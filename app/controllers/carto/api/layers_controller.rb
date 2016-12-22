@@ -130,11 +130,12 @@ module Carto
 
           # don't allow to override table_name and user_name
           new_layer_options = layer_params[:options]
-          if new_layer_options && new_layer_options.include?('table_name')
-            new_layer_options['table_name'] = layer.options['table_name']
-          end
-          if new_layer_options && new_layer_options.include?('user_name')
-            new_layer_options['user_name'] = layer.options['user_name']
+          ['table_name', 'user_name'].each do |key|
+            if layer.options.include?(key)
+              new_layer_options[key] = layer.options[key]
+            else
+              new_layer_options.delete(key)
+            end
           end
 
           unless layer.update_attributes(layer_attributes(layer_params))

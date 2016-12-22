@@ -120,7 +120,7 @@ describe Carto::Api::LayersController do
         map = FactoryGirl.create(:carto_map_with_layers, user_id: @user1.id)
         @map, @table, @table_visualization, @visualization = create_full_visualization(@carto_user1, map: map)
         @layer = map.layers.first
-        @layer2 = FactoryGirl.create(:carto_layer, maps: [map])
+        @layer2 = map.layers[1]
 
         new_order = 2
         new_layer_json = layer_json.merge(
@@ -139,7 +139,7 @@ describe Carto::Api::LayersController do
 
           layer_response[:layers].map { |l| l['id'] }.should eq [@layer.id, @layer2.id]
           layer_response[:layers].each do |layer|
-            layer['options'].should eq new_layer_json[:options]
+            layer['options'].reject { |k| k == 'table_name' }.should eq new_layer_json[:options]
             layer['order'].should eq new_order
           end
         end
@@ -148,7 +148,8 @@ describe Carto::Api::LayersController do
       it 'does not update table_name or users_name options' do
         map = FactoryGirl.create(:carto_map_with_layers, user_id: @user1.id)
         @map, @table, @table_visualization, @visualization = create_full_visualization(@carto_user1, map: map)
-        @layer = map.layers.first
+        @layer = map.data_layers.first
+        original_options = @layer.options.dup
 
         new_layer_json = layer_json.merge(
           options: { table_name: 'other_table_name', user_name: 'other_username' }
@@ -157,14 +158,15 @@ describe Carto::Api::LayersController do
           response.status.should eq 200
           layer_response = response.body
 
-          layer_response[:options].should eq layer_json[:options]
+          layer_response[:options].should eq original_options.slice(:table_name, :user_name).symbolize_keys
         end
       end
 
       it 'does not remove table_name or users_name options' do
         map = FactoryGirl.create(:carto_map_with_layers, user_id: @user1.id)
         @map, @table, @table_visualization, @visualization = create_full_visualization(@carto_user1, map: map)
-        @layer = map.layers.first
+        @layer = map.data_layers.first
+        original_options = @layer.options.dup
 
         new_layer_json = layer_json.merge(
           options: {}
@@ -173,7 +175,7 @@ describe Carto::Api::LayersController do
           response.status.should eq 200
           layer_response = response.body
 
-          layer_response[:options].should eq layer_json[:options]
+          layer_response[:options].should eq original_options.slice(:table_name, :user_name).symbolize_keys
         end
       end
 

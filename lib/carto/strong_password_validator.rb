@@ -8,7 +8,7 @@ module Carto
     DEFAULT_MIN_SYMBOLS = 1
     DEFAULT_MIN_LETTERS = 1
 
-    SYMBOLS = %w({ } [ ] , . < > ; : ‘ “ ? / | \ ` ~ ! @ # $ % ^ & * ( ) _ - + =).freeze
+    SYMBOLS = %w({ } [ ] , . < > ; : ‘ “ ? / | \  ` ~ ! @ # $ % ^ & * ( ) _ - + =).freeze
 
     def initialize(min_length: DEFAULT_MIN_LENGTH,
                    max_length: min_length > DEFAULT_MAX_LENGTH ? min_length : DEFAULT_MAX_LENGTH,

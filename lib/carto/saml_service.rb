@@ -36,6 +36,24 @@ module Carto
     end
 
     def create_user(email)
+      username = email.split('@').first.scan(/\w/).join
+
+      user_account_creator = UserAccountCreator.new('SAML')
+                                               .with_email(email)
+                                               .with_username(username)
+                                               .with_organization(@organization)
+                                               .user
+
+      if user_account_creator.valid?
+        ::User[user_account_creator.user.create!.id]
+      else
+        message = "Carto::SAMLService: Couldn't create user"
+        validation_errors = user_account_creator.validation_errors
+        CartoDB::Logger.error(message: message,
+                              validation_errors: validation_errors)
+
+        raise Carto::UnprocesableEntityError.new("#{message}: #{validation_errors}")
+      end
     end
 
     def saml_response_from_saml_response_param(saml_response_param)

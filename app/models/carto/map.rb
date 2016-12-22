@@ -154,7 +154,7 @@ class Carto::Map < ActiveRecord::Base
     return admits_more_base_layers?(layer) if layer.base_layer?
   end
 
-  def can_add_layer(user)
+  def can_add_layer?(user)
     return false if user.max_layers && user.max_layers <= carto_and_torque_layers.count
 
     visualization.writable_by?(user)

@@ -18,6 +18,7 @@ var InfowindowModel = Backbone.Model.extend({
   TEMPLATE_ATTRIBUTES: ['template', 'template_type', 'alternative_names', 'width', 'maxHeight', 'offset'],
 
   initialize: function (attrs) {
+    attrs = attrs || {};
     this._fields = new Backbone.Collection(attrs.fields || []);
     this.unset('fields', { silent: true });
 

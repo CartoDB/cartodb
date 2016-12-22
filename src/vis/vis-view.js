@@ -2,7 +2,6 @@ var _ = require('underscore');
 var $ = require('jquery');
 var View = require('../core/view');
 var MapViewFactory = require('../geo/map-view-factory');
-var InfowindowManager = require('./infowindow-manager');
 var TooltipManager = require('./tooltip-manager');
 var FeatureEvents = require('./feature-events');
 var MapCursorManager = require('./map-cursor-manager');
@@ -10,6 +9,10 @@ var MapEventsManager = require('./map-events-manager');
 var GeometryManagementController = require('./geometry-management-controller');
 var LegendsView = require('../geo/ui/legends/legends-view');
 var OverlaysView = require('../geo/ui/overlays-view');
+
+var InfowindowModel = require('../geo/ui/infowindow-model');
+var InfowindowView = require('../geo/ui/infowindow-view');
+var InfowindowManager = require('./infowindow-manager');
 
 /**
  * Visualization creation
@@ -63,10 +66,22 @@ var Vis = View.extend({
     new GeometryManagementController(this.mapView, this.model.map); // eslint-disable-line
 
     // Infowindows && Tooltips
-    var infowindowManager = new InfowindowManager(this.model, {
+    var infowindowModel = new InfowindowModel();
+    var infowindowView = new InfowindowView({
+      model: infowindowModel,
+      mapView: this.mapView
+    });
+    infowindowView.render();
+    this.$el.append(infowindowView.el);
+
+    new InfowindowManager({ // eslint-disable-line
+      visModel: this,
+      mapModel: this.model.map,
+      mapView: this.mapView,
+      infowindowModel: infowindowModel
+    }, {
       showEmptyFields: this.model.get('showEmptyInfowindowFields')
     });
-    infowindowManager.manage(this.mapView, this.model.map);
 
     var tooltipManager = new TooltipManager(this.model);
     tooltipManager.manage(this.mapView, this.model.map);

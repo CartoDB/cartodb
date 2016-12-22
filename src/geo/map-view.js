@@ -82,13 +82,6 @@ var MapView = View.extend({
     return this;
   },
 
-  /**
-  * add a infowindow to the map
-  */
-  addInfowindow: function (infoWindowView) {
-    this.addOverlay(infoWindowView);
-  },
-
   addOverlay: function (overlay) {
     var type;
     if (overlay) {

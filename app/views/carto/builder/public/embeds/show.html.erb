@@ -27,6 +27,7 @@
 <%= content_for(:js) do %>
   <script>
     var vizJSON = <%= safe_js_object @vizjson.to_hash.to_json %>;
+    var layersData = <%= safe_js_object @layers_data.to_json %>;
     var stateJSON = <%= safe_js_object @state.to_json %>;
     var authTokens = <%= safe_js_object @auth_tokens.to_json %>;
     var autoStyle = <%= safe_js_object @auto_style.to_json %>;

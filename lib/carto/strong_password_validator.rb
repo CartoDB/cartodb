@@ -60,12 +60,13 @@ module Carto
 
     def suggest
       chars = [*'a'..'z', *'A'..'Z'].sample(@min_letters) +
-              [0..9].sample(@min_letters)                 +
-              SYMBOLS.sample(@min_letters)
+              [*0..9].sample(@min_numbers)                +
+              SYMBOLS.sample(@min_symbols)
 
-      average_length = ((@max_length - @min_length) / 2).to_i
-      padding = [average_length - chars.length, 0].max
-      chars << [*'a'..'z', *'A'..'Z', *0..9, *SYMBOLS].sample(padding)
+      padding = [@max_length - chars.length, 0].max
+      padding.times do
+        chars << [*'a'..'z', *'A'..'Z', *0..9, *SYMBOLS].sample
+      end
 
       chars.shuffle.join
     end

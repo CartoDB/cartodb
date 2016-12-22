@@ -6,8 +6,21 @@ describe Carto::SamlService do
     Carto::SamlService.new(@organization)
   end
 
+  let(:auth_saml_configuration) do
+    {
+      issuer: 'localhost.lan',
+      idp_sso_target_url: 'https://example.com/saml/signon/',
+      idp_slo_target_url: 'https://example.com/saml/signon/',
+      idp_cert_fingerprint: '',
+      assertion_consumer_service_url: 'https://localhost.lan/saml/finalize',
+      name_identifier_format: '',
+      email_attribute: 'username'
+    }
+  end
+
   before(:all) do
-    @organization = FactoryGirl.create(:saml_organization)
+    @organization = FactoryGirl.create(:organization,
+                                       auth_saml_configuration: auth_saml_configuration)
   end
 
   after(:all) do
@@ -90,6 +103,15 @@ describe Carto::SamlService do
         service.get_user(saml_response_param_mock).id.should eq user.id
 
         user.delete
+      end
+
+      it 'returns nil if doen\'t exist and can\'t be created' do
+        byebug
+        response_mock.stubs(:is_valid?).returns(true)
+        email = 'manolo@escobar.es'
+        response_mock.stubs(:attributes).returns(saml_config[:email_attribute] => email)
+
+        service.get_user(saml_response_param_mock).should be_nil
       end
     end
 

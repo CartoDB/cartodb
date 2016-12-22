@@ -41,32 +41,20 @@ module Carto
         layer = Carto::Layer.new(layer_attributes(params))
         validate_for_map(layer)
 
-        if layer.save
+        save_layer(layer) do
           @map.layers << layer
           @map.process_privacy_in(layer)
 
           from_layer = Carto::Layer.where(id: params[:from_layer_id]).first if params[:from_layer_id]
           from_letter = params[:from_letter]
           update_layer_node_styles(layer, from_layer, from_letter)
-
-          render_jsonp Carto::Api::LayerPresenter.new(layer, viewer_user: current_user).to_poro
-        else
-          CartoDB::Logger.info(message: 'Error creating layer', errors: layer.errors.full_messages)
-          raise UnprocesableEntityError.new(layer.errors.full_messages)
         end
       end
 
       def user_create
         layer = Carto::Layer.new(layer_attributes(params))
 
-        if layer.save
-          @user.layers << layer
-
-          render_jsonp Carto::Api::LayerPresenter.new(layer, viewer_user: current_user).to_poro
-        else
-          CartoDB::Logger.info(message: 'Error creating layer', errors: layer.errors.full_messages)
-          raise UnprocesableEntityError.new(layer.errors.full_messages)
-        end
+        save_layer(layer) { @user.layers << layer }
       end
 
       def map_update
@@ -122,6 +110,18 @@ module Carto
 
       def show(owner)
         render_jsonp Carto::Api::LayerPresenter.new(@layer, viewer_user: current_user, user: owner).to_json
+      end
+
+      # Takes a block, executed after saving
+      def save_layer(layer)
+        if layer.save
+          yield
+
+          render_jsonp Carto::Api::LayerPresenter.new(layer, viewer_user: current_user).to_poro
+        else
+          CartoDB::Logger.info(message: 'Error creating layer', errors: layer.errors.full_messages)
+          raise UnprocesableEntityError.new(layer.errors.full_messages)
+        end
       end
 
       def update

@@ -146,16 +146,12 @@ module Carto
         end
 
         if layers.count > 1
-          layers_json = layers.map { |l| Carto::Api::LayerPresenter.new(l, viewer_user: current_user).to_poro }
-          render_jsonp(layers: layers_json)
+          render_jsonp(layers: layers.map { |l| Carto::Api::LayerPresenter.new(l, viewer_user: current_user).to_poro })
         else
           render_jsonp Carto::Api::LayerPresenter.new(layers[0], viewer_user: current_user).to_poro
         end
       rescue RuntimeError => e
-        CartoDB::Logger.error(
-          message: 'Error updating layer',
-          exception: e
-        )
+        CartoDB::Logger.error(message: 'Error updating layer', exception: e)
         render_jsonp({ description: e.message }, 400)
       end
 
@@ -192,7 +188,7 @@ module Carto
         # User must be owner or have permissions for the map's visualization
         @map = Carto::Map.find(map_id)
         vis = @map.visualization
-        raise LoadError.new('Map not found') unless vis && vis.is_viewable_by_user?(current_user)
+        raise LoadError.new('Map not found') unless vis.try(:is_viewable_by_user?, current_user)
       rescue ActiveRecord::RecordNotFound
         raise LoadError.new('Map not found')
       end

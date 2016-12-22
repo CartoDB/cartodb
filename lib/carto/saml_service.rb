@@ -19,11 +19,11 @@ module Carto
       get_user(saml_response_param).try(:username)
     end
 
-    def get_user(saml_response_param, create_if_not_exist: false)
+    def get_user(saml_response_param)
       saml_response = saml_response_from_saml_response_param(saml_response_param)
       email = email_from_saml_response(saml_response)
 
-      fetch_user(email) || (create_user(email) if create_if_not_exist)
+      fetch_user(email) || create_user(email)
     end
 
     private

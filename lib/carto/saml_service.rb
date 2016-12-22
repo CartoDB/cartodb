@@ -47,7 +47,9 @@ module Carto
                                                         .user
 
       if user_account_creator.valid?
-        ::User[user_account_creator.user.create!.id]
+        (user = user_account_creator.user).save
+
+        user
       else
         message = "Carto::SAMLService: Couldn't create user"
         validation_errors = user_account_creator.validation_errors

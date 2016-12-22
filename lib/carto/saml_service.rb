@@ -57,8 +57,6 @@ module Carto
 
         CartoDB::Logger.error(message: message,
                               validation_errors: validation_errors)
-
-        raise Carto::UnprocesableEntityError.new("#{message}: #{validation_errors}")
       end
     end
 
@@ -70,7 +68,6 @@ module Carto
       else
         message = "SAML response not valid"
         debug_response(message, response)
-        raise Carto::UnprocesableEntityError.new(message)
       end
     end
 
@@ -82,7 +79,6 @@ module Carto
       else
         message = "SAML response lacks email"
         debug_response(message, saml_response)
-        raise Carto::UnprocesableEntityError.new(message)
       end
     end
 

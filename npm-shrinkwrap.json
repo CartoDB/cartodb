@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.5.74",
+  "version": "4.5.75",
   "dependencies": {
     "backbone": {
       "version": "1.2.3",
@@ -86,7 +86,7 @@
                             },
                             "readable-stream": {
                               "version": "2.0.6",
-                              "from": "readable-stream@>=2.0.5 <2.1.0",
+                              "from": "readable-stream@>=2.0.0 <2.1.0",
                               "resolved": "https://registry.npmjs.org/readable-stream/-/readable-stream-2.0.6.tgz",
                               "dependencies": {
                                 "core-util-is": {
@@ -1147,7 +1147,7 @@
     "cartodb-deep-insights.js": {
       "version": "0.0.2",
       "from": "cartodb/deep-insights.js#master",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#1672ba9b41cca7193de2390758c88560d79427ab",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#95aacb4c968438e241a254d0b10e72916544d828",
       "dependencies": {
         "cartodb.js": {
           "version": "4.0.0-alpha.1",

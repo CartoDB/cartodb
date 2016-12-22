@@ -170,11 +170,11 @@ class Carto::Map < ActiveRecord::Base
   private
 
   def admits_more_data_layers?
-    data_layers.any? && visualization.canonical? ? false : true
+    !visualization.canonical? || data_layers.empty?
   end
 
   def admits_more_torque_layers?
-    torque_layers.any? && visualization.canonical? ? false : true
+    !visualization.canonical? || torque_layers.empty?
   end
 
   def admits_more_base_layers?(layer)

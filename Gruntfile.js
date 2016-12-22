@@ -251,7 +251,7 @@
     registerCmdTask('npm-test', {cmd: 'npm', args: ['test']});
     registerCmdTask('npm-test-watch', {cmd: 'npm', args: ['run', 'test-watch']});
 
-    grunt.registerTask('pre_client',  ['cdb', 'concat:js', 'jst', 'copy:locale_core', 'copy:locale_client', 'copy:js_core', 'copy:js_client', 'copy:js_test_spec_core', 'copy:js_test_spec_client', 'copy:js_test_jasmine_core', 'copy:js_test_jasmine_client']);
+    grunt.registerTask('pre_client',  ['copy:locale_core', 'copy:locale_client', 'copy:js_core', 'copy:js_client', 'copy:js_test_spec_core', 'copy:js_test_spec_client', 'copy:js_test_jasmine_core', 'copy:js_test_jasmine_client']);
     grunt.registerTask('js',          ['cdb', 'pre_client', 'browserify', 'concat:js', 'jst']);
     grunt.registerTask('pre_default', ['clean', 'config', 'js']);
     grunt.registerTask('test', '(CI env) Re-build JS files and run all tests. ' +

@@ -1,7 +1,5 @@
 # encoding: utf-8
 
-require_dependency 'user_account_creator.rb'
-
 module Carto
   class SamlService
     def initialize(organization)
@@ -42,11 +40,11 @@ module Carto
     def create_user(email)
       username = email.split('@').first.scan(/\w/).join
 
-      user_account_creator = UserAccountCreator.new('SAML')
-                                               .with_email(email)
-                                               .with_username(username)
-                                               .with_organization(@organization)
-                                               .user
+      user_account_creator = CartoDB::UserAccountCreator.new('SAML')
+                                                        .with_email(email)
+                                                        .with_username(username)
+                                                        .with_organization(@organization)
+                                                        .user
 
       if user_account_creator.valid?
         ::User[user_account_creator.user.create!.id]

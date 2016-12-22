@@ -20,26 +20,54 @@ module Carto
     end
 
     def get_user(saml_response_param)
-      response = get_saml_response(saml_response_param)
+      saml_response = saml_response_from_saml_response_param(saml_response_param)
+      email = email_from_saml_response(saml_response)
 
-      unless response.is_valid?
-        debug_response("SAML response not valid", response)
-        return nil
-      end
+      fetch_user(email)
+    end
 
-      email = response.attributes[email_attribute]
-      unless email.present?
-        debug_response("SAML response lacks email", response)
-        return nil
-      end
+    def get_or_create_user(saml_response_param)
+      saml_response = saml_response_from_saml_response_param(saml_response_param)
+      email = email_from_saml_response(saml_response)
 
+      fetch_user(email) || create_user(email)
+    end
+
+    private
+
+    def fetch_user(email)
       # Can't match the username because ADFS can only redirect to one endpoint.
       # So this just checks to see if we have a user with this email address.
       # We can log them in at that point since identity is confirmed by BCG's ADFS.
       ::User.filter("email = ?", email.strip.downcase).first
     end
 
-    private
+    def create_user(email)
+    end
+
+    def saml_response_from_saml_response_param(saml_response_param)
+      response = get_saml_response(saml_response_param)
+
+      if response.is_valid?
+        response
+      else
+        message = "SAML response not valid"
+        debug_response(message, response)
+        raise message
+      end
+    end
+
+    def email_from_saml_response(saml_response)
+      email = saml_response.attributes[email_attribute]
+
+      if email.present?
+        email
+      else
+        message = "SAML response lacks email"
+        debug_response("SAML response lacks email", saml_response)
+        raise message
+      end
+    end
 
     def debug_response(message, response)
       CartoDB::Logger.debug(message: message, response_settings: response.settings, response_options: response.options)

@@ -5,8 +5,12 @@ module Carto::Metrics
     ].freeze
 
     VALID_SERVICES = [
-      :mapviews,
-      :mapviews_es
+      :mapviews
+    ].freeze
+
+    MAPVIEWS_REDIS_KEYS = [
+      'mapviews',
+      'mapviews_es'
     ].freeze
 
     def initialize(username, orgname)
@@ -16,9 +20,9 @@ module Carto::Metrics
 
     def get(_service, _metric, date)
       (@organization ? @organization.users.map(&:username) : [@username]).sum do |username|
-        VALID_SERVICES.sum do |service|
+        MAPVIEWS_REDIS_KEYS.sum do |redis_key|
           CartoDB::Stats::APICalls.new.get_api_calls_from_redis_source(
-            username, service.to_s, from: date, to: date
+            username, redis_key, from: date, to: date
           ).values.first
         end
       end

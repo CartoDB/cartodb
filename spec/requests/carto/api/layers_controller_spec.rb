@@ -2,7 +2,6 @@
 
 require_relative '../../../spec_helper'
 require_relative '../../../../app/controllers/carto/api/layers_controller'
-require_relative '../../../../spec/requests/api/json/layers_controller_shared_examples'
 require 'helpers/unique_names_helper'
 
 describe Carto::Api::LayersController do

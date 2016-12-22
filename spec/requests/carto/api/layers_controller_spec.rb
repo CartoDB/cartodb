@@ -161,6 +161,22 @@ describe Carto::Api::LayersController do
         end
       end
 
+      it 'does not remove table_name or users_name options' do
+        map = FactoryGirl.create(:carto_map_with_layers, user_id: @user1.id)
+        @map, @table, @table_visualization, @visualization = create_full_visualization(@carto_user1, map: map)
+        @layer = map.layers.first
+
+        new_layer_json = layer_json.merge(
+          options: {}
+        )
+        put_json update_map_layer_url(map.id, @layer.id), new_layer_json do |response|
+          response.status.should eq 200
+          layer_response = response.body
+
+          layer_response[:options].should eq layer_json[:options]
+        end
+      end
+
       it 'destroys layers' do
         map = FactoryGirl.create(:carto_map_with_layers, user_id: @user1.id)
         @map, @table, @table_visualization, @visualization = create_full_visualization(@carto_user1, map: map)

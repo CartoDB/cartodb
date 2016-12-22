@@ -22,8 +22,11 @@ module Carto
     end
 
     def get_user(saml_response_param)
-      return unless saml_response = saml_response_from_saml_response_param(saml_response_param)
-      return unless email = email_from_saml_response(saml_response)
+      saml_response = saml_response_from_saml_response_param(saml_response_param)
+      return unless saml_response
+
+      email = email_from_saml_response(saml_response)
+      return unless email
 
       fetch_user(email) || create_user(email)
     end

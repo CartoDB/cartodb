@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+require_dependency 'user_account_creator.rb'
+
 module Carto
   class SamlService
     def initialize(organization)

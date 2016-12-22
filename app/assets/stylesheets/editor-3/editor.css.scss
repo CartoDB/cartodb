@@ -112,8 +112,8 @@
       width: 280px;
     }
     .CDB-Widget.CDB-Widget--timeSeries {
-      padding: 12px 0;
       min-height: auto;
+      padding: 12px 0;
       .CDB-Widget-content {
         margin-right: 12px;
         margin-left: 12px;
@@ -129,9 +129,12 @@
   }
 }
 
-@media (max-width: 1280px) {
+@media (max-width: 1200px) {
   .Editor {
     .CDB-Widget-options {
+      display: block;
+    }
+    .CDB-Widget-actions {
       display: none;
     }
     .CDB-Widget-body.is-collapsed {

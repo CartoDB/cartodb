@@ -58,6 +58,18 @@ module Carto
       message
     end
 
+    def suggest
+      chars = [*'a'..'z', *'A'..'Z'].sample(@min_letters) +
+              [0..9].sample(@min_letters)                 +
+              SYMBOLS.sample(@min_letters)
+
+      average_length = ((@max_length - @min_length) / 2).to_i
+      padding = [average_length - chars.length, 0].max
+      chars << [*'a'..'z', *'A'..'Z', *0..9, *SYMBOLS].sample(padding)
+
+      chars.shuffle.join
+    end
+
     private
 
     def letters_in(string)

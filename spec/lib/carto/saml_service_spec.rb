@@ -44,7 +44,9 @@ describe Carto::SamlService do
       it 'returns nil if response is invalid' do
         response_mock.stubs(:is_valid?).returns(false)
 
-        service.username(saml_response_param_mock).should be_nil
+        expect {
+          service.username(saml_response_param_mock)
+        }.to raise_error(Carto::UnprocesableEntityError)
       end
 
       it 'returns nil if a valid response does not contain the username' do

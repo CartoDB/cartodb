@@ -50,7 +50,7 @@ var HistogramAutoStyler = AutoStyler.extend({
     var bins = this.dataviewModel.get('bins');
     var attr = this.dataviewModel.get('column');
     var styles = this.styles;
-    var isCustomDefinition = this.styles.custom;
+    var isCustomDefinition = this.styles && this.styles.custom || false;
 
     ['marker-fill', 'polygon-fill', 'line-color'].forEach(function (item) {
       if (cartocss.search(StyleUtils.getAttrRegex(item, false)) >= 0) {

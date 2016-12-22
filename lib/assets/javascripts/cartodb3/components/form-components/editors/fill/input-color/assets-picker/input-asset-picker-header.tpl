@@ -15,7 +15,11 @@
               <button class="ColorBar CDB-ListDecoration-rampItemBar u-rSpace--xl js-colorPicker" style="background-color: <%= color %>;"></button>
             </li>
             <li class='CDB-NavMenu-item is-selected'>
-              <span class="RCDB-ListDecoration-rampImg CDB-Text u-actionTextColor js-assetPicker"><%= _t('form-components.editors.fill.input-color.img') %></span>
+              <% if (image) { %>
+                <img src="<%= image %>" class="RCDB-ListDecoration-rampImg CDB-Text u-actionTextColor js-assetPicker"/>
+              <% } else { %>
+                <span class="RCDB-ListDecoration-rampImg CDB-Text u-actionTextColor js-assetPicker"><%= _t('form-components.editors.fill.input-color.img') %></span>
+              <% } %>
             </li>
           </ul>
         </nav>

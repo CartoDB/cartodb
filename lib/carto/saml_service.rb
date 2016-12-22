@@ -46,7 +46,7 @@ module Carto
       else
         message = "SAML response not valid"
         debug_response(message, response)
-        raise message
+        raise Carto::UnprocesableEntityError.new(message)
       end
     end
 
@@ -57,8 +57,8 @@ module Carto
         email
       else
         message = "SAML response lacks email"
-        debug_response("SAML response lacks email", saml_response)
-        raise message
+        debug_response(message, saml_response)
+        raise Carto::UnprocesableEntityError.new(message)
       end
     end
 

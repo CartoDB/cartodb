@@ -39,11 +39,13 @@ module Carto
 
     def create_user(email)
       username = email.split('@').first.scan(/\w/).join
+      password = StrongPasswordValidator.new(max_length: ::User::MAX_PASSWORD_LENGTH - 1).suggest
 
       user_account_creator = CartoDB::UserAccountCreator.new('SAML')
+                                                        .with_organization(@organization)
                                                         .with_email(email)
                                                         .with_username(username)
-                                                        .with_organization(@organization)
+                                                        .with_password(password)
 
       if user_account_creator.valid?
         (user = user_account_creator.user).save

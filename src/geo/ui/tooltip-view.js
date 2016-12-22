@@ -1,31 +1,48 @@
 var _ = require('underscore');
-var InfoBox = require('./infobox');
 var sanitize = require('../../core/sanitize');
-var InfowindowModel = require('./infowindow-model');
+var Template = require('../../core/template');
+var View = require('../../core/view');
 
-var TooltipView = InfoBox.extend({
+var FADE_IN_DURATION = 200;
+var FADE_OUT_DURATION = 100;
+var FADE_TIMEOUT = 50;
+
+var TooltipView = View.extend({
   defaultTemplate: '<p>{{text}}</p>',
   className: 'CDB-Tooltip-wrapper',
 
-  defaults: {
-    vertical_offset: 0,
-    horizontal_offset: 0,
-    position: 'top|center'
-  },
-
-  initialize: function () {
-    if (!this.options.mapView) {
+  initialize: function (options) {
+    if (!options.mapView) {
       throw new Error('mapView should be present');
     }
-    this.options.template = this.options.template || this.defaultTemplate;
-    InfoBox.prototype.initialize.call(this);
+    if (!options.layerView) {
+      throw new Error('layerView should be present');
+    }
+
+    this._mapView = options.mapView;
+    this._layerView = options.layerView;
+
     this._filter = null;
     this.showing = false;
     this.showhideTimeout = null;
+
+    this.model.bind('change:visible', this._showOrHide, this);
+    // TODO: pos and position are ambiguous names
+    this.model.bind('change:pos', this._updatePosition, this);
+    this.model.bind('change:posisition', this._updatePosition, this);
   },
 
-  render: function (data) {
-    var sanitizedOutput = sanitize.html(this.template(data));
+  template: function (data) {
+    var compiledTemplate = Template.compile(this.model.get('template'), 'mustache');
+    return compiledTemplate(data);
+  },
+
+  render: function () {
+    var content = this.model.get('content');
+    if (this._filter && !this._filter(content)) {
+      return this;
+    }
+    var sanitizedOutput = sanitize.html(this.template(content));
     this.$el.html(sanitizedOutput);
     return this;
   },
@@ -40,117 +57,77 @@ var TooltipView = InfoBox.extend({
     return this;
   },
 
-  setFields: function (fields) {
-    this.options.fields = fields;
-    return this;
-  },
-
-  setAlternativeNames: function (n) {
-    this.options.alternative_names = n;
-  },
-
   enable: function () {
-    if (this.options.layer) {
+    if (this._layerView) {
       // unbind previous events
-      this.options.layer.unbind(null, null, this);
-      this.options.layer
+      this._layerView.unbind(null, null, this);
+      this._layerView
         .on('mouseover', function (e, latlng, pos, data) {
-          if (this.options.fields && this.options.fields.length > 0) {
-            var non_valid_keys = ['fields', 'content'];
-
-            if (this.options.omit_columns) {
-              non_valid_keys = non_valid_keys.concat(this.options.omit_columns);
-            }
-
-            var c = InfowindowModel.contentForFields(data, this.options.fields, {
-              show_empty_fields: false
-            });
-
-            // Remove fields and content from data
-            // and make them visible for custom templates
-            data.content = _.omit(data, non_valid_keys);
-
-            // loop through content values
-            data.fields = c.fields;
-
-            // alternamte names
-            var names = this.options.alternative_names;
-            if (names) {
-              for (var i = 0; i < data.fields.length; ++i) {
-                var f = data.fields[i];
-                f.title = names[f.title] || f.title;
-              }
-            }
-            this.show(pos, data);
-            this.showing = true;
-          } else if (this.showing) {
-            this.hide();
-            this.showing = false;
+          if (this.model.get('fields') && this.model.get('fields').length > 0) {
+            this.model.updateContent(data);
+            this.model.set('pos', pos);
+            this.model.set('visible', true);
+          } else {
+            this.model.set('visible', false);
           }
         }, this)
         .on('mouseout', function () {
-          if (this.showing) {
-            this.hide();
-            this.showing = false;
-          }
+          this.model.set('visible', false);
         }, this);
-      this.add_related_model(this.options.layer);
+      this.add_related_model(this._layerView);
     }
   },
 
   disable: function () {
-    if (this.options.layer) {
-      this.options.layer.unbind(null, null, this);
+    if (this._layerView) {
+      this._layerView.unbind(null, null, this);
     }
+    this.model.set('visible', false);
     this.hide();
-    this.showing = false;
   },
 
-  _visibility: function () {
+  _showOrHide: function () {
+    if (this.model.isVisible()) {
+      this._show();
+    } else {
+      this._hide();
+    }
+  },
+
+  _hide: function () {
     var self = this;
-    clearTimeout(this.showhideTimeout);
-
-    var fadeIn = function () {
-      self.$el.fadeIn(100);
-    };
-
     var fadeOut = function () {
-      self.$el.fadeOut(200);
+      self.$el.fadeOut(FADE_OUT_DURATION);
     };
 
-    this.showhideTimeout = setTimeout(self._showing ? fadeIn : fadeOut, 50);
+    clearTimeout(this.showhideTimeout);
+    this.showhideTimeout = setTimeout(fadeOut, FADE_TIMEOUT);
   },
 
-  hide: function () {
-    if (this._showing) {
-      this._showing = false;
-      this._visibility();
-    }
+  _show: function () {
+    this.render();
+    this._updatePosition();
+
+    var self = this;
+    var fadeIn = function () {
+      self.$el.fadeIn(FADE_IN_DURATION);
+    };
+
+    clearTimeout(this.showhideTimeout);
+    this.showhideTimeout = setTimeout(fadeIn, FADE_TIMEOUT);
   },
 
-  show: function (pos, data) {
-    if (this._filter && !this._filter(data)) {
-      return this;
-    }
-    this.render(data);
-    this.setPosition(pos);
-    if (!this._showing) {
-      this._showing = true;
-      this._visibility();
-    }
-    return this;
-  },
-
-  setPosition: function (point) {
-    var pos = this.options.position;
+  _updatePosition: function () {
+    var point = this.model.get('pos');
+    var pos = this.model.get('position');
     var height = this.$el.innerHeight();
     var width = this.$el.innerWidth();
-    var mapViewSize = this.options.mapView.getSize();
+    var mapViewSize = this._mapView.getSize();
     var top = 0;
     var left = 0;
     var modifierClass = 'CDB-Tooltip-wrapper--';
 
-    // Remove tick class
+    // Remove any position modifier
     this._removePositionModifiers();
 
     // Vertically
@@ -194,8 +171,8 @@ var TooltipView = InfoBox.extend({
     }
 
     // Add offsets
-    top += this.options.vertical_offset;
-    left += this.options.horizontal_offset;
+    top += this.model.getVerticalOffset();
+    left += this.model.getHorizontalOffset();
 
     this.$el.css({
       top: top,

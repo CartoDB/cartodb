@@ -1,3 +1,4 @@
+var TooltipModel = require('../geo/ui/tooltip-model');
 var TooltipView = require('../geo/ui/tooltip-view');
 
 /**
@@ -44,14 +45,16 @@ TooltipManager.prototype._reloadVis = function (options) {
 
 TooltipManager.prototype._addTooltipOverlay = function (layerView, layerModel) {
   if (!layerView.tooltipView) {
-    layerView.tooltipView = new TooltipView({
-      mapView: this._mapView,
-      layer: layerView,
-      position: 'bottom|right',
-      vertical_offset: 10,
-      horizontal_offset: 4,
-      omit_columns: ['cartodb_id']
+    var tooltipModel = new TooltipModel({
+      offset: [4, 10]
     });
+
+    layerView.tooltipView = new TooltipView({
+      model: tooltipModel,
+      mapView: this._mapView,
+      layerView: layerView
+    });
+
     this._mapView.addOverlay(layerView.tooltipView);
 
     // TODO: Test this
@@ -69,9 +72,9 @@ TooltipManager.prototype._bindFeatureOverEvent = function (layerView) {
     }
 
     if (this._map.arePopupsEnabled() && layerModel.tooltip.hasTemplate()) {
-      layerView.tooltipView.setTemplate(layerModel.tooltip.get('template'));
-      layerView.tooltipView.setFields(layerModel.tooltip.fields.toJSON());
-      layerView.tooltipView.setAlternativeNames(layerModel.tooltip.get('alternative_names'));
+      layerView.tooltipView.model.set('template', layerModel.tooltip.get('template'));
+      layerView.tooltipView.model.set('fields', layerModel.tooltip.fields.toJSON());
+      layerView.tooltipView.model.set('alternative_names', layerModel.tooltip.get('alternative_names'));
       layerView.tooltipView.enable();
     } else {
       layerView.tooltipView.disable();

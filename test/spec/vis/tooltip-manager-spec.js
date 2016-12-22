@@ -164,9 +164,6 @@ describe('src/vis/tooltip-manager.js', function () {
     expect(this.mapView.addOverlay).toHaveBeenCalled();
     var tooltipView = this.mapView.addOverlay.calls.mostRecent().args[0];
 
-    spyOn(tooltipView, 'setTemplate');
-    spyOn(tooltipView, 'setFields');
-    spyOn(tooltipView, 'setAlternativeNames');
     spyOn(tooltipView, 'enable');
 
     this.layerView.model = new CartoDBLayerGroup({}, {
@@ -176,13 +173,13 @@ describe('src/vis/tooltip-manager.js', function () {
     // Simulate the featureOver event on layer #0
     this.layerView.trigger('featureOver', {}, [100, 200], undefined, { cartodb_id: 10 }, 0);
 
-    expect(tooltipView.setTemplate).toHaveBeenCalledWith('template1');
-    expect(tooltipView.setFields).toHaveBeenCalledWith([{
+    expect(tooltipView.model.get('template')).toEqual('template1');
+    expect(tooltipView.model.get('fields')).toEqual([{
       'name': 'name',
       'title': true,
       'position': 1
     }]);
-    expect(tooltipView.setAlternativeNames).toHaveBeenCalledWith('alternative_names1');
+    expect(tooltipView.model.get('alternative_names')).toEqual('alternative_names1');
     expect(tooltipView.enable).toHaveBeenCalled();
     expect(tooltipView.enable.calls.count()).toEqual(1);
     tooltipView.enable.calls.reset();
@@ -190,13 +187,13 @@ describe('src/vis/tooltip-manager.js', function () {
     // Simulate the featureOver event on layer #1
     this.layerView.trigger('featureOver', {}, [100, 200], undefined, { cartodb_id: 10 }, 1);
 
-    expect(tooltipView.setTemplate).toHaveBeenCalledWith('template2');
-    expect(tooltipView.setFields).toHaveBeenCalledWith([{
+    expect(tooltipView.model.get('template')).toEqual('template2');
+    expect(tooltipView.model.get('fields')).toEqual([{
       'name': 'description',
       'title': true,
       'position': 1
     }]);
-    expect(tooltipView.setAlternativeNames).toHaveBeenCalledWith('alternative_names2');
+    expect(tooltipView.model.get('alternative_names')).toEqual('alternative_names2');
     expect(tooltipView.enable).toHaveBeenCalled();
   });
 

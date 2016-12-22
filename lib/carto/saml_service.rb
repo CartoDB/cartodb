@@ -44,7 +44,6 @@ module Carto
                                                         .with_email(email)
                                                         .with_username(username)
                                                         .with_organization(@organization)
-                                                        .user
 
       if user_account_creator.valid?
         (user = user_account_creator.user).save

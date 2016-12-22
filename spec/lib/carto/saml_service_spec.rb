@@ -41,27 +41,21 @@ describe Carto::SamlService do
     end
 
     describe '#username' do
-      it 'raises error if response is invalid' do
+      it 'returns nil if response is invalid' do
         response_mock.stubs(:is_valid?).returns(false)
 
-        expect {
-          service.username(saml_response_param_mock)
-        }.to raise_error(Carto::UnprocesableEntityError)
+        service.username(saml_response_param_mock).should be_nil
       end
 
-      it 'raises error if a valid response does not contain the username' do
+      it 'returns nil if a valid response does not contain the username' do
         response_mock.stubs(:is_valid?).returns(true)
         response_mock.stubs(:attributes).returns(saml_config[:email_attribute] => nil)
 
-        expect {
-          service.username(saml_response_param_mock)
-        }.to raise_error(Carto::UnprocesableEntityError)
+        service.username(saml_response_param_mock).should be_nil
 
         response_mock.stubs(:attributes).returns(saml_config[:email_attribute] => '')
 
-        expect {
-          service.username(saml_response_param_mock)
-        }.to raise_error(Carto::UnprocesableEntityError)
+        service.username(saml_response_param_mock).should be_nil
       end
 
       it 'returns username from the user with the matching email' do

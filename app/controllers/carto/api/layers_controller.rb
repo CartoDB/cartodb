@@ -51,10 +51,7 @@ module Carto
 
           render_jsonp Carto::Api::LayerPresenter.new(layer, viewer_user: current_user).to_poro
         else
-          CartoDB::Logger.info(
-            message: 'Error creating layer',
-            errors: layer.errors.full_messages
-          )
+          CartoDB::Logger.info(message: 'Error creating layer', errors: layer.errors.full_messages)
           raise UnprocesableEntityError.new(layer.errors.full_messages)
         end
       end
@@ -67,10 +64,7 @@ module Carto
 
           render_jsonp Carto::Api::LayerPresenter.new(layer, viewer_user: current_user).to_poro
         else
-          CartoDB::Logger.info(
-            message: 'Error creating layer',
-            errors: layer.errors.full_messages
-          )
+          CartoDB::Logger.info(message: 'Error creating layer', errors: layer.errors.full_messages)
           raise UnprocesableEntityError.new(layer.errors.full_messages)
         end
       end

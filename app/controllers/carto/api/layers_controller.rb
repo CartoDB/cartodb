@@ -22,11 +22,11 @@ module Carto
                   UnauthorizedError, with: :rescue_from_carto_error
 
       def map_index
-        index(@map)
+        index(@map.layers)
       end
 
       def user_index
-        index(@user, owner: @user)
+        index(@user.layers, owner: @user)
       end
 
       def map_show
@@ -100,12 +100,12 @@ module Carto
         end
       end
 
-      def index(parent, owner: nil)
-        layers = parent.layers.map do |layer|
+      def index(layers, owner: nil)
+        presented_layers = layers.map do |layer|
           Carto::Api::LayerPresenter.new(layer, viewer_user: current_user, user: owner || owner_user(layer)).to_poro
         end
 
-        render_jsonp layers: layers, total_entries: layers.size
+        render_jsonp layers: presented_layers, total_entries: presented_layers.size
       end
 
       def show(owner)

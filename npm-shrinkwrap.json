@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.5.66-autostyle.10",
+  "version": "4.5.74",
   "dependencies": {
     "backbone": {
       "version": "1.2.3",
@@ -86,7 +86,7 @@
                             },
                             "readable-stream": {
                               "version": "2.0.6",
-                              "from": "readable-stream@>=2.0.0 <2.1.0",
+                              "from": "readable-stream@>=2.0.5 <2.1.0",
                               "resolved": "https://registry.npmjs.org/readable-stream/-/readable-stream-2.0.6.tgz",
                               "dependencies": {
                                 "core-util-is": {
@@ -645,9 +645,9 @@
                                   }
                                 },
                                 "jsonpointer": {
-                                  "version": "4.0.0",
+                                  "version": "4.0.1",
                                   "from": "jsonpointer@>=4.0.0 <5.0.0",
-                                  "resolved": "https://registry.npmjs.org/jsonpointer/-/jsonpointer-4.0.0.tgz"
+                                  "resolved": "https://registry.npmjs.org/jsonpointer/-/jsonpointer-4.0.1.tgz"
                                 },
                                 "xtend": {
                                   "version": "4.0.1",
@@ -1012,7 +1012,7 @@
                     },
                     "inherits": {
                       "version": "2.0.3",
-                      "from": "inherits@>=2.0.1 <2.1.0",
+                      "from": "inherits@>=2.0.0 <3.0.0",
                       "resolved": "https://registry.npmjs.org/inherits/-/inherits-2.0.3.tgz"
                     }
                   }

@@ -44,7 +44,7 @@ class SessionsController < ApplicationController
   def create
     user = ldap_user || saml_user || credentials_or_google_user
 
-    (render :action => 'new' and return) unless (params[:user_domain].present? || user.present?)
+    return render(action: 'new') unless user.present?
 
     CartoDB::Stats::Authentication.instance.increment_login_counter(user.email)
 

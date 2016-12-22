@@ -38,7 +38,7 @@ module Carto
       end
 
       def map_create
-        layer = Carto::Layer.new(params.slice(:kind, :options, :infowindow, :tooltip, :order))
+        layer = Carto::Layer.new(layer_attributes(params))
         validate_for_map(layer)
 
         if layer.save
@@ -60,7 +60,7 @@ module Carto
       end
 
       def user_create
-        layer = Carto::Layer.new(params.slice(:kind, :options, :infowindow, :tooltip, :order))
+        layer = Carto::Layer.new(layer_attributes(params))
 
         if layer.save
           @user.layers << layer
@@ -143,7 +143,7 @@ module Carto
             new_layer_options['user_name'] = layer.options['user_name']
           end
 
-          unless layer.update_attributes(layer_params.slice(:options, :kind, :infowindow, :tooltip, :order))
+          unless layer.update_attributes(layer_attributes(layer_params))
             raise UnprocesableEntityError.new(layer.errors.full_messages)
           end
 
@@ -167,6 +167,10 @@ module Carto
       def destroy
         @layer.destroy
         head :no_content
+      end
+
+      def layer_attributes(param)
+        param.slice(:options, :kind, :infowindow, :tooltip, :order)
       end
 
       def ensure_current_user

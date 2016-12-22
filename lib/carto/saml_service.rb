@@ -51,7 +51,7 @@ module Carto
 
         user
       else
-        message = "Carto::SAMLService: Couldn't create user"
+        message = "Carto::SamlService: Couldn't create user"
         validation_errors = user_account_creator.validation_errors
 
         CartoDB::Logger.error(message: message,

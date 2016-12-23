@@ -36,7 +36,7 @@ module Carto::Superadmin
           usage[service] = {}
           retriever.metrics.each do |metric|
             range = retriever.get_range(user, org, service, metric, date_from, date_to)
-            usage[service][metric] = totals ? range.values.sum : range
+            usage[service][metric] = totals ? range.values.sum : range.map { |d, v| { date: d, value: v } }
           end
         end
       end

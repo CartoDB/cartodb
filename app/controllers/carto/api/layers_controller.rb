@@ -6,7 +6,8 @@ module Carto
     class LayersController < ::Api::ApplicationController
       include Carto::ControllerHelper
 
-      ssl_required :show, :layers_by_map, :custom_layers_by_user
+      ssl_required :show, :layers_by_map, :custom_layers_by_user, :map_index, :user_index, :map_show, :user_show,
+                   :map_create, :user_create, :map_update, :user_update, :map_destroy, :user_destroy
 
       before_filter :ensure_current_user, only: [:user_index, :user_show, :user_create, :user_update, :user_destroy]
       before_filter :load_user_layer, only: [:user_show, :user_destroy]

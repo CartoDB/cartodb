@@ -16,52 +16,14 @@ module Carto
       OneLogin::RubySaml::Authrequest.new.create(saml_settings)
     end
 
-    # This only works for existing users
-    def username(saml_response_param)
-      get_user(saml_response_param).try(:username)
-    end
-
-    def get_user(saml_response_param)
+    def get_user_email(saml_response_param)
       saml_response = saml_response_from_saml_response_param(saml_response_param)
       return unless saml_response
 
-      email = email_from_saml_response(saml_response)
-      return unless email
-
-      fetch_user(email) || create_user(email)
+      email_from_saml_response(saml_response)
     end
 
     private
-
-    def fetch_user(email)
-      # Can't match the username because ADFS can only redirect to one endpoint.
-      # So this just checks to see if we have a user with this email address.
-      # We can log them in at that point since identity is confirmed by BCG's ADFS.
-      ::User.filter("email = ?", email.strip.downcase).first
-    end
-
-    def create_user(email)
-      username = email.split('@').first.scan(/\w/).join
-      password = StrongPasswordValidator.new(max_length: ::User::MAX_PASSWORD_LENGTH - 1).suggest
-
-      user_account_creator = CartoDB::UserAccountCreator.new('SAML')
-                                                        .with_organization(@organization)
-                                                        .with_email(email)
-                                                        .with_username(username)
-                                                        .with_password(password)
-
-      if user_account_creator.valid?
-        (user = user_account_creator.user).save
-
-        user
-      else
-        message = "Carto::SamlService: Couldn't create user"
-        validation_errors = user_account_creator.validation_errors
-
-        CartoDB::Logger.error(message: message,
-                              validation_errors: validation_errors)
-      end
-    end
 
     def saml_response_from_saml_response_param(saml_response_param)
       response = get_saml_response(saml_response_param)

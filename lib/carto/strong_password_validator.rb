@@ -8,10 +8,10 @@ module Carto
     DEFAULT_MIN_SYMBOLS = 1
     DEFAULT_MIN_LETTERS = 1
 
-    SYMBOLS = %w({ } [ ] , . < > ; : ‘ “ ? / | \  ` ~ ! @ # $ % ^ & * ( ) _ - + =).freeze
+    SYMBOLS = %w({ } [ ] , . < > ; : ‘ “ \? \/ \| \ ` ~ ! @ # $ % ^ & \* ( ) _ - \+ =).freeze
 
     def initialize(min_length: DEFAULT_MIN_LENGTH,
-                   max_length: min_length > DEFAULT_MAX_LENGTH ? min_length : DEFAULT_MAX_LENGTH,
+                   max_length: DEFAULT_MAX_LENGTH,
                    min_letters: DEFAULT_MIN_NUMBERS,
                    min_symbols: DEFAULT_MIN_SYMBOLS,
                    min_numbers: DEFAULT_MIN_LETTERS)
@@ -56,19 +56,6 @@ module Carto
       message << " and #{errors.last}"
 
       message
-    end
-
-    def suggest
-      chars = [*'a'..'z', *'A'..'Z'].sample(@min_letters) +
-              [*0..9].sample(@min_numbers)                +
-              SYMBOLS.sample(@min_symbols)
-
-      padding = [@max_length - chars.length, 0].max
-      padding.times do
-        chars << [*'a'..'z', *'A'..'Z', *0..9, *SYMBOLS].sample
-      end
-
-      chars.shuffle.join
     end
 
     private

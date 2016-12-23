@@ -5,6 +5,8 @@ var Map = require('../../../src/geo/map');
 var VisModel = require('../../../src/vis/vis');
 var CartoDBLayer = require('../../../src/geo/map/cartodb-layer');
 var CartoDBLayerGroup = require('../../../src/geo/cartodb-layer-group');
+
+var TooltipModel = require('../../../src/geo/ui/tooltip-model');
 var InfowindowModel = require('../../../src/geo/ui/infowindow-model');
 
 var InfowindowManager = require('../../../src/vis/infowindow-manager');
@@ -30,6 +32,7 @@ describe('src/vis/infowindow-manager.js', function () {
     });
 
     this.infowindowModel = new InfowindowModel();
+    this.tooltipModel = new TooltipModel();
 
     var cartoDBLayerGroup = new CartoDBLayerGroup({}, {
       layersCollection: this.map.layers
@@ -99,7 +102,8 @@ describe('src/vis/infowindow-manager.js', function () {
       visModel: this.vis,
       mapModel: this.map,
       mapView: this.mapView,
-      infowindowModel: this.infowindowModel
+      infowindowModel: this.infowindowModel,
+      tooltipModel: this.tooltipModel
     });
 
     this.map.layers.reset([ layer1, layer2 ]);
@@ -200,7 +204,8 @@ describe('src/vis/infowindow-manager.js', function () {
       visModel: this.vis,
       mapModel: this.map,
       mapView: this.mapView,
-      infowindowModel: this.infowindowModel
+      infowindowModel: this.infowindowModel,
+      tooltipModel: this.tooltipModel
     });
 
     this.map.layers.reset([ layer1 ]);
@@ -228,7 +233,8 @@ describe('src/vis/infowindow-manager.js', function () {
       visModel: this.vis,
       mapModel: this.map,
       mapView: this.mapView,
-      infowindowModel: this.infowindowModel
+      infowindowModel: this.infowindowModel,
+      tooltipModel: this.tooltipModel
     });
 
     this.map.layers.reset([ layer1 ]);
@@ -249,7 +255,8 @@ describe('src/vis/infowindow-manager.js', function () {
       visModel: this.vis,
       mapModel: this.map,
       mapView: this.mapView,
-      infowindowModel: this.infowindowModel
+      infowindowModel: this.infowindowModel,
+      tooltipModel: this.tooltipModel
     });
 
     spyOn(this.layerView, 'bind');
@@ -278,7 +285,8 @@ describe('src/vis/infowindow-manager.js', function () {
       visModel: this.vis,
       mapModel: this.map,
       mapView: this.mapView,
-      infowindowModel: this.infowindowModel
+      infowindowModel: this.infowindowModel,
+      tooltipModel: this.tooltipModel
     });
 
     this.map.layers.reset([ layer1 ]);
@@ -301,7 +309,8 @@ describe('src/vis/infowindow-manager.js', function () {
       visModel: this.vis,
       mapModel: this.map,
       mapView: this.mapView,
-      infowindowModel: this.infowindowModel
+      infowindowModel: this.infowindowModel,
+      tooltipModel: this.tooltipModel
     });
 
     this.map.layers.reset([ layer1 ]);
@@ -341,7 +350,8 @@ describe('src/vis/infowindow-manager.js', function () {
       visModel: this.vis,
       mapModel: this.map,
       mapView: this.mapView,
-      infowindowModel: this.infowindowModel
+      infowindowModel: this.infowindowModel,
+      tooltipModel: this.tooltipModel
     });
 
     this.map.layers.reset([ layer1 ]);
@@ -384,7 +394,8 @@ describe('src/vis/infowindow-manager.js', function () {
       visModel: this.vis,
       mapModel: this.map,
       mapView: this.mapView,
-      infowindowModel: this.infowindowModel
+      infowindowModel: this.infowindowModel,
+      tooltipModel: this.tooltipModel
     });
 
     this.map.layers.reset([ layer ]);
@@ -395,6 +406,38 @@ describe('src/vis/infowindow-manager.js', function () {
     expect(this.infowindowModel.getCurrentFeatureId()).toEqual(10);
   });
 
+  it('should hide the tooltip', function () {
+    var layer = new CartoDBLayer({
+      infowindow: {
+        template: 'template',
+        template_type: 'underscore',
+        fields: [{
+          'name': 'name',
+          'title': true,
+          'position': 1
+        }],
+        alternative_names: 'alternative_names'
+      }
+    }, { vis: this.vis });
+
+    new InfowindowManager({ // eslint-disable-line
+      visModel: this.vis,
+      mapModel: this.map,
+      mapView: this.mapView,
+      infowindowModel: this.infowindowModel,
+      tooltipModel: this.tooltipModel
+    });
+
+    this.map.layers.reset([ layer ]);
+
+    this.tooltipModel.set('visible', true);
+
+    // Simulate the featureClick event
+    this.layerView.trigger('featureClick', {}, [100, 200], undefined, { cartodb_id: 10 }, 0);
+
+    expect(this.tooltipModel.isVisible()).toBeFalsy();
+  });
+
   it('should unset the currentFeatureId on the model when the infowindow is hidden', function () {
     var layer = createCartoDBLayer(this.vis);
 
@@ -402,7 +445,8 @@ describe('src/vis/infowindow-manager.js', function () {
       visModel: this.vis,
       mapModel: this.map,
       mapView: this.mapView,
-      infowindowModel: this.infowindowModel
+      infowindowModel: this.infowindowModel,
+      tooltipModel: this.tooltipModel
     });
 
     this.map.layers.reset([ layer ]);
@@ -423,7 +467,8 @@ describe('src/vis/infowindow-manager.js', function () {
       visModel: this.vis,
       mapModel: this.map,
       mapView: this.mapView,
-      infowindowModel: this.infowindowModel
+      infowindowModel: this.infowindowModel,
+      tooltipModel: this.tooltipModel
     });
 
     this.map.layers.reset([ layer ]);
@@ -448,7 +493,8 @@ describe('src/vis/infowindow-manager.js', function () {
       visModel: this.vis,
       mapModel: this.map,
       mapView: this.mapView,
-      infowindowModel: this.infowindowModel
+      infowindowModel: this.infowindowModel,
+      tooltipModel: this.tooltipModel
     });
 
     this.map.layers.reset([ layer ]);
@@ -484,7 +530,8 @@ describe('src/vis/infowindow-manager.js', function () {
       visModel: this.vis,
       mapModel: this.map,
       mapView: this.mapView,
-      infowindowModel: this.infowindowModel
+      infowindowModel: this.infowindowModel,
+      tooltipModel: this.tooltipModel
     });
 
     this.map.layers.reset([ layer1, layer2 ]);
@@ -521,7 +568,8 @@ describe('src/vis/infowindow-manager.js', function () {
       visModel: this.vis,
       mapModel: this.map,
       mapView: this.mapView,
-      infowindowModel: this.infowindowModel
+      infowindowModel: this.infowindowModel,
+      tooltipModel: this.tooltipModel
     });
 
     this.map.layers.reset([ layer1, layer2 ]);

@@ -70,6 +70,10 @@ var Vis = View.extend({
 
     // Infowindows && Tooltips
     var infowindowModel = new InfowindowModel();
+    var tooltipModel = new TooltipModel({
+      offset: [4, 10]
+    });
+
     var infowindowView = new InfowindowView({
       model: infowindowModel,
       mapView: this.mapView
@@ -81,14 +85,12 @@ var Vis = View.extend({
       visModel: this,
       mapModel: this.model.map,
       mapView: this.mapView,
+      tooltipModel: tooltipModel,
       infowindowModel: infowindowModel
     }, {
       showEmptyFields: this.model.get('showEmptyInfowindowFields')
     });
 
-    var tooltipModel = new TooltipModel({
-      offset: [4, 10]
-    });
     var tooltipView = new TooltipView({
       model: tooltipModel,
       mapView: this.mapView

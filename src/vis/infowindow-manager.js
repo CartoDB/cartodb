@@ -10,11 +10,13 @@ var InfowindowManager = function (deps, options) {
   if (!deps.mapModel) throw new Error('mapModel is required');
   if (!deps.mapView) throw new Error('mapView is required');
   if (!deps.infowindowModel) throw new Error('infowindowModel is required');
+  if (!deps.tooltipModel) throw new Error('tooltipModel is required');
 
   this._vis = deps.visModel;
   this._mapModel = deps.mapModel;
   this._mapView = deps.mapView;
   this._infowindowModel = deps.infowindowModel;
+  this._tooltipModel = deps.tooltipModel;
   this._showEmptyFields = !!options.showEmptyFields;
 
   this._featureClickBound = {};
@@ -56,7 +58,7 @@ InfowindowManager.prototype._bindFeatureClickEvent = function (layerView) {
     });
 
     this._infowindowModel.setCurrentFeatureId(data.cartodb_id);
-
+    this._tooltipModel.set('visible', false);
     this._fetchAttributes(layerView, layerModel, data.cartodb_id, latlng);
 
     var clearFilter = function (infowindowModel) {

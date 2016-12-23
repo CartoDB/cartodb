@@ -97,4 +97,30 @@ describe Carto::StrongPasswordValidator do
       validator.formatted_error_message(errors).should be_nil
     end
   end
+
+  describe('#suggest suggests valid passwords') do
+    it 'for max length' do
+      @validator = Carto::StrongPasswordValidator.new(max_length: 10)
+    end
+
+    it 'for min length' do
+      @validator = Carto::StrongPasswordValidator.new(max_length: 1024)
+    end
+
+    it 'for min symbols' do
+      @validator = Carto::StrongPasswordValidator.new(max_length: 20)
+    end
+
+    it 'for min letters' do
+      @validator = Carto::StrongPasswordValidator.new(max_length: 20)
+    end
+
+    it 'for min numbers' do
+      @validator = Carto::StrongPasswordValidator.new(max_length: 20)
+    end
+
+    after(:each) do
+      @validator.validate(@validator.suggest).should be_empty
+    end
+  end
 end

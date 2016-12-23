@@ -18,7 +18,7 @@ module Carto
 
     def get_user_email(saml_response_param)
       saml_response = saml_response_from_saml_response_param(saml_response_param)
-      
+
       email_from_saml_response(saml_response) if saml_response
     end
 
@@ -38,12 +38,7 @@ module Carto
     def email_from_saml_response(saml_response)
       email = saml_response.attributes[email_attribute]
 
-      if email.present?
-        email
-      else
-        message = "SAML response lacks email"
-        debug_response(message, saml_response)
-      end
+      email.present? ? email : debug_response("SAML response lacks email", saml_response)
     end
 
     def debug_response(message, response)

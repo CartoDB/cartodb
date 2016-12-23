@@ -40,45 +40,13 @@ describe('geo/ui/tooltip-view', function () {
     }, {
       name: 'huracan'
     }]);
-    this.tooltipView.enable();
-    this.layerView.trigger('mouseover', new $.Event('e'), [0, 0], [0, 0], {
+    this.tooltipView.model.updateContent({
       test1: 'test1',
       test2: 'test2',
       huracan: 'huracan'
     });
 
     expect(this.tooltipView.$el.html()).toEqual('test2,test1,huracan,');
-  });
-
-  it('should not show the tooltip if there are no fields', function () {
-    this.tooltipModel.set('fields', []);
-    this.tooltipView.enable();
-
-    this.layerView.trigger('mouseover', new $.Event('e'), [0, 0], [0, 0], {});
-
-    // Tooltip is hidden
-    expect(this.tooltipView.model.isVisible()).toBeFalsy();
-  });
-
-  it('should hide the tooltip if it was visible and there are no fields now', function () {
-    this.tooltipModel.set('fields', [{
-      name: 'test2'
-    }]);
-    this.tooltipView.enable();
-
-    // mouseover a layer whose tooltip has fields
-    this.layerView.trigger('mouseover', new $.Event('e'), [0, 0], [0, 0], { name: 'wadus' });
-
-    // Tooltip is visible
-    expect(this.tooltipView.model.isVisible()).toBeTruthy();
-
-    this.tooltipModel.set('fields', []);
-
-    // mouseover a layer whose tooltip doesn NOT has fields
-    this.layerView.trigger('mouseover', new $.Event('e'), [0, 0], [0, 0], {});
-
-    // Tooltip is hidden
-    expect(this.tooltipView.model.isVisible()).toBeFalsy();
   });
 
   it('should use alternate_names ', function () {
@@ -97,12 +65,13 @@ describe('geo/ui/tooltip-view', function () {
     this.tooltipModel.set('alternative_names', {
       'test1': 'testnamed'
     });
-    this.tooltipView.enable();
-    this.layerView.trigger('mouseover', new $.Event('e'), [0, 0], [0, 0], {
+
+    this.tooltipView.model.updateContent({
       test1: 'test1',
       test2: 'test2',
       huracan: 'huracan'
     });
+
     expect(this.tooltipView.$el.html()).toEqual('test2,testnamed,huracan,');
   });
 

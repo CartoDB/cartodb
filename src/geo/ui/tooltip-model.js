@@ -8,6 +8,7 @@ var TooltipModel = Model.extend({
     fields: [],
     alternative_names: {},
     position: 'bottom|right',
+    pos: { x: 0, y: 0 },
     offset: [0, 0],
     blacklisted_columns: ['cartodb_id']
   },

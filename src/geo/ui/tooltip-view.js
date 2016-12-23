@@ -30,6 +30,7 @@ var TooltipView = View.extend({
     // TODO: pos and position are ambiguous names
     this.model.bind('change:pos', this._updatePosition, this);
     this.model.bind('change:posisition', this._updatePosition, this);
+    this.model.bind('change:content change:alternative_names', this.render, this);
   },
 
   template: function (data) {
@@ -44,6 +45,7 @@ var TooltipView = View.extend({
     }
     var sanitizedOutput = sanitize.html(this.template(content));
     this.$el.html(sanitizedOutput);
+    this._updatePosition();
     return this;
   },
 
@@ -55,35 +57,6 @@ var TooltipView = View.extend({
   setFilter: function (f) {
     this._filter = f;
     return this;
-  },
-
-  enable: function () {
-    if (this._layerView) {
-      // unbind previous events
-      this._layerView.unbind(null, null, this);
-      this._layerView
-        .on('mouseover', function (e, latlng, pos, data) {
-          if (this.model.get('fields') && this.model.get('fields').length > 0) {
-            this.model.updateContent(data);
-            this.model.set('pos', pos);
-            this.model.set('visible', true);
-          } else {
-            this.model.set('visible', false);
-          }
-        }, this)
-        .on('mouseout', function () {
-          this.model.set('visible', false);
-        }, this);
-      this.add_related_model(this._layerView);
-    }
-  },
-
-  disable: function () {
-    if (this._layerView) {
-      this._layerView.unbind(null, null, this);
-    }
-    this.model.set('visible', false);
-    this.hide();
   },
 
   _showOrHide: function () {
@@ -106,7 +79,6 @@ var TooltipView = View.extend({
 
   _show: function () {
     this.render();
-    this._updatePosition();
 
     var self = this;
     var fadeIn = function () {

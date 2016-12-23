@@ -72,13 +72,19 @@ TooltipManager.prototype._bindFeatureOverEvent = function (layerView) {
     }
 
     if (this._map.arePopupsEnabled() && layerModel.tooltip.hasTemplate()) {
-      layerView.tooltipView.model.set('template', layerModel.tooltip.get('template'));
+      layerView.tooltipView.model.set('pos', pos);
       layerView.tooltipView.model.set('fields', layerModel.tooltip.fields.toJSON());
+      layerView.tooltipView.model.set('template', layerModel.tooltip.get('template'));
       layerView.tooltipView.model.set('alternative_names', layerModel.tooltip.get('alternative_names'));
-      layerView.tooltipView.enable();
+      layerView.tooltipView.model.updateContent(data);
+      layerView.tooltipView.model.set('visible', true);
     } else {
-      layerView.tooltipView.disable();
+      layerView.tooltipView.model.set('visible', false);
     }
+  }, this);
+
+  layerView.bind('featureOut', function (e) {
+    layerView.tooltipView.model.set('visible', false);
   }, this);
 };
 

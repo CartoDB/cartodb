@@ -128,7 +128,7 @@ describe('src/vis/tooltip-manager.js', function () {
     expect(this.mapView.addOverlay.calls.count()).toEqual(1);
   });
 
-  it('should correctly bind the featureOver event to the corresponding layerView', function () {
+  it('should show the tooltip when a feature is hovered', function () {
     spyOn(this.mapView, 'addOverlay');
 
     var layer1 = new CartoDBLayer({
@@ -164,40 +164,76 @@ describe('src/vis/tooltip-manager.js', function () {
     expect(this.mapView.addOverlay).toHaveBeenCalled();
     var tooltipView = this.mapView.addOverlay.calls.mostRecent().args[0];
 
-    spyOn(tooltipView, 'enable');
-
     this.layerView.model = new CartoDBLayerGroup({}, {
       layersCollection: new LayersCollection([ layer1, layer2 ])
     });
 
     // Simulate the featureOver event on layer #0
-    this.layerView.trigger('featureOver', {}, [100, 200], undefined, { cartodb_id: 10 }, 0);
+    this.layerView.trigger('featureOver', {}, [0, 0], { x: 100, y: 200 }, { cartodb_id: 10, name: 'CARTO' }, 0);
 
-    expect(tooltipView.model.get('template')).toEqual('template1');
+    expect(tooltipView.model.get('pos')).toEqual({ x: 100, y: 200 });
     expect(tooltipView.model.get('fields')).toEqual([{
       'name': 'name',
       'title': true,
       'position': 1
     }]);
+    expect(tooltipView.model.get('template')).toEqual('template1');
     expect(tooltipView.model.get('alternative_names')).toEqual('alternative_names1');
-    expect(tooltipView.enable).toHaveBeenCalled();
-    expect(tooltipView.enable.calls.count()).toEqual(1);
-    tooltipView.enable.calls.reset();
+    expect(tooltipView.model.isVisible()).toBeTruthy();
 
     // Simulate the featureOver event on layer #1
-    this.layerView.trigger('featureOver', {}, [100, 200], undefined, { cartodb_id: 10 }, 1);
+    this.layerView.trigger('featureOver', {}, [0, 0], { x: 200, y: 300 }, { cartodb_id: 10 }, 1);
 
-    expect(tooltipView.model.get('template')).toEqual('template2');
+    expect(tooltipView.model.get('pos')).toEqual({ x: 200, y: 300 });
     expect(tooltipView.model.get('fields')).toEqual([{
       'name': 'description',
       'title': true,
       'position': 1
     }]);
+    expect(tooltipView.model.get('template')).toEqual('template2');
     expect(tooltipView.model.get('alternative_names')).toEqual('alternative_names2');
-    expect(tooltipView.enable).toHaveBeenCalled();
+    expect(tooltipView.model.isVisible()).toBeTruthy();
   });
 
-  it('should disable the tooltip if popups are disabled', function () {
+  it('should hide the tooltip when a feature is not hovered anymore', function () {
+    spyOn(this.mapView, 'addOverlay');
+
+    var layer1 = new CartoDBLayer({
+      tooltip: {
+        template: 'template1',
+        template_type: 'underscore',
+        fields: [{
+          'name': 'name',
+          'title': true,
+          'position': 1
+        }],
+        alternative_names: 'alternative_names1'
+      }
+    }, { vis: this.vis });
+
+    var tooltipManager = new TooltipManager(this.vis);
+    tooltipManager.manage(this.mapView, this.map);
+
+    this.map.layers.reset([ layer1 ]);
+
+    expect(this.mapView.addOverlay).toHaveBeenCalled();
+    var tooltipView = this.mapView.addOverlay.calls.mostRecent().args[0];
+
+    this.layerView.model = new CartoDBLayerGroup({}, {
+      layersCollection: new LayersCollection([ layer1 ])
+    });
+
+    // Simulate the featureOver event on layer #0
+    this.layerView.trigger('featureOver', {}, [0, 0], { x: 100, y: 200 }, { cartodb_id: 10, name: 'CARTO' }, 0);
+
+    expect(tooltipView.model.isVisible()).toBeTruthy();
+
+    this.layerView.trigger('featureOut');
+
+    expect(tooltipView.model.isVisible()).toBeFalsy();
+  });
+
+  it('should not show the tooltip if popups are disabled', function () {
     spyOn(this.mapView, 'addOverlay');
 
     var layer1 = new CartoDBLayer({
@@ -222,19 +258,16 @@ describe('src/vis/tooltip-manager.js', function () {
     expect(this.mapView.addOverlay).toHaveBeenCalled();
     var tooltipView = this.mapView.addOverlay.calls.mostRecent().args[0];
 
-    spyOn(tooltipView, 'disable');
-
     this.layerView.model = new CartoDBLayerGroup({}, {
       layersCollection: new LayersCollection([ layer1 ])
     });
 
     // Simulate the featureOver event on layer #0
-    this.layerView.trigger('featureOver', {}, [100, 200], undefined, { cartodb_id: 10 }, 0);
-
-    expect(tooltipView.disable).toHaveBeenCalled();
+    this.layerView.trigger('featureOver', {}, [0, 0], { x: 100, y: 200 }, { cartodb_id: 10 }, 0);
+    expect(tooltipView.model.isVisible()).toBeFalsy();
   });
 
-  it('should disable the tooltip if tooltip has no template', function () {
+  it('should not show the tooltip if tooltip has no template', function () {
     spyOn(this.mapView, 'addOverlay');
 
     var layer1 = new CartoDBLayer({
@@ -258,16 +291,14 @@ describe('src/vis/tooltip-manager.js', function () {
     expect(this.mapView.addOverlay).toHaveBeenCalled();
     var tooltipView = this.mapView.addOverlay.calls.mostRecent().args[0];
 
-    spyOn(tooltipView, 'disable');
-
     this.layerView.model = new CartoDBLayerGroup({}, {
       layersCollection: new LayersCollection([ layer1 ])
     });
 
     // Simulate the featureOver event on layer #0
-    this.layerView.trigger('featureOver', {}, [100, 200], undefined, { cartodb_id: 10 }, 0);
+    this.layerView.trigger('featureOver', {}, [0, 0], { x: 100, y: 200 }, { cartodb_id: 10 }, 0);
 
-    expect(tooltipView.disable).toHaveBeenCalled();
+    expect(tooltipView.model.isVisible()).toBeFalsy();
   });
 
   it('should bind the featureOver event to the corresponding layerView only once', function () {
@@ -311,7 +342,7 @@ describe('src/vis/tooltip-manager.js', function () {
     expect(featureOverBinds.length).toEqual(1);
   });
 
-  it('should disable the tooltipView if the layerModel doesn\'t have tooltip data', function () {
+  it('should not show the tooltipView if the layerModel doesn\'t have tooltip data', function () {
     spyOn(this.mapView, 'addOverlay');
 
     var layer1 = new CartoDBLayer({}, { vis: this.vis });
@@ -336,15 +367,13 @@ describe('src/vis/tooltip-manager.js', function () {
     expect(this.mapView.addOverlay).toHaveBeenCalled();
     var tooltipView = this.mapView.addOverlay.calls.mostRecent().args[0];
 
-    spyOn(tooltipView, 'disable');
-
     this.layerView.model = new CartoDBLayerGroup({}, {
       layersCollection: new LayersCollection([ layer1, layer2 ])
     });
 
     // Simulate the featureOver event on layer #0
-    this.layerView.trigger('featureOver', {}, [100, 200], undefined, { cartodb_id: 10 }, 0);
+    this.layerView.trigger('featureOver', {}, [0, 0], { x: 100, y: 200 }, { cartodb_id: 10 }, 0);
 
-    expect(tooltipView.disable).toHaveBeenCalled();
+    expect(tooltipView.model.isVisible()).toBeFalsy();
   });
 });

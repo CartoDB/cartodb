@@ -2,7 +2,6 @@ var _ = require('underscore');
 var $ = require('jquery');
 var View = require('../core/view');
 var MapViewFactory = require('../geo/map-view-factory');
-var TooltipManager = require('./tooltip-manager');
 var FeatureEvents = require('./feature-events');
 var MapCursorManager = require('./map-cursor-manager');
 var MapEventsManager = require('./map-events-manager');
@@ -13,6 +12,8 @@ var OverlaysView = require('../geo/ui/overlays-view');
 var InfowindowModel = require('../geo/ui/infowindow-model');
 var InfowindowView = require('../geo/ui/infowindow-view');
 var InfowindowManager = require('./infowindow-manager');
+
+var TooltipManager = require('./tooltip-manager');
 
 /**
  * Visualization creation
@@ -83,8 +84,12 @@ var Vis = View.extend({
       showEmptyFields: this.model.get('showEmptyInfowindowFields')
     });
 
-    var tooltipManager = new TooltipManager(this.model);
-    tooltipManager.manage(this.mapView, this.model.map);
+    new TooltipManager({ // eslint-disable-line
+      visModel: this.model,
+      mapModel: this.model.map,
+      mapView: this.mapView,
+      infowindowModel: infowindowModel
+    });
 
     var featureEvents = new FeatureEvents({
       mapView: this.mapView,

@@ -15,14 +15,9 @@ var TooltipView = View.extend({
     if (!options.mapView) {
       throw new Error('mapView should be present');
     }
-    if (!options.layerView) {
-      throw new Error('layerView should be present');
-    }
 
     this._mapView = options.mapView;
-    this._layerView = options.layerView;
 
-    this._filter = null;
     this.showing = false;
     this.showhideTimeout = null;
 
@@ -40,22 +35,9 @@ var TooltipView = View.extend({
 
   render: function () {
     var content = this.model.get('content');
-    if (this._filter && !this._filter(content)) {
-      return this;
-    }
     var sanitizedOutput = sanitize.html(this.template(content));
     this.$el.html(sanitizedOutput);
     this._updatePosition();
-    return this;
-  },
-
-  /**
-   * sets a filter to open the tooltip. If the feature being hovered
-   * pass the filter the tooltip is shown
-   * setFilter(null) removes the filter
-   */
-  setFilter: function (f) {
-    this._filter = f;
     return this;
   },
 

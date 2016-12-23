@@ -54,22 +54,18 @@ InfowindowManager.prototype._bindFeatureClickEvent = function (layerView) {
       visibility: true
     });
 
-    this._fetchAttributes(layerView, layerModel, data.cartodb_id, latlng);
+    this._infowindowModel.setCurrentFeatureId(data.cartodb_id);
 
-    if (layerView.tooltipView) {
-      layerView.tooltipView.setFilter(function (feature) {
-        return feature.cartodb_id !== data.cartodb_id;
-      }).hide();
-    }
+    this._fetchAttributes(layerView, layerModel, data.cartodb_id, latlng);
 
     var clearFilter = function (infowindowModel) {
       if (!infowindowModel.get('visibility')) {
-        layerView.tooltipView && layerView.tooltipView.setFilter(null);
+        this._infowindowModel.unsetCurrentFeatureId();
       }
     };
 
-    this._infowindowModel.unbind('change:visibility', clearFilter);
-    this._infowindowModel.once('change:visibility', clearFilter);
+    this._infowindowModel.unbind('change:visibility', clearFilter, this);
+    this._infowindowModel.once('change:visibility', clearFilter, this);
   }, this);
 };
 

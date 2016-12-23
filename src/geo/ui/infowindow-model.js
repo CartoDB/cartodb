@@ -42,6 +42,18 @@ var InfowindowModel = Backbone.Model.extend({
     this.set('content', InfowindowModel.contentForFields(attributes, fields, options));
   },
 
+  setCurrentFeatureId: function (featureId) {
+    this.set('currentFeatureId', featureId);
+  },
+
+  unsetCurrentFeatureId: function () {
+    this.unset('currentFeatureId');
+  },
+
+  getCurrentFeatureId: function (featureId) {
+    return this.get('currentFeatureId');
+  },
+
   setLoading: function () {
     this.set({
       content: {

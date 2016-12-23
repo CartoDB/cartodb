@@ -364,12 +364,7 @@ describe('src/vis/infowindow-manager.js', function () {
     expect(this.infowindowModel.get('visibility')).toBe(true);
   });
 
-  it('should set a filter on the tooltipView if the layer has tooltip too', function () {
-    // Simulate that the layerView has been added a tooltipView
-    var tooltipView = jasmine.createSpyObj('tooltipView', ['setFilter', 'hide']);
-    tooltipView.setFilter.and.returnValue(tooltipView);
-    this.layerView.tooltipView = tooltipView;
-
+  it('should set the currentFeatureId on the model when the infowindow is shown', function () {
     var layer = new CartoDBLayer({
       infowindow: {
         template: 'template',
@@ -395,19 +390,10 @@ describe('src/vis/infowindow-manager.js', function () {
     // Simulate the featureClick event
     this.layerView.trigger('featureClick', {}, [100, 200], undefined, { cartodb_id: 10 }, 0);
 
-    expect(this.layerView.tooltipView.setFilter).toHaveBeenCalled();
-    var filterFunction = this.layerView.tooltipView.setFilter.calls.mostRecent().args[0];
-
-    expect(filterFunction({ cartodb_id: 10 })).toBeFalsy();
-    expect(filterFunction({ cartodb_id: 0 })).toBeTruthy();
+    expect(this.infowindowModel.getCurrentFeatureId()).toEqual(10);
   });
 
-  it('should clear the filter on the tooltipView when the infowindow is hidden', function () {
-    // Simulate that the layerView has been added a tooltipView
-    var tooltipView = jasmine.createSpyObj('tooltipView', ['setFilter', 'hide']);
-    tooltipView.setFilter.and.returnValue(tooltipView);
-    this.layerView.tooltipView = tooltipView;
-
+  it('should unset the currentFeatureId on the model when the infowindow is hidden', function () {
     var layer = createCartoDBLayer(this.vis);
 
     new InfowindowManager({ // eslint-disable-line
@@ -422,11 +408,10 @@ describe('src/vis/infowindow-manager.js', function () {
     // Simulate the featureClick event
     this.layerView.trigger('featureClick', {}, [100, 200], undefined, { cartodb_id: 10 }, 0);
 
-    this.layerView.tooltipView.setFilter.calls.reset();
-
+    // Infowindow is hidden
     this.infowindowModel.set('visibility', false);
 
-    expect(this.layerView.tooltipView.setFilter).toHaveBeenCalledWith(null);
+    expect(this.infowindowModel.getCurrentFeatureId()).toBeUndefined();
   });
 
   it('should reload the map when the infowindow template gets new fields', function () {

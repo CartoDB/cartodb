@@ -6,21 +6,24 @@ var TooltipView = require('../geo/ui/tooltip-view');
  * of layers and binds a new tooltip view/model to CartoDB.js whenever the
  * collection of layers changes
  */
-var TooltipManager = function (vis) {
-  this._vis = vis;
-};
+var TooltipManager = function (deps) {
+  if (!deps.visModel) throw new Error('visModel is required');
+  if (!deps.mapModel) throw new Error('mapModel is required');
+  if (!deps.mapView) throw new Error('mapView is required');
+  if (!deps.infowindowModel) throw new Error('infowindowModel is required');
 
-TooltipManager.prototype.manage = function (mapView, map) {
-  this._mapView = mapView;
-  this._map = map;
+  this._visModel = deps.visModel;
+  this._mapModel = deps.mapModel;
+  this._mapView = deps.mapView;
+  this._infowindowModel = deps.infowindowModel;
 
-  this._map.layers.bind('reset', this._addTooltipForLayers, this);
-  this._map.layers.bind('add', this._addTooltipForLayer, this);
+  this._mapModel.layers.bind('reset', this._addTooltipForLayers, this);
+  this._mapModel.layers.bind('add', this._addTooltipForLayer, this);
   this._addTooltipForLayers();
 };
 
 TooltipManager.prototype._addTooltipForLayers = function () {
-  this._map.layers.each(this._addTooltipForLayer, this);
+  this._mapModel.layers.each(this._addTooltipForLayer, this);
 };
 
 TooltipManager.prototype._addTooltipForLayer = function (layerModel) {
@@ -40,7 +43,7 @@ TooltipManager.prototype._addTooltipForLayer = function (layerModel) {
 
 TooltipManager.prototype._reloadVis = function (options) {
   options = options || {};
-  this._vis.reload(options);
+  this._visModel.reload(options);
 };
 
 TooltipManager.prototype._addTooltipOverlay = function (layerView, layerModel) {
@@ -56,11 +59,6 @@ TooltipManager.prototype._addTooltipOverlay = function (layerView, layerModel) {
     });
 
     this._mapView.addOverlay(layerView.tooltipView);
-
-    // TODO: Test this
-    layerView.bind('remove', function () {
-      layerView.tooltipView.clean();
-    }, this);
   }
 };
 
@@ -71,7 +69,9 @@ TooltipManager.prototype._bindFeatureOverEvent = function (layerView) {
       throw new Error('featureOver event for layer ' + layerIndex + ' was captured but layerModel coudn\'t be retrieved');
     }
 
-    if (this._map.arePopupsEnabled() && layerModel.tooltip.hasTemplate()) {
+    if (this._mapModel.arePopupsEnabled() &&
+      layerModel.tooltip.hasTemplate() &&
+      !this._isFeatureInfowindowOpen(data.cartodb_id)) {
       layerView.tooltipView.model.set('pos', pos);
       layerView.tooltipView.model.set('fields', layerModel.tooltip.fields.toJSON());
       layerView.tooltipView.model.set('template', layerModel.tooltip.get('template'));
@@ -86,6 +86,10 @@ TooltipManager.prototype._bindFeatureOverEvent = function (layerView) {
   layerView.bind('featureOut', function (e) {
     layerView.tooltipView.model.set('visible', false);
   }, this);
+};
+
+TooltipManager.prototype._isFeatureInfowindowOpen = function (featureId) {
+  return featureId && this._infowindowModel.getCurrentFeatureId() === featureId;
 };
 
 module.exports = TooltipManager;

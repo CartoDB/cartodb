@@ -43,6 +43,9 @@ CartoDB::Application.routes.draw do
   match '(/user/:user_domain)(/u/:user_domain)/oauth/access_token'   => 'oauth#access_token',  as: :access_token
   get   '(/user/:user_domain)(/u/:user_domain)/oauth/identity'       => 'sessions#show',       as: :oauth_show_sessions
 
+  # This is what an external SAML endpoint should redirect to after successful auth.
+  match '/saml/finalize' => 'sessions#create'
+
   get '/google_plus' => 'google_plus#google_plus', as: :google_plus
   post '/google/signup' => 'google_plus#google_signup', as: :google_plus_signup
 

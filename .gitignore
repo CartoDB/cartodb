@@ -46,6 +46,7 @@ npm-debug.log
 .ruby-gemset
 lib/assets/javascripts/cartodb3/*
 lib/assets/test/spec/cartodb3/*
+lib/assets/test/jasmine/cartodb3/*
 lib/assets/locale/*
 lib/build/dist
 lib/build/grunt-aws.json

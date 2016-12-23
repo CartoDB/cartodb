@@ -4,7 +4,7 @@ CARTO follows semantic versioning (http://semver.org/)
 
 * **Patch** versions like 4.0.**6** are reserved only for fixes that don't require any additional operations and are fully compatible with the previous patch version
 * **Minor** versions like 4.**1**.0 are reserved for changes related to features and bugfixes that may require some additional simple operations like running a rake task
-* **Major** versions like **5.**.0.0 are reserved for big changes like refactors, re-designs or important models changes that are not easy to rollback without specific manual actions
+* **Major** versions like **5**.0.0 are reserved for big changes like refactors, re-designs or important models changes that are not easy to rollback without specific manual actions
 
 ## BRANCHES
 

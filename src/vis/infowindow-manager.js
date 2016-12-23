@@ -16,6 +16,7 @@ var InfowindowManager = function (deps, options) {
   this._mapView = deps.mapView;
   this._infowindowModel = deps.infowindowModel;
   this._showEmptyFields = !!options.showEmptyFields;
+
   this._featureClickBound = {};
 
   this._mapModel.layers.bind('reset', function (layers) {

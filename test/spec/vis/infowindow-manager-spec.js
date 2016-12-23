@@ -139,7 +139,8 @@ describe('src/vis/infowindow-manager.js', function () {
         100,
         200
       ],
-      'visibility': true
+      'visibility': true,
+      'currentFeatureId': 10
     });
 
     // Simulate the featureClick event for layer #1
@@ -178,7 +179,8 @@ describe('src/vis/infowindow-manager.js', function () {
         100,
         200
       ],
-      'visibility': true
+      'visibility': true,
+      'currentFeatureId': 100
     });
   });
 

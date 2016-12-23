@@ -13,6 +13,8 @@ var InfowindowModel = require('../geo/ui/infowindow-model');
 var InfowindowView = require('../geo/ui/infowindow-view');
 var InfowindowManager = require('./infowindow-manager');
 
+var TooltipModel = require('../geo/ui/tooltip-model');
+var TooltipView = require('../geo/ui/tooltip-view');
 var TooltipManager = require('./tooltip-manager');
 
 /**
@@ -84,10 +86,21 @@ var Vis = View.extend({
       showEmptyFields: this.model.get('showEmptyInfowindowFields')
     });
 
+    var tooltipModel = new TooltipModel({
+      offset: [4, 10]
+    });
+    var tooltipView = new TooltipView({
+      model: tooltipModel,
+      mapView: this.mapView
+    });
+    tooltipView.render();
+    this.$el.append(tooltipView.el);
+
     new TooltipManager({ // eslint-disable-line
       visModel: this.model,
       mapModel: this.model.map,
       mapView: this.mapView,
+      tooltipModel: tooltipModel,
       infowindowModel: infowindowModel
     });
 

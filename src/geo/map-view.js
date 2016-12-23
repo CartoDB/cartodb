@@ -1,7 +1,5 @@
 var log = require('cdb.log');
 var View = require('../core/view');
-var overlayTemplate = require('./ui/overlays-container.tpl');
-var CONTAINED_OVERLAYS = ['fullscreen', 'search', 'attribution', 'zoom', 'logo'];
 var GeometryViewFactory = require('./geometry-views/geometry-view-factory');
 
 var MapView = View.extend({
@@ -77,31 +75,14 @@ var MapView = View.extend({
   },
 
   render: function () {
-    this.$el.append(overlayTemplate());
     this._addLayers();
     return this;
-  },
-
-  addOverlay: function (overlay) {
-    var type;
-    if (overlay) {
-      type = overlay.type;
-      if (type && CONTAINED_OVERLAYS.indexOf(type) >= 0) {
-        this._overlayContainer().append(overlay.render().el);
-      } else {
-        this.$el.append(overlay.render().el);
-      }
-      this.addView(overlay);
-    }
   },
 
   isMapAlreadyCreated: function () {
     return this.options.map_object;
   },
 
-  _overlayContainer: function () {
-    return this.$('.CDB-OverlayContainer');
-  },
   /**
   * set model property but unbind changes first in order to not create an infinite loop
   */

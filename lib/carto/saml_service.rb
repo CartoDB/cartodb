@@ -27,12 +27,7 @@ module Carto
     def saml_response_from_saml_response_param(saml_response_param)
       response = get_saml_response(saml_response_param)
 
-      if response.is_valid?
-        response
-      else
-        message = "SAML response not valid"
-        debug_response(message, response)
-      end
+      response.is_valid? ? response : debug_response("SAML response not valid", response)
     end
 
     def email_from_saml_response(saml_response)

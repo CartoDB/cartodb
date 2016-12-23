@@ -18,9 +18,8 @@ module Carto
 
     def get_user_email(saml_response_param)
       saml_response = saml_response_from_saml_response_param(saml_response_param)
-      return unless saml_response
-
-      email_from_saml_response(saml_response)
+      
+      email_from_saml_response(saml_response) if saml_response
     end
 
     private

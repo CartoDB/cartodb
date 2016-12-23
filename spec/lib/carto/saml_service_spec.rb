@@ -105,8 +105,7 @@ describe Carto::SamlService do
         user.delete
       end
 
-      it 'returns nil if doen\'t exist and can\'t be created' do
-        byebug
+      it 'returns nil if doesn\'t exist and can\'t be created' do
         response_mock.stubs(:is_valid?).returns(true)
         email = 'manolo@escobar.es'
         response_mock.stubs(:attributes).returns(saml_config[:email_attribute] => email)

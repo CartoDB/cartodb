@@ -6,21 +6,8 @@ describe Carto::SamlService do
     Carto::SamlService.new(@organization)
   end
 
-  let(:auth_saml_configuration) do
-    {
-      issuer: 'localhost.lan',
-      idp_sso_target_url: 'https://example.com/saml/signon/',
-      idp_slo_target_url: 'https://example.com/saml/signon/',
-      idp_cert_fingerprint: '',
-      assertion_consumer_service_url: 'https://localhost.lan/saml/finalize',
-      name_identifier_format: '',
-      email_attribute: 'username'
-    }
-  end
-
   before(:all) do
-    @organization = FactoryGirl.create(:organization,
-                                       auth_saml_configuration: auth_saml_configuration)
+    @organization = FactoryGirl.create(:saml_organization)
   end
 
   after(:all) do
@@ -53,34 +40,6 @@ describe Carto::SamlService do
       service.stubs(:debug_response)
     end
 
-    describe '#username' do
-      it 'returns nil if response is invalid' do
-        response_mock.stubs(:is_valid?).returns(false)
-
-        service.username(saml_response_param_mock).should be_nil
-      end
-
-      it 'returns nil if a valid response does not contain the username' do
-        response_mock.stubs(:is_valid?).returns(true)
-        response_mock.stubs(:attributes).returns(saml_config[:email_attribute] => nil)
-
-        service.username(saml_response_param_mock).should be_nil
-
-        response_mock.stubs(:attributes).returns(saml_config[:email_attribute] => '')
-
-        service.username(saml_response_param_mock).should be_nil
-      end
-
-      it 'returns username from the user with the matching email' do
-        user = create_test_saml_user
-        response_mock.stubs(:is_valid?).returns(true)
-        response_mock.stubs(:attributes).returns(saml_config[:email_attribute] => user.email)
-
-        service.username(saml_response_param_mock).should eq user.username
-        user.delete
-      end
-    end
-
     describe '#get_user' do
       it 'returns nil if response is invalid' do
         response_mock.stubs(:is_valid?).returns(false)
@@ -103,14 +62,6 @@ describe Carto::SamlService do
         service.get_user(saml_response_param_mock).id.should eq user.id
 
         user.delete
-      end
-
-      it 'returns nil if doesn\'t exist and can\'t be created' do
-        response_mock.stubs(:is_valid?).returns(true)
-        email = 'manolo@escobar.es'
-        response_mock.stubs(:attributes).returns(saml_config[:email_attribute] => email)
-
-        service.get_user(saml_response_param_mock).should be_nil
       end
     end
 

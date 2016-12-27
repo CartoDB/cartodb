@@ -9,6 +9,7 @@ module.exports = function (MapView, PathView) {
   describe('expandable paths', function () {
     beforeEach(function () {
       this.mapView = createMapView(MapView);
+      this.mapView.render();
 
       this.geometry = new Polyline({
         editable: true,

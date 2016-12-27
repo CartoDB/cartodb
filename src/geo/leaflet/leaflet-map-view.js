@@ -10,8 +10,11 @@ var LeafletMapView = MapView.extend({
   initialize: function () {
     MapView.prototype.initialize.call(this);
 
-    var self = this;
     _.bindAll(this, '_addLayer', '_removeLayer', '_setZoom', '_setCenter', '_setView');
+  },
+
+  _createNativeMap: function () {
+    var self = this;
     var center = this.map.get('center');
 
     var mapConfig = {
@@ -20,35 +23,15 @@ var LeafletMapView = MapView.extend({
       zoom: this.map.get('zoom'),
       minZoom: this.map.get('minZoom'),
       maxZoom: this.map.get('maxZoom'),
-      attributionControl: false
+      dragging: !!this.map.get('drag'),
+      doubleClickZoom: !!this.map.get('drag'),
+      scrollWheelZoom: !!this.map.get('scrollwheel'),
+      keyboard: !!this.map.get('keyboard')
     };
 
-    if (!this.isMapAlreadyCreated()) {
-      this._leafletMap = new L.Map(this.el, mapConfig);
-      if (this.map.get('scrollwheel') === false) this._leafletMap.scrollWheelZoom.disable();
-      if (this.map.get('keyboard') === false) this._leafletMap.keyboard.disable();
-      if (this.map.get('drag') === false) {
-        this._leafletMap.dragging.disable();
-        this._leafletMap.doubleClickZoom.disable();
-      }
-    } else {
-      this._leafletMap = this.options.map_object;
-      this.setElement(this._leafletMap.getContainer());
-
-      var c = self._leafletMap.getCenter();
-
-      this._setModelProperty({ center: [c.lat, c.lng] });
-      this._setModelProperty({ zoom: self._leafletMap.getZoom() });
-
-      // unset bounds to not change mapbounds
-      this.map.unset('view_bounds_sw', { silent: true });
-      this.map.unset('view_bounds_ne', { silent: true });
-    }
+    this._leafletMap = new L.Map(this.el, mapConfig);
 
     this.map.bind('set_view', this._setView, this);
-
-    this._bindModel();
-    this.setAttribution();
 
     this._leafletMap.on('layeradd', function (lyr) {
       this.trigger('layeradd', lyr, self);
@@ -103,15 +86,6 @@ var LeafletMapView = MapView.extend({
     this.map.bind('change:minZoom', function () {
       L.Util.setOptions(self._leafletMap, { minZoom: self.map.get('minZoom') });
     }, this);
-
-    this.trigger('ready');
-
-    // looks like leaflet dont like to change the bounds just after the inicialization
-    var bounds = this.map.getViewBounds();
-
-    if (bounds) {
-      this.showBounds(bounds);
-    }
   },
 
   _getLayerViewFactory: function () {
@@ -246,9 +220,11 @@ var LeafletMapView = MapView.extend({
     ];
   },
 
-  setAttribution: function (mdl) {
-    var attributionControl = this._leafletMap.attributionControl;
-    if (this.isMapAlreadyCreated() && attributionControl) {
+  _setAttribution: function (mdl) {
+    var attributionControl = this._leafletMap && this._leafletMap.attributionControl;
+    if (attributionControl) {
+      attributionControl.setPrefix('');
+
       // If this method comes from an attribution property change
       if (mdl) {
         var previousAttributions = mdl.previous('attribution');

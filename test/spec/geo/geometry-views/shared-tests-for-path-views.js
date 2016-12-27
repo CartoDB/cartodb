@@ -8,6 +8,7 @@ module.exports = function (Path, MapView, PathView) {
     spyOn(_, 'debounce').and.callFake(function (func) { return function () { func.apply(this, arguments); }; });
 
     this.mapView = createMapView(MapView);
+    this.mapView.render();
 
     this.geometry = new Path(null, {
       latlngs: [
@@ -144,6 +145,7 @@ module.exports = function (Path, MapView, PathView) {
   describe('expandable paths', function () {
     beforeEach(function () {
       this.mapView = createMapView(MapView);
+      this.mapView.render();
 
       this.geometry = new Path({
         editable: true,

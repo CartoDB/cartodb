@@ -13,6 +13,7 @@ module.exports = function (MapView, PointView) {
       ]
     });
     this.mapView = createMapView(MapView);
+    this.mapView.render();
 
     this.pointView = new PointView({
       model: this.point,
@@ -35,6 +36,7 @@ module.exports = function (MapView, PointView) {
   it('should add a marker to the map when the model gets a lat and lng', function () {
     this.point = new Point();
     this.mapView = createMapView(MapView);
+    this.mapView.render();
 
     this.pointView = new PointView({
       model: this.point,
@@ -101,6 +103,7 @@ module.exports = function (MapView, PointView) {
       });
 
       this.mapView = createMapView(MapView);
+      this.mapView.render();
 
       this.pointView = new PointView({
         model: this.point,

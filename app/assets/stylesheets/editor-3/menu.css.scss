@@ -1,7 +1,7 @@
 @import 'cdb-utilities/mixins';
 @import 'cdb-variables/colors';
 @import 'cdb-variables/sizes';
-@import '_vars';
+@import 'vars';
 
 .EditorMenu {
   @include flex(0 0 72px);

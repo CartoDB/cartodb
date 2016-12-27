@@ -4,7 +4,7 @@
 @import 'cdb-utilities/mixins';
 @import 'cdb-variables/colors';
 @import 'cdb-variables/sizes';
-@import '_vars';
+@import 'vars';
 
 @mixin block-shadow() {
   @include css3-prefix(box-shadow, inset 10px 0 10px -10px rgba(0, 0, 0, 0.3));

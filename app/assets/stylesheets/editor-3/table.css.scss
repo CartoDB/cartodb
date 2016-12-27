@@ -303,7 +303,7 @@ $tableBorderColor: $cSecondaryLine;
   width: 68px;
 }
 
-@media (max-width: 1200px) {
+@media (max-width: $reponsiveWidth) {
   .Table {
     top: $baseSize;
     right: $baseSize;

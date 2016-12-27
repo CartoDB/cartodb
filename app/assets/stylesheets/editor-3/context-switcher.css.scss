@@ -3,6 +3,7 @@
 
 @import 'cdb-utilities/mixins';
 @import 'cdb-variables/colors';
+@import '_vars';
 
 .Editor-contextSwitcher {
   position: absolute;
@@ -80,7 +81,7 @@
   }
 
 }
-@media (max-width: 1280px) {
+@media (max-width: $reponsiveWidth) {
   .Editor-contextSwitcher.is-moved {
     right: 28px;
     bottom: 222px;
@@ -95,7 +96,7 @@
     bottom: 364px;
   }
 }
-@media (max-width: 1200px) {
+@media (max-width: $reponsiveWidth) {
   .Editor-contextSwitcher.in-table {
     right: 16px;
     bottom: 16px;

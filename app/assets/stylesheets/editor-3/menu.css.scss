@@ -1,6 +1,7 @@
 @import 'cdb-utilities/mixins';
 @import 'cdb-variables/colors';
 @import 'cdb-variables/sizes';
+@import '_vars';
 
 .EditorMenu {
   @include flex(0 0 72px);
@@ -114,7 +115,7 @@
 
 
 /* Responsive views */
-@media (max-width: 1280px) {
+@media (max-width: $reponsiveWidth) {
   .EditorMenu {
     @include flex(0 0 48px);
     width: 48px;

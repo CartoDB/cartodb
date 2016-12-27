@@ -192,7 +192,9 @@ class SessionsController < ApplicationController
   def authenticate_with_saml
     return nil unless params[:SAMLResponse].present?
 
-    username = saml_service.username(params[:SAMLResponse])
+    email = saml_service.get_user_email(params[:SAMLResponse])
+    username = username_from_email(email) if email
+
     username ? authenticate!(:saml, scope: username) : nil
   end
 

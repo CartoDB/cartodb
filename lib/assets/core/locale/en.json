@@ -2080,8 +2080,13 @@
       "completed": "Analysis %{nodeId} completed",
       "failed": "Analysis %{nodeId} failed",
       "removed": "Analysis %{nodeId} deleted",
+      "contact": {
+        "label": "contact us",
+        "mail": "support@carto.com"
+      },
+      "sample": "sample",
       "errors": {
-        "timeout": "Your analysis has taken too long. Try to sample your data or contact us for further assistance",
+        "timeout": "Your analysis has taken too long. Try to %{sample} your data or %{contact} for further assistance",
         "without-geom-webmercator": "The column \"the_geom_webmercator\" does not exist"
       }
     },

@@ -17,18 +17,11 @@ module Carto
     end
 
     def get_user_email(saml_response_param)
-      saml_response = saml_response_from_saml_response_param(saml_response_param)
-
-      email_from_saml_response(saml_response) if saml_response
+      response = get_saml_response(saml_response_param)
+      response.is_valid? ? email_from_saml_response(response) : debug_response("Invalid SAML response", response)
     end
 
     private
-
-    def saml_response_from_saml_response_param(saml_response_param)
-      response = get_saml_response(saml_response_param)
-
-      response.is_valid? ? response : debug_response("SAML response not valid", response)
-    end
 
     def email_from_saml_response(saml_response)
       email = saml_response.attributes[email_attribute]
@@ -38,6 +31,7 @@ module Carto
 
     def debug_response(message, response)
       CartoDB::Logger.debug(message: message, response_settings: response.settings, response_options: response.options)
+      nil
     end
 
     def get_saml_response(saml_response_param)

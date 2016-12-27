@@ -131,12 +131,11 @@
 
 @media (max-width: 1200px) {
   .Editor {
-    .CDB-Widget-options {
+    .CDB-Widget-options,
+    .CDB-Widget-actions {
       display: block;
     }
-    .CDB-Widget-actions {
-      display: none;
-    }
+
     .CDB-Widget-body.is-collapsed {
       height: 100%;
       .CDB-Widget-content,

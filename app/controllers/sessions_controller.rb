@@ -44,7 +44,7 @@ class SessionsController < ApplicationController
   def create
     user = ldap_user || saml_user || credentials_or_google_user
 
-    (render :action => 'new' and return) unless (params[:user_domain].present? || user.present?)
+    return render(action: 'new') unless user.present?
 
     CartoDB::Stats::Authentication.instance.increment_login_counter(user.email)
 
@@ -241,7 +241,7 @@ class SessionsController < ApplicationController
   def load_organization
     return @organization if @organization
 
-    subdomain = CartoDB.subdomain_from_request(request)
+    subdomain = CartoDB.extract_subdomain(request)
     @organization = Carto::Organization.where(name: subdomain).first if subdomain
   end
 

@@ -30,7 +30,12 @@ module Carto
     end
 
     def debug_response(message, response)
-      CartoDB::Logger.debug(message: message, response_settings: response.settings, response_options: response.options)
+      CartoDB::Logger.debug(
+        message: message,
+        response_settings: response.settings,
+        response_options: response.options,
+        response_errors: response.errors
+      )
       nil
     end
 

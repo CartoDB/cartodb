@@ -147,10 +147,11 @@ var LeafletMapView = MapView.extend({
 
     // remove layer views
     for (var layer in this._layerViews) {
-      var layerView = this._layerViews[layer];
-      layerView.remove();
       delete this._layerViews[layer];
     }
+
+    // destroy the map and clear all related event listeners
+    this._leafletMap.remove();
 
     View.prototype.clean.call(this);
   },

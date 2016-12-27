@@ -190,6 +190,57 @@ describe SessionsController do
     end
   end
 
+  describe 'SAML' do
+    let(:subdomain) { "samlsubdomain" }
+    let(:user) { FactoryGirl.create(:carto_user) }
+
+    before(:all) do
+      @organization = FactoryGirl.create(:saml_organization)
+      host! "#{@organization.name}.localhost.lan"
+    end
+
+    after(:all) do
+      @organization.delete
+      user.delete
+    end
+
+    it 'redirects to SAML authentication request if enabled' do
+      authentication_request = "http://fakesaml.com/authenticate"
+      Carto::SamlService.any_instance.stubs(:enabled?).returns(true)
+      Carto::SamlService.any_instance.stubs(:authentication_request).returns(authentication_request)
+
+      get login_url(user_domain: @organization.name)
+      response.location.should eq authentication_request
+      response.status.should eq 302
+    end
+
+    it 'authenticates with SAML if SAMLResponse is present and SAML is enabled' do
+      Carto::SamlService.any_instance.stubs(:enabled?).returns(true)
+      Carto::SamlService.any_instance.stubs(:username).returns(subdomain)
+
+      SessionsController.any_instance.expects(:authenticate!).with(:saml, scope: subdomain).returns(user).once
+
+      post create_session_url(user_domain: nil, SAMLResponse: 'xx')
+    end
+
+    # If SAML returns authentication error we should fallback to login
+    it 'fallbacks to login if SAMLResponse is present and SAML is enabled but subdomain is nil' do
+      Carto::SamlService.any_instance.stubs(:enabled?).returns(true)
+      Carto::SamlService.any_instance.stubs(:username).returns(subdomain)
+      failed_saml_response = mock
+      failed_saml_response.stubs(:is_valid?).returns(false)
+      Carto::SamlService.any_instance.stubs(:get_saml_response).returns(failed_saml_response)
+
+      sessions_controller = SessionsController.any_instance
+      sessions_controller.expects(:authenticate!).with(:saml, scope: subdomain).once
+      sessions_controller.expects(:authenticate!).with(:password, scope: @organization.name).returns(nil).once
+
+      post create_session_url(user_domain: nil, SAMLResponse: 'xx')
+
+      response.status.should eq 200
+    end
+  end
+
   private
 
   def bypass_named_maps

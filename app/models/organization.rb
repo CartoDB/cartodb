@@ -45,7 +45,10 @@ class Organization < Sequel::Model
 
   one_to_many :users
   one_to_many :groups
+  one_to_many :assets
   many_to_one :owner, class_name: '::User', key: 'owner_id'
+
+  plugin :serialization, :json, :auth_saml_configuration
 
   plugin :validation_helpers
 
@@ -123,6 +126,7 @@ class Organization < Sequel::Model
   end
 
   def before_destroy
+    return false unless destroy_assets
     destroy_groups
   end
 
@@ -363,7 +367,7 @@ class Organization < Sequel::Model
   end
 
   def auth_enabled?
-    auth_username_password_enabled || auth_google_enabled || auth_github_enabled
+    auth_username_password_enabled || auth_google_enabled || auth_github_enabled || auth_saml_enabled?
   end
 
   def total_seats
@@ -460,7 +464,15 @@ class Organization < Sequel::Model
     owner ? owner.max_layers : ::User::DEFAULT_MAX_LAYERS
   end
 
+  def auth_saml_enabled?
+    auth_saml_configuration.present?
+  end
+
   private
+
+  def destroy_assets
+    assets.map { |asset| Carto::Asset.find(asset.id) }.map(&:destroy).all?
+  end
 
   def destroy_groups
     return unless groups

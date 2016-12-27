@@ -18,25 +18,10 @@ describe Api::Json::PermissionsController do
   include Rack::Test::Methods
 
   before(:all) do
-    @user = create_user(
-      username: 'test',
-      email:    'client@example.com',
-      password: 'clientex'
-    )
+    @user = create_user
     @api_key = @user.api_key
 
-    @user2 = create_user(
-        username: 'test2',
-        email:    'client2@example.com',
-        password: 'clientex2',
-        avatar_url: 'whatever1'
-    )
-    @user3 = create_user(
-        username: 'test3',
-        email:    'client3@example.com',
-        password: 'clientex3',
-        avatar_url: nil
-    )
+    @user2 = create_user
   end
 
   before(:each) do
@@ -44,11 +29,10 @@ describe Api::Json::PermissionsController do
     bypass_named_maps
     delete_user_data @user
     delete_user_data @user2
-    delete_user_data @user3
     @headers = {
-      'CONTENT_TYPE'  => 'application/json',
+      'CONTENT_TYPE' => 'application/json'
     }
-    host! 'test.localhost.lan'
+    host! "#{@user.username}.localhost.lan"
     Permission.any_instance.stubs(:revoke_previous_permissions).returns(nil)
     Permission.any_instance.stubs(:grant_db_permission).returns(nil)
     Permission.any_instance.stubs(:notify_permissions_change).returns(nil)
@@ -63,7 +47,6 @@ describe Api::Json::PermissionsController do
     bypass_named_maps
     @user.destroy
     @user2.destroy
-    @user3.destroy
   end
 
   describe 'PUT /api/v1/perm' do

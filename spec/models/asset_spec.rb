@@ -4,7 +4,7 @@ require 'spec_helper'
 
 describe Asset do
   before(:all) do
-    @user = create_user username: 'test'
+    @user = create_user
   end
 
   after(:all) do
@@ -100,7 +100,7 @@ describe Asset do
         serve_file file do |url|
           asset = Asset.create(user_id: @user.id, url: url)
           File.exists?(local_path(asset)).should be_true
-          asset.public_url.should =~ /\/test\/test\/assets\/\d+cartofante_blue\.png/
+          asset.public_url.should =~ /\/test\/#{@user.username}\/assets\/\d+cartofante_blue\.png/
         end
       end
 

@@ -8,8 +8,12 @@
   min-height: 0;
 }
 
-.Tab-paneLabel-image {
+.Tab-paneLabel-image-container {
   display: inline-block;
-  max-width: 15px;
-  height: 15px;
+  min-width: 18px;
+  height: 18px;
+}
+
+.Tab-paneLabel-image {
+  height: 18px;
 }

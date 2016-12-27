@@ -44,6 +44,8 @@ module.exports = cdb.core.View.extend({
     // and w/o class="" d3 won't instantiate properly
     this.setElement($('<svg class=""></svg>')[0]);
 
+    this._widgetModel = this.options.widgetModel;
+
     this.canvas = d3.select(this.el)
       .attr('width', 0)
       .attr('height', this.options.height);
@@ -56,6 +58,7 @@ module.exports = cdb.core.View.extend({
     this._setupBindings();
     this._setupDimensions();
     this._setupD3Bindings();
+    this._setupFillColor();
 
     this.hide(); // will be toggled on width change
   },
@@ -268,8 +271,10 @@ module.exports = cdb.core.View.extend({
 
   _onMouseOut: function () {
     var bars = this.chart.selectAll('.CDB-Chart-bar');
-    bars.classed('is-highlighted', false)
-        .attr('fill', this.options.chartBarColor);
+
+    bars
+      .classed('is-highlighted', false)
+      .attr('fill', this._getFillColor.bind(this));
     this.trigger('hover', { value: null });
   },
 
@@ -313,10 +318,10 @@ module.exports = cdb.core.View.extend({
 
     this.chart.selectAll('.CDB-Chart-bar')
       .classed('is-highlighted', false)
-      .attr('fill', this.options.chartBarColor);
+      .attr('fill', this._getFillColor.bind(this));
 
     if (bar && bar.node()) {
-      bar.attr('fill', this._getHoverColor());
+      bar.attr('fill', this._getHoverFillColor.bind(this));
       bar.classed('is-highlighted', true);
     }
   },
@@ -476,10 +481,15 @@ module.exports = cdb.core.View.extend({
     this.model.bind('change:show_shadow_bars', this._onChangeShowShadowBars, this);
     this.model.bind('change:width', this._onChangeWidth, this);
     this.model.bind('change:normalized', this._onChangeNormalized, this);
-    this.options.widgetModel && this.options.widgetModel.bind('change:style', function () {
-      this.options.chartBarColor = this.options.widgetModel.getWidgetColor();
-      this.reset();
-    }, this);
+
+    if (this._widgetModel) {
+      this._widgetModel.bind('change:autoStyle', this._refreshBarsColor, this);
+      this._widgetModel.bind('change:style', function () {
+        this._setupFillColor();
+        this._refreshBarsColor();
+      }, this);
+      this.add_related_model(this._widgetModel);
+    }
 
     if (this._originalData) {
       this._originalData.on('change:data', function () {
@@ -940,6 +950,30 @@ module.exports = cdb.core.View.extend({
     return axis;
   },
 
+  _setupFillColor: function () {
+    var obj = this._widgetModel.getAutoStyle();
+    if (!_.isEmpty(obj)) {
+      for (var firstGeom in obj.definition) break;
+      var colorsRange = obj && obj.definition[firstGeom].color.range;
+
+      this._autoStyleRangeColors = d3.scale.linear()
+        .domain([0, _.size(this.model.get('data'))])
+        .range(colorsRange);
+    }
+  },
+
+  _getFillColor: function (d, i) {
+    if (this._widgetModel.isAutoStyle()) {
+      return this._autoStyleRangeColors(i);
+    } else {
+      return this._widgetModel.getWidgetColor() || this.options.chartBarColor;
+    }
+  },
+
+  _getHoverFillColor: function (d, i) {
+    return tinycolor(this._getFillColor(d, i)).darken().toString();
+  },
+
   _updateChart: function () {
     var self = this;
     var data = this.model.get('data');
@@ -951,7 +985,7 @@ module.exports = cdb.core.View.extend({
       .enter()
       .append('rect')
       .attr('class', 'CDB-Chart-bar')
-      .attr('fill', this.options.chartBarColor)
+      .attr('fill', this._getFillColor.bind(this))
       .attr('data', function (d) { return _.isEmpty(d) ? 0 : d.freq; })
       .attr('transform', function (d, i) {
         return 'translate(' + (i * self.barWidth) + ', 0 )';
@@ -1001,8 +1035,11 @@ module.exports = cdb.core.View.extend({
       });
   },
 
-  _getHoverColor: function () {
-    return tinycolor(this.options.chartBarColor).darken().toString();
+  _refreshBarsColor: function () {
+    this.chart
+      .selectAll('.CDB-Chart-bar')
+      .classed('is-highlighted', false)
+      .attr('fill', this._getFillColor.bind(this));
   },
 
   _generateBars: function () {
@@ -1021,7 +1058,7 @@ module.exports = cdb.core.View.extend({
       .enter()
       .append('rect')
       .attr('class', 'CDB-Chart-bar')
-      .attr('fill', this.options.chartBarColor)
+      .attr('fill', this._getFillColor.bind(self))
       .attr('data', function (d) { return _.isEmpty(d) ? 0 : d.freq; })
       .attr('transform', function (d, i) {
         return 'translate(' + (i * self.barWidth) + ', 0 )';

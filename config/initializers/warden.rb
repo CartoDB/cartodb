@@ -220,8 +220,7 @@ Warden::Strategies.add(:saml) do
     saml_service = Carto::SamlService.new(organization)
 
     email = saml_service.get_user_email(params[:SAMLResponse])
-    user = ::User.filter(organization_id: organization.id,
-                         email: email.strip.downcase).first
+    user = organization.users.where(email: email.strip.downcase).first
 
     if user.try(:enabled?)
       success!(user, message: "Success")

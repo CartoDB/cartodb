@@ -952,19 +952,21 @@ module.exports = cdb.core.View.extend({
 
   _setupFillColor: function () {
     var obj = this._widgetModel.getAutoStyle();
+    var data = this.model.get('data');
+
     if (!_.isEmpty(obj)) {
       for (var firstGeom in obj.definition) break;
       var colorsRange = obj && obj.definition[firstGeom].color.range;
 
-      this._autoStyleRangeColors = d3.scale.linear()
-        .domain([0, _.size(this.model.get('data'))])
+      this._autoStyleRangeColors = d3.scale.quantize()
+        .domain([_.first(data).min, _.last(data).max])
         .range(colorsRange);
     }
   },
 
   _getFillColor: function (d, i) {
     if (this._widgetModel.isAutoStyle()) {
-      return this._autoStyleRangeColors(i);
+      return this._autoStyleRangeColors(d.max);
     } else {
       return this._widgetModel.getWidgetColor() || this.options.chartBarColor;
     }
@@ -986,7 +988,9 @@ module.exports = cdb.core.View.extend({
       .append('rect')
       .attr('class', 'CDB-Chart-bar')
       .attr('fill', this._getFillColor.bind(this))
-      .attr('data', function (d) { return _.isEmpty(d) ? 0 : d.freq; })
+      .attr('data', function (d) {
+        return _.isEmpty(d) ? 0 : d.max;
+      })
       .attr('transform', function (d, i) {
         return 'translate(' + (i * self.barWidth) + ', 0 )';
       })
@@ -1059,7 +1063,9 @@ module.exports = cdb.core.View.extend({
       .append('rect')
       .attr('class', 'CDB-Chart-bar')
       .attr('fill', this._getFillColor.bind(self))
-      .attr('data', function (d) { return _.isEmpty(d) ? 0 : d.freq; })
+      .attr('data', function (d) {
+        return _.isEmpty(d) ? 0 : d.max;
+      })
       .attr('transform', function (d, i) {
         return 'translate(' + (i * self.barWidth) + ', 0 )';
       })

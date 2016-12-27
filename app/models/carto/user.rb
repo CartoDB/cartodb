@@ -30,7 +30,7 @@ class Carto::User < ActiveRecord::Base
                    "users.api_key, users.database_schema, users.database_name, users.name, users.location," \
                    "users.disqus_shortname, users.account_type, users.twitter_username, users.google_maps_key, " \
                    "users.viewer, users.quota_in_bytes, users.database_host, users.crypted_password, " \
-                   "users.builder_enabled".freeze
+                   "users.builder_enabled, users.private_tables_enabled, users.private_maps_enabled".freeze
 
   has_many :tables, class_name: Carto::UserTable, inverse_of: :user
   has_many :visualizations, inverse_of: :user

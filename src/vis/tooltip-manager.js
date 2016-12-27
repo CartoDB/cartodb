@@ -57,19 +57,17 @@ TooltipManager.prototype._bindFeatureOverEvent = function (layerView) {
     if (this._mapModel.arePopupsEnabled() &&
       layerModel.tooltip.hasTemplate() &&
       !this._isFeatureInfowindowOpen(data.cartodb_id)) {
-      this._tooltipModel.set('pos', pos);
-      this._tooltipModel.set('fields', layerModel.tooltip.fields.toJSON());
-      this._tooltipModel.set('template', layerModel.tooltip.get('template'));
-      this._tooltipModel.set('alternative_names', layerModel.tooltip.get('alternative_names'));
+      this._tooltipModel.setTooltipTemplate(layerModel.tooltip);
+      this._tooltipModel.setPosition(pos);
       this._tooltipModel.updateContent(data);
-      this._tooltipModel.set('visible', true);
+      this._tooltipModel.show();
     } else {
-      this._tooltipModel.set('visible', false);
+      this._tooltipModel.hide();
     }
   }, this);
 
   layerView.bind('featureOut', function (e) {
-    this._tooltipModel.set('visible', false);
+    this._tooltipModel.hide();
   }, this);
 };
 

@@ -42,16 +42,13 @@ var InfowindowModel = Backbone.Model.extend({
     this.set('content', InfowindowModel.contentForFields(attributes, fields, options));
   },
 
-  setCurrentFeatureId: function (featureId) {
-    this.set('currentFeatureId', featureId);
-  },
-
-  unsetCurrentFeatureId: function () {
-    this.unset('currentFeatureId');
-  },
-
-  getCurrentFeatureId: function (featureId) {
-    return this.get('currentFeatureId');
+  setInfowindowTemplate: function (infowindowTemplateModel) {
+    var attrs = _.pick(infowindowTemplateModel.toJSON(), this.TEMPLATE_ATTRIBUTES);
+    // Remove keys that have a falsy value
+    attrs = _.pick(attrs, _.identity);
+    this.set(_.clone(attrs));
+    this._fields.reset(infowindowTemplateModel.fields.toJSON());
+    this._infowindowTemplateModel = infowindowTemplateModel;
   },
 
   setLoading: function () {
@@ -84,17 +81,36 @@ var InfowindowModel = Backbone.Model.extend({
     return this;
   },
 
-  getAlternativeName: function (fieldName) {
-    return this.get('alternative_names') && this.get('alternative_names')[fieldName];
+  setLatLng: function (latLng) {
+    this.set('latlng', latLng);
   },
 
-  setInfowindowTemplate: function (infowindowTemplateModel) {
-    var attrs = _.pick(infowindowTemplateModel.toJSON(), this.TEMPLATE_ATTRIBUTES);
-    // Remove keys that have a falsy value
-    attrs = _.pick(attrs, _.identity);
-    this.set(_.clone(attrs));
-    this._fields.reset(infowindowTemplateModel.fields.toJSON());
-    this._infowindowTemplateModel = infowindowTemplateModel;
+  show: function () {
+    this.set('visibility', true);
+  },
+
+  hide: function () {
+    this.set('visibility', false);
+  },
+
+  isVisible: function () {
+    return !!this.get('visibility');
+  },
+
+  setCurrentFeatureId: function (featureId) {
+    this.set('currentFeatureId', featureId);
+  },
+
+  unsetCurrentFeatureId: function () {
+    this.unset('currentFeatureId');
+  },
+
+  getCurrentFeatureId: function (featureId) {
+    return this.get('currentFeatureId');
+  },
+
+  getAlternativeName: function (fieldName) {
+    return this.get('alternative_names') && this.get('alternative_names')[fieldName];
   },
 
   hasInfowindowTemplate: function (infowindowTemplateModel) {

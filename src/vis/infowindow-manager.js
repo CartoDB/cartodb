@@ -52,17 +52,15 @@ InfowindowManager.prototype._bindFeatureClickEvent = function (layerView) {
 
     this._updateInfowindowModel(layerModel.infowindow);
 
-    this._infowindowModel.set({
-      latlng: latlng,
-      visibility: true
-    });
+    this._infowindowModel.setLatLng(latlng);
+    this._infowindowModel.show();
 
     this._infowindowModel.setCurrentFeatureId(data.cartodb_id);
-    this._tooltipModel.set('visible', false);
+    this._tooltipModel.hide();
     this._fetchAttributes(layerView, layerModel, data.cartodb_id, latlng);
 
     var clearFilter = function (infowindowModel) {
-      if (!infowindowModel.get('visibility')) {
+      if (!infowindowModel.isVisible()) {
         this._infowindowModel.unsetCurrentFeatureId();
       }
     };
@@ -100,7 +98,7 @@ InfowindowManager.prototype._bindInfowindowModel = function (layerView, layerMod
   layerModel.infowindow.fields.bind('reset', function () {
     if (layerModel.infowindow.hasFields()) {
       this._updateInfowindowModel(layerModel.infowindow);
-      if (this._infowindowModel.get('visibility')) {
+      if (this._infowindowModel.isVisible()) {
         this._reloadVisAndFetchAttributes(layerView, layerModel);
       } else {
         this._reloadVis();
@@ -121,7 +119,7 @@ InfowindowManager.prototype._bindInfowindowModel = function (layerView, layerMod
 
 InfowindowManager.prototype._isLayerInfowindowActiveAndVisible = function (layerModel) {
   return this._infowindowModel.hasInfowindowTemplate(layerModel.infowindow) &&
-    this._infowindowModel.get('visibility');
+    this._infowindowModel.isVisible();
 };
 
 InfowindowManager.prototype._reloadVis = function (options) {
@@ -144,7 +142,7 @@ InfowindowManager.prototype._onPopupsEnabledChanged = function () {
 };
 
 InfowindowManager.prototype._hideInfowindow = function () {
-  this._infowindowModel && this._infowindowModel.set('visibility', false);
+  this._infowindowModel && this._infowindowModel.hide();
 };
 
 module.exports = InfowindowManager;

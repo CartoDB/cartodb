@@ -22,9 +22,8 @@ var TooltipView = View.extend({
     this.showhideTimeout = null;
 
     this.model.bind('change:visible', this._showOrHide, this);
-    // TODO: pos and position are ambiguous names
-    this.model.bind('change:pos', this._updatePosition, this);
-    this.model.bind('change:posisition', this._updatePosition, this);
+    this.model.bind('change:position', this._updatePosition, this);
+    this.model.bind('change:placement', this._updatePosition, this);
     this.model.bind('change:content change:alternative_names', this.render, this);
   },
 
@@ -72,8 +71,8 @@ var TooltipView = View.extend({
   },
 
   _updatePosition: function () {
-    var point = this.model.get('pos');
-    var pos = this.model.get('position');
+    var position = this.model.get('position');
+    var placement = this.model.get('placement');
     var height = this.$el.innerHeight();
     var width = this.$el.innerWidth();
     var mapViewSize = this._mapView.getSize();
@@ -85,40 +84,40 @@ var TooltipView = View.extend({
     this._removePositionModifiers();
 
     // Vertically
-    if (pos.indexOf('top') !== -1) {
-      top = point.y - height;
-    } else if (pos.indexOf('middle') !== -1) {
-      top = point.y - (height / 2);
+    if (placement.indexOf('top') !== -1) {
+      top = position.y - height;
+    } else if (placement.indexOf('middle') !== -1) {
+      top = position.y - (height / 2);
     } else { // bottom
-      top = point.y;
+      top = position.y;
     }
 
     // Fix vertical overflow
     if (top < 0) {
-      top = point.y;
+      top = position.y;
       modifierClass += 'top';
     } else if (top + height > mapViewSize.y) {
-      top = point.y - height;
+      top = position.y - height;
       modifierClass += 'bottom';
     } else {
       modifierClass += 'top';
     }
 
     // Horizontally
-    if (pos.indexOf('left') !== -1) {
-      left = point.x - width;
-    } else if (pos.indexOf('center') !== -1) {
-      left = point.x - (width / 2);
+    if (placement.indexOf('left') !== -1) {
+      left = position.x - width;
+    } else if (placement.indexOf('center') !== -1) {
+      left = position.x - (width / 2);
     } else { // right
-      left = point.x;
+      left = position.x;
     }
 
     // Fix horizontal overflow
     if (left < 0) {
-      left = point.x;
+      left = position.x;
       modifierClass += 'Left';
     } else if (left + width > mapViewSize.x) {
-      left = point.x - width;
+      left = position.x - width;
       modifierClass += 'Right';
     } else {
       modifierClass += 'Left';

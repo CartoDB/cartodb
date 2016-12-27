@@ -82,7 +82,7 @@ describe('src/vis/tooltip-manager.js', function () {
     // Simulate the featureOver event on layer #0
     this.layerView.trigger('featureOver', {}, [0, 0], { x: 100, y: 200 }, { cartodb_id: 10, name: 'CARTO' }, 0);
 
-    expect(this.tooltipModel.get('pos')).toEqual({ x: 100, y: 200 });
+    expect(this.tooltipModel.get('position')).toEqual({ x: 100, y: 200 });
     expect(this.tooltipModel.get('fields')).toEqual([{
       'name': 'name',
       'title': true,
@@ -95,7 +95,7 @@ describe('src/vis/tooltip-manager.js', function () {
     // Simulate the featureOver event on layer #1
     this.layerView.trigger('featureOver', {}, [0, 0], { x: 200, y: 300 }, { cartodb_id: 10 }, 1);
 
-    expect(this.tooltipModel.get('pos')).toEqual({ x: 200, y: 300 });
+    expect(this.tooltipModel.get('position')).toEqual({ x: 200, y: 300 });
     expect(this.tooltipModel.get('fields')).toEqual([{
       'name': 'description',
       'title': true,

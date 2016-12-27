@@ -7,20 +7,10 @@ var TooltipModel = Model.extend({
     template: '<p>{{text}}</p>',
     fields: [],
     alternative_names: {},
-    position: 'bottom|right',
-    pos: { x: 0, y: 0 },
+    placement: 'bottom|right',
+    position: { x: 0, y: 0 },
     offset: [0, 0],
     blacklisted_columns: ['cartodb_id']
-  },
-
-  getVerticalOffset: function () {
-    var offset = this.get('offset');
-    return (offset && offset[1]) || 0;
-  },
-
-  getHorizontalOffset: function () {
-    var offset = this.get('offset');
-    return (offset && offset[0]) || 0;
   },
 
   updateContent: function (attributes) {
@@ -54,17 +44,39 @@ var TooltipModel = Model.extend({
     this.set('content', data);
   },
 
+  setTooltipTemplate: function (tooltipTemplate) {
+    this.set({
+      template: tooltipTemplate.get('template'),
+      fields: tooltipTemplate.fields.toJSON(),
+      alternative_names: tooltipTemplate.get('alternative_names')
+    });
+  },
+
+  setPosition: function (position) {
+    this.set('position', position);
+  },
+
+  show: function () {
+    this.set('visible', true);
+  },
+
+  hide: function () {
+    this.set('visible', false);
+  },
+
   isVisible: function () {
     return !!this.get('visible');
-  }
+  },
 
-  // setTooltipTemplate: function (tooltipTemplate) {
-  //   this.set({
-  //     template: tooltipTemplate.get('template'),
-  //     fields: tooltipTemplate.fields.toJSON()
-  //     alternative_names: tooltipTemplate.get('alternative_names')
-  //   });
-  // }
+  getVerticalOffset: function () {
+    var offset = this.get('offset');
+    return (offset && offset[1]) || 0;
+  },
+
+  getHorizontalOffset: function () {
+    var offset = this.get('offset');
+    return (offset && offset[0]) || 0;
+  }
 });
 
 module.exports = TooltipModel;

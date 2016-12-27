@@ -79,29 +79,29 @@ describe('geo/ui/tooltip-view', function () {
     this.tooltipView.$el.css('width', '200px');
     this.tooltipView.$el.css('height', '20px');
 
-    this.tooltipModel.set('position', 'bottom|right');
-    this.tooltipModel.set('pos', { x: 10, y: 10 });
+    this.tooltipModel.set('placement', 'bottom|right');
+    this.tooltipModel.setPosition({ x: 10, y: 10 });
 
     expect(this.tooltipView.$el.css('top')).toBe('10px');
     expect(this.tooltipView.$el.css('left')).toBe('10px');
 
-    this.tooltipModel.set('position', 'top|left');
-    this.tooltipModel.set('pos', { x: 210, y: 40 });
+    this.tooltipModel.set('placement', 'top|left');
+    this.tooltipModel.setPosition({ x: 210, y: 40 });
 
     expect(this.tooltipView.$el.css('top')).toBe('20px');
     expect(this.tooltipView.$el.css('left')).toBe('10px');
 
-    this.tooltipModel.set('position', 'middle|center');
-    this.tooltipModel.set('pos', { x: 150, y: 30 });
+    this.tooltipModel.set('placement', 'middle|center');
+    this.tooltipModel.setPosition({ x: 150, y: 30 });
 
     expect(this.tooltipView.$el.css('top')).toBe('20px');
     expect(this.tooltipView.$el.css('left')).toBe('50px');
 
     // With offsets
-    this.tooltipModel.set('position', 'middle|center');
+    this.tooltipModel.set('placement', 'middle|center');
     this.tooltipModel.set('offset', [-10, -10]);
-    this.tooltipModel.set('pos', { x: 0, y: 0 });
-    this.tooltipModel.set('pos', { x: 150, y: 30 });
+    this.tooltipModel.setPosition({ x: 0, y: 0 });
+    this.tooltipModel.setPosition({ x: 150, y: 30 });
 
     expect(this.tooltipView.$el.css('top')).toBe('10px');
     expect(this.tooltipView.$el.css('left')).toBe('40px');
@@ -117,53 +117,53 @@ describe('geo/ui/tooltip-view', function () {
     });
 
     it('should position the element on top when bottom overflow occurs', function () {
-      this.tooltipModel.set('position', 'bottom|right');
-      this.tooltipModel.set('pos', { x: 0, y: 90 });
+      this.tooltipModel.set('placement', 'bottom|right');
+      this.tooltipModel.setPosition({ x: 0, y: 90 });
 
       expect(this.tooltipView.$el.css('top')).toBe('10px');
     });
 
     it('should position the element on the bottom when top overflow occurs', function () {
-      this.tooltipModel.set('position', 'top|right');
-      this.tooltipModel.set('pos', { x: 0, y: 10 });
+      this.tooltipModel.set('placement', 'top|right');
+      this.tooltipModel.setPosition({ x: 0, y: 10 });
 
       expect(this.tooltipView.$el.css('top')).toBe('10px');
     });
 
     it('should position the element on top/bottom when overflow vertically centered and overflow occurs', function () {
-      this.tooltipModel.set('position', 'middle|right');
-      this.tooltipModel.set('pos', { x: 0, y: 90 });
+      this.tooltipModel.set('placement', 'middle|right');
+      this.tooltipModel.setPosition({ x: 0, y: 90 });
 
       expect(this.tooltipView.$el.css('top')).toBe('10px');
 
-      this.tooltipModel.set('position', 'middle|right');
-      this.tooltipModel.set('pos', { x: 0, y: 10 });
+      this.tooltipModel.set('placement', 'middle|right');
+      this.tooltipModel.setPosition({ x: 0, y: 10 });
 
       expect(this.tooltipView.$el.css('top')).toBe('10px');
     });
 
     it('should position the element on the left when right overflow occurs', function () {
-      this.tooltipModel.set('position', 'top|right');
-      this.tooltipModel.set('pos', { x: 90, y: 10 });
+      this.tooltipModel.set('placement', 'top|right');
+      this.tooltipModel.setPosition({ x: 90, y: 10 });
 
       expect(this.tooltipView.$el.css('left')).toBe('10px');
     });
 
     it('should position the element on the right when left overflow occurs', function () {
-      this.tooltipModel.set('position', 'top|left');
-      this.tooltipModel.set('pos', { x: 10, y: 10 });
+      this.tooltipModel.set('placement', 'top|left');
+      this.tooltipModel.setPosition({ x: 10, y: 10 });
 
       expect(this.tooltipView.$el.css('left')).toBe('10px');
     });
 
     it('should position the element on the left/right when horizontally centered and overflow occurs', function () {
-      this.tooltipModel.set('position', 'top|center');
-      this.tooltipModel.set('pos', { x: 10, y: 10 });
+      this.tooltipModel.set('placement', 'top|center');
+      this.tooltipModel.setPosition({ x: 10, y: 10 });
 
       expect(this.tooltipView.$el.css('left')).toBe('10px');
 
-      this.tooltipModel.set('position', 'top|center');
-      this.tooltipModel.set('pos', { x: 90, y: 10 });
+      this.tooltipModel.set('placement', 'top|center');
+      this.tooltipModel.setPosition({ x: 90, y: 10 });
 
       expect(this.tooltipView.$el.css('left')).toBe('10px');
     });

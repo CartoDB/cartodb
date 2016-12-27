@@ -133,7 +133,7 @@
   .Editor {
     .CDB-Widget-options,
     .CDB-Widget-actions {
-      display: block;
+      @include display-flex();
     }
 
     .CDB-Widget-body.is-collapsed {

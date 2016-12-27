@@ -25,7 +25,6 @@ var Vis = View.extend({
     this.model.once('load', this.render, this);
     this.model.on('invalidateSize', this._invalidateSize, this);
 
-    // TODO: Inject the ovelaysCollection directly
     this._overlaysCollection = this.model.overlaysCollection;
 
     this.settingsModel = options.settingsModel;

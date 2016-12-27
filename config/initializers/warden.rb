@@ -202,13 +202,21 @@ Warden::Strategies.add(:http_header_authentication) do
 end
 
 Warden::Strategies.add(:saml) do
+  def organization_from_request
+    subdomain = CartoDB.subdomain_from_request(request)
+    Carto::Organization.where(name: subdomain).first if subdomain
+  end
+
+  def saml_service(organization = organization_from_request)
+    Carto::SamlService.new(organization) if organization
+  end
+
   def valid?
-    params[:SAMLResponse].present? && saml_service.enabled?
+    params[:SAMLResponse].present? && saml_service.try(:enabled?)
   end
 
   def authenticate!
-    subdomain = CartoDB.subdomain_from_request(request)
-    organization = Carto::Organization.where(name: subdomain).first if subdomain
+    organization = organization_from_request
     saml_service = Carto::SamlService.new(organization)
 
     email = saml_service.get_user_email(params[:SAMLResponse])

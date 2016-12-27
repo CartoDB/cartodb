@@ -2029,7 +2029,12 @@
           "description": "Apply style to your visualization",
           "sync_on_data_change": "Unfiltered",
           "sync_on_bbox_change": "Dynamic",
-          "description": "Description",
+          "fill": "Fill",
+          "custom-ramp": "Custom ramp",
+          "custom-categories": "Custom categ.",
+          "custom-help": "Represent the widget's values with custom colors in the map",
+          "custom-disabled": "If an aggregated style is applied, auto style is disabled",
+          "description": "Define how your widget interacts with the data",
           "yes": "Yes",
           "no": "No"
         }

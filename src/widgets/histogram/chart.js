@@ -955,18 +955,24 @@ module.exports = cdb.core.View.extend({
     var data = this.model.get('data');
 
     if (!_.isEmpty(obj)) {
-      for (var firstGeom in obj.definition) break;
-      var colorsRange = obj && obj.definition[firstGeom].color.range;
+      var geometryDefinition = obj.definition[Object.keys(obj.definition)[0]]; // Gets first definition by geometry
+      var colorsRange = geometryDefinition && geometryDefinition.color.range;
+      var domain = [(_.first(data).min || _.first(data).start), (_.last(data).max || _.last(data).end)];
+      var autoStyleColorsScale;
 
-      this._autoStyleRangeColors = d3.scale.quantize()
-        .domain([_.first(data).min, _.last(data).max])
-        .range(colorsRange);
+      if (domain && colorsRange) {
+        autoStyleColorsScale = d3.scale.quantize()
+          .domain(domain)
+          .range(colorsRange);
+      }
+
+      this._autoStyleColorsScale = autoStyleColorsScale;
     }
   },
 
   _getFillColor: function (d, i) {
     if (this._widgetModel.isAutoStyle()) {
-      return this._autoStyleRangeColors(d.max);
+      return this._autoStyleColorsScale(d.max);
     } else {
       return this._widgetModel.getWidgetColor() || this.options.chartBarColor;
     }
@@ -989,7 +995,8 @@ module.exports = cdb.core.View.extend({
       .attr('class', 'CDB-Chart-bar')
       .attr('fill', this._getFillColor.bind(this))
       .attr('data', function (d) {
-        return _.isEmpty(d) ? 0 : d.max;
+        var maxValue = d.max || d.end;
+        return _.isEmpty(d) ? 0 : maxValue;
       })
       .attr('transform', function (d, i) {
         return 'translate(' + (i * self.barWidth) + ', 0 )';
@@ -1064,7 +1071,8 @@ module.exports = cdb.core.View.extend({
       .attr('class', 'CDB-Chart-bar')
       .attr('fill', this._getFillColor.bind(self))
       .attr('data', function (d) {
-        return _.isEmpty(d) ? 0 : d.max;
+        var maxValue = d.max || d.end;
+        return _.isEmpty(d) ? 0 : maxValue;
       })
       .attr('transform', function (d, i) {
         return 'translate(' + (i * self.barWidth) + ', 0 )';

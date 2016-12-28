@@ -125,7 +125,7 @@ module.exports = cdb.core.Model.extend({
     this.set('autoStyle', false);
   },
 
-  getAutoStyle: function getAutoStyle () {
+  getAutoStyle: function () {
     var style = this.get('style');
     var cartocss = this.dataviewModel.layer.get('cartocss');
 

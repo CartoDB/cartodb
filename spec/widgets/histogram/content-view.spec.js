@@ -2,6 +2,7 @@ var _ = require('underscore');
 var specHelper = require('../../spec-helper');
 var HistogramContentView = require('../../../src/widgets/histogram/content-view');
 var HistogramWidgetModel = require('../../../src/widgets/histogram/histogram-widget-model');
+var HistogramChartView = require('../../../src/widgets/histogram/chart');
 
 describe('widgets/histogram/content-view', function () {
   beforeEach(function () {
@@ -13,7 +14,7 @@ describe('widgets/histogram/content-view', function () {
 
     this.originalData = this.dataviewModel._unfilteredData;
     this.originalData.set({
-      data: [{ bin: 10 }, { bin: 3 }],
+      data: [{ bin: 10, max: 0 }, { bin: 3, max: 10 }],
       start: 0,
       end: 256,
       bins: 2
@@ -36,6 +37,8 @@ describe('widgets/histogram/content-view', function () {
 
     spyOn(this.dataviewModel, 'getData').and.returnValue(['0', '1']);
     spyOn(this.dataviewModel, 'fetch').and.callThrough();
+
+    spyOn(HistogramChartView.prototype, '_setupFillColor').and.returnValue('red');
 
     this.view = new HistogramContentView({
       model: this.widgetModel,

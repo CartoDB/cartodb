@@ -50,6 +50,33 @@ describe('widgets/histogram/chart', function () {
       return onWindowResizeSpy;
     });
 
+    this.widgetModel = new cdb.core.Model({
+      style: {
+        auto_style: {
+          definition: {
+            point: {
+              color: {
+                attribute: 'whatever',
+                range: ['#FABADA', '#F00000', '#000000']
+              }
+            }
+          }
+        }
+      }
+    });
+
+    this.widgetModel.getWidgetColor = function () {
+      return '';
+    };
+
+    this.widgetModel.getAutoStyle = function () {
+      return this.attributes.style.auto_style;
+    };
+
+    this.widgetModel.isAutoStyle = function () {
+      return false;
+    };
+
     this.view = new WidgetHistogramChart(({
       el: $('.js-chart'),
       margin: this.margin,
@@ -59,6 +86,7 @@ describe('widgets/histogram/chart', function () {
       data: this.data,
       originalData: this.originalModel,
       displayShadowBars: true,
+      widgetModel: this.widgetModel,
       xAxisTickFormat: function (d, i) {
         return d;
       }
@@ -253,8 +281,50 @@ describe('widgets/histogram/chart', function () {
   });
 
   describe('color bar', function () {
-    it('should be green', function () {
-      expect(this.view.$el.find('.CDB-Chart-bar').attr('fill')).toEqual('#9DE0AD');
+    it('should be green by default', function () {
+      expect(this.view.$('.CDB-Chart-bar').attr('fill')).toEqual('#9DE0AD');
+    });
+
+    it('should be custom if widget color is different', function () {
+      spyOn(this.widgetModel, 'getWidgetColor').and.returnValue('red');
+      this.view._refreshBarsColor();
+      expect(this.view.$('.CDB-Chart-bar').attr('fill')).toEqual('red');
+    });
+
+    it('should be colored by autostyle range colors when autostyle is applied', function () {
+      spyOn(this.widgetModel, 'isAutoStyle').and.returnValue(true);
+      this.widgetModel.set({
+        style: {
+          auto_style: {
+            definition: {
+              point: {
+                color: {
+                  attribute: 'whatever',
+                  range: ['red', 'blue', 'green']
+                }
+              }
+            }
+          }
+        }
+      });
+
+      this.view.$('.CDB-Chart-bar').each(function (i, el) {
+        expect($(el).attr('fill')).not.toEqual('#9DE0AD');
+      });
+
+      var dataSize = this.view.model.get('data').length;
+      _.times(dataSize, function (i) {
+        var color;
+        if (i < 6) {
+          color = 'red';
+        } else if (i > 5 && i < 13) {
+          color = 'blue';
+        } else {
+          color = 'green';
+        }
+
+        expect(this.view.$('.CDB-Chart-bar:eq(' + i + ')').attr('fill')).toEqual(color);
+      }, this);
     });
   });
 });
@@ -263,8 +333,8 @@ function genHistogramData (n) {
   n = n || 1;
   var arr = [];
   _.times(n, function (i) {
-    var start = (100 * i) + Math.round(Math.random() * 1000);
-    var end = start + 100;
+    var start = i;
+    var end = i + 1;
     var obj = {
       bin: i,
       freq: Math.round(Math.random() * 10),

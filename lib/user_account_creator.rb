@@ -92,7 +92,7 @@ module CartoDB
 
     def with_email_only(email)
       with_email(email)
-      with_username(email_to_username(email))
+      with_username(self.class.email_to_username(email))
       with_password(SecureRandom.hex)
       self
     end

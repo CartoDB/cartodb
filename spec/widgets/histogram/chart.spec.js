@@ -77,6 +77,9 @@ describe('widgets/histogram/chart', function () {
       return false;
     };
 
+    spyOn(WidgetHistogramChart.prototype, '_refreshBarsColor').and.callThrough();
+    spyOn(WidgetHistogramChart.prototype, '_setupFillColor').and.callThrough();
+
     this.view = new WidgetHistogramChart(({
       el: $('.js-chart'),
       margin: this.margin,
@@ -104,6 +107,10 @@ describe('widgets/histogram/chart', function () {
 
   it('should be hidden initially', function () {
     expect(this.view.$el.attr('style')).toMatch('none');
+  });
+
+  it('should setup the fill color initially', function () {
+    expect(WidgetHistogramChart.prototype._setupFillColor).toHaveBeenCalled();
   });
 
   describe('normalize', function () {
@@ -277,6 +284,32 @@ describe('widgets/histogram/chart', function () {
       var data = this.view._getDataForScales();
       expect(data).not.toBe(this.originalData);
       expect(data).toBe(this.data);
+    });
+  });
+
+  describe('autostyle changes', function () {
+    beforeEach(function () {
+      this.widgetModel.set('autoStyle', true);
+    });
+
+    it('should trigger a refresh of the bars fill color', function () {
+      expect(WidgetHistogramChart.prototype._refreshBarsColor).toHaveBeenCalled();
+    });
+  });
+
+  describe('style changes', function () {
+    beforeEach(function () {
+      WidgetHistogramChart.prototype._setupFillColor.calls.reset();
+      WidgetHistogramChart.prototype._refreshBarsColor.calls.reset();
+      this.widgetModel.set('style', {});
+    });
+
+    it('should trigger a refresh of the bars fill color', function () {
+      expect(WidgetHistogramChart.prototype._refreshBarsColor.calls.count()).toEqual(1);
+    });
+
+    it('should setup the colors scale', function () {
+      expect(WidgetHistogramChart.prototype._setupFillColor.calls.count()).toEqual(1);
     });
   });
 

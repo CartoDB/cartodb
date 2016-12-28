@@ -951,6 +951,10 @@ module.exports = cdb.core.View.extend({
   },
 
   _setupFillColor: function () {
+    if (!this._widgetModel.isAutoStyleEnabled()) {
+      return false;
+    }
+
     var obj = this._widgetModel.getAutoStyle();
     var data = this.model.get('data');
 

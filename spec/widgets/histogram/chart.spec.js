@@ -65,17 +65,10 @@ describe('widgets/histogram/chart', function () {
       }
     });
 
-    this.widgetModel.getWidgetColor = function () {
-      return '';
-    };
-
-    this.widgetModel.getAutoStyle = function () {
-      return this.attributes.style.auto_style;
-    };
-
-    this.widgetModel.isAutoStyle = function () {
-      return false;
-    };
+    this.widgetModel.getWidgetColor = function () { return ''; };
+    this.widgetModel.getAutoStyle = function () { return this.attributes.style.auto_style; };
+    this.widgetModel.isAutoStyleEnabled = function () { return true; };
+    this.widgetModel.isAutoStyle = function () { return false; };
 
     spyOn(WidgetHistogramChart.prototype, '_refreshBarsColor').and.callThrough();
     spyOn(WidgetHistogramChart.prototype, '_setupFillColor').and.callThrough();
@@ -109,8 +102,32 @@ describe('widgets/histogram/chart', function () {
     expect(this.view.$el.attr('style')).toMatch('none');
   });
 
-  it('should setup the fill color initially', function () {
-    expect(WidgetHistogramChart.prototype._setupFillColor).toHaveBeenCalled();
+  describe('_setupFillColor', function () {
+    it('should setup the fill color initially', function () {
+      expect(WidgetHistogramChart.prototype._setupFillColor).toHaveBeenCalled();
+      expect(this.view._autoStyleColorsScale).not.toBeUndefined();
+    });
+
+    it('should not set autoStyleColorsScale function if auto-style is disabled', function () {
+      spyOn(this.widgetModel, 'isAutoStyleEnabled').and.returnValue(false);
+
+      var view = new WidgetHistogramChart(({
+        el: $('.js-chart'),
+        margin: this.margin,
+        chartBarColor: '#9DE0AD',
+        hasHandles: true,
+        height: 100,
+        data: this.data,
+        originalData: this.originalModel,
+        displayShadowBars: true,
+        widgetModel: this.widgetModel,
+        xAxisTickFormat: function (d, i) {
+          return d;
+        }
+      }));
+
+      expect(view._autoStyleColorsScale).toBeUndefined();
+    });
   });
 
   describe('normalize', function () {

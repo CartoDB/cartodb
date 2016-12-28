@@ -94,7 +94,7 @@ module.exports = cdb.core.Model.extend({
   },
 
   isAutoStyle: function () {
-    return this.get('autoStyle');
+    return !!this.get('autoStyle');
   },
 
   autoStyle: function () {

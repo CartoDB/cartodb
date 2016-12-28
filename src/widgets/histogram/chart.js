@@ -971,11 +971,15 @@ module.exports = cdb.core.View.extend({
   },
 
   _getFillColor: function (d, i) {
-    if (this._widgetModel.isAutoStyle()) {
-      return this._autoStyleColorsScale(d.max);
-    } else {
-      return this._widgetModel.getWidgetColor() || this.options.chartBarColor;
+    if (this._widgetModel) {
+      if (this._widgetModel.isAutoStyle()) {
+        return this._autoStyleColorsScale(d.max);
+      } else {
+        return this._widgetModel.getWidgetColor() || this.options.chartBarColor;
+      }
     }
+
+    return this.options.chartBarColor;
   },
 
   _getHoverFillColor: function (d, i) {

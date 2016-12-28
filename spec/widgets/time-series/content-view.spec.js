@@ -1,6 +1,7 @@
 var specHelper = require('../../spec-helper');
 var TimeSeriesContentView = require('../../../src/widgets/time-series/content-view');
 var WidgetModel = require('../../../src/widgets/widget-model');
+var HistogramChartView = require('../../../src/widgets/histogram/chart');
 
 describe('widgets/time-series/content-view', function () {
   beforeEach(function () {
@@ -22,6 +23,8 @@ describe('widgets/time-series/content-view', function () {
     var widgetModel = new WidgetModel({}, {
       dataviewModel: this.dataviewModel
     });
+
+    spyOn(HistogramChartView.prototype, '_setupFillColor').and.returnValue('red');
 
     spyOn(this.dataviewModel, 'fetch').and.callThrough();
     this.view = new TimeSeriesContentView({

@@ -107,7 +107,7 @@ class SessionsController < ApplicationController
     warden.custom_failure!
 
     if !warden.env['warden.options']
-      render :action => 'new' and return
+      render action: 'new' && return
     end
 
     email = warden.env['warden.options'][:saml_email]
@@ -143,7 +143,8 @@ class SessionsController < ApplicationController
       render 'shared/signup_issue'
     end
   rescue => e
-    CartoDB.report_exception(e, "Creating user", new_user: account_creator.nil? ? "account_creator nil" : account_creator.user.inspect)
+    new_user = account_creator.nil? ? "account_creator nil" : account_creator.user.inspect
+    CartoDB.report_exception(e, "Creating user", new_user: new_user)
     flash.now[:error] = e.message
     render action: 'new'
   end

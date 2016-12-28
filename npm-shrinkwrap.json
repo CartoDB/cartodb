@@ -1,11 +1,11 @@
 {
   "name": "cartodb-ui",
-  "version": "4.5.80-11122",
+  "version": "4.5.81-11122",
   "dependencies": {
     "backbone": {
       "version": "1.2.3",
       "from": "backbone@1.2.3",
-      "resolved": "http://registry.npmjs.org/backbone/-/backbone-1.2.3.tgz"
+      "resolved": "https://registry.npmjs.org/backbone/-/backbone-1.2.3.tgz"
     },
     "backbone-forms": {
       "version": "0.14.0",
@@ -86,7 +86,7 @@
                             },
                             "readable-stream": {
                               "version": "2.0.6",
-                              "from": "readable-stream@>=2.0.5 <2.1.0",
+                              "from": "readable-stream@>=2.0.0 <2.1.0",
                               "resolved": "https://registry.npmjs.org/readable-stream/-/readable-stream-2.0.6.tgz",
                               "dependencies": {
                                 "core-util-is": {
@@ -893,9 +893,9 @@
                               "resolved": "https://registry.npmjs.org/levn/-/levn-0.3.0.tgz"
                             },
                             "fast-levenshtein": {
-                              "version": "2.0.5",
+                              "version": "2.0.6",
                               "from": "fast-levenshtein@>=2.0.4 <2.1.0",
-                              "resolved": "http://registry.npmjs.org/fast-levenshtein/-/fast-levenshtein-2.0.5.tgz"
+                              "resolved": "https://registry.npmjs.org/fast-levenshtein/-/fast-levenshtein-2.0.6.tgz"
                             }
                           }
                         },
@@ -1147,7 +1147,7 @@
     "cartodb-deep-insights.js": {
       "version": "0.0.2",
       "from": "cartodb/deep-insights.js#autostyle-fixes",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#76fa7a8fc501889afd68ca313e58c102e2b2d1c0",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#afcf06e3f644833f1dabb93ca514b821a1c22a69",
       "dependencies": {
         "cartodb.js": {
           "version": "4.0.0-alpha.1",

@@ -132,9 +132,12 @@
 
 @media (max-width: $reponsiveWidth) {
   .Editor {
-    .CDB-Widget-options,
-    .CDB-Widget-actions {
+    .CDB-Widget-options {
       @include display-flex();
+    }
+    
+    .CDB-Widget-actions {
+      display: none;
     }
 
     .CDB-Widget-body.is-collapsed {

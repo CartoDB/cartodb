@@ -88,11 +88,7 @@ class SessionsController < ApplicationController
 
   # Meant to be called always from warden LDAP authentication
   def ldap_user_not_at_cartodb
-    warden.custom_failure!
-
-    if !warden.env['warden.options']
-      render :action => 'new' and return
-    end
+    render action: 'new' && return unless verify_warden_failure
 
     username = warden.env['warden.options'][:cartodb_username]
     organization_id = warden.env['warden.options'][:organization_id]
@@ -104,11 +100,7 @@ class SessionsController < ApplicationController
 
   # Meant to be called always from warden SAML authentication
   def saml_user_not_at_cartodb
-    warden.custom_failure!
-
-    if !warden.env['warden.options']
-      render action: 'new' && return
-    end
+    render action: 'new' && return unless verify_warden_failure
 
     email = warden.env['warden.options'][:saml_email]
     username = CartoDB::UserAccountCreator.email_to_username(email)
@@ -116,6 +108,11 @@ class SessionsController < ApplicationController
     created_via = Carto::UserCreation::CREATED_VIA_SAML
 
     create_user(username, organization_id, email, created_via)
+  end
+
+  def verify_warden_failure
+    warden.custom_failure!
+    warden.env['warden.options']
   end
 
   def create_user(username, organization_id, email, created_via)

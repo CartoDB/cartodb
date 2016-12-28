@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.5.82-11122",
+  "version": "4.5.84-11122",
   "dependencies": {
     "backbone": {
       "version": "1.2.3",
@@ -1147,7 +1147,7 @@
     "cartodb-deep-insights.js": {
       "version": "0.0.2",
       "from": "cartodb/deep-insights.js#autostyle-fixes",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#afcf06e3f644833f1dabb93ca514b821a1c22a69",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#d8ce2ab7e45e6fc271aa344d106d94d9ad117224",
       "dependencies": {
         "cartodb.js": {
           "version": "4.0.0-alpha.1",

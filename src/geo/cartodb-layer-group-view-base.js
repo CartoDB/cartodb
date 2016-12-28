@@ -1,9 +1,14 @@
 function CartoDBLayerGroupViewBase (layerGroupModel) {
+  this.interaction = [];
+
   layerGroupModel.on('change:urls', this._reload, this);
   layerGroupModel.onLayerVisibilityChanged(this._reload.bind(this));
+
+  this._reload();
 }
 
 CartoDBLayerGroupViewBase.prototype = {
+  // TODO: Rename to something else
   _reload: function () {
     throw new Error('_reload must be implemented');
   },

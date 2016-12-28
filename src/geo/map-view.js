@@ -36,6 +36,12 @@ var MapView = View.extend({
     this.add_related_model(this.map.geometries);
   },
 
+  clean: function () {
+    delete this._cartoDBLayerGroupView;
+
+    View.prototype.clean.call(this);
+  },
+
   render: function () {
     this._createNativeMap();
     this._setAttribution();

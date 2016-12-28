@@ -2,7 +2,6 @@ var $ = require('jquery');
 var _ = require('underscore');
 var L = require('leaflet');
 var MapView = require('../map-view');
-var View = require('../../core/view');
 var Sanitize = require('../../core/sanitize');
 var LeafletLayerViewFactory = require('./leaflet-layer-view-factory');
 
@@ -153,7 +152,7 @@ var LeafletMapView = MapView.extend({
     // destroy the map and clear all related event listeners
     this._leafletMap.remove();
 
-    View.prototype.clean.call(this);
+    MapView.prototype.clean.call(this);
   },
 
   _setKeyboard: function (model, z) {

@@ -10,7 +10,10 @@ describe Carto::Layer do
     let(:layer_class) { Carto::Layer }
     def create_map(options = {})
       options.delete(:table_id)
-      Carto::Map.create(options)
+      map = Carto::Map.create(options)
+      FactoryGirl.create(:carto_visualization, map: map, user_id: options[:user_id]) if options[:user_id].present?
+
+      map
     end
 
     def add_layer_to_entity(entity, layer)

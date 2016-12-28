@@ -2,6 +2,7 @@
 require_dependency 'google_plus_config'
 require_dependency 'google_plus_api'
 require_dependency 'oauth/github/config'
+require_dependency 'carto/saml_service'
 
 require_relative '../../lib/user_account_creator'
 require_relative '../../lib/cartodb/stats/authentication'
@@ -14,6 +15,13 @@ class SessionsController < ApplicationController
                :ldap_user_not_at_cartodb
 
   skip_before_filter :ensure_org_url_if_org_user # Don't force org urls
+
+  # Disables CSRF protection for the login view (create). I *think* this is safe
+  # since the only transaction that a user can be tricked into doing is logging in
+  # and login won't be accepted if the ADFS server's fingerprint is wrong / missing.
+  # If SAML data isn't passed at all, then authentication is manually failed.
+  # In case of fallback on SAML authorization failed, it will be manually checked.
+  skip_before_filter :verify_authenticity_token, only: [:create], if: :saml_authentication?
   skip_before_filter :ensure_account_has_been_activated,
                      only: [:account_token_authentication_error, :ldap_user_not_at_cartodb]
 
@@ -26,22 +34,22 @@ class SessionsController < ApplicationController
     if logged_in?(CartoDB.extract_subdomain(request))
       redirect_to CartoDB.path(self, 'dashboard', {trailing_slash: true}) and return
     end
+
+    # Automatically trigger SAML request on login view load -- could easily trigger this elsewhere
+    if saml_authentication? && !user
+      redirect_to saml_service.authentication_request
+    end
   end
 
   def create
-    # Try LDAP authentication first
-    user = authenticate_with_ldap if Carto::Ldap::Manager.new.configuration_present?
+    user = ldap_user || saml_user || credentials_or_google_user
 
-    # Fallback to google/password if LDAP deactivated or failed
-    user = authenticate_with_credentials_or_google unless user
-
-    (render :action => 'new' and return) unless (params[:user_domain].present? || user.present?)
+    return render(action: 'new') unless user.present?
 
     CartoDB::Stats::Authentication.instance.increment_login_counter(user.email)
 
     redirect_to user.public_url << CartoDB.path(self, 'dashboard', {trailing_slash: true})
   end
-
 
   def destroy
     # Make sure sessions are destroyed on both scopes: username and default
@@ -157,12 +165,38 @@ class SessionsController < ApplicationController
 
   private
 
+  def ldap_user
+    authenticate_with_ldap if ldap_authentication?
+  end
+
+  def saml_user
+    user = authenticate_with_saml if saml_authentication?
+    if !user && saml_authentication?
+      # Convenient because it's disabled on SAML
+      verify_authenticity_token
+    end
+    user
+  end
+
+  # This acts as a fallback if previous authentications didn't return a valid user.
+  def credentials_or_google_user
+    authenticate_with_credentials_or_google
+  end
+
   def authenticate_with_ldap
     username = params[:user_domain].present? ?  params[:user_domain] : params[:email]
     # INFO: LDAP allows characters that we don't
     authenticate(:ldap, scope: Carto::Ldap::Manager.sanitize_for_cartodb(username))
   end
 
+  def authenticate_with_saml
+    return nil unless params[:SAMLResponse].present?
+
+    username = saml_service.username(params[:SAMLResponse])
+    username ? authenticate!(:saml, scope: username) : nil
+  end
+
+  # TODO: split
   def authenticate_with_credentials_or_google
     user = if !user_password_authentication? && params[:google_access_token].present? && @google_plus_config.present?
         user = GooglePlusAPI.new.get_user(params[:google_access_token])
@@ -188,8 +222,24 @@ class SessionsController < ApplicationController
     params && params['email'].present? && params['password'].present?
   end
 
+  def ldap_authentication?
+    Carto::Ldap::Manager.new.configuration_present?
+  end
+
+  def saml_authentication?
+    saml_service.try(:enabled?)
+  end
+
+  def saml_service
+    if load_organization
+      @saml_service ||= Carto::SamlService.new(load_organization)
+    end
+  end
+
   def load_organization
-    subdomain = CartoDB.subdomain_from_request(request)
+    return @organization if @organization
+
+    subdomain = CartoDB.extract_subdomain(request)
     @organization = Carto::Organization.where(name: subdomain).first if subdomain
   end
 

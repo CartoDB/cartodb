@@ -7,9 +7,14 @@ module Carto
     include DataServicesMetricsHelper
     include AuthTokenGenerator
 
+    serialize :auth_saml_configuration, CartoJsonSymbolizerSerializer
+    before_validation :ensure_auth_saml_configuration
+    validates :auth_saml_configuration, carto_json_symbolizer: true
+
     has_many :users, inverse_of: :organization, order: :username
     belongs_to :owner, class_name: Carto::User, inverse_of: :owned_organization
     has_many :groups, inverse_of: :organization, order: :display_name
+    has_many :assets, class_name: Carto::Asset, dependent: :destroy
 
     before_destroy :destroy_groups_with_extension
 
@@ -114,7 +119,7 @@ module Carto
     end
 
     def auth_enabled?
-      auth_username_password_enabled || auth_google_enabled || auth_github_enabled
+      auth_username_password_enabled || auth_google_enabled || auth_github_enabled || auth_saml_enabled?
     end
 
     def database_name
@@ -143,7 +148,15 @@ module Carto
       end
     end
 
+    def auth_saml_enabled?
+      auth_saml_configuration.present?
+    end
+
     private
+
+    def ensure_auth_saml_configuration
+      self.auth_saml_configuration ||= Hash.new
+    end
 
     def destroy_groups_with_extension
       return unless groups

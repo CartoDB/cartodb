@@ -69,6 +69,7 @@ WORKING_SPECS_1 = \
 	spec/lib/explore_api_spec.rb \
 	spec/lib/user_account_creator_spec.rb \
 	spec/lib/carto/http_header_authentication_spec.rb \
+	spec/lib/carto/saml_service_spec.rb \
 	spec/lib/carto/users_metadata_redis_cache_spec.rb \
 	spec/lib/carto/visualization_migrator_spec.rb \
 	spec/lib/carto/http/client_spec.rb \
@@ -77,6 +78,7 @@ WORKING_SPECS_1 = \
 	spec/helpers/uuidhelper_spec.rb \
 	spec/helpers/url_validator_spec.rb \
 	spec/models/carto/visualization_spec.rb \
+	spec/models/carto/map_spec.rb \
 	spec/requests/superadmin/feature_flag_spec.rb \
 	spec/models/carto/template_spec.rb \
 	spec/models/carto/group_spec.rb \
@@ -161,10 +163,7 @@ WORKING_SPECS_4 = \
 WORKING_SPECS_5 = \
 	spec/requests/api/assets_spec.rb \
 	spec/requests/carto/api/assets_controller_spec.rb \
-	spec/requests/api/user_layers_spec.rb \
-	spec/requests/api/json/layers_controller_spec.rb \
 	spec/requests/carto/api/layers_controller_spec.rb \
-	spec/requests/api/map_layers_spec.rb \
 	spec/requests/api/json/records_controller_spec.rb \
 	spec/requests/carto/api/records_controller_spec.rb \
 	spec/requests/api/json/columns_controller_spec.rb \
@@ -295,6 +294,10 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/requests/carto/api/snapshots_controller_specs.rb \
 	spec/models/carto/snapshot_spec.rb \
 	spec/helpers/application_helper_spec.rb \
+	spec/models/carto/asset_spec.rb \
+	spec/requests/carto/api/organization_assets_controller_spec.rb \
+	spec/lib/carto/assets_service_spec.rb \
+	spec/lib/carto/organization_assets_service_spec.rb \
 	$(NULL)
 
 # This class must be tested isolated as pollutes namespace

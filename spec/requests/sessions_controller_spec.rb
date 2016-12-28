@@ -190,6 +190,80 @@ describe SessionsController do
     end
   end
 
+  shared_examples_for 'SAML' do
+    let(:subdomain) { "samlsubdomain" }
+
+    before(:all) do
+      @organization = FactoryGirl.create(:saml_organization)
+      @user = FactoryGirl.create(:carto_user)
+    end
+
+    after(:all) do
+      @organization.destroy
+      @user.destroy
+    end
+
+    it 'redirects to SAML authentication request if enabled' do
+      authentication_request = "http://fakesaml.com/authenticate"
+      Carto::SamlService.any_instance.stubs(:enabled?).returns(true)
+      Carto::SamlService.any_instance.stubs(:authentication_request).returns(authentication_request)
+
+      get login_url(user_domain: @organization.name)
+      response.location.should eq authentication_request
+      response.status.should eq 302
+    end
+
+    it 'authenticates with SAML if SAMLResponse is present and SAML is enabled' do
+      Carto::SamlService.any_instance.stubs(:enabled?).returns(true)
+      Carto::SamlService.any_instance.stubs(:username).returns(subdomain)
+
+      SessionsController.any_instance.expects(:authenticate!).with(:saml, scope: subdomain).returns(@user).once
+
+      post create_session_url(user_domain: user_domain, SAMLResponse: 'xx')
+    end
+
+    # If SAML returns authentication error we should fallback to login
+    it 'fallbacks to login if SAMLResponse is present and SAML is enabled but subdomain is nil' do
+      Carto::SamlService.any_instance.stubs(:enabled?).returns(true)
+      Carto::SamlService.any_instance.stubs(:username).returns(subdomain)
+      failed_saml_response = mock
+      failed_saml_response.stubs(:is_valid?).returns(false)
+      Carto::SamlService.any_instance.stubs(:get_saml_response).returns(failed_saml_response)
+
+      sessions_controller = SessionsController.any_instance
+      sessions_controller.expects(:authenticate!).with(:saml, scope: subdomain).once
+      sessions_controller.expects(:authenticate!).with(:password, scope: @organization.name).returns(nil).once
+
+      post create_session_url(user_domain: user_domain, SAMLResponse: 'xx')
+
+      response.status.should eq 200
+    end
+  end
+
+  describe 'domainful' do
+    let(:user_domain) { nil }
+
+    before(:each) do
+      CartoDB.stubs(:session_domain).returns('.localhost.lan')
+      CartoDB.stubs(:subdomainless_urls?).returns(false)
+      host! "#{@organization.name}.localhost.lan"
+    end
+
+    it_behaves_like 'SAML'
+  end
+
+  describe 'subdomainless' do
+    let(:user_domain) { @organization.name }
+
+    before(:each) do
+      CartoDB.stubs(:session_domain).returns('localhost.lan')
+      CartoDB.stubs(:subdomainless_urls?).returns(true)
+      host! "localhost.lan"
+    end
+
+    it_behaves_like 'SAML'
+  end
+
   private
 
   def bypass_named_maps

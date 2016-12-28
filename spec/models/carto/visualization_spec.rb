@@ -7,17 +7,9 @@ describe Carto::Visualization do
   include UniqueNamesHelper
 
   before(:all) do
-    @user = create_user(
-      email: 'admin@cartotest.com',
-      username: 'admin',
-      password: '123456'
-    )
+    @user = create_user
     @carto_user = Carto::User.find(@user.id)
-    @user2 = create_user(
-      email: 'noadmin@cartotest.com',
-      username: 'noadmin',
-      password: '123456'
-    )
+    @user2 = create_user
     @carto_user2 = Carto::User.find(@user2.id)
   end
 

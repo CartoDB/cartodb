@@ -17,7 +17,7 @@ describe Api::Json::VisualizationsController do
   include MetricsHelper
 
   before(:all) do
-    @user = create_user(username: 'test')
+    @user = create_user
   end
 
   after(:all) do
@@ -42,7 +42,7 @@ describe Api::Json::VisualizationsController do
   describe '#create' do
     describe '#duplicate map' do
       before(:all) do
-        @other_user = create_user(username: 'other-user')
+        @other_user = create_user
       end
 
       before(:each) do

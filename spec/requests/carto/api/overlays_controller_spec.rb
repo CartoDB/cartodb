@@ -10,16 +10,12 @@ describe Carto::Api::OverlaysController do
   end
 
   before(:all) do
-    @user = create_user(
-      username: 'test',
-      email:    'client@example.com',
-      password: 'clientex'
-    )
+    @user = create_user
     @api_key = @user.api_key
 
     @user2 = create_user
 
-    host! 'test.localhost.lan'
+    host! "#{@user.username}.localhost.lan"
   end
 
   before(:each) do

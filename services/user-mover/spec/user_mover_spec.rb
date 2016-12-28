@@ -256,8 +256,7 @@ module Helpers
   def create_user_mover_test_organization
     org = create_organization(name: String.random(5).downcase, quota_in_bytes: 2500.megabytes)
 
-    owner = create_user(username: String.random(5).downcase, quota_in_bytes: 500.megabytes, table_quota: 200,
-                        private_tables_enabled: true)
+    owner = create_user(quota_in_bytes: 500.megabytes, table_quota: 200, private_tables_enabled: true)
     uo = CartoDB::UserOrganization.new(org.id, owner.id)
     uo.promote_user_to_admin
     owner.db_service.setup_organization_owner

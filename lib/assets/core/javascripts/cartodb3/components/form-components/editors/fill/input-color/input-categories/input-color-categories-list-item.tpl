@@ -3,6 +3,13 @@
 
   <div class='RampItem-secondaryContainer'>
     <div class="ColorBar RampItem-bar js-colorPicker" style="background-color: <%- val %>;"></div>
-    <button class="RampItem-img CDB-Text u-actionTextColor js-assetPicker"><%= _t('form-components.editors.fill.input-color.img') %></button>
+
+    <% if (image) { %>
+      <div class='RampItem-img'>
+        <div class='js-image-container'></div>
+      </div>
+    <% } else { %>
+      <span class="CDB-ListDecoration-rampImg CDB-Text u-actionTextColor js-assetPicker"><%= _t('form-components.editors.fill.input-color.img') %></span>
+    <% } %>
   </div>
 </div>

@@ -15,13 +15,21 @@
               <div class="ColorBar CDB-ListDecoration-rampItemBar u-rSpace--xl js-colorPicker" style="background-color: <%= color %>;"></div>
             </li>
             <li class='CDB-NavMenu-item'>
-              <button class="RCDB-ListDecoration-rampImg CDB-Text u-actionTextColor js-assetPicker"><%= _t('form-components.editors.fill.input-color.img') %></button>
+              <% if (image) { %>
+                <div class='js-image-container'></div>
+              <% } else { %>
+                <span class="CDB-ListDecoration-rampImg CDB-Text u-actionTextColor js-assetPicker"><%= _t('form-components.editors.fill.input-color.img') %></span>
+              <% } %>
             </li>
           </ul>
         </nav>
       </div>
     </li>
+  </ul>
+</div>
 
+<div class="CDB-Box-modalHeader">
+  <ul class="CDB-Box-modalHeaderItem CDB-Box-modalHeaderItem--block CDB-Box-modalHeaderItem--paddingHorizontal">
     <li class="CDB-ListDecoration-item CDB-ListDecoration-itemPadding--vertical CDB-Text CDB-Size-medium u-secondaryTextColor">
       <ul class="ColorBarContainer ColorBarContainer--rampEditing">
         <% _.each(ramp, function (color, i) { %>

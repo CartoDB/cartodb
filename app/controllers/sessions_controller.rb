@@ -175,7 +175,8 @@ class SessionsController < ApplicationController
   private
 
   def extract_username(request, params)
-    (params[:email].present? ? username_from_user_by_email(params[:email]) : CartoDB.extract_subdomain(request)).strip.downcase
+    username = (params[:email].present? ? username_from_user_by_email(params[:email]) : CartoDB.extract_subdomain(request))
+    username.strip.downcase
   end
 
   def username_from_user_by_email(email)

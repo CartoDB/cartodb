@@ -172,16 +172,15 @@ class SessionsController < ApplicationController
     end
   end
 
-  def extract_username(request, params)
-    (params[:email].present? ? username_from_email(params[:email]) : CartoDB.extract_subdomain(request)).strip.downcase
-  end
-
-  def username_from_email(email)
-    user = ::User.where(email: email).first
-    user.present? ? user.username : email
-  end
-
   private
+
+  def extract_username(request, params)
+    (params[:email].present? ? username_from_user_by_email(params[:email]) : CartoDB.extract_subdomain(request)).strip.downcase
+  end
+
+  def username_from_user_by_email(email)
+    ::User.where(email: email).first.try(:username)
+  end
 
   def ldap_user
     authenticate_with_ldap if ldap_authentication?
@@ -211,7 +210,7 @@ class SessionsController < ApplicationController
     return nil unless params[:SAMLResponse].present?
 
     email = saml_service.get_user_email(params[:SAMLResponse])
-    username = username_from_email(email) if email
+    username = username_from_user_by_email(email) if email
 
     username ? authenticate!(:saml, scope: username) : nil
   end

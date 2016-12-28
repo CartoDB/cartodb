@@ -72,8 +72,14 @@ module.exports = cdb.core.Model.extend({
 
     var styles = this.get('style');
 
-    if ((!styles || !styles.auto_style) && (this.get('type') === 'category' || this.get('type') === 'histogram')) return true;
-    return styles && styles.auto_style && styles.auto_style.allowed;
+    if (this.get('type') === 'category' || this.get('type') === 'histogram') {
+      if (!styles || !styles.auto_style) {
+        return true;
+      }
+      return styles && styles.auto_style && styles.auto_style.allowed;
+    } else {
+      return false;
+    }
   },
 
   getWidgetColor: function () {
@@ -127,7 +133,8 @@ module.exports = cdb.core.Model.extend({
 
   getAutoStyle: function () {
     var style = this.get('style');
-    var cartocss = this.dataviewModel.layer.get('cartocss');
+    var layerModel = this.dataviewModel.layer;
+    var cartocss = layerModel.get('cartocss') || (layerModel.get('meta') && layerModel.get('meta').cartocss);
 
     if (style && style.auto_style && style.auto_style.definition) {
       var toRet = _.extend(style.auto_style, {cartocss: cartocss});

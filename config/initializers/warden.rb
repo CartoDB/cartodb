@@ -222,11 +222,15 @@ Warden::Strategies.add(:saml) do
     email = saml_service.get_user_email(params[:SAMLResponse])
     user = organization.users.where(email: email.strip.downcase).first
 
-    if user.try(:enabled?)
-      success!(user, message: "Success")
-      request.flash['logged'] = true
+    if user
+      if user.try(:enabled?)
+        success!(user, message: "Success")
+        request.flash['logged'] = true
+      else
+        fail!
+      end
     else
-      fail!
+      throw(:warden, action: 'saml_user_not_at_cartodb', organization_id: organization.id, saml_email: email)
     end
   rescue => e
     CartoDB::Logger.error(message: "Authenticating with SAML", exception: e)

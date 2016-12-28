@@ -230,17 +230,54 @@ describe SessionsController do
 
       response.status.should eq 200
     end
+
+    it "Allows to login and triggers creation of normal users if user is not present" do
+      new_user = FactoryGirl.build(:carto_user, username: 'new-saml-user', email: 'new-saml-user-email@carto.com')
+      stub_saml_service(new_user)
+
+      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+
+      ::Resque.expects(:enqueue).with(::Resque::UserJobs::Signup::NewUser,
+                                      instance_of(String), anything, instance_of(FalseClass)).returns(true)
+
+      post create_session_url(user_domain: user_domain, SAMLResponse: 'xx')
+
+      response.status.should == 200
+      (response.body =~ /Your account is being created/).to_i.should_not eq 0
+
+      ::User.where(username: new_user.username).first.try(:destroy)
+    end
   end
 
   describe 'SAML authentication' do
-    before(:all) do
+    before(:each) do
       @organization = FactoryGirl.create(:saml_organization)
+      @admin_user = create_admin_user(@organization)
       @user = FactoryGirl.create(:carto_user)
     end
 
-    after(:all) do
-      @organization.destroy
+    after(:each) do
       @user.destroy
+      @organization.destroy
+      @admin_user.destroy
+    end
+
+    def create_admin_user(organization)
+      admin_user_username = "#{organization.name}-admin"
+      admin_user_email = "#{organization.name}-admin@test.com"
+
+      admin_user = create_user(
+        username: admin_user_username,
+        email: admin_user_email,
+        password: '2{Patrañas}',
+        private_tables_enabled: true,
+        quota_in_bytes: 12345,
+        organization: nil
+      )
+      admin_user.save.reload
+      ::Organization.any_instance.stubs(:owner).returns(admin_user)
+
+      admin_user
     end
 
     describe 'domainful' do

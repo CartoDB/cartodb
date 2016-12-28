@@ -92,9 +92,20 @@ module CartoDB
 
     def with_email_only(email)
       with_email(email)
-      with_username(email.split('@')[0])
+      with_username(email_to_username(email))
       with_password(SecureRandom.hex)
       self
+    end
+
+    # Transforms an email address (e.g. firstname.lastname@example.com) into a string
+    # which can serve as a subdomain.
+    # firstname.lastname@example.com -> firstname-lastname
+    # Replaces all non-allowable characters with
+    # hyphens. This could potentially result in collisions between two specially-
+    # constructed names (e.g. John Smith-Bob and Bob-John Smith).
+    # We're ignoring this for now since this type of email is unlikely to come up.
+    def self.email_to_username(email)
+      email.strip.split('@')[0].gsub(/[^A-Za-z0-9-]/, '-').downcase
     end
 
     def user
@@ -126,7 +137,7 @@ module CartoDB
           validate_organization_soft_limits
         end
 
-        if @organization.strong_passwords_enabled && @created_via != Carto::UserCreation::CREATED_VIA_LDAP
+        if requires_strong_password_validation
           password_validator = Carto::StrongPasswordValidator.new
           password_errors = password_validator.validate(@user.password)
 
@@ -138,6 +149,15 @@ module CartoDB
 
       @user.valid? && @user.validate_credentials_not_taken_in_central && @custom_errors.empty?
     end
+
+    def requires_strong_password_validation
+      @organization.strong_passwords_enabled && !VIAS_WITHOUT_PASSWORD.include?(@created_via)
+    end
+
+    VIAS_WITHOUT_PASSWORD = [
+      Carto::UserCreation::CREATED_VIA_LDAP,
+      Carto::UserCreation::CREATED_VIA_SAML
+    ].freeze
 
     def validation_errors
       @user.errors.merge!(@custom_errors)
@@ -166,19 +186,22 @@ module CartoDB
     def build
       return if @built
 
+      if @github_api || VIAS_WITHOUT_PASSWORD.include?(@created_via)
+        dummy_password = generate_dummy_password
+        @user.password = dummy_password
+        @user.password_confirmation = dummy_password
+      end
+
       if @google_user_data
         @google_user_data.set_values(@user)
       elsif @github_api
         @user.github_user_id = @github_api.id
         @user.username = @github_api.username
         @user.email = @user_params[PARAM_EMAIL] || @github_api.email
-        dummy_password = generate_dummy_password
-        @user.password = dummy_password
-        @user.password_confirmation = dummy_password
       else
         @user.email = @user_params[PARAM_EMAIL]
-        @user.password = @user_params[PARAM_PASSWORD]
-        @user.password_confirmation = @user_params[PARAM_PASSWORD]
+        @user.password = @user_params[PARAM_PASSWORD] if @user_params[PARAM_PASSWORD]
+        @user.password_confirmation = @user_params[PARAM_PASSWORD] if @user_params[PARAM_PASSWORD]
       end
 
       @user.invitation_token = @invitation_token

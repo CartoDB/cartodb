@@ -178,7 +178,7 @@ class SessionsController < ApplicationController
     username = if params[:email].present?
                  username_from_user_by_email(params[:email])
                else
-                 CartoDB.extract_subdomain(request))
+                 CartoDB.extract_subdomain(request)
                end
     username.strip.downcase
   end

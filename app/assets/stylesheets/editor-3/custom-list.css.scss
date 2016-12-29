@@ -97,8 +97,15 @@
   @include justify-content(space-between);
   @include align-items(center);
 }
+.CDB-ListDecoration-rampNav-item {
+  @include display-flex();
+  @include align-items(center);
+  height: 40px;
+  padding: 0;
+}
 .CDB-ListDecoration-rampImg {
-  margin-left: 10px;
+  @include display-flex();
+  @include align-items(center);
 }
 .CDB-ListDecoration-rampItemBar {
   width: 20px;

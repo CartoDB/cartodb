@@ -18,7 +18,7 @@
   color: $cBlue;
 }
 .RampItem-bar {
-  width: 50px;
+  width: 20px;
 }
 .RampItem-text {
   max-width: calc(100% - 30px);
@@ -30,4 +30,6 @@
 }
 .RampItem-img {
   margin-left: 10px;
+  min-width: 22px;
+  text-align: center;
 }

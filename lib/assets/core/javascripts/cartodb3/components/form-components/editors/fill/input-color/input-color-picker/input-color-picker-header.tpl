@@ -1,6 +1,6 @@
 <div class="CDB-Box-modalHeader">
   <ul class="CDB-Box-modalHeaderItem CDB-Box-modalHeaderItem--block CDB-Box-modalHeaderItem--paddingHorizontal">
-    <li class="CDB-ListDecoration-item CDB-ListDecoration-itemPadding--vertical CDB-ListDecoration-itemDisplay--flex CDB-Text CDB-Size-medium u-secondaryTextColor">
+    <li class="CDB-ListDecoration-item CDB-ListDecoration-itemDisplay--flex CDB-Text CDB-Size-medium u-secondaryTextColor">
       <div class='CDB-ListDecoration-secondaryContainer'>
         <button class="u-rSpace u-actionTextColor js-back">
           <i class="CDB-IconFont CDB-IconFont-arrowPrev Size-large"></i>
@@ -12,14 +12,18 @@
         <nav class='CDB-NavMenu'>
           <ul class='CDB-NavMenu-Inner CDB-NavMenu-inner--no-margin js-menu'>
             <li class='CDB-NavMenu-item is-selected'>
-              <div class="ColorBar CDB-ListDecoration-rampItemBar u-rSpace--xl js-colorPicker" style="background-color: <%= color %>;"></div>
+              <div class='CDB-NavMenu-link CDB-ListDecoration-rampNav-item'>
+                <button class='ColorBar CDB-ListDecoration-rampItemBar u-rSpace--xl js-colorPicker' style="background-color: <%= color %>;"></button>
+              </div>
             </li>
             <li class='CDB-NavMenu-item'>
-              <% if (image) { %>
-                <div class='js-image-container'></div>
-              <% } else { %>
-                <span class="CDB-ListDecoration-rampImg CDB-Text u-actionTextColor js-assetPicker"><%= _t('form-components.editors.fill.input-color.img') %></span>
-              <% } %>
+              <div class='CDB-NavMenu-link CDB-ListDecoration-rampNav-item'>
+                <% if (image) { %>
+                  <button class='CDB-ListDecoration-rampImg js-image-container'></button>
+                <% } else { %>
+                  <button class="CDB-ListDecoration-rampImg CDB-Text u-actionTextColor js-assetPicker"><%= _t('form-components.editors.fill.input-color.img') %></button>
+                <% } %>
+              </div>
             </li>
           </ul>
         </nav>

@@ -4,7 +4,140 @@ require 'fake_net_ldap'
 require_relative '../lib/fake_net_ldap_bind_as'
 
 describe SessionsController do
-  describe 'login with LDAP' do
+  shared_examples_for 'LDAP' do
+    it "doesn't allows to login until admin does first" do
+      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+      normal_user_username = "ldap-user"
+      normal_user_password = "2{Patrañas}"
+      normal_user_email = "ldap-user@test.com"
+      normal_user_cn = "cn=#{normal_user_username},#{@domain_bases.first}"
+      ldap_entry_data = {
+        :dn => normal_user_cn,
+        @user_id_field => [normal_user_username],
+        @user_email_field => [normal_user_email]
+      }
+      FakeNetLdap.register_user(username: normal_user_cn, password: normal_user_password)
+      FakeNetLdap.register_query(Net::LDAP::Filter.eq('cn', normal_user_username), [ldap_entry_data])
+
+      errors = {
+        errors: {
+          organization: ["Organization owner is not set. Administrator must login first."]
+        }
+      }
+      ::CartoDB.expects(:notify_debug).with('User not valid at signup', errors).returns(nil)
+
+      post create_session_url(user_domain: user_domain, email: normal_user_username, password: normal_user_password)
+
+      response.status.should == 200
+      (response.body =~ /Signup issues/).to_i.should_not eq 0
+    end
+
+    it "Allows to login and triggers creation if using the org admin account" do
+      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+      # @See lib/user_account_creator.rb -> promote_to_organization_owner?
+      admin_user_username = "#{@organization.name}-admin"
+      admin_user_password = '2{Patrañas}'
+      admin_user_email = "#{@organization.name}-admin@test.com"
+      admin_user_cn = "cn=#{admin_user_username},#{@domain_bases.first}"
+      ldap_entry_data = {
+        :dn => admin_user_cn,
+        @user_id_field => [admin_user_username],
+        @user_email_field => [admin_user_email]
+      }
+      FakeNetLdap.register_user(username: admin_user_cn, password: admin_user_password)
+      FakeNetLdap.register_query(Net::LDAP::Filter.eq('cn', admin_user_username), [ldap_entry_data])
+
+      ::Resque.expects(:enqueue).with(::Resque::UserJobs::Signup::NewUser,
+                                      instance_of(String), anything, instance_of(TrueClass)).returns(true)
+
+      post create_session_url(user_domain: user_domain, email: admin_user_username, password: admin_user_password)
+
+      response.status.should == 200
+      (response.body =~ /Your account is being created/).to_i.should_not eq 0
+    end
+
+    it "Allows to login and triggers creation of normal users if admin already present" do
+      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+      admin_user_username = "#{@organization.name}-admin"
+      admin_user_password = '2{Patrañas}'
+      admin_user_email = "#{@organization.name}-admin@test.com"
+      @admin_user = create_user(
+        username: admin_user_username,
+        email: admin_user_email,
+        password: admin_user_password,
+        private_tables_enabled: true,
+        quota_in_bytes: 12345,
+        organization: nil
+      )
+      @admin_user.save.reload
+
+      # INFO: Hack to avoid having to destroy and recreate later the organization
+      ::Organization.any_instance.stubs(:owner).returns(@admin_user)
+
+      normal_user_username = "ldap-user"
+      normal_user_password = "foobar"
+      normal_user_email = "ldap-user@test.com"
+      normal_user_cn = "cn=#{normal_user_username},#{@domain_bases.first}"
+      ldap_entry_data = {
+        :dn => normal_user_cn,
+        @user_id_field => [normal_user_username],
+        @user_email_field => [normal_user_email]
+      }
+      FakeNetLdap.register_user(username: normal_user_cn, password: normal_user_password)
+      FakeNetLdap.register_query(Net::LDAP::Filter.eq('cn', normal_user_username), [ldap_entry_data])
+
+      ::Resque.expects(:enqueue).with(::Resque::UserJobs::Signup::NewUser,
+                                      instance_of(String), anything, instance_of(FalseClass)).returns(true)
+
+      post create_session_url(user_domain: user_domain, email: normal_user_username, password: normal_user_password)
+
+      response.status.should == 200
+      (response.body =~ /Your account is being created/).to_i.should_not eq 0
+
+      @admin_user.destroy
+    end
+
+    it "Just logs in if finds a cartodb username that matches with LDAP credentials " do
+      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+      admin_user_username = "#{@organization.name}-admin"
+      admin_user_password = '2{Patrañas}'
+      admin_user_email = "#{@organization.name}-admin@test.com"
+      admin_user_cn = "cn=#{admin_user_username},#{@domain_bases.first}"
+      ldap_entry_data = {
+        :dn => admin_user_cn,
+        @user_id_field => [admin_user_username],
+        @user_email_field => [admin_user_email]
+      }
+      FakeNetLdap.register_user(username: admin_user_cn, password: admin_user_password)
+      FakeNetLdap.register_query(Net::LDAP::Filter.eq('cn', admin_user_username), [ldap_entry_data])
+
+      @admin_user = create_user(
+        username: admin_user_username,
+        email: admin_user_email,
+        password: admin_user_password,
+        private_tables_enabled: true,
+        quota_in_bytes: 12345,
+        organization: nil
+      )
+      @admin_user.save.reload
+      ::Organization.any_instance.stubs(:owner).returns(@admin_user)
+
+      # INFO: Again, hack to act as if user had organization
+      ::User.stubs(:where).with(username: admin_user_username,
+                                organization_id: @organization.id).returns([@admin_user])
+
+      post create_session_url(user_domain: user_domain, email: admin_user_username, password: admin_user_password)
+
+      response.status.should == 302
+      (response.location =~ /^http\:\/\/#{admin_user_username}(.*)\/dashboard\/$/).to_i.should eq 0
+
+      ::User.unstub(:where)
+
+      @admin_user.destroy
+    end
+  end
+
+  describe 'LDAP authentication' do
     DEFAULT_QUOTA_IN_BYTES = 1000
 
     before(:all) do
@@ -54,139 +187,28 @@ describe SessionsController do
       @organization.destroy_cascade
     end
 
-    it "doesn't allows to login until admin does first" do
-      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
-      normal_user_username = "ldap-user"
-      normal_user_password = "2{Patrañas}"
-      normal_user_email = "ldap-user@test.com"
-      normal_user_cn = "cn=#{normal_user_username},#{@domain_bases.first}"
-      ldap_entry_data = {
-        :dn => normal_user_cn,
-        @user_id_field => [normal_user_username],
-        @user_email_field => [normal_user_email]
-      }
-      FakeNetLdap.register_user(username: normal_user_cn, password: normal_user_password)
-      FakeNetLdap.register_query(Net::LDAP::Filter.eq('cn', normal_user_username), [ldap_entry_data])
+    describe 'domainful' do
+      it_behaves_like 'LDAP'
 
-      errors = {
-        errors: {
-          organization: ["Organization owner is not set. Administrator must login first."]
-        }
-      }
-      ::CartoDB.expects(:notify_debug).with('User not valid at signup', errors).returns(nil)
+      let(:user_domain) { nil }
 
-      host! "#{@organization.name}.localhost.lan"
-      post create_session_url(user_domain: nil, email: normal_user_username, password: normal_user_password)
-
-      response.status.should == 200
-      (response.body =~ /Signup issues/).to_i.should_not eq 0
+      before(:each) do
+        CartoDB.stubs(:session_domain).returns('.localhost.lan')
+        CartoDB.stubs(:subdomainless_urls?).returns(false)
+        host! "#{@organization.name}.localhost.lan"
+      end
     end
 
-    it "Allows to login and triggers creation if using the org admin account" do
-      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
-      # @See lib/user_account_creator.rb -> promote_to_organization_owner?
-      admin_user_username = "#{@organization.name}-admin"
-      admin_user_password = '2{Patrañas}'
-      admin_user_email = "#{@organization.name}-admin@test.com"
-      admin_user_cn = "cn=#{admin_user_username},#{@domain_bases.first}"
-      ldap_entry_data = {
-        :dn => admin_user_cn,
-        @user_id_field => [admin_user_username],
-        @user_email_field => [admin_user_email]
-      }
-      FakeNetLdap.register_user(username: admin_user_cn, password: admin_user_password)
-      FakeNetLdap.register_query(Net::LDAP::Filter.eq('cn', admin_user_username), [ldap_entry_data])
+    describe 'subdomainless' do
+      it_behaves_like 'LDAP'
 
-      ::Resque.expects(:enqueue).with(::Resque::UserJobs::Signup::NewUser,
-                                      instance_of(String), anything, instance_of(TrueClass)).returns(true)
+      let(:user_domain) { @organization.name }
 
-      host! "#{@organization.name}.localhost.lan"
-      post create_session_url(user_domain: nil, email: admin_user_username, password: admin_user_password)
-
-      response.status.should == 200
-      (response.body =~ /Your account is being created/).to_i.should_not eq 0
-    end
-
-    it "Allows to login and triggers creation of normal users if admin already present" do
-      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
-      admin_user_username = "#{@organization.name}-admin"
-      admin_user_password = '2{Patrañas}'
-      admin_user_email = "#{@organization.name}-admin@test.com"
-      @admin_user = create_user(
-        username: admin_user_username,
-        email: admin_user_email,
-        password: admin_user_password,
-        private_tables_enabled: true,
-        quota_in_bytes: 12345,
-        organization: nil
-      )
-      @admin_user.save.reload
-
-      # INFO: Hack to avoid having to destroy and recreate later the organization
-      ::Organization.any_instance.stubs(:owner).returns(@admin_user)
-
-      normal_user_username = "ldap-user"
-      normal_user_password = "foobar"
-      normal_user_email = "ldap-user@test.com"
-      normal_user_cn = "cn=#{normal_user_username},#{@domain_bases.first}"
-      ldap_entry_data = {
-        :dn => normal_user_cn,
-        @user_id_field => [normal_user_username],
-        @user_email_field => [normal_user_email]
-      }
-      FakeNetLdap.register_user(username: normal_user_cn, password: normal_user_password)
-      FakeNetLdap.register_query(Net::LDAP::Filter.eq('cn', normal_user_username), [ldap_entry_data])
-
-      ::Resque.expects(:enqueue).with(::Resque::UserJobs::Signup::NewUser,
-                                      instance_of(String), anything, instance_of(FalseClass)).returns(true)
-
-      host! "#{@organization.name}.localhost.lan"
-      post create_session_url(user_domain: nil, email: normal_user_username, password: normal_user_password)
-
-      response.status.should == 200
-      (response.body =~ /Your account is being created/).to_i.should_not eq 0
-
-      @admin_user.destroy
-    end
-
-    it "Just logs in if finds a cartodb username that matches with LDAP credentials " do
-      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
-      admin_user_username = "#{@organization.name}-admin"
-      admin_user_password = '2{Patrañas}'
-      admin_user_email = "#{@organization.name}-admin@test.com"
-      admin_user_cn = "cn=#{admin_user_username},#{@domain_bases.first}"
-      ldap_entry_data = {
-        :dn => admin_user_cn,
-        @user_id_field => [admin_user_username],
-        @user_email_field => [admin_user_email]
-      }
-      FakeNetLdap.register_user(username: admin_user_cn, password: admin_user_password)
-      FakeNetLdap.register_query(Net::LDAP::Filter.eq('cn', admin_user_username), [ldap_entry_data])
-
-      @admin_user = create_user(
-        username: admin_user_username,
-        email: admin_user_email,
-        password: admin_user_password,
-        private_tables_enabled: true,
-        quota_in_bytes: 12345,
-        organization: nil
-      )
-      @admin_user.save.reload
-      ::Organization.any_instance.stubs(:owner).returns(@admin_user)
-
-      # INFO: Again, hack to act as if user had organization
-      ::User.stubs(:where).with(username: admin_user_username,
-                                organization_id: @organization.id).returns([@admin_user])
-
-      host! "#{@organization.name}.localhost.lan"
-      post create_session_url(user_domain: nil, email: admin_user_username, password: admin_user_password)
-
-      response.status.should == 302
-      (response.location =~ /^http\:\/\/#{admin_user_username}(.*)\/dashboard\/$/).to_i.should eq 0
-
-      ::User.unstub(:where)
-
-      @admin_user.destroy
+      before(:each) do
+        CartoDB.stubs(:session_domain).returns('localhost.lan')
+        CartoDB.stubs(:subdomainless_urls?).returns(true)
+        host! "localhost.lan"
+      end
     end
   end
 

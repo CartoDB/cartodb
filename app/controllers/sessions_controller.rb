@@ -175,8 +175,10 @@ class SessionsController < ApplicationController
   private
 
   def extract_username(request, params)
-    username = if params[:email].present?
-                 username_from_user_by_email(params[:email])
+    # params[:email] can contain a username
+    email = params[:email]
+    username = if email.present?
+                 email.include?('@') ? username_from_user_by_email(params[:email]) : email
                else
                  CartoDB.extract_subdomain(request)
                end
@@ -216,8 +218,7 @@ class SessionsController < ApplicationController
 
     email = saml_service.get_user_email(params[:SAMLResponse])
     username = username_from_user_by_email(email) if email
-
-    username ? authenticate!(:saml, scope: username) : nil
+    authenticate!(:saml, scope: username)
   end
 
   # TODO: split

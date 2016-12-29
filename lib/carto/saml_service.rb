@@ -56,10 +56,10 @@ module Carto
 
       logout_response = OneLogin::RubySaml::Logoutresponse.new(saml_response_param, settings)
 
-      if not logout_response.validate
-        raise "The SAML Logout Response is invalid"
-      elsif logout_response.success?
+      if logout_response.validate && logout_response.success?
         yield
+      else
+        raise "SAML Logout response error. Validate: #{logout_response.validate}; Success: #{logout_response.success?};"
       end
     end
 

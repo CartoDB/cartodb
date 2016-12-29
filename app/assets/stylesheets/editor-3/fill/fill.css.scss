@@ -31,14 +31,13 @@
 
 .Editor-fillImage {
   display: flex;
-  max-width: 20px;
-  max-height: 20px;
+  height: 16px;
   padding: 0 0 0 2px;
 }
 
 .Editor-fillImageAsset {
-  max-width: 20px;
-  max-height: 20px;
+  height: 16px;
+  width: auto;
 }
 
 .CDB-OptionInput-item.is-disabled .CDB-OptionInput-content {

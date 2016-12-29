@@ -7,6 +7,9 @@ var MapView = View.extend({
   className: 'CDB-Map-wrapper',
 
   initialize: function () {
+    // For debugging purposes
+    window.mapView = this;
+
     this.options = this.options || {};
     if (this.options.map === undefined) throw new Error('map is required');
     if (this.options.layerGroupModel === undefined) throw new Error('layerGroupModel is required');

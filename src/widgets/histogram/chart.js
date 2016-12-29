@@ -4,6 +4,8 @@ var d3 = require('d3');
 var cdb = require('cartodb.js');
 var tinycolor = require('tinycolor2');
 var formatter = require('../../formatter');
+var FILTERED_COLOR = '#1181FB';
+var UNFILTERED_COLOR = 'rgba(0, 0, 0, 0.06)';
 
 module.exports = cdb.core.View.extend({
 
@@ -266,6 +268,8 @@ module.exports = cdb.core.View.extend({
   _onBrushMove: function () {
     this.model.set({ dragging: true });
     this._selectBars();
+    this._setupFillColor();
+    this._refreshBarsColor();
     this._adjustBrushHandles();
   },
 
@@ -295,9 +299,7 @@ module.exports = cdb.core.View.extend({
 
     if (bar && bar.node() && !bar.classed('is-selected')) {
       var left = (barIndex * this.barWidth) + (this.barWidth / 2);
-
       var top = this.yScale(freq);
-
       var h = this.chartHeight() - this.yScale(freq);
 
       if (h < this.options.minimumBarHeight && h > 0) {
@@ -321,7 +323,9 @@ module.exports = cdb.core.View.extend({
       .attr('fill', this._getFillColor.bind(this));
 
     if (bar && bar.node()) {
-      bar.attr('fill', this._getHoverFillColor.bind(this));
+      bar.attr('fill', function (d, i) {
+        return this._getHoverFillColor(data[barIndex], barIndex);
+      }.bind(this));
       bar.classed('is-highlighted', true);
     }
   },
@@ -616,27 +620,28 @@ module.exports = cdb.core.View.extend({
   },
 
   _selectBars: function () {
-    var self = this;
+    this.chart
+      .selectAll('.CDB-Chart-bar')
+      .classed({
+        'is-selected': function (d, i) {
+          return this._isBarChartWithinFilter(i);
+        }.bind(this),
+        'is-filtered': function (d, i) {
+          return !this._isBarChartWithinFilter(i);
+        }.bind(this)
+      });
+  },
+
+  _isBarChartWithinFilter: function (i) {
     var extent = this.brush.extent();
     var lo = extent[0];
     var hi = extent[1];
+    var a = Math.floor(i * this.barWidth);
+    var b = Math.floor(a + this.barWidth);
+    var LO = Math.floor(this.xScale(lo));
+    var HI = Math.floor(this.xScale(hi));
 
-    function _isIn (o, i) {
-      var a = Math.floor(i * self.barWidth);
-      var b = Math.floor(a + self.barWidth);
-      var LO = Math.floor(self.xScale(lo));
-      var HI = Math.floor(self.xScale(hi));
-      return (a > LO && a < HI) || (b > LO && b < HI) || (a <= LO && b >= HI);
-    }
-
-    this.chart.selectAll('.CDB-Chart-bar').classed({
-      'is-selected': function (d, i) {
-        return _isIn(self, i);
-      },
-      'is-filtered': function (d, i) {
-        return !_isIn(self, i);
-      }
-    });
+    return (a > LO && a < HI) || (b > LO && b < HI) || (a <= LO && b >= HI);
   },
 
   _isDragging: function () {
@@ -669,6 +674,7 @@ module.exports = cdb.core.View.extend({
   removeSelection: function () {
     this.resetIndexes();
     this.chart.selectAll('.CDB-Chart-bar').classed({'is-selected': false, 'is-filtered': false});
+    this._refreshBarsColor();
     this._removeBrush();
     this._setupBrush();
   },
@@ -755,6 +761,9 @@ module.exports = cdb.core.View.extend({
 
         self.model.set({ lo_index: barIndex, hi_index: barIndex + 1 });
       }
+
+      self._setupFillColor();
+      self._refreshBarsColor();
     }
 
     this.brush
@@ -950,18 +959,30 @@ module.exports = cdb.core.View.extend({
     return axis;
   },
 
+  _calculateDataDomain: function () {
+    var data = this.model.get('data');
+    var lo_index = !this._hasFilterApplied() ? 0 : this.model.get('lo_index');
+    var hi_index = !this._hasFilterApplied() ? (data.length - 1) : this.model.get('hi_index');
+
+    if (this.model.get('dragging')) {
+      lo_index = this._getLoBarIndex();
+      hi_index = this._getHiBarIndex();
+    }
+
+    return [(data[lo_index].min || data[lo_index].start), (data[hi_index].max || data[hi_index].end)];
+  },
+
   _setupFillColor: function () {
     if (!this._widgetModel.isAutoStyleEnabled()) {
       return false;
     }
 
     var obj = this._widgetModel.getAutoStyle();
-    var data = this.model.get('data');
 
     if (!_.isEmpty(obj)) {
       var geometryDefinition = obj.definition[Object.keys(obj.definition)[0]]; // Gets first definition by geometry
       var colorsRange = geometryDefinition && geometryDefinition.color.range;
-      var domain = [(_.first(data).min || _.first(data).start), (_.last(data).max || _.last(data).end)];
+      var domain = this._calculateDataDomain();
       var autoStyleColorsScale;
 
       if (domain && colorsRange) {
@@ -974,11 +995,29 @@ module.exports = cdb.core.View.extend({
     }
   },
 
+  _hasFilterApplied: function () {
+    return this.model.get('lo_index') != null && this.model.get('hi_index') != null;
+  },
+
   _getFillColor: function (d, i) {
     if (this._widgetModel) {
       if (this._widgetModel.isAutoStyle()) {
+        if (this._hasFilterApplied()) {
+          if (!this._isBarChartWithinFilter(i)) {
+            return UNFILTERED_COLOR;
+          }
+        }
+
         return this._autoStyleColorsScale(d.max);
       } else {
+        if (this._hasFilterApplied()) {
+          if (this._isBarChartWithinFilter(i)) {
+            return FILTERED_COLOR;
+          } else {
+            return UNFILTERED_COLOR;
+          }
+        }
+
         return this._widgetModel.getWidgetColor() || this.options.chartBarColor;
       }
     }
@@ -987,7 +1026,7 @@ module.exports = cdb.core.View.extend({
   },
 
   _getHoverFillColor: function (d, i) {
-    return tinycolor(this._getFillColor(d, i)).darken().toString();
+    return tinycolor(this._getFillColor(d, i)).darken(20).toString();
   },
 
   _updateChart: function () {

@@ -277,7 +277,7 @@ class SessionsController < ApplicationController
   def saml_logout
     if params[:SAMLRequest]
       # If we're given a logout request, handle it in the IdP logout initiated method
-      redirect_to saml_service.idp_logout_request(params[:SAMLRequest],params[:RelayState]) { cdb_logout }
+      redirect_to saml_service.idp_logout_request(params[:SAMLRequest], params[:RelayState]) { cdb_logout }
     elsif params[:SAMLResponse]
       # We've been given a response back from the IdP, process it
       saml_service.process_logout_response(params[:SAMLResponse]) { cdb_logout }

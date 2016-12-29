@@ -144,11 +144,6 @@ var LeafletMapView = MapView.extend({
     // see https://github.com/CloudMade/Leaflet/issues/1101
     L.DomEvent.off(window, 'resize', this._leafletMap._onResize, this._leafletMap);
 
-    // remove layer views
-    for (var layer in this._layerViews) {
-      delete this._layerViews[layer];
-    }
-
     // destroy the map and clear all related event listeners
     this._leafletMap.remove();
 

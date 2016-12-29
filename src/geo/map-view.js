@@ -37,6 +37,12 @@ var MapView = View.extend({
   },
 
   clean: function () {
+    // remove layer views
+    for (var layer in this._layerViews) {
+      this._layerViews[layer].remove();
+      delete this._layerViews[layer];
+    }
+
     delete this._cartoDBLayerGroupView;
 
     View.prototype.clean.call(this);

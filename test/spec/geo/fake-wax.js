@@ -27,7 +27,7 @@ var fakeWax = {
   remove: jasmine.createSpy('remove')
 };
 
-fakeWax.map.returnValue(fakeWax);
+fakeWax.map.and.returnValue(fakeWax);
 fakeWax.tilejson.and.returnValue(fakeWax);
 fakeWax.remove.and.returnValue(fakeWax);
 

@@ -1,5 +1,5 @@
 var _ = require('underscore');
-var $ = require('jQuery');
+var $ = require('jquery');
 var CartoDBLayer = require('../../../src/geo/map/cartodb-layer.js');
 var LayersCollection = require('../../../src/geo/map/layers.js');
 var CartoDBLayerGroup = require('../../../src/geo/cartodb-layer-group.js');

@@ -9,6 +9,7 @@ var VisModel = require('../../../../src/vis/vis');
 var TileLayer = require('../../../../src/geo/map/tile-layer');
 var CartoDBLayer = require('../../../../src/geo/map/cartodb-layer');
 var PlainLayer = require('../../../../src/geo/map/plain-layer');
+var LayersCollection = require('../../../../src/geo/map/layers');
 var GMapsBaseLayer = require('../../../../src/geo/map/gmaps-base-layer');
 var CartoDBLayerGroup = require('../../../../src/geo/cartodb-layer-group');
 var LeafletMapView = require('../../../../src/geo/leaflet/leaflet-map-view');
@@ -33,7 +34,7 @@ describe('geo/leaflet/leaflet-map-view', function () {
       attribution: [ '© CARTO' ]
     });
 
-    this.layerGroupModel = new CartoDBLayerGroup({}, { layersCollection: new Backbone.Collection() });
+    this.layerGroupModel = new CartoDBLayerGroup({}, { layersCollection: new LayersCollection() });
     spyOn(this.layerGroupModel, 'hasTileURLTemplates').and.returnValue(true);
     spyOn(this.layerGroupModel, 'getTileURLTemplates').and.returnValue([ 'http://documentation.cartodb.com/api/v1/map/90e64f1b9145961af7ba36d71b887dd2:0/0/{z}/{x}/{y}.png' ]);
 

@@ -8,12 +8,12 @@
   min-height: 0;
 }
 
-.Tab-paneLabel-image-container {
-  display: inline-block;
-  min-width: 18px;
-  height: 18px;
+.Tab-paneLabelImageContainer {
+  min-width: 16px;
+  height: 16px;
 }
 
-.Tab-paneLabel-image {
-  height: 18px;
+.Tab-paneLabelImage {
+  width: auto;
+  height: 16px;
 }

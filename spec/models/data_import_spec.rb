@@ -4,7 +4,7 @@ require_relative '../spec_helper'
 describe DataImport do
   before(:each) do
     ::User.all.each(&:destroy)
-    @user = create_user(username: 'test', email: "client@example.com", password: "clientex")
+    @user = create_user
     bypass_named_maps
     @table = create_table(user_id: @user.id)
   end

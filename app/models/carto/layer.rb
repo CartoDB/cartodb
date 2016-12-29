@@ -79,6 +79,7 @@ module Carto
     before_destroy :ensure_not_viewer
     before_destroy :invalidate_maps
     after_save :invalidate_maps, :update_layer_node_style
+    after_save :register_table_dependencies, if: :data_layer?
 
     ALLOWED_KINDS = %w{carto tiled background gmapsbase torque wms}.freeze
     validates :kind, inclusion: { in: ALLOWED_KINDS }
@@ -270,6 +271,10 @@ module Carto
 
       self.options = options.merge(renamed.to_h)
       self
+    end
+
+    def uses_private_tables?
+      affected_tables.any?(&:private?)
     end
 
     private

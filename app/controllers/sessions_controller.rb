@@ -52,10 +52,7 @@ class SessionsController < ApplicationController
   end
 
   def destroy
-    # Make sure sessions are destroyed on both scopes: username and default
-    cdb_logout
-
-    redirect_to CartoDB.url(self, 'public_visualizations_home')
+    saml_authentication? ? saml_logout : do_logout
   end
 
   def show
@@ -88,7 +85,7 @@ class SessionsController < ApplicationController
 
   # Meant to be called always from warden LDAP authentication
   def ldap_user_not_at_cartodb
-    render action: 'new' && return unless verify_warden_failure
+    render action: 'new' and return unless verify_warden_failure
 
     username = warden.env['warden.options'][:cartodb_username]
     organization_id = warden.env['warden.options'][:organization_id]
@@ -100,7 +97,7 @@ class SessionsController < ApplicationController
 
   # Meant to be called always from warden SAML authentication
   def saml_user_not_at_cartodb
-    render action: 'new' && return unless verify_warden_failure
+    render action: 'new' and return unless verify_warden_failure
 
     email = warden.env['warden.options'][:saml_email]
     username = CartoDB::UserAccountCreator.email_to_username(email)
@@ -263,9 +260,35 @@ class SessionsController < ApplicationController
 
   def load_organization
     return @organization if @organization
+    # Useful for logout
+    return current_user.organization if current_user
 
     subdomain = CartoDB.extract_subdomain(request)
     @organization = Carto::Organization.where(name: subdomain).first if subdomain
   end
 
+  def do_logout
+    # Make sure sessions are destroyed on both scopes: username and default
+    cdb_logout
+
+    redirect_to default_logout_url
+  end
+
+  def saml_logout
+    if params[:SAMLRequest]
+      # If we're given a logout request, handle it in the IdP logout initiated method
+      redirect_to saml_service.idp_logout_request(params[:SAMLRequest], params[:RelayState]) { cdb_logout }
+    elsif params[:SAMLResponse]
+      # We've been given a response back from the IdP, process it
+      saml_service.process_logout_response(params[:SAMLResponse]) { cdb_logout }
+      redirect_to default_logout_url
+    else
+      # Initiate SLO (send Logout Request)
+      redirect_to saml_service.sp_logout_request
+    end
+  end
+
+  def default_logout_url
+    CartoDB.url(self, 'public_visualizations_home')
+  end
 end

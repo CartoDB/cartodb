@@ -21,6 +21,48 @@ module Carto
       response.is_valid? ? email_from_saml_response(response) : debug_response("Invalid SAML response", response)
     end
 
+    # SLO (Single Log Out) request initiated from CARTO
+    # Returns the SAML logout request that to be redirected to
+    def sp_logout_request
+      settings = saml_settings
+
+      if settings.idp_slo_target_url.nil?
+        raise "SLO IdP Endpoint not found in settings for #{@organization}"
+      else
+        OneLogin::RubySaml::Logoutrequest.new.create(settings)
+      end
+    end
+
+    # Method to handle IdP initiated logouts.
+    # Yields a block that should handle the actual logout
+    def idp_logout_request(saml_request_param, relay_state_param)
+      settings = saml_settings
+
+      logout_request = OneLogin::RubySaml::SloLogoutrequest.new(saml_request_param)
+      if !logout_request.is_valid?
+        raise "IdP initiated LogoutRequest was not valid!"
+      end
+
+      yield
+
+      OneLogin::RubySaml::SloLogoutresponse.new.create(settings, logout_request.id, nil, RelayState: relay_state_param)
+    end
+
+    # After sending an SP initiated LogoutRequest to the IdP, we need to accept
+    # the LogoutResponse, verify it, then actually delete our session.
+    # Yields a block that should handle the actual logout
+    def process_logout_response(saml_response_param)
+      settings = saml_settings
+
+      logout_response = OneLogin::RubySaml::Logoutresponse.new(saml_response_param, settings)
+
+      if logout_response.validate && logout_response.success?
+        yield
+      else
+        raise "SAML Logout response error. Validate: #{logout_response.validate}; Success: #{logout_response.success?};"
+      end
+    end
+
     private
 
     def email_from_saml_response(saml_response)
@@ -55,6 +97,8 @@ module Carto
     # Adapted from https://github.com/hryk/warden-saml-example/blob/master/application.rb
     def saml_settings(settings_hash = carto_saml_configuration)
       settings = OneLogin::RubySaml::Settings.new
+      # Make validations throw an error
+      settings.soft = false
       settings_hash.each do |k, v|
         method = "#{k}="
         settings.__send__(method, v) if settings.respond_to?(method)

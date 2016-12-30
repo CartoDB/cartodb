@@ -230,7 +230,6 @@ describe SessionsController do
 
     it 'authenticates with SAML if SAMLResponse is present and SAML is enabled' do
       stub_saml_service(@user)
-
       SessionsController.any_instance.expects(:authenticate!).with(:saml, scope: @user.username).returns(@user).once
 
       post create_session_url(user_domain: user_domain, SAMLResponse: 'xx')
@@ -239,7 +238,6 @@ describe SessionsController do
     # If SAML returns authentication error we should fallback to login
     it 'fallbacks to login if SAMLResponse is present and SAML is enabled but subdomain is nil' do
       stub_saml_service(@user)
-
       failed_saml_response = mock
       failed_saml_response.stubs(:is_valid?).returns(false)
       Carto::SamlService.any_instance.stubs(:get_saml_response).returns(failed_saml_response)
@@ -256,7 +254,6 @@ describe SessionsController do
     it "Allows to login and triggers creation of normal users if user is not present" do
       new_user = FactoryGirl.build(:carto_user, username: 'new-saml-user', email: 'new-saml-user-email@carto.com')
       stub_saml_service(new_user)
-
       Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
 
       ::Resque.expects(:enqueue).with(::Resque::UserJobs::Signup::NewUser,
@@ -268,6 +265,31 @@ describe SessionsController do
       (response.body =~ /Your account is being created/).to_i.should_not eq 0
 
       ::User.where(username: new_user.username).first.try(:destroy)
+    end
+
+    describe 'SAML logout' do
+      it 'calls SamlService#sp_logout_request from user-initiated logout' do
+        stub_saml_service(@user)
+        SessionsController.any_instance.expects(:authenticate!).with(:saml, scope: @user.username).returns(@user).once
+
+        post create_session_url(user_domain: user_domain, SAMLResponse: 'xx')
+
+        # needs returning an url to do a redirection
+        Carto::SamlService.any_instance.stubs(:sp_logout_request).returns('http://carto.com').once
+        get logout_url(user_domain: user_domain)
+      end
+
+      it 'calls SamlService#idp_logout_request if SAMLRequest is present' do
+        # needs returning an url to do a redirection
+        Carto::SamlService.any_instance.stubs(:idp_logout_request).returns('http://carto.com').once
+        get logout_url(user_domain: user_domain, SAMLRequest: 'xx')
+      end
+
+      it 'calls SamlService#process_logout_response if SAMLResponse is present' do
+        # needs returning an url to do a redirection
+        Carto::SamlService.any_instance.stubs(:process_logout_response).returns('http://carto.com').once
+        get logout_url(user_domain: user_domain, SAMLResponse: 'xx')
+      end
     end
   end
 

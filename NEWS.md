@@ -26,6 +26,10 @@ Development
 * Icon styling through in component (#11005)
 * Allow to set opacity for color ramps (#10952)
 * SAML Authentication for organizations. Example:
+  * `Carto::Organization.where(name: 'orgname').first.update_attribute(:auth_saml_configuration, { issuer: 'localhost.lan', idp_sso_target_url: 'http://example.com/saml/signon/', idp_cert_fingerprint: 'EF:C4:C3:50:BE:F3:14:F3:69:45:8B:A7:95:BF:69:99:BA:26:69:7C', assertion_consumer_service_url: 'https://<org-name>.localhost.lan/saml/finalize', name_identifier_format: 'urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified', email_attribute: 'username'})`
+  * Subdomainless URLs:
+    * Login page: http(s)://<ip-address>/user/ORGANIZATION_NAME/login.
+    * `assertion_consumer_service_url`: 'https://<ip-address>/user/<org-name>/saml/finalize'. Check that your server has this URL for the service provider ACS URL.
   * `Carto::Organization.where(name: 'orgname').first.update_attribute(:auth_saml_configuration, { issuer: 'localhost.lan', idp_sso_target_url: 'http://example.com/saml/signon/', idp_cert_fingerprint: 'EF:C4:C3:50:BE:F3:14:F3:69:45:8B:A7:95:BF:69:99:BA:26:69:7C', assertion_consumer_service_url: 'https://myorg.localhost.lan/saml/finalize', name_identifier_format: 'urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified', email_attribute: 'username'})`
 * Autostyling (#10420)
 

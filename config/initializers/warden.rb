@@ -203,7 +203,7 @@ end
 
 Warden::Strategies.add(:saml) do
   def saml_service
-    subdomain = CartoDB.subdomain_from_request(request)
+    subdomain = CartoDB.extract_subdomain(request)
     organization = Carto::Organization.where(name: subdomain).first if subdomain
     Carto::SamlService.new(organization)
   end

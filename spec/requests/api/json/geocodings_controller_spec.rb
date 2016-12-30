@@ -15,7 +15,7 @@ describe Api::Json::GeocodingsController do
   describe 'POST api/v1/geocodings' do
 
     before(:all) do
-      @user = create_user(username: 'test')
+      @user = create_user
     end
 
     after(:all) do

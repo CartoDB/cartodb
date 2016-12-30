@@ -199,14 +199,27 @@
         grunt.config('copy.vendor.src', []);
       }
 
-      // configure copy app to only run on changed file
-      var files = grunt.config.get('copy.app.files');
-      for (var i = 0; i < files.length; ++i) {
-        var cfg = grunt.config.get('copy.app.files.' + i);
-        if (filepath.indexOf(cfg.cwd) !== -1) {
-          grunt.config('copy.app.files.' + i + '.src', filepath.replace(cfg.cwd, ''));
-        } else {
-          grunt.config('copy.app.files.' + i + '.src', []);
+      var COPY_PATHS = [
+        'app',
+        'js_core_cartodb3',
+        'js_client_cartodb3',
+        'js_test_spec_core_cartodb3',
+        'js_test_spec_client_cartodb3',
+        'js_test_jasmine_core_cartodb3',
+        'js_test_jasmine_client_cartodb3'
+      ];
+
+      // configure copy paths to only run on changed files
+      for (var j = 0, m = COPY_PATHS.length; j < m; ++j) {
+        var copy_path = COPY_PATHS[j];
+        var files = grunt.config.get('copy.' + copy_path + '.files');
+        for (var i = 0, l = files.length; i < l; ++i) {
+          var cfg = grunt.config.get('copy.' + copy_path + '.files.' + i);
+          if (filepath.indexOf(cfg.cwd) !== -1) {
+            grunt.config('copy.' + copy_path + '.files.' + i + '.src', filepath.replace(cfg.cwd, ''));
+          } else {
+            grunt.config('copy.' + copy_path + '.files.' + i + '.src', []);
+          }
         }
       }
     });
@@ -238,8 +251,8 @@
     registerCmdTask('npm-test', {cmd: 'npm', args: ['test']});
     registerCmdTask('npm-test-watch', {cmd: 'npm', args: ['run', 'test-watch']});
 
-    // Order in terms of task dependencies
-    grunt.registerTask('js',          ['cdb', 'browserify', 'concat:js', 'jst']);
+    grunt.registerTask('pre_client',  ['copy:locale_core', 'copy:locale_client', 'copy:js_core', 'copy:js_client', 'copy:js_test_spec_core', 'copy:js_test_spec_client', 'copy:js_test_jasmine_core', 'copy:js_test_jasmine_client']);
+    grunt.registerTask('js',          ['cdb', 'pre_client', 'browserify', 'concat:js', 'jst']);
     grunt.registerTask('pre_default', ['clean', 'config', 'js']);
     grunt.registerTask('test', '(CI env) Re-build JS files and run all tests. ' +
     'For manual testing use `grunt jasmine` directly', ['pre_default', 'npm-test', 'jasmine', 'lint']);

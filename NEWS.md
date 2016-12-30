@@ -1,8 +1,62 @@
-3.14.0 (2016-XX-XX)
--------------------
+Development
+-----------
+
+### Features
+* New organization assets (#11034):
+  * REST API available at `/api/v1/organization/<org_id>/assets`
+  * Has DB migration
+  * Assets stored in s3 if configured, local storage is used otherwise.
+    * S3: bucket must exists and its name be present as `bucket` in conf.
+    * Local: automatic as long as S3 is not configured. You may configure max size in bytes for an asset or a custom subdirectory as shown below.
+```yaml
+  # app_config.yml example for organization assets
+  assets:
+    organization:
+      bucket: <bucket name> # required, bucket must exist beforehand
+      max_size_in_bytes: 1048576 # optional, default is 1 MB
+      location: 'organization_assets' # optional subdirectory for local assets, default is 'organization_assets'
+```
+* Pluggable frontends (#11022):
+  * Allow to override some parts of the frontend for customization
+  * Changes the asset build process:
+    * The core frontend is in `lib/assets/core`
+    * The customizations are in `lib/assets/client`
+    * The end result are in `lib/assets/`
+* Snapshots (backend: #10928) allow to save and share map state.
+* Icon styling through in component (#11005)
+* Allow to set opacity for color ramps (#10952)
+* SAML Authentication for organizations. Example:
+  * `Carto::Organization.where(name: 'orgname').first.update_attribute(:auth_saml_configuration, { issuer: 'localhost.lan', idp_sso_target_url: 'http://example.com/saml/signon/', idp_cert_fingerprint: 'EF:C4:C3:50:BE:F3:14:F3:69:45:8B:A7:95:BF:69:99:BA:26:69:7C', assertion_consumer_service_url: 'https://<org-name>.localhost.lan/saml/finalize', name_identifier_format: 'urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified', email_attribute: 'username'})`
+  * Subdomainless URLs:
+    * Login page: http(s)://<ip-address>/user/ORGANIZATION_NAME/login.
+    * `assertion_consumer_service_url`: 'https://<ip-address>/user/<org-name>/saml/finalize'. Check that your server has this URL for the service provider ACS URL.
+  * `Carto::Organization.where(name: 'orgname').first.update_attribute(:auth_saml_configuration, { issuer: 'localhost.lan', idp_sso_target_url: 'http://example.com/saml/signon/', idp_cert_fingerprint: 'EF:C4:C3:50:BE:F3:14:F3:69:45:8B:A7:95:BF:69:99:BA:26:69:7C', assertion_consumer_service_url: 'https://myorg.localhost.lan/saml/finalize', name_identifier_format: 'urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified', email_attribute: 'username', idp_slo_target_url: 'http://example.com/saml/logout'})`
+* Autostyling (#10420)
+
+### Bug fixes
+* Categories legend are now static (#10972)
+* Fixed a bug with vizjson invalidation (#11092). It was introduced in #10934
+* Refactor Layer model (#10934)
+* Fix bugs where legends where being hidden by reordering layers (#11088)
+* Avoid loading all rake code in resque workers (#11069)
+* Fix analysis notification in running state (#11079)
+* Fix color for "Other" category (#11078)
+* Custom errors for latitude/longitude out of bounds (#11060, #11048)
+* Fix timeseries widget height (#11077)
+* Fix scrollbar in carousel (#11061)
+* Correctly refresh map after adding/editing map geometries (#11064)
+* Return embed private instead of 404 in visualization embeds where the visualization doesn't exist (#11056)
+* Fix error loading builder in visualizations without permissions (#10996)
+* Correctly update legend styles (with custom titles) (#10889, #10904)
+* Hide sync options in builder table view for non-owners (#10986)
+* Fix issues with edition of custom color infowindows (#10985)
+
+
+4.0.x (2016-12-05)
+------------------
+
 ### NOTICE
-- This release introduces the Magic Positioner helper to render context menus in the best position inside the
-viewport.
+This release includes the new Builder, so it includes major changes. The logs only includes changes to editor.
 
 ### NOTICE
 This release rebrands CartoDB as CARTO, so a few maintenance tasks have to be run:
@@ -85,6 +139,7 @@ sudo make install
 * Fix issue importing/duplicating maps where the original had an incomplete map.options
 * New builder default geometry styles are now properly initialized at the backend upon dataset import.
 * Fixed list of layers in Add basemap WMS URL tab
+* This release introduces the Magic Positioner helper to render context menus in the best position inside the viewport.
 * Removed non used fonts (Lato and Proxima Nova) and the font loader.
 * Fixed problem generating Histogram stats in columns with only one value (#9737).
 * 'Clear' button in SQL view shows up if the first SQL edition fails (#9869).

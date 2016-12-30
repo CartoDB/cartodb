@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 module Carto
   class SamlService
     def initialize(organization)
@@ -14,32 +16,18 @@ module Carto
       OneLogin::RubySaml::Authrequest.new.create(saml_settings)
     end
 
-    # This only works for existing users
-    def username(saml_response_param)
-      get_user(saml_response_param).try(:username)
-    end
-
-    def get_user(saml_response_param)
+    def get_user_email(saml_response_param)
       response = get_saml_response(saml_response_param)
-
-      unless response.is_valid?
-        debug_response("SAML response not valid", response)
-        return nil
-      end
-
-      email = response.attributes[email_attribute]
-      unless email.present?
-        debug_response("SAML response lacks email", response)
-        return nil
-      end
-
-      # Can't match the username because ADFS can only redirect to one endpoint.
-      # So this just checks to see if we have a user with this email address.
-      # We can log them in at that point since identity is confirmed by BCG's ADFS.
-      ::User.filter("email = ?", email.strip.downcase).first
+      response.is_valid? ? email_from_saml_response(response) : debug_response("Invalid SAML response", response)
     end
 
     private
+
+    def email_from_saml_response(saml_response)
+      email = saml_response.attributes[email_attribute]
+
+      email.present? ? email : debug_response("SAML response lacks email", saml_response)
+    end
 
     def debug_response(message, response)
       CartoDB::Logger.debug(
@@ -48,6 +36,7 @@ module Carto
         response_options: response.options,
         response_errors: response.errors
       )
+      nil
     end
 
     def get_saml_response(saml_response_param)
@@ -60,21 +49,6 @@ module Carto
 
     def email_attribute
       carto_saml_configuration[:email_attribute] || 'name_id'
-    end
-
-    # Transforms an email address (e.g. firstname.lastname@example.com) into a string
-    # which can serve as a subdomain.
-    # firstname.lastname@example.com -> firstname-lastname
-    # Replaces all non-allowable characters with
-    # hyphens. This could potentially result in collisions between two specially-
-    # constructed names (e.g. John Smith-Bob and Bob-John Smith).
-    # We're ignoring this for now since this type of email is unlikely to come up.
-    # This method is used by the SAML authentication framework to create appropriate
-    #
-    # TODO: this is not currently used because `username` gets it based on the email.
-    # This will be either used or deleted on #11073
-    def email_to_subdomain(email)
-      email.strip.split('@')[0].gsub(/[^A-Za-z0-9-]/, '-').downcase
     end
 
     # Our SAML library expects object properties

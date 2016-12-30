@@ -4,12 +4,16 @@ require_dependency 'carto/user_authenticator'
 class Carto::UserCreation < ActiveRecord::Base
   include Carto::UserAuthenticator
 
-  CREATED_VIA_LDAP = 'ldap'
-  CREATED_VIA_ORG_SIGNUP = 'org_signup'
-  CREATED_VIA_API = 'api'
-  CREATED_VIA_HTTP_AUTENTICATION = 'http_authentication'
+  CREATED_VIA_SAML = 'saml'.freeze
+  CREATED_VIA_LDAP = 'ldap'.freeze
+  CREATED_VIA_ORG_SIGNUP = 'org_signup'.freeze
+  CREATED_VIA_API = 'api'.freeze
+  CREATED_VIA_HTTP_AUTENTICATION = 'http_authentication'.freeze
 
-  VALID_CREATED_VIA = [CREATED_VIA_LDAP, CREATED_VIA_ORG_SIGNUP, CREATED_VIA_API, CREATED_VIA_HTTP_AUTENTICATION]
+  VALID_CREATED_VIA = [
+    CREATED_VIA_LDAP, CREATED_VIA_SAML, CREATED_VIA_ORG_SIGNUP,
+    CREATED_VIA_API, CREATED_VIA_HTTP_AUTENTICATION
+  ].freeze
 
   IN_PROGRESS_STATES = [:initial, :enqueuing, :creating_user, :validating_user, :saving_user, :promoting_user, :load_common_data, :creating_user_in_central]
   FINAL_STATES = [:success, :failure]
@@ -112,7 +116,8 @@ class Carto::UserCreation < ActiveRecord::Base
       !has_valid_invitation? &&
       !Carto::Ldap::Manager.new.configuration_present? &&
       !created_via_api? &&
-      !created_via_http_authentication?
+      !created_via_http_authentication? &&
+      !created_via_saml?
   end
 
   def autologin?
@@ -134,6 +139,10 @@ class Carto::UserCreation < ActiveRecord::Base
 
   def created_via_http_authentication?
     created_via == CREATED_VIA_HTTP_AUTENTICATION
+  end
+
+  def created_via_saml?
+    created_via == CREATED_VIA_SAML
   end
 
   def has_valid_invitation?

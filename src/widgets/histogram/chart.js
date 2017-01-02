@@ -965,11 +965,18 @@ module.exports = cdb.core.View.extend({
   },
 
   _calculateDataDomain: function () {
-    var data = this.model.get('data');
-    var dataSize = data.length;
+    var data = _.clone(this.model.get('data'));
 
     if (!this._hasFilterApplied()) {
-      return [(data[0].min || data[0].start), (data[dataSize - 1].max || data[dataSize - 1].end)];
+      var minBucket = _.find(data, function (d) {
+        return d.freq !== 0;
+      });
+
+      var maxBucket = _.find(data.reverse(), function (d) {
+        return d.freq !== 0;
+      });
+
+      return [(minBucket.min || minBucket.start), (maxBucket.max || maxBucket.end)];
     } else {
       var extent = this.brush.extent();
       var loExtent = extent[0];
@@ -1008,8 +1015,6 @@ module.exports = cdb.core.View.extend({
     var domainScale = d3.scale.linear().domain(domain).range([0, 1]);
     var defs = d3.select(this.el).append('defs');
     var stopsNumber = 4;  // It is not necessary to create as many stops as colors
-
-    console.log(domain);
 
     var linearGradients = defs
       .selectAll('linearGradient')

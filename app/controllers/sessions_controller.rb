@@ -179,7 +179,7 @@ class SessionsController < ApplicationController
                else
                  CartoDB.extract_subdomain(request)
                end
-    username.strip.downcase
+    username.strip.downcase if username
   end
 
   def username_from_user_by_email(email)

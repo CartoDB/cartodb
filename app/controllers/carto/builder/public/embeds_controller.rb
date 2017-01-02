@@ -21,9 +21,6 @@ module Carto
         layout false
 
         def show
-          @layers_data = @visualization.layers.map do |l|
-            Carto::Api::LayerPresenter.new(l, with_style_properties: true).to_poro(migrate_builder_infowindows: true)
-          end
           render 'show', layout: 'application_public_visualization_layout'
         end
 

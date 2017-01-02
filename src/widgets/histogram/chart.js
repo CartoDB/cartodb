@@ -966,9 +966,20 @@ module.exports = cdb.core.View.extend({
 
   _calculateDataDomain: function () {
     var data = this.model.get('data');
-    var lo_index = !this._hasFilterApplied() ? 0 : this._getLoBarIndex();
-    var hi_index = !this._hasFilterApplied() ? (data.length - 1) : (this._getHiBarIndex() - 1);
-    return [(data[lo_index].min || data[lo_index].start), (data[hi_index].max || data[hi_index].end)];
+    var dataSize = data.length;
+
+    if (!this._hasFilterApplied()) {
+      return [(data[0].min || data[0].start), (data[dataSize - 1].max || data[dataSize - 1].end)];
+    } else {
+      var extent = this.brush.extent();
+      var loExtent = extent[0];
+      var hiExtent = extent[1];
+
+      var leftX = this.xScale(loExtent) - this.options.handleWidth / 2;
+      var rightX = this.xScale(hiExtent) - this.options.handleWidth / 2;
+
+      return [this.xAxisScale(leftX + 3), this.xAxisScale(rightX + 3)];
+    }
   },
 
   _removeFillGradients: function () {
@@ -996,6 +1007,9 @@ module.exports = cdb.core.View.extend({
     var domain = this._calculateDataDomain();
     var domainScale = d3.scale.linear().domain(domain).range([0, 1]);
     var defs = d3.select(this.el).append('defs');
+    var stopsNumber = 4;  // It is not necessary to create as many stops as colors
+
+    console.log(domain);
 
     var linearGradients = defs
       .selectAll('linearGradient')
@@ -1013,11 +1027,11 @@ module.exports = cdb.core.View.extend({
 
     linearGradients
       .selectAll('stop')
-      .data(colorsRange)
+      .data(d3.range(stopsNumber + 1))
       .enter()
       .append('stop')
       .attr('offset', function (d, i) {
-        var offset = this.__offset__ = Math.floor(((i + 1) / colorsRange.length) * 100);
+        var offset = this.__offset__ = Math.floor(((i) / stopsNumber) * 100);
         return (offset + '%');
       })
       .attr('stop-color', function (d, i) {
@@ -1270,6 +1284,7 @@ module.exports = cdb.core.View.extend({
     this.contract(this.options.height);
     this.resetIndexes();
     this.removeSelection();
+    this._setupFillColor();
   },
 
   setBounds: function () {

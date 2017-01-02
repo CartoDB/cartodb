@@ -71,3 +71,4 @@ doc/manual/build
 .byebug_history
 /tags
 /.tags_swap
+.vscode/

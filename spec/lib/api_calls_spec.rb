@@ -170,5 +170,26 @@ describe CartoDB::Stats::APICalls do
       calls[chose_date_key].should eq(random_data.fetch(chose_date_key, 0)), "Failed day #{chose_date_key}, it was #{calls[chose_date_key]} instead of #{random_data[chose_date_key]}"
     end
 
+    describe 'should execute ZSCAN' do
+      it 'once for a single month' do
+        key = @api_calls.redis_api_call_key(@username, @type)
+        $users_metadata.stubs(:zscan).with(key, 0, match: '201612*').once.returns([])
+        @api_calls.get_api_calls_from_redis_source(@username, @type, from: '20161201', to: '20161202')
+      end
+
+      it 'twice across month boundaries' do
+        key = @api_calls.redis_api_call_key(@username, @type)
+        $users_metadata.stubs(:zscan).with(key, 0, match: '201611*').once.returns([])
+        $users_metadata.stubs(:zscan).with(key, 0, match: '201612*').once.returns([])
+        @api_calls.get_api_calls_from_redis_source(@username, @type, from: '20161101', to: '20161211')
+      end
+
+      it 'twice across year boundaries' do
+        key = @api_calls.redis_api_call_key(@username, @type)
+        $users_metadata.stubs(:zscan).with(key, 0, match: '201612*').once.returns([])
+        $users_metadata.stubs(:zscan).with(key, 0, match: '201701*').once.returns([])
+        @api_calls.get_api_calls_from_redis_source(@username, @type, from: '20161231', to: '20170101')
+      end
+    end
   end
 end

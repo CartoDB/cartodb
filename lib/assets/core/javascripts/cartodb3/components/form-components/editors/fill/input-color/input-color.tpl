@@ -14,5 +14,7 @@
   </button>
 <% } %>
 <% if (imageURL) { %>
-<span class="Editor-fillImage"><img class="Editor-fillImageAsset js-image" src="<%- imageURL %>" /></span>
+<button type="button" class="Editor-fillImage u-lSpace">
+  <div class="js-image-container"></div>
+</button>
 <% } %>

@@ -163,6 +163,8 @@ module.exports = cdb.core.View.extend({
     } else {
       this.refresh();
     }
+
+    this._setupFillColor();
   },
 
   _onChangeRange: function () {
@@ -282,7 +284,7 @@ module.exports = cdb.core.View.extend({
 
     bars
       .classed('is-highlighted', false)
-      // .attr('fill', this._getFillColor.bind(this));
+      .attr('fill', this._getFillColor.bind(this));
     this.trigger('hover', { value: null });
   },
 
@@ -995,8 +997,6 @@ module.exports = cdb.core.View.extend({
     var domainScale = d3.scale.linear().domain(domain).range([0, 1]);
     var defs = d3.select(this.el).append('defs');
 
-    console.log('selected ' + domain);
-
     var linearGradients = defs
       .selectAll('linearGradient')
       .data(data)
@@ -1063,7 +1063,15 @@ module.exports = cdb.core.View.extend({
   },
 
   _getHoverFillColor: function (d, i) {
-    return this._getFillColor(d, i); // 'url(#bar-' + i + ')'; // tinycolor(this._getFillColor(d, i)).darken(20).toString();
+    var currentFillColor = this._getFillColor(d, i);
+
+    if (this._widgetModel) {
+      if (this._widgetModel.isAutoStyle()) {
+        return currentFillColor;
+      }
+    }
+
+    return tinycolor(currentFillColor).darken(20).toString();
   },
 
   _updateChart: function () {
@@ -1078,10 +1086,6 @@ module.exports = cdb.core.View.extend({
       .append('rect')
       .attr('class', 'CDB-Chart-bar')
       .attr('fill', this._getFillColor.bind(this))
-      // .attr('data', function (d) {
-      //   var maxValue = d.max || d.end;
-      //   return _.isEmpty(d) ? 0 : maxValue;
-      // })
       .attr('transform', function (d, i) {
         return 'translate(' + (i * self.barWidth) + ', 0 )';
       })
@@ -1154,20 +1158,13 @@ module.exports = cdb.core.View.extend({
       .append('rect')
       .attr('class', 'CDB-Chart-bar')
       .attr('fill', this._getFillColor.bind(self))
-      // .attr('data', function (d) {
-      //   var maxValue = d.max || d.end;
-      //   return _.isEmpty(d) ? 0 : maxValue;
-      // })
-      .attr('fill', function (d, i) {
-        return 'url(#bar-0)';
-      })
       .attr('transform', function (d, i) {
         return 'translate(' + (i * self.barWidth) + ', 0 )';
       })
       .attr('y', self.chartHeight())
       .attr('height', 0)
-      .attr('width', Math.max(0.5, this.barWidth - 1))
-      
+      .attr('width', Math.max(0.5, this.barWidth - 1));
+
     bars
       .transition()
       .ease(this.options.transitionType)

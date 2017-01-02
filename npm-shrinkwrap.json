@@ -86,7 +86,7 @@
                             },
                             "readable-stream": {
                               "version": "2.0.6",
-                              "from": "readable-stream@>=2.0.0 <2.1.0",
+                              "from": "readable-stream@>=2.0.5 <2.1.0",
                               "resolved": "https://registry.npmjs.org/readable-stream/-/readable-stream-2.0.6.tgz",
                               "dependencies": {
                                 "core-util-is": {
@@ -126,7 +126,7 @@
                         "mkdirp": {
                           "version": "0.5.0",
                           "from": "mkdirp@0.5.0",
-                          "resolved": "http://registry.npmjs.org/mkdirp/-/mkdirp-0.5.0.tgz",
+                          "resolved": "https://registry.npmjs.org/mkdirp/-/mkdirp-0.5.0.tgz",
                           "dependencies": {
                             "minimist": {
                               "version": "0.0.8",
@@ -364,9 +364,9 @@
                               "resolved": "http://registry.npmjs.org/async/-/async-2.1.4.tgz",
                               "dependencies": {
                                 "lodash": {
-                                  "version": "4.17.3",
+                                  "version": "4.17.4",
                                   "from": "lodash@>=4.14.0 <5.0.0",
-                                  "resolved": "https://registry.npmjs.org/lodash/-/lodash-4.17.3.tgz"
+                                  "resolved": "https://registry.npmjs.org/lodash/-/lodash-4.17.4.tgz"
                                 }
                               }
                             }
@@ -771,7 +771,7 @@
     "bootstrap-colorpicker": {
       "version": "2.3.3",
       "from": "bootstrap-colorpicker@2.3.3",
-      "resolved": "http://registry.npmjs.org/bootstrap-colorpicker/-/bootstrap-colorpicker-2.3.3.tgz"
+      "resolved": "https://registry.npmjs.org/bootstrap-colorpicker/-/bootstrap-colorpicker-2.3.3.tgz"
     },
     "browserify-shim": {
       "version": "3.8.12",
@@ -966,7 +966,7 @@
                     },
                     "inherits": {
                       "version": "2.0.3",
-                      "from": "inherits@>=2.0.1 <2.1.0",
+                      "from": "inherits@>=2.0.0 <3.0.0",
                       "resolved": "https://registry.npmjs.org/inherits/-/inherits-2.0.3.tgz"
                     }
                   }
@@ -1147,7 +1147,7 @@
     "cartodb-deep-insights.js": {
       "version": "0.0.2",
       "from": "cartodb/deep-insights.js#autostyle-fixes",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#d8ce2ab7e45e6fc271aa344d106d94d9ad117224",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#f53b07a94b5e3e925636db7a56688baa4ec64693",
       "dependencies": {
         "cartodb.js": {
           "version": "4.0.0-alpha.1",
@@ -1307,7 +1307,7 @@
             "leaflet": {
               "version": "0.7.3",
               "from": "leaflet@0.7.3",
-              "resolved": "http://registry.npmjs.org/leaflet/-/leaflet-0.7.3.tgz"
+              "resolved": "https://registry.npmjs.org/leaflet/-/leaflet-0.7.3.tgz"
             },
             "mustache": {
               "version": "1.1.0",
@@ -1431,6 +1431,18 @@
           "version": "3.5.17",
           "from": "d3@3.5.17",
           "resolved": "https://registry.npmjs.org/d3/-/d3-3.5.17.tgz"
+        },
+        "d3-interpolate": {
+          "version": "1.1.2",
+          "from": "d3-interpolate@1.1.2",
+          "resolved": "https://registry.npmjs.org/d3-interpolate/-/d3-interpolate-1.1.2.tgz",
+          "dependencies": {
+            "d3-color": {
+              "version": "1.0.2",
+              "from": "d3-color@>=1.0.0 <2.0.0",
+              "resolved": "https://registry.npmjs.org/d3-color/-/d3-color-1.0.2.tgz"
+            }
+          }
         },
         "tinycolor2": {
           "version": "1.4.1",
@@ -1612,7 +1624,7 @@
         "leaflet": {
           "version": "0.7.3",
           "from": "leaflet@0.7.3",
-          "resolved": "http://registry.npmjs.org/leaflet/-/leaflet-0.7.3.tgz"
+          "resolved": "https://registry.npmjs.org/leaflet/-/leaflet-0.7.3.tgz"
         },
         "mustache": {
           "version": "1.1.0",
@@ -1769,7 +1781,7 @@
     "jquery": {
       "version": "2.1.4",
       "from": "jquery@2.1.4",
-      "resolved": "http://registry.npmjs.org/jquery/-/jquery-2.1.4.tgz"
+      "resolved": "https://registry.npmjs.org/jquery/-/jquery-2.1.4.tgz"
     },
     "moment": {
       "version": "2.10.6",

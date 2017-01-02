@@ -28,9 +28,14 @@ module.exports = WidgetModel.extend({
     this.lockedCategories = new LockedCategoriesCollection();
 
     this.listenTo(this.dataviewModel, 'change:allCategoryNames', this._onDataviewAllCategoryNamesChange);
+
     this.on('change:locked', this._onLockedChange, this);
     this.on('change:collapsed', this._onCollapsedChange, this);
-    this.on('change:style', this._updateColors, this);
+
+    if (this.isAutoStyleEnabled()) {
+      this.on('change:style', this._updateColors, this);
+    }
+
     this.dataviewModel.filter.on('change', function () {
       this.set('acceptedCategories', this._acceptedCategories().pluck('name'));
     }, this);

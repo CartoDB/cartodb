@@ -202,24 +202,36 @@ Warden::Strategies.add(:http_header_authentication) do
 end
 
 Warden::Strategies.add(:saml) do
-  def saml_service
+  def organization_from_request
     subdomain = CartoDB.extract_subdomain(request)
-    organization = Carto::Organization.where(name: subdomain).first if subdomain
-    Carto::SamlService.new(organization)
+    Carto::Organization.where(name: subdomain).first if subdomain
+  end
+
+  def saml_service(organization = organization_from_request)
+    Carto::SamlService.new(organization) if organization
   end
 
   def valid?
-    params[:SAMLResponse].present? && saml_service.enabled?
+    params[:SAMLResponse].present? && saml_service.try(:enabled?)
   end
 
   def authenticate!
-    return fail! unless params[:SAMLResponse]
+    organization = organization_from_request
+    saml_service = Carto::SamlService.new(organization)
 
-    user = saml_service.get_user(params[:SAMLResponse])
-    return fail! unless user.try(:enabled?)
+    email = saml_service.get_user_email(params[:SAMLResponse])
+    user = organization.users.where(email: email.strip.downcase).first
 
-    success!(user, message: "Success")
-    request.flash['logged'] = true
+    if user
+      if user.try(:enabled?)
+        success!(user, message: "Success")
+        request.flash['logged'] = true
+      else
+        fail!
+      end
+    else
+      throw(:warden, action: 'saml_user_not_at_cartodb', organization_id: organization.id, saml_email: email)
+    end
   rescue => e
     CartoDB::Logger.error(message: "Authenticating with SAML", exception: e)
     return fail!

@@ -57,9 +57,6 @@ module.exports = cdb.core.View.extend({
       .append('g')
       .attr('class', 'CDB-WidgetCanvas');
 
-    // this.canvas
-    //   .append('defs');
-
     this._setupModel();
     this._setupBindings();
     this._setupDimensions();
@@ -165,6 +162,7 @@ module.exports = cdb.core.View.extend({
     }
 
     this._setupFillColor();
+    this._refreshBarsColor();
   },
 
   _onChangeRange: function () {
@@ -989,8 +987,10 @@ module.exports = cdb.core.View.extend({
       return false;
     }
 
+    var self = this;
     var geometryDefinition = obj.definition[Object.keys(obj.definition)[0]]; // Gets first definition by geometry
     var colorsRange = geometryDefinition && geometryDefinition.color.range;
+
     var data = this.model.get('data');
     var interpolatedColors = d3Interpolate.interpolateRgbBasis(colorsRange);
     var domain = this._calculateDataDomain();
@@ -1004,7 +1004,7 @@ module.exports = cdb.core.View.extend({
       .append('linearGradient')
       .attr('id', function (d, i) {
         this.__scale__ = d3.scale.linear().range([ d.start, d.end ]).domain([0, 1]);
-        return 'bar-' + i;
+        return 'bar-' + self.cid + '-' + i;
       })
       .attr('x1', '0%')
       .attr('y1', '0%')
@@ -1017,7 +1017,7 @@ module.exports = cdb.core.View.extend({
       .enter()
       .append('stop')
       .attr('offset', function (d, i) {
-        var offset = this.__offset__ = ((i + 1) / colorsRange.length) * 100;
+        var offset = this.__offset__ = Math.floor(((i + 1) / colorsRange.length) * 100);
         return (offset + '%');
       })
       .attr('stop-color', function (d, i) {
@@ -1045,7 +1045,7 @@ module.exports = cdb.core.View.extend({
           }
         }
 
-        return 'url(#bar-' + i + ')';
+        return 'url(#bar-' + this.cid + '-' + i + ')';
       } else {
         if (this._hasFilterApplied()) {
           if (this._isBarChartWithinFilter(i)) {

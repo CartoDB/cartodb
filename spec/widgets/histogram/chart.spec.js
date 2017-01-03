@@ -591,6 +591,11 @@ describe('widgets/histogram/chart', function () {
       this.redColor = 'rgb(255, 0, 0)';
       this.yellowColor = 'rgb(255, 255, 0)';
 
+      this.getLinearGradients = function () {
+        var defs = d3.select(this.view.el).select('defs');
+        return defs.selectAll('linearGradient');
+      };
+
       var definitionObj = {
         definition: {
           point: {
@@ -632,19 +637,21 @@ describe('widgets/histogram/chart', function () {
 
       this.view.model.attributes.data = data;
       this.view._removeFillGradients();
+      this.view.el = document.createElement('svg'); // Hack it!
     });
 
     it('should generate as many gradients as data we have', function () {
       this.view._generateFillGradients();
-      expect(this.view.$('linearGradient').length).toBe(5);
+      expect(this.getLinearGradients()[0].length).toBe(5);
     });
 
     it('should generate 5 stops in each gradient', function () {
       this.view._generateFillGradients();
-      var data = this.view.model.get('data');
-      _.each(data.length, function (d, i) {
-        expect(this.view.$('linearGradient:eq(' + i + ') stop').length).toBe(5);
-      }, this);
+
+      this.getLinearGradients().each(function (d) {
+        var stops = d3.select(this).selectAll('stop');
+        expect(stops[0].length).toBe(5);
+      });
     });
 
     describe('gradient generation', function () {
@@ -652,36 +659,41 @@ describe('widgets/histogram/chart', function () {
         it('should not create the proper gradient ramp if bucket is out of domain', function () {
           spyOn(this.view, '_calculateDataDomain').and.returnValue([2.1, 8]);
           this.view._generateFillGradients();
+          var self = this;
 
           // Out of domain at the beginning
-          this.view.$('linearGradient:eq(0) stop').each(function (i, el) {
-            expect($(el).attr('stop-color')).toBe(this.redColor);
-          }.bind(this));
+          d3.select(this.getLinearGradients()[0][0]).selectAll('stop').each(function (d) {
+            expect(this.getAttribute('stop-color')).toBe(self.redColor);
+          });
 
           // Out of domain at the end
-          this.view.$('linearGradient:eq(4) stop').each(function (i, el) {
-            expect($(el).attr('stop-color')).toBe(this.yellowColor);
-          }.bind(this));
+          d3.select(this.getLinearGradients()[0][4]).selectAll('stop').each(function (d) {
+            expect(this.getAttribute('stop-color')).toBe(self.yellowColor);
+          });
         });
 
         it('should not create the proper gradient ramp if bucket is empty at the beginning', function () {
+          var self = this;
+
           this.view.model.attributes.data[0].freq = 0;
           this.view._generateFillGradients();
 
           // No data in the first bucket
-          this.view.$('linearGradient:eq(0) stop').each(function (i, el) {
-            expect($(el).attr('stop-color')).toBe(this.redColor);
-          }.bind(this));
+          d3.select(this.getLinearGradients()[0][0]).selectAll('stop').each(function (d) {
+            expect(this.getAttribute('stop-color')).toBe(self.redColor);
+          });
         });
 
         it('should not create the proper gradient ramp if bucket is empty at the end', function () {
           this.view.model.attributes.data[4].freq = 0;
           this.view._generateFillGradients();
 
+          var self = this;
+
           // No data in the last bucket
-          this.view.$('linearGradient:eq(4) stop').each(function (i, el) {
-            expect($(el).attr('stop-color')).toBe(this.yellowColor);
-          }.bind(this));
+          d3.select(this.getLinearGradients()[0][4]).selectAll('stop').each(function (d) {
+            expect(this.getAttribute('stop-color')).toBe(self.yellowColor);
+          });
         });
       });
 
@@ -689,17 +701,26 @@ describe('widgets/histogram/chart', function () {
         it('should generate the proper ramp for each gradient', function () {
           this.view._generateFillGradients();
 
-          expect(this.view.$('linearGradient:eq(0) stop:eq(0)').attr('stop-color')).toBe(this.redColor);
-          expect(this.view.$('linearGradient:eq(0) stop:eq(1)').attr('stop-color')).not.toBe(this.redColor);
-          expect(this.view.$('linearGradient:eq(4) stop:eq(4)').attr('stop-color')).toBe(this.yellowColor);
-          expect(this.view.$('linearGradient:eq(4) stop:eq(3)').attr('stop-color')).not.toBe(this.yellowColor);
+          var linearGradients = this.getLinearGradients();
+          var firstGradient = linearGradients[0][0];
+          var lastGradient = linearGradients[0][4];
+          var middleGradient = linearGradients[0][2];
+
+          var stopsInFirstGradient = d3.select(firstGradient).selectAll('stop');
+          var stopsInMiddleGradient = d3.select(middleGradient).selectAll('stop');
+          var stopsInLastGradient = d3.select(lastGradient).selectAll('stop');
+
+          expect(stopsInFirstGradient[0][0].getAttribute('stop-color')).toBe(this.redColor);
+          expect(stopsInFirstGradient[0][1].getAttribute('stop-color')).not.toBe(this.redColor);
+          expect(stopsInLastGradient[0][4].getAttribute('stop-color')).toBe(this.yellowColor);
+          expect(stopsInLastGradient[0][3].getAttribute('stop-color')).not.toBe(this.yellowColor);
 
           // Checking middle bin gradient
-          expect(this.view.$('linearGradient:eq(2) stop:eq(0)').attr('stop-color')).toBe('rgb(69, 8, 177)'); // From blue
-          expect(this.view.$('linearGradient:eq(2) stop:eq(1)').attr('stop-color')).toBe('rgb(68, 11, 175)');
-          expect(this.view.$('linearGradient:eq(2) stop:eq(2)').attr('stop-color')).toBe('rgb(71, 14, 168)');
-          expect(this.view.$('linearGradient:eq(2) stop:eq(3)').attr('stop-color')).toBe('rgb(79, 19, 157)');
-          expect(this.view.$('linearGradient:eq(2) stop:eq(4)').attr('stop-color')).toBe('rgb(90, 25, 142)'); // To purple
+          expect(stopsInMiddleGradient[0][0].getAttribute('stop-color')).toBe('rgb(69, 8, 177)'); // From blue
+          expect(stopsInMiddleGradient[0][1].getAttribute('stop-color')).toBe('rgb(68, 11, 175)');
+          expect(stopsInMiddleGradient[0][2].getAttribute('stop-color')).toBe('rgb(71, 14, 168)');
+          expect(stopsInMiddleGradient[0][3].getAttribute('stop-color')).toBe('rgb(79, 19, 157)');
+          expect(stopsInMiddleGradient[0][4].getAttribute('stop-color')).toBe('rgb(90, 25, 142)'); // To purple
         });
 
         it('should create the proper gradient ramp althogh all buckets are empty', function () {
@@ -709,11 +730,17 @@ describe('widgets/histogram/chart', function () {
           });
           this.view._generateFillGradients();
 
+          var linearGradients = this.getLinearGradients();
+          var firstGradient = linearGradients[0][0];
+          var lastGradient = linearGradients[0][4];
+          var stopsInFirstGradient = d3.select(firstGradient).selectAll('stop');
+          var stopsInLastGradient = d3.select(lastGradient).selectAll('stop');
+
           // No data in the last bucket
-          expect(this.view.$('linearGradient:eq(0) stop:eq(0)').attr('stop-color')).toBe(this.redColor);
-          expect(this.view.$('linearGradient:eq(0) stop:eq(1)').attr('stop-color')).not.toBe(this.redColor);
-          expect(this.view.$('linearGradient:eq(4) stop:eq(4)').attr('stop-color')).toBe(this.yellowColor);
-          expect(this.view.$('linearGradient:eq(4) stop:eq(3)').attr('stop-color')).not.toBe(this.yellowColor);
+          expect(stopsInFirstGradient[0][0].getAttribute('stop-color')).toBe(this.redColor);
+          expect(stopsInFirstGradient[0][1].getAttribute('stop-color')).not.toBe(this.redColor);
+          expect(stopsInLastGradient[0][4].getAttribute('stop-color')).toBe(this.yellowColor);
+          expect(stopsInLastGradient[0][3].getAttribute('stop-color')).not.toBe(this.yellowColor);
         });
       });
     });

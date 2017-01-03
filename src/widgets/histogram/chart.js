@@ -974,6 +974,8 @@ module.exports = cdb.core.View.extend({
     return data[binIndex].max != null ? data[binIndex].max : data[binIndex].end;
   },
 
+  // Calculates the domain ([ min, max ]) of the selected data. If there is no selection ongoing,
+  // it will take the first and last buckets with frequency.
   _calculateDataDomain: function () {
     var data = _.clone(this.model.get('data'));
     var minBin;
@@ -1042,7 +1044,6 @@ module.exports = cdb.core.View.extend({
     var self = this;
     var geometryDefinition = obj.definition[Object.keys(obj.definition)[0]]; // Gets first definition by geometry
     var colorsRange = geometryDefinition && geometryDefinition.color.range;
-
     var data = this.model.get('data');
     var interpolatedColors = d3Interpolate.interpolateRgbBasis(colorsRange);
     var domain = this._calculateDataDomain();

@@ -76,7 +76,7 @@ module.exports = cdb.core.Model.extend({
       if (!styles || !styles.auto_style) {
         return true;
       }
-      
+
       return styles && styles.auto_style && styles.auto_style.allowed;
     } else {
       return false;

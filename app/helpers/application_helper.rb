@@ -217,6 +217,12 @@ module ApplicationHelper
     end
   end
 
+  def insert_fullstory
+    if Cartodb.get_config(:fullstory, 'org').present?
+      render(partial: 'shared/fullstory', locals: { org: Cartodb.get_config(:fullstory, 'org') })
+    end
+  end
+
   ##
   # Checks that the precompile list contains this file or raises an error, in dev only
   # Note: You will need to move config.assets.precompile to application.rb from production.rb

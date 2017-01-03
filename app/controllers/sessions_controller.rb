@@ -40,7 +40,7 @@ class SessionsController < ApplicationController
       return redirect_to(saml_service.authentication_request)
     end
 
-    if Cartodb::Central.sync_data_with_cartodb_central? && !@organization
+    if Cartodb::Central.sync_data_with_cartodb_central? && (!@organization || !@organization.auth_enabled?)
       return redirect_to(Cartodb::Central.new.login_url)
     end
   end

@@ -21,7 +21,7 @@
                 <% if (image) { %>
                   <div class='CDB-ListDecoration-rampImg js-image-container'></div>
                 <% } else { %>
-                  <span class="CDB-ListDecoration-rampImg CDB-Text u-actionTextColor js-assetPicker"><%= _t('form-components.editors.fill.input-color.img') %></span>
+                  <span class="CDB-ListDecoration-rampImg CDB-Text js-assetPicker"><%= _t('form-components.editors.fill.input-color.img') %></span>
                 <% } %>
               </div>
             </li>

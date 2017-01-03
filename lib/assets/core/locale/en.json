@@ -285,7 +285,7 @@
         "input-color": {
           "solid": "Solid",
           "value": "By value",
-          "img": "img"
+          "img": "Img"
         },
         "input-number": {
           "fixed": "Fixed",

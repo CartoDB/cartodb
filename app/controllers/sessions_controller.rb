@@ -46,7 +46,7 @@ class SessionsController < ApplicationController
   end
 
   def create
-    if central_enabled? && @organization && !@organization.users.exists?(name: extract_username(request, params))
+    if central_enabled? && @organization && !@organization.users.exists?(username: extract_username(request, params))
       @login_error = 'The user is not part of the organization'
       @user_login_url = "#{Cartodb::Central.new.host}/login"
       return render(action: 'new')

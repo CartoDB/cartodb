@@ -14,6 +14,7 @@ window['_fs_namespace'] = 'FS';
     d=n.domain;while(1){n.cookie='fs_uid=;domain='+d+
     ';path=/;expires='+new Date(0).toUTCString();i=d.indexOf('.');if(i<0)break;d=d.slice(i+1)}}};
 })(window,document,window['_fs_namespace'],'script','user');
+FS.clearUserCookie();
 FS.identify('<%= current_user.username %>', {
   displayName: '<%= current_user.username %>',
   email: '<%= current_user.email %>'

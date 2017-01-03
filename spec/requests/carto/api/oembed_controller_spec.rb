@@ -22,18 +22,16 @@ describe Carto::Api::OembedController do
     CartoDB.clear_internal_cache
   end
 
-  describe '#json_response_behaviour'do
+  describe '#json_response_behaviour' do
     before(:each) do
-      controller = Carto::Api::OembedController.new
-      protocol = 'http'
       domain = '.test.local'
-      username = 'testuser'
-      orgname = 'testorg'
-      uuid   = "00000000-0000-0000-0000-000000000000"
+      @username = 'testuser'
+      @orgname = 'testorg'
+      @uuid = "00000000-0000-0000-0000-000000000000"
       @callback = 'callback'
-      @uri = "/user/#{username}/api/v1/oembed?url=http://#{orgname}#{domain}/u/#{username}/#{uuid}"
-
+      @uri = "/user/#{@username}/api/v1/oembed?url=http://#{@orgname}#{domain}/u/#{@username}/#{@uuid}"
     end
+
     it 'Returns JSONP if a callback is specified' do
       uri_with_callback = @uri + "&callback=#{@callback}"
       get uri_with_callback
@@ -45,6 +43,18 @@ describe Carto::Api::OembedController do
       response.body.should_not match(/#{@callback}\(.*\)/)
     end
 
+    it 'Returns regular JSON  if a callback is not' do
+      get @uri
+      response.body.should_not match(/#{@callback}\(.*\)/)
+    end
+
+    it 'Returns valid oembed url' do
+      get_json @uri do |response|
+        response.status.should eq 200
+        embed_url = CartoDB.base_url(@orgname, @username).gsub('http', 'https') + "/viz/#{@uuid}/embed_map"
+        response.body[:html].should include embed_url
+      end
+    end
   end
   describe '#private_url_methods_tests' do
 

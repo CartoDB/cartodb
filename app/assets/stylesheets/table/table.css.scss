@@ -49,37 +49,21 @@ div.panes {
     @include transition-duration(300ms);
 
     .emptynessInfo {
-      position: relative;
-      top: 1.5em;
       display: inline-block;
       width: 600px;
       height: 375px;
 
-      &.emptyTableInfo {
-        background: image-url('layout/empty_table.png') no-repeat 0 0 #FFF;
-      }
-      &.emptyPublicTableInfo {
-        position: absolute;
-        left: 5%;
-        background: image-url('layout/empty_public.png') no-repeat center 70px #FFF;
-      }
-      &.emptySQLInfo {
-        background: image-url('layout/empty_sql.png') no-repeat 40px 0 #FFF;
-      }
-
       h4 {
         margin-top: 8em;
-        color: #333;
-        font-weight: bold;
-        font-size: 17px;
-        font-family: $title-fonts;
+        color: $White;
+        font-size: 19px;
         text-indent:0;
       }
 
       p {
-        margin: 1em auto;
+        margin: 1em auto; 
         width: 325px;
-        color: #999;
+        color: $Grey2;
         font-size: 15px;
         text-indent:0;
 
@@ -312,7 +296,6 @@ div.table {
         right:0;
         width:100%;
         height:10px;
-        background: image-url('layout/thead_shadow.png') repeat 0 0;
 
         pointer-events:none;
         z-index:0;

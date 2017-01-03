@@ -356,6 +356,11 @@ describe SessionsController do
       @user = FactoryGirl.create(:carto_user)
     end
 
+    after(:all) do
+      @user.destroy
+      @organization.destroy
+    end
+
     describe 'with Central' do
       before(:each) do
         Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)

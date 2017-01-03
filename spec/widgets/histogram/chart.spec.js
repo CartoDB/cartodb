@@ -102,32 +102,9 @@ describe('widgets/histogram/chart', function () {
     expect(this.view.$el.attr('style')).toMatch('none');
   });
 
-  describe('_setupFillColor', function () {
-    it('should setup the fill color initially', function () {
-      expect(WidgetHistogramChart.prototype._setupFillColor).toHaveBeenCalled();
-      expect(this.view._autoStyleColorsScale).not.toBeUndefined();
-    });
-
-    it('should not set autoStyleColorsScale function if auto-style is disabled', function () {
-      spyOn(this.widgetModel, 'isAutoStyleEnabled').and.returnValue(false);
-
-      var view = new WidgetHistogramChart(({
-        el: $('.js-chart'),
-        margin: this.margin,
-        chartBarColor: '#9DE0AD',
-        hasHandles: true,
-        height: 100,
-        data: this.data,
-        originalData: this.originalModel,
-        displayShadowBars: true,
-        widgetModel: this.widgetModel,
-        xAxisTickFormat: function (d, i) {
-          return d;
-        }
-      }));
-
-      expect(view._autoStyleColorsScale).toBeUndefined();
-    });
+  it('should setup the fill color initially', function () {
+    expect(WidgetHistogramChart.prototype._setupFillColor).toHaveBeenCalled();
+    expect(this.view._autoStyleColorsScale).toBeUndefined();
   });
 
   describe('normalize', function () {
@@ -341,7 +318,7 @@ describe('widgets/histogram/chart', function () {
       expect(this.view.$('.CDB-Chart-bar').attr('fill')).toEqual('red');
     });
 
-    it('should be colored by autostyle range colors when autostyle is applied', function () {
+    it('should be colored by linear gradients when autostyle is applied', function () {
       spyOn(this.widgetModel, 'isAutoStyle').and.returnValue(true);
       this.widgetModel.set({
         style: {
@@ -358,22 +335,9 @@ describe('widgets/histogram/chart', function () {
         }
       });
 
-      this.view.$('.CDB-Chart-bar').each(function (i, el) {
-        expect($(el).attr('fill')).not.toEqual('#9DE0AD');
-      });
-
       var dataSize = this.view.model.get('data').length;
       _.times(dataSize, function (i) {
-        var color;
-        if (i < 6) {
-          color = 'red';
-        } else if (i > 5 && i < 13) {
-          color = 'blue';
-        } else {
-          color = 'green';
-        }
-
-        expect(this.view.$('.CDB-Chart-bar:eq(' + i + ')').attr('fill')).toEqual(color);
+        expect(this.view.$('.CDB-Chart-bar:eq(' + i + ')').attr('fill')).toContain('url(#bar-');
       }, this);
     });
   });

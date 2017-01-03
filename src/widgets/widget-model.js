@@ -73,7 +73,11 @@ module.exports = cdb.core.Model.extend({
     var styles = this.get('style');
 
     if (this.get('type') === 'category' || this.get('type') === 'histogram') {
-      return (styles && styles.auto_style && styles.auto_style.allowed) || true;
+      if (!styles || !styles.auto_style) {
+        return true;
+      }
+      
+      return styles && styles.auto_style && styles.auto_style.allowed;
     } else {
       return false;
     }

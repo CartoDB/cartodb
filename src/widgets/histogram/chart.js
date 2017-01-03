@@ -1264,7 +1264,6 @@ module.exports = cdb.core.View.extend({
       .enter()
       .append('rect')
       .attr('class', 'CDB-Chart-shadowBar')
-      // .attr('data', function (d) { return _.isEmpty(d) ? 0 : d.freq; })
       .attr('transform', function (d, i) {
         return 'translate(' + (i * barWidth) + ', 0 )';
       })

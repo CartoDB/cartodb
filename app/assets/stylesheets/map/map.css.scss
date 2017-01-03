@@ -560,15 +560,29 @@ div.map {
     background-color: $DarkGrey2;
     border:1px solid Black;
     cursor: default;
-    div.cartodb-legend {
+    > div.cartodb-legend {
       display:none;
       @include position(false, 0, 0, false);
       position:relative;
       margin: 0;
       cursor: default;
-      ul li {
-        color: $Amber1;
+
+      > .legend-title {
+        color: $Grey2;
+        font-size: 13px;
+        font-family: Bloomberg_Prop_K;
+        font-weight: normal;
       }
+
+      > ul > li {
+        color: $Amber1;
+        font-weight: normal;
+        font-family: Bloomberg_Prop_K;
+        font-size: 13px;
+      }
+
+
+
       &.custom, &.cluster, &.bubble, &.color, &.intensity, &.density { display: block; }
       border-bottom: none;
     }

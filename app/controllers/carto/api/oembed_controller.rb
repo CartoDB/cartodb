@@ -40,7 +40,7 @@ module Carto
         else
           url = CartoDB.base_url(fields[:organization_name], fields[:username])
         end
-        url += CartoDB.path(self, 'public_visualizations_embed_map', {id: uuid})
+        url += CartoDB.path(self, 'public_visualizations_embed_map', id: uuid, user_domain: nil)
 
         # force the schema
         if fields[:protocol] == 'https' && !url.include?('https')

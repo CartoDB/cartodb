@@ -349,6 +349,50 @@ describe SessionsController do
     end
   end
 
+  describe '#login' do
+    before(:all) do
+      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
+      @organization = FactoryGirl.create(:organization)
+      @user = FactoryGirl.create(:carto_user)
+    end
+
+    describe 'with Central' do
+      before(:all) do
+        Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
+      end
+
+      it 'redirects to Central for user logins' do
+        get login_url(user_domain: @user.username)
+        response.status.should == 302
+      end
+
+      it 'redirects to Central for orgs without any auth method enabled' do
+        Carto::Organization.any_instance.stubs(:auth_enabled?).returns(false)
+        get login_url(user_domain: @organization.name)
+        response.status.should == 302
+      end
+
+      it 'uses the box login for orgs with any auth enabled' do
+        Carto::Organization.any_instance.stubs(:auth_enabled?).returns(true)
+        get login_url(user_domain: @organization.name)
+        response.status.should == 200
+      end
+
+      it 'disallows login from an organization login page to a non-member' do
+        Carto::Organization.any_instance.stubs(:auth_enabled?).returns(true)
+        post create_session_url(user_domain: @organization.name, username: @user.username)
+        response.status.should == 200
+        response.body.should include 'Not a member'
+      end
+    end
+
+    it 'without Central, it does not redirect' do
+      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+      get login_url(user_domain: @user.username)
+      response.status.should == 200
+    end
+  end
+
   private
 
   def bypass_named_maps

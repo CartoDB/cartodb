@@ -12,6 +12,9 @@ describe('widgets/category/category-widget-model', function () {
     this.dataviewModel = vis.dataviews.createCategoryModel(layer, {
       column: 'col'
     });
+
+    spyOn(CategoryWidgetModel.prototype, '_updateColors').and.callThrough();
+
     this.widgetModel = new CategoryWidgetModel({}, {
       dataviewModel: this.dataviewModel
     }, {autoStyleEnabled: true});
@@ -42,6 +45,15 @@ describe('widgets/category/category-widget-model', function () {
       this.dataviewModel.layer.set('initialStyle', '#layer {  marker-line-width: 0.5;  marker-line-color: #fcfafa;  marker-line-opacity: 1;  marker-width: 6.076923076923077;  marker-fill: #e49115;  marker-fill-opacity: 0.9;  marker-allow-overlap: true;}');
       spyOn(this.widgetModel.autoStyler.colors, 'updateData').and.callThrough();
       spyOn(this.widgetModel, 'autoStyle').and.callThrough();
+    });
+
+    it('should not update colors if auto style is not enabled', function () {
+      var widgetModel = new CategoryWidgetModel({}, {
+        dataviewModel: this.dataviewModel
+      }, { autoStyleEnabled: false });
+
+      widgetModel.set('style', 'whatever');
+      expect(CategoryWidgetModel.prototype._updateColors).not.toHaveBeenCalled();
     });
 
     describe('when category names are updated', function () {

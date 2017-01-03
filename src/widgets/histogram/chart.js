@@ -966,27 +966,48 @@ module.exports = cdb.core.View.extend({
 
   _calculateDataDomain: function () {
     var data = _.clone(this.model.get('data'));
+    var minBin;
+    var maxBin;
+    var minValue;
+    var maxValue;
 
     if (!this._hasFilterApplied()) {
-      var minBucket = _.find(data, function (d) {
+      minValue = (data[0].min || data[0].start);
+      maxValue = (data[data.length - 1].max || data[data.length - 1].end);
+
+      minBin = _.find(data, function (d) {
         return d.freq !== 0;
       });
 
-      var maxBucket = _.find(data.reverse(), function (d) {
+      maxBin = _.find(data.reverse(), function (d) {
         return d.freq !== 0;
       });
-
-      return [(minBucket.min || minBucket.start), (maxBucket.max || maxBucket.end)];
     } else {
-      var extent = this.brush.extent();
-      var loExtent = extent[0];
-      var hiExtent = extent[1];
+      var loBarIndex = this._getLoBarIndex();
+      var hiBarIndex = this._getHiBarIndex() - 1;
+      var filteredData = data.slice(loBarIndex, hiBarIndex);
 
-      var leftX = this.xScale(loExtent) - this.options.handleWidth / 2;
-      var rightX = this.xScale(hiExtent) - this.options.handleWidth / 2;
+      minValue = data[loBarIndex].min || data[loBarIndex].start;
+      maxValue = data[hiBarIndex].max || data[hiBarIndex].end;
 
-      return [this.xAxisScale(leftX + 3), this.xAxisScale(rightX + 3)];
+      if (data[loBarIndex].freq === 0) {
+        minBin = _.find(filteredData, function (d) {
+          return d.freq !== 0;
+        }, this);
+      }
+
+      if (data[hiBarIndex].freq === 0) {
+        var reversedData = filteredData.reverse();
+        maxBin = _.find(reversedData, function (d) {
+          return d.freq !== 0;
+        }, this);
+      }
     }
+
+    minValue = minBin ? (minBin.min || minBin.start) : minValue;
+    maxValue = maxBin ? (maxBin.max || maxBin.end) : maxValue;
+
+    return [minValue, maxValue];
   },
 
   _removeFillGradients: function () {

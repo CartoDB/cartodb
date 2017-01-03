@@ -43,6 +43,7 @@ Development
 * Custom errors for latitude/longitude out of bounds (#11060, #11048)
 * Fix timeseries widget height (#11077)
 * Fix scrollbar in carousel (#11061)
+* Restrict login from organization pages to organization users, and redirect to Central otherwise
 * Correctly refresh map after adding/editing map geometries (#11064)
 * Return embed private instead of 404 in visualization embeds where the visualization doesn't exist (#11056)
 * Fix error loading builder in visualizations without permissions (#10996)

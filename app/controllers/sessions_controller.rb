@@ -46,6 +46,10 @@ class SessionsController < ApplicationController
   end
 
   def create
+    if @organization && !@organization.users.exists?(name: extract_username(request, params))
+      return render(action: 'new', message: 'Not a member?')
+    end
+
     user = ldap_user || saml_user || credentials_or_google_user
 
     return render(action: 'new') unless user.present?

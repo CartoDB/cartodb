@@ -101,7 +101,7 @@
     },
     "filter-by-node-column": {
       "title": "Filter by layer",
-      "description": "Filter by layer allows you to filter the data in your layer by propagating the filters in the attached layer. Now if you filter on widgets added to the '%{name_of_filter_source_layer}' layer, the results in the '%{name_of_source_layer}' layer would be also filtered."
+      "description": "Filter by layer allows you to filter the data in your layer by propagating the filters in the attached layer. Now if you filter on widgets added to the '%{name_of_filter_source_node}' node, the results in the '%{name_of_source_node}' node would be also filtered."
     },
     "spatial-markov-trend": {
       "trend": "The normalized trend for each geometry",

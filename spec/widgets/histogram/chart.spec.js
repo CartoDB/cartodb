@@ -115,6 +115,7 @@ describe('widgets/histogram/chart', function () {
       expect(this.view.updateYScale).toHaveBeenCalled();
       expect(this.view.refresh).toHaveBeenCalled();
     });
+
     it('should denormalize', function () {
       spyOn(this.view, 'updateYScale');
       this.view.setNormalized(false);
@@ -255,6 +256,465 @@ describe('widgets/histogram/chart', function () {
       it('should restore the y scale on request', function () {
         this.view.resetYScale();
         expect(this.view.yScale).toEqual(this.originalScale);
+      });
+    });
+  });
+
+  describe('_calculateDataDomain', function () {
+    beforeEach(function () {
+      this.applyNewData = function (d) {
+        this.view.model.attributes.data = d;
+      };
+    });
+
+    describe('without filter', function () {
+      beforeEach(function () {
+        spyOn(this.view, '_hasFilterApplied').and.returnValue(false);
+      });
+
+      describe('all bins with freq data', function () {
+        it('should return the min and max value from the first and last bins', function () {
+          this.applyNewData([
+            {
+              min: 0,
+              max: 2,
+              freq: 1
+            },
+            {
+              min: 2.1,
+              max: 4,
+              freq: 3
+            },
+            {
+              min: 4.1,
+              max: 6,
+              freq: 2
+            }
+          ]);
+
+          expect(this.view._calculateDataDomain()).toEqual([0, 6]);
+        });
+      });
+
+      describe('not all bins with freq data', function () {
+        it('should return start and end values from bins with frequency (1)', function () {
+          this.applyNewData([
+            {
+              min: 0,
+              max: 2,
+              freq: 0
+            },
+            {
+              min: 2.1,
+              max: 4,
+              freq: 3
+            },
+            {
+              min: 4.1,
+              max: 6,
+              freq: 2
+            }
+          ]);
+          expect(this.view._calculateDataDomain()).toEqual([2.1, 6]);
+        });
+
+        it('should return start and end values from bins with frequency (2)', function () {
+          this.applyNewData([
+            {
+              min: 1,
+              max: 2,
+              freq: 2
+            },
+            {
+              min: 2.1,
+              max: 4,
+              freq: 3
+            },
+            {
+              min: 6.1,
+              max: 8,
+              freq: 0
+            }
+          ]);
+          expect(this.view._calculateDataDomain()).toEqual([1, 4]);
+        });
+
+        it('should return start and end values from bins with frequency (3)', function () {
+          this.applyNewData([
+            {
+              min: 0,
+              max: 2,
+              freq: 0
+            },
+            {
+              min: 2.1,
+              max: 4,
+              freq: 3
+            },
+            {
+              min: 4.1,
+              max: 6,
+              freq: 2
+            },
+            {
+              min: 6.1,
+              max: 8,
+              freq: 0
+            }
+          ]);
+
+          expect(this.view._calculateDataDomain()).toEqual([2.1, 6]);
+        });
+
+        it('should return start and end values from bins with frequency (4)', function () {
+          this.applyNewData([
+            {
+              min: 0,
+              max: 2,
+              freq: 0
+            },
+            {
+              min: 2.1,
+              max: 4,
+              freq: 3
+            },
+            {
+              min: 4.1,
+              max: 6,
+              freq: 0
+            },
+            {
+              min: 6.1,
+              max: 8,
+              freq: 10
+            },
+            {
+              min: 8.1,
+              max: 12,
+              freq: 0
+            }
+          ]);
+          expect(this.view._calculateDataDomain()).toEqual([2.1, 8]);
+        });
+      });
+    });
+
+    describe('with filter', function () {
+      beforeEach(function () {
+        spyOn(this.view, '_hasFilterApplied').and.returnValue(true);
+      });
+
+      describe('all bins with freq data', function () {
+        it('should return the min and max value from the first and last bins', function () {
+          spyOn(this.view, '_getLoBarIndex').and.returnValue(1);
+          spyOn(this.view, '_getHiBarIndex').and.returnValue(2);
+
+          this.applyNewData([
+            {
+              min: 0,
+              max: 2,
+              freq: 1
+            },
+            {
+              min: 2.1,
+              max: 4,
+              freq: 3
+            },
+            {
+              min: 4.1,
+              max: 6,
+              freq: 2
+            }
+          ]);
+
+          expect(this.view._calculateDataDomain()).toEqual([2.1, 4]);
+        });
+      });
+
+      describe('not all bins with freq data', function () {
+        it('should return start and end values from bins with frequency (1)', function () {
+          spyOn(this.view, '_getLoBarIndex').and.returnValue(1);
+          spyOn(this.view, '_getHiBarIndex').and.returnValue(2);
+
+          this.applyNewData([
+            {
+              min: 0,
+              max: 2,
+              freq: 0
+            },
+            {
+              min: 2.1,
+              max: 4,
+              freq: 3
+            },
+            {
+              min: 4.1,
+              max: 6,
+              freq: 0
+            }
+          ]);
+          expect(this.view._calculateDataDomain()).toEqual([2.1, 4]);
+        });
+
+        it('should return start and end values from bins with frequency (2)', function () {
+          spyOn(this.view, '_getLoBarIndex').and.returnValue(1);
+          spyOn(this.view, '_getHiBarIndex').and.returnValue(3);
+
+          this.applyNewData([
+            {
+              min: 1,
+              max: 2,
+              freq: 2
+            },
+            {
+              min: 2.1,
+              max: 4,
+              freq: 3
+            },
+            {
+              min: 6.1,
+              max: 8,
+              freq: 0
+            }
+          ]);
+          expect(this.view._calculateDataDomain()).toEqual([2.1, 4]);
+        });
+
+        it('should return start and end values from bins with frequency (3)', function () {
+          spyOn(this.view, '_getLoBarIndex').and.returnValue(0);
+          spyOn(this.view, '_getHiBarIndex').and.returnValue(4);
+
+          this.applyNewData([
+            {
+              min: 0,
+              max: 2,
+              freq: 0
+            },
+            {
+              min: 2.1,
+              max: 4,
+              freq: 3
+            },
+            {
+              min: 4.1,
+              max: 6,
+              freq: 2
+            },
+            {
+              min: 6.1,
+              max: 8,
+              freq: 0
+            },
+            {
+              min: 8.1,
+              max: 10,
+              freq: 2
+            }
+          ]);
+
+          expect(this.view._calculateDataDomain()).toEqual([2.1, 6]);
+        });
+
+        it('should return start and end values from bins with frequency (4)', function () {
+          spyOn(this.view, '_getLoBarIndex').and.returnValue(1);
+          spyOn(this.view, '_getHiBarIndex').and.returnValue(4);
+
+          this.applyNewData([
+            {
+              min: 0,
+              max: 2,
+              freq: 0
+            },
+            {
+              min: 2.1,
+              max: 4,
+              freq: 3
+            },
+            {
+              min: 4.1,
+              max: 6,
+              freq: 0
+            },
+            {
+              min: 6.1,
+              max: 8,
+              freq: 10
+            },
+            {
+              min: 8.1,
+              max: 12,
+              freq: 0
+            }
+          ]);
+          expect(this.view._calculateDataDomain()).toEqual([2.1, 8]);
+        });
+
+        it('should return start and end values from bins with frequency (5)', function () {
+          spyOn(this.view, '_getLoBarIndex').and.returnValue(1);
+          spyOn(this.view, '_getHiBarIndex').and.returnValue(5);
+
+          this.applyNewData([
+            {
+              min: 0,
+              max: 2,
+              freq: 0
+            },
+            {
+              min: 2.1,
+              max: 4,
+              freq: 0
+            },
+            {
+              min: 4.1,
+              max: 6,
+              freq: 0
+            },
+            {
+              min: 6.1,
+              max: 8,
+              freq: 0
+            },
+            {
+              min: 8.1,
+              max: 12,
+              freq: 0
+            }
+          ]);
+          expect(this.view._calculateDataDomain()).toEqual([2.1, 12]);
+        });
+      });
+    });
+  });
+
+  describe('_generateFillGradients', function () {
+    beforeEach(function () {
+      this.redColor = 'rgb(255, 0, 0)';
+      this.yellowColor = 'rgb(255, 255, 0)';
+
+      var definitionObj = {
+        definition: {
+          point: {
+            color: {
+              range: [this.redColor, 'blue', 'brown', this.yellowColor]
+            }
+          }
+        }
+      };
+      spyOn(this.view._widgetModel, 'getAutoStyle').and.returnValue(definitionObj);
+
+      var data = [
+        {
+          min: 0,
+          max: 2,
+          freq: 5
+        },
+        {
+          min: 2.1,
+          max: 4,
+          freq: 1
+        },
+        {
+          min: 4.1,
+          max: 6,
+          freq: 5
+        },
+        {
+          min: 6.1,
+          max: 8,
+          freq: 8
+        },
+        {
+          min: 8.1,
+          max: 12,
+          freq: 10
+        }
+      ];
+
+      this.view.model.attributes.data = data;
+      this.view._removeFillGradients();
+    });
+
+    it('should generate as many gradients as data we have', function () {
+      this.view._generateFillGradients();
+      expect(this.view.$('linearGradient').length).toBe(5);
+    });
+
+    it('should generate 5 stops in each gradient', function () {
+      this.view._generateFillGradients();
+      var data = this.view.model.get('data');
+      _.each(data.length, function (d, i) {
+        expect(this.view.$('linearGradient:eq(' + i + ') stop').length).toBe(5);
+      }, this);
+    });
+
+    describe('gradient generation', function () {
+      describe('no colors ramp', function () {
+        it('should not create the proper gradient ramp if bucket is out of domain', function () {
+          spyOn(this.view, '_calculateDataDomain').and.returnValue([2.1, 8]);
+          this.view._generateFillGradients();
+
+          // Out of domain at the beginning
+          this.view.$('linearGradient:eq(0) stop').each(function (i, el) {
+            expect($(el).attr('stop-color')).toBe(this.redColor);
+          }.bind(this));
+
+          // Out of domain at the end
+          this.view.$('linearGradient:eq(4) stop').each(function (i, el) {
+            expect($(el).attr('stop-color')).toBe(this.yellowColor);
+          }.bind(this));
+        });
+
+        it('should not create the proper gradient ramp if bucket is empty at the beginning', function () {
+          this.view.model.attributes.data[0].freq = 0;
+          this.view._generateFillGradients();
+
+          // No data in the first bucket
+          this.view.$('linearGradient:eq(0) stop').each(function (i, el) {
+            expect($(el).attr('stop-color')).toBe(this.redColor);
+          }.bind(this));
+        });
+
+        it('should not create the proper gradient ramp if bucket is empty at the end', function () {
+          this.view.model.attributes.data[4].freq = 0;
+          this.view._generateFillGradients();
+
+          // No data in the last bucket
+          this.view.$('linearGradient:eq(4) stop').each(function (i, el) {
+            expect($(el).attr('stop-color')).toBe(this.yellowColor);
+          }.bind(this));
+        });
+      });
+
+      describe('colors ramp', function () {
+        it('should generate the proper ramp for each gradient', function () {
+          this.view._generateFillGradients();
+
+          expect(this.view.$('linearGradient:eq(0) stop:eq(0)').attr('stop-color')).toBe(this.redColor);
+          expect(this.view.$('linearGradient:eq(0) stop:eq(1)').attr('stop-color')).not.toBe(this.redColor);
+          expect(this.view.$('linearGradient:eq(4) stop:eq(4)').attr('stop-color')).toBe(this.yellowColor);
+          expect(this.view.$('linearGradient:eq(4) stop:eq(3)').attr('stop-color')).not.toBe(this.yellowColor);
+
+          // Checking middle bin gradient
+          expect(this.view.$('linearGradient:eq(2) stop:eq(0)').attr('stop-color')).toBe('rgb(69, 8, 177)'); // From blue
+          expect(this.view.$('linearGradient:eq(2) stop:eq(1)').attr('stop-color')).toBe('rgb(68, 11, 175)');
+          expect(this.view.$('linearGradient:eq(2) stop:eq(2)').attr('stop-color')).toBe('rgb(71, 14, 168)');
+          expect(this.view.$('linearGradient:eq(2) stop:eq(3)').attr('stop-color')).toBe('rgb(79, 19, 157)');
+          expect(this.view.$('linearGradient:eq(2) stop:eq(4)').attr('stop-color')).toBe('rgb(90, 25, 142)'); // To purple
+        });
+
+        it('should create the proper gradient ramp althogh all buckets are empty', function () {
+          var data = this.view.model.attributes.data;
+          _.each(data, function (d, i) {
+            d.freq = 0;
+          });
+          this.view._generateFillGradients();
+
+          // No data in the last bucket
+          expect(this.view.$('linearGradient:eq(0) stop:eq(0)').attr('stop-color')).toBe(this.redColor);
+          expect(this.view.$('linearGradient:eq(0) stop:eq(1)').attr('stop-color')).not.toBe(this.redColor);
+          expect(this.view.$('linearGradient:eq(4) stop:eq(4)').attr('stop-color')).toBe(this.yellowColor);
+          expect(this.view.$('linearGradient:eq(4) stop:eq(3)').attr('stop-color')).not.toBe(this.yellowColor);
+        });
       });
     });
   });

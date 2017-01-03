@@ -964,6 +964,16 @@ module.exports = cdb.core.View.extend({
     return axis;
   },
 
+  _getMinValueFromBinIndex: function (binIndex) {
+    var data = this.model.get('data');
+    return data[binIndex].min != null ? data[binIndex].min : data[binIndex].start;
+  },
+
+  _getMaxValueFromBinIndex: function (binIndex) {
+    var data = this.model.get('data');
+    return data[binIndex].max != null ? data[binIndex].max : data[binIndex].end;
+  },
+
   _calculateDataDomain: function () {
     var data = _.clone(this.model.get('data'));
     var minBin;
@@ -972,8 +982,8 @@ module.exports = cdb.core.View.extend({
     var maxValue;
 
     if (!this._hasFilterApplied()) {
-      minValue = (data[0].min || data[0].start);
-      maxValue = (data[data.length - 1].max || data[data.length - 1].end);
+      minValue = this._getMinValueFromBinIndex(0);
+      maxValue = this._getMaxValueFromBinIndex(data.length - 1);
 
       minBin = _.find(data, function (d) {
         return d.freq !== 0;
@@ -987,8 +997,8 @@ module.exports = cdb.core.View.extend({
       var hiBarIndex = this._getHiBarIndex() - 1;
       var filteredData = data.slice(loBarIndex, hiBarIndex);
 
-      minValue = data[loBarIndex].min || data[loBarIndex].start;
-      maxValue = data[hiBarIndex].max || data[hiBarIndex].end;
+      minValue = this._getMinValueFromBinIndex(loBarIndex);
+      maxValue = this._getMaxValueFromBinIndex(hiBarIndex);
 
       if (data[loBarIndex].freq === 0) {
         minBin = _.find(filteredData, function (d) {
@@ -1004,8 +1014,8 @@ module.exports = cdb.core.View.extend({
       }
     }
 
-    minValue = minBin ? (minBin.min || minBin.start) : minValue;
-    maxValue = maxBin ? (maxBin.max || maxBin.end) : maxValue;
+    minValue = minBin ? (minBin.min != null ? minBin.min : minBin.start) : minValue;
+    maxValue = maxBin ? (maxBin.max != null ? maxBin.max : maxBin.end) : maxValue;
 
     return [minValue, maxValue];
   },
@@ -1015,6 +1025,9 @@ module.exports = cdb.core.View.extend({
     defs.remove();
   },
 
+  // Generate a linear-gradient with several stops for each bar
+  // in order to generate the proper colors ramp. It will depend
+  // of the domain of the selected data.
   _generateFillGradients: function () {
     if (!this._widgetModel.isAutoStyleEnabled()) {
       return false;
@@ -1043,7 +1056,10 @@ module.exports = cdb.core.View.extend({
       .enter()
       .append('linearGradient')
       .attr('id', function (d, i) {
-        this.__scale__ = d3.scale.linear().range([ d.start, d.end ]).domain([0, 1]);
+        // This is the scale for each bin, used in each stop within this gradient
+        this.__scale__ = d3.scale.linear()
+          .range([ self._getMinValueFromBinIndex(i), self._getMaxValueFromBinIndex(i) ])
+          .domain([0, 1]);
         return 'bar-' + self.cid + '-' + i;
       })
       .attr('x1', '0%')

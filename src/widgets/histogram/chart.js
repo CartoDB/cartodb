@@ -1072,10 +1072,6 @@ module.exports = cdb.core.View.extend({
     this._generateFillGradients();
   },
 
-  _hasFilterApplied: function () {
-    return this.model.get('lo_index') != null && this.model.get('hi_index') != null;
-  },
-
   _getFillColor: function (d, i) {
     if (this._widgetModel) {
       if (this._widgetModel.isAutoStyle()) {
@@ -1302,6 +1298,10 @@ module.exports = cdb.core.View.extend({
     // We need to explicitly move the lines of the grid behind the shadow bars
     this.chart.selectAll('.CDB-Chart-shadowBars').moveToBack();
     this.chart.selectAll('.CDB-Chart-lines').moveToBack();
+  },
+
+  _hasFilterApplied: function () {
+    return this.model.get('lo_index') != null && this.model.get('hi_index') != null;
   },
 
   unsetBounds: function () {

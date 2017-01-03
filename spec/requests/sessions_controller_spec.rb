@@ -357,7 +357,7 @@ describe SessionsController do
     end
 
     describe 'with Central' do
-      before(:all) do
+      before(:each) do
         Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
       end
 
@@ -380,16 +380,27 @@ describe SessionsController do
 
       it 'disallows login from an organization login page to a non-member' do
         Carto::Organization.any_instance.stubs(:auth_enabled?).returns(true)
-        post create_session_url(user_domain: @organization.name, username: @user.username)
+        post create_session_url(user_domain: @organization.name, email: @user.username, password: @user.password)
         response.status.should == 200
         response.body.should include 'Not a member'
       end
     end
 
-    it 'without Central, it does not redirect' do
-      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
-      get login_url(user_domain: @user.username)
-      response.status.should == 200
+    describe 'without Central' do
+      before(:each) do
+        Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+      end
+
+      it 'does not redirect' do
+        get login_url(user_domain: @user.username)
+        response.status.should == 200
+      end
+
+      it 'allows login from an organization login page to a non-member' do
+        Carto::Organization.any_instance.stubs(:auth_enabled?).returns(true)
+        post create_session_url(user_domain: @organization.name, email: @user.username, password: @user.password)
+        response.status.should == 302
+      end
     end
   end
 

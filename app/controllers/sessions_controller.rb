@@ -40,14 +40,16 @@ class SessionsController < ApplicationController
       return redirect_to(saml_service.authentication_request)
     end
 
-    if Cartodb::Central.sync_data_with_cartodb_central? && (!@organization || !@organization.auth_enabled?)
+    if central_enabled? && (!@organization || !@organization.auth_enabled?)
       return redirect_to(Cartodb::Central.new.login_url)
     end
   end
 
   def create
-    if @organization && !@organization.users.exists?(name: extract_username(request, params))
-      return render(action: 'new', message: 'Not a member?')
+    if central_enabled? && @organization && !@organization.users.exists?(name: extract_username(request, params))
+      user_login_url = "#{Cartodb::Central.new.host}/login"
+      @error_message = "Not a member of #{@organization.name}? Go to <a href=''>#{user_login_url}</a>"
+      return render(action: 'new')
     end
 
     user = ldap_user || saml_user || credentials_or_google_user
@@ -56,7 +58,7 @@ class SessionsController < ApplicationController
 
     CartoDB::Stats::Authentication.instance.increment_login_counter(user.email)
 
-    redirect_to user.public_url << CartoDB.path(self, 'dashboard', {trailing_slash: true})
+    redirect_to user.public_url << CartoDB.path(self, 'dashboard', trailing_slash: true)
   end
 
   def destroy
@@ -158,7 +160,7 @@ class SessionsController < ApplicationController
     if !@organization.nil?
       # TODO: remove duplication (app/controllers/admin/organizations_controller.rb)
       signup_action = "#{CartoDB.protocol}://#{@organization.name}.#{CartoDB.account_host}#{CartoDB.path(self, 'signup_organization_user')}"
-    elsif Cartodb::Central.sync_data_with_cartodb_central?
+    elsif central_enabled?
       signup_action = Cartodb::Central.new.google_signup_url
     else
       signup_action = '/google/signup'
@@ -178,6 +180,10 @@ class SessionsController < ApplicationController
   end
 
   private
+
+  def central_enabled?
+    Cartodb::Central.sync_data_with_cartodb_central?
+  end
 
   def extract_username(request, params)
     # params[:email] can contain a username

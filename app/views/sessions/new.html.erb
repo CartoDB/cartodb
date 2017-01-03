@@ -90,6 +90,16 @@
                 <% if @github_config.present? %>
                   <%= render partial: 'github/github_button',  locals: { config: @github_config } %>
                 <% end %>
+
+                <% if @organization && @organization.auth_username_password_enabled %>
+                  <p class="CDB-Text CDB-Size-medium u-altTextColor u-tSpace--m u-justifyCenter Sessions-description">
+                    <% if @user_login_url %>
+                      Not a member of the <%= @organization.name %> organization? Try the <a href="<%= @user_login_url %>"> general login</a> instead.
+                    <% else %>
+                      Please, remember to use an email address belonging to this organization to login to your account.
+                    <% end %>
+                  </p>
+                <% end %>
               </div>
             </div>
           </div>

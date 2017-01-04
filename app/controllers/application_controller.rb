@@ -18,7 +18,6 @@ class ApplicationController < ActionController::Base
   before_filter :browser_is_html5_compliant?
   before_filter :set_asset_debugging
   before_filter :cors_preflight_check
-  before_filter :prepend_custom_views_path
   after_filter  :allow_cross_domain_access
   after_filter  :remove_flash_cookie
   after_filter  :add_revision_header
@@ -37,12 +36,6 @@ class ApplicationController < ActionController::Base
   end
 
   protected
-
-  DEFAULT_CUSTOM_VIEWS_PATH = 'app/views/custom'.freeze
-
-  def prepend_custom_views_path
-    prepend_view_path(Cartodb.get_config(:paths, custom_views) || DEFAULT_CUSTOM_VIEWS_PATH)
-  end
 
   def handle_unverified_request
     render_403

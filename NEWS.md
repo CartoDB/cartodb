@@ -31,6 +31,7 @@ Development
     * Login page: http(s)://<ip-address>/user/ORGANIZATION_NAME/login.
     * `assertion_consumer_service_url`: 'https://<ip-address>/user/<org-name>/saml/finalize'. Check that your server has this URL for the service provider ACS URL.
 * Autostyling (#10420)
+  * Correctly handle legends (#11121)
 
 ### Bug fixes
 * Categories legend are now static (#10972)

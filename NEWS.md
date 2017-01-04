@@ -25,6 +25,7 @@ Development
 * Snapshots (backend: #10928) allow to save and share map state.
 * Icon styling through in component (#11005)
 * Allow to set opacity for color ramps (#10952)
+* Added Fullstory integration, can be configured in app_config
 * SAML Authentication for organizations. Example:
   * Use the task at `lib/tasks/saml.rake` for configuration.
   * Subdomainless URLs:

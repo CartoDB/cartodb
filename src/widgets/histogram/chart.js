@@ -999,16 +999,20 @@ module.exports = cdb.core.View.extend({
       var hiBarIndex = this._getHiBarIndex() - 1;
       var filteredData = data.slice(loBarIndex, hiBarIndex);
 
+      if (_.isNaN(loBarIndex) || _.isNaN(hiBarIndex)) {
+        return [0, 0];
+      }
+
       minValue = this._getMinValueFromBinIndex(loBarIndex);
       maxValue = this._getMaxValueFromBinIndex(hiBarIndex);
 
-      if (data[loBarIndex].freq === 0) {
+      if (data[loBarIndex] && data[loBarIndex].freq === 0) {
         minBin = _.find(filteredData, function (d) {
           return d.freq !== 0;
         }, this);
       }
 
-      if (data[hiBarIndex].freq === 0) {
+      if (data[hiBarIndex] && data[hiBarIndex].freq === 0) {
         var reversedData = filteredData.reverse();
         maxBin = _.find(reversedData, function (d) {
           return d.freq !== 0;

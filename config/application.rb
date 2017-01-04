@@ -174,11 +174,7 @@ module CartoDB
     frontend_assets_version = JSON::parse(File.read(Rails.root.join('package.json')))['version']
     config.action_controller.relative_url_root = "/assets/#{frontend_assets_version}"
 
-    custom_views_path = Cartodb.get_config(:paths, 'custom_views_path') ||
-                        'app/views/custom'
-
-    ActionController::Base.prepend_view_path(custom_views_path)
-    ActionMailer::Base.prepend_view_path(custom_views_path)
+    config.paths['app/views'].unshift('app/views/custom')
   end
 end
 

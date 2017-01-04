@@ -8,26 +8,28 @@
         <span class="label js-label"><%- label %></span>
       </div>
 
-      <div class='CDB-ListDecoration-secondaryContainer'>
-        <nav class='CDB-NavMenu'>
-          <ul class='CDB-NavMenu-Inner CDB-NavMenu-inner--no-margin js-menu'>
-            <li class='CDB-NavMenu-item is-selected'>
-              <div class='CDB-NavMenu-link CDB-ListDecoration-rampNav-item'>
-                <button class='ColorBar CDB-ListDecoration-rampItemBar u-rSpace--xl js-colorPicker' style="background-color: <%= color %>;"></button>
-              </div>
-            </li>
-            <li class='CDB-NavMenu-item'>
-              <div class='CDB-NavMenu-link CDB-ListDecoration-rampNav-item'>
-                <% if (image) { %>
-                  <button class='CDB-ListDecoration-rampImg js-image-container'></button>
-                <% } else { %>
-                  <button class="CDB-ListDecoration-rampImg CDB-Text u-actionTextColor js-assetPicker"><%= _t('form-components.editors.fill.input-color.img') %></button>
-                <% } %>
-              </div>
-            </li>
-          </ul>
-        </nav>
-      </div>
+      <% if (isCategorized && iconStylingEnabled) { %>
+        <div class='CDB-ListDecoration-secondaryContainer'>
+          <nav class='CDB-NavMenu'>
+            <ul class='CDB-NavMenu-Inner CDB-NavMenu-inner--no-margin js-menu'>
+              <li class='CDB-NavMenu-item is-selected'>
+                <div class='CDB-NavMenu-link CDB-ListDecoration-rampNav-item'>
+                  <button class='ColorBar CDB-ListDecoration-rampItemBar u-rSpace--xl js-colorPicker' type="button" style="background-color: <%= color %>;"></button>
+                </div>
+              </li>
+              <li class='CDB-NavMenu-item'>
+                <div class='CDB-NavMenu-link CDB-ListDecoration-rampNav-item'>
+                  <% if (image) { %>
+                    <button class='CDB-ListDecoration-rampImg js-image-container'></button>
+                  <% } else { %>
+                    <button class="CDB-ListDecoration-rampImg CDB-Text u-actionTextColor js-assetPicker"><%= _t('form-components.editors.fill.input-color.img') %></button>
+                  <% } %>
+                </div>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      <% } %>
     </li>
   </ul>
 </div>

@@ -1031,7 +1031,7 @@ module.exports = cdb.core.View.extend({
   // in order to generate the proper colors ramp. It will depend
   // of the domain of the selected data.
   _generateFillGradients: function () {
-    if (!this._widgetModel.isAutoStyleEnabled()) {
+    if (!this._widgetModel || !this._widgetModel.isAutoStyleEnabled()) {
       return false;
     }
 

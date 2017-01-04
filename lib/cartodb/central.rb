@@ -29,7 +29,7 @@ module Cartodb
     end
 
     def login_url
-      "#{host}/login"
+      URI.join(host, 'login').to_s
     end
 
     def build_request(path, body, method, timeout = 200)

@@ -40,7 +40,7 @@ class SessionsController < ApplicationController
       return redirect_to(saml_service.authentication_request)
     end
 
-    if central_enabled? && (!@organization || !@organization.auth_enabled?)
+    if central_enabled? && !@organization.try(:auth_enabled?)
       return redirect_to(Cartodb::Central.new.login_url)
     end
   end

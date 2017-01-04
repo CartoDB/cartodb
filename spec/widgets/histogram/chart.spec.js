@@ -582,6 +582,40 @@ describe('widgets/histogram/chart', function () {
           ]);
           expect(this.view._calculateDataDomain()).toEqual([2.1, 12]);
         });
+
+        it('should return 0, 0 when lo and hi bar indexes are NaN', function () {
+          spyOn(this.view, '_getLoBarIndex').and.returnValue(NaN);
+          spyOn(this.view, '_getHiBarIndex').and.returnValue(NaN);
+
+          this.applyNewData([
+            {
+              min: 0,
+              max: 2,
+              freq: 0
+            },
+            {
+              min: 2.1,
+              max: 4,
+              freq: 0
+            },
+            {
+              min: 4.1,
+              max: 6,
+              freq: 0
+            },
+            {
+              min: 6.1,
+              max: 8,
+              freq: 0
+            },
+            {
+              min: 8.1,
+              max: 12,
+              freq: 0
+            }
+          ]);
+          expect(this.view._calculateDataDomain()).toEqual([0, 0]);
+        });
       });
     });
   });

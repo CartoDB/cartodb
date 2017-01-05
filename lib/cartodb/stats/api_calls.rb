@@ -108,9 +108,9 @@ module CartoDB
         # Retrieve matching months from Redis with ZSCAN
         # TODO: move to single request if Redis gem ever supports multiple matches
         calls = []
-        matching_months_date = date_from
-        while(matching_months_date < date_to + 1.month) do
-          calls = calls.concat $users_metadata.zscan(redis_key, 0, { match: "#{matching_months_date.strftime('%Y%m')}*"} )
+        matching_months_date = date_from.beginning_of_month
+        while matching_months_date <= date_to
+          calls = calls.concat $users_metadata.zscan(redis_key, 0, match: "#{matching_months_date.strftime('%Y%m')}*")
           matching_months_date += 1.month
         end
 

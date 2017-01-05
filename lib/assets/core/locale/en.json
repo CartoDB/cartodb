@@ -101,7 +101,7 @@
     },
     "filter-by-node-column": {
       "title": "Filter by layer",
-      "description": "Filter by layer allows you to filter the data in your layer by propagating the filters in the '%{name_of_the_layer}' layer. Now if you filter on widgets added to the attached layer, the results in this layer would be also filtered."
+      "description": "Filter by layer allows you to filter the data in your layer by propagating the filters in the attached layer. Now if you filter on widgets added to the '%{name_of_filter_source_node}' node, the results in the '%{name_of_source_node}' node would be also filtered."
     },
     "spatial-markov-trend": {
       "trend": "The normalized trend for each geometry",
@@ -2080,8 +2080,13 @@
       "completed": "Analysis %{nodeId} completed",
       "failed": "Analysis %{nodeId} failed",
       "removed": "Analysis %{nodeId} deleted",
+      "contact": {
+        "label": "contact us",
+        "mail": "support@carto.com"
+      },
+      "sample": "sample",
       "errors": {
-        "timeout": "The execution of the analysis timed out and was stopped",
+        "timeout": "Your analysis has taken too long. Try to %{sample} your data or %{contact} for further assistance",
         "without-geom-webmercator": "The column \"the_geom_webmercator\" does not exist"
       }
     },

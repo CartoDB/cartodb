@@ -488,6 +488,10 @@ class Carto::Visualization < ActiveRecord::Base
     super ? super : build_state
   end
 
+  def can_be_private?
+    derived? ? user.try(:private_maps_enabled) : user.try(:private_tables_enabled)
+  end
+
   private
 
   def auto_generate_indices_for_all_layers

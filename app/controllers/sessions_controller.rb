@@ -12,7 +12,7 @@ class SessionsController < ApplicationController
 
   layout 'frontend'
   ssl_required :new, :create, :destroy, :show, :unauthenticated, :account_token_authentication_error,
-               :ldap_user_not_at_cartodb
+               :ldap_user_not_at_cartodb, :saml_user_not_at_cartodb
 
   skip_before_filter :ensure_org_url_if_org_user # Don't force org urls
 
@@ -23,7 +23,7 @@ class SessionsController < ApplicationController
   # In case of fallback on SAML authorization failed, it will be manually checked.
   skip_before_filter :verify_authenticity_token, only: [:create], if: :saml_authentication?
   skip_before_filter :ensure_account_has_been_activated,
-                     only: [:account_token_authentication_error, :ldap_user_not_at_cartodb]
+                     only: [:account_token_authentication_error, :ldap_user_not_at_cartodb, :saml_user_not_at_cartodb]
 
   before_filter :load_organization
   before_filter :initialize_google_plus_config,
@@ -44,7 +44,7 @@ class SessionsController < ApplicationController
   def create
     user = ldap_user || saml_user || credentials_or_google_user
 
-    (render :action => 'new' and return) unless (params[:user_domain].present? || user.present?)
+    return render(action: 'new') unless user.present?
 
     CartoDB::Stats::Authentication.instance.increment_login_counter(user.email)
 
@@ -52,10 +52,7 @@ class SessionsController < ApplicationController
   end
 
   def destroy
-    # Make sure sessions are destroyed on both scopes: username and default
-    cdb_logout
-
-    redirect_to CartoDB.url(self, 'public_visualizations_home')
+    saml_authentication? ? saml_logout : do_logout
   end
 
   def show
@@ -88,24 +85,41 @@ class SessionsController < ApplicationController
 
   # Meant to be called always from warden LDAP authentication
   def ldap_user_not_at_cartodb
-    warden.custom_failure!
+    render action: 'new' and return unless verify_warden_failure
 
-    if !warden.env['warden.options']
-      render :action => 'new' and return
-    end
-
-    cartodb_username = warden.env['warden.options'][:cartodb_username]
+    username = warden.env['warden.options'][:cartodb_username]
     organization_id = warden.env['warden.options'][:organization_id]
-    ldap_username = warden.env['warden.options'][:ldap_username]
-    ldap_email = warden.env['warden.options'][:ldap_email].blank? ? nil : warden.env['warden.options'][:ldap_email]
+    email = warden.env['warden.options'][:ldap_email].blank? ? nil : warden.env['warden.options'][:ldap_email]
+    created_via = Carto::UserCreation::CREATED_VIA_LDAP
 
+    create_user(username, organization_id, email, created_via)
+  end
+
+  # Meant to be called always from warden SAML authentication
+  def saml_user_not_at_cartodb
+    render action: 'new' and return unless verify_warden_failure
+
+    email = warden.env['warden.options'][:saml_email]
+    username = CartoDB::UserAccountCreator.email_to_username(email)
+    organization_id = warden.env['warden.options'][:organization_id]
+    created_via = Carto::UserCreation::CREATED_VIA_SAML
+
+    create_user(username, organization_id, email, created_via)
+  end
+
+  def verify_warden_failure
+    warden.custom_failure!
+    warden.env['warden.options']
+  end
+
+  def create_user(username, organization_id, email, created_via)
     @organization = ::Organization.where(id: organization_id).first
 
-    account_creator = CartoDB::UserAccountCreator.new(Carto::UserCreation::CREATED_VIA_LDAP)
+    account_creator = CartoDB::UserAccountCreator.new(created_via)
 
     account_creator.with_organization(@organization)
-                   .with_username(cartodb_username)
-    account_creator.with_email(ldap_email) unless ldap_email.nil?
+                   .with_username(username)
+    account_creator.with_email(email) unless email.nil?
 
     if account_creator.valid?
       creation_data = account_creator.enqueue_creation(self)
@@ -118,12 +132,13 @@ class SessionsController < ApplicationController
     else
       errors = account_creator.validation_errors
       CartoDB.notify_debug('User not valid at signup', { errors: errors } )
-      @signup_source = 'LDAP'
+      @signup_source = created_via.upcase
       @signup_errors = errors
       render 'shared/signup_issue'
     end
   rescue => e
-    CartoDB.report_exception(e, "Creating LDAP user", new_user: account_creator.nil? ? "account_creator nil" : account_creator.user.inspect)
+    new_user = account_creator.nil? ? "account_creator nil" : account_creator.user.inspect
+    CartoDB.report_exception(e, "Creating user", new_user: new_user)
     flash.now[:error] = e.message
     render action: 'new'
   end
@@ -154,16 +169,22 @@ class SessionsController < ApplicationController
     end
   end
 
-  def extract_username(request, params)
-    (params[:email].present? ? username_from_email(params[:email]) : CartoDB.extract_subdomain(request)).strip.downcase
-  end
-
-  def username_from_email(email)
-    user = ::User.where(email: email).first
-    user.present? ? user.username : email
-  end
-
   private
+
+  def extract_username(request, params)
+    # params[:email] can contain a username
+    email = params[:email]
+    username = if email.present?
+                 email.include?('@') ? username_from_user_by_email(params[:email]) : email
+               else
+                 CartoDB.extract_subdomain(request)
+               end
+    username.strip.downcase if username
+  end
+
+  def username_from_user_by_email(email)
+    ::User.where(email: email).first.try(:username)
+  end
 
   def ldap_user
     authenticate_with_ldap if ldap_authentication?
@@ -192,8 +213,9 @@ class SessionsController < ApplicationController
   def authenticate_with_saml
     return nil unless params[:SAMLResponse].present?
 
-    username = saml_service.username(params[:SAMLResponse])
-    username ? authenticate!(:saml, scope: username) : nil
+    email = saml_service.get_user_email(params[:SAMLResponse])
+    username = username_from_user_by_email(email) if email
+    authenticate!(:saml, scope: username)
   end
 
   # TODO: split
@@ -238,9 +260,35 @@ class SessionsController < ApplicationController
 
   def load_organization
     return @organization if @organization
+    # Useful for logout
+    return current_user.organization if current_user
 
-    subdomain = CartoDB.subdomain_from_request(request)
+    subdomain = CartoDB.extract_subdomain(request)
     @organization = Carto::Organization.where(name: subdomain).first if subdomain
   end
 
+  def do_logout
+    # Make sure sessions are destroyed on both scopes: username and default
+    cdb_logout
+
+    redirect_to default_logout_url
+  end
+
+  def saml_logout
+    if params[:SAMLRequest]
+      # If we're given a logout request, handle it in the IdP logout initiated method
+      redirect_to saml_service.idp_logout_request(params[:SAMLRequest], params[:RelayState]) { cdb_logout }
+    elsif params[:SAMLResponse]
+      # We've been given a response back from the IdP, process it
+      saml_service.process_logout_response(params[:SAMLResponse]) { cdb_logout }
+      redirect_to default_logout_url
+    else
+      # Initiate SLO (send Logout Request)
+      redirect_to saml_service.sp_logout_request
+    end
+  end
+
+  def default_logout_url
+    CartoDB.url(self, 'public_visualizations_home')
+  end
 end

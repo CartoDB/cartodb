@@ -8,20 +8,23 @@ module Carto::Metrics
       :mapviews
     ].freeze
 
-    def initialize(user, orgname)
-      @user = user
+    MAPVIEWS_REDIS_KEYS = [
+      'mapviews',
+      'mapviews_es'
+    ].freeze
+
+    def initialize(username, orgname)
+      @username = username
       @organization = Carto::Organization.where(name: orgname).first
     end
 
     def get(_service, _metric, date)
-      if @organization
-        @organization.users.map { |user|
+      (@organization ? @organization.users.map(&:username) : [@username]).sum do |username|
+        MAPVIEWS_REDIS_KEYS.sum do |redis_key|
           CartoDB::Stats::APICalls.new.get_api_calls_from_redis_source(
-            user.username, 'mapviews', from: date, to: date
-          ).values[0]
-        }.sum
-      else
-        CartoDB::Stats::APICalls.new.get_api_calls_from_redis_source(@user, 'mapviews', from: date, to: date).values[0]
+            username, redis_key, from: date, to: date
+          ).values.first
+        end
       end
     end
   end

@@ -25,12 +25,14 @@ Development
 * Snapshots (backend: #10928) allow to save and share map state.
 * Icon styling through in component (#11005)
 * Allow to set opacity for color ramps (#10952)
+* Added Fullstory integration, can be configured in app_config
 * SAML Authentication for organizations. Example:
   * Use the task at `lib/tasks/saml.rake` for configuration.
   * Subdomainless URLs:
     * Login page: http(s)://<ip-address>/user/ORGANIZATION_NAME/login.
     * `assertion_consumer_service_url`: 'https://<ip-address>/user/<org-name>/saml/finalize'. Check that your server has this URL for the service provider ACS URL.
 * Autostyling (#10420)
+  * Correctly handle legends (#11121)
 
 ### Bug fixes
 * Categories legend are now static (#10972)

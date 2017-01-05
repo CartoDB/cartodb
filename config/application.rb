@@ -174,7 +174,9 @@ module CartoDB
     frontend_assets_version = JSON::parse(File.read(Rails.root.join('package.json')))['version']
     config.action_controller.relative_url_root = "/assets/#{frontend_assets_version}"
 
-    config.paths['app/views'].unshift('app/views/custom')
+    custom_app_views_paths.reverse.each do |custom_views_path|
+      config.paths['app/views'].unshift(custom_views_path)
+    end
   end
 end
 

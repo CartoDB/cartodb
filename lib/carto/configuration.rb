@@ -48,7 +48,9 @@ module Carto
     end
 
     def custom_app_views_paths
-      env_app_config['custom_paths']['views']
+      config = env_app_config
+
+      config['custom_paths'] && config['custom_paths']['views']
     end
 
     private

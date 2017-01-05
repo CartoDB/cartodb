@@ -49,8 +49,6 @@ module Carto
 
     def custom_app_views_paths
       env_app_config['custom_paths']['views']
-    rescue
-      Array.new
     end
 
     private

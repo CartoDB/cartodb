@@ -132,12 +132,19 @@
 
 @media (max-width: $reponsiveWidth) {
   .Editor {
-    .CDB-Widget-options {
+    .CDB-Widget-options,
+    .CDB-Widget-actions {
       @include display-flex();
     }
 
-    .CDB-Widget-actions {
-      display: none;
+    .CDB-Widget-body {
+      .CDB-Dropdown {
+        min-width: 150px;
+      }
+      .CDB-Dropdown-link {
+        padding: 8px 12px;
+        font-size: 11px;
+      }
     }
 
     .CDB-Widget-body.is-collapsed {

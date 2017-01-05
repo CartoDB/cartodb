@@ -145,6 +145,11 @@
         padding: 8px 12px;
         font-size: 11px;
       }
+      // There is no other way to recognice that element,
+      // and use nth-child is not an option.
+      .js-toggleCollapsed {
+        display: none;
+      }
     }
 
     .CDB-Widget-body.is-collapsed {

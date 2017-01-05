@@ -22,7 +22,11 @@ Development
     * The core frontend is in `lib/assets/core`
     * The customizations are in `lib/assets/client`
     * The end result are in `lib/assets/`
-  * You may also plug backend view templates in `app/views/custom`
+  * You may also plug backend view templates by specifying alternative paths in `app_config.yml`:
+```yaml
+  custom_paths:
+    views: [] # an array of paths were alternate view templates are found
+```
 * Snapshots (backend: #10928) allow to save and share map state.
 * Icon styling through in component (#11005)
 * Allow to set opacity for color ramps (#10952)

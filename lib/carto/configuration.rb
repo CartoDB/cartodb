@@ -48,7 +48,7 @@ module Carto
     end
 
     def custom_app_views_paths
-      Cartodb.get_config(:custom_paths, 'views')
+      env_app_config['custom_paths']['views']
     end
 
     private

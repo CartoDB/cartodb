@@ -23,7 +23,7 @@ Development
     * The customizations are in `lib/assets/client`
     * The end result are in `lib/assets/`
   * You may also plug backend view templates by specifying alternative paths in `app_config.yml`:
-    * Paths are inspected in the order supplied. First valid template is used. Default path is always inspected last.
+    * Paths are inspected in the supplied order. First valid template is used. Default path is always inspected last.
 ```yaml
   custom_paths:
     views: [] # an array of paths were alternate view templates are located.

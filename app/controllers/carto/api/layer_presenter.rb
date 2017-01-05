@@ -39,7 +39,7 @@ module Carto
       # - viewer_user
       # - user: owner user
       # - with_style_properties: request style_properties generation if needed or not. Default: false.
-      def initialize(layer, options={}, configuration={}, decoration_data={})
+      def initialize(layer, options = {}, configuration = {}, decoration_data = {})
         @layer            = layer
         @options          = options
         @configuration    = configuration
@@ -65,6 +65,13 @@ module Carto
 
       def to_json
         public_values(@layer).to_json
+      end
+
+      def to_embed_poro
+        {
+          id: @layer.id,
+          options: @layer.options.select { |k| ['tile_style', 'style_version'].include?(k) }
+        }
       end
 
       def to_vizjson_v2

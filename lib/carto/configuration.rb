@@ -47,6 +47,10 @@ module Carto
       end
     end
 
+    def custom_app_views_paths
+      Cartodb.get_config(:custom_paths, 'views')
+    end
+
     private
 
     def config_files_root

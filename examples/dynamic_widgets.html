@@ -22,41 +22,39 @@
 
   <script>
     window.onload = function() {
-      var vizJSON = 'https://juanignaciosl-ded03.carto-staging.com/api/v3/viz/7f4f7178-655e-11e6-bdcd-040146752f01/viz.json';
+      var vizJSON = 'https://editor3.carto.com/api/v3/viz/94a4362c-491f-11e6-a764-0e233c30368f/viz.json';
       cartodb.deepInsights.createDashboard('#dashboard', vizJSON, {
-        no_cdn: false,
-        autoStyle: true,
-        share_urls: true
+        no_cdn: false
       }, function(err, dashboard) {
-         // var map = dashboard.getMap();
-        //  var params = {
-        //     "title": "Custom category",
-        //     "column": "customer_value",
-        //     "aggregationColumn": "customer_value",
-        //     "aggregation": "count",
-        // };
+         var map = dashboard.getMap();
+         var params = {
+            "title": "Custom category",
+            "column": "adm0_a3",
+            "aggregationColumn": "adm0_a3",
+            "aggregation": "count",
+        };
         // adds a category using column `test` from the second layer
-        // dashboard.createCategoryWidget(params, map.getLayer(1));
+        dashboard.createCategoryWidget(params, map.getLayer(1));
         
-        // setTimeout(function() {
-        //   // add a histogram and a formula
-        //   params = {
-        //       "title": "Custom histogram",
-        //       "type": "histogram",
-        //       "column": "customer_value",
-        //       "operation": "avg",
-        //       "bins": 3
-        //   }
-        //   dashboard.createHistogramWidget(params, map.getLayer(1));
-        // }, 2000);
-        // setTimeout(function() {
-        //   params = {
-        //       "title": "Custom formula",
-        //       "column": "cartodb_id",
-        //       "operation": "count"
-        //   }
-        //   dashboard.createFormulaWidget(params, map.getLayer(1));
-        // }, 5000);
+        setTimeout(function() {
+          // add a histogram and a formula
+          params = {
+              "title": "Custom histogram",
+              "type": "histogram",
+              "column": "pop_min",
+              "operation": "avg",
+              "bins": 15
+          }
+          dashboard.createHistogramWidget(params, map.getLayer(1));
+        }, 2000);
+        setTimeout(function() {
+          params = {
+              "title": "Custom formula",
+              "column": "cartodb_id",
+              "operation": "count"
+          }
+          dashboard.createFormulaWidget(params, map.getLayer(1));
+        }, 5000);
       });
     }
   </script>

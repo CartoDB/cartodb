@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.5.74",
+  "version": "4.5.81",
   "dependencies": {
     "backbone": {
       "version": "1.2.3",
@@ -86,7 +86,7 @@
                             },
                             "readable-stream": {
                               "version": "2.0.6",
-                              "from": "readable-stream@>=2.0.5 <2.1.0",
+                              "from": "readable-stream@>=2.0.0 <2.1.0",
                               "resolved": "https://registry.npmjs.org/readable-stream/-/readable-stream-2.0.6.tgz",
                               "dependencies": {
                                 "core-util-is": {
@@ -364,9 +364,9 @@
                               "resolved": "https://registry.npmjs.org/async/-/async-2.1.4.tgz",
                               "dependencies": {
                                 "lodash": {
-                                  "version": "4.17.2",
+                                  "version": "4.17.4",
                                   "from": "lodash@>=4.14.0 <5.0.0",
-                                  "resolved": "https://registry.npmjs.org/lodash/-/lodash-4.17.2.tgz"
+                                  "resolved": "https://registry.npmjs.org/lodash/-/lodash-4.17.4.tgz"
                                 }
                               }
                             }
@@ -893,9 +893,9 @@
                               "resolved": "https://registry.npmjs.org/levn/-/levn-0.3.0.tgz"
                             },
                             "fast-levenshtein": {
-                              "version": "2.0.5",
+                              "version": "2.0.6",
                               "from": "fast-levenshtein@>=2.0.4 <2.1.0",
-                              "resolved": "https://registry.npmjs.org/fast-levenshtein/-/fast-levenshtein-2.0.5.tgz"
+                              "resolved": "https://registry.npmjs.org/fast-levenshtein/-/fast-levenshtein-2.0.6.tgz"
                             }
                           }
                         },
@@ -1012,7 +1012,7 @@
                     },
                     "inherits": {
                       "version": "2.0.3",
-                      "from": "inherits@>=2.0.0 <3.0.0",
+                      "from": "inherits@>=2.0.1 <2.1.0",
                       "resolved": "https://registry.npmjs.org/inherits/-/inherits-2.0.3.tgz"
                     }
                   }
@@ -1147,7 +1147,7 @@
     "cartodb-deep-insights.js": {
       "version": "0.0.2",
       "from": "cartodb/deep-insights.js#master",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#1672ba9b41cca7193de2390758c88560d79427ab",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#d5527b459923dbb538b13e86b267179f6148a044",
       "dependencies": {
         "cartodb.js": {
           "version": "4.0.0-alpha.1",
@@ -1779,17 +1779,17 @@
     "node-polyglot": {
       "version": "1.0.0",
       "from": "node-polyglot@1.0.0",
-      "resolved": "https://registry.npmjs.org/node-polyglot/-/node-polyglot-1.0.0.tgz"
+      "resolved": "http://registry.npmjs.org/node-polyglot/-/node-polyglot-1.0.0.tgz"
     },
     "perfect-scrollbar": {
       "version": "0.6.7",
       "from": "perfect-scrollbar@0.6.7",
-      "resolved": "https://registry.npmjs.org/perfect-scrollbar/-/perfect-scrollbar-0.6.7.tgz"
+      "resolved": "http://registry.npmjs.org/perfect-scrollbar/-/perfect-scrollbar-0.6.7.tgz"
     },
     "queue-async": {
       "version": "1.2.1",
       "from": "queue-async@1.2.1",
-      "resolved": "https://registry.npmjs.org/queue-async/-/queue-async-1.2.1.tgz"
+      "resolved": "http://registry.npmjs.org/queue-async/-/queue-async-1.2.1.tgz"
     },
     "torque.js": {
       "version": "2.16.1",

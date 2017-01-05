@@ -49,13 +49,15 @@ module.exports = cdb.core.View.extend({
 
   _createHistogramView: function () {
     var chartType = this._torqueLayerModel.get('column_type') === 'date' ? 'time' : 'number';
+    var widgetModel = this._parent.model;
+
     this._chartView = new HistogramChartView({
       type: chartType,
       animationSpeed: 100,
       animationBarDelay: function (d, i) {
         return (i * 3);
       },
-      chartBarColor: this._parent.model.getWidgetColor() || '#F2CC8F',
+      chartBarColor: widgetModel.getWidgetColor() || '#F2CC8F',
       margin: {
         top: 4,
         right: 4,
@@ -66,6 +68,7 @@ module.exports = cdb.core.View.extend({
       height: this.defaults.histogramChartHeight,
       data: this._dataviewModel.getData(),
       originalData: this._originalData,
+      widgetModel: widgetModel,
       displayShadowBars: true
     });
 

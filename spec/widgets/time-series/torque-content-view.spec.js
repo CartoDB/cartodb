@@ -1,6 +1,7 @@
 var specHelper = require('../../spec-helper');
 var TorqueTimesSeriesContentView = require('../../../src/widgets/time-series/torque-content-view');
 var WidgetModel = require('../../../src/widgets/widget-model');
+var HistogramChartView = require('../../../src/widgets/histogram/chart');
 var cdb = require('cartodb.js');
 
 describe('widgets/time-series/torque-content-view', function () {
@@ -26,6 +27,9 @@ describe('widgets/time-series/torque-content-view', function () {
     var widgetModel = new WidgetModel({}, {
       dataviewModel: this.dataviewModel
     });
+
+    spyOn(HistogramChartView.prototype, '_setupFillColor').and.returnValue('red');
+
     this.view = new TorqueTimesSeriesContentView({
       model: widgetModel
     });
@@ -43,7 +47,7 @@ describe('widgets/time-series/torque-content-view', function () {
       var startTime = (new Date()).getTime() - timeOffset;
       this.dataviewModel.fetch();
       this.options.success({
-        bins: [{
+        data: [{
           start: startTime,
           end: startTime + timeOffset,
           freq: 3

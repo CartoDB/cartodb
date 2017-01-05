@@ -171,6 +171,15 @@ describe('widgets/widget-model', function () {
         this.model.set('style', style);
         expect(this.model.isAutoStyleEnabled()).toBe(false);
       });
+
+      it('should be false if type is not category or histogram', function () {
+        var model = new WidgetModel(null, {
+          dataviewModel: this.dataviewModel,
+          type: 'time-series'
+        }, {autoStyleEnabled: true});
+
+        expect(model.isAutoStyleEnabled()).toBeFalsy();
+      });
     });
   });
 

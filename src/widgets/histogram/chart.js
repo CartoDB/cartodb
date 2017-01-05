@@ -1,9 +1,12 @@
 var $ = require('jquery');
 var _ = require('underscore');
 var d3 = require('d3');
+var d3Interpolate = require('d3-interpolate');
 var cdb = require('cartodb.js');
 var tinycolor = require('tinycolor2');
 var formatter = require('../../formatter');
+var FILTERED_COLOR = '#1181FB';
+var UNFILTERED_COLOR = 'rgba(0, 0, 0, 0.06)';
 
 module.exports = cdb.core.View.extend({
 
@@ -44,6 +47,8 @@ module.exports = cdb.core.View.extend({
     // and w/o class="" d3 won't instantiate properly
     this.setElement($('<svg class=""></svg>')[0]);
 
+    this._widgetModel = this.options.widgetModel;
+
     this.canvas = d3.select(this.el)
       .attr('width', 0)
       .attr('height', this.options.height);
@@ -56,6 +61,7 @@ module.exports = cdb.core.View.extend({
     this._setupBindings();
     this._setupDimensions();
     this._setupD3Bindings();
+    this._setupFillColor();
 
     this.hide(); // will be toggled on width change
   },
@@ -154,6 +160,9 @@ module.exports = cdb.core.View.extend({
     } else {
       this.refresh();
     }
+
+    this._setupFillColor();
+    this._refreshBarsColor();
   },
 
   _onChangeRange: function () {
@@ -263,13 +272,17 @@ module.exports = cdb.core.View.extend({
   _onBrushMove: function () {
     this.model.set({ dragging: true });
     this._selectBars();
+    this._setupFillColor();
+    this._refreshBarsColor();
     this._adjustBrushHandles();
   },
 
   _onMouseOut: function () {
     var bars = this.chart.selectAll('.CDB-Chart-bar');
-    bars.classed('is-highlighted', false)
-        .attr('fill', this.options.chartBarColor);
+
+    bars
+      .classed('is-highlighted', false)
+      .attr('fill', this._getFillColor.bind(this));
     this.trigger('hover', { value: null });
   },
 
@@ -290,9 +303,7 @@ module.exports = cdb.core.View.extend({
 
     if (bar && bar.node() && !bar.classed('is-selected')) {
       var left = (barIndex * this.barWidth) + (this.barWidth / 2);
-
       var top = this.yScale(freq);
-
       var h = this.chartHeight() - this.yScale(freq);
 
       if (h < this.options.minimumBarHeight && h > 0) {
@@ -313,10 +324,12 @@ module.exports = cdb.core.View.extend({
 
     this.chart.selectAll('.CDB-Chart-bar')
       .classed('is-highlighted', false)
-      .attr('fill', this.options.chartBarColor);
+      .attr('fill', this._getFillColor.bind(this));
 
     if (bar && bar.node()) {
-      bar.attr('fill', this._getHoverColor());
+      bar.attr('fill', function (d, i) {
+        return this._getHoverFillColor(data[barIndex], barIndex);
+      }.bind(this));
       bar.classed('is-highlighted', true);
     }
   },
@@ -334,6 +347,7 @@ module.exports = cdb.core.View.extend({
     this._removeAxis();
     this._generateAxis();
     this._updateChart();
+    this._refreshBarsColor();
 
     this.chart.select('.CDB-Chart-handles').moveToFront();
     this.chart.select('.Brush').moveToFront();
@@ -476,10 +490,15 @@ module.exports = cdb.core.View.extend({
     this.model.bind('change:show_shadow_bars', this._onChangeShowShadowBars, this);
     this.model.bind('change:width', this._onChangeWidth, this);
     this.model.bind('change:normalized', this._onChangeNormalized, this);
-    this.options.widgetModel && this.options.widgetModel.bind('change:style', function () {
-      this.options.chartBarColor = this.options.widgetModel.getWidgetColor();
-      this.reset();
-    }, this);
+
+    if (this._widgetModel) {
+      this._widgetModel.bind('change:autoStyle', this._refreshBarsColor, this);
+      this._widgetModel.bind('change:style', function () {
+        this._setupFillColor();
+        this._refreshBarsColor();
+      }, this);
+      this.add_related_model(this._widgetModel);
+    }
 
     if (this._originalData) {
       this._originalData.on('change:data', function () {
@@ -606,27 +625,28 @@ module.exports = cdb.core.View.extend({
   },
 
   _selectBars: function () {
-    var self = this;
+    this.chart
+      .selectAll('.CDB-Chart-bar')
+      .classed({
+        'is-selected': function (d, i) {
+          return this._isBarChartWithinFilter(i);
+        }.bind(this),
+        'is-filtered': function (d, i) {
+          return !this._isBarChartWithinFilter(i);
+        }.bind(this)
+      });
+  },
+
+  _isBarChartWithinFilter: function (i) {
     var extent = this.brush.extent();
     var lo = extent[0];
     var hi = extent[1];
+    var a = Math.floor(i * this.barWidth);
+    var b = Math.floor(a + this.barWidth);
+    var LO = Math.floor(this.xScale(lo));
+    var HI = Math.floor(this.xScale(hi));
 
-    function _isIn (o, i) {
-      var a = Math.floor(i * self.barWidth);
-      var b = Math.floor(a + self.barWidth);
-      var LO = Math.floor(self.xScale(lo));
-      var HI = Math.floor(self.xScale(hi));
-      return (a > LO && a < HI) || (b > LO && b < HI) || (a <= LO && b >= HI);
-    }
-
-    this.chart.selectAll('.CDB-Chart-bar').classed({
-      'is-selected': function (d, i) {
-        return _isIn(self, i);
-      },
-      'is-filtered': function (d, i) {
-        return !_isIn(self, i);
-      }
-    });
+    return (a > LO && a < HI) || (b > LO && b < HI) || (a <= LO && b >= HI);
   },
 
   _isDragging: function () {
@@ -659,6 +679,7 @@ module.exports = cdb.core.View.extend({
   removeSelection: function () {
     this.resetIndexes();
     this.chart.selectAll('.CDB-Chart-bar').classed({'is-selected': false, 'is-filtered': false});
+    this._refreshBarsColor();
     this._removeBrush();
     this._setupBrush();
   },
@@ -745,6 +766,9 @@ module.exports = cdb.core.View.extend({
 
         self.model.set({ lo_index: barIndex, hi_index: barIndex + 1 });
       }
+
+      self._setupFillColor();
+      self._refreshBarsColor();
     }
 
     this.brush
@@ -940,6 +964,173 @@ module.exports = cdb.core.View.extend({
     return axis;
   },
 
+  _getMinValueFromBinIndex: function (binIndex) {
+    var data = this.model.get('data');
+    return data[binIndex].min != null ? data[binIndex].min : data[binIndex].start;
+  },
+
+  _getMaxValueFromBinIndex: function (binIndex) {
+    var data = this.model.get('data');
+    return data[binIndex].max != null ? data[binIndex].max : data[binIndex].end;
+  },
+
+  // Calculates the domain ([ min, max ]) of the selected data. If there is no selection ongoing,
+  // it will take the first and last buckets with frequency.
+  _calculateDataDomain: function () {
+    var data = _.clone(this.model.get('data'));
+    var minBin;
+    var maxBin;
+    var minValue;
+    var maxValue;
+
+    if (!this._hasFilterApplied()) {
+      minValue = this._getMinValueFromBinIndex(0);
+      maxValue = this._getMaxValueFromBinIndex(data.length - 1);
+
+      minBin = _.find(data, function (d) {
+        return d.freq !== 0;
+      });
+
+      maxBin = _.find(data.reverse(), function (d) {
+        return d.freq !== 0;
+      });
+    } else {
+      var loBarIndex = this._getLoBarIndex();
+      var hiBarIndex = this._getHiBarIndex() - 1;
+      var filteredData = data.slice(loBarIndex, hiBarIndex);
+
+      if (_.isNaN(loBarIndex) || _.isNaN(hiBarIndex)) {
+        return [0, 0];
+      }
+
+      minValue = this._getMinValueFromBinIndex(loBarIndex);
+      maxValue = this._getMaxValueFromBinIndex(hiBarIndex);
+
+      if (data[loBarIndex] && data[loBarIndex].freq === 0) {
+        minBin = _.find(filteredData, function (d) {
+          return d.freq !== 0;
+        }, this);
+      }
+
+      if (data[hiBarIndex] && data[hiBarIndex].freq === 0) {
+        var reversedData = filteredData.reverse();
+        maxBin = _.find(reversedData, function (d) {
+          return d.freq !== 0;
+        }, this);
+      }
+    }
+
+    minValue = minBin ? (minBin.min != null ? minBin.min : minBin.start) : minValue;
+    maxValue = maxBin ? (maxBin.max != null ? maxBin.max : maxBin.end) : maxValue;
+
+    return [minValue, maxValue];
+  },
+
+  _removeFillGradients: function () {
+    var defs = d3.select(this.el).select('defs');
+    defs.remove();
+  },
+
+  // Generate a linear-gradient with several stops for each bar
+  // in order to generate the proper colors ramp. It will depend
+  // of the domain of the selected data.
+  _generateFillGradients: function () {
+    if (!this._widgetModel || !this._widgetModel.isAutoStyleEnabled()) {
+      return false;
+    }
+
+    var obj = this._widgetModel.getAutoStyle();
+
+    if (_.isEmpty(obj)) {
+      return false;
+    }
+
+    var self = this;
+    var geometryDefinition = obj.definition[Object.keys(obj.definition)[0]]; // Gets first definition by geometry
+    var colorsRange = geometryDefinition && geometryDefinition.color.range;
+    var data = this.model.get('data');
+    var interpolatedColors = d3Interpolate.interpolateRgbBasis(colorsRange);
+    var domain = this._calculateDataDomain();
+    var domainScale = d3.scale.linear().domain(domain).range([0, 1]);
+    var defs = d3.select(this.el).append('defs');
+    var stopsNumber = 4;  // It is not necessary to create as many stops as colors
+
+    var linearGradients = defs
+      .selectAll('linearGradient')
+      .data(data)
+      .enter()
+      .append('linearGradient')
+      .attr('id', function (d, i) {
+        // This is the scale for each bin, used in each stop within this gradient
+        this.__scale__ = d3.scale.linear()
+          .range([ self._getMinValueFromBinIndex(i), self._getMaxValueFromBinIndex(i) ])
+          .domain([0, 1]);
+        return 'bar-' + self.cid + '-' + i;
+      })
+      .attr('x1', '0%')
+      .attr('y1', '0%')
+      .attr('x2', '100%')
+      .attr('y2', '0%');
+
+    linearGradients
+      .selectAll('stop')
+      .data(d3.range(stopsNumber + 1))
+      .enter()
+      .append('stop')
+      .attr('offset', function (d, i) {
+        var offset = this.__offset__ = Math.floor(((i) / stopsNumber) * 100);
+        return (offset + '%');
+      })
+      .attr('stop-color', function (d, i) {
+        var localScale = this.parentNode.__scale__;
+        var interpolateValue = domainScale(localScale(this.__offset__ / 100));
+        return interpolatedColors(interpolateValue);
+      });
+  },
+
+  _setupFillColor: function () {
+    this._removeFillGradients();
+    this._generateFillGradients();
+  },
+
+  _getFillColor: function (d, i) {
+    if (this._widgetModel) {
+      if (this._widgetModel.isAutoStyle()) {
+        if (this._hasFilterApplied()) {
+          if (!this._isBarChartWithinFilter(i)) {
+            return UNFILTERED_COLOR;
+          }
+        }
+
+        return 'url(#bar-' + this.cid + '-' + i + ')';
+      } else {
+        if (this._hasFilterApplied()) {
+          if (this._isBarChartWithinFilter(i)) {
+            return FILTERED_COLOR;
+          } else {
+            return UNFILTERED_COLOR;
+          }
+        }
+
+        return this._widgetModel.getWidgetColor() || this.options.chartBarColor;
+      }
+    }
+
+    return this.options.chartBarColor;
+  },
+
+  _getHoverFillColor: function (d, i) {
+    var currentFillColor = this._getFillColor(d, i);
+
+    if (this._widgetModel) {
+      if (this._widgetModel.isAutoStyle()) {
+        return currentFillColor;
+      }
+    }
+
+    return tinycolor(currentFillColor).darken(20).toString();
+  },
+
   _updateChart: function () {
     var self = this;
     var data = this.model.get('data');
@@ -951,8 +1142,7 @@ module.exports = cdb.core.View.extend({
       .enter()
       .append('rect')
       .attr('class', 'CDB-Chart-bar')
-      .attr('fill', this.options.chartBarColor)
-      .attr('data', function (d) { return _.isEmpty(d) ? 0 : d.freq; })
+      .attr('fill', this._getFillColor.bind(this))
       .attr('transform', function (d, i) {
         return 'translate(' + (i * self.barWidth) + ', 0 )';
       })
@@ -1001,8 +1191,11 @@ module.exports = cdb.core.View.extend({
       });
   },
 
-  _getHoverColor: function () {
-    return tinycolor(this.options.chartBarColor).darken().toString();
+  _refreshBarsColor: function () {
+    this.chart
+      .selectAll('.CDB-Chart-bar')
+      .classed('is-highlighted', false)
+      .attr('fill', this._getFillColor.bind(this));
   },
 
   _generateBars: function () {
@@ -1021,8 +1214,7 @@ module.exports = cdb.core.View.extend({
       .enter()
       .append('rect')
       .attr('class', 'CDB-Chart-bar')
-      .attr('fill', this.options.chartBarColor)
-      .attr('data', function (d) { return _.isEmpty(d) ? 0 : d.freq; })
+      .attr('fill', this._getFillColor.bind(self))
       .attr('transform', function (d, i) {
         return 'translate(' + (i * self.barWidth) + ', 0 )';
       })
@@ -1093,7 +1285,6 @@ module.exports = cdb.core.View.extend({
       .enter()
       .append('rect')
       .attr('class', 'CDB-Chart-shadowBar')
-      .attr('data', function (d) { return _.isEmpty(d) ? 0 : d.freq; })
       .attr('transform', function (d, i) {
         return 'translate(' + (i * barWidth) + ', 0 )';
       })
@@ -1129,12 +1320,17 @@ module.exports = cdb.core.View.extend({
     this.chart.selectAll('.CDB-Chart-lines').moveToBack();
   },
 
+  _hasFilterApplied: function () {
+    return this.model.get('lo_index') != null && this.model.get('hi_index') != null;
+  },
+
   unsetBounds: function () {
     this.model.set('bounded', false);
     this.updateYScale();
     this.contract(this.options.height);
     this.resetIndexes();
     this.removeSelection();
+    this._setupFillColor();
   },
 
   setBounds: function () {

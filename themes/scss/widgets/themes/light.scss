@@ -208,12 +208,6 @@ $chartMiniSelected: rgba(#333, 1);
   .CDB-Chart-bar--timeSeries.is-highlighted {
     fill: $darkHighlightedAlternative;
   }
-  .CDB-Chart-bar.is-selected {
-    fill: $selected;
-  }
-  .CDB-Chart-bar.is-filtered {
-    fill: $lightHighlight;
-  }
   .CDB-Chart-shadowBar {
     fill: $lightHighlight;
   }

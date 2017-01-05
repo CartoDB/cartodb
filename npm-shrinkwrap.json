@@ -86,7 +86,7 @@
                             },
                             "readable-stream": {
                               "version": "2.0.6",
-                              "from": "readable-stream@>=2.0.0 <2.1.0",
+                              "from": "readable-stream@>=2.0.5 <2.1.0",
                               "resolved": "https://registry.npmjs.org/readable-stream/-/readable-stream-2.0.6.tgz",
                               "dependencies": {
                                 "core-util-is": {
@@ -1147,7 +1147,7 @@
     "cartodb-deep-insights.js": {
       "version": "0.0.2",
       "from": "cartodb/deep-insights.js#master",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#e2a1f87a7ee712ffb567e43243d844496e275abb",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#708203920d2f5adeca73838205852688a837bc22",
       "dependencies": {
         "cartodb.js": {
           "version": "4.0.0-alpha.1",

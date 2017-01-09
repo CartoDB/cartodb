@@ -50,7 +50,7 @@ module Carto
     def custom_app_views_paths
       config = env_app_config
 
-      (config['custom_paths'] && config['custom_paths']['views']) || Array.new
+      (config && config['custom_paths'] && config['custom_paths']['views']) || Array.new
     end
 
     private

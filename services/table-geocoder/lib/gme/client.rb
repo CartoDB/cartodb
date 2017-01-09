@@ -88,10 +88,13 @@ module Carto
       # Takes a typhoeus response object and returns a hash
       def get_body(resp)
         if resp.code != 200
-          CartoDB::Logger.warning(message: 'Error response from GME client',
-                                  client_id: @client_id,
-                                  code: resp.code,
-                                  response_body: resp.response_body)
+          # Remove temporarily from rollbar because it's flooding the logs
+          if resp.code != 400
+            CartoDB::Logger.warning(message: 'Error response from GME client',
+                                    client_id: @client_id,
+                                    code: resp.code,
+                                    response_body: resp.response_body)
+          end
           raise HttpError.new(resp.code)
         end
 

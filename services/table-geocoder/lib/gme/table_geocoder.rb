@@ -168,8 +168,9 @@ module Carto
       def fetch_from_gme(search_text)
         @geocoder_client.geocode(search_text)
       rescue => e
-        @log.append_and_store "Error geocoding using GME for text #{search_text}: #{e.message}"
-        CartoDB.notify_error('Error geocoding using GME', error: e.backtrace.join('\n'), search_text: search_text)
+        # Remove temporarily because it's flooding the logs
+        # @log.append_and_store "Error geocoding using GME for text #{search_text}: #{e.message}"
+        # CartoDB.notify_error('Error geocoding using GME', error: e.backtrace.join('\n'), search_text: search_text)
         @failed_processed_rows += 1
         nil
       end

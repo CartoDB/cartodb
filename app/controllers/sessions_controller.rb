@@ -42,7 +42,8 @@ class SessionsController < ApplicationController
   end
 
   def create
-    strategy, username = ldap_user || saml_user || google_user || credentials_user
+    strategy, username = ldap_strategy_username || saml_strategy_username ||
+                         google_strategy_username || credentials_strategy_username
     return render(action: 'new') unless strategy.present?
 
     candidate_user = Carto::User.where(username: username).first
@@ -198,7 +199,7 @@ class SessionsController < ApplicationController
     ::User.where(email: email).first.try(:username)
   end
 
-  def ldap_user
+  def ldap_strategy_username
     if ldap_authentication?
       username = params[:user_domain].present? ? params[:user_domain] : params[:email]
       # INFO: LDAP allows characters that we don't
@@ -206,7 +207,7 @@ class SessionsController < ApplicationController
     end
   end
 
-  def saml_user
+  def saml_strategy_username
     if saml_authentication?
       email = saml_service.get_user_email(params[:SAMLResponse])
       if email
@@ -219,7 +220,7 @@ class SessionsController < ApplicationController
     end
   end
 
-  def google_user
+  def google_strategy_username
     if google_authentication? && !user_password_authentication?
       user = GooglePlusAPI.new.get_user(params[:google_access_token])
       if user
@@ -235,7 +236,7 @@ class SessionsController < ApplicationController
     end
   end
 
-  def credentials_user
+  def credentials_strategy_username
     [:password, extract_username(request, params)] if user_password_authentication?
   end
 

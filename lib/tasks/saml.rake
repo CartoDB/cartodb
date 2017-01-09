@@ -6,8 +6,8 @@ namespace :cartodb do
     # SAML_IDP_SSO_TARGET_URL: SAML Identity Provider login URL. Example: 'http://192.168.20.2/simplesaml/saml2/idp/SSOService.php'.
     # SAML_IDP_SLO_TARGET_URL: SAML Identity Provider logout URL. Example: 'http://192.168.20.2/simplesaml/saml2/idp/SingleLogoutService.php'.
     # SAML_IDP_CERT_FINGERPRINT: SAML server certificate fingerprint. Command: `openssl x509 -noout -fingerprint -in "./cert/server.crt`. Example: '8C:47:97:B1:E2:E4:6C:06:B5:56:11:8A:5A:8B:53:5C:01:05:CB:05'.
-    # SAML_ASSERTION_CONSUMER_SERVICE_URL: CARTO URL for SAML, including organization name. Examples: 'http://192.168.20.2/user/orgname/saml/finalize'.
-    # SAML_NAME_IDENTIFIER_FORMAT: Format of the name identifier parameter. Example: 'urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified'. Defaults to 'urn:oasis:names:tc:SAML:2.0:nameid-format:transient'
+    # SAML_ASSERTION_CONSUMER_SERVICE_URL: CARTO URL for SAML, including organization name. Examples: 'http://192.168.20.2/user/orgname/saml/finalize'. Optional, defaults to the URL built from configuration and organization name
+    # SAML_NAME_IDENTIFIER_FORMAT: Format of the name identifier parameter. Example: 'urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified'. Optional, defaults to 'urn:oasis:names:tc:SAML:2.0:nameid-format:transient'
     # SAML_EMAIL_ATTRIBUTE: attribute with the user email. Example: 'email'.
     task :create_saml_configuration, [] => :environment do |_t, _args|
       organization = Carto::Organization.where(name: ENV['ORGANIZATION_NAME']).first
@@ -22,7 +22,8 @@ namespace :cartodb do
         email_attribute: ENV['SAML_EMAIL_ATTRIBUTE']
       }
 
-      configuration[:assertion_consumer_service_url] ||= 'urn:oasis:names:tc:SAML:2.0:nameid-format:transient'
+      configuration[:assertion_consumer_service_url] ||= CartoDB.base_url(organization.name) + '/saml/finalize'
+      configuration[:name_identifier_format] ||= 'urn:oasis:names:tc:SAML:2.0:nameid-format:transient'
       configuration[:idp_slo_target_url] = ENV['SAML_IDP_SLO_TARGET_URL'] if ENV['SAML_IDP_SLO_TARGET_URL'].present?
 
       raise "Missing parameter: #{configuration}" unless configuration.values.all?(&:present?)

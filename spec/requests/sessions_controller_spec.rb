@@ -294,13 +294,15 @@ describe SessionsController do
   end
 
   describe 'SAML authentication' do
-    before(:each) do
-      @organization = FactoryGirl.create(:saml_organization)
+    def create
+      @organization = FactoryGirl.create(:saml_organization, quota_in_bytes: 1.gigabytes)
       @admin_user = create_admin_user(@organization)
       @user = FactoryGirl.create(:carto_user)
+      @user.organization_id = @organization.id
+      @user.save
     end
 
-    after(:each) do
+    def cleanup
       @user.destroy
       @organization.destroy
       @admin_user.destroy
@@ -319,7 +321,8 @@ describe SessionsController do
         organization: nil
       )
       admin_user.save.reload
-      ::Organization.any_instance.stubs(:owner).returns(admin_user)
+      @organization.owner = admin_user
+      @organization.save
 
       admin_user
     end
@@ -334,6 +337,14 @@ describe SessionsController do
         CartoDB.stubs(:subdomainless_urls?).returns(false)
         host! "#{@organization.name}.localhost.lan"
       end
+
+      before(:all) do
+        create
+      end
+
+      after(:all) do
+        cleanup
+      end
     end
 
     describe 'subdomainless' do
@@ -345,6 +356,14 @@ describe SessionsController do
         CartoDB.stubs(:session_domain).returns('localhost.lan')
         CartoDB.stubs(:subdomainless_urls?).returns(true)
         host! "localhost.lan"
+      end
+
+      before(:all) do
+        create
+      end
+
+      after(:all) do
+        cleanup
       end
     end
   end

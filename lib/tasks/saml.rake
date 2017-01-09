@@ -14,7 +14,7 @@ namespace :cartodb do
       raise "Organization not found: #{ENV['ORGANIZATION_NAME']}" unless organization
 
       configuration = {
-        saml_issuer: ENV['SAML_ISSUER'],
+        issuer: ENV['SAML_ISSUER'],
         idp_sso_target_url: ENV['SAML_IDP_SSO_TARGET_URL'],
         idp_cert_fingerprint: ENV['SAML_IDP_CERT_FINGERPRINT'],
         assertion_consumer_service_url: ENV['SAML_ASSERTION_CONSUMER_SERVICE_URL'],

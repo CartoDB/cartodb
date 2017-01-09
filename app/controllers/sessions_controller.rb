@@ -52,7 +52,7 @@ class SessionsController < ApplicationController
       return render(action: 'new')
     end
 
-    user = ldap_user || saml_user || credentials_or_google_user
+    user = ldap_user || saml_user || google_user || credentials_user
 
     return render(action: 'new') unless user.present?
 
@@ -213,13 +213,8 @@ class SessionsController < ApplicationController
     user
   end
 
-  # This acts as a fallback if previous authentications didn't return a valid user.
-  def credentials_or_google_user
-    authenticate_with_credentials_or_google
-  end
-
   def authenticate_with_ldap
-    username = params[:user_domain].present? ?  params[:user_domain] : params[:email]
+    username = params[:user_domain].present? ? params[:user_domain] : params[:email]
     # INFO: LDAP allows characters that we don't
     authenticate(:ldap, scope: Carto::Ldap::Manager.sanitize_for_cartodb(username))
   end
@@ -232,30 +227,39 @@ class SessionsController < ApplicationController
     authenticate!(:saml, scope: username)
   end
 
-  # TODO: split
-  def authenticate_with_credentials_or_google
-    user = if !user_password_authentication? && params[:google_access_token].present? && @google_plus_config.present?
-        user = GooglePlusAPI.new.get_user(params[:google_access_token])
-        if user
-          authenticate!(:google_access_token, scope: params[:user_domain].present? ?  params[:user_domain] : user.username)
-        elsif user == false
-          # token not valid
-          nil
-        else
-          # token valid, unknown user
-          @google_plus_config.unauthenticated_valid_access_token = params[:google_access_token]
-          nil
-        end
-      else
-        username = extract_username(request, params)
-        user = authenticate!(:password, scope: username)
-      end
+  def google_user
+    authenticate_with_google if google_authentication? && !user_password_authentication?
+  end
 
-    user
+  def credentials_user
+    authenticate_with_credentials if user_password_authentication?
+  end
+
+  def authenticate_with_google
+    user = GooglePlusAPI.new.get_user(params[:google_access_token])
+    if user
+      authenticate!(:google_access_token, scope: params[:user_domain].present? ? params[:user_domain] : user.username)
+    elsif user == false
+      # token not valid
+      nil
+    else
+      # token valid, unknown user
+      @google_plus_config.unauthenticated_valid_access_token = params[:google_access_token]
+      nil
+    end
+  end
+
+  def authenticate_with_credentials
+    username = extract_username(request, params)
+    authenticate!(:password, scope: username)
   end
 
   def user_password_authentication?
     params && params['email'].present? && params['password'].present?
+  end
+
+  def google_authentication?
+    params[:google_access_token].present? && @google_plus_config.present?
   end
 
   def ldap_authentication?

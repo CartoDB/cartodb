@@ -44,7 +44,7 @@ class SessionsController < ApplicationController
   def create
     strategy, username = ldap_strategy_username || saml_strategy_username ||
                          google_strategy_username || credentials_strategy_username
-    return render(action: 'new') unless strategy.present?
+    return render(action: 'new') unless strategy
 
     candidate_user = Carto::User.where(username: username).first
 

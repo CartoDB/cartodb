@@ -2,7 +2,7 @@ require_dependency 'carto/configuration'
 
 module Cartodb
   def self.get_config(*config_chain)
-    current = config
+    current = Cartodb.config
     config_chain.each { |config_param|
       current = current[config_param]
       if current.nil?

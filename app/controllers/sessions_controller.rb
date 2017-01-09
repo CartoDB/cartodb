@@ -3,6 +3,7 @@ require_dependency 'google_plus_config'
 require_dependency 'google_plus_api'
 require_dependency 'oauth/github/config'
 require_dependency 'carto/saml_service'
+require_dependency 'carto/username_finder'
 
 require_relative '../../lib/user_account_creator'
 require_relative '../../lib/cartodb/stats/authentication'
@@ -104,11 +105,12 @@ class SessionsController < ApplicationController
 
     saml_email = warden.env['warden.options'][:saml_email]
     username = CartoDB::UserAccountCreator.email_to_username(saml_email)
+    unique_username = Carto::UsernameFinder.find_unique_username(username)
     organization_id = warden.env['warden.options'][:organization_id]
     created_via = Carto::UserCreation::CREATED_VIA_SAML
 
     @saml_response = warden.env['warden.options'][:saml_response]
-    create_user(username, organization_id, saml_email, created_via)
+    create_user(unique_username, organization_id, saml_email, created_via)
   end
 
   def verify_warden_failure

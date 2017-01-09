@@ -235,22 +235,6 @@ describe SessionsController do
       post create_session_url(user_domain: user_domain, SAMLResponse: 'xx')
     end
 
-    # If SAML returns authentication error we should fallback to login
-    it 'fallbacks to login if SAMLResponse is present and SAML is enabled but subdomain is nil' do
-      stub_saml_service(@user)
-      failed_saml_response = mock
-      failed_saml_response.stubs(:is_valid?).returns(false)
-      Carto::SamlService.any_instance.stubs(:get_saml_response).returns(failed_saml_response)
-
-      sessions_controller = SessionsController.any_instance
-      sessions_controller.expects(:authenticate!).with(:saml, scope: @user.username).once
-      sessions_controller.expects(:authenticate!).with(:password, scope: @organization.name).returns(nil).once
-
-      post create_session_url(user_domain: user_domain, SAMLResponse: 'xx')
-
-      response.status.should eq 200
-    end
-
     it "Allows to login and triggers creation of normal users if user is not present" do
       new_user = FactoryGirl.build(:carto_user, username: 'new-saml-user', email: 'new-saml-user-email@carto.com')
       stub_saml_service(new_user)

@@ -32,12 +32,14 @@ class SessionsController < ApplicationController
 
   def new
     if logged_in?(CartoDB.extract_subdomain(request))
-      return redirect_to(CartoDB.path(self, 'dashboard', trailing_slash: true))
+      redirect_to(CartoDB.path(self, 'dashboard', trailing_slash: true))
     elsif saml_authentication? && !user
       # Automatically trigger SAML request on login view load -- could easily trigger this elsewhere
-      return redirect_to(saml_service.authentication_request)
+      redirect_to(saml_service.authentication_request)
     elsif central_enabled? && !@organization.try(:auth_enabled?)
-      return redirect_to(Cartodb::Central.new.login_url)
+      redirect_to(Cartodb::Central.new.login_url)
+    else
+      render
     end
   end
 

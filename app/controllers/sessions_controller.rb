@@ -3,7 +3,7 @@ require_dependency 'google_plus_config'
 require_dependency 'google_plus_api'
 require_dependency 'oauth/github/config'
 require_dependency 'carto/saml_service'
-require_dependency 'carto/username_finder'
+require_dependency 'carto/username_proposer'
 
 require_relative '../../lib/user_account_creator'
 require_relative '../../lib/cartodb/stats/authentication'

@@ -247,26 +247,80 @@ describe('vis/vis', function () {
       this.vis.reload.calls.reset();
     });
 
-    it('should reload the map when layers are resetted', function () {
-      this.vis.map.layers.reset([{ id: 'layer1' }]);
+    describe('when layers are reset', function () {
+      it('should reload the map', function () {
+        this.vis.map.layers.reset([{ id: 'layer1' }]);
 
-      expect(this.vis.reload).toHaveBeenCalled();
-    });
-
-    it('should reload the map when a new layer is added', function () {
-      this.vis.map.layers.add({ id: 'layer1' });
-
-      expect(this.vis.reload).toHaveBeenCalledWith({
-        sourceId: 'layer1'
+        expect(this.vis.reload).toHaveBeenCalled();
       });
     });
 
-    it('should reload the map when a layer is removed', function () {
-      var layer = this.vis.map.layers.add({ id: 'layer1' }, { silent: true });
-      this.vis.map.layers.remove(layer);
+    describe('when layers are added', function () {
+      it('should reload the map when a new CartoDB layer is added', function () {
+        this.vis.map.layers.add({
+          id: 'layer1',
+          type: 'CartoDB'
+        });
 
-      expect(this.vis.reload).toHaveBeenCalledWith({
-        sourceId: 'layer1'
+        expect(this.vis.reload).toHaveBeenCalledWith({
+          sourceId: 'layer1'
+        });
+      });
+
+      it('should reload the map when a new Torque layer is added', function () {
+        this.vis.map.layers.add({
+          id: 'layer1',
+          type: 'torque'
+        });
+
+        expect(this.vis.reload).toHaveBeenCalledWith({
+          sourceId: 'layer1'
+        });
+      });
+
+      it('should NOT reload the map when a non CartoDB or Torque layer is added', function () {
+        this.vis.map.layers.add({
+          id: 'layer1',
+          type: 'Tiled'
+        });
+
+        expect(this.vis.reload).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('when layers are removed', function () {
+      it('should reload the map when a CartoDB layer is removed', function () {
+        var layer = this.vis.map.layers.add({
+          id: 'layer1',
+          type: 'CartoDB'
+        }, { silent: true });
+        this.vis.map.layers.remove(layer);
+
+        expect(this.vis.reload).toHaveBeenCalledWith({
+          sourceId: 'layer1'
+        });
+      });
+
+      it('should reload the map when a torque layer is removed', function () {
+        var layer = this.vis.map.layers.add({
+          id: 'layer1',
+          type: 'torque'
+        }, { silent: true });
+        this.vis.map.layers.remove(layer);
+
+        expect(this.vis.reload).toHaveBeenCalledWith({
+          sourceId: 'layer1'
+        });
+      });
+
+      it('should NOT reload the map when a non CarotDB or Torque layer is removed', function () {
+        var layer = this.vis.map.layers.add({
+          id: 'layer1',
+          type: 'Tiled'
+        }, { silent: true });
+        this.vis.map.layers.remove(layer);
+
+        expect(this.vis.reload).not.toHaveBeenCalled();
       });
     });
   });

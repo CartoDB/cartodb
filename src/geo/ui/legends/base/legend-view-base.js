@@ -102,15 +102,13 @@ var LegendViewBase = Backbone.View.extend({
   },
 
   _loadImages: function () {
-    _.each(this.$('.js-image-container'), function (el) {
-      var iconUrl = $(el).data('icon');
-
+    _.each(this.$('.js-image-container'), function ($el) {
       var iconView = new ImageLoaderView({
-        $imgContainer: $(el),
+        el: $el,
         imageClass: 'Legend-fillImageAsset'
       });
 
-      iconView._loadImage(iconUrl, $(el).data('color'));
+      iconView._loadImage();
     });
   }
 });

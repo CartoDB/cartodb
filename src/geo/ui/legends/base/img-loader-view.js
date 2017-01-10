@@ -1,13 +1,15 @@
 var $ = require('jquery');
 var Backbone = require('backbone');
-// var utils = require('../helpers/utils');
+var util = require('../../../../core/util');
 
 module.exports = Backbone.View.extend({
   initialize: function (opts) {
+    if (!opts.el) { throw new Error('element is mandatory.'); }
     if (!opts.imageClass) { throw new Error('Image class is mandatory.'); }
-    if (!opts.$imgContainer) { throw new Error('$imgContainer element is mandatory.'); }
 
-    this.$imgContainer = opts.$imgContainer;
+    this._color = this.$el.data('color');
+    this._icon = this.$el.data('icon');
+
     this._imageClass = opts.imageClass;
     this._lastImage = {
       url: null,
@@ -15,31 +17,31 @@ module.exports = Backbone.View.extend({
     };
   },
 
-  _loadImage: function (imageUrl, color) {
+  _loadImage: function () {
     var self = this;
-    var isSVG = this._isSVG(imageUrl);
+    var isSVG = this._isSVG(this._icon);
 
-    if (this.$imgContainer.length === 0) {
+    if (this.$el.length === 0) {
       return;
     }
 
     if (isSVG) {
-      this._requestImage(imageUrl, function (content) {
+      this._requestImage(this._icon, function (content) {
         var svg = content.cloneNode(true);
         var $svg = $(svg);
         $svg = $svg.removeAttr('xmlns:a');
         $svg.attr('class', self._imageClass + ' js-image');
 
-        self.$imgContainer.empty().append($svg);
+        self.$el.empty().append($svg);
 
-        $svg.css('fill', color);
+        $svg.css('fill', self._color);
         $svg.find('path').css('fill', 'inherit');
       });
     } else {
       var $img = $('<img crossorigin="anonymous"/>');
       $img.attr('class', self._imageClass + ' js-image');
-      $img.attr('src', imageUrl + '?req=markup');
-      this.$imgContainer.empty().append($img);
+      $img.attr('src', this._icon + '?req=markup');
+      this.$el.empty().append($img);
     }
   },
 
@@ -71,6 +73,6 @@ module.exports = Backbone.View.extend({
       return false;
     }
     var noQueryString = url.split('?')[0];
-    return noQueryString && cdb.core.util.endsWith(noQueryString.toUpperCase(), 'SVG');
+    return noQueryString && util.endsWith(noQueryString.toUpperCase(), 'SVG');
   }
 });

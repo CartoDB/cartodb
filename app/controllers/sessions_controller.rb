@@ -216,7 +216,7 @@ class SessionsController < ApplicationController
         username = username_from_user_by_email(email)
         [:saml, username]
       else
-        verify_authenticity_toke
+        verify_authenticity_token
         nil
       end
     end

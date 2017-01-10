@@ -290,6 +290,31 @@ describe SessionsController do
       ::User.where(username: new_user.username).first.try(:destroy)
     end
 
+    it "Allows to login and triggers creation of normal users if user is not present" do
+      new_user = FactoryGirl.build(:carto_user, username: 'new-saml-user', email: 'new-saml-user-email@carto.com')
+      stub_saml_service(new_user)
+      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+
+      ::Resque.expects(:enqueue).with(::Resque::UserJobs::Signup::NewUser,
+                                      instance_of(String), anything, instance_of(FalseClass)).returns(true)
+
+      post create_session_url(user_domain: user_domain, SAMLResponse: 'xx')
+
+      response.status.should == 200
+      (response.body =~ /Your account is being created/).to_i.should_not eq 0
+
+      ::User.where(username: new_user.username).first.try(:destroy)
+    end
+
+    it "Fails to authenticate if SAML request fails" do
+      Carto::SamlService.any_instance.stubs(:enabled?).returns(true)
+      Carto::SamlService.any_instance.stubs(:get_user_email).returns(nil)
+
+      post create_session_url(user_domain: user_domain, SAMLResponse: 'xx')
+
+      response.status.should == 200
+    end
+
     describe 'SAML logout' do
       it 'calls SamlService#sp_logout_request from user-initiated logout' do
         stub_saml_service(@user)

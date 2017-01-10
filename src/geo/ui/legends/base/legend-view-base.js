@@ -1,6 +1,8 @@
+var _ = require('underscore');
+var Backbone = require('backbone');
+var $ = require('jquery');
 var errorTitleTemplate = require('./error-title.tpl');
 var noDataAvailableTitleTemplate = require('./no-data-available-title.tpl');
-var Backbone = require('backbone');
 var sanitize = require('../../../../core/sanitize');
 var legendTitleTemplate = require('./legend-title.tpl');
 var ImageLoaderView = require('./img-loader-view');
@@ -109,7 +111,7 @@ var LegendViewBase = Backbone.View.extend({
       });
 
       iconView._loadImage(iconUrl, $(el).data('color'));
-    }.bind(this));
+    });
   }
 });
 

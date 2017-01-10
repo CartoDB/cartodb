@@ -71,7 +71,6 @@ module.exports = Backbone.View.extend({
       return false;
     }
     var noQueryString = url.split('?')[0];
-    return true;
-    // return noQueryString && utils.endsWith(noQueryString.toUpperCase(), 'SVG');
+    return noQueryString && cdb.core.util.endsWith(noQueryString.toUpperCase(), 'SVG');
   }
 });

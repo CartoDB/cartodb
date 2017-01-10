@@ -154,4 +154,25 @@ describe Carto::Visualization do
       @visualization.published?.should eq true
     end
   end
+
+  describe '#can_be_private?' do
+    before(:all) do
+      @visualization = FactoryGirl.create(:carto_visualization, user: @carto_user)
+      @visualization.reload # to clean up the user relation (see #11134)
+    end
+
+    after(:all) do
+      @visualization.destroy
+    end
+
+    it 'returns private_tables_enabled for tables' do
+      @visualization.type = 'table'
+      @visualization.can_be_private?.should eq @user.private_tables_enabled
+    end
+
+    it 'returns private_maps_enabled for maps' do
+      @visualization.type = 'derived'
+      @visualization.can_be_private?.should eq @user.private_maps_enabled
+    end
+  end
 end

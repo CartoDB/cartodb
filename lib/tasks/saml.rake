@@ -2,7 +2,8 @@ namespace :cartodb do
   namespace :saml do
     # Sets (inserts or overrides) SAML configuration for an organization. The following environments variables are needed:
     # ORGANIZATION_NAME: name of the organization. Example: 'orgname'.
-    # SAML_ISSUER: [OPTIONAL] Name of the service provider in the SAML server. Example: 'CARTO_SAML_Test'. Defaults are based on organization name and domain.
+    # SAML_ISSUER: [OPTIONAL] Name of the service provider in the SAML server. Example: 'CARTO_SAML_Test'.
+    #   Default: URL similar to `http://192.168.20.2/user/orgname/saml/metadata` or `http://orgname.domain.com/saml/metadata`, depending on your configuration.
     # SAML_EMAIL_ATTRIBUTE: attribute with the user email. Example: 'email'.
     # SAML_ASSERTION_CONSUMER_SERVICE_URL: [OPTIONAL] CARTO URL for SAML, including organization name. Examples: 'http://192.168.20.2/user/orgname/saml/finalize'. Defaults to the URL built from configuration and organization name
     # SAML_SINGLE_LOGOUT_SERVICE_URL: [OPTIONAL] CARTO URL for SAML logout, including organization name. Examples: 'http://192.168.20.2/user/orgname/logout'. Defaults to the URL built from configuration and organization name

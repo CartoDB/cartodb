@@ -213,8 +213,7 @@ class SessionsController < ApplicationController
     if saml_authentication?
       email = saml_service.get_user_email(params[:SAMLResponse])
       if email
-        username = username_from_user_by_email(email)
-        [:saml, username]
+        [:saml, username_from_user_by_email(email)]
       else
         verify_authenticity_token
         nil

@@ -416,7 +416,7 @@ module CartoDB
           params_data = {
             outFields:  prepared_fields,
             outSR:      4326,
-            f:          'json'
+            f:          'geojson'
           }
 
           params_data.merge! ids_field
@@ -452,34 +452,7 @@ module CartoDB
           # Arcgis error
           raise ExternalServiceError.new("#{prepared_url} : #{response.body}") if body.include?('error')
 
-          begin
-            retrieved_items = body.fetch('features')
-            return [] if retrieved_items.nil? || retrieved_items.empty?
-            retrieved_fields = body.fetch('fields')
-            geometry_type = body.fetch('geometryType')
-            spatial_reference = body.fetch('spatialReference')
-          rescue => exception
-            raise ResponseError.new("Missing data: #{exception.to_s} #{prepared_url} #{exception.backtrace}")
-          end
-          raise ResponseError.new("'fields' empty or invalid #{prepared_url}") \
-            if (retrieved_fields.nil? || retrieved_fields.length == 0)
-          raise ResponseError.new("'features' empty or invalid #{prepared_url}") \
-            if (retrieved_items.nil? || !retrieved_items.kind_of?(Array))
-
-          # Fields can be optional, cannot be enforced to always be present
-          desired_fields = fields.map { |field| field[:name] }
-
-          {
-            geometryType:     geometry_type,
-            spatialReference: spatial_reference,
-            fields:           retrieved_fields,
-            features:         retrieved_items.collect { |item|
-              {
-                'attributes' => item['attributes'].select{ |k, v| desired_fields.include?(k) },
-                'geometry' => item['geometry']
-              }
-            }
-          }
+          body
         end
 
         # By default, will update the block size, incrementing or decrementing it according to stream operation results

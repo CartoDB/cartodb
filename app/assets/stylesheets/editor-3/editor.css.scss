@@ -4,6 +4,7 @@
 @import 'cdb-utilities/mixins';
 @import 'cdb-variables/colors';
 @import 'cdb-variables/sizes';
+@import 'vars';
 
 @mixin block-shadow() {
   @include css3-prefix(box-shadow, inset 10px 0 10px -10px rgba(0, 0, 0, 0.3));
@@ -112,8 +113,8 @@
       width: 280px;
     }
     .CDB-Widget.CDB-Widget--timeSeries {
-      padding: 12px 0;
       min-height: auto;
+      padding: 12px 0;
       .CDB-Widget-content {
         margin-right: 12px;
         margin-left: 12px;
@@ -129,11 +130,23 @@
   }
 }
 
-@media (max-width: 1280px) {
+@media (max-width: $reponsiveWidth) {
   .Editor {
-    .CDB-Widget-options {
-      display: none;
+    .CDB-Widget-options,
+    .CDB-Widget-actions {
+      @include display-flex();
     }
+
+    .CDB-Widget-body {
+      .CDB-Dropdown {
+        min-width: 150px;
+      }
+      .CDB-Dropdown-link {
+        padding: 8px 12px;
+        font-size: 11px;
+      }
+    }
+
     .CDB-Widget-body.is-collapsed {
       height: 100%;
       .CDB-Widget-content,

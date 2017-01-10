@@ -68,6 +68,8 @@ defaults: &defaults
     app_keys:
       editor: ''
       embeds: ''
+  #fullstory:
+    #org: 'XXXXX'
   facebook:
     app_id: ''
     admins: ''

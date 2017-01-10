@@ -302,6 +302,18 @@ describe SessionsController do
         get logout_url(user_domain: user_domain)
       end
 
+      it 'does not call SamlService#sp_logout_request if logout URL is not configured' do
+        stub_saml_service(@user)
+        SessionsController.any_instance.expects(:authenticate!).with(:saml, scope: @user.username).returns(@user).once
+
+        post create_session_url(user_domain: user_domain, SAMLResponse: 'xx')
+
+        # needs returning an url to do a redirection
+        Carto::SamlService.any_instance.stubs(:logout_url_configured?).returns(false)
+        Carto::SamlService.any_instance.stubs(:sp_logout_request).returns('http://carto.com').never
+        get logout_url(user_domain: user_domain)
+      end
+
       it 'calls SamlService#idp_logout_request if SAMLRequest is present' do
         # needs returning an url to do a redirection
         Carto::SamlService.any_instance.stubs(:idp_logout_request).returns('http://carto.com').once

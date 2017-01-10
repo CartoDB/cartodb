@@ -4,8 +4,12 @@ require_dependency 'carto/controller_helper'
 
 module Carto
   class SamlController < ApplicationController
+    include Carto::ControllerHelper
+
     ssl_required  :metadata
-    before_filter :load_organization
+    before_filter :load_organization, :ensure_saml_enabled
+
+    rescue_from LoadError, UnauthorizedError, with: :rescue_from_carto_error
 
     # Callback from Github Oauth
     def metadata

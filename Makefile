@@ -298,7 +298,7 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/requests/carto/api/organization_assets_controller_spec.rb \
 	spec/lib/carto/assets_service_spec.rb \
 	spec/lib/carto/organization_assets_service_spec.rb \
-	spec/models/carto/username_finder_spec.rb \
+	spec/models/carto/username_proposer_spec.rb \
 	$(NULL)
 
 # This class must be tested isolated as pollutes namespace

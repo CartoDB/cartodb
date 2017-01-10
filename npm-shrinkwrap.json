@@ -1152,7 +1152,7 @@
         "cartodb.js": {
           "version": "4.0.0-alpha.1",
           "from": "cartodb/cartodb.js#10726-icons-custom",
-          "resolved": "git://github.com/cartodb/cartodb.js.git#95554a9178d57662f06e504d574eaf376583db74",
+          "resolved": "git://github.com/cartodb/cartodb.js.git#3bf02d044d1ef95cefe20d716bf9de7780348ae0",
           "dependencies": {
             "backbone-poller": {
               "version": "1.1.3",
@@ -1464,7 +1464,7 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
       "from": "cartodb/cartodb.js#10726-icons-custom",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#95554a9178d57662f06e504d574eaf376583db74",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#3bf02d044d1ef95cefe20d716bf9de7780348ae0",
       "dependencies": {
         "backbone-poller": {
           "version": "1.1.3",

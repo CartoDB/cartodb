@@ -273,7 +273,7 @@
       ['setConfig:env.browserify_watch:true', 'browserify', 'build-jasmine-specrunners', 'connect', 'watch']);
     grunt.registerTask('sourcemaps', 'generate sourcemaps, to be used w/ trackjs.com for bughunting',
       ['setConfig:assets_dir:./tmp/sourcemaps', 'config', 'js', 'copy:js', 'exorcise', 'uglify']);
-
+    grunt.registerTask('builder', ['clean', 'config', 'cdb', 'pre_client', 'concat:js', 'jst', 'dev']);
     /**
      * Delegate task to commandline.
      * @param {String} name - If taskname starts with npm it's run a npm script (i.e. `npm run foobar`

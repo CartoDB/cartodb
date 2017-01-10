@@ -32,7 +32,7 @@ describe('geo/ui/legends/custom/img-loader-view', function () {
   describe('._loadImage', function () {
     it('should render resource if format is not SVG', function () {
       this.imgUrl = 'http://www.imageserver.com/image.png';
-  
+
       var $pngEl = $('<div class="js-image-container" data-icon="' + this.imgUrl + '" data-color="' + this.color + '">');
 
       this.imageClass = 'Legend-fillImageAsset';

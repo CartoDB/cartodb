@@ -1,6 +1,5 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
-var $ = require('jquery');
 var errorTitleTemplate = require('./error-title.tpl');
 var noDataAvailableTitleTemplate = require('./no-data-available-title.tpl');
 var sanitize = require('../../../../core/sanitize');

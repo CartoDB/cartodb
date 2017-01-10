@@ -21,15 +21,19 @@ module Carto
       response.is_valid? ? email_from_saml_response(response) : debug_response("Invalid SAML response", response)
     end
 
+    def logout_url_configured?
+      saml_settings.idp_slo_target_url.present?
+    end
+
     # SLO (Single Log Out) request initiated from CARTO
     # Returns the SAML logout request that to be redirected to
     def sp_logout_request
       settings = saml_settings
 
-      if settings.idp_slo_target_url.nil?
-        raise "SLO IdP Endpoint not found in settings for #{@organization}"
-      else
+      if logout_url_configured?
         OneLogin::RubySaml::Logoutrequest.new.create(settings)
+      else
+        raise "SLO IdP Endpoint not found in settings for #{@organization}"
       end
     end
 

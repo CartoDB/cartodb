@@ -50,65 +50,49 @@ var fakeVizJSON = function () {
         'type': 'tiled'
       },
       {
-        'type': 'layergroup',
+        'id': 'aefb9966-e587-40dc-8be7-6e85949f8ebe',
+        'type': 'CartoDB',
+        'infowindow': {
+          'fields': [
+            {
+              'name': 'gnip',
+              'title': true,
+              'position': 0
+            },
+            {
+              'name': 'actor_disp',
+              'title': true,
+              'position': 1
+            }
+          ],
+          'template_name': 'table/views/infowindow_light',
+          'template': '<div class=\"CDB-infowindow CDB-infowindow--light js-infowindow\">\n  <div class=\"CDB-infowindow-close js-close\"></div>\n  <div class=\"CDB-infowindow-container\">\n    <div class=\"CDB-infowindow-bg\">\n      <div class=\"CDB-infowindow-inner\">\n        {{#loading}}\n          <div class=\"CDB-Loader js-loader is-visible\"></div>\n        {{/loading}}\n        <ul class=\"CDB-infowindow-list js-content\">\n          {{#content.fields}}\n          <li class=\"CDB-infowindow-listItem\">\n            {{#title}}<h5 class=\"CDB-infowindow-subtitle\">{{title}}</h5>{{/title}}\n            {{#value}}<h4 class=\"CDB-infowindow-title\">{{{ value }}}</h4>{{/value}}\n            {{^value}}<h4 class=\"CDB-infowindow-title\">null</h4>{{/value}}\n          </li>\n          {{/content.fields}}\n        </ul>\n      </div>\n    </div>\n    <div class=\"CDB-hook\">\n      <div class=\"CDB-hook-inner\"></div>\n    </div>\n  </div>\n</div>\n',
+          'alternative_names': {},
+          'width': 226,
+          'maxHeight': 180
+        },
+        'tooltip': {
+          'fields': [],
+          'template_name': 'tooltip_light',
+          'template': '<div class=\"CDB-Tooltip CDB-Tooltip--isLight\">\n  <ul class=\"CDB-Tooltip-list\">\n    {{#fields}}\n      <li class=\"CDB-Tooltip-listItem\">\n        {{#title}}\n          <h3 class=\"CDB-Tooltip-listTitle\">{{{ title }}}</h3>\n        {{/title}}\n        <h4 class=\"CDB-Tooltip-listText\">{{{ value }}}</h4>\n      </li>\n    {{/fields}}\n  </ul>\n</div>\n',
+          'alternative_names': {},
+          'maxHeight': 180
+        },
+        'legend': {
+          'type': 'none',
+          'show_title': false,
+          'title': '',
+          'template': '',
+          'visible': true
+        },
+        'order': 1,
+        'visible': true,
         'options': {
-          'user_name': 'pabloalonso',
-          'maps_api_template': 'https://{user}.carto.com:443',
-          'sql_api_template': 'https://{user}.carto.com:443',
-          'filter': 'mapnik',
-          'layer_definition': {
-            'stat_tag': '03a89434-379e-11e6-b2e3-0e674067d321',
-            'version': '3.0.0',
-            'layers': [
-              {
-                'id': 'aefb9966-e587-40dc-8be7-6e85949f8ebe',
-                'type': 'CartoDB',
-                'infowindow': {
-                  'fields': [
-                    {
-                      'name': 'gnip',
-                      'title': true,
-                      'position': 0
-                    },
-                    {
-                      'name': 'actor_disp',
-                      'title': true,
-                      'position': 1
-                    }
-                  ],
-                  'template_name': 'table/views/infowindow_light',
-                  'template': '<div class=\"CDB-infowindow CDB-infowindow--light js-infowindow\">\n  <div class=\"CDB-infowindow-close js-close\"></div>\n  <div class=\"CDB-infowindow-container\">\n    <div class=\"CDB-infowindow-bg\">\n      <div class=\"CDB-infowindow-inner\">\n        {{#loading}}\n          <div class=\"CDB-Loader js-loader is-visible\"></div>\n        {{/loading}}\n        <ul class=\"CDB-infowindow-list js-content\">\n          {{#content.fields}}\n          <li class=\"CDB-infowindow-listItem\">\n            {{#title}}<h5 class=\"CDB-infowindow-subtitle\">{{title}}</h5>{{/title}}\n            {{#value}}<h4 class=\"CDB-infowindow-title\">{{{ value }}}</h4>{{/value}}\n            {{^value}}<h4 class=\"CDB-infowindow-title\">null</h4>{{/value}}\n          </li>\n          {{/content.fields}}\n        </ul>\n      </div>\n    </div>\n    <div class=\"CDB-hook\">\n      <div class=\"CDB-hook-inner\"></div>\n    </div>\n  </div>\n</div>\n',
-                  'alternative_names': {},
-                  'width': 226,
-                  'maxHeight': 180
-                },
-                'tooltip': {
-                  'fields': [],
-                  'template_name': 'tooltip_light',
-                  'template': '<div class=\"CDB-Tooltip CDB-Tooltip--isLight\">\n  <ul class=\"CDB-Tooltip-list\">\n    {{#fields}}\n      <li class=\"CDB-Tooltip-listItem\">\n        {{#title}}\n          <h3 class=\"CDB-Tooltip-listTitle\">{{{ title }}}</h3>\n        {{/title}}\n        <h4 class=\"CDB-Tooltip-listText\">{{{ value }}}</h4>\n      </li>\n    {{/fields}}\n  </ul>\n</div>\n',
-                  'alternative_names': {},
-                  'maxHeight': 180
-                },
-                'legend': {
-                  'type': 'none',
-                  'show_title': false,
-                  'title': '',
-                  'template': '',
-                  'visible': true
-                },
-                'order': 1,
-                'visible': true,
-                'options': {
-                  'layer_name': 'twitter_t3chfest_reduced',
-                  'cartocss': '/** simple visualization */\n\n#twitter_t3chfest_reduced{\n  marker-fill-opacity: 0.9;\n  marker-line-color: #FFF;\n  marker-line-width: 1;\n  marker-line-opacity: 1;\n  marker-placement: point;\n  marker-type: ellipse;\n  marker-width: 10;\n  marker-fill: #FF6600;\n  marker-allow-overlap: true;\n}',
-                  'cartocss_version': '2.1.1',
-                  'interactivity': 'cartodb_id',
-                  'source': 'a0'
-                }
-              }
-            ]
-          },
-          'attribution': ''
+          'layer_name': 'twitter_t3chfest_reduced',
+          'cartocss': '/** simple visualization */\n\n#twitter_t3chfest_reduced{\n  marker-fill-opacity: 0.9;\n  marker-line-color: #FFF;\n  marker-line-width: 1;\n  marker-line-opacity: 1;\n  marker-placement: point;\n  marker-type: ellipse;\n  marker-width: 10;\n  marker-fill: #FF6600;\n  marker-allow-overlap: true;\n}',
+          'cartocss_version': '2.1.1',
+          'interactivity': 'cartodb_id',
+          'source': 'a0'
         }
       },
       {
@@ -1096,7 +1080,7 @@ describe('vis/vis', function () {
         this.vis.load(new VizJSON(vizjson));
 
         expect(this.vis.getLayer(0).get('id')).toEqual(vizjson.layers[0].id);
-        expect(this.vis.getLayer(1).get('id')).toEqual(vizjson.layers[1].options.layer_definition.layers[0].id);
+        expect(this.vis.getLayer(1).get('id')).toEqual(vizjson.layers[1].id);
         expect(this.vis.getLayer(2).get('id')).toEqual(vizjson.layers[2].id);
       });
     });

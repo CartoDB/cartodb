@@ -53,7 +53,7 @@ class SessionsController < ApplicationController
   end
 
   def destroy
-    saml_authentication? ? saml_logout : do_logout
+    saml_authentication? && saml_service.try(:logout_url_configured?) ? saml_logout : do_logout
   end
 
   def show

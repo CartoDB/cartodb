@@ -16,12 +16,13 @@ namespace :cartodb do
       configuration = {
         saml_issuer: ENV['SAML_ISSUER'],
         idp_sso_target_url: ENV['SAML_IDP_SSO_TARGET_URL'],
-        idp_slo_target_url: ENV['SAML_IDP_SLO_TARGET_URL'],
         idp_cert_fingerprint: ENV['SAML_IDP_CERT_FINGERPRINT'],
         assertion_consumer_service_url: ENV['SAML_ASSERTION_CONSUMER_SERVICE_URL'],
         name_identifier_format: ENV['SAML_NAME_IDENTIFIER_FORMAT'],
         email_attribute: ENV['SAML_EMAIL_ATTRIBUTE']
       }
+
+      configuration[:idp_slo_target_url] = ENV['SAML_IDP_SLO_TARGET_URL'] if ENV['SAML_IDP_SLO_TARGET_URL'].present?
 
       raise "Missing parameter: #{configuration}" unless configuration.values.all?(&:present?)
 

@@ -135,6 +135,45 @@ describe SessionsController do
 
       @admin_user.destroy
     end
+
+    it "Falls back to credentials if user is not present at LDAP" do
+      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+      admin_user_username = "#{@organization.name}-admin"
+      admin_user_password = '2{Patrañas}'
+      admin_user_email = "#{@organization.name}-admin@test.com"
+      admin_user_cn = "cn=#{admin_user_username},#{@domain_bases.first}"
+      ldap_entry_data = {
+        :dn => admin_user_cn,
+        @user_id_field => [admin_user_username],
+        @user_email_field => [admin_user_email]
+      }
+      FakeNetLdap.register_user(username: admin_user_cn, password: 'fake')
+      FakeNetLdap.register_query(Net::LDAP::Filter.eq('cn', admin_user_username), [ldap_entry_data])
+
+      @admin_user = create_user(
+        username: admin_user_username,
+        email: admin_user_email,
+        password: admin_user_password,
+        private_tables_enabled: true,
+        quota_in_bytes: 12345,
+        organization: nil
+      )
+      @admin_user.save.reload
+      ::Organization.any_instance.stubs(:owner).returns(@admin_user)
+
+      # INFO: Again, hack to act as if user had organization
+      ::User.stubs(:where).with(username: admin_user_username,
+                                organization_id: @organization.id).returns([@admin_user])
+
+      post create_session_url(user_domain: user_domain, email: admin_user_username, password: admin_user_password)
+
+      response.status.should == 302
+      (response.location =~ /^http\:\/\/#{admin_user_username}(.*)\/dashboard\/$/).to_i.should eq 0
+
+      ::User.unstub(:where)
+
+      @admin_user.destroy
+    end
   end
 
   describe 'LDAP authentication' do

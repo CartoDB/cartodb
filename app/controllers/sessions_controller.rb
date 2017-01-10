@@ -44,9 +44,9 @@ class SessionsController < ApplicationController
   end
 
   def create
-    strategy, username = ldap_strategy_username || saml_strategy_username ||
-                         google_strategy_username || credentials_strategy_username
-    return render(action: 'new') unless strategy
+    strategies, username = ldap_strategy_username || saml_strategy_username ||
+                           google_strategy_username || credentials_strategy_username
+    return render(action: 'new') unless strategies
 
     candidate_user = Carto::User.where(username: username).first
 
@@ -56,7 +56,7 @@ class SessionsController < ApplicationController
       return render(action: 'new')
     end
 
-    user = authenticate!(strategy, scope: username)
+    user = authenticate!(*strategies, scope: username)
     CartoDB::Stats::Authentication.instance.increment_login_counter(user.email)
 
     redirect_to user.public_url << CartoDB.path(self, 'dashboard', trailing_slash: true)
@@ -205,7 +205,7 @@ class SessionsController < ApplicationController
     if ldap_authentication?
       username = params[:user_domain].present? ? params[:user_domain] : params[:email]
       # INFO: LDAP allows characters that we don't
-      [:ldap, Carto::Ldap::Manager.sanitize_for_cartodb(username)]
+      [[:ldap, :password], Carto::Ldap::Manager.sanitize_for_cartodb(username)]
     end
   end
 

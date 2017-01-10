@@ -8,7 +8,6 @@ function CartoDBLayerGroupViewBase (layerGroupModel) {
 }
 
 CartoDBLayerGroupViewBase.prototype = {
-  // TODO: Rename to something else
   _reload: function () {
     throw new Error('_reload must be implemented');
   },

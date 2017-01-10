@@ -3,6 +3,7 @@ var noDataAvailableTitleTemplate = require('./no-data-available-title.tpl');
 var Backbone = require('backbone');
 var sanitize = require('../../../../core/sanitize');
 var legendTitleTemplate = require('./legend-title.tpl');
+var ImageLoaderView = require('./img-loader-view');
 
 var LegendViewBase = Backbone.View.extend({
 
@@ -16,12 +17,17 @@ var LegendViewBase = Backbone.View.extend({
 
   render: function () {
     this.$el.html(this._generateHTML());
+
+    this._loadImages();
+
     if (this.model.isVisible()) {
       this.$el.show();
     } else {
       this.$el.hide();
     }
+
     this._toggleLoadingClass();
+
     return this;
   },
 
@@ -91,6 +97,19 @@ var LegendViewBase = Backbone.View.extend({
 
   _toggleLoadingClass: function () {
     this.$el.toggleClass('is-loading', this.model.isLoading());
+  },
+
+  _loadImages: function () {
+    _.each(this.$('.js-image-container'), function (el) {
+      var iconUrl = $(el).data('icon');
+
+      var iconView = new ImageLoaderView({
+        $imgContainer: $(el),
+        imageClass: 'Legend-fillImageAsset'
+      });
+
+      iconView._loadImage(iconUrl, $(el).data('color'));
+    }.bind(this));
   }
 });
 

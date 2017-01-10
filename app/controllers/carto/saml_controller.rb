@@ -11,7 +11,6 @@ module Carto
 
     rescue_from LoadError, UnauthorizedError, with: :rescue_from_carto_error
 
-    # Callback from Github Oauth
     def metadata
       render(xml: Carto::SamlService.new(@organization).saml_metadata)
     end

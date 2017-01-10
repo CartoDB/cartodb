@@ -49,7 +49,7 @@ namespace :cartodb do
 
       organization.update_attribute(:auth_saml_configuration, configuration)
 
-      puts Carto::SamlService.new(organization).saml_metadata
+      puts "Configuration metadata is available at #{base_url}/saml/metadata"
     end
   end
 end

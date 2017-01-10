@@ -109,7 +109,6 @@ class SessionsController < ApplicationController
     organization_id = warden.env['warden.options'][:organization_id]
     created_via = Carto::UserCreation::CREATED_VIA_SAML
 
-    @saml_response = warden.env['warden.options'][:saml_response]
     create_user(unique_username, organization_id, saml_email, created_via)
   end
 

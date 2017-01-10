@@ -1,8 +1,5 @@
-var _ = require('underscore');
 var log = require('cdb.log');
 var View = require('../core/view');
-var overlayTemplate = require('./ui/overlays-container.tpl');
-var CONTAINED_OVERLAYS = ['fullscreen', 'search', 'attribution', 'zoom', 'logo'];
 var GeometryViewFactory = require('./geometry-views/geometry-view-factory');
 
 var MapView = View.extend({
@@ -16,7 +13,6 @@ var MapView = View.extend({
     this.add_related_model(this.map);
 
     this._cartoDBLayerGroupView = null;
-    this.autoSaveBounds = false;
 
     // A map of the LayerViews that is linked to each of the Layer models.
     // The cid of the layer model is used as the key for this mapping.
@@ -79,38 +75,14 @@ var MapView = View.extend({
   },
 
   render: function () {
-    this.$el.append(overlayTemplate());
     this._addLayers();
     return this;
-  },
-
-  /**
-  * add a infowindow to the map
-  */
-  addInfowindow: function (infoWindowView) {
-    this.addOverlay(infoWindowView);
-  },
-
-  addOverlay: function (overlay) {
-    var type;
-    if (overlay) {
-      type = overlay.type;
-      if (type && CONTAINED_OVERLAYS.indexOf(type) >= 0) {
-        this._overlayContainer().append(overlay.render().el);
-      } else {
-        this.$el.append(overlay.render().el);
-      }
-      this.addView(overlay);
-    }
   },
 
   isMapAlreadyCreated: function () {
     return this.options.map_object;
   },
 
-  _overlayContainer: function () {
-    return this.$('.CDB-OverlayContainer');
-  },
   /**
   * set model property but unbind changes first in order to not create an infinite loop
   */
@@ -123,9 +95,6 @@ var MapView = View.extend({
         view_bounds_sw: b[0],
         view_bounds_ne: b[1]
       });
-      if (this.autoSaveBounds) {
-        this._saveLocation();
-      }
     }
     this._bindModel();
   },
@@ -272,15 +241,7 @@ var MapView = View.extend({
 
   _removeGeomFromMap: function (geo) {
     throw new Error('Subclasses of src/geo/map-view.js must implement ._removeGeomFromMap');
-  },
-
-  setAutoSaveBounds: function () {
-    this.autoSaveBounds = true;
-  },
-
-  _saveLocation: _.debounce(function () {
-    this.map.save(null, { silent: true });
-  }, 1000)
+  }
 });
 
 module.exports = MapView;

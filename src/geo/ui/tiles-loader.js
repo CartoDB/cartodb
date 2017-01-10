@@ -1,4 +1,3 @@
-var _ = require('underscore');
 var View = require('../../core/view');
 
 /**

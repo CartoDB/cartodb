@@ -1,7 +1,6 @@
 var $ = require('jquery');
 var _ = require('underscore');
 var Backbone = require('backbone');
-var View = require('../../../src/core/view');
 // required due to implicit dependency in vis --> map-view
 var cdb = require('cdb');
 _.extend(cdb.geo, require('../../../src/geo/leaflet'));
@@ -10,8 +9,6 @@ _.extend(cdb.geo, require('../../../src/geo/gmaps'));
 var VisView = require('../../../src/vis/vis-view');
 var VisModel = require('../../../src/vis/vis');
 var VizJSON = require('../../../src/api/vizjson');
-
-var OverlaysFactory = require('../../../src/vis/overlays-factory');
 
 describe('vis/vis-view', function () {
   beforeEach(function () {
@@ -127,9 +124,11 @@ describe('vis/vis-view', function () {
   });
 
   it('should display/hide the loader while loading', function () {
-    this.visView.addOverlay({
+    this.visModel.overlaysCollection.add({
       type: 'loader'
     });
+
+    expect(this.visView.$el.find('.CDB-Loader:not(.is-visible)').length).toEqual(1);
 
     this.visModel.set('loading', true);
 
@@ -150,98 +149,6 @@ describe('vis/vis-view', function () {
       }];
       this.visModel.load(new VizJSON(this.mapConfig));
       expect(this.visView.getLayerViews().length).toBe(1);
-    });
-  });
-
-  describe('Legends', function () {
-    beforeEach(function () {
-      this.mapConfig.layers = [
-        {
-          type: 'tiled',
-          legend: {
-            type: 'custom',
-            show_title: false,
-            title: '',
-            template: '',
-            items: [
-              {
-                name: 'visible legend item',
-                visible: true,
-                value: '#cccccc',
-                sync: true
-              }
-            ]
-          },
-          options: {
-            urlTemplate: 'https://dnv9my2eseobd.cloudfront.net/v3/{z}/{x}/{y}.png'
-          }
-        },
-        {
-          visible: false,
-          type: 'tiled',
-          legend: {
-            type: 'custom',
-            show_title: false,
-            title: '',
-            template: '',
-            items: [
-              {
-                name: 'invisible legend item',
-                visible: true,
-                value: '#cccccc',
-                sync: true
-              }
-            ]
-          },
-          options: {
-            urlTemplate: 'https://dnv9my2eseobd.cloudfront.net/v3/{z}/{x}/{y}.png'
-          }
-        }
-      ];
-      this.visModel.load(new VizJSON(this.mapConfig));
-    });
-  });
-
-  describe('.getOverlaysByType', function () {
-    it('should retrieve the overlays of a given type', function () {
-      OverlaysFactory.register('wadus', function (data, vis) {
-        return new View();
-      });
-
-      var tooltip1 = this.visView.addOverlay({
-        type: 'wadus'
-      });
-      var tooltip2 = this.visView.addOverlay({
-        type: 'wadus'
-      });
-      var tooltip3 = this.visView.addOverlay({
-        type: 'wadus'
-      });
-      var tooltips = this.visView.getOverlaysByType('wadus');
-      expect(tooltips.length).toEqual(3);
-      expect(tooltips[0]).toEqual(tooltip1);
-      expect(tooltips[1]).toEqual(tooltip2);
-      expect(tooltips[2]).toEqual(tooltip3);
-      tooltip1.clean();
-      tooltip2.clean();
-      tooltip3.clean();
-      expect(this.visView.getOverlaysByType('wadus').length).toEqual(0);
-    });
-  });
-
-  describe('.addOverlay', function () {
-    it('should add an overlay to the map', function () {
-      spyOn(this.visView.mapView, 'addOverlay');
-      var overlay = this.visView.addOverlay({
-        type: 'zoom'
-      });
-
-      expect(this.visView.mapView.addOverlay).toHaveBeenCalledWith(overlay);
-      expect(this.visView.overlays).toContain(overlay);
-
-      overlay.clean();
-
-      expect(this.visView.overlays).not.toContain(overlay);
     });
   });
 });

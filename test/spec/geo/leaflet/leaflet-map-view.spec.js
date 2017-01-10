@@ -179,17 +179,6 @@ describe('geo/leaflet/leaflet-map-view', function () {
     expect(_.size(mapView._layerViews)).toEqual(0);
   });
 
-  it('should save automatically when the zoom or center changes', function (done) {
-    spyOn(map, 'save');
-    mapView.setAutoSaveBounds();
-    map.set('center', [1, 2]);
-
-    setTimeout(function () {
-      expect(map.save).toHaveBeenCalled();
-      done();
-    }, 1500);
-  });
-
   it('should set z-order', function () {
     var layer1 = new TileLayer({urlTemplate: 'test1'});
     var layer2 = new TileLayer({urlTemplate: 'test2'});

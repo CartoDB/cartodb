@@ -1,7 +1,7 @@
 # encoding: utf-8
 
 module Carto
-  class UsernameFinder
+  class UsernameProposer
     def self.find_unique(candidate_username, offset: 0, max_retries: 99)
       suffix = "-#{offset}" if offset > 0
       candidate_username_with_suffix = "#{candidate_username}#{suffix}"

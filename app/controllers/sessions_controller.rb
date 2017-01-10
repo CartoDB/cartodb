@@ -52,7 +52,7 @@ class SessionsController < ApplicationController
 
     if central_enabled? && @organization && candidate_user && !candidate_user.belongs_to_organization?(@organization)
       @login_error = 'The user is not part of the organization'
-      @user_login_url = "#{Cartodb::Central.new.host}/login"
+      @user_login_url = Cartodb::Central.new.login_url
       return render(action: 'new')
     end
 
@@ -216,7 +216,7 @@ class SessionsController < ApplicationController
         username = username_from_user_by_email(email)
         [:saml, username]
       else
-        verify_authenticity_token
+        verify_authenticity_toke
         nil
       end
     end

@@ -3,6 +3,7 @@ require_dependency 'google_plus_config'
 require_dependency 'google_plus_api'
 require_dependency 'oauth/github/config'
 require_dependency 'carto/saml_service'
+require_dependency 'carto/username_proposer'
 
 require_relative '../../lib/user_account_creator'
 require_relative '../../lib/cartodb/stats/authentication'
@@ -12,7 +13,7 @@ class SessionsController < ApplicationController
 
   layout 'frontend'
   ssl_required :new, :create, :destroy, :show, :unauthenticated, :account_token_authentication_error,
-               :ldap_user_not_at_cartodb, :saml_user_not_at_cartodb
+               :ldap_user_not_at_cartodb, :saml_user_not_in_carto
 
   skip_before_filter :ensure_org_url_if_org_user # Don't force org urls
 
@@ -23,7 +24,7 @@ class SessionsController < ApplicationController
   # In case of fallback on SAML authorization failed, it will be manually checked.
   skip_before_filter :verify_authenticity_token, only: [:create], if: :saml_authentication?
   skip_before_filter :ensure_account_has_been_activated,
-                     only: [:account_token_authentication_error, :ldap_user_not_at_cartodb, :saml_user_not_at_cartodb]
+                     only: [:account_token_authentication_error, :ldap_user_not_at_cartodb, :saml_user_not_in_carto]
 
   before_filter :load_organization
   before_filter :initialize_google_plus_config,
@@ -32,23 +33,34 @@ class SessionsController < ApplicationController
 
   def new
     if logged_in?(CartoDB.extract_subdomain(request))
-      redirect_to CartoDB.path(self, 'dashboard', {trailing_slash: true}) and return
-    end
-
-    # Automatically trigger SAML request on login view load -- could easily trigger this elsewhere
-    if saml_authentication? && !user
-      redirect_to saml_service.authentication_request
+      redirect_to(CartoDB.path(self, 'dashboard', trailing_slash: true))
+    elsif saml_authentication? && !user
+      # Automatically trigger SAML request on login view load -- could easily trigger this elsewhere
+      redirect_to(saml_service.authentication_request)
+    elsif central_enabled? && !@organization.try(:auth_enabled?)
+      redirect_to(Cartodb::Central.new.login_url)
+    else
+      render
     end
   end
 
   def create
-    user = ldap_user || saml_user || credentials_or_google_user
+    strategies, username = ldap_strategy_username || saml_strategy_username ||
+                           google_strategy_username || credentials_strategy_username
+    return render(action: 'new') unless strategies
 
-    return render(action: 'new') unless user.present?
+    candidate_user = Carto::User.where(username: username).first
 
+    if central_enabled? && @organization && candidate_user && !candidate_user.belongs_to_organization?(@organization)
+      @login_error = 'The user is not part of the organization'
+      @user_login_url = Cartodb::Central.new.login_url
+      return render(action: 'new')
+    end
+
+    user = authenticate!(*strategies, scope: username)
     CartoDB::Stats::Authentication.instance.increment_login_counter(user.email)
 
-    redirect_to user.public_url << CartoDB.path(self, 'dashboard', {trailing_slash: true})
+    redirect_to user.public_url << CartoDB.path(self, 'dashboard', trailing_slash: true)
   end
 
   def destroy
@@ -95,16 +107,20 @@ class SessionsController < ApplicationController
     create_user(username, organization_id, email, created_via)
   end
 
-  # Meant to be called always from warden SAML authentication
-  def saml_user_not_at_cartodb
-    render action: 'new' and return unless verify_warden_failure
+  def saml_user_not_in_carto
+    # ensure to be called only from warden SAML authentication
+    unless verify_warden_failure
+      render action: 'new'
+      return
+    end
 
-    email = warden.env['warden.options'][:saml_email]
-    username = CartoDB::UserAccountCreator.email_to_username(email)
+    saml_email = warden.env['warden.options'][:saml_email]
+    username = CartoDB::UserAccountCreator.email_to_username(saml_email)
+    unique_username = Carto::UsernameProposer.find_unique(username)
     organization_id = warden.env['warden.options'][:organization_id]
     created_via = Carto::UserCreation::CREATED_VIA_SAML
 
-    create_user(username, organization_id, email, created_via)
+    create_user(unique_username, organization_id, saml_email, created_via)
   end
 
   def verify_warden_failure
@@ -150,7 +166,7 @@ class SessionsController < ApplicationController
     if !@organization.nil?
       # TODO: remove duplication (app/controllers/admin/organizations_controller.rb)
       signup_action = "#{CartoDB.protocol}://#{@organization.name}.#{CartoDB.account_host}#{CartoDB.path(self, 'signup_organization_user')}"
-    elsif Cartodb::Central.sync_data_with_cartodb_central?
+    elsif central_enabled?
       signup_action = Cartodb::Central.new.google_signup_url
     else
       signup_action = '/google/signup'
@@ -171,6 +187,10 @@ class SessionsController < ApplicationController
 
   private
 
+  def central_enabled?
+    Cartodb::Central.sync_data_with_cartodb_central?
+  end
+
   def extract_username(request, params)
     # params[:email] can contain a username
     email = params[:email]
@@ -186,62 +206,52 @@ class SessionsController < ApplicationController
     ::User.where(email: email).first.try(:username)
   end
 
-  def ldap_user
-    authenticate_with_ldap if ldap_authentication?
-  end
-
-  def saml_user
-    user = authenticate_with_saml if saml_authentication?
-    if !user && saml_authentication?
-      # Convenient because it's disabled on SAML
-      verify_authenticity_token
+  def ldap_strategy_username
+    if ldap_authentication?
+      username = params[:user_domain].present? ? params[:user_domain] : params[:email]
+      # INFO: LDAP allows characters that we don't
+      [[:ldap, :password], Carto::Ldap::Manager.sanitize_for_cartodb(username)]
     end
-    user
   end
 
-  # This acts as a fallback if previous authentications didn't return a valid user.
-  def credentials_or_google_user
-    authenticate_with_credentials_or_google
-  end
-
-  def authenticate_with_ldap
-    username = params[:user_domain].present? ?  params[:user_domain] : params[:email]
-    # INFO: LDAP allows characters that we don't
-    authenticate(:ldap, scope: Carto::Ldap::Manager.sanitize_for_cartodb(username))
-  end
-
-  def authenticate_with_saml
-    return nil unless params[:SAMLResponse].present?
-
-    email = saml_service.get_user_email(params[:SAMLResponse])
-    username = username_from_user_by_email(email) if email
-    authenticate!(:saml, scope: username)
-  end
-
-  # TODO: split
-  def authenticate_with_credentials_or_google
-    user = if !user_password_authentication? && params[:google_access_token].present? && @google_plus_config.present?
-        user = GooglePlusAPI.new.get_user(params[:google_access_token])
-        if user
-          authenticate!(:google_access_token, scope: params[:user_domain].present? ?  params[:user_domain] : user.username)
-        elsif user == false
-          # token not valid
-          nil
-        else
-          # token valid, unknown user
-          @google_plus_config.unauthenticated_valid_access_token = params[:google_access_token]
-          nil
-        end
+  def saml_strategy_username
+    if saml_authentication?
+      email = saml_service.get_user_email(params[:SAMLResponse])
+      if email
+        [:saml, username_from_user_by_email(email)]
       else
-        username = extract_username(request, params)
-        user = authenticate!(:password, scope: username)
+        verify_authenticity_token
+        nil
       end
+    end
+  end
 
-    user
+  def google_strategy_username
+    if google_authentication? && !user_password_authentication?
+      user = GooglePlusAPI.new.get_user(params[:google_access_token])
+      if user
+        [:google_access_token, params[:user_domain].present? ? params[:user_domain] : user.username]
+      elsif user == false
+        # token not valid
+        nil
+      else
+        # token valid, unknown user
+        @google_plus_config.unauthenticated_valid_access_token = params[:google_access_token]
+        nil
+      end
+    end
+  end
+
+  def credentials_strategy_username
+    [:password, extract_username(request, params)] if user_password_authentication?
   end
 
   def user_password_authentication?
     params && params['email'].present? && params['password'].present?
+  end
+
+  def google_authentication?
+    params[:google_access_token].present? && @google_plus_config.present?
   end
 
   def ldap_authentication?

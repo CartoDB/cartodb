@@ -265,6 +265,7 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/requests/carto/superadmin/users_controller_spec.rb \
 	spec/requests/carto/superadmin/user_migration_imports_spec.rb \
 	spec/requests/carto/superadmin/user_migration_exports_spec.rb \
+	spec/requests/carto/saml_controller_spec.rb \
 	spec/requests/admin/users_controller_spec.rb \
 	spec/services/carto/user_table_index_service_spec.rb \
 	spec/lib/carto/strong_password_validator_spec.rb \
@@ -298,6 +299,7 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/requests/carto/api/organization_assets_controller_spec.rb \
 	spec/lib/carto/assets_service_spec.rb \
 	spec/lib/carto/organization_assets_service_spec.rb \
+	spec/models/carto/username_proposer_spec.rb \
 	$(NULL)
 
 # This class must be tested isolated as pollutes namespace

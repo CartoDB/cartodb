@@ -71,6 +71,7 @@ CartoDB::Application.routes.draw do
     end
 
     get '/github' => 'github#github', as: :github
+    get '/saml/metadata' => 'saml#metadata'
   end
 
   # Internally, some of this methods will forcibly rewrite to the org-url if user belongs to an organization

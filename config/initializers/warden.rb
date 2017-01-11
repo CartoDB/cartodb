@@ -230,7 +230,10 @@ Warden::Strategies.add(:saml) do
         fail!
       end
     else
-      throw(:warden, action: 'saml_user_not_at_cartodb', organization_id: organization.id, saml_email: email)
+      throw(:warden,
+            action: 'saml_user_not_in_carto',
+            organization_id: organization.id,
+            saml_email: email)
     end
   rescue => e
     CartoDB::Logger.error(message: "Authenticating with SAML", exception: e)

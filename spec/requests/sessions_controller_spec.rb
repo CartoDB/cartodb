@@ -135,6 +135,45 @@ describe SessionsController do
 
       @admin_user.destroy
     end
+
+    it "Falls back to credentials if user is not present at LDAP" do
+      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+      admin_user_username = "#{@organization.name}-admin"
+      admin_user_password = '2{Patrañas}'
+      admin_user_email = "#{@organization.name}-admin@test.com"
+      admin_user_cn = "cn=#{admin_user_username},#{@domain_bases.first}"
+      ldap_entry_data = {
+        :dn => admin_user_cn,
+        @user_id_field => [admin_user_username],
+        @user_email_field => [admin_user_email]
+      }
+      FakeNetLdap.register_user(username: admin_user_cn, password: 'fake')
+      FakeNetLdap.register_query(Net::LDAP::Filter.eq('cn', admin_user_username), [ldap_entry_data])
+
+      @admin_user = create_user(
+        username: admin_user_username,
+        email: admin_user_email,
+        password: admin_user_password,
+        private_tables_enabled: true,
+        quota_in_bytes: 12345,
+        organization: nil
+      )
+      @admin_user.save.reload
+      ::Organization.any_instance.stubs(:owner).returns(@admin_user)
+
+      # INFO: Again, hack to act as if user had organization
+      ::User.stubs(:where).with(username: admin_user_username,
+                                organization_id: @organization.id).returns([@admin_user])
+
+      post create_session_url(user_domain: user_domain, email: admin_user_username, password: admin_user_password)
+
+      response.status.should == 302
+      (response.location =~ /^http\:\/\/#{admin_user_username}(.*)\/dashboard\/$/).to_i.should eq 0
+
+      ::User.unstub(:where)
+
+      @admin_user.destroy
+    end
   end
 
   describe 'LDAP authentication' do
@@ -235,20 +274,20 @@ describe SessionsController do
       post create_session_url(user_domain: user_domain, SAMLResponse: 'xx')
     end
 
-    # If SAML returns authentication error we should fallback to login
-    it 'fallbacks to login if SAMLResponse is present and SAML is enabled but subdomain is nil' do
-      stub_saml_service(@user)
-      failed_saml_response = mock
-      failed_saml_response.stubs(:is_valid?).returns(false)
-      Carto::SamlService.any_instance.stubs(:get_saml_response).returns(failed_saml_response)
+    it "Allows to login and triggers creation of normal users if user is not present" do
+      new_user = FactoryGirl.build(:carto_user, username: 'new-saml-user', email: 'new-saml-user-email@carto.com')
+      stub_saml_service(new_user)
+      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
 
-      sessions_controller = SessionsController.any_instance
-      sessions_controller.expects(:authenticate!).with(:saml, scope: @user.username).once
-      sessions_controller.expects(:authenticate!).with(:password, scope: @organization.name).returns(nil).once
+      ::Resque.expects(:enqueue).with(::Resque::UserJobs::Signup::NewUser,
+                                      instance_of(String), anything, instance_of(FalseClass)).returns(true)
 
       post create_session_url(user_domain: user_domain, SAMLResponse: 'xx')
 
-      response.status.should eq 200
+      response.status.should == 200
+      (response.body =~ /Your account is being created/).to_i.should_not eq 0
+
+      ::User.where(username: new_user.username).first.try(:destroy)
     end
 
     it "Allows to login and triggers creation of normal users if user is not present" do
@@ -265,6 +304,15 @@ describe SessionsController do
       (response.body =~ /Your account is being created/).to_i.should_not eq 0
 
       ::User.where(username: new_user.username).first.try(:destroy)
+    end
+
+    it "Fails to authenticate if SAML request fails" do
+      Carto::SamlService.any_instance.stubs(:enabled?).returns(true)
+      Carto::SamlService.any_instance.stubs(:get_user_email).returns(nil)
+
+      post create_session_url(user_domain: user_domain, SAMLResponse: 'xx')
+
+      response.status.should == 200
     end
 
     describe 'SAML logout' do
@@ -306,13 +354,15 @@ describe SessionsController do
   end
 
   describe 'SAML authentication' do
-    before(:each) do
-      @organization = FactoryGirl.create(:saml_organization)
+    def create
+      @organization = FactoryGirl.create(:saml_organization, quota_in_bytes: 1.gigabytes)
       @admin_user = create_admin_user(@organization)
       @user = FactoryGirl.create(:carto_user)
+      @user.organization_id = @organization.id
+      @user.save
     end
 
-    after(:each) do
+    def cleanup
       @user.destroy
       @organization.destroy
       @admin_user.destroy
@@ -331,7 +381,8 @@ describe SessionsController do
         organization: nil
       )
       admin_user.save.reload
-      ::Organization.any_instance.stubs(:owner).returns(admin_user)
+      @organization.owner = admin_user
+      @organization.save
 
       admin_user
     end
@@ -346,6 +397,14 @@ describe SessionsController do
         CartoDB.stubs(:subdomainless_urls?).returns(false)
         host! "#{@organization.name}.localhost.lan"
       end
+
+      before(:all) do
+        create
+      end
+
+      after(:all) do
+        cleanup
+      end
     end
 
     describe 'subdomainless' do
@@ -357,6 +416,74 @@ describe SessionsController do
         CartoDB.stubs(:session_domain).returns('localhost.lan')
         CartoDB.stubs(:subdomainless_urls?).returns(true)
         host! "localhost.lan"
+      end
+
+      before(:all) do
+        create
+      end
+
+      after(:all) do
+        cleanup
+      end
+    end
+  end
+
+  describe '#login' do
+    before(:all) do
+      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
+      @organization = FactoryGirl.create(:organization)
+      @user = FactoryGirl.create(:carto_user)
+    end
+
+    after(:all) do
+      @user.destroy
+      @organization.destroy
+    end
+
+    describe 'with Central' do
+      before(:each) do
+        Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
+      end
+
+      it 'redirects to Central for user logins' do
+        get login_url(user_domain: @user.username)
+        response.status.should == 302
+      end
+
+      it 'redirects to Central for orgs without any auth method enabled' do
+        Carto::Organization.any_instance.stubs(:auth_enabled?).returns(false)
+        get login_url(user_domain: @organization.name)
+        response.status.should == 302
+      end
+
+      it 'uses the box login for orgs with any auth enabled' do
+        Carto::Organization.any_instance.stubs(:auth_enabled?).returns(true)
+        get login_url(user_domain: @organization.name)
+        response.status.should == 200
+      end
+
+      it 'disallows login from an organization login page to a non-member' do
+        Carto::Organization.any_instance.stubs(:auth_enabled?).returns(true)
+        post create_session_url(user_domain: @organization.name, email: @user.username, password: @user.password)
+        response.status.should == 200
+        response.body.should include 'Not a member'
+      end
+    end
+
+    describe 'without Central' do
+      before(:each) do
+        Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+      end
+
+      it 'does not redirect' do
+        get login_url(user_domain: @user.username)
+        response.status.should == 200
+      end
+
+      it 'allows login from an organization login page to a non-member' do
+        Carto::Organization.any_instance.stubs(:auth_enabled?).returns(true)
+        post create_session_url(user_domain: @organization.name, email: @user.username, password: @user.password)
+        response.status.should == 302
       end
     end
   end

@@ -4,16 +4,63 @@ require 'fake_net_ldap'
 require_relative '../lib/fake_net_ldap_bind_as'
 
 describe SessionsController do
-  def stub_domainful(organization)
+  def stub_domainful(subdomain)
     CartoDB.stubs(:session_domain).returns('.localhost.lan')
     CartoDB.stubs(:subdomainless_urls?).returns(false)
-    host! "#{organization.name}.localhost.lan"
+    host! "#{subdomain}.localhost.lan"
   end
 
   def stub_subdomainless
     CartoDB.stubs(:session_domain).returns('localhost.lan')
     CartoDB.stubs(:subdomainless_urls?).returns(true)
     host! "localhost.lan"
+  end
+
+  shared_examples_for 'Google' do
+    before(:all) do
+      google_plus_config_mock = mock
+      google_plus_config_mock.stubs(:domain).returns { user_domain }
+      google_plus_config_mock.stubs(:access_token_field_id).returns('atfi')
+      google_plus_config_mock.stubs(:iframe_src).returns('')
+      google_plus_config_mock.stubs(:signup_action).returns('')
+      google_plus_config_mock.stubs(:unauthenticated_valid_access_token).returns('')
+      GooglePlusConfig.stubs(:instance).returns(google_plus_config_mock)
+
+      @user = FactoryGirl.create(:carto_user, username: 'google_user')
+    end
+
+    after(:all) do
+      @user.destroy
+    end
+
+    it 'attempts Google authentication if google is enabled and there is a google_access_token param' do
+      access_token = 'kkk'
+      GooglePlusAPI.any_instance.stubs(:get_user).with(access_token).once.returns(@user)
+      SessionsController.any_instance.expects(:authenticate!).with(:google_access_token, scope: @user.username).returns(@user).once
+      post create_session_url(user_domain: user_domain, google_access_token: access_token)
+    end
+  end
+
+  describe 'Google authentication' do
+    describe 'domainful' do
+      it_behaves_like 'Google'
+
+      let(:user_domain) { @user.username }
+
+      before(:each) do
+        stub_domainful(@user.username)
+      end
+    end
+
+    describe 'subdomainless' do
+      it_behaves_like 'Google'
+
+      let(:user_domain) { nil }
+
+      before(:each) do
+        stub_subdomainless
+      end
+    end
   end
 
   shared_examples_for 'LDAP' do
@@ -244,7 +291,7 @@ describe SessionsController do
       let(:user_domain) { nil }
 
       before(:each) do
-        stub_domainful(@organization)
+        stub_domainful(@organization.name)
       end
     end
 
@@ -401,7 +448,7 @@ describe SessionsController do
       let(:user_domain) { nil }
 
       before(:each) do
-        stub_domainful(@organization)
+        stub_domainful(@organization.name)
       end
 
       before(:all) do

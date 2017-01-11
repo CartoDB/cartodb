@@ -6,7 +6,7 @@ require 'rake/dsl_definition'
 require 'rake'
 require 'resque/tasks'
 
-# Do not load take tasks when running resque: https://github.com/CartoDB/cartodb/issues/11046
+# Do not load rake tasks when running resque: https://github.com/CartoDB/cartodb/issues/11046
 if Rake.application.top_level_tasks.reject { |t| ['environment', 'resque:work'].include?(t) }.empty?
   CartoDB::Application.paths['lib/tasks'] = []
   load 'lib/tasks/resque.rake'

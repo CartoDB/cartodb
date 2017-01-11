@@ -13,7 +13,7 @@
           <ul class='CDB-NavMenu-Inner CDB-NavMenu-inner--no-margin js-menu'>
             <li class='CDB-NavMenu-item'>
               <div class='CDB-NavMenu-link CDB-ListDecoration-rampNav-item'>
-                <button class="ColorBar CDB-ListDecoration-rampItemBar u-rSpace--xl js-colorPicker" style="background-color: <%= color %>;"></button>
+                <button class="ColorBar CDB-ListDecoration-rampItemBar u-rSpace--xl js-colorPicker" style="background-color: <%= color %>;" type="button"></button>
               </div>
             </li>
             <li class='CDB-NavMenu-item is-selected'>

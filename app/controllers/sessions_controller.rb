@@ -3,6 +3,7 @@ require_dependency 'google_plus_config'
 require_dependency 'google_plus_api'
 require_dependency 'oauth/github/config'
 require_dependency 'carto/saml_service'
+require_dependency 'carto/username_proposer'
 
 require_relative '../../lib/user_account_creator'
 require_relative '../../lib/cartodb/stats/authentication'
@@ -12,7 +13,7 @@ class SessionsController < ApplicationController
 
   layout 'frontend'
   ssl_required :new, :create, :destroy, :show, :unauthenticated, :account_token_authentication_error,
-               :ldap_user_not_at_cartodb, :saml_user_not_at_cartodb
+               :ldap_user_not_at_cartodb, :saml_user_not_in_carto
 
   skip_before_filter :ensure_org_url_if_org_user # Don't force org urls
 
@@ -23,7 +24,7 @@ class SessionsController < ApplicationController
   # In case of fallback on SAML authorization failed, it will be manually checked.
   skip_before_filter :verify_authenticity_token, only: [:create], if: :saml_authentication?
   skip_before_filter :ensure_account_has_been_activated,
-                     only: [:account_token_authentication_error, :ldap_user_not_at_cartodb, :saml_user_not_at_cartodb]
+                     only: [:account_token_authentication_error, :ldap_user_not_at_cartodb, :saml_user_not_in_carto]
 
   before_filter :load_organization
   before_filter :initialize_google_plus_config,
@@ -95,16 +96,20 @@ class SessionsController < ApplicationController
     create_user(username, organization_id, email, created_via)
   end
 
-  # Meant to be called always from warden SAML authentication
-  def saml_user_not_at_cartodb
-    render action: 'new' and return unless verify_warden_failure
+  def saml_user_not_in_carto
+    # ensure to be called only from warden SAML authentication
+    unless verify_warden_failure
+      render action: 'new'
+      return
+    end
 
-    email = warden.env['warden.options'][:saml_email]
-    username = CartoDB::UserAccountCreator.email_to_username(email)
+    saml_email = warden.env['warden.options'][:saml_email]
+    username = CartoDB::UserAccountCreator.email_to_username(saml_email)
+    unique_username = Carto::UsernameProposer.find_unique(username)
     organization_id = warden.env['warden.options'][:organization_id]
     created_via = Carto::UserCreation::CREATED_VIA_SAML
 
-    create_user(username, organization_id, email, created_via)
+    create_user(unique_username, organization_id, saml_email, created_via)
   end
 
   def verify_warden_failure

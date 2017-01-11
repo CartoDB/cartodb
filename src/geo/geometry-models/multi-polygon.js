@@ -4,12 +4,14 @@ var MultiGeometryBase = require('./multi-geometry-base');
 
 var MultiPolygon = MultiGeometryBase.extend({
   defaults: {
-    editable: false
+    editable: false,
+    expandable: false
   },
 
   _createGeometry: function (latlngs) {
     return new Polygon({
-      editable: this.isEditable()
+      editable: this.isEditable(),
+      expandable: this.isExpandable()
     }, {
       latlngs: latlngs
     });

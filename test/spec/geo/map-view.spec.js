@@ -1,5 +1,4 @@
 var $ = require('jquery');
-var _ = require('underscore');
 var Backbone = require('backbone');
 var VisModel = require('../../../src/vis/vis');
 var Map = require('../../../src/geo/map');
@@ -81,21 +80,6 @@ describe('core/geo/map-view', function () {
       // Tile Layer has a different layer view
       expect(this.mapView.getLayerViewByLayerCid(tileLayer.cid)).not.toEqual(this.mapView.getLayerViewByLayerCid(cartoDBLayer1.cid));
     });
-  });
-
-  it('should be able to add an infowindow', function () {
-    var infowindowView = new Infowindow({
-      mapView: this.mapView,
-      model: new Backbone.Model({
-        content: {
-          fields: []
-        }
-      })
-    });
-    this.mapView.addInfowindow(infowindowView);
-
-    expect(this.mapView._subviews[infowindowView.cid]).toBeTruthy();
-    expect(this.mapView._subviews[infowindowView.cid] instanceof Infowindow).toBeTruthy();
   });
 
   describe('bindings to map.layers', function () {

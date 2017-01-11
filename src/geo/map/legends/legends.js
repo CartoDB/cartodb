@@ -4,7 +4,6 @@ var BubbleLegendModel = require('./bubble-legend-model');
 var ChoroplethLegendModel = require('./choropleth-legend-model');
 var CustomLegendModel = require('./custom-legend-model');
 var CustomChoroplethLegendModel = require('./custom-choropleth-legend-model');
-var HTMLLegendModel = require('./html-legend-model');
 
 var LEGENDS_METADATA = {
   bubble: {
@@ -24,15 +23,15 @@ var LEGENDS_METADATA = {
   },
   custom: {
     modelClass: CustomLegendModel,
-    definitionAttrs: [ { 'items': 'categories' } ]
+    definitionAttrs: [ { 'items': 'categories' }, 'html' ]
+  },
+  html: {
+    modelClass: CustomLegendModel,
+    definitionAttrs: [ { 'items': 'categories' }, 'html' ]
   },
   custom_choropleth: {
     modelClass: CustomChoroplethLegendModel,
     definitionAttrs: [ 'prefix', 'suffix', {'leftLabel': 'left_label'}, {'rightLabel': 'right_label'}, 'colors' ]
-  },
-  html: {
-    modelClass: HTMLLegendModel,
-    definitionAttrs: [ 'html' ]
   }
 };
 
@@ -51,6 +50,14 @@ var Legends = function (legendsData, deps) {
   _.each(LEGENDS_METADATA, function (legendMetadata, legendType) {
     this[legendType] = this._createLegendModel(legendType, legendMetadata);
   }, this);
+
+  // HOTFIX: TO BE DELETED ONCE MIGRATED
+  var data = this._findDataForLegend('html');
+  if (data) {
+    this['custom'] = this['html'];
+  }
+
+  delete this['html'];
 };
 
 Legends.prototype._createLegendModel = function (legendType, legendMetadata) {

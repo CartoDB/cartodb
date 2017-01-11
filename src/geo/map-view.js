@@ -1,11 +1,10 @@
-var _ = require('underscore');
 var log = require('cdb.log');
 var View = require('../core/view');
-var overlayTemplate = require('./ui/overlays-container.tpl');
-var CONTAINED_OVERLAYS = ['fullscreen', 'search', 'attribution', 'zoom', 'logo'];
+var GeometryViewFactory = require('./geometry-views/geometry-view-factory');
 
 var MapView = View.extend({
   initialize: function () {
+    this.options = this.options || {};
     if (this.options.map === undefined) throw new Error('map is required');
     if (this.options.layerGroupModel === undefined) throw new Error('layerGroupModel is required');
 
@@ -14,12 +13,10 @@ var MapView = View.extend({
     this.add_related_model(this.map);
 
     this._cartoDBLayerGroupView = null;
-    this.autoSaveBounds = false;
 
     // A map of the LayerViews that is linked to each of the Layer models.
     // The cid of the layer model is used as the key for this mapping.
     this._layerViews = {};
-    this.geometries = {};
 
     this.map.layers.bind('reset', this._addLayers, this);
     this.map.layers.bind('add', this._addLayer, this);
@@ -38,52 +35,54 @@ var MapView = View.extend({
     throw new Error('subclasses of MapView must implement _getLayerViewFactory');
   },
 
-  _getGeometryViewFactory: function () {
-    throw new Error('subclasses of MapView must implement _getGeometryViewFactory');
-  },
-
   setCursor: function () {
     throw new Error('subclasses of MapView must implement setCursor');
   },
 
+  addMarker: function (marker) {
+    throw new Error('subclasses of MapView must implement addMarker');
+  },
+
+  removeMarker: function (marker) {
+    throw new Error('subclasses of MapView must implement removeMarker');
+  },
+
+  hasMarker: function (marker) {
+    throw new Error('subclasses of MapView must implement hasMarker');
+  },
+
+  addPath: function (path) {
+    throw new Error('subclasses of MapView must implement addPath');
+  },
+
+  removePath: function (path) {
+    throw new Error('subclasses of MapView must implement removePath');
+  },
+
+  // returns { x: 100, y: 200 }
+  latLngToContainerPoint: function (latlng) {
+    throw new Error('subclasses of MapView must implement latLngToContainerPoint');
+  },
+
+  // returns { lat: 0, lng: 0}
+  containerPointToLatLng: function (point) {
+    throw new Error('subclasses of MapView must implement containerPointToLatLng');
+  },
+
   _onGeometryAdded: function (geometry) {
-    var geometryView = this._getGeometryViewFactory().createGeometryView(geometry, this);
+    var geometryView = GeometryViewFactory.createGeometryView(this.map.get('provider'), geometry, this);
     geometryView.render();
   },
 
   render: function () {
-    this.$el.append(overlayTemplate());
     this._addLayers();
     return this;
-  },
-
-  /**
-  * add a infowindow to the map
-  */
-  addInfowindow: function (infoWindowView) {
-    this.addOverlay(infoWindowView);
-  },
-
-  addOverlay: function (overlay) {
-    var type;
-    if (overlay) {
-      type = overlay.type;
-      if (type && CONTAINED_OVERLAYS.indexOf(type) >= 0) {
-        this._overlayContainer().append(overlay.render().el);
-      } else {
-        this.$el.append(overlay.render().el);
-      }
-      this.addView(overlay);
-    }
   },
 
   isMapAlreadyCreated: function () {
     return this.options.map_object;
   },
 
-  _overlayContainer: function () {
-    return this.$('.CDB-OverlayContainer');
-  },
   /**
   * set model property but unbind changes first in order to not create an infinite loop
   */
@@ -96,9 +95,6 @@ var MapView = View.extend({
         view_bounds_sw: b[0],
         view_bounds_ne: b[1]
       });
-      if (this.autoSaveBounds) {
-        this._saveLocation();
-      }
     }
     this._bindModel();
   },
@@ -245,25 +241,6 @@ var MapView = View.extend({
 
   _removeGeomFromMap: function (geo) {
     throw new Error('Subclasses of src/geo/map-view.js must implement ._removeGeomFromMap');
-  },
-
-  setAutoSaveBounds: function () {
-    this.autoSaveBounds = true;
-  },
-
-  _saveLocation: _.debounce(function () {
-    this.map.save(null, { silent: true });
-  }, 1000),
-
-  _addGeometry: function (geom) {
-    var view = this._addGeomToMap(geom);
-    this.geometries[geom.cid] = view;
-  },
-
-  _removeGeometry: function (geo) {
-    var geo_view = this.geometries[geo.cid];
-    this._removeGeomFromMap(geo_view);
-    delete this.geometries[geo.cid];
   }
 });
 

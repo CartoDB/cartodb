@@ -45,13 +45,6 @@ describe('geo/map/legends/legends', function () {
             { type: 'color', name: 'Item 2', color: '#FABADA;' }
           ]
         }
-      },
-      {
-        type: 'html',
-        title: 'HTML Legend',
-        definition: {
-          html: '<p>Some markup that gets sanitised<script>alert("hola");<\/script></p>'
-        }
       }
     ], {
       visModel: this.visModel
@@ -86,11 +79,6 @@ describe('geo/map/legends/legends', function () {
     expect(this.legends.custom.get('preHTMLSnippet')).toEqual('<p>PRE Custom Legend</p>');
     expect(this.legends.custom.get('postHTMLSnippet')).toEqual('<p>POST Custom Legend</p>');
     expect(this.legends.custom.get('items').length).toEqual(2);
-  });
-
-  it('should initialize HTML legends correctly', function () {
-    expect(this.legends.html.get('title')).toEqual('HTML Legend');
-    expect(this.legends.html.get('html')).toEqual('<p>Some markup that gets sanitised<script>alert("hola");<\/script></p>');
   });
 
   it("it should 'show' all legends that have data", function () {

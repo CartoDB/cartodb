@@ -2,7 +2,6 @@ var _ = require('underscore');
 var Model = require('../core/model');
 var Template = require('../core/template');
 var Annotation = require('../geo/ui/annotation');
-var Header = require('../geo/ui/header');
 var Search = require('../geo/ui/search/search');
 var Text = require('../geo/ui/text');
 var TilesLoader = require('../geo/ui/tiles-loader');
@@ -12,62 +11,64 @@ var AttributionView = require('../geo/ui/attribution/attribution-view');
 var LogoView = require('../geo/ui/logo-view');
 var log = require('cdb.log');
 
-/**
- * defines the container for an overlay.
- * It places the overlay
- */
-var OverlaysFactory = {
+var OverlaysFactory = function (deps) {
+  deps = deps || {};
+  if (!deps.mapModel) throw new Error('mapModel is required');
+  if (!deps.mapView) throw new Error('mapView is required');
+  if (!deps.visView) throw new Error('visView is required');
 
-  _types: {},
-
-  // register a type to be created
-  register: function (type, creatorFn) {
-    OverlaysFactory._types[type] = creatorFn;
-  },
-
-  // create a type given the data
-  // raise an exception if the type does not exist
-  create: function (type, data, deps) {
-    deps = deps || {};
-    if (!deps.visView) throw new Error('visView is required');
-    if (!deps.map) throw new Error('map is required');
-    var visView = deps.visView;
-    var map = deps.map;
-
-    var t = OverlaysFactory._types[type];
-
-    if (!t) {
-      log.error("OverlaysFactory: '" + type + "' does not exist");
-      return;
-    }
-
-    data.options = typeof data.options === 'string' ? JSON.parse(data.options) : data.options;
-    data.options = data.options || {};
-    var widget = t(data, visView, map);
-
-    if (widget) {
-      widget.type = type;
-      return widget;
-    }
-
-    return false;
-  }
+  this._mapModel = deps.mapModel;
+  this._mapView = deps.mapView;
+  this._visView = deps.visView;
 };
 
-OverlaysFactory.register('logo', function (data, visView, map) {
+OverlaysFactory._constructors = {};
+
+OverlaysFactory.register = function (type, creatorFn) {
+  this._constructors[type] = creatorFn;
+};
+
+OverlaysFactory.prototype.create = function (type, data) {
+  var overlayConstructor = this.constructor._constructors[type];
+  if (!overlayConstructor) {
+    log.log("Overlays of type '" + type + "' are not supported anymore");
+    return;
+  }
+
+  data.options = typeof data.options === 'string' ? JSON.parse(data.options) : data.options;
+  data.options = data.options || {};
+  var overlay = overlayConstructor(data, {
+    mapModel: this._mapModel,
+    mapView: this._mapView,
+    visView: this._visView
+  });
+
+  if (overlay) {
+    overlay.type = type;
+    return overlay;
+  }
+
+  return false;
+};
+
+// Register overlays
+
+OverlaysFactory.register('logo', function (data, deps) {
   var overlay = new LogoView();
   return overlay.render();
 });
 
-OverlaysFactory.register('attribution', function (data, visView, map) {
+OverlaysFactory.register('attribution', function (data, deps) {
+  if (!deps.mapModel) throw new Error('mapModel is required');
+
   var overlay = new AttributionView({
-    map: map
+    map: deps.mapModel
   });
 
   return overlay.render();
 });
 
-OverlaysFactory.register('text', function (data, visView, map) {
+OverlaysFactory.register('text', function (data, deps) {
   var options = data.options;
 
   var template = Template.compile(
@@ -88,7 +89,9 @@ OverlaysFactory.register('text', function (data, visView, map) {
   return widget.render();
 });
 
-OverlaysFactory.register('annotation', function (data, visView, map) {
+OverlaysFactory.register('annotation', function (data, deps) {
+  if (!deps.mapView) throw new Error('mapView is required');
+
   var options = data.options;
 
   var template = Template.compile(
@@ -104,7 +107,7 @@ OverlaysFactory.register('annotation', function (data, visView, map) {
   var widget = new Annotation({
     className: 'cartodb-overlay overlay-annotation ' + options.device,
     template: template,
-    mapView: visView.mapView,
+    mapView: deps.mapView,
     device: options.device,
     text: options.extra.rendered_text,
     minZoom: options.style['min-zoom'],
@@ -116,31 +119,12 @@ OverlaysFactory.register('annotation', function (data, visView, map) {
   return widget.render();
 });
 
-OverlaysFactory.register('header', function (data, visView, map) {
-  var options = data.options;
-
-  var template = Template.compile(
-    data.template || [
-      '<div class="content">',
-      '<div class="title">{{{ title }}}</div>',
-      '<div class="description">{{{ description }}}</div>',
-      '</div>'
-    ].join('\n'),
-    data.templateType || 'mustache'
-  );
-
-  var widget = new Header({
-    model: new Model(options),
-    template: template
-  });
-
-  return widget.render();
-});
-
 // map zoom control
-OverlaysFactory.register('zoom', function (data, visView, map) {
+OverlaysFactory.register('zoom', function (data, deps) {
+  if (!deps.mapModel) throw new Error('mapModel is required');
+
   var opts = {
-    model: map
+    model: deps.mapModel
   };
 
   var zoom = new Zoom(opts);
@@ -154,16 +138,17 @@ OverlaysFactory.register('loader', function (data) {
 });
 
 // layer_selector
-OverlaysFactory.register('layer_selector', function (data, visView, map) {
-
-});
+OverlaysFactory.register('layer_selector', function (data, deps) {});
 
 // fullscreen
-OverlaysFactory.register('fullscreen', function (data, visView, map) {
+OverlaysFactory.register('fullscreen', function (data, deps) {
+  if (!deps.mapView) throw new Error('mapView is required');
+  if (!deps.visView) throw new Error('visView is required');
+
   var options = _.extend(data, {
-    doc: visView.$el.find('> div').get(0),
+    doc: deps.visView.$el.find('> div').get(0),
     allowWheelOnFullscreen: false,
-    mapView: visView.mapView
+    mapView: deps.mapView
   });
 
   if (data.template) {
@@ -178,13 +163,16 @@ OverlaysFactory.register('fullscreen', function (data, visView, map) {
 });
 
 // share content
-OverlaysFactory.register('share', function (data, visView, map) {});
+OverlaysFactory.register('share', function (data, deps) {});
 
 // search content
-OverlaysFactory.register('search', function (data, visView, map) {
+OverlaysFactory.register('search', function (data, deps) {
+  if (!deps.mapView) throw new Error('mapView is required');
+  if (!deps.mapModel) throw new Error('mapModel is required');
+
   var opts = _.extend(data, {
-    mapView: visView.mapView,
-    model: map
+    mapView: deps.mapView,
+    model: deps.mapModel
   });
 
   if (data.template) {
@@ -194,7 +182,7 @@ OverlaysFactory.register('search', function (data, visView, map) {
   return search.render();
 });
 
-OverlaysFactory.register('custom', function (data, visView, map) {
+OverlaysFactory.register('custom', function (data, deps) {
   var customOverlayView = data;
   return customOverlayView.render();
 });

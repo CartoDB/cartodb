@@ -142,8 +142,6 @@ describe('cartodb.js bundle', function() {
       expect(cdb.geo.ui.InfowindowModel).toEqual(jasmine.any(Function));
       expect(cdb.geo.ui.Infowindow).toEqual(jasmine.any(Function));
 
-      expect(cdb.geo.ui.Header).toEqual(jasmine.any(Function));
-
       expect(cdb.geo.ui.Search).toEqual(jasmine.any(Function));
 
       expect(cdb.geo.ui.LayerView).toEqual(jasmine.any(Function));

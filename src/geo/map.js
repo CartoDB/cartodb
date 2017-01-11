@@ -216,7 +216,10 @@ var Map = Model.extend({
   },
 
   editGeometry: function (geoJSON) {
-    var geometry = GeometryFactory.createGeometryFromGeoJSON(geoJSON);
+    var geometry = GeometryFactory.createGeometryFromGeoJSON(geoJSON, {
+      editable: true,
+      expandable: true
+    });
     this.trigger('enterEditMode', geometry);
     return geometry;
   },
@@ -475,7 +478,7 @@ var Map = Model.extend({
       swPoint = Map.latlngToMercator(sw, zoom);
       boundsSize[0] = Math.abs(nePoint[0] - swPoint[0]);
       boundsSize[1] = Math.abs(swPoint[1] - nePoint[1]);
-      zoomNotFound = boundsSize[0] <= size[0] || boundsSize[1] <= size[1];
+      zoomNotFound = boundsSize[0] <= size[0] && boundsSize[1] <= size[1];
     } while (zoomNotFound && zoom <= maxZoom);
 
     if (zoomNotFound) {
@@ -485,6 +488,11 @@ var Map = Model.extend({
     return zoom - 1;
   }
 }, {
+  PROVIDERS: {
+    GMAPS: 'googlemaps',
+    LEAFLET: 'leaflet'
+  },
+
   latlngToMercator: function (latlng, zoom) {
     var ll = new L.LatLng(latlng[0], latlng[1]);
     var pp = L.CRS.EPSG3857.latLngToPoint(ll, zoom);

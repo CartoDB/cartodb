@@ -33,13 +33,11 @@
 **/src/geo/gmaps/gmaps-cartodb-layer-group-view.js
 **/src/geo/gmaps/gmaps-default-map-style.js
 **/src/geo/gmaps/gmaps-layer-view.js
-**/src/geo/gmaps/gmaps-map-view.js
 **/src/geo/gmaps/gmaps-plain-layer-view.js
 **/src/geo/gmaps/gmaps-tiled-layer-view.js
 **/src/geo/gmaps/projector.js
 **/src/geo/leaflet/leaflet-cartodb-layer-group-view.js
 **/src/geo/leaflet/leaflet-gmaps-tiled-layer-view.js
-**/src/geo/leaflet/leaflet-map-view.js
 **/src/geo/leaflet/leaflet-plain-layer-view.js
 **/src/geo/leaflet/leaflet-wms-layer-view.js
 **/src/geo/map/gmaps-base-layer.js
@@ -47,7 +45,6 @@
 **/src/geo/map/wms-layer.js
 **/src/geo/map.js
 **/src/geo/ui/annotation.js
-**/src/geo/ui/header.js
 **/src/geo/ui/image.js
 **/src/geo/ui/infobox.js
 **/src/geo/ui/layer-selector.js
@@ -93,7 +90,6 @@
 **/test/spec/geo/map/gmaps-base-layer.spec.js
 **/test/spec/geo/map/tile-layer.spec.js
 **/test/spec/geo/map-view.spec.js
-**/test/spec/geo/ui/header.spec.js
 **/test/spec/geo/ui/infobox.spec.js
 **/test/spec/geo/ui/infowindow.spec.js
 **/test/spec/geo/ui/layer-selector-torque.spec.js

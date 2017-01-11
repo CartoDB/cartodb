@@ -2,7 +2,6 @@ var BubbleLegendView = require('./bubble/legend-view');
 var CategoryLegendView = require('./categories/legend-view');
 var ChoroplethLegendView = require('./choropleth/legend-view');
 var CustomLegendView = require('./custom/legend-view');
-var HTMLLegendView = require('./html/legend-view');
 var CustomChoroplethLegendView = require('./custom-choropleth/legend-view');
 
 var LEGEND_VIEW_CONSTRUCTORS = {
@@ -10,8 +9,7 @@ var LEGEND_VIEW_CONSTRUCTORS = {
   category: CategoryLegendView,
   choropleth: ChoroplethLegendView,
   custom_choropleth: CustomChoroplethLegendView,
-  custom: CustomLegendView,
-  html: HTMLLegendView
+  custom: CustomLegendView
 };
 
 var PLACEHOLDER_TEMPLATES = {

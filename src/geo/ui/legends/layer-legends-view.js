@@ -102,7 +102,6 @@ var LayerLegendsView = Backbone.View.extend({
   _getLegendModels: function () {
     return [
       this.model.legends.custom,
-      this.model.legends.html,
       this.model.legends.choropleth,
       this.model.legends.custom_choropleth,
       this.model.legends.category,

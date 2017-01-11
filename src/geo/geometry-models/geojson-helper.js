@@ -38,6 +38,7 @@ module.exports = {
   },
 
   convertLatLngsToGeoJSONPolygonCoords: function (latlngs) {
+    // Append the first latlng to "close" the polygon
     latlngs = latlngs.concat([ latlngs[0] ]);
     return this.convertLatlngsToLnglats(latlngs);
   },

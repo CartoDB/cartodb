@@ -67,6 +67,10 @@ module Carto
       end
     end
 
+    def saml_metadata
+      OneLogin::RubySaml::Metadata.new.generate(saml_settings, true)
+    end
+
     private
 
     def email_from_saml_response(saml_response)

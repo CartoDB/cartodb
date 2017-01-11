@@ -9,7 +9,7 @@
     "match": "RuntimeError: Execution of function interrupted by signal",
     "replaceWith": "timeout"
   }, {
-    "match": "canceling statement due to statement timeout.",
+    "match": "canceling statement due to statement timeout.*",
     "replaceWith": "timeout"
   }, {
     "match": "^.*?PQconnectPoll: FATAL: no pg_hba.conf entry for host.*",

@@ -867,13 +867,15 @@ class Table
                                     user_id: user_id,
                                     qualified_table_name: qualified_table_name,
                                     row_id: row_id,
-                                    raw_attributes: raw_attributes)
+                                    raw_attributes: raw_attributes,
+                                    exception: e)
               if (retries += 1) > MAX_UPDATE_ROW_RETRIES
                 CartoDB::Logger.error(message: 'Max update_row! retries reached',
                                       user_id: user_id,
                                       qualified_table_name: qualified_table_name,
                                       row_id: row_id,
-                                      raw_attributes: raw_attributes)
+                                      raw_attributes: raw_attributes,
+                                      exception: e)
               else
                 retry
               end

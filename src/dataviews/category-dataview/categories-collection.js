@@ -10,6 +10,27 @@ var CategoryItemModel = require('./category-item-model');
 module.exports = Backbone.Collection.extend({
   model: CategoryItemModel,
 
+  initialize: function (models, options) {
+    this.aggregationModel = options.aggregationModel;
+    this.aggregation = options.aggregationModel.get('aggregation');
+    this.aggregationModel.on('change:aggregation', function (model, aggregation) {
+      this.aggregation = aggregation;
+      this.filterNull();
+    }, this);
+
+    this.on('reset', this.filterNull, this);
+  },
+
+  filterNull: function () {
+    if (this.aggregation === 'count') return;
+
+    var models = this.filter(function (category) {
+      return category.get('value') != null;
+    });
+
+    this.reset(models, {silent: true});
+  },
+
   comparator: function (a, b) {
     if (a.get('name') === 'Other') {
       return 1;

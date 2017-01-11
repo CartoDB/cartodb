@@ -4,6 +4,18 @@ require 'fake_net_ldap'
 require_relative '../lib/fake_net_ldap_bind_as'
 
 describe SessionsController do
+  def stub_domainful(organization)
+    CartoDB.stubs(:session_domain).returns('.localhost.lan')
+    CartoDB.stubs(:subdomainless_urls?).returns(false)
+    host! "#{organization.name}.localhost.lan"
+  end
+
+  def stub_subdomainless
+    CartoDB.stubs(:session_domain).returns('localhost.lan')
+    CartoDB.stubs(:subdomainless_urls?).returns(true)
+    host! "localhost.lan"
+  end
+
   shared_examples_for 'LDAP' do
     it "doesn't allows to login until admin does first" do
       Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
@@ -232,9 +244,7 @@ describe SessionsController do
       let(:user_domain) { nil }
 
       before(:each) do
-        CartoDB.stubs(:session_domain).returns('.localhost.lan')
-        CartoDB.stubs(:subdomainless_urls?).returns(false)
-        host! "#{@organization.name}.localhost.lan"
+        stub_domainful(@organization)
       end
     end
 
@@ -244,9 +254,7 @@ describe SessionsController do
       let(:user_domain) { @organization.name }
 
       before(:each) do
-        CartoDB.stubs(:session_domain).returns('localhost.lan')
-        CartoDB.stubs(:subdomainless_urls?).returns(true)
-        host! "localhost.lan"
+        stub_subdomainless
       end
     end
   end
@@ -393,9 +401,7 @@ describe SessionsController do
       let(:user_domain) { nil }
 
       before(:each) do
-        CartoDB.stubs(:session_domain).returns('.localhost.lan')
-        CartoDB.stubs(:subdomainless_urls?).returns(false)
-        host! "#{@organization.name}.localhost.lan"
+        stub_domainful(@organization)
       end
 
       before(:all) do
@@ -413,9 +419,7 @@ describe SessionsController do
       let(:user_domain) { @organization.name }
 
       before(:each) do
-        CartoDB.stubs(:session_domain).returns('localhost.lan')
-        CartoDB.stubs(:subdomainless_urls?).returns(true)
-        host! "localhost.lan"
+        stub_subdomainless
       end
 
       before(:all) do

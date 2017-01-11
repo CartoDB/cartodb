@@ -1,4 +1,4 @@
-var Backbone = require('Backbone');
+var Backbone = require('backbone');
 var CategoriesCollection = require('../../../../src/dataviews/category-dataview/categories-collection');
 
 describe('categories-collection', function () {

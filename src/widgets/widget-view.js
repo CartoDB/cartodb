@@ -15,6 +15,7 @@ module.exports = cdb.core.View.extend({
 
   initialize: function () {
     this.listenTo(this.model, 'destroy', this.clean);
+    this.model.dataviewModel.layer.bind('change:visible', this.render, this);
   },
 
   render: function () {

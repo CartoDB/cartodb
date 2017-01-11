@@ -36,7 +36,8 @@ describe SessionsController do
     it 'attempts Google authentication if google is enabled and there is a google_access_token param' do
       access_token = 'kkk'
       GooglePlusAPI.any_instance.stubs(:get_user).with(access_token).once.returns(@user)
-      SessionsController.any_instance.expects(:authenticate!).with(:google_access_token, scope: @user.username).returns(@user).once
+      SessionsController.any_instance.expects(:authenticate!).with(:google_access_token, scope: @user.username)
+          .returns(@user).once
       post create_session_url(user_domain: user_domain, google_access_token: access_token)
     end
   end

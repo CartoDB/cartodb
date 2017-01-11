@@ -51,7 +51,8 @@ describe('create-dashboard', function () {
         },
         layers: [{
           id: 'first-layer',
-          type: 'torque' // to be identified as an 'interactive' layer
+          type: 'torque', // to be identified as an 'interactive' layer
+          visible: true
         }]
       };
 

@@ -10,6 +10,11 @@ describe('widgets/widget-model', function () {
         column: 'col'
       });
       dataviewModel.remove = spyOn(dataviewModel, 'remove');
+      dataviewModel.layer = {
+        id: 'first-layer',
+        type: 'torque',
+        visible: true
+      };
 
       this.model = new WidgetModel(null, {
         dataviewModel: dataviewModel

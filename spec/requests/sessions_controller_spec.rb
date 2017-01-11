@@ -37,7 +37,7 @@ describe SessionsController do
       access_token = 'kkk'
       GooglePlusAPI.any_instance.stubs(:get_user).with(access_token).once.returns(@user)
       SessionsController.any_instance.expects(:authenticate!).with(:google_access_token, scope: @user.username)
-          .returns(@user).once
+                        .returns(@user).once
       post create_session_url(user_domain: user_domain, google_access_token: access_token)
     end
   end

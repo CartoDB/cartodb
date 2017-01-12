@@ -250,6 +250,9 @@ module CartoDB
         repository.fullpath_for("#{seed}_cookiejar")
       end
 
+      def download
+      end
+
       def download_and_store
         name = ''
         download_error = false

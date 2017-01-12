@@ -261,6 +261,8 @@ module CartoDB
         request = Typhoeus::Request.new(url, followlocation: true)
 
         request.on_headers do |response|
+          raise_error_for_response(response) unless response.success?
+
           @http_response_code = response.code
 
           CartoDB::Importer2::Downloader.valid_url!(response.effective_url)
@@ -283,6 +285,24 @@ module CartoDB
         end
 
         request
+      end
+
+      def raise_error_for_response(response)
+        if response.timed_out?
+          raise DownloadTimeoutError.new("TIMEOUT ERROR: Body:#{response.body}")
+        elsif response.headers['Error'] && response.headers['Error'] =~ /too many nodes/
+          raise TooManyNodesError.new(response.headers['Error'])
+        elsif response.return_code == :couldnt_resolve_host
+          raise CouldntResolveDownloadError.new("Couldn't resolve #{@translated_url}")
+        elsif response.code == 401
+          raise UnauthorizedDownloadError.new(response.body)
+        elsif response.code == 404
+          raise NotFoundDownloadError.new(response.body)
+        elsif response.return_code == :partial_file
+          raise PartialDownloadError.new("DOWNLOAD ERROR: A file transfer was shorter or larger than expected")
+        else
+          raise DownloadError.new("DOWNLOAD ERROR: Code:#{response.code} Body:#{response.body}")
+        end
       end
 
       def download_and_store

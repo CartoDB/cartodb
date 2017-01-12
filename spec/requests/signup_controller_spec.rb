@@ -138,7 +138,7 @@ describe SignupController do
 
       Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
       ::GooglePlusConfig.stubs(:instance).returns({})
-      email = "testemail@#{@organization.whitelisted_email_domains[0]}"
+      email = "#{unique_name('email')}@#{@organization.whitelisted_email_domains[0]}"
       user_data = { 'emails' => [{ 'type' => 'account', 'value' => email }] }
       GooglePlusAPI.any_instance.stubs(:get_user_data).returns(GooglePlusAPIUserData.new(user_data))
       host! "#{@organization.name}.localhost.lan"

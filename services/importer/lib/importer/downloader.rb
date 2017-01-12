@@ -303,6 +303,8 @@ module CartoDB
         else
           raise DownloadError.new("DOWNLOAD ERROR: Code:#{response.code} Body:#{response.body}")
         end
+
+        CartoDB::Logger.error(message: 'CartoDB::Importer2::Downloader: Error', response: response)
       end
 
       def download_and_store

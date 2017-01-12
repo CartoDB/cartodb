@@ -29,7 +29,6 @@ module CartoDB
       MAX_REDIRECTS = 5
       URL_ESCAPED_CHARACTERS = 'áéíóúÁÉÍÓÚñÑçÇàèìòùÀÈÌÒÙ'.freeze
 
-      DEFAULT_FILENAME        = 'importer'.freeze
       CONTENT_DISPOSITION_RE  = %r{;\s*filename=(.*;|.*)}
       URL_RE                  = %r{://}
       URL_TRANSLATORS         = [
@@ -251,11 +250,27 @@ module CartoDB
         repository.fullpath_for("#{seed}_cookiejar")
       end
 
-      MAX_DOWNLOAD_SIZE = 5_242_880
+      FILENAME_PREFIX = 'importer_'.freeze
 
-      def download_to_file(file)
-        request = binded_request(@translated_url, file)
+      def fetch_file
+        file = Tempfile.new(FILENAME_PREFIX)
+        binded_request(@translated_url, file).run
+
+        file_path = if @header_filename
+                      new_file_path = File.join(Pathname.new(file.path).dirname, @header_filename)
+                      File.rename(file.path, new_file_path)
+
+                      new_file_path
+                    else
+                      file.path
+                    end
+
+        self.source_file = SourceFile.new(file_path, @header_filename)
+      ensure
+        file.close
       end
+
+      MAX_DOWNLOAD_SIZE = 5_242_880
 
       def binded_request(url, file)
         request = Typhoeus::Request.new(url, followlocation: true)
@@ -280,6 +295,7 @@ module CartoDB
           raise_error_for_response(response) unless response.success?
 
           headers = response.headers
+          @header_filename = name_from(headers, url, @custom_filename)
           @etag = etag_from(headers)
           @last_modified = last_modified_from(headers)
         end

@@ -15,36 +15,39 @@ describe('categories-collection', function () {
     });
   });
 
-  it('reset should filter null when reset', function () {
-    collection.reset([{
-      name: 'foo',
-      value: 1
-    }, {
-      name: 'bar',
-      value: 10
-    }, {
-      name: 'wadus',
-      value: null
-    }]);
+  describe('.reset', function () {
+    it('should NOT filter null values when categories are aggregated by "count"', function () {
+      collection.reset([{
+        name: 'foo',
+        value: 1
+      }, {
+        name: 'bar',
+        value: 10
+      }, {
+        name: 'wadus',
+        value: null
+      }]);
 
-    expect(collection.length).toBe(3);
-    expect(collection.pluck('name').sort()).toEqual([ 'foo', 'bar', 'wadus' ].sort());
-    expect(collection.pluck('value').sort()).toEqual([ 1, 10, null ].sort());
+      expect(collection.length).toBe(3);
+      expect(collection.pluck('name').sort()).toEqual([ 'foo', 'bar', 'wadus' ].sort());
+      expect(collection.pluck('value').sort()).toEqual([ 1, 10, null ].sort());
+    });
 
-    aggregationModel.set({aggregation: 'avg'});
-
-    collection.reset([{
-      name: 'foo',
-      value: 1
-    }, {
-      name: 'bar',
-      value: 10
-    }, {
-      name: 'wadus',
-      value: null
-    }]);
-    expect(collection.length).toBe(2);
-    expect(collection.pluck('name').sort()).toEqual([ 'foo', 'bar' ].sort());
-    expect(collection.pluck('value').sort()).toEqual([ 1, 10 ].sort());
+    it('should filter null values when categories are NOT aggregated by "count"', function () {
+      aggregationModel.set({aggregation: 'avg'});
+      collection.reset([{
+        name: 'foo',
+        value: 1
+      }, {
+        name: 'bar',
+        value: 10
+      }, {
+        name: 'wadus',
+        value: null
+      }]);
+      expect(collection.length).toBe(2);
+      expect(collection.pluck('name').sort()).toEqual([ 'foo', 'bar' ].sort());
+      expect(collection.pluck('value').sort()).toEqual([ 1, 10 ].sort());
+    });
   });
 });

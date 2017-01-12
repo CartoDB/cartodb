@@ -21,6 +21,8 @@ class SignupController < ApplicationController
   before_filter :initialize_google_plus_config,
                 :initialize_github_config
 
+  skip_before_filter :verify_authenticity_token, only: :create
+
   def signup
     email = params[:email].present? ? params[:email] : nil
     @user = ::User.new(email: email)

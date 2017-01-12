@@ -1,5 +1,7 @@
 var Backbone = require('backbone');
+var _ = require('underscore');
 var CategoryItemModel = require('./category-item-model');
+var COUNT_AGGREGATION_TYPE = 'count';
 
 /**
  *  Data categories collection
@@ -13,22 +15,17 @@ module.exports = Backbone.Collection.extend({
   initialize: function (models, options) {
     this.aggregationModel = options.aggregationModel;
     this.aggregation = options.aggregationModel.get('aggregation');
-    this.aggregationModel.on('change:aggregation', function (model, aggregation) {
-      this.aggregation = aggregation;
-      this.filterNull();
-    }, this);
-
-    this.on('reset', this.filterNull, this);
   },
 
-  filterNull: function () {
-    if (this.aggregation === 'count') return;
-
-    var models = this.filter(function (category) {
-      return category.get('value') != null;
-    });
-
-    this.reset(models, {silent: true});
+  reset: function (models, options) {
+    if (this.aggregationModel.get('aggregation') !== COUNT_AGGREGATION_TYPE) {
+      models = _.filter(models, function (category) {
+        var isModel = category instanceof Backbone.Model;
+        var value = isModel ? category.get('value') : category.value;
+        return value != null;
+      });
+    }
+    Backbone.Collection.prototype.reset.call(this, models, options);
   },
 
   comparator: function (a, b) {

@@ -119,7 +119,7 @@ describe('dataviews/category-dataview-model', function () {
         beforeEach(function () {
           spyOn(this.model, 'trigger');
           this.model.filter.accept(['hey']);
-          this.model._searchModel.setData([{ name: 'hey' }, { name: 'vamos' }, { name: 'neno' }]);
+          this.model._searchModel.setData([{ name: 'hey', value: 1 }, { name: 'vamos', value: 2 }, { name: 'neno', value: 3 }]);
         });
 
         it('should check if search results are already selected or not', function () {
@@ -217,7 +217,7 @@ describe('dataviews/category-dataview-model', function () {
 
   describe('filters over data', function () {
     beforeEach(function () {
-      this.model._data.reset([{ name: 'one' }, { name: 'buddy' }, { name: 'neno' }]);
+      this.model._data.reset([{ name: 'one', value: 1 }, { name: 'buddy', value: 2 }, { name: 'neno', value: 3 }]);
     });
 
     describe('.numberOfAcceptedCategories', function () {

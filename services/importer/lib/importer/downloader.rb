@@ -127,6 +127,7 @@ module CartoDB
         @datasource = nil
         @source_file = nil
         @http_response_code = nil
+        @downloaded_bytes = 0
 
         translators = URL_TRANSLATORS.map(&:new)
         translator = translators.find { |translator| translator.supported?(url) }
@@ -250,7 +251,32 @@ module CartoDB
         repository.fullpath_for("#{seed}_cookiejar")
       end
 
-      def download
+      MAX_DOWNLOAD_SIZE = 5_242_880
+
+      def download_to_file(file)
+        request = Typhoeus::Request.new(@translated_url, followlocation: true)
+
+        request.on_headers do |response|
+          @http_response_code = response.code
+
+          CartoDB::Importer2::Downloader.valid_url!(response.effective_url)
+        end
+
+        request.on_body do |chunk|
+          if (@downloaded_bytes += chunk.bytesize) > MAX_DOWNLOAD_SIZE
+            raise PartialDownloadError.new("download file too big (> #{MAX_DOWNLOAD_SIZE} bytes)")
+          else
+            file.write(chunk)
+          end
+        end
+
+        request.on_complete do |response|
+          raise_error_for_response(response) unless response.success?
+
+          headers = response.headers
+          @etag = etag_from(headers)
+          @last_modified = last_modified_from(headers)
+        end
       end
 
       def download_and_store

@@ -1317,7 +1317,7 @@
             "perfect-scrollbar": {
               "version": "0.6.16",
               "from": "git://github.com/nobuti/perfect-scrollbar.git#autoupdate",
-              "resolved": "git://github.com/nobuti/perfect-scrollbar.git#9fc34100df02e09415e6aa5dd996cc6bb37d9e36"
+              "resolved": "git://github.com/nobuti/perfect-scrollbar.git#6d2c6ac8ec722678e984268056e5f8f16fb81def"
             },
             "torque.js": {
               "version": "2.16.1",
@@ -1452,7 +1452,7 @@
         "perfect-scrollbar": {
           "version": "0.6.16",
           "from": "git://github.com/nobuti/perfect-scrollbar.git#autoupdate",
-          "resolved": "git://github.com/nobuti/perfect-scrollbar.git#9fc34100df02e09415e6aa5dd996cc6bb37d9e36"
+          "resolved": "git://github.com/nobuti/perfect-scrollbar.git#6d2c6ac8ec722678e984268056e5f8f16fb81def"
         },
         "tinycolor2": {
           "version": "1.4.1",
@@ -1644,7 +1644,7 @@
         "perfect-scrollbar": {
           "version": "0.6.16",
           "from": "git://github.com/nobuti/perfect-scrollbar.git#autoupdate",
-          "resolved": "git://github.com/nobuti/perfect-scrollbar.git#9fc34100df02e09415e6aa5dd996cc6bb37d9e36"
+          "resolved": "git://github.com/nobuti/perfect-scrollbar.git#6d2c6ac8ec722678e984268056e5f8f16fb81def"
         },
         "torque.js": {
           "version": "2.16.1",
@@ -1811,7 +1811,7 @@
     "perfect-scrollbar": {
       "version": "0.6.16",
       "from": "git://github.com/nobuti/perfect-scrollbar.git#autoupdate",
-      "resolved": "git://github.com/nobuti/perfect-scrollbar.git#9fc34100df02e09415e6aa5dd996cc6bb37d9e36"
+      "resolved": "git://github.com/nobuti/perfect-scrollbar.git#6d2c6ac8ec722678e984268056e5f8f16fb81def"
     },
     "queue-async": {
       "version": "1.2.1",

@@ -7,8 +7,7 @@ class Carto::StorageOptions::Local
 
   def upload(path, file)
     filename = Pathname.new(file.path).basename
-    target_directory = File.join(Rails.public_path,
-                                 'uploads',
+    target_directory = File.join('public/uploads',
                                  @location,
                                  path)
 

@@ -254,7 +254,11 @@ module CartoDB
       MAX_DOWNLOAD_SIZE = 5_242_880
 
       def download_to_file(file)
-        request = Typhoeus::Request.new(@translated_url, followlocation: true)
+        request = binded_request(@translated_url, file)
+      end
+
+      def binded_request(url, file)
+        request = Typhoeus::Request.new(url, followlocation: true)
 
         request.on_headers do |response|
           @http_response_code = response.code
@@ -277,6 +281,8 @@ module CartoDB
           @etag = etag_from(headers)
           @last_modified = last_modified_from(headers)
         end
+
+        request
       end
 
       def download_and_store

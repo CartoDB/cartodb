@@ -4,18 +4,6 @@ require 'fake_net_ldap'
 require_relative '../lib/fake_net_ldap_bind_as'
 
 describe SessionsController do
-  def stub_domainful(subdomain)
-    CartoDB.stubs(:session_domain).returns('.localhost.lan')
-    CartoDB.stubs(:subdomainless_urls?).returns(false)
-    host! "#{subdomain}.localhost.lan"
-  end
-
-  def stub_subdomainless
-    CartoDB.stubs(:session_domain).returns('localhost.lan')
-    CartoDB.stubs(:subdomainless_urls?).returns(true)
-    host! "localhost.lan"
-  end
-
   shared_examples_for 'Google' do
     before(:all) do
       google_plus_config_mock = mock

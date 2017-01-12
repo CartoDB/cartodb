@@ -7,10 +7,10 @@ describe SessionsController do
   shared_examples_for 'Google' do
     before(:all) do
       google_plus_config = {
-          access_token_field_id: 'atfi',
-          iframe_src: '',
-          signup_action: '',
-          unauthenticated_valid_access_token: ''
+        access_token_field_id: 'atfi',
+        iframe_src: '',
+        signup_action: '',
+        unauthenticated_valid_access_token: ''
       }
       # mocking `:domain` allows lazy loading `user_domain`
       google_plus_config.stubs(:domain).returns { user_domain }

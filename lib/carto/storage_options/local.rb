@@ -9,7 +9,7 @@ class Carto::StorageOptions::Local
 
   def upload(path, file)
     filename = Pathname.new(file.path).basename
-    target_directory = File.join(public_uploads_path,
+    target_directory = File.join(public_uploaded_assets_path,
                                  @location,
                                  path)
 

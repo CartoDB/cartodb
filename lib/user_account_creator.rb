@@ -137,7 +137,7 @@ module CartoDB
           validate_organization_soft_limits
         end
 
-        if requires_strong_password_validation
+        if requires_strong_password_validation?
           password_validator = Carto::StrongPasswordValidator.new
           password_errors = password_validator.validate(@user.password)
 
@@ -150,8 +150,12 @@ module CartoDB
       @user.valid? && @user.validate_credentials_not_taken_in_central && @custom_errors.empty?
     end
 
-    def requires_strong_password_validation
-      @organization.strong_passwords_enabled && !VIAS_WITHOUT_PASSWORD.include?(@created_via)
+    def requires_strong_password_validation?
+      @organization.strong_passwords_enabled && !generate_dummy_password?
+    end
+
+    def generate_dummy_password?
+      @github_api || @google_user_data || VIAS_WITHOUT_PASSWORD.include?(@created_via)
     end
 
     VIAS_WITHOUT_PASSWORD = [
@@ -186,7 +190,7 @@ module CartoDB
     def build
       return if @built
 
-      if @github_api || VIAS_WITHOUT_PASSWORD.include?(@created_via)
+      if generate_dummy_password?
         dummy_password = generate_dummy_password
         @user.password = dummy_password
         @user.password_confirmation = dummy_password

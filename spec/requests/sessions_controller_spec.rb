@@ -6,13 +6,15 @@ require_relative '../lib/fake_net_ldap_bind_as'
 describe SessionsController do
   shared_examples_for 'Google' do
     before(:all) do
-      google_plus_config_mock = mock
-      google_plus_config_mock.stubs(:domain).returns { user_domain }
-      google_plus_config_mock.stubs(:access_token_field_id).returns('atfi')
-      google_plus_config_mock.stubs(:iframe_src).returns('')
-      google_plus_config_mock.stubs(:signup_action).returns('')
-      google_plus_config_mock.stubs(:unauthenticated_valid_access_token).returns('')
-      GooglePlusConfig.stubs(:instance).returns(google_plus_config_mock)
+      google_plus_config = {
+          access_token_field_id: 'atfi',
+          iframe_src: '',
+          signup_action: '',
+          unauthenticated_valid_access_token: ''
+      }
+      # mocking `:domain` allows lazy loading `user_domain`
+      google_plus_config.stubs(:domain).returns { user_domain }
+      GooglePlusConfig.stubs(instance: google_plus_config)
 
       @user = FactoryGirl.create(:carto_user, username: 'google_user')
     end

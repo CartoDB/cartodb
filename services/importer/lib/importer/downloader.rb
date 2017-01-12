@@ -252,7 +252,7 @@ module CartoDB
 
       FILENAME_PREFIX = 'importer_'.freeze
 
-      def fetch_file
+      def download_and_store
         file = Tempfile.new(FILENAME_PREFIX)
         binded_request(@translated_url, file).run
 
@@ -280,7 +280,7 @@ module CartoDB
 
           @http_response_code = response.code
 
-          CartoDB::Importer2::Downloader.valid_url!(response.effective_url)
+          CartoDB::Importer2::Downloader.validate_url!(response.effective_url)
         end
 
         request.on_body do |chunk|
@@ -323,7 +323,7 @@ module CartoDB
         CartoDB::Logger.error(message: 'CartoDB::Importer2::Downloader: Error', response: response)
       end
 
-      def download_and_store
+      def old_download_and_store
         name = ''
         download_error = false
         error_response = nil

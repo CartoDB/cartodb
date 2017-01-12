@@ -133,6 +133,19 @@ describe SignupController do
       response.status.should == 400
     end
 
+    it 'autogenerates a valid password for Google login with strong passwords' do
+      @organization.strong_passwords_enabled.should be_true
+
+      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+      ::GooglePlusConfig.stubs(:instance).returns({})
+      email = "testemail@#{@organization.whitelisted_email_domains[0]}"
+      user_data = { 'emails' => [{ 'type' => 'account', 'value' => email }] }
+      GooglePlusAPI.any_instance.stubs(:get_user_data).returns(GooglePlusAPIUserData.new(user_data))
+      host! "#{@organization.name}.localhost.lan"
+      post signup_organization_user_url(user_domain: @organization.name, google_access_token: 'whatever')
+      response.status.should == 200
+    end
+
     it 'triggers a NewUser job with form parameters and default quota and requiring validation email' do
       Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
       ::Resque.expects(:enqueue).with(::Resque::UserJobs::Signup::NewUser,

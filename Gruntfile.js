@@ -44,8 +44,8 @@
           done && done(err ? new Error(err): null);
         });
       }
-      checkVersion('npm -v', REQUIRED_NPM_VERSION, 'npm', done);
-      checkVersion('node -v', REQUIRED_NODE_VERSION, 'node', done);
+      //checkVersion('npm -v', REQUIRED_NPM_VERSION, 'npm', done);
+      //checkVersion('node -v', REQUIRED_NODE_VERSION, 'node', done);
     }
 
     preFlight(function (err) {
@@ -259,6 +259,7 @@
     grunt.registerTask('editor3', ['browserify:vendor_editor3', 'browserify:common_editor3', 'browserify:editor3', 'browserify:public_editor3']);
     grunt.registerTask('css_editor_3', ['copy:cartofonts', 'copy:iconfont', 'copy:cartoassets', 'copy:perfect_scrollbar', 'copy:colorpicker', 'copy:deep_insights', 'copy:cartodbjs_v4']);
     grunt.registerTask('css',         ['copy:vendor', 'css_editor_3', 'copy:app', 'compass', 'concat:css']);
+    grunt.registerTask('organization',         ['copy:ivan', 'compass:dist', 'concat:css']);
     grunt.registerTask('default',     ['pre_default', 'css', 'manifest']);
     grunt.registerTask('minimize',    ['default', 'copy:js', 'exorcise', 'uglify']);
     grunt.registerTask('release',     ['check_release', 'minimize', 's3', 'invalidate']);

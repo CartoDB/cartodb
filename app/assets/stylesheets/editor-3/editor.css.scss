@@ -89,7 +89,10 @@
   pointer-events: all;
   opacity: 0.6;
 }
-
+.Editor .ps-container > .ps-scrollbar-x-rail,
+.Editor .ps-container > .ps-scrollbar-y-rail {
+  opacity: 0.6;
+}
 .Editor .CDB-Zoom-info {
   display: block;
 }
@@ -213,14 +216,14 @@
     .CDB-Widget-listItemInner {
       margin: 0;
     }
-    .CDB-Widget-canvas .hasXScroll>.ps-scrollbar-x-rail {
-      display: block;
-      width: 100%;
-      opacity: 0.6;
-    }
-    .CDB-Widget-canvas .hasXScroll>.ps-scrollbar-x-rail>.ps-scrollbar-x {
-      min-width: 50%;
-    }
+    // .CDB-Widget-canvas .hasXScroll>.ps-scrollbar-x-rail {
+    //   display: block;
+    //   width: 100%;
+    //   opacity: 0.6;
+    // }
+    // .CDB-Widget-canvas .hasXScroll>.ps-scrollbar-x-rail>.ps-scrollbar-x {
+    //   min-width: 50%;
+    // }
   }
 }
 

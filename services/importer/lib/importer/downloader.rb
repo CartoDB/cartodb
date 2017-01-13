@@ -170,10 +170,6 @@ module CartoDB
         false
       end
 
-      def set_limits(limits={})
-        # not supported
-      end
-
       attr_reader :source_file, :datasource, :etag, :last_modified, :http_response_code
       attr_accessor :url
 

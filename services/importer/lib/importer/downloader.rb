@@ -108,8 +108,6 @@ module CartoDB
 
         @http_options = http_options
         @options = options
-        @importer_config = options[:importer_config]
-        @ogr2ogr_config = options[:ogr2ogr]
         @downloaded_bytes = 0
         @parsed_url = parse_url(url)
       end
@@ -396,11 +394,6 @@ module CartoDB
           name << (random_generator.rand*10).to_i.to_s
         }
         name
-      end
-
-      def temporary_directory
-        return @temporary_directory if @temporary_directory
-        @temporary_directory = Unp.new(@importer_config).generate_temporary_directory.temporary_directory
       end
 
       def gdrive_deny_in?(headers)

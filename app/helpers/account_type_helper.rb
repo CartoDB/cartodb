@@ -9,7 +9,17 @@ module AccountTypeHelper
     plan_name(account_type).gsub(' - Monthly', '').gsub(' - Annual', '')
   end
 
-  private
+  def public_plan_name(account_type)
+    PUBLIC_PLAN_NAME.fetch(account_type)
+  end
+
+  # "private": use the methods instead
+
+  PUBLIC_PLAN_NAME = {
+    'FREE' => 'Free',
+    'BASIC' => 'Personal',
+    'BASIC LUMP-SUM' => 'Personal Lump-Sum'
+  }.freeze
 
   PLAN_NAME_BY_ACCOUNT_TYPE = {
     'FREE' => 'Free',

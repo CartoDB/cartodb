@@ -128,16 +128,15 @@ module CartoDB
         @http_response_code = nil
         @downloaded_bytes = 0
 
-        translators = URL_TRANSLATORS.map(&:new)
-        translator = translators.find { |translator| translator.supported?(url) }
-        if translator.nil?
-          @translated_url = url
-          @custom_filename = nil
-        else
-          @translated_url = translator.translate(url)
-          @custom_filename = translator.respond_to?(:rename_destination) ? translator.rename_destination(url) : nil
-        end
-        @translated_url = clean_url(@translated_url)
+        translator = URL_TRANSLATORS.map(&:new).find { translator.supported?(url) }
+        raw_translated_url = if translator
+                               @custom_filename = translator.try(:rename_destination, url)
+                               translator.translate(url)
+                             else
+                               url
+                             end
+
+        @parsed_url = clean_url(raw_translated_url)
       end
 
       def provides_stream?
@@ -228,7 +227,7 @@ module CartoDB
       end
 
       def headers
-        @headers ||= http_client.head(@translated_url, typhoeus_options).headers
+        @headers ||= http_client.head(@parsed_url, typhoeus_options).headers
       end
 
       def typhoeus_options
@@ -254,7 +253,7 @@ module CartoDB
 
       def download_and_store
         file = Tempfile.new(FILENAME_PREFIX, encoding: 'ascii-8bit')
-        binded_request(@translated_url, file).run
+        binded_request(@parsed_url, file).run
 
         file_path = if @header_filename
                       new_file_path = File.join(Pathname.new(file.path).dirname, @header_filename)
@@ -310,7 +309,7 @@ module CartoDB
         elsif response.headers['Error'] && response.headers['Error'] =~ /too many nodes/
           raise TooManyNodesError.new(response.headers['Error'])
         elsif response.return_code == :couldnt_resolve_host
-          raise CouldntResolveDownloadError.new("Couldn't resolve #{@translated_url}")
+          raise CouldntResolveDownloadError.new("Couldn't resolve #{@parsed_url}")
         elsif response.code == 401
           raise UnauthorizedDownloadError.new(response.body)
         elsif response.code == 404

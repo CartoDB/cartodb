@@ -22,9 +22,6 @@ module CartoDB
       include CartoDB::Importer2::QuotaCheckHelpers
       extend Carto::UrlValidator
 
-      # in seconds
-      HTTP_CONNECT_TIMEOUT = 60
-      DEFAULT_HTTP_REQUEST_TIMEOUT = 600
       URL_ESCAPED_CHARACTERS = 'áéíóúÁÉÍÓÚñÑçÇàèìòùÀÈÌÒÙ'.freeze
 
       CONTENT_DISPOSITION_RE  = %r{;\s*filename=(.*;|.*)}
@@ -193,6 +190,8 @@ module CartoDB
       end
 
       MAX_REDIRECTS = 5
+      HTTP_CONNECT_TIMEOUT_SECONDS = 60
+      DEFAULT_HTTP_REQUEST_TIMEOUT_SECONDS = 600
 
       def typhoeus_options
         verify_ssl = @http_options.fetch(:verify_ssl_cert, false)
@@ -205,8 +204,8 @@ module CartoDB
           ssl_verifypeer:   verify_ssl,
           ssl_verifyhost:   (verify_ssl ? 2 : 0),
           forbid_reuse:     true,
-          connecttimeout:   HTTP_CONNECT_TIMEOUT,
-          timeout:          @http_options.fetch(:http_timeout, DEFAULT_HTTP_REQUEST_TIMEOUT),
+          connecttimeout:   HTTP_CONNECT_TIMEOUT_SECONDS,
+          timeout:          @http_options.fetch(:http_timeout, DEFAULT_HTTP_REQUEST_TIMEOUT_SECONDS),
           maxredirs:        MAX_REDIRECTS
         }
       end

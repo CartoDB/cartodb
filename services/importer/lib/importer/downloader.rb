@@ -124,7 +124,7 @@ module CartoDB
       end
 
       def run(available_quota_in_bytes = nil)
-        if valid_url?
+        if @parsed_url =~ URL_RE
           if available_quota_in_bytes
             raise_if_over_storage_quota(requested_quota: content_length_from_headers,
                                         available_quota: available_quota_in_bytes.to_i,
@@ -342,10 +342,6 @@ module CartoDB
                              nil
                            end
                          end
-      end
-
-      def valid_url?
-        @parsed_url =~ URL_RE
       end
 
       URL_TRANSLATORS = [

@@ -1,13 +1,15 @@
 # encoding utf-8
 
 class Carto::StorageOptions::Local
+  include Carto::Configuration
+
   def initialize(location)
     @location = location
   end
 
   def upload(path, file)
     filename = Pathname.new(file.path).basename
-    target_directory = File.join('public/uploads',
+    target_directory = File.join(public_uploaded_assets_path,
                                  @location,
                                  path)
 

@@ -282,20 +282,17 @@ module CartoDB
       end
 
       def extension_from_headers(content_type)
-        downcased_content_type = content_type.downcase
-        CONTENT_TYPES_MAPPING.each do |item|
-          if item[:content_types].include?(downcased_content_type)
-            return item[:extensions]
-          end
-        end
-        return []
+        CONTENT_TYPES_MAPPING.find { |item| item[:content_types].include?(content_type.downcase) }
       end
 
       def name_with_extension(name)
         # No content-type
         return name unless content_type.present?
 
-        content_type_extensions = extension_from_headers(content_type)
+        content_type_extensions = CONTENT_TYPES_MAPPING.find do |item|
+          item[:content_types].include?(content_type.downcase)
+        end
+
         # We don't have extension registered for that content-type
         return name if content_type_extensions.empty?
 

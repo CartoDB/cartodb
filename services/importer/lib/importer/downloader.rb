@@ -262,6 +262,9 @@ module CartoDB
 
           headers = response.headers
           @header_filename = name_from(headers, url, @custom_filename)
+
+          filename = @custom_filename || name_from_http(headers) || name_in(url) || random_name
+          @header_filename = name_with_extension(filename)
           @etag = etag_from(headers)
           @last_modified = last_modified_from(headers)
         end
@@ -287,12 +290,6 @@ module CartoDB
         else
           raise DownloadError.new("DOWNLOAD ERROR: Code:#{response.code} Body:#{response.body}")
         end
-      end
-
-      def name_from(headers, url, custom: nil)
-        name = custom || name_from_http(headers) || name_in(url) || random_name
-
-        name_with_extension(name, headers)
       end
 
       def extensions_by_content_type(content_type)

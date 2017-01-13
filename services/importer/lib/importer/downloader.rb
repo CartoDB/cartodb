@@ -165,13 +165,6 @@ module CartoDB
         raw_url.try(:is_a?, String) ? URI.escape(raw_url.strip, URL_ESCAPED_CHARACTERS) : raw_url
       end
 
-      def set_local_source_file
-        unless valid_url?
-          @source_file = SourceFile.new(url)
-          self
-        end
-      end
-
       def set_downloaded_source_file(available_quota_in_bytes = nil)
         if available_quota_in_bytes
           raise_if_over_storage_quota(requested_quota: content_length_from_headers(headers),

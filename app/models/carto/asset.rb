@@ -32,6 +32,8 @@ module Carto
     def absolute_public_url
       uri = URI.parse(public_url)
       (uri.absolute? ? uri : URI.join(base_domain, uri)).to_s
+    rescue URI::InvalidURIError
+      public_url
     end
 
     private

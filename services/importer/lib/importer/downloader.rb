@@ -221,8 +221,8 @@ module CartoDB
         file = Tempfile.new(FILENAME_PREFIX, encoding: 'ascii-8bit')
         binded_request(@parsed_url, file).run
 
-        file_path = if @header_filename
-                      new_file_path = File.join(Pathname.new(file.path).dirname, @header_filename)
+        file_path = if @filename
+                      new_file_path = File.join(Pathname.new(file.path).dirname, @filename)
                       File.rename(file.path, new_file_path)
 
                       new_file_path
@@ -230,7 +230,7 @@ module CartoDB
                       file.path
                     end
 
-        self.source_file = SourceFile.new(file_path, @header_filename)
+        self.source_file = SourceFile.new(file_path, @filename)
       ensure
         file.close
         file.unlink
@@ -261,10 +261,13 @@ module CartoDB
           raise_error_for_response(response) unless response.success?
 
           headers = response.headers
-          @header_filename = name_from(headers, url, @custom_filename)
 
-          filename = @custom_filename || name_from_http(headers) || name_in(url) || random_name
-          @header_filename = name_with_extension(filename)
+          basename = @custom_filename ||
+                     filename_from_headers(headers) ||
+                     filename_from_url(url) ||
+                     random_name
+
+          @filename = name_with_extension(basename)
           @etag = etag_from(headers)
           @last_modified = last_modified_from(headers)
         end
@@ -370,7 +373,7 @@ module CartoDB
         media_type.split(';').first
       end
 
-      def name_from_http(headers)
+      def filename_from_headers(headers)
         disposition = headers['Content-Disposition']
         return false unless disposition
         filename = disposition.match(CONTENT_DISPOSITION_RE).to_a[1]
@@ -381,7 +384,7 @@ module CartoDB
         parsed_filename if parsed_filename.present?
       end
 
-      def name_in(url)
+      def filename_from_url(url)
         url_name = self.class.url_filename_regex.match(url).to_s
 
         url_name unless url_name.empty?

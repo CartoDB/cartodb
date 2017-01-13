@@ -129,7 +129,6 @@ module CartoDB
           self.source_file = SourceFile.new(url)
         end
 
-        set_local_source_file || set_downloaded_source_file(available_quota_in_bytes)
         self
       end
 

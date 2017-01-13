@@ -377,10 +377,6 @@ module CartoDB
         url =~ URL_RE
       end
 
-      def translators
-        URL_TRANSLATORS.map(&:new)
-      end
-
       def supported_translator(url)
         URL_TRANSLATORS.map(&:new).find { |translator| translator.supported?(url) }
       end

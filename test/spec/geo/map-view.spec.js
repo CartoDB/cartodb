@@ -19,6 +19,7 @@ var fakeLayerViewFactory = {
 };
 
 var MyMapView = MapView.extend({
+  getSize: function () { return { x: 1000, y: 1000 }; },
   _getLayerViewFactory: function () {
     return fakeLayerViewFactory;
   },
@@ -39,7 +40,8 @@ describe('core/geo/map-view', function () {
     this.layerViewFactory = jasmine.createSpyObj('layerViewFactory', ['createLayerView']);
     this.mapView = new MyMapView({
       el: this.container,
-      map: this.map,
+      mapModel: this.map,
+      visModel: new Backbone.Model(),
       layerGroupModel: new LayerGroupModel(null, {
         layersCollection: this.map.layers
       })
@@ -59,7 +61,8 @@ describe('core/geo/map-view', function () {
 
       this.mapView = new MyMapView({
         el: this.container,
-        map: this.map,
+        mapModel: this.map,
+        visModel: new Backbone.Model(),
         layerGroupModel: new LayerGroupModel(null, {
           windshaftMap: this.windshaftMap,
           layersCollection: this.map.layers

@@ -34,45 +34,27 @@ describe('src/vis/infowindow-manager.js', function () {
     this.infowindowModel = new InfowindowModel();
     this.tooltipModel = new TooltipModel();
 
-    var cartoDBLayerGroup = new CartoDBLayerGroup({}, {
+    this.cartoDBLayerGroup = new CartoDBLayerGroup({}, {
       layersCollection: this.map.layers
     });
 
-    var layerView = this.layerView = new Backbone.Model();
-
-    var MyMapView = MapView.extend({
-      _getLayerViewFactory: function () {
-        return {
-          createLayerView: function () {
-            return layerView;
-          }
-        };
-      },
-      latLngToContainerPoint: function (latlng) {
-        return {
-          x: 0,
-          y: 0
-        };
-      }
+    this.layerView = new Backbone.View({
+      model: this.cartoDBLayerGroup
     });
 
-    this.layerView.model = cartoDBLayerGroup;
-    spyOn(cartoDBLayerGroup, 'fetchAttributes').and.callFake(function (layerIndex, featureId, callback) {
+    spyOn(this.cartoDBLayerGroup, 'fetchAttributes').and.callFake(function (layerIndex, featureId, callback) {
       callback({ name: 'juan' });
     });
 
-    this.mapView = new MyMapView({
-      map: this.map,
-      layerGroupModel: new Backbone.Model()
-    });
-
-    this.mapView.getNativeMap = function () {};
-    this.mapView._addLayerToMap = function () {};
-    this.mapView.latLonToPixel = function () { return { x: 0, y: 0 }; };
-    this.mapView.getSize = function () { return { x: 1000, y: 1000 }; };
-
     this.vis = new VisModel();
     spyOn(this.vis, 'reload');
+
+    this.infowindowManager = new InfowindowManager({ // eslint-disable-line
+      visModel: this.vis,
+      mapModel: this.map,
+      infowindowModel: this.infowindowModel,
+      tooltipModel: this.tooltipModel
+    });
   });
 
   it('should correctly bind the featureClick event to the corresponding layerView', function () {
@@ -98,13 +80,7 @@ describe('src/vis/infowindow-manager.js', function () {
       alternative_names: 'alternative_names2'
     });
 
-    new InfowindowManager({ // eslint-disable-line
-      visModel: this.vis,
-      mapModel: this.map,
-      mapView: this.mapView,
-      infowindowModel: this.infowindowModel,
-      tooltipModel: this.tooltipModel
-    });
+    this.infowindowManager.start(this.layerView);
 
     this.map.layers.reset([ layer1, layer2 ]);
     // Simulate the featureClick event for layer #0
@@ -200,13 +176,7 @@ describe('src/vis/infowindow-manager.js', function () {
       alternative_names: 'alternative_names1'
     });
 
-    new InfowindowManager({ // eslint-disable-line
-      visModel: this.vis,
-      mapModel: this.map,
-      mapView: this.mapView,
-      infowindowModel: this.infowindowModel,
-      tooltipModel: this.tooltipModel
-    });
+    this.infowindowManager.start(this.layerView);
 
     this.map.layers.reset([ layer1 ]);
 
@@ -229,13 +199,7 @@ describe('src/vis/infowindow-manager.js', function () {
       alternative_names: 'alternative_names1'
     });
 
-    new InfowindowManager({ // eslint-disable-line
-      visModel: this.vis,
-      mapModel: this.map,
-      mapView: this.mapView,
-      infowindowModel: this.infowindowModel,
-      tooltipModel: this.tooltipModel
-    });
+    this.infowindowManager.start(this.layerView);
 
     this.map.layers.reset([ layer1 ]);
     this.map.disablePopups();
@@ -245,28 +209,6 @@ describe('src/vis/infowindow-manager.js', function () {
 
     expect(this.layerView.model.fetchAttributes).not.toHaveBeenCalled();
     expect(this.infowindowModel.get('visibility')).toEqual(false);
-  });
-
-  it('should bind the featureClick event to the corresponding layerView only once', function () {
-    var layer1 = createCartoDBLayer(this.vis);
-    var layer2 = createCartoDBLayer(this.vis);
-
-    new InfowindowManager({ // eslint-disable-line
-      visModel: this.vis,
-      mapModel: this.map,
-      mapView: this.mapView,
-      infowindowModel: this.infowindowModel,
-      tooltipModel: this.tooltipModel
-    });
-
-    spyOn(this.layerView, 'bind');
-
-    this.map.layers.reset([ layer1, layer2 ]);
-
-    var featureClickBinds = _.select(this.layerView.bind.calls.all(), function (call) {
-      return call.args[0] === 'featureClick';
-    });
-    expect(featureClickBinds.length).toEqual(1);
   });
 
   it('should hide the infowindow if map popups are disabled', function () {
@@ -281,13 +223,7 @@ describe('src/vis/infowindow-manager.js', function () {
       alternative_names: 'alternative_names1'
     });
 
-    new InfowindowManager({ // eslint-disable-line
-      visModel: this.vis,
-      mapModel: this.map,
-      mapView: this.mapView,
-      infowindowModel: this.infowindowModel,
-      tooltipModel: this.tooltipModel
-    });
+    this.infowindowManager.start(this.layerView);
 
     this.map.layers.reset([ layer1 ]);
 
@@ -305,13 +241,7 @@ describe('src/vis/infowindow-manager.js', function () {
   it('should set loading content while loading', function () {
     var layer1 = createCartoDBLayer(this.vis);
 
-    new InfowindowManager({ // eslint-disable-line
-      visModel: this.vis,
-      mapModel: this.map,
-      mapView: this.mapView,
-      infowindowModel: this.infowindowModel,
-      tooltipModel: this.tooltipModel
-    });
+    this.infowindowManager.start(this.layerView);
 
     this.map.layers.reset([ layer1 ]);
 
@@ -346,13 +276,7 @@ describe('src/vis/infowindow-manager.js', function () {
       }
     }, { vis: this.vis });
 
-    new InfowindowManager({ // eslint-disable-line
-      visModel: this.vis,
-      mapModel: this.map,
-      mapView: this.mapView,
-      infowindowModel: this.infowindowModel,
-      tooltipModel: this.tooltipModel
-    });
+    this.infowindowManager.start(this.layerView);
 
     this.map.layers.reset([ layer1 ]);
 
@@ -390,13 +314,7 @@ describe('src/vis/infowindow-manager.js', function () {
       }
     }, { vis: this.vis });
 
-    new InfowindowManager({ // eslint-disable-line
-      visModel: this.vis,
-      mapModel: this.map,
-      mapView: this.mapView,
-      infowindowModel: this.infowindowModel,
-      tooltipModel: this.tooltipModel
-    });
+    this.infowindowManager.start(this.layerView);
 
     this.map.layers.reset([ layer ]);
 
@@ -420,13 +338,7 @@ describe('src/vis/infowindow-manager.js', function () {
       }
     }, { vis: this.vis });
 
-    new InfowindowManager({ // eslint-disable-line
-      visModel: this.vis,
-      mapModel: this.map,
-      mapView: this.mapView,
-      infowindowModel: this.infowindowModel,
-      tooltipModel: this.tooltipModel
-    });
+    this.infowindowManager.start(this.layerView);
 
     this.map.layers.reset([ layer ]);
 
@@ -441,13 +353,7 @@ describe('src/vis/infowindow-manager.js', function () {
   it('should unset the currentFeatureId on the model when the infowindow is hidden', function () {
     var layer = createCartoDBLayer(this.vis);
 
-    new InfowindowManager({ // eslint-disable-line
-      visModel: this.vis,
-      mapModel: this.map,
-      mapView: this.mapView,
-      infowindowModel: this.infowindowModel,
-      tooltipModel: this.tooltipModel
-    });
+    this.infowindowManager.start(this.layerView);
 
     this.map.layers.reset([ layer ]);
 
@@ -460,61 +366,60 @@ describe('src/vis/infowindow-manager.js', function () {
     expect(this.infowindowModel.getCurrentFeatureId()).toBeUndefined();
   });
 
-  it('should reload the map when the infowindow template gets new fields', function () {
+  it('should reload the map and re-fetch attributes when the infowindow template gets new fields', function () {
     var layer = createCartoDBLayer(this.vis);
 
-    new InfowindowManager({ // eslint-disable-line
-      visModel: this.vis,
-      mapModel: this.map,
-      mapView: this.mapView,
-      infowindowModel: this.infowindowModel,
-      tooltipModel: this.tooltipModel
-    });
+    this.infowindowManager.start(this.layerView);
 
     this.map.layers.reset([ layer ]);
 
-    layer.infowindow.update({
-      fields: [
-        {
-          'name': 'description',
-          'title': true,
-          'position': 1
-        }
-      ]
-    });
-
-    expect(this.vis.reload).toHaveBeenCalledWith({});
-  });
-
-  it('should reload the map and fetch attributes when the infowindow template is active (visible) and it gets fields', function () {
-    var layer = createCartoDBLayer(this.vis);
-
-    new InfowindowManager({ // eslint-disable-line
-      visModel: this.vis,
-      mapModel: this.map,
-      mapView: this.mapView,
-      infowindowModel: this.infowindowModel,
-      tooltipModel: this.tooltipModel
-    });
-
-    this.map.layers.reset([ layer ]);
-
-    this.infowindowModel.setInfowindowTemplate(layer.infowindow);
-    this.infowindowModel.set('visibility', true);
-
+    // Simulate the featureClick event
+    this.layerView.trigger('featureClick', {}, [100, 200], undefined, { cartodb_id: 10 }, 0);
     this.vis.reload.calls.reset();
 
+    this.cartoDBLayerGroup.fetchAttributes.and.callFake(function (layerIndex, featureId, callback) {
+      callback({ name: 'juan', description: 'person' });
+    });
+
     layer.infowindow.update({
       fields: [
         {
-          'name': 'description',
+          'name': 'name',
           'title': true,
           'position': 1
+        },
+        {
+          'name': 'description',
+          'title': true,
+          'position': 2
         }
       ]
     });
 
-    expect(this.vis.reload.calls.argsFor(0)[0].success).toEqual(jasmine.any(Function));
+    expect(this.vis.reload).toHaveBeenCalledWith({ success: jasmine.any(Function) });
+    this.vis.reload.calls.argsFor(0)[0].success();
+
+    // InfowindowModel has been updated
+    expect(this.infowindowModel.get('content')).toEqual({
+      'fields': [
+        {
+          'name': 'name',
+          'title': 'name',
+          'value': 'juan',
+          'index': 0
+        },
+        {
+          'name': 'description',
+          'title': 'description',
+          'value': 'person',
+          'index': 1
+        }
+      ],
+      'data': {
+        'name': 'juan',
+        'description': 'person'
+      }
+    });
   });
 
   it('should hide the infowindow when fields are cleared in the infowindow template', function () {
@@ -526,13 +431,7 @@ describe('src/vis/infowindow-manager.js', function () {
     var layer1 = createCartoDBLayer(this.vis);
     var layer2 = createCartoDBLayer(this.vis);
 
-    new InfowindowManager({ // eslint-disable-line
-      visModel: this.vis,
-      mapModel: this.map,
-      mapView: this.mapView,
-      infowindowModel: this.infowindowModel,
-      tooltipModel: this.tooltipModel
-    });
+    this.infowindowManager.start(this.layerView);
 
     this.map.layers.reset([ layer1, layer2 ]);
 
@@ -564,13 +463,7 @@ describe('src/vis/infowindow-manager.js', function () {
     var layer1 = createCartoDBLayer(this.vis);
     var layer2 = createCartoDBLayer(this.vis);
 
-    new InfowindowManager({ // eslint-disable-line
-      visModel: this.vis,
-      mapModel: this.map,
-      mapView: this.mapView,
-      infowindowModel: this.infowindowModel,
-      tooltipModel: this.tooltipModel
-    });
+    this.infowindowManager.start(this.layerView);
 
     this.map.layers.reset([ layer1, layer2 ]);
 

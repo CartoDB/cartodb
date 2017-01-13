@@ -40,7 +40,8 @@ describe('geo/leaflet/leaflet-map-view', function () {
 
     mapView = new LeafletMapView({
       el: container,
-      map: map,
+      mapModel: map,
+      visModel: new Backbone.Model(),
       layerGroupModel: this.layerGroupModel
     });
 
@@ -342,7 +343,8 @@ describe('geo/leaflet/leaflet-map-view', function () {
     });
     var mapView = new LeafletMapView({
       el: container,
-      map: map,
+      mapModel: map,
+      visModel: new Backbone.Model(),
       layerGroupModel: new Backbone.Model()
     });
     mapView.render();
@@ -363,7 +365,8 @@ describe('geo/leaflet/leaflet-map-view', function () {
     });
     var mapView = new LeafletMapView({
       el: container,
-      map: map,
+      mapModel: map,
+      visModel: new Backbone.Model(),
       layerGroupModel: new Backbone.Model()
     });
     mapView.render();

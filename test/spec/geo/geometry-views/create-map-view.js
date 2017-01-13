@@ -1,4 +1,5 @@
 var _ = require('underscore');
+var Backbone = require('backbone');
 var Map = require('../../../../src/geo/map');
 var CoordinatesComparator = require('./coordinates-comparator');
 
@@ -61,7 +62,8 @@ module.exports = function (MapViewBase) {
     layersFactory: {}
   });
   return new MapView({
-    map: map,
+    mapModel: map,
+    visModel: new Backbone.Model(),
     layerGroupModel: {}
   });
 };

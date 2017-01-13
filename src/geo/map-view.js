@@ -2,20 +2,35 @@ var log = require('cdb.log');
 var View = require('../core/view');
 var GeometryViewFactory = require('./geometry-views/geometry-view-factory');
 
+var InfowindowModel = require('./ui/infowindow-model');
+var InfowindowView = require('./ui/infowindow-view');
+var InfowindowManager = require('../vis/infowindow-manager');
+
+var TooltipModel = require('./ui/tooltip-model');
+var TooltipView = require('./ui/tooltip-view');
+var TooltipManager = require('../vis/tooltip-manager');
+
+var FeatureEvents = require('../vis/feature-events');
+var MapCursorManager = require('../vis/map-cursor-manager');
+var MapEventsManager = require('../vis/map-events-manager');
+var GeometryManagementController = require('../vis/geometry-management-controller');
+
 var MapView = View.extend({
 
   className: 'CDB-Map-wrapper',
 
-  initialize: function () {
+  initialize: function (deps) {
     // For debugging purposes
     window.mapView = this;
 
-    this.options = this.options || {};
-    if (this.options.map === undefined) throw new Error('map is required');
-    if (this.options.layerGroupModel === undefined) throw new Error('layerGroupModel is required');
+    if (!deps.mapModel) throw new Error('mapModel is required');
+    if (!deps.visModel) throw new Error('visModel is required');
+    if (!deps.layerGroupModel) throw new Error('layerGroupModel is required');
 
-    this._cartoDBLayerGroup = this.options.layerGroupModel;
-    this.map = this.options.map;
+    this._mapModel = this.map = deps.mapModel;
+    this._visModel = deps.visModel;
+    this._cartoDBLayerGroup = deps.layerGroupModel;
+
     this.add_related_model(this.map);
 
     this._cartoDBLayerGroupView = null;
@@ -46,6 +61,12 @@ var MapView = View.extend({
       delete this._layerViews[layer];
     }
 
+    this._infowindowView && this._infowindowView.clean();
+    this._infowindowManager.stop();
+
+    this._tooltipView && this._tooltipView.clean();
+    this._tooltipManager.stop();
+
     delete this._cartoDBLayerGroupView;
 
     View.prototype.clean.call(this);
@@ -59,6 +80,7 @@ var MapView = View.extend({
       this._fitBounds(bounds);
     }
     this._addLayers();
+
     return this;
   },
 
@@ -155,6 +177,66 @@ var MapView = View.extend({
     var layerView = this._createLayerView(this._cartoDBLayerGroup);
     this._cartoDBLayerGroupView = layerView;
     this._layerViews[layerModel.cid] = layerView;
+
+    new GeometryManagementController(this, this._mapModel); // eslint-disable-line
+
+    var featureEvents = new FeatureEvents({
+      mapView: this,
+      layersCollection: this._mapModel.layers
+    });
+
+    new MapCursorManager({ // eslint-disable-line
+      mapView: this,
+      mapModel: this._mapModel,
+      featureEvents: featureEvents
+    });
+
+    new MapEventsManager({ // eslint-disable-line
+      mapModel: this._mapModel,
+      featureEvents: featureEvents
+    });
+
+    // Infowindows && Tooltips
+    var infowindowModel = new InfowindowModel();
+    var tooltipModel = new TooltipModel({
+      offset: [4, 10]
+    });
+
+    this._infowindowView = new InfowindowView({
+      model: infowindowModel,
+      mapView: this
+    });
+
+    this._infowindowView.render();
+    this.$el.append(this._infowindowView.el);
+
+    this._infowindowManager = new InfowindowManager({ // eslint-disable-line
+      visModel: this._visModel,
+      mapModel: this._mapModel,
+      tooltipModel: tooltipModel,
+      infowindowModel: infowindowModel
+    }, {
+      showEmptyFields: this._visModel.get('showEmptyInfowindowFields')
+    });
+    this._infowindowManager.start(layerView);
+
+    this._tooltipView = new TooltipView({
+      model: tooltipModel,
+      mapView: this
+    });
+
+    this._tooltipView.render();
+    this.$el.append(this._tooltipView.el);
+
+    this._tooltipManager = new TooltipManager({ // eslint-disable-line
+      visModel: this._visModel,
+      mapModel: this._mapModel,
+      mapView: this,
+      tooltipModel: tooltipModel,
+      infowindowModel: infowindowModel
+    });
+    this._tooltipManager.start(layerView);
+
     return layerView;
   },
 
@@ -201,6 +283,10 @@ var MapView = View.extend({
 
   setCursor: function () {
     throw new Error('subclasses of MapView must implement setCursor');
+  },
+
+  getSize: function () {
+    throw new Error('subclasses of MapView must implement getSize');
   },
 
   addMarker: function (marker) {

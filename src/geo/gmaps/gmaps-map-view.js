@@ -7,7 +7,7 @@ var GMapsLayerViewFactory = require('./gmaps-layer-view-factory');
 
 var GoogleMapsMapView = MapView.extend({
   initialize: function () {
-    MapView.prototype.initialize.call(this);
+    MapView.prototype.initialize.apply(this, arguments);
     _.bindAll(this, '_ready');
     this._isReady = false;
   },

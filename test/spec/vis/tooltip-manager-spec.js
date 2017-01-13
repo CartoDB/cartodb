@@ -1,6 +1,4 @@
-var _ = require('underscore');
 var Backbone = require('backbone');
-var MapView = require('../../../src/geo/map-view');
 var Map = require('../../../src/geo/map');
 var VisModel = require('../../../src/vis/vis');
 var CartoDBLayer = require('../../../src/geo/map/cartodb-layer');
@@ -13,30 +11,20 @@ var TooltipManager = require('../../../src/vis/tooltip-manager');
 describe('src/vis/tooltip-manager.js', function () {
   beforeEach(function () {
     this.map = new Map(null, { layersFactory: {} });
-    var layerView = this.layerView = new Backbone.View();
-    var MyMapView = MapView.extend({
-      _getLayerViewFactory: function () {
-        return {
-          createLayerView: function () {
-            return layerView;
-          }
-        };
-      }
-    });
+    this.layerView = new Backbone.View();
 
-    this.mapView = new MyMapView({
-      map: this.map,
-      layerGroupModel: new Backbone.Model()
-    });
-    this.mapView.getNativeMap = function () {};
-    this.mapView._addLayerToMap = function () {};
-    this.mapView.latLonToPixel = function () { return { x: 0, y: 0 }; };
-    this.mapView.getSize = function () { return { x: 1000, y: 1000 }; };
     this.vis = new VisModel();
+    spyOn(this.vis, 'reload');
+
     this.tooltipModel = new TooltipModel();
     this.infowindowModel = new InfowindowModel();
 
-    spyOn(this.vis, 'reload');
+    this.tooltipManager = new TooltipManager({ // eslint-disable-line
+      visModel: this.vis,
+      mapModel: this.map,
+      tooltipModel: this.tooltipModel,
+      infowindowModel: this.infowindowModel
+    });
   });
 
   it('should show the tooltip when a feature is hovered', function () {
@@ -65,13 +53,7 @@ describe('src/vis/tooltip-manager.js', function () {
       }
     }, { vis: this.vis });
 
-    new TooltipManager({ // eslint-disable-line
-      visModel: this.vis,
-      mapView: this.mapView,
-      mapModel: this.map,
-      tooltipModel: this.tooltipModel,
-      infowindowModel: this.infowindowModel
-    });
+    this.tooltipManager.start(this.layerView);
 
     this.map.layers.reset([ layer1, layer2 ]);
 
@@ -119,13 +101,8 @@ describe('src/vis/tooltip-manager.js', function () {
         alternative_names: 'alternative_names1'
       }
     }, { vis: this.vis });
-    new TooltipManager({ // eslint-disable-line
-      visModel: this.vis,
-      mapView: this.mapView,
-      mapModel: this.map,
-      tooltipModel: this.tooltipModel,
-      infowindowModel: this.infowindowModel
-    });
+
+    this.tooltipManager.start(this.layerView);
 
     this.map.layers.reset([ layer1 ]);
 
@@ -164,13 +141,7 @@ describe('src/vis/tooltip-manager.js', function () {
       }
     }, { vis: this.vis });
 
-    new TooltipManager({ // eslint-disable-line
-      visModel: this.vis,
-      mapView: this.mapView,
-      mapModel: this.map,
-      tooltipModel: this.tooltipModel,
-      infowindowModel: this.infowindowModel
-    });
+    this.tooltipManager.start(this.layerView);
 
     this.map.layers.reset([ layer1 ]);
 
@@ -202,13 +173,7 @@ describe('src/vis/tooltip-manager.js', function () {
       }
     }, { vis: this.vis });
 
-    new TooltipManager({ // eslint-disable-line
-      visModel: this.vis,
-      mapView: this.mapView,
-      mapModel: this.map,
-      tooltipModel: this.tooltipModel,
-      infowindowModel: this.infowindowModel
-    });
+    this.tooltipManager.start(this.layerView);
 
     this.map.layers.reset([ layer1 ]);
     this.map.disablePopups();
@@ -236,13 +201,7 @@ describe('src/vis/tooltip-manager.js', function () {
       }
     }, { vis: this.vis });
 
-    new TooltipManager({ // eslint-disable-line
-      visModel: this.vis,
-      mapView: this.mapView,
-      mapModel: this.map,
-      tooltipModel: this.tooltipModel,
-      infowindowModel: this.infowindowModel
-    });
+    this.tooltipManager.start(this.layerView);
 
     this.map.layers.reset([ layer1 ]);
 
@@ -254,50 +213,6 @@ describe('src/vis/tooltip-manager.js', function () {
     this.layerView.trigger('featureOver', {}, [0, 0], { x: 100, y: 200 }, { cartodb_id: 10 }, 0);
 
     expect(this.tooltipModel.isVisible()).toBeFalsy();
-  });
-
-  it('should bind the featureOver event to the corresponding layerView only once', function () {
-    var layer1 = new CartoDBLayer({
-      tooltip: {
-        template: 'template1',
-        template_type: 'underscore',
-        fields: [{
-          'name': 'name',
-          'title': true,
-          'position': 1
-        }],
-        alternative_names: 'alternative_names1'
-      }
-    }, { vis: this.vis });
-    var layer2 = new CartoDBLayer({
-      tooltip: {
-        template: 'template2',
-        template_type: 'underscore',
-        fields: [{
-          'name': 'description',
-          'title': true,
-          'position': 1
-        }],
-        alternative_names: 'alternative_names2'
-      }
-    }, { vis: this.vis });
-
-    new TooltipManager({ // eslint-disable-line
-      visModel: this.vis,
-      mapView: this.mapView,
-      mapModel: this.map,
-      tooltipModel: this.tooltipModel,
-      infowindowModel: this.infowindowModel
-    });
-
-    spyOn(this.layerView, 'bind');
-
-    this.map.layers.reset([ layer1, layer2 ]);
-
-    var featureOverBinds = _.select(this.layerView.bind.calls.all(), function (call) {
-      return call.args[0] === 'featureOver';
-    });
-    expect(featureOverBinds.length).toEqual(1);
   });
 
   it('should not show the tooltipView if the layerModel doesn\'t have tooltip data', function () {
@@ -315,13 +230,7 @@ describe('src/vis/tooltip-manager.js', function () {
       }
     }, { vis: this.vis });
 
-    new TooltipManager({ // eslint-disable-line
-      visModel: this.vis,
-      mapView: this.mapView,
-      mapModel: this.map,
-      tooltipModel: this.tooltipModel,
-      infowindowModel: this.infowindowModel
-    });
+    this.tooltipManager.start(this.layerView);
 
     this.map.layers.reset([ layer1, layer2 ]);
 

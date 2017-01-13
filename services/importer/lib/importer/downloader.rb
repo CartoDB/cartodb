@@ -179,7 +179,7 @@ module CartoDB
 
       def set_downloaded_source_file(available_quota_in_bytes = nil)
         if available_quota_in_bytes
-          raise_if_over_storage_quota(requested_quota: content_length_from(headers),
+          raise_if_over_storage_quota(requested_quota: content_length_from_headers(headers),
                                       available_quota: available_quota_in_bytes.to_i,
                                       user_id: @options[:user_id])
         end
@@ -325,7 +325,7 @@ module CartoDB
         end
       end
 
-      def content_length_from(headers)
+      def content_length_from_headers(headers)
         content_length = headers['Content-Length'] || -1
         content_length.to_i
       end

@@ -122,7 +122,13 @@ module CartoDB
         true
       end
 
-      def run(available_quota_in_bytes=nil)
+      def run(available_quota_in_bytes = nil)
+        if valid_url?
+          set_downloaded_source_file(available_quota_in_bytes)
+        else
+          self.source_file = SourceFile.new(url)
+        end
+
         set_local_source_file || set_downloaded_source_file(available_quota_in_bytes)
         self
       end
@@ -133,11 +139,13 @@ module CartoDB
         etag                    = etag_from(headers)
         last_modified           = last_modified_from(headers)
 
-        return true unless (previous_etag || previous_last_modified)
+        return true unless previous_etag || previous_last_modified
         return true if previous_etag && etag && previous_etag != etag
         return true if previous_last_modified && last_modified && previous_last_modified.to_i < last_modified.to_i
         false
       rescue
+
+
         false
       end
 
@@ -184,13 +192,12 @@ module CartoDB
                                       user_id: @options[:user_id])
         end
 
-        @etag           = etag_from(headers)
-        @last_modified  = last_modified_from(headers)
-        return self unless modified?
+        if modified?
+          download_and_store
+        else
+          self.source_file = nil
+        end
 
-        download_and_store
-
-        self.source_file  = nil unless modified?
         self
       end
 

@@ -4,6 +4,56 @@ require 'fake_net_ldap'
 require_relative '../lib/fake_net_ldap_bind_as'
 
 describe SessionsController do
+  shared_examples_for 'Google' do
+    before(:all) do
+      google_plus_config = {
+        access_token_field_id: 'atfi',
+        iframe_src: '',
+        signup_action: '',
+        unauthenticated_valid_access_token: ''
+      }
+      # mocking `:domain` allows lazy loading `user_domain`
+      google_plus_config.stubs(:domain).returns { user_domain }
+      GooglePlusConfig.stubs(instance: google_plus_config)
+
+      @user = FactoryGirl.create(:carto_user, username: 'google_user')
+    end
+
+    after(:all) do
+      @user.destroy
+    end
+
+    it 'attempts Google authentication if google is enabled and there is a google_access_token param' do
+      access_token = 'kkk'
+      GooglePlusAPI.any_instance.stubs(:get_user).with(access_token).once.returns(@user)
+      SessionsController.any_instance.expects(:authenticate!).with(:google_access_token, scope: @user.username)
+                        .returns(@user).once
+      post create_session_url(user_domain: user_domain, google_access_token: access_token)
+    end
+  end
+
+  describe 'Google authentication' do
+    describe 'domainful' do
+      it_behaves_like 'Google'
+
+      let(:user_domain) { @user.username }
+
+      before(:each) do
+        stub_domainful(@user.username)
+      end
+    end
+
+    describe 'subdomainless' do
+      it_behaves_like 'Google'
+
+      let(:user_domain) { nil }
+
+      before(:each) do
+        stub_subdomainless
+      end
+    end
+  end
+
   shared_examples_for 'LDAP' do
     it "doesn't allows to login until admin does first" do
       Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
@@ -232,9 +282,7 @@ describe SessionsController do
       let(:user_domain) { nil }
 
       before(:each) do
-        CartoDB.stubs(:session_domain).returns('.localhost.lan')
-        CartoDB.stubs(:subdomainless_urls?).returns(false)
-        host! "#{@organization.name}.localhost.lan"
+        stub_domainful(@organization.name)
       end
     end
 
@@ -244,9 +292,7 @@ describe SessionsController do
       let(:user_domain) { @organization.name }
 
       before(:each) do
-        CartoDB.stubs(:session_domain).returns('localhost.lan')
-        CartoDB.stubs(:subdomainless_urls?).returns(true)
-        host! "localhost.lan"
+        stub_subdomainless
       end
     end
   end
@@ -393,9 +439,7 @@ describe SessionsController do
       let(:user_domain) { nil }
 
       before(:each) do
-        CartoDB.stubs(:session_domain).returns('.localhost.lan')
-        CartoDB.stubs(:subdomainless_urls?).returns(false)
-        host! "#{@organization.name}.localhost.lan"
+        stub_domainful(@organization.name)
       end
 
       before(:all) do
@@ -413,9 +457,7 @@ describe SessionsController do
       let(:user_domain) { @organization.name }
 
       before(:each) do
-        CartoDB.stubs(:session_domain).returns('localhost.lan')
-        CartoDB.stubs(:subdomainless_urls?).returns(true)
-        host! "localhost.lan"
+        stub_subdomainless
       end
 
       before(:all) do

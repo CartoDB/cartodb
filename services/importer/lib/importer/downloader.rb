@@ -181,18 +181,14 @@ module CartoDB
 
       def parse_url(url)
         translator = URL_TRANSLATORS.map(&:new).find { translator.supported?(url) }
-        raw_translated_url = if translator
-                               @custom_filename = translator.try(:rename_destination, url)
-                               translator.translate(url)
-                             else
-                               url
-                             end
+        raw_url = if translator
+                    @custom_filename = translator.try(:rename_destination, url)
+                    translator.translate(url)
+                  else
+                    url
+                  end
 
-        clean_url(raw_translated_url)
-      end
-
-      def clean_url(url)
-        url.try(:is_a?, String) ? URI.escape(url.strip, URL_ESCAPED_CHARACTERS) : url
+        raw_url.try(:is_a?, String) ? URI.escape(raw_url.strip, URL_ESCAPED_CHARACTERS) : raw_url
       end
 
       attr_reader :http_options, :repository, :seed

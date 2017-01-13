@@ -6,8 +6,7 @@ require 'helpers/subdomainless_helper'
 
 describe Carto::Asset do
   # Needed so subdomainless_helper works
-  def host!(_)
-  end
+  def host!(_) end
 
   before(:all) do
     @organization = Carto::Organization.find(FactoryGirl.create(:organization).id)

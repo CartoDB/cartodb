@@ -4,8 +4,7 @@ require 'helpers/subdomainless_helper'
 
 describe Carto::StorageOptions::Local do
   # Just here to allow subdomainless helpers to work
-  def host!(_)
-  end
+  def host!(_) end
 
   shared_examples_for 'upload' do
     before(:all) do

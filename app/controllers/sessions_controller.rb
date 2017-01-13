@@ -32,8 +32,8 @@ class SessionsController < ApplicationController
   before_filter :api_authorization_required, only: :show
 
   def new
-    if logged_in?(CartoDB.extract_subdomain(request))
-      redirect_to(CartoDB.path(self, 'dashboard', trailing_slash: true))
+    if current_viewer.try(:subdomain) == CartoDB.extract_subdomain(request)
+      redirect_to(CartoDB.url(self, 'dashboard', { trailing_slash: true }, current_viewer))
     elsif saml_authentication? && !user
       # Automatically trigger SAML request on login view load -- could easily trigger this elsewhere
       redirect_to(saml_service.authentication_request)

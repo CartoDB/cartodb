@@ -381,12 +381,6 @@ module CartoDB
         URL_TRANSLATORS.map(&:new).find { |translator| translator.supported?(url) }
       end
 
-      def translate(url)
-        translator = supported_translator(url)
-        return url unless translator
-        translator.translate(url)
-      end
-
       def filename
         [DEFAULT_FILENAME, seed].compact.join('_')
       end

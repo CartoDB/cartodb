@@ -140,7 +140,7 @@ module CartoDB
         return true unless previous_etag || previous_last_modified
 
         etag = etag_from(headers)
-        last_modified = last_modified_from(headers)
+        last_modified = last_modified(headers)
 
         etag_changed = etag && previous_etag && etag != previous_etag
         last_modified_changed = (last_modified &&
@@ -267,7 +267,7 @@ module CartoDB
 
           @filename = name_with_extension(basename)
           @etag = etag_from(headers)
-          @last_modified = last_modified_from(headers)
+          @last_modified = last_modified(headers)
         end
 
         request
@@ -334,7 +334,7 @@ module CartoDB
         etag
       end
 
-      def last_modified_from(headers)
+      def last_modified(headers)
         last_modified = headers['Last-Modified']
         last_modified = last_modified.delete('"').delete("'") if last_modified
         if last_modified

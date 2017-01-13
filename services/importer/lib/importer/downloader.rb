@@ -264,10 +264,6 @@ module CartoDB
       def binded_request(url, file)
         request = Typhoeus::Request.new(url, typhoeus_options)
 
-        request.on_headers do |response|
-          
-        end
-
         request.on_body do |chunk|
           if (@downloaded_bytes += chunk.bytesize) > MAX_DOWNLOAD_SIZE
             raise PartialDownloadError.new("download file too big (> #{MAX_DOWNLOAD_SIZE} bytes)")

@@ -289,12 +289,10 @@ module CartoDB
         end
       end
 
-      def name_from(headers, url, custom=nil)
-        name =  custom || name_from_http(headers) || name_in(url)
+      def name_from(headers, url, custom: nil)
+        name = custom || name_from_http(headers) || name_in(url)
 
-        if name == nil || name == ''
-          name = random_name
-        end
+        name = random_name unless name.present?
 
         name_with_extension(name, headers)
       end
@@ -382,13 +380,16 @@ module CartoDB
         return false unless disposition
         filename = disposition.match(CONTENT_DISPOSITION_RE).to_a[1]
         return false unless filename
-        filename.delete("'").delete('"').split(';').first
+
+        parsed_filename = filename.delete("'").delete('"').split(';').first
+
+        parsed_filename if parsed_filename.present?
       end
 
       def name_in(url)
         url_name = self.class.url_filename_regex.match(url).to_s
 
-        url_name if !url_name.empty?
+        url_name unless url_name.empty?
       end
 
       def random_name

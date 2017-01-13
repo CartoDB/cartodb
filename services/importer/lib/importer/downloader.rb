@@ -99,7 +99,7 @@ module CartoDB
         @url_filename_regex ||= Regexp.new("[[:word:]-]+#{Regexp.union(supported_extensions_match)}+", Regexp::IGNORECASE)
       end
 
-      attr_reader :source_file, :etag, :last_modified, :http_response_code
+      attr_reader :source_file, :etag, :last_modified, :http_response_code, :datasource
 
       def initialize(url, http_options = {}, options = {})
         @url = url
@@ -132,6 +132,9 @@ module CartoDB
       def modified?
         previous_etag = @http_options.fetch(:etag, false)
         previous_last_modified = @http_options.fetch(:last_modified, false)
+
+        return true unless previous_etag || previous_last_modified
+
         etag = etag_from(headers)
         last_modified = last_modified_from(headers)
 
@@ -362,7 +365,7 @@ module CartoDB
         URL_TRANSLATORS.map(&:new).find { |translator| translator.supported?(url) }
       end
 
-      def content_type(headers)
+      def content_type
         media_type = headers['Content-Type']
         return nil unless media_type
         media_type.split(';').first

@@ -220,6 +220,8 @@ module CartoDB
 
       def typhoeus_options
         verify_ssl = http_options.fetch(:verify_ssl_cert, false)
+        cookiejar = repository.fullpath_for("#{seed}_cookiejar")
+
         {
           cookiefile:       cookiejar,
           cookiejar:        cookiejar,
@@ -231,10 +233,6 @@ module CartoDB
           timeout:          http_options.fetch(:http_timeout, DEFAULT_HTTP_REQUEST_TIMEOUT),
           maxredirs:        MAX_REDIRECTS
         }
-      end
-
-      def cookiejar
-        repository.fullpath_for("#{seed}_cookiejar")
       end
 
       FILENAME_PREFIX = 'importer_'.freeze

@@ -190,6 +190,31 @@ module CartoDB
 
       def headers
         @headers ||= http_client.head(@parsed_url, typhoeus_options).headers
+
+        return @headers if @headers
+
+        response = http_client.head(@parsed_url, typhoeus_options)
+
+        if response.success?
+          @http_response_code = response.code
+
+          CartoDB::Importer2::Downloader.validate_url!(response.effective_url)
+
+          basename = @custom_filename ||
+                     filename_from_headers(headers) ||
+                     filename_from_url(url) ||
+                     SecureRandom.urlsafe_base64
+
+          @filename = name_with_extension(basename)
+          @etag = etag(headers)
+          @last_modified = last_modified(headers)
+
+          @headers = response.headers
+        else
+          raise_error_for_response(response)
+        end
+
+        @headers
       end
 
       MAX_REDIRECTS = 5
@@ -240,11 +265,7 @@ module CartoDB
         request = Typhoeus::Request.new(url, typhoeus_options)
 
         request.on_headers do |response|
-          raise_error_for_response(response) unless response.success?
-
-          @http_response_code = response.code
-
-          CartoDB::Importer2::Downloader.validate_url!(response.effective_url)
+          
         end
 
         request.on_body do |chunk|
@@ -257,17 +278,6 @@ module CartoDB
 
         request.on_complete do |response|
           raise_error_for_response(response) unless response.success?
-
-          headers = response.headers
-
-          basename = @custom_filename ||
-                     filename_from_headers(headers) ||
-                     filename_from_url(url) ||
-                     SecureRandom.urlsafe_base64
-
-          @filename = name_with_extension(basename)
-          @etag = etag(headers)
-          @last_modified = last_modified(headers)
         end
 
         request

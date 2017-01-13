@@ -139,14 +139,6 @@ module CartoDB
         self
       end
 
-      def clean_up
-        if defined?(@temporary_directory) &&
-           @temporary_directory =~ /^#{Unp.new(@importer_config, @ogr2ogr_config).get_temporal_subfolder_path}/ &&
-           !(@temporary_directory =~ /\.\./)
-          FileUtils.rm_rf @temporary_directory
-        end
-      end
-
       def modified?
         previous_etag           = http_options.fetch(:etag, false)
         previous_last_modified  = http_options.fetch(:last_modified, false)

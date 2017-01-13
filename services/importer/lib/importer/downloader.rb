@@ -149,10 +149,6 @@ module CartoDB
         false
       end
 
-      def checksum
-        etag_from(headers)
-      end
-
       def multi_resource_import_supported?
         false
       end

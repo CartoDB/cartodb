@@ -8,6 +8,7 @@
 // Form
 $cForms-hover: #AAA;
 $selectedBlue: #1181FB;
+$redColor: #F15743;
 
 // Size variables
 // ---------------
@@ -72,4 +73,7 @@ $iconMargin: 10px;
   vertical-align: middle;
 }
 
+.IconText--red {
+  color: $redColor;
+}
 

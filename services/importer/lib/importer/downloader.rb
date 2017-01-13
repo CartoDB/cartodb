@@ -134,10 +134,10 @@ module CartoDB
       end
 
       def modified?
-        previous_etag           = http_options.fetch(:etag, false)
-        previous_last_modified  = http_options.fetch(:last_modified, false)
-        etag                    = etag_from(headers)
-        last_modified           = last_modified_from(headers)
+        previous_etag = http_options.fetch(:etag, false)
+        previous_last_modified = http_options.fetch(:last_modified, false)
+        etag = etag_from(headers)
+        last_modified = last_modified_from(headers)
 
         etag_changed = etag && previous_etag && etag != previous_etag
         last_modified_changed = (last_modified &&

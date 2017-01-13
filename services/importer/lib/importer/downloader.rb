@@ -268,6 +268,7 @@ module CartoDB
         self.source_file = SourceFile.new(file_path, @header_filename)
       ensure
         file.close
+        file.unlink
       end
 
       MAX_DOWNLOAD_SIZE = 5_242_880

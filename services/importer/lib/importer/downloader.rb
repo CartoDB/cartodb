@@ -30,15 +30,6 @@ module CartoDB
 
       CONTENT_DISPOSITION_RE  = %r{;\s*filename=(.*;|.*)}
       URL_RE                  = %r{://}
-      URL_TRANSLATORS         = [
-        UrlTranslator::OSM2,
-        UrlTranslator::OSM,
-        UrlTranslator::FusionTables,
-        UrlTranslator::GitHub,
-        UrlTranslator::GoogleMaps,
-        UrlTranslator::GoogleDocs,
-        UrlTranslator::KimonoLabs
-      ].freeze
 
       CONTENT_TYPES_MAPPING = [
         {
@@ -365,6 +356,16 @@ module CartoDB
       def valid_url?
         url =~ URL_RE
       end
+
+      URL_TRANSLATORS = [
+        UrlTranslator::OSM2,
+        UrlTranslator::OSM,
+        UrlTranslator::FusionTables,
+        UrlTranslator::GitHub,
+        UrlTranslator::GoogleMaps,
+        UrlTranslator::GoogleDocs,
+        UrlTranslator::KimonoLabs
+      ].freeze
 
       def supported_translator(url)
         URL_TRANSLATORS.map(&:new).find { |translator| translator.supported?(url) }

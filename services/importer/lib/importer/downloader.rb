@@ -210,7 +210,7 @@ module CartoDB
 
       def typhoeus_options
         verify_ssl = http_options.fetch(:verify_ssl_cert, false)
-        cookiejar = repository.fullpath_for("#{seed}_cookiejar")
+        cookiejar = Tempfile.new('cookiejar_').path
 
         {
           cookiefile:       cookiejar,

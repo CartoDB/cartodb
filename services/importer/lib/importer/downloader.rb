@@ -253,7 +253,7 @@ module CartoDB
       FILENAME_PREFIX = 'importer_'.freeze
 
       def download_and_store
-        file = Tempfile.new(FILENAME_PREFIX)
+        file = Tempfile.new(FILENAME_PREFIX, encoding: 'ascii-8bit')
         binded_request(@translated_url, file).run
 
         file_path = if @header_filename
@@ -273,7 +273,7 @@ module CartoDB
       MAX_DOWNLOAD_SIZE = 5_242_880
 
       def binded_request(url, file)
-        request = Typhoeus::Request.new(url, followlocation: true)
+        request = Typhoeus::Request.new(url, typhoeus_options)
 
         request.on_headers do |response|
           raise_error_for_response(response) unless response.success?

@@ -99,6 +99,18 @@ module CartoDB
         @url_filename_regex ||= Regexp.new("[[:word:]-]+#{Regexp.union(supported_extensions_match)}+", Regexp::IGNORECASE)
       end
 
+      def provides_stream?
+        false
+      end
+
+      def http_download?
+        true
+      end
+
+      def multi_resource_import_supported?
+        false
+      end
+
       attr_reader :source_file, :etag, :last_modified, :http_response_code, :datasource
 
       def initialize(url, http_options = {}, options = {})
@@ -109,14 +121,6 @@ module CartoDB
         @options = options
         @downloaded_bytes = 0
         @parsed_url = parse_url(url)
-      end
-
-      def provides_stream?
-        false
-      end
-
-      def http_download?
-        true
       end
 
       def run(available_quota_in_bytes = nil)
@@ -144,10 +148,6 @@ module CartoDB
                                  previous_last_modified.to_i < last_modified.to_i)
 
         etag_changed || last_modified_changed
-      end
-
-      def multi_resource_import_supported?
-        false
       end
 
       private

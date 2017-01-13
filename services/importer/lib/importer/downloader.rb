@@ -125,7 +125,17 @@ module CartoDB
 
       def run(available_quota_in_bytes = nil)
         if valid_url?
-          set_downloaded_source_file(available_quota_in_bytes)
+          if available_quota_in_bytes
+            raise_if_over_storage_quota(requested_quota: content_length_from_headers(headers),
+                                        available_quota: available_quota_in_bytes.to_i,
+                                        user_id: @options[:user_id])
+          end
+
+          if modified?
+            download_and_store
+          else
+            @source_file = nil
+          end
         else
           @source_file = SourceFile.new(url)
         end
@@ -163,22 +173,6 @@ module CartoDB
                   end
 
         raw_url.try(:is_a?, String) ? URI.escape(raw_url.strip, URL_ESCAPED_CHARACTERS) : raw_url
-      end
-
-      def set_downloaded_source_file(available_quota_in_bytes = nil)
-        if available_quota_in_bytes
-          raise_if_over_storage_quota(requested_quota: content_length_from_headers(headers),
-                                      available_quota: available_quota_in_bytes.to_i,
-                                      user_id: @options[:user_id])
-        end
-
-        if modified?
-          download_and_store
-        else
-          @source_file = nil
-        end
-
-        self
       end
 
       def headers

@@ -139,7 +139,7 @@ module CartoDB
 
         return true unless previous_etag || previous_last_modified
 
-        etag = etag_from(headers)
+        etag = etag(headers)
         last_modified = last_modified(headers)
 
         etag_changed = etag && previous_etag && etag != previous_etag
@@ -266,7 +266,7 @@ module CartoDB
                      SecureRandom.urlsafe_base64
 
           @filename = name_with_extension(basename)
-          @etag = etag_from(headers)
+          @etag = etag(headers)
           @last_modified = last_modified(headers)
         end
 
@@ -328,7 +328,7 @@ module CartoDB
         content_length.to_i
       end
 
-      def etag_from(headers)
+      def etag(headers)
         etag = headers['ETag']
         etag = etag.delete('"').delete("'") if etag
         etag

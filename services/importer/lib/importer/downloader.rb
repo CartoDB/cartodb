@@ -149,9 +149,6 @@ module CartoDB
 
         return true unless previous_etag || previous_last_modified
 
-        etag = etag
-        last_modified = last_modified
-
         etag_changed = etag && previous_etag && etag != previous_etag
         last_modified_changed = (last_modified &&
                                  previous_last_modified &&

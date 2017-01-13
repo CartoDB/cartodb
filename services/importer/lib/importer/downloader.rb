@@ -112,7 +112,7 @@ module CartoDB
         @url_filename_regex ||= Regexp.new("[[:word:]-]+#{Regexp.union(supported_extensions_match)}+", Regexp::IGNORECASE)
       end
 
-      def initialize(url, http_options = {}, options = {}, seed = nil, repository = nil)
+      def initialize(url, http_options = {}, options = {})
         @url = url
         raise UploadError if url.nil?
 
@@ -120,7 +120,6 @@ module CartoDB
         @options = options
         @importer_config = options[:importer_config]
         @ogr2ogr_config = options[:ogr2ogr]
-        @seed         = seed
         @downloaded_bytes = 0
         @parsed_url = parse_url(url)
       end
@@ -178,7 +177,7 @@ module CartoDB
         raw_url.try(:is_a?, String) ? URI.escape(raw_url.strip, URL_ESCAPED_CHARACTERS) : raw_url
       end
 
-      attr_reader :http_options, :repository, :seed
+      attr_reader :http_options
       attr_writer :source_file
 
       def set_local_source_file

@@ -192,12 +192,7 @@ module CartoDB
       end
 
       def clean_url(url)
-        return url if url.nil? || !url.kind_of?(String)
-
-        url = url.strip
-        url = URI.escape(url, URL_ESCAPED_CHARACTERS)
-
-        url
+        url.try(:is_a?, String) ? URI.escape(url.strip, URL_ESCAPED_CHARACTERS) : url
       end
 
       attr_reader :http_options, :repository, :seed

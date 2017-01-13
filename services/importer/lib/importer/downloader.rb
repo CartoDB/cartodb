@@ -295,7 +295,7 @@ module CartoDB
         end
       end
 
-      def extensions_by_content_type(content_type)
+      def extension_from_headers(content_type)
         downcased_content_type = content_type.downcase
         CONTENT_TYPES_MAPPING.each do |item|
           if item[:content_types].include?(downcased_content_type)
@@ -305,11 +305,11 @@ module CartoDB
         return []
       end
 
-      def name_with_extension(name, headers)
+      def name_with_extension(name)
         # No content-type
-        return name if content_type.nil? || content_type.empty?
+        return name unless content_type.present?
 
-        content_type_extensions = extensions_by_content_type(content_type)
+        content_type_extensions = extension_from_headers(content_type)
         # We don't have extension registered for that content-type
         return name if content_type_extensions.empty?
 
@@ -367,7 +367,7 @@ module CartoDB
         URL_TRANSLATORS.map(&:new).find { |translator| translator.supported?(url) }
       end
 
-      def content_type
+      def content_type(headers)
         media_type = headers['Content-Type']
         return nil unless media_type
         media_type.split(';').first

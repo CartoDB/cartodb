@@ -122,7 +122,6 @@ module CartoDB
         @importer_config = options[:importer_config]
         @ogr2ogr_config = options[:ogr2ogr]
         @seed         = seed
-        @repository   = repository || DataRepository::Filesystem::Local.new(temporary_directory)
         @downloaded_bytes = 0
         @parsed_url = parse_url(url)
       end

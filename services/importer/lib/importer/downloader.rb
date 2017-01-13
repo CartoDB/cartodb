@@ -314,9 +314,12 @@ module CartoDB
         end
       end
 
-      def content_length_from_headers
-        content_length = headers['Content-Length'] || -1
-        content_length.to_i
+      def content_length
+        return @content_length if @content_length
+
+        header_content_length = headers['Content-Length']
+
+        @content_length = header_content_length.to_i if header_content_length
       end
 
       def etag

@@ -370,14 +370,6 @@ module CartoDB
         URL_TRANSLATORS.map(&:new).find { |translator| translator.supported?(url) }
       end
 
-      def filename
-        [DEFAULT_FILENAME, seed].compact.join('_')
-      end
-
-      def filepath(name=nil)
-        repository.fullpath_for(name || filename)
-      end
-
       def content_type
         media_type = headers['Content-Type']
         return nil unless media_type

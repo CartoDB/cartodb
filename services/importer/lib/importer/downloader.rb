@@ -126,7 +126,7 @@ module CartoDB
         if valid_url?
           set_downloaded_source_file(available_quota_in_bytes)
         else
-          self.source_file = SourceFile.new(url)
+          @source_file = SourceFile.new(url)
         end
 
         self
@@ -167,7 +167,7 @@ module CartoDB
 
       def set_local_source_file
         unless valid_url?
-          self.source_file = SourceFile.new(url)
+          @source_file = SourceFile.new(url)
           self
         end
       end
@@ -182,7 +182,7 @@ module CartoDB
         if modified?
           download_and_store
         else
-          self.source_file = nil
+          @source_file = nil
         end
 
         self
@@ -226,7 +226,7 @@ module CartoDB
                       file.path
                     end
 
-        self.source_file = SourceFile.new(file_path, @filename)
+        @source_file = SourceFile.new(file_path, @filename)
       ensure
         file.close
         file.unlink

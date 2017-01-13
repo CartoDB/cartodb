@@ -388,10 +388,6 @@ module CartoDB
         url_name unless url_name.empty?
       end
 
-      def gdrive_deny_in?(headers)
-        headers['X-Frame-Options'] == 'DENY'
-      end
-
       def http_client
         @http_client ||= Carto::Http::Client.get('downloader', log_requests: true)
       end

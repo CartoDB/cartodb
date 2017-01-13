@@ -139,22 +139,17 @@ module CartoDB
         etag                    = etag_from(headers)
         last_modified           = last_modified_from(headers)
 
-        return true unless previous_etag || previous_last_modified
-        return true if previous_etag && etag && previous_etag != etag
-        return true if previous_last_modified && last_modified && previous_last_modified.to_i < last_modified.to_i
-        false
-      rescue
+        etag_changed = etag && previous_etag && etag != previous_etag
+        last_modified_changed = (last_modified &&
+                                 previous_last_modified &&
+                                 previous_last_modified.to_i < last_modified.to_i)
 
-
-        false
+        etag_changed || last_modified_changed
       end
 
       def multi_resource_import_supported?
         false
       end
-
-      attr_reader :source_file, :datasource, :etag, :last_modified, :http_response_code
-      attr_accessor :url
 
       private
 
@@ -171,8 +166,8 @@ module CartoDB
         raw_url.try(:is_a?, String) ? URI.escape(raw_url.strip, URL_ESCAPED_CHARACTERS) : raw_url
       end
 
-      attr_reader :http_options
-      attr_writer :source_file
+      attr_reader :http_options, :source_file, :datasource, :etag, :last_modified, :http_response_code, :url
+      attr_writer :source_file, :url
 
       def set_local_source_file
         unless valid_url?

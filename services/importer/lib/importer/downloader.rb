@@ -123,20 +123,8 @@ module CartoDB
         @ogr2ogr_config = options[:ogr2ogr]
         @seed         = seed
         @repository   = repository || DataRepository::Filesystem::Local.new(temporary_directory)
-        @datasource = nil
-        @source_file = nil
-        @http_response_code = nil
         @downloaded_bytes = 0
-
-        translator = URL_TRANSLATORS.map(&:new).find { translator.supported?(url) }
-        raw_translated_url = if translator
-                               @custom_filename = translator.try(:rename_destination, url)
-                               translator.translate(url)
-                             else
-                               url
-                             end
-
-        @parsed_url = clean_url(raw_translated_url)
+        @parsed_url = parse_url(url)
       end
 
       def provides_stream?
@@ -190,6 +178,18 @@ module CartoDB
       attr_accessor :url
 
       private
+
+      def parse_url(url)
+        translator = URL_TRANSLATORS.map(&:new).find { translator.supported?(url) }
+        raw_translated_url = if translator
+                               @custom_filename = translator.try(:rename_destination, url)
+                               translator.translate(url)
+                             else
+                               url
+                             end
+
+        clean_url(raw_translated_url)
+      end
 
       def clean_url(url)
         return url if url.nil? || !url.kind_of?(String)

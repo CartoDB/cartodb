@@ -25,7 +25,6 @@ module CartoDB
       # in seconds
       HTTP_CONNECT_TIMEOUT = 60
       DEFAULT_HTTP_REQUEST_TIMEOUT = 600
-      MAX_REDIRECTS = 5
       URL_ESCAPED_CHARACTERS = 'áéíóúÁÉÍÓÚñÑçÇàèìòùÀÈÌÒÙ'.freeze
 
       CONTENT_DISPOSITION_RE  = %r{;\s*filename=(.*;|.*)}
@@ -197,6 +196,8 @@ module CartoDB
       def headers
         @headers ||= http_client.head(@parsed_url, typhoeus_options).headers
       end
+
+      MAX_REDIRECTS = 5
 
       def typhoeus_options
         verify_ssl = http_options.fetch(:verify_ssl_cert, false)

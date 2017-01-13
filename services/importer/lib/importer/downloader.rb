@@ -176,8 +176,6 @@ module CartoDB
       end
 
       def headers
-        @headers ||= http_client.head(@parsed_url, typhoeus_options).headers
-
         return @headers if @headers
 
         response = http_client.head(@parsed_url, typhoeus_options)

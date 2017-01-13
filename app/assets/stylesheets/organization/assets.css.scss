@@ -7,6 +7,7 @@
 
 // Form
 $cForms-hover: #AAA;
+$selectedBlue: #1181FB;
 
 // Size variables
 // ---------------
@@ -63,6 +64,12 @@ $iconMargin: 10px;
   }
 }
 
+.IconList-item.is-selected {
+  border: 1px solid $selectedBlue;
+}
+
 .IconItem-icon {
   vertical-align: middle;
 }
+
+

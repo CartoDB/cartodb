@@ -171,9 +171,10 @@ module CartoDB
       attr_writer :source_file
 
       def set_local_source_file
-        return false if valid_url?
-        self.source_file = SourceFile.new(url)
-        self
+        unless valid_url?
+          self.source_file = SourceFile.new(url)
+          self
+        end
       end
 
       def set_downloaded_source_file(available_quota_in_bytes = nil)

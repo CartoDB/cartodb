@@ -126,7 +126,7 @@ module CartoDB
       def run(available_quota_in_bytes = nil)
         if valid_url?
           if available_quota_in_bytes
-            raise_if_over_storage_quota(requested_quota: content_length_from_headers(headers),
+            raise_if_over_storage_quota(requested_quota: content_length_from_headers,
                                         available_quota: available_quota_in_bytes.to_i,
                                         user_id: @options[:user_id])
           end
@@ -149,8 +149,8 @@ module CartoDB
 
         return true unless previous_etag || previous_last_modified
 
-        etag = etag(headers)
-        last_modified = last_modified(headers)
+        etag = etag
+        last_modified = last_modified
 
         etag_changed = etag && previous_etag && etag != previous_etag
         last_modified_changed = (last_modified &&
@@ -186,13 +186,13 @@ module CartoDB
           CartoDB::Importer2::Downloader.validate_url!(response.effective_url)
 
           basename = @custom_filename ||
-                     filename_from_headers(headers) ||
+                     filename_from_headers ||
                      filename_from_url(url) ||
                      SecureRandom.urlsafe_base64
 
           @filename = name_with_extension(basename)
-          @etag = etag(headers)
-          @last_modified = last_modified(headers)
+          @etag = etag
+          @last_modified = last_modified
 
           @headers = response.headers
         else
@@ -314,28 +314,31 @@ module CartoDB
         end
       end
 
-      def content_length_from_headers(headers)
+      def content_length_from_headers
         content_length = headers['Content-Length'] || -1
         content_length.to_i
       end
 
-      def etag(headers)
-        etag = headers['ETag']
-        etag = etag.delete('"').delete("'") if etag
-        etag
+      def etag
+        return @etag if @etag
+
+        header_etag = headers['ETag']
+        header_etag = header_etag.delete('"').delete("'") if header_etag
+
+        @etag = header_etag
       end
 
-      def last_modified(headers)
-        last_modified = headers['Last-Modified']
-        last_modified = last_modified.delete('"').delete("'") if last_modified
-        if last_modified
-          begin
-            last_modified = DateTime.httpdate(last_modified)
-          rescue
-            last_modified = nil
-          end
-        end
-        last_modified
+      def last_modified
+        return @last_modified if @last_modified
+
+        header_last_modified = headers['Last-Modified']
+        @last_modified = if header_last_modified
+                           begin
+                             DateTime.httpdate(header_last_modified.delete('"').delete("'"))
+                           rescue
+                             nil
+                           end
+                         end
       end
 
       def valid_url?
@@ -362,7 +365,7 @@ module CartoDB
         media_type.split(';').first
       end
 
-      def filename_from_headers(headers)
+      def filename_from_headers
         disposition = headers['Content-Disposition']
         return false unless disposition
         filename = disposition.match(CONTENT_DISPOSITION_RE).to_a[1]

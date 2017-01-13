@@ -17,9 +17,7 @@ class Carto::StorageOptions::Local
     FileUtils.mv(file.path, target_directory)
 
     identifier = File.join(target_directory, filename)
-    url = File.join('http://',
-                    CartoDB.account_host,
-                    identifier.gsub('public/', ''))
+    url = File.join('uploads', @location, path, filename)
 
     [identifier, url]
   end

@@ -180,10 +180,11 @@ module CartoDB
       private
 
       def parse_url(url)
-        translator = URL_TRANSLATORS.map(&:new).find { translator.supported?(url) }
-        raw_url = if translator
-                    @custom_filename = translator.try(:rename_destination, url)
-                    translator.translate(url)
+        supported_translator = supported_translator(url)
+
+        raw_url = if supported_translator
+                    @custom_filename = supported_translator.try(:rename_destination, url)
+                    supported_translator.translate(url)
                   else
                     url
                   end
@@ -386,8 +387,12 @@ module CartoDB
         URL_TRANSLATORS.map(&:new)
       end
 
+      def supported_translator(url)
+        URL_TRANSLATORS.map(&:new).find { |translator| translator.supported?(url) }
+      end
+
       def translate(url)
-        translator = translators.find { |translator| translator.supported?(url) }
+        translator = supported_translator(url)
         return url unless translator
         translator.translate(url)
       end

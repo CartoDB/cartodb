@@ -261,7 +261,7 @@ module CartoDB
           basename = @custom_filename ||
                      filename_from_headers(headers) ||
                      filename_from_url(url) ||
-                     random_name
+                     SecureRandom.urlsafe_base64
 
           @filename = name_with_extension(basename)
           @etag = etag_from(headers)
@@ -384,15 +384,6 @@ module CartoDB
         url_name = self.class.url_filename_regex.match(url).to_s
 
         url_name unless url_name.empty?
-      end
-
-      def random_name
-        random_generator = Random.new
-        name = ''
-        10.times {
-          name << (random_generator.rand*10).to_i.to_s
-        }
-        name
       end
 
       def gdrive_deny_in?(headers)

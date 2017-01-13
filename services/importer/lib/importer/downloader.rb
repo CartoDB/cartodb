@@ -353,9 +353,12 @@ module CartoDB
       end
 
       def content_type
-        media_type = headers['Content-Type']
-        return nil unless media_type
-        media_type.split(';').first
+        return @content_type if @content_type
+
+        headers_content_type = headers['Content-Type']
+        return nil unless headers_content_type.present?
+
+        @content_type = headers_content_type.split(';').first
       end
 
       def filename_from_headers

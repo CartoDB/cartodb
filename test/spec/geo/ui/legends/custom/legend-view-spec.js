@@ -19,6 +19,10 @@ describe('geo/ui/legends/custom/legend-view.js', function () {
         }, {
           title: 'bar',
           color: '#ff6600'
+        }, {
+          title: 'bar',
+          color: '#ff6600',
+          icon: 'https://s3.amazonaws.com/com.cartodb.users-assets.production/maki-icons/circle-stroked-18.svg'
         }
       ],
       visible: true
@@ -43,8 +47,9 @@ describe('geo/ui/legends/custom/legend-view.js', function () {
     });
 
     it('should render custom', function () {
-      expect(this.legendView.$('li').length).toBe(2);
+      expect(this.legendView.$('li').length).toBe(3);
       expect(this.legendView.$('.Legend-categoryCircle').length).toBe(2);
+      expect(this.legendView.$('.Legend-categoryIcon').length).toBe(1);
     });
 
     it('should render custom html', function () {

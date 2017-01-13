@@ -30,7 +30,7 @@ describe Carto::StorageOptions::Local do
     end
 
     it 'url starts with domain/uploads/' do
-      @url.should start_with "http://#{host}:3000/uploads/#{@prefix}/123/"
+      @url.should start_with "/uploads/#{@prefix}/123/"
     end
 
     it 'url should not contain filesystem paths' do
@@ -54,8 +54,6 @@ describe Carto::StorageOptions::Local do
   end
 
   describe 'domainful' do
-    let(:host) { 'org.localhost.lan' }
-
     before(:each) do
       stub_domainful('org')
     end
@@ -64,8 +62,6 @@ describe Carto::StorageOptions::Local do
   end
 
   describe 'subdomainless' do
-    let(:host) { 'localhost.lan' }
-
     before(:each) do
       stub_subdomainless
     end

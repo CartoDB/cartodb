@@ -392,10 +392,6 @@ module CartoDB
         headers['X-Frame-Options'] == 'DENY'
       end
 
-      def md5_command_for(name)
-        %Q(md5sum #{name} | cut -d' ' -f1)
-      end
-
       def http_client
         @http_client ||= Carto::Http::Client.get('downloader', log_requests: true)
       end

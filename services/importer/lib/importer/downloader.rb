@@ -102,6 +102,8 @@ module CartoDB
         @url_filename_regex ||= Regexp.new("[[:word:]-]+#{Regexp.union(supported_extensions_match)}+", Regexp::IGNORECASE)
       end
 
+      attr_reader :source_file, :etag, :last_modified, :http_response_code
+
       def initialize(url, http_options = {}, options = {})
         @url = url
         raise UploadError if url.nil?
@@ -131,8 +133,8 @@ module CartoDB
       end
 
       def modified?
-        previous_etag = http_options.fetch(:etag, false)
-        previous_last_modified = http_options.fetch(:last_modified, false)
+        previous_etag = @http_options.fetch(:etag, false)
+        previous_last_modified = @http_options.fetch(:last_modified, false)
         etag = etag_from(headers)
         last_modified = last_modified_from(headers)
 
@@ -162,9 +164,6 @@ module CartoDB
 
         raw_url.try(:is_a?, String) ? URI.escape(raw_url.strip, URL_ESCAPED_CHARACTERS) : raw_url
       end
-
-      attr_reader :http_options, :source_file, :datasource, :etag, :last_modified, :http_response_code, :url
-      attr_writer :source_file, :url
 
       def set_local_source_file
         unless valid_url?
@@ -196,7 +195,7 @@ module CartoDB
       MAX_REDIRECTS = 5
 
       def typhoeus_options
-        verify_ssl = http_options.fetch(:verify_ssl_cert, false)
+        verify_ssl = @http_options.fetch(:verify_ssl_cert, false)
         cookiejar = Tempfile.new('cookiejar_').path
 
         {
@@ -207,7 +206,7 @@ module CartoDB
           ssl_verifyhost:   (verify_ssl ? 2 : 0),
           forbid_reuse:     true,
           connecttimeout:   HTTP_CONNECT_TIMEOUT,
-          timeout:          http_options.fetch(:http_timeout, DEFAULT_HTTP_REQUEST_TIMEOUT),
+          timeout:          @http_options.fetch(:http_timeout, DEFAULT_HTTP_REQUEST_TIMEOUT),
           maxredirs:        MAX_REDIRECTS
         }
       end
@@ -347,7 +346,7 @@ module CartoDB
       end
 
       def valid_url?
-        url =~ URL_RE
+        @parsed_url =~ URL_RE
       end
 
       URL_TRANSLATORS = [

@@ -290,9 +290,7 @@ module CartoDB
       end
 
       def name_from(headers, url, custom: nil)
-        name = custom || name_from_http(headers) || name_in(url)
-
-        name = random_name unless name.present?
+        name = custom || name_from_http(headers) || name_in(url) || random_name
 
         name_with_extension(name, headers)
       end

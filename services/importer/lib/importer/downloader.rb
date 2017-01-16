@@ -351,8 +351,10 @@ module CartoDB
         }
       ].freeze
 
-      def extension_from_headers(content_type)
-        CONTENT_TYPES_MAPPING.find { |item| item[:content_types].include?(content_type.downcase) }
+      def extensions_from_headers
+        @extensions_from_headers ||= CONTENT_TYPES_MAPPING.find do |item|
+          item[:content_types].include?(content_type.downcase)
+        end
       end
 
       def name_with_extension(filename)

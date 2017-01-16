@@ -27,61 +27,6 @@ module CartoDB
       CONTENT_DISPOSITION_RE  = %r{;\s*filename=(.*;|.*)}
       URL_RE                  = %r{://}
 
-      CONTENT_TYPES_MAPPING = [
-        {
-          content_types: ['text/plain'],
-          extensions: ['txt', 'kml', 'geojson']
-        },
-        {
-          content_types: ['text/csv'],
-          extensions: ['csv']
-        },
-        {
-          content_types: ['application/vnd.ms-excel'],
-          extensions: ['xls']
-        },
-        {
-          content_types: ['application/vnd.ms-excel.sheet.binary.macroEnabled.12'],
-          extensions: ['xlsb']
-        },
-        {
-          content_types: ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
-          extensions: ['xlsx']
-        },
-        {
-          content_types: ['application/vnd.geo+json'],
-          extensions: ['geojson']
-        },
-        {
-          content_types: ['application/vnd.google-earth.kml+xml'],
-          extensions: ['kml']
-        },
-        {
-          content_types: ['application/vnd.google-earth.kmz'],
-          extensions: ['kmz']
-        },
-        {
-          content_types: ['application/gpx+xml'],
-          extensions: ['gpx']
-        },
-        {
-          content_types: ['application/zip'],
-          extensions: ['zip', 'carto']
-        },
-        {
-          content_types: ['application/x-gzip'],
-          extensions: ['tgz', 'gz']
-        },
-        {
-          content_types: ['application/json', 'text/javascript', 'application/javascript'],
-          extensions: ['json']
-        },
-        {
-          content_types: ['application/osm3s+xml'],
-          extensions: ['osm']
-        }
-      ].freeze
-
       def self.supported_extensions
         @supported_extensions ||= CartoDB::Importer2::Unp::SUPPORTED_FORMATS
                                   .concat(CartoDB::Importer2::Unp::COMPRESSED_EXTENSIONS)
@@ -277,33 +222,6 @@ module CartoDB
         end
       end
 
-      def extension_from_headers(content_type)
-        CONTENT_TYPES_MAPPING.find { |item| item[:content_types].include?(content_type.downcase) }
-      end
-
-      def name_with_extension(name)
-        # No content-type
-        return name unless content_type.present?
-
-        content_type_extensions = CONTENT_TYPES_MAPPING.find do |item|
-          item[:content_types].include?(content_type.downcase)
-        end
-
-        # We don't have extension registered for that content-type
-        return name if content_type_extensions.empty?
-
-        file_extension = File.extname(name).split('.').last
-        name_without_extension = File.basename(name, ".*")
-
-        #If there is no extension or file extension match in the content type extensions, add content type
-        #extension to the file name deleting the previous extension (if exist)
-        if (file_extension.nil? || file_extension.empty?) || !content_type_extensions.include?(file_extension)
-          return "#{name_without_extension}.#{content_type_extensions.first}"
-        else
-          return name
-        end
-      end
-
       def content_length
         return @content_length if @content_length
 
@@ -376,6 +294,88 @@ module CartoDB
 
       def http_client
         @http_client ||= Carto::Http::Client.get('downloader', log_requests: true)
+      end
+
+      CONTENT_TYPES_MAPPING = [
+        {
+          content_types: ['text/plain'],
+          extensions: ['txt', 'kml', 'geojson']
+        },
+        {
+          content_types: ['text/csv'],
+          extensions: ['csv']
+        },
+        {
+          content_types: ['application/vnd.ms-excel'],
+          extensions: ['xls']
+        },
+        {
+          content_types: ['application/vnd.ms-excel.sheet.binary.macroEnabled.12'],
+          extensions: ['xlsb']
+        },
+        {
+          content_types: ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
+          extensions: ['xlsx']
+        },
+        {
+          content_types: ['application/vnd.geo+json'],
+          extensions: ['geojson']
+        },
+        {
+          content_types: ['application/vnd.google-earth.kml+xml'],
+          extensions: ['kml']
+        },
+        {
+          content_types: ['application/vnd.google-earth.kmz'],
+          extensions: ['kmz']
+        },
+        {
+          content_types: ['application/gpx+xml'],
+          extensions: ['gpx']
+        },
+        {
+          content_types: ['application/zip'],
+          extensions: ['zip', 'carto']
+        },
+        {
+          content_types: ['application/x-gzip'],
+          extensions: ['tgz', 'gz']
+        },
+        {
+          content_types: ['application/json', 'text/javascript', 'application/javascript'],
+          extensions: ['json']
+        },
+        {
+          content_types: ['application/osm3s+xml'],
+          extensions: ['osm']
+        }
+      ].freeze
+
+      def extension_from_headers(content_type)
+        CONTENT_TYPES_MAPPING.find { |item| item[:content_types].include?(content_type.downcase) }
+      end
+
+      def name_with_extension(name)
+        # No content-type
+        return name unless content_type.present?
+
+        content_type_extensions = CONTENT_TYPES_MAPPING.find do |item|
+          item[:content_types].include?(content_type.downcase)
+        end
+
+        # We don't have extension registered for that content-type
+        return name if content_type_extensions.empty?
+
+        file_extension = File.extname(name).split('.').last
+        name_without_extension = File.basename(name, ".*")
+
+        # If there is no extension or file extension match in the content type extensions,
+        # add content type extension to the file name deleting the previous extension (if exist)
+        if (file_extension.nil? || file_extension.empty?) || !content_type_extensions.include?(file_extension)
+          return "#{name_without_extension}.#{content_type_extensions.first}"
+        else
+          return name
+        end
       end
     end
   end

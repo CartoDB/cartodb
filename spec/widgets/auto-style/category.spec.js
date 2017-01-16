@@ -59,6 +59,15 @@ describe('src/widgets/auto-style/category', function () {
       expect(this.categoryAutoStyler.getStyle()).toBe('  #layer [\'mapnik::geometry_type\'=1] { marker-fill: ramp([something], ("#7F3C8D", "#11A579", "#3969AC", "#F2B701", "#E73F74", "#A5AA99"), ("soccer", "basketball", "baseball", "handball", "hockey", "Oh\\"Yeah"));  } #layer {  marker-line-width: 0.5;  marker-line-color: #fcfafa;  marker-line-opacity: 1;  marker-width: 6.076923076923077;   marker-fill-opacity: 0.9;  marker-allow-overlap: true;}');
     });
 
+    it('should not escape single quotes', function () {
+      var data = this.dataview.get('data');
+      data.push({ name: "Oh'Yeah" });
+      this.dataview.set('data', data);
+      this.layer.set('initialStyle', '#layer {  marker-line-width: 0.5;  marker-line-color: #fcfafa;  marker-line-opacity: 1;  marker-width: 6.076923076923077;  marker-fill: #e49115;  marker-fill-opacity: 0.9;  marker-allow-overlap: true;}');
+      this.updateColorsByData();
+      expect(this.categoryAutoStyler.getStyle()).toBe('  #layer [\'mapnik::geometry_type\'=1] { marker-fill: ramp([something], ("#7F3C8D", "#11A579", "#3969AC", "#F2B701", "#E73F74", "#A5AA99"), ("soccer", "basketball", "baseball", "handball", "hockey", "Oh\'Yeah"));  } #layer {  marker-line-width: 0.5;  marker-line-color: #fcfafa;  marker-line-opacity: 1;  marker-width: 6.076923076923077;   marker-fill-opacity: 0.9;  marker-allow-overlap: true;}');
+    });
+
     it('should generate proper CartoCSS when Others is included', function () {
       var data = this.dataview.get('data');
       data.push({ name: 'Others', agg: true });

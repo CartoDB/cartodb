@@ -279,57 +279,61 @@ describe Downloader do
     end
   end
 
-  describe '#name_from' do
+  describe '#name inference' do
     it 'gets the file name from the Content-Disposition header if present' do
       headers = { "Content-Disposition" => %{attachment; filename="bar.csv"} }
-      downloader = Downloader.new(@file_url, {}, user_id: @user.id)
-      downloader.send(:name_from, headers, @file_url).should eq 'bar.csv'
+      downloader = Downloader.new(@file_url, headers, user_id: @user.id)
+      downloader.send(:process_headers, headers)
+      downloader.instance_variable_get(:@filename).should eq 'bar.csv'
 
       headers = { "Content-Disposition" => %{attachment; filename=bar.csv} }
-      downloader = Downloader.new(@file_url, {}, user_id: @user.id)
-      downloader.send(:name_from, headers, @file_url).should eq 'bar.csv'
+      downloader = Downloader.new(@file_url, headers, user_id: @user.id)
+      downloader.send(:process_headers, headers)
+      downloader.instance_variable_get(:@filename).should eq 'bar.csv'
 
       disposition = "attachment; filename=map_gaudi3d.geojson; " +
                     'modification-date="Tue, 06 Aug 2013 15:05:35 GMT'
       headers = { "Content-Disposition" => disposition }
-      downloader = Downloader.new(@file_url, {}, user_id: @user.id)
-      downloader.send(:name_from, headers, @file_url).should eq 'map_gaudi3d.geojson'
+      downloader = Downloader.new(@file_url, headers, user_id: @user.id)
+      downloader.send(:process_headers, headers)
+      downloader.instance_variable_get(:@filename).should eq 'map_gaudi3d.geojson'
     end
 
     it 'gets the file name from the URL if no Content-Disposition header' do
-      headers = {}
-      downloader = Downloader.new(@file_url, {}, user_id: @user.id)
-      downloader.send(:name_from, headers, @file_url).should eq 'ne_110m_lakes.zip'
+      downloader = Downloader.new(@file_url, Hash.new, user_id: @user.id)
+
+      downloader.send(:process_headers, Hash.new)
+      downloader.instance_variable_get(:@filename).should eq 'ne_110m_lakes.zip'
     end
 
     it 'gets the file name from the URL if no Content-Disposition header and custom params schema is used' do
-      headers = {}
       hard_url = "https://manolo.escobar.es/param&myfilenameparam&zip_file.csv.zip&otherinfo"
 
-      downloader = Downloader.new(hard_url, {}, user_id: @user.id)
-      downloader.send(:name_from, headers, hard_url).should eq 'zip_file.csv.zip'
+      downloader = Downloader.new(hard_url, Hash.new, user_id: @user.id)
+      downloader.send(:process_headers, Hash.new)
+      downloader.instance_variable_get(:@filename).should eq 'zip_file.csv.zip'
     end
 
     it 'uses random name in no name can be found in url or http headers' do
-      headers = {}
       empty_url = "https://manolo.escobar.es/param&myfilenameparam&nothing&otherinfo"
 
-      downloader = Downloader.new(empty_url, {}, user_id: @user.id)
-      downloader.send(:name_from, headers, empty_url).should_not eq nil
+      downloader = Downloader.new(empty_url, Hash.new, user_id: @user.id)
+      downloader.send(:process_headers, Hash.new)
+      downloader.instance_variable_get(:@filename).should_not eq nil
     end
 
     it 'discards url query params' do
-      downloader = Downloader.new("#{@file_url}?foo=bar&woo=wee", {}, user_id: @user.id)
+      downloader = Downloader.new("#{@file_url}?foo=bar&woo=wee", Hash.new, user_id: @user.id)
       downloader.send(:process_headers, Hash.new)
       downloader.instance_variable_get(:@filename).should eq 'ne_110m_lakes.zip'
     end
 
     it 'matches longer extension available from filename' do
-      headers = {}
       hard_url = "https://cartofante.net/my_file.xlsx"
 
-      downloader = Downloader.new(hard_url, {}, user_id: @user.id)
-      downloader.send(:name_from, headers, hard_url).should eq 'my_file.xlsx'
+      downloader = Downloader.new(hard_url, Hash.new, user_id: @user.id)
+      downloader.send(:process_headers, Hash.new)
+      downloader.instance_variable_get(:@filename).should eq 'my_file.xlsx'
     end
   end
 

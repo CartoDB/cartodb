@@ -22,8 +22,6 @@ module CartoDB
       include CartoDB::Importer2::QuotaCheckHelpers
       extend Carto::UrlValidator
 
-      URL_RE                  = %r{://}
-
       def self.supported_extensions
         @supported_extensions ||= CartoDB::Importer2::Unp::SUPPORTED_FORMATS
                                   .concat(CartoDB::Importer2::Unp::COMPRESSED_EXTENSIONS)
@@ -73,7 +71,7 @@ module CartoDB
       end
 
       def run(available_quota_in_bytes = nil)
-        if @parsed_url =~ URL_RE
+        if @parsed_url =~ %r{://}
           if available_quota_in_bytes
             raise_if_over_storage_quota(requested_quota: content_length,
                                         available_quota: available_quota_in_bytes.to_i,

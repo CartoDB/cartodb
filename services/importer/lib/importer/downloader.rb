@@ -379,6 +379,7 @@ module CartoDB
       ].freeze
 
       def extensions_from_headers
+        return @extensions_from_headers if @extensions_from_headers
         return nil unless content_type
 
         extensions_from_headers_item = CONTENT_TYPES_MAPPING.find do |item|

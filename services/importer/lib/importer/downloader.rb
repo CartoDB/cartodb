@@ -106,11 +106,14 @@ module CartoDB
       private
 
       def parse_url(url)
-        supported_translator = supported_translator(url)
+        translator = supported_translator(url)
 
-        raw_url = if supported_translator
-                    @custom_filename = supported_translator.try(:rename_destination, url)
-                    supported_translator.translate(url)
+        raw_url = if translator
+                    if translator.respond_to?(:rename_destination)
+                      @custom_filename = translator.rename_destination(url)
+                    end
+
+                    translator.translate(url)
                   else
                     url
                   end

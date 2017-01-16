@@ -71,7 +71,7 @@ describe Downloader do
 
     it 'uses Content-Type header for files without extension' do
       stub_download(url: @file_url_without_extension, filepath: @file_filepath_without_extension, headers: { 'Content-Type' => 'text/csv' })
-      downloader = Downloader.new(@file_url_without_extension)
+      downloader = Downloader.new(@file_url_without_extension, {}, user_id: @user.id)
       downloader.run
       downloader.source_file.filename.should eq 'foowithoutextension.csv'
     end

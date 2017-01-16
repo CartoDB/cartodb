@@ -169,7 +169,9 @@ module CartoDB
 
       def download_and_store
         file = Tempfile.new(FILENAME_PREFIX, encoding: 'ascii-8bit')
-        binded_request(@translated_url, file, size_limit_in_bytes: @user.try(:max_import_file_size)).run
+
+        size_limit_in_bytes = @user.try(:max_import_file_size)
+        binded_request(@translated_url, file, size_limit_in_bytes: size_limit_in_bytes).run
 
         file_path = if @filename
                       new_file_path = File.join(Pathname.new(file.path).dirname, @filename)

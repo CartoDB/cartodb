@@ -8,7 +8,7 @@
 // Form
 $cForms-hover: #AAA;
 $selectedBlue: #1181FB;
-$redColor: #F15743;
+$criticalColor: #FF6C6C;
 
 // Size variables
 // ---------------
@@ -73,7 +73,7 @@ $iconMargin: 10px;
   vertical-align: middle;
 }
 
-.IconText--red {
-  color: $redColor;
+.IconText.is--critical {
+  color: $criticalColor;
 }
 

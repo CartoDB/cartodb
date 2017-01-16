@@ -121,6 +121,9 @@ module CartoDB
         @options = options
         @downloaded_bytes = 0
         @parsed_url = parse_url(url)
+
+        user_id = options[:user_id]
+        @user = Carto::User.find(user_id) if user_id
       end
 
       def run(available_quota_in_bytes = nil)

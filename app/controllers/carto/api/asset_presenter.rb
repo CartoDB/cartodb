@@ -8,7 +8,7 @@ class Carto::Api::AssetPresenter
   def to_hash
     {
       id: @asset.id,
-      public_url: @asset.public_url,
+      public_url: @asset.absolute_public_url,
       user_id: @asset.user_id,
       kind: @asset.kind
     }

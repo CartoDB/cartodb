@@ -124,26 +124,25 @@ module CartoDB
         return @headers if @headers
 
         response = http_client.head(@translated_url, typhoeus_options)
-
-        if response.success?
-          @headers = response.headers
-          @http_response_code = response.code
-
-          CartoDB::Importer2::Downloader.validate_url!(response.effective_url)
-
-          basename = @custom_filename ||
-                     filename_from_headers ||
-                     filename_from_url(url) ||
-                     SecureRandom.urlsafe_base64
-
-          @filename = name_with_extension(basename)
-          @etag = etag
-          @last_modified = last_modified
-        else
-          raise_error_for_response(response)
-        end
+        response.success? ? process_headers(response.headers) : raise_error_for_response(response)
 
         @headers
+      end
+
+      def process_headers(headers)
+        @headers = headers
+        @http_response_code = response.code
+
+        CartoDB::Importer2::Downloader.validate_url!(response.effective_url)
+
+        basename = @custom_filename ||
+                   filename_from_headers ||
+                   filename_from_url ||
+                   SecureRandom.urlsafe_base64
+
+        @filename = name_with_extension(basename)
+        @etag = etag
+        @last_modified = last_modified
       end
 
       MAX_REDIRECTS = 5
@@ -192,23 +191,7 @@ module CartoDB
         request = Typhoeus::Request.new(url, typhoeus_options)
 
         request.on_headers do |response|
-          if response.success?
-            @headers = response.headers
-            @http_response_code = response.code
-
-            CartoDB::Importer2::Downloader.validate_url!(response.effective_url || @translated_url)
-
-            basename = @custom_filename ||
-                       filename_from_headers ||
-                       filename_from_url(url) ||
-                       SecureRandom.urlsafe_base64
-
-            @filename = name_with_extension(basename)
-            @etag = etag
-            @last_modified = last_modified
-          else
-            raise_error_for_response(response)
-          end
+          response.success? ? process_headers(response.headers) : raise_error_for_response(response)
         end
 
         request.on_body do |chunk|
@@ -312,8 +295,8 @@ module CartoDB
         parsed_filename if parsed_filename.present?
       end
 
-      def filename_from_url(url)
-        url_name = self.class.url_filename_regex.match(url).to_s
+      def filename_from_url
+        url_name = self.class.url_filename_regex.match(@translated_url).to_s
 
         url_name unless url_name.empty?
       end

@@ -134,11 +134,7 @@ module CartoDB
                                         user_id: @user.try(:id))
           end
 
-          if modified?
-            download_and_store
-          else
-            @source_file = nil
-          end
+          modified? ? download_and_store : @source_file = nil
         else
           @source_file = SourceFile.new(url)
         end

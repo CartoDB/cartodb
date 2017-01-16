@@ -4,7 +4,7 @@ require 'ipaddr'
 
 module Carto
   module UrlValidator
-    DEFAULT_URL_VALID_PORTS = [22, 80, 443].freeze
+    DEFAULT_URL_VALID_PORTS = [21, 80, 443].freeze
 
     class InvalidUrlError < StandardError
       def initialize(url)

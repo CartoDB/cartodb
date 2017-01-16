@@ -22,24 +22,17 @@ describe Downloader do
     @fusion_tables_filepath = path_to('forest_change.csv')
     @ftp_url        = "ftp://ftp.nlm.nih.gov/nlmdata/sample/INDEX"
     @ftp_filepath   = path_to('INDEX.txt')
-    @repository_dir = '/tmp/importer'
-    @repository     = DataRepository::Filesystem::Local.new(@repository_dir)
-    @repository.create_base_directory
   end
 
   after(:each) do
     Typhoeus::Expectation.clear
   end
 
-  after do
-    FileUtils.rm_rf @repository_dir
-  end
-
   describe '#run' do
     it 'downloads a file from a url' do
       stub_download(url: @file_url, filepath: @file_filepath)
 
-      downloader = Downloader.new(@file_url, {}, {}, nil, @repository)
+      downloader = Downloader.new(@file_url, {}, {})
       downloader.run
       File.exists?(downloader.source_file.fullpath).should eq true
     end

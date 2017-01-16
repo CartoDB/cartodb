@@ -245,7 +245,7 @@ module CartoDB
 
         request.on_body do |chunk|
           if (@downloaded_bytes += chunk.bytesize) > size_limit_in_bytes
-            raise PartialDownloadError.new("download file too big (> #{MAX_DOWNLOAD_SIZE} bytes)")
+            raise FileTooBigError.new("download file too big (> #{MAX_DOWNLOAD_SIZE} bytes)")
           else
             file.write(chunk)
           end

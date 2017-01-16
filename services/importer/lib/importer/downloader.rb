@@ -355,27 +355,23 @@ module CartoDB
         CONTENT_TYPES_MAPPING.find { |item| item[:content_types].include?(content_type.downcase) }
       end
 
-      def name_with_extension(name)
+      def name_with_extension(filename)
         # No content-type
-        return name unless content_type.present?
+        return filename unless content_type.present?
 
         content_type_extensions = CONTENT_TYPES_MAPPING.find do |item|
           item[:content_types].include?(content_type.downcase)
         end
 
         # We don't have extension registered for that content-type
-        return name if content_type_extensions.empty?
+        return filename if content_type_extensions.empty?
 
-        pathname = Pathname.new(name)
+        pathname = Pathname.new(filename)
         file_extension = pathname.extname
-        name_without_extension = pathname.basename('.*')
-
-        # If there is no extension or file extension match in the content type extensions,
-        # add content type extension to the file name deleting the previous extension (if exist)
-        if file_extension.present? || !content_type_extensions.include?(file_extension)
-          return "#{name_without_extension}.#{content_type_extensions.first}"
+        if file_extension.present? || content_type_extensions.exclude?(file_extension)
+          "#{pathname.basename('.*')}.#{content_type_extensions.first}"
         else
-          return name
+          filename
         end
       end
     end

@@ -135,7 +135,7 @@ module CartoDB
 
           modified? ? download_and_store : @source_file = nil
         else
-          @source_file = SourceFile.new(url)
+          @source_file = SourceFile.new(@parsed_url)
         end
 
         self

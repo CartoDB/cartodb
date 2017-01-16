@@ -126,7 +126,7 @@ module CartoDB
         response = http_client.head(@translated_url, typhoeus_options)
 
         @http_response_code = response.code
-        CartoDB::Importer2::Downloader.validate_url!(response.effective_url)
+        CartoDB::Importer2::Downloader.validate_url!(response.effective_url || @translated_url)
         response.success? ? process_headers(response.headers) : raise_error_for_response(response)
 
         @headers
@@ -192,7 +192,8 @@ module CartoDB
 
         request.on_headers do |response|
           @http_response_code = response.code
-          CartoDB::Importer2::Downloader.validate_url!(response.effective_url)
+
+          CartoDB::Importer2::Downloader.validate_url!(response.effective_url || @translated_url)
 
           response.success? ? process_headers(response.headers) : raise_error_for_response(response)
         end

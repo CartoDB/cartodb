@@ -397,10 +397,10 @@ module CartoDB
         pathname = Pathname.new(filename)
         file_extension = pathname.extname
 
-        if file_extension.present? || extensions_from_headers.exclude?(file_extension)
-          "#{pathname.basename('.*')}#{extensions_from_headers.first}"
-        else
+        if file_extension.present? && extensions_from_headers.include?(file_extension)
           filename
+        else
+          "#{pathname.basename('.*')}#{extensions_from_headers.first}"
         end
       end
     end

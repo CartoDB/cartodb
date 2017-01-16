@@ -366,8 +366,9 @@ module CartoDB
         # We don't have extension registered for that content-type
         return name if content_type_extensions.empty?
 
-        file_extension = Pathname.new(name).extname
-        name_without_extension = File.basename(name, ".*")
+        pathname = Pathname.new(name)
+        file_extension = pathname.extname
+        name_without_extension = pathname.basename('.*')
 
         # If there is no extension or file extension match in the content type extensions,
         # add content type extension to the file name deleting the previous extension (if exist)

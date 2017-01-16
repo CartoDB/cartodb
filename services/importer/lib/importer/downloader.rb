@@ -381,8 +381,12 @@ module CartoDB
       def extensions_from_headers
         return nil unless content_type
 
-        @extensions_from_headers ||= CONTENT_TYPES_MAPPING.find do |item|
+        extensions_from_headers_item = CONTENT_TYPES_MAPPING.find do |item|
           item[:content_types].include?(content_type.downcase)
+        end
+
+        if extensions_from_headers_item
+          @extensions_from_headers ||= extensions_from_headers_item[:extensions]
         end
       end
 
@@ -393,7 +397,7 @@ module CartoDB
         file_extension = pathname.extname
 
         if file_extension.present? || extensions_from_headers.exclude?(file_extension)
-          "#{pathname.basename('.*')}.#{extensions_from_headers.first}"
+          "#{pathname.basename('.*')}#{extensions_from_headers.first}"
         else
           filename
         end

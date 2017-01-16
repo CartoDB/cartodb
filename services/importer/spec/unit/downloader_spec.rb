@@ -25,6 +25,10 @@ describe Downloader do
     @user = FactoryGirl.create(:carto_user)
   end
 
+  after do
+    @user.destroy
+  end
+
   after(:each) do
     Typhoeus::Expectation.clear
   end

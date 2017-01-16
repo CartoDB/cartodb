@@ -319,10 +319,9 @@ describe Downloader do
     end
 
     it 'discards url query params' do
-      headers = {}
-      downloader = Downloader.new(@file_url, {}, user_id: @user.id)
-      downloader.send(:name_from, headers, "#{@file_url}?foo=bar&woo=wee")
-        .should eq 'ne_110m_lakes.zip'
+      downloader = Downloader.new("#{@file_url}?foo=bar&woo=wee", {}, user_id: @user.id)
+      downloader.send(:process_headers, Hash.new)
+      downloader.instance_variable_get(:@filename).should eq 'ne_110m_lakes.zip'
     end
 
     it 'matches longer extension available from filename' do

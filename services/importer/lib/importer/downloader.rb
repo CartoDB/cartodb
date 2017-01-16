@@ -62,7 +62,7 @@ module CartoDB
         @http_options = http_options
         @options = options
         @downloaded_bytes = 0
-        @parsed_url = parse_url(url)
+        @translated_url = translate_url(url)
 
         user_id = options[:user_id]
         @user = Carto::User.find(user_id) if user_id
@@ -71,7 +71,7 @@ module CartoDB
       end
 
       def run(available_quota_in_bytes = nil)
-        if @parsed_url =~ %r{://}
+        if @translated_url =~ %r{://}
           if available_quota_in_bytes
             raise_if_over_storage_quota(requested_quota: content_length,
                                         available_quota: available_quota_in_bytes.to_i,
@@ -80,7 +80,7 @@ module CartoDB
 
           modified? ? download_and_store : @source_file = nil
         else
-          @source_file = SourceFile.new(@parsed_url)
+          @source_file = SourceFile.new(@translated_url)
         end
 
         self
@@ -104,7 +104,7 @@ module CartoDB
 
       URL_ESCAPED_CHARACTERS = 'áéíóúÁÉÍÓÚñÑçÇàèìòùÀÈÌÒÙ'.freeze
 
-      def parse_url(url)
+      def translate_url(url)
         translator = supported_translator(url)
 
         raw_url = if translator
@@ -123,7 +123,7 @@ module CartoDB
       def headers
         return @headers if @headers
 
-        response = http_client.head(@parsed_url, typhoeus_options)
+        response = http_client.head(@translated_url, typhoeus_options)
 
         if response.success?
           @headers = response.headers
@@ -171,7 +171,7 @@ module CartoDB
 
       def download_and_store
         file = Tempfile.new(FILENAME_PREFIX, encoding: 'ascii-8bit')
-        binded_request(@parsed_url, file, size_limit_in_bytes: @user.try(:max_import_file_size)).run
+        binded_request(@translated_url, file, size_limit_in_bytes: @user.try(:max_import_file_size)).run
 
         file_path = if @filename
                       new_file_path = File.join(Pathname.new(file.path).dirname, @filename)
@@ -196,7 +196,7 @@ module CartoDB
             @headers = response.headers
             @http_response_code = response.code
 
-            CartoDB::Importer2::Downloader.validate_url!(response.effective_url || @parsed_url)
+            CartoDB::Importer2::Downloader.validate_url!(response.effective_url || @translated_url)
 
             basename = @custom_filename ||
                        filename_from_headers ||
@@ -234,7 +234,7 @@ module CartoDB
         elsif response.headers['Error'] && response.headers['Error'] =~ /too many nodes/
           raise TooManyNodesError.new(response.headers['Error'])
         elsif response.return_code == :couldnt_resolve_host
-          raise CouldntResolveDownloadError.new("Couldn't resolve #{@parsed_url}")
+          raise CouldntResolveDownloadError.new("Couldn't resolve #{@translated_url}")
         elsif response.code == 401
           raise UnauthorizedDownloadError.new(response.body)
         elsif response.code == 404

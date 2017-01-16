@@ -26,18 +26,18 @@ TooltipManager.prototype.stop = function () {
   this._cartoDBLayerGroupView.off('featureOut', this._onFeatureOut, this);
 };
 
-TooltipManager.prototype._onFeatureOvered = function (e, latlng, pos, data, layerIndex) {
-  var layerModel = this._cartoDBLayerGroupView.model.getLayerAt(layerIndex);
+TooltipManager.prototype._onFeatureOvered = function (featureOverEvent) {
+  var layerModel = featureOverEvent.layer;
   if (!layerModel) {
-    throw new Error('featureOver event for layer ' + layerIndex + ' was captured but layerModel coudn\'t be retrieved');
+    throw new Error('featureOver event for layer ' + featureOverEvent.layerIndex + ' was captured but layerModel coudn\'t be retrieved');
   }
 
   if (this._mapModel.arePopupsEnabled() &&
     layerModel.tooltip.hasTemplate() &&
-    !this._isFeatureInfowindowOpen(data.cartodb_id)) {
+    !this._isFeatureInfowindowOpen(featureOverEvent.feature.cartodb_id)) {
     this._tooltipModel.setTooltipTemplate(layerModel.tooltip);
-    this._tooltipModel.setPosition(pos);
-    this._tooltipModel.updateContent(data);
+    this._tooltipModel.setPosition(featureOverEvent.position);
+    this._tooltipModel.updateContent(featureOverEvent.feature);
     this._tooltipModel.show();
   } else {
     this._tooltipModel.hide();

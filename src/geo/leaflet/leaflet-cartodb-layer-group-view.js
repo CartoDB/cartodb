@@ -104,17 +104,30 @@ var LeafletCartoDBLayerGroupView = L.TileLayer.extend({
   },
 
   featureOver: function (e, latlon, pixelPos, data, layer) {
-    // dont pass leaflet lat/lon
-    this.trigger('featureOver', e, [latlon.lat, latlon.lng], pixelPos, data, layer);
+    this.trigger('featureOver', {
+      layer: this.model.getLayerAt(layer),
+      layerIndex: layer,
+      latlng: [latlon.lat, latlon.lng],
+      position: { x: pixelPos.x, y: pixelPos.y },
+      feature: data
+    });
   },
 
   featureOut: function (e, layer) {
-    this.trigger('featureOut', e, layer);
+    this.trigger('featureOut', {
+      layer: this.model.getLayerAt(layer),
+      layerIndex: layer
+    });
   },
 
   featureClick: function (e, latlon, pixelPos, data, layer) {
-    // dont pass leaflet lat/lon
-    this.trigger('featureClick', e, [latlon.lat, latlon.lng], pixelPos, data, layer);
+    this.trigger('featureClick', {
+      layer: this.model.getLayerAt(layer),
+      layerIndex: layer,
+      latlng: [latlon.lat, latlon.lng],
+      position: { x: pixelPos.x, y: pixelPos.y },
+      feature: data
+    });
   },
 
   error: function (e) {

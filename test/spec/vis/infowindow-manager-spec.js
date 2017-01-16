@@ -23,6 +23,16 @@ var createCartoDBLayer = function (vis, infowindowAttrs) {
   }, { vis: vis });
 };
 
+var simulateFeatureClickEvent = function (layerView, data) {
+  layerView.trigger('featureClick', {
+    layer: layerView.model.getLayerAt(data.layerIndex),
+    layerIndex: data.layerIndex,
+    latlng: [100, 200],
+    position: { x: 20, y: 30 },
+    feature: data.data
+  });
+};
+
 describe('src/vis/infowindow-manager.js', function () {
   beforeEach(function () {
     this.map = new Map({}, {
@@ -81,8 +91,11 @@ describe('src/vis/infowindow-manager.js', function () {
     this.infowindowManager.start(this.layerView);
 
     this.map.layers.reset([ layer1, layer2 ]);
-    // Simulate the featureClick event for layer #0
-    this.layerView.trigger('featureClick', {}, [100, 200], undefined, { cartodb_id: 10 }, 0);
+
+    simulateFeatureClickEvent(this.layerView, {
+      layerIndex: 0,
+      data: { cartodb_id: 10 }
+    });
 
     // A request to fetch the attributes for the right cartodb_id and layerIndex has been triggered
     expect(this.layerView.model.fetchAttributes.calls.count()).toEqual(1);
@@ -121,8 +134,10 @@ describe('src/vis/infowindow-manager.js', function () {
       'currentFeatureId': 10
     });
 
-    // Simulate the featureClick event for layer #1
-    this.layerView.trigger('featureClick', {}, [100, 200], undefined, { cartodb_id: 100 }, 1);
+    simulateFeatureClickEvent(this.layerView, {
+      layerIndex: 1,
+      data: { cartodb_id: 100 }
+    });
 
     // A request to fetch the attributes for the right cartodb_id and layerIndex has been triggered
     expect(this.layerView.model.fetchAttributes.calls.count()).toEqual(1);
@@ -178,8 +193,10 @@ describe('src/vis/infowindow-manager.js', function () {
 
     this.map.layers.reset([ layer1 ]);
 
-    // Simulate the featureClick event for layer #0
-    this.layerView.trigger('featureClick', {}, [100, 200], undefined, { cartodb_id: 10 }, 0);
+    simulateFeatureClickEvent(this.layerView, {
+      layerIndex: 0,
+      data: { cartodb_id: 10 }
+    });
 
     expect(this.layerView.model.fetchAttributes).not.toHaveBeenCalled();
     expect(this.infowindowModel.get('visibility')).toEqual(false);
@@ -202,8 +219,10 @@ describe('src/vis/infowindow-manager.js', function () {
     this.map.layers.reset([ layer1 ]);
     this.map.disablePopups();
 
-    // Simulate the featureClick event for layer #0
-    this.layerView.trigger('featureClick', {}, [100, 200], undefined, { cartodb_id: 10 }, 0);
+    simulateFeatureClickEvent(this.layerView, {
+      layerIndex: 0,
+      data: { cartodb_id: 10 }
+    });
 
     expect(this.layerView.model.fetchAttributes).not.toHaveBeenCalled();
     expect(this.infowindowModel.get('visibility')).toEqual(false);
@@ -225,8 +244,10 @@ describe('src/vis/infowindow-manager.js', function () {
 
     this.map.layers.reset([ layer1 ]);
 
-    // Simulate the featureClick event for layer #0
-    this.layerView.trigger('featureClick', {}, [100, 200], undefined, { cartodb_id: 10 }, 0);
+    simulateFeatureClickEvent(this.layerView, {
+      layerIndex: 0,
+      data: { cartodb_id: 10 }
+    });
 
     expect(this.infowindowModel.get('visibility')).toEqual(true);
 
@@ -246,8 +267,10 @@ describe('src/vis/infowindow-manager.js', function () {
     // Fetch attributes does NOT suceed inmediatily
     this.layerView.model.fetchAttributes.and.callFake(function () {});
 
-    // Simulate the featureClick event for layer #0
-    this.layerView.trigger('featureClick', {}, [100, 200], undefined, { cartodb_id: 10 }, 0);
+    simulateFeatureClickEvent(this.layerView, {
+      layerIndex: 0,
+      data: { cartodb_id: 10 }
+    });
 
     // InfowindowModel has been updated
     expect(this.infowindowModel.get('content').fields).toEqual([
@@ -282,8 +305,10 @@ describe('src/vis/infowindow-manager.js', function () {
       callback();
     });
 
-    // Simulate the featureClick event for layer #0
-    this.layerView.trigger('featureClick', {}, [100, 200], undefined, { cartodb_id: 10 }, 0);
+    simulateFeatureClickEvent(this.layerView, {
+      layerIndex: 0,
+      data: { cartodb_id: 10 }
+    });
 
     // InfowindowModel has been updated
     expect(this.infowindowModel.get('content').fields).toEqual([
@@ -316,8 +341,10 @@ describe('src/vis/infowindow-manager.js', function () {
 
     this.map.layers.reset([ layer ]);
 
-    // Simulate the featureClick event
-    this.layerView.trigger('featureClick', {}, [100, 200], undefined, { cartodb_id: 10 }, 0);
+    simulateFeatureClickEvent(this.layerView, {
+      layerIndex: 0,
+      data: { cartodb_id: 10 }
+    });
 
     expect(this.infowindowModel.getCurrentFeatureId()).toEqual(10);
   });
@@ -342,8 +369,10 @@ describe('src/vis/infowindow-manager.js', function () {
 
     this.tooltipModel.set('visible', true);
 
-    // Simulate the featureClick event
-    this.layerView.trigger('featureClick', {}, [100, 200], undefined, { cartodb_id: 10 }, 0);
+    simulateFeatureClickEvent(this.layerView, {
+      layerIndex: 0,
+      data: { cartodb_id: 10 }
+    });
 
     expect(this.tooltipModel.isVisible()).toBeFalsy();
   });
@@ -355,8 +384,10 @@ describe('src/vis/infowindow-manager.js', function () {
 
     this.map.layers.reset([ layer ]);
 
-    // Simulate the featureClick event
-    this.layerView.trigger('featureClick', {}, [100, 200], undefined, { cartodb_id: 10 }, 0);
+    simulateFeatureClickEvent(this.layerView, {
+      layerIndex: 0,
+      data: { cartodb_id: 10 }
+    });
 
     // Infowindow is hidden
     this.infowindowModel.set('visibility', false);
@@ -371,8 +402,10 @@ describe('src/vis/infowindow-manager.js', function () {
 
     this.map.layers.reset([ layer ]);
 
-    // Simulate the featureClick event
-    this.layerView.trigger('featureClick', {}, [100, 200], undefined, { cartodb_id: 10 }, 0);
+    simulateFeatureClickEvent(this.layerView, {
+      layerIndex: 0,
+      data: { cartodb_id: 10 }
+    });
     this.vis.reload.calls.reset();
 
     this.cartoDBLayerGroup.fetchAttributes.and.callFake(function (layerIndex, featureId, callback) {
@@ -433,8 +466,10 @@ describe('src/vis/infowindow-manager.js', function () {
 
     this.map.layers.reset([ layer1, layer2 ]);
 
-    // Simulate the featureClick event for layer #0
-    this.layerView.trigger('featureClick', {}, [100, 200], undefined, { cartodb_id: 10 }, 0);
+    simulateFeatureClickEvent(this.layerView, {
+      layerIndex: 0,
+      data: { cartodb_id: 10 }
+    });
 
     expect(this.infowindowModel.get('visibility')).toBe(true);
 
@@ -465,8 +500,10 @@ describe('src/vis/infowindow-manager.js', function () {
 
     this.map.layers.reset([ layer1, layer2 ]);
 
-    // Simulate the featureClick event for layer #0
-    this.layerView.trigger('featureClick', {}, [100, 200], undefined, { cartodb_id: 10 }, 0);
+    simulateFeatureClickEvent(this.layerView, {
+      layerIndex: 0,
+      data: { cartodb_id: 10 }
+    });
 
     expect(this.infowindowModel.get('visibility')).toBe(true);
 

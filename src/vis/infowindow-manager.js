@@ -36,13 +36,13 @@ InfowindowManager.prototype.stop = function () {
   delete this._cartoDBLayerModel;
 };
 
-InfowindowManager.prototype._onFeatureClicked = function (e, latlng, pos, data, layerIndex) {
+InfowindowManager.prototype._onFeatureClicked = function (featureClickEvent) {
   this._unbindLayerModel();
 
-  this._cartoDBLayerModel = this._cartoDBLayerGroupView.model.getLayerAt(layerIndex);
+  this._cartoDBLayerModel = featureClickEvent.layer;
 
   if (!this._cartoDBLayerModel) {
-    throw new Error('featureClick event for layer ' + layerIndex + ' was captured but layerModel coudn\'t be retrieved');
+    throw new Error('featureClick event for layer ' + featureClickEvent.layerIndex + ' was captured but layerModel coudn\'t be retrieved');
   }
   if (!this._mapModel.arePopupsEnabled() || !this._cartoDBLayerModel.infowindow.hasTemplate()) {
     return;
@@ -52,13 +52,13 @@ InfowindowManager.prototype._onFeatureClicked = function (e, latlng, pos, data, 
 
   this._updateInfowindowModel();
 
-  this._infowindowModel.setLatLng(latlng);
+  this._infowindowModel.setLatLng(featureClickEvent.latlng);
   this._infowindowModel.show();
-  this._infowindowModel.setCurrentFeatureId(data.cartodb_id);
+  this._infowindowModel.setCurrentFeatureId(featureClickEvent.feature.cartodb_id);
 
   this._tooltipModel.hide();
 
-  this._fetchAttributes(data.cartodb_id);
+  this._fetchAttributes(featureClickEvent.feature.cartodb_id);
 
   var clearFilter = function (infowindowModel) {
     if (!infowindowModel.isVisible()) {
@@ -91,16 +91,16 @@ InfowindowManager.prototype._fetchAttributes = function (featureId) {
 };
 
 InfowindowManager.prototype._bindLayerModel = function () {
+  this._cartoDBLayerModel.on('change:visible', this._onLayerVisibilityChanged, this);
   this._cartoDBLayerModel.infowindow.on('change', this._onInfowindowTemplateChanged, this);
   this._cartoDBLayerModel.infowindow.fields.on('reset', this._onInfowindowTemplateFieldsReset, this);
-  this._cartoDBLayerModel.on('change:visible', this._onLayerVisibilityChanged, this);
 };
 
 InfowindowManager.prototype._unbindLayerModel = function () {
   if (this._cartoDBLayerModel) {
+    this._cartoDBLayerModel.off('change:visible', this._onLayerVisibilityChanged, this);
     this._cartoDBLayerModel.infowindow.off('change', this._onInfowindowTemplateChanged, this);
     this._cartoDBLayerModel.infowindow.fields.off('reset', this._onInfowindowTemplateFieldsReset, this);
-    this._cartoDBLayerModel.off('change:visible', this._onLayerVisibilityChanged, this);
   }
 };
 

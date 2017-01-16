@@ -8,6 +8,16 @@ var TooltipModel = require('../../../src/geo/ui/tooltip-model');
 var InfowindowModel = require('../../../src/geo/ui/infowindow-model');
 var TooltipManager = require('../../../src/vis/tooltip-manager');
 
+var simulateFeatureOverEvent = function (layerView, data) {
+  layerView.trigger('featureOver', {
+    layer: layerView.model.getLayerAt(data.layerIndex),
+    layerIndex: data.layerIndex,
+    latlng: [100, 200],
+    position: data.position || { x: 20, y: 30 },
+    feature: data.data
+  });
+};
+
 describe('src/vis/tooltip-manager.js', function () {
   beforeEach(function () {
     this.map = new Map(null, { layersFactory: {} });
@@ -61,8 +71,11 @@ describe('src/vis/tooltip-manager.js', function () {
       layersCollection: new LayersCollection([ layer1, layer2 ])
     });
 
-    // Simulate the featureOver event on layer #0
-    this.layerView.trigger('featureOver', {}, [0, 0], { x: 100, y: 200 }, { cartodb_id: 10, name: 'CARTO' }, 0);
+    simulateFeatureOverEvent(this.layerView, {
+      layerIndex: 0,
+      position: { x: 100, y: 200 },
+      data: { cartodb_id: 10, name: 'CARTO' }
+    });
 
     expect(this.tooltipModel.get('position')).toEqual({ x: 100, y: 200 });
     expect(this.tooltipModel.get('fields')).toEqual([{
@@ -74,8 +87,11 @@ describe('src/vis/tooltip-manager.js', function () {
     expect(this.tooltipModel.get('alternative_names')).toEqual('alternative_names1');
     expect(this.tooltipModel.isVisible()).toBeTruthy();
 
-    // Simulate the featureOver event on layer #1
-    this.layerView.trigger('featureOver', {}, [0, 0], { x: 200, y: 300 }, { cartodb_id: 10 }, 1);
+    simulateFeatureOverEvent(this.layerView, {
+      layerIndex: 1,
+      position: { x: 200, y: 300 },
+      data: { cartodb_id: 10 }
+    });
 
     expect(this.tooltipModel.get('position')).toEqual({ x: 200, y: 300 });
     expect(this.tooltipModel.get('fields')).toEqual([{
@@ -110,8 +126,10 @@ describe('src/vis/tooltip-manager.js', function () {
       layersCollection: new LayersCollection([ layer1 ])
     });
 
-    // Simulate the featureOver event on layer #0
-    this.layerView.trigger('featureOver', {}, [0, 0], { x: 100, y: 200 }, { cartodb_id: 10, name: 'CARTO' }, 0);
+    simulateFeatureOverEvent(this.layerView, {
+      layerIndex: 0,
+      data: { cartodb_id: 10, name: 'CARTO' }
+    });
 
     expect(this.tooltipModel.isVisible()).toBeTruthy();
 
@@ -121,8 +139,10 @@ describe('src/vis/tooltip-manager.js', function () {
 
     this.infowindowModel.setCurrentFeatureId(10);
 
-    // Simulate the featureOver event on layer #0
-    this.layerView.trigger('featureOver', {}, [0, 0], { x: 100, y: 200 }, { cartodb_id: 10, name: 'CARTO' }, 0);
+    simulateFeatureOverEvent(this.layerView, {
+      layerIndex: 0,
+      data: { cartodb_id: 10, name: 'CARTO' }
+    });
 
     expect(this.tooltipModel.isVisible()).toBeFalsy();
   });
@@ -149,8 +169,10 @@ describe('src/vis/tooltip-manager.js', function () {
       layersCollection: new LayersCollection([ layer1 ])
     });
 
-    // Simulate the featureOver event on layer #0
-    this.layerView.trigger('featureOver', {}, [0, 0], { x: 100, y: 200 }, { cartodb_id: 10, name: 'CARTO' }, 0);
+    simulateFeatureOverEvent(this.layerView, {
+      layerIndex: 0,
+      data: { cartodb_id: 10, name: 'CARTO' }
+    });
 
     expect(this.tooltipModel.isVisible()).toBeTruthy();
 
@@ -182,8 +204,10 @@ describe('src/vis/tooltip-manager.js', function () {
       layersCollection: new LayersCollection([ layer1 ])
     });
 
-    // Simulate the featureOver event on layer #0
-    this.layerView.trigger('featureOver', {}, [0, 0], { x: 100, y: 200 }, { cartodb_id: 10 }, 0);
+    simulateFeatureOverEvent(this.layerView, {
+      layerIndex: 0,
+      data: { cartodb_id: 10, name: 'CARTO' }
+    });
     expect(this.tooltipModel.isVisible()).toBeFalsy();
   });
 
@@ -209,8 +233,10 @@ describe('src/vis/tooltip-manager.js', function () {
       layersCollection: new LayersCollection([ layer1 ])
     });
 
-    // Simulate the featureOver event on layer #0
-    this.layerView.trigger('featureOver', {}, [0, 0], { x: 100, y: 200 }, { cartodb_id: 10 }, 0);
+    simulateFeatureOverEvent(this.layerView, {
+      layerIndex: 0,
+      data: { cartodb_id: 10, name: 'CARTO' }
+    });
 
     expect(this.tooltipModel.isVisible()).toBeFalsy();
   });
@@ -238,8 +264,10 @@ describe('src/vis/tooltip-manager.js', function () {
       layersCollection: new LayersCollection([ layer1, layer2 ])
     });
 
-    // Simulate the featureOver event on layer #0
-    this.layerView.trigger('featureOver', {}, [0, 0], { x: 100, y: 200 }, { cartodb_id: 10 }, 0);
+    simulateFeatureOverEvent(this.layerView, {
+      layerIndex: 0,
+      data: { cartodb_id: 10, name: 'CARTO' }
+    });
 
     expect(this.tooltipModel.isVisible()).toBeFalsy();
   });

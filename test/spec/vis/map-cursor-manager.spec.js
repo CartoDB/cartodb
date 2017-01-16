@@ -1,4 +1,3 @@
-var _ = require('underscore');
 var Backbone = require('backbone');
 var MapCursorManager = require('../../../src/vis/map-cursor-manager');
 var CartoDBLayer = require('../../../src/geo/map/cartodb-layer');
@@ -13,14 +12,14 @@ describe('src/vis/map-cursor-manager.js', function () {
   beforeEach(function () {
     this.mapView = jasmine.createSpyObj('mapView', ['setCursor']);
     this.mapModel = jasmine.createSpyObj('map', ['arePopupsEnabled', 'isFeatureInteractivityEnabled']);
-    this.featureEvents = _.extend({}, Backbone.Events);
     this.layerModel = createLayerModel();
-
+    this.cartoDBLayerGroupView = new Backbone.View();
     this.mapCursorManager = new MapCursorManager({
       mapView: this.mapView,
-      mapModel: this.mapModel,
-      featureEvents: this.featureEvents
+      mapModel: this.mapModel
     });
+
+    this.mapCursorManager.start(this.cartoDBLayerGroupView);
   });
 
   describe('when a feature is overed', function () {
@@ -31,7 +30,7 @@ describe('src/vis/map-cursor-manager.js', function () {
     });
 
     it('should NOT change the cursor to pointer if layer is not clickable', function () {
-      this.featureEvents.trigger('featureOver', {
+      this.cartoDBLayerGroupView.trigger('featureOver', {
         layer: this.layerModel
       });
 
@@ -40,7 +39,7 @@ describe('src/vis/map-cursor-manager.js', function () {
 
     it('should change the cursor to pointer if feature interactivity is enabled', function () {
       this.mapModel.isFeatureInteractivityEnabled.and.returnValue(true);
-      this.featureEvents.trigger('featureOver', {
+      this.cartoDBLayerGroupView.trigger('featureOver', {
         layer: this.layerModel
       });
 
@@ -53,7 +52,7 @@ describe('src/vis/map-cursor-manager.js', function () {
       });
 
       it('should NOT change the cursor to pointer if layer has NO infowindow enabled', function () {
-        this.featureEvents.trigger('featureOver', {
+        this.cartoDBLayerGroupView.trigger('featureOver', {
           layer: this.layerModel
         });
 
@@ -62,7 +61,7 @@ describe('src/vis/map-cursor-manager.js', function () {
 
       it('should change the cursor to pointer if layer infowindows enabled', function () {
         this.layerModel.isInfowindowEnabled.and.returnValue(true);
-        this.featureEvents.trigger('featureOver', {
+        this.cartoDBLayerGroupView.trigger('featureOver', {
           layer: this.layerModel
         });
 
@@ -75,7 +74,7 @@ describe('src/vis/map-cursor-manager.js', function () {
     beforeEach(function () {
       this.mapModel.isFeatureInteractivityEnabled.and.returnValue(true);
 
-      this.featureEvents.trigger('featureOver', {
+      this.cartoDBLayerGroupView.trigger('featureOver', {
         layer: this.layerModel
       });
 
@@ -84,7 +83,7 @@ describe('src/vis/map-cursor-manager.js', function () {
     });
 
     it('should change the cursor to auto if no other layer is being overed', function () {
-      this.featureEvents.trigger('featureOut', {
+      this.cartoDBLayerGroupView.trigger('featureOut', {
         layer: this.layerModel
       });
 
@@ -95,7 +94,7 @@ describe('src/vis/map-cursor-manager.js', function () {
       var anotherLayerModel = createLayerModel();
 
       // Another layer is being overed
-      this.featureEvents.trigger('featureOver', {
+      this.cartoDBLayerGroupView.trigger('featureOver', {
         layer: anotherLayerModel
       });
 
@@ -103,7 +102,7 @@ describe('src/vis/map-cursor-manager.js', function () {
       expect(this.mapView.setCursor.calls.reset());
 
       // First layer is not overed anymore
-      this.featureEvents.trigger('featureOut', {
+      this.cartoDBLayerGroupView.trigger('featureOut', {
         layer: this.layerModel
       });
 
@@ -114,7 +113,7 @@ describe('src/vis/map-cursor-manager.js', function () {
   describe('when a feature was overed and layer visibility changes', function () {
     beforeEach(function () {
       this.mapModel.isFeatureInteractivityEnabled.and.returnValue(true);
-      this.featureEvents.trigger('featureOver', {
+      this.cartoDBLayerGroupView.trigger('featureOver', {
         layer: this.layerModel
       });
 
@@ -133,7 +132,7 @@ describe('src/vis/map-cursor-manager.js', function () {
       var anotherLayerModel = createLayerModel();
 
       // Another layer is being overed
-      this.featureEvents.trigger('featureOver', {
+      this.cartoDBLayerGroupView.trigger('featureOver', {
         layer: anotherLayerModel
       });
 

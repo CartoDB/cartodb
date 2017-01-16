@@ -141,7 +141,7 @@ module.exports = function (createLayerGroupView, expectTileURLTemplateToMatch) {
       });
     });
 
-    describe('event binding', function () {
+    describe('event firing', function () {
       beforeEach(function () {
         this.nativeMap = fakeWax.map.calls.argsFor(0)[0];
       });
@@ -159,7 +159,13 @@ module.exports = function (createLayerGroupView, expectTileURLTemplateToMatch) {
           data: { cartodb_id: 10 }
         });
 
-        expect(callback).toHaveBeenCalled();
+        expect(callback.calls.argsFor(0)[0]).toEqual({
+          layer: this.cartoDBLayer1,
+          layerIndex: 0,
+          latlng: [jasmine.any(Number), jasmine.any(Number)],
+          position: { x: jasmine.any(Number), y: jasmine.any(Number) },
+          feature: { cartodb_id: 10 }
+        });
       });
 
       _.each([
@@ -184,7 +190,13 @@ module.exports = function (createLayerGroupView, expectTileURLTemplateToMatch) {
             data: { cartodb_id: 10 }
           });
 
-          expect(callback).toHaveBeenCalled();
+          expect(callback.calls.argsFor(0)[0]).toEqual({
+            layer: this.cartoDBLayer1,
+            layerIndex: 0,
+            latlng: [jasmine.any(Number), jasmine.any(Number)],
+            position: { x: jasmine.any(Number), y: jasmine.any(Number) },
+            feature: { cartodb_id: 10 }
+          });
         });
       });
 
@@ -196,7 +208,10 @@ module.exports = function (createLayerGroupView, expectTileURLTemplateToMatch) {
           e: {}
         });
 
-        expect(callback).toHaveBeenCalled();
+        expect(callback.calls.argsFor(0)[0]).toEqual({
+          layer: this.cartoDBLayer1,
+          layerIndex: 0
+        });
       });
     });
 

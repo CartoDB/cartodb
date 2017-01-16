@@ -10,7 +10,6 @@ var TooltipModel = require('./ui/tooltip-model');
 var TooltipView = require('./ui/tooltip-view');
 var TooltipManager = require('../vis/tooltip-manager');
 
-var FeatureEvents = require('../vis/feature-events');
 var MapCursorManager = require('../vis/map-cursor-manager');
 var MapEventsManager = require('../vis/map-events-manager');
 var GeometryManagementController = require('../vis/geometry-management-controller');
@@ -52,6 +51,46 @@ var MapView = View.extend({
 
     this.map.geometries.on('add', this._onGeometryAdded, this);
     this.add_related_model(this.map.geometries);
+
+    // Infowindows && Tooltips
+    var infowindowModel = new InfowindowModel();
+    var tooltipModel = new TooltipModel({
+      offset: [4, 10]
+    });
+    this._infowindowView = new InfowindowView({
+      model: infowindowModel,
+      mapView: this
+    });
+    this._tooltipView = new TooltipView({
+      model: tooltipModel,
+      mapView: this
+    });
+
+    this._infowindowManager = new InfowindowManager({
+      visModel: this._visModel,
+      mapModel: this._mapModel,
+      tooltipModel: tooltipModel,
+      infowindowModel: infowindowModel
+    }, {
+      showEmptyFields: this._visModel.get('showEmptyInfowindowFields')
+    });
+    this._tooltipManager = new TooltipManager({
+      visModel: this._visModel,
+      mapModel: this._mapModel,
+      mapView: this,
+      tooltipModel: tooltipModel,
+      infowindowModel: infowindowModel
+    });
+
+    this._geometryManagementController = new GeometryManagementController(this, this._mapModel);
+    this._mapCursorManager = new MapCursorManager({
+      mapView: this,
+      mapModel: this._mapModel
+    });
+
+    this._mapEventsManager = new MapEventsManager({
+      mapModel: this._mapModel
+    });
   },
 
   clean: function () {
@@ -61,13 +100,17 @@ var MapView = View.extend({
       delete this._layerViews[layer];
     }
 
-    this._infowindowView && this._infowindowView.clean();
+    delete this._cartoDBLayerGroupView;
+
+    this._infowindowView.clean();
     this._infowindowManager.stop();
 
-    this._tooltipView && this._tooltipView.clean();
+    this._tooltipView.clean();
     this._tooltipManager.stop();
 
-    delete this._cartoDBLayerGroupView;
+    this._geometryManagementController.stop();
+    this._mapCursorManager.stop();
+    this._mapEventsManager.stop();
 
     View.prototype.clean.call(this);
   },
@@ -178,63 +221,18 @@ var MapView = View.extend({
     this._cartoDBLayerGroupView = layerView;
     this._layerViews[layerModel.cid] = layerView;
 
-    new GeometryManagementController(this, this._mapModel); // eslint-disable-line
-
-    var featureEvents = new FeatureEvents({
-      mapView: this,
-      layersCollection: this._mapModel.layers
-    });
-
-    new MapCursorManager({ // eslint-disable-line
-      mapView: this,
-      mapModel: this._mapModel,
-      featureEvents: featureEvents
-    });
-
-    new MapEventsManager({ // eslint-disable-line
-      mapModel: this._mapModel,
-      featureEvents: featureEvents
-    });
-
-    // Infowindows && Tooltips
-    var infowindowModel = new InfowindowModel();
-    var tooltipModel = new TooltipModel({
-      offset: [4, 10]
-    });
-
-    this._infowindowView = new InfowindowView({
-      model: infowindowModel,
-      mapView: this
-    });
+    this._geometryManagementController.start();
+    this._mapCursorManager.start(layerView);
+    this._mapEventsManager.start(layerView);
 
     this._infowindowView.render();
     this.$el.append(this._infowindowView.el);
 
-    this._infowindowManager = new InfowindowManager({ // eslint-disable-line
-      visModel: this._visModel,
-      mapModel: this._mapModel,
-      tooltipModel: tooltipModel,
-      infowindowModel: infowindowModel
-    }, {
-      showEmptyFields: this._visModel.get('showEmptyInfowindowFields')
-    });
     this._infowindowManager.start(layerView);
-
-    this._tooltipView = new TooltipView({
-      model: tooltipModel,
-      mapView: this
-    });
 
     this._tooltipView.render();
     this.$el.append(this._tooltipView.el);
 
-    this._tooltipManager = new TooltipManager({ // eslint-disable-line
-      visModel: this._visModel,
-      mapModel: this._mapModel,
-      mapView: this,
-      tooltipModel: tooltipModel,
-      infowindowModel: infowindowModel
-    });
     this._tooltipManager.start(layerView);
 
     return layerView;

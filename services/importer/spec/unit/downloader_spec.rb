@@ -37,7 +37,7 @@ describe Downloader do
     it 'downloads a file from a url' do
       stub_download(url: @file_url, filepath: @file_filepath)
 
-      downloader = Downloader.new(@user.id, @file_url, {}, Hash.new)
+      downloader = Downloader.new(@user.id, @file_url)
       downloader.run
       File.exists?(downloader.source_file.fullpath).should eq true
     end
@@ -45,7 +45,7 @@ describe Downloader do
     it 'extracts the source_file name from the URL' do
       stub_download(url: @file_url, filepath: @file_filepath, content_disposition: false)
 
-      downloader = Downloader.new(@user.id, @file_url, {}, Hash.new)
+      downloader = Downloader.new(@user.id, @file_url)
       downloader.run
       downloader.source_file.name.should eq 'ne_110m_lakes'
     end
@@ -55,7 +55,7 @@ describe Downloader do
             '?AWSAccessKeyId=XXXXXXXXXXXXXXXXXXXX&Expires=1461934764&Signature=XXXXXXXXXXXXXXXXXXXXXXXXXXM%3D'
       stub_download(url: url, filepath: @file_filepath, content_disposition: false)
 
-      downloader = Downloader.new(@user.id, url, {}, Hash.new)
+      downloader = Downloader.new(@user.id, url)
       downloader.run
       downloader.source_file.name.should eq 'ne_110m_lakes'
     end
@@ -64,14 +64,14 @@ describe Downloader do
       url = "http://s3.amazonaws.com/com.cartodb.imports.staging/XXXXXXXXXXXXXXXXXXXX/ne_110m_lakes.csv"
       stub_download(url: url, filepath: @file_filepath, content_disposition: false)
 
-      downloader = Downloader.new(@user.id, url, {}, Hash.new)
+      downloader = Downloader.new(@user.id, url)
       downloader.run
       downloader.source_file.name.should eq 'ne_110m_lakes'
     end
 
     it 'uses Content-Type header for files without extension' do
       stub_download(url: @file_url_without_extension, filepath: @file_filepath_without_extension, headers: { 'Content-Type' => 'text/csv' })
-      downloader = Downloader.new(@user.id, @file_url_without_extension, {}, Hash.new)
+      downloader = Downloader.new(@user.id, @file_url_without_extension)
       downloader.run
       downloader.source_file.filename.should eq 'foowithoutextension.csv'
     end
@@ -82,7 +82,7 @@ describe Downloader do
           filepath: @file_filepath_without_extension,
           headers: { 'Content-Type' => 'application/octet-stream' }
       )
-      downloader = Downloader.new(@user.id, @file_url_without_extension, {}, Hash.new)
+      downloader = Downloader.new(@user.id, @file_url_without_extension)
       downloader.run
       downloader.source_file.filename.should eq 'foowithoutextension'
     end
@@ -95,14 +95,14 @@ describe Downloader do
           filepath: csv_filepath_with_extension,
           headers: { 'Content-Type' => 'application/octet-stream' }
       )
-      downloader = Downloader.new(@user.id, url_csv_with_extension, {}, Hash.new)
+      downloader = Downloader.new(@user.id, url_csv_with_extension)
       downloader.run
       downloader.source_file.filename.should eq 'ngos.csv'
     end
 
     it 'ignores extra type parameters in Content-Type header' do
       stub_download(url: @file_url_without_extension, filepath: @file_filepath_without_extension, headers: { 'Content-Type' => 'vnd.ms-excel;charset=UTF-8' })
-      downloader = Downloader.new(@user.id, @file_url_without_extension, {}, Hash.new)
+      downloader = Downloader.new(@user.id, @file_url_without_extension)
       downloader.run
       downloader.send(:content_type).should eq 'vnd.ms-excel'
     end
@@ -113,7 +113,7 @@ describe Downloader do
           filepath: @file_filepath_with_wrong_extension,
           headers: { 'Content-Type' => 'text/csv' }
       )
-      downloader = Downloader.new(@user.id, @file_url_with_wrong_extension, {}, Hash.new)
+      downloader = Downloader.new(@user.id, @file_url_with_wrong_extension)
       downloader.run
       downloader.source_file.filename.should eq 'csvwithwrongextension.csv'
     end
@@ -126,7 +126,7 @@ describe Downloader do
           filepath: tgz_filepath_without_extension,
           headers: { 'Content-Type' => 'text/csv' }
       )
-      downloader = Downloader.new(@user.id, url_tgz_without_extension, {}, Hash.new)
+      downloader = Downloader.new(@user.id, url_tgz_without_extension)
       downloader.run
       downloader.source_file.filename.should eq 'csvwithwrongextension.csv'
     end
@@ -139,7 +139,7 @@ describe Downloader do
           filepath: tgz_filepath_without_extension,
           headers: { 'Content-Type' => 'application/x-gzip' }
       )
-      downloader = Downloader.new(@user.id, url_tgz_without_extension, {}, Hash.new)
+      downloader = Downloader.new(@user.id, url_tgz_without_extension)
       downloader.run
       downloader.source_file.filename.should eq 'ok_data.csv.gz'
     end
@@ -152,7 +152,7 @@ describe Downloader do
           filepath: filepath_geojson,
           headers: { 'Content-Type' => 'text/plain' }
       )
-      downloader = Downloader.new(@user.id, url_geojson, {}, Hash.new)
+      downloader = Downloader.new(@user.id, url_geojson)
       downloader.run
       downloader.source_file.filename.should eq 'tm_world_borders_simpl_0_8.geojson'
     end
@@ -165,7 +165,7 @@ describe Downloader do
           filepath: filepath_kml,
           headers: { 'Content-Type' => 'text/plain' }
       )
-      downloader = Downloader.new(@user.id, url_kml, {}, Hash.new)
+      downloader = Downloader.new(@user.id, url_kml)
       downloader.run
       downloader.source_file.filename.should eq 'abandoned.kml'
     end
@@ -175,7 +175,7 @@ describe Downloader do
         url: @fusion_tables_url,
         filepath: @fusion_tables_filepath
       )
-      downloader = Downloader.new(@user.id, @fusion_tables_url, {}, Hash.new)
+      downloader = Downloader.new(@user.id, @fusion_tables_url)
 
       downloader.run
       downloader.source_file.name.should eq 'forest_change'
@@ -184,7 +184,7 @@ describe Downloader do
     it 'supports FTP urls' do
       stub_download(url: @ftp_url, filepath: @ftp_filepath)
 
-      downloader = Downloader.new(@user.id, @ftp_url, {}, Hash.new)
+      downloader = Downloader.new(@user.id, @ftp_url)
       downloader.run
       downloader.source_file.name.should eq 'INDEX'
     end
@@ -197,7 +197,7 @@ describe Downloader do
         { url: 'spec/fixtures/many_characters_áÁñÑçÇàÀ.csv', name: 'many_characters_áÁñÑçÇàÀ' }
       ].each do |url_and_name|
         serve_file url_and_name[:url] do |url|
-          downloader = Downloader.new(@user.id, url, {}, Hash.new)
+          downloader = Downloader.new(@user.id, url)
           downloader.run
           downloader.source_file.name.should eq url_and_name[:name]
         end
@@ -207,7 +207,7 @@ describe Downloader do
     it 'does not break urls with % on it' do
       # INFO: notice this URL is fake
       url_with_percentage = 'https://s3.amazonaws.com/com.cartodb.imports.staging/03b0c2199fc814ceeb75/a_file.zip?AWSAccessKeyId=AKIAIUI5FFFJIRAMEEMA&Expires=1433349484&Signature=t6m%2Bji%2BlKsnrOVqPsptXajPiozw%3D'
-      downloader = Downloader.new(@user.id, url_with_percentage, {}, Hash.new)
+      downloader = Downloader.new(@user.id, url_with_percentage)
       downloader.instance_variable_get("@translated_url").should == url_with_percentage
     end
 
@@ -219,7 +219,7 @@ describe Downloader do
         headers:  { "ETag" => etag }
       )
 
-      downloader = Downloader.new(@user.id, @file_url, { etag: etag }, Hash.new)
+      downloader = Downloader.new(@user.id, @file_url, { etag: etag })
       downloader.run
       downloader.modified?.should be_false
     end
@@ -231,7 +231,7 @@ describe Downloader do
         headers:  {}
       )
 
-      downloader = Downloader.new(@user.id, @file_url, {}, Hash.new)
+      downloader = Downloader.new(@user.id, @file_url)
       lambda { downloader.run }.should raise_error DownloadError
     end
 
@@ -245,19 +245,19 @@ describe Downloader do
       Typhoeus::Response.any_instance.stubs(:mock).returns(false)
       Typhoeus::Response.any_instance.stubs(:return_code).returns(:partial_file)
 
-      downloader = Downloader.new(@user.id, @file_url, {}, Hash.new)
+      downloader = Downloader.new(@user.id, @file_url)
       lambda { downloader.run }.should raise_error PartialDownloadError
     end
   end
 
   describe '#source_file' do
     it 'returns nil if no download initiated' do
-      downloader = Downloader.new(@user.id, @file_url, {}, Hash.new)
+      downloader = Downloader.new(@user.id, @file_url)
       downloader.source_file.should_not be
     end
 
     it 'returns a source file based on the path if passed a file path' do
-      downloader = Downloader.new(@user.id, '/foo/bar', {}, Hash.new)
+      downloader = Downloader.new(@user.id, '/foo/bar')
       downloader.run
       downloader.source_file.fullpath.should eq '/foo/bar'
     end
@@ -265,7 +265,7 @@ describe Downloader do
     it 'returns a source_file name' do
       CartoDB::Importer2::Downloader.any_instance.stubs(:validate_url!).returns(true)
       serve_file 'spec/support/data/ne_110m_lakes.zip' do |url|
-        downloader = Downloader.new(@user.id, url, {}, Hash.new)
+        downloader = Downloader.new(@user.id, url)
         downloader.run
         downloader.source_file.name.should eq 'ne_110m_lakes'
       end
@@ -274,7 +274,7 @@ describe Downloader do
     it 'returns a local filepath' do
       CartoDB::Importer2::Downloader.any_instance.stubs(:validate_url!).returns(true)
       serve_file 'spec/support/data/ne_110m_lakes.zip' do |url|
-        downloader = Downloader.new(@user.id, url, {}, Hash.new)
+        downloader = Downloader.new(@user.id, url)
         downloader.run
         downloader.source_file.fullpath.should match /#{@file_url.split('/').last}/
       end

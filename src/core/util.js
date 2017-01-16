@@ -127,4 +127,11 @@ util.isMobileDevice = function () {
   return /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 };
 
+/**
+ * Returns true if the string ends with provided suffix
+ */
+util.endsWith = function (str, suffix) {
+  return str.indexOf(suffix, str.length - suffix.length) !== -1;
+};
+
 module.exports = util;

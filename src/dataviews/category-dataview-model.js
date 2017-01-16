@@ -38,10 +38,15 @@ module.exports = DataviewModelBase.extend({
       authToken: this.get('authToken')
     });
 
-    this._data = new CategoriesCollection();
+    this._data = new CategoriesCollection(null, {
+      aggregationModel: this
+    });
+
     this._searchModel = new SearchModel({
       apiKey: this.get('apiKey'),
       authToken: this.get('authToken')
+    }, {
+      aggregationModel: this
     });
 
     this.on('change:column change:aggregation change:aggregation_column', this._reloadVisAndForceFetch, this);

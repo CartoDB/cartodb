@@ -23,394 +23,274 @@
 
     <script>
       function main() {
-      	var vizjson = {
-          "id":"2b13c956-e7c1-11e2-806b-5404a6a683d5",
-          "version":"0.1.0",
-          "title":"european_countries_e 0",
-          "likes":0,
-          "description":null,
-          "scrollwheel":true,
-          "legends":true,
-          "url":null,
-          "map_provider":"leaflet",
-          "bounds":[
+         var vizjson = {
+          "bounds": [
             [
-              -18.979025953255253,
-              -155.7421875
+              -85.0511,
+              -179
             ],
             [
-              80.58972691308571,
-              261.2109375
+              83.5702686309814,
+              179
             ]
           ],
-          "center":"[52.5897007687178, 52.734375]",
-          "zoom":2,
-          "updated_at":"2015-03-13T11:24:37+00:00",
+          "center": "[30, 0]",
           "datasource": {
             "user_name": "cdb",
             "maps_api_template": "http://{user}.localhost.lan:8181",
-            "stat_tag": "84ec6844-4b4b-11e5-9c1d-080027880ca6"
+            "stat_tag": "0ec692d4-fb68-4541-a977-629f7d0a8eaf",
+            "template_name": "tpl_0ec692d4_fb68_4541_a977_629f7d0a8eaf"
           },
-          "layers":[
+          "description": null,
+          "options": {
+            "legends": true,
+            "scrollwheel": false,
+            "layer_selector": true,
+            "dashboard_menu": true
+          },
+          "id": "0ec692d4-fb68-4541-a977-629f7d0a8eaf",
+          "layers": [
             {
-              "options":{
-                "id":"0a3d9104-99c6-482b-9f8c-7c6134bddcdc",
-                "order":0,
-                "visible":true,
-                "type":"Tiled",
-                "name":"Positron",
-                "className":"default positron_rainbow",
-                "base_type":"positron_rainbow",
-                "urlTemplate":"http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
-                "read_only":true,
-                "minZoom":"0",
-                "maxZoom":"18",
-                "attribution":"&copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors",
-                "subdomains":"abcd",
-                "category":"CartoDB"
-              },
-              "infowindow":null,
-              "tooltip":null,
-              "id":"0a3d9104-99c6-482b-9f8c-7c6134bddcdc",
-              "order":0,
-              "type":"tiled"
-            },
-            {
-              "id":"923b7812-2d56-41c6-ac15-3ce430db090f",
-              "type":"CartoDB",
-              "infowindow":{
-                "fields":[
-                  {
-                    "name":"pop2005",
-                    "title":true,
-                    "position":0
-                  }
-                ],
-                "template_name":"table/views/infowindow_light",
-                "template": " " +
-                  '<div class="CDB-infowindow CDB-infowindow--custom js-infowindow" style="max-width: 200px;">' +
-                    '<div class="CDB-infowindow-close js-close"></div>' +
-                    '<div class="CDB-infowindow-container">' +
-                      '<div class="CDB-infowindow-header CDB-infowindow-headerBg CDB-infowindow-headerBg--dark">' +
-                        '<div class="CDB-infowindow-list">' +
-                          '<div class="CDB-infowindow-listItem">' +
-                            '<h4 class="CDB-infowindow-title">{{ name }}</h4>' +
-                          '</div>' +
-                        '</div>' +
-                      '</div>' +
-                      '<div class="CDB-hook CDB-hook--white">' +
-                        '<div class="CDB-hook-inner">' +
-                        '</div>' +
-                      '</div>' +
-                    '</div>' +
-                  '</div>',
-                "alternative_names":{},
-                "width":226,
-                "maxHeight":180
-              },
-              "tooltip":{
-                "fields": [
-                  {
-                    "name": "name",
-                    "title": true,
-                    "position": 1
-                  }
-                ],
-                "template_name":"tooltip_light",
-                "template": ' '+
-                    '<div class="CDB-Tooltip CDB-Tooltip--isDark js-content">'+
-                      '<ul class="CDB-Tooltip-list">'+
-                        '{{#fields}}'+
-                        '<li class="CDB-Tooltip-listItem">'+
-                          '<h3 class="CDB-Tooltip-listTitle">Name</h3>'+
-                          '<h4 class="CDB-Tooltip-listText">{{value}}</h4>'+
-                        '</li>'+
-                        '{{/fields}}'+
-                      '</ul>'+
-                    '</div>',
-                "alternative_names":{},
-                "maxHeight":180
-              },
-              "legend":{
-                "type":"choropleth",
-                "show_title":false,
-                "title":"",
-                "template":"",
-                "items":[
-                  {
-                    "name":"Left label",
-                    "visible":true,
-                    "value":"5592.00",
-                    "type":"text"
-                  },
-                  {
-                    "name":"Right label",
-                    "visible":true,
-                    "value":"1638094.00",
-                    "type":"text"
-                  },
-                  {
-                    "name":"Color",
-                    "visible":true,
-                    "value":"#FFFFB2",
-                    "type":"color"
-                  },
-                  {
-                    "name":"Color",
-                    "visible":true,
-                    "value":"#FED976",
-                    "type":"color"
-                  },
-                  {
-                    "name":"Color",
-                    "visible":true,
-                    "value":"#FEB24C",
-                    "type":"color"
-                  },
-                  {
-                    "name":"Color",
-                    "visible":true,
-                    "value":"#FD8D3C",
-                    "type":"color"
-                  },
-                  {
-                    "name":"Color",
-                    "visible":true,
-                    "value":"#FC4E2A",
-                    "type":"color"
-                  },
-                  {
-                    "name":"Color",
-                    "visible":true,
-                    "value":"#E31A1C",
-                    "type":"color"
-                  },
-                  {
-                    "name":"Color",
-                    "visible":true,
-                    "value":"#B10026",
-                    "type":"color"
-                  }
-                ]
-              },
-              "order":1,
-              "visible":true,
-              "options":{
-                "sql":"select * from world_borders",
-                "layer_name":"world_borders",
-                "cartocss":"/** choropleth visualization */\n\n#world_borders{\n  polygon-fill: ramp([pop2005], colorbrewer(Greens));\n  polygon-opacity: 0.8;\n  line-color: #FFF;\n  line-width: 1;\n  line-opacity: 0.5;\n}",
-                "cartocss_version":"2.1.1",
-                "interactivity":"cartodb_id",
-                "table_name":"\"\"."
-              },
-              "legends": [
-                { type: 'choropleth', title: 'Choropleth Legend' },
-                {
-                  type: 'custom', title: 'Custom legend', categories: [
-                    { title: 'Item 1', color: '#CACACA;'},
-                    { title: 'Item 2', color: '#FABADA;'},
-                    { title: 'Item 3', icon: "url(http://com.cartodb.users-assets.production.s3.amazonaws.com/simpleicon/map38.svg)"},
-                  ]
-                },
-                {
-                  type: 'html',
-                  title: 'HTML Legend',
-                  html: '<p class="CDB-Text CDB-Size-small u-mainTextColor u-upperCase">Some markup that gets sanitised<script>alert("hola");<\/script></p>'
-                }
-              ]
-
-            },
-            {
-              "id":"923b7812-2d56-41c6-ac15-b090f3ce430d",
-              "type":"CartoDB",
-              "infowindow":{
-                "fields":[
-                  {
-                    "name":"pop_max",
-                    "title":true,
-                    "position":0
-                  }
-                ],
-                "template_name":"table/views/infowindow_light",
-                "template": " " +
-                  '<div class="CDB-infowindow CDB-infowindow--custom js-infowindow" style="max-width: 200px;">' +
-                    '<div class="CDB-infowindow-close js-close"></div>' +
-                    '<div class="CDB-infowindow-container">' +
-                      '<div class="CDB-infowindow-header CDB-infowindow-headerBg CDB-infowindow-headerBg--dark">' +
-                        '<div class="CDB-infowindow-list">' +
-                          '<div class="CDB-infowindow-listItem">' +
-                            '<h4 class="CDB-infowindow-title">{{ name }}</h4>' +
-                          '</div>' +
-                        '</div>' +
-                      '</div>' +
-                      '<div class="CDB-hook CDB-hook--white">' +
-                        '<div class="CDB-hook-inner">' +
-                        '</div>' +
-                      '</div>' +
-                    '</div>' +
-                  '</div>',
-                "alternative_names":{},
-                "width":226,
-                "maxHeight":180
-              },
-              "tooltip":{
-                "fields": [
-                  {
-                    "name": "name",
-                    "title": true,
-                    "position": 1
-                  }
-                ],
-                "template_name":"tooltip_light",
-                "template": ' '+
-                    '<div class="CDB-Tooltip CDB-Tooltip--isDark js-content">'+
-                      '<ul class="CDB-Tooltip-list">'+
-                        '{{#fields}}'+
-                        '<li class="CDB-Tooltip-listItem">'+
-                          '<h3 class="CDB-Tooltip-listTitle">Name</h3>'+
-                          '<h4 class="CDB-Tooltip-listText">{{value}}</h4>'+
-                        '</li>'+
-                        '{{/fields}}'+
-                      '</ul>'+
-                    '</div>',
-                "alternative_names":{},
-                "maxHeight":180
-              },
-              "legend":{
-                "type":"choropleth",
-                "show_title":false,
-                "title":"",
-                "template":"",
-                "items":[
-                  {
-                    "name":"Left label",
-                    "visible":true,
-                    "value":"5592.00",
-                    "type":"text"
-                  },
-                  {
-                    "name":"Right label",
-                    "visible":true,
-                    "value":"1638094.00",
-                    "type":"text"
-                  },
-                  {
-                    "name":"Color",
-                    "visible":true,
-                    "value":"#FFFFB2",
-                    "type":"color"
-                  },
-                  {
-                    "name":"Color",
-                    "visible":true,
-                    "value":"#FED976",
-                    "type":"color"
-                  },
-                  {
-                    "name":"Color",
-                    "visible":true,
-                    "value":"#FEB24C",
-                    "type":"color"
-                  },
-                  {
-                    "name":"Color",
-                    "visible":true,
-                    "value":"#FD8D3C",
-                    "type":"color"
-                  },
-                  {
-                    "name":"Color",
-                    "visible":true,
-                    "value":"#FC4E2A",
-                    "type":"color"
-                  },
-                  {
-                    "name":"Color",
-                    "visible":true,
-                    "value":"#E31A1C",
-                    "type":"color"
-                  },
-                  {
-                    "name":"Color",
-                    "visible":true,
-                    "value":"#B10026",
-                    "type":"color"
-                  }
-                ]
-              },
-              "order":2,
-              "visible":true,
-              "options":{
-                "sql":"select * from ne_10m_populated_places_simple",
-                "layer_name":"ne_10m_populated_places_simple",
-                "cartocss":"#ne_10m_populated_places_simple{\n  marker-fill-opacity: 0.9;\n  marker-line-color: #FFF;\n  marker-line-width: 1;\n  marker-line-opacity: 1;\n  marker-placement: point;\n  marker-type: ellipse;\n  marker-width: ramp([pop_max], range(8, 32), jenks());\n  marker-fill: ramp([adm0name], cartocolor(Safe), category(8));\n  marker-allow-overlap: true;\n}",
-                "cartocss_version":"2.1.1",
-                "interactivity":"cartodb_id",
-                "table_name":"\"\"."
-              },
-              "legends": [
-                { type: 'bubble', title: 'Bubble Legend', fill_color: '#FABADA' },
-                { type: 'category', title: 'Categories Legend', prefix: 'prefix', suffix: 'suffix' }
-              ]
-            },
-            {
+              "id": "a3f8915e-3b19-4cbc-9be5-e62ad3aa3604",
+              "type": "tiled",
               "options": {
-                "visible": true,
-                "type": "Tiled",
                 "default": "true",
-                "url": "http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png",
+                "url": "https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png",
                 "subdomains": "abcd",
                 "minZoom": "0",
                 "maxZoom": "18",
-                "attribution": "&copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors",
-                "urlTemplate": "http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png",
-                "name": "Positron Labels",
-                "id": "bc054932-1ae8-4d4a-96d6-d49ce4247a59",
-                "className": "httpsbasemapscartocdncomlight_only_labelszxypng",
-                "order": 3
+                "name": "Positron",
+                "className": "positron_rainbow",
+                "attribution": "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"https://carto.com/attributions#basemaps\">CARTO</a>",
+                "urlTemplate": "https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png",
+                "type": "Tiled"
+              }
+            },
+            {
+              "id": "763fd438-ee62-472e-9430-fad06c0bbcc7",
+              "type": "CartoDB",
+              "visible": true,
+              "options": {
+                "layer_name": "world_borders",
+                "attribution": "",
+                "source": "a0"
               },
-              "infowindow": null,
-              "tooltip": null,
-              "id": "bc054932-1ae8-4d4a-96d6-d49ce4247a59",
+              "legends": [
+                {
+                  "conf": {
+                    "columns": []
+                  },
+                  "created_at": "2017-01-09T12:15:34+00:00",
+                  "definition": {
+                    "categories": [
+                      {
+                        "title": "Untitled",
+                        "color": "#3EBCAE"
+                      },
+                      {
+                        "title": "Untitled",
+                        "color": "#E54C1F"
+                      }
+                    ],
+                    "html": "<p class=\\\"CDB-Text CDB-Size-small u-mainTextColor u-upperCase\\\">Some markup that gets sanitised<script>alert(\\\"hola\\\");<\\\\/script></p>"
+                  },
+                  "id": "58041c88-d952-400a-8336-20dacab2eb6d",
+                  "layer_id": "763fd438-ee62-472e-9430-fad06c0bbcc7",
+                  "post_html": "",
+                  "pre_html": "",
+                  "title": "",
+                  "type": "custom",
+                  "updated_at": "2017-01-09T12:32:48+00:00"
+                }
+              ]
+            },
+            {
+              "id": "cdf29905-ba4f-4486-8c74-12bd0117d75b",
+              "type": "CartoDB",
+              "visible": true,
+              "options": {
+                "layer_name": "world_borders",
+                "attribution": "",
+                "source": "c0"
+              },
+              "legends": [
+                {
+                  "conf": {
+                    "columns": []
+                  },
+                  "created_at": "2017-01-09T12:42:26+00:00",
+                  "definition": {},
+                  "id": "c7821d3e-d203-4e5d-b35f-5fbc4ea221f8",
+                  "layer_id": "cdf29905-ba4f-4486-8c74-12bd0117d75b",
+                  "post_html": "",
+                  "pre_html": "",
+                  "title": "pop2005",
+                  "type": "choropleth",
+                  "updated_at": "2017-01-09T12:42:26+00:00"
+                }, {
+                  "conf": {
+                    "columns": []
+                  },
+                  "created_at": "2017-01-09T12:15:34+00:00",
+                  "definition": {
+                    "categories": [
+                      {
+                        "title": "Item 1",
+                        "color": "#CACACA"
+                      },
+                      {
+                        "title": "Item 2",
+                        "color": "#FABADA"
+                      },
+                      {
+                        "title": "Item 3",
+                        "color": "#cc607d",
+                        "icon": "https://s3.amazonaws.com/com.cartodb.users-assets.production/maki-icons/circle-stroked-18.svg"
+                      }
+                    ]
+                  },
+                  "id": "58041c88-d952-400a-8336-20dacab2eb6d",
+                  "layer_id": "763fd438-ee62-472e-9430-fad06c0bbcc7",
+                  "post_html": "",
+                  "pre_html": "",
+                  "title": "",
+                  "type": "custom",
+                  "updated_at": "2017-01-09T12:15:50+00:00"
+                }
+              ]
+            },
+            {
+              "id": "37630e3a-fee6-4eaa-8b6b-5af5f220c97e",
+              "type": "CartoDB",
+              "visible": true,
+              "options": {
+                "layer_name": "ne_10m_populated_places_simple",
+                "attribution": "",
+                "source": "b0"
+              },
+              "legends": [
+                {
+                  "conf": {},
+                  "created_at": "2017-01-09T12:07:54+00:00",
+                  "definition": {},
+                  "id": "ec1f7cf4-9d4a-4451-9c13-73d8a68679f4",
+                  "layer_id": "37630e3a-fee6-4eaa-8b6b-5af5f220c97e",
+                  "post_html": "",
+                  "pre_html": "",
+                  "title": "adm0name",
+                  "type": "category",
+                  "updated_at": "2017-01-09T12:07:54+00:00"
+                },
+                {
+                  "conf": {},
+                  "created_at": "2017-01-09T12:07:54+00:00",
+                  "definition": {
+                    "color": "#5F4690",
+                    "top_label": "",
+                    "bottom_label": ""
+                  },
+                  "id": "7facefae-9e5c-421f-9c06-b9d6d8d5917a",
+                  "layer_id": "37630e3a-fee6-4eaa-8b6b-5af5f220c97e",
+                  "post_html": "",
+                  "pre_html": "",
+                  "title": "pop_max",
+                  "type": "bubble",
+                  "updated_at": "2017-01-09T12:07:54+00:00"
+                }
+              ]
+            }
+          ],
+          "likes": 0,
+          "map_provider": "leaflet",
+          "overlays": [
+            {
+              "type": "share",
+              "order": 1,
+              "options": {
+                "display": true,
+                "x": 20,
+                "y": 20
+              },
+              "template": ""
+            },
+            {
+              "type": "search",
+              "order": 2,
+              "options": {
+                "display": true,
+                "x": 60,
+                "y": 20
+              },
+              "template": ""
+            },
+            {
+              "type": "zoom",
               "order": 3,
-              "type": "tiled"
+              "options": {
+                "display": true,
+                "x": 20,
+                "y": 20
+              },
+              "template": "<a href=\"#zoom_in\" class=\"zoom_in\">+</a> <a href=\"#zoom_out\" class=\"zoom_out\">-</a>"
+            },
+            {
+              "type": "loader",
+              "order": 4,
+              "options": {
+                "display": true,
+                "x": 20,
+                "y": 150
+              },
+              "template": "<div class=\"loader\" original-title=\"\"></div>"
+            },
+            {
+              "type": "logo",
+              "order": 5,
+              "options": {
+                "display": true,
+                "x": 10,
+                "y": 40
+              },
+              "template": ""
             }
           ],
-          "overlays":[
+          "title": "Untitled Map Import",
+          "updated_at": "2017-01-09T12:42:27+00:00",
+          "user": {
+            "fullname": "cdb",
+            "avatar_url": "example.com/avatars/avatar_stars_red.png",
+            "profile_url": "http://cdb.localhost.lan:3000"
+          },
+          "version": "3.0.0",
+          "widgets": [],
+          "zoom": 3,
+          "analyses": [
             {
-              "type":"loader",
-              "options":{
-                "display":true,
-                "x":20,
-                "y":150
+              "id": "c0",
+              "type": "source",
+              "options": {
+                "table_name": "world_borders",
+                "simple_geom": "polygon"
               }
             },
             {
-              "type":"fullscreen",
-              "options":{
-                "x":20,
-                "y":140,
-                "display":true
+              "id": "a0",
+              "type": "source",
+              "options": {
+                "table_name": "world_borders",
+                "simple_geom": "polygon"
               }
             },
             {
-              "type":"search",
-              "options":{
-                "display":true
-              }
-            },
-            {
-              "type":"zoom",
-              "options":{
-                "x":20,
-                "y":20,
-                "display":true
+              "id": "b0",
+              "type": "source",
+              "options": {
+                "table_name": "ne_10m_populated_places_simple",
+                "simple_geom": "point"
               }
             }
           ],
-          "prev":null,
-          "next":null,
-          "transition_options":{}
+          "vector": false
         };
         cartodb.createVis('map', vizjson, {})
         .done(function(vis, layers) {

@@ -8,7 +8,8 @@ var defaultOptions = {
     // Load & install the source-map-support lib (get proper stack traces from inlined source-maps)
     'node_modules/source-map-support/browser-source-map-support.js',
     'test/install-source-map-support.js',
-    'http://maps.googleapis.com/maps/api/js?key=AIzaSyA4KzmztukvT7C49NSlzWkz75Xg3J_UyFI'
+    'http://maps.googleapis.com/maps/api/js?key=AIzaSyA4KzmztukvT7C49NSlzWkz75Xg3J_UyFI',
+    'node_modules/jasmine-ajax/lib/mock-ajax.js'
   ]
 };
 

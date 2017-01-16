@@ -131,7 +131,7 @@ module CartoDB
           if available_quota_in_bytes
             raise_if_over_storage_quota(requested_quota: content_length_from_headers,
                                         available_quota: available_quota_in_bytes.to_i,
-                                        user_id: @options[:user_id])
+                                        user_id: @user.try(:id))
           end
 
           if modified?

@@ -114,7 +114,6 @@ module CartoDB
       attr_reader :source_file, :etag, :last_modified, :http_response_code, :datasource
 
       def initialize(url, http_options = {}, options = {})
-        @url = url
         raise UploadError if url.nil?
 
         @http_options = http_options

@@ -41,7 +41,10 @@ module CartoDB
       end
 
       def self.url_filename_regex
-        @url_filename_regex ||= Regexp.new("[[:word:]-]+#{Regexp.union(supported_extensions_match)}+", Regexp::IGNORECASE)
+        return @url_filename_regex if @url_filename_regex
+
+        se_match_regex = Regexp.union(supported_extensions_match)
+        @url_filename_regex = Regexp.new("[[:word:]-]+#{se_match_regex}+", Regexp::IGNORECASE)
       end
 
       def provides_stream?

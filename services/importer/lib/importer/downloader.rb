@@ -55,7 +55,7 @@ module CartoDB
 
       attr_reader :source_file, :etag, :last_modified, :http_response_code, :datasource
 
-      def initialize(url, http_options = {}, options = {})
+      def initialize(user_id, url, http_options = {}, options = {})
         raise UploadError if url.nil?
 
         @http_options = http_options
@@ -63,7 +63,6 @@ module CartoDB
         @downloaded_bytes = 0
         @translated_url = translate_url(url)
 
-        user_id = options[:user_id]
         @user = Carto::User.find(user_id) if user_id
 
         @downloaded_bytes = 0

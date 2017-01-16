@@ -387,10 +387,12 @@ module CartoDB
       end
 
       def name_with_extension(filename)
+        return filename unless extensions_from_headers
+
         pathname = Pathname.new(filename)
         file_extension = pathname.extname
 
-        if file_extension.present? || extensions_from_headers.try(:exclude?, file_extension)
+        if file_extension.present? || extensions_from_headers.exclude?(file_extension)
           "#{pathname.basename('.*')}.#{extensions_from_headers.first}"
         else
           filename

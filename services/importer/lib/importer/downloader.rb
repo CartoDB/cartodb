@@ -22,7 +22,6 @@ module CartoDB
       include CartoDB::Importer2::QuotaCheckHelpers
       extend Carto::UrlValidator
 
-      CONTENT_DISPOSITION_RE  = %r{;\s*filename=(.*;|.*)}
       URL_RE                  = %r{://}
 
       def self.supported_extensions
@@ -301,6 +300,8 @@ module CartoDB
 
         @content_type = headers_content_type.split(';').first
       end
+
+      CONTENT_DISPOSITION_RE  = %r{;\s*filename=(.*;|.*)}
 
       def filename_from_headers
         disposition = headers['Content-Disposition']

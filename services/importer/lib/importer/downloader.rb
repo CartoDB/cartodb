@@ -264,6 +264,15 @@ module CartoDB
                          end
       end
 
+      def content_type
+        return @content_type if @content_type
+
+        headers_content_type = headers['Content-Type']
+        return nil unless headers_content_type.present?
+
+        @content_type = headers_content_type.split(';').first
+      end
+
       URL_TRANSLATORS = [
         UrlTranslator::OSM2,
         UrlTranslator::OSM,
@@ -276,15 +285,6 @@ module CartoDB
 
       def supported_translator(url)
         URL_TRANSLATORS.map(&:new).find { |translator| translator.supported?(url) }
-      end
-
-      def content_type
-        return @content_type if @content_type
-
-        headers_content_type = headers['Content-Type']
-        return nil unless headers_content_type.present?
-
-        @content_type = headers_content_type.split(';').first
       end
 
       CONTENT_DISPOSITION_RE  = %r{;\s*filename=(.*;|.*)}

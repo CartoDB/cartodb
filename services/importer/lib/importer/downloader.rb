@@ -199,7 +199,7 @@ module CartoDB
             @headers = response.headers
             @http_response_code = response.code
 
-            CartoDB::Importer2::Downloader.validate_url!(response.effective_url)
+            CartoDB::Importer2::Downloader.validate_url!(response.effective_url || @parsed_url)
 
             basename = @custom_filename ||
                        filename_from_headers ||
@@ -379,6 +379,8 @@ module CartoDB
       ].freeze
 
       def extensions_from_headers
+        return nil unless content_type
+
         @extensions_from_headers ||= CONTENT_TYPES_MAPPING.find do |item|
           item[:content_types].include?(content_type.downcase)
         end

@@ -120,13 +120,8 @@ class Admin::UsersController < Admin::AdminController
 
     @user.delete_in_central
     @user.destroy
-    cdb_logout
 
-    if Cartodb::Central.sync_data_with_cartodb_central?
-      redirect_to "https://carto.com"
-    else
-      render(file: "public/404.html", layout: false, status: 404)
-    end
+    redirect_to logout_url
   rescue CartoDB::CentralCommunicationFailure => e
     CartoDB::Logger.error(exception: e, message: 'Central error deleting user at CartoDB', user: @user)
     flash.now[:error] = "Error deleting user: #{e.user_message}"

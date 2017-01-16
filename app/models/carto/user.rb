@@ -468,8 +468,8 @@ class Carto::User < ActiveRecord::Base
   # Some operations, such as user deletion, won't ask for password confirmation if password is not set (because of Google sign in, for example)
   def needs_password_confirmation?
     (!oauth_signin? || !last_password_change_date.nil?) &&
-        !created_with_http_authentication? &&
-        !organization.try(:auth_saml_enabled?)
+      !created_with_http_authentication? &&
+      !organization.try(:auth_saml_enabled?)
   end
 
   def oauth_signin?

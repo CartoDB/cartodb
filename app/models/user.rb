@@ -489,8 +489,8 @@ class User < Sequel::Model
   # (because of Google/Github sign in, for example)
   def needs_password_confirmation?
     (!oauth_signin? || last_password_change_date.present?) &&
-        !created_with_http_authentication? &&
-        !organization.try(:auth_saml_enabled?)
+      !created_with_http_authentication? &&
+      !organization.try(:auth_saml_enabled?)
   end
 
   def oauth_signin?

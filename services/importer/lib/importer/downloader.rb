@@ -129,6 +129,7 @@ module CartoDB
         response = http_client.head(@parsed_url, typhoeus_options)
 
         if response.success?
+          @headers = response.headers
           @http_response_code = response.code
 
           CartoDB::Importer2::Downloader.validate_url!(response.effective_url)
@@ -141,8 +142,6 @@ module CartoDB
           @filename = name_with_extension(basename)
           @etag = etag
           @last_modified = last_modified
-
-          @headers = response.headers
         else
           raise_error_for_response(response)
         end
@@ -194,6 +193,26 @@ module CartoDB
 
       def binded_request(url, file, size_limit_in_bytes: 5_368_709_120)
         request = Typhoeus::Request.new(url, typhoeus_options)
+
+        request.on_headers do |response|
+          if response.success?
+            @headers = response.headers
+            @http_response_code = response.code
+
+            CartoDB::Importer2::Downloader.validate_url!(response.effective_url)
+
+            basename = @custom_filename ||
+                       filename_from_headers ||
+                       filename_from_url(url) ||
+                       SecureRandom.urlsafe_base64
+
+            @filename = name_with_extension(basename)
+            @etag = etag
+            @last_modified = last_modified
+          else
+            raise_error_for_response(response)
+          end
+        end
 
         request.on_body do |chunk|
           if (@downloaded_bytes += chunk.bytesize) > size_limit_in_bytes

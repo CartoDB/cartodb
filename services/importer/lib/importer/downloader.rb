@@ -301,7 +301,7 @@ module CartoDB
       end
 
       def filename_from_url
-        url_name = self.class.url_filename_regex.match(@translated_url).to_s
+        url_name = self.class.url_filename_regex.match(URI.decode(@translated_url)).to_s
 
         url_name unless url_name.empty?
       end

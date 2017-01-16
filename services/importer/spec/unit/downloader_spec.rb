@@ -190,19 +190,18 @@ describe Downloader do
     end
 
     it 'supports accented URLs' do
+      CartoDB::Importer2::Downloader.any_instance.stubs(:validate_url!).returns(true)
+
       [
         { url: 'spec/fixtures/política_agraria_común.csv', name: 'política_agraria_común' },
-        # TODO: move to master branch
         { url: 'spec/fixtures/many_characters_áÁñÑçÇàÀ.csv', name: 'many_characters_áÁñÑçÇàÀ' }
       ].each do |url_and_name|
-        CartoDB::Importer2::Downloader.any_instance.stubs(:validate_url!).returns(true)
         serve_file url_and_name[:url] do |url|
           downloader = Downloader.new(url, {}, user_id: @user.id)
           downloader.run
-          downloader.source_file.name.should eq(url_and_name[:name]), "Error downloading #{url_and_name[:url]}, name: #{downloader.source_file.name}"
+          downloader.source_file.name.should eq url_and_name[:name]
         end
       end
-
     end
 
     it 'does not break urls with % on it' do

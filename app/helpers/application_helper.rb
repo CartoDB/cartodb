@@ -307,8 +307,4 @@ module ApplicationHelper
     # see http://api.rubyonrails.org/v3.2.21/classes/ERB/Util.html#method-c-j
     raw "JSON.parse('#{ j(obj.html_safe) }')"
   end
-
-  def model_errors(model)
-    model.errors.full_messages.map(&:capitalize).join(', ') if model.errors.present?
-  end
 end

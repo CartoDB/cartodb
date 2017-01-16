@@ -1,6 +1,4 @@
-var _ = require('underscore');
 var Backbone = require('backbone');
-var MapView = require('../../../src/geo/map-view');
 var Map = require('../../../src/geo/map');
 var VisModel = require('../../../src/vis/vis');
 var CartoDBLayer = require('../../../src/geo/map/cartodb-layer');

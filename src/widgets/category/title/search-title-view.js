@@ -32,7 +32,7 @@ module.exports = cdb.core.View.extend({
     this.$el.html(
       template({
         isCollapsed: this.model.get('collapsed'),
-        isAutoStyleEnabled: this.model.isAutoStyleEnabled() && this.dataviewModel.layer.get('visible'),
+        isAutoStyleEnabled: this.model.isAutoStyleEnabled(),
         isAutoStyle: this.model.isAutoStyle(),
         title: this.model.get('title'),
         columnName: this.dataviewModel.get('column'),

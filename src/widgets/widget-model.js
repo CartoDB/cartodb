@@ -69,6 +69,7 @@ module.exports = cdb.core.Model.extend({
 
   isAutoStyleEnabled: function () {
     if (!this.defaults.autoStyleEnabled) return false;
+    if (!this.dataviewModel.layer.get('visible')) return false;
 
     var styles = this.get('style');
 

@@ -195,6 +195,7 @@ describe Downloader do
         # TODO: move to master branch
         { url: 'spec/fixtures/many_characters_áÁñÑçÇàÀ.csv', name: 'many_characters_áÁñÑçÇàÀ' }
       ].each do |url_and_name|
+        CartoDB::Importer2::Downloader.any_instance.stubs(:validate_url!).returns(true)
         serve_file url_and_name[:url] do |url|
           downloader = Downloader.new(url, {}, user_id: @user.id)
           downloader.run
@@ -263,6 +264,7 @@ describe Downloader do
     end
 
     it 'returns a source_file name' do
+      CartoDB::Importer2::Downloader.any_instance.stubs(:validate_url!).returns(true)
       serve_file 'spec/support/data/ne_110m_lakes.zip' do |url|
         downloader = Downloader.new(url, {}, user_id: @user.id)
         downloader.run
@@ -271,6 +273,7 @@ describe Downloader do
     end
 
     it 'returns a local filepath' do
+      CartoDB::Importer2::Downloader.any_instance.stubs(:validate_url!).returns(true)
       serve_file 'spec/support/data/ne_110m_lakes.zip' do |url|
         downloader = Downloader.new(url, {}, user_id: @user.id)
         downloader.run

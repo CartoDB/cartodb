@@ -48,7 +48,7 @@
             <%= form_for @user, url: CartoDB.url(self, 'signup_organization_user'),  html: { class: "js-Loading-form" } do |f| %>
               <% if @organization.auth_google_enabled %>
                 <input type="hidden" value="<%= params[:google_access_token] %>" id="google_access_token" name="google_access_token" />
-                <input type="hidden" value="0" id="google_access_filled" name="google_access_filled" />
+                <input type="hidden" value="<%= params[:google_access_token].present? ? 1 : 0 %>" id="google_access_filled" name="google_access_filled" />
               <% end %>
 
               <input type="hidden" value="<%= params[:invitation_token] %>" id="invitation_token" name="invitation_token" />

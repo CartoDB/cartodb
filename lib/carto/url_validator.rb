@@ -20,7 +20,9 @@ module Carto
 
     def valid_url?(str, valid_ports)
       uri = URI.parse(str)
-      return uri.is_a?(URI::HTTP) && valid_ports.include?(uri.port) && !blacklisted_ip?(uri)
+      uri.is_a?(URI::HTTP) &&
+        valid_ports.include?(uri.port) && (Rails.env.staging? || Rails.env.production?) &&
+        !blacklisted_ip?(uri)
     rescue URI::InvalidURIError
       return false
     end

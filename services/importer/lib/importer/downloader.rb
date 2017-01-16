@@ -191,7 +191,6 @@ module CartoDB
       end
 
       def binded_request(url, file)
-        size_limit_in_bytes = @user.try(:max_import_file_size)
         request = Typhoeus::Request.new(url, typhoeus_options)
 
         request.on_headers do |response|
@@ -203,6 +202,7 @@ module CartoDB
         end
 
         request.on_body do |chunk|
+          size_limit_in_bytes = @user.max_import_file_size
           if (@downloaded_bytes += chunk.bytesize) > size_limit_in_bytes
             raise FileTooBigError.new("download file too big (> #{size_limit_in_bytes} bytes)")
           else

@@ -114,7 +114,7 @@ class Admin::UsersController < Admin::AdminController
 
   def delete
     deletion_password_confirmation = params[:deletion_password_confirmation]
-    if !@user.validate_old_password(deletion_password_confirmation)
+    if @user.needs_password_confirmation? && !@user.validate_old_password(deletion_password_confirmation)
       raise PASSWORD_DOES_NOT_MATCH_MESSAGE
     end
 

@@ -22,8 +22,6 @@ module CartoDB
       include CartoDB::Importer2::QuotaCheckHelpers
       extend Carto::UrlValidator
 
-      URL_ESCAPED_CHARACTERS = 'áéíóúÁÉÍÓÚñÑçÇàèìòùÀÈÌÒÙ'.freeze
-
       CONTENT_DISPOSITION_RE  = %r{;\s*filename=(.*;|.*)}
       URL_RE                  = %r{://}
 
@@ -106,6 +104,8 @@ module CartoDB
       end
 
       private
+
+      URL_ESCAPED_CHARACTERS = 'áéíóúÁÉÍÓÚñÑçÇàèìòùÀÈÌÒÙ'.freeze
 
       def parse_url(url)
         translator = supported_translator(url)

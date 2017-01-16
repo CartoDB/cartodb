@@ -222,7 +222,7 @@ describe Downloader do
 
       downloader = Downloader.new(@file_url, { etag: etag }, user_id: @user.id)
       downloader.run
-      downloader.modified?.should eq false
+      downloader.modified?.should be_false
     end
 
     it "raises if remote URL doesn't respond with a 2XX code" do

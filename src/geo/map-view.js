@@ -43,11 +43,7 @@ var MapView = View.extend({
     this.map.layers.bind('reset', this._addLayers, this);
     this.map.layers.bind('add', this._addLayer, this);
     this.map.layers.bind('remove', this._removeLayer, this);
-
-    // TODO: When this.map.layers get new indexes, something needs to happen
     this.add_related_model(this.map.layers);
-
-    this.bind('clean', this._removeLayers, this);
 
     this.map.geometries.on('add', this._onGeometryAdded, this);
     this.add_related_model(this.map.geometries);
@@ -66,6 +62,7 @@ var MapView = View.extend({
       mapView: this
     });
 
+    // Initialise managers
     this._infowindowManager = new InfowindowManager({
       visModel: this._visModel,
       mapModel: this._mapModel,
@@ -77,11 +74,9 @@ var MapView = View.extend({
     this._tooltipManager = new TooltipManager({
       visModel: this._visModel,
       mapModel: this._mapModel,
-      mapView: this,
       tooltipModel: tooltipModel,
       infowindowModel: infowindowModel
     });
-
     this._geometryManagementController = new GeometryManagementController(this, this._mapModel);
     this._mapCursorManager = new MapCursorManager({
       mapView: this,
@@ -94,21 +89,18 @@ var MapView = View.extend({
   },
 
   clean: function () {
-    // remove layer views
-    for (var layer in this._layerViews) {
-      this._layerViews[layer].remove();
-      delete this._layerViews[layer];
-    }
+    this._removeLayers();
 
     delete this._cartoDBLayerGroupView;
 
+    // Clean Infowindow and Tooltip views
     this._infowindowView.clean();
-    this._infowindowManager.stop();
-
     this._tooltipView.clean();
-    this._tooltipManager.stop();
 
+    // Stop managers
     this._geometryManagementController.stop();
+    this._infowindowManager.stop();
+    this._tooltipManager.stop();
     this._mapCursorManager.stop();
     this._mapEventsManager.stop();
 
@@ -123,6 +115,9 @@ var MapView = View.extend({
       this._fitBounds(bounds);
     }
     this._addLayers();
+
+    // Enable geometry management
+    this._geometryManagementController.start();
 
     return this;
   },
@@ -217,25 +212,23 @@ var MapView = View.extend({
       return;
     }
 
-    var layerView = this._createLayerView(this._cartoDBLayerGroup);
-    this._cartoDBLayerGroupView = layerView;
-    this._layerViews[layerModel.cid] = layerView;
+    // Create the view that groups CartoDB layers
+    this._cartoDBLayerGroupView = this._createLayerView(this._cartoDBLayerGroup);
+    this._layerViews[layerModel.cid] = this._cartoDBLayerGroupView;
 
-    this._geometryManagementController.start();
-    this._mapCursorManager.start(layerView);
-    this._mapEventsManager.start(layerView);
-
+    // Render the infowindow and tooltip "overlays"
     this._infowindowView.render();
     this.$el.append(this._infowindowView.el);
-
-    this._infowindowManager.start(layerView);
-
     this._tooltipView.render();
     this.$el.append(this._tooltipView.el);
 
-    this._tooltipManager.start(layerView);
+    // Start managers that should be bound to the CartoDB layer group view
+    this._infowindowManager.start(this._cartoDBLayerGroupView);
+    this._tooltipManager.start(this._cartoDBLayerGroupView);
+    this._mapCursorManager.start(this._cartoDBLayerGroupView);
+    this._mapEventsManager.start(this._cartoDBLayerGroupView);
 
-    return layerView;
+    return this._cartoDBLayerGroupView;
   },
 
   _addIndividualLayer: function (layerModel) {

@@ -299,55 +299,55 @@ module CartoDB
       CONTENT_TYPES_MAPPING = [
         {
           content_types: ['text/plain'],
-          extensions: ['txt', 'kml', 'geojson']
+          extensions: ['.txt', '.kml', '.geojson']
         },
         {
           content_types: ['text/csv'],
-          extensions: ['csv']
+          extensions: ['.csv']
         },
         {
           content_types: ['application/vnd.ms-excel'],
-          extensions: ['xls']
+          extensions: ['.xls']
         },
         {
           content_types: ['application/vnd.ms-excel.sheet.binary.macroEnabled.12'],
-          extensions: ['xlsb']
+          extensions: ['.xlsb']
         },
         {
           content_types: ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
-          extensions: ['xlsx']
+          extensions: ['.xlsx']
         },
         {
           content_types: ['application/vnd.geo+json'],
-          extensions: ['geojson']
+          extensions: ['.geojson']
         },
         {
           content_types: ['application/vnd.google-earth.kml+xml'],
-          extensions: ['kml']
+          extensions: ['.kml']
         },
         {
           content_types: ['application/vnd.google-earth.kmz'],
-          extensions: ['kmz']
+          extensions: ['.kmz']
         },
         {
           content_types: ['application/gpx+xml'],
-          extensions: ['gpx']
+          extensions: ['.gpx']
         },
         {
           content_types: ['application/zip'],
-          extensions: ['zip', 'carto']
+          extensions: ['.zip', '.carto']
         },
         {
           content_types: ['application/x-gzip'],
-          extensions: ['tgz', 'gz']
+          extensions: ['.tgz', '.gz']
         },
         {
           content_types: ['application/json', 'text/javascript', 'application/javascript'],
-          extensions: ['json']
+          extensions: ['.json']
         },
         {
           content_types: ['application/osm3s+xml'],
-          extensions: ['osm']
+          extensions: ['.osm']
         }
       ].freeze
 
@@ -371,7 +371,7 @@ module CartoDB
 
         # If there is no extension or file extension match in the content type extensions,
         # add content type extension to the file name deleting the previous extension (if exist)
-        if (file_extension.nil? || file_extension.empty?) || !content_type_extensions.include?(file_extension)
+        if file_extension.present? || !content_type_extensions.include?(file_extension)
           return "#{name_without_extension}.#{content_type_extensions.first}"
         else
           return name

@@ -59,7 +59,7 @@ var Vis = View.extend({
     this.$el.append(infowindowView.el);
 
     new InfowindowManager({ // eslint-disable-line
-      visModel: this,
+      visModel: this.model,
       mapModel: this.model.map,
       mapView: this.mapView,
       tooltipModel: tooltipModel,

@@ -9,6 +9,7 @@ var VisModel = require('../../../../src/vis/vis');
 var TileLayer = require('../../../../src/geo/map/tile-layer');
 var CartoDBLayer = require('../../../../src/geo/map/cartodb-layer');
 var PlainLayer = require('../../../../src/geo/map/plain-layer');
+var LayersCollection = require('../../../../src/geo/map/layers');
 var GMapsBaseLayer = require('../../../../src/geo/map/gmaps-base-layer');
 var CartoDBLayerGroup = require('../../../../src/geo/cartodb-layer-group');
 var LeafletMapView = require('../../../../src/geo/leaflet/leaflet-map-view');
@@ -29,10 +30,11 @@ describe('geo/leaflet/leaflet-map-view', function () {
     });
 
     map = new Map(null, {
-      layersFactory: {}
+      layersFactory: {},
+      attribution: [ '© CARTO' ]
     });
 
-    this.layerGroupModel = new CartoDBLayerGroup({}, { layersCollection: new Backbone.Collection() });
+    this.layerGroupModel = new CartoDBLayerGroup({}, { layersCollection: new LayersCollection() });
     spyOn(this.layerGroupModel, 'hasTileURLTemplates').and.returnValue(true);
     spyOn(this.layerGroupModel, 'getTileURLTemplates').and.returnValue([ 'http://documentation.cartodb.com/api/v1/map/90e64f1b9145961af7ba36d71b887dd2:0/0/{z}/{x}/{y}.png' ]);
 
@@ -41,6 +43,8 @@ describe('geo/leaflet/leaflet-map-view', function () {
       map: map,
       layerGroupModel: this.layerGroupModel
     });
+
+    mapView.render();
 
     var layerURL = 'http://{s}.tiles.mapbox.com/v3/cartodb.map-1nh578vv/{z}/{x}/{y}.png';
     layer = new TileLayer({ urlTemplate: layerURL });
@@ -313,75 +317,16 @@ describe('geo/leaflet/leaflet-map-view', function () {
   });
 
   describe('attributions', function () {
-    var container;
-
-    beforeEach(function () {
-      container = $('<div>').css({
-        'height': '200px',
-        'width': '200px'
-      });
-    });
-
     it('should not render Leaflet attributions', function () {
       var attributions = mapView.$el.find('.leaflet-control-attribution');
-      expect(attributions.length).toBe(0);
+      expect(attributions.text()).toEqual('© CARTO');
     });
 
-    it('should respect the attribution of existing Leaflet layers', function () {
-      var leafletMap = new L.Map(container[0], {
-        center: [43, 0],
-        zoom: 3
-      });
+    it('should update the attribution when map attribution changes', function () {
+      map.set('attribution', [ '© CARTO', 'Another attribution' ]);
 
-      // Add a tile layer with some attribution
-      L.tileLayer('http://tile.stamen.com/toner/{z}/{x}/{y}.png', {
-        attribution: 'Stamen'
-      }).addTo(leafletMap);
-
-      mapView = new LeafletMapView({
-        el: container,
-        map: map,
-        map_object: leafletMap,
-        layerGroupModel: this.layerGroupModel
-      });
-
-      // Add a CartoDB layer with some custom attribution
-      layer = new CartoDBLayer({
-        attribution: 'custom attribution'
-      }, { vis: this.vis });
-      map.addLayer(layer);
-
-      var attributions = mapView.$el.find('.leaflet-control-attribution').text();
-      expect(attributions).toEqual('Leaflet | Stamen, © CARTO, custom attribution');
-    });
-
-    it('should not render attributions when the Leaflet map has attributionControl disabled', function () {
-      var leafletMap = new L.Map(container[0], {
-        center: [43, 0],
-        zoom: 3,
-        attributionControl: false
-      });
-
-      // Add a tile layer with some attribution
-      L.tileLayer('http://tile.stamen.com/toner/{z}/{x}/{y}.png', {
-        attribution: 'Stamen'
-      }).addTo(leafletMap);
-
-      mapView = new LeafletMapView({
-        el: container,
-        map: map,
-        map_object: leafletMap,
-        layerGroupModel: this.layerGroupModel
-      });
-
-      // Add a CartoDB layer with some custom attribution
-      layer = new CartoDBLayer({
-        attribution: 'custom attribution'
-      }, { vis: this.vis });
-      map.addLayer(layer);
-
-      var attributions = mapView.$el.find('.leaflet-control-attribution').text();
-      expect(attributions).toEqual('');
+      var attributions = mapView.$el.find('.leaflet-control-attribution');
+      expect(attributions.text()).toEqual('© CARTO, Another attribution');
     });
   });
 
@@ -400,6 +345,7 @@ describe('geo/leaflet/leaflet-map-view', function () {
       map: map,
       layerGroupModel: new Backbone.Model()
     });
+    mapView.render();
 
     expect(mapView._leafletMap.dragging.enabled()).toBeFalsy();
     expect(mapView._leafletMap.doubleClickZoom.enabled()).toBeFalsy();
@@ -420,6 +366,7 @@ describe('geo/leaflet/leaflet-map-view', function () {
       map: map,
       layerGroupModel: new Backbone.Model()
     });
+    mapView.render();
 
     spyOn(map, 'trigger');
 

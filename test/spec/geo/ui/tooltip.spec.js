@@ -16,6 +16,7 @@ describe('geo/ui/tooltip-view', function () {
       layerViewFactory: jasmine.createSpyObj('layerViewFactory', ['createLayerView']),
       layerGroupModel: new Backbone.Model()
     });
+    this.mapView.render();
 
     this.layerView = new Backbone.View();
     this.tooltipModel = new TooltipModel({

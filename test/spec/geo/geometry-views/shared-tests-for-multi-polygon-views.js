@@ -21,6 +21,7 @@ module.exports = function (MapView, MultiPolygonView) {
       ]
     });
     this.mapView = createMapView(MapView);
+    this.mapView.render();
 
     this.geometryView = new MultiPolygonView({
       model: this.geometry,

@@ -21,6 +21,7 @@ module.exports = function (MapView, MultiPolylineView) {
       ]
     });
     this.mapView = createMapView(MapView);
+    this.mapView.render();
 
     this.geometryView = new MultiPolylineView({
       model: this.geometry,

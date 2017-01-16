@@ -8,14 +8,14 @@ Projector.prototype.latLngToPixel = function (point) {
   if (p) {
     return p.fromLatLngToContainerPixel(point);
   }
-  return [0, 0];
+  return new google.maps.Point(0, 0);
 };
 Projector.prototype.pixelToLatLng = function (point) {
   var p = this.getProjection();
   if (p) {
     return p.fromContainerPixelToLatLng(point);
   }
-  return [0, 0];
+  return new google.maps.LatLng(0, 0);
 };
 
 module.exports = Projector;

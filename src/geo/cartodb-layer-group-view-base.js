@@ -1,6 +1,10 @@
 function CartoDBLayerGroupViewBase (layerGroupModel) {
+  this.interaction = [];
+
   layerGroupModel.on('change:urls', this._reload, this);
   layerGroupModel.onLayerVisibilityChanged(this._reload.bind(this));
+
+  this._reload();
 }
 
 CartoDBLayerGroupViewBase.prototype = {

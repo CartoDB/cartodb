@@ -33,34 +33,12 @@ var Vis = View.extend({
   },
 
   render: function () {
-    // Create the MapView
-    var div = $('<div>').css({
-      position: 'relative',
-      width: '100%',
-      height: '100%'
-    });
-
-    this.container = div;
-
-    // Another div to prevent leaflet grabbing the div
-    var div_hack = $('<div>')
-      .addClass('cartodb-map-wrapper')
-      .css({
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        width: '100%'
-      });
-
-    div.append(div_hack);
-
-    this.$el.html(div);
-
     var mapViewFactory = new MapViewFactory();
 
-    this.mapView = mapViewFactory.createMapView(this.model.map.get('provider'), this.model.map, div_hack, this.model.layerGroupModel);
+    this.mapView = mapViewFactory.createMapView(this.model.map.get('provider'), this.model.map, this.model.layerGroupModel);
+    // Add the element to the DOM before the native map is created
+    this.$el.html(this.mapView.el);
+
     // Bind events before the view is rendered and layer views are added to the map
     this.mapView.bind('newLayerView', this._bindLayerViewToLoader, this);
     this.mapView.render();

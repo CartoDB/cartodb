@@ -187,6 +187,10 @@ module CartoDB
     subdomainless_urls? ? domainless_base_domain : subdomain_based_base_url(subdomain_from_request(request))
   end
 
+  def self.base_domain_from_name(subdomain)
+    subdomainless_urls? ? domainless_base_domain : subdomain_based_base_url(subdomain)
+  end
+
   def self.ip?(string)
     !!(string =~ Resolv::IPv4::Regex)
   end

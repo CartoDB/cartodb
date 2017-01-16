@@ -2,8 +2,12 @@
 
 require 'spec_helper_min'
 require 'helpers/storage_helper'
+require 'helpers/subdomainless_helper'
 
 describe Carto::Asset do
+  # Needed so subdomainless_helper works
+  def host!(_) end
+
   before(:all) do
     @organization = Carto::Organization.find(FactoryGirl.create(:organization).id)
     @user = FactoryGirl.create(:carto_user)
@@ -47,6 +51,22 @@ describe Carto::Asset do
     it 'removes asset from storage if storage_info is present' do
       Carto::AssetsService.any_instance.expects(:remove).once
       Carto::Asset.create(user: @user, storage_info: storage_info).destroy
+    end
+  end
+
+  describe('#absolute_public_url') do
+    let(:asset) { Carto::Asset.new(organization: @organization, public_url: '/uploads/wadus') }
+
+    it 'preprends subdomain name in subdomainful' do
+      stub_domainful(@organization.name)
+      domain = "http://#{@organization.name}.localhost.lan#{CartoDB.http_port}"
+      asset.absolute_public_url.should eq domain + asset.public_url
+    end
+
+    it 'preprends domain name in subdomainless' do
+      stub_subdomainless
+      domain = "http://localhost.lan#{CartoDB.http_port}"
+      asset.absolute_public_url.should eq domain + asset.public_url
     end
   end
 

@@ -290,7 +290,7 @@ module CartoDB
         URL_TRANSLATORS.map(&:new).find { |translator| translator.supported?(url) }
       end
 
-      CONTENT_DISPOSITION_RE  = %r{;\s*filename=(.*;|.*)}
+      CONTENT_DISPOSITION_RE = %r{;\s*filename=(.*;|.*)}
 
       def filename_from_headers
         disposition = headers['Content-Disposition']

@@ -19,8 +19,7 @@ require_relative '../helpers/quota_check_helpers.rb'
 module CartoDB
   module Importer2
     class Downloader
-      include CartoDB::Importer2::QuotaCheckHelpers
-      extend Carto::UrlValidator
+      include CartoDB::Importer2::QuotaCheckHelpers, Carto::UrlValidator
 
       def self.supported_extensions
         @supported_extensions ||= CartoDB::Importer2::Unp::SUPPORTED_FORMATS
@@ -126,7 +125,7 @@ module CartoDB
         response = http_client.head(@translated_url, typhoeus_options)
 
         @http_response_code = response.code
-        CartoDB::Importer2::Downloader.validate_url!(response.effective_url || @translated_url)
+        validate_url!(response.effective_url || @translated_url)
         response.success? ? process_headers(response.headers) : raise_error_for_response(response)
 
         @headers
@@ -193,7 +192,7 @@ module CartoDB
         request.on_headers do |response|
           @http_response_code = response.code
 
-          CartoDB::Importer2::Downloader.validate_url!(response.effective_url || @translated_url)
+          validate_url!(response.effective_url || @translated_url)
 
           response.success? ? process_headers(response.headers) : raise_error_for_response(response)
         end

@@ -1,3 +1,4 @@
+require 'spec_helper_min'
 require_relative '../simplecov_helper'
 require_relative '../rspec_configuration'
 require_relative '../../lib/carto/url_validator'
@@ -45,5 +46,9 @@ describe 'UUIDHelper' do
     @url_validator.validate_url!("https://example.com/bar.kml")
     @url_validator.validate_url!("http://example.com/foo.csv:80")
     @url_validator.validate_url!("https://example.com/bar.kml:443")
+  end
+
+  it 'allows ftp' do
+    @url_validator.validate_url!("ftp://example.com").should be_true
   end
 end

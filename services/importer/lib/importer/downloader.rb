@@ -170,8 +170,7 @@ module CartoDB
       def download_and_store
         file = Tempfile.new(FILENAME_PREFIX, encoding: 'ascii-8bit')
 
-        size_limit_in_bytes = @user.try(:max_import_file_size)
-        binded_request(@translated_url, file, size_limit_in_bytes: size_limit_in_bytes).run
+        binded_request(@translated_url, file).run
 
         file_path = if @filename
                       new_file_path = File.join(Pathname.new(file.path).dirname, @filename)
@@ -188,7 +187,8 @@ module CartoDB
         file.unlink
       end
 
-      def binded_request(url, file, size_limit_in_bytes: 5_368_709_120)
+      def binded_request(url, file)
+        size_limit_in_bytes = @user.try(:max_import_file_size)
         request = Typhoeus::Request.new(url, typhoeus_options)
 
         request.on_headers do |response|
@@ -201,7 +201,7 @@ module CartoDB
 
         request.on_body do |chunk|
           if (@downloaded_bytes += chunk.bytesize) > size_limit_in_bytes
-            raise FileTooBigError.new("download file too big (> #{MAX_DOWNLOAD_SIZE} bytes)")
+            raise FileTooBigError.new("download file too big (> #{size_limit_in_bytes} bytes)")
           else
             file.write(chunk)
           end

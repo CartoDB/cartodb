@@ -54,7 +54,7 @@
               <input type="hidden" value="<%= params[:invitation_token] %>" id="invitation_token" name="invitation_token" />
 
               <div class="Sessions-fieldsGroup">
-                <% if @organization.auth_username_password_enabled %>
+                <% if @organization.auth_username_password_enabled || duplicated_username_prompt? %>
                   <div class="Sessions-field">
                     <%= f.text_field :username, class: "CDB-Size-medium Sessions-input topBorderRadius", placeholder: 'Username' %>
                     <% if !@user.errors[:username].blank? %>
@@ -63,7 +63,7 @@
                   </div>
 
                   <div class="Sessions-field">
-                    <%= f.email_field :email, class: "CDB-Size-medium Sessions-input", placeholder: 'email', readonly: params[:invitation_token].present? %>
+                    <%= f.email_field :email, class: "CDB-Size-medium Sessions-input", placeholder: 'email', readonly: params[:invitation_token].present? || duplicated_username_prompt? %>
                     <% if !@user.errors[:email].blank? %>
                       <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @user.errors[:email] %>">!</div>
                     <% end %>
@@ -84,7 +84,7 @@
                   </div>
                 <% end %>
 
-                <% if @organization.auth_username_password_enabled %>
+                <% if @organization.auth_username_password_enabled || duplicated_username_prompt? %>
                   <div class="Sessions-field">
                     <p>
                       <button type="submit" class="Sessions-submitButton js-Sessions-button js-Loading">
@@ -113,7 +113,7 @@
               </div>
             <% end %>
 
-            <% if @organization.auth_google_enabled || @organization.auth_github_enabled %>
+            <% if !duplicated_username_prompt? && (@organization.auth_google_enabled || @organization.auth_github_enabled) %>
               <div class="Sessions-field Sessions-oauthContainer">
                 <% if @organization.auth_google_enabled && @google_plus_config.present? %>
                   <%= render partial: 'google_plus/google_plus_button',  locals: { config: @google_plus_config } %>

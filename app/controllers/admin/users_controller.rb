@@ -28,6 +28,7 @@ class Admin::UsersController < Admin::AdminController
   before_filter :setup_user
   before_filter :initialize_google_plus_config, only: [:profile, :account]
   before_filter :load_services, only: [:account, :account_update, :delete]
+  before_filter :load_account_deletion_info, only: [:account, :delete]
 
   layout 'application'
 
@@ -42,7 +43,6 @@ class Admin::UsersController < Admin::AdminController
   end
 
   def account
-    @can_be_deleted, @cant_be_deleted_reason = can_be_deleted?(@user)
     respond_to do |format|
       format.html { render 'account' }
     end
@@ -156,6 +156,10 @@ class Admin::UsersController < Admin::AdminController
 
   def load_services
     @services = get_oauth_services
+  end
+
+  def load_account_deletion_info
+    @can_be_deleted, @cant_be_deleted_reason = can_be_deleted?(@user)
   end
 
   def get_oauth_services

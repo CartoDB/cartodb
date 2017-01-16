@@ -1146,8 +1146,8 @@
     },
     "cartodb-deep-insights.js": {
       "version": "0.0.2",
-      "from": "cartodb/deep-insights.js#master",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#708203920d2f5adeca73838205852688a837bc22",
+      "from": "cartodb/deep-insights.js#508-dont_show_autostyle_on_hidden_layer",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#cef5c1422a60ce32386995c5ed9e6b4b32b3953e",
       "dependencies": {
         "cartodb.js": {
           "version": "4.0.0-alpha.1",

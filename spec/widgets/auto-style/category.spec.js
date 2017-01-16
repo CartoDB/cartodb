@@ -9,7 +9,7 @@ describe('src/widgets/auto-style/category', function () {
     var layer = vis.map.layers.first();
     this.dataview = new Backbone.Model({
       data: [
-        { name: "soccer" },
+        { name: 'soccer' },
         { name: 'basketball' },
         { name: 'baseball' },
         { name: 'handball' },

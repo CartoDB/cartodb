@@ -26,11 +26,10 @@ module.exports = cdb.core.Model.extend({
 
     this.activeAutoStyler();
     this.bind('change:style', this.activeAutoStyler, this);
-    this.dataviewModel.layer.bind('change:visible', this.activeAutoStyler, this);
   },
 
   activeAutoStyler: function () {
-    if (this.isAutoStyleEnabled() && !this.autoStyler && this.dataviewModel.layer.get('visible')) {
+    if (this.isAutoStyleEnabled() && !this.autoStyler) {
       this.autoStyler = AutoStylerFactory.get(this.dataviewModel, this.get('style'));
     }
   },
@@ -69,7 +68,7 @@ module.exports = cdb.core.Model.extend({
   },
 
   isAutoStyleEnabled: function () {
-    if (!this.defaults.autoStyleEnabled || !this.dataviewModel.layer.get('visible')) return false;
+    if (!this.defaults.autoStyleEnabled) return false;
 
     var styles = this.get('style');
 

@@ -27,7 +27,7 @@ module.exports = cdb.core.View.extend({
     this.$el.html(
       template({
         title: this.widgetModel.get('title'),
-        isAutoStyleEnabled: this.widgetModel.isAutoStyleEnabled(),
+        isAutoStyleEnabled: this.widgetModel.isAutoStyleEnabled() && this.dataviewModel.layer.get('visible'),
         isAutoStyle: this.widgetModel.get('autoStyle'),
         isCollapsed: this.widgetModel.get('collapsed')
       })
@@ -39,6 +39,9 @@ module.exports = cdb.core.View.extend({
 
   _initBinds: function () {
     this.widgetModel.bind('change:title change:collapsed change:autoStyle change:style', this.render, this);
+    this.add_related_model(this.widgetModel);
+
+    this.dataviewModel.layer.bind('change:visible', this.render, this);
     this.add_related_model(this.dataviewModel);
   },
 

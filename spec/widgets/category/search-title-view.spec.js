@@ -3,9 +3,11 @@ var CategoryWidgetModel = require('../../../src/widgets/category/category-widget
 var SearchTitleView = require('../../../src/widgets/category/title/search-title-view');
 
 describe('widgets/category/search-title-view', function () {
+  var layer;
+
   beforeEach(function () {
     var vis = specHelper.createDefaultVis();
-    var layer = vis.map.layers.first();
+    layer = vis.map.layers.first();
     layer.restoreCartoCSS = jasmine.createSpy('restore');
     layer.getGeometryType = function () {
       return 'polygon';
@@ -120,22 +122,29 @@ describe('widgets/category/search-title-view', function () {
         this.widgetModel.set('style', {auto_style: {allowed: true}});
         expect(this.view.$('.js-autoStyle').length).toBe(1);
       });
-    });
 
-    describe('with autoStyleEnabled set to false', function () {
-      beforeEach(function () {
-        this.widgetModel = new CategoryWidgetModel({}, {
-          dataviewModel: this.dataviewModel
-        }, {autoStyleEnabled: false});
-        this.view = new SearchTitleView({
-          widgetModel: this.widgetModel,
-          dataviewModel: this.dataviewModel
-        });
-      });
-
-      it('should not render the autostyle button', function () {
+      it('should not render the autostyle button if layer is hidden', function () {
+        layer.set({visible: false});
         expect(this.view.$('.js-autoStyle').length).toBe(0);
       });
+    });
+  });
+
+  describe('with autoStyleEnabled set to false', function () {
+    beforeEach(function () {
+      this.widgetModel = new CategoryWidgetModel({}, {
+        dataviewModel: this.dataviewModel
+      }, {autoStyleEnabled: false});
+      this.view = new SearchTitleView({
+        widgetModel: this.widgetModel,
+        dataviewModel: this.dataviewModel
+      });
+
+      this.view.render();
+    });
+
+    it('should not render the autostyle button', function () {
+      expect(this.view.$('.js-autoStyle').length).toBe(0);
     });
   });
 

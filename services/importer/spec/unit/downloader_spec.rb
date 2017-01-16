@@ -219,7 +219,7 @@ describe Downloader do
         headers:  { "ETag" => etag }
       )
 
-      downloader = Downloader.new(@file_url, {etag: etag}, {}, user_id: @user.id)
+      downloader = Downloader.new(@file_url, { etag: etag }, user_id: @user.id)
       downloader.run
       downloader.modified?.should eq false
     end

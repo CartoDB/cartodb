@@ -4,7 +4,7 @@
   <%= javascript_include_tag 'cdb.js', 'signup.js' %>
 <% end %>
 
-<%= render :partial => 'shared/flash_message' %>
+<%= render :partial => 'shared/flash_message', locals: { error_message: @organization.auth_username_password_enabled ? nil : model_errors(@user) } %>
 
 <div class="CDB-Text <%= @organization.present? ? 'Sessions' : 'Sessions-navy' %>" style="<%= @organization.present? ? background : '' %>">
   <div class="Sessions-content">

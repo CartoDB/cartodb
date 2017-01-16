@@ -11,7 +11,7 @@
 }
 .FlashMessage > .u-inner {
   @include display-flex();
-  @include justify-content(space-between, justify);
+  @include justify-content(center, justify);
   @include align-items(center);
   height: 80px;
 }

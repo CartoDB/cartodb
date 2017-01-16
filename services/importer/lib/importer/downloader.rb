@@ -139,7 +139,7 @@ module CartoDB
                    filename_from_url ||
                    SecureRandom.urlsafe_base64
 
-        @filename = name_with_extension(basename)
+        @filename = filename_with_extension(basename)
         @etag = etag
         @last_modified = last_modified
       end
@@ -208,7 +208,7 @@ module CartoDB
         end
 
         request.on_complete do |response|
-          raise_error_for_response(response) unless response.success?
+          response.success? ? process_headers(response.headers) : raise_error_for_response(response)
         end
 
         request
@@ -378,7 +378,7 @@ module CartoDB
         end
       end
 
-      def name_with_extension(filename)
+      def filename_with_extension(filename)
         return filename unless extensions_from_headers
 
         pathname = Pathname.new(filename)

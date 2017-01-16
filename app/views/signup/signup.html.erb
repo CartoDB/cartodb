@@ -70,9 +70,9 @@
                   </div>
                 <% end %>
 
-                <% if @user.google_sign_in && @organization.auth_google_enabled %>
+                <% if google_sign_in? %>
                   <%= f.hidden_field :google_sign_in %>
-                <% elsif @user.github_user_id && @organization.auth_github_enabled %>
+                <% elsif github_sign_in? %>
                   <%= f.hidden_field :github_user_id %>
                   <input type="hidden" name="github_access_token" value="<%= @github_access_token %>" />
                 <% elsif @organization.auth_username_password_enabled %>

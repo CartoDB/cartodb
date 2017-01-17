@@ -2,7 +2,6 @@ var $ = require('jquery');
 var _ = require('underscore');
 var L = require('leaflet');
 var MapView = require('../map-view');
-var Sanitize = require('../../core/sanitize');
 var LeafletLayerViewFactory = require('./leaflet-layer-view-factory');
 
 var LeafletMapView = MapView.extend({
@@ -25,7 +24,8 @@ var LeafletMapView = MapView.extend({
       dragging: !!this.map.get('drag'),
       doubleClickZoom: !!this.map.get('drag'),
       scrollWheelZoom: !!this.map.get('scrollwheel'),
-      keyboard: !!this.map.get('keyboard')
+      keyboard: !!this.map.get('keyboard'),
+      attributionControl: false
     };
 
     this._leafletMap = new L.Map(this.el, mapConfig);
@@ -213,25 +213,6 @@ var LeafletMapView = MapView.extend({
       [sw.lat, sw.lng],
       [ne.lat, ne.lng]
     ];
-  },
-
-  _setAttribution: function (mdl) {
-    var attributionControl = this._leafletMap && this._leafletMap.attributionControl;
-    if (attributionControl) {
-      attributionControl.setPrefix('');
-
-      // If this method comes from an attribution property change
-      if (mdl) {
-        var previousAttributions = mdl.previous('attribution');
-        _.each(previousAttributions, function (text) {
-          attributionControl.removeAttribution(Sanitize.html(text));
-        });
-      }
-      var currentAttributions = this.map.get('attribution');
-      _.each(currentAttributions, function (text) {
-        attributionControl.addAttribution(Sanitize.html(text));
-      });
-    }
   },
 
   getSize: function () {

@@ -36,7 +36,7 @@ class Carto::Visualization < ActiveRecord::Base
 
   belongs_to :user_table, class_name: Carto::UserTable, primary_key: :map_id, foreign_key: :map_id, inverse_of: :visualization
 
-  belongs_to :permission
+  belongs_to :permission, inverse_of: :visualization
 
   has_many :likes, foreign_key: :subject
   has_many :shared_entities, foreign_key: :entity_id, inverse_of: :visualization

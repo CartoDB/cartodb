@@ -319,14 +319,7 @@ describe('geo/leaflet/leaflet-map-view', function () {
   describe('attributions', function () {
     it('should not render Leaflet attributions', function () {
       var attributions = mapView.$el.find('.leaflet-control-attribution');
-      expect(attributions.text()).toEqual('© CARTO');
-    });
-
-    it('should update the attribution when map attribution changes', function () {
-      map.set('attribution', [ '© CARTO', 'Another attribution' ]);
-
-      var attributions = mapView.$el.find('.leaflet-control-attribution');
-      expect(attributions.text()).toEqual('© CARTO, Another attribution');
+      expect(attributions.text()).toEqual('');
     });
   });
 

@@ -22,8 +22,7 @@ var MyMapView = MapView.extend({
   _getLayerViewFactory: function () {
     return fakeLayerViewFactory;
   },
-  _createNativeMap: function () {},
-  _setAttribution: function () {}
+  _createNativeMap: function () {}
 });
 
 describe('core/geo/map-view', function () {

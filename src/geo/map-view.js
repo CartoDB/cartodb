@@ -53,7 +53,6 @@ var MapView = View.extend({
 
   render: function () {
     this._createNativeMap();
-    this._setAttribution();
     var bounds = this.map.getViewBounds();
     if (bounds) {
       this._fitBounds(bounds);
@@ -92,7 +91,6 @@ var MapView = View.extend({
     this.map.bind('change:scrollwheel', this._setScrollWheel, this);
     this.map.bind('change:keyboard', this._setKeyboard, this);
     this.map.bind('change:center', this._setCenter, this);
-    this.map.bind('change:attribution', this._setAttribution, this);
   },
 
   /** unbind model properties */
@@ -231,10 +229,6 @@ var MapView = View.extend({
   // returns { lat: 0, lng: 0}
   containerPointToLatLng: function (point) {
     throw new Error('subclasses of MapView must implement containerPointToLatLng');
-  },
-
-  _setAttribution: function () {
-    throw new Error('Subclasses of src/geo/map-view.js must implement _setAttribution');
   },
 
   getNativeMap: function () {

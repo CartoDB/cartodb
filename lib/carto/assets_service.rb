@@ -57,9 +57,6 @@ module Carto
       filename = resource.respond_to?(:original_filename) ? resource.original_filename : resource
       extension = File.extname(filename).downcase
 
-      # Filename might include a postfix hash -- Rack::Test::UploadedFile adds it
-      extension.gsub!(/\d+-\w+-\w+\z/, '') if Rails.env.test?
-
       raise UnprocesableEntityError.new("extension not accepted") unless VALID_EXTENSIONS.include?(extension)
       extension
     end

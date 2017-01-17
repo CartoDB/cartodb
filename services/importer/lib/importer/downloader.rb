@@ -115,7 +115,7 @@ module CartoDB
                     url
                   end
 
-        raw_url.try(:is_a?, String) ? URI.escape(raw_url.strip, URL_ESCAPED_CHARACTERS) : raw_url
+        raw_url.is_a?(String) ? URI.escape(raw_url.strip, URL_ESCAPED_CHARACTERS) : raw_url
       end
 
       def raise_if_url_invalid(url)

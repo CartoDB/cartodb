@@ -16,6 +16,10 @@ require_relative '../../../../lib/carto/http/client'
 require_relative '../../../../lib/carto/url_validator'
 require_relative '../helpers/quota_check_helpers.rb'
 
+# NOTE: Beware that some methods and some parameters are kept since this class is supposed to be
+# interchangeable with CartoDB::Importer2::DatasourceDownloader. A better way to have managed
+# managed this might have been through inheritance, since Ruby doesn't provide interfaces.
+
 module CartoDB
   module Importer2
     class Downloader

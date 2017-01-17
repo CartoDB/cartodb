@@ -29,6 +29,13 @@ module Carto
           kind: 'organization_asset')
     end
 
+    def absolute_public_url
+      uri = URI.parse(public_url)
+      (uri.absolute? ? uri : URI.join(base_domain, uri)).to_s
+    rescue URI::InvalidURIError
+      public_url
+    end
+
     private
 
     def validate_storage_info
@@ -41,6 +48,10 @@ module Carto
 
     def remove_asset_from_storage
       Carto::AssetsService.new.remove(storage_info)
+    end
+
+    def base_domain
+      CartoDB.base_domain_from_name(user ? user.subdomain : organization.name)
     end
   end
 end

@@ -4,6 +4,7 @@ require_dependency 'carto/storage'
 
 module Carto
   class AssetsService
+    VALID_EXTENSIONS = %w{.jpeg .jpg .gif .png .svg}.freeze
 
     # resource can be anything accepted by OpenURI#open as a parameter
     def upload(namespace, resource)
@@ -59,6 +60,7 @@ module Carto
       # Filename might include a postfix hash -- Rack::Test::UploadedFile adds it
       extension.gsub!(/\d+-\w+-\w+\z/, '') if Rails.env.test?
 
+      raise UnprocesableEntityError.new("extension not accepted") unless VALID_EXTENSIONS.include?(extension)
       extension
     end
   end

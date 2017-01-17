@@ -1,7 +1,7 @@
 # encoding: utf-8
 
-require 'carto/assets_service'
-require 'carto/organization_assets_service'
+require_dependency 'carto/assets_service'
+require_dependency 'carto/organization_assets_service'
 
 module Carto
   class Asset < ActiveRecord::Base

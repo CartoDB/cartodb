@@ -103,6 +103,7 @@ describe 'csv regression tests' do
 
   it 'imports files from Google Fusion Tables' do
     # From https://www.google.com/fusiontables/exporttable?query=select+*+from+1dimNIKKwROG1yTvJ6JlMm4-B4LxMs2YbncM4p9g
+    CartoDB::Importer2::Downloader.any_instance.stubs(:validate_url!).returns(true)
     serve_file 'spec/support/data/dec_2012_modis_forest_change_fusion_tables.csv' do |url|
       downloader  = Downloader.new(@user.id, url)
       runner      = Runner.new(

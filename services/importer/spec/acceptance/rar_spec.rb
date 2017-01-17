@@ -42,7 +42,7 @@ describe 'rar regression tests' do
 
   it 'ignores unsupported files in the bundle' do
     filepath    = path_to('one_unsupported_one_valid.rar')
-    downloader  = Downloader.new(filepath)
+    downloader  = Downloader.new(@user.id, filepath)
     runner = Runner.new(
       pg:         @user.db_service.db_configuration_for,
       downloader: downloader,
@@ -56,7 +56,7 @@ describe 'rar regression tests' do
 
   it 'imports a rar with >1 file successfully' do
     filepath    = path_to('multiple_csvs.rar')
-    downloader  = Downloader.new(filepath)
+    downloader  = Downloader.new(@user.id, filepath)
     runner = Runner.new(
       pg:         @user.db_service.db_configuration_for,
       downloader: downloader,
@@ -75,7 +75,7 @@ describe 'rar regression tests' do
 
   it 'imports a maximum of Runner::MAX_TABLES_PER_IMPORT files from a rar, but doesnt errors' do
     filepath    = path_to('more_than_10_files.rar')
-    downloader  = Downloader.new(filepath)
+    downloader  = Downloader.new(@user.id, filepath)
     runner = Runner.new(
       pg:         @user.db_service.db_configuration_for,
       downloader: downloader,
@@ -95,7 +95,7 @@ describe 'rar regression tests' do
   it 'imports a shapefile that includes a xxx.VERSION.txt file skipping it' do
     # http://www.naturalearthdata.com/downloads/
     filepath    = path_to('shapefile_with_version_txt.rar')
-    downloader  = Downloader.new(filepath)
+    downloader  = Downloader.new(@user.id, filepath)
     runner = Runner.new(
       pg:         @user.db_service.db_configuration_for,
       downloader: downloader,
@@ -114,7 +114,7 @@ describe 'rar regression tests' do
 
   it 'imports all non-failing items from a rar without failing the whole import' do
     filepath    = path_to('file_ok_and_file_ko.rar')
-    downloader  = Downloader.new(filepath)
+    downloader  = Downloader.new(@user.id, filepath)
     runner = Runner.new(
       pg:         @user.db_service.db_configuration_for,
       downloader: downloader,

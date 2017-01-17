@@ -476,6 +476,18 @@ namespace :cartodb do
       puts "Organization: #{organization.name} seats updated to: #{args[:seats]}."
     end
 
+    desc "set organization viewer_seats"
+    task :set_organization_viewer_seats, [:organization_name, :seats] => :environment do |_, args|
+      usage = 'usage: rake cartodb:db:set_organization_viewer_seats[organization_name,seats]'
+      raise usage if args[:organization_name].blank? || args[:seats].blank?
+
+      organization = Organization.filter(name: args[:organization_name]).first
+      seats = args[:seats].to_i
+      organization.viewer_seats = seats
+      organization.save
+
+      puts "Organization: #{organization.name} seats updated to: #{args[:seats]}."
+    end
 
     #################
     # SET TABLE QUOTA

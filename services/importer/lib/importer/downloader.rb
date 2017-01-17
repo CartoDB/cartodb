@@ -146,8 +146,6 @@ module CartoDB
                    SecureRandom.urlsafe_base64
 
         @filename = filename_with_extension(basename)
-        @etag = etag
-        @last_modified = last_modified
       end
 
       MAX_REDIRECTS = 5

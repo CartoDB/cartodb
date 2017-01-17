@@ -248,6 +248,37 @@ describe Downloader do
       downloader = Downloader.new(@user.id, @file_url)
       lambda { downloader.run }.should raise_error PartialDownloadError
     end
+
+    describe('#quota_checks') do
+      before do
+        @old_max_import_file_size = @user.max_import_file_size
+        @user.max_import_file_size = 1024
+        @user.save
+      end
+
+      after do
+        @user.max_import_file_size = @old_max_import_file_size
+        @user.save
+      end
+
+      it 'raises when file size is bigger than available quota before download' do
+        CartoDB::Importer2::Downloader.any_instance.stubs(:validate_url!).returns(true)
+        serve_file 'spec/support/data/ne_110m_lakes.zip' do |url|
+          downloader = Downloader.new(@user.id, url)
+          expect { downloader.run }.to raise_error(CartoDB::Importer2::StorageQuotaExceededError)
+        end
+      end
+
+      it 'raises when file size is bigger than available quota during download' do
+        CartoDB::Importer2::Downloader.any_instance.stubs(:validate_url!).returns(true)
+        CartoDB::Importer2::Downloader.any_instance.stubs(:content_length)
+
+        serve_file 'spec/support/data/ne_110m_lakes.zip' do |url|
+          downloader = Downloader.new(@user.id, url)
+          expect { downloader.run }.to raise_error(CartoDB::Importer2::FileTooBigError)
+        end
+      end
+    end
   end
 
   describe '#source_file' do

@@ -1,9 +1,10 @@
 # encoding: utf-8
 
-require 'carto/storage'
+require_dependency 'carto/storage'
 
 module Carto
   class AssetsService
+    VALID_EXTENSIONS = %w{.jpeg .jpg .gif .png .svg}.freeze
 
     # resource can be anything accepted by OpenURI#open as a parameter
     def upload(namespace, resource)
@@ -27,7 +28,7 @@ module Carto
     end
 
     def fetch_file(resource)
-      temp_file = Tempfile.new("asset_download_#{Time.now.utc.to_i}")
+      temp_file = Tempfile.new(["asset_download_#{Time.now.utc.to_i}", resource_extension(resource)])
 
       begin
         read = IO.copy_stream(open(resource), temp_file, max_size_in_bytes + 1)
@@ -49,6 +50,15 @@ module Carto
 
     def max_size_in_bytes
       1_048_576 # 1 MB
+    end
+
+    def resource_extension(resource)
+      # Resource can be a ActionDispatch::Http::UploadedFile or a URI string
+      filename = resource.respond_to?(:original_filename) ? resource.original_filename : resource
+      extension = File.extname(filename).downcase
+
+      raise UnprocesableEntityError.new("extension not accepted") unless VALID_EXTENSIONS.include?(extension)
+      extension
     end
   end
 end

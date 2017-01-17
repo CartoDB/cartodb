@@ -10,5 +10,26 @@ describe Carto::AssetsService do
         Carto::AssetsService.new.fetch_file(Tempfile.new('manolo'))
       }.to raise_error(Carto::UnprocesableEntityError)
     end
+
+    it 'keeps original extension' do
+      file = Tempfile.new(['test', '.svg'])
+      file.write('wadus')
+      file.rewind
+      uploaded_file = Rack::Test::UploadedFile.new(file)
+
+      temp_file = Carto::AssetsService.new.fetch_file(uploaded_file)
+      temp_file.path.should end_with '.svg'
+    end
+
+    it 'rejects invalid extensions' do
+      file = Tempfile.new(['test', '.exe'])
+      file.write('wadus')
+      file.rewind
+      uploaded_file = Rack::Test::UploadedFile.new(file)
+
+      expect {
+        Carto::AssetsService.new.fetch_file(uploaded_file)
+      }.to raise_error(Carto::UnprocesableEntityError)
+    end
   end
 end

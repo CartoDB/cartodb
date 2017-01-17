@@ -44,6 +44,6 @@ describe 'UUIDHelper' do
   end
 
   it 'allows ftp' do
-    @url_validator.validate_url!("ftp://example.com").should be_true
+    expect { @url_validator.validate_url!("ftp://example.com") }.to_not raise_error
   end
 end

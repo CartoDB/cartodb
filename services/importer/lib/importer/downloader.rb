@@ -176,7 +176,7 @@ module CartoDB
       def download_and_store
         file = Tempfile.new(FILENAME_PREFIX, encoding: 'ascii-8bit')
 
-        binded_request(@translated_url, file).run
+        bound_request(@translated_url, file).run
 
         file_path = if @filename
                       new_file_path = File.join(Pathname.new(file.path).dirname, @filename)
@@ -193,7 +193,7 @@ module CartoDB
         file.unlink
       end
 
-      def binded_request(url, file)
+      def bound_request(url, file)
         request = Typhoeus::Request.new(url, typhoeus_options)
 
         request.on_headers do |response|

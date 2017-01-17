@@ -22,16 +22,10 @@ describe Downloader do
     @fusion_tables_filepath = path_to('forest_change.csv')
     @ftp_url        = "ftp://ftp.nlm.nih.gov/nlmdata/sample/INDEX"
     @ftp_filepath   = path_to('INDEX.txt')
-    @user = FactoryGirl.create(:carto_user)
   end
 
-  after do
-    @user.destroy
-  end
-
-  after(:each) do
-    Typhoeus::Expectation.clear
-  end
+  before(:all) { @user = FactoryGirl.create(:carto_user) }
+  after(:all)  { @user.destroy }
 
   describe '#run' do
     it 'downloads a file from a url' do
@@ -250,13 +244,13 @@ describe Downloader do
     end
 
     describe('#quota_checks') do
-      before do
+      before(:all) do
         @old_max_import_file_size = @user.max_import_file_size
         @user.max_import_file_size = 1024
         @user.save
       end
 
-      after do
+      after(:all) do
         @user.max_import_file_size = @old_max_import_file_size
         @user.save
       end

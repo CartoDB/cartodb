@@ -77,3 +77,36 @@ $iconMargin: 10px;
   color: $redColor;
 }
 
+.Modal {
+  .AssetItem {
+    margin-bottom: 16px;
+    margin-left: 16px;
+    margin-right: 0px;
+    margin-top: 0;
+  }
+  .CreateDialog-footerLine {
+    margin-left: -478px;
+  }
+  .CreateDialog-footerInner {
+    padding: 24px 0;
+    line-height: 36px;
+    box-sizing: border-box;
+  }
+  .CreateDialog-footerLine,
+  .CreateDialog-footerInner {
+    width: 948px;
+  }
+}
+.Dialog .Modal-inner {
+  .Modal-navigation {
+    position: absolute;
+  }
+  .AssetsList {
+    margin-left: -16px;
+    padding-left: 0;
+
+    &:last-child {
+      margin-left: -16px;
+    }
+  }
+}

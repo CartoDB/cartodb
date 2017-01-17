@@ -16,7 +16,7 @@ class ImportMailer < ActionMailer::Base
     @link = if first_imported_table.nil?
               "#{user.public_url}#{CartoDB.path(self, 'tables_index')}"
             else
-              "#{user.public_url}#{CartoDB.path(self, 'public_tables_show', { id: @dataset_name })}"
+              "#{user.public_url}#{CartoDB.path(self, 'public_tables_show', id: @dataset_name)}"
             end
 
     mail :to => user.email,

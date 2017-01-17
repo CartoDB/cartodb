@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-require 'carto/storage'
+require_dependency 'carto/storage'
 
 module Carto
   class AssetsService

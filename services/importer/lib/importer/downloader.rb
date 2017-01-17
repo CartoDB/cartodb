@@ -69,7 +69,7 @@ module CartoDB
       def run(_available_quota_in_bytes = nil)
         if @translated_url =~ %r{://}
           raise_if_over_storage_quota(requested_quota: content_length,
-                                      available_quota: max_quota_in_bytes,
+                                      available_quota: size_limit_in_bytes,
                                       user_id: @user.id)
 
           modified? ? download_and_store : @source_file = nil
@@ -96,8 +96,8 @@ module CartoDB
 
       private
 
-      def max_quota_in_bytes
-        [@user.max_import_file_size, @user.remaining_quota].compact.min
+      def size_limit_in_bytes
+        @size_limit_in_bytes ||= [@user.max_import_file_size, @user.remaining_quota].compact.min
       end
 
       URL_ESCAPED_CHARACTERS = 'áéíóúÁÉÍÓÚñÑçÇàèìòùÀÈÌÒÙ'.freeze
@@ -204,7 +204,6 @@ module CartoDB
         end
 
         request.on_body do |chunk|
-          size_limit_in_bytes = @user.max_import_file_size
           if (@downloaded_bytes += chunk.bytesize) > size_limit_in_bytes
             raise FileTooBigError.new("download file too big (> #{size_limit_in_bytes} bytes)")
           else

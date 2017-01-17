@@ -28,7 +28,7 @@ describe 'rar regression tests' do
 
   it 'returns empty results if no supported files in the bundle' do
     filepath    = path_to('one_unsupported.rar')
-    downloader  = Downloader.new(filepath)
+    downloader  = Downloader.new(@user.id, filepath)
     runner = Runner.new(
       pg:         @user.db_service.db_configuration_for,
       downloader: downloader,

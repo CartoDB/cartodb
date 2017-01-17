@@ -45,6 +45,7 @@ Development
 * Fixed a bug with vizjson invalidation (#11092). It was introduced in #10934
 * Refactor Layer model (#10934)
 * Fix bugs where legends where being hidden by reordering layers (#11088)
+* Correctly ask for alternative username when signing up with Google/GitHub into an organization
 * Avoid loading all rake code in resque workers (#11069)
 * Fix analysis notification in running state (#11079)
 * Fix color for "Other" category (#11078)

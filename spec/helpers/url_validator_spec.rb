@@ -41,7 +41,6 @@ describe 'UUIDHelper' do
     @url_validator.validate_url!("https://example.com/bar.kml")
     @url_validator.validate_url!("http://example.com/foo.csv:80")
     @url_validator.validate_url!("https://example.com/bar.kml:443")
-    @url_validator.validate_url!("ftp://example.com")
   end
 
   it 'allows ftp' do

@@ -133,6 +133,7 @@ InfowindowManager.prototype._onPopupsEnabledChanged = function () {
 
 InfowindowManager.prototype._hideInfowindow = function () {
   this._infowindowModel && this._infowindowModel.hide();
+  this._unbindLayerModel();
 };
 
 module.exports = InfowindowManager;

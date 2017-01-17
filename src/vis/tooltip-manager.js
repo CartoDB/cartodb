@@ -4,12 +4,10 @@
  * collection of layers changes
  */
 var TooltipManager = function (deps) {
-  if (!deps.visModel) throw new Error('visModel is required');
   if (!deps.mapModel) throw new Error('mapModel is required');
   if (!deps.tooltipModel) throw new Error('tooltipModel is required');
   if (!deps.infowindowModel) throw new Error('infowindowModel is required');
 
-  this._visModel = deps.visModel;
   this._mapModel = deps.mapModel;
   this._tooltipModel = deps.tooltipModel;
   this._infowindowModel = deps.infowindowModel;

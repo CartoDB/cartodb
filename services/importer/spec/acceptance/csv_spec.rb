@@ -29,7 +29,7 @@ describe 'csv regression tests' do
 
   it 'georeferences files with lat / lon columns' do
     filepath    = path_to('../../../../spec/support/data/csv_with_lat_lon.csv')
-    downloader  = Downloader.new(filepath)
+    downloader  = Downloader.new(@user.id, filepath)
     runner      = Runner.new({
                                pg: @user.db_service.db_configuration_for,
                                downloader: downloader,
@@ -46,7 +46,7 @@ describe 'csv regression tests' do
 
   it 'imports XLS files' do
     filepath    = path_to('../../../../spec/support/data/ngos.xlsx')
-    downloader  = Downloader.new(filepath)
+    downloader  = Downloader.new(@user.id, filepath)
     runner      = Runner.new({
                                pg: @user.db_service.db_configuration_for,
                                downloader: downloader,
@@ -61,7 +61,7 @@ describe 'csv regression tests' do
 
   it 'imports files with duplicated column names' do
     filepath    = path_to('../fixtures/duplicated_column_name.csv')
-    downloader  = Downloader.new(filepath)
+    downloader  = Downloader.new(@user.id, filepath)
     runner      = Runner.new({
                                pg: @user.db_service.db_configuration_for,
                                downloader: downloader,
@@ -89,7 +89,7 @@ describe 'csv regression tests' do
 
   it 'imports files exported from the SQL API' do
     filepath    = path_to('ne_10m_populated_places_simple.csv')
-    downloader  = Downloader.new(filepath)
+    downloader  = Downloader.new(@user.id, filepath)
     runner      = Runner.new({
                                pg: @user.db_service.db_configuration_for,
                                downloader: downloader,
@@ -104,7 +104,7 @@ describe 'csv regression tests' do
   it 'imports files from Google Fusion Tables' do
     # From https://www.google.com/fusiontables/exporttable?query=select+*+from+1dimNIKKwROG1yTvJ6JlMm4-B4LxMs2YbncM4p9g
     serve_file 'spec/support/data/dec_2012_modis_forest_change_fusion_tables.csv' do |url|
-      downloader  = Downloader.new(url)
+      downloader  = Downloader.new(@user.id, url)
       runner      = Runner.new(
         pg: @user.db_service.db_configuration_for,
         downloader: downloader,
@@ -121,7 +121,7 @@ describe 'csv regression tests' do
 
   it 'imports files with a the_geom column in GeoJSON' do
     filepath    = path_to('csv_with_geojson.csv')
-    downloader  = Downloader.new(filepath)
+    downloader  = Downloader.new(@user.id, filepath)
     runner      = Runner.new({
                                pg: @user.db_service.db_configuration_for,
                                downloader: downloader,
@@ -139,7 +139,7 @@ describe 'csv regression tests' do
 
   it 'imports files with & in the name' do
     filepath    = path_to('ne_10m_populated_places_&simple.csv')
-    downloader  = Downloader.new(filepath)
+    downloader  = Downloader.new(@user.id, filepath)
     runner      = Runner.new({
                                pg: @user.db_service.db_configuration_for,
                                downloader: downloader,
@@ -176,7 +176,7 @@ describe 'csv regression tests' do
 
   it 'imports records with cell line breaks' do
     filepath    = path_to('in_cell_line_breaks.csv')
-    downloader  = Downloader.new(filepath)
+    downloader  = Downloader.new(@user.id, filepath)
     runner      = Runner.new({
                                pg: @user.db_service.db_configuration_for,
                                downloader: downloader,
@@ -195,7 +195,7 @@ describe 'csv regression tests' do
 
   it 'imports records with cell line breaks in tables which require normalization' do
     filepath    = path_to('in_cell_line_breaks_needs_norm.csv')
-    downloader  = Downloader.new(filepath)
+    downloader  = Downloader.new(@user.id, filepath)
     runner      = Runner.new({
                                pg: @user.db_service.db_configuration_for,
                                downloader: downloader,
@@ -214,7 +214,7 @@ describe 'csv regression tests' do
 
   it 'import records in ISO-8859-1 with Windows-style breaks' do
     filepath    = path_to('cp1252_with_crlf.csv')
-    downloader  = Downloader.new(filepath)
+    downloader  = Downloader.new(@user.id, filepath)
     runner      = Runner.new({
                                pg: @user.db_service.db_configuration_for,
                                downloader: downloader,
@@ -233,7 +233,7 @@ describe 'csv regression tests' do
 
   it 'import records with cell cp1252 reverse line breaks' do
     filepath    = path_to('cp1252_with_rev_lf.csv')
-    downloader  = Downloader.new(filepath)
+    downloader  = Downloader.new(@user.id, filepath)
     runner      = Runner.new({
                                pg: @user.db_service.db_configuration_for,
                                downloader: downloader,
@@ -258,7 +258,7 @@ describe 'csv regression tests' do
 
   it 'import records with cell utf8 reverse line breaks' do
     filepath    = path_to('utf8_with_rev_lf.csv')
-    downloader  = Downloader.new(filepath)
+    downloader  = Downloader.new(@user.id, filepath)
     runner      = Runner.new({
                                pg: @user.db_service.db_configuration_for,
                                downloader: downloader,
@@ -290,7 +290,7 @@ describe 'csv regression tests' do
   it 'import records with escaped quotes' do
     %w(escaped_quotes_comma_sep.csv escaped_quotes_semi_sep.csv).each do |csv_file|
       filepath    = path_to(csv_file)
-      downloader  = Downloader.new(filepath)
+      downloader  = Downloader.new(@user.id, filepath)
       runner      = Runner.new({
                                  pg: @user.db_service.db_configuration_for,
                                  downloader: downloader,
@@ -328,7 +328,7 @@ describe 'csv regression tests' do
 
   it 'refuses to import csv with broken encoding' do
     filepath    = path_to('broken_encoding.csv')
-    downloader  = Downloader.new(filepath)
+    downloader  = Downloader.new(@user.id, filepath)
     runner      = Runner.new({
                                pg: @user.db_service.db_configuration_for,
                                downloader: downloader,
@@ -394,7 +394,7 @@ describe 'csv regression tests' do
 
   def runner_with_fixture(file, job=nil, add_ogr2ogr2_options=false)
     filepath = path_to(file)
-    downloader = Downloader.new(filepath)
+    downloader = Downloader.new(@user.id, filepath)
     runner = Runner.new({
                  pg: @user.db_service.db_configuration_for,
                  downloader: downloader,

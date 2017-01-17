@@ -36,7 +36,7 @@ describe Carto::Asset do
     it 'should create a valid asset for organization and resource' do
       bypass_storage
       asset = Carto::Asset.for_organization(organization: @organization,
-                                            resource: Tempfile.new('manolo'))
+                                            resource: Tempfile.new(['manolo', '.jpg']))
 
       asset.valid?.should be_true
     end

@@ -27,7 +27,7 @@ module Carto
     end
 
     def fetch_file(resource)
-      temp_file = Tempfile.new("asset_download_#{Time.now.utc.to_i}")
+      temp_file = Tempfile.new(["asset_download_#{Time.now.utc.to_i}", resource_extension(resource)])
 
       begin
         read = IO.copy_stream(open(resource), temp_file, max_size_in_bytes + 1)
@@ -49,6 +49,17 @@ module Carto
 
     def max_size_in_bytes
       1_048_576 # 1 MB
+    end
+
+    def resource_extension(resource)
+      # Resource can be a ActionDispatch::Http::UploadedFile or a URI string
+      filename = resource.respond_to?(:original_filename) ? resource.original_filename : resource
+      extension = File.extname(filename).downcase
+
+      # Filename might include a postfix hash -- Rack::Test::UploadedFile adds it
+      extension.gsub!(/\d+-\w+-\w+\z/, '') if Rails.env.test?
+
+      extension
     end
   end
 end

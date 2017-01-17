@@ -20,6 +20,14 @@ var STATE_INIT = 'init'; // vis hasn't been sent to Windshaft
 var STATE_OK = 'ok'; // vis has been sent to Windshaft and everything is ok
 var STATE_ERROR = 'error'; // vis has been sent to Windshaft and there were some issues
 
+var isCartoDBLayer = function (layerModel) {
+  return layerModel.get('type') === 'CartoDB';
+};
+
+var isTorqueLayer = function (layerModel) {
+  return layerModel.get('type') === 'torque';
+};
+
 var VisModel = Backbone.Model.extend({
   defaults: {
     loading: false,
@@ -338,15 +346,19 @@ var VisModel = Backbone.Model.extend({
   },
 
   _onLayerAdded: function (layerModel) {
-    this.reload({
-      sourceId: layerModel.get('id')
-    });
+    if (isCartoDBLayer(layerModel) || isTorqueLayer(layerModel)) {
+      this.reload({
+        sourceId: layerModel.get('id')
+      });
+    }
   },
 
   _onLayerRemoved: function (layerModel) {
-    this.reload({
-      sourceId: layerModel.get('id')
-    });
+    if (isCartoDBLayer(layerModel) || isTorqueLayer(layerModel)) {
+      this.reload({
+        sourceId: layerModel.get('id')
+      });
+    }
   },
 
   _onDataviewAdded: function () {

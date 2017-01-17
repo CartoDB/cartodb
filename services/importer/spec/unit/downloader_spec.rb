@@ -309,25 +309,25 @@ describe Downloader do
   describe '#name inference' do
     it 'gets the file name from the Content-Disposition header if present' do
       headers = { "Content-Disposition" => %{attachment; filename="bar.csv"} }
-      downloader = Downloader.new(@user.id, @file_url, headers, Hash.new)
+      downloader = Downloader.new(@user.id, @file_url, headers)
       downloader.send(:process_headers, headers)
       downloader.instance_variable_get(:@filename).should eq 'bar.csv'
 
       headers = { "Content-Disposition" => %{attachment; filename=bar.csv} }
-      downloader = Downloader.new(@user.id, @file_url, headers, Hash.new)
+      downloader = Downloader.new(@user.id, @file_url, headers)
       downloader.send(:process_headers, headers)
       downloader.instance_variable_get(:@filename).should eq 'bar.csv'
 
       disposition = "attachment; filename=map_gaudi3d.geojson; " +
                     'modification-date="Tue, 06 Aug 2013 15:05:35 GMT'
       headers = { "Content-Disposition" => disposition }
-      downloader = Downloader.new(@user.id, @file_url, headers, Hash.new)
+      downloader = Downloader.new(@user.id, @file_url, headers)
       downloader.send(:process_headers, headers)
       downloader.instance_variable_get(:@filename).should eq 'map_gaudi3d.geojson'
     end
 
     it 'gets the file name from the URL if no Content-Disposition header' do
-      downloader = Downloader.new(@user.id, @file_url, Hash.new, Hash.new)
+      downloader = Downloader.new(@user.id, @file_url)
 
       downloader.send(:process_headers, Hash.new)
       downloader.instance_variable_get(:@filename).should eq 'ne_110m_lakes.zip'
@@ -336,7 +336,7 @@ describe Downloader do
     it 'gets the file name from the URL if no Content-Disposition header and custom params schema is used' do
       hard_url = "https://manolo.escobar.es/param&myfilenameparam&zip_file.csv.zip&otherinfo"
 
-      downloader = Downloader.new(@user.id, hard_url, Hash.new, Hash.new)
+      downloader = Downloader.new(@user.id, hard_url)
       downloader.send(:process_headers, Hash.new)
       downloader.instance_variable_get(:@filename).should eq 'zip_file.csv.zip'
     end
@@ -344,13 +344,13 @@ describe Downloader do
     it 'uses random name in no name can be found in url or http headers' do
       empty_url = "https://manolo.escobar.es/param&myfilenameparam&nothing&otherinfo"
 
-      downloader = Downloader.new(@user.id, empty_url, Hash.new, Hash.new)
+      downloader = Downloader.new(@user.id, empty_url)
       downloader.send(:process_headers, Hash.new)
       downloader.instance_variable_get(:@filename).should_not eq nil
     end
 
     it 'discards url query params' do
-      downloader = Downloader.new(@user.id, "#{@file_url}?foo=bar&woo=wee", Hash.new, Hash.new)
+      downloader = Downloader.new(@user.id, "#{@file_url}?foo=bar&woo=wee")
       downloader.send(:process_headers, Hash.new)
       downloader.instance_variable_get(:@filename).should eq 'ne_110m_lakes.zip'
     end
@@ -358,7 +358,7 @@ describe Downloader do
     it 'matches longer extension available from filename' do
       hard_url = "https://cartofante.net/my_file.xlsx"
 
-      downloader = Downloader.new(@user.id, hard_url, Hash.new, Hash.new)
+      downloader = Downloader.new(@user.id, hard_url)
       downloader.send(:process_headers, Hash.new)
       downloader.instance_variable_get(:@filename).should eq 'my_file.xlsx'
     end

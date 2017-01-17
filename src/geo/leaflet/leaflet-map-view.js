@@ -25,7 +25,8 @@ var LeafletMapView = MapView.extend({
       dragging: !!this.map.get('drag'),
       doubleClickZoom: !!this.map.get('drag'),
       scrollWheelZoom: !!this.map.get('scrollwheel'),
-      keyboard: !!this.map.get('keyboard')
+      keyboard: !!this.map.get('keyboard'),
+      attributionControl: false
     };
 
     this._leafletMap = new L.Map(this.el, mapConfig);

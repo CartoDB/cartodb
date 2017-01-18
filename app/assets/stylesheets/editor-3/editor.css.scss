@@ -41,7 +41,7 @@
   left: 0;
   width: 100%;
   min-height: 0;
-  padding: 19px 25px 0;
+  padding: 19px 24px 0;
   box-sizing: border-box;
 }
 .Editor-panel.is-dark {
@@ -65,15 +65,25 @@
   width: 488px;
 }
 
-.Editor-panel .ps-scrollbar-y-rail {
+.Editor-panel .ps-scrollbar-y-rail,
+.CDB-Widget-canvas .ps-container>.ps-scrollbar-y-rail {
   right: 0 !Important;
-  width: 2px !Important; // Resets standard scroll track color
+  width: 4px !Important; // Resets standard scroll track color
   background: #EEE;
   z-index: 3;
 }
-.Editor-panel .ps-scrollbar-y {
-  width: 2px !Important; // Resets standard scroll bar color
+.Editor-panel .ps-scrollbar-y,
+.CDB-Widget-canvas .ps-container>.ps-scrollbar-y-rail>.ps-scrollbar-y {
+  width: 4px !Important; // Resets standard scroll bar color
   background: #AAA;
+  right: 0 !important;
+  &:hover {
+    cursor: all-scroll;
+    cursor: -webkit-grab;
+  }
+  &:active {
+    cursor: -webkit-grabbing;
+  }
 }
 .Editor-panel .ps-scrollbar-x-rail {
   height: 2px !Important; // Resets standard scroll track color
@@ -85,7 +95,7 @@
 .Editor-panel .ps-scrollbar-x-rail .ps-scrollbar-x {
   bottom: -1px !Important; // Resets standard scroll bar position
   height: 4px !Important; // Resets standard scroll bar color
-  background: #AAA;
+  background: red;
   pointer-events: all;
   opacity: 0.6;
 }
@@ -216,14 +226,6 @@
     .CDB-Widget-listItemInner {
       margin: 0;
     }
-    // .CDB-Widget-canvas .hasXScroll>.ps-scrollbar-x-rail {
-    //   display: block;
-    //   width: 100%;
-    //   opacity: 0.6;
-    // }
-    // .CDB-Widget-canvas .hasXScroll>.ps-scrollbar-x-rail>.ps-scrollbar-x {
-    //   min-width: 50%;
-    // }
   }
 }
 

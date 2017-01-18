@@ -51,24 +51,27 @@ module Carto
           locked: @visualization.locked,
           source: @visualization.source,
           title: @visualization.title,
-          parent_id: @visualization.parent_id,
           license: @visualization.license,
           attributions: @visualization.attributions,
           kind: @visualization.kind,
           likes: @visualization.likes_count,
-          prev_id: @visualization.prev_id,
-          next_id: @visualization.next_id,
-          transition_options: @visualization.transition_options,
-          active_child: nil,
           table: user_table_presentation,
           external_source: Carto::Api::ExternalSourcePresenter.new(@visualization.external_source).to_poro,
           synchronization: Carto::Api::SynchronizationPresenter.new(@visualization.synchronization).to_poro,
-          children: [],
           liked: @current_viewer ? @visualization.is_liked_by_user_id?(@current_viewer.id) : false,
           url: url,
           uses_builder_features: @visualization.uses_builder_features?,
           auth_tokens: auth_tokens,
-          version: @visualization.version || 2
+          version: @visualization.version || 2,
+          # TODO: The following are Odyssey fields and could be removed
+          # They are kept here for now for compatibility with the old presenter and JS code
+          # `children` is hardcoded to avoid a performance impact (an extra query)
+          prev_id: @visualization.prev_id,
+          next_id: @visualization.next_id,
+          parent_id: @visualization.parent_id,
+          transition_options: @visualization.transition_options,
+          active_child: nil,
+          children: []
         }
         poro[:related_tables] = related_tables if @options.fetch(:related, true)
         poro

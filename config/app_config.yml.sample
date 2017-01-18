@@ -276,6 +276,10 @@ defaults: &defaults
   assets:
     s3_bucket_name: "tests"
     max_file_size: 5242880 # 5.megabytes
+    organization:
+      bucket: "tests"
+      max_size_in_bytes: 1048576
+      location: 'organization_assets'
   app_assets:
     asset_host: "//cartodb-libs.global.ssl.fastly.net/cartodbui"
   avatars:

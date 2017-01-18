@@ -402,7 +402,7 @@ class DataImport < Sequel::Model
   end
 
   def final_state?
-    [STATE_COMPLETE, STATE_FAILURE, STATE_STUCK].include? state
+    [STATE_COMPLETE, STATE_FAILURE, STATE_STUCK].include?(state)
   end
 
   private

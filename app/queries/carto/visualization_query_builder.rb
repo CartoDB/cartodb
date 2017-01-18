@@ -126,7 +126,7 @@ class Carto::VisualizationQueryBuilder
   end
 
   def with_prefetch_table
-    with_eager_load_of(:table)
+    with_eager_load_of(map: :user_table)
   end
 
   def with_prefetch_permission

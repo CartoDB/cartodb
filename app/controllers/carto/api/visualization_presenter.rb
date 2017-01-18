@@ -24,7 +24,6 @@ module Carto
 
       def to_poro
         return to_public_poro unless @visualization.is_viewable_by_user?(@current_viewer)
-
         show_stats = @options.fetch(:show_stats, true)
 
         permission = @visualization.permission.nil? ? nil : Carto::Api::PermissionPresenter.new(@visualization.permission,
@@ -32,7 +31,7 @@ module Carto
                                                                                            .with_presenter_cache(@presenter_cache)
                                                                                            .to_poro
 
-        user_table_presentation = Carto::Api::UserTablePresenter.new(@visualization.table, @current_viewer)
+        user_table_presentation = Carto::Api::UserTablePresenter.new(@visualization.user_table, @current_viewer)
                                                                 .with_presenter_cache(@presenter_cache).to_poro
 
         poro = {
@@ -128,9 +127,11 @@ module Carto
       end
 
       def related_tables
-        related = @visualization.table ?
-          @visualization.related_tables.select { |table| table.id != @visualization.table.id } :
-          @visualization.related_tables
+        related = if @visualization.user_table
+                    @visualization.related_tables.select { |table| table.id != @visualization.user_table.id }
+                  else
+                    @visualization.related_tables
+                  end
 
         related.map do |table|
           Carto::Api::UserTablePresenter.new(table, @current_viewer).to_poro

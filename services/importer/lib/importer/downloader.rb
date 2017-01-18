@@ -131,8 +131,7 @@ module CartoDB
       def headers
         return @headers if @headers
 
-        response = Carto::Http::Client.get('downloader', log_requests: true)
-                                      .head(@translated_url, typhoeus_options)
+        response = http_client.head(@translated_url, typhoeus_options)
 
         @http_response_code = response.code
         raise_if_url_invalid(response.effective_url || @translated_url)

@@ -136,13 +136,14 @@ module CartoDB
         @http_response_code = response.code
         if response.success?
           raise_if_url_invalid(response.effective_url || @translated_url)
-          @headers = response.headers
 
-          set_headers
+          set_headers(response.headers)
         end
       end
 
-      def set_headers
+      def set_headers(headers)
+        @headers = headers
+
         basename = @custom_filename ||
                    filename_from_headers ||
                    filename_from_url ||

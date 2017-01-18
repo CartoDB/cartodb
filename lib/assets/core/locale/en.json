@@ -2025,7 +2025,7 @@
           "operation-column": "operation column"
         },
         "style": {
-          "title-label": "Behaviour",
+          "title-label": "Behavior",
           "description": "Apply style to your visualization",
           "sync_on_data_change": "Unfiltered",
           "sync_on_bbox_change": "Dynamic",

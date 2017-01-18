@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.5.102",
+  "version": "4.5.104",
   "dependencies": {
     "backbone": {
       "version": "1.2.3",
@@ -86,7 +86,7 @@
                             },
                             "readable-stream": {
                               "version": "2.0.6",
-                              "from": "readable-stream@>=2.0.5 <2.1.0",
+                              "from": "readable-stream@>=2.0.0 <2.1.0",
                               "resolved": "https://registry.npmjs.org/readable-stream/-/readable-stream-2.0.6.tgz",
                               "dependencies": {
                                 "core-util-is": {
@@ -819,7 +819,7 @@
             },
             "map-obj": {
               "version": "1.0.1",
-              "from": "map-obj@>=1.0.1 <2.0.0",
+              "from": "map-obj@>=1.0.1 <1.1.0",
               "resolved": "https://registry.npmjs.org/map-obj/-/map-obj-1.0.1.tgz"
             },
             "replace-requires": {
@@ -1152,7 +1152,7 @@
         "cartodb.js": {
           "version": "4.0.0-alpha.1",
           "from": "cartodb/cartodb.js#v4",
-          "resolved": "git://github.com/cartodb/cartodb.js.git#f4b8564d9dba219d50e1f8e6c59585d36c4becac",
+          "resolved": "git://github.com/cartodb/cartodb.js.git#ee34fec99a4b3ffb2f861c123651d8b9bcee04e5",
           "dependencies": {
             "backbone-poller": {
               "version": "1.1.3",
@@ -1413,7 +1413,7 @@
                 },
                 "turf-jenks": {
                   "version": "1.0.1",
-                  "from": "turf-jenks@>=1.0.1 <2.0.0",
+                  "from": "turf-jenks@>=1.0.1 <1.1.0",
                   "resolved": "https://registry.npmjs.org/turf-jenks/-/turf-jenks-1.0.1.tgz",
                   "dependencies": {
                     "simple-statistics": {
@@ -1464,7 +1464,7 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
       "from": "cartodb/cartodb.js#v4",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#f4b8564d9dba219d50e1f8e6c59585d36c4becac",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#ee34fec99a4b3ffb2f861c123651d8b9bcee04e5",
       "dependencies": {
         "backbone-poller": {
           "version": "1.1.3",
@@ -1730,7 +1730,7 @@
             },
             "turf-jenks": {
               "version": "1.0.1",
-              "from": "turf-jenks@>=1.0.1 <2.0.0",
+              "from": "turf-jenks@>=1.0.1 <1.1.0",
               "resolved": "https://registry.npmjs.org/turf-jenks/-/turf-jenks-1.0.1.tgz",
               "dependencies": {
                 "simple-statistics": {

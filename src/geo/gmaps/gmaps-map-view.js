@@ -167,12 +167,6 @@ var GoogleMapsMapView = MapView.extend({
     return [ [0, 0], [0, 0] ];
   },
 
-  _setAttribution: function () {
-    // There is no control over Google Maps attribution component, so we can't add
-    // any attribution text there (if Map is already created using createLayer for example)
-    // and there is no CartoDB attribution component.
-  },
-
   setCursor: function (cursor) {
     this._gmapsMap.setOptions({ draggableCursor: cursor });
   },

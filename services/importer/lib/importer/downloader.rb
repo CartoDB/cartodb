@@ -138,11 +138,11 @@ module CartoDB
           raise_if_url_invalid(response.effective_url || @translated_url)
           @headers = response.headers
 
-          process_headers
+          set_headers
         end
       end
 
-      def process_headers
+      def set_headers
         basename = @custom_filename ||
                    filename_from_headers ||
                    filename_from_url ||
@@ -202,7 +202,7 @@ module CartoDB
 
           raise_if_url_invalid(response.effective_url || @translated_url)
 
-          response.success? ? process_headers(response.headers) : raise_error_for_response(response)
+          response.success? ? set_headers(response.headers) : raise_error_for_response(response)
         end
 
         request.on_body do |chunk|
@@ -214,7 +214,7 @@ module CartoDB
         end
 
         request.on_complete do |response|
-          response.success? ? process_headers(response.headers) : raise_error_for_response(response)
+          response.success? ? set_headers(response.headers) : raise_error_for_response(response)
         end
 
         request

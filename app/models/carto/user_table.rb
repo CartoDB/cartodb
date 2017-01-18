@@ -13,12 +13,9 @@ module Carto
       PRIVACY_LINK => 'link'
     }.freeze
 
-    belongs_to :visualization, primary_key: :map_id, foreign_key: :map_id,
-                               conditions: { type: Carto::Visualization::TYPE_CANONICAL }, inverse_of: :user_table
-
     belongs_to :user
 
-    belongs_to :map
+    belongs_to :map, inverse_of: :user_table
 
     belongs_to :data_import
 
@@ -59,9 +56,12 @@ module Carto
       @table = table
     end
 
+    def visualization
+      map.visualization
+    end
+
     def synchronization
-      # TODO: replace with an association so it can be joined and eager loaded
-      @synchronization ||= get_synchronization
+      visualization.synchronization
     end
 
     def dependent_visualizations
@@ -144,10 +144,6 @@ module Carto
 
     def table
       @table ||= ::Table.new( { user_table: self } )
-    end
-
-    def get_synchronization
-      Carto::Synchronization.where(user_id: user_id, name: name).first
     end
 
     def visualization_readable_by?(user)

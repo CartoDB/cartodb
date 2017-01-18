@@ -34,15 +34,13 @@ class Carto::Visualization < ActiveRecord::Base
   belongs_to :user, inverse_of: :visualizations, select: Carto::User::DEFAULT_SELECT
   belongs_to :full_user, class_name: Carto::User, foreign_key: :user_id, primary_key: :id, inverse_of: :visualizations, readonly: true
 
-  belongs_to :user_table, class_name: Carto::UserTable, primary_key: :map_id, foreign_key: :map_id, inverse_of: :visualization
-
   belongs_to :permission, inverse_of: :visualization
 
   has_many :likes, foreign_key: :subject
   has_many :shared_entities, foreign_key: :entity_id, inverse_of: :visualization
 
   # TODO: duplicated with user_table?
-  belongs_to :table, class_name: Carto::UserTable, primary_key: :map_id, foreign_key: :map_id, inverse_of: :visualization
+  belongs_to :table, class_name: Carto::UserTable, primary_key: :map_id, foreign_key: :map_id
   has_one :external_source
   has_many :unordered_children, class_name: Carto::Visualization, foreign_key: :parent_id
 
@@ -104,6 +102,10 @@ class Carto::Visualization < ActiveRecord::Base
   def tags=(tags)
     tags.reject!(&:blank?) if tags
     super(tags)
+  end
+
+  def user_table
+    map.user_table
   end
 
   def layers_with_data_readable_by(user)

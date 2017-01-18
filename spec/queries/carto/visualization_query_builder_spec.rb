@@ -11,6 +11,11 @@ describe Carto::VisualizationQueryBuilder do
   include_context 'visualization creation helpers'
   include_context 'users helper'
 
+  def preload_activerecord_metadata
+    # Loads the model structures into memory, to avoid counting those as queries
+    Carto::VisualizationQueryBuilder.new.build.first.user_table.name
+  end
+
   before(:each) do
     @vqb = Carto::VisualizationQueryBuilder.new
 
@@ -66,8 +71,7 @@ describe Carto::VisualizationQueryBuilder do
   it 'can prefetch table' do
     table1 = create_random_table(@user1)
 
-    # To preload AR table metadata
-    Carto::VisualizationQueryBuilder.new.build.first.user_table.name
+    preload_activerecord_metadata
 
     expect {
       @vqb.build.where(id: table1.table_visualization.id).first.user_table.name

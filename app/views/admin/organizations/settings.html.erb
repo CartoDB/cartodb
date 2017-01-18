@@ -73,8 +73,10 @@
         </div>
       </div>
 
-      <div class="FormAccount-row IconPicker js-iconPicker">
-      </div>
+      <% if current_user.has_feature_flag?('icon-styling') %>
+        <div class="FormAccount-row IconPicker js-iconPicker">
+        </div>
+      <% end %>
 
       <div class="FormAccount-row">
         <div class="FormAccount-rowLabel">

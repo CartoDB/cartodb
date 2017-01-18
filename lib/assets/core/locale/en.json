@@ -1565,6 +1565,8 @@
           "no-quota-assigned-body": "To get access to the %{analysis} function, %{contact}.",
           "no-quota-assigned-contact": "contact our team",
           "no-credits-body": "You have consumed all your credits during this billing cycle. %{contact} to get some more.",
+          "no-credits-enough-title": "Not enough quota",
+          "no-credits-enough-body": "To get access to the %{analysis} function, you will need more credits, your current quota is not enough. %{contact} to get some more.",
           "no-credits-contact": "Contact us",
           "no-credits-mail": "sales@carto.com",
           "no-credits-message": "No credits available",

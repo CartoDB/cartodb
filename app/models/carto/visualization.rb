@@ -103,7 +103,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def user_table
-    map.user_table
+    map.user_table if map
   end
 
   def layers_with_data_readable_by(user)

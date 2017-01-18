@@ -57,11 +57,11 @@ module Carto
     end
 
     def visualization
-      map.visualization
+      map.visualization if map
     end
 
     def synchronization
-      visualization.synchronization
+      visualization.synchronization if visualization
     end
 
     def dependent_visualizations

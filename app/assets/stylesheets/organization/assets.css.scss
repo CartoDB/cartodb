@@ -1,5 +1,5 @@
-@import "../variables/mixins";
-@import "../variables/colors";
+@import '../variables/mixins';
+@import '../variables/colors';
 
 // Color variables
 // ---------------
@@ -19,6 +19,9 @@ $baseSize: 8px;
 $iconMargin: 10px;
 
 
+.IconPicker {
+  margin-bottom: 20px;
+}
 
 .IconList {
   @include display-flex;
@@ -108,4 +111,7 @@ $iconMargin: 10px;
       margin-left: -16px;
     }
   }
+}
+.is-hidden {
+  display: none;
 }

@@ -126,11 +126,11 @@ class Carto::VisualizationQueryBuilder
   end
 
   def with_prefetch_table
-    with_eager_load_of(map: :user_table)
+    with_eager_load_of_nested_associations(map: :user_table)
   end
 
   def with_prefetch_permission
-    with_eager_load_of_nested_associations(:permission => :owner)
+    with_eager_load_of_nested_associations(permission: :owner)
   end
 
   def with_prefetch_external_source

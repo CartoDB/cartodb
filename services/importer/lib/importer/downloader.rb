@@ -134,15 +134,15 @@ module CartoDB
         response = http_client.head(@translated_url, typhoeus_options)
 
         @http_response_code = response.code
-        raise_if_url_invalid(response.effective_url || @translated_url)
-        response.success? ? process_headers(response.headers) : raise_error_for_response(response)
+        if response.success?
+          raise_if_url_invalid(response.effective_url || @translated_url)
+          @headers = response.headers
 
-        @headers
+          process_headers
+        end
       end
 
-      def process_headers(headers)
-        @headers = headers
-
+      def process_headers
         basename = @custom_filename ||
                    filename_from_headers ||
                    filename_from_url ||

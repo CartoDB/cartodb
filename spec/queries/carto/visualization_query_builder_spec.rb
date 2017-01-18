@@ -66,12 +66,15 @@ describe Carto::VisualizationQueryBuilder do
   it 'can prefetch table' do
     table1 = create_random_table(@user1)
 
+    # To preload AR table metadata
+    Carto::VisualizationQueryBuilder.new.build.first.user_table.name
+
     expect {
-      @vqb.build.where(id: table1.table_visualization.id).first.table.name
+      @vqb.build.where(id: table1.table_visualization.id).first.user_table.name
     }.to make_database_queries(count: 2..3)
 
     expect {
-      @vqb.with_prefetch_table.build.where(id: table1.table_visualization.id).first.table.name
+      @vqb.with_prefetch_table.build.where(id: table1.table_visualization.id).first.user_table.name
     }.to make_database_queries(count: 1)
   end
 

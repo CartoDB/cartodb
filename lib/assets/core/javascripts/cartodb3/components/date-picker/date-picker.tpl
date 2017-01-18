@@ -2,6 +2,6 @@
   <strong class="js-date-str"><%- date %></strong>
   <i class="CDB-IconFont CDB-IconFont-calendar DatePicker-datesIcon"></i>
 </button>
-<div class="DatePicker-simpleDropdown datepickerHidden js-DatePicker-simpleDropdown">
+<div class="DatePicker-simpleDropdown js-DatePicker-simpleDropdown">
   <div class="js-calendar DatePicker-calendar DatePicker-calendar--simple"></div>
 </div>

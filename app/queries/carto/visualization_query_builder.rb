@@ -137,6 +137,11 @@ class Carto::VisualizationQueryBuilder
     with_eager_load_of(:external_source)
   end
 
+  def with_prefetch_synchronization
+    with_eager_load_of(:synchronization)
+    self
+  end
+
   def with_type(type)
     # Clear always the other "types holder"
     @types = nil

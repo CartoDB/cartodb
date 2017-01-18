@@ -34,6 +34,7 @@ module Carto
             .with_prefetch_user
             .with_prefetch_table
             .with_prefetch_permission
+            .with_prefetch_synchronization
             .with_prefetch_external_source
             .with_types(types)
             .with_tags(tags)

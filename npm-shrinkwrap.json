@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.5.95",
+  "version": "4.5.104",
   "dependencies": {
     "backbone": {
       "version": "1.2.3",
@@ -10,7 +10,7 @@
     "backbone-forms": {
       "version": "0.14.0",
       "from": "backbone-forms@0.14.0",
-      "resolved": "https://registry.npmjs.org/backbone-forms/-/backbone-forms-0.14.0.tgz"
+      "resolved": "http://registry.npmjs.org/backbone-forms/-/backbone-forms-0.14.0.tgz"
     },
     "backbone-model-file-upload": {
       "version": "1.0.0",
@@ -378,14 +378,14 @@
                           "resolved": "https://registry.npmjs.org/json-stringify-safe/-/json-stringify-safe-5.0.1.tgz"
                         },
                         "mime-types": {
-                          "version": "2.1.13",
+                          "version": "2.1.14",
                           "from": "mime-types@>=2.1.7 <2.2.0",
-                          "resolved": "https://registry.npmjs.org/mime-types/-/mime-types-2.1.13.tgz",
+                          "resolved": "https://registry.npmjs.org/mime-types/-/mime-types-2.1.14.tgz",
                           "dependencies": {
                             "mime-db": {
-                              "version": "1.25.0",
-                              "from": "mime-db@>=1.25.0 <1.26.0",
-                              "resolved": "https://registry.npmjs.org/mime-db/-/mime-db-1.25.0.tgz"
+                              "version": "1.26.0",
+                              "from": "mime-db@>=1.26.0 <1.27.0",
+                              "resolved": "https://registry.npmjs.org/mime-db/-/mime-db-1.26.0.tgz"
                             }
                           }
                         },
@@ -442,9 +442,9 @@
                               }
                             },
                             "sshpk": {
-                              "version": "1.10.1",
+                              "version": "1.10.2",
                               "from": "sshpk@>=1.7.0 <2.0.0",
-                              "resolved": "https://registry.npmjs.org/sshpk/-/sshpk-1.10.1.tgz",
+                              "resolved": "https://registry.npmjs.org/sshpk/-/sshpk-1.10.2.tgz",
                               "dependencies": {
                                 "asn1": {
                                   "version": "0.2.3",
@@ -585,9 +585,9 @@
                                   "resolved": "https://registry.npmjs.org/has-ansi/-/has-ansi-2.0.0.tgz",
                                   "dependencies": {
                                     "ansi-regex": {
-                                      "version": "2.0.0",
+                                      "version": "2.1.1",
                                       "from": "ansi-regex@>=2.0.0 <3.0.0",
-                                      "resolved": "https://registry.npmjs.org/ansi-regex/-/ansi-regex-2.0.0.tgz"
+                                      "resolved": "https://registry.npmjs.org/ansi-regex/-/ansi-regex-2.1.1.tgz"
                                     }
                                   }
                                 },
@@ -597,9 +597,9 @@
                                   "resolved": "https://registry.npmjs.org/strip-ansi/-/strip-ansi-3.0.1.tgz",
                                   "dependencies": {
                                     "ansi-regex": {
-                                      "version": "2.0.0",
+                                      "version": "2.1.1",
                                       "from": "ansi-regex@>=2.0.0 <3.0.0",
-                                      "resolved": "https://registry.npmjs.org/ansi-regex/-/ansi-regex-2.0.0.tgz"
+                                      "resolved": "https://registry.npmjs.org/ansi-regex/-/ansi-regex-2.1.1.tgz"
                                     }
                                   }
                                 },
@@ -1101,7 +1101,7 @@
     "camshaft-reference": {
       "version": "0.29.0",
       "from": "camshaft-reference@<2.0.0",
-      "resolved": "https://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.29.0.tgz"
+      "resolved": "http://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.29.0.tgz"
     },
     "carto": {
       "version": "0.15.1-cdb1",
@@ -1147,12 +1147,12 @@
     "cartodb-deep-insights.js": {
       "version": "0.0.2",
       "from": "cartodb/deep-insights.js#master",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#708203920d2f5adeca73838205852688a837bc22",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#7298ed9b2f6c3930032ce1d808cf179139f14c3c",
       "dependencies": {
         "cartodb.js": {
           "version": "4.0.0-alpha.1",
           "from": "cartodb/cartodb.js#v4",
-          "resolved": "git://github.com/cartodb/cartodb.js.git#eb273bd1ead79d6cedd7635655f6aad5bee1abf5",
+          "resolved": "git://github.com/cartodb/cartodb.js.git#ee34fec99a4b3ffb2f861c123651d8b9bcee04e5",
           "dependencies": {
             "backbone-poller": {
               "version": "1.1.3",
@@ -1260,9 +1260,9 @@
                       "resolved": "https://registry.npmjs.org/postcss/-/postcss-5.0.19.tgz",
                       "dependencies": {
                         "supports-color": {
-                          "version": "3.1.2",
+                          "version": "3.2.3",
                           "from": "supports-color@>=3.1.2 <4.0.0",
-                          "resolved": "https://registry.npmjs.org/supports-color/-/supports-color-3.1.2.tgz",
+                          "resolved": "https://registry.npmjs.org/supports-color/-/supports-color-3.2.3.tgz",
                           "dependencies": {
                             "has-flag": {
                               "version": "1.0.0",
@@ -1381,9 +1381,9 @@
                       "resolved": "https://registry.npmjs.org/postcss/-/postcss-5.0.19.tgz",
                       "dependencies": {
                         "supports-color": {
-                          "version": "3.1.2",
+                          "version": "3.2.3",
                           "from": "supports-color@>=3.1.2 <4.0.0",
-                          "resolved": "https://registry.npmjs.org/supports-color/-/supports-color-3.1.2.tgz",
+                          "resolved": "https://registry.npmjs.org/supports-color/-/supports-color-3.2.3.tgz",
                           "dependencies": {
                             "has-flag": {
                               "version": "1.0.0",
@@ -1464,7 +1464,7 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
       "from": "cartodb/cartodb.js#v4",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#eb273bd1ead79d6cedd7635655f6aad5bee1abf5",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#ee34fec99a4b3ffb2f861c123651d8b9bcee04e5",
       "dependencies": {
         "backbone-poller": {
           "version": "1.1.3",
@@ -1577,9 +1577,9 @@
                   "resolved": "https://registry.npmjs.org/postcss/-/postcss-5.0.19.tgz",
                   "dependencies": {
                     "supports-color": {
-                      "version": "3.1.2",
+                      "version": "3.2.3",
                       "from": "supports-color@>=3.1.2 <4.0.0",
-                      "resolved": "https://registry.npmjs.org/supports-color/-/supports-color-3.1.2.tgz",
+                      "resolved": "https://registry.npmjs.org/supports-color/-/supports-color-3.2.3.tgz",
                       "dependencies": {
                         "has-flag": {
                           "version": "1.0.0",
@@ -1698,9 +1698,9 @@
                   "resolved": "https://registry.npmjs.org/postcss/-/postcss-5.0.19.tgz",
                   "dependencies": {
                     "supports-color": {
-                      "version": "3.1.2",
+                      "version": "3.2.3",
                       "from": "supports-color@>=3.1.2 <4.0.0",
-                      "resolved": "https://registry.npmjs.org/supports-color/-/supports-color-3.1.2.tgz",
+                      "resolved": "https://registry.npmjs.org/supports-color/-/supports-color-3.2.3.tgz",
                       "dependencies": {
                         "has-flag": {
                           "version": "1.0.0",
@@ -1801,7 +1801,7 @@
     "queue-async": {
       "version": "1.2.1",
       "from": "queue-async@1.2.1",
-      "resolved": "https://registry.npmjs.org/queue-async/-/queue-async-1.2.1.tgz"
+      "resolved": "http://registry.npmjs.org/queue-async/-/queue-async-1.2.1.tgz"
     },
     "torque.js": {
       "version": "2.16.1",
@@ -1875,9 +1875,9 @@
               "resolved": "https://registry.npmjs.org/postcss/-/postcss-5.0.19.tgz",
               "dependencies": {
                 "supports-color": {
-                  "version": "3.1.2",
+                  "version": "3.2.3",
                   "from": "supports-color@>=3.1.2 <4.0.0",
-                  "resolved": "https://registry.npmjs.org/supports-color/-/supports-color-3.1.2.tgz",
+                  "resolved": "https://registry.npmjs.org/supports-color/-/supports-color-3.2.3.tgz",
                   "dependencies": {
                     "has-flag": {
                       "version": "1.0.0",

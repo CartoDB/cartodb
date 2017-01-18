@@ -113,6 +113,7 @@ class Carto::UserCreation < ActiveRecord::Base
   # TODO: Shorcut, search for a better solution to detect requirement
   def requires_validation_email?
     google_sign_in != true &&
+      !github_user_id &&
       !has_valid_invitation? &&
       !Carto::Ldap::Manager.new.configuration_present? &&
       !created_via_api? &&

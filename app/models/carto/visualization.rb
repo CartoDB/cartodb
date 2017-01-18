@@ -148,7 +148,7 @@ class Carto::Visualization < ActiveRecord::Base
 
   # TODO: refactor next methods, all have similar naming but some receive user and some others user_id
   def is_liked_by_user_id?(user_id)
-    likes_by_user_id(user_id).count > 0
+    likes_by_user_id(user_id).any?
   end
 
   def likes_by_user_id(user_id)
@@ -333,7 +333,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def likes_count
-    likes.count
+    likes.size
   end
 
   def widgets

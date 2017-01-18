@@ -31,13 +31,13 @@ module Carto
         only_with_display_name = params[:only_with_display_name] == 'true'
 
         vqb = VisualizationQueryBuilder.new
-            .with_prefetch_user
-            .with_prefetch_table
-            .with_prefetch_permission
-            .with_prefetch_synchronization
-            .with_prefetch_external_source
-            .with_types(types)
-            .with_tags(tags)
+                                       .with_prefetch_user
+                                       .with_prefetch_table
+                                       .with_prefetch_permission
+                                       .with_prefetch_synchronization
+                                       .with_prefetch_external_source
+                                       .with_types(types)
+                                       .with_tags(tags)
 
         if !bbox_parameter.blank?
           vqb.with_bounding_box(BoundingBoxHelper.parse_bbox_parameters(bbox_parameter))

@@ -19,7 +19,6 @@ class Carto::Map < ActiveRecord::Base
 
   belongs_to :user
 
-  has_many :visualizations, class_name: Carto::Visualization, inverse_of: :map
   has_one :visualization, class_name: Carto::Visualization, inverse_of: :map
 
   DEFAULT_OPTIONS = {

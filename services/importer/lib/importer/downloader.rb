@@ -244,6 +244,7 @@ module CartoDB
 
       def content_length
         return @content_length if @content_length
+        return nil unless headers
 
         header_content_length = headers['Content-Length']
 
@@ -252,6 +253,7 @@ module CartoDB
 
       def etag
         return @etag if @etag
+        return nil unless headers
 
         header_etag = headers['ETag']
         header_etag = header_etag.delete('"').delete("'") if header_etag
@@ -261,6 +263,7 @@ module CartoDB
 
       def last_modified
         return @last_modified if @last_modified
+        return nil unless headers
 
         header_last_modified = headers['Last-Modified']
         @last_modified = if header_last_modified
@@ -274,6 +277,7 @@ module CartoDB
 
       def content_type
         return @content_type if @content_type
+        return nil unless headers
 
         headers_content_type = headers['Content-Type']
         return nil unless headers_content_type.present?
@@ -298,6 +302,8 @@ module CartoDB
       CONTENT_DISPOSITION_RE = %r{;\s*filename=(.*;|.*)}
 
       def filename_from_headers
+        return nil unless headers
+
         disposition = headers['Content-Disposition']
         return false unless disposition
         filename = disposition.match(CONTENT_DISPOSITION_RE).to_a[1]

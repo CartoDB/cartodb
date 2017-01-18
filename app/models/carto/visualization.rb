@@ -105,6 +105,7 @@ class Carto::Visualization < ActiveRecord::Base
   def user_table
     map.user_table if map
   end
+  alias :table :user_table
 
   def layers_with_data_readable_by(user)
     return [] unless map

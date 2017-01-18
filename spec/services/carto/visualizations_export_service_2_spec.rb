@@ -320,7 +320,7 @@ describe Carto::VisualizationsExportService2 do
     if importing_user && layer_export_options.has_key?(:stat_tag)
       # Persisted layer
       layer_options[:stat_tag].should_not be_nil
-      layer_options[:stat_tag].should eq layer.maps.first.visualizations.first.id
+      layer_options[:stat_tag].should eq layer.maps.first.visualization.id
     else
       layer_options.has_key?(:stat_tag).should eq layer_export_options.has_key?(:stat_tag)
       layer_options[:stat_tag].should be_nil
@@ -1160,7 +1160,7 @@ describe Carto::VisualizationsExportService2 do
       if importing_user && original_layer_options.has_key?(:stat_tag)
         # Persisted layer
         imported_layer_options[:stat_tag].should_not be_nil
-        imported_layer_options[:stat_tag].should eq imported_layer.maps.first.visualizations.first.id
+        imported_layer_options[:stat_tag].should eq imported_layer.maps.first.visualization.id
       else
         imported_layer_options.has_key?(:stat_tag).should eq original_layer_options.has_key?(:stat_tag)
         imported_layer_options[:stat_tag].should be_nil

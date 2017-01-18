@@ -44,7 +44,10 @@ module Carto
       file = CartoDB::FileUploadFile.new(filepath)
 
       s3_config = Cartodb.config[:exporter]['s3'] || {}
-      s3_config['content-disposition'] = %{attachment;filename="#{URI::encode(file.original_filename.force_encoding('iso-8859-1'))}";filename*=utf-8''#{URI::encode(file.original_filename)}}
+
+      plain_name = header_encode(file.original_filename.force_encoding('iso-8859-1'))
+      utf_name = header_encode(file.original_filename)
+      s3_config['content-disposition'] = %{attachment;filename=#{plain_name};filename*=utf-8''#{utf_name}}
 
       results = file_upload_helper.upload_file_to_storage(
         file_param: file,
@@ -84,6 +87,10 @@ module Carto
     end
 
     private
+
+    def header_encode(name)
+      URI.encode(name, /[^#{URI::PATTERN::UNRESERVED}]/)
+    end
 
     def default_file_upload_helper
       CartoDB::FileUpload.new(Cartodb.get_config(:exporter, "uploads_path"))

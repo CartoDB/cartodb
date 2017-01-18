@@ -240,6 +240,10 @@ module CartoDB
         end
       end
 
+      def http_client
+        @http_client ||= Carto::Http::Client.get('downloader', log_requests: true)
+      end
+
       def content_length
         return @content_length if @content_length
 

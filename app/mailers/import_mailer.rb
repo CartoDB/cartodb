@@ -12,7 +12,7 @@ class ImportMailer < ActionMailer::Base
     @first_table = first_imported_table.nil? ? first_table : first_imported_table
     @username = user.username
     @files = filenames || []
-    @dataset_name = @first_table && @first_table['name'].present? ? @first_table['name'] : @files.first
+    @dataset_name = (@first_table && @first_table['name'].present?) ? @first_table['name'] : @files.first
     @link = if first_imported_table.nil?
               "#{user.public_url}#{CartoDB.path(self, 'tables_index')}"
             else

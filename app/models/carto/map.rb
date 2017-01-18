@@ -20,6 +20,7 @@ class Carto::Map < ActiveRecord::Base
   belongs_to :user
 
   has_many :visualizations, class_name: Carto::Visualization, inverse_of: :map
+  has_one :visualization, class_name: Carto::Visualization, inverse_of: :map
 
   DEFAULT_OPTIONS = {
     zoom:            3,
@@ -105,7 +106,7 @@ class Carto::Map < ActiveRecord::Base
   end
 
   def writable_by_user?(user)
-    visualizations.select { |v| v.writable_by?(user) }.any?
+    visualization.writable_by?(user)
   end
 
   def contains_layer?(layer)
@@ -122,10 +123,6 @@ class Carto::Map < ActiveRecord::Base
   def force_notify_map_change
     map = ::Map[id]
     map.force_notify_map_change if map
-  end
-
-  def visualization
-    visualizations.first
   end
 
   def update_dataset_dependencies

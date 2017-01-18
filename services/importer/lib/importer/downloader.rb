@@ -221,8 +221,6 @@ module CartoDB
       end
 
       def raise_error_for_response(response)
-        CartoDB::Logger.error(message: 'CartoDB::Importer2::Downloader: Error', response: response)
-
         if response.timed_out?
           raise DownloadTimeoutError.new("TIMEOUT ERROR: Body:#{response.body}")
         elsif response.headers['Error'] && response.headers['Error'] =~ /too many nodes/

@@ -39,8 +39,6 @@ class Carto::Visualization < ActiveRecord::Base
   has_many :likes, foreign_key: :subject
   has_many :shared_entities, foreign_key: :entity_id, inverse_of: :visualization
 
-  # TODO: duplicated with user_table?
-  belongs_to :table, class_name: Carto::UserTable, primary_key: :map_id, foreign_key: :map_id
   has_one :external_source
   has_many :unordered_children, class_name: Carto::Visualization, foreign_key: :parent_id
 
@@ -85,8 +83,8 @@ class Carto::Visualization < ActiveRecord::Base
   def size
     # Only canonical visualizations (Datasets) have a related table and then count against disk quota,
     # but we want to not break and even allow ordering by size multiple types
-    if table
-      table.size
+    if user_table
+      user_table.size
     elsif type == TYPE_REMOTE && !external_source.nil?
       external_source.size
     else
@@ -309,7 +307,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def table_service
-    table.nil? ? nil : table.service
+    user_table.try(:service)
   end
 
   def has_read_permission?(user)

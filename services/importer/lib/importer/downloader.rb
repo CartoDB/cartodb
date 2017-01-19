@@ -19,6 +19,20 @@ require_relative '../helpers/quota_check_helpers.rb'
 # NOTE: Beware that some methods and some parameters are kept since this class is supposed to be
 # interchangeable with CartoDB::Importer2::DatasourceDownloader. A better way to have managed
 # managed this might have been through inheritance, since Ruby doesn't provide interfaces.
+# The out-facing methods this class must implement for this purpose are:
+# - supported_extensions
+# - supported_extensions_match
+# - url_filename_regex
+# - provides_stream?
+# - http_download?
+# - multi_resource_import_supported?
+# - source_file
+# - etag
+# - last_modified
+# - http_response_code
+# - datasource
+# - run
+# - modified?
 
 module CartoDB
   module Importer2

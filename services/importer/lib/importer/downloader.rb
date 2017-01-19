@@ -76,7 +76,7 @@ module CartoDB
       def initialize(user_id, url, http_options = {}, options = {})
         raise UploadError unless user_id && url
 
-        @user = Carto::User.find(user_id) if user_id
+        @user = Carto::User.find(user_id)
         @translated_url = translate_url(url)
         @http_options = http_options
         @options = options

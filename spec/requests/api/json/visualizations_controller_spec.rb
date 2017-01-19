@@ -77,7 +77,7 @@ describe Api::Json::VisualizationsController do
       end
 
       it 'registers table dependencies for duplicated maps' do
-        map, table, table_visualization, visualization = create_full_visualization(@user)
+        map, table, table_visualization, visualization = create_full_visualization(Carto::User.find(@user.id))
         new_name = visualization.name + ' registered'
 
         post_json api_v1_visualizations_create_url(api_key: @user.api_key),

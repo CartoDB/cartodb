@@ -262,6 +262,27 @@ describe CartoDB::Connector::Importer do
     Carto::Visualization.find_by_id(data_import.visualization_id).privacy.should eq 'public'
   end
 
+  it 'imported visualization should have registered table dependencies' do
+    filepath = "#{Rails.root}/spec/support/data/elecciones2008.csv"
+
+    data_import = DataImport.create(
+      user_id: @user.id,
+      data_source: filepath,
+      updated_at: Time.now.utc,
+      append: false,
+      create_visualization: true
+    )
+    data_import.values[:data_source] = filepath
+
+    data_import.run_import!
+
+    data_import.success.should eq true
+    visualization = Carto::Visualization.find_by_id(data_import.visualization_id)
+    data_layer = visualization.data_layers.first
+    data_layer.user_tables.size.should eq 1
+    data_layer.user_tables.first.name.should include 'elecciones2008'
+  end
+
   it 'should not import as private if private_tables_enabled is disabled' do
     @user.private_tables_enabled = false
     @user.save

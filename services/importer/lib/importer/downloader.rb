@@ -393,8 +393,9 @@ module CartoDB
         return @extensions_from_headers if @extensions_from_headers
         return nil unless content_type
 
+        downcased_content_type = content_type.downcase
         extensions_from_headers_item = CONTENT_TYPES_MAPPING.find do |item|
-          item[:content_types].include?(content_type.downcase)
+          item[:content_types].include?(downcased_content_type)
         end
 
         if extensions_from_headers_item

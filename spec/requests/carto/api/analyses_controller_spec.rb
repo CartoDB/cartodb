@@ -13,6 +13,9 @@ describe Carto::Api::AnalysesController do
     @user2 = FactoryGirl.create(:carto_user, builder_enabled: true)
     @map, @table, @table_visualization, @visualization = create_full_visualization(@user)
     bypass_named_maps
+  end
+
+  before(:each) do
     @analysis = FactoryGirl.create(:source_analysis, visualization_id: @visualization.id, user_id: @user.id)
   end
 
@@ -22,6 +25,9 @@ describe Carto::Api::AnalysesController do
     # This avoids connection leaking.
     ::User[@user.id].destroy
     ::User[@user2.id].destroy
+  end
+
+  after(:each) do
     @analysis.destroy
   end
 
@@ -122,6 +128,17 @@ describe Carto::Api::AnalysesController do
         a.visualization_id.should eq @visualization.id
         clean_analysis_definition(a.analysis_definition).should eq payload[:analysis_definition].deep_symbolize_keys
 
+        a.destroy
+      end
+    end
+
+    it 'registers table dependencies when creating analysis' do
+      bypass_named_maps
+      Carto::Layer.any_instance.expects(:register_table_dependencies).times(@visualization.data_layers.count)
+      post_json create_analysis_url(@user, @visualization), payload do |response|
+        response.status.should eq 201
+
+        a = Carto::Analysis.find_by_natural_id(@visualization.id, natural_id)
         a.destroy
       end
     end
@@ -247,6 +264,18 @@ describe Carto::Api::AnalysesController do
       end
     end
 
+    it 'registers table dependencies when updating existing analysis' do
+      @analysis.reload
+      @analysis.analysis_definition[:id].should_not eq new_payload[:analysis_definition][:id]
+      @analysis.analysis_definition[new_key].should be_nil
+      bypass_named_maps
+
+      Carto::Layer.any_instance.expects(:register_table_dependencies).times(@visualization.data_layers.count)
+      put_json viz_analysis_url(@user, @visualization, @analysis), new_payload do |response|
+        response.status.should eq 200
+      end
+    end
+
     it 'returns 422 if payload visualization_id or id do not match' do
       put_json viz_analysis_url(@user, @visualization, @analysis),
                new_payload.merge(visualization_id: 'x') do |response|
@@ -321,6 +350,14 @@ describe Carto::Api::AnalysesController do
       end
     end
 
+    it 'registers table dependencies when destroying existing analysis' do
+      bypass_named_maps
+      Carto::Layer.any_instance.expects(:register_table_dependencies).times(@visualization.data_layers.count)
+      delete_json viz_analysis_url(@user, @visualization, @analysis) do |response|
+        response.status.should eq 200
+        Carto::Analysis.where(id: @analysis.id).first.should be_nil
+      end
+    end
     it 'returns 403 if user does not own the visualization' do
       delete_json viz_analysis_url(@user2, @visualization, @analysis) do |response|
         response.status.should eq 403

@@ -9,7 +9,6 @@ var ListContentView = require('./widgets/list/content-view');
 var WidgetViewFactory = require('./widgets/widget-view-factory');
 var template = require('./dashboard-sidebar.tpl');
 var matchMedia = window.matchMedia;
-var MutationObserver = window.MutationObserver;
 
 module.exports = cdb.core.View.extend({
   className: 'CDB-Widget-canvas',
@@ -73,7 +72,6 @@ module.exports = cdb.core.View.extend({
     this._renderShadows();
     this._bindScroll();
     this._initResize();
-    this._observe();
     return this;
   },
 
@@ -83,21 +81,6 @@ module.exports = cdb.core.View.extend({
       var mq = matchMedia(breakpoint);
       mq.addListener(this._resizeHandler);
     }, this);
-  },
-
-  _observe: function () {
-    if (MutationObserver == null) {
-      // the scroll has default behaviour as fallback ?
-      return;
-    }
-
-    var target = this.el;
-    var onMutationObserver = this._updateScrollCss.bind(this);
-    this._observer = new MutationObserver(onMutationObserver);
-    onMutationObserver();
-
-    var config = { childList: true, subtree: true };
-    this._observer.observe(target, config);
   },
 
   _updateScrollCss: function () {
@@ -179,7 +162,6 @@ module.exports = cdb.core.View.extend({
   _updateScroll: function () {
     this._$container().scrollLeft = 0;
     this._$container().scrollTop = 0;
-    Ps.update(this._container());
   },
 
   _onResize: function (mediaQuery) {
@@ -187,7 +169,6 @@ module.exports = cdb.core.View.extend({
     // trigger actions always if breakpoints changes
     this._updateScroll();
     this._onScroll();
-    this._updateScrollCss();
   },
 
   _onScrollBottom: function () {

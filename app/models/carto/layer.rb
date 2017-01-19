@@ -5,6 +5,8 @@ require_dependency 'carto/query_rewriter'
 
 module Carto
   module LayerTableDependencies
+    private
+
     def affected_tables
       return [] unless maps.first.present? && options.present?
       node_id = options.symbolize_keys[:source]

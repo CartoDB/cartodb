@@ -6,8 +6,11 @@ require_relative '../../../spec_helper'
 require_relative 'visualizations_controller_shared_examples'
 require_relative '../../../../app/controllers/api/json/visualizations_controller'
 require_relative '.././../../factories/organizations_contexts'
+require 'factories/carto_visualizations'
 
 describe Api::Json::VisualizationsController do
+  include Carto::Factories::Visualizations
+
   it_behaves_like 'visualization controllers' do
   end
 
@@ -71,6 +74,23 @@ describe Api::Json::VisualizationsController do
         last_response.status.should be_success
 
         Carto::Visualization.exists?(user_id: @user.id, type: 'derived', name: new_name).should be_true
+      end
+
+      it 'registers table dependencies for duplicated maps' do
+        map, table, table_visualization, visualization = create_full_visualization(@user)
+        new_name = visualization.name + ' registered'
+
+        post_json api_v1_visualizations_create_url(api_key: @user.api_key),
+                  source_visualization_id: visualization.id,
+                  name: new_name
+
+        last_response.status.should be_success
+
+        visualization = Carto::Visualization.where(user_id: @user.id, type: 'derived', name: new_name).first
+        visualization.should be
+        visualization.data_layers.first.user_tables.count.should eq 1
+
+        destroy_full_visualization(map, table, table_visualization, visualization)
       end
 
       it "duplicates someone else's map if has at least read permission to it" do

@@ -47,7 +47,7 @@ module Carto
 
       plain_name = header_encode(file.original_filename.force_encoding('iso-8859-1'))
       utf_name = header_encode(file.original_filename)
-      s3_config['content-disposition'] = %{attachment;filename=#{plain_name};filename*=utf-8''#{utf_name}}
+      s3_config['content-disposition'] = %{attachment;filename="#{plain_name}";filename*=utf-8''#{utf_name}}
 
       results = file_upload_helper.upload_file_to_storage(
         file_param: file,

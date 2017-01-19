@@ -488,5 +488,36 @@ describe CartoDB::Connector::Importer do
       data_import.destroy
       visualization.destroy
     end
+
+    it 'registers table dependencies for .carto import' do
+      filepath = "#{Rails.root}/services/importer/spec/fixtures/visualization_export_with_csv_table.carto"
+
+      data_import = DataImport.create(
+        user_id: @user.id,
+        data_source: filepath,
+        updated_at: Time.now.utc,
+        append: false,
+        create_visualization: true
+      )
+      data_import.values[:data_source] = filepath
+
+      data_import.run_import!
+      data_import.success.should eq true
+
+      # Fixture file checks
+      data_import.table_name.should eq 'twitter_t3chfest_reduced'
+      visualization = Carto::Visualization.find(data_import.visualization_id)
+      layer = visualization.data_layers.first
+      layer.user_tables.count.should eq 1
+      user_table = layer.user_tables.first
+      user_table.name.should eq 'twitter_t3chfest_reduced'
+
+      canonical_layer = user_table.visualization.data_layers.first
+      canonical_layer.user_tables.count.should eq 1
+
+      data_import.table.destroy
+      data_import.destroy
+      visualization.destroy
+    end
   end
 end

@@ -38,8 +38,8 @@ class Layer < Sequel::Model
   end
 
   one_to_many  :layer_node_styles
-  many_to_many :maps,  :after_add => proc { |layer, parent| layer.after_added_to_map(parent) }
-  many_to_many :users, :after_add => proc { |layer, parent| layer.set_default_order(parent) }
+  many_to_many :maps,  after_add: proc { |layer, parent| layer.after_added_to_map(parent) }
+  many_to_many :users, after_add: proc { |layer, parent| layer.set_default_order(parent) }
   many_to_many :user_tables,
                 join_table: :layers_user_tables,
                 left_key: :layer_id, right_key: :user_table_id,

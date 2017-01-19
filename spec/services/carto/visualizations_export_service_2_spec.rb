@@ -800,7 +800,7 @@ describe Carto::VisualizationsExportService2 do
         public_table = FactoryGirl.create(:public_user_table, user: @user)
 
         private_layer = FactoryGirl.create(:carto_layer, options: { table_name: private_table.name }, maps: [map])
-        public_layer =  FactoryGirl.create(:carto_layer, options: { table_name: public_table.name }, maps: [map])
+        FactoryGirl.create(:carto_layer, options: { table_name: public_table.name }, maps: [map])
 
         map, table, table_visualization, visualization = create_full_visualization(@user,
                                                                                    map: map,

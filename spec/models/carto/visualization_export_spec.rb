@@ -78,7 +78,7 @@ describe Carto::VisualizationExport do
       table2 = FactoryGirl.create(:private_user_table, user: @carto_user1)
 
       layer1 = FactoryGirl.create(:carto_layer, options: { table_name: table1.name }, maps: [map])
-      layer2 = FactoryGirl.create(:carto_layer, options: { table_name: table2.name }, maps: [map])
+      FactoryGirl.create(:carto_layer, options: { table_name: table2.name }, maps: [map])
 
       map, table, table_visualization, visualization = create_full_visualization(@carto_user1,
                                                                                  map: map,
@@ -146,7 +146,7 @@ describe Carto::VisualizationExport do
       table2 = FactoryGirl.create(:private_user_table, user: @carto_user1)
 
       layer1 = FactoryGirl.create(:carto_layer, options: { table_name: table1.name }, maps: [map])
-      layer2 = FactoryGirl.create(:carto_layer, options: { table_name: table2.name }, maps: [map])
+      FactoryGirl.create(:carto_layer, options: { table_name: table2.name }, maps: [map])
 
       map, table, table_visualization, visualization = create_full_visualization(@carto_user1,
                                                                                  map: map,

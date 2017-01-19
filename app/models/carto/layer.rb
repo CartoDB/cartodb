@@ -62,7 +62,7 @@ module Carto
     serialize :tooltip, CartoJsonSerializer
 
     has_many :layers_maps
-    has_many :maps, through: :layers_maps, after_add: :set_default_order
+    has_many :maps, through: :layers_maps, after_add: :after_added_to_map
 
     has_many :layers_user
     has_many :users, through: :layers_user, after_add: :set_default_order
@@ -277,6 +277,11 @@ module Carto
 
     def uses_private_tables?
       user_tables.any?(&:private?)
+    end
+
+    def after_added_to_map(map)
+      set_default_order(map)
+      register_table_dependencies
     end
 
     private

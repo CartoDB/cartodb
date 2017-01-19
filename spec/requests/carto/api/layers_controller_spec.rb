@@ -86,6 +86,21 @@ describe Carto::Api::LayersController do
         end
       end
 
+      it 'registers table dependencies when creating a layer for a map' do
+        @map, @table, @table_visualization, @visualization = create_full_visualization(@carto_user1)
+        # Let's make room for another layer of the same kind
+        destroyed_layer = @map.layers.where(kind: layer_json[:kind]).first
+        destroyed_layer.destroy if destroyed_layer
+
+        post_json create_map_layer_url(@map.id), layer_json.merge(options: { table_name: @table.name }) do |response|
+          response.status.should eq 200
+          layer_response = response.body
+
+          @layer = Carto::Layer.find(layer_response[:id])
+          @layer.user_tables.should eq [@table]
+        end
+      end
+
       it 'does not allow to exceed max_layers' do
         @map, @table, @table_visualization, @visualization = create_full_visualization(@carto_user1)
         @carto_user1.max_layers = 1

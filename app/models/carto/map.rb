@@ -8,7 +8,7 @@ class Carto::Map < ActiveRecord::Base
   has_many :layers, class_name: 'Carto::Layer',
                     order: '"order"',
                     through: :layers_maps,
-                    after_add: Proc.new { |map, layer| layer.set_default_order(map) }
+                    after_add: Proc.new { |map, layer| layer.after_added_to_map(map) }
 
   has_many :base_layers, class_name: 'Carto::Layer',
                          order: '"order"',

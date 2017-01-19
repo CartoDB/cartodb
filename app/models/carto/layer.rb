@@ -107,7 +107,7 @@ module Carto
       save if persisted?
     end
 
-    def affected_tables_readable_by(user)
+    def user_tables_readable_by(user)
       user_tables.select { |ut| ut.readable_by?(user) }
     end
 

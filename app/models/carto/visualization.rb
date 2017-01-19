@@ -117,7 +117,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def related_tables_readable_by(user)
-    layers_with_data_readable_by(user).map { |l| l.affected_tables_readable_by(user) }.flatten.uniq
+    layers_with_data_readable_by(user).map { |l| l.user_tables_readable_by(user) }.flatten.uniq
   end
 
   def related_canonical_visualizations

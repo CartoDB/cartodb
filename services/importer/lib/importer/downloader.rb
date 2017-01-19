@@ -17,8 +17,22 @@ require_relative '../../../../lib/carto/url_validator'
 require_relative '../helpers/quota_check_helpers.rb'
 
 # NOTE: Beware that some methods and some parameters are kept since this class is supposed to be
-# interchangeable with CartoDB::Importer2::DatasourceDownloader. A better way to have managed
+# interchangeable with CartoDB::Importer2::DatasourceDownloader. A better way to have
 # managed this might have been through inheritance, since Ruby doesn't provide interfaces.
+# The out-facing methods this class must implement for this purpose are:
+# - supported_extensions
+# - supported_extensions_match
+# - url_filename_regex
+# - provides_stream?
+# - http_download?
+# - multi_resource_import_supported?
+# - source_file
+# - etag
+# - last_modified
+# - http_response_code
+# - datasource
+# - run
+# - modified?
 
 module CartoDB
   module Importer2
@@ -62,7 +76,7 @@ module CartoDB
       def initialize(user_id, url, http_options = {}, options = {})
         raise UploadError unless user_id && url
 
-        @user = Carto::User.find(user_id) if user_id
+        @user = Carto::User.find(user_id)
         @translated_url = translate_url(url)
         @http_options = http_options
         @options = options
@@ -380,8 +394,9 @@ module CartoDB
         return @extensions_from_headers if @extensions_from_headers
         return nil unless content_type
 
+        downcased_content_type = content_type.downcase
         extensions_from_headers_item = CONTENT_TYPES_MAPPING.find do |item|
-          item[:content_types].include?(content_type.downcase)
+          item[:content_types].include?(downcased_content_type)
         end
 
         if extensions_from_headers_item

@@ -94,24 +94,18 @@ GMapsCartoDBLayerGroupView.prototype = new wax.g.connector();
 GMapsCartoDBLayerGroupView.prototype.interactionClass = wax.g.interaction;
 _.extend(
   GMapsCartoDBLayerGroupView.prototype,
+  GMapsCartoDBLayerGroupView.prototype,
   CartoDBLayerGroupViewBase.prototype,
+  GMapsCartoDBLayerGroupView.prototype,
   GMapsLayerView.prototype,
   {
-    addToMap: function () {
-      this.gmapsMap.overlayMapTypes.setAt(0, this);
+    reload: function () {
+      this.model.invalidate();
     },
 
     remove: function () {
-      // Remove the custom map type
-      var index = this.gmapsMap.overlayMapTypes.getArray().indexOf(this);
-      this.gmapsMap.overlayMapTypes.removeAt(index);
-
-      this._clearInteraction();
-      this.finishLoading && this.finishLoading();
-    },
-
-    reload: function () {
-      this.model.invalidate();
+      GMapsLayerView.prototype.remove.call(this);
+      this.clear();
     },
 
     featureOver: function (e, latlon, pixelPos, data, layer) {

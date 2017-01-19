@@ -74,9 +74,9 @@
 }
 .Editor-panel .ps-scrollbar-y,
 .CDB-Widget-canvas .ps-container>.ps-scrollbar-y-rail>.ps-scrollbar-y {
+  right: 0 !important;
   width: 4px !Important; // Resets standard scroll bar color
   background: #AAA;
-  right: 0 !important;
   &:hover {
     cursor: all-scroll;
     cursor: -webkit-grab;
@@ -95,7 +95,6 @@
 .Editor-panel .ps-scrollbar-x-rail .ps-scrollbar-x {
   bottom: -1px !Important; // Resets standard scroll bar position
   height: 4px !Important; // Resets standard scroll bar color
-  background: red;
   pointer-events: all;
   opacity: 0.6;
 }

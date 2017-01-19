@@ -73,8 +73,6 @@ module CartoDB
 
       attr_reader :source_file, :etag, :last_modified, :http_response_code, :datasource
 
-      TMP_IMPORTER_PATH = '/tmp/importer'.freeze
-
       def initialize(user_id, url, http_options = {}, options = {})
         raise UploadError unless user_id && url
 
@@ -84,8 +82,6 @@ module CartoDB
         @options = options
 
         @downloaded_bytes = 0
-
-        FileUtils.mkdir_p(TMP_IMPORTER_PATH)
       end
 
       def run(_available_quota_in_bytes = nil)
@@ -117,6 +113,19 @@ module CartoDB
       end
 
       private
+
+      DEFAULT_TMP_FILE_DIRECTORY = '/tmp/imports'.freeze
+
+      def tmp_file_directory
+        return @tmp_file_directory if @tmp_file_directory
+
+        directory = Cartodb.get_config(:importer, 'unp_temporal_folder') ||
+                    DEFAULT_TMP_FILE_DIRECTORY
+
+        FileUtils.mkdir_p(directory) unless File.directory?(directory)
+
+        @tmp_file_directory = directory
+      end
 
       def size_limit_in_bytes
         @size_limit_in_bytes ||= [@user.max_import_file_size, @user.remaining_quota].compact.min
@@ -176,7 +185,7 @@ module CartoDB
 
       def typhoeus_options
         verify_ssl = @http_options.fetch(:verify_ssl_cert, false)
-        cookiejar = Tempfile.new('cookiejar_', TMP_IMPORTER_PATH).path
+        cookiejar = Tempfile.new('cookiejar_', tmp_file_directory).path
 
         {
           cookiefile:       cookiejar,
@@ -194,7 +203,7 @@ module CartoDB
       FILENAME_PREFIX = 'importer_'.freeze
 
       def download_and_store
-        file = Tempfile.new(FILENAME_PREFIX, TMP_IMPORTER_PATH, encoding: 'ascii-8bit')
+        file = Tempfile.new(FILENAME_PREFIX, tmp_file_directory, encoding: 'ascii-8bit')
 
         bound_request(file).run
 

@@ -172,7 +172,7 @@ module CartoDB
 
       def typhoeus_options
         verify_ssl = @http_options.fetch(:verify_ssl_cert, false)
-        cookiejar = Tempfile.new('cookiejar_').path
+        cookiejar = Tempfile.new('cookiejar_', '/tmp/importer').path
 
         {
           cookiefile:       cookiejar,
@@ -190,7 +190,7 @@ module CartoDB
       FILENAME_PREFIX = 'importer_'.freeze
 
       def download_and_store
-        file = Tempfile.new(FILENAME_PREFIX, encoding: 'ascii-8bit')
+        file = Tempfile.new(FILENAME_PREFIX, '/tmp/importer', encoding: 'ascii-8bit')
 
         bound_request(file).run
 

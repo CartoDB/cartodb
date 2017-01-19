@@ -265,6 +265,10 @@ describe Downloader do
 
       it 'raises when file size is bigger than available quota during download' do
         CartoDB::Importer2::Downloader.any_instance.stubs(:validate_url!).returns(true)
+
+        # We stub the `content_length` so to simulate a situation where we can't infer the
+        # file size from the headers, and we're forced to do it counting chunk sizes during
+        # download time.
         CartoDB::Importer2::Downloader.any_instance.stubs(:content_length)
 
         serve_file 'spec/support/data/ne_110m_lakes.zip' do |url|

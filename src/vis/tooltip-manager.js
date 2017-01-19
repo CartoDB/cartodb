@@ -1,7 +1,8 @@
+var _ = require('underscore');
+
 /**
- * Manages the tooltips for a map. It listens to changes on the collection
- * of layers and binds a new tooltip view/model to CartoDB.js whenever the
- * collection of layers changes
+ * Manages the tooltips for a map. It listens to events triggered by a
+ * CartoDBLayerGroupView and updates models accordingly
  */
 var TooltipManager = function (deps) {
   if (!deps.mapModel) throw new Error('mapModel is required');
@@ -11,6 +12,8 @@ var TooltipManager = function (deps) {
   this._mapModel = deps.mapModel;
   this._tooltipModel = deps.tooltipModel;
   this._infowindowModel = deps.infowindowModel;
+
+  this._layersBeingFeaturedOvered = {};
 };
 
 TooltipManager.prototype.start = function (cartoDBLayerGroupView) {
@@ -26,28 +29,66 @@ TooltipManager.prototype.stop = function () {
 
 TooltipManager.prototype._onFeatureOvered = function (featureOverEvent) {
   var layerModel = featureOverEvent.layer;
+  var featureData = featureOverEvent.feature;
+  var featureId = featureData.cartodb_id;
+
   if (!layerModel) {
     throw new Error('featureOver event for layer ' + featureOverEvent.layerIndex + ' was captured but layerModel coudn\'t be retrieved');
   }
 
-  if (this._mapModel.arePopupsEnabled() &&
-    layerModel.tooltip.hasTemplate() &&
-    !this._isFeatureInfowindowOpen(featureOverEvent.feature.cartodb_id)) {
+  var showTooltip = this._mapModel.arePopupsEnabled() && layerModel.tooltip.hasTemplate() &&
+    !this._isFeatureInfowindowOpen(layerModel, featureId);
+  if (showTooltip) {
+    this._markLayerAsFeatureOvered(layerModel);
     this._tooltipModel.setTooltipTemplate(layerModel.tooltip);
     this._tooltipModel.setPosition(featureOverEvent.position);
-    this._tooltipModel.updateContent(featureOverEvent.feature);
-    this._tooltipModel.show();
+    this._tooltipModel.updateContent(featureData);
+    this._showTooltip(layerModel);
   } else {
-    this._tooltipModel.hide();
+    this._unmarkLayerAsFeatureOvered(layerModel);
+    this._hideTooltip(layerModel);
   }
 };
 
-TooltipManager.prototype._onFeatureOut = function () {
-  this._tooltipModel.hide();
+TooltipManager.prototype._onFeatureOut = function (featureOutEvent) {
+  var layerModel = featureOutEvent.layer;
+  this._unmarkLayerAsFeatureOvered(layerModel);
+  if (this._noLayerIsBeingFeatureOvered()) {
+    this._hideTooltip(layerModel);
+  }
 };
 
-TooltipManager.prototype._isFeatureInfowindowOpen = function (featureId) {
-  return featureId && this._infowindowModel.getCurrentFeatureId() === featureId;
+TooltipManager.prototype._showTooltip = function (layerModel) {
+  this._tooltipModel.show();
+  layerModel.on('change:visible', this._onLayerVisibilityChanged, this);
+};
+
+TooltipManager.prototype._hideTooltip = function (layerModel) {
+  this._tooltipModel.hide();
+  layerModel.off('change:visible', this._onLayerVisibilityChanged, this);
+};
+
+TooltipManager.prototype._onLayerVisibilityChanged = function (layerModel) {
+  this._hideTooltip(layerModel);
+};
+
+TooltipManager.prototype._markLayerAsFeatureOvered = function (layerModel) {
+  this._layersBeingFeaturedOvered[layerModel.cid] = true;
+};
+
+TooltipManager.prototype._unmarkLayerAsFeatureOvered = function (layerModel) {
+  this._layersBeingFeaturedOvered[layerModel.cid] = false;
+};
+
+TooltipManager.prototype._noLayerIsBeingFeatureOvered = function () {
+  return _.all(this._layersBeingFeaturedOvered, function (value, key) {
+    return !value;
+  }, this);
+};
+
+TooltipManager.prototype._isFeatureInfowindowOpen = function (layerModel, featureId) {
+  return featureId && this._infowindowModel.getCurrentFeatureId() === featureId &&
+    this._infowindowModel.hasInfowindowTemplate(layerModel.infowindow);
 };
 
 module.exports = TooltipManager;

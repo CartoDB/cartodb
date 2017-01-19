@@ -389,8 +389,8 @@ describe('src/vis/infowindow-manager.js', function () {
       data: { cartodb_id: 10 }
     });
 
-    // Infowindow is hidden
-    this.infowindowModel.set('visibility', false);
+    // Layer is hidden and infowindow too
+    layer.hide();
 
     expect(this.infowindowModel.getCurrentFeatureId()).toBeUndefined();
   });

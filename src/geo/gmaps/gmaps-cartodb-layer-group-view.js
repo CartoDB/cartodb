@@ -94,45 +94,60 @@ GMapsCartoDBLayerGroupView.prototype = new wax.g.connector();
 GMapsCartoDBLayerGroupView.prototype.interactionClass = wax.g.interaction;
 _.extend(
   GMapsCartoDBLayerGroupView.prototype,
-  GMapsCartoDBLayerGroupView.prototype,
   CartoDBLayerGroupViewBase.prototype,
-  GMapsCartoDBLayerGroupView.prototype,
   GMapsLayerView.prototype,
   {
+    addToMap: function () {
+      this.gmapsMap.overlayMapTypes.setAt(0, this);
+    },
+
+    remove: function () {
+      // Remove the custom map type
+      var index = this.gmapsMap.overlayMapTypes.getArray().indexOf(this);
+      this.gmapsMap.overlayMapTypes.removeAt(index);
+
+      this._clearInteraction();
+      this.finishLoading && this.finishLoading();
+    },
+
     reload: function () {
       this.model.invalidate();
     },
 
-    remove: function () {
-      GMapsLayerView.prototype.remove.call(this);
-      this.clear();
-    },
-
     featureOver: function (e, latlon, pixelPos, data, layer) {
-      this.trigger('featureOver', {
-        layer: this.model.getLayerAt(layer),
-        layerIndex: layer,
-        latlng: [latlon.lat(), latlon.lng()],
-        position: { x: pixelPos.x, y: pixelPos.y },
-        feature: data
-      });
+      var layerModel = this.model.getLayerAt(layer);
+      if (layerModel) {
+        this.trigger('featureOver', {
+          layer: layerModel,
+          layerIndex: layer,
+          latlng: [latlon.lat(), latlon.lng()],
+          position: { x: pixelPos.x, y: pixelPos.y },
+          feature: data
+        });
+      }
     },
 
     featureOut: function (e, layer) {
-      this.trigger('featureOut', {
-        layer: this.model.getLayerAt(layer),
-        layerIndex: layer
-      });
+      var layerModel = this.model.getLayerAt(layer);
+      if (layerModel) {
+        this.trigger('featureOut', {
+          layer: layerModel,
+          layerIndex: layer
+        });
+      }
     },
 
     featureClick: function (e, latlon, pixelPos, data, layer) {
-      this.trigger('featureClick', {
-        layer: this.model.getLayerAt(layer),
-        layerIndex: layer,
-        latlng: [latlon.lat(), latlon.lng()],
-        position: { x: pixelPos.x, y: pixelPos.y },
-        feature: data
-      });
+      var layerModel = this.model.getLayerAt(layer);
+      if (layerModel) {
+        this.trigger('featureClick', {
+          layer: layerModel,
+          layerIndex: layer,
+          latlng: [latlon.lat(), latlon.lng()],
+          position: { x: pixelPos.x, y: pixelPos.y },
+          feature: data
+        });
+      }
     },
 
     error: function (e) {

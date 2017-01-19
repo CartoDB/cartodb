@@ -104,30 +104,39 @@ var LeafletCartoDBLayerGroupView = L.TileLayer.extend({
   },
 
   featureOver: function (e, latlon, pixelPos, data, layer) {
-    this.trigger('featureOver', {
-      layer: this.model.getLayerAt(layer),
-      layerIndex: layer,
-      latlng: [latlon.lat, latlon.lng],
-      position: { x: pixelPos.x, y: pixelPos.y },
-      feature: data
-    });
+    var layerModel = this.model.getLayerAt(layer);
+    if (layerModel) {
+      this.trigger('featureOver', {
+        layer: layerModel,
+        layerIndex: layer,
+        latlng: [latlon.lat, latlon.lng],
+        position: { x: pixelPos.x, y: pixelPos.y },
+        feature: data
+      });
+    }
   },
 
   featureOut: function (e, layer) {
-    this.trigger('featureOut', {
-      layer: this.model.getLayerAt(layer),
-      layerIndex: layer
-    });
+    var layerModel = this.model.getLayerAt(layer);
+    if (layerModel) {
+      this.trigger('featureOut', {
+        layer: layerModel,
+        layerIndex: layer
+      });
+    }
   },
 
   featureClick: function (e, latlon, pixelPos, data, layer) {
-    this.trigger('featureClick', {
-      layer: this.model.getLayerAt(layer),
-      layerIndex: layer,
-      latlng: [latlon.lat, latlon.lng],
-      position: { x: pixelPos.x, y: pixelPos.y },
-      feature: data
-    });
+    var layerModel = this.model.getLayerAt(layer);
+    if (layerModel) {
+      this.trigger('featureClick', {
+        layer: layerModel,
+        layerIndex: layer,
+        latlng: [latlon.lat, latlon.lng],
+        position: { x: pixelPos.x, y: pixelPos.y },
+        feature: data
+      });
+    }
   },
 
   error: function (e) {

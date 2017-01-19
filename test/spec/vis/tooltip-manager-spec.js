@@ -2,7 +2,6 @@ var Backbone = require('backbone');
 var Map = require('../../../src/geo/map');
 var VisModel = require('../../../src/vis/vis');
 var CartoDBLayer = require('../../../src/geo/map/cartodb-layer');
-var LayersCollection = require('../../../src/geo/map/layers');
 var CartoDBLayerGroup = require('../../../src/geo/cartodb-layer-group');
 var TooltipModel = require('../../../src/geo/ui/tooltip-model');
 var InfowindowModel = require('../../../src/geo/ui/infowindow-model');
@@ -18,10 +17,21 @@ var simulateFeatureOverEvent = function (layerView, data) {
   });
 };
 
+var simulateFeatureOutEvent = function (layerView, data) {
+  layerView.trigger('featureOut', {
+    layer: layerView.model.getLayerAt(data.layerIndex),
+    layerIndex: data.layerIndex
+  });
+};
+
 describe('src/vis/tooltip-manager.js', function () {
   beforeEach(function () {
     this.map = new Map(null, { layersFactory: {} });
-    this.layerView = new Backbone.View();
+    this.layerView = new Backbone.View({
+      model: new CartoDBLayerGroup({}, {
+        layersCollection: this.map.layers
+      })
+    });
 
     this.vis = new VisModel();
     spyOn(this.vis, 'reload');
@@ -66,10 +76,6 @@ describe('src/vis/tooltip-manager.js', function () {
     this.tooltipManager.start(this.layerView);
 
     this.map.layers.reset([ layer1, layer2 ]);
-
-    this.layerView.model = new CartoDBLayerGroup({}, {
-      layersCollection: new LayersCollection([ layer1, layer2 ])
-    });
 
     simulateFeatureOverEvent(this.layerView, {
       layerIndex: 0,
@@ -122,10 +128,6 @@ describe('src/vis/tooltip-manager.js', function () {
 
     this.map.layers.reset([ layer1 ]);
 
-    this.layerView.model = new CartoDBLayerGroup({}, {
-      layersCollection: new LayersCollection([ layer1 ])
-    });
-
     simulateFeatureOverEvent(this.layerView, {
       layerIndex: 0,
       data: { cartodb_id: 10, name: 'CARTO' }
@@ -133,10 +135,13 @@ describe('src/vis/tooltip-manager.js', function () {
 
     expect(this.tooltipModel.isVisible()).toBeTruthy();
 
-    this.layerView.trigger('featureOut');
+    simulateFeatureOutEvent(this.layerView, {
+      layerIndex: 0
+    });
 
     expect(this.tooltipModel.isVisible()).toBeFalsy();
 
+    this.infowindowModel.setInfowindowTemplate(layer1.infowindow);
     this.infowindowModel.setCurrentFeatureId(10);
 
     simulateFeatureOverEvent(this.layerView, {
@@ -165,9 +170,37 @@ describe('src/vis/tooltip-manager.js', function () {
 
     this.map.layers.reset([ layer1 ]);
 
-    this.layerView.model = new CartoDBLayerGroup({}, {
-      layersCollection: new LayersCollection([ layer1 ])
+    simulateFeatureOverEvent(this.layerView, {
+      layerIndex: 0,
+      data: { cartodb_id: 10, name: 'CARTO' }
     });
+
+    expect(this.tooltipModel.isVisible()).toBeTruthy();
+
+    simulateFeatureOutEvent(this.layerView, {
+      layerIndex: 0
+    });
+
+    expect(this.tooltipModel.isVisible()).toBeFalsy();
+  });
+
+  it('should hide the tooltip when the layer is hidden', function () {
+    var layer1 = new CartoDBLayer({
+      tooltip: {
+        template: 'template1',
+        template_type: 'underscore',
+        fields: [{
+          'name': 'name',
+          'title': true,
+          'position': 1
+        }],
+        alternative_names: 'alternative_names1'
+      }
+    }, { vis: this.vis });
+
+    this.tooltipManager.start(this.layerView);
+
+    this.map.layers.reset([ layer1 ]);
 
     simulateFeatureOverEvent(this.layerView, {
       layerIndex: 0,
@@ -176,12 +209,57 @@ describe('src/vis/tooltip-manager.js', function () {
 
     expect(this.tooltipModel.isVisible()).toBeTruthy();
 
-    this.layerView.trigger('featureOut');
+    layer1.hide();
 
     expect(this.tooltipModel.isVisible()).toBeFalsy();
   });
 
-  it('should not show the tooltip if popups are disabled', function () {
+  it('should NOT hide the tooltip when a feature is being featured over and other features are outered', function () {
+    var layer1 = new CartoDBLayer({
+      tooltip: {
+        template: 'template1',
+        template_type: 'underscore',
+        fields: [{
+          'name': 'name',
+          'title': true,
+          'position': 1
+        }],
+        alternative_names: 'alternative_names1'
+      }
+    }, { vis: this.vis });
+    var layer2 = new CartoDBLayer({
+      tooltip: {
+        template: 'template2',
+        template_type: 'underscore',
+        fields: [{
+          'name': 'name',
+          'title': true,
+          'position': 1
+        }],
+        alternative_names: 'alternative_names1'
+      }
+    }, { vis: this.vis });
+
+    this.tooltipManager.start(this.layerView);
+
+    this.map.layers.reset([ layer1, layer2 ]);
+
+    simulateFeatureOverEvent(this.layerView, {
+      layerIndex: 0,
+      data: { cartodb_id: 10, name: 'CARTO' }
+    });
+
+    expect(this.tooltipModel.isVisible()).toBeTruthy();
+
+    // A feature from a different layer is not overed anymore
+    simulateFeatureOutEvent(this.layerView, {
+      layerIndex: 1
+    });
+
+    expect(this.tooltipModel.isVisible()).toBeTruthy();
+  });
+
+  it('should NOT show the tooltip if popups are disabled', function () {
     var layer1 = new CartoDBLayer({
       tooltip: {
         template: 'template1',
@@ -200,10 +278,6 @@ describe('src/vis/tooltip-manager.js', function () {
     this.map.layers.reset([ layer1 ]);
     this.map.disablePopups();
 
-    this.layerView.model = new CartoDBLayerGroup({}, {
-      layersCollection: new LayersCollection([ layer1 ])
-    });
-
     simulateFeatureOverEvent(this.layerView, {
       layerIndex: 0,
       data: { cartodb_id: 10, name: 'CARTO' }
@@ -211,7 +285,7 @@ describe('src/vis/tooltip-manager.js', function () {
     expect(this.tooltipModel.isVisible()).toBeFalsy();
   });
 
-  it('should not show the tooltip if tooltip has no template', function () {
+  it('should NOT show the tooltip if tooltip has no template', function () {
     var layer1 = new CartoDBLayer({
       tooltip: {
         template: '',
@@ -229,10 +303,6 @@ describe('src/vis/tooltip-manager.js', function () {
 
     this.map.layers.reset([ layer1 ]);
 
-    this.layerView.model = new CartoDBLayerGroup({}, {
-      layersCollection: new LayersCollection([ layer1 ])
-    });
-
     simulateFeatureOverEvent(this.layerView, {
       layerIndex: 0,
       data: { cartodb_id: 10, name: 'CARTO' }
@@ -241,7 +311,7 @@ describe('src/vis/tooltip-manager.js', function () {
     expect(this.tooltipModel.isVisible()).toBeFalsy();
   });
 
-  it('should not show the tooltipView if the layerModel doesn\'t have tooltip data', function () {
+  it('should NOT show the tooltipView if the layerModel doesn\'t have tooltip data', function () {
     var layer1 = new CartoDBLayer({}, { vis: this.vis });
     var layer2 = new CartoDBLayer({
       tooltip: {
@@ -259,10 +329,6 @@ describe('src/vis/tooltip-manager.js', function () {
     this.tooltipManager.start(this.layerView);
 
     this.map.layers.reset([ layer1, layer2 ]);
-
-    this.layerView.model = new CartoDBLayerGroup({}, {
-      layersCollection: new LayersCollection([ layer1, layer2 ])
-    });
 
     simulateFeatureOverEvent(this.layerView, {
       layerIndex: 0,

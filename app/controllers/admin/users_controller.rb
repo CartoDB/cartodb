@@ -28,6 +28,7 @@ class Admin::UsersController < Admin::AdminController
   before_filter :setup_user
   before_filter :initialize_google_plus_config, only: [:profile, :account]
   before_filter :load_services, only: [:account, :account_update, :delete]
+  before_filter :load_account_deletion_info, only: [:account, :delete]
 
   layout 'application'
 
@@ -42,7 +43,6 @@ class Admin::UsersController < Admin::AdminController
   end
 
   def account
-    @can_be_deleted, @cant_be_deleted_reason = can_be_deleted?(@user)
     respond_to do |format|
       format.html { render 'account' }
     end
@@ -114,19 +114,14 @@ class Admin::UsersController < Admin::AdminController
 
   def delete
     deletion_password_confirmation = params[:deletion_password_confirmation]
-    if !@user.validate_old_password(deletion_password_confirmation)
+    if @user.needs_password_confirmation? && !@user.validate_old_password(deletion_password_confirmation)
       raise PASSWORD_DOES_NOT_MATCH_MESSAGE
     end
 
     @user.delete_in_central
     @user.destroy
-    cdb_logout
 
-    if Cartodb::Central.sync_data_with_cartodb_central?
-      redirect_to "https://carto.com"
-    else
-      render(file: "public/404.html", layout: false, status: 404)
-    end
+    redirect_to logout_url
   rescue CartoDB::CentralCommunicationFailure => e
     CartoDB::Logger.error(exception: e, message: 'Central error deleting user at CartoDB', user: @user)
     flash.now[:error] = "Error deleting user: #{e.user_message}"
@@ -156,6 +151,10 @@ class Admin::UsersController < Admin::AdminController
 
   def load_services
     @services = get_oauth_services
+  end
+
+  def load_account_deletion_info
+    @can_be_deleted, @cant_be_deleted_reason = can_be_deleted?(@user)
   end
 
   def get_oauth_services

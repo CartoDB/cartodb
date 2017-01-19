@@ -104,13 +104,14 @@ describe Carto::Visualization do
     include Carto::Factories::Visualizations
 
     it 'only returns tables that a user can read' do
+      map = FactoryGirl.create(:carto_map, user: @carto_user)
+
       private_table = FactoryGirl.create(:private_user_table, user: @carto_user)
       public_table = FactoryGirl.create(:public_user_table, user: @carto_user)
 
-      private_layer = FactoryGirl.create(:carto_layer, options: { table_name: private_table.name })
-      public_layer =  FactoryGirl.create(:carto_layer, options: { table_name: public_table.name })
+      private_layer = FactoryGirl.create(:carto_layer, options: { table_name: private_table.name }, maps: [map])
+      public_layer =  FactoryGirl.create(:carto_layer, options: { table_name: public_table.name }, maps: [map])
 
-      map = FactoryGirl.create(:carto_map, layers: [private_layer, public_layer], user: @carto_user)
       map, table, table_visualization, visualization = create_full_visualization(@carto_user,
                                                                                  map: map,
                                                                                  table: private_table,

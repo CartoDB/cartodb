@@ -794,13 +794,14 @@ describe Carto::VisualizationsExportService2 do
       end
 
       it 'only exports layers that a user has permissions at' do
+        map = FactoryGirl.create(:carto_map, user: @user)
+
         private_table = FactoryGirl.create(:private_user_table, user: @user)
         public_table = FactoryGirl.create(:public_user_table, user: @user)
 
-        private_layer = FactoryGirl.create(:carto_layer, options: { table_name: private_table.name })
-        public_layer =  FactoryGirl.create(:carto_layer, options: { table_name: public_table.name })
+        private_layer = FactoryGirl.create(:carto_layer, options: { table_name: private_table.name }, maps: [map])
+        public_layer =  FactoryGirl.create(:carto_layer, options: { table_name: public_table.name }, maps: [map])
 
-        map = FactoryGirl.create(:carto_map, layers: [private_layer, public_layer], user: @user)
         map, table, table_visualization, visualization = create_full_visualization(@user,
                                                                                    map: map,
                                                                                    table: private_table,

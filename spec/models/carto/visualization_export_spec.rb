@@ -72,13 +72,14 @@ describe Carto::VisualizationExport do
 
   describe '#export' do
     it 'exports a .carto file including the carto.json and the files' do
+      map = FactoryGirl.create(:carto_map, user: @carto_user1)
+
       table1 = FactoryGirl.create(:private_user_table, user: @carto_user1)
       table2 = FactoryGirl.create(:private_user_table, user: @carto_user1)
 
-      layer1 = FactoryGirl.create(:carto_layer, options: { table_name: table1.name })
-      layer2 = FactoryGirl.create(:carto_layer, options: { table_name: table2.name })
+      layer1 = FactoryGirl.create(:carto_layer, options: { table_name: table1.name }, maps: [map])
+      layer2 = FactoryGirl.create(:carto_layer, options: { table_name: table2.name }, maps: [map])
 
-      map = FactoryGirl.create(:carto_map, layers: [layer1, layer2], user: @carto_user1)
       map, table, table_visualization, visualization = create_full_visualization(@carto_user1,
                                                                                  map: map,
                                                                                  table: table1,
@@ -107,11 +108,12 @@ describe Carto::VisualizationExport do
     end
 
     it 'excludes data not accessible by the user' do
+      map = FactoryGirl.create(:carto_map, user: @carto_user1)
+
       table1 = FactoryGirl.create(:private_user_table, user: @carto_user1)
 
-      layer1 = FactoryGirl.create(:carto_layer, options: { table_name: table1.name })
+      layer1 = FactoryGirl.create(:carto_layer, options: { table_name: table1.name }, maps: [map])
 
-      map = FactoryGirl.create(:carto_map, layers: [layer1], user: @carto_user1)
       map, table, table_visualization, visualization = create_full_visualization(@carto_user1,
                                                                                  map: map,
                                                                                  table: table1,
@@ -138,13 +140,14 @@ describe Carto::VisualizationExport do
     end
 
     it 'excludes layers and user_tables with user_tables_ids parameter' do
+      map = FactoryGirl.create(:carto_map, user: @carto_user1)
+
       table1 = FactoryGirl.create(:private_user_table, user: @carto_user1)
       table2 = FactoryGirl.create(:private_user_table, user: @carto_user1)
 
-      layer1 = FactoryGirl.create(:carto_layer, options: { table_name: table1.name })
-      layer2 = FactoryGirl.create(:carto_layer, options: { table_name: table2.name })
+      layer1 = FactoryGirl.create(:carto_layer, options: { table_name: table1.name }, maps: [map])
+      layer2 = FactoryGirl.create(:carto_layer, options: { table_name: table2.name }, maps: [map])
 
-      map = FactoryGirl.create(:carto_map, layers: [layer1, layer2], user: @carto_user1)
       map, table, table_visualization, visualization = create_full_visualization(@carto_user1,
                                                                                  map: map,
                                                                                  table: table1,

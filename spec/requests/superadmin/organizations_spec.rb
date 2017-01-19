@@ -188,7 +188,7 @@ feature "Superadmin's organization API" do
 
       Carto::SharedEntity.where(recipient_id: @org_user_2.id).count.should == 1
 
-      permission = table.map.visualizations.first.permission
+      permission = table.map.visualization.permission
       acl = JSON.parse(permission.access_control_list)
       acl[0]['id'].should == @org_user_2.id
 
@@ -202,7 +202,7 @@ feature "Superadmin's organization API" do
 
       # User is removed from ACL
       table.reload
-      permission = table.map.visualizations.first.permission
+      permission = table.map.visualization.permission
       acl = JSON.parse(permission.access_control_list)
       acl.count.should == 0
 

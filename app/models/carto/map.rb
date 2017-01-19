@@ -15,11 +15,11 @@ class Carto::Map < ActiveRecord::Base
                          through: :layers_maps,
                          source: :layer
 
-  has_many :user_tables, class_name: Carto::UserTable, inverse_of: :map
+  has_one :user_table, class_name: Carto::UserTable, inverse_of: :map
 
   belongs_to :user
 
-  has_many :visualizations, class_name: Carto::Visualization, inverse_of: :map
+  has_one :visualization, class_name: Carto::Visualization, inverse_of: :map
 
   DEFAULT_OPTIONS = {
     zoom:            3,
@@ -105,7 +105,7 @@ class Carto::Map < ActiveRecord::Base
   end
 
   def writable_by_user?(user)
-    visualizations.select { |v| v.writable_by?(user) }.any?
+    visualization.writable_by?(user)
   end
 
   def contains_layer?(layer)
@@ -122,10 +122,6 @@ class Carto::Map < ActiveRecord::Base
   def force_notify_map_change
     map = ::Map[id]
     map.force_notify_map_change if map
-  end
-
-  def visualization
-    visualizations.first
   end
 
   def update_dataset_dependencies
@@ -204,8 +200,7 @@ class Carto::Map < ActiveRecord::Base
   end
 
   def get_the_last_time_tiles_have_changed_to_render_it_in_vizjsons
-    table       = user_tables.first
-    from_table  = table.service.data_last_modified if table
+    from_table = user_table.service.data_last_modified if user_table
 
     [from_table, data_layers.map(&:updated_at)].flatten.compact.max
   end

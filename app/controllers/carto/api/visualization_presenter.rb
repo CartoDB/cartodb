@@ -24,7 +24,6 @@ module Carto
 
       def to_poro
         return to_public_poro unless @visualization.is_viewable_by_user?(@current_viewer)
-
         show_stats = @options.fetch(:show_stats, true)
 
         permission = @visualization.permission.nil? ? nil : Carto::Api::PermissionPresenter.new(@visualization.permission,
@@ -32,7 +31,7 @@ module Carto
                                                                                            .with_presenter_cache(@presenter_cache)
                                                                                            .to_poro
 
-        user_table_presentation = Carto::Api::UserTablePresenter.new(@visualization.table, @current_viewer)
+        user_table_presentation = Carto::Api::UserTablePresenter.new(@visualization.user_table, @current_viewer)
                                                                 .with_presenter_cache(@presenter_cache).to_poro
 
         poro = {
@@ -52,26 +51,29 @@ module Carto
           locked: @visualization.locked,
           source: @visualization.source,
           title: @visualization.title,
-          parent_id: @visualization.parent_id,
           license: @visualization.license,
           attributions: @visualization.attributions,
           kind: @visualization.kind,
           likes: @visualization.likes_count,
-          prev_id: @visualization.prev_id,
-          next_id: @visualization.next_id,
-          transition_options: @visualization.transition_options,
-          active_child: @visualization.active_child,
           table: user_table_presentation,
           external_source: Carto::Api::ExternalSourcePresenter.new(@visualization.external_source).to_poro,
           synchronization: Carto::Api::SynchronizationPresenter.new(@visualization.synchronization).to_poro,
-          children: @visualization.children.map { |v| children_poro(v) },
           liked: @current_viewer ? @visualization.is_liked_by_user_id?(@current_viewer.id) : false,
           url: url,
           uses_builder_features: @visualization.uses_builder_features?,
           auth_tokens: auth_tokens,
-          version: @visualization.version || 2
+          version: @visualization.version || 2,
+          # TODO: The following are Odyssey fields and could be removed
+          # They are kept here for now for compatibility with the old presenter and JS code
+          # `children` is hardcoded to avoid a performance impact (an extra query)
+          prev_id: @visualization.prev_id,
+          next_id: @visualization.next_id,
+          parent_id: @visualization.parent_id,
+          transition_options: @visualization.transition_options,
+          active_child: nil,
+          children: []
         }
-        poro.merge!( { related_tables: related_tables } ) if @options.fetch(:related, true)
+        poro[:related_tables] = related_tables if @options.fetch(:related, true)
         poro
       end
 
@@ -130,9 +132,11 @@ module Carto
       end
 
       def related_tables
-        related = @visualization.table ?
-          @visualization.related_tables.select { |table| table.id != @visualization.table.id } :
-          @visualization.related_tables
+        related = if @visualization.user_table
+                    @visualization.related_tables.select { |table| table.id != @visualization.user_table.id }
+                  else
+                    @visualization.related_tables
+                  end
 
         related.map do |table|
           Carto::Api::UserTablePresenter.new(table, @current_viewer).to_poro

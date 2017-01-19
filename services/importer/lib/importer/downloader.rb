@@ -73,6 +73,8 @@ module CartoDB
 
       attr_reader :source_file, :etag, :last_modified, :http_response_code, :datasource
 
+      TMP_IMPORTER_PATH = TMP_IMPORTER_PATH.freeze
+
       def initialize(user_id, url, http_options = {}, options = {})
         raise UploadError unless user_id && url
 
@@ -82,6 +84,8 @@ module CartoDB
         @options = options
 
         @downloaded_bytes = 0
+
+        FileUtils.mkdir_p(TMP_IMPORTER_PATH)
       end
 
       def run(_available_quota_in_bytes = nil)
@@ -172,7 +176,7 @@ module CartoDB
 
       def typhoeus_options
         verify_ssl = @http_options.fetch(:verify_ssl_cert, false)
-        cookiejar = Tempfile.new('cookiejar_', '/tmp/importer').path
+        cookiejar = Tempfile.new('cookiejar_', TMP_IMPORTER_PATH).path
 
         {
           cookiefile:       cookiejar,
@@ -190,7 +194,7 @@ module CartoDB
       FILENAME_PREFIX = 'importer_'.freeze
 
       def download_and_store
-        file = Tempfile.new(FILENAME_PREFIX, '/tmp/importer', encoding: 'ascii-8bit')
+        file = Tempfile.new(FILENAME_PREFIX, TMP_IMPORTER_PATH, encoding: 'ascii-8bit')
 
         bound_request(file).run
 

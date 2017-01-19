@@ -28,11 +28,12 @@ module.exports = cdb.core.View.extend({
   },
 
   render: function () {
+    var isAutoStyleButtonVisible = this.model.isAutoStyleEnabled() && this.dataviewModel.layer.get('visible');
     this.clearSubViews();
     this.$el.html(
       template({
         isCollapsed: this.model.get('collapsed'),
-        isAutoStyleEnabled: this.model.isAutoStyleEnabled(),
+        isAutoStyleEnabled: isAutoStyleButtonVisible,
         isAutoStyle: this.model.isAutoStyle(),
         title: this.model.get('title'),
         columnName: this.dataviewModel.get('column'),

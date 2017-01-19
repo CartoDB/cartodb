@@ -39,7 +39,7 @@
               "dependencies": {
                 "eventemitter2": {
                   "version": "0.4.14",
-                  "from": "eventemitter2@>=0.4.9 <0.5.0",
+                  "from": "eventemitter2@>=0.4.13 <0.5.0",
                   "resolved": "https://registry.npmjs.org/eventemitter2/-/eventemitter2-0.4.14.tgz"
                 },
                 "semver": {
@@ -76,7 +76,7 @@
                           "dependencies": {
                             "inherits": {
                               "version": "2.0.3",
-                              "from": "inherits@>=2.0.1 <2.1.0",
+                              "from": "inherits@>=2.0.0 <3.0.0",
                               "resolved": "https://registry.npmjs.org/inherits/-/inherits-2.0.3.tgz"
                             },
                             "typedarray": {
@@ -86,7 +86,7 @@
                             },
                             "readable-stream": {
                               "version": "2.0.6",
-                              "from": "readable-stream@>=2.0.0 <2.1.0",
+                              "from": "readable-stream@>=2.0.5 <2.1.0",
                               "resolved": "https://registry.npmjs.org/readable-stream/-/readable-stream-2.0.6.tgz",
                               "dependencies": {
                                 "core-util-is": {
@@ -311,7 +311,7 @@
                                 },
                                 "inherits": {
                                   "version": "2.0.3",
-                                  "from": "inherits@>=2.0.1 <2.1.0",
+                                  "from": "inherits@>=2.0.0 <3.0.0",
                                   "resolved": "https://registry.npmjs.org/inherits/-/inherits-2.0.3.tgz"
                                 },
                                 "isarray": {
@@ -707,7 +707,7 @@
               "dependencies": {
                 "graceful-fs": {
                   "version": "1.2.3",
-                  "from": "graceful-fs@>=1.0.0 <2.0.0",
+                  "from": "graceful-fs@>=1.2.0 <1.3.0",
                   "resolved": "https://registry.npmjs.org/graceful-fs/-/graceful-fs-1.2.3.tgz"
                 }
               }
@@ -922,7 +922,7 @@
                   "dependencies": {
                     "escape-string-regexp": {
                       "version": "1.0.5",
-                      "from": "escape-string-regexp@>=1.0.3 <2.0.0",
+                      "from": "escape-string-regexp@>=1.0.2 <2.0.0",
                       "resolved": "https://registry.npmjs.org/escape-string-regexp/-/escape-string-regexp-1.0.5.tgz"
                     }
                   }
@@ -966,7 +966,7 @@
                     },
                     "inherits": {
                       "version": "2.0.3",
-                      "from": "inherits@>=2.0.1 <2.1.0",
+                      "from": "inherits@2.0.3",
                       "resolved": "https://registry.npmjs.org/inherits/-/inherits-2.0.3.tgz"
                     }
                   }
@@ -1012,7 +1012,7 @@
                     },
                     "inherits": {
                       "version": "2.0.3",
-                      "from": "inherits@>=2.0.1 <2.1.0",
+                      "from": "inherits@2.0.3",
                       "resolved": "https://registry.npmjs.org/inherits/-/inherits-2.0.3.tgz"
                     }
                   }
@@ -1106,7 +1106,7 @@
     "carto": {
       "version": "0.15.1-cdb1",
       "from": "cartodb/carto#master",
-      "resolved": "git://github.com/cartodb/carto.git#e931f914752678efb53995ff8b823aa5f57bf6c9",
+      "resolved": "git://github.com/cartodb/carto.git#4f792fbeadd883479bee7b5350893ca63b1cdd99",
       "dependencies": {
         "mapnik-reference": {
           "version": "6.0.5",
@@ -1146,8 +1146,8 @@
     },
     "cartodb-deep-insights.js": {
       "version": "0.0.2",
-      "from": "cartodb/deep-insights.js#master",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#261df49a8e5e3010b8aa38c32a35e50cb37a5242",
+      "from": "cartodb/deep-insights.js#508-dont_show_autostyle_on_hidden_layer",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#4e184365fd3fb8f2796b5f18e6e66e38374dd52a",
       "dependencies": {
         "cartodb.js": {
           "version": "4.0.0-alpha.1",
@@ -1162,7 +1162,7 @@
             "carto": {
               "version": "0.15.1-cdb1",
               "from": "cartodb/carto#master",
-              "resolved": "git://github.com/cartodb/carto.git#e931f914752678efb53995ff8b823aa5f57bf6c9",
+              "resolved": "git://github.com/cartodb/carto.git#4f792fbeadd883479bee7b5350893ca63b1cdd99",
               "dependencies": {
                 "mapnik-reference": {
                   "version": "6.0.5",
@@ -1196,7 +1196,7 @@
                 "carto": {
                   "version": "0.15.1-cdb1",
                   "from": "cartodb/carto#master",
-                  "resolved": "git://github.com/cartodb/carto.git#e931f914752678efb53995ff8b823aa5f57bf6c9",
+                  "resolved": "git://github.com/cartodb/carto.git#4f792fbeadd883479bee7b5350893ca63b1cdd99",
                   "dependencies": {
                     "mapnik-reference": {
                       "version": "6.0.5",
@@ -1327,7 +1327,7 @@
                 "carto": {
                   "version": "0.15.1-cdb1",
                   "from": "cartodb/carto#master",
-                  "resolved": "git://github.com/cartodb/carto.git#e931f914752678efb53995ff8b823aa5f57bf6c9",
+                  "resolved": "git://github.com/cartodb/carto.git#4f792fbeadd883479bee7b5350893ca63b1cdd99",
                   "dependencies": {
                     "mapnik-reference": {
                       "version": "6.0.5",
@@ -1418,7 +1418,7 @@
                 },
                 "turf-jenks": {
                   "version": "1.0.1",
-                  "from": "turf-jenks@>=1.0.1 <1.1.0",
+                  "from": "turf-jenks@>=1.0.1 <2.0.0",
                   "resolved": "https://registry.npmjs.org/turf-jenks/-/turf-jenks-1.0.1.tgz",
                   "dependencies": {
                     "simple-statistics": {
@@ -1484,7 +1484,7 @@
         "carto": {
           "version": "0.15.1-cdb1",
           "from": "cartodb/carto#master",
-          "resolved": "git://github.com/cartodb/carto.git#e931f914752678efb53995ff8b823aa5f57bf6c9",
+          "resolved": "git://github.com/cartodb/carto.git#4f792fbeadd883479bee7b5350893ca63b1cdd99",
           "dependencies": {
             "mapnik-reference": {
               "version": "6.0.5",
@@ -1523,7 +1523,7 @@
             "carto": {
               "version": "0.15.1-cdb1",
               "from": "cartodb/carto#master",
-              "resolved": "git://github.com/cartodb/carto.git#e931f914752678efb53995ff8b823aa5f57bf6c9",
+              "resolved": "git://github.com/cartodb/carto.git#4f792fbeadd883479bee7b5350893ca63b1cdd99",
               "dependencies": {
                 "mapnik-reference": {
                   "version": "6.0.5",
@@ -1654,7 +1654,7 @@
             "carto": {
               "version": "0.15.1-cdb1",
               "from": "cartodb/carto#master",
-              "resolved": "git://github.com/cartodb/carto.git#e931f914752678efb53995ff8b823aa5f57bf6c9",
+              "resolved": "git://github.com/cartodb/carto.git#4f792fbeadd883479bee7b5350893ca63b1cdd99",
               "dependencies": {
                 "mapnik-reference": {
                   "version": "6.0.5",
@@ -1826,7 +1826,7 @@
         "carto": {
           "version": "0.15.1-cdb1",
           "from": "cartodb/carto#master",
-          "resolved": "git://github.com/cartodb/carto.git#e931f914752678efb53995ff8b823aa5f57bf6c9",
+          "resolved": "git://github.com/cartodb/carto.git#4f792fbeadd883479bee7b5350893ca63b1cdd99",
           "dependencies": {
             "mapnik-reference": {
               "version": "6.0.5",
@@ -1869,7 +1869,7 @@
             },
             "debug": {
               "version": "2.2.0",
-              "from": "debug@2.2.0",
+              "from": "debug@>=2.2.0 <2.3.0",
               "resolved": "https://registry.npmjs.org/debug/-/debug-2.2.0.tgz",
               "dependencies": {
                 "ms": {

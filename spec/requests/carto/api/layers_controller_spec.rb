@@ -131,6 +131,22 @@ describe Carto::Api::LayersController do
         end
       end
 
+      it 'register table dependencies when updating layers' do
+        map = FactoryGirl.create(:carto_map_with_layers, user_id: @user1.id)
+        @map, @table, @table_visualization, @visualization = create_full_visualization(@carto_user1, map: map)
+        @layer = map.layers.first
+
+        new_order = 2
+        new_layer_json = layer_json.merge(
+          options: { random: '1' },
+          order: new_order
+        )
+        Carto::Layer.any_instance.expects(:register_table_dependencies).once
+        put_json update_map_layer_url(map.id, @layer.id), new_layer_json do |response|
+          response.status.should eq 200
+        end
+      end
+
       it 'updates several layers at once' do
         map = FactoryGirl.create(:carto_map_with_layers, user_id: @user1.id)
         @map, @table, @table_visualization, @visualization = create_full_visualization(@carto_user1, map: map)

@@ -32,8 +32,8 @@ class SessionsController < ApplicationController
   before_filter :api_authorization_required, only: :show
 
   def new
-    if logged_in?(CartoDB.extract_subdomain(request))
-      redirect_to(CartoDB.path(self, 'dashboard', trailing_slash: true))
+    if current_viewer.try(:subdomain) == CartoDB.extract_subdomain(request)
+      redirect_to(CartoDB.url(self, 'dashboard', { trailing_slash: true }, current_viewer))
     elsif saml_authentication? && !user
       # Automatically trigger SAML request on login view load -- could easily trigger this elsewhere
       redirect_to(saml_service.authentication_request)
@@ -299,6 +299,14 @@ class SessionsController < ApplicationController
   end
 
   def default_logout_url
-    CartoDB.url(self, 'public_visualizations_home')
+    # User could've been just deleted
+    username = CartoDB.subdomain_from_request(request)
+    if username && (Carto::User.exists?(username: username) || Carto::Organization.exists?(name: username))
+      CartoDB.url(self, 'public_visualizations_home')
+    elsif Cartodb::Central.sync_data_with_cartodb_central?
+      "https://carto.com"
+    else
+      "/404.html"
+    end
   end
 end

@@ -27,9 +27,6 @@ module Carto
 
         map = visualization.map
         map.user = user
-        unless map.save
-          raise "Errors saving imported map: #{map.errors.full_messages}"
-        end
 
         visualization.analyses.each do |analysis|
           analysis.user_id = user.id

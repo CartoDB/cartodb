@@ -34,15 +34,11 @@ class Carto::Visualization < ActiveRecord::Base
   belongs_to :user, inverse_of: :visualizations, select: Carto::User::DEFAULT_SELECT
   belongs_to :full_user, class_name: Carto::User, foreign_key: :user_id, primary_key: :id, inverse_of: :visualizations, readonly: true
 
-  belongs_to :user_table, class_name: Carto::UserTable, primary_key: :map_id, foreign_key: :map_id, inverse_of: :visualization
-
-  belongs_to :permission
+  belongs_to :permission, inverse_of: :visualization
 
   has_many :likes, foreign_key: :subject
   has_many :shared_entities, foreign_key: :entity_id, inverse_of: :visualization
 
-  # TODO: duplicated with user_table?
-  belongs_to :table, class_name: Carto::UserTable, primary_key: :map_id, foreign_key: :map_id, inverse_of: :visualization
   has_one :external_source
   has_many :unordered_children, class_name: Carto::Visualization, foreign_key: :parent_id
 
@@ -52,7 +48,7 @@ class Carto::Visualization < ActiveRecord::Base
 
   belongs_to :active_layer, class_name: Carto::Layer
 
-  belongs_to :map, class_name: Carto::Map
+  belongs_to :map, class_name: Carto::Map, inverse_of: :visualization
 
   has_many :related_templates, class_name: Carto::Template, foreign_key: :source_visualization_id
 
@@ -87,8 +83,8 @@ class Carto::Visualization < ActiveRecord::Base
   def size
     # Only canonical visualizations (Datasets) have a related table and then count against disk quota,
     # but we want to not break and even allow ordering by size multiple types
-    if table
-      table.size
+    if user_table
+      user_table.size
     elsif type == TYPE_REMOTE && !external_source.nil?
       external_source.size
     else
@@ -105,6 +101,11 @@ class Carto::Visualization < ActiveRecord::Base
     tags.reject!(&:blank?) if tags
     super(tags)
   end
+
+  def user_table
+    map.user_table if map
+  end
+  alias :table :user_table
 
   def layers_with_data_readable_by(user)
     return [] unless map
@@ -148,7 +149,7 @@ class Carto::Visualization < ActiveRecord::Base
 
   # TODO: refactor next methods, all have similar naming but some receive user and some others user_id
   def is_liked_by_user_id?(user_id)
-    likes_by_user_id(user_id).count > 0
+    likes_by_user_id(user_id).any?
   end
 
   def likes_by_user_id(user_id)
@@ -307,7 +308,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def table_service
-    table.nil? ? nil : table.service
+    user_table.try(:service)
   end
 
   def has_read_permission?(user)
@@ -333,7 +334,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def likes_count
-    likes.count
+    likes.size
   end
 
   def widgets
@@ -404,7 +405,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def uses_builder_features?
-    analyses.any? || widgets.any? || mapcapped?
+    builder? || analyses.any? || widgets.any? || mapcapped?
   end
 
   def add_source_analyses

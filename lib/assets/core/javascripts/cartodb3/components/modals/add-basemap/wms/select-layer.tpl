@@ -24,8 +24,6 @@
     </div>
   </div>
 
-  <ul class="List js-layers"></ul>
-
   <% if (searchQuery && layersFound.length == 0) { %>
     <div class="IntermediateInfo">
       <div class="LayoutIcon">
@@ -34,6 +32,8 @@
       <h4 class="CDB-Text CDB-Size-large u-mainTextColor u-bSpace u-secondaryTextColor u-tSpace-xl"><%- _t('components.modals.add-basemap.wms.oh-no') %></h4>
       <p class="CDB-Text CDB-Size-medium u-altTextColor"><%- _t('components.modals.add-basemap.wms.unfortunately') %></p>
     </div>
+  <% } else { %>
+    <div class="js-layers"></div>
   <% } %>
 </div>
 

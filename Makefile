@@ -299,6 +299,7 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/requests/carto/api/organization_assets_controller_spec.rb \
 	spec/lib/carto/assets_service_spec.rb \
 	spec/lib/carto/organization_assets_service_spec.rb \
+	spec/lib/carto/storage_options/local_spec.rb \
 	spec/models/carto/username_proposer_spec.rb \
 	$(NULL)
 

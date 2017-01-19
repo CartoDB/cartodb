@@ -488,14 +488,17 @@ class User < Sequel::Model
   # Some operations, such as user deletion, won't ask for password confirmation if password is not set
   # (because of Google/Github sign in, for example)
   def needs_password_confirmation?
-    (
-      (!oauth_signin? || last_password_change_date.present?) &&
-      Carto::UserCreation.http_authentication.find_by_user_id(id).nil?
-    )
+    (!oauth_signin? || last_password_change_date.present?) &&
+      !created_with_http_authentication? &&
+      !organization.try(:auth_saml_enabled?)
   end
 
   def oauth_signin?
     google_sign_in || github_user_id.present?
+  end
+
+  def created_with_http_authentication?
+    Carto::UserCreation.http_authentication.find_by_user_id(id).present?
   end
 
   def password_confirmation

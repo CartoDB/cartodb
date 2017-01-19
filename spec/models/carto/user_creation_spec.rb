@@ -82,6 +82,21 @@ describe Carto::UserCreation do
       saved_user.enable_account_token.should be_nil
     end
 
+    it 'does not assign an enable_account_token if user has signed up with GitHub' do
+      ::User.any_instance.stubs(:create_in_central).returns(true)
+      CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+      user_data = FactoryGirl.build(:valid_user)
+      user_data.organization = @organization
+      user_data.github_user_id = 123
+
+      user_creation = Carto::UserCreation.new_user_signup(user_data)
+      user_creation.next_creation_step until user_creation.finished?
+
+      saved_user = Carto::User.order("created_at desc").limit(1).first
+      saved_user.username.should == user_data.username
+      saved_user.enable_account_token.should be_nil
+    end
+
     it 'does not assign an enable_account_token nor sends email if user had an invitation and the right token is set' do
       ::Resque.expects(:enqueue).with(::Resque::UserJobs::Mail::NewOrganizationUser).never
       ::Resque.expects(:enqueue).with(Resque::OrganizationJobs::Mail::Invitation, instance_of(String)).once

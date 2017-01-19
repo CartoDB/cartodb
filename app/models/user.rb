@@ -1578,9 +1578,6 @@ class User < Sequel::Model
   def regenerate_api_key
     invalidate_varnish_cache
     update api_key: ::User.make_token
-  rescue CartoDB::CentralCommunicationFailure => e
-    CartoDB::Logger.error(message: 'Error updating api key for mobile_apps in Central', exception: e, user: self.inspect)
-    raise e
   end
 
   # This is set temporary on user creation with invitation,

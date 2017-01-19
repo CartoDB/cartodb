@@ -73,7 +73,7 @@ module CartoDB
 
       attr_reader :source_file, :etag, :last_modified, :http_response_code, :datasource
 
-      TMP_IMPORTER_PATH = TMP_IMPORTER_PATH.freeze
+      TMP_IMPORTER_PATH = '/tmp/importer'.freeze
 
       def initialize(user_id, url, http_options = {}, options = {})
         raise UploadError unless user_id && url

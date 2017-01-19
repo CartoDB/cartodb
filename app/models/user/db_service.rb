@@ -232,7 +232,7 @@ module CartoDB
           # other users in the organization can run it (when updating shared datasets)
           db_user = @user.organization_user? ? organization_member_group_role_member_name : @user.database_username
           db.run(%{REVOKE ALL ON FUNCTION "#{@user.database_schema}"._CDB_UserQuotaInBytes() FROM PUBLIC;})
-          db.run(%{GRANT ALL ON FUNCTION "#{@user.database_schema}"._CDB_UserQuotaInBytes() TO #{db_user};})
+          db.run(%{GRANT ALL ON FUNCTION "#{@user.database_schema}"._CDB_UserQuotaInBytes() TO "#{db_user}";})
 
           db.run("SET search_path TO #{search_path};")
         end

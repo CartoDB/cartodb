@@ -78,11 +78,37 @@
 .CDB-ListDecoration-item {
   min-height: 41px;
 }
+.CDB-ListDecoration-itemDisplay--flex {
+  @include display-flex();
+  @include justify-content(space-between);
+}
 .CDB-ListDecoration-itemPadding--vertical {
   min-height: auto;
 }
 .CDB-ListDecoration-item:last-type-of {
   border-bottom: 0;
+}
+.CDB-ListDecoration-item .CDB-NavMenu-item:last-child {
+  margin-right: 0;
+}
+.CDB-ListDecoration-secondaryContainer {
+  @include display-flex();
+  @include flex-direction(row);
+  @include justify-content(space-between);
+  @include align-items(center);
+}
+.CDB-ListDecoration-rampNav-item {
+  @include display-flex();
+  @include align-items(center);
+  height: 40px;
+  padding: 0;
+}
+.CDB-ListDecoration-rampImg {
+  @include display-flex();
+  @include align-items(center);
+}
+.CDB-ListDecoration-rampItemBar {
+  width: 20px;
 }
 .CustomList-list--visible.ps-container > .ps-scrollbar-y-rail {
   @include opacity(0.8);

@@ -9,8 +9,4 @@
     <% }) %>
   </ul>
 </div>
-<div class="Modal-inner Modal-inner--with-navigation">
-  <div class="ScrollView ScrollView--with-navigation">
-    <div class="ScrollView-content js-tab-content"></div>
-  </div>
-</div>
+<div class="Modal-inner Modal-inner--with-navigation js-tab-content"></div>

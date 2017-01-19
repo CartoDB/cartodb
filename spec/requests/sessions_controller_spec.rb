@@ -1,4 +1,5 @@
 require_relative '../spec_helper'
+require_relative '../helpers/subdomainless_helper'
 
 require 'fake_net_ldap'
 require_relative '../lib/fake_net_ldap_bind_as'

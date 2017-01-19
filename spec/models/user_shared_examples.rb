@@ -561,22 +561,49 @@ shared_examples_for "user models" do
   end
 
   describe '#needs_password_confirmation?' do
-    it 'is true for a normal user' do
-      user = FactoryGirl.build(:carto_user, google_sign_in: nil)
-      user.needs_password_confirmation?.should == true
+    before(:all) do
+      @user = create_user
+    end
 
-      user = FactoryGirl.build(:carto_user, google_sign_in: false)
-      user.needs_password_confirmation?.should == true
+    after(:each) do
+      @user.google_sign_in = nil
+      @user.last_password_change_date = nil
+      @user.organization = nil
+    end
+
+    after(:all) do
+      User[@user.id].destroy
+    end
+
+    it 'is true for a normal user' do
+      @user.needs_password_confirmation?.should == true
+
+      @user.google_sign_in = nil
+      @user.needs_password_confirmation?.should == true
+
+      @user.google_sign_in = false
+      @user.needs_password_confirmation?.should == true
     end
 
     it 'is false for users that signed in with Google' do
-      user = FactoryGirl.build(:carto_user, google_sign_in: true)
-      user.needs_password_confirmation?.should == false
+      @user.google_sign_in = true
+      @user.needs_password_confirmation?.should == false
     end
 
     it 'is true for users that signed in with Google but changed the password' do
-      user = FactoryGirl.build(:carto_user, google_sign_in: true, last_password_change_date: Time.now)
-      user.needs_password_confirmation?.should == true
+      @user.google_sign_in = true
+      @user.last_password_change_date = Time.now
+      @user.needs_password_confirmation?.should == true
+    end
+
+    it 'is false for users within a SAML organization' do
+      organization = FactoryGirl.create(:saml_organization)
+      organization.auth_saml_enabled?.should == true
+      @user.organization = organization
+      @user.needs_password_confirmation?.should == false
+
+      @user.organization = nil
+      organization.destroy
     end
   end
 

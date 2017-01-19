@@ -276,10 +276,12 @@ defaults: &defaults
   assets:
     s3_bucket_name: "tests"
     max_file_size: 5242880 # 5.megabytes
-    organization:
-      bucket: "tests"
-      max_size_in_bytes: 1048576
-      location: 'organization_assets'
+    # Example for configuring organization assets.
+    # If 'aws.s3' configuration exists, S3 is used for storing assets and 'assets.organization.bucket' value is required. If 'aws.s3' config is not present, assets will be stored locally.
+    # organization:
+    #   bucket: "tests" # Required if 'aws.s3' config is present. Bucket must exist beforehand. If no 'aws.s3' config is present, organization assets will be stored locally and this line is not needed.
+    #   max_size_in_bytes: 1048576 # Optional, default is 1 MB
+    #   location: 'organization_assets' # Optional subdirectory for local assets, default is 'organization_assets'
   app_assets:
     asset_host: "//cartodb-libs.global.ssl.fastly.net/cartodbui"
   avatars:

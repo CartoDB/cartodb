@@ -165,7 +165,7 @@ class Layer < Sequel::Model
   end
 
   def uses_private_tables?
-    !(affected_tables.select(&:private?).empty?)
+    user_tables.select(&:private?).any?
   end
 
   def legend

@@ -108,11 +108,11 @@ module Carto
     end
 
     def affected_tables_readable_by(user)
-      affected_tables.select { |ut| ut.readable_by?(user) }
+      user_tables.select { |ut| ut.readable_by?(user) }
     end
 
     def data_readable_by?(user)
-      affected_tables.all? { |ut| ut.readable_by?(user) }
+      user_tables.all? { |ut| ut.readable_by?(user) }
     end
 
     def legend
@@ -276,7 +276,7 @@ module Carto
     end
 
     def uses_private_tables?
-      affected_tables.any?(&:private?)
+      user_tables.any?(&:private?)
     end
 
     private

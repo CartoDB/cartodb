@@ -332,7 +332,7 @@ module Carto
       private
 
       def attribution
-        @layer.affected_tables.map(&:visualization).map(&:attributions).join(', ')
+        @layer.user_tables.map(&:visualization).map(&:attributions).join(', ')
       end
 
       def as_data

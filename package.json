@@ -42,6 +42,7 @@
     "brfs": "^1.4.3",
     "browserify": "13.0.0",
     "browserify-resolutions": "1.1.0",
+    "bubleify": "^0.7.0",
     "cartoassets": "cartodb/CartoAssets#master",
     "csswring": "^3.0.5",
     "git-rev": "0.2.1",

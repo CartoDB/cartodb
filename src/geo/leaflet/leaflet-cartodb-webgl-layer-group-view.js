@@ -1,7 +1,8 @@
 var TC = require('tangram.cartodb');
 var LeafletLayerView = require('./leaflet-layer-view');
+var L = require('leaflet');
 
-var LeafletCartoDBVectorLayerGroupView = window.L.TileLayer.extend({
+var LeafletCartoDBVectorLayerGroupView = L.Layer.extend({
   includes: [
     LeafletLayerView.prototype
   ],
@@ -31,7 +32,7 @@ var LeafletCartoDBVectorLayerGroupView = window.L.TileLayer.extend({
   },
 
   onAdd: function (map) {
-
+    L.Layer.prototype.onAdd.call(this, map);
   },
 
   _onLayerAdded: function (layer) {

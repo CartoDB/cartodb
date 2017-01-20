@@ -112,6 +112,16 @@ module CartoDB
         etag_changed || last_modified_changed
       end
 
+      def etag
+        return @etag if @etag
+        return nil unless headers
+
+        header_etag = headers['ETag']
+        header_etag = header_etag.delete('"').delete("'") if header_etag
+
+        @etag = header_etag
+      end
+
       private
 
       DEFAULT_TMP_FILE_DIRECTORY = '/tmp/imports'.freeze
@@ -277,16 +287,6 @@ module CartoDB
         header_content_length = headers['Content-Length']
 
         @content_length = header_content_length.to_i if header_content_length
-      end
-
-      def etag
-        return @etag if @etag
-        return nil unless headers
-
-        header_etag = headers['ETag']
-        header_etag = header_etag.delete('"').delete("'") if header_etag
-
-        @etag = header_etag
       end
 
       def last_modified

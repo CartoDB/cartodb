@@ -29,7 +29,7 @@ describe 'Mapinfo regression tests' do
   it 'imports Mapinfo files' do
     # Rails.root not loaded yet. This is a workaround
     filepath    = "#{File.expand_path('../..', __FILE__)}/fixtures/Ivanovo.zip"
-    downloader  = Downloader.new(filepath)
+    downloader  = Downloader.new(@user.id, filepath)
     runner      = Runner.new({
                                pg: @user.db_service.db_configuration_for,
                                downloader: downloader,

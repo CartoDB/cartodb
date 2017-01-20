@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.5.111",
+  "version": "4.5.112",
   "dependencies": {
     "backbone": {
       "version": "1.2.3",
@@ -1106,7 +1106,7 @@
     "carto": {
       "version": "0.15.1-cdb1",
       "from": "cartodb/carto#master",
-      "resolved": "git://github.com/cartodb/carto.git#e931f914752678efb53995ff8b823aa5f57bf6c9",
+      "resolved": "git://github.com/cartodb/carto.git#4f792fbeadd883479bee7b5350893ca63b1cdd99",
       "dependencies": {
         "mapnik-reference": {
           "version": "6.0.5",
@@ -1162,7 +1162,7 @@
             "carto": {
               "version": "0.15.1-cdb1",
               "from": "cartodb/carto#master",
-              "resolved": "git://github.com/cartodb/carto.git#e931f914752678efb53995ff8b823aa5f57bf6c9",
+              "resolved": "git://github.com/cartodb/carto.git#4f792fbeadd883479bee7b5350893ca63b1cdd99",
               "dependencies": {
                 "mapnik-reference": {
                   "version": "6.0.5",
@@ -1196,7 +1196,7 @@
                 "carto": {
                   "version": "0.15.1-cdb1",
                   "from": "cartodb/carto#master",
-                  "resolved": "git://github.com/cartodb/carto.git#e931f914752678efb53995ff8b823aa5f57bf6c9",
+                  "resolved": "git://github.com/cartodb/carto.git#4f792fbeadd883479bee7b5350893ca63b1cdd99",
                   "dependencies": {
                     "mapnik-reference": {
                       "version": "6.0.5",
@@ -1327,7 +1327,7 @@
                 "carto": {
                   "version": "0.15.1-cdb1",
                   "from": "cartodb/carto#master",
-                  "resolved": "git://github.com/cartodb/carto.git#e931f914752678efb53995ff8b823aa5f57bf6c9",
+                  "resolved": "git://github.com/cartodb/carto.git#4f792fbeadd883479bee7b5350893ca63b1cdd99",
                   "dependencies": {
                     "mapnik-reference": {
                       "version": "6.0.5",
@@ -1484,7 +1484,7 @@
         "carto": {
           "version": "0.15.1-cdb1",
           "from": "cartodb/carto#master",
-          "resolved": "git://github.com/cartodb/carto.git#e931f914752678efb53995ff8b823aa5f57bf6c9",
+          "resolved": "git://github.com/cartodb/carto.git#4f792fbeadd883479bee7b5350893ca63b1cdd99",
           "dependencies": {
             "mapnik-reference": {
               "version": "6.0.5",
@@ -1523,7 +1523,7 @@
             "carto": {
               "version": "0.15.1-cdb1",
               "from": "cartodb/carto#master",
-              "resolved": "git://github.com/cartodb/carto.git#e931f914752678efb53995ff8b823aa5f57bf6c9",
+              "resolved": "git://github.com/cartodb/carto.git#4f792fbeadd883479bee7b5350893ca63b1cdd99",
               "dependencies": {
                 "mapnik-reference": {
                   "version": "6.0.5",
@@ -1654,7 +1654,7 @@
             "carto": {
               "version": "0.15.1-cdb1",
               "from": "cartodb/carto#master",
-              "resolved": "git://github.com/cartodb/carto.git#e931f914752678efb53995ff8b823aa5f57bf6c9",
+              "resolved": "git://github.com/cartodb/carto.git#4f792fbeadd883479bee7b5350893ca63b1cdd99",
               "dependencies": {
                 "mapnik-reference": {
                   "version": "6.0.5",
@@ -1826,7 +1826,7 @@
         "carto": {
           "version": "0.15.1-cdb1",
           "from": "cartodb/carto#master",
-          "resolved": "git://github.com/cartodb/carto.git#e931f914752678efb53995ff8b823aa5f57bf6c9",
+          "resolved": "git://github.com/cartodb/carto.git#4f792fbeadd883479bee7b5350893ca63b1cdd99",
           "dependencies": {
             "mapnik-reference": {
               "version": "6.0.5",

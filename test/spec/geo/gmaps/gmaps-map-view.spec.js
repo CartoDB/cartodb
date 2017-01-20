@@ -25,6 +25,7 @@ describe('geo/gmaps/gmaps-map-view', function () {
       map: map,
       layerGroupModel: new Backbone.Model()
     });
+    mapView.render();
 
     var layerURL = 'http://localhost/{s}/light_nolabels/{z}/{x}/{y}.png';
     layer = new TileLayer({ urlTemplate: layerURL });
@@ -142,6 +143,7 @@ describe('geo/gmaps/gmaps-map-view', function () {
       map: map,
       layerGroupModel: new Backbone.Model()
     });
+    mapView.render();
 
     expect(mapView._gmapsMap.get('draggable')).toBeFalsy();
     expect(mapView._gmapsMap.get('disableDoubleClickZoom')).toBeTruthy();
@@ -162,6 +164,7 @@ describe('geo/gmaps/gmaps-map-view', function () {
       map: map,
       layerGroupModel: new Backbone.Model()
     });
+    mapView.render();
 
     spyOn(map, 'trigger');
     spyOn(mapView, 'trigger');

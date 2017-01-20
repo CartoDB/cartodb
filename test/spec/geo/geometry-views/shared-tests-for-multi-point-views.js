@@ -11,6 +11,7 @@ module.exports = function (MapView, MultiPointView) {
       ]
     });
     this.mapView = createMapView(MapView);
+    this.mapView.render();
 
     this.geometryView = new MultiPointView({
       model: this.geometry,

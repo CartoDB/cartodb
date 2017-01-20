@@ -19,6 +19,8 @@ describe('geo/ui/search', function () {
       layerViewFactory: jasmine.createSpyObj('layerViewFactory', ['createLayerView']),
       layerGroupModel: new Backbone.Model()
     });
+    this.mapView.render();
+
     this.view = new Search({
       model: this.map,
       mapView: this.mapView

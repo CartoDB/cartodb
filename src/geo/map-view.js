@@ -3,7 +3,13 @@ var View = require('../core/view');
 var GeometryViewFactory = require('./geometry-views/geometry-view-factory');
 
 var MapView = View.extend({
+
+  className: 'CDB-Map-wrapper',
+
   initialize: function () {
+    // For debugging purposes
+    window.mapView = this;
+
     this.options = this.options || {};
     if (this.options.map === undefined) throw new Error('map is required');
     if (this.options.layerGroupModel === undefined) throw new Error('layerGroupModel is required');
@@ -18,6 +24,8 @@ var MapView = View.extend({
     // The cid of the layer model is used as the key for this mapping.
     this._layerViews = {};
 
+    this._bindModel();
+
     this.map.layers.bind('reset', this._addLayers, this);
     this.map.layers.bind('add', this._addLayer, this);
     this.map.layers.bind('remove', this._removeLayer, this);
@@ -31,56 +39,31 @@ var MapView = View.extend({
     this.add_related_model(this.map.geometries);
   },
 
-  _getLayerViewFactory: function () {
-    throw new Error('subclasses of MapView must implement _getLayerViewFactory');
+  clean: function () {
+    // remove layer views
+    for (var layer in this._layerViews) {
+      this._layerViews[layer].remove();
+      delete this._layerViews[layer];
+    }
+
+    delete this._cartoDBLayerGroupView;
+
+    View.prototype.clean.call(this);
   },
 
-  setCursor: function () {
-    throw new Error('subclasses of MapView must implement setCursor');
-  },
-
-  addMarker: function (marker) {
-    throw new Error('subclasses of MapView must implement addMarker');
-  },
-
-  removeMarker: function (marker) {
-    throw new Error('subclasses of MapView must implement removeMarker');
-  },
-
-  hasMarker: function (marker) {
-    throw new Error('subclasses of MapView must implement hasMarker');
-  },
-
-  addPath: function (path) {
-    throw new Error('subclasses of MapView must implement addPath');
-  },
-
-  removePath: function (path) {
-    throw new Error('subclasses of MapView must implement removePath');
-  },
-
-  // returns { x: 100, y: 200 }
-  latLngToContainerPoint: function (latlng) {
-    throw new Error('subclasses of MapView must implement latLngToContainerPoint');
-  },
-
-  // returns { lat: 0, lng: 0}
-  containerPointToLatLng: function (point) {
-    throw new Error('subclasses of MapView must implement containerPointToLatLng');
+  render: function () {
+    this._createNativeMap();
+    var bounds = this.map.getViewBounds();
+    if (bounds) {
+      this._fitBounds(bounds);
+    }
+    this._addLayers();
+    return this;
   },
 
   _onGeometryAdded: function (geometry) {
     var geometryView = GeometryViewFactory.createGeometryView(this.map.get('provider'), geometry, this);
     geometryView.render();
-  },
-
-  render: function () {
-    this._addLayers();
-    return this;
-  },
-
-  isMapAlreadyCreated: function () {
-    return this.options.map_object;
   },
 
   /**
@@ -108,7 +91,6 @@ var MapView = View.extend({
     this.map.bind('change:scrollwheel', this._setScrollWheel, this);
     this.map.bind('change:keyboard', this._setKeyboard, this);
     this.map.bind('change:center', this._setCenter, this);
-    this.map.bind('change:attribution', this.setAttribution, this);
   },
 
   /** unbind model properties */
@@ -125,11 +107,11 @@ var MapView = View.extend({
   _changeBounds: function () {
     var bounds = this.map.getViewBounds();
     if (bounds) {
-      this.showBounds(bounds);
+      this._fitBounds(bounds);
     }
   },
 
-  showBounds: function (bounds) {
+  _fitBounds: function (bounds) {
     this.map.fitBounds(bounds, this.getSize());
   },
 
@@ -215,32 +197,70 @@ var MapView = View.extend({
     return l;
   },
 
-  setAttribution: function () {
-    throw new Error('Subclasses of src/geo/map-view.js must implement .setAttribution');
+  setCursor: function () {
+    throw new Error('subclasses of MapView must implement setCursor');
+  },
+
+  addMarker: function (marker) {
+    throw new Error('subclasses of MapView must implement addMarker');
+  },
+
+  removeMarker: function (marker) {
+    throw new Error('subclasses of MapView must implement removeMarker');
+  },
+
+  hasMarker: function (marker) {
+    throw new Error('subclasses of MapView must implement hasMarker');
+  },
+
+  addPath: function (path) {
+    throw new Error('subclasses of MapView must implement addPath');
+  },
+
+  removePath: function (path) {
+    throw new Error('subclasses of MapView must implement removePath');
+  },
+
+  // returns { x: 100, y: 200 }
+  latLngToContainerPoint: function (latlng) {
+    throw new Error('subclasses of MapView must implement latLngToContainerPoint');
+  },
+
+  // returns { lat: 0, lng: 0}
+  containerPointToLatLng: function (point) {
+    throw new Error('subclasses of MapView must implement containerPointToLatLng');
   },
 
   getNativeMap: function () {
-    throw new Error('Subclasses of src/geo/map-view.js must implement .getNativeMap');
+    throw new Error('Subclasses of src/geo/map-view.js must implement getNativeMap');
+  },
+
+  _getLayerViewFactory: function () {
+    throw new Error('subclasses of MapView must implement _getLayerViewFactory');
   },
 
   _addLayerToMap: function () {
-    throw new Error('Subclasses of src/geo/map-view.js must implement ._addLayerToMap');
+    throw new Error('Subclasses of src/geo/map-view.js must implement _addLayerToMap');
   },
 
   _setZoom: function (model, z) {
-    throw new Error('Subclasses of src/geo/map-view.js must implement ._setZoom');
+    throw new Error('Subclasses of src/geo/map-view.js must implement _setZoom');
   },
 
   _setCenter: function (model, center) {
-    throw new Error('Subclasses of src/geo/map-view.js must implement ._setCenter');
+    throw new Error('Subclasses of src/geo/map-view.js must implement _setCenter');
   },
 
   _addGeomToMap: function (geom) {
-    throw new Error('Subclasses of src/geo/map-view.js must implement ._addGeomToMap');
+    throw new Error('Subclasses of src/geo/map-view.js must implement _addGeomToMap');
   },
 
   _removeGeomFromMap: function (geo) {
-    throw new Error('Subclasses of src/geo/map-view.js must implement ._removeGeomFromMap');
+    throw new Error('Subclasses of src/geo/map-view.js must implement _removeGeomFromMap');
+  },
+
+  _createNativeMap: function () {
+    throw new Error('Subclasses of src/geo/map-view.js must implement _createNativeMap');
   }
 });
 

@@ -41,7 +41,6 @@ var LeafletCartoDBLayerGroupView = L.TileLayer.extend({
   initialize: function (layerModel, leafletMap) {
     var self = this;
     var hovers = [];
-    this.interaction = [];
 
     // TODO: Be more explicit about the options that are really used by the L.TileLayer
     var opts = _.clone(layerModel.attributes);
@@ -99,9 +98,9 @@ var LeafletCartoDBLayerGroupView = L.TileLayer.extend({
 
     this.addProfiling();
 
-    CartoDBLayerGroupViewBase.call(this, layerModel);
-    L.TileLayer.prototype.initialize.call(this);
     LeafletLayerView.call(this, layerModel, this, leafletMap);
+    L.TileLayer.prototype.initialize.call(this);
+    CartoDBLayerGroupViewBase.call(this, layerModel);
   },
 
   featureOver: function (e, latlon, pixelPos, data, layer) {
@@ -215,19 +214,22 @@ var LeafletCartoDBLayerGroupView = L.TileLayer.extend({
    * @param {Event} Wax event
    */
   _manageOnEvents: function (map, o) {
-    var layer_point = this._findPos(map, o);
+    var layerPoint = this._findPos(map, o);
 
-    if (!layer_point || isNaN(layer_point.x) || isNaN(layer_point.y)) {
-      // If layer_point doesn't contain x and y,
+    if (!layerPoint || isNaN(layerPoint.x) || isNaN(layerPoint.y)) {
+      // If layerPoint doesn't contain x and y,
       // we can't calculate event map position
       return false;
     }
 
-    var latlng = map.layerPointToLatLng(layer_point);
-    var event_type = o.e.type.toLowerCase();
-    var screenPos = map.layerPointToContainerPoint(layer_point);
-
-    switch (event_type) {
+    var latlng = map.layerPointToLatLng(layerPoint);
+    var containerPoint = map.layerPointToContainerPoint(layerPoint);
+    var screenPos = {
+      x: containerPoint.x,
+      y: containerPoint.y
+    };
+    var eventType = o.e.type.toLowerCase();
+    switch (eventType) {
       case 'mousemove':
         if (this.options.featureOver) {
           return this.options.featureOver(o.e, latlng, screenPos, o.data, o.layer);

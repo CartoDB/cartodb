@@ -31,7 +31,9 @@ module.exports = Model.extend({
   },
 
   initialize: function (attrs, opts) {
-    this._data = new CategoriesCollection();
+    this._data = new CategoriesCollection(null, {
+      aggregationModel: opts.aggregationModel
+    });
     this.sync = BackboneAbortSync.bind(this);
   },
 

@@ -24,6 +24,7 @@ describe('geo/leaflet/leaflet-torque-layer-view', function () {
       layerViewFactory: new LeafletLayerViewFactory(),
       layerGroupModel: new Backbone.Model()
     });
+    this.mapView.render();
 
     spyOn(L.TorqueLayer.prototype, 'initialize').and.callThrough();
 

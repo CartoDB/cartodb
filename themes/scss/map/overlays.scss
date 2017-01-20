@@ -465,10 +465,7 @@ $maxLegendContainerHeight: 300px;
   display: block;
   width: 10px;
   height: 10px;
-  transform: translateX(1px);
-  background-repeat: no-repeat;
-  background-position: 50% 50%;
-  background-size: 100%;
+  transform: translateX(-1px) translateY(-2px) scale(0.55556); // scale original 18px SVG image => 10px
 }
 .Legend-categoryTitle {
   max-width: 90%;

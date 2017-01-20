@@ -78,7 +78,6 @@ var GMapsCartoDBLayerGroupView = function (layerModel, gmapsMap) {
 
   this.options = _.defaults(opts, CartoDBDefaultOptions);
   this.tiles = 0;
-  this.interaction = [];
 
   wax.g.connector.call(this, opts);
 
@@ -209,10 +208,6 @@ _.extend(
     clear: function () {
       this._clearInteraction();
       this.finishLoading && this.finishLoading();
-    },
-
-    update: function () {
-      this._reload.apply(this, arguments);
     },
 
     _reload: function () {

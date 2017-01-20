@@ -8,56 +8,36 @@ var GMapsLayerViewFactory = require('./gmaps-layer-view-factory');
 var GoogleMapsMapView = MapView.extend({
   initialize: function () {
     MapView.prototype.initialize.call(this);
-
     _.bindAll(this, '_ready');
     this._isReady = false;
+  },
+
+  _createNativeMap: function () {
     var self = this;
-
-    var bounds = this.map.getViewBounds();
-
-    if (bounds) {
-      this.showBounds(bounds);
-    }
-
     var center = this.map.get('center');
 
-    if (!this.isMapAlreadyCreated()) {
-      this._gmapsMap = new google.maps.Map(this.el, {
-        center: new google.maps.LatLng(center[0], center[1]),
-        zoom: this.map.get('zoom'),
-        minZoom: this.map.get('minZoom'),
-        maxZoom: this.map.get('maxZoom'),
-        disableDefaultUI: true,
-        scrollwheel: this.map.get('scrollwheel'),
-        draggable: this.map.get('drag'),
-        disableDoubleClickZoom: !this.map.get('drag'),
-        mapTypeControl: false,
-        mapTypeId: google.maps.MapTypeId.ROADMAP,
-        backgroundColor: 'white',
-        tilt: 0
-      });
+    this._gmapsMap = new google.maps.Map(this.el, {
+      center: new google.maps.LatLng(center[0], center[1]),
+      zoom: this.map.get('zoom'),
+      minZoom: this.map.get('minZoom'),
+      maxZoom: this.map.get('maxZoom'),
+      disableDefaultUI: true,
+      scrollwheel: this.map.get('scrollwheel'),
+      draggable: this.map.get('drag'),
+      disableDoubleClickZoom: !this.map.get('drag'),
+      mapTypeControl: false,
+      mapTypeId: google.maps.MapTypeId.ROADMAP,
+      backgroundColor: 'white',
+      tilt: 0
+    });
 
-      this.map.bind('change:maxZoom', function () {
-        self._gmapsMap.setOptions({ maxZoom: self.map.get('maxZoom') });
-      }, this);
+    this.map.bind('change:maxZoom', function () {
+      self._gmapsMap.setOptions({ maxZoom: self.map.get('maxZoom') });
+    }, this);
 
-      this.map.bind('change:minZoom', function () {
-        self._gmapsMap.setOptions({ minZoom: self.map.get('minZoom') });
-      }, this);
-    } else {
-      this._gmapsMap = this.options.map_object;
-      this.setElement(this._gmapsMap.getDiv());
-
-      // fill variables
-      var c = self._gmapsMap.getCenter();
-
-      self._setModelProperty({ center: [c.lat(), c.lng()] });
-      self._setModelProperty({ zoom: self._gmapsMap.getZoom() });
-
-      // unset bounds to not change mapbounds
-      self.map.unset('view_bounds_sw', { silent: true });
-      self.map.unset('view_bounds_ne', { silent: true });
-    }
+    this.map.bind('change:minZoom', function () {
+      self._gmapsMap.setOptions({ minZoom: self.map.get('minZoom') });
+    }, this);
 
     google.maps.event.addListener(this._gmapsMap, 'center_changed', function () {
       var c = self._gmapsMap.getCenter();
@@ -85,9 +65,6 @@ var GoogleMapsMapView = MapView.extend({
     google.maps.event.addListener(this._gmapsMap, 'dblclick', function (e) {
       self.trigger('dblclick', e);
     });
-
-    this._bindModel();
-    this.setAttribution();
 
     this.projector = new Projector(this._gmapsMap);
 
@@ -188,12 +165,6 @@ var GoogleMapsMapView = MapView.extend({
       ];
     }
     return [ [0, 0], [0, 0] ];
-  },
-
-  setAttribution: function () {
-    // There is no control over Google Maps attribution component, so we can't add
-    // any attribution text there (if Map is already created using createLayer for example)
-    // and there is no CartoDB attribution component.
   },
 
   setCursor: function (cursor) {

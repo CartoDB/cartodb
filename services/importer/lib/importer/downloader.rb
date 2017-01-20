@@ -122,6 +122,20 @@ module CartoDB
         @etag = header_etag
       end
 
+      def last_modified
+        return @last_modified if @last_modified
+        return nil unless headers
+
+        header_last_modified = headers['Last-Modified']
+        @last_modified = if header_last_modified
+                           begin
+                             DateTime.httpdate(header_last_modified.delete('"').delete("'"))
+                           rescue
+                             nil
+                           end
+                         end
+      end
+
       private
 
       DEFAULT_TMP_FILE_DIRECTORY = '/tmp/imports'.freeze
@@ -287,20 +301,6 @@ module CartoDB
         header_content_length = headers['Content-Length']
 
         @content_length = header_content_length.to_i if header_content_length
-      end
-
-      def last_modified
-        return @last_modified if @last_modified
-        return nil unless headers
-
-        header_last_modified = headers['Last-Modified']
-        @last_modified = if header_last_modified
-                           begin
-                             DateTime.httpdate(header_last_modified.delete('"').delete("'"))
-                           rescue
-                             nil
-                           end
-                         end
       end
 
       def content_type

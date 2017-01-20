@@ -122,6 +122,8 @@ module CartoDB
         @etag = header_etag
       end
 
+      alias checksum etag
+
       def last_modified
         return @last_modified if @last_modified
         return nil unless headers

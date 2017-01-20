@@ -73,6 +73,11 @@
         </div>
       </div>
 
+      <% if current_user.has_feature_flag?('icon-styling') %>
+        <div class="FormAccount-row IconPicker js-iconPicker">
+        </div>
+      <% end %>
+
       <div class="FormAccount-row">
         <div class="FormAccount-rowLabel">
           <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Display name</label>

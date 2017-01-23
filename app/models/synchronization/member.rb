@@ -337,12 +337,11 @@ module CartoDB
             checksum: checksum,
             verify_ssl_cert: false
           }
-          options = {
-            importer_config: Cartodb.config[:importer],
-            user_id: user.id
-          }
 
-          CartoDB::Importer2::Downloader.new(resource_url, http_options, options)
+          CartoDB::Importer2::Downloader.new(user.id,
+                                             resource_url,
+                                             http_options,
+                                             importer_config: Cartodb.config[:importer])
         else
           log.append 'Downloading file data from datasource'
 

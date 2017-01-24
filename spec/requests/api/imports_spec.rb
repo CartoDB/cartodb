@@ -39,6 +39,7 @@ describe "Imports API" do
   end
 
   it 'performs asynchronous url imports' do
+    CartoDB::Importer2::Downloader.any_instance.stubs(:validate_url!).returns(true)
     serve_file Rails.root.join('db/fake_data/clubbing.csv') do |url|
       post api_v1_imports_create_url(params.merge(:url        => url,
                                        :table_name => "wadus"))
@@ -122,6 +123,7 @@ describe "Imports API" do
   it 'imports all the sample data' do
     @user.update table_quota: 10
 
+    CartoDB::Importer2::Downloader.any_instance.stubs(:validate_url!).returns(true)
     serve_file(Rails.root.join('spec/support/data/TM_WORLD_BORDERS_SIMPL-0.3.zip')) do |url|
       post api_v1_imports_create_url(params.merge(url: url, table_name: "wadus"))
 
@@ -146,6 +148,7 @@ describe "Imports API" do
     @user.update table_quota: 5
 
     # This file contains 10 data sources
+    CartoDB::Importer2::Downloader.any_instance.stubs(:validate_url!).returns(true)
     serve_file(Rails.root.join('spec/support/data/ESP_adm.zip')) do |url|
       post api_v1_imports_create_url, params.merge(:url        => url,
                                        :table_name => "wadus")
@@ -159,6 +162,7 @@ describe "Imports API" do
 
   it 'raises an error if the user attempts to import tables when being over disk quota' do
     @user.update quota_in_bytes: 1000, table_quota: 200
+    CartoDB::Importer2::Downloader.any_instance.stubs(:validate_url!).returns(true)
     serve_file(Rails.root.join('spec/support/data/ESP_adm.zip')) do |url|
       post api_v1_imports_create_url, params.merge(:url        => url,
                                        :table_name => "wadus")

@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.5.104",
+  "version": "4.5.111",
   "dependencies": {
     "backbone": {
       "version": "1.2.3",
@@ -966,7 +966,7 @@
                     },
                     "inherits": {
                       "version": "2.0.3",
-                      "from": "inherits@>=2.0.0 <3.0.0",
+                      "from": "inherits@>=2.0.1 <2.1.0",
                       "resolved": "https://registry.npmjs.org/inherits/-/inherits-2.0.3.tgz"
                     }
                   }
@@ -1147,12 +1147,12 @@
     "cartodb-deep-insights.js": {
       "version": "0.0.2",
       "from": "cartodb/deep-insights.js#master",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#7298ed9b2f6c3930032ce1d808cf179139f14c3c",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#261df49a8e5e3010b8aa38c32a35e50cb37a5242",
       "dependencies": {
         "cartodb.js": {
           "version": "4.0.0-alpha.1",
           "from": "cartodb/cartodb.js#v4",
-          "resolved": "git://github.com/cartodb/cartodb.js.git#ee34fec99a4b3ffb2f861c123651d8b9bcee04e5",
+          "resolved": "git://github.com/cartodb/cartodb.js.git#c9824ab6c01fb6fc1f95aa16fdd48c9c858a75c3",
           "dependencies": {
             "backbone-poller": {
               "version": "1.1.3",
@@ -1314,6 +1314,11 @@
               "from": "mustache@1.1.0",
               "resolved": "https://registry.npmjs.org/mustache/-/mustache-1.1.0.tgz"
             },
+            "perfect-scrollbar": {
+              "version": "0.6.16",
+              "from": "git://github.com/CartoDB/perfect-scrollbar.git#master",
+              "resolved": "git://github.com/CartoDB/perfect-scrollbar.git#4707acc2875660994daa78cb87741592414207d3"
+            },
             "torque.js": {
               "version": "2.16.1",
               "from": "cartodb/torque#master",
@@ -1444,6 +1449,11 @@
             }
           }
         },
+        "perfect-scrollbar": {
+          "version": "0.6.16",
+          "from": "git://github.com/CartoDB/perfect-scrollbar.git#master",
+          "resolved": "git://github.com/CartoDB/perfect-scrollbar.git#4707acc2875660994daa78cb87741592414207d3"
+        },
         "tinycolor2": {
           "version": "1.4.1",
           "from": "tinycolor2@1.4.1",
@@ -1464,7 +1474,7 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
       "from": "cartodb/cartodb.js#v4",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#ee34fec99a4b3ffb2f861c123651d8b9bcee04e5",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#c9824ab6c01fb6fc1f95aa16fdd48c9c858a75c3",
       "dependencies": {
         "backbone-poller": {
           "version": "1.1.3",
@@ -1631,6 +1641,11 @@
           "from": "mustache@1.1.0",
           "resolved": "https://registry.npmjs.org/mustache/-/mustache-1.1.0.tgz"
         },
+        "perfect-scrollbar": {
+          "version": "0.6.16",
+          "from": "git://github.com/CartoDB/perfect-scrollbar.git#master",
+          "resolved": "git://github.com/CartoDB/perfect-scrollbar.git#4707acc2875660994daa78cb87741592414207d3"
+        },
         "torque.js": {
           "version": "2.16.1",
           "from": "cartodb/torque#master",
@@ -1794,9 +1809,9 @@
       "resolved": "http://registry.npmjs.org/node-polyglot/-/node-polyglot-1.0.0.tgz"
     },
     "perfect-scrollbar": {
-      "version": "0.6.7",
-      "from": "perfect-scrollbar@0.6.7",
-      "resolved": "http://registry.npmjs.org/perfect-scrollbar/-/perfect-scrollbar-0.6.7.tgz"
+      "version": "0.6.16",
+      "from": "git://github.com/CartoDB/perfect-scrollbar.git#master",
+      "resolved": "git://github.com/CartoDB/perfect-scrollbar.git#4707acc2875660994daa78cb87741592414207d3"
     },
     "queue-async": {
       "version": "1.2.1",

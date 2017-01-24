@@ -1,0 +1,85 @@
+@import '../variables/mixins';
+@import '../variables/colors';
+
+// Color variables
+// ---------------
+
+// Form
+$cForms-hover: #AAA;
+$selectedBlue: #1181FB;
+$criticalColor: #FF6C6C;
+
+// Size variables
+// ---------------
+
+// Base
+$baseSize: 8px;
+
+// margin
+$iconMargin: 10px;
+
+
+.IconPicker {
+  margin-bottom: 20px;
+}
+
+.IconList {
+  @include display-flex;
+  @include flex-wrap(wrap);
+  position: relative;
+}
+
+.IconList-item {
+  @include display-flex();
+  @include align-items(center);
+  @include justify-content(center);
+  width: $baseSize * 11;
+  min-width: $baseSize * 11;
+  height: $baseSize * 7;
+  margin-right: $iconMargin;
+  margin-bottom: $iconMargin;
+  border: 1px solid $cForms-border;
+  border-radius: 4px;
+  background: $cStructure-mainBkg;
+  box-sizing: border-box;
+  overflow: hidden;
+
+  &:last-child {
+    margin-right: 0;
+  }
+  &:hover {
+    border: 1px solid $cForms-hover;
+    cursor: pointer;
+  }
+}
+
+.IconList-item--small {
+  width: $baseSize * 5;
+  min-width: $baseSize * 5;
+  height: $baseSize * 5;
+}
+
+.IconList-item--dashed {
+  border-style: dashed;
+
+  &:hover {
+    border: 1px dashed $cForms-hover;
+  }
+}
+
+.IconList-item.is-selected {
+  border: 1px solid $selectedBlue;
+}
+
+.IconItem-icon {
+  vertical-align: middle;
+}
+
+.IconText.is--critical {
+  color: $criticalColor;
+}
+
+.is-hidden {
+  display: none;
+}
+

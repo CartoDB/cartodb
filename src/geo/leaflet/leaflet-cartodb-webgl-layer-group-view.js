@@ -2,7 +2,7 @@ var TC = require('tangram.cartodb');
 var LeafletLayerView = require('./leaflet-layer-view');
 var L = require('leaflet');
 
-var LeafletCartoDBVectorLayerGroupView = L.Layer.extend({
+var LeafletCartoDBVectorLayerGroupView = L.Class.extend({
   includes: [
     LeafletLayerView.prototype
   ],
@@ -41,6 +41,8 @@ var LeafletCartoDBVectorLayerGroupView = L.Layer.extend({
       self.tangram.addLayer(e.attributes);
     });
   },
+
+  setZIndex: function (zIndex) {},
 
   _onURLsChanged: function (e, res) {
     this.tangram.addDataSource(res.tiles[0]);

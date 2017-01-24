@@ -345,10 +345,9 @@ module CartoDB
       end
 
       def filename_from_url
-        unescaped_url = CGI.unescape(@translated_url)
-        url_name = self.class.url_filename_regex.match(unescaped_url).to_s
+        filename = CGI.unescape(File.basename(URI(@translated_url).path))
 
-        url_name unless url_name.empty?
+        filename if filename.present?
       end
 
       CONTENT_TYPES_MAPPING = [

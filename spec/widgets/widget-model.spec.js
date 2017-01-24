@@ -1,15 +1,23 @@
 var specHelper = require('../spec-helper');
 var WidgetModel = require('../../src/widgets/widget-model');
+var Backbone = require('backbone');
 
 describe('widgets/widget-model', function () {
   describe('when autostyle options is enabled', function () {
+    var dataviewModel;
+
     beforeEach(function () {
       var vis = specHelper.createDefaultVis();
       // Use a category dataview as example
-      var dataviewModel = vis.dataviews.createCategoryModel(vis.map.layers.first(), {
+      dataviewModel = vis.dataviews.createCategoryModel(vis.map.layers.first(), {
         column: 'col'
       });
       dataviewModel.remove = spyOn(dataviewModel, 'remove');
+      dataviewModel.layer = new Backbone.Model({
+        id: 'first-layer',
+        type: 'torque',
+        visible: true
+      });
 
       this.model = new WidgetModel(null, {
         dataviewModel: dataviewModel
@@ -174,7 +182,7 @@ describe('widgets/widget-model', function () {
 
       it('should be false if type is not category or histogram', function () {
         var model = new WidgetModel(null, {
-          dataviewModel: this.dataviewModel,
+          dataviewModel: dataviewModel,
           type: 'time-series'
         }, {autoStyleEnabled: true});
 

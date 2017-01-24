@@ -28,11 +28,12 @@ module.exports = cdb.core.View.extend({
   },
 
   render: function () {
+    var isAutoStyleButtonVisible = this.model.isAutoStyleEnabled() && this.dataviewModel.layer.get('visible');
     this.clearSubViews();
     this.$el.html(
       template({
         isCollapsed: this.model.get('collapsed'),
-        isAutoStyleEnabled: this.model.isAutoStyleEnabled(),
+        isAutoStyleEnabled: isAutoStyleButtonVisible,
         isAutoStyle: this.model.isAutoStyle(),
         title: this.model.get('title'),
         columnName: this.dataviewModel.get('column'),
@@ -54,6 +55,9 @@ module.exports = cdb.core.View.extend({
     this.add_related_model(this.model.lockedCategories);
     this.dataviewModel.filter.bind('change', this.render, this);
     this.add_related_model(this.dataviewModel.filter);
+
+    this.dataviewModel.layer.bind('change:visible', this.render, this);
+    this.add_related_model(this.dataviewModel);
   },
 
   _initViews: function () {

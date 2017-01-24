@@ -49,7 +49,8 @@ describe('widgets/widget-view-factory', function () {
     beforeEach(function () {
       this.layer = new cdb.core.Model({
         id: 'layer-uuid',
-        type: 'cartodb'
+        type: 'cartodb',
+        visible: true
       });
       this.widget = new cdb.core.Model({}, {
         layer: this.layer

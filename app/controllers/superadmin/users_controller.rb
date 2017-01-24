@@ -105,7 +105,8 @@ class Superadmin::UsersController < Superadmin::SuperadminController
         id: entry.id,
         data_type: entry.data_type,
         date: entry.updated_at,
-        status: entry.success.nil? ? false : entry.success
+        status: entry.success.nil? ? false : entry.success,
+        state: entry.state
       }
     })
   end
@@ -139,7 +140,8 @@ class Superadmin::UsersController < Superadmin::SuperadminController
         id: entry.id,
         data_type: entry.service_name,
         date: entry.updated_at,
-        status: entry.success?
+        status: entry.success?,
+        state: entry.state
       }
     })
   end

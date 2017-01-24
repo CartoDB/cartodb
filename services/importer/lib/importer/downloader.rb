@@ -20,9 +20,6 @@ require_relative '../helpers/quota_check_helpers.rb'
 # interchangeable with CartoDB::Importer2::DatasourceDownloader. A better way to have
 # managed this might have been through inheritance, since Ruby doesn't provide interfaces.
 # The out-facing methods this class must implement for this purpose are:
-# - supported_extensions
-# - supported_extensions_match
-# - url_filename_regex
 # - provides_stream?
 # - http_download?
 # - multi_resource_import_supported?
@@ -38,26 +35,6 @@ module CartoDB
   module Importer2
     class Downloader
       include CartoDB::Importer2::QuotaCheckHelpers, Carto::UrlValidator
-
-      def self.supported_extensions
-        @supported_extensions ||= CartoDB::Importer2::Unp::SUPPORTED_FORMATS
-                                  .concat(CartoDB::Importer2::Unp::COMPRESSED_EXTENSIONS)
-                                  .sort_by(&:length).reverse
-      end
-
-      def self.supported_extensions_match
-        @supported_extensions_match ||= supported_extensions.map { |ext|
-          ext = ext.gsub('.', '\\.')
-          [/#{ext}$/i, /#{ext}(?=\.)/i, /#{ext}(?=\?)/i, /#{ext}(?=&)/i]
-        }.flatten
-      end
-
-      def self.url_filename_regex
-        return @url_filename_regex if @url_filename_regex
-
-        se_match_regex = Regexp.union(supported_extensions_match)
-        @url_filename_regex = Regexp.new("[[:word:]-]+#{se_match_regex}+", Regexp::IGNORECASE)
-      end
 
       def provides_stream?
         false

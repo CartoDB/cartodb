@@ -351,12 +351,13 @@ module CartoDB
         if extension.present? && self.class.supported_extensions.include?(extension)
           filename
         else
+          # For non-conventional URLs (i.e: filename in params)
           regex_match = self.class
                             .url_filename_regex
                             .match(@translated_url)
                             .to_s
 
-          return regex_match if regex_match.present?
+          regex_match if regex_match.present?
         end
       end
 

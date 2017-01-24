@@ -401,6 +401,10 @@ class DataImport < Sequel::Model
     errors.add(:user, "Viewer users can't create data imports") if user && user.viewer
   end
 
+  def final_state?
+    [STATE_COMPLETE, STATE_FAILURE, STATE_STUCK].include?(state)
+  end
+
   private
 
   def dispatch
@@ -838,12 +842,10 @@ class DataImport < Sequel::Model
       log.append "File will be downloaded from #{resource_url}"
 
       http_options = { http_timeout: ::DataImport.http_timeout_for(current_user) }
-      options = {
-        importer_config: Cartodb.config[:importer],
-        user_id: current_user.id
-      }
-
-      CartoDB::Importer2::Downloader.new(resource_url, http_options, options)
+      CartoDB::Importer2::Downloader.new(current_user.id,
+                                         resource_url,
+                                         http_options,
+                                         importer_config: Cartodb.config[:importer])
     else
       log.append 'Downloading file data from datasource'
 

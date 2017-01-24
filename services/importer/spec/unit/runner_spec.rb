@@ -25,7 +25,7 @@ describe CartoDB::Importer2::Runner do
     @pg_options = @user.db_service.db_configuration_for
 
     @fake_log = CartoDB::Importer2::Doubles::Log.new(@user)
-    @downloader = CartoDB::Importer2::Downloader.new(@filepath)
+    @downloader = CartoDB::Importer2::Downloader.new(@user.id, @filepath)
     @fake_multiple_downloader_2 = CartoDB::Importer2::Doubles::MultipleDownloaderFake.instance(2)
   end
 

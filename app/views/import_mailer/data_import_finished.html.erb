@@ -1,6 +1,6 @@
 <% if @total_tables == 1 %>
   <% if @errors.nil? %>
-    <%- message = "<p>Your dataset <strong>#{@first_table['name']}</strong> was successfully imported</p>" %>
+    <%- message = "<p>Your dataset <strong>#{@dataset_name}</strong> was successfully imported</p>" %>
   <% else %>
      <%- message = "<p>There was some error while importing your dataset <strong>#{@files.first}</strong></p>" %>
   <% end %>

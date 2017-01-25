@@ -819,7 +819,7 @@
             },
             "map-obj": {
               "version": "1.0.1",
-              "from": "map-obj@>=1.0.1 <1.1.0",
+              "from": "map-obj@>=1.0.1 <2.0.0",
               "resolved": "https://registry.npmjs.org/map-obj/-/map-obj-1.0.1.tgz"
             },
             "replace-requires": {
@@ -1147,7 +1147,7 @@
     "cartodb-deep-insights.js": {
       "version": "0.0.2",
       "from": "cartodb/deep-insights.js#513-issue",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#a0612e0697b4f1a9f294c60d696d15a1e5f2da78",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#0055b6338cfa78203cbb555ae07bd6e00e6b9057",
       "dependencies": {
         "cartodb.js": {
           "version": "4.0.0-alpha.1",

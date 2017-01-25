@@ -1,8 +1,8 @@
 var specHelper = require('../../spec-helper');
-var CategoryWidgetModel = require('../../../src/widgets/category/category-widget-model');
-var SearchTitleView = require('../../../src/widgets/category/title/search-title-view');
+var HistogramWidgetModel = require('../../../src/widgets/histogram/histogram-widget-model');
+var HistogramTitleView = require('../../../src/widgets/histogram/histogram-title-view');
 
-describe('widgets/category/search-title-view', function () {
+describe('widgets/histogram/title-view', function () {
   var layer;
 
   beforeEach(function () {
@@ -10,81 +10,41 @@ describe('widgets/category/search-title-view', function () {
     layer = vis.map.layers.first();
     layer.restoreCartoCSS = jasmine.createSpy('restore');
     layer.getGeometryType = function () {
-      return 'point';
+      return 'polygon';
     };
-    this.dataviewModel = vis.dataviews.createCategoryModel(layer, {
-      column: 'col'
+    this.dataviewModel = vis.dataviews.createHistogramModel(layer, {
+      id: 'abc-123',
+      title: 'my histogram',
+      column: 'a_column',
+      bins: 20
     });
-    this.dataviewModel.layer.set('initialStyle', '#layer {  marker-line-width: 0.5;  marker-line-color: #fcfafa;  marker-line-opacity: 1;  marker-width: 6.076923076923077;  marker-fill: #e49115;  marker-fill-opacity: 0.9;  marker-allow-overlap: true;}');
+    var cartocss = '#layer {  marker-line-width: 0.5;  marker-line-color: #fcfafa;  marker-line-opacity: 1;  marker-width: 6.076923076923077;  marker-fill: ramp([something], ("#7F3C8D", "#11A579", "#3969AC", "#F2B701", "#E73F74"), ("soccer", "basketball", "baseball", "handball", "hockey"));  marker-fill-opacity: 0.9;  marker-allow-overlap: true;}';
+    this.dataviewModel.layer.set({
+      cartocss: cartocss,
+      initialStyle: cartocss
+    });
+    spyOn(this.dataviewModel, 'getDistributionType').and.returnValue('J');
+
+    this.widgetModel = new HistogramWidgetModel({
+      type: 'histogram'
+    }, {
+      dataviewModel: this.dataviewModel
+    }, {autoStyleEnabled: true});
+
+    this.view = new HistogramTitleView({
+      widgetModel: this.widgetModel,
+      dataviewModel: this.dataviewModel
+    });
+  });
+
+  it('should render properly', function () {
+    this.view.render();
+    var $el = this.view.$el;
+    expect($el.find('.CDB-Widget-options').length).toBe(1);
+    expect($el.find('h3').length).toBe(1);
   });
 
   describe('with autoStyleEnabled as true', function () {
-    beforeEach(function () {
-      this.widgetModel = new CategoryWidgetModel({}, {
-        dataviewModel: this.dataviewModel
-      }, {autoStyleEnabled: true});
-
-      this.view = new SearchTitleView({
-        widgetModel: this.widgetModel,
-        dataviewModel: this.dataviewModel
-      });
-    });
-
-    it('should render properly', function () {
-      this.view.render();
-      var $el = this.view.$el;
-      expect($el.find('.js-title').length).toBe(1);
-      expect($el.find('.CDB-Widget-options').length).toBe(1);
-      expect($el.find('.js-titleText').length).toBe(1);
-    });
-
-    describe('search', function () {
-      beforeEach(function () {
-        this.widgetModel.toggleSearch();
-      });
-
-      it('should render search form properly', function () {
-        expect(this.view.$('.CDB-Widget-search').length).toBe(1);
-        expect(this.view.$('.js-searchIcon').length).toBe(1);
-        expect(this.view.$('.CDB-Widget-textInput').length).toBe(1);
-        expect(this.view.$('.CDB-Widget-searchApply').length).toBe(0);
-      });
-
-      it('should trigger search when text input changes', function () {
-        spyOn(this.dataviewModel, 'applySearch');
-        this.view.$('.js-textInput').val('ES');
-        this.view._onSubmitForm();
-        expect(this.dataviewModel.applySearch).toHaveBeenCalled();
-      });
-
-      it('should not trigger search when text input changes are not valid', function () {
-        spyOn(this.dataviewModel, 'applySearch');
-        this.view.$('.js-textInput').val('');
-        this.view._onSubmitForm();
-        expect(this.dataviewModel.applySearch).not.toHaveBeenCalled();
-      });
-
-      it('should not trigger search when text input changes are same as last search query value', function () {
-        spyOn(this.dataviewModel, 'applySearch');
-        this.dataviewModel.setSearchQuery('ES');
-        this.view.$('.js-textInput').val('ES');
-        this.view._onSubmitForm();
-        expect(this.dataviewModel.applySearch).not.toHaveBeenCalled();
-      });
-
-      it('should show apply button when there is any change to apply', function () {
-        this.dataviewModel.filter.accept('test');
-        expect(this.view.$('.CDB-Widget-searchApply').length).toBe(1);
-      });
-
-      it('should apply locked categories when apply button is clicked', function () {
-        spyOn(this.widgetModel, 'applyLocked');
-        this.dataviewModel.filter.accept('one');
-        this.view.$('.js-applyLocked').click();
-        expect(this.widgetModel.applyLocked).toHaveBeenCalled();
-      });
-    });
-
     describe('options', function () {
       beforeEach(function () {
         spyOn(this.view, '_isAutoStyleButtonVisible').and.returnValue(true);
@@ -100,7 +60,7 @@ describe('widgets/category/search-title-view', function () {
         expect(this.view.$('.js-cancelAutoStyle').length).toBe(1);
       });
 
-      it('should remove category colors when they are applied and button is clicked', function () {
+      it('should remove histogram colors when they are applied and button is clicked', function () {
         spyOn(this.widgetModel, 'cancelAutoStyle').and.callThrough();
         this.view.$('.js-autoStyle').click();
         expect(this.view.$('.js-cancelAutoStyle').hasClass('is-selected')).toBeTruthy();
@@ -116,10 +76,11 @@ describe('widgets/category/search-title-view', function () {
 
       describe('checking allowed', function () {
         beforeEach(function () {
-          spyOn(this.view.model, 'getAutoStyle').and.returnValue({
+          spyOn(this.widgetModel, 'getAutoStyle').and.returnValue({
             cartocss: '#whatever {}',
             definition: 'dummy'
           });
+
           this.view.render();
         });
 
@@ -136,7 +97,7 @@ describe('widgets/category/search-title-view', function () {
 
       describe('checking layer visibility', function () {
         beforeEach(function () {
-          spyOn(this.view.model, 'getAutoStyle').and.returnValue({
+          spyOn(this.widgetModel, 'getAutoStyle').and.returnValue({
             cartocss: '#whatever {}',
             definition: 'dummy'
           });
@@ -151,7 +112,7 @@ describe('widgets/category/search-title-view', function () {
 
       describe('checking auto-style definition', function () {
         it('should display autostyle button if definition exists', function () {
-          spyOn(this.view.model, 'getAutoStyle').and.returnValue({
+          spyOn(this.widgetModel, 'getAutoStyle').and.returnValue({
             cartocss: '#whatever {}',
             definition: {
               point: {
@@ -166,7 +127,7 @@ describe('widgets/category/search-title-view', function () {
         });
 
         it('should not display autostyle button if definition doesn\'t exist', function () {
-          spyOn(this.view.model, 'getAutoStyle').and.returnValue({
+          spyOn(this.widgetModel, 'getAutoStyle').and.returnValue({
             cartocss: '#whatever {}',
             definition: {}
           });
@@ -179,7 +140,9 @@ describe('widgets/category/search-title-view', function () {
 
   describe('with autoStyleEnabled set to false', function () {
     beforeEach(function () {
-      var widgetModel = new CategoryWidgetModel({}, {
+      var widgetModel = new HistogramWidgetModel({
+        type: 'histogram'
+      }, {
         dataviewModel: this.dataviewModel
       }, {autoStyleEnabled: false});
 
@@ -194,7 +157,7 @@ describe('widgets/category/search-title-view', function () {
         }
       });
 
-      this.view = new SearchTitleView({
+      this.view = new HistogramTitleView({
         widgetModel: widgetModel,
         dataviewModel: this.dataviewModel
       });

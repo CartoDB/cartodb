@@ -17,9 +17,12 @@ module.exports = cdb.core.View.extend({
     'click .js-cancelAutoStyle': '_cancelAutoStyle'
   },
 
-  initialize: function () {
-    this.widgetModel = this.options.widgetModel;
-    this.dataviewModel = this.options.dataviewModel;
+  initialize: function (opts) {
+    if (!opts.widgetModel) throw new Error('widgetModel is needed');
+    if (!opts.dataviewModel) throw new Error('dataviewModel is needed');
+    
+    this.widgetModel = opts.widgetModel;
+    this.dataviewModel = opts.dataviewModel;
     this._initBinds();
   },
 

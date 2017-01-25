@@ -88,7 +88,7 @@ Style/CaseIndentation:
   Description: Indentation of when in a case/when/[else/]end.
   StyleGuide: https://github.com/bbatsov/ruby-style-guide#indent-when-to-case
   Enabled: true
-  IndentWhenRelativeTo: case
+  EnforcedStyle: case
   SupportedStyles:
   - case
   - end
@@ -567,14 +567,14 @@ Lint/AssignmentInCondition:
 Lint/EndAlignment:
   Description: Align ends correctly.
   Enabled: true
-  AlignWith: keyword
+  EnforcedStyleAlignWith: keyword
   SupportedStyles:
   - keyword
   - variable
 Lint/DefEndAlignment:
   Description: Align ends corresponding to defs correctly.
   Enabled: true
-  AlignWith: start_of_line
+  EnforcedStyleAlignWith: start_of_line
   SupportedStyles:
   - start_of_line
   - def
@@ -798,7 +798,7 @@ Style/LineEndConcatenation:
   Description: Use \ instead of + or << to concatenate two string literals at line
     end.
   Enabled: false
-Style/MethodCallParentheses:
+Style/MethodCallWithoutArgsParentheses:
   Description: Do not use parentheses for method calls with no arguments.
   StyleGuide: https://github.com/bbatsov/ruby-style-guide#no-args-no-parens
   Enabled: true
@@ -1013,7 +1013,7 @@ Lint/EnsureReturn:
   Description: Do not use return in an ensure block.
   StyleGuide: https://github.com/bbatsov/ruby-style-guide#no-return-ensure
   Enabled: true
-Lint/Eval:
+Security/Eval:
   Description: The use of eval represents a serious security risk.
   Enabled: true
 Lint/HandleExceptions:

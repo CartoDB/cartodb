@@ -39,6 +39,9 @@ Development
     * `assertion_consumer_service_url`: 'https://<ip-address>/user/<org-name>/saml/finalize'. Check that your server has this URL for the service provider ACS URL.
 * Autostyling (#10420)
   * Correctly handle legends (#11121)
+* Updated ogr2ogr version to 2.1.2. To install or upgrade it in the system:
+  * `sudo apt-get update`
+  * `sudo apt-get install gdal2.1-static-bin`
 
 ### Bug fixes
 * Categories legend are now static (#10972)

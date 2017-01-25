@@ -11,16 +11,19 @@ describe Admin::OrganizationsController do
       login_as(@org_user_owner, scope: @org_user_owner.username)
     end
 
-    it 'does not display out of quota message if there is remaining quota' do
+    it 'does not display out warning messages if organization signup would work' do
       @organization.unassigned_quota.should > @organization.default_quota_in_bytes
 
       get organization_auth_url(user_domain: @org_user_owner.username)
 
       response.status.should eq 200
       response.body.should_not include("Your organization has run out of quota")
+      response.body.should_not include("Your organization has run out of seats")
     end
 
     it 'displays out of quota message if there is no remaining quota' do
+      old_quota_in_bytes = @organization.quota_in_bytes
+
       old_remaining_quota = @organization.unassigned_quota
       new_quota = (@organization.quota_in_bytes - old_remaining_quota) + (@organization.default_quota_in_bytes / 2)
       @organization.reload
@@ -32,6 +35,27 @@ describe Admin::OrganizationsController do
 
       response.status.should eq 200
       response.body.should include("Your organization has run out of quota")
+
+      @organization.quota_in_bytes = old_quota_in_bytes
+      @organization.save
+    end
+
+    it 'displays out of seats message if there are no seats left' do
+      old_seats = @organization.seats
+
+      new_seats = @organization.seats - @organization.remaining_seats
+      @organization.reload
+      @org_user_owner.reload
+      @organization.seats = new_seats
+      @organization.save
+
+      get organization_auth_url(user_domain: @org_user_owner.username)
+
+      response.status.should eq 200
+      response.body.should include("Your organization has run out of seats")
+
+      @organization.seats = old_seats
+      @organization.save
     end
   end
 end

@@ -109,8 +109,11 @@ class Admin::OrganizationsController < Admin::AdminController
     @organization = current_user.organization
     raise RecordNotFound unless @organization.present? && current_user.organization_owner?
 
-    unless @organization.validate_disk_quota
-      flash.now[:warning] = "Your organization has run out of quota"
+    warning = []
+    warning << "Your organization has run out of quota" unless @organization.validate_disk_quota
+    warning << "Your organization has run out of seats" unless @organization.validate_builder_seats
+    unless warning.empty?
+      flash.now[:warning] = warning.join('. ')
       flash.now[:detail] = "Users won't be able to sign up to your organization. <a href='mailto:contact@carto.com'>Contact us</a> to increase your quota."
     end
 

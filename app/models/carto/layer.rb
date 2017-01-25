@@ -61,13 +61,13 @@ module Carto
     serialize :infowindow, CartoJsonSerializer
     serialize :tooltip, CartoJsonSerializer
 
-    has_many :layers_maps
+    has_many :layers_maps, dependent: :destroy
     has_many :maps, through: :layers_maps, after_add: :after_added_to_map
 
-    has_many :layers_user
+    has_many :layers_user, dependent: :destroy
     has_many :users, through: :layers_user, after_add: :set_default_order
 
-    has_many :layers_user_table
+    has_many :layers_user_table, dependent: :destroy
     has_many :user_tables, through: :layers_user_table, class_name: Carto::UserTable
 
     has_many :widgets, class_name: Carto::Widget, order: '"order"'

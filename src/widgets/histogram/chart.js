@@ -1041,7 +1041,7 @@ module.exports = cdb.core.View.extend({
 
     var obj = this._widgetModel.getAutoStyle();
 
-    if (_.isEmpty(obj)) {
+    if (_.isEmpty(obj) || _.isEmpty(obj.definition)) {
       return false;
     }
 

@@ -674,6 +674,12 @@ describe('widgets/histogram/chart', function () {
       this.view.el = document.createElement('svg'); // Hack it!
     });
 
+    it('should not generate any gradient if auto-style colors are not provided', function () {
+      this.view._widgetModel.getAutoStyle.and.returnValue({});
+      this.view._generateFillGradients();
+      expect(this.getLinearGradients().length).toBe(0);
+    });
+
     it('should generate as many gradients as data we have', function () {
       this.view._generateFillGradients();
       expect(this.getLinearGradients()[0].length).toBe(5);

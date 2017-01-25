@@ -42,19 +42,34 @@ shared_examples_for "organization models" do
   end
 
   describe "#signup_page_enabled" do
-
     it 'is true if domain whitelist is not empty' do
-      get_organization.whitelisted_email_domains = ['cartodb.com']
-      get_organization.signup_page_enabled.should == true
+      organization = get_organization
+      organization.auth_username_password_enabled = true
+      organization.whitelisted_email_domains = ['carto.com']
+      organization.signup_page_enabled.should == true
     end
 
     it 'is false if domain whitelist is empty' do
-      get_organization = FactoryGirl.build(:organization)
-      get_organization.whitelisted_email_domains = []
-      get_organization.signup_page_enabled.should == false
+      organization = get_organization
+      organization.auth_username_password_enabled = true
+      organization.whitelisted_email_domains = []
+      organization.signup_page_enabled.should == false
     end
 
+    it 'is false if no authentication is enabled' do
+      organization = get_organization
+      organization.auth_username_password_enabled = false
+      organization.auth_google_enabled = false
+      organization.auth_github_enabled = false
+      organization.whitelisted_email_domains = ['carto.com']
+      organization.signup_page_enabled.should be_false
+    end
   end
 
+  it 'generates auth_tokens and save them for future accesses' do
+    token = get_organization.get_auth_token
+    token.should be
+    get_organization.reload
+    get_organization.get_auth_token.should eq token
+  end
 end
-

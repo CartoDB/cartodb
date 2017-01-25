@@ -19,9 +19,9 @@ class GeocoderMailer < ActionMailer::Base
 
     def set_subject(state)
       if @geocoding_failed
-        subject = "Your CartoDB dataset geocoding failed"
+        subject = "Your dataset geocoding has failed"
       else
-        subject = "Your CartoDB dataset geocoding just finished"
+        subject = "Your dataset geocoding has just finished"
       end
 
       subject

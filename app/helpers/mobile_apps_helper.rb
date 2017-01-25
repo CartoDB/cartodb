@@ -15,8 +15,6 @@ module MobileAppsHelper
 
   def progress_bar_width
     case @mobile_app.app_type
-    when 'dev'
-      (@mobile_app.monthly_users * 100) / @max_dev_users
     when 'open'
       (@mobile_app.monthly_users * 100) / progress_bar_max_users
     when 'private'
@@ -30,8 +28,6 @@ module MobileAppsHelper
 
   def progress_bar_max_users
     case @mobile_app.app_type
-    when 'dev'
-      @max_dev_users
     when 'open'
       current_user.mobile_max_open_users
     when 'private'

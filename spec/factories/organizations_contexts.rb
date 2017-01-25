@@ -32,6 +32,8 @@ shared_context 'organization with users helper' do
     organization.name = unique_name('org')
     organization.quota_in_bytes = 1234567890
     organization.seats = 15
+    organization.viewer_seats = 15
+    organization.builder_enabled = false
     organization
   end
 

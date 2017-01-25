@@ -3,10 +3,12 @@
 require 'securerandom'
 require_dependency 'google_plus_api'
 require_dependency 'carto/strong_password_validator'
+require_dependency 'dummy_password_generator'
 
 # This class is quite coupled to UserCreation.
 module CartoDB
   class UserAccountCreator
+    include DummyPasswordGenerator
 
     PARAM_USERNAME = :username
     PARAM_EMAIL = :email
@@ -18,7 +20,9 @@ module CartoDB
     PARAM_SOFT_OBS_SNAPSHOT_LIMIT = :soft_obs_snapshot_limit
     PARAM_SOFT_OBS_GENERAL_LIMIT = :soft_obs_general_limit
     PARAM_SOFT_TWITTER_DATASOURCE_LIMIT = :soft_twitter_datasource_limit
+    PARAM_SOFT_MAPZEN_ROUTING_LIMIT = :soft_mapzen_routing_limit
     PARAM_QUOTA_IN_BYTES = :quota_in_bytes
+    PARAM_VIEWER = :viewer
 
     def initialize(created_via)
       @built = false
@@ -62,8 +66,16 @@ module CartoDB
       with_param(PARAM_SOFT_TWITTER_DATASOURCE_LIMIT, value)
     end
 
+    def with_soft_mapzen_routing_limit(value)
+      with_param(PARAM_SOFT_MAPZEN_ROUTING_LIMIT, value)
+    end
+
     def with_quota_in_bytes(value)
       with_param(PARAM_QUOTA_IN_BYTES, value)
+    end
+
+    def with_viewer(value)
+      with_param(PARAM_VIEWER, value)
     end
 
     def with_organization(organization)
@@ -80,9 +92,20 @@ module CartoDB
 
     def with_email_only(email)
       with_email(email)
-      with_username(email.split('@')[0])
+      with_username(self.class.email_to_username(email))
       with_password(SecureRandom.hex)
       self
+    end
+
+    # Transforms an email address (e.g. firstname.lastname@example.com) into a string
+    # which can serve as a subdomain.
+    # firstname.lastname@example.com -> firstname-lastname
+    # Replaces all non-allowable characters with
+    # hyphens. This could potentially result in collisions between two specially-
+    # constructed names (e.g. John Smith-Bob and Bob-John Smith).
+    # We're ignoring this for now since this type of email is unlikely to come up.
+    def self.email_to_username(email)
+      email.strip.split('@')[0].gsub(/[^A-Za-z0-9-]/, '-').downcase
     end
 
     def user
@@ -93,6 +116,12 @@ module CartoDB
       @built = false
       # get_user_data can return nil
       @google_user_data = GooglePlusAPI.new.get_user_data(google_access_token)
+      self
+    end
+
+    def with_github_oauth_api(github_api)
+      @built = false
+      @github_api = github_api
       self
     end
 
@@ -108,7 +137,7 @@ module CartoDB
           validate_organization_soft_limits
         end
 
-        if @organization.strong_passwords_enabled && @created_via != Carto::UserCreation::CREATED_VIA_LDAP
+        if requires_strong_password_validation?
           password_validator = Carto::StrongPasswordValidator.new
           password_errors = password_validator.validate(@user.password)
 
@@ -120,6 +149,19 @@ module CartoDB
 
       @user.valid? && @user.validate_credentials_not_taken_in_central && @custom_errors.empty?
     end
+
+    def requires_strong_password_validation?
+      @organization.strong_passwords_enabled && !generate_dummy_password?
+    end
+
+    def generate_dummy_password?
+      @github_api || @google_user_data || VIAS_WITHOUT_PASSWORD.include?(@created_via)
+    end
+
+    VIAS_WITHOUT_PASSWORD = [
+      Carto::UserCreation::CREATED_VIA_LDAP,
+      Carto::UserCreation::CREATED_VIA_SAML
+    ].freeze
 
     def validation_errors
       @user.errors.merge!(@custom_errors)
@@ -148,12 +190,22 @@ module CartoDB
     def build
       return if @built
 
+      if generate_dummy_password?
+        dummy_password = generate_dummy_password
+        @user.password = dummy_password
+        @user.password_confirmation = dummy_password
+      end
+
       if @google_user_data
         @google_user_data.set_values(@user)
+      elsif @github_api
+        @user.github_user_id = @github_api.id
+        @user.username = @github_api.username
+        @user.email = @user_params[PARAM_EMAIL] || @github_api.email
       else
         @user.email = @user_params[PARAM_EMAIL]
-        @user.password = @user_params[PARAM_PASSWORD]
-        @user.password_confirmation = @user_params[PARAM_PASSWORD]
+        @user.password = @user_params[PARAM_PASSWORD] if @user_params[PARAM_PASSWORD]
+        @user.password_confirmation = @user_params[PARAM_PASSWORD] if @user_params[PARAM_PASSWORD]
       end
 
       @user.invitation_token = @invitation_token
@@ -164,7 +216,9 @@ module CartoDB
       @user.soft_obs_snapshot_limit = @user_params[PARAM_SOFT_OBS_SNAPSHOT_LIMIT] == 'true'
       @user.soft_obs_general_limit = @user_params[PARAM_SOFT_OBS_GENERAL_LIMIT] == 'true'
       @user.soft_twitter_datasource_limit = @user_params[PARAM_SOFT_TWITTER_DATASOURCE_LIMIT] == 'true'
+      @user.soft_mapzen_routing_limit = @user_params[PARAM_SOFT_MAPZEN_ROUTING_LIMIT] == 'true'
       @user.quota_in_bytes = @user_params[PARAM_QUOTA_IN_BYTES] if @user_params[PARAM_QUOTA_IN_BYTES]
+      @user.viewer = @user_params[PARAM_VIEWER] if @user_params[PARAM_VIEWER]
 
       @built = true
       @user
@@ -189,6 +243,9 @@ module CartoDB
       end
       if @user_params[PARAM_SOFT_TWITTER_DATASOURCE_LIMIT] == 'true' && !owner.soft_twitter_datasource_limit
         @custom_errors[:soft_twitter_datasource_limit] = ["Owner can't assign soft twitter datasource limit"]
+      end
+      if @user_params[PARAM_SOFT_MAPZEN_ROUTING_LIMIT] == 'true' && !owner.soft_mapzen_routing_limit
+        @custom_errors[:soft_mapzen_routing_limit] = ["Owner can't assign soft mapzen routing limit"]
       end
     end
 

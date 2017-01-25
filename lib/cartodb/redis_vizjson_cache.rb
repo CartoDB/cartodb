@@ -28,8 +28,9 @@ module CartoDB
         purge_ids([visualization_id])
       end
 
-      def key(visualization_id, https_flag = false, vizjson_version = @vizjson_version)
-        "visualization:#{visualization_id}:vizjson#{VIZJSON_VERSION_KEY[vizjson_version]}:#{VERSION}:#{https_flag ? 'https' : 'http'}"
+      def key(visualization_id, https_flag = false, vizjson_version = @vizjson_version, domain = CartoDB.session_domain)
+        "visualization:#{visualization_id}:vizjson#{VIZJSON_VERSION_KEY[vizjson_version]}:#{VERSION}:" \
+        "#{https_flag ? 'https' : 'http'}:#{domain}"
       end
 
       def purge(vizs)
@@ -41,7 +42,9 @@ module CartoDB
       def purge_ids(ids)
         return unless ids.count > 0
         keys = VIZJSON_VERSION_KEY.keys.map { |vizjson_version|
-          ids.map { |id| [key(id, false, vizjson_version), key(id, true, vizjson_version)] }.flatten
+          Cartodb.config.fetch(:vizjson_cache_domains, [CartoDB.session_domain]).map { |domain|
+            ids.map { |id| [key(id, false, vizjson_version), key(id, true, vizjson_version, domain)] }.flatten
+          }.flatten
         }.flatten
         redis.del keys
       end

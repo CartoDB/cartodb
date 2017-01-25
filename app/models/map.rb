@@ -6,6 +6,8 @@ require_relative '../helpers/bounding_box_helper'
 class Map < Sequel::Model
   self.raise_on_save_failure = false
 
+  plugin :serialization, :json, :options
+
   one_to_many :tables, class: ::UserTable
   many_to_one :user
 
@@ -79,12 +81,19 @@ class Map < Sequel::Model
   end
 
   def notify_map_change
+    visualization = visualizations.first
+
+    force_notify_map_change
+  end
+
+  def force_notify_map_change
     update_related_named_maps
     invalidate_vizjson_varnish_cache
   end
 
   def before_destroy
     raise CartoDB::InvalidMember.new(user: "Viewer users can't destroy maps") if user && user.viewer
+    layers.each(&:destroy)
     super
     invalidate_vizjson_varnish_cache
   end
@@ -117,7 +126,9 @@ class Map < Sequel::Model
   end
 
   def viz_updated_at
-    get_the_last_time_tiles_have_changed_to_render_it_in_vizjsons
+    latest_mapcap = visualizations.first.latest_mapcap
+
+    latest_mapcap ? latest_mapcap.created_at : get_the_last_time_tiles_have_changed_to_render_it_in_vizjsons
   end
 
   def invalidate_vizjson_varnish_cache
@@ -150,12 +161,16 @@ class Map < Sequel::Model
     @visualizations_collection ||= CartoDB::Visualization::Collection.new.fetch(map_id: [id]).to_a
   end
 
+  def visualization
+    visualizations.first
+  end
+
   def process_privacy_in(layer)
     return self unless layer.uses_private_tables?
 
     visualizations.each do |visualization|
-      unless visualization.organization?
-        visualization.privacy = 'private'
+      if visualization.can_be_private?
+        visualization.privacy = CartoDB::Visualization::Member::PRIVACY_PRIVATE
         visualization.store
       end
     end

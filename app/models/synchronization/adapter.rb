@@ -27,12 +27,12 @@ module CartoDB
             data_for_exception << "1st result:#{runner.results.first.inspect}"
             raise data_for_exception
           end
-          copy_privileges(user.database_schema, table_name, result.schema, result.table_name)
           index_statements = generate_index_statements(user.database_schema, table_name)
           move_to_schema(result)
           geo_type = fix_the_geom_type!(user.database_schema, result.table_name)
           import_cleanup(user.database_schema, result.table_name)
           cartodbfy(result.table_name)
+          copy_privileges(user.database_schema, table_name, user.database_schema, result.table_name)
           overwrite(table_name, result)
           setup_table(table_name, geo_type)
           run_index_statements(index_statements)
@@ -154,7 +154,9 @@ module CartoDB
         return nil unless the_geom_data
 
         if the_geom_data[:typname] != 'geometry'
-          user.in_database.rename_column(qualified_table_name, THE_GEOM, :the_geom_str)
+          user.in_database.execute %{
+              ALTER TABLE #{qualified_table_name} RENAME COLUMN "#{THE_GEOM}" TO "the_geom_str"
+          }
           return nil
         end
 
@@ -347,12 +349,12 @@ module CartoDB
           and relnamespace = (select oid from pg_namespace where nspname = '#{destination_schema}')
         ))
       rescue => exception
-        Rollbar.report_message('Error copying privileges', 'error',
-                               { error: exception.inspect,
-                                 origin_schema: origin_schema,
-                                 origin_table_name: origin_table_name,
-                                 destination_schema: destination_schema,
-                                 destination_table_name: destination_table_name } )
+        CartoDB::Logger.error(exception: exception,
+                              message: 'Error copying privileges',
+                              origin_schema: origin_schema,
+                              origin_table_name: origin_table_name,
+                              destination_schema: destination_schema,
+                              destination_table_name: destination_table_name)
       end
 
       # Store all indexes to re-create them after "syncing" the table by reimporting and swapping it
@@ -396,9 +398,9 @@ module CartoDB
             database.run(statement)
           rescue => exception
             if exception.message !~ /relation .* already exists/
-              Rollbar.report_message('Error copying indexes', 'error',
-                                   { error: exception.inspect,
-                                     statement: statement } )
+              CartoDB::Logger.error(exception: exception,
+                                    message: 'Error copying indexes',
+                                    statement: statement)
             end
           end
         }

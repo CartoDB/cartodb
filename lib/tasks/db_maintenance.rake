@@ -381,6 +381,29 @@ namespace :cartodb do
       user.db_service.set_user_privileges_at_db
     end
 
+    desc 'Set org role privileges in all organizations'
+    task :set_org_privileges_in_cartodb_schema, [:org_name] => :environment do |_t, args|
+      org = ::Organization.find(name: args[:org_name])
+      owner = org.owner
+      if owner
+        owner.db_service.setup_organization_role_permissions
+      else
+        puts 'Organization without owner'
+      end
+    end
+
+    desc 'Set org role privileges in all organizations'
+    task set_all_orgs_privileges_in_cartodb_schema: :environment do |_t, _args|
+      Organization.each do |org|
+        owner = org.owner
+        if owner
+          owner.db_service.setup_organization_role_permissions
+        else
+          puts "Organization without owner: #{org.name}"
+        end
+      end
+    end
+
     ##########################
     # SET TRIGGER CHECK QUOTA
     ##########################
@@ -453,6 +476,18 @@ namespace :cartodb do
       puts "Organization: #{organization.name} seats updated to: #{args[:seats]}."
     end
 
+    desc "set organization viewer_seats"
+    task :set_organization_viewer_seats, [:organization_name, :seats] => :environment do |_, args|
+      usage = 'usage: rake cartodb:db:set_organization_viewer_seats[organization_name,seats]'
+      raise usage if args[:organization_name].blank? || args[:seats].blank?
+
+      organization = Organization.filter(name: args[:organization_name]).first
+      seats = args[:seats].to_i
+      organization.viewer_seats = seats
+      organization.save
+
+      puts "Organization: #{organization.name} seats updated to: #{args[:seats]}."
+    end
 
     #################
     # SET TABLE QUOTA
@@ -842,6 +877,9 @@ namespace :cartodb do
         organization.display_name = ENV['ORGANIZATION_DISPLAY_NAME']
         organization.seats = ENV['ORGANIZATION_SEATS']
         organization.quota_in_bytes = ENV['ORGANIZATION_QUOTA']
+        if ENV['BUILDER_ENABLED'] == "true"
+          organization.builder_enabled = true
+        end
         organization.save
       end
       uo = CartoDB::UserOrganization.new(organization.id, user.id)
@@ -862,6 +900,9 @@ namespace :cartodb do
         organization.display_name = ENV['ORGANIZATION_DISPLAY_NAME']
         organization.seats = ENV['ORGANIZATION_SEATS']
         organization.quota_in_bytes = ENV['ORGANIZATION_QUOTA']
+        if ENV['BUILDER_ENABLED'] == "true"
+          organization.builder_enabled = true
+        end
         organization.save
       end
     end
@@ -1294,7 +1335,43 @@ namespace :cartodb do
         end
       end
     end
-    
+
+    desc 'Connect aggregation tables through FDW to builder users'
+    task :connect_aggregation_fdw_tables_to_builder_users => :environment do
+      unless Cartodb.get_config(:aggregation_tables).present?
+        raise "Aggregation tables not configured!"
+      end
+      # We're using a PostgreSQL cursor to avoid loading all the users
+      # in memory at once. (For ActiveRecord we'd use `find_each`)
+      User.where.use_cursor(rows_per_fetch: 100).each do |user|
+        if user.has_feature_flag?('editor-3')
+          begin
+            user.db_service.connect_to_aggregation_tables
+          rescue => e
+            puts "Error trying to connect #{user.username}: #{e.message}"
+            puts e.backtrace
+          end
+        end
+      end
+    end
+
+    desc 'Connect aggregation tables through FDW to all users'
+    task :connect_aggregation_fdw_tables_to_all_users => :environment do
+      unless Cartodb.get_config(:aggregation_tables).present?
+        raise "Aggregation tables not configured!"
+      end
+      # We're using a PostgreSQL cursor to avoid loading all the users
+      # in memory at once. (For ActiveRecord we'd use `find_each`)
+      User.where.use_cursor(rows_per_fetch: 100).each do |user|
+        begin
+          user.db_service.connect_to_aggregation_tables
+        rescue => e
+          puts "Error trying to connect #{user.username}: #{e.message}"
+          puts e.backtrace
+        end
+      end
+    end
+
     # usage:
     #   bundle exec rake cartodb:db:obs_quota_enterprise[1000]
     desc 'Give data observatory quota to all the enterprise users'

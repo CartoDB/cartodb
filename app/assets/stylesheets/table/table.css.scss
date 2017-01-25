@@ -375,13 +375,14 @@ div.table {
 
 
       tr {
-        position:relative;
         width:100%;
         // z-index:0;
         background:white;
         border-top:1px solid #ECECEC;
 
         td {
+          vertical-align: top;
+
           &:not(.row_header) {
             div.cell:not(.disabled) {
               cursor: pointer;

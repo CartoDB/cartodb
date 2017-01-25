@@ -5,7 +5,6 @@
 .WidgetList {
   @include display-flex;
   flex-wrap: wrap;
-  padding-top: 105px;
 }
 
 .WidgetList-option {
@@ -16,6 +15,7 @@
   @include align-items(baseline);
   flex: 0 0 304px;
   width: 304px;
+  max-width: 304px;
   margin: 0 4px 8px;
   box-sizing: border-box;
   padding: $baseSize * 2;
@@ -53,51 +53,57 @@
   border-radius: 2px;
   background: $cThirdBackground;
 }
-.WidgetList-nav {
-  @include display-flex();
-  @include justify-content(center);
-  position: fixed;
-  width: 100%;
-  padding: $baseSize * 4 0;
-  background-color: $cThirdBackground;
-  z-index: 1;
+
+.Widget-selectTitle {
+  width: 124px;
 }
 
-.WidgetIcon {
-  width: 20px;
-  height: 18px;
-  background-repeat: no-repeat;
-  background-position: center center;
+.Widget-categoryFake {
+  height: 4px;
+  margin-bottom: 16px;
+  border-radius: 10px;
+  background: $cSecondaryBackground;
+  box-sizing: border-box;
 }
-.WidgetIcon--histogram {
-  background-image: image-url('layout/widgets/histogram_bn.svg');
+.Widget-categoryFakeText {
+  width: 100px;
+  height: 4px;
+  margin: 7px 0;
+  border-radius: 10px;
+  background: #F2F6F9;
 }
-.Editor-navButtonsItem.is-selected .WidgetIcon--histogram {
-  background-image: image-url('layout/widgets/histogram_color.svg');
+.Widget-histogramFakeContainer {
+  margin-bottom: 12px;
+  padding-top: 1px;
 }
-
-.WidgetIcon--category {
-  background-image: image-url('layout/widgets/category_bn.svg');
+.Widget-histogramFakeContainer .Widget-categoryFakeText {
+  margin-bottom: 9px;
 }
-.Editor-navButtonsItem.is-selected .WidgetIcon--category {
-  background-image: image-url('layout/widgets/category_color.svg');
+.Widget-histogramFake {
+  position: relative;
+  height: 20px;
+  border-top: 1px solid $cSecondaryLine;
+  border-bottom: 1px solid $cSecondaryLine;
 }
-
-.WidgetIcon--formula {
-  background-image: image-url('layout/widgets/formula_bn.svg');
-
+.Widget-histogramFake::before {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  left: 0;
+  height: 1px;
+  background: $cSecondaryLine;
+  content: '';
 }
-.Editor-navButtonsItem.is-selected .WidgetIcon--formula {
-  background-image: image-url('layout/widgets/formula_color.svg');
+.Widget-formulaFakeContainer {
+  margin-bottom: 12px;
+  padding-top: 1px;
 }
-
-.WidgetIcon--time-series {
-  background-image: image-url('layout/widgets/timeSeries_bn.svg');
+.Widget-formulaFake {
+  position: relative;
+  width: 96px;
+  height: 20px;
+  background: $cSecondaryLine;
 }
-.Editor-navButtonsItem.is-selected .WidgetIcon--time-series {
-  background-image: image-url('layout/widgets/timeSeries_color.svg');
-}
-
 
 
 

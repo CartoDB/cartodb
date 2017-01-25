@@ -1,61 +1,17 @@
-<% content_for(:subject) { @subject } %>
+<%- message = "<p>We've successfully geocoded <strong>#{@geocoded_rows}</strong> out of <strong>#{@processable_rows}</strong> points from <strong>#{@table_name}</strong>.</p>" %>
 
-<% content_for :body do %>
+<% if @geocoding_failed || !@all_rows_geocoded %>
+  <%= render partial: 'mailer_modules/warning_message', locals: { message: message } %>
+<% else %>
+  <%= render partial: 'mailer_modules/positive_message', locals: { message: message } %>
+<% end %>
+
+<% if @geocoding_failed || !@all_rows_geocoded %>
   <tr>
-    <td>
-      <!-- HEADER -->
-      <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #ffffff; border: 1px solid #dddddd; border-bottom: 0; border-collapse: separate !important; border-top-left-radius: 4px; border-top-right-radius: 4px; width: 100% !important;">
-        <tr>
-          <td align="left" style="padding: 40px 50px 40px 50px; font-weight: bold; font-size: 25px; font-family: Helvetica, Arial, sans-serif; color: #333333;"><% if @geocoding_failed || !@all_rows_geocoded %>Your dataset geocoding have just finished<% else %>Your dataset was successfully geocoded<% end %></td>
-        </tr>
-      </table>
-    </td>
-  </tr>
-  <tr>
-    <td>
-      <!-- CONTENT -->
-      <table cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #ffffff; border: 1px solid #dddddd; border-top: 1px solid #dddddd; border-bottom: 1px solid #cccccc; border-bottom-left-radius: 4px; border-bottom-right-radius: 4px; width: 100% !important;">
-        <tr>
-          <td valign="top" style="padding: 0;">
-            <table cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: <% if @geocoding_failed || !@all_rows_geocoded %>#FEFAF4;<% else %>#F2FAE8;<% end %> border-bottom: 1px solid #dddddd; width: 100% !important;">
-              <tr>
-                <td align="left" style="padding: 40px 50px 40px 50px; font-family: Helvetica, Arial, sans-serif;">
-                  <p style="margin: 0; font-size: 16px; line-height: 25px; color: #666666;">We've successfully geocoded <strong><%= @geocoded_rows %></strong> out of <strong><%= @processable_rows %></strong> points from <strong><%= @table_name %></strong>.</p>
-                </td>
-              </tr>
-            </table>
-          </td>
-        </tr>
-
-        <% if @geocoding_failed || !@all_rows_geocoded %>
-          <tr>
-            <td align="left" style="padding: 40px 50px 0 50px; font-size: 16px; line-height: 25px; font-family: Helvetica, Arial, sans-serif; color: #666666;">Rows that are not geocoded could have errors on their column values, or just doesn't exist in our data. To try again set "Override all values" checkbox for those rows you want to geocode try again.</td>
-          </tr>
-        <% end %>
-
-        <tr>
-          <td style="padding: 40px 50px 40px 50px;" align="center" class="padding">
-            <table border="0" cellspacing="0" cellpadding="0" class="mobile-button-container">
-              <tr>
-                <td align="center">
-                  <!-- BULLETPROOF BUTTON -->
-                  <table width="100%" border="0" cellspacing="0" cellpadding="0" class="mobile-button-container">
-                    <tr>
-                      <td align="center" style="padding: 0;">
-                        <table border="0" cellspacing="0" cellpadding="0" class="responsive-table">
-                          <tr>
-                            <td align="center"><a href="<%= @link %>" target="_blank" style="font-size: 16px; font-family: Helvetica, Arial, sans-serif; font-weight: normal; color: #ffffff; text-decoration: none; background-color: #3AA9E3; border-top: 15px solid #3AA9E3; border-bottom: 15px solid #3AA9E3; border-left: 25px solid #3AA9E3; border-right: 25px solid #3AA9E3; border-radius: 3px; -webkit-border-radius: 3px; -moz-border-radius: 3px; display: inline-block;" class="mobile-button">View your dataset</a></td>
-                          </tr>
-                        </table>
-                      </td>
-                    </tr>
-                  </table>
-                </td>
-              </tr>
-            </table>
-          </td>
-        </tr>
-      </table>
+    <td align="left" style="font-size: 14px; line-height: 25px; font-family: 'Open Sans', Helvetica, Arial, sans-serif; color: #647083;">
+      <p>Rows that are not geocoded could have errors on their column values, or just doesn't exist in our data. To try again set "Override all values" checkbox for those rows you want to geocode try again.</p>
     </td>
   </tr>
 <% end %>
+
+<%= render partial: 'mailer_modules/link_to_action', locals: { link: @link, link_text: 'View your dataset' } %>

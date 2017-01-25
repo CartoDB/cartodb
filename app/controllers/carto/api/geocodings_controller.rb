@@ -1,4 +1,4 @@
-#encoding: UTF-8
+# encoding: utf-8
 
 module Carto
   module Api
@@ -99,7 +99,7 @@ module Carto
       end
 
       def get_table(table_name)
-        Carto::Helpers::TableLocator.new.get_by_id_or_name(table_name, uri_user)
+        Carto::Helpers::TableLocator.new.get_by_id_or_name(table_name, uri_user).try(&:service)
       end
 
     end

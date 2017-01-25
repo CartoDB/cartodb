@@ -45,8 +45,9 @@
   max-height: 200px;
   text-align: left;
   color: #2E3C43;
-  background-color: #f9f9f9;
+  background-color: $cStructure-grayBkg;
   overflow: hidden;
+  font-family: monospace;
 }
 .OptionCard--codeRequest pre { white-space: pre-wrap }
 .OptionCard--codeResult { padding-bottom: 0 }
@@ -86,15 +87,10 @@
 .OptionCard-icon {
   margin-bottom: $sMargin-elementInline;
 }
-.OptionCard-title {
-  font-size: $sFontSize-large;
-  line-height: $sLineHeight-large;
+.OptionCard-title {;
   margin-bottom: $sMargin-min;
 }
 .OptionCard-desc {
-  font-size: $sFontSize-normal;
-  line-height: $sLineHeight-normal;
-  color: $cTypography-secondary;
   margin-bottom: $sMargin-elementInline;
 }
 .OptionCard-shadow {
@@ -103,9 +99,9 @@
   bottom: 0;
   width: 100%;
   left: 0;
-  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, rgba(#f9f9f9,0.04)), color-stop(100%, rgba(#f9f9f9,0.95)));
-  background-image: -webkit-linear-gradient(top, rgba(#f9f9f9,0.04) 0%, rgba(#f9f9f9,0.95) 100%);
-  background-image: -moz-linear-gradient(top, rgba(#f9f9f9,0.04) 0%, rgba(#f9f9f9,0.95) 100%);
-  background-image: -o-linear-gradient(top, rgba(#f9f9f9,0.04) 0%, rgba(#f9f9f9,0.95) 100%);
-  background-image: linear-gradient(top, rgba(#f9f9f9,0.04) 0%,rgba(#f9f9f9,0.95) 100%);
+  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, rgba($cStructure-grayBkg, 0.04)), color-stop(100%, rgba($cStructure-grayBkg, 0.95)));
+  background-image: -webkit-linear-gradient(top, rgba($cStructure-grayBkg, 0.04) 0%, rgba($cStructure-grayBkg, 0.95) 100%);
+  background-image: -moz-linear-gradient(top, rgba($cStructure-grayBkg, 0.04) 0%, rgba($cStructure-grayBkg, 0.95) 100%);
+  background-image: -o-linear-gradient(top, rgba($cStructure-grayBkg, 0.04) 0%, rgba($cStructure-grayBkg, 0.95) 100%);
+  background-image: linear-gradient(top, rgba($cStructure-grayBkg, 0.04) 0%,rgba($cStructure-grayBkg, 0.95) 100%);
 }

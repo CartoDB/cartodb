@@ -49,6 +49,7 @@ describe Admin::OrganizationUsersController do
 
     describe '#create' do
       it 'creates users' do
+        ::User.any_instance.stubs(:create_in_central).returns(true)
         User.any_instance.expects(:load_common_data).once.returns(true)
 
         post create_organization_user_url(user_domain: @org_user_owner.username), user: user_params
@@ -58,6 +59,7 @@ describe Admin::OrganizationUsersController do
         user.email.should eq user_params[:email]
         user.quota_in_bytes.should eq user_params[:quota_in_bytes]
         user.twitter_datasource_enabled.should be_nil
+        user.builder_enabled.should be_nil
 
         user.destroy
       end

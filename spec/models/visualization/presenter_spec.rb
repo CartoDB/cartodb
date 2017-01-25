@@ -21,7 +21,7 @@ describe Visualization::Member do
     @user_mock = create_mocked_user(
       user_id: user_id,
       user_name: user_name,
-      public_url: "http://#{user_name}.cartodb.com",
+      public_url: "http://#{user_name}.carto.com",
       groups: []
     )
     CartoDB::Visualization::Relator.any_instance.stubs(:user).returns(@user_mock)

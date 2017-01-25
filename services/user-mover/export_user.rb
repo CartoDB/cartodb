@@ -13,6 +13,7 @@ require 'optparse'
 require 'json'
 require 'tsort'
 require 'securerandom'
+require 'carto/configuration'
 
 require_relative 'config'
 require_relative 'utils'
@@ -69,7 +70,9 @@ module CartoDB
       end
     end
     class ExportJob
-      attr_reader :logger
+      include Carto::Configuration
+
+      attr_reader :logger, :json_file
 
       REDIS_KEYS = {
         mapviews: {
@@ -125,7 +128,7 @@ module CartoDB
           }
         }
       }.freeze
-      TABLE_NULL_EXCEPTIONS = ['table_quota'].freeze # those won't be discarded if set to NULL
+      TABLE_NULL_EXCEPTIONS = ['table_quota', 'builder_enabled'].freeze # those won't be discarded if set to NULL
       include CartoDB::DataMover::Utils
 
       def get_user_metadata(user_id)
@@ -209,14 +212,14 @@ module CartoDB
           models_ordered.reverse_each do |model|
             data[model].each do |rows|
               keys = rows.keys.select { |k| !rows[k].nil? }
-              f.write generate_pg_delete_query(model.table_name, rows)
+              f.write generate_pg_delete_query(model, rows)
             end
           end
         end
       end
 
-      def generate_pg_delete_query(table_name, rows)
-        "DELETE FROM #{table_name} WHERE id = '#{rows['id']}';\n"
+      def generate_pg_delete_query(model, rows)
+        "DELETE FROM #{model.table_name} WHERE #{model.primary_key} = '#{rows[model.primary_key]}';\n"
       end
 
       # This could be more solid by avoiding to generate SQL queries manually. There are
@@ -234,7 +237,7 @@ module CartoDB
         id = [id] if id.is_a?(Integer) || id.is_a?(String)
 
         # first dump this model
-        query = "SELECT * FROM #{model.table_name} WHERE id IN (#{id.map { |i| "'#{i}'" }.join(', ')});"
+        query = "SELECT * FROM #{model.table_name} WHERE #{model.primary_key} IN (#{id.map { |i| "'#{i}'" }.join(', ')});"
         result = pg_conn.exec(query)
         data[model] = (0..result.cmd_tuples - 1).map do |tuple_number|
           result[tuple_number]
@@ -242,7 +245,6 @@ module CartoDB
 
         model.reflections.each do |_name, reflection|
           unless exclude.include?(reflection.klass) || !reflection.through_reflection.nil?
-
             if reflection.belongs_to?
               ids = data[model].map { |t| t[reflection.association_foreign_key.to_s] }.reject { |t| t == nil }
               next if ids.empty?
@@ -257,19 +259,19 @@ module CartoDB
             end
 
             ids = data[reflection.klass].map do |data_for_related_key|
-              data_for_related_key["id"]
+              data_for_related_key[reflection.klass.primary_key]
             end
-            data.merge!(dump_related_data(reflection.klass, ids, exclude + [model])) { |_, x, y| merge_without_duplicated_ids(x, y) } if !ids.empty?
+            data.merge!(dump_related_data(reflection.klass, ids, exclude + [model])) { |_, x, y| merge_without_duplicated_ids(x, y, reflection.klass.primary_key) } if !ids.empty?
           end
         end
 
         data
       end
 
-      def merge_without_duplicated_ids(x, y)
+      def merge_without_duplicated_ids(x, y, primary_key)
         # this gets called when we try to merge >1 table.
         # it will remove duplicates by ida
-        (x + y).uniq { |s| s['id'] }
+        (x + y).uniq { |s| s[primary_key] }
       end
 
       # This is not very solid since we are definining the protocol
@@ -432,7 +434,7 @@ module CartoDB
       end
 
       def exportjob_logger
-        @@exportjob_logger ||= ::Logger.new("#{Rails.root}/log/datamover.log")
+        @@exportjob_logger ||= ::Logger.new(log_file_path("datamover.log"))
       end
 
       def get_db_size(database)
@@ -451,6 +453,7 @@ module CartoDB
 
         @start = Time.now
         @logger = options[:logger] || default_logger
+        @@exportjob_logger = options[:export_job_logger]
 
         job_uuid = @options[:job_uuid] || SecureRandom.uuid
         export_log = { job_uuid:     job_uuid,
@@ -490,7 +493,8 @@ module CartoDB
               )
             end
 
-            File.open("#{@options[:path]}user_#{@user_id}.json", "w") do |f|
+            @json_file = "user_#{@user_id}.json"
+            File.open("#{@options[:path]}#{json_file}", "w") do |f|
               f.write(user_info.to_json)
             end
             set_user_mover_banner(@user_id) if options[:set_banner]
@@ -512,7 +516,8 @@ module CartoDB
 
             dump_org_metadata if @options[:metadata]
             data = { organization: @org_metadata, users: @org_users.to_a, groups: @org_groups, split_user_schemas: @options[:split_user_schemas] }
-            File.open("#{@options[:path]}org_#{@org_metadata['id']}.json", "w") do |f|
+            @json_file = "org_#{@org_metadata['id']}.json"
+            File.open("#{@options[:path]}#{json_file}", "w") do |f|
               f.write(data.to_json)
             end
 
@@ -535,7 +540,9 @@ module CartoDB
                                                              path: @options[:path],
                                                              job_uuid: job_uuid,
                                                              from_org: true,
-                                                             schema_mode: true)
+                                                             schema_mode: true,
+                                                             logger: @logger,
+                                                             export_job_logger: exportjob_logger)
             end
           end
         rescue => e

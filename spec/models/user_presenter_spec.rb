@@ -107,7 +107,8 @@ describe Carto::Api::UserPresenter do
 
   protected
 
-  def compare_data(old_data, new_data, org_user = false, mobile_sdk_enabled = false)
+  def compare_data(original_old_data, new_data, org_user = false, mobile_sdk_enabled = false)
+    old_data = add_new_keys(original_old_data)
     # INFO: new organization presenter now doesn't contain users
     old_data[:organization].delete(:users) if old_data[:organization]
 
@@ -158,6 +159,9 @@ describe Carto::Api::UserPresenter do
     new_data[:new_dashboard_enabled].should == old_data[:new_dashboard_enabled]
     new_data[:feature_flags].should == old_data[:feature_flags]
     new_data[:base_url].should == old_data[:base_url]
+    new_data[:geocoder_provider].should == old_data[:geocoder_provider]
+    new_data[:isolines_provider].should == old_data[:isolines_provider]
+    new_data[:routing_provider].should == old_data[:routing_provider]
 
     if org_user
       new_data[:organization].keys.sort.should == old_data[:organization].keys.sort
@@ -182,6 +186,7 @@ describe Carto::Api::UserPresenter do
       new_data[:organization][:here_isolines_quota].should == old_data[:organization][:here_isolines_quota]
       new_data[:organization][:obs_snapshot_quota].should == old_data[:organization][:obs_snapshot_quota]
       new_data[:organization][:obs_general_quota].should == old_data[:organization][:obs_general_quota]
+      new_data[:organization][:mapzen_routing_quota].should == old_data[:organization][:mapzen_routing_quota]
       new_data[:organization][:map_view_quota].should == old_data[:organization][:map_view_quota]
       new_data[:organization][:twitter_datasource_quota].should == old_data[:organization][:twitter_datasource_quota]
       new_data[:organization][:map_view_block_price].should == old_data[:organization][:map_view_block_price]
@@ -189,6 +194,7 @@ describe Carto::Api::UserPresenter do
       new_data[:organization][:here_isolines_block_price].should == old_data[:organization][:here_isolines_block_price]
       new_data[:organization][:obs_snapshot_block_price].should == old_data[:organization][:obs_snapshot_block_price]
       new_data[:organization][:obs_general_block_price].should == old_data[:organization][:obs_general_block_price]
+      new_data[:organization][:mapzen_routing_block_price].should == old_data[:organization][:mapzen_routing_block_price]
       new_data[:organization][:seats].should == old_data[:organization][:seats]
       new_data[:organization][:twitter_username].should == old_data[:organization][:twitter_username]
       new_data[:organization][:location].should == old_data[:organization][:location]
@@ -197,6 +203,9 @@ describe Carto::Api::UserPresenter do
       #owner is excluded from the users list
       new_data[:organization][:website].should == old_data[:organization][:website]
       new_data[:organization][:avatar_url].should == old_data[:organization][:avatar_url]
+      new_data[:geocoder_provider].should == old_data[:geocoder_provider]
+      new_data[:isolines_provider].should == old_data[:isolines_provider]
+      new_data[:routing_provider].should == old_data[:routing_provider]
     end
 
     if mobile_sdk_enabled
@@ -212,6 +221,12 @@ describe Carto::Api::UserPresenter do
 
     # TODO: Pending migration and testing of :real_table_count & :last_active_time
 
+  end
+
+  def add_new_keys(user_poro)
+    new_poro = user_poro.dup.deep_merge(viewer: false)
+    new_poro[:organization] = user_poro[:organization].deep_merge(viewer_seats: 0) if user_poro[:organization].present?
+    new_poro
   end
 
   def create_org(org_name, org_quota, org_seats)

@@ -1,14 +1,14 @@
-<%= content_for(:title) do %>CartoDB · Datasets by <%= @name %><% end %>
+<%= content_for(:title) do %>CARTO · Datasets by <%= @name %><% end %>
 <%= content_for(:description) do %><%= @page_description %><% end %>
 
-<div class="PublicBody-content">
+<div class="CDB-Text PublicBody-content">
   <% if @datasets.size == 0 %>
     <%= render 'admin/shared/no_results', is_maps: false, alt_url: CartoDB.url(self, 'public_maps_home') %>
   <% else %>
     <ul class="MapsList">
       <% @datasets.each do |vis| %>
         <li class="MapsList-item">
-          <div class="MapCard MapCard--squared MapCard--borderless" data-vis-id="<%= vis[:id] %>" data-vis-owner-name="<%= vis[:owner][:username] %>">
+          <div class="MapCard MapCard--squared MapCard--borderless" data-vis-id="<%= vis[:id] %>" data-vis-owner-name="<%= vis[:owner].username %>">
             <a href="<%= CartoDB.url(self, 'public_table', { id: vis[:title] }, vis[:owner]) %>" class="MapCard-header js-header">
               <div class="MapCard-loader"></div>
             </a>
@@ -19,14 +19,14 @@
                 </div>
                 <div class="MapCard-contentFooterDetails u-ellipsLongText">
                   <div class="MapCard-contentFooterTitle">
-                    <h3 class="MapCard-title DefaultTitle">
+                    <h3 class="MapCard-title DefaultTitle CDB-Text is-semibold CDB-Size-large">
                       <a href="<%= CartoDB.url(self, 'public_table', {id: vis[:title]}, vis[:owner]) %>" class="DefaultTitle-link u-ellipsLongText" title="<%= vis[:title] %>"><%= vis[:title] %></a>
                     </h3>
                   </div>
 
-                  <div class="MapCard-contentFooterIcons">
+                  <div class="MapCard-contentFooterIcons CDB-Size-medium u-altTextColor">
                     <div class="MapCard-contentFooterDetails--left">
-                      <div class="MapCard-contentFooterTimeDiff DefaultTimeDiff">
+                      <div class="MapCard-contentFooterTimeDiff DefaultTimeDiff CDB-Text CDB-Size-medium u-altTextColor">
                         <i class="CDB-IconFont CDB-IconFont-clock DefaultTimeDiff-icon"></i>
                         <%= time_ago_in_words(vis[:updated_at]) %> ago
                       </div>

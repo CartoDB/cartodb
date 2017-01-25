@@ -1,68 +1,17 @@
-<% content_for(:subject) { @subject } %>
+<%- message = "<p style='margin-bottom: 0; font-size: 24px; color: #ffffff;'><strong>No more seats left!</strong></p>" %>
 
-<% content_for :body do %>
-  <tr>
-    <td>
-      <!-- HEADER -->
-      <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #ffffff; border: 1px solid #dddddd; border-bottom: 0; border-collapse: separate !important; border-top-left-radius: 4px; border-top-right-radius: 4px; width: 100% !important;">
-        <tr>
-          <td align="left" style="padding: 40px 50px 0 50px; font-weight: bold; font-size: 25px; font-family: Helvetica, Arial, sans-serif; color: #333333;"><%= @subject %></td>
-        </tr>
-      </table>
-    </td>
-  </tr>
+<%= render partial: 'mailer_modules/negative_message', locals: { message: message } %>
 
-  <tr>
-    <td>
-      <!-- CONTENT -->
-      <table cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #ffffff; border: 1px solid #dddddd; border-top: 0; border-bottom: 1px solid #cccccc; border-bottom-left-radius: 4px; border-bottom-right-radius: 4px; width: 100% !important;">
-        <tr>
-          <td valign="top" style="padding: 0;">
-            <table cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #ffffff; width: 100% !important;">
-              <tr>
-                <td align="left" style="padding: 40px 50px 0 50px; font-family: Helvetica, Arial, sans-serif;">
-                  <p style="margin: 0; font-size: 16px; line-height: 25px; color: #666666;">
-                  Hey there,<br /><br />
+<tr>
+  <td align="left" style="font-size: 14px; line-height: 25px; font-family: 'Open Sans', Helvetica, Arial, sans-serif; color: #647083;">
+    <p>Hey there,</p>
+    <p>It looks like your team is growing fast and you’ve run out of space.</p>
+    <p>This is a friendly reminder that your organization has <strong>no more seats left</strong>. You can purchase more seats to continue working at the capacity you need.</p>
+    <p>Obtaning more seats is really simple: just <a href="<%= @link %>" style="color: #1181FB;">contact one of our account experts</a>.</p>
+    <p>In the meantime, take a look at some of the amazing things we’ve been up to at <a href="https://carto.com" style="color: #1181FB;">carto.com</a>.</p>
+    <p>Thanks and Happy Mapping</p>
+    </p>
+  </td>
+</tr>
 
-                  It looks like your team is growing fast and you’ve run out of space.<br /><br />
-
-                  This is a friendly reminder that your organization has <strong>no more seats left</strong>. You can purchase more seats to continue working at the capacity you need.<br /><br />
-
-                  Obtaning more seats is really simple: just <a href="<%= @link %>" style="color: #0090D7;">contact one of our account experts</a>.<br /><br />
-
-                  In the meantime, take a look at some of the amazing things we’ve been up to at <a href="http://www.cartodb.com" style="color: #0090D7;">cartodb.com</a>.<br /><br />
-
-                  Thanks and Happy Mapping,
-                  </p>
-                </td>
-              </tr>
-            </table>
-          </td>
-        </tr>
-
-        <tr>
-          <td style="padding: 40px 50px 40px 50px;" align="center" class="padding">
-            <table border="0" cellspacing="0" cellpadding="0" class="mobile-button-container">
-              <tr>
-                <td align="center">
-                  <!-- BULLETPROOF BUTTON -->
-                  <table width="100%" border="0" cellspacing="0" cellpadding="0" class="mobile-button-container">
-                    <tr>
-                      <td align="center" style="padding: 0;">
-                        <table border="0" cellspacing="0" cellpadding="0" class="responsive-table">
-                          <tr>
-                            <td align="center"><a href="<%= @link %>" target="_blank" style="font-size: 16px; font-family: Helvetica, Arial, sans-serif; font-weight: normal; color: #ffffff; text-decoration: none; background-color: #3AA9E3; border-top: 15px solid #3AA9E3; border-bottom: 15px solid #3AA9E3; border-left: 25px solid #3AA9E3; border-right: 25px solid #3AA9E3; border-radius: 3px; -webkit-border-radius: 3px; -moz-border-radius: 3px; display: inline-block;" class="mobile-button">Get more seats</a></td>
-                          </tr>
-                        </table>
-                      </td>
-                    </tr>
-                  </table>
-                </td>
-              </tr>
-            </table>
-          </td>
-        </tr>
-      </table>
-    </td>
-  </tr>
-<% end %>
+<%= render partial: 'mailer_modules/link_to_action', locals: { link: @link, link_text: "Get more seats" } %>

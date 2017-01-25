@@ -67,8 +67,12 @@ module CartoDB
       user.obs_snapshot_block_price = attributes[:obs_snapshot_block_price] || 1500
       user.obs_general_quota = attributes[:obs_general_quota] || 1000
       user.obs_general_block_price = attributes[:obs_general_block_price] || 1500
+      user.mapzen_routing_quota   = attributes[:mapzen_routing_quota] || 1000
+      user.mapzen_routing_block_price = attributes[:mapzen_routing_block_price] || 1500
       user.sync_tables_enabled   = attributes[:sync_tables_enabled] || false
       user.organization          = attributes[:organization] || nil
+      user.viewer                = attributes[:viewer] || false
+      user.builder_enabled       = attributes[:builder_enabled] # nil by default, for old tests
       if attributes[:organization_id]
         user.organization_id = attributes[:organization_id]
       end
@@ -81,10 +85,22 @@ module CartoDB
     def create_user(attributes = {})
       user = new_user(attributes)
       raise "User not valid: #{user.errors}" unless user.valid?
-      # INFO: avoiding enable_remote_db_user
+      # INFO: avoiding enable_remote_db_user
       Cartodb.config[:signups] = nil
       user.save
       load_user_functions(user)
+      user
+    end
+
+    # Similar to create_user, but it doesn't raise error on validation error
+    def create_validated_user(attributes = {})
+      user = new_user(attributes)
+      # INFO: avoiding enable_remote_db_user
+      Cartodb.config[:signups] = nil
+      user.save
+      if user.valid?
+        load_user_functions(user)
+      end
       user
     end
 
@@ -136,6 +152,7 @@ module CartoDB
       user_mock.stubs(:groups).returns(groups)
       user_mock.stubs(:public_url).returns(public_url)
       user_mock.stubs(:avatar_url).returns(avatar_url)
+      user_mock.stubs(:new_visualizations_version).returns(2)
       user_mock
     end
 
@@ -157,7 +174,7 @@ module CartoDB
       end
 
       data_import.data_source = file_name
-      data_import.send :new_importer
+      data_import.send :dispatch
       data_import
     end
 

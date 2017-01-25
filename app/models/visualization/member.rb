@@ -77,6 +77,8 @@ module CartoDB
       attribute :prev_id,             String, default: nil
       attribute :next_id,             String, default: nil
       attribute :bbox,                String, default: nil
+      attribute :auth_token,          String, default: nil
+      attribute :version,             Integer
       # Don't use directly, use instead getter/setter "transition_options"
       attribute :slide_transition_options,  String, default: DEFAULT_OPTIONS_VALUE
       attribute :active_child,        String, default: nil
@@ -158,8 +160,13 @@ module CartoDB
         self.id == other_vis.id
       end
 
-      def default_privacy(owner)
-        owner.try(:private_tables_enabled) ? PRIVACY_LINK : PRIVACY_PUBLIC
+      def ensure_valid_privacy
+        self.privacy = default_privacy if privacy.nil?
+        self.privacy = PRIVACY_PUBLIC unless can_be_private?
+      end
+
+      def default_privacy
+        can_be_private? ? PRIVACY_LINK : PRIVACY_PUBLIC
       end
 
       def store
@@ -202,7 +209,11 @@ module CartoDB
 
         # Allow only "maintaining" privacy link for everyone but not setting it
         if privacy == PRIVACY_LINK && privacy_changed
-          validator.validate_expected_value(:private_tables_enabled, true, user.private_tables_enabled)
+          if derived?
+            validator.validate_expected_value(:private_maps_enabled, true, user.private_maps_enabled)
+          else
+            validator.validate_expected_value(:private_tables_enabled, true, user.private_tables_enabled)
+          end
         end
 
         if type_slide?
@@ -260,29 +271,33 @@ module CartoDB
           CartoDB.notify_error(exception.message, error: exception.inspect, user: user, visualization_id: id)
         end
 
-        # Named map must be deleted before the map, or we lose the reference to it
-        Carto::NamedMaps::Api.new(carto_visualization).destroy
-
         unlink_self_from_list!
 
         support_tables.delete_all
 
-        invalidate_cache
         overlays.map(&:destroy)
-        layers(:base).map(&:destroy)
-        layers(:cartodb).map(&:destroy)
-        safe_sequel_delete {
+        safe_sequel_delete do
           # "Mark" that this vis id is the destructor to avoid cycles: Vis -> Map -> relatedvis (Vis again)
           related_map = map
           related_map.being_destroyed_by_vis_id = id
           related_map.destroy
-        } if map
-        safe_sequel_delete { table.destroy } if (type == TYPE_CANONICAL && table && !from_table_deletion)
-        safe_sequel_delete { children.map { |child|
-                                            # Refetch each item before removal so Relator reloads prev/next cursors
-                                            child.fetch.delete
-                                          }
-        }
+        end if map
+        safe_sequel_delete { table.destroy } if type == TYPE_CANONICAL && table && !from_table_deletion
+        safe_sequel_delete do
+          children.map do |child|
+            # Refetch each item before removal so Relator reloads prev/next cursors
+            child.fetch.delete
+          end
+        end
+
+        # Avoid invalidating if the visualization has already been destroyed
+        # This happens deleting a canonical visualization, which triggers a table deletion,
+        # which triggers a second deletion of the same visualization
+        carto_vis = carto_visualization
+        if carto_vis
+          Carto::NamedMaps::Api.new(carto_vis).destroy
+          invalidate_cache
+        end
 
         safe_sequel_delete { permission.destroy_shared_entities } if permission
         safe_sequel_delete { repository.delete(id) }
@@ -362,6 +377,11 @@ module CartoDB
         super(tags)
       end
 
+      def version=(version)
+        self.dirty = true
+        super(version)
+      end
+
       def public?
         privacy == PRIVACY_PUBLIC
       end
@@ -376,6 +396,10 @@ module CartoDB
 
       def is_privacy_private?
         privacy == PRIVACY_PRIVATE
+      end
+
+      def can_be_private?(owner = user)
+        derived? ? owner.try(:private_maps_enabled) : owner.try(:private_tables_enabled)
       end
 
       def organization?
@@ -424,11 +448,6 @@ module CartoDB
 
       def users_with_permissions(permission_types)
         permission.users_with_permissions(permission_types)
-      end
-
-      def all_users_with_read_permission
-        users_with_permissions([CartoDB::Visualization::Member::PERMISSION_READONLY,
-                                CartoDB::Visualization::Member::PERMISSION_READWRITE]) + [user]
       end
 
       def varnish_key
@@ -521,13 +540,16 @@ module CartoDB
         digest
       end
 
-      def get_auth_tokens
-        named_map = get_named_map
-        raise CartoDB::InvalidMember unless named_map
+      def get_auth_token
+        if auth_token.nil?
+          auth_token = make_auth_token
+          store
+        end
+        auth_token
+      end
 
-        tokens = named_map.template[:template][:auth][:valid_tokens]
-        raise CartoDB::InvalidMember if tokens.size == 0
-        tokens
+      def get_auth_tokens
+        [get_auth_token]
       end
 
       def supports_private_maps?
@@ -649,6 +671,7 @@ module CartoDB
 
       def save_named_map
         return if type == TYPE_REMOTE
+        return true if named_map_updates_disabled?
 
         unless @updating_named_maps
           Rails::Sequel.connection.after_commit do
@@ -680,10 +703,33 @@ module CartoDB
         @map ||= ::Map.where(id: map_id).first
       end
 
+      def mapcaps
+        Carto::Mapcap.latest_for_visualization(id)
+      end
+
+      def latest_mapcap
+        mapcaps.first
+      end
+
+      def mapcapped?
+        mapcaps.exists?
+      end
+
+      def invalidate_for_permissions_change
+        # A change in permissions should trigger the same invalidations as a privacy change
+        self.privacy_changed = true
+        invalidate_cache
+        save_named_map
+      end
+
       private
 
       attr_reader   :repository, :name_checker, :validator
       attr_accessor :privacy_changed, :name_changed, :old_name, :permission_change_valid, :dirty, :attributions_changed
+
+      def named_map_updates_disabled?
+        mapcapped? && !privacy_changed
+      end
 
       def embed_redis_cache
         @embed_redis_cache ||= EmbedRedisCache.new($tables_metadata)
@@ -732,6 +778,8 @@ module CartoDB
       end
 
       def do_store(propagate_changes = true, table_privacy_changed = false)
+        self.version = user.new_visualizations_version if version.nil?
+
         if password_protected?
           raise CartoDB::InvalidMember.new('No password set and required') unless has_password?
         else
@@ -793,11 +841,24 @@ module CartoDB
       end
 
       def create_named_map
+        return unless map
         Carto::NamedMaps::Api.new(carto_visualization).create
       end
 
       def update_named_map
-        Carto::NamedMaps::Api.new(carto_visualization).update
+        return if named_map_updates_disabled? || map.nil?
+
+        # A visualization destroy triggers destroys on all its layers. Each
+        # layer destroy, will trigger an update back to the visualization. When
+        # the last layer is destroyed, and the visualization named map template
+        # is generated to be updated, it will contain no layers, causing an
+        # error at the Maps API. This is a hack to prevent that update and error
+        # from happening. A better way to solve this would be to get
+        # callbacks under control.
+        presentation_visualization = carto_visualization.try(:for_presentation)
+        if presentation_visualization && presentation_visualization.layers.any?
+          Carto::NamedMaps::Api.new(presentation_visualization).update
+        end
       end
 
       def propagate_privacy_and_name_to(table)
@@ -817,9 +878,9 @@ module CartoDB
 
       # @param table Table
       def propagate_name_to(table)
-        table.name = self.name
-        table.register_table_only = self.register_table_only
-        table.update(name: self.name)
+        table.register_table_only = register_table_only
+        table.name = name
+        table.update(name: name)
         if name_changed
           support_tables.rename(old_name, name, recreate_constraints=true, seek_parent_name=old_name)
         end

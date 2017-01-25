@@ -7,7 +7,7 @@
     <div class="MapCard-content">
       <div class="MapCard-contentBody">
         <div class="MapCard-contentBodyRow MapCard-contentBodyRow--flex">
-          <h3 class="MapCard-title DefaultTitle">
+          <h3 class="MapCard-title DefaultTitle CDB-Text is-semibold CDB-Size-large">
             <a href="<%= CartoDB.url(self, 'public_visualizations_public_map', {id: vis[:id]}, vis[:owner]) %>" class="DefaultTitle-link u-ellipsLongText" title="<%= vis[:title] %>"><%= vis[:title] %></a>
           </h3>
         </div>
@@ -26,15 +26,15 @@
           <div class="DefaultTags MapCard-contentBodyRow">
             <% if vis[:tags].size > 0 %>
               <%# Keep on one line to avoid unwanted spaces %>
-              <% formatted_tags(vis[:tags]) do |tag| %><a class="DefaultTags-item js-tag-link" href="<%= CartoDB.url(self, 'public_tag', {tag: tag}, vis[:owner]) %>"><%= tag %></a><% end %>
+              <% formatted_tags(vis[:tags]) do |tag| %><a class="CDB-Tag CDB-Text CDB-Size-small u-upperCase DefaultTags-item js-tag-link" href="<%= CartoDB.url(self, 'public_tag', {tag: tag}, vis[:owner]) %>"><%= tag %></a><% end %>
             <% end %>
           </div>
         </div>
       </div>
 
-      <div class="MapCard-contentFooter">
+      <div class="MapCard-contentFooter CDB-Size-medium u-altTextColor">
         <div class="MapCard-contentFooterDetails--left">
-          <div class="MapCard-contentFooterTimeDiff DefaultTimeDiff">
+          <div class="MapCard-contentFooterTimeDiff DefaultTimeDiff CDB-Text CDB-Size-medium u-altTextColor">
             <i class="CDB-IconFont CDB-IconFont-clock DefaultTimeDiff-icon"></i>
             <%= time_ago_in_words(vis[:updated_at]) %> ago
           </div>

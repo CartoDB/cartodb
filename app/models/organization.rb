@@ -4,13 +4,23 @@ require_relative '../controllers/carto/api/group_presenter'
 require_relative './organization/organization_decorator'
 require_relative '../helpers/data_services_metrics_helper'
 require_relative './permission'
+require_dependency 'carto/helpers/auth_token_generator'
 
 class Organization < Sequel::Model
 
+  class OrganizationWithoutOwner < StandardError
+    attr_reader :organization
+
+    def initialize(organization)
+      @organization = organization
+      super "Organization #{organization.name} has no owner"
+    end
+  end
 
   include CartoDB::OrganizationDecorator
   include Concerns::CartodbCentralSynchronizable
   include DataServicesMetricsHelper
+  include Carto::AuthTokenGenerator
 
   Organization.raise_on_save_failure = true
   self.strict_param_setting = false
@@ -35,7 +45,10 @@ class Organization < Sequel::Model
 
   one_to_many :users
   one_to_many :groups
+  one_to_many :assets
   many_to_one :owner, class_name: '::User', key: 'owner_id'
+
+  plugin :serialization, :json, :auth_saml_configuration
 
   plugin :validation_helpers
 
@@ -43,6 +56,7 @@ class Organization < Sequel::Model
   DEFAULT_HERE_ISOLINES_QUOTA = 0
   DEFAULT_OBS_SNAPSHOT_QUOTA = 0
   DEFAULT_OBS_GENERAL_QUOTA = 0
+  DEFAULT_MAPZEN_ROUTING_QUOTA = nil
 
   def validate
     super
@@ -55,11 +69,13 @@ class Organization < Sequel::Model
     validates_integer :obs_snapshot_quota, allow_nil: false, message: 'obs_snapshot_quota cannot be nil'
     validates_integer :obs_general_quota, allow_nil: false, message: 'obs_general_quota cannot be nil'
 
-
     if default_quota_in_bytes
       errors.add(:default_quota_in_bytes, 'Default quota must be positive') if default_quota_in_bytes <= 0
     end
     errors.add(:name, 'cannot exist as user') if name_exists_in_users?
+    if whitelisted_email_domains.present? && !auth_enabled?
+      errors.add(:whitelisted_email_domains, 'enable at least one auth. system or clear whitelisted email domains')
+    end
   end
 
   def validate_new_user(user, errors)
@@ -71,9 +87,18 @@ class Organization < Sequel::Model
     end
   end
 
-  def validate_for_signup(errors, quota_in_bytes)
-    errors.add(:organization, "not enough seats") if remaining_seats <= 0
-    errors.add(:quota_in_bytes, "not enough disk quota") if unassigned_quota <= 0 || (!quota_in_bytes.nil? && unassigned_quota < quota_in_bytes)
+  def validate_for_signup(errors, user)
+    if user.builder? && remaining_seats(excluded_users: [user]) <= 0
+      errors.add(:organization, "not enough seats")
+    end
+
+    if user.viewer? && remaining_viewer_seats(excluded_users: [user]) <= 0
+      errors.add(:organization, "not enough viewer seats")
+    end
+
+    if unassigned_quota <= 0 || unassigned_quota < user.quota_in_bytes.to_i
+      errors.add(:quota_in_bytes, "not enough disk quota")
+    end
   end
 
   def before_validation
@@ -81,6 +106,7 @@ class Organization < Sequel::Model
     self.here_isolines_quota ||= DEFAULT_HERE_ISOLINES_QUOTA
     self.obs_snapshot_quota ||= DEFAULT_OBS_SNAPSHOT_QUOTA
     self.obs_general_quota ||= DEFAULT_OBS_GENERAL_QUOTA
+    self.mapzen_routing_quota ||= DEFAULT_MAPZEN_ROUTING_QUOTA
   end
 
   # Just to make code more uniform with user.database_schema
@@ -94,11 +120,13 @@ class Organization < Sequel::Model
     @here_isolines_quota_modified = changed_columns.include?(:here_isolines_quota)
     @obs_snapshot_quota_modified = changed_columns.include?(:obs_snapshot_quota)
     @obs_general_quota_modified = changed_columns.include?(:obs_general_quota)
+    @mapzen_routing_quota_modified = changed_columns.include?(:mapzen_routing_quota)
     self.updated_at = Time.now
     raise errors.join('; ') unless valid?
   end
 
   def before_destroy
+    return false unless destroy_assets
     destroy_groups
   end
 
@@ -117,21 +145,22 @@ class Organization < Sequel::Model
   def destroy_cascade
     destroy_groups
     destroy_non_owner_users
-    if self.owner
-      self.owner.destroy
+    if owner
+      owner.destroy
     else
-      self.destroy
+      destroy
     end
   end
 
   def destroy_non_owner_users
-    non_owner_users.each { |u|
-      u.destroy
-    }
+    non_owner_users.each do |user|
+      user.shared_entities.map(&:entity).each(&:delete)
+      user.destroy
+    end
   end
 
   def non_owner_users
-    self.users.select { |u| u.id != self.owner.id }
+    users.select { |u| owner && u.id != owner.id }
   end
 
   ##
@@ -140,24 +169,30 @@ class Organization < Sequel::Model
   #        example: 0.20 will get all organizations at 80% of their map view limit
   #
   def self.overquota(delta = 0)
-
     Organization.all.select do |o|
+      begin
         limit = o.geocoding_quota.to_i - (o.geocoding_quota.to_i * delta)
         over_geocodings = o.get_geocoding_calls > limit
-
         limit = o.here_isolines_quota.to_i - (o.here_isolines_quota.to_i * delta)
         over_here_isolines = o.get_here_isolines_calls > limit
-
         limit = o.obs_snapshot_quota.to_i - (o.obs_snapshot_quota.to_i * delta)
         over_obs_snapshot = o.get_obs_snapshot_calls > limit
-
         limit = o.obs_general_quota.to_i - (o.obs_general_quota.to_i * delta)
         over_obs_general = o.get_obs_general_calls > limit
-
-        limit =  o.twitter_datasource_quota.to_i - (o.twitter_datasource_quota.to_i * delta)
+        limit = o.twitter_datasource_quota.to_i - (o.twitter_datasource_quota.to_i * delta)
         over_twitter_imports = o.get_twitter_imports_count > limit
-
-        over_geocodings || over_twitter_imports || over_here_isolines || over_obs_snapshot || over_obs_general
+        limit = o.mapzen_routing_quota.to_i - (o.mapzen_routing_quota.to_i * delta)
+        over_mapzen_routing = o.get_mapzen_routing_calls > limit
+        over_geocodings || over_twitter_imports || over_here_isolines || over_obs_snapshot || over_obs_general || over_mapzen_routing
+      rescue OrganizationWithoutOwner => error
+        # Avoid aborting because of inconistent organizations; just omit them
+        CartoDB::Logger.error(
+          message: 'Skipping organization without owner in overquota report',
+          organization: name,
+          exception: error
+        )
+        false
+      end
     end
   end
 
@@ -166,6 +201,7 @@ class Organization < Sequel::Model
   end
 
   def get_geocoding_calls(options = {})
+    require_organization_owner_presence!
     date_from, date_to = quota_dates(options)
     if owner.has_feature_flag?('new_geocoder_quota')
       get_organization_geocoding_data(self, date_from, date_to)
@@ -175,6 +211,7 @@ class Organization < Sequel::Model
   end
 
   def get_new_system_geocoding_calls(options = {})
+    require_organization_owner_presence! if !options[:from]
     date_to = (options[:to] ? options[:to].to_date : Date.current)
     date_from = (options[:from] ? options[:from].to_date : owner.last_billing_cycle)
     get_organization_geocoding_data(self, date_from, date_to)
@@ -199,6 +236,11 @@ class Organization < Sequel::Model
     date_from, date_to = quota_dates(options)
 
     SearchTweet.get_twitter_imports_count(users_dataset.join(:search_tweets, :user_id => :id), date_from, date_to)
+  end
+
+  def get_mapzen_routing_calls(options = {})
+    date_from, date_to = quota_dates(options)
+    get_organization_mapzen_routing_data(self, date_from, date_to)
   end
 
   def remaining_geocoding_quota
@@ -226,6 +268,11 @@ class Organization < Sequel::Model
     (remaining > 0 ? remaining : 0)
   end
 
+  def remaining_mapzen_routing_quota
+    remaining = mapzen_routing_quota.to_i - get_mapzen_routing_calls
+    (remaining > 0 ? remaining : 0)
+  end
+
   def db_size_in_bytes
     users.map(&:db_size_in_bytes).sum.to_i
   end
@@ -240,39 +287,45 @@ class Organization < Sequel::Model
 
   def to_poro
     {
-      :created_at       => self.created_at,
-      :description      => self.description,
-      :discus_shortname => self.discus_shortname,
-      :display_name     => self.display_name,
-      :id               => self.id,
-      :name             => self.name,
-      :owner            => {
-        :id         => self.owner ? self.owner.id : nil,
-        :username   => self.owner ? self.owner.username : nil,
-        :avatar_url => self.owner ? self.owner.avatar_url : nil,
-        :email      => self.owner ? self.owner.email : nil,
-        :groups     => self.owner && self.owner.groups ? self.owner.groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro } : []
+      created_at:       created_at,
+      description:      description,
+      discus_shortname: discus_shortname,
+      display_name:     display_name,
+      id:               id,
+      name:             name,
+      owner: {
+        id:         owner ? owner.id : nil,
+        username:   owner ? owner.username : nil,
+        avatar_url: owner ? owner.avatar_url : nil,
+        email:      owner ? owner.email : nil,
+        groups:     owner && owner.groups ? owner.groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro } : []
       },
-      :quota_in_bytes           => self.quota_in_bytes,
-      :unassigned_quota         => self.unassigned_quota,
-      :geocoding_quota          => self.geocoding_quota,
-      :map_view_quota           => self.map_view_quota,
-      :twitter_datasource_quota => self.twitter_datasource_quota,
-      :map_view_block_price     => self.map_view_block_price,
-      :geocoding_block_price    => self.geocoding_block_price,
-      :here_isolines_quota      => self.here_isolines_quota,
-      :here_isolines_block_price => self.here_isolines_block_price,
-      :obs_snapshot_quota       => self.obs_snapshot_quota,
-      :obs_snapshot_block_price => self.obs_snapshot_block_price,
-      :obs_general_quota        => self.obs_general_quota,
-      :obs_general_block_price  => self.obs_general_block_price,
-      :seats                    => self.seats,
-      :twitter_username         => self.twitter_username,
-      :location                 => self.twitter_username,
-      :updated_at               => self.updated_at,
-      :website          => self.website,
-      :admin_email      => self.admin_email,
-      :avatar_url       => self.avatar_url
+      quota_in_bytes:            quota_in_bytes,
+      unassigned_quota:          unassigned_quota,
+      geocoding_quota:           geocoding_quota,
+      map_view_quota:            map_view_quota,
+      twitter_datasource_quota:  twitter_datasource_quota,
+      map_view_block_price:      map_view_block_price,
+      geocoding_block_price:     geocoding_block_price,
+      here_isolines_quota:       here_isolines_quota,
+      here_isolines_block_price: here_isolines_block_price,
+      obs_snapshot_quota:        obs_snapshot_quota,
+      obs_snapshot_block_price:  obs_snapshot_block_price,
+      obs_general_quota:         obs_general_quota,
+      obs_general_block_price:   obs_general_block_price,
+      geocoder_provider:         geocoder_provider,
+      isolines_provider:         isolines_provider,
+      routing_provider:          routing_provider,
+      mapzen_routing_quota:       mapzen_routing_quota,
+      mapzen_routing_block_price: mapzen_routing_block_price,
+      seats:                     seats,
+      twitter_username:          twitter_username,
+      location:                  twitter_username,
+      updated_at:                updated_at,
+      website:                   website,
+      admin_email:               admin_email,
+      avatar_url:                avatar_url,
+      user_count:                users.count
     }
   end
 
@@ -296,14 +349,6 @@ class Organization < Sequel::Model
     users.map { |u| u.tags(exclude_shared, type) }.flatten
   end
 
-  def get_auth_token
-    if self.auth_token.nil?
-      self.auth_token = make_auth_token
-      self.save
-    end
-    self.auth_token
-  end
-
   def public_vis_by_type(type, page_num, items_per_page, tags, order = 'updated_at')
     CartoDB::Visualization::Collection.new.fetch(
         user_id:  self.users.map(&:id),
@@ -318,15 +363,39 @@ class Organization < Sequel::Model
   end
 
   def signup_page_enabled
-    !whitelisted_email_domains.nil? && !whitelisted_email_domains.empty?
+    whitelisted_email_domains.present? && auth_enabled?
   end
 
-  def remaining_seats
-    seats - assigned_seats
+  def auth_enabled?
+    auth_username_password_enabled || auth_google_enabled || auth_github_enabled || auth_saml_enabled?
   end
 
-  def assigned_seats
-    users.nil? ? 0 : users.count
+  def total_seats
+    seats + viewer_seats
+  end
+
+  def remaining_seats(excluded_users: [])
+    seats - assigned_seats(excluded_users: excluded_users)
+  end
+
+  def remaining_viewer_seats(excluded_users: [])
+    viewer_seats - assigned_viewer_seats(excluded_users: excluded_users)
+  end
+
+  def assigned_seats(excluded_users: [])
+    builder_users.count { |u| !excluded_users.include?(u) }
+  end
+
+  def assigned_viewer_seats(excluded_users: [])
+    viewer_users.count { |u| !excluded_users.include?(u) }
+  end
+
+  def builder_users
+    (users || []).select(&:builder?)
+  end
+
+  def viewer_users
+    (users || []).select(&:viewer?)
   end
 
   def notify_if_disk_quota_limit_reached
@@ -364,12 +433,46 @@ class Organization < Sequel::Model
       'here_isolines_quota', here_isolines_quota,
       'obs_snapshot_quota', obs_snapshot_quota,
       'obs_general_quota', obs_general_quota,
+      'mapzen_routing_quota', mapzen_routing_quota,
       'google_maps_client_id', google_maps_key,
       'google_maps_api_key', google_maps_private_key,
-      'period_end_date', period_end_date
+      'period_end_date', period_end_date,
+      'geocoder_provider', geocoder_provider,
+      'isolines_provider', isolines_provider,
+      'routing_provider', routing_provider
+  end
+
+  def require_organization_owner_presence!
+    if owner.nil?
+      raise Organization::OrganizationWithoutOwner.new(self)
+    end
+  end
+
+  def max_import_file_size
+    owner ? owner.max_import_file_size : ::User::DEFAULT_MAX_IMPORT_FILE_SIZE
+  end
+
+  def max_import_table_row_count
+    owner ? owner.max_import_table_row_count : ::User::DEFAULT_MAX_IMPORT_TABLE_ROW_COUNT
+  end
+
+  def max_concurrent_import_count
+    owner ? owner.max_concurrent_import_count : ::User::DEFAULT_MAX_CONCURRENT_IMPORT_COUNT
+  end
+
+  def max_layers
+    owner ? owner.max_layers : ::User::DEFAULT_MAX_LAYERS
+  end
+
+  def auth_saml_enabled?
+    auth_saml_configuration.present?
   end
 
   private
+
+  def destroy_assets
+    assets.map { |asset| Carto::Asset.find(asset.id) }.map(&:destroy).all?
+  end
 
   def destroy_groups
     return unless groups
@@ -414,17 +517,5 @@ class Organization < Sequel::Model
 
   def name_exists_in_users?
     !::User.where(username: self.name).first.nil?
-  end
-
-  def make_auth_token
-    digest = secure_digest(Time.now, (1..10).map{ rand.to_s })
-    10.times do
-      digest = secure_digest(digest, CartoDB::Visualization::Member::TOKEN_DIGEST)
-    end
-    digest
-  end
-
-  def secure_digest(*args)
-    Digest::SHA256.hexdigest(args.flatten.join)
   end
 end

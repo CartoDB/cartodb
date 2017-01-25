@@ -20,7 +20,8 @@ describe Carto::Api::GroupsController do
       @org_user_1_json = { "id" => @org_user_1.id,
                            "username" => @org_user_1.username,
                            "avatar_url" => @org_user_1.avatar_url,
-                           "base_url" => @org_user_1.public_url
+                           "base_url" => @org_user_1.public_url,
+                           "viewer" => false
                          }
       @carto_org_user_2 = Carto::User.find(@org_user_2.id)
 
@@ -241,7 +242,7 @@ describe Carto::Api::GroupsController do
 
       put_json api_v1_organization_groups_update_url(user_domain: @org_user_owner.username, organization_id: @carto_organization.id, group_id: group.id, api_key: @org_user_owner.api_key), { display_name: group_2.display_name }, @headers do |response|
         response.status.should == 409
-        response.body[:errors].should match /A group with that name already exists/
+        response.body[:errors][0].should match /A group with that name already exists/
       end
     end
 

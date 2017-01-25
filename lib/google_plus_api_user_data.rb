@@ -1,4 +1,7 @@
+require_dependency 'dummy_password_generator'
+
 class GooglePlusAPIUserData
+  include DummyPasswordGenerator
 
   def initialize(parsed_response)
     @parsed_response = parsed_response
@@ -21,7 +24,7 @@ class GooglePlusAPIUserData
   def set_values(user)
     user.username = auto_username
     user.email = email
-    dummy_password = (0...15).map { ('a'..'z').to_a[rand(26)] }.join
+    dummy_password = generate_dummy_password
     user.password = dummy_password
     user.password_confirmation = dummy_password
     user.google_sign_in = true

@@ -5,6 +5,7 @@ require File.expand_path('../boot', __FILE__)
 require "action_controller/railtie"
 require "sequel-rails/railtie"
 require "action_mailer/railtie"
+require_relative '../lib/carto/configuration'
 
 if defined?(Bundler)
   Bundler.require(:default, :assets, Rails.env)
@@ -20,6 +21,8 @@ end
 
 module CartoDB
   class Application < Rails::Application
+    include Carto::Configuration
+
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers
     # -- all .rb files in that directory are automatically loaded.
@@ -56,6 +59,10 @@ module CartoDB
     # Enable the asset pipeline
     config.assets.enabled = false
 
+    FileUtils.mkdir_p(log_dir_path) unless File.directory?(log_dir_path)
+
+    config.paths['public'] = [public_uploads_path]
+
     config.assets.paths << Rails.root.join('bower_components')
 
     # Default setting is [/\w+\.(?!js|css).+/, /application.(css|js)$/]
@@ -77,6 +84,7 @@ module CartoDB
       vendor_editor3.js
       common_editor3.js
       editor3.js
+      dataset.js
       public_editor3.js
       account_templates.js
       account_deps.js
@@ -91,7 +99,6 @@ module CartoDB
       table.js
       public_dashboard.js
       public_like.js
-      cartod1b.js
       common.js
       old_common.js
       old_common_without_core.js
@@ -126,8 +133,6 @@ module CartoDB
       old_common.css
       dashboard.css
       cartodb.css
-      fonts_ie.css
-      fonts.css
       front.css
       editor.css
       editor3.css
@@ -144,10 +149,10 @@ module CartoDB
       data_library.css
       public_table.css
       sessions.css
-      cartod1b.css
       user_feed.css
       explore.css
       mobile_apps.css
+      api_keys.css
 
       plugins/tipsy.css
 
@@ -168,6 +173,10 @@ module CartoDB
 
     frontend_assets_version = JSON::parse(File.read(Rails.root.join('package.json')))['version']
     config.action_controller.relative_url_root = "/assets/#{frontend_assets_version}"
+
+    custom_app_views_paths.reverse.each do |custom_views_path|
+      config.paths['app/views'].unshift(custom_views_path)
+    end
   end
 end
 
@@ -178,7 +187,6 @@ require 'cartodb/controller_flows/public/datasets'
 require 'cartodb/controller_flows/public/maps'
 require 'cartodb/errors'
 require 'cartodb/logger'
-require 'cartodb/sql_parser'
 require 'cartodb/connection_pool'
 require 'cartodb/pagination'
 require 'cartodb/mini_sequel'

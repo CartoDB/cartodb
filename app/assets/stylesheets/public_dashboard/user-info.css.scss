@@ -30,9 +30,9 @@ $sAvatar-publicHalf: $sAvatar-public / 2;
   z-index: 10000001; // to be placed on top of attribution text on smaller devices
 }
 .UserInfo-name {
-  font-size: 24px;
+  font-size: 22px;
   font-weight: $sFontWeight-lighter;
-  line-height: $sLineHeight-largest;
+  line-height: $sLineHeight-larger;
   color: $cTypography-headers;
   margin-bottom: $sMargin-min;
 }

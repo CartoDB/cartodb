@@ -9,24 +9,25 @@
 }
 .NotificationsList-item {
   position: relative;
-  margin: 0!important;
-  padding: $sMargin-element $sMargin-element $sMargin-element 53px!important;
-  background: $cStructure-grayBkg;
+  padding: 0 0 15px 25px !important;
+  margin: 15px !important;
+}
+.NotificationsList-item:not(:last-child) {
+  margin: 0 15px;
+  border-bottom: 1px solid $cStructure-mainLine;
 }
 .NotificationsList-item:last-child {
-  border-radius: 0 0 2px 2px;
+  padding: 0 0 0 25px !important;
 }
 .NotificationsList-icon {
   position: absolute;
-  top: 22px;
-  left: 20px;
+  left: 0;
   width: 18px;
   height: 18px;
-  border: 1px solid $cTypography-help;
-  border-radius: 20px;
   font-size: $sFontSize-small;
-  line-height: 17px;
-  color: $cTypography-help;
+
+  line-height: 20px;
+  color: #B1B8C1;
   text-align: center;
 }
 .NotificationsList-title {
@@ -61,15 +62,11 @@
   background: none;
 }
 .NotificationsList-item.is-new {
-  margin: 0 $sMargin-element $sMargin-element!important;
-  padding: $sMargin-element 0 0 33px!important;
-  border-top: 1px solid $cStructure-mainLine;
-  background: white;
-
-  .NotificationsList-text { color:$cTypography-headers }
+  .NotificationsList-text {
+    color: #162945;
+  }
   .NotificationsList-icon {
     color: inherit;
-    left: 0
   }
 }
 

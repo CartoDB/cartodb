@@ -4,12 +4,21 @@
 @import 'cdb-utilities/mixins';
 @import 'cdb-variables/colors';
 @import 'cdb-variables/sizes';
+@import 'vars';
 
 $elementWidth: 180px;
 $elementWidthShort: 120px;
 $elementPadding: 14px 14px 18px;
 $tableBorderColor: $cSecondaryLine;
 
+.Table-wrapper {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: $cMainBg;
+}
 .Table {
   @include display-flex();
   @include flex-direction(column);
@@ -18,16 +27,31 @@ $tableBorderColor: $cSecondaryLine;
   right: $baseSize * 2;
   bottom: $baseSize * 2;
   left: $baseSize * 2;
+  background: $cWhite;
   overflow-x: auto;
   overflow-y: hidden;
-  background: $cWhite;
   z-index: 2;
 }
-.Table-head {
+.Table::before {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 65px;
   background: $cThirdBackground;
+  content: '';
 }
-.Table-head tr {
-  border-bottom: 1px solid $cMainLine;
+.Table--relative {
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  padding: 0;
+  border-top: 1px solid $cMainLine;
+}
+.Table-head {
+  position: relative;
+  background: $cThirdBackground;
 }
 .Table-headItem {
   border-right: 1px solid $tableBorderColor;
@@ -38,7 +62,7 @@ $tableBorderColor: $cSecondaryLine;
 }
 .Table-headItemInfo {
   margin-top: 2px;
-  font-family: 'Monaco';
+  font-family: 'Monaco', 'Monospace';
 }
 .Table-headItemWrapper {
   width: $elementWidth;
@@ -49,8 +73,6 @@ $tableBorderColor: $cSecondaryLine;
 .Table-headItemWrapper--short {
   width: $elementWidthShort;
 }
-
-
 .Table-headItemName {
   height: auto;
   margin: 0;
@@ -69,7 +91,6 @@ $tableBorderColor: $cSecondaryLine;
   background: $cWhite;
   box-sizing: border-box;
 }
-
 .Table-columnSorted--asc {
   @include transform(rotate(-90deg));
 }
@@ -82,15 +103,12 @@ $tableBorderColor: $cSecondaryLine;
 .Table-columnMenu .CustomList-list {
   max-height: none;
 }
-.Table-columnMenu--toLeft {
-  margin-left: 213px;
-}
 .Table-columnTypeMenu {
   top: 81px;
   left: 100%;
   min-width: 95px;
   max-width: 95px;
-  margin-left: 10px;
+  margin-left: 4px;
   z-index: 20;
 }
 .Table-columnTypeMenu--toLeft {
@@ -102,19 +120,24 @@ $tableBorderColor: $cSecondaryLine;
 .Table-body {
   @include display-flex();
   @include flex(1);
+  background: $cWhite;
 }
 .Table-body table {
   position: absolute;
   width: 100%;
   height: 100%;
-  background: #FFF;
+  background: $cWhite;
 }
 .Table-body tbody {
   @include display-flex();
   @include flex-direction(column);
   height: calc(100vh - 175px);
   padding-bottom: 60px;
+  border-top: 1px solid $cMainLine;
   overflow-y: scroll;
+}
+.Table-body--relative tbody {
+  height: calc(100vh - 360px);
 }
 .Table-row {
   height: 40px;
@@ -130,10 +153,12 @@ $tableBorderColor: $cSecondaryLine;
   position: relative;
   box-sizing: content-box;
   border-right: 1px solid $tableBorderColor;
+  vertical-align: top;
 }
 .Table-cellItem:hover,
 .Table-cellItem.is-highlighted {
   background: rgba($cHighlight, 0.32);
+  cursor: pointer;
   .CDB-Shape-threePoints {
     display: block;
   }
@@ -156,7 +181,6 @@ $tableBorderColor: $cSecondaryLine;
 .Table-rowMenu--bottom {
   margin-top: -200px;
 }
-
 .Table-row:hover .Table-cellItem::before {
   display: block;
   position: absolute;
@@ -169,7 +193,12 @@ $tableBorderColor: $cSecondaryLine;
   pointer-events: none;
   content: '';
 }
-
+.Table-editor {
+  position: absolute;
+  min-width: 200px;
+  padding: 10px;
+  z-index: 5;
+}
 .Table-cell {
   @include align-items(center);
   width: $elementWidth;
@@ -201,19 +230,31 @@ $tableBorderColor: $cSecondaryLine;
 .Table-cell .CDB-Text.is-disabled {
   color: $cAltText;
 }
-
+// Disabled state color
+.Table.is-disabled .Table-headItemName,
+.Table.is-disabled .Table-cell .CDB-Text,
+.Table.is-disabled .Table-cell .CDB-Text.is-number,
+.Table.is-disabled .Table-cell .CDB-Text.is-cartodbId {
+  color: $cAltText;
+}
 .Table-paginator {
   @include display-flex();
   @include align-items(center);
   position: fixed;
-  bottom: 45px;
-  left: calc(50% + 142px);
+  right: calc(50% - 280px);
+  bottom: 33px;
   padding: 1px;
   border-radius: $halfBaseSize;
   background: $cWhite;
   box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.24);
   z-index: 10;
   box-sizing: border-box;
+}
+.Table-paginator--relative {
+  position: absolute;
+  right: 25px;
+  bottom: 25px;
+  left: auto;
 }
 .Table-paginatorText {
   min-width: 76px;
@@ -235,3 +276,45 @@ $tableBorderColor: $cSecondaryLine;
 .Table-paginatorButton--next {
   border-left: 1px solid $cThirdBackground;
 }
+.Table-editorTextarea {
+  $width: 280px;
+  $height: 96px;
+  width: $width;
+  height: $height;
+  resize: vertical;
+}
+.Table-editorDate {
+  margin-left: -8px;
+}
+.Table-editorDate .CDB-Legend {
+  display: none;
+}
+.Table-editorDate .Editor-formInner {
+  display: inline-block;
+  margin: 0 0 0 8px;
+  vertical-align: top;
+}
+.Table-editorDate input[name="day"] {
+  width: 32px;
+}
+.Table-editorDate input[name="year"] {
+  width: 48px;
+}
+.Table-editorDate input[name="time"] {
+  width: 68px;
+}
+
+@media (max-width: $reponsiveWidth) {
+  .Table {
+    top: $baseSize;
+    right: $baseSize;
+    bottom: $baseSize;
+    left: $baseSize;
+  }
+  .Table-paginator {
+    bottom: 17px;
+  }
+}
+
+
+

@@ -3,14 +3,20 @@ require 'spec_helper_min'
 require_dependency 'carto/uuidhelper'
 require 'factories/carto_visualizations'
 require 'support/helpers'
+require 'helpers/metrics_helper'
 
 describe Carto::Api::VisualizationExportsController, type: :controller do
   include Carto::UUIDHelper
   include Carto::Factories::Visualizations
   include HelperMethods
+  include MetricsHelper
 
   def create_visualization_export_url(user = nil)
     visualization_exports_url(user_domain: user ? user.username : nil, api_key: user ? user.api_key : nil)
+  end
+
+  before(:each) do
+    bypass_metrics
   end
 
   describe 'normal users' do
@@ -207,9 +213,8 @@ describe Carto::Api::VisualizationExportsController, type: :controller do
         Carto::Api::VisualizationExportsController.any_instance.expects(:send_file).
           with(@export.file, type: 'application/zip')
         Carto::Api::VisualizationExportsController.any_instance.stubs(:render)
-        get URI::encode("/u/#{@user.username}/#{@export.url}?api_key=#{@user.api_key}"), nil, nil do |response|
-          response.status.should eq 200
-        end
+        get URI::encode("/u/#{@user.username}/#{@export.url}?api_key=#{@user.api_key}"), nil, nil
+        response.status.should eq 200
       end
     end
   end

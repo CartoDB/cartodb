@@ -115,7 +115,7 @@ namespace :cartodb do
       ff = FeatureFlag[name: args[:feature]]
       if !ff
         ff = FeatureFlag.new(name: args[:feature], restricted: restricted)
-        ff.id = FeatureFlag.order(:id).last.id + 1
+        ff.id = FeatureFlag.any? ? FeatureFlag.order(:id).last.id + 1 : 0
         ff.save
 
         puts "[INFO]\tFeature flag '#{args[:feature]}' created and restricted set to '#{ff.restricted}'"

@@ -18,9 +18,10 @@ module CartoDB
 
     @old_acl = nil
 
-    ACCESS_READONLY   = 'r'
-    ACCESS_READWRITE  = 'rw'
-    ACCESS_NONE       = 'n'
+    ACCESS_READONLY   = 'r'.freeze
+    ACCESS_READWRITE  = 'rw'.freeze
+    ACCESS_NONE       = 'n'.freeze
+    SORTED_ACCESSES   = [ACCESS_READWRITE, ACCESS_READONLY, ACCESS_NONE].freeze
 
     TYPE_USER         = 'user'
     TYPE_ORGANIZATION = 'org'
@@ -296,6 +297,10 @@ module CartoDB
       super
       errors.add(:owner_id, 'cannot be nil') if owner_id.nil? || owner_id.empty?
       errors.add(:owner_username, 'cannot be nil') if owner_username.nil? || owner_username.empty?
+      viewer_writers = users_with_permissions(ACCESS_READWRITE).select(&:viewer)
+      unless viewer_writers.empty?
+        errors.add(:access_control_list, "grants write to viewers: #{viewer_writers.map(&:username).join(',')}")
+      end
 
       if new?
         errors.add(:acl, 'must be empty on initial creation') if acl.present?
@@ -327,31 +332,24 @@ module CartoDB
     # @param subject ::User
     # @return String Permission::ACCESS_xxx
     def permission_for_user(subject)
-      permission = nil
-
       # Common scenario
       return ACCESS_READWRITE if is_owner?(subject)
 
-      acl.map { |entry|
-        if entry[:type] == TYPE_USER && entry[:id] == subject.id
-          permission = entry[:access]
-        end
+      permission_entries = acl.select do |entry|
+        (entry[:type] == TYPE_USER && entry[:id] == subject.id) ||
+          (entry[:type] == TYPE_GROUP && !subject.groups.nil? && subject.groups.map(&:id).include?(entry[:id])) ||
+          (entry[:type] == TYPE_ORGANIZATION && !subject.organization.nil? && subject.organization.id == entry[:id])
+      end
 
-        if entry[:type] == TYPE_GROUP && permission == nil
-          if !subject.groups.nil? && subject.groups.collect(&:id).include?(entry[:id])
-            permission = entry[:access]
-          end
-        end
+      higher_access(permission_entries.map { |entry| entry[:access] })
+    end
 
-        # Organization has lower precedence than user, if set leave as it is
-        if entry[:type] == TYPE_ORGANIZATION && permission == nil
-          if !subject.organization.nil? && subject.organization.id == entry[:id]
-            permission = entry[:access]
-          end
-        end
-      }
-      permission = ACCESS_NONE if permission.nil?
-      permission
+    def higher_access(accesses)
+      return ACCESS_NONE if accesses.empty?
+      index = SORTED_ACCESSES.index do |access|
+        accesses.include?(access)
+      end
+      SORTED_ACCESSES[index]
     end
 
     def permission_for_org
@@ -449,18 +447,11 @@ module CartoDB
         end
       end
 
-      if e.table? and (org or users.any?)
-        e.invalidate_cache
-      end
+      e.invalidate_for_permissions_change
     end
 
-    def users_with_permissions(permission_type)
-      user_ids = relevant_user_acl_entries(acl).select { |entry|
-        permission_type.include?(entry[:access])
-      }.map { |entry|
-          entry[:id]
-      }
-
+    def users_with_permissions(access)
+      user_ids = relevant_user_acl_entries(acl).select { |e| access == e[:access] }.map { |e| e[:id] }
       ::User.where(id: user_ids).all
     end
 

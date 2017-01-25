@@ -1,6 +1,8 @@
 @import "../variables/mixins";
 @import "../variables/colors";
 @import "../variables/sizes";
+@import 'cdb-variables/colors';
+
 
 .Badge {
   position: absolute;
@@ -22,5 +24,6 @@
     right: auto;
   }
 }
-.Badge--negative { background-color: $cHighlight-negative }
+.Badge--negative { background-color: $cError }
 .Badge--positive { background-color: $cHighlight-positive }
+.Badge--alert { background-color: $cAlert }

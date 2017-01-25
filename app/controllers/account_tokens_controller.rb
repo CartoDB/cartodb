@@ -1,4 +1,6 @@
 class AccountTokensController < ApplicationController
+  include LoginHelper
+
   layout 'frontend'
 
   ssl_required :enable, :resend
@@ -6,6 +8,9 @@ class AccountTokensController < ApplicationController
   skip_before_filter :ensure_account_has_been_activated, :only => [ :enable, :resend ]
 
   def enable
+    # Cleans session information, making sure that Warden authenticate runs the strategy. Check #10489.
+    cdb_logout
+
     token = params[:id]
     user = ::User.where(enable_account_token: token).first
     render(file: 'signup/account_already_enabled', status: 404) and return unless user

@@ -1,7 +1,8 @@
 # encoding: utf-8
 
-require_relative '../http/client.rb'
-require_relative 'template.rb'
+require_relative 'template'
+require_relative '../http/client'
+require_dependency 'carto/named_maps/template'
 
 module Carto
   module NamedMaps
@@ -37,9 +38,10 @@ module Carto
 
           response = http_client.post(url, params)
 
-          if response.code.to_s =~ /^2/
+          response_code = response.code
+          if response_code.to_s =~ /^2/
             ::JSON.parse(response.response_body).deep_symbolize_keys
-          else
+          elsif response_code != 409 # Ignore when max number of templates is reached
             log_response(response, 'create')
           end
         end

@@ -1,4 +1,4 @@
-# encoding utf-8
+# encoding: utf-8
 
 require_relative '../../spec_helper_min.rb'
 require_relative '../../../lib/carto/ghost_tables_manager'
@@ -65,6 +65,15 @@ module Carto
                            .returns([*1..Carto::GhostTablesManager::MAX_TABLES_FOR_SYNC_RUN])
 
       @ghost_tables_manager.send(:should_run_synchronously?).should be_false
+    end
+
+    it 'should not run when no tables are changed with tables detected as raster and non-raster' do
+      raster_tables = [Carto::TableFacade.new(123, 'manolito', @user.id)]
+      @ghost_tables_manager.stubs(:fetch_non_raster_cartodbfied_tables).returns(raster_tables)
+      @ghost_tables_manager.stubs(:fetch_raster_tables).returns(raster_tables)
+      @ghost_tables_manager.stubs(:fetch_user_tables).returns(raster_tables)
+
+      @ghost_tables_manager.send(:user_tables_synced_with_db?).should be_true
     end
 
     it 'should link sql created table, relink sql renamed tables and unlink sql dropped tables' do

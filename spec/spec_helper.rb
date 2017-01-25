@@ -89,3 +89,11 @@ end
 def http_json_headers
   { "CONTENT_TYPE" => "application/json", :format => "json" }
 end
+
+def fake_data_path(filename)
+  Rails.root.join("db/fake_data/#{filename}").to_s
+end
+
+def login_page_response?(response)
+  response.status == 200 && response.body.include?("title=\"Email or username\"")
+end

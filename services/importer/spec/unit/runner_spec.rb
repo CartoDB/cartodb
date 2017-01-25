@@ -25,7 +25,7 @@ describe CartoDB::Importer2::Runner do
     @pg_options = @user.db_service.db_configuration_for
 
     @fake_log = CartoDB::Importer2::Doubles::Log.new(@user)
-    @downloader = CartoDB::Importer2::Downloader.new(@filepath)
+    @downloader = CartoDB::Importer2::Downloader.new(@user.id, @filepath)
     @fake_multiple_downloader_2 = CartoDB::Importer2::Doubles::MultipleDownloaderFake.instance(2)
   end
 
@@ -261,24 +261,20 @@ describe CartoDB::Importer2::Runner do
     end
 
     it 'logs multiple subresource import times' do
-      runner = CartoDB::Importer2::Runner.new({
-                            pg: @pg_options,
-                            downloader: @fake_multiple_downloader_2,
-                            log: @fake_log,
-                            user: CartoDB::Importer2::Doubles::User.new
-                          })
+      runner = CartoDB::Importer2::Runner.new(pg: @pg_options,
+                                              downloader: @fake_multiple_downloader_2,
+                                              log: @fake_log,
+                                              user: @user)
       spy_runner_importer_stats(runner, @importer_stats_spy)
       runner.run
       @importer_stats_spy.timed_block_suffix_count('run.subresource').should eq 2
     end
 
     it 'logs multiple subresource import flow times' do
-      runner = CartoDB::Importer2::Runner.new({
-                            pg: @pg_options,
-                            downloader: @fake_multiple_downloader_2,
-                            log: @fake_log,
-                            user: CartoDB::Importer2::Doubles::User.new
-                          })
+      runner = CartoDB::Importer2::Runner.new(pg: @pg_options,
+                                              downloader: @fake_multiple_downloader_2,
+                                              log: @fake_log,
+                                              user: @user)
       spy_runner_importer_stats(runner, @importer_stats_spy)
       runner.run
       @importer_stats_spy.timed_block_suffix_count('run.subresource.datasource_metadata').should eq 2

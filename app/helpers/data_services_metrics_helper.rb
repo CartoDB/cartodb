@@ -1,7 +1,8 @@
 # encoding: utf-8
 
 require_relative '../../services/dataservices-metrics/lib/geocoder_usage_metrics'
-require_relative '../../services/dataservices-metrics/lib/here_isolines_usage_metrics'
+require_relative '../../services/dataservices-metrics/lib/isolines_usage_metrics'
+require_relative '../../services/dataservices-metrics/lib/routing_usage_metrics'
 require_relative '../../services/dataservices-metrics/lib/observatory_snapshot_usage_metrics'
 require_relative '../../services/dataservices-metrics/lib/observatory_general_usage_metrics'
 
@@ -11,7 +12,7 @@ module DataServicesMetricsHelper
   end
 
   def get_organization_geocoding_data(organization, from, to)
-    return if organization.owner.nil?
+    organization.require_organization_owner_presence!
     get_geocoding_data(organization.owner, from, to)
   end
 
@@ -20,8 +21,17 @@ module DataServicesMetricsHelper
   end
 
   def get_organization_here_isolines_data(organization, from, to)
-    return if organization.owner.nil?
+    organization.require_organization_owner_presence!
     get_here_isolines_data(organization.owner, from, to)
+  end
+
+  def get_user_mapzen_routing_data(user, from, to)
+    get_mapzen_routing_data(user, from, to)
+  end
+
+  def get_organization_mapzen_routing_data(organization, from, to)
+    organization.require_organization_owner_presence!
+    get_mapzen_routing_data(organization.owner, from, to)
   end
 
   def get_user_obs_snapshot_data(user, from, to)
@@ -29,7 +39,7 @@ module DataServicesMetricsHelper
   end
 
   def get_organization_obs_snapshot_data(organization, from, to)
-    return if organization.owner.nil?
+    organization.require_organization_owner_presence!
     get_obs_snapshot_data(organization.owner, from, to)
   end
 
@@ -38,7 +48,7 @@ module DataServicesMetricsHelper
   end
 
   def get_organization_obs_general_data(organization, from, to)
-    return if organization.owner.nil?
+    organization.require_organization_owner_presence!
     get_obs_general_data(organization.owner, from, to)
   end
 
@@ -65,7 +75,7 @@ module DataServicesMetricsHelper
 
   def get_here_isolines_data(user, from, to)
     orgname = user.organization.nil? ? nil : user.organization.name
-    usage_metrics = CartoDB::HereIsolinesUsageMetrics.new(user.username, orgname)
+    usage_metrics = CartoDB::IsolinesUsageMetrics.new(user.username, orgname)
     here_isolines_key = :here_isolines
     countable_requests = 0
     from.upto(to).each do |date|
@@ -105,4 +115,17 @@ module DataServicesMetricsHelper
     countable_requests
   end
 
+  def get_mapzen_routing_data(user, from, to)
+    orgname = user.organization.nil? ? nil : user.organization.name
+    usage_metrics = CartoDB::RoutingUsageMetrics.new(user.username, orgname)
+    mapzen_routing_key = :routing_mapzen
+    countable_requests = 0
+    from.upto(to).each do |date|
+      success = usage_metrics.get(mapzen_routing_key, :success_responses, date)
+      countable_requests += success unless success.nil?
+      empty = usage_metrics.get(mapzen_routing_key, :empty_responses, date)
+      countable_requests += empty unless empty.nil?
+    end
+    countable_requests
+  end
 end

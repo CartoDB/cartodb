@@ -1,11 +1,12 @@
 # coding: UTF-8
 require_relative '../../spec_helper'
 require_relative '../organization_shared_examples'
+require 'helpers/storage_helper'
 
 describe Carto::Organization do
+  include StorageHelper
 
   it_behaves_like 'organization models' do
-
     before(:each) do
       # INFO: forcing ActiveRecord initialization so expectations on number of queries don't count AR queries
       @the_organization = Carto::Organization.where(id: @organization.id).first
@@ -30,16 +31,24 @@ describe Carto::Organization do
 
   end
 
-  describe 'deletion' do
+  describe '#destroy' do
+    before(:each) do
+      @organization = Carto::Organization.find(FactoryGirl.create(:organization).id)
+    end
 
     it 'destroys its groups through the extension' do
       Carto::Group.any_instance.expects(:destroy_group_with_extension).once
-      organization = Carto::Organization.find(FactoryGirl.create(:organization).id)
-      group = FactoryGirl.create(:carto_group, organization: organization)
-      organization.destroy
+      FactoryGirl.create(:carto_group, organization: @organization)
+      @organization.destroy
     end
 
+    it 'destroys organization assets' do
+      bypass_storage
+      asset = FactoryGirl.create(:organization_asset,
+                                 organization_id: @organization.id)
+
+      @organization.destroy
+      Carto::Asset.exists?(asset.id).should be_false
+    end
   end
-
 end
-

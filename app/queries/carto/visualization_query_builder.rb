@@ -126,15 +126,20 @@ class Carto::VisualizationQueryBuilder
   end
 
   def with_prefetch_table
-    with_eager_load_of(:table)
+    with_eager_load_of_nested_associations(map: :user_table)
   end
 
   def with_prefetch_permission
-    with_eager_load_of_nested_associations(:permission => :owner)
+    with_eager_load_of_nested_associations(permission: :owner)
   end
 
   def with_prefetch_external_source
     with_eager_load_of(:external_source)
+  end
+
+  def with_prefetch_synchronization
+    with_eager_load_of(:synchronization)
+    self
   end
 
   def with_type(type)
@@ -193,11 +198,17 @@ class Carto::VisualizationQueryBuilder
     self
   end
 
+  # Published: see `Carto::Visualization#published?`
+  def with_published
+    @only_published = true
+    self
+  end
+
   def build
     query = Carto::Visualization.scoped
 
-    if @name && !(@id || @user_id || @organization_id)
-      CartoDB.notify_debug("VQB query by name without user_id nor org_id", stack: caller.take(25))
+    if @name && !(@id || @user_id || @organization_id || @owned_by_or_shared_with_user_id || @shared_with_user_id)
+      CartoDB::Logger.debug(message: "VQB query by name without user_id nor org_id")
     end
 
     if @id
@@ -250,13 +261,14 @@ class Carto::VisualizationQueryBuilder
     end
 
     if @exclude_synced_external_sources
-      query = query.joins(%Q{
+      query = query.joins(%{
                             LEFT JOIN external_sources es
                               ON es.visualization_id = visualizations.id
                           })
-                   .joins(%Q{
+                   .joins(%{
                             LEFT JOIN external_data_imports edi
-                              ON  edi.external_source_id = es.id
+                              ON edi.external_source_id = es.id
+                              AND (SELECT state FROM data_imports WHERE id = edi.data_import_id) <> 'failure'
                               #{exclude_only_synchronized}
                           })
                    .where("edi.id IS NULL")
@@ -312,6 +324,21 @@ class Carto::VisualizationQueryBuilder
       query = query.joins(:user).where(users: { organization_id: @organization_id })
     end
 
+    if @only_published || @privacy == Carto::Visualization::PRIVACY_PUBLIC
+      # "Published" is only required for builder maps
+      # This SQL check should match Ruby `Carto::Visualization#published?` definition
+      query = query.where(%{
+            visualizations.privacy <> '#{Carto::Visualization::PRIVACY_PRIVATE}'
+        and (
+               ((visualizations.version <> #{Carto::Visualization::VERSION_BUILDER}) or (visualizations.version is null))
+            or
+               visualizations.type <> '#{Carto::Visualization::TYPE_DERIVED}'
+            or
+               (exists (select 1 from mapcaps mc_pub where visualizations.id = mc_pub.visualization_id limit 1))
+            )
+      })
+    end
+
     @include_associations.each { |association|
       query = query.includes(association)
     }
@@ -335,7 +362,7 @@ class Carto::VisualizationQueryBuilder
   end
 
   def build_paged(page = 1, per_page = 20)
-    self.build.offset((page - 1) * per_page).limit(per_page)
+    build.offset((page.to_i - 1) * per_page.to_i).limit(per_page.to_i)
   end
 
   private

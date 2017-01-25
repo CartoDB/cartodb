@@ -31,7 +31,7 @@ def create_import(user, file_name, name=nil)
   end
 
   @data_import.data_source =  file_name
-  @data_import.send :new_importer
+  @data_import.send :dispatch
   @data_import
 end
 
@@ -145,6 +145,27 @@ describe Table do
       table.table_visualization.name  .should == table.name
     end
 
+    it 'propagates name changes to analyses' do
+      table = create_table(name: 'bogus_name', user_id: @user.id)
+      carto_layer = Carto::Layer.find(table.layers.first.id)
+
+      analysis = Carto::Analysis.source_analysis_for_layer(carto_layer, 0)
+      analysis.save
+
+      table.name.should eq 'bogus_name'
+
+      table.name = 'new_name'
+      table.save
+
+      analysis.reload
+
+      analysis.analysis_definition[:options][:table_name].should eq 'new_name'
+      analysis.analysis_definition[:params][:query].should include('new_name')
+
+      analysis.destroy
+      table.destroy
+    end
+
     it 'receives a name change if table visualization name changed' do
       Table.any_instance.stubs(:update_cdb_tablemetadata)
 
@@ -202,7 +223,7 @@ describe Table do
             "maxZoom" => "18",
             "name" => "Waduson",
             "className" => "waduson",
-            "attribution" => "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"https://cartodb.com/attributions\">CartoDB</a>"
+            "attribution" => "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"https://carto.com/attributions\">CARTO</a>"
           }
         }
       }
@@ -235,7 +256,7 @@ describe Table do
       table.map.layers[0].options["maxZoom"].should == "18"
       table.map.layers[0].options["name"].should == "Waduson"
       table.map.layers[0].options["className"].should == "waduson"
-      table.map.layers[0].options["attribution"].should == "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"https://cartodb.com/attributions\">CartoDB</a>"
+      table.map.layers[0].options["attribution"].should == "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"https://carto.com/attributions\">CARTO</a>"
       table.map.layers[0].order.should == 0
 
       Cartodb.config[:basemaps] = old_basemap_config
@@ -255,7 +276,7 @@ describe Table do
             "maxZoom" => "18",
             "name" => "Waduson",
             "className" => "waduson",
-            "attribution" => "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"https://cartodb.com/attributions\">CartoDB</a>",
+            "attribution" => "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"https://carto.com/attributions\">CARTO</a>",
             "labels" => {
               "url" => "http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png"
             }
@@ -277,7 +298,7 @@ describe Table do
       table.map.layers[0].options["maxZoom"].should == "18"
       table.map.layers[0].options["name"].should == "Waduson"
       table.map.layers[0].options["className"].should == "waduson"
-      table.map.layers[0].options["attribution"].should == "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"https://cartodb.com/attributions\">CartoDB</a>"
+      table.map.layers[0].options["attribution"].should == "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"https://carto.com/attributions\">CARTO</a>"
       table.map.layers[0].order.should == 0
 
       table.map.layers[2].options["urlTemplate"].should == "http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png"
@@ -287,7 +308,7 @@ describe Table do
       table.map.layers[2].options["maxZoom"].should == "18"
       table.map.layers[2].options["name"].should == "Waduson Labels"
       table.map.layers[2].options["className"].should be_nil
-      table.map.layers[2].options["attribution"].should == "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"https://cartodb.com/attributions\">CartoDB</a>"
+      table.map.layers[2].options["attribution"].should == "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"https://carto.com/attributions\">CARTO</a>"
       table.map.layers[2].options["type"].should == "Tiled"
       table.map.layers[2].options["labels"].should be_nil
       table.map.layers[2].order.should == 2
@@ -357,9 +378,10 @@ describe Table do
       table = create_table(user_id: @user.id)
       table.should be_private
       table.table_visualization.should be_private
-      derived_vis = CartoDB::Visualization::Copier.new(
-        @user, table.table_visualization
-      ).copy
+
+      map = CartoDB::Visualization::TableBlender.new(@user, [table]).blend
+      derived_vis = FactoryGirl.create(:derived_visualization, user_id: @user.id, map_id: map.id,
+                                                               privacy: CartoDB::Visualization::Member::PRIVACY_PRIVATE)
 
       bypass_named_maps
       derived_vis.store
@@ -368,16 +390,16 @@ describe Table do
       table.privacy = UserTable::PRIVACY_PUBLIC
       table.save
 
-      table.affected_visualizations.map { |vis|
+      table.affected_visualizations.map do |vis|
         vis.public?.should == vis.table?
-      }
+      end
 
       table.privacy = UserTable::PRIVACY_PRIVATE
       table.save
 
-      table.affected_visualizations.map { |vis|
+      table.affected_visualizations.map do |vis|
         vis.private?.should == true
-      }
+      end
     end
 
     it "doesn't propagates changes to affected visualizations if privacy set to public with link" do
@@ -388,9 +410,8 @@ describe Table do
 
       table.privacy = UserTable::PRIVACY_PUBLIC
       table.save
-      derived_vis = CartoDB::Visualization::Copier.new(
-          @user, table.table_visualization
-      ).copy
+      map = CartoDB::Visualization::TableBlender.new(@user, [table]).blend
+      derived_vis = FactoryGirl.create(:derived_visualization, user_id: @user.id, map_id: map.id)
 
       bypass_named_maps
       derived_vis.store
@@ -400,12 +421,12 @@ describe Table do
       table.save
       table.reload
 
-      table.affected_visualizations.map { |vis|
-        vis.public?.should == vis.derived?  # Derived kept public
-        vis.private?.should == false  # None changed to private
-        vis.password_protected?.should == false  # None changed to password protected
-        vis.public_with_link?.should == vis.table?  # Table/canonical changed
-      }
+      table.affected_visualizations.map do |vis|
+        vis.public?.should eq vis.derived?         # Derived kept public
+        vis.private?.should eq false               # None changed to private
+        vis.password_protected?.should eq false    # None changed to password protected
+        vis.public_with_link?.should eq vis.table? # Table/canonical changed
+      end
     end
 
     it 'receives privacy changes from the associated visualization' do
@@ -715,9 +736,9 @@ describe Table do
 
     id = table.table_visualization.id
     CartoDB::Varnish.any_instance.expects(:purge)
-                                 .times(4)
-                                 .with(".*#{id}:vizjson")
-                                 .returns(true)
+                    .times(6)
+                    .with(".*#{id}:vizjson")
+                    .returns(true)
 
     CartoDB::TablePrivacyManager.any_instance.expects(:update_cdb_tablemetadata)
     table.privacy = UserTable::PRIVACY_PUBLIC
@@ -771,12 +792,11 @@ describe Table do
 
     it 'deletes derived visualizations that depend on this table' do
       bypass_named_maps
-      table   = create_table(name: 'bogus_name', user_id: @user.id)
-      source  = table.table_visualization
-      derived = CartoDB::Visualization::Copier.new(@user, source).copy
-      derived.store
+      table = create_table(name: 'bogus_name', user_id: @user.id)
 
-      rehydrated = CartoDB::Visualization::Member.new(id: derived.id).fetch
+      map = CartoDB::Visualization::TableBlender.new(@user, [table]).blend
+      derived = FactoryGirl.create(:derived_visualization, user_id: @user.id, map_id: map.id)
+
       table.reload
 
       table.destroy
@@ -1060,7 +1080,7 @@ describe Table do
 
       data_import = DataImport.create( :user_id       => @user.id,
                                     :table_name    => 'rescol',
-                                    :data_source   => '/../db/fake_data/reserved_columns.csv' )
+                                    :data_source   => fake_data_path('reserved_columns.csv') )
       data_import.run_import!
       table.run_query("select name from table1 where cartodb_id = '#{pk}'")[:rows].first[:name].should == "name #1"
     end
@@ -1166,6 +1186,29 @@ describe Table do
       @user.in_database.run("CREATE TABLE cdb_importer.repeated_table (id integer)")
       expect { create_table(user_id: @user.id, name: 'repeated_table') }.to_not raise_error
     end
+
+    it 'correctly returns dates' do
+      table = create_table(user_id: @user.id)
+      table.add_column!(name: "without_tz", type: "timestamp without time zone")
+      table.add_column!(name: "with_tz", type: "timestamp with time zone")
+      table.add_column!(name: "date", type: "date ") # Add a space to avoid auto-conversion to timestampz
+
+      table.insert_row!(
+        with_tz: '2016-12-02T10:10:10+01:00',
+        without_tz: '2016-12-02T10:10:10',
+        date: '2016-12-02'
+      )
+
+      record = table.record(1)
+      record[:with_tz].is_a?(DateTime).should be_true
+      record[:with_tz].should eq DateTime.parse('2016-12-02T10:10:10+01:00')
+
+      record[:without_tz].is_a?(DateTime).should be_true
+      record[:without_tz].to_s.should eq '2016-12-02T10:10:10+00:00'
+
+      record[:date].is_a?(DateTime).should be_true
+      record[:date].to_s.should eq '2016-12-02T00:00:00+00:00'
+    end
   end
 
   context "insert and update rows" do
@@ -1260,7 +1303,7 @@ describe Table do
     it "should be able to update data in rows with column names with multiple underscores" do
       data_import = DataImport.create( :user_id       => @user.id,
                                        :table_name    => 'elecciones2008',
-                                       :data_source   => '/../spec/support/data/elecciones2008.csv')
+                                       :data_source   => Rails.root.join('spec/support/data/elecciones2008.csv').to_s)
       data_import.run_import!
 
       table = create_table(user_table: UserTable[data_import.table_id], user_id: @user.id)
@@ -1278,7 +1321,7 @@ describe Table do
 
     it "should be able to insert data in rows with column names with multiple underscores" do
       data_import = DataImport.create( :user_id       => @user.id,
-                                       :data_source   => '/../spec/support/data/elecciones2008.csv')
+                                       :data_source   => Rails.root.join('spec/support/data/elecciones2008.csv').to_s)
       data_import.run_import!
 
       table = create_table(user_table: UserTable[data_import.table_id], user_id: @user.id)
@@ -1363,20 +1406,20 @@ describe Table do
 
   context "post import processing tests" do
     it "should optimize the table" do
-      fixture     = "#{Rails.root}/db/fake_data/SHP1.zip"
+      fixture = fake_data_path("SHP1.zip")
       Table.any_instance.expects(:optimize).once
       data_import = create_import(@user, fixture)
     end
 
     it "should assign table_id" do
-      fixture     =  "#{Rails.root}/db/fake_data/SHP1.zip"
+      fixture = fake_data_path("SHP1.zip")
       data_import = create_import(@user, fixture)
       data_import.table.table_id.should_not be_nil
     end
 
     it "should add a the_geom column after importing a CSV" do
       data_import = DataImport.create( :user_id       => @user.id,
-                                       :data_source   => '/../db/fake_data/twitters.csv' )
+                                       :data_source   => fake_data_path('twitters.csv') )
       data_import.run_import!
 
       table = Table.new(user_table: UserTable[data_import.table_id])
@@ -1394,7 +1437,7 @@ describe Table do
       table.save.reload
       table.name.should == 'empty_file'
 
-      fixture     = "#{Rails.root}/db/fake_data/empty_file.csv"
+      fixture = fake_data_path("empty_file.csv")
       data_import = create_import(@user, fixture, table.name)
 
       @user.in_database do |user_database|
@@ -1409,7 +1452,7 @@ describe Table do
       table.name.should == 'empty_file'
 
       data_import = DataImport.create( :user_id       => @user.id,
-                                       :data_source   => '/../db/fake_data/csv_no_quotes.csv' )
+                                       :data_source   => fake_data_path('csv_no_quotes.csv') )
       data_import.run_import!
 
       table2 = Table.new(user_table: UserTable[data_import.table_id])
@@ -1437,7 +1480,7 @@ describe Table do
 
     it "should add a cartodb_id serial column as primary key when importing a
     file without a column with name cartodb_id" do
-      fixture       = "#{Rails.root}/db/fake_data/gadm4_export.csv"
+      fixture       = fake_data_path("gadm4_export.csv")
       data_import   = create_import(@user, fixture)
       table         = data_import.table
       table.should_not be_nil, "Import failure: #{data_import.log.inspect}"
@@ -1478,7 +1521,7 @@ describe Table do
 
     it "should return geometry types when guessing is enabled" do
       data_import = DataImport.create( :user_id       => @user.id,
-                                       :data_source   => '/../db/fake_data/gadm4_export.csv',
+                                       :data_source   => fake_data_path('gadm4_export.csv'),
                                        :type_guessing  => true )
       data_import.run_import!
 
@@ -1515,7 +1558,7 @@ describe Table do
     end
 
     it "should normalize strings if there is a non-convertible entry when converting string to number" do
-      fixture     = "#{Rails.root}/db/fake_data/short_clubbing.csv"
+      fixture = fake_data_path("short_clubbing.csv")
       data_import = create_import(@user, fixture)
       table       = data_import.table
 
@@ -1529,7 +1572,7 @@ describe Table do
     end
 
     it "should normalize string if there is a non-convertible entry when converting string to boolean" do
-      fixture     = "#{Rails.root}/db/fake_data/column_string_to_boolean.csv"
+      fixture = fake_data_path("column_string_to_boolean.csv")
       data_import = create_import(@user, fixture)
       table       = data_import.table
 
@@ -1561,7 +1604,7 @@ describe Table do
     end
 
     it "should normalize boolean if there is a non-convertible entry when converting boolean to string" do
-      fixture     = "#{Rails.root}/db/fake_data/column_string_to_boolean.csv"
+      fixture = fake_data_path("column_string_to_boolean.csv")
       data_import = create_import(@user, fixture)
       table       = data_import.table
       table.modify_column! :name=>"f1", :type=>"boolean"
@@ -1572,7 +1615,7 @@ describe Table do
     end
 
     it "should normalize boolean if there is a non-convertible entry when converting boolean to number" do
-      fixture     = "#{Rails.root}/db/fake_data/column_string_to_boolean.csv"
+      fixture = fake_data_path("column_string_to_boolean.csv")
       data_import = create_import(@user, fixture)
       table       = data_import.table
       table.modify_column! :name=>"f1", :type=>"boolean"
@@ -1584,7 +1627,7 @@ describe Table do
 
     it "should normalize number if there is a non-convertible entry when
     converting number to boolean" do
-      fixture     = "#{Rails.root}/db/fake_data/column_number_to_boolean.csv"
+      fixture = fake_data_path("column_number_to_boolean.csv")
       data_import = create_import(@user, fixture)
       table       = data_import.table
 
@@ -1794,7 +1837,7 @@ describe Table do
 
   context "imports" do
     it "file twitters.csv" do
-      fixture     =  "#{Rails.root}/db/fake_data/twitters.csv"
+      fixture = fake_data_path("twitters.csv")
       data_import = create_import(@user, fixture)
 
       data_import.table.name.should match(/^twitters/)
@@ -1802,7 +1845,7 @@ describe Table do
     end
 
     it "file SHP1.zip" do
-      fixture     = "#{Rails.root}/db/fake_data/SHP1.zip"
+      fixture = fake_data_path("SHP1.zip")
       data_import = create_import(@user, fixture)
 
       data_import.table.name.should == "esp_adm1"
@@ -2269,16 +2312,16 @@ describe Table do
       table.should be_private
 
       Carto::NamedMaps::Api.any_instance.stubs(get: nil, create: true, update: true)
-      source  = table.table_visualization
-      derived = CartoDB::Visualization::Copier.new(@user, source).copy
-      derived.store
+
+      map = CartoDB::Visualization::TableBlender.new(@user, [table]).blend
+      derived = FactoryGirl.create(:derived_visualization, user_id: @user.id, map_id: map.id)
       derived.type.should eq(CartoDB::Visualization::Member::TYPE_DERIVED)
 
       # Do not create all member objects anew to be able to set expectations
       CartoDB::Visualization::Member.stubs(:new).with(has_entry(id: derived.id)).returns(derived)
       CartoDB::Visualization::Member.stubs(:new).with(has_entry(type: 'table')).returns(table.table_visualization)
 
-      derived.expects(:invalidate_cache).once
+      derived.expects(:invalidate_cache).at_least_once
 
       table.privacy = UserTable::PRIVACY_PUBLIC
       table.save
@@ -2294,9 +2337,8 @@ describe Table do
       table.save
 
       Carto::NamedMaps::Api.any_instance.stubs(get: nil, create: true, update: true)
-      source = table.table_visualization
-      derived = CartoDB::Visualization::Copier.new(@user, source).copy
-      derived.store
+      map = CartoDB::Visualization::TableBlender.new(@user, [table]).blend
+      derived = FactoryGirl.create(:derived_visualization, user_id: @user.id, map_id: map.id)
       derived.type.should eq(CartoDB::Visualization::Member::TYPE_DERIVED)
 
       # Scenario 1: Fail at map saving (can happen due to Map handlers)
@@ -2305,9 +2347,7 @@ describe Table do
 
       ::Map.any_instance.stubs(:save).once.raises(StandardError)
 
-      expect do
-        table.save
-      end.to raise_exception StandardError
+      expect { table.save }.to raise_exception StandardError
 
       table.reload.privacy.should eq UserTable::PRIVACY_PUBLIC
 

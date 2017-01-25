@@ -16,11 +16,16 @@ $text-color: rgba(white, 0.5);
 .Navbar--left { text-align: left }
 
 .Navbar-brand {
-  display: inline-block;
-  width: 48px;
   height: 48px;
-  vertical-align: middle;
-  margin-right: 5px;
+  max-width: 92px;
+  margin: 0 auto;
+  margin-bottom: 40px;
+  @include display-flex;
+  @include justify-content(center, center);
+
+  img {
+    height: 100%;
+  }
 }
 
 .Navbar-menu { float: right }

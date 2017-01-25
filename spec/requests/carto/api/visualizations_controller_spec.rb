@@ -28,6 +28,50 @@ describe Carto::Api::VisualizationsController do
       def vizjson_vx_version
         '0.1.0'
       end
+
+      def attributions_from_vizjson(visualization)
+        visualization['layers'][1]['options']['attribution'].split(',').map(&:strip)
+      end
+
+      it 'marks visualizations as using vizjson2' do
+        visualization = FactoryGirl.create(:carto_visualization)
+        Carto::Api::VisualizationsController.any_instance.stubs(:generate_vizjson2).returns({})
+        get(
+          api_v2_visualizations_vizjson_url(user_domain: visualization.user.username, id: visualization.id),
+          {},
+          'HTTP_REFERER' => 'http://wadus.com'
+        )
+        visualization.uses_vizjson2?.should be_true
+      end
+
+      it 'marks visualizations as using vizjson2 with invalid referer' do
+        visualization = FactoryGirl.create(:carto_visualization)
+        Carto::Api::VisualizationsController.any_instance.stubs(:generate_vizjson2).returns({})
+        get(
+          api_v2_visualizations_vizjson_url(user_domain: visualization.user.username, id: visualization.id),
+          {},
+          'HTTP_REFERER' => 'invalid'
+        )
+        visualization.uses_vizjson2?.should be_true
+      end
+
+      it 'marks visualizations as using vizjson2 without referer' do
+        visualization = FactoryGirl.create(:carto_visualization)
+        Carto::Api::VisualizationsController.any_instance.stubs(:generate_vizjson2).returns({})
+        get api_v2_visualizations_vizjson_url(user_domain: visualization.user.username, id: visualization.id)
+        visualization.uses_vizjson2?.should be_true
+      end
+
+      it 'does not mark visualizations as using vizjson2 with carto referer' do
+        visualization = FactoryGirl.create(:carto_visualization)
+        Carto::Api::VisualizationsController.any_instance.stubs(:generate_vizjson2).returns({})
+        get(
+          api_v2_visualizations_vizjson_url(user_domain: visualization.user.username, id: visualization.id),
+          {},
+          'HTTP_REFERER' => 'https://carto.com/wadus'
+        )
+        visualization.uses_vizjson2?.should be_false
+      end
     end
   end
 
@@ -39,6 +83,12 @@ describe Carto::Api::VisualizationsController do
 
       def vizjson_vx_version
         '3.0.0'
+      end
+
+      def attributions_from_vizjson(visualization)
+        visualization['layers'].select { |l| l['type'] == 'CartoDB' }
+                               .map { |l| l['options']['attribution'] }
+                               .select(&:present?)
       end
     end
   end
@@ -273,6 +323,11 @@ describe Carto::Api::VisualizationsController do
       expected_visualization = JSON.parse(table1_visualization_hash.to_json)
       expected_visualization = normalize_hash(expected_visualization)
 
+      # This is only in the Carto::Visualization presenter (not in old member presenter)
+      expected_visualization['uses_builder_features'] = false
+      expected_visualization['auth_tokens'] = nil # normalize_hash converts [] to nil
+      expected_visualization['version'] = 2
+
       response = response_body(type: CartoDB::Visualization::Member::TYPE_CANONICAL)
       # INFO: old API won't support server side generated urls for visualizations. See #5250 and #5279
       response['visualizations'][0].delete('url')
@@ -282,7 +337,8 @@ describe Carto::Api::VisualizationsController do
         'total_entries' => 1,
         'total_user_entries' => 1,
         'total_likes' => 0,
-        'total_shared' => 0
+        'total_shared' => 0,
+
       }
     end
 
@@ -1118,6 +1174,11 @@ describe Carto::Api::VisualizationsController do
         response.body[:layers][index]['options']['named_map']
       end
 
+      def first_data_layer_from_response(response)
+        index = response.body[:layers].index { |l| l['type'] == 'CartoDB' }
+        response.body[:layers][index]
+      end
+
       let(:infowindow) do
         JSON.parse(FactoryGirl.build_stubbed(:carto_layer_with_infowindow).infowindow)
       end
@@ -1150,7 +1211,7 @@ describe Carto::Api::VisualizationsController do
             @table.save
           end
 
-          it 'uses v3 infowindows and tooltips templates' do
+          it 'uses v3 infowindows and tooltips templates removing "table/views/" from template_name' do
             # vizjson v2 doesn't change
             get_json api_v2_visualizations_vizjson_url(user_domain: @user_1.username,
                                                        id: @visualization.id,
@@ -1173,13 +1234,14 @@ describe Carto::Api::VisualizationsController do
             get_json get_vizjson3_url(@user_1, @visualization), @headers do |response|
               response.status.should eq 200
 
-              layer_definition = first_layer_definition_from_response(response)
-              response_infowindow = layer_definition['layers'][0]['infowindow']
-              response_infowindow['template_name'].should eq infowindow['template_name']
+              layer = first_data_layer_from_response(response)
+              response_infowindow = layer['infowindow']
+              infowindow['template_name'].should eq "table/views/infowindow_light"
+              response_infowindow['template_name'].should eq "infowindow_light"
               response_infowindow['template'].should include(v3_infowindow_light_template_fragment)
               response_infowindow['template'].should_not include(v2_infowindow_light_template_fragment)
 
-              response_tooltip = layer_definition['layers'][0]['tooltip']
+              response_tooltip = layer['tooltip']
               response_tooltip['template_name'].should eq tooltip['template_name']
               response_tooltip['template'].should include(v3_tooltip_light_template_fragment)
               response_tooltip['template'].should_not include(v2_tooltip_light_template_fragment)
@@ -1195,7 +1257,7 @@ describe Carto::Api::VisualizationsController do
             @table.save
           end
 
-          it 'uses v3 infowindows templates at named maps' do
+          it 'uses v3 infowindows templates at named maps removing "table/views/" from template_name' do
             # vizjson v2 doesn't change
             get_json api_v2_visualizations_vizjson_url(user_domain: @user_1.username,
                                                        id: @visualization.id,
@@ -1217,13 +1279,14 @@ describe Carto::Api::VisualizationsController do
             get_json get_vizjson3_url(@user_1, @visualization), @headers do |response|
               response.status.should eq 200
 
-              layer_named_map = first_layer_named_map_from_response(response)
-              response_infowindow = layer_named_map['layers'][0]['infowindow']
-              response_infowindow['template_name'].should eq infowindow['template_name']
+              layer = first_data_layer_from_response(response)
+              response_infowindow = layer['infowindow']
+              infowindow['template_name'].should eq "table/views/infowindow_light"
+              response_infowindow['template_name'].should eq 'infowindow_light'
               response_infowindow['template'].should include(v3_infowindow_light_template_fragment)
               response_infowindow['template'].should_not include(v2_infowindow_light_template_fragment)
 
-              response_tooltip = layer_named_map['layers'][0]['tooltip']
+              response_tooltip = layer['tooltip']
               response_tooltip['template_name'].should eq tooltip['template_name']
               response_tooltip['template'].should include(v3_tooltip_light_template_fragment)
               response_tooltip['template'].should_not include(v2_tooltip_light_template_fragment)
@@ -1266,12 +1329,12 @@ describe Carto::Api::VisualizationsController do
             get_json get_vizjson3_url(@user_1, @visualization), @headers do |response|
               response.status.should eq 200
 
-              layer_definition = first_layer_definition_from_response(response)
-              response_infowindow = layer_definition['layers'][0]['infowindow']
+              layer = first_data_layer_from_response(response)
+              response_infowindow = layer['infowindow']
               response_infowindow['template_name'].should eq ''
               response_infowindow['template'].should eq custom_infowindow[:template]
 
-              response_tooltip = layer_definition['layers'][0]['tooltip']
+              response_tooltip = layer['tooltip']
               response_tooltip['template_name'].should eq ''
               response_tooltip['template'].should eq custom_tooltip[:template]
             end
@@ -1306,12 +1369,12 @@ describe Carto::Api::VisualizationsController do
             get_json get_vizjson3_url(@user_1, @visualization), @headers do |response|
               response.status.should eq 200
 
-              layer_named_map = first_layer_named_map_from_response(response)
-              response_infowindow = layer_named_map['layers'][0]['infowindow']
+              layer = first_data_layer_from_response(response)
+              response_infowindow = layer['infowindow']
               response_infowindow['template_name'].should eq ''
               response_infowindow['template'].should eq custom_infowindow[:template]
 
-              response_tooltip = layer_named_map['layers'][0]['tooltip']
+              response_tooltip = layer['tooltip']
               response_tooltip['template_name'].should eq ''
               response_tooltip['template'].should eq custom_tooltip[:template]
             end
@@ -1970,6 +2033,7 @@ describe Carto::Api::VisualizationsController do
     organization.name = unique_name('org')
     organization.quota_in_bytes = 1234567890
     organization.seats = 5
+    organization.builder_enabled = false
     organization
   end
 

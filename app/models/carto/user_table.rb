@@ -1,19 +1,21 @@
 require 'active_record'
 
 module Carto
-
   class UserTable < ActiveRecord::Base
 
     PRIVACY_PRIVATE = 0
     PRIVACY_PUBLIC = 1
     PRIVACY_LINK = 2
 
-    belongs_to :visualization, primary_key: :map_id, foreign_key: :map_id,
-                conditions: { type: Carto::Visualization::TYPE_CANONICAL }, inverse_of: :user_table
+    PRIVACY_VALUES_TO_TEXTS = {
+      PRIVACY_PRIVATE => 'private',
+      PRIVACY_PUBLIC => 'public',
+      PRIVACY_LINK => 'link'
+    }.freeze
 
     belongs_to :user
 
-    belongs_to :map
+    belongs_to :map, inverse_of: :user_table
 
     belongs_to :data_import
 
@@ -30,6 +32,10 @@ module Carto
     # Estimated size
     def size
       row_count_and_size[:size]
+    end
+
+    def table_size
+      table.table_size
     end
 
     # Estimated row_count. Preferred: `estimated_row_count`
@@ -50,13 +56,20 @@ module Carto
       @table = table
     end
 
+    def visualization
+      map.visualization if map
+    end
+
     def synchronization
-      # TODO: replace with an association so it can be joined and eager loaded
-      @synchronization ||= get_synchronization
+      visualization.synchronization if visualization
     end
 
     def dependent_visualizations
       affected_visualizations.select(&:dependent?)
+    end
+
+    def accessible_dependent_derived_maps
+      affected_visualizations.select { |v| (v.has_read_permission?(user) && v.derived?) ? v : nil }
     end
 
     def non_dependent_visualizations
@@ -79,6 +92,10 @@ module Carto
       privacy == PRIVACY_LINK
     end
 
+    def privacy_text
+      PRIVACY_VALUES_TO_TEXTS[privacy].upcase
+    end
+
     def readable_by?(user)
       !private? || is_owner?(user) || visualization_readable_by?(user)
     end
@@ -93,6 +110,10 @@ module Carto
 
     def sync_table_id
       self.table_id = service.get_table_id
+    end
+
+    def permission
+      visualization.permission if visualization
     end
 
     private
@@ -125,12 +146,8 @@ module Carto
       @table ||= ::Table.new( { user_table: self } )
     end
 
-    def get_synchronization
-      Carto::Synchronization.where(user_id: user_id, name: name).first
-    end
-
     def visualization_readable_by?(user)
-      user && visualization && visualization.permission && visualization.permission.user_has_read_permission?(user)
+      user && permission && permission.user_has_read_permission?(user)
     end
   end
 

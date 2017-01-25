@@ -6,6 +6,7 @@ class Admin::OrganizationsController < Admin::AdminController
 
   ssl_required :show, :settings, :settings_update, :regenerate_all_api_keys, :groups, :auth, :auth_update
   before_filter :login_required, :load_organization_and_members, :load_ldap_configuration
+  before_filter :enforce_engine_enabled, only: :regenerate_all_api_keys
   helper_method :show_billing
 
   layout 'application'
@@ -87,6 +88,7 @@ class Admin::OrganizationsController < Admin::AdminController
     @organization.whitelisted_email_domains = attributes[:whitelisted_email_domains].split(",")
     @organization.auth_username_password_enabled = attributes[:auth_username_password_enabled]
     @organization.auth_google_enabled = attributes[:auth_google_enabled]
+    @organization.auth_github_enabled = attributes[:auth_github_enabled]
     @organization.strong_passwords_enabled = attributes[:strong_passwords_enabled]
     @organization.update_in_central
     @organization.save(raise_on_failure: true)
@@ -95,10 +97,10 @@ class Admin::OrganizationsController < Admin::AdminController
   rescue CartoDB::CentralCommunicationFailure => e
     @organization.reload
     flash.now[:error] = "There was a problem while updating your organization. Please, try again and contact us if the problem persists. #{e.user_message}"
-    render action: 'settings'
+    render action: 'auth'
   rescue Sequel::ValidationFailed => e
     flash.now[:error] = "There's been a validation error, check your values"
-    render action: 'settings'
+    render action: 'auth'
   end
 
   private
@@ -118,6 +120,12 @@ class Admin::OrganizationsController < Admin::AdminController
 
   def load_ldap_configuration
     @ldap_configuration = Carto::Ldap::Configuration.where(organization_id: @organization.id).first
+  end
+
+  def enforce_engine_enabled
+    unless @organization.engine_enabled?
+      render_403
+    end
   end
 
 end

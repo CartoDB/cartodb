@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+require_dependency 'map/copier'
+
 module CartoDB
   module Visualization
     class TableBlender
@@ -16,7 +18,8 @@ module CartoDB
         destination_map = copier.new_map_from(maps.first).save
 
         copier.copy_base_layer(maps.first, destination_map)
-        maps.each { |map| copier.copy_data_layers(map, destination_map) }
+
+        maps.each { |map| copier.copy_data_layers(map, destination_map, user) }
 
         destination_map.user = user
         destination_map.save
@@ -24,8 +27,8 @@ module CartoDB
       end
 
       def blended_privacy
-        return Visualization::Member::PRIVACY_PRIVATE if tables.map{|t| t.private?}.any?
-        return Visualization::Member::PRIVACY_LINK if tables.map{|t| t.public_with_link_only?}.any?
+        return Visualization::Member::PRIVACY_PRIVATE if tables.any?(&:private?)
+        return Visualization::Member::PRIVACY_LINK if tables.any?(&:public_with_link_only?)
         Visualization::Member::PRIVACY_PUBLIC
       end
 

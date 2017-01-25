@@ -1,4 +1,4 @@
-# encoding utf-8
+# encoding: utf-8
 
 require_relative 'bolt.rb'
 
@@ -129,7 +129,7 @@ module Carto
 
     # Fetches all linkable tables: non raster cartodbfied + raster
     def fetch_cartodbfied_tables
-      fetch_non_raster_cartodbfied_tables + fetch_raster_tables
+      (fetch_non_raster_cartodbfied_tables + fetch_raster_tables).uniq
     end
 
     # this method searchs for tables with all the columns needed in a cartodb table.

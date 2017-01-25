@@ -29,6 +29,24 @@
   height: 100%;
 }
 
+.Editor-fillImage {
+  display: flex;
+  height: 16px;
+  padding: 0 0 0 2px;
+}
+
+.Editor-fillImageAsset {
+  width: auto;
+  height: 16px;
+}
+
+.Editor-categoryImagesTag {
+  padding: 2px;
+  border: 1px solid #E4E4E4;
+  border-radius: 3px;
+  text-align: center;
+}
+
 .CDB-OptionInput-item.is-disabled .CDB-OptionInput-content {
   color: #CCC;
 }
@@ -41,9 +59,11 @@
 .CDB-OptionInput-container {
   height: 100%;
 }
+.CDB-OptionInput-container--noSlider {
+  width: 100%;
+}
 
 .InputColor-modalHeader {
   @include display-flex();
   @include justify-content(space-between);
-  @include align-items(center);
 }

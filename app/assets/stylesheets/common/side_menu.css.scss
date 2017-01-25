@@ -20,12 +20,6 @@
   @include align-items(center, center);
   margin: 30px 0;
 }
-.SideMenu-progressSize {
-  margin-left: $sMargin-elementInline;
-  color: $cTypography-secondary;
-  font-size: $sFontSize-smallUpperCase;
-  font-weight: $sFontWeight-lighter;
-}
 .SideMenu-progressBar {
   @include progress-bar(6px, 9px, true, false);
   width: 140px;
@@ -53,14 +47,13 @@
 .SideMenu-typeLink {
   display: inline-block;
   font-size: 14px;
-  color: $cTypography-link;
+  color: #1181FB;
   background: transparent;
   border: none;
   outline: none;
 
   &:hover {
-    color: $cTypography-linkHover;
-    text-decoration: none;
+    text-decoration: underline;
   }
 }
 .SideMenu-typeLink.is-selected {
@@ -103,5 +96,4 @@
 
   color: $cTypography-paragraphs;
   margin-left: 15px;
-  font-size: 13px;
 }

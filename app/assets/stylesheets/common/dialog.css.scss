@@ -1,6 +1,8 @@
 @import "../variables/mixins";
 @import "../variables/colors";
 @import "../variables/sizes";
+@import 'cdb-variables/colors';
+
 
 $sSmallWidth: 670px;
 
@@ -47,6 +49,7 @@ body.is-inDialog {
   position: fixed;
   top: $sMargin-group; // to be aligned with header icon
   right: $sMargin-section;
+  z-index: 2;
 }
 .Dialog-backBtn {
   position: fixed;
@@ -101,7 +104,6 @@ body.is-inDialog {
 .Dialog-body.Dialog-body--create {
   position: relative;
   width: 100%;
-  padding-bottom: 100px;
   overflow: auto;
 }
 .Dialog-body.Dialog-body--share {
@@ -131,10 +133,12 @@ body.is-inDialog {
   position: relative;
   background: none;
 }
+.Dialog-body .ListingContent {
+  margin-bottom: 100px;
+}
 .Dialog-footer {
   padding: $sMargin-group 0;
   text-align: center;
-  border-top: 1px solid $cStructure-mainLine;
 }
 .Dialog-footer--withoutBorder { border-top: none }
 .Dialog-footer--simple {
@@ -191,9 +195,13 @@ body.is-inDialog {
     color: $cIcons-active !important;
   }
 }
+.Dialog-headerIcon--twitter {
+  border-color: #55ACEE;
+  color: #55ACEE;
+}
 .Dialog-headerIcon--negative {
-  color: $cHighlight-negative;
-  border-color: $cHighlight-negative;
+  color: $cError;
+  border-color: $cError;
 }
 .Dialog-headerIcon--positive {
   color: $cHighlight-positive;
@@ -366,5 +374,12 @@ $sNarrower-width: 620px;
   100% {
     @include opacity(0.0);
     @include transform(scale(2.0));
+  }
+}
+
+@media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
+  /* IE10+ CSS styles go here */
+  .Dialog-body .ListingContent {
+    margin-bottom: 200px;
   }
 }

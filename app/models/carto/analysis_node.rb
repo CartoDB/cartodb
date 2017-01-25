@@ -1,11 +1,19 @@
 # encoding: UTF-8
+require_dependency 'carto/query_rewriter'
 
 class Carto::AnalysisNode
+  include Carto::QueryRewriter
+
   def initialize(definition)
     @definition = definition
   end
 
   attr_reader :definition
+
+  def self.find_by_natural_id(visualization_id, natural_id)
+    analyses = Carto::Analysis.where(visualization_id: visualization_id).all
+    analyses.lazy.map { |analysis| analysis.analysis_node.find_by_id(natural_id) }.find(&:present?)
+  end
 
   def id
     definition[:id]
@@ -19,8 +27,13 @@ class Carto::AnalysisNode
     definition[:params]
   end
 
+  def non_child_params
+    param_locations = children_and_location.keys.select { |cal| cal.first == :params }.map(&:second)
+    params.reject { |key| param_locations.include?(key) }
+  end
+
   def options
-    definition[:options]
+    definition[:options] ||= Hash.new
   end
 
   def children
@@ -45,9 +58,33 @@ class Carto::AnalysisNode
     source? && options && options[:table_name] == table_name
   end
 
+  def source_descendants
+    return [self] if source?
+    children.map(&:source_descendants).flatten
+  end
+
+  def descendants
+    [self] + children.map(&:descendants).flatten
+  end
+
+  def fix_analysis_node_queries(old_username, new_user, renamed_tables)
+    if options && options.key?(:table_name)
+      old_table_name = options[:table_name]
+      old_username, old_table_name = old_table_name.split('.') if old_table_name.include?('.')
+      options[:table_name] = renamed_tables.fetch(old_table_name, old_table_name)
+    end
+
+    if params && old_username
+      query = params[:query]
+      params[:query] = rewrite_query(query, old_username, new_user, renamed_tables) if query.present?
+    end
+
+    children.each { |child| child.fix_analysis_node_queries(old_username, new_user, renamed_tables) }
+  end
+
   private
 
-  MANDATORY_KEYS_FOR_ANALYSIS_NODE = [:id, :type, :params, :options].freeze
+  MANDATORY_KEYS_FOR_ANALYSIS_NODE = [:id, :type, :params].freeze
   def get_children(definition, path = [])
     children = definition.map do |k, v|
       if v.is_a?(Hash)

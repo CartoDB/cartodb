@@ -10,27 +10,6 @@ $size: 36px;
   display: inline-block;
   position: relative;
 }
-.Logo:after {
-  @include opacity(0);
-  @include transition(all, 0.4s, ease-in);
-  position: absolute;
-  top: -4px;
-  left: -4px;
-  width: $size + 4;
-  height: $size + 4;
-  border: 2px solid rgba(#FFFFFF, 0.7);
-  border-radius: $size;
-  border-bottom-color: transparent;
-  background: transparent;
-  content: '';
-}
-.Logo--text {
-  i {
-    color: #FFFFFF;
-    font-size: 17px;
-    line-height: $size;
-  }
-}
 .Logo--avatar {
   @include transition(border-radius, 0.2s, linear);
   display: inline-block;

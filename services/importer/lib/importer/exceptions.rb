@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 require_relative '../../../../services/datasources/lib/datasources/exceptions'
+require_relative './connector_runner'
 
 module CartoDB
   module Importer2
@@ -15,7 +16,11 @@ module CartoDB
     end
 
     # Generic/unmapped errors
-    class GenericImportError < StandardError; end
+    class GenericImportError < StandardError
+      def initialize(message = "Import Error")
+        super
+      end
+    end
     # Mapped errors
 
     class FileTooBigError < BaseImportError
@@ -83,7 +88,7 @@ module CartoDB
     class TiffToSqlConversionError              < StandardError; end
     class UnknownError                          < StandardError; end
     class UnknownSridError                      < StandardError; end
-    class UnsupportedFormatError                < StandardError; end
+    class UnsupportedFormatError                < GenericImportError; end
     class UploadError                           < StandardError; end
 
     class DownloadError                         < StandardError; end
@@ -169,8 +174,10 @@ module CartoDB
       CartoDB::Datasources::GNIPServiceError                      => 1009,
       CartoDB::Datasources::DropboxPermissionError                => 1016,
       CartoDB::Datasources::BoxPermissionError                    => 1021,
-      CartoDB::Datasources::GDriveNoExternalAppsAllowedError      => 1008
+      CartoDB::Datasources::GDriveNoExternalAppsAllowedError      => 1008,
+      Carto::Connector::ConnectorError               => 1500,
+      Carto::Connector::ConnectorsDisabledError      => 1501,
+      Carto::Connector::InvalidParametersError       => 1502
     }
   end
 end
-

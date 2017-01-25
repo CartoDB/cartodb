@@ -11,6 +11,9 @@
       id: "<%= current_user.organization.id %>",
       quota_in_bytes: <%= current_user.organization.quota_in_bytes %>,
       seats: <%= current_user.organization.seats %>,
+      viewer_seats: <%= current_user.organization.viewer_seats %>,
+      assigned_seats: <%= current_user.organization.assigned_seats %>,
+      assigned_viewer_seats: <%= current_user.organization.assigned_viewer_seats %>,
       owner: { id: "<%= current_user.id %>" },
       signup_enabled: <%= current_user.organization.auth_username_password_enabled || current_user.organization.auth_google_enabled %>
     };

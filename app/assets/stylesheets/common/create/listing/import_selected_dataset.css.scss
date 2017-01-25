@@ -65,10 +65,6 @@ $br: 4px;
 .DatasetSelected-syncLabel {
   width: 100px;
   border-right: 1px solid $cStructure-softLine;
-  color: $cTypography-paragraphs;
-  font-size: 14px;
-  font-weight: $sFontWeight-lighter;
-  line-height: 16px;
 }
 .DatasetSelected-syncOptionsList {
   @include display-flex();
@@ -79,9 +75,6 @@ $br: 4px;
 }
 .DatasetSelected-syncOptionsItem {
   margin-left: 24px;
-}
-.DatasetSelected-syncOptionsItem .RadioButton-label {
-  font-size: $sFontSize-normal;
 }
 .UpgradeElement.DatasetSelected-upgrade {
   padding: 20px;

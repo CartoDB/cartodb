@@ -70,7 +70,7 @@ module Carto
         begin
           get_body(resp)
         rescue OverQueryLimit
-          CartoDB.notify_debug('Carto::Gme::Client rescuing from OverQueryLimit exception', params)
+          CartoDB.notify_debug('Carto::Gme::Client rescuing from OverQueryLimit exception', params.symbolize_keys)
           return self.get(endpoint, params, first_request_time, retry_counter+1)
         end
       end
@@ -88,10 +88,13 @@ module Carto
       # Takes a typhoeus response object and returns a hash
       def get_body(resp)
         if resp.code != 200
-          CartoDB::Logger.warning(message: 'Error response from GME client',
-                                  client_id: @client_id,
-                                  code: resp.code,
-                                  response_body: resp.response_body)
+          # Remove temporarily from rollbar because it's flooding the logs
+          if resp.code != 400
+            CartoDB::Logger.warning(message: 'Error response from GME client',
+                                    client_id: @client_id,
+                                    code: resp.code,
+                                    response_body: resp.response_body)
+          end
           raise HttpError.new(resp.code)
         end
 

@@ -1,12 +1,15 @@
 require 'uuidtools'
 require_dependency 'carto/uuidhelper'
+require_dependency 'carto/query_rewriter'
 
 module Carto
   # Export/import is versioned, but importing should generate a model tree that can be persisted by this class
   class VisualizationsExportPersistenceService
     include Carto::UUIDHelper
+    include Carto::QueryRewriter
 
-    def save_import(user, visualization)
+    def save_import(user, visualization, renamed_tables: {})
+      old_username = visualization.user.username if visualization.user
       apply_user_limits(user, visualization)
       ActiveRecord::Base.transaction do
         visualization.id = random_uuid
@@ -14,16 +17,16 @@ module Carto
 
         ensure_unique_name(user, visualization)
 
-        visualization.layers.map { |layer| fix_layer_user_information(layer, user) }
+        visualization.layers.each { |layer| layer.fix_layer_user_information(old_username, user, renamed_tables) }
+        visualization.analyses.each do |analysis|
+          analysis.analysis_node.fix_analysis_node_queries(old_username, user, renamed_tables)
+        end
 
         permission = Carto::Permission.new(owner: user, owner_username: user.username)
         visualization.permission = permission
 
         map = visualization.map
         map.user = user
-        unless map.save
-          raise "Errors saving imported map: #{map.errors.full_messages}"
-        end
 
         visualization.analyses.each do |analysis|
           analysis.user_id = user.id
@@ -51,23 +54,34 @@ module Carto
           end
           layer.save if changed
         end
+
+        map.data_layers.each(&:register_table_dependencies)
+
+        new_user_layers = map.base_layers.select(&:custom?).select { |l| !contains_equivalent_base_layer?(user.layers, l) }
+        new_user_layers.map(&:dup).map { |l| user.layers << l }
       end
 
       # Propagate changes (named maps, default permissions and so on)
       visualization_member = CartoDB::Visualization::Member.new(id: visualization.id).fetch
       visualization_member.store
 
-      visualization_member.map.layers.map(&:register_table_dependencies)
-
       visualization
     end
 
     private
 
+    def contains_equivalent_base_layer?(layers, layer)
+      layers.any? { |l| equivalent_base_layer?(l, layer) }
+    end
+
+    def equivalent_base_layer?(layer_a, layer_b)
+      layer_a.kind == 'tiled' && layer_a.kind == layer_b.kind && layer_a.options == layer_b.options
+    end
+
     def ensure_unique_name(user, visualization)
       existing_names = Carto::Visualization.uniq
                                            .where(user_id: user.id)
-                                           .where("name ~ '#{visualization.name}( Import)?( \d*)?$'")
+                                           .where("name ~ ?", "#{Regexp.escape(visualization.name)}( Import)?( \d*)?$")
                                            .pluck(:name)
       if existing_names.include?(visualization.name)
         import_name = "#{visualization.name} Import"
@@ -99,30 +113,6 @@ module Carto
         end
       end
       visualization.map.layers = layers
-    end
-
-    def fix_layer_user_information(layer, new_user)
-      new_username = new_user.username
-
-      options = layer.options
-      if options.has_key?(:user_name)
-        old_username = options[:user_name]
-        options[:user_name] = new_username
-
-        # query_history is not modified as a safety measure for cases where this naive replacement doesn't work
-        query = options[:query]
-
-        options[:query] = rewrite_query_for_new_user(query, old_username, new_user) if query.present?
-      end
-    end
-
-    def rewrite_query_for_new_user(query, old_username, new_user)
-      if new_user.username == new_user.database_schema
-        new_schema = new_user.sql_safe_database_schema
-        query.gsub(" #{old_username}.", " #{new_schema}.").gsub(" \"#{old_username}\".", " #{new_schema}.")
-      else
-        query.gsub(" #{old_username}.", " ").gsub(" \"#{old_username}\".", " ")
-      end
     end
   end
 end

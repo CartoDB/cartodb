@@ -19,7 +19,7 @@ $selectedColor: white;
 }
 .UserNotifications-Icon {
   font-size: $sFontSize-large;
-  color: $idleColor;
+  color: #FFFFFF;
   &:hover { color: $selectedColor }
 }
 .UserNotifications-badge {
@@ -27,6 +27,7 @@ $selectedColor: white;
   @include transition(all, .5s, ease-in-out);
   @include transform(scale(0));
   color: $cHighlight-negative;
+  background-color: #73C86B;
 }
 // States
 .UserNotifications.has--alerts {

@@ -137,6 +137,38 @@ namespace :cartodb do
       puts "Purge complete. Removed #{purged_count} items"
     end
 
+    desc "Updates visualizations auth tokens from named maps"
+    task update_auth_tokens: :environment do |_|
+      Carto::Visualization.find_each(conditions: "privacy = 'password'") do |visualization|
+        puts "Updating #{visualization.id}"
+        begin
+          tokens = visualization.get_auth_tokens
+          puts "  from #{visualization.auth_token} to #{tokens.first}"
+          visualization.update_column(:auth_token, tokens.first)
+        rescue => e
+          puts "ERROR #{e.inspect}"
+        end
+      end
+    end
+
+    desc "Have all Builder visualizations mapcapped. Dry mode: `bundle exec rake cartodb:vizs:mapcap_builder_visualizations['--dry']`"
+    task :mapcap_builder_visualizations, [:dry] => :environment do |_, args|
+      dry = args[:dry] == '--dry'
+
+      puts "Mapcapping v3 visualizations. Dry mode #{dry ? 'on' : 'off'}"
+
+      Carto::Visualization.find_each(conditions: "version = 3 and type = 'derived' and privacy != 'private'") do |visualization|
+        begin
+          if !visualization.mapcapped?
+            puts "Mapcapping #{visualization.id}"
+            Carto::Mapcap.create!(visualization_id: visualization.id) unless dry
+          end
+        rescue => e
+          puts "ERROR mapcapping #{visualization}: #{e.inspect}"
+        end
+      end
+    end
+
     private
 
     def inconsistent?(viz)

@@ -4,7 +4,7 @@ require_relative '../spec_helper'
 describe DataImport do
   before(:each) do
     ::User.all.each(&:destroy)
-    @user = create_user(username: 'test', email: "client@example.com", password: "clientex")
+    @user = create_user
     bypass_named_maps
     @table = create_table(user_id: @user.id)
   end
@@ -46,7 +46,7 @@ describe DataImport do
     Table.any_instance.stubs(:cartodbfy).raises(CartoDB::CartoDBfyInvalidID)
     data_import = DataImport.create(
       user_id: @user.id,
-      data_source: '/../db/fake_data/clubbing.csv',
+      data_source: fake_data_path('clubbing.csv'),
       updated_at: Time.now
     )
 
@@ -61,7 +61,7 @@ describe DataImport do
 
     data_import = DataImport.create(
       user_id: @user.id,
-      data_source: '/../db/fake_data/clubbing.csv',
+      data_source: fake_data_path('clubbing.csv'),
       updated_at: Time.now
     ).run_import!
 
@@ -77,7 +77,7 @@ describe DataImport do
 
     data_import = DataImport.create(
       user_id: @user.id,
-      data_source: '/../db/fake_data/clubbing.csv',
+      data_source: fake_data_path('clubbing.csv'),
       updated_at: Time.now
     ).run_import!
 
@@ -101,7 +101,7 @@ describe DataImport do
   it 'should allow to create a table from a query' do
     data_import_1 = DataImport.create(
       user_id: @user.id,
-      data_source: '/../db/fake_data/clubbing.csv',
+      data_source: fake_data_path('clubbing.csv'),
       updated_at: Time.now).run_import!
     data_import_1.state.should be == 'complete'
 
@@ -121,7 +121,7 @@ describe DataImport do
   it 'imports a simple file' do
     data_import = DataImport.create(
       user_id: @user.id,
-      data_source: '/../db/fake_data/clubbing.csv',
+      data_source: fake_data_path('clubbing.csv'),
       updated_at: Time.now
     ).run_import!
 
@@ -134,7 +134,7 @@ describe DataImport do
   it 'imports a simple file with latlon' do
     data_import = DataImport.create(
       user_id: @user.id,
-      data_source: '/../services/importer/spec/fixtures/csv_with_geojson.csv',
+      data_source: Rails.root.join('services/importer/spec/fixtures/csv_with_geojson.csv').to_s,
       updated_at: Time.now
     ).run_import!
 
@@ -144,6 +144,7 @@ describe DataImport do
 
   it 'should allow to create a table from a url' do
     data_import = nil
+    CartoDB::Importer2::Downloader.any_instance.stubs(:validate_url!).returns(true)
     serve_file Rails.root.join('db/fake_data/clubbing.csv') do |url|
       data_import = DataImport.create(
         user_id: @user.id,
@@ -159,6 +160,7 @@ describe DataImport do
 
   it 'should allow to create a table from a url with params' do
     data_import = nil
+    CartoDB::Importer2::Downloader.any_instance.stubs(:validate_url!).returns(true)
     serve_file Rails.root.join('db/fake_data/clubbing.csv?param=wadus'),
                headers: { "content-type" => "text/plain" } do |url|
       data_import = DataImport.create(
@@ -176,7 +178,7 @@ describe DataImport do
   it "can create a table from a query selecting only the cartodb_id" do
     data_import_1 = DataImport.create(
       user_id: @user.id,
-      data_source: '/../db/fake_data/clubbing.csv',
+      data_source: fake_data_path('clubbing.csv'),
       updated_at: Time.now).run_import!
     data_import_1.state.should be == 'complete'
 

@@ -156,7 +156,7 @@ describe Carto::Api::VizJSON3Presenter do
       @visualization.reload
 
       v3_vizjson = Carto::Api::VizJSON3Presenter.new(@visualization, viewer_user).send :calculate_vizjson
-      v3_vizjson[:layers][1][:options][:named_map][:layers][0][:options].should eq source: source
+      v3_vizjson[:layers][1][:options][:source].should eq source
     end
   end
 
@@ -180,8 +180,8 @@ describe Carto::Api::VizJSON3Presenter do
       v2_vizjson[:layers][1][:options][:layer_definition][:layers][0][:options][:source].should be_nil
       nm_vizjson[:layers][1][:options][:layer_definition][:layers][0][:options][:sql].should eq query
       nm_vizjson[:layers][1][:options][:layer_definition][:layers][0][:options][:source].should be_nil
-      v3_vizjson[:layers][1][:options][:layer_definition][:layers][0][:options][:sql].should eq query
-      v3_vizjson[:layers][1][:options][:layer_definition][:layers][0][:options][:source].should be_nil
+      v3_vizjson[:layers][1][:options][:sql].should eq query
+      v3_vizjson[:layers][1][:options][:source].should be_nil
 
       source = 'a1'
       layer.options['source'] = source
@@ -196,17 +196,159 @@ describe Carto::Api::VizJSON3Presenter do
       v2_vizjson[:layers][1][:options][:layer_definition][:layers][0][:options][:source].should be_nil
       nm_vizjson[:layers][1][:options][:layer_definition][:layers][0][:options][:sql].should be_nil
       nm_vizjson[:layers][1][:options][:layer_definition][:layers][0][:options][:source].should eq(id: source)
-      v3_vizjson[:layers][1][:options][:layer_definition][:layers][0][:options][:sql].should be_nil
-      v3_vizjson[:layers][1][:options][:layer_definition][:layers][0][:options][:source].should eq source
+      v3_vizjson[:layers][1][:options][:sql].should be_nil
+      v3_vizjson[:layers][1][:options][:source].should eq source
     end
-end
-  describe 'anonyous_vizjson' do
+  end
+
+  describe 'anonymous_vizjson' do
     include_context 'full visualization'
 
     it 'v3 should include sql_wrap' do
       v3_vizjson = Carto::Api::VizJSON3Presenter.new(@visualization, viewer_user).send :calculate_vizjson
-      v3_vizjson[:layers][1][:options][:layer_definition][:layers][0][:options][:sql_wrap].should eq "select * from (<%= sql %>) __wrap"
+      v3_vizjson[:layers][1][:options][:sql_wrap].should eq "select * from (<%= sql %>) __wrap"
     end
   end
 
+  describe 'layers' do
+    include_context 'full visualization'
+
+    before(:all) do
+      @data_layer = @map.data_layers.first
+      @data_layer.options[:attribution] = 'CARTO attribution'
+      @data_layer.save
+
+      @torque_layer = FactoryGirl.create(:carto_layer, kind: 'torque', maps: [@map])
+      @torque_layer.options[:table_name] = 'wadus'
+      @torque_layer.save
+    end
+
+    shared_examples 'common layer checks' do
+      it 'should not include layergroup layers' do
+        vizjson[:layers].map { |l| l[:type] }.should_not include 'layergroup'
+      end
+
+      it 'should not include namedmap layers' do
+        vizjson[:layers].map { |l| l[:type] }.should_not include 'namedmap'
+      end
+
+      it 'should have exactly three layers: tiled, CartoDB and torque' do
+        vizjson[:layers].map { |l| l[:type] }.should eq %w(tiled CartoDB torque)
+      end
+
+      it 'should include attribution for all layers' do
+        vizjson[:layers].each { |l| l[:options].should include :attribution }
+      end
+
+      it 'should not include named map options in any layer' do
+        vizjson[:layers].each do |l|
+          options = l[:options]
+          options.should_not include :stat_tag
+          options.should_not include :maps_api_template
+          options.should_not include :sql_api_template
+          options.should_not include :named_map
+        end
+      end
+
+      it 'should not include interactivity in any layer' do
+        vizjson[:layers].each do |l|
+          l.should_not include :interactivity
+          l[:options].should_not include :interactivity
+        end
+      end
+
+      it 'should not include infowindow nor tooltip in basemaps' do
+        vizjson[:layers].each do |l|
+          if l[:type] == 'tiled'
+            l.should_not include :infowindow
+            l.should_not include :tooltip
+          end
+        end
+      end
+
+      it 'should not include order in any layer' do
+        vizjson[:layers].each do |l|
+          l.should_not include :order
+        end
+      end
+
+      it 'should not include layer_name in options for carto layers' do
+        carto_layer = vizjson[:layers][1]
+        carto_layer.should_not include :layer_name
+        carto_layer[:options][:layer_name].should
+      end
+
+      it 'should not include Odyssey options' do
+        vizjson.should_not include :prev
+        vizjson.should_not include :next
+        vizjson.should_not include :transition_options
+      end
+    end
+
+    describe 'in namedmap vizjson' do
+      let(:vizjson) do
+        Carto::Api::VizJSON3Presenter.new(@visualization, viewer_user)
+                                     .send(:calculate_vizjson, forced_privacy_version: :force_named)
+      end
+
+      include_examples 'common layer checks'
+
+      it 'should not include sql nor cartocss fields in data layers' do
+        data_layer_options = vizjson[:layers][1][:options]
+        data_layer_options.should_not include :sql
+        data_layer_options.should_not include :cartocss
+        data_layer_options.should_not include :cartocss_version
+      end
+
+      it 'should include cartocss but not sql in torque layers' do
+        torque_layer = vizjson[:layers][2]
+        torque_layer.should_not include :sql
+        torque_layer[:cartocss].should be
+        torque_layer[:cartocss_version].should be
+      end
+    end
+
+    describe 'in anonymous vizjson' do
+      let(:vizjson) do
+        Carto::Api::VizJSON3Presenter.new(@visualization, viewer_user)
+                                     .send(:calculate_vizjson, forced_privacy_version: :force_anonymous)
+      end
+
+      include_examples 'common layer checks'
+
+      it 'should include sql and cartocss fields in data layers' do
+        data_layer_options = vizjson[:layers][1][:options]
+        data_layer_options[:sql].should be
+        data_layer_options[:cartocss].should be
+        data_layer_options[:cartocss_version].should be
+      end
+
+      it 'should include sql and cartocss fields in torque layers' do
+        torque_layer = vizjson[:layers][2]
+        torque_layer[:sql].should be
+        torque_layer[:cartocss].should be
+        torque_layer[:cartocss_version].should be
+      end
+    end
+
+    describe 'overlays' do
+      include_context 'full visualization'
+
+      def vizjson
+        Carto::Api::VizJSON3Presenter.new(@visualization, viewer_user)
+                                     .send(:calculate_vizjson, forced_privacy_version: :force_anonymous)
+      end
+
+      it 'enables map layer_selector option if there is a layer_selector overlay' do
+        vizjson[:options]['layer_selector'].should eq false
+        @visualization.overlays << Carto::Overlay.new(type: 'layer_selector')
+        vizjson[:options]['layer_selector'].should eq true
+      end
+
+      it 'removes layer selector overlay ' do
+        @visualization.overlays << Carto::Overlay.new(type: 'layer_selector')
+        vizjson[:overlays].any? { |o| o[:type] == 'layer_selector' }.should be_false
+      end
+    end
+  end
 end

@@ -1,3 +1,5 @@
+require_dependency 'carto/user_authenticator'
+
 Rails.configuration.middleware.use RailsWarden::Manager do |manager|
   manager.default_strategies :password, :api_authentication
   manager.failure_app = SessionsController
@@ -15,13 +17,15 @@ class Warden::SessionSerializer
 end
 
 Warden::Strategies.add(:password) do
+  include Carto::UserAuthenticator
+
   def valid_password_strategy_for_user(user)
     user.organization.nil? || user.organization.auth_username_password_enabled
   end
 
   def authenticate!
     if params[:email] && params[:password]
-      if (user = ::User.authenticate(params[:email], params[:password]))
+      if (user = authenticate(params[:email], params[:password]))
         if user.enabled? && valid_password_strategy_for_user(user)
           success!(user, :message => "Success")
           request.flash['logged'] = true
@@ -73,6 +77,30 @@ Warden::Strategies.add(:google_access_token) do
       else
         fail!
       end
+    else
+      fail!
+    end
+  end
+end
+
+Warden::Strategies.add(:github_oauth) do
+  def valid_github_oauth_strategy_for_user(user)
+    user.organization.nil? || user.organization.auth_github_enabled
+  end
+
+  def authenticate!
+    if params[:github_api]
+      github_api = params[:github_api]
+      github_id = github_api.id
+      user = User.where(github_user_id: github_id).first
+      unless user
+        user = User.where(email: github_api.email, github_user_id: nil).first
+        if user && valid_github_oauth_strategy_for_user(user)
+          user.github_user_id = github_id
+          user.save
+        end
+      end
+      user && valid_github_oauth_strategy_for_user(user) ? success!(user) : fail!
     else
       fail!
     end
@@ -169,6 +197,46 @@ Warden::Strategies.add(:http_header_authentication) do
     success!(user)
   rescue => e
     CartoDB.report_exception(e, "Authenticating with http_header_authentication", user: user)
+    return fail!
+  end
+end
+
+Warden::Strategies.add(:saml) do
+  def organization_from_request
+    subdomain = CartoDB.extract_subdomain(request)
+    Carto::Organization.where(name: subdomain).first if subdomain
+  end
+
+  def saml_service(organization = organization_from_request)
+    Carto::SamlService.new(organization) if organization
+  end
+
+  def valid?
+    params[:SAMLResponse].present? && saml_service.try(:enabled?)
+  end
+
+  def authenticate!
+    organization = organization_from_request
+    saml_service = Carto::SamlService.new(organization)
+
+    email = saml_service.get_user_email(params[:SAMLResponse])
+    user = organization.users.where(email: email.strip.downcase).first
+
+    if user
+      if user.try(:enabled?)
+        success!(user, message: "Success")
+        request.flash['logged'] = true
+      else
+        fail!
+      end
+    else
+      throw(:warden,
+            action: 'saml_user_not_in_carto',
+            organization_id: organization.id,
+            saml_email: email)
+    end
+  rescue => e
+    CartoDB::Logger.error(message: "Authenticating with SAML", exception: e)
     return fail!
   end
 end

@@ -40,7 +40,7 @@ module Carto
         else
           url = CartoDB.base_url(fields[:organization_name], fields[:username])
         end
-        url += CartoDB.path(self, 'public_visualizations_embed_map', {id: uuid})
+        url += CartoDB.path(self, 'public_visualizations_embed_map', id: uuid, user_domain: nil)
 
         # force the schema
         if fields[:protocol] == 'https' && !url.include?('https')
@@ -59,7 +59,7 @@ module Carto
             :author_name => fields[:username],
             :author_url => fields[:user_profile_url],
             :provider_name => 'CartoDB',
-            :provider_url => "#{fields[:protocol]}://www.cartodb.com/"
+            :provider_url => "#{fields[:protocol]}://carto.com/"
         }
 
         if format == 'xml'
@@ -101,7 +101,7 @@ module Carto
         }
       end
 
-      # testuser.cartodb.com || testorg.cartodb.com/u/user
+      # testuser.carto.com || testorg.carto.com/u/user
       def from_url(url_fragments, protocol, domain)
         # To ease testing don't request eactly all URI.split params
         raise UrlFRagmentsError.new("Invalid url_fragments parameter") unless url_fragments.length > 5
@@ -125,7 +125,7 @@ module Carto
         }
       end
 
-      # https://cartodb.com/u/testuser/...
+      # https://carto.com/u/testuser/...
       def from_domainless_url(url_fragments, protocol)
         # To ease testing don't request eactly all URI.split params
         raise UrlFRagmentsError.new("Invalid url_fragments parameter") unless url_fragments.length > 5

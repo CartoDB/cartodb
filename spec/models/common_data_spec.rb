@@ -141,7 +141,7 @@ describe CommonData do
                 "owner": {
                     "id": "beacfd17-418e-4e71-b307-95b5c96105dc",
                     "username": "common-data",
-                    "email": "mario.defrutos+30@cartodb.com",
+                    "email": "mario.defrutos+30@carto.com",
                     "avatar_url": "//example.com/avatars/avatar_mountains_blue.png",
                     "base_url": "http://common-data.localhost.lan:3000",
                     "quota_in_bytes": 262144000,
@@ -177,7 +177,7 @@ describe CommonData do
                     "owner": {
                         "id": "beacfd17-418e-4e71-b307-95b5c96105dc",
                         "username": "common-data",
-                        "email": "mario.defrutos+30@cartodb.com",
+                        "email": "mario.defrutos+30@carto.com",
                         "avatar_url": "//example.com/avatars /avatar_mountains_blue.png",
                         "base_url": "http://common-data.localhost.lan:3000",
                         "quota_in_bytes": 262144000,
@@ -255,7 +255,7 @@ describe CommonData do
                 "owner": {
                     "id": "beacfd17-418e-4e71-b307-95b5c96105dc",
                     "username": "common-data",
-                    "email": "ma rio.defrutos+30@cartodb.com",
+                    "email": "ma rio.defrutos+30@carto.com",
                     "avatar_url": "//example.com/avatars/avatar_mountains_blue.png",
                     "base_url": "http://common-data.localhost.lan:3000",
                     "quota_in_bytes": 262144000,
@@ -291,7 +291,7 @@ describe CommonData do
                     "owner": {
                         "id": "beacfd17-418e-4e71-b307-95b5c96105dc",
                         "username": "common-data",
-                        "email": "mario.defrutos+30@cartodb.com",
+                        "email": "mario.defrutos+30@carto.com",
                         "avatar_url": "//example .com/avatars/avatar_mountains_blue.png",
                         "base_url": "http://common-data.localhost.lan:3000",
                         "quota_in_bytes": 262144000,
@@ -369,7 +369,7 @@ describe CommonData do
                 "owner": {
                     "id": "beacfd17-418e-4e71-b307-95b5c96105dc",
                     "username": "common-data",
-                    "email": "mario.defrutos+30@cartodb.com",
+                    "email": "mario.defrutos+30@carto.com",
                     "avatar_url": "//example.com/avatars/avatar_mountains_blue.png",
                     "base_url": "http://common-data.localhost.lan:3000",
                     "quota_in_bytes": 262144000,
@@ -405,7 +405,7 @@ describe CommonData do
                     "owner": {
                         "id": "beacfd17-418e-4e71-b307-95b5c96105dc",
                         "username": "common-data",
-                        "email": "mario.defrutos+30@cartodb.com",
+                        "email": "mario.defrutos+30@carto.com",
                         "avatar_url ": "//example.com/avatars/avatar_mountains_blue.png",
                         "base_url": "http://common-data.localhost.lan:3000",
                         "quota_in_bytes": 262144000,
@@ -483,7 +483,7 @@ describe CommonData do
                 "owner": {
                     "id": "beacfd17-418e-4e71-b307-95b5c96105dc",
                     "username": "common-data",
-                    "email": "mario.defrutos+30@cartodb.com",
+                    "email": "mario.defrutos+30@carto.com",
                     "avatar_url": "//example.com/avatars/avatar_mountains_blue.png",
                     "base_url": "http://common-data.localhost.lan:3000",
                     "quota_in_bytes": 262144000,
@@ -519,7 +519,7 @@ describe CommonData do
                     "owner": {
                         "id": "beacfd17-418e-4e71-b307-95b5c96105dc",
                         "username": "common-data",
-                        "email": "mario.defrutos+30 @cartodb.com",
+                        "email": "mario.defrutos+30 @carto.com",
                         "avatar_url": "//example.com/avatars/avatar_mountains_blue.png",
                         "base_url": "http://common-data.localhost.lan:3000",
                         "quota_in_bytes": 262144000,
@@ -597,7 +597,7 @@ describe CommonData do
                 "owner": {
                     "id": "beacfd17-418e-4e71-b307-95b5c96105dc",
                     "usernam e": "common-data",
-                    "email": "mario.defrutos+30@cartodb.com",
+                    "email": "mario.defrutos+30@carto.com",
                     "avatar_url": "//example.com/avatars/avatar_mountains_blue.png",
                     "base_url": "http://common-data.localhost.lan:3000",
                     "quota_in_bytes": 262144000,
@@ -633,7 +633,7 @@ describe CommonData do
                     "owner": {
                         "id": "beacfd17-418e-4e71-b307-95b5c96105dc",
                         "username": "common-data",
-                        "email": "mario.defrutos+30@cartodb.com",
+                        "email": "mario.defrutos+30@carto.com",
                         "a vatar_url": "//example.com/avatars/avatar_mountains_blue.png",
                         "base_url": "http://common-data.localhost.lan:3000",
                         "quota_in_bytes": 262144000,
@@ -709,7 +709,7 @@ describe CommonData do
                 "owner": {
                     "id": "beacfd17-418e-4e71-b307-95b5c96105dc",
                     "username": "common-data",
-                    "email": "mario.defrutos+30@cartodb.com",
+                    "email": "mario.defrutos+30@carto.com",
                     "avatar_url": "//example.com/avatars/av atar_mountains_blue.png",
                     "base_url": "http://common-data.localhost.lan:3000",
                     "quota_in_bytes": 262144000,
@@ -745,7 +745,7 @@ describe CommonData do
                     "owner": {
                         "id": "beacfd17-418e-4e71-b307 -95b5c96105dc",
                         "username": "common-data",
-                        "email": "mario.defrutos+30@cartodb.com",
+                        "email": "mario.defrutos+30@carto.com",
                         "avatar_url": "//example.com/avatars/avatar_mountains_blue.png",
                         "base_url": "http://common-data.localhost.lan:3000",
                         "quota_in_bytes": 262144000,
@@ -821,7 +821,7 @@ describe CommonData do
               "owner":{
                     "id": "beacfd17-418e-4e71-b307 -95b5c96105dc",
                     "username": "common-data",
-                    "email": "mario.defrutos+30@cartodb.com",
+                    "email": "mario.defrutos+30@carto.com",
                     "avatar_url": "//example.com/avatars/avatar_mountains_blue.png",
                     "base_url": "http://common-data.localhost.lan:3000",
                     "quota_in_bytes": 262144000,
@@ -857,7 +857,7 @@ describe CommonData do
                     "owner": {
                         "id": "beacfd17-418e-4e71-b307-95b5c96105dc",
                         "username": "common-data",
-                        "email": "mario.defrutos+30@cartodb.com",
+                        "email": "mario.defrutos+30@carto.com",
                         "avatar_url": "//example.com/avatars/avatar_mountains_blue.png",
                         "base_url": "http://common-data.localhost.lan:3000",
                         "quota_in_bytes": 262144000,

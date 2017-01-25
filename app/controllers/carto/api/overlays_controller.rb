@@ -91,7 +91,7 @@ module Carto
       end
 
       def check_current_user_has_permissions_on_vis
-        unless @visualization.is_writable_by_user(current_user)
+        unless @visualization.writable_by?(current_user)
           raise Carto::UnauthorizedError.new("#{current_user.id} doesn't own visualization #{@visualization.id}")
         end
       end

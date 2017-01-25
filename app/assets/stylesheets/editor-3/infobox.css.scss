@@ -2,10 +2,19 @@
 @import 'cdb-variables/colors';
 @import 'cdb-variables/sizes';
 
+// Styles for infobox element
+// ------------------------------
+
+.Infobox-wrapper {
+  width: 100%;
+  margin-top: -25px;
+  margin-bottom: -25px;
+}
 .Infobox {
+  @include flex(2);
   margin-right: -25px;
   margin-left: -25px;
-  padding: 25px;
+  padding: 21px 25px 25px;
   background: $cThirdBackground;
 
   &.is-error {
@@ -14,14 +23,33 @@
   }
 
   &.is-alert {
-    background: rgba($cHighlightYellow, 0.6);
+    background: rgba($cHighlightYellow, 0.64);
+  }
+
+  &.is-dark {
+    background: rgba(0, 0, 0, 0.4);
+    color: #FEB714;
+    .Infobox-buttonLink {
+      color: $cWhite;
+    }
   }
 }
-
+.Infobox-buttonLink {
+  padding: 4px 0;
+  color: $cBlue;
+  &.is-disabled {
+    cursor: default;
+    opacity: 0.24;
+  }
+}
+.Infobox-quota {
+  @include flex(10);
+  margin-right: $baseSize * 5;
+}
 .Infobox-buttons {
   @include display-flex();
+  @include flex(10);
 }
-
 .Infobox-button {
   @include flex(1);
 

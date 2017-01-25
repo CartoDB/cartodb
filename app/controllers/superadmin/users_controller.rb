@@ -7,8 +7,8 @@ class Superadmin::UsersController < Superadmin::SuperadminController
   respond_to :json
 
   ssl_required :show, :create, :update, :destroy, :index
-  before_filter :get_user, only: [ :update, :destroy, :show, :dump, :data_imports, :data_import ]
-  before_filter :get_carto_user, only: [ :synchronizations, :synchronization ]
+  before_filter :get_user, only: [:update, :destroy, :show, :dump, :data_imports, :data_import]
+  before_filter :get_carto_user, only: [:synchronizations, :synchronization, :geocodings, :geocoding]
 
   layout 'application'
 
@@ -41,15 +41,17 @@ class Superadmin::UsersController < Superadmin::SuperadminController
 
     if @user.save
       @user.reload
-      CartoDB::Visualization::CommonDataService.load_common_data(@user, self)
+      CartoDB::Visualization::CommonDataService.load_common_data(@user, self) if @user.should_load_common_data?
       @user.set_relationships_from_central(params[:user])
     end
     respond_with(:superadmin, @user)
   end
 
   def update
-    @user.set_fields_from_central(params[:user], :update)
-    @user.set_relationships_from_central(params[:user])
+    user_param = params[:user]
+    @user.set_fields_from_central(user_param, :update)
+    @user.set_relationships_from_central(user_param)
+    @user.regenerate_api_key(user_param[:api_key]) if user_param[:api_key].present?
 
     @user.save
     respond_with(:superadmin, @user)
@@ -59,7 +61,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
     @user.destroy
     respond_with(:superadmin, @user)
   rescue => e
-    Rollbar.report_message('Error destroying user', 'error', { error: e.inspect, user: @user.inspect })
+    CartoDB::Logger.error(exception: e, message: 'Error destroying user', user: @user)
     render json: { "error": "Error destroying user: #{e.message}" }, status: 422
   end
 
@@ -103,7 +105,8 @@ class Superadmin::UsersController < Superadmin::SuperadminController
         id: entry.id,
         data_type: entry.data_type,
         date: entry.updated_at,
-        status: entry.success.nil? ? false : entry.success
+        status: entry.success.nil? ? false : entry.success,
+        state: entry.state
       }
     })
   end
@@ -116,13 +119,29 @@ class Superadmin::UsersController < Superadmin::SuperadminController
                  })
   end
 
+  def geocodings
+    respond_with(@user.geocodings.map do |entry|
+      {
+        id: entry.id,
+        date: entry.updated_at,
+        status: entry.state
+      }
+    end)
+  end
+
+  def geocoding
+    geocoding = @user.geocodings.find(params[:geocoding_id])
+    respond_with(data: geocoding.attributes, log: geocoding && geocoding.log.to_s)
+  end
+
   def synchronizations
     respond_with(@user.synchronizations.map { |entry|
       {
         id: entry.id,
         data_type: entry.service_name,
         date: entry.updated_at,
-        status: entry.success?
+        status: entry.success?,
+        state: entry.state
       }
     })
   end

@@ -13,6 +13,7 @@ module Carto
           id: @invitation.id,
           users_emails: @invitation.users_emails,
           welcome_text: @invitation.welcome_text,
+          viewer: @invitation.viewer,
           created_at: @invitation.created_at,
           updated_at: @invitation.updated_at
         }

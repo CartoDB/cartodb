@@ -2,12 +2,20 @@
 
 module LoginHelper
 
-  DEFAULT_BACKGROUND_COLOR = "#354046"
+  DEFAULT_BACKGROUND_COLOR = "#F9F9F9".freeze
 
   def background
-    base_color = @organization && @organization.color ? @organization.color : DEFAULT_BACKGROUND_COLOR
-    color = "#{darken_color(base_color,0.6)}, #{base_color}"
-    "background-image: url(#{image_path('backgrounds/sessions.png')}), linear-gradient(to bottom right, #{color});"
+    base_color = (@organization.present? && @organization.color.present?) ? @organization.color : DEFAULT_BACKGROUND_COLOR
+    color = color_to_rgb(base_color)
+
+    "background-image: linear-gradient(0deg, #F9F9F9 70%, rgba(#{color}, 0.4) 100%);"
+  end
+
+  def color_to_rgb(hex_color)
+    hex_color = hex_color.delete('#')
+    rgb = hex_color.scan(/../).map(&:hex)
+
+    "#{rgb[0]}, #{rgb[1]}, #{rgb[2]}"
   end
 
   def darken_color(hex_color, amount=0.4)
@@ -16,11 +24,12 @@ module LoginHelper
     rgb[0] = (rgb[0].to_i * amount).round
     rgb[1] = (rgb[1].to_i * amount).round
     rgb[2] = (rgb[2].to_i * amount).round
+
     "#%02x%02x%02x" % rgb
   end
 
   def organization_color(organization)
-    !organization.nil? ? darken_color(organization.color, 0.7) : "#292E33"
+    !organization.nil? ? darken_color(organization.color, 0.4) : "#292E33"
   end
 
   def render_organization_avatar
@@ -37,7 +46,7 @@ module LoginHelper
     else
       "<picture class=\"Navbar-brand\">
         <source type='image/svg+xml' srcset=\"#{brand_path}\">
-        <img src=\"#{brand_path}\" alt='CartoDB' height=\"48\" width=\"48\" />
+        <img src=\"#{brand_path}\" alt='CARTO' height=\"48\" width=\"48\" />
       </picture>".html_safe
     end
   end
@@ -61,5 +70,5 @@ module LoginHelper
       }
     end
   end
-  
+
 end

@@ -5,6 +5,7 @@
 require 'yaml'
 require 'pg'
 require 'redis'
+require_dependency 'carto/configuration'
 
 script_name = "script/compare_metadata.rb"
 data = `ps aux | grep "#{script_name}"`
@@ -16,8 +17,9 @@ if data.length > 0
   exit 0
 end
 
-config = YAML.load(File.read('../config/app_config.yml'))
-database = YAML.load(File.read('../config/database.yml'))
+carto_conf = Carto::Conf.new
+config = carto_conf.app_config
+database = carto_conf.db_config
 
 
 RAILS_ENV = ENV['RAILS_ENV'] || 'production'

@@ -1,4 +1,4 @@
-# encoding utf-8
+# encoding: utf-8
 
 require_relative '../../../spec_helper_min'
 require_relative '../../../../lib/carto/named_maps/template'
@@ -31,6 +31,12 @@ module Carto
         end
       end
 
+      it 'should have correct Named Maps version' do
+        template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
+
+        template_hash[:version].should eq Carto::NamedMaps::Template::NAMED_MAPS_VERSION
+      end
+
       describe '#layers' do
         describe 'carto layers' do
           before(:all) do
@@ -59,9 +65,46 @@ module Carto
             @template_hash[:layergroup][:layers].second[:type].should eq 'cartodb'
           end
 
-          describe 'with infowindows' do
+          it 'should contain layer id' do
+            @template_hash[:layergroup][:layers].second[:id].should_not be_nil
+            @template_hash[:layergroup][:layers].second[:id].should eq @carto_layer.id
+          end
+
+          describe 'with popups' do
+            let(:dummy_infowindow) do
+              {
+                "fields" => [
+                  {
+                    "name" => "click_status",
+                    "title" => true,
+                    "position" => 8
+                  }],
+                "template_name" => "table/views/infowindow_light",
+                "template" => "",
+                "alternative_names" => {},
+                "width" => 226,
+                "maxHeight" => 180
+              }
+            end
+
+            let(:dummy_tooltip) do
+              {
+                "fields" => [
+                  {
+                    "name" => "hover_status",
+                    "title" => true,
+                    "position" => 8
+                  }],
+                "template_name" => "table/views/infowindow_light",
+                "template" => "",
+                "alternative_names" => {},
+                "width" => 226,
+                "maxHeight" => 180
+              }
+            end
+
             before(:all) do
-              @carto_layer.options[:interactivity] = 'cartodb_id,manolo_status'
+              @carto_layer.options[:interactivity] = 'cartodb_id,click_status'
               @carto_layer.save
 
               @visualization.reload
@@ -74,44 +117,43 @@ module Carto
               @visualization.reload
             end
 
-            describe 'triggered on hover' do
-              it 'interactivity should be present' do
-                template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
-                layer_options_hash = template_hash[:layergroup][:layers].second[:options]
+            describe 'triggered on hover only' do
+              before(:all) do
+                @carto_layer.tooltip = dummy_tooltip
+                @carto_layer.save
 
-                layer_options_hash[:interactivity].should be_present
+                @visualization.reload
+
+                template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
+                @layer_options_hash = template_hash[:layergroup][:layers].second[:options]
               end
 
-              it 'interactivity should be correct' do
-                template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
-                layer_options_hash = template_hash[:layergroup][:layers].second[:options]
+              after(:all) do
+                @carto_layer.tooltip = nil
+                @carto_layer.save
 
-                layer_options_hash[:interactivity].should eq @carto_layer.options[:interactivity]
+                @visualization.reload
+                @layer_options_hash = nil
+              end
+
+              it 'interactivity contain fields but not cartodb_id' do
+                @layer_options_hash[:interactivity].should eq 'hover_status'
+              end
+
+              it 'should not contain attributes' do
+                @layer_options_hash[:attributes].should be_nil
               end
             end
 
-            describe 'triggered onclick' do
-              let(:dummy_infowindow) do
-                {
-                  "fields" => [
-                    {
-                      "name" => "manolo_status",
-                      "title" => true,
-                      "position" => 8
-                    }],
-                  "template_name" => "table/views/infowindow_light",
-                  "template" => "",
-                  "alternative_names" => {},
-                  "width" => 226,
-                  "maxHeight" => 180
-                }
-              end
-
+            describe 'triggered onclick only' do
               before(:all) do
                 @carto_layer.infowindow = dummy_infowindow
                 @carto_layer.save
 
                 @visualization.reload
+
+                template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
+                @layer_options_hash = template_hash[:layergroup][:layers].second[:options]
               end
 
               after(:all) do
@@ -119,22 +161,66 @@ module Carto
                 @carto_layer.save
 
                 @visualization.reload
+                @layer_options_hash = nil
               end
 
-              it 'attributes should be present' do
-                template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
-                layer_options_hash = template_hash[:layergroup][:layers].second[:options]
-
-                layer_options_hash[:attributes].should be_present
+              it 'interactivity should only contain cartodb_id' do
+                @layer_options_hash[:interactivity].should eq 'cartodb_id'
               end
 
-              it 'attributes should be correct' do
+              it 'should have attributes' do
+                @layer_options_hash[:attributes].should_not be_nil
+                @layer_options_hash[:attributes].should_not be_empty
+              end
+
+              it 'attributes should have id: cartodb_id' do
+                @layer_options_hash[:attributes][:id].should eq 'cartodb_id'
+              end
+
+              it 'attributes should contain correct columns' do
+                @layer_options_hash[:attributes][:columns].should eq ['click_status']
+              end
+            end
+
+            describe 'triggered onclick and onhover' do
+              before(:all) do
+                @carto_layer.infowindow = dummy_infowindow
+                @carto_layer.tooltip = dummy_tooltip
+                @carto_layer.save
+
+                @visualization.reload
+
                 template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
-                layer_options_hash = template_hash[:layergroup][:layers].second[:options]
+                @layer_options_hash = template_hash[:layergroup][:layers].second[:options]
+              end
 
-                expected_attributes = { id: 'cartodb_id', columns: ['manolo_status'] }
+              after(:all) do
+                @carto_layer.infowindow = nil
+                @carto_layer.save
 
-                layer_options_hash[:attributes].should eq expected_attributes
+                @visualization.reload
+                @layer_options_hash = nil
+              end
+
+              it 'interactivity should contain cartodb_id and selected columns' do
+                @layer_options_hash[:interactivity].should include 'cartodb_id'
+                @layer_options_hash[:interactivity].should_not include 'click_status'
+                @layer_options_hash[:interactivity].should include 'hover_status'
+              end
+
+              it 'should have attributes' do
+                @layer_options_hash[:attributes].should_not be_nil
+                @layer_options_hash[:attributes].should_not be_empty
+              end
+
+              it 'attributes should have id: cartodb_id' do
+                @layer_options_hash[:attributes][:id].should eq 'cartodb_id'
+              end
+
+              it 'attributes should contain correct columns but not cartodb_id' do
+                @layer_options_hash[:attributes][:columns].should include 'click_status'
+                @layer_options_hash[:attributes][:columns].should_not include 'hover_status'
+                @layer_options_hash[:attributes][:columns].should_not include 'cartodb_id'
               end
             end
           end
@@ -167,8 +253,6 @@ module Carto
 
               @carto_layer.options[:source] = @analysis.natural_id
               @carto_layer.save
-
-              @template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
             end
 
             after(:all) do
@@ -179,12 +263,34 @@ module Carto
               @template_hash = nil
             end
 
-            it 'should not contain sql' do
-              @template_hash[:layergroup][:layers].second[:options][:sql].should be_nil
+            describe 'and builder' do
+              before(:all) do
+                @visualization.stubs(:version).returns(3)
+                @template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
+              end
+
+              it 'should not contain sql' do
+                @template_hash[:layergroup][:layers].second[:options][:sql].should be_nil
+              end
+
+              it 'should contain source' do
+                @template_hash[:layergroup][:layers].second[:options][:source][:id].should eq @analysis.natural_id
+              end
             end
 
-            it 'should contain source' do
-              @template_hash[:layergroup][:layers].second[:options][:source][:id].should eq @analysis.natural_id
+            describe 'and editor' do
+              before(:all) do
+                @visualization.stubs(:version).returns(2)
+                @template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
+              end
+
+              it 'should contain sql' do
+                @template_hash[:layergroup][:layers].second[:options].should_not be_nil
+              end
+
+              it 'should not contain source' do
+                @template_hash[:layergroup][:layers].second[:options][:source].should be_nil
+              end
             end
           end
 
@@ -236,6 +342,11 @@ module Carto
             @template_hash[:layergroup][:layers].second[:type].should eq 'torque'
           end
 
+          it 'should contain layer id' do
+            @template_hash[:layergroup][:layers].second[:id].should_not be_nil
+            @template_hash[:layergroup][:layers].second[:id].should eq @torque_layer.id
+          end
+
           describe 'with aggregations' do
             before(:all) do
               @torque_layer.options[:query_wrapper] = 'SELECT manolo FROM (<%= sql %>)'
@@ -252,12 +363,12 @@ module Carto
               @template_hash = nil
             end
 
-            it 'should not contain sql wrap' do
-              @template_hash[:layergroup][:layers].second[:options][:sql_wrap].should be_nil
+            it 'should contain sql wrap' do
+              @template_hash[:layergroup][:layers].second[:options][:sql_wrap].should eq 'SELECT manolo FROM (<%= sql %>)'
             end
 
-            it 'should wrap sql' do
-              @template_hash[:layergroup][:layers].second[:options][:sql].should =~ /SELECT manolo FROM/
+            it 'should not wrap sql' do
+              @template_hash[:layergroup][:layers].second[:options][:sql].should_not =~ /SELECT manolo FROM/
             end
           end
         end
@@ -330,6 +441,28 @@ module Carto
       end
 
       describe '#auth' do
+        describe 'when mapcaps exist' do
+          before(:all) do
+            @mapcap = Carto::Mapcap.create(visualization_id: @visualization.id)
+            @regenerated_visualization = @visualization.latest_mapcap.regenerate_visualization
+          end
+
+          after(:all) do
+            @mapcap.destroy
+            @regenerated_visualization = nil
+          end
+
+          it 'should use non-mapcapped visualization for auth' do
+            @visualization.stubs(:password_protected?).returns(true)
+            @visualization.stubs(:non_mapcapped).returns(@visualization) # return stubbed object
+
+            @regenerated_visualization.password_protected?.should be_false
+
+            template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
+            template_hash[:auth][:method].should eq Carto::NamedMaps::Template::AUTH_TYPE_SIGNED
+          end
+        end
+
         describe 'should be open' do
           after(:each) do
             @visualization.save
@@ -340,10 +473,6 @@ module Carto
 
           it 'for public visualizations' do
             @visualization.privacy = Carto::Visualization::PRIVACY_PUBLIC
-          end
-
-          it 'for private visualizations' do
-            @visualization.privacy = Carto::Visualization::PRIVACY_PRIVATE
           end
 
           it 'for link visualizations' do
@@ -368,20 +497,86 @@ module Carto
             @visualization.privacy = Carto::Visualization::PRIVACY_PRIVATE
             @visualization.stubs(:organization?).returns(true)
           end
+
+          it 'for private visualizations' do
+            @visualization.privacy = Carto::Visualization::PRIVACY_PRIVATE
+          end
+
+          describe 'and include tokens' do
+            before(:all) do
+              @org = mock
+              @org.stubs(:get_auth_token).returns(SecureRandom.urlsafe_base64(nil, false))
+              @group = mock
+              @group.stubs(:get_auth_token).returns(SecureRandom.urlsafe_base64(nil, false))
+              @other_user = mock
+              @other_user.stubs(:get_auth_token).returns(SecureRandom.urlsafe_base64(nil, false))
+            end
+
+            before(:each) do
+              @visualization.privacy = Carto::Visualization::PRIVACY_PRIVATE
+              @visualization.stubs(:organization?).returns(true)
+            end
+
+            it 'for owner user always' do
+              template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
+              template_hash[:auth][:valid_tokens].should eq [@visualization.user.get_auth_token]
+            end
+
+            it 'for organization' do
+              @visualization.permission.stubs(:entities_with_read_permission).returns([@org])
+              template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
+              auth_tokens = template_hash[:auth][:valid_tokens]
+              auth_tokens.count.should eq 2
+              auth_tokens.should include @user.get_auth_token
+              auth_tokens.should include @org.get_auth_token
+            end
+
+            it 'for group' do
+              @visualization.permission.stubs(:entities_with_read_permission).returns([@group])
+              template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
+              auth_tokens = template_hash[:auth][:valid_tokens]
+              auth_tokens.count.should eq 2
+              auth_tokens.should include @user.get_auth_token
+              auth_tokens.should include @group.get_auth_token
+            end
+
+            it 'for other user' do
+              @visualization.permission.stubs(:entities_with_read_permission).returns([@other_user])
+              template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
+              auth_tokens = template_hash[:auth][:valid_tokens]
+              auth_tokens.count.should eq 2
+              auth_tokens.should include @user.get_auth_token
+              auth_tokens.should include @other_user.get_auth_token
+            end
+
+            it 'for multiple entities' do
+              @visualization.permission.stubs(:entities_with_read_permission).returns([@other_user, @group, @org])
+              template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
+              auth_tokens = template_hash[:auth][:valid_tokens]
+              auth_tokens.count.should eq 4
+              auth_tokens.should include @user.get_auth_token
+              auth_tokens.should include @other_user.get_auth_token
+              auth_tokens.should include @group.get_auth_token
+              auth_tokens.should include @org.get_auth_token
+            end
+          end
         end
       end
 
       describe '#layergroup' do
-        it 'should not have any dataview if no widgets are present' do
-          template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
+        before (:all) { @layergroup_hash = Carto::NamedMaps::Template.new(@visualization).to_hash[:layergroup] }
+        after  (:all) { @layergroup_hash = nil }
 
-          template_hash[:layergroup][:dataviews].should be_empty
+        it 'should have version according to Map Config' do
+          @layergroup_hash[:version].should eq Carto::NamedMaps::Template::MAP_CONFIG_VERSION
+        end
+
+        it 'should not have any dataview if no widgets are present' do
+          @layergroup_hash[:dataviews].should be_empty
         end
 
         it 'should not have any analysis if no analyses are present' do
-          template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
-
-          template_hash[:layergroup][:analyses].should be_empty
+          @layergroup_hash[:analyses].should be_empty
         end
 
         describe 'dataviews' do
@@ -441,7 +636,7 @@ module Carto
           end
 
           it 'should have the right definition' do
-            @analysis_hash.should eq @analysis.analysis_definition
+            @analysis_hash.should eq @analysis.analysis_definition_for_api
           end
         end
       end
@@ -465,6 +660,43 @@ module Carto
 
         it 'should contain bounds' do
           @template_hash[:view][:bounds].should eq @map.view_bounds_data
+        end
+
+        describe '#preview_layers' do
+          before(:all) do
+            @carto_layer = FactoryGirl.create(:carto_layer, kind: 'carto', maps: [@map])
+            @visualization.reload
+
+            template = Carto::NamedMaps::Template.new(@visualization)
+            @preview_layers = template.to_hash[:view][:preview_layers]
+          end
+
+          after(:all) do
+            @carto_layer.destroy
+            @visualization.reload
+
+            @preview_layers = nil
+          end
+
+          it 'should contain preview_layers' do
+            @preview_layers.should_not be_nil
+          end
+
+          it 'should not generate preview_layers for basemaps' do
+            preview_layers_ids = @preview_layers.keys.flatten
+
+            @visualization.base_layers.map(&:id).each do |id|
+              preview_layers_ids.should_not include(id)
+            end
+          end
+
+          it 'should generate preview_layers correctly' do
+            @visualization.data_layers.should_not be_empty
+            @visualization.data_layers.each do |layer|
+              expected_visibility = layer.options['visible'] || false
+              @preview_layers[layer.id.to_sym].should eq expected_visibility
+            end
+          end
         end
       end
     end

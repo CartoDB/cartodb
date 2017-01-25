@@ -9,7 +9,7 @@ require_relative '../../requests/http_authentication_helper'
 describe Carto::HttpHeaderAuthentication do
   include HttpAuthenticationHelper
 
-  EMAIL = "user@cartodb.com"
+  EMAIL = "user@carto.com"
   USERNAME = "user"
   ID = UUIDTools::UUID.timestamp_create.to_s
 

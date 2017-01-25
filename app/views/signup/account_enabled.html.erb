@@ -1,18 +1,19 @@
 <% content_for :title do %><%= @user.username %> account enabled<% end %>
 
-<div class="Sessions" style="<%= background %>">
+<div class="Sessions CDB-Text">
   <div class="Sessions-content">
     <div class="Sessions-inner">
       <div class="u-inner">
         <div class="Sessions-center Sessions--centered">
-          <div class="Logo js-logo">
-            <span class="Logo--avatar">
-              <i class="CDB-IconFont CDB-IconFont-cartoFante" style="color: <%= @organization && @organization.color ? darken_color(@organization.color,0.7) : "#292E33" %>"></i>
-            </span>
+          <div class="Sessions-logoContainer">
+            <picture class="Navbar-brand">
+              <%= image_tag("layout/carto-logo-darkblue.svg", :alt => "CARTO") %>
+            </picture>
           </div>
+
           <div class="js-info">
             <h1 class="Sessions-title u-tspace-m">Your account is active!</h1>
-            <p class="Sessions-description">Go to <%= link_to "your dashboard", @destination_url %> and start enjoying your CartoDB account.</p>
+            <p class="Sessions-description">Go to <%= link_to "your dashboard", @destination_url %> and start enjoying your CARTO account.</p>
           </div>
         </div>
       </div>

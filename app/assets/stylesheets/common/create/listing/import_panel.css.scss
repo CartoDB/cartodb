@@ -24,19 +24,10 @@ $w: 780px;
   display: inline-block;
   margin-bottom: 20px;
 }
-.ImportPanel-headerTitle {
-  color: $cTypography-paragraphs;
-  font-size: $sFontSize-larger;
-  font-weight: $sFontWeight-normal;
-  line-height: $sLineHeight-normal;
-}
+
 .ImportPanel-headerDescription {
   width: 465px;
   margin: 5px auto 0;
-  color: $cTypography-paragraphs;
-  font-size: 14px;
-  font-weight: $sFontWeight-lighter;
-  line-height: $sLineHeight-normal;
 }
 .ImportPanel-headerDescription--normalWeight { font-weight: $sFontWeight-normal; }
 .ImportPanel-headerDescription--withoutWidth { width: auto }

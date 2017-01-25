@@ -1,114 +1,44 @@
-<% content_for(:subject) { @subject } %>
+<% if @total_tables == 1 %>
+  <% if @errors.nil? %>
+    <%- message = "<p>Your dataset <strong>#{@dataset_name}</strong> was successfully imported</p>" %>
+  <% else %>
+     <%- message = "<p>There was some error while importing your dataset <strong>#{@files.first}</strong></p>" %>
+  <% end %>
+<% else %>
+  <% if @errors.nil? %>
+    <%- message = "<p><strong>#{@imported_tables}</strong> out of <strong>#{@total_tables}</strong> were successfully imported</p>" %>
+  <% else %>
+     <%- message = "<p><strong>#{@imported_tables}</strong> out of <strong>#{@total_tables}</strong> were successfully imported</p>" %>
+  <% end %>
+<% end %>
 
-<% content_for :body do %>
+<% if @errors.nil? %>
+  <%= render partial: 'mailer_modules/positive_message', locals: { message: message } %>
+<% else %>
+  <%= render partial: 'mailer_modules/warning_message', locals: { message: message } %>
+<% end %>
+
+<% if @errors.present? %>
   <tr>
-    <td>
-      <!-- HEADER -->
-      <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #ffffff; border: 1px solid #dddddd; border-bottom: 0; border-collapse: separate !important; border-top-left-radius: 4px; border-top-right-radius: 4px; width: 100% !important;">
-        <% if @total_tables == 1 %>
-          <% if @errors.nil? %>
-            <tr>
-              <td align="left" style="padding: 40px 50px 40px 50px; font-weight: bold; font-size: 25px; font-family: Helvetica, Arial, sans-serif; color: #333333;">Your dataset import just finished</td>
-            </tr>
-          <% else %>
-            <tr>
-              <td align="left" style="padding: 40px 50px 0 50px; font-weight: bold; font-size: 25px; font-family: Helvetica, Arial, sans-serif; color: #333333;">Your dataset import just finished</td>
-            </tr>
-            <tr>
-              <td align="left" style="padding: 20px 50px 40px 50px; font-size: 16px; line-height: 25px; font-family: Helvetica, Arial, sans-serif; color: #666666;"><strong><%= @username %></strong>, there was some error while importing your dataset <strong><%= @first_table['name'] %></strong>:</td>
-            </tr>
-          <% end %>
-        <% else %>
-          <tr>
-            <td align="left" style="padding: 40px 50px 0 50px; font-weight: bold; font-size: 25px; font-family: Helvetica, Arial, sans-serif; color: #333333;">Your datasets import just finished</td>
-          </tr>
+    <td align="left" style="font-size: 14px; line-height: 25px; font-family: 'Open Sans', Helvetica, Arial, sans-serif; color: #647083;">
+      <p><strong><%= @errors['title'] %></strong></p>
+      <p><%= @errors['what_about'].html_safe %></p>
+    </td>
+  </tr>
 
-          <% if @errors.nil? %>
-            <tr>
-              <td align="left" style="padding: 20px 50px 40px 50px; font-size: 16px; line-height: 25px; font-family: Helvetica, Arial, sans-serif; color: #666666;"><strong><%= @imported_tables %></strong> out of <strong><%= @total_tables %></strong> were successfully imported.</td>
-            </tr>
-          <% else %>
-            <tr>
-              <td align="left" style="padding: 20px 50px 0 50px; font-size: 16px; line-height: 25px; font-family: Helvetica, Arial, sans-serif; color: #666666;"><strong><%= @imported_tables %></strong> out of <strong><%= @total_tables %></strong> were successfully imported.</td>
-            </tr>
-            <tr>
-              <td align="left" style="padding: 20px 50px 40px 50px; font-size: 16px; line-height: 25px; font-family: Helvetica, Arial, sans-serif; color: #666666;"><strong><%= @username %></strong>, there was some error while importing your datasets:</td>
-            </tr>
-          <% end %>
+  <tr>
+    <td align="left" style="font-size: 14px; line-height: 25px; font-family: 'Open Sans', Helvetica, Arial, sans-serif; color: #647083;">
+      <p>Dataset files:</p>
+
+      <ul>
+        <% @files.each do |filename| %>
+          <li><strong>File name:</strong> <%= filename %></li>
         <% end %>
-      </table>
+      </ul>
     </td>
   </tr>
-  <tr>
-    <td>
-      <!-- CONTENT -->
-      <table cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #ffffff; border: 1px solid #dddddd; border-top: 1px solid #dddddd; border-bottom: 1px solid #cccccc; border-bottom-left-radius: 4px; border-bottom-right-radius: 4px; width: 100% !important;">
-        <tr>
-          <td valign="top" style="padding: 0;">
-            <% if @errors.nil? %>
-              <table cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #F2FAE8; border-bottom: 1px solid #dddddd; width: 100% !important;">
-                <tr>
-                  <td align="left" style="padding: 40px 50px 40px 50px; font-family: Helvetica, Arial, sans-serif;">
-                    <p style="margin: 0; font-size: 16px; line-height: 25px; color: #666666;">Your dataset <strong><%= @first_table['name'] %></strong> was successfully imported.</p>
-                  </td>
-                </tr>
-              </table>
-            <% else %>
-              <table cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #FEFAF4; border-bottom: 1px solid #dddddd; width: 100% !important;">
-                <tr>
-                  <td align="left" style="padding: 40px 50px 40px 50px; font-family: Helvetica, Arial, sans-serif;">
-                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
-                      <tr>
-                        <td align="left" style="font-size: 16px; line-height: 25px; font-family: Helvetica, Arial, sans-serif; color: #666666;"><strong><%= @errors['title'] %></strong></td>
-                      </tr>
-                      <tr>
-                        <td align="left" style="padding: 20px 0 0 0; font-size: 16px; line-height: 25px; font-family: Helvetica, Arial, sans-serif; color: #666666;"><%= @errors['what_about'].html_safe %></td>
-                      </tr>
-                    </table>
-                  </td>
-                </tr>
-                <tr>
-                  <td align="left" style="padding: 5px 50px 10px 50px; font-family: Helvetica, Arial, sans-serif; font-size: 16px; color: #666666;">Dataset files</td>
-                </tr>
-                <% @files.each do |filename| %>
-                  <tr>
-                    <td align="left" style="padding: 5px 50px 10px 50px; font-family: Helvetica, Arial, sans-serif;">
-                      <table width="100%" border="0" cellspacing="0" cellpadding="0">
-                        <tr>
-                          <td align="left" style="font-size: 16px; line-height: 25px; font-family: Helvetica, Arial, sans-serif; color: #666666;"><strong>File name:</strong> <%= filename %></td>
-                        </tr>
-                      </table>
-                    </td>
-                  </tr>
-                <% end %>
-              </table>
-            <% end %>
-          </td>
-        </tr>
+<% end %>
 
-        <tr>
-          <td style="padding: 40px 50px 40px 50px;" align="center" class="padding">
-            <table border="0" cellspacing="0" cellpadding="0" class="mobile-button-container">
-              <tr>
-                <td align="center">
-                  <!-- BULLETPROOF BUTTON -->
-                  <table width="100%" border="0" cellspacing="0" cellpadding="0" class="mobile-button-container">
-                    <tr>
-                      <td align="center" style="padding: 0;">
-                        <table border="0" cellspacing="0" cellpadding="0" class="responsive-table">
-                          <tr>
-                            <td align="center"><a href="<%= @link %>" target="_blank" style="font-size: 16px; font-family: Helvetica, Arial, sans-serif; font-weight: normal; color: #ffffff; text-decoration: none; background-color: #3AA9E3; border-top: 15px solid #3AA9E3; border-bottom: 15px solid #3AA9E3; border-left: 25px solid #3AA9E3; border-right: 25px solid #3AA9E3; border-radius: 3px; -webkit-border-radius: 3px; -moz-border-radius: 3px; display: inline-block;" class="mobile-button">View your dataset<%= @imported_tables == 1 ? '' : 's' %></a></td>
-                          </tr>
-                        </table>
-                      </td>
-                    </tr>
-                  </table>
-                </td>
-              </tr>
-            </table>
-          </td>
-        </tr>
-      </table>
-    </td>
-  </tr>
+<% if @imported_tables > 0 %>
+  <%= render partial: 'mailer_modules/link_to_action', locals: { link: @link, link_text: "View your #{@imported_tables == 1 ? 'dataset' : 'datasets'}" } %>
 <% end %>

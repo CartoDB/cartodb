@@ -38,24 +38,23 @@ class Api::Json::RecordsController < Api::ApplicationController
 
       return(head 401) unless @table.table_visualization.has_permission?(current_user,
                                                           CartoDB::Visualization::Member::PERMISSION_READWRITE)
-      unless params[:id].blank?
+      if params[:cartodb_id].present?
         begin
           resp = @stats_aggregator.timing('save') do
-            @table.update_row!(params[:id], params.reject{|k,v| REJECT_PARAMS.include?(k)}.symbolize_keys)
+            @table.update_row!(params[:cartodb_id], params.reject { |k, _| REJECT_PARAMS.include?(k) }.symbolize_keys)
           end
           if resp > 0
-            render_jsonp(get_record(params[:id]))
+            render_jsonp(get_record(params[:cartodb_id]))
           else
-            render_jsonp({ :errors => ["row identified with #{params[:id]} not found"] }, 404) and return
+            render_jsonp({ errors: ["row identified with #{params[:cartodb_id]} not found"] }, 404)
           end
         rescue => e
           CartoDB::StdoutLogger.info e.backtrace.join('\n')
-          render_jsonp({ :errors => [translate_error(e.message.split("\n").first)] }, 400) and return
+          render_jsonp({ errors: [translate_error(e.message.split("\n").first)] }, 400)
         end
       else
-        render_jsonp({ :errors => ["id can't be blank"] }, 404) and return
+        render_jsonp({ errors: ["cartodb_id can't be blank"] }, 404)
       end
-
     end
   end
 
@@ -66,7 +65,7 @@ class Api::Json::RecordsController < Api::ApplicationController
         return(head 401) unless @table.table_visualization.has_permission?(current_user,
                                                             CartoDB::Visualization::Member::PERMISSION_READWRITE)
 
-        id = (params[:id] =~ /\A\d+\z/ ? params[:id] : params[:id].to_s.split(','))
+        id = (params[:cartodb_id] =~ /\A\d+\z/ ? params[:cartodb_id] : params[:cartodb_id].to_s.split(','))
         schema_name = current_user.database_schema
         if current_user.id != @table.owner.id
           schema_name = @table.owner.database_schema
@@ -82,7 +81,7 @@ class Api::Json::RecordsController < Api::ApplicationController
 
         head :no_content
       rescue => e
-        render_jsonp({ errors: ["row identified with #{params[:id]} not found"] }, 404)
+        render_jsonp({ errors: ["row identified with #{params[:cartodb_id]} not found"] }, 404)
       end
 
     end

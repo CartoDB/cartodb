@@ -80,7 +80,8 @@ class CommonData
         method: :get,
         connecttimeout: CONNECT_TIMEOUT,
         timeout: DEFAULT_TIMEOUT,
-        params: {per_page: NO_PAGE_LIMIT}
+        params: { per_page: NO_PAGE_LIMIT },
+        followlocation: true
       )
       is_https_request = (request.url =~ /^https:\/\//)
       cached_data = redis_cache.get(is_https_request)

@@ -17,15 +17,30 @@ module Carto
       end
 
       def create
+        order_param = params[:order]
+        order = if order_param.present?
+                  order_param
+                else
+                  @map.visualization.widgets.count
+                end
         widget = Carto::Widget.new(
           layer_id: @layer_id,
-          order: Carto::Widget.where(layer_id: @layer_id).count + 1,
+          order: order,
           type: params[:type],
           title: params[:title],
           options: params[:options],
+          style: params[:style],
           source_id: source_id_from_params)
         widget.save!
+
+        Carto::Tracking::Events::CreatedWidget.new(current_viewer.id,
+                                                   user_id: current_viewer.id,
+                                                   visualization_id: @layer.visualization.id,
+                                                   widget_id: widget.id).report
+
         render_jsonp(WidgetPresenter.new(widget).to_poro, 201)
+      rescue ActiveRecord::RecordInvalid
+        render json: { errors: widget.errors }, status: 422
       rescue => e
         CartoDB::Logger.error(exception: e, message: "Error creating widget", widget: (widget ? widget : 'not created'))
         render json: { errors: e.message }, status: 500
@@ -36,6 +51,7 @@ module Carto
         update_params[:source_id] = source_id_from_params if source_id_from_params
         @widget.update_attributes(update_params)
         @widget.options = params[:options]
+        @widget.style = params[:style]
         @widget.save!
 
         render_jsonp(WidgetPresenter.new(@widget).to_poro)
@@ -46,6 +62,7 @@ module Carto
 
       def destroy
         @widget.destroy
+
         render_jsonp(WidgetPresenter.new(@widget).to_poro)
       rescue => e
         CartoDB::Logger.error(exception: e, message: "Error destroying widget", widget: @widget)

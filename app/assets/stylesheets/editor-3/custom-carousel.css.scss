@@ -25,7 +25,7 @@
   @include display-flex();
   @include justify-content(flex-start);
   position: relative;
-  padding-bottom: 16px;
+  padding-bottom: 19px;
 }
 .Carousel-item {
   @include display-flex();
@@ -39,6 +39,7 @@
   border-radius: 4px;
   background: $cThirdBackground;
   box-sizing: border-box;
+  overflow: hidden;
 
   &:last-child {
     margin-right: 0;
@@ -47,6 +48,11 @@
     border: 1px solid $cMainLine;
     cursor: pointer;
   }
+}
+.Carousel-item--small {
+  width: $baseSize * 5;
+  min-width: $baseSize * 5;
+  height: $baseSize * 5;
 }
 .Carousel-item.is-selected {
   border: 2px solid $cBlue;
@@ -80,3 +86,19 @@
   width: 100%;
   opacity: 1;
 }
+.Carousel-list.ps-container:hover .ps-scrollbar-x-rail .ps-scrollbar-x,
+.Carousel-list:hover .ps-scrollbar-x-rail {
+  opacity: 1;
+}
+.ps-scrollbar-x-rail:hover {
+  cursor: move;
+  cursor: -webkit-grab;
+  cursor: -moz-grab;
+}
+
+.ps-scrollbar-x-rail:active {
+  cursor: move;
+  cursor: -webkit-grabbing;
+  cursor: -moz-grabbing;
+}
+

@@ -2,9 +2,12 @@
 
 require 'active_record'
 require_dependency 'cartodb/errors'
+require_dependency 'carto/user_authenticator'
 
 module Carto
   class Invitation < ActiveRecord::Base
+    include Carto::UserAuthenticator
+
     # Because of an activerecord-postgresql-array bug that makes array
     # insertions unusable we can't set _users_emails mandatory on construction,
     # so we create a creator enforcing desired behaviour.
@@ -19,20 +22,22 @@ module Carto
 
     private_class_method :new
 
-    def self.create_new(inviter_user, users_emails, welcome_text)
+    def self.create_new(inviter_user, users_emails, welcome_text, viewer)
       raise CartoDB::InvalidUser.new("Only owners can create invitations") unless inviter_user.organization_owner?
 
       # ActiveRecord validation for all values
       invitation = new(inviter_user: inviter_user,
                        organization: inviter_user.organization,
                        users_emails: users_emails,
-                       welcome_text: welcome_text)
+                       welcome_text: welcome_text,
+                       viewer: viewer)
       return invitation unless invitation.valid?
 
       # Two-step creation workarounding array bug
       invitation = new(inviter_user: inviter_user,
                        organization: inviter_user.organization,
-                       welcome_text: welcome_text)
+                       welcome_text: welcome_text,
+                       viewer: viewer)
 
       invitation.seed = Carto::UserService.make_token
       if invitation.save
@@ -55,7 +60,7 @@ module Carto
     end
 
     def token(email)
-      ::User.secure_digest(email, seed)
+      secure_digest(email, seed)
     end
 
     def use(email, token)

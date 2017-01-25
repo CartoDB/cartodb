@@ -1,11 +1,14 @@
 # encoding: utf-8
 require 'json'
 require 'ejs'
+require_dependency 'carto/table_utils'
 
 module CartoDB
   # Natural naming would be "Layer", but it collides with Layer class
   module LayerModule
     class Presenter
+      include Carto::TableUtils
+
       EMPTY_CSS = '#dummy{}'
 
       TORQUE_ATTRS = %w(
@@ -79,10 +82,10 @@ module CartoDB
         return poro unless poro['options']
 
         # INFO changed to support new  presenter's way of sending owner
-        if @options[:user] && !poro['options']['user_name']
+        if @options[:user] && !poro['options']['user_name'].present?
           user_name = @options[:user].username
           schema_name = @options[:user].sql_safe_database_schema
-        elsif poro['options']['user_name']
+        elsif poro['options']['user_name'].present?
           user_name = poro['options']['user_name']
           schema_name = poro['options']['user_name']
         end
@@ -91,9 +94,7 @@ module CartoDB
           # if the table_name already have a schema don't add another one
           # this case happens when you share a layer already shared with you
           if user_name != options[:viewer_user].username && !poro['options']['table_name'].include?('.')
-            poro['options']['table_name'] = schema_name.include?('-') ?
-              "\"#{schema_name}\".#{poro['options']['table_name']}" :
-              "#{schema_name}.#{poro['options']['table_name']}"
+            poro['options']['table_name'] = safe_schema_and_table_quoting(schema_name, poro['options']['table_name'])
           end
         end
         poro
@@ -141,7 +142,7 @@ module CartoDB
           legend:     layer.legend,
           options:    {
             stat_tag:           options.fetch(:visualization_id),
-            maps_api_template: ApplicationHelper.maps_api_template(api_templates_type),
+            maps_api_template: fix_torque_maps_api_template(ApplicationHelper.maps_api_template(api_templates_type)),
             sql_api_template: ApplicationHelper.sql_api_template(api_templates_type),
             # tiler_* is kept for backwards compatibility
             tiler_protocol:     (configuration[:tiler]["public"]["protocol"] rescue nil),
@@ -161,21 +162,21 @@ module CartoDB
       def infowindow_data_v1
         with_template(layer.infowindow, layer.infowindow_template_path)
       rescue => e
-        Rollbar.report_exception(e)
+        CartoDB::Logger.error(exception: e)
         throw e
       end
 
       def infowindow_data_v2
         whitelisted_infowindow(with_template(layer.infowindow, layer.infowindow_template_path))
       rescue => e
-        Rollbar.report_exception(e)
+        CartoDB::Logger.error(exception: e)
         throw e
       end
 
       def tooltip_data_v2
         whitelisted_infowindow(with_template(layer.tooltip, layer.tooltip_template_path))
       rescue => e
-        Rollbar.report_exception(e)
+        CartoDB::Logger.error(exception: e)
         throw e
       end
 
@@ -266,10 +267,10 @@ module CartoDB
                      layer_options['user_name']
                    end
 
-            return "select * from #{name}.#{layer_options['table_name']}"
+            return "select * from #{name}.#{safe_table_name_quoting(layer_options['table_name'])}"
           end
         end
-        "select * from #{layer_options.fetch('table_name')}"
+        "select * from #{safe_table_name_quoting(layer_options.fetch('table_name'))}"
       end
 
       def public_options
@@ -281,6 +282,21 @@ module CartoDB
         infowindow.nil? ? nil : infowindow.select { |key, value|
                                                     INFOWINDOW_KEYS.include?(key) || INFOWINDOW_KEYS.include?(key.to_s)
                                                   }
+      end
+
+      def fix_torque_maps_api_template(maps_api_template)
+        if visualization_owner_is_table_owner?
+          maps_api_template
+        else
+          # This fixes #9017 avoding Torque request to table owner named map instead of visualization owner.
+          # See https://github.com/CartoDB/torque/blob/8a14fe546ac411829b5f52bb575526ad5ecb79f8/lib/torque/provider/windshaft.js#L361
+          maps_api_template.gsub('{user}', layer.user.username)
+        end
+      end
+
+      def visualization_owner_is_table_owner?
+        layer.options.nil? || layer.options['user_name'].nil? || layer.user.nil? ||
+          layer.options['user_name'] == layer.user.username
       end
     end
   end

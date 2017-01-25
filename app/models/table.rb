@@ -18,25 +18,27 @@ require_relative '../model_factories/layer_factory'
 require_relative '../model_factories/map_factory'
 require_relative '../../lib/cartodb/stats/user_tables'
 require_relative '../../lib/cartodb/stats/importer'
-
+require_dependency 'carto/table_utils'
 require_dependency 'carto/valid_table_name_proposer'
 
 class Table
   extend Forwardable
+  include Carto::TableUtils
 
-   # TODO Part of a service along with schema
+  # TODO Part of a service along with schema
   # INFO: created_at and updated_at cannot be dropped from existing tables without dropping the triggers first
-  CARTODB_REQUIRED_COLUMNS = %W{ cartodb_id the_geom }
-  CARTODB_COLUMNS = %W{ cartodb_id created_at updated_at the_geom }
+  CARTODB_REQUIRED_COLUMNS = %w{cartodb_id the_geom}.freeze
+  CARTODB_COLUMNS = %w{cartodb_id created_at updated_at the_geom}.freeze
   THE_GEOM_WEBMERCATOR = :the_geom_webmercator
   THE_GEOM = :the_geom
   CARTODB_ID = :cartodb_id
+  DATATYPE_DATE = 'date'.freeze
 
   NO_GEOMETRY_TYPES_CACHING_TIMEOUT = 5.minutes
   GEOMETRY_TYPES_PRESENT_CACHING_TIMEOUT = 24.hours
-  STATEMENT_TIMEOUT = 1.hour*1000
+  STATEMENT_TIMEOUT = 1.hour * 1000
 
-  # See http://www.postgresql.org/docs/9.3/static/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS
+  # See http://www.postgresql.org/docs/9.5/static/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS
   PG_IDENTIFIER_MAX_LENGTH = 63
 
   # @see services/importer/lib/importer/column.rb -> RESERVED_WORDS
@@ -299,7 +301,6 @@ class Table
   # TODO: basically most if not all of what the import_cleanup does is done by cartodbfy.
   # Consider deletion.
   def import_cleanup
-    owner.in_database(:as => :superuser) do |user_database|
       # When tables are created using ogr2ogr they are added a ogc_fid or gid primary key
       # In that case:
       #  - If cartodb_id already exists, remove ogc_fid
@@ -316,21 +317,27 @@ class Table
       end
 
       # Remove primary key
-      existing_pk = user_database[%Q{
-        SELECT c.conname AS pk_name
-        FROM pg_class r, pg_constraint c, pg_namespace n
-        WHERE r.oid = c.conrelid AND contype='p' AND relname = '#{self.name}'
-        AND r.relnamespace = n.oid and n.nspname= '#{owner.database_schema}'
-      }].first
+      owner.transaction_with_timeout(statement_timeout: STATEMENT_TIMEOUT, as: :superuser) do |user_database|
+        existing_pk = user_database[%Q{
+          SELECT c.conname AS pk_name
+          FROM pg_class r, pg_constraint c, pg_namespace n
+          WHERE r.oid = c.conrelid AND contype='p' AND relname = '#{name}'
+          AND r.relnamespace = n.oid and n.nspname= '#{owner.database_schema}'
+        }].first
+
       existing_pk = existing_pk[:pk_name] unless existing_pk.nil?
-      user_database.run(%Q{
-        ALTER TABLE #{qualified_table_name} DROP CONSTRAINT "#{existing_pk}"
-      }) unless existing_pk.nil?
+
+        user_database.run(%{
+          ALTER TABLE #{qualified_table_name} DROP CONSTRAINT "#{existing_pk}"
+        }) unless existing_pk.nil?
+      end
 
       # All normal fields casted to text
       self.schema(reload: true, cartodb_types: false).each do |column|
         if column[1] =~ /^character varying/
-          user_database.run(%Q{ALTER TABLE #{qualified_table_name} ALTER COLUMN "#{column[0]}" TYPE text})
+          owner.transaction_with_timeout(statement_timeout: STATEMENT_TIMEOUT) do |user_database|
+            user_database.run(%{ALTER TABLE #{qualified_table_name} ALTER COLUMN "#{column[0]}" TYPE text})
+          end
         end
       end
 
@@ -338,25 +345,34 @@ class Table
       if aux_cartodb_id_column.present?
         begin
           already_had_cartodb_id = false
-          user_database.run(%Q{ALTER TABLE #{qualified_table_name} ADD COLUMN cartodb_id SERIAL})
+          owner.transaction_with_timeout(statement_timeout: STATEMENT_TIMEOUT) do |user_database|
+            user_database.run(%{ALTER TABLE #{qualified_table_name} ADD COLUMN cartodb_id SERIAL})
+          end
         rescue
           already_had_cartodb_id = true
         end
         unless already_had_cartodb_id
-          user_database.run(%Q{UPDATE #{qualified_table_name} SET cartodb_id = CAST(#{aux_cartodb_id_column} AS INTEGER)})
-          cartodb_id_sequence_name = user_database["SELECT pg_get_serial_sequence('#{owner.database_schema}.#{self.name}', 'cartodb_id')"].first[:pg_get_serial_sequence]
-          max_cartodb_id = user_database[%Q{SELECT max(cartodb_id) FROM #{qualified_table_name}}].first[:max]
-          # only reset the sequence on real imports.
+          owner.transaction_with_timeout(statement_timeout: STATEMENT_TIMEOUT) do |user_database|
+            user_database.run(%{
+              UPDATE #{qualified_table_name}
+              SET cartodb_id = CAST(#{aux_cartodb_id_column} AS INTEGER)
+            })
 
-          if max_cartodb_id
-            user_database.run("ALTER SEQUENCE #{cartodb_id_sequence_name} RESTART WITH #{max_cartodb_id+1}")
+            cartodb_id_sequence_name = user_database[%{
+              SELECT pg_get_serial_sequence('#{owner.database_schema}.#{name}', 'cartodb_id')
+            }].first[:pg_get_serial_sequence]
+            max_cartodb_id = user_database[%{SELECT max(cartodb_id) FROM #{qualified_table_name}}].first[:max]
+            # only reset the sequence on real imports.
+
+            if max_cartodb_id
+              user_database.run("ALTER SEQUENCE #{cartodb_id_sequence_name} RESTART WITH #{max_cartodb_id + 1}")
+            end
           end
         end
-        user_database.run(%Q{ALTER TABLE #{qualified_table_name} DROP COLUMN #{aux_cartodb_id_column}})
+        owner.transaction_with_timeout(statement_timeout: STATEMENT_TIMEOUT) do |user_database|
+          user_database.run(%{ALTER TABLE #{qualified_table_name} DROP COLUMN #{aux_cartodb_id_column}})
+        end
       end
-
-    end
-
   end
 
   def before_create
@@ -467,7 +483,7 @@ class Table
   def optimize
     owner.db_service.in_database_direct_connection({statement_timeout: STATEMENT_TIMEOUT}) do |user_direct_conn|
       user_direct_conn.run(%Q{
-        VACUUM FULL #{qualified_table_name}
+        VACUUM ANALYZE #{qualified_table_name}
         })
     end
   rescue => e
@@ -511,7 +527,9 @@ class Table
 
     map.add_layer(base_layer)
 
-    data_layer = ::ModelFactories::LayerFactory.get_default_data_layer(name, owner, the_geom_type)
+    geometry_type = the_geom_type || 'geometry'
+    data_layer = ::ModelFactories::LayerFactory.get_default_data_layer(name, owner, geometry_type)
+
     map.add_layer(data_layer)
 
     if base_layer.supports_labels_layer?
@@ -612,7 +630,7 @@ class Table
           ALTER COLUMN #{column}
           SET DEFAULT now()
         })
-      elsif column_type == 'date' || column_type == 'timestamptz'
+      elsif column_type == DATATYPE_DATE || column_type == 'timestamptz'
         database.run(%Q{
           ALTER TABLE #{qualified_table_name}
           ALTER COLUMN #{column}
@@ -664,7 +682,7 @@ class Table
     value = value.downcase if value
     return if value == @user_table[:name] || value.blank?
 
-    new_name = get_valid_name(value)
+    new_name = register_table_only ? value : get_valid_name(value)
 
     # Do not keep track of name changes until table has been saved
     unless new?
@@ -798,9 +816,10 @@ class Table
           new_column_type = get_new_column_type(invalid_column)
           user_database.set_column_type(self.name, invalid_column.to_sym, new_column_type)
           # INFO: There's a complex logic for retrying and need to know how often it is actually done
-          Rollbar.report_message('Retrying insert_row!',
-                                 'debug',
-                                 {user_id: self.user_id, qualified_table_name: self.qualified_table_name, raw_attributes: raw_attributes})
+          CartoDB::Logger.debug(message: 'Retrying insert_row!',
+                                user_id: user_id,
+                                qualified_table_name: qualified_table_name,
+                                raw_attributes: raw_attributes)
           retry
         end
       end
@@ -809,7 +828,11 @@ class Table
     primary_key
   end
 
+  MAX_UPDATE_ROW_RETRIES = 3
+
   def update_row!(row_id, raw_attributes)
+    retries = 0
+
     rows_updated = 0
     owner.in_database do |user_database|
       schema = user_database.schema(name, schema: owner.database_schema, reload: true).map{|c| c.first}
@@ -840,10 +863,22 @@ class Table
             if new_column_type
               user_database.set_column_type self.name, invalid_column.to_sym, new_column_type
               # INFO: There's a complex logic for retrying and need to know how often it is actually done
-              Rollbar.report_message('Retrying update_row!',
-                                     'debug',
-                                     {user_id: self.user_id, qualified_table_name: self.qualified_table_name, row_id: row_id, raw_attributes: raw_attributes})
-              retry
+              CartoDB::Logger.debug(message: 'Retrying update_row!',
+                                    user_id: user_id,
+                                    qualified_table_name: qualified_table_name,
+                                    row_id: row_id,
+                                    raw_attributes: raw_attributes,
+                                    exception: e)
+              if (retries += 1) > MAX_UPDATE_ROW_RETRIES
+                CartoDB::Logger.error(message: 'Max update_row! retries reached',
+                                      user_id: user_id,
+                                      qualified_table_name: qualified_table_name,
+                                      row_id: row_id,
+                                      raw_attributes: raw_attributes,
+                                      exception: e)
+              else
+                retry
+              end
             end
           else
             raise e
@@ -925,7 +960,9 @@ class Table
       if Table.column_names_for(user_database, name, self.owner).include?(new_name)
         raise 'Column already exists'
       end
-      user_database.rename_column(name, old_name.to_sym, new_name.to_sym)
+      user_database.execute %{
+          ALTER TABLE "#{name}" RENAME COLUMN "#{old_name}" TO "#{new_name}"
+      }
     end
   end #rename_column
 
@@ -1027,17 +1064,28 @@ class Table
   def record(identifier)
     row = nil
     owner.in_database do |user_database|
-      select = if schema.flatten.include?(THE_GEOM)
-        schema.select{|c| c[0] != THE_GEOM }.map{|c| %Q{"#{c[0]}"} }.join(',') + ',ST_AsGeoJSON(the_geom,8) as the_geom'
-      else
-        schema.map{|c| %Q{"#{c[0]}"} }.join(',')
-      end
+      select_sql = schema.map { |column|
+        name, type = column
+        if name == THE_GEOM
+          "ST_AsGeoJSON(the_geom,8) as the_geom"
+        elsif type == DATATYPE_DATE
+          %{CAST("#{name}" AS text) AS "#{name}"}
+        else
+          %{"#{name}"}
+        end
+      }.join(',')
       # If we force to get the name from an schema, we avoid the problem of having as
       # table name a reserved word, such 'as'
-      row = user_database["SELECT #{select} FROM #{qualified_table_name} WHERE cartodb_id = #{identifier}"].first
+      row = user_database["SELECT #{select_sql} FROM #{qualified_table_name} WHERE cartodb_id = #{identifier}"].first
     end
     raise if row.nil?
-    row
+
+    # `.schema` returns [name, type] pairs, except for geometry types where it returns additional data we don't need
+    db_schema = schema.map { |col_data| col_data.first(2) }.to_h
+    row.map { |name, value|
+      parsed_value = db_schema[name] == DATATYPE_DATE && value ? DateTime.parse(value) : value
+      [name, parsed_value]
+    }.to_h
   end
 
   def run_query(query)
@@ -1103,16 +1151,18 @@ class Table
   def pg_indexes
     owner.in_database(as: :superuser).fetch(%{
       SELECT
-        a.attname as column, i.relname as name
+        a.attname as column, i.relname as name, ix.indisvalid as valid
       FROM
-        pg_class t, pg_class i, pg_index ix, pg_attribute a
+        pg_class t, pg_class i, pg_index ix, pg_attribute a, pg_namespace n
       WHERE
         t.oid = ix.indrelid
         AND i.oid = ix.indexrelid
         AND a.attrelid = t.oid
         AND a.attnum = ANY(ix.indkey)
         AND t.relkind = 'r'
-        AND t.relname = '#{name}';
+        AND t.relname = '#{name}'
+        AND n.nspname = '#{owner.database_schema}'
+        AND t.relnamespace = n.oid;
     }).all
   end
 
@@ -1121,8 +1171,9 @@ class Table
     owner.in_database.execute(%{CREATE INDEX #{concurrently} "#{index_name(column, prefix)}" ON "#{name}"("#{column}")})
   end
 
-  def drop_index(column, prefix = '')
-    owner.in_database.execute(%{DROP INDEX "#{index_name(column, prefix)}"})
+  def drop_index(column, prefix = '', concurrent: false)
+    concurrently = concurrent ? 'CONCURRENTLY' : ''
+    owner.in_database.execute(%{DROP INDEX #{concurrently} "#{index_name(column, prefix)}"})
   end
 
   def cartodbfy
@@ -1219,6 +1270,7 @@ class Table
       end
 
       begin
+        propagate_name_change_to_analyses
         propagate_namechange_to_table_vis
         if @user_table.layers.blank?
           exception_to_raise = CartoDB::TableError.new("Attempt to rename table without layers #{qualified_table_name}")
@@ -1246,7 +1298,7 @@ class Table
   end
 
   def qualified_table_name
-    "\"#{owner.database_schema}\".\"#{@user_table.name}\""
+    safe_schema_and_table_quoting(owner.database_schema, @user_table.name)
   end
 
   def database_schema
@@ -1346,6 +1398,22 @@ class Table
 
   private
 
+  def related_visualizations
+    carto_layers = layers.map do |layer|
+      Carto::Layer.find(layer.id) if layer.persisted?
+    end
+
+    carto_layers.flatten.compact.uniq.map(&:visualization).compact.uniq
+  end
+
+  def propagate_name_change_to_analyses
+    related_visualizations.each do |visualization|
+      visualization.analyses.each do |analysis|
+        analysis.update_table_name(@name_changed_from, name)
+      end
+    end
+  end
+
   def index_name(column, prefix)
     "#{prefix}#{name}_#{column}"
   end
@@ -1396,7 +1464,7 @@ class Table
   end
 
   # Gets a valid postgresql table name for a given database
-  # See http://www.postgresql.org/docs/9.3/static/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS
+  # See http://www.postgresql.org/docs/9.5/static/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS
   def get_valid_name(contendent)
     user_table_names = owner.tables.map(&:name)
 
@@ -1494,7 +1562,9 @@ class Table
             type = DEFAULT_THE_GEOM_TYPE
           end
         else
-          owner.in_database.rename_column(qualified_table_name, THE_GEOM, :the_geom_str)
+          owner.in_database.execute %{
+              ALTER TABLE #{qualified_table_name} RENAME COLUMN "#{THE_GEOM}" TO "the_geom_str"
+          }
         end
       else # Ensure a the_geom column, of type point by default
         type = DEFAULT_THE_GEOM_TYPE
@@ -1524,7 +1594,7 @@ class Table
       end
     end
 
-    raise "Error: unsupported geometry type #{type.to_s.downcase} in CartoDB" unless VALID_GEOMETRY_TYPES.include?(type.to_s.downcase)
+    raise "Error: unsupported geometry type #{type.to_s.downcase} in CARTO" unless VALID_GEOMETRY_TYPES.include?(type.to_s.downcase)
 
     type = type.to_s.upcase
 

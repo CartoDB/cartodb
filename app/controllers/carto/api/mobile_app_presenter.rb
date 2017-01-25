@@ -63,14 +63,9 @@ module Carto
         if @fetch_app_types == true
           data[:app_types] = {
             "open": {
-              text: "Limits based on your CartoDB plan. <a href='#'>Learn more</a>.",
+              text: "Limits based on your CARTO plan. <a href='#'>Learn more</a>.",
               available: app_type_available?('open', @current_user.open_apps_enabled?),
               selected: app_type_selected?('open')
-            },
-            "dev": {
-              text: "Limited to 5 users, unlimited feature-wise. <a href='#'>Learn more</a>.",
-              available: app_type_available?('dev', true),
-              selected: app_type_selected?('dev')
             },
             "private": {
               text: "Only for enterprise. <a href='#'>Learn more</a>.",
@@ -94,7 +89,7 @@ module Carto
       end
 
       def app_type_available?(app_type, current_apps_enabled)
-        (!@mobile_app.persisted? && current_apps_enabled) || app_type_selected?(app_type)
+        (!@mobile_app.persisted? && current_apps_enabled) || app_type_selected?(app_type) || (@mobile_app.persisted? && current_apps_enabled)
       end
 
       def app_type_selected?(app_type)

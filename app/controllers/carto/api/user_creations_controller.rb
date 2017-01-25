@@ -6,6 +6,7 @@ module Carto
     class UserCreationsController < ::Api::ApplicationController
 
       skip_before_filter :api_authorization_required
+      skip_before_filter :http_header_authentication, only: [:show]
 
       ssl_required :show
 
@@ -14,7 +15,7 @@ module Carto
       def show
         if @user_creation.autologin?
           params[:username] = @user_creation.username
-          authenticate!(:user_creation, scope: @user_creation.subdomain)
+          authenticate!(:user_creation, scope: @user_creation.username)
         end
         render_jsonp(UserCreationPresenter.new(@user_creation).to_poro)
       end

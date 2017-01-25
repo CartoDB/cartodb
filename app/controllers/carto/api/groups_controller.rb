@@ -43,46 +43,56 @@ module Carto
         group = @organization.create_group(params['display_name'])
         render_jsonp(Carto::Api::GroupPresenter.full(group).to_poro, 200)
       rescue CartoDB::ModelAlreadyExistsError => e
-        CartoDB.notify_debug('Group already exists', { params: params })
-        render json: { errors: "A group with that data already exists" }, status: 409
+        CartoDB::Logger.debug(message: 'Group already exists', exception: e, params: params)
+        render json: { errors: ["A group with that name already exists"] }, status: 409
+      rescue ActiveRecord::StatementInvalid => e
+        handle_statement_invalid_error(e, group)
       rescue => e
-        CartoDB.notify_exception(e, { params: params , group: (group ? group : 'not created'), organization: @organization })
-        render json: { errors: e.message }, status: 500
+        CartoDB::Logger.error(exception: e, params: params, group: group || 'no group', organization: @organization)
+        render json: { errors: [e.message] }, status: 500
       end
 
       def update
         @group.rename_group_with_extension(params['display_name'])
         render_jsonp(Carto::Api::GroupPresenter.full(@group).to_poro, 200)
       rescue CartoDB::ModelAlreadyExistsError => e
-        CartoDB.notify_debug('Group display name already exists', { params: params })
-        render json: { errors: "A group with that name already exists" }, status: 409
+        CartoDB::Logger.debug(message: 'Group display name already exists', params: params)
+        render json: { errors: ["A group with that name already exists"] }, status: 409
+      rescue ActiveRecord::StatementInvalid => e
+        handle_statement_invalid_error(e, @group)
       rescue => e
-        CartoDB.notify_exception(e, { params: params , group: @group })
-        render json: { errors: e.message }, status: 500
+        CartoDB::Logger.error(exception: e, params: params, group: @group)
+        render json: { errors: [e.message] }, status: 500
       end
 
       def destroy
         @group.destroy_group_with_extension
         render json: {}, status: 204
+      rescue ActiveRecord::StatementInvalid => e
+        handle_statement_invalid_error(e, @group)
       rescue => e
-        CartoDB.notify_exception(e, { params: params , group: @group })
-        render json: { errors: e.message }, status: 500
+        CartoDB::Logger.error(exception: e, params: params, group: @group)
+        render json: { errors: [e.message] }, status: 500
       end
 
       def add_users
         @group.add_users_with_extension(@organization_users)
         render json: {}, status: 200
+      rescue ActiveRecord::StatementInvalid => e
+        handle_statement_invalid_error(e, @group)
       rescue => e
-        CartoDB.notify_exception(e, { params: params , group: @group, user: @user })
-        render json: { errors: e.message }, status: 500
+        CartoDB::Logger.error(exception: e, user: @user, params: params, group: @group)
+        render json: { errors: [e.message] }, status: 500
       end
 
       def remove_users
         @group.remove_users_with_extension(@organization_users)
         render json: {}, status: 200
+      rescue ActiveRecord::StatementInvalid => e
+        handle_statement_invalid_error(e, @group)
       rescue => e
-        CartoDB.notify_exception(e, { params: params , group: @group, user: @user })
-        render json: { errors: e.message }, status: 500
+        CartoDB::Logger.error(exception: e, user: @user, params: params, group: @group)
+        render json: { errors: [e.message] }, status: 500
       end
 
       private
@@ -98,42 +108,59 @@ module Carto
       def load_organization
         return unless params['organization_id'].present?
         @organization = Carto::Organization.where(id: params['organization_id']).first
-        render json: { errors: "Organization #{params['organization_id']} not found" }, status: 404 unless @organization
+        render json: { errors: ["Org. #{params['organization_id']} not found"] }, status: 404 unless @organization
       end
 
       def load_user
         return unless params['user_id'].present?
+
         @user = Carto::User.where(id: params['user_id']).first
-        render json: { errors: "User #{params['user_id']} not found" }, status: 404 unless @user
+        render json: { errors: ["User #{params['user_id']} not found"] }, status: 404 unless @user
+
         if @organization.nil?
           @organization = @user.organization
-        else
-          render json: { errors: "You can't get other organization users" }, status: 501 unless @user.organization_id == @organization.id
+        elsif @user.organization_id != @organization.id
+          render json: { errors: ["You can't get other organization users"] }, status: 501
         end
-        render json: { errors: "You can't get other users groups" }, status: 501 unless @user.id == current_user.id || current_user.organization_owner?
+
+        unless @user.id == current_user.id || current_user.organization_owner?
+          render json: { errors: ["You can't get other users groups"] }, status: 501
+        end
       end
 
       def validate_organization_or_user_loaded
-        render json: { errors: "You must set user_id or organization_id" }, status: 404 unless @organization || @user
+        render json: { errors: ["You must set user_id or organization_id"] }, status: 404 unless @organization || @user
       end
 
       def org_users_only
-        render json: { errors: "Not organization owner" }, status: 400 unless @organization.id == current_user.organization_id
+        unless @organization.id == current_user.organization_id
+          render json: { errors: ["Not organization owner"] }, status: 400
+        end
       end
 
       def org_owner_only
-        render json: { errors: "Not organization owner" }, status: 400 unless @organization.owner_id == current_user.id
+        render json: { errors: ["Not org. owner"] }, status: 400 unless @organization.owner_id == current_user.id
       end
 
       def load_group
         @group = @organization.groups.where(id: params['group_id']).first
-        render json: { errors: "Group #{params['group_id']} not found" }, status: 404 unless @group
+        render json: { errors: ["Group #{params['group_id']} not found"] }, status: 404 unless @group
       end
 
       def load_organization_users
         ids = params['users'].present? ? params['users'] : [ params['user_id'] ]
         @organization_users = ids.map { |id| @organization.users.where(id: id).first }
-        render json: { errors: "Users #{ids} not found" }, status: 404 unless @organization_users.length > 0
+        render json: { errors: ["Users #{ids} not found"] }, status: 404 if @organization_users.empty?
+      end
+
+      def handle_statement_invalid_error(e, group)
+        err_regexp = /ERROR:  (.*)\n/
+        if e.message =~ err_regexp
+          render json: { errors: [err_regexp.match(e.message)[1]] }, status: 422
+        else
+          CartoDB::Logger.error(exception: e, params: params, group: group || 'no group', organization: @organization)
+          render json: { errors: [e.message] }, status: 500
+        end
       end
 
     end

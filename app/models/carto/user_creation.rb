@@ -1,12 +1,19 @@
 # encoding: UTF-8
+require_dependency 'carto/user_authenticator'
 
 class Carto::UserCreation < ActiveRecord::Base
-  CREATED_VIA_LDAP = 'ldap'
-  CREATED_VIA_ORG_SIGNUP = 'org_signup'
-  CREATED_VIA_API = 'api'
-  CREATED_VIA_HTTP_AUTENTICATION = 'http_authentication'
+  include Carto::UserAuthenticator
 
-  VALID_CREATED_VIA = [CREATED_VIA_LDAP, CREATED_VIA_ORG_SIGNUP, CREATED_VIA_API, CREATED_VIA_HTTP_AUTENTICATION]
+  CREATED_VIA_SAML = 'saml'.freeze
+  CREATED_VIA_LDAP = 'ldap'.freeze
+  CREATED_VIA_ORG_SIGNUP = 'org_signup'.freeze
+  CREATED_VIA_API = 'api'.freeze
+  CREATED_VIA_HTTP_AUTENTICATION = 'http_authentication'.freeze
+
+  VALID_CREATED_VIA = [
+    CREATED_VIA_LDAP, CREATED_VIA_SAML, CREATED_VIA_ORG_SIGNUP,
+    CREATED_VIA_API, CREATED_VIA_HTTP_AUTENTICATION
+  ].freeze
 
   IN_PROGRESS_STATES = [:initial, :enqueuing, :creating_user, :validating_user, :saving_user, :promoting_user, :load_common_data, :creating_user_in_central]
   FINAL_STATES = [:success, :failure]
@@ -37,9 +44,12 @@ class Carto::UserCreation < ActiveRecord::Base
     user_creation.soft_obs_snapshot_limit = user.soft_obs_snapshot_limit
     user_creation.soft_obs_general_limit = user.soft_obs_general_limit
     user_creation.soft_twitter_datasource_limit = user.soft_twitter_datasource_limit.nil? ? false : user.soft_twitter_datasource_limit
+    user_creation.soft_mapzen_routing_limit = user.soft_mapzen_routing_limit
     user_creation.google_sign_in = user.google_sign_in
+    user_creation.github_user_id = user.github_user_id
     user_creation.log = Carto::Log.new_user_creation
     user_creation.created_via = created_via
+    user_creation.viewer = user.viewer || false
 
     user_creation
   end
@@ -103,10 +113,12 @@ class Carto::UserCreation < ActiveRecord::Base
   # TODO: Shorcut, search for a better solution to detect requirement
   def requires_validation_email?
     google_sign_in != true &&
+      !github_user_id &&
       !has_valid_invitation? &&
       !Carto::Ldap::Manager.new.configuration_present? &&
       !created_via_api? &&
-      !created_via_http_authentication?
+      !created_via_http_authentication? &&
+      !created_via_saml?
   end
 
   def autologin?
@@ -130,6 +142,10 @@ class Carto::UserCreation < ActiveRecord::Base
     created_via == CREATED_VIA_HTTP_AUTENTICATION
   end
 
+  def created_via_saml?
+    created_via == CREATED_VIA_SAML
+  end
+
   def has_valid_invitation?
     return false unless invitation_token
     !valid_invitation.nil?
@@ -141,8 +157,8 @@ class Carto::UserCreation < ActiveRecord::Base
     cartodb_user.enable_account_token.nil? && cartodb_user.enabled
   end
 
-  def unused_invitation
-    select_valid_invitation_token(Carto::Invitation.query_with_unused_email(email).all)
+  def pertinent_invitation
+    @pertinent_invitation ||= select_valid_invitation_token(Carto::Invitation.query_with_unused_email(email).all)
   end
 
   def valid_invitation
@@ -192,8 +208,9 @@ class Carto::UserCreation < ActiveRecord::Base
     @cartodb_user.crypted_password = crypted_password
     @cartodb_user.salt = salt
     @cartodb_user.google_sign_in = google_sign_in
+    @cartodb_user.github_user_id = github_user_id
     @cartodb_user.invitation_token = invitation_token
-    @cartodb_user.enable_account_token = ::User.make_token if requires_validation_email?
+    @cartodb_user.enable_account_token = make_token if requires_validation_email?
 
     unless organization_id.nil? || @promote_to_organization_owner
       organization = ::Organization.where(id: organization_id).first
@@ -208,6 +225,12 @@ class Carto::UserCreation < ActiveRecord::Base
     @cartodb_user.soft_obs_snapshot_limit = soft_obs_snapshot_limit unless soft_obs_snapshot_limit.nil?
     @cartodb_user.soft_obs_general_limit = soft_obs_general_limit unless soft_obs_general_limit.nil?
     @cartodb_user.soft_twitter_datasource_limit = soft_twitter_datasource_limit unless soft_twitter_datasource_limit.nil?
+    @cartodb_user.soft_mapzen_routing_limit = soft_mapzen_routing_limit unless soft_mapzen_routing_limit.nil?
+    @cartodb_user.viewer = viewer if viewer
+
+    if pertinent_invitation
+      @cartodb_user.viewer = pertinent_invitation.viewer
+    end
 
     @cartodb_user
   rescue => e
@@ -236,7 +259,7 @@ class Carto::UserCreation < ActiveRecord::Base
 
   def use_invitation
     return unless invitation_token
-    invitation = unused_invitation
+    invitation = pertinent_invitation
     return unless invitation
 
     invitation.use(email, invitation_token)

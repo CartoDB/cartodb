@@ -1,8 +1,8 @@
 // Content Result
-// 
+//
 // Show the result of any action made in the
 // dashboard, example (search, no results, error,
-// loading, ...) 
+// loading, ...)
 // --------------------------------------------------
 
 @import "compass/css3/images";
@@ -31,8 +31,7 @@
   min-height: 0;
   margin: 0 auto;
   padding: 28px 0 0 0;
-  @include background(image-url('layout/no_datasets_bkg.png') center center no-repeat $blueBkg);
-  box-shadow: 1px 0 0 1px $cStructure-softLine;
+  border-bottom: 1px solid $cStructure-softLine;
   overflow: hidden;
   z-index: 9;
 
@@ -43,21 +42,6 @@
     top: 0;
     bottom: 0;
     z-index: 0;
-  }  
-
-  &:after {
-    left: 50%;
-    right: 0;
-    margin-left: 470px;
-    @include background-horizontal(rgba($blueBkg,0), rgba($blueBkg,1));
-  }
-
-  &:before {
-    left: 0;
-    right: 50%;
-    margin-right: 470px;
-    background-color: transparent!important;
-    @include background-horizontal(rgba($blueBkg,1), rgba($blueBkg,0));
   }
 
   .NoDatasets-illustration {
@@ -67,7 +51,10 @@
     width: 671px;
     height: 195px;
     margin-left: -335px;
-    @include background(image-url('layout/search_lens_bkg.png') center center no-repeat);
+    background-image: image-url('layout/search_lens_bkg.png');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 100%;
   }
   .NoDatasets-illustration--secondary { @include background(image-url('layout/connect-dataset.png') center center no-repeat) }
 }
@@ -90,7 +77,7 @@
     right: 0;
     height: 2px;
     background: rgba(black, 0.55);
-    @include animation(pulsate 1.5s linear infinite);      
+    @include animation(pulsate 1.5s linear infinite);
   }
 }
 .ContentResult-icon {

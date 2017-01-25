@@ -37,6 +37,10 @@ DESC
       u.username = ENV['SUBDOMAIN']
       u.database_host = ENV['DATABASE_HOST'] || ::Rails::Sequel.configuration.environment_for(Rails.env)['host']
 
+      if ENV['BUILDER_ENABLED'] == "true"
+        u.builder_enabled = true
+      end
+
       u.save
 
       raise u.errors.inspect if u.new?
@@ -60,7 +64,11 @@ DESC
       user.username = ENV['SUBDOMAIN']
       user.database_host = ENV['DATABASE_HOST'] || ::Rails::Sequel.configuration.environment_for(Rails.env)['host']
 
-      if !user.errors.empty?
+      if ENV['BUILDER_ENABLED'] == "true"
+        u.builder_enabled = true
+      end
+
+      unless user.valid?
         puts
         puts 'There are some problems with the info that you provided to create the new user:'
         user.errors.full_messages.each do |error|
@@ -138,6 +146,11 @@ DESC
         else
           u.database_host = ENV['DATABASE_HOST']
         end
+
+        if ENV['BUILDER_ENABLED'] == "true"
+          u.builder_enabled = true
+        end
+
         u.save
         if u.new?
           raise u.errors.inspect

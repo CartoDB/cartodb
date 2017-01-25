@@ -15,14 +15,17 @@ module Carto
 
       def index
         presentations = @organization.users.each do |user|
-          Carto::Api::UserPresenter.new(user, current_viewer: current_viewer).to_poro
+          Carto::Api::UserPresenter.new(user, current_viewer: current_viewer).to_poro_without_id
         end
 
-        render_jsonp(presentations, 200)
+        render_jsonp presentations, 200
       end
 
       def show
-        render_jsonp(Carto::Api::UserPresenter.new(@user, current_viewer: current_viewer).to_poro, 200)
+        presentation = Carto::Api::UserPresenter.new(@user, current_viewer: current_viewer)
+                                                .to_poro_without_id
+
+        render_jsonp presentation, 200
       end
 
       def create
@@ -33,6 +36,9 @@ module Carto
         account_creator.with_email(create_params[:email]) if create_params[:email].present?
         account_creator.with_password(create_params[:password]) if create_params[:password].present?
         account_creator.with_quota_in_bytes(create_params[:quota_in_bytes]) if create_params[:quota_in_bytes].present?
+
+        param_viewer = create_params[:viewer]
+        account_creator.with_viewer(param_viewer) if param_viewer
 
         if create_params[:soft_geocoding_limit].present?
           account_creator.with_soft_geocoding_limit(create_params[:soft_geocoding_limit])
@@ -54,11 +60,19 @@ module Carto
           account_creator.with_soft_twitter_datasource_limit(create_params[:soft_twitter_datasource_limit])
         end
 
+        if create_params[:soft_mapzen_routing_limit].present?
+          account_creator.with_soft_mapzen_routing_limit(create_params[:soft_mapzen_routing_limit])
+        end
+
         render_jsonp(account_creator.validation_errors.full_messages, 410) && return unless account_creator.valid?
 
         account_creator.enqueue_creation(self)
 
-        render_jsonp Carto::Api::UserPresenter.new(account_creator.user, current_viewer: current_viewer).to_poro, 200
+        presentation = Carto::Api::UserPresenter.new(account_creator.user,
+                                                     current_viewer: current_viewer)
+                                                .to_poro_without_id
+
+        render_jsonp presentation, 200
       rescue => e
         CartoDB.notify_exception(e, user: account_creator.user.inspect)
 
@@ -90,7 +104,10 @@ module Carto
         @user.update_in_central
         @user.save
 
-        render_jsonp Carto::Api::UserPresenter.new(@user, current_viewer: current_viewer).to_poro, 200
+        presentation = Carto::Api::UserPresenter.new(@user, current_viewer: current_viewer)
+                                                .to_poro_without_id
+
+        render_jsonp presentation, 200
       rescue CartoDB::CentralCommunicationFailure => e
         CartoDB.notify_exception(e)
 
@@ -101,7 +118,7 @@ module Carto
         render_jsonp("Can't delete org owner", 401) && return if @organization.owner_id == @user.id
 
         unless @user.can_delete
-          render_jsonp("Can't delete @user. #{'Has shared entities' if @user.has_shared_entities?}", 410)
+          render_jsonp "Can't delete @user. #{'Has shared entities' if @user.has_shared_entities?}", 410
         end
 
         @user.delete_in_central
@@ -109,27 +126,34 @@ module Carto
 
         render_jsonp 'User deleted', 200
       rescue CartoDB::CentralCommunicationFailure => e
-        CartoDB.notify_exception(e)
-        if e.user_message =~ /No user found with username/
-          @user.destroy
-          render_jsonp 'User deleted', 200
-        else
-          render_jsonp "User couldn't be deleted", 500
-        end
+        CartoDB::Logger.error(exception: e, message: 'Central error deleting user from EUMAPI', user: @user)
+        render_jsonp "User couldn't be deleted", 500
       end
 
       private
 
+      COMMON_MUTABLE_ATTRIBUTES = [
+        :email,
+        :password,
+        :quota_in_bytes,
+        :soft_geocoding_limit,
+        :soft_here_isolines_limit,
+        :soft_obs_general_limit,
+        :soft_obs_snapshot_limit,
+        :soft_twitter_datasource_limit,
+        :soft_mapzen_routing_limit,
+        :viewer
+      ].freeze
+
       # TODO: Use native strong params when in Rails 4+
       def create_params
-        permit(:email, :username, :password, :quota_in_bytes, :soft_geocoding_limit, :soft_here_isolines_limit,
-               :soft_obs_snapshot_limit, :soft_obs_general_limit, :soft_twitter_datasource_limit)
+        @create_params ||=
+          permit(COMMON_MUTABLE_ATTRIBUTES + [:username])
       end
 
       # TODO: Use native strong params when in Rails 4+
       def update_params
-        permit(:email, :password, :quota_in_bytes, :soft_geocoding_limit, :soft_here_isolines_limit,
-               :soft_obs_snapshot_limit, :soft_obs_general_limit, :soft_twitter_datasource_limit)
+        @update_params ||= permit(COMMON_MUTABLE_ATTRIBUTES)
       end
     end
   end

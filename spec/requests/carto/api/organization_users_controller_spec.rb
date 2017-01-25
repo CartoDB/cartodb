@@ -49,7 +49,8 @@ describe Carto::Api::OrganizationUsersController do
                   soft_twitter_datasource_limit: nil,
                   soft_here_isolines_limit: nil,
                   soft_obs_snapshot_limit: nil,
-                  soft_obs_general_limit: nil)
+                  soft_obs_general_limit: nil,
+                  viewer: nil)
 
     params = {
       password: '2{Patrañas}',
@@ -57,13 +58,14 @@ describe Carto::Api::OrganizationUsersController do
     }
     unless username.nil?
       params[:username] = username
-      params[:email] = "#{username}@cartodb.com"
+      params[:email] = "#{username}@carto.com"
     end
     params[:soft_geocoding_limit] = soft_geocoding_limit unless soft_geocoding_limit.nil?
     params[:soft_twitter_datasource_limit] = soft_twitter_datasource_limit unless soft_twitter_datasource_limit.nil?
     params[:soft_here_isolines_limit] = soft_here_isolines_limit unless soft_here_isolines_limit.nil?
     params[:soft_obs_snapshot_limit] = soft_obs_snapshot_limit unless soft_obs_snapshot_limit.nil?
     params[:soft_obs_general_limit] = soft_obs_general_limit unless soft_obs_general_limit.nil?
+    params[:viewer] = viewer if viewer
 
     params
   end
@@ -138,7 +140,7 @@ describe Carto::Api::OrganizationUsersController do
       login(@organization.owner)
 
       username = 'manolo'
-      params = { username: username, email: "#{username}@cartodb.com" }
+      params = { username: username, email: "#{username}@carto.com" }
       post api_v2_organization_users_create_url(id_or_name: @organization.name), params
 
       last_response.status.should eq 410
@@ -155,9 +157,10 @@ describe Carto::Api::OrganizationUsersController do
 
       last_user_created = @organization.users.detect { |u| u.username == username }
       last_user_created.username.should eq username
-      last_user_created.email.should eq "#{username}@cartodb.com"
+      last_user_created.email.should eq "#{username}@carto.com"
       last_user_created.soft_geocoding_limit.should eq false
       last_user_created.quota_in_bytes.should eq 1024
+      last_user_created.builder_enabled.should be_nil
       last_user_created.destroy
     end
 
@@ -172,6 +175,34 @@ describe Carto::Api::OrganizationUsersController do
       @organization.reload
       last_user_created = @organization.users.detect { |u| u.username == username }
       last_user_created.soft_geocoding_limit.should eq false
+      last_user_created.destroy
+    end
+
+    it 'can create viewers' do
+      login(@organization.owner)
+      username = 'viewer-user'
+      params = user_params(username, viewer: true)
+      post api_v2_organization_users_create_url(id_or_name: @organization.name), params
+
+      last_response.status.should eq 200
+
+      @organization.reload
+      last_user_created = @organization.users.detect { |u| u.username == username }
+      last_user_created.viewer.should eq true
+      last_user_created.destroy
+    end
+
+    it 'creates builders by default' do
+      login(@organization.owner)
+      username = 'builder-user'
+      params = user_params(username)
+      post api_v2_organization_users_create_url(id_or_name: @organization.name), params
+
+      last_response.status.should eq 200
+
+      @organization.reload
+      last_user_created = @organization.users.detect { |u| u.username == username }
+      last_user_created.viewer.should eq false
       last_user_created.destroy
     end
 
@@ -228,7 +259,6 @@ describe Carto::Api::OrganizationUsersController do
       @organization.reload
       @organization.users.detect { |u| u.username == username }.should be_nil
     end
-
   end
 
   describe 'user update' do
@@ -283,6 +313,22 @@ describe Carto::Api::OrganizationUsersController do
       last_response.status.should eq 200
 
       user_to_update.reload.email.should == new_email
+    end
+
+    it 'should update viewer' do
+      login(@organization.owner)
+
+      2.times do
+        user_to_update = @organization.non_owner_users[0]
+        new_viewer = !user_to_update.viewer?
+        params = { viewer: new_viewer }
+        put api_v2_organization_users_update_url(id_or_name: @organization.name,
+                                                 u_username: user_to_update.username),
+            params
+        last_response.status.should eq 200
+
+        user_to_update.reload.viewer.should == new_viewer
+      end
     end
 
     it 'should update quota_in_bytes' do
@@ -470,6 +516,55 @@ describe Carto::Api::OrganizationUsersController do
                                                   u_username: user_to_be_deleted.username)
 
       last_response.status.should == 401
+    end
+
+    describe 'with Central' do
+      before(:each) do
+        ::User.any_instance.unstub(:delete_in_central)
+        Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
+        @organization.reload
+        @user_to_be_deleted = @organization.non_owner_users.first
+      end
+
+      def mock_delete_request(code)
+        response_mock = mock
+        response_mock.stubs(:code).returns(code)
+        response_mock.stubs(:body).returns('{"errors": []}')
+        Carto::Http::Request.any_instance.stubs(:run).returns(response_mock)
+      end
+
+      it 'should delete users in Central' do
+        ::User.any_instance.stubs(:destroy).once
+        mock_delete_request(204)
+        login(@organization.owner)
+
+        delete api_v2_organization_users_delete_url(id_or_name: @organization.name,
+                                                    u_username: @user_to_be_deleted.username)
+
+        last_response.status.should eq 200
+      end
+
+      it 'should delete users missing from Central' do
+        ::User.any_instance.stubs(:destroy).once
+        mock_delete_request(404)
+        login(@organization.owner)
+
+        delete api_v2_organization_users_delete_url(id_or_name: @organization.name,
+                                                    u_username: @user_to_be_deleted.username)
+
+        last_response.status.should eq 200
+      end
+
+      it 'should not delete users that failed to delete from Central' do
+        ::User.any_instance.stubs(:destroy).never
+        mock_delete_request(500)
+        login(@organization.owner)
+
+        delete api_v2_organization_users_delete_url(id_or_name: @organization.name,
+                                                    u_username: @user_to_be_deleted.username)
+
+        last_response.status.should eq 500
+      end
     end
   end
 

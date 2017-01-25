@@ -4,7 +4,7 @@ FactoryGirl.define do
 
   factory :user_creation, class: Carto::UserCreation do
     username "whatever"
-    email "whatever@cartodb.com"
+    email "whatever@carto.com"
     crypted_password "rgjreogjorejgpovrjeg"
     salt "ewefgrjwopjgow"
     google_sign_in false

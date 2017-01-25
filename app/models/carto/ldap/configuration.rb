@@ -37,6 +37,7 @@ class Carto::Ldap::Configuration < ActiveRecord::Base
   # @param String email_field Which LDAP entry field represents the email
   # @param String domain_bases List of DCs conforming the path.
   #                            Serialized, e.g. "['a','b']", due to Rails 3 or PG gem issue handling `PG text[]` fields
+  # @param String additional_search_filter Additional filter to add (with &) to the search query if present
   # @param String user_object_class Name of the attribute where the sers are maped in LDAP
   # @param String group_object_class Name of the attribute where the groups are maped in LDAP
   # @param DateTime created_at (Self-generated)
@@ -75,9 +76,9 @@ class Carto::Ldap::Configuration < ActiveRecord::Base
     valid_ldap_entry = nil
     domain_bases_list.find do |domain|
       valid_ldap_entry = ldap_connection.bind_as(
-        :base => domain,
-        :filter => "(#{self.user_id_field}=#{username})",
-        :password => password
+        base: domain,
+        filter: search_filter(username),
+        password: password
       )
     end
     @last_authentication_result = ldap_connection.get_operation_result
@@ -119,6 +120,15 @@ class Carto::Ldap::Configuration < ActiveRecord::Base
   end
 
   private
+
+  def search_filter(username)
+    user_id_filter = "(#{user_id_field}=#{username})"
+    if additional_search_filter.present?
+      "(&#{user_id_filter}#{additional_search_filter})"
+    else
+      user_id_filter
+    end
+  end
 
   def domain_bases_not_empty
     errors.add(:domain_bases, "No domain bases set") unless domain_bases.present?

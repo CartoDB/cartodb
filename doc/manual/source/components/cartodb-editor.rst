@@ -13,7 +13,7 @@ Internally the editor is the operations core of CartoDB. It manages PostgreSQL m
 
 It is developed in Ruby on Rails and like the other components of CartoDB is Open Source and you can find the source code at `CartoDB/cartodb <https://github.com/CartoDB/cartodb>`_
 
-You can find usage documentation at http://docs.cartodb.com/cartodb-editor.html
+You can find usage documentation at https://docs.carto.com/cartodb-editor.html
 
 Although you can chechout any branch of the repository most of them are usually work in progress that is not guaranteed to work. In order to run a production ready Editor service you need to use **master** branch.
 

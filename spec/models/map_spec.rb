@@ -44,6 +44,112 @@ describe Map do
       end
     end
 
+    describe '#validations' do
+      before(:all) do
+        @map_user = FactoryGirl.create(:carto_user)
+        @map = Carto::Map.create(user_id: @map_user.id)
+      end
+
+      after(:all) do
+        @map.destroy
+        @map_user.destroy
+      end
+
+      describe '#options' do
+        it 'sets dashboard_menu true by default' do
+          @map.dashboard_menu.should eq true
+        end
+
+        it 'sets layer_selector false by default' do
+          @map.layer_selector.should eq false
+        end
+
+        it 'allows to change dashboard_menu' do
+          @map.dashboard_menu = false
+          @map.dashboard_menu.should be_false
+
+          @map.dashboard_menu = true
+          @map.dashboard_menu.should be_true
+        end
+
+        it 'allows to change layer_selector' do
+          @map.layer_selector = false
+          @map.layer_selector.should be_false
+
+          @map.layer_selector = true
+          @map.layer_selector.should be_true
+        end
+
+        it 'rejects a non-boolean dashboard_menu value' do
+          @map.dashboard_menu = 'patata'
+
+          @map.valid?.should be_false
+          @map.errors[:options][0].should include('String did not match the following type: boolean')
+        end
+
+        it 'rejects a non-boolean layer_selector value' do
+          @map.layer_selector = 'patata'
+
+          @map.valid?.should be_false
+          @map.errors[:options][0].should include('String did not match the following type: boolean')
+        end
+
+        it 'requires a dashboard_menu value' do
+          @map.dashboard_menu = nil
+
+          @map.valid?.should be_false
+          @map.errors[:options].should_not be_empty
+          @map.errors[:options][0].should include('NilClass did not match the following type: boolean')
+        end
+
+        it 'requires a layer_selector value' do
+          @map.layer_selector = nil
+
+          @map.valid?.should be_false
+          @map.errors[:options].should_not be_empty
+          @map.errors[:options][0].should include('NilClass did not match the following type: boolean')
+        end
+
+        it 'requires dashboard_menu to be present' do
+          old_options = @map.options.dup
+          @map.options = Hash.new
+
+          @map.valid?.should be_false
+          @map.errors[:options].should_not be_empty
+          @map.errors[:options][0].should include('did not contain a required property of \'dashboard_menu\'')
+
+          @map.options = old_options
+        end
+
+        it 'requires layer_selector to be present' do
+          old_options = @map.options.dup
+          @map.options = Hash.new
+
+          @map.valid?.should be_false
+          @map.errors[:options].should_not be_empty
+          @map.errors[:options][0].should include('did not contain a required property of \'layer_selector\'')
+
+          @map.options = old_options
+        end
+
+        it 'rejects spammy options' do
+          @map.options[:spam] = 'hell'
+
+          @map.valid?.should be_false
+          @map.errors[:options].should_not be_empty
+          @map.errors[:options][0].should include('spam')
+        end
+
+        it 'rejects incomplete options' do
+          @map.options.delete(:dashboard_menu)
+
+          @map.valid?.should be_false
+          @map.errors[:options].should_not be_empty
+          @map.errors[:options][0].should include('dashboard_menu')
+        end
+      end
+    end
+
     describe '#destroy' do
       it 'should fail for existing maps and viewer users' do
         new_map = Map.create(user_id: @user.id, table_id: @table.id)
@@ -189,8 +295,8 @@ describe Map do
       table.optimize
 
       table.map.recalculate_bounds!
-      table.map.view_bounds_ne.should == "[40.428198, -3.699732]"
-      table.map.view_bounds_sw.should == "[40.415113, -3.70957]"
+      table.map.view_bounds_ne.should == "[40.4283, -3.69968]"
+      table.map.view_bounds_sw.should == "[40.415, -3.70962]"
     end
 
     it "recenters map using bounds" do
@@ -245,6 +351,33 @@ describe Map do
     end
   end
 
+  describe '#notify_map_change' do
+    before(:each) do
+      @map = Map.create(user_id: @user.id, table_id: @table.id)
+      layer = Layer.new(kind: 'tiled')
+      @map.add_layer(layer)
+    end
+
+    after(:each) do
+      @map.destroy
+    end
+
+    it 'invalidates vizjson cache' do
+      CartoDB::Varnish.any_instance.stubs(:purge).with(@map.visualization.varnish_vizjson_key).once
+      @map.notify_map_change
+      CartoDB::Varnish.any_instance.stubs(:purge) # Needed to avoid counting the call from destroy
+    end
+
+    it 'updates_named_maps' do
+      named_maps_api_mock = mock
+      Carto::NamedMaps::Api.stubs(:new).with { |vis| vis.id == @map.visualization.id }.returns(named_maps_api_mock)
+      named_maps_api_mock.stubs(:show).returns(true)
+      named_maps_api_mock.stubs(:update).once
+      @map.notify_map_change
+      Carto::NamedMaps::Api.unstub(:new)
+    end
+  end
+
   describe '#updated_at' do
     it 'is updated after saving the map' do
       map         = Map.create(user_id: @user.id, table_id: @table.id)
@@ -270,13 +403,13 @@ describe Map do
       map.add_layer(Layer.new(kind: 'carto', order: 5))
       map.save.reload
 
-      second__tiled_layer = Layer.new(kind: 'tiled')
+      second_tiled_layer = Layer.new(kind: 'tiled')
       # more tiled layers allowed only if at top
-      second__tiled_layer.order = 0
-      map.admits_layer?(second__tiled_layer).should == false
-      second__tiled_layer.order = 15
-      map.admits_layer?(second__tiled_layer).should == true
-      map.add_layer(layer)
+      second_tiled_layer.order = 0
+      map.admits_layer?(second_tiled_layer).should == false
+      second_tiled_layer.order = 15
+      map.admits_layer?(second_tiled_layer).should == true
+      map.add_layer(second_tiled_layer)
       map.save.reload
 
       # This is now a valid scenario, for example switcing from a basemap with labels on top to another that has too
@@ -335,31 +468,29 @@ describe Map do
       @table2.user_id = @user.id
       @table2.save
 
-      source  = @table1.table_visualization
-      derived = CartoDB::Visualization::Copier.new(@user, source).copy
-      derived.store
+      visualization = @table1.table_visualization
 
-      derived.layers(:cartodb).length.should eq 1
+      visualization.layers(:cartodb).length.should eq 1
       @table1.privacy = UserTable::PRIVACY_PUBLIC
       @table1.save
-      derived.privacy = CartoDB::Visualization::Member::PRIVACY_PUBLIC
-      derived.store
+      visualization.privacy = CartoDB::Visualization::Member::PRIVACY_PUBLIC
+      visualization.store
 
-      derived.fetch.private?.should be_false
+      visualization.fetch.private?.should be_false
 
       layer = Layer.create(
         kind:     'carto',
         options:  { table_name: @table2.name }
       )
-      layer.add_map(derived.map)
+      layer.add_map(visualization.map)
       layer.save
       layer.reload
       @user.reload
 
       layer.uses_private_tables?.should be_true
 
-      derived.map.process_privacy_in(layer)
-      derived.fetch.private?.should be_true
+      visualization.map.process_privacy_in(layer)
+      visualization.fetch.private?.should be_true
     end
   end
 

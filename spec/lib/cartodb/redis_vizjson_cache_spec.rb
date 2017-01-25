@@ -44,8 +44,8 @@ describe CartoDB::Visualization::RedisVizjsonCache do
 
       deleted.count.should eq KEYS_PER_VISUALIZATION
 
-      deleted.count { |d| d.match(/http$/) }.should eq VIZJSON_VERSION_COUNT
-      deleted.count { |d| d.match(/https$/) }.should eq VIZJSON_VERSION_COUNT
+      deleted.count { |d| d.match(/:http:/) }.should eq VIZJSON_VERSION_COUNT
+      deleted.count { |d| d.match(/:https:/) }.should eq VIZJSON_VERSION_COUNT
       deleted.count { |d| d.match(/#{visualization_id}/) }.should eq KEYS_PER_VISUALIZATION
     end
   end
@@ -60,8 +60,8 @@ describe CartoDB::Visualization::RedisVizjsonCache do
 
       deleted.count.should eq vs.count * KEYS_PER_VISUALIZATION
 
-      deleted.count { |d| d.match(/http$/) }.should eq vs.count * VIZJSON_VERSION_COUNT
-      deleted.count { |d| d.match(/https$/) }.should eq vs.count * VIZJSON_VERSION_COUNT
+      deleted.count { |d| d.match(/:http:/) }.should eq vs.count * VIZJSON_VERSION_COUNT
+      deleted.count { |d| d.match(/:https:/) }.should eq vs.count * VIZJSON_VERSION_COUNT
 
       deleted.count { |d| d.match(/#{vs[0].id}/) }.should eq KEYS_PER_VISUALIZATION
       deleted.count { |d| d.match(/#{vs[1].id}/) }.should eq KEYS_PER_VISUALIZATION

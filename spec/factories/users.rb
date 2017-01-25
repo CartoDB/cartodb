@@ -1,11 +1,12 @@
 # Read about factories at https://github.com/thoughtbot/factory_girl
 
 require 'helpers/unique_names_helper'
+require 'carto/user_authenticator'
 
 include UniqueNamesHelper
+include Carto::UserAuthenticator
 
 FactoryGirl.define do
-
   factory :user, class: ::User do
 
     username               { unique_name('user') }
@@ -14,6 +15,7 @@ FactoryGirl.define do
     table_quota            5
     quota_in_bytes         5000000
     id                     { UUIDTools::UUID.timestamp_create.to_s }
+    builder_enabled        nil # Most tests still assume editor
 
     trait :admin_privileges do
 
@@ -65,15 +67,19 @@ FactoryGirl.define do
     password { email.split('@').first }
     password_confirmation { email.split('@').first }
     salt 'kkkkkkkkk'
-    crypted_password 'kkkkkkkkk'
 
     api_key '21ee521b8a107ea55d61fd7b485dd93d54c0b9d2'
     table_quota 5
     quota_in_bytes 5000000
     id { UUIDTools::UUID.timestamp_create.to_s }
+    builder_enabled nil # Most tests still assume editor
 
     before(:create) do
       CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+    end
+
+    after(:build) do |carto_user|
+      carto_user.crypted_password = password_digest(carto_user.password, carto_user.salt)
     end
 
     after(:create) do |carto_user|

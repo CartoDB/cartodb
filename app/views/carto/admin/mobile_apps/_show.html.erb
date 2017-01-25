@@ -9,7 +9,7 @@
           <h3 class="MobileAppsList-itemInfoTitle u-ellipsLongText"><%= link_to a.name, CartoDB.url(self, 'mobile_app', id: a.id) %></h3>
           <h4 class="MobileAppsList-itemInfoSubtitle u-ellipsLongText"><%= a.description rescue nil %></h4>
         </div>
-        <div class="MobileAppsList-details">
+        <div class="CDB-Size-medium MobileAppsList-details">
           <p class="MobileAppsList-details--paragraph">
             <span class="MobileAppsList-detail">
               <i class="MobileAppsList-details--icon MobileAppsList-statusIcon MobileAppsList-statusIcon--<%= a.app_type %>"></i> <%= a.app_type %>

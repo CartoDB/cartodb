@@ -14,11 +14,12 @@ gem 'activerecord-postgres-array', '0.0.9'
 gem 'vizzuality-sequel-rails', '0.3.7', git: 'https://github.com/Vizzuality/sequel-rails.git'
 
 gem 'rails_warden',            '0.5.8' # Auth via the Warden Rack framework
+gem 'ruby-saml',               '1.4.1'
 gem 'oauth',                   '0.4.5'
 gem 'oauth-plugin',            '0.4.0.pre4'
 
-gem 'redis',                   '3.2.1'
-gem 'hiredis',                 '0.6.0'
+gem 'redis',                   '3.3.0'
+gem 'hiredis',                 '0.6.1'
 gem 'nokogiri',                '~> 1.6.6.2'
 gem 'statsd-client',           '0.0.7', require: 'statsd'
 gem 'aws-sdk',                 '1.8.5'
@@ -33,6 +34,7 @@ gem 'ejs',                     '~> 1.1.1'
 gem 'execjs',                  '~> 0.4' # Required by ejs
 
 gem 'net-ldap',                '0.11'
+gem 'json-schema',             '2.0.0'
 
 group :production, :staging do
   gem 'unicorn',               '4.8.2'

@@ -1,12 +1,12 @@
-<%= content_for(:title) do %>CartoDB &middot; <%= @name %> public feed<% end %>
+<%= content_for(:title) do %>CARTO &middot; <%= @name %> public feed<% end %>
 <%= content_for(:description) do %><%= @page_description %><% end %>
 
-<div class="PublicBody-content PublicBody--grey">
+<div class="CDB-Text PublicBody-content PublicBody--grey">
   <div class="PublicUserProfile">
     <div class="PublicUserProfile-profile">
 
       <div class="PublicUserProfile-bio">
-        <h2 class="PublicUserProfile-name u-breakLongWords"><%= @name %></h2>
+        <h2 class="CDB-Size-huge PublicUserProfile-name u-breakLongWords"><%= @name %></h2>
 
         <% unless @viewed_user.description.nil? || @tables_num == 0 %>
           <p class="PublicUserProfile-description"><%= @viewed_user.description %></p>
@@ -14,26 +14,44 @@
       </div>
       <ul class="PublicUserProfile-details">
         <% unless @viewed_user.twitter_username.blank? || @tables_num == 0 %>
-          <li class="PublicUserProfile-detail"><i class="CDB-IconFont CDB-IconFont-twitter CDB-IconFont--withLabel"></i> <a href="http://twitter.com/<%= @viewed_user.twitter_username %>"><%= @viewed_user.twitter_username %></a></li>
+          <li class="PublicUserProfile-detail">
+            <i class="CDB-IconFont CDB-IconFont-twitter CDB-IconFont--withLabel"></i>
+            <a href="http://twitter.com/<%= @viewed_user.twitter_username %>"><%= @viewed_user.twitter_username %></a>
+          </li>
         <% end %>
 
         <% unless @viewed_user.website.blank? || @tables_num == 0 %>
-          <li class="PublicUserProfile-detail"><i class="CDB-IconFont CDB-IconFont-anchor CDB-IconFont--withLabel"></i> <a href="<%= @website %>"><%= @website_clean %></a></li>
+          <li class="PublicUserProfile-detail">
+            <i class="CDB-IconFont CDB-IconFont-anchor CDB-IconFont--withLabel"></i>
+            <a href="<%= @website %>"><%= @website_clean %></a>
+          </li>
         <% end %>
 
         <% if @viewed_user.has_organization? %>
-          <li class="PublicUserProfile-detail"><i class="CDB-IconFont CDB-IconFont-attache CDB-IconFont--withLabel"></i> <%= @viewed_user.organization.name %></li>
+          <li class="PublicUserProfile-detail">
+            <i class="CDB-IconFont CDB-IconFont-attache CDB-IconFont--withLabel"></i>
+            <%= @viewed_user.organization.name %>
+          </li>
       <% end %>
 
         <% if @viewed_user.available_for_hire %>
-        <li class="PublicUserProfile-detail"><i class="CDB-IconFont CDB-IconFont-email CDB-IconFont-withLabel"></i> <a href="mailto:<%= @viewed_user.email %>"><%= @viewed_user.email %></a></li>
+        <li class="PublicUserProfile-detail">
+          <i class="CDB-IconFont CDB-IconFont-email CDB-IconFont--withLabel"></i>
+          <a href="mailto:<%= @viewed_user.email %>"><%= @viewed_user.email %></a>
+        </li>
         <% end %>
 
         <% unless @viewed_user.location.blank? %>
-        <li class="PublicUserProfile-detail"><i class="CDB-IconFont CDB-IconFont-pin CDB-IconFont--withLabel"></i> <%= @viewed_user.location %></li>
+        <li class="PublicUserProfile-detail">
+          <i class="CDB-IconFont CDB-IconFont-pin CDB-IconFont--withLabel"></i>
+          <%= @viewed_user.location %>
+        </li>
         <% end %>
 
-        <li class="PublicUserProfile-detail"><i class="CDB-IconFont CDB-IconFont-calendar CDB-IconFont--withLabel"></i> Member since <%= @viewed_user.created_at.strftime("%B %Y") %></li>
+        <li class="PublicUserProfile-detail">
+          <i class="CDB-IconFont CDB-IconFont-calendar CDB-IconFont--withLabel"></i>
+          Member since <%= @viewed_user.created_at.strftime("%B %Y") %>
+        </li>
       </ul>
     </div>
 

@@ -2,6 +2,7 @@
 require_relative '../spec_helper'
 require_relative '../../app/connectors/importer'
 require_relative '../doubles/result'
+require_relative '../helpers/feature_flag_helper'
 require 'csv'
 
 describe CartoDB::Importer2::Overviews do
@@ -19,23 +20,7 @@ describe CartoDB::Importer2::Overviews do
     @feature_flag.destroy
   end
 
-  def set_feature_flag(user, feature, state)
-    user.reload
-    if state != user.has_feature_flag?(feature)
-      ff = FeatureFlag[name: feature]
-      ffu = FeatureFlagsUser[feature_flag_id: ff.id, user_id: user.id]
-      if state
-        unless ffu
-          FeatureFlagsUser.new(feature_flag_id: ff.id, user_id: user.id).save
-        end
-      else
-        ff.update restricted: false unless ff.restricted
-        ffu.delete if ffu
-      end
-      user.reload
-    end
-    user
-  end
+  include FeatureFlagHelper
 
   def overview_tables(user, table)
     overviews = user.in_database do |db|
@@ -304,9 +289,12 @@ describe CartoDB::Importer2::Overviews do
       data_import.stubs(:puts)
       CartoDB.stubs(:notify_error)
 
-      expect { data_import.run_import! }.to raise_error(Sequel::DatabaseError)
-      data_import.success.should eq false
-      data_import.log.entries.should match(/canceling statement due to statement timeout/)
+      # The overviews timeout should abort overviews creation but otherwise
+      # import the dataset correctly.
+      data_import.run_import!
+      data_import.success.should eq true
+      table_name = UserTable[id: data_import.table.id].name
+      has_overviews?(@user, table_name).should eq false
     end
   end
 end

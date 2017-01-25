@@ -97,6 +97,20 @@ module CartoDB
         if dataset.should_create_overviews?
           dataset.create_overviews!
         end
+      rescue => exception
+        # In case of overview creation failure we'll just omit the
+        # overviews creation and continue with the process.
+        # Since the actual creation is handled by a single SQL
+        # function, and thus executed in a transaction, we shouldn't
+        # need any clean up here. (Either all overviews were created
+        # or nothing changed)
+        runner.log.append("Overviews creation failed: #{exception.message}")
+        CartoDB::Logger.error(
+          message:    "Overviews creation failed",
+          exception:  exception,
+          user:       Carto::User.find(data_import.user_id),
+          table_name: result.name
+        )
       end
 
       def create_visualization
@@ -104,8 +118,10 @@ module CartoDB
           create_default_visualization
         else
           user = Carto::User.find(data_import.user_id)
+          renamed_tables = results.map { |r| [r.original_name, r.name] }.to_h
           runner.visualizations.each do |visualization|
-            vis = Carto::VisualizationsExportPersistenceService.new.save_import(user, visualization)
+            persister = Carto::VisualizationsExportPersistenceService.new
+            vis = persister.save_import(user, visualization, renamed_tables: renamed_tables)
             bind_visualization_to_data_import(vis)
           end
         end
@@ -192,6 +208,14 @@ module CartoDB
         end
 
         new_name
+      rescue => exception
+        drop("#{ORIGIN_SCHEMA}.#{current_name}")
+        CartoDB::Logger.debug(message: 'Error in table rename: dropping importer table',
+                              exception: exception,
+                              table_name: current_name,
+                              new_table_name: new_name,
+                              data_import: @data_import_id)
+        raise exception
       end
 
       def rename_the_geom_index_if_exists(current_name, new_name)

@@ -4,16 +4,19 @@ require_relative '../../../models/visualization/member'
 require_relative '../../../models/visualization/collection'
 require_relative '../../../models/visualization/presenter'
 require_relative '../../../models/visualization/locator'
-require_relative '../../../models/visualization/copier'
 require_relative '../../../models/visualization/name_generator'
 require_relative '../../../models/visualization/table_blender'
 require_relative '../../../models/visualization/watcher'
 require_relative '../../../models/map/presenter'
 require_relative '../../../../lib/static_maps_url_helper'
-require_relative '../../../../lib/cartodb/event_tracker'
+
+require_dependency 'carto/tracking/events'
+require_dependency 'carto/visualizations_export_service_2'
+require_dependency 'carto/visualization_migrator'
 
 class Api::Json::VisualizationsController < Api::ApplicationController
   include CartoDB
+  include Carto::VisualizationMigrator
 
   ssl_allowed :notify_watching, :list_watching, :add_like, :remove_like
   ssl_required :create, :update, :destroy, :set_next_id
@@ -37,34 +40,25 @@ class Api::Json::VisualizationsController < Api::ApplicationController
         prev_id = vis_data.delete(:prev_id) || vis_data.delete('prev_id')
         next_id = vis_data.delete(:next_id) || vis_data.delete('next_id')
 
-        vis_data = add_default_privacy(vis_data)
-
         param_tables = params[:tables]
-        subdomain = CartoDB.extract_subdomain(request)
         current_user_id = current_user.id
 
-        vis = if params[:source_visualization_id]
-                source, = @stats_aggregator.timing('locate') do
-                  locator.get(params.fetch(:source_visualization_id), subdomain)
-                end
-
-                return head(403) unless source && source.can_copy?(current_user)
-
-                copy_overlays = params.fetch(:copy_overlays, true)
-                copy_layers = params.fetch(:copy_layers, true)
-
-                additional_fields = {
-                  type:       params.fetch(:type, Visualization::Member::TYPE_DERIVED),
-                  parent_id:  params.fetch(:parent_id, nil)
-                }
-
-                @stats_aggregator.timing('copy') do
-                  Visualization::Copier.new(current_user, source, name_candidate)
-                                       .copy(copy_overlays, copy_layers, additional_fields)
+        origin = 'blank'
+        source_id = params[:source_visualization_id]
+        vis = if source_id
+                user = Carto::User.find(current_user_id)
+                source = Carto::Visualization.where(id: source_id).first
+                return head(403) unless source && source.is_viewable_by_user?(user) && !source.kind_raster?
+                if source.derived?
+                  origin = 'copy'
+                  duplicate_derived_visualization(params[:source_visualization_id], user)
+                else
+                  tables = [UserTable.find(id: source.user_table.id)]
+                  create_visualization_from_tables(tables, vis_data)
                 end
               elsif param_tables
+                subdomain = CartoDB.extract_subdomain(request)
                 viewed_user = ::User.find(username: subdomain)
-
                 tables = @stats_aggregator.timing('locate-table') do
                   tables = param_tables.map do |table_name|
                     Helpers::TableLocator.new.get_by_id_or_name(table_name, viewed_user) if viewed_user
@@ -72,27 +66,12 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
                   tables.flatten
                 end
-
-                blender = Visualization::TableBlender.new(current_user, tables)
-                map = blender.blend
-
-                vis = Visualization::Member.new(vis_data.merge(name: name_candidate,
-                                                               map_id: map.id,
-                                                               type: 'derived',
-                                                               privacy: blender.blended_privacy,
-                                                               user_id: current_user_id))
-
-                @stats_aggregator.timing('default-overlays') do
-                  Visualization::Overlays.new(vis).create_default_overlays
-                end
-
-                vis
+                create_visualization_from_tables(tables, vis_data)
               else
                 Visualization::Member.new(vis_data.merge(name: name_candidate, user_id:  current_user_id))
               end
 
-        vis.privacy = vis.default_privacy(current_user)
-
+        vis.ensure_valid_privacy
         # both null, make sure is the first children or automatically link to the tail of the list
         if !vis.parent_id.nil? && prev_id.nil? && next_id.nil?
           parent_vis = Visualization::Member.new(id: vis.parent_id).fetch
@@ -109,10 +88,22 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
         vis = set_visualization_prev_next(vis, prev_id, next_id)
 
-        track_event(vis, 'Created')
+        current_viewer_id = current_viewer.id
+        properties = {
+          user_id: current_viewer_id,
+          origin: origin,
+          visualization_id: vis.id
+        }
+
+        if vis.derived?
+          Carto::Tracking::Events::CreatedMap.new(current_viewer_id, properties).report
+        else
+          Carto::Tracking::Events::CreatedDataset.new(current_viewer_id, properties).report
+        end
 
         render_jsonp(vis)
-      rescue CartoDB::InvalidMember
+      rescue CartoDB::InvalidMember => e
+        CartoDB::Logger.error(message: "Invalid member creating visualization", visualization_id: vis.id, exception: e)
         render_jsonp({ errors: vis.full_errors }, 400)
       end
     end
@@ -158,18 +149,27 @@ class Api::Json::VisualizationsController < Api::ApplicationController
             end
           end
         else
+          old_version = vis.version
+
           vis.attributes = vis_data
           vis = @stats_aggregator.timing('save') do
             vis.store.fetch
           end
+
+          if version_needs_migration?(old_version, vis.version)
+            migrate_visualization_to_v3(vis)
+          end
         end
 
         render_jsonp(vis)
-      rescue KeyError
+      rescue KeyError => e
+        CartoDB::Logger.error(message: "KeyError updating visualization", visualization_id: vis.id, exception: e)
         head(404)
-      rescue CartoDB::InvalidMember
+      rescue CartoDB::InvalidMember => e
+        CartoDB::Logger.error(message: "InvalidMember updating visualization", visualization_id: vis.id, exception: e)
         render_jsonp({ errors: vis.full_errors.empty? ? ['Error saving data'] : vis.full_errors }, 400)
       rescue => e
+        CartoDB::Logger.error(message: "Error updating visualization", visualization_id: vis.id, exception: e)
         render_jsonp({ errors: ['Unknown error'] }, 400)
       end
     end
@@ -186,12 +186,23 @@ class Api::Json::VisualizationsController < Api::ApplicationController
         return head(404) unless vis
         return head(403) unless vis.is_owner?(current_user)
 
-        track_event(vis, 'Deleted')
+        current_viewer_id = current_viewer.id
+        properties = { user_id: current_viewer_id, visualization_id: vis.id }
+        if vis.derived?
+          Carto::Tracking::Events::DeletedMap.new(current_viewer_id, properties).report
+        else
+          Carto::Tracking::Events::DeletedDataset.new(current_viewer_id, properties).report
+        end
+
         unless vis.table.nil?
-          vis.table.dependent_visualizations.each { |dependent_vis|
-            # Remove dependent visualizations as well, if any
-            track_event(dependent_vis, 'Deleted')
-          }
+          vis.table.dependent_visualizations.each do |dependent_vis|
+            properties = { user_id: current_viewer_id, visualization_id: dependent_vis.id }
+            if dependent_vis.derived?
+              Carto::Tracking::Events::DeletedMap.new(current_viewer_id, properties).report
+            else
+              Carto::Tracking::Events::DeletedDataset.new(current_viewer_id, properties).report
+            end
+          end
         end
 
         @stats_aggregator.timing('delete') do
@@ -267,28 +278,19 @@ class Api::Json::VisualizationsController < Api::ApplicationController
              .invalidate_cache
         end
 
-        if (current_viewer.id != vis.user.id)
-          vis_preview_image = Carto::StaticMapsURLHelper.new.url_for_static_map(request, vis, 600, 300)
-          send_like_email(vis, current_viewer, vis_preview_image)
+        current_viewer_id = current_viewer.id
+        if current_viewer_id != vis.user.id
+          protocol = request.protocol.sub('://', '')
+          vis_url = Carto::StaticMapsURLHelper.new.url_for_static_map_with_visualization(vis, protocol, 600, 300)
+          send_like_email(vis, current_viewer, vis_url)
         end
 
-        custom_properties = {
-          action: 'like',
-          vis_id: vis.id,
-          vis_name: vis.name,
-          vis_type: vis.type == 'derived' ? 'map' : 'dataset',
-          vis_author: vis.user.username,
-          vis_author_email: vis.user.email,
-          vis_author_id: vis.user.id
-        }
+        Carto::Tracking::Events::LikedMap.new(current_viewer_id,
+                                              user_id: current_viewer_id,
+                                              visualization_id: vis.id,
+                                              action: 'like').report
 
-        Cartodb::EventTracker.new.send_event(current_viewer, 'Liked map', custom_properties)
-
-        render_jsonp({
-                       id:    vis.id,
-                       likes: vis.likes.count,
-                       liked: vis.liked_by?(current_viewer.id)
-                     })
+        render_jsonp(id: vis.id, likes: vis.likes.count, liked: vis.liked_by?(current_viewer_id))
       rescue KeyError => exception
         render(text: exception.message, status: 403)
       rescue AlreadyLikedError
@@ -300,7 +302,6 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
   def remove_like
     @stats_aggregator.timing('visualizations.unlike') do
-
       begin
         return(head 403) unless current_viewer
 
@@ -311,37 +312,57 @@ class Api::Json::VisualizationsController < Api::ApplicationController
             vis.privacy != Visualization::Member::PRIVACY_PUBLIC && vis.privacy != Visualization::Member::PRIVACY_LINK
         end
 
+        current_viewer_id = current_viewer.id
         @stats_aggregator.timing('destroy') do
-          vis.remove_like_from(current_viewer.id)
+          vis.remove_like_from(current_viewer_id)
              .fetch
              .invalidate_cache
         end
 
-        custom_properties = {
-          action: 'remove',
-          vis_id: vis.id,
-          vis_name: vis.name,
-          vis_type: vis.type == 'derived' ? 'map' : 'dataset',
-          vis_author: vis.user.username,
-          vis_author_email: vis.user.email,
-          vis_author_id: vis.user.id
-        }
+        Carto::Tracking::Events::LikedMap.new(current_viewer_id,
+                                              user_id: current_viewer_id,
+                                              visualization_id: vis.id,
+                                              action: 'remove').report
 
-        Cartodb::EventTracker.new.send_event(current_viewer, 'Liked map', custom_properties)
-
-        render_jsonp({
-                       id:    vis.id,
-                       likes: vis.likes.count,
-                       liked: false
-                     })
+        render_jsonp(id: vis.id, likes: vis.likes.count, liked: false)
       rescue KeyError => exception
         render(text: exception.message, status: 403)
       end
-
     end
   end
 
   private
+
+  def duplicate_derived_visualization(source, user)
+    visualization_copy_id = @stats_aggregator.timing('copy') do
+      export_service = Carto::VisualizationsExportService2.new
+      visualization_hash = export_service.export_visualization_json_hash(source, user)
+      visualization_copy = export_service.build_visualization_from_hash_export(visualization_hash)
+      visualization_copy.name = name_candidate
+      visualization_copy.version = user.new_visualizations_version
+      Carto::VisualizationsExportPersistenceService.new.save_import(user, visualization_copy)
+      visualization_copy.id
+    end
+
+    CartoDB::Visualization::Member.new(id: visualization_copy_id).fetch
+  end
+
+  def create_visualization_from_tables(tables, vis_data)
+    blender = Visualization::TableBlender.new(current_user, tables)
+    map = blender.blend
+
+    vis = Visualization::Member.new(vis_data.merge(name: name_candidate,
+                                                   map_id: map.id,
+                                                   type: 'derived',
+                                                   privacy: blender.blended_privacy,
+                                                   user_id: current_user.id))
+
+    @stats_aggregator.timing('default-overlays') do
+      Visualization::Overlays.new(vis).create_default_overlays
+    end
+
+    vis
+  end
 
   def table_and_schema_from_params
     if params.fetch('id', nil) =~ /\./
@@ -382,14 +403,6 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   def payload
     request.body.rewind
     ::JSON.parse(request.body.read.to_s || String.new, {symbolize_names: true})
-  end
-
-  def add_default_privacy(data)
-    { privacy: default_privacy }.merge(data)
-  end
-
-  def default_privacy
-    current_user.private_tables_enabled ? Visualization::Member::PRIVACY_PRIVATE : Visualization::Member::PRIVACY_PUBLIC
   end
 
   def name_candidate
@@ -451,12 +464,4 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     end
     vis
   end
-
-  def track_event(vis, action)
-    custom_properties = {'privacy' => vis.privacy, 'type' => vis.type,  'vis_id' => vis.id}
-    event_type = vis.type == Visualization::Member::TYPE_DERIVED ? 'map' : 'dataset'
-
-    Cartodb::EventTracker.new.send_event(current_user, "#{action} #{event_type}", custom_properties)
-  end
-
 end

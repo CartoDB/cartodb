@@ -18,25 +18,10 @@ describe Api::Json::PermissionsController do
   include Rack::Test::Methods
 
   before(:all) do
-    @user = create_user(
-      username: 'test',
-      email:    'client@example.com',
-      password: 'clientex'
-    )
+    @user = create_user
     @api_key = @user.api_key
 
-    @user2 = create_user(
-        username: 'test2',
-        email:    'client2@example.com',
-        password: 'clientex2',
-        avatar_url: 'whatever1'
-    )
-    @user3 = create_user(
-        username: 'test3',
-        email:    'client3@example.com',
-        password: 'clientex3',
-        avatar_url: nil
-    )
+    @user2 = create_user
   end
 
   before(:each) do
@@ -44,17 +29,17 @@ describe Api::Json::PermissionsController do
     bypass_named_maps
     delete_user_data @user
     delete_user_data @user2
-    delete_user_data @user3
     @headers = {
-      'CONTENT_TYPE'  => 'application/json',
+      'CONTENT_TYPE' => 'application/json'
     }
-    host! 'test.localhost.lan'
+    host! "#{@user.username}.localhost.lan"
     Permission.any_instance.stubs(:revoke_previous_permissions).returns(nil)
     Permission.any_instance.stubs(:grant_db_permission).returns(nil)
     Permission.any_instance.stubs(:notify_permissions_change).returns(nil)
     vis_entity_mock = mock
     vis_entity_mock.stubs(:table?).returns(false)
     vis_entity_mock.stubs(:id).returns(@entity_id)
+    vis_entity_mock.stubs(:invalidate_for_permissions_change)
     Permission.any_instance.stubs(:entity).returns(vis_entity_mock)
   end
 
@@ -62,7 +47,6 @@ describe Api::Json::PermissionsController do
     bypass_named_maps
     @user.destroy
     @user2.destroy
-    @user3.destroy
   end
 
   describe 'PUT /api/v1/perm' do
@@ -87,6 +71,7 @@ describe Api::Json::PermissionsController do
                   id:         @user2.id,
                   username:   @user2.username,
                   avatar_url: @user2.avatar_url,
+                  viewer:     false,
                   base_url:   @user2.public_url,
                   groups:     []
               },
@@ -173,6 +158,7 @@ describe 'group permission support' do
     vis_entity_mock = mock
     vis_entity_mock.stubs(:table?).returns(false)
     vis_entity_mock.stubs(:id).returns(entity_id)
+    vis_entity_mock.stubs(:invalidate_for_permissions_change)
     Permission.any_instance.stubs(:entity).returns(vis_entity_mock)
     Permission.any_instance.stubs(:revoke_previous_permissions).returns(nil)
 
@@ -225,6 +211,7 @@ describe 'group permission support' do
     vis_entity_mock = mock
     vis_entity_mock.stubs(:table?).returns(false)
     vis_entity_mock.stubs(:id).returns(entity_id)
+    vis_entity_mock.stubs(:invalidate_for_permissions_change)
     Permission.any_instance.stubs(:entity).returns(vis_entity_mock)
     Permission.any_instance.stubs(:revoke_previous_permissions).returns(nil)
 

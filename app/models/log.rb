@@ -16,8 +16,8 @@ module CartoDB
     ENTRY_FORMAT = "%s: %s#{ENTRY_POSTFIX}"
     ENTRY_REHYDRATED_FORMAT = "%s#{ENTRY_POSTFIX}"
 
-    HALF_OF_LOG_MARK = '===LOG HALF===\n'
-    END_OF_LOG_MARK = '===LOG END==='
+    HALF_OF_LOG_MARK = "===LOG HALF===\n".freeze
+    END_OF_LOG_MARK  = '===LOG END==='.freeze
 
     TYPE_DATA_IMPORT     = 'import'.freeze
     TYPE_SYNCHRONIZATION = 'sync'.freeze
@@ -62,7 +62,7 @@ module CartoDB
 
       # Extra decoration only for string presentation
       list = @fixed_entries_half
-      circular_half = @circular_entries_half.compact
+      circular_half = ordered_circular_entries_half
       if circular_half.length > 0
         list = list + [HALF_OF_LOG_MARK]
       end
@@ -152,15 +152,21 @@ module CartoDB
                                                  .map { |entry| ENTRY_REHYDRATED_FORMAT % [entry] }
         # Fill circular part
         if @circular_entries_half.length < half_max_size
-          @circular_index = @circular_entries_half.length - 1
+          @circular_index = @circular_entries_half.length
           @circular_entries_half = @circular_entries_half + Array.new(half_max_size - @circular_entries_half.length)
+        else
+          @circular_index = 0
         end
       end
     end
 
+    def ordered_circular_entries_half
+      # Reorder circular buffer: entries 0 to @circular_index-1 have been more recently overwritten
+      (@circular_entries_half[@circular_index..-1] + @circular_entries_half[0...@circular_index]).compact
+    end
+
     def collect_entries
-      # INFO: Abusing that join always produces a String to not need to handle nils
-      (@fixed_entries_half + @circular_entries_half).join('')
+      (@fixed_entries_half + ordered_circular_entries_half).join('')
     end
 
     # INFO: To ease testing

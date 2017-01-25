@@ -3,6 +3,7 @@
 
 @import 'cdb-utilities/mixins';
 @import 'cdb-variables/colors';
+@import 'cdb-variables/sizes';
 
 $color: $cThirdBackground;
 $br: 2px;
@@ -75,4 +76,19 @@ $br: 2px;
   @include align-items(center);
   width: 100%;
   margin-top: 10px;
+}
+.FormPlaceholder-widget {
+  margin-bottom: $halfBaseSize;
+  padding: 2 * $baseSize;
+  border: 1px solid $color;
+  border-radius: $br;
+}
+.FormPlaceholder-widgetIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: $br;
+  background: $color;
+}
+.FormPlaceholder-widgetInner {
+  @include flex(1);
 }

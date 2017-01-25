@@ -1,6 +1,23 @@
  var _ = require('underscore');
  var timer = require("grunt-timer");
  var jasmineCfg = require('./lib/build/tasks/jasmine.js');
+ var duplicatedDependencies = require('./lib/build/tasks/shrinkwrap-duplicated-dependencies.js');
+
+ var REQUIRED_NPM_VERSION = /2.14.[0-9]+/;
+ var REQUIRED_NODE_VERSION = /0.10.[0-9]+/;
+ var SHRINKWRAP_MODULES_TO_VALIDATE = [
+  'backbone',
+  'camshaft-reference',
+  'carto',
+  'cartodb.js',
+  'cartocolor',
+  'd3',
+  'jquery',
+  'leaflet',
+  'perfect-scrollbar',
+  'torque.js',
+  'turbo-carto'
+];
 
   /**
    *  CartoDB UI assets generation
@@ -9,6 +26,45 @@
   module.exports = function(grunt) {
 
     if (timer) timer.init(grunt);
+
+    function preFlight(done) {
+      function checkVersion(cmd, versionRegExp, name, done) {
+        require("child_process").exec(cmd, function (error, stdout, stderr) {
+          var err = null;
+          if (error) {
+            err = 'failed to check version for ' + name;
+          } else {
+            if (!versionRegExp.test(stdout)) {
+              err = 'installed ' + name + ' version does not match with required one ' + versionRegExp.toString() + " installed: " +  stdout;
+            }
+          }
+          if (err) {
+            grunt.log.fail(err);
+          }
+          done && done(err ? new Error(err): null);
+        });
+      }
+      checkVersion('npm -v', REQUIRED_NPM_VERSION, 'npm', done);
+      checkVersion('node -v', REQUIRED_NODE_VERSION, 'node', done);
+    }
+
+    preFlight(function (err) {
+      if (err) {
+        grunt.log.fail("############### /!\\ CAUTION /!\\ #################");
+        grunt.log.fail("PLEASE installed required versions to build CARTO:\n- npm: " + REQUIRED_NPM_VERSION + "\n- node: " + REQUIRED_NODE_VERSION);
+        grunt.log.fail("#################################################");
+        process.exit(1);
+      }
+    });
+
+    var duplicatedModules = duplicatedDependencies(require('./npm-shrinkwrap.json'), SHRINKWRAP_MODULES_TO_VALIDATE);
+    if (duplicatedModules.length > 0) {
+      grunt.log.fail("############### /!\\ CAUTION /!\\ #################");
+      grunt.log.fail("Duplicated dependencies found in npm-shrinkwrap.json file.");
+      grunt.log.fail(JSON.stringify(duplicatedModules, null, 4));
+      grunt.log.fail("#################################################");
+      process.exit(1);
+    }
 
     var ROOT_ASSETS_DIR = './public/assets/';
     var ASSETS_DIR = './public/assets/<%= pkg.version %>';
@@ -20,8 +76,6 @@
     } else {
       throw grunt.util.error(env +' file is missing! See '+ env +'.sample for how it should look like');
     }
-
-    env.tape_tests = 'lib/assets/test/tape/**/*-test.js';
 
     var aws = {};
     if (grunt.file.exists('./lib/build/grunt-aws.json')) {
@@ -38,24 +92,24 @@
       root_assets_dir: ROOT_ASSETS_DIR,
 
       // Concat task
-      concat:   require('./lib/build/tasks/concat').task(),
+      concat: require('./lib/build/tasks/concat').task(),
 
       // JST generation task
-      jst:      require('./lib/build/tasks/jst').task(),
+      jst: require('./lib/build/tasks/jst').task(),
 
       // Compass files generation
-      compass:  require('./lib/build/tasks/compass').task(),
+      compass: require('./lib/build/tasks/compass').task(),
 
       // Copy assets (stylesheets, javascripts, images...)
-      copy:     require('./lib/build/tasks/copy').task(grunt),
+      copy: require('./lib/build/tasks/copy').task(grunt),
 
       // Watch actions
       watch: require('./lib/build/tasks/watch.js').task(),
 
       // Clean folders before other tasks
-      clean:    require('./lib/build/tasks/clean').task(),
+      clean: require('./lib/build/tasks/clean').task(),
 
-      jasmine:  jasmineCfg,
+      jasmine: jasmineCfg,
 
       s3: require('./lib/build/tasks/s3.js').task(),
 
@@ -145,14 +199,29 @@
         grunt.config('copy.vendor.src', []);
       }
 
-      // configure copy app to only run on changed file
-      var files = grunt.config.get('copy.app.files');
-      for (var i = 0; i < files.length; ++i) {
-        var cfg = grunt.config.get('copy.app.files.' + i);
-        if (filepath.indexOf(cfg.cwd) !== -1) {
-          grunt.config('copy.app.files.' + i + '.src', filepath.replace(cfg.cwd, ''));
-        } else {
-          grunt.config('copy.app.files.' + i + '.src', []);
+      var COPY_PATHS = [
+        'app',
+        'js_core_cartodb',
+        'js_client_cartodb',
+        'js_core_cartodb3',
+        'js_client_cartodb3',
+        'js_test_spec_core_cartodb3',
+        'js_test_spec_client_cartodb3',
+        'js_test_jasmine_core_cartodb3',
+        'js_test_jasmine_client_cartodb3'
+      ];
+
+      // configure copy paths to only run on changed files
+      for (var j = 0, m = COPY_PATHS.length; j < m; ++j) {
+        var copy_path = COPY_PATHS[j];
+        var files = grunt.config.get('copy.' + copy_path + '.files');
+        for (var i = 0, l = files.length; i < l; ++i) {
+          var cfg = grunt.config.get('copy.' + copy_path + '.files.' + i);
+          if (filepath.indexOf(cfg.cwd) !== -1) {
+            grunt.config('copy.' + copy_path + '.files.' + i + '.src', filepath.replace(cfg.cwd, ''));
+          } else {
+            grunt.config('copy.' + copy_path + '.files.' + i + '.src', []);
+          }
         }
       }
     });
@@ -165,7 +234,7 @@
     // path/to/some/ignored/files:0:0: File ignored because of your .eslintignore file. Use --no-ignore to override.
     grunt.registerTask('lint', 'lint source files', function () {
       var done = this.async();
-      require('child_process').exec('PATH=$(npm bin):$PATH semistandard', function (error, stdout, stderr) {
+      require('child_process').exec('(git diff --name-only --relative; git diff origin/master.. --name-only --relative) | grep \'\\.js\\?$\' | xargs node_modules/.bin/semistandard', function (error, stdout, stderr) {
         if (error) {
           grunt.log.fail(error);
 
@@ -175,7 +244,7 @@
           grunt.fail.warn('try `node_modules/.bin/semistandard --format src/filename.js` to auto-format code (you might still need to fix some things manually).');
         } else {
           grunt.log.ok('All linted files OK!');
-          grunt.log.writeln('Note that files listed in .eslintignore are not linted');
+          grunt.log.writelns('>> Note that files listed in .eslintignore are not linted');
         }
         done();
       });
@@ -184,17 +253,44 @@
     registerCmdTask('npm-test', {cmd: 'npm', args: ['test']});
     registerCmdTask('npm-test-watch', {cmd: 'npm', args: ['run', 'test-watch']});
 
-    // Order in terms of task dependencies
-    grunt.registerTask('js',          ['cdb', 'browserify', 'concat:js', 'jst']);
+    grunt.registerTask('pre_client', [
+      'copy:locale_core',
+      'copy:locale_client',
+      'copy:js_core_cartodb',
+      'copy:js_client_cartodb',
+      'copy:js_core_cartodb3',
+      'copy:js_client_cartodb3',
+      'copy:js_test_spec_core_cartodb3',
+      'copy:js_test_spec_client_cartodb3',
+      'copy:js_test_jasmine_core_cartodb3',
+      'copy:js_test_jasmine_client_cartodb3'
+    ]);
+
+    grunt.registerTask('js', ['cdb', 'pre_client', 'browserify', 'concat:js', 'jst']);
     grunt.registerTask('pre_default', ['clean', 'config', 'js']);
-    grunt.registerTask('test', '(CI env) Re-build JS files and run all tests. ' +
-    'For manual testing use `grunt jasmine` directly', ['pre_default', 'npm-test', 'jasmine', 'lint']);
-    grunt.registerTask('editor3', ['browserify:vendor_editor3', 'browserify:common_editor3', 'browserify:editor3', 'browserify:public_editor3']);
-    grunt.registerTask('css_editor_3', ['copy:cartofonts', 'copy:iconfont', 'copy:cartoassets', 'copy:perfect_scrollbar', 'copy:colorpicker', 'copy:deep_insights', 'copy:cartodbjs_v4']);
-    grunt.registerTask('css',         ['copy:vendor', 'css_editor_3', 'copy:app', 'compass', 'concat:css']);
-    grunt.registerTask('default',     ['pre_default', 'css', 'manifest']);
-    grunt.registerTask('minimize',    ['default', 'copy:js', 'exorcise', 'uglify']);
-    grunt.registerTask('release',     ['check_release', 'minimize', 's3', 'invalidate']);
+    grunt.registerTask('test',
+      '(CI env) Re-build JS files and run all tests. For manual testing use `grunt jasmine` directly', [
+        'pre_default', 'npm-test', 'jasmine', 'lint'
+      ]);
+    grunt.registerTask('editor3', [
+      'browserify:vendor_editor3',
+      'browserify:common_editor3',
+      'browserify:editor3',
+      'browserify:public_editor3'
+    ]);
+    grunt.registerTask('css_editor_3', [
+      'copy:cartofonts',
+      'copy:iconfont',
+      'copy:cartoassets',
+      'copy:perfect_scrollbar',
+      'copy:colorpicker',
+      'copy:deep_insights',
+      'copy:cartodbjs_v4'
+    ]);
+    grunt.registerTask('css', ['copy:vendor', 'css_editor_3', 'copy:app', 'compass', 'concat:css']);
+    grunt.registerTask('default', ['pre_default', 'css', 'manifest']);
+    grunt.registerTask('minimize', ['default', 'copy:js', 'exorcise', 'uglify']);
+    grunt.registerTask('release', ['check_release', 'minimize', 's3', 'invalidate']);
     grunt.registerTask('build-jasmine-specrunners', _
       .chain(jasmineCfg)
       .keys()
@@ -204,8 +300,15 @@
       .value());
     grunt.registerTask('dev', 'Typical task for frontend development (watch JS/CSS changes)',
       ['setConfig:env.browserify_watch:true', 'browserify', 'build-jasmine-specrunners', 'connect', 'watch']);
-    grunt.registerTask('sourcemaps', 'generate sourcemaps, to be used w/ trackjs.com for bughunting',
-      ['setConfig:assets_dir:./tmp/sourcemaps', 'config', 'js', 'copy:js', 'exorcise', 'uglify']);
+    grunt.registerTask('sourcemaps',
+      'generate sourcemaps, to be used w/ trackjs.com for bughunting', [
+        'setConfig:assets_dir:./tmp/sourcemaps',
+        'config',
+        'js',
+        'copy:js',
+        'exorcise',
+        'uglify'
+      ]);
 
     /**
      * Delegate task to commandline.

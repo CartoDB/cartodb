@@ -475,7 +475,8 @@ module Carto
                       when 'density'
                         spp['aggregation']['value']
                       else
-                        raise "Unsupported source type: #{@source_type}"
+                        # Ignore some malformed wizards that have a property set even when the type does not support it
+                        return
                       end
 
         destination['attribute'] = wpp['property']

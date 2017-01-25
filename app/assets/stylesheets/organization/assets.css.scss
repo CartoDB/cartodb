@@ -18,6 +18,12 @@ $baseSize: 8px;
 // margin
 $iconMargin: 10px;
 
+// Action bar
+$actionBarHeight: 17px;
+
+.IconActions {
+  height: $actionBarHeight;
+}
 
 .IconPicker {
   margin-bottom: 20px;

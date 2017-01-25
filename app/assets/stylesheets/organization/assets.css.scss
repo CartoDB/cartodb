@@ -30,6 +30,7 @@ $actionBarHeight: 17px;
 }
 
 .IconList {
+  // scss-lint:disable Shorthand
   @include display-flex;
   @include flex-wrap(wrap);
   position: relative;
@@ -92,5 +93,6 @@ $actionBarHeight: 17px;
 
 // To be removed once we insert tabs again to implement Dropbox uploading
 .IconModal {
+  // scss-lint:disable ImportantRule
   padding: 0 !important;
 }

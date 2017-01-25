@@ -88,3 +88,8 @@ $actionBarHeight: 17px;
 .is-hidden {
   display: none;
 }
+
+// To be removed once we insert tabs again to implement Dropbox uploading
+.IconModal { 
+  padding: 0 !important;
+}

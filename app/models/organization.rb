@@ -96,9 +96,13 @@ class Organization < Sequel::Model
       errors.add(:organization, "not enough viewer seats")
     end
 
-    if unassigned_quota <= 0 || unassigned_quota < user.quota_in_bytes.to_i
+    if !validate_disk_quota(user.quota_in_bytes.to_i)
       errors.add(:quota_in_bytes, "not enough disk quota")
     end
+  end
+
+  def validate_disk_quota(quota = default_quota_in_bytes)
+    unassigned_quota >= quota
   end
 
   def before_validation

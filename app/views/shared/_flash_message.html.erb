@@ -1,10 +1,32 @@
 <% error_message = local_assigns[:error_message] %>
-<% if cookies[:flash] || flash[:success] || error_message || flash[:error] %>
-  <div class="CDB-Text FlashMessage <%= 'FlashMessage--success' if flash[:success] %><%= 'FlashMessage--error' if error_message || flash[:error] %>">
+<% if cookies[:flash] || flash[:success] || flash[:warning] || error_message || flash[:error] %>
+  <%
+      flash_container_class = if flash[:success]
+                                'FlashMessage--success'
+                              elsif flash[:warning]
+                                'FlashMessage--warning'
+                              elsif error_message || flash[:error]
+                                'FlashMessage--error'
+                              end
+  %>
+  <div class="CDB-Text FlashMessage <%= flash_container_class %>">
     <div class="u-inner">
-      <p class="FlashMessage-info <%= 'success' if flash[:success] %><%= 'error' if error_message || flash[:error] %>">
-        <%= raw cookies[:flash] || flash[:success] || [error_message, flash[:error]].compact.join(', ') %>
+      <%
+        flash_class =  if flash[:success]
+                         'success'
+                       elsif flash[:warning]
+                         'warning'
+                       elsif error_message || flash[:error]
+                         'error'
+                       end
+      %>
+      <p class="FlashMessage-info <%= flash_class %>">
+        <%= raw cookies[:flash] || flash[:success]  || flash[:warning] || [error_message, flash[:error]].compact.join(', ') %>
       </p>
+
+      <% if flash[:detail] %>
+          <p class="FlashMessage-detail <%= flash_class %>"><%= raw flash[:detail] %></p>
+      <% end %>
     </div>
   </div>
 <% end %>

@@ -229,16 +229,21 @@ describe Carto::Api::LayerPresenter do
             }
           end
 
-          before(:each) do
+          it 'sets fill size from marker-width' do
             layer = build_layer_with_wizard_properties(polygon_wizard_properties)
             options = presenter_with_style_properties(layer).to_poro['options']
-            @properties = options['style_properties']['properties']
-            @fill_color = @properties['fill']['color']
-            @fill_size = @properties['fill']['size']
+            properties = options['style_properties']['properties']
+            fill_size = properties['fill']['size']
+            fill_size['fixed'].should eq marker_width
           end
 
-          it 'sets fill size from marker-width' do
-            @fill_size['fixed'].should eq marker_width
+          it 'ignores property' do
+            polygon_wizard_properties['properties']['property'] = 'wadus_property'
+            layer = build_layer_with_wizard_properties(polygon_wizard_properties)
+            options = presenter_with_style_properties(layer).to_poro['options']
+
+            properties = options['style_properties']['properties']
+            JSON.dump(properties).should_not include 'wadus_property'
           end
         end
 
@@ -273,10 +278,17 @@ describe Carto::Api::LayerPresenter do
 
       describe 'cluster' do
         let(:query_wrapper) { "with meta ... <%= sql %> ..." }
+        let(:cluster_options) do
+          {
+            "query_wrapper" => query_wrapper,
+            "wizard_properties" => {
+              "type" => "cluster",
+              "properties" => { "method" => "3 Buckets", "marker-fill" => "#FD8D3C" }
+            }
+          }
+        end
         before(:each) do
-          properties = { "type" => "cluster", "properties" => { "method" => "3 Buckets", "marker-fill" => "#FD8D3C" } }
-          options = { 'query_wrapper' => query_wrapper, 'wizard_properties' => properties }
-          layer = FactoryGirl.build(:carto_layer, options: options)
+          layer = FactoryGirl.build(:carto_layer, options: cluster_options)
           @options = presenter_with_style_properties(layer).to_poro['options']
           @properties = @options['style_properties']['properties']
         end
@@ -288,6 +300,14 @@ describe Carto::Api::LayerPresenter do
 
         it 'sets query_wrapper at sql_wrap' do
           @options['sql_wrap'].should eq query_wrapper
+        end
+
+        it 'ignores property' do
+          cluster_options['wizard_properties']['properties']['property'] = 'wadus_property'
+          layer = FactoryGirl.build(:carto_layer, options: cluster_options)
+          options = presenter_with_style_properties(layer).to_poro['options']
+          properties = options['style_properties']['properties']
+          JSON.dump(properties).should_not include 'wadus_property'
         end
       end
 

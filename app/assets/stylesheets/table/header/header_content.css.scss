@@ -156,7 +156,7 @@
     ul.actions {
       @include display-flex();
       @include justify-content(flex-start, start);
-      @include align-items(center, center);
+      align-items: baseline;
       height:45px;
       margin:0;
       padding: 0px;

@@ -161,6 +161,28 @@ module CartoDB
           data = JSON.parse(response.response_body)
           table_visualization_map_id = data['table_visualization']['map_id']
 
+          url = "#{remote_base_url}/api/v1/maps/#{table_visualization_map_id}"
+          response = http_client.get(url, params: {
+            api_key: remote_api_key
+          })
+
+          if response.code != 200
+            runner.log.append("Skipping remote vis copy: Error fetching #{url} - #{response.code} #{response.body}")
+            return
+          end
+
+          data = JSON.parse(response.response_body)
+          table.map.provider = data['provider']
+          table.map.bounding_box_sw = data['bounding_box_sw']
+          table.map.bounding_box_ne = data['bounding_box_ne']
+          table.map.center = data['center']
+          table.map.zoom = data['zoom']
+          table.map.view_bounds_sw = data['view_bounds_sw']
+          table.map.view_bounds_ne = data['view_bounds_ne']
+          table.map.legends = data['legends']
+          table.map.scrollwheel = data['scrollwheel']
+          table.map.save
+          
           # Get remote vis layer configs
           url = "#{remote_base_url}/api/v1/maps/#{table_visualization_map_id}/layers"
           response = http_client.get(url, params: {

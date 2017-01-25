@@ -530,7 +530,7 @@ div.cartodb-legend.custom ul li .bullet, div.cartodb-legend.category ul li .bull
 
   div.cartodb-map {
 
-    & > div.cartodb-searchbox {
+    div.cartodb-searchbox {
       @include bb_entry_style;
       width: 160px;
       top: 20px;

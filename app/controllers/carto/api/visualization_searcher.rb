@@ -20,6 +20,7 @@ module Carto
 
         only_liked = params[:only_liked] == 'true'
         only_shared = params[:only_shared] == 'true'
+        samples = params[:samples] == 'true'
         exclude_shared = params[:exclude_shared] == 'true'
         exclude_raster = params[:exclude_raster] == 'true'
         locked = params[:locked]
@@ -56,7 +57,15 @@ module Carto
           when FILTER_SHARED_YES
             vqb.with_owned_by_or_shared_with_user_id(current_user.id)
           when FILTER_SHARED_NO
-            vqb.with_user_id(current_user.id) if !only_liked
+            if samples
+              if Cartodb.config[:map_samples] && Cartodb.config[:map_samples]["user_id"]
+                vqb.with_user_id(Cartodb.config[:map_samples]["user_id"]) 
+              else
+                raise "The sample user is not setup in app_config"
+              end
+            else
+              vqb.with_user_id(current_user.id) if !only_liked
+            end
           when FILTER_SHARED_ONLY
             vqb.with_shared_with_user_id(current_user.id)
                 .with_user_id_not(current_user.id)
@@ -66,7 +75,7 @@ module Carto
             vqb.without_raster
           end
 
-          if locked == 'true'
+          if locked == 'true' || samples
             vqb.with_locked(true)
           elsif locked == 'false'
             vqb.with_locked(false)

@@ -82,7 +82,7 @@ HistogramAutoStyler.SCALES_MAP = {
   'polygon-fill': {
     'F': {
       palette: 'PinkYl',
-      quantification: 'quantiles'
+      quantification: 'equal'
     },
     'L': {
       palette: 'Emrld',
@@ -108,7 +108,7 @@ HistogramAutoStyler.SCALES_MAP = {
   'line-color': {
     'F': {
       palette: 'PinkYl',
-      quantification: 'quantiles'
+      quantification: 'equal'
     },
     'L': {
       palette: 'Emrld',
@@ -134,7 +134,7 @@ HistogramAutoStyler.SCALES_MAP = {
   'marker-fill': {
     'F': {
       palette: 'RedOr',
-      quantification: 'quantiles'
+      quantification: 'equal'
     },
     'L': {
       palette: 'BluYl',

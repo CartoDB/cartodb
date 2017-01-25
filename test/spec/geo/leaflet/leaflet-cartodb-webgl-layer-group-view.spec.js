@@ -39,8 +39,8 @@ describe('src/geo/leaflet/leaflet-cartodb-webgl-layer-group-view.js', function (
     var self = this;
 
     setTimeout(function () {
-        this.layer1.set('meta', {cartocss: '#layer {polygon-fill: red;}'});
-        this.layer2.set('meta', {cartocss: '#layer {polygon-fill: blue;}'});
+        self.layer1.set('meta', {cartocss: '#layer {polygon-fill: red;}'});
+        self.layer2.set('meta', {cartocss: '#layer {polygon-fill: blue;}'});
 
         expect(view.options.styles).toEqual([ '#layer {polygon-fill: red;}', '#layer {polygon-fill: blue;}' ]);
         done();
@@ -53,8 +53,8 @@ describe('src/geo/leaflet/leaflet-cartodb-webgl-layer-group-view.js', function (
     var self = this;
 
     setTimeout(function () {
-        this.layer1.set('visible', true);
-        this.layer2.set('visible', false);
+        self.layer1.set('visible', true);
+        self.layer2.set('visible', false);
 
         expect(view.tangram.scene.config.layers.layer1.visible).toBeTruthy();
         expect(view.tangram.scene.config.layers.layer1.visible).toBeFalsy();

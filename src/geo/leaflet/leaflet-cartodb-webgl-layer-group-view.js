@@ -37,15 +37,19 @@ var LeafletCartoDBVectorLayerGroupView = L.Class.extend({
 
   _onLayerAdded: function (layer) {
     var self = this;
-    layer.bind('change:meta', function (e) {
+    layer.bind('change:meta change:visible change:cartocss', function (e) {
       self.tangram.addLayer(e.attributes);
     });
   },
 
-  setZIndex: function (zIndex) {},
+  setZIndex: function () {},
 
   _onURLsChanged: function (e, res) {
-    this.tangram.addDataSource(res.tiles[0]);
+    var url = res.tiles[0]
+      .replace('{layerIndexes}', 'mapnik')
+      .replace('.png', '.mvt');
+
+    this.tangram.addDataSource(url);
   }
 });
 

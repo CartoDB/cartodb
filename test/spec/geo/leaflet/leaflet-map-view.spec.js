@@ -98,18 +98,6 @@ describe('geo/leaflet/leaflet-map-view', function () {
     expect(map.layers.length).toEqual(1);
   });
 
-  it('should trigger an event when a new layerView is added to the map', function () {
-    var spy = { c: function () {} };
-    spyOn(spy, 'c');
-    mapView.bind('newLayerView', spy.c);
-
-    map.addLayer(layer);
-
-    expect(map.layers.length).toEqual(1);
-    expect(_.size(mapView._layerViews)).toEqual(1);
-    expect(spy.c).toHaveBeenCalled();
-  });
-
   it('should allow removing a layer', function () {
     map.addLayer(layer);
     map.removeLayer(layer);

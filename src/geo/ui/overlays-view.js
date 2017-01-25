@@ -112,6 +112,11 @@ var OverlaysView = View.extend({
     return _(this._overlayViews).find(function (v) {
       return v.type === type;
     });
+  },
+
+  clean: function () {
+    View.prototype.clean.apply(this);
+    this._clearOverlays();
   }
 });
 

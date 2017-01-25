@@ -177,10 +177,10 @@ var MapView = View.extend({
   _addLayers: function (layerCollection, options) {
     var self = this;
     this._removeLayers();
-    this.map.layers.each(function (layerModel) {
+    this.map.layers.each(function (layerModel, index) {
       self._addLayer(layerModel, layerCollection, {
         silent: (options && options.silent) || false,
-        index: options && options.index
+        index: index
       });
     });
   },

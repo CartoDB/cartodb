@@ -6,7 +6,7 @@ var GMapsLayerView = require('./gmaps-layer-view');
 var TorqueLayerViewBase = require('../torque-layer-view-base');
 
 var GMapsTorqueLayerView = function (layerModel, gmapsMap) {
-  GMapsLayerView.call(this, layerModel, this, gmapsMap);
+  GMapsLayerView.call(this, layerModel, gmapsMap);
 
   torque.GMapsTorqueLayer.call(this, this._initialAttrs(layerModel));
 
@@ -19,7 +19,15 @@ _.extend(
   torque.GMapsTorqueLayer.prototype,
   TorqueLayerViewBase,
   {
-    _update: function () {
+    addToMap: function () {
+      this.setMap(this.gmapsMap);
+    },
+
+    remove: function () {
+      this.setMap(null);
+    },
+
+    _onModelUpdated: function () {
       var changed = this.model.changedAttributes();
       if (changed === false) return;
 
@@ -46,10 +54,6 @@ _.extend(
           this._reloadTiles();
         }.bind(this), 0);
       }
-    },
-
-    refreshView: function () {
-      // TODO: update screen
     },
 
     onAdd: function () {

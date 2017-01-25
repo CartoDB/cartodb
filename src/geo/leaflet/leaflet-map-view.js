@@ -135,7 +135,6 @@ var LeafletMapView = MapView.extend({
       } else {
         layerView.setModel(layerModel);
         self._layerViews[layerModel.cid] = layerView;
-        self.trigger('newLayerView', layerView, layerModel, self);
       }
     });
   },
@@ -185,10 +184,6 @@ var LeafletMapView = MapView.extend({
   _addLayerToMap: function (layerView, layerModel, opts) {
     this._leafletMap.addLayer(layerView.leafletLayer);
     this._reorderLayerViews();
-
-    if (!opts.silent) {
-      this.trigger('newLayerView', layerView);
-    }
     return layerView;
   },
 

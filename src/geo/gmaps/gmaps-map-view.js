@@ -1,6 +1,5 @@
 /* global google */
 var _ = require('underscore');
-var log = require('cdb.log');
 var MapView = require('../map-view');
 var Projector = require('./projector');
 var GMapsLayerViewFactory = require('./gmaps-layer-view-factory');
@@ -108,33 +107,7 @@ var GoogleMapsMapView = MapView.extend({
   },
 
   _addLayerToMap: function (layerView, layerModel, opts) {
-    if (layerView) {
-      var isBaseLayer = _.keys(this._layerViews).length === 1 || (opts && opts.index === 0) || layerModel.get('order') === 0;
-      // set base layer
-      if (isBaseLayer) {
-        var m = layerView.model;
-        if (m.get('type') !== 'GMapsBase') {
-          layerView.isBase = true;
-        }
-      } else {
-        // TODO: Make sure this order will be right
-        var idx = layerModel.get('order');
-        if (layerView.getTile) {
-          if (!layerView.gmapsLayer) {
-            log.error("gmaps layer can't be null");
-          }
-          this._gmapsMap.overlayMapTypes.setAt(idx, layerView.gmapsLayer);
-        } else {
-          layerView.gmapsLayer.setMap(this._gmapsMap);
-        }
-      }
-      if (opts === undefined || !opts.silent) {
-        this.trigger('newLayerView', layerView, layerModel, this);
-      }
-    } else {
-      log.error('layer type not supported');
-    }
-
+    layerView.addToMap();
     return layerView;
   },
 

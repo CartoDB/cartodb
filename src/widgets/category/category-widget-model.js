@@ -87,6 +87,24 @@ module.exports = WidgetModel.extend({
     }
   },
 
+  hasAutoStyleColors: function () {
+    var autoStyle = this.getAutoStyle();
+    var hasDefinedColors = false;
+
+    if (!autoStyle || _.isEmpty(autoStyle) || _.isEmpty(autoStyle.definition)) {
+      return false;
+    }
+
+    // Check colors by geometry
+    _.each(autoStyle.definition, function (geometryStyle) {
+      if (geometryStyle.color && geometryStyle.color.range && geometryStyle.color.range.length > 0) {
+        hasDefinedColors = true;
+      }
+    }, this);
+
+    return hasDefinedColors;
+  },
+
   isLocked: function () {
     return this.get('locked');
   },

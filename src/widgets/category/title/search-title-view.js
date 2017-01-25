@@ -76,13 +76,9 @@ module.exports = cdb.core.View.extend({
   },
 
   _isAutoStyleButtonVisible: function () {
-    var layerModelMeta = this.dataviewModel.layer.get('meta');
-    var cartocss = this.dataviewModel.layer.get('cartocss') || (layerModelMeta && layerModelMeta.cartocss);
-    var autoStyle = cartocss && this.model.getAutoStyle();
-
     return this.model.isAutoStyleEnabled() &&
       this.dataviewModel.layer.get('visible') &&
-      (autoStyle && !_.isEmpty(autoStyle.definition));
+      this.model.hasAutoStyleColors();
   },
 
   _onSearchToggled: function () {

@@ -1,4 +1,5 @@
 var $ = require('jquery');
+var _ = require('underscore');
 var cdb = require('cartodb.js');
 var TooltipView = require('../widget-tooltip-view');
 var template = require('./histogram-title-template.tpl');
@@ -23,12 +24,11 @@ module.exports = cdb.core.View.extend({
   },
 
   render: function () {
-    var isAutoStyleButtonVisible = this.widgetModel.isAutoStyleEnabled() && this.dataviewModel.layer.get('visible');
     this.clearSubViews();
     this.$el.html(
       template({
         title: this.widgetModel.get('title'),
-        isAutoStyleEnabled: isAutoStyleButtonVisible,
+        isAutoStyleEnabled: this._isAutoStyleButtonVisible(),
         isAutoStyle: this.widgetModel.get('autoStyle'),
         isCollapsed: this.widgetModel.get('collapsed')
       })
@@ -42,8 +42,8 @@ module.exports = cdb.core.View.extend({
     this.widgetModel.bind('change:title change:collapsed change:autoStyle change:style', this.render, this);
     this.add_related_model(this.widgetModel);
 
-    this.dataviewModel.layer.bind('change:visible', this.render, this);
-    this.add_related_model(this.dataviewModel);
+    this.dataviewModel.layer.bind('change:visible change:cartocss', this.render, this);
+    this.add_related_model(this.dataviewModel.layer);
   },
 
   _initViews: function () {
@@ -52,6 +52,16 @@ module.exports = cdb.core.View.extend({
     });
     $('body').append(sizesTooltip.render().el);
     this.addView(sizesTooltip);
+  },
+
+  _isAutoStyleButtonVisible: function () {
+    var layerModelMeta = this.dataviewModel.layer.get('meta');
+    var cartocss = this.dataviewModel.layer.get('cartocss') || (layerModelMeta && layerModelMeta.cartocss);
+    var autoStyle = cartocss && this.widgetModel.getAutoStyle();
+
+    return this.widgetModel.isAutoStyleEnabled() &&
+      this.dataviewModel.layer.get('visible') &&
+      (autoStyle && !_.isEmpty(autoStyle.definition));
   },
 
   _autoStyle: function () {

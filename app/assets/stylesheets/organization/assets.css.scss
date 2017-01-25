@@ -33,6 +33,7 @@ $actionBarHeight: 17px;
   @include display-flex;
   @include flex-wrap(wrap);
   position: relative;
+  margin: 0 -12px 0 0;
 }
 
 .IconList-item {

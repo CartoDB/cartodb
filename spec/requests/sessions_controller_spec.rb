@@ -557,7 +557,7 @@ describe SessionsController do
       end
     end
 
-    describe 'subddomainless' do
+    describe 'subdomainless' do
       it_behaves_like 'logout endpoint'
 
       before(:each) do

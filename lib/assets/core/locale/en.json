@@ -562,7 +562,7 @@
       },
       "maps-metadata": {
         "modal-title": "Map metadata",
-        "modal-desc": "Edit the attributtes of your map",
+        "modal-desc": "Edit the attributes of your map",
         "back-btn": "GO BACK",
         "save-btn": "Save",
         "cancel-btn": "Cancel",
@@ -588,7 +588,7 @@
       },
       "dataset-metadata": {
         "modal-title": "Dataset metadata",
-        "modal-desc": "Edit the attributtes of your dataset",
+        "modal-desc": "Edit the attributes of your dataset",
         "back-btn": "GO BACK",
         "save-btn": "Save",
         "cancel-btn": "Cancel",
@@ -2025,7 +2025,7 @@
           "operation-column": "operation column"
         },
         "style": {
-          "title-label": "Behaviour",
+          "title-label": "Behavior",
           "description": "Apply style to your visualization",
           "sync_on_data_change": "Unfiltered",
           "sync_on_bbox_change": "Dynamic",

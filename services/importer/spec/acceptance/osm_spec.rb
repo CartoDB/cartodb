@@ -29,7 +29,7 @@ describe 'OSM regression tests' do
 
   it 'imports OSM files' do
     filepath    = path_to('map2.osm')
-    downloader  = Downloader.new(filepath)
+    downloader  = Downloader.new(@user.id, filepath)
     runner      = Runner.new({
                                pg: @user.db_service.db_configuration_for,
                                downloader: downloader,

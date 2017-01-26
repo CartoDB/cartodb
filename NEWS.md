@@ -39,8 +39,13 @@ Development
     * `assertion_consumer_service_url`: 'https://<ip-address>/user/<org-name>/saml/finalize'. Check that your server has this URL for the service provider ACS URL.
 * Autostyling (#10420)
   * Correctly handle legends (#11121)
+* Updated ogr2ogr version to 2.1.2. To install or upgrade it in the system:
+  * `sudo apt-get update`
+  * `sudo apt-get install gdal2.1-static-bin`
 
 ### Bug fixes
+* Start using layers<->user_table cache in all places (#11303)
+  * Run `cartodb:db:register_table_dependencies` rake to update caches for existing maps
 * Categories legend are now static (#10972)
 * Fixed a bug with vizjson invalidation (#11092). It was introduced in #10934
 * Refactor Layer model (#10934)

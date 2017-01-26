@@ -42,6 +42,14 @@
   }
 }
 
+.ScrollView--withoutMargins,
+.ScrollView--withoutMargins .ScrollView-wrapper {
+  margin-right: 0;
+  margin-left: 0;
+  padding-right: 0;
+  padding-left: 0;
+}
+
 .ScrollView-shadow {
   @include transition(opacity, 400ms);
   @include opacity(0);

@@ -126,6 +126,18 @@ describe Carto::Api::AnalysesController do
       end
     end
 
+    it 'registers table dependencies when creating analysis' do
+      bypass_named_maps
+      # Twice because of destroy
+      Carto::Layer.any_instance.expects(:register_table_dependencies).times(@visualization.data_layers.count * 2)
+      post_json create_analysis_url(@user, @visualization), payload do |response|
+        response.status.should eq 201
+
+        a = Carto::Analysis.find(response.body[:id])
+        a.destroy
+      end
+    end
+
     it 'overrides old analysis in the same visualization if they have the same natural id' do
       bypass_named_maps
       Carto::Analysis.where(visualization_id: @visualization.id).count.should eq 1
@@ -247,6 +259,14 @@ describe Carto::Api::AnalysesController do
       end
     end
 
+    it 'registers table dependencies when updating existing analysis' do
+      bypass_named_maps
+      Carto::Layer.any_instance.expects(:register_table_dependencies).times(@visualization.data_layers.count)
+      put_json viz_analysis_url(@user, @visualization, @analysis), new_payload do |response|
+        response.status.should eq 200
+      end
+    end
+
     it 'returns 422 if payload visualization_id or id do not match' do
       put_json viz_analysis_url(@user, @visualization, @analysis),
                new_payload.merge(visualization_id: 'x') do |response|
@@ -318,6 +338,16 @@ describe Carto::Api::AnalysesController do
       delete_json viz_analysis_url(@user, @visualization, @analysis) do |response|
         response.status.should eq 200
         Carto::Analysis.where(id: @analysis.id).first.should be_nil
+      end
+    end
+
+    it 'registers table dependencies when destroying existing analysis' do
+      bypass_named_maps
+      analysis = FactoryGirl.create(:source_analysis, visualization_id: @visualization.id, user_id: @user.id)
+      Carto::Layer.any_instance.expects(:register_table_dependencies).times(@visualization.data_layers.count)
+      delete_json viz_analysis_url(@user, @visualization, analysis) do |response|
+        response.status.should eq 200
+        Carto::Analysis.where(id: analysis.id).first.should be_nil
       end
     end
 

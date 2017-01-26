@@ -55,8 +55,8 @@ describe('src/geo/leaflet/leaflet-cartodb-webgl-layer-group-view.js', function (
   it('should set a new tile template URL when urls change', function () {
     spyOn(this.view.tangram, 'addDataSource');
 
-    this.layerGroupModel.set('urls', { tiles: ['hahaha'] });
+    this.layerGroupModel.set('urls', { tiles: ['http://0.ashbu.cartocdn.com/documentation/api/v1/map/90e64f1b9145961af7ba36d71b887dd2:0/{layerIndexes}/{z}/{x}/{y}.png'] });
 
-    expect(this.view.tangram.addDataSource).toHaveBeenCalledWith('hahaha');
+    expect(this.view.tangram.addDataSource).toHaveBeenCalledWith('http://0.ashbu.cartocdn.com/documentation/api/v1/map/90e64f1b9145961af7ba36d71b887dd2:0/mapnik/{z}/{x}/{y}.mvt');
   });
 });

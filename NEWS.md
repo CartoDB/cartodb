@@ -44,6 +44,8 @@ Development
   * `sudo apt-get install gdal2.1-static-bin`
 
 ### Bug fixes
+* Start using layers<->user_table cache in all places (#11303)
+  * Run `cartodb:db:register_table_dependencies` rake to update caches for existing maps
 * Categories legend are now static (#10972)
 * Fixed a bug with vizjson invalidation (#11092). It was introduced in #10934
 * Refactor Layer model (#10934)

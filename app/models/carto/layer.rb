@@ -5,6 +5,8 @@ require_dependency 'carto/query_rewriter'
 
 module Carto
   module LayerTableDependencies
+    private
+
     def affected_tables
       return [] unless maps.first.present? && options.present?
       node_id = options.symbolize_keys[:source]
@@ -59,13 +61,13 @@ module Carto
     serialize :infowindow, CartoJsonSerializer
     serialize :tooltip, CartoJsonSerializer
 
-    has_many :layers_maps
-    has_many :maps, through: :layers_maps, after_add: :set_default_order
+    has_many :layers_maps, dependent: :destroy
+    has_many :maps, through: :layers_maps, after_add: :after_added_to_map
 
-    has_many :layers_user
+    has_many :layers_user, dependent: :destroy
     has_many :users, through: :layers_user, after_add: :set_default_order
 
-    has_many :layers_user_table
+    has_many :layers_user_table, dependent: :destroy
     has_many :user_tables, through: :layers_user_table, class_name: Carto::UserTable
 
     has_many :widgets, class_name: Carto::Widget, order: '"order"'
@@ -105,12 +107,12 @@ module Carto
       save if persisted?
     end
 
-    def affected_tables_readable_by(user)
-      affected_tables.select { |ut| ut.readable_by?(user) }
+    def user_tables_readable_by(user)
+      user_tables.select { |ut| ut.readable_by?(user) }
     end
 
     def data_readable_by?(user)
-      affected_tables.all? { |ut| ut.readable_by?(user) }
+      user_tables.all? { |ut| ut.readable_by?(user) }
     end
 
     def legend
@@ -274,7 +276,12 @@ module Carto
     end
 
     def uses_private_tables?
-      affected_tables.any?(&:private?)
+      user_tables.any?(&:private?)
+    end
+
+    def after_added_to_map(map)
+      set_default_order(map)
+      register_table_dependencies
     end
 
     private

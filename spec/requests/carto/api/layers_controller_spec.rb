@@ -86,6 +86,21 @@ describe Carto::Api::LayersController do
         end
       end
 
+      it 'registers table dependencies when creating a layer for a map' do
+        @map, @table, @table_visualization, @visualization = create_full_visualization(@carto_user1)
+        # Let's make room for another layer of the same kind
+        destroyed_layer = @map.layers.where(kind: layer_json[:kind]).first
+        destroyed_layer.destroy if destroyed_layer
+
+        post_json create_map_layer_url(@map.id), layer_json.merge(options: { table_name: @table.name }) do |response|
+          response.status.should eq 200
+          layer_response = response.body
+
+          @layer = Carto::Layer.find(layer_response[:id])
+          @layer.user_tables.should eq [@table]
+        end
+      end
+
       it 'does not allow to exceed max_layers' do
         @map, @table, @table_visualization, @visualization = create_full_visualization(@carto_user1)
         @carto_user1.max_layers = 1
@@ -113,6 +128,22 @@ describe Carto::Api::LayersController do
           layer_response[:id].should eq @layer.id
           layer_response[:options].should eq new_layer_json[:options]
           layer_response[:order].should eq new_order
+        end
+      end
+
+      it 'register table dependencies when updating layers' do
+        map = FactoryGirl.create(:carto_map_with_layers, user_id: @user1.id)
+        @map, @table, @table_visualization, @visualization = create_full_visualization(@carto_user1, map: map)
+        @layer = map.layers.first
+
+        new_order = 2
+        new_layer_json = layer_json.merge(
+          options: { random: '1' },
+          order: new_order
+        )
+        Carto::Layer.any_instance.expects(:register_table_dependencies).once
+        put_json update_map_layer_url(map.id, @layer.id), new_layer_json do |response|
+          response.status.should eq 200
         end
       end
 

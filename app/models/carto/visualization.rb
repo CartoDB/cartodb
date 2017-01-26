@@ -117,7 +117,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def related_tables_readable_by(user)
-    layers_with_data_readable_by(user).map { |l| l.affected_tables_readable_by(user) }.flatten.uniq
+    layers_with_data_readable_by(user).map { |l| l.user_tables_readable_by(user) }.flatten.uniq
   end
 
   def related_canonical_visualizations
@@ -540,7 +540,7 @@ class Carto::Visualization < ActiveRecord::Base
   def get_related_tables
     return [] unless map
 
-    map.carto_and_torque_layers.flat_map(&:affected_tables).uniq
+    map.carto_and_torque_layers.flat_map(&:user_tables).uniq
   end
 
   def get_related_canonical_visualizations

@@ -18,15 +18,23 @@ $baseSize: 8px;
 // margin
 $iconMargin: 10px;
 
+// Action bar
+$actionBarHeight: 17px;
+
+.IconActions {
+  height: $actionBarHeight;
+}
 
 .IconPicker {
   margin-bottom: 20px;
 }
 
 .IconList {
+  // scss-lint:disable Shorthand
   @include display-flex;
   @include flex-wrap(wrap);
   position: relative;
+  margin: 0 -12px 0 0;
 }
 
 .IconList-item {
@@ -83,3 +91,8 @@ $iconMargin: 10px;
   display: none;
 }
 
+// To be removed once we insert tabs again to implement Dropbox uploading
+.IconModal {
+  // scss-lint:disable ImportantRule
+  padding: 0 !important;
+}

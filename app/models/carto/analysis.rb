@@ -17,9 +17,8 @@ class Carto::Analysis < ActiveRecord::Base
   belongs_to :visualization, class_name: Carto::Visualization
   belongs_to :user, class_name: Carto::User
 
-  after_save :update_map_dataset_dependencies
-  after_save :notify_map_change
-  after_destroy :notify_map_change
+  after_save :update_map_dataset_dependencies, :notify_map_change
+  after_destroy :update_map_dataset_dependencies, :notify_map_change
 
   def self.find_by_natural_id(visualization_id, natural_id)
     analysis = find_by_sql(

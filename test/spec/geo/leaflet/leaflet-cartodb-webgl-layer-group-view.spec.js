@@ -16,14 +16,20 @@ describe('src/geo/leaflet/leaflet-cartodb-webgl-layer-group-view.js', function (
     this.layerGroupModel = new CartoDBLayerGroup({}, {
       layersCollection: this.layersCollection
     });
-    this.layerGroupModel.getTileURLTemplates = function () { return [ 'http://carto.com/{z}/{x}/{y}.png' ]; };
+    this.layerGroupModel.getTileURLTemplates = function () { return [ ]; };
+
+    this.layerGroupModel.set('urls', { tiles: [] });
 
     this.vis = new VisModel();
 
-    this.layer1 = new CartoDBLayer({ id: 'layer1' }, { vis: this.vis });
-    this.layer2 = new CartoDBLayer({ id: 'layer2' }, { vis: this.vis });
+    this.layer1 = new CartoDBLayer({ id: 'layer1', meta: {cartocss: '#layer {polygon-fill: black;}'} }, { vis: this.vis });
+    this.layer2 = new CartoDBLayer({ id: 'layer2', meta: {cartocss: '#layer {polygon-fill: black;}'} }, { vis: this.vis });
 
     this.layersCollection.reset([ this.layer1, this.layer2 ]);
+
+    this.view = new LeafletCartoDBWebGLLayerGroupView(this.layerGroupModel, this.leafletMap); // eslint-disable-line
+
+    this.view.tangram = {addLayer: function () {}, addDataSource: function () {}};
   });
 
   afterEach(function () {
@@ -31,30 +37,26 @@ describe('src/geo/leaflet/leaflet-cartodb-webgl-layer-group-view.js', function (
   });
 
   it('should set the styles options when meta changes', function () {
-    var view = new LeafletCartoDBWebGLLayerGroupView(this.layerGroupModel, this.leafletMap); // eslint-disable-line
+    spyOn(this.view.tangram, 'addLayer');
     var self = this;
 
-    setTimeout(function () {
-      self.layer1.set('meta', {cartocss: '#layer {polygon-fill: red;}'});
-      self.layer2.set('meta', {cartocss: '#layer {polygon-fill: blue;}'});
-
-      expect(view.options.styles).toEqual([ '#layer {polygon-fill: red;}', '#layer {polygon-fill: blue;}' ]);
-      done(); // eslint-disable-line
-    }, 100);
+    self.layer1.set('meta', {cartocss: '#layer {polygon-fill: red;}'});
+    expect(this.view.tangram.addLayer).toHaveBeenCalled();
   });
 
   it('should set the visibility options when visibility changes', function () {
-    var view = new LeafletCartoDBWebGLLayerGroupView(this.layerGroupModel, this.leafletMap); // eslint-disable-line
+    spyOn(this.view.tangram, 'addLayer');
     var self = this;
 
-    setTimeout(function () {
-      self.layer1.set('visible', true);
-      self.layer2.set('visible', false);
+    self.layer1.set('visible', false);
+    expect(this.view.tangram.addLayer).toHaveBeenCalled();
+  });
 
-      expect(view.tangram.scene.config.layers.layer1.visible).toBeTruthy();
-      expect(view.tangram.scene.config.layers.layer1.visible).toBeFalsy();
+  it('should set a new tile template URL when urls change', function () {
+    spyOn(this.view.tangram, 'addDataSource');
 
-      done(); // eslint-disable-line
-    }, 100);
+    this.layerGroupModel.set('urls', { tiles: ['hahaha'] });
+
+    expect(this.view.tangram.addDataSource).toHaveBeenCalledWith('hahaha');
   });
 });

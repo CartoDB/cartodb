@@ -15,7 +15,6 @@ var LayerLegendsView = View.extend({
     this._legendViews = [];
 
     this.settingsModel = options.settingsModel;
-    this.tryContainerVisibility = options.tryContainerVisibility;
 
     this.model.on('change:visible', this.render, this);
     this.model.on('change:layer_name', this.render, this);
@@ -51,8 +50,13 @@ var LayerLegendsView = View.extend({
       this.$el.html('');
     }
 
-    this.tryContainerVisibility();
+    this.trigger('render');
+
     return this;
+  },
+
+  isEmpty: function () {
+    return this.$el.html() === '';
   },
 
   _shouldLegendsBeVisible: function () {

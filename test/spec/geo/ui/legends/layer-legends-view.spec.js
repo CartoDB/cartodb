@@ -44,6 +44,15 @@ describe('geo/ui/legends/layer-legends-view', function () {
     expect(this.layerLegendsView.$('.CDB-Legend-item').length).toEqual(5);
   });
 
+  it('should trigger a "render" event when the view is rendered', function () {
+    var callback = jasmine.createSpy('callback');
+    this.layerLegendsView.on('render', callback);
+
+    this.layerLegendsView.render();
+
+    expect(callback).toHaveBeenCalled();
+  });
+
   it('should update the name of the layer when it changes', function () {
     expect(this.layerLegendsView.$el.html()).toMatch('CartoDB Layer #1');
 

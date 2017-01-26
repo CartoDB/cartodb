@@ -34,8 +34,6 @@ var LegendsView = View.extend({
     this._renderShadows();
     this._bindScroll();
 
-    this._tryVisibility();
-
     return this;
   },
 
@@ -96,9 +94,11 @@ var LegendsView = View.extend({
   _renderLayerLegends: function (layerModel) {
     var layerLegendsView = new LayerLegendsView({
       model: layerModel,
-      settingsModel: this.settingsModel,
-      tryContainerVisibility: this._tryVisibility.bind(this)
+      settingsModel: this.settingsModel
     });
+
+    layerLegendsView.on('render', this._showOrHide, this);
+    this.addView(layerLegendsView);
 
     this.$(this._container()).append(layerLegendsView.render().$el);
   },
@@ -111,12 +111,12 @@ var LegendsView = View.extend({
     }
   },
 
-  _tryVisibility: function () {
-    var visible = _.any(this.$('.js-layer-legends'), function (el) {
+  _showOrHide: function () {
+    var hasAnyLayerLegends = _.any(this.$('.js-layer-legends'), function (el) {
       return !$(el).is(':empty');
     });
 
-    this.$el.toggle(visible);
+    this.$el.toggle(hasAnyLayerLegends);
   },
 
   _hasLegends: function (layerModel) {

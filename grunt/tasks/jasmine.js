@@ -33,7 +33,8 @@ module.exports = {
     src: [], // actual src files are require'd in the *.spec.js files
     options: _.defaults({
       outfile: 'test/SpecRunner-src.html',
-      specs: '<%= config.tmp %>/src-specs.js'
+      specs: '<%= config.tmp %>/src-specs.js',
+      '--web-security': 'no'
     }, defaultOptions)
   }
 };

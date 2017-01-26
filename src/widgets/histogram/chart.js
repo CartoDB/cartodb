@@ -1039,12 +1039,11 @@ module.exports = cdb.core.View.extend({
   _removeFillGradients: function () {
     var defs = d3.select(this.el).select('defs');
     defs.remove();
+    delete this._linearGradients;
   },
 
   _areGradientsAlreadyGenerated: function () {
-    var defs = d3.select(this.el).append('defs');
-    var linearGradients = defs.selectAll('linearGradient');
-    return linearGradients[0].length > 0;
+    return !!this._linearGradients;
   },
 
   // Generate a linear-gradient with several stops for each bar
@@ -1071,7 +1070,7 @@ module.exports = cdb.core.View.extend({
     var defs = d3.select(this.el).append('defs');
     var stopsNumber = 4;  // It is not necessary to create as many stops as colors
 
-    var linearGradients = defs
+    this._linearGradients = defs
       .selectAll('linearGradient')
       .data(data)
       .enter()
@@ -1088,7 +1087,7 @@ module.exports = cdb.core.View.extend({
       .attr('x2', '100%')
       .attr('y2', '0%');
 
-    linearGradients
+    this._linearGradients
       .selectAll('stop')
       .data(d3.range(stopsNumber + 1))
       .enter()

@@ -76,11 +76,7 @@ describe('widgets/histogram/title-view', function () {
 
       describe('checking allowed', function () {
         beforeEach(function () {
-          spyOn(this.widgetModel, 'getAutoStyle').and.returnValue({
-            cartocss: '#whatever {}',
-            definition: 'dummy'
-          });
-
+          spyOn(this.widgetModel, 'hasColorsAutoStyle').and.returnValue(true);
           this.view.render();
         });
 
@@ -112,25 +108,13 @@ describe('widgets/histogram/title-view', function () {
 
       describe('checking auto-style definition', function () {
         it('should display autostyle button if definition exists', function () {
-          spyOn(this.widgetModel, 'getAutoStyle').and.returnValue({
-            cartocss: '#whatever {}',
-            definition: {
-              point: {
-                fill: {
-                  color: 'red'
-                }
-              }
-            }
-          });
+          spyOn(this.widgetModel, 'hasColorsAutoStyle').and.returnValue(true);
           this.view.render();
           expect(this.view.$('.js-autoStyle').length).toBe(1);
         });
 
         it('should not display autostyle button if definition doesn\'t exist', function () {
-          spyOn(this.widgetModel, 'getAutoStyle').and.returnValue({
-            cartocss: '#whatever {}',
-            definition: {}
-          });
+          spyOn(this.widgetModel, 'hasColorsAutoStyle').and.returnValue(false);
           this.view.render();
           expect(this.view.$('.js-autoStyle').length).toBe(0);
         });

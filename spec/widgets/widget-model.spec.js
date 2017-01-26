@@ -189,6 +189,87 @@ describe('widgets/widget-model', function () {
         expect(model.isAutoStyleEnabled()).toBeFalsy();
       });
     });
+
+    describe('.hasColorsAutoStyle', function () {
+      it('should return false if autostyle or auto-style definition is empty', function () {
+        spyOn(this.model, 'getAutoStyle').and.returnValue({
+          cartocss: '#dummy {}',
+          definition: {}
+        });
+        expect(this.model.hasColorsAutoStyle()).toBe(false);
+        this.model.getAutoStyle.and.returnValue({});
+        expect(this.model.hasColorsAutoStyle()).toBe(false);
+      });
+
+      it('should return false if color or range doesn\'t exist', function () {
+        spyOn(this.model, 'getAutoStyle').and.returnValue({
+          cartocss: '#dummy {}',
+          definition: {
+            point: {}
+          }
+        });
+        expect(this.model.hasColorsAutoStyle()).toBe(false);
+        this.model.getAutoStyle.and.returnValue({
+          cartocss: '#dummy {}',
+          definition: {
+            point: {
+              color: {}
+            }
+          }
+        });
+        expect(this.model.hasColorsAutoStyle()).toBe(false);
+      });
+
+      it('should return false if there is no colors defined', function () {
+        spyOn(this.model, 'getAutoStyle').and.returnValue({
+          cartocss: '#dummy {}',
+          definition: {
+            point: {
+              color: {
+                range: []
+              }
+            }
+          }
+        });
+        expect(this.model.hasColorsAutoStyle()).toBe(false);
+
+        this.model.getAutoStyle.and.returnValue({
+          cartocss: '#dummy {}',
+          definition: {
+            point: {
+              color: {
+                range: {}
+              }
+            },
+            line: {
+              color: {
+                range: {}
+              }
+            },
+            polygon: {
+              color: {
+                range: {}
+              }
+            }
+          }
+        });
+        expect(this.model.hasColorsAutoStyle()).toBe(false);
+      });
+
+      it('should return true if autostyle return any color', function () {
+        spyOn(this.model, 'getAutoStyle').and.returnValue({
+          cartocss: '#dummy {}',
+          definition: {
+            point: {
+              color: {
+                range: ['#red']
+              }
+            }
+          }
+        });
+        expect(this.model.hasColorsAutoStyle()).toBe(true);
+      });
+    });
   });
 
   describe('when autostyle option is disabled', function () {

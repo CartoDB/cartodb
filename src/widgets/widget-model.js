@@ -92,6 +92,24 @@ module.exports = cdb.core.Model.extend({
           styles.widget_style.definition.color.fixed;
   },
 
+  hasColorsAutoStyle: function () {
+    var autoStyle = this.getAutoStyle();
+    var hasDefinedColors = false;
+
+    if (!autoStyle || _.isEmpty(autoStyle) || _.isEmpty(autoStyle.definition)) {
+      return false;
+    }
+
+    // Check colors in all geometries
+    _.each(autoStyle.definition, function (geometryStyle) {
+      if (geometryStyle.color && geometryStyle.color.range && geometryStyle.color.range.length > 0) {
+        hasDefinedColors = true;
+      }
+    }, this);
+
+    return hasDefinedColors;
+  },
+
   getColor: function (name) {
     if (this.isAutoStyleEnabled() && this.isAutoStyle() && this.get('type') === 'category') {
       return this.autoStyler.colors.getColorByCategory(name);

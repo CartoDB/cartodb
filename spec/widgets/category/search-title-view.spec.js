@@ -116,10 +116,7 @@ describe('widgets/category/search-title-view', function () {
 
       describe('checking allowed', function () {
         beforeEach(function () {
-          spyOn(this.view.model, 'getAutoStyle').and.returnValue({
-            cartocss: '#whatever {}',
-            definition: 'dummy'
-          });
+          spyOn(this.view.model, 'hasColorsAutoStyle').and.returnValue(true);
           this.view.render();
         });
 
@@ -136,10 +133,7 @@ describe('widgets/category/search-title-view', function () {
 
       describe('checking layer visibility', function () {
         beforeEach(function () {
-          spyOn(this.view.model, 'getAutoStyle').and.returnValue({
-            cartocss: '#whatever {}',
-            definition: 'dummy'
-          });
+          spyOn(this.view.model, 'hasColorsAutoStyle').and.returnValue(true);
           this.view.render();
         });
 
@@ -151,25 +145,13 @@ describe('widgets/category/search-title-view', function () {
 
       describe('checking auto-style definition', function () {
         it('should display autostyle button if definition exists', function () {
-          spyOn(this.view.model, 'getAutoStyle').and.returnValue({
-            cartocss: '#whatever {}',
-            definition: {
-              point: {
-                fill: {
-                  color: 'red'
-                }
-              }
-            }
-          });
+          spyOn(this.view.model, 'hasColorsAutoStyle').and.returnValue(true);
           this.view.render();
           expect(this.view.$('.js-autoStyle').length).toBe(1);
         });
 
         it('should not display autostyle button if definition doesn\'t exist', function () {
-          spyOn(this.view.model, 'getAutoStyle').and.returnValue({
-            cartocss: '#whatever {}',
-            definition: {}
-          });
+          spyOn(this.view.model, 'hasColorsAutoStyle').and.returnValue(false);
           this.view.render();
           expect(this.view.$('.js-autoStyle').length).toBe(0);
         });
@@ -183,16 +165,7 @@ describe('widgets/category/search-title-view', function () {
         dataviewModel: this.dataviewModel
       }, {autoStyleEnabled: false});
 
-      spyOn(widgetModel, 'getAutoStyle').and.returnValue({
-        cartocss: '#whatever {}',
-        definition: {
-          point: {
-            fill: {
-              color: 'red'
-            }
-          }
-        }
-      });
+      spyOn(widgetModel, 'hasColorsAutoStyle').and.returnValue(true);
 
       this.view = new SearchTitleView({
         widgetModel: widgetModel,

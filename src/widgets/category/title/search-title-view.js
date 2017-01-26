@@ -78,7 +78,7 @@ module.exports = cdb.core.View.extend({
   _isAutoStyleButtonVisible: function () {
     return this.model.isAutoStyleEnabled() &&
       this.dataviewModel.layer.get('visible') &&
-      this.model.hasAutoStyleColors();
+      this.model.hasColorsAutoStyle();
   },
 
   _onSearchToggled: function () {

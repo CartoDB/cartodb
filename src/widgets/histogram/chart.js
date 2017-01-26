@@ -48,6 +48,7 @@ module.exports = cdb.core.View.extend({
     this.setElement($('<svg class=""></svg>')[0]);
 
     this._widgetModel = this.options.widgetModel;
+    this._dataviewModel = this.options.dataviewModel;
 
     this.canvas = d3.select(this.el)
       .attr('width', 0)
@@ -498,6 +499,15 @@ module.exports = cdb.core.View.extend({
         this._refreshBarsColor();
       }, this);
       this.add_related_model(this._widgetModel);
+    }
+
+    if (this._dataviewModel) {
+      this._dataviewModel.layer.bind('change:cartocss', function () {
+        if (!this._areGradientsAlreadyGenerated()) {
+          this._setupFillColor();
+        }
+      }, this);
+      this.add_related_model(this._dataviewModel.layer);
     }
 
     if (this._originalData) {
@@ -1029,6 +1039,12 @@ module.exports = cdb.core.View.extend({
   _removeFillGradients: function () {
     var defs = d3.select(this.el).select('defs');
     defs.remove();
+  },
+
+  _areGradientsAlreadyGenerated: function () {
+    var defs = d3.select(this.el).append('defs');
+    var linearGradients = defs.selectAll('linearGradient');
+    return linearGradients[0].length > 0;
   },
 
   // Generate a linear-gradient with several stops for each bar

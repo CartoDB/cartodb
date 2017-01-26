@@ -264,6 +264,7 @@ module.exports = cdb.core.View.extend({
       width: this.canvasWidth,
       height: this.defaults.chartHeight,
       data: this._dataviewModel.getData(),
+      dataviewModel: this._dataviewModel,
       originalData: this._originalData,
       displayShadowBars: !this.model.get('normalized'),
       normalized: this.model.get('normalized'),

@@ -205,7 +205,7 @@ shared_examples_for 'Layer model' do
     end
   end
 
-  describe '#before_destroy' do
+  describe '#destroy' do
     it 'invalidates the vizjson cache of all related maps' do
       map   = create_map(user_id: @user.id, table_id: @table.id)
       layer = layer_class.create(kind: 'carto')
@@ -213,6 +213,21 @@ shared_examples_for 'Layer model' do
 
       layer.maps.each { |m| m.expects(:notify_map_change) }
       layer.destroy
+    end
+
+    it 'deletes ternary relations' do
+      map   = create_map(user_id: @user.id, table_id: @table.id)
+      layer = layer_class.create(kind: 'carto')
+      layer.options[:query] = "SELECT * FROM #{@table.name}"
+      layer.register_table_dependencies
+      add_layer_to_entity(map, layer)
+      add_layer_to_entity(@user, layer)
+
+      layer.destroy
+
+      Carto::LayersMap.where(layer_id: layer.id).exists?.should be_false
+      Carto::LayersUser.where(layer_id: layer.id).exists?.should be_false
+      Carto::LayersUserTable.where(layer_id: layer.id).exists?.should be_false
     end
   end
 

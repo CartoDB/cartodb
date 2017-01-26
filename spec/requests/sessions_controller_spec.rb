@@ -531,6 +531,41 @@ describe SessionsController do
     end
   end
 
+  describe '#logout' do
+    before(:all) do
+      @user = FactoryGirl.create(:carto_user)
+    end
+
+    after(:all) do
+      @user.destroy
+    end
+
+    shared_examples_for 'logout endpoint' do
+      it 'redirects to user dashboard' do
+        post create_session_url(email: @user.username, password: @user.password)
+        get CartoDB.base_url(@user.username) + logout_path
+        response.status.should eq 302
+        response.location.should include @user.username
+      end
+    end
+
+    describe 'domainful' do
+      it_behaves_like 'logout endpoint'
+
+      before(:each) do
+        stub_domainful(@user.username)
+      end
+    end
+
+    describe 'subddomainless' do
+      it_behaves_like 'logout endpoint'
+
+      before(:each) do
+        stub_subdomainless
+      end
+    end
+  end
+
   private
 
   def bypass_named_maps

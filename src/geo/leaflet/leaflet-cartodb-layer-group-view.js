@@ -220,14 +220,15 @@ var LeafletCartoDBLayerGroupView = L.TileLayer.extend({
   },
 
   _reload: function () {
+    var tileURLTemplates;
     if (this.model.hasTileURLTemplates()) {
-      this.setUrl(this.model.getTileURLTemplates()[0]);
-      // manage interaction
-      this._reloadInteraction();
-      this.ok && this.ok();
+      tileURLTemplates = this.model.getTileURLTemplates()[0];
     } else {
-      this.setUrl(EMPTY_GIF);
+      tileURLTemplates = EMPTY_GIF;
     }
+    this.setUrl(tileURLTemplates);
+
+    this._reloadInteraction();
   },
 
   /**

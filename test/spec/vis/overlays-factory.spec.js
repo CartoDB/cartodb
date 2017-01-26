@@ -20,9 +20,6 @@ describe('vis/overlays-factory', function () {
 
     this.visView = new Backbone.View();
     this.visView.mapView = this.mapView;
-    this.visView.getLayerViews = function () {
-      return [ createFakeLayerView(), createFakeLayerView() ];
-    };
 
     this.overlaysFactory = new OverlaysFactory({
       mapModel: this.map,

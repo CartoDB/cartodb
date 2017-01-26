@@ -1,11 +1,11 @@
 var $ = require('jquery');
 var _ = require('underscore');
-var Backbone = require('backbone');
+var View = require('../../../core/view');
 var Ps = require('perfect-scrollbar');
 var template = require('./legends-view.tpl');
 var LayerLegendsView = require('./layer-legends-view');
 
-var LegendsView = Backbone.View.extend({
+var LegendsView = View.extend({
 
   className: 'CDB-Legends-canvas',
 
@@ -20,7 +20,9 @@ var LegendsView = Backbone.View.extend({
 
   _initBinds: function () {
     this._layersCollection.on('add remove', this._onLayerAddedOrRemoved, this);
+    this.add_related_model(this._layersCollection);
     this.settingsModel.on('change', this._onSettingsModelChanged, this);
+    this.add_related_model(this.settingsModel);
   },
 
   render: function () {
@@ -31,6 +33,8 @@ var LegendsView = Backbone.View.extend({
     this._renderScroll();
     this._renderShadows();
     this._bindScroll();
+
+    this._tryVisibility();
 
     return this;
   },
@@ -108,11 +112,11 @@ var LegendsView = Backbone.View.extend({
   },
 
   _tryVisibility: function () {
-    var shouldHide = !_.every(this.$('.js-layer-legends'), function (el) {
-      return $(el).is(':empty');
+    var visible = _.any(this.$('.js-layer-legends'), function (el) {
+      return !$(el).is(':empty');
     });
 
-    this.$el.toggle(shouldHide);
+    this.$el.toggle(visible);
   },
 
   _hasLegends: function (layerModel) {

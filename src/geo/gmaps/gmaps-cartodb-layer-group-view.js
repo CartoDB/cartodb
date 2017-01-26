@@ -230,23 +230,25 @@ _.extend(
     },
 
     _reload: function () {
-      this.loading && this.loading();
-
+      var tileURLTemplates;
       if (this.model.hasTileURLTemplates()) {
-        this.options.tiles = this.model.getTileURLTemplates();
-        this.tiles = 0;
-        this.cache = {};
-        this._reloadInteraction();
-        this._refreshView();
-        this.ok && this.ok();
+        tileURLTemplates = this.model.getTileURLTemplates();
       } else {
-        this.error && this.error('URLs have not been fetched yet');
+        tileURLTemplates = [ EMPTY_GIF ];
       }
+
+      this.options.tiles = tileURLTemplates;
+      this.tiles = 0;
+      this.cache = {};
+      this._reloadInteraction();
+      this._refreshView();
     },
 
     _refreshView: function () {
-      // this.gmapsMap.overlayMapTypes.set(0, this);
-      this.gmapsMap.overlayMapTypes.removeAt(0);
+      var overlayIndex = this.gmapsMap.overlayMapTypes.getArray().indexOf(this);
+      if (overlayIndex >= 0) {
+        this.gmapsMap.overlayMapTypes.removeAt(overlayIndex);
+      }
       this.gmapsMap.overlayMapTypes.setAt(0, this);
     },
 

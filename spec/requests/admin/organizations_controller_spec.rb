@@ -5,6 +5,9 @@ describe Admin::OrganizationsController do
   include Warden::Test::Helpers
   include_context 'organization with users helper'
 
+  let(:out_of_quota_message) { "Your organization has run out of quota" }
+  let(:out_of_seats_message) { "Your organization has run out of seats" }
+
   describe '#auth' do
     before(:each) do
       host! "#{@organization.name}.localhost.lan"
@@ -27,8 +30,8 @@ describe Admin::OrganizationsController do
         get organization_auth_url(user_domain: @org_user_owner.username)
 
         response.status.should eq 200
-        response.body.should_not include("Your organization has run out of quota")
-        response.body.should_not include("Your organization has run out of seats")
+        response.body.should_not include(out_of_quota_message)
+        response.body.should_not include(out_of_seats_message)
       end
 
       it 'displays out of quota message if there is no remaining quota' do
@@ -44,7 +47,7 @@ describe Admin::OrganizationsController do
         get organization_auth_url(user_domain: @org_user_owner.username)
 
         response.status.should eq 200
-        response.body.should include("Your organization has run out of quota")
+        response.body.should include(out_of_quota_message)
 
         @organization.quota_in_bytes = old_quota_in_bytes
         @organization.save
@@ -62,7 +65,7 @@ describe Admin::OrganizationsController do
         get organization_auth_url(user_domain: @org_user_owner.username)
 
         response.status.should eq 200
-        response.body.should include("Your organization has run out of seats")
+        response.body.should include(out_of_seats_message)
 
         @organization.seats = old_seats
         @organization.save
@@ -93,8 +96,8 @@ describe Admin::OrganizationsController do
         get organization_auth_url(user_domain: @org_user_owner.username)
 
         response.status.should eq 200
-        response.body.should_not include("Your organization has run out of quota")
-        response.body.should_not include("Your organization has run out of seats")
+        response.body.should_not include(out_of_quota_message)
+        response.body.should_not include(out_of_seats_message)
 
         @organization.quota_in_bytes = old_quota_in_bytes
         @organization.seats = old_seats

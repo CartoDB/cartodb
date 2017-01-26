@@ -57,16 +57,19 @@ var HistogramAutoStyler = AutoStyler.extend({
         var scales = HistogramAutoStyler.SCALES_MAP[item][shape];
         var geom = item.substring(0, item.indexOf('-'));
         var definition = {};
-        if (isCustomDefinition === true) {
-          definition = _.extend(definition, styles.definition);
-        } else {
-          definition = {
-            color: {
-              range: cartocolor[scales.palette][bins] || cartocolor[scales.palette][Object.keys(cartocolor[scales.palette]).length],
-              quantification: scales.quantification,
-              attribute: attr
-            }
-          };
+
+        if (scales) {
+          if (isCustomDefinition === true) {
+            definition = _.extend(definition, styles.definition);
+          } else {
+            definition = {
+              color: {
+                range: cartocolor[scales.palette][bins] || cartocolor[scales.palette][Object.keys(cartocolor[scales.palette]).length],
+                quantification: scales.quantification,
+                attribute: attr
+              }
+            };
+          }
         }
 
         definitions[geom === 'marker' ? 'point' : geom] = definition;

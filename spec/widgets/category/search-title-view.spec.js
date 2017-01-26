@@ -10,7 +10,7 @@ describe('widgets/category/search-title-view', function () {
     layer = vis.map.layers.first();
     layer.restoreCartoCSS = jasmine.createSpy('restore');
     layer.getGeometryType = function () {
-      return 'polygon';
+      return 'point';
     };
     this.dataviewModel = vis.dataviews.createCategoryModel(layer, {
       column: 'col'
@@ -23,6 +23,7 @@ describe('widgets/category/search-title-view', function () {
       this.widgetModel = new CategoryWidgetModel({}, {
         dataviewModel: this.dataviewModel
       }, {autoStyleEnabled: true});
+
       this.view = new SearchTitleView({
         widgetModel: this.widgetModel,
         dataviewModel: this.dataviewModel
@@ -35,7 +36,6 @@ describe('widgets/category/search-title-view', function () {
       expect($el.find('.js-title').length).toBe(1);
       expect($el.find('.CDB-Widget-options').length).toBe(1);
       expect($el.find('.js-titleText').length).toBe(1);
-      expect(this.view.$('.js-autoStyle').length).toBe(1);
     });
 
     describe('search', function () {
@@ -87,6 +87,7 @@ describe('widgets/category/search-title-view', function () {
 
     describe('options', function () {
       beforeEach(function () {
+        spyOn(this.view, '_isAutoStyleButtonVisible').and.returnValue(true);
         this.view.render();
       });
 
@@ -108,35 +109,66 @@ describe('widgets/category/search-title-view', function () {
       });
     });
 
-    describe('allowed', function () {
+    describe('autostyle', function () {
       beforeEach(function () {
-        this.view.render();
+        this.dataviewModel.layer.set('cartocss', '#whatever {}');
       });
 
-      it('should remove button when not allowed', function () {
-        this.widgetModel.set('style', {auto_style: {allowed: false}});
-        expect(this.view.$('.js-autoStyle').length).toBe(0);
+      describe('checking allowed', function () {
+        beforeEach(function () {
+          spyOn(this.view.model, 'hasColorsAutoStyle').and.returnValue(true);
+          this.view.render();
+        });
+
+        it('should remove button when not allowed', function () {
+          this.widgetModel.set('style', {auto_style: {allowed: false}});
+          expect(this.view.$('.js-autoStyle').length).toBe(0);
+        });
+
+        it('should show button when allowed', function () {
+          this.widgetModel.set('style', {auto_style: {allowed: true}});
+          expect(this.view.$('.js-autoStyle').length).toBe(1);
+        });
       });
 
-      it('should show button when allowed', function () {
-        this.widgetModel.set('style', {auto_style: {allowed: true}});
-        expect(this.view.$('.js-autoStyle').length).toBe(1);
+      describe('checking layer visibility', function () {
+        beforeEach(function () {
+          spyOn(this.view.model, 'hasColorsAutoStyle').and.returnValue(true);
+          this.view.render();
+        });
+
+        it('should not render the autostyle button if layer is hidden', function () {
+          layer.set({visible: false});
+          expect(this.view.$('.js-autoStyle').length).toBe(0);
+        });
       });
 
-      it('should not render the autostyle button if layer is hidden', function () {
-        layer.set({visible: false});
-        expect(this.view.$('.js-autoStyle').length).toBe(0);
+      describe('checking auto-style definition', function () {
+        it('should display autostyle button if definition exists', function () {
+          spyOn(this.view.model, 'hasColorsAutoStyle').and.returnValue(true);
+          this.view.render();
+          expect(this.view.$('.js-autoStyle').length).toBe(1);
+        });
+
+        it('should not display autostyle button if definition doesn\'t exist', function () {
+          spyOn(this.view.model, 'hasColorsAutoStyle').and.returnValue(false);
+          this.view.render();
+          expect(this.view.$('.js-autoStyle').length).toBe(0);
+        });
       });
     });
   });
 
   describe('with autoStyleEnabled set to false', function () {
     beforeEach(function () {
-      this.widgetModel = new CategoryWidgetModel({}, {
+      var widgetModel = new CategoryWidgetModel({}, {
         dataviewModel: this.dataviewModel
       }, {autoStyleEnabled: false});
+
+      spyOn(widgetModel, 'hasColorsAutoStyle').and.returnValue(true);
+
       this.view = new SearchTitleView({
-        widgetModel: this.widgetModel,
+        widgetModel: widgetModel,
         dataviewModel: this.dataviewModel
       });
 

@@ -28,12 +28,11 @@ module.exports = cdb.core.View.extend({
   },
 
   render: function () {
-    var isAutoStyleButtonVisible = this.model.isAutoStyleEnabled() && this.dataviewModel.layer.get('visible');
     this.clearSubViews();
     this.$el.html(
       template({
         isCollapsed: this.model.get('collapsed'),
-        isAutoStyleEnabled: isAutoStyleButtonVisible,
+        isAutoStyleEnabled: this._isAutoStyleButtonVisible(),
         isAutoStyle: this.model.isAutoStyle(),
         title: this.model.get('title'),
         columnName: this.dataviewModel.get('column'),
@@ -53,11 +52,15 @@ module.exports = cdb.core.View.extend({
     this.model.bind('change:title change:collapsed change:autoStyle change:style', this.render, this);
     this.model.lockedCategories.bind('change add remove', this.render, this);
     this.add_related_model(this.model.lockedCategories);
+
+    this.dataviewModel.bind('change:data', this.render, this);
+    this.add_related_model(this.dataviewModel);
+
     this.dataviewModel.filter.bind('change', this.render, this);
     this.add_related_model(this.dataviewModel.filter);
 
-    this.dataviewModel.layer.bind('change:visible', this.render, this);
-    this.add_related_model(this.dataviewModel);
+    this.dataviewModel.layer.bind('change:visible change:cartocss', this.render, this);
+    this.add_related_model(this.dataviewModel.layer);
   },
 
   _initViews: function () {
@@ -74,6 +77,12 @@ module.exports = cdb.core.View.extend({
     });
     $('body').append(colorsTooltip.render().el);
     this.addView(colorsTooltip);
+  },
+
+  _isAutoStyleButtonVisible: function () {
+    return this.model.isAutoStyleEnabled() &&
+      this.dataviewModel.layer.get('visible') &&
+      this.model.hasColorsAutoStyle();
   },
 
   _onSearchToggled: function () {

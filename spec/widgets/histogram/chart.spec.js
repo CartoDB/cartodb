@@ -73,6 +73,9 @@ describe('widgets/histogram/chart', function () {
     spyOn(WidgetHistogramChart.prototype, '_refreshBarsColor').and.callThrough();
     spyOn(WidgetHistogramChart.prototype, '_setupFillColor').and.callThrough();
 
+    this.dataviewModel = new cdb.core.Model();
+    this.dataviewModel.layer = new cdb.core.Model();
+
     this.view = new WidgetHistogramChart(({
       el: $('.js-chart'),
       margin: this.margin,
@@ -80,6 +83,7 @@ describe('widgets/histogram/chart', function () {
       hasHandles: true,
       height: 100,
       data: this.data,
+      dataviewModel: this.dataviewModel,
       originalData: this.originalModel,
       displayShadowBars: true,
       widgetModel: this.widgetModel,
@@ -674,6 +678,12 @@ describe('widgets/histogram/chart', function () {
       this.view.el = document.createElement('svg'); // Hack it!
     });
 
+    it('should not generate any gradient if auto-style colors are not provided', function () {
+      this.view._widgetModel.getAutoStyle.and.returnValue({});
+      this.view._generateFillGradients();
+      expect(this.getLinearGradients().length).toBe(0);
+    });
+
     it('should generate as many gradients as data we have', function () {
       this.view._generateFillGradients();
       expect(this.getLinearGradients()[0].length).toBe(5);
@@ -777,6 +787,22 @@ describe('widgets/histogram/chart', function () {
           expect(stopsInLastGradient[0][3].getAttribute('stop-color')).not.toBe(this.yellowColor);
         });
       });
+    });
+  });
+
+  describe('on dataview layer cartocss change', function () {
+    it('should generate bar gradients if they were not defined before', function () {
+      this.view._setupFillColor.calls.reset();
+      spyOn(this.view, '_areGradientsAlreadyGenerated').and.returnValue(false);
+      this.dataviewModel.layer.set('cartocss', '#dummy {}');
+      expect(this.view._setupFillColor.calls.count()).toBe(1);
+    });
+
+    it('should not generate bar gradients if they were defined before', function () {
+      this.view._setupFillColor.calls.reset();
+      spyOn(this.view, '_areGradientsAlreadyGenerated').and.returnValue(true);
+      this.dataviewModel.layer.set('cartocss', '#dummy {}');
+      expect(this.view._setupFillColor.calls.count()).toBe(0);
     });
   });
 

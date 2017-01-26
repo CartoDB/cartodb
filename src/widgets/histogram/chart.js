@@ -48,6 +48,7 @@ module.exports = cdb.core.View.extend({
     this.setElement($('<svg class=""></svg>')[0]);
 
     this._widgetModel = this.options.widgetModel;
+    this._dataviewModel = this.options.dataviewModel;
 
     this.canvas = d3.select(this.el)
       .attr('width', 0)
@@ -498,6 +499,15 @@ module.exports = cdb.core.View.extend({
         this._refreshBarsColor();
       }, this);
       this.add_related_model(this._widgetModel);
+    }
+
+    if (this._dataviewModel) {
+      this._dataviewModel.layer.bind('change:cartocss', function () {
+        if (!this._areGradientsAlreadyGenerated()) {
+          this._setupFillColor();
+        }
+      }, this);
+      this.add_related_model(this._dataviewModel.layer);
     }
 
     if (this._originalData) {
@@ -1029,6 +1039,11 @@ module.exports = cdb.core.View.extend({
   _removeFillGradients: function () {
     var defs = d3.select(this.el).select('defs');
     defs.remove();
+    delete this._linearGradients;
+  },
+
+  _areGradientsAlreadyGenerated: function () {
+    return !!this._linearGradients;
   },
 
   // Generate a linear-gradient with several stops for each bar
@@ -1041,7 +1056,7 @@ module.exports = cdb.core.View.extend({
 
     var obj = this._widgetModel.getAutoStyle();
 
-    if (_.isEmpty(obj)) {
+    if (_.isEmpty(obj) || _.isEmpty(obj.definition)) {
       return false;
     }
 
@@ -1055,7 +1070,7 @@ module.exports = cdb.core.View.extend({
     var defs = d3.select(this.el).append('defs');
     var stopsNumber = 4;  // It is not necessary to create as many stops as colors
 
-    var linearGradients = defs
+    this._linearGradients = defs
       .selectAll('linearGradient')
       .data(data)
       .enter()
@@ -1072,7 +1087,7 @@ module.exports = cdb.core.View.extend({
       .attr('x2', '100%')
       .attr('y2', '0%');
 
-    linearGradients
+    this._linearGradients
       .selectAll('stop')
       .data(d3.range(stopsNumber + 1))
       .enter()

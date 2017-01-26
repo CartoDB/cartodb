@@ -8,14 +8,6 @@ module CartoDB::Importer2
 
   describe NamedplacesGuesser do
 
-    before(:all) do
-      @db = ActiveRecord::Base.establish_connection :adapter => :nulldb
-    end
-
-    after(:all) do
-      @db.disconnect!
-    end
-
     describe '#found?' do
       it 'raises an exception if not run yet' do
         content_guesser = mock

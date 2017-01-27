@@ -89,7 +89,8 @@ var LeafletMapView = MapView.extend({
 
   _getLayerViewFactory: function () {
     this._layerViewFactory = this._layerViewFactory || new LeafletLayerViewFactory({
-      vector: this.map.get('vector')
+      vector: this.map.get('vector'),
+      webgl: this.map.get('webgl')
     });
 
     return this._layerViewFactory;

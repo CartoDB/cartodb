@@ -58,6 +58,7 @@ module Carto
     end
 
     COLOR_REGEXP = /^#(?:[0-9a-fA-F]{3}){1,2}$/
+    CSS_URL_REGEX = /^(?:url\(('|")?)(.*?)(?:('|")?\))$/
 
     def build_custom_definition_from_custom_type
       categories = items.each_with_index.map do |item, index|
@@ -70,7 +71,14 @@ module Carto
           if value =~ COLOR_REGEXP
             category_definition[:color] = value
           else
-            category_definition[:icon] = value
+            byebug
+            match = CSS_URL_REGEX.match(value)
+
+            if match
+              category_definition[:icon] = match[2]
+            else
+              category_definition[:icon] = value
+            end
           end
         end
 

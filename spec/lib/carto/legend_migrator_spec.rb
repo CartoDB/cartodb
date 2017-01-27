@@ -142,7 +142,7 @@ module Carto
               {
                 "name" => "Untitled",
                 "visible" => true,
-                "value" => "superduper.png",
+                "value" => "url(superduper.png)",
                 "sync" => true
               },
               {

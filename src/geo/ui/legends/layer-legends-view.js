@@ -55,10 +55,6 @@ var LayerLegendsView = View.extend({
     return this;
   },
 
-  isEmpty: function () {
-    return this.$el.html() === '';
-  },
-
   _shouldLegendsBeVisible: function () {
     var showLegends = this.settingsModel.get('showLegends');
     return showLegends && this._isLayerVisible();

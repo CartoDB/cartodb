@@ -247,9 +247,9 @@ describe Downloader do
       it "reads etag from download" do
         etag = 'whatever'
         stub_download(
-            url:      @file_url,
-            filepath: @file_filepath,
-            headers:  { "ETag" => etag }
+          url:      @file_url,
+          filepath: @file_filepath,
+          headers:  { "ETag" => etag }
         )
 
         downloader = Downloader.new(@user.id, @file_url)

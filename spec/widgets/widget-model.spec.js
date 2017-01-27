@@ -190,6 +190,21 @@ describe('widgets/widget-model', function () {
       });
     });
 
+    describe('.getAutoStyle', function () {
+      it('should not provide any info if auto-style is not enabled', function () {
+        spyOn(this.model, 'isAutoStyleEnabled').and.returnValue(false);
+        var data = this.model.getAutoStyle();
+        expect(data).toEqual({});
+      });
+
+      it('should not provide any info if autoStyler is not defined', function () {
+        spyOn(this.model, 'isAutoStyleEnabled').and.returnValue(true);
+        this.model.autoStyler = undefined;
+        var data = this.model.getAutoStyle();
+        expect(data).toEqual({});
+      });
+    });
+
     describe('.hasColorsAutoStyle', function () {
       it('should return false if autostyle or auto-style definition is empty', function () {
         spyOn(this.model, 'getAutoStyle').and.returnValue({

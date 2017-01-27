@@ -155,15 +155,19 @@ module.exports = cdb.core.Model.extend({
     var layerModel = this.dataviewModel.layer;
     var cartocss = layerModel.get('cartocss') || (layerModel.get('meta') && layerModel.get('meta').cartocss);
 
-    if (style && style.auto_style && style.auto_style.definition) {
-      var toRet = _.extend(style.auto_style, {cartocss: cartocss});
-      return _.extend({}, toRet, {definition: this.autoStyler.getDef(cartocss)});
-    } else {
-      return {
-        definition: this.autoStyler.getDef(cartocss),
-        cartocss: cartocss
-      };
+    if (this.isAutoStyleEnabled() && this.autoStyler) {
+      if (style && style.auto_style && style.auto_style.definition) {
+        var toRet = _.extend(style.auto_style, {cartocss: cartocss});
+        return _.extend({}, toRet, {definition: this.autoStyler.getDef(cartocss)});
+      } else {
+        return {
+          definition: this.autoStyler.getDef(cartocss),
+          cartocss: cartocss
+        };
+      }
     }
+
+    return {};
   },
 
   setInitialState: function (state) {

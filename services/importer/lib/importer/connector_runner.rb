@@ -28,7 +28,7 @@ module CartoDB
 
         @id = @job.id
         @unique_suffix = @id.delete('-')
-        @json_params = connector_source
+        @json_params = JSON.load(connector_source)
         extract_params
         @connector = Carto::Connector.new(@params, user: @user, logger: @log)
         @results = []
@@ -40,7 +40,7 @@ module CartoDB
 
       def run(tracker = nil)
         @tracker = tracker
-        @job.log "ConnectorRunner #{@json_params}"
+        @job.log "ConnectorRunner #{@json_params.except('connection').to_json}"
         # TODO: logging with CartoDB::Logger
         table_name = @job.table_name
         @job.log "Copy connected table"
@@ -100,7 +100,7 @@ module CartoDB
 
       # Parse @json_params and extract @params
       def extract_params
-        @params = Carto::Connector::Parameters.new(JSON.load(@json_params))
+        @params = Carto::Connector::Parameters.new(@json_params)
       end
 
       def result_table_name

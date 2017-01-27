@@ -8,10 +8,6 @@ module ApplicationHelper
     super(CartoDB.extract_subdomain(request))
   end
 
-  def logged_user_url(path, params = {})
-    CartoDB.url(self, path, params, current_user)
-  end
-
   def show_footer?
     (controller_name == 'tables' && action_name != 'show') ||
     (controller_name == 'client_applications') || (controller_name == 'users')

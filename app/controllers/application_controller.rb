@@ -4,6 +4,7 @@ require_dependency 'carto/http_header_authentication'
 
 class ApplicationController < ActionController::Base
   include ::SslRequirement
+  include UrlHelper
   protect_from_forgery
 
   helper :all

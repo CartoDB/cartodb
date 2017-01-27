@@ -44,6 +44,8 @@ Development
   * `sudo apt-get install gdal2.1-static-bin`
 
 ### Bug fixes
+* Start using layers<->user_table cache in all places (#11303)
+  * Run `cartodb:db:register_table_dependencies` rake to update caches for existing maps
 * Categories legend are now static (#10972)
 * Fixed a bug with vizjson invalidation (#11092). It was introduced in #10934
 * Refactor Layer model (#10934)
@@ -54,6 +56,7 @@ Development
 * Fix color for "Other" category (#11078)
 * Custom errors for latitude/longitude out of bounds (#11060, #11048)
 * Fix timeseries widget height (#11077)
+* Fix redirection after logout for subdomainless URLs (#11361)
 * Fix scrollbar in carousel (#11061)
 * Restrict login from organization pages to organization users, and redirect to Central otherwise
 * Correctly refresh map after adding/editing map geometries (#11064)

@@ -88,7 +88,7 @@ shared_examples_for 'Layer model' do
           map.expects(:notify_map_change).times(1)
         end
 
-        @layer.affected_tables.each do |table|
+        @layer.send(:affected_tables).each do |table|
           table.expects(:update_cdb_tablemetadata).times(0)
         end
 
@@ -117,7 +117,7 @@ shared_examples_for 'Layer model' do
       add_layer_to_entity(map, layer)
       layer.reload
 
-      layer.affected_tables.map(&:name).should =~ [table2.name, @table.name]
+      layer.send(:affected_tables).map(&:name).should =~ [table2.name, @table.name]
     end
 
     it "should return empty affected tables when no tables are involved" do
@@ -128,7 +128,7 @@ shared_examples_for 'Layer model' do
       )
       add_layer_to_entity(map, layer)
 
-      layer.affected_tables.map(&:name).should =~ []
+      layer.send(:affected_tables).map(&:name).should =~ []
     end
 
     it 'includes table_name option in the results' do
@@ -140,7 +140,7 @@ shared_examples_for 'Layer model' do
       add_layer_to_entity(map, layer)
       layer.reload
 
-      layer.affected_tables.map(&:name).should =~ [@table.name]
+      layer.send(:affected_tables).map(&:name).should =~ [@table.name]
     end
   end
 
@@ -233,13 +233,15 @@ shared_examples_for 'Layer model' do
 
   describe '#uses_private_tables?' do
     it 'returns true if any of the affected tables is private' do
-      @table.table_visualization.layers(:cartodb).length.should == 1
-      @table.table_visualization.layers(:cartodb).first.uses_private_tables?.should be_true
+      layers = @table.table_visualization.layers(:cartodb)
+      layers.length.should == 1
+      layers.first.uses_private_tables?.should be_true
       @table.privacy = UserTable::PRIVACY_PUBLIC
       @table.save
       @user.reload
 
-      @table.table_visualization.layers(:cartodb).first.uses_private_tables?.should be_false
+      layers.first.reload
+      layers.first.uses_private_tables?.should be_false
     end
   end
 

@@ -2,20 +2,8 @@ var _ = require('underscore');
 var $ = require('jquery');
 var View = require('../core/view');
 var MapViewFactory = require('../geo/map-view-factory');
-var FeatureEvents = require('./feature-events');
-var MapCursorManager = require('./map-cursor-manager');
-var MapEventsManager = require('./map-events-manager');
-var GeometryManagementController = require('./geometry-management-controller');
 var LegendsView = require('../geo/ui/legends/legends-view');
 var OverlaysView = require('../geo/ui/overlays-view');
-
-var InfowindowModel = require('../geo/ui/infowindow-model');
-var InfowindowView = require('../geo/ui/infowindow-view');
-var InfowindowManager = require('./infowindow-manager');
-
-var TooltipModel = require('../geo/ui/tooltip-model');
-var TooltipView = require('../geo/ui/tooltip-view');
-var TooltipManager = require('./tooltip-manager');
 
 /**
  * Visualization creation
@@ -35,69 +23,13 @@ var Vis = View.extend({
   render: function () {
     var mapViewFactory = new MapViewFactory();
 
-    this.mapView = mapViewFactory.createMapView(this.model.map.get('provider'), this.model.map, this.model.layerGroupModel);
+    this.mapView = mapViewFactory.createMapView(this.model.map.get('provider'), this.model, this.model.map, this.model.layerGroupModel);
     // Add the element to the DOM before the native map is created
     this.$el.html(this.mapView.el);
 
     // Bind events before the view is rendered and layer views are added to the map
     this.mapView.bind('newLayerView', this._bindLayerViewToLoader, this);
     this.mapView.render();
-
-    new GeometryManagementController(this.mapView, this.model.map); // eslint-disable-line
-
-    // Infowindows && Tooltips
-    var infowindowModel = new InfowindowModel();
-    var tooltipModel = new TooltipModel({
-      offset: [4, 10]
-    });
-
-    var infowindowView = new InfowindowView({
-      model: infowindowModel,
-      mapView: this.mapView
-    });
-    infowindowView.render();
-    this.$el.append(infowindowView.el);
-
-    new InfowindowManager({ // eslint-disable-line
-      visModel: this.model,
-      mapModel: this.model.map,
-      mapView: this.mapView,
-      tooltipModel: tooltipModel,
-      infowindowModel: infowindowModel
-    }, {
-      showEmptyFields: this.model.get('showEmptyInfowindowFields')
-    });
-
-    var tooltipView = new TooltipView({
-      model: tooltipModel,
-      mapView: this.mapView
-    });
-    tooltipView.render();
-    this.$el.append(tooltipView.el);
-
-    new TooltipManager({ // eslint-disable-line
-      visModel: this.model,
-      mapModel: this.model.map,
-      mapView: this.mapView,
-      tooltipModel: tooltipModel,
-      infowindowModel: infowindowModel
-    });
-
-    var featureEvents = new FeatureEvents({
-      mapView: this.mapView,
-      layersCollection: this.model.map.layers
-    });
-
-    new MapCursorManager({ // eslint-disable-line
-      mapView: this.mapView,
-      mapModel: this.model.map,
-      featureEvents: featureEvents
-    });
-
-    new MapEventsManager({ // eslint-disable-line
-      mapModel: this.model.map,
-      featureEvents: featureEvents
-    });
 
     this._renderLegends();
 

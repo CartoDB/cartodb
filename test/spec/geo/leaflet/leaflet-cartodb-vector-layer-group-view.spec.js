@@ -54,8 +54,7 @@ describe('src/geo/leaflet/leaflet-cartodb-vector-layer-group-view.js', function 
 
     var featureClickCallback = jasmine.createSpy('featureClickCallback');
     var featureOverCallback = jasmine.createSpy('featureOverCallback');
-    var mouseoverCallback = jasmine.createSpy('mouseoverCallback');
-    var mouseoutCallback = jasmine.createSpy('mouseoutCallback');
+    var featureOutCallback = jasmine.createSpy('featureOutCallback');
 
     var layerView = new LeafletCartoDBVectorLayerGroupView(this.layerGroupModel, this.leafletMap); // eslint-disable-line
     layerView.setUrl('http://wadus.com');
@@ -63,18 +62,31 @@ describe('src/geo/leaflet/leaflet-cartodb-vector-layer-group-view.js', function 
     _.defer(function () {
       layerView.bind('featureClick', featureClickCallback);
       layerView.bind('featureOver', featureOverCallback);
-      layerView.bind('mouseover', mouseoverCallback);
-      layerView.bind('mouseout', mouseoutCallback);
+      layerView.bind('featureOut', featureOutCallback);
 
-      layerView.eventCallbacks.featureClick('event', 'latlng', 'pos', 'data', 'layerIndex');
-      layerView.eventCallbacks.featureOver('event', 'latlng', 'pos', 'data', 'layerIndex');
-      layerView.eventCallbacks.featureOut('event');
+      layerView.eventCallbacks.featureClick('event', 'latlng', 'pos', 'data', 0);
+      expect(featureClickCallback.calls.argsFor(0)[0]).toEqual({
+        layer: cartoDBLayer1,
+        layerIndex: 0,
+        latlng: 'latlng',
+        position: 'pos',
+        feature: 'data'
+      });
 
-      expect(featureClickCallback).toHaveBeenCalledWith('event', 'latlng', 'pos', 'data', 'layerIndex');
-      expect(featureOverCallback).toHaveBeenCalledWith('event', 'latlng', 'pos', 'data', 'layerIndex');
-      expect(mouseoverCallback).toHaveBeenCalledWith('event', 'latlng', 'pos', 'data');
-      expect(mouseoutCallback).toHaveBeenCalled();
+      layerView.eventCallbacks.featureOver('event', 'latlng', 'pos', 'data', 0);
+      expect(featureOverCallback.calls.argsFor(0)[0]).toEqual({
+        layer: cartoDBLayer1,
+        layerIndex: 0,
+        latlng: 'latlng',
+        position: 'pos',
+        feature: 'data'
+      });
 
+      layerView.eventCallbacks.featureOut('event', 'latlng', 'pos', 'data', 0);
+      expect(featureOutCallback.calls.argsFor(0)[0]).toEqual({
+        layer: cartoDBLayer1,
+        layerIndex: 0
+      });
       done();
     });
   });

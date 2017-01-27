@@ -141,9 +141,11 @@ module.exports = function (createLayerGroupView, expectTileURLTemplateToMatch) {
       });
     });
 
-    describe('event binding', function () {
+    describe('event firing', function () {
       beforeEach(function () {
         this.nativeMap = fakeWax.map.calls.argsFor(0)[0];
+
+        this.layersCollection.reset([this.cartoDBLayer1]);
       });
 
       it('should trigger a "featureOver" event', function () {
@@ -159,7 +161,31 @@ module.exports = function (createLayerGroupView, expectTileURLTemplateToMatch) {
           data: { cartodb_id: 10 }
         });
 
-        expect(callback).toHaveBeenCalled();
+        expect(callback.calls.argsFor(0)[0]).toEqual({
+          layer: this.cartoDBLayer1,
+          layerIndex: 0,
+          latlng: [jasmine.any(Number), jasmine.any(Number)],
+          position: { x: jasmine.any(Number), y: jasmine.any(Number) },
+          feature: { cartodb_id: 10 }
+        });
+      });
+
+      it('should NOT trigger a "featureOver" event if layer has been removed', function () {
+        var callback = jasmine.createSpy('callback');
+        this.layerGroupView.on('featureOver', callback);
+
+        this.layersCollection.remove(this.cartoDBLayer1);
+
+        fakeWax.fire('on', {
+          e: {
+            type: 'mousemove',
+            clientX: 10,
+            clientY: 20
+          },
+          data: { cartodb_id: 10 }
+        });
+
+        expect(callback).not.toHaveBeenCalled();
       });
 
       _.each([
@@ -184,7 +210,32 @@ module.exports = function (createLayerGroupView, expectTileURLTemplateToMatch) {
             data: { cartodb_id: 10 }
           });
 
-          expect(callback).toHaveBeenCalled();
+          expect(callback.calls.argsFor(0)[0]).toEqual({
+            layer: this.cartoDBLayer1,
+            layerIndex: 0,
+            latlng: [jasmine.any(Number), jasmine.any(Number)],
+            position: { x: jasmine.any(Number), y: jasmine.any(Number) },
+            feature: { cartodb_id: 10 }
+          });
+        });
+
+        it('should NOT trigger a "featureClick" event when wax fires a "' + eventName + '" event and the layer has been removed', function () {
+          var callback = jasmine.createSpy('callback');
+          this.layerGroupView.on('featureClick', callback);
+
+          this.layersCollection.remove(this.cartoDBLayer1);
+
+          var waxEvent = {
+            type: eventName,
+            clientX: 10,
+            clientY: 20
+          };
+          fakeWax.fire('on', {
+            e: waxEvent,
+            data: { cartodb_id: 10 }
+          });
+
+          expect(callback).not.toHaveBeenCalled();
         });
       });
 
@@ -196,7 +247,24 @@ module.exports = function (createLayerGroupView, expectTileURLTemplateToMatch) {
           e: {}
         });
 
-        expect(callback).toHaveBeenCalled();
+        expect(callback.calls.argsFor(0)[0]).toEqual({
+          layer: this.cartoDBLayer1,
+          layerIndex: 0
+        });
+      });
+
+      it('should NOT trigger a "featureOut" event if the layer has been removed', function () {
+        var callback = jasmine.createSpy('callback');
+        this.layerGroupView.on('featureOut', callback);
+
+        this.layersCollection.remove(this.cartoDBLayer1);
+        this.layersCollection.remove(this.cartoDBLayer2);
+
+        fakeWax.fire('off', {
+          e: {}
+        });
+
+        expect(callback).not.toHaveBeenCalled();
       });
     });
 

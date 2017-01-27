@@ -22,9 +22,11 @@ describe('geo/gmaps/gmaps-map-view', function () {
     });
     mapView = new GoogleMapsMapView({
       el: container,
-      map: map,
+      mapModel: map,
+      visModel: new Backbone.Model(),
       layerGroupModel: new Backbone.Model()
     });
+
     mapView.render();
 
     var layerURL = 'http://localhost/{s}/light_nolabels/{z}/{x}/{y}.png';
@@ -140,7 +142,8 @@ describe('geo/gmaps/gmaps-map-view', function () {
     });
     var mapView = new GoogleMapsMapView({
       el: container,
-      map: map,
+      mapModel: map,
+      visModel: new Backbone.Model(),
       layerGroupModel: new Backbone.Model()
     });
     mapView.render();
@@ -161,7 +164,8 @@ describe('geo/gmaps/gmaps-map-view', function () {
     });
     var mapView = new GoogleMapsMapView({
       el: container,
-      map: map,
+      mapModel: map,
+      visModel: new Backbone.Model(),
       layerGroupModel: new Backbone.Model()
     });
     mapView.render();

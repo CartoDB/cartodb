@@ -109,17 +109,39 @@ _.extend(
     },
 
     featureOver: function (e, latlon, pixelPos, data, layer) {
-      // dont pass gmaps LatLng
-      this.trigger('featureOver', e, [latlon.lat(), latlon.lng()], pixelPos, data, layer);
+      var layerModel = this.model.getLayerAt(layer);
+      if (layerModel) {
+        this.trigger('featureOver', {
+          layer: layerModel,
+          layerIndex: layer,
+          latlng: [latlon.lat(), latlon.lng()],
+          position: { x: pixelPos.x, y: pixelPos.y },
+          feature: data
+        });
+      }
     },
 
     featureOut: function (e, layer) {
-      this.trigger('featureOut', e, layer);
+      var layerModel = this.model.getLayerAt(layer);
+      if (layerModel) {
+        this.trigger('featureOut', {
+          layer: layerModel,
+          layerIndex: layer
+        });
+      }
     },
 
     featureClick: function (e, latlon, pixelPos, data, layer) {
-      // dont pass leaflet lat/lon
-      this.trigger('featureClick', e, [latlon.lat(), latlon.lng()], pixelPos, data, layer);
+      var layerModel = this.model.getLayerAt(layer);
+      if (layerModel) {
+        this.trigger('featureClick', {
+          layer: layerModel,
+          layerIndex: layer,
+          latlng: [latlon.lat(), latlon.lng()],
+          position: { x: pixelPos.x, y: pixelPos.y },
+          feature: data
+        });
+      }
     },
 
     error: function (e) {

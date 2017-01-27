@@ -53,6 +53,10 @@ module CartoDB
 
     # Configure sensitive parameters which will be filtered from the log file.
     config.filter_parameters += [:password]
+    # Filter out connector connection credentials. We'd rather filter just 'connector.connection',
+    # but version 3.x of Rails doesn't support nested parameter filtering.
+    config.filter_parameters += [:connection]
+
     ::Sequel.extension(:pagination)
     ::Sequel.extension(:connection_validator)
 

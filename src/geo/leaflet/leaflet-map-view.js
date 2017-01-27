@@ -181,10 +181,9 @@ var LeafletMapView = MapView.extend({
     return this._leafletMap;
   },
 
-  _addLayerToMap: function (layerView, layerModel, opts) {
+  _addLayerToMap: function (layerView) {
     this._leafletMap.addLayer(layerView.leafletLayer);
     this._reorderLayerViews();
-    return layerView;
   },
 
   _reorderLayerViews: function () {

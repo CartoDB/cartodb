@@ -106,9 +106,8 @@ var GoogleMapsMapView = MapView.extend({
     return this._gmapsMap;
   },
 
-  _addLayerToMap: function (layerView, layerModel, opts) {
+  _addLayerToMap: function (layerView) {
     layerView.addToMap();
-    return layerView;
   },
 
   getSize: function () {

@@ -186,6 +186,8 @@ var MapView = View.extend({
   },
 
   _addLayer: function (layerModel, layerCollection, options) {
+    options = options || {};
+
     var layerView;
     if (layerModel.get('type') === 'CartoDB') {
       layerView = this._addGroupedLayer(layerModel);
@@ -196,10 +198,11 @@ var MapView = View.extend({
     if (!layerView) {
       return;
     }
-    this._addLayerToMap(layerView, layerModel, {
-      silent: options.silent,
-      index: options.index
-    });
+    this._addLayerToMap(layerView);
+
+    if (!options.silent) {
+      this.trigger('newLayerView', layerView);
+    }
   },
 
   _addGroupedLayer: function (layerModel) {

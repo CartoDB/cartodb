@@ -53,7 +53,6 @@ var Vis = View.extend({
     this.$el.html(this.mapView.el);
 
     // Bind events before the view is rendered and layer views are added to the map
-    // TODO: Bring back "newLayerView" events!
     this.mapView.bind('newLayerView', this._bindLayerViewToLoader, this);
     this.mapView.render();
   },

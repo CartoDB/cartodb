@@ -9,7 +9,8 @@ var defaultOptions = {
     'node_modules/source-map-support/browser-source-map-support.js',
     'test/install-source-map-support.js',
     'http://maps.googleapis.com/maps/api/js?key=AIzaSyA4KzmztukvT7C49NSlzWkz75Xg3J_UyFI',
-    'node_modules/jasmine-ajax/lib/mock-ajax.js'
+    'node_modules/jasmine-ajax/lib/mock-ajax.js',
+    'https://raw.githubusercontent.com/CartoDB/tangram-1/point-experiment/dist/tangram.min.js'
   ]
 };
 
@@ -32,7 +33,8 @@ module.exports = {
     src: [], // actual src files are require'd in the *.spec.js files
     options: _.defaults({
       outfile: 'test/SpecRunner-src.html',
-      specs: '<%= config.tmp %>/src-specs.js'
+      specs: '<%= config.tmp %>/src-specs.js',
+      '--web-security': 'no'
     }, defaultOptions)
   }
 };

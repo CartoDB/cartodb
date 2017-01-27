@@ -71,7 +71,7 @@ module CartoDB
         false
       end
 
-      attr_reader :source_file, :etag, :last_modified, :http_response_code, :datasource
+      attr_reader :source_file, :http_response_code, :datasource
 
       def initialize(user_id, url, http_options = {}, options = {})
         raise UploadError unless user_id && url

@@ -142,6 +142,11 @@ var LegendsView = View.extend({
 
   hide: function () {
     this.$el.hide();
+  },
+
+  clean: function () {
+    View.prototype.clean.call(this);
+    this._clear();
   }
 });
 

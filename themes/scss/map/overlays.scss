@@ -483,6 +483,10 @@ $maxLegendContainerHeight: 300px;
 .Legend-placeholderInner {
   padding: 12px 24px 0;
 }
+.Legend-fillImageAsset.is-svg {
+  width: 18px;
+  height: 18px;
+}
 
 @media (max-width: 600px) {
   .CDB-Legends-canvas {

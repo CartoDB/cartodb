@@ -16,6 +16,8 @@ var LegendsView = View.extend({
     this._isRendered = false;
     this.settingsModel = options.settingsModel;
     this._initBinds();
+
+    this._layerLegendsViews = [];
   },
 
   _initBinds: function () {
@@ -33,7 +35,7 @@ var LegendsView = View.extend({
     this._renderScroll();
     this._renderShadows();
     this._bindScroll();
-
+    this._showOrHide();
     return this;
   },
 
@@ -97,6 +99,7 @@ var LegendsView = View.extend({
       settingsModel: this.settingsModel
     });
 
+    this._layerLegendsViews.push(layerLegendsView);
     layerLegendsView.on('render', this._showOrHide, this);
     this.addView(layerLegendsView);
 
@@ -112,11 +115,13 @@ var LegendsView = View.extend({
   },
 
   _showOrHide: function () {
-    var hasAnyLayerLegends = _.any(this.$('.js-layer-legends'), function (el) {
-      return !$(el).is(':empty');
-    });
+    this.$el.toggle(this._isAnyLayerLegendViewVisible());
+  },
 
-    this.$el.toggle(hasAnyLayerLegends);
+  _isAnyLayerLegendViewVisible: function () {
+    return _.any(this._layerLegendsViews, function (layerLegendView) {
+      return !layerLegendView.isEmpty();
+    });
   },
 
   _hasLegends: function (layerModel) {
@@ -124,6 +129,10 @@ var LegendsView = View.extend({
   },
 
   _clear: function () {
+    _.each(this._layerLegendsViews, function (layerLegendView) {
+      layerLegendView.clean();
+    });
+    this._layerLegendsViews = [];
     this.$el.html('');
   },
 

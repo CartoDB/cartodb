@@ -37,7 +37,6 @@ var LayerLegendsView = View.extend({
     if (shouldVisible) {
       this.$el.html(
         template({
-          shouldVisible: shouldVisible,
           layerName: this.model.getName(),
           isLayerVisible: this._isLayerVisible(),
           showLegends: showLegends,
@@ -53,6 +52,10 @@ var LayerLegendsView = View.extend({
     this.trigger('render');
 
     return this;
+  },
+
+  isEmpty: function () {
+    return this.$el.html() === '';
   },
 
   _shouldLegendsBeVisible: function () {

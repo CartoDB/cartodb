@@ -1,6 +1,7 @@
 var specHelper = require('../spec-helper');
 var WidgetModel = require('../../src/widgets/widget-model');
 var Backbone = require('backbone');
+var _ = require('underscore');
 
 describe('widgets/widget-model', function () {
   describe('when autostyle options is enabled', function () {
@@ -187,6 +188,70 @@ describe('widgets/widget-model', function () {
         }, {autoStyleEnabled: true});
 
         expect(model.isAutoStyleEnabled()).toBeFalsy();
+      });
+    });
+
+    describe('.getAutoStyle', function () {
+      it('should not provide any info if auto-style is not enabled', function () {
+        spyOn(this.model, 'isAutoStyleEnabled').and.returnValue(false);
+        var data = this.model.getAutoStyle();
+        expect(data).toEqual({});
+      });
+
+      it('should not provide any info if autoStyler is not defined', function () {
+        spyOn(this.model, 'isAutoStyleEnabled').and.returnValue(true);
+        this.model.autoStyler = undefined;
+        var data = this.model.getAutoStyle();
+        expect(data).toEqual({});
+      });
+
+      it('should return proper definition and cartocss when no style model present', function () {
+        var definition = 'a definition';
+        var cartocss = 'some cartocss';
+        spyOn(this.model, 'isAutoStyleEnabled').and.returnValue(true);
+        this.model.autoStyler = {
+          getDef: function () {
+            return definition;
+          }
+        };
+        this.model.dataviewModel.layer.set('cartocss', cartocss);
+        var expectedData = {
+          definition: definition,
+          cartocss: cartocss
+        };
+
+        var data = this.model.getAutoStyle();
+
+        expect(_.isEqual(data, expectedData)).toBe(true);
+      });
+
+      it('should return proper definition and cartocss when auto_style property already present', function () {
+        var definition = 'a definition';
+        var cartocss = 'some cartocss';
+        var style = {
+          auto_style: {
+            definition: 'other definition',
+            cartocss: 'other cartocss',
+            anotherProperty: 'another property'
+          }
+        };
+        spyOn(this.model, 'isAutoStyleEnabled').and.returnValue(true);
+        this.model.set('style', style);
+        this.model.autoStyler = {
+          getDef: function () {
+            return definition;
+          }
+        };
+        this.model.dataviewModel.layer.set('cartocss', cartocss);
+        var expectedData = {
+          definition: definition,
+          cartocss: cartocss,
+          anotherProperty: 'another property'
+        };
+
+        var data = this.model.getAutoStyle();
+
+        expect(_.isEqual(data, expectedData)).toBe(true);
       });
     });
 

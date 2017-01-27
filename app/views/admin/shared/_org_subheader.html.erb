@@ -4,22 +4,22 @@
     <div class="Filters-row">
       <ul class="Filters-group CDB-Text CDB-Size-medium">
         <li class="Filters-typeItem">
-          <a href="<%= CartoDB.url(self, 'organization_settings', {}, current_user) %>" class="Filters-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/organizations_settings" %>">
+          <a href="<%= logged_user_url('organization_settings') %>" class="Filters-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/organizations_settings" %>">
             Organization profile
           </a>
         </li>
         <li class="Filters-typeItem">
-          <a href="<%= CartoDB.url(self, 'organization_auth', {}, current_user) %>" class="Filters-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/organizations_auth" %>">
+          <a href="<%= logged_user_url('organization_auth') %>" class="Filters-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/organizations_auth" %>">
             Auth settings
           </a>
         </li>
         <li class="Filters-typeItem">
-          <a href="<%= CartoDB.url(self, 'organization', {}, current_user) %>" class="Filters-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/organizations_show" %>">
+          <a href="<%= logged_user_url('organization') %>" class="Filters-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/organizations_show" %>">
             <%= current_user.organization.users.count %>/<%= current_user.organization.total_seats %> users
           </a>
         </li>
         <li class="Filters-typeItem">
-          <a href="<%= CartoDB.url(self, 'organization_groups', {}, current_user) %>" class="Filters-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/organizations_groups" %>">
+          <a href="<%= logged_user_url('organization_groups') %>" class="Filters-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/organizations_groups" %>">
             Groups
           </a>
         </li>

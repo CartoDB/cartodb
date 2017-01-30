@@ -1379,7 +1379,7 @@
         "widgets": "one widget |||| %{smart_count} widgets",
         "analyses": "one analysis |||| %{smart_count} analyses",
         "layers": "one layer |||| %{smart_count} layers",
-        "affected-items": "Deleting this layer will affect to",
+        "affected-items": "Deleting this layer affects",
         "and": "and",
         "link-to-export": "Before deleting the layer, you can <a href='#' data-event='exportMapAction'>export as .CARTO file</a>"
       },

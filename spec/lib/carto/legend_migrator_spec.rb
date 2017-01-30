@@ -193,7 +193,7 @@ module Carto
 
           if @old_legend['type'] == 'custom'
             new_legend.definition[:categories].map { |category| category[:icon] }.each do |icon|
-              unless (icon.blank?)
+              unless icon.blank?
                 icon.should include("superduper.png")
                 icon.should_not include("url(")
               end

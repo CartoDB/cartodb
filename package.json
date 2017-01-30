@@ -31,7 +31,6 @@
     "camshaft-reference": "<2.0",
     "carto": "cartodb/carto#master",
     "d3": "3.5.17",
-    "d3.cartodb": "CartoDB/d3.cartodb#gh-pages",
     "tangram.cartodb": "cartodb/tangram.cartodb#master",
     "jquery": "2.1.4",
     "leaflet": "0.7.3",

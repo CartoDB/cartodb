@@ -28,42 +28,65 @@ namespace :carto do
         end
       end
 
+
       desc 'Fix custom legends with images'
       task migrate_custom_image: :environment do
-        CSS_URL_REGEX = /^(?:url\(('|")?)(.*?)(?:('|")?\))$/
+        include Carto::MapcappedVisualizationUpdater
 
-        custom_image_legends = Carto::Legend.where(type: 'custom')
-        custom_image_legends_count = custom_image_legends.count
+        CSS_URL_REGEX = /^(?:url\(['"]?)(.*?)(?:['"]?\))$/
 
-        errored = []
-        puts "#{custom_image_legends_count} custom image legends..."
-        custom_image_legends.each_with_index do |legend, index|
-          if Carto::Layer.exists?(legend.layer_id)
-            legend[:definition][:categories].each_with_index do |cat, cat_index|
-              icon = cat[:icon]
-              match = icon && CSS_URL_REGEX.match(icon)
+        puts "Updating base layer urls"
+        layers = Carto::Layer.joins(:legends).where(legends: { type: 'custom' })
 
-              if match
-                legend.definition[:categories][cat_index][:icon] = match[2]
+        total = layers.count
+        acc = 0
+        errors = 0
 
-                if !legend.save
-                  errored << legend
+        puts "Updating #{total} layers"
+
+        layers.find_each do |layer|
+          acc += 1
+
+          puts "#{acc} / #{total}" if (acc % 100).zero?
+
+          begin
+            visualization = layer.visualization
+            next unless visualization
+
+            success = update_visualization_and_mapcap(visualization) do |vis, persisted|
+              vis.layers.each do |l|
+                acc_legend = 0
+
+                l.legends.each do |legend|
+                  acc_category = 0
+                  categories = legend[:definition][:categories]
+
+                  categories && categories.each do |category|
+                    icon = category[:icon]
+                    match = icon && CSS_URL_REGEX.match(icon)
+
+                    if match
+                      l.legends[acc_legend][:definition][:categories][acc_category][:icon] = match[1]
+                    end
+
+                    acc_category += 1
+                  end
+
+                  legend.save if persisted
+
+                  acc_legend += 1
                 end
               end
             end
-          end
 
-          printf "(#{index}/#{custom_image_legends_count})"
-        end
-
-        2.times { puts }
-
-        unless errored.empty?
-          puts "Errored legend migrations (#{errored.count}):"
-          errored.each do |legend|
-            puts "#{legend.id}: #{legend.errors.full_messages.join(',')}"
+            raise 'MapcappedVisualizationUpdater returned false' unless success
+          rescue => e
+            errors += 1
+            STDERR.puts "Error updating layer #{layer.id}: #{e.inspect}. #{e.backtrace.join(',')}"
           end
         end
+
+        puts "Finished. Total: #{total}. Errors: #{errors}"
       end
     end
   end

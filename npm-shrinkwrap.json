@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.5.119-4815-legendicons",
+  "version": "4.5.122",
   "dependencies": {
     "backbone": {
       "version": "1.2.3",
@@ -707,7 +707,7 @@
               "dependencies": {
                 "graceful-fs": {
                   "version": "1.2.3",
-                  "from": "graceful-fs@>=1.2.0 <1.3.0",
+                  "from": "graceful-fs@>=1.0.0 <2.0.0",
                   "resolved": "https://registry.npmjs.org/graceful-fs/-/graceful-fs-1.2.3.tgz"
                 }
               }
@@ -966,7 +966,7 @@
                     },
                     "inherits": {
                       "version": "2.0.3",
-                      "from": "inherits@>=2.0.1 <3.0.0",
+                      "from": "inherits@>=2.0.0 <3.0.0",
                       "resolved": "https://registry.npmjs.org/inherits/-/inherits-2.0.3.tgz"
                     }
                   }
@@ -1151,8 +1151,8 @@
       "dependencies": {
         "cartodb.js": {
           "version": "4.0.0-alpha.1",
-          "from": "cartodb/cartodb.js#4815-legendicons",
-          "resolved": "git://github.com/cartodb/cartodb.js.git#41958d3c4df36368d2b9afeb1004de7c447c5221",
+          "from": "cartodb/cartodb.js#v4",
+          "resolved": "git://github.com/cartodb/cartodb.js.git#c5bca0bc3fcc447cc608767d51b25c8c263f1d44",
           "dependencies": {
             "backbone-poller": {
               "version": "1.1.3",
@@ -1327,9 +1327,9 @@
                   }
                 },
                 "tangram-cartocss": {
-                  "version": "0.3.2",
+                  "version": "0.3.3",
                   "from": "cartodb/tangram-carto#master",
-                  "resolved": "git://github.com/cartodb/tangram-carto.git#571f04f42e87706ce1aa7d12ed206380f471694b",
+                  "resolved": "git://github.com/cartodb/tangram-carto.git#b882e6b8c82d02ac953d4f4604bb67b388b19f37",
                   "dependencies": {
                     "babel-runtime": {
                       "version": "6.11.6",
@@ -1671,8 +1671,8 @@
     },
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
-      "from": "cartodb/cartodb.js#4815-legendicons",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#41958d3c4df36368d2b9afeb1004de7c447c5221",
+      "from": "cartodb/cartodb.js#v4",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#c5bca0bc3fcc447cc608767d51b25c8c263f1d44",
       "dependencies": {
         "backbone-poller": {
           "version": "1.1.3",
@@ -1852,9 +1852,9 @@
               }
             },
             "tangram-cartocss": {
-              "version": "0.3.2",
+              "version": "0.3.3",
               "from": "cartodb/tangram-carto#master",
-              "resolved": "git://github.com/cartodb/tangram-carto.git#571f04f42e87706ce1aa7d12ed206380f471694b",
+              "resolved": "git://github.com/cartodb/tangram-carto.git#b882e6b8c82d02ac953d4f4604bb67b388b19f37",
               "dependencies": {
                 "babel-runtime": {
                   "version": "6.11.6",

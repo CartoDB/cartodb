@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.5.119",
+  "version": "4.5.119-4815-legendicons",
   "description": "CARTO UI frontend",
   "repository": {
     "type": "git",
@@ -24,7 +24,7 @@
     "carto": "cartodb/carto#master",
     "cartodb-deep-insights.js": "cartodb/deep-insights.js#master",
     "cartodb-pecan": "0.2.x",
-    "cartodb.js": "CartoDB/cartodb.js#v4",
+    "cartodb.js": "CartoDB/cartodb.js#4815-legendicons",
     "cartocolor": "4.0.0",
     "clipboard": "1.5.12",
     "codemirror": "5.14.2",

@@ -190,6 +190,15 @@ module Carto
           category_keys.should include(:title)
           category_keys.should include(:color)
           category_keys.should include(:icon)
+
+          if @old_legend['type'] == 'custom'
+            new_legend.definition[:categories].map { |category| category[:icon] }.each do |icon|
+              unless (icon.blank?)
+                icon.should include("superduper.png")
+                icon.should_not include("url(")
+              end
+            end
+          end
         end
       end
 

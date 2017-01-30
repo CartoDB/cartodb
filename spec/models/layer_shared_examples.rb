@@ -229,6 +229,100 @@ shared_examples_for 'Layer model' do
       Carto::LayersUser.where(layer_id: layer.id).exists?.should be_false
       Carto::LayersUserTable.where(layer_id: layer.id).exists?.should be_false
     end
+
+    describe 'updates analysis tree' do
+      before(:each) do
+        @map = create_map(user_id: @user.id, table_id: @table.id)
+        @carto_visualization = Carto::Visualization.find(@map.visualization.id)
+
+        # Analysis and layer that should not be touched
+        @witness_analysis = FactoryGirl.build(:source_analysis, user_id: @user.id, visualization: @carto_visualization)
+        @witness_analysis.analysis_definition[:id] = 'a0'
+        @witness_analysis.save
+
+        @witness_layer = layer_class.create(kind: 'carto')
+        @witness_layer.options[:source] = 'a0'
+        @witness_layer.save
+      end
+
+      after(:each) do
+        # Check that the witness layer/analysis are still there
+        @witness_analysis.reload.should be
+        Carto::Analysis.find_by_natural_id(@carto_visualization.id, 'a0').should be
+        @witness_layer.reload.should be
+
+        @map.destroy
+      end
+
+      def create_analysis_definition(tree)
+        node_id, definition = tree.entries.first
+        if definition == :source
+          # Source analysis
+          {
+            id: node_id,
+            type: 'source',
+            params: { query: 'SELECT * FROM wadus' }
+          }
+        elsif definition.count > 1
+          # Merge analysis
+          {
+            id: node_id,
+            type: 'intersection',
+            params: {
+              source: create_analysis_definition([definition.entries[0]].to_h),
+              target: create_analysis_definition([definition.entries[1]].to_h)
+            }
+          }
+        else
+          # Subsample analysis
+          {
+            id: node_id,
+            type: 'sampling',
+            params: {
+              source: create_analysis_definition(definition),
+              sampling: 0.1
+            }
+          }
+        end
+      end
+
+      def create_analysis(tree)
+        FactoryGirl.create(:analysis,
+                           analysis_definition: create_analysis_definition(tree),
+                           visualization: @carto_visualization,
+                           user_id: @user.id)
+      end
+
+      def create_analysis_layer(analysis)
+        layer = layer_class.create(kind: 'carto')
+        layer.options[:source] = analysis.natural_id
+        layer.save
+        layer
+      end
+
+      it 'deletes analysis node in simple layer' do
+        analysis = create_analysis('b0' => :source)
+        layer = create_analysis_layer(analysis)
+
+        layer.destroy
+        Carto::Analysis.find_by_natural_id(@carto_visualization.id, 'b0').should be_nil
+      end
+
+      it 'deletes entire analysis tree in simple layer' do
+        analysis = create_analysis(
+          'b2' => {
+            'b1' => { 'b0' => :source },
+            'some_table_name' => :source
+          }
+        )
+        layer = create_analysis_layer(analysis)
+
+        layer.destroy
+        ['b2', 'b1', 'b0', 'some_table_name'].each do |node_id|
+          Carto::Analysis.find_by_natural_id(@carto_visualization.id, node_id).should be_nil
+        end
+      end
+    end
   end
 
   describe '#uses_private_tables?' do

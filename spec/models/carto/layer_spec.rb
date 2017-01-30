@@ -11,7 +11,7 @@ describe Carto::Layer do
     def create_map(options = {})
       options.delete(:table_id)
       map = Carto::Map.create(options)
-      FactoryGirl.create(:carto_visualization, map: map, user_id: options[:user_id]) if options[:user_id].present?
+      FactoryGirl.create(:carto_visualization, map: map, user: Carto::User.find(options[:user_id])) if options[:user_id].present?
 
       map
     end

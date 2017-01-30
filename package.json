@@ -24,7 +24,7 @@
     "carto": "cartodb/carto#master",
     "cartodb-deep-insights.js": "cartodb/deep-insights.js#master",
     "cartodb-pecan": "0.2.x",
-    "cartodb.js": "CartoDB/cartodb.js#v4",
+    "cartodb.js": "CartoDB/cartodb.js#tangram-integration",
     "cartocolor": "4.0.0",
     "clipboard": "1.5.12",
     "codemirror": "5.14.2",
@@ -34,7 +34,7 @@
     "perfect-scrollbar": "git://github.com/CartoDB/perfect-scrollbar.git#master",
     "queue-async": "1.2.1",
     "torque.js": "CartoDB/torque#master",
-    "tangram": "cartodb/tangram-1#fork",
+    "tangram": "cartodb/tangram-1#race-cond",
     "underscore": "1.8.3"
   },
   "devDependencies": {

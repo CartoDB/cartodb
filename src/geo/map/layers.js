@@ -76,7 +76,7 @@ var Layers = Backbone.Collection.extend({
 
   moveCartoDBLayer: function (from, to) {
     if (from === to) {
-      return this;
+      return false;
     }
 
     var tempLayerModel = this.at(from);

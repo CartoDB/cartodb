@@ -408,16 +408,20 @@ namespace :cartodb do
     # SET TRIGGER CHECK QUOTA
     ##########################
     desc 'reset check quota trigger on all user tables'
-    task :reset_trigger_check_quota => :environment do |t, args|
+    task :reset_trigger_check_quota, [:start] => :environment do |_, args|
+      start = args[:start]
       puts "Resetting check quota trigger for ##{::User.count} users"
-      ::User.all.each_with_index do |user, i|
+      i = 0
+      Carto::User.find_each(start: start) do |user|
         begin
-          puts "Setting user quota in db '#{user.database_name}' (#{user.username})"
+          puts "Setting user quota in db '#{user.database_name}' (#{user.id} #{user.username})"
           user.db_service.rebuild_quota_trigger
         rescue => exception
           puts "\nERRORED #{user.id} (#{user.username}): #{exception.message}\n"
         end
-        if i % 500 == 0
+
+        i += 1
+        if (i % 500).zero?
           puts "\nProcessed ##{i} users"
         end
       end

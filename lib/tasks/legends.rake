@@ -28,7 +28,6 @@ namespace :carto do
         end
       end
 
-
       desc 'Fix custom legends with images'
       task migrate_custom_image: :environment do
         include Carto::MapcappedVisualizationUpdater

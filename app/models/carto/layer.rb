@@ -52,17 +52,9 @@ module Carto
     end
   end
 
-  module LayerDeletion
-    def delete_analysis_nodes
-      return unless visualization
-      visualization.analysis_tree.save(exclude: [self])
-    end
-  end
-
   class Layer < ActiveRecord::Base
     include Carto::TableUtils
     include LayerTableDependencies
-    include LayerDeletion
     include Carto::QueryRewriter
 
     serialize :options, CartoJsonSerializer
@@ -86,7 +78,7 @@ module Carto
 
     has_many :layer_node_styles
 
-    before_destroy :ensure_not_viewer, :delete_analysis_nodes, :invalidate_maps
+    before_destroy :ensure_not_viewer, :invalidate_maps
     after_save :invalidate_maps, :update_layer_node_style
     after_save :register_table_dependencies, if: :data_layer?
 
@@ -293,6 +285,11 @@ module Carto
 
     def source_id
       options.symbolize_keys[:source]
+    end
+
+    def update_analysis_nodes_for_layer_deletion
+      return unless visualization
+      visualization.analysis_tree.save(exclude: [self])
     end
 
     private

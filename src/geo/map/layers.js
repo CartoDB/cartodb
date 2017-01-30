@@ -79,19 +79,19 @@ var Layers = Backbone.Collection.extend({
       return false;
     }
 
-    var tempLayerModel = this.at(from);
+    var movingLayer = this.at(from);
 
-    if (tempLayerModel.get('type') !== CARTODB_LAYER_TYPE) {
+    if (!movingLayer || movingLayer.get('type') !== CARTODB_LAYER_TYPE) {
       return false;
     }
 
-    this.remove(tempLayerModel, { silent: true });
-    this.add(tempLayerModel, {
+    this.remove(movingLayer, { silent: true });
+    this.add(movingLayer, {
       at: to,
       silent: true
     });
 
-    return tempLayerModel;
+    return movingLayer;
   }
 });
 

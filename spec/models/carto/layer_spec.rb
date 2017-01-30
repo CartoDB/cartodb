@@ -212,7 +212,7 @@ describe Carto::Layer do
       layer = create_analysis_layer(analysis)
 
       layer.update_analysis_nodes_for_layer_deletion
-      Carto::Analysis.find_by_natural_id(@visualization.id, 'b0').should be_nil
+      Carto::AnalysisNode.find_by_natural_id(@visualization.id, 'b0').should be_nil
     end
 
     it 'deletes entire analysis tree in simple layer' do
@@ -226,7 +226,24 @@ describe Carto::Layer do
 
       layer.update_analysis_nodes_for_layer_deletion
       ['b2', 'b1', 'b0', 'some_table_name'].each do |node_id|
-        Carto::Analysis.find_by_natural_id(@visualization.id, node_id).should be_nil
+        Carto::AnalysisNode.find_by_natural_id(@visualization.id, node_id).should be_nil
+      end
+    end
+
+    it 'deletes only unreferenced nodes' do
+      analysis1 = create_analysis('b2' => { 'b1' => { 'b0' => :source } })
+      layer1 = create_analysis_layer(analysis1)
+
+      analysis2 = create_analysis('b1' => { 'b0' => :source })
+      create_analysis_layer(analysis2)
+
+      layer1.update_analysis_nodes_for_layer_deletion
+      ['b1', 'b0'].each do |node_id|
+        Carto::AnalysisNode.find_by_natural_id(@visualization.id, node_id).should be
+      end
+
+      ['b2'].each do |node_id|
+        Carto::AnalysisNode.find_by_natural_id(@visualization.id, node_id).should be_nil
       end
     end
   end

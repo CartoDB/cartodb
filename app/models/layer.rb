@@ -10,6 +10,7 @@ require_relative 'carto/layer'
 class Layer < Sequel::Model
   include Carto::TableUtils
   include Carto::LayerTableDependencies
+  include Carto::LayerDeletion
   include Carto::QueryRewriter
 
   plugin :serialization, :json, :options, :infowindow, :tooltip
@@ -92,6 +93,7 @@ class Layer < Sequel::Model
 
   def before_destroy
     raise CartoDB::InvalidMember.new(user: "Viewer users can't destroy layers") if user && user.viewer
+    delete_analysis_nodes
     maps.each(&:notify_map_change)
     super
   end
@@ -232,6 +234,10 @@ class Layer < Sequel::Model
 
   def map
     maps.first
+  end
+
+  def visualization
+    map.visualization if map
   end
 
   def query

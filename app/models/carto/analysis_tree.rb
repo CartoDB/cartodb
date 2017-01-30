@@ -14,10 +14,11 @@ class Carto::AnalysisTree
     @nodes[node_id]
   end
 
-  def save
+  def save(exclude: [])
+    excluded_ids = exclude.map(&:id)
     ActiveRecord::Base.transaction do
       @visualization.analyses.each(&:destroy)
-      @visualization.layers.each do |layer|
+      @visualization.data_layers.reject { |l| excluded_ids.include?(l.id) }.each do |layer|
         next unless layer.source_id.present?
         node = get(layer.source_id)
         next unless node

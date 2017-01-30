@@ -722,6 +722,10 @@ module CartoDB
         save_named_map
       end
 
+      def analysis_tree
+        Carto::AnalysisTree.new(Carto::Visualization.find(id))
+      end
+
       private
 
       attr_reader   :repository, :name_checker, :validator

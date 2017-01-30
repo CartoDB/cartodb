@@ -493,6 +493,10 @@ class Carto::Visualization < ActiveRecord::Base
     derived? ? user.try(:private_maps_enabled) : user.try(:private_tables_enabled)
   end
 
+  def analysis_tree
+    Carto::AnalysisTree.new(self)
+  end
+
   private
 
   def auto_generate_indices_for_all_layers

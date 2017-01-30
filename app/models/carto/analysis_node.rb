@@ -84,7 +84,26 @@ class Carto::AnalysisNode
     children.each { |child| child.fix_analysis_node_queries(old_username, new_user, renamed_tables) }
   end
 
+  def tree_definition
+    # Returns a definition taking the input nodes from the analysis tree
+    return unless @tree
+    {
+      id: id,
+      type: type,
+      options: options,
+      params: tree_params
+    }
+  end
+
   private
+
+  def tree_params
+    params = non_child_params
+    children_and_location.each do |location, child|
+      params[location[1]] = child.tree_definition
+    end
+    params
+  end
 
   MANDATORY_KEYS_FOR_ANALYSIS_NODE = [:id, :type, :params].freeze
   def get_children(definition, path = [])

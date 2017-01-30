@@ -284,6 +284,10 @@ module Carto
       register_table_dependencies
     end
 
+    def source_id
+      options.symbolize_keys[:source]
+    end
+
     private
 
     def rename_in(target, anchor, substitution)
@@ -307,10 +311,6 @@ module Carto
 
     def query
       options.symbolize_keys[:query]
-    end
-
-    def source_id
-      options.symbolize_keys[:source]
     end
 
     def invalidate_maps

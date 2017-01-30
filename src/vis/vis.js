@@ -171,6 +171,8 @@ var VisModel = Backbone.Model.extend({
       layersFactory: layersFactory
     });
 
+    this.listenTo(this.map, 'cartodbLayerMoved', this.reload);
+
     // Reset the collection of overlays
     this.overlaysCollection.reset(vizjson.overlays);
 
@@ -401,7 +403,12 @@ var VisModel = Backbone.Model.extend({
     overlayView.type = 'custom';
     this.overlaysCollection.add(overlayView);
     return overlayView;
-  }
+  },
+
+  moveCartoDBLayer: function (from, to) {
+    this.layers.moveCartoDBLayer(from, to);
+    this.refres
+  },
 });
 
 module.exports = VisModel;

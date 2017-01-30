@@ -39,13 +39,12 @@ namespace :carto do
         puts "#{custom_image_legends_count} custom image legends..."
         custom_image_legends.each_with_index do |legend, index|
           if Carto::Layer.exists?(legend.layer_id)
-            legend[:definition][:categories].each_with_index do |cat, index|
+            legend[:definition][:categories].each_with_index do |cat, cat_index|
               icon = cat[:icon]
               match = icon && CSS_URL_REGEX.match(icon)
 
               if match
-                byebug
-                legend.definition[:categories][index][:icon] = match[2]
+                legend.definition[:categories][cat_index][:icon] = match[2]
 
                 if !legend.save
                   errored << legend

@@ -72,12 +72,10 @@ module Carto
 
           if match
             category_definition[:icon] = match[2]
+          elsif value =~ COLOR_REGEXP
+            category_definition[:color] = value
           else
-            if value =~ COLOR_REGEXP
-              category_definition[:color] = value
-            else
-              category_definition[:icon] = value
-            end
+            category_definition[:icon] = value
           end
         end
 

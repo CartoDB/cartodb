@@ -6,7 +6,7 @@
       </div>
       <div class="MobileAppsList-itemInfo">
         <div class="MobileAppsList-itemInfoName">
-          <h3 class="MobileAppsList-itemInfoTitle u-ellipsLongText"><%= link_to a.name, CartoDB.url(self, 'mobile_app', id: a.id) %></h3>
+          <h3 class="MobileAppsList-itemInfoTitle u-ellipsLongText"><%= link_to a.name, current_user_url('mobile_app', id: a.id) %></h3>
           <h4 class="MobileAppsList-itemInfoSubtitle u-ellipsLongText"><%= a.description rescue nil %></h4>
         </div>
         <div class="CDB-Size-medium MobileAppsList-details">

@@ -140,6 +140,7 @@ WORKING_SPECS_2 = \
 WORKING_SPECS_4 = \
 	services/wms/spec/unit/wms_spec.rb \
 	services/sql-api/spec/sql_api_spec.rb \
+	spec/requests/admin/organizations_controller_spec.rb \
 	spec/requests/admin/visualizations_spec.rb \
 	spec/requests/api/json/visualizations_controller_spec.rb \
 	spec/requests/carto/api/visualizations_controller_spec.rb \

@@ -91,8 +91,10 @@ var Map = Model.extend({
   // PUBLIC API METHODS
 
   moveCartoDBLayer: function (from, to) {
-    this.layers.moveCartoDBLayer(from, to);
-    this.trigger('cartodbLayerMoved', {}, this);
+    var layerMoved = this.layers.moveCartoDBLayer(from, to);
+    if (layerMoved) {
+      this.trigger('cartodbLayerMoved', {}, this);
+    }
   },
 
   createCartoDBLayer: function (attrs, options) {

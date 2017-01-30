@@ -90,6 +90,8 @@ var Layers = Backbone.Collection.extend({
       at: to,
       silent: true
     });
+
+    return tempLayerModel;
   }
 });
 

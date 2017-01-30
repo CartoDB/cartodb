@@ -1151,8 +1151,8 @@
       "dependencies": {
         "cartodb.js": {
           "version": "4.0.0-alpha.1",
-          "from": "cartodb/cartodb.js#v4",
-          "resolved": "git://github.com/cartodb/cartodb.js.git#9d005ddc8046e2a4c513372bdeb86bd62282a008",
+          "from": "cartodb/cartodb.js#4815-legendicons",
+          "resolved": "git://github.com/cartodb/cartodb.js.git#41958d3c4df36368d2b9afeb1004de7c447c5221",
           "dependencies": {
             "backbone-poller": {
               "version": "1.1.3",

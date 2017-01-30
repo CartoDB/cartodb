@@ -10,7 +10,7 @@ var defaultOptions = {
     'test/install-source-map-support.js',
     'http://maps.googleapis.com/maps/api/js?key=AIzaSyA4KzmztukvT7C49NSlzWkz75Xg3J_UyFI',
     'node_modules/jasmine-ajax/lib/mock-ajax.js',
-    'https://raw.githubusercontent.com/CartoDB/tangram-1/point-experiment/dist/tangram.min.js'
+    'http://cdn.rawgit.com/CartoDB/tangram-1/point-experiment/dist/tangram.min.js'
   ]
 };
 

@@ -1,10 +1,13 @@
 <% error_message = local_assigns[:error_message] %>
-<% if cookies[:flash] || flash[:success] || error_message || flash[:error] %>
-  <div class="CDB-Text FlashMessage <%= 'FlashMessage--success' if flash[:success] %><%= 'FlashMessage--error' if error_message || flash[:error] %>">
-    <div class="u-inner">
-      <p class="FlashMessage-info <%= 'success' if flash[:success] %><%= 'error' if error_message || flash[:error] %>">
-        <%= raw cookies[:flash] || flash[:success] || [error_message, flash[:error]].compact.join(', ') %>
-      </p>
-    </div>
-  </div>
+<% if flash[:success] %>
+    <%= render(partial: 'shared/flash_single_message', locals: { message_class: 'success', message: flash[:success], detail: flash[:success_detail] }) %>
+<% end %>
+<% if error_message || flash[:error] %>
+    <%= render(partial: 'shared/flash_single_message', locals: { message_class: 'error', message: error_message || flash[:error], detail: flash[:error_detail] }) %>
+<% end %>
+<% if flash[:warning] %>
+    <%= render(partial: 'shared/flash_single_message', locals: { message_class: 'warning', message: flash[:warning], detail: flash[:warning_detail] }) %>
+<% end %>
+<% if cookies[:flash] %>
+    <%= render(partial: 'shared/flash_single_message', locals: { message: cookies[:flash] }) %>
 <% end %>

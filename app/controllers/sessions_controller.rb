@@ -300,7 +300,7 @@ class SessionsController < ApplicationController
 
   def default_logout_url
     # User could've been just deleted
-    username = CartoDB.subdomain_from_request(request)
+    username = CartoDB.extract_subdomain(request)
     if username && (Carto::User.exists?(username: username) || Carto::Organization.exists?(name: username))
       CartoDB.url(self, 'public_visualizations_home')
     elsif Cartodb::Central.sync_data_with_cartodb_central?

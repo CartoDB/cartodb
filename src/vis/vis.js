@@ -403,12 +403,7 @@ var VisModel = Backbone.Model.extend({
     overlayView.type = 'custom';
     this.overlaysCollection.add(overlayView);
     return overlayView;
-  },
-
-  moveCartoDBLayer: function (from, to) {
-    this.layers.moveCartoDBLayer(from, to);
-    this.refres
-  },
+  }
 });
 
 module.exports = VisModel;

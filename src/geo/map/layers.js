@@ -78,7 +78,7 @@ var Layers = Backbone.Collection.extend({
     if (from === to) {
       return this;
     }
-    
+
     var tempLayerModel = this.at(from);
 
     if (tempLayerModel.get('type') !== CARTODB_LAYER_TYPE) {

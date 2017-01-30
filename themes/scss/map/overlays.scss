@@ -462,8 +462,8 @@ $maxLegendContainerHeight: 300px;
   content: '';
 }
 .Legend-categoryIcon {
-  position: relative;
   display: block;
+  position: relative;
   width: 10px;
   height: 10px;
 }
@@ -487,10 +487,10 @@ $maxLegendContainerHeight: 300px;
   position: absolute;
   top: 0;
   right: 0;
-  height: 18px;
   width: 18px;
-  vertical-align: bottom;
+  height: 18px;
   transform: translateX(4px) translateY(-4px) scale(0.55556); // scale original 18px SVG image => 10px
+  vertical-align: bottom;
 }
 
 @media (max-width: 600px) {

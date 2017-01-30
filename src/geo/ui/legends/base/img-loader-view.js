@@ -30,7 +30,7 @@ module.exports = Backbone.View.extend({
         var svg = content.cloneNode(true);
         var $svg = $(svg);
         $svg = $svg.removeAttr('xmlns:a');
-        $svg.attr('class', self._imageClass + ' is-svg js-image');
+        $svg.attr('class', self._imageClass + ' js-image');
 
         self.$el.empty().append($svg);
 

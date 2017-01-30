@@ -4,8 +4,10 @@ require_dependency 'carto/query_rewriter'
 class Carto::AnalysisNode
   include Carto::QueryRewriter
 
-  def initialize(definition)
+  def initialize(definition, tree = nil)
     @definition = definition
+    @tree = tree
+    @tree.try(:add, self)
   end
 
   attr_reader :definition
@@ -90,7 +92,7 @@ class Carto::AnalysisNode
       if v.is_a?(Hash)
         this_path = path + [k]
         if (MANDATORY_KEYS_FOR_ANALYSIS_NODE - v.keys).empty?
-          { this_path => Carto::AnalysisNode.new(v) }
+          { this_path => @tree.try(:get, v[:id]) || Carto::AnalysisNode.new(v, @tree) }
         else
           get_children(v, this_path)
         end

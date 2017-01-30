@@ -462,10 +462,10 @@ $maxLegendContainerHeight: 300px;
   content: '';
 }
 .Legend-categoryIcon {
+  position: relative;
   display: block;
   width: 10px;
   height: 10px;
-  transform: translateX(-1px) translateY(-2px) scale(0.55556); // scale original 18px SVG image => 10px
 }
 .Legend-categoryTitle {
   max-width: 90%;
@@ -483,9 +483,14 @@ $maxLegendContainerHeight: 300px;
 .Legend-placeholderInner {
   padding: 12px 24px 0;
 }
-.Legend-fillImageAsset.is-svg {
-  width: 18px;
+.Legend-fillImageAsset {
+  position: absolute;
+  top: 0;
+  right: 0;
   height: 18px;
+  width: 18px;
+  vertical-align: bottom;
+  transform: translateX(4px) translateY(-4px) scale(0.55556); // scale original 18px SVG image => 10px
 }
 
 @media (max-width: 600px) {

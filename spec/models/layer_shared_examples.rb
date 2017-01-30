@@ -243,12 +243,14 @@ shared_examples_for 'Layer model' do
         @witness_layer = layer_class.create(kind: 'carto')
         @witness_layer.options[:source] = 'a0'
         @witness_layer.save
+        add_layer_to_entity(@map, @witness_layer)
       end
 
       after(:each) do
         # Check that the witness layer/analysis are still there
-        @witness_analysis.reload.should be
-        Carto::Analysis.find_by_natural_id(@carto_visualization.id, 'a0').should be
+        witness_analysis = Carto::Analysis.find_by_natural_id(@carto_visualization.id, 'a0')
+        witness_analysis.should be
+        witness_analysis.analysis_definition.should eq @witness_analysis.analysis_definition
         @witness_layer.reload.should be
 
         @map.destroy
@@ -297,6 +299,7 @@ shared_examples_for 'Layer model' do
         layer = layer_class.create(kind: 'carto')
         layer.options[:source] = analysis.natural_id
         layer.save
+        add_layer_to_entity(@map, layer)
         layer
       end
 

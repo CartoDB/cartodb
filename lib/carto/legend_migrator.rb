@@ -68,14 +68,13 @@ module Carto
         category_definition = { title: title }
 
         if value
-          if value =~ COLOR_REGEXP
-            category_definition[:color] = value
-          else
-            byebug
-            match = CSS_URL_REGEX.match(value)
+          match = CSS_URL_REGEX.match(value)
 
-            if match
-              category_definition[:icon] = match[2]
+          if match
+            category_definition[:icon] = match[2]
+          else
+            if value =~ COLOR_REGEXP
+              category_definition[:color] = value
             else
               category_definition[:icon] = value
             end

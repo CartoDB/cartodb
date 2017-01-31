@@ -25,12 +25,13 @@ CartoDB::Application.configure do
   # If you have no front-end server that supports something like X-Sendfile,
   # just comment this out and Rails will serve the files
 
-  # See everything in the log (default is :info)
-  config.log_level = :debug
-
   # Use a different logger for distributed setups
   config.logger = Logger.new(STDOUT)
   # config.logger = ActiveSupport::BufferedLogger.new(Carto::Conf.new.log_file_path('development.log'))
+
+  # Adjust the log level. Note that assigning to `config.log_levl` would
+  # have no effect here, since we have set the logger explicitly.
+  config.logger.level = 0 # :debug
 
   # Use a different cache store in production
   # config.cache_store = :mem_cache_store

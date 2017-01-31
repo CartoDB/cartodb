@@ -289,7 +289,25 @@ module Carto
 
     def update_analysis_nodes_for_layer_deletion
       return unless visualization
-      visualization.analysis_tree.save(exclude: [self])
+
+      tree = visualization.analysis_tree
+      layer_letter = options.symbolize_keys[:letter]
+
+      # Search for other layers that can host the nodes owned by this layer (same letter)
+      owned_nodes = tree.get(source_id).descendants.select { |n| n.letter == layer_letter }
+      candidate_parents = owned_nodes.map do |owned_node|
+        parent_layer = visualization.data_layers.reject { |l| l.id == id }.find do |other_layer|
+          other_head = tree.get(other_layer.source_id)
+          other_head.find_by_id(source_id)
+        end
+        parent_layer ? [owned_node, parent_layer] : nil
+      end
+      new_parent_layer, node_to_move = candidate_parents.compact.first
+
+      
+
+
+      tree.save(exclude: [self])
     end
 
     private

@@ -4,6 +4,8 @@ require_dependency 'carto/query_rewriter'
 class Carto::AnalysisNode
   include Carto::QueryRewriter
 
+  ID_REGEX = /^([a-z]+)(\d+)$/
+
   def initialize(definition, tree = nil)
     @definition = definition
     @tree = tree
@@ -19,6 +21,16 @@ class Carto::AnalysisNode
 
   def id
     definition[:id]
+  end
+
+  def letter
+    match = ID_REGEX.match(id)
+    match[1] if match
+  end
+
+  def sequence
+    match = ID_REGEX.match(id)
+    match[2].to_i if match
   end
 
   def type

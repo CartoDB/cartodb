@@ -246,24 +246,5 @@ describe Carto::Layer do
         Carto::AnalysisNode.find_by_natural_id(@visualization.id, node_id).should be_nil
       end
     end
-
-    it 'moves nodes to another parent layer' do
-      analysis1 = create_analysis('b2' => { 'b1' => { 'b0' => :source } })
-      layer1 = create_analysis_layer(analysis1)
-
-      analysis2 = create_analysis('c2' => { 'b1' => { 'b0' => :source } })
-      create_analysis_layer(analysis2)
-
-      layer1.update_analysis_nodes_for_layer_deletion
-      ['b1', 'b0'].each do |node_id|
-        Carto::AnalysisNode.find_by_natural_id(@visualization.id, node_id).should be_nil
-      end
-
-      ['c2', 'b1', 'b0'].each do |node_id|
-        Carto::AnalysisNode.find_by_natural_id(@visualization.id, node_id).should be_nil
-      end
-
-      Carto::AnalysisNode.find_by_natural_id(@visualization.id, 'c2').descendants.map(&:id).should eq ['c2', 'c1', 'c0']
-    end
   end
 end

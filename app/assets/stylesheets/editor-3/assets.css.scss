@@ -13,6 +13,11 @@
   @include display-flex;
   position: relative;
 }
+.AssetListItem.Carousel-item {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+}
 .AssetsList-inner {
   display: block;
   position: relative;

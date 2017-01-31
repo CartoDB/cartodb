@@ -1,0 +1,1248 @@
+# The data in this document has been extracted and modified from the shared OpenStreetMap dataset: (http://wiki.openstreetmap.org/wiki/User:Ewmjc/Country_bounds)
+# The content of this file is licensed under the Creative Commons Attribution-ShareAlike 2.0 license (CC BY-SA). (http://creativecommons.org/licenses/by-sa/2.0/legalcode)
+
+- AW:
+    max_lat: 12.616667
+    max_lon: -69.85
+    min_lat: 12.416667
+    min_lon: -70.066667
+- AG:
+    max_lat: 17.733333
+    max_lon: -61.666667
+    min_lat: 16.916667
+    min_lon: -62.333333
+- AE:
+    max_lat: 26.133333
+    max_lon: 58.0
+    min_lat: 22.166667
+    min_lon: 45.0
+- AF:
+    max_lat: 38.483611
+    max_lon: 74.8868713067265
+    min_lat: 29.383333
+    min_lon: 60.566667
+- DZ:
+    max_lat: 37.116667
+    max_lon: 13.0
+    min_lat: 19.0
+    min_lon: -8.666667
+- AZ:
+    max_lat: 41.910556
+    max_lon: 50.858333
+    min_lat: 38.416667
+    min_lon: 44.876389
+- AL:
+    max_lat: 42.659167
+    max_lon: 21.05
+    min_lat: 39.65
+    min_lon: 19.266667
+- AM:
+    max_lat: 41.3
+    max_lon: 46.560556
+    min_lat: 38.894167
+    min_lon: 43.4425
+- AD:
+    max_lat: 42.65
+    max_lon: 1.783333
+    min_lat: 42.433333
+    min_lon: 1.416667
+- AO:
+    max_lat: -4.4
+    max_lon: 23.983333
+    min_lat: -32.0
+    min_lon: 10.0
+- AR:
+    max_lat: -21.783333
+    max_lon: -53.65
+    min_lat: -58.116667
+    min_lon: -73.533333
+- AU:
+    max_lat: -9.133333
+    max_lon: 167.983333
+    min_lat: -55.05
+    min_lon: 112.928889
+- AU:
+    max_lat: -12.216667
+    max_lon: 123.533333
+    min_lat: -12.533333
+    min_lon: 123.016667
+- AT:
+    max_lat: 49.016667
+    max_lon: 19.0
+    min_lat: 46.377222
+    min_lon: 1.2
+- AI:
+    max_lat: 18.6
+    max_lon: -62.916667
+    min_lat: 18.15
+    min_lon: -63.433333
+- BH:
+    max_lat: 26.416667
+    max_lon: 50.823333
+    min_lat: 25.0
+    min_lon: 45.0
+- BB:
+    max_lat: 13.333333
+    max_lon: -59.416667
+    min_lat: 13.033333
+    min_lon: -59.65
+- BW:
+    max_lat: -17.833333
+    max_lon: 29.016667
+    min_lat: -26.833333
+    min_lon: 20.0
+- BM:
+    max_lat: 32.390556
+    max_lon: -64.633333
+    min_lat: 32.246944
+    min_lon: -64.882778
+- BE:
+    max_lat: 51.683333
+    max_lon: 6.4
+    min_lat: 49.516667
+    min_lon: 2.566667
+- BS:
+    max_lat: 29.375
+    max_lon: -70.0
+    min_lat: 20.0
+    min_lon: -80.483333
+- BD:
+    max_lat: 26.5
+    max_lon: 92.683333
+    min_lat: 20.6
+    min_lon: 84.0
+- BZ:
+    max_lat: 18.483333
+    max_lon: -87.483333
+    min_lat: 15.9
+    min_lon: -89.216944
+- BA:
+    max_lat: 45.268333
+    max_lon: 19.618333
+    min_lat: 42.558056
+    min_lon: 15.747222
+- BO:
+    max_lat: -9.666667
+    max_lon: -57.566667
+    min_lat: -22.883333
+    min_lon: -69.6
+- MM:
+    max_lat: 28.35
+    max_lon: 102.0
+    min_lat: 6.0
+    min_lon: 92.190833
+- BJ:
+    max_lat: 12.3614
+    max_lon: 3.816667
+    min_lat: 6.233333
+    min_lon: -4.0
+- BY:
+    max_lat: 56.066667
+    max_lon: 32.708056
+    min_lat: 50.716667
+    min_lon: 22.55
+- SB:
+    max_lat: -5.166667
+    max_lon: 170.2
+    min_lat: -12.883333
+    min_lon: 155.516667
+- BR:
+    max_lat: 5.266667
+    max_lon: -28.85
+    min_lat: -33.733333
+    min_lon: -73.75
+- FR:
+    max_lat: -21.416667
+    max_lon: 39.7
+    min_lat: -21.416667
+    min_lon: 39.7
+- BT:
+    max_lat: 30.0
+    max_lon: 92.033333
+    min_lat: 26.716667
+    min_lon: 80.0
+- BG:
+    max_lat: 44.193611
+    max_lon: 28.6
+    min_lat: 41.0
+    min_lon: 22.371389
+- BV:
+    max_lat: -54.386111
+    max_lon: 3.433889
+    min_lat: -54.452778
+    min_lon: 3.285278
+- BN:
+    max_lat: 5.05
+    max_lon: 120.0
+    min_lat: -2.0
+    min_lon: 110.0
+- BI:
+    max_lat: -2.3425
+    max_lon: 30.831389
+    min_lat: -4.443333
+    min_lon: 29.023889
+- CA:
+    max_lat: 83.116667
+    max_lon: -52.666667
+    min_lat: 40.0
+    min_lon: -141.666667
+- KH:
+    max_lat: 17.483333
+    max_lon: 107.566667
+    min_lat: 9.916667
+    min_lon: 102.358333
+- TD:
+    max_lat: 26.0
+    max_lon: 24.0
+    min_lat: 7.5
+    min_lon: 2.0
+- LK:
+    max_lat: 9.833333
+    max_lon: 81.866667
+    min_lat: 5.916667
+    min_lon: 79.516667
+- CG:
+    max_lat: 3.866667
+    max_lon: 20.0
+    min_lat: -4.995556
+    min_lon: 11.166667
+- CD:
+    max_lat: 5.133333
+    max_lon: 31.233333
+    min_lat: -13.466667
+    min_lon: 12.266667
+- CN:
+    max_lat: 53.5
+    max_lon: 134.672222
+    min_lat: 18.163056
+    min_lon: 74.166667
+- CL:
+    max_lat: -17.53
+    max_lon: -66.433333
+    min_lat: -56.533333
+    min_lon: -109.466667
+- KY:
+    max_lat: 19.75
+    max_lon: -79.716667
+    min_lat: 19.25
+    min_lon: -81.416667
+- CC:
+    max_lat: -11.833333
+    max_lon: 96.918056
+    min_lat: -12.204167
+    min_lon: 96.816667
+- CM:
+    max_lat: 16.0
+    max_lon: 16.0
+    min_lat: 2.016667
+    min_lon: 8.483333
+- KM:
+    max_lat: -11.35
+    max_lon: 45.316667
+    min_lat: -13.0
+    min_lon: 43.226111
+- CO:
+    max_lat: 13.383333
+    max_lon: -66.854722
+    min_lat: -4.214722
+    min_lon: -81.85
+- AU:
+    max_lat: -15.5
+    max_lon: 159.119444
+    min_lat: -29.472222
+    min_lon: 147.1
+- CR:
+    max_lat: 11.216667
+    max_lon: -82.05
+    min_lat: 5.5
+    min_lon: -87.1
+- CF:
+    max_lat: 10.7
+    max_lon: 27.216667
+    min_lat: 2.433333
+    min_lon: 14.533333
+- CU:
+    max_lat: 23.265833
+    max_lon: -74.135
+    min_lat: 19.828056
+    min_lon: -84.950833
+- CV:
+    max_lat: 17.2
+    max_lon: -22.666667
+    min_lat: 14.8
+    min_lon: -25.366667
+- CK:
+    max_lat: -8.918611
+    max_lon: -157.3375
+    min_lat: -21.953056
+    min_lon: -171.783333
+- CY:
+    max_lat: 35.7
+    max_lon: 34.6
+    min_lat: 34.566667
+    min_lon: 32.270833
+- DK:
+    max_lat: 64.0
+    max_lon: 18.0
+    min_lat: 53.583333
+    min_lon: 4.516667
+- DJ:
+    max_lat: 13.0
+    max_lon: 43.451944
+    min_lat: 10.9825
+    min_lon: 41.0
+- DM:
+    max_lat: 15.633333
+    max_lon: -61.25
+    min_lat: 15.2
+    min_lon: -61.483333
+- DO:
+    max_lat: 19.933333
+    max_lon: -68.316667
+    min_lat: 17.473056
+    min_lon: -71.966667
+- EC:
+    max_lat: 1.65
+    max_lon: -75.216667
+    min_lat: -4.95
+    min_lon: -92.0
+- EG:
+    max_lat: 31.916667
+    max_lon: 36.333333
+    min_lat: 20.383333
+    min_lon: 24.7
+- IE:
+    max_lat: 55.433333
+    max_lon: -6.0025
+    min_lat: 51.425556
+    min_lon: -10.680833
+- GQ:
+    max_lat: 3.783333
+    max_lon: 11.4
+    min_lat: -1.483333
+    min_lon: 5.05
+- EE:
+    max_lat: 59.983333
+    max_lon: 28.883333
+    min_lat: 57.521389
+    min_lon: 21.795833
+- ER:
+    max_lat: 18.033333
+    max_lon: 43.114722
+    min_lat: 12.383333
+    min_lon: 36.483333
+- SV:
+    max_lat: 14.433333
+    max_lon: -87.657222
+    min_lat: 13.158611
+    min_lon: -90.116389
+- ET:
+    max_lat: 14.698889
+    max_lon: 47.45
+    min_lat: 3.433333
+    min_lon: 33.033333
+- FR:
+    max_lat: -22.333333
+    max_lon: 40.366667
+    min_lat: -22.333333
+    min_lon: 40.366667
+- CZ:
+    max_lat: 59.65
+    max_lon: 25.5
+    min_lat: 40.65
+    min_lon: 12.116667
+- GF:
+    max_lat: 5.75
+    max_lon: -51.65
+    min_lat: 2.166667
+    min_lon: -60.0
+- FI:
+    max_lat: 70.083333
+    max_lon: 32.0
+    min_lat: 58.83
+    min_lon: 18.0
+- FJ:
+    max_lat: -12.466667
+    max_lon: -179.983333
+    min_lat: -21.016667
+    min_lon: 180.0
+- FK:
+    max_lat: -50.966667
+    max_lon: -57.666667
+    min_lat: -52.966667
+    min_lon: -61.433333
+- FM:
+    max_lat: 10.093611
+    max_lon: 163.034444
+    min_lat: 1.026389
+    min_lon: 137.425
+- FO:
+    max_lat: 62.4
+    max_lon: -6.25
+    min_lat: 61.333333
+    min_lon: -7.8
+- PF:
+    max_lat: 16.633333
+    max_lon: -179.8
+    min_lat: -27.916667
+    min_lon: 180.0
+- FR:
+    max_lat: 51.083333
+    max_lon: 9.533333
+    min_lat: 41.333333
+    min_lon: -5.133333
+- TF:
+    max_lat: -37.783333
+    max_lon: 77.6
+    min_lat: -50.016667
+    min_lon: 50.233333
+- GM:
+    max_lat: 13.816667
+    max_lon: -4.0
+    min_lat: 7.0
+    min_lon: -16.816944
+- GA:
+    max_lat: 2.283333
+    max_lon: 14.483333
+    min_lat: -3.9
+    min_lon: 8.7
+- GE:
+    max_lat: 43.570556
+    max_lon: 46.635556
+    min_lat: 41.15
+    min_lon: 40.013056
+- GH:
+    max_lat: 11.15
+    max_lon: 1.192778
+    min_lat: 4.733333
+    min_lon: -4.0
+- GI:
+    max_lat: 36.15
+    max_lon: -5.333333
+    min_lat: 36.1
+    min_lon: -5.35
+- GD:
+    max_lat: 12.666667
+    max_lon: -61.25
+    min_lat: 11.983333
+    min_lon: -61.8
+- GG:
+    max_lat: 49.733333
+    max_lon: -2.158056
+    min_lat: 49.401111
+    min_lon: -2.7
+- GL:
+    max_lat: 83.666667
+    max_lon: -12.133333
+    min_lat: 51.7
+    min_lon: -73.05
+- DE:
+    max_lat: 55.05
+    max_lon: 15.033333
+    min_lat: 47.266667
+    min_lon: 5.9
+- FR:
+    max_lat: -11.5
+    max_lon: 47.366667
+    min_lat: -11.566667
+    min_lon: 47.3
+- GP:
+    max_lat: 18.116667
+    max_lon: -61.0
+    min_lat: 15.0
+    min_lon: -63.15
+- GR:
+    max_lat: 44.0
+    max_lon: 29.648056
+    min_lat: 34.8
+    min_lon: 19.381667
+- GT:
+    max_lat: 17.816667
+    max_lon: -87.05
+    min_lat: 13.751111
+    min_lon: -92.583333
+- GN:
+    max_lat: 12.633333
+    max_lon: -4.0
+    min_lat: 7.0
+    min_lon: -15.366667
+- GY:
+    max_lat: 8.433333
+    max_lon: -56.0
+    min_lat: 1.316667
+    min_lon: -61.233333
+- GZ:
+    max_lat: 34.377361
+    max_lon: 31.566667
+    min_lat: 34.533333
+    min_lon: 31.216667
+- HT:
+    max_lat: 20.083333
+    max_lon: -71.633333
+    min_lat: 18.016667
+    min_lon: -74.483333
+- HK:
+    max_lat: 22.566667
+    max_lon: 114.433333
+    min_lat: 22.15
+    min_lon: 113.833333
+- HM:
+    max_lat: -52.9
+    max_lon: 73.85
+    min_lat: -53.2
+    min_lon: 72.566667
+- HN:
+    max_lat: 17.45
+    max_lon: -82.5
+    min_lat: 13.016667
+    min_lon: -89.333333
+- HR:
+    max_lat: 46.526944
+    max_lon: 19.383056
+    min_lat: 42.380278
+    min_lon: 13.493333
+- HU:
+    max_lat: 48.983333
+    max_lon: 22.866667
+    min_lat: 45.75
+    min_lon: 16.183333
+- IS:
+    max_lat: 66.566667
+    max_lon: -13.2
+    min_lat: 63.3
+    min_lon: -24.533333
+- ID:
+    max_lat: 10.616667
+    max_lon: 141.016667
+    min_lat: -11.0
+    min_lon: 94.970278
+- IM:
+    max_lat: 54.4
+    max_lon: -4.316667
+    min_lat: 54.033333
+    min_lon: -4.833333
+- IN:
+    max_lat: 35.9558333333333
+    max_lon: 97.35
+    min_lat: 6.755556
+    min_lon: 67.016667
+- IO:
+    max_lat: -5.233333
+    max_lon: 72.483333
+    min_lat: -7.35
+    min_lon: 71.265278
+- FR:
+    max_lat: 10.283333
+    max_lon: -109.216667
+    min_lat: 10.283333
+    min_lon: -109.216667
+- IR:
+    max_lat: 39.7754
+    max_lon: 62.0
+    min_lat: 25.05
+    min_lon: 27.4455
+- IL:
+    max_lat: 33.286111
+    max_lon: 35.666667
+    min_lat: 29.516667
+    min_lon: 34.283333
+- IT:
+    max_lat: 48.533333
+    max_lon: 20.433333
+    min_lat: 35.483333
+    min_lon: 1.35
+- CI:
+    max_lat: 10.652222
+    max_lon: -2.566667
+    min_lat: 4.35
+    min_lon: -8.538889
+- IQ:
+    max_lat: 37.352778
+    max_lon: 48.833333
+    min_lat: 28.866667
+    min_lon: 38.800871
+- JP:
+    max_lat: 45.520833
+    max_lon: 154.0
+    min_lat: 20.416667
+    min_lon: 122.933333
+- JE:
+    max_lat: 49.305833
+    max_lon: -1.927778
+    min_lat: 49.112778
+    min_lon: -2.253889
+- JM:
+    max_lat: 18.533333
+    max_lon: -70.0
+    min_lat: 17.0
+    min_lon: -78.366667
+- SJ:
+    max_lat: 71.157778
+    max_lon: -7.933056
+    min_lat: 70.826389
+    min_lon: -9.071944
+- JO:
+    max_lat: 33.002222
+    max_lon: 38.883333
+    min_lat: 29.0
+    min_lon: 34.9875
+- FR:
+    max_lat: -17.05
+    max_lon: 42.75
+    min_lat: -17.05
+    min_lon: 42.75
+- KE:
+    max_lat: 4.883333
+    max_lon: 41.8583834826426
+    min_lat: -4.716667
+    min_lon: 27.433333
+- KG:
+    max_lat: 43.016667
+    max_lon: 80.115833
+    min_lat: 39.25
+    min_lon: 69.333333
+- KP:
+    max_lat: 43.003889
+    max_lon: 130.672222
+    min_lat: 37.6775
+    min_lon: 124.1875
+- KI:
+    max_lat: 4.716667
+    max_lon: -174.533333
+    min_lat: -10.3
+    min_lon: 179.716667
+- KR:
+    max_lat: 38.586667
+    max_lon: 131.866667
+    min_lat: 33.1175
+    min_lon: 124.612222
+- CX:
+    max_lat: -10.4
+    max_lon: 105.75
+    min_lat: -10.566667
+    min_lon: 105.566667
+- KW:
+    max_lat: 30.069444
+    max_lon: 49.410556
+    min_lat: 25.0
+    min_lon: 45.0
+- KZ:
+    max_lat: 55.330556
+    max_lon: 90.0
+    min_lat: 40.416667
+    min_lon: 46.589722
+- LA:
+    max_lat: 22.5
+    max_lon: 107.633333
+    min_lat: 13.933333
+    min_lon: 100.095833
+- LB:
+    max_lat: 34.69
+    max_lon: 36.592778
+    min_lat: 33.078333
+    min_lon: 35.103611
+- LV:
+    max_lat: 58.066667
+    max_lon: 28.2
+    min_lat: 55.7
+    min_lon: 20.966667
+- LT:
+    max_lat: 56.441667
+    max_lon: 27.0
+    min_lat: 53.0
+    min_lon: 21.0
+- LR:
+    max_lat: 9.5
+    max_lon: -4.0
+    min_lat: 4.328333
+    min_lon: -11.472222
+- SK:
+    max_lat: 49.6
+    max_lon: 26.5
+    min_lat: 45.5
+    min_lon: 17.0
+- LI:
+    max_lat: 47.233333
+    max_lon: 9.75
+    min_lat: 47.05
+    min_lon: 9.5
+- LS:
+    max_lat: -28.616667
+    max_lon: 29.316667
+    min_lat: -30.666667
+    min_lon: 24.0
+- LU:
+    max_lat: 50.181667
+    max_lon: 6.505833
+    min_lat: 49.460833
+    min_lon: 5.742778
+- LY:
+    max_lat: 33.15
+    max_lon: 25.5
+    min_lat: 20.8
+    min_lon: 5.0
+- MG:
+    max_lat: -11.95
+    max_lon: 50.483333
+    min_lat: -25.6
+    min_lon: 43.183333
+- MQ:
+    max_lat: 14.866667
+    max_lon: -60.816667
+    min_lat: 14.383333
+    min_lon: -61.966667
+- MO:
+    max_lat: 22.216389
+    max_lon: 113.592222
+    min_lat: 22.1125
+    min_lon: 113.531389
+- MD:
+    max_lat: 48.467222
+    max_lon: 30.096111
+    min_lat: 45.481667
+    min_lon: 26.672222
+- YT:
+    max_lat: -12.641389
+    max_lon: 45.288611
+    min_lat: -12.993889
+    min_lon: 45.024444
+- MN:
+    max_lat: 52.1
+    max_lon: 119.916667
+    min_lat: 41.55
+    min_lon: 87.783333
+- MS:
+    max_lat: 16.816667
+    max_lon: -62.15
+    min_lat: 16.666667
+    min_lon: -62.233333
+- MW:
+    max_lat: -5.0
+    max_lon: 37.0
+    min_lat: -17.15
+    min_lon: 32.716667
+- ME:
+    max_lat: 43.547778
+    max_lon: 20.3425
+    min_lat: 41.864167
+    min_lon: 18.438056
+- MK:
+    max_lat: 42.373056
+    max_lon: 23.033333
+    min_lat: 40.866667
+    min_lon: 20.459167
+- ML:
+    max_lat: 26.0
+    max_lon: 13.0
+    min_lat: 10.15
+    min_lon: -12.55
+- MC:
+    max_lat: 43.745833
+    max_lon: 7.439444
+    min_lat: 43.716667
+    min_lon: 7.4
+- MA:
+    max_lat: 36.21
+    max_lon: 2.0
+    min_lat: 5.51
+    min_lon: -13.1
+- MU:
+    max_lat: -5.25
+    max_lon: 72.466667
+    min_lat: -20.516667
+    min_lon: 56.6
+- MR:
+    max_lat: 26.9
+    max_lon: 13.0
+    min_lat: 14.7382733887277
+    min_lon: -17.079444
+- MT:
+    max_lat: 36.081944
+    max_lon: 14.575
+    min_lat: 35.783889
+    min_lon: 14.185556
+- OM:
+    max_lat: 26.505
+    max_lon: 59.838056
+    min_lat: 16.633333
+    min_lon: 45.0
+- MV:
+    max_lat: 7.1
+    max_lon: 73.7
+    min_lat: -0.7
+    min_lon: 72.583333
+- MX:
+    max_lat: 32.983333
+    max_lon: -86.716667
+    min_lat: 14.55
+    min_lon: -119.921667
+- MY:
+    max_lat: 7.383333
+    max_lon: 120.0
+    min_lat: 0.85
+    min_lon: 99.641277
+- MZ:
+    max_lat: 15.033333
+    max_lon: 40.845278
+    min_lat: -26.857222
+    min_lon: 30.231389
+- NC:
+    max_lat: -18.016667
+    max_lon: 172.05
+    min_lat: -22.783333
+    min_lon: 158.246667
+- NU:
+    max_lat: -18.933333
+    max_lon: -169.783333
+    min_lat: -19.1
+    min_lon: -169.916667
+- NF:
+    max_lat: -29.05
+    max_lon: 167.95
+    min_lat: -29.05
+    min_lon: 167.95
+- NE:
+    max_lat: 26.0
+    max_lon: 16.0
+    min_lat: 11.716667
+    min_lon: 0.233333
+- VU:
+    max_lat: -13.066667
+    max_lon: 170.216667
+    min_lat: -20.25
+    min_lon: 166.016667
+- NG:
+    max_lat: 13.866667
+    max_lon: 14.65
+    min_lat: 4.266667
+    min_lon: 2.716667
+- NL:
+    max_lat: 53.583333
+    max_lon: 7.2
+    min_lat: 50.75
+    min_lon: 3.133333
+- 'NO':
+    max_lat: 71.181944
+    max_lon: 31.166667
+    min_lat: 56.15
+    min_lon: 3.033333
+- NP:
+    max_lat: 30.45
+    max_lon: 88.183333
+    min_lat: 26.45
+    min_lon: 80.0
+- NR:
+    max_lat: -0.5
+    max_lon: 166.95
+    min_lat: -0.55
+    min_lon: 166.916667
+- SR:
+    max_lat: 6.0
+    max_lon: -53.983333
+    min_lat: 2.1
+    min_lon: -60.0
+- AN:
+    max_lat: 18.05
+    max_lon: -62.933333
+    min_lat: 12.016667
+    min_lon: -69.166667
+- NI:
+    max_lat: 15.0
+    max_lon: -82.566667
+    min_lat: 10.716667
+    min_lon: -87.684167
+- NZ:
+    max_lat: -29.216667
+    max_lon: -178.9
+    min_lat: -52.616667
+    min_lon: 179.066667
+- PY:
+    max_lat: -19.333333
+    max_lon: -54.35
+    min_lat: -27.533333
+    min_lon: -62.633333
+- PN:
+    max_lat: -23.916667
+    max_lon: -124.783333
+    min_lat: -25.066667
+    min_lon: -130.733333
+- PE:
+    max_lat: 4.626667
+    max_lon: -68.833333
+    min_lat: -18.333333
+    min_lon: -81.358333
+- CN:
+    max_lat: 20.7
+    max_lon: 117.816667
+    min_lat: 6.183333
+    min_lon: 106.7
+- PG:
+    max_lat: 114.4083335
+    max_lon: 16.966667
+    min_lat: 116.9
+    min_lon: 7.883333
+- PK:
+    max_lat: 37.0837107040298
+    max_lon: 77.800014
+    min_lat: 23.966667
+    min_lon: 60.866667
+- PL:
+    max_lat: 54.833333
+    max_lon: 26.5
+    min_lat: 45.5
+    min_lon: 14.0
+- PA:
+    max_lat: 9.65
+    max_lon: -77.283333
+    min_lat: 7.213333
+    min_lon: -82.95
+- PT:
+    max_lat: 42.15
+    max_lon: -5.0
+    min_lat: 30.033333
+    min_lon: -31.266667
+- PG:
+    max_lat: -0.733333
+    max_lon: 159.483333
+    min_lat: -11.65
+    min_lon: 120.0
+- PW:
+    max_lat: 8.166667
+    max_lon: 134.716389
+    min_lat: 2.898333
+    min_lon: 131.175
+- GW:
+    max_lat: 12.683333
+    max_lon: -4.0
+    min_lat: 5.0
+    min_lon: -16.651944
+- QA:
+    max_lat: 26.441111
+    max_lon: 52.75
+    min_lat: 24.284722
+    min_lon: 50.680556
+- RS:
+    max_lat: 46.155556
+    max_lon: 22.966667
+    min_lat: 41.866667
+    min_lon: 18.928889
+- RE:
+    max_lat: -20.0
+    max_lon: 57.0
+    min_lat: -21.366667
+    min_lon: 55.216667
+- MH:
+    max_lat: 19.316667
+    max_lon: 172.8
+    min_lat: 4.566667
+    min_lon: 160.8
+- RO:
+    max_lat: 48.25
+    max_lon: 29.65
+    min_lat: 43.666667
+    min_lon: 19.0
+- PH:
+    max_lat: 21.113056
+    max_lon: 126.604444
+    min_lat: 4.588889
+    min_lon: 116.65
+- RU:
+    max_lat: 86.216667
+    max_lon: 147.172222
+    min_lat: 38.7
+    min_lon: 19.655556
+- RW:
+    max_lat: 5.0
+    max_lon: 37.0
+    min_lat: -2.8
+    min_lon: 28.866667
+- SA:
+    max_lat: 32.2
+    max_lon: 55.166667
+    min_lat: 5.0
+    min_lon: 34.566667
+- PM:
+    max_lat: 47.139722
+    max_lon: -56.120556
+    min_lat: 46.748333
+    min_lon: -56.405278
+- KN:
+    max_lat: 17.416667
+    max_lon: -62.516667
+    min_lat: 17.1
+    min_lon: -62.85
+- SC:
+    max_lat: -3.716667
+    max_lon: 56.266667
+    min_lat: -10.216667
+    min_lon: 46.216667
+- ZA:
+    max_lat: -22.133333
+    max_lon: 32.883333
+    min_lat: -34.833333
+    min_lon: 16.466667
+- SN:
+    max_lat: 16.666667
+    max_lon: -11.3780213873722
+    min_lat: 12.336667
+    min_lon: -17.682778
+- SH:
+    max_lat: -7.9
+    max_lon: -5.633333
+    min_lat: -40.4
+    min_lon: -14.416667
+- SI:
+    max_lat: 46.866667
+    max_lon: 17.466667
+    min_lat: 45.083333
+    min_lon: 13.426667
+- SL:
+    max_lat: 10.0
+    max_lon: -4.0
+    min_lat: 5.0
+    min_lon: -13.316667
+- SM:
+    max_lat: 43.966667
+    max_lon: 12.5
+    min_lat: 43.908333
+    min_lon: 12.416667
+- SG:
+    max_lat: 4.0
+    max_lon: 104.4075
+    min_lat: 1.159444
+    min_lon: 102.0
+- SO:
+    max_lat: 11.983333
+    max_lon: 51.4
+    min_lat: -1.65942969590957
+    min_lon: 41.0
+- ES:
+    max_lat: 43.916667
+    max_lon: 4.333333
+    min_lat: 27.633333
+    min_lon: -18.166667
+- LC:
+    max_lat: 14.1
+    max_lon: -60.866667
+    min_lat: 13.7
+    min_lon: -61.066667
+- SD:
+    max_lat: 27.166667
+    max_lon: 38.833333
+    min_lat: 3.516667
+    min_lon: 21.883333
+- SJ:
+    max_lat: 80.816667
+    max_lon: 32.583333
+    min_lat: 74.35
+    min_lon: 10.5
+- SE:
+    max_lat: 69.033333
+    max_lon: 25.0
+    min_lat: 46.758333
+    min_lon: 10.958333
+- GS:
+    max_lat: -53.970278
+    max_lon: -26.333333
+    min_lat: -59.466667
+    min_lon: -38.305
+- SY:
+    max_lat: 37.280278
+    max_lon: 42.337778
+    min_lat: 32.0
+    min_lon: 35.6
+- CH:
+    max_lat: 49.866667
+    max_lon: 10.5
+    min_lat: 45.366667
+    min_lon: 6.0
+- TT:
+    max_lat: 20.0
+    max_lon: -60.5
+    min_lat: 10.033333
+    min_lon: -74.0
+- FR:
+    max_lat: -15.866667
+    max_lon: 54.416667
+    min_lat: -15.866667
+    min_lon: 54.416667
+- TH:
+    max_lat: 20.442778
+    max_lon: 105.766667
+    min_lat: 5.616667
+    min_lon: 97.366667
+- TJ:
+    max_lat: 40.9
+    max_lon: 75.0
+    min_lat: 36.716667
+    min_lon: 67.416667
+- TC:
+    max_lat: 21.95
+    max_lon: -71.083333
+    min_lat: 21.116667
+    min_lon: -72.466667
+- TK:
+    max_lat: -8.533333
+    max_lon: -171.183333
+    min_lat: -9.433333
+    min_lon: -172.516667
+- TO:
+    max_lat: -15.566667
+    max_lon: -150.0
+    min_lat: -22.333333
+    min_lon: -176.2
+- TG:
+    max_lat: 11.103889
+    max_lon: 1.816667
+    min_lat: 6.131944
+    min_lon: -4.0
+- ST:
+    max_lat: 1.733333
+    max_lon: 7.483333
+    min_lat: -0.016667
+    min_lon: 6.466667
+- TN:
+    max_lat: 37.566667
+    max_lon: 13.0
+    min_lat: 26.0
+    min_lon: 7.0
+- TL:
+    max_lat: -7.597222
+    max_lon: 127.336667
+    min_lat: -9.469722
+    min_lon: 124.085556
+- TR:
+    max_lat: 42.1
+    max_lon: 44.8
+    min_lat: 35.819444
+    min_lon: 25.0
+- TV:
+    max_lat: -5.65
+    max_lon: 179.883333
+    min_lat: -10.75
+    min_lon: 176.116667
+- TW:
+    max_lat: 26.389444
+    max_lon: 122.107778
+    min_lat: 21.733333
+    min_lon: 118.115255566105
+- TM:
+    max_lat: 42.566667
+    max_lon: 66.65
+    min_lat: 35.216667
+    min_lon: 52.5
+- TZ:
+    max_lat: 0.833333
+    max_lon: 40.433333
+    min_lat: -11.7
+    min_lon: 29.583333
+- UG:
+    max_lat: 4.166667
+    max_lon: 34.95
+    min_lat: -1.433333
+    min_lon: 29.583333
+- GB:
+    max_lat: 61.5
+    max_lon: 2.866667
+    min_lat: 49.866667
+    min_lon: -13.65
+- UA:
+    max_lat: 63.4
+    max_lon: 68.85
+    min_lat: 37.8
+    min_lon: 20.933333
+- US:
+    max_lat: 167.740111
+    max_lon: 8.731796
+    min_lat: 167.740111
+    min_lon: 8.731796
+- BF:
+    max_lat: 14.983333
+    max_lon: 2.2655
+    min_lat: 9.45
+    min_lon: -5.466667
+- UY:
+    max_lat: -30.183333
+    max_lon: -53.266667
+    min_lat: -35.033333
+    min_lon: -58.5
+- UZ:
+    max_lat: 48.583333
+    max_lon: 80.383333
+    min_lat: 35.266667
+    min_lon: 56.083333
+- VC:
+    max_lat: 13.366667
+    max_lon: -61.116667
+    min_lat: 12.533333
+    min_lon: -61.433333
+- VE:
+    max_lat: 15.7
+    max_lon: -59.966667
+    min_lat: 0.766667
+    min_lon: -73.16
+- VG:
+    max_lat: 18.766667
+    max_lon: -64.266667
+    min_lat: 18.3
+    min_lon: -64.85
+- VN:
+    max_lat: 23.666667
+    max_lon: 109.466667
+    min_lat: 8.383333
+    min_lon: 102.216667
+- VA:
+    max_lat: 41.9
+    max_lon: 12.45
+    min_lat: 41.9
+    min_lon: 12.45
+- NA:
+    max_lat: -16.983333
+    max_lon: 25.25
+    min_lat: -28.933333
+    min_lon: 12.016667
+- WE:
+    max_lat: 35.008333
+    max_lon: 32.545556
+    min_lat: 35.933333
+    min_lon: 31.35
+- WF:
+    max_lat: -13.183333
+    max_lon: -176.083333
+    min_lat: -14.35
+    min_lon: -178.183333
+- EH:
+    max_lat: 27.666667
+    max_lon: -8.666667
+    min_lat: 20.8
+    min_lon: -17.110556
+- WS:
+    max_lat: -13.433333
+    max_lon: -171.0
+    min_lat: -14.05
+    min_lon: -172.816667
+- SZ:
+    max_lat: -25.783333
+    max_lon: 32.133333
+    min_lat: -27.316667
+    min_lon: 30.783333
+- CS:
+    max_lat: 43.75
+    max_lon: 20.75
+    min_lat: 42.556111
+    min_lon: 19.223056
+- YE:
+    max_lat: 27.695278
+    max_lon: 54.533333
+    min_lat: 12.1
+    min_lon: 41.833333
+- ZM:
+    max_lat: 5.0
+    max_lon: 39.283333
+    min_lat: -18.05
+    min_lon: 22.0
+- ZW:
+    max_lat: -15.6
+    max_lon: 33.05
+    min_lat: -22.316667
+    min_lon: 25.333333

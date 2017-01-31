@@ -29,7 +29,6 @@ CartoDB::Application.configure do
   # We'll set the level to :info, which omits SQL statements in the log.
   config.logger.level = 1 # :info
 
-
   # Use a different logger for distributed setups
   # config.logger = SyslogLogger.new
 

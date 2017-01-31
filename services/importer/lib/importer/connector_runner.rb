@@ -28,7 +28,7 @@ module CartoDB
 
         @id = @job.id
         @unique_suffix = @id.delete('-')
-        @json_params = JSON.load(connector_source)
+        @json_params = JSON.parse(connector_source)
         extract_params
         @connector = Carto::Connector.new(@params, user: @user, logger: @log)
         @results = []

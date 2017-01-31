@@ -243,6 +243,20 @@ describe Downloader do
       lambda { downloader.run }.should raise_error PartialDownloadError
     end
 
+    describe '#etag' do
+      it "reads etag from download" do
+        etag = 'whatever'
+        stub_download(
+          url:      @file_url,
+          filepath: @file_filepath,
+          headers:  { "ETag" => etag }
+        )
+
+        downloader = Downloader.new(@user.id, @file_url)
+        downloader.etag.should eq etag
+      end
+    end
+
     describe('#quota_checks') do
       before(:all) do
         @old_max_import_file_size = @user.max_import_file_size

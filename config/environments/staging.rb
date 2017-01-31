@@ -24,7 +24,9 @@ CartoDB::Application.configure do
 
   # Note that we pass the desired log level to the logger's constructor;
   # assigning to `config.log_level` would have no effect here, since we have set the logger explicitly.
-  config.logger = ActiveSupport::TaggedLogging.new(ActiveSupport::BufferedLogger.new(Carto::Conf.new.log_file_path('production.log'), Logger::INFO))
+  config.logger = ActiveSupport::TaggedLogging.new(
+    ActiveSupport::BufferedLogger.new(Carto::Conf.new.log_file_path('production.log'), Logger::INFO)
+  )
 
   # Use a different logger for distributed setups
   # config.logger = SyslogLogger.new

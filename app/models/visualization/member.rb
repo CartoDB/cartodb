@@ -943,7 +943,7 @@ module CartoDB
 
       def related_layers_from(table)
         layers(:cartodb).select do |layer|
-          (layer.affected_tables.map(&:name) + [layer.options.fetch('table_name', nil)]).include?(table.name)
+          (layer.user_tables.map(&:name) + [layer.options.fetch('table_name', nil)]).include?(table.name)
         end
       end
 

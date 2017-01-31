@@ -937,12 +937,15 @@ module CartoDB
       end
 
       def remove_layers_from(table)
-        related_layers_from(table).each { |layer|
+        related_layers_from(table).each do |layer|
           map.remove_layer(layer)
           layer.destroy
-        }
+        end
         self.active_layer_id = layers(:cartodb).first.nil? ? nil : layers(:cartodb).first.id
         store
+
+        # Clean up unused analysis nodes
+        carto_visualization.analysis_tree.save(exclude: related_layers_from(table))
       end
 
       def related_layers_from(table)

@@ -27,6 +27,5 @@ module Carto
         [/#{ext}$/i, /#{ext}(?=\.)/i, /#{ext}(?=\?)/i, /#{ext}(?=&)/i]
       }.flatten
     end
-
   end
 end

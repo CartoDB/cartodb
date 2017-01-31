@@ -53,7 +53,7 @@ namespace :carto do
             next unless visualization
 
             success = update_visualization_and_mapcap(visualization) do |vis, persisted|
-              vis.layers.each do |l|
+              vis.data_layers.each do |l|
                 acc_legend = 0
 
                 l.legends.each do |legend|
@@ -65,7 +65,7 @@ namespace :carto do
                     match = icon && CSS_URL_REGEX.match(icon)
 
                     if match
-                      l.legends[acc_legend][:definition][:categories][acc_category][:icon] = match[1]
+                      category[:icon] = match[1]
                     end
 
                     acc_category += 1

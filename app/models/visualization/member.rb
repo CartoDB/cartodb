@@ -945,7 +945,9 @@ module CartoDB
         store
 
         # Clean up unused analysis nodes
-        carto_visualization.analysis_tree.save(exclude: related_layers_from(table))
+        Rails::Sequel.connection.after_commit do
+          carto_visualization.analysis_tree.save(exclude: related_layers_from(table))
+        end
       end
 
       def related_layers_from(table)

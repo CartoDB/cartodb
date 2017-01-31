@@ -203,6 +203,7 @@ describe Carto::Layer do
     def create_analysis_layer(analysis)
       layer = Carto::Layer.create(kind: 'carto', maps: [@map])
       layer.options[:source] = analysis.natural_id
+      layer.options[:letter] = analysis.natural_id[0]
       layer.save
       layer
     end

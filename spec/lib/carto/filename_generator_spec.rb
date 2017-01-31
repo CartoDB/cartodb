@@ -41,11 +41,11 @@ describe Carto::FilenameGenerator do
     end
 
     it 'returns the filename for weirds URLs with filenames within the parameters (see #5704)' do
-      filename = '1259030001_MB_2011_ASGC_NSW_csv.zip'
+      inner_filename = '1259030001_MB_2011_ASGC_NSW_csv.zip'
       weird_url = "http://www.abs.gov.au/ausstats/subscriber.nsf/log?openagent&"\
-                  "#{filename}"\
+                  "#{inner_filename}"\
                   "&1259.0.30.001&Data%20Cubes&2787F2FFF3F6E607CA2578CC001268ED&0&July%202011&05.10.2011&Latest"
-      [[weird_url, filename]].each do |url, filename|
+      [[weird_url, inner_filename]].each do |url, filename|
         generator.filename_from_url(url, supported_extensions).should eq filename
       end
     end

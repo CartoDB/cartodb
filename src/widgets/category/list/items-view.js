@@ -55,14 +55,14 @@ module.exports = cdb.core.View.extend({
   _renderPlaceholder: function () {
     // Change view classes
     this.$el
-      .addClass('CDB-Widget-list--withBorders')
+      .addClass('CDB-Widget-list--withBorders CDB-Widget-list--fake')
       .removeClass('CDB-Widget-list--wrapped');
     this.$el.append(placeholder());
   },
 
   _renderList: function () {
     // Change view classes
-    this.$el.removeClass('CDB-Widget-list--withBorders');
+    this.$el.removeClass('CDB-Widget-list--withBorders CDB-Widget-list--fake');
     this.$el[this.options.paginator ? 'addClass' : 'removeClass']('CDB-Widget-list--wrapped');
 
     var groupItem;

@@ -31,7 +31,7 @@ CartoDB::Application.configure do
 
   # Adjust the log level. Note that assigning to `config.log_levl` would
   # have no effect here, since we have set the logger explicitly.
-  config.logger.level = 0 # :debug
+  config.logger.level = Logger::DEBUG
 
   # Use a different cache store in production
   # config.cache_store = :mem_cache_store

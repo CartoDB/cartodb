@@ -16,5 +16,5 @@ ActiveRecord::Base.establish_connection @dbconfig[Rails.env].merge(active_record
 # in the same log (STDOUT) as the messages from Sequel (note that for development Rails.logger is configured as STDOUT)
 if Rails.env == 'development'
   ActiveRecord::Base.logger = Logger.new(STDOUT)
-  ActiveRecord::Base.logger.level = 0 # :debug
+  ActiveRecord::Base.logger.level = Logger::DEBUG
 end

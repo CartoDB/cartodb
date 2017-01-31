@@ -24,12 +24,15 @@ CartoDB::Application.configure do
 
   # Use a different logger for distributed setups
   # config.logger = SyslogLogger.new
-  config.logger = ActiveSupport::TaggedLogging.new(ActiveSupport::BufferedLogger.new(Carto::Conf.new.log_file_path('production.log')))
 
-  # Adjust the log level. Note that assigning to `config.log_levl` would
-  # have no effect here, since we have set the logger explicitly.
-  # We'll set the level to :info, which omits SQL statements in the log.
-  config.logger.level = 1 # :info
+  # Note that we pass the desired log level to the logger's constructor;
+  # assigning to `config.log_level` would have no effect here, since we have set the logger explicitly.
+  config.logger = ActiveSupport::TaggedLogging.new(ActiveSupport::BufferedLogger.new(Carto::Conf.new.log_file_path('production.log'), Logger::INFO))
+
+  # # Adjust the log level. Note that assigning to `config.log_level` would
+  # # have no effect here, since we have set the logger explicitly.
+  # # We'll set the level to :info, which omits SQL statements in the log.
+  # config.logger.level = 1 # :info
 
   # Use a different cache store in production
   # config.cache_store = :mem_cache_store

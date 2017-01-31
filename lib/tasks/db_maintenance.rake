@@ -412,7 +412,10 @@ namespace :cartodb do
       start = args[:start]
       puts "Resetting check quota trigger for ##{::User.count} users"
       i = 0
-      Carto::User.find_each(start: start) do |user|
+
+      query = ::User.order(:id)
+      query = query.where('id > ?', start) if start
+      query.use_cursor(rows_per_fetch: 500).each do |user|
         begin
           puts "Setting user quota in db '#{user.database_name}' (#{user.id} #{user.username})"
           user.db_service.rebuild_quota_trigger

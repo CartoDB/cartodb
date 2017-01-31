@@ -13,10 +13,6 @@ module Carto
       @user = user
     end
 
-    def rebuild_quota_trigger
-      # TODO: Implement/clone from Sequel model
-    end
-
     def build_search_path(user_schema = nil, quote_user_schema = true)
       user_schema ||= @user.database_schema
       UserDBService.build_search_path(user_schema, quote_user_schema)
@@ -28,11 +24,5 @@ module Carto
       quote_char = quote_user_schema ? "\"" : ""
       "#{quote_char}#{user_schema}#{quote_char}, #{SCHEMA_CARTODB}, #{SCHEMA_CDB_DATASERVICES_API}, #{SCHEMA_PUBLIC}"
     end
-
-
-    def load_cartodb_functions
-      #TODO: Implement
-    end
-
   end
 end

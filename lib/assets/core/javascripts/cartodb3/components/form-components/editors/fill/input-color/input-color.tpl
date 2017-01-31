@@ -20,7 +20,7 @@
 </button>
 <% } %>
 
-<% if (categoryImagesPresent) { %>
+<% if (showCategories && categoryImagesPresent) { %>
 <button type="button" class="Editor-fillImage u-lSpace">
   <div class='Editor-categoryImagesTag CDB-Text CDB-FontSize-small u-altTextColor is-semibold u-upperCase'><%= _t('form-components.editors.fill.input-color.img') %></div>
 </button>

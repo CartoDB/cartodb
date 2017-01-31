@@ -12,8 +12,10 @@
 .FlashMessage > .u-inner {
   @include display-flex();
   @include justify-content(center, justify);
-  @include align-items(center);
+  @include flex-direction(column);
+  @include align-items(left);
   height: 80px;
+  line-height: $sLineHeight-larger;
 }
 .FlashMessage.FlashMessage--inDialogWithFiltersNavListing {
   position: fixed;
@@ -30,12 +32,19 @@
 .FlashMessage--error {
   background: #FFDBDB;
 }
+.FlashMessage--warning {
+  background: #FFFFD9;
+}
 .FlashMessage--main {
   background: #F0F7FC;
 }
 .FlashMessage-info {
   color: $cTypography-headers;
   font-size: $sFontSize-large;
+}
+.FlashMessage-detail {
+  color: $cTypography-secondary;
+  font-size: $sFontSize-normal;
 }
 .FlashMessage-info--larger {
   max-width: 720px;

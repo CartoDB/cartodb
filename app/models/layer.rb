@@ -38,8 +38,8 @@ class Layer < Sequel::Model
   end
 
   one_to_many  :layer_node_styles
-  many_to_many :maps,  :after_add => proc { |layer, parent| layer.set_default_order(parent) }
-  many_to_many :users, :after_add => proc { |layer, parent| layer.set_default_order(parent) }
+  many_to_many :maps,  after_add: proc { |layer, parent| layer.after_added_to_map(parent) }
+  many_to_many :users, after_add: proc { |layer, parent| layer.set_default_order(parent) }
   many_to_many :user_tables,
                 join_table: :layers_user_tables,
                 left_key: :layer_id, right_key: :user_table_id,
@@ -165,7 +165,7 @@ class Layer < Sequel::Model
   end
 
   def uses_private_tables?
-    !(affected_tables.select(&:private?).empty?)
+    user_tables.select(&:private?).any?
   end
 
   def legend
@@ -192,6 +192,11 @@ class Layer < Sequel::Model
 
   def qualify_for_organization(owner_username)
     options['query'] = qualify_query(query, options['table_name'], owner_username) if query
+  end
+
+  def after_added_to_map(map)
+    set_default_order(map)
+    register_table_dependencies
   end
 
   private

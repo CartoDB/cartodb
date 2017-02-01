@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.5.123",
+  "version": "4.5.126",
   "dependencies": {
     "backbone": {
       "version": "1.2.3",
@@ -966,7 +966,7 @@
                     },
                     "inherits": {
                       "version": "2.0.3",
-                      "from": "inherits@>=2.0.1 <2.1.0",
+                      "from": "inherits@>=2.0.0 <3.0.0",
                       "resolved": "https://registry.npmjs.org/inherits/-/inherits-2.0.3.tgz"
                     }
                   }
@@ -1431,7 +1431,7 @@
                     "glob": {
                       "version": "7.1.1",
                       "from": "glob@>=7.0.5 <8.0.0",
-                      "resolved": "http://registry.npmjs.org/glob/-/glob-7.1.1.tgz",
+                      "resolved": "https://registry.npmjs.org/glob/-/glob-7.1.1.tgz",
                       "dependencies": {
                         "fs.realpath": {
                           "version": "1.0.0",
@@ -1441,7 +1441,7 @@
                         "inflight": {
                           "version": "1.0.6",
                           "from": "inflight@>=1.0.4 <2.0.0",
-                          "resolved": "http://registry.npmjs.org/inflight/-/inflight-1.0.6.tgz",
+                          "resolved": "https://registry.npmjs.org/inflight/-/inflight-1.0.6.tgz",
                           "dependencies": {
                             "wrappy": {
                               "version": "1.0.2",
@@ -1473,7 +1473,7 @@
                                 "concat-map": {
                                   "version": "0.0.1",
                                   "from": "concat-map@0.0.1",
-                                  "resolved": "http://registry.npmjs.org/concat-map/-/concat-map-0.0.1.tgz"
+                                  "resolved": "https://registry.npmjs.org/concat-map/-/concat-map-0.0.1.tgz"
                                 }
                               }
                             }
@@ -1494,7 +1494,7 @@
                         "path-is-absolute": {
                           "version": "1.0.1",
                           "from": "path-is-absolute@>=1.0.0 <2.0.0",
-                          "resolved": "http://registry.npmjs.org/path-is-absolute/-/path-is-absolute-1.0.1.tgz"
+                          "resolved": "https://registry.npmjs.org/path-is-absolute/-/path-is-absolute-1.0.1.tgz"
                         }
                       }
                     }
@@ -1956,7 +1956,7 @@
                 "glob": {
                   "version": "7.1.1",
                   "from": "glob@>=7.0.5 <8.0.0",
-                  "resolved": "http://registry.npmjs.org/glob/-/glob-7.1.1.tgz",
+                  "resolved": "https://registry.npmjs.org/glob/-/glob-7.1.1.tgz",
                   "dependencies": {
                     "fs.realpath": {
                       "version": "1.0.0",
@@ -1966,7 +1966,7 @@
                     "inflight": {
                       "version": "1.0.6",
                       "from": "inflight@>=1.0.4 <2.0.0",
-                      "resolved": "http://registry.npmjs.org/inflight/-/inflight-1.0.6.tgz",
+                      "resolved": "https://registry.npmjs.org/inflight/-/inflight-1.0.6.tgz",
                       "dependencies": {
                         "wrappy": {
                           "version": "1.0.2",
@@ -1998,7 +1998,7 @@
                             "concat-map": {
                               "version": "0.0.1",
                               "from": "concat-map@0.0.1",
-                              "resolved": "http://registry.npmjs.org/concat-map/-/concat-map-0.0.1.tgz"
+                              "resolved": "https://registry.npmjs.org/concat-map/-/concat-map-0.0.1.tgz"
                             }
                           }
                         }
@@ -2019,7 +2019,7 @@
                     "path-is-absolute": {
                       "version": "1.0.1",
                       "from": "path-is-absolute@>=1.0.0 <2.0.0",
-                      "resolved": "http://registry.npmjs.org/path-is-absolute/-/path-is-absolute-1.0.1.tgz"
+                      "resolved": "https://registry.npmjs.org/path-is-absolute/-/path-is-absolute-1.0.1.tgz"
                     }
                   }
                 }

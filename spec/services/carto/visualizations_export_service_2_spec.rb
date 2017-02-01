@@ -862,17 +862,17 @@ describe Carto::VisualizationsExportService2 do
         user_table = Carto::UserTable.find(table.id)
         share_table_with_user(table, shared_user)
 
-        query_1 = query(table, owner_user)
+        query1 = query(table, owner_user)
         layer_options = {
           table_name: table.name,
-          query: query_1,
+          query: query1,
           user_name: owner_user.username,
-          query_history: [query_1]
+          query_history: [query1]
         }
         layer = FactoryGirl.create(:carto_layer, options: layer_options)
-        layer.options['query'].should eq query_1
+        layer.options['query'].should eq query1
         layer.options['user_name'].should eq owner_user.username
-        layer.options['query_history'].should eq [query_1]
+        layer.options['query_history'].should eq [query1]
 
         map = FactoryGirl.create(:carto_map, layers: [layer], user: owner_user)
         map, table, table_visualization, visualization = create_full_visualization(owner_user,
@@ -881,7 +881,7 @@ describe Carto::VisualizationsExportService2 do
                                                                                        data_layer: layer)
 
         FactoryGirl.create(:source_analysis, visualization: visualization, user: owner_user,
-                                             source_table: table.name, query: query_1)
+                                             source_table: table.name, query: query1)
         return map, table, table_visualization, visualization
       end
 
@@ -893,14 +893,14 @@ describe Carto::VisualizationsExportService2 do
       let(:export_service) { Carto::VisualizationsExportService2.new }
 
       def check_username_change(visualization, table, source_user, target_user)
-        query_1 = query(table, source_user)
+        query1 = query(table, source_user)
         exported = export_service.export_visualization_json_hash(visualization.id, target_user)
         layers = exported[:visualization][:layers]
         layers.should_not be_nil
         layer = layers[0]
-        layer[:options]['query'].should eq query_1
+        layer[:options]['query'].should eq query1
         layer[:options]['user_name'].should eq source_user.username
-        layer[:options]['query_history'].should eq [query_1]
+        layer[:options]['query_history'].should eq [query1]
 
         built_viz = export_service.build_visualization_from_hash_export(exported)
         imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(target_user, built_viz)
@@ -954,15 +954,15 @@ describe Carto::VisualizationsExportService2 do
         target_user = @carto_org_user_1
         @map, @table, @table_visualization, @visualization = shared_table_viz_with_layer_query(source_user, target_user)
 
-        query_1 = query(@table, source_user)
+        query1 = query(@table, source_user)
         # Self export
         exported = export_service.export_visualization_json_hash(@visualization.id, source_user)
         layers = exported[:visualization][:layers]
         layers.should_not be_nil
         layer = layers[0]
-        layer[:options]['query'].should eq query_1
+        layer[:options]['query'].should eq query1
         layer[:options]['user_name'].should eq source_user.username
-        layer[:options]['query_history'].should eq [query_1]
+        layer[:options]['query_history'].should eq [query1]
 
         delete_user_data org_user_same_name
         org_user_same_name.destroy

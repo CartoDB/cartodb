@@ -2,7 +2,7 @@ module Carto
   module QueryRewriter
     def rewrite_query(query, old_username, new_user, renamed_tables)
       new_query = query
-      new_query = rewrite_query_for_new_user(query, old_username, new_user) if old_username != new_user.username
+      new_query = rewrite_query_for_new_user(query, old_username, new_user) if old_username != new_user.database_schema
       new_query = rewrite_query_for_renamed_tables(new_query, renamed_tables) if renamed_tables.present?
       if test_query(new_user, new_query)
         new_query

@@ -886,7 +886,7 @@ describe Carto::VisualizationsExportService2 do
       end
 
       after(:each) do
-        ::UserTable[@table.id].destroy
+        ::UserTable[@table.id].destroy if @table && ::UserTable[@table.id]
         destroy_full_visualization(@map, @table, @table_visualization, @visualization)
       end
 
@@ -945,6 +945,44 @@ describe Carto::VisualizationsExportService2 do
         @map, @table, @table_visualization, @visualization = shared_table_viz_with_layer_query(source_user, target_user)
         source_user.username.should include('-')
         check_username_change(@visualization, @table, source_user, target_user).should eq query(@table)
+      end
+
+      it 'removes owner name from user_name and query importing into a non-org. even if username matches' do
+        name = 'wadus-user'
+        org_user_same_name = @helper.create_test_user(name, @organization)
+        source_user = Carto::User.find(org_user_same_name.id)
+        target_user = @carto_org_user_1
+        @map, @table, @table_visualization, @visualization = shared_table_viz_with_layer_query(source_user, target_user)
+
+        query_1 = query(@table, source_user)
+        # Self export
+        exported = export_service.export_visualization_json_hash(@visualization.id, source_user)
+        layers = exported[:visualization][:layers]
+        layers.should_not be_nil
+        layer = layers[0]
+        layer[:options]['query'].should eq query_1
+        layer[:options]['user_name'].should eq source_user.username
+        layer[:options]['query_history'].should eq [query_1]
+
+        delete_user_data org_user_same_name
+        org_user_same_name.destroy
+
+        user_same_name = @helper.create_test_user(name)
+        carto_user_same_name = Carto::User.find(user_same_name.id)
+
+        built_viz = export_service.build_visualization_from_hash_export(exported)
+        imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(carto_user_same_name, built_viz)
+        imported_layer = imported_viz.layers[0]
+
+        imported_layer[:options]['user_name'].should eq user_same_name.username
+
+        analysis_definition = imported_viz.analyses.first.analysis_definition
+        analysis_definition[:params][:query].should eq imported_layer[:options]['query']
+
+        imported_layer[:options]['query'].should eq query(@table)
+
+        delete_user_data user_same_name
+        user_same_name.destroy
       end
 
       it 'does not replace owner name with new user name on import when new query fails' do

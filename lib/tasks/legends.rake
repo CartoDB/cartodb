@@ -67,14 +67,16 @@ namespace :carto do
                     css_url_match = icon && CSS_URL_REGEX.match(icon)
                     if css_url_match
                       icon = css_url_match[1]
+
+                      category[:icon] = icon
                     end
 
                     static_assets_match = icon && STATIC_ASSETS_REGEX.match(icon)
                     if static_assets_match
                       icon = "https://s3.amazonaws.com/com.cartodb.users-assets.production#{static_assets_match[1]}"
-                    end
 
-                    category[:icon] = icon
+                      category[:icon] = icon
+                    end
 
                     acc_category += 1
                   end

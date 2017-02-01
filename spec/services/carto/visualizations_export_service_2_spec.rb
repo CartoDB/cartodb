@@ -857,6 +857,10 @@ describe Carto::VisualizationsExportService2 do
         end
       end
 
+      def setup_visualization_with_layer_query(owner_user, shared_user)
+        @map, @table, @table_visualization, @visualization = shared_table_viz_with_layer_query(owner_user, shared_user)
+      end
+
       def shared_table_viz_with_layer_query(owner_user, shared_user)
         table = create_table(privacy: UserTable::PRIVACY_PRIVATE, name: table_name, user_id: owner_user.id)
         user_table = Carto::UserTable.find(table.id)
@@ -917,7 +921,7 @@ describe Carto::VisualizationsExportService2 do
       it 'replaces owner name with new user name on import for user_name and query' do
         source_user = @carto_org_user_1
         target_user = @carto_org_user_2
-        @map, @table, @table_visualization, @visualization = shared_table_viz_with_layer_query(source_user, target_user)
+        setup_visualization_with_layer_query(source_user, target_user)
         source_user.username.should_not include('-')
         check_username_change(@visualization, @table, source_user, target_user).should eq query(@table, target_user)
       end
@@ -925,7 +929,7 @@ describe Carto::VisualizationsExportService2 do
       it 'replaces owner name (with dash) with new user name on import for user_name and query' do
         source_user = @carto_org_user_with_dash_1
         target_user = @carto_org_user_with_dash_2
-        @map, @table, @table_visualization, @visualization = shared_table_viz_with_layer_query(source_user, target_user)
+        setup_visualization_with_layer_query(source_user, target_user)
         source_user.username.should include('-')
         check_username_change(@visualization, @table, source_user, target_user).should eq query(@table, target_user)
       end
@@ -933,7 +937,7 @@ describe Carto::VisualizationsExportService2 do
       it 'replaces owner name (without dash) with new user name (with dash) on import for user_name and query' do
         source_user = @carto_org_user_1
         target_user = @carto_org_user_with_dash_2
-        @map, @table, @table_visualization, @visualization = shared_table_viz_with_layer_query(source_user, target_user)
+        setup_visualization_with_layer_query(source_user, target_user)
         source_user.username.should_not include('-')
         target_user.username.should include('-')
         check_username_change(@visualization, @table, source_user, target_user).should eq query(@table, target_user)
@@ -942,7 +946,7 @@ describe Carto::VisualizationsExportService2 do
       it 'removes owner name from user_name and query importing into a non-organization account' do
         source_user = @carto_org_user_with_dash_1
         target_user = @carto_normal_user
-        @map, @table, @table_visualization, @visualization = shared_table_viz_with_layer_query(source_user, target_user)
+        setup_visualization_with_layer_query(source_user, target_user)
         source_user.username.should include('-')
         check_username_change(@visualization, @table, source_user, target_user).should eq query(@table)
       end
@@ -991,7 +995,7 @@ describe Carto::VisualizationsExportService2 do
         Carto::Layer.any_instance.stubs(:test_query).returns(false)
         source_user = @carto_org_user_1
         target_user = @carto_org_user_2
-        @map, @table, @table_visualization, @visualization = shared_table_viz_with_layer_query(source_user, target_user)
+        setup_visualization_with_layer_query(source_user, target_user)
         check_username_change(@visualization, @table, source_user, target_user).should eq query(@table, source_user)
       end
     end

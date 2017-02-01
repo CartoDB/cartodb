@@ -1422,6 +1422,9 @@
       "image": {
         "title-label": "Image"
       },
+      "gmaps": {
+        "title-label": "Google Maps"
+      },
       "menu-tab-pane-labels": {
         "data": "Data",
         "analyses": "Analysis",

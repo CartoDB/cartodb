@@ -33,6 +33,7 @@ namespace :carto do
         include Carto::MapcappedVisualizationUpdater
 
         CSS_URL_REGEX = /^(?:url\(['"]?)(.*?)(?:['"]?\))$/
+        STATIC_ASSETS_REGEX = /http:\/\/com.cartodb.users-assets.production.s3.amazonaws.com(.*)/
 
         puts "Updating base layer urls"
         layers = Carto::Layer.joins(:legends).where(legends: { type: 'custom' })
@@ -62,11 +63,18 @@ namespace :carto do
 
                   categories && categories.each do |category|
                     icon = category[:icon]
-                    match = icon && CSS_URL_REGEX.match(icon)
 
-                    if match
-                      category[:icon] = match[1]
+                    css_url_match = icon && CSS_URL_REGEX.match(icon)
+                    if css_url_match
+                      icon = css_url_match[1]
                     end
+
+                    static_assets_match = icon && STATIC_ASSETS_REGEX.match(icon)
+                    if static_assets_match
+                      icon = "https://s3.amazonaws.com/com.cartodb.users-assets.production#{static_assets_match[1]}"
+                    end
+
+                    category[:icon] = icon
 
                     acc_category += 1
                   end

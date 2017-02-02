@@ -298,7 +298,7 @@ describe Visualization::Member do
 
         Carto::Visualization.exists?(@visualization.id).should be_true
         Carto::Visualization.exists?(@table_visualization.id).should be_true
-        Carto::Layer.exists?(canonical_layer.id).should be_false
+        Carto::Layer.exists?(canonical_layer.id).should be_true
         Carto::UserTable.exists?(@table.id).should be_true
         Carto::Map.exists?(canonical_map.id).should be_true
       end

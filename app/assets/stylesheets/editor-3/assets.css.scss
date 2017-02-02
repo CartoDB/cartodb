@@ -85,6 +85,11 @@
 
 .AssetsList-item.AssetsList-item--text {
   border: 1px dotted $cMainLine;
+
+  &:hover {
+    border: 1px solid $cMainLine;
+    cursor: pointer;
+  }
 }
 
 .AssetsList-item.AssetsList-item--text.is-selected {

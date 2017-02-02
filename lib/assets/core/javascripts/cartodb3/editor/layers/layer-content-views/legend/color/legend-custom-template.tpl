@@ -5,7 +5,7 @@
       <% if (items[i].color) { %>
         <span class="Legend-categoryCircle" style="opacity:1; background: <%= items[i].color %>;"></span>
       <% } else if (items[i].icon) { %>
-        <span class="Legend-categoryIcon" style="opacity:1; background-image: <%= items[i].icon %>;"></span>
+        <span class="Legend-categoryIcon js-image-container" data-icon="<%= items[i].icon %>" <% if (items[i].color) { %>data-color="<%= items[i].color %>"<% } %>></span>
       <% } %>
     </li>
   <% } %>

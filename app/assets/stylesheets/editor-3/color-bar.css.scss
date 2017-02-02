@@ -40,6 +40,11 @@
   width: 171px;
 }
 
+.ColorsBar {
+  @include display-flex();
+  @include flex(1);
+}
+
 .ColorBar {
   position: relative;
   width: 100%;
@@ -109,13 +114,6 @@
 .ColorBar.ColorBar--spaceSmall {
   margin-right: 2px;
   border-radius: 2px;
-}
-.ColorBar.ColorBar--spaceSmall:first-child {
-  border-radius: $baseSize - 2 3px 3px $baseSize - 2;
-}
-.ColorBar.ColorBar--spaceSmall:last-child {
-  margin-right: 0;
-  border-radius: 3px $baseSize - 2 $baseSize - 2 3px;
 }
 
 .ColorBarWrapper--withInvertLink {

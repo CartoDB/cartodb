@@ -424,6 +424,38 @@ describe CartoDB::Connector::Importer do
       ::UserTable[existing_table.id].destroy
     end
 
+    it 'imports a visualization export and table is not duplicated if collision strategy is skip' do
+      table_name = 'twitter_t3chfest_reduced'
+      existing_table = create_table(name: table_name, user_id: @user.id)
+      filepath = "#{Rails.root}/services/importer/spec/fixtures/visualization_export_with_csv_table.carto"
+
+      data_import = DataImport.create(
+        user_id: @user.id,
+        data_source: filepath,
+        updated_at: Time.now.utc,
+        append: false,
+        create_visualization: true,
+        collision_strategy: 'skip'
+      )
+      data_import.values[:data_source] = filepath
+
+      data_import.run_import!
+      data_import.success.should eq true
+
+      data_import.tables_created_count.should eq 0
+      data_import.table_names.should be_empty
+      data_import.table_name.should be_nil
+
+      visualization = Carto::Visualization.find(data_import.visualization_id)
+      visualization.data_layers.first.options['table_name'].should eq table_name
+
+      # TODO: check table linkage
+
+      data_import.destroy
+      visualization.destroy
+      ::UserTable[existing_table.id].destroy
+    end
+
     it 'imports a visualization export with two data layers' do
       filepath = "#{Rails.root}/services/importer/spec/fixtures/visualization_export_with_two_tables.carto"
 

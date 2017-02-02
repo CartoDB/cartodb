@@ -673,7 +673,8 @@ class DataImport < Sequel::Model
                                                 user: current_user,
                                                 unpacker: CartoDB::Importer2::Unp.new(Cartodb.config[:importer]),
                                                 post_import_handler: post_import_handler,
-                                                importer_config: Cartodb.config[:importer]
+                                                importer_config: Cartodb.config[:importer],
+                                                collision_strategy: collision_strategy
                                               })
       runner.loader_options = ogr2ogr_options.merge content_guessing_options
       runner.set_importer_stats_host_info(Socket.gethostname)
@@ -880,7 +881,7 @@ class DataImport < Sequel::Model
 
     # Calculate total size out of stats
     total_size = 0
-    ::JSON.parse(self.stats).each {|stat| total_size += stat['size']}
+    ::JSON.parse(self.stats).each { |stat| total_size += stat ? stat['size'] : 0 }
     importer_stats_aggregator.update_counter('total_size', total_size)
 
     import_time = self.updated_at - self.created_at

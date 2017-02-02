@@ -449,7 +449,11 @@ describe CartoDB::Connector::Importer do
       visualization = Carto::Visualization.find(data_import.visualization_id)
       visualization.data_layers.first.options['table_name'].should eq table_name
 
-      # TODO: check table linkage
+      visualization.data_layers.count.should eq 1
+      layer = visualization.data_layers.first
+      layer.user_tables.count.should eq 1
+      user_table = layer.user_tables.first
+      user_table.name.should eq table_name
 
       data_import.destroy
       visualization.destroy

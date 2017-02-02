@@ -83,6 +83,14 @@
   }
 }
 
+.AssetsList-item.AssetsList-item--text {
+  border: 1px dotted $cMainLine;
+}
+
+.AssetsList-item.AssetsList-item--text.is-selected {
+  border: 1px solid $cSecondaryLine;
+}
+
 .AssetsList-item.is-selected {
   border: 2px solid $cBlue;
 }
@@ -91,4 +99,10 @@
   width: $baseSize * 5;
   min-width: $baseSize * 5;
   height: $baseSize * 5;
+}
+
+.AssetsList-item--medium {
+  width: $baseSize * 7;
+  min-width: $baseSize * 7;
+  height: $baseSize * 7;
 }

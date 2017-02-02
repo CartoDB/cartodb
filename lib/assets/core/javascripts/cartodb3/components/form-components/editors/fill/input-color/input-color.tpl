@@ -16,13 +16,13 @@
   </button>
 <% } %>
 
-<% if (imageURL) { %>
+<% if (imageURL && kind !== 'custom-marker') { %>
 <button type="button" class="Editor-fillImage">
   <div class="js-image-container"></div>
 </button>
 <% } %>
 
-<% if (!imageURL && categoryImagesPresent) { %>
+<% if ((!imageURL && categoryImagesPresent) || (imageURL && kind === 'custom-marker')) { %>
 <button type="button" class="Editor-fillImage">
   <div class='Editor-categoryImagesTag CDB-Text CDB-FontSize-small u-altTextColor is-semibold u-upperCase'><%= _t('form-components.editors.fill.input-color.img') %></div>
 </button>

@@ -735,13 +735,28 @@
           "add-people": "Add people"
         }
       },
+      "assets-picker": {
+        "delete-image": "Delete image",
+        "delete-images": "Delete images",
+        "deselect-all": "Deselect all",
+        "error-desc": "Please, go back and try again. If the problem persists contact us at <a href='mailto:support@carto.com'>support@carto.com</a>",
+        "go-back": "Go back",
+        "loading": "Loading…",
+        "upload-desc": "Paste a URL or select a file like JPG, GIF, PNG, SVG",
+        "select-all": "Select all",
+        "upload-file-url": "Upload a file or a URL"
+      },
       "add-asset": {
+        "maki-icons": "Maki Icons",
+        "modal-desc": "or just use our nice selection",
         "modal-title": "Select marker image",
-        "modal-desc": "Upload your icons or just use our nice selection",
+        "pin-icons": "Pin Icons",
         "set-image": "Set image",
-        "your-uploads": "Your uploads",
         "simple-icons": "Simple Icons",
-        "pin-icons": "Pin Icons"
+        "upload-file": "Upload file",
+        "upload-asset": "Upload asset",
+        "upload-image": "Upload your image",
+        "your-uploads": "Your uploads"
       },
       "add-analysis": {
         "modal-title": "Add a new analysis",

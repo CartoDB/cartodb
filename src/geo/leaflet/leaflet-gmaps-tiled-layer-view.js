@@ -33,7 +33,7 @@ var substitutes = {
 
 var LeafletGmapsTiledLayerView = L.TileLayer.extend({
   initialize: function(layerModel, leafletMap) {
-    var substitute = substitutes[layerModel.get('base_type')];
+    var substitute = substitutes[layerModel.get('baseType')];
     L.TileLayer.prototype.initialize.call(this, substitute.url, {
       tms:          false,
       attribution:  substitute.attribution,

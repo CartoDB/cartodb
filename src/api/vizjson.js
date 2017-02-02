@@ -110,7 +110,7 @@ VizJSON.prototype.enforceGMapsBaseLayer = function (gmapsBaseType, gmapsStyle) {
   if (this.map_provider === VizJSON.MAP_PROVIDER_TYPES.LEAFLET && isGmapsBaseTypeValid) {
     if (this.layers) {
       this.layers[0].options.type = 'GMapsBase';
-      this.layers[0].options.base_type = gmapsBaseType;
+      this.layers[0].options.baseType = gmapsBaseType;
       this.layers[0].options.name = gmapsBaseType;
 
       if (gmapsStyle) {
@@ -123,7 +123,7 @@ VizJSON.prototype.enforceGMapsBaseLayer = function (gmapsBaseType, gmapsStyle) {
       log.error('No base map loaded. Using Leaflet.');
     }
   } else {
-    log.error('GMaps base_type "' + gmapsBaseType + ' is not supported. Using leaflet.');
+    log.error('GMaps baseType "' + gmapsBaseType + ' is not supported. Using leaflet.');
   }
 };
 

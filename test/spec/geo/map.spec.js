@@ -313,9 +313,9 @@ describe('core/geo/map', function () {
         expectedLayerModelClass: GMapsBaseLayer,
         expectedLayerModelType: 'GMapsBase',
         testAttributes: {
-          base_type: 'http://example.com'
+          baseType: 'http://example.com'
         },
-        expectedErrorMessage: 'The following attributes are missing: base_type'
+        expectedErrorMessage: 'The following attributes are missing: baseType'
       },
       {
         createMethod: 'createPlainLayer',

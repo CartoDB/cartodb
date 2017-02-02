@@ -181,7 +181,7 @@ describe('geo/leaflet/leaflet-map-view', function () {
   });
 
   // Test cases for gmaps substitutes since the support is deprecated.
-  _({ // GMaps basemap base_type: expected substitute data
+  _({ // GMaps basemap baseType: expected substitute data
     // empty = defaults to gray_roadmap
     '': {
       tiles: {
@@ -248,7 +248,7 @@ describe('geo/leaflet/leaflet-map-view', function () {
     var testContext;
 
     if (baseType) {
-      layerOpts = {base_type: baseType};
+      layerOpts = {baseType: baseType};
       testContext = 'with basemap "' + baseType + '"';
     } else {
       testContext = 'with default basemap "gray_roadmap"';

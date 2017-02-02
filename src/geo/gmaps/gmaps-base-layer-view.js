@@ -2,7 +2,6 @@
 var _ = require('underscore');
 var GMapsLayerView = require('./gmaps-layer-view');
 
-var DEFAULT_MAP_STYLE = require('./gmaps-default-map-style');
 var GOOGLE_MAP_TYPE_IDS = {
   'roadmap': google.maps.MapTypeId.ROADMAP,
   'gray_roadmap': google.maps.MapTypeId.ROADMAP,
@@ -21,8 +20,8 @@ _.extend(
   GMapsLayerView.prototype, {
     addToMap: function () {
       this.gmapsMap.setOptions({
-        mapTypeId: GOOGLE_MAP_TYPE_IDS[this.model.get('base_type')],
-        styles: this.model.get('style') || DEFAULT_MAP_STYLE
+        mapTypeId: GOOGLE_MAP_TYPE_IDS[this.model.get('baseType')],
+        styles: this.model.get('style')
       });
     },
 
@@ -30,8 +29,8 @@ _.extend(
 
     _onModelUpdated: function () {
       this.gmapsMap.setOptions({
-        mapTypeId: GOOGLE_MAP_TYPE_IDS[this.model.get('base_type')],
-        styles: this.model.get('style') || DEFAULT_MAP_STYLE
+        mapTypeId: GOOGLE_MAP_TYPE_IDS[this.model.get('baseType')],
+        styles: JSON.parse(this.model.get('style'))
       });
     }
   }

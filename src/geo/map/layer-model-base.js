@@ -95,7 +95,7 @@ var MapLayer = Model.extend({
       } else if (myType === 'named_map') {
         return cdb.geo.CartoDBNamedMapLayer.prototype.isEqual.call(this, layer);
       } else { // same type but not tiled
-        var myBaseType = me.base_type ? me.base_type : me.options.base_type;
+        var myBaseType = me.baseType ? me.baseType : me.options.baseType;
         if (myBaseType) {
           if (_.isEqual(me, other)) {
             return true;

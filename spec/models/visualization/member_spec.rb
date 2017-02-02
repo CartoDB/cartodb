@@ -240,54 +240,6 @@ describe Visualization::Member do
         @user.destroy
       end
 
-      it 'destroys maps if they are dependent' do
-        table_visualization = CartoDB::Visualization::Member.new(id: @table_visualization.id).fetch
-        table_visualization.delete
-
-        Carto::Visualization.exists?(@visualization.id).should be_false
-      end
-
-      it 'unlinks only dependent data layers' do
-        layer_to_be_deleted = @visualization.data_layers.first
-        layer = FactoryGirl.build(:carto_layer, kind: 'carto', maps: [@map])
-        layer.options[:query] = "SELECT * FROM #{@other_table.name}"
-        layer.save
-        layer.user_tables << @other_table
-
-        table_visualization = CartoDB::Visualization::Member.new(id: @table_visualization.id).fetch
-        table_visualization.delete
-
-        Carto::Visualization.exists?(@visualization.id).should be_true
-        Carto::Layer.exists?(layer_to_be_deleted.id).should be_false
-        Carto::Layer.exists?(layer.id).should be_true
-      end
-
-      it 'deletes related analysis' do
-        layer_to_be_deleted = @visualization.data_layers.first
-        layer_to_be_deleted.options[:source] = 'a0'
-        layer_to_be_deleted.save
-        layer_to_be_deleted.user_tables << @table
-
-        layer = FactoryGirl.build(:carto_layer, kind: 'carto', maps: [@map])
-        layer.options[:source] = 'b0'
-        layer.save
-        layer.user_tables << @other_table
-
-        # We are doing dependencies manually because the physical table does not exist
-        Carto::Map.any_instance.stubs(:update_dataset_dependencies)
-        analysis_to_be_deleted = @visualization.analyses.create(user: @user, analysis_definition: { id: 'a0' })
-        analysis_to_keep = @visualization.analyses.create(user: @user, analysis_definition: { id: 'b0' })
-
-        table_visualization = CartoDB::Visualization::Member.new(id: @table_visualization.id).fetch
-        table_visualization.delete
-
-        Carto::Visualization.exists?(@visualization.id).should be_true
-        Carto::Layer.exists?(layer_to_be_deleted.id).should be_false
-        Carto::Layer.exists?(layer.id).should be_true
-        Carto::Analysis.exists?(analysis_to_be_deleted.id).should be_false
-        Carto::Analysis.exists?(analysis_to_keep.id).should be_true
-      end
-
       it 'does not delete any metadata in case of deletion error' do
         canonical_map = @table_visualization.map
         canonical_layer = @table_visualization.data_layers.first

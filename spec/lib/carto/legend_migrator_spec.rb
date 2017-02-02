@@ -142,7 +142,7 @@ module Carto
               {
                 "name" => "Untitled",
                 "visible" => true,
-                "value" => "superduper.png",
+                "value" => "url(http://com.cartodb.users-assets.production.s3.amazonaws.com/superduper.png)",
                 "sync" => true
               },
               {
@@ -190,6 +190,15 @@ module Carto
           category_keys.should include(:title)
           category_keys.should include(:color)
           category_keys.should include(:icon)
+
+          if @old_legend['type'] == 'custom'
+            new_legend.definition[:categories].map { |category| category[:icon] }.each do |icon|
+              unless icon.blank?
+                icon.should include("https://s3.amazonaws.com/com.cartodb.users-assets.production/superduper.png")
+                icon.should_not include("url(")
+              end
+            end
+          end
         end
       end
 

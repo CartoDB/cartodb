@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.5.137",
+  "version": "4.5.130",
   "dependencies": {
     "backbone": {
       "version": "1.2.3",
@@ -1065,7 +1065,7 @@
                     },
                     "source-map": {
                       "version": "0.1.43",
-                      "from": "source-map@>=0.1.30 <0.2.0",
+                      "from": "source-map@>=0.1.33 <0.2.0",
                       "resolved": "https://registry.npmjs.org/source-map/-/source-map-0.1.43.tgz",
                       "dependencies": {
                         "amdefine": {

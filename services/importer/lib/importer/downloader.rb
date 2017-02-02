@@ -14,6 +14,7 @@ require_relative './url_translator/kimono_labs'
 require_relative './unp'
 require_relative '../../../../lib/carto/http/client'
 require_relative '../../../../lib/carto/url_validator'
+require_relative '../../../../lib/carto/filename_generator'
 require_relative '../helpers/quota_check_helpers.rb'
 
 # NOTE: Beware that some methods and some parameters are kept since this class is supposed to be
@@ -21,8 +22,6 @@ require_relative '../helpers/quota_check_helpers.rb'
 # managed this might have been through inheritance, since Ruby doesn't provide interfaces.
 # The out-facing methods this class must implement for this purpose are:
 # - supported_extensions
-# - supported_extensions_match
-# - url_filename_regex
 # - provides_stream?
 # - http_download?
 # - multi_resource_import_supported?
@@ -37,26 +36,12 @@ require_relative '../helpers/quota_check_helpers.rb'
 module CartoDB
   module Importer2
     class Downloader
-      include CartoDB::Importer2::QuotaCheckHelpers, Carto::UrlValidator
+      include CartoDB::Importer2::QuotaCheckHelpers, Carto::UrlValidator, Carto::FilenameGenerator
 
       def self.supported_extensions
         @supported_extensions ||= CartoDB::Importer2::Unp::SUPPORTED_FORMATS
                                   .concat(CartoDB::Importer2::Unp::COMPRESSED_EXTENSIONS)
                                   .sort_by(&:length).reverse
-      end
-
-      def self.supported_extensions_match
-        @supported_extensions_match ||= supported_extensions.map { |ext|
-          ext = ext.gsub('.', '\\.')
-          [/#{ext}$/i, /#{ext}(?=\.)/i, /#{ext}(?=\?)/i, /#{ext}(?=&)/i]
-        }.flatten
-      end
-
-      def self.url_filename_regex
-        return @url_filename_regex if @url_filename_regex
-
-        se_match_regex = Regexp.union(supported_extensions_match)
-        @url_filename_regex = Regexp.new("[[:word:]-]+#{se_match_regex}+", Regexp::IGNORECASE)
       end
 
       def provides_stream?
@@ -71,7 +56,7 @@ module CartoDB
         false
       end
 
-      attr_reader :source_file, :etag, :last_modified, :http_response_code, :datasource
+      attr_reader :source_file, :http_response_code, :datasource
 
       def initialize(user_id, url, http_options = {}, options = {})
         raise UploadError unless user_id && url
@@ -199,7 +184,7 @@ module CartoDB
 
         basename = @custom_filename ||
                    filename_from_headers ||
-                   filename_from_url ||
+                   filename_from_url(@translated_url, self.class.supported_extensions) ||
                    SecureRandom.urlsafe_base64
 
         @filename = filename_with_extension(basename)
@@ -342,23 +327,6 @@ module CartoDB
         parsed_filename = filename.delete("'").delete('"').split(';').first
 
         parsed_filename if parsed_filename.present?
-      end
-
-      def filename_from_url
-        filename = CGI.unescape(File.basename(URI(@translated_url).path))
-
-        extension = File.extname(filename)
-        if extension.present? && self.class.supported_extensions.include?(extension)
-          filename
-        else
-          # For non-conventional URLs (i.e: filename in params)
-          regex_match = self.class
-                            .url_filename_regex
-                            .match(@translated_url)
-                            .to_s
-
-          regex_match if regex_match.present?
-        end
       end
 
       CONTENT_TYPES_MAPPING = [

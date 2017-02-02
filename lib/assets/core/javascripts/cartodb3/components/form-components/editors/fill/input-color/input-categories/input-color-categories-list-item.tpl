@@ -7,7 +7,7 @@
     <% if (iconStylingEnabled) { %>
       <div class='RampItem-img'>
         <% if (image) { %>
-            <div class='js-image-container'></div>
+            <div class='js-image-container u-flex'></div>
         <% } else { %>
           <button class="CDB-Text u-actionTextColor js-assetPicker"><%= _t('form-components.editors.fill.input-color.img') %></button>
         <% } %>

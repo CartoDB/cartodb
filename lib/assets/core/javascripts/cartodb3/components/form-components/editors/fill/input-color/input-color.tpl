@@ -1,7 +1,9 @@
 <% if (showCategories) { %>
-  <% _.each(value, function (color) { %>
-    <div class="ColorBar ColorBar--spaceMedium" style="background-color: <%- color %>"></div>
-  <% }); %>
+  <ul class="ColorsBar">
+    <% _.each(value, function (color) { %>
+      <li class="ColorBar <%- categoryImagesPresent ? 'ColorBar--spaceSmall' : 'ColorBar--spaceMedium' %>" style="background-color: <%- color %>"></li>
+    <% }); %>
+  </ul>
 <% } else { %>
   <button type="button" class="Editor-fillContainer">
     <ul class="ColorBarContainer">
@@ -15,13 +17,13 @@
 <% } %>
 
 <% if (imageURL) { %>
-<button type="button" class="Editor-fillImage u-lSpace">
+<button type="button" class="Editor-fillImage">
   <div class="js-image-container"></div>
 </button>
 <% } %>
 
 <% if (!imageURL && categoryImagesPresent) { %>
-<button type="button" class="Editor-fillImage u-lSpace">
+<button type="button" class="Editor-fillImage">
   <div class='Editor-categoryImagesTag CDB-Text CDB-FontSize-small u-altTextColor is-semibold u-upperCase'><%= _t('form-components.editors.fill.input-color.img') %></div>
 </button>
 <% } %>

@@ -198,8 +198,13 @@ class DataImport < Sequel::Model
     log.append 'After dispatch'
 
     if results.empty?
-      self.error_code = 1002
-      self.state      = STATE_FAILURE
+      if collision_strategy == 'skip'
+        self.error_code = 1022
+        self.state = STATE_COMPLETE
+      else
+        self.error_code = 1002
+        self.state = STATE_FAILURE
+      end
       save
     end
 

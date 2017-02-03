@@ -14,6 +14,16 @@ describe CartoDB::Connector::Importer do
     bypass_named_maps
   end
 
+  after(:each) do
+    if @data_import
+      @data_import.table.destroy if @data_import.table.id.present?
+      @data_import.destroy
+    end
+    @visualization.destroy if @visualization
+    ::UserTable[@existing_table.id].destroy if @existing_table
+  end
+
+
   after(:all) do
     bypass_named_maps
     @user.destroy
@@ -90,18 +100,66 @@ describe CartoDB::Connector::Importer do
 
     filepath = "#{Rails.root}/spec/support/data/elecciones2008.csv"
 
-    data_import = DataImport.create(
+    @data_import = DataImport.create(
       :user_id       => @user.id,
       :data_source   => filepath,
       :updated_at    => Time.now,
       :append        => false,
       :privacy       => (::UserTable::PRIVACY_VALUES_TO_TEXTS.invert)['public']
     )
-    data_import.values[:data_source] = filepath
+    @data_import.values[:data_source] = filepath
 
-    data_import.run_import!
+    @data_import.run_import!
 
-    UserTable[id: data_import.table.id].privacy.should eq (::UserTable::PRIVACY_VALUES_TO_TEXTS.invert)['public']
+    UserTable[id: @data_import.table.id].privacy.should eq (::UserTable::PRIVACY_VALUES_TO_TEXTS.invert)['public']
+  end
+
+  it 'importing the same file twice should import the table twice renaming the second import' do
+    name = 'elecciones2008'
+    filepath = "#{Rails.root}/spec/support/data/#{name}.csv"
+
+    @data_import = DataImport.create(user_id: @user.id, data_source: filepath)
+    @data_import.values[:data_source] = filepath
+    @data_import.run_import!
+
+    @data_import.success.should eq true
+    UserTable[id: @data_import.table.id].name.should eq name
+
+    data_import2 = DataImport.create(user_id: @user.id, data_source: filepath)
+    data_import2.values[:data_source] = filepath
+    data_import2.run_import!
+
+    data_import2.success.should eq true
+    UserTable[id: data_import2.table.id].name.should eq "#{name}_1"
+
+    data_import2.table.destroy if data_import2 && data_import2.table.id.present?
+    data_import2.destroy
+  end
+
+  it 'importing the same file twice with collision strategy skip should import the table once' do
+    name = 'elecciones2008'
+    filepath = "#{Rails.root}/spec/support/data/#{name}.csv"
+
+    @data_import = DataImport.create(user_id: @user.id, data_source: filepath, collision_strategy: 'skip')
+    @data_import.values[:data_source] = filepath
+    @data_import.run_import!
+
+    UserTable[id: @data_import.table.id].name.should eq name
+    @data_import.success.should eq true
+
+    data_import2 = DataImport.create(user_id: @user.id, data_source: filepath, collision_strategy: 'skip')
+    data_import2.values[:data_source] = filepath
+    data_import2.run_import!
+
+    data_import2.error_code = 1022
+    data_import2.success.should eq true
+
+    data_import2.tables_created_count.should eq 0
+    data_import2.table_names.should eq ''
+    data_import2.table_name.should be_nil
+
+    data_import2.table.destroy if data_import2 && data_import2.table.id.present?
+    data_import2.destroy
   end
 
   it 'should import tables as private if privacy param is set to private' do
@@ -367,15 +425,6 @@ describe CartoDB::Connector::Importer do
   end
 
   describe 'visualization importing' do
-    after(:each) do
-      if @data_import
-        @data_import.table.destroy if @data_import && @data_import.table.id.present?
-        @data_import.destroy
-      end
-      @visualization.destroy if @visualization
-      ::UserTable[@existing_table.id].destroy if @existing_table
-    end
-
     it 'imports a visualization export' do
       filepath = "#{Rails.root}/services/importer/spec/fixtures/visualization_export_with_csv_table.carto"
 

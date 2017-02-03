@@ -25,6 +25,10 @@
 <% end %>
 
 <%= content_for(:js) do %>
+  <% if params[:vector] %>
+    <%= javascript_include_tag 'tangram.min.js' %>
+  <% end %>
+  
   <script>
     var vizJSON = <%= safe_js_object @vizjson.to_hash.to_json %>;
     var layersData = <%= safe_js_object @layers_data.to_json %>;

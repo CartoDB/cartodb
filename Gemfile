@@ -79,6 +79,8 @@ gem 'rollbar',               '~>2.11.1'
 gem 'resque',                '1.25.2'
 gem 'resque-metrics',        '0.1.1'
 
+gem 'net-telnet'
+
 # This is weird. In ruby 2 test-unit is required. We don't know why for sure
 gem 'test-unit'
 

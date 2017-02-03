@@ -486,11 +486,11 @@ describe CartoDB::Connector::Importer do
 
       @visualization.data_layers.count.should eq 2
 
-      expected_table_names.each { |table_name|
+      expected_table_names.each do |table_name|
         layer = @visualization.data_layers.find { |l| l.user_tables.first.name == table_name }
         layer.should_not be_nil
         layer.user_tables.count.should eq 1
-      }
+      end
       @data_import.tables.map(&:destroy)
     end
 

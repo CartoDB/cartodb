@@ -16,14 +16,14 @@
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.24);
 
     &.dark {
-      background:#000000;
+      background: #000000;
 
       h4 {
-        color:#999;
+        color: #999;
       }
 
       p {
-        color:#FFFFFF;
+        color: #FFFFFF;
       }
     }
   }
@@ -77,7 +77,7 @@
       max-height: 62px;
       overflow: hidden;
       padding: 17px 12px;
-      background: linear-gradient(right, #4F9CD7, #2B68A8);
+      background: linear-gradient(-90deg, #4F9CD7, #2B68A8);
 
       border-top-left-radius: 2px;
       border-top-right-radius: 2px;
@@ -88,52 +88,52 @@
         font: bold 21px "Helvetica Neue", "Helvetica", Arial;
         color: #FFFFFF;
         line-height: 23px;
-        text-shadow: 0 1px rgba(0,0,0,0.5);
+        text-shadow: 0 1px rgba(0, 0, 0, 0.5);
         word-wrap: break-word;
       }
     }
 
     /* Color header themes */
-    &.green div.cartodb-popup-header {
-      background: linear-gradient(top, #00CC99, #00B185);
+    &.green .cartodb-popup-header {
+      background: linear-gradient(-90deg, #0C9, #00B185);
 
       h4 {
         color: #00916D;
       }
-      span.separator {
+      .separator {
         background: #008E6A;
       }
     }
 
-    &.blue div.cartodb-popup-header {
-      background: linear-gradient(top, #4F9CD7, #2B68A8);
+    &.blue .cartodb-popup-header {
+      background: linear-gradient(-90deg, #4F9CD7, #2B68A8);
 
       h4 {
         color: #1F4C7F;
       }
-      span.separator {
+      .separator {
         background: #225386;
       }
     }
 
-    &.yellow div.cartodb-popup-header {
-      background: linear-gradient(top, #FFBF0D, #FF9933);
+    &.yellow .cartodb-popup-header {
+      background: linear-gradient(-90deg, #FFBF0D, #FF9933);
 
       h4 {
         color: #D8832A;
       }
-      span.separator {
+      .separator {
         background: #CC7A29;
       }
     }
 
-    &.orange div.cartodb-popup-header {
-      background: linear-gradient(top, #FF6825, #FF3333);
+    &.orange .cartodb-popup-header {
+      background: linear-gradient(-90deg, #FF6825, #FF3333);
 
       h4 {
         color: #CC2929;
       }
-      span.separator {
+      .separator {
         background: #CC2929;
       }
     }

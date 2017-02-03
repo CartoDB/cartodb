@@ -722,6 +722,10 @@ module CartoDB
         save_named_map
       end
 
+      def analysis_tree
+        Carto::AnalysisTree.new(Carto::Visualization.find(id))
+      end
+
       private
 
       attr_reader   :repository, :name_checker, :validator
@@ -933,12 +937,17 @@ module CartoDB
       end
 
       def remove_layers_from(table)
-        related_layers_from(table).each { |layer|
+        related_layers_from(table).each do |layer|
           map.remove_layer(layer)
           layer.destroy
-        }
+        end
         self.active_layer_id = layers(:cartodb).first.nil? ? nil : layers(:cartodb).first.id
         store
+
+        # Clean up unused analysis nodes
+        Rails::Sequel.connection.after_commit do
+          carto_visualization.analysis_tree.save(exclude: related_layers_from(table))
+        end
       end
 
       def related_layers_from(table)

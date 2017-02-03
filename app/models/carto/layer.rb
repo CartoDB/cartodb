@@ -78,8 +78,7 @@ module Carto
 
     has_many :layer_node_styles
 
-    before_destroy :ensure_not_viewer
-    before_destroy :invalidate_maps
+    before_destroy :ensure_not_viewer, :invalidate_maps
     after_save :invalidate_maps, :update_layer_node_style
     after_save :register_table_dependencies, if: :data_layer?
 
@@ -284,6 +283,15 @@ module Carto
       register_table_dependencies
     end
 
+    def source_id
+      options.symbolize_keys[:source]
+    end
+
+    def update_analysis_nodes_for_layer_deletion
+      return unless visualization
+      visualization.analysis_tree.save(exclude: [self])
+    end
+
     private
 
     def rename_in(target, anchor, substitution)
@@ -307,10 +315,6 @@ module Carto
 
     def query
       options.symbolize_keys[:query]
-    end
-
-    def source_id
-      options.symbolize_keys[:source]
     end
 
     def invalidate_maps

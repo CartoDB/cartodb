@@ -199,6 +199,10 @@ class Layer < Sequel::Model
     register_table_dependencies
   end
 
+  def source_id
+    options && options.symbolize_keys[:source]
+  end
+
   private
 
   def rename_in(target, anchor, substitution)
@@ -230,12 +234,12 @@ class Layer < Sequel::Model
     maps.first
   end
 
-  def query
-    options.symbolize_keys[:query]
+  def visualization
+    map.visualization if map
   end
 
-  def source_id
-    options && options.symbolize_keys[:source]
+  def query
+    options.symbolize_keys[:query]
   end
 
   def update_layer_node_style

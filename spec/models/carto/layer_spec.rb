@@ -11,7 +11,7 @@ describe Carto::Layer do
     def create_map(options = {})
       options.delete(:table_id)
       map = Carto::Map.create(options)
-      FactoryGirl.create(:carto_visualization, map: map, user_id: options[:user_id]) if options[:user_id].present?
+      FactoryGirl.create(:carto_visualization, map: map, user: Carto::User.find(options[:user_id])) if options[:user_id].present?
 
       map
     end
@@ -123,6 +123,128 @@ describe Carto::Layer do
       it 'should return the affected tables' do
         sql = "select coalesce('tabname', null) from cdb_tablemetadata;select 1;select * from spatial_ref_sys"
         @layer.send(:affected_table_names, sql).should =~ ["cartodb.cdb_tablemetadata", "public.spatial_ref_sys"]
+      end
+    end
+  end
+
+  describe '#update_analysis_nodes_for_layer_deletion' do
+    before(:all) do
+      @user = FactoryGirl.create(:carto_user, private_tables_enabled: true)
+    end
+
+    before(:each) do
+      bypass_named_maps
+      @map = Carto::Map.create(user_id: @user.id)
+      @visualization = FactoryGirl.create(:carto_visualization, map: @map, user: @user)
+
+      # Analysis and layer that should not be touched
+      @witness_analysis = FactoryGirl.build(:source_analysis, user_id: @user.id, visualization: @visualization)
+      @witness_analysis.analysis_definition[:id] = 'a0'
+      @witness_analysis.save
+
+      @witness_layer = Carto::Layer.create(kind: 'carto', maps: [@map])
+      @witness_layer.options[:source] = 'a0'
+      @witness_layer.save
+    end
+
+    after(:each) do
+      # Check that the witness layer/analysis are still there
+      witness_analysis = Carto::Analysis.find_by_natural_id(@visualization.id, 'a0')
+      witness_analysis.should be
+      witness_analysis.analysis_definition.should eq @witness_analysis.analysis_definition
+      @witness_layer.reload.should be
+
+      @map.destroy
+    end
+
+    after(:all) do
+      @user.destroy
+    end
+
+    def create_analysis_definition(tree)
+      node_id, definition = tree.entries.first
+      if definition == :source
+        # Source analysis
+        {
+          id: node_id,
+          type: 'source',
+          params: { query: 'SELECT * FROM wadus' }
+        }
+      elsif definition.count > 1
+        # Merge analysis
+        {
+          id: node_id,
+          type: 'intersection',
+          params: {
+            source: create_analysis_definition([definition.entries[0]].to_h),
+            target: create_analysis_definition([definition.entries[1]].to_h)
+          }
+        }
+      else
+        # Subsample analysis
+        {
+          id: node_id,
+          type: 'sampling',
+          params: {
+            source: create_analysis_definition(definition),
+            sampling: 0.1
+          }
+        }
+      end
+    end
+
+    def create_analysis(tree)
+      FactoryGirl.create(:analysis,
+                         analysis_definition: create_analysis_definition(tree),
+                         visualization: @visualization,
+                         user_id: @user.id)
+    end
+
+    def create_analysis_layer(analysis)
+      layer = Carto::Layer.create(kind: 'carto', maps: [@map])
+      layer.options[:source] = analysis.natural_id
+      layer.options[:letter] = analysis.natural_id[0]
+      layer.save
+      layer
+    end
+
+    it 'deletes analysis node in simple layer' do
+      analysis = create_analysis('b0' => :source)
+      layer = create_analysis_layer(analysis)
+
+      layer.update_analysis_nodes_for_layer_deletion
+      Carto::AnalysisNode.find_by_natural_id(@visualization.id, 'b0').should be_nil
+    end
+
+    it 'deletes entire analysis tree in simple layer' do
+      analysis = create_analysis(
+        'b2' => {
+          'b1' => { 'b0' => :source },
+          'some_table_name' => :source
+        }
+      )
+      layer = create_analysis_layer(analysis)
+
+      layer.update_analysis_nodes_for_layer_deletion
+      ['b2', 'b1', 'b0', 'some_table_name'].each do |node_id|
+        Carto::AnalysisNode.find_by_natural_id(@visualization.id, node_id).should be_nil
+      end
+    end
+
+    it 'deletes only unreferenced nodes' do
+      analysis1 = create_analysis('b2' => { 'b1' => { 'b0' => :source } })
+      layer1 = create_analysis_layer(analysis1)
+
+      analysis2 = create_analysis('b1' => { 'b0' => :source })
+      create_analysis_layer(analysis2)
+
+      layer1.update_analysis_nodes_for_layer_deletion
+      ['b1', 'b0'].each do |node_id|
+        Carto::AnalysisNode.find_by_natural_id(@visualization.id, node_id).should be
+      end
+
+      ['b2'].each do |node_id|
+        Carto::AnalysisNode.find_by_natural_id(@visualization.id, node_id).should be_nil
       end
     end
   end

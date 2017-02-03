@@ -23,7 +23,6 @@ describe CartoDB::Connector::Importer do
     ::UserTable[@existing_table.id].destroy if @existing_table
   end
 
-
   after(:all) do
     bypass_named_maps
     @user.destroy
@@ -111,7 +110,7 @@ describe CartoDB::Connector::Importer do
 
     @data_import.run_import!
 
-    UserTable[id: @data_import.table.id].privacy.should eq (::UserTable::PRIVACY_VALUES_TO_TEXTS.invert)['public']
+    UserTable[id: @data_import.table.id].privacy.should eq ::UserTable::PRIVACY_VALUES_TO_TEXTS.invert['public']
   end
 
   it 'importing the same file twice should import the table twice renaming the second import' do

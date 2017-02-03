@@ -456,6 +456,44 @@ describe CartoDB::Connector::Importer do
       user_table.name.should eq table_name
     end
 
+    it 'imports a visualization export but not existing tables if collision strategy is skip' do
+      existing_table_name = 'guess_country'
+      not_existing_table_name = 'guess_ip'
+      @existing_table = create_table(name: existing_table_name, user_id: @user.id)
+      filepath = "#{Rails.root}/services/importer/spec/fixtures/guess_country_ip.carto"
+
+      @data_import = DataImport.create(
+        user_id: @user.id,
+        data_source: filepath,
+        updated_at: Time.now.utc,
+        append: false,
+        create_visualization: true,
+        collision_strategy: 'skip'
+      )
+      @data_import.values[:data_source] = filepath
+
+      @data_import.run_import!
+      @data_import.success.should eq true
+
+      @data_import.tables_created_count.should eq 1
+      @data_import.table_names.should eq not_existing_table_name
+      @data_import.table_name.should eq not_existing_table_name
+
+      expected_table_names = [existing_table_name, not_existing_table_name]
+      @visualization = Carto::Visualization.find(@data_import.visualization_id)
+      layer_table_names = @visualization.data_layers.map { |l| l.options['table_name'] }.sort
+      layer_table_names.should eq expected_table_names
+
+      @visualization.data_layers.count.should eq 2
+
+      expected_table_names.each { |table_name|
+        layer = @visualization.data_layers.find { |l| l.user_tables.first.name == table_name }
+        layer.should_not be_nil
+        layer.user_tables.count.should eq 1
+      }
+      @data_import.tables.map(&:destroy)
+    end
+
     it 'imports a visualization export with two data layers' do
       filepath = "#{Rails.root}/services/importer/spec/fixtures/visualization_export_with_two_tables.carto"
 
@@ -481,9 +519,11 @@ describe CartoDB::Connector::Importer do
       layer1 = @visualization.layers[1]
       layer1.options['type'].should eq "CartoDB"
       layer1.options['table_name'].should eq "guess_country"
+      layer1.user_tables.count.should eq 1
       layer2 = @visualization.layers[2]
       layer2.options['type'].should eq "CartoDB"
       layer2.options['table_name'].should eq "twitter_t3chfest_reduced"
+      layer2.user_tables.count.should eq 1
       @data_import.tables.map(&:destroy)
     end
 

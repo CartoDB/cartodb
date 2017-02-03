@@ -736,14 +736,19 @@
         }
       },
       "assets-picker": {
+        "browse": "Browse",
         "delete-image": "Delete image",
         "delete-images": "Delete images",
         "deselect-all": "Deselect all",
+        "drag-and-drop": "Drag & drop your file",
         "error-desc": "Please, go back and try again. If the problem persists contact us at <a href='mailto:support@carto.com'>support@carto.com</a>",
         "go-back": "Go back",
+        "incorrect-url": "Error. Your URL doesn’t look correct.",
         "loading": "Loading…",
-        "upload-desc": "Paste a URL or select a file like JPG, GIF, PNG, SVG",
+        "or": "or",
         "select-all": "Select all",
+        "submit": "submit",
+        "upload-desc": "Paste a URL or select a file like JPG, GIF, PNG, SVG",
         "upload-file-url": "Upload a file or a URL"
       },
       "add-asset": {

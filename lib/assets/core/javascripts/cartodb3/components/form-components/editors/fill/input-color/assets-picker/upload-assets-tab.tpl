@@ -1,35 +1,30 @@
 <div class="ImportPanel-header">
   <h3 class="CDB-Text CDB-Size-large u-mainTextColor u-secondaryTextColor u-bSpace--m">
-    <%- _t('components.modals.add-layer.imports.header-import.upload-file-url', { smart_count: 1 }) %>
+    <%- _t('components.modals.assets-picker.upload-file-url') %>
   </h3>
   <p class="CDB-Text CDB-Size-medium u-altTextColor">
-    <% fileEnabledText = _t('components.modals.add-layer.imports.header-import.select-a-file') +
-    ' <a href="https://carto.com/docs/carto-engine/import-api/importing-geospatial-data/#supported-geospatial-data-formats">' +
-      _t('components.modals.add-layer.imports.header-import.see-all-formats') +
-      '</a>'
-    %>
-    <%= _t('components.modals.add-layer.imports.header-import.paste-url', { fileEnabled: fileEnabledText  }) %>
+    <%- _t('components.modals.assets-picker.upload-desc') %>
   </p>
 </div>
 <div class="Form-row Form-row--centered">
   <div class="Form-rowData Form-rowData--med Form-rowData--noMargin js-dropzone">
     <div class="Form-upload">
-      <label class="Form-fileLabel js-fileLabel CDB-Text CDB-Size-medium"><%- _t('components.modals.add-layer.imports.form-import.drag-and-drop') %></label>
+      <label class="Form-fileLabel js-fileLabel CDB-Text CDB-Size-medium"><%- _t('components.modals.assets-picker.drag-and-drop') %></label>
       <label class="Form-fileLabel Form-fileLabel--error CDB-Text CDB-Size-small js-fileError"></label>
       <div class="Form-file">
         <input type="file" class="js-fileInput" />
         <span class="CDB-Button CDB-Button--primary Form-fileButton CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase js-fileButton">
-          <%- _t('components.modals.add-layer.imports.form-import.browse') %>
+          <%- _t('components.modals.assets-picker.browse') %>
         </span>
       </div>
     </div>
   </div>
-  <span class="u-lSpace--xl u-rSpace--xl u-flex u-alignCenter CDB-Text CDB-Size-medium u-altTextColor"><%- _t('components.modals.add-layer.imports.form-import.or') %></span>
+  <span class="u-lSpace--xl u-rSpace--xl u-flex u-alignCenter CDB-Text CDB-Size-medium u-altTextColor"><%- _t('components.modals.assets-picker.or') %></span>
   <div class="Form-rowData Form-rowData--noMargin Form-rowData--med">
-    <input type="text" class="Form-input Form-input--med has-submit js-url CDB-Text CDB-Size-medium" value="" placeholder="https://carto.com/data-library" />
+    <input type="text" class="Form-input Form-input--med has-submit js-url CDB-Text CDB-Size-medium" value="" placeholder="https://carto.com/markers/pin.png" />
     <button type="submit" class="CDB-Text CDB-Size-small Form-inputSubmit u-upperCase u-actionTextColor Form-inputSubmit js-submit">
-      <span><%- _t('components.modals.add-layer.imports.form-import.submit') %></span>
+      <span><%- _t('components.modals.assets-picker.submit') %></span>
     </button>
-    <div class="Form-inputError CDB-Text"><%- _t('components.modals.add-layer.imports.form-import.error-desc') %></div>
+    <div class="Form-inputError CDB-Text js-url-error"><%- _t('components.modals.assets-picker.incorrect-url') %></div>
   </div>
 </div>

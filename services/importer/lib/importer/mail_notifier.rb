@@ -56,8 +56,13 @@ module CartoDB
         else
           # This case happens before process the files when there
           # is no file stats
-          if !data_import.service_item_id.blank?
-            # Imports from files, URLs or connectors have a service_item_id
+          if data_import.service_name == 'connector'
+            # Connector imports have all its parameters in service_item_id
+            # but we don't want to make them visible because they may contain
+            # credentials
+            files << "(connector)"
+          elsif !data_import.service_item_id.blank?
+            # Imports from files, URLs  have a service_item_id
             files << File.basename(data_import.service_item_id)
           elsif !data_import.table_name.blank?
             # Imports from queries or table duplications use table_name

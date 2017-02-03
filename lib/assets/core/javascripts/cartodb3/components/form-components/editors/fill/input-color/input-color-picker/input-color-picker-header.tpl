@@ -8,7 +8,7 @@
         <span class="label js-label"><%- label %></span>
       </div>
 
-      <% if (isCategorized && iconStylingEnabled) { %>
+      <% if (isCategorized && imageEnabled) { %>
         <div class='CDB-ListDecoration-secondaryContainer'>
           <nav class='CDB-NavMenu'>
             <ul class='CDB-NavMenu-Inner CDB-NavMenu-inner--no-margin js-menu'>

@@ -1,0 +1,227 @@
+@import '../variables/mixins';
+@import '../variables/colors';
+@import '../variables/sizes';
+@import '../variables/onboarding';
+@import 'cdb-variables/colors';
+@import 'cdb-variables/sizes';
+
+$sSmallDescriptionWidth: 200px;
+$sRegularDescriptionWidth: 445px;
+$sBigDescriptionWidth: 550px;
+$sWidgetsPadWidth: 378px;
+$cBackgroundColor: #2E3C43;
+
+// TODO: put variables to /variables/onboarding
+$sToolbarWidth: 72px;
+$sEditorWidth: 344px;
+$sWidgetsWidth: 376px;
+
+// TODO: put mixin to a common place
+@mixin setStepPad($step, $padHeights, $selector) {
+  .#{$selector}.is-#{$step} {
+    @each $position, $height in $padHeights {
+      .#{$selector}-pad#{$position} {
+        height: map-get($padHeights, #{$position});
+      }
+    }
+  }
+}
+
+.DataOnboarding {
+  @include display-flex();
+  height: 100%;
+  pointer-events: auto;
+}
+
+.DataOnboarding-footer {
+  margin-top: $sMargin-section;
+}
+
+.DataOnboarding-footerButtons {
+  margin-bottom: $sMargin-element;
+}
+
+.DataOnboarding-contentWrapper {
+  @include flex(1);
+  @include display-flex();
+  @include align-items(center);
+  height: 100%;
+  background: rgba($cBackgroundColor, 0.88);
+  pointer-events: all;
+  z-index: 5;
+}
+
+.DataOnboarding-body {
+  position: absolute;
+  left: 100%;
+  margin-top: 45px;
+  margin-left: 70px;
+}
+
+.DataOnboarding-body.is-step4 {
+  right: 100%;
+  left: auto;
+  bottom: 36px;
+}
+
+.DataOnboarding-contentBody {
+  width: 0;
+  margin: 0 80px;
+}
+
+.DataOnboarding-forget,
+.DataOnboarding-header,
+.DataOnboarding-footer,
+.DataOnboarding-step {
+  display: none;
+}
+
+.DataOnboarding-footer .DataOnboarding-footerButtons,
+.DataOnboarding-contentWrapper .DataOnboarding-header p,
+.DataOnboarding-contentWrapper .DataOnboarding-step p {
+  @include opacity(1);
+  @include transition(opacity, 200ms, ease-in-out, 1s);
+}
+
+.DataOnboarding-header,
+.DataOnboarding-footer {
+  min-width: 300px;
+}
+
+.DataOnboarding.is-step0 .DataOnboarding-header,
+.DataOnboarding.is-step0 .DataOnboarding-footer.is-step0,
+.DataOnboarding.is-step1 .DataOnboarding-footer.is-step1,
+.DataOnboarding.is-step2 .DataOnboarding-footer.is-step2,
+.DataOnboarding.is-step3 .DataOnboarding-footer.is-step3,
+.DataOnboarding.is-step4 .DataOnboarding-footer.is-step4,
+.DataOnboarding.is-step0 .DataOnboarding-step.is-step0,
+.DataOnboarding.is-step1 .DataOnboarding-step.is-step1,
+.DataOnboarding.is-step2 .DataOnboarding-step.is-step2,
+.DataOnboarding.is-step3 .DataOnboarding-step.is-step3,
+.DataOnboarding.is-step4 .DataOnboarding-step.is-step4 {
+  display: block;
+}
+
+.DataOnboarding-description {
+  @include transition(width, 100ms, ease-in-out);
+  width: $sRegularDescriptionWidth;
+  margin-bottom: $sMargin-elementInline;
+  color: #FFF;
+  font-size: $sFontSize-large;
+  font-weight: $sFontWeight-normal;
+  line-height: $sLineHeight-large;
+}
+
+.DataOnboarding-toolbarOverlay,
+.DataOnboarding-widgetsOverlay,
+.DataOnboarding-pads {
+  @include transition(width, 300ms, ease-in-out);
+  height: 100%;
+  z-index: 10;
+}
+
+.DataOnboarding-toolbarOverlay {
+  width: $sToolbarWidth;
+}
+
+.DataOnboarding-widgetsOverlay {
+  width: $sWidgetsWidth;
+  display: block;
+}
+
+.DataOnboarding-pads--left {
+  width: $sEditorWidth;
+}
+
+.DataOnboarding-padTop,
+.DataOnboarding-padMiddle,
+.DataOnboarding-padBottom {
+  @include transition(height, 300ms, ease-in-out);
+  width: 100%;
+  display: block;
+}
+
+.DataOnboarding-toolbarOverlay,
+.DataOnboarding-widgetsOverlay,
+.DataOnboarding-padTop,
+.DataOnboarding-padBottom {
+  @include opacity(0.88);
+  background: $cBackgroundColor;
+}
+
+.DataOnboarding-padMiddle {
+  @include opacity(1);
+  position: relative;
+  background: transparent;
+}
+
+.DataOnboarding-body.is-step3 {
+  bottom: 36px;
+}
+
+$steps: (
+  step0: (
+    Top: 0,
+    Middle: 100%,
+    Bottom: 0
+  ),
+  step1: (
+    Top: 0,
+    Middle: (19 + 64 + 21) * 1px,
+    Bottom: 100%
+  ),
+  step2: (
+    Top: (64 + 21) * 1px,
+    Middle: calc(100% - (64 + 21 + 66) * 1px),
+    Bottom: 66px
+  ),
+  step3: (
+    Top: calc(100% - 66px),
+    Middle: 66px,
+    Bottom: 0
+  ),
+  step4: (
+    Top: 100%,
+    Middle: 0,
+    Bottom: 0
+  )
+);
+
+@each $step, $heights in $steps {
+  @include setStepPad($step, $heights, 'DataOnboarding');
+}
+
+.DataOnboarding-pads--right {
+  width: 150px;
+
+  &.is-step0,
+  &.is-step1,
+  &.is-step2,
+  &.is-step3 {
+    .DataOnboarding-padTop {
+      height: 100%;
+    }
+    .DataOnboarding-padBottom {
+      height: 0;
+    }
+  }
+
+  &.is-step4 {
+    .DataOnboarding-padTop {
+      height: calc(100% - 100px);
+    }
+    .DataOnboarding-padBottom {
+      height: 100px;
+      background: transparent;
+    }
+  }
+}
+
+.DataOnboarding-padBottom {
+  position: relative;
+}
+
+
+.DataOnboarding-forgetLabel {
+  cursor: pointer;
+}

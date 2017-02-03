@@ -49,14 +49,20 @@
       "description": "The widgets you add to your map appear directly on your visualization."
     },
     "skip": "skip",
-    "next": "next",
+    "next": "next"
+  },
+  "data-onboarding": {
+    "title": "Welcome to layer view",
+    "description": "Edit, analyze, style and enhance your data with pop-ups and legends.",
+    "take-tour": "Take a tour",
+    "edit-layer": "Edit layer"
   },
   "analyses-onboarding": {
     "placeholders": {
       "layer-name": "NAME OF THE LAYER",
       "clusters": "CLUSTERS",
       "method": "METHOD",
-      "percentage": "PERCENTAGE",
+      "percentage": "PERCENTAGE"
     },
     "done": "Done",
     "finished": "has finished",

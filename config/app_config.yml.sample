@@ -535,6 +535,7 @@ defaults: &defaults
     sqlserver:
       enabled: false
       max_rows: 500000
+  enforce_non_empty_layer_css: false
 
 development:
   <<: *defaults

@@ -548,7 +548,6 @@ development:
     url_purge_command: 'url.purge'
     retries: 5
     timeout: 5
-  enforce_non_empty_layer_css: false
 
 test:
   <<: *defaults

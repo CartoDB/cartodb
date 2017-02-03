@@ -286,9 +286,9 @@ defaults: &defaults
     asset_host: "//cartodb-libs.global.ssl.fastly.net/cartodbui"
   avatars:
     gravatar_enabled: true
-    base_url: 'example.com/avatars'
-    kinds: ['stars', 'mountains']
-    colors: ['red', 'blue']
+    base_url: '/assets/unversioned/images/avatars'
+    kinds: ['ghost', 'heart', 'marker', 'mountain', 'pacman', 'planet', 'star']
+    colors: ['green', 'orange', 'red', 'yellow']
   dropbox_api_key: ""
   gdrive:
     api_key: ""

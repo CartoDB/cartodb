@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.5.119",
+  "version": "4.5.133",
   "dependencies": {
     "backbone": {
       "version": "1.2.3",
@@ -86,7 +86,7 @@
                             },
                             "readable-stream": {
                               "version": "2.0.6",
-                              "from": "readable-stream@>=2.0.5 <2.1.0",
+                              "from": "readable-stream@>=2.0.0 <2.1.0",
                               "resolved": "https://registry.npmjs.org/readable-stream/-/readable-stream-2.0.6.tgz",
                               "dependencies": {
                                 "core-util-is": {
@@ -487,9 +487,9 @@
                                   "resolved": "https://registry.npmjs.org/ecc-jsbn/-/ecc-jsbn-0.1.1.tgz"
                                 },
                                 "bcrypt-pbkdf": {
-                                  "version": "1.0.0",
+                                  "version": "1.0.1",
                                   "from": "bcrypt-pbkdf@>=1.0.0 <2.0.0",
-                                  "resolved": "https://registry.npmjs.org/bcrypt-pbkdf/-/bcrypt-pbkdf-1.0.0.tgz"
+                                  "resolved": "https://registry.npmjs.org/bcrypt-pbkdf/-/bcrypt-pbkdf-1.0.1.tgz"
                                 }
                               }
                             }
@@ -1106,7 +1106,7 @@
     "carto": {
       "version": "0.15.1-cdb1",
       "from": "cartodb/carto#master",
-      "resolved": "git://github.com/cartodb/carto.git#4f792fbeadd883479bee7b5350893ca63b1cdd99",
+      "resolved": "git://github.com/cartodb/carto.git#b6186d884cc1e3876adedf8a1654cb1a26275c6b",
       "dependencies": {
         "mapnik-reference": {
           "version": "6.0.5",
@@ -1162,7 +1162,7 @@
             "carto": {
               "version": "0.15.1-cdb1",
               "from": "cartodb/carto#master",
-              "resolved": "git://github.com/cartodb/carto.git#4f792fbeadd883479bee7b5350893ca63b1cdd99",
+              "resolved": "git://github.com/cartodb/carto.git#b6186d884cc1e3876adedf8a1654cb1a26275c6b",
               "dependencies": {
                 "mapnik-reference": {
                   "version": "6.0.5",
@@ -1196,7 +1196,7 @@
                 "carto": {
                   "version": "0.15.1-cdb1",
                   "from": "cartodb/carto#master",
-                  "resolved": "git://github.com/cartodb/carto.git#4f792fbeadd883479bee7b5350893ca63b1cdd99",
+                  "resolved": "git://github.com/cartodb/carto.git#b6186d884cc1e3876adedf8a1654cb1a26275c6b",
                   "dependencies": {
                     "mapnik-reference": {
                       "version": "6.0.5",
@@ -1305,9 +1305,9 @@
               }
             },
             "tangram.cartodb": {
-              "version": "0.2.2",
+              "version": "0.2.4",
               "from": "cartodb/tangram.cartodb#master",
-              "resolved": "git://github.com/cartodb/tangram.cartodb.git#f3b44701e10f578b48d0854720ab70d7a6f4a03f",
+              "resolved": "git://github.com/cartodb/tangram.cartodb.git#59127727dd2b58996ff5355c77e2032be643b6e9",
               "dependencies": {
                 "babel-runtime": {
                   "version": "6.18.0",
@@ -1327,9 +1327,9 @@
                   }
                 },
                 "tangram-cartocss": {
-                  "version": "0.3.2",
+                  "version": "0.3.3",
                   "from": "cartodb/tangram-carto#master",
-                  "resolved": "git://github.com/cartodb/tangram-carto.git#571f04f42e87706ce1aa7d12ed206380f471694b",
+                  "resolved": "git://github.com/cartodb/tangram-carto.git#3ffe62b5a585dcd12f3c43e489950ac4ce83582e",
                   "dependencies": {
                     "babel-runtime": {
                       "version": "6.11.6",
@@ -1351,7 +1351,7 @@
                     "carto": {
                       "version": "0.15.1-cdb1",
                       "from": "cartodb/carto#master",
-                      "resolved": "git://github.com/cartodb/carto.git#4f792fbeadd883479bee7b5350893ca63b1cdd99",
+                      "resolved": "git://github.com/cartodb/carto.git#b6186d884cc1e3876adedf8a1654cb1a26275c6b",
                       "dependencies": {
                         "mapnik-reference": {
                           "version": "6.0.5",
@@ -1525,7 +1525,7 @@
                 "carto": {
                   "version": "0.15.1-cdb1",
                   "from": "cartodb/carto#master",
-                  "resolved": "git://github.com/cartodb/carto.git#4f792fbeadd883479bee7b5350893ca63b1cdd99",
+                  "resolved": "git://github.com/cartodb/carto.git#b6186d884cc1e3876adedf8a1654cb1a26275c6b",
                   "dependencies": {
                     "mapnik-reference": {
                       "version": "6.0.5",
@@ -1682,7 +1682,7 @@
         "carto": {
           "version": "0.15.1-cdb1",
           "from": "cartodb/carto#master",
-          "resolved": "git://github.com/cartodb/carto.git#4f792fbeadd883479bee7b5350893ca63b1cdd99",
+          "resolved": "git://github.com/cartodb/carto.git#b6186d884cc1e3876adedf8a1654cb1a26275c6b",
           "dependencies": {
             "mapnik-reference": {
               "version": "6.0.5",
@@ -1721,7 +1721,7 @@
             "carto": {
               "version": "0.15.1-cdb1",
               "from": "cartodb/carto#master",
-              "resolved": "git://github.com/cartodb/carto.git#4f792fbeadd883479bee7b5350893ca63b1cdd99",
+              "resolved": "git://github.com/cartodb/carto.git#b6186d884cc1e3876adedf8a1654cb1a26275c6b",
               "dependencies": {
                 "mapnik-reference": {
                   "version": "6.0.5",
@@ -1830,9 +1830,9 @@
           }
         },
         "tangram.cartodb": {
-          "version": "0.2.2",
+          "version": "0.2.4",
           "from": "cartodb/tangram.cartodb#master",
-          "resolved": "git://github.com/cartodb/tangram.cartodb.git#f3b44701e10f578b48d0854720ab70d7a6f4a03f",
+          "resolved": "git://github.com/cartodb/tangram.cartodb.git#59127727dd2b58996ff5355c77e2032be643b6e9",
           "dependencies": {
             "babel-runtime": {
               "version": "6.18.0",
@@ -1852,9 +1852,9 @@
               }
             },
             "tangram-cartocss": {
-              "version": "0.3.2",
+              "version": "0.3.3",
               "from": "cartodb/tangram-carto#master",
-              "resolved": "git://github.com/cartodb/tangram-carto.git#571f04f42e87706ce1aa7d12ed206380f471694b",
+              "resolved": "git://github.com/cartodb/tangram-carto.git#3ffe62b5a585dcd12f3c43e489950ac4ce83582e",
               "dependencies": {
                 "babel-runtime": {
                   "version": "6.11.6",
@@ -1876,7 +1876,7 @@
                 "carto": {
                   "version": "0.15.1-cdb1",
                   "from": "cartodb/carto#master",
-                  "resolved": "git://github.com/cartodb/carto.git#4f792fbeadd883479bee7b5350893ca63b1cdd99",
+                  "resolved": "git://github.com/cartodb/carto.git#b6186d884cc1e3876adedf8a1654cb1a26275c6b",
                   "dependencies": {
                     "mapnik-reference": {
                       "version": "6.0.5",
@@ -2050,7 +2050,7 @@
             "carto": {
               "version": "0.15.1-cdb1",
               "from": "cartodb/carto#master",
-              "resolved": "git://github.com/cartodb/carto.git#4f792fbeadd883479bee7b5350893ca63b1cdd99",
+              "resolved": "git://github.com/cartodb/carto.git#b6186d884cc1e3876adedf8a1654cb1a26275c6b",
               "dependencies": {
                 "mapnik-reference": {
                   "version": "6.0.5",
@@ -2214,6 +2214,191 @@
       "from": "queue-async@1.2.1",
       "resolved": "http://registry.npmjs.org/queue-async/-/queue-async-1.2.1.tgz"
     },
+    "tangram": {
+      "version": "0.11.7",
+      "from": "cartodb/tangram-1#race-cond",
+      "resolved": "git://github.com/cartodb/tangram-1.git#c795a2e446c2000a916ca69b90d443b5bc7e7c6b",
+      "dependencies": {
+        "csscolorparser": {
+          "version": "1.0.3",
+          "from": "csscolorparser@1.0.3",
+          "resolved": "https://registry.npmjs.org/csscolorparser/-/csscolorparser-1.0.3.tgz"
+        },
+        "earcut": {
+          "version": "2.1.1",
+          "from": "earcut@2.1.1",
+          "resolved": "https://registry.npmjs.org/earcut/-/earcut-2.1.1.tgz"
+        },
+        "fontfaceobserver": {
+          "version": "2.0.7",
+          "from": "fontfaceobserver@2.0.7",
+          "resolved": "https://registry.npmjs.org/fontfaceobserver/-/fontfaceobserver-2.0.7.tgz"
+        },
+        "geojson-vt": {
+          "version": "2.1.6",
+          "from": "geojson-vt@2.1.6",
+          "resolved": "https://registry.npmjs.org/geojson-vt/-/geojson-vt-2.1.6.tgz"
+        },
+        "gl-mat3": {
+          "version": "1.0.0",
+          "from": "gl-mat3@1.0.0",
+          "resolved": "https://registry.npmjs.org/gl-mat3/-/gl-mat3-1.0.0.tgz"
+        },
+        "gl-mat4": {
+          "version": "1.1.4",
+          "from": "gl-mat4@1.1.4",
+          "resolved": "https://registry.npmjs.org/gl-mat4/-/gl-mat4-1.1.4.tgz"
+        },
+        "gl-shader-errors": {
+          "version": "1.0.3",
+          "from": "gl-shader-errors@1.0.3",
+          "resolved": "https://registry.npmjs.org/gl-shader-errors/-/gl-shader-errors-1.0.3.tgz"
+        },
+        "js-yaml": {
+          "version": "3.5.3",
+          "from": "tangrams/js-yaml#read-only",
+          "resolved": "git://github.com/tangrams/js-yaml.git#1637976c6f593bed33ed088aedb6d01390a947c0",
+          "dependencies": {
+            "argparse": {
+              "version": "1.0.9",
+              "from": "argparse@>=1.0.2 <2.0.0",
+              "resolved": "https://registry.npmjs.org/argparse/-/argparse-1.0.9.tgz",
+              "dependencies": {
+                "sprintf-js": {
+                  "version": "1.0.3",
+                  "from": "sprintf-js@>=1.0.2 <1.1.0",
+                  "resolved": "https://registry.npmjs.org/sprintf-js/-/sprintf-js-1.0.3.tgz"
+                }
+              }
+            },
+            "esprima": {
+              "version": "2.7.3",
+              "from": "esprima@>=2.6.0 <3.0.0",
+              "resolved": "https://registry.npmjs.org/esprima/-/esprima-2.7.3.tgz"
+            }
+          }
+        },
+        "jszip": {
+          "version": "3.0.0",
+          "from": "tangrams/jszip#read-only",
+          "resolved": "git://github.com/tangrams/jszip.git#856ff081cd4a03884fa04a60f3a1998ca51d7b3c",
+          "dependencies": {
+            "es6-promise": {
+              "version": "3.0.2",
+              "from": "es6-promise@>=3.0.2 <3.1.0",
+              "resolved": "https://registry.npmjs.org/es6-promise/-/es6-promise-3.0.2.tgz"
+            },
+            "pako": {
+              "version": "1.0.4",
+              "from": "pako@>=1.0.0 <1.1.0",
+              "resolved": "https://registry.npmjs.org/pako/-/pako-1.0.4.tgz"
+            },
+            "readable-stream": {
+              "version": "2.0.6",
+              "from": "readable-stream@>=2.0.6 <2.1.0",
+              "resolved": "https://registry.npmjs.org/readable-stream/-/readable-stream-2.0.6.tgz",
+              "dependencies": {
+                "core-util-is": {
+                  "version": "1.0.2",
+                  "from": "core-util-is@>=1.0.0 <1.1.0",
+                  "resolved": "https://registry.npmjs.org/core-util-is/-/core-util-is-1.0.2.tgz"
+                },
+                "inherits": {
+                  "version": "2.0.3",
+                  "from": "inherits@>=2.0.1 <2.1.0",
+                  "resolved": "https://registry.npmjs.org/inherits/-/inherits-2.0.3.tgz"
+                },
+                "isarray": {
+                  "version": "1.0.0",
+                  "from": "isarray@>=1.0.0 <1.1.0",
+                  "resolved": "https://registry.npmjs.org/isarray/-/isarray-1.0.0.tgz"
+                },
+                "process-nextick-args": {
+                  "version": "1.0.7",
+                  "from": "process-nextick-args@>=1.0.6 <1.1.0",
+                  "resolved": "https://registry.npmjs.org/process-nextick-args/-/process-nextick-args-1.0.7.tgz"
+                },
+                "string_decoder": {
+                  "version": "0.10.31",
+                  "from": "string_decoder@>=0.10.0 <0.11.0",
+                  "resolved": "https://registry.npmjs.org/string_decoder/-/string_decoder-0.10.31.tgz"
+                },
+                "util-deprecate": {
+                  "version": "1.0.2",
+                  "from": "util-deprecate@>=1.0.1 <1.1.0",
+                  "resolved": "https://registry.npmjs.org/util-deprecate/-/util-deprecate-1.0.2.tgz"
+                }
+              }
+            },
+            "asap": {
+              "version": "2.0.5",
+              "from": "asap@>=2.0.3 <2.1.0",
+              "resolved": "https://registry.npmjs.org/asap/-/asap-2.0.5.tgz"
+            }
+          }
+        },
+        "pbf": {
+          "version": "1.3.7",
+          "from": "pbf@1.3.7",
+          "resolved": "https://registry.npmjs.org/pbf/-/pbf-1.3.7.tgz",
+          "dependencies": {
+            "ieee754": {
+              "version": "1.1.8",
+              "from": "ieee754@>=1.1.6 <2.0.0",
+              "resolved": "https://registry.npmjs.org/ieee754/-/ieee754-1.1.8.tgz"
+            },
+            "resolve-protobuf-schema": {
+              "version": "2.0.0",
+              "from": "resolve-protobuf-schema@>=2.0.0 <3.0.0",
+              "resolved": "https://registry.npmjs.org/resolve-protobuf-schema/-/resolve-protobuf-schema-2.0.0.tgz",
+              "dependencies": {
+                "protocol-buffers-schema": {
+                  "version": "2.2.0",
+                  "from": "protocol-buffers-schema@>=2.0.2 <3.0.0",
+                  "resolved": "https://registry.npmjs.org/protocol-buffers-schema/-/protocol-buffers-schema-2.2.0.tgz"
+                }
+              }
+            }
+          }
+        },
+        "strip-comments": {
+          "version": "0.3.2",
+          "from": "strip-comments@0.3.2",
+          "resolved": "https://registry.npmjs.org/strip-comments/-/strip-comments-0.3.2.tgz"
+        },
+        "topojson-client": {
+          "version": "2.1.0",
+          "from": "tangrams/topojson-client#read-only",
+          "resolved": "git://github.com/tangrams/topojson-client.git#1068f4f2e03ddf8236499bbc896cec98d7a342b7",
+          "dependencies": {
+            "commander": {
+              "version": "2.9.0",
+              "from": "commander@>=2.0.0 <3.0.0",
+              "resolved": "https://registry.npmjs.org/commander/-/commander-2.9.0.tgz",
+              "dependencies": {
+                "graceful-readlink": {
+                  "version": "1.0.1",
+                  "from": "graceful-readlink@>=1.0.0",
+                  "resolved": "https://registry.npmjs.org/graceful-readlink/-/graceful-readlink-1.0.1.tgz"
+                }
+              }
+            }
+          }
+        },
+        "vector-tile": {
+          "version": "1.3.0",
+          "from": "vector-tile@1.3.0",
+          "resolved": "https://registry.npmjs.org/vector-tile/-/vector-tile-1.3.0.tgz",
+          "dependencies": {
+            "point-geometry": {
+              "version": "0.0.0",
+              "from": "point-geometry@0.0.0",
+              "resolved": "https://registry.npmjs.org/point-geometry/-/point-geometry-0.0.0.tgz"
+            }
+          }
+        }
+      }
+    },
     "torque.js": {
       "version": "2.16.1",
       "from": "cartodb/torque#master",
@@ -2222,7 +2407,7 @@
         "carto": {
           "version": "0.15.1-cdb1",
           "from": "cartodb/carto#master",
-          "resolved": "git://github.com/cartodb/carto.git#4f792fbeadd883479bee7b5350893ca63b1cdd99",
+          "resolved": "git://github.com/cartodb/carto.git#b6186d884cc1e3876adedf8a1654cb1a26275c6b",
           "dependencies": {
             "mapnik-reference": {
               "version": "6.0.5",

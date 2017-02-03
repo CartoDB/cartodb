@@ -8,7 +8,7 @@
         <span class="label js-label"><%- label %></span>
       </div>
 
-      <% if (isCategorized && iconStylingEnabled) { %>
+      <% if (isCategorized && imageEnabled) { %>
         <div class='CDB-ListDecoration-secondaryContainer'>
           <nav class='CDB-NavMenu'>
             <ul class='CDB-NavMenu-Inner CDB-NavMenu-inner--no-margin js-menu'>
@@ -20,9 +20,9 @@
               <li class='CDB-NavMenu-item'>
                 <div class='CDB-NavMenu-link CDB-ListDecoration-rampNav-item'>
                   <% if (image) { %>
-                    <button class='CDB-ListDecoration-rampImg js-image-container'></button>
+                    <button class="CDB-ListDecoration-rampImg js-image-container" type="button"></button>
                   <% } else { %>
-                    <button class="CDB-ListDecoration-rampImg CDB-Text u-actionTextColor js-assetPicker"><%= _t('form-components.editors.fill.input-color.img') %></button>
+                    <button class="CDB-ListDecoration-rampImg CDB-Text u-actionTextColor js-assetPicker" type="button"><%= _t('form-components.editors.fill.input-color.img') %></button>
                   <% } %>
                 </div>
               </li>

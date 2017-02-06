@@ -1,6 +1,6 @@
 <div class="Infobox <%- type %>">
   <h2 class="CDB-Text is-semibold CDB-Size-small u-bSpace--m u-upperCase"><%- title %></h2>
-  <div class="CDB-Text CDB-Size-medium u-bSpace--xl u-flex">
+  <div class="CDB-Text CDB-Size-medium <% if (hasButtons || hasQuota) { %>u-bSpace--xl<% } %> u-flex">
     <% if (isLoading) { %>
       <div class="CDB-LoaderIcon is-dark u-rSpace--m">
         <svg class="CDB-LoaderIcon-spinner" viewBox="0 0 50 50">
@@ -19,7 +19,7 @@
     <% } %>
     <% if (hasButtons) { %>
       <ul class="Infobox-buttons">
-        <li class="Infobox-button js-leftPosition"></li>
+        <li class="Infobox-button js-leftPosition u-flex"></li>
         <li class="Infobox-button Infobox-button--right js-rightPosition"></li>
       </ul>
     <% } %>

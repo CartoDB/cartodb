@@ -128,18 +128,7 @@ module Carto
     end
 
     def affected_visualizations
-      @affected_visualizations ||= affected_visualization_ids.map { |id| Carto::Visualization.find(id) }
-    end
-
-    # TODO: use associations?
-    def affected_visualization_ids
-      ActiveRecord::Base.connection.execute(%Q{
-        SELECT  distinct visualizations.id
-        FROM    layers_user_tables, layers_maps, visualizations
-        WHERE   layers_user_tables.user_table_id = '#{table.id}'
-        AND     layers_user_tables.layer_id = layers_maps.layer_id
-        AND     layers_maps.map_id = visualizations.map_id
-      }).map { |row| row['id'] }
+      layers.map(&:visualization).uniq
     end
 
     def table

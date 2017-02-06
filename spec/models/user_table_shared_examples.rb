@@ -29,6 +29,7 @@ shared_examples_for 'user table models' do
 
     before(:each) do
       @second_layer.update_attribute(:kind, 'carto')
+      @user_table.reload
     end
 
     after(:all) do

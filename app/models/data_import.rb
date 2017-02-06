@@ -29,6 +29,7 @@ require_relative '../../services/importer/lib/importer/exceptions'
 require_dependency 'carto/tracking/events'
 require_dependency 'carto/valid_table_name_proposer'
 require_dependency 'carto/configuration'
+require_dependency 'carto/db/user_schema'
 
 include CartoDB::Datasources
 
@@ -106,6 +107,8 @@ class DataImport < Sequel::Model
   TYPE_URL            = 'url'
   TYPE_QUERY          = 'query'
   TYPE_DATASOURCE     = 'datasource'
+
+  COLLISION_STRATEGY_SKIP = 'skip'
 
   def after_initialize
     instantiate_log
@@ -198,7 +201,7 @@ class DataImport < Sequel::Model
     log.append 'After dispatch'
 
     if results.empty?
-      if collision_strategy == 'skip'
+      if collision_strategy == COLLISION_STRATEGY_SKIP
         self.error_code = 1022
         self.state = STATE_COMPLETE
       else

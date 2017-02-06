@@ -28,6 +28,7 @@ describe CartoDB::Connector::Importer do
     @user.destroy
   end
 
+  let(:skip) { DataImport::COLLISION_STRATEGY_SKIP }
 
   it 'should not fail to return a new_name when ALTERing the INDEX fails' do
 
@@ -139,14 +140,14 @@ describe CartoDB::Connector::Importer do
     name = 'elecciones2008'
     filepath = "#{Rails.root}/spec/support/data/#{name}.csv"
 
-    @data_import = DataImport.create(user_id: @user.id, data_source: filepath, collision_strategy: 'skip')
+    @data_import = DataImport.create(user_id: @user.id, data_source: filepath, collision_strategy: skip)
     @data_import.values[:data_source] = filepath
     @data_import.run_import!
 
     UserTable[id: @data_import.table.id].name.should eq name
     @data_import.success.should eq true
 
-    data_import2 = DataImport.create(user_id: @user.id, data_source: filepath, collision_strategy: 'skip')
+    data_import2 = DataImport.create(user_id: @user.id, data_source: filepath, collision_strategy: skip)
     data_import2.values[:data_source] = filepath
     data_import2.run_import!
 
@@ -483,7 +484,7 @@ describe CartoDB::Connector::Importer do
         updated_at: Time.now.utc,
         append: false,
         create_visualization: true,
-        collision_strategy: 'skip'
+        collision_strategy: skip
       )
       @data_import.values[:data_source] = filepath
 
@@ -516,7 +517,7 @@ describe CartoDB::Connector::Importer do
         updated_at: Time.now.utc,
         append: false,
         create_visualization: true,
-        collision_strategy: 'skip'
+        collision_strategy: skip
       )
       @data_import.values[:data_source] = filepath
 

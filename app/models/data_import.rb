@@ -712,7 +712,8 @@ class DataImport < Sequel::Model
       service_item_id,
       user: current_user,
       pg: database_options,
-      log: log
+      log: log,
+      collision_strategy: collision_strategy
     )
 
     registrar     = CartoDB::TableRegistrar.new(current_user, ::Table)

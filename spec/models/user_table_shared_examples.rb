@@ -24,11 +24,11 @@ shared_examples_for 'user table models' do
     before(:all) do
       @map, @other_table, @table_visualization, @visualization = create_full_visualization(@carto_user)
       @first_layer = @visualization.data_layers.first
-      @second_layer = FactoryGirl.create(:carto_layer, kind: 'carto', maps: [@map])
+      @second_layer = FactoryGirl.create(:carto_layer, kind: 'torque', maps: [@map])
     end
 
     before(:each) do
-      @second_layer.update_attribute(:kind, 'carto')
+      @second_layer.update_attribute(:kind, 'torque')
       @user_table.reload
     end
 

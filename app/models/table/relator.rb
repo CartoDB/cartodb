@@ -44,11 +44,11 @@ module CartoDB
     end
 
     def dependent_visualizations
-      affected_visualizations.select(&:dependent?)
+      affected_visualizations.select { |v| v.fully_dependent_on?(table) }
     end
 
     def non_dependent_visualizations
-      affected_visualizations.select(&:non_dependent?)
+      affected_visualizations.select { |v| v.partially_dependent_on?(table) }
     end
 
     def affected_visualizations
@@ -118,4 +118,3 @@ module CartoDB
 
   end
 end
-

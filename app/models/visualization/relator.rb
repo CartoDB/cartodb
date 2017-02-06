@@ -17,7 +17,7 @@ module CartoDB
       }.freeze
 
       INTERFACE = %w{ overlays user table related_templates related_tables related_canonical_visualizations
-                      layers stats mapviews total_mapviews single_data_layer? synchronization is_synced? permission
+                      layers stats mapviews total_mapviews layers_dependent_on synchronization is_synced? permission
                       parent children support_tables prev_list_item next_list_item likes likes_count reload_likes
                       estimated_row_count actual_row_count }.freeze
 
@@ -130,8 +130,8 @@ module CartoDB
         @total_mapviews ||= Visualization::Stats.new(self, user).total_mapviews
       end
 
-      def single_data_layer?
-        layers(:cartodb).to_a.length == 1 || related_tables.length == 1
+      def layers_dependent_on(table)
+        layers(:carto_and_torque).map { |l| l.user_tables.map(&:id).include?(table.id) }
       end
 
       def permission

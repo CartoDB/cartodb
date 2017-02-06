@@ -2204,14 +2204,6 @@ describe Table do
     end
   end
 
-  describe 'Valid names for new table' do
-    it 'Regression for CDB-3446' do
-      new_name = 'table_'
-
-      Carto::ValidTableNameProposer.new(@user).propose_valid_table_name(new_name).should_not == 'table_1'
-    end
-  end
-
   describe '#key' do
     it 'computes a suitable key for a table' do
       table = create_table(name: "any_name", user_id: @user.id)

@@ -17,7 +17,7 @@ module CartoDB
       def should_skip?(table_name)
         return false unless @user && @collision_strategy == 'skip'
 
-        Carto::ValidTableNameProposer.new(@user).taken?(table_name)
+        Carto::Db::UserSchema.new(@user).table_names.include?(table_name)
       end
     end
   end

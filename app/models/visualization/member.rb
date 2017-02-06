@@ -935,10 +935,14 @@ module CartoDB
       end
 
       def remove_layers_from(table)
-        related_layers_from(table).each { |layer|
+        related_layers_from(table).each do |layer|
+          # Using delete to avoid hooks, as they generate a conflict between ORMs and are
+          # not needed in this case since they are already triggered by deleting the layer
+          Carto::Analysis.find_by_natural_id(id, layer.source_id).try(:delete) if layer.source_id
+
           map.remove_layer(layer)
           layer.destroy
-        }
+        end
         self.active_layer_id = layers(:cartodb).first.nil? ? nil : layers(:cartodb).first.id
         store
       end

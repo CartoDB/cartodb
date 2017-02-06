@@ -8,7 +8,7 @@ module Carto
       @valid_table_name_proposer = Carto::ValidTableNameProposer.new
     end
 
-    let(:taken) { %w{ table_m_nolo_es_co_bar_ table_m_nolo_es_co_bar_1 table_m_nolo_es_co_bar_3 } }
+    let(:taken) { %w{table_m_nolo_es_co_bar_ table_m_nolo_es_co_bar_1 table_m_nolo_es_co_bar_3} }
 
     describe '#propose_valid_table_name' do
       it 'Regression for CDB-3446' do

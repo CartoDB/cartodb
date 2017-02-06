@@ -73,7 +73,7 @@
     "open": "0.0.5",
     "semistandard": "7.0.4",
     "source-map-support": "0.4.0",
-    "uglify-js": "2.4.x",
+    "uglify-js": "2.7.x",
     "watchify": "3.7.0"
   },
   "browserify": {

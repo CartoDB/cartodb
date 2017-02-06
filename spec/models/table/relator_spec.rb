@@ -72,7 +72,7 @@ describe CartoDB::TableRelator do
       before :each do
         bypass_named_maps
 
-        CartoDB::Visualization::Member.any_instance.stubs(:dependent?).returns(true, false, true)
+        CartoDB::Visualization::Member.any_instance.stubs(:fully_dependent?).returns(true, false, true)
         @dependents = @table_relator.serialize_dependent_visualizations
       end
 
@@ -128,7 +128,7 @@ describe CartoDB::TableRelator do
       before :each do
         bypass_named_maps
 
-        CartoDB::Visualization::Member.any_instance.stubs(:non_dependent?).returns(true, false, false)
+        CartoDB::Visualization::Member.any_instance.stubs(:partially_dependent?).returns(true, false, false)
         @non_dependents = @table_relator.serialize_non_dependent_visualizations
       end
 

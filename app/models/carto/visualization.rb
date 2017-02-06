@@ -218,7 +218,9 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def partially_dependent_on?(user_table)
-    derived? && layers_dependent_on(user_table).instance_eval { any? && !all? }
+    return false unless derived?
+    layer_dependencies = layers_dependent_on(user_table)
+    layer_dependencies.any? && !layer_dependencies.all?
   end
 
   def layers_dependent_on(user_table)

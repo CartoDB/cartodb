@@ -108,7 +108,7 @@ class DataImport < Sequel::Model
   TYPE_QUERY          = 'query'
   TYPE_DATASOURCE     = 'datasource'
 
-  COLLISION_STRATEGY_SKIP = 'skip'
+  COLLISION_STRATEGY_SKIP = 'skip'.freeze
 
   def after_initialize
     instantiate_log

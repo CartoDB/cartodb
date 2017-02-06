@@ -185,7 +185,7 @@ module CartoDB
       end
 
       def rename(result, current_name, new_name)
-        new_name = Carto::ValidTableNameProposer.new(table_registrar.user.id)
+        new_name = Carto::ValidTableNameProposer.new(table_registrar.user)
                                                 .propose_valid_table_name(new_name)
 
         database.execute(%{

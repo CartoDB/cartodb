@@ -1469,7 +1469,7 @@ class Table
     user_table_names = owner.tables.map(&:name)
 
     # We only want to check for UserTables names
-    Carto::ValidTableNameProposer.new(owner.id)
+    Carto::ValidTableNameProposer.new(owner)
                                  .propose_valid_table_name(contendent, taken_names: user_table_names)
   end
 

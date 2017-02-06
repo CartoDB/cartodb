@@ -507,7 +507,7 @@ class DataImport < Sequel::Model
     self.data_source  = query
     save
 
-    table_name = Carto::ValidTableNameProposer.new(current_user.id).propose_valid_table_name(name)
+    table_name = Carto::ValidTableNameProposer.new(current_user).propose_valid_table_name(name)
     # current_user.db_services.in_database.run(%{CREATE TABLE #{table_name} AS #{query}})
     current_user.db_service.in_database_direct_connection(statement_timeout: DIRECT_STATEMENT_TIMEOUT) do |user_direct_conn|
         user_direct_conn.run(%{CREATE TABLE #{table_name} AS #{query}})

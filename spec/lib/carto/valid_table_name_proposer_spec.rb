@@ -8,7 +8,7 @@ module Carto
     before(:all) do
       @user = FactoryGirl.create(:carto_user)
 
-      @valid_table_name_proposer = Carto::ValidTableNameProposer.new(@user.id)
+      @valid_table_name_proposer = Carto::ValidTableNameProposer.new(@user)
     end
 
     before(:each) do

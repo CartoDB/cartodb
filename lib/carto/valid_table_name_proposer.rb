@@ -8,8 +8,8 @@ module Carto
     DEFAULT_TABLE_NAME = 'untitled_table'.freeze
     MAX_RENAME_RETRIES = 10000
 
-    def initialize(user_or_id)
-      @user = user_or_id.respond_to?(:username) ? user_or_id : ::User.where(id: user_or_id).first
+    def initialize(user)
+      @user = user
     end
 
     def taken?(table_name)

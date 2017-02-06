@@ -227,10 +227,7 @@ module Carto
 
     def register_table_dependencies
       if data_layer?
-        if persisted?
-          reload
-          maps.reload
-        end
+        reload.maps.reload if persisted?
         self.user_tables = affected_tables
       end
     end

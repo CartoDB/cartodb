@@ -68,7 +68,6 @@ var CartoDBLayerGroup = Backbone.Model.extend({
   },
 
   _replaceLayerIndexesOfVisibleLayers: function (type, url) {
-
     if (type === 'png') {
       var remoteIndexesOfVisibleLayers = _.reduce(this.getLayers(), function (indexes, layerModel, layerIndex) {
         if (layerModel.isVisible()) {
@@ -78,8 +77,7 @@ var CartoDBLayerGroup = Backbone.Model.extend({
       }.bind(this), []);
 
       return url.replace('{layerIndexes}', remoteIndexesOfVisibleLayers.join(','));
-    }
-    else if (type === 'mvt') {
+    } else if (type === 'mvt') {
       return url
         .replace('{layerIndexes}', 'mapnik')
         .replace('.png', '.mvt');

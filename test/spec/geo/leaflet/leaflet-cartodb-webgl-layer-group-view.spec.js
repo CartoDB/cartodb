@@ -19,7 +19,6 @@ describe('src/geo/leaflet/leaflet-cartodb-webgl-layer-group-view.js', function (
 
     this.layerGroupModel.set('urls', { tiles: [] });
 
-
     this.vis = new VisModel();
 
     this.layer1 = new CartoDBLayer({ id: 'layer1', meta: {cartocss: '#layer {polygon-fill: black;}'} }, { vis: this.vis });
@@ -68,5 +67,5 @@ describe('src/geo/leaflet/leaflet-cartodb-webgl-layer-group-view.js', function (
     this.layerGroupModel.set('urls', { tiles: ['http://0.ashbu.cartocdn.com/documentation/api/v1/map/90e64f1b9145961af7ba36d71b887dd2:0/{layerIndexes}/{z}/{x}/{y}.png'] });
 
     expect(this.view.tangram.addDataSource).toHaveBeenCalledWith('http://0.ashbu.cartocdn.com/documentation/api/v1/map/90e64f1b9145961af7ba36d71b887dd2:0/mapnik/{z}/{x}/{y}.mvt?auth_token=hahskdfasd');
-  })
+  });
 });

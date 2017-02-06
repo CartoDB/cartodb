@@ -1147,12 +1147,12 @@
     "cartodb-deep-insights.js": {
       "version": "0.0.2",
       "from": "cartodb/deep-insights.js#google-maps",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#00295952dbcb13f0213b3bcca58cb69fb7181a08",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#643986ed426db5ed910ffdaeb6f1f13bc2d57455",
       "dependencies": {
         "cartodb.js": {
           "version": "4.0.0-alpha.1",
-          "from": "cartodb/cartodb.js#google-maps",
-          "resolved": "git://github.com/cartodb/cartodb.js.git#d018260fa69a17dca4135bb6075579f1e56ed0c6",
+          "from": "cartodb/cartodb.js#switch-to-gmaps",
+          "resolved": "git://github.com/cartodb/cartodb.js.git#17f9ad1333c200b5f92b6a0f9ac8b1fe93c58cee",
           "dependencies": {
             "backbone-poller": {
               "version": "1.1.3",
@@ -1329,7 +1329,7 @@
                 "tangram-cartocss": {
                   "version": "0.3.3",
                   "from": "cartodb/tangram-carto#master",
-                  "resolved": "git://github.com/cartodb/tangram-carto.git#3ffe62b5a585dcd12f3c43e489950ac4ce83582e",
+                  "resolved": "git://github.com/cartodb/tangram-carto.git#2a9bffdabfbe062702d33a77a96c436cfa1f40e1",
                   "dependencies": {
                     "babel-runtime": {
                       "version": "6.11.6",
@@ -1671,8 +1671,8 @@
     },
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
-      "from": "cartodb/cartodb.js#google-maps",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#d018260fa69a17dca4135bb6075579f1e56ed0c6",
+      "from": "cartodb/cartodb.js#switch-to-gmaps",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#17f9ad1333c200b5f92b6a0f9ac8b1fe93c58cee",
       "dependencies": {
         "backbone-poller": {
           "version": "1.1.3",
@@ -1854,7 +1854,7 @@
             "tangram-cartocss": {
               "version": "0.3.3",
               "from": "cartodb/tangram-carto#master",
-              "resolved": "git://github.com/cartodb/tangram-carto.git#3ffe62b5a585dcd12f3c43e489950ac4ce83582e",
+              "resolved": "git://github.com/cartodb/tangram-carto.git#2a9bffdabfbe062702d33a77a96c436cfa1f40e1",
               "dependencies": {
                 "babel-runtime": {
                   "version": "6.11.6",

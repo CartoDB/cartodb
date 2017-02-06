@@ -65,7 +65,7 @@ module Carto
     end
 
     def dependent_visualizations
-      affected_visualizations.select(&:dependent?)
+      affected_visualizations.select { |v| v.fully_dependent_on?(self) }
     end
 
     def accessible_dependent_derived_maps
@@ -73,7 +73,7 @@ module Carto
     end
 
     def non_dependent_visualizations
-      affected_visualizations.select(&:non_dependent?)
+      affected_visualizations.select { |v| v.partially_dependent_on?(self) }
     end
 
     def name_for_user(other_user)

@@ -213,18 +213,16 @@ class Carto::Visualization < ActiveRecord::Base
     type == TYPE_DERIVED
   end
 
-  # TODO: Check if for type slide should return true also
-  def dependent?
-    derived? && single_data_layer?
+  def fully_dependent_on?(user_table)
+    derived? && layers_dependent_on(user_table).all?
   end
 
-  # TODO: Check if for type slide should return true also
-  def non_dependent?
-    derived? && !single_data_layer?
+  def partially_dependent_on?(user_table)
+    derived? && layers_dependent_on(user_table).instance_eval { any? && !all? }
   end
 
-  def single_data_layer?
-    data_layers.count == 1 || related_tables.count == 1
+  def layers_dependent_on(user_table)
+    carto_and_torque_layers.map { |l| l.user_tables.include?(user_table) }
   end
 
   def layers

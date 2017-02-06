@@ -212,6 +212,8 @@ class Api::Json::VisualizationsController < Api::ApplicationController
         return head 204
       rescue KeyError
         head(404)
+      rescue Sequel::DatabaseError => e
+        render_jsonp({ errors: [e.message] }, 400)
       end
     end
   end

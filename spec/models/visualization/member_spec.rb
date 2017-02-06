@@ -287,6 +287,21 @@ describe Visualization::Member do
         Carto::Analysis.exists?(analysis_to_be_deleted.id).should be_false
         Carto::Analysis.exists?(analysis_to_keep.id).should be_true
       end
+
+      it 'does not delete any metadata in case of deletion error' do
+        canonical_map = @table_visualization.map
+        canonical_layer = @table_visualization.data_layers.first
+        Table.any_instance.stubs(:remove_table_from_user_database).raises(Sequel::DatabaseError.new('cannot drop'))
+
+        table_visualization = CartoDB::Visualization::Member.new(id: @table_visualization.id).fetch
+        expect { table_visualization.delete }.to raise_error
+
+        Carto::Visualization.exists?(@visualization.id).should be_true
+        Carto::Visualization.exists?(@table_visualization.id).should be_true
+        Carto::Layer.exists?(canonical_layer.id).should be_true
+        Carto::UserTable.exists?(@table.id).should be_true
+        Carto::Map.exists?(canonical_map.id).should be_true
+      end
     end
   end
 

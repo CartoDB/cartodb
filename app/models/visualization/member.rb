@@ -271,38 +271,40 @@ module CartoDB
           CartoDB.notify_error(exception.message, error: exception.inspect, user: user, visualization_id: id)
         end
 
-        unlink_self_from_list!
+        repository.transaction do
+          unlink_self_from_list!
 
-        support_tables.delete_all
+          support_tables.delete_all
 
-        overlays.map(&:destroy)
-        safe_sequel_delete do
-          # "Mark" that this vis id is the destructor to avoid cycles: Vis -> Map -> relatedvis (Vis again)
-          related_map = map
-          related_map.being_destroyed_by_vis_id = id
-          related_map.destroy
-        end if map
-        safe_sequel_delete { table.destroy } if type == TYPE_CANONICAL && table && !from_table_deletion
-        safe_sequel_delete do
-          children.map do |child|
-            # Refetch each item before removal so Relator reloads prev/next cursors
-            child.fetch.delete
+          overlays.map(&:destroy)
+          safe_sequel_delete do
+            # "Mark" that this vis id is the destructor to avoid cycles: Vis -> Map -> relatedvis (Vis again)
+            related_map = map
+            related_map.being_destroyed_by_vis_id = id
+            related_map.destroy
+          end if map
+          safe_sequel_delete { table.destroy } if type == TYPE_CANONICAL && table && !from_table_deletion
+          safe_sequel_delete do
+            children.map do |child|
+              # Refetch each item before removal so Relator reloads prev/next cursors
+              child.fetch.delete
+            end
           end
-        end
 
-        # Avoid invalidating if the visualization has already been destroyed
-        # This happens deleting a canonical visualization, which triggers a table deletion,
-        # which triggers a second deletion of the same visualization
-        carto_vis = carto_visualization
-        if carto_vis
-          Carto::NamedMaps::Api.new(carto_vis).destroy
-          invalidate_cache
-        end
+          # Avoid invalidating if the visualization has already been destroyed
+          # This happens deleting a canonical visualization, which triggers a table deletion,
+          # which triggers a second deletion of the same visualization
+          carto_vis = carto_visualization
+          if carto_vis
+            Carto::NamedMaps::Api.new(carto_vis).destroy
+            invalidate_cache
+          end
 
-        safe_sequel_delete { permission.destroy_shared_entities } if permission
-        safe_sequel_delete { repository.delete(id) }
-        safe_sequel_delete { permission.destroy } if permission
-        attributes.keys.each { |key| send("#{key}=", nil) }
+          safe_sequel_delete { permission.destroy_shared_entities } if permission
+          safe_sequel_delete { repository.delete(id) }
+          safe_sequel_delete { permission.destroy } if permission
+          attributes.keys.each { |key| send("#{key}=", nil) }
+        end
 
         self
       end

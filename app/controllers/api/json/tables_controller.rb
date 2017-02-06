@@ -2,7 +2,7 @@
 
 require_relative '../../../models/visualization/presenter'
 require_relative '../../../helpers/bounding_box_helper'
-
+require_dependency 'carto/db/user_schema'
 require_dependency 'carto/tracking/events'
 
 class Api::Json::TablesController < Api::ApplicationController

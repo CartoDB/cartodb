@@ -131,7 +131,7 @@ module CartoDB
       end
 
       def layers_dependent_on(table)
-        layers(:carto_and_torque).map { |l| l.user_tables.map(&:id).include?(table.id) }
+        layers(:carto_and_torque).map { |l| l.depends_on?(table) }
       end
 
       def permission

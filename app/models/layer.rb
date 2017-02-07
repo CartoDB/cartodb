@@ -203,6 +203,10 @@ class Layer < Sequel::Model
     options && options.symbolize_keys[:source]
   end
 
+  def depends_on?(table)
+    user_tables.map(&:id).include?(table.id)
+  end
+
   private
 
   def rename_in(target, anchor, substitution)

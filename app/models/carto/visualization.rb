@@ -224,7 +224,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def layers_dependent_on(user_table)
-    carto_and_torque_layers.map { |l| l.user_tables.include?(user_table) }
+    carto_and_torque_layers.map { |l| l.depends_on?(user_table) }
   end
 
   def layers

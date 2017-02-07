@@ -17,7 +17,7 @@ module CartoDB
       }.freeze
 
       INTERFACE = %w{ overlays user table related_templates related_tables related_canonical_visualizations
-                      layers stats mapviews total_mapviews layers_dependent_on synchronization is_synced? permission
+                      layers stats mapviews total_mapviews carto_and_torque_layers synchronization is_synced? permission
                       parent children support_tables prev_list_item next_list_item likes likes_count reload_likes
                       estimated_row_count actual_row_count }.freeze
 

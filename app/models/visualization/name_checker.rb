@@ -2,26 +2,23 @@
 require_relative './collection'
 
 module CartoDB
-  module Visualization 
+  module Visualization
     class NameChecker
       def initialize(user)
         @user = user
-      end #initialize
+      end
 
       def available?(candidate)
-        !taken_names_for(user).include?(candidate)
-      end #available?
+        !taken_names_for.include?(candidate)
+      end
 
       private
 
-      def taken_names_for(user)
-        Visualization::Collection.new
-                                 .fetch(user_id: user.id, exclude_shared: true)
-                                 .map(&:name)
-      end #taken_names
+      def taken_names_for
+        @taken_names ||= Carto::Visualization::where(user_id: user.id).select(:name).map(&:name)
+      end
 
       attr_reader :user
     end # NameChecker
   end # Visualization
 end # CartoDB
-

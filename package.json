@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.5.133",
+  "version": "4.5.135",
   "description": "CARTO UI frontend",
   "repository": {
     "type": "git",
@@ -60,7 +60,7 @@
     "grunt-contrib-jasmine": "0.9.1",
     "grunt-contrib-jst": "git://github.com/javisantana/grunt-contrib-jst.git#master",
     "grunt-contrib-sass": "0.9.2",
-    "grunt-contrib-uglify": "0.9.x",
+    "grunt-contrib-uglify": "2.0.x",
     "grunt-contrib-watch": "1.0.0",
     "grunt-exorcise": "2.1.0",
     "grunt-mustache": "0.1.7",
@@ -73,7 +73,7 @@
     "open": "0.0.5",
     "semistandard": "7.0.4",
     "source-map-support": "0.4.0",
-    "uglify-js": "2.4.x",
+    "uglify-js": "2.7.x",
     "watchify": "3.7.0"
   },
   "browserify": {

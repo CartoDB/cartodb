@@ -98,7 +98,8 @@
     },
     "style": {
       "title": "Make it beautiful!",
-      "description": "Use these options to style your data in beautiful ways. For example, you can create thematic maps by altering the FILL option by value."
+      "description": "Use these options to style your data in beautiful ways. For example, you can create thematic maps by altering the FILL option by value.",
+      "short-description": "Use these options to style your data in beautiful ways."
     },
     "cartocss": {
       "title": "Dress it up with CartoCSS",

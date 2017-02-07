@@ -17,8 +17,8 @@ $sEditorWidth: 344px;
 $sWidgetsWidth: 376px;
 
 // TODO: put mixin to a common place
-@mixin setStepPad($step, $padHeights, $selector) {
-  .#{$selector}.is-#{$step} {
+@mixin setStepPad($step, $padHeights, $selector, $tab) {
+  .#{$selector}.is-#{$step}.#{$selector}--#{$tab} {
     @each $position, $height in $padHeights {
       .#{$selector}-pad#{$position} {
         height: map-get($padHeights, #{$position});
@@ -60,9 +60,17 @@ $sWidgetsWidth: 376px;
   margin-left: 70px;
 }
 
+.LayerOnboarding-body.is-step3 {
+  bottom: 36px;
+}
+
 .LayerOnboarding-body.is-step4 {
   right: 100%;
   left: auto;
+  bottom: 36px;
+}
+
+.LayerOnboarding--style .LayerOnboarding-body.is-step2 {
   bottom: 36px;
 }
 
@@ -174,11 +182,7 @@ $sWidgetsWidth: 376px;
   background: transparent;
 }
 
-.LayerOnboarding-body.is-step3 {
-  bottom: 36px;
-}
-
-$steps: (
+$dataSteps: (
   step0: (
     Top: 0,
     Middle: 100%,
@@ -206,11 +210,64 @@ $steps: (
   )
 );
 
-@each $step, $heights in $steps {
-  @include setStepPad($step, $heights, 'LayerOnboarding');
+$stylePointsSteps: (
+  step0: (
+    Top: 0,
+    Middle: 100%,
+    Bottom: 0
+  ),
+  step1: (
+    Top: 136px, // 19 + 85 + 32
+    Middle: 173px, // 18 + 155
+    Bottom: calc(100% - (136 + 173) * 1px)
+  ),
+  step2: (
+    Top: (136 + 173 - 32) * 1px,
+    Middle: 300px,
+    Bottom: calc(100% - (136 + 173 - 32 + 300) * 1px)
+  ),
+  step3: (
+    Top: calc(100% - 66px),
+    Middle: 66px,
+    Bottom: 0
+  )
+);
+
+$styleSteps: (
+  step0: (
+    Top: 0,
+    Middle: 100%,
+    Bottom: 0
+  ),
+  step1: (
+    Top: 136px,
+    Middle: 300px,
+    Bottom: calc(100% - 136px)
+  ),
+  step2: (
+    Top: calc(100% - 66px),
+    Middle: 66px,
+    Bottom: 0
+  )
+);
+
+@each $step, $heights in $dataSteps {
+  @include setStepPad($step, $heights, 'LayerOnboarding', 'data');
 }
 
-.LayerOnboarding-pads--right {
+@each $step, $heights in $stylePointsSteps {
+  @include setStepPad($step, $heights, 'LayerOnboarding', 'stylePoints');
+}
+
+@each $step, $heights in $styleSteps {
+  @include setStepPad($step, $heights, 'LayerOnboarding', 'style');
+}
+
+@each $step, $heights in $styleSteps {
+  @include setStepPad($step, $heights, 'LayerOnboarding', 'analysis');
+}
+
+.LayerOnboarding--data .LayerOnboarding-pads--right {
   width: 216px;
 
   &.is-step0,
@@ -239,7 +296,6 @@ $steps: (
 .LayerOnboarding-padBottom {
   position: relative;
 }
-
 
 .LayerOnboarding-forgetLabel {
   cursor: pointer;

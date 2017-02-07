@@ -5,22 +5,29 @@
   <div class="LayerOnboarding-padMiddle">
     <div class="LayerOnboarding-body is-step0 js-step">
       <div class="LayerOnboarding-step is-step1">
-        <p class="CDB-Text Onboarding-headerTitle">1/2</p>
+        <p class="CDB-Text Onboarding-headerTitle">1/3</p>
+        <p class="CDB-Text Onboarding-headerText LayerOnboarding-headerText"><%- _t('style-onboarding.aggregation.title')%></p>
+        <p class="CDB-Text LayerOnboarding-description">
+          <%- _t('style-onboarding.aggregation.description')%>
+        </p>
+      </div>
+      <div class="LayerOnboarding-step is-step2">
+        <p class="CDB-Text Onboarding-headerTitle">2/3</p>
         <p class="CDB-Text Onboarding-headerText"><%- _t('style-onboarding.style.title')%></p>
         <p class="CDB-Text LayerOnboarding-description LayerOnboarding-description--style">
-          <%- _t('style-onboarding.style.short-description')%>
+          <%- _t('style-onboarding.style.description')%>
         </p>
       </div>
 
-      <div class="LayerOnboarding-step is-step2">
-        <p class="CDB-Text Onboarding-headerTitle">2/2</p>
+      <div class="LayerOnboarding-step is-step3">
+        <p class="CDB-Text Onboarding-headerTitle">3/3</p>
         <p class="CDB-Text Onboarding-headerText"><%- _t('style-onboarding.cartocss.title')%></p>
         <p class="CDB-Text LayerOnboarding-description">
           <%- _t('style-onboarding.cartocss.description')%>
         </p>
       </div>
 
-      <div class="LayerOnboarding-footer is-step1">
+      <div class="LayerOnboarding-footer is-step1 is-step2">
         <div class="LayerOnboarding-footerButtons">
           <button class="CDB-Button CDB-Button--secondary CDB-Button--white CDB-Button--big Onboarding-footer--marginRight js-close">
             <span class="CDB-Button-Text CDB-Text u-upperCase is-semibold CDB-Size-medium"><%- _t('style-onboarding.exit')%></span>
@@ -32,7 +39,7 @@
         </div>
       </div>
 
-      <div class="LayerOnboarding-footer is-step2">
+      <div class="LayerOnboarding-footer is-step3">
         <div class="LayerOnboarding-footerButtons">
           <button class="CDB-Button CDB-Button--primary CDB-Button--big js-close">
             <span class="CDB-Button-Text CDB-Text u-upperCase is-semibold CDB-Size-medium"><%- _t('style-onboarding.style-layer')%></span>

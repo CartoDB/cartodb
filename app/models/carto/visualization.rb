@@ -5,9 +5,26 @@ require_dependency 'cartodb/redis_vizjson_cache'
 require_dependency 'carto/named_maps/api'
 require_dependency 'carto/helpers/auth_token_generator'
 
+module Carto::VisualizationDependencies
+  def fully_dependent_on?(user_table)
+    derived? && layers_dependent_on(user_table).count == carto_and_torque_layers.count
+  end
+
+  def partially_dependent_on?(user_table)
+    derived? && layers_dependent_on(user_table).count.between?(1, carto_and_torque_layers.count - 1)
+  end
+
+  private
+
+  def layers_dependent_on(user_table)
+    carto_and_torque_layers.select { |l| l.depends_on?(user_table) }
+  end
+end
+
 class Carto::Visualization < ActiveRecord::Base
   include CacheHelper
   include Carto::AuthTokenGenerator
+  include Carto::VisualizationDependencies
 
   AUTH_DIGEST = '1211b3e77138f6e1724721f1ab740c9c70e66ba6fec5e989bb6640c4541ed15d06dbd5fdcbd3052b'.freeze
 
@@ -211,18 +228,6 @@ class Carto::Visualization < ActiveRecord::Base
 
   def derived?
     type == TYPE_DERIVED
-  end
-
-  def fully_dependent_on?(user_table)
-    derived? && layers_dependent_on(user_table).count == carto_and_torque_layers.count
-  end
-
-  def partially_dependent_on?(user_table)
-    derived? && layers_dependent_on(user_table).count.between?(1, carto_and_torque_layers.count - 1)
-  end
-
-  def layers_dependent_on(user_table)
-    carto_and_torque_layers.select { |l| l.depends_on?(user_table) }
   end
 
   def layers

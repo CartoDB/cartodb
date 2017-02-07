@@ -23,6 +23,7 @@ module CartoDB
       extend Forwardable
       include Virtus.model
       include CacheHelper
+      include Carto::VisualizationDependencies
 
       PRIVACY_PUBLIC       = 'public'        # published and listable in public user profile
       PRIVACY_PRIVATE      = 'private'       # not published (viz.json and embed_map should return 404)
@@ -479,14 +480,6 @@ module CartoDB
 
       def type_slide?
         type == TYPE_SLIDE
-      end
-
-      def fully_dependent_on?(user_table)
-        derived? && layers_dependent_on(user_table).count == carto_and_torque_layers.count
-      end
-
-      def partially_dependent_on?(user_table)
-        derived? && layers_dependent_on(user_table).count.between?(1, carto_and_torque_layers.count - 1)
       end
 
       def invalidate_cache

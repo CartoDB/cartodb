@@ -130,8 +130,8 @@ module CartoDB
         @total_mapviews ||= Visualization::Stats.new(self, user).total_mapviews
       end
 
-      def layers_dependent_on(table)
-        layers(:carto_and_torque).map { |l| l.depends_on?(table) }
+      def carto_and_torque_layers
+        layers(:carto_and_torque)
       end
 
       def permission

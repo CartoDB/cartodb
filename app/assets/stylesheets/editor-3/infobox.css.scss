@@ -26,6 +26,10 @@
     background: rgba($cHighlightYellow, 0.64);
   }
 
+  &.is-success {
+    background: rgba($cHighlight, 0.18);
+  }
+
   &.is-dark {
     background: rgba(0, 0, 0, 0.4);
     color: #FEB714;
@@ -40,6 +44,10 @@
   &.is-disabled {
     cursor: default;
     opacity: 0.24;
+  }
+
+  .is-error & {
+    color: $cWhite;
   }
 }
 .Infobox-quota {

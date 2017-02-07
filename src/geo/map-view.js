@@ -1,3 +1,4 @@
+var _ = require('underscore');
 var log = require('cdb.log');
 var View = require('../core/view');
 var GeometryViewFactory = require('./geometry-views/geometry-view-factory');
@@ -246,11 +247,12 @@ var MapView = View.extend({
   },
 
   _removeLayers: function () {
-    for (var i in this._layerViews) {
-      var layerView = this._layerViews[i];
+    var layerViews = _.uniq(_.values(this._layerViews));
+    for (var i in layerViews) {
+      var layerView = layerViews[i];
       layerView.remove();
-      delete this._layerViews[i];
     }
+    this._layerViews = {};
   },
 
   _removeLayer: function (layerModel) {

@@ -102,7 +102,10 @@ _.extend(
     },
 
     remove: function () {
-      this.gmapsMap.overlayMapTypes.removeAt(0);
+      var overlayIndex = this.gmapsMap.overlayMapTypes.getArray().indexOf(this);
+      if (overlayIndex >= 0) {
+        this.gmapsMap.overlayMapTypes.removeAt(0);
+      }
 
       this._clearInteraction();
       this.finishLoading && this.finishLoading();

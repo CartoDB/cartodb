@@ -10,7 +10,7 @@ module Carto
     MAX_RENAME_RETRIES = 10000
 
     def propose_valid_table_name(contendent = DEFAULT_TABLE_NAME.dup, taken_names:)
-      contendent = DEFAULT_TABLE_NAME unless contendent.present?
+      contendent = DEFAULT_TABLE_NAME.dup unless contendent.present?
 
       sanitized_contendent = Carto::DB::Sanitize.sanitize_identifier(contendent)
       used_table_names = taken_names +

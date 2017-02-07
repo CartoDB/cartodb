@@ -481,12 +481,12 @@ module CartoDB
         type == TYPE_SLIDE
       end
 
-      def fully_dependent_on?(table)
-        derived? && layers_dependent_on(table).all?
+      def fully_dependent_on?(user_table)
+        derived? && layers_dependent_on(user_table).count == carto_and_torque_layers.count
       end
 
-      def partially_dependent_on?(table)
-        derived? && layers_dependent_on(table).instance_eval { any? && !all? }
+      def partially_dependent_on?(user_table)
+        derived? && layers_dependent_on(user_table).count.between?(1, carto_and_torque_layers.count - 1)
       end
 
       def invalidate_cache

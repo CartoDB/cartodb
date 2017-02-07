@@ -214,17 +214,15 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def fully_dependent_on?(user_table)
-    derived? && layers_dependent_on(user_table).all?
+    derived? && layers_dependent_on(user_table).count == carto_and_torque_layers.count
   end
 
   def partially_dependent_on?(user_table)
-    return false unless derived?
-    layer_dependencies = layers_dependent_on(user_table)
-    layer_dependencies.any? && !layer_dependencies.all?
+    derived? && layers_dependent_on(user_table).count.between?(1, carto_and_torque_layers.count - 1)
   end
 
   def layers_dependent_on(user_table)
-    carto_and_torque_layers.map { |l| l.depends_on?(user_table) }
+    carto_and_torque_layers.select { |l| l.depends_on?(user_table) }
   end
 
   def layers

@@ -34,6 +34,7 @@ require_dependency 'carto/db/user_schema'
 include CartoDB::Datasources
 
 class DataImport < Sequel::Model
+  extend Carto::DataImportConstants
   include Carto::Configuration
 
   MERGE_WITH_UNMATCHING_COLUMN_TYPES_RE = /No .*matches.*argument type.*/
@@ -107,8 +108,6 @@ class DataImport < Sequel::Model
   TYPE_URL            = 'url'
   TYPE_QUERY          = 'query'
   TYPE_DATASOURCE     = 'datasource'
-
-  COLLISION_STRATEGY_SKIP = 'skip'.freeze
 
   def after_initialize
     instantiate_log

@@ -1,7 +1,9 @@
-require_dependency 'carto/db/user_schema'
+require 'carto/db/user_schema'
+require_relative '../../../../app/models/carto/data_import_constants'
 
 module CartoDB
   module Importer2
+    # Needs @visualizations and @collision strategy instance variables in classes including this.
     module RunnerHelper
       def should_import?(table_name)
         !should_skip?(table_name)
@@ -22,7 +24,7 @@ module CartoDB
         Carto::Db::UserSchema.new(@user).table_names.include?(table_name)
       end
 
-      SKIP = DataImport::COLLISION_STRATEGY_SKIP
+      SKIP = Carto::DataImportConstants::COLLISION_STRATEGY_SKIP
     end
   end
 end

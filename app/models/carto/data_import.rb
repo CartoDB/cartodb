@@ -4,6 +4,7 @@ require 'active_record'
 
 module Carto
   class DataImport < ActiveRecord::Base
+    extend Carto::DataImportConstants
 
     # INFO: hack to workaround `ActiveRecord::DangerousAttributeError: logger is defined by ActiveRecord`
     class << self

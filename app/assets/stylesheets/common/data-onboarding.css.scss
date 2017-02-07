@@ -27,21 +27,21 @@ $sWidgetsWidth: 376px;
   }
 }
 
-.DataOnboarding {
+.LayerOnboarding {
   @include display-flex();
   height: 100%;
   pointer-events: auto;
 }
 
-.DataOnboarding-footer {
+.LayerOnboarding-footer {
   margin-top: $sMargin-section;
 }
 
-.DataOnboarding-footerButtons {
+.LayerOnboarding-footerButtons {
   margin-bottom: $sMargin-element;
 }
 
-.DataOnboarding-contentWrapper {
+.LayerOnboarding-contentWrapper {
   @include flex(1);
   @include display-flex();
   @include align-items(center);
@@ -50,59 +50,75 @@ $sWidgetsWidth: 376px;
   pointer-events: all;
   z-index: 5;
 }
-
-.DataOnboarding-body {
+.LayerOnboarding-contentWrapper--analysis {
+  @include justify-content(center);
+}
+.LayerOnboarding-body {
   position: absolute;
   left: 100%;
   margin-top: 45px;
   margin-left: 70px;
 }
 
-.DataOnboarding-body.is-step4 {
+.LayerOnboarding-body.is-step4 {
   right: 100%;
   left: auto;
   bottom: 36px;
 }
 
-.DataOnboarding-contentBody {
+.LayerOnboarding-contentBody {
   width: 0;
   margin: 0 80px;
 }
 
-.DataOnboarding-forget,
-.DataOnboarding-header,
-.DataOnboarding-footer,
-.DataOnboarding-step {
+.LayerOnboarding-contentBody--analysis {
+  width: auto;
+}
+
+.LayerOnboarding-forget,
+.LayerOnboarding-header,
+.LayerOnboarding-footer,
+.LayerOnboarding-step {
   display: none;
 }
 
-.DataOnboarding-footer .DataOnboarding-footerButtons,
-.DataOnboarding-contentWrapper .DataOnboarding-header p,
-.DataOnboarding-contentWrapper .DataOnboarding-step p {
+.LayerOnboarding-footer .LayerOnboarding-footerButtons,
+.LayerOnboarding-contentWrapper .LayerOnboarding-header p,
+.LayerOnboarding-contentWrapper .LayerOnboarding-step p {
   @include opacity(1);
   @include transition(opacity, 200ms, ease-in-out, 1s);
 }
 
-.DataOnboarding-header,
-.DataOnboarding-footer {
+.LayerOnboarding-header,
+.LayerOnboarding-footer {
   min-width: 300px;
 }
 
-.DataOnboarding.is-step0 .DataOnboarding-header,
-.DataOnboarding.is-step0 .DataOnboarding-footer.is-step0,
-.DataOnboarding.is-step1 .DataOnboarding-footer.is-step1,
-.DataOnboarding.is-step2 .DataOnboarding-footer.is-step2,
-.DataOnboarding.is-step3 .DataOnboarding-footer.is-step3,
-.DataOnboarding.is-step4 .DataOnboarding-footer.is-step4,
-.DataOnboarding.is-step0 .DataOnboarding-step.is-step0,
-.DataOnboarding.is-step1 .DataOnboarding-step.is-step1,
-.DataOnboarding.is-step2 .DataOnboarding-step.is-step2,
-.DataOnboarding.is-step3 .DataOnboarding-step.is-step3,
-.DataOnboarding.is-step4 .DataOnboarding-step.is-step4 {
+.LayerOnboarding.is-step0 .LayerOnboarding-header,
+.LayerOnboarding.is-step0 .LayerOnboarding-footer.is-step0,
+.LayerOnboarding.is-step1 .LayerOnboarding-footer.is-step1,
+.LayerOnboarding.is-step2 .LayerOnboarding-footer.is-step2,
+.LayerOnboarding.is-step3 .LayerOnboarding-footer.is-step3,
+.LayerOnboarding.is-step4 .LayerOnboarding-footer.is-step4,
+.LayerOnboarding.is-step0 .LayerOnboarding-step.is-step0,
+.LayerOnboarding.is-step1 .LayerOnboarding-step.is-step1,
+.LayerOnboarding.is-step2 .LayerOnboarding-step.is-step2,
+.LayerOnboarding.is-step3 .LayerOnboarding-step.is-step3,
+.LayerOnboarding.is-step4 .LayerOnboarding-step.is-step4 {
   display: block;
 }
 
-.DataOnboarding-description {
+.LayerOnboarding-list {
+  list-style-type: disc;
+  padding-left: 2em;
+  padding-top: 12px;
+}
+
+.LayerOnboarding-headerText {
+  width: $sBigDescriptionWidth;
+}
+
+.LayerOnboarding-description {
   @include transition(width, 100ms, ease-in-out);
   width: $sRegularDescriptionWidth;
   margin-bottom: $sMargin-elementInline;
@@ -112,50 +128,53 @@ $sWidgetsWidth: 376px;
   line-height: $sLineHeight-large;
 }
 
-.DataOnboarding-toolbarOverlay,
-.DataOnboarding-widgetsOverlay,
-.DataOnboarding-pads {
+.LayerOnboarding-description--analysis,
+.LayerOnboarding-description--style {
+  width: $sBigDescriptionWidth;
+}
+
+.LayerOnboarding-toolbarOverlay,
+.LayerOnboarding-widgetsOverlay,
+.LayerOnboarding-pads {
   @include transition(width, 300ms, ease-in-out);
   height: 100%;
   z-index: 10;
 }
-
-.DataOnboarding-toolbarOverlay {
-  width: $sToolbarWidth;
-}
-
-.DataOnboarding-widgetsOverlay {
-  width: $sWidgetsWidth;
-  display: block;
-}
-
-.DataOnboarding-pads--left {
+.LayerOnboarding-pads {
   width: $sEditorWidth;
 }
 
-.DataOnboarding-padTop,
-.DataOnboarding-padMiddle,
-.DataOnboarding-padBottom {
+.LayerOnboarding-toolbarOverlay {
+  width: $sToolbarWidth;
+}
+
+.LayerOnboarding-widgetsOverlay {
+  width: $sWidgetsWidth;
+  display: block;
+}
+.LayerOnboarding-padTop,
+.LayerOnboarding-padMiddle,
+.LayerOnboarding-padBottom {
   @include transition(height, 300ms, ease-in-out);
   width: 100%;
   display: block;
 }
 
-.DataOnboarding-toolbarOverlay,
-.DataOnboarding-widgetsOverlay,
-.DataOnboarding-padTop,
-.DataOnboarding-padBottom {
+.LayerOnboarding-toolbarOverlay,
+.LayerOnboarding-widgetsOverlay,
+.LayerOnboarding-padTop,
+.LayerOnboarding-padBottom {
   @include opacity(0.88);
   background: $cBackgroundColor;
 }
 
-.DataOnboarding-padMiddle {
+.LayerOnboarding-padMiddle {
   @include opacity(1);
   position: relative;
   background: transparent;
 }
 
-.DataOnboarding-body.is-step3 {
+.LayerOnboarding-body.is-step3 {
   bottom: 36px;
 }
 
@@ -188,40 +207,40 @@ $steps: (
 );
 
 @each $step, $heights in $steps {
-  @include setStepPad($step, $heights, 'DataOnboarding');
+  @include setStepPad($step, $heights, 'LayerOnboarding');
 }
 
-.DataOnboarding-pads--right {
+.LayerOnboarding-pads--right {
   width: 216px;
 
   &.is-step0,
   &.is-step1,
   &.is-step2,
   &.is-step3 {
-    .DataOnboarding-padTop {
+    .LayerOnboarding-padTop {
       height: 100%;
     }
-    .DataOnboarding-padBottom {
+    .LayerOnboarding-padBottom {
       height: 0;
     }
   }
 
   &.is-step4 {
-    .DataOnboarding-padTop {
+    .LayerOnboarding-padTop {
       height: calc(100% - 100px);
     }
-    .DataOnboarding-padBottom {
+    .LayerOnboarding-padBottom {
       height: 100px;
       background: transparent;
     }
   }
 }
 
-.DataOnboarding-padBottom {
+.LayerOnboarding-padBottom {
   position: relative;
 }
 
 
-.DataOnboarding-forgetLabel {
+.LayerOnboarding-forgetLabel {
   cursor: pointer;
 }

@@ -39,7 +39,7 @@ describe CartoDB::TableRelator do
     end
   end
 
-  describe '.serialize_dependent_visualizations' do
+  describe '.serialize_fully_dependent_visualizations' do
     before :each do
       bypass_named_maps
 
@@ -60,7 +60,7 @@ describe CartoDB::TableRelator do
 
     describe 'given there are no dependent visualizations' do
       before :each do
-        @dependents = @table_relator.serialize_dependent_visualizations
+        @dependents = @table_relator.serialize_fully_dependent_visualizations
       end
 
       it 'should return an empty list' do
@@ -75,7 +75,7 @@ describe CartoDB::TableRelator do
         CartoDB::Visualization::Member.any_instance
                                       .stubs(:fully_dependent_on?)
                                       .returns(true, false, true)
-        @dependents = @table_relator.serialize_dependent_visualizations
+        @dependents = @table_relator.serialize_fully_dependent_visualizations
       end
 
       it 'should return a list with dependent visualizations' do
@@ -94,7 +94,7 @@ describe CartoDB::TableRelator do
     end
   end
 
-  describe '.serialize_non_dependent_visualizations' do
+  describe '.serialize_partially_dependent_visualizations' do
     before :each do
       bypass_named_maps
 
@@ -118,7 +118,7 @@ describe CartoDB::TableRelator do
       before :each do
         bypass_named_maps
 
-        @non_dependents = @table_relator.serialize_non_dependent_visualizations
+        @non_dependents = @table_relator.serialize_partially_dependent_visualizations
       end
 
       it 'should return an empty list' do
@@ -133,7 +133,7 @@ describe CartoDB::TableRelator do
         CartoDB::Visualization::Member.any_instance
                                       .stubs(:partially_dependent_on?)
                                       .returns(true, false, false)
-        @non_dependents = @table_relator.serialize_non_dependent_visualizations
+        @non_dependents = @table_relator.serialize_partially_dependent_visualizations
       end
 
       it 'should return a list with dependent visualizations' do

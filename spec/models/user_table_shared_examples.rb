@@ -41,8 +41,8 @@ shared_examples_for 'user table models' do
       @first_layer.user_table_ids = []
       @second_layer.user_table_ids = []
 
-      @dependent_test_object.dependent_visualizations.any?.should be_false
-      @dependent_test_object.non_dependent_visualizations.any?.should be_false
+      @dependent_test_object.fully_dependent_visualizations.any?.should be_false
+      @dependent_test_object.partially_dependent_visualizations.any?.should be_false
     end
 
     it 'one layer depending on the table -> fully dependent' do
@@ -50,40 +50,40 @@ shared_examples_for 'user table models' do
       @second_layer.user_table_ids = []
       @second_layer.update_attribute(:kind, 'tiled')
 
-      @dependent_test_object.dependent_visualizations.any?.should be_true
-      @dependent_test_object.non_dependent_visualizations.any?.should be_false
+      @dependent_test_object.fully_dependent_visualizations.any?.should be_true
+      @dependent_test_object.partially_dependent_visualizations.any?.should be_false
     end
 
     it 'two layers depending on the table -> fully dependent' do
       @first_layer.user_table_ids = [@user_table.id]
       @second_layer.user_table_ids = [@user_table.id]
 
-      @dependent_test_object.dependent_visualizations.any?.should be_true
-      @dependent_test_object.non_dependent_visualizations.any?.should be_false
+      @dependent_test_object.fully_dependent_visualizations.any?.should be_true
+      @dependent_test_object.partially_dependent_visualizations.any?.should be_false
     end
 
     it 'two layers depending on different tables -> partially dependent' do
       @first_layer.user_table_ids = [@user_table.id]
       @second_layer.user_table_ids = [@other_table.id]
 
-      @dependent_test_object.dependent_visualizations.any?.should be_false
-      @dependent_test_object.non_dependent_visualizations.any?.should be_true
+      @dependent_test_object.fully_dependent_visualizations.any?.should be_false
+      @dependent_test_object.partially_dependent_visualizations.any?.should be_true
     end
 
     it 'two layers depending on multiple tables (both include this one) -> fully dependent' do
       @first_layer.user_table_ids = [@user_table.id]
       @second_layer.user_table_ids = [@user_table.id, @other_table.id]
 
-      @dependent_test_object.dependent_visualizations.any?.should be_true
-      @dependent_test_object.non_dependent_visualizations.any?.should be_false
+      @dependent_test_object.fully_dependent_visualizations.any?.should be_true
+      @dependent_test_object.partially_dependent_visualizations.any?.should be_false
     end
 
     it 'two layers depending on multiple tables (this table is only used in one layer) -> partially dependent' do
       @first_layer.user_table_ids = [@user_table.id, @other_table.id]
       @second_layer.user_table_ids = [@other_table.id]
 
-      @dependent_test_object.dependent_visualizations.any?.should be_false
-      @dependent_test_object.non_dependent_visualizations.any?.should be_true
+      @dependent_test_object.fully_dependent_visualizations.any?.should be_false
+      @dependent_test_object.partially_dependent_visualizations.any?.should be_true
     end
   end
 end

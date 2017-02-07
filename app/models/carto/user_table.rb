@@ -64,7 +64,7 @@ module Carto
       visualization.synchronization if visualization
     end
 
-    def dependent_visualizations
+    def fully_dependent_visualizations
       affected_visualizations.select { |v| v.fully_dependent_on?(self) }
     end
 
@@ -72,7 +72,7 @@ module Carto
       affected_visualizations.select { |v| (v.has_read_permission?(user) && v.derived?) ? v : nil }
     end
 
-    def non_dependent_visualizations
+    def partially_dependent_visualizations
       affected_visualizations.select { |v| v.partially_dependent_on?(self) }
     end
 

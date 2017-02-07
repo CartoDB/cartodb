@@ -56,8 +56,8 @@ class Table
       :description                  => :description,
       :geometry_types               => :geometry_types,
       :table_visualization          => :table_visualization,
-      :dependent_visualizations     => :serialize_dependent_visualizations,
-      :non_dependent_visualizations => :serialize_non_dependent_visualizations,
+      :dependent_visualizations     => :serialize_fully_dependent_visualizations,
+      :non_dependent_visualizations => :serialize_partially_dependent_visualizations,
       :synchronization              => :serialize_synchronization
   }
 
@@ -567,8 +567,8 @@ class Table
     if @table_visualization
       @table_visualization.user_data = { name: owner.username, api_key: owner.api_key }
     end
-    @dependent_visualizations_cache     = dependent_visualizations.to_a
-    @non_dependent_visualizations_cache = non_dependent_visualizations.to_a
+    @fully_dependent_visualizations_cache     = fully_dependent_visualizations.to_a
+    @partially_dependent_visualizations_cache = partially_dependent_visualizations.to_a
   end
 
   def after_destroy
@@ -578,8 +578,8 @@ class Table
     remove_table_from_stats
 
     cache.del geometry_types_key
-    @dependent_visualizations_cache.each(&:delete)
-    @non_dependent_visualizations_cache.each do |visualization|
+    @fully_dependent_visualizations_cache.each(&:delete)
+    @partially_dependent_visualizations_cache.each do |visualization|
       visualization.unlink_from(self)
     end
 

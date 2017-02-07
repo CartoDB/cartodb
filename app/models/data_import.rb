@@ -34,7 +34,7 @@ require_dependency 'carto/db/user_schema'
 include CartoDB::Datasources
 
 class DataImport < Sequel::Model
-  extend Carto::DataImportConstants
+  include Carto::DataImportConstants
   include Carto::Configuration
 
   MERGE_WITH_UNMATCHING_COLUMN_TYPES_RE = /No .*matches.*argument type.*/

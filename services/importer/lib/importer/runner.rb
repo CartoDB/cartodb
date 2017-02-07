@@ -272,7 +272,7 @@ module CartoDB
             end
 
             table_files.each_with_index do |source_file, index|
-              next if (index >= MAX_TABLES_PER_IMPORT) || !should_import?(table_name_from_source_file(source_file))
+              next if (index >= MAX_TABLES_PER_IMPORT) || !should_import?(source_file.name)
               @job.new_table_name if (index > 0)
 
               log.store   # Checkpoint-save
@@ -391,7 +391,7 @@ module CartoDB
       def result_for(job, source_file, table_names, support_table_names=[], exception_klass=nil)
         job.logger.store
         Result.new(
-          name:           table_name_from_source_file(source_file),
+          name:           source_file.name,
           schema:         source_file.target_schema,
           extension:      source_file.extension,
           etag:           source_file.etag,
@@ -403,10 +403,6 @@ module CartoDB
           log_trace:      job.logger.to_s,
           support_tables: support_table_names
         )
-      end
-
-      def table_name_from_source_file(source_file)
-        source_file.name
       end
 
       def error_for(exception_klass=nil)

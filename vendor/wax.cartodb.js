@@ -3359,6 +3359,7 @@ wax.g.connector.prototype.getTileUrl = function(coord, z) {
 
     x = (x < 0) ? (coord.x % mod) + mod : x;
 
+    // Fix upper limit to load the default empty image if it is rebased
     if (y < 0 || y >= mod ) return this.options.blankImage;
 
     return this.options.tiles

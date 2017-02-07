@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.5.135",
+  "version": "4.5.136",
   "dependencies": {
     "backbone": {
       "version": "1.2.3",
@@ -1146,13 +1146,13 @@
     },
     "cartodb-deep-insights.js": {
       "version": "0.0.2",
-      "from": "cartodb/deep-insights.js#google-maps",
+      "from": "git://github.com/cartodb/deep-insights.js.git#643986ed426db5ed910ffdaeb6f1f13bc2d57455",
       "resolved": "git://github.com/cartodb/deep-insights.js.git#643986ed426db5ed910ffdaeb6f1f13bc2d57455",
       "dependencies": {
         "cartodb.js": {
           "version": "4.0.0-alpha.1",
           "from": "cartodb/cartodb.js#switch-to-gmaps",
-          "resolved": "git://github.com/cartodb/cartodb.js.git#17f9ad1333c200b5f92b6a0f9ac8b1fe93c58cee",
+          "resolved": "git://github.com/cartodb/cartodb.js.git#6a7d371dcc07edaf635459e9bef8fb211e515afa",
           "dependencies": {
             "backbone-poller": {
               "version": "1.1.3",
@@ -1672,7 +1672,7 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
       "from": "cartodb/cartodb.js#switch-to-gmaps",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#17f9ad1333c200b5f92b6a0f9ac8b1fe93c58cee",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#6a7d371dcc07edaf635459e9bef8fb211e515afa",
       "dependencies": {
         "backbone-poller": {
           "version": "1.1.3",
@@ -1817,7 +1817,7 @@
             },
             "turf-jenks": {
               "version": "1.0.1",
-              "from": "turf-jenks@>=1.0.1 <2.0.0",
+              "from": "turf-jenks@>=1.0.1 <1.1.0",
               "resolved": "https://registry.npmjs.org/turf-jenks/-/turf-jenks-1.0.1.tgz",
               "dependencies": {
                 "simple-statistics": {

@@ -45,21 +45,21 @@ class Table
   # @see config/initializers/carto_db.rb -> RESERVED_COLUMN_NAMES
   RESERVED_COLUMN_NAMES = %w(oid tableoid xmin cmin xmax cmax ctid ogc_fid).freeze
   PUBLIC_ATTRIBUTES = {
-      :id                           => :id,
-      :name                         => :name,
-      :privacy                      => :privacy_text,
-      :schema                       => :schema,
-      :updated_at                   => :updated_at,
-      :rows_counted                 => :rows_estimated,
-      :table_size                   => :table_size,
-      :map_id                       => :map_id,
-      :description                  => :description,
-      :geometry_types               => :geometry_types,
-      :table_visualization          => :table_visualization,
-      :dependent_visualizations     => :serialize_fully_dependent_visualizations,
-      :non_dependent_visualizations => :serialize_partially_dependent_visualizations,
-      :synchronization              => :serialize_synchronization
-  }
+    id:                           :id,
+    name:                         :name,
+    privacy:                      :privacy_text,
+    schema:                       :schema,
+    updated_at:                   :updated_at,
+    rows_counted:                 :rows_estimated,
+    table_size:                   :table_size,
+    map_id:                       :map_id,
+    description:                  :description,
+    geometry_types:               :geometry_types,
+    table_visualization:          :table_visualization,
+    dependent_visualizations:     :serialize_fully_dependent_visualizations,
+    non_dependent_visualizations: :serialize_partially_dependent_visualizations,
+    synchronization:              :serialize_synchronization
+  }.freeze
 
   DEFAULT_THE_GEOM_TYPE = 'geometry'
 

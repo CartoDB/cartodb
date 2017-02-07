@@ -28,6 +28,8 @@ module Carto
     has_many :external_data_imports, inverse_of: :data_import, class_name: Carto::ExternalDataImport
     has_many :user_tables, class_name: Carto::UserTable
 
+    validate :validate_collision_strategy
+
     def is_raster?
       ::JSON.parse(self.stats).select{ |item| item['type'] == '.tif' }.length > 0
     end

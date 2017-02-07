@@ -406,6 +406,7 @@ class DataImport < Sequel::Model
   def validate
     super
     errors.add(:user, "Viewer users can't create data imports") if user && user.viewer
+    validate_collision_strategy
   end
 
   def final_state?

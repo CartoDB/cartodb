@@ -16,15 +16,18 @@
                 <button class="ColorBar CDB-ListDecoration-rampItemBar u-rSpace--xl js-colorPicker" style="background-color: <%= color %>;" type="button"></button>
               </div>
             </li>
-            <li class='CDB-NavMenu-item is-selected'>
-              <div class='CDB-NavMenu-link CDB-ListDecoration-rampNav-item'>
-                <% if (image) { %>
-                  <div class='CDB-ListDecoration-rampImg js-image-container'></div>
-                <% } else { %>
-                  <span class="CDB-ListDecoration-rampImg CDB-Text js-assetPicker"><%= _t('form-components.editors.fill.input-color.img') %></span>
-                <% } %>
-              </div>
-            </li>
+
+            <% if (imageEnabled) { %>
+              <li class='CDB-NavMenu-item is-selected'>
+                <div class='CDB-NavMenu-link CDB-ListDecoration-rampNav-item'>
+                  <% if (image) { %>
+                    <div class='CDB-ListDecoration-rampImg js-image-container'></div>
+                  <% } else { %>
+                    <span class="CDB-ListDecoration-rampImg CDB-Text js-assetPicker"><%= _t('form-components.editors.fill.input-color.img') %></span>
+                  <% } %>
+                </div>
+              </li>
+            <% } %>
           </ul>
         </nav>
       </div>

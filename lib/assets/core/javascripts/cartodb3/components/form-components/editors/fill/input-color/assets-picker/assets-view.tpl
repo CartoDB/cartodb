@@ -11,7 +11,7 @@
       <div class="Modal-navigation">
         <ul class="Modal-navigationInner CDB-Text is-semibold CDB-Size-medium js-menu">
           <li class="CDB-NavMenu-item is-selected">
-              <button class="CDB-NavMenu-link u-upperCase"><%- _t('components.modals.add-asset.your-uploads') %></button>
+            <button class="CDB-NavMenu-link u-upperCase"><%- _t('components.modals.add-asset.your-uploads') %></button>
           </li>
         </ul>
       </div>

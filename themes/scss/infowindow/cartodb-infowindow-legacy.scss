@@ -4,7 +4,7 @@
 .cartodb-popup.v2 {
   position: relative;
   max-width: 200px;
-  padding: 20px 24px 18px;
+  padding: 20px 12px 18px;
   transform: translateX(15px) translateY(-15px);
   border-radius: 4px;
   background: #FFF;
@@ -46,12 +46,16 @@
 .cartodb-popup-content {
   font-family: 'Open Sans';
   h4 {
-    margin-bottom: 2px;
+    margin-top: 12px;
     color: #636D72;
     font-size: 10px;
     font-weight: 300;
     line-height: 14px;
     text-transform: uppercase;
+
+    &:first-child {
+      margin-top: 0;
+    }
   }
   p {
     color: #2E3C43;
@@ -75,7 +79,7 @@
     width: auto;
     height: auto;
     max-height: 62px;
-    margin: -20px -24px 0;
+    margin: -20px -12px 0;
     padding: 17px 12px;
     border-top-left-radius: 2px;
     border-top-right-radius: 2px;
@@ -90,10 +94,13 @@
       line-height: 23px;
       text-shadow: 0 1px rgba(0, 0, 0, 0.5);
       word-wrap: break-word;
+      text-transform: uppercase;
     }
 
     h4 {
       text-transform: uppercase;
+      font-size: 80%;
+      font-weight: bold;
     }
   }
 

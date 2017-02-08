@@ -6,14 +6,14 @@
     <div class="LayerOnboarding-body is-step0 js-step">
       <div class="LayerOnboarding-step is-step1">
         <p class="CDB-Text Onboarding-headerTitle">1/4</p>
-        <p class="CDB-Text Onboarding-headerText"><%- _t('data-onboarding.layer-options.title')%></p>
+        <p class="CDB-Text Onboarding-headerText LayerOnboarding-headerText"><%- _t('data-onboarding.layer-options.title')%></p>
         <p class="CDB-Text LayerOnboarding-description">
           <%- _t('data-onboarding.layer-options.description')%>
         </p>
       </div>
       <div class="LayerOnboarding-step is-step2">
         <p class="CDB-Text Onboarding-headerTitle">2/4</p>
-        <p class="CDB-Text Onboarding-headerText"><%- _t('data-onboarding.data-tab.title')%></p>
+        <p class="CDB-Text Onboarding-headerText LayerOnboarding-headerText"><%- _t('data-onboarding.data-tab.title')%></p>
         <p class="CDB-Text LayerOnboarding-description">
           <%- _t('data-onboarding.data-tab.description')%>
         </p>
@@ -21,7 +21,7 @@
 
       <div class="LayerOnboarding-step is-step3">
         <p class="CDB-Text Onboarding-headerTitle">3/4</p>
-        <p class="CDB-Text Onboarding-headerText"><%- _t('data-onboarding.sql-editor.title')%></p>
+        <p class="CDB-Text Onboarding-headerText LayerOnboarding-headerText"><%- _t('data-onboarding.sql-editor.title')%></p>
         <p class="CDB-Text LayerOnboarding-description">
           <%- _t('data-onboarding.sql-editor.description')%>
         </p>
@@ -82,7 +82,7 @@
     <div class="LayerOnboarding-body is-step0 js-step">
       <div class="LayerOnboarding-step is-step4">
         <p class="CDB-Text Onboarding-headerTitle">4/4</p>
-        <p class="CDB-Text Onboarding-headerText"><%- _t('data-onboarding.add-geometry.title')%></p>
+        <p class="CDB-Text Onboarding-headerText LayerOnboarding-headerText"><%- _t('data-onboarding.add-geometry.title')%></p>
         <p class="CDB-Text LayerOnboarding-description">
           <%- _t('data-onboarding.add-geometry.description')%>
         </p>

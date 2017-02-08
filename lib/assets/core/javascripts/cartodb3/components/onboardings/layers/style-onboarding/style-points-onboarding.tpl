@@ -13,7 +13,7 @@
       </div>
       <div class="LayerOnboarding-step is-step2">
         <p class="CDB-Text Onboarding-headerTitle">2/3</p>
-        <p class="CDB-Text Onboarding-headerText"><%- _t('style-onboarding.style.title')%></p>
+        <p class="CDB-Text Onboarding-headerText LayerOnboarding-headerText"><%- _t('style-onboarding.style.title')%></p>
         <p class="CDB-Text LayerOnboarding-description LayerOnboarding-description--style">
           <%- _t('style-onboarding.style.description')%>
         </p>
@@ -21,7 +21,7 @@
 
       <div class="LayerOnboarding-step is-step3">
         <p class="CDB-Text Onboarding-headerTitle">3/3</p>
-        <p class="CDB-Text Onboarding-headerText"><%- _t('style-onboarding.cartocss.title')%></p>
+        <p class="CDB-Text Onboarding-headerText LayerOnboarding-headerText"><%- _t('style-onboarding.cartocss.title')%></p>
         <p class="CDB-Text LayerOnboarding-description">
           <%- _t('style-onboarding.cartocss.description')%>
         </p>

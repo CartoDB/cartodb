@@ -517,28 +517,28 @@ class User < Sequel::Model
   #
   def self.overquota(delta = 0)
     users_overquota = []
-    ::User.where(enabled: true, organization_id: nil).each do |u|
-        limit = u.geocoding_quota.to_i - (u.geocoding_quota.to_i * delta)
-        over_geocodings = u.get_geocoding_calls > limit
+    ::User.where(enabled: true, organization_id: nil).exclude(account_type: 'FREE').use_cursor.each do |u|
+      limit = u.geocoding_quota.to_i - (u.geocoding_quota.to_i * delta)
+      over_geocodings = u.get_geocoding_calls > limit
 
-        limit =  u.twitter_datasource_quota.to_i - (u.twitter_datasource_quota.to_i * delta)
-        over_twitter_imports = u.get_twitter_imports_count > limit
+      limit = u.twitter_datasource_quota.to_i - (u.twitter_datasource_quota.to_i * delta)
+      over_twitter_imports = u.get_twitter_imports_count > limit
 
-        limit = u.here_isolines_quota.to_i - (u.here_isolines_quota.to_i * delta)
-        over_here_isolines = u.get_here_isolines_calls > limit
+      limit = u.here_isolines_quota.to_i - (u.here_isolines_quota.to_i * delta)
+      over_here_isolines = u.get_here_isolines_calls > limit
 
-        limit = u.obs_snapshot_quota.to_i - (u.obs_snapshot_quota.to_i * delta)
-        over_obs_snapshot = u.get_obs_snapshot_calls > limit
+      limit = u.obs_snapshot_quota.to_i - (u.obs_snapshot_quota.to_i * delta)
+      over_obs_snapshot = u.get_obs_snapshot_calls > limit
 
-        limit = u.obs_general_quota.to_i - (u.obs_general_quota.to_i * delta)
-        over_obs_general = u.get_obs_general_calls > limit
+      limit = u.obs_general_quota.to_i - (u.obs_general_quota.to_i * delta)
+      over_obs_general = u.get_obs_general_calls > limit
 
-        limit = u.mapzen_routing_quota.to_i - (u.mapzen_routing_quota.to_i * delta)
-        over_mapzen_routing = u.get_mapzen_routing_calls > limit
+      limit = u.mapzen_routing_quota.to_i - (u.mapzen_routing_quota.to_i * delta)
+      over_mapzen_routing = u.get_mapzen_routing_calls > limit
 
-        if over_geocodings || over_twitter_imports || over_here_isolines || over_mapzen_routing || over_obs_snapshot || over_obs_general
-          users_overquota.push(u)
-        end
+      if over_geocodings || over_twitter_imports || over_here_isolines || over_mapzen_routing || over_obs_snapshot || over_obs_general
+        users_overquota.push(u)
+      end
     end
     users_overquota
   end

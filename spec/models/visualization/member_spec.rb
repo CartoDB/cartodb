@@ -247,6 +247,19 @@ describe Visualization::Member do
         Carto::Visualization.exists?(@visualization.id).should be_false
       end
 
+      it 'destroys maps with join analyses if they are dependent' do
+        # First layer uses tables @table, Second layer uses tables @table and @other_table. Map is dependent on @table
+        layer = FactoryGirl.build(:carto_layer, kind: 'carto', maps: [@map])
+        layer.options[:query] = "SELECT * FROM #{@other_table.name}"
+        layer.save
+        layer.user_tables << @table << @other_table
+
+        table_visualization = CartoDB::Visualization::Member.new(id: @table_visualization.id).fetch
+        table_visualization.delete
+
+        Carto::Visualization.exists?(@visualization.id).should be_false
+      end
+
       it 'unlinks only dependent data layers' do
         layer_to_be_deleted = @visualization.data_layers.first
         layer = FactoryGirl.build(:carto_layer, kind: 'carto', maps: [@map])

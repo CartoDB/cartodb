@@ -287,6 +287,10 @@ module Carto
       register_table_dependencies
     end
 
+    def depends_on?(user_table)
+      user_tables.include?(user_table)
+    end
+
     private
 
     def rename_in(target, anchor, substitution)

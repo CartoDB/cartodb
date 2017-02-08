@@ -2,6 +2,7 @@
 @import '../variables/colors';
 @import '../variables/sizes';
 @import '../variables/onboarding';
+@import '../editor-3/vars';
 @import 'cdb-variables/colors';
 @import 'cdb-variables/sizes';
 
@@ -12,9 +13,12 @@ $sWidgetsPadWidth: 378px;
 $cBackgroundColor: #2E3C43;
 
 // TODO: put variables to /variables/onboarding
+
 $sToolbarWidth: 72px;
+$sToolbarWidth-mediaXL: 48px;
 $sEditorWidth: 344px;
-$sWidgetsWidth: 376px;
+$sWidgetsWidth: 368px;
+$sWidgetsWidth-mediaXXL: 296px;
 
 // TODO: put mixin to a common place
 @mixin setStepPad($step, $padHeights, $selector, $tab) {
@@ -77,6 +81,7 @@ $sWidgetsWidth: 376px;
 .LayerOnboarding-contentBody {
   width: 0;
   margin: 0 80px;
+  z-index: 20;
 }
 
 .LayerOnboarding-contentBody--analysis {
@@ -158,8 +163,12 @@ $sWidgetsWidth: 376px;
 
 .LayerOnboarding-widgetsOverlay {
   width: $sWidgetsWidth;
+  display: none;
+}
+.LayerOnboarding-widgetsOverlay.is-step4 {
   display: block;
 }
+
 .LayerOnboarding-padTop,
 .LayerOnboarding-padMiddle,
 .LayerOnboarding-padBottom {
@@ -269,6 +278,7 @@ $styleSteps: (
 
 .LayerOnboarding--data .LayerOnboarding-pads--right {
   width: 216px;
+  display: none;
 
   &.is-step0,
   &.is-step1,
@@ -276,6 +286,9 @@ $styleSteps: (
   &.is-step3 {
     .LayerOnboarding-padTop {
       height: 100%;
+    }
+    .LayerOnboarding-padMiddle {
+      height: 0;
     }
     .LayerOnboarding-padBottom {
       height: 0;
@@ -285,13 +298,92 @@ $styleSteps: (
   &.is-step4 {
     .LayerOnboarding-padTop {
       height: calc(100% - 100px);
+
+      &.has-timeSeries {
+        height: calc(100% - (100 + 143) * 1px); // 143 - XXXL time serie
+      }
+      &.has-timeSeries--animated {
+        height: calc(100% - (100 + 166) * 1px); // 166 - XXXL animated
+      }
     }
-    .LayerOnboarding-padBottom {
+    .LayerOnboarding-padMiddle {
       height: 100px;
       background: transparent;
     }
+    .LayerOnboarding-padBottom {
+      height: 0;
+
+      &.has-timeSeries {
+        height: 143px;
+      }
+      &.has-timeSeries--animated {
+        height: 166px;
+      }
+    }
+
+    @media (max-width: $sViewport-xxl) {
+      .LayerOnboarding-padTop {
+        &.has-timeSeries {
+          height: calc(100% - (100 + 127) * 1px); // 127 - XXL time serie
+        }
+        &.has-timeSeries--animated {
+          height: calc(100% - (100 + 150) * 1px); // 150 - XXL animated
+        }
+      }
+      .LayerOnboarding-padBottom {
+        &.has-timeSeries {
+          height: calc(100% - (100 + 127) * 1px);
+        }
+        &.has-timeSeries--animated {
+          height: calc(100% - (100 + 150) * 1px);
+        }
+      }
+    }
+
+    @media (max-width: $sViewport-xl) {
+      .LayerOnboarding-padTop {
+        &.has-timeSeries {
+          height: calc(100% - (100 + 119) * 1px); // 119 - XL time serie
+        }
+        &.has-timeSeries--animated {
+          height: calc(100% - (100 + 142) * 1px); // 142 - XL animated
+        }        
+        &.has-widgets {
+          height: calc(100% - (100 + 192) * 1px);
+
+          &.has-timeSeries {
+            height: calc(100% - (100 + 192 + 119) * 1px);
+          }
+          &.has-timeSeries--animated {
+            height: calc(100% - (100 + 192 + 142) * 1px);
+          }
+        }
+      }
+      .LayerOnboarding-padBottom {
+        &.has-timeSeries {
+          height: calc(100% - (100 + 119) * 1px);
+        }
+        &.has-timeSeries--animated {
+          height: calc(100% - (100 + 142) * 1px);
+        }        
+        &.has-widgets {
+          height: 192px;
+
+          &.has-timeSeries {
+            height: (192 + 119) * 1px;
+          }
+          &.has-timeSeries--animated {
+            height: (192 + 142) * 1px;
+          }
+        }
+      }
+    }
   }
 }
+.LayerOnboarding--data .LayerOnboarding-pads--right.is-step4 {
+  display: block;
+}
+
 
 .LayerOnboarding-padBottom {
   position: relative;
@@ -299,4 +391,20 @@ $styleSteps: (
 
 .LayerOnboarding-forgetLabel {
   cursor: pointer;
+}
+
+@media (max-width: $sViewport-xxl) {
+  .LayerOnboarding-widgetsOverlay {
+    width: $sWidgetsWidth-mediaXXL;
+  }
+}
+
+@media (max-width: $sViewport-xl) {
+  .LayerOnboarding-toolbarOverlay {
+    width: $sToolbarWidth-mediaXL;
+  }
+
+  .LayerOnboarding-widgetsOverlay {
+    width: 0;
+  }
 }

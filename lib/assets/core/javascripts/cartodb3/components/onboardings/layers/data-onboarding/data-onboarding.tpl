@@ -68,8 +68,11 @@
 </div>
 
 <div class="LayerOnboarding-pads LayerOnboarding-pads--right is-step0 js-step">
-  <div class="LayerOnboarding-padTop"></div>
-  <div class="LayerOnboarding-padBottom">
+  <div class="LayerOnboarding-padTop
+    <% if (hasTimeSeries) { %>has-timeSeries <% if (hasAnimatedTimeSeries) { %>has-timeSeries--animated<% } %><% } %>
+    <% if (hasSidebarWidgets) { %>has-widgets<% } %>
+  "></div>
+  <div class="LayerOnboarding-padMiddle">
     <div class="LayerOnboarding-body is-step0 js-step">
       <div class="LayerOnboarding-step is-step4">
         <p class="CDB-Text Onboarding-headerTitle">4/4</p>
@@ -88,8 +91,12 @@
       </div>
     </div>
   </div>
+  <div class="LayerOnboarding-padBottom
+    <% if (hasTimeSeries) { %>has-timeSeries <% if (hasAnimatedTimeSeries) { %>has-timeSeries--animated<% } %><% } %>
+    <% if (hasSidebarWidgets) { %>has-widgets<% } %>
+  "></div>
 </div>
 
-<% if (hasWidgets) { %>
-  <div class="LayerOnboarding-widgetsOverlay"></div>
+<% if (hasSidebarWidgets) { %>
+  <div class="LayerOnboarding-widgetsOverlay js-step"></div>
 <% } %>

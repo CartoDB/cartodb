@@ -103,6 +103,7 @@ module CartoDB
       table.js
       public_dashboard.js
       public_like.js
+      tangram.min.js
       common.js
       old_common.js
       old_common_without_core.js

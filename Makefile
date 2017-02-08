@@ -78,6 +78,7 @@ WORKING_SPECS_1 = \
 	spec/lib/carto/table_utils_spec.rb \
 	spec/helpers/uuidhelper_spec.rb \
 	spec/helpers/url_validator_spec.rb \
+	spec/models/carto/data_import_spec.rb \
 	spec/models/carto/visualization_spec.rb \
 	spec/models/carto/map_spec.rb \
 	spec/requests/superadmin/feature_flag_spec.rb \
@@ -188,6 +189,7 @@ WORKING_SPECS_5 = \
 	spec/lib/carto/bolt_spec.rb \
 	spec/lib/carto/valid_table_name_proposer_spec.rb \
 	spec/lib/carto/db/sanitize_spec.rb \
+	spec/lib/carto/db/user_schema_spec.rb \
 	spec/lib/carto/file_system/sanitize_spec.rb \
 	$(NULL)
 

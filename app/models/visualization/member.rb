@@ -12,6 +12,7 @@ require_relative '../table/privacy_manager'
 require_relative '../../../services/minimal-validation/validator'
 require_relative '../../helpers/embed_redis_cache'
 require_dependency 'cartodb/redis_vizjson_cache'
+require_dependency 'carto/visualization'
 
 # Every table has always at least one visualization (the "canonical visualization"), of type 'table',
 # which shares the same privacy options as the table and gets synced.
@@ -23,6 +24,7 @@ module CartoDB
       extend Forwardable
       include Virtus.model
       include CacheHelper
+      include Carto::VisualizationDependencies
 
       PRIVACY_PUBLIC       = 'public'        # published and listable in public user profile
       PRIVACY_PRIVATE      = 'private'       # not published (viz.json and embed_map should return 404)
@@ -481,14 +483,6 @@ module CartoDB
 
       def type_slide?
         type == TYPE_SLIDE
-      end
-
-      def dependent?
-        derived? && single_data_layer?
-      end
-
-      def non_dependent?
-        derived? && !single_data_layer?
       end
 
       def invalidate_cache

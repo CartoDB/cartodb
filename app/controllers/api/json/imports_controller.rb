@@ -156,7 +156,8 @@ class Api::Json::ImportsController < Api::ApplicationController
       upload_host:            Socket.gethostname,
       create_visualization:   ["true", true].include?(params[:create_vis]),
       user_defined_limits:    user_defined_limits,
-      privacy:                privacy
+      privacy:                privacy,
+      collision_strategy:     params[:collision_strategy]
     }
   end
 

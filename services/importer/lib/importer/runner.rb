@@ -6,16 +6,18 @@ require_relative './unp'
 require_relative './column'
 require_relative './exceptions'
 require_relative './result'
+require_relative './runner_helper'
 require_relative '../../../datasources/lib/datasources/datasources_factory'
 require_relative '../../../platform-limits/platform_limits'
 require_relative '../../../../lib/cartodb/stats/importer'
 require_relative '../../../../lib/carto/visualization_exporter'
-require_relative '../helpers/quota_check_helpers.rb'
+require_relative '../helpers/quota_check_helpers'
 
 module CartoDB
   module Importer2
     class Runner
       include CartoDB::Importer2::QuotaCheckHelpers
+      include CartoDB::Importer2::RunnerHelper
 
       # Legacy guessed average "final size" of an imported file
       # e.g. a Shapefile shrinks after import. This won't help in scenarios like CSVs (which tend to grow)
@@ -67,6 +69,7 @@ module CartoDB
         @stats               = []
         @warnings = {}
         @visualizations = []
+        @collision_strategy = options[:collision_strategy]
       end
 
       def loader_options=(value)
@@ -142,12 +145,6 @@ module CartoDB
       # If not specified, fake
       def tracker
         @tracker || lambda { |state| state }
-      end
-
-      def success?
-        # TODO: Change this, "runner" can be ok even if no data has changed, should expose "data_changed" attribute
-        return true unless remote_data_updated?
-        (results.count(&:success?) + @visualizations.count) > 0
       end
 
       attr_reader :results, :log, :loader, :stats, :downloader, :warnings, :visualizations
@@ -275,7 +272,7 @@ module CartoDB
             end
 
             table_files.each_with_index do |source_file, index|
-              next if (index >= MAX_TABLES_PER_IMPORT)
+              next if (index >= MAX_TABLES_PER_IMPORT) || !should_import?(source_file.name)
               @job.new_table_name if (index > 0)
 
               log.store   # Checkpoint-save

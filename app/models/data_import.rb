@@ -29,10 +29,12 @@ require_relative '../../services/importer/lib/importer/exceptions'
 require_dependency 'carto/tracking/events'
 require_dependency 'carto/valid_table_name_proposer'
 require_dependency 'carto/configuration'
+require_dependency 'carto/db/user_schema'
 
 include CartoDB::Datasources
 
 class DataImport < Sequel::Model
+  include Carto::DataImportConstants
   include Carto::Configuration
 
   MERGE_WITH_UNMATCHING_COLUMN_TYPES_RE = /No .*matches.*argument type.*/
@@ -198,8 +200,13 @@ class DataImport < Sequel::Model
     log.append 'After dispatch'
 
     if results.empty?
-      self.error_code = 1002
-      self.state      = STATE_FAILURE
+      if collision_strategy == COLLISION_STRATEGY_SKIP
+        self.error_code = 1022
+        self.state = STATE_COMPLETE
+      else
+        self.error_code = 1002
+        self.state = STATE_FAILURE
+      end
       save
     end
 
@@ -399,6 +406,7 @@ class DataImport < Sequel::Model
   def validate
     super
     errors.add(:user, "Viewer users can't create data imports") if user && user.viewer
+    validate_collision_strategy
   end
 
   def final_state?
@@ -502,7 +510,8 @@ class DataImport < Sequel::Model
     self.data_source  = query
     save
 
-    table_name = Carto::ValidTableNameProposer.new(current_user.id).propose_valid_table_name(name)
+    taken_names = Carto::Db::UserSchema.new(current_user).table_names
+    table_name = Carto::ValidTableNameProposer.new.propose_valid_table_name(name, taken_names: taken_names)
     # current_user.db_services.in_database.run(%{CREATE TABLE #{table_name} AS #{query}})
     current_user.db_service.in_database_direct_connection(statement_timeout: DIRECT_STATEMENT_TIMEOUT) do |user_direct_conn|
         user_direct_conn.run(%{CREATE TABLE #{table_name} AS #{query}})
@@ -673,7 +682,8 @@ class DataImport < Sequel::Model
                                                 user: current_user,
                                                 unpacker: CartoDB::Importer2::Unp.new(Cartodb.config[:importer]),
                                                 post_import_handler: post_import_handler,
-                                                importer_config: Cartodb.config[:importer]
+                                                importer_config: Cartodb.config[:importer],
+                                                collision_strategy: collision_strategy
                                               })
       runner.loader_options = ogr2ogr_options.merge content_guessing_options
       runner.set_importer_stats_host_info(Socket.gethostname)
@@ -706,7 +716,8 @@ class DataImport < Sequel::Model
       service_item_id,
       user: current_user,
       pg: database_options,
-      log: log
+      log: log,
+      collision_strategy: collision_strategy
     )
 
     registrar     = CartoDB::TableRegistrar.new(current_user, ::Table)
@@ -880,7 +891,7 @@ class DataImport < Sequel::Model
 
     # Calculate total size out of stats
     total_size = 0
-    ::JSON.parse(self.stats).each {|stat| total_size += stat['size']}
+    ::JSON.parse(stats).each { |stat| total_size += stat ? stat['size'] : 0 }
     importer_stats_aggregator.update_counter('total_size', total_size)
 
     import_time = self.updated_at - self.created_at

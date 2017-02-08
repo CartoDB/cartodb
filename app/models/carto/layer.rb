@@ -227,7 +227,10 @@ module Carto
 
     def register_table_dependencies
       if data_layer?
-        maps.reload if persisted?
+        if persisted?
+          user_tables.reload
+          maps.reload
+        end
         self.user_tables = affected_tables
       end
     end
@@ -282,6 +285,10 @@ module Carto
     def after_added_to_map(map)
       set_default_order(map)
       register_table_dependencies
+    end
+
+    def depends_on?(user_table)
+      user_tables.include?(user_table)
     end
 
     private

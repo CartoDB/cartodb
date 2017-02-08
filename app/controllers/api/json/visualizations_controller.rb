@@ -195,7 +195,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
         end
 
         unless vis.table.nil?
-          vis.table.dependent_visualizations.each do |dependent_vis|
+          vis.table.fully_dependent_visualizations.each do |dependent_vis|
             properties = { user_id: current_viewer_id, visualization_id: dependent_vis.id }
             if dependent_vis.derived?
               Carto::Tracking::Events::DeletedMap.new(current_viewer_id, properties).report

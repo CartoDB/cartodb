@@ -64,16 +64,16 @@ module Carto
       visualization.synchronization if visualization
     end
 
-    def dependent_visualizations
-      affected_visualizations.select(&:dependent?)
+    def fully_dependent_visualizations
+      affected_visualizations.select { |v| v.fully_dependent_on?(self) }
     end
 
     def accessible_dependent_derived_maps
       affected_visualizations.select { |v| (v.has_read_permission?(user) && v.derived?) ? v : nil }
     end
 
-    def non_dependent_visualizations
-      affected_visualizations.select(&:non_dependent?)
+    def partially_dependent_visualizations
+      affected_visualizations.select { |v| v.partially_dependent_on?(self) }
     end
 
     def name_for_user(other_user)
@@ -128,18 +128,7 @@ module Carto
     end
 
     def affected_visualizations
-      @affected_visualizations ||= affected_visualization_ids.map { |id| Carto::Visualization.find(id) }
-    end
-
-    # TODO: use associations?
-    def affected_visualization_ids
-      ActiveRecord::Base.connection.execute(%Q{
-        SELECT  distinct visualizations.id
-        FROM    layers_user_tables, layers_maps, visualizations
-        WHERE   layers_user_tables.user_table_id = '#{table.id}'
-        AND     layers_user_tables.layer_id = layers_maps.layer_id
-        AND     layers_maps.map_id = visualizations.map_id
-      }).map { |row| row['id'] }
+      layers.map(&:visualization).uniq
     end
 
     def table

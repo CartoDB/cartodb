@@ -17,6 +17,17 @@
     "november": "November",
     "december": "December"
   },
+  "assets": {
+    "simple-icons": {
+      "disclaimer": "<a href='http://www.flaticon.com/packs/simpleicon-places/' target='_blank'>SimpleIcons Places</a>, icons by <a href='http://www.simpleicon.com' target='_blank'>simpleicon.com</a>"
+    },
+    "maki-icons": {
+      "disclaimer": "<a href='https://github.com/mapbox/maki' target='_blank'>Maki Icons</a>, an open source project by <a href='http://mapbox.com' target='_blank'>Mapbox</a>"
+    },
+      "pin-icons": {
+        "disclaimer": "<a href='http://www.flaticon.com/packs/pins-of-maps/' target='_blank'>Pin Maps</a>, icons by <a href='http://freepik.com' target='_blank'>freepik.com</a>"
+      }
+  },
   "operators": {
     "count": "COUNT",
     "sum": "SUM",

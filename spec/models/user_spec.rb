@@ -495,6 +495,13 @@ describe User do
   end
 
   describe '#overquota' do
+    before(:all) do
+      @user.account_type = 'NOT FREE'
+      @user.save
+      @user2.account_type = 'NOT FREE'
+      @user2.save
+    end
+
     # Filter overquota users to only those created by this spec
     def overquota(delta = 0)
       ::User.overquota(delta).select { |u| [@user.id, @user2.id].include?(u.id) }

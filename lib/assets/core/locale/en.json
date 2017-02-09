@@ -87,7 +87,7 @@
     },
     "done": "Done",
     "add-analysis": "Add analysis",
-    "never-show-message": "Never show me this message."
+    "never-show-message": "Don't show me this again."
   },
   "style-onboarding": {
     "title": "Style this map!",
@@ -107,7 +107,7 @@
     },
     "take-tour": "Take the tour",
     "style-layer": "Style layer",
-    "never-show-message": "Never show me this message.",
+    "never-show-message": "Don't show me this again.",
     "exit": "Exit tour",
     "next": "Next"
   },
@@ -122,7 +122,7 @@
     "finished": "has finished",
     "style-analysis": "Style this analysis",
     "read-more": "Read more in documentation",
-    "never-show-message": "Never show me this message.",
+    "never-show-message": "Don't show me this again.",
     "no-new-columns": "No new columns were created.",
     "geometries-updated": "The geometries in your table were updated",
     "new-column-added": "A new column has been added to your dataset.",

@@ -5,23 +5,23 @@
   <div class="LayerOnboarding-padMiddle">
     <div class="LayerOnboarding-body is-step0 js-step">
       <div class="LayerOnboarding-step is-step1">
-        <p class="CDB-Text Onboarding-headerTitle">1/3</p>
-        <p class="CDB-Text Onboarding-headerText LayerOnboarding-headerText"><%- _t('style-onboarding.aggregation.title')%></p>
+        <p class="CDB-Text LayerOnboarding-headerTitle">1/3</p>
+        <p class="CDB-Text LayerOnboarding-headerText"><%- _t('style-onboarding.aggregation.title')%></p>
         <p class="CDB-Text LayerOnboarding-description">
           <%- _t('style-onboarding.aggregation.description')%>
         </p>
       </div>
       <div class="LayerOnboarding-step is-step2">
-        <p class="CDB-Text Onboarding-headerTitle">2/3</p>
-        <p class="CDB-Text Onboarding-headerText LayerOnboarding-headerText"><%- _t('style-onboarding.style.title')%></p>
+        <p class="CDB-Text LayerOnboarding-headerTitle">2/3</p>
+        <p class="CDB-Text LayerOnboarding-headerText"><%- _t('style-onboarding.style.title')%></p>
         <p class="CDB-Text LayerOnboarding-description LayerOnboarding-description--style">
           <%- _t('style-onboarding.style.description')%>
         </p>
       </div>
 
       <div class="LayerOnboarding-step is-step3">
-        <p class="CDB-Text Onboarding-headerTitle">3/3</p>
-        <p class="CDB-Text Onboarding-headerText LayerOnboarding-headerText"><%- _t('style-onboarding.cartocss.title')%></p>
+        <p class="CDB-Text LayerOnboarding-headerTitle">3/3</p>
+        <p class="CDB-Text LayerOnboarding-headerText"><%- _t('style-onboarding.cartocss.title')%></p>
         <p class="CDB-Text LayerOnboarding-description">
           <%- _t('style-onboarding.cartocss.description')%>
         </p>
@@ -54,7 +54,7 @@
 <div class="LayerOnboarding-contentWrapper is-step0 js-step">
   <div class="LayerOnboarding-contentBody is-step0 js-step">
     <div class="LayerOnboarding-header is-step0">
-      <p class="CDB-Text Onboarding-headerTitle"><%- _t('style-onboarding.title')%></p>
+      <p class="CDB-Text LayerOnboarding-headerTitle"><%- _t('style-onboarding.title')%></p>
 
       <p class="CDB-Text LayerOnboarding-description">
         <%- _t('style-onboarding.description')%>
@@ -75,7 +75,7 @@
       <div class="u-iBlock is-step1">
         <input class="CDB-Checkbox js-forget" type="checkbox" id="forget-me" name="forget-me" value="true">
         <span class="u-iBlock CDB-Checkbox-face"></span>
-        <label for="forget-me" class="BuilderOnboarding-forgetLabel Checkbox-label CDB-Text CDB-Size-small u-altTextColor u-lSpace"><%- _t('style-onboarding.never-show-message') %></label>
+        <label for="forget-me" class="BuilderOnboarding-forgetLabel Checkbox-label CDB-Text CDB-Size-small u-whiteTextColor is-light u-lSpace"><%- _t('style-onboarding.never-show-message') %></label>
       </div>
     </div>
   </div>

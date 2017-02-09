@@ -1,26 +1,22 @@
 @import '../variables/mixins';
 @import '../variables/colors';
-@import '../variables/sizes';
 @import '../variables/onboarding';
 @import '../editor-3/vars';
 @import 'cdb-variables/colors';
 @import 'cdb-variables/sizes';
+@import '../variables/sizes';
 
 $sSmallDescriptionWidth: 200px;
 $sRegularDescriptionWidth: 445px;
 $sBigDescriptionWidth: 550px;
 $sWidgetsPadWidth: 378px;
-$cBackgroundColor: #2E3C43;
-
-// TODO: put variables to /variables/onboarding
-
 $sToolbarWidth: 72px;
 $sToolbarWidth-mediaXL: 48px;
 $sEditorWidth: 344px;
 $sWidgetsWidth: 368px;
 $sWidgetsWidth-mediaXXL: 296px;
+$cBackgroundColor: #2E3C43;
 
-// TODO: put mixin to a common place
 @mixin setStepPad($step, $padHeights, $selector, $tab) {
   .#{$selector}.is-#{$step}.#{$selector}--#{$tab} {
     @each $position, $height in $padHeights {
@@ -38,7 +34,7 @@ $sWidgetsWidth-mediaXXL: 296px;
 }
 
 .LayerOnboarding-footer {
-  margin-top: $sMargin-section;
+  margin-top: $sMargin-group;
 }
 
 .LayerOnboarding-footerButtons {
@@ -57,6 +53,14 @@ $sWidgetsWidth-mediaXXL: 296px;
 .LayerOnboarding-contentWrapper--analysis {
   @include justify-content(center);
 }
+
+.LayerOnboarding-headerTitle {
+  margin-bottom: 22px;
+  color: #FFF;
+  font-size: 26px;
+  font-weight: $sFontWeight-lighter;
+}
+
 .LayerOnboarding-body {
   position: absolute;
   left: 100%;
@@ -121,15 +125,22 @@ $sWidgetsWidth-mediaXXL: 296px;
   display: block;
 }
 
-.LayerOnboarding-list {
-  list-style-type: disc;
-  padding-left: 2em;
-  padding-top: 12px;
+.LayerOnboarding--analysis .LayerOnboarding-footer {
+  display: block;
 }
 
 .LayerOnboarding-headerText {
   width: $sBigDescriptionWidth;
-  line-height: 1.5em;
+  color: #FFF;
+  font-size: 26px;
+  font-weight: lighter;
+  line-height: 34px;
+  margin-top: -12px;
+  margin-bottom: 16px;
+}
+
+.LayerOnboarding-headerText.is-step4{
+  width: 285px;
 }
 
 .LayerOnboarding-description {
@@ -145,6 +156,14 @@ $sWidgetsWidth-mediaXXL: 296px;
 .LayerOnboarding-description--analysis,
 .LayerOnboarding-description--style {
   width: $sBigDescriptionWidth;
+}
+
+.LayerOnboarding-description.is-step4{
+  width: 285px;
+}
+
+.Onboarding-listItem .LayerOnboarding-description {
+  font-size: $sFontSize-large;
 }
 
 .LayerOnboarding-toolbarOverlay,

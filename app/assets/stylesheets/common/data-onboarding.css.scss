@@ -9,13 +9,11 @@
 $sSmallDescriptionWidth: 200px;
 $sRegularDescriptionWidth: 445px;
 $sBigDescriptionWidth: 550px;
-$sWidgetsPadWidth: 378px;
 $sToolbarWidth: 72px;
 $sToolbarWidth-mediaXL: 48px;
 $sEditorWidth: 344px;
-$sWidgetsWidth: 368px;
-$sWidgetsWidth-mediaXXL: 296px;
 $cBackgroundColor: #2E3C43;
+$sHighlightHeight: 64;
 
 @mixin setStepPad($step, $padHeights, $selector, $tab) {
   .#{$selector}.is-#{$step}.#{$selector}--#{$tab} {
@@ -182,8 +180,12 @@ $cBackgroundColor: #2E3C43;
 }
 
 .LayerOnboarding-widgetsOverlay {
-  width: $sWidgetsWidth;
+  width: 16px;
   display: none;
+
+  &.has-widgets {
+    width: 376px;
+  }
 }
 .LayerOnboarding-widgetsOverlay.is-step4 {
   display: block;
@@ -324,7 +326,7 @@ $styleSteps: (
 }
 
 .LayerOnboarding--data .LayerOnboarding-pads--right {
-  width: 150px;
+  width: 136px;
   display: none;
 
   &.is-step0,
@@ -344,45 +346,45 @@ $styleSteps: (
 
   &.is-step4 {
     .LayerOnboarding-padTop {
-      height: calc(100% - 100px);
+      height: calc(100% - (64 + 16) * 1px);
 
       &.has-timeSeries {
-        height: calc(100% - (100 + 143) * 1px); // 143 - XXXL time serie
+        height: calc(100% - (64 + 151) * 1px); // 151 - XXXL time serie
       }
       &.has-timeSeries--animated {
-        height: calc(100% - (100 + 166) * 1px); // 166 - XXXL animated
+        height: calc(100% - (64 + 175) * 1px); // 175 - XXXL animated
       }
     }
     .LayerOnboarding-padMiddle {
-      height: 100px;
+      height: 64px;
       background: transparent;
     }
     .LayerOnboarding-padBottom {
-      height: 0;
+      height: 16px;
 
       &.has-timeSeries {
-        height: 143px;
+        height: 151px;
       }
       &.has-timeSeries--animated {
-        height: 166px;
+        height: 175px;
       }
     }
 
     @media (max-width: $sViewport-xxl) {
       .LayerOnboarding-padTop {
         &.has-timeSeries {
-          height: calc(100% - (100 + 127) * 1px); // 127 - XXL time serie
+          height: calc(100% - (64 + 135) * 1px); // 135 - XXL time serie
         }
         &.has-timeSeries--animated {
-          height: calc(100% - (100 + 150) * 1px); // 150 - XXL animated
+          height: calc(100% - (64 + 159) * 1px); // 159 - XXL animated
         }
       }
       .LayerOnboarding-padBottom {
         &.has-timeSeries {
-          height: calc(100% - (100 + 127) * 1px);
+          height: calc(100% - (64 + 135) * 1px);
         }
         &.has-timeSeries--animated {
-          height: calc(100% - (100 + 150) * 1px);
+          height: calc(100% - (64 + 159) * 1px);
         }
       }
     }
@@ -390,37 +392,37 @@ $styleSteps: (
     @media (max-width: $sViewport-xl) {
       .LayerOnboarding-padTop {
         &.has-timeSeries {
-          height: calc(100% - (100 + 119) * 1px); // 119 - XL time serie
+          height: calc(100% - (64 + 127) * 1px); // 127 - XL time serie
         }
         &.has-timeSeries--animated {
-          height: calc(100% - (100 + 142) * 1px); // 142 - XL animated
+          height: calc(100% - (64 + 151) * 1px); // 151 - XL animated
         }        
         &.has-widgets {
-          height: calc(100% - (100 + 192) * 1px);
+          height: calc(100% - (64 + 216) * 1px);
 
           &.has-timeSeries {
-            height: calc(100% - (100 + 192 + 119) * 1px);
+            height: calc(100% - (64 + 335) * 1px);
           }
           &.has-timeSeries--animated {
-            height: calc(100% - (100 + 192 + 142) * 1px);
+            height: calc(100% - (64 + 359) * 1px);
           }
         }
       }
       .LayerOnboarding-padBottom {
         &.has-timeSeries {
-          height: calc(100% - (100 + 119) * 1px);
+          height: calc(100% - (64 + 127) * 1px);
         }
         &.has-timeSeries--animated {
-          height: calc(100% - (100 + 142) * 1px);
+          height: calc(100% - (64 + 151) * 1px);
         }        
         &.has-widgets {
-          height: 192px;
+          height: 216px;
 
           &.has-timeSeries {
-            height: (192 + 119) * 1px;
+            height: 335px;
           }
           &.has-timeSeries--animated {
-            height: (192 + 142) * 1px;
+            height: 359px;
           }
         }
       }
@@ -441,8 +443,8 @@ $styleSteps: (
 }
 
 @media (max-width: $sViewport-xxl) {
-  .LayerOnboarding-widgetsOverlay {
-    width: $sWidgetsWidth-mediaXXL;
+  .LayerOnboarding-widgetsOverlay.has-widgets {
+    width: 304px;
   }
 }
 
@@ -452,6 +454,10 @@ $styleSteps: (
   }
 
   .LayerOnboarding-widgetsOverlay {
-    width: 0;
+    width: 8px;
+
+    &.has-widgets {
+      width: 8px;
+    }
   }
 }

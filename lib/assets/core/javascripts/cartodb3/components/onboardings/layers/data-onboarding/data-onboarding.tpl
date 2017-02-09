@@ -103,6 +103,6 @@
   "></div>
 </div>
 
-<% if (hasSidebarWidgets) { %>
-  <div class="LayerOnboarding-widgetsOverlay js-step"></div>
-<% } %>
+<div class="LayerOnboarding-widgetsOverlay js-step
+  <% if (hasSidebarWidgets) { %>has-widgets<% } %>
+"></div>

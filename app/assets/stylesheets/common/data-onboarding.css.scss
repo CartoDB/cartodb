@@ -239,21 +239,44 @@ $dataSteps: (
   )
 );
 
-$stylePointsSteps: (
+$stylePointsSimpleAggregationSteps: (
   step0: (
     Top: 0,
     Middle: 100%,
     Bottom: 0
   ),
   step1: (
-    Top: 136px, // 19 + 85 + 32
-    Middle: 173px, // 18 + 155
-    Bottom: calc(100% - (136 + 173) * 1px)
+    Top: 136px,
+    Middle: 141px,
+    Bottom: calc(100% - (136 + 141) * 1px)
   ),
   step2: (
-    Top: (136 + 173 - 32) * 1px,
-    Middle: 300px,
-    Bottom: calc(100% - (136 + 173 - 32 + 300) * 1px)
+    Top: (136 + 141) * 1px,
+    Middle: calc(100% - (136 + 141 + 66) * 1px),
+    Bottom: 66px
+  ),
+  step3: (
+    Top: calc(100% - 66px),
+    Middle: 66px,
+    Bottom: 0
+  )
+);
+
+$stylePointsDoubleAggregationSteps: (
+  step0: (
+    Top: 0,
+    Middle: 100%,
+    Bottom: 0
+  ),
+  step1: (
+    Top: 136px,
+    Middle: (275 + 32) * 1px,
+    Bottom: calc(100% - (136 + 275 + 32) * 1px)
+  ),
+  step2: (
+    Top: (136 + 275 + 32) * 1px,
+    Middle: calc(100% - (136 + 275 + 32 + 66) * 1px),
+    Bottom: 66px,
   ),
   step3: (
     Top: calc(100% - 66px),
@@ -284,8 +307,12 @@ $styleSteps: (
   @include setStepPad($step, $heights, 'LayerOnboarding', 'data');
 }
 
-@each $step, $heights in $stylePointsSteps {
-  @include setStepPad($step, $heights, 'LayerOnboarding', 'stylePoints');
+@each $step, $heights in $stylePointsSimpleAggregationSteps {
+  @include setStepPad($step, $heights, 'LayerOnboarding', 'stylePointsSimpleAggregation');
+}
+
+@each $step, $heights in $stylePointsDoubleAggregationSteps {
+  @include setStepPad($step, $heights, 'LayerOnboarding', 'stylePointsDoubleAggregation');
 }
 
 @each $step, $heights in $styleSteps {

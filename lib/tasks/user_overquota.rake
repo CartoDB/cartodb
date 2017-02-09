@@ -7,7 +7,7 @@ namespace :cartodb do
       args.with_defaults(delta: 0.20)
       delta = args[:delta].to_f
       puts 'Executing overquota calculation'
-      ::User.store_overquota_users(delta, Date.today)
+      Carto::OverquotaUsersService.new(Date.today).store_overquota_users(delta)
       puts "Ended getting the overquota users for delta #{delta}"
     end
 

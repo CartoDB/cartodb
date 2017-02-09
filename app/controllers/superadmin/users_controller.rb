@@ -18,7 +18,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
 
   def index
     if params[:overquota].present?
-      users = ::User.get_stored_overquota_users(Date.today)
+      users = Carto::OverquotaUsersService.new(Date.today).get_stored_overquota_users
       respond_with(:superadmin, users)
     elsif params[:db_size_in_bytes_change].present?
       # This use case is specific: we only return cached db_size_in_bytes, which is

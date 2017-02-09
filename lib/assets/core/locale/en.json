@@ -2049,6 +2049,8 @@
         "line": "line",
         "polygon": "polygon"
       },
+      "loading-state": "Requesting feature data...",
+      "error-state": "There was an error requesting feature data",
       "overlay-text": "Start clicking on the map to draw your %{featureType}",
       "add": "Add",
       "save": "Save",

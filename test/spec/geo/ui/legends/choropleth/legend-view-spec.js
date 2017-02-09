@@ -59,7 +59,7 @@ describe('geo/ui/legends/choropleth/legend-view.js', function () {
       expect(this.legendView.$('.Legend-choropleth').length).toBe(1);
       expect(this.legendView.$('.Legend-choroplethAverage').length).toBe(1);
       expect(this.legendView.$('.Legend-choroplethAverage').text()).toContain('64');
-      expect(this.legendView.$('h3').text()).toBe('Foo');
+      expect(this.legendView.$('h3').text()).toContain('Foo');
       expect(this.legendView.$('h3 ~ div p').length).toBe(2);
       expect(this.legendView.$('h3 ~ div p').length).toBe(2);
       expect(this.legendView.$('h3 ~ div p').eq(0).text()).toContain('1');

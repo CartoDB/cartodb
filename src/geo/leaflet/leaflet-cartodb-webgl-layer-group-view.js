@@ -35,7 +35,7 @@ var LeafletCartoDBWebglLayerGroupView = L.Class.extend({
 
   _onLayerAdded: function (layer) {
     var self = this;
-    layer.bind('change:meta change:visible change:cartocss', function (e) {
+    layer.bind('change:meta change:visible', function (e) {
       self.tangram.addLayer(e.attributes);
     });
   },

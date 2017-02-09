@@ -4,62 +4,7 @@
 .CDB-infowindow-wrapper {
   position: absolute;
   z-index: 1; // makes infowindows visible with Google Maps
-  /* migrate old infowindows */
-  .cartodb-popup.v2 {
-    position: relative;
-    max-width: 200px;
-    padding: 20px 24px 18px;
-    transform: translateX(15px) translateY(-15px);
-    border-radius: 4px;
-    background: #FFF;
-    font-family: 'Open Sans';
-    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.24);
-  }
-  .cartodb-popup-close-button {
-    position: absolute;
-    top: -12px;
-    right: -12px;
-    bottom: 0;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background: #FFF;
-    font-size: 12px;
-    line-height: 24px;
-    text-align: center;
-    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.24);
-    cursor: pointer;
-    z-index: 2;
-  }
-  .cartodb-popup-content {
-    font-family: 'Open Sans';
-    h4 {
-      margin-bottom: 2px;
-      color: #636D72;
-      font-size: 10px;
-      font-weight: 300;
-      line-height: 14px;
-      text-transform: uppercase;
-    }
-    p {
-      color: #2E3C43;
-      font-size: 12px;
-      font-weight: 600;
-      line-height: 16px;
-    }
-  }
-  .cartodb-popup-tip-container {
-    position: absolute;
-    bottom: -16px;
-    left: 12px;
-    width: 0;
-    height: 0;
-    border-top: 16px solid #FFF;
-    border-right: 16px solid transparent;
-  }
 }
-
-
 .CDB-infowindow {
   position: relative;
   transform: translateY(-24px) translateX(4px); /* remove when fix the position */
@@ -458,4 +403,3 @@ img[data-clipPath] {
   cursor: pointer;
   z-index: 2;
 }
-

@@ -1,6 +1,6 @@
 module Carto
   class OverquotaUsersService
-    def initialize(date)
+    def initialize(date = Date.today)
       @date = date
     end
 

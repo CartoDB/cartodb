@@ -13,7 +13,7 @@ describe 'Carto::OverquotaUsersService' do
 
   # Filter overquota users to only those created by this spec
   def overquota(delta = 0)
-    service = Carto::OverquotaUsersService.new(Date.today)
+    service = Carto::OverquotaUsersService.new
     $users_metadata.del(service.send(:date_key))
     service.store_overquota_users(delta)
     users = service.get_stored_overquota_users.map { |u| u['id'] }.select { |uid| [@user.id, @user2.id].include?(uid) }

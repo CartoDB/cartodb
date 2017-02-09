@@ -1,5 +1,6 @@
 require_relative '../../../lib/carto/http/client'
 require_dependency 'carto/uuidhelper'
+require_dependency 'carto/overquota_users_service'
 
 class Superadmin::UsersController < Superadmin::SuperadminController
   include Carto::UUIDHelper
@@ -18,7 +19,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
 
   def index
     if params[:overquota].present?
-      users = Carto::OverquotaUsersService.new(Date.today).get_stored_overquota_users
+      users = Carto::OverquotaUsersService.new.get_stored_overquota_users
       respond_with(:superadmin, users)
     elsif params[:db_size_in_bytes_change].present?
       # This use case is specific: we only return cached db_size_in_bytes, which is

@@ -1,17 +1,22 @@
 # coding: UTF-8
 require_relative '../spec_helper'
+require 'models/user_table_shared_examples'
 
 describe UserTable do
   before(:all) do
     bypass_named_maps
 
     @user = create_user(email: 'admin@cartotest.com', username: 'admin', password: '123456')
+    @carto_user = Carto::User.find(@user.id)
 
     @user_table = ::UserTable.new
 
     @user_table.user_id = @user.id
     @user_table.name = 'user_table'
     @user_table.save
+
+    # The dependent visualization models are in the Table class for the Sequel model
+    @dependent_test_object = @user_table.service
   end
 
   after(:all) do
@@ -19,24 +24,7 @@ describe UserTable do
     @user.destroy
   end
 
-  describe '#estimated_row_count and #actual_row_count' do
-    it 'should query Table estimated an actual row count methods' do
-      ::Table.any_instance.stubs(:estimated_row_count).returns(999)
-      ::Table.any_instance.stubs(:actual_row_count).returns(1000)
-
-      @user_table.estimated_row_count.should == 999
-      @user_table.actual_row_count.should == 1000
-    end
-  end
-
-  it 'should sync table_id with physical table oid' do
-    @user_table.table_id = nil
-    @user_table.save
-
-    @user_table.table_id.should be_nil
-
-    @user_table.sync_table_id.should eq @user_table.service.get_table_id
-  end
+  it_behaves_like 'user table models'
 
   context 'viewer users' do
     after(:each) do

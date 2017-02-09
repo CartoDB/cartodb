@@ -2,6 +2,7 @@
 
 require 'carto/connector'
 require_relative 'exceptions'
+require_relative 'runner_helper'
 
 module CartoDB
   module Importer2
@@ -16,6 +17,7 @@ module CartoDB
     # the Connector class, which in turn defines the rest of valid parameters for the connector.
     #
     class ConnectorRunner
+      include CartoDB::Importer2::RunnerHelper
 
       attr_reader :results, :log, :job, :warnings
       attr_accessor :stats
@@ -25,10 +27,11 @@ module CartoDB
         @log        = options[:log] || new_logger
         @job        = options[:job] || new_job(@log, @pg_options)
         @user       = options[:user]
+        @collision_strategy = options[:collision_strategy]
 
         @id = @job.id
         @unique_suffix = @id.delete('-')
-        @json_params = connector_source
+        @json_params = JSON.parse(connector_source)
         extract_params
         @connector = Carto::Connector.new(@params, user: @user, logger: @log)
         @results = []
@@ -40,23 +43,25 @@ module CartoDB
 
       def run(tracker = nil)
         @tracker = tracker
-        @job.log "ConnectorRunner #{@json_params}"
+        @job.log "ConnectorRunner #{@json_params.except('connection').to_json}"
         # TODO: logging with CartoDB::Logger
         table_name = @job.table_name
-        @job.log "Copy connected table"
-        warnings = @connector.copy_table(schema_name: @job.schema, table_name: @job.table_name)
-        @warnings.merge! warnings if warnings.present?
+        if should_import?(@connector.remote_table_name)
+          @job.log "Copy connected table"
+          warnings = @connector.copy_table(schema_name: @job.schema, table_name: @job.table_name)
+          @warnings.merge! warnings if warnings.present?
+        else
+          @job.log "Table #{table_name} won't be imported"
+        end
       rescue => error
         @job.log "ConnectorRunner Error #{error}"
         @results.push result_for(@job.schema, table_name, error)
       else
-        @job.log "ConnectorRunner created table #{table_name}"
-        @job.log "job schema: #{@job.schema}"
-        @results.push result_for(@job.schema, table_name)
-      end
-
-      def success?
-        results.count(&:success?) > 0
+        if should_import?(@connector.remote_table_name)
+          @job.log "ConnectorRunner created table #{table_name}"
+          @job.log "job schema: #{@job.schema}"
+          @results.push result_for(@job.schema, table_name)
+        end
       end
 
       def remote_data_updated?
@@ -100,7 +105,7 @@ module CartoDB
 
       # Parse @json_params and extract @params
       def extract_params
-        @params = Carto::Connector::Parameters.new(JSON.load(@json_params))
+        @params = Carto::Connector::Parameters.new(@json_params)
       end
 
       def result_table_name

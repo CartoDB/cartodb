@@ -84,6 +84,7 @@ describe 'Carto::OverquotaUsersService' do
     ::User.any_instance.stubs(:get_geocoding_calls).returns(0)
     ::User.any_instance.stubs(:geocoding_quota).returns(100)
     ::User.any_instance.stubs(:get_twitter_imports_count).returns(81)
+    ::User.any_instance.stubs(:get_twitter_datasource_calls).returns(81)
     ::User.any_instance.stubs(:twitter_datasource_quota).returns(100)
     overquota.should be_empty
     overquota(0.20).should include(@user.id)

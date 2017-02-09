@@ -894,6 +894,7 @@ class User < Sequel::Model
     date_from, date_to = quota_dates(options)
     SearchTweet.get_twitter_imports_count(self.search_tweets_dataset, date_from, date_to)
   end
+  alias get_twitter_datasource_calls get_twitter_imports_count
 
   # Returns an array representing the last 30 days, populated with api_calls
   # from three different sources

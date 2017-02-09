@@ -39,29 +39,16 @@ module Carto
     def overquota(delta)
       overquota_users = []
       ::User.where(enabled: true, organization_id: nil).exclude(account_type: 'FREE').use_cursor.each do |u|
-        limit = u.geocoding_quota.to_i - (u.geocoding_quota.to_i * delta)
-        over_geocodings = u.get_geocoding_calls > limit
-
-        limit = u.twitter_datasource_quota.to_i - (u.twitter_datasource_quota.to_i * delta)
-        over_twitter_imports = u.get_twitter_imports_count > limit
-
-        limit = u.here_isolines_quota.to_i - (u.here_isolines_quota.to_i * delta)
-        over_here_isolines = u.get_here_isolines_calls > limit
-
-        limit = u.obs_snapshot_quota.to_i - (u.obs_snapshot_quota.to_i * delta)
-        over_obs_snapshot = u.get_obs_snapshot_calls > limit
-
-        limit = u.obs_general_quota.to_i - (u.obs_general_quota.to_i * delta)
-        over_obs_general = u.get_obs_general_calls > limit
-
-        limit = u.mapzen_routing_quota.to_i - (u.mapzen_routing_quota.to_i * delta)
-        over_mapzen_routing = u.get_mapzen_routing_calls > limit
-
-        if over_geocodings || over_twitter_imports || over_here_isolines || over_mapzen_routing || over_obs_snapshot || over_obs_general
-          overquota_users << u
-        end
+        overquota_users << u if services_overquota(u, delta)
       end
       overquota_users
+    end
+
+    SERVICES = %w(geocoding twitter_datasource here_isolines obs_snapshot obs_general mapzen_routing).freeze
+    def services_overquota(user, delta)
+      SERVICES.any? do |service|
+        user.send("get_#{service}_calls") > user.send("#{service}_quota").to_i * (1 - delta)
+      end
     end
   end
 end

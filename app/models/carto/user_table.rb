@@ -30,7 +30,6 @@ module Carto
 
     validates :user_id, presence: true
     validate :validate_user_not_viewer
-    validates :name, presence: true
     validates :name, uniqueness: { scope: :user_id }
     validates :name, exclusion: Carto::DB::Sanitize::RESERVED_TABLE_NAMES
     validates :privacy, inclusion: [PRIVACY_PRIVATE, PRIVACY_PUBLIC, PRIVACY_LINK].freeze

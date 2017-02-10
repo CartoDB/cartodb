@@ -72,7 +72,7 @@ class Table
   def initialize(args = {})
     if args[:user_table].nil?
       # TODO: This won't work, you need to UserTable.new.set_fields(args, args.keys)
-      @user_table = UserTable.new(args)
+      @user_table = Carto::UserTable.new(args)
     else
       @user_table = args[:user_table]
     end

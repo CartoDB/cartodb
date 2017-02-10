@@ -302,11 +302,18 @@ class UserTable < Sequel::Model
     data_import.try(:external_data_imports).try(:first).try(:external_source).try(:visualization)
   end
 
+  private
+
   def default_privacy_value
     user.try(:private_tables_enabled) ? UserTable::PRIVACY_PRIVATE : UserTable::PRIVACY_PUBLIC
   end
 
-  private
+  def set_default_table_privacy
+    unless privacy
+      self.privacy = default_privacy_value
+      save
+    end
+  end
 
   def create_default_map_and_layers
     base_layer = ::ModelFactories::LayerFactory.get_default_base_layer(user)

@@ -414,7 +414,6 @@ class Table
 
   def after_create
     grant_select_to_tiler_user
-    set_default_table_privacy
 
     @force_schema = nil
     self.new_table = true
@@ -641,11 +640,6 @@ class Table
     end
 
     @user_table[:name] = new_name
-  end
-
-  def set_default_table_privacy
-    @user_table.privacy ||= default_privacy_value
-    save
   end
 
   def privacy_changed?

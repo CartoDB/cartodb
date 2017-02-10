@@ -49,7 +49,7 @@
       <p class="CDB-Text LayerOnboarding-headerTitle"><%- _t('data-onboarding.title')%></p>
 
       <p class="CDB-Text LayerOnboarding-description">
-        <%- _t('data-onboarding.description')%>
+        <%= _widow('data-onboarding.description')%>
       </p>
     </div>
 
@@ -91,7 +91,7 @@
       <div class="LayerOnboarding-footer is-step4">
         <div class="LayerOnboarding-footerButtons">
           <button class="CDB-Button CDB-Button--primary CDB-Button--big js-close">
-            <span class="CDB-Button-Text CDB-Text u-upperCase is-semibold CDB-Size-medium"><%- _t('data-onboarding.add-geometry.edit-layer')%></span>
+            <span class="CDB-Button-Text CDB-Text u-upperCase is-semibold CDB-Size-medium"><%- _t('data-onboarding.add-geometry.edit-layer') %></span>
           </button>
         </div>
       </div>

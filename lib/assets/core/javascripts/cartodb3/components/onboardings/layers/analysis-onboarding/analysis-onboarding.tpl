@@ -18,7 +18,7 @@
         </li>
 
         <li class="Onboarding-listItem">
-          <p class="CDB-Text LayerOnboarding-description"><%- _t('analysis-onboarding.description-list.item2')%></p>
+          <p class="CDB-Text LayerOnboarding-description"><%= _widow('analysis-onboarding.description-list.item2')%></p>
         </li>
 
         <li class="Onboarding-listItem">

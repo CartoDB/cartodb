@@ -33,9 +33,9 @@ module Carto
     validates :name, uniqueness: { scope: :user_id }
     validates :name, exclusion: Carto::DB::Sanitize::RESERVED_TABLE_NAMES
     validates :privacy, inclusion: [PRIVACY_PRIVATE, PRIVACY_PUBLIC, PRIVACY_LINK].freeze
-    validate { service.validate }
+    validate :validate_privacy_changes
 
-    before_validation { service.before_validation }
+    before_validation :set_default_table_privacy
 
     def geometry_types
       @geometry_types ||= table.geometry_types
@@ -130,6 +130,14 @@ module Carto
 
     private
 
+    def default_privacy_value
+      user.try(:private_tables_enabled) ? PRIVACY_PRIVATE : PRIVACY_PUBLIC
+    end
+
+    def set_default_table_privacy
+      self.privacy ||= default_privacy_value
+    end
+
     def fully_qualified_name
       "\"#{user.database_schema}\".#{name}"
     end
@@ -153,6 +161,25 @@ module Carto
 
     def validate_user_not_viewer
       errors.add(:user, "Viewer users can't create tables") if user && user.viewer
+    end
+
+    def validate_privacy_changes
+      unless user.try(:private_tables_enabled)
+        # If it's a new table and the user is trying to make it private
+        if new_record? && private?
+          errors.add(:privacy, 'unauthorized to create private tables')
+        end
+
+        # if the table exists, is private, but the owner no longer has private privileges
+        if !new_record? && private? && privacy_changed?
+          errors.add(:privacy, 'unauthorized to modify privacy status to private')
+        end
+
+        # cannot change any existing table to 'with link'
+        if !new_record? && public_with_link_only? && privacy_changed?
+          errors.add(:privacy, 'unauthorized to modify privacy status to public with link')
+        end
+      end
     end
   end
 end

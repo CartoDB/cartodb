@@ -1,5 +1,6 @@
 require 'active_record'
 require_dependency 'carto/helpers/sequel_compatible_model'
+require_dependency 'carto/db/sanitize'
 
 module Carto
   class UserTable < ActiveRecord::Base
@@ -26,6 +27,16 @@ module Carto
 
     has_many :layers_user_table
     has_many :layers, through: :layers_user_table
+
+    validates :user_id, presence: true
+    validate :validate_user_not_viewer
+    validates :name, presence: true
+    validates :name, uniqueness: { scope: :user_id }
+    validates :name, exclusion: Carto::DB::Sanitize::RESERVED_TABLE_NAMES
+    validates :privacy, inclusion: [PRIVACY_PRIVATE, PRIVACY_PUBLIC, PRIVACY_LINK].freeze
+    validate { service.validate }
+
+    before_validation { service.before_validation }
 
     def geometry_types
       @geometry_types ||= table.geometry_types
@@ -140,6 +151,9 @@ module Carto
     def visualization_readable_by?(user)
       user && permission && permission.user_has_read_permission?(user)
     end
-  end
 
+    def validate_user_not_viewer
+      errors.add(:user, "Viewer users can't create tables") if user && user.viewer
+    end
+  end
 end

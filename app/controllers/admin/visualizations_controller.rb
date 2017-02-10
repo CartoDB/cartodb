@@ -185,20 +185,20 @@ class Admin::VisualizationsController < Admin::AdminController
     @disqus_shortname       = @visualization.user.disqus_shortname.presence || 'cartodb'
     @public_tables_count    = @visualization.user.public_table_count
 
-    @non_dependent_visualizations = @table.non_dependent_visualizations.select{
-        |vis| vis.privacy == Visualization::Member::PRIVACY_PUBLIC
-    }
+    @partially_dependent_visualizations = @table.partially_dependent_visualizations.select do |vis|
+      vis.privacy == Visualization::Member::PRIVACY_PUBLIC
+    end
 
-    @dependent_visualizations = @table.dependent_visualizations.select{
-        |vis| vis.privacy == Visualization::Member::PRIVACY_PUBLIC
-    }
+    @fully_dependent_visualizations = @table.fully_dependent_visualizations.select do |vis|
+      vis.privacy == Visualization::Member::PRIVACY_PUBLIC
+    end
 
-    @total_visualizations  = @non_dependent_visualizations + @dependent_visualizations
+    @total_visualizations = @partially_dependent_visualizations + @fully_dependent_visualizations
 
-    @total_nonpublic_total_vis_count = @table.non_dependent_visualizations.select{
-        |vis| vis.privacy != Visualization::Member::PRIVACY_PUBLIC
-    }.count + @table.dependent_visualizations.select{
-        |vis| vis.privacy != Visualization::Member::PRIVACY_PUBLIC
+    @total_nonpublic_total_vis_count = @table.partially_dependent_visualizations.select { |vis|
+      vis.privacy != Visualization::Member::PRIVACY_PUBLIC
+    }.count + @table.fully_dependent_visualizations.select { |vis|
+      vis.privacy != Visualization::Member::PRIVACY_PUBLIC
     }.count
 
     # Public export API SQL url

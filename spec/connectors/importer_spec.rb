@@ -14,11 +14,21 @@ describe CartoDB::Connector::Importer do
     bypass_named_maps
   end
 
+  after(:each) do
+    if @data_import
+      @data_import.table.destroy if @data_import.table.id.present?
+      @data_import.destroy
+    end
+    @visualization.destroy if @visualization
+    ::UserTable[@existing_table.id].destroy if @existing_table
+  end
+
   after(:all) do
     bypass_named_maps
     @user.destroy
   end
 
+  let(:skip) { DataImport::COLLISION_STRATEGY_SKIP }
 
   it 'should not fail to return a new_name when ALTERing the INDEX fails' do
 
@@ -90,18 +100,66 @@ describe CartoDB::Connector::Importer do
 
     filepath = "#{Rails.root}/spec/support/data/elecciones2008.csv"
 
-    data_import = DataImport.create(
+    @data_import = DataImport.create(
       :user_id       => @user.id,
       :data_source   => filepath,
       :updated_at    => Time.now,
       :append        => false,
       :privacy       => (::UserTable::PRIVACY_VALUES_TO_TEXTS.invert)['public']
     )
-    data_import.values[:data_source] = filepath
+    @data_import.values[:data_source] = filepath
 
-    data_import.run_import!
+    @data_import.run_import!
 
-    UserTable[id: data_import.table.id].privacy.should eq (::UserTable::PRIVACY_VALUES_TO_TEXTS.invert)['public']
+    UserTable[id: @data_import.table.id].privacy.should eq ::UserTable::PRIVACY_VALUES_TO_TEXTS.invert['public']
+  end
+
+  it 'importing the same file twice should import the table twice renaming the second import' do
+    name = 'elecciones2008'
+    filepath = "#{Rails.root}/spec/support/data/#{name}.csv"
+
+    @data_import = DataImport.create(user_id: @user.id, data_source: filepath)
+    @data_import.values[:data_source] = filepath
+    @data_import.run_import!
+
+    @data_import.success.should eq true
+    UserTable[id: @data_import.table.id].name.should eq name
+
+    data_import2 = DataImport.create(user_id: @user.id, data_source: filepath)
+    data_import2.values[:data_source] = filepath
+    data_import2.run_import!
+
+    data_import2.success.should eq true
+    UserTable[id: data_import2.table.id].name.should eq "#{name}_1"
+
+    data_import2.table.destroy if data_import2 && data_import2.table.id.present?
+    data_import2.destroy
+  end
+
+  it 'importing the same file twice with collision strategy skip should import the table once' do
+    name = 'elecciones2008'
+    filepath = "#{Rails.root}/spec/support/data/#{name}.csv"
+
+    @data_import = DataImport.create(user_id: @user.id, data_source: filepath, collision_strategy: skip)
+    @data_import.values[:data_source] = filepath
+    @data_import.run_import!
+
+    UserTable[id: @data_import.table.id].name.should eq name
+    @data_import.success.should eq true
+
+    data_import2 = DataImport.create(user_id: @user.id, data_source: filepath, collision_strategy: skip)
+    data_import2.values[:data_source] = filepath
+    data_import2.run_import!
+
+    data_import2.error_code = 1022
+    data_import2.success.should eq true
+
+    data_import2.tables_created_count.should eq 0
+    data_import2.table_names.should eq ''
+    data_import2.table_name.should be_nil
+
+    data_import2.table.destroy if data_import2 && data_import2.table.id.present?
+    data_import2.destroy
   end
 
   it 'should import tables as private if privacy param is set to private' do
@@ -370,154 +428,209 @@ describe CartoDB::Connector::Importer do
     it 'imports a visualization export' do
       filepath = "#{Rails.root}/services/importer/spec/fixtures/visualization_export_with_csv_table.carto"
 
-      data_import = DataImport.create(
+      @data_import = DataImport.create(
         user_id: @user.id,
         data_source: filepath,
         updated_at: Time.now.utc,
         append: false,
         create_visualization: true
       )
-      data_import.values[:data_source] = filepath
+      @data_import.values[:data_source] = filepath
 
-      data_import.run_import!
-      data_import.success.should eq true
+      @data_import.run_import!
+      @data_import.success.should eq true
 
       # Fixture file checks
-      data_import.table_name.should eq 'twitter_t3chfest_reduced'
-      visualization = Carto::Visualization.find(data_import.visualization_id)
-      visualization.name.should eq "exported map"
-      visualization.description.should eq "A map that has been exported"
-      visualization.tags.should include('exported')
-      map = visualization.map
+      @data_import.table_name.should eq 'twitter_t3chfest_reduced'
+      @visualization = Carto::Visualization.find(@data_import.visualization_id)
+      @visualization.name.should eq "exported map"
+      @visualization.description.should eq "A map that has been exported"
+      @visualization.tags.should include('exported')
+      map = @visualization.map
       map.center.should eq "[39.75365697136308, -2.318115234375]"
-
-      data_import.table.destroy
-      data_import.destroy
-      visualization.destroy
     end
 
     it 'imports a visualization export when the table already exists' do
-      existing_table = create_table(name: 'twitter_t3chfest_reduced', user_id: @user.id)
+      @existing_table = create_table(name: 'twitter_t3chfest_reduced', user_id: @user.id)
       filepath = "#{Rails.root}/services/importer/spec/fixtures/visualization_export_with_csv_table.carto"
 
-      data_import = DataImport.create(
+      @data_import = DataImport.create(
         user_id: @user.id,
         data_source: filepath,
         updated_at: Time.now.utc,
         append: false,
         create_visualization: true
       )
-      data_import.values[:data_source] = filepath
+      @data_import.values[:data_source] = filepath
 
-      data_import.run_import!
-      data_import.success.should eq true
+      @data_import.run_import!
+      @data_import.success.should eq true
 
       # Fixture file checks
       renamed_table = 'twitter_t3chfest_reduced_1'
-      data_import.table_name.should eq renamed_table
-      visualization = Carto::Visualization.find(data_import.visualization_id)
-      visualization.data_layers.first.options['table_name'].should eq renamed_table
+      @data_import.table_name.should eq renamed_table
+      @visualization = Carto::Visualization.find(@data_import.visualization_id)
+      @visualization.data_layers.first.options['table_name'].should eq renamed_table
+    end
 
-      data_import.table.destroy
-      data_import.destroy
-      visualization.destroy
-      ::UserTable[existing_table.id].destroy
+    it 'imports a visualization export and table is not duplicated if collision strategy is skip' do
+      table_name = 'twitter_t3chfest_reduced'
+      @existing_table = create_table(name: table_name, user_id: @user.id)
+      filepath = "#{Rails.root}/services/importer/spec/fixtures/visualization_export_with_csv_table.carto"
+
+      @data_import = DataImport.create(
+        user_id: @user.id,
+        data_source: filepath,
+        updated_at: Time.now.utc,
+        append: false,
+        create_visualization: true,
+        collision_strategy: skip
+      )
+      @data_import.values[:data_source] = filepath
+
+      @data_import.run_import!
+      @data_import.success.should eq true
+
+      @data_import.tables_created_count.should eq 0
+      @data_import.table_names.should be_empty
+      @data_import.table_name.should be_nil
+
+      @visualization = Carto::Visualization.find(@data_import.visualization_id)
+      @visualization.data_layers.first.options['table_name'].should eq table_name
+
+      @visualization.data_layers.count.should eq 1
+      layer = @visualization.data_layers.first
+      layer.user_tables.count.should eq 1
+      user_table = layer.user_tables.first
+      user_table.name.should eq table_name
+    end
+
+    it 'imports a visualization export but not existing tables if collision strategy is skip' do
+      existing_table_name = 'guess_country'
+      not_existing_table_name = 'guess_ip'
+      @existing_table = create_table(name: existing_table_name, user_id: @user.id)
+      filepath = "#{Rails.root}/services/importer/spec/fixtures/guess_country_ip.carto"
+
+      @data_import = DataImport.create(
+        user_id: @user.id,
+        data_source: filepath,
+        updated_at: Time.now.utc,
+        append: false,
+        create_visualization: true,
+        collision_strategy: skip
+      )
+      @data_import.values[:data_source] = filepath
+
+      @data_import.run_import!
+      @data_import.success.should eq true
+
+      @data_import.tables_created_count.should eq 1
+      @data_import.table_names.should eq not_existing_table_name
+      @data_import.table_name.should eq not_existing_table_name
+
+      expected_table_names = [existing_table_name, not_existing_table_name]
+      @visualization = Carto::Visualization.find(@data_import.visualization_id)
+      layer_table_names = @visualization.data_layers.map { |l| l.options['table_name'] }.sort
+      layer_table_names.should eq expected_table_names
+
+      @visualization.data_layers.count.should eq 2
+
+      expected_table_names.each do |table_name|
+        layer = @visualization.data_layers.find { |l| l.user_tables.first.name == table_name }
+        layer.should_not be_nil
+        layer.user_tables.count.should eq 1
+      end
+      @data_import.tables.map(&:destroy)
     end
 
     it 'imports a visualization export with two data layers' do
       filepath = "#{Rails.root}/services/importer/spec/fixtures/visualization_export_with_two_tables.carto"
 
-      data_import = DataImport.create(
+      @data_import = DataImport.create(
         user_id: @user.id,
         data_source: filepath,
         updated_at: Time.now.utc,
         append: false,
         create_visualization: true
       )
-      data_import.values[:data_source] = filepath
+      @data_import.values[:data_source] = filepath
 
-      data_import.run_import!
-      data_import.success.should eq true
+      @data_import.run_import!
+      @data_import.success.should eq true
 
       # Fixture file checks
-      data_import.table_names.should eq "guess_country twitter_t3chfest_reduced"
-      visualization = Carto::Visualization.find(data_import.visualization_id)
-      visualization.name.should eq "map with two layers"
-      layers = visualization.layers
-      visualization.layers.count.should eq 3 # basemap + 2 data layers
+      @data_import.table_names.should eq "guess_country twitter_t3chfest_reduced"
+      @visualization = Carto::Visualization.find(@data_import.visualization_id)
+      @visualization.name.should eq "map with two layers"
+      @visualization.layers.count.should eq 3 # basemap + 2 data layers
+      layers = @visualization.layers
       layers[0].options['name'].should eq "CartoDB World Eco"
-      layer1 = visualization.layers[1]
+      layer1 = @visualization.layers[1]
       layer1.options['type'].should eq "CartoDB"
       layer1.options['table_name'].should eq "guess_country"
-      layer2 = visualization.layers[2]
+      layer1.user_tables.count.should eq 1
+      layer2 = @visualization.layers[2]
       layer2.options['type'].should eq "CartoDB"
       layer2.options['table_name'].should eq "twitter_t3chfest_reduced"
-      data_import.tables.map(&:destroy)
-      data_import.destroy
-      visualization.destroy
+      layer2.user_tables.count.should eq 1
+      @data_import.tables.map(&:destroy)
     end
 
     it 'imports a visualization export without data' do
       filepath = "#{Rails.root}/services/importer/spec/fixtures/visualization_export_without_tables.carto"
 
-      data_import = DataImport.create(
+      @data_import = DataImport.create(
         user_id: @user.id,
         data_source: filepath,
         updated_at: Time.now.utc,
         append: false,
         create_visualization: true
       )
-      data_import.values[:data_source] = filepath
+      @data_import.values[:data_source] = filepath
 
-      data_import.run_import!
-      data_import.success.should eq true
+      @data_import.run_import!
+      @data_import.success.should eq true
 
       # Fixture file checks
-      visualization = Carto::Visualization.find(data_import.visualization_id)
-      visualization.name.should eq "map with two layers"
-      layers = visualization.layers
-      visualization.layers.count.should eq 3 # basemap + 2 data layers
+      @visualization = Carto::Visualization.find(@data_import.visualization_id)
+      @visualization.name.should eq "map with two layers"
+      layers = @visualization.layers
+      @visualization.layers.count.should eq 3 # basemap + 2 data layers
       layers[0].options['name'].should eq "CartoDB World Eco"
-      layer1 = visualization.layers[1]
+      layer1 = @visualization.layers[1]
       layer1.options['type'].should eq "CartoDB"
       layer1.options['table_name'].should eq "guess_country"
-      layer2 = visualization.layers[2]
+      layer2 = @visualization.layers[2]
       layer2.options['type'].should eq "CartoDB"
       layer2.options['table_name'].should eq "twitter_t3chfest_reduced"
-      data_import.tables.map(&:destroy)
-      data_import.destroy
-      visualization.destroy
+      @data_import.tables.map(&:destroy)
     end
 
     it 'registers table dependencies for .carto import' do
       filepath = "#{Rails.root}/services/importer/spec/fixtures/visualization_export_with_csv_table.carto"
 
-      data_import = DataImport.create(
+      @data_import = DataImport.create(
         user_id: @user.id,
         data_source: filepath,
         updated_at: Time.now.utc,
         append: false,
         create_visualization: true
       )
-      data_import.values[:data_source] = filepath
+      @data_import.values[:data_source] = filepath
 
-      data_import.run_import!
-      data_import.success.should eq true
+      @data_import.run_import!
+      @data_import.success.should eq true
 
       # Fixture file checks
-      data_import.table_name.should eq 'twitter_t3chfest_reduced'
-      visualization = Carto::Visualization.find(data_import.visualization_id)
-      layer = visualization.data_layers.first
+      @data_import.table_name.should eq 'twitter_t3chfest_reduced'
+      @visualization = Carto::Visualization.find(@data_import.visualization_id)
+      layer = @visualization.data_layers.first
       layer.user_tables.count.should eq 1
       user_table = layer.user_tables.first
       user_table.name.should eq 'twitter_t3chfest_reduced'
 
       canonical_layer = user_table.visualization.data_layers.first
       canonical_layer.user_tables.count.should eq 1
-
-      data_import.table.destroy
-      data_import.destroy
-      visualization.destroy
     end
   end
 end

@@ -34,7 +34,11 @@
 }
 
 .AssetItem-icon {
-  vertical-align: middle;
+  @include align-items(center);
+  @include justify-content(center);
+  @include display-flex;
+  width: 100%;
+  height: 100%;
 }
 
 .AssetItem-label {
@@ -79,6 +83,19 @@
   }
 }
 
+.AssetsList-item.AssetsList-item--text {
+  border: 1px dotted $cMainLine;
+
+  &:hover {
+    border: 1px solid $cMainLine;
+    cursor: pointer;
+  }
+}
+
+.AssetsList-item.AssetsList-item--text.is-selected {
+  border: 1px solid $cSecondaryLine;
+}
+
 .AssetsList-item.is-selected {
   border: 2px solid $cBlue;
 }
@@ -87,4 +104,10 @@
   width: $baseSize * 5;
   min-width: $baseSize * 5;
   height: $baseSize * 5;
+}
+
+.AssetsList-item--medium {
+  width: $baseSize * 7;
+  min-width: $baseSize * 7;
+  height: $baseSize * 7;
 }

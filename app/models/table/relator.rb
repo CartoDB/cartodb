@@ -6,10 +6,10 @@ module CartoDB
   class TableRelator
     INTERFACE = %w{
       table_visualization
-      serialize_dependent_visualizations
-      serialize_non_dependent_visualizations
-      dependent_visualizations
-      non_dependent_visualizations
+      serialize_fully_dependent_visualizations
+      serialize_partially_dependent_visualizations
+      fully_dependent_visualizations
+      partially_dependent_visualizations
       affected_visualizations
       synchronization
       serialize_synchronization
@@ -35,20 +35,20 @@ module CartoDB
       @table_visualization = table_visualization
     end
 
-    def serialize_dependent_visualizations
-      dependent_visualizations.map { |object| preview_for(object) }
+    def serialize_fully_dependent_visualizations
+      fully_dependent_visualizations.map { |object| preview_for(object) }
     end
 
-    def serialize_non_dependent_visualizations
-      non_dependent_visualizations.map { |object| preview_for(object) }
+    def serialize_partially_dependent_visualizations
+      partially_dependent_visualizations.map { |object| preview_for(object) }
     end
 
-    def dependent_visualizations
-      affected_visualizations.select(&:dependent?)
+    def fully_dependent_visualizations
+      affected_visualizations.select { |v| v.fully_dependent_on?(table) }
     end
 
-    def non_dependent_visualizations
-      affected_visualizations.select(&:non_dependent?)
+    def partially_dependent_visualizations
+      affected_visualizations.select { |v| v.partially_dependent_on?(table) }
     end
 
     def affected_visualizations
@@ -118,4 +118,3 @@ module CartoDB
 
   end
 end
-

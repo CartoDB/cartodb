@@ -118,10 +118,6 @@ class Table
     attrs
   end
 
-  def default_privacy_value
-    self.owner.try(:private_tables_enabled) ? UserTable::PRIVACY_PRIVATE : UserTable::PRIVACY_PUBLIC
-  end
-
   def geometry_types_key
     @geometry_types_key ||= "#{redis_key}:geometry_types"
   end
@@ -417,9 +413,6 @@ class Table
   end
 
   def after_create
-    self.create_default_map_and_layers
-    self.create_default_visualization
-
     grant_select_to_tiler_user
     set_default_table_privacy
 
@@ -517,49 +510,6 @@ class Table
         options: basemap.merge({ 'urlTemplate' => basemap['url'] })
       }
     end
-  end
-
-  def create_default_map_and_layers
-    base_layer = ::ModelFactories::LayerFactory.get_default_base_layer(owner)
-
-    map = ::ModelFactories::MapFactory.get_map(base_layer, user_id, id)
-    @user_table.map_id = map.id
-
-    map.add_layer(base_layer)
-
-    geometry_type = the_geom_type || 'geometry'
-    data_layer = ::ModelFactories::LayerFactory.get_default_data_layer(name, owner, geometry_type)
-
-    map.add_layer(data_layer)
-
-    if base_layer.supports_labels_layer?
-      labels_layer = ::ModelFactories::LayerFactory.get_default_labels_layer(base_layer)
-      map.add_layer(labels_layer)
-    end
-  end
-
-  def create_default_visualization
-    kind = is_raster? ? CartoDB::Visualization::Member::KIND_RASTER : CartoDB::Visualization::Member::KIND_GEOM
-
-    esv = external_source_visualization
-
-    member = CartoDB::Visualization::Member.new(
-      name:         self.name,
-      map_id:       self.map_id,
-      type:         CartoDB::Visualization::Member::TYPE_CANONICAL,
-      description:  @user_table.description,
-      attributions: esv.nil? ? nil : esv.attributions,
-      source:       esv.nil? ? nil : esv.source,
-      tags:         (@user_table.tags.split(',') if @user_table.tags),
-      privacy:      UserTable::PRIVACY_VALUES_TO_TEXTS[default_privacy_value],
-      user_id:      self.owner.id,
-      kind:         kind
-    )
-
-    member.store
-    member.map.set_default_boundaries!
-
-    CartoDB::Visualization::Overlays.new(member).create_default_overlays
   end
 
   def before_destroy
@@ -1419,12 +1369,7 @@ class Table
   end
 
   def external_source_visualization
-    @user_table.
-      try(:data_import).
-      try(:external_data_imports).
-      try(:first).
-      try(:external_source).
-      try(:visualization)
+    @user_table.try(:external_source_visualization)
   end
 
   def previous_privacy

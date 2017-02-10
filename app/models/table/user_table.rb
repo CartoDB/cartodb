@@ -192,6 +192,8 @@ class UserTable < Sequel::Model
 
   def after_create
     super
+    create_default_map_and_layers
+    create_default_visualization
     service.after_create
   end
 
@@ -294,5 +296,56 @@ class UserTable < Sequel::Model
 
   def actual_row_count
     service.actual_row_count
+  end
+
+  def external_source_visualization
+    data_import.try(:external_data_imports).try(:first).try(:external_source).try(:visualization)
+  end
+
+  def default_privacy_value
+    user.try(:private_tables_enabled) ? UserTable::PRIVACY_PRIVATE : UserTable::PRIVACY_PUBLIC
+  end
+
+  private
+
+  def create_default_map_and_layers
+    base_layer = ::ModelFactories::LayerFactory.get_default_base_layer(user)
+
+    self.map = ::ModelFactories::MapFactory.get_map(base_layer, user_id, id)
+    map.add_layer(base_layer)
+
+    geometry_type = service.the_geom_type || 'geometry'
+    data_layer = ::ModelFactories::LayerFactory.get_default_data_layer(name, user, geometry_type)
+
+    map.add_layer(data_layer)
+
+    if base_layer.supports_labels_layer?
+      labels_layer = ::ModelFactories::LayerFactory.get_default_labels_layer(base_layer)
+      map.add_layer(labels_layer)
+    end
+  end
+
+  def create_default_visualization
+    kind = service.is_raster? ? CartoDB::Visualization::Member::KIND_RASTER : CartoDB::Visualization::Member::KIND_GEOM
+
+    esv = external_source_visualization
+
+    member = CartoDB::Visualization::Member.new(
+      name:         name,
+      map_id:       map_id,
+      type:         CartoDB::Visualization::Member::TYPE_CANONICAL,
+      description:  description,
+      attributions: esv.nil? ? nil : esv.attributions,
+      source:       esv.nil? ? nil : esv.source,
+      tags:         (tags.split(',') if tags),
+      privacy:      UserTable::PRIVACY_VALUES_TO_TEXTS[default_privacy_value],
+      user_id:      user.id,
+      kind:         kind
+    )
+
+    member.store
+    member.map.set_default_boundaries!
+
+    CartoDB::Visualization::Overlays.new(member).create_default_overlays
   end
 end

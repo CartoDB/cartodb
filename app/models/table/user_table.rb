@@ -159,16 +159,16 @@ class UserTable < Sequel::Model
     super
 
     # userid and table name tuple must be unique
-    validates_unique [:name, :user_id], :message => 'is already taken'
+    validates_unique [:name, :user_id], message: 'is already taken'
 
     # tables must have a user
     errors.add(:user_id, "can't be blank") if user_id.blank?
 
     errors.add(:user, "Viewer users can't create tables") if user && user.viewer
 
-    errors.add(
-      :name, 'is a reserved keyword, please choose a different one'
-    ) if Carto::DB::Sanitize::RESERVED_TABLE_NAMES.include?(name)
+    if Carto::DB::Sanitize::RESERVED_TABLE_NAMES.include?(name)
+      errors.add(:name, 'is a reserved keyword, please choose a different one')
+    end
 
     # TODO this kind of check should be moved to the DB
     # privacy setting must be a sane value
@@ -176,11 +176,26 @@ class UserTable < Sequel::Model
       errors.add(:privacy, "has an invalid value '#{privacy}'")
     end
 
-    service.validate
+    unless user.try(:private_tables_enabled)
+      # If it's a new table and the user is trying to make it private
+      if new? && privacy == PRIVACY_PRIVATE
+        errors.add(:privacy, 'unauthorized to create private tables')
+      end
+
+      # if the table exists, is private, but the owner no longer has private privileges
+      if !new? && privacy == PRIVACY_PRIVATE && changed_columns.include?(:privacy)
+        errors.add(:privacy, 'unauthorized to modify privacy status to private')
+      end
+
+      # cannot change any existing table to 'with link'
+      if !new? && privacy == PRIVACY_LINK && changed_columns.include?(:privacy)
+        errors.add(:privacy, 'unauthorized to modify privacy status to public with link')
+      end
+    end
   end
 
   def before_validation
-    service.before_validation
+    set_default_table_privacy
     super
   end
 
@@ -194,6 +209,10 @@ class UserTable < Sequel::Model
     super
     create_default_map_and_layers
     create_default_visualization
+
+    set_default_table_privacy
+    save
+
     service.after_create
   end
 
@@ -305,14 +324,11 @@ class UserTable < Sequel::Model
   private
 
   def default_privacy_value
-    user.try(:private_tables_enabled) ? UserTable::PRIVACY_PRIVATE : UserTable::PRIVACY_PUBLIC
+    user.try(:private_tables_enabled) ? PRIVACY_PRIVATE : PRIVACY_PUBLIC
   end
 
   def set_default_table_privacy
-    unless privacy
-      self.privacy = default_privacy_value
-      save
-    end
+    self.privacy ||= default_privacy_value
   end
 
   def create_default_map_and_layers

@@ -230,37 +230,6 @@ class Table
 
   ## Callbacks
 
-  # Core validation method that is automatically called before create and save
-  def validate
-    ## SANITY CHECKS
-    # TODO this should be fully moved to storage
-
-    # Branch if owner does not have private table privileges
-    unless self.owner.try(:private_tables_enabled)
-      # If it's a new table and the user is trying to make it private
-      if self.new? && @user_table.privacy == UserTable::PRIVACY_PRIVATE
-        @user_table.errors.add(:privacy, 'unauthorized to create private tables')
-      end
-
-      # if the table exists, is private, but the owner no longer has private privileges
-      if !self.new? && @user_table.privacy == UserTable::PRIVACY_PRIVATE && @user_table.changed_columns.include?(:privacy)
-        @user_table.errors.add(:privacy, 'unauthorized to modify privacy status to private')
-      end
-
-      # cannot change any existing table to 'with link'
-      if !self.new? && @user_table.privacy == UserTable::PRIVACY_LINK && @user_table.changed_columns.include?(:privacy)
-        @user_table.errors.add(:privacy, 'unauthorized to modify privacy status to pubic with link')
-      end
-
-    end
-  end
-
-  # runs before each validation phase on create and update
-  def before_validation
-    # ensure privacy variable is set to one of the constants. this is bad.
-    @user_table.privacy ||= (owner.try(:private_tables_enabled) ? UserTable::PRIVACY_PRIVATE : UserTable::PRIVACY_PUBLIC)
-  end
-
   def import_to_cartodb(uniname = nil)
     @data_import ||= DataImport.where(id: @user_table.data_import_id).first || DataImport.new(user_id: owner.id)
     if migrate_existing_table.present? || uniname

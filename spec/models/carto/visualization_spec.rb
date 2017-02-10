@@ -104,6 +104,7 @@ describe Carto::Visualization do
     include Carto::Factories::Visualizations
 
     it 'only returns tables that a user can read' do
+      @carto_user.update_attribute(:private_tables_enabled, true)
       map = FactoryGirl.create(:carto_map, user: @carto_user)
 
       private_table = FactoryGirl.create(:private_user_table, user: @carto_user)

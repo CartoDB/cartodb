@@ -19,7 +19,11 @@ describe Carto::UserTable do
     @user.destroy
   end
 
-  it_behaves_like 'user table models'
+  it_behaves_like 'user table models' do
+    def build_user_table(attrs = {})
+      Carto::UserTable.new({ privacy: nil }.merge(attrs))
+    end
+  end
 
   describe '#readable_by?' do
     include_context 'organization with users helper'

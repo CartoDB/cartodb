@@ -70,6 +70,11 @@ var GoogleMapsMapView = MapView.extend({
     this.projector.draw = this._ready;
   },
 
+  clean: function () {
+    google.maps.event.clearInstanceListeners(window);
+    google.maps.event.clearInstanceListeners(document);
+  },
+
   _getLayerViewFactory: function () {
     this._layerViewFactory = this._layerViewFactory || new GMapsLayerViewFactory({
       vector: this.map.get('vector')

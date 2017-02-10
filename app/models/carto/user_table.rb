@@ -1,7 +1,9 @@
 require 'active_record'
+require_dependency 'carto/helpers/sequel_compatible_model'
 
 module Carto
   class UserTable < ActiveRecord::Base
+    include SequelCompatibleModel
 
     PRIVACY_PRIVATE = 0
     PRIVACY_PUBLIC = 1

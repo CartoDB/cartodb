@@ -169,12 +169,12 @@ describe Carto::Visualization do
 
     it 'returns private_tables_enabled for tables' do
       @visualization.type = 'table'
-      @visualization.can_be_private?.should eq @user.private_tables_enabled
+      @visualization.can_be_private?.should eq @carto_user.private_tables_enabled
     end
 
     it 'returns private_maps_enabled for maps' do
       @visualization.type = 'derived'
-      @visualization.can_be_private?.should eq @user.private_maps_enabled
+      @visualization.can_be_private?.should eq @carto_user.private_maps_enabled
     end
   end
 end

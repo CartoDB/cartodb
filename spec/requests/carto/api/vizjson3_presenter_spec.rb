@@ -6,7 +6,7 @@ describe Carto::Api::VizJSON3Presenter do
   include_context 'visualization creation helpers'
 
   before(:all) do
-    @user_1 = FactoryGirl.create(:carto_user, private_tables_enabled: false)
+    @user_1 = FactoryGirl.create(:carto_user, private_tables_enabled: true)
   end
 
   after(:all) do
@@ -123,7 +123,7 @@ describe Carto::Api::VizJSON3Presenter do
       original_vizjson.should_not eq original_named_vizjson
 
       @table.privacy = Carto::UserTable::PRIVACY_PRIVATE
-      @table.save
+      @table.save!
       @visualization = Carto::Visualization.find(@visualization.id)
       v3_presenter = Carto::Api::VizJSON3Presenter.new(@visualization, nil)
 
@@ -152,7 +152,7 @@ describe Carto::Api::VizJSON3Presenter do
       layer.options['source'] = source
       layer.save
       @table.privacy = Carto::UserTable::PRIVACY_PRIVATE
-      @table.save
+      @table.save!
       @visualization.reload
 
       v3_vizjson = Carto::Api::VizJSON3Presenter.new(@visualization, viewer_user).send :calculate_vizjson

@@ -1951,6 +1951,7 @@ describe Table do
       ::Table.any_instance.stubs(:set_table_id).returns(table_id)
       ::Table.any_instance.stubs(:set_the_geom_column!).returns(true)
       ::Table.any_instance.stubs(:after_create)
+      ::UserTable.any_instance.stubs(:after_create)
       ::Table.any_instance.stubs(:after_save)
       ::Table.any_instance.stubs(:cartodbfy)
       ::Table.any_instance.stubs(:schema)
@@ -1958,7 +1959,9 @@ describe Table do
       table = Table.new
 
       # A user who can create private tables has by default private tables
-      table.default_privacy_value.should eq ::UserTable::PRIVACY_PRIVATE
+      user_table = ::UserTable.new
+      user_table.stubs(:user).returns(user_mock)
+      user_table.send(:default_privacy_value).should eq ::UserTable::PRIVACY_PRIVATE
 
       table.user_id = UUIDTools::UUID.timestamp_create.to_s
       table.privacy = UserTable::PRIVACY_PUBLIC
@@ -1992,10 +1995,10 @@ describe Table do
       expected_errors_hash = { privacy: ['unauthorized to modify privacy status to pubic with link'] }
       table.errors.should eq expected_errors_hash
 
-      table = Table.new
       # A user who cannot create private tables has by default public
-      table.default_privacy_value.should eq ::UserTable::PRIVACY_PUBLIC
-
+      user_table = ::UserTable.new
+      user_table.stubs(:user).returns(user_mock)
+      user_table.send(:default_privacy_value).should eq ::UserTable::PRIVACY_PUBLIC
     end
   end #validation_for_link_privacy
 

@@ -209,7 +209,6 @@ class UserTable < Sequel::Model
     super
     create_default_map_and_layers
     create_default_visualization
-
     set_default_table_privacy
     save
 
@@ -355,11 +354,11 @@ class UserTable < Sequel::Model
 
     member = CartoDB::Visualization::Member.new(
       name:         name,
-      map_id:       map_id,
+      map_id:       map.id,
       type:         CartoDB::Visualization::Member::TYPE_CANONICAL,
       description:  description,
-      attributions: esv.nil? ? nil : esv.attributions,
-      source:       esv.nil? ? nil : esv.source,
+      attributions: esv.try(:attributions),
+      source:       esv.try(:source),
       tags:         (tags.split(',') if tags),
       privacy:      UserTable::PRIVACY_VALUES_TO_TEXTS[default_privacy_value],
       user_id:      user.id,
@@ -368,6 +367,7 @@ class UserTable < Sequel::Model
 
     member.store
     member.map.set_default_boundaries!
+    map.reload
 
     CartoDB::Visualization::Overlays.new(member).create_default_overlays
   end

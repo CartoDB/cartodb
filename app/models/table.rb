@@ -45,21 +45,21 @@ class Table
   # @see config/initializers/carto_db.rb -> RESERVED_COLUMN_NAMES
   RESERVED_COLUMN_NAMES = %w(oid tableoid xmin cmin xmax cmax ctid ogc_fid).freeze
   PUBLIC_ATTRIBUTES = {
-      :id                           => :id,
-      :name                         => :name,
-      :privacy                      => :privacy_text,
-      :schema                       => :schema,
-      :updated_at                   => :updated_at,
-      :rows_counted                 => :rows_estimated,
-      :table_size                   => :table_size,
-      :map_id                       => :map_id,
-      :description                  => :description,
-      :geometry_types               => :geometry_types,
-      :table_visualization          => :table_visualization,
-      :dependent_visualizations     => :serialize_dependent_visualizations,
-      :non_dependent_visualizations => :serialize_non_dependent_visualizations,
-      :synchronization              => :serialize_synchronization
-  }
+    id:                           :id,
+    name:                         :name,
+    privacy:                      :privacy_text,
+    schema:                       :schema,
+    updated_at:                   :updated_at,
+    rows_counted:                 :rows_estimated,
+    table_size:                   :table_size,
+    map_id:                       :map_id,
+    description:                  :description,
+    geometry_types:               :geometry_types,
+    table_visualization:          :table_visualization,
+    dependent_visualizations:     :serialize_fully_dependent_visualizations,
+    non_dependent_visualizations: :serialize_partially_dependent_visualizations,
+    synchronization:              :serialize_synchronization
+  }.freeze
 
   DEFAULT_THE_GEOM_TYPE = 'geometry'
 
@@ -567,8 +567,8 @@ class Table
     if @table_visualization
       @table_visualization.user_data = { name: owner.username, api_key: owner.api_key }
     end
-    @dependent_visualizations_cache     = dependent_visualizations.to_a
-    @non_dependent_visualizations_cache = non_dependent_visualizations.to_a
+    @fully_dependent_visualizations_cache     = fully_dependent_visualizations.to_a
+    @partially_dependent_visualizations_cache = partially_dependent_visualizations.to_a
   end
 
   def after_destroy
@@ -578,8 +578,8 @@ class Table
     remove_table_from_stats
 
     cache.del geometry_types_key
-    @dependent_visualizations_cache.each(&:delete)
-    @non_dependent_visualizations_cache.each do |visualization|
+    @fully_dependent_visualizations_cache.each(&:delete)
+    @partially_dependent_visualizations_cache.each do |visualization|
       visualization.unlink_from(self)
     end
 
@@ -1469,8 +1469,7 @@ class Table
     user_table_names = owner.tables.map(&:name)
 
     # We only want to check for UserTables names
-    Carto::ValidTableNameProposer.new(owner.id)
-                                 .propose_valid_table_name(contendent, taken_names: user_table_names)
+    Carto::ValidTableNameProposer.new.propose_valid_table_name(contendent, taken_names: user_table_names)
   end
 
   def self.sanitize_columns(table_name, options={})

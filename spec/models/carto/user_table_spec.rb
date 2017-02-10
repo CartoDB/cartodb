@@ -8,7 +8,7 @@ describe Carto::UserTable do
 
     @user = FactoryGirl.create(:carto_user)
     @carto_user = @user
-    @user_table = Carto::UserTable.create(user: @user, name: 'user_table')
+    @user_table = FactoryGirl.create(:public_user_table, user: @user)
 
     # The dependent visualization models are in the UserTable class for the AR model
     @dependent_test_object = @user_table

@@ -27,7 +27,7 @@ var createLayerGroupView = function (layerGroupModel, container) {
 
 var expectTileURLTemplateToMatch = function (layerGroupView, expectedTileURLTemplate) {
   var x = 0;
-  var y = 10;
+  var y = 7;
   var z = 3;
   var expectedTileURL = expectedTileURLTemplate.replace('{x}', x).replace('{y}', y).replace('{z}', z);
   var actualTileURL = layerGroupView.getTile({ x: x, y: y }, z).src;

@@ -43,6 +43,20 @@ shared_examples_for 'user table models' do
       end
     end
 
+    it 'defaults to public privacy for users without private tables' do
+      @user.stubs(:private_tables_enabled).returns(false)
+      ut = build_user_table(user: @user)
+      expect(ut.valid?).to be_true
+      expect(ut.privacy).to eq Carto::UserTable::PRIVACY_PUBLIC
+    end
+
+    it 'defaults to private privacy for users with private tables' do
+      @user.stubs(:private_tables_enabled).returns(true)
+      ut = build_user_table(user: @user)
+      expect(ut.valid?).to be_true
+      expect(ut.privacy).to eq Carto::UserTable::PRIVACY_PRIVATE
+    end
+
     it 'validates privacy option for user without private tables' do
       @user.stubs(:private_tables_enabled).returns(false)
       ut = build_user_table(user: @user, privacy: Carto::UserTable::PRIVACY_PUBLIC)

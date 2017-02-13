@@ -27,8 +27,16 @@ describe Carto::UserTable do
     end
   end
 
-  it 'sets privacy to nil by default' do
-    expect(Carto::UserTable.new.privacy).to be_nil
+  describe '#default_privacy' do
+    it 'sets privacy to nil by default' do
+      expect(Carto::UserTable.new.privacy).to be_nil
+    end
+
+    it 'lets caller specify privacy' do
+      [UserTable::PRIVACY_PRIVATE, UserTable::PRIVACY_LINK, UserTable::PRIVACY_PUBLIC].each do |privacy|
+        expect(Carto::UserTable.new(privacy: privacy).privacy).to eq privacy
+      end
+    end
   end
 
   describe '#readable_by?' do

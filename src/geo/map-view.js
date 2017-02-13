@@ -157,12 +157,12 @@ var MapView = View.extend({
 
   /** unbind model properties */
   _unbindModel: function () {
-    this.map.unbind('change:view_bounds_sw', null, this);
-    this.map.unbind('change:view_bounds_ne', null, this);
-    this.map.unbind('change:zoom', null, this);
-    this.map.unbind('change:scrollwheel', null, this);
-    this.map.unbind('change:keyboard', null, this);
-    this.map.unbind('change:center', null, this);
+    this.map.unbind('change:view_bounds_sw', this._changeBounds, this);
+    this.map.unbind('change:view_bounds_ne', this._changeBounds, this);
+    this.map.unbind('change:zoom', this._setZoom, this);
+    this.map.unbind('change:scrollwheel', this._setScrollWheel, this);
+    this.map.unbind('change:keyboard', this._setKeyboard, this);
+    this.map.unbind('change:center', this._setCenter, this);
     this.map.unbind('change:attribution', null, this);
   },
 

@@ -6,9 +6,9 @@ var LeafletLayerViewFactory = require('./leaflet-layer-view-factory');
 
 var LeafletMapView = MapView.extend({
   initialize: function () {
-    MapView.prototype.initialize.apply(this, arguments);
-
     _.bindAll(this, '_addLayer', '_removeLayer', '_setZoom', '_setCenter', '_setView');
+
+    MapView.prototype.initialize.apply(this, arguments);
   },
 
   _createNativeMap: function () {

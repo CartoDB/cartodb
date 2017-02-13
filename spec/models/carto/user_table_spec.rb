@@ -3,12 +3,14 @@ require_relative '../../spec_helper_min'
 require 'models/user_table_shared_examples'
 
 describe Carto::UserTable do
+  include UniqueNamesHelper
+
   before(:all) do
     bypass_named_maps
 
     @user = FactoryGirl.create(:carto_user)
     @carto_user = @user
-    @user_table = FactoryGirl.create(:carto_user_table, user: @user)
+    @user_table = Carto::UserTable.new(user: @user, name: unique_name('user_table'))
 
     # The dependent visualization models are in the UserTable class for the AR model
     @dependent_test_object = @user_table

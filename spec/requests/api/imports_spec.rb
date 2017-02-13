@@ -22,11 +22,7 @@ describe "Imports API" do
 
   it 'performs asynchronous imports' do
     f = upload_file('db/fake_data/column_number_to_boolean.csv', 'text/csv')
-    post api_v1_imports_create_url(
-      params.merge(:filename  => 'column_number_to_boolean.csv',
-                   :table_name => "wadus")),
-      f.read.force_encoding('UTF-8')
-
+    post api_v1_imports_create_url(params.merge(:table_name => "wadus")), filename: f
 
     response.code.should be == '200'
     response_json = JSON.parse(response.body)
@@ -57,9 +53,9 @@ describe "Imports API" do
 
     f = upload_file('db/fake_data/column_number_to_boolean.csv', 'text/csv')
     post api_v1_imports_create_url(
-      params.merge(:filename   => 'column_number_to_boolean.csv',
-                   :table_id   => @table.id,
-                   :append     => true)), f.read.force_encoding('UTF-8')
+      params.merge(:table_id   => @table.id,
+                   :append     => true)), f.read.force_encoding('UTF-8'),
+      filename: f
 
 
     response.code.should be == '200'

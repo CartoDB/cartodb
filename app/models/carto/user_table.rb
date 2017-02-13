@@ -14,7 +14,9 @@ module Carto
       PRIVACY_LINK => 'link'
     }.freeze
 
-    after_initialize :nullify_default_privacy
+    def self.column_defaults
+      super.merge("privacy" => nil)
+    end
 
     belongs_to :user
 
@@ -36,12 +38,6 @@ module Carto
     validates :name, exclusion: Carto::DB::Sanitize::RESERVED_TABLE_NAMES
     validates :privacy, inclusion: [PRIVACY_PRIVATE, PRIVACY_PUBLIC, PRIVACY_LINK].freeze
     validate :validate_privacy_changes
-
-    def nullify_default_privacy
-      # AR sets privacy = 0 (private) by default, taken from the DB. We want it to be `nil`
-      # so the `before_validation` hook sets an appropriate privacy based on the table owner
-      self.privacy = nil if new_record? && !privacy_changed?
-    end
 
     def geometry_types
       @geometry_types ||= table.geometry_types

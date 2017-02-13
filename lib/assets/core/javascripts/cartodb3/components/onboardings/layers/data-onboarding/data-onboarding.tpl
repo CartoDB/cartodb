@@ -49,7 +49,7 @@
       <p class="CDB-Text LayerOnboarding-headerTitle"><%- _t('data-onboarding.title')%></p>
 
       <p class="CDB-Text LayerOnboarding-description">
-        <%= _widow('data-onboarding.description')%>
+        <%= _t('data-onboarding.description')%>
       </p>
     </div>
 

@@ -53,7 +53,7 @@
   },
   "data-onboarding": {
     "title": "Welcome to layer view",
-    "description": "Edit, analyze, style and enhance your data with pop-ups and legends.",
+    "description": "Edit, analyze, style and enhance your data with pop-ups and&nbsp;legends.",
     "take-tour": "Take the tour",
     "edit-layer": "Edit layer",
     "layer-options": {
@@ -81,7 +81,7 @@
     "description": "Build reproducible workflows for analyzing and explaining your data. Analyses turn your maps into Location Intelligence apps.",
     "description-list": {
       "item1": "Different analyses can be chained",
-      "item2": "Analyses are dynamic. When the data changes, the analysis is refreshed.",
+      "item2": "Analyses are dynamic. When the data changes, the analysis is&nbsp;refreshed.",
       "item3": "The original data is not modified by the analysis workflow.",
       "item4": "Some analysis queries add calculated results to columns in your dataset."
     },

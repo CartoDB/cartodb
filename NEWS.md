@@ -43,6 +43,8 @@ Development
 * Updated ogr2ogr version to 2.1.2. To install or upgrade it in the system:
   * `sudo apt-get update`
   * `sudo apt-get install gdal2.1-static-bin`
+* Style with icons
+  * Removed Pin, and Simple icons (#11479)
 
 ### Bug fixes
 * Start using layers<->user_table cache in all places (#11303)

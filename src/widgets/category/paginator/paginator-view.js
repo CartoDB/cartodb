@@ -37,12 +37,14 @@ module.exports = cdb.core.View.extend({
     this.clearSubViews();
     this.$el.empty();
     var categoriesCount = this.dataviewModel.getCount();
+    var isMobile = 'ontouchstart' in window;
 
     if (categoriesCount > MINCATEGORIES) {
       var pages = Math.ceil(this.dataviewModel.getSize() / this.options.itemsPerPage);
       var template = this.options.template;
       this.$el.html(
         template({
+          showSearch: !isMobile,
           showPaginator: this.options.paginator,
           currentPage: this.model.get('page'),
           categoriesCount: categoriesCount,

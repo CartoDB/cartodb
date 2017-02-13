@@ -56,7 +56,7 @@ describe('geo/ui/legends/custom-choropleth/legend-view.js', function () {
 
     it('should render choropleth', function () {
       expect(this.legendView.$('.Legend-choropleth').length).toBe(1);
-      expect(this.legendView.$('h3').text()).toBe('Foo');
+      expect(this.legendView.$('h3').text()).toContain('Foo');
       expect(this.legendView.$('h3 ~ div p').length).toBe(2);
       expect(this.legendView.$('h3 ~ div p').length).toBe(2);
       expect(this.legendView.$('h3 ~ div p').eq(0).text()).toContain('low');

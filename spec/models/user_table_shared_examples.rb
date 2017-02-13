@@ -7,7 +7,8 @@ shared_examples_for 'user table models' do
     it 'validates that user is required' do
       ut = build_user_table
       expect(ut.valid?).to be_false
-      expect(ut.errors.keys).to include :user_id
+      # Error key is :user_id for Sequel, :user for AR
+      expect(ut.errors.keys & [:user, :user_id]).not_to be_empty
     end
 
     it 'validates that viewer user cannot modify tables' do

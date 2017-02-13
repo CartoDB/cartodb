@@ -930,6 +930,7 @@ div.cartodb-popup.v2 {
     }
   div.cartodb-popup-content-wrapper {
       background: $DarkGrey3;
+      padding: 16px;
   }
   div.cartodb-popup-tip-container:before {
     background: none;
@@ -1010,6 +1011,10 @@ div.cartodb-popup h4 {
   font-weight: normal;
   color: #787878;
 }
+
+div.cartodb-popup .jspContainer:after,  div.cartodb-popup .jspContainer:before{
+  display: none;
+  }
 
 
 div.cartodb-tooltip-content-wrapper {

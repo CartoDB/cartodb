@@ -483,10 +483,10 @@ module CartoDB
     #  - if the table is used in the only one visualization layer, the vis is removed
     # TODO: send a notification to the visualizations owner
     def check_related_visualizations(table)
-      dependent_visualizations = table.dependent_visualizations.to_a
-      non_dependent_visualizations = table.non_dependent_visualizations.to_a
+      fully_dependent_visualizations = table.fully_dependent_visualizations.to_a
+      partially_dependent_visualizations = table.partially_dependent_visualizations.to_a
       table_visualization = table.table_visualization
-      non_dependent_visualizations.each do |visualization|
+      partially_dependent_visualizations.each do |visualization|
         # check permissions, if the owner does not have permissions
         # to see the table the layers using this table are removed
         perm = visualization.permission
@@ -495,7 +495,7 @@ module CartoDB
         end
       end
 
-      dependent_visualizations.each do |visualization|
+      fully_dependent_visualizations.each do |visualization|
         # check permissions, if the owner does not have permissions
         # to see the table the visualization is removed
         perm = visualization.permission

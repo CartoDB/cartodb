@@ -286,9 +286,9 @@ defaults: &defaults
     asset_host: "//cartodb-libs.global.ssl.fastly.net/cartodbui"
   avatars:
     gravatar_enabled: true
-    base_url: 'example.com/avatars'
-    kinds: ['stars', 'mountains']
-    colors: ['red', 'blue']
+    base_url: '/assets/unversioned/images/avatars'
+    kinds: ['ghost', 'heart', 'marker', 'mountain', 'pacman', 'planet', 'star']
+    colors: ['green', 'orange', 'red', 'yellow']
   dropbox_api_key: ""
   gdrive:
     api_key: ""
@@ -644,6 +644,7 @@ defaults: &defaults
     sqlserver:
       enabled: false
       max_rows: 500000
+  enforce_non_empty_layer_css: false
 
 development:
   <<: *defaults
@@ -656,7 +657,6 @@ development:
     url_purge_command: 'url.purge'
     retries: 5
     timeout: 5
-  enforce_non_empty_layer_css: false
 
 test:
   <<: *defaults

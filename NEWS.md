@@ -29,6 +29,7 @@ Development
     views: [] # an array of paths were alternate view templates are located.
 ```
 * Snapshots (backend: #10928) allow to save and share map state.
+* Import API parameter: `collision_strategy`. Support for `skip` #11385.
 * Icon styling through in component (#11005)
 * Allow to set opacity for color ramps (#10952)
 * Added Fullstory integration, can be configured in app_config
@@ -56,6 +57,7 @@ Development
 * Fix color for "Other" category (#11078)
 * Custom errors for latitude/longitude out of bounds (#11060, #11048)
 * Fix timeseries widget height (#11077)
+* Improve speed of map name availability check, improves map creation and renaming times (#11435)
 * Fix redirection after logout for subdomainless URLs (#11361)
 * Fix scrollbar in carousel (#11061)
 * Restrict login from organization pages to organization users, and redirect to Central otherwise

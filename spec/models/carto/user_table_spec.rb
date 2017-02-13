@@ -21,8 +21,12 @@ describe Carto::UserTable do
 
   it_behaves_like 'user table models' do
     def build_user_table(attrs = {})
-      Carto::UserTable.new({ privacy: nil }.merge(attrs))
+      Carto::UserTable.new(attrs)
     end
+  end
+
+  it 'sets privacy to nil by default' do
+    expect(Carto::UserTable.new.privacy).to be_nil
   end
 
   describe '#readable_by?' do

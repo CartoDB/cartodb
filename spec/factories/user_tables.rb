@@ -9,7 +9,6 @@ FactoryGirl.define do
 
   factory :carto_user_table, class: Carto::UserTable do
     name { unique_name('user_table') }
-    privacy nil
 
     factory :private_user_table do
       privacy Carto::UserTable::PRIVACY_PRIVATE

@@ -71,6 +71,7 @@
     "jstify": "0.13.0",
     "load-grunt-tasks": "3.2.0",
     "open": "0.0.5",
+    "proxyquireify": "^3.2.1",
     "semistandard": "7.0.4",
     "source-map-support": "0.4.0",
     "uglify-js": "2.4.x",

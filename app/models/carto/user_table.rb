@@ -164,7 +164,7 @@ module Carto
     end
 
     def validate_user_not_viewer
-      errors.add(:user, "Viewer users can't create tables") if user && user.viewer
+      errors.add(:user, "Viewer users can't create tables") if user.try(:viewer)
     end
 
     def validate_privacy_changes

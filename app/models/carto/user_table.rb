@@ -13,6 +13,9 @@ module Carto
       PRIVACY_PUBLIC => 'public',
       PRIVACY_LINK => 'link'
     }.freeze
+    def new?
+      new_record?
+    end
 
     def self.column_defaults
       # AR sets privacy = 0 (private) by default, taken from the DB. We want it to be `nil`

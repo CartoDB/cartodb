@@ -168,21 +168,8 @@ module Carto
     end
 
     def validate_privacy_changes
-      unless user.try(:private_tables_enabled)
-        # If it's a new table and the user is trying to make it private
-        if new_record? && private?
-          errors.add(:privacy, 'unauthorized to create private tables')
-        end
-
-        # if the table exists, is private, but the owner no longer has private privileges
-        if !new_record? && private? && privacy_changed?
-          errors.add(:privacy, 'unauthorized to modify privacy status to private')
-        end
-
-        # cannot change any existing table to 'with link'
-        if !new_record? && public_with_link_only? && privacy_changed?
-          errors.add(:privacy, 'unauthorized to modify privacy status to public with link')
-        end
+      if !user.try(:private_tables_enabled) && !public? && (new_record? || privacy_changed?)
+        errors.add(:privacy, 'unauthorized to create private tables')
       end
     end
   end

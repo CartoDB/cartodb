@@ -26,14 +26,14 @@ module Carto
     has_many :layers_user_table
     has_many :layers, through: :layers_user_table
 
+    before_validation :set_default_table_privacy
+
     validates :user, presence: true
     validate :validate_user_not_viewer
     validates :name, uniqueness: { scope: :user_id }
     validates :name, exclusion: Carto::DB::Sanitize::RESERVED_TABLE_NAMES
     validates :privacy, inclusion: [PRIVACY_PRIVATE, PRIVACY_PUBLIC, PRIVACY_LINK].freeze
     validate :validate_privacy_changes
-
-    before_validation :set_default_table_privacy
 
     def geometry_types
       @geometry_types ||= table.geometry_types

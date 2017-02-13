@@ -3,7 +3,7 @@
 ActionDispatch::ParamsParser::DEFAULT_PARSERS.delete(Mime::XML)
 
 # Patches for Ruby 2.4
-if RUBY_VERSION >= "2.4.0"
+if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("2.4")
   # ActiveSupport dates, e.g: 3.days (fixed in Rails 5, and no sooner)
   class ActiveSupport::Duration
     def coerce(other)

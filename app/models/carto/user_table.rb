@@ -23,6 +23,8 @@ module Carto
       super.merge("privacy" => nil)
     end
 
+    attr_accessible :privacy, :tags, :description
+
     belongs_to :user
 
     belongs_to :map, inverse_of: :user_table
@@ -43,6 +45,8 @@ module Carto
     validates :name, exclusion: Carto::DB::Sanitize::RESERVED_TABLE_NAMES
     validates :privacy, inclusion: [PRIVACY_PRIVATE, PRIVACY_PUBLIC, PRIVACY_LINK].freeze
     validate :validate_privacy_changes
+
+    before_create { service.before_create }
 
     def geometry_types
       @geometry_types ||= table.geometry_types

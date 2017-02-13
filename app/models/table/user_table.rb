@@ -333,7 +333,7 @@ class UserTable < Sequel::Model
   def create_default_map_and_layers
     base_layer = ::ModelFactories::LayerFactory.get_default_base_layer(user)
 
-    self.map = ::ModelFactories::MapFactory.get_map(base_layer, user_id, id)
+    self.map = ::ModelFactories::MapFactory.get_map(base_layer, user.id, id)
     map.add_layer(base_layer)
 
     geometry_type = service.the_geom_type || 'geometry'

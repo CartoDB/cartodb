@@ -152,7 +152,7 @@ module Carto
     end
 
     def affected_visualizations
-      layers.map(&:visualization).uniq
+      layers.map(&:visualization).uniq.compact
     end
 
     def table

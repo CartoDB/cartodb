@@ -74,8 +74,8 @@ $sHighlightHeight: 64;
 
 .LayerOnboarding-body.is-step4 {
   right: 100%;
-  left: auto;
   bottom: 36px;
+  left: auto;
 }
 
 .LayerOnboarding--style .LayerOnboarding-body.is-step2 {
@@ -131,14 +131,14 @@ $sHighlightHeight: 64;
 
 .LayerOnboarding-headerText {
   width: $sBigDescriptionWidth;
+  margin-top: -12px;
+  margin-bottom: 16px;
   color: #FFF;
   font-size: 26px;
   line-height: 34px;
-  margin-top: -12px;
-  margin-bottom: 16px;
 }
 
-.LayerOnboarding-headerText.is-step4{
+.LayerOnboarding-headerText.is-step4 {
   width: 285px;
 }
 

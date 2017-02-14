@@ -116,7 +116,11 @@ module Carto
     end
 
     def privacy_text
-      PRIVACY_VALUES_TO_TEXTS[privacy].upcase
+      visualization_privacy.upcase
+    end
+
+    def visualization_privacy
+      PRIVACY_VALUES_TO_TEXTS[privacy]
     end
 
     def readable_by?(user)

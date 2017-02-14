@@ -47,6 +47,8 @@ Development
   * Removed Pin, and Simple icons (#11479)
 
 ### Bug fixes
+* Style with icons
+  * Reset icon on map when you remove that custom icon
 * Start using layers<->user_table cache in all places (#11303)
   * Run `cartodb:db:register_table_dependencies` rake to update caches for existing maps
 * Categories legend are now static (#10972)

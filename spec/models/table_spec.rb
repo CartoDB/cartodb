@@ -137,30 +137,26 @@ describe Table do
         table = create_table(name: "epaminondas_pantulis", user_id: @user.id)
         CartoDB::Visualization::Collection.new.fetch.to_a.length.should == visualizations + 1
 
-        default_map_values = {
-          zoom: 3,
-          bounding_box_sw: "[#{::Map::DEFAULT_OPTIONS[:bounding_box_sw][0]}, #{::Map::DEFAULT_OPTIONS[:bounding_box_sw][1]}]",
-          bounding_box_ne: "[#{::Map::DEFAULT_OPTIONS[:bounding_box_ne][0]}, #{::Map::DEFAULT_OPTIONS[:bounding_box_ne][1]}]",
-          provider: 'leaflet'
-        }
+        map = table.map
+        map.should be
+        map.zoom.should eq 3
+        map.bounding_box_sw.to_s.should eq "[#{::Map::DEFAULT_OPTIONS[:bounding_box_sw][0]}, #{::Map::DEFAULT_OPTIONS[:bounding_box_sw][1]}]"
+        map.bounding_box_ne.to_s.should eq "[#{::Map::DEFAULT_OPTIONS[:bounding_box_ne][0]}, #{::Map::DEFAULT_OPTIONS[:bounding_box_ne][1]}]"
+        map.provider.should eq 'leaflet'
+        map.layers.count.should == 2
+        map.layers.map(&:kind).should == ['tiled', 'carto']
+        map.data_layers.first.infowindow["fields"].should == []
+        map.data_layers.first.options["table_name"].should == "epaminondas_pantulis"
 
-        table.map.should be
-        attributes = table.map.respond_to?(:values) ? table.map.values : table.map.attributes
-        attributes.slice(:zoom, :bounding_box_sw, :bounding_box_ne, :provider).should == default_map_values
-        table.map.layers.count.should == 2
-        table.map.layers.map(&:kind).should == ['tiled', 'carto']
-        table.map.data_layers.first.infowindow["fields"].should == []
-        table.map.data_layers.first.options["table_name"].should == "epaminondas_pantulis"
-
-        table.map.layers[0].options["urlTemplate"].should == "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png"
-        table.map.layers[0].options["url"].should == "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png"
-        table.map.layers[0].options["subdomains"].should == "abcd"
-        table.map.layers[0].options["minZoom"].should == "0"
-        table.map.layers[0].options["maxZoom"].should == "18"
-        table.map.layers[0].options["name"].should == "Waduson"
-        table.map.layers[0].options["className"].should == "waduson"
-        table.map.layers[0].options["attribution"].should == "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"https://carto.com/attributions\">CARTO</a>"
-        table.map.layers[0].order.should == 0
+        map.layers[0].options["urlTemplate"].should == "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png"
+        map.layers[0].options["url"].should == "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png"
+        map.layers[0].options["subdomains"].should == "abcd"
+        map.layers[0].options["minZoom"].should == "0"
+        map.layers[0].options["maxZoom"].should == "18"
+        map.layers[0].options["name"].should == "Waduson"
+        map.layers[0].options["className"].should == "waduson"
+        map.layers[0].options["attribution"].should == "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"https://carto.com/attributions\">CARTO</a>"
+        map.layers[0].order.should == 0
 
         Cartodb.config[:basemaps] = old_basemap_config
       end
@@ -1719,8 +1715,7 @@ describe Table do
         resp.should == {:name => "_xmin", :type => "text", :cartodb_type => "string"}
       end
 
-      it "should add a cartodb_id serial column as primary key when importing a
-      file without a column with name cartodb_id" do
+      it "should add a cartodb_id serial column as primary key when importing a file without a column with name cartodb_id" do
         fixture       = fake_data_path("gadm4_export.csv")
         data_import   = create_import(@user, fixture)
         table         = data_import.table

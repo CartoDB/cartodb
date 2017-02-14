@@ -29,6 +29,10 @@ class Carto::Map < ActiveRecord::Base
     center:          [30, 0]
   }.freeze
 
+  serialize :bounding_box_sw, JSON
+  serialize :bounding_box_ne, JSON
+  serialize :center, JSON
+
   serialize :options, ::Carto::CartoJsonSerializer
   validates :options, carto_json_symbolizer: true
 

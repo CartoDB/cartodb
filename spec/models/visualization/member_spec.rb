@@ -224,7 +224,7 @@ describe Visualization::Member do
 
       before(:all) do
         @user = FactoryGirl.create(:carto_user)
-        @other_table = FactoryGirl.create(:carto_user_table)
+        @other_table = FactoryGirl.create(:carto_user_table, user: @user)
       end
 
       before(:each) do

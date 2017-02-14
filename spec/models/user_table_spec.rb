@@ -24,7 +24,11 @@ describe UserTable do
     @user.destroy
   end
 
-  it_behaves_like 'user table models'
+  it_behaves_like 'user table models' do
+    def build_user_table(attrs = {})
+      ::UserTable.new.set_all(attrs)
+    end
+  end
 
   context 'viewer users' do
     after(:each) do

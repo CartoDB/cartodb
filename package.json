@@ -24,12 +24,12 @@
   "dependencies": {
     "backbone": "1.2.3",
     "cartocolor": "4.0.0",
-    "cartodb.js": "CartoDB/cartodb.js#385-mobile-issues",
+    "cartodb.js": "CartoDB/cartodb.js#v4",
     "d3": "3.5.17",
     "d3-interpolate": "1.1.2",
     "jquery": "2.1.4",
     "moment": "2.10.6",
-    "perfect-scrollbar": "git://github.com/CartoDB/perfect-scrollbar.git#touchmove",
+    "perfect-scrollbar": "git://github.com/CartoDB/perfect-scrollbar.git#master",
     "tinycolor2": "1.4.1",
     "underscore": "1.8.3",
     "urijs": "1.17.1"

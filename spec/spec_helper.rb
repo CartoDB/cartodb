@@ -7,6 +7,11 @@ require 'helpers/unique_names_helper'
 # This file is copied to spec/ when you run 'rails generate rspec:install'
 ENV['RAILS_ENV'] ||= 'test'
 require File.expand_path('../../config/environment', __FILE__)
+
+# Needed because load order changes in Ruby 2.3+, related to https://github.com/rspec/rspec-rails/pull/1372
+# We can remove this if we upgrade to rspec 3+
+ActiveRecord.send(:remove_const, :TestFixtures)
+
 require 'rspec/rails'
 
 # Requires supporting ruby files with custom matchers and macros, etc,

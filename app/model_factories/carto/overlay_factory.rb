@@ -23,12 +23,12 @@ module Carto
       )
     end
 
-   def build_loader_overlay(order)
+    def build_loader_overlay(order)
       Carto::Overlay.new(
         order: order,
         type: 'loader',
         template: '<div class="loader" original-title=""></div>',
-        options: { display: true, x: 20, y: 150 },
+        options: { display: true, x: 20, y: 150 }
       )
     end
 
@@ -37,7 +37,7 @@ module Carto
         order: order,
         type: 'zoom',
         template: '<a href="#zoom_in" class="zoom_in">+</a> <a href="#zoom_out" class="zoom_out">-</a>',
-        options: { display: true, x: 20, y: 20 },
+        options: { display: true, x: 20, y: 20 }
       )
     end
 

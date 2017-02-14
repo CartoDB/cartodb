@@ -15,9 +15,7 @@
   border: 1px solid $cSecondaryLine;
   border-radius: $halfBaseSize;
   background: #FFF;
-  cursor: move;
-  cursor: -webkit-grab;
-  cursor: -moz-grab;
+  cursor: pointer;
 }
 .Editor-ListLayer-item.is-hidden {
   opacity: 0.64;
@@ -118,7 +116,6 @@
   width: 40px;
   height: 40px;
   border-radius: $baseSize / 2;
-  cursor: pointer;
 }
 .Editor-ListLayer-media.is-hidden {
   opacity: 0.24;

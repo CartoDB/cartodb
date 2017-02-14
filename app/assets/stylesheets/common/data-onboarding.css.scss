@@ -346,27 +346,27 @@ $styleSteps: (
   &.is-step4 {
     .LayerOnboarding-padTop {
       height: calc(100% - (64 + 16) * 1px);
-
-      &.has-timeSeries {
-        height: calc(100% - (64 + 151) * 1px); // 151 - XXXL time serie
-      }
-      &.has-timeSeries--animated {
-        height: calc(100% - (64 + 175) * 1px); // 175 - XXXL animated
-      }
     }
+    .LayerOnboarding-padTop.has-timeSeries {
+      height: calc(100% - (64 + 151) * 1px); // 151 - XXXL time serie
+    }
+    .LayerOnboarding-padTop.has-timeSeries--animated {
+      height: calc(100% - (64 + 175) * 1px); // 175 - XXXL animated
+    }
+
     .LayerOnboarding-padMiddle {
       height: 64px;
       background: transparent;
     }
+
     .LayerOnboarding-padBottom {
       height: 16px;
-
-      &.has-timeSeries {
-        height: 151px;
-      }
-      &.has-timeSeries--animated {
-        height: 175px;
-      }
+    }
+    .LayerOnboarding-padBottom.has-timeSeries {
+      height: 151px;
+    }
+    .LayerOnboarding-padBottom.has-timeSeries--animated {
+      height: 175px;
     }
 
     @media (max-width: $sViewport-xxl) {

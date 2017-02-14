@@ -790,6 +790,7 @@ module.exports = cdb.core.View.extend({
       .attr('class', 'Brush')
       .call(this.brush)
       .selectAll('rect')
+      .attr('class', 'ps-prevent-touchmove')
       .attr('y', 0)
       .attr('height', this.chartHeight())
       .on('mouseout', this._onMouseOut)

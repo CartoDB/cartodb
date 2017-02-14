@@ -34,6 +34,20 @@ describe "Imports API" do
     table.map.data_layers.first.options["table_name"].should == "column_number_to_boolean"
   end
 
+  it 'performs asynchronous imports (file parameter, used in API docs)' do
+    f = upload_file('db/fake_data/column_number_to_boolean.csv', 'text/csv')
+    post api_v1_imports_create_url(params.merge(table_name: "wadus")), file: f
+
+    response.code.should be == '200'
+    response_json = JSON.parse(response.body)
+
+    last_import = DataImport[response_json['item_queue_id']]
+    last_import.state.should be == 'complete'
+    table = UserTable[last_import.table_id]
+    table.name.should == "column_number_to_boolean"
+    table.map.data_layers.first.options["table_name"].should == "column_number_to_boolean"
+  end
+
   it 'performs asynchronous url imports' do
     CartoDB::Importer2::Downloader.any_instance.stubs(:validate_url!).returns(true)
     serve_file Rails.root.join('db/fake_data/clubbing.csv') do |url|

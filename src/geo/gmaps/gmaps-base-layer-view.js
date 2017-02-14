@@ -29,9 +29,13 @@ _.extend(
     },
 
     _updateNativeMapOptions: function () {
+      var styles = {};
+      try {
+        styles = JSON.parse(this.model.get('style'));
+      } catch (e) {}
       this.gmapsMap.setOptions({
         mapTypeId: GOOGLE_MAP_TYPE_IDS[this.model.get('baseType')],
-        styles: JSON.parse(this.model.get('style'))
+        styles: styles
       });
     }
   }

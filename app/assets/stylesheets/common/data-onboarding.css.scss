@@ -397,7 +397,7 @@ $styleSteps: (
         }
         &.has-timeSeries--animated {
           height: calc(100% - (64 + 151) * 1px); // 151 - XL animated
-        }        
+        }
         &.has-widgets {
           height: calc(100% - (64 + 216) * 1px);
 
@@ -415,7 +415,7 @@ $styleSteps: (
         }
         &.has-timeSeries--animated {
           height: calc(100% - (64 + 151) * 1px);
-        }        
+        }
         &.has-widgets {
           height: 216px;
 

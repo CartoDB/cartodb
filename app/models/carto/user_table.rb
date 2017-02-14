@@ -192,7 +192,12 @@ module Carto
     end
 
     def create_canonical_visualization
-      build_canonical_visualization(self).save!
+      visualization = build_canonical_visualization(self)
+      # INFO: workaround for array saves not working
+      tags = visualization.tags
+      visualization.tags = nil
+      visualization.save!
+      visualization.update_column(:tags, tags)
     end
   end
 end

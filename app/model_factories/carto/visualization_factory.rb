@@ -1,14 +1,17 @@
+require_dependency 'carto/uuidhelper'
+
 module Carto
   module VisualizationFactory
-    include LayerFactory
-    include OverlayFactory
+    include Carto::LayerFactory
+    include Carto::OverlayFactory
+    include Carto::UUIDHelper
 
     def build_canonical_visualization(user_table)
       kind = user_table.service.is_raster? ? Carto::Visualization::KIND_RASTER : Carto::Visualization::KIND_GEOM
       esv = user_table.external_source_visualization
       user = user_table.user
 
-      Carto::Visualization.new(
+      visualization = Carto::Visualization.new(
         name: user_table.name,
         map: build_canonical_map(user_table),
         type: Carto::Visualization::TYPE_CANONICAL,
@@ -21,6 +24,11 @@ module Carto
         kind: kind,
         overlays: build_default_overlays(user)
       )
+
+      # This should be done with a DB default
+      visualization.id = random_uuid
+
+      visualization
     end
 
     private

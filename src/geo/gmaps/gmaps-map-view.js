@@ -6,9 +6,9 @@ var GMapsLayerViewFactory = require('./gmaps-layer-view-factory');
 
 var GoogleMapsMapView = MapView.extend({
   initialize: function () {
-    MapView.prototype.initialize.apply(this, arguments);
     _.bindAll(this, '_ready');
     this._isReady = false;
+    MapView.prototype.initialize.apply(this, arguments);
   },
 
   _createNativeMap: function () {
@@ -68,6 +68,11 @@ var GoogleMapsMapView = MapView.extend({
     this.projector = new Projector(this._gmapsMap);
 
     this.projector.draw = this._ready;
+  },
+
+  clean: function () {
+    google.maps.event.clearInstanceListeners(window);
+    google.maps.event.clearInstanceListeners(document);
   },
 
   _getLayerViewFactory: function () {

@@ -14,6 +14,8 @@ module Carto
       PRIVACY_PUBLIC => 'public',
       PRIVACY_LINK => 'link'
     }.freeze
+
+    # For compatibility with Sequel model
     def new?
       new_record?
     end
@@ -198,6 +200,8 @@ module Carto
       visualization.tags = nil
       visualization.save!
       visualization.update_column(:tags, tags)
+
+      update_attribute(:map, visualization.map)
     end
   end
 end

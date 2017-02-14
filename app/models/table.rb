@@ -72,12 +72,16 @@ class Table
   def initialize(args = {})
     if args[:user_table].nil?
       # TODO: This won't work, you need to UserTable.new.set_fields(args, args.keys)
-      @user_table = Carto::UserTable.new(args)
+      @user_table = model_class.new(args)
     else
       @user_table = args[:user_table]
     end
     # TODO: this probably makes sense only if user_table is not passed as argument
     @user_table.set_service(self)
+  end
+
+  def model_class
+    ::UserTable
   end
 
   # forwardable does not work well with this one

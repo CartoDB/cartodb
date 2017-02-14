@@ -202,6 +202,7 @@ module Carto
       visualization.update_column(:tags, tags)
 
       update_attribute(:map, visualization.map)
+      visualization.map.set_default_boundaries!
     end
   end
 end

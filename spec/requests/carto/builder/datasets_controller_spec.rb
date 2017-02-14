@@ -7,9 +7,10 @@ describe Carto::Builder::DatasetsController do
     before(:all) do
       CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
       @user = FactoryGirl.build(:valid_user, builder_enabled: true).save
-      @table = FactoryGirl.create(:carto_user_table, user_id: @user.id)
-      @map = @table.map
-      @visualization = @table.map.visualization
+      @map = FactoryGirl.create(:carto_map, user_id: @user.id)
+      @table = FactoryGirl.create(:carto_user_table, user_id: @user.id, map_id: @map)
+      @visualization = FactoryGirl.create(:carto_visualization, type: Carto::Visualization::TYPE_CANONICAL,
+                                                                user_id: @user.id, name: @table.name, map_id: @map.id)
     end
 
     before(:each) do

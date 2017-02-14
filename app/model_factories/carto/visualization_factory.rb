@@ -22,7 +22,8 @@ module Carto
         privacy: user_table.visualization_privacy,
         user: user,
         kind: kind,
-        overlays: build_default_overlays(user)
+        overlays: build_default_overlays(user),
+        permission: Carto::Permission.new(owner: user, owner_username: user.username)
       )
 
       # This should be done with a DB default

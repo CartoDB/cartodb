@@ -4,6 +4,8 @@ require_relative '../../helpers/bounding_box_helper'
 require_relative './carto_json_serializer'
 
 module Carto::MapBoundaries
+  MAXIMUM_ZOOM = 18
+
   def set_default_boundaries!
     bounds = get_map_bounds
     set_boundaries(bounds)
@@ -74,7 +76,6 @@ class Carto::Map < ActiveRecord::Base
     provider:        'leaflet',
     center:          [30, 0]
   }.freeze
-  MAXIMUM_ZOOM = 18
 
   serialize :options, ::Carto::CartoJsonSerializer
   validates :options, carto_json_symbolizer: true

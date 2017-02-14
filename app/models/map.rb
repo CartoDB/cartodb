@@ -66,8 +66,6 @@ class Map < Sequel::Model
     center:          [30, 0]
   }
 
-  MAXIMUM_ZOOM = 18
-
   attr_accessor :table_id,
                 # Flag to detect if being destroyed by whom so invalidate_vizjson_varnish_cache skips it
                 :being_destroyed_by_vis_id

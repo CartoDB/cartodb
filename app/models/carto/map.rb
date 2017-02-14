@@ -198,7 +198,7 @@ class Carto::Map < ActiveRecord::Base
     longitude_size = bounds[:maxx] - bounds[:minx]
 
     # Don't touch zoom if the table is empty or has no bounds
-    return if longitude_size == 0 && latitude_size == 0
+    return if longitude_size.zero? && latitude_size.zero?
 
     zoom = -1 * ((Math.log([longitude_size, latitude_size].max) / Math.log(2)) - (Math.log(360) / Math.log(2)))
     zoom = [[zoom.round, 1].max, MAXIMUM_ZOOM].min

@@ -3,6 +3,7 @@ require_dependency 'carto/db/sanitize'
 
 module Carto
   class UserTable < ActiveRecord::Base
+    include Carto::VisualizationFactory
 
     PRIVACY_PRIVATE = 0
     PRIVACY_PUBLIC = 1
@@ -47,6 +48,8 @@ module Carto
     validate :validate_privacy_changes
 
     before_create { service.before_create }
+    after_create :create_canonical_visualization
+    after_create { service.after_create }
 
     def geometry_types
       @geometry_types ||= table.geometry_types
@@ -182,6 +185,10 @@ module Carto
       if !user.try(:private_tables_enabled) && !public? && (new_record? || privacy_changed?)
         errors.add(:privacy, 'unauthorized to create private tables')
       end
+    end
+
+    def create_canonical_visualization
+      build_canonical_visualization(self).save!
     end
   end
 end

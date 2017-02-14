@@ -82,6 +82,13 @@ div.map {
     }
   }
 
+div.cartodb-legend.custom ul li .bullet, div.cartodb-legend.category ul li .bullet, div.cartodb-legend.color ul li .bullet {
+    width: 7px;
+    height: 7px;
+    margin-right: 6px;
+}
+
+
   div.cartodb-legend-stack {
     &:hover {
       .reset {
@@ -110,10 +117,12 @@ div.map {
       border: solid 1px #666;
     }
   }
-  div.cartodb-legend.choropleth li.graph {
-    border: 1px solid $Black;
-    border-radius: 0;
-
+  div.cartodb-legend.choropleth {
+    padding: 12px;
+      li.graph {
+        border: 1px solid $Black;
+        border-radius: 0;
+    }
   }
 
   &.table { // TABLE'S MAP
@@ -566,19 +575,23 @@ div.map {
       position:relative;
       margin: 0;
       cursor: default;
+      padding: 12px;
+      font-family: Bloomberg_Prop_K;
 
       > .legend-title {
-        color: $Grey2;
+        color: $White;
         font-size: 13px;
         font-family: Bloomberg_Prop_K;
-        font-weight: normal;
+        text-transform: none;
       }
 
       > ul > li {
-        color: $Amber1;
+        color: $Grey2;
         font-weight: normal;
         font-family: Bloomberg_Prop_K;
-        font-size: 13px;
+        font-size: 11px; 
+        line-height: 8px;
+        text-transform: none;
       }
 
 
@@ -602,9 +615,6 @@ div.map {
   }
 
   div.cartodb-legend {
-    @include position(false, 0, 20px, false);
-    margin: 0 80px 0 0;
-
     .warning {
       text-transform: none;
       font-style:italic;

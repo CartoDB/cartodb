@@ -1,3 +1,5 @@
+// scss-lint:disable NestingDepth
+
 @import '../variables/mixins';
 @import '../variables/colors';
 @import '../variables/onboarding';
@@ -155,7 +157,7 @@ $sHighlightHeight: 64;
   width: $sBigDescriptionWidth;
 }
 
-.LayerOnboarding-description.is-step4{
+.LayerOnboarding-description.is-step4 {
   width: 285px;
 }
 
@@ -179,8 +181,8 @@ $sHighlightHeight: 64;
 }
 
 .LayerOnboarding-widgetsOverlay {
-  width: 16px;
   display: none;
+  width: 16px;
 
   &.has-widgets {
     width: 376px;
@@ -194,8 +196,8 @@ $sHighlightHeight: 64;
 .LayerOnboarding-padMiddle,
 .LayerOnboarding-padBottom {
   @include transition(height, 300ms, ease-in-out);
-  width: 100%;
   display: block;
+  width: 100%;
 }
 
 .LayerOnboarding-toolbarOverlay,
@@ -325,8 +327,8 @@ $styleSteps: (
 }
 
 .LayerOnboarding--data .LayerOnboarding-pads--right {
-  width: 136px;
   display: none;
+  width: 136px;
 
   &.is-step0,
   &.is-step1,

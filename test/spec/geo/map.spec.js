@@ -191,6 +191,26 @@ describe('core/geo/map', function () {
     ]);
   });
 
+  describe('Layer action methods', function () {
+    beforeEach(function () {
+      this.map.layers.add(new CartoDBLayer({}, { vis: this.vis }));
+      this.map.layers.add(new PlainLayer({}));
+    });
+
+    describe('.moveCartoDBLayer', function () {
+      it('should provide a way to move CartoDB layers', function () {
+        expect(this.map.moveCartoDBLayer).toBeDefined();
+      });
+
+      it('should trigger an event in order to notify other elements', function () {
+        var moveCartoDBLayer = jasmine.createSpy('moveCartoDBLayer', {});
+        this.map.on('cartodbLayerMoved', moveCartoDBLayer);
+        this.map.moveCartoDBLayer(0, 1);
+        expect(moveCartoDBLayer).toHaveBeenCalled();
+      });
+    });
+  });
+
   describe('Layer creation methods', function () {
     var testCases = [
       {

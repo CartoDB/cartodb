@@ -90,6 +90,13 @@ var Map = Model.extend({
 
   // PUBLIC API METHODS
 
+  moveCartoDBLayer: function (from, to) {
+    var layerMoved = this.layers.moveCartoDBLayer(from, to);
+    if (layerMoved) {
+      this.trigger('cartodbLayerMoved', {}, this);
+    }
+  },
+
   createCartoDBLayer: function (attrs, options) {
     this._checkProperties(attrs, ['sql|source', 'cartocss']);
     return this._addNewLayerModel('cartodb', attrs, options);

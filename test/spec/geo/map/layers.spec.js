@@ -148,4 +148,34 @@ describe('geo/map/layers', function () {
     expect(layer2.get('order')).toEqual(1);
     expect(layers.pluck('order')).toEqual([ 0, 1 ]);
   });
+
+  describe('.moveCartoDBLayer', function () {
+    beforeEach(function () {
+      layers.add(new PlainLayer({ name: 'Positron' }));
+      layers.add(new CartoDBLayer({ title: 'CARTO' }, { vis: this.vis }));
+    });
+
+    it('should move a layer from one position to other', function () {
+      var movedLayer = layers.moveCartoDBLayer(1, 0);
+      expect(layers.indexOf(movedLayer)).toBe(0);
+      expect(movedLayer.get('title')).toBe('CARTO');
+
+      layers.add(new CartoDBLayer({ title: 'CARTO 2' }, { vis: this.vis }));
+      movedLayer = layers.moveCartoDBLayer(2, 1);
+      expect(layers.indexOf(movedLayer)).toBe(1);
+      expect(movedLayer.get('title')).toBe('CARTO 2');
+    });
+
+    it('should not move anything if the position is the same', function () {
+      var movedLayer = layers.moveCartoDBLayer(1, 1);
+      expect(movedLayer).toBeFalsy();
+      expect(layers.at(1).get('title')).toBe('CARTO');
+    });
+
+    it('should not move the layer if it is not a CartoDB type', function () {
+      var movedLayer = layers.moveCartoDBLayer(0, 1);
+      expect(movedLayer).toBeFalsy();
+      expect(layers.at(1).get('title')).toBe('CARTO');
+    });
+  });
 });

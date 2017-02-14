@@ -199,6 +199,7 @@ var fakeVizJSON = function () {
 
 describe('vis/vis', function () {
   beforeEach(function () {
+    spyOn(Vis.prototype, 'reload').and.callThrough();
     this.vis = new Vis();
   });
 
@@ -221,21 +222,21 @@ describe('vis/vis', function () {
 
   describe('bindings to collection of layers', function () {
     beforeEach(function () {
-      spyOn(this.vis, 'reload').and.callFake(function (options) {
+      Vis.prototype.reload.and.callFake(function (options) {
         options && options.success && options.success();
       });
 
       this.vis.load(new VizJSON(fakeVizJSON()), {});
       this.vis.instantiateMap();
 
-      this.vis.reload.calls.reset();
+      Vis.prototype.reload.calls.reset();
     });
 
     describe('when layers are reset', function () {
       it('should reload the map', function () {
         this.vis.map.layers.reset([{ id: 'layer1' }]);
 
-        expect(this.vis.reload).toHaveBeenCalled();
+        expect(Vis.prototype.reload).toHaveBeenCalled();
       });
     });
 
@@ -246,7 +247,7 @@ describe('vis/vis', function () {
           type: 'CartoDB'
         });
 
-        expect(this.vis.reload).toHaveBeenCalledWith({
+        expect(Vis.prototype.reload).toHaveBeenCalledWith({
           sourceId: 'layer1'
         });
       });
@@ -257,7 +258,7 @@ describe('vis/vis', function () {
           type: 'torque'
         });
 
-        expect(this.vis.reload).toHaveBeenCalledWith({
+        expect(Vis.prototype.reload).toHaveBeenCalledWith({
           sourceId: 'layer1'
         });
       });
@@ -268,7 +269,7 @@ describe('vis/vis', function () {
           type: 'Tiled'
         });
 
-        expect(this.vis.reload).not.toHaveBeenCalled();
+        expect(Vis.prototype.reload).not.toHaveBeenCalled();
       });
     });
 
@@ -280,7 +281,7 @@ describe('vis/vis', function () {
         }, { silent: true });
         this.vis.map.layers.remove(layer);
 
-        expect(this.vis.reload).toHaveBeenCalledWith({
+        expect(Vis.prototype.reload).toHaveBeenCalledWith({
           sourceId: 'layer1'
         });
       });
@@ -292,19 +293,38 @@ describe('vis/vis', function () {
         }, { silent: true });
         this.vis.map.layers.remove(layer);
 
-        expect(this.vis.reload).toHaveBeenCalledWith({
+        expect(Vis.prototype.reload).toHaveBeenCalledWith({
           sourceId: 'layer1'
         });
       });
 
-      it('should NOT reload the map when a non CarotDB or Torque layer is removed', function () {
+      it('should NOT reload the map when a non CartoDB or Torque layer is removed', function () {
         var layer = this.vis.map.layers.add({
           id: 'layer1',
           type: 'Tiled'
         }, { silent: true });
         this.vis.map.layers.remove(layer);
 
-        expect(this.vis.reload).not.toHaveBeenCalled();
+        expect(Vis.prototype.reload).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('when layers are moved', function () {
+      beforeEach(function () {
+        this.vis.map.layers.add({
+          id: 'layer1',
+          type: 'Tiled'
+        }, { silent: true });
+        this.vis.map.layers.add({
+          id: 'layer2',
+          type: 'CartoDB'
+        }, { silent: true });
+      });
+
+      it('should reload the map', function () {
+        Vis.prototype.reload.calls.reset();
+        this.vis.map.moveCartoDBLayer(1, 0);
+        expect(Vis.prototype.reload.calls.count()).toBe(1);
       });
     });
   });
@@ -352,18 +372,18 @@ describe('vis/vis', function () {
   describe('.instantiateMap', function () {
     beforeEach(function () {
       this.vis.load(new VizJSON(fakeVizJSON()), {});
-      spyOn(this.vis, 'reload').and.callThrough();
+      Vis.prototype.reload.calls.reset();
     });
 
     it('should instantiate without filters if no filters', function () {
       this.vis._isAnyDataviewFiltered = function () {
         return false;
       };
-      this.vis.reload.calls.reset();
+      Vis.prototype.reload.calls.reset();
       this.vis.instantiateMap();
 
-      expect(this.vis.reload).toHaveBeenCalled();
-      expect(this.vis.reload.calls.mostRecent().args[0].includeFilters).toBe(false); // include filters
+      expect(Vis.prototype.reload).toHaveBeenCalled();
+      expect(Vis.prototype.reload.calls.mostRecent().args[0].includeFilters).toBe(false); // include filters
     });
 
     it('should instantiate twice if filters', function () {
@@ -371,12 +391,12 @@ describe('vis/vis', function () {
         return true;
       };
 
-      this.vis.reload.calls.reset();
+      Vis.prototype.reload.calls.reset();
       this.vis.instantiateMap();
-      this.vis.reload.calls.mostRecent().args[0].success();
+      Vis.prototype.reload.calls.mostRecent().args[0].success();
 
-      expect(this.vis.reload).toHaveBeenCalledTimes(2);
-      expect(this.vis.reload.calls.mostRecent().args[0].includeFilters).toBe(true); // include filters
+      expect(Vis.prototype.reload).toHaveBeenCalledTimes(2);
+      expect(Vis.prototype.reload.calls.mostRecent().args[0].includeFilters).toBe(true); // include filters
     });
   });
 
@@ -1016,10 +1036,9 @@ describe('vis/vis', function () {
       spyOn(_, 'debounce').and.callFake(function (func) { return function () { func.apply(this, arguments); }; });
 
       this.vis = new Vis();
-      spyOn(this.vis, 'reload');
       this.vis.load(new VizJSON(fakeVizJSON()));
       this.vis.instantiateMap();
-      this.vis.reload.calls.mostRecent().args[0].success();
+      Vis.prototype.reload.calls.mostRecent().args[0].success();
 
       layer = this.vis.map.layers.at(0);
       layer.getDataProvider = jasmine.createSpy('getDataProvider');
@@ -1036,9 +1055,9 @@ describe('vis/vis', function () {
 
     describe('when a dataview is added', function () {
       it('should reload the map', function () {
-        this.vis.reload.calls.reset();
+        Vis.prototype.reload.calls.reset();
         this.vis._dataviewsCollection.add(dataview);
-        expect(this.vis.reload).toHaveBeenCalled();
+        expect(Vis.prototype.reload).toHaveBeenCalled();
       });
     });
 
@@ -1049,9 +1068,9 @@ describe('vis/vis', function () {
         };
 
         this.vis._dataviewsCollection.add(dataview);
-        this.vis.reload.calls.reset();
+        Vis.prototype.reload.calls.reset();
         dataview.remove();
-        expect(this.vis.reload).toHaveBeenCalledTimes(1);
+        expect(Vis.prototype.reload).toHaveBeenCalledTimes(1);
       });
 
       it('should not reload the map if there is not a filter', function () {
@@ -1060,9 +1079,9 @@ describe('vis/vis', function () {
         };
 
         this.vis._dataviewsCollection.add(dataview);
-        this.vis.reload.calls.reset();
+        Vis.prototype.reload.calls.reset();
         dataview.remove();
-        expect(this.vis.reload).not.toHaveBeenCalled();
+        expect(Vis.prototype.reload).not.toHaveBeenCalled();
       });
     });
 

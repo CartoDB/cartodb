@@ -72,6 +72,26 @@ var Layers = Backbone.Collection.extend({
     return this.select(function (layerModel) {
       return !!layerModel.legends;
     });
+  },
+
+  moveCartoDBLayer: function (from, to) {
+    if (from === to) {
+      return false;
+    }
+
+    var movingLayer = this.at(from);
+
+    if (!movingLayer || movingLayer.get('type') !== CARTODB_LAYER_TYPE) {
+      return false;
+    }
+
+    this.remove(movingLayer, { silent: true });
+    this.add(movingLayer, {
+      at: to,
+      silent: true
+    });
+
+    return movingLayer;
   }
 });
 

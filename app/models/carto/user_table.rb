@@ -146,6 +146,10 @@ module Carto
       visualization.permission if visualization
     end
 
+    def external_source_visualization
+      data_import.try(:external_data_imports).try(:first).try(:external_source).try(:visualization)
+    end
+
     private
 
     def default_privacy_value

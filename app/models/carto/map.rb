@@ -23,15 +23,11 @@ class Carto::Map < ActiveRecord::Base
 
   DEFAULT_OPTIONS = {
     zoom:            3,
-    bounding_box_sw: [BoundingBoxHelper::DEFAULT_BOUNDS[:minlat], BoundingBoxHelper::DEFAULT_BOUNDS[:minlon]],
-    bounding_box_ne: [BoundingBoxHelper::DEFAULT_BOUNDS[:maxlat], BoundingBoxHelper::DEFAULT_BOUNDS[:maxlon]],
+    bounding_box_sw: [BoundingBoxHelper::DEFAULT_BOUNDS[:minlat], BoundingBoxHelper::DEFAULT_BOUNDS[:minlon]].to_s,
+    bounding_box_ne: [BoundingBoxHelper::DEFAULT_BOUNDS[:maxlat], BoundingBoxHelper::DEFAULT_BOUNDS[:maxlon]].to_s,
     provider:        'leaflet',
     center:          [30, 0]
   }.freeze
-
-  serialize :bounding_box_sw, JSON
-  serialize :bounding_box_ne, JSON
-  serialize :center, JSON
 
   serialize :options, ::Carto::CartoJsonSerializer
   validates :options, carto_json_symbolizer: true

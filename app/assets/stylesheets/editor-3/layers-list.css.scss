@@ -105,8 +105,18 @@
   left: -20px;
   opacity: 0;
 }
-.Editor-ListLayer-item:hover .Editor-ListLayer-dragIcon {
-  opacity: 1;
+.Editor-ListLayer-item:hover {
+  .Editor-ListLayer-dragIcon {
+    opacity: 1;
+  }
+
+  .Editor-ListLayer-titleText {
+    text-decoration: underline;
+
+    &.is-hover {
+      text-decoration: none;
+    }
+  }
 }
 
 .Editor-ListLayer-media {
@@ -135,7 +145,6 @@
   @include flex(1);
   width: 0;
   padding-right: $baseSize * 2;
-  cursor: pointer;
 }
 
 .Editor-ListAnalysis {
@@ -188,13 +197,6 @@
   display: block;
   margin-right: 0;
 }
-.Editor-ListAnalysis-item.ui-draggable .CDB-Shape, // override default cursor for shape
-.Editor-ListAnalysis-item.ui-draggable {
-   // scss-lint:disable VendorPrefix
-  cursor: move;
-  cursor: -webkit-grab;
-  cursor: -moz-grab;
-}
 .Editor-ListAnalysis-item.ui-draggable-dragging {
    // scss-lint:disable VendorPrefix
   width: 100%;
@@ -228,19 +230,19 @@
   padding-right: $baseSize;
   border: 1px solid $cSecondaryLine;
   border-radius: $halfBaseSize;
+
   &:hover {
     @include transition(border 200ms ease-in);
     border: 1px solid $cHoverLine;
-    cursor: pointer;
   }
 }
 .Editor-ListAnalysis-layer.is-base {
   background: $cThirdBackground;
+
   &:hover {
-    border: 1px solid $cSecondaryLine;
-    cursor: move;
-    cursor: -webkit-grab;
-    cursor: -moz-grab;
+    .Editor-ListAnalysis-itemInfoDataset {
+      text-decoration: underline;
+    }
   }
 }
 

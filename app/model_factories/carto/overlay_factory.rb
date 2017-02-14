@@ -50,7 +50,7 @@ module Carto
       )
     end
 
-    def build_search_overlay(member, order)
+    def build_search_overlay(order)
       Carto::Overlay.new(
         order: order,
         type: 'search',

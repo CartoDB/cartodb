@@ -52,8 +52,7 @@ describe "Imports API" do
     @table = FactoryGirl.create(:table, :user_id => @user.id)
 
     f = upload_file('db/fake_data/column_number_to_boolean.csv', 'text/csv')
-    post api_v1_imports_create_url(
-           params.merge(table_id: @table.id, append: true)),
+    post api_v1_imports_create_url(params.merge(table_id: @table.id, append: true)),
          f.read.force_encoding('UTF-8'),
          filename: f
 

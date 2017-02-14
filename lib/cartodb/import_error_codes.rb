@@ -119,6 +119,11 @@ module CartoDB
       what_about: "CARTO has not permission to access your files at Box. Please import file again.",
       source: ERROR_SOURCE_USER
     },
+    1022 => {
+      title: 'All tables were skipped',
+      what_about: "You set 'skip' collision strategy and all tables already exist, so nothing was imported.",
+      source: ERROR_SOURCE_USER
+    },
     1100 => {
       title: 'Download file not found',
       what_about: "Provided URL doesn't return a file (error 404). Please check that URL is still valid and that you can download the file and try again.",

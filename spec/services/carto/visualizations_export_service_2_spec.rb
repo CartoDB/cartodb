@@ -748,7 +748,7 @@ describe Carto::VisualizationsExportService2 do
 
       before(:all) do
         bypass_named_maps
-        @user = FactoryGirl.create(:carto_user, private_maps_enabled: true)
+        @user = FactoryGirl.create(:carto_user, private_maps_enabled: true, private_tables_enabled: true)
         @user2 = FactoryGirl.create(:carto_user, private_maps_enabled: true)
         @map, @table, @table_visualization, @visualization = create_full_visualization(@user)
         @analysis = FactoryGirl.create(:source_analysis, visualization: @visualization, user: @user)

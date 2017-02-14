@@ -45,21 +45,21 @@ class Table
   # @see config/initializers/carto_db.rb -> RESERVED_COLUMN_NAMES
   RESERVED_COLUMN_NAMES = %w(oid tableoid xmin cmin xmax cmax ctid ogc_fid).freeze
   PUBLIC_ATTRIBUTES = {
-      :id                           => :id,
-      :name                         => :name,
-      :privacy                      => :privacy_text,
-      :schema                       => :schema,
-      :updated_at                   => :updated_at,
-      :rows_counted                 => :rows_estimated,
-      :table_size                   => :table_size,
-      :map_id                       => :map_id,
-      :description                  => :description,
-      :geometry_types               => :geometry_types,
-      :table_visualization          => :table_visualization,
-      :dependent_visualizations     => :serialize_dependent_visualizations,
-      :non_dependent_visualizations => :serialize_non_dependent_visualizations,
-      :synchronization              => :serialize_synchronization
-  }
+    id:                           :id,
+    name:                         :name,
+    privacy:                      :privacy_text,
+    schema:                       :schema,
+    updated_at:                   :updated_at,
+    rows_counted:                 :rows_estimated,
+    table_size:                   :table_size,
+    map_id:                       :map_id,
+    description:                  :description,
+    geometry_types:               :geometry_types,
+    table_visualization:          :table_visualization,
+    dependent_visualizations:     :serialize_fully_dependent_visualizations,
+    non_dependent_visualizations: :serialize_partially_dependent_visualizations,
+    synchronization:              :serialize_synchronization
+  }.freeze
 
   DEFAULT_THE_GEOM_TYPE = 'geometry'
 
@@ -116,10 +116,6 @@ class Table
     attrs[:table_visualization] = CartoDB::Visualization::Presenter.new(self.table_visualization,
                                                       { real_privacy: true, user: viewer_user }.merge(options)).to_poro
     attrs
-  end
-
-  def default_privacy_value
-    self.owner.try(:private_tables_enabled) ? UserTable::PRIVACY_PRIVATE : UserTable::PRIVACY_PUBLIC
   end
 
   def geometry_types_key
@@ -233,37 +229,6 @@ class Table
   end
 
   ## Callbacks
-
-  # Core validation method that is automatically called before create and save
-  def validate
-    ## SANITY CHECKS
-    # TODO this should be fully moved to storage
-
-    # Branch if owner does not have private table privileges
-    unless self.owner.try(:private_tables_enabled)
-      # If it's a new table and the user is trying to make it private
-      if self.new? && @user_table.privacy == UserTable::PRIVACY_PRIVATE
-        @user_table.errors.add(:privacy, 'unauthorized to create private tables')
-      end
-
-      # if the table exists, is private, but the owner no longer has private privileges
-      if !self.new? && @user_table.privacy == UserTable::PRIVACY_PRIVATE && @user_table.changed_columns.include?(:privacy)
-        @user_table.errors.add(:privacy, 'unauthorized to modify privacy status to private')
-      end
-
-      # cannot change any existing table to 'with link'
-      if !self.new? && @user_table.privacy == UserTable::PRIVACY_LINK && @user_table.changed_columns.include?(:privacy)
-        @user_table.errors.add(:privacy, 'unauthorized to modify privacy status to pubic with link')
-      end
-
-    end
-  end
-
-  # runs before each validation phase on create and update
-  def before_validation
-    # ensure privacy variable is set to one of the constants. this is bad.
-    @user_table.privacy ||= (owner.try(:private_tables_enabled) ? UserTable::PRIVACY_PRIVATE : UserTable::PRIVACY_PUBLIC)
-  end
 
   def import_to_cartodb(uniname = nil)
     @data_import ||= DataImport.where(id: @user_table.data_import_id).first || DataImport.new(user_id: owner.id)
@@ -417,11 +382,7 @@ class Table
   end
 
   def after_create
-    self.create_default_map_and_layers
-    self.create_default_visualization
-
     grant_select_to_tiler_user
-    set_default_table_privacy
 
     @force_schema = nil
     self.new_table = true
@@ -519,56 +480,13 @@ class Table
     end
   end
 
-  def create_default_map_and_layers
-    base_layer = ::ModelFactories::LayerFactory.get_default_base_layer(owner)
-
-    map = ::ModelFactories::MapFactory.get_map(base_layer, user_id, id)
-    @user_table.map_id = map.id
-
-    map.add_layer(base_layer)
-
-    geometry_type = the_geom_type || 'geometry'
-    data_layer = ::ModelFactories::LayerFactory.get_default_data_layer(name, owner, geometry_type)
-
-    map.add_layer(data_layer)
-
-    if base_layer.supports_labels_layer?
-      labels_layer = ::ModelFactories::LayerFactory.get_default_labels_layer(base_layer)
-      map.add_layer(labels_layer)
-    end
-  end
-
-  def create_default_visualization
-    kind = is_raster? ? CartoDB::Visualization::Member::KIND_RASTER : CartoDB::Visualization::Member::KIND_GEOM
-
-    esv = external_source_visualization
-
-    member = CartoDB::Visualization::Member.new(
-      name:         self.name,
-      map_id:       self.map_id,
-      type:         CartoDB::Visualization::Member::TYPE_CANONICAL,
-      description:  @user_table.description,
-      attributions: esv.nil? ? nil : esv.attributions,
-      source:       esv.nil? ? nil : esv.source,
-      tags:         (@user_table.tags.split(',') if @user_table.tags),
-      privacy:      UserTable::PRIVACY_VALUES_TO_TEXTS[default_privacy_value],
-      user_id:      self.owner.id,
-      kind:         kind
-    )
-
-    member.store
-    member.map.set_default_boundaries!
-
-    CartoDB::Visualization::Overlays.new(member).create_default_overlays
-  end
-
   def before_destroy
     @table_visualization                = table_visualization
     if @table_visualization
       @table_visualization.user_data = { name: owner.username, api_key: owner.api_key }
     end
-    @dependent_visualizations_cache     = dependent_visualizations.to_a
-    @non_dependent_visualizations_cache = non_dependent_visualizations.to_a
+    @fully_dependent_visualizations_cache     = fully_dependent_visualizations.to_a
+    @partially_dependent_visualizations_cache = partially_dependent_visualizations.to_a
   end
 
   def after_destroy
@@ -578,8 +496,8 @@ class Table
     remove_table_from_stats
 
     cache.del geometry_types_key
-    @dependent_visualizations_cache.each(&:delete)
-    @non_dependent_visualizations_cache.each do |visualization|
+    @fully_dependent_visualizations_cache.each(&:delete)
+    @partially_dependent_visualizations_cache.each do |visualization|
       visualization.unlink_from(self)
     end
 
@@ -691,11 +609,6 @@ class Table
     end
 
     @user_table[:name] = new_name
-  end
-
-  def set_default_table_privacy
-    @user_table.privacy ||= default_privacy_value
-    save
   end
 
   def privacy_changed?
@@ -1419,12 +1332,7 @@ class Table
   end
 
   def external_source_visualization
-    @user_table.
-      try(:data_import).
-      try(:external_data_imports).
-      try(:first).
-      try(:external_source).
-      try(:visualization)
+    @user_table.try(:external_source_visualization)
   end
 
   def previous_privacy
@@ -1469,8 +1377,7 @@ class Table
     user_table_names = owner.tables.map(&:name)
 
     # We only want to check for UserTables names
-    Carto::ValidTableNameProposer.new(owner.id)
-                                 .propose_valid_table_name(contendent, taken_names: user_table_names)
+    Carto::ValidTableNameProposer.new.propose_valid_table_name(contendent, taken_names: user_table_names)
   end
 
   def self.sanitize_columns(table_name, options={})

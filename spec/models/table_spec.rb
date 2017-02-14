@@ -1944,58 +1944,60 @@ describe Table do
       user_mock.stubs(:database_name).returns(nil)
       user_mock.stubs(:over_table_quota?).returns(false)
       user_mock.stubs(:database_schema).returns('public')
+      user_mock.stubs(:viewer).returns(false)
 
       ::Table.any_instance.stubs(:get_valid_name).returns('test')
       ::Table.any_instance.stubs(:owner).returns(user_mock)
       ::Table.any_instance.stubs(:create_table_in_database!)
       ::Table.any_instance.stubs(:set_table_id).returns(table_id)
       ::Table.any_instance.stubs(:set_the_geom_column!).returns(true)
-      ::Table.any_instance.stubs(:after_create)
+      ::UserTable.any_instance.stubs(:after_create)
       ::Table.any_instance.stubs(:after_save)
       ::Table.any_instance.stubs(:cartodbfy)
       ::Table.any_instance.stubs(:schema)
       CartoDB::TablePrivacyManager.any_instance.stubs(:owner).returns(user_mock)
-      table = Table.new
 
       # A user who can create private tables has by default private tables
-      table.default_privacy_value.should eq ::UserTable::PRIVACY_PRIVATE
+      user_table = ::UserTable.new
+      user_table.stubs(:user).returns(user_mock)
+      user_table.send(:default_privacy_value).should eq ::UserTable::PRIVACY_PRIVATE
 
-      table.user_id = UUIDTools::UUID.timestamp_create.to_s
-      table.privacy = UserTable::PRIVACY_PUBLIC
-      table.name = 'test'
-      table.validate
-      table.errors.size.should eq 0
+      user_table.user_id = UUIDTools::UUID.timestamp_create.to_s
+      user_table.privacy = UserTable::PRIVACY_PUBLIC
+      user_table.name = 'test'
+      user_table.validate
+      user_table.errors.size.should eq 0
 
-      table.privacy = UserTable::PRIVACY_PRIVATE
-      table.validate
-      table.errors.size.should eq 0
+      user_table.privacy = UserTable::PRIVACY_PRIVATE
+      user_table.validate
+      user_table.errors.size.should eq 0
 
-      table.privacy = UserTable::PRIVACY_LINK
-      table.validate
-      table.errors.size.should eq 0
+      user_table.privacy = UserTable::PRIVACY_LINK
+      user_table.validate
+      user_table.errors.size.should eq 0
 
-      table.privacy = UserTable::PRIVACY_PUBLIC
+      user_table.privacy = UserTable::PRIVACY_PUBLIC
       user_mock.stubs(:private_tables_enabled).returns(false)
 
       # Anybody can "keep" a table being type link if it is new or hasn't changed (changed meaning had a previous privacy value)
-      table.privacy = UserTable::PRIVACY_LINK
-      table.validate
-      table.errors.size.should eq 0
+      user_table.privacy = UserTable::PRIVACY_LINK
+      user_table.validate
+      user_table.errors.size.should eq 0
 
       # Save so privacy changes instead of being "new"
-      table.privacy = UserTable::PRIVACY_PUBLIC
-      table.save
+      user_table.privacy = UserTable::PRIVACY_PUBLIC
+      user_table.save
 
-      table.privacy = UserTable::PRIVACY_LINK
-      table.validate
-      table.errors.size.should eq 1
-      expected_errors_hash = { privacy: ['unauthorized to modify privacy status to pubic with link'] }
-      table.errors.should eq expected_errors_hash
+      user_table.privacy = UserTable::PRIVACY_LINK
+      user_table.validate
+      user_table.errors.size.should eq 1
+      expected_errors_hash = { privacy: ['unauthorized to modify privacy status to public with link'] }
+      user_table.errors.should eq expected_errors_hash
 
-      table = Table.new
       # A user who cannot create private tables has by default public
-      table.default_privacy_value.should eq ::UserTable::PRIVACY_PUBLIC
-
+      user_table = ::UserTable.new
+      user_table.stubs(:user).returns(user_mock)
+      user_table.send(:default_privacy_value).should eq ::UserTable::PRIVACY_PUBLIC
     end
   end #validation_for_link_privacy
 
@@ -2201,14 +2203,6 @@ describe Table do
       rows[:rows][1][:cartodb_id].should eq cartodb_id_2
       rows[:rows][0][:description].should eq description_1
       rows[:rows][1][:description].should eq description_2
-    end
-  end
-
-  describe 'Valid names for new table' do
-    it 'Regression for CDB-3446' do
-      new_name = 'table_'
-
-      Carto::ValidTableNameProposer.new(@user.id).propose_valid_table_name(new_name).should_not == 'table_1'
     end
   end
 

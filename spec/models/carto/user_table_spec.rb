@@ -1,12 +1,19 @@
 # coding: UTF-8
 require_relative '../../spec_helper_min'
+require 'models/user_table_shared_examples'
 
 describe Carto::UserTable do
+  include UniqueNamesHelper
+
   before(:all) do
     bypass_named_maps
 
     @user = FactoryGirl.create(:carto_user)
-    @user_table = Carto::UserTable.create(user: @user, name: 'user_table')
+    @carto_user = @user
+    @user_table = Carto::UserTable.new(user: @user, name: unique_name('user_table'))
+
+    # The dependent visualization models are in the UserTable class for the AR model
+    @dependent_test_object = @user_table
   end
 
   after(:all) do
@@ -14,23 +21,22 @@ describe Carto::UserTable do
     @user.destroy
   end
 
-  describe '#estimated_row_count and #actual_row_count' do
-    it 'should query Table estimated an actual row count methods' do
-      ::Table.any_instance.stubs(:estimated_row_count).returns(999)
-      ::Table.any_instance.stubs(:actual_row_count).returns(1000)
-
-      @user_table.estimated_row_count.should == 999
-      @user_table.actual_row_count.should == 1000
+  it_behaves_like 'user table models' do
+    def build_user_table(attrs = {})
+      Carto::UserTable.new(attrs)
     end
   end
 
-  it 'should sync table_id with physical table oid' do
-    @user_table.table_id = nil
-    @user_table.save
+  describe '#default_privacy' do
+    it 'sets privacy to nil by default' do
+      expect(Carto::UserTable.new.privacy).to be_nil
+    end
 
-    @user_table.table_id.should be_nil
-
-    @user_table.sync_table_id.should eq @user_table.service.get_table_id
+    it 'lets caller specify privacy' do
+      [UserTable::PRIVACY_PRIVATE, UserTable::PRIVACY_LINK, UserTable::PRIVACY_PUBLIC].each do |privacy|
+        expect(Carto::UserTable.new(privacy: privacy).privacy).to eq privacy
+      end
+    end
   end
 
   describe '#readable_by?' do

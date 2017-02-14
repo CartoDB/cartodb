@@ -17,6 +17,11 @@
     "november": "November",
     "december": "December"
   },
+  "assets": {
+    "maki-icons": {
+      "disclaimer": "<a href='https://github.com/mapbox/maki' target='_blank'>Maki Icons</a>, an open source project by <a href='http://mapbox.com' target='_blank'>Mapbox</a>"
+    }
+  },
   "operators": {
     "count": "COUNT",
     "sum": "SUM",
@@ -735,13 +740,31 @@
           "add-people": "Add people"
         }
       },
+      "assets-picker": {
+        "browse": "Browse",
+        "delete-image": "Delete image",
+        "delete-images": "Delete images",
+        "deselect-all": "Deselect all",
+        "drag-and-drop": "Drag & drop your file",
+        "error-desc": "Please, go back and try again. If the problem persists contact us at <a href='mailto:support@carto.com'>support@carto.com</a>",
+        "go-back": "Go back",
+        "incorrect-url": "Error. Your URL doesn’t look correct.",
+        "loading": "Loading…",
+        "or": "or",
+        "select-all": "Select all",
+        "submit": "submit",
+        "upload-desc": "Paste a URL or select a file like JPG, GIF, PNG, SVG",
+        "upload-file-url": "Upload a file or a URL"
+      },
       "add-asset": {
+        "icons": "Icons",
+        "modal-desc": "or just use our nice selection",
         "modal-title": "Select marker image",
-        "modal-desc": "Upload your icons or just use our nice selection",
         "set-image": "Set image",
-        "your-uploads": "Your uploads",
-        "simple-icons": "Simple Icons",
-        "pin-icons": "Pin Icons"
+        "upload-file": "Upload file",
+        "upload-asset": "Upload asset",
+        "upload-image": "Upload your image",
+        "your-uploads": "Your uploads"
       },
       "add-analysis": {
         "modal-title": "Add a new analysis",
@@ -1178,7 +1201,7 @@
       "cancel": "Cancel",
       "confirm": "Ok, delete it",
       "desc": "The deleted dataset cannot be recovered, be sure before proceeding. We recommend you to export your dataset before deleting it.",
-      "error": "Error deleting %{tableName}",
+      "error": "Error deleting %{tableName}: %{error}",
       "loading": "Deleting your dataset %{tableName}...",
       "title": "You are about to delete the %{tableName} dataset",
       "affected-vis-count": "%{smart_count} map affected |||| %{smart_count} maps affected",
@@ -1379,7 +1402,7 @@
         "widgets": "one widget |||| %{smart_count} widgets",
         "analyses": "one analysis |||| %{smart_count} analyses",
         "layers": "one layer |||| %{smart_count} layers",
-        "affected-items": "Deleting this layer will affect to",
+        "affected-items": "Deleting this layer affects",
         "and": "and",
         "link-to-export": "Before deleting the layer, you can <a href='#' data-event='exportMapAction'>export as .CARTO file</a>"
       },

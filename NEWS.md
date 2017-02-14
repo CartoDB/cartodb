@@ -29,6 +29,7 @@ Development
     views: [] # an array of paths were alternate view templates are located.
 ```
 * Snapshots (backend: #10928) allow to save and share map state.
+* Import API parameter: `collision_strategy`. Support for `skip` #11385.
 * Icon styling through in component (#11005)
 * Allow to set opacity for color ramps (#10952)
 * Added Fullstory integration, can be configured in app_config
@@ -42,8 +43,13 @@ Development
 * Updated ogr2ogr version to 2.1.2. To install or upgrade it in the system:
   * `sudo apt-get update`
   * `sudo apt-get install gdal2.1-static-bin`
+* Style with icons
+  * Removed Pin, and Simple icons (#11479)
 
 ### Bug fixes
+* Style with icons
+  * Reset icon on map when you remove that custom icon
+  * Made icon's clicking area larger
 * Start using layers<->user_table cache in all places (#11303)
   * Run `cartodb:db:register_table_dependencies` rake to update caches for existing maps
 * Categories legend are now static (#10972)
@@ -56,6 +62,7 @@ Development
 * Fix color for "Other" category (#11078)
 * Custom errors for latitude/longitude out of bounds (#11060, #11048)
 * Fix timeseries widget height (#11077)
+* Improve speed of map name availability check, improves map creation and renaming times (#11435)
 * Fix redirection after logout for subdomainless URLs (#11361)
 * Fix scrollbar in carousel (#11061)
 * Restrict login from organization pages to organization users, and redirect to Central otherwise

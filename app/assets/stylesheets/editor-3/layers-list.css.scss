@@ -65,10 +65,6 @@
   border-color: $cSecondaryBackground;
   background: $cSecondaryBackground;
 }
-.Editor-ListLayer-item:hover {
-  @include transition(border 200ms ease-in);
-  border: 1px solid $cHoverLine;
-}
 .Editor-ListLayer-item.last-child {
   margin-bottom: 0;
 }
@@ -106,6 +102,9 @@
   opacity: 0;
 }
 .Editor-ListLayer-item:hover {
+  @include transition(border 200ms ease-in);
+  border: 1px solid $cHoverLine;
+
   .Editor-ListLayer-dragIcon {
     opacity: 1;
   }

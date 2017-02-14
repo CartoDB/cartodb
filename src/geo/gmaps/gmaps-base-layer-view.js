@@ -19,15 +19,16 @@ _.extend(
   GMapsBaseLayerView.prototype,
   GMapsLayerView.prototype, {
     addToMap: function () {
-      this.gmapsMap.setOptions({
-        mapTypeId: GOOGLE_MAP_TYPE_IDS[this.model.get('baseType')],
-        styles: this.model.get('style')
-      });
+      this._updateNativeMapOptions();
     },
 
     remove: function () { },
 
     _onModelUpdated: function () {
+      this._updateNativeMapOptions();
+    },
+
+    _updateNativeMapOptions: function () {
       this.gmapsMap.setOptions({
         mapTypeId: GOOGLE_MAP_TYPE_IDS[this.model.get('baseType')],
         styles: JSON.parse(this.model.get('style'))

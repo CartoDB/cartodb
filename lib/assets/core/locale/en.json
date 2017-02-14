@@ -18,15 +18,9 @@
     "december": "December"
   },
   "assets": {
-    "simple-icons": {
-      "disclaimer": "<a href='http://www.flaticon.com/packs/simpleicon-places/' target='_blank'>SimpleIcons Places</a>, icons by <a href='http://www.simpleicon.com' target='_blank'>simpleicon.com</a>"
-    },
     "maki-icons": {
       "disclaimer": "<a href='https://github.com/mapbox/maki' target='_blank'>Maki Icons</a>, an open source project by <a href='http://mapbox.com' target='_blank'>Mapbox</a>"
-    },
-      "pin-icons": {
-        "disclaimer": "<a href='http://www.flaticon.com/packs/pins-of-maps/' target='_blank'>Pin Maps</a>, icons by <a href='http://freepik.com' target='_blank'>freepik.com</a>"
-      }
+    }
   },
   "operators": {
     "count": "COUNT",
@@ -763,12 +757,10 @@
         "upload-file-url": "Upload a file or a URL"
       },
       "add-asset": {
-        "maki-icons": "Maki Icons",
+        "icons": "Icons",
         "modal-desc": "or just use our nice selection",
         "modal-title": "Select marker image",
-        "pin-icons": "Pin Icons",
         "set-image": "Set image",
-        "simple-icons": "Simple Icons",
         "upload-file": "Upload file",
         "upload-asset": "Upload asset",
         "upload-image": "Upload your image",
@@ -1411,7 +1403,7 @@
         "widgets": "one widget |||| %{smart_count} widgets",
         "analyses": "one analysis |||| %{smart_count} analyses",
         "layers": "one layer |||| %{smart_count} layers",
-        "affected-items": "Deleting this layer will affect to",
+        "affected-items": "Deleting this layer affects",
         "and": "and",
         "link-to-export": "Before deleting the layer, you can <a href='#' data-event='exportMapAction'>export as .CARTO file</a>"
       },

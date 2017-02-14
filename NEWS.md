@@ -43,8 +43,14 @@ Development
 * Updated ogr2ogr version to 2.1.2. To install or upgrade it in the system:
   * `sudo apt-get update`
   * `sudo apt-get install gdal2.1-static-bin`
+* Style with icons
+  * Removed Pin, and Simple icons (#11479)
+  * Select an icon previously uploaded by the organization admin (#11462)
 
 ### Bug fixes
+* Style with icons
+  * Reset icon on map when you remove that custom icon
+  * Made icon's clicking area larger
 * Start using layers<->user_table cache in all places (#11303)
   * Run `cartodb:db:register_table_dependencies` rake to update caches for existing maps
 * Categories legend are now static (#10972)

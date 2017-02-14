@@ -3,6 +3,7 @@
 require 'active_record'
 require_relative '../../lib/importer/namedplaces_guesser'
 require_relative '../../../../spec/rspec_configuration.rb'
+require_relative '../../../../spec/spec_helper_min'
 
 module CartoDB::Importer2
 

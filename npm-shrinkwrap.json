@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.5.145",
+  "version": "4.5.146",
   "dependencies": {
     "backbone": {
       "version": "1.2.3",
@@ -1189,9 +1189,9 @@
               }
             },
             "tangram.cartodb": {
-              "version": "0.2.5",
+              "version": "0.2.6",
               "from": "cartodb/tangram.cartodb#master",
-              "resolved": "git://github.com/cartodb/tangram.cartodb.git#6b4d6063d6649d18a9e3747c37fc65dad4d705f6",
+              "resolved": "git://github.com/cartodb/tangram.cartodb.git#eee4b9da0e027fc4159fe5caf442d09b26a4a190",
               "dependencies": {
                 "babel-runtime": {
                   "version": "6.18.0",
@@ -1598,9 +1598,9 @@
           "resolved": "https://registry.npmjs.org/d3/-/d3-3.5.17.tgz"
         },
         "tangram.cartodb": {
-          "version": "0.2.5",
+          "version": "0.2.6",
           "from": "cartodb/tangram.cartodb#master",
-          "resolved": "git://github.com/cartodb/tangram.cartodb.git#6b4d6063d6649d18a9e3747c37fc65dad4d705f6",
+          "resolved": "git://github.com/cartodb/tangram.cartodb.git#eee4b9da0e027fc4159fe5caf442d09b26a4a190",
           "dependencies": {
             "babel-runtime": {
               "version": "6.18.0",

@@ -4,6 +4,7 @@ require_relative '../../spec_helper'
 describe Carto::Map do
   before(:all) do
     @user = create_user
+    @carto_user = Carto::User.find(@user.id)
   end
 
   before(:each) do
@@ -73,6 +74,30 @@ describe Carto::Map do
     map.other_layers.map(&:id).should eq map_new.other_layers.map(&:id)
 
     map.destroy
+  end
+
+  describe '#update_dataset_dependencies' do
+    before(:all) do
+      @carto_layer = FactoryGirl.create(:carto_layer, kind: 'carto')
+      @torque_layer = FactoryGirl.create(:carto_layer, kind: 'torque')
+      @map = Carto::Map.create(user: @carto_user, layers: [@carto_layer, @torque_layer])
+    end
+
+    after(:all) do
+      @torque_layer.destroy
+      @carto_layer.destroy
+      @map.destroy
+    end
+
+    it 'updates dependencies of carto layers' do
+      @map.layers.select(&:carto?).first.expects(:register_table_dependencies).once
+      @map.update_dataset_dependencies
+    end
+
+    it 'updates dependencies of carto layers' do
+      @map.layers.select(&:torque?).first.expects(:register_table_dependencies).once
+      @map.update_dataset_dependencies
+    end
   end
 
 end

@@ -1639,7 +1639,7 @@
         "top-range": "Top range",
         "tracts": "Tracts",
         "tracts-help": "Number of AOIs evenly spaced between 0 and RADIUS",
-        "tune-analysis": "Tune your analysis",
+        "select-type": "Select data type",
         "tune-centroid": "Tune your centroid",
         "tune-clusters": "Tune your clusters",
         "units": "Units",

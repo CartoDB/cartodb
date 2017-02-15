@@ -603,6 +603,7 @@ div.cartodb-legend.custom ul li .bullet, div.cartodb-legend.category ul li .bull
 
   // animations
   .leaflet-control-attribution.leaflet-control,
+  .ol-cartodb-attribution,
   div.cartodb-legend,
   div.cartodb-legend-stack,
   div.cartodb-share,
@@ -814,6 +815,7 @@ div.cartodb-legend.custom ul li .bullet, div.cartodb-legend.category ul li .bull
     &.map.derived .cartodb-map {
 
       .leaflet-control-attribution.leaflet-control,
+      .ol-cartodb-attribution,
       div.cartodb-share,
       div.cartodb-layer-selector-box,
       div.cartodb-legend-stack,
@@ -844,6 +846,7 @@ div.cartodb-legend.custom ul li .bullet, div.cartodb-legend.category ul li .bull
     &.narrow.map.derived .cartodb-map {
 
       .leaflet-control-attribution.leaflet-control,
+      .ol-cartodb-attribution,
       div.cartodb-share,
       div.cartodb-share,
       div.cartodb-layer-selector-box,

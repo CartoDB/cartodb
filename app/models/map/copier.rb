@@ -75,7 +75,7 @@ module CartoDB
       attr_reader :map
 
       def data_layer_copies_from(map, user)
-        map.carto_and_torque_layers.map do |layer|
+        map.data_layers.map do |layer|
           new_layer = layer.copy
           new_layer.qualify_for_organization(map.user.username) if user.id != map.user.id
 

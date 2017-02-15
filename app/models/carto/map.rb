@@ -49,10 +49,6 @@ class Carto::Map < ActiveRecord::Base
     layers.select(&:user_layer?)
   end
 
-  def carto_and_torque_layers
-    layers.select { |layer| layer.carto? || layer.torque? }
-  end
-
   def torque_layers
     layers.select(&:torque?)
   end
@@ -155,7 +151,7 @@ class Carto::Map < ActiveRecord::Base
   end
 
   def can_add_layer?(user)
-    return false if user.max_layers && user.max_layers <= carto_and_torque_layers.count
+    return false if user.max_layers && user.max_layers <= data_layers.count
 
     visualization.writable_by?(user)
   end

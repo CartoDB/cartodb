@@ -11,13 +11,13 @@ module CartoDB
       LAYER_SCOPES = {
         base:             :user_layers,
         cartodb:          :carto_layers,
-        carto_and_torque: :carto_and_torque_layers,
+        data:             :data_layers,
         others:           :other_layers,
         named_map:        :named_maps_layers
       }.freeze
 
       INTERFACE = %w{ overlays user table related_templates related_tables related_canonical_visualizations
-                      layers stats mapviews total_mapviews carto_and_torque_layers synchronization is_synced? permission
+                      layers stats mapviews total_mapviews data_layers synchronization is_synced? permission
                       parent children support_tables prev_list_item next_list_item likes likes_count reload_likes
                       estimated_row_count actual_row_count }.freeze
 
@@ -96,7 +96,7 @@ module CartoDB
       end
 
       def related_tables
-        @related_tables ||= layers(:carto_and_torque).flat_map { |layer| layer.user_tables.map(&:service) }.uniq(&:id)
+        @related_tables ||= layers(:data).flat_map { |layer| layer.user_tables.map(&:service) }.uniq(&:id)
       end
 
       def related_canonical_visualizations
@@ -130,8 +130,8 @@ module CartoDB
         @total_mapviews ||= Visualization::Stats.new(self, user).total_mapviews
       end
 
-      def carto_and_torque_layers
-        layers(:carto_and_torque)
+      def data_layers
+        layers(:data)
       end
 
       def permission

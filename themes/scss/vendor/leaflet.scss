@@ -21,6 +21,7 @@
 	}
 .leaflet-container {
 	overflow: hidden;
+	touch-action: none; // Fix for Surface map pan (already fixed in Leaflet v1.0)
 	-ms-touch-action: none;
 	}
 .leaflet-tile,

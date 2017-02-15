@@ -723,24 +723,6 @@ namespace :cartodb do
       end
     end
 
-    desc 'Runs the specified CartoDB migration script'
-    task :migrate_to, [:version] => :environment do |t, args|
-      usage = 'usage: rake cartodb:db:migrate_to[version]'
-      raise usage if args[:version].blank?
-      require Rails.root.join 'lib/cartodb/generic_migrator.rb'
-
-      CartoDB::GenericMigrator.new(args[:version]).migrate!
-    end
-
-    desc 'Undo migration changes USE WITH CARE'
-    task :rollback_migration, [:version] => :environment do |t, args|
-      usage = 'usage: rake cartodb:db:rollback_migration[version]'
-      raise usage if args[:version].blank?
-      require Rails.root.join 'lib/cartodb/generic_migrator.rb'
-
-      CartoDB::GenericMigrator.new(args[:version]).rollback!
-    end
-
     desc 'Save users metadata in redis'
     task :save_users_metadata => :environment do
       ::User.all.each do |u|

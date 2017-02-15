@@ -45,6 +45,7 @@ Development
   * `sudo apt-get install gdal2.1-static-bin`
 * Style with icons
   * Removed Pin, and Simple icons (#11479)
+  * Sets the default initial size for icons to 20px (#11498)
 
 ### Bug fixes
 * Style with icons

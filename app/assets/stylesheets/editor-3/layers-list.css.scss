@@ -229,16 +229,12 @@
   padding-right: $baseSize;
   border: 1px solid $cSecondaryLine;
   border-radius: $halfBaseSize;
+  background: $cThirdBackground;
 
   &:hover {
     @include transition(border 200ms ease-in);
     border: 1px solid $cHoverLine;
-  }
-}
-.Editor-ListAnalysis-layer {
-  background: $cThirdBackground;
 
-  &:hover {
     .Editor-ListAnalysis-title,
     .Editor-ListAnalysis-itemInfoDataset {
       text-decoration: underline;

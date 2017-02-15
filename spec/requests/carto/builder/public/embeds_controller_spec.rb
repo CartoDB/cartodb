@@ -91,6 +91,24 @@ describe Carto::Builder::Public::EmbedsController do
       response.body.should include("var authTokens = JSON.parse('[]');")
     end
 
+    it 'does not include google maps if not configured' do
+      @user.google_maps_key = ''
+      @user.save
+      get builder_visualization_public_embed_url(visualization_id: @visualization.id, vector: true)
+
+      response.status.should == 200
+      response.body.should_not include("maps.google.com/maps/api/js")
+    end
+
+    it 'includes the google maps client id if configured' do
+      @user.google_maps_key = 'client=wadus_cid'
+      @user.save
+      get builder_visualization_public_embed_url(visualization_id: @visualization.id, vector: true)
+
+      response.status.should == 200
+      response.body.should include("maps.google.com/maps/api/js?client=wadus_cid")
+    end
+
     it 'does not embed password protected viz' do
       @visualization.privacy = Carto::Visualization::PRIVACY_PROTECTED
       @visualization.save
@@ -210,6 +228,16 @@ describe Carto::Builder::Public::EmbedsController do
         auth_tokens = @org_user_1.get_auth_tokens
         auth_tokens.count.should eq 2
         auth_tokens.each { |token| response.body.should include token }
+      end
+
+      it 'includes the organizations google maps client id if configured' do
+        @organization.google_maps_key = 'client=wadus_org_cid'
+        @organization.save
+        login_as(@org_user_1)
+        get builder_visualization_public_embed_url(visualization_id: @org_visualization.id, vector: true)
+
+        response.status.should == 200
+        response.body.should include("maps.google.com/maps/api/js?client=wadus_org_cid")
       end
     end
   end

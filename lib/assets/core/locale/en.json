@@ -1535,6 +1535,7 @@
           "select-country": "Select country column",
           "select-latitude": "Select a latitude column",
           "select-longitude": "Select a longitude column",
+          "select-postal-code": "Select a postal code column",
           "street-address": "Street Addresses"
         },
         "group-by": "Group by",

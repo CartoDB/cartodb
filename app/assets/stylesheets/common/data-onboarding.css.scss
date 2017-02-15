@@ -1,26 +1,22 @@
+// scss-lint:disable NestingDepth
+
 @import '../variables/mixins';
 @import '../variables/colors';
-@import '../variables/sizes';
 @import '../variables/onboarding';
 @import '../editor-3/vars';
 @import 'cdb-variables/colors';
 @import 'cdb-variables/sizes';
+@import '../variables/sizes';
 
 $sSmallDescriptionWidth: 200px;
 $sRegularDescriptionWidth: 445px;
 $sBigDescriptionWidth: 550px;
-$sWidgetsPadWidth: 378px;
-$cBackgroundColor: #2E3C43;
-
-// TODO: put variables to /variables/onboarding
-
 $sToolbarWidth: 72px;
 $sToolbarWidth-mediaXL: 48px;
 $sEditorWidth: 344px;
-$sWidgetsWidth: 368px;
-$sWidgetsWidth-mediaXXL: 296px;
+$cBackgroundColor: #2E3C43;
+$sHighlightHeight: 64;
 
-// TODO: put mixin to a common place
 @mixin setStepPad($step, $padHeights, $selector, $tab) {
   .#{$selector}.is-#{$step}.#{$selector}--#{$tab} {
     @each $position, $height in $padHeights {
@@ -38,7 +34,7 @@ $sWidgetsWidth-mediaXXL: 296px;
 }
 
 .LayerOnboarding-footer {
-  margin-top: $sMargin-section;
+  margin-top: $sMargin-group;
 }
 
 .LayerOnboarding-footerButtons {
@@ -57,6 +53,14 @@ $sWidgetsWidth-mediaXXL: 296px;
 .LayerOnboarding-contentWrapper--analysis {
   @include justify-content(center);
 }
+
+.LayerOnboarding-headerTitle {
+  margin-bottom: 22px;
+  color: #FFF;
+  font-size: 26px;
+  font-weight: $sFontWeight-lighter;
+}
+
 .LayerOnboarding-body {
   position: absolute;
   left: 100%;
@@ -70,8 +74,8 @@ $sWidgetsWidth-mediaXXL: 296px;
 
 .LayerOnboarding-body.is-step4 {
   right: 100%;
-  left: auto;
   bottom: 36px;
+  left: auto;
 }
 
 .LayerOnboarding--style .LayerOnboarding-body.is-step2 {
@@ -121,15 +125,21 @@ $sWidgetsWidth-mediaXXL: 296px;
   display: block;
 }
 
-.LayerOnboarding-list {
-  list-style-type: disc;
-  padding-left: 2em;
-  padding-top: 12px;
+.LayerOnboarding--analysis .LayerOnboarding-footer {
+  display: block;
 }
 
 .LayerOnboarding-headerText {
   width: $sBigDescriptionWidth;
-  line-height: 1.5em;
+  margin-top: -12px;
+  margin-bottom: 16px;
+  color: #FFF;
+  font-size: 26px;
+  line-height: 34px;
+}
+
+.LayerOnboarding-headerText.is-step4 {
+  width: 285px;
 }
 
 .LayerOnboarding-description {
@@ -145,6 +155,14 @@ $sWidgetsWidth-mediaXXL: 296px;
 .LayerOnboarding-description--analysis,
 .LayerOnboarding-description--style {
   width: $sBigDescriptionWidth;
+}
+
+.LayerOnboarding-description.is-step4 {
+  width: 285px;
+}
+
+.Onboarding-listItem .LayerOnboarding-description {
+  font-size: $sFontSize-large;
 }
 
 .LayerOnboarding-toolbarOverlay,
@@ -163,8 +181,12 @@ $sWidgetsWidth-mediaXXL: 296px;
 }
 
 .LayerOnboarding-widgetsOverlay {
-  width: $sWidgetsWidth;
   display: none;
+  width: 16px;
+
+  &.has-widgets {
+    width: 376px;
+  }
 }
 .LayerOnboarding-widgetsOverlay.is-step4 {
   display: block;
@@ -174,8 +196,8 @@ $sWidgetsWidth-mediaXXL: 296px;
 .LayerOnboarding-padMiddle,
 .LayerOnboarding-padBottom {
   @include transition(height, 300ms, ease-in-out);
-  width: 100%;
   display: block;
+  width: 100%;
 }
 
 .LayerOnboarding-toolbarOverlay,
@@ -220,21 +242,44 @@ $dataSteps: (
   )
 );
 
-$stylePointsSteps: (
+$stylePointsSimpleAggregationSteps: (
   step0: (
     Top: 0,
     Middle: 100%,
     Bottom: 0
   ),
   step1: (
-    Top: 136px, // 19 + 85 + 32
-    Middle: 173px, // 18 + 155
-    Bottom: calc(100% - (136 + 173) * 1px)
+    Top: 136px,
+    Middle: 141px,
+    Bottom: calc(100% - (136 + 141) * 1px)
   ),
   step2: (
-    Top: (136 + 173 - 32) * 1px,
-    Middle: 300px,
-    Bottom: calc(100% - (136 + 173 - 32 + 300) * 1px)
+    Top: (136 + 141) * 1px,
+    Middle: calc(100% - (136 + 141 + 66) * 1px),
+    Bottom: 66px
+  ),
+  step3: (
+    Top: calc(100% - 66px),
+    Middle: 66px,
+    Bottom: 0
+  )
+);
+
+$stylePointsDoubleAggregationSteps: (
+  step0: (
+    Top: 0,
+    Middle: 100%,
+    Bottom: 0
+  ),
+  step1: (
+    Top: 136px,
+    Middle: (275 + 32) * 1px,
+    Bottom: calc(100% - (136 + 275 + 32) * 1px)
+  ),
+  step2: (
+    Top: (136 + 275 + 32) * 1px,
+    Middle: calc(100% - (136 + 275 + 32 + 66) * 1px),
+    Bottom: 66px,
   ),
   step3: (
     Top: calc(100% - 66px),
@@ -265,8 +310,12 @@ $styleSteps: (
   @include setStepPad($step, $heights, 'LayerOnboarding', 'data');
 }
 
-@each $step, $heights in $stylePointsSteps {
-  @include setStepPad($step, $heights, 'LayerOnboarding', 'stylePoints');
+@each $step, $heights in $stylePointsSimpleAggregationSteps {
+  @include setStepPad($step, $heights, 'LayerOnboarding', 'stylePointsSimpleAggregation');
+}
+
+@each $step, $heights in $stylePointsDoubleAggregationSteps {
+  @include setStepPad($step, $heights, 'LayerOnboarding', 'stylePointsDoubleAggregation');
 }
 
 @each $step, $heights in $styleSteps {
@@ -278,8 +327,8 @@ $styleSteps: (
 }
 
 .LayerOnboarding--data .LayerOnboarding-pads--right {
-  width: 150px;
   display: none;
+  width: 136px;
 
   &.is-step0,
   &.is-step1,
@@ -298,45 +347,45 @@ $styleSteps: (
 
   &.is-step4 {
     .LayerOnboarding-padTop {
-      height: calc(100% - 100px);
-
-      &.has-timeSeries {
-        height: calc(100% - (100 + 143) * 1px); // 143 - XXXL time serie
-      }
-      &.has-timeSeries--animated {
-        height: calc(100% - (100 + 166) * 1px); // 166 - XXXL animated
-      }
+      height: calc(100% - (64 + 16) * 1px);
     }
+    .LayerOnboarding-padTop.has-timeSeries {
+      height: calc(100% - (64 + 151) * 1px); // 151 - XXXL time serie
+    }
+    .LayerOnboarding-padTop.has-timeSeries--animated {
+      height: calc(100% - (64 + 175) * 1px); // 175 - XXXL animated
+    }
+
     .LayerOnboarding-padMiddle {
-      height: 100px;
+      height: 64px;
       background: transparent;
     }
-    .LayerOnboarding-padBottom {
-      height: 0;
 
-      &.has-timeSeries {
-        height: 143px;
-      }
-      &.has-timeSeries--animated {
-        height: 166px;
-      }
+    .LayerOnboarding-padBottom {
+      height: 16px;
+    }
+    .LayerOnboarding-padBottom.has-timeSeries {
+      height: 151px;
+    }
+    .LayerOnboarding-padBottom.has-timeSeries--animated {
+      height: 175px;
     }
 
     @media (max-width: $sViewport-xxl) {
       .LayerOnboarding-padTop {
         &.has-timeSeries {
-          height: calc(100% - (100 + 127) * 1px); // 127 - XXL time serie
+          height: calc(100% - (64 + 135) * 1px); // 135 - XXL time serie
         }
         &.has-timeSeries--animated {
-          height: calc(100% - (100 + 150) * 1px); // 150 - XXL animated
+          height: calc(100% - (64 + 159) * 1px); // 159 - XXL animated
         }
       }
       .LayerOnboarding-padBottom {
         &.has-timeSeries {
-          height: calc(100% - (100 + 127) * 1px);
+          height: calc(100% - (64 + 135) * 1px);
         }
         &.has-timeSeries--animated {
-          height: calc(100% - (100 + 150) * 1px);
+          height: calc(100% - (64 + 159) * 1px);
         }
       }
     }
@@ -344,37 +393,37 @@ $styleSteps: (
     @media (max-width: $sViewport-xl) {
       .LayerOnboarding-padTop {
         &.has-timeSeries {
-          height: calc(100% - (100 + 119) * 1px); // 119 - XL time serie
+          height: calc(100% - (64 + 127) * 1px); // 127 - XL time serie
         }
         &.has-timeSeries--animated {
-          height: calc(100% - (100 + 142) * 1px); // 142 - XL animated
-        }        
+          height: calc(100% - (64 + 151) * 1px); // 151 - XL animated
+        }
         &.has-widgets {
-          height: calc(100% - (100 + 192) * 1px);
+          height: calc(100% - (64 + 216) * 1px);
 
           &.has-timeSeries {
-            height: calc(100% - (100 + 192 + 119) * 1px);
+            height: calc(100% - (64 + 335) * 1px);
           }
           &.has-timeSeries--animated {
-            height: calc(100% - (100 + 192 + 142) * 1px);
+            height: calc(100% - (64 + 359) * 1px);
           }
         }
       }
       .LayerOnboarding-padBottom {
         &.has-timeSeries {
-          height: calc(100% - (100 + 119) * 1px);
+          height: calc(100% - (64 + 127) * 1px);
         }
         &.has-timeSeries--animated {
-          height: calc(100% - (100 + 142) * 1px);
-        }        
+          height: calc(100% - (64 + 151) * 1px);
+        }
         &.has-widgets {
-          height: 192px;
+          height: 216px;
 
           &.has-timeSeries {
-            height: (192 + 119) * 1px;
+            height: 335px;
           }
           &.has-timeSeries--animated {
-            height: (192 + 142) * 1px;
+            height: 359px;
           }
         }
       }
@@ -395,8 +444,8 @@ $styleSteps: (
 }
 
 @media (max-width: $sViewport-xxl) {
-  .LayerOnboarding-widgetsOverlay {
-    width: $sWidgetsWidth-mediaXXL;
+  .LayerOnboarding-widgetsOverlay.has-widgets {
+    width: 304px;
   }
 }
 
@@ -406,6 +455,10 @@ $styleSteps: (
   }
 
   .LayerOnboarding-widgetsOverlay {
-    width: 0;
+    width: 8px;
+
+    &.has-widgets {
+      width: 8px;
+    }
   }
 }

@@ -46,6 +46,7 @@ Development
 * Style with icons
   * Removed Pin, and Simple icons (#11479)
   * Sets the default initial size for icons to 20px (#11498)
+* Onboarding for layer edition (#10905)
 
 ### Bug fixes
 * Style with icons

@@ -58,7 +58,7 @@
   },
   "data-onboarding": {
     "title": "Welcome to layer view",
-    "description": "Edit, analyze, style and enhance your data with pop-ups and legends.",
+    "description": "Edit, analyze, style and enhance your data with pop-ups and&nbsp;legends.",
     "take-tour": "Take the tour",
     "edit-layer": "Edit layer",
     "layer-options": {
@@ -86,13 +86,13 @@
     "description": "Build reproducible workflows for analyzing and explaining your data. Analyses turn your maps into Location Intelligence apps.",
     "description-list": {
       "item1": "Different analyses can be chained",
-      "item2": "Analyses are dynamic. When the data changes, the analysis is refreshed.",
+      "item2": "Analyses are dynamic. When the data changes, the analysis is&nbsp;refreshed.",
       "item3": "The original data is not modified by the analysis workflow.",
       "item4": "Some analysis queries add calculated results to columns in your dataset."
     },
     "done": "Done",
     "add-analysis": "Add analysis",
-    "never-show-message": "Never show me this message."
+    "never-show-message": "Don't show me this again."
   },
   "style-onboarding": {
     "title": "Style this map!",
@@ -112,7 +112,7 @@
     },
     "take-tour": "Take the tour",
     "style-layer": "Style layer",
-    "never-show-message": "Never show me this message.",
+    "never-show-message": "Don't show me this again.",
     "exit": "Exit tour",
     "next": "Next"
   },
@@ -127,7 +127,7 @@
     "finished": "has finished",
     "style-analysis": "Style this analysis",
     "read-more": "Read more in documentation",
-    "never-show-message": "Never show me this message.",
+    "never-show-message": "Don't show me this again.",
     "no-new-columns": "No new columns were created.",
     "geometries-updated": "The geometries in your table were updated",
     "new-column-added": "A new column has been added to your dataset.",

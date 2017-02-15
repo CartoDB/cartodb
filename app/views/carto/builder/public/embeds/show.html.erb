@@ -30,7 +30,7 @@
   <% end %>
 
   <% if @vizjson[:map_provider] == 'googlemaps' %>
-    <%= render(partial: 'shared/visualizations/google_maps') %>
+    <%= render(partial: 'shared/visualizations/google_maps', locals: { google_maps_qs: @google_maps_qs }) %>
   <% end %>
 
   <script>

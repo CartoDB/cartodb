@@ -33,10 +33,10 @@ var LeafletCartoDBWebglLayerGroupView = L.Class.extend({
 
   onAdd: function () {},
 
-  _onLayerAdded: function (layer) {
+  _onLayerAdded: function (layer, i) {
     var self = this;
     layer.bind('change:meta change:visible', function (e) {
-      self.tangram.addLayer(e.attributes);
+      self.tangram.addLayer(e.attributes, (i + 1));
     });
   },
 

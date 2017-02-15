@@ -257,15 +257,17 @@ var MapView = View.extend({
 
   _removeLayer: function (layerModel) {
     var layerView = this._layerViews[layerModel.cid];
-    if (layerModel.get('type') === 'CartoDB') {
-      if (this.map.layers.getCartoDBLayers().length === 0) {
+    if (layerView) {
+      if (layerModel.get('type') === 'CartoDB') {
+        if (this.map.layers.getCartoDBLayers().length === 0) {
+          layerView.remove();
+          this._cartoDBLayerGroupView = null;
+        }
+      } else {
         layerView.remove();
-        this._cartoDBLayerGroupView = null;
       }
-    } else {
-      layerView.remove();
+      delete this._layerViews[layerModel.cid];
     }
-    delete this._layerViews[layerModel.cid];
   },
 
   getLayerViewByLayerCid: function (cid) {

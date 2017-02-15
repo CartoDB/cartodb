@@ -28,7 +28,7 @@
   <% if params[:vector] %>
     <%= javascript_include_tag 'tangram.min.js' %>
   <% end %>
-  
+
   <% if current_user.google_maps_api_key %>
     <!-- include google maps library -->
     <script type='text/javascript' src="//maps.google.com/maps/api/js?key=<%= current_user.google_maps_api_key %>&v=3.25"></script>
@@ -39,6 +39,9 @@
     var layersData = <%= safe_js_object @layers_data.to_json %>;
     var stateJSON = <%= safe_js_object @state.to_json %>;
     var authTokens = <%= safe_js_object @auth_tokens.to_json %>;
+    <% if @google_maps_key %>
+      var googleMapsKey = <%= safe_js_object @google_maps_key.to_json %>;
+    <% end %>
   </script>
   <%= javascript_include_tag 'vendor_editor3.js' %>
   <%= javascript_include_tag 'common_editor3.js' %>
@@ -47,4 +50,3 @@
   <%= insert_trackjs('builder-embeds') %>
   <%= insert_google_analytics('embeds', true) %>
 <% end %>
-

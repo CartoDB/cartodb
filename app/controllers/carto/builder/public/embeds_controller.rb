@@ -15,6 +15,7 @@ module Carto
         before_filter :ensure_viewable, only: [:show]
         before_filter :ensure_protected_viewable, only: [:show_protected]
         before_filter :load_auth_tokens, only: [:show, :show_protected]
+        before_filter :load_google_maps_key, only: [:show, :show_protected]
 
         skip_before_filter :builder_users_only # This is supposed to be public even in beta
 
@@ -51,6 +52,10 @@ module Carto
                          elsif @visualization.is_privacy_private?
                            current_viewer ? current_viewer.get_auth_tokens : []
                          end
+        end
+
+        def load_google_maps_key
+          @google_maps_key = @visualization.user.google_maps_api_key
         end
 
         def load_vizjson

@@ -38,7 +38,7 @@ class Carto::Map < ActiveRecord::Base
   after_commit :force_notify_map_change
 
   def data_layers
-    layers.select(&:carto?)
+    layers.select(&:data_layer?)
   end
 
   def carto_layers

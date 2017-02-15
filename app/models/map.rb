@@ -27,7 +27,7 @@ class Map < Sequel::Model
   many_to_many :data_layers,
                clone: :layers,
                right_key: :layer_id,
-               conditions: { kind: "carto" }
+               conditions: "kind in ('carto', 'torque')"
 
   many_to_many :user_layers,
                clone: :layers,

@@ -77,6 +77,12 @@
   margin-right: -7px;
 }
 
+.CDB-Widget-content--histogram,
+.CDB-Widget-content--timeSeries {
+  touch-action: none;
+  -ms-touch-action: none;
+}
+
 
 // Widget media query
 @media (max-width: 1300px) {

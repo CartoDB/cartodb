@@ -19,6 +19,11 @@ class Map < Sequel::Model
                clone: :layers,
                right_key: :layer_id
 
+  many_to_many :carto_layers,
+               clone: :layers,
+               right_key: :layer_id,
+               conditions: { kind: "carto" }
+
   many_to_many :data_layers,
                clone: :layers,
                right_key: :layer_id,

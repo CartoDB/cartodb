@@ -238,6 +238,10 @@ class Carto::Visualization < ActiveRecord::Base
     map ? map.data_layers : []
   end
 
+  def carto_layers
+    map ? map.carto_layers : []
+  end
+
   def user_layers
     map ? map.user_layers : []
   end

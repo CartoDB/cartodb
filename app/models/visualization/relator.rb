@@ -10,7 +10,7 @@ module CartoDB
     class Relator
       LAYER_SCOPES = {
         base:             :user_layers,
-        cartodb:          :data_layers,
+        cartodb:          :carto_layers,
         carto_and_torque: :carto_and_torque_layers,
         others:           :other_layers,
         named_map:        :named_maps_layers

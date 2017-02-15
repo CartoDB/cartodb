@@ -41,6 +41,10 @@ class Carto::Map < ActiveRecord::Base
     layers.select(&:carto?)
   end
 
+  def carto_layers
+    layers.select(&:carto?)
+  end
+
   def user_layers
     layers.select(&:user_layer?)
   end

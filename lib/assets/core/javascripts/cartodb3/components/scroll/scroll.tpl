@@ -5,6 +5,6 @@
 <div class="Carousel-shadow Carousel-shadow--left js-leftShadow"></div>
 <div class="Carousel-shadow Carousel-shadow--right js-rightShadow"></div>
 <% } %>
-<div class="ScrollView-wrapper js-wrapper">
+<div class="ScrollView-wrapper js-wrapper js-perfect-scroll">
   <div class="ScrollView-content js-content"></div>
 </div>

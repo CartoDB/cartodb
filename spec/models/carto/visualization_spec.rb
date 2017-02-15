@@ -104,6 +104,7 @@ describe Carto::Visualization do
     include Carto::Factories::Visualizations
 
     it 'only returns tables that a user can read' do
+      @carto_user.update_attribute(:private_tables_enabled, true)
       map = FactoryGirl.create(:carto_map, user: @carto_user)
 
       private_table = FactoryGirl.create(:private_user_table, user: @carto_user)
@@ -168,12 +169,12 @@ describe Carto::Visualization do
 
     it 'returns private_tables_enabled for tables' do
       @visualization.type = 'table'
-      @visualization.can_be_private?.should eq @user.private_tables_enabled
+      @visualization.can_be_private?.should eq @carto_user.private_tables_enabled
     end
 
     it 'returns private_maps_enabled for maps' do
       @visualization.type = 'derived'
-      @visualization.can_be_private?.should eq @user.private_maps_enabled
+      @visualization.can_be_private?.should eq @carto_user.private_maps_enabled
     end
   end
 end

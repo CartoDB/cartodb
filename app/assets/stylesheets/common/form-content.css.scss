@@ -6,7 +6,6 @@
 // --------------------------------------------------
 
 $sLabel-width: 140px;
-
 .Form--minHeight { min-height: 400px }
 .Form-title {
   display: block;
@@ -40,6 +39,11 @@ $sLabel-width: 140px;
   font-size: 14px;
   font-weight: $sFontWeight-lighter;
   color: $cTypography-paragraphs;
+}
+.Form-modal {
+  @include justify-content(center);
+  @include align-items(center);
+  width: 100%;
 }
 .Form-row {
   @include display-flex();

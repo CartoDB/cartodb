@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.5.146",
+  "version": "4.5.147",
   "dependencies": {
     "backbone": {
       "version": "1.2.3",
@@ -1152,7 +1152,7 @@
         "cartodb.js": {
           "version": "4.0.0-alpha.1",
           "from": "cartodb/cartodb.js#switch-to-gmaps",
-          "resolved": "git://github.com/cartodb/cartodb.js.git#d66187920ac33ba83f1f7ee514a373251f51e69b",
+          "resolved": "git://github.com/cartodb/cartodb.js.git#a972a363a3f0e2d0def3479afa76e15aac122f94",
           "dependencies": {
             "backbone-poller": {
               "version": "1.1.3",

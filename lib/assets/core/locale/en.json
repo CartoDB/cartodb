@@ -1526,6 +1526,8 @@
           "country": "Countries",
           "enter-country-name": "Or enter country name",
           "enter-region-name": "Or enter region name",
+          "ip-address-column": "IP Address",
+          "ip-address-help": "In which column are your IP addresses stored?",
           "ip-address": "IP Addresses",
           "long-lat": "Longitude and Latitude",
           "postal-code": "Postal Codes",
@@ -1536,7 +1538,8 @@
           "select-latitude": "Select a latitude column",
           "select-longitude": "Select a longitude column",
           "select-postal-code": "Select a postal code column",
-          "street-address": "Street Addresses"
+          "street-address": "Street Addresses",
+          "select-ip": "Select an IP address column"
         },
         "group-by": "Group by",
         "hide": "Hide",
@@ -1546,8 +1549,6 @@
         "input-num": "Input #%{num}",
         "intact": "Intact",
         "intact-help": "Keep all polygon tracts as individual polygons",
-        "ip-address": "Col. IP AD.",
-        "ip-address-help": "In which column are your IP addresses stored?",
         "join-type": "Join Type",
         "keep-columns": "Select the columns you want to keep",
         "key-columns": "Key columns",

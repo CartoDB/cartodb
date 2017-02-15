@@ -88,7 +88,7 @@ describe Carto::Builder::Public::EmbedsController do
       get builder_visualization_public_embed_url(visualization_id: @visualization.id, vector: true)
 
       response.status.should == 200
-      response.body.should include("var authTokens = JSON.parse('null');")
+      response.body.should include("var authTokens = JSON.parse('[]');")
     end
 
     it 'does not embed password protected viz' do

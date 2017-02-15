@@ -235,10 +235,11 @@
     border: 1px solid $cHoverLine;
   }
 }
-.Editor-ListAnalysis-layer.is-base {
+.Editor-ListAnalysis-layer {
   background: $cThirdBackground;
 
   &:hover {
+    .Editor-ListAnalysis-title,
     .Editor-ListAnalysis-itemInfoDataset {
       text-decoration: underline;
     }

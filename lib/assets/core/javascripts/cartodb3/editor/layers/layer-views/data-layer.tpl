@@ -50,13 +50,6 @@
             <% } %>
           </li>
         <% } %>
-        <% if (queryGeometryHasGeom) { %>
-          <li class="Editor-HeaderInfo-actionsItem CDB-Shape">
-            <button class="js-style">
-              <i class="CDB-IconFont CDB-IconFont-drop u-actionTextColor"></i>
-            </button>
-          </li>
-        <% } %>
         <li class="Editor-HeaderInfo-actionsItem CDB-Shape">
           <button class="js-toggle">
             <% if (isVisible) { %>

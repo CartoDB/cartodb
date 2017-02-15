@@ -16,6 +16,23 @@
   border-radius: $halfBaseSize;
   background: #FFF;
   cursor: pointer;
+
+  &:hover {
+    @include transition(border 200ms ease-in);
+    border: 1px solid $cHoverLine;
+
+    .Editor-ListLayer-dragIcon {
+      opacity: 1;
+    }
+
+    .Editor-ListLayer-titleText {
+      text-decoration: underline;
+
+      &.is-hover {
+        text-decoration: none;
+      }
+    }
+  }
 }
 .Editor-ListLayer-item.is-hidden {
   opacity: 0.64;
@@ -101,23 +118,6 @@
   left: -20px;
   opacity: 0;
 }
-.Editor-ListLayer-item:hover {
-  @include transition(border 200ms ease-in);
-  border: 1px solid $cHoverLine;
-
-  .Editor-ListLayer-dragIcon {
-    opacity: 1;
-  }
-
-  .Editor-ListLayer-titleText {
-    text-decoration: underline;
-
-    &.is-hover {
-      text-decoration: none;
-    }
-  }
-}
-
 .Editor-ListLayer-media {
   @include display-flex();
   @include align-items(center);

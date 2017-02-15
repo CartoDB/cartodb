@@ -110,6 +110,8 @@
   .CDB-Widget-content--timeSeries {
     width: 100%;
     margin-top: 0; // override default
+    touch-action: none;
+    -ms-touch-action: none;
   }
   .CDB-Widget {
     width: auto;
@@ -130,6 +132,8 @@
   }
   .CDB-Widget-content--histogram {
     min-width: 232px;
+    touch-action: none;
+    -ms-touch-action: none;
   }
   .CDB-Widget-content--formula {
     min-width: 180px;

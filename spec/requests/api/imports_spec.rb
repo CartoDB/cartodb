@@ -22,11 +22,21 @@ describe "Imports API" do
 
   it 'performs asynchronous imports' do
     f = upload_file('db/fake_data/column_number_to_boolean.csv', 'text/csv')
-    post api_v1_imports_create_url(
-      params.merge(:filename  => 'column_number_to_boolean.csv',
-                   :table_name => "wadus")),
-      f.read.force_encoding('UTF-8')
+    post api_v1_imports_create_url(params.merge(table_name: "wadus")), filename: f
 
+    response.code.should be == '200'
+    response_json = JSON.parse(response.body)
+
+    last_import = DataImport[response_json['item_queue_id']]
+    last_import.state.should be == 'complete'
+    table = UserTable[last_import.table_id]
+    table.name.should == "column_number_to_boolean"
+    table.map.data_layers.first.options["table_name"].should == "column_number_to_boolean"
+  end
+
+  it 'performs asynchronous imports (file parameter, used in API docs)' do
+    f = upload_file('db/fake_data/column_number_to_boolean.csv', 'text/csv')
+    post api_v1_imports_create_url(params.merge(table_name: "wadus")), file: f
 
     response.code.should be == '200'
     response_json = JSON.parse(response.body)
@@ -56,11 +66,9 @@ describe "Imports API" do
     @table = FactoryGirl.create(:table, :user_id => @user.id)
 
     f = upload_file('db/fake_data/column_number_to_boolean.csv', 'text/csv')
-    post api_v1_imports_create_url(
-      params.merge(:filename   => 'column_number_to_boolean.csv',
-                   :table_id   => @table.id,
-                   :append     => true)), f.read.force_encoding('UTF-8')
-
+    post api_v1_imports_create_url(params.merge(table_id: @table.id, append: true)),
+         f.read.force_encoding('UTF-8'),
+         filename: f
 
     response.code.should be == '200'
     response_json = JSON.parse(response.body)

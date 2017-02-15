@@ -40,8 +40,8 @@ describe Carto::Map do
     base_layers_count = map.base_layers.count
     base_layers_count.should eq 9
 
-    data_layers_count = map.data_layers.count
-    data_layers_count.should eq 5
+    carto_layers_count = map.carto_layers.count
+    carto_layers_count.should eq 5
 
     user_layers_count = map.user_layers.count
     user_layers_count.should eq 3
@@ -59,7 +59,7 @@ describe Carto::Map do
 
     layers_count.should eq map_new.layers.count
     base_layers_count.should eq map_new.base_layers.count
-    data_layers_count.should eq map_new.data_layers.count
+    carto_layers_count.should eq map_new.carto_layers.count
     user_layers_count.should eq map_new.user_layers.count
     carto_and_torque_layers_count.should eq map_new.data_layers.count
     torque_layers_count.should eq map_new.torque_layers.count

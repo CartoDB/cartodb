@@ -45,6 +45,7 @@ Development
   * `sudo apt-get install gdal2.1-static-bin`
 * Style with icons
   * Removed Pin, and Simple icons (#11479)
+* Onboarding for layer edition (#10905)
 
 ### Bug fixes
 * Style with icons

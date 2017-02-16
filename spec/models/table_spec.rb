@@ -143,6 +143,7 @@ describe Table do
         map.zoom.should eq 3
         map.bounding_box_sw.should eq "[#{::Map::DEFAULT_OPTIONS[:bounding_box_sw][0]}, #{::Map::DEFAULT_OPTIONS[:bounding_box_sw][1]}]"
         map.bounding_box_ne.should eq "[#{::Map::DEFAULT_OPTIONS[:bounding_box_ne][0]}, #{::Map::DEFAULT_OPTIONS[:bounding_box_ne][1]}]"
+        map.center.should eq "[0.0,0.0]"
         map.provider.should eq 'leaflet'
         map.layers.count.should == 2
         map.layers.map(&:kind).should == ['tiled', 'carto']

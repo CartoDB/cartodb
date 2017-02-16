@@ -163,22 +163,6 @@ module Carto
           end
         end
 
-        it 'should reject more that Legend:MAX_LEGENDS_PER_LAYER legends per layer' do
-          Legend::MAX_LEGENDS_PER_LAYER.times do
-            post_json create_legend_url, custom_legend_payload do |response|
-              response.status.should eq 201
-
-              legend_is_correct(response.body)
-            end
-          end
-
-          post_json create_legend_url, custom_legend_payload do |response|
-            response.status.should eq 422
-
-            response.body[:errors].should include('Maximum number of legends per layer reached')
-          end
-        end
-
         it 'should return a validation errors' do
           post_json create_legend_url, {} do |response|
             response.status.should eq 422
@@ -383,6 +367,22 @@ module Carto
         end
 
         describe 'multiple legends per layer' do
+          it 'should reject more that Legend:MAX_LEGENDS_PER_LAYER legends per layer' do
+            Legend::MAX_LEGENDS_PER_LAYER.times do
+              post_json create_legend_url, custom_legend_payload do |response|
+                response.status.should eq 201
+
+                legend_is_correct(response.body)
+              end
+            end
+
+            post_json create_legend_url, custom_legend_payload do |response|
+              response.status.should eq 422
+
+              response.body[:errors].should include('Maximum number of legends per layer reached')
+            end
+          end
+
           it 'can create a color layer and a size layer' do
             post_json create_legend_url, category_legend_payload do |response|
               response.status.should eq 201

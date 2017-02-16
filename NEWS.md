@@ -49,6 +49,7 @@ Development
 * Onboarding for layer edition (#10905)
 
 ### Bug fixes
+* Fixed problem found in Surfaces related with map panning and widgets filtering
 * Style with icons
   * Reset icon on map when you remove that custom icon
   * Made icon's clicking area larger

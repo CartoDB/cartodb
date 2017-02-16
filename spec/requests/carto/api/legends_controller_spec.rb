@@ -138,7 +138,7 @@ module Carto
       end
 
       describe '#create' do
-        before(:each) { @layer.reload.legends.map(&:destroy) }
+        after(:each) { @layer.reload.legends.map(&:destroy) }
 
         def create_lengend_url(user: @user, visualization: @visualization, layer: @layer)
           legends_url(user_domain: user.subdomain,
@@ -379,6 +379,38 @@ module Carto
           post_json url, {} do |response|
             response.status.should eq 404
             response.body[:errors].should include('Visualization not found')
+          end
+        end
+
+        describe 'multiple legends per layer' do
+          it 'can create a color layer and a size layer' do
+            post_json create_lengend_url, category_legend_payload do |response|
+              response.status.should eq 201
+            end
+
+            post_json create_lengend_url, bubble_legend_payload do |response|
+              response.status.should eq 201
+            end
+          end
+
+          it 'cannot create two color layers' do
+            post_json create_lengend_url, category_legend_payload do |response|
+              response.status.should eq 201
+            end
+
+            post_json create_lengend_url, custom_legend_payload do |response|
+              response.status.should eq 422
+            end
+          end
+
+          it 'cannot create two size layers' do
+            post_json create_lengend_url, bubble_legend_payload do |response|
+              response.status.should eq 201
+            end
+
+            post_json create_lengend_url, bubble_legend_payload do |response|
+              response.status.should eq 422
+            end
           end
         end
       end

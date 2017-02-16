@@ -46,8 +46,10 @@ Development
 * Style with icons
   * Removed Pin, and Simple icons (#11479)
   * Select an icon previously uploaded by the organization admin (#11462)
+  * Sets the default initial size for icons to 20px (#11498)
 
 ### Bug fixes
+* Fixed problem found in Surfaces related with map panning and widgets filtering
 * Style with icons
   * Reset icon on map when you remove that custom icon
   * Made icon's clicking area larger

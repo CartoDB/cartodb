@@ -1,6 +1,6 @@
 module Carto
-  module LayerFactory
-    def build_default_base_layer(user)
+  class LayerFactory
+    def self.build_default_base_layer(user)
       basemap = user.default_basemap
       options = if basemap['className'] === 'googlemaps'
                   { kind: 'gmapsbase', options: basemap }
@@ -11,7 +11,7 @@ module Carto
       Carto::Layer.new(options)
     end
 
-    def build_default_labels_layer(base_layer)
+    def self.build_default_labels_layer(base_layer)
       base_layer_options = base_layer.options
       labels_layer_url = base_layer_options['labels']['url']
 
@@ -26,7 +26,7 @@ module Carto
       )
     end
 
-    def build_data_layer(user_table)
+    def self.build_data_layer(user_table)
       user = user_table.user
       geometry_type = user_table.geometry_type
 
@@ -47,27 +47,31 @@ module Carto
       data_layer
     end
 
-    private
+    # private
 
-    def style_properties(geometry_type)
+    def self.style_properties(geometry_type)
       {
         type: 'simple',
         properties: Carto::Form.new(geometry_type).to_hash
       }
     end
+    private_class_method :style_properties
 
-    def tile_style(user, geometry_type)
+    def self.tile_style(user, geometry_type)
       user.builder_enabled? ? builder_tile_style(geometry_type) : legacy_tile_style(geometry_type)
     end
+    private_class_method :tile_style
 
-    def builder_tile_style(geometry_type)
+    def self.builder_tile_style(geometry_type)
       style_class = Carto::Styles::Style.style_for_geometry_type(geometry_type)
 
       style_class ? style_class.new.to_cartocss : legacy_tile_style(geometry_type)
     end
+    private_class_method :builder_tile_style
 
-    def legacy_tile_style(geometry_type)
+    def self.legacy_tile_style(geometry_type)
       "#layer #{Cartodb.config[:layer_opts]['default_tile_styles'][geometry_type]}"
     end
+    private_class_method :legacy_tile_style
   end
 end

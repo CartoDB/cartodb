@@ -1,7 +1,7 @@
 # encoding: utf-8
 module Carto
-  module OverlayFactory
-    def build_default_overlays(user)
+  class OverlayFactory
+    def self.build_default_overlays(user)
       overlays = [
         build_share_overlay(2),
         build_search_overlay(3),
@@ -12,18 +12,19 @@ module Carto
       overlays
     end
 
-    private
+    # private
 
-    def build_logo_overlay(order)
+    def self.build_logo_overlay(order)
       Carto::Overlay.new(
         order: order,
         type: "logo",
         template: '',
-        options: { display: true, x: 10, y: 40 },
+        options: { display: true, x: 10, y: 40 }
       )
     end
+    private_class_method :build_logo_overlay
 
-    def build_loader_overlay(order)
+    def self.build_loader_overlay(order)
       Carto::Overlay.new(
         order: order,
         type: 'loader',
@@ -31,8 +32,9 @@ module Carto
         options: { display: true, x: 20, y: 150 }
       )
     end
+    private_class_method :build_loader_overlay
 
-    def build_zoom_overlay(order)
+    def self.build_zoom_overlay(order)
       Carto::Overlay.new(
         order: order,
         type: 'zoom',
@@ -40,8 +42,9 @@ module Carto
         options: { display: true, x: 20, y: 20 }
       )
     end
+    private_class_method :build_zoom_overlay
 
-    def build_share_overlay(order)
+    def self.build_share_overlay(order)
       Carto::Overlay.new(
         order: order,
         type: 'share',
@@ -49,8 +52,9 @@ module Carto
         options: { display: true, x: 20, y: 20 }
       )
     end
+    private_class_method :build_share_overlay
 
-    def build_search_overlay(order)
+    def self.build_search_overlay(order)
       Carto::Overlay.new(
         order: order,
         type: 'search',
@@ -58,5 +62,6 @@ module Carto
         options: { display: true, x: 60, y: 20 }
       )
     end
+    private_class_method :build_search_overlay
   end
 end

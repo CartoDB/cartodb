@@ -3,8 +3,6 @@ require_dependency 'carto/db/sanitize'
 
 module Carto
   class UserTable < ActiveRecord::Base
-    include Carto::VisualizationFactory
-
     PRIVACY_PRIVATE = 0
     PRIVACY_PUBLIC = 1
     PRIVACY_LINK = 2
@@ -202,7 +200,7 @@ module Carto
     end
 
     def create_canonical_visualization
-      visualization = build_canonical_visualization(self)
+      visualization = Carto::VisualizationFactory.build_canonical_visualization(self)
       # INFO: workaround for array saves not working
       tags = visualization.tags
       visualization.tags = nil

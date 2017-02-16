@@ -19,20 +19,20 @@ class Map < Sequel::Model
                clone: :layers,
                right_key: :layer_id
 
-  many_to_many :data_layers,
+  many_to_many :carto_layers,
                clone: :layers,
                right_key: :layer_id,
                conditions: { kind: "carto" }
+
+  many_to_many :data_layers,
+               clone: :layers,
+               right_key: :layer_id,
+               conditions: "kind in ('carto', 'torque')"
 
   many_to_many :user_layers,
                clone: :layers,
                right_key: :layer_id,
                conditions: "kind in ('tiled', 'background', 'gmapsbase', 'wms')"
-
-  many_to_many :carto_and_torque_layers,
-               clone: :layers,
-               right_key: :layer_id,
-               conditions: "kind in ('carto', 'torque')"
 
   many_to_many :torque_layers,
                clone: :layers,
@@ -150,7 +150,7 @@ class Map < Sequel::Model
   end
 
   def can_add_layer(user)
-    return false if self.user.max_layers && self.user.max_layers <= carto_and_torque_layers.count
+    return false if self.user.max_layers && self.user.max_layers <= data_layers.count
     return false if self.user.viewer
 
     current_vis = visualizations.first

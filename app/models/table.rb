@@ -608,7 +608,7 @@ class Table
     new_name = register_table_only ? value : get_valid_name(value)
 
     # Do not keep track of name changes until table has been saved
-    unless new?
+    unless new_record?
       @name_changed_from = @user_table.name if @user_table.name.present?
       update_cdb_tablemetadata
     end
@@ -1511,7 +1511,7 @@ class Table
     type = type.to_s.upcase
 
     self.the_geom_type = type.downcase
-    @user_table.save_changes unless @user_table.new?
+    @user_table.save_changes unless @user_table.new_record?
   end
 
   def create_table_in_database!

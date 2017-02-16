@@ -13,11 +13,6 @@ module Carto
       PRIVACY_LINK => 'link'
     }.freeze
 
-    # For compatibility with Sequel model
-    def new?
-      new_record?
-    end
-
     def self.column_defaults
       # AR sets privacy = 0 (private) by default, taken from the DB. We want it to be `nil`
       # so the `before_validation` hook sets an appropriate privacy based on the table owner

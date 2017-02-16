@@ -16,8 +16,7 @@ module Carto
         privacy: user_table.visualization_privacy,
         user: user,
         kind: kind,
-        overlays: Carto::OverlayFactory.build_default_overlays(user),
-        permission: Carto::Permission.new(owner: user, owner_username: user.username)
+        overlays: Carto::OverlayFactory.build_default_overlays(user)
       )
     end
 

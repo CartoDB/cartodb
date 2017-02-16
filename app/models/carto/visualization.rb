@@ -84,7 +84,7 @@ class Carto::Visualization < ActiveRecord::Base
   validates :version, presence: true
 
   before_validation :set_default_version
-  before_create :set_random_id
+  before_create :set_random_id, :set_default_permission
 
   # INFO: workaround for array saves not working
   before_create :delay_saving_tags
@@ -515,6 +515,10 @@ class Carto::Visualization < ActiveRecord::Base
   def set_random_id
     # This should be done with a DB default
     self.id ||= random_uuid
+  end
+
+  def set_default_permission
+    self.permission ||= Carto::Permission.create(owner: user, owner_username: user.username)
   end
 
   def delay_saving_tags

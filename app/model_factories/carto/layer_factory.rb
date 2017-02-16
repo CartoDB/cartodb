@@ -28,7 +28,7 @@ module Carto
 
     def build_data_layer(user_table)
       user = user_table.user
-      geometry_type = user_table.service.the_geom_type || 'geometry'
+      geometry_type = user_table.geometry_type
 
       data_layer = Carto::Layer.new(Cartodb.config[:layer_opts]['data'])
       layer_options = data_layer.options

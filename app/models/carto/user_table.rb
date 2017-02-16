@@ -136,6 +136,10 @@ module Carto
       service.is_raster?
     end
 
+    def geometry_type
+      service.the_geom_type || 'geometry'
+    end
+
     def estimated_row_count
       service.estimated_row_count
     end

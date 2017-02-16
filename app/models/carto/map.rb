@@ -69,6 +69,9 @@ class Carto::Map < ActiveRecord::Base
 
   has_one :visualization, class_name: Carto::Visualization, inverse_of: :map
 
+  # bounding_box_sw, bounding_box_new and center should probably be JSON serialized fields
+  # However, many callers expect to get an string (and do the JSON deserialization themselves), mainly in presenters
+  # So for now, we are just treating them as strings (see the .to_s in the constant below), but this could be improved
   DEFAULT_OPTIONS = {
     zoom:            3,
     bounding_box_sw: [BoundingBoxHelper::DEFAULT_BOUNDS[:minlat], BoundingBoxHelper::DEFAULT_BOUNDS[:minlon]].to_s,
@@ -76,9 +79,6 @@ class Carto::Map < ActiveRecord::Base
     provider:        'leaflet',
     center:          [30, 0].to_s
   }.freeze
-  # bounding_box_sw, bounding_box_new and center should probably be JSON serialized fields
-  # However, many callers expect to get an string (and do the JSON deserialization themselves), mainly in presenters
-  # So for now, we are just treating them as strings (see the .to_s in the constant above), but this could be improved
 
   serialize :options, ::Carto::CartoJsonSerializer
   validates :options, carto_json_symbolizer: true

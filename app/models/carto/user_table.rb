@@ -201,12 +201,7 @@ module Carto
 
     def create_canonical_visualization
       visualization = Carto::VisualizationFactory.build_canonical_visualization(self)
-      # INFO: workaround for array saves not working
-      tags = visualization.tags
-      visualization.tags = nil
       visualization.save!
-      visualization.update_column(:tags, tags)
-
       update_attribute(:map, visualization.map)
       visualization.map.set_default_boundaries!
     end

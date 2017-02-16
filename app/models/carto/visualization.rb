@@ -86,6 +86,10 @@ class Carto::Visualization < ActiveRecord::Base
   before_validation :set_default_version
   before_create :set_random_id
 
+  # INFO: workaround for array saves not working
+  before_create :delay_saving_tags
+  after_create :save_tags
+
   def set_default_version
     self.version ||= user.try(:new_visualizations_version)
   end
@@ -511,6 +515,15 @@ class Carto::Visualization < ActiveRecord::Base
   def set_random_id
     # This should be done with a DB default
     self.id ||= random_uuid
+  end
+
+  def delay_saving_tags
+    @cached_tags = tags
+    self.tags = nil
+  end
+
+  def save_tags
+    update_attribute(:tags, @cached_tags)
   end
 
   def named_maps_api

@@ -367,22 +367,6 @@ module Carto
         end
 
         describe 'multiple legends per layer' do
-          it 'should reject more that Legend:MAX_LEGENDS_PER_LAYER legends per layer' do
-            Legend::MAX_LEGENDS_PER_LAYER.times do
-              post_json create_legend_url, custom_legend_payload do |response|
-                response.status.should eq 201
-
-                legend_is_correct(response.body)
-              end
-            end
-
-            post_json create_legend_url, custom_legend_payload do |response|
-              response.status.should eq 422
-
-              response.body[:errors].should include('Maximum number of legends per layer reached')
-            end
-          end
-
           it 'can create a color layer and a size layer' do
             post_json create_legend_url, category_legend_payload do |response|
               response.status.should eq 201
@@ -481,9 +465,7 @@ module Carto
         end
 
         it 'updates a legend when max legends reached' do
-          (Legend::MAX_LEGENDS_PER_LAYER - 1).times do
-            Legend.create!(custom_legend_payload.merge(layer_id: @layer.id))
-          end
+          Legend.create!(bubble_legend_payload.merge(layer_id: @layer.id))
 
           custom_legend_payload[:definition][:html] = '<p>modified</p>'
           put_json update_legend_url, custom_legend_payload do |response|
@@ -521,7 +503,7 @@ module Carto
         before(:all) do
           @layer.reload.legends.map(&:destroy)
           Legend.create!(custom_legend_payload.merge(layer_id: @layer.id))
-          Legend.create!(custom_legend_payload.merge(layer_id: @layer.id))
+          Legend.create!(bubble_legend_payload.merge(layer_id: @layer.id))
         end
 
         after(:all) do

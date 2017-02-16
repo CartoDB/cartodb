@@ -76,6 +76,9 @@ class Carto::Map < ActiveRecord::Base
     provider:        'leaflet',
     center:          [30, 0].to_s
   }.freeze
+  # bounding_box_sw, bounding_box_new and center should probably be JSON serialized fields
+  # However, many callers expect to get an string (and do the JSON deserialization themselves), mainly in presenters
+  # So for now, we are just treating them as strings (see the .to_s in the constant above), but this could be improved
 
   serialize :options, ::Carto::CartoJsonSerializer
   validates :options, carto_json_symbolizer: true

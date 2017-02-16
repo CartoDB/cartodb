@@ -140,7 +140,7 @@ module Carto
       describe '#create' do
         after(:each) { @layer.reload.legends.map(&:destroy) }
 
-        def create_lengend_url(user: @user, visualization: @visualization, layer: @layer)
+        def create_legend_url(user: @user, visualization: @visualization, layer: @layer)
           legends_url(user_domain: user.subdomain,
                       visualization_id: visualization.id,
                       layer_id: layer.id,
@@ -148,7 +148,7 @@ module Carto
         end
 
         it 'should reject non visualization owners' do
-          post_json create_lengend_url(user: @intruder), {} do |response|
+          post_json create_legend_url(user: @intruder), {} do |response|
             response.status.should eq 403
           end
         end
@@ -156,7 +156,7 @@ module Carto
         it 'should reject non data layers' do
           base_layer = @visualization.layers.first
 
-          post_json create_lengend_url(layer: base_layer), custom_legend_payload do |response|
+          post_json create_legend_url(layer: base_layer), custom_legend_payload do |response|
             response.status.should eq 422
 
             response.body[:errors].should include("'#{base_layer.kind}' layers can't have legends")
@@ -165,14 +165,14 @@ module Carto
 
         it 'should reject more that Legend:MAX_LEGENDS_PER_LAYER legends per layer' do
           Legend::MAX_LEGENDS_PER_LAYER.times do
-            post_json create_lengend_url, custom_legend_payload do |response|
+            post_json create_legend_url, custom_legend_payload do |response|
               response.status.should eq 201
 
               legend_is_correct(response.body)
             end
           end
 
-          post_json create_lengend_url, custom_legend_payload do |response|
+          post_json create_legend_url, custom_legend_payload do |response|
             response.status.should eq 422
 
             response.body[:errors].should include('Maximum number of legends per layer reached')
@@ -180,7 +180,7 @@ module Carto
         end
 
         it 'should return a validation errors' do
-          post_json create_lengend_url, {} do |response|
+          post_json create_legend_url, {} do |response|
             response.status.should eq 422
 
             response.body[:errors].should_not be_nil
@@ -189,7 +189,7 @@ module Carto
 
         describe 'with valid definitions' do
           after(:each) do
-            post_json create_lengend_url, @payload do |response|
+            post_json create_legend_url, @payload do |response|
               response.status.should eq 201
 
               legend_is_correct(response.body)
@@ -226,7 +226,7 @@ module Carto
             spammy_definition = @payload[:definition].merge(spam: 'hell')
             @payload[:definition] = spammy_definition
 
-            post_json create_lengend_url, @payload do |response|
+            post_json create_legend_url, @payload do |response|
               response.status.should eq 422
             end
           end
@@ -261,7 +261,7 @@ module Carto
             spammy_definition = @payload[:conf].merge(spam: 'hell')
             @payload[:conf] = spammy_definition
 
-            post_json create_lengend_url, @payload do |response|
+            post_json create_legend_url, @payload do |response|
               response.status.should eq 422
             end
           end
@@ -295,7 +295,7 @@ module Carto
           after(:each) do
             @payload[:conf] = { columns: { not: 'an_array' } }
 
-            post_json create_lengend_url, @payload do |response|
+            post_json create_legend_url, @payload do |response|
               response.status.should eq 422
             end
           end
@@ -329,7 +329,7 @@ module Carto
           after(:each) do
             @payload[:conf] = ['manolo', 'escobar', 2]
 
-            post_json create_lengend_url, @payload do |response|
+            post_json create_legend_url, @payload do |response|
               response.status.should eq 422
             end
           end
@@ -384,31 +384,31 @@ module Carto
 
         describe 'multiple legends per layer' do
           it 'can create a color layer and a size layer' do
-            post_json create_lengend_url, category_legend_payload do |response|
+            post_json create_legend_url, category_legend_payload do |response|
               response.status.should eq 201
             end
 
-            post_json create_lengend_url, bubble_legend_payload do |response|
+            post_json create_legend_url, bubble_legend_payload do |response|
               response.status.should eq 201
             end
           end
 
           it 'cannot create two color layers' do
-            post_json create_lengend_url, category_legend_payload do |response|
+            post_json create_legend_url, category_legend_payload do |response|
               response.status.should eq 201
             end
 
-            post_json create_lengend_url, custom_legend_payload do |response|
+            post_json create_legend_url, custom_legend_payload do |response|
               response.status.should eq 422
             end
           end
 
           it 'cannot create two size layers' do
-            post_json create_lengend_url, bubble_legend_payload do |response|
+            post_json create_legend_url, bubble_legend_payload do |response|
               response.status.should eq 201
             end
 
-            post_json create_lengend_url, bubble_legend_payload do |response|
+            post_json create_legend_url, bubble_legend_payload do |response|
               response.status.should eq 422
             end
           end
@@ -419,7 +419,7 @@ module Carto
         before (:all) { @legend = Legend.create!(custom_legend_payload.merge(layer_id: @layer.id)) }
         after  (:all) { @legend.destroy }
 
-        def show_lengend_url(user: @user, visualization: @visualization, layer: @layer, legend: @legend)
+        def show_legend_url(user: @user, visualization: @visualization, layer: @layer, legend: @legend)
           legend_url(user_domain: user.subdomain,
                      visualization_id: visualization.id,
                      layer_id: layer.id,
@@ -428,7 +428,7 @@ module Carto
         end
 
         it 'should show a legend' do
-          get_json show_lengend_url, {} do |response|
+          get_json show_legend_url, {} do |response|
             response.status.should eq 200
 
             legend_is_correct(response.body)
@@ -436,7 +436,7 @@ module Carto
         end
 
         it 'should not show a legend to others' do
-          get_json show_lengend_url(user: @intruder), {} do |response|
+          get_json show_legend_url(user: @intruder), {} do |response|
             response.status.should eq 403
           end
         end
@@ -459,7 +459,7 @@ module Carto
         before (:all) { @legend = Legend.create!(custom_legend_payload.merge(layer_id: @layer.id)) }
         after  (:all) { @legend.destroy }
 
-        def update_lengend_url(user: @user, visualization: @visualization, layer: @layer, legend: @legend)
+        def update_legend_url(user: @user, visualization: @visualization, layer: @layer, legend: @legend)
           legend_url(user_domain: user.subdomain,
                      visualization_id: visualization.id,
                      layer_id: layer.id,
@@ -469,7 +469,7 @@ module Carto
 
         it 'updates a legend' do
           custom_legend_payload[:definition][:html] = '<p>modified</p>'
-          put_json update_lengend_url, custom_legend_payload do |response|
+          put_json update_legend_url, custom_legend_payload do |response|
             response.status.should eq 200
 
             legend_is_correct(response.body)
@@ -482,7 +482,7 @@ module Carto
           end
 
           custom_legend_payload[:definition][:html] = '<p>modified</p>'
-          put_json update_lengend_url, custom_legend_payload do |response|
+          put_json update_legend_url, custom_legend_payload do |response|
             response.status.should eq 200
 
             legend_is_correct(response.body)
@@ -494,7 +494,7 @@ module Carto
         end
 
         it 'should let others update a legend' do
-          put_json update_lengend_url(user: @intruder), {} do |response|
+          put_json update_legend_url(user: @intruder), {} do |response|
             response.status.should eq 403
           end
         end
@@ -524,7 +524,7 @@ module Carto
           @layer.reload.legends.map(&:destroy)
         end
 
-        def index_lengend_url(user: @user, visualization: @visualization, layer: @layer)
+        def index_legend_url(user: @user, visualization: @visualization, layer: @layer)
           legends_url(user_domain: user.subdomain,
                       visualization_id: visualization.id,
                       layer_id: layer.id,
@@ -532,7 +532,7 @@ module Carto
         end
 
         it 'indexes legends' do
-          get_json index_lengend_url, {} do |response|
+          get_json index_legend_url, {} do |response|
             response.status.should eq 200
 
             response.body.each do |legend|
@@ -542,7 +542,7 @@ module Carto
         end
 
         it 'should not index legends to others' do
-          get_json index_lengend_url(user: @intruder), {} do |response|
+          get_json index_legend_url(user: @intruder), {} do |response|
             response.status.should eq 403
           end
         end
@@ -552,7 +552,7 @@ module Carto
         before (:each) { @legend = Legend.create!(custom_legend_payload.merge(layer_id: @layer.id)) }
         after  (:each) { @legend.destroy }
 
-        def delete_lengend_url(user: @user, visualization: @visualization, layer: @layer, legend: @legend)
+        def delete_legend_url(user: @user, visualization: @visualization, layer: @layer, legend: @legend)
           legend_url(user_domain: user.subdomain,
                      visualization_id: visualization.id,
                      layer_id: layer.id,
@@ -561,7 +561,7 @@ module Carto
         end
 
         it 'should delete a legend' do
-          delete_json delete_lengend_url, {} do |response|
+          delete_json delete_legend_url, {} do |response|
             response.status.should eq 204
 
             response.body.should be_empty
@@ -571,7 +571,7 @@ module Carto
         end
 
         it 'should not delete another user\'s legend' do
-          delete_json delete_lengend_url(user: @intruder), {} do |response|
+          delete_json delete_legend_url(user: @intruder), {} do |response|
             response.status.should eq 403
           end
 

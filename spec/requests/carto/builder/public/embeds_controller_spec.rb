@@ -58,7 +58,7 @@ describe Carto::Builder::Public::EmbedsController do
     end
 
     it 'displays published layers, not ("live") visualization layers' do
-      @map, @table, @table_visualization, @visualization = create_full_visualization(@carto_user, visualization_attributes: { version: 3, privacy: Carto::Visualization::PRIVACY_PUBLIC })
+      @map, @table, @table_visualization, @visualization = create_full_builder_vis(@carto_user)
       Carto::Mapcap.create!(visualization_id: @visualization.id)
 
       layer = @visualization.layers[1]

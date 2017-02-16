@@ -24,6 +24,8 @@ module Carto
       super.merge("privacy" => nil)
     end
 
+    # The ::Table service depends on the constructor not being able to set all parameters, only these are allowed
+    # This is done so things like name changes are forced to go through ::Table.name= to ensure renaming behaviour
     attr_accessible :privacy, :tags, :description
 
     belongs_to :user

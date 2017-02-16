@@ -4,6 +4,7 @@ require_relative '../../helpers/embed_redis_cache'
 require_dependency 'cartodb/redis_vizjson_cache'
 require_dependency 'carto/named_maps/api'
 require_dependency 'carto/helpers/auth_token_generator'
+require_dependency 'carto/uuidhelper'
 
 module Carto::VisualizationDependencies
   def fully_dependent_on?(user_table)
@@ -23,6 +24,7 @@ end
 
 class Carto::Visualization < ActiveRecord::Base
   include CacheHelper
+  include Carto::UUIDHelper
   include Carto::AuthTokenGenerator
   include Carto::VisualizationDependencies
 
@@ -82,6 +84,7 @@ class Carto::Visualization < ActiveRecord::Base
   validates :version, presence: true
 
   before_validation :set_default_version
+  before_create :set_random_id
 
   def set_default_version
     self.version ||= user.try(:new_visualizations_version)
@@ -503,6 +506,11 @@ class Carto::Visualization < ActiveRecord::Base
     user_tables.each do |ut|
       ::Resque.enqueue(::Resque::UserDBJobs::UserDBMaintenance::AutoIndexTable, ut.id)
     end
+  end
+
+  def set_random_id
+    # This should be done with a DB default
+    self.id ||= random_uuid
   end
 
   def named_maps_api

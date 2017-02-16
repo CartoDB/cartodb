@@ -133,7 +133,9 @@
 .Editor-ListLayer-media--basemap {
   border: 1px solid $cMainLine;
 }
-
+.Editor-ListLayer-info.is-hidden {
+  opacity: 0.24;
+}
 
 .Editor-ListLayer-title {
   @include display-flex();

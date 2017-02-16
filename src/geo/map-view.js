@@ -113,10 +113,6 @@ var MapView = View.extend({
 
   render: function () {
     this._createNativeMap();
-    var bounds = this.map.getViewBounds();
-    if (bounds) {
-      this._fitBounds(bounds);
-    }
     this._addLayers();
 
     // Enable geometry management

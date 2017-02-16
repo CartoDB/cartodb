@@ -400,6 +400,8 @@ module Carto
 
             post_json create_legend_url, custom_legend_payload do |response|
               response.status.should eq 422
+
+              response.body[:errors].should include('Only one color legend per layer allowed')
             end
           end
 
@@ -410,6 +412,8 @@ module Carto
 
             post_json create_legend_url, bubble_legend_payload do |response|
               response.status.should eq 422
+
+              response.body[:errors].should include('Only one size legend per layer allowed')
             end
           end
         end

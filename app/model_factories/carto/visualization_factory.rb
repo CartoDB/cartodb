@@ -30,13 +30,11 @@ module Carto
       layers = [base_layer, data_layer]
       layers << Carto::LayerFactory.build_default_labels_layer(base_layer) if base_layer.supports_labels_layer?
 
-      options = Carto::Map::DEFAULT_OPTIONS.merge(
+      Carto::Map.new(
         user: user,
         provider: Carto::Map.provider_for_baselayer_kind(base_layer.kind),
         layers: layers
       )
-
-      Carto::Map.new(options)
     end
     private_class_method :build_canonical_map
   end

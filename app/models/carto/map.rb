@@ -74,7 +74,7 @@ class Carto::Map < ActiveRecord::Base
     bounding_box_sw: [BoundingBoxHelper::DEFAULT_BOUNDS[:minlat], BoundingBoxHelper::DEFAULT_BOUNDS[:minlon]].to_s,
     bounding_box_ne: [BoundingBoxHelper::DEFAULT_BOUNDS[:maxlat], BoundingBoxHelper::DEFAULT_BOUNDS[:maxlon]].to_s,
     provider:        'leaflet',
-    center:          [30, 0]
+    center:          [30, 0].to_s
   }.freeze
 
   serialize :options, ::Carto::CartoJsonSerializer
@@ -229,6 +229,12 @@ class Carto::Map < ActiveRecord::Base
   end
 
   def ensure_options
+    self.zoom ||= DEFAULT_OPTIONS[:zoom]
+    self.bounding_box_sw ||= DEFAULT_OPTIONS[:bounding_box_sw]
+    self.bounding_box_ne ||= DEFAULT_OPTIONS[:bounding_box_ne]
+    self.center ||= DEFAULT_OPTIONS[:center]
+    self.provider ||= DEFAULT_OPTIONS[:provider]
+
     self.options ||= {}
     options[:dashboard_menu] = true if options[:dashboard_menu].nil?
     options[:layer_selector] = false if options[:layer_selector].nil?

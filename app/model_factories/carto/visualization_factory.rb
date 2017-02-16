@@ -49,8 +49,6 @@ module Carto
       )
 
       Carto::Map.new(options)
-
-      # TODO: Calculate bound
     end
   end
 end

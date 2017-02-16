@@ -20,6 +20,8 @@ var MapView = View.extend({
   className: 'CDB-Map-wrapper',
 
   initialize: function (deps) {
+    View.prototype.initialize.apply(this, arguments);
+
     // For debugging purposes
     window.mapView = this;
 

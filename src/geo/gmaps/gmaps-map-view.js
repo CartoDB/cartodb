@@ -73,6 +73,8 @@ var GoogleMapsMapView = MapView.extend({
   clean: function () {
     google.maps.event.clearInstanceListeners(window);
     google.maps.event.clearInstanceListeners(document);
+
+    MapView.prototype.clean.call(this);
   },
 
   _getLayerViewFactory: function () {

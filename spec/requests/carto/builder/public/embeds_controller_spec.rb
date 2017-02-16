@@ -92,6 +92,9 @@ describe Carto::Builder::Public::EmbedsController do
     end
 
     it 'does not include google maps if not configured' do
+      @map.provider = 'googlemaps'
+      @map.save
+      @visualization.create_mapcap!
       @user.google_maps_key = ''
       @user.save
       get builder_visualization_public_embed_url(visualization_id: @visualization.id, vector: true)
@@ -101,12 +104,27 @@ describe Carto::Builder::Public::EmbedsController do
     end
 
     it 'includes the google maps client id if configured' do
+      @map.provider = 'googlemaps'
+      @map.save
+      @visualization.create_mapcap!
       @user.google_maps_key = 'client=wadus_cid'
       @user.save
       get builder_visualization_public_embed_url(visualization_id: @visualization.id, vector: true)
 
       response.status.should == 200
       response.body.should include("maps.google.com/maps/api/js?client=wadus_cid")
+    end
+
+    it 'does not includes google maps if the maps does not need it' do
+      @map.provider = 'leaflet'
+      @map.save
+      @visualization.create_mapcap!
+      @user.google_maps_key = 'client=wadus_cid'
+      @user.save
+      get builder_visualization_public_embed_url(visualization_id: @visualization.id, vector: true)
+
+      response.status.should == 200
+      response.body.should_not include("maps.google.com/maps/api/js")
     end
 
     it 'does not embed password protected viz' do
@@ -231,6 +249,9 @@ describe Carto::Builder::Public::EmbedsController do
       end
 
       it 'includes the organizations google maps client id if configured' do
+        @org_visualization.map.provider = 'googlemaps'
+        @org_visualization.map.save
+        @org_visualization.create_mapcap!
         @organization.google_maps_key = 'client=wadus_org_cid'
         @organization.save
         login_as(@org_user_1)

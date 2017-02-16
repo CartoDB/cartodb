@@ -76,6 +76,8 @@ describe Carto::Builder::DatasetsController do
     end
 
     it 'does not include google maps if not configured' do
+      @map.provider = 'googlemaps'
+      @map.save
       @user.google_maps_key = ''
       @user.save
       get builder_dataset_url(id: @visualization.id)
@@ -85,12 +87,25 @@ describe Carto::Builder::DatasetsController do
     end
 
     it 'includes the google maps client id if configured' do
+      @map.provider = 'googlemaps'
+      @map.save
       @user.google_maps_key = 'client=wadus_cid'
       @user.save
       get builder_dataset_url(id: @visualization.id)
 
       response.status.should == 200
       response.body.should include("maps.google.com/maps/api/js?client=wadus_cid")
+    end
+
+    it 'does not include google maps if the map does not need it' do
+      @map.provider = 'leaflet'
+      @map.save
+      @user.google_maps_key = 'client=wadus_cid'
+      @user.save
+      get builder_dataset_url(id: @visualization.id)
+
+      response.status.should == 200
+      response.body.should_not include("maps.google.com/maps/api/js")
     end
   end
 end

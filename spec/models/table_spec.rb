@@ -160,6 +160,8 @@ describe Table do
         map.layers[0].order.should == 0
 
         Cartodb.config[:basemaps] = old_basemap_config
+
+        map.visualization.overlays.count.should eq 5
       end
 
       it "should add a layer with labels if the baselayer has that option enabled" do

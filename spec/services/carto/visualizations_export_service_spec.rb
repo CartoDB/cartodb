@@ -101,7 +101,7 @@ describe Carto::VisualizationsExportService do
     base_layer = visualization.layers(:base).first
     visualization_clone = visualization.dup
 
-    original_data_layer_names = visualization.layers(:carto_and_torque).map { |layer| layer.options["table_name"] }
+    original_data_layer_names = visualization.layers(:data).map { |layer| layer.options["table_name"] }
 
     # As duplicating the vis only works fine with parent object, store also the vizjson for comparisons
     vizjson_options = {
@@ -133,7 +133,7 @@ describe Carto::VisualizationsExportService do
                                                       .to_json
     restored_vizjson = ::JSON.parse(restored_vizjson)
 
-    restored_data_layer_names = visualization.layers(:carto_and_torque).map { |layer| layer.options["table_name"] }
+    restored_data_layer_names = visualization.layers(:data).map { |layer| layer.options["table_name"] }
 
     # Base attributes checks
     restored_visualization.name.should eq visualization_clone.name
@@ -171,7 +171,7 @@ describe Carto::VisualizationsExportService do
     # Layer checks
     (restored_visualization.layers(:base).count > 0).should eq true
     restored_visualization.layers(:base).first["options"].should eq base_layer["options"]
-    restored_visualization.layers(:carto_and_torque).count.should eq 2
+    restored_visualization.layers(:data).count.should eq 2
     (restored_data_layer_names - original_data_layer_names).should eq []
   end
 

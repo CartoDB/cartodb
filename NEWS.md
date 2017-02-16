@@ -48,6 +48,7 @@ Development
   * Sets the default initial size for icons to 20px (#11498)
 
 ### Bug fixes
+* Fixed problem found in Surfaces related with map panning and widgets filtering
 * Style with icons
   * Reset icon on map when you remove that custom icon
   * Made icon's clicking area larger
@@ -56,6 +57,7 @@ Development
 * Categories legend are now static (#10972)
 * Fixed a bug with vizjson invalidation (#11092). It was introduced in #10934
 * Refactor Layer model (#10934)
+* Correctly register table dependencies of torque layers (#11549)
 * Fix bugs where legends where being hidden by reordering layers (#11088)
 * Correctly ask for alternative username when signing up with Google/GitHub into an organization
 * Avoid loading all rake code in resque workers (#11069)

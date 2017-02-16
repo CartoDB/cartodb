@@ -7,17 +7,17 @@ require_dependency 'carto/helpers/auth_token_generator'
 
 module Carto::VisualizationDependencies
   def fully_dependent_on?(user_table)
-    derived? && layers_dependent_on(user_table).count == carto_and_torque_layers.count
+    derived? && layers_dependent_on(user_table).count == data_layers.count
   end
 
   def partially_dependent_on?(user_table)
-    derived? && layers_dependent_on(user_table).count.between?(1, carto_and_torque_layers.count - 1)
+    derived? && layers_dependent_on(user_table).count.between?(1, data_layers.count - 1)
   end
 
   private
 
   def layers_dependent_on(user_table)
-    carto_and_torque_layers.select { |l| l.depends_on?(user_table) }
+    data_layers.select { |l| l.depends_on?(user_table) }
   end
 end
 
@@ -238,12 +238,12 @@ class Carto::Visualization < ActiveRecord::Base
     map ? map.data_layers : []
   end
 
-  def user_layers
-    map ? map.user_layers : []
+  def carto_layers
+    map ? map.carto_layers : []
   end
 
-  def carto_and_torque_layers
-    map ? map.carto_and_torque_layers : []
+  def user_layers
+    map ? map.user_layers : []
   end
 
   def torque_layers
@@ -414,7 +414,7 @@ class Carto::Visualization < ActiveRecord::Base
   def add_source_analyses
     return unless analyses.empty?
 
-    carto_and_torque_layers.each_with_index do |layer, index|
+    data_layers.each_with_index do |layer, index|
       analysis = Carto::Analysis.source_analysis_for_layer(layer, index)
 
       if analysis.save
@@ -543,7 +543,7 @@ class Carto::Visualization < ActiveRecord::Base
   def get_related_tables
     return [] unless map
 
-    map.carto_and_torque_layers.flat_map(&:user_tables).uniq
+    map.data_layers.flat_map(&:user_tables).uniq
   end
 
   def get_related_canonical_visualizations

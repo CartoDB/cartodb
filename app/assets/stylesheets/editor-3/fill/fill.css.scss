@@ -13,6 +13,10 @@
   width: 248px;
   z-index: 100;
 }
+.Editor-FormDialog.is-bottom {
+  top: auto;
+  bottom: 36px;
+}
 
 .Editor-FormDialog .CustomList {
   display: block;

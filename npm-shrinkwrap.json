@@ -934,7 +934,7 @@
                 },
                 "xtend": {
                   "version": "4.0.1",
-                  "from": "xtend@>=4.0.0 <4.1.0",
+                  "from": "xtend@>=4.0.1 <4.1.0",
                   "resolved": "https://registry.npmjs.org/xtend/-/xtend-4.0.1.tgz"
                 }
               }
@@ -1556,7 +1556,7 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
       "from": "cartodb/cartodb.js#switch-to-gmaps",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#d66187920ac33ba83f1f7ee514a373251f51e69b",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#a972a363a3f0e2d0def3479afa76e15aac122f94",
       "dependencies": {
         "backbone-poller": {
           "version": "1.1.3",

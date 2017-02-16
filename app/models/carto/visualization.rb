@@ -86,7 +86,9 @@ class Carto::Visualization < ActiveRecord::Base
   before_validation :set_default_version
   before_create :set_random_id, :set_default_permission
 
-  # INFO: workaround for array saves not working
+  # INFO: workaround for array saves not working. There is a bug in `activerecord-postgresql-array` which
+  # makes inserting including array fields to save, but updates work. Wo se insert without tags and add them
+  # with an update after creation. This is fixed in Rails 4.
   before_create :delay_saving_tags
   after_create :save_tags
 

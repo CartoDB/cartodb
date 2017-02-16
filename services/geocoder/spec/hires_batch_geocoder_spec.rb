@@ -39,7 +39,7 @@ describe CartoDB::HiresBatchGeocoder do
       mock_complete_response
       @batch_geocoder.expects(:upload).once
       @batch_geocoder.run
-      assert @geocoding_model.state.should == 'completed'
+      @geocoding_model.state.should == 'completed'
     end
 
     it 'times out if not finished before the DEFAULT_TIMEOUT' do
@@ -48,7 +48,7 @@ describe CartoDB::HiresBatchGeocoder do
       @batch_geocoder.expects(:cancel).once
       @batch_geocoder.stubs(:default_timeout).returns(-10) # make sure it times out
       @batch_geocoder.run
-      assert @geocoding_model.state.should == 'timeout'
+      @geocoding_model.state.should == 'timeout'
     end
   end
 
@@ -104,7 +104,7 @@ describe CartoDB::HiresBatchGeocoder do
       expected_processed_rows = 20
       expected_success_rows = 17
       expected_failed_rows = 0
-      expected_empty_rows = 3 
+      expected_empty_rows = 3
       expected_total_rows = 30
 
       response_body = <<END_XML
@@ -141,7 +141,7 @@ END_XML
       expected_processed_rows = 20
       expected_success_rows = 17
       expected_failed_rows = 0
-      expected_empty_rows = 3 
+      expected_empty_rows = 3
       expected_total_rows = 30
 
       response_body = <<END_XML

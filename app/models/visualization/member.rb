@@ -893,7 +893,7 @@ module CartoDB
 
         # This includes both the canonical and derived visualizations
         table.affected_visualizations.each do |affected_visualization|
-          affected_visualization.layers(:carto_and_torque).each do |layer|
+          affected_visualization.layers(:data).each do |layer|
             if layer.options['table_name'] == table.name
               layer.options['attribution']  = self.attributions
               layer.save

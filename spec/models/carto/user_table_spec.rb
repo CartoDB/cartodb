@@ -51,4 +51,29 @@ describe Carto::UserTable do
       user_table.readable_by?(@carto_org_user_2).should be_true
     end
   end
+
+  describe('#affected_visualizations') do
+    before(:each) do
+      # We recreate an inconsistent state where a layer has no visualization
+      @user_table.stubs(:layers).returns([Carto::Layer.new])
+    end
+
+    describe('#fully_dependent_visualizations') do
+      it 'resists layers without visualizations' do
+        expect { @user_table.fully_dependent_visualizations }.to_not raise_error
+      end
+    end
+
+    describe('#accessible_dependent_derived_maps') do
+      it 'resists layers without visualizations' do
+        expect { @user_table.accessible_dependent_derived_maps }.to_not raise_error
+      end
+    end
+
+    describe('#partially_dependent_visualizations') do
+      it 'resists layers without visualizations' do
+        expect { @user_table.partially_dependent_visualizations }.to_not raise_error
+      end
+    end
+  end
 end

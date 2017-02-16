@@ -80,6 +80,7 @@ class Table
     @user_table.set_service(self)
   end
 
+  # This is here just for testing purposes (being able to test this service against both models)
   def model_class
     ::UserTable
   end

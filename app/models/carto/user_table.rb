@@ -1,4 +1,5 @@
 require 'active_record'
+require_dependency 'carto/db/sanitize'
 
 module Carto
   class UserTable < ActiveRecord::Base
@@ -13,6 +14,12 @@ module Carto
       PRIVACY_LINK => 'link'
     }.freeze
 
+    def self.column_defaults
+      # AR sets privacy = 0 (private) by default, taken from the DB. We want it to be `nil`
+      # so the `before_validation` hook sets an appropriate privacy based on the table owner
+      super.merge("privacy" => nil)
+    end
+
     belongs_to :user
 
     belongs_to :map, inverse_of: :user_table
@@ -24,6 +31,15 @@ module Carto
 
     has_many :layers_user_table
     has_many :layers, through: :layers_user_table
+
+    before_validation :set_default_table_privacy
+
+    validates :user, presence: true
+    validate :validate_user_not_viewer
+    validates :name, uniqueness: { scope: :user_id }
+    validates :name, exclusion: Carto::DB::Sanitize::RESERVED_TABLE_NAMES
+    validates :privacy, inclusion: [PRIVACY_PRIVATE, PRIVACY_PUBLIC, PRIVACY_LINK].freeze
+    validate :validate_privacy_changes
 
     def geometry_types
       @geometry_types ||= table.geometry_types
@@ -118,6 +134,14 @@ module Carto
 
     private
 
+    def default_privacy_value
+      user.try(:private_tables_enabled) ? PRIVACY_PRIVATE : PRIVACY_PUBLIC
+    end
+
+    def set_default_table_privacy
+      self.privacy ||= default_privacy_value
+    end
+
     def fully_qualified_name
       "\"#{user.database_schema}\".#{name}"
     end
@@ -128,7 +152,7 @@ module Carto
     end
 
     def affected_visualizations
-      layers.map(&:visualization).uniq
+      layers.map(&:visualization).uniq.compact
     end
 
     def table
@@ -138,6 +162,15 @@ module Carto
     def visualization_readable_by?(user)
       user && permission && permission.user_has_read_permission?(user)
     end
-  end
 
+    def validate_user_not_viewer
+      errors.add(:user, "Viewer users can't create tables") if user.try(:viewer)
+    end
+
+    def validate_privacy_changes
+      if !user.try(:private_tables_enabled) && !public? && (new_record? || privacy_changed?)
+        errors.add(:privacy, 'unauthorized to create private tables')
+      end
+    end
+  end
 end

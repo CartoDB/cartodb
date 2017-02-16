@@ -15,7 +15,7 @@ describe TableBlender do
     map.stubs(:to_hash).returns({})
     map.stubs(:user).returns(user)
     map.stubs(:user_layers).returns([])
-    map.stubs(:carto_and_torque_layers).returns([])
+    map.stubs(:data_layers).returns([])
     map
   end
 

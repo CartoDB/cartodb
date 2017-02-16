@@ -11,12 +11,12 @@ class ExploreAPI
   def get_visualization_tables(visualization)
     # We are using layers instead of related tables because with related tables we are connecting
     # to the users databases and we are reaching the connections limit
-    table_names = visualization.layers(:carto_and_torque).map { |layer| extract_table_name(layer) }.uniq
+    table_names = visualization.layers(:data).map { |layer| extract_table_name(layer) }.uniq
     %[{#{table_names.compact.join(',')}}]
   end
 
   def get_map_layers(visualization)
-    visualization.layers(:carto_and_torque)
+    visualization.layers(:data)
   end
 
   def get_geometry_data(visualization)

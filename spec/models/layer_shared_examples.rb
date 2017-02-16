@@ -300,5 +300,18 @@ shared_examples_for 'Layer model' do
       @layer.save
       LayerNodeStyle.where(layer_id: @layer.id).count.should eq 0
     end
+
+    it 'saves styles for torque layers' do
+      @layer.kind = 'torque'
+      @layer.options['source'] = 'a0'
+      @layer.save
+      lns = LayerNodeStyle.where(layer_id: @layer.id).first
+      lns.should be
+      lns.tooltip.should eq @layer.tooltip || {}
+      lns.infowindow.should eq @layer.infowindow || {}
+      lns.options['tile_style'].should eq @layer.options['tile_style']
+      lns.options['sql_wrap'].should eq @layer.options['sql_wrap']
+      lns.options['style_properties'].should eq @layer.options['style_properties']
+    end
   end
 end

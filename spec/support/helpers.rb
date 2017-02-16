@@ -25,7 +25,7 @@ module HelperMethods
   end
 
   def upload_file(file_path, mime_type)
-    Rack::Test::UploadedFile.new(Rails.root.join(file_path), mime_type)
+    fixture_file_upload(Rails.root.join(file_path), mime_type)
   end
 
   def http_json_headers

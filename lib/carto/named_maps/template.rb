@@ -258,7 +258,7 @@ module Carto
       def preview_layers
         preview_layers = {}
 
-        @visualization.carto_and_torque_layers.each do |layer|
+        @visualization.data_layers.each do |layer|
           preview_layers[:"#{layer.id}"] = layer.options[:visible] || false
         end
 

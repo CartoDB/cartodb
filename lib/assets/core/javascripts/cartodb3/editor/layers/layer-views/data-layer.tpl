@@ -68,13 +68,13 @@
         </li>
       </ul>
     </div>
-    <div class="u-flex">
-      <button class="CDB-Text CDB-Size-small u-secondaryTextColor u-upperCase u-rSpace--m">
+    <div class="u-flex Editor-ListLayer-info js-analyses-widgets-info">
+      <span class="CDB-Text CDB-Size-small u-secondaryTextColor u-upperCase u-rSpace--m">
         <%- _t('editor.layers.layer.analyses-count', { smart_count: numberOfAnalyses }) %>
-      </button>
-      <button class="CDB-Text CDB-Size-small u-secondaryTextColor u-upperCase">
+      </span>
+      <span class="CDB-Text CDB-Size-small u-secondaryTextColor u-upperCase">
         <%- _t('editor.layers.layer.widgets-count', { smart_count: numberOfWidgets }) %>
-      </button>
+      </span>
     </div>
   </div>
 </div>

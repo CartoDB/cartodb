@@ -2,10 +2,11 @@ require_relative '../../../../spec_helper'
 require_relative '../../../../factories/organizations_contexts.rb'
 
 describe Carto::Builder::Public::EmbedsController do
-  include Warden::Test::Helpers
+  include Warden::Test::Helpers, Carto::Factories::Visualizations, HelperMethods
 
   before(:all) do
     @user = FactoryGirl.create(:valid_user)
+    @carto_user = Carto::User.find(@user.id)
     @map = FactoryGirl.create(:map, user_id: @user.id)
     @visualization = FactoryGirl.create(:carto_visualization, user_id: @user.id, map_id: @map.id, version: 3)
     # Only mapcapped visualizations are presented by default
@@ -54,6 +55,26 @@ describe Carto::Builder::Public::EmbedsController do
       response.status.should == 404
 
       unpublished_visualization.destroy
+    end
+
+    it 'displays published layers, not ("live") visualization layers' do
+      @map, @table, @table_visualization, @visualization = create_full_visualization(@carto_user, visualization_attributes: { version: 3, privacy: Carto::Visualization::PRIVACY_PUBLIC })
+      Carto::Mapcap.create!(visualization_id: @visualization.id)
+
+      layer = @visualization.layers[1]
+      old_tile_style = layer.options['tile_style']
+
+      new_layer_style = '#layer { marker-width: 7; }'
+      layer.options['tile_style'] = new_layer_style
+      layer.save
+
+      get builder_visualization_public_embed_url(visualization_id: @visualization.id)
+
+      response.status.should == 200
+      response.body.should_not include(new_layer_style)
+      response.body.should include(old_tile_style)
+
+      destroy_full_visualization(@map, @table, @table_visualization, @visualization)
     end
 
     it 'embeds visualizations' do

@@ -132,6 +132,10 @@ module Carto
       !private? || is_owner?(user) || visualization_readable_by?(user)
     end
 
+    def raster?
+      service.is_raster?
+    end
+
     def estimated_row_count
       service.estimated_row_count
     end

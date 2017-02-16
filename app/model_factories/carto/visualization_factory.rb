@@ -7,7 +7,7 @@ module Carto
     include Carto::UUIDHelper
 
     def build_canonical_visualization(user_table)
-      kind = user_table.service.is_raster? ? Carto::Visualization::KIND_RASTER : Carto::Visualization::KIND_GEOM
+      kind = user_table.raster? ? Carto::Visualization::KIND_RASTER : Carto::Visualization::KIND_GEOM
       esv = user_table.external_source_visualization
       user = user_table.user
 

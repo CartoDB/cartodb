@@ -1,0 +1,464 @@
+// scss-lint:disable NestingDepth
+
+@import '../variables/mixins';
+@import '../variables/colors';
+@import '../variables/onboarding';
+@import '../editor-3/vars';
+@import 'cdb-variables/colors';
+@import 'cdb-variables/sizes';
+@import '../variables/sizes';
+
+$sSmallDescriptionWidth: 200px;
+$sRegularDescriptionWidth: 445px;
+$sBigDescriptionWidth: 550px;
+$sToolbarWidth: 72px;
+$sToolbarWidth-mediaXL: 48px;
+$sEditorWidth: 344px;
+$cBackgroundColor: #2E3C43;
+$sHighlightHeight: 64;
+
+@mixin setStepPad($step, $padHeights, $selector, $tab) {
+  .#{$selector}.is-#{$step}.#{$selector}--#{$tab} {
+    @each $position, $height in $padHeights {
+      .#{$selector}-pad#{$position} {
+        height: map-get($padHeights, #{$position});
+      }
+    }
+  }
+}
+
+.LayerOnboarding {
+  @include display-flex();
+  height: 100%;
+  pointer-events: auto;
+}
+
+.LayerOnboarding-footer {
+  margin-top: $sMargin-group;
+}
+
+.LayerOnboarding-footerButtons {
+  margin-bottom: $sMargin-element;
+}
+
+.LayerOnboarding-contentWrapper {
+  @include flex(1);
+  @include display-flex();
+  @include align-items(center);
+  height: 100%;
+  background: rgba($cBackgroundColor, 0.88);
+  pointer-events: all;
+  z-index: 5;
+}
+.LayerOnboarding-contentWrapper--analysis {
+  @include justify-content(center);
+}
+
+.LayerOnboarding-headerTitle {
+  margin-bottom: 22px;
+  color: #FFF;
+  font-size: 26px;
+  font-weight: $sFontWeight-lighter;
+}
+
+.LayerOnboarding-body {
+  position: absolute;
+  left: 100%;
+  margin-top: 45px;
+  margin-left: 70px;
+}
+
+.LayerOnboarding-body.is-step3 {
+  bottom: 36px;
+}
+
+.LayerOnboarding-body.is-step4 {
+  right: 100%;
+  bottom: 36px;
+  left: auto;
+}
+
+.LayerOnboarding--style .LayerOnboarding-body.is-step2 {
+  bottom: 36px;
+}
+
+.LayerOnboarding-contentBody {
+  width: 0;
+  margin: 0 80px;
+  z-index: 20;
+}
+
+.LayerOnboarding-contentBody--analysis {
+  width: auto;
+}
+
+.LayerOnboarding-forget,
+.LayerOnboarding-header,
+.LayerOnboarding-footer,
+.LayerOnboarding-step {
+  display: none;
+}
+
+.LayerOnboarding-footer .LayerOnboarding-footerButtons,
+.LayerOnboarding-contentWrapper .LayerOnboarding-header p,
+.LayerOnboarding-contentWrapper .LayerOnboarding-step p {
+  @include opacity(1);
+  @include transition(opacity, 200ms, ease-in-out, 1s);
+}
+
+.LayerOnboarding-header,
+.LayerOnboarding-footer {
+  min-width: 300px;
+}
+
+.LayerOnboarding.is-step0 .LayerOnboarding-header,
+.LayerOnboarding.is-step0 .LayerOnboarding-footer.is-step0,
+.LayerOnboarding.is-step1 .LayerOnboarding-footer.is-step1,
+.LayerOnboarding.is-step2 .LayerOnboarding-footer.is-step2,
+.LayerOnboarding.is-step3 .LayerOnboarding-footer.is-step3,
+.LayerOnboarding.is-step4 .LayerOnboarding-footer.is-step4,
+.LayerOnboarding.is-step0 .LayerOnboarding-step.is-step0,
+.LayerOnboarding.is-step1 .LayerOnboarding-step.is-step1,
+.LayerOnboarding.is-step2 .LayerOnboarding-step.is-step2,
+.LayerOnboarding.is-step3 .LayerOnboarding-step.is-step3,
+.LayerOnboarding.is-step4 .LayerOnboarding-step.is-step4 {
+  display: block;
+}
+
+.LayerOnboarding--analysis .LayerOnboarding-footer {
+  display: block;
+}
+
+.LayerOnboarding-headerText {
+  width: $sBigDescriptionWidth;
+  margin-top: -12px;
+  margin-bottom: 16px;
+  color: #FFF;
+  font-size: 26px;
+  line-height: 34px;
+}
+
+.LayerOnboarding-headerText.is-step4 {
+  width: 285px;
+}
+
+.LayerOnboarding-description {
+  @include transition(width, 100ms, ease-in-out);
+  width: $sRegularDescriptionWidth;
+  margin-bottom: $sMargin-elementInline;
+  color: #FFF;
+  font-size: $sFontSize-large;
+  font-weight: $sFontWeight-normal;
+  line-height: $sLineHeight-large;
+}
+
+.LayerOnboarding-description--analysis,
+.LayerOnboarding-description--style {
+  width: $sBigDescriptionWidth;
+}
+
+.LayerOnboarding-description.is-step4 {
+  width: 285px;
+}
+
+.Onboarding-listItem .LayerOnboarding-description {
+  font-size: $sFontSize-large;
+}
+
+.LayerOnboarding-toolbarOverlay,
+.LayerOnboarding-widgetsOverlay,
+.LayerOnboarding-pads {
+  @include transition(width, 300ms, ease-in-out);
+  height: 100%;
+  z-index: 10;
+}
+.LayerOnboarding-pads {
+  width: $sEditorWidth;
+}
+
+.LayerOnboarding-toolbarOverlay {
+  width: $sToolbarWidth;
+}
+
+.LayerOnboarding-widgetsOverlay {
+  display: none;
+  width: 16px;
+
+  &.has-widgets {
+    width: 376px;
+  }
+}
+.LayerOnboarding-widgetsOverlay.is-step4 {
+  display: block;
+}
+
+.LayerOnboarding-padTop,
+.LayerOnboarding-padMiddle,
+.LayerOnboarding-padBottom {
+  @include transition(height, 300ms, ease-in-out);
+  display: block;
+  width: 100%;
+}
+
+.LayerOnboarding-toolbarOverlay,
+.LayerOnboarding-widgetsOverlay,
+.LayerOnboarding-padTop,
+.LayerOnboarding-padBottom {
+  @include opacity(0.88);
+  background: $cBackgroundColor;
+}
+
+.LayerOnboarding-padMiddle {
+  @include opacity(1);
+  position: relative;
+  background: transparent;
+}
+
+$dataSteps: (
+  step0: (
+    Top: 0,
+    Middle: 100%,
+    Bottom: 0
+  ),
+  step1: (
+    Top: 0,
+    Middle: (19 + 64 + 21) * 1px,
+    Bottom: 100%
+  ),
+  step2: (
+    Top: (64 + 21) * 1px,
+    Middle: calc(100% - (64 + 21 + 66) * 1px),
+    Bottom: 66px
+  ),
+  step3: (
+    Top: calc(100% - 66px),
+    Middle: 66px,
+    Bottom: 0
+  ),
+  step4: (
+    Top: 100%,
+    Middle: 0,
+    Bottom: 0
+  )
+);
+
+$stylePointsSimpleAggregationSteps: (
+  step0: (
+    Top: 0,
+    Middle: 100%,
+    Bottom: 0
+  ),
+  step1: (
+    Top: 136px,
+    Middle: 141px,
+    Bottom: calc(100% - (136 + 141) * 1px)
+  ),
+  step2: (
+    Top: (136 + 141) * 1px,
+    Middle: calc(100% - (136 + 141 + 66) * 1px),
+    Bottom: 66px
+  ),
+  step3: (
+    Top: calc(100% - 66px),
+    Middle: 66px,
+    Bottom: 0
+  )
+);
+
+$stylePointsDoubleAggregationSteps: (
+  step0: (
+    Top: 0,
+    Middle: 100%,
+    Bottom: 0
+  ),
+  step1: (
+    Top: 136px,
+    Middle: (275 + 32) * 1px,
+    Bottom: calc(100% - (136 + 275 + 32) * 1px)
+  ),
+  step2: (
+    Top: (136 + 275 + 32) * 1px,
+    Middle: calc(100% - (136 + 275 + 32 + 66) * 1px),
+    Bottom: 66px,
+  ),
+  step3: (
+    Top: calc(100% - 66px),
+    Middle: 66px,
+    Bottom: 0
+  )
+);
+
+$styleSteps: (
+  step0: (
+    Top: 0,
+    Middle: 100%,
+    Bottom: 0
+  ),
+  step1: (
+    Top: 136px,
+    Middle: 300px,
+    Bottom: calc(100% - 136px)
+  ),
+  step2: (
+    Top: calc(100% - 66px),
+    Middle: 66px,
+    Bottom: 0
+  )
+);
+
+@each $step, $heights in $dataSteps {
+  @include setStepPad($step, $heights, 'LayerOnboarding', 'data');
+}
+
+@each $step, $heights in $stylePointsSimpleAggregationSteps {
+  @include setStepPad($step, $heights, 'LayerOnboarding', 'stylePointsSimpleAggregation');
+}
+
+@each $step, $heights in $stylePointsDoubleAggregationSteps {
+  @include setStepPad($step, $heights, 'LayerOnboarding', 'stylePointsDoubleAggregation');
+}
+
+@each $step, $heights in $styleSteps {
+  @include setStepPad($step, $heights, 'LayerOnboarding', 'style');
+}
+
+@each $step, $heights in $styleSteps {
+  @include setStepPad($step, $heights, 'LayerOnboarding', 'analysis');
+}
+
+.LayerOnboarding--data .LayerOnboarding-pads--right {
+  display: none;
+  width: 136px;
+
+  &.is-step0,
+  &.is-step1,
+  &.is-step2,
+  &.is-step3 {
+    .LayerOnboarding-padTop {
+      height: 100%;
+    }
+    .LayerOnboarding-padMiddle {
+      height: 0;
+    }
+    .LayerOnboarding-padBottom {
+      height: 0;
+    }
+  }
+
+  &.is-step4 {
+    .LayerOnboarding-padTop {
+      height: calc(100% - (64 + 16) * 1px);
+    }
+    .LayerOnboarding-padTop.has-timeSeries {
+      height: calc(100% - (64 + 151) * 1px); // 151 - XXXL time serie
+    }
+    .LayerOnboarding-padTop.has-timeSeries--animated {
+      height: calc(100% - (64 + 175) * 1px); // 175 - XXXL animated
+    }
+
+    .LayerOnboarding-padMiddle {
+      height: 64px;
+      background: transparent;
+    }
+
+    .LayerOnboarding-padBottom {
+      height: 16px;
+    }
+    .LayerOnboarding-padBottom.has-timeSeries {
+      height: 151px;
+    }
+    .LayerOnboarding-padBottom.has-timeSeries--animated {
+      height: 175px;
+    }
+
+    @media (max-width: $sViewport-xxl) {
+      .LayerOnboarding-padTop {
+        &.has-timeSeries {
+          height: calc(100% - (64 + 135) * 1px); // 135 - XXL time serie
+        }
+        &.has-timeSeries--animated {
+          height: calc(100% - (64 + 159) * 1px); // 159 - XXL animated
+        }
+      }
+      .LayerOnboarding-padBottom {
+        &.has-timeSeries {
+          height: calc(100% - (64 + 135) * 1px);
+        }
+        &.has-timeSeries--animated {
+          height: calc(100% - (64 + 159) * 1px);
+        }
+      }
+    }
+
+    @media (max-width: $sViewport-xl) {
+      .LayerOnboarding-padTop {
+        &.has-timeSeries {
+          height: calc(100% - (64 + 127) * 1px); // 127 - XL time serie
+        }
+        &.has-timeSeries--animated {
+          height: calc(100% - (64 + 151) * 1px); // 151 - XL animated
+        }
+        &.has-widgets {
+          height: calc(100% - (64 + 216) * 1px);
+
+          &.has-timeSeries {
+            height: calc(100% - (64 + 335) * 1px);
+          }
+          &.has-timeSeries--animated {
+            height: calc(100% - (64 + 359) * 1px);
+          }
+        }
+      }
+      .LayerOnboarding-padBottom {
+        &.has-timeSeries {
+          height: calc(100% - (64 + 127) * 1px);
+        }
+        &.has-timeSeries--animated {
+          height: calc(100% - (64 + 151) * 1px);
+        }
+        &.has-widgets {
+          height: 216px;
+
+          &.has-timeSeries {
+            height: 335px;
+          }
+          &.has-timeSeries--animated {
+            height: 359px;
+          }
+        }
+      }
+    }
+  }
+}
+.LayerOnboarding--data .LayerOnboarding-pads--right.is-step4 {
+  display: block;
+}
+
+
+.LayerOnboarding-padBottom {
+  position: relative;
+}
+
+.LayerOnboarding-forgetLabel {
+  cursor: pointer;
+}
+
+@media (max-width: $sViewport-xxl) {
+  .LayerOnboarding-widgetsOverlay.has-widgets {
+    width: 304px;
+  }
+}
+
+@media (max-width: $sViewport-xl) {
+  .LayerOnboarding-toolbarOverlay {
+    width: $sToolbarWidth-mediaXL;
+  }
+
+  .LayerOnboarding-widgetsOverlay {
+    width: 8px;
+
+    &.has-widgets {
+      width: 8px;
+    }
+  }
+}

@@ -7,6 +7,7 @@ module SpecHelperHelpers
 
   def clean_metadata_database
     if system('which stellar')
+      Rails::Sequel.connection.disconnect
       system 'stellar restore'
     else
       protected_tables = [:schema_migrations, :spatial_ref_sys]

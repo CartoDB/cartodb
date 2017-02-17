@@ -23,8 +23,10 @@ TooltipManager.prototype.start = function (cartoDBLayerGroupView) {
 };
 
 TooltipManager.prototype.stop = function () {
-  this._cartoDBLayerGroupView.off('featureOver', this._onFeatureOvered, this);
-  this._cartoDBLayerGroupView.off('featureOut', this._onFeatureOut, this);
+  if (this._cartoDBLayerGroupView) {
+    this._cartoDBLayerGroupView.off('featureOver', this._onFeatureOvered, this);
+    this._cartoDBLayerGroupView.off('featureOut', this._onFeatureOut, this);
+  }
 };
 
 TooltipManager.prototype._onFeatureOvered = function (featureOverEvent) {

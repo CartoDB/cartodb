@@ -17,10 +17,12 @@ MapModelEventsManager.prototype.start = function (cartoDBLayerGroupView) {
 };
 
 MapModelEventsManager.prototype.stop = function () {
-  this._cartoDBLayerGroupView.off('featureOver', this._onFeatureOver, this);
-  this._cartoDBLayerGroupView.off('featureClick', this._onFeatureClick, this);
-  this._cartoDBLayerGroupView.off('featureOut', this._onFeatureOut, this);
-  delete this._cartoDBLayerGroupView;
+  if (this._cartoDBLayerGroupView) {
+    this._cartoDBLayerGroupView.off('featureOver', this._onFeatureOver, this);
+    this._cartoDBLayerGroupView.off('featureClick', this._onFeatureClick, this);
+    this._cartoDBLayerGroupView.off('featureOut', this._onFeatureOut, this);
+    delete this._cartoDBLayerGroupView;
+  }
 };
 
 MapModelEventsManager.prototype._onFeatureOver = function (event) {

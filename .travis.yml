@@ -7,8 +7,6 @@ before_install:
 
 install:
   - npm install
-
-before_script:
   - npm install -g npm@2.14
   - npm install -g grunt-cli
 

@@ -91,29 +91,33 @@
     margin-right: 0;
   }
 }
-.ColorBar.ColorBar--inline {
+.ColorBar--inline {
   display: inline-block;
   width: 30px;
 }
-.ColorBar.ColorBar--spaceless {
+.ColorBar--spaceless {
   border-width: 1px 0;
   border-radius: 0;
+
+  &:first-child {
+    border-width: 1px 0 1px 1px;
+    border-radius: $baseSize - 2 0 0 $baseSize - 2;
+  }
+  &:last-child {
+    border-width: 1px 1px 1px 0;
+    border-radius: 0 $baseSize - 2 $baseSize - 2 0;
+  }
+  &:only-child {
+    border-width: 1px;
+    border-radius: $baseSize - 2;
+  }
 }
-.ColorBar.ColorBar--spaceless:first-child {
-  border-width: 1px 0 1px 1px;
-  border-radius: $baseSize - 2 0 0 $baseSize - 2;
-}
-.ColorBar.ColorBar--spaceless:last-child {
-  border-width: 1px 1px 1px 0;
-  border-radius: 0 $baseSize - 2 $baseSize - 2 0;
-}
-.ColorBar.ColorBar--spaceless:only-child {
-  border-width: 1px;
-  border-radius: $baseSize - 2;
-}
-.ColorBar.ColorBar--spaceSmall {
+.ColorBar--spaceSmall {
   margin-right: 2px;
   border-radius: 2px;
+}
+.ColorBar--clickable {
+  cursor: pointer;
 }
 
 .ColorBarWrapper--withInvertLink {

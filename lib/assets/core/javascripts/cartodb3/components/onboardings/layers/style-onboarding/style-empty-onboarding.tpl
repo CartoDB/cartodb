@@ -7,19 +7,19 @@
 
 <div class="LayerOnboarding-contentWrapper LayerOnboarding-contentWrapper--analysis is-step0 js-step">
   <div class="LayerOnboarding-contentBody LayerOnboarding-contentBody--analysis is-step0 js-step">
-    <div class="Onboarding-body">
+    <div class="Onboarding-body is-step0">
       <p class="CDB-Text LayerOnboarding-headerTitle"><%= _t('style-onboarding.georeference.title', { name: name })%></p>
 
-      <p class="CDB-Text Onboarding-headerDescription"><%- _t('style-onboarding.georeference.description')%></p>
+      <p class="CDB-Text LayerOnboarding-description"><%- _t('style-onboarding.georeference.description')%></p>
     </div>
 
-    <div class="LayerOnboarding-footer">
+    <div class="LayerOnboarding-footer is-step0">
       <div class="LayerOnboarding-footerButtons">
         <button class="CDB-Button CDB-Button--secondary CDB-Button--white CDB-Button--big Onboarding-footer--marginRight js-close">
           <span class="CDB-Button-Text CDB-Text u-upperCase is-semibold CDB-Size-medium"><%- _t('style-onboarding.georeference.skip')%></span>
         </button>
 
-        <button class="CDB-Button CDB-Button--primary CDB-Button--big js-add-analysis">
+        <button class="CDB-Button CDB-Button--primary CDB-Button--big js-georeference">
           <span class="CDB-Button-Text CDB-Text u-upperCase is-semibold CDB-Size-medium"><%- _t('style-onboarding.georeference.georeference')%></span>
         </button>
       </div>

@@ -130,11 +130,8 @@ $sHighlightHeight: 64;
   display: block;
 }
 
-.LayerOnboarding--analysis,
-.LayerOnboarding--styleGeoreference {
-  .LayerOnboarding-footer {
-    display: block;
-  }
+.LayerOnboarding--analysis .LayerOnboarding-footer {
+  display: block;
 }
 
 .LayerOnboarding-headerText {

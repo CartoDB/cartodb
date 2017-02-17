@@ -72,6 +72,7 @@ Development
 * Correctly update legend styles (with custom titles) (#10889, #10904)
 * Hide sync options in builder table view for non-owners (#10986)
 * Fix issues with edition of custom color infowindows (#10985)
+* UI fixes for georeference. Changes of copy and validation warning. (#11426)
 
 
 4.0.x (2016-12-05)

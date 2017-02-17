@@ -764,7 +764,8 @@
         "upload-file": "Upload file",
         "upload-asset": "Upload asset",
         "upload-image": "Upload your image",
-        "your-uploads": "Your uploads"
+        "your-uploads": "Your uploads",
+        "organization-uploads": "Organization uploads"
       },
       "add-analysis": {
         "modal-title": "Add a new analysis",
@@ -1411,7 +1412,8 @@
         "heatmap": "Pixel",
         "analysis": "Analysis",
         "add-analysis": "Add analysis",
-        "analyses-count": "(%{smart_count}) Analysis |||| (%{smart_count}) Analyses",
+        "analyses-count": "%{smart_count} Analysis |||| %{smart_count} Analyses",
+        "widgets-count": "%{smart_count} Widget |||| %{smart_count} Widgets",
         "add-layer": "Add layer",
         "delete": "Delete",
         "cancel-delete-analysis": "Cancel"

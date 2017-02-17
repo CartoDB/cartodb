@@ -58,23 +58,23 @@
   },
   "data-onboarding": {
     "title": "Welcome to layer view",
-    "description": "Edit, analyze, style and enhance your data with pop-ups and&nbsp;legends.",
+    "description": "Analyze and style your data and enhance it with pop-ups and&nbsp;legends.",
     "take-tour": "Take the tour",
     "edit-layer": "Edit layer",
     "layer-options": {
       "title": "Layer options",
-      "description": "Layers can be renamed by double clicking on the layer name. Data layers can be exported, duplicated, and flattened."
+      "description": "Layers can be renamed by double clicking on the layer name, centered by clicking in the crosshair, and exported through their contextual menu."
     },
     "data-tab": {
       "title": "Data tab",
-      "description": "Edit, style, and add analysis, pop-ups, and legends to layers. To further explore your data add widgets."
+      "description": "Style, and add analysis, pop-ups, and legends to layers. To further explore your data add widgets."
     },
     "sql-editor": {
       "title": "SQL Editor",
-      "description": "Data layers can be edited and processed by using the SQL editor at the bottom of the screen."
+      "description": "Data layers can be edited and processed by using the SQL viewer at the bottom of the screen."
     },
     "add-geometry": {
-      "title": "Add geometry and switch to dataset view",
+      "title": "Add geometries and switch to dataset view",
       "description": "You can switch between map or table view. In map view, you can add points, lines, and polygons.",
       "edit-layer": "Edit layer"
     },

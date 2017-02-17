@@ -54,6 +54,15 @@ class Api::Json::ImportsController < Api::ApplicationController
               file_param: params[:file],
               request_body: request.body,
               s3_config: Cartodb.config[:importer]['s3'])
+
+            # In Rack < 1.6 / Rails < 4, tempfiles are not inmediately cleaned (https://github.com/rack/rack/pull/671).
+            # Instead they stay around until a GC cycle which can take a while in instances with low traffic.
+            # This forces the tempfile to be removed right away, just after we have saved it to our storage.
+            [:filename, :file].each do |param_name|
+              file = params[param_name]
+              file.tempfile.close! if file
+            end
+
             # Not queued import is set by skipping pending state and setting directly as already enqueued
             options.merge({
                               data_source: results[:file_uri].presence,

@@ -18,7 +18,7 @@
   </div>
   <div class="Editor-ListLayer-inner">
     <div class="Editor-ListLayer-title">
-      <div class="Editor-ListLayer-titleText js-header"></div>
+      <div class="Editor-ListLayer-titleText js-Editor-ListLayer-titleText js-header"></div>
       <ul class="Editor-HeaderInfo-actions">
         <% if (isTorque) { %>
           <li class="Editor-HeaderInfo-actionsItem u-rSpace">
@@ -68,15 +68,13 @@
         </li>
       </ul>
     </div>
-    <div class="u-flex u-justifySpace">
-      <button class="CDB-Text CDB-Size-small u-actionTextColor u-upperCase js-add-analysis" data-layer-id="<%- layerId %>">
-        <%- _t('editor.layers.layer.add-analysis') %>
-      </button>
-      <% if (isCollapsed && numberOfAnalyses > 0) { %>
-        <p class="CDB-Text CDB-Size-small u-secondaryTextColor">
-          <%- _t('editor.layers.layer.analyses-count', { smart_count: numberOfAnalyses }) %>
-        </p>
-      <% } %>
+    <div class="u-flex Editor-ListLayer-info js-analyses-widgets-info">
+      <span class="CDB-Text CDB-Size-small u-secondaryTextColor u-upperCase u-rSpace--m">
+        <%- _t('editor.layers.layer.analyses-count', { smart_count: numberOfAnalyses }) %>
+      </span>
+      <span class="CDB-Text CDB-Size-small u-secondaryTextColor u-upperCase">
+        <%- _t('editor.layers.layer.widgets-count', { smart_count: numberOfWidgets }) %>
+      </span>
     </div>
   </div>
 </div>

@@ -6,13 +6,17 @@ module SpecHelperHelpers
   end
 
   def clean_metadata_database
-    protected_tables = [:schema_migrations, :spatial_ref_sys]
-    Rails::Sequel.connection.tables.each do |t|
-      if !protected_tables.include?(t)
-        begin
-          Rails::Sequel.connection.run("TRUNCATE TABLE \"#{t}\" CASCADE")
-        rescue Sequel::DatabaseError => e
-          raise e unless e.message =~ /PG::Error: ERROR:  relation ".*" does not exist/
+    if system('which stellar')
+      system 'stellar restore'
+    else
+      protected_tables = [:schema_migrations, :spatial_ref_sys]
+      Rails::Sequel.connection.tables.each do |t|
+        if !protected_tables.include?(t)
+          begin
+            Rails::Sequel.connection.run("TRUNCATE TABLE \"#{t}\" CASCADE")
+          rescue Sequel::DatabaseError => e
+            raise e unless e.message =~ /PG::Error: ERROR:  relation ".*" does not exist/
+          end
         end
       end
     end

@@ -298,7 +298,7 @@ module Carto
     # before the model. This can cause deadlocks with simultaneous request to update and delete the model.
     # This request a explicit lock to PostgreSQL so the tables are always accessed in the same order. #11443
     def lock_user_tables
-      user_tables.lock.all
+      user_tables.lock.all if persisted?
     end
 
     def rename_in(target, anchor, substitution)

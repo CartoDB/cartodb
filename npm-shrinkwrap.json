@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.5.149",
+  "version": "4.5.156",
   "dependencies": {
     "backbone": {
       "version": "1.2.3",
@@ -10,7 +10,7 @@
     "backbone-forms": {
       "version": "0.14.0",
       "from": "backbone-forms@0.14.0",
-      "resolved": "http://registry.npmjs.org/backbone-forms/-/backbone-forms-0.14.0.tgz"
+      "resolved": "https://registry.npmjs.org/backbone-forms/-/backbone-forms-0.14.0.tgz"
     },
     "backbone-model-file-upload": {
       "version": "1.0.0",
@@ -86,7 +86,7 @@
                             },
                             "readable-stream": {
                               "version": "2.0.6",
-                              "from": "readable-stream@>=2.0.0 <2.1.0",
+                              "from": "readable-stream@>=2.0.5 <2.1.0",
                               "resolved": "https://registry.npmjs.org/readable-stream/-/readable-stream-2.0.6.tgz",
                               "dependencies": {
                                 "core-util-is": {
@@ -966,7 +966,7 @@
                     },
                     "inherits": {
                       "version": "2.0.3",
-                      "from": "inherits@>=2.0.0 <3.0.0",
+                      "from": "inherits@>=2.0.1 <2.1.0",
                       "resolved": "https://registry.npmjs.org/inherits/-/inherits-2.0.3.tgz"
                     }
                   }
@@ -1101,7 +1101,7 @@
     "camshaft-reference": {
       "version": "0.29.0",
       "from": "camshaft-reference@<2.0.0",
-      "resolved": "http://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.29.0.tgz"
+      "resolved": "https://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.29.0.tgz"
     },
     "carto": {
       "version": "0.15.1-cdb1",
@@ -1226,9 +1226,9 @@
                           "resolved": "https://registry.npmjs.org/core-js/-/core-js-2.4.1.tgz"
                         },
                         "regenerator-runtime": {
-                          "version": "0.10.1",
+                          "version": "0.10.2",
                           "from": "regenerator-runtime@>=0.10.0 <0.11.0",
-                          "resolved": "https://registry.npmjs.org/regenerator-runtime/-/regenerator-runtime-0.10.1.tgz"
+                          "resolved": "https://registry.npmjs.org/regenerator-runtime/-/regenerator-runtime-0.10.2.tgz"
                         }
                       }
                     },
@@ -1402,9 +1402,9 @@
               "resolved": "git://github.com/CartoDB/perfect-scrollbar.git#735c6c0bf3cff1c4756d0b186d5ca00b0d8cf880"
             },
             "torque.js": {
-              "version": "2.16.1",
+              "version": "2.16.3",
               "from": "cartodb/torque#master",
-              "resolved": "git://github.com/cartodb/torque.git#e20286ed840ef4208ba824ff9574c1072e406bfd",
+              "resolved": "git://github.com/cartodb/torque.git#771c92fb2f97a481e62a8f9ef42f205e4b8b6b70",
               "dependencies": {
                 "carto": {
                   "version": "0.15.1-cdb1",
@@ -1635,9 +1635,9 @@
                       "resolved": "https://registry.npmjs.org/core-js/-/core-js-2.4.1.tgz"
                     },
                     "regenerator-runtime": {
-                      "version": "0.10.1",
+                      "version": "0.10.2",
                       "from": "regenerator-runtime@>=0.10.0 <0.11.0",
-                      "resolved": "https://registry.npmjs.org/regenerator-runtime/-/regenerator-runtime-0.10.1.tgz"
+                      "resolved": "https://registry.npmjs.org/regenerator-runtime/-/regenerator-runtime-0.10.2.tgz"
                     }
                   }
                 },
@@ -1811,9 +1811,9 @@
           "resolved": "git://github.com/CartoDB/perfect-scrollbar.git#735c6c0bf3cff1c4756d0b186d5ca00b0d8cf880"
         },
         "torque.js": {
-          "version": "2.16.1",
+          "version": "2.16.3",
           "from": "cartodb/torque#master",
-          "resolved": "git://github.com/cartodb/torque.git#e20286ed840ef4208ba824ff9574c1072e406bfd",
+          "resolved": "git://github.com/cartodb/torque.git#771c92fb2f97a481e62a8f9ef42f205e4b8b6b70",
           "dependencies": {
             "carto": {
               "version": "0.15.1-cdb1",
@@ -1980,7 +1980,7 @@
     "queue-async": {
       "version": "1.2.1",
       "from": "queue-async@1.2.1",
-      "resolved": "http://registry.npmjs.org/queue-async/-/queue-async-1.2.1.tgz"
+      "resolved": "https://registry.npmjs.org/queue-async/-/queue-async-1.2.1.tgz"
     },
     "tangram": {
       "version": "0.11.7",
@@ -2168,9 +2168,9 @@
       }
     },
     "torque.js": {
-      "version": "2.16.1",
+      "version": "2.16.3",
       "from": "cartodb/torque#master",
-      "resolved": "git://github.com/cartodb/torque.git#e20286ed840ef4208ba824ff9574c1072e406bfd",
+      "resolved": "git://github.com/cartodb/torque.git#771c92fb2f97a481e62a8f9ef42f205e4b8b6b70",
       "dependencies": {
         "carto": {
           "version": "0.15.1-cdb1",

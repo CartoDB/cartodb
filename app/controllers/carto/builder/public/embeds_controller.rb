@@ -21,7 +21,7 @@ module Carto
         layout false
 
         def show
-          @layers_data = @visualization.layers.map do |l|
+          @layers_data = visualization_for_presentation.layers.map do |l|
             Carto::Api::LayerPresenter.new(l).to_embed_poro
           end
 

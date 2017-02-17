@@ -18,10 +18,7 @@
   var ACTIVE_LOCALE = 'en';
 </script>
 
-<% if current_user.google_maps_api_key %>
-  <!-- include google maps library -->
-  <script type='text/javascript' src="//maps.google.com/maps/api/js?key=<%= current_user.google_maps_api_key %>&v=3.25"></script>
-<% end %>
+<%= render(partial: 'shared/visualizations/google_maps', locals: { google_maps_qs: @google_maps_qs }) %>
 
 <%= javascript_include_tag 'vendor_editor3.js' %>
 <%= javascript_include_tag 'common_editor3.js' %>

@@ -1412,7 +1412,8 @@
         "heatmap": "Pixel",
         "analysis": "Analysis",
         "add-analysis": "Add analysis",
-        "analyses-count": "(%{smart_count}) Analysis |||| (%{smart_count}) Analyses",
+        "analyses-count": "%{smart_count} Analysis |||| %{smart_count} Analyses",
+        "widgets-count": "%{smart_count} Widget |||| %{smart_count} Widgets",
         "add-layer": "Add layer",
         "delete": "Delete",
         "cancel-delete-analysis": "Cancel"

@@ -38,15 +38,15 @@ class Carto::Map < ActiveRecord::Base
   after_commit :force_notify_map_change
 
   def data_layers
+    layers.select(&:data_layer?)
+  end
+
+  def carto_layers
     layers.select(&:carto?)
   end
 
   def user_layers
     layers.select(&:user_layer?)
-  end
-
-  def carto_and_torque_layers
-    layers.select { |layer| layer.carto? || layer.torque? }
   end
 
   def torque_layers
@@ -151,7 +151,7 @@ class Carto::Map < ActiveRecord::Base
   end
 
   def can_add_layer?(user)
-    return false if user.max_layers && user.max_layers <= carto_and_torque_layers.count
+    return false if user.max_layers && user.max_layers <= data_layers.count
 
     visualization.writable_by?(user)
   end

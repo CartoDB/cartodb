@@ -8,7 +8,7 @@ module Carto
       include Carto::HtmlSafe
 
       delegate [:id, :map, :qualified_name, :likes, :description, :retrieve_named_map?, :password_protected?, :overlays,
-                :prev_id, :next_id, :transition_options, :has_password?, :parent_id, :get_auth_tokens, :user, 
+                :prev_id, :next_id, :transition_options, :has_password?, :parent_id, :get_auth_tokens, :user,
                 :related_canonical_visualizations
                ] => :visualization
 
@@ -60,7 +60,7 @@ module Carto
         when :base
           map.user_layers
         when :cartodb
-          map.data_layers
+          map.carto_layers
         when :others
           map.other_layers
         else

@@ -15,9 +15,24 @@
   border: 1px solid $cSecondaryLine;
   border-radius: $halfBaseSize;
   background: #FFF;
-  cursor: move;
-  cursor: -webkit-grab;
-  cursor: -moz-grab;
+  cursor: pointer;
+
+  &:hover {
+    @include transition(border 200ms ease-in);
+    border: 1px solid $cHoverLine;
+
+    .Editor-ListLayer-dragIcon {
+      opacity: 1;
+    }
+
+    .Editor-ListLayer-titleText {
+      text-decoration: underline;
+
+      &.is-hover {
+        text-decoration: none;
+      }
+    }
+  }
 }
 .Editor-ListLayer-item.is-hidden {
   opacity: 0.64;
@@ -67,10 +82,6 @@
   border-color: $cSecondaryBackground;
   background: $cSecondaryBackground;
 }
-.Editor-ListLayer-item:hover {
-  @include transition(border 200ms ease-in);
-  border: 1px solid $cHoverLine;
-}
 .Editor-ListLayer-item.last-child {
   margin-bottom: 0;
 }
@@ -107,10 +118,6 @@
   left: -20px;
   opacity: 0;
 }
-.Editor-ListLayer-item:hover .Editor-ListLayer-dragIcon {
-  opacity: 1;
-}
-
 .Editor-ListLayer-media {
   @include display-flex();
   @include align-items(center);
@@ -118,7 +125,6 @@
   width: 40px;
   height: 40px;
   border-radius: $baseSize / 2;
-  cursor: pointer;
 }
 .Editor-ListLayer-media.is-hidden {
   opacity: 0.24;
@@ -127,7 +133,9 @@
 .Editor-ListLayer-media--basemap {
   border: 1px solid $cMainLine;
 }
-
+.Editor-ListLayer-info.is-hidden {
+  opacity: 0.24;
+}
 
 .Editor-ListLayer-title {
   @include display-flex();
@@ -138,7 +146,6 @@
   @include flex(1);
   width: 0;
   padding-right: $baseSize * 2;
-  cursor: pointer;
 }
 
 .Editor-ListAnalysis {
@@ -191,13 +198,6 @@
   display: block;
   margin-right: 0;
 }
-.Editor-ListAnalysis-item.ui-draggable .CDB-Shape, // override default cursor for shape
-.Editor-ListAnalysis-item.ui-draggable {
-   // scss-lint:disable VendorPrefix
-  cursor: move;
-  cursor: -webkit-grab;
-  cursor: -moz-grab;
-}
 .Editor-ListAnalysis-item.ui-draggable-dragging {
    // scss-lint:disable VendorPrefix
   width: 100%;
@@ -231,19 +231,16 @@
   padding-right: $baseSize;
   border: 1px solid $cSecondaryLine;
   border-radius: $halfBaseSize;
+  background: $cThirdBackground;
+
   &:hover {
     @include transition(border 200ms ease-in);
     border: 1px solid $cHoverLine;
-    cursor: pointer;
-  }
-}
-.Editor-ListAnalysis-layer.is-base {
-  background: $cThirdBackground;
-  &:hover {
-    border: 1px solid $cSecondaryLine;
-    cursor: move;
-    cursor: -webkit-grab;
-    cursor: -moz-grab;
+
+    .Editor-ListAnalysis-title,
+    .Editor-ListAnalysis-itemInfoDataset {
+      text-decoration: underline;
+    }
   }
 }
 

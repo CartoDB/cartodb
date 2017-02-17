@@ -124,7 +124,7 @@ module Carto
       def layers_vizjson(forced_privacy_version)
         ordered_layers = (
           [basemap_layer] +
-          @visualization.data_layers +
+          @visualization.carto_layers +
           @visualization.other_layers +
           non_basemap_base_layers).compact
 

@@ -67,8 +67,8 @@ module Carto
       LEGEND_TYPES_PER_ATTRIBUTE.each do |attribute, legend_types|
         next unless legend_types.include?(type)
 
-        other_legends_present = layer.legends.none? { |legend| legend.id != id && legend_types.include?(legend.type) }
-        errors.add(:layer, "Only one #{attribute} legend per layer allowed") unless other_legends_present
+        other_legends_present = layer.legends.any? { |legend| legend.id != id && legend_types.include?(legend.type) }
+        errors.add(:layer, "Only one #{attribute} legend per layer allowed") if other_legends_present
       end
     end
 

@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.5.148",
+  "version": "4.5.149",
   "dependencies": {
     "backbone": {
       "version": "1.2.3",
@@ -1402,9 +1402,9 @@
               "resolved": "git://github.com/CartoDB/perfect-scrollbar.git#735c6c0bf3cff1c4756d0b186d5ca00b0d8cf880"
             },
             "torque.js": {
-              "version": "2.16.1",
+              "version": "2.16.3",
               "from": "cartodb/torque#master",
-              "resolved": "git://github.com/cartodb/torque.git#e20286ed840ef4208ba824ff9574c1072e406bfd",
+              "resolved": "git://github.com/cartodb/torque.git#771c92fb2f97a481e62a8f9ef42f205e4b8b6b70",
               "dependencies": {
                 "carto": {
                   "version": "0.15.1-cdb1",
@@ -1811,9 +1811,9 @@
           "resolved": "git://github.com/CartoDB/perfect-scrollbar.git#735c6c0bf3cff1c4756d0b186d5ca00b0d8cf880"
         },
         "torque.js": {
-          "version": "2.16.1",
+          "version": "2.16.3",
           "from": "cartodb/torque#master",
-          "resolved": "git://github.com/cartodb/torque.git#e20286ed840ef4208ba824ff9574c1072e406bfd",
+          "resolved": "git://github.com/cartodb/torque.git#771c92fb2f97a481e62a8f9ef42f205e4b8b6b70",
           "dependencies": {
             "carto": {
               "version": "0.15.1-cdb1",
@@ -2168,9 +2168,9 @@
       }
     },
     "torque.js": {
-      "version": "2.16.1",
+      "version": "2.16.3",
       "from": "cartodb/torque#master",
-      "resolved": "git://github.com/cartodb/torque.git#e20286ed840ef4208ba824ff9574c1072e406bfd",
+      "resolved": "git://github.com/cartodb/torque.git#771c92fb2f97a481e62a8f9ef42f205e4b8b6b70",
       "dependencies": {
         "carto": {
           "version": "0.15.1-cdb1",

@@ -2059,7 +2059,7 @@
           "custom-categories": "Custom categ.",
           "custom-help": "Represent the widget's values with custom colors in the map",
           "custom-disabled": "If an aggregated style is applied, auto style is disabled",
-          "description": "Define how your widget interacts with the data",
+          "description": "Description",
           "yes": "Yes",
           "no": "No"
         }

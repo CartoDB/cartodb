@@ -58,7 +58,12 @@ $sHighlightHeight: 64;
   margin-bottom: 22px;
   color: #FFF;
   font-size: 26px;
+  line-height: 34px;
   font-weight: $sFontWeight-lighter;
+
+  strong {
+    font-weight: $sFontWeight-bold;
+  }
 }
 
 .LayerOnboarding-body {
@@ -125,8 +130,11 @@ $sHighlightHeight: 64;
   display: block;
 }
 
-.LayerOnboarding--analysis .LayerOnboarding-footer {
-  display: block;
+.LayerOnboarding--analysis,
+.LayerOnboarding--styleGeoreference {
+  .LayerOnboarding-footer {
+    display: block;
+  }
 }
 
 .LayerOnboarding-headerText {

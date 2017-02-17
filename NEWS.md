@@ -45,6 +45,7 @@ Development
   * `sudo apt-get install gdal2.1-static-bin`
 * Style with icons
   * Removed Pin, and Simple icons (#11479)
+  * Select an icon previously uploaded by the organization admin (#11462)
   * Sets the default initial size for icons to 20px (#11498)
 
 ### Bug fixes
@@ -68,6 +69,7 @@ Development
 * Improve speed of map name availability check, improves map creation and renaming times (#11435)
 * Fix redirection after logout for subdomainless URLs (#11361)
 * Fix scrollbar in carousel (#11061)
+* Fix layer loading at embeds (#11554)
 * Restrict login from organization pages to organization users, and redirect to Central otherwise
 * Correctly refresh map after adding/editing map geometries (#11064)
 * Return embed private instead of 404 in visualization embeds where the visualization doesn't exist (#11056)
@@ -75,7 +77,7 @@ Development
 * Correctly update legend styles (with custom titles) (#10889, #10904)
 * Hide sync options in builder table view for non-owners (#10986)
 * Fix issues with edition of custom color infowindows (#10985)
-
+* Color scheme is now clickable in category ramps (#11413)
 
 4.0.x (2016-12-05)
 ------------------

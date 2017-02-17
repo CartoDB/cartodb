@@ -3,7 +3,7 @@
     <li class="CDB-ListDecoration-item CDB-ListDecoration-itemPadding--vertical CDB-Text CDB-Size-medium u-secondaryTextColor u-flex u-alignCenter">
       <ul class="ColorBarContainer">
         <% _.each(range, function (color) { %>
-          <li class="ColorBar ColorBar--spaceless" style="background-color: <%- color %>;"></li>
+          <li class="ColorBar ColorBar--spaceless ColorBar--clickable js-color" style="background-color: <%- color %>;"></li>
         <% }); %>
       </ul>
     </li>

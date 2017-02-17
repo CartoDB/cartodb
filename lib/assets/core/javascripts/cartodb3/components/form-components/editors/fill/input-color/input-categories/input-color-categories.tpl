@@ -3,9 +3,11 @@
     <li class="CDB-ListDecoration-item CDB-ListDecoration-itemPadding--vertical CDB-Text CDB-Size-medium u-secondaryTextColor">
       <ul class="u-flex u-justifySpace">
         <li class="u-flex">
-          <button class="u-rSpace u-actionTextColor js-back">
-            <i class="CDB-IconFont CDB-IconFont-arrowPrev Size-large"></i>
-          </button>
+          <% if (showBackArrow) { %>
+            <button class="u-rSpace u-actionTextColor js-back">
+              <i class="CDB-IconFont CDB-IconFont-arrowPrev Size-large"></i>
+            </button>
+          <% } %>
           <span class="label js-label"><%- attribute %></span>
         </li>
         <% if (columnType === 'number') { %>

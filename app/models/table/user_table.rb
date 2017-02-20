@@ -16,7 +16,7 @@ class UserTable < Sequel::Model
     user_id=
     []
     []=
-    new?
+    new_record?
     save
     save_changes
     map_id
@@ -57,6 +57,11 @@ class UserTable < Sequel::Model
     PRIVACY_PUBLIC => 'public',
     PRIVACY_LINK => 'link'
   }
+
+  # For compatibility with AR model
+  def new_record?
+    new?
+  end
 
   # Associations
   many_to_one  :map
@@ -159,16 +164,16 @@ class UserTable < Sequel::Model
     super
 
     # userid and table name tuple must be unique
-    validates_unique [:name, :user_id], :message => 'is already taken'
+    validates_unique [:name, :user_id], message: 'is already taken'
 
     # tables must have a user
     errors.add(:user_id, "can't be blank") if user_id.blank?
 
     errors.add(:user, "Viewer users can't create tables") if user && user.viewer
 
-    errors.add(
-      :name, 'is a reserved keyword, please choose a different one'
-    ) if Carto::DB::Sanitize::RESERVED_TABLE_NAMES.include?(name)
+    if Carto::DB::Sanitize::RESERVED_TABLE_NAMES.include?(name)
+      errors.add(:name, 'is a reserved keyword, please choose a different one')
+    end
 
     # TODO this kind of check should be moved to the DB
     # privacy setting must be a sane value
@@ -176,11 +181,26 @@ class UserTable < Sequel::Model
       errors.add(:privacy, "has an invalid value '#{privacy}'")
     end
 
-    service.validate
+    unless user.try(:private_tables_enabled)
+      # If it's a new table and the user is trying to make it private
+      if new? && privacy == PRIVACY_PRIVATE
+        errors.add(:privacy, 'unauthorized to create private tables')
+      end
+
+      # if the table exists, is private, but the owner no longer has private privileges
+      if !new? && privacy == PRIVACY_PRIVATE && changed_columns.include?(:privacy)
+        errors.add(:privacy, 'unauthorized to modify privacy status to private')
+      end
+
+      # cannot change any existing table to 'with link'
+      if !new? && privacy == PRIVACY_LINK && changed_columns.include?(:privacy)
+        errors.add(:privacy, 'unauthorized to modify privacy status to public with link')
+      end
+    end
   end
 
   def before_validation
-    service.before_validation
+    set_default_table_privacy
     super
   end
 
@@ -192,6 +212,11 @@ class UserTable < Sequel::Model
 
   def after_create
     super
+    create_default_map_and_layers
+    create_default_visualization
+    set_default_table_privacy
+    save
+
     service.after_create
   end
 
@@ -294,5 +319,61 @@ class UserTable < Sequel::Model
 
   def actual_row_count
     service.actual_row_count
+  end
+
+  def external_source_visualization
+    data_import.try(:external_data_imports).try(:first).try(:external_source).try(:visualization)
+  end
+
+  private
+
+  def default_privacy_value
+    user.try(:private_tables_enabled) ? PRIVACY_PRIVATE : PRIVACY_PUBLIC
+  end
+
+  def set_default_table_privacy
+    self.privacy ||= default_privacy_value
+  end
+
+  def create_default_map_and_layers
+    base_layer = ::ModelFactories::LayerFactory.get_default_base_layer(user)
+
+    self.map = ::ModelFactories::MapFactory.get_map(base_layer, user.id, id)
+    map.add_layer(base_layer)
+
+    geometry_type = service.the_geom_type || 'geometry'
+    data_layer = ::ModelFactories::LayerFactory.get_default_data_layer(name, user, geometry_type)
+
+    map.add_layer(data_layer)
+
+    if base_layer.supports_labels_layer?
+      labels_layer = ::ModelFactories::LayerFactory.get_default_labels_layer(base_layer)
+      map.add_layer(labels_layer)
+    end
+  end
+
+  def create_default_visualization
+    kind = service.is_raster? ? CartoDB::Visualization::Member::KIND_RASTER : CartoDB::Visualization::Member::KIND_GEOM
+
+    esv = external_source_visualization
+
+    member = CartoDB::Visualization::Member.new(
+      name:         name,
+      map_id:       map.id,
+      type:         CartoDB::Visualization::Member::TYPE_CANONICAL,
+      description:  description,
+      attributions: esv.try(:attributions),
+      source:       esv.try(:source),
+      tags:         (tags.split(',') if tags),
+      privacy:      UserTable::PRIVACY_VALUES_TO_TEXTS[default_privacy_value],
+      user_id:      user.id,
+      kind:         kind
+    )
+
+    member.store
+    member.map.set_default_boundaries!
+    map.reload
+
+    CartoDB::Visualization::Overlays.new(member).create_default_overlays
   end
 end

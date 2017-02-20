@@ -65,8 +65,8 @@ describe Carto::Api::ImportsController do
   end
 
   it 'gets the detail of an import' do
-    post api_v1_imports_create_url(api_key: @user.api_key, table_name: 'wadus', filename: File.basename('wadus.csv')),
-         upload_file('db/fake_data/column_number_to_boolean.csv', 'text/csv')
+    post api_v1_imports_create_url(api_key: @user.api_key, table_name: 'wadus'),
+         filename: upload_file('db/fake_data/column_number_to_boolean.csv', 'text/csv')
 
     item_queue_id = JSON.parse(response.body)['item_queue_id']
 
@@ -76,12 +76,12 @@ describe Carto::Api::ImportsController do
 
     import = JSON.parse(response.body)
     import['state'].should be == 'complete'
-    import['display_name'].should be == 'wadus.csv'
+    import['display_name'].should be == 'column_number_to_boolean.csv'
   end
 
   it 'gets the detail of an import stuck unpacking' do
-    post api_v1_imports_create_url(api_key: @user.api_key, table_name: 'wadus', filename: File.basename('wadus.csv')),
-         upload_file('db/fake_data/column_number_to_boolean.csv', 'text/csv')
+    post api_v1_imports_create_url(api_key: @user.api_key, table_name: 'wadus'),
+         filename: upload_file('db/fake_data/column_number_to_boolean.csv', 'text/csv')
 
     response_json = JSON.parse(response.body)
     last_import = DataImport[response_json['item_queue_id']]
@@ -139,8 +139,8 @@ describe Carto::Api::ImportsController do
   end
 
   it 'creates a table from a sql query' do
-    post api_v1_imports_create_url,
-         params.merge(filename: upload_file('spec/support/data/_penguins_below_80.zip', 'application/octet-stream'))
+    post api_v1_imports_create_url(params.merge(table_name: 'wadus_2')),
+         filename: upload_file('spec/support/data/_penguins_below_80.zip', 'application/octet-stream')
 
     response.code.should be == '200'
 

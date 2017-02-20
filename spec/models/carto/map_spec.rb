@@ -4,6 +4,7 @@ require_relative '../../spec_helper'
 describe Carto::Map do
   before(:all) do
     @user = create_user
+    @carto_user = Carto::User.find(@user.id)
   end
 
   before(:each) do
@@ -39,13 +40,13 @@ describe Carto::Map do
     base_layers_count = map.base_layers.count
     base_layers_count.should eq 9
 
-    data_layers_count = map.data_layers.count
-    data_layers_count.should eq 5
+    carto_layers_count = map.carto_layers.count
+    carto_layers_count.should eq 5
 
     user_layers_count = map.user_layers.count
     user_layers_count.should eq 3
 
-    carto_and_torque_layers_count = map.carto_and_torque_layers.count
+    carto_and_torque_layers_count = map.data_layers.count
     carto_and_torque_layers_count.should eq 6
 
     torque_layers_count = map.torque_layers.count
@@ -58,9 +59,9 @@ describe Carto::Map do
 
     layers_count.should eq map_new.layers.count
     base_layers_count.should eq map_new.base_layers.count
-    data_layers_count.should eq map_new.data_layers.count
+    carto_layers_count.should eq map_new.carto_layers.count
     user_layers_count.should eq map_new.user_layers.count
-    carto_and_torque_layers_count.should eq map_new.carto_and_torque_layers.count
+    carto_and_torque_layers_count.should eq map_new.data_layers.count
     torque_layers_count.should eq map_new.torque_layers.count
     other_layers_count.should eq map_new.other_layers.count
 
@@ -68,11 +69,35 @@ describe Carto::Map do
     map.base_layers.map(&:id).should eq map_new.base_layers.map(&:id)
     map.data_layers.map(&:id).should eq map_new.data_layers.map(&:id)
     map.user_layers.map(&:id).should eq map_new.user_layers.map(&:id)
-    map.carto_and_torque_layers.map(&:id).should eq map_new.carto_and_torque_layers.map(&:id)
+    map.data_layers.map(&:id).should eq map_new.data_layers.map(&:id)
     map.torque_layers.map(&:id).should eq map_new.torque_layers.map(&:id)
     map.other_layers.map(&:id).should eq map_new.other_layers.map(&:id)
 
     map.destroy
+  end
+
+  describe '#update_dataset_dependencies' do
+    before(:all) do
+      @carto_layer = FactoryGirl.create(:carto_layer, kind: 'carto')
+      @torque_layer = FactoryGirl.create(:carto_layer, kind: 'torque')
+      @map = Carto::Map.create(user: @carto_user, layers: [@carto_layer, @torque_layer])
+    end
+
+    after(:all) do
+      @torque_layer.destroy
+      @carto_layer.destroy
+      @map.destroy
+    end
+
+    it 'updates dependencies of carto layers' do
+      @map.layers.select(&:carto?).first.expects(:register_table_dependencies).once
+      @map.update_dataset_dependencies
+    end
+
+    it 'updates dependencies of carto layers' do
+      @map.layers.select(&:torque?).first.expects(:register_table_dependencies).once
+      @map.update_dataset_dependencies
+    end
   end
 
 end

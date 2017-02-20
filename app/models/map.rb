@@ -2,8 +2,11 @@
 require_relative '../models/visualization/collection'
 require_relative '../models/table/user_table'
 require_relative '../helpers/bounding_box_helper'
+require_dependency 'common/map_common'
 
 class Map < Sequel::Model
+  include Carto::MapBoundaries
+
   self.raise_on_save_failure = false
 
   plugin :serialization, :json, :options
@@ -19,20 +22,20 @@ class Map < Sequel::Model
                clone: :layers,
                right_key: :layer_id
 
-  many_to_many :data_layers,
+  many_to_many :carto_layers,
                clone: :layers,
                right_key: :layer_id,
                conditions: { kind: "carto" }
+
+  many_to_many :data_layers,
+               clone: :layers,
+               right_key: :layer_id,
+               conditions: "kind in ('carto', 'torque')"
 
   many_to_many :user_layers,
                clone: :layers,
                right_key: :layer_id,
                conditions: "kind in ('tiled', 'background', 'gmapsbase', 'wms')"
-
-  many_to_many :carto_and_torque_layers,
-               clone: :layers,
-               right_key: :layer_id,
-               conditions: "kind in ('carto', 'torque')"
 
   many_to_many :torque_layers,
                clone: :layers,
@@ -62,8 +65,6 @@ class Map < Sequel::Model
     provider:        'leaflet',
     center:          [30, 0]
   }
-
-  MAXIMUM_ZOOM = 18
 
   attr_accessor :table_id,
                 # Flag to detect if being destroyed by whom so invalidate_vizjson_varnish_cache skips it
@@ -115,16 +116,6 @@ class Map < Sequel::Model
     CartoDB::notify_exception(exception, user: user)
   end
 
-  def set_default_boundaries!
-    bounds = get_map_bounds
-    set_boundaries(bounds)
-    recenter_using_bounds(bounds)
-    recalculate_zoom(bounds)
-    save
-  rescue Sequel::DatabaseError => exception
-    CartoDB::notify_exception(exception, user: user)
-  end
-
   def viz_updated_at
     latest_mapcap = visualizations.first.latest_mapcap
 
@@ -150,7 +141,7 @@ class Map < Sequel::Model
   end
 
   def can_add_layer(user)
-    return false if self.user.max_layers && self.user.max_layers <= carto_and_torque_layers.count
+    return false if self.user.max_layers && self.user.max_layers <= data_layers.count
     return false if self.user.viewer
 
     current_vis = visualizations.first
@@ -185,25 +176,6 @@ class Map < Sequel::Model
     (center.nil? || center == '') ? DEFAULT_OPTIONS[:center] : center.gsub(/\[|\]|\s*/, '').split(',')
   end
 
-  def recenter_using_bounds(bounds)
-    x = (bounds[:maxx] + bounds[:minx]) / 2
-    y = (bounds[:maxy] + bounds[:miny]) / 2
-    self.center = "[#{y},#{x}]"
-  end
-
-  def recalculate_zoom(bounds)
-    latitude_size = bounds[:maxy] - bounds[:miny]
-    longitude_size = bounds[:maxx] - bounds[:minx]
-
-    # Don't touch zoom if the table is empty or has no bounds
-    return if longitude_size == 0 && latitude_size == 0
-
-    zoom = -1 * ((Math.log([longitude_size, latitude_size].max) / Math.log(2)) - (Math.log(360) / Math.log(2)))
-    zoom = [[zoom.round, 1].max, MAXIMUM_ZOOM].min
-
-    self.zoom = zoom
-  end
-
   def view_bounds_data
     if view_bounds_sw.nil? || view_bounds_sw == ''
       bbox_sw = DEFAULT_OPTIONS[:bounding_box_sw]
@@ -229,17 +201,6 @@ class Map < Sequel::Model
   end
 
   private
-
-  def get_map_bounds
-    # (lon,lat) as comes out from postgis
-    BoundingBoxHelper.get_table_bounds(user.in_database, table_name)
-  end
-
-  def set_boundaries(bounds)
-    # switch to (lat,lon) for the frontend
-    self.view_bounds_ne = "[#{bounds[:maxy]}, #{bounds[:maxx]}]"
-    self.view_bounds_sw = "[#{bounds[:miny]}, #{bounds[:minx]}]"
-  end
 
   def get_the_last_time_tiles_have_changed_to_render_it_in_vizjsons
     table       = tables.first

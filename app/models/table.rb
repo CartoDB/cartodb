@@ -72,12 +72,17 @@ class Table
   def initialize(args = {})
     if args[:user_table].nil?
       # TODO: This won't work, you need to UserTable.new.set_fields(args, args.keys)
-      @user_table = UserTable.new(args)
+      @user_table = model_class.new(args)
     else
       @user_table = args[:user_table]
     end
     # TODO: this probably makes sense only if user_table is not passed as argument
     @user_table.set_service(self)
+  end
+
+  # This is here just for testing purposes (being able to test this service against both models)
+  def model_class
+    ::UserTable
   end
 
   # forwardable does not work well with this one
@@ -116,10 +121,6 @@ class Table
     attrs[:table_visualization] = CartoDB::Visualization::Presenter.new(self.table_visualization,
                                                       { real_privacy: true, user: viewer_user }.merge(options)).to_poro
     attrs
-  end
-
-  def default_privacy_value
-    self.owner.try(:private_tables_enabled) ? UserTable::PRIVACY_PRIVATE : UserTable::PRIVACY_PUBLIC
   end
 
   def geometry_types_key
@@ -233,37 +234,6 @@ class Table
   end
 
   ## Callbacks
-
-  # Core validation method that is automatically called before create and save
-  def validate
-    ## SANITY CHECKS
-    # TODO this should be fully moved to storage
-
-    # Branch if owner does not have private table privileges
-    unless self.owner.try(:private_tables_enabled)
-      # If it's a new table and the user is trying to make it private
-      if self.new? && @user_table.privacy == UserTable::PRIVACY_PRIVATE
-        @user_table.errors.add(:privacy, 'unauthorized to create private tables')
-      end
-
-      # if the table exists, is private, but the owner no longer has private privileges
-      if !self.new? && @user_table.privacy == UserTable::PRIVACY_PRIVATE && @user_table.changed_columns.include?(:privacy)
-        @user_table.errors.add(:privacy, 'unauthorized to modify privacy status to private')
-      end
-
-      # cannot change any existing table to 'with link'
-      if !self.new? && @user_table.privacy == UserTable::PRIVACY_LINK && @user_table.changed_columns.include?(:privacy)
-        @user_table.errors.add(:privacy, 'unauthorized to modify privacy status to pubic with link')
-      end
-
-    end
-  end
-
-  # runs before each validation phase on create and update
-  def before_validation
-    # ensure privacy variable is set to one of the constants. this is bad.
-    @user_table.privacy ||= (owner.try(:private_tables_enabled) ? UserTable::PRIVACY_PRIVATE : UserTable::PRIVACY_PUBLIC)
-  end
 
   def import_to_cartodb(uniname = nil)
     @data_import ||= DataImport.where(id: @user_table.data_import_id).first || DataImport.new(user_id: owner.id)
@@ -417,11 +387,7 @@ class Table
   end
 
   def after_create
-    self.create_default_map_and_layers
-    self.create_default_visualization
-
     grant_select_to_tiler_user
-    set_default_table_privacy
 
     @force_schema = nil
     self.new_table = true
@@ -517,49 +483,6 @@ class Table
         options: basemap.merge({ 'urlTemplate' => basemap['url'] })
       }
     end
-  end
-
-  def create_default_map_and_layers
-    base_layer = ::ModelFactories::LayerFactory.get_default_base_layer(owner)
-
-    map = ::ModelFactories::MapFactory.get_map(base_layer, user_id, id)
-    @user_table.map_id = map.id
-
-    map.add_layer(base_layer)
-
-    geometry_type = the_geom_type || 'geometry'
-    data_layer = ::ModelFactories::LayerFactory.get_default_data_layer(name, owner, geometry_type)
-
-    map.add_layer(data_layer)
-
-    if base_layer.supports_labels_layer?
-      labels_layer = ::ModelFactories::LayerFactory.get_default_labels_layer(base_layer)
-      map.add_layer(labels_layer)
-    end
-  end
-
-  def create_default_visualization
-    kind = is_raster? ? CartoDB::Visualization::Member::KIND_RASTER : CartoDB::Visualization::Member::KIND_GEOM
-
-    esv = external_source_visualization
-
-    member = CartoDB::Visualization::Member.new(
-      name:         self.name,
-      map_id:       self.map_id,
-      type:         CartoDB::Visualization::Member::TYPE_CANONICAL,
-      description:  @user_table.description,
-      attributions: esv.nil? ? nil : esv.attributions,
-      source:       esv.nil? ? nil : esv.source,
-      tags:         (@user_table.tags.split(',') if @user_table.tags),
-      privacy:      UserTable::PRIVACY_VALUES_TO_TEXTS[default_privacy_value],
-      user_id:      self.owner.id,
-      kind:         kind
-    )
-
-    member.store
-    member.map.set_default_boundaries!
-
-    CartoDB::Visualization::Overlays.new(member).create_default_overlays
   end
 
   def before_destroy
@@ -685,17 +608,12 @@ class Table
     new_name = register_table_only ? value : get_valid_name(value)
 
     # Do not keep track of name changes until table has been saved
-    unless new?
+    unless new_record?
       @name_changed_from = @user_table.name if @user_table.name.present?
       update_cdb_tablemetadata
     end
 
     @user_table[:name] = new_name
-  end
-
-  def set_default_table_privacy
-    @user_table.privacy ||= default_privacy_value
-    save
   end
 
   def privacy_changed?
@@ -1419,12 +1337,7 @@ class Table
   end
 
   def external_source_visualization
-    @user_table.
-      try(:data_import).
-      try(:external_data_imports).
-      try(:first).
-      try(:external_source).
-      try(:visualization)
+    @user_table.try(:external_source_visualization)
   end
 
   def previous_privacy
@@ -1598,7 +1511,7 @@ class Table
     type = type.to_s.upcase
 
     self.the_geom_type = type.downcase
-    @user_table.save_changes unless @user_table.new?
+    @user_table.save_changes unless @user_table.new_record?
   end
 
   def create_table_in_database!

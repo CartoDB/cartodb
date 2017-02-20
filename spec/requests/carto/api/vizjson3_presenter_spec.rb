@@ -6,11 +6,11 @@ describe Carto::Api::VizJSON3Presenter do
   include_context 'visualization creation helpers'
 
   before(:all) do
-    @user_1 = FactoryGirl.create(:carto_user, private_tables_enabled: false)
+    @user1 = FactoryGirl.create(:carto_user, private_tables_enabled: true)
   end
 
   after(:all) do
-    @user_1.destroy
+    @user1.destroy
   end
 
   let(:redis_mock) do
@@ -19,7 +19,7 @@ describe Carto::Api::VizJSON3Presenter do
 
   shared_context 'full visualization' do
     before(:all) do
-      @map, @table, @table_visualization, @visualization = create_full_visualization(Carto::User.find(@user_1.id))
+      @map, @table, @table_visualization, @visualization = create_full_visualization(Carto::User.find(@user1.id))
     end
 
     after(:all) do
@@ -123,7 +123,7 @@ describe Carto::Api::VizJSON3Presenter do
       original_vizjson.should_not eq original_named_vizjson
 
       @table.privacy = Carto::UserTable::PRIVACY_PRIVATE
-      @table.save
+      @table.save!
       @visualization = Carto::Visualization.find(@visualization.id)
       v3_presenter = Carto::Api::VizJSON3Presenter.new(@visualization, nil)
 
@@ -134,7 +134,7 @@ describe Carto::Api::VizJSON3Presenter do
     end
 
     it 'includes analyses information without including sources parameters' do
-      analysis = FactoryGirl.create(:analysis_with_source, visualization: @visualization, user: @user_1)
+      analysis = FactoryGirl.create(:analysis_with_source, visualization: @visualization, user: @user1)
       analysis.analysis_definition[:params].should_not be_nil
       @visualization.reload
       v3_presenter = Carto::Api::VizJSON3Presenter.new(@visualization, nil)
@@ -152,7 +152,7 @@ describe Carto::Api::VizJSON3Presenter do
       layer.options['source'] = source
       layer.save
       @table.privacy = Carto::UserTable::PRIVACY_PRIVATE
-      @table.save
+      @table.save!
       @visualization.reload
 
       v3_vizjson = Carto::Api::VizJSON3Presenter.new(@visualization, viewer_user).send :calculate_vizjson

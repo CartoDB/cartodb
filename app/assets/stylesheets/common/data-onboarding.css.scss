@@ -467,7 +467,7 @@ $styleSteps: (
   }
 }
 
-@media (max-width: $sViewport-l) {
+@media (max-width: 1008px) { // Empiric value
   .LayerOnboarding-contentBody--analysis {
     width: 0;
   }

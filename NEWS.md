@@ -49,6 +49,7 @@ Development
   * Sets the default initial size for icons to 20px (#11498)
 
 ### Bug fixes
+* Fixed problem switching between qualitative and quantitative attributes (#10654)
 * Fixed problem found in Surfaces related with map panning and widgets filtering
 * Style with icons
   * Reset icon on map when you remove that custom icon

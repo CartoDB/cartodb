@@ -115,7 +115,7 @@
 
 
 /* Responsive views */
-@media (max-width: $reponsiveWidth) {
+@media (max-width: $sViewport-xl) {
   .EditorMenu {
     @include flex(0 0 48px);
     width: 48px;

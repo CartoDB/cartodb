@@ -268,9 +268,11 @@
 
     grunt.registerTask('js', ['cdb', 'pre_client', 'browserify', 'concat:js', 'jst']);
     grunt.registerTask('pre_default', ['clean', 'config', 'js']);
-    grunt.registerTask('test',
-      '(CI env) Re-build JS files and run all tests. For manual testing use `grunt jasmine` directly', [
-        'pre_default', 'npm-test', 'jasmine', 'lint'
+    grunt.registerTask('test', '(CI env) Re-build JS files and run all tests. For manual testing use `grunt jasmine` directly', [
+        'pre_default',
+        'npm-test',
+        'jasmine',
+        'lint'
       ]);
     grunt.registerTask('editor3', [
       'browserify:vendor_editor3',
@@ -298,8 +300,12 @@
         return ['jasmine', name, 'build'].join(':');
       })
       .value());
-    grunt.registerTask('dev', 'Typical task for frontend development (watch JS/CSS changes)',
-      ['setConfig:env.browserify_watch:true', 'browserify', 'build-jasmine-specrunners', 'connect', 'watch']);
+    grunt.registerTask('dev', 'Typical task for frontend development (watch JS/CSS changes)', [
+      'setConfig:env.browserify_watch:true',
+      'browserify',
+      'build-jasmine-specrunners',
+      'connect',
+      'watch']);
     grunt.registerTask('sourcemaps',
       'generate sourcemaps, to be used w/ trackjs.com for bughunting', [
         'setConfig:assets_dir:./tmp/sourcemaps',

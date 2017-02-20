@@ -266,18 +266,29 @@
       'copy:js_test_jasmine_client_cartodb3'
     ]);
 
-    grunt.registerTask('js', ['cdb', 'pre_client', 'browserify', 'concat:js', 'jst']);
+    grunt.registerTask('browserify_editor', [
+      'browserify:explore',
+      'browserify:user_feed',
+      'browserify:account',
+      'browserify:confirmation',
+      'browserify:editor',
+      'browserify:dashboard',
+      'browserify:keys',
+      'browserify:new_public_table',
+      'browserify:organization',
+      'browserify:public_dashboard',
+      'browserify:data_library',
+      'browserify:public_map',
+      'browserify:mobile_apps',
+      'browserify:test_specs_for_browserify_modules'
+    ]);
+
+    grunt.registerTask('js', ['cdb', 'pre_client', 'browserify_editor', 'concat:js', 'jst']);
     grunt.registerTask('pre_default', ['clean', 'config', 'js']);
     grunt.registerTask('test',
       '(CI env) Re-build JS files and run all tests. For manual testing use `grunt jasmine` directly', [
         'pre_default', 'npm-test', 'jasmine', 'lint'
       ]);
-    grunt.registerTask('editor3', [
-      'browserify:vendor_editor3',
-      'browserify:common_editor3',
-      'browserify:editor3',
-      'browserify:public_editor3'
-    ]);
     grunt.registerTask('css_editor_3', [
       'copy:cartofonts',
       'copy:iconfont',
@@ -298,8 +309,16 @@
         return ['jasmine', name, 'build'].join(':');
       })
       .value());
+    grunt.registerTask('browserify_editor3', [
+      'browserify:vendor_editor3',
+      'browserify:common_editor3',
+      'browserify:dataset',
+      'browserify:editor3',
+      'browserify:public_editor3',
+      'browserify:cartodb3-specs'
+    ]);
     grunt.registerTask('dev', 'Typical task for frontend development (watch JS/CSS changes)',
-      ['setConfig:env.browserify_watch:true', 'browserify', 'build-jasmine-specrunners', 'connect', 'watch']);
+      ['setConfig:env.browserify_watch:true', 'browserify_editor3', 'build-jasmine-specrunners', 'connect', 'watch']);
     grunt.registerTask('sourcemaps',
       'generate sourcemaps, to be used w/ trackjs.com for bughunting', [
         'setConfig:assets_dir:./tmp/sourcemaps',

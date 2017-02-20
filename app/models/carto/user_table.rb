@@ -3,7 +3,6 @@ require_dependency 'carto/db/sanitize'
 
 module Carto
   class UserTable < ActiveRecord::Base
-
     PRIVACY_PRIVATE = 0
     PRIVACY_PUBLIC = 1
     PRIVACY_LINK = 2
@@ -19,6 +18,10 @@ module Carto
       # so the `before_validation` hook sets an appropriate privacy based on the table owner
       super.merge("privacy" => nil)
     end
+
+    # The ::Table service depends on the constructor not being able to set all parameters, only these are allowed
+    # This is done so things like name changes are forced to go through ::Table.name= to ensure renaming behaviour
+    attr_accessible :privacy, :tags, :description
 
     belongs_to :user
 
@@ -40,6 +43,10 @@ module Carto
     validates :name, exclusion: Carto::DB::Sanitize::RESERVED_TABLE_NAMES
     validates :privacy, inclusion: [PRIVACY_PRIVATE, PRIVACY_PUBLIC, PRIVACY_LINK].freeze
     validate :validate_privacy_changes
+
+    before_create { service.before_create }
+    after_create :create_canonical_visualization
+    after_create { service.after_create }
 
     def geometry_types
       @geometry_types ||= table.geometry_types
@@ -109,11 +116,23 @@ module Carto
     end
 
     def privacy_text
-      PRIVACY_VALUES_TO_TEXTS[privacy].upcase
+      visualization_privacy.upcase
+    end
+
+    def visualization_privacy
+      PRIVACY_VALUES_TO_TEXTS[privacy]
     end
 
     def readable_by?(user)
       !private? || is_owner?(user) || visualization_readable_by?(user)
+    end
+
+    def raster?
+      service.is_raster?
+    end
+
+    def geometry_type
+      service.the_geom_type || 'geometry'
     end
 
     def estimated_row_count
@@ -130,6 +149,10 @@ module Carto
 
     def permission
       visualization.permission if visualization
+    end
+
+    def external_source_visualization
+      data_import.try(:external_data_imports).try(:first).try(:external_source).try(:visualization)
     end
 
     private
@@ -171,6 +194,13 @@ module Carto
       if !user.try(:private_tables_enabled) && !public? && (new_record? || privacy_changed?)
         errors.add(:privacy, 'unauthorized to create private tables')
       end
+    end
+
+    def create_canonical_visualization
+      visualization = Carto::VisualizationFactory.build_canonical_visualization(self)
+      visualization.save!
+      update_attribute(:map, visualization.map)
+      visualization.map.set_default_boundaries!
     end
   end
 end

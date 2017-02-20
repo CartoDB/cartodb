@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.5.161",
+  "version": "4.6.1",
   "dependencies": {
     "backbone": {
       "version": "1.2.3",
@@ -76,7 +76,7 @@
                           "dependencies": {
                             "inherits": {
                               "version": "2.0.3",
-                              "from": "inherits@>=2.0.1 <2.1.0",
+                              "from": "inherits@2.0.3",
                               "resolved": "https://registry.npmjs.org/inherits/-/inherits-2.0.3.tgz"
                             },
                             "typedarray": {
@@ -1147,12 +1147,12 @@
     "cartodb-deep-insights.js": {
       "version": "0.0.2",
       "from": "cartodb/deep-insights.js#google-maps",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#643986ed426db5ed910ffdaeb6f1f13bc2d57455",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#75ea06166218687c4248878682f9704e5bc07113",
       "dependencies": {
         "cartodb.js": {
           "version": "4.0.0-alpha.1",
-          "from": "cartodb/cartodb.js#switch-to-gmaps",
-          "resolved": "git://github.com/cartodb/cartodb.js.git#38f256c1d80de70e6a90b951dddeb8b2d08d95dd",
+          "from": "cartodb/cartodb.js#google-maps",
+          "resolved": "git://github.com/cartodb/cartodb.js.git#ff9d12ad6f78035d42dd224cc37c268346e7a159",
           "dependencies": {
             "backbone-poller": {
               "version": "1.1.3",
@@ -1555,8 +1555,8 @@
     },
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
-      "from": "cartodb/cartodb.js#switch-to-gmaps",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#38f256c1d80de70e6a90b951dddeb8b2d08d95dd",
+      "from": "cartodb/cartodb.js#google-maps",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#ff9d12ad6f78035d42dd224cc37c268346e7a159",
       "dependencies": {
         "backbone-poller": {
           "version": "1.1.3",
@@ -1980,7 +1980,7 @@
     "queue-async": {
       "version": "1.2.1",
       "from": "queue-async@1.2.1",
-      "resolved": "http://registry.npmjs.org/queue-async/-/queue-async-1.2.1.tgz"
+      "resolved": "https://registry.npmjs.org/queue-async/-/queue-async-1.2.1.tgz"
     },
     "tangram": {
       "version": "0.11.7",

@@ -227,7 +227,7 @@ describe('src/vis/vizjson', function () {
           className: 'httpsbasemapscartocdncomlight_nolabelszxypng',
           attribution: '',
           urlTemplate: 'http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png',
-          base_type: 'roadmap',
+          baseType: 'roadmap',
           style: {color: 'blue'}
         }
       });

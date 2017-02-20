@@ -5,7 +5,7 @@ var GMapsBaseLayer = LayerModelBase.extend({
   defaults: {
     type: 'GMapsBase',
     visible: true,
-    base_type: 'gray_roadmap',
+    baseType: 'gray_roadmap',
     style: null
   }
 });

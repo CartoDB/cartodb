@@ -1,11 +1,11 @@
 var $ = require('jquery');
 var _ = require('underscore');
-var Backbone = require('backbone');
+var View = require('../../../core/view');
 var Ps = require('perfect-scrollbar');
 var template = require('./legends-view.tpl');
 var LayerLegendsView = require('./layer-legends-view');
 
-var LegendsView = Backbone.View.extend({
+var LegendsView = View.extend({
 
   className: 'CDB-Legends-canvas',
 
@@ -16,11 +16,15 @@ var LegendsView = Backbone.View.extend({
     this._isRendered = false;
     this.settingsModel = options.settingsModel;
     this._initBinds();
+
+    this._layerLegendsViews = [];
   },
 
   _initBinds: function () {
     this._layersCollection.on('add remove', this._onLayerAddedOrRemoved, this);
+    this.add_related_model(this._layersCollection);
     this.settingsModel.on('change', this._onSettingsModelChanged, this);
+    this.add_related_model(this.settingsModel);
   },
 
   render: function () {
@@ -31,7 +35,7 @@ var LegendsView = Backbone.View.extend({
     this._renderScroll();
     this._renderShadows();
     this._bindScroll();
-
+    this._showOrHide();
     return this;
   },
 
@@ -92,9 +96,12 @@ var LegendsView = Backbone.View.extend({
   _renderLayerLegends: function (layerModel) {
     var layerLegendsView = new LayerLegendsView({
       model: layerModel,
-      settingsModel: this.settingsModel,
-      tryContainerVisibility: this._tryVisibility.bind(this)
+      settingsModel: this.settingsModel
     });
+
+    this._layerLegendsViews.push(layerLegendsView);
+    layerLegendsView.on('render', this._showOrHide, this);
+    this.addView(layerLegendsView);
 
     this.$(this._container()).append(layerLegendsView.render().$el);
   },
@@ -107,12 +114,14 @@ var LegendsView = Backbone.View.extend({
     }
   },
 
-  _tryVisibility: function () {
-    var shouldHide = !_.every(this.$('.js-layer-legends'), function (el) {
-      return $(el).is(':empty');
-    });
+  _showOrHide: function () {
+    this.$el.toggle(this._isAnyLayerLegendViewVisible());
+  },
 
-    this.$el.toggle(shouldHide);
+  _isAnyLayerLegendViewVisible: function () {
+    return _.any(this._layerLegendsViews, function (layerLegendView) {
+      return !layerLegendView.isEmpty();
+    });
   },
 
   _hasLegends: function (layerModel) {
@@ -120,6 +129,10 @@ var LegendsView = Backbone.View.extend({
   },
 
   _clear: function () {
+    _.each(this._layerLegendsViews, function (layerLegendView) {
+      layerLegendView.clean();
+    });
+    this._layerLegendsViews = [];
     this.$el.html('');
   },
 
@@ -129,6 +142,11 @@ var LegendsView = Backbone.View.extend({
 
   hide: function () {
     this.$el.hide();
+  },
+
+  clean: function () {
+    View.prototype.clean.call(this);
+    this._clear();
   }
 });
 

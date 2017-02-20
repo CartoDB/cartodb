@@ -1,3 +1,4 @@
+var _ = require('underscore');
 var log = require('cdb.log');
 var View = require('../core/view');
 var GeometryViewFactory = require('./geometry-views/geometry-view-factory');
@@ -19,6 +20,8 @@ var MapView = View.extend({
   className: 'CDB-Map-wrapper',
 
   initialize: function (deps) {
+    View.prototype.initialize.apply(this, arguments);
+
     // For debugging purposes
     window.mapView = this;
 
@@ -103,15 +106,13 @@ var MapView = View.extend({
     this._mapCursorManager.stop();
     this._mapEventsManager.stop();
 
+    this._unbindModel();
+
     View.prototype.clean.call(this);
   },
 
   render: function () {
     this._createNativeMap();
-    var bounds = this.map.getViewBounds();
-    if (bounds) {
-      this._fitBounds(bounds);
-    }
     this._addLayers();
 
     // Enable geometry management
@@ -154,12 +155,12 @@ var MapView = View.extend({
 
   /** unbind model properties */
   _unbindModel: function () {
-    this.map.unbind('change:view_bounds_sw', null, this);
-    this.map.unbind('change:view_bounds_ne', null, this);
-    this.map.unbind('change:zoom', null, this);
-    this.map.unbind('change:scrollwheel', null, this);
-    this.map.unbind('change:keyboard', null, this);
-    this.map.unbind('change:center', null, this);
+    this.map.unbind('change:view_bounds_sw', this._changeBounds, this);
+    this.map.unbind('change:view_bounds_ne', this._changeBounds, this);
+    this.map.unbind('change:zoom', this._setZoom, this);
+    this.map.unbind('change:scrollwheel', this._setScrollWheel, this);
+    this.map.unbind('change:keyboard', this._setKeyboard, this);
+    this.map.unbind('change:center', this._setCenter, this);
     this.map.unbind('change:attribution', null, this);
   },
 
@@ -177,15 +178,17 @@ var MapView = View.extend({
   _addLayers: function (layerCollection, options) {
     var self = this;
     this._removeLayers();
-    this.map.layers.each(function (layerModel) {
+    this.map.layers.each(function (layerModel, index) {
       self._addLayer(layerModel, layerCollection, {
         silent: (options && options.silent) || false,
-        index: options && options.index
+        index: index
       });
     });
   },
 
   _addLayer: function (layerModel, layerCollection, options) {
+    options = options || {};
+
     var layerView;
     if (layerModel.get('type') === 'CartoDB') {
       layerView = this._addGroupedLayer(layerModel);
@@ -196,10 +199,11 @@ var MapView = View.extend({
     if (!layerView) {
       return;
     }
-    this._addLayerToMap(layerView, layerModel, {
-      silent: options.silent,
-      index: options.index
-    });
+    this._addLayerToMap(layerView);
+
+    if (!options.silent) {
+      this.trigger('newLayerView', layerView);
+    }
   },
 
   _addGroupedLayer: function (layerModel) {
@@ -241,24 +245,27 @@ var MapView = View.extend({
   },
 
   _removeLayers: function () {
-    for (var i in this._layerViews) {
-      var layerView = this._layerViews[i];
+    var layerViews = _.uniq(_.values(this._layerViews));
+    for (var i in layerViews) {
+      var layerView = layerViews[i];
       layerView.remove();
-      delete this._layerViews[i];
     }
+    this._layerViews = {};
   },
 
   _removeLayer: function (layerModel) {
     var layerView = this._layerViews[layerModel.cid];
-    if (layerModel.get('type') === 'CartoDB') {
-      if (this.map.layers.getCartoDBLayers().length === 0) {
+    if (layerView) {
+      if (layerModel.get('type') === 'CartoDB') {
+        if (this.map.layers.getCartoDBLayers().length === 0) {
+          layerView.remove();
+          this._cartoDBLayerGroupView = null;
+        }
+      } else {
         layerView.remove();
-        this._cartoDBLayerGroupView = null;
       }
-    } else {
-      layerView.remove();
+      delete this._layerViews[layerModel.cid];
     }
-    delete this._layerViews[layerModel.cid];
   },
 
   getLayerViewByLayerCid: function (cid) {

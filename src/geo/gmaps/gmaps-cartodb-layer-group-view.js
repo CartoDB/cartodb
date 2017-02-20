@@ -84,7 +84,7 @@ var GMapsCartoDBLayerGroupView = function (layerModel, gmapsMap) {
   // lovely wax connector overwrites options so set them again
   // TODO: remove wax.connector here
   _.extend(this.options, opts);
-  GMapsLayerView.call(this, layerModel, this, gmapsMap);
+  GMapsLayerView.call(this, layerModel, gmapsMap);
   this.projector = new Projector(opts.map);
   CartoDBLayerGroupViewBase.call(this, layerModel);
 };
@@ -94,18 +94,25 @@ GMapsCartoDBLayerGroupView.prototype = new wax.g.connector();
 GMapsCartoDBLayerGroupView.prototype.interactionClass = wax.g.interaction;
 _.extend(
   GMapsCartoDBLayerGroupView.prototype,
-  GMapsCartoDBLayerGroupView.prototype,
   CartoDBLayerGroupViewBase.prototype,
-  GMapsCartoDBLayerGroupView.prototype,
   GMapsLayerView.prototype,
   {
-    reload: function () {
-      this.model.invalidate();
+    addToMap: function () {
+      this.gmapsMap.overlayMapTypes.setAt(0, this);
     },
 
     remove: function () {
-      GMapsLayerView.prototype.remove.call(this);
-      this.clear();
+      var overlayIndex = this.gmapsMap.overlayMapTypes.getArray().indexOf(this);
+      if (overlayIndex >= 0) {
+        this.gmapsMap.overlayMapTypes.removeAt(0);
+      }
+
+      this._clearInteraction();
+      this.finishLoading && this.finishLoading();
+    },
+
+    reload: function () {
+      this.model.invalidate();
     },
 
     featureOver: function (e, latlon, pixelPos, data, layer) {
@@ -225,39 +232,27 @@ _.extend(
       return im;
     },
 
-    onAdd: function () {},
-
-    clear: function () {
-      this._clearInteraction();
-      this.finishLoading && this.finishLoading();
-    },
-
     _reload: function () {
-      this.loading && this.loading();
-
+      var tileURLTemplates;
       if (this.model.hasTileURLTemplates()) {
-        this.options.tiles = this.model.getTileURLTemplates();
-        this.tiles = 0;
-        this.cache = {};
-        this._reloadInteraction();
-        this.refreshView();
-        this.ok && this.ok();
+        tileURLTemplates = this.model.getTileURLTemplates();
       } else {
-        this.error && this.error('URLs have not been fetched yet');
+        tileURLTemplates = [ EMPTY_GIF ];
       }
+
+      this.options.tiles = tileURLTemplates;
+      this.tiles = 0;
+      this.cache = {};
+      this._reloadInteraction();
+      this._refreshView();
     },
 
-    refreshView: function () {
-      var self = this;
-      var map = this.options.map;
-      map.overlayMapTypes.forEach(
-        function (layer, i) {
-          if (layer === self) {
-            map.overlayMapTypes.setAt(i, self);
-            return;
-          }
-        }
-      );
+    _refreshView: function () {
+      var overlayIndex = this.gmapsMap.overlayMapTypes.getArray().indexOf(this);
+      if (overlayIndex >= 0) {
+        this.gmapsMap.overlayMapTypes.removeAt(overlayIndex);
+      }
+      this.gmapsMap.overlayMapTypes.setAt(0, this);
     },
 
     _checkLayer: function () {

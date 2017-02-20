@@ -7,7 +7,7 @@ var PlainLayer = LayerModelBase.extend({
   defaults: {
     type: 'Plain',
     visible: true,
-    base_type: 'plain',
+    baseType: 'plain',
     className: 'plain',
     color: '#FFFFFF',
     image: ''

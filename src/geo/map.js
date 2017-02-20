@@ -118,7 +118,7 @@ var Map = Model.extend({
   },
 
   createGMapsBaseLayer: function (attrs, options) {
-    this._checkProperties(attrs, ['base_type']);
+    this._checkProperties(attrs, ['baseType']);
     return this._addNewLayerModel('gmapsbase', attrs, options);
   },
 

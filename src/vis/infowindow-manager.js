@@ -28,11 +28,14 @@ InfowindowManager.prototype.start = function (cartoDBLayerGroupView) {
 };
 
 InfowindowManager.prototype.stop = function () {
-  this._cartoDBLayerGroupView.off('featureClick', this._onFeatureClicked, this);
-  this._unbindLayerModel();
-
-  delete this._cartoDBLayerGroupView;
-  delete this._cartoDBLayerModel;
+  if (this._cartoDBLayerGroupView) {
+    this._cartoDBLayerGroupView.off('featureClick', this._onFeatureClicked, this);
+    delete this._cartoDBLayerGroupView;
+  }
+  if (this._cartoDBLayerModel) {
+    this._unbindLayerModel();
+    delete this._cartoDBLayerModel;
+  }
 };
 
 InfowindowManager.prototype._onFeatureClicked = function (featureClickEvent) {

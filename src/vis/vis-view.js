@@ -21,27 +21,17 @@ var Vis = View.extend({
   },
 
   render: function () {
-    var mapViewFactory = new MapViewFactory();
+    this.model.map.off('change:provider', this.render, this);
+    this.model.map.on('change:provider', this.render, this);
 
-    this.mapView = mapViewFactory.createMapView(this.model.map.get('provider'), this.model, this.model.map, this.model.layerGroupModel);
-    // Add the element to the DOM before the native map is created
-    this.$el.html(this.mapView.el);
+    this._cleanMapView();
+    this._renderMapView();
 
-    // Bind events before the view is rendered and layer views are added to the map
-    this.mapView.bind('newLayerView', this._bindLayerViewToLoader, this);
-    this.mapView.render();
+    this._cleanLegendsView();
+    this._renderLegendsView();
 
-    this._renderLegends();
-
-    var overlaysView = new OverlaysView({
-      visModel: this.model,
-      visView: this,
-      mapModel: this.model.map,
-      mapView: this.mapView,
-      overlaysCollection: this._overlaysCollection
-    });
-    overlaysView.render();
-    this.$el.append(overlaysView.el);
+    this._cleanOverlaysView();
+    this._renderOverlaysView();
 
     // If a CartoDB embed map is hidden by default, its
     // height is 0 and it will need to recalculate its size
@@ -55,13 +45,50 @@ var Vis = View.extend({
     }
   },
 
-  _renderLegends: function () {
+  _renderMapView: function () {
+    this.mapView = this._getMapViewFactory().createMapView(this.model.map.get('provider'), this.model, this.model.map, this.model.layerGroupModel);
+    // Add the element to the DOM before the native map is created
+    this.$el.html(this.mapView.el);
+
+    // Bind events before the view is rendered and layer views are added to the map
+    this.mapView.bind('newLayerView', this._bindLayerViewToLoader, this);
+    this.mapView.render();
+  },
+
+  _getMapViewFactory: function () {
+    return this.mapViewFactory || new MapViewFactory();
+  },
+
+  _cleanMapView: function () {
+    this.mapView && this.mapView.clean();
+  },
+
+  _renderLegendsView: function () {
     this._legendsView = new LegendsView({
       layersCollection: this.model.map.layers,
       settingsModel: this.settingsModel
     });
 
     this.$el.append(this._legendsView.render().$el);
+  },
+
+  _cleanLegendsView: function () {
+    this._legendsView && this._legendsView.clean();
+  },
+
+  _renderOverlaysView: function () {
+    this._overlaysView = new OverlaysView({
+      visModel: this.model,
+      visView: this,
+      mapModel: this.model.map,
+      mapView: this.mapView,
+      overlaysCollection: this._overlaysCollection
+    });
+    this.$el.append(this._overlaysView.render().$el);
+  },
+
+  _cleanOverlaysView: function () {
+    this._overlaysView && this._overlaysView.clean();
   },
 
   _bindLayerViewToLoader: function (layerView) {
@@ -75,14 +102,6 @@ var Vis = View.extend({
 
   _invalidateSize: function () {
     this.mapView.invalidateSize();
-  },
-
-  // returns an array of layers
-  getLayerViews: function () {
-    var self = this;
-    return _.compact(this.model.map.layers.map(function (layer) {
-      return self.mapView.getLayerViewByLayerCid(layer.cid);
-    }));
   },
 
   _onResize: function () {

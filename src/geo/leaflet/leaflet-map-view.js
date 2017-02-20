@@ -5,11 +5,6 @@ var MapView = require('../map-view');
 var LeafletLayerViewFactory = require('./leaflet-layer-view-factory');
 
 var LeafletMapView = MapView.extend({
-  initialize: function () {
-    MapView.prototype.initialize.apply(this, arguments);
-
-    _.bindAll(this, '_addLayer', '_removeLayer', '_setZoom', '_setCenter', '_setView');
-  },
 
   _createNativeMap: function () {
     var self = this;
@@ -136,7 +131,6 @@ var LeafletMapView = MapView.extend({
       } else {
         layerView.setModel(layerModel);
         self._layerViews[layerModel.cid] = layerView;
-        self.trigger('newLayerView', layerView, layerModel, self);
       }
     });
   },
@@ -183,14 +177,9 @@ var LeafletMapView = MapView.extend({
     return this._leafletMap;
   },
 
-  _addLayerToMap: function (layerView, layerModel, opts) {
+  _addLayerToMap: function (layerView) {
     this._leafletMap.addLayer(layerView.leafletLayer);
     this._reorderLayerViews();
-
-    if (!opts.silent) {
-      this.trigger('newLayerView', layerView);
-    }
-    return layerView;
   },
 
   _reorderLayerViews: function () {

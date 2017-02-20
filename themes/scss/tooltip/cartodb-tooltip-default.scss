@@ -4,6 +4,7 @@
 .CDB-Tooltip-wrapper {
   display: none;
   position: absolute;
+  z-index: 1; // makes tooltips visible with Google Maps
   min-width: 120px;
   max-width: 180px;
   border-radius: 4px;

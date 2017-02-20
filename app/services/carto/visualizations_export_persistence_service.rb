@@ -32,14 +32,9 @@ module Carto
           analysis.user_id = user.id
         end
 
-        # INFO: workaround for array saves not working
-        tags = visualization.tags
-        visualization.tags = nil
         unless visualization.save
           raise "Errors saving imported visualization: #{visualization.errors.full_messages}"
         end
-
-        visualization.update_attribute(:tags, tags)
 
         visualization.layers.map do |layer|
           # Flag needed because `.changed?` won't realize about options hash changes

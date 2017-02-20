@@ -1,11 +1,13 @@
 <div class="CDB-Box-modalHeader">
   <ul class="CDB-Box-modalHeaderItem CDB-Box-modalHeaderItem--block CDB-Box-modalHeaderItem--paddingHorizontal">
     <li class="InputColor-modalHeader CDB-ListDecoration-item CDB-ListDecoration-itemPadding--vertical CDB-Text CDB-Size-medium u-secondaryTextColor">
-      <div class="u-flex u-alignStart">
+      <div class="u-flex u-alignStart u-ellipsis">
         <button class="u-rSpace u-actionTextColor js-back">
           <i class="CDB-IconFont CDB-IconFont-arrowPrev Size-large"></i>
         </button>
-        <%- attribute %>
+        <div class="u-ellipsis">
+          <%- attribute %>
+        </div>
       </div>
     </li>
     <li class="CDB-ListDecoration-item CDB-ListDecoration-itemPadding--vertical CDB-Text CDB-Size-medium u-secondaryTextColor">

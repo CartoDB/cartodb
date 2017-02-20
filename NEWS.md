@@ -2,6 +2,7 @@ Development
 -----------
 
 ### Features
+* Adding Google-Maps basemaps (#11447)
 * New organization assets (#11034):
   * REST API available at `/api/v1/organization/<org_id>/assets`
   * Has DB migration

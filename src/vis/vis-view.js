@@ -46,9 +46,7 @@ var Vis = View.extend({
   },
 
   _renderMapView: function () {
-    this.mapViewFactory = this._getMapViewFactory();
-
-    this.mapView = this.mapViewFactory.createMapView(this.model.map.get('provider'), this.model, this.model.map, this.model.layerGroupModel);
+    this.mapView = this._getMapViewFactory().createMapView(this.model.map.get('provider'), this.model, this.model.map, this.model.layerGroupModel);
     // Add the element to the DOM before the native map is created
     this.$el.html(this.mapView.el);
 

@@ -12,16 +12,13 @@ var VizJSON = require('../../../src/api/vizjson');
 var View = require('../../../src/core/view');
 
 var FakeMapViewFactory = function () {};
-FakeMapViewFactory.prototype.createMapView = function () {
-  return new View();
-};
 
 // extend VisView in our tests
 VisView = VisView.extend({
   _getMapViewFactory: function () {
     if (!this.__mapViewFactory) {
-      this.__mapViewFactory = new FakeMapViewFactory();
-      spyOn(this.__mapViewFactory, 'createMapView').and.callThrough();
+      this.__mapViewFactory = jasmine.createSpyObj('fakeMapViewFactory', [ 'createMapView' ]);
+      this.__mapViewFactory.createMapView.and.returnValue(jasmine.createSpyObj('fakeMapView', [ 'render', 'clean', 'bind' ]));
     }
     return this.__mapViewFactory;
   }
@@ -70,8 +67,6 @@ describe('vis/vis-view', function () {
       el: this.container
     });
 
-    this.mapViewFactory = this.visView._getMapViewFactory();
-
     this.visModel.load(new VizJSON(this.mapConfig));
     this.visView.render();
   });
@@ -81,28 +76,34 @@ describe('vis/vis-view', function () {
   });
 
   describe('map provider', function () {
-    // it('should have created a LeafletMap by default', function () {
+    beforeEach(function () {
+      this.fakeMapViewFactory = this.visView._getMapViewFactory();
+      this.fakeMapViewFactory.createMapView.calls.reset();
 
-    //   expect(this.mapViewFactory).toHaveBeenCalledWith('wadus');
-    // });
+      this.visView.render();
+    });
 
-    // it('should create a gmaps when provider changes to leaflet', function () {
-    //   this.visModel.map.set('provider', 'something', { sileng: true });
-    //   this.visModel.map.set('provider', 'leaflet');
+    it('should have created a LeafletMap by default', function () {
+      expect(this.fakeMapViewFactory.createMapView.calls.mostRecent().args[0]).toEqual('leaflet');
+    });
 
-    //   this.visView.render();
+    it('should create a gmaps when provider changes to leaflet', function () {
+      this.visModel.map.set('provider', 'something');
+      this.visModel.map.set('provider', 'leaflet');
 
-    //   expect(this.mapViewFactory).toHaveBeenCalledWith('wadus');
-    // });
+      this.visView.render();
 
-    // it('should create a google maps map when provider is googlemaps', function () {
-    //   this.visModel.map.set('provider', 'something', { sileng: true });
-    //   this.visModel.map.set('provider', 'googlemaps');
+      expect(this.fakeMapViewFactory.createMapView.calls.mostRecent().args[0]).toEqual('leaflet');
+    });
 
-    //   this.visView.render();
+    it('should create a google maps map when provider is googlemaps', function () {
+      this.visModel.map.set('provider', 'something', { silent: true });
+      this.visModel.map.set('provider', 'googlemaps');
 
-    //   expect(this.mapViewFactory).toHaveBeenCalledWith('wadus');
-    // });
+      this.visView.render();
+
+      expect(this.fakeMapViewFactory.createMapView.calls.mostRecent().args[0]).toEqual('googlemaps');
+    });
   });
 
   it('should bind resize changes when map height is 0', function () {

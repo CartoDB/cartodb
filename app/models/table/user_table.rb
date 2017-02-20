@@ -16,7 +16,7 @@ class UserTable < Sequel::Model
     user_id=
     []
     []=
-    new?
+    new_record?
     save
     save_changes
     map_id
@@ -57,6 +57,11 @@ class UserTable < Sequel::Model
     PRIVACY_PUBLIC => 'public',
     PRIVACY_LINK => 'link'
   }
+
+  # For compatibility with AR model
+  def new_record?
+    new?
+  end
 
   # Associations
   many_to_one  :map

@@ -65,6 +65,7 @@ Development
 * Avoid loading all rake code in resque workers (#11069)
 * Fix analysis notification in running state (#11079)
 * Fix color for "Other" category (#11078)
+* Validate that only one legend per type (color/size) is allowed (#11556)
 * Custom errors for latitude/longitude out of bounds (#11060, #11048)
 * Fix timeseries widget height (#11077)
 * Improve speed of map name availability check, improves map creation and renaming times (#11435)

@@ -9,9 +9,6 @@ _.extend(cdb.geo, require('../../../src/geo/gmaps'));
 var VisView = require('../../../src/vis/vis-view');
 var VisModel = require('../../../src/vis/vis');
 var VizJSON = require('../../../src/api/vizjson');
-var View = require('../../../src/core/view');
-
-var FakeMapViewFactory = function () {};
 
 // extend VisView in our tests
 VisView = VisView.extend({

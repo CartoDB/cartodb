@@ -466,3 +466,13 @@ $styleSteps: (
     }
   }
 }
+
+@media (max-width: $sViewport-l) {
+  .LayerOnboarding-contentBody--analysis {
+    width: 0;
+  }
+
+  .LayerOnboarding-contentWrapper--analysis {
+    @include justify-content(flex-start);
+  }
+}

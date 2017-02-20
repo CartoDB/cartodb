@@ -54,20 +54,80 @@
       "description": "The widgets you add to your map appear directly on your visualization."
     },
     "skip": "skip",
-    "next": "next",
+    "next": "next"
+  },
+  "data-onboarding": {
+    "title": "Welcome to layer view",
+    "description": "Analyze and style your data and enhance it with pop-ups and&nbsp;legends.",
+    "take-tour": "Take the tour",
+    "edit-layer": "Edit layer",
+    "layer-options": {
+      "title": "Layer options",
+      "description": "Layers can be renamed by double clicking on the layer name, centered by clicking in the crosshair, and exported through their contextual menu."
+    },
+    "data-tab": {
+      "title": "Data tab",
+      "description": "Style, and add analysis, pop-ups, and legends to layers. To further explore your data add widgets."
+    },
+    "sql-editor": {
+      "title": "SQL Editor",
+      "description": "Data layers can be edited and processed by using the SQL viewer at the bottom of the screen."
+    },
+    "add-geometry": {
+      "title": "Add geometries and switch to dataset view",
+      "description": "You can switch between map or table view. In map view, you can add points, lines, and polygons.",
+      "edit-layer": "Edit layer"
+    },
+    "exit": "Exit tour",
+    "next": "Next"
+  },
+  "analysis-onboarding": {
+    "title": "The Art of Analysis",
+    "description": "Build reproducible workflows for analyzing and explaining your data. Analyses turn your maps into Location Intelligence apps.",
+    "description-list": {
+      "item1": "Different analyses can be chained",
+      "item2": "Analyses are dynamic. When the data changes, the analysis is&nbsp;refreshed.",
+      "item3": "The original data is not modified by the analysis workflow.",
+      "item4": "Some analysis queries add calculated results to columns in your dataset."
+    },
+    "done": "Done",
+    "add-analysis": "Add analysis",
+    "never-show-message": "Don't show me this again."
+  },
+  "style-onboarding": {
+    "title": "Style this map!",
+    "description": "Apply aggregation styling to maps and define options by geometry attributes or by a column value.",
+    "aggregation": {
+      "title": "How would you like to aggregate your data?",
+      "description": "Map types are called \"Aggregation\". Add Torque, heat map, and other aggregation styles to data."
+    },
+    "style": {
+      "title": "Make it beautiful!",
+      "description": "Use these options to style your data in beautiful ways. For example, you can create thematic maps by altering the FILL option by value.",
+      "short-description": "Use these options to style your data in beautiful ways."
+    },
+    "cartocss": {
+      "title": "Dress it up with CartoCSS",
+      "description": "Further style data by using the CartoCSS editor at the bottom of the screen."
+    },
+    "take-tour": "Take the tour",
+    "style-layer": "Style layer",
+    "never-show-message": "Don't show me this again.",
+    "exit": "Exit tour",
+    "next": "Next"
   },
   "analyses-onboarding": {
     "placeholders": {
       "layer-name": "NAME OF THE LAYER",
       "clusters": "CLUSTERS",
       "method": "METHOD",
-      "percentage": "PERCENTAGE",
+      "percentage": "PERCENTAGE"
     },
     "done": "Done",
     "finished": "has finished",
     "style-analysis": "Style this analysis",
     "read-more": "Read more in documentation",
-    "never-show-message": "Never show me this message.",
+    "never-show-message": "Don't show me this again.",
     "no-new-columns": "No new columns were created.",
     "geometries-updated": "The geometries in your table were updated",
     "new-column-added": "A new column has been added to your dataset.",

@@ -78,6 +78,7 @@
 
 .Editor-checker {
   width: 100%;
+  @include align-items(flex-start);
 }
 .Editor-checker--slim .Editor-formInner {
   min-height: 20px;
@@ -85,6 +86,9 @@
 .Editor-checkerInput {
   width: 92px;
   margin-right: 12px;
+  min-height: 32px;
+  @include display-flex();
+  @include align-items(center);
 }
 /* move to CartoAssets */
 .Editor-checkerInput .CDB-Checkbox-face {

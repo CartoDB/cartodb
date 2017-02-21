@@ -19,7 +19,7 @@
     <div class="Editor-HeaderInfo-title u-bSpace--m">
       <h2 class="CDB-Text CDB-HeaderInfo-TitleText CDB-Size-large"><%- _t('editor.widgets.widgets-form.style.title-label') %></h2>
     </div>
-    <p class="CDB-Text u-upperCase CDB-FontSize-small u-altTextColor u-bSpace--m"><%- styleDescription %></p>
+    <p class="CDB-Text u-upperCase CDB-FontSize-small u-altTextColor u-bSpace--m"><%- _t('editor.widgets.widgets-form.style.define') %></p>
 
     <div data-fields="<%- styleFields %>"></div>
 

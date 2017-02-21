@@ -2,7 +2,6 @@
 
 @import '../variables/mixins';
 @import '../variables/colors';
-@import '../variables/onboarding';
 @import '../editor-3/vars';
 @import 'cdb-variables/colors';
 @import 'cdb-variables/sizes';
@@ -465,5 +464,15 @@ $styleSteps: (
     &.has-widgets {
       width: 8px;
     }
+  }
+}
+
+@media (max-width: 1008px) { // Empiric value
+  .LayerOnboarding-contentBody--analysis {
+    width: 0;
+  }
+
+  .LayerOnboarding-contentWrapper--analysis {
+    @include justify-content(flex-start);
   }
 }

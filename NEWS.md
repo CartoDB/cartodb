@@ -2,6 +2,7 @@ Development
 -----------
 
 ### Features
+* Improve dialog forms to render them floated. (#7786)
 * New organization assets (#11034):
   * REST API available at `/api/v1/organization/<org_id>/assets`
   * Has DB migration
@@ -56,6 +57,7 @@ Development
 * Style with icons
   * Reset icon on map when you remove that custom icon
   * Made icon's clicking area larger
+  * Avoid request when url is not defined
 * Start using layers<->user_table cache in all places (#11303)
   * Run `cartodb:db:register_table_dependencies` rake to update caches for existing maps
 * Categories legend are now static (#10972)
@@ -70,6 +72,7 @@ Development
 * Validate that only one legend per type (color/size) is allowed (#11556)
 * Custom errors for latitude/longitude out of bounds (#11060, #11048)
 * Fix timeseries widget height (#11077)
+* Fix a DB deadlock while simultaneously updating and deleting layers (#11568)
 * Improve speed of map name availability check, improves map creation and renaming times (#11435)
 * Fix redirection after logout for subdomainless URLs (#11361)
 * Fix scrollbar in carousel (#11061)
@@ -82,8 +85,8 @@ Development
 * Hide sync options in builder table view for non-owners (#10986)
 * Fix issues with edition of custom color infowindows (#10985)
 * UI fixes for georeference. Changes of copy and validation warning. (#11426)
-
 * Color scheme is now clickable in category ramps (#11413)
+* Fix responsive layout in onboarding steps (#11444)
 
 4.0.x (2016-12-05)
 ------------------

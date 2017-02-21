@@ -56,6 +56,14 @@ describe('geo/map/cartodb-layer', function () {
 
       expect(this.vis.reload).not.toHaveBeenCalled();
     });
+
+    it('should reload the map when infowindow fields are reset', function () {
+      var layer = new CartoDBLayer({}, { vis: this.vis });
+
+      layer.infowindow.fields.reset([{ }]);
+
+      expect(this.vis.reload).toHaveBeenCalled();
+    });
   });
 
   describe('.getInteractiveColumnNames', function () {

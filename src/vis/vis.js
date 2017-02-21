@@ -315,8 +315,21 @@ var VisModel = Backbone.Model.extend({
   },
 
   reload: function (options) {
-    options = _.extend({includeFilters: true}, options);
-    options = _.pick(options, 'sourceId', 'forceFetch', 'success', 'error', 'includeFilters');
+    options = options || {};
+    var successCallback = options.success;
+    var errorCallback = options.error;
+
+    options = _.extend({
+      includeFilters: true,
+      success: function () {
+        this.trigger('reloaded');
+        successCallback && successCallback();
+      }.bind(this),
+      error: function () {
+        errorCallback && errorCallback();
+      }
+    }, _.pick(options, 'sourceId', 'forceFetch', 'includeFilters'));
+
     if (this._instantiateMapWasCalled) {
       this.trigger('reload');
       this._windshaftMap.createInstance(options); // this reload method is call from other places

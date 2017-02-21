@@ -2,7 +2,7 @@ var _ = require('underscore');
 var GMapsLayerView = require('./gmaps-layer-view');
 
 var GMapsTiledLayerView = function(layerModel, gmapsMap) {
-  GMapsLayerView.call(this, layerModel, this, gmapsMap);
+  GMapsLayerView.call(this, layerModel, gmapsMap);
   this.tileSize = new google.maps.Size(256, 256);
   this.opacity = 1.0;
   this.isPng = true;

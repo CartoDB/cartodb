@@ -1,21 +1,38 @@
+var _ = require('underscore');
 var log = require('cdb.log');
 var View = require('../core/view');
 var GeometryViewFactory = require('./geometry-views/geometry-view-factory');
+
+var InfowindowModel = require('./ui/infowindow-model');
+var InfowindowView = require('./ui/infowindow-view');
+var InfowindowManager = require('../vis/infowindow-manager');
+
+var TooltipModel = require('./ui/tooltip-model');
+var TooltipView = require('./ui/tooltip-view');
+var TooltipManager = require('../vis/tooltip-manager');
+
+var MapCursorManager = require('../vis/map-cursor-manager');
+var MapEventsManager = require('../vis/map-events-manager');
+var GeometryManagementController = require('../vis/geometry-management-controller');
 
 var MapView = View.extend({
 
   className: 'CDB-Map-wrapper',
 
-  initialize: function () {
+  initialize: function (deps) {
+    View.prototype.initialize.apply(this, arguments);
+
     // For debugging purposes
     window.mapView = this;
 
-    this.options = this.options || {};
-    if (this.options.map === undefined) throw new Error('map is required');
-    if (this.options.layerGroupModel === undefined) throw new Error('layerGroupModel is required');
+    if (!deps.mapModel) throw new Error('mapModel is required');
+    if (!deps.visModel) throw new Error('visModel is required');
+    if (!deps.layerGroupModel) throw new Error('layerGroupModel is required');
 
-    this._cartoDBLayerGroup = this.options.layerGroupModel;
-    this.map = this.options.map;
+    this._mapModel = this.map = deps.mapModel;
+    this._visModel = deps.visModel;
+    this._cartoDBLayerGroup = deps.layerGroupModel;
+
     this.add_related_model(this.map);
 
     this._cartoDBLayerGroupView = null;
@@ -29,35 +46,78 @@ var MapView = View.extend({
     this.map.layers.bind('reset', this._addLayers, this);
     this.map.layers.bind('add', this._addLayer, this);
     this.map.layers.bind('remove', this._removeLayer, this);
-
-    // TODO: When this.map.layers get new indexes, something needs to happen
     this.add_related_model(this.map.layers);
-
-    this.bind('clean', this._removeLayers, this);
 
     this.map.geometries.on('add', this._onGeometryAdded, this);
     this.add_related_model(this.map.geometries);
+
+    // Infowindows && Tooltips
+    var infowindowModel = new InfowindowModel();
+    var tooltipModel = new TooltipModel({
+      offset: [4, 10]
+    });
+    this._infowindowView = new InfowindowView({
+      model: infowindowModel,
+      mapView: this
+    });
+    this._tooltipView = new TooltipView({
+      model: tooltipModel,
+      mapView: this
+    });
+
+    // Initialise managers
+    this._infowindowManager = new InfowindowManager({
+      visModel: this._visModel,
+      mapModel: this._mapModel,
+      tooltipModel: tooltipModel,
+      infowindowModel: infowindowModel
+    }, {
+      showEmptyFields: this._visModel.get('showEmptyInfowindowFields')
+    });
+    this._tooltipManager = new TooltipManager({
+      mapModel: this._mapModel,
+      tooltipModel: tooltipModel,
+      infowindowModel: infowindowModel
+    });
+    this._geometryManagementController = new GeometryManagementController(this, this._mapModel);
+    this._mapCursorManager = new MapCursorManager({
+      mapView: this,
+      mapModel: this._mapModel
+    });
+
+    this._mapEventsManager = new MapEventsManager({
+      mapModel: this._mapModel
+    });
   },
 
   clean: function () {
-    // remove layer views
-    for (var layer in this._layerViews) {
-      this._layerViews[layer].remove();
-      delete this._layerViews[layer];
-    }
+    this._removeLayers();
 
     delete this._cartoDBLayerGroupView;
+
+    // Clean Infowindow and Tooltip views
+    this._infowindowView.clean();
+    this._tooltipView.clean();
+
+    // Stop managers
+    this._geometryManagementController.stop();
+    this._infowindowManager.stop();
+    this._tooltipManager.stop();
+    this._mapCursorManager.stop();
+    this._mapEventsManager.stop();
+
+    this._unbindModel();
 
     View.prototype.clean.call(this);
   },
 
   render: function () {
     this._createNativeMap();
-    var bounds = this.map.getViewBounds();
-    if (bounds) {
-      this._fitBounds(bounds);
-    }
     this._addLayers();
+
+    // Enable geometry management
+    this._geometryManagementController.start();
+
     return this;
   },
 
@@ -95,12 +155,12 @@ var MapView = View.extend({
 
   /** unbind model properties */
   _unbindModel: function () {
-    this.map.unbind('change:view_bounds_sw', null, this);
-    this.map.unbind('change:view_bounds_ne', null, this);
-    this.map.unbind('change:zoom', null, this);
-    this.map.unbind('change:scrollwheel', null, this);
-    this.map.unbind('change:keyboard', null, this);
-    this.map.unbind('change:center', null, this);
+    this.map.unbind('change:view_bounds_sw', this._changeBounds, this);
+    this.map.unbind('change:view_bounds_ne', this._changeBounds, this);
+    this.map.unbind('change:zoom', this._setZoom, this);
+    this.map.unbind('change:scrollwheel', this._setScrollWheel, this);
+    this.map.unbind('change:keyboard', this._setKeyboard, this);
+    this.map.unbind('change:center', this._setCenter, this);
     this.map.unbind('change:attribution', null, this);
   },
 
@@ -118,15 +178,17 @@ var MapView = View.extend({
   _addLayers: function (layerCollection, options) {
     var self = this;
     this._removeLayers();
-    this.map.layers.each(function (layerModel) {
+    this.map.layers.each(function (layerModel, index) {
       self._addLayer(layerModel, layerCollection, {
         silent: (options && options.silent) || false,
-        index: options && options.index
+        index: index
       });
     });
   },
 
   _addLayer: function (layerModel, layerCollection, options) {
+    options = options || {};
+
     var layerView;
     if (layerModel.get('type') === 'CartoDB') {
       layerView = this._addGroupedLayer(layerModel);
@@ -137,10 +199,11 @@ var MapView = View.extend({
     if (!layerView) {
       return;
     }
-    this._addLayerToMap(layerView, layerModel, {
-      silent: options.silent,
-      index: options.index
-    });
+    this._addLayerToMap(layerView);
+
+    if (!options.silent) {
+      this.trigger('newLayerView', layerView);
+    }
   },
 
   _addGroupedLayer: function (layerModel) {
@@ -150,10 +213,23 @@ var MapView = View.extend({
       return;
     }
 
-    var layerView = this._createLayerView(this._cartoDBLayerGroup);
-    this._cartoDBLayerGroupView = layerView;
-    this._layerViews[layerModel.cid] = layerView;
-    return layerView;
+    // Create the view that groups CartoDB layers
+    this._cartoDBLayerGroupView = this._createLayerView(this._cartoDBLayerGroup);
+    this._layerViews[layerModel.cid] = this._cartoDBLayerGroupView;
+
+    // Render the infowindow and tooltip "overlays"
+    this._infowindowView.render();
+    this.$el.append(this._infowindowView.el);
+    this._tooltipView.render();
+    this.$el.append(this._tooltipView.el);
+
+    // Start managers that should be bound to the CartoDB layer group view
+    this._infowindowManager.start(this._cartoDBLayerGroupView);
+    this._tooltipManager.start(this._cartoDBLayerGroupView);
+    this._mapCursorManager.start(this._cartoDBLayerGroupView);
+    this._mapEventsManager.start(this._cartoDBLayerGroupView);
+
+    return this._cartoDBLayerGroupView;
   },
 
   _addIndividualLayer: function (layerModel) {
@@ -169,24 +245,27 @@ var MapView = View.extend({
   },
 
   _removeLayers: function () {
-    for (var i in this._layerViews) {
-      var layerView = this._layerViews[i];
+    var layerViews = _.uniq(_.values(this._layerViews));
+    for (var i in layerViews) {
+      var layerView = layerViews[i];
       layerView.remove();
-      delete this._layerViews[i];
     }
+    this._layerViews = {};
   },
 
   _removeLayer: function (layerModel) {
     var layerView = this._layerViews[layerModel.cid];
-    if (layerModel.get('type') === 'CartoDB') {
-      if (this.map.layers.getCartoDBLayers().length === 0) {
+    if (layerView) {
+      if (layerModel.get('type') === 'CartoDB') {
+        if (this.map.layers.getCartoDBLayers().length === 0) {
+          layerView.remove();
+          this._cartoDBLayerGroupView = null;
+        }
+      } else {
         layerView.remove();
-        this._cartoDBLayerGroupView = null;
       }
-    } else {
-      layerView.remove();
+      delete this._layerViews[layerModel.cid];
     }
-    delete this._layerViews[layerModel.cid];
   },
 
   getLayerViewByLayerCid: function (cid) {
@@ -199,6 +278,10 @@ var MapView = View.extend({
 
   setCursor: function () {
     throw new Error('subclasses of MapView must implement setCursor');
+  },
+
+  getSize: function () {
+    throw new Error('subclasses of MapView must implement getSize');
   },
 
   addMarker: function (marker) {

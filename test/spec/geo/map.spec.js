@@ -76,6 +76,63 @@ describe('core/geo/map', function () {
     });
   });
 
+  describe('.addLayer', function () {
+    it('should add a layer to the collection', function () {
+      var layer = new Backbone.Model();
+      map.addLayer(layer);
+      expect(map.layers.models).toEqual([ layer ]);
+    });
+  });
+
+  describe('.removeLayer', function () {
+    it('should allow removing a layer', function () {
+      var layer = new Backbone.Model();
+      map.addLayer(layer);
+      map.removeLayer(layer);
+      expect(map.layers.length).toEqual(0);
+    });
+  });
+
+  describe('.removeLayerAt', function () {
+    it('should remove a layer by index', function () {
+      var layer1 = new Backbone.Model();
+      var layer2 = new Backbone.Model();
+      map.addLayer(layer1);
+      map.addLayer(layer2);
+
+      expect(map.layers.models).toEqual([ layer1, layer2 ]);
+
+      map.removeLayerAt(0);
+
+      expect(map.layers.models).toEqual([ layer2 ]);
+    });
+  });
+
+  describe('.removeLayerByCid', function () {
+    it('should allow removing a layer by Cid', function () {
+      var layer1 = new Backbone.Model();
+      var layer2 = new Backbone.Model();
+      map.addLayer(layer1);
+      map.addLayer(layer2);
+
+      expect(map.layers.models).toEqual([ layer1, layer2 ]);
+
+      map.removeLayerByCid(layer1.cid);
+
+      expect(map.layers.models).toEqual([ layer2 ]);
+    });
+  });
+
+  describe('.enableScrollWheel & .disableScrollWheel', function () {
+    it('should enable/disable the scroll wheel', function () {
+      map.disableScrollWheel();
+      expect(map.get('scrollwheel')).toEqual(false);
+
+      map.enableScrollWheel();
+      expect(map.get('scrollwheel')).toEqual(true);
+    });
+  });
+
   it('should raise only one change event on setBounds', function () {
     var c = 0;
     map.bind('change:view_bounds_ne', function () {
@@ -276,9 +333,9 @@ describe('core/geo/map', function () {
         expectedLayerModelClass: GMapsBaseLayer,
         expectedLayerModelType: 'GMapsBase',
         testAttributes: {
-          base_type: 'http://example.com'
+          baseType: 'http://example.com'
         },
-        expectedErrorMessage: 'The following attributes are missing: base_type'
+        expectedErrorMessage: 'The following attributes are missing: baseType'
       },
       {
         createMethod: 'createPlainLayer',

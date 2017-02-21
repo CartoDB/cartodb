@@ -3,11 +3,6 @@ var Backbone = require('backbone');
 var OverlaysFactory = require('../../../src/vis/overlays-factory');
 
 describe('vis/overlays-factory', function () {
-  var createFakeLayerView = function () {
-    var view = new Backbone.View();
-    return view;
-  };
-
   beforeEach(function () {
     this.map = new Backbone.Model();
     this.map.layers = new Backbone.Collection();
@@ -20,9 +15,6 @@ describe('vis/overlays-factory', function () {
 
     this.visView = new Backbone.View();
     this.visView.mapView = this.mapView;
-    this.visView.getLayerViews = function () {
-      return [ createFakeLayerView(), createFakeLayerView() ];
-    };
 
     this.overlaysFactory = new OverlaysFactory({
       mapModel: this.map,

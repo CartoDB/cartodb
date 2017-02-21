@@ -10,6 +10,17 @@ var VisView = require('../../../src/vis/vis-view');
 var VisModel = require('../../../src/vis/vis');
 var VizJSON = require('../../../src/api/vizjson');
 
+// extend VisView in our tests
+VisView = VisView.extend({
+  _getMapViewFactory: function () {
+    if (!this.__mapViewFactory) {
+      this.__mapViewFactory = jasmine.createSpyObj('fakeMapViewFactory', [ 'createMapView' ]);
+      this.__mapViewFactory.createMapView.and.returnValue(jasmine.createSpyObj('fakeMapView', [ 'render', 'clean', 'bind' ]));
+    }
+    return this.__mapViewFactory;
+  }
+});
+
 describe('vis/vis-view', function () {
   beforeEach(function () {
     this.container = $('<div>').css('height', '200px');
@@ -48,9 +59,11 @@ describe('vis/vis-view', function () {
       this.visView = new VisView(attrs);
       return this.visView;
     };
+
     this.createNewVis({
       el: this.container
     });
+
     this.visModel.load(new VizJSON(this.mapConfig));
     this.visView.render();
   });
@@ -59,20 +72,35 @@ describe('vis/vis-view', function () {
     jasmine.clock().uninstall();
   });
 
-  it('should create a leaflet map when provider is leaflet', function () {
-    this.visModel.map.set('provider', 'leaflet');
+  describe('map provider', function () {
+    beforeEach(function () {
+      this.fakeMapViewFactory = this.visView._getMapViewFactory();
+      this.fakeMapViewFactory.createMapView.calls.reset();
 
-    this.visView.render();
+      this.visView.render();
+    });
 
-    expect(this.visView.mapView._leafletMap).not.toEqual(undefined);
-  });
+    it('should have created a LeafletMap by default', function () {
+      expect(this.fakeMapViewFactory.createMapView.calls.mostRecent().args[0]).toEqual('leaflet');
+    });
 
-  it('should create a google maps map when provider is googlemaps', function () {
-    this.visModel.map.set('provider', 'googlemaps');
+    it('should create a gmaps when provider changes to leaflet', function () {
+      this.visModel.map.set('provider', 'something');
+      this.visModel.map.set('provider', 'leaflet');
 
-    this.visView.render();
+      this.visView.render();
 
-    expect(this.visView.mapView._gmapsMap).not.toEqual(undefined);
+      expect(this.fakeMapViewFactory.createMapView.calls.mostRecent().args[0]).toEqual('leaflet');
+    });
+
+    it('should create a google maps map when provider is googlemaps', function () {
+      this.visModel.map.set('provider', 'something', { silent: true });
+      this.visModel.map.set('provider', 'googlemaps');
+
+      this.visView.render();
+
+      expect(this.fakeMapViewFactory.createMapView.calls.mostRecent().args[0]).toEqual('googlemaps');
+    });
   });
 
   it('should bind resize changes when map height is 0', function () {
@@ -137,18 +165,5 @@ describe('vis/vis-view', function () {
     this.visModel.set('loading', false);
 
     expect(this.visView.$el.find('.CDB-Loader:not(.is-visible)').length).toEqual(1);
-  });
-
-  describe('.getLayerViews', function () {
-    it('should return the layerViews', function () {
-      this.mapConfig.layers = [{
-        type: 'tiled',
-        options: {
-          urlTemplate: 'https://dnv9my2eseobd.cloudfront.net/v3/{z}/{x}/{y}.png'
-        }
-      }];
-      this.visModel.load(new VizJSON(this.mapConfig));
-      expect(this.visView.getLayerViews().length).toBe(1);
-    });
   });
 });

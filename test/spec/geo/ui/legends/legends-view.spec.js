@@ -76,9 +76,10 @@ describe('geo/ui/legends/legends-view', function () {
     expect(this.legendsView.$('input').length).toBe(0);
   });
 
-  it('should hide element if showLayerSelector is false and no legends are visible', function () {
+  it('should hide element if showLayerSelector changes to false and no legends are visible', function () {
     spyOn(this.cartoDBLayer1.legends, 'hasAnyLegend').and.returnValue(false);
     spyOn(this.cartoDBLayer2.legends, 'hasAnyLegend').and.returnValue(false);
+    expect(this.legendsView.el.style.display).toEqual('block');
     this.settingsModel.set('showLayerSelector', false);
     expect(this.legendsView.el.style.display).toEqual('none');
   });

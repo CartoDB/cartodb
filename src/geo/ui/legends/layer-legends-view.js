@@ -1,9 +1,9 @@
 var _ = require('underscore');
-var Backbone = require('backbone');
+var View = require('../../../core/view');
 var template = require('./layer-legends-template.tpl');
 var LegendViewFactory = require('./legend-view-factory');
 
-var LayerLegendsView = Backbone.View.extend({
+var LayerLegendsView = View.extend({
 
   className: 'CDB-LayerLegends js-layer-legends',
 
@@ -15,17 +15,18 @@ var LayerLegendsView = Backbone.View.extend({
     this._legendViews = [];
 
     this.settingsModel = options.settingsModel;
-    this.tryContainerVisibility = options.tryContainerVisibility;
 
     this.model.on('change:visible', this.render, this);
     this.model.on('change:layer_name', this.render, this);
 
-    this._getLegendModels().forEach(function (model) {
-      model.on('change:state', _.debounce(this.render, 150), this);
-      model.on('change:visible', _.debounce(this.render, 150), this);
+    this._getLegendModels().forEach(function (legendModel) {
+      legendModel.on('change:state', _.debounce(this.render, 150), this);
+      legendModel.on('change:visible', _.debounce(this.render, 150), this);
+      this.add_related_model(legendModel);
     }, this);
 
     this.settingsModel.on('change', this.render, this);
+    this.add_related_model(this.settingsModel);
   },
 
   render: function () {
@@ -36,7 +37,6 @@ var LayerLegendsView = Backbone.View.extend({
     if (shouldVisible) {
       this.$el.html(
         template({
-          shouldVisible: shouldVisible,
           layerName: this.model.getName(),
           isLayerVisible: this._isLayerVisible(),
           showLegends: showLegends,
@@ -49,8 +49,13 @@ var LayerLegendsView = Backbone.View.extend({
       this.$el.html('');
     }
 
-    this.tryContainerVisibility();
+    this.trigger('render');
+
     return this;
+  },
+
+  isEmpty: function () {
+    return this.$el.html() === '';
   },
 
   _shouldLegendsBeVisible: function () {

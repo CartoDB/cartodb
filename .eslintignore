@@ -31,7 +31,6 @@
 **/src/geo/gmaps/cartodb-default-options.js
 **/src/geo/gmaps/gmaps-base-layer-view.js
 **/src/geo/gmaps/gmaps-cartodb-layer-group-view.js
-**/src/geo/gmaps/gmaps-default-map-style.js
 **/src/geo/gmaps/gmaps-layer-view.js
 **/src/geo/gmaps/gmaps-plain-layer-view.js
 **/src/geo/gmaps/gmaps-tiled-layer-view.js
@@ -40,7 +39,6 @@
 **/src/geo/leaflet/leaflet-gmaps-tiled-layer-view.js
 **/src/geo/leaflet/leaflet-plain-layer-view.js
 **/src/geo/leaflet/leaflet-wms-layer-view.js
-**/src/geo/map/gmaps-base-layer.js
 **/src/geo/map/tile-layer.js
 **/src/geo/map/wms-layer.js
 **/src/geo/map.js

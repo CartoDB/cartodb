@@ -40,7 +40,8 @@ describe('geo/leaflet/leaflet-map-view', function () {
 
     mapView = new LeafletMapView({
       el: container,
-      map: map,
+      mapModel: map,
+      visModel: new Backbone.Model(),
       layerGroupModel: this.layerGroupModel
     });
 
@@ -95,18 +96,6 @@ describe('geo/leaflet/leaflet-map-view', function () {
       layer
     ]);
     expect(map.layers.length).toEqual(1);
-  });
-
-  it('should trigger an event when a new layerView is added to the map', function () {
-    var spy = { c: function () {} };
-    spyOn(spy, 'c');
-    mapView.bind('newLayerView', spy.c);
-
-    map.addLayer(layer);
-
-    expect(map.layers.length).toEqual(1);
-    expect(_.size(mapView._layerViews)).toEqual(1);
-    expect(spy.c).toHaveBeenCalled();
   });
 
   it('should allow removing a layer', function () {
@@ -192,7 +181,7 @@ describe('geo/leaflet/leaflet-map-view', function () {
   });
 
   // Test cases for gmaps substitutes since the support is deprecated.
-  _({ // GMaps basemap base_type: expected substitute data
+  _({ // GMaps basemap baseType: expected substitute data
     // empty = defaults to gray_roadmap
     '': {
       tiles: {
@@ -259,7 +248,7 @@ describe('geo/leaflet/leaflet-map-view', function () {
     var testContext;
 
     if (baseType) {
-      layerOpts = {base_type: baseType};
+      layerOpts = {baseType: baseType};
       testContext = 'with basemap "' + baseType + '"';
     } else {
       testContext = 'with default basemap "gray_roadmap"';
@@ -335,7 +324,8 @@ describe('geo/leaflet/leaflet-map-view', function () {
     });
     var mapView = new LeafletMapView({
       el: container,
-      map: map,
+      mapModel: map,
+      visModel: new Backbone.Model(),
       layerGroupModel: new Backbone.Model()
     });
     mapView.render();
@@ -356,7 +346,8 @@ describe('geo/leaflet/leaflet-map-view', function () {
     });
     var mapView = new LeafletMapView({
       el: container,
-      map: map,
+      mapModel: map,
+      visModel: new Backbone.Model(),
       layerGroupModel: new Backbone.Model()
     });
     mapView.render();

@@ -19,6 +19,7 @@ var fakeLayerViewFactory = {
 };
 
 var MyMapView = MapView.extend({
+  getSize: function () { return { x: 1000, y: 1000 }; },
   _getLayerViewFactory: function () {
     return fakeLayerViewFactory;
   },
@@ -38,7 +39,8 @@ describe('core/geo/map-view', function () {
     this.layerViewFactory = jasmine.createSpyObj('layerViewFactory', ['createLayerView']);
     this.mapView = new MyMapView({
       el: this.container,
-      map: this.map,
+      mapModel: this.map,
+      visModel: new Backbone.Model(),
       layerGroupModel: new LayerGroupModel(null, {
         layersCollection: this.map.layers
       })
@@ -58,7 +60,8 @@ describe('core/geo/map-view', function () {
 
       this.mapView = new MyMapView({
         el: this.container,
-        map: this.map,
+        mapModel: this.map,
+        visModel: new Backbone.Model(),
         layerGroupModel: new LayerGroupModel(null, {
           windshaftMap: this.windshaftMap,
           layersCollection: this.map.layers
@@ -102,6 +105,21 @@ describe('core/geo/map-view', function () {
         // Tile Layer has a different layer view
         expect(this.mapView.getLayerViewByLayerCid(tileLayer.cid)).not.toEqual(this.mapView.getLayerViewByLayerCid(cartoDBLayer1.cid));
       });
+
+      it('should trigger a "newLayerView" event for each new layerView', function () {
+        var callback = jasmine.createSpy('callback');
+        this.mapView.on('newLayerView', callback);
+
+        var tileLayer = new TileLayer();
+        var cartoDBLayer1 = new CartoDBLayer({}, { vis: this.vis });
+        var cartoDBLayer2 = new CartoDBLayer({}, { vis: this.vis });
+
+        this.map.layers.reset([tileLayer, cartoDBLayer1, cartoDBLayer2]);
+
+        expect(callback.calls.count()).toEqual(2);
+        expect(callback.calls.argsFor(0)[0]).toEqual(this.mapView.getLayerViewByLayerCid(tileLayer.cid));
+        expect(callback.calls.argsFor(1)[0]).toEqual(this.mapView.getLayerViewByLayerCid(cartoDBLayer1.cid));
+      });
     });
 
     describe('when new layerModels are added to map.layers', function () {
@@ -143,6 +161,23 @@ describe('core/geo/map-view', function () {
 
         // Tile Layer has a different layer view
         expect(this.mapView.getLayerViewByLayerCid(tileLayer.cid)).not.toEqual(this.mapView.getLayerViewByLayerCid(cartoDBLayer1.cid));
+      });
+
+      it('should trigger a "newLayerView" event for each new layerView', function () {
+        var callback = jasmine.createSpy('callback');
+        this.mapView.on('newLayerView', callback);
+
+        var tileLayer = new TileLayer();
+        var cartoDBLayer1 = new CartoDBLayer({}, { vis: this.vis });
+        var cartoDBLayer2 = new CartoDBLayer({}, { vis: this.vis });
+
+        this.map.addLayer(tileLayer);
+        this.map.addLayer(cartoDBLayer1);
+        this.map.addLayer(cartoDBLayer2);
+
+        expect(callback.calls.count()).toEqual(2);
+        expect(callback.calls.argsFor(0)[0]).toEqual(this.mapView.getLayerViewByLayerCid(tileLayer.cid));
+        expect(callback.calls.argsFor(1)[0]).toEqual(this.mapView.getLayerViewByLayerCid(cartoDBLayer1.cid));
       });
     });
 

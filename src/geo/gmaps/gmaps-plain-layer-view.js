@@ -3,7 +3,7 @@ var GMapsLayerView = require('./gmaps-layer-view');
 
 var GMapsPlainLayerView = function(layerModel, gmapsMap) {
   this.color = layerModel.get('color')
-  GMapsLayerView.call(this, layerModel, this, gmapsMap);
+  GMapsLayerView.call(this, layerModel, gmapsMap);
 };
 
 _.extend(

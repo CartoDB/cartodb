@@ -56,6 +56,54 @@ describe('geo/map/cartodb-layer', function () {
 
       expect(this.vis.reload).not.toHaveBeenCalled();
     });
+
+    it('should reload the map when infowindow fields are reset', function () {
+      var layer = new CartoDBLayer({}, { vis: this.vis });
+
+      layer.infowindow.fields.reset([
+        {
+          'name': 'name',
+          'title': true,
+          'position': 1
+        }
+      ]);
+
+      expect(this.vis.reload).toHaveBeenCalled();
+    });
+
+    it('should reload the map when infowindow fields are added', function () {
+      var layer = new CartoDBLayer({}, { vis: this.vis });
+
+      layer.infowindow.fields.add({
+        'name': 'name',
+        'title': true,
+        'position': 1
+      });
+
+      expect(this.vis.reload).toHaveBeenCalled();
+    });
+
+    it('should reload the map when infowindow fields are removed', function () {
+      var layer = new CartoDBLayer({}, { vis: this.vis });
+
+      layer.infowindow.fields.add({
+        'name': 'name',
+        'title': true,
+        'position': 1
+      });
+
+      this.vis.reload.calls.reset();
+
+      layer.infowindow.fields.add({
+        'name': 'name',
+        'title': true,
+        'position': 1
+      });
+
+      layer.infowindow.fields.remove(layer.infowindow.fields.at(0));
+
+      expect(this.vis.reload).toHaveBeenCalled();
+    });
   });
 
   describe('.getInteractiveColumnNames', function () {

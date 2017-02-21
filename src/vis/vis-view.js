@@ -2,20 +2,8 @@ var _ = require('underscore');
 var $ = require('jquery');
 var View = require('../core/view');
 var MapViewFactory = require('../geo/map-view-factory');
-var FeatureEvents = require('./feature-events');
-var MapCursorManager = require('./map-cursor-manager');
-var MapEventsManager = require('./map-events-manager');
-var GeometryManagementController = require('./geometry-management-controller');
 var LegendsView = require('../geo/ui/legends/legends-view');
 var OverlaysView = require('../geo/ui/overlays-view');
-
-var InfowindowModel = require('../geo/ui/infowindow-model');
-var InfowindowView = require('../geo/ui/infowindow-view');
-var InfowindowManager = require('./infowindow-manager');
-
-var TooltipModel = require('../geo/ui/tooltip-model');
-var TooltipView = require('../geo/ui/tooltip-view');
-var TooltipManager = require('./tooltip-manager');
 
 /**
  * Visualization creation
@@ -33,83 +21,17 @@ var Vis = View.extend({
   },
 
   render: function () {
-    var mapViewFactory = new MapViewFactory();
+    this.model.map.off('change:provider', this.render, this);
+    this.model.map.on('change:provider', this.render, this);
 
-    this.mapView = mapViewFactory.createMapView(this.model.map.get('provider'), this.model.map, this.model.layerGroupModel);
-    // Add the element to the DOM before the native map is created
-    this.$el.html(this.mapView.el);
+    this._cleanMapView();
+    this._renderMapView();
 
-    // Bind events before the view is rendered and layer views are added to the map
-    this.mapView.bind('newLayerView', this._bindLayerViewToLoader, this);
-    this.mapView.render();
+    this._cleanLegendsView();
+    this._renderLegendsView();
 
-    new GeometryManagementController(this.mapView, this.model.map); // eslint-disable-line
-
-    // Infowindows && Tooltips
-    var infowindowModel = new InfowindowModel();
-    var tooltipModel = new TooltipModel({
-      offset: [4, 10]
-    });
-
-    var infowindowView = new InfowindowView({
-      model: infowindowModel,
-      mapView: this.mapView
-    });
-    infowindowView.render();
-    this.$el.append(infowindowView.el);
-
-    new InfowindowManager({ // eslint-disable-line
-      visModel: this.model,
-      mapModel: this.model.map,
-      mapView: this.mapView,
-      tooltipModel: tooltipModel,
-      infowindowModel: infowindowModel
-    }, {
-      showEmptyFields: this.model.get('showEmptyInfowindowFields')
-    });
-
-    var tooltipView = new TooltipView({
-      model: tooltipModel,
-      mapView: this.mapView
-    });
-    tooltipView.render();
-    this.$el.append(tooltipView.el);
-
-    new TooltipManager({ // eslint-disable-line
-      visModel: this.model,
-      mapModel: this.model.map,
-      mapView: this.mapView,
-      tooltipModel: tooltipModel,
-      infowindowModel: infowindowModel
-    });
-
-    var featureEvents = new FeatureEvents({
-      mapView: this.mapView,
-      layersCollection: this.model.map.layers
-    });
-
-    new MapCursorManager({ // eslint-disable-line
-      mapView: this.mapView,
-      mapModel: this.model.map,
-      featureEvents: featureEvents
-    });
-
-    new MapEventsManager({ // eslint-disable-line
-      mapModel: this.model.map,
-      featureEvents: featureEvents
-    });
-
-    this._renderLegends();
-
-    var overlaysView = new OverlaysView({
-      visModel: this.model,
-      visView: this,
-      mapModel: this.model.map,
-      mapView: this.mapView,
-      overlaysCollection: this._overlaysCollection
-    });
-    overlaysView.render();
-    this.$el.append(overlaysView.el);
+    this._cleanOverlaysView();
+    this._renderOverlaysView();
 
     // If a CartoDB embed map is hidden by default, its
     // height is 0 and it will need to recalculate its size
@@ -123,13 +45,50 @@ var Vis = View.extend({
     }
   },
 
-  _renderLegends: function () {
+  _renderMapView: function () {
+    this.mapView = this._getMapViewFactory().createMapView(this.model.map.get('provider'), this.model, this.model.map, this.model.layerGroupModel);
+    // Add the element to the DOM before the native map is created
+    this.$el.html(this.mapView.el);
+
+    // Bind events before the view is rendered and layer views are added to the map
+    this.mapView.bind('newLayerView', this._bindLayerViewToLoader, this);
+    this.mapView.render();
+  },
+
+  _getMapViewFactory: function () {
+    return this.mapViewFactory || new MapViewFactory();
+  },
+
+  _cleanMapView: function () {
+    this.mapView && this.mapView.clean();
+  },
+
+  _renderLegendsView: function () {
     this._legendsView = new LegendsView({
       layersCollection: this.model.map.layers,
       settingsModel: this.settingsModel
     });
 
     this.$el.append(this._legendsView.render().$el);
+  },
+
+  _cleanLegendsView: function () {
+    this._legendsView && this._legendsView.clean();
+  },
+
+  _renderOverlaysView: function () {
+    this._overlaysView = new OverlaysView({
+      visModel: this.model,
+      visView: this,
+      mapModel: this.model.map,
+      mapView: this.mapView,
+      overlaysCollection: this._overlaysCollection
+    });
+    this.$el.append(this._overlaysView.render().$el);
+  },
+
+  _cleanOverlaysView: function () {
+    this._overlaysView && this._overlaysView.clean();
   },
 
   _bindLayerViewToLoader: function (layerView) {
@@ -143,14 +102,6 @@ var Vis = View.extend({
 
   _invalidateSize: function () {
     this.mapView.invalidateSize();
-  },
-
-  // returns an array of layers
-  getLayerViews: function () {
-    var self = this;
-    return _.compact(this.model.map.layers.map(function (layer) {
-      return self.mapView.getLayerViewByLayerCid(layer.cid);
-    }));
   },
 
   _onResize: function () {

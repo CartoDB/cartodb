@@ -8,17 +8,26 @@ var _ = require('underscore');
 var MapCursorManager = function (deps) {
   if (!deps.mapView) throw new Error('mapView is required');
   if (!deps.mapModel) throw new Error('mapModel is required');
-  if (!deps.featureEvents) throw new Error('featureEvents is required');
 
   this._mapView = deps.mapView;
   this._mapModel = deps.mapModel;
-  this._featureEvents = deps.featureEvents;
-
-  this._featureEvents.on('featureOver', this._onFeatureOver, this);
-  this._featureEvents.on('featureOut', this._onFeatureOut, this);
 
   // Map to keep track of clickable layers that are being feature overed
   this._clickableLayersBeingFeatureOvered = {};
+};
+
+MapCursorManager.prototype.start = function (cartoDBLayerGroupView) {
+  this._cartoDBLayerGroupView = cartoDBLayerGroupView;
+  this._cartoDBLayerGroupView.on('featureOver', this._onFeatureOver, this);
+  this._cartoDBLayerGroupView.on('featureOut', this._onFeatureOut, this);
+};
+
+MapCursorManager.prototype.stop = function (cartoDBLayerGroupView) {
+  if (this._cartoDBLayerGroupView) {
+    this._cartoDBLayerGroupView.off('featureOver', this._onFeatureOver, this);
+    this._cartoDBLayerGroupView.off('featureOut', this._onFeatureOut, this);
+    delete this._cartoDBLayerGroupView;
+  }
 };
 
 MapCursorManager.prototype._onFeatureOver = function (featureEvent) {

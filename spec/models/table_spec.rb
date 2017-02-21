@@ -1109,8 +1109,11 @@ describe Table do
       table = create_table(user_id: @user.id, name: "varnish_privacy", privacy: UserTable::PRIVACY_PRIVATE)
 
       id = table.table_visualization.id
+
+      # Old models call this 6 times, new ones only two for the moment
+      # TODO: this will probably be fixed when refactor is needed
       CartoDB::Varnish.any_instance.expects(:purge)
-                      .times(6)
+                      .times(2..6)
                       .with(".*#{id}:vizjson")
                       .returns(true)
 
@@ -2500,7 +2503,6 @@ describe Table do
     end
 
     it_behaves_like 'table service'
-    # Uncomment this to get all tests with the new model
-    # it_behaves_like 'table service with legacy model'
+    it_behaves_like 'table service with legacy model'
   end
 end

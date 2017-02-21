@@ -617,7 +617,7 @@ class Table
   end
 
   def privacy_changed?
-     @user_table.previous_changes && @user_table.previous_changes.keys.include?(:privacy)
+    @user_table.privacy_changed?
   end
 
   def redis_key
@@ -1314,6 +1314,22 @@ class Table
                           table_name: name)
   end
 
+  def propagate_attribution_change(attributions)
+    # This includes both the canonical and derived visualizations
+    affected_visualizations.each do |affected_visualization|
+      affected_visualization.layers(:data).each do |layer|
+        if layer.options['table_name'] == name
+          layer.options['attribution']  = attributions
+          layer.save
+        end
+      end
+    end
+  end
+
+  def table_visualization
+    @user_table.table_visualization
+  end
+
   private
 
   def related_visualizations
@@ -1342,7 +1358,7 @@ class Table
 
   def previous_privacy
     # INFO: @user_table.initial_value(:privacy) weirdly returns incorrect value so using changes index instead
-    privacy_changed? ? @user_table.previous_changes[:privacy].first : nil
+    privacy_changed? ? @user_table.previous_privacy : nil
   end
 
   def importer_stats

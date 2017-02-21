@@ -47,6 +47,7 @@ module Carto
     before_create { service.before_create }
     after_create :create_canonical_visualization
     after_create { service.after_create }
+    after_save { service.after_save }
 
     def geometry_types
       @geometry_types ||= table.geometry_types
@@ -97,6 +98,10 @@ module Carto
 
     def partially_dependent_visualizations
       affected_visualizations.select { |v| v.partially_dependent_on?(self) }
+    end
+
+    def dependent_visualizations
+      affected_visualizations.select { |v| v.dependent_on?(self) }
     end
 
     def name_for_user(other_user)
@@ -153,6 +158,25 @@ module Carto
 
     def external_source_visualization
       data_import.try(:external_data_imports).try(:first).try(:external_source).try(:visualization)
+    end
+
+    def table_visualization
+      @table_visualization ||= Carto::Visualization.where(
+        map_id: map_id,
+        type:   Carto::Visualization::TYPE_CANONICAL
+      ).first
+    end
+
+    def update_cdb_tablemetadata
+      service.update_cdb_tablemetadata
+    end
+
+    def privacy_changed?
+      changes.include?('privacy')
+    end
+
+    def previous_privacy
+      changes['privacy'].first
     end
 
     private

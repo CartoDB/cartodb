@@ -184,13 +184,7 @@ module CartoDB
         self
       end
 
-      def store_using_table(fields, table_privacy_changed = false)
-        if type == TYPE_CANONICAL
-          # Each table has a canonical visualization which must have privacy synced
-          self.privacy = fields[:privacy_text]
-          self.map_id = fields[:map_id]
-        end
-        # But as this method also notifies of changes in a table, must save always
+      def store_using_table(table_privacy_changed = false)
         do_store(false, table_privacy_changed)
         self
       end
@@ -891,15 +885,7 @@ module CartoDB
       def propagate_attribution_change
         return unless attributions_changed
 
-        # This includes both the canonical and derived visualizations
-        table.affected_visualizations.each do |affected_visualization|
-          affected_visualization.layers(:data).each do |layer|
-            if layer.options['table_name'] == table.name
-              layer.options['attribution']  = self.attributions
-              layer.save
-            end
-          end
-        end
+        table.propagate_attribution_change(self.attributions)
       end
 
       def revert_name_change(previous_name)

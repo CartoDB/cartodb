@@ -15,6 +15,10 @@ module Carto::VisualizationDependencies
     derived? && layers_dependent_on(user_table).count.between?(1, data_layers.count - 1)
   end
 
+  def dependent_on?(user_table)
+    derived? && layers_dependent_on(user_table).count > 0
+  end
+
   private
 
   def layers_dependent_on(user_table)
@@ -505,7 +509,78 @@ class Carto::Visualization < ActiveRecord::Base
     derived? ? user.try(:private_maps_enabled) : user.try(:private_tables_enabled)
   end
 
+  def store_using_table(table_privacy_changed = false)
+    do_store(false, table_privacy_changed)
+    self
+  end
+
+  # Backward compatibility with Sequel
+  def store
+    save
+  end
+
   private
+
+  def do_store(propagate_changes = true, table_privacy_changed = false)
+    self.version = user.new_visualizations_version if version.nil?
+
+    if password_protected?
+      raise CartoDB::InvalidMember.new('No password set and required') unless has_password?
+    else
+      remove_password
+    end
+
+    # Warning: imports create by default private canonical visualizations
+    if type != TYPE_CANONICAL && @privacy == PRIVACY_PRIVATE && privacy_changed && !supports_private_maps?
+      raise CartoDB::InvalidMember
+    end
+
+    perform_invalidations(table_privacy_changed)
+
+    # Ensure a permission is set before saving the visualization
+    if permission.nil?
+      perm = CartoDB::Permission.new
+      perm.owner = user
+      perm.save
+      @permission_id = perm.id
+    end
+    save
+
+    restore_previous_privacy unless save_named_map
+
+    propagate_attribution_change if table
+    if type == TYPE_REMOTE || type == TYPE_CANONICAL
+      propagate_privacy_and_name_to(table) if table and propagate_changes
+    else
+      propagate_name_to(table) if table and propagate_changes
+    end
+  end
+
+  def remove_password
+    @password_salt = nil
+    @encrypted_password = nil
+  end
+
+  def perform_invalidations(table_privacy_changed)
+    # previously we used 'invalidate_cache' but due to public_map displaying all the user public visualizations,
+    # now we need to purgue everything to avoid cached stale data or public->priv still showing scenarios
+    if changed.include?('name') || changed.include?('privacy') || table_privacy_changed || changed?
+      invalidate_cache
+    end
+
+    # When a table's relevant data is changed, propagate to all who use it or relate to it
+    if changed? && table
+      table.dependent_visualizations.each do |affected_vis|
+        affected_vis.invalidate_cache
+      end
+    end
+  end
+
+  def propagate_attribution_change
+    return unless changed.include?('attributions')
+
+    table.propagate_attribution_change(self.attributions)
+  end
 
   def auto_generate_indices_for_all_layers
     user_tables = data_layers.map(&:user_tables).flatten.uniq

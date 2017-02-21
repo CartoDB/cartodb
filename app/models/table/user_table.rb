@@ -325,6 +325,22 @@ class UserTable < Sequel::Model
     data_import.try(:external_data_imports).try(:first).try(:external_source).try(:visualization)
   end
 
+  def table_visualization
+    @table_visualization ||= Visualization::Collection.new.fetch(
+      map_id: map_id,
+      type:   Visualization::Member::TYPE_CANONICAL
+    ).first
+  end
+
+  # TODO: merge following?
+  def privacy_changed?
+    previous_changes && previous_changes.keys.include?(:privacy)
+  end
+
+  def previous_privacy
+    previous_changes[:privacy].first
+  end
+
   private
 
   def default_privacy_value

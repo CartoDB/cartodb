@@ -141,8 +141,10 @@ describe('src/vis/tooltip-manager.js', function () {
 
     expect(this.tooltipModel.isVisible()).toBeFalsy();
 
+    // Infowindow for layer1 is now visible
     this.infowindowModel.setInfowindowTemplate(layer1.infowindow);
     this.infowindowModel.setCurrentFeatureId(10);
+    this.infowindowModel.show();
 
     simulateFeatureOverEvent(this.layerView, {
       layerIndex: 0,

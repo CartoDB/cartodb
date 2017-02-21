@@ -90,6 +90,7 @@ TooltipManager.prototype._noLayerIsBeingFeatureOvered = function () {
 
 TooltipManager.prototype._isFeatureInfowindowOpen = function (layerModel, featureId) {
   return featureId && this._infowindowModel.getCurrentFeatureId() === featureId &&
+    this._infowindowModel.isVisible() &&
     this._infowindowModel.hasInfowindowTemplate(layerModel.infowindow);
 };
 

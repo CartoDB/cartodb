@@ -90,6 +90,7 @@ InfowindowManager.prototype._bindLayerModel = function () {
   this._cartoDBLayerModel.on('change:visible', this._hideInfowindow, this);
   this._cartoDBLayerModel.infowindow.on('change', this._updateInfowindowModel, this);
   this._cartoDBLayerModel.infowindow.fields.on('reset', this._onInfowindowTemplateFieldsReset, this);
+  this._vis.on('reloaded', this._onVisReloaded, this);
 };
 
 InfowindowManager.prototype._unbindLayerModel = function () {
@@ -98,6 +99,7 @@ InfowindowManager.prototype._unbindLayerModel = function () {
     this._cartoDBLayerModel.off('change:visible', this._hideInfowindow, this);
     this._cartoDBLayerModel.infowindow.off('change', this._updateInfowindowModel, this);
     this._cartoDBLayerModel.infowindow.fields.off('reset', this._onInfowindowTemplateFieldsReset, this);
+    this._vis.off('reloaded', this._onVisReloaded, this);
   }
 };
 
@@ -108,13 +110,14 @@ InfowindowManager.prototype._updateInfowindowModel = function (infowindowTemplat
 InfowindowManager.prototype._onInfowindowTemplateFieldsReset = function () {
   if (this._cartoDBLayerModel.infowindow.hasFields()) {
     this._updateInfowindowModel(this._cartoDBLayerModel.infowindow);
-    this._vis.reload({
-      success: function () {
-        this._fetchAttributes();
-      }.bind(this)
-    });
   } else {
     this._hideInfowindow();
+  }
+};
+
+InfowindowManager.prototype._onVisReloaded = function () {
+  if (this._cartoDBLayerModel && this._cartoDBLayerModel.infowindow.hasFields()) {
+    this._fetchAttributes();
   }
 };
 

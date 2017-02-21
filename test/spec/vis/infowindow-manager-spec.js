@@ -395,7 +395,7 @@ describe('src/vis/infowindow-manager.js', function () {
     expect(this.infowindowModel.getCurrentFeatureId()).toBeUndefined();
   });
 
-  it('should reload the map and re-fetch attributes when the infowindow template gets new fields', function () {
+  it('should update the infowindow model when the infowindow template gets new fields', function () {
     var layer = createCartoDBLayer(this.vis);
 
     this.infowindowManager.start(this.layerView);
@@ -406,11 +406,8 @@ describe('src/vis/infowindow-manager.js', function () {
       layerIndex: 0,
       data: { cartodb_id: 10 }
     });
-    this.vis.reload.calls.reset();
 
-    this.cartoDBLayerGroup.fetchAttributes.and.callFake(function (layerIndex, featureId, callback) {
-      callback({ name: 'juan', description: 'person' });
-    });
+    spyOn(this.infowindowModel, 'setInfowindowTemplate');
 
     layer.infowindow.update({
       fields: [
@@ -427,10 +424,24 @@ describe('src/vis/infowindow-manager.js', function () {
       ]
     });
 
-    expect(this.vis.reload).toHaveBeenCalledWith({ success: jasmine.any(Function) });
-    this.vis.reload.calls.argsFor(0)[0].success();
+    expect(this.infowindowModel.setInfowindowTemplate).toHaveBeenCalledWith(layer.infowindow);
+  });
 
-    // InfowindowModel has been updated
+  it('should re-fetch attributes when the vis is reloaded', function () {
+    var layer = createCartoDBLayer(this.vis);
+    this.infowindowManager.start(this.layerView);
+
+    this.map.layers.reset([ layer ]);
+
+    this.cartoDBLayerGroup.fetchAttributes.and.callFake(function (layerIndex, featureId, callback) {
+      callback({ name: 'juan' });
+    });
+
+    simulateFeatureClickEvent(this.layerView, {
+      layerIndex: 0,
+      data: { cartodb_id: 10 }
+    });
+
     expect(this.infowindowModel.get('content')).toEqual({
       'fields': [
         {
@@ -438,17 +449,31 @@ describe('src/vis/infowindow-manager.js', function () {
           'title': 'name',
           'value': 'juan',
           'index': 0
-        },
-        {
-          'name': 'description',
-          'title': 'description',
-          'value': 'person',
-          'index': 1
         }
       ],
       'data': {
-        'name': 'juan',
-        'description': 'person'
+        'name': 'juan'
+      }
+    });
+
+    this.cartoDBLayerGroup.fetchAttributes.and.callFake(function (layerIndex, featureId, callback) {
+      callback({ name: 'luis' });
+    });
+
+    this.vis.trigger('reloaded');
+
+    // InfowindowModel has been updated
+    expect(this.infowindowModel.get('content')).toEqual({
+      'fields': [
+        {
+          'name': 'name',
+          'title': 'name',
+          'value': 'luis',
+          'index': 0
+        }
+      ],
+      'data': {
+        'name': 'luis'
       }
     });
   });

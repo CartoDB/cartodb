@@ -362,9 +362,29 @@ describe('vis/vis', function () {
         expect(this.vis._windshaftMap.createInstance).toHaveBeenCalledWith({
           sourceId: 'sourceId',
           forceFetch: 'forceFetch',
-          success: 'success',
+          success: jasmine.any(Function),
+          error: jasmine.any(Function),
           includeFilters: true
         });
+      });
+
+      it('should trigger a `reload` event', function () {
+        var reloadCallback = jasmine.createSpy('reloadCallback');
+        this.vis.on('reload', reloadCallback);
+
+        this.vis.reload();
+
+        expect(reloadCallback).toHaveBeenCalled();
+      });
+
+      it('should trigger a `reloaded` event when reload succeeds', function () {
+        var reloadedCallback = jasmine.createSpy('reloadedCallback');
+        this.vis.on('reloaded', reloadedCallback);
+
+        this.vis.reload();
+        this.vis._windshaftMap.createInstance.calls.mostRecent().args[0].success();
+
+        expect(reloadedCallback).toHaveBeenCalled();
       });
     });
   });
@@ -1008,23 +1028,6 @@ describe('vis/vis', function () {
       this.vis.setError('something');
 
       expect(callback).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('.instantiateMap', function () {
-    beforeEach(function () {
-      spyOn(_, 'debounce').and.callFake(function (func) { return function () { func.apply(this, arguments); }; });
-    });
-
-    it('should trigger a `reload` event', function () {
-      var reloadCallback = jasmine.createSpy('reloadCallback');
-
-      this.vis.load(new VizJSON(fakeVizJSON()));
-      this.vis.on('reload', reloadCallback);
-
-      this.vis.instantiateMap();
-
-      expect(reloadCallback).toHaveBeenCalled();
     });
   });
 

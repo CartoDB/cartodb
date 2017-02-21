@@ -1,12 +1,14 @@
 @import '../variables/mixins';
 @import '../variables/colors';
 @import '../variables/sizes';
+@import '../editor-3/vars';
 @import 'cdb-variables/colors';
 @import 'cdb-variables/sizes';
 
 $sSmallDescriptionWidth: 200px;
 $sRegularDescriptionWidth: 445px;
 $sBigDescriptionWidth: 550px;
+$sToolbarWidth-mediaXL: 48px;
 $sWidgetsPadWidth: 378px;
 $cBackgroundColor: #2E3C43;
 
@@ -53,6 +55,12 @@ $cBackgroundColor: #2E3C43;
 .BuilderOnboarding-footer,
 .BuilderOnboarding-step {
   display: none;
+}
+
+.BuilderOnboarding-forget,
+.BuilderOnboarding-header,
+.BuilderOnboarding-footer {
+  min-width: 300px;
 }
 
 .BuilderOnboarding-footer .BuilderOnboarding-footerButtons,
@@ -144,16 +152,32 @@ $cBackgroundColor: #2E3C43;
 }
 
 .BuilderOnboarding.is-step1 {
+  .BuilderOnboarding-body {
+    width: 0;
+  }
+
   .BuilderOnboarding-pad2 {
     width: 72px;
+
+    @media (max-width: $sViewport-xl) {
+      width: $sToolbarWidth-mediaXL;
+    }
   }
   .BuilderOnboarding-description {
     width: $sBigDescriptionWidth;
   }
 }
 .BuilderOnboarding.is-step2 {
+  .BuilderOnboarding-body {
+    width: 0;
+  }
+
   .BuilderOnboarding-pad {
     width: 72px;
+
+    @media (max-width: $sViewport-xl) {
+      width: $sToolbarWidth-mediaXL;
+    }
   }
   .BuilderOnboarding-pad2 {
     width: 345px;
@@ -168,6 +192,10 @@ $cBackgroundColor: #2E3C43;
 }
 
 .BuilderOnboarding.is-step3 {
+  .BuilderOnboarding-body {
+    width: 0;
+  }
+
   .BuilderOnboarding-pad2 {
     width: 0;
   }
@@ -188,6 +216,10 @@ $cBackgroundColor: #2E3C43;
 
   .BuilderOnboarding-contentWrapper {
     @include flex(0 0 416px);
+
+    @media (max-width: $sViewport-xl) {
+      @include flex(0 0 392px);
+    }
   }
   .BuilderOnboarding-pad5 {
     right: 0;
@@ -195,8 +227,12 @@ $cBackgroundColor: #2E3C43;
 }
 
 .BuilderOnboarding.is-step4 {
+  .BuilderOnboarding-body {
+    width: 285px;
+  }
+
   .BuilderOnboarding-pad {
-    @include flex(1);
+    display: none;
   }
   .BuilderOnboarding-pad4 {
     position: relative;
@@ -204,7 +240,7 @@ $cBackgroundColor: #2E3C43;
     background: none;
   }
   .BuilderOnboarding-description {
-    width: $sRegularDescriptionWidth;
+    width: auto;
   }
   .BuilderOnboarding-pad5 {
     right: 0;

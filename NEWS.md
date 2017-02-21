@@ -49,7 +49,7 @@ Development
   * Select an icon previously uploaded by the organization admin (#11462)
   * Sets the default initial size for icons to 20px (#11498)
 * Onboarding for layer edition (#10905)
-* Improved formula widget description field. (##11469)
+* Improved formula widget description field. (#11469)
 
 ### Bug fixes
 * Fixed problem switching between qualitative and quantitative attributes (#10654)

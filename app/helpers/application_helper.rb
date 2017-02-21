@@ -105,11 +105,7 @@ module ApplicationHelper
 
     if Cartodb.config[:datasource_search].present? && Cartodb.config[:datasource_search]['twitter_search'].present? \
       && Cartodb.config[:datasource_search]['twitter_search']['standard'].present?
-      if current_user.has_feature_flag?('gnip_v2')
-        config[:datasource_search_twitter] = Cartodb.config[:datasource_search]['twitter_search']['standard']['search_url_v2']
-      else
-        config[:datasource_search_twitter] = Cartodb.config[:datasource_search]['twitter_search']['standard']['search_url']
-      end
+      config[:datasource_search_twitter] = Cartodb.config[:datasource_search]['twitter_search']['standard']['search_url']
     end
 
     if Cartodb.config[:graphite_public].present?

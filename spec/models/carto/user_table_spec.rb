@@ -10,7 +10,11 @@ describe Carto::UserTable do
 
     @user = FactoryGirl.create(:carto_user)
     @carto_user = @user
-    @user_table = Carto::UserTable.new(user: @user, name: unique_name('user_table'))
+
+    @user_table = Carto::UserTable.new
+    @user_table.user = @user
+    @user_table.name = unique_name('user_table')
+    @user_table.save
 
     # The dependent visualization models are in the UserTable class for the AR model
     @dependent_test_object = @user_table
@@ -23,7 +27,9 @@ describe Carto::UserTable do
 
   it_behaves_like 'user table models' do
     def build_user_table(attrs = {})
-      Carto::UserTable.new(attrs)
+      ut = Carto::UserTable.new
+      ut.assign_attributes(attrs, without_protection: true)
+      ut
     end
   end
 

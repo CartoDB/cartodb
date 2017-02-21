@@ -2,7 +2,6 @@
 
 @import '../variables/mixins';
 @import '../variables/colors';
-@import '../variables/onboarding';
 @import '../editor-3/vars';
 @import 'cdb-variables/colors';
 @import 'cdb-variables/sizes';
@@ -81,6 +80,11 @@ $sHighlightHeight: 64;
   right: 100%;
   bottom: 36px;
   left: auto;
+}
+.LayerOnboarding-pads--left .LayerOnboarding-body.is-step4 {
+  right: auto;
+  bottom: 50px;
+  left: 400px;
 }
 
 .LayerOnboarding--style .LayerOnboarding-body.is-step2 {
@@ -465,5 +469,15 @@ $styleSteps: (
     &.has-widgets {
       width: 8px;
     }
+  }
+}
+
+@media (max-width: 1008px) { // Empiric value
+  .LayerOnboarding-contentBody--analysis {
+    width: 0;
+  }
+
+  .LayerOnboarding-contentWrapper--analysis {
+    @include justify-content(flex-start);
   }
 }

@@ -27,6 +27,7 @@ module Carto
       before_filter :load_by_name_or_id, only: [:vizjson2, :vizjson3]
       before_filter :load_visualization, only: [:likes_count, :likes_list, :is_liked, :show, :stats, :list_watching,
                                                 :static_map]
+      before_filter :load_common_data, only: [:index]
 
       rescue_from Carto::LoadError, with: :rescue_from_carto_error
       rescue_from Carto::UUIDParameterFormatError, with: :rescue_from_carto_error
@@ -35,6 +36,18 @@ module Carto
         render_jsonp(to_json(@visualization))
       rescue KeyError
         head(404)
+      end
+
+      def load_common_data
+        return true unless current_user.present? && current_user.should_load_common_data?
+        begin
+          visualizations_api_url = CartoDB::Visualization::CommonDataService.build_url(self)
+          current_user.load_common_data(visualizations_api_url)
+        rescue Exception => e
+          # We don't block the load of the dashboard because we aren't able to load common data
+          CartoDB.notify_exception(e, {user:current_user})
+          return true
+        end
       end
 
       def index

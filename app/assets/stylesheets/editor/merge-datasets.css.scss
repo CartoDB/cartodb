@@ -9,10 +9,9 @@
   @include align-items(stretch, stretch);
 }
 .MergeDatasets-stickyHeader {
-  background-color: $cStructure-mainBkg;
-  border-bottom: 1px solid $cStructure-mainLine;
+  background-color: #181818;
   position: fixed;
-  top: 157px; // compensate for dialog header
+  top: 101px; // compensate for dialog header
   left: 0;
   width: 100%;
   z-index: 2;
@@ -72,10 +71,16 @@
 }
 .MergeDatasets-radioPlaceholder { width: 16px }
 
-.MergeDatasets-selectAllText { margin-right: $sMargin-elementInline }
+.MergeDatasets-selectAllText { 
+  margin-right: $sMargin-elementInline;
+  color: #d8d8d8;
+  line-height: 17px;
+
+ }
 .MergeDatasets-fixedAboveFooter {
   position: fixed;
-  bottom: 100px; //to appear above fixed footer
+  background: #202020;
+  bottom: 70px; //to appear above fixed footer
   margin-bottom: 0;
 }
 .MergeDatasets-puzzleMergeMethod {

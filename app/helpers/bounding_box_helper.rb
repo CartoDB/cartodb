@@ -3,10 +3,10 @@
 module BoundingBoxHelper
 
   DEFAULT_BOUNDS = {
-    minlon: -179,
-    maxlon: 179,
-    minlat: -85.0511,
-    maxlat: 85.0511
+    minlon: -160,
+    maxlon: 160,
+    minlat: -30,
+    maxlat: 50
   }
 
   LIMIT_BOUNDS = {

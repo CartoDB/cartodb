@@ -1,6 +1,6 @@
 // cartodb.js version: 3.15.9
 // uncompressed version: cartodb.uncompressed.js
-// sha: 22abea44dc35b3cfe1e4aadb9295a5b2fb916f90
+// sha: 28dcdbb8746260108287abd0a2134e1184e286f5
 (function() {
   var define;  // Undefine define (require.js), see https://github.com/CartoDB/cartodb.js/issues/543
   var root = this;
@@ -27297,7 +27297,7 @@ cdb.geo.geocoder.NOKIA = {
 cdb.geo.geocoder.BING = {
 
   keys: {
-    api_key:   "AjpDgTq-h1SPLZfoD8fxeLqWRlQ8JqoM17ZwiNN27jOn82uddopEz04yR_nlNhh4",
+    api_key:   "AiYSWJYqsRki5Kkx-0Q9BN4IIw6OOLrJvc1Iw7ll_BQAPq7YJ2-0y0gtq5DdGY1L",
   },
 
   geocode: function(address, callback) {
@@ -29703,7 +29703,7 @@ cdb.geo.ui.CategoryLegend = cdb.geo.ui.BaseLegend.extend({
 
     view = new cdb.geo.ui.LegendItem({
       model: item,
-      className: (item.get("value") && item.get("value").indexOf("http") >= 0 || item.get("type") && item.get("type") == 'image') ? "bkg" : "",
+      className: (item.get("value") && _.isString(item.get("value")) && item.get("value").indexOf("http") >= 0 || item.get("type") && item.get("type") == 'image') ? "bkg" : "",
       template: '\t\t<div class="bullet" style="background: <%= value %>"></div> <%- name || ((name === false) ? "false": "null") %>'
     });
 
@@ -29799,7 +29799,7 @@ cdb.geo.ui.ColorLegend = cdb.geo.ui.BaseLegend.extend({
 
     view = new cdb.geo.ui.LegendItem({
       model: item,
-      className: (item.get("value") && item.get("value").indexOf("http") >= 0) ? "bkg" : "",
+      className: (item.get("value") && _.isString(item.get("value")) && item.get("value").indexOf("http") >= 0) ? "bkg" : "",
       template: '\t\t<div class="bullet" style="background: <%= value %>"></div> <%- name || ((name === false) ? "false": "null") %>'
     });
 
@@ -29901,9 +29901,9 @@ cdb.geo.ui.StackedLegend = cdb.core.View.extend({
 
   render: function() {
 
-    if (this.vis) {
+    /*if (this.vis) {
       this.$el.html(this.template());
-    }
+    }*/
 
     this._renderItems();
     this._checkVisibility();
@@ -30106,7 +30106,7 @@ cdb.geo.ui.CustomLegend = cdb.geo.ui.BaseLegend.extend({
 
     view = new cdb.geo.ui.LegendItem({
       model: item,
-      className: (item.get("value") && item.get("value").indexOf("http") >= 0) ? "bkg" : "",
+      className: (item.get("value") && _.isString(item.get("value")) && item.get("value").indexOf("http") >= 0) ? "bkg" : "",
       template: template
     });
 
@@ -35828,6 +35828,7 @@ function layerView(base) {
       var eventTimeout = -1;
 
       opts.featureOver  = function(e, latlon, pxPos, data, layer) {
+        this.layer = layer;
         if (!hovers[layer]) {
           self.trigger('layerenter', e, latlon, pxPos, data, layer);
         }
@@ -35839,6 +35840,9 @@ function layerView(base) {
         if (e.timeStamp === previousEvent) {
           clearTimeout(eventTimeout);
         }
+
+        table.mapTab.setTooltipLayer(layer);
+
         eventTimeout = setTimeout(function() {
           self.trigger('mouseover', e, latlon, pxPos, data, layer);
           self.trigger('layermouseover', e, latlon, pxPos, data, layer);
@@ -35854,12 +35858,16 @@ function layerView(base) {
         hovers[layer] = 0;
         if(!_.any(hovers)) {
           self.trigger('mouseout');
+
+          _featureOut  && _featureOut.apply(this, arguments);
+          self.featureOut  && self.featureOut.apply(self, arguments);
         }
-        _featureOut  && _featureOut.apply(this, arguments);
-        self.featureOut  && self.featureOut.apply(self, arguments);
+        
       };
 
       opts.featureClick  = _.debounce(function() {
+        table.mapTab.setInfowindowLayer(this.layer);
+
         _featureClick  && _featureClick.apply(self, arguments);
         self.featureClick  && self.featureClick.apply(self, arguments);
       }, 10);

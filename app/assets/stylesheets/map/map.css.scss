@@ -19,7 +19,7 @@ div.map {
   @include box-sizing(border-box);
   @include position(0px, 0, 0, 0); // 1px to cause header opacity black border needs to be present
   @include size(100%);
-  background: #333 image-url('layout/noise.png') repeat 0 0;
+  background: #000;
   z-index:1;
 }
 
@@ -63,6 +63,32 @@ div.map {
     }
   }
 
+  div.ol-cartodb-attribution {
+    position: absolute;
+    right: 0em;
+    bottom: 0em;
+    margin: 0;
+    text-decoration: none;
+    background: rgba(0,0,0,0.32);
+    color: #d8d8d8;
+    padding: 0 5px;
+    display: inline;
+    z-index: 7;
+    pointer-events: auto;
+    font: 11px "Helvetica Neue", Arial, Helvetica, sans-serif;
+    cursor: auto;
+    a {
+      color: #0078a8;
+    }
+  }
+
+div.cartodb-legend.custom ul li .bullet, div.cartodb-legend.category ul li .bullet, div.cartodb-legend.color ul li .bullet {
+    width: 7px;
+    height: 7px;
+    margin-right: 6px;
+}
+
+
   div.cartodb-legend-stack {
     &:hover {
       .reset {
@@ -91,10 +117,12 @@ div.map {
       border: solid 1px #666;
     }
   }
-  div.cartodb-legend.choropleth li.graph {
-    border: 1px solid $Black;
-    border-radius: 0;
-
+  div.cartodb-legend.choropleth {
+    padding: 12px;
+      li.graph {
+        border: 1px solid $Black;
+        border-radius: 0;
+    }
   }
 
   &.table { // TABLE'S MAP
@@ -493,7 +521,11 @@ div.map {
 
     @include position(-1px, 0px, 0, 0);
     @include size(auto);
-
+    overflow: hidden;
+    outline: 0;
+    z-index: 1;
+    font: 12px/1.5 "Helvetica Neue", Arial, Helvetica, sans-serif;
+    background: #000;
   }
 
   div.cartodb-map {
@@ -537,15 +569,33 @@ div.map {
     background-color: $DarkGrey2;
     border:1px solid Black;
     cursor: default;
-    div.cartodb-legend {
+    > div.cartodb-legend {
       display:none;
       @include position(false, 0, 0, false);
       position:relative;
       margin: 0;
       cursor: default;
-      ul li {
-        color: $Amber1;
+      padding: 12px;
+      font-family: Bloomberg_Prop_K;
+
+      > .legend-title {
+        color: $White;
+        font-size: 13px;
+        font-family: Bloomberg_Prop_K;
+        text-transform: none;
       }
+
+      > ul > li {
+        color: $Grey2;
+        font-weight: normal;
+        font-family: Bloomberg_Prop_K;
+        font-size: 11px; 
+        line-height: 8px;
+        text-transform: none;
+      }
+
+
+
       &.custom, &.cluster, &.bubble, &.color, &.intensity, &.density { display: block; }
       border-bottom: none;
     }
@@ -553,6 +603,7 @@ div.map {
 
   // animations
   .leaflet-control-attribution.leaflet-control,
+  .ol-cartodb-attribution,
   div.cartodb-legend,
   div.cartodb-legend-stack,
   div.cartodb-share,
@@ -565,9 +616,6 @@ div.map {
   }
 
   div.cartodb-legend {
-    @include position(false, 0, 20px, false);
-    margin: 0 80px 0 0;
-
     .warning {
       text-transform: none;
       font-style:italic;
@@ -611,7 +659,7 @@ div.map {
     top: 0px;
   }
 
-  div.cartodb-layer-selector-box a.layers .count, &:hover{
+  div.cartodb-layer-selector-box a.layers .count {
     background: none;
   }
 
@@ -767,6 +815,7 @@ div.map {
     &.map.derived .cartodb-map {
 
       .leaflet-control-attribution.leaflet-control,
+      .ol-cartodb-attribution,
       div.cartodb-share,
       div.cartodb-layer-selector-box,
       div.cartodb-legend-stack,
@@ -797,6 +846,7 @@ div.map {
     &.narrow.map.derived .cartodb-map {
 
       .leaflet-control-attribution.leaflet-control,
+      .ol-cartodb-attribution,
       div.cartodb-share,
       div.cartodb-share,
       div.cartodb-layer-selector-box,
@@ -867,24 +917,50 @@ div.map {
   }
 }
 
-div.cartodb-edit-buttons {
-  border-top:1px solid #E5E5E5;
-  display:block;
-}
-
 // FOR INFOWINDOWS //
+
+div.cartodb-popup.v2 {
+  box-shadow: none;
+    &:before {
+        border-top: 14px solid $DarkGrey3; 
+    }
+
+    a.cartodb-popup-close-button {
+    right: 6px;
+    top: 6px;
+    width: 20px;
+    height: 20px;
+    background: none;
+    border-radius: 18px;
+    box-shadow: none;
+      &:before, &:after {
+          width: 12px;
+          background: $Grey2;
+      }
+      &:hover {
+          box-shadow: none;
+      }
+    }
+  div.cartodb-popup-content-wrapper {
+      background: $DarkGrey3;
+      padding: 16px;
+  }
+  div.cartodb-popup-tip-container:before {
+    background: none;
+  }
+}
 
 .cartodb-popup-content-wrapper
 div.cartodb-edit-buttons {
   width:100%;
-  padding:11px 0 6px;
-  margin:10px 0 0;
-  letter-spacing: -4px;
+  padding-top: 6px;
+  margin-top: 6px;
+  border-top: 1px solid $Black;
 
   // CartoDB id
   .cartodb_id {
     @include inline-block();
-    color: #999;
+    color: #Grey2;
     font-size: 13px;
     margin-top:8px;
     letter-spacing:0px;
@@ -895,29 +971,33 @@ div.cartodb-edit-buttons {
   div.right {width:auto; margin-top:4px;}
 
   a.button {
+    @include bb_button_style;
+    background-repeat: no-repeat;
+    color: transparent;
     float:left;
+    margin-right: 6px;
+    width: 19px;
     vertical-align:top;
-    width:29px;
-    height:24px;
-    border-right:0;
-    margin:0;
-    padding:0!important; 
-    margin:0;
-    text-indent: -9999px;
-    font-size:0;
-    line-height:0;
-    letter-spacing:0px;
-    @include border-radius(0);
 
-    &.edit_data {@include edit-bottom-states(10, 6, #F9F9F9, #EBEBEB, #DEDEDE, #E1E1E1);}
-    &.edit_geo {@include edit-bottom-states(-20, 6, #F9F9F9, #EBEBEB, #DEDEDE, #E1E1E1);}
-    &.remove {@include edit-bottom-states(-52, 6, #F9F9F9, #EBEBEB, #DEDEDE, #E1E1E1);}
+    &.disabled {
+      color: transparent;
+    }
+
+    &.edit_data {
+      background-image: url('../images/map-sfff5cc66d9.png');
+      background-position: 5px -295px;
+    }
+    &.edit_geo {
+      background-image: url('../images/map-sfff5cc66d9.png');
+      background-position: -26px -295px;
+    }
+    &.remove {
+      background-image: url('../images/map-sfff5cc66d9.png');
+      background-position: -58px -296px;
+    }
 
     &.add_point {@include edit-bottom-states(-80, 7, #F9F9F9, #EBEBEB, #DEDEDE, #E1E1E1);}
     &.add_annotation {@include edit-bottom-states(-110, 7, #F9F9F9, #EBEBEB, #DEDEDE, #E1E1E1);}
-
-    &:first-child {@include border-left-radius(2px);}
-    &:last-child {@include border-right-radius(2px); border-right:1px solid #B0B0B0;}
   }
 }
 
@@ -933,6 +1013,38 @@ div.cartodb-popup.dark  {
     }
   }
 }
+
+div.cartodb-popup p,  {
+  font-family: "Bloomberg_Prop_K"; 
+  color: $White;
+}
+
+div.cartodb-popup h4 {
+  font-family: "Bloomberg_Prop_K";
+  font-weight: normal;
+  color: #787878;
+}
+
+div.cartodb-popup .jspContainer:after,  div.cartodb-popup .jspContainer:before{
+  display: none;
+  }
+
+
+div.cartodb-tooltip-content-wrapper {
+  background-color: $DarkGrey3;
+  border-radius: 0;
+}
+
+div.cartodb-tooltip-content { 
+    padding: 6px 12px;
+    > h4 {
+      color: #787878;
+    }
+    > p {
+      color: #fff;
+    }
+
+  }
 
 .search-bar-container {
   background: none !important;

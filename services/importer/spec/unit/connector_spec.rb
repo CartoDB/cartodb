@@ -958,6 +958,7 @@ describe Carto::Connector do
               "odbc_BoolsAsChar" => '0',
               "odbc_ByteaAsLongVarBinary" => '1',
               "odbc_MaxVarcharSize" => '256',
+              "odbc_SSLmode" => 'require',
               "schema" => 'public',
               "table" => 'thetable',
               "encoding" => 'theencoding',
@@ -1025,7 +1026,8 @@ describe Carto::Connector do
             'password' => { required: false },
             'server'   => { required: true  },
             'port'     => { required: false },
-            'database' => { required: true  }
+            'database' => { required: true  },
+            'sslmode'  => { required: false }
           },
           'table'      => { required: true  },
           'schema'     => { required: false },

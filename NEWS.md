@@ -69,6 +69,7 @@ Development
 * Validate that only one legend per type (color/size) is allowed (#11556)
 * Custom errors for latitude/longitude out of bounds (#11060, #11048)
 * Fix timeseries widget height (#11077)
+* Fix a DB deadlock while simultaneously updating and deleting layers (#11568)
 * Improve speed of map name availability check, improves map creation and renaming times (#11435)
 * Fix redirection after logout for subdomainless URLs (#11361)
 * Fix scrollbar in carousel (#11061)

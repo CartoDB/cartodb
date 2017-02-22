@@ -102,7 +102,7 @@ module Carto
 
             if layer_options['type'] == 'Plain'
               layers.push(type: 'plain', options: options_for_plain_basemap_layers(layer_options))
-            else
+            elsif !layer.gmapsbase?
               layers.push(type: 'http', options: options_for_http_basemap_layers(layer_options))
             end
           end

@@ -79,6 +79,7 @@ Development
 * Fix layer loading at embeds (#11554)
 * Restrict login from organization pages to organization users, and redirect to Central otherwise
 * Correctly refresh map after adding/editing map geometries (#11064)
+* Fix inconsistent state after user deletion failed (#11606)
 * Return embed private instead of 404 in visualization embeds where the visualization doesn't exist (#11056)
 * Fix error loading builder in visualizations without permissions (#10996)
 * Correctly update legend styles (with custom titles) (#10889, #10904)

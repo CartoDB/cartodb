@@ -257,11 +257,6 @@ class UserTable < Sequel::Model
     service.update_cdb_tablemetadata
   end
 
-  def table_visualization
-    service.table_visualization
-  end
-
-
   def privacy_text
     PRIVACY_VALUES_TO_TEXTS[self.privacy].upcase
   end

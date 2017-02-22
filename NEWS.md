@@ -70,6 +70,7 @@ Development
 * Fix analysis notification in running state (#11079)
 * Fix color for "Other" category (#11078)
 * Validate that only one legend per type (color/size) is allowed (#11556)
+* Clean up import directory when importing from URL (#11599)
 * Custom errors for latitude/longitude out of bounds (#11060, #11048)
 * Fix timeseries widget height (#11077)
 * Fix a DB deadlock while simultaneously updating and deleting layers (#11568)

@@ -58,6 +58,7 @@ Development
   * Reset icon on map when you remove that custom icon
   * Made icon's clicking area larger
   * Avoid request when url is not defined
+  * Fix copy when deleting icons in organization.
 * Start using layers<->user_table cache in all places (#11303)
   * Run `cartodb:db:register_table_dependencies` rake to update caches for existing maps
 * Categories legend are now static (#10972)

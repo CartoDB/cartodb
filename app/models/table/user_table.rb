@@ -1,8 +1,10 @@
 # coding: UTF-8
 require 'cartodb/per_request_sequel_cache'
+require 'forwardable'
 
 # This class is intended to deal exclusively with storage
 class UserTable < Sequel::Model
+  extend Forwardable
 
   INTERFACE = %w{
     pk
@@ -78,6 +80,8 @@ class UserTable < Sequel::Model
                                     layers:               :nullify,
                                     automatic_geocoding:  :destroy
   plugin :dirty
+
+  def_delegators :relator, :affected_visualizations
 
   def_dataset_method(:search) do |query|
     conditions = <<-EOS
@@ -386,5 +390,9 @@ class UserTable < Sequel::Model
     map.reload
 
     CartoDB::Visualization::Overlays.new(member).create_default_overlays
+  end
+
+  def relator
+    @relator ||= CartoDB::TableRelator.new(Rails::Sequel.connection, self)
   end
 end

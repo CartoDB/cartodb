@@ -65,8 +65,8 @@ class Table
 
   VALID_GEOMETRY_TYPES = %W{ geometry multipolygon point multilinestring }
 
-  def_delegators :relator, *CartoDB::TableRelator::INTERFACE
-  def_delegators :@user_table, *::UserTable::INTERFACE
+  def_delegators :relator, *(CartoDB::TableRelator::INTERFACE - ['affected_visualizations'])
+  def_delegators :@user_table, *(::UserTable::INTERFACE + ['affected_visualizations'])
 
 
   def initialize(args = {})

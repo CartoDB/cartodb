@@ -188,5 +188,23 @@ describe Carto::Builder::VisualizationsController do
       response.status.should == 200
       response.body.should include(analysis.natural_id)
     end
+
+    it 'does not include google maps if not configured' do
+      @user1.google_maps_key = ''
+      @user1.save
+      get builder_visualization_url(id: @visualization.id)
+
+      response.status.should == 200
+      response.body.should_not include("maps.google.com/maps/api/js")
+    end
+
+    it 'includes the google maps client id if configured' do
+      @user1.google_maps_key = 'client=wadus_cid'
+      @user1.save
+      get builder_visualization_url(id: @visualization.id)
+
+      response.status.should == 200
+      response.body.should include("maps.google.com/maps/api/js?client=wadus_cid")
+    end
   end
 end

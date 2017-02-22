@@ -101,8 +101,8 @@ module Carto
           return
         end
 
-        @user.save
         @user.update_in_central
+        @user.save
 
         presentation = Carto::Api::UserPresenter.new(@user, current_viewer: current_viewer)
                                                 .to_poro_without_id

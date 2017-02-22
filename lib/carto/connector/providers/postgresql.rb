@@ -38,7 +38,8 @@ module Carto
       def optional_connection_attributes
         {
           port: { Port: 5432 },
-          password: { PWD: nil }
+          password: { PWD: nil },
+          sslmode: { SSLmode: 'require' }
         }
       end
 

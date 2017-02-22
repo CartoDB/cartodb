@@ -2,6 +2,7 @@ Development
 -----------
 
 ### Features
+* Marking 'Do not show me again' in Layer Onboarding affects every tab. (#11586)
 * Adding Google-Maps basemaps (#11447)
 * Improve dialog forms to render them floated. (#7786)
 * New organization assets (#11034):
@@ -50,6 +51,7 @@ Development
   * Select an icon previously uploaded by the organization admin (#11462)
   * Sets the default initial size for icons to 20px (#11498)
 * Onboarding for layer edition (#10905)
+* Improved formula widget description field. (#11469)
 
 ### Bug fixes
 * Fixed problem switching between qualitative and quantitative attributes (#10654)
@@ -58,6 +60,7 @@ Development
   * Reset icon on map when you remove that custom icon
   * Made icon's clicking area larger
   * Avoid request when url is not defined
+  * Fix copy when deleting icons in organization.
 * Start using layers<->user_table cache in all places (#11303)
   * Run `cartodb:db:register_table_dependencies` rake to update caches for existing maps
 * Categories legend are now static (#10972)

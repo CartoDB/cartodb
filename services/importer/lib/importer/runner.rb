@@ -291,7 +291,7 @@ module CartoDB
           end
         end
       ensure
-        @importer_stats.timing('cleanup') do
+        @importer_stats.timing('resource.cleanup') do
           unpacker.clean_up
           @downloader.clean_up
         end

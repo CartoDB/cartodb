@@ -84,9 +84,15 @@ module Carto
     end
 
     def header_value(headers)
-      puts 'user-auto-creation : Trying to extract value from headers'
       header = ::Cartodb.get_config(:http_header_authentication, 'header')
-      headers[header] if header.present?
+
+      # ActionDispatch::Http::Headers breaks when #[] receives nil, so we coalesce to ''
+      header_value = headers[header || '']
+
+      puts "user-auto-creation : Trying to extract value from headers " \
+           "for #{header}, value is #{header_value.present? ? header_value : 'not available'}"
+
+      header_value
     end
   end
 end

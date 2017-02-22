@@ -42,6 +42,7 @@ module Carto
         end
         latest_mapcap = @visualization.latest_mapcap
         @mapcaps_data = latest_mapcap ? [Carto::Api::MapcapPresenter.new(latest_mapcap).to_poro] : []
+        @google_maps_qs = @visualization.user.google_maps_query_string
 
         @builder_notifications = notifications(:builder)
         @dashboard_notifications = notifications(:dashboard)

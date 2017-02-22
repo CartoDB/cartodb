@@ -101,8 +101,8 @@ module Carto
           return
         end
 
-        @user.update_in_central
         @user.save
+        @user.update_in_central
 
         presentation = Carto::Api::UserPresenter.new(@user, current_viewer: current_viewer)
                                                 .to_poro_without_id
@@ -121,8 +121,8 @@ module Carto
           render_jsonp "Can't delete @user. #{'Has shared entities' if @user.has_shared_entities?}", 410
         end
 
-        @user.delete_in_central
         @user.destroy
+        @user.delete_in_central
 
         render_jsonp 'User deleted', 200
       rescue CartoDB::CentralCommunicationFailure => e

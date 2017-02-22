@@ -51,6 +51,9 @@
   @include display-flex();
   @include flex(10);
 }
+.Infobox-buttons--quota {
+  @include flex(1);
+}
 .Infobox-button {
   @include flex(1);
 

@@ -98,9 +98,9 @@ class Table
   def update(args)
     # Sequel and ActiveRecord #update doesn't behave equal, we need this workaround for compatibility reasons
     if @user_table.is_a?(Carto::UserTable)
-      # TODO: commented temporally to avoid recursive call
-      # Table should probably not update metadata, ever
-      # @user_table.update_attributes(args)
+      args.each do |attribute, value|
+        @user_table.update_column(attribute, value)
+      end
     else
       @user_table.update(args)
     end

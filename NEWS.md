@@ -33,7 +33,7 @@ Development
 ```
 * Snapshots (backend: #10928) allow to save and share map state.
 * Import API parameter: `collision_strategy`. Support for `skip` #11385.
-* Allow to override S3 endpoint for visualization exports and data imports when using S3 compatible storage services
+* Allow to override S3 endpoint for visualization exports and data imports when using S3 compatible storage services (#11614)
 * Icon styling through in component (#11005)
 * Allow to set opacity for color ramps (#10952)
 * Added Fullstory integration, can be configured in app_config

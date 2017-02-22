@@ -50,7 +50,7 @@ module Carto
     after_save { service.after_save }
 
     def geometry_types
-      @geometry_types ||= table.geometry_types
+      @geometry_types ||= service.geometry_types
     end
 
     # Estimated size
@@ -59,7 +59,7 @@ module Carto
     end
 
     def table_size
-      table.table_size
+      service.table_size
     end
 
     # Estimated row_count. Preferred: `estimated_row_count`
@@ -69,7 +69,7 @@ module Carto
 
     # Estimated row count and size. Preferred `estimated_row_count` for row count.
     def row_count_and_size
-      @row_count_and_size ||= table.row_count_and_size
+      @row_count_and_size ||= service.row_count_and_size
     end
 
     def service
@@ -77,7 +77,7 @@ module Carto
     end
 
     def set_service(table)
-      @table = table
+      @service = table
     end
 
     def visualization
@@ -172,10 +172,12 @@ module Carto
     end
 
     def privacy_changed?
+      # TODO: should this consider previous_changes as well?
       changes.include?('privacy')
     end
 
     def previous_privacy
+      # TODO: should this consider previous_changes as well?
       changes['privacy'].first
     end
 
@@ -200,10 +202,6 @@ module Carto
 
     def affected_visualizations
       layers.map(&:visualization).uniq.compact
-    end
-
-    def table
-      @table ||= ::Table.new( { user_table: self } )
     end
 
     def visualization_readable_by?(user)

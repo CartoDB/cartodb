@@ -96,7 +96,14 @@ class Table
   end
 
   def update(args)
-    @user_table.update(args)
+    # Sequel and ActiveRecord #update doesn't behave equal, we need this workaround for compatibility reasons
+    if @user_table.is_a?(Carto::UserTable)
+      # TODO: commented temporally to avoid recursive call
+      # Table should probably not update metadata, ever
+      # @user_table.update_attributes(args)
+    else
+      @user_table.update(args)
+    end
     self
   end
 
@@ -603,7 +610,7 @@ class Table
 
   def name=(value)
     value = value.downcase if value
-    return if value == @user_table[:name] || value.blank?
+    return if value == @user_table.name || value.blank?
 
     new_name = register_table_only ? value : get_valid_name(value)
 
@@ -613,7 +620,7 @@ class Table
       update_cdb_tablemetadata
     end
 
-    @user_table[:name] = new_name
+    @user_table.name = new_name
   end
 
   def privacy_changed?

@@ -24,5 +24,9 @@ module Carto
       quote_char = quote_user_schema ? "\"" : ""
       "#{quote_char}#{user_schema}#{quote_char}, #{SCHEMA_CARTODB}, #{SCHEMA_CDB_DATASERVICES_API}, #{SCHEMA_PUBLIC}"
     end
+
+    def public_user_roles
+      @user.organization_user? ? [CartoDB::PUBLIC_DB_USER, @user.database_public_username] : [CartoDB::PUBLIC_DB_USER]
+    end
   end
 end

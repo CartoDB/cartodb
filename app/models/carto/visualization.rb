@@ -87,7 +87,7 @@ class Carto::Visualization < ActiveRecord::Base
 
   validates :version, presence: true
 
-  before_validation :set_default_version
+  before_validation :set_default_version, :set_register_table_only
   before_create :set_random_id, :set_default_permission
 
   # INFO: workaround for array saves not working. There is a bug in `activerecord-postgresql-array` which
@@ -95,6 +95,14 @@ class Carto::Visualization < ActiveRecord::Base
   # with an update after creation. This is fixed in Rails 4.
   before_create :delay_saving_tags
   after_create :save_tags
+
+  attr_accessor :register_table_only
+
+  def set_register_table_only
+    self.register_table_only = false
+    # TODO
+    true
+  end
 
   def set_default_version
     self.version ||= user.try(:new_visualizations_version)
@@ -135,7 +143,13 @@ class Carto::Visualization < ActiveRecord::Base
   def user_table
     map.user_table if map
   end
-  alias :table :user_table
+  # This breaks compatibility with the older model
+  # alias :table :user_table
+
+  def table
+    return nil if map.nil?
+    @table ||= user_table.try(:service)
+  end
 
   def layers_with_data_readable_by(user)
     return [] unless map
@@ -195,7 +209,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def is_publically_accesible?
-    (is_public? || is_link_privacy?) && published?
+    (public? || public_with_link?) && published?
   end
 
   def writable_by?(user)
@@ -295,11 +309,11 @@ class Carto::Visualization < ActiveRecord::Base
     privacy == PRIVACY_PRIVATE
   end
 
-  def is_public?
+  def public?
     privacy == PRIVACY_PUBLIC
   end
 
-  def is_link_privacy?
+  def public_with_link?
     self.privacy == PRIVACY_LINK
   end
 
@@ -516,7 +530,8 @@ class Carto::Visualization < ActiveRecord::Base
 
   # Backward compatibility with Sequel
   def store
-    save
+    do_store
+    self
   end
 
   private
@@ -564,22 +579,79 @@ class Carto::Visualization < ActiveRecord::Base
   def perform_invalidations(table_privacy_changed)
     # previously we used 'invalidate_cache' but due to public_map displaying all the user public visualizations,
     # now we need to purgue everything to avoid cached stale data or public->priv still showing scenarios
-    if changed.include?('name') || changed.include?('privacy') || table_privacy_changed || changed?
+    if name_changed || privacy_changed || table_privacy_changed || changed?
       invalidate_cache
     end
 
     # When a table's relevant data is changed, propagate to all who use it or relate to it
     if changed? && table
-      table.dependent_visualizations.each do |affected_vis|
+      user_table.dependent_visualizations.each do |affected_vis|
         affected_vis.invalidate_cache
       end
     end
+  end
+
+  def privacy_changed
+    changed.include?('privacy') || previous_changes['privacy']
+  end
+
+  def name_changed
+    changed.include?('name') || previous_changes['name']
+  end
+
+  def old_name
+    previous_changes['name'].first
+  end
+
+  def propagate_privacy_and_name_to(table)
+    raise "Empty table sent to Visualization::Member propagate_privacy_and_name_to()" unless table
+    propagate_privacy_to(table) if privacy_changed
+    propagate_name_to(table)    if name_changed
+  end
+
+  def propagate_privacy_to(table)
+    if type == TYPE_CANONICAL
+      CartoDB::TablePrivacyManager.new(table)
+        .set_from_visualization(self)
+        .update_cdb_tablemetadata
+    end
+    self
+  end
+
+  # @param table Table
+  def propagate_name_to(table)
+    table.register_table_only = register_table_only
+    table.name = name
+    table.update(name: name)
+    if name_changed
+      support_tables.rename(old_name, name, recreate_constraints=true, seek_parent_name=old_name)
+    end
+    self
+  rescue => exception
+    # TODO: old_name
+    if name_changed && !(exception.to_s =~ /relation.*does not exist/)
+      revert_name_change(old_name)
+    end
+    raise CartoDB::InvalidMember.new(exception.to_s)
+  end
+
+  def revert_name_change(previous_name)
+    self.name = previous_name
+    # store
+    save
+  rescue => exception
+    raise CartoDB::InvalidMember.new(exception.to_s)
   end
 
   def propagate_attribution_change
     return unless changed.include?('attributions')
 
     table.propagate_attribution_change(self.attributions)
+  end
+
+  def support_tables
+    @support_tables ||= CartoDB::Visualization::SupportTables.new(
+      user.in_database, parent_id: id, parent_kind: kind, public_user_roles: user.db_service.public_user_roles)
   end
 
   def auto_generate_indices_for_all_layers

@@ -103,9 +103,7 @@ module CartoDB
       # S3 storage service is being used
       # WARNING: This attribute may not work in some aws-sdk v1 versions newer
       # than 1.8.5 (http://lists.basho.com/pipermail/riak-users_lists.basho.com/2013-May/011984.html)
-      if !s3_config['s3_endpoint'].blank?
-        s3_config_hash['s3_endpoint'] = s3_config['s3_endpoint']
-      end
+      s3_config_hash['s3_endpoint'] = s3_config['s3_endpoint'] if s3_config['s3_endpoint'].present?
       AWS.config(s3_config_hash)
       s3_bucket = AWS::S3.new.buckets[s3_config['bucket_name']]
 

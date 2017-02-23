@@ -1,13 +1,18 @@
 module Carto
   class VisualizationFactory
-    def self.build_canonical_visualization(user_table)
+    def self.create_canonical_visualization(user_table)
       kind = user_table.raster? ? Carto::Visualization::KIND_RASTER : Carto::Visualization::KIND_GEOM
       esv = user_table.external_source_visualization
       user = user_table.user
 
-      Carto::Visualization.new(
+      # Map must be saved before layers, so register_table_dependencies is correctly called after adding each layer
+      # to the map. There are several reloads in this process, since the layers<->maps relation is not synchronized
+      # with inverse_of (not supported in Rails, for has_many through relations).
+      layers = build_canonical_layers(user_table)
+
+      visualization = Carto::Visualization.new(
         name: user_table.name,
-        map: build_canonical_map(user_table),
+        map: build_canonical_map(user_table, layers.first),
         type: Carto::Visualization::TYPE_CANONICAL,
         description: user_table.description,
         attributions: esv.try(:attributions),
@@ -18,11 +23,26 @@ module Carto
         kind: kind,
         overlays: Carto::OverlayFactory.build_default_overlays(user)
       )
+
+      visualization.save!
+      layers.each do |layer|
+        layer.maps << visualization.map
+        layer.save!
+      end
+      visualization
     end
 
     # private
 
-    def self.build_canonical_map(user_table)
+    def self.build_canonical_map(user_table, base_layer)
+      Carto::Map.new(
+        user: user_table.user,
+        provider: Carto::Map.provider_for_baselayer_kind(base_layer.kind)
+      )
+    end
+    private_class_method :build_canonical_map
+
+    def self.build_canonical_layers(user_table)
       user = user_table.user
 
       base_layer = Carto::LayerFactory.build_default_base_layer(user)
@@ -30,12 +50,8 @@ module Carto
       layers = [base_layer, data_layer]
       layers << Carto::LayerFactory.build_default_labels_layer(base_layer) if base_layer.supports_labels_layer?
 
-      Carto::Map.new(
-        user: user,
-        provider: Carto::Map.provider_for_baselayer_kind(base_layer.kind),
-        layers: layers
-      )
+      layers
     end
-    private_class_method :build_canonical_map
+    private_class_method :build_canonical_layers
   end
 end

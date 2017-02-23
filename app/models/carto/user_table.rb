@@ -232,8 +232,7 @@ module Carto
     end
 
     def create_canonical_visualization
-      visualization = Carto::VisualizationFactory.build_canonical_visualization(self)
-      visualization.save!
+      visualization = Carto::VisualizationFactory.create_canonical_visualization(self)
       update_attribute(:map, visualization.map)
       visualization.map.set_default_boundaries!
     end

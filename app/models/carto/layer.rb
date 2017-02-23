@@ -8,7 +8,7 @@ module Carto
     private
 
     def affected_tables
-      return [] unless maps.first.try(:user) && options.present?
+      return [] unless maps.first.present? && options.present?
       node_id = options.symbolize_keys[:source]
       if node_id.present?
         visualization_id = map.visualization.id
@@ -103,7 +103,7 @@ module Carto
       maps.reload if persisted?
 
       return unless order.nil?
-      max_order = parent.layers.map(&:order).compact.max || -1
+      max_order = parent.layers.reload.map(&:order).compact.max || -1
       self.order = max_order + 1
       save if persisted?
     end
@@ -285,8 +285,7 @@ module Carto
 
     def after_added_to_map(map)
       set_default_order(map)
-      self.maps = [map]
-      register_table_dependencies if persisted?
+      register_table_dependencies
     end
 
     def depends_on?(user_table)

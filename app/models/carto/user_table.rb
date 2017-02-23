@@ -30,7 +30,10 @@ module Carto
     belongs_to :data_import
 
     has_many :automatic_geocodings, inverse_of: :table, class_name: Carto::AutomaticGeocoding, foreign_key: :table_id
-    has_many :tags, foreign_key: :table_id
+
+    # Disabled to avoid conflicting with the `tags` field. This relation is updated by ::Table.manage_tags.
+    # TODO: We can remove both the `user_tables.tags` field and the `tags` table in favour of the canonical viz tags.
+    # has_many :tags, foreign_key: :table_id
 
     has_many :layers_user_table
     has_many :layers, through: :layers_user_table
@@ -184,6 +187,11 @@ module Carto
     def save_changes
       # TODO: Compatibility with Sequel model, can be removed afterwards. Used in ::Table.set_the_geom_column!
       save if changed?
+    end
+
+    def tags=(value)
+      return unless value
+      super(value.split(',').map(&:strip).reject(&:blank?).uniq.join(','))
     end
 
     private

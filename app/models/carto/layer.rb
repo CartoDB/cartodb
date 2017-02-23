@@ -8,7 +8,7 @@ module Carto
     private
 
     def affected_tables
-      return [] unless maps.first.present? && options.present?
+      return [] unless maps.first.try(:user) && options.present?
       node_id = options.symbolize_keys[:source]
       if node_id.present?
         visualization_id = map.visualization.id
@@ -285,7 +285,8 @@ module Carto
 
     def after_added_to_map(map)
       set_default_order(map)
-      register_table_dependencies
+      self.maps = [map]
+      register_table_dependencies if persisted?
     end
 
     def depends_on?(user_table)

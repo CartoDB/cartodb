@@ -293,4 +293,14 @@ class UserTable < Sequel::Model
   def actual_row_count
     service.actual_row_count
   end
+  
+  def schema_alias=(hash)
+    self.alias_columns = (hash || {}).to_json
+  end
+
+  def schema_alias
+    JSON.parse(alias_columns).with_indifferent_access
+  rescue JSON::ParserError, TypeError
+    {}
+  end
 end

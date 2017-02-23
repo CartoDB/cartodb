@@ -99,6 +99,7 @@ class Table
     # Sequel and ActiveRecord #update doesn't behave equal, we need this workaround for compatibility reasons
     if @user_table.is_a?(Carto::UserTable)
       args.each do |attribute, value|
+        # Triggering callbacks caused circular dependencies
         @user_table.update_column(attribute, value)
       end
     else

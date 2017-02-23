@@ -1185,8 +1185,10 @@ describe Table do
         table.table_visualization.name.should == 'bogus_name_2'
         table.name.should == 'bogus_name_2'
         table.name.should == table.table_visualization.name
+        CartoDB::UserModule::DBService.new(@user).tables_effective.should include('bogus_name_2')
 
         visualization_id = table.table_visualization.id
+        # TODO: should this model be also "dynamic"?
         visualization = CartoDB::Visualization::Member.new(id: visualization_id)
           .fetch
         visualization.name = 'bogus name 3'
@@ -1194,6 +1196,7 @@ describe Table do
         table.reload
         table.name.should == 'bogus_name_3'
 
+        # TODO: should this model be also "dynamic"?
         visualization = CartoDB::Visualization::Member.new(id: visualization.id)
           .fetch
         visualization.name.should == 'bogus_name_3'

@@ -7,9 +7,8 @@ module Carto
   module LayerTableDependencies
     private
 
-    def affected_tables(maps = self.maps)
-      map = maps.first
-      return [] unless map.present? && options.present?
+    def affected_tables
+      return [] unless maps.first.present? && options.present?
       node_id = options.symbolize_keys[:source]
       if node_id.present?
         visualization_id = map.visualization.id
@@ -25,7 +24,7 @@ module Carto
         dependencies.flatten.compact.uniq
       else
         tables_by_query = tables_from_query_option
-        dependencies = tables_by_query.present? ? tables_by_query : tables_from_table_name_option(map.user)
+        dependencies = tables_by_query.present? ? tables_by_query : tables_from_table_name_option
         dependencies.compact.uniq
       end
     end
@@ -43,7 +42,7 @@ module Carto
       []
     end
 
-    def tables_from_table_name_option(user = self.user)
+    def tables_from_table_name_option
       return [] if options.empty?
       sym_options = options.symbolize_keys
       user_name = sym_options[:user_name]
@@ -227,13 +226,13 @@ module Carto
       end
     end
 
-    def register_table_dependencies(maps = self.maps)
+    def register_table_dependencies
       if data_layer?
         if persisted?
           user_tables.reload
           maps.reload
         end
-        affected_tables(maps).map { |t| self.user_tables << t }
+        self.user_tables = affected_tables
       end
     end
 
@@ -286,7 +285,7 @@ module Carto
 
     def after_added_to_map(map)
       set_default_order(map)
-      register_table_dependencies([map])
+      register_table_dependencies
     end
 
     def depends_on?(user_table)

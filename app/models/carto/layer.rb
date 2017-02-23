@@ -80,6 +80,7 @@ module Carto
 
     before_destroy :ensure_not_viewer
     before_destroy :invalidate_maps
+    before_save :lock_user_tables
     after_save :invalidate_maps, :update_layer_node_style
     after_save :register_table_dependencies, if: :data_layer?
 
@@ -292,6 +293,13 @@ module Carto
     end
 
     private
+
+    # The table dependencies will only be updated after the layer. However, when deleting them, they need to be deleted
+    # before the model. This can cause deadlocks with simultaneous request to update and delete the model.
+    # This request a explicit lock to PostgreSQL so the tables are always accessed in the same order. #11443
+    def lock_user_tables
+      user_tables.lock.all if persisted?
+    end
 
     def rename_in(target, anchor, substitution)
       return if target.blank?

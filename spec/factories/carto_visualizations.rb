@@ -10,6 +10,10 @@ module Carto
         )
       end
 
+      def create_full_builder_vis(carto_user, privacy: Carto::Visualization::PRIVACY_PUBLIC)
+        create_full_visualization(carto_user, visualization_attributes: { version: 3, privacy: privacy })
+      end
+
       # "Full visualization": with map, table... Metadata only (not actual user table).
       # Table is bound to visualization, and to data_layer if it's not passed.
       def create_full_visualization(

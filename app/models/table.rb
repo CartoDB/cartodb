@@ -72,12 +72,17 @@ class Table
   def initialize(args = {})
     if args[:user_table].nil?
       # TODO: This won't work, you need to UserTable.new.set_fields(args, args.keys)
-      @user_table = UserTable.new(args)
+      @user_table = model_class.new(args)
     else
       @user_table = args[:user_table]
     end
     # TODO: this probably makes sense only if user_table is not passed as argument
     @user_table.set_service(self)
+  end
+
+  # This is here just for testing purposes (being able to test this service against both models)
+  def model_class
+    ::UserTable
   end
 
   # forwardable does not work well with this one
@@ -603,7 +608,7 @@ class Table
     new_name = register_table_only ? value : get_valid_name(value)
 
     # Do not keep track of name changes until table has been saved
-    unless new?
+    unless new_record?
       @name_changed_from = @user_table.name if @user_table.name.present?
       update_cdb_tablemetadata
     end
@@ -1506,7 +1511,7 @@ class Table
     type = type.to_s.upcase
 
     self.the_geom_type = type.downcase
-    @user_table.save_changes unless @user_table.new?
+    @user_table.save_changes unless @user_table.new_record?
   end
 
   def create_table_in_database!

@@ -546,7 +546,7 @@ class Carto::Visualization < ActiveRecord::Base
     end
 
     # Warning: imports create by default private canonical visualizations
-    if type != TYPE_CANONICAL && @privacy == PRIVACY_PRIVATE && privacy_changed && !supports_private_maps?
+    if type != TYPE_CANONICAL && @privacy == PRIVACY_PRIVATE && privacy_changed && !user.try(:private_maps_enabled?)
       raise CartoDB::InvalidMember
     end
 

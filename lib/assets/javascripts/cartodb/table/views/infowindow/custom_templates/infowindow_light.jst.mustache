@@ -8,7 +8,12 @@
       <h4>{{alternative_name}}</h4>
       {{/alternative_name}}
       {{^alternative_name}}
+      {{#alias}}
+       <h4>{{alias}}</h4>
+       {{/alias}}
+       {{^alias}}
       <h4>{{name}}</h4>
+       {{/alias}}
       {{/alternative_name}}
       <p>{{=<% %>=}}{{<%={{ }}=%>{{{ name }}}{{=<% %>=}}}}<%={{ }}=%></p>
       {{/title}}

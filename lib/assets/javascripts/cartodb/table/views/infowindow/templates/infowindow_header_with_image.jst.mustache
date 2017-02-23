@@ -30,7 +30,14 @@
       {{#content.fields}}
         <div class="order{{index}}">
             {{#index}}
-              {{#title}}<h4>{{title}}</h4>{{/title}}
+              {{#title}}
+              {{#alias}}
+              <h4>{{alias}}</h4>
+              {{/alias}}
+              {{^alias}}
+              <h4>{{title}}</h4>
+              {{/alias}}
+              {{/title}}
               {{#value}}
                 <p>{{{ value }}}</p>
               {{/value}}

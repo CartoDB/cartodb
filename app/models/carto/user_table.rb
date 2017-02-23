@@ -181,6 +181,11 @@ module Carto
       changes['privacy'].first
     end
 
+    def save_changes
+      # TODO: Compatibility with Sequel model, can be removed afterwards. Used in ::Table.set_the_geom_column!
+      save if changed?
+    end
+
     private
 
     def default_privacy_value

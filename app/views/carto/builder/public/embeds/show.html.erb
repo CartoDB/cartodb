@@ -28,7 +28,11 @@
   <% if params[:vector] %>
     <%= javascript_include_tag 'tangram.min.js' %>
   <% end %>
-  
+
+  <% if @vizjson[:map_provider] == 'googlemaps' %>
+    <%= render(partial: 'shared/visualizations/google_maps', locals: { google_maps_qs: @google_maps_qs }) %>
+  <% end %>
+
   <script>
     var vizJSON = <%= safe_js_object @vizjson.to_hash.to_json %>;
     var layersData = <%= safe_js_object @layers_data.to_json %>;

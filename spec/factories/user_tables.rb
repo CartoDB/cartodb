@@ -40,6 +40,11 @@ FactoryGirl.define do
       end
     end
 
+    trait :full do
+      with_canonical_visualization
+      with_db_table
+    end
+
     factory :private_user_table do
       privacy Carto::UserTable::PRIVACY_PRIVATE
     end

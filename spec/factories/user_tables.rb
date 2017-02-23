@@ -14,18 +14,21 @@ FactoryGirl.define do
       user_table.service.stubs(:before_create)
       user_table.service.stubs(:after_create)
       user_table.stubs(:create_canonical_visualization)
+      CartoDB::TablePrivacyManager.any_instance.stubs(:apply_privacy_change)
     end
 
     after(:create) do |user_table|
       user_table.service.unstub(:before_create)
       user_table.service.unstub(:after_create)
       user_table.unstub(:create_canonical_visualization)
+      CartoDB::TablePrivacyManager.any_instance.unstub(:apply_privacy_change)
     end
 
     trait :with_db_table do
       before(:create) do |user_table|
         user_table.service.unstub(:before_create)
         user_table.service.unstub(:after_create)
+        CartoDB::TablePrivacyManager.any_instance.unstub(:apply_privacy_change)
       end
     end
 

@@ -47,8 +47,7 @@ class Table
   PUBLIC_ATTRIBUTES = {
     id: :id,
     name: :name,
-    alias: :alias,
-    schema_alias: :schema_alias,
+    aliases: :aliases,
     privacy: :privacy_text,
     schema: :schema,
     updated_at: :updated_at,
@@ -1356,20 +1355,12 @@ class Table
                           table_name: name)
   end
 
-  def alias=(alias_)
-    @user_table.alias = alias_
+  def aliases=(aliases)
+    @user_table.aliases = aliases
   end
 
-  def alias
-    @user_table.alias
-  end
-
-  def schema_alias=(schema_alias)
-    @user_table.schema_alias = schema_alias
-  end
-
-  def schema_alias
-    @user_table.schema_alias
+  def aliases
+    @user_table.aliases
   end
 
   private

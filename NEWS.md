@@ -95,6 +95,7 @@ Development
 * UI fixes for georeference. Changes of copy and validation warning. (#11426)
 * Color scheme is now clickable in category ramps (#11413)
 * Fix responsive layout in onboarding steps (#11444)
+* Correctly create custom category legend if style has icons (#11592)
 
 4.0.x (2016-12-05)
 ------------------

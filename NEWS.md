@@ -53,6 +53,7 @@ Development
   * Sets the default initial size for icons to 20px (#11498)
 * Onboarding for layer edition (#10905)
 * Improved formula widget description field. (#11469)
+* Migrate to use GNIP v2 for twitter search connector (#10051, #11595)
 
 ### Bug fixes
 * Fixed problem switching between qualitative and quantitative attributes (#10654)

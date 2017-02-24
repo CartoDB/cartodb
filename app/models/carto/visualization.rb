@@ -534,6 +534,14 @@ class Carto::Visualization < ActiveRecord::Base
     self
   end
 
+  def is_owner?(user)
+    user.id == user_id
+  end
+
+  def liked_by?(user_id)
+    !(likes.select { |like| like.actor == user_id }.first.nil?)
+  end
+
   private
 
   def do_store(propagate_changes = true, table_privacy_changed = false)

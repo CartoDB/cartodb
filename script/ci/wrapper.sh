@@ -12,7 +12,6 @@ do
     owner=$(psql -U $dbAdmin -t -c "select r.rolname from pg_database d, pg_roles r where d.datname='carto_db_test' and d.datdba = r.oid")
     newDatabase="${databaseName}_${i}";
     # Create the database with specific owner and template
-    dropdb -U $dbAdmin $newDatabase
     $(psql -U $dbAdmin -t -c "create database $newDatabase with owner $owner template $databaseName;") >> wrapper.log 2>&1
     # Create the database.yml file
     echo "# Creating database_$i.yml file" >> wrapper.log 2>&1

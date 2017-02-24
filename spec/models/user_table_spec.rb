@@ -2,9 +2,12 @@
 require_relative '../spec_helper'
 
 describe UserTable do
+  before(:each) do
+    bypass_named_maps
+  end
+
   before(:all) do
     bypass_named_maps
-
     @user = create_user(email: 'admin@cartotest.com', username: 'admin', password: '123456')
 
     @user_table = ::UserTable.new
@@ -37,7 +40,7 @@ describe UserTable do
 
     @user_table.sync_table_id.should eq @user_table.service.get_table_id
   end
-  
+
   describe('#alias') do
     before(:each) do
       @user_table.alias = nil

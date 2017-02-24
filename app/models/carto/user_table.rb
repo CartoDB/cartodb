@@ -90,6 +90,7 @@ module Carto
     def sync_table_id
       self.table_id = service.get_table_id
     end
+
     def schema_alias=(hash)
       self.alias_columns = (hash || {}).to_json
     end
@@ -99,7 +100,7 @@ module Carto
     rescue JSON::ParserError, TypeError
       {}
     end
-    
+
     private
 
     def fully_qualified_name

@@ -32,7 +32,7 @@ describe Carto::UserTable do
 
     @user_table.sync_table_id.should eq @user_table.service.get_table_id
   end
-  
+
   describe('#alias') do
     before(:each) do
       @user_table.update_attributes!(alias: nil)

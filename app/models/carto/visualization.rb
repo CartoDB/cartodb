@@ -573,9 +573,9 @@ class Carto::Visualization < ActiveRecord::Base
 
     propagate_attribution_change if table
     if type == TYPE_REMOTE || type == TYPE_CANONICAL
-      propagate_privacy_and_name_to(table) if table and propagate_changes
-    else
-      propagate_name_to(table) if table and propagate_changes
+      propagate_privacy_and_name_to(table) if table && propagate_changes
+    elsif table && propagate_changes
+      propagate_name_to(table)
     end
   end
 
@@ -593,9 +593,7 @@ class Carto::Visualization < ActiveRecord::Base
 
     # When a table's relevant data is changed, propagate to all who use it or relate to it
     if changed? && table
-      user_table.dependent_visualizations.each do |affected_vis|
-        affected_vis.invalidate_cache
-      end
+      user_table.dependent_visualizations.each(&:invalidate_cache)
     end
   end
 
@@ -619,9 +617,7 @@ class Carto::Visualization < ActiveRecord::Base
 
   def propagate_privacy_to(table)
     if type == TYPE_CANONICAL
-      CartoDB::TablePrivacyManager.new(table)
-        .set_from_visualization(self)
-        .update_cdb_tablemetadata
+      CartoDB::TablePrivacyManager.new(table).set_from_visualization(self).update_cdb_tablemetadata
     end
     self
   end
@@ -633,7 +629,7 @@ class Carto::Visualization < ActiveRecord::Base
     table.name = name
     table.update(name: name)
     if name_changed
-      support_tables.rename(old_name, name, recreate_constraints=true, seek_parent_name=old_name)
+      support_tables.rename(old_name, name, true, old_name)
     end
     self
   rescue => exception
@@ -655,12 +651,13 @@ class Carto::Visualization < ActiveRecord::Base
   def propagate_attribution_change
     return unless changed.include?('attributions')
 
-    table.propagate_attribution_change(self.attributions)
+    table.propagate_attribution_change(attributions)
   end
 
   def support_tables
     @support_tables ||= CartoDB::Visualization::SupportTables.new(
-      user.in_database, parent_id: id, parent_kind: kind, public_user_roles: user.db_service.public_user_roles)
+      user.in_database, parent_id: id, parent_kind: kind, public_user_roles: user.db_service.public_user_roles
+    )
   end
 
   def auto_generate_indices_for_all_layers

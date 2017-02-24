@@ -885,7 +885,7 @@ module CartoDB
       def propagate_attribution_change
         return unless attributions_changed
 
-        table.propagate_attribution_change(self.attributions)
+        table.propagate_attribution_change(attributions)
       end
 
       def revert_name_change(previous_name)

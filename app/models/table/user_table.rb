@@ -292,10 +292,6 @@ class UserTable < Sequel::Model
     self.privacy == PRIVACY_LINK
   end #public_with_link_only?
 
-  def privacy_changed?
-    @user_table.previous_changes.keys.include?(:privacy)
-  end
-
   # TODO move tags to value object. A set is more appropriate
   def tags=(value)
     return unless value

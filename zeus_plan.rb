@@ -11,7 +11,7 @@ class CustomPlan < Zeus::Rails
     ENV['PARALLEL'] = 'true'
 
     # Clean up at least sometimes
-    drop_leaked_test_user_databases
+    drop_leaked_test_user_databases rescue nil
 
     # Start redis server
     CartoDB::RedisTest.up

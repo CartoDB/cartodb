@@ -1691,6 +1691,7 @@
           },
           "quota-error-title": "Error",
           "quota-fetch-error": "There was an error obtaining your quota: %{error}.",
+          "quota-dataservice-down": "Dataservices API unreacheable.",
           "cancel": "Cancel",
           "confirm": "confirm",
           "analysis-type": {

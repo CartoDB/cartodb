@@ -83,7 +83,7 @@ describe Visualization::Locator do
 
       table = Visualization::Locator.new.get(table.id, user.username)
       table[1].nil?.should eq false
-      table[1].id.should eq table_vis.table.id
+      table[1].id.should eq table_vis.user_table.id
 
       user.destroy
     end

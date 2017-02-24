@@ -204,6 +204,7 @@ defaults: &defaults
       bucket_name: ''
       url_ttl: 7200
       async_long_uploads: false
+      s3_endpoint: ''
     uploads_path: 'public/uploads' # including 'uploads' assumes public path. Absolute path example: /tmp/exports/downloads
   importer:
     blacklisted_ip_addr: []
@@ -220,6 +221,7 @@ defaults: &defaults
       async_long_uploads: false
       proxy_uri:
       use_ssl: True
+      s3_endpoint: ''
 
     unp_temporal_folder: '/tmp/imports/'
     # It must end in `/uploads` and be accessible via HTTP, if relative will default to Rails.Root/#{uploads_path}

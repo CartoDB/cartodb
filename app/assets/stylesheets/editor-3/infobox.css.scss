@@ -7,14 +7,14 @@
 
 .Infobox-wrapper {
   width: 100%;
-  margin-top: -25px;
-  margin-bottom: -25px;
+  margin-top: -24px;
+  margin-bottom: -24px;
 }
 .Infobox {
   @include flex(2);
-  margin-right: -25px;
-  margin-left: -25px;
-  padding: 21px 25px 25px;
+  margin-right: -24px;
+  margin-left: -24px;
+  padding: 21px 24px 24px;
   background: $cThirdBackground;
 
   &.is-error {
@@ -34,6 +34,7 @@
     }
   }
 }
+
 .Infobox-buttonLink {
   padding: 4px 0;
   color: $cBlue;
@@ -49,6 +50,9 @@
 .Infobox-buttons {
   @include display-flex();
   @include flex(10);
+}
+.Infobox-buttons--quota {
+  @include flex(1);
 }
 .Infobox-button {
   @include flex(1);

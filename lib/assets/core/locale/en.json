@@ -1977,8 +1977,8 @@
         "cartocss-applied": {
           "title": "CARTOCSS APPLIED",
           "body": "You just applied styles with CartoCSS editor. You can continue or clear all styles.",
-          "accept": "CONTINUE",
-          "cancel": "CLEAR"
+          "continue": "CONTINUE",
+          "clear": "CLEAR"
         },
         "layer-hidden": {
           "title": "LAYER HIDDEN",
@@ -1988,7 +1988,7 @@
         "torque-exists": {
           "title": "TORQUE LAYER",
           "body": "There is already a torque layer in the layers collection. If you continue, this layer will get the default style.",
-          "accept": "CONTINUE",
+          "continue": "CONTINUE",
           "cancel": "CANCEL"
         },
       },
@@ -2139,18 +2139,18 @@
           "operation-column": "operation column"
         },
         "style": {
-          "title-label": "Behavior",
-          "description": "Apply style to your visualization",
-          "sync_on_data_change": "Unfiltered",
-          "sync_on_bbox_change": "Dynamic",
-          "fill": "Fill",
-          "custom-ramp": "Custom ramp",
           "custom-categories": "Custom categ.",
-          "custom-help": "Represent the widget's values with custom colors in the map",
           "custom-disabled": "If an aggregated style is applied, auto style is disabled",
-          "description": "Define how your widget interacts with the data",
-          "yes": "Yes",
-          "no": "No"
+          "custom-help": "Represent the widget's values with custom colors in the map",
+          "custom-ramp": "Custom ramp",
+          "define": "Define how your widget interacts with the data",
+          "description": "Description",
+          "fill": "Fill",
+          "no": "No",
+          "sync_on_bbox_change": "Dynamic",
+          "sync_on_data_change": "Unfiltered",
+          "title-label": "Behavior",
+          "yes": "Yes"
         }
       }
     },

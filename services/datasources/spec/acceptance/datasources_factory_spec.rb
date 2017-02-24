@@ -37,10 +37,6 @@ describe DatasourcesFactory do
       twitter_provider = DatasourcesFactory.get_datasource(Search::Twitter::DATASOURCE_NAME, user_mock)
       twitter_provider.is_a?(Search::Twitter).should eq true
 
-      user_mock.stubs('has_feature_flag?').with('gnip_v2').returns(true)
-      twitter_provider_v2 = DatasourcesFactory.get_datasource(Search::Twitter::DATASOURCE_NAME, user_mock)
-      twitter_provider_v2.is_a?(Search::Twitter).should eq true
-
       nil_provider = DatasourcesFactory.get_datasource(nil, user_mock)
       nil_provider.nil?.should eq true
 

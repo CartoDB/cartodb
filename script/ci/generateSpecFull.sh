@@ -34,7 +34,7 @@ grep 'rb'| sed -e 's/^\s*//' -e '/^$/d' | sed '/^#/ d' | sed 's/\\//' | sed 's/\
 i=6001;
 while read -r line
 do
-  echo "$line $i" >> specfull.txt;
+  echo "$line" >> specfull.txt;
   i=$((i+1))
 done < temp.txt
 

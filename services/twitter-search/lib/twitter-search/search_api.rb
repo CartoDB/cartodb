@@ -41,7 +41,7 @@ module CartoDB
 
       # @param config Hash
       # @param redis_storage Redis|nil (optional)
-      def initialize(config, user, redis_storage = nil, pre_json_parse_cleaner = nil)
+      def initialize(config, redis_storage = nil, pre_json_parse_cleaner = nil)
         raise TwitterConfigException.new(CONFIG_AUTH_REQUIRED) if config[CONFIG_AUTH_REQUIRED].nil?
         if config[CONFIG_AUTH_REQUIRED]
           raise TwitterConfigException.new(CONFIG_AUTH_USERNAME) if config[CONFIG_AUTH_USERNAME].nil? or config[CONFIG_AUTH_USERNAME].empty?
@@ -50,8 +50,6 @@ module CartoDB
         raise TwitterConfigException.new(CONFIG_SEARCH_URL) if config[CONFIG_SEARCH_URL].nil? or config[CONFIG_SEARCH_URL].empty?
 
         @config = config
-        @user = user
-
         # Defaults for ratelimit (not critical if not present)
         @config[CONFIG_REDIS_RL_ACTIVE] = true if config[CONFIG_REDIS_RL_ACTIVE].nil?
         @config[CONFIG_REDIS_RL_MAX_CONCURRENCY] = REDIS_RL_CONCURRENCY if config[CONFIG_REDIS_RL_MAX_CONCURRENCY].nil?
@@ -128,9 +126,6 @@ module CartoDB
         payload = {
             PARAM_QUERY => params[PARAM_QUERY]
         }
-        if not @user.has_feature_flag?('gnip_v2')
-          payload[PARAM_PUBLISHER] = 'twitter'
-        end
         payload[PARAM_FROMDATE] = params[PARAM_FROMDATE] unless params[PARAM_FROMDATE].nil? or params[PARAM_FROMDATE].empty?
         payload[PARAM_TODATE] = params[PARAM_TODATE] unless params[PARAM_TODATE].nil? or params[PARAM_TODATE].empty?
         if !params[PARAM_MAXRESULTS].nil? && params[PARAM_MAXRESULTS].kind_of?(Fixnum) \

@@ -437,6 +437,23 @@ module Carto
               @background_layer_hash[:type].should eq 'http'
             end
           end
+
+          describe 'when google maps' do
+            before(:all) do
+              @gmaps_layer = @visualization.layers.first
+
+              @gmaps_layer.options[:type] = 'gmapsbase'
+
+              @gmaps_layer.save
+              @visualization.reload
+
+              @named_map_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
+            end
+
+            it 'should not be included' do
+              @named_map_hash[:layergroup][:layers].none? { |l| l[:type] == 'gmapsbase' }.should be_true
+            end
+          end
         end
       end
 

@@ -33,7 +33,6 @@ module.exports = cdb.core.View.extend({
     var template = columnType === 'number' ? numberTemplate : timeTemplate;
     var scale = d3.scale.linear()
       .domain([0, data.length])
-      .nice()
       .range([this._dataviewModel.get('start'), this._dataviewModel.get('end')]);
     var html = '';
 

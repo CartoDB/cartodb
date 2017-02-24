@@ -82,12 +82,10 @@ module.exports = cdb.core.View.extend({
     if (columnType === 'date') {
       this._scale = d3.time.scale()
         .domain([data[0].start * 1000, data[data.length - 1].end * 1000])
-        .nice()
         .range([this._dataviewModel.get('start'), this._dataviewModel.get('end')]);
     } else {
       this._scale = d3.scale.linear()
         .domain([data[0].start, data[data.length - 1].end])
-        .nice()
         .range([this._dataviewModel.get('start'), this._dataviewModel.get('end')]);
     }
   },

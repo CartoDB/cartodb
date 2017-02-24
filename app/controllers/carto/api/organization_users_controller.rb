@@ -121,13 +121,15 @@ module Carto
           render_jsonp "Can't delete @user. #{'Has shared entities' if @user.has_shared_entities?}", 410
         end
 
-        @user.delete_in_central
         @user.destroy
+        @user.delete_in_central
 
         render_jsonp 'User deleted', 200
       rescue CartoDB::CentralCommunicationFailure => e
         CartoDB::Logger.error(exception: e, message: 'Central error deleting user from EUMAPI', user: @user)
         render_jsonp "User couldn't be deleted", 500
+      rescue => e
+        render_jsonp "User couldn't be deleted: #{e.message}", 500
       end
 
       private

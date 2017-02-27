@@ -9,7 +9,6 @@ module CartoDB
       serialize_partially_dependent_visualizations
       fully_dependent_visualizations
       partially_dependent_visualizations
-      affected_visualizations
       synchronization
       serialize_synchronization
       row_count_and_size

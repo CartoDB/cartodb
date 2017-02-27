@@ -48,6 +48,7 @@ class UserTable < Sequel::Model
     set_except
     update_updated_at
     values
+    affected_visualizations
   }
 
   PRIVACY_PRIVATE = 0

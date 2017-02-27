@@ -552,6 +552,7 @@ class Carto::Visualization < ActiveRecord::Base
   private
 
   def do_store(propagate_changes = true, table_privacy_changed = false)
+    # TODO: Probably move some of these things to save hooks. Can't do it right now because this method takes parameters
     perform_invalidations(table_privacy_changed)
 
     save!

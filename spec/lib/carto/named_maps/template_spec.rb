@@ -13,7 +13,7 @@ module Carto
       end
 
       before(:all) do
-        @user = FactoryGirl.create(:carto_user, private_tables_enabled: true)
+        @user = FactoryGirl.create(:carto_user, private_tables_enabled: true, private_maps_enabled: true)
 
         @map, _, _, @visualization = create_full_visualization(@user)
 
@@ -454,6 +454,7 @@ module Carto
 
           it 'should use non-mapcapped visualization for auth' do
             @visualization.stubs(:password_protected?).returns(true)
+            @visualization.stubs(:has_password?).returns(true)
             @visualization.stubs(:non_mapcapped).returns(@visualization) # return stubbed object
 
             @regenerated_visualization.password_protected?.should be_false
@@ -482,7 +483,7 @@ module Carto
 
         describe 'should be signed' do
           after(:each) do
-            @visualization.save
+            @visualization.save!
 
             template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
             template_hash[:auth][:valid_tokens].should_not be_empty
@@ -491,6 +492,8 @@ module Carto
 
           it 'for password protected visualizations' do
             @visualization.privacy = Carto::Visualization::PRIVACY_PROTECTED
+            @visualization.password_salt = 'xxx'
+            @visualization.encrypted_password = 'yyy'
           end
 
           it 'for organization private visualizations' do

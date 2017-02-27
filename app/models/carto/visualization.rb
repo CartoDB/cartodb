@@ -89,7 +89,6 @@ class Carto::Visualization < ActiveRecord::Base
   validate :validate_password_presence
   validate :validate_privacy_changes
 
-
   before_validation :set_default_version, :set_register_table_only
   before_create :set_random_id, :set_default_permission
 
@@ -547,7 +546,7 @@ class Carto::Visualization < ActiveRecord::Base
 
   private
 
-  def do_store(propagate_changes = true, table_privacy_changed = false)
+  def do_store(_propagate_changes = true, _table_privacy_changed = false)
     save!
   end
 
@@ -717,7 +716,7 @@ class Carto::Visualization < ActiveRecord::Base
 
   def validate_privacy_changes
     if derived? && is_privacy_private? && privacy_changed? && !user.try(:private_maps_enabled?)
-      errors.add(:privacy, 'cannot set private privacy')
+      errors.add(:privacy, 'cannot be set to private')
     end
   end
 

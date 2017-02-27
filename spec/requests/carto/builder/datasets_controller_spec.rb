@@ -44,6 +44,7 @@ describe Carto::Builder::DatasetsController do
     end
 
     it 'redirects to public view for visualizations not writable by user' do
+      bypass_named_maps
       @other_visualization = FactoryGirl.create(:carto_visualization, type: Carto::Visualization::TYPE_CANONICAL)
 
       get builder_dataset_url(id: @other_visualization.id)

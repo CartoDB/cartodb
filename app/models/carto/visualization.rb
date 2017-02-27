@@ -100,7 +100,7 @@ class Carto::Visualization < ActiveRecord::Base
 
   def set_register_table_only
     self.register_table_only = false
-    # TODO
+    # This is a callback, returning `true` avoids halting because of assignment `false` return value
     true
   end
 

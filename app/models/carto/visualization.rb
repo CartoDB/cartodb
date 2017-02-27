@@ -195,6 +195,7 @@ class Carto::Visualization < ActiveRecord::Base
   def is_liked_by_user_id?(user_id)
     likes_by_user_id(user_id).any?
   end
+  alias liked_by? is_liked_by_user_id? # Model compatibility
 
   def likes_by_user_id(user_id)
     likes.where(actor: user_id)
@@ -536,10 +537,6 @@ class Carto::Visualization < ActiveRecord::Base
 
   def is_owner?(user)
     user.id == user_id
-  end
-
-  def liked_by?(user_id)
-    !(likes.select { |like| like.actor == user_id }.first.nil?)
   end
 
   private

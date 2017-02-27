@@ -327,7 +327,6 @@ class UserTable < Sequel::Model
     ).first
   end
 
-  # TODO: merge following?
   def privacy_changed?
     previous_changes && previous_changes.keys.include?(:privacy)
   end

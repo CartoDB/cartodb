@@ -1363,7 +1363,7 @@ class Table
 
   def previous_privacy
     # INFO: @user_table.initial_value(:privacy) weirdly returns incorrect value so using changes index instead
-    privacy_changed? ? @user_table.previous_privacy : nil
+    privacy_changed? ? @user_table.privacy_was : nil
   end
 
   def importer_stats

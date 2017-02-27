@@ -331,7 +331,7 @@ class UserTable < Sequel::Model
     previous_changes && previous_changes.keys.include?(:privacy)
   end
 
-  def previous_privacy
+  def privacy_was
     previous_changes[:privacy].first
   end
 

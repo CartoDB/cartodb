@@ -174,16 +174,6 @@ module Carto
       service.update_cdb_tablemetadata
     end
 
-    def privacy_changed?
-      # TODO: should this consider previous_changes as well?
-      changes.include?('privacy')
-    end
-
-    def previous_privacy
-      # TODO: should this consider previous_changes as well?
-      changes['privacy'].first
-    end
-
     def save_changes
       # TODO: Compatibility with Sequel model, can be removed afterwards. Used in ::Table.set_the_geom_column!
       save if changed?

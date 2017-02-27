@@ -61,25 +61,18 @@ $sHighlightHeight: 64;
 }
 
 .LayerOnboarding-body {
+  @include transition(margin-top 0.3s ease-in-out, margin-left 0.3s ease-in-out);
   position: absolute;
   left: 100%;
   margin-top: 45px;
   margin-left: 70px;
 }
-
 .LayerOnboarding-body.is-step3 {
-  bottom: 36px;
+  margin-top: -190px;
 }
-
 .LayerOnboarding-body.is-step4 {
-  right: 100%;
-  bottom: 36px;
-  left: auto;
-}
-.LayerOnboarding-pads--left .LayerOnboarding-body.is-step4 {
-  right: auto;
-  bottom: 50px;
-  left: 400px;
+  margin-top: -270px;
+  margin-left: -460px;
 }
 
 .LayerOnboarding--style .LayerOnboarding-body.is-step2 {
@@ -147,7 +140,7 @@ $sHighlightHeight: 64;
 }
 
 .LayerOnboarding-description {
-  @include transition(width, 100ms, ease-in-out);
+  //@include transition(width, 100ms, ease-in-out);
   width: $sRegularDescriptionWidth;
   margin-bottom: $sMargin-elementInline;
   color: #FFF;

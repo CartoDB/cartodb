@@ -31,7 +31,7 @@ namespace :cartodb do
     file_upload_helper = CartoDB::FileUpload.new(Cartodb.config[:importer].fetch("uploads_path", nil))
 
     unless data_import_item.nil?
-      # be 100% safe en rescue blocks when trying to log the failed id
+      # be 100% safe in rescue blocks when trying to log the failed id
       data_import_item_id = data_import_item.id rescue nil
 
       begin

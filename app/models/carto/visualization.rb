@@ -633,7 +633,6 @@ class Carto::Visualization < ActiveRecord::Base
     end
     self
   rescue => exception
-    # TODO: old_name
     if name_changed && !(exception.to_s =~ /relation.*does not exist/)
       revert_name_change(old_name)
     end

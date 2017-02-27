@@ -86,8 +86,11 @@ class Carto::Visualization < ActiveRecord::Base
   has_many :snapshots, class_name: Carto::Snapshot, dependent: :destroy
 
   validates :version, presence: true
+  validate :validate_password_presence
+  validate :validate_privacy_changes
 
   before_validation :set_default_version, :set_register_table_only
+  before_save :remove_password_if_unprotected
   before_create :set_random_id, :set_default_permission
 
   # INFO: workaround for array saves not working. There is a bug in `activerecord-postgresql-array` which
@@ -255,6 +258,10 @@ class Carto::Visualization < ActiveRecord::Base
 
   def derived?
     type == TYPE_DERIVED
+  end
+
+  def remote?
+    type == TYPE_REMOTE
   end
 
   def layers
@@ -545,34 +552,14 @@ class Carto::Visualization < ActiveRecord::Base
   private
 
   def do_store(propagate_changes = true, table_privacy_changed = false)
-    self.version = user.new_visualizations_version if version.nil?
-
-    if password_protected?
-      raise CartoDB::InvalidMember.new('No password set and required') unless has_password?
-    else
-      remove_password
-    end
-
-    # Warning: imports create by default private canonical visualizations
-    if type != TYPE_CANONICAL && @privacy == PRIVACY_PRIVATE && privacy_changed && !user.try(:private_maps_enabled?)
-      raise CartoDB::InvalidMember
-    end
-
     perform_invalidations(table_privacy_changed)
 
-    # Ensure a permission is set before saving the visualization
-    if permission.nil?
-      perm = CartoDB::Permission.new
-      perm.owner = user
-      perm.save
-      @permission_id = perm.id
-    end
-    save
+    save!
 
     restore_previous_privacy unless save_named_map
 
     propagate_attribution_change if table
-    if type == TYPE_REMOTE || type == TYPE_CANONICAL
+    if remote? || canonical?
       propagate_privacy_and_name_to(table) if table && propagate_changes
     elsif table && propagate_changes
       propagate_name_to(table)
@@ -743,5 +730,19 @@ class Carto::Visualization < ActiveRecord::Base
 
   def varnish_vizjson_key
     ".*#{id}:vizjson"
+  end
+
+  def validate_password_presence
+    errors.add(:password, 'required for protected visualization') if password_protected? && !has_password?
+  end
+
+  def remove_password_if_unprotected
+    remove_password unless password_protected?
+  end
+
+  def validate_privacy_changes
+    if derived? && is_privacy_private? && privacy_changed && !user.try(:private_maps_enabled?)
+      errors.add(:privacy, 'cannot set private privacy')
+    end
   end
 end

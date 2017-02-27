@@ -550,7 +550,7 @@ class Carto::Visualization < ActiveRecord::Base
     end
 
     # Warning: imports create by default private canonical visualizations
-    if type != TYPE_CANONICAL && @privacy == PRIVACY_PRIVATE && privacy_changed && !user.try(:private_maps_enabled?)
+    if type != TYPE_CANONICAL && @privacy == PRIVACY_PRIVATE && privacy_changed? && !user.try(:private_maps_enabled?)
       raise CartoDB::InvalidMember
     end
 
@@ -575,7 +575,7 @@ class Carto::Visualization < ActiveRecord::Base
   def perform_invalidations(table_privacy_changed)
     # previously we used 'invalidate_cache' but due to public_map displaying all the user public visualizations,
     # now we need to purgue everything to avoid cached stale data or public->priv still showing scenarios
-    if name_changed || privacy_changed || table_privacy_changed || changed?
+    if table_privacy_changed || changed?
       invalidate_cache
     end
 
@@ -585,22 +585,14 @@ class Carto::Visualization < ActiveRecord::Base
     end
   end
 
-  def privacy_changed
-    changed.include?('privacy') || previous_changes['privacy']
-  end
-
-  def name_changed
-    changed.include?('name') || previous_changes['name']
-  end
-
   def old_name
     previous_changes['name'].first
   end
 
   def propagate_privacy_and_name_to(table)
     raise "Empty table sent to Visualization::Member propagate_privacy_and_name_to()" unless table
-    propagate_privacy_to(table) if privacy_changed
-    propagate_name_to(table)    if name_changed
+    propagate_privacy_to(table) if privacy_changed?
+    propagate_name_to(table)    if name_changed?
   end
 
   def propagate_privacy_to(table)
@@ -616,13 +608,13 @@ class Carto::Visualization < ActiveRecord::Base
     table.register_table_only = register_table_only
     table.name = name
     table.update(name: name)
-    if name_changed
-      support_tables.rename(old_name, name, true, old_name)
+    if name_changed?
+      support_tables.rename(name_was, name, true, name_was)
     end
     self
   rescue => exception
-    if name_changed && !(exception.to_s =~ /relation.*does not exist/)
-      revert_name_change(old_name)
+    if name_changed? && !(exception.to_s =~ /relation.*does not exist/)
+      revert_name_change(name_was)
     end
     raise CartoDB::InvalidMember.new(exception.to_s)
   end

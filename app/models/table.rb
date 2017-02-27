@@ -1321,12 +1321,10 @@ class Table
 
   def propagate_attribution_change(attributions)
     # This includes both the canonical and derived visualizations
-    affected_visualizations.each do |affected_visualization|
-      affected_visualization.layers(:data).each do |layer|
-        if layer.options['table_name'] == name
-          layer.options['attribution']  = attributions
-          layer.save
-        end
+    @user_table.layers.select(&:data_layer?).each do |layer|
+      if layer.options['table_name'] == name
+        layer.options['attribution'] = attributions
+        layer.save
       end
     end
   end

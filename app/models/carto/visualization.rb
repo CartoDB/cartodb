@@ -558,15 +558,7 @@ class Carto::Visualization < ActiveRecord::Base
     end
 
     perform_invalidations(table_privacy_changed)
-
-    # Ensure a permission is set before saving the visualization
-    if permission.nil?
-      perm = CartoDB::Permission.new
-      perm.owner = user
-      perm.save
-      @permission_id = perm.id
-    end
-    save
+    save!
 
     restore_previous_privacy unless save_named_map
 

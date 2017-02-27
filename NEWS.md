@@ -56,6 +56,7 @@ Development
 * Migrate to use GNIP v2 for twitter search connector (#10051, #11595)
 
 ### Bug fixes
+* Fixed missing metadata option in header when dataset is sync
 * Fixed problem with dates when filtering time series widget
 * Fixed problem switching between qualitative and quantitative attributes (#10654)
 * Fixed problem found in Surfaces related with map panning and widgets filtering

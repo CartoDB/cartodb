@@ -645,6 +645,12 @@ CartoDB::Application.routes.draw do
       get 'connectors/:provider_id/connect' => 'connectors#connect', as: :api_v1_connectors_connect
     end
   end
+
+  # Load optional engines
+  Dir['gears' + '/*/*.gemspec'].each do |gemspec_file|
+    module_name = File.basename(gemspec_file, File.extname(gemspec_file))
+    mount "#{module_name.camelize}::Engine".constantize, at: "/"
+  end
 end
 
 # rubocop:enable Metrics/LineLength, Style/ExtraSpacing, Style/SingleSpaceBeforeFirstArg

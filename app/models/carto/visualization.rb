@@ -16,7 +16,7 @@ module Carto::VisualizationDependencies
   end
 
   def dependent_on?(user_table)
-    derived? && layers_dependent_on(user_table).count > 0
+    derived? && layers_dependent_on(user_table).any?
   end
 
   private

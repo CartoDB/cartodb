@@ -438,7 +438,6 @@ class Table
     update_name_changes
 
     CartoDB::TablePrivacyManager.new(@user_table).apply_privacy_change(self, previous_privacy, privacy_changed?)
-
     update_cdb_tablemetadata if privacy_changed? || !@name_changed_from.nil?
   end
 

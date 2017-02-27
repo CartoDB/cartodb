@@ -86,9 +86,16 @@ class Carto::Visualization < ActiveRecord::Base
   has_many :snapshots, class_name: Carto::Snapshot, dependent: :destroy
 
   validates :version, presence: true
+  validate :validate_password_presence
+  validate :validate_privacy_changes
+
 
   before_validation :set_default_version, :set_register_table_only
   before_create :set_random_id, :set_default_permission
+
+  before_save :remove_password_if_unprotected, :perform_invalidations
+  after_save :save_named_map_or_rollback_privacy, :propagate_attribution_change
+  after_save :propagate_privacy_and_name_to, if: :table
 
   # INFO: workaround for array saves not working. There is a bug in `activerecord-postgresql-array` which
   # makes inserting including array fields to save, but updates work. Wo se insert without tags and add them
@@ -526,7 +533,6 @@ class Carto::Visualization < ActiveRecord::Base
 
   def store_using_table(table_privacy_changed = false)
     do_store(false, table_privacy_changed)
-    self
   end
 
   # Backward compatibility with Sequel
@@ -542,29 +548,7 @@ class Carto::Visualization < ActiveRecord::Base
   private
 
   def do_store(propagate_changes = true, table_privacy_changed = false)
-    # TODO: Move some of this stuff to validation/hooks. Can't do it right now because this method takes parameters
-    if password_protected?
-      raise CartoDB::InvalidMember.new('No password set and required') unless has_password?
-    else
-      remove_password
-    end
-
-    # Warning: imports create by default private canonical visualizations
-    if type != TYPE_CANONICAL && @privacy == PRIVACY_PRIVATE && privacy_changed? && !user.try(:private_maps_enabled?)
-      raise CartoDB::InvalidMember
-    end
-
-    perform_invalidations(table_privacy_changed)
     save!
-
-    restore_previous_privacy unless save_named_map
-
-    propagate_attribution_change if table
-    if type == TYPE_REMOTE || type == TYPE_CANONICAL
-      propagate_privacy_and_name_to(table) if table && propagate_changes
-    elsif table && propagate_changes
-      propagate_name_to(table)
-    end
   end
 
   def remove_password
@@ -572,38 +556,38 @@ class Carto::Visualization < ActiveRecord::Base
     @encrypted_password = nil
   end
 
-  def perform_invalidations(table_privacy_changed)
+  def perform_invalidations
     # previously we used 'invalidate_cache' but due to public_map displaying all the user public visualizations,
     # now we need to purgue everything to avoid cached stale data or public->priv still showing scenarios
-    if table_privacy_changed || changed?
+    if privacy_changed? || name_changed? || dirty?
       invalidate_cache
     end
 
     # When a table's relevant data is changed, propagate to all who use it or relate to it
-    if changed? && table
+    if dirty? && table
       user_table.dependent_visualizations.each(&:invalidate_cache)
     end
   end
 
-  def old_name
-    previous_changes['name'].first
+  def dirty?
+    description_changed? || attributions_changed? || version_changed? || encrypted_password_changed?
   end
 
-  def propagate_privacy_and_name_to(table)
+  def propagate_privacy_and_name_to
     raise "Empty table sent to Visualization::Member propagate_privacy_and_name_to()" unless table
-    propagate_privacy_to(table) if privacy_changed?
-    propagate_name_to(table)    if name_changed?
+    propagate_privacy if privacy_changed? && canonical?
+    propagate_name if name_changed?
   end
 
-  def propagate_privacy_to(table)
-    if type == TYPE_CANONICAL
+  def propagate_privacy
+    table.reload
+    if table.privacy_text.casecmp(privacy) != 0 # privacy is different, case insensitive
       CartoDB::TablePrivacyManager.new(table).set_from_visualization(self).update_cdb_tablemetadata
     end
-    self
   end
 
   # @param table Table
-  def propagate_name_to(table)
+  def propagate_name
     table.reload # Needed to avoid double renames
     table.register_table_only = register_table_only
     table.name = name
@@ -628,9 +612,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def propagate_attribution_change
-    return unless changed.include?('attributions')
-
-    table.propagate_attribution_change(attributions)
+    table.propagate_attribution_change(attributions) if table && attributions_changed?
   end
 
   def support_tables
@@ -723,5 +705,26 @@ class Carto::Visualization < ActiveRecord::Base
 
   def varnish_vizjson_key
     ".*#{id}:vizjson"
+  end
+
+  def validate_password_presence
+    errors.add(:password, 'required for protected visualization') if password_protected? && !has_password?
+  end
+
+  def remove_password_if_unprotected
+    remove_password unless password_protected?
+  end
+
+  def validate_privacy_changes
+    if derived? && is_privacy_private? && privacy_changed? && !user.try(:private_maps_enabled?)
+      errors.add(:privacy, 'cannot set private privacy')
+    end
+  end
+
+  def save_named_map_or_rollback_privacy
+    if !save_named_map && privacy_changed?
+      self.privacy = privacy_was
+      save
+    end
   end
 end

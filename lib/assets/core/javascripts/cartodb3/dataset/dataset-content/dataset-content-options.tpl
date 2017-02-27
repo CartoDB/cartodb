@@ -5,7 +5,7 @@
       <li>
         <button class="CDB-Text CDB-Size-small is-semibold u-actionTextColor u-upperCase js-addRow">
           <div class="u-flex u-alignCenter">
-            <svg width="16px" height="7px" viewBox="0 0 16 7" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+            <svg width="16px" height="18px" viewBox="0 0 16 6" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
               <defs>
                 <path d="M4,3 L4,0 L3,0 L3,3 L0,3 L0,4 L3,4 L3,7 L4,7 L4,4 L7,4 L7,3 L4,3 Z" id="path-1"></path>
                 <mask id="mask-2" maskContentUnits="userSpaceOnUse" maskUnits="objectBoundingBox" x="0" y="0" width="7" height="7" fill="white">
@@ -27,7 +27,7 @@
       <li class="u-lSpace--xl">
         <button class="CDB-Text CDB-Size-small is-semibold u-actionTextColor u-upperCase js-addColumn">
           <div class="u-flex u-alignCenter">
-            <svg width="16px" height="7px" viewBox="0 4 16 7" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+            <svg width="16px" height="18px" viewBox="0 4 16 6" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
               <g id="Add-Column" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" transform="translate(0.000000, 4.000000)">
                 <path d="M4,3 L4,0 L3,0 L3,3 L0,3 L0,4 L3,4 L3,7 L4,7 L4,4 L7,4 L7,3 L4,3 Z" id="Combined-Shape" fill="#1181FB"></path>
                 <path d="M9,0 L12,0 L12,7 L9,7 L9,0 Z M10,1 L11,1 L11,6 L10,6 L10,1 Z" id="Combined-Shape" fill="#1181FB"></path>
@@ -44,7 +44,7 @@
     <li class="u-lSpace--xl">
       <button class="CDB-Text CDB-Size-small is-semibold u-actionTextColor u-upperCase is-disabled js-export">
         <div class="u-flex u-alignCenter">
-          <svg width="11px" height="10px" viewBox="-1 2 11 10" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+          <svg width="11px" height="18px" viewBox="-1 2 11 10" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
             <g id="Esport" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" transform="translate(0.000000, 3.000000)" stroke-linecap="square">
               <path d="M4.5,0.5 L4.5,6.5" id="Line" stroke="#1181FB"></path>
               <path d="M4.5,7.5 L8.5,3.5" id="Line" stroke="#1181FB"></path>

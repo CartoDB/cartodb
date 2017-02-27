@@ -16,8 +16,7 @@ describe Search::Twitter do
       'auth_required' => false,
       'username'      => '',
       'password'      => '',
-      'search_url'    => 'http://fakeurlv1.cartodb',
-      'search_url_v2'    => 'http://fakeurlv2.cartodb'
+      'search_url'    => 'http://fakeurl.carto',
     }
   end #get_config
 
@@ -31,7 +30,6 @@ describe Search::Twitter do
       user = CartoDB::Datasources::Doubles::User.new({
         twitter_datasource_quota: big_quota
       })
-      user.stubs(:has_feature_flag?).with('gnip_v2').returns(true)
       twitter_datasource = Search::Twitter.get_new(get_config, user)
 
       maxresults_filter = twitter_datasource.send :build_maxresults_field, user
@@ -44,7 +42,6 @@ describe Search::Twitter do
         twitter_datasource_quota: small_quota,
         soft_twitter_datasource_limit: false
       })
-      user.stubs(:has_feature_flag?).with('gnip_v2').returns(true)
       twitter_datasource = Search::Twitter.get_new(get_config, user)
       maxresults_filter = twitter_datasource.send :build_maxresults_field, user
       maxresults_filter.should eq small_quota
@@ -55,17 +52,14 @@ describe Search::Twitter do
         twitter_datasource_quota: small_quota,
         soft_twitter_datasource_limit: true
       })
-      user.stubs(:has_feature_flag?).with('gnip_v2').returns(true)
       maxresults_filter = twitter_datasource.send :build_maxresults_field, user
       maxresults_filter.should eq CartoDB::TwitterSearch::SearchAPI::MAX_PAGE_RESULTS
       totalresults_filter = twitter_datasource.send :build_total_results_field, user
       totalresults_filter.should eq Search::Twitter::NO_TOTAL_RESULTS
     end
 
-    it 'tests category filters v1' do
+    it 'tests category filters' do
       user_mock = CartoDB::Datasources::Doubles::User.new
-      user_mock.stubs(:has_feature_flag?).with('gnip_v2').returns(false)
-
       twitter_datasource = Search::Twitter.get_new(get_config, user_mock)
 
       input_terms = terms_fixture
@@ -86,34 +80,8 @@ describe Search::Twitter do
       output.should eq expected_output_terms
     end
 
-    it 'tests category filters v2' do
+    it 'tests search term cut if too many' do
       user_mock = CartoDB::Datasources::Doubles::User.new
-      user_mock.stubs(:has_feature_flag?).with('gnip_v2').returns(true)
-
-      twitter_datasource = Search::Twitter.get_new(get_config, user_mock)
-
-      input_terms = terms_fixture
-
-      expected_output_terms = [
-        {
-          Search::Twitter::CATEGORY_NAME_KEY  => 'Category 1',
-          Search::Twitter::CATEGORY_TERMS_KEY => '(uno OR @dos OR #tres) has:geo'
-        },
-        {
-          Search::Twitter::CATEGORY_NAME_KEY  => 'Category 2',
-          Search::Twitter::CATEGORY_TERMS_KEY => '(aaa OR bbb) has:geo'
-        }
-      ]
-
-      output = twitter_datasource.send :build_queries_from_fields, input_terms
-
-      output.should eq expected_output_terms
-    end
-
-    it 'tests search term cut if too many v1' do
-      user_mock = CartoDB::Datasources::Doubles::User.new
-      user_mock.stubs(:has_feature_flag?).with('gnip_v2').returns(false)
-
       twitter_datasource = Search::Twitter.get_new(get_config, user_mock)
 
       input_terms = {
@@ -136,36 +104,8 @@ describe Search::Twitter do
       output.should eq expected_output_terms
     end
 
-    it 'tests search term cut if too many v2' do
-      user_mock = CartoDB::Datasources::Doubles::User.new
-      user_mock.stubs(:has_feature_flag?).with('gnip_v2').returns(true)
-
-      twitter_datasource = Search::Twitter.get_new(get_config, user_mock)
-
-      input_terms = {
-          categories: [
-              {
-                  category: 'Category 1',
-                  terms:    Array(1..35)
-              }
-          ]
-      }
-
-      expected_output_terms = [
-          {
-              Search::Twitter::CATEGORY_NAME_KEY  => 'Category 1',
-              Search::Twitter::CATEGORY_TERMS_KEY => '(1 OR 2 OR 3 OR 4 OR 5 OR 6 OR 7 OR 8 OR 9 OR 10 OR 11 OR 12 OR 13 OR 14 OR 15 OR 16 OR 17 OR 18 OR 19 OR 20 OR 21 OR 22 OR 23 OR 24 OR 25 OR 26 OR 27 OR 28 OR 29) has:geo'
-          },
-      ]
-
-      output = twitter_datasource.send :build_queries_from_fields, input_terms
-      output.should eq expected_output_terms
-    end
-
     it 'tests search term cut if too big (even if amount is ok)' do
       user_mock = CartoDB::Datasources::Doubles::User.new
-      user_mock.stubs(:has_feature_flag?).with('gnip_v2').returns(true)
-
       twitter_datasource = Search::Twitter.get_new(get_config, user_mock)
 
       input_terms = {
@@ -186,8 +126,6 @@ describe Search::Twitter do
 
     it 'tests date filters' do
       user_mock = CartoDB::Datasources::Doubles::User.new
-      user_mock.stubs(:has_feature_flag?).with('gnip_v2').returns(true)
-
       twitter_datasource = Search::Twitter.get_new(get_config, user_mock)
 
       input_dates = dates_fixture
@@ -218,14 +156,12 @@ describe Search::Twitter do
     it 'tests twitter search integration (without conversion to CSV)' do
       # This test bridges lots of internal calls to simulate only up until twitter search call and results
       user_mock = CartoDB::Datasources::Doubles::User.new
-      user_mock.stubs(:has_feature_flag?).with('gnip_v2').returns(true)
-
       twitter_datasource = Search::Twitter.get_new(get_config, user_mock)
 
       input_terms = terms_fixture
       input_dates = dates_fixture
 
-      Typhoeus.stub(/fakeurlv2\.cartodb/) do |request|
+      Typhoeus.stub(/fakeurl\.carto/) do |request|
         accept = (request.options[:headers]||{})['Accept'] || 'application/json'
         format = accept.split(',').first
 
@@ -243,7 +179,7 @@ describe Search::Twitter do
       end
 
       twitter_api_config = twitter_datasource.send :search_api_config
-      twitter_api = CartoDB::TwitterSearch::SearchAPI.new(twitter_api_config, user_mock)
+      twitter_api = CartoDB::TwitterSearch::SearchAPI.new(twitter_api_config)
 
       fields = {
         categories: input_terms[:categories],
@@ -281,14 +217,12 @@ describe Search::Twitter do
       user_mock = CartoDB::Datasources::Doubles::User.new(
         twitter_datasource_quota: remaining_tweets_quota
       )
-      user_mock.stubs(:has_feature_flag?).with('gnip_v2').returns(true)
-
       twitter_datasource = Search::Twitter.get_new(get_config, user_mock)
 
       input_terms = terms_fixture
       input_dates = dates_fixture
 
-      Typhoeus.stub(/fakeurlv2\.cartodb/) do |request|
+      Typhoeus.stub(/fakeurl\.carto/) do |request|
         accept = (request.options[:headers]||{})['Accept'] || 'application/json'
         format = accept.split(',').first
 
@@ -307,7 +241,7 @@ describe Search::Twitter do
       end
 
       twitter_api_config = twitter_datasource.send :search_api_config
-      twitter_api = CartoDB::TwitterSearch::SearchAPI.new(twitter_api_config, user_mock)
+      twitter_api = CartoDB::TwitterSearch::SearchAPI.new(twitter_api_config)
 
       fields = {
           categories: input_terms[:categories],
@@ -339,7 +273,6 @@ describe Search::Twitter do
 
     it 'tests user limits on datasource usage' do
       user_mock = CartoDB::Datasources::Doubles::User.new
-      user_mock.stubs(:has_feature_flag?).with('gnip_v2').returns(true)
       twitter_datasource = Search::Twitter.get_new(get_config, user_mock)
 
       # Service enabled tests
@@ -389,7 +322,6 @@ describe Search::Twitter do
 
     it 'checks terms sanitize method' do
       user_mock = CartoDB::Datasources::Doubles::User.new
-      user_mock.stubs(:has_feature_flag?).with('gnip_v2').returns(true)
       twitter_datasource = Search::Twitter.get_new(get_config, user_mock)
 
       terms = [ 'a', ' b', 'c ', ' d ', ' e f', 'g h ', ' i j ', ' 1 2 3 4 ', ' ' ]

@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.6.0-11469",
+  "version": "4.6.9",
   "dependencies": {
     "backbone": {
       "version": "1.2.3",
@@ -182,9 +182,9 @@
                           "resolved": "https://registry.npmjs.org/path-is-absolute/-/path-is-absolute-1.0.1.tgz"
                         },
                         "rimraf": {
-                          "version": "2.6.0",
+                          "version": "2.6.1",
                           "from": "rimraf@>=2.2.8 <3.0.0",
-                          "resolved": "https://registry.npmjs.org/rimraf/-/rimraf-2.6.0.tgz",
+                          "resolved": "https://registry.npmjs.org/rimraf/-/rimraf-2.6.1.tgz",
                           "dependencies": {
                             "glob": {
                               "version": "7.1.1",
@@ -623,9 +623,9 @@
                               }
                             },
                             "is-my-json-valid": {
-                              "version": "2.15.0",
+                              "version": "2.16.0",
                               "from": "is-my-json-valid@>=2.12.4 <3.0.0",
-                              "resolved": "https://registry.npmjs.org/is-my-json-valid/-/is-my-json-valid-2.15.0.tgz",
+                              "resolved": "https://registry.npmjs.org/is-my-json-valid/-/is-my-json-valid-2.16.0.tgz",
                               "dependencies": {
                                 "generate-function": {
                                   "version": "2.0.0",
@@ -1147,7 +1147,7 @@
     "cartodb-deep-insights.js": {
       "version": "0.0.2",
       "from": "cartodb/deep-insights.js#master",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#f8469d8d4c3b4d10d07d8268bdf6feb822330a6f",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#db4433f6bd036022add7f1ac4d7a3e9ec4536163",
       "dependencies": {
         "cartodb.js": {
           "version": "4.0.0-alpha.1",

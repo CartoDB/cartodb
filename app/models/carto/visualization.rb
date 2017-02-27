@@ -624,7 +624,7 @@ class Carto::Visualization < ActiveRecord::Base
 
   # @param table Table
   def propagate_name_to(table)
-    table.instance_variable_get(:@user_table).reload
+    table.reload # Needed to avoid double renames
     table.register_table_only = register_table_only
     table.name = name
     table.update(name: name)

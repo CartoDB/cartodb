@@ -49,6 +49,7 @@ class UserTable < Sequel::Model
     update_updated_at
     values
     affected_visualizations
+    reload
   }
 
   PRIVACY_PRIVATE = 0

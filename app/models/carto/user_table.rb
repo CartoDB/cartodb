@@ -91,11 +91,11 @@ module Carto
       self.table_id = service.get_table_id
     end
 
-    def aliases=(hash)
+    def column_aliases=(hash)
       super((hash || {}).to_json)
     end
 
-    def aliases
+    def column_aliases
       JSON.parse(super).with_indifferent_access
     rescue JSON::ParserError, TypeError
       {}

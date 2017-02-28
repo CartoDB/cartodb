@@ -12,7 +12,7 @@ module Carto
 
       visualization = Carto::Visualization.new(
         name: user_table.name,
-        map: build_canonical_map(user_table, layers.first),
+        map: build_canonical_map(user, layers.first),
         type: Carto::Visualization::TYPE_CANONICAL,
         description: user_table.description,
         attributions: esv.try(:attributions),
@@ -34,9 +34,9 @@ module Carto
 
     # private
 
-    def self.build_canonical_map(user_table, base_layer)
+    def self.build_canonical_map(user, base_layer)
       Carto::Map.new(
-        user: user_table.user,
+        user: user,
         provider: Carto::Map.provider_for_baselayer_kind(base_layer.kind)
       )
     end

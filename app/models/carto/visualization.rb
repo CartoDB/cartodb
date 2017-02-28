@@ -149,8 +149,6 @@ class Carto::Visualization < ActiveRecord::Base
   def user_table
     map.user_table if map
   end
-  # This breaks compatibility with the older model
-  # alias :table :user_table
 
   def table
     @table ||= user_table.try(:service)

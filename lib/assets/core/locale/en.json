@@ -69,7 +69,7 @@
       "title": "Data tab",
       "description": "Style, add analysis, pop-ups, and legends to layers. To further explore your data, add widgets."
     },
-    "sql-view": {
+    "sql-editor": {
       "title": "SQL View",
       "description": "Data layers can be edited and processed by using the SQL view at the bottom of the screen."
     },

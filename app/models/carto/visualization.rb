@@ -530,13 +530,13 @@ class Carto::Visualization < ActiveRecord::Base
     derived? ? user.try(:private_maps_enabled) : user.try(:private_tables_enabled)
   end
 
-  def store_using_table(table_privacy_changed = false)
-    do_store(false, table_privacy_changed)
+  # TODO: Backward compatibility with Sequel
+  def store_using_table(_table_privacy_changed = false)
+    store
   end
 
-  # Backward compatibility with Sequel
   def store
-    do_store
+    save!
     self
   end
 
@@ -545,10 +545,6 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   private
-
-  def do_store(_propagate_changes = true, _table_privacy_changed = false)
-    save!
-  end
 
   def remove_password
     @password_salt = nil
@@ -604,8 +600,7 @@ class Carto::Visualization < ActiveRecord::Base
 
   def revert_name_change(previous_name)
     self.name = previous_name
-    # store
-    save
+    store
   rescue => exception
     raise CartoDB::InvalidMember.new(exception.to_s)
   end

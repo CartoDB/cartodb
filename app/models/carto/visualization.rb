@@ -197,10 +197,9 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   # TODO: refactor next methods, all have similar naming but some receive user and some others user_id
-  def is_liked_by_user_id?(user_id)
+  def liked_by?(user_id)
     likes_by_user_id(user_id).any?
   end
-  alias liked_by? is_liked_by_user_id? # Model compatibility
 
   def likes_by_user_id(user_id)
     likes.where(actor: user_id)

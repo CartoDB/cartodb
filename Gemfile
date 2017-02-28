@@ -1,3 +1,5 @@
+require File.dirname(__FILE__) + '/lib/carto/carto_gears_support'
+
 source 'http://rubygems.org'
 
 gem 'rails',                   '3.2.22'
@@ -124,9 +126,6 @@ end
 # segment metrics
 gem 'analytics-ruby', '~> 2.0.0', :require => 'segment/analytics'
 
-# Load optional engines
-Dir['gears' + '/*/*.gemspec'].each do |gemspec_file|
-  dir_name = File.dirname(gemspec_file)
-  gem_name = File.basename(gemspec_file, File.extname(gemspec_file))
-  gem gem_name, :path => dir_name
+Carto::CartoGearsSupport.new.gears.each do |gear|
+  gemspec path: gear.path
 end

@@ -647,9 +647,8 @@ CartoDB::Application.routes.draw do
   end
 
   # Load optional engines
-  Dir['gears' + '/*/*.gemspec'].each do |gemspec_file|
-    module_name = File.basename(gemspec_file, File.extname(gemspec_file))
-    mount "#{module_name.camelize}::Engine".constantize, at: "/"
+  Carto::CartoGearsSupport.new.gears.each do |gear|
+    mount gear.engine, at: '/'
   end
 end
 

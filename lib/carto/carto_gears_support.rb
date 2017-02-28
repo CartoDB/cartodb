@@ -26,16 +26,15 @@ module Carto
 
   class Gear
     def initialize(gem_name, path)
-      @gem_name = gem_name
-      @path = path
+      @name = gem_name.dup.freeze
+      @path = path.dup.freeze
     end
 
-    attr_reader :path
+    attr_reader :name, :path
 
     def engine
-      module_name = @gem_name.classify
-      module_name << 's' if @gem_name[-1] == 's'
-      # module_name.constantize.const_get(:Engine)
+      module_name = @name.classify
+      module_name << 's' if @name[-1] == 's'
       "#{module_name}::Engine".constantize
     end
   end

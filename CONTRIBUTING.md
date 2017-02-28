@@ -175,6 +175,7 @@ Notes:
 - If you want to pass ENV variables, pass them to the `zeus start` process (master), not to the slaves.
 - When testing, you can run `TURBO=1 zeus start` to enable some extra optimizations for the testing environment
   (less database cleaning).
+- If your console breaks after running zeus, add something like `zeus() { /usr/bin/zeus "$@"; stty sane; }` to `.bashrc`.
 
 ### Stellar
 

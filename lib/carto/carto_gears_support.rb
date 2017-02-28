@@ -13,24 +13,25 @@ module Carto
 
     def gears_dir_gears
       Dir['gears' + '/*/*.gemspec'].map do |gemspec_file|
-        Carto::Gear.new(File.basename(gemspec_file, File.extname(gemspec_file)), File.dirname(gemspec_file))
+        Carto::Gear.new(File.basename(gemspec_file, File.extname(gemspec_file)), File.dirname(gemspec_file), true)
       end
     end
 
     def local_gears
       (ENV['CARTO_GEARS_LOCAL'] || '').split.map do |gear_name|
-        Carto::Gear.new(gear_name, "../#{gear_name.strip}")
+        Carto::Gear.new(gear_name, "../#{gear_name.strip}", false)
       end
     end
   end
 
   class Gear
-    def initialize(gem_name, path)
+    def initialize(gem_name, path, install)
       @name = gem_name.dup.freeze
       @path = path.dup.freeze
+      @install = install
     end
 
-    attr_reader :name, :path
+    attr_reader :name, :path, :install
 
     def engine
       module_name = @name.classify

@@ -33,38 +33,48 @@ describe Carto::UserTable do
     @user_table.sync_table_id.should eq @user_table.service.get_table_id
   end
 
-  describe('#aliases') do
-    let(:aliases) do
+  describe('#name_alias') do
+    let(:name_alias) { 'Manolo Escobar' }
+
+    after(:all) do
+      @user_table.update_attributes!(name_alias: nil)
+    end
+
+    it 'sets and gets' do
+      @user_table.update_attributes!(name_alias: name_alias)
+      @user_table.reload.name_alias.should eq(name_alias)
+    end
+  end
+
+  describe('#column_aliases') do
+    let(:column_aliases) do
       {
-        name: 'table name',
-        columns: [
-          one_column: 'with an alias',
-          another_column: 'with another alias'
-        ]
+        one_column: 'with an alias',
+        another_column: 'with another alias'
       }.with_indifferent_access
     end
 
     before(:each) do
-      @user_table.update_attributes!(aliases: {})
+      @user_table.update_attributes!(column_aliases: {})
     end
 
     after(:all) do
-      @user_table.update_attributes!(aliases: {})
+      @user_table.update_attributes!(column_aliases: {})
     end
 
     it 'sets and gets' do
-      @user_table.update_attributes!(aliases: aliases)
-      @user_table.reload.aliases.should eq aliases
+      @user_table.update_attributes!(column_aliases: column_aliases)
+      @user_table.reload.column_aliases.should eq column_aliases
     end
 
     it 'ignores format issues' do
-      @user_table.update_attributes!(aliases: 'not a hash')
-      @user_table.reload.aliases.should(eq({}))
+      @user_table.update_attributes!(column_aliases: 'not a hash')
+      @user_table.reload.column_aliases.should(eq({}))
     end
 
     it 'ignores nil issues' do
-      @user_table.update_attributes!(aliases: nil)
-      @user_table.reload.aliases.should(eq({}))
+      @user_table.update_attributes!(column_aliases: nil)
+      @user_table.reload.column_aliases.should(eq({}))
     end
   end
 end

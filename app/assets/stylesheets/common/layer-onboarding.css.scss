@@ -68,7 +68,7 @@ $sHighlightHeight: 64;
 .LayerOnboarding-footer .LayerOnboarding-footerButtons,
 .LayerOnboarding-contentWrapper .LayerOnboarding-step p {
   @include opacity(1);
-  @include transition(opacity, 200ms, linear, 1s);
+  @include transition(opacity, 200ms, ease-in-out, 1s);
 }
 
 .LayerOnboarding-header,
@@ -90,7 +90,7 @@ $sHighlightHeight: 64;
 }
 
 .LayerOnboarding-description {
-  @include transition(width, 100ms, linear);
+  @include transition(width, 100ms, ease-in-out);
   width: $sRegularDescriptionWidth;
   margin-bottom: $sMargin-elementInline;
   color: #FFF;
@@ -109,7 +109,7 @@ $sHighlightHeight: 64;
 
 .LayerOnboarding-toolbarOverlay,
 .LayerOnboarding-pads {
-  @include transition(width, 300ms, linear);
+  @include transition(width, 300ms, ease-in-out);
   height: 100%;
   z-index: 10;
 }
@@ -117,7 +117,7 @@ $sHighlightHeight: 64;
 .LayerOnboarding-padTop,
 .LayerOnboarding-padMiddle,
 .LayerOnboarding-padBottom {
-  @include transition(height, 300ms, linear);
+  @include transition(height, 300ms, ease-in-out);
   display: block;
   width: 100%;
 }

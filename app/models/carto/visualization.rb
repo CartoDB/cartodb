@@ -153,7 +153,6 @@ class Carto::Visualization < ActiveRecord::Base
   # alias :table :user_table
 
   def table
-    return nil if map.nil?
     @table ||= user_table.try(:service)
   end
 

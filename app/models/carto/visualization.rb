@@ -129,7 +129,7 @@ class Carto::Visualization < ActiveRecord::Base
     # but we want to not break and even allow ordering by size multiple types
     if user_table
       user_table.size
-    elsif type == TYPE_REMOTE && !external_source.nil?
+    elsif remote? && !external_source.nil?
       external_source.size
     else
       0
@@ -262,6 +262,10 @@ class Carto::Visualization < ActiveRecord::Base
     type == TYPE_DERIVED
   end
 
+  def remote?
+    type == TYPE_REMOTE
+  end
+
   def layers
     map ? map.layers : []
   end
@@ -387,13 +391,13 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def get_named_map
-    return false if type == TYPE_REMOTE
+    return false if remote?
 
     named_maps_api.show
   end
 
   def save_named_map
-    return if type == TYPE_REMOTE || mapcapped?
+    return if remote? || mapcapped?
 
     get_named_map ? named_maps_api.update : named_maps_api.create
   end

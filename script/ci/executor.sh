@@ -3,14 +3,17 @@
 main() {
     port=$((6000 + $2))
     # Run the rspec
-    ZEUSSOCK=".zeus$port.sock" bundle exec zeus rspec -J#$3 $1 >> $port.log 2>&1;
+    start=$SECONDS
+    ZEUSSOCK=".zeus$port.sock" bundle exec zeus rspec -J#$3 $1 >> parallel_tests/$port.log 2>&1;
+    taken=$(($SECONDS - $start))
+    formatted_time=$(date -u -d @$taken +'%-0M:%-0S')
 
     # Give some feedback
     if [ $? -eq 0 ]; then
-      echo "Finished: $1 Port: $port";
+      echo "[$formatted_time] Finished: $1 Port: $port";
       echo "$1" >> parallel_tests/specsuccess.log;
     else
-      echo "Finished (FAILED): $1 Port: $port";
+      echo "[$formatted_time] Finished (FAILED): $1 Port: $port";
       echo "$1" >> parallel_tests/specfailed.log;
     fi
 }

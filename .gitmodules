@@ -1,6 +1,7 @@
 [submodule "lib/assets/javascripts/cdb"]
 	path = lib/assets/javascripts/cdb
 	url = ssh://bbgithub.dev.bloomberg.com/datavis-cartodb/cartodb.js.git
+    branch = development
 [submodule "app/assets/stylesheets/old_common"]
 	path = app/assets/stylesheets/old_common
 	url = ssh://bbgithub.dev.bloomberg.com/datavis-cartodb/cartodb.css.git

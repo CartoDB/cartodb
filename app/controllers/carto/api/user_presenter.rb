@@ -168,7 +168,8 @@ module Carto
             google_maps_geocoder_enabled: @user.google_maps_geocoder_enabled?,
             google_maps_enabled: @user.google_maps_enabled?,
             engine_enabled: @user.engine_enabled?,
-            builder_enabled: @user.builder_enabled?
+            builder_enabled: @user.builder_enabled?,
+            mobile_sdk_enabled: @user.mobile_sdk_enabled?
           },
           limits: {
             concurrent_syncs: CartoDB::PlatformLimits::Importer::UserConcurrentSyncsAmount::MAX_SYNCS_PER_USER,

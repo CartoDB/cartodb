@@ -53,10 +53,12 @@ Development
   * Sets the default initial size for icons to 20px (#11498)
 * Onboarding for layer edition (#10905)
 * Improved formula widget description field. (#11469)
+* Added support for Zeus for faster testing (#11574). Check `CONTRIBUTING.md` for configuration details.
 * Migrate to use GNIP v2 for twitter search connector (#10051, #11595)
 
 ### Bug fixes
-* Fixed missing metadata option in header when dataset is sync
+* Fixed problem with Bubbles legend when a new analysis is applied (#11666)
+* Fixed missing metadata option in header when dataset is sync (#11458)
 * Fixed problem with dates when filtering time series widget
 * Fixed problem switching between qualitative and quantitative attributes (#10654)
 * Fixed problem found in Surfaces related with map panning and widgets filtering
@@ -99,6 +101,7 @@ Development
 * Fix responsive layout in onboarding steps (#11444)
 * Correctly create custom category legend if style has icons (#11592)
 * JOIN Analysis Fails Without Error Message (#11184)
+* Fix problem with perfect-scrollbar in Edge browsers (CartoDB/perfect-scrollbar/#2)
 
 4.0.x (2016-12-05)
 ------------------

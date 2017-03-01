@@ -53,6 +53,7 @@ Development
   * Sets the default initial size for icons to 20px (#11498)
 * Onboarding for layer edition (#10905)
 * Improved formula widget description field. (#11469)
+* Added support for Zeus for faster testing (#11574). Check `CONTRIBUTING.md` for configuration details.
 * Migrate to use GNIP v2 for twitter search connector (#10051, #11595)
 
 ### Bug fixes

@@ -5,10 +5,9 @@ require 'carto/configuration'
 CartoDB::Application.configure do
   # Settings specified here will take precedence over those in config/application.rb
 
-  ActiveSupport::Dependencies.autoload_paths << File::join( Rails.root, 'lib')
-  Dir['gears' + '/*/*.gemspec'].each do |gemspec_file|
-    gem_name = File.basename(gemspec_file, File.extname(gemspec_file))
-    ActiveSupport::Dependencies.autoload_paths << File::join( Rails.root, "gears/#{gem_name}/lib")
+  ActiveSupport::Dependencies.autoload_paths << File::join(Rails.root, 'lib')
+  Carto::CartoGearsSupport.new.gears.each do |gear|
+    ActiveSupport::Dependencies.autoload_paths << File::join(gear.path, 'lib')
   end
   # ActiveSupport::Dependencies.autoload_paths << File::join( Rails.root, 'lib/central')
 

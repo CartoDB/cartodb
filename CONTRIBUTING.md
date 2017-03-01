@@ -168,14 +168,17 @@ The development environment can be quite slow to start up, but we have some work
 ### Zeus
 
 1. Install zeus globally with `gem install zeus`. This is recommended but not needed. You can also use `bundle exec zeus`, which is a bit slower.
-2. Start the zeus server. `zeus start`. This will start preloading the environments.
-3. Run your rails commands prefixed by zeus. For example: `zeus c` for console, `zeus rspec xxx` for testing. Run `zeus commands` for a full list (or check `zeus.json`).
+2. Start the zeus server. `zeus start`. This will start preloading the environments. and display a colorful status.
+3. In a different console, run your rails commands prefixed by zeus. For example: `zeus c` for console,
+   `zeus rspec xxx` for testing. Run `zeus commands` for a full list (or check `zeus.json`).
 
 Notes:
 - If you want to pass ENV variables, pass them to the `zeus start` process (master), not to the slaves.
 - When testing, you can run `TURBO=1 zeus start` to enable some extra optimizations for the testing environment
   (less database cleaning).
 - If your console breaks after running zeus, add something like `zeus() { /usr/bin/zeus "$@"; stty sane; }` to `.bashrc`.
+- If using Vagrant and getting errors, check out [zeus docs](https://github.com/burke/zeus/wiki/Using-with-vagrant).
+  Basically, you have to run with `ZEUSSOCK=/tmp/zeus.sock` as an environment variable.
 
 ### Stellar
 

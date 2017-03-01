@@ -92,7 +92,7 @@ class Carto::Visualization < ActiveRecord::Base
   before_validation :set_default_version, :set_register_table_only
   before_create :set_random_id, :set_default_permission
 
-  before_save :remove_password_if_unprotected, :perform_invalidations
+  before_save :remove_password_if_unprotected, :invalidate
   after_save :save_named_map_or_rollback_privacy, :propagate_attribution_change
   after_save :propagate_privacy_and_name_to, if: :table
 
@@ -551,7 +551,7 @@ class Carto::Visualization < ActiveRecord::Base
     self.encrypted_password = nil
   end
 
-  def perform_invalidations
+  def invalidate
     # previously we used 'invalidate_cache' but due to public_map displaying all the user public visualizations,
     # now we need to purgue everything to avoid cached stale data or public->priv still showing scenarios
     if privacy_changed? || name_changed? || dirty?

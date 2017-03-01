@@ -129,7 +129,7 @@ class Carto::Visualization < ActiveRecord::Base
     # but we want to not break and even allow ordering by size multiple types
     if user_table
       user_table.size
-    elsif remote? && !external_source.nil?
+    elsif remote? && external_source
       external_source.size
     else
       0

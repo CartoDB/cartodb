@@ -10,7 +10,7 @@ sh cleaner.sh || exit 1
 sh wrapper.sh $1 || exit 1
 
 # TESTS
-time parallel -j $1 --delay 0.1 -a specfull.txt './executor.sh' || exit 1
+time parallel -j $1 -a specfull.txt ./executor.sh {} {%} || exit 1
 
 # SECOND TRY
 sh secondTry.sh || exit 1

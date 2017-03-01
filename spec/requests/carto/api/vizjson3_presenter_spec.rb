@@ -1,5 +1,7 @@
 require 'spec_helper_min'
 require 'mock_redis'
+require 'carto/api/vizjson3_presenter'
+require 'carto/api/vizjson_presenter'
 
 describe Carto::Api::VizJSON3Presenter do
   include Carto::Factories::Visualizations

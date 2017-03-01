@@ -3,15 +3,15 @@
 main() {
     port=$((6000 + $2))
     # Run the rspec
-    echo ZEUSSOCK=".zeus$port.sock" bundle exec zeus rspec -J#$3 $1
+    ZEUSSOCK=".zeus$port.sock" bundle exec zeus rspec -J#$3 $1
 
     # Give some feedback
     if [ $? -eq 0 ]; then
       echo "Finished: $1 Port: $port";
-      echo "$1" >> specsuccess.log;
+      echo "$1" >> parallel_tests/specsuccess.log;
     else
       echo "Finished (FAILED): $1 Port: $port";
-      echo "$1" >> specfailed.log;
+      echo "$1" >> parallel_tests/specfailed.log;
     fi
 }
 

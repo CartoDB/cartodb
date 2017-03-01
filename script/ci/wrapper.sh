@@ -12,9 +12,9 @@ do
     owner=$(psql -U $dbAdmin -t -c "select r.rolname from pg_database d, pg_roles r where d.datname='carto_db_test' and d.datdba = r.oid")
     newDatabase="${databaseName}_${i}";
     # Create the database with specific owner and template
-    $(psql -U $dbAdmin -t -c "create database $newDatabase with owner $owner template $databaseName;") >> wrapper.log 2>&1
+    $(psql -U $dbAdmin -t -c "create database $newDatabase with owner $owner template $databaseName;") >> parallel_tests/wrapper.log 2>&1
     # Create the database.yml file
-    echo "# Creating database_$i.yml file" >> wrapper.log 2>&1
+    echo "# Creating database_$i.yml file" >> parallel_tests/wrapper.log 2>&1
     sed -e s/carto_db_test/carto_db_test_$i/g config/database.yml.sample > config/database_$i.yml
 done
 
@@ -25,6 +25,6 @@ do
   TURBO=1 ZEUSSOCK=".zeus$i.sock" RAILS_DATABASE_FILE=database_$i.yml REDIS_PORT=$i bundle exec zeus start >/dev/null 2>/dev/null &
 done
 
-touch specfailed.log
-touch specsuccess.log
+touch parallel_tests/specfailed.log
+touch parallel_tests/specsuccess.log
 echo "# Wrapper finished"

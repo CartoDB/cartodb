@@ -1,5 +1,3 @@
-<div class="LayerOnboarding-toolbarOverlay"></div>
-
 <div class="LayerOnboarding-pads LayerOnboarding-pads--left">
   <div class="LayerOnboarding-padTop"></div>
   <div class="LayerOnboarding-padMiddle"></div>

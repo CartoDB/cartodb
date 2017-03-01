@@ -184,9 +184,13 @@ $sHighlightHeight: 64;
 .LayerOnboarding-pads {
   width: $sEditorWidth;
 }
-
 .LayerOnboarding-toolbarOverlay {
   width: $sToolbarWidth;
+}
+.LayerOnboarding--styleGeoreference {
+  .LayerOnboarding-pads {
+    width: $sEditorWidth + $sToolbarWidth;
+  }
 }
 
 .LayerOnboarding-widgetsOverlay {

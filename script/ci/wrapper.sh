@@ -16,9 +16,13 @@ do
     # Create the database.yml file
     echo "# Creating database_$i.yml file" >> wrapper.log 2>&1
     sed -e s/carto_db_test/carto_db_test_$i/g config/database.yml.sample > config/database_$i.yml
+done
 
-    # Start Zeus server
-    ZEUSSOCK=".zeus$i.sock" RAILS_DATABASE_FILE=database_$i.yml REDIS_PORT=$i bundle exec zeus start >/dev/null 2>/dev/null &
+sleep 5
+for i in $(seq $startPort $lastPort)
+do
+  # Start Zeus server
+  ZEUSSOCK=".zeus$i.sock" RAILS_DATABASE_FILE=database_$i.yml REDIS_PORT=$i bundle exec zeus start >/dev/null 2>/dev/null &
 done
 
 touch specfailed.log

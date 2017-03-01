@@ -107,7 +107,7 @@
       "short-description": "Use these options to style your data in beautiful ways."
     },
     "georeference": {
-      "title": "The layer <strong>%{name}</strong> include non-georeferenced data.",
+      "title": "The layer <strong>%{name}</strong> includes non-georeferenced data.",
       "description": "For this data to appear, please perform a georeference analysis to get the needed geographical information.",
       "skip": "Skip",
       "georeference": "Georeference data"
@@ -1421,7 +1421,12 @@
     },
     "tab-pane": {
       "layers": {
-        "title-label": "Layers"
+        "title-label": "Layers",
+        "georeference": {
+          "title": "Layer not georeferenced",
+          "body": "The layer <strong>%{name}</strong> include non-georeferenced data. Please georeference or manually add data to visualize",
+          "show": "Georeference"
+        }
       },
       "elements": {
         "title-label": "Elements"

@@ -57,25 +57,25 @@
     "next": "next"
   },
   "data-onboarding": {
-    "title": "Welcome to layer view",
-    "description": "Analyze and style your data and enhance it with pop-ups and&nbsp;legends.",
+    "title": "Welcome to the layer pane",
+    "description": "Analyze, style, and enhance your data with pop-ups and&nbsp;legends.",
     "take-tour": "Take the tour",
     "edit-layer": "Edit layer",
     "layer-options": {
       "title": "Layer options",
-      "description": "Layers can be renamed by double clicking on the layer name, centered by clicking in the crosshair, and exported through their contextual menu."
+      "description": "Layers can be renamed by double-clicking on the layer name, centered by clicking in the crosshair, and exported through their contextual menu."
     },
     "data-tab": {
       "title": "Data tab",
-      "description": "Style, and add analysis, pop-ups, and legends to layers. To further explore your data add widgets."
+      "description": "Style, add analysis, pop-ups, and legends to layers. To further explore your data, add widgets."
     },
     "sql-editor": {
-      "title": "SQL Editor",
-      "description": "Data layers can be edited and processed by using the SQL viewer at the bottom of the screen."
+      "title": "SQL View",
+      "description": "Data layers can be edited and processed by using the SQL view at the bottom of the screen."
     },
     "add-geometry": {
       "title": "Add geometries and switch to dataset view",
-      "description": "You can switch between map or table view. In map view, you can add points, lines, and polygons.",
+      "description": "You can switch between map or data view. In map view, you can add points, lines, and polygons.",
       "edit-layer": "Edit layer"
     },
     "exit": "Exit tour",
@@ -99,7 +99,7 @@
     "description": "Apply aggregation styling to maps and define options by geometry attributes or by a column value.",
     "aggregation": {
       "title": "How would you like to aggregate your data?",
-      "description": "Map types are called \"Aggregation\". Add Torque, heat map, and other aggregation styles to data."
+      "description": "Map types are called \"Aggregation\". Add Torque, Heatmap, and other aggregation styles to data."
     },
     "style": {
       "title": "Make it beautiful!",
@@ -114,7 +114,7 @@
     },
     "cartocss": {
       "title": "Dress it up with CartoCSS",
-      "description": "Further style data by using the CartoCSS editor at the bottom of the screen."
+      "description": "Further style data by using the CartoCSS view at the bottom of the screen."
     },
     "take-tour": "Take the tour",
     "style-layer": "Style layer",

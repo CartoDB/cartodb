@@ -100,6 +100,7 @@ Development
 * Color scheme is now clickable in category ramps (#11413)
 * Fix responsive layout in onboarding steps (#11444)
 * Correctly create custom category legend if style has icons (#11592)
+* Fix problem with perfect-scrollbar in Edge browsers (CartoDB/perfect-scrollbar/#2)
 
 4.0.x (2016-12-05)
 ------------------

@@ -96,7 +96,7 @@ class Table
   end
 
   def update(args)
-    # Sequel and ActiveRecord #update doesn't behave equal, we need this workaround for compatibility reasons
+    # Sequel and ActiveRecord #update don't behave equally, we need this workaround for compatibility reasons
     if @user_table.is_a?(Carto::UserTable)
       @user_table.update_attributes(args)
     else

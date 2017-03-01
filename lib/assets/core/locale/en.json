@@ -54,20 +54,80 @@
       "description": "The widgets you add to your map appear directly on your visualization."
     },
     "skip": "skip",
-    "next": "next",
+    "next": "next"
+  },
+  "data-onboarding": {
+    "title": "Welcome to the layer pane",
+    "description": "Analyze, style, and enhance your data with pop-ups and&nbsp;legends.",
+    "take-tour": "Take the tour",
+    "edit-layer": "Edit layer",
+    "layer-options": {
+      "title": "Layer options",
+      "description": "Layers can be renamed by double-clicking on the layer name, centered by clicking in the crosshair, and exported through their contextual menu."
+    },
+    "data-tab": {
+      "title": "Data tab",
+      "description": "Style, add analysis, pop-ups, and legends to layers. To further explore your data, add widgets."
+    },
+    "sql-editor": {
+      "title": "SQL View",
+      "description": "Data layers can be edited and processed by using the SQL view at the bottom of the screen."
+    },
+    "add-geometry": {
+      "title": "Add geometries and switch to dataset view",
+      "description": "You can switch between map or data view. In map view, you can add points, lines, and polygons.",
+      "edit-layer": "Edit layer"
+    },
+    "exit": "Exit tour",
+    "next": "Next"
+  },
+  "analysis-onboarding": {
+    "title": "The Art of Analysis",
+    "description": "Build reproducible workflows for analyzing and explaining your data. Analyses turn your maps into Location Intelligence apps.",
+    "description-list": {
+      "item1": "Different analyses can be chained",
+      "item2": "Analyses are dynamic. When the data changes, the analysis is&nbsp;refreshed.",
+      "item3": "The original data is not modified by the analysis workflow.",
+      "item4": "Some analysis queries add calculated results to columns in your dataset."
+    },
+    "done": "Done",
+    "add-analysis": "Add analysis",
+    "never-show-message": "Don't show me this again."
+  },
+  "style-onboarding": {
+    "title": "Style this map!",
+    "description": "Apply aggregation styling to maps and define options by geometry attributes or by a column value.",
+    "aggregation": {
+      "title": "How would you like to aggregate your data?",
+      "description": "Map types are called \"Aggregation\". Add Torque, Heatmap, and other aggregation styles to data."
+    },
+    "style": {
+      "title": "Make it beautiful!",
+      "description": "Use these options to style your data in beautiful ways. For example, you can create thematic maps by altering the FILL option by value.",
+      "short-description": "Use these options to style your data in beautiful ways."
+    },
+    "cartocss": {
+      "title": "Dress it up with CartoCSS",
+      "description": "Further style data by using the CartoCSS view at the bottom of the screen."
+    },
+    "take-tour": "Take the tour",
+    "style-layer": "Style layer",
+    "never-show-message": "Don't show me this again.",
+    "exit": "Exit tour",
+    "next": "Next"
   },
   "analyses-onboarding": {
     "placeholders": {
       "layer-name": "NAME OF THE LAYER",
       "clusters": "CLUSTERS",
       "method": "METHOD",
-      "percentage": "PERCENTAGE",
+      "percentage": "PERCENTAGE"
     },
     "done": "Done",
     "finished": "has finished",
     "style-analysis": "Style this analysis",
     "read-more": "Read more in documentation",
-    "never-show-message": "Never show me this message.",
+    "never-show-message": "Don't show me this again.",
     "no-new-columns": "No new columns were created.",
     "geometries-updated": "The geometries in your table were updated",
     "new-column-added": "A new column has been added to your dataset.",
@@ -98,7 +158,6 @@
       "description": "This operation performs a spatial intersection and aggregates the geometry values from the target layer that intersect with the geometry of the source layer.",
       "count-vals-density": "This column is added if COUNT was chosen as the aggregation operation",
       "extra-column": "This column is added if {operation_type} is chosen with column {column_name}"
-
     },
     "filter": {
       "title": "Row filtering",
@@ -764,7 +823,8 @@
         "upload-file": "Upload file",
         "upload-asset": "Upload asset",
         "upload-image": "Upload your image",
-        "your-uploads": "Your uploads"
+        "your-uploads": "Your uploads",
+        "organization-uploads": "Organization uploads"
       },
       "add-analysis": {
         "modal-title": "Add a new analysis",
@@ -1411,7 +1471,8 @@
         "heatmap": "Pixel",
         "analysis": "Analysis",
         "add-analysis": "Add analysis",
-        "analyses-count": "(%{smart_count}) Analysis |||| (%{smart_count}) Analyses",
+        "analyses-count": "%{smart_count} Analysis |||| %{smart_count} Analyses",
+        "widgets-count": "%{smart_count} Widget |||| %{smart_count} Widgets",
         "add-layer": "Add layer",
         "delete": "Delete",
         "cancel-delete-analysis": "Cancel"
@@ -1445,6 +1506,9 @@
       "image": {
         "title-label": "Image"
       },
+      "gmaps": {
+        "title-label": "Google Maps"
+      },
       "menu-tab-pane-labels": {
         "data": "Data",
         "analyses": "Analysis",
@@ -1462,7 +1526,6 @@
           "inner": "Returns the result of #1 intersecting #2 (i.e. the inner part of a Venn diagram intersection)"
         },
         "admin-region": "Admin. Region",
-        "admin-region-help": "In which column are your region names stored?",
         "aggregate": "Aggregate",
         "aggregate-by": "Aggregate by",
         "aggregate-by-help": "Will calculate aggregate values for each centroid",
@@ -1484,7 +1547,6 @@
         "categorize-by-help": "If selected a centroid will be found for each category",
         "category-column": "Category column",
         "city": "City",
-        "city-help": "In which column are your city names stored?",
         "clusters-num": "# of clusters",
         "column": "Column",
         "columns": "Columns",
@@ -1492,7 +1554,6 @@
         "confirm-analysis": "Confirm",
         "convex-hull": "Convex Hull",
         "country": "Country",
-        "country-help": "In which column are your country names stored?",
         "create-btn": "Apply",
         "data-observatory-measurement-area": "Country",
         "data-observatory-measurement-column": "New col. name",
@@ -1503,7 +1564,6 @@
         "data-observatory-measurement-segments": "Segments",
         "define-columns": "Define column to find similarities with",
         "define-reference-and-target": "Define reference and target layers",
-        "define-two-layers": "Define two layers",
         "define-two-layers": "Define two layers",
         "denominator": "Denominator",
         "denominator-help": "A column to normalize the target column",
@@ -1520,15 +1580,42 @@
         "filter-column": "2nd. layer col.",
         "filter-column": "Filter column",
         "foreign-keys": "Foreign Keys",
-        "foreign-keys": "Foreign Keys",
         "geometry-from": "Geometry from",
-        "georeference-admin-region": "Admin. Regions",
-        "georeference-city": "City names",
-        "georeference-country": "Country names",
-        "georeference-ip-address": "IP Addresses",
-        "georeference-long-lat": "Lon/Lat Columns",
-        "georeference-postal-code": "Postal Codes",
-        "georeference-street-address": "Street Addresses",
+        "georeference": {
+          "postal-code-help": "Select a column with postal codes",
+          "admin-region-help": "Select a column with region names",
+          "admin-region-extended-help": "Specify an admin. region or select a column with region names",
+          "admin-region": "Admin. Regions",
+          "city-help": "Select a column with city names",
+          "city-extended-help": "Specify a city or select a column with city names",
+          "city": "Cities",
+          "country-help": "Select a column with country names",
+          "country-extended-help": "Specify a country or select a column with country names",
+          "country": "Countries",
+          "enter-city-name": "Or enter city name",
+          "enter-country-name": "Or enter country name",
+          "enter-region-name": "Or enter region name",
+          "enter-state-name": "Or enter state name",
+          "ip-address-column": "IP Address",
+          "ip-address-help": "Select a column with IP addresses",
+          "ip-address": "IP Addresses",
+          "long-lat": "Longitude and Latitude",
+          "postal-code": "Postal Codes",
+          "select-a-country": "Select a country column",
+          "select-admin": "Select a region column",
+          "select-city": "Select a city column",
+          "select-country": "Select country column",
+          "select-ip": "Select an IP column",
+          "select-latitude": "Select a latitude column",
+          "select-longitude": "Select a longitude column",
+          "select-postal-code": "Select a postal code column",
+          "select-state": "Select state column",
+          "select-street-address": "Select an address column",
+          "state-help": "Specify a state or select a column with state names",
+          "street-address-column": "Street Address",
+          "street-address-help": "Select a column with street addresses",
+          "street-address": "Street Addresses"
+        },
         "group-by": "Group by",
         "hide": "Hide",
         "inner": "Inner",
@@ -1537,8 +1624,6 @@
         "input-num": "Input #%{num}",
         "intact": "Intact",
         "intact-help": "Keep all polygon tracts as individual polygons",
-        "ip-address": "Col. IP AD.",
-        "ip-address-help": "In which column are your IP addresses stored?",
         "join-type": "Join Type",
         "keep-columns": "Select the columns you want to keep",
         "key-columns": "Key columns",
@@ -1579,7 +1664,6 @@
         "points_source": "Point source",
         "polygons_source": "Polygon source",
         "postal-code": "Postal Code",
-        "postal-code-help": "In which column are your postal codes stored?",
         "quota": {
           "title": "confirm your analysis",
           "loading": "Obtaining your quotas...",
@@ -1608,8 +1692,10 @@
         "sampling": "Sampling",
         "sampling-desc": "Select a sample of the data",
         "sampling-rate": "% of data ",
+        "search-by-column-name": "Search by column name",
         "second-geom-required": "This analysis requires a second geometry column",
         "select-column": "Select a column",
+        "select-type": "Select data type",
         "setup-analysis": "Setup analysis",
         "show": "Show",
         "significance": "Significance",
@@ -1621,9 +1707,6 @@
         "spatial-markov-trend-time-columns": "Input columns",
         "spatial-markov-trend-time-columns-help": "Each column should contain values for a time period",
         "state": "State",
-        "state-help": "In which column are your state names stored?",
-        "street-address": "COL. Street AD.",
-        "street-address-help": "In which column are your street addresses stored?",
         "target": "Target",
         "target-layer": "Target layer",
         "intersection-layer": "Intersect layer",
@@ -1886,8 +1969,8 @@
         "cartocss-applied": {
           "title": "CARTOCSS APPLIED",
           "body": "You just applied styles with CartoCSS editor. You can continue or clear all styles.",
-          "accept": "CONTINUE",
-          "cancel": "CLEAR"
+          "continue": "CONTINUE",
+          "clear": "CLEAR"
         },
         "layer-hidden": {
           "title": "LAYER HIDDEN",
@@ -1897,7 +1980,7 @@
         "torque-exists": {
           "title": "TORQUE LAYER",
           "body": "There is already a torque layer in the layers collection. If you continue, this layer will get the default style.",
-          "accept": "CONTINUE",
+          "continue": "CONTINUE",
           "cancel": "CANCEL"
         },
       },
@@ -2048,18 +2131,18 @@
           "operation-column": "operation column"
         },
         "style": {
-          "title-label": "Behavior",
-          "description": "Apply style to your visualization",
-          "sync_on_data_change": "Unfiltered",
-          "sync_on_bbox_change": "Dynamic",
-          "fill": "Fill",
-          "custom-ramp": "Custom ramp",
           "custom-categories": "Custom categ.",
-          "custom-help": "Represent the widget's values with custom colors in the map",
           "custom-disabled": "If an aggregated style is applied, auto style is disabled",
-          "description": "Define how your widget interacts with the data",
-          "yes": "Yes",
-          "no": "No"
+          "custom-help": "Represent the widget's values with custom colors in the map",
+          "custom-ramp": "Custom ramp",
+          "define": "Define how your widget interacts with the data",
+          "description": "Description",
+          "fill": "Fill",
+          "no": "No",
+          "sync_on_bbox_change": "Dynamic",
+          "sync_on_data_change": "Unfiltered",
+          "title-label": "Behavior",
+          "yes": "Yes"
         }
       }
     },
@@ -2069,6 +2152,8 @@
         "line": "line",
         "polygon": "polygon"
       },
+      "loading-state": "Requesting feature data...",
+      "error-state": "There was an error requesting feature data",
       "overlay-text": "Start clicking on the map to draw your %{featureType}",
       "add": "Add",
       "save": "Save",
@@ -2130,11 +2215,11 @@
       "added": "Layer added successfully"
     },
     "cartocss": {
-        "error": {
-          "body": "%{body} %{error}",
-          "title": "Error in CartoCSS styles:"
-        },
-        "success": "CartoCSS applied"
+      "error": {
+        "body": "%{body} %{error}",
+        "title": "Error in CartoCSS styles:"
+      },
+      "success": "CartoCSS applied"
     },
     "sql": {
       "alter-loading": "Modifying table…",
@@ -2147,20 +2232,24 @@
       "success": "SQL query applied"
     },
     "edit-feature": {
+      "edit": {
+        "loading": "Requesting geometry data...",
+        "error": "There was an error requesting geometry data"
+      },
       "error": {
         "body": "%{body} %{error}"
       },
       "destroy": {
-        "loading": "Deleting feature…",
-        "error": "Error deleting feature",
-        "success": "Feature deleted correctly"
+        "loading": "Deleting geometry…",
+        "error": "Error deleting geometry",
+        "success": "Geometry deleted correctly"
       },
       "save": {
-        "loading": "Saving feature…",
-        "error": "Error saving feature",
-        "success": "Feature successfully saved"
+        "loading": "Saving geometry…",
+        "error": "Error saving geometry",
+        "success": "Geometry successfully saved"
       },
-      "adding": "Adding feature…",
+      "adding": "Adding geometry…",
     }
   }
 }

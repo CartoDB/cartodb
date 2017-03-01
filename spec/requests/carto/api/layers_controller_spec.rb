@@ -103,8 +103,8 @@ describe Carto::Api::LayersController do
 
       it 'does not allow to exceed max_layers' do
         @map, @table, @table_visualization, @visualization = create_full_visualization(@carto_user1)
-        @carto_user1.max_layers = 1
-        @carto_user1.save
+        @user1.max_layers = 1
+        @user1.save
 
         post_json create_map_layer_url(@map.id), layer_json.merge(kind: 'tiled', order: 10) do |response|
           response.status.to_s.should match /4../ # 422 in new, 403 in old

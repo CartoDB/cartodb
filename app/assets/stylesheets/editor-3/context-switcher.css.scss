@@ -81,7 +81,7 @@
   }
 
 }
-@media (max-width: $reponsiveWidth) {
+@media (max-width: $sViewport-xl) {
   .Editor-contextSwitcher.is-moved {
     right: 28px;
     bottom: 222px;
@@ -96,7 +96,7 @@
     bottom: 364px;
   }
 }
-@media (max-width: $reponsiveWidth) {
+@media (max-width: $sViewport-xl) {
   .Editor-contextSwitcher.in-table {
     right: 16px;
     bottom: 16px;

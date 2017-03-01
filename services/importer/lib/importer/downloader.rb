@@ -65,8 +65,13 @@ module CartoDB
         @translated_url = translate_url(url)
         @http_options = http_options
         @options = options
+        @cleanup_paths = []
 
         @downloaded_bytes = 0
+      end
+
+      def clean_up
+        @cleanup_paths.each { |fp| FileUtils.safe_unlink(fp) }
       end
 
       def run(_available_quota_in_bytes = nil)
@@ -228,6 +233,9 @@ module CartoDB
                     end
 
         @source_file = SourceFile.new(file_path, @filename)
+        @cleanup_paths << file_path
+
+        @source_file
       ensure
         file.close
         file.unlink

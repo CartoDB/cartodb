@@ -13,15 +13,16 @@ module Carto
         before_filter :load_vizjson,
                       :load_state, only: [:show, :show_protected]
         before_filter :ensure_viewable, only: [:show]
-        before_filter :ensure_protected_viewable, only: [:show_protected]
-        before_filter :load_auth_tokens, only: [:show, :show_protected]
+        before_filter :ensure_protected_viewable,
+                      :load_auth_tokens,
+                      :load_google_maps_qs, only: [:show, :show_protected]
 
         skip_before_filter :builder_users_only # This is supposed to be public even in beta
 
         layout false
 
         def show
-          @layers_data = @visualization.layers.map do |l|
+          @layers_data = visualization_for_presentation.layers.map do |l|
             Carto::Api::LayerPresenter.new(l).to_embed_poro
           end
 
@@ -50,7 +51,13 @@ module Carto
                            @visualization.get_auth_tokens
                          elsif @visualization.is_privacy_private?
                            current_viewer ? current_viewer.get_auth_tokens : []
+                         else
+                           []
                          end
+        end
+
+        def load_google_maps_qs
+          @google_maps_qs = @visualization.user.google_maps_query_string
         end
 
         def load_vizjson

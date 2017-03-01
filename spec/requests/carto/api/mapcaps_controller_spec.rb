@@ -27,6 +27,7 @@ describe Carto::Api::MapcapsController do
   after(:all) do
     Carto::FeatureFlag.destroy_all
 
+    @torque_layer.destroy
     destroy_full_visualization(@map, @table, @table_visualization, @visualization)
 
     @user.destroy
@@ -81,7 +82,17 @@ describe Carto::Api::MapcapsController do
     end
 
     it 'triggers autoindex regeneration' do
-      Carto::Visualization.any_instance.stubs(:auto_generate_indices_for_all_layers).once
+      ::Resque.expects(:enqueue).with(::Resque::UserDBJobs::UserDBMaintenance::AutoIndexTable, @table.id).once
+      post_json create_mapcap_url, {} do |response|
+        response.status.should eq 201
+
+        mapcap_should_be_correct(response.body)
+      end
+    end
+
+    it 'triggers autoindex regeneration for torque layers' do
+      @map.data_layers.first.update_attribute(:kind, 'torque')
+      ::Resque.expects(:enqueue).with(::Resque::UserDBJobs::UserDBMaintenance::AutoIndexTable, @table.id).once
       post_json create_mapcap_url, {} do |response|
         response.status.should eq 201
 

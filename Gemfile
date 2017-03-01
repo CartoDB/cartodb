@@ -79,6 +79,8 @@ gem 'rollbar',               '~>2.11.1'
 gem 'resque',                '1.25.2'
 gem 'resque-metrics',        '0.1.1'
 
+gem 'net-telnet'
+
 # This is weird. In ruby 2 test-unit is required. We don't know why for sure
 gem 'test-unit'
 
@@ -87,7 +89,7 @@ group :test do
   gem 'simplecov-json'
   gem 'simplecov-rcov'
   gem 'db-query-matchers',     '0.4.0'
-  gem 'rack-test',             '0.6.2',  require: 'rack/test'
+  gem 'rack-test',             '0.6.3',  require: 'rack/test'
   gem 'factory_girl_rails',    '~> 4.0.0'
   gem 'selenium-webdriver',    '>= 2.5.0'
   gem 'capybara',              '1.1.2'

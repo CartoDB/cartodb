@@ -12,12 +12,7 @@
   right: 0;
   min-width: 246px;
   max-width: 272px;
-  visibility: hidden;
   z-index: 100;
-
-  &.has-visibility {
-    visibility: visible;
-  }
 }
 .CustomList--small {
   width: 215px;
@@ -38,7 +33,7 @@
 .CustomList-list {
   position: relative;
   width: 100%;
-  max-height: 185px;
+  max-height: 168px;
   overflow: hidden;
 }
 .CustomList-list.is-customized .CustomList-item--add {
@@ -110,18 +105,20 @@
 .CDB-ListDecoration-rampItemBar {
   width: 20px;
 }
-.CustomList-list--visible.ps-container > .ps-scrollbar-y-rail {
+// Custom scroll styles
+.CustomList-list.ps-container > .ps-scrollbar-x-rail,
+.CustomList-list.ps-container > .ps-scrollbar-y-rail {
   @include opacity(0.8);
   display: block;
-  margin-right: 2px;
   background: none;
 }
-.CustomList-list--visible.ps-container>.ps-scrollbar-y-rail>.ps-scrollbar-y {
-  min-height: 16px;
+.CustomList-list.ps-container > .ps-scrollbar-y,
+.CustomList-list.ps-container > .ps-scrollbar-y-rail {
+  width: 4px;
 }
-.Editor-panel .CustomList-list--visible .ps-scrollbar-y,
-.Editor-panel .CustomList-list--visible .ps-scrollbar-y-rail,
-.Table-columnMenu .CustomList-list--visible .ps-scrollbar-y,
-.Table-columnMenu .CustomList-list--visible .ps-scrollbar-y-rail {
-  width: 4px !important;
+.CustomList-list.ps-container > .ps-scrollbar-y-rail {
+  margin-right: 2px;
+}
+.CustomList-list.ps-container > .ps-scrollbar-x-rail {
+  margin-bottom: 2px;
 }

@@ -53,6 +53,8 @@ describe 'SHP regression tests' do
                                user: @user
                              })
     runner.run
+    puts runner.log
+    Rails.logger.info runner.log
 
     geometry_type_for(runner, @user).should eq "MULTIPOLYGON"
     job = runner.send(:job)

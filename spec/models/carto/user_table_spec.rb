@@ -10,7 +10,11 @@ describe Carto::UserTable do
 
     @user = FactoryGirl.create(:carto_user)
     @carto_user = @user
-    @user_table = Carto::UserTable.new(user: @user, name: unique_name('user_table'))
+
+    @user_table = Carto::UserTable.new
+    @user_table.user = @user
+    @user_table.name = unique_name('user_table')
+    @user_table.save
 
     # The dependent visualization models are in the UserTable class for the AR model
     @dependent_test_object = @user_table
@@ -23,7 +27,9 @@ describe Carto::UserTable do
 
   it_behaves_like 'user table models' do
     def build_user_table(attrs = {})
-      Carto::UserTable.new(attrs)
+      ut = Carto::UserTable.new
+      ut.assign_attributes(attrs, without_protection: true)
+      ut
     end
   end
 
@@ -49,6 +55,31 @@ describe Carto::UserTable do
       share_table_with_user(@table, @org_user_2)
 
       user_table.readable_by?(@carto_org_user_2).should be_true
+    end
+  end
+
+  describe('#affected_visualizations') do
+    before(:each) do
+      # We recreate an inconsistent state where a layer has no visualization
+      @user_table.stubs(:layers).returns([Carto::Layer.new])
+    end
+
+    describe('#fully_dependent_visualizations') do
+      it 'resists layers without visualizations' do
+        expect { @user_table.fully_dependent_visualizations }.to_not raise_error
+      end
+    end
+
+    describe('#accessible_dependent_derived_maps') do
+      it 'resists layers without visualizations' do
+        expect { @user_table.accessible_dependent_derived_maps }.to_not raise_error
+      end
+    end
+
+    describe('#partially_dependent_visualizations') do
+      it 'resists layers without visualizations' do
+        expect { @user_table.partially_dependent_visualizations }.to_not raise_error
+      end
     end
   end
 end

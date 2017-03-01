@@ -3,8 +3,7 @@
 main() {
     port=$((6000 + $2))
     # Run the rspec
-    ZEUSSOCK=".zeus$port.sock" bundle exec zeus rspec $1 >> $port.log 2>&1;
-    #RAILS_ENV=test PARALLEL=true RAILS_DATABASE_FILE=database_${2}.yml REDIS_PORT=$port bundle exec rspec --require ./spec/rspec_configuration.rb $1 >> $port.log 2>&1;
+    echo ZEUSSOCK=".zeus$port.sock" bundle exec zeus rspec -J#$3 $1
 
     # Give some feedback
     if [ $? -eq 0 ]; then
@@ -17,5 +16,5 @@ main() {
 }
 
 # Init
-main $1 $2;
+main $1 $2 $3;
 exit 0;

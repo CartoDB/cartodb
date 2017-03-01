@@ -31,6 +31,11 @@ class CustomPlan < Zeus::Rails
   end
 
   def test
+    if ENV['TURBO']
+      job_index = ARGV.find { |i| i.starts_with?('-J#') }
+      job_id = ARGV.delete(job_index).split('#')[1] if job_index
+      ENV['PARALLEL_SEQ'] = job_id || Process.pid.to_s
+    end
     Rails::Sequel.connection.disconnect
 
     exit super

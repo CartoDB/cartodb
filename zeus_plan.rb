@@ -34,7 +34,7 @@ class CustomPlan < Zeus::Rails
     ENV['CHECK_SPEC'] = Process.pid.to_s if ENV['TURBO']
     Rails::Sequel.connection.disconnect
 
-    super
+    exit super
   end
 
   def carto_user_dbconsole

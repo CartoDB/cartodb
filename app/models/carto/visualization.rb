@@ -582,7 +582,6 @@ class Carto::Visualization < ActiveRecord::Base
     end
   end
 
-  # @param table Table
   def propagate_name
     table.reload # Needed to avoid double renames
     table.register_table_only = register_table_only
@@ -717,7 +716,10 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def save_named_map_or_rollback_privacy
-    if !save_named_map && privacy_changed?
+    unless save_named_map
+      # Explicitly set privacy to its previous value so the hooks run and the user db permissions are updated
+      # TODO: It would be better to raise an exception to rollback the transaction, but that can break renames
+      # as we don't explicitly rollback those in the user database. Consider an `after_rollback` hook in user table?
       self.privacy = privacy_was
       save
     end

@@ -5,14 +5,15 @@ module Carto
       esv = user_table.external_source_visualization
       user = user_table.user
 
-      # Map must be saved before layers, so register_table_dependencies is correctly called after adding each layer
+      # Map must be saved before layers, so register_table_dependencies is called after adding each layer
       # to the map. There are several reloads in this process, since the layers<->maps relation is not synchronized
       # with inverse_of (not supported in Rails, for has_many through relations).
       layers = build_canonical_layers(user_table)
+      base_layers = layers.select(&:basemap?)
 
       visualization = Carto::Visualization.new(
         name: user_table.name,
-        map: build_canonical_map(user, layers.first),
+        map: build_canonical_map(user, base_layers.first),
         type: Carto::Visualization::TYPE_CANONICAL,
         description: user_table.description,
         attributions: esv.try(:attributions),

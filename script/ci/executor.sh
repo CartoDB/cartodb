@@ -3,7 +3,7 @@
 main() {
     port=$((6000 + $2))
     # Run the rspec
-    ZEUSSOCK=".zeus$port.sock" bundle exec zeus rspec -J#$3 $1
+    ZEUSSOCK=".zeus$port.sock" bundle exec zeus rspec -J#$3 $1 >> $port.log 2>&1;
 
     # Give some feedback
     if [ $? -eq 0 ]; then

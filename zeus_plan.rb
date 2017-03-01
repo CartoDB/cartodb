@@ -31,7 +31,6 @@ class CustomPlan < Zeus::Rails
   end
 
   def test
-    ENV['CHECK_SPEC'] = Process.pid.to_s if ENV['TURBO']
     Rails::Sequel.connection.disconnect
 
     exit super

@@ -22,7 +22,7 @@ sleep 5
 for i in $(seq $startPort $lastPort)
 do
   # Start Zeus server
-  ZEUSSOCK=".zeus$i.sock" RAILS_DATABASE_FILE=database_$i.yml REDIS_PORT=$i bundle exec zeus start >/dev/null 2>/dev/null &
+  TURBO=1 ZEUSSOCK=".zeus$i.sock" RAILS_DATABASE_FILE=database_$i.yml REDIS_PORT=$i bundle exec zeus start >/dev/null 2>/dev/null &
 done
 
 touch specfailed.log

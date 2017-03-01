@@ -118,6 +118,7 @@ group :development, :test do
   gem 'rb-readline'
   gem 'byebug'
   gem 'rack'
+  gem 'zeus'
 
   # Server
   gem 'thin',                           require: false

@@ -5,7 +5,7 @@
 @import "../variables/colors";
 @import "../variables/sizes";
 
-$height: 71px;
+$height: 40px;
 $cHeader-light: rgba(#61AEEC, 1);
 $cHeader-dark:  rgba(#3A91D7, 1);
 
@@ -49,6 +49,32 @@ $cHeader-dark:  rgba(#3A91D7, 1);
 .Header-navigationItem {
   margin-left: $sMargin-section;
 }
+.Header-navigationToggles {
+  padding: 6px 7px 6px 6px;
+  border-right: 1px solid #000000;
+  display: flex;
+}
+.Header-navigationToggleItem {
+  background: #444444;
+  padding: 3px 0 3px 0;
+  width: 93px;
+  display: inline-block;
+  text-align: center;
+  cursor: pointer;
+  border: 1px solid #000000;
+  &.selected {
+    background: #005AB5;
+    color: white;
+  }
+  &:first-child {
+    border-right: none;
+  }
+  & a {
+    color: #d8d8d8;
+    display: block;
+    width: 100%;
+  }
+}
 .Header-navigationLink {
   font-weight: $sFontWeight-normal;
   font-size: $sFontSize-smallUpperCase;
@@ -82,7 +108,7 @@ $cHeader-dark:  rgba(#3A91D7, 1);
     }
   }
 }
-.Header-settings { height: 70px }
+.Header-settings { height: 40px }
 .Header-settingsList {
   height: 100%;
   @include display-flex();

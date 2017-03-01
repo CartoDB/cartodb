@@ -66,7 +66,7 @@ module CartoDB
               if visualization.update_remote_data(
                   Member::PRIVACY_PUBLIC,
                   dataset['description'], dataset['tags'], dataset['license'],
-                  dataset['source'], dataset['attributions'], dataset['display_name'], dataset['exportable'], dataset['export_geom'])
+                  dataset['source'], dataset['attributions'], dataset['display_name'], dataset['exportable'], dataset['export_geom'], dataset['category'])
                 visualization.store
                 updated += 1
               else
@@ -76,7 +76,7 @@ module CartoDB
               visualization = Member.remote_member(
                 dataset['name'], user.id, Member::PRIVACY_PUBLIC,
                 dataset['description'], dataset['tags'], dataset['license'],
-                dataset['source'], dataset['attributions'], dataset['display_name'], dataset['exportable'], dataset['export_geom']).store
+                dataset['source'], dataset['attributions'], dataset['display_name'], dataset['exportable'], dataset['export_geom'], dataset['category']).store
               added += 1
             end
 

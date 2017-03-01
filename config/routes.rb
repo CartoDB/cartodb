@@ -151,6 +151,8 @@ CartoDB::Application.routes.draw do
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/library/:page'                => 'visualizations#index', as: :datasets_library_page
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/library/tag/:tag'             => 'visualizations#index', as: :datasets_library_tag
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/library/tag/:tag/:page'       => 'visualizations#index', as: :datasets_library_tag_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/imported'                     => 'visualizations#index', as: :datasets_imported
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/category/:cat'                => 'visualizations#index', as: :datasets_category_cat
 
     # Tables search
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/tables/search/:q'                    => 'visualizations#index', as: :tables_search
@@ -327,6 +329,7 @@ CartoDB::Application.routes.draw do
     # Visualizations
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/viz'                                => 'visualizations#index',           as: :api_v1_visualizations_index
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/search'                         => 'visualizations#search',          as: :api_v1_visualizations_search
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/subcategories'                  => 'visualizations#subcategories',   as: :api_v1_visualizations_subcategories
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id'                            => 'visualizations#show',            as: :api_v1_visualizations_show,            constraints: { id: /[^\/]+/ }
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/likes'                      => 'visualizations#likes_count',     as: :api_v1_visualizations_likes_count,     constraints: { id: /[^\/]+/ }
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/likes/detailed'             => 'visualizations#likes_list',      as: :api_v1_visualizations_likes_list,      constraints: { id: /[^\/]+/ }

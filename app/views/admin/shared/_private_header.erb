@@ -1,20 +1,10 @@
 <div class="Header" id="header">
   <div class="u-inner Header-inner">
     <div class="Header-navigation">
-      <ul class="Header-navigationList">
-        <li class="js-logo">
-          <a href="<%= root_url %>">
-            <span class="Logo Logo--avatar">
-              <i class="CDB-IconFont CDB-IconFont-cartoFante"></i>
-            </span>
-          </a>
-        </li>
-        <li>
-          <ul class="Header-navigationBreadcrumb">
-            <li class="Header-navigationBreadcrumbItem js-breadcrumb-dropdown"></li>
-          </ul>
-        </li>
-      </ul>
+      <nav class="Header-navigationToggles">
+        <div class="Header-navigationToggleItem maps"><a href="<%= CartoDB.url(self, 'maps_index') %>">Maps</a></div>
+        <div class="Header-navigationToggleItem datasets"><a href="<%= CartoDB.url(self, 'datasets_index') %>">Datasets</a></div>
+      </nav>
     </div>
     <div class="Header-settings">
       <% if current_user.has_feature_flag?('bbg_profile_menu') %>

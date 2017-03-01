@@ -157,6 +157,11 @@ $sLabel-width: 140px;
 .Form-rowData ~ .Form-rowDataExtra { top: 10px } // to compensate for its top-padding
 .Form-rowData--step ~ .Form-rowDataExtra { top: 0 }
 
+.Form-rowData .category-list .select2-choice,
+.Form-rowData .subcategory-list .select2-choice {
+  width: 200px;
+}
+
 .Form-input {
   @include bb_entry_style;
   position: relative;

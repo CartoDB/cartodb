@@ -1,0 +1,47 @@
+@import "../variables/mixins";
+@import "../variables/colors";
+@import "../variables/sizes";
+
+
+.SideMenu {
+  width: 200px;
+  float: left;
+  display: block;
+  border-right: 1px solid #000000;
+}
+
+.SideMenuContent {
+  padding: 10px;
+  .MenuItem {
+    cursor:pointer;
+    padding: 2px 4px 2px 4px;
+    &.selected {
+      background: #333333;
+    }
+    &.expanded .ParentChevron {
+      background-image: url('../images/beam_dropdown_arrow.png');
+    }
+  }
+}
+
+.CategoryTree {
+  .SubCategories {
+    display: none;
+    &.expanded {
+      display: block;
+    }
+  }
+  .SubCategory {
+    margin-left:30px;
+  }
+  .ParentChevron {
+    display:inline-block;
+    cursor:pointer;
+    width:12px;
+    height:12px;
+    margin-right:5px;
+    background-size:contain;
+    background-image: url('../images/beam_dropdown_arrow_right.png');
+    background-repeat: no-repeat;
+  }
+}

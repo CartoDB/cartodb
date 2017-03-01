@@ -11,10 +11,13 @@
   display: block;
   min-height: 600px;
   margin: 0 auto;
-  padding-top: 81px
 }
 
 .ContentController.on-boarding { 
   padding-top: 0;
   min-height: initial;
+}
+
+.ContentController .ContentList { 
+  float: left;
 }

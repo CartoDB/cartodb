@@ -18,7 +18,7 @@ do
     sed -e s/carto_db_test/carto_db_test_$i/g config/database.yml.sample > config/database_$i.yml
 
     # Start Zeus server
-    TURBO=1 ZEUSSOCK=".zeus$i.sock" RAILS_ENV=test PARALLEL=true RAILS_DATABASE_FILE=database_$i.yml REDIS_PORT=$i bundle exec zeus start >/dev/null 2>/dev/null &
+    ZEUSSOCK=".zeus$i.sock" RAILS_DATABASE_FILE=database_$i.yml REDIS_PORT=$i bundle exec zeus start >/dev/null 2>/dev/null &
 done
 
 touch specfailed.log

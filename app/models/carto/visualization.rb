@@ -547,8 +547,8 @@ class Carto::Visualization < ActiveRecord::Base
   private
 
   def remove_password
-    @password_salt = nil
-    @encrypted_password = nil
+    self.password_salt = nil
+    self.encrypted_password = nil
   end
 
   def perform_invalidations

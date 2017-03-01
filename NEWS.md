@@ -90,6 +90,8 @@ Development
 * UI fixes for georeference. Changes of copy and validation warning. (#11426)
 * Color scheme is now clickable in category ramps (#11413)
 * Fix responsive layout in onboarding steps (#11444)
+* Layer onboardings are now aware on sync'd layers and highlighted area is clicked. (#11583)
+
 
 4.0.x (2016-12-05)
 ------------------

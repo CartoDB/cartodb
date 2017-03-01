@@ -3,24 +3,24 @@
 module Carto
   class CartoGearsSupport
     # Returns gears found at:
-    # - `gears` Rails root dir.
-    # - `CARTO_GEARS_LOCAL` environment variable. Those are assumed to be at the same level than Rails root.
+    # - `/gears`. Should be "installed" (added to `Gemfile.lock``)
+    # - `/private_gears` (shouldn't be installed)
     def gears
-      (gears_dir_gears + local_gears)
+      (public_gears + private_gears)
     end
 
     private
 
-    def gears_dir_gears
-      Dir['gears' + '/*/*.gemspec'].map do |gemspec_file|
-        Carto::Gear.new(File.basename(gemspec_file, File.extname(gemspec_file)), File.dirname(gemspec_file), true)
-      end
+    def public_gears
+      Dir['gears/*/*.gemspec'].map { |gemspec_file| gear_from_gemspec_file(gemspec_file, true) }
     end
 
-    def local_gears
-      (ENV['CARTO_GEARS_LOCAL'] || '').split.map do |gear_name|
-        Carto::Gear.new(gear_name, "../#{gear_name.strip}", false)
-      end
+    def private_gears
+      Dir['private_gears/*/*.gemspec'].map { |gemspec_file| gear_from_gemspec_file(gemspec_file, false) }
+    end
+
+    def gear_from_gemspec_file(gemspec_file, install)
+      Carto::Gear.new(File.basename(gemspec_file, File.extname(gemspec_file)), File.dirname(gemspec_file), install)
     end
   end
 

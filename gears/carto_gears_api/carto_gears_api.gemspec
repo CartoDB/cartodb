@@ -18,9 +18,4 @@ Gem::Specification.new do |s|
 
   s.add_dependency "rails", "~> 3.2.22"
   s.add_dependency 'values', '1.8.0'
-
-  s.add_development_dependency "rspec-rails", '2.12.0'
-  s.add_development_dependency "rack-test", '0.6.3'
-  s.add_development_dependency "mocha", '1.1.0'
-  s.add_development_dependency "byebug"
 end

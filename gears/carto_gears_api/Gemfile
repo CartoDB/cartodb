@@ -12,3 +12,10 @@ gemspec
 
 # To use debugger
 # gem 'debugger'
+
+group :test do
+  gem "rspec-rails", '2.12.0'
+  gem "rack-test", '0.6.3'
+  gem "mocha", '1.1.0'
+  gem "byebug"
+end

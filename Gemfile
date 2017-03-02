@@ -1,5 +1,3 @@
-require File.dirname(__FILE__) + '/lib/carto/carto_gears_support'
-
 source 'http://rubygems.org'
 
 gem 'rails',                   '3.2.22'
@@ -126,6 +124,9 @@ end
 
 # segment metrics
 gem 'analytics-ruby', '~> 2.0.0', :require => 'segment/analytics'
+
+# CARTO Gears engines
+require File.dirname(__FILE__) + '/lib/carto/carto_gears_support'
 
 Carto::CartoGearsSupport.new.gears.each do |gear|
   if gear.install

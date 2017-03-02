@@ -16,10 +16,6 @@ describe Carto::VisualizationQueryBuilder do
     Carto::VisualizationQueryBuilder.new.build.first.user_table.name
   end
 
-  before(:all) do
-    Rails::Sequel.connection.run("TRUNCATE TABLE visualizations CASCADE")
-  end
-
   before(:each) do
     @vqb = Carto::VisualizationQueryBuilder.new
 
@@ -61,28 +57,29 @@ describe Carto::VisualizationQueryBuilder do
     table1 = create_random_table(@user1)
 
     expect {
-      @vqb.build.first.user.username.should_not eq nil
+      @vqb.with_user_id(@user1.id).build.first.user.username.should_not eq nil
     }.to make_database_queries(count: 2..3)
     # 1: SELECT * FROM visualizations LIMIT 1
     # 2: to select basic user fields
     # 3: AR seems to not be very clever detecting vis.user is already fetched and sometimes re-fetches it
 
     expect {
-      @vqb.with_prefetch_user(true).build.first.user.username.should_not eq nil
+      @vqb.with_user_id(@user1.id).with_prefetch_user(true).build.first.user.username.should_not eq nil
     }.to make_database_queries(count: 1)
   end
 
   it 'can prefetch table' do
     table1 = create_random_table(@user1)
+    table_visualization = table1.table_visualization
 
     preload_activerecord_metadata
 
     expect {
-      @vqb.build.where(id: table1.table_visualization.id).first.user_table.name
+      @vqb.with_user_id(@user1.id).build.where(id: table_visualization.id).first.user_table.name
     }.to make_database_queries(count: 2..3)
 
     expect {
-      @vqb.with_prefetch_table.build.where(id: table1.table_visualization.id).first.user_table.name
+      @vqb.with_user_id(@user1.id).with_prefetch_table.build.where(id: table_visualization.id).first.user_table.name
     }.to make_database_queries(count: 1)
   end
 

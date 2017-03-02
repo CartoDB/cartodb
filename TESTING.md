@@ -29,6 +29,9 @@ To avoid wasting time and resources creating once and again test users,
 if you require 'spec_helper' you have two "global test users" for the whole suite to use,
 $user_1 and $user_2. Just take care to not destroy or leave them in inconsistent state between test batteries.
 
+You can also use the following `runParallelTests.sh` script to run the tests in a multithreaded way.
+Run `script/ci/runParallelTests.sh X` where X is a number of threads to use.
+
 Troubleshooting
 ---------------
 

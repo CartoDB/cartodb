@@ -99,8 +99,7 @@ Development
 * UI fixes for georeference. Changes of copy and validation warning. (#11426)
 * Color scheme is now clickable in category ramps (#11413)
 * Fix responsive layout in onboarding steps (#11444)
-* Several improvements to parallel tests, they are faster and more consistent.
-  Run with `script/ci/runParallelTests.sh X` where X is a number of threads to use (#11636)
+* Speed improvements to parallel tests (#11636)
 * Correctly create custom category legend if style has icons (#11592)
 * Fix problem with perfect-scrollbar in Edge browsers (CartoDB/perfect-scrollbar/#2)
 * Layer onboardings are now aware on sync'd layers and highlighted area is clicked. (#11583)

@@ -16,20 +16,20 @@ References:
 
 # HOWTO
 
-## Pick a directory
+## Private vs public gears
 
 CARTO currently supports two directories for Gears:
 
 `/gears`
 
-Directory for public components. For example, if you begin a development of a new feature within CARTO and you want to do it
-with a component-based approach, this is a good place. It's part of the main repo and Gears here will be
-automatically added to `Gemfile.lock` .
+Public engines. For example, for new features developed with a component-based approach.
+It's part of the main repo and gears inside it will be automatically added to `Gemfile` and `Gemfile.lock`.
 
 `/private_gears`
 
-Private gears. It's skipped at `.gitignore`, and it's dynamically loaded, so it won't appear in `Gemfile.lock`. You
-can add symbolic links there to external repos.
+Private engines. For example, for in-house developments that can't be shipped with the Open Source version.
+It's skipped at `.gitignore`, and it's dynamically loaded, so it won't appear in `Gemfile` or `Gemfile.lock`.
+You can have the code wherever you want, and add symbolic links there.
 
 ### Private gears limitations
 
@@ -37,19 +37,34 @@ Due to the custom handling of this in order to avoid polluting Gemfile and Gemfi
 have several limitations:
 
 - If you specify a runtime dependency of a gem already existing at Gemfile, it must have the exact version.
-- Although the private gem itself doesn't appear in Gemfile or Gemfile.lock, dependencies do, because they need to be installed.
+- Although the private gem itself doesn't appear in `Gemfile` or `Gemfile.lock`, dependencies do, because they need to
+be installed.
 
 ## Create a Rails engine
 
-Assuming that you pick `/gears`, create a rails engine:
+Assuming that you pick `/gears`, create a Rails engine by
 
 ```ruby
 bundle exec rails plugin new gears/my_component --full --mountable
 ```
 
-It will be monted at root (`/`) and automatically loaded.
+It will be mounted at root (`/`) and automatically loaded.
 
 Automatic reload for development is supported right out of the box.
 
 You must use only classes under `CartoGearsApi` namespace. _It's currently under `/gears/carto_gears_api/lib`,
 but it will be documented before first public release._
+
+## Tests
+
+CartoDB runs the tests with `bundle exec rspec` at engine directory. If you want to use this, you should create
+your tests with rspec.
+
+_Due to [a current limitation](https://github.com/CartoDB/cartodb/issues/11689) tests must be explicitly added
+to main `Makefile`._
+
+In order to enable rspec:
+
+1. `rspec --init`
+2. Copy the contents of `test_helper.rb` into `spec_helper`.
+3. Run `rspec` and fix path errors that you might get.

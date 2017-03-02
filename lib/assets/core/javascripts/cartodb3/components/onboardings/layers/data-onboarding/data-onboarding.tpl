@@ -2,7 +2,7 @@
 
 <div class="LayerOnboarding-pads LayerOnboarding-pads--left">
   <div class="LayerOnboarding-padTop"></div>
-  <div class="LayerOnboarding-padMiddle">
+  <div class="LayerOnboarding-padMiddle js-highlight">
     <div class="LayerOnboarding-body is-step0 js-step">
       <div class="LayerOnboarding-step is-step1">
         <p class="CDB-Text LayerOnboarding-headerTitle">1/4</p>
@@ -27,6 +27,14 @@
         </p>
       </div>
 
+      <div class="LayerOnboarding-step is-step4">
+        <p class="CDB-Text LayerOnboarding-headerTitle">4/4</p>
+        <p class="CDB-Text LayerOnboarding-headerText is-step4"><%- _t('data-onboarding.add-geometry.title')%></p>
+        <p class="CDB-Text LayerOnboarding-description is-step4">
+          <%- _t('data-onboarding.add-geometry.description')%>
+        </p>
+      </div>
+
       <div class="LayerOnboarding-footer is-step1 is-step2 is-step3">
         <div class="LayerOnboarding-footerButtons">
           <button class="CDB-Button CDB-Button--secondary CDB-Button--white CDB-Button--big Onboarding-footer--marginRight js-close">
@@ -35,6 +43,14 @@
 
           <button class="CDB-Button CDB-Button--primary CDB-Button--big js-next">
             <span class="CDB-Button-Text CDB-Text u-upperCase is-semibold CDB-Size-medium"><%- _t('data-onboarding.next')%></span>
+          </button>
+        </div>
+      </div>
+
+      <div class="LayerOnboarding-footer is-step4">
+        <div class="LayerOnboarding-footerButtons">
+          <button class="CDB-Button CDB-Button--primary CDB-Button--big js-close">
+            <span class="CDB-Button-Text CDB-Text u-upperCase is-semibold CDB-Size-medium"><%- _t('data-onboarding.add-geometry.edit-layer') %></span>
           </button>
         </div>
       </div>
@@ -72,37 +88,3 @@
     </div>
   </div>
 </div>
-
-<div class="LayerOnboarding-pads LayerOnboarding-pads--right is-step0 js-step">
-  <div class="LayerOnboarding-padTop
-    <% if (hasTimeSeries) { %>has-timeSeries <% if (hasAnimatedTimeSeries) { %>has-timeSeries--animated<% } %><% } %>
-    <% if (hasSidebarWidgets) { %>has-widgets<% } %>
-  "></div>
-  <div class="LayerOnboarding-padMiddle">
-    <div class="LayerOnboarding-body is-step0 js-step">
-      <div class="LayerOnboarding-step is-step4">
-        <p class="CDB-Text LayerOnboarding-headerTitle">4/4</p>
-        <p class="CDB-Text LayerOnboarding-headerText is-step4"><%- _t('data-onboarding.add-geometry.title')%></p>
-        <p class="CDB-Text LayerOnboarding-description is-step4">
-          <%- _t('data-onboarding.add-geometry.description')%>
-        </p>
-      </div>
-
-      <div class="LayerOnboarding-footer is-step4">
-        <div class="LayerOnboarding-footerButtons">
-          <button class="CDB-Button CDB-Button--primary CDB-Button--big js-close">
-            <span class="CDB-Button-Text CDB-Text u-upperCase is-semibold CDB-Size-medium"><%- _t('data-onboarding.add-geometry.edit-layer') %></span>
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="LayerOnboarding-padBottom
-    <% if (hasTimeSeries) { %>has-timeSeries <% if (hasAnimatedTimeSeries) { %>has-timeSeries--animated<% } %><% } %>
-    <% if (hasSidebarWidgets) { %>has-widgets<% } %>
-  "></div>
-</div>
-
-<div class="LayerOnboarding-widgetsOverlay js-step
-  <% if (hasSidebarWidgets) { %>has-widgets<% } %>
-"></div>

@@ -127,6 +127,12 @@ end
 # segment metrics
 gem 'analytics-ruby', '~> 2.0.0', :require => 'segment/analytics'
 
-Carto::CartoGearsSupport.new.gears.select(&:install).each do |gear|
-  gemspec path: gear.path
+Carto::CartoGearsSupport.new.gears.each do |gear|
+  if gear.install
+    gemspec path: gear.path
+  else
+    gear.gemspec.runtime_dependencies.each do |dependency|
+      gem dependency.name, dependency.requirements_list
+    end
+  end
 end

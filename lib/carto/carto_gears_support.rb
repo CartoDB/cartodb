@@ -38,5 +38,9 @@ module Carto
       module_name << 's' if @name[-1] == 's'
       "#{module_name}::Engine".constantize
     end
+
+    def gemspec
+      Gem::Specification::load(File::join(path, "#{name}.gemspec"))
+    end
   end
 end

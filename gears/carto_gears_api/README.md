@@ -31,6 +31,14 @@ automatically added to `Gemfile.lock` .
 Private gears. It's skipped at `.gitignore`, and it's dynamically loaded, so it won't appear in `Gemfile.lock`. You
 can add symbolic links there to external repos.
 
+### Private gears limitations
+
+Due to the custom handling of this in order to avoid polluting Gemfile and Gemfile.lock files, private gears
+have several limitations:
+
+- If you specify a runtime dependency of a gem already existing at Gemfile, it must have the exact version.
+- Although the private gem itself doesn't appear in Gemfile or Gemfile.lock, dependencies do, because they need to be installed.
+
 ## Create a Rails engine
 
 Assuming that you pick `/gears`, create a rails engine:

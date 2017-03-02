@@ -16,6 +16,10 @@ describe Carto::VisualizationQueryBuilder do
     Carto::VisualizationQueryBuilder.new.build.first.user_table.name
   end
 
+  before(:all) do
+    Rails::Sequel.connection.run("TRUNCATE TABLE visualizations CASCADE")
+  end
+
   before(:each) do
     @vqb = Carto::VisualizationQueryBuilder.new
 
@@ -122,10 +126,6 @@ describe Carto::VisualizationQueryBuilder do
                                           .with_order('likes', :desc)
                                           .build
                                           .all.map(&:id)
-
-    puts "#{table1.table_visualization.id} #{table1.table_visualization.likes.count}"
-    puts "#{table2.table_visualization.id} #{table2.table_visualization.likes.count}"
-    puts "#{table3.table_visualization.id} #{table3.table_visualization.likes.count}"
 
     ids.should == [ table1.table_visualization.id, table3.table_visualization.id, table2.table_visualization.id ]
 

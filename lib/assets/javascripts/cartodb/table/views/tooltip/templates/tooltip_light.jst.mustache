@@ -1,9 +1,14 @@
 <div class="cartodb-tooltip-content-wrapper">
   <div class="cartodb-tooltip-content">
   {{#fields}}
-    {{#title}}
-    <h4>{{title}}</h4>
-    {{/title}}
+  {{#title}}
+  {{#alias}}
+  <h4>{{alias}}</h4>
+  {{/alias}}
+  {{^alias}}
+  <h4>{{title}}</h4>
+  {{/alias}}
+  {{/title}}
     <p>{{{ value }}}</p>
   {{/fields}}
   </div>

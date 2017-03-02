@@ -101,7 +101,8 @@
       "spyOn",
       "it",
       "xit",
-      "expect"
+      "expect",
+      "$"
     ],
     "ignore": [
       "/.grunt",

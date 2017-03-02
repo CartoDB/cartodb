@@ -7,6 +7,9 @@ class CustomPlan < Zeus::Rails
   include SpecHelperHelpers
 
   def carto_test
+    # Load everything (disabled in Zeus by default)
+    Rails.application.eager_load!
+
     # Disable before suite hooks
     ENV['PARALLEL'] = 'true'
 

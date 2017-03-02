@@ -4,8 +4,8 @@ require_relative '../../acceptance_helper'
 feature "Superadmin's organization API" do
   before(:all) do
     # Capybara.current_driver = :rack_test
-    @organization1 = create_organization_with_users(name: 'vizzuality')
-    @organization2 = create_organization_with_users(name: 'vizzuality-2')
+    @organization1 = create_organization_with_users
+    @organization2 = create_organization_with_users
     @org_atts = @organization1.values
   end
 
@@ -20,10 +20,10 @@ feature "Superadmin's organization API" do
   end
 
   scenario "organization create success" do
-    @org_atts = FactoryGirl.build(:organization, name: 'wadus').values
+    @org_atts = FactoryGirl.build(:organization).values
     post_json superadmin_organizations_path, { organization: @org_atts }, superadmin_headers do |response|
       response.status.should == 201
-      response.body[:name].should == 'wadus'
+      response.body[:name].should == @org_atts[:name]
 
       # Double check that the organization has been created properly
       organization = Organization.filter(:name => @org_atts[:name]).first
@@ -34,13 +34,13 @@ feature "Superadmin's organization API" do
   end
 
   scenario "organization with owner creation success" do
-    org_atts = FactoryGirl.build(:organization, name: 'wadus').values
+    org_atts = FactoryGirl.build(:organization).values
     user = FactoryGirl.create(:user_with_private_tables)
     org_atts[:owner_id] = user.id
 
     post_json superadmin_organizations_path, { organization: org_atts }, superadmin_headers do |response|
       response.status.should == 201
-      response.body[:name].should == 'wadus'
+      response.body[:name].should == org_atts[:name]
 
       # Double check that the organization has been created properly
       organization = Organization.filter(name: org_atts[:name]).first
@@ -55,7 +55,7 @@ feature "Superadmin's organization API" do
   end
 
   scenario "organization with owner creation failure" do
-    org_atts = FactoryGirl.build(:organization, name: 'wadus-fail').values
+    org_atts = FactoryGirl.build(:organization).values
     user = FactoryGirl.create(:user_with_private_tables)
     org_atts[:owner_id] = user.id
 

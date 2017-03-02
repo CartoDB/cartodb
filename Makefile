@@ -354,7 +354,7 @@ CARTO_GEARS_API_SPECS = \
 check-carto-gears-api:
 	CHECK_SPEC=53 cd gears/carto_gears_api && RAILS_ENV=test bundle exec rspec $(CARTO_GEARS_API_SPECS)
 
-check-gears: check-carto-gears-api:
+check-gears: check-carto-gears-api
 
 check-external: prepare-test-db check-integrations
 

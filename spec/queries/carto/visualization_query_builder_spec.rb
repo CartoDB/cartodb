@@ -13,11 +13,11 @@ describe Carto::VisualizationQueryBuilder do
 
   def preload_activerecord_metadata
     # Loads the model structures into memory, to avoid counting those as queries
-    Carto::VisualizationQueryBuilder.new.build.first.user_table.name
+    @vqb.build.first.user_table.name
   end
 
   before(:each) do
-    @vqb = Carto::VisualizationQueryBuilder.new
+    @vqb = Carto::VisualizationQueryBuilder.new.with_user_id(@user1.id)
 
     DBQueryMatchers.configure do |config|
       config.ignores = []
@@ -38,7 +38,7 @@ describe Carto::VisualizationQueryBuilder do
     table = create_random_table(@user1)
     table_visualization = table.table_visualization
     table_visualization.store
-    @vqb.build.map(&:id).should include table_visualization.id
+    Carto::VisualizationQueryBuilder.new.build.map(&:id).should include table_visualization.id
   end
 
   it 'searches for all visualizations for a user' do
@@ -48,7 +48,7 @@ describe Carto::VisualizationQueryBuilder do
     table_visualization1.store
     table_visualization2 = table2.table_visualization
     table_visualization2.store
-    ids = @vqb.with_user_id(@user1.id).build.map(&:id)
+    ids = Carto::VisualizationQueryBuilder.new.with_user_id(@user1.id).build.map(&:id)
     ids.should include table_visualization1.id
     ids.should_not include table_visualization2.id
   end
@@ -57,14 +57,14 @@ describe Carto::VisualizationQueryBuilder do
     table1 = create_random_table(@user1)
 
     expect {
-      @vqb.with_user_id(@user1.id).build.first.user.username.should_not eq nil
+      @vqb.build.first.user.username.should_not eq nil
     }.to make_database_queries(count: 2..3)
     # 1: SELECT * FROM visualizations LIMIT 1
     # 2: to select basic user fields
     # 3: AR seems to not be very clever detecting vis.user is already fetched and sometimes re-fetches it
 
     expect {
-      @vqb.with_user_id(@user1.id).with_prefetch_user(true).build.first.user.username.should_not eq nil
+      @vqb.with_prefetch_user(true).build.first.user.username.should_not eq nil
     }.to make_database_queries(count: 1)
   end
 
@@ -75,11 +75,11 @@ describe Carto::VisualizationQueryBuilder do
     preload_activerecord_metadata
 
     expect {
-      @vqb.with_user_id(@user1.id).build.where(id: table_visualization.id).first.user_table.name
+      @vqb.build.where(id: table_visualization.id).first.user_table.name
     }.to make_database_queries(count: 2..3)
 
     expect {
-      @vqb.with_user_id(@user1.id).with_prefetch_table.build.where(id: table_visualization.id).first.user_table.name
+      @vqb.with_prefetch_table.build.where(id: table_visualization.id).first.user_table.name
     }.to make_database_queries(count: 1)
   end
 
@@ -104,10 +104,7 @@ describe Carto::VisualizationQueryBuilder do
     table3 = create_random_table(@user1)
 
     # Searches only using query builder itself
-    ids = @vqb.with_type(Carto::Visualization::TYPE_CANONICAL)
-              .with_order(:updated_at, :desc)
-              .build
-              .all.map(&:id)
+    ids = @vqb.with_type(Carto::Visualization::TYPE_CANONICAL).with_order(:updated_at, :desc).build.all.map(&:id)
     ids.should == [ table3.table_visualization.id, table2.table_visualization.id, table1.table_visualization.id ]
 
     # From here on, uses OffdatabaseQueryAdapter
@@ -118,37 +115,22 @@ describe Carto::VisualizationQueryBuilder do
     table1.table_visualization.add_like_from(@user2.id)
     table3.table_visualization.add_like_from(@user1.id)
 
-    ids = Carto::VisualizationQueryBuilder.new
-                                          .with_type(Carto::Visualization::TYPE_CANONICAL)
-                                          .with_order('likes', :desc)
-                                          .build
-                                          .all.map(&:id)
+    ids = @vqb.with_type(Carto::Visualization::TYPE_CANONICAL)
+              .with_order('likes', :desc)
+              .build
+              .all.map(&:id)
 
     ids.should == [ table1.table_visualization.id, table3.table_visualization.id, table2.table_visualization.id ]
 
-    Carto::VisualizationQueryBuilder.new
-                                    .with_type(Carto::Visualization::TYPE_CANONICAL)
-                                    .with_order('likes', :desc)
-                                    .build
-                                    .count.should == 3
+    @vqb.with_type(Carto::Visualization::TYPE_CANONICAL).with_order('likes', :desc).build.count.should == 3
 
     # Check with limit
-    ids = Carto::VisualizationQueryBuilder.new
-                                          .with_type(Carto::Visualization::TYPE_CANONICAL)
-                                          .with_order('likes', :desc)
-                                          .build
-                                          .limit(2)
-                                          .all.map(&:id)
+    ids = @vqb.with_type(Carto::Visualization::TYPE_CANONICAL).with_order('likes', :desc).build.limit(2).all.map(&:id)
     ids.should == [ table1.table_visualization.id, table3.table_visualization.id ]
 
     # Check with limit AND offset
-    ids = Carto::VisualizationQueryBuilder.new
-                                          .with_type(Carto::Visualization::TYPE_CANONICAL)
-                                          .with_order('likes', :desc)
-                                          .build
-                                          .offset(1)
-                                          .limit(2)
-                                          .all.map(&:id)
+    ids = @vqb.with_type(Carto::Visualization::TYPE_CANONICAL).with_order('likes', :desc).build
+              .offset(1).limit(2).all.map(&:id)
     ids.should == [ table3.table_visualization.id, table2.table_visualization.id ]
 
     # Mapviews
@@ -165,7 +147,7 @@ describe Carto::VisualizationQueryBuilder do
                             .with(@user1.username, {stat_tag: table3.table_visualization.id})
                             .returns({ "2015-04-15" => 12, "2015-04-14" => 20 })
 
-    ids = Carto::VisualizationQueryBuilder.new
+    ids = @vqb
                                           .with_type(Carto::Visualization::TYPE_CANONICAL)
                                           .with_order('mapviews', :desc)
                                           .build
@@ -185,7 +167,7 @@ describe Carto::VisualizationQueryBuilder do
    # Careful to not do anything else on this spec after this size assertions
    ActiveRecord::Relation.any_instance.stubs(:all).returns([ mocked_vis3, mocked_vis1, mocked_vis2 ])
 
-   ids = Carto::VisualizationQueryBuilder.new.with_type(Carto::Visualization::TYPE_CANONICAL)
+   ids = @vqb.with_type(Carto::Visualization::TYPE_CANONICAL)
                                              .with_order('size', :desc)
                                              .build.map(&:id)
    ids.should == [ table3.table_visualization.id, table1.table_visualization.id, table2.table_visualization.id ]

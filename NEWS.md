@@ -55,6 +55,7 @@ Development
 * Improved formula widget description field. (#11469)
 * Added support for Zeus for faster testing (#11574). Check `CONTRIBUTING.md` for configuration details.
 * Migrate to use GNIP v2 for twitter search connector (#10051, #11595)
+* Invite to georeference proactively when detecting non-georeferenced data (#11316)
 
 ### Bug fixes
 * Fixed problem with Bubbles legend when a new analysis is applied (#11666)

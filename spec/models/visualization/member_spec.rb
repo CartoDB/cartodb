@@ -20,6 +20,7 @@ describe Visualization::Member do
   end
 
   after(:all) do
+    Carto::User.find(@user.id).visualizations.each(&:delete)
     @user.destroy
   end
 
@@ -31,7 +32,7 @@ describe Visualization::Member do
     user_name = 'whatever'
     user_apikey = '123'
     @user_mock = mock
-    @user_mock.stubs(:id).returns(user_id)
+    @user_mock.stubs(:id).returns(@user.id)
     @user_mock.stubs(:username).returns(user_name)
     @user_mock.stubs(:api_key).returns(user_apikey)
     @user_mock.stubs(:viewer).returns(false)

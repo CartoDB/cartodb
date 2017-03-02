@@ -2,7 +2,7 @@
 
 <div class="LayerOnboarding-pads LayerOnboarding-pads--left">
   <div class="LayerOnboarding-padTop"></div>
-  <div class="LayerOnboarding-padMiddle">
+  <div class="LayerOnboarding-padMiddle js-highlight">
     <div class="LayerOnboarding-body is-step0 js-step">
       <div class="LayerOnboarding-step is-step1">
         <p class="CDB-Text LayerOnboarding-headerTitle">1/3</p>

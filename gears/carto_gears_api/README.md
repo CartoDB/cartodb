@@ -30,3 +30,18 @@ automatically added to `Gemfile.lock` .
 
 Private gears. It's skipped at `.gitignore`, and it's dynamically loaded, so it won't appear in `Gemfile.lock`. You
 can add symbolic links there to external repos.
+
+## Create a Rails engine
+
+Assuming that you pick `/gears`, create a rails engine:
+
+```ruby
+bundle exec rails plugin new gears/my_component --full --mountable
+```
+
+It will be monted at root (`/`) and automatically loaded.
+
+Automatic reload for development is supported right out of the box.
+
+You must use only classes under `CartoGearsApi` namespace. _It's currently under `/gears/carto_gears_api/lib`,
+but it will be documented before first public release._

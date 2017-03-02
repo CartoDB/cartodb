@@ -22,6 +22,13 @@ class CustomPlan < Zeus::Rails
     if ENV['TURBO']
       clean_redis_databases
       clean_metadata_database
+
+      # TODO: This cleanup is necessary due to a bug in TableRelator.table_visualization
+      RSpec.configure do |config|
+        config.before(:all) do
+          Carto::Visualization.where(map_id: nil).each(&:delete)
+        end
+      end
     else
       RSpec.configure do |config|
         config.before(:all) do

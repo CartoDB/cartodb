@@ -43,12 +43,6 @@ describe Carto::HttpHeaderAuthentication do
       stub_http_header_authentication_configuration(field: 'email')
       Carto::HttpHeaderAuthentication.new.valid?(mock_email_request).should == true
     end
-
-    it 'resists when config header is nil' do
-      stub_http_header_authentication_configuration(field: 'email', header: nil)
-      expect { Carto::HttpHeaderAuthentication.new.valid?(mock_email_request).should == false }
-        .to_not raise_error
-    end
   end
 
   describe '#get_user?' do

@@ -348,7 +348,7 @@ check-integrations:
 # TODO: iterate every gears subdirectory #11689
 # TODO: run only `bundle exec rspec`, without specifying the files #11689
 check-carto-gears-api:
-	cd gears/carto_gears_api && RAILS_ENV=test bundle exec rspec spec/carto_gears_api/users_service_spec.rb
+	CHECK_SPEC=53 cd gears/carto_gears_api && RAILS_ENV=test bundle exec rspec spec/carto_gears_api/users_service_spec.rb
 
 check-external: prepare-test-db check-integrations
 

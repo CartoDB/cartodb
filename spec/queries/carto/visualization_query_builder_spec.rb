@@ -147,30 +147,24 @@ describe Carto::VisualizationQueryBuilder do
                             .with(@user1.username, {stat_tag: table3.table_visualization.id})
                             .returns({ "2015-04-15" => 12, "2015-04-14" => 20 })
 
-    ids = @vqb
-                                          .with_type(Carto::Visualization::TYPE_CANONICAL)
-                                          .with_order('mapviews', :desc)
-                                          .build
-                                          .all.map(&:id)
-    ids.should == [ table2.table_visualization.id, table3.table_visualization.id, table1.table_visualization.id ]
+    ids = @vqb.with_type(Carto::Visualization::TYPE_CANONICAL).with_order('mapviews', :desc).build.all.map(&:id)
+    ids.should == [table2.table_visualization.id, table3.table_visualization.id, table1.table_visualization.id]
 
     # Size
 
-   mocked_vis1 = Carto::Visualization.where(id: table1.table_visualization.id).first
-   mocked_vis2 = Carto::Visualization.where(id: table2.table_visualization.id).first
-   mocked_vis3 = Carto::Visualization.where(id: table3.table_visualization.id).first
+    mocked_vis1 = Carto::Visualization.where(id: table1.table_visualization.id).first
+    mocked_vis2 = Carto::Visualization.where(id: table2.table_visualization.id).first
+    mocked_vis3 = Carto::Visualization.where(id: table3.table_visualization.id).first
 
-   mocked_vis1.stubs(:size).returns(200)
-   mocked_vis2.stubs(:size).returns(1)
-   mocked_vis3.stubs(:size).returns(600)
+    mocked_vis1.stubs(:size).returns(200)
+    mocked_vis2.stubs(:size).returns(1)
+    mocked_vis3.stubs(:size).returns(600)
 
-   # Careful to not do anything else on this spec after this size assertions
-   ActiveRecord::Relation.any_instance.stubs(:all).returns([ mocked_vis3, mocked_vis1, mocked_vis2 ])
+    # Careful to not do anything else on this spec after this size assertions
+    ActiveRecord::Relation.any_instance.stubs(:all).returns([mocked_vis3, mocked_vis1, mocked_vis2])
 
-   ids = @vqb.with_type(Carto::Visualization::TYPE_CANONICAL)
-                                             .with_order('size', :desc)
-                                             .build.map(&:id)
-   ids.should == [ table3.table_visualization.id, table1.table_visualization.id, table2.table_visualization.id ]
+    ids = @vqb.with_type(Carto::Visualization::TYPE_CANONICAL).with_order('size', :desc).build.map(&:id)
+    ids.should == [table3.table_visualization.id, table1.table_visualization.id, table2.table_visualization.id]
 
     # NOTE: Not testing with multiple order criteria as currently the editor doesn't supports it so is not needed
   end

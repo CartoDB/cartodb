@@ -1,6 +1,5 @@
 require 'helpers/unique_names_helper'
 
-
 module CartoDB
   module Factories
     include UniqueNamesHelper

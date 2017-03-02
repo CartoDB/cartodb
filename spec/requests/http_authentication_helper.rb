@@ -7,14 +7,11 @@ module HttpAuthenticationHelper
     { "#{authenticated_header}" => value }
   end
 
-  def stub_http_header_authentication_configuration(field: 'email',
-                                                    header: authenticated_header,
-                                                    autocreation: false,
-                                                    enabled: true)
+  def stub_http_header_authentication_configuration(field: 'email', autocreation: false, enabled: true)
     Cartodb.stubs(:get_config)
 
     config = {
-      'header' => header,
+      'header' => authenticated_header,
       'field' => field,
       'autocreation' => autocreation
     }

@@ -26,7 +26,10 @@ class CustomPlan < Zeus::Rails
       # TODO: This cleanup is necessary due to a bug in TableRelator.table_visualization
       RSpec.configure do |config|
         config.before(:all) do
-          Carto::Visualization.where(map_id: nil).each(&:delete)
+          Carto::Visualization.where(map_id: nil).each do |v|
+            v.external_source.try(:delete)
+            v.delete
+          end
         end
       end
     else

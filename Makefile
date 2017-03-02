@@ -346,7 +346,7 @@ check-carto-db-class:
 check-integrations:
 	CHECK_SPEC=52 RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_INTEGRATIONS)
 check-carto-gears-api:
-	cd gears/carto_gears_api; bundle exec rspec
+	cd gears/carto_gears_api && RAILS_ENV=test bundle exec rspec
 
 check-external: prepare-test-db check-integrations
 

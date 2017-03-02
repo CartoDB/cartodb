@@ -1,13 +1,13 @@
 [submodule "lib/assets/javascripts/cdb"]
-        path = lib/assets/javascripts/cdb
-        url = https://github.com/bloomberg/cartodb.js.git
+	path = lib/assets/javascripts/cdb
+	url = ssh://bbgithub.dev.bloomberg.com/datavis-cartodb/cartodb.js.git
+    branch = development
 [submodule "app/assets/stylesheets/old_common"]
-        path = app/assets/stylesheets/old_common
-        url = https://github.com/bloomberg/cartodb.css.git
+	path = app/assets/stylesheets/old_common
+	url = ssh://bbgithub.dev.bloomberg.com/datavis-cartodb/cartodb.css.git
 [submodule "lib/sql"]
-        path = lib/sql
-        url = git://github.com/CartoDB/cartodb-postgresql.git
+	path = lib/sql
+	url = git://github.com/CartoDB/cartodb-postgresql.git
 [submodule "lib/carto_assets"]
-        path = lib/carto_assets
-        url = https://github.com/bloomberg/CartoAssets.git
-        
+	path = lib/carto_assets
+	url = ssh://bbgithub.dev.bloomberg.com/datavis-cartodb/CartoAssets.git

@@ -345,16 +345,22 @@ check-carto-db-class:
 	CHECK_SPEC=51 RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_carto_db_class)
 check-integrations:
 	CHECK_SPEC=52 RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_INTEGRATIONS)
+
+CARTO_GEARS_API_SPECS = \
+	spec/carto_gears_api/users_service_spec.rb \
+	$(NULL)
 # TODO: iterate every gears subdirectory #11689
 # TODO: run only `bundle exec rspec`, without specifying the files #11689
 check-carto-gears-api:
-	CHECK_SPEC=53 cd gears/carto_gears_api && RAILS_ENV=test bundle exec rspec spec/carto_gears_api/users_service_spec.rb
+	CHECK_SPEC=53 cd gears/carto_gears_api && RAILS_ENV=test bundle exec rspec $(CARTO_GEARS_API_SPECS)
+
+check-gears: check-carto-gears-api:
 
 check-external: prepare-test-db check-integrations
 
 check-prepared: check-1 check-2 check-4 check-5 check-7 check-9 check-spec-helper-min check-carto-db-class check-carto-gears-api
 
-check: prepare-test-db check-prepared
+check: prepare-test-db check-prepared check-gears
 check-frontend:
 	./node_modules/.bin/grunt test
 

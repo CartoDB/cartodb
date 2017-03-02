@@ -117,6 +117,7 @@ feature "Superadmin's organization API" do
     end
 
     it "gets all organizations" do
+      Organization.where(owner_id: nil).each(&:delete)
       get_json superadmin_organizations_path, {}, superadmin_headers do |response|
         response.status.should == 200
         response.body.map { |u| u["name"] }.should include(@organization1.name, @organization2.name)

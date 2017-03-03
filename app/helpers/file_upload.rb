@@ -93,12 +93,18 @@ module CartoDB
     end
 
     def upload_file_to_s3(filepath, filename, token, s3_config)
-      AWS.config(
+      s3_config_hash = {
         access_key_id: s3_config['access_key_id'],
         secret_access_key: s3_config['secret_access_key'],
         proxy_uri: (s3_config['proxy_uri'].present? ?  s3_config['proxy_uri'] : nil),
         use_ssl: s3_config['use_ssl']
-      )
+      }
+      # This allows to override the S3 endpoint in case a non AWS compatible
+      # S3 storage service is being used
+      # WARNING: This attribute may not work in some aws-sdk v1 versions newer
+      # than 1.8.5 (http://lists.basho.com/pipermail/riak-users_lists.basho.com/2013-May/011984.html)
+      s3_config_hash['s3_endpoint'] = s3_config['s3_endpoint'] if s3_config['s3_endpoint'].present?
+      AWS.config(s3_config_hash)
       s3_bucket = AWS::S3.new.buckets[s3_config['bucket_name']]
 
       path = "#{token}/#{File.basename(filename)}"

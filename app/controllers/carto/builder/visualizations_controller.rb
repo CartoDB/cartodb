@@ -36,7 +36,7 @@ module Carto
         @vizjson = generate_anonymous_map_vizjson3(@visualization, params)
         @state = @visualization.state.json
         @analyses_data = @visualization.analyses.map { |a| Carto::Api::AnalysisPresenter.new(a).to_poro }
-        @basemaps = Cartodb.config[:basemaps].present? && Cartodb.config[:basemaps]
+        @basemaps = current_viewer.basemaps
         @overlays_data = @visualization.overlays.map do |overlay|
           Carto::Api::OverlayPresenter.new(overlay).to_poro
         end

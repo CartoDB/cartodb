@@ -118,8 +118,8 @@ class Admin::UsersController < Admin::AdminController
       raise PASSWORD_DOES_NOT_MATCH_MESSAGE
     end
 
-    @user.delete_in_central
     @user.destroy
+    @user.delete_in_central
 
     redirect_to logout_url
   rescue CartoDB::CentralCommunicationFailure => e

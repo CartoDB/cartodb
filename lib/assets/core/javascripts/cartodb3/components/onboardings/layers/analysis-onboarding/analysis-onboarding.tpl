@@ -2,7 +2,7 @@
 
 <div class="LayerOnboarding-pads LayerOnboarding-pads--left">
   <div class="LayerOnboarding-padTop"></div>
-  <div class="LayerOnboarding-padMiddle"></div>
+  <div class="LayerOnboarding-padMiddle js-highlight"></div>
 </div>
 
 <div class="LayerOnboarding-contentWrapper LayerOnboarding-contentWrapper--analysis is-step0 js-step">

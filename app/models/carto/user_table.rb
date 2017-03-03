@@ -50,7 +50,7 @@ module Carto
     before_create { service.before_create }
     after_create :create_canonical_visualization
     after_create { service.after_create }
-    after_save { service.after_save }
+    after_save { CartoDB::Logger.debug(message: "Carto::UserTable#after_save"); service.after_save }
 
     def geometry_types
       @geometry_types ||= service.geometry_types
@@ -175,6 +175,7 @@ module Carto
     end
 
     def save_changes
+      CartoDB::Logger.debug(message: "Carto::UserTable#save_changes");
       # TODO: Compatibility with Sequel model, can be removed afterwards. Used in ::Table.set_the_geom_column!
       save if changed?
     end

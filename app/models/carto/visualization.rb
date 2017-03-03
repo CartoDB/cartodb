@@ -536,6 +536,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def store
+    CartoDB::Logger.debug(message: "Carto::Visualization#store");
     save!
     self
   end
@@ -706,6 +707,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def remove_password_if_unprotected
+    CartoDB::Logger.debug(message: "Carto::Visualization#remove_password_if_unprotected (before_save)");
     remove_password unless password_protected?
   end
 
@@ -716,6 +718,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def save_named_map_or_rollback_privacy
+    CartoDB::Logger.debug(message: "Carto::Visualization#save_named_map_or_rollback_privacy");
     if !save_named_map && privacy_changed?
       # Explicitly set privacy to its previous value so the hooks run and the user db permissions are updated
       # TODO: It would be better to raise an exception to rollback the transaction, but that can break renames

@@ -98,6 +98,7 @@ class Table
   def update(args)
     # Sequel and ActiveRecord #update don't behave equally, we need this workaround for compatibility reasons
     if @user_table.is_a?(Carto::UserTable)
+      CartoDB::Logger.debug(message: "::Table#update on ActiveRecord model");
       @user_table.update_attributes(args)
     else
       @user_table.update(args)

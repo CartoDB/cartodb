@@ -175,7 +175,7 @@ module Carto
     end
 
     def save_changes
-      CartoDB::Logger.debug(message: "Carto::UserTable#save_changes");
+      CartoDB::Logger.debug(message: "Carto::UserTable#save_changes")
       # TODO: Compatibility with Sequel model, can be removed afterwards. Used in ::Table.set_the_geom_column!
       save if changed?
     end

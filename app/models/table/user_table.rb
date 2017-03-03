@@ -1,7 +1,6 @@
 # coding: UTF-8
 require 'cartodb/per_request_sequel_cache'
 require 'forwardable'
-require_relative '../visualization/collection'
 
 # This class is intended to deal exclusively with storage
 class UserTable < Sequel::Model
@@ -324,9 +323,9 @@ class UserTable < Sequel::Model
   end
 
   def table_visualization
-    @table_visualization ||= Visualization::Collection.new.fetch(
+    @table_visualization ||= CartoDB::Visualization::Collection.new.fetch(
       map_id: map_id,
-      type:   Visualization::Member::TYPE_CANONICAL
+      type:   CartoDB::Visualization::Member::TYPE_CANONICAL
     ).first
   end
 

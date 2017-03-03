@@ -11,9 +11,9 @@ module Carto
     before_validation :ensure_auth_saml_configuration
     validates :auth_saml_configuration, carto_json_symbolizer: true
 
-    has_many :users, inverse_of: :organization, order: :username
+    has_many :users, -> { order(:username) }, inverse_of: :organization
     belongs_to :owner, class_name: Carto::User, inverse_of: :owned_organization
-    has_many :groups, inverse_of: :organization, order: :display_name
+    has_many :groups, -> { order(:display_name) }, inverse_of: :organization
     has_many :assets, class_name: Carto::Asset, dependent: :destroy
 
     before_destroy :destroy_groups_with_extension

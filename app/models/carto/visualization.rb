@@ -50,8 +50,8 @@ class Carto::Visualization < ActiveRecord::Base
   # INFO: disable ActiveRecord inheritance column
   self.inheritance_column = :_type
 
-  belongs_to :user, inverse_of: :visualizations, select: Carto::User::DEFAULT_SELECT
-  belongs_to :full_user, class_name: Carto::User, foreign_key: :user_id, primary_key: :id, inverse_of: :visualizations, readonly: true
+  belongs_to :user, -> { select(Carto::User::DEFAULT_SELECT) }, inverse_of: :visualizations
+  belongs_to :full_user, -> { readonly(true) }, class_name: Carto::User, foreign_key: :user_id, primary_key: :id, inverse_of: :visualizations
 
   belongs_to :permission, inverse_of: :visualization
 
@@ -61,7 +61,7 @@ class Carto::Visualization < ActiveRecord::Base
   has_one :external_source
   has_many :unordered_children, class_name: Carto::Visualization, foreign_key: :parent_id
 
-  has_many :overlays, order: '"order"'
+  has_many :overlays, -> { order(:order) }
 
   belongs_to :parent, class_name: Carto::Visualization, primary_key: :parent_id
 
@@ -75,7 +75,7 @@ class Carto::Visualization < ActiveRecord::Base
   has_many :external_sources, class_name: Carto::ExternalSource
 
   has_many :analyses, class_name: Carto::Analysis
-  has_many :mapcaps, class_name: Carto::Mapcap, dependent: :destroy, order: 'created_at DESC'
+  has_many :mapcaps, -> { order('created_at DESC') }, class_name: Carto::Mapcap, dependent: :destroy
 
   has_one :state, class_name: Carto::State, autosave: true
 

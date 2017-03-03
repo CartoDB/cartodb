@@ -70,11 +70,8 @@ module Carto
     has_many :layers_user_table, dependent: :destroy
     has_many :user_tables, through: :layers_user_table, class_name: Carto::UserTable
 
-    has_many :widgets, class_name: Carto::Widget, order: '"order"'
-    has_many :legends,
-             class_name: Carto::Legend,
-             dependent: :destroy,
-             order: :created_at
+    has_many :widgets, -> { order(:order) }, class_name: Carto::Widget
+    has_many :legends, -> { order(:created_at) }, class_name: Carto::Legend, dependent: :destroy
 
     has_many :layer_node_styles
 

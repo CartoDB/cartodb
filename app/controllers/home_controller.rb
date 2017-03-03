@@ -14,7 +14,7 @@ class HomeController < ApplicationController
   CDB_LATEST_VERSION = '0.18.5'.freeze
   REDIS_VERSION = '3'.freeze
   RUBY_BIN_VERSION = 'ruby 2.2.3'.freeze
-  NODE_VERSION = 'v0.08'.freeze
+  NODE_VERSION = 'v0.10'.freeze
   GEOS_VERSION = '3.5.0'.freeze
   GDAL_VERSION = '2.1'.freeze
 

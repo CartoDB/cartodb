@@ -172,21 +172,26 @@ module Carto
     # NOTE: Must not live inside another model as AR internally uses model name as key for its internal connection cache
     # and establish_connection would override the model's connection
     def get_database(options, configuration)
-      resolver = ActiveRecord::Base::ConnectionSpecification::Resolver.new(
-          configuration, get_connection_name(options[:as])
-        )
+      resolver = ActiveRecord::ConnectionAdapters::ConnectionSpecification::Resolver.new([])
       conn = ActiveRecord::Base.connection_handler.establish_connection(
-          get_connection_name(options[:as]), resolver.spec
-        ).connection
+        get_connection_name(options[:as]), resolver.spec(configuration)
+      ).connection
 
       unless options[:as] == :cluster_admin
-        conn.execute(%Q{ SET search_path TO #{@user.db_service.build_search_path} })
+        conn.execute("SET search_path TO #{@user.db_service.build_search_path}")
       end
       conn
     end
 
+    class NamedThing
+      def initialize(name)
+        @name = name
+      end
+      attr_reader :name
+    end
+
     def get_connection_name(kind = :user_model)
-      kind.to_s
+      NamedThing.new(kind.to_s)
     end
 
     def connection(options = {})

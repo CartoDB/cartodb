@@ -5,6 +5,8 @@
   <div class="LayerOnboarding-padMiddle js-highlight"></div>
 </div>
 
+<!-- This file has been modified -->
+
 <div class="LayerOnboarding-contentWrapper LayerOnboarding-contentWrapper--analysis is-step0 js-step">
   <div class="LayerOnboarding-contentBody LayerOnboarding-contentBody--analysis is-step0 js-step">
     <div class="Onboarding-body">

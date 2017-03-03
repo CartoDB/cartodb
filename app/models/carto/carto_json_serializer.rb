@@ -7,7 +7,11 @@ module Carto
     end
 
     def self.load(value)
-      value.nil? ? nil : JSON.parse(value).with_indifferent_access
+      value.nil? ? nil : hash(value).with_indifferent_access
+    end
+
+    def self.hash(value)
+      value.is_a?(Hash) ? value : JSON.parse(value)
     end
   end
 
@@ -17,7 +21,7 @@ module Carto
   # key comparison, fail, and it only applies to the first level.
   class CartoJsonSymbolizerSerializer < CartoJsonSerializer
     def self.load(value)
-      value.nil? ? nil : JSON.parse(value).deep_symbolize_keys
+      value.nil? ? nil : hash(value).deep_symbolize_keys
     end
   end
 end

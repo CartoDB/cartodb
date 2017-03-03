@@ -9,23 +9,23 @@ class HomeController < ApplicationController
 
   OS_VERSION = "Description:\tUbuntu 12.04"
   PG_VERSION = 'PostgreSQL 9.5'.freeze
-  POSTGIS_VERSION = '2.2'
-  CDB_VALID_VERSION = '0.18'
-  CDB_LATEST_VERSION = '0.18.5'
-  REDIS_VERSION = '3'
-  RUBY_BIN_VERSION = 'ruby 2.2.3'
-  NODE_VERSION = 'v0.08'
-  GEOS_VERSION = '3.5.0'
-  GDAL_VERSION = '2.1'
+  POSTGIS_VERSION = '2.2'.freeze
+  CDB_VALID_VERSION = '0.18'.freeze
+  CDB_LATEST_VERSION = '0.18.5'.freeze
+  REDIS_VERSION = '3'.freeze
+  RUBY_BIN_VERSION = 'ruby 2.2.3'.freeze
+  NODE_VERSION = 'v0.08'.freeze
+  GEOS_VERSION = '3.5.0'.freeze
+  GDAL_VERSION = '2.1'.freeze
 
-  WINDSHAFT_VALID_VERSION = '2.88'
-  WINDSHAFT_LATEST_VERSION = '2.88.4'
+  WINDSHAFT_VALID_VERSION = '2.88'.freeze
+  WINDSHAFT_LATEST_VERSION = '2.88.4'.freeze
   RUN_WINDSHAFT_INSTRUCTIONS = 'Run Windshaft: <span class="code">cd /Windshaft-cartodb && node app.js development'\
-    '</span>'
-  SQL_API_VALID_VERSION = '1.43'
-  SQL_API_LATEST_VERSION = '1.43.2'
-  RUN_SQL_API_INSTRUCTIONS = 'Run SQL API: <span class="code">cd /CartoDB-SQL-API; node app.js development</span>'
-  RUN_RESQUE_INSTRUCTIONS =  'Run Resque: <span class="code">bundle exec script/resque</span>'
+    '</span>'.freeze
+  SQL_API_VALID_VERSION = '1.43'.freeze
+  SQL_API_LATEST_VERSION = '1.43.2'.freeze
+  RUN_SQL_API_INSTRUCTIONS = 'Run SQL API <span class="code">cd /CartoDB-SQL-API; node app.js development</span>'.freeze
+  RUN_RESQUE_INSTRUCTIONS =  'Run Resque <span class="code">bundle exec script/resque</span>'.freeze
 
   skip_before_filter :browser_is_html5_compliant?, only: :app_status
   # Don't force org urls
@@ -61,7 +61,9 @@ class HomeController < ApplicationController
       diagnosis_output('SQL API', RUN_SQL_API_INSTRUCTIONS) {
         sql_api_diagnosis(SQL_API_VALID_VERSION, SQL_API_LATEST_VERSION) },
       diagnosis_output('Resque') { resque_diagnosis(RUN_RESQUE_INSTRUCTIONS) },
-      diagnosis_output('GEOS') { single_line_command_version_diagnosis('geos-config --version', minor_version: GEOS_VERSION) },
+      diagnosis_output('GEOS') do
+        single_line_command_version_diagnosis('geos-config --version', minor_version: GEOS_VERSION)
+      end,
       diagnosis_output('GDAL') { single_line_command_version_diagnosis('gdal-config --version', GDAL_VERSION) },
     ]
   end
@@ -215,13 +217,14 @@ class HomeController < ApplicationController
 
   def status_and_messages(version, messages, supported_version, latest_version, minor_version: nil)
     valid = if minor_version.present?
-              Gem::Version.new(version.gsub('v', '')) >= Gem::Version.new(minor_version.gsub('v', ''))
+              Gem::Version.new(version.delete('v')) >= Gem::Version.new(minor_version.delete('v'))
             else
               version =~ /\A#{supported_version}/ ? true : false
             end
     messages = ["Installed version: #{version}"]
     unless valid
-      messages << "Current supported version: #{supported_version}.#{ latest_version.nil? ? '' : "Latest version: #{latest_version}" }"
+      latest = latest_version.nil? ? '' : "Latest version: #{latest_version}"
+      messages << "Current supported version: #{supported_version}.#{latest}"
     end
     if latest_version && valid
       latest = version =~ /\A#{latest_version}/ ? true : false
@@ -232,7 +235,13 @@ class HomeController < ApplicationController
     end
   end
 
-  def single_line_command_version_diagnosis(command, supported_version = nil, line_index = 0, latest_version = nil, minor_version: nil)
+  def single_line_command_version_diagnosis(
+    command,
+    supported_version = nil,
+    line_index = 0,
+    latest_version = nil,
+    minor_version: nil
+  )
     version_diagnosis(supported_version, latest_version, minor_version: minor_version) {
       stdin, stdout, stderr, process = Open3.popen3(command)
       output = stdout.read.split("\n")

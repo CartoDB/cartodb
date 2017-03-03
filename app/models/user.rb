@@ -217,7 +217,7 @@ class User < Sequel::Model
 
   def before_create
     super
-    self.database_host ||= ::Rails::Sequel.configuration.environment_for(Rails.env)['host']
+    self.database_host ||= ::SequelRails.configuration.environment_for(Rails.env)['host']
     self.api_key ||= self.class.make_token
   end
 
@@ -1275,7 +1275,7 @@ class User < Sequel::Model
   end
 
   def last_visualization_created_at
-    Rails::Sequel.connection.fetch("SELECT created_at FROM visualizations WHERE " +
+    SequelRails.connection.fetch("SELECT created_at FROM visualizations WHERE " +
       "map_id IN (select id FROM maps WHERE user_id=?) ORDER BY created_at DESC " +
       "LIMIT 1;", id)
       .to_a.fetch(0, {}).fetch(:created_at, nil)

@@ -641,7 +641,7 @@ shared_examples_for "user models" do
     end
 
     it "should set a default database_host" do
-      @user.database_host.should eq ::Rails::Sequel.configuration.environment_for(Rails.env)['host']
+      @user.database_host.should eq ::SequelRails.configuration.environment_for(Rails.env)['host']
     end
 
     it "should set a default api_key" do

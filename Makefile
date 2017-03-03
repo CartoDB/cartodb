@@ -346,13 +346,10 @@ check-carto-db-class:
 check-integrations:
 	CHECK_SPEC=52 RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_INTEGRATIONS)
 
-CARTO_GEARS_API_SPECS = \
-	spec/carto_gears_api/users_service_spec.rb \
-	$(NULL)
 # TODO: iterate every gears subdirectory #11689
 # TODO: run only `bundle exec rspec`, without specifying the files #11689
 check-carto-gears-api:
-	CHECK_SPEC=53 cd gears/carto_gears_api && RAILS_ENV=test bundle exec rspec $(CARTO_GEARS_API_SPECS)
+	cd gears/carto_gears_api && RAILS_ENV=test bundle exec rspec
 
 check-gears: check-carto-gears-api
 

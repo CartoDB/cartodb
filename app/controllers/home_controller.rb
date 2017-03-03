@@ -242,13 +242,13 @@ class HomeController < ApplicationController
     latest_version = nil,
     minor_version: nil
   )
-    version_diagnosis(supported_version, latest_version, minor_version: minor_version) {
+    version_diagnosis(supported_version, latest_version, minor_version: minor_version) do
       stdin, stdout, stderr, process = Open3.popen3(command)
       output = stdout.read.split("\n")
       if latest_version.nil?
         [output[line_index], output]
       end
-    }
+    end
   end
 
   def configuration_url(conf)

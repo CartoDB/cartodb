@@ -42,6 +42,8 @@ CartoDB::Application.configure do
   config.assets.digest = false
   config.assets.debug = false
 
+  config.eager_load = false
+
   # config.assets.prefix = 'assets-test'
 
   # Configure static asset server for tests with Cache-Control for performance

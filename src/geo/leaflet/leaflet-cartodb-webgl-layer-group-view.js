@@ -23,7 +23,9 @@ var LeafletCartoDBWebglLayerGroupView = L.Class.extend({
 
   initialize: function (layerGroupModel, map) {
     LeafletLayerView.call(this, layerGroupModel, this, map);
-    layerGroupModel.bind('change:urls', this._onURLsChanged, this);
+    layerGroupModel.bind('change:urls',
+      this._onURLsChanged(layerGroupModel.getTileURLTemplates.bind(layerGroupModel))
+    );
 
     this.tangram = new TC(map);
 
@@ -42,12 +44,11 @@ var LeafletCartoDBWebglLayerGroupView = L.Class.extend({
 
   setZIndex: function () {},
 
-  _onURLsChanged: function (e, res) {
-    var url = res.tiles[0]
-      .replace('{layerIndexes}', 'mapnik')
-      .replace('.png', '.mvt');
-
-    this.tangram.addDataSource(url);
+  _onURLsChanged: function (getUrl) {
+    var self = this;
+    return function () {
+      self.tangram.addDataSource(getUrl('mvt'));
+    };
   }
 });
 

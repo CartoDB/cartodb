@@ -46,15 +46,19 @@ var CartoDBLayerGroup = Backbone.Model.extend({
     return !!this.get('urls');
   },
 
-  getTileURLTemplates: function () {
+  getTileURLTemplates: function (type) {
+    type = type || 'png';
+
     if (this._areAllLayersHidden()) {
       return [];
     }
     var tileURLTemplates = (this.get('urls') && this.get('urls').tiles) || [];
-    return _.chain(tileURLTemplates)
-      .map(this._replaceLayerIndexesOfVisibleLayers.bind(this))
+    var urls = _.chain(tileURLTemplates)
+      .map(this._replaceLayerIndexesOfVisibleLayers.bind(this, type))
       .map(this._appendAuthParamsToURL.bind(this))
       .value();
+
+    return type === 'mvt' ? urls && urls[0] : urls;
   },
 
   _areAllLayersHidden: function () {
@@ -63,14 +67,21 @@ var CartoDBLayerGroup = Backbone.Model.extend({
     });
   },
 
-  _replaceLayerIndexesOfVisibleLayers: function (url) {
-    var remoteIndexesOfVisibleLayers = _.reduce(this.getLayers(), function (indexes, layerModel, layerIndex) {
-      if (layerModel.isVisible()) {
-        indexes.push(this.get('indexOfLayersInWindshaft')[layerIndex]);
-      }
-      return indexes;
-    }.bind(this), []);
-    return url.replace('{layerIndexes}', remoteIndexesOfVisibleLayers.join(','));
+  _replaceLayerIndexesOfVisibleLayers: function (type, url) {
+    if (type === 'png') {
+      var remoteIndexesOfVisibleLayers = _.reduce(this.getLayers(), function (indexes, layerModel, layerIndex) {
+        if (layerModel.isVisible()) {
+          indexes.push(this.get('indexOfLayersInWindshaft')[layerIndex]);
+        }
+        return indexes;
+      }.bind(this), []);
+
+      return url.replace('{layerIndexes}', remoteIndexesOfVisibleLayers.join(','));
+    } else if (type === 'mvt') {
+      return url
+        .replace('{layerIndexes}', 'mapnik')
+        .replace('.png', '.mvt');
+    }
   },
 
   hasTileURLTemplates: function () {

@@ -156,3 +156,44 @@ After that, there are several rules you should follow when a new pull request is
   - Change UI assets version, present in [package.json](package.json) file. Minor if it is a bugfixing or a small feature, major when it is a big change.
 - Our linter machine, [Hound](https://houndci.com/), should not trigger any warnings about your changes.
 - All tests should pass, both for JS and Ruby.
+
+## Development environment accessories
+
+The development environment can be quite slow to start up, but we have some workarounds that help speed it up:
+- Using Zeus to avoid the load times of the Rails environment by keeping it into memory. It provides a very fast
+  execution of rails commands.
+- Using Stellar (database snapshotting tool) in order to quickly reload the test database. This is also useful
+  while testing code, in order to quickly rollback to a previous DB state.
+
+### Zeus
+
+1. Install zeus globally with `gem install zeus`. This is recommended but not needed. You can also use `bundle exec zeus`, which is a bit slower.
+2. Start the zeus server. `zeus start`. This will start preloading the environments. and display a colorful status.
+3. In a different console, run your rails commands prefixed by zeus. For example: `zeus c` for console,
+   `zeus rspec xxx` for testing. Run `zeus commands` for a full list (or check `zeus.json`).
+
+Notes:
+- If you want to pass ENV variables, pass them to the `zeus start` process (master), not to the slaves.
+- When testing, you can run `TURBO=1 zeus start` to enable some extra optimizations for the testing environment
+  (less database cleaning).
+- If your console breaks after running zeus, add something like `zeus() { /usr/bin/zeus "$@"; stty sane; }` to `.bashrc`.
+- If using Vagrant and getting errors, check out [zeus docs](https://github.com/burke/zeus/wiki/Using-with-vagrant).
+  Basically, you have to run with `ZEUSSOCK=/tmp/zeus.sock` as an environment variable.
+
+### Stellar
+
+1. Install stellar. Check your distribution packages, or install with pip: `pip install stellar`
+2. Create a configuration file by running `stellar init` and following the steps. The connection string is: `postgresql://postgres@localhost/carto_db_test`. The project name doesn't matter.
+3. Create a clean testing database `make prepare-test-db`
+4. Create a snapshot: `stellar snapshot`
+
+Then to use it for testing, you can pass `STELLAR=stellar` (you can pass the executable path) as an ENV variable and the
+testing environment will use it to clean up the database (instead of manually truncating tables).
+
+#### For development
+Stellar can also be useful for development, to quickly restore the database to its original configuration. Just create
+a different configuration (by going to a different directory, stellar always reads `stellar.yaml` in the current path)
+for the development environment.
+
+Then, you can use `stellar snapshot` and `stellar restore` to take and restore snapshot quickly. Also check
+`stellar list` to list current db snapshots and `stellar gc` to remove old ones.

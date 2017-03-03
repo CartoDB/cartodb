@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.6.0-11469",
+  "version": "4.6.12",
   "dependencies": {
     "backbone": {
       "version": "1.2.3",
@@ -10,7 +10,7 @@
     "backbone-forms": {
       "version": "0.14.0",
       "from": "backbone-forms@0.14.0",
-      "resolved": "https://registry.npmjs.org/backbone-forms/-/backbone-forms-0.14.0.tgz"
+      "resolved": "http://registry.npmjs.org/backbone-forms/-/backbone-forms-0.14.0.tgz"
     },
     "backbone-model-file-upload": {
       "version": "1.0.0",
@@ -182,9 +182,9 @@
                           "resolved": "https://registry.npmjs.org/path-is-absolute/-/path-is-absolute-1.0.1.tgz"
                         },
                         "rimraf": {
-                          "version": "2.6.0",
+                          "version": "2.6.1",
                           "from": "rimraf@>=2.2.8 <3.0.0",
-                          "resolved": "https://registry.npmjs.org/rimraf/-/rimraf-2.6.0.tgz",
+                          "resolved": "https://registry.npmjs.org/rimraf/-/rimraf-2.6.1.tgz",
                           "dependencies": {
                             "glob": {
                               "version": "7.1.1",
@@ -623,9 +623,9 @@
                               }
                             },
                             "is-my-json-valid": {
-                              "version": "2.15.0",
+                              "version": "2.16.0",
                               "from": "is-my-json-valid@>=2.12.4 <3.0.0",
-                              "resolved": "https://registry.npmjs.org/is-my-json-valid/-/is-my-json-valid-2.15.0.tgz",
+                              "resolved": "https://registry.npmjs.org/is-my-json-valid/-/is-my-json-valid-2.16.0.tgz",
                               "dependencies": {
                                 "generate-function": {
                                   "version": "2.0.0",
@@ -1101,7 +1101,7 @@
     "camshaft-reference": {
       "version": "0.29.0",
       "from": "camshaft-reference@<2.0.0",
-      "resolved": "https://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.29.0.tgz"
+      "resolved": "http://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.29.0.tgz"
     },
     "carto": {
       "version": "0.15.1-cdb1",
@@ -1147,7 +1147,7 @@
     "cartodb-deep-insights.js": {
       "version": "0.0.2",
       "from": "cartodb/deep-insights.js#master",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#f8469d8d4c3b4d10d07d8268bdf6feb822330a6f",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#db4433f6bd036022add7f1ac4d7a3e9ec4536163",
       "dependencies": {
         "cartodb.js": {
           "version": "4.0.0-alpha.1",
@@ -1399,7 +1399,7 @@
             "perfect-scrollbar": {
               "version": "0.6.16",
               "from": "git://github.com/CartoDB/perfect-scrollbar.git#master",
-              "resolved": "git://github.com/CartoDB/perfect-scrollbar.git#735c6c0bf3cff1c4756d0b186d5ca00b0d8cf880"
+              "resolved": "git://github.com/CartoDB/perfect-scrollbar.git#085cd7abdd8426d6fa1e8527dcf6c2734e2318c6"
             },
             "torque.js": {
               "version": "2.16.3",
@@ -1534,7 +1534,7 @@
         "perfect-scrollbar": {
           "version": "0.6.16",
           "from": "git://github.com/CartoDB/perfect-scrollbar.git#master",
-          "resolved": "git://github.com/CartoDB/perfect-scrollbar.git#735c6c0bf3cff1c4756d0b186d5ca00b0d8cf880"
+          "resolved": "git://github.com/CartoDB/perfect-scrollbar.git#085cd7abdd8426d6fa1e8527dcf6c2734e2318c6"
         },
         "tinycolor2": {
           "version": "1.4.1",
@@ -1808,7 +1808,7 @@
         "perfect-scrollbar": {
           "version": "0.6.16",
           "from": "git://github.com/CartoDB/perfect-scrollbar.git#master",
-          "resolved": "git://github.com/CartoDB/perfect-scrollbar.git#735c6c0bf3cff1c4756d0b186d5ca00b0d8cf880"
+          "resolved": "git://github.com/CartoDB/perfect-scrollbar.git#085cd7abdd8426d6fa1e8527dcf6c2734e2318c6"
         },
         "torque.js": {
           "version": "2.16.3",
@@ -1929,14 +1929,14 @@
       "resolved": "https://registry.npmjs.org/clipboard/-/clipboard-1.5.12.tgz",
       "dependencies": {
         "good-listener": {
-          "version": "1.2.1",
+          "version": "1.2.2",
           "from": "good-listener@>=1.1.6 <2.0.0",
-          "resolved": "https://registry.npmjs.org/good-listener/-/good-listener-1.2.1.tgz",
+          "resolved": "https://registry.npmjs.org/good-listener/-/good-listener-1.2.2.tgz",
           "dependencies": {
             "delegate": {
-              "version": "3.1.1",
-              "from": "delegate@>=3.1.1 <4.0.0",
-              "resolved": "https://registry.npmjs.org/delegate/-/delegate-3.1.1.tgz"
+              "version": "3.1.2",
+              "from": "delegate@>=3.1.2 <4.0.0",
+              "resolved": "https://registry.npmjs.org/delegate/-/delegate-3.1.2.tgz"
             }
           }
         },
@@ -1975,12 +1975,12 @@
     "perfect-scrollbar": {
       "version": "0.6.16",
       "from": "git://github.com/CartoDB/perfect-scrollbar.git#master",
-      "resolved": "git://github.com/CartoDB/perfect-scrollbar.git#735c6c0bf3cff1c4756d0b186d5ca00b0d8cf880"
+      "resolved": "git://github.com/CartoDB/perfect-scrollbar.git#085cd7abdd8426d6fa1e8527dcf6c2734e2318c6"
     },
     "queue-async": {
       "version": "1.2.1",
       "from": "queue-async@1.2.1",
-      "resolved": "https://registry.npmjs.org/queue-async/-/queue-async-1.2.1.tgz"
+      "resolved": "http://registry.npmjs.org/queue-async/-/queue-async-1.2.1.tgz"
     },
     "tangram": {
       "version": "0.11.7",

@@ -1,17 +1,14 @@
-<div class="CDB-Box-modalHeader">
-  <% if (showBackButton || columnType === 'number') { %>
-    <ul class="CDB-Box-modalHeaderItem CDB-Box-modalHeaderItem--block CDB-Box-modalHeaderItem--paddingHorizontal">
-      <li class="CDB-ListDecoration-item CDB-ListDecoration-itemPadding--vertical CDB-Text CDB-Size-medium u-secondaryTextColor">
-        <ul class="u-flex u-justifySpace">
-          <% if (showBackButton) { %>
-          <li class="u-flex">
-            <button class="u-rSpace u-actionTextColor js-back">
-              <i class="CDB-IconFont CDB-IconFont-arrowPrev Size-large"></i>
-            </button>
-            <span class="label js-label"><%- attribute %></span>
-          </li>
-          <% } %>
-          <% if (columnType === 'number') { %>
+<div class="CDB-Box-modalHeader js-prevStep">
+  <ul class="CDB-Box-modalHeaderItem CDB-Box-modalHeaderItem--block CDB-Box-modalHeaderItem--paddingHorizontal">
+    <li class="CDB-ListDecoration-item CDB-ListDecoration-itemPadding--vertical CDB-Text CDB-Size-medium u-secondaryTextColor">
+      <ul class="u-flex u-justifySpace">
+        <li class="u-flex">
+          <button class="u-rSpace u-actionTextColor js-back">
+            <i class="CDB-IconFont CDB-IconFont-arrowPrev Size-large"></i>
+          </button>
+          <span class="label js-label"><%- attribute %></span>
+        </li>
+        <% if (columnType === 'number') { %>
           <li class="u-flex">
             <%- _t('form-components.editors.fill.quantification.methods.' + quantification) %>
             <button class="CDB-Shape u-lSpace js-quantification">
@@ -22,11 +19,10 @@
               </div>
             </button>
           </li>
-          <% } %>
-        </ul>
-      </li>
-    </ul>
-  <% } %>
+        <% } %>
+      </ul>
+    </li>
+  </ul>
 </div>
 <div class="InputColorCategory-loader js-loader is-hidden">
   <div class="CDB-LoaderIcon is-dark">

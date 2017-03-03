@@ -55,6 +55,7 @@ Development
 * Improved formula widget description field. (#11469)
 * Added support for Zeus for faster testing (#11574). Check `CONTRIBUTING.md` for configuration details.
 * Migrate to use GNIP v2 for twitter search connector (#10051, #11595)
+* Invite to georeference proactively when detecting non-georeferenced data (#11316)
 
 ### Bug fixes
 * Fixed problem with Bubbles legend when a new analysis is applied (#11666)
@@ -100,6 +101,10 @@ Development
 * Color scheme is now clickable in category ramps (#11413)
 * Fix responsive layout in onboarding steps (#11444)
 * Correctly create custom category legend if style has icons (#11592)
+* Fix problem with perfect-scrollbar in Edge browsers (CartoDB/perfect-scrollbar/#2)
+* Layer onboardings are now aware on sync'd layers and highlighted area is clicked. (#11583)
+
+* JOIN Analysis Fails Without Error Message (#11184)
 * Fix problem with perfect-scrollbar in Edge browsers (CartoDB/perfect-scrollbar/#2)
 
 4.0.x (2016-12-05)

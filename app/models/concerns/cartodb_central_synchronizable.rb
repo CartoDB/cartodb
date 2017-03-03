@@ -71,7 +71,7 @@ module Concerns
            :obs_snapshot_quota, :obs_snapshot_block_price, :obs_general_quota,
            :obs_general_block_price, :salesforce_datasource_enabled, :geocoder_provider,
            :isolines_provider, :routing_provider, :engine_enabled, :builder_enabled,
-           :mapzen_routing_quota, :mapzen_routing_block_price]
+           :mapzen_routing_quota, :mapzen_routing_block_price, :no_map_logo]
         when :update
           [:seats, :viewer_seats, :quota_in_bytes, :display_name, :description, :website,
            :discus_shortname, :twitter_username, :geocoding_quota, :map_view_quota,
@@ -83,7 +83,7 @@ module Concerns
            :obs_snapshot_quota, :obs_snapshot_block_price, :obs_general_quota,
            :obs_general_block_price, :salesforce_datasource_enabled, :geocoder_provider,
            :isolines_provider, :routing_provider, :engine_enabled, :builder_enabled,
-           :mapzen_routing_quota, :mapzen_routing_block_price]
+           :mapzen_routing_quota, :mapzen_routing_block_price, :no_map_logo]
         end
       elsif is_a?(::User)
         [:account_type, :admin, :crypted_password, :database_host,
@@ -108,7 +108,7 @@ module Concerns
          :mobile_gis_extension, :mobile_max_open_users, :mobile_max_private_users,
          :salesforce_datasource_enabled, :viewer, :geocoder_provider,
          :isolines_provider, :routing_provider, :engine_enabled, :builder_enabled,
-         :mapzen_routing_quota, :mapzen_routing_block_price, :soft_mapzen_routing_limit]
+         :mapzen_routing_quota, :mapzen_routing_block_price, :soft_mapzen_routing_limit, :no_map_logo]
       end
     end
 

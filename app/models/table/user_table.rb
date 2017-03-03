@@ -1,6 +1,7 @@
 # coding: UTF-8
 require 'cartodb/per_request_sequel_cache'
 require 'forwardable'
+require_relative '../visualization/collection'
 
 # This class is intended to deal exclusively with storage
 class UserTable < Sequel::Model

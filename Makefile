@@ -346,12 +346,10 @@ check-carto-db-class:
 check-integrations:
 	CHECK_SPEC=52 RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_INTEGRATIONS)
 
-# TODO: iterate every gears subdirectory #11689
-# TODO: run only `bundle exec rspec`, without specifying the files #11689
-check-carto-gears-api:
-	cd gears/carto_gears_api && RAILS_ENV=test bundle exec rspec
+check-gear/%: %
+	cd $< && RAILS_ENV=test bundle exec rspec
 
-check-gears: check-carto-gears-api
+check-gears: $(addprefix check-gear/, $(wildcard gears/*))
 
 check-external: prepare-test-db check-integrations
 

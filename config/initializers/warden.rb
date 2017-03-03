@@ -294,7 +294,7 @@ Warden::Manager.after_set_user except: :fetch do |user, auth, opts|
   warden_proxy = auth.env['warden']
   # On testing there is no warden global so we cannot run this logic
   if warden_proxy
-    auth.env['rack.session'].select { |key, value|
+    auth.env['rack.session'].to_hash.select { |key, value|
       key.start_with?("warden.user") && !key.end_with?(".session")
     }.each { |key, value|
       unless value == user.username

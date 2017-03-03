@@ -50,7 +50,7 @@ module Carto
       end
 
       it 'only accepts known types' do
-        Legend::VALID_LEGEND_TYPES.split.each do |type|
+        Legend::VALID_LEGEND_TYPES.each do |type|
           @legend.type = type
           @legend.valid?
           @legend.errors[:type].should be_empty

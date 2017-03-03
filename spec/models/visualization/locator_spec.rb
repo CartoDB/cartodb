@@ -24,7 +24,7 @@ describe Visualization::Locator do
   before do
     bypass_named_maps
 
-    @db = Rails::Sequel.connection
+    @db = SequelRails.connection
     Sequel.extension(:pagination)
 
     Visualization.repository  = DataRepository::Backend::Sequel.new(@db, :visualizations)

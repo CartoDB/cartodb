@@ -11,7 +11,7 @@ namespace :cartodb do
       end
       puts "Setting bounding boxes for canonical of the user #{user_id}..."
       user = Carto::User.find(user_id)
-      table_names = Rails::Sequel.connection.fetch(
+      table_names = SequelRails.connection.fetch(
         %Q{SELECT name FROM user_tables WHERE user_tables.user_id = ?}, user_id
       )
       updated = 0

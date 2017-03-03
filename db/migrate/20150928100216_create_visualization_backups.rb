@@ -1,6 +1,6 @@
 Sequel.migration do
   up do
-    Rails::Sequel::connection.run 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp"'
+    SequelRails::connection.run 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp"'
 
     # INFO: On purpose without indexes, constraints, etc.
     create_table :visualization_backups do

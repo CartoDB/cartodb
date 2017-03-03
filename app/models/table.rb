@@ -246,7 +246,7 @@ class Table
       uniname = get_valid_name(name ? name : migrate_existing_table) unless uniname
 
       # with table #{uniname} table created now run migrator to CartoDBify
-      hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+      hash_in = ::SequelRails.configuration.environment_for(Rails.env).merge(
         'host' => owner.database_host,
         'database' => owner.database_name,
         :logger => ::Rails.logger,
@@ -1149,7 +1149,7 @@ class Table
   end
 
   def relator
-    @relator ||= CartoDB::TableRelator.new(Rails::Sequel.connection, self)
+    @relator ||= CartoDB::TableRelator.new(SequelRails.connection, self)
   end
 
   def set_table_id

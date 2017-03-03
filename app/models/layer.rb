@@ -143,7 +143,7 @@ class Layer < Sequel::Model
     basemap? && options["labels"] && options["labels"]["url"]
   end
 
-  def register_table_dependencies(db=Rails::Sequel.connection)
+  def register_table_dependencies(db=SequelRails.connection)
     db.transaction do
       delete_table_dependencies
       insert_table_dependencies

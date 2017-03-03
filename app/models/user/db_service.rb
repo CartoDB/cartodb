@@ -965,33 +965,33 @@ module CartoDB
       def db_configuration_for(user_role = nil)
         logger = (Rails.env.development? || Rails.env.test? ? ::Rails.logger : nil)
         if user_role == :superuser
-          ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+          ::SequelRails.configuration.environment_for(Rails.env).merge(
             'database' => @user.database_name,
             :logger => logger,
             'host' => @user.database_host
           ) { |_, o, n| n.nil? ? o : n }
         elsif user_role == :cluster_admin
-          ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+          ::SequelRails.configuration.environment_for(Rails.env).merge(
             'database' => 'postgres',
             :logger => logger,
             'host' => @user.database_host
           ) { |_, o, n| n.nil? ? o : n }
         elsif user_role == :public_user
-          ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+          ::SequelRails.configuration.environment_for(Rails.env).merge(
             'database' => @user.database_name,
             :logger => logger,
             'username' => CartoDB::PUBLIC_DB_USER, 'password' => CartoDB::PUBLIC_DB_USER_PASSWORD,
             'host' => @user.database_host
           ) { |_, o, n| n.nil? ? o : n }
         elsif user_role == :public_db_user
-          ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+          ::SequelRails.configuration.environment_for(Rails.env).merge(
             'database' => @user.database_name,
             :logger => logger,
             'username' => @user.database_public_username, 'password' => CartoDB::PUBLIC_DB_USER_PASSWORD,
             'host' => @user.database_host
           ) { |_, o, n| n.nil? ? o : n }
         else
-          ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+          ::SequelRails.configuration.environment_for(Rails.env).merge(
             'database' => @user.database_name,
             :logger => logger,
             'username' => @user.database_username,
@@ -1132,7 +1132,7 @@ module CartoDB
         begin
           conn.run("CREATE DATABASE \"#{@user.database_name}\"
           WITH TEMPLATE = template_postgis
-          OWNER = #{::Rails::Sequel.configuration.environment_for(Rails.env)['username']}
+          OWNER = #{::SequelRails.configuration.environment_for(Rails.env)['username']}
           ENCODING = 'UTF8'
           CONNECTION LIMIT=-1")
         rescue => e
@@ -1173,7 +1173,7 @@ module CartoDB
       end
 
       def self.terminate_database_connections(database_name, database_host)
-        connection_params = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+        connection_params = ::SequelRails.configuration.environment_for(Rails.env).merge(
           'host' => database_host,
           'database' => 'postgres'
         ) { |_, o, n| n.nil? ? o : n }

@@ -375,7 +375,7 @@ describe Table do
         @user.save
         table = create_table({:name => 'Wadus table', :user_id => @user.id})
 
-        Rails::Sequel.connection.table_exists?(table.name.to_sym).should be_false
+        SequelRails.connection.table_exists?(table.name.to_sym).should be_false
 
         @user.in_database do |user_database|
           user_database.table_exists?(table.name.to_sym).should be_true
@@ -1336,7 +1336,7 @@ describe Table do
 
         table = create_table(name: 'Wadus table', user_id: @user.id)
 
-        Rails::Sequel.connection.table_exists?(table.name.to_sym).should be_false
+        SequelRails.connection.table_exists?(table.name.to_sym).should be_false
         @user.in_database do |user_database|
           user_database.table_exists?(table.name.to_sym).should be_true
         end
@@ -1367,7 +1367,7 @@ describe Table do
         table = create_table({:name => 'Wadus table', :user_id => @user.id})
         table.name.should == 'wadus_table'
 
-        Rails::Sequel.connection.table_exists?(table.name.to_sym).should be_false
+        SequelRails.connection.table_exists?(table.name.to_sym).should be_false
         @user.in_database do |user_database|
           user_database.table_exists?(table.name.to_sym).should be_true
         end

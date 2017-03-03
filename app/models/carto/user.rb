@@ -541,7 +541,7 @@ class Carto::User < ActiveRecord::Base
   private
 
   def set_database_host
-    self.database_host ||= ::Rails::Sequel.configuration.environment_for(Rails.env)['host']
+    self.database_host ||= ::SequelRails.configuration.environment_for(Rails.env)['host']
   end
 
   def generate_api_key

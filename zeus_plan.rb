@@ -49,7 +49,7 @@ class CustomPlan < Zeus::Rails
       job_id = ARGV.delete(job_index).split('#')[1] if job_index
       ENV['PARALLEL_SEQ'] = job_id || Process.pid.to_s
     end
-    Rails::Sequel.connection.disconnect
+    SequelRails.connection.disconnect
 
     exit super
   end

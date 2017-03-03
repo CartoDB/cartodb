@@ -141,6 +141,6 @@ module BoundingBoxHelper
     polygon_sql = to_polygon(bounds[:minx], bounds[:miny], bounds[:maxx], bounds[:maxy])
     safe_table_name = safe_table_name_quoting(table_name)
     update_sql = %{UPDATE #{safe_table_name} SET #{column_name} = #{polygon_sql} WHERE id = '#{id}';}
-    Rails::Sequel.connection.run(update_sql)
+    SequelRails.connection.run(update_sql)
   end
 end

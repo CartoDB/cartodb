@@ -87,24 +87,6 @@ class UserTable < Sequel::Model
 
   def_delegators :relator, :affected_visualizations
 
-  def_dataset_method(:search) do |query|
-    conditions = <<-EOS
-      to_tsvector('english', coalesce(name, '') || ' ' || coalesce(description, '')) @@ plainto_tsquery('english', ?) OR name ILIKE ?
-      EOS
-    where(conditions, query, "%#{query}%")
-  end
-
-  def_dataset_method(:multiple_order) do |criteria|
-    if criteria.nil? || criteria.empty?
-      order(:id)
-    else
-      order_params = criteria.map do |key, order|
-        Sequel.send(order.to_sym, key.to_sym)
-      end
-      order(*order_params)
-    end
-  end
-
   # Ignore mass-asigment on not allowed columns
   self.strict_param_setting = false
 

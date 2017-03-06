@@ -28,4 +28,15 @@ WindshaftError.prototype.isAnalysisError = function (errorType) {
   return errorType === ERROR_TYPE_ANALYSIS;
 };
 
+WindshaftError.prototype.toString = function () {
+  var prefix = 'Maps API Error -> ';
+  if (this.layerId) {
+    return prefix + "Layer '" + this.layerId + "' has errors: \n" + this.message;
+  }
+  if (this.analysisId) {
+    return prefix + "Analysis '" + this.analysisId + "' has errors: \n" + this.message;
+  }
+  return prefix + 'Unknown error: \n' + this.message;
+};
+
 module.exports = WindshaftError;

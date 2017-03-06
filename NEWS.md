@@ -74,6 +74,7 @@ Development
   * Run `cartodb:db:register_table_dependencies` rake to update caches for existing maps
 * Categories legend are now static (#10972)
 * Fixed a bug with vizjson invalidation (#11092). It was introduced in #10934
+* Refactor Layer model (#10934) and UserTable (#11589).
 * Correctly render map previews for maps with google basemaps (#11608)
 * Refactor Layer model (#10934)
 * Correctly register table dependencies of torque layers (#11549)

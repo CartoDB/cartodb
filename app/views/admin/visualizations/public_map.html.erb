@@ -188,7 +188,7 @@
                     <div class="DatasetsList-itemInfo">
                       <div class="DatasetsList-itemPrimaryInfo">
                         <h3 class="DatasetsList-itemTitle DefaultTitle u-ellipsLongText CDB-Text CDB-Size-large u-mainTextColor">
-                          <a href="<%= CartoDB.url(self, 'public_table', {id: vis.table.name}, @user_domain.nil? ? nil : @related_tables_owners[vis.table.user_id]) %>" title="<%= vis.table.name %>" class="DefaultTitle-link u-ellipsLongText"><%= vis.table.name %></a>
+                          <a href="<%= CartoDB.url(self, 'public_table', {id: vis.user_table.name}, @user_domain.nil? ? nil : @related_tables_owners[vis.user_table.user_id]) %>" title="<%= vis.user_table.name %>" class="DefaultTitle-link u-ellipsLongText"><%= vis.user_table.name %></a>
                         </h3>
                         <% if vis.description %>
                           <div class="DefaultDescription DatasetsList-itemDescription u-ellipsLongText CDB-Text CDB-Size-medium u-altTextColor"><%= raw vis.description_html_safe %></div>
@@ -203,10 +203,10 @@
                           data-vis-id="<%= vis.id %>"
                           data-likes-count="<%= vis.likes.count %>">
                         </a>
-                        <% if (vis.table.service.rows_counted) %>
+                        <% if (vis.user_table.service.rows_counted) %>
                           <span class="RowsIndicator u-hideOnTablet">
                             <i class="CDB-IconFont CDB-IconFont-rows RowsIndicator-icon u-altTextColor CDB-Size-small"></i>
-                            <%= "#{number_to_human(vis.table.service.rows_counted, format: "%n%u", units: { unit: "", thousand: "K", million: "M" }, delimiter: ",")} row#{vis.table.service.rows_counted.size == 1 ? "" : "s"}" %>
+                            <%= "#{number_to_human(vis.user_table.service.rows_counted, format: "%n%u", units: { unit: "", thousand: "K", million: "M" }, delimiter: ",")} row#{vis.user_table.service.rows_counted.size == 1 ? "" : "s"}" %>
                           </span>
                         <% end %>
                         <span class="DatasetsList-itemTimeDiff DefaultTimeDiff u-hideOnTablet">

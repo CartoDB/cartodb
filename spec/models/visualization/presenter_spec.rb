@@ -60,8 +60,7 @@ describe Visualization::Member do
 
   describe 'to_poro fields' do
     it 'basic fields expected at the to_poro method' do
-      perm_mock = mock
-      perm_mock.stubs(:to_poro).returns({ wadus: 'wadus'})
+      perm_mock = FactoryGirl.build(:carto_permission)
 
       vis_mock = mock
       vis_mock.stubs(:id).returns(UUIDTools::UUID.timestamp_create.to_s)

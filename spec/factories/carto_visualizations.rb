@@ -1,20 +1,19 @@
+require_relative '../support/factories/tables'
+
 module Carto
   module Factories
     module Visualizations
+      include CartoDB::Factories
+
       def full_visualization_table(carto_user, map)
-        FactoryGirl.create(
-          :carto_user_table,
-          user_id: carto_user.id,
-          map_id: map.id,
-          privacy: Carto::UserTable::PRIVACY_PUBLIC
-        )
+        Carto::UserTable.find(create_table(name: unique_name('fvt_table'), user_id: carto_user.id).id)
       end
 
       def create_full_builder_vis(carto_user, privacy: Carto::Visualization::PRIVACY_PUBLIC)
         create_full_visualization(carto_user, visualization_attributes: { version: 3, privacy: privacy })
       end
 
-      # "Full visualization": with map, table... Metadata only (not actual user table).
+      # "Full visualization": with map, table... Including actual user table.
       # Table is bound to visualization, and to data_layer if it's not passed.
       def create_full_visualization(
         carto_user,
@@ -60,6 +59,7 @@ module Carto
       def destroy_full_visualization(map, table, table_visualization, visualization)
         table_visualization.map.destroy if table_visualization && table_visualization.map
         table_visualization.destroy if table_visualization
+        table.service.destroy if table && table.service
         table.destroy if table
         visualization.destroy if visualization
         map.destroy if map

@@ -58,7 +58,7 @@ module Carto
           table: user_table_presentation,
           external_source: Carto::Api::ExternalSourcePresenter.new(@visualization.external_source).to_poro,
           synchronization: Carto::Api::SynchronizationPresenter.new(@visualization.synchronization).to_poro,
-          liked: @current_viewer ? @visualization.is_liked_by_user_id?(@current_viewer.id) : false,
+          liked: @current_viewer ? @visualization.liked_by?(@current_viewer.id) : false,
           url: url,
           uses_builder_features: @visualization.uses_builder_features?,
           auth_tokens: auth_tokens,

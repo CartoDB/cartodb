@@ -126,6 +126,7 @@ describe Carto::Api::VisualizationExportsController, type: :controller do
 
     describe '#show' do
       before(:all) do
+        bypass_named_maps
         @visualization = FactoryGirl.create(:carto_visualization, user: @user)
         @export = FactoryGirl.create(:visualization_export, visualization: @visualization, user: @user)
         @anonymous_export = FactoryGirl.create(:visualization_export, visualization: @visualization, user: nil)
@@ -179,6 +180,7 @@ describe Carto::Api::VisualizationExportsController, type: :controller do
 
     describe '#download' do
       before(:all) do
+        bypass_named_maps
         @visualization = FactoryGirl.create(:carto_visualization, user: @user)
         @export = FactoryGirl.create(:visualization_export, visualization: @visualization, user: @user)
         @anonymous_export = FactoryGirl.create(:visualization_export, visualization: @visualization, user: nil)

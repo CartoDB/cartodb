@@ -382,6 +382,7 @@ describe Carto::VisualizationQueryBuilder do
     end
 
     it 'does not select private v2 maps' do
+      @carto_user1.stubs(:private_maps_enabled?).returns(true)
       map, table, table_visualization, visualization = create_full_visualization(@carto_user1, visualization_attributes: { version: 2, privacy: Carto::Visualization::PRIVACY_PRIVATE })
 
       visualizations = @vqb.with_published.build

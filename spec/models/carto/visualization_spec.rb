@@ -159,6 +159,7 @@ describe Carto::Visualization do
 
   describe '#can_be_private?' do
     before(:all) do
+      bypass_named_maps
       @visualization = FactoryGirl.create(:carto_visualization, user: @carto_user)
       @visualization.reload # to clean up the user relation (see #11134)
     end

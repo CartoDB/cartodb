@@ -1,8 +1,10 @@
 # coding: UTF-8
 require 'cartodb/per_request_sequel_cache'
+require 'forwardable'
 
 # This class is intended to deal exclusively with storage
 class UserTable < Sequel::Model
+  extend Forwardable
 
   INTERFACE = %w{
     pk
@@ -46,6 +48,8 @@ class UserTable < Sequel::Model
     set_except
     update_updated_at
     values
+    affected_visualizations
+    reload
   }
 
   PRIVACY_PRIVATE = 0
@@ -78,6 +82,8 @@ class UserTable < Sequel::Model
                                     layers:               :nullify,
                                     automatic_geocoding:  :destroy
   plugin :dirty
+
+  def_delegators :relator, :affected_visualizations
 
   def_dataset_method(:search) do |query|
     conditions = <<-EOS
@@ -257,11 +263,6 @@ class UserTable < Sequel::Model
     service.update_cdb_tablemetadata
   end
 
-  def table_visualization
-    service.table_visualization
-  end
-
-
   def privacy_text
     PRIVACY_VALUES_TO_TEXTS[self.privacy].upcase
   end
@@ -293,10 +294,6 @@ class UserTable < Sequel::Model
     self.privacy == PRIVACY_LINK
   end #public_with_link_only?
 
-  def privacy_changed?
-    @user_table.previous_changes.keys.include?(:privacy)
-  end
-
   # TODO move tags to value object. A set is more appropriate
   def tags=(value)
     return unless value
@@ -323,6 +320,21 @@ class UserTable < Sequel::Model
 
   def external_source_visualization
     data_import.try(:external_data_imports).try(:first).try(:external_source).try(:visualization)
+  end
+
+  def table_visualization
+    @table_visualization ||= CartoDB::Visualization::Collection.new.fetch(
+      map_id: map_id,
+      type:   CartoDB::Visualization::Member::TYPE_CANONICAL
+    ).first
+  end
+
+  def privacy_changed?
+    previous_changes && previous_changes.keys.include?(:privacy)
+  end
+
+  def privacy_was
+    previous_changes[:privacy].first
   end
 
   private
@@ -375,5 +387,9 @@ class UserTable < Sequel::Model
     map.reload
 
     CartoDB::Visualization::Overlays.new(member).create_default_overlays
+  end
+
+  def relator
+    @relator ||= CartoDB::TableRelator.new(Rails::Sequel.connection, self)
   end
 end

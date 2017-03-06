@@ -34,7 +34,7 @@
     "perfect-scrollbar": "git://github.com/CartoDB/perfect-scrollbar.git#master",
     "queue-async": "1.2.1",
     "torque.js": "CartoDB/torque#master",
-    "tangram": "cartodb/tangram-1#race-cond",
+    "tangram": "cartodb/tangram-1#release-carto",
     "underscore": "1.8.3"
   },
   "devDependencies": {

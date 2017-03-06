@@ -51,6 +51,8 @@ module Carto
     after_create :create_canonical_visualization
     after_create { service.after_create }
     after_save { CartoDB::Logger.debug(message: "Carto::UserTable#after_save"); service.after_save }
+    before_destroy { service.before_destroy }
+    after_destroy { service.after_destroy }
 
     def geometry_types
       @geometry_types ||= service.geometry_types
@@ -164,10 +166,7 @@ module Carto
     end
 
     def table_visualization
-      @table_visualization ||= Carto::Visualization.where(
-        map_id: map_id,
-        type:   Carto::Visualization::TYPE_CANONICAL
-      ).first
+      map.visualization
     end
 
     def update_cdb_tablemetadata

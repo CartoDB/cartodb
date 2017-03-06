@@ -2507,6 +2507,6 @@ describe Table do
     end
 
     it_behaves_like 'table service'
-    #it_behaves_like 'table service with legacy model'
+    it_behaves_like 'table service with legacy model'
   end
 end

@@ -57,21 +57,21 @@ class Carto::Visualization < ActiveRecord::Base
   belongs_to :user, inverse_of: :visualizations, select: Carto::User::DEFAULT_SELECT
   belongs_to :full_user, class_name: Carto::User, foreign_key: :user_id, primary_key: :id, inverse_of: :visualizations, readonly: true
 
-  belongs_to :permission, inverse_of: :visualization
+  belongs_to :permission, inverse_of: :visualization, dependent: :destroy
 
   has_many :likes, foreign_key: :subject
-  has_many :shared_entities, foreign_key: :entity_id, inverse_of: :visualization
+  has_many :shared_entities, foreign_key: :entity_id, inverse_of: :visualization, dependent: :destroy
 
   has_one :external_source
   has_many :unordered_children, class_name: Carto::Visualization, foreign_key: :parent_id
 
-  has_many :overlays, order: '"order"'
+  has_many :overlays, order: '"order"', dependent: :destroy
 
   belongs_to :parent, class_name: Carto::Visualization, primary_key: :parent_id
 
   belongs_to :active_layer, class_name: Carto::Layer
 
-  belongs_to :map, class_name: Carto::Map, inverse_of: :visualization
+  belongs_to :map, class_name: Carto::Map, inverse_of: :visualization, dependent: :destroy
 
   has_many :related_templates, class_name: Carto::Template, foreign_key: :source_visualization_id
 
@@ -96,6 +96,10 @@ class Carto::Visualization < ActiveRecord::Base
   after_save :save_named_map_or_rollback_privacy, :propagate_attribution_change
   after_save :propagate_privacy_and_name_to, if: :table
 
+  before_destroy :backup_visualization
+  after_destroy :invalidate_cache
+  after_destroy :destroy_named_map
+
   # INFO: workaround for array saves not working. There is a bug in `activerecord-postgresql-array` which
   # makes inserting including array fields to save, but updates work. Wo se insert without tags and add them
   # with an update after creation. This is fixed in Rails 4.
@@ -118,10 +122,6 @@ class Carto::Visualization < ActiveRecord::Base
 
   def self.columns
     super.reject { |c| DELETED_COLUMNS.include?(c.name) }
-  end
-
-  def ==(other_visualization)
-    id == other_visualization.id
   end
 
   def size
@@ -386,6 +386,10 @@ class Carto::Visualization < ActiveRecord::Base
 
   def attributions_from_derived_visualizations
     related_canonical_visualizations.map(&:attributions).reject(&:blank?)
+  end
+
+  def delete_from_table
+    destroy if persisted?
   end
 
   def get_named_map
@@ -726,5 +730,22 @@ class Carto::Visualization < ActiveRecord::Base
       self.privacy = privacy_was
       save
     end
+  end
+
+  def backup_visualization
+    if user.has_feature_flag?(Carto::VisualizationsExportService::FEATURE_FLAG_NAME) && map
+      Carto::VisualizationsExportService.new.export(id)
+    end
+  rescue => exception
+    # Don't break deletion flow
+    CartoDB::Logger.error(
+      message: 'Error backing up visualization',
+      exception: exception,
+      visualization_id: id
+    )
+  end
+
+  def destroy_named_map
+    named_maps_api.destroy
   end
 end

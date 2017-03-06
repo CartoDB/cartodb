@@ -252,6 +252,10 @@ module CartoDB
         self
       end
 
+      def delete_from_table
+        delete(true)
+      end
+
       def delete(from_table_deletion = false)
         raise CartoDB::InvalidMember.new(user: "Viewer users can't delete visualizations") if user.viewer
 

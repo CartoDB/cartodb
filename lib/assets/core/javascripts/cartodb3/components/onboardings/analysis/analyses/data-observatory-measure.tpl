@@ -14,5 +14,5 @@
 </p>
 
 <p class="CDB-Text Onboarding-description">
-  <a href="https://carto.com/learn/guides/analysis/detect-outliers-and-clusters" class="Onboarding-readMore" target="_blank"><%- _t('analyses-onboarding.learn-more') %></a>
+  <a href="https://carto.com/learn/guides/analysis/enrich-from-data-observatory" class="Onboarding-readMore" target="_blank"><%- _t('analyses-onboarding.learn-more') %></a>
 </p>

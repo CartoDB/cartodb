@@ -68,3 +68,7 @@ In order to enable rspec:
 1. `rspec --init`
 2. Copy the contents of `test_helper.rb` into `spec_helper`.
 3. Run `rspec` and fix path errors that you might get.
+
+# Documentation
+
+Generate the documentation with `yard`.

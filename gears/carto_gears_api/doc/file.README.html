@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>
+  File: README
+  
+    &mdash; Documentation by YARD 0.9.8
+  
+</title>
+
+  <link rel="stylesheet" href="css/style.css" type="text/css" charset="utf-8" />
+
+  <link rel="stylesheet" href="css/common.css" type="text/css" charset="utf-8" />
+
+<script type="text/javascript" charset="utf-8">
+  pathId = "README";
+  relpath = '';
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div class="nav_wrap">
+      <iframe id="nav" src="file_list.html?1"></iframe>
+      <div id="resizer"></div>
+    </div>
+
+    <div id="main" tabindex="-1">
+      <div id="header">
+        <div id="menu">
+  
+    <a href="_index.html">Index</a> &raquo; 
+    <span class="title">File: README</span>
+  
+</div>
+
+        <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="class_list.html">
+
+        <svg width="24" height="24">
+          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
+        </svg>
+    </a>
+  
+</div>
+        <div class="clear"></div>
+      </div>
+
+      <div id="content"><div id='filecontents'><h1>CARTO Gears API</h1>
+
+<h1>An API for building CARTO Gears</h1>
+
+<p>CARTO Gear: Rails engine built on top of CARTO, using CARTO Gears API.</p>
+
+<p>This is meant to be a documented way to add new features to CARTO, in a non-intrusive manner,
+taking advantage of a domain API maintained by CARTO team. Our goal with this API and conventions is making
+CARTO easily extensible.</p>
+
+<p>References:</p>
+
+<ul>
+<li><a href="https://leanpub.com/cbra">Component-based Rails Applications, Stephan Hagemann</a>.</li>
+<li><a href="http://tech.taskrabbit.com/blog/2014/02/11/rails-4-engines/">Rails 4 Engines, Brian Leonard</a>.</li>
+</ul>
+
+<h1>HOWTO</h1>
+
+<h2>Private vs public gears</h2>
+
+<p>CARTO currently supports two directories for Gears:</p>
+
+<p><code>/gears</code></p>
+
+<p>Public engines. For example, for new features developed with a component-based approach.
+It&#39;s part of the main repo and gears inside it will be automatically added to <code>Gemfile</code> and <code>Gemfile.lock</code>.</p>
+
+<p><code>/private_gears</code></p>
+
+<p>Private engines. For example, for in-house developments that can&#39;t be shipped with the Open Source version.
+It&#39;s skipped at <code>.gitignore</code>, and it&#39;s dynamically loaded, so it won&#39;t appear in <code>Gemfile</code> or <code>Gemfile.lock</code>.
+You can have the code wherever you want, and add symbolic links there.</p>
+
+<h3>Private gears limitations</h3>
+
+<p>Due to the custom handling of this in order to avoid polluting Gemfile and Gemfile.lock files, private gears
+have several limitations:</p>
+
+<ul>
+<li>If you specify a runtime dependency of a gem already existing at Gemfile, it must have the exact version.</li>
+<li>Although the private gem itself doesn&#39;t appear in <code>Gemfile</code> or <code>Gemfile.lock</code>, dependencies do, because they need to
+be installed.</li>
+</ul>
+
+<h2>Create a Rails engine</h2>
+
+<p>Assuming that you pick <code>/gears</code>, create a Rails engine by</p>
+
+<pre class="code ruby"><code class="ruby">bundle exec rails plugin new gears/my_component --full --mountable
+</code></pre>
+
+<p>It will be mounted at root (<code>/</code>) and automatically loaded.</p>
+
+<p>Automatic reload for development is supported right out of the box.</p>
+
+<p>You must use only classes under <code>CartoGearsApi</code> namespace. <em>It&#39;s currently under <code>/gears/carto_gears_api/lib</code>,
+but it will be documented before first public release.</em></p>
+
+<h2>Tests</h2>
+
+<p>CartoDB runs the tests with <code>bundle exec rspec</code> at engine directory. If you want to use this, you should create
+your tests with rspec.</p>
+
+<p><em>Due to <a href="https://github.com/CartoDB/cartodb/issues/11689">a current limitation</a> tests must be explicitly added
+to main <code>Makefile</code>.</em></p>
+
+<p>In order to enable rspec:</p>
+
+<ol>
+<li><code>rspec --init</code></li>
+<li>Copy the contents of <code>test_helper.rb</code> into <code>spec_helper</code>.</li>
+<li>Run <code>rspec</code> and fix path errors that you might get.</li>
+</ol>
+
+<h1>Documentation</h1>
+
+<p>Generate the documentation with <code>rdoc --exclude test/dummy</code>.</p>
+</div></div>
+
+      <div id="footer">
+  Generated on Mon Mar  6 16:46:39 2017 by
+  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.9.8 (ruby-2.2.3).
+</div>
+
+    </div>
+  </body>
+</html>

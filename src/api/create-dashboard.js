@@ -119,10 +119,8 @@ var createDashboard = function (selector, vizJSON, opts, callback) {
           vis: vis
         });
       },
-      error: function () {
-        var error = new Error('Map instantiation failed');
-        console.log(error);
-        callback && callback(error, {
+      error: function (errorMessage) {
+        callback && callback(new Error(errorMessage), {
           dashboardView: dashboardView,
           widgets: widgetsService,
           vis: vis
@@ -156,7 +154,7 @@ module.exports = function (selector, vizJSON, opts, callback) {
       if (data) {
         _load(data, opts);
       } else {
-        callback && callback(new Error('error fetching viz.json file'));
+        callback && callback(new Error('Error fetching viz.json file: ' + vizJSON));
       }
     });
   } else {

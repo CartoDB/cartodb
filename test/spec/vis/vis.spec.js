@@ -1031,6 +1031,10 @@ describe('vis/vis', function () {
     });
   });
 
+  var MyDataviewModel = DataviewModelBase.extend({
+    toJSON: function () {}
+  });
+
   describe('when a vizjson has been loaded', function () {
     var layer;
     var dataview;
@@ -1046,7 +1050,7 @@ describe('vis/vis', function () {
       layer = this.vis.map.layers.at(0);
       layer.getDataProvider = jasmine.createSpy('getDataProvider');
 
-      dataview = new DataviewModelBase({
+      dataview = new MyDataviewModel({
         source: {id: 'a0'}
       }, {
         layer: layer,

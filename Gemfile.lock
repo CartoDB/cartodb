@@ -425,7 +425,7 @@ DEPENDENCIES
   selenium-webdriver (>= 2.5.0)
   sequel (= 3.42.0)
   sequel_pg (= 1.6.3)
-  simplecov
+  simplecov (= 0.13.0)
   simplecov-json
   simplecov-rcov
   state_machine (= 1.1.2)

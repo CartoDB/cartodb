@@ -1,4 +1,4 @@
-<div class="CDB-Text Editor-formInner">
+<div class="CDB-Text Editor-formInner<% if (type){ %> Editor-formInner--<%- type %><% } %>">
   <% if (title) { %>
     <label class="CDB-Legend <% if (editorType){ %> CDB-Legend--<%- editorType %><% } %> u-upperCase CDB-Text is-semibold CDB-Size-small u-rSpace--m" for="<%- editorId %>" title="<%- title %>">
       <div class="u-ellipsis <% if (help) { %>Editor-formHelp<% } %>">

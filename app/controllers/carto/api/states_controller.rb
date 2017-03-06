@@ -16,7 +16,7 @@ module Carto
 
       def update
         @visualization.state.json = params[:json]
-        @visualization.save!
+        @visualization.state.save!
 
         render json: StatePresenter.new(@visualization.state).to_hash
       rescue ActiveRecord::RecordInvalid

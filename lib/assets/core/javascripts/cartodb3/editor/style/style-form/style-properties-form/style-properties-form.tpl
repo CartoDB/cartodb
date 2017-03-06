@@ -1,4 +1,4 @@
-<div class="Editor-HeaderInfo">
+<div class="Editor-HeaderInfo js-styleProperties">
   <div class="Editor-HeaderNumeration CDB-Text is-semibold u-rSpace--m"><%- stepNumber %></div>
   <div class="Editor-HeaderInfo-inner CDB-Text js-selector">
     <div class="Editor-HeaderInfo-title u-bSpace--m">

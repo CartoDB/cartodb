@@ -14,6 +14,6 @@
   </a>
   <ul class="EditorMenu-navigation js-menu"></ul>
 </div>
-<div class="Editor-panelWrapper">
+<div class="Editor-panelWrapper js-editorPanel">
   <div class="js-content"></div>
 </div>

@@ -28,7 +28,3 @@
 <p class="CDB-Text Onboarding-description">
   <%- _t('analyses-onboarding.centroid.description') %>
 </p>
-
-<p class="CDB-Text Onboarding-description">
-  <a href="https://carto.com/learn/guides/analysis/calculate-clusters-of-points" class="Onboarding-readMore" target="_blank"><%- _t('analyses-onboarding.learn-more') %></a>
-</p>

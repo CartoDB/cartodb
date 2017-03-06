@@ -185,6 +185,12 @@ module Carto
       super(value.split(',').map(&:strip).reject(&:blank?).uniq.join(','))
     end
 
+    # TODO: remove if error https://rollbar.com/vizzuality/CartoDB/items/21868/occurrences/22255989732/ disappears
+    # Simplify certain privacy values for the vizjson
+    def privacy_text_for_vizjson
+      privacy == PRIVACY_LINK ? 'PUBLIC' : privacy_text
+    end
+
     private
 
     def default_privacy_value

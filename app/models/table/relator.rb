@@ -29,11 +29,11 @@ module CartoDB
     end
 
     def fully_dependent_visualizations
-      affected_visualizations.select { |v| v.fully_dependent_on?(table) }
+      table.affected_visualizations.select { |v| v.fully_dependent_on?(table) }
     end
 
     def partially_dependent_visualizations
-      affected_visualizations.select { |v| v.partially_dependent_on?(table) }
+      table.affected_visualizations.select { |v| v.partially_dependent_on?(table) }
     end
 
     def dependent_visualizations

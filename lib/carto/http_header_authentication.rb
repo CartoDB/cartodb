@@ -85,7 +85,7 @@ module Carto
 
     def header_value(headers)
       header = ::Cartodb.get_config(:http_header_authentication, 'header')
-      puts "user-auto-creation : Trying to extract value from headers for #{header}, value is #{headers[header]}"
+      puts "user-auto-creation : Trying to extract value from headers for #{header}, value is #{headers[header || '']}"
       !header.nil? && !header.empty? ? headers[header] : nil
     end
   end

@@ -492,9 +492,6 @@ class Table
 
   def before_destroy
     @table_visualization                = table_visualization
-    if @table_visualization
-      @table_visualization.user_data = { name: owner.username, api_key: owner.api_key }
-    end
     @fully_dependent_visualizations_cache     = fully_dependent_visualizations.to_a
     @partially_dependent_visualizations_cache = partially_dependent_visualizations.to_a
   end

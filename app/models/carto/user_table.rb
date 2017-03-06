@@ -166,7 +166,7 @@ module Carto
     end
 
     def table_visualization
-      map.visualization
+      map.visualization if map
     end
 
     def update_cdb_tablemetadata

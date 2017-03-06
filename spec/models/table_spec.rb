@@ -2214,7 +2214,10 @@ describe Table do
       before(:all) do
         @user.private_tables_enabled = true
         @user.save
-        @carto_user = Carto::User.find(@user.id)
+      end
+
+      before(:each) do
+        @carto_user = ::Table.new.model_class == ::UserTable ? @user : Carto::User.find(@user.id)
       end
 
       it 'propagates changes to affected visualizations if privacy set to PRIVATE' do
@@ -2281,11 +2284,11 @@ describe Table do
         bypass_named_maps
 
         CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
-        @carto_user = Carto::User.find(@user.id)
       end
 
       before(:each) do
         bypass_named_maps
+        @carto_user = ::Table.new.model_class == ::UserTable ? @user : Carto::User.find(@user.id)
       end
 
       it 'deletes derived visualizations that depend on this table' do
@@ -2352,7 +2355,7 @@ describe Table do
       it 'invalidates derived visualization cache if there are changes in table privacy' do
         @user.private_tables_enabled = true
         @user.save
-        @carto_user = Carto::User.find(@user.id)
+        @carto_user = ::Table.new.model_class == ::UserTable ? @user : Carto::User.find(@user.id)
         table = create_table(user_id: @user.id)
         table.save
         table.should be_private
@@ -2380,7 +2383,7 @@ describe Table do
       it 'privacy reverts if named map update fails' do
         @user.private_tables_enabled = true
         @user.save
-        @carto_user = Carto::User.find(@user.id)
+        @carto_user = ::Table.new.model_class == ::UserTable ? @user : Carto::User.find(@user.id)
         table = create_table(user_id: @user.id, privacy: UserTable::PRIVACY_PUBLIC)
         table.save
 
@@ -2393,13 +2396,18 @@ describe Table do
 
         table.privacy = UserTable::PRIVACY_PRIVATE
 
-        ::Map.any_instance.stubs(:save).once.raises(StandardError)
+        (table.model_class == ::UserTable ? ::Map : Carto::Map).any_instance.stubs(:save).once.raises(StandardError)
 
         expect { table.save }.to raise_exception StandardError
 
         table.reload.privacy.should eq UserTable::PRIVACY_PUBLIC
 
-        ::Map.any_instance.stubs(:save).returns(true)
+        if table.model_class == Carto::UserTable
+          # There is something weird with AR. The name unique validation always returns false after throwing from a hook
+          table.instance_variable_set(:@user_table, Carto::UserTable.find(table.id))
+        end
+
+        (table.model_class == ::UserTable ? ::Map : Carto::Map).any_instance.stubs(:save).returns(true)
 
         # Scenario 2: Fail setting user table privacy (unlikely, but just in case)
 
@@ -2407,42 +2415,26 @@ describe Table do
 
         # Scenario 3: Fail saving canonical visualization named map
 
-        @stub_calls = 0
-        @restore_called = false
-        CartoDB::Visualization::Member.any_instance.stubs(:store_using_table).with(table.table_visualization) do
-          @stub_calls += 1
-          if @stub_calls > 1
-            @restore_called = true
-            true
-          else
-            raise 'Manolo is a nice guy, this test is not.'
-          end
-        end
+        viz_class = table.model_class == ::UserTable ? CartoDB::Visualization::Member : Carto::Visualization
+
+        viz_class.any_instance.stubs(:store_using_table)
+                 .raises('Manolo is a nice guy, this test is not.')
+                 .then.returns(nil).at_least(2)
 
         table.privacy = UserTable::PRIVACY_PRIVATE
         expect do
           table.save
         end.to raise_error 'Manolo is a nice guy, this test is not.'
 
-        @restore_called.should eq true
-
         table.reload.privacy.should eq UserTable::PRIVACY_PUBLIC
 
-        CartoDB::Visualization::Member.any_instance.unstub(:store_using_table)
+        viz_class.any_instance.unstub(:store_using_table)
 
         # Scenario 4: Fail saving affected visualizations named map
 
-        @stub_calls = 0
-        @restore_called = false
-        CartoDB::Visualization::Member.any_instance.stubs(:store_using_table).with(derived) do
-          @stub_calls += 1
-          if @stub_calls > 1
-            @restore_called = true
-            true
-          else
-            raise 'Manolo is a nice guy, this test is not.'
-          end
-        end
+        viz_class.any_instance.stubs(:store_using_table)
+                 .raises('Manolo is a nice guy, this test is not.')
+                 .then.returns(nil).at_least(2)
 
         table.privacy = UserTable::PRIVACY_PRIVATE
         expect do
@@ -2451,7 +2443,7 @@ describe Table do
 
         table.reload.privacy.should eq UserTable::PRIVACY_PUBLIC
 
-        CartoDB::Visualization::Member.any_instance.unstub(:store_using_table)
+        viz_class.any_instance.unstub(:store_using_table)
 
         # Scenario 5: All went fine
 
@@ -2508,7 +2500,7 @@ describe Table do
       @user.destroy
     end
 
-    #it_behaves_like 'table service'
+    it_behaves_like 'table service'
     it_behaves_like 'table service with legacy model'
   end
 end

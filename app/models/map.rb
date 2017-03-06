@@ -201,7 +201,7 @@ class Map < Sequel::Model
   end
 
   def dup
-    Map.new(map.to_hash.select { |k, _| k != :id })
+    Map.new(to_hash.select { |k, _| k != :id })
   end
 
   private

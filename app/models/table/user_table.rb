@@ -339,6 +339,14 @@ class UserTable < Sequel::Model
     previous_changes[:privacy].first
   end
 
+  def fully_dependent_visualizations
+    affected_visualizations.select { |v| v.fully_dependent_on?(self) }
+  end
+
+  def partially_dependent_visualizations
+    affected_visualizations.select { |v| v.partially_dependent_on?(self) }
+  end
+
   private
 
   def default_privacy_value

@@ -26,19 +26,13 @@ describe Carto::Api::StatesController do
   end
 
   before(:all) do
-    FactoryGirl.create(:carto_feature_flag, name: 'editor-3', restricted: false)
-
     @user = FactoryGirl.create(:carto_user)
     @intruder = FactoryGirl.create(:carto_user)
 
     @map, @table, @table_visualization, @visualization = create_full_visualization(@user)
   end
 
-  before(:each) { bypass_named_maps }
-
   after(:all) do
-    Carto::FeatureFlag.where(name: 'editor-3').first.destroy
-
     destroy_full_visualization(@map, @table, @table_visualization, @visualization)
 
     @user.destroy
@@ -59,6 +53,16 @@ describe Carto::Api::StatesController do
     end
 
     it 'update a state' do
+      put_json update_state_url, json: state do |response|
+        response.status.should eq 200
+
+        state_should_be_correct(response)
+      end
+    end
+
+    it 'does not trigger named map updates' do
+      Carto::NamedMaps::Api.any_instance.expects(:create).never
+      Carto::NamedMaps::Api.any_instance.expects(:update).never
       put_json update_state_url, json: state do |response|
         response.status.should eq 200
 

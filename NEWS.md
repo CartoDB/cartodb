@@ -75,6 +75,7 @@ Development
 * Fixed a bug with vizjson invalidation (#11092). It was introduced in #10934
 * Refactor Layer model (#10934) and UserTable (#11589).
 * Correctly render map previews for maps with google basemaps (#11608)
+* Do not trigger visualization hooks on state update (#11701)
 * Refactor Layer model (#10934)
 * Correctly register table dependencies of torque layers (#11549)
 * Fix bugs where legends where being hidden by reordering layers (#11088)

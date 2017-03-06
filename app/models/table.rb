@@ -1166,6 +1166,10 @@ class Table
     record.nil? ? nil : record[:oid]
   end # get_table_id
 
+  def changing_name?
+    @name_changed_from.present?
+  end
+
   def update_name_changes
     if @name_changed_from.present? && @name_changed_from != name
       reload

@@ -588,7 +588,8 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def propagate_name
-    table.reload # Needed to avoid double renames
+    # TODO: Move this to ::Table?
+    return if table.changing_name?
     table.register_table_only = register_table_only
     table.name = name
     table.update(name: name)

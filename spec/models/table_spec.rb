@@ -111,6 +111,100 @@ describe Table do
         table.name.should == "cdb_tablemetadata_t"
       end
 
+      it 'propagates name changes to table visualization' do
+        table = create_table(name: 'bogus_name', user_id: @user.id)
+
+        table.table_visualization.name.should == table.name
+
+        table.name = 'bogus_name_1'
+        table.save
+
+        table.reload
+        table.name                      .should == 'bogus_name_1'
+        table.table_visualization.name  .should == table.name
+
+        table.name = 'viva la pepa'
+        table.save
+
+        table.reload
+        table.name                      .should == 'viva_la_pepa'
+        table.table_visualization.name  .should == table.name
+
+        table.name = '     viva el pepe     '
+        table.save
+
+        table.reload
+        table.name                      .should == 'viva_el_pepe'
+        table.table_visualization.name  .should == table.name
+      end
+
+      it 'propagates name changes to analyses' do
+        table = create_table(name: 'bogus_name', user_id: @user.id)
+        carto_layer = Carto::Layer.find(table.layers.first.id)
+
+        analysis = Carto::Analysis.source_analysis_for_layer(carto_layer, 0)
+        analysis.save
+
+        table.name.should eq 'bogus_name'
+
+        table.name = 'new_name'
+        table.save
+
+        analysis.reload
+
+        analysis.analysis_definition[:options][:table_name].should eq 'new_name'
+        analysis.analysis_definition[:params][:query].should include('new_name')
+
+        analysis.destroy
+        table.destroy
+      end
+
+      it 'receives a name change if table visualization name changed' do
+        Table.any_instance.stubs(:update_cdb_tablemetadata)
+
+        table = create_table(name: 'bogus_name', user_id: @user.id)
+
+        table.table_visualization.name.should == table.name
+
+        table.table_visualization.name = 'bogus_name_2'
+        table.table_visualization.store
+
+        table.reload
+        table.table_visualization.name.should == 'bogus_name_2'
+        table.name.should == 'bogus_name_2'
+        table.name.should == table.table_visualization.name
+        CartoDB::UserModule::DBService.new(@user).tables_effective.should include('bogus_name_2')
+
+        visualization_id = table.table_visualization.id
+        # TODO: should this model be also "dynamic"?
+        visualization = CartoDB::Visualization::Member.new(id: visualization_id)
+          .fetch
+        visualization.name = 'bogus name 3'
+        visualization.store
+        table.reload
+        table.name.should == 'bogus_name_3'
+
+        # TODO: should this model be also "dynamic"?
+        visualization = CartoDB::Visualization::Member.new(id: visualization.id)
+          .fetch
+        visualization.name.should == 'bogus_name_3'
+        table.reload
+        table.name.should == 'bogus_name_3'
+      end
+
+      it 'propagates name changes to affected layers' do
+        table = create_table(name: 'bogus_name', user_id: @user.id)
+
+        layer = table.layers.first
+
+        table.name = 'bogus_name_1'
+        table.save
+
+        table.reload
+        layer.reload
+        layer.options.fetch('table_name').should == table.name
+      end
+
       it "should create default associated map and layers" do
         old_basemap_config = Cartodb.config[:basemaps]
 
@@ -227,6 +321,51 @@ describe Table do
       it "should have a privacy associated and it should be private by default" do
         table = create_table :user_id => @user.id
         table.should be_private
+      end
+
+      it 'changes to and from public-with-link privacy' do
+        table = create_table :user_id => @user.id
+
+        table.privacy = UserTable::PRIVACY_LINK
+        table.save
+        table.reload
+        table.should be_public_with_link_only
+        table.table_visualization.should be_public_with_link
+
+        table.privacy = UserTable::PRIVACY_PUBLIC
+        table.save
+        table.reload
+        table                           .should be_public
+        table.table_visualization       .should be_public
+      end
+
+      it 'propagates privacy changes to the associated visualization' do
+        # Need to at least have this decorated in the user data or checks before becoming private will raise an error
+        CartoDB::Visualization::Member.any_instance.stubs(:supports_private_maps?).returns(true)
+
+        table = create_table(user_id: @user.id)
+        table.should be_private
+        table.table_visualization.should be_private
+
+        table.privacy = UserTable::PRIVACY_PUBLIC
+        table.save
+        table.reload
+        table                           .should be_public
+        table.table_visualization       .should be_public
+
+        rehydrated = UserTable.where(id: table.id).first
+        rehydrated                      .should be_public
+        rehydrated.table_visualization  .should be_public
+
+        table.privacy = UserTable::PRIVACY_PRIVATE
+        table.save
+        table.reload
+        table                           .should be_private
+        table.table_visualization       .should be_private
+
+        rehydrated = UserTable.where(id: table.id).first
+        rehydrated                      .should be_private
+        rehydrated.table_visualization  .should be_private
       end
 
       it 'receives privacy changes from the associated visualization' do
@@ -370,6 +509,21 @@ describe Table do
         }.to raise_error(Sequel::DatabaseError)
       end
 
+      it "should allow public user access when the table is public" do
+        @user.private_tables_enabled = true
+        @user.save
+        table = create_table(:user_id => @user.id)
+
+        table.should be_private
+
+        table.privacy = UserTable::PRIVACY_PUBLIC
+        table.save
+
+        expect {
+          @user.in_database(:as => :public_user).run("select * from #{table.name}")
+        }.to_not raise_error
+      end
+
       it "should be associated to a database table" do
         @user.private_tables_enabled = false
         @user.save
@@ -389,6 +543,144 @@ describe Table do
 
         table.owner.database_name.should == @user.database_name
       end
+
+      it "should rename a database table when the attribute name is modified" do
+        delete_user_data @user
+        @user.private_tables_enabled = false
+        @user.save
+
+        table = create_table(name: 'Wadus table', user_id: @user.id)
+
+        Rails::Sequel.connection.table_exists?(table.name.to_sym).should be_false
+        @user.in_database do |user_database|
+          user_database.table_exists?(table.name.to_sym).should be_true
+        end
+
+        table.name = 'Wadus table #23'
+        table.save
+        table.reload
+        table.name.should == "Wadus table #23".sanitize
+        @user.in_database do |user_database|
+          user_database.table_exists?('wadus_table'.to_sym).should be_false
+          user_database.table_exists?('wadus_table_23'.to_sym).should be_true
+        end
+
+        table.name = ''
+        table.save
+        table.reload
+        table.name.should == "Wadus table #23".sanitize
+        @user.in_database do |user_database|
+          user_database.table_exists?('wadus_table_23'.to_sym).should be_true
+        end
+      end
+
+      it 'converts all names to downcase' do
+        delete_user_data @user
+        @user.private_tables_enabled = false
+        @user.save
+
+        table = create_table({:name => 'Wadus table', :user_id => @user.id})
+        table.name.should == 'wadus_table'
+
+        Rails::Sequel.connection.table_exists?(table.name.to_sym).should be_false
+        @user.in_database do |user_database|
+          user_database.table_exists?(table.name.to_sym).should be_true
+        end
+
+        table.name = 'Wadus_table'
+        table.name.should == 'wadus_table'
+      end
+
+      it "should invoke update_cdb_tablemetadata when the table is renamed" do
+        delete_user_data @user
+        @user.private_tables_enabled = false
+        @user.save
+
+        table = create_table(name: 'Wadus table', user_id: @user.id)
+        CartoDB::TablePrivacyManager.any_instance
+
+        table.expects(:update_cdb_tablemetadata)
+        table.name = 'Wadus table #23'
+        table.save
+      end
+
+      it "should rename the pk sequence when renaming the table" do
+        table1 = new_table(name: 'table 1', user_id: @user.id)
+        table1.stubs(:update_cdb_tablemetadata)
+
+        table1.save.reload
+        table1.name.should == 'table_1'
+
+        table1.name = 'table 2'
+        table1.save.reload
+        table1.name.should == 'table_2'
+
+        table2 = new_table(name: 'table 1', user_id: @user.id)
+        table2.stubs(:update_cdb_tablemetadata)
+
+        table2.save.reload
+        table2.name.should == 'table_1'
+
+        lambda {
+          table2.destroy
+        }.should_not raise_error
+      end
+
+      it "can't create a table using a reserved postgresql word as its name" do
+        delete_user_data @user
+        @user.private_tables_enabled = false
+        @user.save
+
+        table = create_table(name: 'as', user_id: @user.id)
+
+        @user.in_database do |user_database|
+          user_database.table_exists?('as_t'.to_sym).should be_true
+        end
+
+        table.name = 'where'
+        table.save
+        table.reload
+        @user.in_database do |user_database|
+          user_database.table_exists?('where_t'.to_sym).should be_true
+        end
+      end
+
+      it 'raises QuotaExceeded when trying to create a table while over quota' do
+        pending "Deactivated until table creation paths are unified - Issue 2974"
+        quota_in_bytes  = 524288000
+        table_quota     = 5
+        new_user        = new_user
+        user            = create_user(quota_in_bytes: quota_in_bytes, table_quota: table_quota)
+
+        5.times { |t| create_table(name: "table #{t}", user_id: user.id) }
+
+        expect {
+          create_table(name: "table 6", user_id: user.id)
+        }.to raise_error(CartoDB::QuotaExceeded)
+
+        user.destroy
+      end
+    end
+
+    it "should remove varnish cache when updating the table privacy" do
+      Carto::NamedMaps::Api.any_instance.stubs(get: nil, create: true, update: true)
+
+      @user.private_tables_enabled = true
+      @user.save
+      table = create_table(user_id: @user.id, name: "varnish_privacy", privacy: UserTable::PRIVACY_PRIVATE)
+
+      id = table.table_visualization.id
+
+      # Old models call this 6 times, new ones only two for the moment
+      # TODO: this will probably be fixed when refactor is needed
+      CartoDB::Varnish.any_instance.expects(:purge)
+                      .times(2..6)
+                      .with(".*#{id}:vizjson")
+                      .returns(true)
+
+      CartoDB::TablePrivacyManager.any_instance.expects(:update_cdb_tablemetadata)
+      table.privacy = UserTable::PRIVACY_PUBLIC
+      table.save
     end
 
     context "when removing the table" do
@@ -443,6 +735,37 @@ describe Table do
         table.reload
         table.schema(:cartodb_types => false).should be_equal_to_default_db_schema
         table.schema.should be_equal_to_default_cartodb_schema
+      end
+
+      it "can be associated to many tags" do
+        delete_user_data @user
+        table = create_table :user_id => @user.id, :tags => "tag 1, tag 2,tag 3, tag 3"
+
+        Tag.count.should == 3
+
+        tag1 = Tag[:name => 'tag 1']
+        tag1.user_id.should  == @user.id
+        tag1.table_id.should == table.id
+
+        tag2 = Tag[:name => 'tag 2']
+        tag2.user_id.should  == @user.id
+        tag2.table_id.should == table.id
+
+        tag3 = Tag[:name => 'tag 3']
+        tag3.user_id.should  == @user.id
+        tag3.table_id.should == table.id
+
+        table.tags = "tag 1"
+        table.save_changes
+
+        Tag.count.should == 1
+        tag1 = Tag[:name => 'tag 1']
+        tag1.user_id.should  == @user.id
+        tag1.table_id.should == table.id
+
+        table.tags = "    "
+        table.save_changes
+        Tag.count.should == 0
       end
 
       it "can add a column of a CartoDB::TYPE type" do
@@ -570,6 +893,88 @@ describe Table do
 
         rows = table.records
         rows[:rows][0][:my_new_column_new_name].should == 1
+      end
+
+      it "can be created with a given schema if it is valid" do
+        table = new_table(:user_id => @user.id)
+        table.force_schema = "code char(5) CONSTRAINT firstkey PRIMARY KEY, title  varchar(40) NOT NULL, did  integer NOT NULL, date_prod date, kind varchar(10)"
+        table.save
+        check_schema(table, [
+          [:cartodb_id, "integer"],
+          [:code, "character(5)"], [:title, "character varying(40)"], [:did, "integer"], [:date_prod, "date"],
+          [:kind, "character varying(10)"], [:the_geom, "geometry", "geometry", "geometry"]
+        ])
+      end
+
+      it "should sanitize columns from a given schema" do
+        delete_user_data @user
+        table = new_table(:user_id => @user.id)
+        table.force_schema = "\"code wadus\" char(5) CONSTRAINT firstkey PRIMARY KEY, title  varchar(40) NOT NULL, did  integer NOT NULL, date_prod date, kind varchar(10)"
+        table.save
+        check_schema(table, [
+          [:cartodb_id, "integer"],
+          [:code_wadus, "character(5)"], [:title, "character varying(40)"], [:did, "integer"], [:date_prod, "date"],
+          [:kind, "character varying(10)"], [:the_geom, "geometry", "geometry", "geometry"]
+        ])
+      end
+
+      it "should alter the schema automatically to a a wide range of numbers when inserting" do
+        table = new_table(:user_id => @user.id)
+        table.force_schema = "name varchar, age integer"
+        table.save
+
+        pk_row1 = table.insert_row!(:name => 'Fernando Blat', :age => "29")
+        table.rows_counted.should == 1
+
+        pk_row2 = table.insert_row!(:name => 'Javi Jam', :age => "30.3")
+        table.rows_counted.should == 2
+
+        table.schema(:cartodb_types => false).should include([:age, "double precision"])
+        table.schema.should include([:age, "number"])
+      end
+
+      it "should alter the schema automatically to a a wide range of numbers when inserting a number with 0" do
+        table = new_table(:user_id => @user.id)
+        table.force_schema = "name varchar, age integer"
+        table.save
+
+        pk_row1 = table.insert_row!(:name => 'Fernando Blat', :age => "29")
+        table.rows_counted.should == 1
+
+        pk_row2 = table.insert_row!(:name => 'Javi Jam', :age => "30.0")
+        table.rows_counted.should == 2
+
+        table.schema(:cartodb_types => false).should include([:age, "double precision"])
+        table.schema.should include([:age, "number"])
+      end
+
+      it "should alter the schema automatically to a a wide range of numbers when updating" do
+        table = new_table(:user_id => @user.id)
+        table.force_schema = "name varchar, age integer"
+        table.save
+
+        pk_row1 = table.insert_row!(:name => 'Fernando Blat', :age => "29")
+        table.rows_counted.should == 1
+
+        pk_row2 = table.update_row!(pk_row1, :name => 'Javi Jam', :age => "25.4")
+        table.rows_counted.should == 1
+
+        table.schema(:cartodb_types => false).should include([:age, "double precision"])
+        table.schema.should include([:age, "number"])
+      end
+
+      pending "should alter the schema automatically when trying to insert a big string (greater than 200 chars)" do
+        table = new_table(:user_id => @user.id)
+        table.force_schema = "name varchar(40)"
+        table.save
+
+        table.schema(:cartodb_types => false).should_not include([:name, "text"])
+
+        pk_row1 = table.insert_row!(:name => 'f'*201)
+        table.rows_counted.should == 1
+
+        table.reload
+        table.schema(:cartodb_types => false).should include([:name, "text"])
       end
 
       it "should not remove an existing table when the creation of a new table with default schema and the same name has raised an exception" do
@@ -774,6 +1179,19 @@ describe Table do
         ("%.3f" % query_result[:rows][0][:lat]).should == ("%.3f" % lat)
       end
 
+      it "should update null value to nil when inserting and updating" do
+        table = new_table(:user_id => @user.id)
+        table.force_schema = "valid boolean"
+        table.save.reload
+
+        pk = table.insert_row!({:valid => "null"})
+        table.record(pk)[:valid].should be_nil
+
+        pk = table.insert_row!({:valid => true})
+        table.update_row!(pk, {:valid => "null"})
+        table.record(pk)[:valid].should be_nil
+      end
+
       it "should be able to update a row" do
         table = create_table(:user_id => @user.id)
 
@@ -813,6 +1231,44 @@ describe Table do
 
         table.update_row!(pk1, :description => "Description 123")
         table.records[:rows].first[:description].should be == "Description 123"
+      end
+
+      it "should be able to update data in rows with column names with multiple underscores" do
+        data_import = DataImport.create( :user_id       => @user.id,
+                                         :table_name    => 'elecciones2008',
+                                         :data_source   => Rails.root.join('spec/support/data/elecciones2008.csv').to_s)
+        data_import.run_import!
+
+        table = create_table(user_table: UserTable[data_import.table_id], user_id: @user.id)
+        table.should_not be_nil, "Import failure: #{data_import.log}"
+        update_data = {:upo___nombre_partido=>"PSOEE"}
+        id = 5
+
+        lambda {
+          table.update_row!(id, update_data)
+        }.should_not raise_error
+
+        res = table.sequel.where(:cartodb_id => 5).first
+        res[:upo___nombre_partido].should == "PSOEE"
+      end
+
+      it "should be able to insert data in rows with column names with multiple underscores" do
+        data_import = DataImport.create( :user_id       => @user.id,
+                                         :data_source   => Rails.root.join('spec/support/data/elecciones2008.csv').to_s)
+        data_import.run_import!
+
+        table = create_table(user_table: UserTable[data_import.table_id], user_id: @user.id)
+        table.should_not be_nil, "Import failure: #{data_import.log}"
+
+        pk = nil
+        insert_data = {:upo___nombre_partido=>"PSOEE"}
+
+        lambda {
+          pk = table.insert_row!(insert_data)
+        }.should_not raise_error
+
+        res = table.sequel.where(:cartodb_id => pk).first
+        res[:upo___nombre_partido].should == "PSOEE"
       end
 
       # No longer used, now we automatically rename reserved word columns
@@ -867,781 +1323,6 @@ describe Table do
           table.should_not be_nil
           table.name.should == "wadus_the_table_#{n}"
         end
-      end
-    end
-
-    describe 'UserTable.multiple_order' do
-      it 'returns sorted records' do
-        table_1 = create_table(name: "bogus_table_1", user_id: @user.id)
-        table_2 = create_table(name: "bogus_table_2", user_id: @user.id)
-
-        UserTable.search('bogus').multiple_order(name: 'asc')
-          .to_a.first.name.should == 'bogus_table_1'
-        UserTable.search('bogus').multiple_order(name: 'desc')
-          .to_a.first.name.should == 'bogus_table_2'
-      end
-    end # Table.multiple_order
-
-    context "retrieving tables from ids" do
-      it "should be able to find a table by name or by identifier" do
-        table = new_table :user_id => @user.id
-        table.name = 'awesome name'
-        table.save.reload
-
-        UserTable.find_by_identifier(@user.id, table.name).id.should == table.id
-        lambda {
-          UserTable.find_by_identifier(666, table.name)
-        }.should raise_error
-      end
-    end
-
-    describe '#has_index?' do
-      let(:table) { create_table name: 'table_with_indexes', user_id: @user.id }
-
-      it 'returns true when the index exists' do
-        table.has_index?('cartodb_id').should be_true
-        table.has_index?('the_geom').should be_true
-        table.has_index?('the_geom_webmercator').should be_true
-      end
-
-      it 'returns false when the index does not exist' do
-        table.has_index?('cartodb_id2').should be_false
-        table.has_index?('the_geom_wadus').should be_false
-      end
-    end
-
-    describe '#name=' do
-      it 'does not change the name if it is equivalent to the current one' do
-        table = new_table(user_id: @user.id, name: 'new name')
-
-        table.name.should == 'new_name'
-
-        table.name = 'new name'
-        table.name.should == 'new_name'
-      end
-    end
-
-    describe '#validation_for_link_privacy' do
-      it 'checks that only users with private tables enabled can set LINK privacy' do
-        table_id = UUIDTools::UUID.timestamp_create.to_s
-
-        user_mock = mock
-        user_mock.stubs(:private_tables_enabled).returns(true)
-        user_mock.stubs(:database_name).returns(nil)
-        user_mock.stubs(:over_table_quota?).returns(false)
-        user_mock.stubs(:database_schema).returns('public')
-        user_mock.stubs(:viewer).returns(false)
-
-        ::Table.any_instance.stubs(:get_valid_name).returns('test')
-        ::Table.any_instance.stubs(:owner).returns(user_mock)
-        ::Table.any_instance.stubs(:create_table_in_database!)
-        ::Table.any_instance.stubs(:set_table_id).returns(table_id)
-        ::Table.any_instance.stubs(:set_the_geom_column!).returns(true)
-        ::UserTable.any_instance.stubs(:after_create)
-        ::Table.any_instance.stubs(:after_save)
-        ::Table.any_instance.stubs(:cartodbfy)
-        ::Table.any_instance.stubs(:schema)
-        CartoDB::TablePrivacyManager.any_instance.stubs(:owner).returns(user_mock)
-
-        # A user who can create private tables has by default private tables
-        user_table = ::UserTable.new
-        user_table.stubs(:user).returns(user_mock)
-        user_table.send(:default_privacy_value).should eq ::UserTable::PRIVACY_PRIVATE
-
-        user_table.user_id = UUIDTools::UUID.timestamp_create.to_s
-        user_table.privacy = UserTable::PRIVACY_PUBLIC
-        user_table.name = 'test'
-        user_table.validate
-        user_table.errors.size.should eq 0
-
-        user_table.privacy = UserTable::PRIVACY_PRIVATE
-        user_table.validate
-        user_table.errors.size.should eq 0
-
-        user_table.privacy = UserTable::PRIVACY_LINK
-        user_table.validate
-        user_table.errors.size.should eq 0
-
-        user_table.privacy = UserTable::PRIVACY_PUBLIC
-        user_mock.stubs(:private_tables_enabled).returns(false)
-
-        # Anybody can "keep" a table being type link if it is new or hasn't changed (changed meaning had a previous privacy value)
-        user_table.privacy = UserTable::PRIVACY_LINK
-        user_table.validate
-        user_table.errors.size.should eq 0
-
-        # Save so privacy changes instead of being "new"
-        user_table.privacy = UserTable::PRIVACY_PUBLIC
-        user_table.save
-
-        user_table.privacy = UserTable::PRIVACY_LINK
-        user_table.validate
-        user_table.errors.size.should eq 1
-        expected_errors_hash = { privacy: ['unauthorized to modify privacy status to public with link'] }
-        user_table.errors.should eq expected_errors_hash
-
-        # A user who cannot create private tables has by default public
-        user_table = ::UserTable.new
-        user_table.stubs(:user).returns(user_mock)
-        user_table.send(:default_privacy_value).should eq ::UserTable::PRIVACY_PUBLIC
-      end
-    end #validation_for_link_privacy
-
-    describe '#key' do
-      it 'computes a suitable key for a table' do
-        table = create_table(name: "any_name", user_id: @user.id)
-        table.redis_key.should == "rails:table:#{table.id}"
-      end
-
-      it 'computes different keys for different tables' do
-        table_1 = create_table(user_id: @user.id)
-        table_2 = create_table(user_id: @user.id)
-
-        table_1.redis_key.should_not == table_2.redis_key
-      end
-    end
-
-    describe '#geometry_types_key' do
-      it 'computes a suitable key' do
-        table = create_table(name: 'any_other_name', user_id: @user.id)
-        table.geometry_types_key.should == "#{table.redis_key}:geometry_types"
-      end
-    end
-
-    describe '#geometry_types' do
-      it "returns an empty array and does not cache if there's no column the_geom" do
-        table = create_table(user_id: @user.id)
-
-        cache = mock()
-        cache.expects(:get).once
-        cache.expects(:setex).once
-
-        table.stubs(:cache).returns(cache)
-
-        # A bit extreme way of getting a table without the_geom
-        table.owner.in_database.run(%Q{ALTER TABLE #{table.name} DROP COLUMN "the_geom" CASCADE})
-        table.schema(reload: true)
-
-        table.geometry_types.should == []
-      end
-
-      it "returns an empty array and does not cache if there are no geometries in the query" do
-        table = create_table(user_id: @user.id)
-
-        cache = mock()
-        cache.expects(:get).once.returns(nil)
-        cache.expects(:setex).once
-
-        table.stubs(:cache).returns(cache)
-
-        table.geometry_types.should == []
-      end
-
-      it "caches if there are geometries" do
-        table = create_table(user_id: @user.id)
-
-        cache = mock()
-        cache.expects(:get).once
-        cache.expects(:setex).once
-
-        table.stubs(:cache).returns(cache)
-        table.owner.in_database.run(%Q{
-          INSERT INTO #{table.name}(the_geom)
-          VALUES(ST_GeomFromText('POINT(-71.060316 48.432044)', 4326))
-        })
-
-        table.geometry_types.should == ['ST_Point']
-      end
-
-      it "returns the value from the cache if it is there" do
-        table = create_table(user_id: @user.id)
-        any_types = ['ST_Any_Type', 'ST_Any_Other_Type']
-        table.expects(:query_geometry_types).once.returns(any_types)
-
-        table.geometry_types.should eq(any_types), "cache miss failure"
-        table.geometry_types.should eq(any_types), "cache hit failure"
-        $tables_metadata.get(table.geometry_types_key).should eq(any_types.to_s), "it should be actually cached"
-      end
-    end
-
-    describe 'self.get_valid_column_name' do
-      it 'returns the same candidate name if it is ok' do
-        Table.expects(:get_column_names).once.returns(%w{a b c})
-        Table.get_valid_column_name('dummy_table_name', 'a').should == 'a'
-      end
-
-      it 'returns an alternative name if using a reserved word' do
-        Table.expects(:get_column_names).once.returns(%w{column b c})
-        Table.get_valid_column_name(
-          'dummy_table_name',
-          'column',
-          reserved_words: %w{ INSERT SELECT COLUMN }).should == 'column_1'
-      end
-
-      it 'avoids collisions when a renamed column already exists' do
-        Table.expects(:get_column_names).once.returns(%w{column_1 column c})
-        Table.get_valid_column_name(
-          'dummy_table_name',
-          'column',
-          reserved_words: %w{ INSERT SELECT COLUMN }).should == 'column_2'
-      end
-
-    end
-
-    describe '#estimated_row_count and #actual_row_count' do
-      it "should return row counts" do
-        table = new_table(:user_id => @user.id)
-        table.save
-
-        pk_row1 = table.insert_row!(:name => 'name1')
-        table.actual_row_count.should == 1
-        [0, 1].should include(table.estimated_row_count)
-      end
-    end
-  end
-
-  shared_examples_for 'table service with legacy model' do
-    it "should remove varnish cache when updating the table privacy" do
-      Carto::NamedMaps::Api.any_instance.stubs(get: nil, create: true, update: true)
-
-      @user.private_tables_enabled = true
-      @user.save
-      table = create_table(user_id: @user.id, name: "varnish_privacy", privacy: UserTable::PRIVACY_PRIVATE)
-
-      id = table.table_visualization.id
-      CartoDB::Varnish.any_instance.expects(:purge)
-                      .times(6)
-                      .with(".*#{id}:vizjson")
-                      .returns(true)
-
-      CartoDB::TablePrivacyManager.any_instance.expects(:update_cdb_tablemetadata)
-      table.privacy = UserTable::PRIVACY_PUBLIC
-      table.save
-    end
-
-    context 'table setups' do
-      it 'propagates name changes to table visualization' do
-        table = create_table(name: 'bogus_name', user_id: @user.id)
-
-        table.table_visualization.name.should == table.name
-
-        table.name = 'bogus_name_1'
-        table.save
-
-        table.reload
-        table.name                      .should == 'bogus_name_1'
-        table.table_visualization.name  .should == table.name
-
-        table.name = 'viva la pepa'
-        table.save
-
-        table.reload
-        table.name                      .should == 'viva_la_pepa'
-        table.table_visualization.name  .should == table.name
-
-        table.name = '     viva el pepe     '
-        table.save
-
-        table.reload
-        table.name                      .should == 'viva_el_pepe'
-        table.table_visualization.name  .should == table.name
-      end
-
-      it 'propagates name changes to analyses' do
-        table = create_table(name: 'bogus_name', user_id: @user.id)
-        carto_layer = Carto::Layer.find(table.layers.first.id)
-
-        analysis = Carto::Analysis.source_analysis_for_layer(carto_layer, 0)
-        analysis.save
-
-        table.name.should eq 'bogus_name'
-
-        table.name = 'new_name'
-        table.save
-
-        analysis.reload
-
-        analysis.analysis_definition[:options][:table_name].should eq 'new_name'
-        analysis.analysis_definition[:params][:query].should include('new_name')
-
-        analysis.destroy
-        table.destroy
-      end
-
-      it 'receives a name change if table visualization name changed' do
-        Table.any_instance.stubs(:update_cdb_tablemetadata)
-
-        table = create_table(name: 'bogus_name', user_id: @user.id)
-
-        table.table_visualization.name.should == table.name
-
-        table.table_visualization.name = 'bogus_name_2'
-        table.table_visualization.store
-
-        table.reload
-        table.table_visualization.name.should == 'bogus_name_2'
-        table.name.should == 'bogus_name_2'
-        table.name.should == table.table_visualization.name
-
-        visualization_id = table.table_visualization.id
-        visualization = CartoDB::Visualization::Member.new(id: visualization_id)
-          .fetch
-        visualization.name = 'bogus name 3'
-        visualization.store
-        table.reload
-        table.name.should == 'bogus_name_3'
-
-        visualization = CartoDB::Visualization::Member.new(id: visualization.id)
-          .fetch
-        visualization.name.should == 'bogus_name_3'
-        table.reload
-        table.name.should == 'bogus_name_3'
-      end
-
-      it 'propagates name changes to affected layers' do
-        table = create_table(name: 'bogus_name', user_id: @user.id)
-
-        layer = table.layers.first
-
-        table.name = 'bogus_name_1'
-        table.save
-
-        table.reload
-        layer.reload
-        layer.options.fetch('table_name').should == table.name
-      end
-
-      it 'changes to and from public-with-link privacy' do
-        table = create_table :user_id => @user.id
-
-        table.privacy = UserTable::PRIVACY_LINK
-        table.save
-        table.reload
-        table.should be_public_with_link_only
-        table.table_visualization.should be_public_with_link
-
-        table.privacy = UserTable::PRIVACY_PUBLIC
-        table.save
-        table.reload
-        table                           .should be_public
-        table.table_visualization       .should be_public
-      end
-
-      it 'propagates privacy changes to the associated visualization' do
-        # Need to at least have this decorated in the user data or checks before becoming private will raise an error
-        CartoDB::Visualization::Member.any_instance.stubs(:supports_private_maps?).returns(true)
-
-        table = create_table(user_id: @user.id)
-        table.should be_private
-        table.table_visualization.should be_private
-
-        table.privacy = UserTable::PRIVACY_PUBLIC
-        table.save
-        table.reload
-        table                           .should be_public
-        table.table_visualization       .should be_public
-
-        rehydrated = UserTable.where(id: table.id).first
-        rehydrated                      .should be_public
-        rehydrated.table_visualization  .should be_public
-
-        table.privacy = UserTable::PRIVACY_PRIVATE
-        table.save
-        table.reload
-        table                           .should be_private
-        table.table_visualization       .should be_private
-
-        rehydrated = UserTable.where(id: table.id).first
-        rehydrated                      .should be_private
-        rehydrated.table_visualization  .should be_private
-      end
-
-      it 'propagates changes to affected visualizations if privacy set to PRIVATE' do
-        # Need to at least have this decorated in the user data or checks before becoming private will raise an error
-        CartoDB::Visualization::Member.any_instance.stubs(:supports_private_maps?).returns(true)
-
-        table = create_table(user_id: @user.id)
-        table.should be_private
-        table.table_visualization.should be_private
-
-        map = CartoDB::Visualization::TableBlender.new(@user, [table]).blend
-        derived_vis = FactoryGirl.create(:derived_visualization, user_id: @user.id, map_id: map.id,
-                                                                 privacy: CartoDB::Visualization::Member::PRIVACY_PRIVATE)
-
-        bypass_named_maps
-        derived_vis.store
-        table.reload
-
-        table.privacy = UserTable::PRIVACY_PUBLIC
-        table.save
-
-        table.affected_visualizations.map do |vis|
-          vis.public?.should == vis.table?
-        end
-
-        table.privacy = UserTable::PRIVACY_PRIVATE
-        table.save
-
-        table.affected_visualizations.map do |vis|
-          vis.private?.should == true
-        end
-      end
-
-      it "doesn't propagates changes to affected visualizations if privacy set to public with link" do
-        # Need to at least have this decorated in the user data or checks before becoming private will raise an error
-        CartoDB::Visualization::Member.any_instance.stubs(:supports_private_maps?).returns(true)
-
-        table = create_table(user_id: @user.id)
-
-        table.privacy = UserTable::PRIVACY_PUBLIC
-        table.save
-        map = CartoDB::Visualization::TableBlender.new(@user, [table]).blend
-        derived_vis = FactoryGirl.create(:derived_visualization, user_id: @user.id, map_id: map.id)
-
-        bypass_named_maps
-        derived_vis.store
-        table.reload
-
-        table.privacy = UserTable::PRIVACY_LINK
-        table.save
-        table.reload
-
-        table.affected_visualizations.map do |vis|
-          vis.public?.should eq vis.derived?         # Derived kept public
-          vis.private?.should eq false               # None changed to private
-          vis.password_protected?.should eq false    # None changed to password protected
-          vis.public_with_link?.should eq vis.table? # Table/canonical changed
-        end
-      end
-
-      it "should allow public user access when the table is public" do
-        @user.private_tables_enabled = true
-        @user.save
-        table = create_table(:user_id => @user.id)
-
-        table.should be_private
-
-        table.privacy = UserTable::PRIVACY_PUBLIC
-        table.save
-
-        expect {
-          @user.in_database(:as => :public_user).run("select * from #{table.name}")
-        }.to_not raise_error
-      end
-
-      it "should rename a database table when the attribute name is modified" do
-        delete_user_data @user
-        @user.private_tables_enabled = false
-        @user.save
-
-        table = create_table(name: 'Wadus table', user_id: @user.id)
-
-        Rails::Sequel.connection.table_exists?(table.name.to_sym).should be_false
-        @user.in_database do |user_database|
-          user_database.table_exists?(table.name.to_sym).should be_true
-        end
-
-        table.name = 'Wadus table #23'
-        table.save
-        table.reload
-        table.name.should == "Wadus table #23".sanitize
-        @user.in_database do |user_database|
-          user_database.table_exists?('wadus_table'.to_sym).should be_false
-          user_database.table_exists?('wadus_table_23'.to_sym).should be_true
-        end
-
-        table.name = ''
-        table.save
-        table.reload
-        table.name.should == "Wadus table #23".sanitize
-        @user.in_database do |user_database|
-          user_database.table_exists?('wadus_table_23'.to_sym).should be_true
-        end
-      end
-
-      it 'converts all names to downcase' do
-        delete_user_data @user
-        @user.private_tables_enabled = false
-        @user.save
-
-        table = create_table({:name => 'Wadus table', :user_id => @user.id})
-        table.name.should == 'wadus_table'
-
-        Rails::Sequel.connection.table_exists?(table.name.to_sym).should be_false
-        @user.in_database do |user_database|
-          user_database.table_exists?(table.name.to_sym).should be_true
-        end
-
-        table.name = 'Wadus_table'
-        table.name.should == 'wadus_table'
-      end
-
-      it "should invoke update_cdb_tablemetadata when the table is renamed" do
-        delete_user_data @user
-        @user.private_tables_enabled = false
-        @user.save
-
-        table = create_table(name: 'Wadus table', user_id: @user.id)
-        CartoDB::TablePrivacyManager.any_instance
-
-        table.expects(:update_cdb_tablemetadata)
-        table.name = 'Wadus table #23'
-        table.save
-      end
-
-      it "should rename the pk sequence when renaming the table" do
-        table1 = new_table(name: 'table 1', user_id: @user.id)
-        table1.stubs(:update_cdb_tablemetadata)
-
-        table1.save.reload
-        table1.name.should == 'table_1'
-
-        table1.name = 'table 2'
-        table1.save.reload
-        table1.name.should == 'table_2'
-
-        table2 = new_table(name: 'table 1', user_id: @user.id)
-        table2.stubs(:update_cdb_tablemetadata)
-
-        table2.save.reload
-        table2.name.should == 'table_1'
-
-        lambda {
-          table2.destroy
-        }.should_not raise_error
-      end
-
-      it "can't create a table using a reserved postgresql word as its name" do
-        delete_user_data @user
-        @user.private_tables_enabled = false
-        @user.save
-
-        table = create_table(name: 'as', user_id: @user.id)
-
-        @user.in_database do |user_database|
-          user_database.table_exists?('as_t'.to_sym).should be_true
-        end
-
-        table.name = 'where'
-        table.save
-        table.reload
-        @user.in_database do |user_database|
-          user_database.table_exists?('where_t'.to_sym).should be_true
-        end
-      end
-
-      it 'raises QuotaExceeded when trying to create a table while over quota' do
-        pending "Deactivated until table creation paths are unified - Issue 2974"
-        quota_in_bytes  = 524288000
-        table_quota     = 5
-        new_user        = new_user
-        user            = create_user(quota_in_bytes: quota_in_bytes, table_quota: table_quota)
-
-        5.times { |t| create_table(name: "table #{t}", user_id: user.id) }
-
-        expect {
-          create_table(name: "table 6", user_id: user.id)
-        }.to raise_error(CartoDB::QuotaExceeded)
-
-        user.destroy
-      end
-    end
-
-    context "when removing the table" do
-      before(:all) do
-        bypass_named_maps
-
-        CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
-        @doomed_table = create_table(user_id: @user.id)
-        @automatic_geocoding = FactoryGirl.create(:automatic_geocoding, table: @doomed_table)
-        @doomed_table.destroy
-      end
-
-      before(:each) do
-        bypass_named_maps
-      end
-
-      it 'deletes derived visualizations that depend on this table' do
-        bypass_named_maps
-        table = create_table(name: 'bogus_name', user_id: @user.id)
-
-        map = CartoDB::Visualization::TableBlender.new(@user, [table]).blend
-        derived = FactoryGirl.create(:derived_visualization, user_id: @user.id, map_id: map.id)
-
-        table.reload
-
-        table.destroy
-        expect {
-          CartoDB::Visualization::Member.new(id: derived.id).fetch
-        }.to raise_error KeyError
-      end
-    end
-
-    context 'schema and columns' do
-      it "can be associated to many tags" do
-        delete_user_data @user
-        table = create_table :user_id => @user.id, :tags => "tag 1, tag 2,tag 3, tag 3"
-
-        Tag.count.should == 3
-
-        tag1 = Tag[:name => 'tag 1']
-        tag1.user_id.should  == @user.id
-        tag1.table_id.should == table.id
-
-        tag2 = Tag[:name => 'tag 2']
-        tag2.user_id.should  == @user.id
-        tag2.table_id.should == table.id
-
-        tag3 = Tag[:name => 'tag 3']
-        tag3.user_id.should  == @user.id
-        tag3.table_id.should == table.id
-
-        table.tags = "tag 1"
-        table.save_changes
-
-        Tag.count.should == 1
-        tag1 = Tag[:name => 'tag 1']
-        tag1.user_id.should  == @user.id
-        tag1.table_id.should == table.id
-
-        table.tags = "    "
-        table.save_changes
-        Tag.count.should == 0
-      end
-
-      it "can be created with a given schema if it is valid" do
-        table = new_table(:user_id => @user.id)
-        table.force_schema = "code char(5) CONSTRAINT firstkey PRIMARY KEY, title  varchar(40) NOT NULL, did  integer NOT NULL, date_prod date, kind varchar(10)"
-        table.save
-        check_schema(table, [
-          [:cartodb_id, "integer"],
-          [:code, "character(5)"], [:title, "character varying(40)"], [:did, "integer"], [:date_prod, "date"],
-          [:kind, "character varying(10)"], [:the_geom, "geometry", "geometry", "geometry"]
-        ])
-      end
-
-      it "should sanitize columns from a given schema" do
-        delete_user_data @user
-        table = new_table(:user_id => @user.id)
-        table.force_schema = "\"code wadus\" char(5) CONSTRAINT firstkey PRIMARY KEY, title  varchar(40) NOT NULL, did  integer NOT NULL, date_prod date, kind varchar(10)"
-        table.save
-        check_schema(table, [
-          [:cartodb_id, "integer"],
-          [:code_wadus, "character(5)"], [:title, "character varying(40)"], [:did, "integer"], [:date_prod, "date"],
-          [:kind, "character varying(10)"], [:the_geom, "geometry", "geometry", "geometry"]
-        ])
-      end
-
-      it "should alter the schema automatically to a a wide range of numbers when inserting" do
-        table = new_table(:user_id => @user.id)
-        table.force_schema = "name varchar, age integer"
-        table.save
-
-        pk_row1 = table.insert_row!(:name => 'Fernando Blat', :age => "29")
-        table.rows_counted.should == 1
-
-        pk_row2 = table.insert_row!(:name => 'Javi Jam', :age => "30.3")
-        table.rows_counted.should == 2
-
-        table.schema(:cartodb_types => false).should include([:age, "double precision"])
-        table.schema.should include([:age, "number"])
-      end
-
-      it "should alter the schema automatically to a a wide range of numbers when inserting a number with 0" do
-        table = new_table(:user_id => @user.id)
-        table.force_schema = "name varchar, age integer"
-        table.save
-
-        pk_row1 = table.insert_row!(:name => 'Fernando Blat', :age => "29")
-        table.rows_counted.should == 1
-
-        pk_row2 = table.insert_row!(:name => 'Javi Jam', :age => "30.0")
-        table.rows_counted.should == 2
-
-        table.schema(:cartodb_types => false).should include([:age, "double precision"])
-        table.schema.should include([:age, "number"])
-      end
-
-      it "should alter the schema automatically to a a wide range of numbers when updating" do
-        table = new_table(:user_id => @user.id)
-        table.force_schema = "name varchar, age integer"
-        table.save
-
-        pk_row1 = table.insert_row!(:name => 'Fernando Blat', :age => "29")
-        table.rows_counted.should == 1
-
-        pk_row2 = table.update_row!(pk_row1, :name => 'Javi Jam', :age => "25.4")
-        table.rows_counted.should == 1
-
-        table.schema(:cartodb_types => false).should include([:age, "double precision"])
-        table.schema.should include([:age, "number"])
-      end
-
-      pending "should alter the schema automatically when trying to insert a big string (greater than 200 chars)" do
-        table = new_table(:user_id => @user.id)
-        table.force_schema = "name varchar(40)"
-        table.save
-
-        table.schema(:cartodb_types => false).should_not include([:name, "text"])
-
-        pk_row1 = table.insert_row!(:name => 'f'*201)
-        table.rows_counted.should == 1
-
-        table.reload
-        table.schema(:cartodb_types => false).should include([:name, "text"])
-      end
-    end
-
-    context "insert and update rows" do
-      it "should update null value to nil when inserting and updating" do
-        table = new_table(:user_id => @user.id)
-        table.force_schema = "valid boolean"
-        table.save.reload
-
-        pk = table.insert_row!({:valid => "null"})
-        table.record(pk)[:valid].should be_nil
-
-        pk = table.insert_row!({:valid => true})
-        table.update_row!(pk, {:valid => "null"})
-        table.record(pk)[:valid].should be_nil
-      end
-
-      it "should be able to update data in rows with column names with multiple underscores" do
-        data_import = DataImport.create( :user_id       => @user.id,
-                                         :table_name    => 'elecciones2008',
-                                         :data_source   => Rails.root.join('spec/support/data/elecciones2008.csv').to_s)
-        data_import.run_import!
-
-        table = create_table(user_table: UserTable[data_import.table_id], user_id: @user.id)
-        table.should_not be_nil, "Import failure: #{data_import.log}"
-        update_data = {:upo___nombre_partido=>"PSOEE"}
-        id = 5
-
-        lambda {
-          table.update_row!(id, update_data)
-        }.should_not raise_error
-
-        res = table.sequel.where(:cartodb_id => 5).first
-        res[:upo___nombre_partido].should == "PSOEE"
-      end
-
-      it "should be able to insert data in rows with column names with multiple underscores" do
-        data_import = DataImport.create( :user_id       => @user.id,
-                                         :data_source   => Rails.root.join('spec/support/data/elecciones2008.csv').to_s)
-        data_import.run_import!
-
-        table = create_table(user_table: UserTable[data_import.table_id], user_id: @user.id)
-        table.should_not be_nil, "Import failure: #{data_import.log}"
-
-        pk = nil
-        insert_data = {:upo___nombre_partido=>"PSOEE"}
-
-        lambda {
-          pk = table.insert_row!(insert_data)
-        }.should_not raise_error
-
-        res = table.sequel.where(:cartodb_id => pk).first
-        res[:upo___nombre_partido].should == "PSOEE"
       end
     end
 
@@ -2093,7 +1774,124 @@ describe Table do
       end
     end
 
+    describe 'UserTable.multiple_order' do
+      it 'returns sorted records' do
+        table_1 = create_table(name: "bogus_table_1", user_id: @user.id)
+        table_2 = create_table(name: "bogus_table_2", user_id: @user.id)
+
+        UserTable.search('bogus').multiple_order(name: 'asc')
+          .to_a.first.name.should == 'bogus_table_1'
+        UserTable.search('bogus').multiple_order(name: 'desc')
+          .to_a.first.name.should == 'bogus_table_2'
+      end
+    end # Table.multiple_order
+
+    context "retrieving tables from ids" do
+      it "should be able to find a table by name or by identifier" do
+        table = new_table :user_id => @user.id
+        table.name = 'awesome name'
+        table.save.reload
+
+        UserTable.find_by_identifier(@user.id, table.name).id.should == table.id
+        lambda {
+          UserTable.find_by_identifier(666, table.name)
+        }.should raise_error
+      end
+    end
+
+    describe '#has_index?' do
+      let(:table) { create_table name: 'table_with_indexes', user_id: @user.id }
+
+      it 'returns true when the index exists' do
+        table.has_index?('cartodb_id').should be_true
+        table.has_index?('the_geom').should be_true
+        table.has_index?('the_geom_webmercator').should be_true
+      end
+
+      it 'returns false when the index does not exist' do
+        table.has_index?('cartodb_id2').should be_false
+        table.has_index?('the_geom_wadus').should be_false
+      end
+    end
+
+    describe '#name=' do
+      it 'does not change the name if it is equivalent to the current one' do
+        table = new_table(user_id: @user.id, name: 'new name')
+
+        table.name.should == 'new_name'
+
+        table.name = 'new name'
+        table.name.should == 'new_name'
+      end
+    end
+
     describe '#validation_for_link_privacy' do
+      it 'checks that only users with private tables enabled can set LINK privacy' do
+        table_id = UUIDTools::UUID.timestamp_create.to_s
+
+        user_mock = mock
+        user_mock.stubs(:private_tables_enabled).returns(true)
+        user_mock.stubs(:database_name).returns(nil)
+        user_mock.stubs(:over_table_quota?).returns(false)
+        user_mock.stubs(:database_schema).returns('public')
+        user_mock.stubs(:viewer).returns(false)
+
+        ::Table.any_instance.stubs(:get_valid_name).returns('test')
+        ::Table.any_instance.stubs(:owner).returns(user_mock)
+        ::Table.any_instance.stubs(:create_table_in_database!)
+        ::Table.any_instance.stubs(:set_table_id).returns(table_id)
+        ::Table.any_instance.stubs(:set_the_geom_column!).returns(true)
+        ::UserTable.any_instance.stubs(:after_create)
+        ::Table.any_instance.stubs(:after_save)
+        ::Table.any_instance.stubs(:cartodbfy)
+        ::Table.any_instance.stubs(:schema)
+        CartoDB::TablePrivacyManager.any_instance.stubs(:owner).returns(user_mock)
+
+        # A user who can create private tables has by default private tables
+        user_table = ::UserTable.new
+        user_table.stubs(:user).returns(user_mock)
+        user_table.send(:default_privacy_value).should eq ::UserTable::PRIVACY_PRIVATE
+
+        user_table.user_id = UUIDTools::UUID.timestamp_create.to_s
+        user_table.privacy = UserTable::PRIVACY_PUBLIC
+        user_table.name = 'test'
+        user_table.validate
+        user_table.errors.size.should eq 0
+
+        user_table.privacy = UserTable::PRIVACY_PRIVATE
+        user_table.validate
+        user_table.errors.size.should eq 0
+
+        user_table.privacy = UserTable::PRIVACY_LINK
+        user_table.validate
+        user_table.errors.size.should eq 0
+
+        user_table.privacy = UserTable::PRIVACY_PUBLIC
+        user_mock.stubs(:private_tables_enabled).returns(false)
+
+        # Anybody can "keep" a table being type link if it is new or hasn't changed (changed meaning had a previous privacy value)
+        user_table.privacy = UserTable::PRIVACY_LINK
+        user_table.validate
+        user_table.errors.size.should eq 0
+
+        # Save so privacy changes instead of being "new"
+        user_table.privacy = UserTable::PRIVACY_PUBLIC
+        user_table.save
+
+        user_table.privacy = UserTable::PRIVACY_LINK
+        user_table.validate
+        user_table.errors.size.should eq 1
+        expected_errors_hash = { privacy: ['unauthorized to modify privacy status to public with link'] }
+        user_table.errors.should eq expected_errors_hash
+
+        # A user who cannot create private tables has by default public
+        user_table = ::UserTable.new
+        user_table.stubs(:user).returns(user_mock)
+        user_table.send(:default_privacy_value).should eq ::UserTable::PRIVACY_PUBLIC
+      end
+    end #validation_for_link_privacy
+
+    describe '#the_geom_conversions' do
       it 'tests the_geom conversions and expected results' do
         # Empty table/default schema (no conversion)
         table = new_table(:name => 'one', :user_id => @user.id)
@@ -2298,6 +2096,245 @@ describe Table do
       end
     end
 
+    describe '#key' do
+      it 'computes a suitable key for a table' do
+        table = create_table(name: "any_name", user_id: @user.id)
+        table.redis_key.should == "rails:table:#{table.id}"
+      end
+
+      it 'computes different keys for different tables' do
+        table_1 = create_table(user_id: @user.id)
+        table_2 = create_table(user_id: @user.id)
+
+        table_1.redis_key.should_not == table_2.redis_key
+      end
+    end
+
+    describe '#geometry_types_key' do
+      it 'computes a suitable key' do
+        table = create_table(name: 'any_other_name', user_id: @user.id)
+        table.geometry_types_key.should == "#{table.redis_key}:geometry_types"
+      end
+    end
+
+    describe '#geometry_types' do
+      it "returns an empty array and does not cache if there's no column the_geom" do
+        table = create_table(user_id: @user.id)
+
+        cache = mock()
+        cache.expects(:get).once
+        cache.expects(:setex).once
+
+        table.stubs(:cache).returns(cache)
+
+        # A bit extreme way of getting a table without the_geom
+        table.owner.in_database.run(%Q{ALTER TABLE #{table.name} DROP COLUMN "the_geom" CASCADE})
+        table.schema(reload: true)
+
+        table.geometry_types.should == []
+      end
+
+      it "returns an empty array and does not cache if there are no geometries in the query" do
+        table = create_table(user_id: @user.id)
+
+        cache = mock()
+        cache.expects(:get).once.returns(nil)
+        cache.expects(:setex).once
+
+        table.stubs(:cache).returns(cache)
+
+        table.geometry_types.should == []
+      end
+
+      it "caches if there are geometries" do
+        table = create_table(user_id: @user.id)
+
+        cache = mock()
+        cache.expects(:get).once
+        cache.expects(:setex).once
+
+        table.stubs(:cache).returns(cache)
+        table.owner.in_database.run(%Q{
+          INSERT INTO #{table.name}(the_geom)
+          VALUES(ST_GeomFromText('POINT(-71.060316 48.432044)', 4326))
+        })
+
+        table.geometry_types.should == ['ST_Point']
+      end
+
+      it "returns the value from the cache if it is there" do
+        table = create_table(user_id: @user.id)
+        any_types = ['ST_Any_Type', 'ST_Any_Other_Type']
+        table.expects(:query_geometry_types).once.returns(any_types)
+
+        table.geometry_types.should eq(any_types), "cache miss failure"
+        table.geometry_types.should eq(any_types), "cache hit failure"
+        $tables_metadata.get(table.geometry_types_key).should eq(any_types.to_s), "it should be actually cached"
+      end
+    end
+
+    describe 'self.get_valid_column_name' do
+      it 'returns the same candidate name if it is ok' do
+        Table.expects(:get_column_names).once.returns(%w{a b c})
+        Table.get_valid_column_name('dummy_table_name', 'a').should == 'a'
+      end
+
+      it 'returns an alternative name if using a reserved word' do
+        Table.expects(:get_column_names).once.returns(%w{column b c})
+        Table.get_valid_column_name(
+          'dummy_table_name',
+          'column',
+          reserved_words: %w{ INSERT SELECT COLUMN }).should == 'column_1'
+      end
+
+      it 'avoids collisions when a renamed column already exists' do
+        Table.expects(:get_column_names).once.returns(%w{column_1 column c})
+        Table.get_valid_column_name(
+          'dummy_table_name',
+          'column',
+          reserved_words: %w{ INSERT SELECT COLUMN }).should == 'column_2'
+      end
+
+    end
+
+    describe '#estimated_row_count and #actual_row_count' do
+      it "should return row counts" do
+        table = new_table(:user_id => @user.id)
+        table.save
+
+        pk_row1 = table.insert_row!(:name => 'name1')
+        table.actual_row_count.should == 1
+        [0, 1].should include(table.estimated_row_count)
+      end
+    end
+  end
+
+  shared_examples_for 'table service with legacy model' do
+    context 'table setups' do
+      before(:all) do
+        @user.private_tables_enabled = true
+        @user.save
+      end
+
+      it 'propagates changes to affected visualizations if privacy set to PRIVATE' do
+        # Need to at least have this decorated in the user data or checks before becoming private will raise an error
+        CartoDB::Visualization::Member.any_instance.stubs(:supports_private_maps?).returns(true)
+
+        table = create_table(user_id: @user.id)
+        table.should be_private
+        table.table_visualization.should be_private
+
+        map = CartoDB::Visualization::TableBlender.new(@user, [table]).blend
+        derived_vis = FactoryGirl.create(:derived_visualization, user_id: @user.id, map_id: map.id,
+                                                                 privacy: CartoDB::Visualization::Member::PRIVACY_PRIVATE)
+
+        bypass_named_maps
+        derived_vis.store
+        table.reload
+
+        table.privacy = UserTable::PRIVACY_PUBLIC
+        table.save
+
+        table.affected_visualizations.map do |vis|
+          vis.public?.should == vis.table?
+        end
+
+        table.privacy = UserTable::PRIVACY_PRIVATE
+        table.save
+
+        table.affected_visualizations.map do |vis|
+          vis.private?.should == true
+        end
+      end
+
+      it "doesn't propagates changes to affected visualizations if privacy set to public with link" do
+        # Need to at least have this decorated in the user data or checks before becoming private will raise an error
+        CartoDB::Visualization::Member.any_instance.stubs(:supports_private_maps?).returns(true)
+
+        table = create_table(user_id: @user.id)
+
+        table.privacy = UserTable::PRIVACY_PUBLIC
+        table.save
+        map = CartoDB::Visualization::TableBlender.new(@user, [table]).blend
+        derived_vis = FactoryGirl.create(:derived_visualization, user_id: @user.id, map_id: map.id)
+
+        bypass_named_maps
+        derived_vis.store
+        table.reload
+
+        table.privacy = UserTable::PRIVACY_LINK
+        table.save
+        table.reload
+
+        table.affected_visualizations.map do |vis|
+          vis.public?.should eq vis.derived?         # Derived kept public
+          vis.private?.should eq false               # None changed to private
+          vis.password_protected?.should eq false    # None changed to password protected
+          vis.public_with_link?.should eq vis.table? # Table/canonical changed
+        end
+      end
+    end
+
+    context "when removing the table" do
+      before(:all) do
+        bypass_named_maps
+
+        CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
+        @doomed_table = create_table(user_id: @user.id)
+        @automatic_geocoding = FactoryGirl.create(:automatic_geocoding, table: @doomed_table)
+        @doomed_table.destroy
+      end
+
+      before(:each) do
+        bypass_named_maps
+      end
+
+      it 'deletes derived visualizations that depend on this table' do
+        bypass_named_maps
+        table = create_table(name: 'bogus_name', user_id: @user.id)
+
+        map = CartoDB::Visualization::TableBlender.new(@user, [table]).blend
+        derived = FactoryGirl.create(:derived_visualization, user_id: @user.id, map_id: map.id)
+
+        table.reload
+
+        table.destroy
+        expect {
+          CartoDB::Visualization::Member.new(id: derived.id).fetch
+        }.to raise_error KeyError
+      end
+    end
+
+    context "search" do
+      it "should find tables by description" do
+        table = Table.new
+        table.user_id = @user.id
+        table.name = "clubbing_spain_1_copy"
+        table.description = "A world borders shapefile suitable for thematic mapping applications. Contains polygon borders in two resolutions as well as longitude/latitude values and various country codes. Camión"
+        table.save.reload
+
+        ['borders', 'polygons', 'spain', 'countries'].each do |query|
+          tables = UserTable.search(query)
+          tables.should_not be_empty
+          tables.first.id.should == table.id
+        end
+        tables = UserTable.search("wadus")
+        tables.should be_empty
+      end
+
+      it "should find tables by name" do
+        table = Table.new
+        table.user_id = @user.id
+        table.name = "european_countries_1"
+        table.description = "A world borders shapefile suitable for thematic mapping applications. Contains polygon borders in two resolutions as well as longitude/latitude values and various country codes"
+        table.save.reload
+
+        tables = UserTable.search("eur")
+        tables.should_not be_empty
+        tables.first.id.should == table.id
+      end
+    end
+
     describe '#destroy' do
       it "invalidates geometry_types cache entry" do
         table = create_table(user_id: @user.id)
@@ -2427,36 +2464,6 @@ describe Table do
         @user.save
       end
     end
-
-    context "search" do
-      it "should find tables by description" do
-        table = Table.new
-        table.user_id = @user.id
-        table.name = "clubbing_spain_1_copy"
-        table.description = "A world borders shapefile suitable for thematic mapping applications. Contains polygon borders in two resolutions as well as longitude/latitude values and various country codes. Camión"
-        table.save.reload
-
-        ['borders', 'polygons', 'spain', 'countries'].each do |query|
-          tables = UserTable.search(query)
-          tables.should_not be_empty
-          tables.first.id.should == table.id
-        end
-        tables = UserTable.search("wadus")
-        tables.should be_empty
-      end
-
-      it "should find tables by name" do
-        table = Table.new
-        table.user_id = @user.id
-        table.name = "european_countries_1"
-        table.description = "A world borders shapefile suitable for thematic mapping applications. Contains polygon borders in two resolutions as well as longitude/latitude values and various country codes"
-        table.save.reload
-
-        tables = UserTable.search("eur")
-        tables.should_not be_empty
-        tables.first.id.should == table.id
-      end
-    end
   end
 
   describe 'with ::UserTable model' do
@@ -2500,7 +2507,6 @@ describe Table do
     end
 
     it_behaves_like 'table service'
-    # Uncomment this to get all tests with the new model
-    # it_behaves_like 'table service with legacy model'
+    #it_behaves_like 'table service with legacy model'
   end
 end

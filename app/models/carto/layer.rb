@@ -103,7 +103,7 @@ module Carto
       maps.reload if persisted?
 
       return unless order.nil?
-      max_order = parent.layers.map(&:order).compact.max || -1
+      max_order = parent.layers.reload.map(&:order).compact.max || -1
       self.order = max_order + 1
       save if persisted?
     end

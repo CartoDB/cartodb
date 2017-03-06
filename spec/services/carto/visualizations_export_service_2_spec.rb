@@ -764,6 +764,7 @@ describe Carto::VisualizationsExportService2 do
 
       describe 'visualization types' do
         before(:all) do
+          bypass_named_maps
           @table_visualization = FactoryGirl.create(:carto_visualization, type: 'table')
           @remote_visualization = FactoryGirl.create(:carto_visualization, type: 'remote')
         end

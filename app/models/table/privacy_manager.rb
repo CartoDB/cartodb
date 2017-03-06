@@ -21,8 +21,8 @@ module CartoDB
       end
 
       revertable_privacy_change(metadata_table, old_privacy,
-                                [metadata_table.table_visualization] + metadata_table.affected_visualizations) do
-        propagate_to([metadata_table.table_visualization])
+                                [@table.table_visualization] + metadata_table.affected_visualizations) do
+        propagate_to([@table.table_visualization])
         notify_privacy_affected_entities(metadata_table) if privacy_changed
       end
 
@@ -70,10 +70,11 @@ module CartoDB
     # Propagation flow: Table -> Table PrivacyManager -> Visualization -> Visualization NamedMap
     def propagate_to(visualizations, table_privacy_changed = false)
       visualizations.each do |visualization|
-        visualization.store_using_table({
-                                          privacy_text: ::UserTable::PRIVACY_VALUES_TO_TEXTS[privacy],
-                                          map_id: visualization.map_id
-                                        }, table_privacy_changed)
+        if visualization.type == CartoDB::Visualization::Member::TYPE_CANONICAL
+          # Each table has a canonical visualization which must have privacy synced
+          visualization.privacy = ::UserTable::PRIVACY_VALUES_TO_TEXTS[privacy]
+        end
+        visualization.store_using_table(table_privacy_changed)
       end
 
       self

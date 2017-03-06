@@ -2367,7 +2367,8 @@ describe Table do
         CartoDB::Visualization::Member.stubs(:new).with(has_entry(id: derived.id)).returns(derived)
         CartoDB::Visualization::Member.stubs(:new).with(has_entry(type: 'table')).returns(table.table_visualization)
 
-        derived.expects(:invalidate_cache).at_least_once
+        # Hack to get the correct (Sequel/AR) model
+        CartoDB::Varnish.new.purge(derived.varnish_vizjson_key)
 
         table.privacy = UserTable::PRIVACY_PUBLIC
         table.save

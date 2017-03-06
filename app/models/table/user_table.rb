@@ -49,6 +49,8 @@ class UserTable < Sequel::Model
     update_updated_at
     values
     affected_visualizations
+    fully_dependent_visualizations
+    partially_dependent_visualizations
     reload
   }
 

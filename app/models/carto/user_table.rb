@@ -51,7 +51,7 @@ module Carto
     after_create :create_canonical_visualization
     after_create { service.after_create }
     after_save { CartoDB::Logger.debug(message: "Carto::UserTable#after_save"); service.after_save }
-    before_destroy { service.before_destroy }
+    before_destroy { service.before_destroy unless destroyed? }
     after_destroy { service.after_destroy }
 
     def geometry_types

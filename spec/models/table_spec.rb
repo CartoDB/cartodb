@@ -2281,9 +2281,6 @@ describe Table do
         bypass_named_maps
 
         CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
-        @doomed_table = create_table(user_id: @user.id)
-        @automatic_geocoding = FactoryGirl.create(:automatic_geocoding, table: @doomed_table)
-        @doomed_table.destroy
         @carto_user = Carto::User.find(@user.id)
       end
 

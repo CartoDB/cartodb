@@ -7,8 +7,6 @@ module CartoDB
     INTERFACE = %w{
       serialize_fully_dependent_visualizations
       serialize_partially_dependent_visualizations
-      fully_dependent_visualizations
-      partially_dependent_visualizations
       synchronization
       serialize_synchronization
       row_count_and_size
@@ -21,19 +19,11 @@ module CartoDB
     end
 
     def serialize_fully_dependent_visualizations
-      fully_dependent_visualizations.map { |object| preview_for(object) }
+      table.fully_dependent_visualizations.map { |object| preview_for(object) }
     end
 
     def serialize_partially_dependent_visualizations
-      partially_dependent_visualizations.map { |object| preview_for(object) }
-    end
-
-    def fully_dependent_visualizations
-      table.affected_visualizations.select { |v| v.fully_dependent_on?(table) }
-    end
-
-    def partially_dependent_visualizations
-      table.affected_visualizations.select { |v| v.partially_dependent_on?(table) }
+      table.partially_dependent_visualizations.map { |object| preview_for(object) }
     end
 
     def dependent_visualizations

@@ -1,18 +1,13 @@
-<div class="LayerOnboarding-pads LayerOnboarding-pads--left">
-  <div class="LayerOnboarding-padTop"></div>
-  <div class="LayerOnboarding-padMiddle"></div>
-</div>
-
-<div class="LayerOnboarding-contentWrapper LayerOnboarding-contentWrapper--analysis is-step0 js-step">
-  <div class="LayerOnboarding-contentBody LayerOnboarding-contentBody--analysis is-step0 js-step">
+<div class="Onboarding-contentWrapper is-step0 js-step">
+  <div class="Onboarding-contentBody is-step0 js-step">
     <div class="Onboarding-body is-step0">
-      <p class="CDB-Text LayerOnboarding-headerTitle"><%= _t('style-onboarding.georeference.title', { name: name })%></p>
+      <p class="CDB-Text Onboarding-headerTitle"><%= _t('style-onboarding.georeference.title', { name: name })%></p>
 
-      <p class="CDB-Text LayerOnboarding-description"><%- _t('style-onboarding.georeference.description')%></p>
+      <p class="CDB-Text Onboarding-description"><%- _t('style-onboarding.georeference.description')%></p>
     </div>
 
-    <div class="LayerOnboarding-footer is-step0">
-      <div class="LayerOnboarding-footerButtons">
+    <div class="Onboarding-footer is-step0">
+      <div class="Onboarding-footerButtons">
         <button class="CDB-Button CDB-Button--secondary CDB-Button--white CDB-Button--big Onboarding-footer--marginRight js-close">
           <span class="CDB-Button-Text CDB-Text u-upperCase is-semibold CDB-Size-medium"><%- _t('style-onboarding.georeference.skip')%></span>
         </button>

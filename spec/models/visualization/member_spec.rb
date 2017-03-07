@@ -656,7 +656,6 @@ describe Visualization::Member do
           type: Visualization::Member::TYPE_CANONICAL,
           user_id:  user_id
       )
-      visualization.user_data = { actions: { private_maps: false } }
       # Unchanged visualizations could be
       visualization.valid?.should eq true
 

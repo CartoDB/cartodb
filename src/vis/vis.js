@@ -291,8 +291,8 @@ var VisModel = Backbone.Model.extend({
         options.success && options.success();
         this._onMapInstantiatedForTheFirstTime();
       }.bind(this),
-      error: function (error) {
-        options.error && options.error(error);
+      error: function () {
+        options.error && options.error();
       },
       includeFilters: false
     });
@@ -325,8 +325,8 @@ var VisModel = Backbone.Model.extend({
         this.trigger('reloaded');
         successCallback && successCallback();
       }.bind(this),
-      error: function (error) {
-        errorCallback && errorCallback(error);
+      error: function () {
+        errorCallback && errorCallback();
       }
     }, _.pick(options, 'sourceId', 'forceFetch', 'includeFilters'));
 

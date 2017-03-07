@@ -51,23 +51,32 @@ var WindshaftMap = Backbone.Model.extend({
     var filters;
     options = options || {};
 
-    var payload = this.toJSON();
-    var params = this._getParams();
+    try {
+      var payload = this.toJSON();
+      var params = this._getParams();
 
-    if (options.includeFilters === true) {
-      filters = this._dataviewsCollection.getFilters();
-      if (!_.isEmpty(filters)) {
-        params.filters = filters;
+      if (options.includeFilters === true) {
+        filters = this._dataviewsCollection.getFilters();
+        if (!_.isEmpty(filters)) {
+          params.filters = filters;
+        }
       }
-    }
 
-    var request = new Request(payload, params, options);
-    if (this._canPerformRequest(request)) {
-      this._performRequest(request);
-    } else {
-      var errorMessage = 'Maximum number of subsequent equal requests to the Maps API reached (' + MAP_INSTANTIATION_LIMIT + ')';
-      log.error(errorMessage, payload, params);
-      options.error && options.error(errorMessage);
+      var request = new Request(payload, params, options);
+      if (this._canPerformRequest(request)) {
+        this._performRequest(request);
+      } else {
+        log.error('Maximum number of subsequent equal requests to the Maps API reached (' + MAP_INSTANTIATION_LIMIT + '):', payload, params);
+        options.error && options.error();
+      }
+    } catch (e) {
+      var error = new WindshaftError({
+        message: e.message
+      });
+      this._modelUpdater.setErrors([ error ]);
+
+      log.error(e.message);
+      options.error && options.error();
     }
   },
 
@@ -97,7 +106,7 @@ var WindshaftMap = Backbone.Model.extend({
         this._trackRequest(request, response);
         var windshaftErrors = this._getErrorsFromResponse(response);
         this._modelUpdater.setErrors(windshaftErrors);
-        options.error && options.error(windshaftErrors[0].toString());
+        options.error && options.error();
       }.bind(this)
     });
   },

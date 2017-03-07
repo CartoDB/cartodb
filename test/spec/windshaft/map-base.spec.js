@@ -137,7 +137,7 @@ describe('windshaft/map-base', function () {
 
           expect(this.client.instantiateMap).not.toHaveBeenCalled();
 
-          expect(log.error).toHaveBeenCalledWith('Maximum number of subsequent equal requests to the Maps API reached (3)', this.windshaftMap.toJSON(), { stat_tag: 'stat_tag' });
+          expect(log.error).toHaveBeenCalledWith('Maximum number of subsequent equal requests to the Maps API reached (3):', this.windshaftMap.toJSON(), { stat_tag: 'stat_tag' });
         });
 
         it('should make the request if request was done 3 times and response was different the last time', function () {
@@ -198,6 +198,31 @@ describe('windshaft/map-base', function () {
             expect(this.client.instantiateMap).toHaveBeenCalled();
           });
         });
+      });
+    });
+
+    describe('when an exception is thrown/catched', function () {
+      beforeEach(function () {
+        spyOn(this.windshaftMap, 'toJSON').and.callFake(function () {
+          throw new Error('something went wrong!');
+        });
+
+        this.successCallback = jasmine.createSpy('success');
+        this.errorCallback = jasmine.createSpy('error');
+        this.windshaftMap.createInstance({
+          success: this.successCallback,
+          error: this.errorCallback
+        });
+      });
+
+      it('should set an error', function () {
+        expect(this.modelUpdater.setErrors).toHaveBeenCalled();
+        expect(this.modelUpdater.setErrors.calls.argsFor(0)[0][0].message).toEqual('something went wrong!');
+      });
+
+      it('should invoke the error callback', function () {
+        expect(this.successCallback).not.toHaveBeenCalled();
+        expect(this.errorCallback).toHaveBeenCalled();
       });
     });
 
@@ -367,7 +392,7 @@ describe('windshaft/map-base', function () {
       });
 
       it('should invoke a given error callback', function () {
-        expect(this.errorCallback).toHaveBeenCalledWith('Maps API Error -> Unknown error: \nsomething went wrong');
+        expect(this.errorCallback).toHaveBeenCalledWith();
       });
 
       it('should should update models and use first error message', function () {

@@ -82,7 +82,7 @@ class Table
 
   # This is here just for testing purposes (being able to test this service against both models)
   def model_class
-    ::UserTable
+    Carto::UserTable
   end
 
   # forwardable does not work well with this one

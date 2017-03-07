@@ -5,6 +5,7 @@ describe Carto::Builder::Public::EmbedsController do
   include Warden::Test::Helpers, Carto::Factories::Visualizations, HelperMethods
 
   before(:all) do
+    bypass_named_maps
     @user = FactoryGirl.create(:valid_user, private_maps_enabled: true)
     @carto_user = Carto::User.find(@user.id)
     @map = FactoryGirl.create(:map, user_id: @user.id)
@@ -14,6 +15,7 @@ describe Carto::Builder::Public::EmbedsController do
   end
 
   before(:each) do
+    bypass_named_maps
     Carto::Visualization.any_instance.stubs(:organization?).returns(false)
     Carto::Visualization.any_instance.stubs(:get_auth_tokens).returns(['trusty_token'])
   end
@@ -38,6 +40,7 @@ describe Carto::Builder::Public::EmbedsController do
       get builder_visualization_public_embed_url(visualization_id: unpublished_visualization.id)
       response.status.should == 404
 
+      unpublished_visualization.map = nil
       unpublished_visualization.destroy
     end
 
@@ -46,6 +49,7 @@ describe Carto::Builder::Public::EmbedsController do
       get builder_visualization_public_embed_url(visualization_id: unpublished_visualization.id)
       response.status.should == 404
 
+      unpublished_visualization.map = nil
       unpublished_visualization.destroy
     end
 
@@ -54,6 +58,7 @@ describe Carto::Builder::Public::EmbedsController do
       get builder_visualization_public_embed_url(visualization_id: unpublished_visualization.id)
       response.status.should == 404
 
+      unpublished_visualization.map = nil
       unpublished_visualization.destroy
     end
 
@@ -305,6 +310,7 @@ describe Carto::Builder::Public::EmbedsController do
       response.body.include?('Invalid password').should be false
       response.status.should == 404
 
+      unpublished_visualization.map = nil
       unpublished_visualization.destroy
     end
 
@@ -319,6 +325,7 @@ describe Carto::Builder::Public::EmbedsController do
 
       response.status.should == 200
 
+      published_visualization.map = nil
       published_visualization.destroy
     end
 

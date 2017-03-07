@@ -26,3 +26,4 @@ describe CartoGearsApi::UsersService do
     end
   end
 end
+

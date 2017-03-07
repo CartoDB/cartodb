@@ -51,6 +51,10 @@ module Carto
     after_create :create_canonical_visualization
     after_create { service.after_create }
     after_save { CartoDB::Logger.debug(message: "Carto::UserTable#after_save"); service.after_save }
+
+    # The `destroyed?` check is needed to avoid the hook running twice when deleting a table from the ::Table service
+    # as it is triggered directly, and a second time from canonical visualization destruction hooks.
+    # TODO: This can be simplified after deleting the old UserTable model
     before_destroy { service.before_destroy unless destroyed? }
     after_destroy { service.after_destroy }
 

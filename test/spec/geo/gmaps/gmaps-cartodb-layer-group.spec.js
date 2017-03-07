@@ -34,6 +34,10 @@ var expectTileURLTemplateToMatch = function (layerGroupView, expectedTileURLTemp
   expect(removeSubdomainFromTileURL(actualTileURL)).toEqual(removeSubdomainFromTileURL(expectedTileURL));
 };
 
+var fireNativeEvent = function (layerGroupView, eventName) {
+  layerGroupView.trigger(eventName);
+};
+
 describe('src/geo/gmaps/gmaps-cartodb-layer-group-view.js', function () {
-  SharedTestsForCartoDBLayerGroupViews.call(this, createLayerGroupView, expectTileURLTemplateToMatch);
+  SharedTestsForCartoDBLayerGroupViews.call(this, createLayerGroupView, expectTileURLTemplateToMatch, fireNativeEvent);
 });

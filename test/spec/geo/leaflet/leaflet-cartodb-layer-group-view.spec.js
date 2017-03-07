@@ -5,26 +5,18 @@ var FakeWax = require('../fake-wax');
 
 var OriginalLeafletCartoDBLayerGroupView = require('../../../../src/geo/leaflet/leaflet-cartodb-layer-group-view');
 
-var LeafletCartoDBLayerGroupView = OriginalLeafletCartoDBLayerGroupView.extend({
-  interactionClass: FakeWax,
+var LeafletCartoDBLayerGroupView = OriginalLeafletCartoDBLayerGroupView;
 
-  initialize: function () {
-    this.__templateURL = null;
-    OriginalLeafletCartoDBLayerGroupView.prototype.initialize.apply(this, arguments);
-  },
-
-  setUrl: function (url) {
-    this.__templateURL = url;
-    OriginalLeafletCartoDBLayerGroupView.prototype.setUrl.apply(this, arguments);
-  },
-
-  getUrl: function () {
-    return this.__templateURL;
+LeafletCartoDBLayerGroupView.prototype = Object.assign(
+  {},
+  OriginalLeafletCartoDBLayerGroupView.prototype,
+  {
+    interactionClass: FakeWax,
   }
-});
+);
 
 var expectTileURLTemplateToMatch = function (layerGroupView, expectedTileURLTemplate) {
-  expect(layerGroupView.getUrl()).toEqual(expectedTileURLTemplate);
+  expect(layerGroupView.leafletLayer._url).toEqual(expectedTileURLTemplate);
 };
 
 var createLayerGroupView = function (layerGroupModel, container) {
@@ -34,10 +26,15 @@ var createLayerGroupView = function (layerGroupModel, container) {
   });
 
   var layerGroupView = new LeafletCartoDBLayerGroupView(layerGroupModel, leafletMap);
-  layerGroupView.addTo(leafletMap);
+  layerGroupView.leafletLayer.addTo(leafletMap);
   return layerGroupView;
 };
 
+var fireNativeEvent = function (layerGroupView, eventName) {
+  layerGroupView.leafletLayer.fire(eventName);
+};
+
 describe('src/geo/leaflet/leaflet-cartodb-layer-group-view.js', function () {
-  SharedTestsForCartoDBLayerGroupViews.call(this, createLayerGroupView, expectTileURLTemplateToMatch);
+  SharedTestsForCartoDBLayerGroupViews.call(this, createLayerGroupView, expectTileURLTemplateToMatch, fireNativeEvent);
 });
+

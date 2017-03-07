@@ -86,7 +86,7 @@ var GMapsCartoDBLayerGroupView = function (layerModel, gmapsMap) {
   _.extend(this.options, opts);
   GMapsLayerView.call(this, layerModel, gmapsMap);
   this.projector = new Projector(opts.map);
-  CartoDBLayerGroupViewBase.call(this, layerModel);
+  CartoDBLayerGroupViewBase.call(this, layerModel, gmapsMap);
 };
 
 // TODO: Do we need this?

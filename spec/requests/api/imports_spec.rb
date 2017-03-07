@@ -146,10 +146,9 @@ describe "Imports API" do
       table.should have_required_indexes_and_triggers
       table.should have_no_invalid_the_geom
       table.geometry_types.should_not be_blank
-    end
 
-    DataImport.count.should == 1
-    Map.count.should == 1
+      table.map.should be
+    end
   end
 
   it 'raises an error if the user attempts to import tables when being over quota' do

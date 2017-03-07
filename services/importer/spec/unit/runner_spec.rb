@@ -14,10 +14,11 @@ require_relative '../doubles/user'
 require_relative '../doubles/input_file_size_limit'
 require_relative '../doubles/table_row_count_limit'
 
+require 'tempfile'
+
 describe CartoDB::Importer2::Runner do
   before(:all) do
-    @filepath       = '/var/tmp/foo.txt'
-    @filepath = File.open(@filepath, 'w+')
+    @filepath = Tempfile.open('runner_spec')
     @filepath.write('...')
     @filepath.close
     @user = create_user
@@ -34,6 +35,7 @@ describe CartoDB::Importer2::Runner do
   end
 
   after(:all) do
+    @filepath.close!
     @user.destroy
   end
 
@@ -318,4 +320,3 @@ describe CartoDB::Importer2::Runner do
   end
 
 end
-

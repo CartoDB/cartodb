@@ -14,5 +14,5 @@
 </p>
 
 <p class="CDB-Text Onboarding-description">
-  <a href="http://postgis.net/docs/ST_Intersects.html" class="Onboarding-readMore" target="_blank"><%- _t('analyses-onboarding.read-more') %></a>
+  <a href="https://carto.com/learn/guides/analysis/intersect-second-layer" class="Onboarding-readMore" target="_blank"><%- _t('analyses-onboarding.learn-more') %></a>
 </p>

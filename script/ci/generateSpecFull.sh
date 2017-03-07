@@ -1,7 +1,8 @@
 #!/bin/bash
 # Jesus Vazquez
 
-truncate -s 0 *.log
+rm -r parallel_tests
+mkdir parallel_tests
 
 # The following tests are disabled in a parallel environment and are run afterwards, sequentially
 DISABLED_TESTS=(
@@ -13,10 +14,9 @@ DISABLED_TESTS=(
 # specfull.txt by builiding and OR regex (spec\|spec\|spec)
 first=1
 DISABLED_TEST_REGEX=''
-truncate -s0 specfailed.txt
 for spec in ${DISABLED_TESTS[@]}
 do
-  echo $spec >> specfailed.log
+  echo $spec >> parallel_tests/specfailed.log
   if [[ $first -eq 0 ]]
   then
     DISABLED_TEST_REGEX="$DISABLED_TEST_REGEX\\|$spec"
@@ -29,13 +29,6 @@ done
 cat Makefile | grep -v 'spec/lib/varnish_spec.rb' | \
 grep -v $DISABLED_TEST_REGEX | \
 grep -v 'require ./spec/rspec_configuration.rb'| \
-grep 'rb'| sed -e 's/^\s*//' -e '/^$/d' | sed '/^#/ d' | sed 's/\\//' | sed 's/\s.*$//' > temp.txt
-
-i=6001;
-while read -r line
-do
-  echo "$line $i" >> specfull.txt;
-  i=$((i+1))
-done < temp.txt
+grep 'rb'| sed -e 's/^\s*//' -e '/^$/d' | sed '/^#/ d' | sed 's/\\//' | sed 's/\s.*$//' > parallel_tests/specfull.txt
 
 echo "# Speclist has been created"

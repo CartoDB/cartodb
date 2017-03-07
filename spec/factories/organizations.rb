@@ -1,8 +1,12 @@
+require 'helpers/unique_names_helper'
+
+include UniqueNamesHelper
+
 FactoryGirl.define do
 
   factory :organization do
     to_create(&:save)
-    name 'vizzuality'
+    name { unique_name('organization') }
     seats 10
     quota_in_bytes 100.megabytes
     geocoding_quota 1000

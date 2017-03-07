@@ -21,7 +21,7 @@ describe CartoDB::SharedEntity do
       recipient_id   = UUIDTools::UUID.timestamp_create.to_s
       entity_id      = UUIDTools::UUID.timestamp_create.to_s
 
-      SharedEntity.all.count.should eq 0
+      SharedEntity.where(entity_id: entity_id).count.should eq 0
 
       shared_entity = SharedEntity.new(
           recipient_id:   recipient_id,
@@ -33,7 +33,7 @@ describe CartoDB::SharedEntity do
       shared_entity.errors.should eq Hash.new
       shared_entity.save
 
-      SharedEntity.all.count.should eq 1
+      SharedEntity.where(entity_id: entity_id).count.should eq 1
 
       shared_entity2 = SharedEntity.new(
           recipient_id:   recipient_id,
@@ -46,7 +46,7 @@ describe CartoDB::SharedEntity do
 
       shared_entity.destroy
 
-      SharedEntity.all.count.should eq 0
+      SharedEntity.where(entity_id: entity_id).count.should eq 0
 
       shared_entity = SharedEntity.new(
           recipient_id:   entity_id,

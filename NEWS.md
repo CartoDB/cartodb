@@ -60,6 +60,7 @@ Development
 * Invite to georeference proactively when detecting non-georeferenced data (#11316)
 
 ### Bug fixes
+* Ensured all analysis onboarding screens link to carto.learn guides (#11193)
 * Fixed problem with Bubbles legend when a new analysis is applied (#11666)
 * Fixed missing metadata option in header when dataset is sync (#11458)
 * Fixed problem with dates when filtering time series widget
@@ -97,6 +98,7 @@ Development
 * Correctly refresh map after adding/editing map geometries (#11064)
 * Fix inconsistent state after user deletion failed (#11606)
 * Return embed private instead of 404 in visualization embeds where the visualization doesn't exist (#11056)
+* `app_config.yml.sample` configuration for dataservices.
 * Fix error loading builder in visualizations without permissions (#10996)
 * Correctly update legend styles (with custom titles) (#10889, #10904)
 * Hide sync options in builder table view for non-owners (#10986)
@@ -104,6 +106,7 @@ Development
 * UI fixes for georeference. Changes of copy and validation warning. (#11426)
 * Color scheme is now clickable in category ramps (#11413)
 * Fix responsive layout in onboarding steps (#11444)
+* Speed improvements to parallel tests (#11636)
 * Fix for race condition when importing files and deploying at the same time (#11653)
 * Correctly create custom category legend if style has icons (#11592)
 * Fix problem with perfect-scrollbar in Edge browsers (CartoDB/perfect-scrollbar/#2)

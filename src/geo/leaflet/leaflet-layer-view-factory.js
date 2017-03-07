@@ -35,7 +35,7 @@ LeafletLayerViewFactory.prototype.createLayerView = function (layerModel, mapMod
 
   if (LayerViewClass) {
     try {
-      return new LayerViewClass(layerModel, mapModel, {
+      return new LayerViewClass(layerModel,  mapModel, {
         vector: this._vector
       });
     } catch (e) {

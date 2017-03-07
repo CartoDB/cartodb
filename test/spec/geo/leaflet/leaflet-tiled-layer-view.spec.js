@@ -18,19 +18,18 @@ describe('leaflet-tiled-layer-view', function () {
   });
 
   it('should have options set correctly', function () {
-    expect(this.layerView.options.subdomains).toEqual(['a']);
-    expect(this.layerView._url).toBe('http://whatever.com');
-    expect(this.layerView.options.attribution).toBe('CARTO');
-    expect(this.layerView.options.errorTileUrl).toBe('http://matall.in');
-    expect(this.layerView.options.maxZoom).toBe(10);
-    expect(this.layerView.options.minZoom).toBe(0);
-    expect(this.layerView.options.opacity).toBe(1);
-    expect(this.layerView.options.tms).toBeFalsy();
+    expect(this.layerView.leafletLayer.options.subdomains).toEqual(['a']);
+    expect(this.layerView.leafletLayer._url).toBe('http://whatever.com');
+    expect(this.layerView.leafletLayer.options.attribution).toBe('CARTO');
+    expect(this.layerView.leafletLayer.options.errorTileUrl).toBe('http://matall.in');
+    expect(this.layerView.leafletLayer.options.maxZoom).toBe(10);
+    expect(this.layerView.leafletLayer.options.minZoom).toBe(0);
+    expect(this.layerView.leafletLayer.options.opacity).toBe(1);
+    expect(this.layerView.leafletLayer.options.tms).toBeFalsy();
   });
 
   describe('._modelUpdated', function () {
     beforeEach(function () {
-      spyOn(this.layerView, 'setUrl').and.callThrough();
       this.layerModel.set({
         subdomains: ['b'],
         urlTemplate: 'http://hello.com',
@@ -42,18 +41,17 @@ describe('leaflet-tiled-layer-view', function () {
     });
 
     it('should update several attributes', function () {
-      expect(this.layerView.options.subdomains).toEqual(['b']);
-      expect(this.layerView.options.attribution).toBe('carto');
-      expect(this.layerView.options.errorTileUrl).toBe('http://matall.in');
-      expect(this.layerView.options.maxZoom).toBe(12);
-      expect(this.layerView.options.minZoom).toBe(1);
-      expect(this.layerView.options.opacity).toBe(1);
-      expect(this.layerView.options.tms).toBeTruthy();
+      expect(this.layerView.leafletLayer.options.subdomains).toEqual(['b']);
+      expect(this.layerView.leafletLayer.options.attribution).toBe('carto');
+      expect(this.layerView.leafletLayer.options.errorTileUrl).toBe('http://matall.in');
+      expect(this.layerView.leafletLayer.options.maxZoom).toBe(12);
+      expect(this.layerView.leafletLayer.options.minZoom).toBe(1);
+      expect(this.layerView.leafletLayer.options.opacity).toBe(1);
+      expect(this.layerView.leafletLayer.options.tms).toBeTruthy();
     });
 
     it('should update url', function () {
-      expect(this.layerView.setUrl).toHaveBeenCalled();
-      expect(this.layerView._url).toBe('http://hello.com');
+      expect(this.layerView.leafletLayer._url).toBe('http://hello.com');
     });
   });
 });

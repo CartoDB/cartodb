@@ -137,8 +137,8 @@ describe('geo/leaflet/leaflet-map-view', function () {
     var tileLayer2 = new TileLayer({ urlTemplate: 'http://tilelayer2.com' });
     map.addLayer(tileLayer2, { at: 0 });
 
-    expect(mapView.getLayerViewByLayerCid(tileLayer.cid).options.zIndex).toEqual(1);
-    expect(mapView.getLayerViewByLayerCid(tileLayer2.cid).options.zIndex).toEqual(0);
+    expect(mapView.getLayerViewByLayerCid(tileLayer.cid).leafletLayer.options.zIndex).toEqual(1);
+    expect(mapView.getLayerViewByLayerCid(tileLayer2.cid).leafletLayer.options.zIndex).toEqual(0);
   });
 
   it('should remove all layers when map view is cleaned', function () {
@@ -170,14 +170,6 @@ describe('geo/leaflet/leaflet-map-view', function () {
     var layer = new TileLayer({type: 'rambo'});
     map.addLayer(layer);
     expect(_.size(mapView._layerViews)).toEqual(0);
-  });
-
-  it('should set z-order', function () {
-    var layer1 = new TileLayer({urlTemplate: 'test1'});
-    var layer2 = new TileLayer({urlTemplate: 'test2'});
-    var layerView1 = mapView.getLayerViewByLayerCid(map.addLayer(layer1));
-    var layerView2 = mapView.getLayerViewByLayerCid(map.addLayer(layer2, { at: 0 }));
-    expect(layerView1.options.zIndex > layerView2.options.zIndex).toEqual(true);
   });
 
   // Test cases for gmaps substitutes since the support is deprecated.

@@ -4,6 +4,7 @@ var Backbone = require('backbone');
 /**
  * base layer for all leaflet layers
  */
+//TODO: Revisit parameters
 var LeafletLayerView = function (layerModel, leafletLayer, leafletMap) {
   this.leafletLayer = leafletLayer;
   this.leafletMap = leafletMap;
@@ -17,6 +18,11 @@ var LeafletLayerView = function (layerModel, leafletLayer, leafletMap) {
 
 _.extend(LeafletLayerView.prototype, Backbone.Events);
 _.extend(LeafletLayerView.prototype, {
+
+  // TODO: Uncomment this
+  // _createLeafletLayer: function () {
+  //   throw new Error('subclasses of LeafletLayerView must implement _createLeafletLayer');
+  // },
 
   setModel: function (model) {
     if (this.model) {

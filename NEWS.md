@@ -93,6 +93,7 @@ Development
 * Correctly refresh map after adding/editing map geometries (#11064)
 * Fix inconsistent state after user deletion failed (#11606)
 * Return embed private instead of 404 in visualization embeds where the visualization doesn't exist (#11056)
+* `app_config.yml.sample` configuration for dataservices.
 * Fix error loading builder in visualizations without permissions (#10996)
 * Correctly update legend styles (with custom titles) (#10889, #10904)
 * Hide sync options in builder table view for non-owners (#10986)

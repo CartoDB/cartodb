@@ -7,7 +7,7 @@ module Carto
     # - `/private_gears` (shouldn't be installed)
     # Returns install gears first.
     def gears
-      (public_gears + private_gears).sort { |a, _| a.install ? -1 : 1 }
+      (public_gears + private_gears).sort { |a, _| a.installable ? -1 : 1 }
     end
 
     private
@@ -26,15 +26,15 @@ module Carto
   end
 
   class Gear
-    def initialize(gem_name, path, install)
+    def initialize(gem_name, path, installable)
       @name = gem_name.dup.freeze
       @path = path.dup.freeze
-      @install = install
+      @installable = installable
     end
 
     # path should only be used from CARTO Gemfile, because Rails is not yet available and relative path is good enough.
     # If you need access to the gear path, use full_path instead.
-    attr_reader :name, :path, :install
+    attr_reader :name, :path, :installable
 
     def engine
       module_name = @name.classify

@@ -129,7 +129,7 @@ gem 'analytics-ruby', '~> 2.0.0', :require => 'segment/analytics'
 require File.dirname(__FILE__) + '/lib/carto/carto_gears_support'
 
 Carto::CartoGearsSupport.new.gears.each do |gear|
-  if gear.install
+  if gear.installable
     gemspec path: gear.path
   else
     gear.gemspec.runtime_dependencies.each do |dependency|

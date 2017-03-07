@@ -110,6 +110,7 @@ module Carto
 
     # Sequel model compatibility (for TableBlender)
     def add_map(map)
+      CartoDB::Logger.debug(message: 'Adding map to Carto::Layer with legacy method')
       maps << map
     end
 

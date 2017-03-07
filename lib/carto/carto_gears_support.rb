@@ -7,7 +7,7 @@ module Carto
     # - `/private_gears` (shouldn't be installed)
     # Returns install gears first.
     def gears
-      (public_gears + private_gears).sort { |a, b| a.install ? -1 : 1 }
+      (public_gears + private_gears).sort { |a, _| a.install ? -1 : 1 }
     end
 
     private

@@ -40,6 +40,16 @@ have several limitations:
 - Although the private gem itself doesn't appear in `Gemfile` or `Gemfile.lock`, dependencies do, because they need to
 be installed.
 
+### Generating a clean Gemfile.lock
+
+As said, `Gemfile.lock` won't mention private gears, but it contains private gears dependencies.
+In order to generate a clean `Gemfile.lock`, you should:
+
+1. `mv private_gears private_gears.bak`
+2. `bundle update`
+3. `git commit Gemfile.lock -m "Clean Gemfile.lock" && git push`
+4. `mv private_gears.bak private_gears`
+
 ## Create a Rails engine
 
 Assuming that you pick `/gears`, create a Rails engine by

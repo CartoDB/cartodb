@@ -113,6 +113,22 @@ describe Carto::Api::VizJSON3Presenter do
     end
   end
 
+  describe '#to_vizjson (without caching)' do
+    include_context 'full visualization'
+
+    it 'returns map bounds' do
+      presenter = Carto::Api::VizJSON3Presenter.new(@visualization, nil)
+      presenter.to_vizjson[:bounds].should eq [[-85.0511, -179], [85.0511, 179]]
+    end
+
+    it 'returns nil map bounds if map bounds are not set' do
+      @visualization.map.view_bounds_sw = nil
+      @visualization.map.view_bounds_ne = nil
+
+      Carto::Api::VizJSON3Presenter.new(@visualization, nil).to_vizjson[:bounds].should be_nil
+    end
+  end
+
   describe '#to_named_map_vizjson' do
     include_context 'full visualization'
 

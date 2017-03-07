@@ -53,6 +53,7 @@ Development
   * Select an icon previously uploaded by the organization admin (#11462)
   * Sets the default initial size for icons to 20px (#11498)
 * Onboarding for layer edition (#10905)
+* Improved empty bounds map handling (#11711).
 * Updated diagnosis page versions.
 * Improved formula widget description field. (#11469)
 * Added support for Zeus for faster testing (#11574). Check `CONTRIBUTING.md` for configuration details.

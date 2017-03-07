@@ -60,9 +60,6 @@ but it will be documented before first public release._
 CartoDB runs the tests with `bundle exec rspec` at engine directory. If you want to use this, you should create
 your tests with rspec.
 
-_Due to [a current limitation](https://github.com/CartoDB/cartodb/issues/11689) tests must be explicitly added
-to main `Makefile`._
-
 In order to enable rspec:
 
 1. `rspec --init`

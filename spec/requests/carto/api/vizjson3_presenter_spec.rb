@@ -276,10 +276,13 @@ describe Carto::Api::VizJSON3Presenter do
         end
       end
 
-      it 'should not include layer_name in options for carto layers' do
-        carto_layer = vizjson[:layers][1]
-        carto_layer.should_not include :layer_name
-        carto_layer[:options][:layer_name].should
+      it 'should include layer_name in options for data layers' do
+        vizjson[:layers].each do |layer|
+          unless layer[:type] == 'tiled'
+            layer.should_not include :layer_name
+            layer[:options][:layer_name].should be
+          end
+        end
       end
 
       it 'should not include Odyssey options' do

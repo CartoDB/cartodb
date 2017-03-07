@@ -7,5 +7,5 @@
 </p>
 
 <p class="CDB-Text Onboarding-description">
-  <a href="https://carto.com/academy/courses/sql-postgis/joining-data/" class="Onboarding-readMore" target="_blank"><%- _t('analyses-onboarding.read-more') %></a>
+  <a href="https://carto.com/learn/guides/analysis/join-column-from-second-layer" class="Onboarding-readMore" target="_blank"><%- _t('analyses-onboarding.learn-more') %></a>
 </p>

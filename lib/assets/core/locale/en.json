@@ -1424,8 +1424,7 @@
         "title-label": "Layers",
         "georeference": {
           "title": "Layer not georeferenced",
-          "body": "The layer <strong>%{name}</strong> include non-georeferenced data. Please georeference or manually add data to visualize",
-          "show": "Georeference"
+          "body": "The layer <strong>%{name}</strong> include non-georeferenced data."
         }
       },
       "elements": {
@@ -1803,6 +1802,10 @@
           "success": "Map centered",
           "error": "Error centering map"
         }
+      },
+      "georeference": {
+        "manually-add": "Please georeference or manually add data to visualize",
+        "georeference-button": "Georeference"
       }
     },
     "data": {
@@ -1957,7 +1960,6 @@
           "title-label-line": "Lines style",
           "title-label-polygon": "Polygons style",
           "placeholder-text": "There's no geometry in your data that could be styled.",
-          "manually-add": "Please georeference or manually add data to visualize.",
           "georeference": "Georeference",
           "desc": "Change the visualization"
         },

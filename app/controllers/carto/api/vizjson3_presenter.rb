@@ -362,10 +362,13 @@ module Carto
 
       def as_torque
         layer_options = @layer.options.deep_symbolize_keys
+        torque_options = layer_options.select { |k| TORQUE_ATTRS.include? k }
+        torque_options[:attribution] = attribution
+        torque_options[:layer_name] = layer_name
 
         torque = {
-          type:       'torque',
-          options:    layer_options.select { |k| TORQUE_ATTRS.include? k }.merge(attribution: attribution)
+          type: 'torque',
+          options: torque_options
         }
 
         torque[:cartocss] = layer_options[:tile_style]

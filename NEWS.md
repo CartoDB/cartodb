@@ -59,6 +59,7 @@ Development
 * Migrate to use GNIP v2 for twitter search connector (#10051, #11595)
 
 ### Bug fixes
+* Ensured all analysis onboarding screens link to carto.learn guides (#11193)
 * Fixed problem with Bubbles legend when a new analysis is applied (#11666)
 * Fixed missing metadata option in header when dataset is sync (#11458)
 * Fixed problem with dates when filtering time series widget

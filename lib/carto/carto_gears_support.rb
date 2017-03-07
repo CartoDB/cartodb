@@ -5,8 +5,9 @@ module Carto
     # Returns gears found at:
     # - `/gears`. Should be "installed" (added to `Gemfile.lock``)
     # - `/private_gears` (shouldn't be installed)
+    # Returns install gears first.
     def gears
-      (public_gears + private_gears)
+      (public_gears + private_gears).sort { |a, b| a.install ? -1 : 1 }
     end
 
     private
@@ -31,6 +32,8 @@ module Carto
       @install = install
     end
 
+    # path should only be used from CARTO Gemfile, because Rails is not yet available and relative path is good enough.
+    # If you need access to the gear path, use full_path instead.
     attr_reader :name, :path, :install
 
     def engine
@@ -41,6 +44,10 @@ module Carto
 
     def gemspec
       Gem::Specification::load(File::join(path, "#{name}.gemspec"))
+    end
+
+    def full_path
+      Rails.root.join(path)
     end
   end
 end

@@ -7,7 +7,7 @@ CartoDB::Application.configure do
 
   ActiveSupport::Dependencies.autoload_paths << File::join(Rails.root, 'lib')
   Carto::CartoGearsSupport.new.gears.each do |gear|
-    ActiveSupport::Dependencies.autoload_paths << File::join(gear.path, 'lib')
+    ActiveSupport::Dependencies.autoload_paths << File::join(gear.full_path, 'lib')
   end
   # ActiveSupport::Dependencies.autoload_paths << File::join( Rails.root, 'lib/central')
 

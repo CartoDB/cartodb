@@ -194,6 +194,6 @@ require 'varnish/lib/cartodb-varnish'
 $pool = CartoDB::ConnectionPool.new
 
 Carto::CartoGearsSupport.new.gears.select { |g| !g.install }.each do |gear|
-  $LOAD_PATH << File::join(gear.path, 'lib')
+  $LOAD_PATH << File::join(gear.full_path, 'lib')
   require gear.name
 end

@@ -33,6 +33,10 @@ describe Carto::Api::VisualizationsController do
         visualization['layers'][1]['options']['attribution'].split(',').map(&:strip)
       end
 
+      before(:each) do
+        bypass_named_maps
+      end
+
       it 'marks visualizations as using vizjson2' do
         visualization = FactoryGirl.create(:carto_visualization)
         Carto::Api::VisualizationsController.any_instance.stubs(:generate_vizjson2).returns({})

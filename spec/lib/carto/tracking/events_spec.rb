@@ -10,11 +10,11 @@ module Carto
         include Carto::Factories::Visualizations
 
         before(:all) do
-          @user = FactoryGirl.create(:carto_user)
+          @user = FactoryGirl.create(:carto_user, private_maps_enabled: true)
           @intruder = FactoryGirl.create(:carto_user)
           @map, @table, @table_visualization, @visualization = create_full_visualization(@user)
           @visualization.privacy = 'private'
-          @visualization.save
+          @visualization.save!
           @visualization.reload
         end
 

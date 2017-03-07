@@ -258,7 +258,6 @@ describe User do
     it "should return proper values for non-persisted settings" do
       organization = create_organization_with_users
       organization.users.reject(&:organization_owner?).each do |u|
-        u.remove_logo?.should be_true
         u.private_maps_enabled.should be_true
       end
       organization.destroy

@@ -347,7 +347,7 @@ check-integrations:
 	CHECK_SPEC=52 RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_INTEGRATIONS)
 
 check-gear/%: %
-	cd $< && RAILS_ENV=test bundle exec rspec
+	cd $< && bundle install && RAILS_ENV=test bundle exec rspec
 
 check-gears: $(addprefix check-gear/, $(wildcard gears/*))
 

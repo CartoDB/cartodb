@@ -48,7 +48,17 @@ class Carto::Permission < ActiveRecord::Base
     entities.compact.uniq
   end
 
+  def entity_type
+    ENTITY_TYPE_VISUALIZATION
+  end
+
+  def entity_id
+    visualization.try(:id)
+  end
+
   private
+
+  ENTITY_TYPE_VISUALIZATION = 'vis'.freeze
 
   def permitted?(user, permission_type)
     SORTED_ACCESSES.index(permission_for_user(user)) <= SORTED_ACCESSES.index(permission_type)

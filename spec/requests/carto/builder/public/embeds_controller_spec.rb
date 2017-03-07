@@ -5,7 +5,7 @@ describe Carto::Builder::Public::EmbedsController do
   include Warden::Test::Helpers, Carto::Factories::Visualizations, HelperMethods
 
   before(:all) do
-    @user = FactoryGirl.create(:valid_user)
+    @user = FactoryGirl.create(:valid_user, private_maps_enabled: true)
     @carto_user = Carto::User.find(@user.id)
     @map = FactoryGirl.create(:map, user_id: @user.id)
     @visualization = FactoryGirl.create(:carto_visualization, user_id: @user.id, map_id: @map.id, version: 3)
@@ -149,6 +149,7 @@ describe Carto::Builder::Public::EmbedsController do
     end
 
     it 'does not embed password protected viz' do
+      stub_passwords(TEST_PASSWORD)
       @visualization.privacy = Carto::Visualization::PRIVACY_PROTECTED
       @visualization.save
 
@@ -218,9 +219,17 @@ describe Carto::Builder::Public::EmbedsController do
         Carto::Visualization.any_instance.unstub(:organization?)
         Carto::Visualization.any_instance.stubs(:needed_auth_tokens).returns([])
 
-        @org_map_2 = FactoryGirl.create(:map, user_id: @org_user_owner.id)
+        @org_map2 = FactoryGirl.create(:map, user_id: @org_user_owner.id)
 
-        @org_protected_visualization = FactoryGirl.create(:carto_visualization, user: @carto_org_user_owner, map_id: @org_map_2.id, version: 3, privacy: Carto::Visualization::PRIVACY_PROTECTED)
+        @org_protected_visualization = FactoryGirl.create(
+          :carto_visualization,
+          user: @carto_org_user_owner,
+          map_id: @org_map2.id,
+          version: 3,
+          privacy: Carto::Visualization::PRIVACY_PROTECTED,
+          encrypted_password: 'xxx',
+          password_salt: 'yyy'
+        )
         share_visualization(@org_protected_visualization, @org_user_1)
       end
 
@@ -286,10 +295,10 @@ describe Carto::Builder::Public::EmbedsController do
 
   describe '#show_protected' do
     it 'does not display visualizations without mapcaps' do
+      stub_passwords(TEST_PASSWORD)
       unpublished_visualization = FactoryGirl.create(:carto_visualization, user_id: @user.id, map_id: @map.id, version: 3, privacy: Carto::Visualization::PRIVACY_PROTECTED)
       unpublished_visualization.published?.should be_false
 
-      stub_passwords(TEST_PASSWORD)
 
       post builder_visualization_public_embed_protected_url(visualization_id: unpublished_visualization.id, password: TEST_PASSWORD)
 
@@ -300,11 +309,11 @@ describe Carto::Builder::Public::EmbedsController do
     end
 
     it 'does display published visualizations' do
+      stub_passwords(TEST_PASSWORD)
       published_visualization = FactoryGirl.create(:carto_visualization, user_id: @user.id, map_id: @map.id, version: 3, privacy: Carto::Visualization::PRIVACY_PROTECTED)
       Carto::Mapcap.create!(visualization_id: published_visualization.id)
       published_visualization.published?.should be_true
 
-      stub_passwords(TEST_PASSWORD)
 
       post builder_visualization_public_embed_protected_url(visualization_id: published_visualization.id, password: TEST_PASSWORD)
 
@@ -314,10 +323,10 @@ describe Carto::Builder::Public::EmbedsController do
     end
 
     it 'rejects incorrect passwords' do
+      stub_passwords(TEST_PASSWORD)
       @visualization.privacy = Carto::Visualization::PRIVACY_PROTECTED
       @visualization.save
 
-      stub_passwords(TEST_PASSWORD)
 
       post builder_visualization_public_embed_protected_url(visualization_id: @visualization.id, password: "${TEST_PASSWORD}NO!")
 
@@ -326,10 +335,10 @@ describe Carto::Builder::Public::EmbedsController do
     end
 
     it 'accepts correct passwords' do
+      stub_passwords(TEST_PASSWORD)
       @visualization.privacy = Carto::Visualization::PRIVACY_PROTECTED
       @visualization.save
 
-      stub_passwords(TEST_PASSWORD)
 
       post builder_visualization_public_embed_protected_url(visualization_id: @visualization.id, password: TEST_PASSWORD)
 
@@ -339,10 +348,10 @@ describe Carto::Builder::Public::EmbedsController do
     end
 
     it 'includes auth tokens' do
+      stub_passwords(TEST_PASSWORD)
       @visualization.privacy = Carto::Visualization::PRIVACY_PROTECTED
       @visualization.save
 
-      stub_passwords(TEST_PASSWORD)
 
       post builder_visualization_public_embed_protected_url(visualization_id: @visualization.id, password: TEST_PASSWORD)
 

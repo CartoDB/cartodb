@@ -21,7 +21,9 @@ describe Carto::Api::VizJSON3Presenter do
 
   shared_context 'full visualization' do
     before(:all) do
+      bypass_named_maps
       @map, @table, @table_visualization, @visualization = create_full_visualization(Carto::User.find(@user1.id))
+      @table.update_attribute(:privacy, Carto::UserTable::PRIVACY_PUBLIC)
     end
 
     after(:all) do
@@ -207,7 +209,7 @@ describe Carto::Api::VizJSON3Presenter do
     include_context 'full visualization'
 
     it 'v3 should include sql_wrap' do
-      v3_vizjson = Carto::Api::VizJSON3Presenter.new(@visualization, viewer_user).send :calculate_vizjson
+      v3_vizjson = Carto::Api::VizJSON3Presenter.new(@visualization, viewer_user).send(:calculate_vizjson)
       v3_vizjson[:layers][1][:options][:sql_wrap].should eq "select * from (<%= sql %>) __wrap"
     end
   end

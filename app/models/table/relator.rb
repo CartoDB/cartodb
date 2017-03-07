@@ -5,34 +5,19 @@ require_relative '../visualization/member'
 module CartoDB
   class TableRelator
     INTERFACE = %w{
-      table_visualization
       serialize_fully_dependent_visualizations
       serialize_partially_dependent_visualizations
       fully_dependent_visualizations
       partially_dependent_visualizations
-      affected_visualizations
       synchronization
       serialize_synchronization
       row_count_and_size
-      set_table_visualization
       related_templates
     }
 
     def initialize(db, table)
       @db     = db
       @table  = table
-    end
-
-    def table_visualization
-      @table_visualization ||= Visualization::Collection.new.fetch(
-        map_id: @table.map_id,
-        type:   Visualization::Member::TYPE_CANONICAL
-      ).first
-    end
-
-    # INFO: avoids doble viz fetching when table is itself generated from viz
-    def set_table_visualization(table_visualization)
-      @table_visualization = table_visualization
     end
 
     def serialize_fully_dependent_visualizations
@@ -49,6 +34,10 @@ module CartoDB
 
     def partially_dependent_visualizations
       affected_visualizations.select { |v| v.partially_dependent_on?(table) }
+    end
+
+    def dependent_visualizations
+      affected_visualizations.select { |v| v.dependent_on?(table) }
     end
 
     def affected_visualizations

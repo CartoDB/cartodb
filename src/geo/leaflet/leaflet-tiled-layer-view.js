@@ -1,10 +1,17 @@
 var L = require('leaflet');
-var Backbone = require('backbone');
 var LeafletLayerView = require('./leaflet-layer-view');
 
 var LeafletTiledLayerView = function (layerModel, leafletMap) {
   var self = this;
   LeafletLayerView.apply(this, [layerModel, this._createLeafletLayer(layerModel), leafletMap]);
+
+  this.leafletLayer.on('load', function (e) {
+    self.trigger('load');
+  });
+
+  this.leafletLayer.on('loading', function (e) {
+    self.trigger('loading');
+  });
 
   this.leafletLayer.onAdd = function (map) {
     L.TileLayer.prototype.onAdd.apply(this, arguments);

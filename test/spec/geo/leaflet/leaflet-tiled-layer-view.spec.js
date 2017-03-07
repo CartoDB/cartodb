@@ -54,4 +54,16 @@ describe('leaflet-tiled-layer-view', function () {
       expect(this.layerView.leafletLayer._url).toBe('http://hello.com');
     });
   });
+
+  it('should trigger load and loading events', function () {
+    var loadCallback = jasmine.createSpy('loadCallback');
+    this.layerView.bind('load', loadCallback);
+    this.layerView.leafletLayer.fire('load');
+    expect(loadCallback).toHaveBeenCalled();
+
+    var loadingCallback = jasmine.createSpy('loadingCallback');
+    this.layerView.bind('loading', loadingCallback);
+    this.layerView.leafletLayer.fire('loading');
+    expect(loadingCallback).toHaveBeenCalled();
+  });
 });

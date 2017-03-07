@@ -103,6 +103,7 @@ Development
 * UI fixes for georeference. Changes of copy and validation warning. (#11426)
 * Color scheme is now clickable in category ramps (#11413)
 * Fix responsive layout in onboarding steps (#11444)
+* Speed improvements to parallel tests (#11636)
 * Fix for race condition when importing files and deploying at the same time (#11653)
 * Correctly create custom category legend if style has icons (#11592)
 * Fix problem with perfect-scrollbar in Edge browsers (CartoDB/perfect-scrollbar/#2)

@@ -314,6 +314,8 @@ describe Visualization::Member do
         Carto::Layer.exists?(canonical_layer.id).should be_true
         Carto::UserTable.exists?(@table.id).should be_true
         Carto::Map.exists?(canonical_map.id).should be_true
+
+        Table.any_instance.unstub(:remove_table_from_user_database)
       end
     end
   end

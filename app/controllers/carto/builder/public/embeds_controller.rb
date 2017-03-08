@@ -8,7 +8,8 @@ module Carto
 
         ssl_required :show, :show_protected
 
-        before_filter :load_visualization,
+        before_filter :x_frame_options_allow,
+                      :load_visualization,
                       :redirect_to_old_embed_if_v2, only: [:show, :show_protected]
         before_filter :load_vizjson,
                       :load_state, only: [:show, :show_protected]
@@ -39,6 +40,10 @@ module Carto
         end
 
         private
+
+        def x_frame_options_allow
+          response.headers.delete('X-Frame-Options')
+        end
 
         def load_visualization
           @visualization = load_visualization_from_id_or_name(params[:visualization_id])

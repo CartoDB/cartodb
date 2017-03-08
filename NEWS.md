@@ -56,6 +56,7 @@ Development
 * Improved formula widget description field. (#11469)
 * Added support for Zeus for faster testing (#11574). Check `CONTRIBUTING.md` for configuration details.
 * Migrate to use GNIP v2 for twitter search connector (#10051, #11595)
+* Update tangram with smooth point outline.
 
 ### Bug fixes
 * Fixed problem with Bubbles legend when a new analysis is applied (#11666)

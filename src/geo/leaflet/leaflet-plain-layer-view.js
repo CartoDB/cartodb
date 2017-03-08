@@ -2,46 +2,44 @@ var _ = require('underscore');
 var L = require('leaflet');
 var LeafletLayerView = require('./leaflet-layer-view');
 
-/**
- * this is a dummy layer class that modifies the leaflet DOM element background
- * instead of creating a layer with div
- */
-var LeafletPlainLayerView = L.Class.extend({
-  includes: L.Mixin.Events,
+var LeafletPlainLayerView = function (layerModel, leafletMap) {
+  var self = this;
+  LeafletLayerView.apply(this, [layerModel, this._createLeafletLayer(layerModel), leafletMap]);
 
-  initialize: function(layerModel, leafletMap) {
-    LeafletLayerView.call(this, layerModel, this, leafletMap);
-  },
+  this.leafletLayer.onAdd = function () {
+    self._redraw();
+  };
 
-  onAdd: function() {
-    this.redraw();
-  },
-
-  onRemove: function() {
-    var div = this.leafletMap.getContainer()
+  this.leafletLayer.onRemove = function () {
+    var div = self.leafletMap.getContainer();
     div.style.background = 'none';
-  },
+  };
+}
 
-  _modelUpdated: function() {
-    this.redraw();
-  },
+LeafletPlainLayerView.prototype = _.extend(
+  {},
+  LeafletLayerView.prototype,
+  {
+    setZIndex: function () {},
 
-  redraw: function() {
-    var div = this.leafletMap.getContainer()
-    div.style.backgroundColor = this.model.get('color') || '#FFF';
+    _createLeafletLayer: function (layerModel) {
+      return new L.Class();
+    },
 
-    if (this.model.get('image')) {
-      var st = 'transparent url(' + this.model.get('image') + ') repeat center center';
-      div.style.background = st
+    _modelUpdated: function () {
+      this._redraw();
+    },
+
+    _redraw: function () {
+      var div = this.leafletMap.getContainer()
+      div.style.backgroundColor = this.model.get('color') || '#FFF';
+
+      if (this.model.get('image')) {
+        var style = 'transparent url(' + this.model.get('image') + ') repeat center center';
+        div.style.background = style;
+      }
     }
-  },
-
-  // this method
-  setZIndex: function() {
   }
-
-});
-
-_.extend(LeafletPlainLayerView.prototype, LeafletLayerView.prototype);
+);
 
 module.exports = LeafletPlainLayerView;

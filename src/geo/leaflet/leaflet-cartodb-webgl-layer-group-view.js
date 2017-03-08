@@ -21,10 +21,12 @@ LeafletCartoDBWebglLayerGroupView.prototype = _.extend(
   LeafletLayerView.prototype,
   {
     _createLeafletLayer: function () {
-      return new L.Class();
+      var leafletLayer = new L.Class();
+      leafletLayer.onAdd = function () {};
+      leafletLayer.onRemove = function () {};
+      leafletLayer.setZIndex = function () {};
+      return leafletLayer;
     },
-
-    onAdd: function () {},
 
     _onLayerAdded: function (layer, i) {
       var self = this;

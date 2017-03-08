@@ -3,17 +3,7 @@ var L = require('leaflet');
 var LeafletLayerView = require('./leaflet-layer-view');
 
 var LeafletPlainLayerView = function (layerModel, leafletMap) {
-  var self = this;
   LeafletLayerView.apply(this, arguments);
-
-  this.leafletLayer.onAdd = function () {
-    self._redraw();
-  };
-
-  this.leafletLayer.onRemove = function () {
-    var div = self.leafletMap.getContainer();
-    div.style.background = 'none';
-  };
 }
 
 LeafletPlainLayerView.prototype = _.extend(
@@ -21,7 +11,21 @@ LeafletPlainLayerView.prototype = _.extend(
   LeafletLayerView.prototype,
   {
     _createLeafletLayer: function (layerModel) {
-      return new L.Class();
+      var self = this;
+      var leafletLayer = new L.Class();
+
+      leafletLayer.onAdd = function () {
+        self._redraw();
+      };
+
+      leafletLayer.onRemove = function () {
+        var div = self.leafletMap.getContainer();
+        div.style.background = 'none';
+      };
+
+      leafletLayer.setZIndex = function () {};
+
+      return leafletLayer;
     },
 
     _modelUpdated: function () {

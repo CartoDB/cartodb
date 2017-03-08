@@ -6,6 +6,7 @@
         <div class="Header-navigationToggleItem datasets"><a href="<%= CartoDB.url(self, 'datasets_index') %>">Datasets</a></div>
       </nav>
     </div>
+    <div class="Filters"></div>
     <div class="Header-settings">
       <% if current_user.has_feature_flag?('bbg_profile_menu') %>
       <ul class="Header-settingsList">

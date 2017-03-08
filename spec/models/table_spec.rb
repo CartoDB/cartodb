@@ -2207,6 +2207,22 @@ describe Table do
         [0, 1].should include(table.estimated_row_count)
       end
     end
+
+    describe '#public_values' do
+      it 'should work with a canonical visualizations that has two related tables' do
+        # Note: with Builder, this should not happen (canonical visualizations cannot be modified), for compatibility
+        # with older, migrated, canonical visualizations
+        main_table = create_table(user_id: @user.id)
+        aux_table = create_table(user_id: @user.id)
+
+        canonical_layer = main_table.layers.first
+        canonical_layer.options["query"] = "SELECT * FROM #{main_table.name} JOIN #{aux_table.name} ON true"
+        canonical_layer.save
+
+        main_table.public_values[:table_visualization][:related_tables].count.should eq 1
+        main_table.public_values[:table_visualization][:related_tables][0][:name].should eq aux_table.name
+      end
+    end
   end
 
   shared_examples_for 'table service with legacy model' do

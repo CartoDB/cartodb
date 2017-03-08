@@ -30,7 +30,12 @@ module CartoDB
   def self.url(context, path, params = {}, user = nil)
     # Must clean user_domain or else polymorphic_path will use it and generate again /u/xxx/user/xxx
     base_url = CartoDB.base_url_from_request(context.request, user)
-    base_url + context.polymorphic_path(path, params.merge(user_domain: nil))
+    base_url + main_context(context).polymorphic_path(path, params.merge(user_domain: nil))
+  end
+
+  # Isolated-context engines need route resolution not in the engine itself but in the main app
+  def self.main_context(context)
+    context.respond_to?(:main_app) && context.main_app ? context.main_app : context
   end
 
   # Helper method to encapsulate Rails base URL generation compatible with our subdomainless mode

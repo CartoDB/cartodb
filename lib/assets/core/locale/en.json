@@ -1806,7 +1806,8 @@
       },
       "georeference": {
         "manually-add": "Please georeference or manually add data to visualize.",
-        "georeference-button": "Georeference"
+        "georeference-button": "Georeference",
+        "visualize": "Georeference to visualize"
       }
     },
     "data": {

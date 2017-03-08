@@ -15,8 +15,8 @@ var LeafletLayerView = function (layerModel, leafletMap) {
 _.extend(LeafletLayerView.prototype, Backbone.Events);
 _.extend(LeafletLayerView.prototype, {
 
-  _createLeafletLayer: function () {
-    throw new Error('subclasses of LeafletLayerView must implement _createLeafletLayer');
+  setZIndex: function (index) {
+    this.leafletLayer.setZIndex(index);
   },
 
   setModel: function (model) {
@@ -27,9 +27,6 @@ _.extend(LeafletLayerView.prototype, {
     this.model.bind('change', this._modelUpdated, this);
   },
 
-  /**
-   * remove layer from the map and unbind events
-   */
   remove: function () {
     this.leafletMap.removeLayer(this.leafletLayer);
     this.trigger('remove', this);
@@ -39,6 +36,10 @@ _.extend(LeafletLayerView.prototype, {
 
   reload: function () {
     this.leafletLayer.redraw();
+  },
+
+  _createLeafletLayer: function () {
+    throw new Error('subclasses of LeafletLayerView must implement _createLeafletLayer');
   }
 });
 

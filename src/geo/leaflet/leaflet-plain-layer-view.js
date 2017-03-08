@@ -20,8 +20,6 @@ LeafletPlainLayerView.prototype = _.extend(
   {},
   LeafletLayerView.prototype,
   {
-    setZIndex: function () {},
-
     _createLeafletLayer: function (layerModel) {
       return new L.Class();
     },

@@ -33,8 +33,6 @@ LeafletCartoDBWebglLayerGroupView.prototype = _.extend(
       });
     },
 
-    setZIndex: function () {},
-
     _onURLsChanged: function (getUrl) {
       var self = this;
       return function () {

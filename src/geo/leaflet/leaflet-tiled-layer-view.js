@@ -36,10 +36,6 @@ LeafletTiledLayerView.prototype = _.extend(
   {},
   LeafletLayerView.prototype,
   {
-    setZIndex: function (index) {
-      this.leafletLayer.setZIndex(index);
-    },
-
     _createLeafletLayer: function (layerModel) {
       return new L.TileLayer(layerModel.get('urlTemplate'), generateLeafletLayerOptions(layerModel));
     },

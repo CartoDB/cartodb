@@ -60,10 +60,6 @@ LeafletCartoDBLayerGroupView.prototype = _.extend(
   LeafletLayerView.prototype,
   CartoDBLayerGroupViewBase.prototype,
   {
-    setZIndex: function (index) {
-      this.leafletLayer.setZIndex(index);
-    },
-
     interactionClass: wax.leaf.interaction,
 
     _createLeafletLayer: function (layerModel) {

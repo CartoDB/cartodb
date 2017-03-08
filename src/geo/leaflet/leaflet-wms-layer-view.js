@@ -33,8 +33,6 @@ LeafletWMSLayerView.prototype = _.extend(
   {},
   LeafletLayerView.prototype,
   {
-    setZIndex: function () {},
-
     _createLeafletLayer: function (layerModel) {
       return new L.TileLayer.WMS(layerModel.get('urlTemplate'), generateLeafletLayerOptions(layerModel));
     },

@@ -30,10 +30,6 @@ LeafletTorqueLayer.prototype = _.extend(
       return new L.TorqueLayer(attrs);
     },
 
-    setZIndex: function (index) {
-      this.leafletLayer.setZIndex(index);
-    },
-
     _modelUpdated: function () {
       var model = this.model;
 

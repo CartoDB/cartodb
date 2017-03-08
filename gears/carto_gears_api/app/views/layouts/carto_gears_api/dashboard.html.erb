@@ -4,15 +4,14 @@
     </script>
     <%= javascript_include_tag 'cdb.js', 'models.js', 'dashboard_templates.js', 'dashboard_deps.js', 'dashboard.js' -%>
 <% end %>
-
 <%= content_for(:css) do -%>
     <%= stylesheet_link_tag 'dashboard.css', :media => 'all' %>
 <% end %>
-
 <%= render :template => 'layouts/application' %>
+<%= yield :dashboard_body %>
+    <% if !Cartodb.config[:cartodb_com_hosted].present? %>
+        <div class="SupportBanner" id="support-banner"></div>
+    <% end %>
 
-<% if !Cartodb.config[:cartodb_com_hosted].present? %>
-    <div class="SupportBanner" id="support-banner"></div>
-<% end %>
-
-<%= render 'admin/shared/footer' %>
+    <%= render 'admin/shared/footer' %>
+<%= render :partial => 'shared/flash_message' %>

@@ -114,6 +114,8 @@ module Carto
       end
 
       def bounds_from(map)
+        return nil unless map.view_bounds_sw && map.view_bounds_ne
+
         ::JSON.parse("[#{map.view_bounds_sw}, #{map.view_bounds_ne}]")
       rescue => e
         CartoDB::Logger.debug(

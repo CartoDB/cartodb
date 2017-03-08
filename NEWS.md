@@ -53,6 +53,7 @@ Development
   * Select an icon previously uploaded by the organization admin (#11462)
   * Sets the default initial size for icons to 20px (#11498)
 * Onboarding for layer edition (#10905)
+* Improved empty bounds map handling (#11711).
 * Updated diagnosis page versions.
 * Improved formula widget description field. (#11469)
 * Added support for Zeus for faster testing (#11574). Check `CONTRIBUTING.md` for configuration details.
@@ -60,6 +61,7 @@ Development
 * Invite to georeference proactively when detecting non-georeferenced data (#11316)
 
 ### Bug fixes
+* Fixed font style for the "You have run out of quota" module (#11690)
 * Ensured all analysis onboarding screens link to carto.learn guides (#11193)
 * Fixed problem with Bubbles legend when a new analysis is applied (#11666)
 * Fixed missing metadata option in header when dataset is sync (#11458)

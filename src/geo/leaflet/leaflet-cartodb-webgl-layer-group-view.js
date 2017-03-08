@@ -1,9 +1,9 @@
+var _ = require('underscore');
+var L = require('leaflet');
 var TC = require('tangram.cartodb');
 var LeafletLayerView = require('./leaflet-layer-view');
-var L = require('leaflet');
 
 var LeafletCartoDBWebglLayerGroupView = function (layerGroupModel, leafletMap) {
-  var self = this;
   LeafletLayerView.apply(this, arguments);
 
   layerGroupModel.bind('change:urls',

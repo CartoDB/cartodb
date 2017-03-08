@@ -12,7 +12,7 @@ LeafletCartoDBLayerGroupView.prototype = _.extend(
   {},
   OriginalLeafletCartoDBLayerGroupView.prototype,
   {
-    interactionClass: FakeWax,
+    interactionClass: FakeWax
   }
 );
 

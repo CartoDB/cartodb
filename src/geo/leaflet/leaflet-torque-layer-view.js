@@ -1,5 +1,6 @@
 require('torque.js');
 var _ = require('underscore');
+var L = require('leaflet');
 var LeafletLayerView = require('./leaflet-layer-view');
 var TorqueLayerViewBase = require('../torque-layer-view-base');
 var util = require('cdb.core.util');
@@ -61,7 +62,6 @@ LeafletTorqueLayer.prototype = _.extend(
           this.leafletLayer._reloadTiles();
         }.bind(this), 0);
       }
-
     }
   }
 );

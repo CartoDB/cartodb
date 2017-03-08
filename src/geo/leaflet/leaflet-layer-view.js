@@ -1,9 +1,6 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
 
-/**
- * base layer for all leaflet layers
- */
 var LeafletLayerView = function (layerModel, leafletMap) {
   this.leafletLayer = this._createLeafletLayer(layerModel);
   this.leafletMap = leafletMap;

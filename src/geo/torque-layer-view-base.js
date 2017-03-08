@@ -6,7 +6,7 @@ var _ = require('underscore');
  *
  * Methods are prefixed with _ to indicate that they are not intended to be used outside the implementing models.
  */
-TorqueLayerViewBase = {
+var TorqueLayerViewBase = {
   setNativeTorqueLayer: function (nativeTorqueLayer) {
     var model = this.model;
     this.nativeTorqueLayer = nativeTorqueLayer;
@@ -45,10 +45,9 @@ TorqueLayerViewBase = {
       this._callModel('pause');
     }, this);
 
-    var steps = model.get('torque-steps')
-      || ( this.nativeTorqueLayer.provider && this.nativeTorqueLayer.provider.getSteps() )
-      || this.nativeTorqueLayer.options.steps
-      || 0;
+    var steps = model.get('torque-steps') ||
+      (this.nativeTorqueLayer.provider && this.nativeTorqueLayer.provider.getSteps()) ||
+      this.nativeTorqueLayer.options.steps || 0;
 
     model.set({
       isRunning: this.nativeTorqueLayer.isRunning(),

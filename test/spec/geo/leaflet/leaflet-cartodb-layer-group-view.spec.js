@@ -1,3 +1,4 @@
+var _ = require('underscore');
 var L = require('leaflet');
 
 var SharedTestsForCartoDBLayerGroupViews = require('../shared-tests-for-cartodb-layer-group-views');
@@ -7,7 +8,7 @@ var OriginalLeafletCartoDBLayerGroupView = require('../../../../src/geo/leaflet/
 
 var LeafletCartoDBLayerGroupView = OriginalLeafletCartoDBLayerGroupView;
 
-LeafletCartoDBLayerGroupView.prototype = Object.assign(
+LeafletCartoDBLayerGroupView.prototype = _.extend(
   {},
   OriginalLeafletCartoDBLayerGroupView.prototype,
   {

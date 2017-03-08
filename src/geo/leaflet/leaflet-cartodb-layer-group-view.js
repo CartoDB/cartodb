@@ -1,3 +1,4 @@
+var _ = require('underscore');
 var L = require('leaflet');
 var LeafletLayerView = require('./leaflet-layer-view');
 var CartoDBLayerGroupViewBase = require('../cartodb-layer-group-view-base');
@@ -55,7 +56,7 @@ var LeafletCartoDBLayerGroupView = function (layerModel, leafletMap) {
   });
 };
 
-LeafletCartoDBLayerGroupView.prototype = Object.assign(
+LeafletCartoDBLayerGroupView.prototype = _.extend(
   {},
   LeafletLayerView.prototype,
   CartoDBLayerGroupViewBase.prototype,

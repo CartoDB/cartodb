@@ -1,3 +1,4 @@
+var _ = require('underscore');
 var L = require('leaflet');
 var LeafletLayerView = require('./leaflet-layer-view');
 
@@ -19,7 +20,7 @@ var LeafletTiledLayerView = function (layerModel, leafletMap) {
   };
 };
 
-LeafletTiledLayerView.prototype = Object.assign(
+LeafletTiledLayerView.prototype = _.extend(
   {},
   LeafletLayerView.prototype,
   {

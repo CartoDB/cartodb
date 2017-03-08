@@ -49,6 +49,8 @@ class UserTable < Sequel::Model
     update_updated_at
     values
     affected_visualizations
+    fully_dependent_visualizations
+    partially_dependent_visualizations
     reload
   }
 
@@ -84,24 +86,6 @@ class UserTable < Sequel::Model
   plugin :dirty
 
   def_delegators :relator, :affected_visualizations
-
-  def_dataset_method(:search) do |query|
-    conditions = <<-EOS
-      to_tsvector('english', coalesce(name, '') || ' ' || coalesce(description, '')) @@ plainto_tsquery('english', ?) OR name ILIKE ?
-      EOS
-    where(conditions, query, "%#{query}%")
-  end
-
-  def_dataset_method(:multiple_order) do |criteria|
-    if criteria.nil? || criteria.empty?
-      order(:id)
-    else
-      order_params = criteria.map do |key, order|
-        Sequel.send(order.to_sym, key.to_sym)
-      end
-      order(*order_params)
-    end
-  end
 
   # Ignore mass-asigment on not allowed columns
   self.strict_param_setting = false
@@ -335,6 +319,14 @@ class UserTable < Sequel::Model
 
   def privacy_was
     previous_changes[:privacy].first
+  end
+
+  def fully_dependent_visualizations
+    affected_visualizations.select { |v| v.fully_dependent_on?(self) }
+  end
+
+  def partially_dependent_visualizations
+    affected_visualizations.select { |v| v.partially_dependent_on?(self) }
   end
 
   private

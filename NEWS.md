@@ -101,6 +101,7 @@ Development
 * Hide sync options in builder table view for non-owners (#10986)
 * Fix issues with edition of custom color infowindows (#10985)
 * UI fixes for georeference. Changes of copy and validation warning. (#11426)
+* Show layer name in legends for Torque layers (#11715)
 * Color scheme is now clickable in category ramps (#11413)
 * Fix responsive layout in onboarding steps (#11444)
 * Fix for race condition when importing files and deploying at the same time (#11653)

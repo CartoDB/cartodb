@@ -3,6 +3,10 @@ require_dependency 'cartodb_config_utils'
 
 module ApplicationHelper
   include CartoDB::ConfigUtils
+  include SafeJsObject
+  include TrackjsHelper
+  include GoogleAnalyticsHelper
+  include HubspotHelper
 
   def current_user
     super(CartoDB.extract_subdomain(request))
@@ -177,34 +181,6 @@ module ApplicationHelper
     current_user.present? ? current_user.account_type.to_s.upcase : 'UNAUTHENTICATED'
   end
 
-  def insert_google_analytics(track, public_view = false, custom_vars = {})
-    if !Cartodb.config[:google_analytics].blank? && !Cartodb.config[:google_analytics][track].blank? && !Cartodb.config[:google_analytics]["domain"].blank?
-      ua = Cartodb.config[:google_analytics][track]
-      domain = Cartodb.config[:google_analytics]["domain"]
-
-      render(:partial => 'shared/analytics', :locals => { ua: ua, domain: domain, custom_vars: custom_vars, public_view: public_view })
-    end
-  end
-
-  def insert_trackjs(app = 'editor')
-    if !Cartodb.config[:trackjs].blank? && !Cartodb.config[:trackjs]['customer'].blank?
-      customer = Cartodb.config[:trackjs]['customer']
-      enabled = Cartodb.config[:trackjs]['enabled']
-      app_key = Cartodb.config[:trackjs]['app_keys'][app]
-
-      render(:partial => 'shared/trackjs', :locals => { customer: customer, enabled: enabled, app_key: app_key })
-    end
-  end
-
-  def insert_hubspot(app = 'editor')
-    if CartoDB::Hubspot::instance.enabled? && !CartoDB::Hubspot::instance.token.blank?
-      token = CartoDB::Hubspot::instance.token
-      event_ids = CartoDB::Hubspot::instance.event_ids
-
-      render(:partial => 'shared/hubspot', :locals => { token: token, event_ids: event_ids })
-    end
-  end
-
   def insert_hubspot_form(form = 'newsletter')
     if CartoDB::Hubspot::instance.enabled? && !CartoDB::Hubspot::instance.token.blank? && CartoDB::Hubspot::instance.form_ids.present? && !CartoDB::Hubspot::instance.form_ids[form].blank?
       token = CartoDB::Hubspot::instance.token
@@ -289,19 +265,6 @@ module ApplicationHelper
   #if cartodb_com_hosted is false, means that it is SaaS. If it's true (or doesn't exist), it's a custom installation
   def cartodb_onpremise_version
     Cartodb.config[:onpremise_version]
-  end
-
-  # Wraps a JSON object to be loaded as a JS object in a safe way.
-  #
-  # @example expected usage (my-template.erb), illustrated with a Visualization object
-  #   <script>
-  #     var vizdata = <%= safe_js_object vis.to_vizjson.to_json %>;
-  #   </script>
-  #
-  # @return string
-  def safe_js_object(obj)
-    # see http://api.rubyonrails.org/v3.2.21/classes/ERB/Util.html#method-c-j
-    raw "JSON.parse('#{ j(obj.html_safe) }')"
   end
 
   def model_errors(model)

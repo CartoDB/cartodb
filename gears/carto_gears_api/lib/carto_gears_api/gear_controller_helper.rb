@@ -7,5 +7,9 @@ module CartoGearsApi
     include TrackjsHelper
     include GoogleAnalyticsHelper
     include HubspotHelper
+    include FrontendConfigHelper
+    include AppAssetsHelper
+    include MapsApiHelper
+    include SqlApiHelper
   end
 end

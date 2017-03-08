@@ -7,6 +7,10 @@ module ApplicationHelper
   include TrackjsHelper
   include GoogleAnalyticsHelper
   include HubspotHelper
+  include FrontendConfigHelper
+  include AppAssetsHelper
+  include MapsApiHelper
+  include SqlApiHelper
 
   def current_user
     super(CartoDB.extract_subdomain(request))
@@ -49,93 +53,9 @@ module ApplicationHelper
     end
   end
 
-  def sql_api_template(privacy="private")
-    sql_api_url('{user}', privacy)
-  end
-
-  def sql_api_url(username, privacy = 'private')
-    sql_api = Cartodb.config[:sql_api][privacy]
-    if CartoDB.subdomainless_urls?
-      sql_api["protocol"] + "://" + sql_api["domain"] + ":" + sql_api["port"].to_s + "/user/#{username}"
-    else
-      sql_api["protocol"] + "://#{username}." + sql_api["domain"] + ":" + sql_api["port"].to_s
-    end
-  end
-
-  def maps_api_template(privacy="private")
-      maps_api = Cartodb.config[:tiler][privacy]
-      if CartoDB.subdomainless_urls?
-        maps_api["protocol"] + "://" + maps_api["domain"] + ":" + maps_api["port"].to_s + "/user/{user}"
-      else
-        maps_api["protocol"] + "://{user}." + maps_api["domain"] + ":" + maps_api["port"].to_s
-      end
-  end
-
-  def app_assets_base_url
-    asset_host = CartoDB.get_absolute_url(Cartodb.get_config(:app_assets, 'asset_host'))
-    base_url = asset_host.present? ? asset_host : CartoDB.base_domain_from_request(request)
-    "#{base_url}/assets"
-  end
-
   module_function :maps_api_template
   module_function :sql_api_template, :sql_api_url
   module_function :app_assets_base_url
-
-  def frontend_config
-    config = {
-      app_assets_base_url:        app_assets_base_url,
-      maps_api_template:          maps_api_template,
-      sql_api_template:           sql_api_template,
-      user_name:                  CartoDB.extract_subdomain(request),
-      cartodb_com_hosted:         Cartodb.config[:cartodb_com_hosted].present?,
-      account_host:               CartoDB.account_host,
-      dropbox_api_key:            Cartodb.get_config(:dropbox_api_key),
-      gdrive_api_key:             Cartodb.get_config(:gdrive, 'api_key'),
-      gdrive_app_id:              Cartodb.get_config(:gdrive, 'app_id'),
-      oauth_dropbox:              Cartodb.get_config(:oauth, 'dropbox', 'app_key'),
-      oauth_box:                  Cartodb.get_config(:oauth, 'box', 'client_id'),
-      oauth_gdrive:               Cartodb.get_config(:oauth, 'gdrive', 'client_id'),
-      oauth_instagram:            Cartodb.get_config(:oauth, 'instagram', 'app_key'),
-      oauth_mailchimp:            Cartodb.get_config(:oauth, 'mailchimp', 'app_key'),
-      arcgis_enabled:             Cartodb.get_config(:datasources, 'arcgis_enabled'),
-      salesforce_enabled:         Cartodb.get_config(:datasources, 'salesforce_enabled'),
-      datasource_search_twitter:  nil,
-      max_asset_file_size:        Cartodb.config[:assets]["max_file_size"],
-      watcher_ttl:                Cartodb.config[:watcher].try("fetch", 'ttl', 60),
-      upgrade_url:                cartodb_com_hosted? ? false : "#{current_user.upgrade_url(request.protocol)}",
-      licenses:                   Carto::License.all,
-      data_library_enabled:       CartoDB::Visualization::CommonDataService.configured?
-    }
-
-    if Cartodb.config[:datasource_search].present? && Cartodb.config[:datasource_search]['twitter_search'].present? \
-      && Cartodb.config[:datasource_search]['twitter_search']['standard'].present?
-      config[:datasource_search_twitter] = Cartodb.config[:datasource_search]['twitter_search']['standard']['search_url']
-    end
-
-    if Cartodb.config[:graphite_public].present?
-      config[:statsd_host] = Cartodb.config[:graphite_public]['host']
-      config[:statsd_port] = Cartodb.config[:graphite_public]['port']
-    end
-
-    if Cartodb.config[:error_track].present?
-      config[:error_track_url] = Cartodb.config[:error_track]["url"]
-      config[:error_track_percent_users] = Cartodb.config[:error_track]["percent_users"]
-    end
-
-    if Cartodb.config[:static_image_upload_endpoint].present?
-      config[:static_image_upload_endpoint] = Cartodb.config[:static_image_upload_endpoint]
-    end
-
-    if Cartodb.config[:cdn_url].present?
-      config[:cdn_url] = Cartodb.config[:cdn_url]
-    end
-
-    if !Cartodb.get_config(:dataservices, 'enabled').nil?
-      config[:dataservices_enabled] = Cartodb.get_config(:dataservices, 'enabled')
-    end
-
-    config.to_json
-  end
 
   def frontend_config_public(options={ https_apis: false })
     api_type = (options[:https_apis].present? && options[:https_apis]) ? 'private' : 'public'
@@ -260,11 +180,6 @@ module ApplicationHelper
 
   def vis_json_url(vis_id, context, user=nil)
     "#{ CartoDB.url(context, 'api_v2_visualizations_vizjson', { id: vis_id }, user).sub(/(http:|https:)/i, '') }.json"
-  end
-
-  #if cartodb_com_hosted is false, means that it is SaaS. If it's true (or doesn't exist), it's a custom installation
-  def cartodb_onpremise_version
-    Cartodb.config[:onpremise_version]
   end
 
   def model_errors(model)

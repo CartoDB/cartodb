@@ -14,5 +14,5 @@
 </p>
 
 <p class="CDB-Text Onboarding-description">
-  <a href="https://carto.com/docs/carto-engine/dataservices-api/isoline-functions/" class="Onboarding-readMore" target="_blank"><%- _t('analyses-onboarding.read-more') %></a>
+  <a href="https://carto.com/learn/guides/analysis/areas-of-influence" class="Onboarding-readMore" target="_blank"><%- _t('analyses-onboarding.learn-more') %></a>
 </p>

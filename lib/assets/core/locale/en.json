@@ -127,6 +127,7 @@
     "finished": "has finished",
     "style-analysis": "Style this analysis",
     "read-more": "Read more in documentation",
+    "learn-more": "Learn more",
     "never-show-message": "Don't show me this again.",
     "no-new-columns": "No new columns were created.",
     "geometries-updated": "The geometries in your table were updated",
@@ -137,7 +138,7 @@
     "new-columns-included-based-on-input": "New columns have been included with your original data based on the columns chosen for the input.",
     "sampling": {
       "title": "Subsample of rows",
-      "description": "A sample of your original table was randomly selected to give approximately %{percentage}% of the rows from your input dataset."
+      "description": "A sample of your original table was randomly selected to give approximately a percentage of the rows from your input dataset."
     },
     "merge": {
       "title": "Join columns from 2nd layer",
@@ -165,7 +166,7 @@
     },
     "filter-by-node-column": {
       "title": "Filter by layer",
-      "description": "Filter by layer allows you to filter the data in your layer by propagating the filters in the attached layer. Now if you filter on widgets added to the '%{name_of_filter_source_node}' node, the results in the '%{name_of_source_node}' node would be also filtered."
+      "description": "Filter by layer allows you to filter the data in your layer by propagating the filters in the attached layer. Now if you filter on widgets added to the first node, the results in the second node would be also filtered."
     },
     "spatial-markov-trend": {
       "trend": "The normalized trend for each geometry",
@@ -206,7 +207,7 @@
       "title": "Group points into polygons",
       "the-geom": "This column was updated to polygons encompassing the input points.",
       "category": "This will be the category over which the polygons were calculated",
-      "description": "Group points into polygons used '%{method}' to create new polygons."
+      "description": "Group points into polygons to create new polygons."
     },
     "georeference": {
       "title": "Georeference",

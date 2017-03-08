@@ -5,7 +5,7 @@ var TorqueLayerViewBase = require('../torque-layer-view-base');
 var util = require('cdb.core.util');
 
 var LeafletTorqueLayer = function (layerModel, leafletMap) {
-  LeafletLayerView.apply(this, [layerModel, this._createLeafletLayer(layerModel), leafletMap]);
+  LeafletLayerView.apply(this, arguments);
   this.setNativeTorqueLayer(this.leafletLayer);
 };
 

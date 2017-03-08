@@ -4,7 +4,7 @@ var LeafletLayerView = require('./leaflet-layer-view');
 
 var LeafletPlainLayerView = function (layerModel, leafletMap) {
   var self = this;
-  LeafletLayerView.apply(this, [layerModel, this._createLeafletLayer(layerModel), leafletMap]);
+  LeafletLayerView.apply(this, arguments);
 
   this.leafletLayer.onAdd = function () {
     self._redraw();

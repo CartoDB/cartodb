@@ -2,54 +2,46 @@ var TC = require('tangram.cartodb');
 var LeafletLayerView = require('./leaflet-layer-view');
 var L = require('leaflet');
 
-var LeafletCartoDBWebglLayerGroupView = L.Class.extend({
-  includes: [
-    LeafletLayerView.prototype
-  ],
+var LeafletCartoDBWebglLayerGroupView = function (layerGroupModel, leafletMap) {
+  var self = this;
+  LeafletLayerView.apply(this, arguments);
 
-  options: {
-    minZoom: 0,
-    maxZoom: 28,
-    tileSize: 256,
-    zoomOffset: 0,
-    tileBuffer: 50
-  },
+  layerGroupModel.bind('change:urls',
+    this._onURLsChanged(layerGroupModel.getTileURLTemplates.bind(layerGroupModel))
+  );
 
-  events: {
-    featureOver: null,
-    featureOut: null,
-    featureClick: null
-  },
+  this.tangram = new TC(leafletMap);
 
-  initialize: function (layerGroupModel, map) {
-    LeafletLayerView.call(this, layerGroupModel, this, map);
-    layerGroupModel.bind('change:urls',
-      this._onURLsChanged(layerGroupModel.getTileURLTemplates.bind(layerGroupModel))
-    );
+  layerGroupModel.each(this._onLayerAdded, this);
+  layerGroupModel.onLayerAdded(this._onLayerAdded.bind(this));
+};
 
-    this.tangram = new TC(map);
+LeafletCartoDBWebglLayerGroupView.prototype = _.extend(
+  {},
+  LeafletLayerView.prototype,
+  {
+    _createLeafletLayer: function () {
+      return new L.Class();
+    },
 
-    layerGroupModel.each(this._onLayerAdded, this);
-    layerGroupModel.onLayerAdded(this._onLayerAdded.bind(this));
-  },
+    onAdd: function () {},
 
-  onAdd: function () {},
+    _onLayerAdded: function (layer, i) {
+      var self = this;
+      layer.bind('change:meta change:visible', function (e) {
+        self.tangram.addLayer(e.attributes, (i + 1));
+      });
+    },
 
-  _onLayerAdded: function (layer, i) {
-    var self = this;
-    layer.bind('change:meta change:visible', function (e) {
-      self.tangram.addLayer(e.attributes, (i + 1));
-    });
-  },
+    setZIndex: function () {},
 
-  setZIndex: function () {},
-
-  _onURLsChanged: function (getUrl) {
-    var self = this;
-    return function () {
-      self.tangram.addDataSource(getUrl('mvt'));
-    };
+    _onURLsChanged: function (getUrl) {
+      var self = this;
+      return function () {
+        self.tangram.addDataSource(getUrl('mvt'));
+      };
+    }
   }
-});
+);
 
 module.exports = LeafletCartoDBWebglLayerGroupView;

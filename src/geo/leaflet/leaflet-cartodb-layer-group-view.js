@@ -43,8 +43,7 @@ var findContainerPoint = function (map, o) {
 
 var LeafletCartoDBLayerGroupView = function (layerModel, leafletMap) {
   var self = this;
-
-  LeafletLayerView.apply(this, [layerModel, this._createLeafletLayer(layerModel), leafletMap]);
+  LeafletLayerView.apply(this, arguments);
   CartoDBLayerGroupViewBase.call(this, layerModel, leafletMap);
 
   this.leafletLayer.on('load', function (e) {

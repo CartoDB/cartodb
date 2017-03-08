@@ -18,7 +18,7 @@ var generateLeafletLayerOptions = function (layerModel) {
 
 var LeafletWMSLayerView = function (layerModel, leafletMap) {
   var self = this;
-  LeafletLayerView.apply(this, [layerModel, this._createLeafletLayer(layerModel), leafletMap]);
+  LeafletLayerView.apply(this, arguments);
 
   this.leafletLayer.on('load', function (e) {
     self.trigger('load');

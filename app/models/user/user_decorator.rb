@@ -86,6 +86,7 @@ module CartoDB
         billing_period: last_billing_cycle,
         api_key: api_key,
         layers: layers.map(&:public_values),
+        created_at: created_at,
         trial_ends_at: trial_ends_at,
         upgraded_at: upgraded_at,
         show_trial_reminder: trial_ends_at.present?,

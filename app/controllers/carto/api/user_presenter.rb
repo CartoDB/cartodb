@@ -156,6 +156,7 @@ module Carto
           layers: @user.layers.map { |layer|
               Carto::Api::LayerPresenter.new(layer).to_poro
           },
+          created_at: @user.created_at,
           trial_ends_at: @user.trial_ends_at,
           upgraded_at: @user.upgraded_at,
           show_trial_reminder: @user.trial_ends_at.present?,

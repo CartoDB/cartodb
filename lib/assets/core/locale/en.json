@@ -110,7 +110,7 @@
       "title": "The layer <strong>%{name}</strong> includes non-georeferenced data.",
       "description": "For this data to appear, please perform a georeference analysis to get the needed geographical information.",
       "skip": "Skip",
-      "georeference": "Georeference data"
+      "data": "Georeference data"
     },
     "cartocss": {
       "title": "Dress it up with CartoCSS",

@@ -1774,18 +1774,6 @@ describe Table do
       end
     end
 
-    describe 'UserTable.multiple_order' do
-      it 'returns sorted records' do
-        table_1 = create_table(name: "bogus_table_1", user_id: @user.id)
-        table_2 = create_table(name: "bogus_table_2", user_id: @user.id)
-
-        UserTable.search('bogus').multiple_order(name: 'asc')
-          .to_a.first.name.should == 'bogus_table_1'
-        UserTable.search('bogus').multiple_order(name: 'desc')
-          .to_a.first.name.should == 'bogus_table_2'
-      end
-    end # Table.multiple_order
-
     context "retrieving tables from ids" do
       it "should be able to find a table by name or by identifier" do
         table = new_table :user_id => @user.id
@@ -2216,6 +2204,10 @@ describe Table do
         @user.save
       end
 
+      before(:each) do
+        @carto_user = ::Table.new.model_class == ::UserTable ? @user : Carto::User.find(@user.id)
+      end
+
       it 'propagates changes to affected visualizations if privacy set to PRIVATE' do
         # Need to at least have this decorated in the user data or checks before becoming private will raise an error
         CartoDB::Visualization::Member.any_instance.stubs(:supports_private_maps?).returns(true)
@@ -2224,7 +2216,7 @@ describe Table do
         table.should be_private
         table.table_visualization.should be_private
 
-        map = CartoDB::Visualization::TableBlender.new(@user, [table]).blend
+        map = CartoDB::Visualization::TableBlender.new(@carto_user, [table]).blend
         derived_vis = FactoryGirl.create(:derived_visualization, user_id: @user.id, map_id: map.id,
                                                                  privacy: CartoDB::Visualization::Member::PRIVACY_PRIVATE)
 
@@ -2236,7 +2228,7 @@ describe Table do
         table.save
 
         table.affected_visualizations.map do |vis|
-          vis.public?.should == vis.table?
+          vis.public?.should == (vis.type == Carto::Visualization::TYPE_CANONICAL)
         end
 
         table.privacy = UserTable::PRIVACY_PRIVATE
@@ -2255,7 +2247,7 @@ describe Table do
 
         table.privacy = UserTable::PRIVACY_PUBLIC
         table.save
-        map = CartoDB::Visualization::TableBlender.new(@user, [table]).blend
+        map = CartoDB::Visualization::TableBlender.new(@carto_user, [table]).blend
         derived_vis = FactoryGirl.create(:derived_visualization, user_id: @user.id, map_id: map.id)
 
         bypass_named_maps
@@ -2270,7 +2262,7 @@ describe Table do
           vis.public?.should eq vis.derived?         # Derived kept public
           vis.private?.should eq false               # None changed to private
           vis.password_protected?.should eq false    # None changed to password protected
-          vis.public_with_link?.should eq vis.table? # Table/canonical changed
+          vis.public_with_link?.should eq (vis.type == Carto::Visualization::TYPE_CANONICAL) # Table/canonical changed
         end
       end
     end
@@ -2280,20 +2272,18 @@ describe Table do
         bypass_named_maps
 
         CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
-        @doomed_table = create_table(user_id: @user.id)
-        @automatic_geocoding = FactoryGirl.create(:automatic_geocoding, table: @doomed_table)
-        @doomed_table.destroy
       end
 
       before(:each) do
         bypass_named_maps
+        @carto_user = ::Table.new.model_class == ::UserTable ? @user : Carto::User.find(@user.id)
       end
 
       it 'deletes derived visualizations that depend on this table' do
         bypass_named_maps
         table = create_table(name: 'bogus_name', user_id: @user.id)
 
-        map = CartoDB::Visualization::TableBlender.new(@user, [table]).blend
+        map = CartoDB::Visualization::TableBlender.new(@carto_user, [table]).blend
         derived = FactoryGirl.create(:derived_visualization, user_id: @user.id, map_id: map.id)
 
         table.reload
@@ -2302,36 +2292,6 @@ describe Table do
         expect {
           CartoDB::Visualization::Member.new(id: derived.id).fetch
         }.to raise_error KeyError
-      end
-    end
-
-    context "search" do
-      it "should find tables by description" do
-        table = Table.new
-        table.user_id = @user.id
-        table.name = "clubbing_spain_1_copy"
-        table.description = "A world borders shapefile suitable for thematic mapping applications. Contains polygon borders in two resolutions as well as longitude/latitude values and various country codes. Camión"
-        table.save.reload
-
-        ['borders', 'polygons', 'spain', 'countries'].each do |query|
-          tables = UserTable.search(query)
-          tables.should_not be_empty
-          tables.first.id.should == table.id
-        end
-        tables = UserTable.search("wadus")
-        tables.should be_empty
-      end
-
-      it "should find tables by name" do
-        table = Table.new
-        table.user_id = @user.id
-        table.name = "european_countries_1"
-        table.description = "A world borders shapefile suitable for thematic mapping applications. Contains polygon borders in two resolutions as well as longitude/latitude values and various country codes"
-        table.save.reload
-
-        tables = UserTable.search("eur")
-        tables.should_not be_empty
-        tables.first.id.should == table.id
       end
     end
 
@@ -2353,13 +2313,14 @@ describe Table do
       it 'invalidates derived visualization cache if there are changes in table privacy' do
         @user.private_tables_enabled = true
         @user.save
+        @carto_user = ::Table.new.model_class == ::UserTable ? @user : Carto::User.find(@user.id)
         table = create_table(user_id: @user.id)
         table.save
         table.should be_private
 
         Carto::NamedMaps::Api.any_instance.stubs(get: nil, create: true, update: true)
 
-        map = CartoDB::Visualization::TableBlender.new(@user, [table]).blend
+        map = CartoDB::Visualization::TableBlender.new(@carto_user, [table]).blend
         derived = FactoryGirl.create(:derived_visualization, user_id: @user.id, map_id: map.id)
         derived.type.should eq(CartoDB::Visualization::Member::TYPE_DERIVED)
 
@@ -2367,7 +2328,8 @@ describe Table do
         CartoDB::Visualization::Member.stubs(:new).with(has_entry(id: derived.id)).returns(derived)
         CartoDB::Visualization::Member.stubs(:new).with(has_entry(type: 'table')).returns(table.table_visualization)
 
-        derived.expects(:invalidate_cache).at_least_once
+        # Hack to get the correct (Sequel/AR) model
+        CartoDB::Varnish.new.purge(derived.varnish_vizjson_key)
 
         table.privacy = UserTable::PRIVACY_PUBLIC
         table.save
@@ -2379,11 +2341,12 @@ describe Table do
       it 'privacy reverts if named map update fails' do
         @user.private_tables_enabled = true
         @user.save
+        @carto_user = ::Table.new.model_class == ::UserTable ? @user : Carto::User.find(@user.id)
         table = create_table(user_id: @user.id, privacy: UserTable::PRIVACY_PUBLIC)
         table.save
 
         Carto::NamedMaps::Api.any_instance.stubs(get: nil, create: true, update: true)
-        map = CartoDB::Visualization::TableBlender.new(@user, [table]).blend
+        map = CartoDB::Visualization::TableBlender.new(@carto_user, [table]).blend
         derived = FactoryGirl.create(:derived_visualization, user_id: @user.id, map_id: map.id)
         derived.type.should eq(CartoDB::Visualization::Member::TYPE_DERIVED)
 
@@ -2391,13 +2354,18 @@ describe Table do
 
         table.privacy = UserTable::PRIVACY_PRIVATE
 
-        ::Map.any_instance.stubs(:save).once.raises(StandardError)
+        (table.model_class == ::UserTable ? ::Map : Carto::Map).any_instance.stubs(:save).once.raises(StandardError)
 
         expect { table.save }.to raise_exception StandardError
 
         table.reload.privacy.should eq UserTable::PRIVACY_PUBLIC
 
-        ::Map.any_instance.stubs(:save).returns(true)
+        if table.model_class == Carto::UserTable
+          # There is something weird with AR. The name unique validation always returns false after throwing from a hook
+          table.instance_variable_set(:@user_table, Carto::UserTable.find(table.id))
+        end
+
+        (table.model_class == ::UserTable ? ::Map : Carto::Map).any_instance.stubs(:save).returns(true)
 
         # Scenario 2: Fail setting user table privacy (unlikely, but just in case)
 
@@ -2405,42 +2373,26 @@ describe Table do
 
         # Scenario 3: Fail saving canonical visualization named map
 
-        @stub_calls = 0
-        @restore_called = false
-        CartoDB::Visualization::Member.any_instance.stubs(:store_using_table).with(table.table_visualization) do
-          @stub_calls += 1
-          if @stub_calls > 1
-            @restore_called = true
-            true
-          else
-            raise 'Manolo is a nice guy, this test is not.'
-          end
-        end
+        viz_class = table.model_class == ::UserTable ? CartoDB::Visualization::Member : Carto::Visualization
+
+        viz_class.any_instance.stubs(:store_using_table)
+                 .raises('Manolo is a nice guy, this test is not.')
+                 .then.returns(nil).at_least(2)
 
         table.privacy = UserTable::PRIVACY_PRIVATE
         expect do
           table.save
         end.to raise_error 'Manolo is a nice guy, this test is not.'
 
-        @restore_called.should eq true
-
         table.reload.privacy.should eq UserTable::PRIVACY_PUBLIC
 
-        CartoDB::Visualization::Member.any_instance.unstub(:store_using_table)
+        viz_class.any_instance.unstub(:store_using_table)
 
         # Scenario 4: Fail saving affected visualizations named map
 
-        @stub_calls = 0
-        @restore_called = false
-        CartoDB::Visualization::Member.any_instance.stubs(:store_using_table).with(derived) do
-          @stub_calls += 1
-          if @stub_calls > 1
-            @restore_called = true
-            true
-          else
-            raise 'Manolo is a nice guy, this test is not.'
-          end
-        end
+        viz_class.any_instance.stubs(:store_using_table)
+                 .raises('Manolo is a nice guy, this test is not.')
+                 .then.returns(nil).at_least(2)
 
         table.privacy = UserTable::PRIVACY_PRIVATE
         expect do
@@ -2449,7 +2401,7 @@ describe Table do
 
         table.reload.privacy.should eq UserTable::PRIVACY_PUBLIC
 
-        CartoDB::Visualization::Member.any_instance.unstub(:store_using_table)
+        viz_class.any_instance.unstub(:store_using_table)
 
         # Scenario 5: All went fine
 
@@ -2507,6 +2459,6 @@ describe Table do
     end
 
     it_behaves_like 'table service'
-    #it_behaves_like 'table service with legacy model'
+    it_behaves_like 'table service with legacy model'
   end
 end

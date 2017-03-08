@@ -6,49 +6,23 @@ var _ = require('underscore');
  *
  * Methods are prefixed with _ to indicate that they are not intended to be used outside the implementing models.
  */
-module.exports = {
-
-  _initialAttrs: function (layerModel) {
-    return {
-      table: layerModel.get('table_name'),
-      user: layerModel.get('user_name'),
-      column: layerModel.get('property'),
-      blendmode: layerModel.get('torque-blend-mode'),
-      resolution: 1,
-      // TODO: manage time columns
-      countby: 'count(cartodb_id)',
-      maps_api_template: layerModel.get('maps_api_template'),
-      stat_tag: layerModel.get('stat_tag'),
-      animationDuration: layerModel.get('torque-duration'),
-      steps: layerModel.get('torque-steps'),
-      sql: this._getQuery(layerModel),
-      visible: layerModel.get('visible'),
-      extra_params: {
-        api_key: layerModel.get('api_key')
-      },
-      attribution: layerModel.get('attribution'),
-      cartocss: layerModel.get('cartocss') || layerModel.get('tile_style'),
-      named_map: layerModel.get('named_map'),
-      auth_token: layerModel.get('auth_token'),
-      no_cdn: layerModel.get('no_cdn'),
-      loop: !(layerModel.get('loop') === false)
-    };
-  },
-
-  _init: function (layerModel) {
-    if (layerModel.get('visible')) {
-      this.play();
+TorqueLayerViewBase = {
+  setNativeTorqueLayer: function (nativeTorqueLayer) {
+    var model = this.model;
+    this.nativeTorqueLayer = nativeTorqueLayer;
+    if (model.get('visible')) {
+      this.nativeTorqueLayer.play();
     }
 
-    this.on('tilesLoaded', function () {
+    this.nativeTorqueLayer.on('tilesLoaded', function () {
       this.trigger('load');
     }, this);
 
-    this.on('tilesLoading', function () {
+    this.nativeTorqueLayer.on('tilesLoading', function () {
       this.trigger('loading');
     }, this);
 
-    this.on('change:time', function (changes) {
+    this.nativeTorqueLayer.on('change:time', function (changes) {
       this._setModelAttrs({
         step: changes.step,
         time: changes.time,
@@ -59,26 +33,58 @@ module.exports = {
       });
     }, this);
 
-    this.on('change:steps', function (changes) {
+    this.nativeTorqueLayer.on('change:steps', function (changes) {
       this._setModelAttrs({ steps: changes.steps });
     }, this);
 
-    this.on('play', function () {
+    this.nativeTorqueLayer.on('play', function () {
       this._callModel('play');
-    });
+    }, this);
 
-    this.on('pause', function () {
+    this.nativeTorqueLayer.on('pause', function () {
       this._callModel('pause');
-    });
+    }, this);
 
-    layerModel.set({
-      isRunning: this.isRunning(),
-      time: this.getTime(),
-      step: this.getStep(),
-      steps: layerModel.get('torque-steps') || (this.provider && this.provider.getSteps()) || this.options.steps || 0
+    var steps = model.get('torque-steps')
+      || ( this.nativeTorqueLayer.provider && this.nativeTorqueLayer.provider.getSteps() )
+      || this.nativeTorqueLayer.options.steps
+      || 0;
+
+    model.set({
+      isRunning: this.nativeTorqueLayer.isRunning(),
+      time: this.nativeTorqueLayer.getTime(),
+      step: this.nativeTorqueLayer.getStep(),
+      steps: steps
     });
 
     this._onModel();
+  },
+
+  _initialAttrs: function (model) {
+    return {
+      table: model.get('table_name'),
+      user: model.get('user_name'),
+      column: model.get('property'),
+      blendmode: model.get('torque-blend-mode'),
+      resolution: 1,
+      // TODO: manage time columns
+      countby: 'count(cartodb_id)',
+      maps_api_template: model.get('maps_api_template'),
+      stat_tag: model.get('stat_tag'),
+      animationDuration: model.get('torque-duration'),
+      steps: model.get('torque-steps'),
+      sql: this._getQuery(model),
+      visible: model.get('visible'),
+      extra_params: {
+        api_key: model.get('api_key')
+      },
+      attribution: model.get('attribution'),
+      cartocss: model.get('cartocss') || model.get('tile_style'),
+      named_map: model.get('named_map'),
+      auth_token: model.get('auth_token'),
+      no_cdn: model.get('no_cdn'),
+      loop: !(model.get('loop') === false)
+    };
   },
 
   /**
@@ -116,29 +122,29 @@ module.exports = {
 
   _isRunningChanged: function (m, isRunning) {
     if (isRunning) {
-      this.play();
+      this.nativeTorqueLayer.play();
     } else {
-      this.pause();
+      this.nativeTorqueLayer.pause();
     }
   },
 
   _timeChanged: function (m, time) {
-    this.setStep(this.timeToStep(time));
+    this.nativeTorqueLayer.setStep(this.nativeTorqueLayer.timeToStep(time));
   },
 
   _stepChanged: function (m, step) {
-    this.setStep(step);
+    this.nativeTorqueLayer.setStep(step);
   },
 
   _stepsChanged: function (m, steps) {
-    this.setSteps(steps);
+    this.nativeTorqueLayer.setSteps(steps);
   },
 
   _renderRangeChanged: function (m, r) {
     if (_.isObject(r) && _.isNumber(r.start) && _.isNumber(r.end)) {
-      this.renderRange(r.start, r.end);
+      this.nativeTorqueLayer.renderRange(r.start, r.end);
     } else {
-      this.resetRenderRange();
+      this.nativeTorqueLayer.resetRenderRange();
     }
   },
 
@@ -151,3 +157,5 @@ module.exports = {
     return query;
   }
 };
+
+module.exports = TorqueLayerViewBase;

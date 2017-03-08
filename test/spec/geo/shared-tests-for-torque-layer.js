@@ -9,6 +9,10 @@
  */
 module.exports = function () {
   describe('(shared tests for a torque layer view)', function () {
+    beforeEach(function () {
+      this.nativeTorqueLayer = this.view.nativeTorqueLayer;
+    });
+
     it('should setup initial values on model', function () {
       expect(this.view.model.get('step')).toEqual(0);
       expect(this.view.model.get('time')).toBeDefined(); // number of Date? varies between leaflet and gmaps
@@ -18,68 +22,68 @@ module.exports = function () {
 
     describe('when step attr changes on model', function () {
       beforeEach(function () {
-        spyOn(this.view, 'play');
-        spyOn(this.view, 'pause');
+        spyOn(this.nativeTorqueLayer, 'play');
+        spyOn(this.nativeTorqueLayer, 'pause');
       });
 
       it('should pause/play', function () {
         this.view.model.set('isRunning', false);
-        expect(this.view.play).not.toHaveBeenCalled();
-        expect(this.view.pause).toHaveBeenCalled();
+        expect(this.nativeTorqueLayer.play).not.toHaveBeenCalled();
+        expect(this.nativeTorqueLayer.pause).toHaveBeenCalled();
         this.view.model.set('isRunning', true);
-        expect(this.view.play).toHaveBeenCalled();
+        expect(this.nativeTorqueLayer.play).toHaveBeenCalled();
       });
     });
 
     describe('when step attr changes on model', function () {
       beforeEach(function () {
-        spyOn(this.view, 'setStep');
+        spyOn(this.nativeTorqueLayer, 'setStep');
         this.view.model.set('step', 123);
       });
 
       it('should setStep when step attr changes on model', function () {
-        expect(this.view.setStep).toHaveBeenCalledWith(123);
+        expect(this.nativeTorqueLayer.setStep).toHaveBeenCalledWith(123);
       });
     });
 
     describe('when steps attr changes on model', function () {
       beforeEach(function () {
-        spyOn(this.view, 'setSteps');
+        spyOn(this.nativeTorqueLayer, 'setSteps');
         this.view.model.set('steps', 512);
       });
 
       it('should setSteps when steps attr changes on model', function () {
-        expect(this.view.setSteps).toHaveBeenCalledWith(512);
+        expect(this.nativeTorqueLayer.setSteps).toHaveBeenCalledWith(512);
       });
     });
 
     describe('when renderRange attr changes on model', function () {
       beforeEach(function () {
-        spyOn(this.view, 'renderRange');
-        spyOn(this.view, 'resetRenderRange');
+        spyOn(this.nativeTorqueLayer, 'renderRange');
+        spyOn(this.nativeTorqueLayer, 'resetRenderRange');
       });
 
       it('should update renderRange if there are values', function () {
         this.view.model.set('renderRange', {start: 0, end: 100});
-        expect(this.view.renderRange).toHaveBeenCalledWith(0, 100);
-        expect(this.view.resetRenderRange).not.toHaveBeenCalled();
+        expect(this.nativeTorqueLayer.renderRange).toHaveBeenCalledWith(0, 100);
+        expect(this.nativeTorqueLayer.resetRenderRange).not.toHaveBeenCalled();
       });
 
       it('should reset renderRange if there are no values set', function () {
         this.view.model.set('renderRange', null);
-        expect(this.view.resetRenderRange).toHaveBeenCalled();
+        expect(this.nativeTorqueLayer.resetRenderRange).toHaveBeenCalled();
 
-        this.view.resetRenderRange.calls.reset();
+        this.nativeTorqueLayer.resetRenderRange.calls.reset();
         this.view.model.set('renderRange', {});
-        expect(this.view.resetRenderRange).toHaveBeenCalled();
+        expect(this.nativeTorqueLayer.resetRenderRange).toHaveBeenCalled();
       });
     });
 
-    describe('when change:time is triggered', function () {
+    describe('when change:time is fired', function () {
       beforeEach(function () {
-        spyOn(this.view, 'setStep');
-        spyOn(this.view, 'renderRange');
-        this.view.trigger('change:time', {
+        spyOn(this.nativeTorqueLayer, 'setStep');
+        spyOn(this.nativeTorqueLayer, 'renderRange');
+        this.nativeTorqueLayer.fire('change:time', {
           step: 1,
           time: 9000,
           start: 0,
@@ -94,15 +98,15 @@ module.exports = function () {
       });
 
       it('should not call view methods again', function () {
-        expect(this.view.setStep).not.toHaveBeenCalled();
-        expect(this.view.renderRange).not.toHaveBeenCalled();
+        expect(this.nativeTorqueLayer.setStep).not.toHaveBeenCalled();
+        expect(this.nativeTorqueLayer.renderRange).not.toHaveBeenCalled();
       });
     });
 
-    describe('when change:steps is triggered', function () {
+    describe('when change:steps is fired', function () {
       beforeEach(function () {
-        spyOn(this.view, 'setSteps');
-        this.view.trigger('change:steps', {steps: 1234});
+        spyOn(this.nativeTorqueLayer, 'setSteps');
+        this.nativeTorqueLayer.fire('change:steps', {steps: 1234});
       });
 
       it('should update model', function () {
@@ -110,7 +114,7 @@ module.exports = function () {
       });
 
       it('should not call view methods again', function () {
-        expect(this.view.setSteps).not.toHaveBeenCalled();
+        expect(this.nativeTorqueLayer.setSteps).not.toHaveBeenCalled();
       });
     });
 
@@ -118,30 +122,31 @@ module.exports = function () {
       beforeEach(function () {
         spyOn(this.view.model, 'pause').and.callThrough();
         spyOn(this.view.model, 'play').and.callThrough();
-        spyOn(this.view, 'pause').and.callThrough();
-        spyOn(this.view, 'play').and.callThrough();
+        spyOn(this.nativeTorqueLayer, 'pause').and.callThrough();
+        spyOn(this.nativeTorqueLayer, 'play').and.callThrough();
       });
 
       it('should call model play/pause when triggered on view', function () {
-        this.view.pause();
+        this.nativeTorqueLayer.pause();
         expect(this.view.model.pause).toHaveBeenCalled();
-        expect(this.view.pause.calls.count()).toEqual(1); // verify that view is not called again
+        expect(this.nativeTorqueLayer.pause.calls.count()).toEqual(1); // verify that view is not called again
 
-        this.view.play();
+        this.nativeTorqueLayer.play();
         expect(this.view.model.play).toHaveBeenCalled();
-        expect(this.view.play.calls.count()).toEqual(1); // verify that view is not called again
+        expect(this.nativeTorqueLayer.play.calls.count()).toEqual(1); // verify that view is not called again
       });
     });
   });
 
   describe('when cartocss attr changes on model', function () {
     beforeEach(function () {
-      spyOn(this.view, 'setCartoCSS');
+      this.nativeTorqueLayer = this.view.nativeTorqueLayer;
+      spyOn(this.nativeTorqueLayer, 'setCartoCSS');
     });
 
     it('should set the new cartoCSS on the torque layer', function () {
       this.view.model.set('cartocss', 'some shiny new cartocss');
-      expect(this.view.setCartoCSS).toHaveBeenCalledWith('some shiny new cartocss');
+      expect(this.nativeTorqueLayer.setCartoCSS).toHaveBeenCalledWith('some shiny new cartocss');
     });
   });
 };

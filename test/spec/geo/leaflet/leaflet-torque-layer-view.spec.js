@@ -42,8 +42,6 @@ describe('geo/leaflet/leaflet-torque-layer-view', function () {
   SharedTestsForTorqueLayer.call(this);
 
   it('should reuse layer view', function () {
-    expect(this.view instanceof L.TorqueLayer).toEqual(true);
-
     this.view.check = 'testing';
     var newLayer = new TorqueLayer(this.view.model.attributes, {
       vis: this.vis
@@ -51,7 +49,6 @@ describe('geo/leaflet/leaflet-torque-layer-view', function () {
     newLayer.set({ sql: 'select * from table', cartocss: 'Map {}' });
     this.map.layers.reset([newLayer]);
 
-    expect(this.mapView._layerViews[newLayer.cid] instanceof L.TorqueLayer).toEqual(true);
     expect(this.mapView._layerViews[newLayer.cid].model).toEqual(newLayer);
     expect(this.mapView._layerViews[newLayer.cid].check).toEqual('testing');
   });
@@ -71,6 +68,6 @@ describe('geo/leaflet/leaflet-torque-layer-view', function () {
       'http://juan.carto.com/{z}/{x}/{y}.torque'
     ]);
 
-    expect(this.view.provider.templateUrl).toEqual('http://pepe.carto.com/{z}/{x}/{y}.torque');
+    expect(this.view.leafletLayer.provider.templateUrl).toEqual('http://pepe.carto.com/{z}/{x}/{y}.torque');
   });
 });

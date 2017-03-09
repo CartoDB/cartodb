@@ -17,7 +17,12 @@
   // Due to line-heights, better to substract some pixels in the top
   padding: ($sMargin-section - 4) 0;
   box-sizing: border-box;
+  .CDB-Loader {
+    height: 1px;
+  }
 }
+
+
 .CDB-Widget--timeSeries {
   width: 100%; // override default width
   margin-bottom: 0;
@@ -118,11 +123,16 @@
     margin-top: 0; // override default
   }
   .CDB-Widget {
+    @include flex(0 0 auto);
     width: auto;
     min-width: auto;
     padding: 12px 0;
     border-left-width: 1px;
     border-left-style: solid;
+    overflow: hidden;
+    .CDB-Loader {
+      height: 2px;
+    }
   }
   .CDB-Widget-header,
   .CDB-Widget-footer,
@@ -143,5 +153,11 @@
   .CDB-Widget-title .CDB-Text {
     max-width: 190px;
     padding-right: 12px;
+  }
+  .CDB-Widget-canvasInner {
+    border-radius: 0;
+  }
+  .CDB-Widget-list {
+    max-width: 314px;
   }
 }

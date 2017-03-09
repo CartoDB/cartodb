@@ -12,7 +12,7 @@ LeafletPlainLayerView.prototype = _.extend(
   {
     _createLeafletLayer: function (layerModel) {
       var self = this;
-      var leafletLayer = new L.Class();
+      var leafletLayer = new L.Layer();
 
       leafletLayer.onAdd = function () {
         self._redraw();

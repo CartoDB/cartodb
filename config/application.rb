@@ -182,12 +182,6 @@ module CartoDB
     custom_app_views_paths.reverse.each do |custom_views_path|
       config.paths['app/views'].unshift(custom_views_path)
     end
-
-    config.action_dispatch.default_headers = {
-      'X-Frame-Options' => 'DENY',
-      'X-XSS-Protection' => '1; mode=block',
-      'X-Content-Type-Options' => 'nosniff'
-    }
   end
 end
 

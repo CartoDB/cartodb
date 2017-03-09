@@ -4,6 +4,7 @@ module Carto
   module Api
     class UserPresenter
       include AccountTypeHelper
+      BUILDER_ACTIVATION_DATE = Date.new(2016, 11, 11).freeze
 
       # options:
       # - fetch_groups
@@ -156,11 +157,11 @@ module Carto
           layers: @user.layers.map { |layer|
               Carto::Api::LayerPresenter.new(layer).to_poro
           },
-          created_at: @user.created_at,
           trial_ends_at: @user.trial_ends_at,
           upgraded_at: @user.upgraded_at,
           show_trial_reminder: @user.trial_ends_at.present?,
           show_upgraded_message: (@user.account_type.downcase != 'free' && @user.upgraded_at && @user.upgraded_at + 15.days > Date.today ? true : false),
+          show_builder_activated_message: @user.created_at < BUILDER_ACTIVATION_DATE,
           actions: {
             private_tables: @user.private_tables_enabled,
             private_maps: @user.private_maps_enabled?,

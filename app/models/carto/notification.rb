@@ -6,7 +6,7 @@ module Carto
   class Notification < ActiveRecord::Base
     MAX_BODY_LENGTH = 140
 
-    belongs_to :organization, dependent: :destroy, inverse_of: :notifications
+    belongs_to :organization, inverse_of: :notifications
 
     validates :icon, presence: true
     validates :recipients, inclusion: { in: [nil, 'builders', 'viewers', 'all'] }

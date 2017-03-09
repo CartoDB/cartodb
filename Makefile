@@ -253,6 +253,7 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/models/carto/analysis_node_spec.rb \
 	spec/models/carto/layer_spec.rb \
 	spec/models/carto/mobile_app_presenter_spec.rb \
+	spec/models/carto/notification_spec.rb \
 	spec/models/carto/overlay_spec.rb \
 	spec/models/carto/user_migration_spec.rb \
 	spec/models/table_registrar_spec.rb \

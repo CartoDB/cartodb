@@ -6,10 +6,10 @@ module Carto
   class Notification < ActiveRecord::Base
     MAX_BODY_LENGTH = 140
 
-    belongs_to :organization, dependent: :destroy
+    belongs_to :organization, dependent: :destroy, inverse_of: :notifications
 
     validates :icon, presence: true
-    validates :recipients, inclusion: { in: [nil, :builders, :viewers, :all] }
+    validates :recipients, inclusion: { in: [nil, 'builders', 'viewers', 'all'] }
     validates :recipients, presence: true, if: :organization
     validates :body, presence: true
     validate  :valid_markdown

@@ -3,6 +3,14 @@
       <%= render :partial => 'admin/shared/pages_subheader' %>
 
       <div class="FormAccount-Content">
+        <% if content_for? :profile_title %>
+          <div class="FormAccount-title">
+            <p class="FormAccount-titleText"><%= yield :profile_title %></p>
+          </div>
+
+          <span class="FormAccount-separator"></span>
+        <% end %>
+
         <%= yield :profile_body %>
       </div>
     </div>

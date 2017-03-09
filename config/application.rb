@@ -186,7 +186,7 @@ module CartoDB
 end
 
 require 'csv'
-require 'state_machine'
+require 'state_machines-activerecord'
 require 'cartodb/controller_flows/public/content'
 require 'cartodb/controller_flows/public/datasets'
 require 'cartodb/controller_flows/public/maps'

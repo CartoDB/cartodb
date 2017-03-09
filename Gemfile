@@ -50,7 +50,7 @@ end
 
 # Importer & sync tables
 gem 'roo',                     '1.13.2'
-gem 'state_machine',           '1.1.2'
+gem 'state_machines-activerecord', '0.4.0'
 gem 'typhoeus',                '0.7.2'
 gem 'charlock_holmes',         '0.7.2'
 gem 'dbf',                     '2.0.6'

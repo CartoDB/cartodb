@@ -11,5 +11,10 @@ module CartoGearsApi
     include AppAssetsHelper
     include MapsApiHelper
     include SqlApiHelper
+    include CartoGearsApi::UrlHelper
+
+    def logged_user
+      @logged_user ||= CartoGearsApi::UsersService.new.logged_user(request)
+    end
   end
 end

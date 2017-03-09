@@ -73,8 +73,10 @@ module CartoDB
         if visualization.type == CartoDB::Visualization::Member::TYPE_CANONICAL
           # Each table has a canonical visualization which must have privacy synced
           visualization.privacy = ::UserTable::PRIVACY_VALUES_TO_TEXTS[privacy]
+          visualization.store_using_table(table_privacy_changed)
+        else
+          visualization.invalidate_cache
         end
-        visualization.store_using_table(table_privacy_changed)
       end
 
       self

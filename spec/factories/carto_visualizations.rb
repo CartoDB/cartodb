@@ -57,12 +57,11 @@ module Carto
 
       # Helper method for `create_full_visualization` results cleanup
       def destroy_full_visualization(map, table, table_visualization, visualization)
-        table_visualization.map.destroy if table_visualization && table_visualization.map
-        table_visualization.destroy if table_visualization
-        table.service.destroy if table && table.service
-        table.destroy if table
-        visualization.destroy if visualization
-        map.destroy if map
+        table_visualization.destroy if table_visualization && Carto::Visualization.exists?(table_visualization.id)
+        table.service.destroy if table && table.service && Carto::UserTable.exists?(table.id)
+        table.destroy if table && Carto::UserTable.exists?(table.id)
+        visualization.destroy if visualization && Carto::Visualization.exists?(visualization.id)
+        map.destroy if map && Carto::Map.exists?(map.id)
       end
 
       def destroy_visualization(visualization_id)

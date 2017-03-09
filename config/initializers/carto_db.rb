@@ -47,7 +47,7 @@ module CartoDB
       org_username = nil
     else
       subdomain = user.subdomain
-      org_username = user.organization_username
+      org_username = organization_username(user)
     end
     CartoDB.base_url(subdomain, org_username)
   end
@@ -137,6 +137,11 @@ module CartoDB
 
   # "private" methods, not intended for direct usage
   # ------------------------------------------------
+
+  def self.organization_username(user)
+    subdomainless_urls? || user.organization.nil? ? nil : user.username
+  end
+
 
   def self.request_host
     return @@request_host if defined?(@@request_host)

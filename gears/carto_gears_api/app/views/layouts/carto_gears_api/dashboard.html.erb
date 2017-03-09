@@ -7,11 +7,11 @@
 <%= content_for(:css) do -%>
     <%= stylesheet_link_tag 'dashboard.css', :media => 'all' %>
 <% end %>
+<%= render :partial => 'shared/flash_message' %>
 <%= render :template => 'layouts/application' %>
 <%= yield :dashboard_body %>
-    <% if !Cartodb.config[:cartodb_com_hosted].present? %>
-        <div class="SupportBanner" id="support-banner"></div>
-    <% end %>
+<% if !Cartodb.config[:cartodb_com_hosted].present? %>
+    <div class="SupportBanner" id="support-banner"></div>
+<% end %>
 
-    <%= render 'admin/shared/footer' %>
-<%= render :partial => 'shared/flash_message' %>
+<%= render 'admin/shared/footer' %>

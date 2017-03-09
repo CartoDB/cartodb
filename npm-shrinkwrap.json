@@ -5,12 +5,12 @@
     "backbone": {
       "version": "1.2.3",
       "from": "backbone@1.2.3",
-      "resolved": "https://registry.npmjs.org/backbone/-/backbone-1.2.3.tgz"
+      "resolved": "http://registry.npmjs.org/backbone/-/backbone-1.2.3.tgz"
     },
     "backbone-forms": {
       "version": "0.14.0",
       "from": "backbone-forms@0.14.0",
-      "resolved": "http://registry.npmjs.org/backbone-forms/-/backbone-forms-0.14.0.tgz"
+      "resolved": "https://registry.npmjs.org/backbone-forms/-/backbone-forms-0.14.0.tgz"
     },
     "backbone-model-file-upload": {
       "version": "1.0.0",
@@ -771,7 +771,7 @@
     "bootstrap-colorpicker": {
       "version": "2.3.3",
       "from": "bootstrap-colorpicker@2.3.3",
-      "resolved": "https://registry.npmjs.org/bootstrap-colorpicker/-/bootstrap-colorpicker-2.3.3.tgz"
+      "resolved": "http://registry.npmjs.org/bootstrap-colorpicker/-/bootstrap-colorpicker-2.3.3.tgz"
     },
     "browserify-shim": {
       "version": "3.8.12",
@@ -1101,7 +1101,7 @@
     "camshaft-reference": {
       "version": "0.29.0",
       "from": "camshaft-reference@<2.0.0",
-      "resolved": "http://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.29.0.tgz"
+      "resolved": "https://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.29.0.tgz"
     },
     "carto": {
       "version": "0.15.1-cdb3",
@@ -1147,7 +1147,7 @@
     "cartodb-deep-insights.js": {
       "version": "0.0.2",
       "from": "cartodb/deep-insights.js#master",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#6da5ffb1b8cd02a4dcee7cb7bcba6268b49ba7c8",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#5934e3ded3184eb298df4f0ec36bcc4e4b484196",
       "dependencies": {
         "cartodb.js": {
           "version": "4.0.0-alpha.1",
@@ -1926,7 +1926,7 @@
     "clipboard": {
       "version": "1.5.12",
       "from": "clipboard@1.5.12",
-      "resolved": "https://registry.npmjs.org/clipboard/-/clipboard-1.5.12.tgz",
+      "resolved": "http://registry.npmjs.org/clipboard/-/clipboard-1.5.12.tgz",
       "dependencies": {
         "good-listener": {
           "version": "1.2.2",
@@ -1955,7 +1955,7 @@
     "codemirror": {
       "version": "5.14.2",
       "from": "codemirror@5.14.2",
-      "resolved": "https://registry.npmjs.org/codemirror/-/codemirror-5.14.2.tgz"
+      "resolved": "http://registry.npmjs.org/codemirror/-/codemirror-5.14.2.tgz"
     },
     "jquery": {
       "version": "2.1.4",
@@ -1965,7 +1965,7 @@
     "moment": {
       "version": "2.10.6",
       "from": "moment@2.10.6",
-      "resolved": "https://registry.npmjs.org/moment/-/moment-2.10.6.tgz"
+      "resolved": "http://registry.npmjs.org/moment/-/moment-2.10.6.tgz"
     },
     "node-polyglot": {
       "version": "1.0.0",
@@ -1980,7 +1980,7 @@
     "queue-async": {
       "version": "1.2.1",
       "from": "queue-async@1.2.1",
-      "resolved": "http://registry.npmjs.org/queue-async/-/queue-async-1.2.1.tgz"
+      "resolved": "https://registry.npmjs.org/queue-async/-/queue-async-1.2.1.tgz"
     },
     "tangram": {
       "version": "0.11.7",

@@ -87,7 +87,7 @@ module.exports = cdb.core.View.extend({
 
   _scrollToPage: function () {
     var page = this.model.get('page');
-    var pageWidth = this._$target.find('.CDB-Widget-listGroup:eq(0)').outerWidth();
+    var pageWidth = this._$target.find('.CDB-Widget-listGroup').first().outerWidth();
     this._$target.css('margin-left', -(page * pageWidth));
   },
 

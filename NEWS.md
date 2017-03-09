@@ -61,6 +61,8 @@ Development
 * Invite to georeference proactively when detecting non-georeferenced data (#11316)
 
 ### Bug fixes
+* Fixed silent problem with jQuery selector (cartodb/deep-insights.js#527)
+* Form editors remains open if a modal is open even triggering document click or ESC (#11686)
 * Fixed font style for the "You have run out of quota" module (#11690)
 * Ensured all analysis onboarding screens link to carto.learn guides (#11193)
 * Fixed problem with Bubbles legend when a new analysis is applied (#11666)
@@ -114,7 +116,7 @@ Development
 * Correctly create custom category legend if style has icons (#11592)
 * Fix problem with perfect-scrollbar in Edge browsers (CartoDB/perfect-scrollbar/#2)
 * Layer onboardings are now aware on sync'd layers and highlighted area is clicked. (#11583)
-
+* Fixed overflow on loaders.
 * JOIN Analysis Fails Without Error Message (#11184)
 * Fix problem with perfect-scrollbar in Edge browsers (CartoDB/perfect-scrollbar/#2)
 

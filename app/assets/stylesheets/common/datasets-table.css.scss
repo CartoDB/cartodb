@@ -314,7 +314,6 @@ $bannedColor: #E1A7A5;
 
 @media (min-width: $sMedia-desktop) {
   .DatasetsTable {
-    width: $sLayout-width;
     padding-left: 0;
     padding-right: 0;
   }
@@ -338,7 +337,6 @@ $bannedColor: #E1A7A5;
     margin-bottom: 0;
   }
   .DatasetsTable-itemMeta > * {
-    width: auto;
     margin-right: 18px;
     text-align: center;
   }

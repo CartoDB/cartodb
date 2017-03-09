@@ -8,7 +8,8 @@
   display:block;
   top: 0;
   left: 0;
-  width: $sLayout-width;
+  padding-left: 10px;
+  flex-grow: 1;
   background: transparent;
   z-index: 10;
 }
@@ -333,11 +334,6 @@ a.Filters-cleanSearch { line-height:32px }
 .Filters-link:hover {
   text-decoration: none;
   .Filters-progressSize { color: $cTypography-paragraphs }
-}
-@media only screen and (max-width: 959px) {
-  .Filters-row {
-    padding: 0 20px;
-  }
 }
 
 .Filters--navListing {

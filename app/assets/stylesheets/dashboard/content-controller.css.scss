@@ -8,7 +8,7 @@
 .ContentController {
   background-color: $DarkGrey6;
   position: relative;
-  display: block;
+  display: flex;
   min-height: 600px;
   margin: 0 auto;
 }
@@ -20,4 +20,6 @@
 
 .ContentController .ContentList { 
   float: left;
+  flex: 1 1 0%;
+  padding: 0 10px 0 10px;
 }

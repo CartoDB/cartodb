@@ -1,5 +1,5 @@
 <div class="Header" id="header">
-  <div class="u-inner Header-inner">
+  <div class="Header-inner">
     <div class="Header-navigation">
       <nav class="Header-navigationToggles">
         <div class="Header-navigationToggleItem maps"><a href="<%= CartoDB.url(self, 'maps_index') %>">Maps</a></div>
@@ -25,7 +25,6 @@
         <% end %>
         <li class="Header-settingsItem Header-settingsItem--avatar">
           <button class="UserAvatar js-settings-dropdown">
-            <img src="<%= current_user.avatar %>" class='UserAvatar-img UserAvatar-img--medium' />
           </button>
         </li>
       </ul>

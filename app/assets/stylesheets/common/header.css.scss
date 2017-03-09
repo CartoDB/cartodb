@@ -18,9 +18,13 @@ $cHeader-dark:  rgba(#3A91D7, 1);
 }
 .Header-inner {
   position:relative;
-  @include display-flex();
-  @include justify-content(space-between, justify);
+  display: flex;
+  justify-content: flex-start;
   @include align-items(center);
+}
+.Header-navigation {
+  width: 200px;
+  flex: 0 0 auto;
 }
 .Header-navigationList {
   @include display-flex();
@@ -114,6 +118,14 @@ $cHeader-dark:  rgba(#3A91D7, 1);
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center, center);
+  .UserAvatar {
+    background: url('../images/menu-icon.png');
+    background-size: contain;
+    opacity: 0.7;
+    margin: 2px 10px 2px 2px;
+    width: 24px;
+    height: 24px;
+  }
 }
 .Header-settingsItem {
   position: relative;

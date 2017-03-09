@@ -235,8 +235,6 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/requests/carto/api/vizjson3_presenter_spec.rb \
 	spec/requests/admin/users_controller_spec.rb \
 	spec/lib/carto/strong_password_validator_spec.rb \
-	spec/lib/carto/ghost_tables_manager_spec.rb \
-	spec/lib/carto/bolt.rb \
 	$(NULL)
 
 # This class must be tested isolated as pollutes namespace

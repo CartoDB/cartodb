@@ -60,6 +60,7 @@ Development
 * Migrate to use GNIP v2 for twitter search connector (#10051, #11595)
 
 ### Bug fixes
+* Fixed silent problem with jQuery selector (cartodb/deep-insights.js#527)
 * Fixed font style for the "You have run out of quota" module (#11690)
 * Ensured all analysis onboarding screens link to carto.learn guides (#11193)
 * Fixed problem with Bubbles legend when a new analysis is applied (#11666)

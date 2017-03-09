@@ -652,7 +652,7 @@
         },
         "error": {
           "title": "We couldn't save your data",
-          "subtitle": "We had an error trying to save your data: <span class='CDB-Text is-semibol%{error}</span>"
+          "subtitle": "We had an error trying to save your data: <span class='CDB-Text is-semibold'>%{error}</span>"
         },
         "loading": "Saving your data...",
         "success": "<span class='CDB-Text is-semibold'>Metadata</span> for %{name} map <span class='CDB-Text is-semibold'>was saved</span>."
@@ -1425,7 +1425,7 @@
         "title-label": "Layers",
         "georeference": {
           "title": "Layer not georeferenced",
-          "body": "The layer <strong>%{name}</strong> include non-georeferenced data."
+          "body": "The layer <span class='CDB-Text is-semibold'>%{name}</span> include non-georeferenced data."
         }
       },
       "elements": {

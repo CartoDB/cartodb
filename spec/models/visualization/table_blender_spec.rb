@@ -38,11 +38,11 @@ describe TableBlender do
         map1, table1, table_visualization1, visualization1 = create_full_visualization(@carto_user1, canonical_map: map1)
         map2, table2, table_visualization2, visualization2 = create_full_visualization(@carto_user1, canonical_map: map2)
 
-        blender = CartoDB::Visualization::TableBlender.new(@user1, [::UserTable[table1.id], ::UserTable[table2.id]])
+        blender = CartoDB::Visualization::TableBlender.new(@carto_user1, [table1, table2])
         map = blender.blend
 
         map.layers.count.should eq 4
-        orders_and_kind = map.layers.map { |l| [l.order, l.kind] }.sort { |x,y| x[0] <=> y[0] }
+        orders_and_kind = map.layers.map { |l| [l.order, l.kind] }.sort { |x, y| x[0] <=> y[0] }
         orders_and_kind.should eq [[0, 'tiled'], [1, 'carto'], [2, 'carto'], [3, 'tiled']]
 
         destroy_full_visualization(map2, table2, table_visualization2, visualization2)

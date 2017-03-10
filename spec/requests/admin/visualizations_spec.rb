@@ -647,11 +647,13 @@ describe Admin::VisualizationsController do
 
   describe 'find visualizations by name' do
     before(:all) do
-      @organization = create_organization_with_users(name: 'vizzuality')
+      @organization = create_organization_with_users(name: unique_name('organization'))
       @org_user = @organization.users.first
       bypass_named_maps
-      @table = new_table(user_id: @org_user.id, privacy: ::UserTable::PRIVACY_PUBLIC).save.reload
-      @faketable = new_table(user_id: @user.id, privacy: ::UserTable::PRIVACY_PUBLIC).save.reload
+      @table = new_table(user_id: @org_user.id, privacy: ::UserTable::PRIVACY_PUBLIC).save
+      @table.reload
+      @faketable = new_table(user_id: @user.id, privacy: ::UserTable::PRIVACY_PUBLIC).save
+      @faketable.reload
     end
 
     it 'finds visualization by org and name' do

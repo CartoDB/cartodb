@@ -1,8 +1,12 @@
+require 'helpers/unique_names_helper'
+
+include UniqueNamesHelper
+
 FactoryGirl.define do
 
   factory :organization do
     to_create(&:save)
-    name 'vizzuality'
+    name { unique_name('organization') }
     seats 10
     quota_in_bytes 100.megabytes
     geocoding_quota 1000
@@ -34,6 +38,20 @@ FactoryGirl.define do
         user.enabled = true
         user.save
         org.reload
+      end
+    end
+
+    factory :saml_organization do
+      auth_saml_configuration do
+        {
+          issuer: 'localhost.lan',
+          idp_sso_target_url: 'https://example.com/saml/signon/',
+          idp_slo_target_url: 'https://example.com/saml/signon/',
+          idp_cert_fingerprint: '',
+          assertion_consumer_service_url: 'https://localhost.lan/saml/finalize',
+          name_identifier_format: '',
+          email_attribute: 'username'
+        }
       end
     end
   end

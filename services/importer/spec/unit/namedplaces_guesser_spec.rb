@@ -3,18 +3,11 @@
 require 'active_record'
 require_relative '../../lib/importer/namedplaces_guesser'
 require_relative '../../../../spec/rspec_configuration.rb'
+require_relative '../../../../spec/spec_helper_min'
 
 module CartoDB::Importer2
 
   describe NamedplacesGuesser do
-
-    before(:all) do
-      @db = ActiveRecord::Base.establish_connection :adapter => :nulldb
-    end
-
-    after(:all) do
-      @db.disconnect!
-    end
 
     describe '#found?' do
       it 'raises an exception if not run yet' do

@@ -1,0 +1,167 @@
+// scss-lint:disable NestingDepth
+
+@import '../variables/mixins';
+@import '../variables/colors';
+@import '../editor-3/vars';
+@import 'cdb-variables/colors';
+@import 'cdb-variables/sizes';
+@import '../variables/sizes';
+
+$sRegularDescriptionWidth: 445px;
+$sBigDescriptionWidth: 550px;
+$cBackgroundColor: #2E3C43;
+$sHighlightHeight: 64;
+
+.LayerOnboarding {
+  @include display-flex();
+  height: 100%;
+  pointer-events: auto;
+}
+
+.LayerOnboarding-footer {
+  margin-top: $sMargin-group;
+}
+
+.LayerOnboarding-footerButtons {
+  margin-bottom: $sMargin-element;
+}
+
+.LayerOnboarding-contentWrapper {
+  @include flex(1);
+  @include display-flex();
+  @include align-items(center);
+  height: 100%;
+  background: rgba($cBackgroundColor, 0.88);
+  pointer-events: all;
+  z-index: 5;
+}
+
+.LayerOnboarding-headerTitle {
+  margin-bottom: 22px;
+  color: #FFF;
+  font-size: 26px;
+  font-weight: $sFontWeight-lighter;
+}
+
+.LayerOnboarding-body {
+  @include transition(top 0.3s ease-in-out, left 0.3s ease-in-out);
+  position: absolute;
+  top: 32px;
+  left: 380px;
+}
+
+.LayerOnboarding-contentBody {
+  display: none;
+}
+.LayerOnboarding-contentBody.is-step0 {
+  display: block;
+  width: 0;
+  margin: 0 80px;
+  z-index: 20;
+}
+
+.LayerOnboarding-footer,
+.LayerOnboarding-step {
+  display: none;
+}
+
+.LayerOnboarding-footer .LayerOnboarding-footerButtons,
+.LayerOnboarding-contentWrapper .LayerOnboarding-step p {
+  @include opacity(1);
+  @include transition(opacity, 200ms, ease-in-out, 1s);
+}
+
+.LayerOnboarding-header,
+.LayerOnboarding-footer {
+  min-width: 300px;
+}
+
+.LayerOnboarding-headerText {
+  width: $sBigDescriptionWidth;
+  margin-top: -12px;
+  margin-bottom: 16px;
+  color: #FFF;
+  font-size: 26px;
+  line-height: 34px;
+}
+
+.LayerOnboarding-headerText.is-step4 {
+  width: 285px;
+}
+
+.LayerOnboarding-description {
+  @include transition(width, 100ms, ease-in-out);
+  width: $sRegularDescriptionWidth;
+  margin-bottom: $sMargin-elementInline;
+  color: #FFF;
+  font-size: $sFontSize-large;
+  font-weight: $sFontWeight-normal;
+  line-height: $sLineHeight-large;
+}
+
+.LayerOnboarding-description.is-step4 {
+  width: 285px;
+}
+
+.Onboarding-listItem .LayerOnboarding-description {
+  font-size: $sFontSize-large;
+}
+
+.LayerOnboarding-toolbarOverlay,
+.LayerOnboarding-pads {
+  @include transition(width, 300ms, ease-in-out);
+  height: 100%;
+  z-index: 10;
+}
+
+.LayerOnboarding-padTop,
+.LayerOnboarding-padMiddle,
+.LayerOnboarding-padBottom {
+  @include transition(height, 300ms, ease-in-out);
+  display: block;
+  width: 100%;
+}
+
+.LayerOnboarding-toolbarOverlay,
+.LayerOnboarding-padTop,
+.LayerOnboarding-padBottom {
+  @include opacity(0.88);
+  background: $cBackgroundColor;
+}
+
+.LayerOnboarding-padMiddle {
+  @include opacity(1);
+  position: relative;
+  background: transparent;
+}
+
+.LayerOnboarding-padBottom {
+  position: relative;
+}
+
+.LayerOnboarding-forgetLabel {
+  cursor: pointer;
+}
+
+// Analysis tab
+
+.LayerOnboarding-contentBody--analysis.is-step0 {
+  width: auto;
+}
+
+.LayerOnboarding--analysis .LayerOnboarding-footer {
+  display: block;
+}
+
+.LayerOnboarding-contentWrapper--analysis {
+  @include justify-content(center);
+}
+.LayerOnboarding-description--analysis {
+  width: $sBigDescriptionWidth;
+}
+
+// Style tab
+
+.LayerOnboarding-description--style {
+  width: $sBigDescriptionWidth;
+}

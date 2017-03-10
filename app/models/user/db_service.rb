@@ -22,7 +22,7 @@ module CartoDB
       SCHEMA_GEOCODING = 'cdb'.freeze
       SCHEMA_CDB_DATASERVICES_API = 'cdb_dataservices_client'.freeze
       SCHEMA_AGGREGATION_TABLES = 'aggregation'.freeze
-      CDB_DATASERVICES_CLIENT_VERSION = '0.13.0'.freeze
+      CDB_DATASERVICES_CLIENT_VERSION = '0.15.0'.freeze
       ODBC_FDW_VERSION = '0.2.0'.freeze
 
       def initialize(user)
@@ -227,6 +227,13 @@ module CartoDB
           else
             db.run("SELECT CDB_SetUserQuotaInBytes('#{@user.database_schema}', #{@user.quota_in_bytes});")
           end
+
+          # _CDB_UserQuotaInBytes is called by the quota trigger, and need to be open so
+          # other users in the organization can run it (when updating shared datasets)
+          db_user = @user.organization_user? ? organization_member_group_role_member_name : @user.database_username
+          db.run(%{REVOKE ALL ON FUNCTION "#{@user.database_schema}"._CDB_UserQuotaInBytes() FROM PUBLIC;})
+          db.run(%{GRANT ALL ON FUNCTION "#{@user.database_schema}"._CDB_UserQuotaInBytes() TO "#{db_user}";})
+
           db.run("SET search_path TO #{search_path};")
         end
       end

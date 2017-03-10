@@ -258,7 +258,6 @@ describe User do
     it "should return proper values for non-persisted settings" do
       organization = create_organization_with_users
       organization.users.reject(&:organization_owner?).each do |u|
-        u.remove_logo?.should be_true
         u.private_maps_enabled.should be_true
       end
       organization.destroy
@@ -494,89 +493,6 @@ describe User do
     end
   end
 
-  describe '#overquota' do
-    # Filter overquota users to only those created by this spec
-    def overquota(delta = 0)
-      ::User.overquota(delta).select { |u| [@user.id, @user2.id].include?(u.id) }
-    end
-
-    it "should return users near their geocoding quota" do
-      ::User.any_instance.stubs(:get_api_calls).returns([0])
-      ::User.any_instance.stubs(:map_view_quota).returns(120)
-      ::User.any_instance.stubs(:get_geocoding_calls).returns(81)
-      ::User.any_instance.stubs(:geocoding_quota).returns(100)
-      overquota.should be_empty
-      overquota(0.20).map(&:id).should include(@user.id)
-      overquota(0.20).size.should == 2
-      overquota(0.10).should be_empty
-    end
-
-    it "should return users near their here isolines quota" do
-      ::User.any_instance.stubs(:get_api_calls).returns([0])
-      ::User.any_instance.stubs(:map_view_quota).returns(120)
-      ::User.any_instance.stubs(:get_geocoding_calls).returns(0)
-      ::User.any_instance.stubs(:geocoding_quota).returns(100)
-      ::User.any_instance.stubs(:get_here_isolines_calls).returns(81)
-      ::User.any_instance.stubs(:here_isolines_quota).returns(100)
-      overquota.should be_empty
-      overquota(0.20).map(&:id).should include(@user.id)
-      overquota(0.20).size.should == 2
-      overquota(0.10).should be_empty
-    end
-
-    it "should return users near their data observatory snapshot quota" do
-      ::User.any_instance.stubs(:get_api_calls).returns([0])
-      ::User.any_instance.stubs(:map_view_quota).returns(120)
-      ::User.any_instance.stubs(:get_geocoding_calls).returns(0)
-      ::User.any_instance.stubs(:geocoding_quota).returns(100)
-      ::User.any_instance.stubs(:get_here_isolines_calls).returns(0)
-      ::User.any_instance.stubs(:here_isolines_quota).returns(100)
-      ::User.any_instance.stubs(:get_obs_general_calls).returns(0)
-      ::User.any_instance.stubs(:obs_general_quota).returns(100)
-      ::User.any_instance.stubs(:get_obs_snapshot_calls).returns(81)
-      ::User.any_instance.stubs(:obs_snapshot_quota).returns(100)
-      overquota.should be_empty
-      overquota(0.20).map(&:id).should include(@user.id)
-      overquota(0.20).size.should == 2
-      overquota(0.10).should be_empty
-    end
-
-    it "should return users near their data observatory general quota" do
-      ::User.any_instance.stubs(:get_api_calls).returns([0])
-      ::User.any_instance.stubs(:map_view_quota).returns(120)
-      ::User.any_instance.stubs(:get_geocoding_calls).returns(0)
-      ::User.any_instance.stubs(:geocoding_quota).returns(100)
-      ::User.any_instance.stubs(:get_here_isolines_calls).returns(0)
-      ::User.any_instance.stubs(:here_isolines_quota).returns(100)
-      ::User.any_instance.stubs(:get_obs_snapshot_calls).returns(0)
-      ::User.any_instance.stubs(:obs_snapshot_quota).returns(100)
-      ::User.any_instance.stubs(:get_obs_general_calls).returns(81)
-      ::User.any_instance.stubs(:obs_general_quota).returns(100)
-      overquota.should be_empty
-      overquota(0.20).map(&:id).should include(@user.id)
-      overquota(0.20).size.should == 2
-      overquota(0.10).should be_empty
-    end
-    it "should return users near their twitter quota" do
-      ::User.any_instance.stubs(:get_api_calls).returns([0])
-      ::User.any_instance.stubs(:map_view_quota).returns(120)
-      ::User.any_instance.stubs(:get_geocoding_calls).returns(0)
-      ::User.any_instance.stubs(:geocoding_quota).returns(100)
-      ::User.any_instance.stubs(:get_twitter_imports_count).returns(81)
-      ::User.any_instance.stubs(:twitter_datasource_quota).returns(100)
-      overquota.should be_empty
-      overquota(0.20).map(&:id).should include(@user.id)
-      overquota(0.20).size.should == 2
-      overquota(0.10).should be_empty
-    end
-
-    it "should not return organization users" do
-      ::User.any_instance.stubs(:organization_id).returns("organization-id")
-      ::User.any_instance.stubs(:organization).returns(Organization.new)
-      overquota.should be_empty
-    end
-  end
-
   describe '#private_maps_enabled?' do
     it 'should not have private maps enabled by default' do
       user_missing_private_maps = create_user :email => 'user_mpm@example.com',  :username => 'usermpm',  :password => 'usermpm'
@@ -725,28 +641,39 @@ describe User do
 
       u2 = create_user(email: 'u2@exampleb.com', username: 'ub2', password: 'admin123', organization: org)
 
-      FactoryGirl.create(:geocoding, user: u2, kind: 'high-resolution', created_at: Time.now, processed_rows: 1, formatter: 'b')
+      geocoding_attributes = {
+        user: u2,
+        kind: 'high-resolution',
+        created_at: Time.now,
+        formatter: 'b'
+      }
 
-      st = SearchTweet.new
-      st.user = u2
-      st.table_id = '96a86fb7-0270-4255-a327-15410c2d49d4'
-      st.data_import_id = '96a86fb7-0270-4255-a327-15410c2d49d4'
-      st.service_item_id = '555'
-      st.retrieved_items = 5
-      st.state = ::SearchTweet::STATE_COMPLETE
-      st.save
+      gc1 = FactoryGirl.create(:geocoding, geocoding_attributes.merge(processed_rows: 1))
+      gc2 = FactoryGirl.create(:geocoding, geocoding_attributes.merge(processed_rows: 2))
+
+      tweet_attributes = {
+        user: u2,
+        table_id: '96a86fb7-0270-4255-a327-15410c2d49d4',
+        data_import_id: '96a86fb7-0270-4255-a327-15410c2d49d4',
+        service_item_id: '555',
+        state: ::SearchTweet::STATE_COMPLETE
+      }
+
+      st1 = SearchTweet.create(tweet_attributes.merge(retrieved_items: 5))
+      st2 = SearchTweet.create(tweet_attributes.merge(retrieved_items: 10))
 
       u1.reload
       u2.reload
-      u2.get_geocoding_calls.should == 1
-      u2.get_twitter_imports_count.should == 5
+
+      u2.get_geocoding_calls.should == gc1.processed_rows + gc2.processed_rows
+      u2.get_twitter_imports_count.should == st1.retrieved_items + st2.retrieved_items
       u1.get_geocoding_calls.should == 0
       u1.get_twitter_imports_count.should == 0
 
       u2.destroy
       u1.reload
-      u1.get_geocoding_calls.should == 1
-      u1.get_twitter_imports_count.should == 5
+      u1.get_geocoding_calls.should == gc1.processed_rows + gc2.processed_rows
+      u1.get_twitter_imports_count.should == st1.retrieved_items + st2.retrieved_items
 
       org.destroy
     end

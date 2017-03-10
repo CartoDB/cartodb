@@ -410,7 +410,7 @@ feature "Superadmin's users API" do
 
     it "gets overquota users" do
       ::User.stubs(:overquota).returns [@user]
-      ::User.stubs(:get_stored_overquota_users).returns [@user.data]
+      Carto::OverquotaUsersService.any_instance.stubs(:get_stored_overquota_users).returns [@user.data]
       get_json superadmin_users_path, { overquota: true }, superadmin_headers do |response|
         response.status.should == 200
         response.body[0]["username"].should == @user.username

@@ -4,10 +4,33 @@ require_relative '../../helpers/embed_redis_cache'
 require_dependency 'cartodb/redis_vizjson_cache'
 require_dependency 'carto/named_maps/api'
 require_dependency 'carto/helpers/auth_token_generator'
+require_dependency 'carto/uuidhelper'
+
+module Carto::VisualizationDependencies
+  def fully_dependent_on?(user_table)
+    derived? && layers_dependent_on(user_table).count == data_layers.count
+  end
+
+  def partially_dependent_on?(user_table)
+    derived? && layers_dependent_on(user_table).count.between?(1, data_layers.count - 1)
+  end
+
+  def dependent_on?(user_table)
+    derived? && layers_dependent_on(user_table).any?
+  end
+
+  private
+
+  def layers_dependent_on(user_table)
+    data_layers.select { |l| l.depends_on?(user_table) }
+  end
+end
 
 class Carto::Visualization < ActiveRecord::Base
   include CacheHelper
+  include Carto::UUIDHelper
   include Carto::AuthTokenGenerator
+  include Carto::VisualizationDependencies
 
   AUTH_DIGEST = '1211b3e77138f6e1724721f1ab740c9c70e66ba6fec5e989bb6640c4541ed15d06dbd5fdcbd3052b'.freeze
 
@@ -34,25 +57,21 @@ class Carto::Visualization < ActiveRecord::Base
   belongs_to :user, inverse_of: :visualizations, select: Carto::User::DEFAULT_SELECT
   belongs_to :full_user, class_name: Carto::User, foreign_key: :user_id, primary_key: :id, inverse_of: :visualizations, readonly: true
 
-  belongs_to :user_table, class_name: Carto::UserTable, primary_key: :map_id, foreign_key: :map_id, inverse_of: :visualization
-
-  belongs_to :permission
+  belongs_to :permission, inverse_of: :visualization, dependent: :destroy
 
   has_many :likes, foreign_key: :subject
-  has_many :shared_entities, foreign_key: :entity_id, inverse_of: :visualization
+  has_many :shared_entities, foreign_key: :entity_id, inverse_of: :visualization, dependent: :destroy
 
-  # TODO: duplicated with user_table?
-  belongs_to :table, class_name: Carto::UserTable, primary_key: :map_id, foreign_key: :map_id, inverse_of: :visualization
   has_one :external_source
   has_many :unordered_children, class_name: Carto::Visualization, foreign_key: :parent_id
 
-  has_many :overlays, order: '"order"'
+  has_many :overlays, order: '"order"', dependent: :destroy
 
   belongs_to :parent, class_name: Carto::Visualization, primary_key: :parent_id
 
   belongs_to :active_layer, class_name: Carto::Layer
 
-  belongs_to :map, class_name: Carto::Map
+  belongs_to :map, class_name: Carto::Map, inverse_of: :visualization, dependent: :destroy
 
   has_many :related_templates, class_name: Carto::Template, foreign_key: :source_visualization_id
 
@@ -67,8 +86,33 @@ class Carto::Visualization < ActiveRecord::Base
   has_many :snapshots, class_name: Carto::Snapshot, dependent: :destroy
 
   validates :version, presence: true
+  validate :validate_password_presence
+  validate :validate_privacy_changes
 
-  before_validation :set_default_version
+  before_validation :set_default_version, :set_register_table_only
+  before_create :set_random_id, :set_default_permission
+
+  before_save :remove_password_if_unprotected, :invalidate
+  after_save :save_named_map_or_rollback_privacy, :propagate_attribution_change
+  after_save :propagate_privacy_and_name_to, if: :table
+
+  before_destroy :backup_visualization
+  after_destroy :invalidate_cache
+  after_destroy :destroy_named_map
+
+  # INFO: workaround for array saves not working. There is a bug in `activerecord-postgresql-array` which
+  # makes inserting including array fields to save, but updates work. Wo se insert without tags and add them
+  # with an update after creation. This is fixed in Rails 4.
+  before_create :delay_saving_tags
+  after_create :save_tags
+
+  attr_accessor :register_table_only
+
+  def set_register_table_only
+    self.register_table_only = false
+    # This is a callback, returning `true` avoids halting because of assignment `false` return value
+    true
+  end
 
   def set_default_version
     self.version ||= user.try(:new_visualizations_version)
@@ -80,16 +124,12 @@ class Carto::Visualization < ActiveRecord::Base
     super.reject { |c| DELETED_COLUMNS.include?(c.name) }
   end
 
-  def ==(other_visualization)
-    id == other_visualization.id
-  end
-
   def size
     # Only canonical visualizations (Datasets) have a related table and then count against disk quota,
     # but we want to not break and even allow ordering by size multiple types
-    if table
-      table.size
-    elsif type == TYPE_REMOTE && !external_source.nil?
+    if user_table
+      user_table.size
+    elsif remote? && external_source
       external_source.size
     else
       0
@@ -106,6 +146,14 @@ class Carto::Visualization < ActiveRecord::Base
     super(tags)
   end
 
+  def user_table
+    map.user_table if map
+  end
+
+  def table
+    @table ||= user_table.try(:service)
+  end
+
   def layers_with_data_readable_by(user)
     return [] unless map
     map.layers.select { |l| l.data_readable_by?(user) }
@@ -116,7 +164,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def related_tables_readable_by(user)
-    layers_with_data_readable_by(user).map { |l| l.affected_tables_readable_by(user) }.flatten.uniq
+    layers_with_data_readable_by(user).map { |l| l.user_tables_readable_by(user) }.flatten.uniq
   end
 
   def related_canonical_visualizations
@@ -147,8 +195,8 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   # TODO: refactor next methods, all have similar naming but some receive user and some others user_id
-  def is_liked_by_user_id?(user_id)
-    likes_by_user_id(user_id).count > 0
+  def liked_by?(user_id)
+    likes_by_user_id(user_id).any?
   end
 
   def likes_by_user_id(user_id)
@@ -164,7 +212,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def is_publically_accesible?
-    (is_public? || is_link_privacy?) && published?
+    (public? || public_with_link?) && published?
   end
 
   def writable_by?(user)
@@ -212,18 +260,8 @@ class Carto::Visualization < ActiveRecord::Base
     type == TYPE_DERIVED
   end
 
-  # TODO: Check if for type slide should return true also
-  def dependent?
-    derived? && single_data_layer?
-  end
-
-  # TODO: Check if for type slide should return true also
-  def non_dependent?
-    derived? && !single_data_layer?
-  end
-
-  def single_data_layer?
-    data_layers.count == 1 || related_tables.count == 1
+  def remote?
+    type == TYPE_REMOTE
   end
 
   def layers
@@ -234,12 +272,12 @@ class Carto::Visualization < ActiveRecord::Base
     map ? map.data_layers : []
   end
 
-  def user_layers
-    map ? map.user_layers : []
+  def carto_layers
+    map ? map.carto_layers : []
   end
 
-  def carto_and_torque_layers
-    map ? map.carto_and_torque_layers : []
+  def user_layers
+    map ? map.user_layers : []
   end
 
   def torque_layers
@@ -278,11 +316,11 @@ class Carto::Visualization < ActiveRecord::Base
     privacy == PRIVACY_PRIVATE
   end
 
-  def is_public?
+  def public?
     privacy == PRIVACY_PUBLIC
   end
 
-  def is_link_privacy?
+  def public_with_link?
     self.privacy == PRIVACY_LINK
   end
 
@@ -307,7 +345,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def table_service
-    table.nil? ? nil : table.service
+    user_table.try(:service)
   end
 
   def has_read_permission?(user)
@@ -333,7 +371,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def likes_count
-    likes.count
+    likes.size
   end
 
   def widgets
@@ -350,14 +388,19 @@ class Carto::Visualization < ActiveRecord::Base
     related_canonical_visualizations.map(&:attributions).reject(&:blank?)
   end
 
+  def delete_from_table
+    CartoDB::Logger.debug(message: "Carto::Visualization#delete_from_table");
+    destroy if persisted?
+  end
+
   def get_named_map
-    return false if type == TYPE_REMOTE
+    return false if remote?
 
     named_maps_api.show
   end
 
   def save_named_map
-    return if type == TYPE_REMOTE || mapcapped?
+    return if remote? || mapcapped?
 
     get_named_map ? named_maps_api.update : named_maps_api.create
   end
@@ -404,13 +447,13 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def uses_builder_features?
-    analyses.any? || widgets.any? || mapcapped?
+    builder? || analyses.any? || widgets.any? || mapcapped?
   end
 
   def add_source_analyses
     return unless analyses.empty?
 
-    carto_and_torque_layers.each_with_index do |layer, index|
+    data_layers.each_with_index do |layer, index|
       analysis = Carto::Analysis.source_analysis_for_layer(layer, index)
 
       if analysis.save
@@ -488,13 +531,130 @@ class Carto::Visualization < ActiveRecord::Base
     super ? super : build_state
   end
 
+  def can_be_private?
+    derived? ? user.try(:private_maps_enabled) : user.try(:private_tables_enabled)
+  end
+
+  # TODO: Backward compatibility with Sequel
+  def store_using_table(_table_privacy_changed = false)
+    store
+  end
+
+  def store
+    CartoDB::Logger.debug(message: "Carto::Visualization#store")
+    save!
+    self
+  end
+
+  def is_owner?(user)
+    user.id == user_id
+  end
+
+  def unlink_from(user_table)
+    CartoDB::Logger.debug(message: "Carto::Visualization#unlink_from")
+    layers_dependent_on(user_table).each do |layer|
+      Carto::Analysis.find_by_natural_id(id, layer.source_id).try(:destroy) if layer.source_id
+
+      map.remove_layer(layer)
+      layer.destroy
+    end
+  end
+
   private
+
+  def remove_password
+    self.password_salt = nil
+    self.encrypted_password = nil
+  end
+
+  def invalidate
+    # previously we used 'invalidate_cache' but due to public_map displaying all the user public visualizations,
+    # now we need to purgue everything to avoid cached stale data or public->priv still showing scenarios
+    if privacy_changed? || name_changed? || cached_data_changed?
+      invalidate_cache
+    end
+
+    # When a table's relevant data is changed, propagate to all who use it or relate to it
+    if cached_data_changed? && table
+      user_table.dependent_visualizations.each(&:invalidate_cache)
+    end
+  end
+
+  # Attributes that cause an invalidation to be triggered (they are presented in public pages)
+  def cached_data_changed?
+    description_changed? || attributions_changed? || version_changed? || encrypted_password_changed?
+  end
+
+  def propagate_privacy_and_name_to
+    raise "Empty table sent to Visualization::Member propagate_privacy_and_name_to()" unless table
+    propagate_privacy if privacy_changed? && canonical?
+    propagate_name if name_changed?
+  end
+
+  def propagate_privacy
+    table.reload
+    if table.privacy_text.casecmp(privacy) != 0 # privacy is different, case insensitive
+      CartoDB::TablePrivacyManager.new(table).set_from_visualization(self).update_cdb_tablemetadata
+    end
+  end
+
+  def propagate_name
+    # TODO: Move this to ::Table?
+    return if table.changing_name?
+    table.register_table_only = register_table_only
+    table.name = name
+    table.update(name: name)
+    if name_changed?
+      support_tables.rename(name_was, name, true, name_was)
+    end
+    self
+  rescue => exception
+    if name_changed? && !(exception.to_s =~ /relation.*does not exist/)
+      revert_name_change(name_was)
+    end
+    raise CartoDB::InvalidMember.new(exception.to_s)
+  end
+
+  def revert_name_change(previous_name)
+    self.name = previous_name
+    store
+  rescue => exception
+    raise CartoDB::InvalidMember.new(exception.to_s)
+  end
+
+  def propagate_attribution_change
+    table.propagate_attribution_change(attributions) if table && attributions_changed?
+  end
+
+  def support_tables
+    @support_tables ||= CartoDB::Visualization::SupportTables.new(
+      user.in_database, parent_id: id, parent_kind: kind, public_user_roles: user.db_service.public_user_roles
+    )
+  end
 
   def auto_generate_indices_for_all_layers
     user_tables = data_layers.map(&:user_tables).flatten.uniq
     user_tables.each do |ut|
       ::Resque.enqueue(::Resque::UserDBJobs::UserDBMaintenance::AutoIndexTable, ut.id)
     end
+  end
+
+  def set_random_id
+    # This should be done with a DB default
+    self.id ||= random_uuid
+  end
+
+  def set_default_permission
+    self.permission ||= Carto::Permission.create(owner: user, owner_username: user.username)
+  end
+
+  def delay_saving_tags
+    @cached_tags = tags
+    self.tags = nil
+  end
+
+  def save_tags
+    update_attribute(:tags, @cached_tags)
   end
 
   def named_maps_api
@@ -535,7 +695,7 @@ class Carto::Visualization < ActiveRecord::Base
   def get_related_tables
     return [] unless map
 
-    map.carto_and_torque_layers.flat_map(&:affected_tables).uniq
+    map.data_layers.flat_map(&:user_tables).uniq
   end
 
   def get_related_canonical_visualizations
@@ -556,5 +716,49 @@ class Carto::Visualization < ActiveRecord::Base
 
   def varnish_vizjson_key
     ".*#{id}:vizjson"
+  end
+
+  def validate_password_presence
+    errors.add(:password, 'required for protected visualization') if password_protected? && !has_password?
+  end
+
+  def remove_password_if_unprotected
+    CartoDB::Logger.debug(message: "Carto::Visualization#remove_password_if_unprotected (before_save)")
+    remove_password unless password_protected?
+  end
+
+  def validate_privacy_changes
+    if derived? && is_privacy_private? && privacy_changed? && !user.try(:private_maps_enabled?)
+      errors.add(:privacy, 'cannot be set to private')
+    end
+  end
+
+  def save_named_map_or_rollback_privacy
+    CartoDB::Logger.debug(message: "Carto::Visualization#save_named_map_or_rollback_privacy")
+    if !save_named_map && privacy_changed?
+      # Explicitly set privacy to its previous value so the hooks run and the user db permissions are updated
+      # TODO: It would be better to raise an exception to rollback the transaction, but that can break renames
+      # as we don't explicitly rollback those in the user database. Consider an `after_rollback` hook in user table?
+      self.privacy = privacy_was
+      save
+    end
+  end
+
+  def backup_visualization
+    CartoDB::Logger.debug(message: "Carto::Visualization#backup_visualization");
+    if user.has_feature_flag?(Carto::VisualizationsExportService::FEATURE_FLAG_NAME) && map
+      Carto::VisualizationsExportService.new.export(id)
+    end
+  rescue => exception
+    # Don't break deletion flow
+    CartoDB::Logger.error(
+      message: 'Error backing up visualization',
+      exception: exception,
+      visualization_id: id
+    )
+  end
+
+  def destroy_named_map
+    named_maps_api.destroy
   end
 end

@@ -96,7 +96,11 @@
 .Modal-footerContainer {
   border-top: 1px solid $cSecondaryLine;
 }
-
+.Modal-outer {
+  @include display-flex();
+  @include flex(1);
+  overflow: hidden;
+}
 .Modal-basemapContainer {
   @include flex-direction(column);
 }

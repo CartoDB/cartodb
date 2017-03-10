@@ -1,7 +1,9 @@
 require_relative '../spec_helper'
 require_relative './http_authentication_helper'
+require 'helpers/unique_names_helper'
 
 describe SignupController do
+  include UniqueNamesHelper
 
   before(:each) do
     ::User.any_instance.stubs(:load_common_data).returns(true)
@@ -89,14 +91,13 @@ describe SignupController do
     it 'triggers validation error and not a NewUser job if email is not valid' do
       ::Resque.expects(:enqueue).never
 
-      username = 'testusername'
+      username = unique_name('user')
       email = 'testemail@nonono.com'
       password = '2{Patrañas}'
       host! "#{@organization.name}.localhost.lan"
       post signup_organization_user_url(user_domain: @organization.name, user: { username: username, email: email, password: password })
       response.status.should == 422
-      last_user_creation = Carto::UserCreation.order('created_at desc').limit(1).first
-      last_user_creation.should == nil
+      Carto::UserCreation.where(username: username).any?.should be_false
     end
 
     it 'triggers validation error is password is too short' do
@@ -131,6 +132,19 @@ describe SignupController do
 
       post signup_organization_user_url(user_domain: @organization.name, google_signup_access_token: 'whatever')
       response.status.should == 400
+    end
+
+    it 'autogenerates a valid password for Google login with strong passwords' do
+      @organization.strong_passwords_enabled.should be_true
+
+      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+      ::GooglePlusConfig.stubs(:instance).returns({})
+      email = "#{unique_name('email')}@#{@organization.whitelisted_email_domains[0]}"
+      user_data = { 'emails' => [{ 'type' => 'account', 'value' => email }] }
+      GooglePlusAPI.any_instance.stubs(:get_user_data).returns(GooglePlusAPIUserData.new(user_data))
+      host! "#{@organization.name}.localhost.lan"
+      post signup_organization_user_url(user_domain: @organization.name, google_access_token: 'whatever')
+      response.status.should == 200
     end
 
     it 'triggers a NewUser job with form parameters and default quota and requiring validation email' do

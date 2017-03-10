@@ -36,12 +36,13 @@ module Carto
         @vizjson = generate_anonymous_map_vizjson3(@visualization, params)
         @state = @visualization.state.json
         @analyses_data = @visualization.analyses.map { |a| Carto::Api::AnalysisPresenter.new(a).to_poro }
-        @basemaps = Cartodb.config[:basemaps].present? && Cartodb.config[:basemaps]
+        @basemaps = current_viewer.basemaps
         @overlays_data = @visualization.overlays.map do |overlay|
           Carto::Api::OverlayPresenter.new(overlay).to_poro
         end
         latest_mapcap = @visualization.latest_mapcap
         @mapcaps_data = latest_mapcap ? [Carto::Api::MapcapPresenter.new(latest_mapcap).to_poro] : []
+        @google_maps_qs = @visualization.user.google_maps_query_string
 
         @builder_notifications = notifications(:builder)
         @dashboard_notifications = notifications(:dashboard)

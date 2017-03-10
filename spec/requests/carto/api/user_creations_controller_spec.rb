@@ -44,7 +44,8 @@ describe Carto::Api::UserCreationsController do
       user_data.organization = @organization
       user_data.google_sign_in = true
 
-      Carto::Api::UserCreationsController.any_instance.expects(:authenticate!).with(:user_creation, scope: user_data.organization.name).once
+      Carto::Api::UserCreationsController.any_instance.expects(:authenticate!)
+                                         .with(:user_creation, scope: user_data.username).once
 
       user_creation = Carto::UserCreation.new_user_signup(user_data)
       user_creation.next_creation_step until user_creation.finished?

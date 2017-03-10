@@ -102,7 +102,9 @@ module Carto
 
             if layer_options['type'] == 'Plain'
               layers.push(type: 'plain', options: options_for_plain_basemap_layers(layer_options))
-            else
+            elsif !layer.gmapsbase?
+              # Tiler doesn't support rendering Google basemaps in static images. We skip them to avoid errors in
+              # dashboard previews, this way at least we get the data on a transparent background.
               layers.push(type: 'http', options: options_for_http_basemap_layers(layer_options))
             end
           end
@@ -258,7 +260,7 @@ module Carto
       def preview_layers
         preview_layers = {}
 
-        @visualization.carto_and_torque_layers.each do |layer|
+        @visualization.data_layers.each do |layer|
           preview_layers[:"#{layer.id}"] = layer.options[:visible] || false
         end
 

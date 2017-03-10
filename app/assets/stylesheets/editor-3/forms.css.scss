@@ -11,6 +11,9 @@
   min-height: $baseSize * 4;
   margin-top: $baseSize;
 }
+.Editor-formInner.Editor-formInner--Slider {
+  margin-bottom: 40px;
+}
 .Options-form .Editor-formInner {
   margin-top: 0;
 }
@@ -58,7 +61,7 @@
 
 
 .Editor-formInner .Editor-formSelect {
-  max-width: 158px;
+  max-width: 160px;
 }
 .Editor-formSelect {
   @include flex(1);
@@ -77,14 +80,18 @@
 }
 
 .Editor-checker {
+  @include align-items(flex-start);
   width: 100%;
 }
 .Editor-checker--slim .Editor-formInner {
   min-height: 20px;
 }
 .Editor-checkerInput {
+  @include display-flex();
+  @include align-items(center);
   width: 92px;
   margin-right: 12px;
+  min-height: 32px;
 }
 /* move to CartoAssets */
 .Editor-checkerInput .CDB-Checkbox-face {
@@ -121,5 +128,5 @@
   cursor: default;
 }
 .RampItem-bar {
-  width: 50px;
+  width: 20px;
 }

@@ -49,6 +49,11 @@
     cursor: pointer;
   }
 }
+.Carousel-item--small {
+  width: $baseSize * 5;
+  min-width: $baseSize * 5;
+  height: $baseSize * 5;
+}
 .Carousel-item.is-selected {
   border: 2px solid $cBlue;
 }

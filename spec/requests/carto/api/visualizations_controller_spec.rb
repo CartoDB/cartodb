@@ -33,6 +33,10 @@ describe Carto::Api::VisualizationsController do
         visualization['layers'][1]['options']['attribution'].split(',').map(&:strip)
       end
 
+      before(:each) do
+        bypass_named_maps
+      end
+
       it 'marks visualizations as using vizjson2' do
         visualization = FactoryGirl.create(:carto_visualization)
         Carto::Api::VisualizationsController.any_instance.stubs(:generate_vizjson2).returns({})
@@ -1253,8 +1257,9 @@ describe Carto::Api::VisualizationsController do
           before(:each) do
             @user_1.private_tables_enabled = true
             @user_1.save
+            @table.user.reload
             @table.privacy = UserTable::PRIVACY_PRIVATE
-            @table.save
+            @table.save!
           end
 
           it 'uses v3 infowindows templates at named maps removing "table/views/" from template_name' do
@@ -1345,6 +1350,7 @@ describe Carto::Api::VisualizationsController do
           before(:each) do
             @user_1.private_tables_enabled = true
             @user_1.save
+            @table.user.reload
             @table.privacy = UserTable::PRIVACY_PRIVATE
             @table.save
           end

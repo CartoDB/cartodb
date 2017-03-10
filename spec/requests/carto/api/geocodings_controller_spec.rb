@@ -12,7 +12,7 @@ describe 'legacy behaviour tests' do
     let(:params) { { :api_key => @user.api_key } }
 
     before(:all) do
-      @user = create_user(username: 'test')
+      @user = create_user
     end
 
     before(:each) do

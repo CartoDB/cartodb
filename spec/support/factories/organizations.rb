@@ -1,10 +1,13 @@
+require 'helpers/unique_names_helper'
+
 module CartoDB
   module Factories
+    include UniqueNamesHelper
 
     def new_organization(attributes = {})
       organization = Organization.new
 
-      organization.name =             attributes[:name] || 'vizzuality'
+      organization.name =             attributes[:name] || unique_name('organization')
       organization.seats =            attributes[:seats] || 10
       organization.quota_in_bytes =   attributes[:quota_in_bytes] || 100.megabytes
       organization.geocoding_quota =  attributes[:geocoding_quota] || 1000

@@ -9,7 +9,7 @@ module Cartodb
         break
       end
     }
-    current
+    current if current.present?
   end
 
   def self.config

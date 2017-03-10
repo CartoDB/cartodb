@@ -5,6 +5,8 @@ require_dependency 'carto/query_rewriter'
 
 module Carto
   module LayerTableDependencies
+    private
+
     def affected_tables
       return [] unless maps.first.present? && options.present?
       node_id = options.symbolize_keys[:source]
@@ -59,13 +61,13 @@ module Carto
     serialize :infowindow, CartoJsonSerializer
     serialize :tooltip, CartoJsonSerializer
 
-    has_many :layers_maps
-    has_many :maps, through: :layers_maps, after_add: :set_default_order
+    has_many :layers_maps, dependent: :destroy
+    has_many :maps, through: :layers_maps, after_add: :after_added_to_map
 
-    has_many :layers_user
+    has_many :layers_user, dependent: :destroy
     has_many :users, through: :layers_user, after_add: :set_default_order
 
-    has_many :layers_user_table
+    has_many :layers_user_table, dependent: :destroy
     has_many :user_tables, through: :layers_user_table, class_name: Carto::UserTable
 
     has_many :widgets, class_name: Carto::Widget, order: '"order"'
@@ -78,7 +80,9 @@ module Carto
 
     before_destroy :ensure_not_viewer
     before_destroy :invalidate_maps
+    before_save :lock_user_tables
     after_save :invalidate_maps, :update_layer_node_style
+    after_save :register_table_dependencies, if: :data_layer?
 
     ALLOWED_KINDS = %w{carto tiled background gmapsbase torque wms}.freeze
     validates :kind, inclusion: { in: ALLOWED_KINDS }
@@ -99,17 +103,23 @@ module Carto
       maps.reload if persisted?
 
       return unless order.nil?
-      max_order = parent.layers.map(&:order).compact.max || -1
+      max_order = parent.layers.reload.map(&:order).compact.max || -1
       self.order = max_order + 1
       save if persisted?
     end
 
-    def affected_tables_readable_by(user)
-      affected_tables.select { |ut| ut.readable_by?(user) }
+    # Sequel model compatibility (for TableBlender)
+    def add_map(map)
+      CartoDB::Logger.debug(message: 'Adding map to Carto::Layer with legacy method')
+      maps << map
+    end
+
+    def user_tables_readable_by(user)
+      user_tables.select { |ut| ut.readable_by?(user) }
     end
 
     def data_readable_by?(user)
-      affected_tables.all? { |ut| ut.readable_by?(user) }
+      user_tables.all? { |ut| ut.readable_by?(user) }
     end
 
     def legend
@@ -224,7 +234,10 @@ module Carto
 
     def register_table_dependencies
       if data_layer?
-        maps.reload if persisted?
+        if persisted?
+          user_tables.reload
+          maps.reload
+        end
         self.user_tables = affected_tables
       end
     end
@@ -272,7 +285,27 @@ module Carto
       self
     end
 
+    def uses_private_tables?
+      user_tables.any?(&:private?)
+    end
+
+    def after_added_to_map(map)
+      set_default_order(map)
+      register_table_dependencies
+    end
+
+    def depends_on?(user_table)
+      user_tables.include?(user_table)
+    end
+
     private
+
+    # The table dependencies will only be updated after the layer. However, when deleting them, they need to be deleted
+    # before the model. This can cause deadlocks with simultaneous request to update and delete the model.
+    # This request a explicit lock to PostgreSQL so the tables are always accessed in the same order. #11443
+    def lock_user_tables
+      user_tables.lock.all if persisted?
+    end
 
     def rename_in(target, anchor, substitution)
       return if target.blank?

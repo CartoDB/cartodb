@@ -1,5 +1,6 @@
 # encoding: utf-8
 require_relative '../../lib/importer/source_file'
+require 'tempfile'
 
 module CartoDB
 
@@ -62,7 +63,8 @@ module CartoDB
           end
           @item_metadata ||= { :subresources => subresources }
 
-          @source_file = SourceFile.new('/var/tmp/foo.txt')
+          @tempfile = Tempfile.new('downloader_double')
+          @source_file = SourceFile.new(@tempfile.path)
         end
 
         def multi_resource_import_supported?

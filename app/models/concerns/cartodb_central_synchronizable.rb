@@ -58,34 +58,34 @@ module Concerns
     end
 
     def allowed_attributes_from_central(action)
-      if self.is_a?(Organization)
+      if is_a?(Organization)
         case action
         when :create
           [:name, :seats, :viewer_seats, :quota_in_bytes, :display_name, :description, :website,
-          :discus_shortname, :twitter_username, :geocoding_quota, :map_view_quota,
-          :geocoding_block_price, :map_view_block_price,
-          :twitter_datasource_enabled, :twitter_datasource_block_size,
-          :twitter_datasource_block_price, :twitter_datasource_quota,
-          :google_maps_key, :google_maps_private_key, :auth_username_password_enabled,
-          :auth_google_enabled, :here_isolines_quota, :here_isolines_block_price,
-          :obs_snapshot_quota, :obs_snapshot_block_price, :obs_general_quota,
-          :obs_general_block_price, :salesforce_datasource_enabled, :geocoder_provider,
-          :isolines_provider, :routing_provider, :engine_enabled, :builder_enabled,
-          :mapzen_routing_quota, :mapzen_routing_block_price]
+           :discus_shortname, :twitter_username, :geocoding_quota, :map_view_quota,
+           :geocoding_block_price, :map_view_block_price,
+           :twitter_datasource_enabled, :twitter_datasource_block_size,
+           :twitter_datasource_block_price, :twitter_datasource_quota,
+           :google_maps_key, :google_maps_private_key, :auth_username_password_enabled,
+           :auth_google_enabled, :here_isolines_quota, :here_isolines_block_price,
+           :obs_snapshot_quota, :obs_snapshot_block_price, :obs_general_quota,
+           :obs_general_block_price, :salesforce_datasource_enabled, :geocoder_provider,
+           :isolines_provider, :routing_provider, :engine_enabled, :builder_enabled,
+           :mapzen_routing_quota, :mapzen_routing_block_price, :no_map_logo]
         when :update
           [:seats, :viewer_seats, :quota_in_bytes, :display_name, :description, :website,
-          :discus_shortname, :twitter_username, :geocoding_quota, :map_view_quota,
-          :geocoding_block_price, :map_view_block_price,
-          :twitter_datasource_enabled, :twitter_datasource_block_size,
-          :twitter_datasource_block_price, :twitter_datasource_quota,
-          :google_maps_key, :google_maps_private_key, :auth_username_password_enabled,
-          :auth_google_enabled, :here_isolines_quota, :here_isolines_block_price,
-          :obs_snapshot_quota, :obs_snapshot_block_price, :obs_general_quota,
-          :obs_general_block_price, :salesforce_datasource_enabled, :geocoder_provider,
-          :isolines_provider, :routing_provider, :engine_enabled, :builder_enabled,
-          :mapzen_routing_quota, :mapzen_routing_block_price]
+           :discus_shortname, :twitter_username, :geocoding_quota, :map_view_quota,
+           :geocoding_block_price, :map_view_block_price,
+           :twitter_datasource_enabled, :twitter_datasource_block_size,
+           :twitter_datasource_block_price, :twitter_datasource_quota,
+           :google_maps_key, :google_maps_private_key, :auth_username_password_enabled,
+           :auth_google_enabled, :here_isolines_quota, :here_isolines_block_price,
+           :obs_snapshot_quota, :obs_snapshot_block_price, :obs_general_quota,
+           :obs_general_block_price, :salesforce_datasource_enabled, :geocoder_provider,
+           :isolines_provider, :routing_provider, :engine_enabled, :builder_enabled,
+           :mapzen_routing_quota, :mapzen_routing_block_price, :no_map_logo]
         end
-      elsif self.is_a?(::User)
+      elsif is_a?(::User)
         [:account_type, :admin, :crypted_password, :database_host,
          :database_timeout, :description, :disqus_shortname, :available_for_hire, :email,
          :geocoding_block_price, :geocoding_quota, :map_view_block_price,
@@ -108,7 +108,7 @@ module Concerns
          :mobile_gis_extension, :mobile_max_open_users, :mobile_max_private_users,
          :salesforce_datasource_enabled, :viewer, :geocoder_provider,
          :isolines_provider, :routing_provider, :engine_enabled, :builder_enabled,
-         :mapzen_routing_quota, :mapzen_routing_block_price, :soft_mapzen_routing_limit]
+         :mapzen_routing_quota, :mapzen_routing_block_price, :soft_mapzen_routing_limit, :no_map_logo]
       end
     end
 

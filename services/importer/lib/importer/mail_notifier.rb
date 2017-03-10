@@ -19,7 +19,7 @@ module CartoDB
       end
 
       def should_notify?
-        import_time >= MIN_IMPORT_TIME_TO_NOTIFY && @data_import.synchronization_id.nil?
+        import_time >= MIN_IMPORT_TIME_TO_NOTIFY && @data_import.synchronization_id.nil? && @data_import.final_state?
       end
 
       def import_time
@@ -33,7 +33,8 @@ module CartoDB
         total_tables = @results.length
         first_imported_table = imported_tables == 0 ? nil : @results.select {|r| r.success }.first
         first_table = @results.first
-        errors = imported_tables == total_tables ? nil : @data_import.get_error_text
+        error_text = @data_import.get_error_text
+        errors = error_text.present? ? error_text : nil
         @mail_sent = @resque.enqueue(::Resque::UserJobs::Mail::DataImportFinished,
                                      user_id, imported_tables, total_tables, first_imported_table,
                                      first_table, errors, filenames)
@@ -55,8 +56,13 @@ module CartoDB
         else
           # This case happens before process the files when there
           # is no file stats
-          if !data_import.service_item_id.blank?
-            # Imports from files, URLs or connectors have a service_item_id
+          if data_import.service_name == 'connector'
+            # Connector imports have all its parameters in service_item_id
+            # but we don't want to make them visible because they may contain
+            # credentials
+            files << "(connector)"
+          elsif !data_import.service_item_id.blank?
+            # Imports from files, URLs  have a service_item_id
             files << File.basename(data_import.service_item_id)
           elsif !data_import.table_name.blank?
             # Imports from queries or table duplications use table_name

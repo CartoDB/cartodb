@@ -33,6 +33,8 @@ module Carto
           Carto::Api::LayerPresenter.new(l, with_style_properties: true).to_poro(migrate_builder_infowindows: true)
         end
 
+        @google_maps_qs = @canonical_visualization.user.google_maps_query_string
+
         carto_viewer = current_viewer && Carto::User.where(id: current_viewer.id).first
         @dashboard_notifications = carto_viewer ? carto_viewer.notifications_for_category(:dashboard) : {}
       end

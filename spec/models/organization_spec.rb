@@ -1,12 +1,11 @@
 require_relative '../spec_helper'
-
 require_relative '../../app/models/visualization/collection'
 require_relative '../../app/models/organization.rb'
 require_relative 'organization_shared_examples'
 require 'helpers/unique_names_helper'
+require 'helpers/storage_helper'
 
-include UniqueNamesHelper
-include CartoDB
+include CartoDB, StorageHelper, UniqueNamesHelper
 
 describe 'refactored behaviour' do
   it_behaves_like 'organization models' do
@@ -46,13 +45,15 @@ describe Organization do
   end
 
   describe '#destroy_cascade' do
+    before(:each) do
+      @organization = FactoryGirl.create(:organization)
+    end
 
     after(:each) do
-      @organization.delete if @organization
+      @organization.delete if @organization.try(:persisted?)
     end
 
     it 'Destroys users and owner as well' do
-
       ::User.any_instance.stubs(:create_in_central).returns(true)
       ::User.any_instance.stubs(:update_in_central).returns(true)
 
@@ -79,15 +80,20 @@ describe Organization do
 
     it 'destroys its groups through the extension' do
       Carto::Group.any_instance.expects(:destroy_group_with_extension).once
-      @organization = FactoryGirl.create(:organization)
-      group = FactoryGirl.create(:carto_group, organization: Carto::Organization.find(@organization.id))
+
+      FactoryGirl.create(:carto_group, organization: Carto::Organization.find(@organization.id))
       @organization.destroy
-      @organization = nil
     end
 
+    it 'destroys assets' do
+      bypass_storage
+      asset = FactoryGirl.create(:organization_asset,
+                                 organization_id: @organization.id)
+
+      @organization.destroy
+      Carto::Asset.exists?(asset.id).should be_false
+    end
   end
-
-
 
   describe '#add_user_to_org' do
     it 'Tests adding a user to an organization (but no owner)' do

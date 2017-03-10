@@ -82,7 +82,7 @@ describe 'raster2pgsql acceptance tests' do
 
   it 'if there are some problem while importing should clean the temporary tables' do
       filepath    = path_to('raster_simple.tif')
-      downloader  = CartoDB::Importer2::Downloader.new(filepath)
+      downloader  = CartoDB::Importer2::Downloader.new(@user.id, filepath)
       log         = CartoDB::Importer2::Doubles::Log.new(@user)
       job         = Job.new({ logger: log, pg_options: @user.db_service.db_configuration_for })
       runner      = CartoDB::Importer2::Runner.new({
@@ -115,7 +115,7 @@ describe 'raster2pgsql acceptance tests' do
     TOLERANCE = 1e-6
 
     filepath    = path_to('raster_simple.tif')
-    downloader  = CartoDB::Importer2::Downloader.new(filepath)
+    downloader  = CartoDB::Importer2::Downloader.new(@user.id, filepath)
     log         = CartoDB::Importer2::Doubles::Log.new(@user)
     job         = Job.new({ logger: log, pg_options: @user.db_service.db_configuration_for.with_indifferent_access })
     runner      = CartoDB::Importer2::Runner.new({

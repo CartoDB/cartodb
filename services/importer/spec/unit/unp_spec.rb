@@ -180,7 +180,7 @@ describe Unp do
   describe '#rename' do
     it 'renames a file' do
       fixture   = "/var/tmp/#{Time.now.to_i}.txt"
-      new_name  = '/var/tmp/foo.txt'
+      new_name  = '/var/tmp/unp_spec_renamed.txt'
       File.open(fixture, 'w').close
 
       unp = Unp.new
@@ -266,4 +266,3 @@ describe Unp do
     zipfile
   end
 end
-

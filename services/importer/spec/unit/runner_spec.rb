@@ -14,10 +14,11 @@ require_relative '../doubles/user'
 require_relative '../doubles/input_file_size_limit'
 require_relative '../doubles/table_row_count_limit'
 
+require 'tempfile'
+
 describe CartoDB::Importer2::Runner do
   before(:all) do
-    @filepath       = '/var/tmp/foo.txt'
-    @filepath = File.open(@filepath, 'w+')
+    @filepath = Tempfile.open('runner_spec')
     @filepath.write('...')
     @filepath.close
     @user = create_user
@@ -25,7 +26,7 @@ describe CartoDB::Importer2::Runner do
     @pg_options = @user.db_service.db_configuration_for
 
     @fake_log = CartoDB::Importer2::Doubles::Log.new(@user)
-    @downloader = CartoDB::Importer2::Downloader.new(@filepath)
+    @downloader = CartoDB::Importer2::Downloader.new(@user.id, @filepath)
     @fake_multiple_downloader_2 = CartoDB::Importer2::Doubles::MultipleDownloaderFake.instance(2)
   end
 
@@ -34,6 +35,7 @@ describe CartoDB::Importer2::Runner do
   end
 
   after(:all) do
+    @filepath.close!
     @user.destroy
   end
 
@@ -318,4 +320,3 @@ describe CartoDB::Importer2::Runner do
   end
 
 end
-

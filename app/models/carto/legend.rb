@@ -11,6 +11,10 @@ module Carto
     belongs_to :layer, class_name: Carto::Layer
 
     VALID_LEGEND_TYPES = %(category bubble choropleth custom custom_choropleth).freeze
+    LEGEND_TYPES_PER_ATTRIBUTE = {
+      color: %(category choropleth custom custom_choropleth),
+      size: %(bubble)
+    }.freeze
 
     serialize :definition, ::Carto::CartoJsonSerializer
     serialize :conf, ::Carto::CartoJsonSerializer
@@ -22,6 +26,7 @@ module Carto
 
     validate :on_data_layer,
              :under_max_legends_per_layer,
+             :under_max_legends_per_layer_and_type,
              :validate_definition_schema,
              :validate_conf_schema
 
@@ -54,6 +59,16 @@ module Carto
         unless other_legends.count < MAX_LEGENDS_PER_LAYER
           errors.add(:layer, 'Maximum number of legends per layer reached')
         end
+      end
+    end
+
+    def under_max_legends_per_layer_and_type
+      return unless type
+      LEGEND_TYPES_PER_ATTRIBUTE.each do |attribute, legend_types|
+        next unless legend_types.include?(type)
+
+        other_legends_present = layer.legends.any? { |legend| legend.id != id && legend_types.include?(legend.type) }
+        errors.add(:layer, "Only one #{attribute} legend per layer allowed") if other_legends_present
       end
     end
 

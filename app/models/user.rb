@@ -488,14 +488,17 @@ class User < Sequel::Model
   # Some operations, such as user deletion, won't ask for password confirmation if password is not set
   # (because of Google/Github sign in, for example)
   def needs_password_confirmation?
-    (
-      (!oauth_signin? || last_password_change_date.present?) &&
-      Carto::UserCreation.http_authentication.find_by_user_id(id).nil?
-    )
+    (!oauth_signin? || last_password_change_date.present?) &&
+      !created_with_http_authentication? &&
+      !organization.try(:auth_saml_enabled?)
   end
 
   def oauth_signin?
     google_sign_in || github_user_id.present?
+  end
+
+  def created_with_http_authentication?
+    Carto::UserCreation.http_authentication.find_by_user_id(id).present?
   end
 
   def password_confirmation
@@ -505,66 +508,6 @@ class User < Sequel::Model
   def password_confirmation=(password_confirmation)
     set_last_password_change_date
     @password_confirmation = password_confirmation
-  end
-
-  ##
-  # SLOW! Checks redis data (geocodings and isolines) for every user
-  # delta: get users who are also this percentage below their limit.
-  #        example: 0.20 will get all users at 80% of their map view limit
-  #
-  def self.overquota(delta = 0)
-    users_overquota = []
-    ::User.where(enabled: true, organization_id: nil).each do |u|
-        limit = u.geocoding_quota.to_i - (u.geocoding_quota.to_i * delta)
-        over_geocodings = u.get_geocoding_calls > limit
-
-        limit =  u.twitter_datasource_quota.to_i - (u.twitter_datasource_quota.to_i * delta)
-        over_twitter_imports = u.get_twitter_imports_count > limit
-
-        limit = u.here_isolines_quota.to_i - (u.here_isolines_quota.to_i * delta)
-        over_here_isolines = u.get_here_isolines_calls > limit
-
-        limit = u.obs_snapshot_quota.to_i - (u.obs_snapshot_quota.to_i * delta)
-        over_obs_snapshot = u.get_obs_snapshot_calls > limit
-
-        limit = u.obs_general_quota.to_i - (u.obs_general_quota.to_i * delta)
-        over_obs_general = u.get_obs_general_calls > limit
-
-        limit = u.mapzen_routing_quota.to_i - (u.mapzen_routing_quota.to_i * delta)
-        over_mapzen_routing = u.get_mapzen_routing_calls > limit
-
-        if over_geocodings || over_twitter_imports || over_here_isolines || over_mapzen_routing || over_obs_snapshot || over_obs_general
-          users_overquota.push(u)
-        end
-    end
-    users_overquota
-  end
-
-  def self.store_overquota_users(delta, date)
-    overquota_users = overquota(delta)
-    today = date.strftime('%Y%m%d')
-    key = "overquota:users:#{today}"
-    overquota_users.each do |user|
-      $users_metadata.hmset key, user.id, user.data.to_json
-    end
-    # Expire the cache after two months. Enough time to review data if needed
-    $users_metadata.expire key, 2.months
-  end
-
-  def self.get_stored_overquota_users(date)
-    formated_date = date.strftime('%Y%m%d')
-    key = "overquota:users:#{formated_date}"
-    if $users_metadata.exists key
-      users = []
-      users_json = $users_metadata.hgetall key
-      users_json.each do |_k, v|
-        users.push(JSON.parse(v))
-      end
-      users
-    else
-      CartoDB::Logger.warning(message: "There is no overquota cached users for date #{formated_date}")
-      []
-    end
   end
 
   def password=(value)
@@ -796,7 +739,7 @@ class User < Sequel::Model
   end
 
   def remove_logo?
-    Carto::AccountType.new.remove_logo?(self)
+    has_organization? ? organization.no_map_logo : no_map_logo
   end
 
   def soft_geocoding_limit?
@@ -951,6 +894,7 @@ class User < Sequel::Model
     date_from, date_to = quota_dates(options)
     SearchTweet.get_twitter_imports_count(self.search_tweets_dataset, date_from, date_to)
   end
+  alias get_twitter_datasource_calls get_twitter_imports_count
 
   # Returns an array representing the last 30 days, populated with api_calls
   # from three different sources
@@ -1572,12 +1516,9 @@ class User < Sequel::Model
     to.invite_token = ::User.make_token
   end
 
-  def regenerate_api_key
+  def regenerate_api_key(new_api_key = ::User.make_token)
     invalidate_varnish_cache
-    update api_key: ::User.make_token
-  rescue CartoDB::CentralCommunicationFailure => e
-    CartoDB::Logger.error(message: 'Error updating api key for mobile_apps in Central', exception: e, user: self.inspect)
-    raise e
+    update api_key: new_api_key
   end
 
   # This is set temporary on user creation with invitation,
@@ -1673,26 +1614,26 @@ class User < Sequel::Model
 
   # INFO: assigning to owner is necessary because of payment reasons
   def assign_search_tweets_to_organization_owner
-    return if self.organization.nil? || self.organization.owner.nil? || self.id == self.organization.owner.id
-    self.search_tweets_dataset.each { |st|
-      st.user = self.organization.owner
-      st.save
-    }
+    return if organization.nil? || organization.owner.nil? || organization_owner?
+    search_tweets_dataset.all.each do |st|
+      st.user = organization.owner
+      st.save(raise_on_failure: true)
+    end
   rescue => e
     CartoDB::Logger.error(exception: e, message: 'Error assigning search tweets to org owner', user: self)
   end
 
   # INFO: assigning to owner is necessary because of payment reasons
   def assign_geocodings_to_organization_owner
-    return if self.organization.nil? || self.organization.owner.nil? || self.id == self.organization.owner.id
-    self.geocodings.each { |g|
-      g.user = self.organization.owner
+    return if organization.nil? || organization.owner.nil? || organization_owner?
+    geocodings_dataset.all.each do |g|
+      g.user = organization.owner
       g.data_import_id = nil
-      g.save
-    }
+      g.save(raise_on_failure: true)
+    end
   rescue => e
     CartoDB::Logger.error(exception: e, message: 'Error assigning geocodings to org owner', user: self)
-    self.geocodings.each { |g| g.destroy }
+    geocodings.each(&:destroy)
   end
 
   def name_exists_in_organizations?

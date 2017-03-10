@@ -1,8 +1,10 @@
 # coding: UTF-8
 require 'cartodb/per_request_sequel_cache'
+require 'forwardable'
 
 # This class is intended to deal exclusively with storage
 class UserTable < Sequel::Model
+  extend Forwardable
 
   INTERFACE = %w{
     pk
@@ -16,7 +18,7 @@ class UserTable < Sequel::Model
     user_id=
     []
     []=
-    new?
+    new_record?
     save
     save_changes
     map_id
@@ -46,6 +48,10 @@ class UserTable < Sequel::Model
     set_except
     update_updated_at
     values
+    affected_visualizations
+    fully_dependent_visualizations
+    partially_dependent_visualizations
+    reload
   }
 
   PRIVACY_PRIVATE = 0
@@ -57,6 +63,11 @@ class UserTable < Sequel::Model
     PRIVACY_PUBLIC => 'public',
     PRIVACY_LINK => 'link'
   }
+
+  # For compatibility with AR model
+  def new_record?
+    new?
+  end
 
   # Associations
   many_to_one  :map
@@ -74,23 +85,7 @@ class UserTable < Sequel::Model
                                     automatic_geocoding:  :destroy
   plugin :dirty
 
-  def_dataset_method(:search) do |query|
-    conditions = <<-EOS
-      to_tsvector('english', coalesce(name, '') || ' ' || coalesce(description, '')) @@ plainto_tsquery('english', ?) OR name ILIKE ?
-      EOS
-    where(conditions, query, "%#{query}%")
-  end
-
-  def_dataset_method(:multiple_order) do |criteria|
-    if criteria.nil? || criteria.empty?
-      order(:id)
-    else
-      order_params = criteria.map do |key, order|
-        Sequel.send(order.to_sym, key.to_sym)
-      end
-      order(*order_params)
-    end
-  end
+  def_delegators :relator, :affected_visualizations
 
   # Ignore mass-asigment on not allowed columns
   self.strict_param_setting = false
@@ -159,16 +154,16 @@ class UserTable < Sequel::Model
     super
 
     # userid and table name tuple must be unique
-    validates_unique [:name, :user_id], :message => 'is already taken'
+    validates_unique [:name, :user_id], message: 'is already taken'
 
     # tables must have a user
     errors.add(:user_id, "can't be blank") if user_id.blank?
 
     errors.add(:user, "Viewer users can't create tables") if user && user.viewer
 
-    errors.add(
-      :name, 'is a reserved keyword, please choose a different one'
-    ) if Carto::DB::Sanitize::RESERVED_TABLE_NAMES.include?(name)
+    if Carto::DB::Sanitize::RESERVED_TABLE_NAMES.include?(name)
+      errors.add(:name, 'is a reserved keyword, please choose a different one')
+    end
 
     # TODO this kind of check should be moved to the DB
     # privacy setting must be a sane value
@@ -176,11 +171,26 @@ class UserTable < Sequel::Model
       errors.add(:privacy, "has an invalid value '#{privacy}'")
     end
 
-    service.validate
+    unless user.try(:private_tables_enabled)
+      # If it's a new table and the user is trying to make it private
+      if new? && privacy == PRIVACY_PRIVATE
+        errors.add(:privacy, 'unauthorized to create private tables')
+      end
+
+      # if the table exists, is private, but the owner no longer has private privileges
+      if !new? && privacy == PRIVACY_PRIVATE && changed_columns.include?(:privacy)
+        errors.add(:privacy, 'unauthorized to modify privacy status to private')
+      end
+
+      # cannot change any existing table to 'with link'
+      if !new? && privacy == PRIVACY_LINK && changed_columns.include?(:privacy)
+        errors.add(:privacy, 'unauthorized to modify privacy status to public with link')
+      end
+    end
   end
 
   def before_validation
-    service.before_validation
+    set_default_table_privacy
     super
   end
 
@@ -192,6 +202,11 @@ class UserTable < Sequel::Model
 
   def after_create
     super
+    create_default_map_and_layers
+    create_default_visualization
+    set_default_table_privacy
+    save
+
     service.after_create
   end
 
@@ -232,11 +247,6 @@ class UserTable < Sequel::Model
     service.update_cdb_tablemetadata
   end
 
-  def table_visualization
-    service.table_visualization
-  end
-
-
   def privacy_text
     PRIVACY_VALUES_TO_TEXTS[self.privacy].upcase
   end
@@ -268,10 +278,6 @@ class UserTable < Sequel::Model
     self.privacy == PRIVACY_LINK
   end #public_with_link_only?
 
-  def privacy_changed?
-    @user_table.previous_changes.keys.include?(:privacy)
-  end
-
   # TODO move tags to value object. A set is more appropriate
   def tags=(value)
     return unless value
@@ -294,5 +300,88 @@ class UserTable < Sequel::Model
 
   def actual_row_count
     service.actual_row_count
+  end
+
+  def external_source_visualization
+    data_import.try(:external_data_imports).try(:first).try(:external_source).try(:visualization)
+  end
+
+  def table_visualization
+    @table_visualization ||= CartoDB::Visualization::Collection.new.fetch(
+      map_id: map_id,
+      type:   CartoDB::Visualization::Member::TYPE_CANONICAL
+    ).first
+  end
+
+  def privacy_changed?
+    previous_changes && previous_changes.keys.include?(:privacy)
+  end
+
+  def privacy_was
+    previous_changes[:privacy].first
+  end
+
+  def fully_dependent_visualizations
+    affected_visualizations.select { |v| v.fully_dependent_on?(self) }
+  end
+
+  def partially_dependent_visualizations
+    affected_visualizations.select { |v| v.partially_dependent_on?(self) }
+  end
+
+  private
+
+  def default_privacy_value
+    user.try(:private_tables_enabled) ? PRIVACY_PRIVATE : PRIVACY_PUBLIC
+  end
+
+  def set_default_table_privacy
+    self.privacy ||= default_privacy_value
+  end
+
+  def create_default_map_and_layers
+    base_layer = ::ModelFactories::LayerFactory.get_default_base_layer(user)
+
+    self.map = ::ModelFactories::MapFactory.get_map(base_layer, user.id, id)
+    map.add_layer(base_layer)
+
+    geometry_type = service.the_geom_type || 'geometry'
+    data_layer = ::ModelFactories::LayerFactory.get_default_data_layer(name, user, geometry_type)
+
+    map.add_layer(data_layer)
+
+    if base_layer.supports_labels_layer?
+      labels_layer = ::ModelFactories::LayerFactory.get_default_labels_layer(base_layer)
+      map.add_layer(labels_layer)
+    end
+  end
+
+  def create_default_visualization
+    kind = service.is_raster? ? CartoDB::Visualization::Member::KIND_RASTER : CartoDB::Visualization::Member::KIND_GEOM
+
+    esv = external_source_visualization
+
+    member = CartoDB::Visualization::Member.new(
+      name:         name,
+      map_id:       map.id,
+      type:         CartoDB::Visualization::Member::TYPE_CANONICAL,
+      description:  description,
+      attributions: esv.try(:attributions),
+      source:       esv.try(:source),
+      tags:         (tags.split(',') if tags),
+      privacy:      UserTable::PRIVACY_VALUES_TO_TEXTS[default_privacy_value],
+      user_id:      user.id,
+      kind:         kind
+    )
+
+    member.store
+    member.map.set_default_boundaries!
+    map.reload
+
+    CartoDB::Visualization::Overlays.new(member).create_default_overlays
+  end
+
+  def relator
+    @relator ||= CartoDB::TableRelator.new(Rails::Sequel.connection, self)
   end
 end

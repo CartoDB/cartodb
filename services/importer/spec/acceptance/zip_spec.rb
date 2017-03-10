@@ -27,7 +27,7 @@ describe 'zip regression tests' do
 
   it 'returns empty results if no supported files in the bundle' do
     filepath    = path_to('one_unsupported.zip')
-    downloader  = ::CartoDB::Importer2::Downloader.new(filepath)
+    downloader  = ::CartoDB::Importer2::Downloader.new(@user.id, filepath)
     runner      = ::CartoDB::Importer2::Runner.new({
                                pg: @user.db_service.db_configuration_for,
                                downloader: downloader,
@@ -41,7 +41,7 @@ describe 'zip regression tests' do
 
   it 'ignores unsupported files in the bundle' do
     filepath    = path_to('one_unsupported_one_valid.zip')
-    downloader  = ::CartoDB::Importer2::Downloader.new(filepath)
+    downloader  = ::CartoDB::Importer2::Downloader.new(@user.id, filepath)
     runner      = ::CartoDB::Importer2::Runner.new({
                                pg: @user.db_service.db_configuration_for,
                                downloader: downloader,
@@ -55,7 +55,7 @@ describe 'zip regression tests' do
 
   it 'imports a zip with >1 file successfully' do
     filepath    = path_to('multiple_csvs.zip')
-    downloader  = ::CartoDB::Importer2::Downloader.new(filepath)
+    downloader  = ::CartoDB::Importer2::Downloader.new(@user.id, filepath)
     runner      = ::CartoDB::Importer2::Runner.new({
                                pg: @user.db_service.db_configuration_for,
                                downloader: downloader,
@@ -74,7 +74,7 @@ describe 'zip regression tests' do
 
   it 'imports a maximum of Runner::MAX_TABLES_PER_IMPORT files from a zip, but doesnt errors' do
     filepath    = path_to('more_than_10_files.zip')
-    downloader  = ::CartoDB::Importer2::Downloader.new(filepath)
+    downloader  = ::CartoDB::Importer2::Downloader.new(@user.id, filepath)
     runner      = ::CartoDB::Importer2::Runner.new({
                                pg: @user.db_service.db_configuration_for,
                                downloader: downloader,
@@ -94,7 +94,7 @@ describe 'zip regression tests' do
   it 'imports a shapefile that includes a xxx.VERSION.txt file skipping it' do
     # http://www.naturalearthdata.com/downloads/
     filepath    = path_to('shapefile_with_version_txt.zip')
-    downloader  = ::CartoDB::Importer2::Downloader.new(filepath)
+    downloader  = ::CartoDB::Importer2::Downloader.new(@user.id, filepath)
     runner      = ::CartoDB::Importer2::Runner.new({
                                pg: @user.db_service.db_configuration_for,
                                downloader: downloader,
@@ -113,7 +113,7 @@ describe 'zip regression tests' do
 
     it 'imports all non-failing items from a zip without failing the whole import' do
     filepath    = path_to('file_ok_and_file_ko.zip')
-    downloader  = ::CartoDB::Importer2::Downloader.new(filepath)
+    downloader  = ::CartoDB::Importer2::Downloader.new(@user.id, filepath)
     runner      = ::CartoDB::Importer2::Runner.new({
                                pg: @user.db_service.db_configuration_for,
                                downloader: downloader,
@@ -135,7 +135,7 @@ describe 'zip regression tests' do
 
     it 'imports one table from a visualization export (ignoring the visualization json)' do
       filepath    = path_to('visualization_export_with_csv_table.carto')
-      downloader  = ::CartoDB::Importer2::Downloader.new(filepath)
+      downloader  = ::CartoDB::Importer2::Downloader.new(@user.id, filepath)
       runner      = ::CartoDB::Importer2::Runner.new(pg: @user.db_service.db_configuration_for,
                                                      downloader: downloader,
                                                      log: CartoDB::Importer2::Doubles::Log.new(@user),
@@ -158,7 +158,7 @@ describe 'zip regression tests' do
 
     it 'imports one table from a geopackage visualization export (ignoring the visualization json)' do
       filepath    = path_to('visualization_export_with_geopackage_tables.carto')
-      downloader  = ::CartoDB::Importer2::Downloader.new(filepath)
+      downloader  = ::CartoDB::Importer2::Downloader.new(@user.id, filepath)
       runner      = ::CartoDB::Importer2::Runner.new(pg: @user.db_service.db_configuration_for,
                                                      downloader: downloader,
                                                      log: CartoDB::Importer2::Doubles::Log.new(@user),

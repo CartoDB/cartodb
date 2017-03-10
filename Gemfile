@@ -14,6 +14,7 @@ gem 'activerecord-postgres-array', '0.0.9'
 gem 'vizzuality-sequel-rails', '0.3.7', git: 'https://github.com/Vizzuality/sequel-rails.git'
 
 gem 'rails_warden',            '0.5.8' # Auth via the Warden Rack framework
+gem 'ruby-saml',               '1.4.1'
 gem 'oauth',                   '0.4.5'
 gem 'oauth-plugin',            '0.4.0.pre4'
 
@@ -78,15 +79,17 @@ gem 'rollbar',               '~>2.11.1'
 gem 'resque',                '1.25.2'
 gem 'resque-metrics',        '0.1.1'
 
+gem 'net-telnet'
+
 # This is weird. In ruby 2 test-unit is required. We don't know why for sure
 gem 'test-unit'
 
 group :test do
-  gem 'simplecov',                       require: false
+  gem 'simplecov', '0.13.0', require: false
   gem 'simplecov-json'
   gem 'simplecov-rcov'
   gem 'db-query-matchers',     '0.4.0'
-  gem 'rack-test',             '0.6.2',  require: 'rack/test'
+  gem 'rack-test',             '0.6.3',  require: 'rack/test'
   gem 'factory_girl_rails',    '~> 4.0.0'
   gem 'selenium-webdriver',    '>= 2.5.0'
   gem 'capybara',              '1.1.2'
@@ -113,6 +116,7 @@ group :development, :test do
   gem 'rb-readline'
   gem 'byebug'
   gem 'rack'
+  gem 'zeus'
 
   # Server
   gem 'thin',                           require: false

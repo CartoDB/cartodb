@@ -29,7 +29,7 @@ describe 'SHP regression tests' do
 
   it 'imports SHP files' do
     filepath    = path_to('TM_WORLD_BORDERS_SIMPL-0.3.zip')
-    downloader  = Downloader.new(filepath)
+    downloader  = Downloader.new(@user.id, filepath)
     runner      = Runner.new({
                                pg: @user.db_service.db_configuration_for,
                                downloader: downloader,
@@ -45,7 +45,7 @@ describe 'SHP regression tests' do
 
   it 'imports shp files without .prj' do
     filepath    = path_to('shp_no_prj.zip')
-    downloader  = Downloader.new(filepath)
+    downloader  = Downloader.new(@user.id, filepath)
     runner      = Runner.new({
                                pg: @user.db_service.db_configuration_for,
                                downloader: downloader,

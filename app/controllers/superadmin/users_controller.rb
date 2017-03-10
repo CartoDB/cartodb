@@ -1,5 +1,6 @@
 require_relative '../../../lib/carto/http/client'
 require_dependency 'carto/uuidhelper'
+require_dependency 'carto/overquota_users_service'
 
 class Superadmin::UsersController < Superadmin::SuperadminController
   include Carto::UUIDHelper
@@ -18,7 +19,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
 
   def index
     if params[:overquota].present?
-      users = ::User.get_stored_overquota_users(Date.today)
+      users = Carto::OverquotaUsersService.new.get_stored_overquota_users
       respond_with(:superadmin, users)
     elsif params[:db_size_in_bytes_change].present?
       # This use case is specific: we only return cached db_size_in_bytes, which is
@@ -48,8 +49,10 @@ class Superadmin::UsersController < Superadmin::SuperadminController
   end
 
   def update
-    @user.set_fields_from_central(params[:user], :update)
-    @user.set_relationships_from_central(params[:user])
+    user_param = params[:user]
+    @user.set_fields_from_central(user_param, :update)
+    @user.set_relationships_from_central(user_param)
+    @user.regenerate_api_key(user_param[:api_key]) if user_param[:api_key].present?
 
     @user.save
     respond_with(:superadmin, @user)
@@ -103,7 +106,8 @@ class Superadmin::UsersController < Superadmin::SuperadminController
         id: entry.id,
         data_type: entry.data_type,
         date: entry.updated_at,
-        status: entry.success.nil? ? false : entry.success
+        status: entry.success.nil? ? false : entry.success,
+        state: entry.state
       }
     })
   end
@@ -137,7 +141,8 @@ class Superadmin::UsersController < Superadmin::SuperadminController
         id: entry.id,
         data_type: entry.service_name,
         date: entry.updated_at,
-        status: entry.success?
+        status: entry.success?,
+        state: entry.state
       }
     })
   end

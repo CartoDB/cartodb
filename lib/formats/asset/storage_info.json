@@ -1,0 +1,19 @@
+{
+  "type": "object",
+  "required": ["type", "location", "identifier"],
+  "additionalProperties": false,
+  "properties": {
+    "type": {
+      "description": "Describes in what service the asset is hosted in",
+      "enum": ["s3", "local"]
+    },
+    "location": {
+      "description": "The sub-level in which the asset is located (i.e: bucket, subdirectory)",
+      "type": "string"
+    },
+    "identifier": {
+      "description": "Must identify an asset within a location uniquely (i.e: full path)",
+      "type": "string"
+    }
+  }
+}

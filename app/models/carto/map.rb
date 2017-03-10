@@ -2,31 +2,38 @@ require 'active_record'
 
 require_relative '../../helpers/bounding_box_helper'
 require_relative './carto_json_serializer'
+require_dependency 'common/map_common'
 
 class Carto::Map < ActiveRecord::Base
+  include Carto::MapBoundaries
+
   has_many :layers_maps
   has_many :layers, class_name: 'Carto::Layer',
                     order: '"order"',
                     through: :layers_maps,
-                    after_add: Proc.new { |map, layer| layer.set_default_order(map) }
+                    after_add: Proc.new { |map, layer| layer.after_added_to_map(map) },
+                    dependent: :destroy
 
   has_many :base_layers, class_name: 'Carto::Layer',
                          order: '"order"',
                          through: :layers_maps,
                          source: :layer
 
-  has_many :user_tables, class_name: Carto::UserTable, inverse_of: :map
+  has_one :user_table, class_name: Carto::UserTable, inverse_of: :map, dependent: :destroy
 
   belongs_to :user
 
-  has_many :visualizations, class_name: Carto::Visualization, inverse_of: :map
+  has_one :visualization, class_name: Carto::Visualization, inverse_of: :map
 
+  # bounding_box_sw, bounding_box_new and center should probably be JSON serialized fields
+  # However, many callers expect to get an string (and do the JSON deserialization themselves), mainly in presenters
+  # So for now, we are just treating them as strings (see the .to_s in the constant below), but this could be improved
   DEFAULT_OPTIONS = {
     zoom:            3,
-    bounding_box_sw: [BoundingBoxHelper::DEFAULT_BOUNDS[:minlat], BoundingBoxHelper::DEFAULT_BOUNDS[:minlon]],
-    bounding_box_ne: [BoundingBoxHelper::DEFAULT_BOUNDS[:maxlat], BoundingBoxHelper::DEFAULT_BOUNDS[:maxlon]],
+    bounding_box_sw: [BoundingBoxHelper::DEFAULT_BOUNDS[:minlat], BoundingBoxHelper::DEFAULT_BOUNDS[:minlon]].to_s,
+    bounding_box_ne: [BoundingBoxHelper::DEFAULT_BOUNDS[:maxlat], BoundingBoxHelper::DEFAULT_BOUNDS[:maxlon]].to_s,
     provider:        'leaflet',
-    center:          [30, 0]
+    center:          [30, 0].to_s
   }.freeze
 
   serialize :options, ::Carto::CartoJsonSerializer
@@ -38,15 +45,15 @@ class Carto::Map < ActiveRecord::Base
   after_commit :force_notify_map_change
 
   def data_layers
+    layers.select(&:data_layer?)
+  end
+
+  def carto_layers
     layers.select(&:carto?)
   end
 
   def user_layers
     layers.select(&:user_layer?)
-  end
-
-  def carto_and_torque_layers
-    layers.select { |layer| layer.carto? || layer.torque? }
   end
 
   def torque_layers
@@ -105,7 +112,7 @@ class Carto::Map < ActiveRecord::Base
   end
 
   def writable_by_user?(user)
-    visualizations.select { |v| v.writable_by?(user) }.any?
+    visualization.writable_by?(user)
   end
 
   def contains_layer?(layer)
@@ -122,10 +129,6 @@ class Carto::Map < ActiveRecord::Base
   def force_notify_map_change
     map = ::Map[id]
     map.force_notify_map_change if map
-  end
-
-  def visualization
-    visualizations.first
   end
 
   def update_dataset_dependencies
@@ -148,9 +151,55 @@ class Carto::Map < ActiveRecord::Base
     options[:layer_selector]
   end
 
+  def admits_layer?(layer)
+    return admits_more_torque_layers? if layer.torque?
+    return admits_more_data_layers? if layer.data_layer?
+    return admits_more_base_layers?(layer) if layer.base_layer?
+  end
+
+  def can_add_layer?(user)
+    return false if user.max_layers && user.max_layers <= data_layers.count
+
+    visualization.writable_by?(user)
+  end
+
+  def process_privacy_in(layer)
+    if layer.uses_private_tables? && visualization.can_be_private?
+      visualization.privacy = Carto::Visualization::PRIVACY_PRIVATE
+      visualization.save
+    end
+  end
+
+  def recalculate_bounds!
+    CartoDB::Logger.debug(message: "Carto::Map#recalculate_bounds!")
+    set_boundaries(get_map_bounds)
+    save
+  end
+
   private
 
+  def admits_more_data_layers?
+    !visualization.canonical? || data_layers.empty?
+  end
+
+  def admits_more_torque_layers?
+    !visualization.canonical? || torque_layers.empty?
+  end
+
+  def admits_more_base_layers?(layer)
+    # no basemap layer, always allow
+    return true if user_layers.empty?
+    # have basemap? then allow only if comes on top (for labels)
+    layer.order >= layers.last.order
+  end
+
   def ensure_options
+    self.zoom ||= DEFAULT_OPTIONS[:zoom]
+    self.bounding_box_sw ||= DEFAULT_OPTIONS[:bounding_box_sw]
+    self.bounding_box_ne ||= DEFAULT_OPTIONS[:bounding_box_ne]
+    self.center ||= DEFAULT_OPTIONS[:center]
+    self.provider ||= DEFAULT_OPTIONS[:provider]
+
     self.options ||= {}
     options[:dashboard_menu] = true if options[:dashboard_menu].nil?
     options[:layer_selector] = false if options[:layer_selector].nil?
@@ -170,10 +219,12 @@ class Carto::Map < ActiveRecord::Base
   end
 
   def get_the_last_time_tiles_have_changed_to_render_it_in_vizjsons
-    table       = user_tables.first
-    from_table  = table.service.data_last_modified if table
+    from_table = user_table.service.data_last_modified if user_table
 
     [from_table, data_layers.map(&:updated_at)].flatten.compact.max
   end
 
+  def table_name
+    user_table.try(:name)
+  end
 end

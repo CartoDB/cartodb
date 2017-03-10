@@ -7,17 +7,9 @@ describe Carto::Visualization do
   include UniqueNamesHelper
 
   before(:all) do
-    @user = create_user(
-      email: 'admin@cartotest.com',
-      username: 'admin',
-      password: '123456'
-    )
+    @user = create_user
     @carto_user = Carto::User.find(@user.id)
-    @user2 = create_user(
-      email: 'noadmin@cartotest.com',
-      username: 'noadmin',
-      password: '123456'
-    )
+    @user2 = create_user
     @carto_user2 = Carto::User.find(@user2.id)
   end
 
@@ -112,13 +104,15 @@ describe Carto::Visualization do
     include Carto::Factories::Visualizations
 
     it 'only returns tables that a user can read' do
+      @carto_user.update_attribute(:private_tables_enabled, true)
+      map = FactoryGirl.create(:carto_map, user: @carto_user)
+
       private_table = FactoryGirl.create(:private_user_table, user: @carto_user)
       public_table = FactoryGirl.create(:public_user_table, user: @carto_user)
 
-      private_layer = FactoryGirl.create(:carto_layer, options: { table_name: private_table.name })
-      public_layer =  FactoryGirl.create(:carto_layer, options: { table_name: public_table.name })
+      private_layer = FactoryGirl.create(:carto_layer, options: { table_name: private_table.name }, maps: [map])
+      FactoryGirl.create(:carto_layer, options: { table_name: public_table.name }, maps: [map])
 
-      map = FactoryGirl.create(:carto_map, layers: [private_layer, public_layer], user: @carto_user)
       map, table, table_visualization, visualization = create_full_visualization(@carto_user,
                                                                                  map: map,
                                                                                  table: private_table,
@@ -160,6 +154,28 @@ describe Carto::Visualization do
       @visualization.version = 3
       @visualization.stubs(:mapcapped?).returns(true)
       @visualization.published?.should eq true
+    end
+  end
+
+  describe '#can_be_private?' do
+    before(:all) do
+      bypass_named_maps
+      @visualization = FactoryGirl.create(:carto_visualization, user: @carto_user)
+      @visualization.reload # to clean up the user relation (see #11134)
+    end
+
+    after(:all) do
+      @visualization.destroy
+    end
+
+    it 'returns private_tables_enabled for tables' do
+      @visualization.type = 'table'
+      @visualization.can_be_private?.should eq @carto_user.private_tables_enabled
+    end
+
+    it 'returns private_maps_enabled for maps' do
+      @visualization.type = 'derived'
+      @visualization.can_be_private?.should eq @carto_user.private_maps_enabled
     end
   end
 end

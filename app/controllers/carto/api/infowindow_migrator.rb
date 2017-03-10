@@ -1,7 +1,7 @@
 module Carto
   module Api
     module InfowindowMigrator
-      MUSTACHE_ROOT_PATH = 'lib/assets/javascripts/cartodb3/mustache-templates'.freeze
+      MUSTACHE_ROOT_PATH = 'lib/assets/core/javascripts/cartodb3/mustache-templates'.freeze
 
       def migrate_builder_infowindow(templated_element, mustache_dir: 'infowindows')
         return nil if templated_element.nil?

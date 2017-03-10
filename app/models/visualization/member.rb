@@ -12,6 +12,7 @@ require_relative '../table/privacy_manager'
 require_relative '../../../services/minimal-validation/validator'
 require_relative '../../helpers/embed_redis_cache'
 require_dependency 'cartodb/redis_vizjson_cache'
+require_dependency 'carto/visualization'
 
 # Every table has always at least one visualization (the "canonical visualization"), of type 'table',
 # which shares the same privacy options as the table and gets synced.
@@ -23,6 +24,7 @@ module CartoDB
       extend Forwardable
       include Virtus.model
       include CacheHelper
+      include Carto::VisualizationDependencies
 
       PRIVACY_PUBLIC       = 'public'        # published and listable in public user profile
       PRIVACY_PRIVATE      = 'private'       # not published (viz.json and embed_map should return 404)
@@ -93,7 +95,6 @@ module CartoDB
         self.id         ||= @repository.next_id
         @name_checker   = name_checker
         @validator      = MinimalValidator::Validator.new
-        @user_data      = nil
         self.permission_change_valid = true   # Changes upon set of different permission_id
         # this flag is passed to the table in case of canonical visualizations. It's used to say to the table to not touch the database and only change the metadata information, useful for ghost tables
         self.register_table_only = false
@@ -182,13 +183,7 @@ module CartoDB
         self
       end
 
-      def store_using_table(fields, table_privacy_changed = false)
-        if type == TYPE_CANONICAL
-          # Each table has a canonical visualization which must have privacy synced
-          self.privacy = fields[:privacy_text]
-          self.map_id = fields[:map_id]
-        end
-        # But as this method also notifies of changes in a table, must save always
+      def store_using_table(table_privacy_changed = false)
         do_store(false, table_privacy_changed)
         self
       end
@@ -257,6 +252,10 @@ module CartoDB
         self
       end
 
+      def delete_from_table
+        delete(true)
+      end
+
       def delete(from_table_deletion = false)
         raise CartoDB::InvalidMember.new(user: "Viewer users can't delete visualizations") if user.viewer
 
@@ -271,38 +270,40 @@ module CartoDB
           CartoDB.notify_error(exception.message, error: exception.inspect, user: user, visualization_id: id)
         end
 
-        unlink_self_from_list!
+        repository.transaction do
+          unlink_self_from_list!
 
-        support_tables.delete_all
+          support_tables.delete_all
 
-        overlays.map(&:destroy)
-        safe_sequel_delete do
-          # "Mark" that this vis id is the destructor to avoid cycles: Vis -> Map -> relatedvis (Vis again)
-          related_map = map
-          related_map.being_destroyed_by_vis_id = id
-          related_map.destroy
-        end if map
-        safe_sequel_delete { table.destroy } if type == TYPE_CANONICAL && table && !from_table_deletion
-        safe_sequel_delete do
-          children.map do |child|
-            # Refetch each item before removal so Relator reloads prev/next cursors
-            child.fetch.delete
+          overlays.map(&:destroy)
+          safe_sequel_delete do
+            # "Mark" that this vis id is the destructor to avoid cycles: Vis -> Map -> relatedvis (Vis again)
+            related_map = map
+            related_map.being_destroyed_by_vis_id = id
+            related_map.destroy
+          end if map
+          safe_sequel_delete { table.destroy } if type == TYPE_CANONICAL && table && !from_table_deletion
+          safe_sequel_delete do
+            children.map do |child|
+              # Refetch each item before removal so Relator reloads prev/next cursors
+              child.fetch.delete
+            end
           end
-        end
 
-        # Avoid invalidating if the visualization has already been destroyed
-        # This happens deleting a canonical visualization, which triggers a table deletion,
-        # which triggers a second deletion of the same visualization
-        carto_vis = carto_visualization
-        if carto_vis
-          Carto::NamedMaps::Api.new(carto_vis).destroy
-          invalidate_cache
-        end
+          # Avoid invalidating if the visualization has already been destroyed
+          # This happens deleting a canonical visualization, which triggers a table deletion,
+          # which triggers a second deletion of the same visualization
+          carto_vis = carto_visualization
+          if carto_vis
+            Carto::NamedMaps::Api.new(carto_vis).destroy
+            invalidate_cache
+          end
 
-        safe_sequel_delete { permission.destroy_shared_entities } if permission
-        safe_sequel_delete { repository.delete(id) }
-        safe_sequel_delete { permission.destroy } if permission
-        attributes.keys.each { |key| send("#{key}=", nil) }
+          safe_sequel_delete { permission.destroy_shared_entities } if permission
+          safe_sequel_delete { repository.delete(id) }
+          safe_sequel_delete { permission.destroy } if permission
+          attributes.keys.each { |key| send("#{key}=", nil) }
+        end
 
         self
       end
@@ -311,10 +312,6 @@ module CartoDB
       def unlink_from(table)
         invalidate_cache
         remove_layers_from(table)
-      end
-
-      def user_data=(user_data)
-        @user_data = user_data
       end
 
       def name=(name)
@@ -479,14 +476,6 @@ module CartoDB
 
       def type_slide?
         type == TYPE_SLIDE
-      end
-
-      def dependent?
-        derived? && single_data_layer?
-      end
-
-      def non_dependent?
-        derived? && !single_data_layer?
       end
 
       def invalidate_cache
@@ -895,15 +884,7 @@ module CartoDB
       def propagate_attribution_change
         return unless attributions_changed
 
-        # This includes both the canonical and derived visualizations
-        table.affected_visualizations.each do |affected_visualization|
-          affected_visualization.layers(:carto_and_torque).each do |layer|
-            if layer.options['table_name'] == table.name
-              layer.options['attribution']  = self.attributions
-              layer.save
-            end
-          end
-        end
+        table.propagate_attribution_change(attributions)
       end
 
       def revert_name_change(previous_name)
@@ -933,17 +914,21 @@ module CartoDB
       end
 
       def remove_layers_from(table)
-        related_layers_from(table).each { |layer|
+        related_layers_from(table).each do |layer|
+          # Using delete to avoid hooks, as they generate a conflict between ORMs and are
+          # not needed in this case since they are already triggered by deleting the layer
+          Carto::Analysis.find_by_natural_id(id, layer.source_id).try(:delete) if layer.source_id
+
           map.remove_layer(layer)
           layer.destroy
-        }
+        end
         self.active_layer_id = layers(:cartodb).first.nil? ? nil : layers(:cartodb).first.id
         store
       end
 
       def related_layers_from(table)
         layers(:cartodb).select do |layer|
-          (layer.affected_tables.map(&:name) + [layer.options.fetch('table_name', nil)]).include?(table.name)
+          (layer.user_tables.map(&:name) + [layer.options.fetch('table_name', nil)]).include?(table.name)
         end
       end
 

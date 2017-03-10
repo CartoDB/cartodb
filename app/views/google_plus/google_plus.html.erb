@@ -7,6 +7,10 @@
       function signinCallback(authResult) {
         if(inIframe() && parentInSameDomain()) {
           parent.signinCallback(authResult);
+
+          document.getElementById("signinButton").onclick = function() {
+            parent.signinCallbackClick && parent.signinCallbackClick(authResult);
+          };
         }
       }
 

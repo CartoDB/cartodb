@@ -28,6 +28,10 @@ module Cartodb
       "#{host}/google/signup"
     end
 
+    def login_url
+      URI.join(host, 'login').to_s
+    end
+
     def build_request(path, body, method, timeout = 200)
       http_client = Carto::Http::Client.get('central', log_requests: true)
       http_client.request(

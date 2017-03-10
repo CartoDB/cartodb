@@ -6,16 +6,15 @@ describe Carto::Builder::DatasetsController do
   describe '#show' do
     before(:all) do
       CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+      bypass_named_maps
       @user = FactoryGirl.build(:valid_user, builder_enabled: true).save
-      @map = FactoryGirl.create(:carto_map, user_id: @user.id)
-      @table = FactoryGirl.create(:carto_user_table, user_id: @user.id, map_id: @map)
-      @visualization = FactoryGirl.create(:carto_visualization, type: Carto::Visualization::TYPE_CANONICAL,
-                                                                user_id: @user.id, name: @table.name, map_id: @map.id)
+      @table = FactoryGirl.create(:carto_user_table, :full, user_id: @user.id, map: @map)
+      @map = @table.map
+      @visualization = @table.table_visualization
     end
 
     before(:each) do
       @user.stubs(:has_feature_flag?).with('new_geocoder_quota').returns(true)
-      @user.stubs(:has_feature_flag?).with('gnip_v2').returns(true)
       login(@user)
     end
 
@@ -44,6 +43,7 @@ describe Carto::Builder::DatasetsController do
     end
 
     it 'redirects to public view for visualizations not writable by user' do
+      bypass_named_maps
       @other_visualization = FactoryGirl.create(:carto_visualization, type: Carto::Visualization::TYPE_CANONICAL)
 
       get builder_dataset_url(id: @other_visualization.id)
@@ -73,6 +73,39 @@ describe Carto::Builder::DatasetsController do
       get builder_dataset_url(id: @visualization.id)
 
       response.status.should == 404
+    end
+
+    it 'does not include google maps if not configured' do
+      @map.provider = 'googlemaps'
+      @map.save
+      @user.google_maps_key = ''
+      @user.save
+      get builder_dataset_url(id: @visualization.id)
+
+      response.status.should == 200
+      response.body.should_not include("maps.google.com/maps/api/js")
+    end
+
+    it 'includes the google maps client id if configured' do
+      @map.provider = 'googlemaps'
+      @map.save
+      @user.google_maps_key = 'client=wadus_cid'
+      @user.save
+      get builder_dataset_url(id: @visualization.id)
+
+      response.status.should == 200
+      response.body.should include("maps.google.com/maps/api/js?client=wadus_cid")
+    end
+
+    it 'does not include google maps if the map does not need it' do
+      @map.provider = 'leaflet'
+      @map.save
+      @user.google_maps_key = 'client=wadus_cid'
+      @user.save
+      get builder_dataset_url(id: @visualization.id)
+
+      response.status.should == 200
+      response.body.should_not include("maps.google.com/maps/api/js")
     end
   end
 end

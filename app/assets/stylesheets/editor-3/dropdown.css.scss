@@ -16,13 +16,22 @@
   position: absolute;
   top: 40px;
   right: 0;
-  z-index: 2;
+  z-index: 100; // Lets treat it the same depth as CDB-Box-modal
 }
 
 .Editor-dropDownInfoText {
   width: 160px;
   padding: 14px;
   box-sizing: border-box;
+}
+
+.Editor-dropdownOperators {
+  display: none;
+  max-width: 244px;
+
+  &.is-visible {
+    @include display-flex();
+  }
 }
 
 .Editor-dropdownCalculations {

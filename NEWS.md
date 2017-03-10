@@ -1,8 +1,130 @@
-3.14.0 (2016-XX-XX)
--------------------
+Development
+-----------
+
+### Features
+* Marking 'Do not show me again' in Layer Onboarding affects every tab. (#11586)
+* Adding Google-Maps basemaps (#11447)
+* Improve dialog forms to render them floated. (#7786)
+* Adds slider component to the forms (#11617)
+* New organization assets (#11034):
+  * REST API available at `/api/v1/organization/<org_id>/assets`
+  * Has DB migration
+  * Assets stored in s3 if configured, local storage is used otherwise.
+    * S3: bucket must exists and its name be present as `bucket` in conf.
+    * Local: automatic as long as S3 is not configured. You may configure max size in bytes for an asset or a custom subdirectory as shown below.
+```yaml
+  # app_config.yml example for organization assets
+  assets:
+    organization:
+      bucket: <bucket name> # required, bucket must exist beforehand
+      max_size_in_bytes: 1048576 # optional, default is 1 MB
+      location: 'organization_assets' # optional subdirectory for local assets, default is 'organization_assets'
+```
+* Pluggable frontends (#11022):
+  * Allow to override some parts of the frontend for customization
+  * Changes the asset build process:
+    * The core frontend is in `lib/assets/core`
+    * The customizations are in `lib/assets/client`
+    * The end result are in `lib/assets/`
+  * You may also plug backend view templates by specifying alternative paths in `app_config.yml`:
+    * Paths are inspected in the supplied order. First valid template is used. Default path is always inspected last.
+```yaml
+  custom_paths:
+    views: [] # an array of paths were alternate view templates are located.
+```
+* Snapshots (backend: #10928) allow to save and share map state.
+* Import API parameter: `collision_strategy`. Support for `skip` #11385.
+* Allow to override S3 endpoint for visualization exports and data imports when using S3 compatible storage services (#11614)
+* Icon styling through in component (#11005)
+* Allow to set opacity for color ramps (#10952)
+* Added Fullstory integration, can be configured in app_config
+* SAML Authentication for organizations. Example:
+  * Use the task at `lib/tasks/saml.rake` for configuration.
+  * Subdomainless URLs:
+    * Login page: http(s)://<ip-address>/user/ORGANIZATION_NAME/login.
+    * `assertion_consumer_service_url`: 'https://<ip-address>/user/<org-name>/saml/finalize'. Check that your server has this URL for the service provider ACS URL.
+* Autostyling (#10420)
+  * Correctly handle legends (#11121)
+* Updated ogr2ogr version to 2.1.2. To install or upgrade it in the system:
+  * `sudo apt-get update`
+  * `sudo apt-get install gdal2.1-static-bin`
+* Style with icons
+  * Removed Pin, and Simple icons (#11479)
+  * Select an icon previously uploaded by the organization admin (#11462)
+  * Sets the default initial size for icons to 20px (#11498)
+* Onboarding for layer edition (#10905)
+* Improved empty bounds map handling (#11711).
+* Updated diagnosis page versions.
+* Improved formula widget description field. (#11469)
+* Added support for Zeus for faster testing (#11574). Check `CONTRIBUTING.md` for configuration details.
+* Migrate to use GNIP v2 for twitter search connector (#10051, #11595)
+
+### Bug fixes
+* Fixed problems related with IE11.
+* Fixed silent problem with jQuery selector (cartodb/deep-insights.js#527)
+* Form editors remains open if a modal is open even triggering document click or ESC (#11686)
+* Fixed font style for the "You have run out of quota" module (#11690)
+* Ensured all analysis onboarding screens link to carto.learn guides (#11193)
+* Fixed problem with Bubbles legend when a new analysis is applied (#11666)
+* Fixed missing metadata option in header when dataset is sync (#11458)
+* Fixed problem with dates when filtering time series widget
+* Fixed problem switching between qualitative and quantitative attributes (#10654)
+* Fixed problem found in Surfaces related with map panning and widgets filtering
+* Style with icons
+  * Reset icon on map when you remove that custom icon
+  * Made icon's clicking area larger
+  * Avoid request when url is not defined
+  * Fix copy when deleting icons in organization.
+* Start using layers<->user_table cache in all places (#11303)
+  * Run `cartodb:db:register_table_dependencies` rake to update caches for existing maps
+* Categories legend are now static (#10972)
+* Fixed a bug with vizjson invalidation (#11092). It was introduced in #10934
+* Refactor Layer model (#10934) and UserTable (#11589, #11700).
+* Correctly render map previews for maps with google basemaps (#11608)
+* Do not trigger visualization hooks on state update (#11701)
+* Refactor Layer model (#10934)
+* Correctly register table dependencies of torque layers (#11549)
+* Fix bugs where legends where being hidden by reordering layers (#11088)
+* Correctly ask for alternative username when signing up with Google/GitHub into an organization
+* Avoid loading all rake code in resque workers (#11069)
+* Fix analysis notification in running state (#11079)
+* Fix color for "Other" category (#11078)
+* Validate that only one legend per type (color/size) is allowed (#11556)
+* Clean up import directory when importing from URL (#11599)
+* Custom errors for latitude/longitude out of bounds (#11060, #11048)
+* Fix timeseries widget height (#11077)
+* Fix a DB deadlock while simultaneously updating and deleting layers (#11568)
+* Improve speed of map name availability check, improves map creation and renaming times (#11435)
+* Fix redirection after logout for subdomainless URLs (#11361)
+* Fix scrollbar in carousel (#11061)
+* Fix layer loading at embeds (#11554)
+* Restrict login from organization pages to organization users, and redirect to Central otherwise
+* Correctly refresh map after adding/editing map geometries (#11064)
+* Fix inconsistent state after user deletion failed (#11606)
+* Return embed private instead of 404 in visualization embeds where the visualization doesn't exist (#11056)
+* `app_config.yml.sample` configuration for dataservices.
+* Fix error loading builder in visualizations without permissions (#10996)
+* Correctly update legend styles (with custom titles) (#10889, #10904)
+* Hide sync options in builder table view for non-owners (#10986)
+* Fix issues with edition of custom color infowindows (#10985)
+* UI fixes for georeference. Changes of copy and validation warning. (#11426)
+* Show layer name in legends for Torque layers (#11715)
+* Color scheme is now clickable in category ramps (#11413)
+* Fix responsive layout in onboarding steps (#11444)
+* Speed improvements to parallel tests (#11636)
+* Fix for race condition when importing files and deploying at the same time (#11653)
+* Correctly create custom category legend if style has icons (#11592)
+* Fix problem with perfect-scrollbar in Edge browsers (CartoDB/perfect-scrollbar/#2)
+* Layer onboardings are now aware on sync'd layers and highlighted area is clicked. (#11583)
+* Fixed overflow on loaders.
+* JOIN Analysis Fails Without Error Message (#11184)
+* Fix problem with perfect-scrollbar in Edge browsers (CartoDB/perfect-scrollbar/#2)
+
+4.0.x (2016-12-05)
+------------------
+
 ### NOTICE
-- This release introduces the Magic Positioner helper to render context menus in the best position inside the
-viewport.
+This release includes the new Builder, so it includes major changes. The logs only includes changes to editor.
 
 ### NOTICE
 This release rebrands CartoDB as CARTO, so a few maintenance tasks have to be run:
@@ -80,10 +202,12 @@ sudo make install
 * Support for export visualizations with characters outside iso-8859-1
 * Forward compatibility for infowindows at Builder
 * Correctly copy map privacy from source tables
+* Fix permissions in quota trigger for shared datasets. Run `bundle exec rake cartodb:db:reset_trigger_check_quota_for_user[<username>]` to fix existing users.
 * Several auth_token related fixes
 * Fix issue importing/duplicating maps where the original had an incomplete map.options
 * New builder default geometry styles are now properly initialized at the backend upon dataset import.
 * Fixed list of layers in Add basemap WMS URL tab
+* This release introduces the Magic Positioner helper to render context menus in the best position inside the viewport.
 * Removed non used fonts (Lato and Proxima Nova) and the font loader.
 * Fixed problem generating Histogram stats in columns with only one value (#9737).
 * 'Clear' button in SQL view shows up if the first SQL edition fails (#9869).

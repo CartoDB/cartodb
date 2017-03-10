@@ -165,7 +165,18 @@ class Asset < Sequel::Model
 
   ASSET_SUBFOLDER = 'uploads'.freeze
 
+  def absolute_public_url
+    uri = URI.parse(public_url)
+    (uri.absolute? ? uri : URI.join(base_domain, uri)).to_s
+  rescue URI::InvalidURIError
+    public_url
+  end
+
   private
+
+  def base_domain
+    CartoDB.base_domain_from_name(user ? user.subdomain : organization.name)
+  end
 
   def chmod_mode
     # Example in case asset kind should change mode

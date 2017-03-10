@@ -22,11 +22,21 @@ describe "Imports API" do
 
   it 'performs asynchronous imports' do
     f = upload_file('db/fake_data/column_number_to_boolean.csv', 'text/csv')
-    post api_v1_imports_create_url(
-      params.merge(:filename  => 'column_number_to_boolean.csv',
-                   :table_name => "wadus")),
-      f.read.force_encoding('UTF-8')
+    post api_v1_imports_create_url(params.merge(table_name: "wadus")), filename: f
 
+    response.code.should be == '200'
+    response_json = JSON.parse(response.body)
+
+    last_import = DataImport[response_json['item_queue_id']]
+    last_import.state.should be == 'complete'
+    table = UserTable[last_import.table_id]
+    table.name.should == "column_number_to_boolean"
+    table.map.data_layers.first.options["table_name"].should == "column_number_to_boolean"
+  end
+
+  it 'performs asynchronous imports (file parameter, used in API docs)' do
+    f = upload_file('db/fake_data/column_number_to_boolean.csv', 'text/csv')
+    post api_v1_imports_create_url(params.merge(table_name: "wadus")), file: f
 
     response.code.should be == '200'
     response_json = JSON.parse(response.body)
@@ -39,6 +49,7 @@ describe "Imports API" do
   end
 
   it 'performs asynchronous url imports' do
+    CartoDB::Importer2::Downloader.any_instance.stubs(:validate_url!).returns(true)
     serve_file Rails.root.join('db/fake_data/clubbing.csv') do |url|
       post api_v1_imports_create_url(params.merge(:url        => url,
                                        :table_name => "wadus"))
@@ -55,11 +66,9 @@ describe "Imports API" do
     @table = FactoryGirl.create(:table, :user_id => @user.id)
 
     f = upload_file('db/fake_data/column_number_to_boolean.csv', 'text/csv')
-    post api_v1_imports_create_url(
-      params.merge(:filename   => 'column_number_to_boolean.csv',
-                   :table_id   => @table.id,
-                   :append     => true)), f.read.force_encoding('UTF-8')
-
+    post api_v1_imports_create_url(params.merge(table_id: @table.id, append: true)),
+         f.read.force_encoding('UTF-8'),
+         filename: f
 
     response.code.should be == '200'
     response_json = JSON.parse(response.body)
@@ -122,6 +131,7 @@ describe "Imports API" do
   it 'imports all the sample data' do
     @user.update table_quota: 10
 
+    CartoDB::Importer2::Downloader.any_instance.stubs(:validate_url!).returns(true)
     serve_file(Rails.root.join('spec/support/data/TM_WORLD_BORDERS_SIMPL-0.3.zip')) do |url|
       post api_v1_imports_create_url(params.merge(url: url, table_name: "wadus"))
 
@@ -136,29 +146,32 @@ describe "Imports API" do
       table.should have_required_indexes_and_triggers
       table.should have_no_invalid_the_geom
       table.geometry_types.should_not be_blank
-    end
 
-    DataImport.count.should == 1
-    Map.count.should == 1
+      table.map.should be
+    end
   end
 
   it 'raises an error if the user attempts to import tables when being over quota' do
-    @user.update table_quota: 5
+    @user.update table_quota: 1
 
-    # This file contains 10 data sources
+    # This file contains 6 data sources
+    CartoDB::Importer2::Downloader.any_instance.stubs(:validate_url!).returns(true)
     serve_file(Rails.root.join('spec/support/data/ESP_adm.zip')) do |url|
       post api_v1_imports_create_url, params.merge(:url        => url,
                                        :table_name => "wadus")
     end
     response.code.should be == '200'
     last_import = DataImport.order(:updated_at.desc).first
+    last_import.tables_created_count.should be_nil
     last_import.state.should be == 'failure'
     last_import.error_code.should be == 8002
+    last_import.log.entries.should include('Results would set overquota')
     @user.reload.tables.count.should == 0
   end
 
   it 'raises an error if the user attempts to import tables when being over disk quota' do
     @user.update quota_in_bytes: 1000, table_quota: 200
+    CartoDB::Importer2::Downloader.any_instance.stubs(:validate_url!).returns(true)
     serve_file(Rails.root.join('spec/support/data/ESP_adm.zip')) do |url|
       post api_v1_imports_create_url, params.merge(:url        => url,
                                        :table_name => "wadus")

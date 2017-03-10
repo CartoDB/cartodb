@@ -10,7 +10,7 @@ module CartoDB; end
 
 describe Carto::Api::DataImportPresenter do
   before(:all) do
-    @user = create_user(username: 'test', email: "client@example.com", password: "clientex")
+    @user = create_user
     @user.max_layers = 4
   end
 

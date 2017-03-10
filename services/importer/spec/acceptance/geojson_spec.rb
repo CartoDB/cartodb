@@ -32,7 +32,7 @@ describe 'geojson regression tests' do
 
   it 'imports a file exported from CartoDB' do
     filepath    = path_to('tm_world_borders_simpl_0_8.geojson')
-    downloader  = ::CartoDB::Importer2::Downloader.new(filepath)
+    downloader  = ::CartoDB::Importer2::Downloader.new(@user.id, filepath)
     runner      = ::CartoDB::Importer2::Runner.new({
                                pg: @user.db_service.db_configuration_for,
                                downloader: downloader,
@@ -45,7 +45,7 @@ describe 'geojson regression tests' do
   it 'imports a file from a url with params' do
     filepath    = 'https://raw.github.com/benbalter/dc-wifi-social/master' +
                   '/bars.geojson?foo=bar'
-    downloader  = ::CartoDB::Importer2::Downloader.new(filepath)
+    downloader  = ::CartoDB::Importer2::Downloader.new(@user.id, filepath)
     runner      = ::CartoDB::Importer2::Runner.new({
                                pg: @user.db_service.db_configuration_for,
                                downloader: downloader,
@@ -57,7 +57,7 @@ describe 'geojson regression tests' do
 
   it "raises if GeoJSON isn't valid" do
     filepath    = path_to('invalid.geojson')
-    downloader  = ::CartoDB::Importer2::Downloader.new(filepath)
+    downloader  = ::CartoDB::Importer2::Downloader.new(@user.id, filepath)
     runner      = ::CartoDB::Importer2::Runner.new({
                                pg: @user.db_service.db_configuration_for,
                                downloader: downloader,

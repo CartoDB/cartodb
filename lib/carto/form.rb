@@ -5,7 +5,7 @@ require_relative './definition'
 module Carto
   class Form
     DEFAULT_FORMS_DEFINITION_LOCATION =
-      "#{Rails.root}/lib/assets/javascripts/cartodb3/data/default-form-styles.json".freeze
+      "#{Rails.root}/lib/assets/core/javascripts/cartodb3/data/default-form-styles.json".freeze
 
     def initialize(geometry_type)
       @geometry_type = geometry_type

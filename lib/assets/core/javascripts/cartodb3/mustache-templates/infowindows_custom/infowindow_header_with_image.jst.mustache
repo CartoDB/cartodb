@@ -1,0 +1,38 @@
+<div class="CDB-infowindow CDB-infowindow--light js-infowindow" data-cover="true">
+  <div class="CDB-infowindow-close js-close"></div>
+  <div class="CDB-infowindow-container">
+    <div class="CDB-infowindow-header CDB-infowindow-headerMedia js-header js-cover">
+      {{#loading}}<div class="CDB-Loader js-loader"></div>{{/loading}}
+      <div class="CDB-infowindow-mediaTitle">
+        {{#content.fields.1}}
+        <h4 class="CDB-infowindow-title">
+          <span>{{=<% %>=}}{{<%={{ }}=%>{{{ name }}}{{=<% %>=}}}}<%={{ }}=%></span>
+        </h4>
+        {{/content.fields.1}}
+      </div>
+    </div>
+    <div class="CDB-infowindow-inner js-inner">
+      {{#loading}}<div class="CDB-Loader js-loader"></div>{{/loading}}
+      <div class="CDB-infowindow-list js-content">
+        {{#content.fields}}
+          {{#position}}
+        <div class="CDB-infowindow-listItem CDB-infowindow-listItem--order{{position}}">
+            {{#title}}
+              {{#alternative_name}}
+          <h5 class="CDB-infowindow-subtitle">{{{alternative_name}}}</h5>
+              {{/alternative_name}}
+              {{^alternative_name}}
+          <h5 class="CDB-infowindow-subtitle">{{{name}}}</h5>
+              {{/alternative_name}}
+            {{/title}}
+          <h4 class="CDB-infowindow-title">{{=<% %>=}}{{<%={{ }}=%>{{{ name }}}{{=<% %>=}}}}<%={{ }}=%></h4>
+        </div>
+          {{/position}}
+        {{/content.fields}}
+      </div>
+    </div>
+    <div class="CDB-hook">
+      <div class="CDB-hook-inner"></div>
+    </div>
+  </div>
+</div>

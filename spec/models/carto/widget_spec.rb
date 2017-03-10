@@ -23,13 +23,15 @@ describe Carto::Widget do
 
     describe '#save' do
       before(:each) do
-        @map = FactoryGirl.create(:carto_map_with_layers)
+        @user = FactoryGirl.create(:carto_user)
+        @map = FactoryGirl.create(:carto_map_with_layers, user: @user)
         @widget = FactoryGirl.create(:widget, layer: @map.data_layers.first)
       end
 
       after(:each) do
         @widget.destroy
         @map.destroy
+        @user.destroy
       end
 
       it 'triggers notify_map_change on related map(s)' do
@@ -64,13 +66,15 @@ describe Carto::Widget do
 
   describe '#from_visualization_id' do
     before(:all) do
-      @map = FactoryGirl.create(:carto_map_with_layers)
+      @user = FactoryGirl.create(:carto_user)
+      @map = FactoryGirl.create(:carto_map_with_layers, user: @user)
       @visualization = FactoryGirl.create(:carto_visualization, map: @map)
     end
 
     after(:all) do
       @visualization.destroy
       @map.destroy
+      @user.destroy
     end
 
     it 'retrieves all visualization widgets' do

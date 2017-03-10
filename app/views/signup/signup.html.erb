@@ -4,7 +4,7 @@
   <%= javascript_include_tag 'cdb.js', 'signup.js' %>
 <% end %>
 
-<%= render :partial => 'shared/flash_message' %>
+<%= render :partial => 'shared/flash_message', locals: { error_message: @organization.auth_username_password_enabled ? nil : model_errors(@user) } %>
 
 <div class="CDB-Text <%= @organization.present? ? 'Sessions' : 'Sessions-navy' %>" style="<%= @organization.present? ? background : '' %>">
   <div class="Sessions-content">
@@ -48,13 +48,13 @@
             <%= form_for @user, url: CartoDB.url(self, 'signup_organization_user'),  html: { class: "js-Loading-form" } do |f| %>
               <% if @organization.auth_google_enabled %>
                 <input type="hidden" value="<%= params[:google_access_token] %>" id="google_access_token" name="google_access_token" />
-                <input type="hidden" value="0" id="google_access_filled" name="google_access_filled" />
+                <input type="hidden" value="<%= params[:google_access_token].present? ? 1 : 0 %>" id="google_access_filled" name="google_access_filled" />
               <% end %>
 
               <input type="hidden" value="<%= params[:invitation_token] %>" id="invitation_token" name="invitation_token" />
 
-              <% if @organization.auth_username_password_enabled %>
-                <div class="Sessions-fieldsGroup">
+              <div class="Sessions-fieldsGroup">
+                <% if @organization.auth_username_password_enabled || duplicated_username_prompt? %>
                   <div class="Sessions-field">
                     <%= f.text_field :username, class: "CDB-Size-medium Sessions-input topBorderRadius", placeholder: 'Username' %>
                     <% if !@user.errors[:username].blank? %>
@@ -63,16 +63,16 @@
                   </div>
 
                   <div class="Sessions-field">
-                    <%= f.email_field :email, class: "CDB-Size-medium Sessions-input", placeholder: 'email', readonly: params[:invitation_token].present? %>
+                    <%= f.email_field :email, class: "CDB-Size-medium Sessions-input", placeholder: 'email', readonly: params[:invitation_token].present? || duplicated_username_prompt? %>
                     <% if !@user.errors[:email].blank? %>
                       <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @user.errors[:email] %>">!</div>
                     <% end %>
                   </div>
                 <% end %>
 
-                <% if @user.google_sign_in && @organization.auth_google_enabled %>
+                <% if google_sign_in? %>
                   <%= f.hidden_field :google_sign_in %>
-                <% elsif @user.github_user_id && @organization.auth_github_enabled %>
+                <% elsif github_sign_in? %>
                   <%= f.hidden_field :github_user_id %>
                   <input type="hidden" name="github_access_token" value="<%= @github_access_token %>" />
                 <% elsif @organization.auth_username_password_enabled %>
@@ -84,7 +84,7 @@
                   </div>
                 <% end %>
 
-                <% if @organization.auth_username_password_enabled %>
+                <% if @organization.auth_username_password_enabled || duplicated_username_prompt? %>
                   <div class="Sessions-field">
                     <p>
                       <button type="submit" class="Sessions-submitButton js-Sessions-button js-Loading">
@@ -107,14 +107,13 @@
                   </div>
                 <% end %>
               </div>
-              </div>
 
               <div style="display:none">
                 <%= f.check_box :terms, { checked: true } %>
               </div>
             <% end %>
 
-            <% if @organization.auth_google_enabled || @organization.auth_github_enabled %>
+            <% if !duplicated_username_prompt? && (@organization.auth_google_enabled || @organization.auth_github_enabled) %>
               <div class="Sessions-field Sessions-oauthContainer">
                 <% if @organization.auth_google_enabled && @google_plus_config.present? %>
                   <%= render partial: 'google_plus/google_plus_button',  locals: { config: @google_plus_config } %>
@@ -127,31 +126,32 @@
             <% end %>
 
             <% if @organization.auth_username_password_enabled %>
-              <p class="CDB-Text CDB-Size-medium u-altTextColor u-tSpace--m u-flex u-justifyCenter Sessions-description">Please, use an email address belonging to this organization.</p>
+              <p class="CDB-Text CDB-Size-medium u-altTextColor u-tSpace--m u-justifyCenter Sessions-description">Please, use an email address belonging to this organization.</p>
             <% end %>
           </div>
         </div>
       </div>
     </div>
-
-    <footer class="Sessions-footer">
-      <div class="u-inner">
-        <div class="Sessions-notloggedin <%= "is-active" unless @google_plus_config.present? %>">
-          <p class="Sessions-text Sessions-text--footer u-altTextColor u-txt-center">
-            Already have an account?
-            <% if params[:after].present? %>
-              <% if (params[:referrer].present?) %>
-                <%= link_to "Log in", login_url(after: params[:after], referrer: params[:referrer]) %>
-              <% else %>
-                <%= link_to "Log in", login_url(after: params[:after]) %>
-              <% end %>
-            <% else %>
-              <%= link_to "Log in", login_url %>
-            <% end %>
-          </p>
-
-          <p class="Sessions-text Sessions-text--footer u-altTextColor u-txt-center">By clicking in "sign up" you accept the <%= link_to 'terms and conditions', terms_path %> of the service and the <%= link_to 'privacy policy', privacy_path %></p>
-        </div>
-      </div>
-    </footer>
   </div>
+
+  <footer class="Sessions-footer">
+    <div class="u-inner">
+      <div class="Sessions-notloggedin <%= "is-active" unless @google_plus_config.present? %>">
+        <p class="Sessions-text Sessions-text--footer u-altTextColor u-txt-center">
+          Already have an account?
+          <% if params[:after].present? %>
+            <% if (params[:referrer].present?) %>
+              <%= link_to "Log in", login_url(after: params[:after], referrer: params[:referrer]) %>
+            <% else %>
+              <%= link_to "Log in", login_url(after: params[:after]) %>
+            <% end %>
+          <% else %>
+            <%= link_to "Log in", login_url %>
+          <% end %>
+        </p>
+
+        <p class="Sessions-text Sessions-text--footer u-altTextColor u-txt-center">By clicking in "sign up" you accept the <%= link_to 'terms and conditions', terms_path %> of the service and the <%= link_to 'privacy policy', privacy_path %></p>
+      </div>
+    </div>
+  </footer>
+</div>

@@ -320,7 +320,7 @@ describe Carto::VisualizationsExportService2 do
     if importing_user && layer_export_options.has_key?(:stat_tag)
       # Persisted layer
       layer_options[:stat_tag].should_not be_nil
-      layer_options[:stat_tag].should eq layer.maps.first.visualizations.first.id
+      layer_options[:stat_tag].should eq layer.maps.first.visualization.id
     else
       layer_options.has_key?(:stat_tag).should eq layer_export_options.has_key?(:stat_tag)
       layer_options[:stat_tag].should be_nil
@@ -748,7 +748,7 @@ describe Carto::VisualizationsExportService2 do
 
       before(:all) do
         bypass_named_maps
-        @user = FactoryGirl.create(:carto_user, private_maps_enabled: true)
+        @user = FactoryGirl.create(:carto_user, private_maps_enabled: true, private_tables_enabled: true)
         @user2 = FactoryGirl.create(:carto_user, private_maps_enabled: true)
         @map, @table, @table_visualization, @visualization = create_full_visualization(@user)
         @analysis = FactoryGirl.create(:source_analysis, visualization: @visualization, user: @user)
@@ -764,6 +764,7 @@ describe Carto::VisualizationsExportService2 do
 
       describe 'visualization types' do
         before(:all) do
+          bypass_named_maps
           @table_visualization = FactoryGirl.create(:carto_visualization, type: 'table')
           @remote_visualization = FactoryGirl.create(:carto_visualization, type: 'remote')
         end
@@ -794,13 +795,14 @@ describe Carto::VisualizationsExportService2 do
       end
 
       it 'only exports layers that a user has permissions at' do
+        map = FactoryGirl.create(:carto_map, user: @user)
+
         private_table = FactoryGirl.create(:private_user_table, user: @user)
         public_table = FactoryGirl.create(:public_user_table, user: @user)
 
-        private_layer = FactoryGirl.create(:carto_layer, options: { table_name: private_table.name })
-        public_layer =  FactoryGirl.create(:carto_layer, options: { table_name: public_table.name })
+        private_layer = FactoryGirl.create(:carto_layer, options: { table_name: private_table.name }, maps: [map])
+        FactoryGirl.create(:carto_layer, options: { table_name: public_table.name }, maps: [map])
 
-        map = FactoryGirl.create(:carto_map, layers: [private_layer, public_layer], user: @user)
         map, table, table_visualization, visualization = create_full_visualization(@user,
                                                                                    map: map,
                                                                                    table: private_table,
@@ -848,57 +850,62 @@ describe Carto::VisualizationsExportService2 do
 
       let(:table_name) { 'a_shared_table' }
 
-      def query(user = nil)
+      def query(table, user = nil)
         if user.present?
-          "SELECT * FROM #{user.sql_safe_database_schema}.#{@table.name}"
+          "SELECT * FROM #{user.sql_safe_database_schema}.#{table.name}"
         else
-          "SELECT * FROM #{@table.name}"
+          "SELECT * FROM #{table.name}"
         end
       end
 
       def setup_visualization_with_layer_query(owner_user, shared_user)
-        @table = create_table(privacy: UserTable::PRIVACY_PRIVATE, name: table_name, user_id: owner_user.id)
-        user_table = Carto::UserTable.find(@table.id)
-        share_table_with_user(@table, shared_user)
+        @map, @table, @table_visualization, @visualization = shared_table_viz_with_layer_query(owner_user, shared_user)
+      end
 
-        query_1 = query(owner_user)
+      def shared_table_viz_with_layer_query(owner_user, shared_user)
+        table = create_table(privacy: UserTable::PRIVACY_PRIVATE, name: table_name, user_id: owner_user.id)
+        user_table = Carto::UserTable.find(table.id)
+        share_table_with_user(table, shared_user)
+
+        query1 = query(table, owner_user)
         layer_options = {
-          table_name: @table.name,
-          query: query_1,
+          table_name: table.name,
+          query: query1,
           user_name: owner_user.username,
-          query_history: [query_1]
+          query_history: [query1]
         }
         layer = FactoryGirl.create(:carto_layer, options: layer_options)
-        layer.options['query'].should eq query_1
+        layer.options['query'].should eq query1
         layer.options['user_name'].should eq owner_user.username
-        layer.options['query_history'].should eq [query_1]
+        layer.options['query_history'].should eq [query1]
 
         map = FactoryGirl.create(:carto_map, layers: [layer], user: owner_user)
-        @map, @table, @table_visualization, @visualization = create_full_visualization(owner_user,
+        map, table, table_visualization, visualization = create_full_visualization(owner_user,
                                                                                        map: map,
                                                                                        table: user_table,
                                                                                        data_layer: layer)
 
-        FactoryGirl.create(:source_analysis, visualization: @visualization, user: owner_user,
-                                             source_table: @table.name, query: query_1)
+        FactoryGirl.create(:source_analysis, visualization: visualization, user: owner_user,
+                                             source_table: table.name, query: query1)
+        return map, table, table_visualization, visualization
       end
 
       after(:each) do
-        ::UserTable[@table.id].destroy
+        ::UserTable[@table.id].destroy if @table && ::UserTable[@table.id]
         destroy_full_visualization(@map, @table, @table_visualization, @visualization)
       end
 
       let(:export_service) { Carto::VisualizationsExportService2.new }
 
-      def check_username_replacement(source_user, target_user)
-        query_1 = query(source_user)
-        exported = export_service.export_visualization_json_hash(@visualization.id, target_user)
+      def check_username_change(visualization, table, source_user, target_user)
+        query1 = query(table, source_user)
+        exported = export_service.export_visualization_json_hash(visualization.id, target_user)
         layers = exported[:visualization][:layers]
         layers.should_not be_nil
         layer = layers[0]
-        layer[:options]['query'].should eq query_1
+        layer[:options]['query'].should eq query1
         layer[:options]['user_name'].should eq source_user.username
-        layer[:options]['query_history'].should eq [query_1]
+        layer[:options]['query_history'].should eq [query1]
 
         built_viz = export_service.build_visualization_from_hash_export(exported)
         imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(target_user, built_viz)
@@ -917,7 +924,7 @@ describe Carto::VisualizationsExportService2 do
         target_user = @carto_org_user_2
         setup_visualization_with_layer_query(source_user, target_user)
         source_user.username.should_not include('-')
-        check_username_replacement(source_user, target_user).should eq query(target_user)
+        check_username_change(@visualization, @table, source_user, target_user).should eq query(@table, target_user)
       end
 
       it 'replaces owner name (with dash) with new user name on import for user_name and query' do
@@ -925,7 +932,7 @@ describe Carto::VisualizationsExportService2 do
         target_user = @carto_org_user_with_dash_2
         setup_visualization_with_layer_query(source_user, target_user)
         source_user.username.should include('-')
-        check_username_replacement(source_user, target_user).should eq query(target_user)
+        check_username_change(@visualization, @table, source_user, target_user).should eq query(@table, target_user)
       end
 
       it 'replaces owner name (without dash) with new user name (with dash) on import for user_name and query' do
@@ -934,7 +941,7 @@ describe Carto::VisualizationsExportService2 do
         setup_visualization_with_layer_query(source_user, target_user)
         source_user.username.should_not include('-')
         target_user.username.should include('-')
-        check_username_replacement(source_user, target_user).should eq query(target_user)
+        check_username_change(@visualization, @table, source_user, target_user).should eq query(@table, target_user)
       end
 
       it 'removes owner name from user_name and query importing into a non-organization account' do
@@ -942,7 +949,45 @@ describe Carto::VisualizationsExportService2 do
         target_user = @carto_normal_user
         setup_visualization_with_layer_query(source_user, target_user)
         source_user.username.should include('-')
-        check_username_replacement(source_user, target_user).should eq query
+        check_username_change(@visualization, @table, source_user, target_user).should eq query(@table)
+      end
+
+      it 'removes owner name from user_name and query importing into a non-org. even if username matches' do
+        name = 'wadus-user'
+        org_user_same_name = @helper.create_test_user(name, @organization)
+        source_user = Carto::User.find(org_user_same_name.id)
+        target_user = @carto_org_user_1
+        @map, @table, @table_visualization, @visualization = shared_table_viz_with_layer_query(source_user, target_user)
+
+        query1 = query(@table, source_user)
+        # Self export
+        exported = export_service.export_visualization_json_hash(@visualization.id, source_user)
+        layers = exported[:visualization][:layers]
+        layers.should_not be_nil
+        layer = layers[0]
+        layer[:options]['query'].should eq query1
+        layer[:options]['user_name'].should eq source_user.username
+        layer[:options]['query_history'].should eq [query1]
+
+        delete_user_data org_user_same_name
+        org_user_same_name.destroy
+
+        user_same_name = @helper.create_test_user(name)
+        carto_user_same_name = Carto::User.find(user_same_name.id)
+
+        built_viz = export_service.build_visualization_from_hash_export(exported)
+        imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(carto_user_same_name, built_viz)
+        imported_layer = imported_viz.layers[0]
+
+        imported_layer[:options]['user_name'].should eq user_same_name.username
+
+        analysis_definition = imported_viz.analyses.first.analysis_definition
+        analysis_definition[:params][:query].should eq imported_layer[:options]['query']
+
+        imported_layer[:options]['query'].should eq query(@table)
+
+        delete_user_data user_same_name
+        user_same_name.destroy
       end
 
       it 'does not replace owner name with new user name on import when new query fails' do
@@ -952,7 +997,7 @@ describe Carto::VisualizationsExportService2 do
         source_user = @carto_org_user_1
         target_user = @carto_org_user_2
         setup_visualization_with_layer_query(source_user, target_user)
-        check_username_replacement(source_user, target_user).should eq query(source_user)
+        check_username_change(@visualization, @table, source_user, target_user).should eq query(@table, source_user)
       end
     end
 
@@ -1160,7 +1205,7 @@ describe Carto::VisualizationsExportService2 do
       if importing_user && original_layer_options.has_key?(:stat_tag)
         # Persisted layer
         imported_layer_options[:stat_tag].should_not be_nil
-        imported_layer_options[:stat_tag].should eq imported_layer.maps.first.visualizations.first.id
+        imported_layer_options[:stat_tag].should eq imported_layer.maps.first.visualization.id
       else
         imported_layer_options.has_key?(:stat_tag).should eq original_layer_options.has_key?(:stat_tag)
         imported_layer_options[:stat_tag].should be_nil

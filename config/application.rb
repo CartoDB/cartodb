@@ -53,6 +53,10 @@ module CartoDB
 
     # Configure sensitive parameters which will be filtered from the log file.
     config.filter_parameters += [:password]
+    # Filter out connector connection credentials. We'd rather filter just 'connector.connection',
+    # but version 3.x of Rails doesn't support nested parameter filtering.
+    config.filter_parameters += [:connection]
+
     ::Sequel.extension(:pagination)
     ::Sequel.extension(:connection_validator)
 
@@ -99,6 +103,7 @@ module CartoDB
       table.js
       public_dashboard.js
       public_like.js
+      tangram.min.js
       common.js
       old_common.js
       old_common_without_core.js
@@ -173,6 +178,10 @@ module CartoDB
 
     frontend_assets_version = JSON::parse(File.read(Rails.root.join('package.json')))['version']
     config.action_controller.relative_url_root = "/assets/#{frontend_assets_version}"
+
+    custom_app_views_paths.reverse.each do |custom_views_path|
+      config.paths['app/views'].unshift(custom_views_path)
+    end
   end
 end
 

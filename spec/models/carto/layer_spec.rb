@@ -10,7 +10,10 @@ describe Carto::Layer do
     let(:layer_class) { Carto::Layer }
     def create_map(options = {})
       options.delete(:table_id)
-      Carto::Map.create(options)
+      map = Carto::Map.create(options)
+      FactoryGirl.create(:carto_visualization, map: map, user_id: options[:user_id]) if options[:user_id].present?
+
+      map
     end
 
     def add_layer_to_entity(entity, layer)
@@ -69,7 +72,7 @@ describe Carto::Layer do
     it 'returns all tables from the root analysis' do
       @layer.stubs(:options).returns(source: @analysis.natural_id)
       @layer.stubs(:affected_table_names).returns([]).twice
-      affected = @layer.affected_tables
+      affected = @layer.send(:affected_tables)
       affected.count.should eq 2
       affected.should include @table1
       affected.should include @table2
@@ -78,32 +81,32 @@ describe Carto::Layer do
     it 'returns only tables from the sub-analysis' do
       @layer.stubs(:options).returns(source: source_analysis_id)
       @layer.stubs(:affected_table_names).returns([]).once
-      affected = @layer.affected_tables
+      affected = @layer.send(:affected_tables)
       affected.count.should eq 1
       affected.should include @table1
 
       @layer.stubs(:options).returns(source: target_analysis_id)
       @layer.stubs(:affected_table_names).returns([]).once
-      affected = @layer.affected_tables
+      affected = @layer.send(:affected_tables)
       affected.count.should eq 1
       affected.should include @table2
     end
 
     it 'ignores query/table_name if source is specified' do
       @layer.stubs(:options).returns(source: 'wadus', table_name: @table1.name)
-      affected = @layer.affected_tables
+      affected = @layer.send(:affected_tables)
       affected.should be_empty
     end
 
     it 'fallbacks to query/table_name if source is not specified' do
       @layer.stubs(:options).returns(table_name: @table1.name)
-      affected = @layer.affected_tables
+      affected = @layer.send(:affected_tables)
       affected.should eq [@table1]
 
       query = "SELECT * FROM #{@table2.name}"
       @layer.stubs(:options).returns(query: query)
       @layer.stubs(:affected_table_names).with(query).returns([@table2.name]).once
-      affected = @layer.affected_tables
+      affected = @layer.send(:affected_tables)
       affected.should eq [@table2]
     end
 
@@ -111,7 +114,7 @@ describe Carto::Layer do
       query = "SELECT * FROM #{@table2.name}"
       @layer.stubs(:options).returns(table_name: @table1.name, query: query)
       @layer.stubs(:affected_table_names).with(query).returns([@table2.name]).once
-      affected = @layer.affected_tables
+      affected = @layer.send(:affected_tables)
       affected.count.should eq 1
       affected.should include @table2
     end

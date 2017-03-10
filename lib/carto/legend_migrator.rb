@@ -58,6 +58,8 @@ module Carto
     end
 
     COLOR_REGEXP = /^#(?:[0-9a-fA-F]{3}){1,2}$/
+    CSS_URL_REGEX = /^(?:url\(['"]?)(.*?)(?:['"]?\))$/
+    STATIC_ASSETS_REGEX = /http:\/\/com.cartodb.users-assets.production.s3.amazonaws.com(.*)/
 
     def build_custom_definition_from_custom_type
       categories = items.each_with_index.map do |item, index|
@@ -67,10 +69,14 @@ module Carto
         category_definition = { title: title }
 
         if value
-          if value =~ COLOR_REGEXP
+          css_url_match = CSS_URL_REGEX.match(value)
+
+          if css_url_match
+            category_definition[:icon] = update_static_assets_path(css_url_match[1])
+          elsif value =~ COLOR_REGEXP
             category_definition[:color] = value
           else
-            category_definition[:icon] = value
+            category_definition[:icon] = update_static_assets_path(value)
           end
         end
 
@@ -78,6 +84,16 @@ module Carto
       end
 
       { categories: categories }
+    end
+
+    def update_static_assets_path(value)
+      static_assets_match = STATIC_ASSETS_REGEX.match(value)
+
+      if static_assets_match
+        value = "https://s3.amazonaws.com/com.cartodb.users-assets.production#{static_assets_match[1]}"
+      end
+
+      value
     end
 
     def build_custom_definition_from_ramp_type

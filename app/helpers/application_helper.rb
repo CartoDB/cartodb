@@ -105,11 +105,7 @@ module ApplicationHelper
 
     if Cartodb.config[:datasource_search].present? && Cartodb.config[:datasource_search]['twitter_search'].present? \
       && Cartodb.config[:datasource_search]['twitter_search']['standard'].present?
-      if current_user.has_feature_flag?('gnip_v2')
-        config[:datasource_search_twitter] = Cartodb.config[:datasource_search]['twitter_search']['standard']['search_url_v2']
-      else
-        config[:datasource_search_twitter] = Cartodb.config[:datasource_search]['twitter_search']['standard']['search_url']
-      end
+      config[:datasource_search_twitter] = Cartodb.config[:datasource_search]['twitter_search']['standard']['search_url']
     end
 
     if Cartodb.config[:graphite_public].present?
@@ -217,6 +213,12 @@ module ApplicationHelper
     end
   end
 
+  def insert_fullstory
+    if Cartodb.get_config(:fullstory, 'org').present? && current_user && current_user.account_type.casecmp('FREE').zero?
+      render(partial: 'shared/fullstory', locals: { org: Cartodb.get_config(:fullstory, 'org') })
+    end
+  end
+
   ##
   # Checks that the precompile list contains this file or raises an error, in dev only
   # Note: You will need to move config.assets.precompile to application.rb from production.rb
@@ -300,5 +302,9 @@ module ApplicationHelper
   def safe_js_object(obj)
     # see http://api.rubyonrails.org/v3.2.21/classes/ERB/Util.html#method-c-j
     raw "JSON.parse('#{ j(obj.html_safe) }')"
+  end
+
+  def model_errors(model)
+    model.errors.full_messages.map(&:capitalize).join(', ') if model.errors.present?
   end
 end

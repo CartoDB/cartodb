@@ -18,7 +18,7 @@ describe CartoDB::HiresBatchGeocoder do
         'mailto' => ''
       })
     @working_dir = Dir.mktmpdir
-    @geocoding_model = FactoryGirl.create(:geocoding, kind: 'high-resolution', formatter: '{street}', 
+    @geocoding_model = FactoryGirl.create(:geocoding, kind: 'high-resolution', formatter: '{street}',
                                           remote_id: 'wadus')
   end
 
@@ -76,17 +76,17 @@ describe CartoDB::HiresBatchGeocoder do
   end
 
   describe '#cancel' do
-    before { 
+    before {
       stub_api_request(200, 'response_cancel.xml')
       @geocoding_model.remote_id = 'wadus'
       @geocoding_model.save
       CartoDB::HiresBatchGeocoder.any_instance.stubs(:request_id).returns('wadus')
-    } 
+    }
     let(:geocoder) { CartoDB::HiresBatchGeocoder.new('dummy_input_file.csv', @working_dir, @log, @geocoding_model) }
 
     it "updates the status" do
       geocoder.cancel
-      assert @geocoding_model.state = 'cancelled'
+      @geocoding_model.state.should eq 'cancelled'
     end
   end
 

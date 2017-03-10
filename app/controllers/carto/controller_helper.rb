@@ -9,6 +9,10 @@ module Carto
       @status = status
       @user_message = user_message
     end
+
+    def self.with_full_messages(active_record_exception)
+      new(active_record_exception.record.errors.full_messages.join(', '))
+    end
   end
 
   class UUIDParameterFormatError < CartoError

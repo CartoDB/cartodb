@@ -16,7 +16,6 @@ describe Carto::Builder::VisualizationsController do
       map = FactoryGirl.create(:map, user_id: @user1.id)
       @visualization = FactoryGirl.create(:carto_visualization, user_id: @user1.id, map_id: map.id)
       @user1.stubs(:has_feature_flag?).with('new_geocoder_quota').returns(true)
-      @user1.stubs(:has_feature_flag?).with('gnip_v2').returns(true)
 
       login(@user1)
     end
@@ -187,6 +186,24 @@ describe Carto::Builder::VisualizationsController do
 
       response.status.should == 200
       response.body.should include(analysis.natural_id)
+    end
+
+    it 'does not include google maps if not configured' do
+      @user1.google_maps_key = ''
+      @user1.save
+      get builder_visualization_url(id: @visualization.id)
+
+      response.status.should == 200
+      response.body.should_not include("maps.google.com/maps/api/js")
+    end
+
+    it 'includes the google maps client id if configured' do
+      @user1.google_maps_key = 'client=wadus_cid'
+      @user1.save
+      get builder_visualization_url(id: @visualization.id)
+
+      response.status.should == 200
+      response.body.should include("maps.google.com/maps/api/js?client=wadus_cid")
     end
   end
 end

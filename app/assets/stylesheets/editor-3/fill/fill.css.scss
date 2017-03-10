@@ -29,6 +29,24 @@
   height: 100%;
 }
 
+.Editor-fillImage {
+  display: flex;
+  height: 16px;
+  margin-left: 8px;
+}
+
+.Editor-fillImageAsset {
+  width: auto;
+  height: 16px;
+}
+
+.Editor-categoryImagesTag {
+  padding: 2px;
+  border: 1px solid #E4E4E4;
+  border-radius: 3px;
+  text-align: center;
+}
+
 .CDB-OptionInput-item.is-disabled .CDB-OptionInput-content {
   color: #CCC;
 }

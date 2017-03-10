@@ -20,9 +20,6 @@ describe Api::Json::VisualizationsController do
   before(:all) do
     CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
     @user = create_user(
-      username: 'test',
-      email:    'client@example.com',
-      password: 'clientex',
       private_tables_enabled: true,
       private_maps_enabled: true
     )
@@ -43,7 +40,7 @@ describe Api::Json::VisualizationsController do
     @headers = {
       'CONTENT_TYPE' => 'application/json'
     }
-    host! 'test.localhost.lan'
+    host! "#{@user.username}.localhost.lan"
   end
 
   after(:all) do

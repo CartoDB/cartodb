@@ -23,6 +23,45 @@ describe Admin::UsersController do
     login_as(@user, scope: @user.username)
   end
 
+  describe '#delete' do
+    let(:password) { 'abcdefgh' }
+    before(:all) do
+      @user2 = create_user(password: password)
+      @saml_organization = FactoryGirl.create(:saml_organization)
+      @saml_user = create_user(password: password, organization_id: @saml_organization.id)
+      @saml_user.reload
+    end
+
+    after(:all) do
+      @saml_organization.destroy_cascade
+    end
+
+    it 'requires password' do
+      host! "#{@user2.username}.localhost.lan"
+      login_as(@user2, scope: @user2.username)
+      delete account_user_url
+      Carto::User.where(id: @user2.id).first.should_not be_nil
+      last_response.status.should eq 200
+      last_response.body.include?('Password does not match').should be_true
+    end
+
+    it 'does not require password for SAML organizations' do
+      host! "#{@saml_organization.name}.localhost.lan"
+      login_as(@saml_user, scope: @saml_organization.name)
+      delete account_user_url(scope: @saml_organization.name)
+      Carto::User.where(id: @saml_user.id).first.should be_nil
+      last_response.body.include?('Password does not match').should be_false
+    end
+
+    it 'deletes if password match' do
+      host! "#{@user2.username}.localhost.lan"
+      login_as(@user2, scope: @user2.username)
+      delete account_user_url(deletion_password_confirmation: password)
+      Carto::User.where(id: @user2.id).first.should be_nil
+      last_response.body.include?('Password does not match').should be_false
+    end
+  end
+
   describe '#update' do
     describe '#account' do
       it 'updates password' do

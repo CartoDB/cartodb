@@ -4,6 +4,7 @@
 @import 'cdb-utilities/mixins';
 @import 'cdb-variables/colors';
 @import 'cdb-variables/sizes';
+@import 'vars';
 
 @mixin block-shadow() {
   @include css3-prefix(box-shadow, inset 10px 0 10px -10px rgba(0, 0, 0, 0.3));
@@ -40,7 +41,7 @@
   left: 0;
   width: 100%;
   min-height: 0;
-  padding: 19px 25px 0;
+  padding: 19px 24px 0;
   box-sizing: border-box;
 }
 .Editor-panel.is-dark {
@@ -64,15 +65,25 @@
   width: 488px;
 }
 
-.Editor-panel .ps-scrollbar-y-rail {
+.Editor-panel .ps-scrollbar-y-rail,
+.CDB-Widget-canvas .ps-container>.ps-scrollbar-y-rail {
   right: 0 !Important;
-  width: 2px !Important; // Resets standard scroll track color
+  width: 4px !Important; // Resets standard scroll track color
   background: #EEE;
   z-index: 3;
 }
-.Editor-panel .ps-scrollbar-y {
-  width: 2px !Important; // Resets standard scroll bar color
+.Editor-panel .ps-scrollbar-y,
+.CDB-Widget-canvas .ps-container>.ps-scrollbar-y-rail>.ps-scrollbar-y {
+  right: 0 !important;
+  width: 4px !Important; // Resets standard scroll bar color
   background: #AAA;
+  &:hover {
+    cursor: all-scroll;
+    cursor: -webkit-grab;
+  }
+  &:active {
+    cursor: -webkit-grabbing;
+  }
 }
 .Editor-panel .ps-scrollbar-x-rail {
   height: 2px !Important; // Resets standard scroll track color
@@ -84,12 +95,13 @@
 .Editor-panel .ps-scrollbar-x-rail .ps-scrollbar-x {
   bottom: -1px !Important; // Resets standard scroll bar position
   height: 4px !Important; // Resets standard scroll bar color
-  background: #AAA;
-  min-width: 120px;
   pointer-events: all;
   opacity: 0.6;
 }
-
+.Editor .ps-container > .ps-scrollbar-x-rail,
+.Editor .ps-container > .ps-scrollbar-y-rail {
+  opacity: 0.6;
+}
 .Editor .CDB-Zoom-info {
   display: block;
 }
@@ -106,13 +118,14 @@
 
 
 /* Responsive views */
-@media (max-width: 1600px) {
+@media (max-width: $sViewport-xxl) {
   .Editor {
     .CDB-Widget-canvas,
     .CDB-Widget {
       width: 280px;
     }
     .CDB-Widget.CDB-Widget--timeSeries {
+      min-height: auto;
       padding: 12px 0;
       .CDB-Widget-content {
         margin-right: 12px;
@@ -129,11 +142,23 @@
   }
 }
 
-@media (max-width: 1280px) {
+@media (max-width: $sViewport-xl) {
   .Editor {
-    .CDB-Widget-options {
-      display: none;
+    .CDB-Widget-options,
+    .CDB-Widget-actions {
+      @include display-flex();
     }
+
+    .CDB-Widget-body {
+      .CDB-Dropdown {
+        min-width: 150px;
+      }
+      .CDB-Dropdown-link {
+        padding: 8px 12px;
+        font-size: 11px;
+      }
+    }
+
     .CDB-Widget-body.is-collapsed {
       height: 100%;
       .CDB-Widget-content,
@@ -199,14 +224,6 @@
     }
     .CDB-Widget-listItemInner {
       margin: 0;
-    }
-    .CDB-Widget-canvas .hasXScroll>.ps-scrollbar-x-rail {
-      display: block;
-      width: 100%;
-      opacity: 0.6;
-    }
-    .CDB-Widget-canvas .hasXScroll>.ps-scrollbar-x-rail>.ps-scrollbar-x {
-      min-width: 50%;
     }
   }
 }

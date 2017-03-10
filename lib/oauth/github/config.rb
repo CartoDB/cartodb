@@ -17,7 +17,7 @@ module Carto
 
       def github_url(controller)
         escaped_state = Rack::Utils.escape(state)
-        url = "https://github.com/login/oauth/authorize?client_id=#{client_id}&state=#{escaped_state}&scope=user"
+        url = "https://github.com/login/oauth/authorize?client_id=#{client_id}&state=#{escaped_state}&scope=user:email"
 
         params = {}
         params[:invitation_token] = @invitation_token if @invitation_token

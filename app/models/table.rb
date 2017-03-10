@@ -177,7 +177,7 @@ class Table
     table = nil
     return table unless viewer_user
 
-    table_temp = UserTable.where(id: table_id).first.service
+    table_temp = Carto::UserTable.where(id: table_id).first.service
     unless table_temp.nil?
       vis = CartoDB::Visualization::Collection.new.fetch(
           user_id: viewer_user.id,
@@ -192,7 +192,7 @@ class Table
   # Getter by table uuid using canonical visualizations. No privacy checks
   # @param table_id String
   def self.get_by_table_id(table_id)
-    table_temp = UserTable.where(id: table_id).first
+    table_temp = Carto::UserTable.where(id: table_id).first
     table_temp.service unless table_temp.nil?
   end
 
@@ -210,7 +210,7 @@ class Table
           user_id = owner.id
         end
       end
-      UserTable.where(user_id: user_id, name: table_name).first
+      Carto::UserTable.where(user_id: user_id, name: table_name).first
     }
   end
 

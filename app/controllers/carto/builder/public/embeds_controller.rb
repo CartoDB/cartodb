@@ -1,10 +1,12 @@
 require_dependency 'carto/api/vizjson3_presenter'
+require_dependency 'carto/helpers/frame_options_helper'
 
 module Carto
   module Builder
     module Public
       class EmbedsController < BuilderController
         include VisualizationsControllerHelper
+        include Carto::FrameOptionsHelper
 
         ssl_required :show, :show_protected
 
@@ -40,10 +42,6 @@ module Carto
         end
 
         private
-
-        def x_frame_options_allow
-          response.headers.delete('X-Frame-Options')
-        end
 
         def load_visualization
           @visualization = load_visualization_from_id_or_name(params[:visualization_id])

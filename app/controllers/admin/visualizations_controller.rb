@@ -11,9 +11,11 @@ require_dependency 'static_maps_url_helper'
 require_dependency 'static_maps_url_helper'
 require_dependency 'carto/user_db_size_cache'
 require_dependency 'carto/ghost_tables_manager'
+require_dependency 'carto/helpers/frame_options_helper'
 
 class Admin::VisualizationsController < Admin::AdminController
   include CartoDB, VisualizationsControllerHelper
+  include Carto::FrameOptionsHelper
 
   MAX_MORE_VISUALIZATIONS = 3
   DEFAULT_PLACEHOLDER_CHARS = 4
@@ -713,9 +715,5 @@ class Admin::VisualizationsController < Admin::AdminController
     if @visualization && @visualization.version == 3
       redirect_to CartoDB.url(self, 'builder_visualization_public_embed', visualization_id: @visualization.id)
     end
-  end
-
-  def x_frame_options_allow
-    response.headers.delete('X-Frame-Options')
   end
 end

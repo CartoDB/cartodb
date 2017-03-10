@@ -593,7 +593,7 @@ class Carto::Visualization < ActiveRecord::Base
 
   def propagate_privacy
     table.reload
-    if table.privacy_text.casecmp(privacy) != 0 # privacy is different, case insensitive
+    if privacy && table.privacy_text.casecmp(privacy) != 0 # privacy is different, case insensitive
       CartoDB::TablePrivacyManager.new(table).set_from_visualization(self).update_cdb_tablemetadata
     end
   end

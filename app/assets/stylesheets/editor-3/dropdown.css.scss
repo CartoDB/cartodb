@@ -92,7 +92,9 @@
 }
 
 .Editor-boxModal--darked {
-  background: $cSecondaryDark;
+  border: 1px solid #25353C;
+  background: #243238;
+  box-shadow: 0 $baseSize $baseSize * 2 0 rgba(0, 0, 0, 0.35);
 }
 
 .Editor-boxModalHeader {

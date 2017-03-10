@@ -227,7 +227,7 @@ class Layer < Sequel::Model
   end
 
   def tables_from_names(table_names, user)
-    ::Table.get_all_by_names(table_names, user)
+    ::Table.get_all_by_names(table_names, user).compact.map { |t| ::UserTable[t.id] }
   end
 
   def affected_table_names(query)

@@ -650,10 +650,9 @@ describe Admin::VisualizationsController do
       @organization = create_organization_with_users(name: unique_name('organization'))
       @org_user = @organization.users.first
       bypass_named_maps
-      @table = new_table(user_id: @org_user.id, privacy: ::UserTable::PRIVACY_PUBLIC).save
-      @table.reload
-      @faketable = new_table(user_id: @user.id, privacy: ::UserTable::PRIVACY_PUBLIC).save
-      @faketable.reload
+      @table = new_table(user_id: @org_user.id, privacy: ::UserTable::PRIVACY_PUBLIC).save.reload
+      @faketable = new_table(user_id: @user.id, privacy: ::UserTable::PRIVACY_PUBLIC).save.reload
+      @faketable_name = @faketable.table_visualization.name
     end
 
     it 'finds visualization by org and name' do
@@ -665,7 +664,7 @@ describe Admin::VisualizationsController do
     end
 
     it 'does not find visualizations outside org' do
-      url = CartoDB.url(@mock_context, 'public_table', { id: @faketable.table_visualization.name }, @org_user)
+      url = CartoDB.url(@mock_context, 'public_table', { id: @faketable_name }, @org_user)
       url = url.sub("/u/#{@org_user.username}", '')
 
       get url
@@ -687,7 +686,7 @@ describe Admin::VisualizationsController do
     end
 
     it 'does not find visualizations outside user with public schema' do
-      url = CartoDB.url(@mock_context, 'public_table', { id: "public.#{@faketable.table_visualization.name}" },
+      url = CartoDB.url(@mock_context, 'public_table', { id: "public.#{@faketable_name}" },
                         @org_user)
       url = url.sub("/u/#{@org_user.username}", '')
 

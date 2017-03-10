@@ -15,7 +15,8 @@ module CartoDB
 
         maps            = tables.map(&:map)
         copier          = CartoDB::Map::Copier.new
-        destination_map = copier.new_map_from(maps.first).save
+        destination_map = copier.new_map_from(maps.first)
+        destination_map.save
 
         copier.copy_base_layer(maps.first, destination_map)
 

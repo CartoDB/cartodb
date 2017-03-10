@@ -36,11 +36,12 @@
 .UpgradeElement-infoText {
   font-size: $sFontSize-large;
   color: $cTypography-paragraphs;
+  line-height: $sLineHeight-normal;
 }
 .UpgradeElement-actions {
   @include display-flex();
   @include justify-content(flex-start, start);
-  @include align-items(center); 
+  @include align-items(center);
 }
 .UpgradeElement-trial {
   @include display-flex();

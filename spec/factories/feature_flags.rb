@@ -6,13 +6,13 @@ FactoryGirl.define do
 
   factory :feature_flag, class: ::FeatureFlag do
     id { unique_integer }
-    sequence(:name) { |n| "FF#{n}" }
+    name { unique_name('ff') }
     restricted true
   end
 
   factory :carto_feature_flag, class: Carto::FeatureFlag do
     id { unique_integer }
-    sequence(:name) { |n| "FF#{n}" }
+    name { unique_name('ff') }
     restricted true
   end
 

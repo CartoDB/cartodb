@@ -645,6 +645,14 @@ defaults: &defaults
       enabled: false
       max_rows: 500000
   enforce_non_empty_layer_css: false
+  dataservices:
+    enabled:
+        geocoder_internal: false
+        hires_geocoder: false
+        isolines: false
+        routing: false
+        data_observatory: false
+
 
 development:
   <<: *defaults

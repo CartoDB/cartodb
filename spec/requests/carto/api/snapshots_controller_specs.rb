@@ -9,6 +9,7 @@ describe Carto::Api::SnapshotsController do
   let(:fake_state) { { manolo: 'escobar' } }
 
   before(:all) do
+    bypass_named_maps
     @user = FactoryGirl.create(:carto_user)
     @intruder = FactoryGirl.create(:carto_user)
     @visualization = FactoryGirl.create(:carto_visualization, user: @user)

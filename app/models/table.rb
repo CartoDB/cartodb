@@ -96,7 +96,13 @@ class Table
   end
 
   def update(args)
-    @user_table.update(args)
+    # Sequel and ActiveRecord #update don't behave equally, we need this workaround for compatibility reasons
+    if @user_table.is_a?(Carto::UserTable)
+      CartoDB::Logger.debug(message: "::Table#update on ActiveRecord model")
+      @user_table.update_attributes(args)
+    else
+      @user_table.update(args)
+    end
     self
   end
 
@@ -433,7 +439,6 @@ class Table
     update_name_changes
 
     CartoDB::TablePrivacyManager.new(@user_table).apply_privacy_change(self, previous_privacy, privacy_changed?)
-
     update_cdb_tablemetadata if privacy_changed? || !@name_changed_from.nil?
   end
 
@@ -487,16 +492,13 @@ class Table
 
   def before_destroy
     @table_visualization                = table_visualization
-    if @table_visualization
-      @table_visualization.user_data = { name: owner.username, api_key: owner.api_key }
-    end
     @fully_dependent_visualizations_cache     = fully_dependent_visualizations.to_a
     @partially_dependent_visualizations_cache = partially_dependent_visualizations.to_a
   end
 
   def after_destroy
     # Delete visualization BEFORE deleting metadata, or named map won't be destroyed properly
-    @table_visualization.delete(from_table_deletion=true) if @table_visualization
+    @table_visualization.delete_from_table if @table_visualization
     Tag.filter(user_id: user_id, table_id: id).delete
     remove_table_from_stats
 
@@ -603,7 +605,7 @@ class Table
 
   def name=(value)
     value = value.downcase if value
-    return if value == @user_table[:name] || value.blank?
+    return if value == @user_table.name || value.blank?
 
     new_name = register_table_only ? value : get_valid_name(value)
 
@@ -613,11 +615,11 @@ class Table
       update_cdb_tablemetadata
     end
 
-    @user_table[:name] = new_name
+    @user_table.name = new_name
   end
 
   def privacy_changed?
-     @user_table.previous_changes && @user_table.previous_changes.keys.include?(:privacy)
+    @user_table.privacy_changed?
   end
 
   def redis_key
@@ -1164,6 +1166,10 @@ class Table
     record.nil? ? nil : record[:oid]
   end # get_table_id
 
+  def changing_name?
+    @name_changed_from.present?
+  end
+
   def update_name_changes
     if @name_changed_from.present? && @name_changed_from != name
       reload
@@ -1314,6 +1320,20 @@ class Table
                           table_name: name)
   end
 
+  def propagate_attribution_change(attributions)
+    # This includes both the canonical and derived visualizations
+    @user_table.layers.select(&:data_layer?).each do |layer|
+      if layer.options['table_name'] == name
+        layer.options['attribution'] = attributions
+        layer.save
+      end
+    end
+  end
+
+  def table_visualization
+    @user_table.table_visualization
+  end
+
   private
 
   def related_visualizations
@@ -1342,7 +1362,7 @@ class Table
 
   def previous_privacy
     # INFO: @user_table.initial_value(:privacy) weirdly returns incorrect value so using changes index instead
-    privacy_changed? ? @user_table.previous_changes[:privacy].first : nil
+    privacy_changed? ? @user_table.privacy_was : nil
   end
 
   def importer_stats

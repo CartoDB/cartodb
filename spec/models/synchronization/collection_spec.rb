@@ -23,8 +23,8 @@ describe Synchronization::Collection do
       Synchronization::Member.new(random_attributes(name: 'sync_2',
                                                     user_id: user_id)).store
 
-      collection    = Synchronization::Collection.new(user_id: user_id)
-      records       = collection.fetch
+      collection    = Synchronization::Collection.new
+      records       = collection.fetch(user_id: user_id)
       records.first.name.should == 'sync_1'
       records.to_a.last.name.should == 'sync_2'
     end

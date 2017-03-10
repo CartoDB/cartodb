@@ -6,11 +6,8 @@ require_relative '../../../app/models/layer'
 describe CartoDB::Map::Copier do
   before do
     @user_id  = UUIDTools::UUID.timestamp_create.to_s
-    @map      = OpenStruct.new(
-                  user_id: @user_id,
-                  to_hash: { user_id: @user_id },
-                  layers:  (1..5).map { Layer.new(kind: 'carto') }
-                )
+    @map      = Map.new(user_id: @user_id)
+    @map.stubs(:layers).returns((1..5).map { Layer.new(kind: 'carto') })
     @copier = CartoDB::Map::Copier.new
   end
 
@@ -23,8 +20,7 @@ describe CartoDB::Map::Copier do
 
     it 'copies all layers from the original map' do
       new_map = @copier.copy(@map)
-      new_map.layers.length.should == @map.layers.length
+      new_map.layers.length.should == 5
     end
   end #copy
 end # CartoDB::Map::Copier
-

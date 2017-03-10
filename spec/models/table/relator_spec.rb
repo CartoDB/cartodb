@@ -43,7 +43,7 @@ describe CartoDB::TableRelator do
     before :each do
       bypass_named_maps
 
-      table = mock('Table')
+      table = Table.new
       table.stubs(:id).returns(2)
       @affected_vis_records = [
         { id: 1, name: '1st', updated_at: Time.now },
@@ -56,6 +56,7 @@ describe CartoDB::TableRelator do
       vis_mock.stubs(:with_sql).returns(records)
       db = { visualizations: vis_mock }
       @table_relator = CartoDB::TableRelator.new(db, table)
+      table.instance_variable_get(:@user_table).stubs(:relator).returns(@table_relator)
     end
 
     describe 'given there are no dependent visualizations' do
@@ -98,7 +99,7 @@ describe CartoDB::TableRelator do
     before :each do
       bypass_named_maps
 
-      table = mock('Table')
+      table = Table.new
       table.stubs(:id).returns(2)
       @affected_vis_records = [
         { id: 1, name: '1st', updated_at: Time.now },
@@ -112,6 +113,7 @@ describe CartoDB::TableRelator do
       vis_mock.stubs(:with_sql).returns(records)
       db = { visualizations: vis_mock }
       @table_relator = CartoDB::TableRelator.new(db, table)
+      table.instance_variable_get(:@user_table).stubs(:relator).returns(@table_relator)
     end
 
     describe 'given there are no dependent visualizations' do

@@ -11,5 +11,4 @@ module SafeJsObject
     # see http://api.rubyonrails.org/v3.2.21/classes/ERB/Util.html#method-c-j
     raw "JSON.parse('#{ j(obj.html_safe) }')"
   end
-
 end

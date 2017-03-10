@@ -62,7 +62,7 @@ describe Visualization::Relator do
       table1 = create_table({:name => 'table1', :user_id => @user.id})
       table2 = create_table({:name => 'table2', :user_id => @user.id})
       vis_table1 = create_vis_from_table(@carto_user, table1)
-      vis_table2 = create_vis_from_table(@carto_user, table2)
+      create_vis_from_table(@carto_user, table2)
 
       vis_table1.related_canonical_visualizations.map(&:id).should == [table1.table_visualization.id]
     end

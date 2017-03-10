@@ -59,7 +59,7 @@ $bannedColor: #E1A7A5;
 }
 .DatasetsTable-item--selectable.is--selected {
   background-color: $gridRowBackgroundSelected;
-  border: 1px solid $SelectionBlue2;
+  outline: 1px solid $SelectionBlue2;
   &:hover { cursor: default }
   .DatasetsTable-itemDescription .DefaultDescription:after {
     @include background-horizontal(rgba(255,255,255,0), $gridRowBackgroundSelected);

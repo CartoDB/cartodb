@@ -8,7 +8,7 @@
 // --------------------------------------------------
 .MapsList {
   @include display-flex();
-  justify-content: space-between;
+  justify-content: flex-start;
   @include align-items(center);
   @include flex-wrap(wrap);
   position: relative;

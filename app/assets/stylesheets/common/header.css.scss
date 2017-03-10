@@ -15,6 +15,8 @@ $cHeader-dark:  rgba(#3A91D7, 1);
   height: $height;
   background-color: $DarkGrey6;
   border-bottom: 1px solid $Black;
+  position: fixed;
+  z-index: 5;
 }
 .Header-inner {
   position:relative;

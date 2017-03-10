@@ -8,6 +8,7 @@ module Carto
 
     belongs_to :organization, inverse_of: :notifications
 
+    # TODO: `icon` should be a restricted list of values
     validates :icon, presence: true
     validates :recipients, inclusion: { in: [nil, 'builders', 'viewers', 'all'] }
     validates :recipients, presence: true, if: :organization

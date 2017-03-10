@@ -30,7 +30,7 @@ module Carto
       def load_organization
         @organization = Carto::Organization.find(current_user.organization_id)
         unless [@organization.name, @organization.id].include?(params[:organization_id])
-          raise Carto::UnauthorizedError.new('Only organization owners')
+          raise Carto::LoadError.new('Cannot find organization')
         end
       end
 

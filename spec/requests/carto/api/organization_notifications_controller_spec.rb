@@ -19,7 +19,7 @@ module Carto
     shared_examples_for 'requires owner authentication' do
       it 'returns 403 if organization does not exists' do
         request('abc', @owner) do
-          expect(response.status).to eq 403
+          expect(response.status).to eq 404
         end
       end
 

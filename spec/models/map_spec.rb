@@ -226,7 +226,7 @@ describe Map do
       @table.save
 
       # Upon save of the original map, will sanitize all visualizations pointing to old one, saving with new one
-      CartoDB::Visualization::Member.any_instance.expects(:store_from_map)
+      CartoDB::Visualization::Member.any_instance.expects(:store_from_map).at_least_once
       map.save
 
       map.destroy
@@ -273,9 +273,9 @@ describe Map do
 
   describe '#after_save' do
     it 'invalidates varnish cache' do
-      map = @table.map
+      map = ::Map[@table.map.id]
       # One per save, one per destroy
-      map.expects(:invalidate_vizjson_varnish_cache).twice()
+      map.expects(:invalidate_vizjson_varnish_cache).twice
       map.save
       map.destroy
     end

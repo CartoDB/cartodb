@@ -2434,40 +2434,15 @@ describe Table do
     end
   end
 
-  describe 'with ::UserTable model' do
-    before(:all) do
-      @user = FactoryGirl.create(:valid_user, quota_in_bytes: 524288000, table_quota: 500, private_tables_enabled: true)
-      Table.any_instance.stubs(:model_class).returns(::UserTable)
-    end
-
-    before(:each) do
-      CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
-      CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
-      Table.any_instance.stubs(:update_cdb_tablemetadata)
-      Table.any_instance.stubs(:model_class).returns(::UserTable)
-
-      bypass_named_maps
-    end
-
-    after(:all) do
-      @user.destroy
-    end
-
-    it_behaves_like 'table service'
-    it_behaves_like 'table service with legacy model'
-  end
-
   describe 'with Carto::UserTable model' do
     before(:all) do
       @user = FactoryGirl.create(:valid_user, quota_in_bytes: 524288000, table_quota: 500, private_tables_enabled: true)
-      Table.any_instance.stubs(:model_class).returns(Carto::UserTable)
     end
 
     before(:each) do
       CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
       CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
       Table.any_instance.stubs(:update_cdb_tablemetadata)
-      Table.any_instance.stubs(:model_class).returns(Carto::UserTable)
 
       bypass_named_maps
     end

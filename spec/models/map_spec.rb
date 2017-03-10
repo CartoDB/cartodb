@@ -423,7 +423,7 @@ describe Map do
 
     describe 'when linked to a table visualization' do
       it 'returns false when passed a data layer and it is already linked to a base layer' do
-        map = @table.map
+        map = ::Map[@table.map.id]
         map.remove_layer(map.data_layers.first)
         map.reload
 
@@ -452,7 +452,7 @@ describe Map do
 
   describe '#before_destroy' do
     it 'invalidates varnish cache' do
-      map = @table.map
+      map = ::Map[@table.map.id]
       map.expects(:invalidate_vizjson_varnish_cache)
       map.destroy
     end
@@ -470,15 +470,15 @@ describe Map do
 
       visualization = @table1.table_visualization
 
-      visualization.layers(:cartodb).length.should eq 1
+      visualization.data_layers.length.should eq 1
       @table1.privacy = UserTable::PRIVACY_PUBLIC
       @table1.save
       visualization.privacy = CartoDB::Visualization::Member::PRIVACY_PUBLIC
       visualization.store
 
-      visualization.fetch.private?.should be_false
+      visualization.private?.should be_false
 
-      layer = Layer.create(
+      layer = Carto::Layer.create(
         kind:     'carto',
         options:  { table_name: @table2.name }
       )
@@ -490,7 +490,7 @@ describe Map do
       layer.uses_private_tables?.should be_true
 
       visualization.map.process_privacy_in(layer)
-      visualization.fetch.private?.should be_true
+      visualization.private?.should be_true
     end
   end
 

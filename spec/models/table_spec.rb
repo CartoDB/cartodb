@@ -689,7 +689,7 @@ describe Table do
 
         CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
         @doomed_table = create_table(user_id: @user.id)
-        @automatic_geocoding = FactoryGirl.create(:automatic_geocoding, table: @doomed_table)
+        @automatic_geocoding = FactoryGirl.create(:automatic_geocoding, table_id: @doomed_table.id)
         @doomed_table.destroy
       end
 
@@ -2437,6 +2437,7 @@ describe Table do
   describe 'with ::UserTable model' do
     before(:all) do
       @user = FactoryGirl.create(:valid_user, quota_in_bytes: 524288000, table_quota: 500, private_tables_enabled: true)
+      Table.any_instance.stubs(:model_class).returns(::UserTable)
     end
 
     before(:each) do
@@ -2459,6 +2460,7 @@ describe Table do
   describe 'with Carto::UserTable model' do
     before(:all) do
       @user = FactoryGirl.create(:valid_user, quota_in_bytes: 524288000, table_quota: 500, private_tables_enabled: true)
+      Table.any_instance.stubs(:model_class).returns(Carto::UserTable)
     end
 
     before(:each) do

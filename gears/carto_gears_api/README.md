@@ -1,6 +1,8 @@
 CARTO Gears API
 ===============
 
+**DISCLAIMER: CARTO Gears API is still in development, it won't be considered stable until first major 1 version**
+
 # An API for building CARTO Gears
 
 CARTO Gear: Rails engine built on top of CARTO, using CARTO Gears API.
@@ -78,4 +80,22 @@ In order to enable rspec:
 
 # Documentation
 
+## `CartoGearsAPI::` (Ruby API)
 Generate the documentation with `yard`.
+
+## Extension points
+
+### Adding links to profile page
+
+Example:
+
+```ruby
+CartoGearsApi::Pages::Subheader.instance.links_generators << lambda do |context|
+  user = CartoGearsApi::UsersService.new.logged_user(context.request)
+  if user.has_feature_flag?('carto_experimental_gear')
+    include CartoGearsApi::UrlHelper
+
+    [[carto_gear_path(:carto_experimental_gear, context, 'do_something'), 'Do Something!', 'carto_experimental_gear/something_controller']]
+  end
+end
+```

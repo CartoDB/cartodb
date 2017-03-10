@@ -8,7 +8,7 @@ module CartoGearsApi
   # @attr_reader [String] username User name
   # @attr_reader [String] email Email
   # @attr_reader [CartoGearsApi::Organization] organization Organization
-  class User < Value.new(:id, :username, :email, :organization)
+  class User < Value.new(:id, :username, :email, :organization, :feature_flags)
     extend ActiveModel::Naming
     include ActiveRecord::AttributeMethods::PrimaryKey
 
@@ -26,6 +26,10 @@ module CartoGearsApi
       else
         organization.nil? ? username : organization.name
       end
+    end
+
+    def has_feature_flag?(feature_flag)
+      @feature_flags.include?(feature_flag)
     end
   end
 
@@ -50,7 +54,8 @@ module CartoGearsApi
         id: UUIDTools::UUID.parse(user.id),
         username: user.username,
         email: user.email,
-        organization: user.organization ? organization(user.organization) : nil
+        organization: user.organization ? organization(user.organization) : nil,
+        feature_flags: user.feature_flags
       )
     end
 

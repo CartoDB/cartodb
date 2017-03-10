@@ -201,7 +201,9 @@ class Map < Sequel::Model
   end
 
   def dup
-    Map.new(to_hash.select { |k, _| k != :id })
+    map = Map.new(to_hash.reject { |k, _| [:id, :options].include?(k) })
+    map.options = options # Manually copied to avoid serialization
+    map
   end
 
   private

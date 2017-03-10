@@ -17,7 +17,6 @@ WORKING_SPECS_INTEGRATIONS = \
 WORKING_SPECS_1 = \
 	spec/models/table_spec.rb \
 	spec/models/table_privacy_manager_spec.rb \
-	spec/models/table/relator_spec.rb \
 	spec/models/table/column_typecaster_spec.rb \
 	spec/models/user_spec.rb \
 	spec/models/user_presenter_spec.rb \

@@ -58,6 +58,7 @@ Development
 * Improved formula widget description field. (#11469)
 * Added support for Zeus for faster testing (#11574). Check `CONTRIBUTING.md` for configuration details.
 * Migrate to use GNIP v2 for twitter search connector (#10051, #11595)
+* Improve affordance of layer item (#11359)
 
 ### Bug fixes
 * Fixed problems related with IE11.

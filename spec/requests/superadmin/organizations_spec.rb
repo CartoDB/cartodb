@@ -190,6 +190,7 @@ feature "Superadmin's organization API" do
       Carto::SharedEntity.where(recipient_id: @org_user_2.id).count.should == 1
 
       permission = table.map.visualization.permission
+      permission.reload
       acl = JSON.parse(permission.access_control_list)
       acl[0]['id'].should == @org_user_2.id
 

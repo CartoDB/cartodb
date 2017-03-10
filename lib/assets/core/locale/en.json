@@ -1437,6 +1437,7 @@
         "export": "Export data",
         "hide": "Hide layer",
         "show": "Show layer",
+        "edit": "Edit layer",
         "center-map": "Center map on layer"
       },
       "drag-n-drop-analysis": {

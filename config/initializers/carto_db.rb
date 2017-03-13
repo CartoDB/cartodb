@@ -142,7 +142,6 @@ module CartoDB
     subdomainless_urls? || user.organization.nil? ? nil : user.username
   end
 
-
   def self.request_host
     return @@request_host if defined?(@@request_host)
     @@request_host = ''

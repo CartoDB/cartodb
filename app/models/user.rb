@@ -1415,7 +1415,8 @@ class User < Sequel::Model
 
   # @return String public user url, which is also the base url for a given user
   def public_url(subdomain_override=nil, protocol_override=nil)
-    CartoDB.base_url(subdomain_override.nil? ? subdomain : subdomain_override, CartoDB.organization_username(self), protocol_override)
+    base_subdomain = subdomain_override.nil? ? subdomain : subdomain_override
+    CartoDB.base_url(base_subdomain, CartoDB.organization_username(self), protocol_override)
   end
 
   # ----------

@@ -5,3 +5,4 @@ module AppAssetsHelper
     "#{base_url}/assets"
   end
 end
+

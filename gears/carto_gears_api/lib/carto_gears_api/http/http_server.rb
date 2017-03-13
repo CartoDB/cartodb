@@ -58,8 +58,8 @@ module CartoGearsApi
           )
         else
           raise ConnectionError.new("Unexpected response (#{response.code} - #{valid_codes})",
-                                                   url: request.url, body: body, method: method, timeout: timeout,
-                                                   request: request, response: response)
+                                    url: request.url, body: body, method: method, timeout: timeout,
+                                    request: request, response: response)
         end
       rescue => e
         CartoGearsApi::Logger.new('api').error(exception: e, additional_data: e.inspect)
@@ -82,3 +82,4 @@ module CartoGearsApi
     end
   end
 end
+

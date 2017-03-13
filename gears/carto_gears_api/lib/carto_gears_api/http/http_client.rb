@@ -21,7 +21,7 @@ module CartoGearsApi
       end
     end
 
-    class HttpServerResponse
+    class HttpResponse
       def initialize(body:)
         @body = body
       end
@@ -31,7 +31,8 @@ module CartoGearsApi
       end
     end
 
-    class HttpServer
+    # Preferred way for performing HTTP requests from a gear. It contains logging and useful defaults.
+    class HttpClient
       def initialize(https: !development, host:, port: nil, username: nil, password: nil)
         @host = host
         @port = port
@@ -43,17 +44,11 @@ module CartoGearsApi
         @auth = { username: username, password: password } if username && password
       end
 
-      protected
-
-      def development
-        !(Rails.env.production? || Rails.env.staging?)
-      end
-
       def send_request(path:, body: nil, method: :get, valid_codes: [200], timeout: nil)
         request = build_request(path: path, body: body, method: method, timeout: timeout)
         response = request.run
         if valid_codes.include?(response.code)
-          HttpServerResponse.new(
+          HttpResponse.new(
             body: response.body
           )
         else
@@ -64,6 +59,12 @@ module CartoGearsApi
       rescue => e
         CartoGearsApi::Logger.new('api').error(exception: e, additional_data: e.inspect)
         raise e
+      end
+
+      private
+
+      def development
+        !(Rails.env.production? || Rails.env.staging?)
       end
 
       def build_request(path:, body:, method:, content_type: { "Content-Type" => "application/json" }, timeout: 200)

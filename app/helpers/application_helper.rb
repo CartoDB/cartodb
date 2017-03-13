@@ -1,6 +1,6 @@
 # coding: utf-8
 require_dependency 'cartodb_config_utils'
-require_dependency 'carto_gears_api/pages/subheader'
+require_dependency 'carto_gears_api/helpers/pages_helper'
 
 module ApplicationHelper
   include CartoDB::ConfigUtils

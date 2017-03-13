@@ -30,7 +30,10 @@ module Carto
     belongs_to :data_import
 
     has_many :automatic_geocodings, inverse_of: :table, class_name: Carto::AutomaticGeocoding, foreign_key: :table_id
-    has_many :tags, foreign_key: :table_id
+
+    # Disabled to avoid conflicting with the `tags` field. This relation is updated by ::Table.manage_tags.
+    # TODO: We can remove both the `user_tables.tags` field and the `tags` table in favour of the canonical viz tags.
+    # has_many :tags, foreign_key: :table_id
 
     has_many :layers_user_table
     has_many :layers, through: :layers_user_table
@@ -47,9 +50,16 @@ module Carto
     before_create { service.before_create }
     after_create :create_canonical_visualization
     after_create { service.after_create }
+    after_save { CartoDB::Logger.debug(message: "Carto::UserTable#after_save"); service.after_save }
+
+    # The `destroyed?` check is needed to avoid the hook running twice when deleting a table from the ::Table service
+    # as it is triggered directly, and a second time from canonical visualization destruction hooks.
+    # TODO: This can be simplified after deleting the old UserTable model
+    before_destroy { CartoDB::Logger.debug(message: "Carto::UserTable#before_destroy"); service.before_destroy unless destroyed? }
+    after_destroy { CartoDB::Logger.debug(message: "Carto::UserTable#after_destroy"); service.after_destroy }
 
     def geometry_types
-      @geometry_types ||= table.geometry_types
+      @geometry_types ||= service.geometry_types
     end
 
     # Estimated size
@@ -58,7 +68,7 @@ module Carto
     end
 
     def table_size
-      table.table_size
+      service.table_size
     end
 
     # Estimated row_count. Preferred: `estimated_row_count`
@@ -68,7 +78,7 @@ module Carto
 
     # Estimated row count and size. Preferred `estimated_row_count` for row count.
     def row_count_and_size
-      @row_count_and_size ||= table.row_count_and_size
+      @row_count_and_size ||= service.row_count_and_size
     end
 
     def service
@@ -76,7 +86,7 @@ module Carto
     end
 
     def set_service(table)
-      @table = table
+      @service = table
     end
 
     def visualization
@@ -97,6 +107,10 @@ module Carto
 
     def partially_dependent_visualizations
       affected_visualizations.select { |v| v.partially_dependent_on?(self) }
+    end
+
+    def dependent_visualizations
+      affected_visualizations.select { |v| v.dependent_on?(self) }
     end
 
     def name_for_user(other_user)
@@ -155,6 +169,30 @@ module Carto
       data_import.try(:external_data_imports).try(:first).try(:external_source).try(:visualization)
     end
 
+    def table_visualization
+      map.visualization if map
+    end
+
+    def update_cdb_tablemetadata
+      service.update_cdb_tablemetadata
+    end
+
+    def save_changes
+      CartoDB::Logger.debug(message: "Carto::UserTable#save_changes")
+      # TODO: Compatibility with Sequel model, can be removed afterwards. Used in ::Table.set_the_geom_column!
+      save if changed?
+    end
+
+    def tags=(value)
+      return unless value
+      super(value.split(',').map(&:strip).reject(&:blank?).uniq.join(','))
+    end
+
+    # TODO: This is related to an incompatibility between visualizations models, `get_related_tables`, See #11705
+    def privacy_text_for_vizjson
+      privacy == PRIVACY_LINK ? 'PUBLIC' : privacy_text
+    end
+
     private
 
     def default_privacy_value
@@ -178,10 +216,6 @@ module Carto
       layers.map(&:visualization).uniq.compact
     end
 
-    def table
-      @table ||= ::Table.new( { user_table: self } )
-    end
-
     def visualization_readable_by?(user)
       user && permission && permission.user_has_read_permission?(user)
     end
@@ -197,8 +231,7 @@ module Carto
     end
 
     def create_canonical_visualization
-      visualization = Carto::VisualizationFactory.build_canonical_visualization(self)
-      visualization.save!
+      visualization = Carto::VisualizationFactory.create_canonical_visualization(self)
       update_attribute(:map, visualization.map)
       visualization.map.set_default_boundaries!
     end

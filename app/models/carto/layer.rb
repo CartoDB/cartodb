@@ -103,9 +103,15 @@ module Carto
       maps.reload if persisted?
 
       return unless order.nil?
-      max_order = parent.layers.map(&:order).compact.max || -1
+      max_order = parent.layers.reload.map(&:order).compact.max || -1
       self.order = max_order + 1
       save if persisted?
+    end
+
+    # Sequel model compatibility (for TableBlender)
+    def add_map(map)
+      CartoDB::Logger.debug(message: 'Adding map to Carto::Layer with legacy method')
+      maps << map
     end
 
     def user_tables_readable_by(user)

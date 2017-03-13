@@ -261,4 +261,9 @@ class Map < Sequel::Model
   def table_name
     tables.first.nil? ? nil : tables.first.name
   end
+
+  def get_map_bounds
+    # (lon,lat) as comes out from postgis
+    BoundingBoxHelper.get_table_bounds(user.in_database, table_name)
+  end
 end

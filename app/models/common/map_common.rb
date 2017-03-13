@@ -13,11 +13,6 @@ module Carto::MapBoundaries
 
   private
 
-  def get_map_bounds
-    # (lon,lat) as comes out from postgis
-    BoundingBoxHelper.get_table_bounds(::User[user.id].in_database, table_name)
-  end
-
   def set_boundaries(bounds)
     # switch to (lat,lon) for the frontend
     self.view_bounds_ne = "[#{bounds[:maxy]}, #{bounds[:maxx]}]"

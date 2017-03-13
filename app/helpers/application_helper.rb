@@ -187,4 +187,8 @@ module ApplicationHelper
   def model_errors(model)
     model.errors.full_messages.map(&:capitalize).join(', ') if model.errors.present?
   end
+
+  def pages_subheader_instance
+    CartoGearsApi::Pages::Subheader.instance
+  end
 end

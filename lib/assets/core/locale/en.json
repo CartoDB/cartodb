@@ -106,12 +106,6 @@
       "description": "Use these options to style your data in beautiful ways. For example, you can create thematic maps by altering the FILL option by value.",
       "short-description": "Use these options to style your data in beautiful ways."
     },
-    "georeference": {
-      "title": "The layer <strong>%{name}</strong> includes non-georeferenced data.",
-      "description": "For this data to appear, please perform a georeference analysis to get the needed geographical information.",
-      "skip": "Skip",
-      "data": "Georeference data"
-    },
     "cartocss": {
       "title": "Dress it up with CartoCSS",
       "description": "Further style data by using the CartoCSS view at the bottom of the screen."

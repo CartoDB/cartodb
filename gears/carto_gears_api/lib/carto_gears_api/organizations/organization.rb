@@ -1,5 +1,4 @@
 require 'values'
-require 'uuidtools'
 
 module CartoGearsApi
   module Organizations

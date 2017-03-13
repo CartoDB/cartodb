@@ -25,7 +25,7 @@ module CartoGearsApi
       end
 
       def links(context)
-        @links_generators.flat_map { |generator| generator.call(context) }
+        @links_generators.flat_map { |generator| generator.call(context) }.compact
       end
     end
   end

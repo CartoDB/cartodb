@@ -1,9 +1,5 @@
 var _ = require('underscore');
-var path = require('path');
-var fse = require('fs-extra');
 var colors = require('colors');
-var recursive = require('recursive-readdir');
-var child = require('child_process');
 var modifiedFiles = require('./modifiedFiles');
 
 var fileList = [];
@@ -24,7 +20,7 @@ var getModifiedFiles = function () {
       }
 
       if (change) {
-        fileList.forEach(function file(file) {
+        fileList.forEach(function file (file) {
           console.log(file);
         });
       }

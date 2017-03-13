@@ -27,7 +27,7 @@ var fetchRequires = function (absoluteFilePath) {
               var ext = path.extname(absolutePath);
               if (validExtensions.indexOf(ext) === -1) {
                 absolutePath += defaultExt;
-              } 
+              }
               requires.push(absolutePath);
             }
           });

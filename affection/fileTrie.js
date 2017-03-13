@@ -14,7 +14,7 @@ var FileTrie = function () {
       if (!path.extname(filePath)) {
         reject('filePath must contain a valid file path.');
         return;
-      };
+      }
 
       var key = _buildKey(filePath, true);
       var fileName = path.basename(filePath);
@@ -58,7 +58,7 @@ var FileTrie = function () {
 
   var markSubTree = function (entryFilePath, mark) {
     var filesToMark;
-    var fileToMark
+    var fileToMark;
     var node;
 
     mark = mark || entryFilePath;
@@ -107,7 +107,7 @@ var FileTrie = function () {
   var _writeKey = function (key) {
     var node = trie.root;
     var subKey;
-    
+
     for (var i = 0; i < key.length; i++) {
       subKey = key[i];
       if (!node[subKey]) {
@@ -116,11 +116,11 @@ var FileTrie = function () {
       node = node[subKey];
     }
     return node;
-  }
+  };
 
   var print = function () {
     console.log(colors.yellow(JSON.stringify(trie)));
-  }
+  };
 
   return {
     addFileRequires: addFileRequires,

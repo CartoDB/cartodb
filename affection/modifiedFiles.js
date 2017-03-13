@@ -5,7 +5,6 @@ var recursive = require('recursive-readdir');
 var Promise = require('bluebird');
 var _ = require('underscore');
 
-
 function getCurrentBranchName () {
   var promise = new Promise(function (resolve, reject) {
     child.exec('git rev-parse --abbrev-ref HEAD', function (error, stdout, stderr) {
@@ -38,7 +37,7 @@ function getFilesModifiedInBranch (branchName) {
   });
 
   return promise;
-};
+}
 
 var notNodeModules = function (file, stats) {
   return stats.isDirectory() && file.toLowerCase().indexOf('node_modules') > -1;
@@ -56,13 +55,17 @@ function getFilesInStatus () {
             var resolvedPath = path.resolve('.', name);
 
             try {
-              var stats = fs.statSync(resolvedPath); 
+              var stats = fs.statSync(resolvedPath);
               if (stats.isFile()) {
                 acc.push(Promise.resolve(resolvedPath));
                 return acc;
               } else if (stats.isDirectory()) {
                 acc.push(new Promise(function (resolve, reject) {
                   recursive(resolvedPath, [notNodeModules], function (err, files) {
+                    if (err) {
+                      reject(err);
+                    }
+
                     resolve(files);
                   });
                 }));
@@ -110,10 +113,10 @@ var getModifiedFiles = function (verbose) {
         if (verbose) {
           console.log(files);
         }
-      })
+      });
   });
 
-  return promise;  
+  return promise;
 };
 
 module.exports = getModifiedFiles;

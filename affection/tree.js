@@ -1,5 +1,4 @@
 var fs = require('fs-extra');
-var path = require('path');
 var colors = require('colors');
 var recursive = require('recursive-readdir');
 var minimist = require('minimist');
@@ -10,17 +9,17 @@ var FileTrie = require('./fileTrie');
 var configFile = './tree.config.json';
 var start = Date.now();
 var trie = new FileTrie();
+var error = false;
 var config;
-
-
-var replaceSpec = function (spec) {
-  return replacements.reduce(function (acc, replacement) {
-    return acc.replace(replacement[0], replacement[1]);
-  }, spec);
-};
 
 var main = function (testsFolder, replacements, modifiedFiles, filesRegex) {
   filesRegex = filesRegex || 'spec\\.js$';
+
+  var replaceFilePath = function (spec) {
+    return replacements.reduce(function (acc, replacement) {
+      return acc.replace(replacement[0], replacement[1]);
+    }, spec);
+  };
 
   var onlyTheseFiles = function (file, stats) {
     var theRegex = new RegExp(filesRegex);
@@ -28,9 +27,13 @@ var main = function (testsFolder, replacements, modifiedFiles, filesRegex) {
   };
 
   recursive(testsFolder, [onlyTheseFiles], function (err, files) {
-    if (!files || files.length === 0) {
-      console.log('Spec files not found.');
-      return -1;
+    if (err) {
+      console.error(err);
+      process.exit(1);
+    }
+    if (!files || files.length === 0) {
+      console.error('Spec files not found.');
+      process.exit(1);
     }
 
     console.log('Found ' + files.length + ' spec files.');
@@ -44,7 +47,7 @@ var main = function (testsFolder, replacements, modifiedFiles, filesRegex) {
         console.log(colors.magenta('Took ' + (Date.now() - start)));
 
         console.log('Getting reverse spec dependencies...');
-        
+
         var markStart = Date.now();
         files.forEach(function (file) {
           trie.markSubTree(file);
@@ -65,7 +68,7 @@ var main = function (testsFolder, replacements, modifiedFiles, filesRegex) {
           .value();
 
         var targetSpecs = affectedSpecs.map(function (spec) {
-          return replaceSpec(spec);
+          return replaceFilePath(spec);
         });
 
         console.log('<affected>');
@@ -76,30 +79,34 @@ var main = function (testsFolder, replacements, modifiedFiles, filesRegex) {
       })
       .catch(function (reason) {
         console.error(colors.red(reason));
+        process.exit(-1);
       });
   });
 };
 
-// Read configuration
+// Read configuration & run program
+
 try {
   if (fs.statSync(configFile)) {
     config = fs.readJsonSync(configFile);
     if (!config.testsFolder) {
       console.error('`testsFolder` not found in config file.');
-      return -1;
-    }
-    if (!config.replacements) {
+      error = true;
+    } else if (!config.replacements) {
       console.error('`replacements` not found in config file.');
-      return -1;
+      error = true;
+    } else {
+      var modifiedFiles = minimist(process.argv.slice(2))._;
+      main(config.testsFolder, config.replacements, modifiedFiles, config.filesRegex);
     }
-    testsFolder = config.testsFolder;
-    replacements = config.replacements;
-    var modifiedFiles = minimist(process.argv.slice(2))._;
-    main(config.testsFolder, config.replacements, modifiedFiles, config.filesRegex);
+
+    if (error) {
+      process.exit(1);
+    }
   }
 } catch (err) {
   if (err.code && err.code === 'ENOENT') {
     console.error('Config file `tree.config.json` not found!');
-    return -1;
+    process.exit(1);
   }
 }

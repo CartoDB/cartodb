@@ -1,5 +1,6 @@
 # coding: utf-8
 require_dependency 'cartodb_config_utils'
+require_dependency 'carto_gears_api/pages/subheader'
 
 module ApplicationHelper
   include CartoDB::ConfigUtils
@@ -184,5 +185,9 @@ module ApplicationHelper
 
   def model_errors(model)
     model.errors.full_messages.map(&:capitalize).join(', ') if model.errors.present?
+  end
+
+  def pages_subheader_instance
+    CartoGearsApi::Pages::Subheader.instance
   end
 end

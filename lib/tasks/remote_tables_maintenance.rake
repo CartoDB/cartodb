@@ -89,6 +89,56 @@ namespace :cartodb do
       end
     end
 
+    desc "Sync dataset aliases for user"
+    task :sync_dataset_aliases_for_user, [:dataset_name, :username] => [:environment] do |t, args|
+      require_relative '../../app/helpers/common_data_redis_cache'
+      require_relative '../../app/services/visualization/common_data_service'
+
+      common_data_user = Cartodb.config[:common_data]["username"]
+
+      lib_datasets = Hash[
+        Rails::Sequel.connection.fetch(%Q[
+          SELECT name_alias, column_aliases FROM user_tables WHERE
+            user_id=(SELECT id FROM users WHERE username='#{common_data_user}')
+            AND name='#{args[:dataset_name]}';
+        ]).all.map { |row| [row.fetch(:name_alias), row.fetch(:column_aliases)] }
+      ]
+
+      lib_datasets.each { |name_alias, column_aliases|
+        sql_query = %Q[
+          UPDATE user_tables SET name_alias='#{name_alias}', column_aliases='#{column_aliases}'::json WHERE
+            user_id=(SELECT id FROM users WHERE username='#{args[:username]}') AND name='#{args[:dataset_name]}';
+          ]
+        updated_rows = Rails::Sequel.connection.fetch(sql_query).update
+        puts "#{updated_rows} datasets named #{args[:dataset_name]} updated for user #{args[:username]}"
+      }
+    end
+
+    desc "Sync dataset aliases for all users"
+    task :sync_dataset_aliases, [:dataset_name] => [:environment] do |t, args|
+      require_relative '../../app/helpers/common_data_redis_cache'
+      require_relative '../../app/services/visualization/common_data_service'
+
+      common_data_user = Cartodb.config[:common_data]["username"]
+
+      lib_datasets = Hash[
+        Rails::Sequel.connection.fetch(%Q[
+          SELECT name_alias, column_aliases FROM user_tables WHERE
+            user_id=(SELECT id FROM users WHERE username='#{common_data_user}')
+            AND name='#{args[:dataset_name]}';
+        ]).all.map { |row| [row.fetch(:name_alias), row.fetch(:column_aliases)] }
+      ]
+
+      lib_datasets.each { |name_alias, column_aliases|
+        sql_query = %Q[
+          UPDATE user_tables SET name_alias='#{name_alias}', column_aliases='#{column_aliases}'::json WHERE
+            name='#{args[:dataset_name]}' AND user_id <> (SELECT id FROM users WHERE username='#{common_data_user}');
+          ]
+        updated_rows = Rails::Sequel.connection.fetch(sql_query).update
+        puts "Aliases for dataset named #{args[:dataset_name]} updated for #{updated_rows} users"
+      }
+    end
+
     def get_visualizations_api_url
       common_data_config = Cartodb.config[:common_data]
       username = common_data_config["username"]

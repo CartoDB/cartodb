@@ -143,10 +143,6 @@ div.cartodb-legend.custom ul li .bullet, div.cartodb-legend.category ul li .bull
 
   &.derived { // VISUALIZATION'S MAP
 
-    div.cartodb-legend-stack {
-      @include position(false, 20px, 20px, false);
-    }
-
     &.hide_legends div.cartodb-map div.cartodb-legend-stack {
       display:none!important;
     }
@@ -561,45 +557,7 @@ div.cartodb-legend.custom ul li .bullet, div.cartodb-legend.category ul li .bull
 
   }
 
-  div.cartodb-legend-stack {
-    @include position(false, 80px, 20px, false);
-    margin: 0;
-
-    z-index: 10001;
-    background-color: $DarkGrey2;
-    border:1px solid Black;
-    cursor: default;
-    > div.cartodb-legend {
-      display:none;
-      @include position(false, 0, 0, false);
-      position:relative;
-      margin: 0;
-      cursor: default;
-      padding: 12px;
-      font-family: Bloomberg_Prop_K;
-
-      > .legend-title {
-        color: $White;
-        font-size: 13px;
-        font-family: Bloomberg_Prop_K;
-        text-transform: none;
-      }
-
-      > ul > li {
-        color: $Grey2;
-        font-weight: normal;
-        font-family: Bloomberg_Prop_K;
-        font-size: 11px; 
-        line-height: 8px;
-        text-transform: none;
-      }
-
-
-
-      &.custom, &.cluster, &.bubble, &.color, &.intensity, &.density { display: block; }
-      border-bottom: none;
-    }
-  }
+  
 
   // animations
   .leaflet-control-attribution.leaflet-control,
@@ -1149,3 +1107,45 @@ div.search-result-dropdown {
 :fullscreen {
   top: 0!Important; left: 0!Important; right: 0!Important; bottom: 0!Important;
 }
+
+//blp legend styling 
+
+div.cartodb-legend-stack {
+    @include position(false, 20px, 20px, false);
+    margin: 0;
+
+    z-index: 10001;
+    background-color: rgba(0,0,0, 0.50);
+    border:1px solid Black;
+    cursor: default;
+    > div.cartodb-legend {
+      display:none;
+      @include position(false, 0, 0, false);
+      position:relative;
+      margin: 0;
+      cursor: default;
+      padding: 12px;
+      font-family: Bloomberg_Prop_K;
+
+      > .legend-title {
+        color: $White;
+        font-size: 15px;
+        font-family: AvenirNext_demi;
+        text-transform: none;
+      }
+
+      > ul > li {
+        color: $Grey2;
+        font-weight: normal;
+        font-family: AvenirNext_Regular;
+        font-size: 13px; 
+        line-height: 8px;
+        text-transform: none;
+      }
+
+
+
+      &.custom, &.cluster, &.bubble, &.color, &.intensity, &.density { display: block; }
+      border-bottom: none;
+    }
+  }

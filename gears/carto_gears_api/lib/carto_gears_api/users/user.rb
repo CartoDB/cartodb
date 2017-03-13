@@ -9,7 +9,7 @@ module CartoGearsApi
     # @attr_reader [String] username User name
     # @attr_reader [String] email Email
     # @attr_reader [CartoGearsApi::Organizations::Organization] organization Organization
-    class User < Value.new(:id, :username, :email, :organization, :feature_flags)
+    class User < Value.new(:id, :username, :email, :organization, :feature_flags, :can_change_email)
       extend ActiveModel::Naming
       include ActiveRecord::AttributeMethods::PrimaryKey
 
@@ -31,6 +31,10 @@ module CartoGearsApi
 
       def has_feature_flag?(feature_flag)
         @feature_flags.include?(feature_flag)
+      end
+
+      def can_change_email?
+        @can_change_email
       end
     end
   end

@@ -19,7 +19,8 @@ module CartoGearsApi
           username: user.username,
           email: user.email,
           organization: user.organization ? organization(user.organization) : nil,
-          feature_flags: user.feature_flags
+          feature_flags: user.feature_flags,
+          can_change_email: user.can_change_email?
         )
       end
 

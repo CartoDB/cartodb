@@ -1,4 +1,3 @@
-require 'uuidtools'
 require_dependency 'carto_gears_api/users/user'
 
 module CartoGearsApi
@@ -16,7 +15,7 @@ module CartoGearsApi
 
       def user(user)
         CartoGearsApi::Users::User.with(
-          id: UUIDTools::UUID.parse(user.id),
+          id: user.id,
           username: user.username,
           email: user.email,
           organization: user.organization ? organization(user.organization) : nil,

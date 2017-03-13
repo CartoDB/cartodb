@@ -5,7 +5,7 @@ module CartoGearsApi
   module Users
     # User information.
     #
-    # @attr_reader [UUID] id User id
+    # @attr_reader [String] id User id
     # @attr_reader [String] username User name
     # @attr_reader [String] email Email
     # @attr_reader [CartoGearsApi::Organizations::Organization] organization Organization

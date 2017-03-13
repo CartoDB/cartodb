@@ -95,7 +95,12 @@ CartoGearsApi::Pages::Subheader.instance.links_generators << lambda do |context|
   if user.has_feature_flag?('carto_experimental_gear')
     include CartoGearsApi::UrlHelper
 
-    [[carto_gear_path(:carto_experimental_gear, context, 'do_something'), 'Do Something!', 'carto_experimental_gear/something_controller']]
+    [
+        CartoGearsApi::Pages::SubheaderLink.with(
+          path: carto_gear_path(:my_gear, context, 'something'),
+          text: 'The Text',
+          controller: 'my_gear/something')
+    ]
   end
 end
 ```

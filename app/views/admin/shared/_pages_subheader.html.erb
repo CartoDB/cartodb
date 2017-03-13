@@ -32,8 +32,8 @@
       <% if current_user.organization_owner? %>
         <li class="SideMenu-typeItem"><a href="<%= CartoDB.url(self, 'organization_settings', {}, current_user) %>" class="SideMenu-typeLink <%= 'is-selected' if ["admin/organizations", "admin/organization", "admin/organization_users"].include?("#{params[:controller]}") %>" class="SideMenu-typeLink">Organization settings</a></li>
       <% end %>
-      <% CartoGearsApi::Pages::Subheader.instance.links(self).each do |path, text, controller| %>
-          <li class="SideMenu-typeItem"><a href="<%= path %>" class="SideMenu-typeLink <%= 'is-selected' if [controller].include?("#{params[:controller]}") %>" class="SideMenu-typeLink"><%= text %></a></li>
+      <% CartoGearsApi::Pages::Subheader.instance.links(self).each do |link| %>
+          <li class="SideMenu-typeItem"><a href="<%= link.path %>" class="SideMenu-typeLink <%= 'is-selected' if [link.controller].include?("#{params[:controller]}") %>" class="SideMenu-typeLink"><%= link.text %></a></li>
       <% end %>
     </ul>
   </div>

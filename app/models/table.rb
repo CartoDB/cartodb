@@ -210,7 +210,7 @@ class Table
           user_id = owner.id
         end
       end
-      Carto::UserTable.where(user_id: user_id, name: table_name).first
+      ::UserTable.where(user_id: user_id, name: table_name).first
     }
   end
 

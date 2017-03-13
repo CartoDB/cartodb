@@ -357,7 +357,7 @@ var SHRINKWRAP_MODULES_TO_VALIDATE = [
         });
     });
 
-    grunt.registerTask('affected_dev', 'Revolutionising testing at Carto', [
+    grunt.registerTask('affected_dev', 'Build only specs affected by changes in current branch', [
       'copy_builder',
       'affected',
       'browserify:affected_specs',

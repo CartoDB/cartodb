@@ -40,11 +40,16 @@
   "devDependencies": {
     "autoprefixer-core": "5.2.1",
     "aws-sdk": "2.0.0-rc11",
+    "bluebird": "3.5.0",
     "brfs": "^1.4.3",
     "browserify": "13.0.0",
+    "browserify-incremental": "3.1.1",
+    "browserify-incremental-plugin": "1.1.0",
     "browserify-resolutions": "1.1.0",
     "cartoassets": "cartodb/CartoAssets#master",
+    "colors": "1.1.2",
     "csswring": "^3.0.5",
+    "fs-extra": "2.0.0",
     "git-rev": "0.2.1",
     "grunt": "0.4.5",
     "grunt-available-tasks": "0.5.4",
@@ -70,7 +75,9 @@
     "jasmine-ajax": "git://github.com/nobuti/jasmine-ajax.git#master",
     "jstify": "0.13.0",
     "load-grunt-tasks": "3.2.0",
+    "minimist": "1.2.0",
     "open": "0.0.5",
+    "recursive-readdir": "2.1.1",
     "semistandard": "7.0.4",
     "source-map-support": "0.4.0",
     "uglify-js": "2.7.x",
@@ -159,6 +166,7 @@
     "test-debug": "node-debug --no-preload ./node_modules/.bin/jasmine --",
     "test-watch": "watch 'npm test' $npm_package_config_npmJsDir",
     "preupdate-internal-deps": "echo 'DEPRECATED TASK, use `npm run-script update-internal-deps` instead'",
-    "update-internal-deps": "rm -rf node_modules && npm install --no-shrinkwrap && npm shrinkwrap"
+    "update-internal-deps": "rm -rf node_modules && npm install --no-shrinkwrap && npm shrinkwrap",
+    "affected_specs": "node affection/index.js | xargs node affection/tree.js"
   }
 }

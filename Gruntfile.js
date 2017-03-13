@@ -1,11 +1,13 @@
- var _ = require('underscore');
- var timer = require("grunt-timer");
- var jasmineCfg = require('./lib/build/tasks/jasmine.js');
- var duplicatedDependencies = require('./lib/build/tasks/shrinkwrap-duplicated-dependencies.js');
-
- var REQUIRED_NPM_VERSION = /2.14.[0-9]+/;
- var REQUIRED_NODE_VERSION = /0.10.[0-9]+/;
- var SHRINKWRAP_MODULES_TO_VALIDATE = [
+var _ = require('underscore');
+var timer = require("grunt-timer");
+var colors = require('colors');
+var jasmineCfg = require('./lib/build/tasks/jasmine.js');
+var duplicatedDependencies = require('./lib/build/tasks/shrinkwrap-duplicated-dependencies.js');
+var retrieveAffectedSpecs = require('./lib/build/affectedSpecs');
+ 
+var REQUIRED_NPM_VERSION = /2.14.[0-9]+/;
+var REQUIRED_NODE_VERSION = /0.10.[0-9]+/;
+var SHRINKWRAP_MODULES_TO_VALIDATE = [
   'backbone',
   'camshaft-reference',
   'carto',
@@ -44,8 +46,8 @@
           done && done(err ? new Error(err): null);
         });
       }
-      checkVersion('npm -v', REQUIRED_NPM_VERSION, 'npm', done);
-      checkVersion('node -v', REQUIRED_NODE_VERSION, 'node', done);
+      //checkVersion('npm -v', REQUIRED_NPM_VERSION, 'npm', done);
+      //checkVersion('node -v', REQUIRED_NODE_VERSION, 'node', done);
     }
 
     preFlight(function (err) {
@@ -190,7 +192,7 @@
       grunt.log.ok("************************************************");
     });
 
-    grunt.event.on('watch', function(action, filepath) {
+    grunt.event.on('watch', function(action, filepath, subtask) {
       // configure copy vendor to only run on changed file
       var cfg = grunt.config.get('copy.vendor');
       if (filepath.indexOf(cfg.cwd) !== -1) {
@@ -199,17 +201,26 @@
         grunt.config('copy.vendor.src', []);
       }
 
-      var COPY_PATHS = [
-        'app',
-        'js_core_cartodb',
-        'js_client_cartodb',
+      var builderFiles = [
         'js_core_cartodb3',
         'js_client_cartodb3',
         'js_test_spec_core_cartodb3',
-        'js_test_spec_client_cartodb3',
+        'js_test_spec_client_cartodb3'
+      ];
+      var otherFiles = [
+        'app',
+        'js_core_cartodb',
+        'js_client_cartodb',
         'js_test_jasmine_core_cartodb3',
         'js_test_jasmine_client_cartodb3'
       ];
+
+      var COPY_PATHS = [];
+      if (subtask === 'js_affected') {
+        COPY_PATHS = COPY_PATHS.concat(builderFiles);
+      } else {
+        COPY_PATHS = COPY_PATHS.concat(otherFiles).concat(builderFiles);
+      }
 
       // configure copy paths to only run on changed files
       for (var j = 0, m = COPY_PATHS.length; j < m; ++j) {
@@ -315,6 +326,44 @@
         'exorcise',
         'uglify'
       ]);
+
+    grunt.registerTask('copy_builder', 'Multitask with all the tasks responsible for copying builder files.', [
+     'copy:js_core_cartodb3',
+     'copy:js_client_cartodb3',
+     'copy:js_test_spec_core_cartodb3',
+     'copy:js_test_spec_client_cartodb3'
+    ]);
+
+    grunt.registerTask('affected', 'Generate only affected specs', function () {
+      var done = this.async();
+
+      retrieveAffectedSpecs(grunt)
+        .then(function (affectedSpecs) {
+          console.log(colors.yellow(affectedSpecs.length + ' specs found.'));
+
+          var newSrc = ['lib/build/source-map-support.js']
+            .concat(affectedSpecs)
+            .concat([
+              '!lib/assets/test/spec/cartodb3/deep-insights-integrations.spec.js',
+              'lib/assets/test/spec/node_modules/**/*.spec.js',
+              'lib/assets/test/spec/cartodb3/deep-insights-integrations.spec.js'
+            ]);
+
+          grunt.config.set('browserify.affected_specs.src', newSrc);
+          done();
+        })
+        .catch(function (reason) {
+          throw new Error(reason);
+        });
+    });
+
+    grunt.registerTask('affected_dev', 'Revolutionising testing at Carto', [
+      'copy_builder',
+      'affected',
+      'browserify:affected_specs',
+      'jasmine:affected:build',
+      'watch:js_affected'
+    ]);
 
     /**
      * Delegate task to commandline.

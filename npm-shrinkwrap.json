@@ -1,11 +1,11 @@
 {
   "name": "cartodb-ui",
-  "version": "4.6.22",
+  "version": "4.6.28",
   "dependencies": {
     "backbone": {
       "version": "1.2.3",
       "from": "backbone@1.2.3",
-      "resolved": "http://registry.npmjs.org/backbone/-/backbone-1.2.3.tgz"
+      "resolved": "https://registry.npmjs.org/backbone/-/backbone-1.2.3.tgz"
     },
     "backbone-forms": {
       "version": "0.14.0",
@@ -771,7 +771,7 @@
     "bootstrap-colorpicker": {
       "version": "2.3.3",
       "from": "bootstrap-colorpicker@2.3.3",
-      "resolved": "http://registry.npmjs.org/bootstrap-colorpicker/-/bootstrap-colorpicker-2.3.3.tgz"
+      "resolved": "https://registry.npmjs.org/bootstrap-colorpicker/-/bootstrap-colorpicker-2.3.3.tgz"
     },
     "browserify-shim": {
       "version": "3.8.12",
@@ -1277,9 +1277,9 @@
                           "resolved": "https://registry.npmjs.org/crypt/-/crypt-0.0.2.tgz"
                         },
                         "is-buffer": {
-                          "version": "1.1.4",
+                          "version": "1.1.5",
                           "from": "is-buffer@>=1.1.1 <1.2.0",
-                          "resolved": "https://registry.npmjs.org/is-buffer/-/is-buffer-1.1.4.tgz"
+                          "resolved": "https://registry.npmjs.org/is-buffer/-/is-buffer-1.1.5.tgz"
                         }
                       }
                     },
@@ -1525,9 +1525,9 @@
           "resolved": "https://registry.npmjs.org/d3-interpolate/-/d3-interpolate-1.1.2.tgz",
           "dependencies": {
             "d3-color": {
-              "version": "1.0.2",
+              "version": "1.0.3",
               "from": "d3-color@>=1.0.0 <2.0.0",
-              "resolved": "https://registry.npmjs.org/d3-color/-/d3-color-1.0.2.tgz"
+              "resolved": "https://registry.npmjs.org/d3-color/-/d3-color-1.0.3.tgz"
             }
           }
         },
@@ -1686,9 +1686,9 @@
                       "resolved": "https://registry.npmjs.org/crypt/-/crypt-0.0.2.tgz"
                     },
                     "is-buffer": {
-                      "version": "1.1.4",
+                      "version": "1.1.5",
                       "from": "is-buffer@>=1.1.1 <1.2.0",
-                      "resolved": "https://registry.npmjs.org/is-buffer/-/is-buffer-1.1.4.tgz"
+                      "resolved": "https://registry.npmjs.org/is-buffer/-/is-buffer-1.1.5.tgz"
                     }
                   }
                 },
@@ -1926,7 +1926,7 @@
     "clipboard": {
       "version": "1.5.12",
       "from": "clipboard@1.5.12",
-      "resolved": "http://registry.npmjs.org/clipboard/-/clipboard-1.5.12.tgz",
+      "resolved": "https://registry.npmjs.org/clipboard/-/clipboard-1.5.12.tgz",
       "dependencies": {
         "good-listener": {
           "version": "1.2.2",
@@ -1955,7 +1955,7 @@
     "codemirror": {
       "version": "5.14.2",
       "from": "codemirror@5.14.2",
-      "resolved": "http://registry.npmjs.org/codemirror/-/codemirror-5.14.2.tgz"
+      "resolved": "https://registry.npmjs.org/codemirror/-/codemirror-5.14.2.tgz"
     },
     "jquery": {
       "version": "2.1.4",
@@ -1965,7 +1965,7 @@
     "moment": {
       "version": "2.10.6",
       "from": "moment@2.10.6",
-      "resolved": "http://registry.npmjs.org/moment/-/moment-2.10.6.tgz"
+      "resolved": "https://registry.npmjs.org/moment/-/moment-2.10.6.tgz"
     },
     "node-polyglot": {
       "version": "1.0.0",
@@ -1983,9 +1983,9 @@
       "resolved": "https://registry.npmjs.org/queue-async/-/queue-async-1.2.1.tgz"
     },
     "tangram": {
-      "version": "0.11.7",
-      "from": "cartodb/tangram-1#race-cond",
-      "resolved": "git://github.com/cartodb/tangram-1.git#c795a2e446c2000a916ca69b90d443b5bc7e7c6b",
+      "version": "0.11.8",
+      "from": "cartodb/tangram-1#master",
+      "resolved": "git://github.com/cartodb/tangram-1.git#5d22377c3c78b71929dc357900128077d8a6ab5e",
       "dependencies": {
         "csscolorparser": {
           "version": "1.0.3",
@@ -2003,9 +2003,9 @@
           "resolved": "https://registry.npmjs.org/fontfaceobserver/-/fontfaceobserver-2.0.7.tgz"
         },
         "geojson-vt": {
-          "version": "2.1.6",
-          "from": "geojson-vt@2.1.6",
-          "resolved": "https://registry.npmjs.org/geojson-vt/-/geojson-vt-2.1.6.tgz"
+          "version": "2.4.0",
+          "from": "geojson-vt@2.4.0",
+          "resolved": "https://registry.npmjs.org/geojson-vt/-/geojson-vt-2.4.0.tgz"
         },
         "gl-mat3": {
           "version": "1.0.0",

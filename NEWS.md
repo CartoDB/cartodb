@@ -2,6 +2,7 @@ Development
 -----------
 
 ### Features
+* Quota pre-check to analyses that consume quota.
 * Marking 'Do not show me again' in Layer Onboarding affects every tab. (#11586)
 * Adding Google-Maps basemaps (#11447)
 * Improve dialog forms to render them floated. (#7786)
@@ -58,6 +59,7 @@ Development
 * Improved formula widget description field. (#11469)
 * Added support for Zeus for faster testing (#11574). Check `CONTRIBUTING.md` for configuration details.
 * Migrate to use GNIP v2 for twitter search connector (#10051, #11595)
+* Update tangram with smooth point outline.
 * Improve affordance of layer item (#11359)
 
 ### Bug fixes

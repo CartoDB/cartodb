@@ -1671,12 +1671,29 @@
           "loading": "Obtaining your quotas...",
           "credits-left-body": "This might incur into an extra cost. Extra credits will be charged at $%{blockPrice}/%{blockSize}.",
           "credits-left-message": "%{smart_count} credit left |||| %{smart_count} credits left",
+          "enough-quota": "You need to use approximately %{credits} of your credits.",
+          "hard-limit-not-enough-quota": "We're sorry the current quota is insufficient to enrich your data. Rows will be set to null and analysis may not complete. Please %{contact} us to extend your quota for this function.",
+          "soft-limit-enough-quota": "We're sorry the current quota is insufficient to enrich your data. This might need about %{credits} extra credits. Extra credits will be charged at $%{blockPrice}/%{blockSize}.",
           "no-quota-assigned-body": "To get access to the %{analysis} function, %{contact}.",
-          "no-quota-assigned-contact": "contact our team",
           "no-credits-body": "You have consumed all your credits during this billing cycle. %{contact} to get some more.",
-          "no-credits-contact": "Contact us",
-          "no-credits-mail": "sales@carto.com",
           "no-credits-message": "No credits available",
+          "contact-message": {
+            "no-credits": {
+              "regular": "Contact us",
+              "organization": "Contact your organization admin"
+            },
+            "no-quota-assigned": {
+              "regular": "contact our team",
+              "organization": "contact your organization admin"
+            }
+          },
+          "emails" : {
+            "support": "support@carto.com",
+            "saas": "sales@carto.com"
+          },
+          "quota-error-title": "Error",
+          "quota-fetch-error": "There was an error obtaining your quota: %{error}.",
+          "quota-dataservice-down": "Dataservices API unreacheable.",
           "cancel": "Cancel",
           "confirm": "confirm",
           "analysis-type": {

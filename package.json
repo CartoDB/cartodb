@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.6.26",
+  "version": "4.6.28",
   "description": "CARTO UI frontend",
   "repository": {
     "type": "git",
@@ -34,7 +34,7 @@
     "perfect-scrollbar": "git://github.com/CartoDB/perfect-scrollbar.git#master",
     "queue-async": "1.2.1",
     "torque.js": "CartoDB/torque#master",
-    "tangram": "cartodb/tangram-1#race-cond",
+    "tangram": "cartodb/tangram-1#master",
     "underscore": "1.8.3"
   },
   "devDependencies": {

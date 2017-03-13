@@ -37,7 +37,7 @@ describe Visualization::Member do
           name: 'test',
           type: Visualization::Member::TYPE_CANONICAL
       )
-      visualization.user_data = { actions: { private_maps: true } }
+
       # Careful, do a user mock after touching user_data as it does some checks about user too
       user_mock = mock
       user_mock.stubs(:private_tables_enabled).returns(true)

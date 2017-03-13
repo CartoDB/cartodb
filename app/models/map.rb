@@ -200,6 +200,10 @@ class Map < Sequel::Model
     }
   end
 
+  def dup
+    Map.new(to_hash.select { |k, _| k != :id })
+  end
+
   private
 
   def get_the_last_time_tiles_have_changed_to_render_it_in_vizjsons

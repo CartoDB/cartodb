@@ -492,16 +492,13 @@ class Table
 
   def before_destroy
     @table_visualization                = table_visualization
-    if @table_visualization
-      @table_visualization.user_data = { name: owner.username, api_key: owner.api_key }
-    end
     @fully_dependent_visualizations_cache     = fully_dependent_visualizations.to_a
     @partially_dependent_visualizations_cache = partially_dependent_visualizations.to_a
   end
 
   def after_destroy
     # Delete visualization BEFORE deleting metadata, or named map won't be destroyed properly
-    @table_visualization.delete(from_table_deletion=true) if @table_visualization
+    @table_visualization.delete_from_table if @table_visualization
     Tag.filter(user_id: user_id, table_id: id).delete
     remove_table_from_stats
 
@@ -1168,6 +1165,10 @@ class Table
       .where(:relkind => 'r', :nspname => owner.database_schema, :relname => name).first
     record.nil? ? nil : record[:oid]
   end # get_table_id
+
+  def changing_name?
+    @name_changed_from.present?
+  end
 
   def update_name_changes
     if @name_changed_from.present? && @name_changed_from != name

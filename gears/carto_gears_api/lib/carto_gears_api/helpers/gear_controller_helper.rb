@@ -1,3 +1,6 @@
+require_dependency 'carto_gears_api/helpers/url_helper'
+require_dependency 'carto_gears_api/users/users_service'
+
 module CartoGearsApi
   module Helpers
     # This should be included in every controller using the following CARTO layouts:
@@ -17,7 +20,7 @@ module CartoGearsApi
 
       # @return [CartoGearsApi::Users::User] Logged user, `nil` if none.
       def logged_user
-        @logged_user ||= CartoGearsApi::UsersService.new.logged_user(request)
+        @logged_user ||= CartoGearsApi::Users::UsersService.new.logged_user(request)
       end
     end
   end

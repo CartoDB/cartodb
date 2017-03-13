@@ -1,4 +1,5 @@
 require_dependency 'carto_gears_api/users/user'
+require_dependency 'carto_gears_api/organizations/organization'
 
 module CartoGearsApi
   module Users
@@ -25,7 +26,7 @@ module CartoGearsApi
       end
 
       def organization(organization)
-        CartoGearsApi::Organization::Organization.with(name: organization.name)
+        CartoGearsApi::Organizations::Organization.with(name: organization.name)
       end
     end
   end

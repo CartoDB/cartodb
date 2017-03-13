@@ -1,4 +1,3 @@
-var L = require('leaflet');
 var MarkerAdapterBase = require('../base/marker-adapter-base');
 
 var LeafletMarkerAdapter = function (nativeMarker) {
@@ -41,10 +40,11 @@ LeafletMarkerAdapter.prototype.getIconURL = function () {
 };
 
 LeafletMarkerAdapter.prototype.setIconURL = function (iconURL) {
-  var newIcon = L.icon({
-    iconUrl: iconURL
-  });
-  this._nativeMarker.setIcon(newIcon);
+  // Leaflet provides the `setIcon` method which generates a new img for the icon.
+  // We want to be able to update the markers icon while it's being dragged. That's
+  // why we're doing this little hack that changes the src of the existing marker img.
+  this._nativeMarker._icon.src = iconURL;
+  this._nativeMarker.options.icon.options.iconUrl = iconURL;
 };
 
 LeafletMarkerAdapter.prototype.on = function () {

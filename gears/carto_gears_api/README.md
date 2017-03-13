@@ -3,7 +3,7 @@ CARTO Gears API
 
 **DISCLAIMER: CARTO Gears API is still in development, it won't be considered stable until first major 1 version**
 
-# An API for building CARTO Gears
+## An API for building CARTO Gears
 
 CARTO Gear: Rails engine built on top of CARTO, using CARTO Gears API.
 
@@ -16,9 +16,9 @@ References:
 - [Component-based Rails Applications, Stephan Hagemann](https://leanpub.com/cbra).
 - [Rails 4 Engines, Brian Leonard](http://tech.taskrabbit.com/blog/2014/02/11/rails-4-engines/).
 
-# HOWTO
+## HOWTO
 
-## Private vs public gears
+### Private vs public gears
 
 CARTO currently supports two directories for Gears:
 
@@ -33,7 +33,7 @@ Private engines. For example, for in-house developments that can't be shipped wi
 It's skipped at `.gitignore`, and it's dynamically loaded, so it won't appear in `Gemfile` or `Gemfile.lock`.
 You can have the code wherever you want, and add symbolic links there.
 
-### Private gears limitations
+#### Private gears limitations
 
 Due to the custom handling of this in order to avoid polluting Gemfile and Gemfile.lock files, private gears
 have several limitations:
@@ -42,7 +42,7 @@ have several limitations:
 - Although the private gem itself doesn't appear in `Gemfile` or `Gemfile.lock`, dependencies do, because they need to
 be installed.
 
-### Generating a clean Gemfile.lock
+#### Generating a clean Gemfile.lock
 
 As said, `Gemfile.lock` won't mention private gears, but it contains private gears dependencies.
 In order to generate a clean `Gemfile.lock`, you should:
@@ -52,7 +52,7 @@ In order to generate a clean `Gemfile.lock`, you should:
 3. `git commit Gemfile.lock -m "Clean Gemfile.lock" && git push`
 4. `mv private_gears.bak private_gears`
 
-## Create a Rails engine
+### Create a Rails engine
 
 Assuming that you pick `/gears`, create a Rails engine by
 
@@ -67,7 +67,7 @@ Automatic reload for development is supported right out of the box.
 You must use only classes under `CartoGearsApi` namespace. _It's currently under `/gears/carto_gears_api/lib`,
 but it will be documented before first public release._
 
-## Tests
+### Tests
 
 CartoDB runs the tests with `bundle exec rspec` at engine directory. If you want to use this, you should create
 your tests with rspec.
@@ -78,15 +78,16 @@ In order to enable rspec:
 2. Copy the contents of `test_helper.rb` into `spec_helper`.
 3. Run `rspec` and fix path errors that you might get.
 
-# Documentation
+## Documentation
 
-## `CartoGearsAPI::` (Ruby API)
+### `CartoGearsAPI::` (Ruby API)
 Generate the documentation with `yard`.
 
-## Extension points
+### Extension points
 
-### Adding links to profile page
+#### Adding links to profile page
 
+See creation at {CartoGearsApi::Pages::SubheaderLink}.
 Example:
 
 ```ruby

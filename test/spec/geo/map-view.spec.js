@@ -52,7 +52,7 @@ describe('core/geo/map-view', function () {
 
   describe('.render', function () {
     it('should add layer views to the map', function () {
-      var tileLayer = new TileLayer();
+      var tileLayer = new TileLayer(null, { vis: {} });
       var cartoDBLayer1 = new CartoDBLayer({}, { vis: this.vis });
       var cartoDBLayer2 = new CartoDBLayer({}, { vis: this.vis });
 
@@ -88,7 +88,7 @@ describe('core/geo/map-view', function () {
   describe('bindings to map.layers', function () {
     describe('when layers of map.layers are resetted', function () {
       it('should group CartoDB layers into a single layerView and add one layerView for each non-CartoDB layer', function () {
-        var tileLayer = new TileLayer();
+        var tileLayer = new TileLayer(null, { vis: {} });
         var cartoDBLayer1 = new CartoDBLayer({}, { vis: this.vis });
         var cartoDBLayer2 = new CartoDBLayer({}, { vis: this.vis });
 
@@ -110,7 +110,7 @@ describe('core/geo/map-view', function () {
         var callback = jasmine.createSpy('callback');
         this.mapView.on('newLayerView', callback);
 
-        var tileLayer = new TileLayer();
+        var tileLayer = new TileLayer(null, { vis: {} });
         var cartoDBLayer1 = new CartoDBLayer({}, { vis: this.vis });
         var cartoDBLayer2 = new CartoDBLayer({}, { vis: this.vis });
 
@@ -135,7 +135,7 @@ describe('core/geo/map-view', function () {
       });
 
       it('should group CartoDB layers into a single layerView', function () {
-        var tileLayer = new TileLayer();
+        var tileLayer = new TileLayer(null, { vis: {} });
         var cartoDBLayer1 = new CartoDBLayer({}, { vis: this.vis });
         var cartoDBLayer2 = new CartoDBLayer({}, { vis: this.vis });
 
@@ -167,7 +167,7 @@ describe('core/geo/map-view', function () {
         var callback = jasmine.createSpy('callback');
         this.mapView.on('newLayerView', callback);
 
-        var tileLayer = new TileLayer();
+        var tileLayer = new TileLayer(null, { vis: {} });
         var cartoDBLayer1 = new CartoDBLayer({}, { vis: this.vis });
         var cartoDBLayer2 = new CartoDBLayer({}, { vis: this.vis });
 
@@ -183,7 +183,7 @@ describe('core/geo/map-view', function () {
 
     describe('when layerModels are removed from map.layers', function () {
       it('should should remove the corresponding layerView for layers that are rendered individually (not grouped)', function () {
-        var tileLayer = new TileLayer();
+        var tileLayer = new TileLayer(null, { vis: {} });
 
         this.map.layers.reset([tileLayer]);
 

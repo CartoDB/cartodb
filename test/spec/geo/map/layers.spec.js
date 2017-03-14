@@ -14,10 +14,10 @@ describe('geo/map/layers', function () {
   });
 
   it('should compare equal layers correctly', function () {
-    var layer1 = new PlainLayer({ name: 'Positron' });
-    var layer2 = new PlainLayer({});
-    var layer3 = new PlainLayer({});
-    var layer4 = new PlainLayer({});
+    var layer1 = new PlainLayer({ name: 'Positron' }, { vis: {} });
+    var layer2 = new PlainLayer({}, { vis: {} });
+    var layer3 = new PlainLayer({}, { vis: {} });
+    var layer4 = new PlainLayer({}, { vis: {} });
 
     expect(layer3.isEqual(layer4)).toBeTruthy();
     expect(layer1.isEqual(layer2)).not.toBeTruthy();
@@ -29,8 +29,8 @@ describe('geo/map/layers', function () {
   });
 
   it('should compare TileLayers', function () {
-    var layer1 = new TileLayer({ urlTemplate: 'urlTemplate', name: 'layer1', other: 'something' });
-    var layer2 = new TileLayer({ urlTemplate: 'urlTemplate', name: 'layer2', other: 'else' });
+    var layer1 = new TileLayer({ urlTemplate: 'urlTemplate', name: 'layer1', other: 'something' }, { vis: {} });
+    var layer2 = new TileLayer({ urlTemplate: 'urlTemplate', name: 'layer2', other: 'else' }, { vis: {} });
 
     expect(layer1.isEqual(layer2)).toBeFalsy();
 
@@ -40,7 +40,7 @@ describe('geo/map/layers', function () {
   });
 
   it('should re-assign order when new layers are added to the collection', function () {
-    var baseLayer = new TileLayer();
+    var baseLayer = new TileLayer(null, { vis: {} });
     var layer1 = new CartoDBLayer({}, { vis: this.vis });
     var layer2 = new CartoDBLayer({}, { vis: this.vis });
     var layer3 = new CartoDBLayer({}, { vis: this.vis });
@@ -80,7 +80,7 @@ describe('geo/map/layers', function () {
     expect(torqueLayer.get('order')).toEqual(4);
     expect(layers.pluck('order')).toEqual([ 0, 1, 2, 3, 4 ]);
 
-    var tiledLayer = new TileLayer({});
+    var tiledLayer = new TileLayer(null, { vis: {} });
 
     // Tiled layer should be at the top
     layers.add(tiledLayer);
@@ -107,11 +107,11 @@ describe('geo/map/layers', function () {
   });
 
   it('should re-assign order when new layers are removed from the collection', function () {
-    var baseLayer = new TileLayer();
+    var baseLayer = new TileLayer(null, { vis: {} });
     var layer1 = new CartoDBLayer({}, { vis: this.vis });
     var layer2 = new CartoDBLayer({}, { vis: this.vis });
     var torqueLayer = new TorqueLayer({}, { vis: this.vis });
-    var labelsLayer = new TileLayer();
+    var labelsLayer = new TileLayer(null, { vis: {} });
 
     // Sets the order to 0
     layers.add(baseLayer);
@@ -151,7 +151,7 @@ describe('geo/map/layers', function () {
 
   describe('.moveCartoDBLayer', function () {
     beforeEach(function () {
-      layers.add(new PlainLayer({ name: 'Positron' }));
+      layers.add(new PlainLayer({ name: 'Positron' }, { vis: {} }));
       layers.add(new CartoDBLayer({ title: 'CARTO' }, { vis: this.vis }));
     });
 

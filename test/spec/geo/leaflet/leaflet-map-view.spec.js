@@ -48,7 +48,7 @@ describe('geo/leaflet/leaflet-map-view', function () {
     mapView.render();
 
     var layerURL = 'http://{s}.tiles.mapbox.com/v3/cartodb.map-1nh578vv/{z}/{x}/{y}.png';
-    layer = new TileLayer({ urlTemplate: layerURL });
+    layer = new TileLayer({ urlTemplate: layerURL }, { vis: {} });
 
     spy = jasmine.createSpyObj('spy', ['zoomChanged', 'centerChanged', 'keyboardChanged', 'changed']);
     map.bind('change:zoom', spy.zoomChanged);
@@ -124,17 +124,17 @@ describe('geo/leaflet/leaflet-map-view', function () {
   });
 
   it('should create a PlainLayer when the layer is cartodb', function () {
-    layer = new PlainLayer({});
+    layer = new PlainLayer(null, { vis: {} });
     var lyr = map.addLayer(layer);
     var layerView = mapView.getLayerViewByLayerCid(lyr);
     expect(layerView.setQuery).not.toEqual(LeafletPlainLayerView);
   });
 
   it('should insert layers in specified order', function () {
-    var tileLayer = new TileLayer({ urlTemplate: 'http://tilelayer1.com' });
+    var tileLayer = new TileLayer({ urlTemplate: 'http://tilelayer1.com' }, { vis: {} });
     map.addLayer(tileLayer);
 
-    var tileLayer2 = new TileLayer({ urlTemplate: 'http://tilelayer2.com' });
+    var tileLayer2 = new TileLayer({ urlTemplate: 'http://tilelayer2.com' }, { vis: {} });
     map.addLayer(tileLayer2, { at: 0 });
 
     expect(mapView.getLayerViewByLayerCid(tileLayer.cid).options.zIndex).toEqual(1);
@@ -144,7 +144,7 @@ describe('geo/leaflet/leaflet-map-view', function () {
   it('should remove all layers when map view is cleaned', function () {
     var cartoDBLayer1 = new CartoDBLayer({}, { vis: this.vis });
     var cartoDBLayer2 = new CartoDBLayer({}, { vis: this.vis });
-    var tileLayer = new TileLayer({ urlTemplate: 'test' });
+    var tileLayer = new TileLayer({ urlTemplate: 'test' }, { vis: {} });
 
     map.addLayer(cartoDBLayer1);
     map.addLayer(cartoDBLayer2);
@@ -167,14 +167,14 @@ describe('geo/leaflet/leaflet-map-view', function () {
   });
 
   it("should not add a layer view when it can't be created", function () {
-    var layer = new TileLayer({type: 'rambo'});
+    var layer = new TileLayer({type: 'rambo'}, { vis: {} });
     map.addLayer(layer);
     expect(_.size(mapView._layerViews)).toEqual(0);
   });
 
   it('should set z-order', function () {
-    var layer1 = new TileLayer({urlTemplate: 'test1'});
-    var layer2 = new TileLayer({urlTemplate: 'test2'});
+    var layer1 = new TileLayer({urlTemplate: 'test1'}, { vis: {} });
+    var layer2 = new TileLayer({urlTemplate: 'test2'}, { vis: {} });
     var layerView1 = mapView.getLayerViewByLayerCid(map.addLayer(layer1));
     var layerView2 = mapView.getLayerViewByLayerCid(map.addLayer(layer2, { at: 0 }));
     expect(layerView1.options.zIndex > layerView2.options.zIndex).toEqual(true);

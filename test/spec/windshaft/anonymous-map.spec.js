@@ -202,7 +202,7 @@ describe('windshaft/anonymous-map', function () {
           urlTemplate: 'URL_TEMPLATE',
           subdomains: 'abc',
           tms: false
-        }));
+        }, { vis: {} }));
 
         expect(this.map.toJSON().layers).toEqual([
           {
@@ -224,7 +224,7 @@ describe('windshaft/anonymous-map', function () {
           id: 'LAYER_ID',
           color: 'COLOR',
           image: 'http://carto.com/image.png'
-        }));
+        }, { vis: {} }));
 
         expect(this.map.toJSON().layers).toEqual([
           {

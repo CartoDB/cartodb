@@ -63,6 +63,7 @@ Development
 * Improve affordance of layer item (#11359)
 
 ### Bug fixes
+* Fixed time widget loader (#11754),
 * Fixed problems related with IE11.
 * Fixed silent problem with jQuery selector (cartodb/deep-insights.js#527)
 * Form editors remains open if a modal is open even triggering document click or ESC (#11686)

@@ -1,6 +1,8 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
 var VisModel = require('../../../src/vis/vis');
+var TileLayer = require('../../../src/geo/map/tile-layer');
+var PlainLayer = require('../../../src/geo/map/plain-layer');
 var CartoDBLayer = require('../../../src/geo/map/cartodb-layer');
 var TorqueLayer = require('../../../src/geo/map/torque-layer');
 var WindshaftClient = require('../../../src/windshaft/client');
@@ -95,7 +97,7 @@ describe('windshaft/anonymous-map', function () {
         'layers': [
           {
             'id': 'layer1',
-            'type': 'cartodb',
+            'type': 'mapnik',
             'options': {
               'cartocss': 'cartoCSS1',
               'cartocss_version': '2.0',
@@ -105,7 +107,7 @@ describe('windshaft/anonymous-map', function () {
           },
           {
             'id': 'layer2',
-            'type': 'cartodb',
+            'type': 'mapnik',
             'options': {
               'cartocss': 'cartoCSS2',
               'cartocss_version': '2.0',
@@ -115,7 +117,7 @@ describe('windshaft/anonymous-map', function () {
           },
           {
             'id': 'layer3',
-            'type': 'cartodb',
+            'type': 'mapnik',
             'options': {
               'cartocss': 'cartoCSS3',
               'cartocss_version': '2.0',
@@ -134,7 +136,7 @@ describe('windshaft/anonymous-map', function () {
 
       expect(this.map.toJSON().layers[0]).toEqual({
         'id': 'layer1',
-        'type': 'cartodb',
+        'type': 'mapnik',
         'options': {
           'cartocss': 'cartoCSS1',
           'cartocss_version': '2.0',
@@ -152,7 +154,7 @@ describe('windshaft/anonymous-map', function () {
         'layers': [
           {
             'id': 'layer1',
-            'type': 'cartodb',
+            'type': 'mapnik',
             'options': {
               'cartocss': 'cartoCSS1',
               'cartocss_version': '2.0',
@@ -169,7 +171,7 @@ describe('windshaft/anonymous-map', function () {
           },
           {
             'id': 'layer2',
-            'type': 'cartodb',
+            'type': 'mapnik',
             'options': {
               'cartocss': 'cartoCSS2',
               'cartocss_version': '2.0',
@@ -179,7 +181,7 @@ describe('windshaft/anonymous-map', function () {
           },
           {
             'id': 'layer3',
-            'type': 'cartodb',
+            'type': 'mapnik',
             'options': {
               'cartocss': 'cartoCSS3',
               'cartocss_version': '2.0',
@@ -193,30 +195,71 @@ describe('windshaft/anonymous-map', function () {
       });
     });
 
-    it('should NOT include interactivity and attributes options for "torque" layers', function () {
-      this.layersCollection.reset(new TorqueLayer({
-        id: 'torqueId',
-        sql: 'sql',
-        cartocss: 'cartocss'
-      }, {
-        vis: this.vis
-      }));
+    describe('http layers', function () {
+      it('should be included', function () {
+        this.layersCollection.reset(new TileLayer({
+          id: 'LAYER_ID',
+          urlTemplate: 'URL_TEMPLATE',
+          subdomains: 'abc',
+          tms: false
+        }));
 
-      expect(this.map.toJSON()).toEqual({
-        'layers': [
+        expect(this.map.toJSON().layers).toEqual([
+          {
+            'id': 'LAYER_ID',
+            'type': 'http',
+            'options': {
+              'urlTemplate': 'URL_TEMPLATE',
+              'subdomains': 'abc',
+              'tms': false
+            }
+          }
+        ]);
+      });
+    });
+
+    describe('plain layers', function () {
+      it('should be included', function () {
+        this.layersCollection.reset(new PlainLayer({
+          id: 'LAYER_ID',
+          color: 'COLOR',
+          image: 'http://carto.com/image.png'
+        }));
+
+        expect(this.map.toJSON().layers).toEqual([
+          {
+            'id': 'LAYER_ID',
+            'type': 'plain',
+            'options': {
+              'color': 'COLOR',
+              'imageUrl': 'http://carto.com/image.png'
+            }
+          }
+        ]);
+      });
+    });
+
+    describe('torque layers', function () {
+      it('should be included', function () {
+        this.layersCollection.reset(new TorqueLayer({
+          id: 'torqueId',
+          sql: 'sql',
+          cartocss: 'cartocss'
+        }, {
+          vis: this.vis
+        }));
+
+        expect(this.map.toJSON().layers).toEqual([
           {
             'id': 'torqueId',
             'type': 'torque',
             'options': {
               'sql': 'sql',
               'cartocss': 'cartocss',
-              'cartocss_version': '2.1.0',
-              'interactivity': []
+              'cartocss_version': '2.1.0'
             }
           }
-        ],
-        'dataviews': {},
-        'analyses': []
+        ]);
       });
     });
 

@@ -3,7 +3,6 @@ var _ = require('underscore');
 module.exports = function (LayerModel) {
   var METHODS = [
     'isVisible',
-    'getInteractiveColumnNames',
     'getName',
     'setDataProvider',
     'getDataProvider'

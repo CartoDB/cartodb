@@ -129,14 +129,6 @@ var TorqueLayer = LayerModelBase.extend({
     return this.get('layer_name');
   },
 
-  getInteractiveColumnNames: function () {
-    return [];
-  },
-
-  getInfowindowFieldNames: function () {
-    return [];
-  },
-
   fetchAttributes: function (layer, featureID, callback) {},
 
   setDataProvider: function (dataProvider) {

@@ -61,6 +61,7 @@ Development
 * Migrate to use GNIP v2 for twitter search connector (#10051, #11595)
 * Update tangram with smooth point outline.
 * Improve affordance of layer item (#11359)
+* Update tangram-cartocss to use smooth point outline.
 
 ### Bug fixes
 * Fixed problems related with IE11.

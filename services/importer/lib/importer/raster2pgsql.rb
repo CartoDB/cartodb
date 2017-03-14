@@ -146,30 +146,21 @@ module CartoDB
       def run_raster2pgsql(overviews_list)
         # We create a pipe and wait for it to complete the transaction in postgres
         # In order to avoid a temporary sql, potentially pretty big
-        command = %Q(#{raster2pgsql_command(overviews_list)} | #{psql_base_command})
-        stdout, stderr, status  = Open3.capture3(command)
-        output = stdout + stderr
-        output_message = "(#{status}) |#{output}| Command: #{command}"
-        self.command_output << "\n#{output_message}"
-        self.exit_code = status.to_i
+        pipeline = [raster2pgsql_command(overviews_list), psql_base_command]
+        Open3.pipeline_r(*pipeline, err: :out) do |output, statuses|
+          status = statuses.last
+          output_message = "(#{status}) |#{output}| Command: #{command}"
+          self.command_output << "\n#{output_message}"
+          self.exit_code = status.to_i
 
-        if output =~ /canceling statement due to statement timeout/i
-          raise StatementTimeoutError.new(output_message, ERRORS_MAP[StatementTimeoutError])
+          if output =~ /canceling statement due to statement timeout/i
+            raise StatementTimeoutError.new(output_message, ERRORS_MAP[StatementTimeoutError])
+          end
+
+          raise UnknownSridError.new(output_message)          if output =~ /invalid srid/i
+          raise TiffToSqlConversionError.new(output_message)  if status.to_i != 0
+          raise TiffToSqlConversionError.new(output_message)  if output =~ /failure/i
         end
-
-        raise UnknownSridError.new(output_message)          if output =~ /invalid srid/i
-        raise TiffToSqlConversionError.new(output_message)  if status.to_i != 0
-        raise TiffToSqlConversionError.new(output_message)  if output =~ /failure/i
-      end
-
-      def run_psql(command)
-        stdout, stderr, status  = Open3.capture3(command)
-        output_message = stdout + stderr
-        output_message = "(#{status}) |#{output_message}| Command: #{command}"
-        self.command_output << "\n#{output_message}"
-        self.exit_code = status.to_i
-
-        raise TiffToSqlConversionError.new(output_message)  if exit_code != 0
       end
 
       def calculate_raster_scale(pixel_size)
@@ -205,8 +196,10 @@ module CartoDB
       end
 
       def raster2pgsql_command(overviews_list)
-        %Q(#{raster2pgsql_path} -s #{PROJECTION} -t #{BLOCKSIZE} -C -x -Y -I -f #{RASTER_COLUMN_NAME} ) +
-        %Q(-l #{overviews_list} #{aligned_filepath} #{SCHEMA}.#{table_name})
+        [
+          raster2pgsql_path, '-s', PROJECTION, '-t', BLOCKSIZE, '-C', '-x', '-Y', '-I', '-f', RASTER_COLUMN_NAME,
+          '-l', overviews_list, 'aligned_filepath', "#{SCHEMA}.#{table_name}"
+        ]
       end
 
       # We add an overview for the tiler with factor = 1,
@@ -228,37 +221,33 @@ module CartoDB
       # NOTE: the name of the column the_raster_webmercator is maintained for compatibility.
       def import_original_raster
         db.run %{DROP TABLE #{base_table_fqtn}}
-        raster_import_command =
-          %{#{raster2pgsql_path} -t #{BLOCKSIZE} -C -x -Y -I -f #{RASTER_COLUMN_NAME} } +
-          %{#{filepath} #{SCHEMA}.#{table_name}}
+        raster_import_command = [raster2pgsql_path, '-t', BLOCKSIZE, '-C', '-x', '-Y', '-I', '-f', RASTER_COLUMN_NAME,
+                                 filepath, "#{SCHEMA}.#{table_name}"]
         # TODO refactor with run_raster2pgsql
-        command = %Q(#{raster_import_command} | #{psql_base_command})
-        stdout, stderr, status  = Open3.capture3(command)
-        output = stdout + stderr
-        output_message = "(#{status}) |#{output}| Command: #{command}"
-        self.command_output << "\n#{output_message}"
-        self.exit_code = status.to_i
+        pipeline = [raster_import_command, psql_base_command]
+        Open3.pipeline_r(*pipeline, err: :out) do |output, statuses|
+          status = statuses.last
+          output_message = "(#{status}) |#{output}| Command: #{command}"
+          self.command_output << "\n#{output_message}"
+          self.exit_code = status.to_i
 
-        if output =~ /canceling statement due to statement timeout/i
-          raise StatementTimeoutError.new(output_message, ERRORS_MAP[StatementTimeoutError])
+          if output =~ /canceling statement due to statement timeout/i
+            raise StatementTimeoutError.new(output_message, ERRORS_MAP[StatementTimeoutError])
+          end
+
+          raise UnknownSridError.new(output_message)          if output =~ /invalid srid/i
+          raise TiffToSqlConversionError.new(output_message)  if status.to_i != 0
+          raise TiffToSqlConversionError.new(output_message)  if output =~ /failure/i
         end
-
-        raise UnknownSridError.new(output_message)          if output =~ /invalid srid/i
-        raise TiffToSqlConversionError.new(output_message)  if status.to_i != 0
-        raise TiffToSqlConversionError.new(output_message)  if output =~ /failure/i
       end
 
-      def psql_inline_command(query)
-        psql_base_command %Q(-c "#{query}")
-      end
-
-      def psql_base_command(extra_params=nil)
+      def psql_base_command
         host      = pg_options.fetch(:host)
         port      = pg_options.fetch(:port)
         user      = pg_options.fetch(:username)
         database  = pg_options.fetch(:database)
 
-        %Q(#{psql_path} -h #{host} -p #{port} -U #{user} -d #{database} #{extra_params})
+        [psql_path, '-h', host, '-p', port, '-U', user, '-d', database]
       end
 
       def raster2pgsql_path

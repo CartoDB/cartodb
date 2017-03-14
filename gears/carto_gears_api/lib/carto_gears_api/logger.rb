@@ -43,7 +43,8 @@ module CartoGearsApi
 
     def log(level, exception: nil, message: nil, user: nil, **additional_data)
       gear_message = "{#{@gear}}: #{message}"
-      CartoDB::Logger.log(level, exception: exception, message: gear_message, user: user, **additional_data)
+      additional = additional_data.merge(gear: @gear)
+      CartoDB::Logger.log(level, exception: exception, message: gear_message, user: user, **additional)
     end
   end
 end

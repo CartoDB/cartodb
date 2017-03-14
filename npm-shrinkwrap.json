@@ -971,7 +971,7 @@
                     },
                     "inherits": {
                       "version": "2.0.3",
-                      "from": "inherits@>=2.0.1 <2.1.0",
+                      "from": "inherits@>=2.0.0 <3.0.0",
                       "resolved": "https://registry.npmjs.org/inherits/-/inherits-2.0.3.tgz"
                     }
                   }
@@ -1152,7 +1152,7 @@
     "cartodb-deep-insights.js": {
       "version": "0.0.2",
       "from": "cartodb/deep-insights.js#master",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#5934e3ded3184eb298df4f0ec36bcc4e4b484196",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#9c2653063445a0bf9811fc087f63561831af2472",
       "dependencies": {
         "cartodb.js": {
           "version": "4.0.0-alpha.1",

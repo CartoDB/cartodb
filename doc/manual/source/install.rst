@@ -222,16 +222,18 @@ NodeJS is required by different parts of the stack. The more significant are the
 
     sudo apt-get install nodejs
 
-  .. code-block:: bash
-
-    npm install npm@2.14.16 -g
-
   Note this should install both NodeJS 0.10.26 and npm 2.14.16. You can verify the installation went as expected with:
 
   .. code-block:: bash
 
     nodejs -v
     npm -v
+
+If npm version is wrong you should update it:
+
+  .. code-block:: bash
+
+    npm install npm@2.14.16 -g
 
 
 SQL API

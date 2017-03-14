@@ -2,6 +2,7 @@
 //
 // Expected layout hierarchy:
 //   CDB-Widget
+//     CDB-Loader
 //     CDB-Widget-error
 //     CDB-Widget-body
 //       CDB-Widget-header
@@ -17,6 +18,8 @@
   // Due to line-heights, better to substract some pixels in the top
   padding: ($sMargin-section - 4) 0;
   box-sizing: border-box;
+  overflow-x: hidden; // Not showing the loader in any side
+
   .CDB-Loader {
     height: 1px;
   }
@@ -129,7 +132,7 @@
     padding: 12px 0;
     border-left-width: 1px;
     border-left-style: solid;
-    overflow: hidden;
+
     .CDB-Loader {
       height: 2px;
     }

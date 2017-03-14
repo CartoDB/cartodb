@@ -4,7 +4,7 @@ module CartoGearsApi
   # Gears on CARTO should use this class for logging. It takes local directories and external
   # services conventions into account.
   class Logger
-    # @param gear_name The name of the gear. Log messages will be prefixed with `{gear_name}`.
+    # @param gear_name [String] The name of the gear. Log messages will be prefixed with it.
     def initialize(gear_name)
       @gear = gear_name
     end
@@ -42,8 +42,9 @@ module CartoGearsApi
     private
 
     def log(level, exception: nil, message: nil, user: nil, **additional_data)
-      gear_message = "{#{@gear}}: #{message}"
-      CartoDB::Logger.log(level, exception: exception, message: gear_message, user: user, **additional_data)
+      gear_message = "{#{@gear}}: #{message}" if message
+      additional = additional_data.merge(gear: @gear)
+      CartoDB::Logger.log(level, exception: exception, message: gear_message, user: user, **additional)
     end
   end
 end

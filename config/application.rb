@@ -6,6 +6,7 @@ require "action_controller/railtie"
 require "sequel-rails/railtie"
 require "action_mailer/railtie"
 require_relative '../lib/carto/configuration'
+require_relative '../lib/carto/carto_gears_support'
 
 if defined?(Bundler)
   Bundler.require(:default, :assets, Rails.env)

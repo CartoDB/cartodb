@@ -3,6 +3,7 @@ Development
 
 ### Features
 * Color picker for codemirror component.
+* Quota pre-check to analyses that consume quota.
 * Marking 'Do not show me again' in Layer Onboarding affects every tab. (#11586)
 * Adding Google-Maps basemaps (#11447)
 * Improve dialog forms to render them floated. (#7786)
@@ -59,8 +60,12 @@ Development
 * Improved formula widget description field. (#11469)
 * Added support for Zeus for faster testing (#11574). Check `CONTRIBUTING.md` for configuration details.
 * Migrate to use GNIP v2 for twitter search connector (#10051, #11595)
+* Update tangram with smooth point outline.
+* Improve affordance of layer item (#11359)
+* Update tangram-cartocss to use smooth point outline.
 
 ### Bug fixes
+* Fixed time widget loader (#11754),
 * Fixed problems related with IE11.
 * Fixed silent problem with jQuery selector (cartodb/deep-insights.js#527)
 * Form editors remains open if a modal is open even triggering document click or ESC (#11686)
@@ -115,11 +120,14 @@ Development
 * Speed improvements to parallel tests (#11636)
 * Fix for race condition when importing files and deploying at the same time (#11653)
 * Correctly create custom category legend if style has icons (#11592)
+* Fixed error handling if json "errors" field contains one single string (#11752)
 * Fix problem with perfect-scrollbar in Edge browsers (CartoDB/perfect-scrollbar/#2)
 * Layer onboardings are now aware on sync'd layers and highlighted area is clicked. (#11583)
 * Fixed overflow on loaders.
 * JOIN Analysis Fails Without Error Message (#11184)
 * Fix problem with perfect-scrollbar in Edge browsers (CartoDB/perfect-scrollbar/#2)
+* Fix problem creating analyses without Data Services API (#11745)
+* Fix problem when number column is used like categories in fill component (#11736)
 
 4.0.x (2016-12-05)
 ------------------

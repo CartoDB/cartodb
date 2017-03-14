@@ -117,6 +117,7 @@ Development
 * Speed improvements to parallel tests (#11636)
 * Fix for race condition when importing files and deploying at the same time (#11653)
 * Correctly create custom category legend if style has icons (#11592)
+* Fixed error handling if json "errors" field contains one single string (#11752)
 * Fix problem with perfect-scrollbar in Edge browsers (CartoDB/perfect-scrollbar/#2)
 * Layer onboardings are now aware on sync'd layers and highlighted area is clicked. (#11583)
 * Fixed overflow on loaders.

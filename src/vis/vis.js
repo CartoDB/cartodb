@@ -44,6 +44,14 @@ var VisModel = Backbone.Model.extend({
 
     this.overlaysCollection = new Backbone.Collection();
     this.settings = new SettingsModel();
+
+    this.layerGroupModel = new CartoDBLayerGroup({
+      apiKey: this.get('apiKey'),
+      authToken: this.get('authToken')
+    }, {
+      layersCollection: this._layersCollection
+    });
+
     this._instantiateMapWasCalled = false;
   },
 
@@ -117,16 +125,9 @@ var VisModel = Backbone.Model.extend({
 
     var windshaftClient = new WindshaftClient(windshaftSettings);
 
-    var layerGroupModel = this.layerGroupModel = new CartoDBLayerGroup({
-      apiKey: this.get('apiKey'),
-      authToken: this.get('authToken')
-    }, {
-      layersCollection: this._layersCollection
-    });
-
     var modelUpdater = new ModelUpdater({
       visModel: this,
-      layerGroupModel: layerGroupModel,
+      layerGroupModel: this.layerGroupModel,
       dataviewsCollection: this._dataviewsCollection,
       layersCollection: this._layersCollection,
       analysisCollection: this._analysisCollection

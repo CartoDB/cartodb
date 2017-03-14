@@ -83,7 +83,6 @@ module CartoDB
       end
 
       def run(use_append_mode=false)
-        byebug
         @append_mode = use_append_mode
         stdout, stderr, status  = Open3.capture3(environment, *command)
         self.command_output     = (stdout + stderr).encode('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: '?????')

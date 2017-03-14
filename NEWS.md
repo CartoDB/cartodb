@@ -123,6 +123,7 @@ Development
 * Fixed overflow on loaders.
 * JOIN Analysis Fails Without Error Message (#11184)
 * Fix problem with perfect-scrollbar in Edge browsers (CartoDB/perfect-scrollbar/#2)
+* Fix problem when number column is used like categories in fill component (#11736) 
 
 4.0.x (2016-12-05)
 ------------------

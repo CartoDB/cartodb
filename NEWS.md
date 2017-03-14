@@ -59,6 +59,7 @@ Development
 * Improved formula widget description field. (#11469)
 * Added support for Zeus for faster testing (#11574). Check `CONTRIBUTING.md` for configuration details.
 * Migrate to use GNIP v2 for twitter search connector (#10051, #11595)
+* Update tangram with smooth point outline.
 * Improve affordance of layer item (#11359)
 
 ### Bug fixes
@@ -122,6 +123,7 @@ Development
 * JOIN Analysis Fails Without Error Message (#11184)
 * Fix problem with perfect-scrollbar in Edge browsers (CartoDB/perfect-scrollbar/#2)
 * Fix problem creating analyses without Data Services API (#11745)
+* Fix problem when number column is used like categories in fill component (#11736)
 
 4.0.x (2016-12-05)
 ------------------

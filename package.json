@@ -167,6 +167,7 @@
     "test-watch": "watch 'npm test' $npm_package_config_npmJsDir",
     "preupdate-internal-deps": "echo 'DEPRECATED TASK, use `npm run-script update-internal-deps` instead'",
     "update-internal-deps": "rm -rf node_modules && npm install --no-shrinkwrap && npm shrinkwrap",
+    "branch-files": "node lib/build/branchFiles/branchFiles.js",
     "affected_specs": "node lib/build/branchFiles/branchFiles.js | xargs node lib/build/affectedFiles/affectedFiles.js"
   }
 }

@@ -313,10 +313,9 @@ var SHRINKWRAP_MODULES_TO_VALIDATE = [
       .value());
     grunt.registerTask('dev', 'Typical task for frontend development (watch JS/CSS changes)', [
       'setConfig:env.browserify_watch:true',
-      'browserify',
-      'build-jasmine-specrunners',
-      'connect',
-      'watch']);
+      'browserify_but_specs',
+      'watch_but_specs']);
+
     grunt.registerTask('sourcemaps',
       'generate sourcemaps, to be used w/ trackjs.com for bughunting', [
         'setConfig:assets_dir:./tmp/sourcemaps',
@@ -326,6 +325,21 @@ var SHRINKWRAP_MODULES_TO_VALIDATE = [
         'exorcise',
         'uglify'
       ]);
+
+    grunt.registerTask('watch_but_specs', 'All watch tasks except those that watch spec changes', function () {
+      delete grunt.config.data.watch.js_test_spec_core_cartodb3;
+      delete grunt.config.data.watch.js_test_spec_client_cartodb3;
+      delete grunt.config.data.watch.js_test_jasmine_core_cartodb3;
+      delete grunt.config.data.watch.js_test_jasmine_client_cartodb3;
+      delete grunt.config.data.watch.js_affected;
+      grunt.task.run('watch');
+    });
+
+    grunt.registerTask('browserify_but_specs', 'All browserify tasks except those that generate specs', function () {
+      delete grunt.config.data.browserify.affected_specs;
+      delete grunt.config.data.browserify['cartodb3-specs'];
+      grunt.task.run('browserify');
+    });
 
     grunt.registerTask('copy_builder', 'Multitask with all the tasks responsible for copying builder files.', [
      'copy:js_core_cartodb3',
@@ -342,12 +356,12 @@ var SHRINKWRAP_MODULES_TO_VALIDATE = [
           console.log(colors.yellow(affectedSpecs.length + ' specs found.'));
 
           var newSrc = ['lib/build/source-map-support.js']
-            .concat(affectedSpecs)
-            .concat([
-              '!lib/assets/test/spec/cartodb3/deep-insights-integrations.spec.js',
-              'lib/assets/test/spec/node_modules/**/*.spec.js',
-              'lib/assets/test/spec/cartodb3/deep-insights-integrations.spec.js'
-            ]);
+            .concat(affectedSpecs);
+            // .concat([
+            //   '!lib/assets/test/spec/cartodb3/deep-insights-integrations.spec.js',
+            //   'lib/assets/test/spec/node_modules/**/*.spec.js',
+            //   'lib/assets/test/spec/cartodb3/deep-insights-integrations.spec.js'
+            //]);
 
           grunt.config.set('browserify.affected_specs.src', newSrc);
           done();
@@ -362,6 +376,7 @@ var SHRINKWRAP_MODULES_TO_VALIDATE = [
       'affected',
       'browserify:affected_specs',
       'jasmine:affected:build',
+      'connect',
       'watch:js_affected'
     ]);
 

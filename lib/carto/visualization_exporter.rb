@@ -106,7 +106,8 @@ module Carto
 
       filename = "#{safe_vis_name} (#{Time.now.utc.strftime('on %Y-%m-%d at %H.%M.%S')})#{CARTO_EXTENSION}".freeze
 
-      `cd #{export_dir}/ && zip -r \"#{filename}\" #{visualization_id} && cd -`
+      status = system('zip', '-r', filename, visualization_id, chdir: export_dir)
+      raise "Error compressing export" unless status
 
       FileUtils.remove_dir(tmp_dir)
 

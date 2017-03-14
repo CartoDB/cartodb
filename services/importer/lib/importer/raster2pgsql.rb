@@ -97,7 +97,7 @@ module CartoDB
       end
 
       def align_raster(scale)
-        gdalwarp_command = [gdalwarp_path, GDALWARP_COMMON_OPTIONS, '-tr', scale, "-#{scale}", webmercator_filepath, aligned_filepath].flatten
+        gdalwarp_command = [gdalwarp_path, GDALWARP_COMMON_OPTIONS, '-tr', scale.to_s, "-#{scale}", webmercator_filepath, aligned_filepath].flatten
 
         stdout, stderr, status  = Open3.capture3(*gdalwarp_command)
         output_message = "(#{status}) |#{stdout + stderr}| Command: #{gdalwarp_command}"
@@ -147,9 +147,10 @@ module CartoDB
         # We create a pipe and wait for it to complete the transaction in postgres
         # In order to avoid a temporary sql, potentially pretty big
         pipeline = [raster2pgsql_command(overviews_list), psql_base_command]
-        Open3.pipeline_r(*pipeline, err: :out) do |output, statuses|
-          status = statuses.last
-          output_message = "(#{status}) |#{output}| Command: #{command}"
+        Open3.pipeline_r(*pipeline, err: :out) do |output_st, statuses|
+          status = statuses.last.value
+          output = output_st.read
+          output_message = "(#{status}) |#{output}| Command: #{pipeline}"
           self.command_output << "\n#{output_message}"
           self.exit_code = status.to_i
 
@@ -197,8 +198,8 @@ module CartoDB
 
       def raster2pgsql_command(overviews_list)
         [
-          raster2pgsql_path, '-s', PROJECTION, '-t', BLOCKSIZE, '-C', '-x', '-Y', '-I', '-f', RASTER_COLUMN_NAME,
-          '-l', overviews_list, 'aligned_filepath', "#{SCHEMA}.#{table_name}"
+          raster2pgsql_path, '-s', PROJECTION.to_s, '-t', BLOCKSIZE, '-C', '-x', '-Y', '-I', '-f', RASTER_COLUMN_NAME,
+          '-l', overviews_list, aligned_filepath, "#{SCHEMA}.#{table_name}"
         ]
       end
 
@@ -225,9 +226,10 @@ module CartoDB
                                  filepath, "#{SCHEMA}.#{table_name}"]
         # TODO refactor with run_raster2pgsql
         pipeline = [raster_import_command, psql_base_command]
-        Open3.pipeline_r(*pipeline, err: :out) do |output, statuses|
-          status = statuses.last
-          output_message = "(#{status}) |#{output}| Command: #{command}"
+        Open3.pipeline_r(*pipeline, err: :out) do |output_st, statuses|
+          status = statuses.last.value
+          output = output_st.read
+          output_message = "(#{status}) |#{output}| Command: #{pipeline}"
           self.command_output << "\n#{output_message}"
           self.exit_code = status.to_i
 
@@ -247,7 +249,7 @@ module CartoDB
         user      = pg_options.fetch(:username)
         database  = pg_options.fetch(:database)
 
-        [psql_path, '-h', host, '-p', port, '-U', user, '-d', database]
+        [psql_path, '-h', host, '-p', port.to_s, '-U', user, '-d', database]
       end
 
       def raster2pgsql_path

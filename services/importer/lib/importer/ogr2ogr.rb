@@ -8,11 +8,11 @@ module CartoDB
       ENCODING  = 'UTF-8'
       SCHEMA    = 'cdb_importer'
 
-      OUTPUT_FORMAT_OPTION  = '-f PostgreSQL'
-      PG_COPY_OPTION        = 'PG_USE_COPY=YES'
-      NEW_LAYER_TYPE_OPTION = '-nlt PROMOTE_TO_MULTI'
-      OSM_INDEXING_OPTION   = 'OSM_USE_CUSTOM_INDEXING=NO'
-      APPEND_MODE_OPTION    = '-append'
+      PG_COPY_OPTION        = { 'PG_USE_COPY' => 'YES' }.freeze
+      OSM_INDEXING_OPTION   = { 'OSM_USE_CUSTOM_INDEXING' => 'NO' }.freeze
+      OUTPUT_FORMAT_OPTION  = ['-f', 'PostgreSQL'].freeze
+      NEW_LAYER_TYPE_OPTION = ['-nlt', 'PROMOTE_TO_MULTI'].freeze
+      APPEND_MODE_OPTION    = '-append'.freeze
 
       DEFAULT_BINARY = 'which ogr2ogr2.1'
 
@@ -46,18 +46,28 @@ module CartoDB
         self.shape_coordinate_system = options.fetch(:shape_coordinate_system, '')
       end
 
+      def environment_for_import
+        [OSM_INDEXING_OPTION, PG_COPY_OPTION, client_encoding_option, shape_encoding_option]
+      end
+
       def command_for_import
-        "#{OSM_INDEXING_OPTION} #{PG_COPY_OPTION} #{client_encoding_option} #{shape_encoding_option} " +
-        "#{executable_path} #{OUTPUT_FORMAT_OPTION} #{guessing_option} " +
-        "#{postgres_options} #{projection_option} #{layer_creation_options} #{filepath} #{layer} " +
-        "#{layer_name_option} #{new_layer_type_option} #{shape_coordinate_option} #{timeout_options} " +
-        "#{overwrite_option}"
+        [
+          executable_path, OUTPUT_FORMAT_OPTION, guessing_option,
+          postgres_options, projection_option, layer_creation_options, filepath, layer,
+          layer_name_option, new_layer_type_option, shape_coordinate_option, timeout_options,
+          overwrite_option
+        ]
+      end
+
+      def environment_for_append
+        [OSM_INDEXING_OPTION, PG_COPY_OPTION, client_encoding_option]
       end
 
       def command_for_append
-        "#{OSM_INDEXING_OPTION} #{PG_COPY_OPTION} #{client_encoding_option} " +
-        "#{executable_path} #{APPEND_MODE_OPTION} #{OUTPUT_FORMAT_OPTION} #{postgres_options} " +
-        "#{projection_option} #{filepath} #{layer} #{layer_name_option} #{NEW_LAYER_TYPE_OPTION} "
+        [
+          executable_path, APPEND_MODE_OPTION, OUTPUT_FORMAT_OPTION, postgres_options,
+          projection_option, filepath, layer, layer_name_option, NEW_LAYER_TYPE_OPTION
+        ]
       end
 
       def executable_path
@@ -65,12 +75,17 @@ module CartoDB
       end
 
       def command
-        append_mode ? command_for_append : command_for_import
+        (append_mode ? command_for_append : command_for_import).flatten.reject(&:blank?)
+      end
+
+      def environment
+        (append_mode ? environment_for_append : environment_for_import).compact.reduce(:merge)
       end
 
       def run(use_append_mode=false)
+        byebug
         @append_mode = use_append_mode
-        stdout, stderr, status  = Open3.capture3(command)
+        stdout, stderr, status  = Open3.capture3(environment, *command)
         self.command_output     = (stdout + stderr).encode('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: '?????')
         self.exit_code          = status.to_i
         self
@@ -149,15 +164,18 @@ module CartoDB
       def guessing_option
         if csv_guessing && is_csv?
           # Inverse of the selection: if I want guessing I must NOT leave quoted fields as string
-          "-oo AUTODETECT_TYPE=YES -oo QUOTED_FIELDS_AS_STRING=#{quoted_fields_guessing ? 'NO' : 'YES' } " +
-          "#{x_y_possible_names_option} -s_srs EPSG:4326 -t_srs EPSG:4326"
-        else
-          ''
+          [
+            '-oo', 'AUTODETECT_TYPE=YES',
+            '-oo', "QUOTED_FIELDS_AS_STRING=#{quoted_fields_guessing ? 'NO' : 'YES'}"
+          ] + x_y_possible_names_option + ['-s_srs', 'EPSG:4326', '-t_srs', 'EPSG:4326']
         end
       end
 
       def x_y_possible_names_option
-        "-oo X_POSSIBLE_NAMES=#{LONGITUDE_POSSIBLE_NAMES.join(',')} -oo Y_POSSIBLE_NAMES=#{LATITUDE_POSSIBLE_NAMES.join(',')}"
+        [
+          '-oo', "X_POSSIBLE_NAMES=#{LONGITUDE_POSSIBLE_NAMES.join(',')}",
+          '-oo', "Y_POSSIBLE_NAMES=#{LATITUDE_POSSIBLE_NAMES.join(',')}"
+        ]
       end
 
       def new_layer_type_option
@@ -175,49 +193,52 @@ module CartoDB
       end
 
       def client_encoding_option
-        "PGCLIENTENCODING=#{encoding}"
+        { 'PGCLIENTENCODING' => encoding }
       end
 
       def shape_encoding_option
-        !shape_encoding.nil? && !shape_encoding.empty? ? "SHAPE_ENCODING=#{shape_encoding}" : ''
+        shape_encoding.present? ? { 'SHAPE_ENCODING' => shape_encoding } : nil
       end
 
       def shape_coordinate_option
-        shape_coordinate_system.empty? ? '' : "-s_srs EPSG:#{shape_coordinate_system}"
+        shape_coordinate_system.empty? ? '' : ['-s_srs', "EPSG:#{shape_coordinate_system}"]
       end
 
       def layer_name_option
-        "-nln #{SCHEMA}.#{table_name}"
+        ['-nln', "#{SCHEMA}.#{table_name}"]
       end
 
       # @see http://www.gdal.org/drv_pg.html
       # @see http://www.gdal.org/drv_pg_advanced.html
       def postgres_options
-        %Q{PG:"host=#{pg_options.fetch(:host)} }      +
-        %Q{port=#{pg_options.fetch(:direct_port, pg_options.fetch(:port))} }          +
-        %Q{user=#{pg_options.fetch(:username)} }          +
-        %Q{dbname=#{pg_options.fetch(:database)} }    +
-        %Q{password=#{pg_options.fetch(:password)}"}
+        [
+          %{PG:host=#{pg_options.fetch(:host)} } +
+            %{port=#{pg_options.fetch(:direct_port, pg_options.fetch(:port))} } +
+            %{user=#{pg_options.fetch(:username)} } +
+            %{dbname=#{pg_options.fetch(:database)} } +
+            %{password=#{pg_options.fetch(:password)}}
+        ]
         # 'schemas=#{SCHEMA},cartodb' param is no longer needed, let the DB build the proper one
       end
 
       def layer_creation_options
         # Dimension option, precision option
-        "-lco DIM=2 -lco PRECISION=NO"
+        ['-lco', 'DIM=2', '-lco', 'PRECISION=NO']
       end
 
       def projection_option
-        is_csv? || filepath =~ /\.ods/ ? nil : '-t_srs EPSG:4326 '
+        is_csv? || filepath =~ /\.ods/ ? nil : ['-t_srs', 'EPSG:4326']
       end
 
       def timeout_options
         # see http://www.gdal.org/ogr2ogr.html
         # see http://www.gdal.org/drv_pg.html
-        %Q{-doo PRELUDE_STATEMENTS="SET statement_timeout TO \'#{DEFAULT_TIMEOUT}\'" } +
-        %Q{-doo CLOSING_STATEMENTS='SET statement_timeout TO DEFAULT' } +
-        %Q{-update}
+        [
+          '-doo', %{PRELUDE_STATEMENTS=SET statement_timeout TO \'#{DEFAULT_TIMEOUT}\' },
+          '-doo', %{CLOSING_STATEMENTS=SET statement_timeout TO DEFAULT },
+          '-update'
+        ]
       end
     end
   end
 end
-

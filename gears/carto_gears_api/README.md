@@ -81,7 +81,13 @@ In order to enable rspec:
 ## Documentation
 
 ### `CartoGearsAPI::` (Ruby API)
-Generate the documentation with `yard`.
+Generate the documentation with the following command:
+
+`yardoc --files app/views/shared/form/_input_text.html.erb`
+
+Documented ERBs are listed in the "Files" top left section at the docs.
+
+Note: YARD support for ERB files is quite limited, and ERBs documentation is still ongoing.
 
 ### Extension points
 

@@ -477,7 +477,7 @@ var Infowindow = View.extend({
   _closeInfowindow: function (ev) {
     if (ev) {
       ev.preventDefault();
-      ev.stopPropagation();
+      ev.stopImmediatePropagation();
     }
     if (this.model.get('visibility')) {
       this.model.set('visibility', false);

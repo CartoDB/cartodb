@@ -9,7 +9,7 @@
     var upgrade_url = "<%= current_user.upgrade_url(request.protocol) %>";
     var mobile_enabled = "<%= current_user.mobile_sdk_enabled? %>"
   </script>
-  <%= javascript_include_tag 'cdb.js', 'models.js', 'keys_templates.js', 'keys_deps.js', 'keys.js' -%>
+  <%= javascript_include_tag 'cdb.js', 'models.js', 'keys_templates.js', 'keys_deps.js', 'keys.js', 'profile.js' -%>
 <% end %>
 <%= content_for(:css) do %>
   <%= stylesheet_link_tag 'api_keys.css', :media => 'all' %>

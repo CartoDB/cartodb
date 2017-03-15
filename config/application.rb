@@ -77,6 +77,7 @@ module CartoDB
       embed.js
       dashboard_deps.js
       dashboard.js
+      profile.js
       dashboard_templates.js
       public_dashboard_deps.js
       public_dashboard.js

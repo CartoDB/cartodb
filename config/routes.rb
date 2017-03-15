@@ -599,6 +599,12 @@ CartoDB::Application.routes.draw do
       end
 
       put 'notifications/:category', to: 'user_notifications#update', as: :api_v3_user_notifications_update
+
+      resources :organizations, only: [] do
+        resources :notifications, only: [:create, :destroy],
+                                  controller: :organization_notifications,
+                                  constraints: { id: UUID_REGEXP }
+      end
     end
 
     scope 'v2/' do

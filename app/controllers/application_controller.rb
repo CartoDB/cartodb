@@ -11,6 +11,7 @@ class ApplicationController < ActionController::Base
 
   around_filter :wrap_in_profiler
 
+  before_filter :set_security_headers
   before_filter :http_header_authentication, if: :http_header_authentication?
   before_filter :store_request_host
   before_filter :ensure_user_organization_valid
@@ -364,4 +365,9 @@ class ApplicationController < ActionController::Base
     Carto::HttpHeaderAuthentication.new.valid?(request)
   end
 
+  def set_security_headers
+    headers['X-Frame-Options'] = 'DENY'
+    headers['X-XSS-Protection'] = '1; mode=block'
+    headers['X-Content-Type-Options'] = 'nosniff'
+  end
 end

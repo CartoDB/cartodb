@@ -14,7 +14,7 @@ module ApplicationHelper
   end
 
   def show_google_api_keys?(user)
-    user.google_maps_geocoder_enabled? && (!user.organization.present? || user.organization_owner? )
+    user.google_maps_geocoder_enabled? && (!user.organization.present? || user.organization_owner?)
   end
 
   def in_my_tables?

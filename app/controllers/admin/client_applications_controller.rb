@@ -65,7 +65,6 @@ class Admin::ClientApplicationsController < Admin::AdminController
     end
   end
 
-
   def load_dashboard_notifications
     carto_user = Carto::User.where(id: current_user.id).first if current_user
 

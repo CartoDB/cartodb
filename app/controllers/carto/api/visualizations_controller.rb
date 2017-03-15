@@ -17,7 +17,7 @@ module Carto
       include VisualizationsControllerHelper
 
       ssl_required :index, :show
-      ssl_allowed  :vizjson2, :vizjson3, :likes_count, :likes_list, :is_liked, :list_watching, :static_map, :search
+      ssl_allowed  :vizjson2, :vizjson3, :likes_count, :likes_list, :is_liked, :list_watching, :static_map, :search, :subcategories
 
       # TODO: compare with older, there seems to be more optional authentication endpoints
       skip_before_filter :api_authorization_required, only: [:index, :vizjson2, :vizjson3, :is_liked, :static_map]
@@ -62,6 +62,7 @@ module Carto
             hideSharedEmptyDataset = true
           end
         end
+        parent_category = params.fetch('parent_category', -1)
 
         presenter_cache = Carto::Api::PresenterCache.new
 
@@ -69,8 +70,12 @@ module Carto
           # TODO: undesirable table hardcoding, needed for disambiguation. Look for
           # a better approach and/or move it to the query builder
           excludedNames = [emptyDatasetName]
+          query = vqb.with_order("visualizations.#{order}", :desc).with_excluded_names(excludedNames)
+          if parent_category != -1
+            query = query.with_parent_category(parent_category.to_i)
+          end
           response = {
-            visualizations: vqb.with_order("visualizations.#{order}", :desc).with_excluded_names(excludedNames).build_paged(page, per_page).map { |v|
+            visualizations: query.build_paged(page, per_page).map { |v|
                 VisualizationPresenter.new(v, current_viewer, self, { related: false }).with_presenter_cache(presenter_cache).to_poro
             },
             total_entries: vqb.build.count
@@ -86,8 +91,12 @@ module Carto
         else
           # TODO: undesirable table hardcoding, needed for disambiguation. Look for
           # a better approach and/or move it to the query builder
+          query = vqb.with_order("visualizations.#{order}", :desc)
+          if parent_category != -1
+            query = query.with_parent_category(parent_category.to_i)
+          end
           response = {
-            visualizations: vqb.with_order("visualizations.#{order}", :desc).build_paged(page, per_page).map { |v|
+            visualizations: query.build_paged(page, per_page).map { |v|
                 VisualizationPresenter.new(v, current_viewer, self, { related: false }).with_presenter_cache(presenter_cache).to_poro
             },
             total_entries: vqb.build.count
@@ -161,6 +170,19 @@ module Carto
         response.headers['Cache-Control']   = "max-age=86400,must-revalidate, public"
 
         redirect_to Carto::StaticMapsURLHelper.new.url_for_static_map(request, @visualization, map_width, map_height)
+      end
+
+      def subcategories
+        categoryId = params[:category_id]
+
+        categories = Sequel::Model.db.fetch("
+          SELECT id, name, parent_id, list_order FROM visualization_categories
+            WHERE id = ANY(get_viz_child_category_ids(?))
+            ORDER BY parent_id, list_order, name",
+            categoryId
+          ).all
+
+        render :json => categories.to_json
       end
 
       def search

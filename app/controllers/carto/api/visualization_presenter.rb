@@ -66,6 +66,7 @@ module Carto
           legend_style: @visualization.legend_style,
           exportable: @visualization.exportable,
           export_geom: @visualization.export_geom,
+          category: @visualization.category,
           url: url
         }
         poro.merge!( { related_tables: related_tables } ) if @options.fetch(:related, true)

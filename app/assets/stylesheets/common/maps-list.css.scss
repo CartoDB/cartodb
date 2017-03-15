@@ -8,11 +8,10 @@
 // --------------------------------------------------
 .MapsList {
   @include display-flex();
-  @include justify-content(flex-start, start);
+  justify-content: flex-start;
   @include align-items(center);
   @include flex-wrap(wrap);
   position: relative;
-  width: $sLayout-width + $sMargin-element;
   margin-left: auto;
   margin-right: auto;
 }

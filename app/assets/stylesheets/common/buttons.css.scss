@@ -118,3 +118,18 @@ $cHighlight-mainHover: rgba(#007FBD, 1);
   font-size: $sFontSize-smallUpperCase;
   line-height: 24px;
 }
+
+.Button--toolbar {
+  @include bb_button_style;
+  height: 27px;
+  line-height: 25px;
+  padding: 0px 9px;
+  margin-right: 4px;
+}
+
+.Button--toolbar-negative {
+  background-color: $cHighlight-negative;
+  &:hover {
+    background-color: rgba(#B93F37, 1);
+  }
+}

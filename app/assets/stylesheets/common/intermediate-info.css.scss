@@ -12,7 +12,7 @@
   @include flex-direction(column);
   @include align-items(center, center);
   @include justify-content(center, center);
-  width: 100%;
+  width: $sLayout-width;
   min-height: 360px;
   margin: 0 auto;
   text-align: center;

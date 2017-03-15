@@ -103,67 +103,92 @@ describe('geo/cartodb-layer-group', function () {
       expect(this.cartoDBLayerGroup.getTileURLTemplates()).toEqual([]);
     });
 
-    it('should return an array with the tile URL templates', function () {
-      this.cartoDBLayerGroup.set('urls', {
-        tiles: [ 'http://carto.com/{layerIndexes}/{z}/{x}/{y}.png', 'http://carto.com/{layerIndexes}/{z}/{x}/{y}.png' ]
+    describe('png', function () {
+      beforeEach(function () {
+        this.cartoDBLayerGroup.set('urls', {
+          tiles: [ 'http://carto.com/{layerIndexes}/{z}/{x}/{y}.{format}', 'http://carto.com/{layerIndexes}/{z}/{x}/{y}.{format}' ]
+        });
       });
 
-      expect(this.cartoDBLayerGroup.getTileURLTemplates()).toEqual([
-        'http://carto.com/1,2/{z}/{x}/{y}.png',
-        'http://carto.com/1,2/{z}/{x}/{y}.png'
-      ]);
+      it('should return an array with the tile URL templates', function () {
+        expect(this.cartoDBLayerGroup.getTileURLTemplates()).toEqual([
+          'http://carto.com/1,2/{z}/{x}/{y}.png',
+          'http://carto.com/1,2/{z}/{x}/{y}.png'
+        ]);
+      });
+
+      it('should not include index of layers that are hidden', function () {
+        this.cartoDBLayer1.set('visible', false);
+
+        expect(this.cartoDBLayerGroup.getTileURLTemplates()).toEqual([
+          'http://carto.com/2/{z}/{x}/{y}.png',
+          'http://carto.com/2/{z}/{x}/{y}.png'
+        ]);
+      });
+
+      it('should return an empty array if all layers are hidden', function () {
+        this.cartoDBLayer1.set('visible', false);
+        this.cartoDBLayer2.set('visible', false);
+
+        expect(this.cartoDBLayerGroup.getTileURLTemplates()).toEqual([]);
+      });
+
+      it('should append the api_key to urls', function () {
+        this.cartoDBLayerGroup.set({
+          apiKey: 'THE_API_KEY'
+        });
+
+        expect(this.cartoDBLayerGroup.getTileURLTemplates()).toEqual([
+          'http://carto.com/1,2/{z}/{x}/{y}.png?api_key=THE_API_KEY',
+          'http://carto.com/1,2/{z}/{x}/{y}.png?api_key=THE_API_KEY'
+        ]);
+      });
+
+      it('should append the auth_token to urls', function () {
+        this.cartoDBLayerGroup.set({
+          authToken: 'AUTH_TOKEN'
+        });
+
+        expect(this.cartoDBLayerGroup.getTileURLTemplates()).toEqual([
+          'http://carto.com/1,2/{z}/{x}/{y}.png?auth_token=AUTH_TOKEN',
+          'http://carto.com/1,2/{z}/{x}/{y}.png?auth_token=AUTH_TOKEN'
+        ]);
+      });
     });
 
-    it('should not include index of layers that are hidden', function () {
-      this.cartoDBLayerGroup.set('urls', {
-        tiles: [ 'http://carto.com/{layerIndexes}/{z}/{x}/{y}.png', 'http://carto.com/{layerIndexes}/{z}/{x}/{y}.png' ]
+    describe('mvt', function () {
+      beforeEach(function () {
+        this.cartoDBLayerGroup.set('urls', {
+          tiles: [ 'http://carto.com/{layerIndexes}/{z}/{x}/{y}.{format}', 'http://carto.com/{layerIndexes}/{z}/{x}/{y}.{format}' ]
+        });
       });
 
-      this.cartoDBLayer1.set('visible', false);
-
-      expect(this.cartoDBLayerGroup.getTileURLTemplates()).toEqual([
-        'http://carto.com/2/{z}/{x}/{y}.png',
-        'http://carto.com/2/{z}/{x}/{y}.png'
-      ]);
-    });
-
-    it('should return an empty array if all layers are hidden', function () {
-      this.cartoDBLayerGroup.set('urls', {
-        tiles: [ 'http://carto.com/{layerIndexes}/{z}/{x}/{y}.png', 'http://carto.com/{layerIndexes}/{z}/{x}/{y}.png' ]
+      it('should return a single tile URL template', function () {
+        expect(this.cartoDBLayerGroup.getTileURLTemplates('mvt')).toEqual('http://carto.com/mapnik/{z}/{x}/{y}.mvt');
       });
 
-      this.cartoDBLayer1.set('visible', false);
-      this.cartoDBLayer2.set('visible', false);
+      it('should return a single tile URL template if all layers are hidden', function () {
+        this.cartoDBLayer1.set('visible', false);
+        this.cartoDBLayer2.set('visible', false);
 
-      expect(this.cartoDBLayerGroup.getTileURLTemplates()).toEqual([]);
-    });
-
-    it('should append the api_key to urls', function () {
-      this.cartoDBLayerGroup.set({
-        apiKey: 'THE_API_KEY',
-        urls: {
-          tiles: [ 'http://carto.com/{layerIndexes}/{z}/{x}/{y}.png', 'http://carto.com/{layerIndexes}/{z}/{x}/{y}.png' ]
-        }
+        expect(this.cartoDBLayerGroup.getTileURLTemplates('mvt')).toEqual('http://carto.com/mapnik/{z}/{x}/{y}.mvt');
       });
 
-      expect(this.cartoDBLayerGroup.getTileURLTemplates()).toEqual([
-        'http://carto.com/1,2/{z}/{x}/{y}.png?api_key=THE_API_KEY',
-        'http://carto.com/1,2/{z}/{x}/{y}.png?api_key=THE_API_KEY'
-      ]);
-    });
+      it('should append the api_key to urls', function () {
+        this.cartoDBLayerGroup.set({
+          apiKey: 'THE_API_KEY'
+        });
 
-    it('should append the auth_token to urls', function () {
-      this.cartoDBLayerGroup.set({
-        authToken: 'AUTH_TOKEN',
-        urls: {
-          tiles: [ 'http://carto.com/{layerIndexes}/{z}/{x}/{y}.png', 'http://carto.com/{layerIndexes}/{z}/{x}/{y}.png' ]
-        }
+        expect(this.cartoDBLayerGroup.getTileURLTemplates('mvt')).toEqual('http://carto.com/mapnik/{z}/{x}/{y}.mvt?api_key=THE_API_KEY');
       });
 
-      expect(this.cartoDBLayerGroup.getTileURLTemplates()).toEqual([
-        'http://carto.com/1,2/{z}/{x}/{y}.png?auth_token=AUTH_TOKEN',
-        'http://carto.com/1,2/{z}/{x}/{y}.png?auth_token=AUTH_TOKEN'
-      ]);
+      it('should append the auth_token to urls', function () {
+        this.cartoDBLayerGroup.set({
+          authToken: 'AUTH_TOKEN'
+        });
+
+        expect(this.cartoDBLayerGroup.getTileURLTemplates('mvt')).toEqual('http://carto.com/mapnik/{z}/{x}/{y}.mvt?auth_token=AUTH_TOKEN');
+      });
     });
   });
 

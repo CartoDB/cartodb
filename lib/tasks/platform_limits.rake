@@ -77,4 +77,18 @@ namespace :cartodb do
     user.save
   end
 
+  desc 'Set max_import_file_size, max_import_table_row_count'
+  task :set_import_limits, [:username, :max_import_file_size, :max_import_table_row_count] => :environment do |_task, args|
+    username = args[:username]
+    raise 'username needed' unless username
+    user = ::User.where(username: username).first
+    raise "user #{username} not found" unless user
+
+
+    user.max_import_file_size = args[:max_import_file_size] if args[:max_import_file_size].present?
+    user.max_import_table_row_count = args[:max_import_table_row_count] if args[:max_import_table_row_count].present?
+
+    user.save
+  end
+
 end

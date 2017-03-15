@@ -11,9 +11,11 @@ require_dependency 'static_maps_url_helper'
 require_dependency 'static_maps_url_helper'
 require_dependency 'carto/user_db_size_cache'
 require_dependency 'carto/ghost_tables_manager'
+require_dependency 'carto/helpers/frame_options_helper'
 
 class Admin::VisualizationsController < Admin::AdminController
   include CartoDB, VisualizationsControllerHelper
+  include Carto::FrameOptionsHelper
 
   MAX_MORE_VISUALIZATIONS = 3
   DEFAULT_PLACEHOLDER_CHARS = 4
@@ -23,6 +25,9 @@ class Admin::VisualizationsController < Admin::AdminController
               :embed_protected, :public_map_protected, :embed_forbidden, :track_embed
   ssl_required :index, :show, :protected_public_map, :show_protected_public_map
 
+  before_filter :x_frame_options_allow, only: [:embed_forbidden, :embed_map, :embed_protected,
+                                               :show_organization_embed_map, :show_protected_embed_map,
+                                               :track_embed]
   before_filter :login_required, only: [:index]
   before_filter :table_and_schema_from_params, only: [:show, :public_table, :public_map, :show_protected_public_map,
                                                       :show_protected_embed_map, :embed_map]
@@ -49,10 +54,6 @@ class Admin::VisualizationsController < Admin::AdminController
   skip_before_filter :browser_is_html5_compliant?, only: [:public_map, :embed_map, :track_embed,
                                                           :show_protected_embed_map, :show_protected_public_map]
   skip_before_filter :verify_authenticity_token, only: [:show_protected_public_map, :show_protected_embed_map]
-
-  skip_before_filter :x_frame_options_deny, only: [:embed_forbidden, :embed_map, :embed_protected,
-                                                   :show_organization_embed_map, :show_protected_embed_map,
-                                                   :track_embed]
 
   def index
     @first_time    = !current_user.dashboard_viewed?

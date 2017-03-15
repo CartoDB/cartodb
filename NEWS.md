@@ -56,6 +56,7 @@ Development
 * Onboarding for layer edition (#10905)
 * Improved empty bounds map handling (#11711).
 * Updated diagnosis page versions.
+* set_import_limits rake (#11756).
 * Improved formula widget description field. (#11469)
 * Added support for Zeus for faster testing (#11574). Check `CONTRIBUTING.md` for configuration details.
 * Migrate to use GNIP v2 for twitter search connector (#10051, #11595)

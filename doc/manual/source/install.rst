@@ -229,6 +229,12 @@ NodeJS is required by different parts of the stack. The more significant are the
     nodejs -v
     npm -v
 
+If npm version is wrong you should update it:
+
+  .. code-block:: bash
+
+    npm install npm@2.14.16 -g
+
 
 SQL API
 -------

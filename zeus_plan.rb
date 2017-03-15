@@ -65,6 +65,11 @@ class CustomPlan < Zeus::Rails
     ARGV.replace(['resque:work'])
     Rake.application.run
   end
+
+  def rake
+    Rails::Sequel.connection.disconnect
+    super
+  end
 end
 
 Zeus.plan = CustomPlan.new

@@ -23,6 +23,13 @@
             Groups
           </a>
         </li>
+        <% if current_user.has_feature_flag?('notifications') %>
+          <li class="Filters-typeItem">
+            <a href="<%= current_user_url('organization_notifications') %>" class="Filters-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/organizations_notifications" %>">
+              Notifications
+            </a>
+          </li>
+        <% end %>
         <% if show_billing  %>
           <li class="Filters-typeItem">
             <a href="<%= current_user.plan_url(request.protocol) %>" class="Filters-typeLink">Billing</a>

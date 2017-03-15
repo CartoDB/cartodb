@@ -31,6 +31,12 @@ class Admin::OrganizationsController < Admin::AdminController
     end
   end
 
+  def notifications
+    respond_to do |format|
+      format.html { render 'notifications' }
+    end
+  end
+
   def settings_update
     attributes = params[:organization]
 

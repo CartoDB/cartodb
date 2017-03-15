@@ -1370,11 +1370,12 @@
     },
     "maps": {
       "options": {
-        "rename": "Rename",
         "duplicate": "Duplicate",
-        "export-map": "Export map",
         "edit-metadata": "Edit metadata…",
-        "remove": "Delete map…"
+        "export-image": "Export as image",
+        "export-map": "Export map",
+        "remove": "Delete map…",
+        "rename": "Rename"
       },
       "duplicate": {
         "error": "There was an error duplicating %{name}",
@@ -1388,6 +1389,14 @@
         "error": "Error deleting map %{name}: %{error}",
         "loading": "Removing the map %{name}...",
         "success": "Map %{name} deleted"
+      },
+      "export-image": {
+        "title": "Export image",
+        "desc": "This map will be exported as a %{format} image of %{dimensions}.",
+        "available-in": "It's now available in",
+        "cancel": "Cancel",
+        "export": "Export",
+        "download": "Download"
       },
       "export": {
         "confirmation": {
@@ -1855,6 +1864,19 @@
           "body": "This layer is hidden, changes won't be shown until you make it visible.",
           "show": "SHOW"
         }
+      }
+    },
+    "export-image": {
+      "invalid-dimension": "Invalid dimension",
+      "properties": {
+        "width": "width",
+        "height": "height",
+        "size": "Size",
+        "size-subtitle": "You can also edit the width and height",
+        "format": "Format",
+        "format-subtitle": "Change column names and type in table mode",
+        "options": "Options",
+        "options-subtitle": "Configure display options"
       }
     },
     "legend": {

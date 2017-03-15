@@ -32,6 +32,7 @@ module Carto
         {
           id: @user_table.id,
           name: @user_table.name_for_user(@current_viewer),
+          name_alias: @user_table.name_alias,
           permission: Carto::Api::PermissionPresenter.new(@permission, current_viewer: @current_viewer).with_presenter_cache(@presenter_cache).to_poro,
           geometry_types: @user_table.geometry_types,
           privacy: privacy_text(@user_table.privacy).upcase,

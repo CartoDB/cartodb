@@ -23,7 +23,10 @@ describe('src/vis/model-updater', function () {
       dataviewsCollection: {},
       analysisCollection: {},
       modelUpdater: {},
-      windshaftSettings: {}
+      windshaftSettings: {
+        urlTemplate: 'http://{user}.cartodb.com:80',
+        userName: 'rambo'
+      }
     });
 
     spyOn(this.windshaftMap, 'getBaseURL').and.callFake(function (subdomain) {

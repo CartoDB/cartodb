@@ -49,16 +49,29 @@ var CartoDBLayerGroup = Backbone.Model.extend({
   getTileURLTemplates: function (type) {
     type = type || 'png';
 
-    if (this._areAllLayersHidden()) {
-      return [];
-    }
     var tileURLTemplates = (this.get('urls') && this.get('urls').tiles) || [];
-    var urls = _.chain(tileURLTemplates)
-      .map(this._replaceLayerIndexesOfVisibleLayers.bind(this, type))
-      .map(this._appendAuthParamsToURL.bind(this))
-      .value();
+    if (type === 'png') {
+      if (this._areAllLayersHidden()) {
+        return [];
+      }
+      return _.map(tileURLTemplates, this._generatePNGTileURLTemplate.bind(this));
+    } else if (type === 'mvt') {
+      return this._generateMTVTileURLTemplate(tileURLTemplates[0]);
+    }
+  },
 
-    return type === 'mvt' ? urls && urls[0] : urls;
+  _generatePNGTileURLTemplate: function (urlTemplate) {
+    urlTemplate = urlTemplate
+      .replace('{layerIndexes}', this._getIndexesOfVisibleLayers())
+      .replace('{format}', 'png');
+    return this._appendAuthParamsToURL(urlTemplate);
+  },
+
+  _generateMTVTileURLTemplate: function (urlTemplate) {
+    urlTemplate = urlTemplate
+      .replace('{layerIndexes}', 'mapnik')
+      .replace('{format}', 'mvt');
+    return this._appendAuthParamsToURL(urlTemplate);
   },
 
   _areAllLayersHidden: function () {
@@ -67,21 +80,14 @@ var CartoDBLayerGroup = Backbone.Model.extend({
     });
   },
 
-  _replaceLayerIndexesOfVisibleLayers: function (type, url) {
-    if (type === 'png') {
-      var remoteIndexesOfVisibleLayers = _.reduce(this.getLayers(), function (indexes, layerModel, layerIndex) {
-        if (layerModel.isVisible()) {
-          indexes.push(this.get('indexOfLayersInWindshaft')[layerIndex]);
-        }
-        return indexes;
-      }.bind(this), []);
-
-      return url.replace('{layerIndexes}', remoteIndexesOfVisibleLayers.join(','));
-    } else if (type === 'mvt') {
-      return url
-        .replace('{layerIndexes}', 'mapnik')
-        .replace('.png', '.mvt');
-    }
+  _getIndexesOfVisibleLayers: function (url) {
+    var indexOfLayersInWindshaft = this.get('indexOfLayersInWindshaft');
+    return _.reduce(this.getLayers(), function (indexes, layerModel, layerIndex) {
+      if (layerModel.isVisible()) {
+        indexes.push(indexOfLayersInWindshaft[layerIndex]);
+      }
+      return indexes;
+    }, []).join(',');
   },
 
   hasTileURLTemplates: function () {

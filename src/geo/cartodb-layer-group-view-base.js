@@ -1,5 +1,6 @@
-function CartoDBLayerGroupViewBase (layerGroupModel) {
+function CartoDBLayerGroupViewBase (layerGroupModel, nativeMap) {
   this.interaction = [];
+  this.nativeMap = nativeMap;
 
   layerGroupModel.on('change:urls', this._reload, this);
   layerGroupModel.onLayerVisibilityChanged(this._reload.bind(this));
@@ -42,18 +43,18 @@ CartoDBLayerGroupViewBase.prototype = {
       }
 
       this.interaction[layerIndexInLayerGroup] = this.interactionClass()
-        .map(this.options.map)
+        .map(this.nativeMap)
         .tilejson(tilejson)
         .on('on', function (o) {
           if (self._interactionDisabled) return;
           o.layer = layerIndexInLayerGroup;
-          self._manageOnEvents(self.options.map, o);
+          self._manageOnEvents(self.nativeMap, o);
         })
         .on('off', function (o) {
           if (self._interactionDisabled) return;
           o = o || {};
           o.layer = layerIndexInLayerGroup;
-          self._manageOffEvents(self.options.map, o);
+          self._manageOffEvents(self.nativeMap, o);
         });
     }
   },

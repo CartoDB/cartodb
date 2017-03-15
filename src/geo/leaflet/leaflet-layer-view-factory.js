@@ -2,7 +2,6 @@ var log = require('cdb.log');
 var LeafletTiledLayerView = require('./leaflet-tiled-layer-view');
 var LeafletWMSLayerView = require('./leaflet-wms-layer-view');
 var LeafletPlainLayerView = require('./leaflet-plain-layer-view');
-var LeafletGmapsTiledLayerView = require('./leaflet-gmaps-tiled-layer-view');
 var LeafletCartoDBLayerGroupView = require('./leaflet-cartodb-layer-group-view');
 var LeafletTorqueLayerView = require('./leaflet-torque-layer-view');
 var LeafletCartoDBWebglLayerGroupView = require('./leaflet-cartodb-webgl-layer-group-view');
@@ -24,7 +23,6 @@ LeafletLayerViewFactory.prototype._constructors = {
   'tiled': LeafletTiledLayerView,
   'wms': LeafletWMSLayerView,
   'plain': LeafletPlainLayerView,
-  'gmapsbase': LeafletGmapsTiledLayerView,
   'layergroup': LayerGroupViewConstructor,
   'torque': LeafletTorqueLayerView
 };

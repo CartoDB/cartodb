@@ -1,11 +1,8 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
 
-/**
- * base layer for all leaflet layers
- */
-var LeafletLayerView = function (layerModel, leafletLayer, leafletMap) {
-  this.leafletLayer = leafletLayer;
+var LeafletLayerView = function (layerModel, leafletMap) {
+  this.leafletLayer = this._createLeafletLayer(layerModel);
   this.leafletMap = leafletMap;
   this.model = layerModel;
 
@@ -18,6 +15,10 @@ var LeafletLayerView = function (layerModel, leafletLayer, leafletMap) {
 _.extend(LeafletLayerView.prototype, Backbone.Events);
 _.extend(LeafletLayerView.prototype, {
 
+  setZIndex: function (index) {
+    this.leafletLayer.setZIndex(index);
+  },
+
   setModel: function (model) {
     if (this.model) {
       this.model.unbind('change', this._modelUpdated, this);
@@ -26,9 +27,6 @@ _.extend(LeafletLayerView.prototype, {
     this.model.bind('change', this._modelUpdated, this);
   },
 
-  /**
-   * remove layer from the map and unbind events
-   */
   remove: function () {
     this.leafletMap.removeLayer(this.leafletLayer);
     this.trigger('remove', this);
@@ -38,6 +36,10 @@ _.extend(LeafletLayerView.prototype, {
 
   reload: function () {
     this.leafletLayer.redraw();
+  },
+
+  _createLeafletLayer: function () {
+    throw new Error('subclasses of LeafletLayerView must implement _createLeafletLayer');
   }
 });
 

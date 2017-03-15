@@ -10,7 +10,8 @@ var GMapsTorqueLayerView = function (layerModel, gmapsMap) {
 
   torque.GMapsTorqueLayer.call(this, this._initialAttrs(layerModel));
 
-  this._init(layerModel); // available due to this model being extended with torque-layer-base
+  // TODO: revisit this and use composition like we're doing with Leaflet
+  this.setNativeTorqueLayer(this);
 };
 
 _.extend(

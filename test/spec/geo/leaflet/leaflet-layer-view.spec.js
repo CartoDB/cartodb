@@ -1,14 +1,18 @@
 var Backbone = require('backbone');
 var LeafletLayerView = require('../../../../src/geo/leaflet/leaflet-layer-view');
 
+LeafletLayerView.prototype._createLeafletLayer = function () {
+  return jasmine.createSpyObj('leafletLayer', ['redraw']);
+};
+
 describe('leaflet-layer-view', function () {
   beforeEach(function () {
     this.layerModel = new Backbone.Model();
     spyOn(this.layerModel, 'bind');
     spyOn(this.layerModel, 'unbind');
-    this.leafletLayer = jasmine.createSpyObj('leafletLayer', ['redraw']);
     this.leafletMap = jasmine.createSpyObj('leafletMap', ['removeLayer']);
-    this.layerView = new LeafletLayerView(this.layerModel, this.leafletLayer, this.leafletMap);
+    this.layerView = new LeafletLayerView(this.layerModel, this.leafletMap);
+    this.leafletLayer = this.layerView.leafletLayer;
   });
 
   it('should have a model change binding', function () {

@@ -54,14 +54,14 @@ ModelUpdater.prototype._updateLayerGroupModel = function (windshaftMap) {
 ModelUpdater.prototype._calculateTileURLTemplatesForCartoDBLayers = function (windshaftMap) {
   var urlTemplates = [];
   _.each(windshaftMap.getSupportedSubdomains(), function (subdomain) {
-    urlTemplates.push(this._generatePNGTileURLTemplate(windshaftMap, subdomain));
+    urlTemplates.push(this._generateTileURLTemplate(windshaftMap, subdomain));
   }, this);
 
   return urlTemplates;
 };
 
-ModelUpdater.prototype._generatePNGTileURLTemplate = function (windshaftMap, subdomain) {
-  return windshaftMap.getBaseURL(subdomain) + '/{layerIndexes}/{z}/{x}/{y}.png';
+ModelUpdater.prototype._generateTileURLTemplate = function (windshaftMap, subdomain) {
+  return windshaftMap.getBaseURL(subdomain) + '/{layerIndexes}/{z}/{x}/{y}.{format}';
 };
 
 ModelUpdater.prototype._calculateGridURLTemplatesForCartoDBLayers = function (windshaftMap) {

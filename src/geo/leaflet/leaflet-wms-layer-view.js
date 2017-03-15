@@ -2,33 +2,46 @@ var _ = require('underscore');
 var L = require('leaflet');
 var LeafletLayerView = require('./leaflet-layer-view.js');
 
-var LeafletWMSLayerView = L.TileLayer.WMS.extend({
-  initialize: function(layerModel, leafletMap) {
+var generateLeafletLayerOptions = function (layerModel) {
+  return {
+    attribution:  layerModel.get('attribution'),
+    layers:       layerModel.get('layers'),
+    format:       layerModel.get('format'),
+    transparent:  layerModel.get('transparent'),
+    minZoom:      layerModel.get('minZomm'),
+    maxZoom:      layerModel.get('maxZoom'),
+    subdomains:   layerModel.get('subdomains') || 'abc',
+    errorTileUrl: layerModel.get('errorTileUrl'),
+    opacity:      layerModel.get('opacity')
+  };
+};
 
-    L.TileLayer.WMS.prototype.initialize.call(this, layerModel.get('urlTemplate'), {
-      attribution:  layerModel.get('attribution'),
-      layers:       layerModel.get('layers'),
-      format:       layerModel.get('format'),
-      transparent:  layerModel.get('transparent'),
-      minZoom:      layerModel.get('minZomm'),
-      maxZoom:      layerModel.get('maxZoom'),
-      subdomains:   layerModel.get('subdomains') || 'abc',
-      errorTileUrl: layerModel.get('errorTileUrl'),
-      opacity:      layerModel.get('opacity')
-    });
+var LeafletWMSLayerView = function (layerModel, leafletMap) {
+  var self = this;
+  LeafletLayerView.apply(this, arguments);
 
-    LeafletLayerView.call(this, layerModel, this, leafletMap);
+  this.leafletLayer.on('load', function (e) {
+    self.trigger('load');
+  });
+
+  this.leafletLayer.on('loading', function (e) {
+    self.trigger('loading');
+  });
+}
+
+LeafletWMSLayerView.prototype = _.extend(
+  {},
+  LeafletLayerView.prototype,
+  {
+    _createLeafletLayer: function (layerModel) {
+      return new L.TileLayer.WMS(layerModel.get('urlTemplate'), generateLeafletLayerOptions(layerModel));
+    },
+
+    _modelUpdated: function () {
+      L.Util.setOptions(this.leafletLayer, generateLeafletLayerOptions(this.model));
+      this.leafletLayer.setUrl(this.model.get('urlTemplate'));
+    }
   }
-
-});
-
-_.extend(LeafletWMSLayerView.prototype, LeafletLayerView.prototype, {
-
-  _modelUpdated: function() {
-    _.defaults(this.leafletLayer.options, _.clone(this.model.attributes));
-    this.leafletLayer.setUrl(this.model.get('urlTemplate'));
-  }
-
-});
+);
 
 module.exports = LeafletWMSLayerView;

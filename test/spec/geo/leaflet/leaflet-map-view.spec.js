@@ -10,7 +10,6 @@ var TileLayer = require('../../../../src/geo/map/tile-layer');
 var CartoDBLayer = require('../../../../src/geo/map/cartodb-layer');
 var PlainLayer = require('../../../../src/geo/map/plain-layer');
 var LayersCollection = require('../../../../src/geo/map/layers');
-var GMapsBaseLayer = require('../../../../src/geo/map/gmaps-base-layer');
 var CartoDBLayerGroup = require('../../../../src/geo/cartodb-layer-group');
 var LeafletMapView = require('../../../../src/geo/leaflet/leaflet-map-view');
 var LeafletTiledLayerView = require('../../../../src/geo/leaflet/leaflet-tiled-layer-view');
@@ -137,8 +136,8 @@ describe('geo/leaflet/leaflet-map-view', function () {
     var tileLayer2 = new TileLayer({ urlTemplate: 'http://tilelayer2.com' }, { vis: {} });
     map.addLayer(tileLayer2, { at: 0 });
 
-    expect(mapView.getLayerViewByLayerCid(tileLayer.cid).options.zIndex).toEqual(1);
-    expect(mapView.getLayerViewByLayerCid(tileLayer2.cid).options.zIndex).toEqual(0);
+    expect(mapView.getLayerViewByLayerCid(tileLayer.cid).leafletLayer.options.zIndex).toEqual(1);
+    expect(mapView.getLayerViewByLayerCid(tileLayer2.cid).leafletLayer.options.zIndex).toEqual(0);
   });
 
   it('should remove all layers when map view is cleaned', function () {
@@ -170,139 +169,6 @@ describe('geo/leaflet/leaflet-map-view', function () {
     var layer = new TileLayer({type: 'rambo'}, { vis: {} });
     map.addLayer(layer);
     expect(_.size(mapView._layerViews)).toEqual(0);
-  });
-
-  it('should set z-order', function () {
-    var layer1 = new TileLayer({urlTemplate: 'test1'}, { vis: {} });
-    var layer2 = new TileLayer({urlTemplate: 'test2'}, { vis: {} });
-    var layerView1 = mapView.getLayerViewByLayerCid(map.addLayer(layer1));
-    var layerView2 = mapView.getLayerViewByLayerCid(map.addLayer(layer2, { at: 0 }));
-    expect(layerView1.options.zIndex > layerView2.options.zIndex).toEqual(true);
-  });
-
-  // Test cases for gmaps substitutes since the support is deprecated.
-  _({ // GMaps basemap baseType: expected substitute data
-    // empty = defaults to gray_roadmap
-    '': {
-      tiles: {
-        providedBy: 'cartocdn',
-        type: 'light'
-      },
-      subdomains: ['a', 'b', 'c', 'd'],
-      minZoom: 0,
-      maxZoom: 18,
-      attribution: 'Map designs by <a href="http://stamen.com/">Stamen</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, Provided by <a href="https://carto.com">CARTO</a>'
-    },
-    dark_roadmap: {
-      tiles: {
-        providedBy: 'cartocdn',
-        type: 'dark'
-      },
-      subdomains: ['a', 'b', 'c', 'd'],
-      minZoom: 0,
-      maxZoom: 18,
-      attribution: 'Map designs by <a href="http://stamen.com/">Stamen</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, Provided by <a href="https://carto.com">CARTO</a>'
-    },
-    roadmap: {
-      tiles: {
-        providedBy: 'nokia',
-        type: 'normal.day'
-      },
-      subdomains: ['1', '2', '3', '4'],
-      minZoom: 0,
-      maxZoom: 21,
-      attribution: '©2012 Nokia <a href="http://here.net/services/terms" target="_blank">Terms of use</a>'
-    },
-    hybrid: {
-      tiles: {
-        providedBy: 'nokia',
-        type: 'hybrid.day'
-      },
-      subdomains: ['1', '2', '3', '4'],
-      minZoom: 0,
-      maxZoom: 21,
-      attribution: '©2012 Nokia <a href="http://here.net/services/terms" target="_blank">Terms of use</a>'
-    },
-    terrain: {
-      tiles: {
-        providedBy: 'nokia',
-        type: 'terrain.day'
-      },
-      subdomains: ['1', '2', '3', '4'],
-      minZoom: 0,
-      maxZoom: 21,
-      attribution: '©2012 Nokia <a href="http://here.net/services/terms" target="_blank">Terms of use</a>'
-    },
-    satellite: { // Nokia Satellite Day
-      tiles: {
-        providedBy: 'nokia',
-        type: 'satellite.day'
-      },
-      subdomains: ['1', '2', '3', '4'],
-      minZoom: 0,
-      maxZoom: 21,
-      attribution: '©2012 Nokia <a href="http://here.net/services/terms" target="_blank">Terms of use</a>'
-    }
-  }).map(function (substitute, baseType) {
-    var layerOpts;
-    var testContext;
-
-    if (baseType) {
-      layerOpts = {baseType: baseType};
-      testContext = 'with basemap "' + baseType + '"';
-    } else {
-      testContext = 'with default basemap "gray_roadmap"';
-    }
-
-    describe('given a GMaps layer model ' + testContext, function () {
-      var view;
-
-      beforeEach(function () {
-        var layer = new GMapsBaseLayer(layerOpts);
-        map.layers.add(layer);
-        view = mapView.getLayerViewByLayerCid(layer.cid);
-      });
-
-      it("should have a tileUrl based on substitute's template URL", function () {
-        var tileUrl = view.getTileUrl({ x: 101, y: 202, z: 303 });
-
-        expect(tileUrl).toContain(substitute.tiles.providedBy);
-        expect(tileUrl).toContain(substitute.tiles.type);
-      });
-
-      it("should have substitute's attribution", function () {
-        expect(view.options.attribution).toEqual(substitute.attribution);
-      });
-
-      it("should have substitute's minZoom", function () {
-        expect(view.options.minZoom).toEqual(substitute.minZoom);
-      });
-
-      it("should have substitute's maxZoom", function () {
-        expect(view.options.maxZoom).toEqual(substitute.maxZoom);
-      });
-
-      it("shouldn't have any opacity since gmaps basemap didn't have any", function () {
-        expect(view.options.opacity).toEqual(1);
-      });
-
-      it("should match substitute's subdomains", function () {
-        expect(view.options.subdomains).toEqual(substitute.subdomains);
-      });
-
-      it("shouldn't have an errorTileUrl since gmaps didn't have any", function () {
-        expect(view.options.errorTileUrl).toEqual('');
-      });
-
-      it("shouldn't use osgeo's TMS setting", function () {
-        expect(view.options.tms).toEqual(false);
-      });
-
-      xit('should change keyboard', function () {
-        mapView._setKeyboard(null, false);
-        expect(spy.keyboardChanged).toHaveBeenCalled();
-      });
-    });
   });
 
   describe('attributions', function () {

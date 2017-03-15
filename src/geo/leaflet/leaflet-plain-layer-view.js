@@ -2,46 +2,46 @@ var _ = require('underscore');
 var L = require('leaflet');
 var LeafletLayerView = require('./leaflet-layer-view');
 
-/**
- * this is a dummy layer class that modifies the leaflet DOM element background
- * instead of creating a layer with div
- */
-var LeafletPlainLayerView = L.Class.extend({
-  includes: L.Mixin.Events,
+var LeafletPlainLayerView = function (layerModel, leafletMap) {
+  LeafletLayerView.apply(this, arguments);
+}
 
-  initialize: function(layerModel, leafletMap) {
-    LeafletLayerView.call(this, layerModel, this, leafletMap);
-  },
+LeafletPlainLayerView.prototype = _.extend(
+  {},
+  LeafletLayerView.prototype,
+  {
+    _createLeafletLayer: function (layerModel) {
+      var self = this;
+      var leafletLayer = new L.Class();
 
-  onAdd: function() {
-    this.redraw();
-  },
+      leafletLayer.onAdd = function () {
+        self._redraw();
+      };
 
-  onRemove: function() {
-    var div = this.leafletMap.getContainer()
-    div.style.background = 'none';
-  },
+      leafletLayer.onRemove = function () {
+        var div = self.leafletMap.getContainer();
+        div.style.background = 'none';
+      };
 
-  _modelUpdated: function() {
-    this.redraw();
-  },
+      leafletLayer.setZIndex = function () {};
 
-  redraw: function() {
-    var div = this.leafletMap.getContainer()
-    div.style.backgroundColor = this.model.get('color') || '#FFF';
+      return leafletLayer;
+    },
 
-    if (this.model.get('image')) {
-      var st = 'transparent url(' + this.model.get('image') + ') repeat center center';
-      div.style.background = st
+    _modelUpdated: function () {
+      this._redraw();
+    },
+
+    _redraw: function () {
+      var div = this.leafletMap.getContainer()
+      div.style.backgroundColor = this.model.get('color') || '#FFF';
+
+      if (this.model.get('image')) {
+        var style = 'transparent url(' + this.model.get('image') + ') repeat center center';
+        div.style.background = style;
+      }
     }
-  },
-
-  // this method
-  setZIndex: function() {
   }
-
-});
-
-_.extend(LeafletPlainLayerView.prototype, LeafletLayerView.prototype);
+);
 
 module.exports = LeafletPlainLayerView;

@@ -8,7 +8,7 @@ var EMPTY_GIF = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAA
 var FakeWax = require('./fake-wax');
 var fakeWax = FakeWax();
 
-module.exports = function (createLayerGroupView, expectTileURLTemplateToMatch) {
+module.exports = function (createLayerGroupView, expectTileURLTemplateToMatch, fireNativeEvent) {
   describe('shared tests for CartoDBLayerGroupViews', function () {
     beforeEach(function () {
       fakeWax.tilejson.calls.reset();
@@ -361,6 +361,19 @@ module.exports = function (createLayerGroupView, expectTileURLTemplateToMatch) {
       it('should fetch empty tiles', function () {
         expectTileURLTemplateToMatch(this.layerGroupView, EMPTY_GIF);
       });
+    });
+
+    it('should trigger load and loading events', function () {
+      var loadCallback = jasmine.createSpy('loadCallback');
+      var loadingCallback = jasmine.createSpy('loadingCallback');
+      this.layerGroupView.bind('load', loadCallback);
+      this.layerGroupView.bind('loading', loadingCallback);
+
+      fireNativeEvent(this.layerGroupView, 'load');
+      fireNativeEvent(this.layerGroupView, 'loading');
+
+      expect(loadCallback).toHaveBeenCalled();
+      expect(loadingCallback).toHaveBeenCalled();
     });
   });
 };

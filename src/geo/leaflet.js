@@ -3,7 +3,6 @@ module.exports = {
 
   LeafletPlainLayerView: require('./leaflet/leaflet-plain-layer-view'),
   LeafletTiledLayerView: require('./leaflet/leaflet-tiled-layer-view'),
-  LeafletGmapsTiledLayerView: require('./leaflet/leaflet-gmaps-tiled-layer-view'),
   LeafletWMSLayerView: require('./leaflet/leaflet-wms-layer-view'),
   LeafletCartoDBLayerGroupView: require('./leaflet/leaflet-cartodb-layer-group-view'),
 

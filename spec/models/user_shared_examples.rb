@@ -61,11 +61,10 @@ shared_examples_for "user models" do
     it 'calculates the remaining quota for a non-org user correctly' do
       @user1.geocoding_quota = 500
       @user1.save
-      Geocoding.new(kind: 'high-resolution',
-                    user: @user1,
-                    formatter: '{dummy}',
-                    processed_rows: 100).save
 
+      user1_geocoder_metrics = CartoDB::GeocoderUsageMetrics.new(@user1.username, nil)
+      user1_geocoder_metrics.incr(:geocoder_here, :success_responses, 100)
+      
       get_user_by_id(@user1.id).remaining_geocoding_quota.should == 400
     end
 
@@ -73,15 +72,11 @@ shared_examples_for "user models" do
       @organization.geocoding_quota = 500
       @organization.save.reload
 
-      Geocoding.new(kind: 'high-resolution',
-                    user: @org_user_1,
-                    formatter: '{dummy}',
-                    processed_rows: 100).save
+      org_user_1_geocoder_metrics = CartoDB::GeocoderUsageMetrics.new(@org_user_1.username, @org_user_1.organization.name)
+      org_user_1_geocoder_metrics.incr(:geocoder_here, :success_responses, 100)
 
-      Geocoding.new(kind: 'high-resolution',
-                    user: @org_user_2,
-                    formatter: '{dummy}',
-                    processed_rows: 100).save
+      org_user_2_geocoder_metrics = CartoDB::GeocoderUsageMetrics.new(@org_user_2.username, @org_user_2.organization.name)
+      org_user_2_geocoder_metrics.incr(:geocoder_here, :success_responses, 100)
 
       get_user_by_id(@org_user_1.id).remaining_geocoding_quota.should == 300
       get_user_by_id(@org_user_2.id).remaining_geocoding_quota.should == 300

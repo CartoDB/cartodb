@@ -1,3 +1,39 @@
 <% content_for :settings_body do %>
+  <div class="FormAccount-title">
+    <p class="FormAccount-titleText">Past notifications</p>
+  </div>
+
+  <span class="FormAccount-separator"></span>
+
+  <ul class="NotificationsList">
+    <li class="NotificationsList-item">
+      <div class="NotificationsList-itemCategory">
+
+      </div>
+
+      <div class="NotificationsList-itemInfo">
+        <div class="NotificationsList-itemPrimaryInfo">
+          <h3 class="NotificationsList-itemTitle">
+            <a href="#" title="Charge code added successfully! Access to Meridian renewed for thirty days." class="u-ellipsis CDB-Text CDB-Size-large u-mainTextColor">Charge code added successfully! Access to Meridian renewed for thirty days.</a>
+          </h3>
+
+          <div class="NotificationsList-itemDescription">
+            <p class="u-ellipsis CDB-Text CDB-Size-medium u-altTextColor" title=""><span class="u-rSpace--xl">19/01/2017</span> User type: All</p>
+          </div>
+        </div>
+
+        <div class="NotificationsList-itemSecondaryInfo">
+          <div class="NotificationsList-itemMeta CDB-Text CDB-Size-small">
+            <a href="#" class="NotificationsList-itemLink">Resend</a>
+          </div>
+
+          <div class="NotificationsList-itemMeta CDB-Text CDB-Size-small">
+            <a href="#" class="NotificationsList-itemLink NotificationsList-itemLink--remove">Remove for all users</a>
+          </div>
+        </div>
+      </div>
+    </li>
+  </ul>
 <% end %>
+
 <%= render template: 'admin/organizations/_organization_settings', locals: { title: 'notifications' } %>

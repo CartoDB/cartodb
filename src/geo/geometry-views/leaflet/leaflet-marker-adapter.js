@@ -43,6 +43,9 @@ LeafletMarkerAdapter.prototype.setIconURL = function (iconURL) {
   // Leaflet provides the `setIcon` method which generates a new img for the icon.
   // We want to be able to update the markers icon while it's being dragged. That's
   // why we're doing this little hack that changes the src of the existing marker img.
+  // Removing the image and adding a new one we lost the mousedown event so drag is not
+  // working, reusing the node, we avoid some extra browser work and reuse the attached
+  // events, having the desired behaviour.
   this._nativeMarker._icon.src = iconURL;
   this._nativeMarker.options.icon.options.iconUrl = iconURL;
 };

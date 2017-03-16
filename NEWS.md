@@ -65,8 +65,9 @@ Development
 * Update tangram-cartocss to use smooth point outline.
 
 ### Bug fixes
-* Fixed time widget loader (#11754),
-* Fixed problems related with IE11.
+* Using clean method instead of remove for context-menu-view (#11778)
+* Fixed time widget loader (#11754)
+* Fixed problems related with IE11
 * Fixed silent problem with jQuery selector (cartodb/deep-insights.js#527)
 * Form editors remains open if a modal is open even triggering document click or ESC (#11686)
 * Fixed font style for the "You have run out of quota" module (#11690)

@@ -114,6 +114,7 @@ module CartoDB
         table_data = {
           id:           table.id,
           name:         table_name,
+          name_alias:   table.name_alias,
           permission:   nil
         }
         table_visualization = table.table_visualization

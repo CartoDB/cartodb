@@ -68,6 +68,7 @@ class CommonData
         "geometry_types" => %Q[{#{row["table"]["geometry_types"].join(',')}}],
         "rows" => row["table"]["row_count"],
         "size" => row["table"]["size"],
+        "name_alias" => row["table"]["name_alias"],
         "url" => export_url(row["name"]),
         "created_at" => row["created_at"],
         "updated_at" => row["updated_at"]

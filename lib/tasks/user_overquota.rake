@@ -34,11 +34,7 @@ namespace :cartodb do
         number_cycles.times do |cycle|
           date_from = billing_date << cycle
           date_to = billing_date << (cycle-1)
-          if args[:redis]
-            geocodings = user.get_new_system_geocoding_calls(from: date_from, to: date_to)
-          else
-            geocodings = user.get_db_system_geocoding_calls(date_from, date_to)
-          end
+          geocodings = user.get_new_system_geocoding_calls(from: date_from, to: date_to)
           # We don't want cycles with 0 geocoding calls
           next unless geocodings > 0
           quota = user.geocoding_quota

@@ -912,10 +912,6 @@ class User < Sequel::Model
     get_user_geocoding_data(self, date_from, date_to)
   end
 
-  def get_db_system_geocoding_calls(date_from, date_to)
-    Geocoding.get_geocoding_calls(geocodings_dataset, date_from, date_to)
-  end
-
   def get_not_aggregated_geocoding_calls(options = {})
     date_from, date_to = quota_dates(options)
     Geocoding.get_not_aggregated_user_geocoding_calls(geocodings_dataset.db, self.id, date_from, date_to)

@@ -5,7 +5,7 @@ require 'mock_redis'
 require_relative '../../../../spec/rspec_configuration'
 
 describe CartoDB::ServiceUsageMetrics do
-  describe 'Read quota info from redis with and without zero padding' do
+  describe 'Read quota info from redis with zero padding' do
 
     before(:each) do
       @redis_mock = MockRedis.new

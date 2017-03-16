@@ -95,7 +95,7 @@ module CartoDB
         path = normalize(local_path)
         current_directory = Dir.pwd
         Dir.chdir(temporary_directory)
-        stdout, stderr, status  = Open3.capture3(command_for(path))
+        stdout, stderr, status = Open3.capture3(*command_for(path))
         Dir.chdir(current_directory)
 
         if unp_failure?(stdout + stderr, status)
@@ -119,7 +119,7 @@ module CartoDB
       end
 
       def command_for(path)
-        stdout, stderr, status  = Open3.capture3('which unp')
+        stdout, stderr, status = Open3.capture3('which unp')
         if status != 0
           puts "Cannot find command 'unp' (required for import task) #{stderr}"
           raise InstallError
@@ -127,15 +127,15 @@ module CartoDB
         unp_path = stdout.chop
         puts "Path to 'unp': #{unp_path} -- stderr was #{stderr} and status was #{status}" if (stderr.size > 0)
 
-        command = "#{unp_path} #{path} --"
+        command = [unp_path, path, '--']
         if !(path.end_with?('.tar.gz') || path.end_with?('.tgz') || path.end_with?('.tar'))
           # tar doesn't allows -o, which doesn't makes too much sense as each import comes in a different folder
-          command = "#{command} -o"
+          command << '-o'
         end
         if path.end_with?('.zip')
           # There's no "fail if password needed" parameter, so we always send a password.
           # If it's not needed it's ignored, and if it's needed it will fail
-          command = "#{command} -P 'fail-if-prompts-for-password'"
+          command += ['-P', 'fail-if-prompts-for-password']
         end
         command
       end

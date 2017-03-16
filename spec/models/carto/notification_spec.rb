@@ -126,18 +126,14 @@ module Carto
           @notification.recipients = 'builders'
           @notification.save!
 
-          expect(@notification.received_notifications.map(&:user_id)).to eq(
-            @organization.users.reject(&:viewer).map(&:id)
-          )
+          expect(@notification.received_notifications.map(&:user_id)).to eq @organization.builder_users.map(&:id)
         end
 
         it 'should send the notification to current organization viewers' do
           @notification.recipients = 'viewers'
           @notification.save!
 
-          expect(@notification.received_notifications.map(&:user_id)).to eq(
-            @organization.users.select(&:viewer).map(&:id)
-          )
+          expect(@notification.received_notifications.map(&:user_id)).to eq @organization.viewer_users.map(&:id)
         end
       end
     end

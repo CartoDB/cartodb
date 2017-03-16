@@ -83,7 +83,7 @@ class Carto::User < ActiveRecord::Base
 
   # Auto creates notifications on first access
   def static_notifications_with_creation
-    static_notifications_with_creation || build_static_notifications(user: self, notifications: {})
+    static_notifications_without_creation || build_static_notifications(user: self, notifications: {})
   end
   alias_method_chain :static_notifications, :creation
 

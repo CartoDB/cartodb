@@ -7,6 +7,7 @@ module Carto
     MAX_BODY_LENGTH = 140
 
     belongs_to :organization, inverse_of: :notifications
+    has_many :received_notifications, inverse_of: :notification
 
     # TODO: `icon` should be a restricted list of values
     validates :icon, presence: true

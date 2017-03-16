@@ -205,13 +205,15 @@ describe Geocoding do
       @user.stubs('hard_geocoding_limit?').returns(true)
       delete_user_data @user
       geocoding.max_geocodable_rows.should eq 200
-      FactoryGirl.create(:geocoding, user: @user, processed_rows: 100, remote_id: 'wadus', formatter: 'foo', kind: 'high-resolution')
+      user_geocoder_metrics = CartoDB::GeocoderUsageMetrics.new(@user.username, nil)
+      user_geocoder_metrics.incr(:geocoder_here, :success_responses, 100)
       geocoding.max_geocodable_rows.should eq 100
     end
 
     it 'returns 50000 if the user has soft limit' do
       @user.stubs('soft_geocoding_limit?').returns(true)
-      FactoryGirl.create(:geocoding, user: @user, processed_rows: 100, formatter: 'foo', kind: 'high-resolution')
+      user_geocoder_metrics = CartoDB::GeocoderUsageMetrics.new(@user.username, nil)
+      user_geocoder_metrics.incr(:geocoder_here, :success_responses, 100)
       geocoding.max_geocodable_rows.should eq 50000
     end
 
@@ -222,7 +224,8 @@ describe Geocoding do
       org_geocoding = FactoryGirl.build(:geocoding, user: org_user)
       organization.geocoding_quota.should eq 150
       org_geocoding.max_geocodable_rows.should eq 150
-      FactoryGirl.create(:geocoding, user: org_user, processed_rows: 100, remote_id: 'wadus', formatter: 'foo', kind: 'high-resolution')
+      org_user_geocoder_metrics = CartoDB::GeocoderUsageMetrics.new(org_user.username, organization.name)
+      org_user_geocoder_metrics.incr(:geocoder_here, :success_responses, 100)
       org_geocoding.max_geocodable_rows.should eq 50
       organization.destroy
     end

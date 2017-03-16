@@ -5,6 +5,7 @@ var Layers = require('../../../src/geo/map/layers');
 var CartoDBLayer = require('../../../src/geo/map/cartodb-layer');
 var TileLayer = require('../../../src/geo/map/tile-layer');
 var TorqueLayer = require('../../../src/geo/map/torque-layer');
+var GMapsBaseLayer = require('../../../src/geo/map/gmaps-base-layer');
 var CartoDBLayerGroup = require('../../../src/geo/cartodb-layer-group');
 
 describe('geo/cartodb-layer-group', function () {
@@ -311,6 +312,20 @@ describe('geo/cartodb-layer-group', function () {
       this.torqueLayer.hide();
 
       expect(this.cartoDBLayerGroup.getStaticImageURLTemplate()).toEqual('http://carto.com/image?layer=0,2,4');
+    });
+
+    it('should ignore Google Maps base layers (Maps API is not aware of them)', function () {
+      this.baseLayer = new GMapsBaseLayer(null);
+      this.cartoDBLayer1 = new CartoDBLayer({}, { vis: this.vis });
+      this.cartoDBLayer2 = new CartoDBLayer({}, { vis: this.vis });
+
+      this.layersCollection.reset([
+        this.baseLayer,
+        this.cartoDBLayer1,
+        this.cartoDBLayer2
+      ]);
+
+      expect(this.cartoDBLayerGroup.getStaticImageURLTemplate()).toEqual('http://carto.com/image?layer=0,1');
     });
 
     it('should include api_key param', function () {

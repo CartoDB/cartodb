@@ -1,6 +1,7 @@
 var _ = require('underscore');
 var $ = require('jquery');
 var Backbone = require('backbone');
+var LayerTypes = require('./map/layer-types');
 var util = require('../core/util');
 
 var CartoDBLayerGroup = Backbone.Model.extend({
@@ -27,7 +28,7 @@ var CartoDBLayerGroup = Backbone.Model.extend({
   },
 
   _getLayers: function () {
-    return this._layersCollection.models;
+    return this._layersCollection.reject(LayerTypes.isGoogleMapsBaseLayer);
   },
 
   getIndexOfLayerInLayerGroup: function (layerModel) {

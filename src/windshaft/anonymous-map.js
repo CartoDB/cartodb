@@ -21,6 +21,17 @@ var optionsForHTTPLayer = function (layerModel) {
   };
 };
 
+var optionsForWMSLayer = function (layerModel) {
+  return {
+    id: layerModel.get('id'),
+    type: HTTP_LAYER_TYPE,
+    options: {
+      urlTemplate: layerModel.get('urlTemplate'),
+      tms: true
+    }
+  };
+};
+
 var optionsForPlainLayer = function (layerModel) {
   return {
     id: layerModel.get('id'),
@@ -100,6 +111,8 @@ var AnonymousMap = MapBase.extend({
       return optionsForHTTPLayer(layerModel);
     } else if (LayerTypes.isPlainLayer(layerModel)) {
       return optionsForPlainLayer(layerModel);
+    } else if (LayerTypes.isWMSLayer(layerModel)) {
+      return optionsForWMSLayer(layerModel);
     } else if (LayerTypes.isCartoDBLayer(layerModel)) {
       return optionsForMapnikLayer(layerModel);
     } else if (LayerTypes.isTorqueLayer(layerModel)) {

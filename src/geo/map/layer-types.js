@@ -1,5 +1,7 @@
 var TILED_LAYER_TYPE = 'Tiled';
 var PLAIN_LAYER_TYPE = 'Plain';
+var WMS_LAYER_TYPE = 'WMS';
+var GMAPS_BASE_LAYER_TYPE = 'GMapsBase';
 var CARTODB_LAYER_TYPE = 'CartoDB';
 var TORQUE_LAYER_TYPE = 'torque';
 
@@ -14,6 +16,14 @@ module.exports = {
 
   isPlainLayer: function (layerModel) {
     return isLayerOfType(layerModel, PLAIN_LAYER_TYPE);
+  },
+
+  isWMSLayer: function (layerModel) {
+    return isLayerOfType(layerModel, WMS_LAYER_TYPE);
+  },
+
+  isGoogleMapsBaseLayer: function (layerModel) {
+    return isLayerOfType(layerModel, GMAPS_BASE_LAYER_TYPE);
   },
 
   isCartoDBLayer: function (layerModel) {

@@ -1,4 +1,5 @@
 <% content_for :settings_body do %>
+  <div class="FormAccount-container">
     <% if @ldap_configuration %>
       <%= render :partial => 'admin/organizations/ldap_configuration' %>
     <% else %>
@@ -91,11 +92,9 @@
             <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Save changes</span>
           </button>
         </div>
-
       <% end %>
-
     <% end %>
-
+  </div>
 <% end %>
-<%= render template: 'admin/organizations/_organization_settings', locals: { title: 'auth settings' } %>
 
+<%= render template: 'admin/organizations/_organization_settings', locals: { title: 'auth settings' } %>

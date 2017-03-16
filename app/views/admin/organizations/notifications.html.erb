@@ -1,4 +1,5 @@
 <% content_for :settings_body do %>
+  <div class="FormAccount-container">
     <%= form_for @notification, url: CartoDB.url(self, 'new_organization_notification_admin', {}, current_user) do |f| %>
       <%= csrf_meta_tags %>
 
@@ -37,7 +38,7 @@
         <span class="FormAccount-subtitleText">
           (stores up to 12 most recent notifications)
         </span>
-      </span>
+      </p>
     </div>
 
     <span class="FormAccount-separator"></span>
@@ -69,9 +70,10 @@
               </div>
             </div>
           </div>
-        </div>
+        </li>
       <% end %>
     </ul>
+  </div>
 <% end %>
 
 <%= render template: 'admin/organizations/_organization_settings', locals: { title: 'notifications' } %>

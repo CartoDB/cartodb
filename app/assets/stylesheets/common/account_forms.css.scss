@@ -12,6 +12,12 @@ $sLabel-width: 140px;
   @include flex-direction(row);
   @include justify-content(space-between);
 }
+.FormAccount-container {
+  margin-top: 25px;
+}
+.FormAccount-container--short {
+  margin-top: 16px;
+}
 .FormAccount-Content {
   display: block;
   position: relative;

@@ -1,4 +1,5 @@
 <% content_for :settings_body do %>
+  <div class="FormAccount-container">
     <%= form_for @organization, url: CartoDB.url(self, 'organization_settings_update', {}, current_user), multipart: true do |f| %>
       <%= csrf_meta_tags %>
 
@@ -200,7 +201,7 @@
           </button>
       </div>
     <% end %>
-
+  </div>
 <% end %>
 
 <%= render template: 'admin/organizations/_organization_settings', locals: { title: 'settings' } %>

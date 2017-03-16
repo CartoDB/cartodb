@@ -21,7 +21,7 @@
             <% Carto::Notification::RECIPIENTS.each do |recipient| %>
               <input class="CDB-Radio" type="radio" name="carto_notification[recipients]" value="<%= recipient %>" <%= recipient == @notification.recipients ? 'checked' : '' %> required="true">
               <span class="u-iBlock CDB-Radio-face"></span>
-              <label class="u-iBlock u-lSpace CDB-Text CDB-Size-medium u-secondaryTextColor is-semibold"><%= recipient %></label>
+              <label class="u-iBlock u-lSpace CDB-Text CDB-Size-medium u-secondaryTextColor is-semibold"><%= recipient.capitalize %></label>
             <% end %>
           </div>
         </div>

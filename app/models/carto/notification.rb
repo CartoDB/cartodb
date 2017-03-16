@@ -10,7 +10,7 @@ module Carto
     ICON_SUCCESS = 'success'.freeze
 
     RECIPIENT_ALL = 'all'.freeze
-    RECIPIENTS = ['builders'.freeze, 'viewers'.freeze, RECIPIENT_ALL].freeze
+    RECIPIENTS = [RECIPIENT_ALL, 'builders'.freeze, 'viewers'.freeze].freeze
 
     belongs_to :organization, inverse_of: :notifications
 

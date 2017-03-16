@@ -122,6 +122,13 @@ module Carto
           expect(@notification.received_notifications.map(&:user_id)).to eq @organization.users.map(&:id)
         end
 
+        it 'sent notifications should be unread' do
+          @notification.recipients = 'all'
+          @notification.save!
+
+          expect(@notification.received_notifications.map(&:read_at).none?).to be_true
+        end
+
         it 'should send the notification to current organization builders' do
           @notification.recipients = 'builders'
           @notification.save!

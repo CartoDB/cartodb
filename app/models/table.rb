@@ -536,7 +536,8 @@ class Table
       user_id:      self.owner.id,
       kind:         kind,
       exportable:   esv.nil? ? true : esv.exportable,
-      export_geom:  esv.nil? ? true : esv.export_geom
+      export_geom:  esv.nil? ? true : esv.export_geom,
+      category:     esv.nil? ? -1 : esv.category
     )
 
     member.store

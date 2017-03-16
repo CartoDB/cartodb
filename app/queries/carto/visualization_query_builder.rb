@@ -158,6 +158,11 @@ class Carto::VisualizationQueryBuilder
     self
   end
 
+  def with_parent_category(category)
+    @parent_category = category
+    self
+  end
+
   def with_locked(locked)
     @locked = locked
     self
@@ -292,6 +297,10 @@ class Carto::VisualizationQueryBuilder
 
     if @types
       query = query.where(type: @types)
+    end
+
+    if @parent_category
+      query = query.where('visualizations.category = ? OR visualizations.category = ANY(get_viz_child_category_ids(?))', @parent_category, @parent_category)
     end
 
     if !@locked.nil?

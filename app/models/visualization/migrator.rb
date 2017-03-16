@@ -31,6 +31,7 @@ module CartoDB
           String    :legend_style
           Boolean   :exportable, null: false, default: true
           Boolean   :export_geom, null: false, default: true
+          Integer   :category
           String    :license
           String    :source
           String    :attributions

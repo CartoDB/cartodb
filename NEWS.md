@@ -66,6 +66,7 @@ Development
 * Update tangram-cartocss to use smooth point outline.
 
 ### Bug fixes
+* Adds https protocol to WMS Proxy URLs (#11786)
 * Fixed time widget loader (#11754),
 * Fixed problems related with IE11.
 * Fixed silent problem with jQuery selector (cartodb/deep-insights.js#527)

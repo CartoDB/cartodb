@@ -27,4 +27,35 @@ describe CartoDB::ServiceUsageMetrics do
       @usage_metrics.get('here_isolines', 'isolines_generated', Date.new(2016, 6, 20)).should eq 0
     end
   end
+
+  describe :assert_valid_amount do
+    before(:each) do
+      @redis_mock = MockRedis.new
+      @usage_metrics = CartoDB::ServiceUsageMetrics.new('rtorre', 'team', @redis_mock)
+      @usage_metrics.stubs(:check_valid_data)
+    end
+
+    it 'passes when fed with a positive integer' do
+      @usage_metrics.send(:assert_valid_amount, 42).should eq nil
+    end
+
+    it 'validates that the amount passed cannot be nil' do
+      expect {
+        @usage_metrics.send(:assert_valid_amount, nil)
+      }.to raise_exception(ArgumentError, 'Invalid metric amount')
+    end
+
+    it 'validates that the amount passed cannot be negative' do
+      expect {
+        @usage_metrics.send(:assert_valid_amount, -42)
+      }.to raise_exception(ArgumentError, 'Invalid metric amount')
+    end
+
+    it 'validates that the amount passed cannot be zero' do
+      expect {
+        @usage_metrics.send(:assert_valid_amount, 0)
+      }.to raise_exception(ArgumentError, 'Invalid metric amount')
+    end
+  end
+
 end

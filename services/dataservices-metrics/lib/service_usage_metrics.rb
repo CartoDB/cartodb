@@ -14,7 +14,8 @@ module CartoDB
     end
 
     def incr(service, metric, amount = 1, date = DateTime.current)
-      check_valid_data(service, metric, amount)
+      check_valid_data(service, metric)
+      assert_valid_amount(amount)
       return if amount == 0
 
       # TODO We could add EXPIRE command to add TTL to the keys
@@ -40,7 +41,7 @@ module CartoDB
 
     protected
 
-    def check_valid_data(service, metric, amount = 0)
+    def check_valid_data(service, metric)
       raise NotImplementedError.new("You must implement check_valid_data in your metrics class.")
     end
 
@@ -60,6 +61,10 @@ module CartoDB
 
     def date_year_month(date)
       date.strftime('%Y%m')
+    end
+
+    def assert_valid_amount(amount)
+      raise ArgumentError.new('Invalid metric amount') if amount.nil? || amount <= 0
     end
 
   end

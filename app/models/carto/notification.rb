@@ -29,7 +29,7 @@ module Carto
               else
                 organization.users
               end
-      users.each { |u| received_notifications.create!(user: u, sent_at: created_at) }
+      users.each { |u| received_notifications.create!(user: u, received_at: created_at) }
     end
 
     def valid_markdown

@@ -60,6 +60,8 @@ class Carto::User < ActiveRecord::Base
   has_many :groups, :through => :users_group
 
   has_many :received_notifications, inverse_of: :user
+  has_many :unread_received_notifications, inverse_of: :user, class_name: Carto::ReceivedNotification,
+                                           conditions: { read_at: nil }, order: 'received_at DESC'
 
   delegate [
       :database_username, :database_password, :in_database,

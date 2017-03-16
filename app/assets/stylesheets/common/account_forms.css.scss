@@ -35,6 +35,9 @@ $sLabel-width: 140px;
 .FormAccount-titleText--negative {
   color: $cHighlight-negative;
 }
+.FormAccount-subtitleText {
+  font-size: 75%;
+}
 .FormAccount-list {
   padding: 0 0 20px 160px;
   color: $cTypography-paragraphs;
@@ -709,3 +712,25 @@ $sLabel-width: 140px;
   justify-content: space-between;
 }
 
+.OrganizationNotification {
+  display: flex;
+
+  .OrganizationNotificationIconContainer {
+    width: 70px;
+    height: 70px;
+    padding: 20px;
+  }
+  .OrganizationNotificationIcon {
+    background: #aaaaaa;
+    width: 100%;
+    height: 100%;
+  }
+  .OrganizationNotificationBody {
+    strong {
+      font-weight: bold;
+    }
+    em {
+      font-style: italic;
+    }
+  }
+}

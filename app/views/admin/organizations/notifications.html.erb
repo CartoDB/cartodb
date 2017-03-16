@@ -29,5 +29,33 @@
           <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Send</span>
         </button>
       </div>
+    <% end %>
+
+    <div class="FormAccount-title">
+      <p class="FormAccount-titleText">
+        Past Notifications
+        <span class="FormAccount-subtitleText">
+          (stores up to 12 most recent notifications)
+        </span>
+      </span>
+    </div>
+
+    <span class="FormAccount-separator"></span>
+
+    <div class="OrganizationNotificationsList">
+      <% @notifications.each do |notification| %>
+        <div class="OrganizationNotification">
+          <div class="OrganizationNotificationIconContainer">
+            <div class="OrganizationNotificationIcon NotificationIcon-<%= notification.icon %>"></div>
+          </div>
+          <div class="OrganizationNotificationBody">
+            <%= raw notification.html_body %>
+          </div>
+          <div class="OrganizationNotificationActions">
+          </div>
+        </div>
+      <% end %>
+    </div>
+
 <% end %>
 <%= render template: 'admin/organizations/_organization_settings', locals: { title: 'notifications' } %>

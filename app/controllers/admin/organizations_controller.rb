@@ -47,7 +47,7 @@ class Admin::OrganizationsController < Admin::AdminController
       recipients: params[:carto_notification]['recipients']
     }
     carto_organization.notifications.create!(attributes)
-    redirect_to CartoDB.url(self, 'organization_notifications', {}, current_user),
+    redirect_to CartoDB.url(self, 'organization_notifications_admin', {}, current_user),
                 flash: { success: 'Notification sent!' }
   end
 

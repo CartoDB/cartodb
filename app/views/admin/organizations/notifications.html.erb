@@ -1,5 +1,5 @@
 <% content_for :settings_body do %>
-    <%= form_for @notification, url: CartoDB.url(self, 'new_organization_notification', {}, current_user) do |f| %>
+    <%= form_for @notification, url: CartoDB.url(self, 'new_organization_notification_admin', {}, current_user) do |f| %>
       <%= csrf_meta_tags %>
 
       <div class="FormAccount-row FormAccount-row--smallMarginBottom">
@@ -29,6 +29,5 @@
           <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Send</span>
         </button>
       </div>
-    <% end %>
 <% end %>
 <%= render template: 'admin/organizations/_organization_settings', locals: { title: 'notifications' } %>

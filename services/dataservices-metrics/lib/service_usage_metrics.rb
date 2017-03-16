@@ -41,7 +41,7 @@ module CartoDB
 
     protected
 
-    def check_valid_data(service, metric)
+    def check_valid_data(_service, _metric)
       raise NotImplementedError.new("You must implement check_valid_data in your metrics class.")
     end
 

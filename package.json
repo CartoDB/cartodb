@@ -49,6 +49,7 @@
     "cartoassets": "cartodb/CartoAssets#master",
     "colors": "1.1.2",
     "csswring": "^3.0.5",
+    "exports-loader": "0.6.4",
     "fs-extra": "2.0.0",
     "git-rev": "0.2.1",
     "grunt": "0.4.5",
@@ -71,17 +72,23 @@
     "grunt-mustache": "0.1.7",
     "grunt-postcss": "0.5.5",
     "grunt-timer": "0.3.3",
+    "grunt-webpack": "2.0.1",
+    "hogan.js": "^3.0.2",
     "jasmine": "2.5.2",
     "jasmine-ajax": "git://github.com/nobuti/jasmine-ajax.git#master",
     "jstify": "0.13.0",
     "load-grunt-tasks": "3.2.0",
     "minimist": "1.2.0",
+    "mustache-loader": "^0.4.1",
     "open": "0.0.5",
     "recursive-readdir": "2.1.1",
     "semistandard": "7.0.4",
+    "shim-loader": "0.1.0",
     "source-map-support": "0.4.0",
+    "tpl-loader": "git://github.com/ivanmalagon/tpl-loader.git#master",
     "uglify-js": "2.7.x",
-    "watchify": "3.7.0"
+    "watchify": "3.7.0",
+    "webpack": "2.2.1"
   },
   "browserify": {
     "transform": [
@@ -168,6 +175,7 @@
     "preupdate-internal-deps": "echo 'DEPRECATED TASK, use `npm run-script update-internal-deps` instead'",
     "update-internal-deps": "rm -rf node_modules && npm install --no-shrinkwrap && npm shrinkwrap",
     "branch-files": "node lib/build/branchFiles/branchFiles.js",
-    "affected_specs": "node lib/build/branchFiles/branchFiles.js | xargs node lib/build/affectedFiles/affectedFiles.js"
+    "affected_specs": "node lib/build/branchFiles/branchFiles.js | xargs node lib/build/affectedFiles/affectedFiles.js",
+    "webpack": "webpack"
   }
 }

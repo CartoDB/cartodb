@@ -1,4 +1,4 @@
-# coding: UTF-8
+# coding: utf-8
 
 require 'ostruct'
 require_relative '../spec_helper'
@@ -513,9 +513,13 @@ describe User do
     before do
       delete_user_data @user
       @user.stubs(:last_billing_cycle).returns(Date.today)
-      FactoryGirl.create(:geocoding, user: @user, kind: 'high-resolution', created_at: Time.now, processed_rows: 1)
-      FactoryGirl.create(:geocoding, user: @user, kind: 'admin0', created_at: Time.now, processed_rows: 1)
-      FactoryGirl.create(:geocoding, user: @user, kind: 'high-resolution', created_at: Time.now - 5.days, processed_rows: 1, cache_hits: 1)
+      @mock_redis = MockRedis.new
+      @usage_metrics = CartoDB::GeocoderUsageMetrics.new(@user.username, nil, @mock_redis)
+      @usage_metrics.incr(:geocoder_here, :success_responses, 1, Time.now)
+      @usage_metrics.incr(:geocoder_internal, :success_responses, 1, Time.now)
+      @usage_metrics.incr(:geocoder_here, :success_responses, 1, Time.now - 5.days)
+      @usage_metrics.incr(:geocoder_cache, :success_responses, 1, Time.now - 5.days)
+      CartoDB::GeocoderUsageMetrics.stubs(:new).returns(@usage_metrics)
     end
 
     it "should return the sum of geocoded rows for the current billing period" do

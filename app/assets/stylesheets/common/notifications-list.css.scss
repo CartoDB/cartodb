@@ -1,0 +1,99 @@
+@import "../variables/mixins";
+@import "../variables/colors";
+@import "../variables/sizes";
+
+/* compensate for the negative margins and border */
+$selectedItemPaddingOnSides: $sMargin-element - 1px;
+$opacityTransition: 250ms;
+
+$bannedColor: #E1A7A5;
+
+.NotificationsList {
+  position: relative;
+  width: 100%;
+  @include display-flex();
+  @include flex-direction(column);
+  margin: 0 auto;
+}
+.NotificationsList-item {
+  position: relative;
+  @include display-flex();
+  @include align-items(center);
+  @include transition(border, 200ms, ease-in);
+  padding: 20px 0;
+  border: 1px solid transparent;
+  border-bottom: 1px solid $cStructure-softLine;
+  box-sizing: border-box;
+  margin-bottom: -1px;
+
+  &:first-child { 
+    padding-top: 0;
+  }
+}
+
+// Position of the geometry type icon
+@mixin geometry-type-icon($x-pos: 0, $y-pos: 0) {
+  @include background(image-url('layout/geometry-types-icons.png') no-repeat $x-pos $y-pos);
+  @include image-2x("layout/geometry-types-icons@2x.png", 200px, 120px, ($x-pos), ($y-pos));
+}
+
+.NotificationsList-itemCategory {
+  position: relative;
+  display: inline-block;
+  min-width: 40px;
+  height: 40px;
+  margin-right: 16px;
+  margin-top: 3px;
+  @include geometry-type-icon(-160px);
+  @include opacity(1);
+  @include css3-prefix('transition', opacity $opacityTransition ease-in-out);
+  border: none;
+  z-index: 1;
+}
+.NotificationsList-itemCategory.is--lineDataset { @include geometry-type-icon(-40px) }
+.NotificationsList-itemCategory.is--polygonDataset { @include geometry-type-icon(-80px) }
+.NotificationsList-itemCategory.is--pointDataset { @include geometry-type-icon() }
+.NotificationsList-itemCategory.is--rasterDataset { @include geometry-type-icon(-120px) }
+
+.NotificationsList-itemInfo {
+  position: relative;
+  @include display-flex();
+  @include flex-direction(column);
+  @include opacity(1);
+  @include flex(1);
+  @include transition(opacity, $opacityTransition);
+  z-index: 1;
+
+  @include flex-direction(row);
+  @include justify-content(space-between, justify);
+  @include align-items(center);
+}
+.NotificationsList-itemPrimaryInfo {
+  @include display-flex();
+  @include flex-direction(column);
+  flex-grow: 1;
+  margin-right: $sMargin-element;
+  width: 400px;
+}
+.NotificationsList-itemSecondaryInfo {
+  width: 100%;
+  margin-top: 0;
+  @include display-flex();
+  @include flex-direction(column);
+}
+.NotificationsList-itemTitle {
+  @include display-flex();
+  @include align-items(center);
+  margin-bottom: 0;
+}
+.NotificationsList-itemDescription {
+  margin-top: 4px;
+  height: 16px;
+}
+.NotificationsList-itemLink {
+  font-size: 12px;
+  line-height: 20px;
+}
+.NotificationsList-itemLink--remove {
+  color: $cHighlight-negative;
+}

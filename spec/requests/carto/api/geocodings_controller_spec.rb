@@ -42,6 +42,8 @@ describe 'legacy behaviour tests' do
     describe 'GET /api/v1/geocodings/:id' do
 
       it 'returns a geocoding' do
+        user_geocoder_metrics = CartoDB::GeocoderUsageMetrics.new(@user.username, nil)
+        user_geocoder_metrics.incr(:geocoder_here, :success_responses, 100)
         geocoding = FactoryGirl.create(:geocoding, table_id: UUIDTools::UUID.timestamp_create.to_s, formatter: 'b', user: @user, used_credits: 100, processed_rows: 100, kind: 'high-resolution')
 
         get_json api_v1_geocodings_show_url(params.merge(id: geocoding.id)) do |response|

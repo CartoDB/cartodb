@@ -10,6 +10,8 @@
     var can_change_email = <%= @user.can_change_email? %>;
     var upgrade_url = "<%= current_user.upgrade_url(request.protocol) %>";
     var services_list = <%= @services.to_json.html_safe %>;
+    var dashboardNotifications = <%= safe_js_object @dashboard_notifications.to_json %>;
+    
     // Necessary for Google + actions
     var access_token = '';
     <% if (@google_plus_config.present?) %>
@@ -17,7 +19,7 @@
       var iframe_src = '<%= @google_plus_config.iframe_src %>';
     <% end %>
   </script>
-  <%= javascript_include_tag 'cdb.js', 'models.js', 'account_templates.js', 'account_deps.js', 'account.js', 'profile.js' -%>
+  <%= javascript_include_tag 'cdb.js', 'models.js', 'account_templates.js', 'account_deps.js', 'account.js' -%>
 <% end %>
 
 <%= render :partial => 'shared/flash_message' %>

@@ -1133,5 +1133,30 @@ describe('vis/vis', function () {
         expect(callback).toHaveBeenCalled();
       });
     });
+
+    describe('.getStaticImageURL', function () {
+      beforeEach(function () {
+        this.vis.layerGroupModel.set('urls', {
+          'image': 'http://carto.com/image/1234567890/{z}/{lat}/{lng}/{width}/{height}.{format}'
+        });
+      });
+
+      it('should return the URL with default options', function () {
+        var expectedURL = 'http://carto.com/image/1234567890/4/0/0/300/300.png?layer=0,1,2';
+        expect(this.vis.getStaticImageURL()).toEqual(expectedURL);
+      });
+
+      it('should use given options', function () {
+        var expectedURL = 'http://carto.com/image/1234567890/10/180/-180/400/600.jpg?layer=0,1,2';
+        expect(this.vis.getStaticImageURL({
+          zoom: 10,
+          lat: 180,
+          lng: -180,
+          width: 400,
+          height: 600,
+          format: 'jpg'
+        })).toEqual(expectedURL);
+      });
+    });
   });
 });

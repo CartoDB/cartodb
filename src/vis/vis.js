@@ -55,6 +55,30 @@ var VisModel = Backbone.Model.extend({
     this._instantiateMapWasCalled = false;
   },
 
+  getStaticImageURL: function (options) {
+    options = _.defaults({}, options, {
+      zoom: 4,
+      lat: 0,
+      lng: 0,
+      width: 300,
+      height: 300,
+      format: 'png'
+    });
+
+    var url;
+    var urlTemplate = this.layerGroupModel.getStaticImageURLTemplate();
+    if (urlTemplate) {
+      url = urlTemplate
+        .replace('{z}', options.zoom)
+        .replace('{lat}', options.lat)
+        .replace('{lng}', options.lng)
+        .replace('{width}', options.width)
+        .replace('{height}', options.height)
+        .replace('{format}', options.format);
+    }
+    return url;
+  },
+
   done: function (callback) {
     this._doneCallback = callback;
     return this;

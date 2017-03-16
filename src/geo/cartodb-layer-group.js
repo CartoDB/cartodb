@@ -18,24 +18,24 @@ var CartoDBLayerGroup = Backbone.Model.extend({
     this._layersCollection = options.layersCollection;
   },
 
-  contains: function (layerModel) {
-    return this.getIndexOf(layerModel) >= 0;
+  forEachGroupedLayer: function (iteratee, context) {
+    _.each(this._getGroupedLayers(), iteratee.bind(context || this));
   },
 
-  each: function (iteratee, context) {
-    _.each(this.getLayers(), iteratee.bind(context || this));
-  },
-
-  getLayers: function () {
+  _getGroupedLayers: function () {
     return this._layersCollection.getCartoDBLayers();
   },
 
-  getIndexOf: function (layerModel) {
-    return this.getLayers().indexOf(layerModel);
+  _getLayers: function () {
+    return this._layersCollection.models;
   },
 
-  getLayerAt: function (index) {
-    return this.getLayers()[index];
+  getIndexOfLayerInLayerGroup: function (layerModel) {
+    return this._getGroupedLayers().indexOf(layerModel);
+  },
+
+  getLayerInLayerGroupAt: function (index) {
+    return this._getGroupedLayers()[index];
   },
 
   isEqual: function () {
@@ -62,7 +62,7 @@ var CartoDBLayerGroup = Backbone.Model.extend({
 
   _generatePNGTileURLTemplate: function (urlTemplate) {
     urlTemplate = urlTemplate
-      .replace('{layerIndexes}', this._getIndexesOfVisibleLayers())
+      .replace('{layerIndexes}', this._getIndexesOfVisibleMapnikLayers())
       .replace('{format}', 'png');
     return this._appendAuthParamsToURL(urlTemplate);
   },
@@ -75,16 +75,25 @@ var CartoDBLayerGroup = Backbone.Model.extend({
   },
 
   _areAllLayersHidden: function () {
-    return _.all(this.getLayers(), function (layerModel) {
+    return _.all(this._getGroupedLayers(), function (layerModel) {
       return !layerModel.isVisible();
     });
   },
 
-  _getIndexesOfVisibleLayers: function (url) {
+  _getIndexesOfVisibleMapnikLayers: function (url) {
     var indexOfLayersInWindshaft = this.get('indexOfLayersInWindshaft');
-    return _.reduce(this.getLayers(), function (indexes, layerModel, layerIndex) {
+    return _.reduce(this._getGroupedLayers(), function (indexes, layerModel, layerIndex) {
       if (layerModel.isVisible()) {
         indexes.push(indexOfLayersInWindshaft[layerIndex]);
+      }
+      return indexes;
+    }, []).join(',');
+  },
+
+  _getIndexesOfVisibleLayers: function (url) {
+    return _.reduce(this._getLayers(), function (indexes, layerModel, layerIndex) {
+      if (layerModel.isVisible()) {
+        indexes.push(layerIndex);
       }
       return indexes;
     }, []).join(',');
@@ -101,6 +110,15 @@ var CartoDBLayerGroup = Backbone.Model.extend({
 
   getAttributesBaseURL: function (layerIndex) {
     return this.get('urls') && this.get('urls').attributes && this.get('urls').attributes[layerIndex];
+  },
+
+  getStaticImageURLTemplate: function () {
+    var staticImageURLTemplate = this.get('urls') && this.get('urls').image;
+    if (staticImageURLTemplate) {
+      staticImageURLTemplate = this._appendParamsToURL(staticImageURLTemplate, [ 'layer=' + this._getIndexesOfVisibleLayers() ]);
+      staticImageURLTemplate = this._appendAuthParamsToURL(staticImageURLTemplate);
+    }
+    return staticImageURLTemplate;
   },
 
   fetchAttributes: function (layerIndex, featureID, callback) {
@@ -148,15 +166,18 @@ var CartoDBLayerGroup = Backbone.Model.extend({
 
   _appendParamsToURL: function (url, params) {
     if (params.length) {
-      return url + '?' + params.join('&');
+      var separator = '?';
+      if (url.indexOf('?') !== -1) {
+        separator = '&';
+      }
+      return url + separator + params.join('&');
     }
-
     return url;
   },
 
   onLayerVisibilityChanged: function (callback) {
     this._layersCollection.on('change:visible', function (layerModel) {
-      if (this.contains(layerModel)) {
+      if (this._isLayerGrouped(layerModel)) {
         callback(layerModel);
       }
     }, this);
@@ -164,10 +185,14 @@ var CartoDBLayerGroup = Backbone.Model.extend({
 
   onLayerAdded: function (callback) {
     this._layersCollection.on('add', function (layerModel) {
-      if (this.contains(layerModel)) {
-        callback(layerModel, this.getIndexOf(layerModel));
+      if (this._isLayerGrouped(layerModel)) {
+        callback(layerModel, this.getLayerInLayerGroupAt(layerModel));
       }
     }, this);
+  },
+
+  _isLayerGrouped: function (layerModel) {
+    return this._getGroupedLayers().indexOf(layerModel) >= 0;
   }
 });
 

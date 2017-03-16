@@ -3,6 +3,8 @@ var Backbone = require('backbone');
 var VisModel = require('../../../src/vis/vis');
 var Layers = require('../../../src/geo/map/layers');
 var CartoDBLayer = require('../../../src/geo/map/cartodb-layer');
+var TileLayer = require('../../../src/geo/map/tile-layer');
+var TorqueLayer = require('../../../src/geo/map/torque-layer');
 var CartoDBLayerGroup = require('../../../src/geo/cartodb-layer-group');
 
 describe('geo/cartodb-layer-group', function () {
@@ -240,50 +242,91 @@ describe('geo/cartodb-layer-group', function () {
       expect(this.cartoDBLayerGroup.getGridURLTemplates(1)).toEqual([]);
     });
 
-    it('should return an array with the grid URL templates', function () {
-      this.cartoDBLayerGroup.set('urls', {
-        grids: [
-          [ 'url1' ],
-          [ 'url2' ]
-        ]
-      });
-
-      expect(this.cartoDBLayerGroup.getGridURLTemplates(0)).toEqual([ 'url1' ]);
-      expect(this.cartoDBLayerGroup.getGridURLTemplates(1)).toEqual([ 'url2' ]);
-    });
-
-    it('should append the api_key to urls', function () {
-      this.cartoDBLayerGroup.set({
-        apiKey: 'THE_API_KEY',
-        urls: {
+    describe("when there're grid URLs", function () {
+      beforeEach(function () {
+        this.cartoDBLayerGroup.set('urls', {
           grids: [
             [ 'url1' ],
             [ 'url2' ]
           ]
-        }
+        });
       });
 
-      expect(this.cartoDBLayerGroup.getGridURLTemplates(0)).toEqual([ 'url1?api_key=THE_API_KEY' ]);
-      expect(this.cartoDBLayerGroup.getGridURLTemplates(1)).toEqual([ 'url2?api_key=THE_API_KEY' ]);
-    });
-
-    it('should append the auth_token to urls', function () {
-      this.cartoDBLayerGroup.set({
-        authToken: 'AUTH_TOKEN',
-        urls: {
-          grids: [
-            [ 'url1' ],
-            [ 'url2' ]
-          ]
-        }
+      it('should return an array with the grid URL templates', function () {
+        expect(this.cartoDBLayerGroup.getGridURLTemplates(0)).toEqual([ 'url1' ]);
+        expect(this.cartoDBLayerGroup.getGridURLTemplates(1)).toEqual([ 'url2' ]);
       });
 
-      expect(this.cartoDBLayerGroup.getGridURLTemplates(0)).toEqual([ 'url1?auth_token=AUTH_TOKEN' ]);
-      expect(this.cartoDBLayerGroup.getGridURLTemplates(1)).toEqual([ 'url2?auth_token=AUTH_TOKEN' ]);
+      it('should append the api_key to urls', function () {
+        this.cartoDBLayerGroup.set({
+          apiKey: 'THE_API_KEY'
+        });
+
+        expect(this.cartoDBLayerGroup.getGridURLTemplates(0)).toEqual([ 'url1?api_key=THE_API_KEY' ]);
+        expect(this.cartoDBLayerGroup.getGridURLTemplates(1)).toEqual([ 'url2?api_key=THE_API_KEY' ]);
+      });
+
+      it('should append the auth_token to urls', function () {
+        this.cartoDBLayerGroup.set({
+          authToken: 'AUTH_TOKEN'
+        });
+
+        expect(this.cartoDBLayerGroup.getGridURLTemplates(0)).toEqual([ 'url1?auth_token=AUTH_TOKEN' ]);
+        expect(this.cartoDBLayerGroup.getGridURLTemplates(1)).toEqual([ 'url2?auth_token=AUTH_TOKEN' ]);
+      });
     });
   });
 
   describe('.getAttributesBaseURL', function () {
 
+  });
+
+  describe('.getStaticImageURLTemplate', function () {
+    beforeEach(function () {
+      this.baseLayer = new TileLayer({}, { vis: this.vis });
+      this.cartoDBLayer1 = new CartoDBLayer({}, { vis: this.vis });
+      this.cartoDBLayer2 = new CartoDBLayer({}, { vis: this.vis });
+      this.torqueLayer = new TorqueLayer({}, { vis: this.vis });
+      this.labelsLayer = new TileLayer({}, { vis: this.vis });
+
+      this.layersCollection.reset([
+        this.baseLayer,
+        this.cartoDBLayer1,
+        this.cartoDBLayer2,
+        this.torqueLayer,
+        this.labelsLayer
+      ]);
+
+      this.cartoDBLayerGroup.set('urls', {
+        image: 'http://carto.com/image'
+      });
+    });
+
+    it('should include indexes of visible layers', function () {
+      expect(this.cartoDBLayerGroup.getStaticImageURLTemplate()).toEqual('http://carto.com/image?layer=0,1,2,3,4');
+    });
+
+    it('should not include hidden layers', function () {
+      this.cartoDBLayer1.hide();
+      this.torqueLayer.hide();
+
+      expect(this.cartoDBLayerGroup.getStaticImageURLTemplate()).toEqual('http://carto.com/image?layer=0,2,4');
+    });
+
+    it('should include api_key param', function () {
+      this.cartoDBLayerGroup.set({
+        apiKey: 'THE_API_KEY'
+      });
+
+      expect(this.cartoDBLayerGroup.getStaticImageURLTemplate()).toEqual('http://carto.com/image?layer=0,1,2,3,4&api_key=THE_API_KEY');
+    });
+
+    it('should include auth_token param', function () {
+      this.cartoDBLayerGroup.set({
+        authToken: 'AUTH_TOKEN'
+      });
+
+      expect(this.cartoDBLayerGroup.getStaticImageURLTemplate()).toEqual('http://carto.com/image?layer=0,1,2,3,4&auth_token=AUTH_TOKEN');
+    });
   });
 });

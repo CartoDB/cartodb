@@ -42,13 +42,21 @@ ModelUpdater.prototype._updateLayerGroupModel = function (windshaftMap) {
   var urls = {
     tiles: this._calculateTileURLTemplatesForCartoDBLayers(windshaftMap),
     grids: this._calculateGridURLTemplatesForCartoDBLayers(windshaftMap),
-    attributes: this._calculateAttributesBaseURLsForCartoDBLayers(windshaftMap)
+    attributes: this._calculateAttributesBaseURLsForCartoDBLayers(windshaftMap),
+    image: this._calculateStaticMapURL(windshaftMap)
   };
 
   this._layerGroupModel.set({
     indexOfLayersInWindshaft: windshaftMap.getLayerIndexesByType('mapnik'),
     urls: urls
   });
+};
+
+ModelUpdater.prototype._calculateStaticMapURL = function (windshaftMap) {
+  return [
+    windshaftMap.getStaticBaseURL(),
+    '{z}/{lat}/{lng}/{width}/{height}.{format}'
+  ].join('/');
 };
 
 ModelUpdater.prototype._calculateTileURLTemplatesForCartoDBLayers = function (windshaftMap) {

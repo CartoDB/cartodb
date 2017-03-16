@@ -121,10 +121,6 @@ var TorqueLayer = LayerModelBase.extend({
     });
   },
 
-  isVisible: function () {
-    return true;
-  },
-
   getName: function () {
     return this.get('layer_name');
   },

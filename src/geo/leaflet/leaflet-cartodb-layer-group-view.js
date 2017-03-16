@@ -112,7 +112,7 @@ LeafletCartoDBLayerGroupView.prototype = _.extend(
     },
 
     _onFeatureClicked: function (latlon, containerPoint, data, layer) {
-      var layerModel = this.model.getLayerAt(layer);
+      var layerModel = this.model.getLayerInLayerGroupAt(layer);
       if (layerModel) {
         this.trigger('featureClick', {
           layer: layerModel,
@@ -125,7 +125,7 @@ LeafletCartoDBLayerGroupView.prototype = _.extend(
     },
 
     _onFeatureOver: function (latlon, containerPoint, data, layer) {
-      var layerModel = this.model.getLayerAt(layer);
+      var layerModel = this.model.getLayerInLayerGroupAt(layer);
       if (layerModel) {
         this.trigger('featureOver', {
           layer: layerModel,
@@ -138,7 +138,7 @@ LeafletCartoDBLayerGroupView.prototype = _.extend(
     },
 
     _onFeatureOut: function (layerIndex) {
-      var layerModel = this.model.getLayerAt(layerIndex);
+      var layerModel = this.model.getLayerInLayerGroupAt(layerIndex);
       if (layerModel) {
         this.trigger('featureOut', {
           layer: layerModel,

@@ -25,7 +25,7 @@ var createCartoDBLayer = function (vis, infowindowAttrs) {
 
 var simulateFeatureClickEvent = function (layerView, data) {
   layerView.trigger('featureClick', {
-    layer: layerView.model.getLayerAt(data.layerIndex),
+    layer: layerView.model.getLayerInLayerGroupAt(data.layerIndex),
     layerIndex: data.layerIndex,
     latlng: [100, 200],
     position: { x: 20, y: 30 },

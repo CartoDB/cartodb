@@ -42,7 +42,7 @@ module CartoDB
       end
 
       def extract(extracted_file_path, source_file, layer_name)
-        `#{@ogr2ogr_binary} -f 'KML' #{extracted_file_path} #{source_file.fullpath} "#{layer_name}"`
+        system(@ogr2ogr_binary, '-f', 'KML', extracted_file_path, source_file.fullpath, layer_name)
       end
 
       def multiple_layers?(source_file)
@@ -51,7 +51,7 @@ module CartoDB
 
       def layers_in(source_file)
         stdout, stderr, status =
-          Open3.capture3("#{OGRINFO_BINARY} #{source_file.fullpath}")
+          Open3.capture3(OGRINFO_BINARY, source_file.fullpath)
         stdout.split("\n")
           .select { |line| line =~ /\A\d/ }
           .map { |line| line.gsub(/\A\d+:\s/, '') }

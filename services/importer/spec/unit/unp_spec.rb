@@ -123,7 +123,9 @@ describe Unp do
     it 'returns the unp command line to be executed' do
       unp = Unp.new
 
-      unp.command_for('bogus').should match /.*unp.*bogus.*/
+      command = unp.command_for('bogus')
+      command.any? { |c| c.match /unp/ }.should be_true
+      command.should include 'bogus'
     end
 
     it 'raises if unp is not found' do

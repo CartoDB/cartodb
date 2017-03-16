@@ -1,5 +1,5 @@
 <% content_for :settings_body do %>
-  <div class="FormAccount-container">
+  <div class="FormAccount-container js-OrganizationNotification">
     <%= form_for @notification, url: CartoDB.url(self, 'new_organization_notification_admin', {}, current_user) do |f| %>
       <%= csrf_meta_tags %>
 
@@ -32,47 +32,49 @@
       </div>
     <% end %>
 
-    <div class="FormAccount-title">
-      <p class="FormAccount-titleText">
-        Past Notifications
-        <span class="FormAccount-subtitleText">
-          (stores up to 12 most recent notifications)
-        </span>
-      </p>
+    <div class="OrganizationNotifications">
+      <div class="FormAccount-title">
+        <p class="FormAccount-titleText">
+          Past Notifications
+          <span class="FormAccount-subtitleText">
+            (stores up to 12 most recent notifications)
+          </span>
+        </p>
+      </div>
+
+      <span class="FormAccount-separator"></span>
+
+      <ul class="NotificationsList">
+        <% @notifications.each do |notification| %>
+          <li class="NotificationsList-item js-NotificationsList-item">
+            <div class="NotificationsList-itemCategory NotificationsList-itemCategory--<%= notification.icon %>">
+            </div>
+
+            <div class="NotificationsList-itemInfo">
+              <div class="NotificationsList-itemPrimaryInfo">
+                <div class="NotificationsList-itemTitle u-ellipsis CDB-Text CDB-Size-large u-mainTextColor js-html_body">
+                  <%= raw notification.html_body %>
+                </div>
+
+                <div class="NotificationsList-itemDescription">
+                  <p class="u-ellipsis CDB-Text CDB-Size-medium u-altTextColor"><abbr title="<%= notification.to_hash[:created_at] %>" class="u-rSpace--xl"><%= notification.to_hash[:created_at].strftime("%d/%m/%Y") %></abbr> User type: <span class="js-recipients" data-recipients="<%= notification.to_hash[:recipients] %>"><%= notification.to_hash[:recipients].capitalize %></span></p>
+                </div>
+              </div>
+
+              <div class="NotificationsList-itemSecondaryInfo">
+                <div class="NotificationsList-itemMeta CDB-Text CDB-Size-small">
+                  <a href="#/resend" class="NotificationsList-itemLink js-resend">Resend</a>
+                </div>
+
+                <div class="NotificationsList-itemMeta CDB-Text CDB-Size-small">
+                  <a href="#" class="NotificationsList-itemLink NotificationsList-itemLink--remove">Remove for all users</a>
+                </div>
+              </div>
+            </div>
+          </li>
+        <% end %>
+      </ul>
     </div>
-
-    <span class="FormAccount-separator"></span>
-
-    <ul class="NotificationsList">
-      <% @notifications.each do |notification| %>
-        <li class="NotificationsList-item">
-          <div class="NotificationsList-itemCategory NotificationsList-itemCategory--<%= notification.icon %>">
-          </div>
-
-          <div class="NotificationsList-itemInfo">
-            <div class="NotificationsList-itemPrimaryInfo">
-              <h3 class="NotificationsList-itemTitle">
-                <a href="#" title="Charge code added successfully! Access to Meridian renewed for thirty days." class="u-ellipsis CDB-Text CDB-Size-large u-mainTextColor"><%= raw notification.html_body %></a>
-              </h3>
-
-              <div class="NotificationsList-itemDescription">
-                <p class="u-ellipsis CDB-Text CDB-Size-medium u-altTextColor" title=""><span class="u-rSpace--xl"><%#= notification.created_at %></span> User type: <%= notification.recipients %></p>
-              </div>
-            </div>
-
-            <div class="NotificationsList-itemSecondaryInfo">
-              <div class="NotificationsList-itemMeta CDB-Text CDB-Size-small">
-                <a href="#" class="NotificationsList-itemLink">Resend</a>
-              </div>
-
-              <div class="NotificationsList-itemMeta CDB-Text CDB-Size-small">
-                <a href="#" class="NotificationsList-itemLink NotificationsList-itemLink--remove">Remove for all users</a>
-              </div>
-            </div>
-          </div>
-        </li>
-      <% end %>
-    </ul>
   </div>
 <% end %>
 

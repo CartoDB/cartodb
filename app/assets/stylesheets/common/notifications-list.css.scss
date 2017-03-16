@@ -2,12 +2,11 @@
 @import "../variables/colors";
 @import "../variables/sizes";
 
-/* compensate for the negative margins and border */
-$selectedItemPaddingOnSides: $sMargin-element - 1px;
 $opacityTransition: 250ms;
 
-$bannedColor: #E1A7A5;
-
+.OrganizationNotifications {
+  margin: $sMargin-section 0 100px;
+}
 .NotificationsList {
   position: relative;
   width: 100%;
@@ -32,9 +31,9 @@ $bannedColor: #E1A7A5;
 }
 
 // Position of the geometry type icon
-@mixin geometry-type-icon($x-pos: 0, $y-pos: 0) {
-  @include background(image-url('layout/geometry-types-icons.png') no-repeat $x-pos $y-pos);
-  @include image-2x("layout/geometry-types-icons@2x.png", 200px, 120px, ($x-pos), ($y-pos));
+@mixin notification-type-icon($x-pos: 0, $y-pos: 0) {
+  @include background(image-url('layout/notification-types-icons.png') no-repeat $x-pos $y-pos);
+  @include image-2x("layout/notification-types-icons@2x.png", 40px, 40px, ($x-pos), ($y-pos));
 }
 
 .NotificationsList-itemCategory {
@@ -44,16 +43,15 @@ $bannedColor: #E1A7A5;
   height: 40px;
   margin-right: 16px;
   margin-top: 3px;
-  @include geometry-type-icon(-160px);
+  @include notification-type-icon();
   @include opacity(1);
   @include css3-prefix('transition', opacity $opacityTransition ease-in-out);
   border: none;
   z-index: 1;
 }
-.NotificationsList-itemCategory.is--lineDataset { @include geometry-type-icon(-40px) }
-.NotificationsList-itemCategory.is--polygonDataset { @include geometry-type-icon(-80px) }
-.NotificationsList-itemCategory.is--pointDataset { @include geometry-type-icon() }
-.NotificationsList-itemCategory.is--rasterDataset { @include geometry-type-icon(-120px) }
+.NotificationsList-itemCategory--warning {
+  @include notification-type-icon();
+}
 
 .NotificationsList-itemInfo {
   position: relative;
@@ -81,6 +79,12 @@ $bannedColor: #E1A7A5;
   @include display-flex();
   @include flex-direction(column);
 }
+.NotificationsList-itemMeta {
+  @include display-flex();
+  @include align-items(center);
+  @include justify-content(flex-end, end);
+  margin-bottom: 2 * $sMargin-min;
+}
 .NotificationsList-itemTitle {
   @include display-flex();
   @include align-items(center);
@@ -92,7 +96,6 @@ $bannedColor: #E1A7A5;
 }
 .NotificationsList-itemLink {
   font-size: 12px;
-  line-height: 20px;
 }
 .NotificationsList-itemLink--remove {
   color: $cHighlight-negative;

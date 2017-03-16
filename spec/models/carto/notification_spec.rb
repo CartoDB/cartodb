@@ -14,12 +14,12 @@ module Carto
 
     describe '#validation' do
       it 'passes for valid notification' do
-        n = Notification.new(icon: 'ok', body: 'Hello, friend!')
+        n = Notification.new(icon: Carto::Notification::ICON_WARNING, body: 'Hello, friend!')
         expect(n).to be_valid
       end
 
       it 'passes for valid organization notification' do
-        n = Notification.new(icon: 'ok', body: 'Hello, friend!', organization: @organization, recipients: 'builders')
+        n = Notification.new(icon: Carto::Notification::ICON_WARNING, body: 'Hello, friend!', organization: @organization, recipients: 'builders')
         expect(n).to be_valid
       end
 
@@ -93,7 +93,7 @@ module Carto
 
     it 'should be deleted when the organization is destroyed' do
       org = FactoryGirl.create(:organization)
-      n = Notification.create!(organization_id: org.id, icon: 'ok', recipients: 'all', body: 'Hey!')
+      n = Notification.create!(organization_id: org.id, icon: Carto::Notification::ICON_WARNING, recipients: 'all', body: 'Hey!')
       org.destroy
       expect(Notification.exists?(n.id)).to be_false
     end

@@ -55,6 +55,9 @@ $sLabel-width: 140px;
   @include justify-content(flex-start, start);
   margin: 0 0 32px;
 }
+.FormAccount-row--smallMarginBottom {
+  margin-bottom: 16px;
+}
 .FormAccount-row--wideMarginBottom {
   margin-bottom: 100px;
 }
@@ -699,3 +702,10 @@ $sLabel-width: 140px;
 .FormAccount-GooglePlus-iframe {
   display: none;
 }
+
+.OrganizationNotification-submissionRow {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+

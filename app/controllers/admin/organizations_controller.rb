@@ -4,7 +4,8 @@ require_relative './../helpers/avatar_helper'
 class Admin::OrganizationsController < Admin::AdminController
   include AvatarHelper
 
-  ssl_required :show, :settings, :settings_update, :regenerate_all_api_keys, :groups, :auth, :auth_update
+  ssl_required :show, :settings, :settings_update, :regenerate_all_api_keys, :groups, :auth, :auth_update,
+               :notifications, :new_notification
   before_filter :login_required, :load_organization_and_members, :load_ldap_configuration
   before_filter :enforce_engine_enabled, only: :regenerate_all_api_keys
   helper_method :show_billing
@@ -32,9 +33,21 @@ class Admin::OrganizationsController < Admin::AdminController
   end
 
   def notifications
+    @notification = Carto::Notification.new(recipients: Carto::Notification::RECIPIENT_ALL)
     respond_to do |format|
       format.html { render 'notifications' }
     end
+  end
+
+  def new_notification
+    carto_organization = Carto::Organization.find(@organization.id)
+    attributes = {
+      body: params[:carto_notification]['body'],
+      icon: Carto::Notification::ICON_WARNING,
+      recipients: params[:carto_notification]['recipients']
+    }
+    carto_organization.notifications.create!(attributes)
+    redirect_to CartoDB.url(self, 'organization_notifications', {}, current_user), flash: { success: 'Notification sent!' }
   end
 
   def settings_update

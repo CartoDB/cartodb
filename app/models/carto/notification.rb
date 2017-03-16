@@ -6,11 +6,16 @@ module Carto
   class Notification < ActiveRecord::Base
     MAX_BODY_LENGTH = 140
 
+    ICON_WARNING = 'warning'.freeze
+    ICON_SUCCESS = 'success'.freeze
+
+    RECIPIENT_ALL = 'all'.freeze
+    RECIPIENTS = ['builders'.freeze, 'viewers'.freeze, RECIPIENT_ALL]
+
     belongs_to :organization, inverse_of: :notifications
 
-    # TODO: `icon` should be a restricted list of values
-    validates :icon, presence: true
-    validates :recipients, inclusion: { in: [nil, 'builders', 'viewers', 'all'] }
+    validates :icon, presence: true, inclusion: { in: [ICON_WARNING, ICON_SUCCESS] }
+    validates :recipients, inclusion: { in: [nil] + RECIPIENTS }
     validates :recipients, presence: true, if: :organization
     validates :body, presence: true
     validate  :valid_markdown

@@ -152,6 +152,27 @@ namespace :cartodb do
       puts "#{updated_rows} datasets named #{args[:dataset_name]} set to category #{args[:dataset_category]}"
     end
 
+    desc "Set dataset category by name in Data Library and propagate to all users"
+    task :set_dataset_category_by_name, [:dataset_name, :dataset_category_name] => [:environment] do |t, args|
+      require_relative '../../app/helpers/common_data_redis_cache'
+      require_relative '../../app/services/visualization/common_data_service'
+
+      category_records = Rails::Sequel.connection.fetch(%Q[
+          SELECT id FROM visualization_categories WHERE type=1 AND name='#{args[:dataset_category_name]}';
+        ]).all
+
+      if category_records.length == 1
+        sql_query = %Q[
+          UPDATE visualizations SET category=#{category_records[0][:id]} WHERE name='#{args[:dataset_name]}';
+        ]
+        updated_rows = Rails::Sequel.connection.fetch(sql_query).update
+        CommonDataRedisCache.new.invalidate
+        puts "#{updated_rows} datasets named #{args[:dataset_name]} set to category #{args[:dataset_category_name]}"
+      else
+        puts "Error!: #{category_records.length} categories found with name #{args[:dataset_category_name]}"
+      end
+    end
+
     desc "Sync dataset aliases for user"
     task :sync_dataset_aliases_for_user, [:dataset_name, :username] => [:environment] do |t, args|
       require_relative '../../app/helpers/common_data_redis_cache'

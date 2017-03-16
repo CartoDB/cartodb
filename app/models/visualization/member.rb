@@ -80,7 +80,7 @@ module CartoDB
       attribute :legend_style,        String, default: ''
       attribute :exportable,          Boolean, default: true
       attribute :export_geom,         Boolean, default: true
-      attribute :category,            Integer
+      attribute :category,            Integer, default: -1
       attribute :parent_id,           String, default: nil
       attribute :kind,                String, default: KIND_GEOM
       attribute :prev_id,             String, default: nil

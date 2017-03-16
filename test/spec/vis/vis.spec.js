@@ -232,100 +232,44 @@ describe('vis/vis', function () {
       Vis.prototype.reload.calls.reset();
     });
 
-    describe('when layers are reset', function () {
-      it('should reload the map', function () {
-        this.vis.map.layers.reset([{ id: 'layer1' }]);
+    it('should reload the map when layers are resetted', function () {
+      this.vis.map.layers.reset([{ id: 'layer1' }]);
 
-        expect(Vis.prototype.reload).toHaveBeenCalled();
+      expect(Vis.prototype.reload).toHaveBeenCalled();
+    });
+
+    it('should reload the map when a new layer is added', function () {
+      this.vis.map.layers.add({ id: 'layer1' });
+      expect(Vis.prototype.reload).toHaveBeenCalledWith({
+        sourceId: 'layer1'
       });
     });
 
-    describe('when layers are added', function () {
-      it('should reload the map when a new CartoDB layer is added', function () {
-        this.vis.map.layers.add({
-          id: 'layer1',
-          type: 'CartoDB'
-        });
+    it('should reload the map when layers are removed', function () {
+      var layer = this.vis.map.layers.add({
+        id: 'layer1',
+        type: 'CartoDB'
+      }, { silent: true });
+      this.vis.map.layers.remove(layer);
 
-        expect(Vis.prototype.reload).toHaveBeenCalledWith({
-          sourceId: 'layer1'
-        });
-      });
-
-      it('should reload the map when a new Torque layer is added', function () {
-        this.vis.map.layers.add({
-          id: 'layer1',
-          type: 'torque'
-        });
-
-        expect(Vis.prototype.reload).toHaveBeenCalledWith({
-          sourceId: 'layer1'
-        });
-      });
-
-      it('should NOT reload the map when a non CartoDB or Torque layer is added', function () {
-        this.vis.map.layers.add({
-          id: 'layer1',
-          type: 'Tiled'
-        });
-
-        expect(Vis.prototype.reload).not.toHaveBeenCalled();
+      expect(Vis.prototype.reload).toHaveBeenCalledWith({
+        sourceId: 'layer1'
       });
     });
 
-    describe('when layers are removed', function () {
-      it('should reload the map when a CartoDB layer is removed', function () {
-        var layer = this.vis.map.layers.add({
-          id: 'layer1',
-          type: 'CartoDB'
-        }, { silent: true });
-        this.vis.map.layers.remove(layer);
+    it('should reload the map when layers are moved', function () {
+      this.vis.map.layers.add({
+        id: 'layer1',
+        type: 'Tiled'
+      }, { silent: true });
+      this.vis.map.layers.add({
+        id: 'layer2',
+        type: 'CartoDB'
+      }, { silent: true });
 
-        expect(Vis.prototype.reload).toHaveBeenCalledWith({
-          sourceId: 'layer1'
-        });
-      });
-
-      it('should reload the map when a torque layer is removed', function () {
-        var layer = this.vis.map.layers.add({
-          id: 'layer1',
-          type: 'torque'
-        }, { silent: true });
-        this.vis.map.layers.remove(layer);
-
-        expect(Vis.prototype.reload).toHaveBeenCalledWith({
-          sourceId: 'layer1'
-        });
-      });
-
-      it('should NOT reload the map when a non CartoDB or Torque layer is removed', function () {
-        var layer = this.vis.map.layers.add({
-          id: 'layer1',
-          type: 'Tiled'
-        }, { silent: true });
-        this.vis.map.layers.remove(layer);
-
-        expect(Vis.prototype.reload).not.toHaveBeenCalled();
-      });
-    });
-
-    describe('when layers are moved', function () {
-      beforeEach(function () {
-        this.vis.map.layers.add({
-          id: 'layer1',
-          type: 'Tiled'
-        }, { silent: true });
-        this.vis.map.layers.add({
-          id: 'layer2',
-          type: 'CartoDB'
-        }, { silent: true });
-      });
-
-      it('should reload the map', function () {
-        Vis.prototype.reload.calls.reset();
-        this.vis.map.moveCartoDBLayer(1, 0);
-        expect(Vis.prototype.reload.calls.count()).toBe(1);
-      });
+      Vis.prototype.reload.calls.reset();
+      this.vis.map.moveCartoDBLayer(1, 0);
+      expect(Vis.prototype.reload.calls.count()).toBe(1);
     });
   });
 

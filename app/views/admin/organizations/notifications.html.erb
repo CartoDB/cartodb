@@ -1,57 +1,77 @@
 <% content_for :settings_body do %>
-  <%= form_for @notification, url: CartoDB.url(self, 'new_organization_notification', {}, current_user) do |f| %>
-    <%= csrf_meta_tags %>
+    <%= form_for @notification, url: CartoDB.url(self, 'new_organization_notification_admin', {}, current_user) do |f| %>
+      <%= csrf_meta_tags %>
 
-    <div class="FormAccount-row FormAccount-row--smallMarginBottom">
-      <div class="FormAccount-rowLabel">
-        <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Notification Description</label>
-      </div>
-      <div class="FormAccount-rowData">
-        <%= f.text_area :body, :class => "CDB-Textarea CDB-Text FormAccount-textarea FormAccount-input FormAccount-input--totalwidth" %>
-      </div>
-      <div class="FormAccount-rowInfo">
-        <p class="FormAccount-rowInfoText"></p>
-      </div>
-    </div>
-
-    <div class="OrganizationNotification-submissionRow ">
-      <div class="FormAccount-rowData">
-        <div class="CDB-Text CDB-Size-medium u-rSpace--xl">
-          <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Send to:</label>
-          <% Carto::Notification::RECIPIENTS.each do |recipient| %>
-            <input class="CDB-Radio" type="radio" name="carto_notification[recipients]" value="<%= recipient %>" <%= recipient == @notification.recipients ? 'checked' : '' %> required="true">
-            <span class="u-iBlock CDB-Radio-face"></span>
-            <label class="u-iBlock u-lSpace CDB-Text CDB-Size-medium u-secondaryTextColor is-semibold"><%= recipient %></label>
-          <% end %>
+      <div class="FormAccount-row FormAccount-row--smallMarginBottom">
+        <div class="FormAccount-rowLabel">
+          <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Notification Description</label>
+        </div>
+        <div class="FormAccount-rowData">
+          <%= f.text_area :body, :class => "CDB-Textarea CDB-Text FormAccount-textarea FormAccount-input FormAccount-input--totalwidth" %>
+        </div>
+        <div class="FormAccount-rowInfo">
+          <p class="FormAccount-rowInfoText"></p>
         </div>
       </div>
-      <button type="submit" class="CDB-Button CDB-Button--primary">
-        <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Send</span>
-      </button>
-    </div>
-  <% end %>
 
-  <div class="FormAccount-title">
-    <p class="FormAccount-titleText">Past notifications</p>
-  </div>
-
-  <span class="FormAccount-separator"></span>
-
-  <ul class="NotificationsList">
-    <% @notifications.each do |notification| %>
-      <div class="OrganizationNotification">
-        <div class="OrganizationNotificationIconContainer">
-          <div class="OrganizationNotificationIcon NotificationIcon-<%= notification.icon %>"></div>
+      <div class="OrganizationNotification-submissionRow ">
+        <div class="FormAccount-rowData">
+          <div class="CDB-Text CDB-Size-medium u-rSpace--xl">
+            <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Send to:</label>
+            <% Carto::Notification::RECIPIENTS.each do |recipient| %>
+              <input class="CDB-Radio" type="radio" name="carto_notification[recipients]" value="<%= recipient %>" <%= recipient == @notification.recipients ? 'checked' : '' %> required="true">
+              <span class="u-iBlock CDB-Radio-face"></span>
+              <label class="u-iBlock u-lSpace CDB-Text CDB-Size-medium u-secondaryTextColor is-semibold"><%= recipient.capitalize %></label>
+            <% end %>
+          </div>
         </div>
-        <div class="OrganizationNotificationBody">
-          <%= raw notification.html_body %>
-        </div>
-        <div class="OrganizationNotificationActions">
-        </div>
+        <button type="submit" class="CDB-Button CDB-Button--primary">
+          <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Send</span>
+        </button>
       </div>
     <% end %>
 
-  </ul>
+    <div class="FormAccount-title">
+      <p class="FormAccount-titleText">
+        Past Notifications
+        <span class="FormAccount-subtitleText">
+          (stores up to 12 most recent notifications)
+        </span>
+      </span>
+    </div>
+
+    <span class="FormAccount-separator"></span>
+
+    <ul class="NotificationsList">
+      <% @notifications.each do |notification| %>
+        <li class="NotificationsList-item">
+          <div class="NotificationsList-itemCategory NotificationsList-itemCategory--<%= notification.icon %>">
+          </div>
+
+          <div class="NotificationsList-itemInfo">
+            <div class="NotificationsList-itemPrimaryInfo">
+              <h3 class="NotificationsList-itemTitle">
+                <a href="#" title="Charge code added successfully! Access to Meridian renewed for thirty days." class="u-ellipsis CDB-Text CDB-Size-large u-mainTextColor"><%= raw notification.html_body %></a>
+              </h3>
+
+              <div class="NotificationsList-itemDescription">
+                <p class="u-ellipsis CDB-Text CDB-Size-medium u-altTextColor" title=""><span class="u-rSpace--xl"><%#= notification.created_at %></span> User type: <%#= notification.recipients %></p>
+              </div>
+            </div>
+
+            <div class="NotificationsList-itemSecondaryInfo">
+              <div class="NotificationsList-itemMeta CDB-Text CDB-Size-small">
+                <a href="#" class="NotificationsList-itemLink">Resend</a>
+              </div>
+
+              <div class="NotificationsList-itemMeta CDB-Text CDB-Size-small">
+                <a href="#" class="NotificationsList-itemLink NotificationsList-itemLink--remove">Remove for all users</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </ul>
 <% end %>
 
 <%= render template: 'admin/organizations/_organization_settings', locals: { title: 'notifications' } %>

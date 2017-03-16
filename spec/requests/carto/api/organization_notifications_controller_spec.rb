@@ -81,7 +81,8 @@ module Carto
     describe '#destroy' do
       before(:each) do
         @organization.notifications.each(&:destroy)
-        @notification = @organization.notifications.create!(body: 'a', recipients: 'builders', icon: Carto::Notification::ICON_WARNING)
+        @notification = @organization.notifications.create!(body: 'a', recipients: 'builders',
+                                                            icon: Carto::Notification::ICON_WARNING)
       end
 
       def destroy_notification_request(org_id, user, notification_id)

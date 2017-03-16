@@ -8,6 +8,7 @@ class Admin::OrganizationsController < Admin::AdminController
                :notifications, :new_notification
   before_filter :login_required, :load_organization_and_members, :load_ldap_configuration
   before_filter :enforce_engine_enabled, only: :regenerate_all_api_keys
+  before_filter :load_carto_organization, only: [:notifications, :new_notification]
   helper_method :show_billing
 
   layout 'application'
@@ -34,6 +35,7 @@ class Admin::OrganizationsController < Admin::AdminController
 
   def notifications
     @notification = Carto::Notification.new(recipients: Carto::Notification::RECIPIENT_ALL)
+    @notifications = @carto_organization.notifications.limit(12).all.map { |n| Carto::Api::NotificationPresenter.new(n) }
     respond_to do |format|
       format.html { render 'notifications' }
     end
@@ -47,7 +49,8 @@ class Admin::OrganizationsController < Admin::AdminController
       recipients: params[:carto_notification]['recipients']
     }
     carto_organization.notifications.create!(attributes)
-    redirect_to CartoDB.url(self, 'organization_notifications', {}, current_user), flash: { success: 'Notification sent!' }
+    redirect_to CartoDB.url(self, 'organization_notifications_admin', {}, current_user),
+                flash: { success: 'Notification sent!' }
   end
 
   def settings_update
@@ -157,6 +160,10 @@ class Admin::OrganizationsController < Admin::AdminController
     unless @organization.engine_enabled?
       render_403
     end
+  end
+
+  def load_carto_organization
+    @carto_organization = Carto::Organization.find(@organization.id)
   end
 
 end

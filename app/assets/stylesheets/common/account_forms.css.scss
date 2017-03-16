@@ -35,6 +35,9 @@ $sLabel-width: 140px;
 .FormAccount-titleText--negative {
   color: $cHighlight-negative;
 }
+.FormAccount-subtitleText {
+  font-size: 75%;
+}
 .FormAccount-list {
   padding: 0 0 20px 160px;
   color: $cTypography-paragraphs;
@@ -708,4 +711,3 @@ $sLabel-width: 140px;
   flex-direction: row;
   justify-content: space-between;
 }
-

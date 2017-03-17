@@ -10,7 +10,7 @@
   text-align: center;
 }
 
-.ColorPicker::before, 
+.ColorPicker::before,
 .ColorPicker::after {
   display: none;
 }
@@ -24,6 +24,10 @@
   width: 37px;
   padding: 3px 4px;
   text-align: center;
+
+  .ColorPicker--cm & {
+    width: 42px;;
+  }
 }
 
 .ColorPicker-input.is-disabled {
@@ -32,11 +36,21 @@
 
 .ColorPicker-input.is-color {
   width: 52px;
+
+  .ColorPicker--cm & {
+    width: 70px;
+  }
 }
 
 .ColorPicker-inputWrapper {
   flex: 1;
   margin: 0 2px;
+}
+
+.ColorPicker-inputWrapper:last-child {
+  .ColorPicker--cm & {
+    display: none;
+  }
 }
 
 .ColorPicker .colorpicker-saturation {
@@ -67,6 +81,10 @@
   margin-bottom: $baseSize;
   border-radius: 2px;
   background-image: image-url('layout/colorpicker/hue-horizontal.png');
+
+  .ColorPicker--cm & {
+    height: $baseSize * 3;
+  }
 }
 
 .ColorPicker.colorpicker.colorpicker-horizontal .colorpicker-hue::before {
@@ -91,6 +109,10 @@
 
 .ColorPicker.colorpicker.colorpicker-horizontal .colorpicker-alpha.is-hidden {
   visibility: hidden;
+
+  .ColorPicker--cm & {
+    display: none;
+  }
 }
 
 .ColorPicker.colorpicker.colorpicker-horizontal .colorpicker-alpha::before {
@@ -116,6 +138,10 @@
   background-image: image-url('layout/colorpicker/alpha.png');
   background-position: 100%;
   pointer-events: none;
+
+  .ColorPicker--cm & {
+    border: 0;
+  }
 }
 
 .ColorPicker.colorpicker.colorpicker-horizontal .colorpicker-color {
@@ -143,6 +169,12 @@
   border-radius: 50%;
   background: $cWhite;
   box-shadow: 1px 1px 1px #333;
+
+  .ColorPicker--cm & {
+    height: $baseSize * 3;
+    margin-top: 0;
+    border-radius: 2px;
+  }
 }
 
 .colorpicker-saturation i b {

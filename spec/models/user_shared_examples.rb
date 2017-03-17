@@ -770,4 +770,15 @@ shared_examples_for "user models" do
       @user1.batch_queries_statement_timeout.should eq 42
     end
   end
+
+  describe '#basemaps' do
+    it 'shows all basemaps for google maps users' do
+      user = create_user
+      user.basemaps.keys.sort.should eq ["CARTO", "Stamen"]
+      user.google_maps_key = 'client=whatever'
+      user.google_maps_private_key = 'wadus'
+      user.save
+      user.basemaps.keys.sort.should eq ["CARTO", "GMaps", "Stamen"]
+    end
+  end
 end

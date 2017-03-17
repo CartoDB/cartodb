@@ -1474,13 +1474,8 @@ class User < Sequel::Model
   # this may have change in the future but in any case this method provides a way to abstract what
   # basemaps are active for the user
   def basemaps
-    basemaps = Cartodb.config[:basemaps]
-    if basemaps
-      basemaps.select { |group|
-        g = group == 'GMaps'
-        google_maps_enabled? ? g : !g
-      }
-    end
+    basemaps = Cartodb.config[:basemaps] || []
+    basemaps.select { |group| group != 'GMaps' || google_maps_enabled? }
   end
 
   def google_maps_enabled?

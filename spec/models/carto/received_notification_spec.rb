@@ -34,7 +34,7 @@ module Carto
         unread = create_received_notification(false)
         create_received_notification(true)
 
-        expect(@user.unread_received_notifications).to eq [unread]
+        expect(@user.received_notifications.unread).to eq [unread]
       end
 
       it 'sorted in decreasing date order' do
@@ -45,7 +45,7 @@ module Carto
         unread3 = create_received_notification(false)
         Delorean.back_to_the_present
 
-        expect(@user.unread_received_notifications).to eq [unread3, unread2, unread1]
+        expect(@user.received_notifications.unread).to eq [unread3, unread2, unread1]
       end
     end
   end

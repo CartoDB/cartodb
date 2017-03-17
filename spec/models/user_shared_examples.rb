@@ -772,13 +772,28 @@ shared_examples_for "user models" do
   end
 
   describe '#basemaps' do
-    it 'shows all basemaps for google maps users' do
+    it 'shows all basemaps for Google Maps users' do
       user = create_user
-      user.basemaps.keys.sort.should eq ["CARTO", "Stamen"]
+      basemaps = user.basemaps
+      basemaps.keys.sort.should eq ['CARTO', 'Stamen']
+      basemaps.keys.first.should eq 'CARTO'
       user.google_maps_key = 'client=whatever'
       user.google_maps_private_key = 'wadus'
       user.save
-      user.basemaps.keys.sort.should eq ["CARTO", "GMaps", "Stamen"]
+      basemaps = user.basemaps
+      basemaps.keys.sort.should eq ['CARTO', 'GMaps', 'Stamen']
+      basemaps.keys.first.should eq 'GMaps'
+    end
+  end
+
+  describe '#default_basemap' do
+    it 'defaults to Google for Google Maps users, Positron for others' do
+      user = create_user
+      user.default_basemap['name'].should eq 'Positron'
+      user.google_maps_key = 'client=whatever'
+      user.google_maps_private_key = 'wadus'
+      user.save
+      user.default_basemap['name'].should eq 'GMaps Roadmap'
     end
   end
 end

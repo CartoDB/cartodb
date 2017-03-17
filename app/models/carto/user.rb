@@ -220,14 +220,17 @@ class Carto::User < ActiveRecord::Base
     Rack::Utils.parse_nested_query(google_maps_query_string)['client'] if google_maps_query_string
   end
 
-  # returnd a list of basemaps enabled for the user
-  # when google map key is set it gets the basemaps inside the group "GMaps"
-  # if not it get everything else but GMaps in any case GMaps and other groups can work together
-  # this may have change in the future but in any case this method provides a way to abstract what
-  # basemaps are active for the user
+  # returns a list of basemaps enabled for the user, default one first
   def basemaps
-    basemaps = Cartodb.config[:basemaps] || []
-    basemaps.select { |group| group != 'GMaps' || google_maps_enabled? }
+    sorted_basemaps = (Cartodb.config[:basemaps] || [])
+                        .select { |group| group != 'GMaps' || google_maps_enabled? }
+                        .sort { |a, b|
+      if a[0] == 'GMaps' then
+        -1
+      else
+        b[0] == 'GMaps' ? 1 : 0
+      end }
+    Hash[sorted_basemaps]
   end
 
   def google_maps_enabled?

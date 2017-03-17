@@ -71,11 +71,17 @@ module Carto
     end
 
     def rescue_from_validation_error(exception)
-      render_jsonp({ errors: exception.record.errors.messages }, 422)
+      respond_to do |format|
+        format.html { render text: exception.record.errors.messages, status: 422 }
+        format.json { render json: { errors: exception.record.errors.messages }, status: 422 }
+      end
     end
 
     def rescue_from_record_not_found
-      render_jsonp({ errors: 'Record not found' }, 404)
+      respond_to do |format|
+        format.html { render_404 }
+        format.json { render json: { errors: 'Record not found' }, status: 404 }
+      end
     end
   end
 

@@ -29,6 +29,9 @@ $bannedColor: #E1A7A5;
   text-align: left;
   padding: 5px;
   border-right: 1px solid $DarkGrey8;
+  .DatasetTitle-link {
+    border-bottom: 1px $Grey2 dotted;
+  }
 }
 
 .DatasetsTable th

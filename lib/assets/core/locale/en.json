@@ -1391,7 +1391,7 @@
         "success": "Map %{name} deleted"
       },
       "export-image": {
-        "title": "Export image",
+        "title": "Export as image",
         "export": "Export",
         "generating": "Generating",
         "download": "Download"

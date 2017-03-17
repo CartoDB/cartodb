@@ -13,11 +13,9 @@ module Carto
       PRIVACY_LINK => 'link'
     }.freeze
 
-    def self.column_defaults
-      # AR sets privacy = 0 (private) by default, taken from the DB. We want it to be `nil`
-      # so the `before_validation` hook sets an appropriate privacy based on the table owner
-      super.merge("privacy" => nil)
-    end
+    # AR sets privacy = 0 (private) by default, taken from the DB. We want it to be `nil`
+    # so the `before_validation` hook sets an appropriate privacy based on the table owner
+    attribute 'privacy', Type::Integer.new, default: nil
 
     # The ::Table service depends on the constructor not being able to set all parameters, only these are allowed
     # This is done so things like name changes are forced to go through ::Table.name= to ensure renaming behaviour

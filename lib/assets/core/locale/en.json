@@ -1372,7 +1372,7 @@
       "options": {
         "duplicate": "Duplicate",
         "edit-metadata": "Edit metadata…",
-        "export-image": "Export as image",
+        "export-image": "Export as image…",
         "export-map": "Export map",
         "remove": "Delete map…",
         "rename": "Rename"
@@ -1392,9 +1392,6 @@
       },
       "export-image": {
         "title": "Export image",
-        "desc": "This map will be exported as a %{format} image of %{dimensions}.",
-        "available-in": "It's now available in",
-        "cancel": "Cancel",
         "export": "Export",
         "generating": "Generating",
         "download": "Download"

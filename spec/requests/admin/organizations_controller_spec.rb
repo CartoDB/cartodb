@@ -105,4 +105,47 @@ describe Admin::OrganizationsController do
       end
     end
   end
+
+  describe 'notifications' do
+    before(:each) do
+      host! "#{@organization.name}.localhost.lan"
+      login_as(@org_user_owner, scope: @org_user_owner.username)
+    end
+
+    describe '#notifications' do
+      it 'displays last notification' do
+        body = 'Free meal today'
+        FactoryGirl.create(:notification, organization: @carto_organization, body: body)
+        get organization_notifications_admin_url(user_domain: @org_user_owner.username)
+        response.status.should eq 200
+        response.body.should include(body)
+      end
+    end
+
+    describe '#new_notification' do
+      it 'creates a new notification' do
+        params = {
+          body: 'the body',
+          recipients: Carto::Notification::RECIPIENT_ALL
+        }
+        post new_organization_notification_admin_url(user_domain: @org_user_owner.username), carto_notification: params
+        response.status.should eq 302
+        flash[:success].should eq 'Notification sent!'
+        notification = @carto_organization.reload.notifications.first
+        notification.body.should eq params[:body]
+        notification.recipients.should eq params[:recipients]
+        notification.icon.should eq Carto::Notification::ICON_WARNING
+      end
+    end
+
+    describe '#destroy_notification' do
+      it 'destroys a notification' do
+        notification = @carto_organization.notifications.first
+        delete destroy_organization_notification_admin_url(user_domain: @org_user_owner.username, id: notification.id)
+        response.status.should eq 302
+        flash[:success].should eq 'Notification was successfully deleted!'
+        @carto_organization.reload.notifications.should_not include(notification)
+      end
+    end
+  end
 end

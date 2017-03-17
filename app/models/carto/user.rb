@@ -232,10 +232,10 @@ class Carto::User < ActiveRecord::Base
   # return the default basemap based on the default setting. If default attribute is not set, first basemaps is returned
   # it only takes into account basemaps enabled for that user
   def default_basemap
-    default = if google_maps_enabled? && basemaps['GMaps']
+    default = if google_maps_enabled? && basemaps['GMaps'].present?
                 ['GMaps', basemaps['GMaps']]
               else
-                basemaps.find { |group, group_basemaps | group_basemaps.find { |b, attr| attr['default'] } }
+                basemaps.find { |_, group_basemaps| group_basemaps.find { |_, attr| attr['default'] } }
               end
     default ||= basemaps.first
     # return only the attributes

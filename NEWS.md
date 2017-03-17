@@ -59,10 +59,10 @@ Development
 * Improved formula widget description field. (#11469)
 * In an organization, only the owner sees the Google API keys.
 * Added support for Zeus for faster testing (#11574). Check `CONTRIBUTING.md` for configuration details.
-* Migrate to use GNIP v2 for twitter search connector (#10051, #11595)
-* Notifications API (WIP) (#11734)
+* Migrate to use GNIP v2 for twitter search connector (#10051, #11595).
+* Notifications API (#11734) and administrator UI (#11729).
 * Update tangram with smooth point outline.
-* Improve affordance of layer item (#11359)
+* Improve affordance of layer item (#11359).
 * Update tangram-cartocss to use smooth point outline.
 
 ### Bug fixes

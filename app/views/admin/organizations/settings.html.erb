@@ -167,10 +167,10 @@
             <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Google Maps query string</label>
           </div>
           <div class="FormAccount-rowData">
-            <%= f.text_field :google_maps_key, class: "FormAccount-input FormAccount-input--long is-disabled", :readonly => "true" %>
+            <%= f.text_field :google_maps_key, class: "FormAccount-input FormAccount-input--long is-disabled CDB-InputText CDB-Text", :readonly => "true" %>
           </div>
           <div class="FormAccount-rowInfo">
-            <p class="FormAccount-rowInfoText">
+            <p class="FormAccount-rowInfoText CDB-Text CDB-Size-small u-altTextColor">
               This is the <%= @organization.name %> Google Maps query string.
               Contact with <a href="mailto:support@carto.com">support@carto.com</a> to change it.
             </p>
@@ -182,10 +182,10 @@
             <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Google Maps private key</label>
           </div>
           <div class="FormAccount-rowData">
-            <%= f.text_field :google_maps_private_key, class: "FormAccount-input FormAccount-input--long is-disabled", :readonly => "true" %>
+            <%= f.text_field :google_maps_private_key, class: "FormAccount-input FormAccount-input--long is-disabled CDB-InputText CDB-Text", :readonly => "true" %>
           </div>
           <div class="FormAccount-rowInfo">
-            <p class="FormAccount-rowInfoText">
+            <p class="FormAccount-rowInfoText CDB-Text CDB-Size-small u-altTextColor">
               This is the <%= @organization.name %> Google Maps private key
               contact with <a href="mailto:support@carto.com">support@carto.com</a> to change it.
             </p>

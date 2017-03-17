@@ -40,12 +40,12 @@ $opacityTransition: 250ms;
   @include notification-type-icon();
   @include opacity(1);
   @include css3-prefix('transition', opacity $opacityTransition ease-in-out);
-  position: relative;
   display: inline-block;
+  position: relative;
   min-width: 40px;
   height: 40px;
-  margin-right: 16px;
   margin-top: 3px;
+  margin-right: 16px;
   border: none;
   z-index: 1;
 }
@@ -54,23 +54,21 @@ $opacityTransition: 250ms;
 }
 .NotificationsList-itemInfo {
   @include display-flex();
-  @include flex-direction(column);
+  @include flex-direction(row);
   @include opacity(1);
   @include flex(1);
   @include transition(opacity, $opacityTransition);
-  position: relative;
-  z-index: 1;
-
-  @include flex-direction(row);
   @include justify-content(space-between, justify);
   @include align-items(center);
+  position: relative;
+  z-index: 1;
 }
 .NotificationsList-itemPrimaryInfo {
   @include display-flex();
   @include flex-direction(column);
   flex-grow: 1;
-  margin-right: $sMargin-element;
   width: 400px;
+  margin-right: $sMargin-element;
 }
 .NotificationsList-itemSecondaryInfo {
   @include display-flex();

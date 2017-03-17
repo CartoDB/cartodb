@@ -170,7 +170,7 @@ class Carto::User < ActiveRecord::Base
   end
 
   def remove_logo?
-    Carto::AccountType.new.remove_logo?(self)
+    has_organization? ? organization.no_map_logo? : no_map_logo?
   end
 
   def organization_username

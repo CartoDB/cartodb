@@ -18,6 +18,7 @@ describe CartoDB::TableRegistrar do
     let(:attributions) { "Table registrar test attributions" }
 
     before(:each) do
+      bypass_named_maps
       @data_import = FactoryGirl.create(:data_import, user_id: @user.id)
 
       @external_data_import = FactoryGirl.create(:external_data_import_with_external_source,

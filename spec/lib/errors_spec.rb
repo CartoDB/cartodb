@@ -4,7 +4,6 @@ require 'spec_helper'
 
 describe CartoDB do
   describe '#base_cartodb_error' do
-
     it 'Tests usage of the base cartodb exception/error' do
       error_message = 'something !!!'
       nested_exception = StandardError.new('123456 cartodb')
@@ -28,6 +27,26 @@ describe CartoDB do
         our_exception.message.should eq (error_message + CartoDB::BaseCartoDBError::APPENDED_MESSAGE_PREFIX + nested_exception.message)
       end
     end
+  end
 
+  describe CartoDB::CentralCommunicationFailure do
+    describe '#user_message' do
+      it 'supports single error JSON messages' do
+        error = 'Something is really broken'
+        response = mock
+        response.stubs(:code).returns(403)
+        response.stubs(:body).returns("{\"errors\":\"#{error}\"}")
+        e = CartoDB::CentralCommunicationFailure.new(response)
+        e.user_message.should eq "There was a problem with authentication server. #{error}"
+      end
+
+      it 'supports multiple error JSON messages' do
+        response = mock
+        response.stubs(:code).returns(403)
+        response.stubs(:body).returns("{\"errors\":[\"A\", \"B\"]}")
+        e = CartoDB::CentralCommunicationFailure.new(response)
+        e.user_message.should eq "There was a problem with authentication server. A ; B"
+      end
+    end
   end
 end

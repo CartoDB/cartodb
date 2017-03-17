@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.6.18",
+  "version": "4.6.32",
   "dependencies": {
     "backbone": {
       "version": "1.2.3",
@@ -971,7 +971,7 @@
                     },
                     "inherits": {
                       "version": "2.0.3",
-                      "from": "inherits@>=2.0.1 <2.1.0",
+                      "from": "inherits@>=2.0.0 <3.0.0",
                       "resolved": "https://registry.npmjs.org/inherits/-/inherits-2.0.3.tgz"
                     }
                   }
@@ -1157,7 +1157,7 @@
         "cartodb.js": {
           "version": "4.0.0-alpha.1",
           "from": "cartodb/cartodb.js#static-images",
-          "resolved": "git://github.com/cartodb/cartodb.js.git#eb427c711e43ec99869ba99e4784ab857e5c51ba",
+          "resolved": "git://github.com/cartodb/cartodb.js.git#f637bbdf01e09491f58428e437fb66a4965e6a6e",
           "dependencies": {
             "backbone-poller": {
               "version": "1.1.3",
@@ -1561,7 +1561,7 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
       "from": "cartodb/cartodb.js#static-images",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#eb427c711e43ec99869ba99e4784ab857e5c51ba",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#f637bbdf01e09491f58428e437fb66a4965e6a6e",
       "dependencies": {
         "backbone-poller": {
           "version": "1.1.3",
@@ -1988,9 +1988,9 @@
       "resolved": "https://registry.npmjs.org/queue-async/-/queue-async-1.2.1.tgz"
     },
     "tangram": {
-      "version": "0.11.7",
-      "from": "cartodb/tangram-1#race-cond",
-      "resolved": "git://github.com/cartodb/tangram-1.git#c795a2e446c2000a916ca69b90d443b5bc7e7c6b",
+      "version": "0.11.8",
+      "from": "cartodb/tangram-1#master",
+      "resolved": "git://github.com/cartodb/tangram-1.git#5d22377c3c78b71929dc357900128077d8a6ab5e",
       "dependencies": {
         "csscolorparser": {
           "version": "1.0.3",
@@ -2008,9 +2008,9 @@
           "resolved": "https://registry.npmjs.org/fontfaceobserver/-/fontfaceobserver-2.0.7.tgz"
         },
         "geojson-vt": {
-          "version": "2.1.6",
-          "from": "geojson-vt@2.1.6",
-          "resolved": "https://registry.npmjs.org/geojson-vt/-/geojson-vt-2.1.6.tgz"
+          "version": "2.4.0",
+          "from": "geojson-vt@2.4.0",
+          "resolved": "https://registry.npmjs.org/geojson-vt/-/geojson-vt-2.4.0.tgz"
         },
         "gl-mat3": {
           "version": "1.0.0",

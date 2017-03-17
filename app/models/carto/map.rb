@@ -11,14 +11,15 @@ class Carto::Map < ActiveRecord::Base
   has_many :layers, class_name: 'Carto::Layer',
                     order: '"order"',
                     through: :layers_maps,
-                    after_add: Proc.new { |map, layer| layer.after_added_to_map(map) }
+                    after_add: Proc.new { |map, layer| layer.after_added_to_map(map) },
+                    dependent: :destroy
 
   has_many :base_layers, class_name: 'Carto::Layer',
                          order: '"order"',
                          through: :layers_maps,
                          source: :layer
 
-  has_one :user_table, class_name: Carto::UserTable, inverse_of: :map
+  has_one :user_table, class_name: Carto::UserTable, inverse_of: :map, dependent: :destroy
 
   belongs_to :user
 
@@ -167,6 +168,12 @@ class Carto::Map < ActiveRecord::Base
       visualization.privacy = Carto::Visualization::PRIVACY_PRIVATE
       visualization.save
     end
+  end
+
+  def recalculate_bounds!
+    CartoDB::Logger.debug(message: "Carto::Map#recalculate_bounds!")
+    set_boundaries(get_map_bounds)
+    save
   end
 
   private

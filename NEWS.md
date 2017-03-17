@@ -2,9 +2,11 @@ Development
 -----------
 
 ### Features
+* Quota pre-check to analyses that consume quota.
 * Marking 'Do not show me again' in Layer Onboarding affects every tab. (#11586)
 * Adding Google-Maps basemaps (#11447)
 * Improve dialog forms to render them floated. (#7786)
+* Adds slider component to the forms (#11617)
 * New organization assets (#11034):
   * REST API available at `/api/v1/organization/<org_id>/assets`
   * Has DB migration
@@ -52,11 +54,25 @@ Development
   * Select an icon previously uploaded by the organization admin (#11462)
   * Sets the default initial size for icons to 20px (#11498)
 * Onboarding for layer edition (#10905)
+* Improved empty bounds map handling (#11711).
+* Updated diagnosis page versions.
 * Improved formula widget description field. (#11469)
+* In an organization, only the owner sees the Google API keys.
 * Added support for Zeus for faster testing (#11574). Check `CONTRIBUTING.md` for configuration details.
 * Migrate to use GNIP v2 for twitter search connector (#10051, #11595)
+* Notifications API (WIP) (#11734)
+* Update tangram with smooth point outline.
+* Improve affordance of layer item (#11359)
+* Update tangram-cartocss to use smooth point outline.
 
 ### Bug fixes
+* Adds https protocol to WMS Proxy URLs (#11786)
+* Fixed time widget loader (#11754),
+* Fixed problems related with IE11.
+* Fixed silent problem with jQuery selector (cartodb/deep-insights.js#527)
+* Form editors remains open if a modal is open even triggering document click or ESC (#11686)
+* Fixed font style for the "You have run out of quota" module (#11690)
+* Ensured all analysis onboarding screens link to carto.learn guides (#11193)
 * Fixed problem with Bubbles legend when a new analysis is applied (#11666)
 * Fixed missing metadata option in header when dataset is sync (#11458)
 * Fixed problem with dates when filtering time series widget
@@ -71,7 +87,9 @@ Development
   * Run `cartodb:db:register_table_dependencies` rake to update caches for existing maps
 * Categories legend are now static (#10972)
 * Fixed a bug with vizjson invalidation (#11092). It was introduced in #10934
+* Refactor Layer model (#10934) and UserTable (#11589, #11700).
 * Correctly render map previews for maps with google basemaps (#11608)
+* Do not trigger visualization hooks on state update (#11701)
 * Refactor Layer model (#10934)
 * Correctly register table dependencies of torque layers (#11549)
 * Fix bugs where legends where being hidden by reordering layers (#11088)
@@ -80,6 +98,7 @@ Development
 * Fix analysis notification in running state (#11079)
 * Fix color for "Other" category (#11078)
 * Validate that only one legend per type (color/size) is allowed (#11556)
+* Enable more security HTTP headers (#11727)
 * Clean up import directory when importing from URL (#11599)
 * Custom errors for latitude/longitude out of bounds (#11060, #11048)
 * Fix timeseries widget height (#11077)
@@ -92,19 +111,26 @@ Development
 * Correctly refresh map after adding/editing map geometries (#11064)
 * Fix inconsistent state after user deletion failed (#11606)
 * Return embed private instead of 404 in visualization embeds where the visualization doesn't exist (#11056)
+* `app_config.yml.sample` configuration for dataservices.
 * Fix error loading builder in visualizations without permissions (#10996)
 * Correctly update legend styles (with custom titles) (#10889, #10904)
 * Hide sync options in builder table view for non-owners (#10986)
 * Fix issues with edition of custom color infowindows (#10985)
 * UI fixes for georeference. Changes of copy and validation warning. (#11426)
+* Show layer name in legends for Torque layers (#11715)
 * Color scheme is now clickable in category ramps (#11413)
 * Fix responsive layout in onboarding steps (#11444)
+* Speed improvements to parallel tests (#11636)
+* Fix for race condition when importing files and deploying at the same time (#11653)
 * Correctly create custom category legend if style has icons (#11592)
+* Fixed error handling if json "errors" field contains one single string (#11752)
 * Fix problem with perfect-scrollbar in Edge browsers (CartoDB/perfect-scrollbar/#2)
 * Layer onboardings are now aware on sync'd layers and highlighted area is clicked. (#11583)
-
+* Fixed overflow on loaders.
 * JOIN Analysis Fails Without Error Message (#11184)
 * Fix problem with perfect-scrollbar in Edge browsers (CartoDB/perfect-scrollbar/#2)
+* Fix problem creating analyses without Data Services API (#11745)
+* Fix problem when number column is used like categories in fill component (#11736)
 
 4.0.x (2016-12-05)
 ------------------

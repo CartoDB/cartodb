@@ -11,6 +11,9 @@
   min-height: $baseSize * 4;
   margin-top: $baseSize;
 }
+.Editor-formInner.Editor-formInner--Slider {
+  margin-bottom: 40px;
+}
 .Options-form .Editor-formInner {
   margin-top: 0;
 }

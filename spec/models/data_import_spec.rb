@@ -7,10 +7,13 @@ describe DataImport do
   it_behaves_like 'DataImport model'
 
   before(:each) do
-    ::User.all.each(&:destroy)
     @user = create_user
     bypass_named_maps
     @table = create_table(user_id: @user.id)
+  end
+
+  after(:each) do
+    @user.destroy
   end
 
   after(:all) do

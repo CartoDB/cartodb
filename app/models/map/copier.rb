@@ -13,7 +13,7 @@ module CartoDB
       end
 
       def new_map_from(map)
-        @new_map ||= ::Map.new(map.to_hash.select { |k, v| k != :id })
+        @new_map ||= map.dup
         # Explicit association assignment to make user itself available, beyond its id, for validations
         if map.user
           @new_map.user ||= map.user
@@ -29,7 +29,7 @@ module CartoDB
 
       def copy_base_layer(origin_map, destination_map)
         origin_map.user_layers.map do |layer|
-          link(destination_map, layer.copy)
+          link(destination_map, layer.dup)
         end
       end
 
@@ -76,7 +76,7 @@ module CartoDB
 
       def data_layer_copies_from(map, user)
         map.data_layers.map do |layer|
-          new_layer = layer.copy
+          new_layer = layer.dup
           new_layer.qualify_for_organization(map.user.username) if user.id != map.user.id
 
           user.builder_enabled? ? reset_layer_styles(layer, new_layer) : new_layer
@@ -84,7 +84,7 @@ module CartoDB
       end
 
       def layer_copies_from(map)
-        map.layers.map(&:copy)
+        map.layers.map(&:dup)
       end
 
       def link(map, layer)

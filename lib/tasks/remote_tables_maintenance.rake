@@ -145,7 +145,7 @@ namespace :cartodb do
       require_relative '../../app/services/visualization/common_data_service'
 
       sql_query = %Q[
-        UPDATE visualizations SET category=#{args[:dataset_category]} WHERE name='#{args[:dataset_name]}';
+        UPDATE visualizations SET category=#{args[:dataset_category]} WHERE name='#{args[:dataset_name]}' AND (type='table' OR type='remote');
       ]
       updated_rows = Rails::Sequel.connection.fetch(sql_query).update
       CommonDataRedisCache.new.invalidate
@@ -163,7 +163,7 @@ namespace :cartodb do
 
       if category_records.length == 1
         sql_query = %Q[
-          UPDATE visualizations SET category=#{category_records[0][:id]} WHERE name='#{args[:dataset_name]}';
+          UPDATE visualizations SET category=#{category_records[0][:id]} WHERE name='#{args[:dataset_name]}' AND (type='table' OR type='remote');
         ]
         updated_rows = Rails::Sequel.connection.fetch(sql_query).update
         CommonDataRedisCache.new.invalidate

@@ -1,6 +1,6 @@
 source 'http://rubygems.org'
 
-gem 'rails',                   '4.1.16'
+gem 'rails',                   '4.2.8'
 
 gem 'rake',                    '0.9.2.2'
 gem 'pg',                      '0.15.0'
@@ -12,6 +12,7 @@ gem 'activerecord-postgresql-adapter'
 # gem 'activerecord-postgres-array', '0.0.9'
 
 gem 'protected_attributes'
+gem 'responders', '~> 2.0'
 
 gem 'sequel-rails'
 
@@ -71,10 +72,6 @@ gem 'uuidtools',                '2.1.5'
 
 # Markdown
 gem 'redcarpet', '3.3.3'
-
-# TODO we should be able to remove this using the new
-#      Rails routes DSL
-gem 'bartt-ssl_requirement',   '~>1.4.0', require: 'ssl_requirement'
 
 # TODO Production gems, put them in :production group
 gem 'rollbar',               '~>2.11.1'

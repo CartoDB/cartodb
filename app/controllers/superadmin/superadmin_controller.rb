@@ -1,5 +1,5 @@
 class Superadmin::SuperadminController < ActionController::Base
-  include SslRequirement
+  #include SslRequirement
   before_filter :authenticate
 
   rescue_from StandardError, with: :rescue_from_superadmin_error

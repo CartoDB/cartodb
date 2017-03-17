@@ -3,7 +3,7 @@ require_relative '../../lib/cartodb/profiler.rb'
 require_dependency 'carto/http_header_authentication'
 
 class ApplicationController < ActionController::Base
-  include ::SslRequirement
+  #include ::SslRequirement
   include UrlHelper
   protect_from_forgery
 

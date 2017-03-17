@@ -17,7 +17,8 @@ class Carto::Map < ActiveRecord::Base
                                                through: :layers_maps,
                                                source: :layer
 
-  has_one :user_table, class_name: Carto::UserTable, inverse_of: :map, dependent: :destroy
+  # autosave must be explicitly disabled due to https://github.com/rails/rails/issues/9336
+  has_one :user_table, class_name: Carto::UserTable, inverse_of: :map, dependent: :destroy, autosave: false
 
   belongs_to :user
 

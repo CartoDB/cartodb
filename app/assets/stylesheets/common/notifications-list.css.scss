@@ -1,6 +1,6 @@
-@import "../variables/mixins";
-@import "../variables/colors";
-@import "../variables/sizes";
+@import '../variables/mixins';
+@import '../variables/colors';
+@import '../variables/sizes';
 
 $opacityTransition: 250ms;
 
@@ -8,24 +8,24 @@ $opacityTransition: 250ms;
   margin: $sMargin-section 0 100px;
 }
 .NotificationsList {
-  position: relative;
-  width: 100%;
   @include display-flex();
   @include flex-direction(column);
+  position: relative;
+  width: 100%;
   margin: 0 auto;
 }
 .NotificationsList-item {
-  position: relative;
   @include display-flex();
   @include align-items(center);
   @include transition(border, 200ms, ease-in);
+  position: relative;
+  margin-bottom: -1px;
   padding: 20px 0;
   border: 1px solid transparent;
   border-bottom: 1px solid $cStructure-softLine;
   box-sizing: border-box;
-  margin-bottom: -1px;
 
-  &:first-child { 
+  &:first-child {
     padding-top: 0;
   }
 }
@@ -37,29 +37,28 @@ $opacityTransition: 250ms;
 }
 
 .NotificationsList-itemCategory {
+  @include notification-type-icon();
+  @include opacity(1);
+  @include css3-prefix('transition', opacity $opacityTransition ease-in-out);
   position: relative;
   display: inline-block;
   min-width: 40px;
   height: 40px;
   margin-right: 16px;
   margin-top: 3px;
-  @include notification-type-icon();
-  @include opacity(1);
-  @include css3-prefix('transition', opacity $opacityTransition ease-in-out);
   border: none;
   z-index: 1;
 }
 .NotificationsList-itemCategory--warning {
   @include notification-type-icon();
 }
-
 .NotificationsList-itemInfo {
-  position: relative;
   @include display-flex();
   @include flex-direction(column);
   @include opacity(1);
   @include flex(1);
   @include transition(opacity, $opacityTransition);
+  position: relative;
   z-index: 1;
 
   @include flex-direction(row);
@@ -74,10 +73,10 @@ $opacityTransition: 250ms;
   width: 400px;
 }
 .NotificationsList-itemSecondaryInfo {
-  width: 100%;
-  margin-top: 0;
   @include display-flex();
   @include flex-direction(column);
+  width: 100%;
+  margin-top: 0;
 }
 .NotificationsList-itemMeta {
   @include display-flex();
@@ -91,8 +90,8 @@ $opacityTransition: 250ms;
   margin-bottom: 0;
 }
 .NotificationsList-itemDescription {
-  margin-top: 4px;
   height: 16px;
+  margin-top: 4px;
 }
 .NotificationsList-itemLink {
   font-size: 12px;

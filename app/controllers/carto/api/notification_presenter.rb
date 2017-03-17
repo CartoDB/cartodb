@@ -4,7 +4,7 @@ class Carto::Api::NotificationPresenter
   extend Forwardable
   include Carto::HtmlSafe
 
-  delegate [ :id, :icon, :recipients, :body] => :@notification
+  delegate [:id, :icon, :recipients, :body, :created_at] => :@notification
 
   def initialize(notification)
     @notification = notification

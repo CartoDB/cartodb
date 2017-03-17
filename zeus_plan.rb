@@ -67,7 +67,7 @@ class CustomPlan < Zeus::Rails
   end
 
   def rake
-    Rails::Sequel.connection.disconnect
+    SequelRails.connection.disconnect
     super
   end
 end

@@ -122,6 +122,7 @@ class Layer < Sequel::Model
     attributes = public_values.select { |k, v| k != 'id' }.merge(override_attributes)
     ::Layer.new(attributes)
   end
+  alias dup copy
 
   def data_layer?
     !base_layer?

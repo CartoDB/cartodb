@@ -739,7 +739,7 @@ class User < Sequel::Model
   end
 
   def remove_logo?
-    Carto::AccountType.new.remove_logo?(self)
+    has_organization? ? organization.no_map_logo : no_map_logo
   end
 
   def soft_geocoding_limit?

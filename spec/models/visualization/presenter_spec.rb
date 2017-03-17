@@ -37,7 +37,7 @@ describe Visualization::Member do
           name: 'test',
           type: Visualization::Member::TYPE_CANONICAL
       )
-      visualization.user_data = { actions: { private_maps: true } }
+
       # Careful, do a user mock after touching user_data as it does some checks about user too
       user_mock = mock
       user_mock.stubs(:private_tables_enabled).returns(true)
@@ -60,8 +60,7 @@ describe Visualization::Member do
 
   describe 'to_poro fields' do
     it 'basic fields expected at the to_poro method' do
-      perm_mock = mock
-      perm_mock.stubs(:to_poro).returns({ wadus: 'wadus'})
+      perm_mock = FactoryGirl.build(:carto_permission)
 
       vis_mock = mock
       vis_mock.stubs(:id).returns(UUIDTools::UUID.timestamp_create.to_s)

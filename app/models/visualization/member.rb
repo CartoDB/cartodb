@@ -95,7 +95,6 @@ module CartoDB
         self.id         ||= @repository.next_id
         @name_checker   = name_checker
         @validator      = MinimalValidator::Validator.new
-        @user_data      = nil
         self.permission_change_valid = true   # Changes upon set of different permission_id
         # this flag is passed to the table in case of canonical visualizations. It's used to say to the table to not touch the database and only change the metadata information, useful for ghost tables
         self.register_table_only = false
@@ -184,13 +183,7 @@ module CartoDB
         self
       end
 
-      def store_using_table(fields, table_privacy_changed = false)
-        if type == TYPE_CANONICAL
-          # Each table has a canonical visualization which must have privacy synced
-          self.privacy = fields[:privacy_text]
-          self.map_id = fields[:map_id]
-        end
-        # But as this method also notifies of changes in a table, must save always
+      def store_using_table(table_privacy_changed = false)
         do_store(false, table_privacy_changed)
         self
       end
@@ -259,6 +252,10 @@ module CartoDB
         self
       end
 
+      def delete_from_table
+        delete(true)
+      end
+
       def delete(from_table_deletion = false)
         raise CartoDB::InvalidMember.new(user: "Viewer users can't delete visualizations") if user.viewer
 
@@ -315,10 +312,6 @@ module CartoDB
       def unlink_from(table)
         invalidate_cache
         remove_layers_from(table)
-      end
-
-      def user_data=(user_data)
-        @user_data = user_data
       end
 
       def name=(name)
@@ -891,15 +884,7 @@ module CartoDB
       def propagate_attribution_change
         return unless attributions_changed
 
-        # This includes both the canonical and derived visualizations
-        table.affected_visualizations.each do |affected_visualization|
-          affected_visualization.layers(:data).each do |layer|
-            if layer.options['table_name'] == table.name
-              layer.options['attribution']  = self.attributions
-              layer.save
-            end
-          end
-        end
+        table.propagate_attribution_change(attributions)
       end
 
       def revert_name_change(previous_name)

@@ -4,6 +4,7 @@ require 'spec_helper_min'
 
 describe Carto::Snapshot do
   before(:all) do
+    bypass_named_maps
     @user = FactoryGirl.create(:carto_user)
     @visualization = FactoryGirl.create(:carto_visualization, user: @user)
   end

@@ -25,6 +25,8 @@ class Admin::VisualizationsController < Admin::AdminController
               :embed_protected, :public_map_protected, :embed_forbidden, :track_embed
   ssl_required :index, :show, :protected_public_map, :show_protected_public_map
 
+
+
   before_filter :x_frame_options_allow, only: [:embed_forbidden, :embed_map, :embed_protected,
                                                :show_organization_embed_map, :show_protected_embed_map,
                                                :track_embed]

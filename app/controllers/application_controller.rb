@@ -27,14 +27,14 @@ class ApplicationController < ActionController::Base
   rescue_from NoHTML5Compliant, :with => :no_html5_compliant
   rescue_from RecordNotFound,   :with => :render_404
 
-  # this disables SSL requirement in non-production environments (add "|| Rails.env.development?" for local https)
-  unless Rails.env.production? || Rails.env.staging?
-    def self.ssl_required(*splat)
-      false
+  def self.ssl_required(*splat)
+    if Rails.env.production? || Rails.env.staging?
+      force_ssl only: splat
     end
-    def self.ssl_allowed(*splat)
-      true
-    end
+  end
+
+  def self.ssl_allowed(*splat)
+    # noop
   end
 
   protected

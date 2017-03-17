@@ -264,13 +264,17 @@ describe Geocoding do
     end
 
     it 'returns the used credits when the user is over geocoding quota' do
+      user_geocoder_metrics = CartoDB::GeocoderUsageMetrics.new(@user.username, nil)
       geocoding = FactoryGirl.create(:geocoding, user: @user, processed_rows: 0, cache_hits: 100, kind: 'high-resolution', geocoder_type: 'heremaps', formatter: 'foo')
+      user_geocoder_metrics.incr(:geocoder_here, :success_responses, 100)
       # 100 total (user has 200) => 0 used credits
       geocoding.calculate_used_credits.should eq 0
       geocoding = FactoryGirl.create(:geocoding, user: @user, processed_rows: 0, cache_hits: 150, kind: 'high-resolution', geocoder_type: 'heremaps', formatter: 'foo')
+      user_geocoder_metrics.incr(:geocoder_cache, :success_responses, 150)
       # 250 total => 50 used credits
       geocoding.calculate_used_credits.should eq 50
       geocoding = FactoryGirl.create(:geocoding, user: @user, processed_rows: 100, cache_hits: 0, kind: 'high-resolution', geocoder_type: 'heremaps', formatter: 'foo')
+      user_geocoder_metrics.incr(:geocoder_here, :success_responses, 100)
       # 350 total => 100 used credits
       geocoding.calculate_used_credits.should eq 100
     end

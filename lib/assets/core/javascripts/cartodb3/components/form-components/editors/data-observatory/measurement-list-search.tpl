@@ -1,6 +1,6 @@
 <div class="CDB-Box-modalHeaderItem">
-  <div style="display: flex;">
-    <div style="flex: 1;">
+  <div  class="u-flex u-grow">
+    <div class="u-grow">
       <input type="text" name="text" autocomplete="off" placeholder="<%- searchPlaceholder %>" class="CDB-InputTextPlain CDB-Text js-search">
       <button type="button" style="display:none" class="u-lSpace--xl js-clear">
         <div class="CDB-Shape">
@@ -10,7 +10,7 @@
     </div>
 
     <div>
-      <button class="CDB-Text u-actionTextColor js-action u-rSpace--m">Filters</button>
+      <button class="CDB-Text CDB-Size-medium u-actionTextColor js-filters u-rSpace--m">Filters</button>
     </div>
   </div>
 </div>

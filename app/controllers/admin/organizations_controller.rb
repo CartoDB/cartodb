@@ -36,7 +36,7 @@ class Admin::OrganizationsController < Admin::AdminController
 
   def notifications
     @notification = Carto::Notification.new(recipients: Carto::Notification::RECIPIENT_ALL)
-    @notifications = @carto_organization.notifications.limit(12).all.map { |n| Carto::Api::NotificationPresenter.new(n) }
+    @notifications = @carto_organization.notifications.limit(12).map { |n| Carto::Api::NotificationPresenter.new(n) }
     respond_to do |format|
       format.html { render 'notifications' }
     end

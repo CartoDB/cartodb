@@ -59,7 +59,7 @@ Development
 * Improved formula widget description field. (#11469)
 * Added support for Zeus for faster testing (#11574). Check `CONTRIBUTING.md` for configuration details.
 * Migrate to use GNIP v2 for twitter search connector (#10051, #11595)
-* Notifications API (WIP) (#11734)
+* Notifications API (WIP) (#11734, #11780)
 * Update tangram with smooth point outline.
 * Improve affordance of layer item (#11359)
 * Update tangram-cartocss to use smooth point outline.

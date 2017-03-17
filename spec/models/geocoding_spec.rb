@@ -1,5 +1,6 @@
 # encoding: utf-8
 require 'spec_helper'
+require 'mock_redis'
 
 describe Geocoding do
   before(:all) do
@@ -264,7 +265,9 @@ describe Geocoding do
     end
 
     it 'returns the used credits when the user is over geocoding quota' do
-      user_geocoder_metrics = CartoDB::GeocoderUsageMetrics.new(@user.username, nil)
+      redis_mock = MockRedis.new
+      user_geocoder_metrics = CartoDB::GeocoderUsageMetrics.new(@user.username, _org = nil, _redis = redis_mock)
+      CartoDB::GeocoderUsageMetrics.stubs(:new).returns(user_geocoder_metrics)
       geocoding = FactoryGirl.create(:geocoding, user: @user, processed_rows: 0, cache_hits: 100, kind: 'high-resolution', geocoder_type: 'heremaps', formatter: 'foo')
       user_geocoder_metrics.incr(:geocoder_here, :success_responses, 100)
       # 100 total (user has 200) => 0 used credits

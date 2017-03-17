@@ -1,0 +1,7 @@
+@import 'cdb-utilities/mixins';
+@import 'cdb-variables/colors';
+@import 'cdb-variables/sizes';
+
+.DO-itemDescription {
+  font-size: $sFontSize-medium - 1;
+}

@@ -1,10 +1,7 @@
 # coding: utf-8
 require_relative './../helpers/avatar_helper'
-require_relative '../carto/controller_helper'
 
 class Admin::OrganizationsController < Admin::AdminController
-  include Carto::ControllerHelper
-  extend Carto::DefaultRescueFroms
   include AvatarHelper
 
   ssl_required :show, :settings, :settings_update, :regenerate_all_api_keys, :groups, :auth, :auth_update,
@@ -14,8 +11,6 @@ class Admin::OrganizationsController < Admin::AdminController
   before_filter :load_carto_organization, only: [:notifications, :new_notification]
   before_filter :load_notification, only: [:destroy_notification]
   helper_method :show_billing
-
-  setup_default_rescues
 
   layout 'application'
 

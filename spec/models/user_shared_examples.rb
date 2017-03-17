@@ -126,7 +126,6 @@ shared_examples_for "user models" do
       usage_metrics.incr(:geocoder_here, :success_responses, 100, (DateTime.current - 2))
       usage_metrics.incr(:geocoder_cache, :success_responses, 100, (DateTime.current - 1))
 
-      get_user_by_id(@user1.id).get_new_system_geocoding_calls.should == 210
       get_user_by_id(@user1.id).get_geocoding_calls.should == 210
     end
 
@@ -152,7 +151,7 @@ shared_examples_for "user models" do
       usage_metrics_2.incr(:geocoder_here, :success_responses, 120, DateTime.current - 1)
       usage_metrics_2.incr(:geocoder_cache, :success_responses, 10, DateTime.current - 1)
 
-      @organization.get_new_system_geocoding_calls.should == 230
+      @organization.get_geocoding_calls.should == 230
     end
 
     it 'calculates the used geocoder quota in the current billing cycle including empty requests' do
@@ -163,7 +162,7 @@ shared_examples_for "user models" do
       usage_metrics.incr(:geocoder_here, :empty_responses, 10, (DateTime.current - 2))
       usage_metrics.incr(:geocoder_cache, :success_responses, 100, (DateTime.current - 1))
 
-      get_user_by_id(@user1.id).get_new_system_geocoding_calls.should == 220
+      get_user_by_id(@user1.id).get_geocoding_calls.should == 220
     end
   end
 

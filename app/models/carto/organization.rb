@@ -36,13 +36,6 @@ module Carto
       owner && owner.period_end_date
     end
 
-    def get_new_system_geocoding_calls(options = {})
-      require_organization_owner_presence!
-      date_to = (options[:to] ? options[:to].to_date : Date.current)
-      date_from = (options[:from] ? options[:from].to_date : owner.last_billing_cycle)
-      get_organization_geocoding_data(self, date_from, date_to)
-    end
-
     def get_here_isolines_calls(options = {})
       require_organization_owner_presence!
       date_to = (options[:to] ? options[:to].to_date : Date.today)

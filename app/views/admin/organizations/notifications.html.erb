@@ -57,17 +57,17 @@
                 </div>
 
                 <div class="NotificationsList-itemDescription">
-                  <p class="u-ellipsis CDB-Text CDB-Size-medium u-altTextColor"><abbr title="<%= notification.to_hash[:created_at] %>" class="u-rSpace--xl"><%= notification.created_at.strftime("%d/%m/%Y") %></abbr> User type: <span class="js-recipients" data-recipients="<%= notification.recipients %>"><%= notification.recipients.capitalize %></span></p>
+                  <p class="u-ellipsis CDB-Text CDB-Size-medium u-altTextColor"><abbr title="<%= notification.created_at %>" class="u-rSpace--xl"><%= notification.created_at.strftime("%d/%m/%Y") %></abbr> User type: <span class="js-recipients" data-recipients="<%= notification.recipients %>"><%= notification.recipients.capitalize %></span></p>
                 </div>
               </div>
 
               <div class="NotificationsList-itemSecondaryInfo">
                 <div class="NotificationsList-itemMeta CDB-Text CDB-Size-small">
-                  <a href="#/resend" class="NotificationsList-itemLink js-resend">Resend</a>
+                  <button class="FormAccount-link NotificationsList-itemLink js-resend">Resend</button>
                 </div>
 
                 <div class="NotificationsList-itemMeta CDB-Text CDB-Size-small">
-                  <a href="#" class="NotificationsList-itemLink NotificationsList-itemLink--remove">Remove for all users</a>
+                  <button class="FormAccount-link NotificationsList-itemLink NotificationsList-itemLink--remove js-remove" data-id="<%= notification.id %>">Remove for all users</button>
                 </div>
               </div>
             </div>

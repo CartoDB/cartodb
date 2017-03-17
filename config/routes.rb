@@ -90,6 +90,7 @@ CartoDB::Application.routes.draw do
 
     get    '(/user/:user_domain)(/u/:user_domain)/organization/notifications' => 'organizations#notifications',          as: :organization_notifications_admin
     post   '(/user/:user_domain)(/u/:user_domain)/organization/notifications' => 'organizations#new_notification',          as: :new_organization_notification_admin
+    delete '(/user/:user_domain)(/u/:user_domain)/organization/notifications/:id' => 'organizations#destroy_notification',          as: :destroy_organization_notification_admin
 
     # Organization users management
     get '(/user/:user_domain)(/u/:user_domain)/organization/users/:id/edit'  => 'organization_users#edit',    as: :edit_organization_user,   constraints: { id: /[0-z\.\-]+/ }

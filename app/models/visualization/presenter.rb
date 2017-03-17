@@ -44,6 +44,7 @@ module CartoDB
           legend_style: visualization.legend_style,
           exportable: visualization.exportable,
           export_geom: visualization.export_geom,
+          category: visualization.category,
           prev_id: visualization.prev_id,
           next_id: visualization.next_id,
           transition_options: visualization.transition_options,
@@ -70,6 +71,7 @@ module CartoDB
           legend_style:     visualization.legend_style,
           exportable:       visualization.exportable,
           export_geom:      visualization.export_geom,
+          category:         visualization.category,
           title:            visualization.title,
           kind:             visualization.kind,
           privacy:          privacy_for_vizjson.upcase,
@@ -112,6 +114,7 @@ module CartoDB
         table_data = {
           id:           table.id,
           name:         table_name,
+          name_alias:   table.name_alias,
           permission:   nil
         }
         table_visualization = table.table_visualization

@@ -8,13 +8,19 @@
 .ContentController {
   background-color: $DarkGrey6;
   position: relative;
-  display: block;
+  display: flex;
   min-height: 600px;
   margin: 0 auto;
-  padding-top: 81px
+  top: 40px;
 }
 
 .ContentController.on-boarding { 
   padding-top: 0;
   min-height: initial;
+}
+
+.ContentController .ContentList { 
+  float: left;
+  flex: 1 1 auto;
+  padding: 0 10px 0 10px;
 }

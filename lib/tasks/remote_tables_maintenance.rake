@@ -89,6 +89,69 @@ namespace :cartodb do
       end
     end
 
+    desc "Sync category set in Data Library for all datasets to all users"
+    task :sync_dataset_categories => [:environment] do
+      require_relative '../../app/helpers/common_data_redis_cache'
+      require_relative '../../app/services/visualization/common_data_service'
+
+      common_data_user = Cartodb.config[:common_data]["username"]
+
+      lib_datasets = Hash[
+        Rails::Sequel.connection.fetch(%Q[
+          SELECT name, category FROM visualizations WHERE
+            user_id=(SELECT id FROM users WHERE username='#{common_data_user}')
+            AND type='remote';
+        ]).all.map { |row| [row.fetch(:name), row.fetch(:category)] }
+      ]
+
+      lib_datasets.each { |dataset_name, dataset_category|
+        sql_query = %Q[
+          UPDATE visualizations SET category=#{dataset_category} WHERE name='#{dataset_name}';
+          ]
+        updated_rows = Rails::Sequel.connection.fetch(sql_query).update
+        CommonDataRedisCache.new.invalidate
+        puts "#{updated_rows} datasets named #{dataset_name} set to category #{dataset_category}"
+      }
+    end
+
+    desc "Sync category set in Data Library to all users"
+    task :sync_dataset_category, [:dataset_name] => [:environment] do |t, args|
+      require_relative '../../app/helpers/common_data_redis_cache'
+      require_relative '../../app/services/visualization/common_data_service'
+
+      common_data_user = Cartodb.config[:common_data]["username"]
+
+      lib_datasets = Hash[
+        Rails::Sequel.connection.fetch(%Q[
+          SELECT name, category FROM visualizations WHERE
+            user_id=(SELECT id FROM users WHERE username='#{common_data_user}')
+            AND type='remote' AND name='#{args[:dataset_name]}';
+        ]).all.map { |row| [row.fetch(:name), row.fetch(:category)] }
+      ]
+
+      lib_datasets.each { |dataset_name, dataset_category|
+        sql_query = %Q[
+          UPDATE visualizations SET category=#{dataset_category} WHERE name='#{dataset_name}';
+          ]
+        updated_rows = Rails::Sequel.connection.fetch(sql_query).update
+        CommonDataRedisCache.new.invalidate
+        puts "#{updated_rows} datasets named #{dataset_name} set to category #{dataset_category}"
+      }
+    end
+
+    desc "Set dataset category in Data Library and propagate to all users"
+    task :set_dataset_category, [:dataset_name, :dataset_category] => [:environment] do |t, args|
+      require_relative '../../app/helpers/common_data_redis_cache'
+      require_relative '../../app/services/visualization/common_data_service'
+
+      sql_query = %Q[
+        UPDATE visualizations SET category=#{args[:dataset_category]} WHERE name='#{args[:dataset_name]}';
+      ]
+      updated_rows = Rails::Sequel.connection.fetch(sql_query).update
+      CommonDataRedisCache.new.invalidate
+      puts "#{updated_rows} datasets named #{args[:dataset_name]} set to category #{args[:dataset_category]}"
+    end
+
     desc "Sync dataset aliases for user"
     task :sync_dataset_aliases_for_user, [:dataset_name, :username] => [:environment] do |t, args|
       require_relative '../../app/helpers/common_data_redis_cache'

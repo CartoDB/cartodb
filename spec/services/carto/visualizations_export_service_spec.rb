@@ -2,6 +2,7 @@
 
 require_relative '../../spec_helper'
 require 'helpers/unique_names_helper'
+require 'visualization/vizjson'
 
 describe Carto::VisualizationsExportService do
   include UniqueNamesHelper

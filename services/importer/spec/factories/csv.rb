@@ -25,7 +25,7 @@ module CartoDB
 
           self
         end
-        
+
         def delete
           File.delete(filepath)
           self
@@ -36,4 +36,3 @@ module CartoDB
     end
   end
 end
-

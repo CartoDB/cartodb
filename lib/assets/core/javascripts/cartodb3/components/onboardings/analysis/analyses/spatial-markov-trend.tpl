@@ -26,5 +26,5 @@
 </p>
 
 <p class="CDB-Text Onboarding-description">
-  <a href="https://github.com/CartoDB/crankshaft/blob/develop/doc/04_markov.md" class="Onboarding-readMore" target="_blank"><%- _t('analyses-onboarding.read-more') %></a>
+  <a href="https://carto.com/learn/guides/analysis/predict-trends-and-volatility" class="Onboarding-readMore" target="_blank"><%- _t('analyses-onboarding.learn-more') %></a>
 </p>

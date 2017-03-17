@@ -213,12 +213,8 @@ describe User do
       end
       user = FactoryGirl.build(:user, organization: organization)
       user.max_layers = 3
-      user.private_tables_enabled = false
-      user.sync_tables_enabled = false
       user.save
       user.max_layers.should == 3
-      user.private_tables_enabled.should be_false
-      user.sync_tables_enabled.should be_false
       organization.destroy
     end
 
@@ -258,7 +254,6 @@ describe User do
     it "should return proper values for non-persisted settings" do
       organization = create_organization_with_users
       organization.users.reject(&:organization_owner?).each do |u|
-        u.remove_logo?.should be_true
         u.private_maps_enabled.should be_true
       end
       organization.destroy

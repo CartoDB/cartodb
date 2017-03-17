@@ -174,6 +174,7 @@ GEM
       treetop (~> 1.4.8)
     memory_profiler (0.9.6)
     metaclass (0.0.4)
+    method_source (0.8.2)
     mime-types (1.25.1)
     mini_portile (0.6.2)
     mocha (1.1.0)
@@ -289,9 +290,9 @@ GEM
       faraday (~> 0.9)
       jwt (~> 1.5)
       multi_json (~> 1.10)
-    simplecov (0.11.2)
+    simplecov (0.13.0)
       docile (~> 1.1.0)
-      json (~> 1.8)
+      json (>= 1.8, < 3)
       simplecov-html (~> 0.10.0)
     simplecov-html (0.10.0)
     simplecov-json (0.2)
@@ -349,6 +350,8 @@ GEM
     websocket (1.2.2)
     xpath (0.1.4)
       nokogiri (~> 1.3)
+    zeus (0.15.13)
+      method_source (>= 0.6.7)
 
 PLATFORMS
   ruby
@@ -415,7 +418,7 @@ DEPENDENCIES
   selenium-webdriver (>= 2.5.0)
   sequel (= 3.42.0)
   sequel_pg (= 1.6.3)
-  simplecov
+  simplecov (= 0.13.0)
   simplecov-json
   simplecov-rcov
   state_machine (= 1.1.2)
@@ -429,6 +432,7 @@ DEPENDENCIES
   virtus (= 1.0.5)
   vizzuality-sequel-rails (= 0.3.7)!
   webrick (= 1.3.1)
+  zeus
 
 BUNDLED WITH
-   1.11.2
+   1.14.3

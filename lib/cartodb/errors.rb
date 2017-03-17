@@ -143,6 +143,7 @@ module CartoDB
       @message = "Application server responded with http #{response.code}: #{response.body}"
       @response_code = response.code
       @errors = JSON.parse(response.body)['errors']
+      @errors = [@errors] unless @errors.is_a?(Array)
     rescue
       @errors = ['Couldn\'t parse response errors.']
     end

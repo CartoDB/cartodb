@@ -85,7 +85,7 @@ gem 'net-telnet'
 gem 'test-unit'
 
 group :test do
-  gem 'simplecov',                       require: false
+  gem 'simplecov', '0.13.0', require: false
   gem 'simplecov-json'
   gem 'simplecov-rcov'
   gem 'db-query-matchers',     '0.4.0'
@@ -116,6 +116,7 @@ group :development, :test do
   gem 'rb-readline'
   gem 'byebug'
   gem 'rack'
+  gem 'zeus'
 
   # Server
   gem 'thin',                           require: false

@@ -38,7 +38,7 @@
     </div>
   </div>
 
-  <% if current_user.google_maps_geocoder_enabled? %>
+  <% if show_google_api_keys?(current_user) %>
     <div class="FormAccount-title">
       <p class="FormAccount-titleText">Configure API keys from external providers</p>
     </div>

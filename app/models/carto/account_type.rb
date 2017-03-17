@@ -14,14 +14,8 @@ module Carto
 
     NO_SOFT_GEOCODING_PLANS_REGEXP = /(#{NO_SOFT_GEOCODING_PLANS})/i
 
-    NO_REMOVE_LOGO_PLANS_REGEXP = /^(FREE|MAGELLAN|JOHN SNOW|ACADEMY|ACADEMIC|ON HOLD|SITE LICENSE|CARTO FOR)/i
-
     def pay_users
       ::User.where("upper(account_type) != '#{FREE}'").count
-    end
-
-    def remove_logo?(user)
-      NO_REMOVE_LOGO_PLANS_REGEXP.match(user.account_type) ? false : true
     end
 
     def soft_geocoding_limit?(user)

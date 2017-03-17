@@ -1,5 +1,7 @@
 require 'spec_helper_min'
 require 'mock_redis'
+require 'carto/api/vizjson3_presenter'
+require 'carto/api/vizjson_presenter'
 
 describe Carto::Api::VizJSON3Presenter do
   include Carto::Factories::Visualizations
@@ -19,7 +21,9 @@ describe Carto::Api::VizJSON3Presenter do
 
   shared_context 'full visualization' do
     before(:all) do
+      bypass_named_maps
       @map, @table, @table_visualization, @visualization = create_full_visualization(Carto::User.find(@user1.id))
+      @table.update_attribute(:privacy, Carto::UserTable::PRIVACY_PUBLIC)
     end
 
     after(:all) do
@@ -106,6 +110,22 @@ describe Carto::Api::VizJSON3Presenter do
       vizjson_b = v3_presenter.to_named_map_vizjson(vector: false)
       vizjson_a[:vector].should eq true
       vizjson_b[:vector].should eq false
+    end
+  end
+
+  describe '#to_vizjson (without caching)' do
+    include_context 'full visualization'
+
+    it 'returns map bounds' do
+      presenter = Carto::Api::VizJSON3Presenter.new(@visualization, nil)
+      presenter.to_vizjson[:bounds].should eq [[-85.0511, -179], [85.0511, 179]]
+    end
+
+    it 'returns nil map bounds if map bounds are not set' do
+      @visualization.map.view_bounds_sw = nil
+      @visualization.map.view_bounds_ne = nil
+
+      Carto::Api::VizJSON3Presenter.new(@visualization, nil).to_vizjson[:bounds].should be_nil
     end
   end
 
@@ -205,7 +225,7 @@ describe Carto::Api::VizJSON3Presenter do
     include_context 'full visualization'
 
     it 'v3 should include sql_wrap' do
-      v3_vizjson = Carto::Api::VizJSON3Presenter.new(@visualization, viewer_user).send :calculate_vizjson
+      v3_vizjson = Carto::Api::VizJSON3Presenter.new(@visualization, viewer_user).send(:calculate_vizjson)
       v3_vizjson[:layers][1][:options][:sql_wrap].should eq "select * from (<%= sql %>) __wrap"
     end
   end
@@ -272,10 +292,13 @@ describe Carto::Api::VizJSON3Presenter do
         end
       end
 
-      it 'should not include layer_name in options for carto layers' do
-        carto_layer = vizjson[:layers][1]
-        carto_layer.should_not include :layer_name
-        carto_layer[:options][:layer_name].should
+      it 'should include layer_name in options for data layers' do
+        vizjson[:layers].each do |layer|
+          unless layer[:type] == 'tiled'
+            layer.should_not include :layer_name
+            layer[:options][:layer_name].should be
+          end
+        end
       end
 
       it 'should not include Odyssey options' do

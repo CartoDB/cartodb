@@ -251,9 +251,9 @@ describe Admin::VisualizationsController do
     end
 
     it 'returns public map for org users' do
-      org = OrganizationFactory.new.new_organization(name: 'public-map-spec-org').save
+      org = OrganizationFactory.new.new_organization.save
 
-      user_a = create_user({username: 'user-public-map', quota_in_bytes: 123456789, table_quota: 400})
+      user_a = create_user(quota_in_bytes: 123456789, table_quota: 400)
       user_org = CartoDB::UserOrganization.new(org.id, user_a.id)
       user_org.promote_user_to_admin
 

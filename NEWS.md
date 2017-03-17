@@ -62,6 +62,7 @@ Development
 * Migrate to use GNIP v2 for twitter search connector (#10051, #11595)
 * Notifications API (WIP) (#11734)
 * Update tangram with smooth point outline.
+* GME users can change to any basemap #11785.
 * Improve affordance of layer item (#11359)
 * Update tangram-cartocss to use smooth point outline.
 

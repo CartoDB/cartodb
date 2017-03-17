@@ -1120,7 +1120,19 @@
         "count-message": "If you select 'COUNT' all columns are selected"
       },
       "interval-error": "Value must be between %{minValue} and %{maxValue}",
-      "copy-button": "COPY"
+      "copy-button": "COPY",
+      "data-observatory": {
+        "dropdown": {
+          "measurement": {
+            "search": "Search...",
+            "type": "measurements"
+          },
+          "filter": {
+            "header": "Filter measurements by",
+            "type": "filters"
+          }
+        }
+      }
     },
     "codemirror": {
       "no-errors": "No errors",

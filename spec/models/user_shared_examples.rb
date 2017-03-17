@@ -776,13 +776,11 @@ shared_examples_for "user models" do
       user = create_user
       basemaps = user.basemaps
       basemaps.keys.sort.should eq ['CARTO', 'Stamen']
-      basemaps.keys.first.should eq 'CARTO'
       user.google_maps_key = 'client=whatever'
       user.google_maps_private_key = 'wadus'
       user.save
       basemaps = user.basemaps
       basemaps.keys.sort.should eq ['CARTO', 'GMaps', 'Stamen']
-      basemaps.keys.first.should eq 'GMaps'
     end
   end
 

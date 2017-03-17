@@ -220,17 +220,9 @@ class Carto::User < ActiveRecord::Base
     Rack::Utils.parse_nested_query(google_maps_query_string)['client'] if google_maps_query_string
   end
 
-  # returns a list of basemaps enabled for the user, default one first
+  # returns a list of basemaps enabled for the user
   def basemaps
-    sorted_basemaps = (Cartodb.config[:basemaps] || [])
-                        .select { |group| group != 'GMaps' || google_maps_enabled? }
-                        .sort { |a, b|
-      if a[0] == 'GMaps' then
-        -1
-      else
-        b[0] == 'GMaps' ? 1 : 0
-      end }
-    Hash[sorted_basemaps]
+    (Cartodb.config[:basemaps] || []).select { |group| group != 'GMaps' || google_maps_enabled? }
   end
 
   def google_maps_enabled?
@@ -240,16 +232,14 @@ class Carto::User < ActiveRecord::Base
   # return the default basemap based on the default setting. If default attribute is not set, first basemaps is returned
   # it only takes into account basemaps enabled for that user
   def default_basemap
-    default = basemaps.find { |group, group_basemaps |
-      group_basemaps.find { |b, attr| attr['default'] }
-    }
-    if default.nil?
-      default = basemaps.first[1]
-    else
-      default = default[1]
-    end
+    default = if google_maps_enabled? && basemaps['GMaps']
+                ['GMaps', basemaps['GMaps']]
+              else
+                basemaps.find { |group, group_basemaps | group_basemaps.find { |b, attr| attr['default'] } }
+              end
+    default ||= basemaps.first
     # return only the attributes
-    default.first[1]
+    default[1].first[1]
   end
 
   def remaining_geocoding_quota(options = {})

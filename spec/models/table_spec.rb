@@ -1152,6 +1152,12 @@ describe Table do
         }.should raise_error(CartoDB::InvalidAttributes)
       end
 
+      it "fails with long values" do
+        table = create_table(:user_id => @user.id)
+        table.add_column!(name: 'text_col', type: 'varchar(3)')
+        expect { table.insert_row!(text_col: 'hola') }.to raise_error(Sequel::DatabaseError, /value too long for type/)
+      end
+
       it "updates data_last_modified when changing data" do
         table = create_table(:user_id => @user.id)
 

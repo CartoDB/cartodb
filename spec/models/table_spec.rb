@@ -1787,6 +1787,15 @@ describe Table do
       end
     end
 
+    describe '#get_by_table_id' do
+      it 'returns table service' do
+        id = Carto::UserTable.first.id
+        table = Table.get_by_table_id(id)
+        table.should_not be_nil
+        table.id.should eq id
+      end
+    end
+
     describe '#has_index?' do
       let(:table) { create_table name: 'table_with_indexes', user_id: @user.id }
 

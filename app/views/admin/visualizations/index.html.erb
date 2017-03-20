@@ -25,8 +25,11 @@
 
 <div class="ContentController" id="content-controller">
   <div class="LeftMenu"></div>
-  <div class="NoDatasets"></div>
-  <div class="ContentList" id="content-list"></div>
+  <div class="RightContent">
+    <div class="SearchBar"><input type="text" class="search-bar-input" placeholder="<Filter>"></div>
+    <div class="NoDatasets"></div>
+    <div class="ContentList" id="content-list"></div>
+  </div>
 </div>
 
 <% if !Cartodb.config[:cartodb_com_hosted].present? %>

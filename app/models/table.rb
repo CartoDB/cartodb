@@ -474,22 +474,6 @@ class Table
     raise e
   end
 
-  def default_baselayer_for_user(user=nil)
-    user ||= self.owner
-    basemap = user.default_basemap
-    if basemap['className'] === 'googlemaps'
-      {
-        kind: 'gmapsbase',
-        options: basemap
-      }
-    else
-      {
-        kind: 'tiled',
-        options: basemap.merge({ 'urlTemplate' => basemap['url'] })
-      }
-    end
-  end
-
   def before_destroy
     @table_visualization                = table_visualization
     @fully_dependent_visualizations_cache     = fully_dependent_visualizations.to_a

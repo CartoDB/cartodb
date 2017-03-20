@@ -1153,7 +1153,7 @@ describe Table do
       end
 
       it "fails with long values" do
-        table = create_table(:user_id => @user.id)
+        table = create_table(user_id: @user.id)
         table.add_column!(name: 'text_col', type: 'varchar(3)')
         expect { table.insert_row!(text_col: 'hola') }.to raise_error(Sequel::DatabaseError, /value too long for type/)
       end
@@ -1394,7 +1394,7 @@ describe Table do
       end
 
       it "should raise an error when creating a column with reserved name" do
-        table = create_table(:user_id => @user.id)
+        table = create_table(user_id: @user.id)
         lambda {
           table.add_column!(:name => "xmin", :type => "number")
         }.should raise_error(CartoDB::InvalidColumnName)

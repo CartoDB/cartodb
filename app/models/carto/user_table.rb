@@ -189,6 +189,11 @@ module Carto
       super(value.split(',').map(&:strip).reject(&:blank?).uniq.join(','))
     end
 
+    # TODO: Compatibility with Sequel model, can be removed afterwards.
+    def set_tag_array(tag_array)
+      self.tags = tag_array.join(',')
+    end
+
     # TODO: This is related to an incompatibility between visualizations models, `get_related_tables`, See #11705
     def privacy_text_for_vizjson
       privacy == PRIVACY_LINK ? 'PUBLIC' : privacy_text

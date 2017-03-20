@@ -1809,6 +1809,12 @@ describe Table do
       end
     end
 
+    describe '#table_size' do
+      it 'returns nil for unknown tables' do
+        Table.table_size(String.random(10), connection: @user.in_database).should be_nil
+      end
+    end
+
     describe '#has_index?' do
       let(:table) { create_table name: 'table_with_indexes', user_id: @user.id }
 

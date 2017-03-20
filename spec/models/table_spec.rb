@@ -1400,6 +1400,13 @@ describe Table do
         }.should raise_error(CartoDB::InvalidColumnName)
       end
 
+      it "should raise an error when renaming a column with reserved name" do
+        table = create_table(:user_id => @user.id)
+        lambda {
+          table.rename_column('name', 'xmin')
+        }.should raise_error(CartoDB::InvalidColumnName)
+      end
+
       it "should not raise an error when renaming a column with reserved name" do
         table = create_table(:user_id => @user.id)
         resp = table.modify_column!(:name => "name", :new_name => "xmin")

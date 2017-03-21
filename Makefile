@@ -236,6 +236,7 @@ WORKING_SPECS_9 = \
 	spec/models/carto/invitation_spec.rb \
 	spec/models/carto/user_service_spec.rb \
 	spec/models/carto/user_spec.rb \
+	spec/models/carto/helpers/billing_cycle_spec.rb \
 	spec/models/carto/user_table_spec.rb \
 	spec/models/carto/organization_spec.rb \
 	spec/models/carto/visualization_export_spec.rb \

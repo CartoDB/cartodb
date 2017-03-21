@@ -1,3 +1,5 @@
+require 'active_support/time'
+
 module Carto
   module BillingCycle
     def last_billing_cycle

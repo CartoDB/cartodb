@@ -22,6 +22,7 @@ require_dependency 'carto/helpers/auth_token_generator'
 require_dependency 'carto/helpers/has_connector_configuration'
 require_dependency 'carto/helpers/batch_queries_statement_timeout'
 require_dependency 'carto/user_authenticator'
+require_dependency 'carto/helpers/billing_cycle'
 
 class User < Sequel::Model
   include CartoDB::MiniSequel
@@ -32,6 +33,7 @@ class User < Sequel::Model
   include Carto::AuthTokenGenerator
   include Carto::HasConnectorConfiguration
   include Carto::BatchQueriesStatementTimeout
+  include Carto::BillingCycle
   extend Carto::UserAuthenticator
 
   self.strict_param_setting = false
@@ -1055,18 +1057,6 @@ class User < Sequel::Model
       # Manually set updated_at
       api_calls["updated_at"] = Time.now.to_i
       $users_metadata.HMSET key, 'api_calls', api_calls.to_json
-    end
-  end
-
-  def last_billing_cycle
-    day = period_end_date.day rescue 29.days.ago.day
-    # << operator substract 1 month from the date object
-    date = (day > Date.today.day ? Date.today << 1 : Date.today)
-    begin
-      Date.parse("#{date.year}-#{date.month}-#{day}")
-    rescue ArgumentError
-      day = day - 1
-      retry
     end
   end
 

@@ -977,12 +977,22 @@ module.exports = cdb.core.View.extend({
 
   _getMinValueFromBinIndex: function (binIndex) {
     var data = this.model.get('data');
-    return data[binIndex].min != null ? data[binIndex].min : data[binIndex].start;
+    var dataBin = data[binIndex];
+    if (dataBin) {
+      return dataBin.min != null ? dataBin.min : dataBin.start;
+    } else {
+      return null;
+    }
   },
 
   _getMaxValueFromBinIndex: function (binIndex) {
     var data = this.model.get('data');
-    return data[binIndex].max != null ? data[binIndex].max : data[binIndex].end;
+    var dataBin = data[binIndex];
+    if (dataBin) {
+      return dataBin.min != null ? dataBin.max : dataBin.end;
+    } else {
+      return null;
+    }
   },
 
   // Calculates the domain ([ min, max ]) of the selected data. If there is no selection ongoing,

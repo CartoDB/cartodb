@@ -117,6 +117,7 @@ group :development, :test do
   gem 'byebug'
   gem 'rack'
   gem 'zeus'
+  gem 'timecop', require: false
 
   # Server
   gem 'thin',                           require: false

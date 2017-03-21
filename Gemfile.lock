@@ -329,6 +329,7 @@ GEM
     thor (0.19.1)
     thread_safe (0.3.5)
     tilt (1.4.1)
+    timecop (0.8.1)
     treetop (1.4.15)
       polyglot
       polyglot (>= 0.3.1)
@@ -434,6 +435,7 @@ DEPENDENCIES
   statsd-client (= 0.0.7)
   test-unit
   thin
+  timecop
   typhoeus (= 0.7.2)
   unicorn (= 4.8.2)
   unicorn-worker-killer

@@ -57,14 +57,17 @@ Development
 * Improved empty bounds map handling (#11711).
 * Updated diagnosis page versions.
 * Improved formula widget description field. (#11469)
+* In an organization, only the owner sees the Google API keys.
 * Added support for Zeus for faster testing (#11574). Check `CONTRIBUTING.md` for configuration details.
 * Migrate to use GNIP v2 for twitter search connector (#10051, #11595)
-* Notifications API (WIP) (#11734, #11780)
+* Notifications API (WIP) (#11734, #11780, #11734)
+* Invite to georeference proactively when detecting non-georeferenced data (#11316)
 * Update tangram with smooth point outline.
 * Improve affordance of layer item (#11359)
 * Update tangram-cartocss to use smooth point outline.
 
 ### Bug fixes
+* Adds https protocol to WMS Proxy URLs (#11786)
 * Fixed time widget loader (#11754),
 * Fixed problems related with IE11.
 * Fixed silent problem with jQuery selector (cartodb/deep-insights.js#527)

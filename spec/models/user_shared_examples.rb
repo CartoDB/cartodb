@@ -64,7 +64,7 @@ shared_examples_for "user models" do
 
       user1_geocoder_metrics = CartoDB::GeocoderUsageMetrics.new(@user1.username, nil)
       user1_geocoder_metrics.incr(:geocoder_here, :success_responses, 100)
-      
+
       get_user_by_id(@user1.id).remaining_geocoding_quota.should == 400
     end
 
@@ -72,10 +72,16 @@ shared_examples_for "user models" do
       @organization.geocoding_quota = 500
       @organization.save.reload
 
-      org_user_1_geocoder_metrics = CartoDB::GeocoderUsageMetrics.new(@org_user_1.username, @org_user_1.organization.name)
+      org_user_1_geocoder_metrics = CartoDB::GeocoderUsageMetrics.new(
+        @org_user_1.username,
+        @org_user_1.organization.name
+      )
       org_user_1_geocoder_metrics.incr(:geocoder_here, :success_responses, 100)
 
-      org_user_2_geocoder_metrics = CartoDB::GeocoderUsageMetrics.new(@org_user_2.username, @org_user_2.organization.name)
+      org_user_2_geocoder_metrics = CartoDB::GeocoderUsageMetrics.new(
+        @org_user_2.username,
+        @org_user_2.organization.name
+      )
       org_user_2_geocoder_metrics.incr(:geocoder_here, :success_responses, 100)
 
       get_user_by_id(@org_user_1.id).remaining_geocoding_quota.should == 300

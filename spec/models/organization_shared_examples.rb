@@ -12,14 +12,19 @@ shared_examples_for "organization models" do
   describe "#get_geocoding_calls" do
 
     it "counts all geocodings within the org" do
-      org_user_1_geocoder_metrics = CartoDB::GeocoderUsageMetrics.new(@org_user_1.username, @org_user_1.organization.name)
+      org_user_1_geocoder_metrics = CartoDB::GeocoderUsageMetrics.new(
+        @org_user_1.username,
+        @org_user_1.organization.name
+      )
       org_user_1_geocoder_metrics.incr(:geocoder_here, :success_responses, 2)
       org_user_1_geocoder_metrics.incr(:geocoder_cache, :success_responses, 3)
 
-      org_user_2_geocoder_metrics = CartoDB::GeocoderUsageMetrics.new(@org_user_2.username, @org_user_2.organization.name)
+      org_user_2_geocoder_metrics = CartoDB::GeocoderUsageMetrics.new(
+        @org_user_2.username,
+        @org_user_2.organization.name
+      )
       org_user_2_geocoder_metrics.incr(:geocoder_here, :success_responses, 4)
       org_user_2_geocoder_metrics.incr(:geocoder_cache, :success_responses, 5)
-
 
       user1_geocoder_metrics = CartoDB::GeocoderUsageMetrics.new(@user1.username, nil)
       user1_geocoder_metrics.incr(:geocoder_here, :success_responses, 2)

@@ -144,6 +144,8 @@
     margin-left: 0;
   }
   .CDB-Widget-content--histogram {
+    @include display-flex();
+    @include flex-direction(column);
     min-width: 232px;
   }
   .CDB-Widget-content--formula {

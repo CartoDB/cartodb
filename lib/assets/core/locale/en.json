@@ -249,7 +249,8 @@
       "population-segments": "Population segments",
       "race-and-ethnicity": "Race and Ethnicity",
       "religion": "Religion",
-      "transportation": "Transportation"
+      "transportation": "Transportation",
+      "filters": "Filters"
     },
     "merge": {
       "title": "Join columns from 2nd layer",

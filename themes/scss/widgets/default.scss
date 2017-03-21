@@ -18,18 +18,15 @@
   // Due to line-heights, better to substract some pixels in the top
   padding: ($sMargin-section - 4) 0;
   box-sizing: border-box;
-  overflow-x: hidden; // Not showing the loader in any side
-
-  .CDB-Loader {
-    height: 1px;
-  }
 }
-
-
+.CDB-Widget .CDB-Loader {
+  height: 1px;
+}
 .CDB-Widget--timeSeries {
   width: 100%; // override default width
   margin-bottom: 0;
   border-radius: $baseSize / 2;
+  overflow-x: hidden;
 }
 .CDB-Widget-title {
   @include display-flex();
@@ -104,13 +101,24 @@
 }
 
 @media (max-width:759px) {
+  .CDB-Widget {
+    @include flex(0 0 auto);
+    width: auto;
+    min-width: 250px; // Enough for dropdown width
+    padding: 12px 0;
+    border-left-width: 1px;
+    border-left-style: solid;
+    overflow-x: hidden;
+  }
+  .CDB-Widget .CDB-Loader {
+    height: 2px;
+  }
   .CDB-Widget--timeSeries {
     height: auto;
     min-height: auto; // override default min-height
     max-height: auto;
     margin-bottom: 2px;
   }
-
   .CDB-Widget-body--timeSeries {
     @include display-flex();
     @include justify-content(flex-start, start);
@@ -125,18 +133,6 @@
     width: 100%;
     margin-top: 0; // override default
   }
-  .CDB-Widget {
-    @include flex(0 0 auto);
-    width: auto;
-    min-width: auto;
-    padding: 12px 0;
-    border-left-width: 1px;
-    border-left-style: solid;
-
-    .CDB-Loader {
-      height: 2px;
-    }
-  }
   .CDB-Widget-header,
   .CDB-Widget-footer,
   .CDB-Widget-content {
@@ -148,6 +144,8 @@
     margin-left: 0;
   }
   .CDB-Widget-content--histogram {
+    @include display-flex();
+    @include flex-direction(column);
     min-width: 232px;
   }
   .CDB-Widget-content--formula {

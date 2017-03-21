@@ -68,4 +68,23 @@ describe CartoDB::ServiceUsageMetrics do
       @usage_metrics.get(:dummy_service, :dummy_metric).should eq 0
     end
   end
+
+  describe :get_date_range do
+    before(:each) do
+      @redis_mock = MockRedis.new
+      @usage_metrics = CartoDB::ServiceUsageMetrics.new('rtorre', 'team', @redis_mock)
+      @usage_metrics.stubs(:check_valid_data)
+    end
+
+    it 'gets a sum of the zscores stored in a given date range' do
+      @redis_mock.zincrby('org:team:dummy_service:dummy_metric:201703', _amount=1, _day='20')
+      @redis_mock.zincrby('org:team:dummy_service:dummy_metric:201703', _amount=2, _day='21')
+      @redis_mock.zincrby('org:team:dummy_service:dummy_metric:201703', _amount=3, _day='22')
+
+      @usage_metrics.get_date_range('dummy_service',
+                                    'dummy_metric',
+                                    Date.new(2017, 03, 20),
+                                    Date.new(2017, 03, 22)).should eq 6
+    end
+  end
 end

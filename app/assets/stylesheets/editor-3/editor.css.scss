@@ -144,6 +144,9 @@
 
 @media (max-width: $sViewport-xl) {
   .Editor {
+    .CDB-Widget {
+      overflow-x: hidden;
+    }
     .CDB-Widget-options,
     .CDB-Widget-actions {
       @include display-flex();

@@ -5,11 +5,13 @@ require 'spec_helper_min'
 module Carto
   describe Notification do
     before(:all) do
-      @organization = FactoryGirl.create(:organization)
+      @sequel_organization = FactoryGirl.create(:organization_with_users)
+      @organization = Carto::Organization.find(@sequel_organization.id)
+      @organization.users[1].update_attribute(:viewer, true)
     end
 
     after(:all) do
-      @organization.destroy
+      @sequel_organization.destroy
     end
 
     describe '#validation' do
@@ -98,6 +100,51 @@ module Carto
                                recipients: 'all', body: 'Hey!')
       org.destroy
       expect(Notification.exists?(n.id)).to be_false
+    end
+
+    describe '#after_create' do
+      it 'for non-org notifications should not send the notification to users' do
+        n = Notification.create(icon: 'ok', body: 'Hello, friend!')
+        expect(n.received_notifications).to be_empty
+      end
+
+      describe 'for org notifications' do
+        before(:each) do
+          @notification = Notification.new(icon: 'ok', body: 'Hello, friend!', organization: @organization)
+        end
+
+        after(:each) do
+          @notification.destroy
+        end
+
+        it 'should send the notification to all current organization members' do
+          @notification.recipients = 'all'
+          @notification.save!
+
+          expect(@notification.received_notifications.map(&:user_id)).to eq @organization.users.map(&:id)
+        end
+
+        it 'sent notifications should be unread' do
+          @notification.recipients = 'all'
+          @notification.save!
+
+          expect(@notification.received_notifications.map(&:read_at).none?).to be_true
+        end
+
+        it 'should send the notification to current organization builders' do
+          @notification.recipients = 'builders'
+          @notification.save!
+
+          expect(@notification.received_notifications.map(&:user_id)).to eq @organization.builder_users.map(&:id)
+        end
+
+        it 'should send the notification to current organization viewers' do
+          @notification.recipients = 'viewers'
+          @notification.save!
+
+          expect(@notification.received_notifications.map(&:user_id)).to eq @organization.viewer_users.map(&:id)
+        end
+      end
     end
   end
 end

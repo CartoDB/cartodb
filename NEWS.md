@@ -61,14 +61,18 @@ Development
 * Added support for Zeus for faster testing (#11574). Check `CONTRIBUTING.md` for configuration details.
 * Migrate to use GNIP v2 for twitter search connector (#10051, #11595).
 * Notifications API (#11734) and administrator UI (#11729).
+* Migrate to use GNIP v2 for twitter search connector (#10051, #11595)
+* Notifications API (WIP) (#11734, #11780, #11734)
+* Invite to georeference proactively when detecting non-georeferenced data (#11316)
 * Update tangram with smooth point outline.
 * Improve affordance of layer item (#11359).
 * Update tangram-cartocss to use smooth point outline.
 
 ### Bug fixes
+* Using clean method instead of remove for context-menu-view (#11778)
 * Adds https protocol to WMS Proxy URLs (#11786)
-* Fixed time widget loader (#11754),
-* Fixed problems related with IE11.
+* Fixed time widget loader (#11754)
+* Fixed problems related with IE11
 * Fixed silent problem with jQuery selector (cartodb/deep-insights.js#527)
 * Form editors remains open if a modal is open even triggering document click or ESC (#11686)
 * Fixed font style for the "You have run out of quota" module (#11690)
@@ -126,6 +130,7 @@ Development
 * Fixed error handling if json "errors" field contains one single string (#11752)
 * Fix problem with perfect-scrollbar in Edge browsers (CartoDB/perfect-scrollbar/#2)
 * Layer onboardings are now aware on sync'd layers and highlighted area is clicked. (#11583)
+* Do not show builder activated notification for new users (#11720)
 * Fixed overflow on loaders.
 * JOIN Analysis Fails Without Error Message (#11184)
 * Fix problem with perfect-scrollbar in Edge browsers (CartoDB/perfect-scrollbar/#2)

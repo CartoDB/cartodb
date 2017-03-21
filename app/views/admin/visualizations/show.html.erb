@@ -8,18 +8,18 @@
 
   <script type="text/javascript" id="dropboxjs" src="//www.dropbox.com/static/api/1/dropins.js" data-app-key="<%= Cartodb.config[:dropbox_api_key] %>"></script>
   <script>
-    var vis_data = <%= safe_js_object @visualization.to_hash.to_json %>
-    , user_data = <%= safe_js_object current_user.data({ show_api_calls: false }).to_json %>
-    , config = <%= safe_js_object frontend_config %>
-    , map_data = <%= safe_js_object @visualization.map.public_values.to_json %>
-    , basemaps = <%=raw Cartodb.config[:basemaps].present? ? Cartodb.config[:basemaps].to_json.html_safe: 'null' %>
+    var vis_data = <%= safe_js_object @visualization.to_hash.to_json %>;
+    var user_data = <%= safe_js_object current_user.data({ show_api_calls: false }).to_json %>;
+    var config = <%= safe_js_object frontend_config %>;
+    var map_data = <%= safe_js_object @visualization.map.public_values.to_json %>;
+    var basemaps = <%=raw Cartodb.config[:basemaps].present? ? Cartodb.config[:basemaps].to_json.html_safe: 'null' %>;
   </script>
 
   <% content_for(:js) do %>
-  <% if !@google_maps_query_string.blank? %>
-        <script type="text/javascript"
-            src="//maps.googleapis.com/maps/api/js?sensor=false&v=3.12&<%= @google_maps_query_string %>">
-        </script>
+    <% if !@google_maps_query_string.blank? %>
+      <script type="text/javascript"
+          src="//maps.googleapis.com/maps/api/js?sensor=false&v=3.12&<%= @google_maps_query_string %>">
+      </script>
     <% end %>
     <%= javascript_include_tag 'cdb.js','models.js', 'templates.js', 'templates_mustache.js', 'table.js', 'editor.js' %>
   <% end %>

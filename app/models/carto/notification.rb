@@ -13,6 +13,7 @@ module Carto
     RECIPIENTS = [RECIPIENT_ALL, 'builders'.freeze, 'viewers'.freeze].freeze
 
     belongs_to :organization, inverse_of: :notifications
+    has_many :received_notifications, inverse_of: :notification
 
     validates :icon, presence: true, inclusion: { in: [ICON_WARNING, ICON_SUCCESS] }
     validates :recipients, inclusion: { in: [nil] + RECIPIENTS }
@@ -20,7 +21,21 @@ module Carto
     validates :body, presence: true
     validate  :valid_markdown
 
+    after_create :send_to_organization_members
+
     private
+
+    def send_to_organization_members
+      return unless organization
+      users = if recipients == 'builders'
+                organization.builder_users
+              elsif recipients == 'viewers'
+                organization.viewer_users
+              else
+                organization.users
+              end
+      users.each { |u| received_notifications.create!(user: u, received_at: created_at) }
+    end
 
     def valid_markdown
       return unless body.present?

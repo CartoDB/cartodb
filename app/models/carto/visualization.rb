@@ -400,7 +400,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def save_named_map
-    return if remote? || mapcapped?
+    return if remote? || mapcapped? || data_layers.empty?
 
     get_named_map ? named_maps_api.update : named_maps_api.create
   end

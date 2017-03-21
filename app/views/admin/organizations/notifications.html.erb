@@ -15,7 +15,7 @@
         </div>
       </div>
 
-      <div class="OrganizationNotification-submissionRow ">
+      <div class="OrganizationNotification-submissionRow js-update">
         <div class="FormAccount-rowData">
           <div class="CDB-Text CDB-Size-medium u-rSpace--xl">
             <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Send to:</label>
@@ -26,9 +26,9 @@
             <% end %>
           </div>
         </div>
-        <button type="submit" class="CDB-Button CDB-Button--primary">
-          <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Send</span>
-        </button>
+
+        <div class="js-send">
+        </div>
       </div>
     <% end %>
 
@@ -52,7 +52,7 @@
 
             <div class="NotificationsList-itemInfo">
               <div class="NotificationsList-itemPrimaryInfo">
-                <div class="NotificationsList-itemTitle u-ellipsis CDB-Text CDB-Size-large u-mainTextColor js-html_body">
+                <div class="NotificationsList-itemTitle u-ellipsis CDB-Text CDB-Size-large u-mainTextColor js-html_body" data-body="<%= notification.body %>">
                   <%= raw notification.html_body %>
                 </div>
 

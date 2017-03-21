@@ -7,6 +7,9 @@ $opacityTransition: 250ms;
 .OrganizationNotifications {
   margin: $sMargin-section 0 100px;
 }
+.OrganizationNotifications-button {
+  height: 34px;
+}
 .NotificationsList {
   @include display-flex();
   @include flex-direction(column);
@@ -86,6 +89,14 @@ $opacityTransition: 250ms;
   @include display-flex();
   @include align-items(center);
   margin-bottom: 0;
+
+  em {
+    font-style: italic;
+  }
+
+  strong {
+    font-weight: 600;
+  }
 }
 .NotificationsList-itemDescription {
   height: 16px;

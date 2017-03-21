@@ -2,8 +2,7 @@ module Carto
   module BillingCycle
     def last_billing_cycle
       day = period_end_date.day rescue 29.days.ago.day
-      # << operator substract 1 month from the date object
-      date = (day > Date.today.day ? Date.today << 1 : Date.today)
+      date = (day > Date.today.day ? (Date.today - 1.month) : Date.today)
       begin
         Date.parse("#{date.year}-#{date.month}-#{day}")
       rescue ArgumentError

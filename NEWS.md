@@ -64,6 +64,7 @@ Development
 * Notifications API (WIP) (#11734, #11780, #11734)
 * Invite to georeference proactively when detecting non-georeferenced data (#11316)
 * Update tangram with smooth point outline.
+* GME users can change to any basemap #11785.
 * Improve affordance of layer item (#11359)
 * Update tangram-cartocss to use smooth point outline.
 

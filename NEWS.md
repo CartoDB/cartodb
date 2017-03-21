@@ -69,8 +69,9 @@ Development
 * Update tangram-cartocss to use smooth point outline.
 
 ### Bug fixes
-* Fixex problem with clipped contextual menu in widgets (#11790)
-* Fix copy for confirm analysis with quota (#11749)
+* Fixed histogram filtering when there is no bucket in that range (#11798)
+* Fixed problem with clipped contextual menu in widgets (#11790)
+* Fixed copy for confirm analysis with quota (#11749)
 * Using clean method instead of remove for context-menu-view (#11778)
 * Adds https protocol to WMS Proxy URLs (#11786)
 * Fixed time widget loader (#11754)

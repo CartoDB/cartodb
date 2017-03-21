@@ -25,7 +25,7 @@
         </li>
         <% if current_user.has_feature_flag?('notifications') %>
           <li class="Filters-typeItem">
-            <a href="<%= current_user_url('organization_notifications_admin') %>" class="Filters-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/organizations_notifications" || "admin/organizations_new_notification" %>">
+            <a href="<%= current_user_url('organization_notifications_admin') %>" class="Filters-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/organizations_notifications" || "#{params[:controller]}_#{params[:action]}" == "admin/organizations_new_notification" %>">
               Notifications
             </a>
           </li>

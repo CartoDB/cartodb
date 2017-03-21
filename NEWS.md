@@ -98,6 +98,7 @@ Development
 * Correctly ask for alternative username when signing up with Google/GitHub into an organization
 * Avoid loading all rake code in resque workers (#11069)
 * Fix analysis notification in running state (#11079)
+* Warn about affected maps on dataset deletion (regression, fixed in #11801)
 * Fix color for "Other" category (#11078)
 * Validate that only one legend per type (color/size) is allowed (#11556)
 * Enable more security HTTP headers (#11727)

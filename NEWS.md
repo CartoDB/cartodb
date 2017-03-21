@@ -2,6 +2,7 @@ Development
 -----------
 
 ### Features
+* New dropdown for Data Observatory (#11618)
 * Quota pre-check to analyses that consume quota.
 * Marking 'Do not show me again' in Layer Onboarding affects every tab. (#11586)
 * Adding Google-Maps basemaps (#11447)

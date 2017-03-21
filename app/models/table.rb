@@ -117,9 +117,7 @@ class Table
     selected_attrs = options[:except].present? ?
       PUBLIC_ATTRIBUTES.select { |k, v| !options[:except].include?(k.to_sym) } : PUBLIC_ATTRIBUTES
 
-    attrs = Hash[selected_attrs.map{ |k, v|
-      [k, (self.send(v) rescue self[v].to_s)]
-    }]
+    attrs = Hash[selected_attrs.map { |k, v| [k, send(v)] }]
 
     if !viewer_user.nil? && !owner.nil? && owner.id != viewer_user.id
       attrs[:name] = "#{owner.sql_safe_database_schema}.#{attrs[:name]}"

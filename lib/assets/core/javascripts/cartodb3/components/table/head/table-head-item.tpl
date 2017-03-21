@@ -13,7 +13,7 @@
       "></i>
     <% } %>
 
-    <button class="CDB-Shape-threePoints is-blue is-small js-options">
+    <button class="CDB-Shape-threePoints is-blue is-small js-columnOptions">
       <div class="CDB-Shape-threePointsItem"></div>
       <div class="CDB-Shape-threePointsItem"></div>
       <div class="CDB-Shape-threePointsItem"></div>

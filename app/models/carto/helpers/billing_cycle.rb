@@ -4,7 +4,7 @@ module Carto
       day = period_end_date.day rescue 29.days.ago.day
       date = (day > Date.today.day ? (Date.today - 1.month) : Date.today)
       begin
-        Date.parse("#{date.year}-#{date.month}-#{day}")
+        Date.new(date.year, date.month, day)
       rescue ArgumentError
         day = day - 1
         retry

@@ -52,6 +52,7 @@
     "exports-loader": "0.6.4",
     "fs-extra": "2.0.0",
     "git-rev": "0.2.1",
+    "glob": "7.1.1",
     "grunt": "0.4.5",
     "grunt-available-tasks": "0.5.4",
     "grunt-aws": "0.3.0",
@@ -72,7 +73,6 @@
     "grunt-mustache": "0.1.7",
     "grunt-postcss": "0.5.5",
     "grunt-timer": "0.3.3",
-    "grunt-webpack": "2.0.1",
     "hogan.js": "^3.0.2",
     "jasmine": "2.5.2",
     "jasmine-ajax": "git://github.com/nobuti/jasmine-ajax.git#master",
@@ -81,6 +81,7 @@
     "minimist": "1.2.0",
     "mustache-loader": "^0.4.1",
     "open": "0.0.5",
+    "prettysize": "0.0.3",
     "recursive-readdir": "2.1.1",
     "semistandard": "7.0.4",
     "shim-loader": "0.1.0",
@@ -175,7 +176,6 @@
     "preupdate-internal-deps": "echo 'DEPRECATED TASK, use `npm run-script update-internal-deps` instead'",
     "update-internal-deps": "rm -rf node_modules && npm install --no-shrinkwrap && npm shrinkwrap",
     "branch-files": "node lib/build/branchFiles/branchFiles.js",
-    "affected_specs": "node lib/build/branchFiles/branchFiles.js | xargs node lib/build/affectedFiles/affectedFiles.js",
-    "webpack": "webpack"
+    "affected_specs": "node lib/build/branchFiles/branchFiles.js | xargs node lib/build/affectedFiles/affectedFiles.js"
   }
 }

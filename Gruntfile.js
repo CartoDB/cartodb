@@ -3,8 +3,8 @@ var timer = require("grunt-timer");
 var colors = require('colors');
 var jasmineCfg = require('./lib/build/tasks/jasmine.js');
 var duplicatedDependencies = require('./lib/build/tasks/shrinkwrap-duplicated-dependencies.js');
-var retrieveAffectedSpecs = require('./lib/build/affectedSpecs');
- 
+var webpackTask = require('./lib/build/tasks/webpack/webpack.js');
+
 var REQUIRED_NPM_VERSION = /2.14.[0-9]+/;
 var REQUIRED_NODE_VERSION = /0.10.[0-9]+/;
 var SHRINKWRAP_MODULES_TO_VALIDATE = [
@@ -21,9 +21,9 @@ var SHRINKWRAP_MODULES_TO_VALIDATE = [
   'turbo-carto'
 ];
 
-  /**
-   *  CartoDB UI assets generation
-   */
+/**
+ *  CartoDB UI assets generation
+ */
 
   module.exports = function(grunt) {
 
@@ -46,8 +46,8 @@ var SHRINKWRAP_MODULES_TO_VALIDATE = [
           done && done(err ? new Error(err): null);
         });
       }
-      checkVersion('npm -v', REQUIRED_NPM_VERSION, 'npm', done);
-      checkVersion('node -v', REQUIRED_NODE_VERSION, 'node', done);
+      //checkVersion('npm -v', REQUIRED_NPM_VERSION, 'npm', done);
+      //checkVersion('node -v', REQUIRED_NODE_VERSION, 'node', done);
     }
 
     preFlight(function (err) {
@@ -348,37 +348,35 @@ var SHRINKWRAP_MODULES_TO_VALIDATE = [
      'copy:js_test_spec_client_cartodb3'
     ]);
 
+    // Affected specs section - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
     grunt.registerTask('affected', 'Generate only affected specs', function () {
-      var done = this.async();
-
-      retrieveAffectedSpecs(grunt)
-        .then(function (affectedSpecs) {
-          console.log(colors.yellow(affectedSpecs.length + ' specs found.'));
-
-          var newSrc = ['lib/build/source-map-support.js']
-            .concat(affectedSpecs);
-            // .concat([
-            //   '!lib/assets/test/spec/cartodb3/deep-insights-integrations.spec.js',
-            //   'lib/assets/test/spec/node_modules/**/*.spec.js',
-            //   'lib/assets/test/spec/cartodb3/deep-insights-integrations.spec.js'
-            //]);
-
-          grunt.config.set('browserify.affected_specs.src', newSrc);
-          done();
-        })
-        .catch(function (reason) {
-          throw new Error(reason);
-        });
+      webpackTask.affected.call(this, grunt);
     });
 
-    grunt.registerTask('affected_dev', 'Build only specs affected by changes in current branch', [
+    grunt.registerTask('bootstrap_webpack_builder_specs', 'Create the webpack compiler', function () {
+      webpackTask.bootstrap.call(this, 'builder_specs');
+    });
+
+    grunt.registerTask('webpack:builder_specs', 'Webpack compilation task for builder specs', function () {
+      webpackTask.compile.call(this, 'builder_specs');
+    });
+
+    /**
+     * `grunt affected_specs` compile Builder specs using only affected ones by the current branch.
+     * `grunt affected_specs --specs=all` compile all Builder specs.
+     */
+    grunt.registerTask('affected_specs', 'Build only specs affected by changes in current branch', [
       'copy_builder',
       'affected',
-      'browserify:affected_specs',
+      'bootstrap_webpack_builder_specs',
+      'webpack:builder_specs',
       'jasmine:affected:build',
       'connect',
       'watch:js_affected'
     ]);
+
+    // / Affected specs section - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
     /**
      * Delegate task to commandline.

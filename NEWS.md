@@ -69,7 +69,8 @@ Development
 * Update tangram-cartocss to use smooth point outline.
 
 ### Bug fixes
-* Fixex problem with clipped contextual menu in widgets (#11790)
+* Fixed problem removing a layer within the proper layer is throwing a JS error (#11803)
+* Fixed problem with clipped contextual menu in widgets (#11790)
 * Fix copy for confirm analysis with quota (#11749)
 * Using clean method instead of remove for context-menu-view (#11778)
 * Adds https protocol to WMS Proxy URLs (#11786)

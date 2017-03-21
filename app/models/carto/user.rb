@@ -40,7 +40,7 @@ class Carto::User < ActiveRecord::Base
 
   belongs_to :organization, inverse_of: :users
   has_one :owned_organization, class_name: Carto::Organization, inverse_of: :owner, foreign_key: :owner_id
-  has_one :notifications, class_name: Carto::UserNotification, inverse_of: :user
+  has_one :static_notifications, class_name: Carto::UserNotification, inverse_of: :user
 
   has_many :feature_flags_user, dependent: :destroy, foreign_key: :user_id, inverse_of: :user
   has_many :feature_flags, through: :feature_flags_user
@@ -58,6 +58,8 @@ class Carto::User < ActiveRecord::Base
 
   has_many :users_group, dependent: :destroy, class_name: Carto::UsersGroup
   has_many :groups, :through => :users_group
+
+  has_many :received_notifications, inverse_of: :user
 
   delegate [
       :database_username, :database_password, :in_database,
@@ -78,10 +80,10 @@ class Carto::User < ActiveRecord::Base
   before_create :generate_api_key
 
   # Auto creates notifications on first access
-  def notifications_with_creation
-    notifications_without_creation || build_notifications(user: self, notifications: {})
+  def static_notifications_with_creation
+    static_notifications_without_creation || build_static_notifications(user: self, notifications: {})
   end
-  alias_method_chain :notifications, :creation
+  alias_method_chain :static_notifications, :creation
 
   def self.columns
     super.reject { |c| c.name == "arcgis_datasource_enabled" }
@@ -507,7 +509,7 @@ class Carto::User < ActiveRecord::Base
   end
 
   def notifications_for_category(category)
-    notifications.notifications[category] || {}
+    static_notifications.notifications[category] || {}
   end
 
   def builder_enabled?

@@ -30,7 +30,7 @@
     "max": "MAX"
   },
   "builder-activated-notification": {
-    "message": "CARTO Builder has been activated in your account. <a href='https://carto.com/blog/categories/new-features' class='onboardingNotification-link'>Learn more</a> about it and let us know what you think or <a href='mailto:builder-support@carto.com' class='onboardingNotification-link'>contact us</a>. Happy mapping!"
+    "message": "CARTO Builder has been activated in your account. <a href='https://carto.com/learn/guides' class='onboardingNotification-link'>Learn more</a> about it and let us know what you think or <a href='mailto:builder-support@carto.com' class='onboardingNotification-link'>contact us</a>. Happy mapping!"
   },
   "builder-onboarding": {
     "title": "Welcome to Builder,",
@@ -646,7 +646,7 @@
         },
         "error": {
           "title": "We couldn't save your data",
-          "subtitle": "We had an error trying to save your data: <span class='CDB-Text is-semibol%{error}</span>"
+          "subtitle": "We had an error trying to save your data: <span class='CDB-Text is-semibold'>%{error}</span>"
         },
         "loading": "Saving your data...",
         "success": "<span class='CDB-Text is-semibold'>Metadata</span> for %{name} map <span class='CDB-Text is-semibold'>was saved</span>."
@@ -1428,7 +1428,11 @@
     },
     "tab-pane": {
       "layers": {
-        "title-label": "Layers"
+        "title-label": "Layers",
+        "georeference": {
+          "title": "Layer not georeferenced",
+          "body": "The layer <span class='CDB-Text is-semibold'>%{name}</span> include non-georeferenced data."
+        }
       },
       "elements": {
         "title-label": "Elements"
@@ -1823,6 +1827,11 @@
           "success": "Map centered",
           "error": "Error centering map"
         }
+      },
+      "georeference": {
+        "manually-add": "Please georeference or manually add data to visualize.",
+        "georeference-button": "Georeference",
+        "visualize": "Layer doesn't have geometry"
       }
     },
     "data": {
@@ -1977,6 +1986,7 @@
           "title-label-line": "Lines style",
           "title-label-polygon": "Polygons style",
           "placeholder-text": "There's no geometry in your data that could be styled.",
+          "georeference": "Georeference",
           "desc": "Change the visualization"
         },
         "unanimatable": {

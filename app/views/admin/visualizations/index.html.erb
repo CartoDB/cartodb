@@ -15,6 +15,7 @@
     var isFirstTimeViewingDashboard = <%= (!!@first_time).to_s %>;
     var isJustLoggedIn = <%= (!!@just_logged_in).to_s %>;
     var default_fallback_basemap = <%= safe_js_object current_user.default_basemap.to_json %>;
+    var dashboard_notifications = <%= safe_js_object @dashboard_notifications.to_json %>;
   </script>
   <%= javascript_include_tag 'cdb.js', 'models.js', 'dashboard_templates.js', 'dashboard_deps.js', 'dashboard.js' -%>
 <% end %>

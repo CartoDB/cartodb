@@ -298,6 +298,12 @@ describe('widgets/histogram/chart', function () {
 
           expect(this.view._calculateDataDomain()).toEqual([0, 6]);
         });
+
+        it('should return null when there is no data', function () {
+          this.applyNewData([]);
+
+          expect(this.view._calculateDataDomain()).toEqual([null, null]);
+        });
       });
 
       describe('not all bins with freq data', function () {
@@ -399,6 +405,12 @@ describe('widgets/histogram/chart', function () {
             }
           ]);
           expect(this.view._calculateDataDomain()).toEqual([2.1, 8]);
+        });
+
+        it('should return null when there is no data', function () {
+          this.applyNewData([]);
+
+          expect(this.view._calculateDataDomain()).toEqual([null, null]);
         });
       });
     });

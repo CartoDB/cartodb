@@ -15,6 +15,7 @@ module Carto
     belongs_to :owner, class_name: Carto::User, inverse_of: :owned_organization
     has_many :groups, inverse_of: :organization, order: :display_name
     has_many :assets, class_name: Carto::Asset, dependent: :destroy
+    has_many :notifications, dependent: :destroy
 
     before_destroy :destroy_groups_with_extension
 
@@ -150,6 +151,14 @@ module Carto
 
     def auth_saml_enabled?
       auth_saml_configuration.present?
+    end
+
+    def builder_users
+      users.reject(&:viewer)
+    end
+
+    def viewer_users
+      users.select(&:viewer)
     end
 
     private

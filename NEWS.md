@@ -2,6 +2,7 @@ Development
 -----------
 
 ### Features
+* New dropdown for Data Observatory (#11618)
 * Quota pre-check to analyses that consume quota.
 * Marking 'Do not show me again' in Layer Onboarding affects every tab. (#11586)
 * Adding Google-Maps basemaps (#11447)
@@ -66,9 +67,12 @@ Development
 * Invite to georeference proactively when detecting non-georeferenced data (#11316)
 * Update tangram with smooth point outline.
 * Improve affordance of layer item (#11359).
+* GME users can change to any basemap #11785.
+* Improve affordance of layer item (#11359)
 * Update tangram-cartocss to use smooth point outline.
 
 ### Bug fixes
+* Fix copy for confirm analysis with quota (#11749)
 * Using clean method instead of remove for context-menu-view (#11778)
 * Adds https protocol to WMS Proxy URLs (#11786)
 * Fixed time widget loader (#11754)

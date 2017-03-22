@@ -22,8 +22,10 @@ module Carto
         end
 
         render_jsonp ReceivedNotificationPresenter.new(@received_notification)
-      rescue ArgumentError
+
+      rescue ArgumentError => e
         render_jsonp({ errors: { read_at: 'invalid date format' } }, 422)
+        CartoDB::Logger.warning(exception: e)
       end
 
       private

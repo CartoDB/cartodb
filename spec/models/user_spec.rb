@@ -1,4 +1,4 @@
-# coding: UTF-8
+# coding: utf-8
 
 require 'ostruct'
 require_relative '../spec_helper'
@@ -513,9 +513,13 @@ describe User do
     before do
       delete_user_data @user
       @user.stubs(:last_billing_cycle).returns(Date.today)
-      FactoryGirl.create(:geocoding, user: @user, kind: 'high-resolution', created_at: Time.now, processed_rows: 1)
-      FactoryGirl.create(:geocoding, user: @user, kind: 'admin0', created_at: Time.now, processed_rows: 1)
-      FactoryGirl.create(:geocoding, user: @user, kind: 'high-resolution', created_at: Time.now - 5.days, processed_rows: 1, cache_hits: 1)
+      @mock_redis = MockRedis.new
+      @usage_metrics = CartoDB::GeocoderUsageMetrics.new(@user.username, nil, @mock_redis)
+      @usage_metrics.incr(:geocoder_here, :success_responses, 1, Time.now)
+      @usage_metrics.incr(:geocoder_internal, :success_responses, 1, Time.now)
+      @usage_metrics.incr(:geocoder_here, :success_responses, 1, Time.now - 5.days)
+      @usage_metrics.incr(:geocoder_cache, :success_responses, 1, Time.now - 5.days)
+      CartoDB::GeocoderUsageMetrics.stubs(:new).returns(@usage_metrics)
     end
 
     it "should return the sum of geocoded rows for the current billing period" do
@@ -623,7 +627,7 @@ describe User do
   end
 
   describe "organization user deletion" do
-    it "should transfer geocodings and tweet imports to owner" do
+    it "should transfer tweet imports to owner" do
       u1 = create_user(email: 'u1@exampleb.com', username: 'ub1', password: 'admin123')
       org = create_org('cartodbtestb', 1234567890, 5)
 
@@ -636,16 +640,6 @@ describe User do
       u1.reload
 
       u2 = create_user(email: 'u2@exampleb.com', username: 'ub2', password: 'admin123', organization: org)
-
-      geocoding_attributes = {
-        user: u2,
-        kind: 'high-resolution',
-        created_at: Time.now,
-        formatter: 'b'
-      }
-
-      gc1 = FactoryGirl.create(:geocoding, geocoding_attributes.merge(processed_rows: 1))
-      gc2 = FactoryGirl.create(:geocoding, geocoding_attributes.merge(processed_rows: 2))
 
       tweet_attributes = {
         user: u2,
@@ -661,14 +655,11 @@ describe User do
       u1.reload
       u2.reload
 
-      u2.get_geocoding_calls.should == gc1.processed_rows + gc2.processed_rows
       u2.get_twitter_imports_count.should == st1.retrieved_items + st2.retrieved_items
-      u1.get_geocoding_calls.should == 0
       u1.get_twitter_imports_count.should == 0
 
       u2.destroy
       u1.reload
-      u1.get_geocoding_calls.should == gc1.processed_rows + gc2.processed_rows
       u1.get_twitter_imports_count.should == st1.retrieved_items + st2.retrieved_items
 
       org.destroy

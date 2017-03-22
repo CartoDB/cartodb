@@ -25,10 +25,9 @@ module CartoDB
 
     protected
 
-    def check_valid_data(service, metric, amount = 0)
+    def check_valid_data(service, metric)
       raise ArgumentError.new('Invalid service') unless VALID_SERVICES.include?(service)
       raise ArgumentError.new('Invalid metric') unless VALID_METRICS.include?(metric)
-      raise ArgumentError.new('Invalid data observatory metric amount') if !amount.nil? && amount < 0
     end
   end
 end

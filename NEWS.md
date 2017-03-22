@@ -55,6 +55,7 @@ Development
   * Select an icon previously uploaded by the organization admin (#11462)
   * Sets the default initial size for icons to 20px (#11498)
 * Onboarding for layer edition (#10905)
+* Initial support for Rails engines with CARTO Gears.
 * Improved empty bounds map handling (#11711).
 * Updated diagnosis page versions.
 * Improved formula widget description field (#11469).
@@ -72,7 +73,9 @@ Development
 * Update tangram-cartocss to use smooth point outline.
 
 ### Bug fixes
-* Fix copy for confirm analysis with quota (#11749)
+* Fixed histogram filtering when there is no bucket in that range (#11798)
+* Fixed problem with clipped contextual menu in widgets (#11790)
+* Fixed copy for confirm analysis with quota (#11749)
 * Using clean method instead of remove for context-menu-view (#11778)
 * Adds https protocol to WMS Proxy URLs (#11786)
 * Fixed time widget loader (#11754)
@@ -140,6 +143,7 @@ Development
 * Fix problem with perfect-scrollbar in Edge browsers (CartoDB/perfect-scrollbar/#2)
 * Fix problem creating analyses without Data Services API (#11745)
 * Fix problem when number column is used like categories in fill component (#11736)
+* Don't let user to apply icons over categories when auto-style is applied (#11761)
 
 4.0.x (2016-12-05)
 ------------------

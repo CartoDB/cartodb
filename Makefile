@@ -349,11 +349,16 @@ check-carto-db-class:
 check-integrations:
 	CHECK_SPEC=52 RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_INTEGRATIONS)
 
+check-gear/%: %
+	cd $< && bundle install && RAILS_ENV=test bundle exec rspec
+
+check-gears: $(addprefix check-gear/, $(wildcard gears/*))
+
 check-external: prepare-test-db check-integrations
 
 check-prepared: check-1 check-2 check-4 check-5 check-7 check-9 check-spec-helper-min check-carto-db-class
 
-check: prepare-test-db check-prepared
+check: prepare-test-db check-prepared check-gears
 check-frontend:
 	./node_modules/.bin/grunt test
 

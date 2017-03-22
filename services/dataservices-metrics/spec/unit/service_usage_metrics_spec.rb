@@ -78,5 +78,16 @@ describe CartoDB::ServiceUsageMetrics do
                                     Date.new(2017, 03, 20),
                                     Date.new(2017, 03, 22)).should eq 6
     end
+
+    it 'gracefully deals with days without record' do
+      @redis_mock.zincrby('org:team:dummy_service:dummy_metric:201703', _amount=1, _day='20')
+      @redis_mock.zincrby('org:team:dummy_service:dummy_metric:201703', _amount=2, _day='21')
+      @redis_mock.zincrby('org:team:dummy_service:dummy_metric:201703', _amount=3, _day='22')
+
+      @usage_metrics.get_date_range(:dummy_service,
+                                    :dummy_metric,
+                                    Date.new(2017, 03, 15),
+                                    Date.new(2017, 03, 22)).should eq 6
+    end
   end
 end

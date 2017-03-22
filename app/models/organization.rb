@@ -211,17 +211,6 @@ class Organization < Sequel::Model
   def get_geocoding_calls(options = {})
     require_organization_owner_presence!
     date_from, date_to = quota_dates(options)
-    if owner.has_feature_flag?('new_geocoder_quota')
-      get_organization_geocoding_data(self, date_from, date_to)
-    else
-      Geocoding.get_geocoding_calls(users_dataset.join(:geocodings, :user_id => :id), date_from, date_to)
-    end
-  end
-
-  def get_new_system_geocoding_calls(options = {})
-    require_organization_owner_presence! if !options[:from]
-    date_to = (options[:to] ? options[:to].to_date : Date.current)
-    date_from = (options[:from] ? options[:from].to_date : owner.last_billing_cycle)
     get_organization_geocoding_data(self, date_from, date_to)
   end
 

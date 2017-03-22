@@ -77,10 +77,11 @@ LeafletCartoDBLayerGroupView.prototype = _.extend(
         tileURLTemplate = EMPTY_GIF;
       }
 
-      this.leafletLayer.setUrl(tileURLTemplate);
       if (subdomains) {
         L.Util.setOptions(this.leafletLayer, {subdomains:subdomains});
       }
+
+      this.leafletLayer.setUrl(tileURLTemplate);
 
       this._reloadInteraction();
     },

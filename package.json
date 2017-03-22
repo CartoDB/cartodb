@@ -84,6 +84,7 @@
     "prettysize": "0.0.3",
     "recursive-readdir": "2.1.1",
     "semistandard": "7.0.4",
+    "semver": "4.3.6",
     "shim-loader": "0.1.0",
     "source-map-support": "0.4.0",
     "tpl-loader": "git://github.com/ivanmalagon/tpl-loader.git#master",

@@ -1,12 +1,14 @@
 var _ = require('underscore');
 var timer = require("grunt-timer");
 var colors = require('colors');
+var semver = require('semver');
 var jasmineCfg = require('./lib/build/tasks/jasmine.js');
 var duplicatedDependencies = require('./lib/build/tasks/shrinkwrap-duplicated-dependencies.js');
 var webpackTask = require('./lib/build/tasks/webpack/webpack.js');
 
-var REQUIRED_NPM_VERSION = /2.14.[0-9]+/;
-var REQUIRED_NODE_VERSION = /0.10.[0-9]+/;
+var REQUIRED_NPM_VERSION = '2.14 - 3';
+var REQUIRED_NODE_VERSION = '6 - 7';
+
 var SHRINKWRAP_MODULES_TO_VALIDATE = [
   'backbone',
   'camshaft-reference',
@@ -30,14 +32,15 @@ var SHRINKWRAP_MODULES_TO_VALIDATE = [
     if (timer) timer.init(grunt);
 
     function preFlight(done) {
-      function checkVersion(cmd, versionRegExp, name, done) {
+      function checkVersion(cmd, versionRange, name, done) {
         require("child_process").exec(cmd, function (error, stdout, stderr) {
           var err = null;
           if (error) {
             err = 'failed to check version for ' + name;
           } else {
-            if (!versionRegExp.test(stdout)) {
-              err = 'installed ' + name + ' version does not match with required one ' + versionRegExp.toString() + " installed: " +  stdout;
+            var installed = semver.clean(stdout);
+            if (!semver.satisfies(installed, versionRange)) {
+              err = 'Installed ' + name + ' version does not match with required [' + versionRange + "] Installed: " +  installed;
             }
           }
           if (err) {
@@ -46,8 +49,8 @@ var SHRINKWRAP_MODULES_TO_VALIDATE = [
           done && done(err ? new Error(err): null);
         });
       }
-      //checkVersion('npm -v', REQUIRED_NPM_VERSION, 'npm', done);
-      //checkVersion('node -v', REQUIRED_NODE_VERSION, 'node', done);
+      checkVersion('npm -v', REQUIRED_NPM_VERSION, 'npm', done);
+      checkVersion('node -v', REQUIRED_NODE_VERSION, 'node', done);
     }
 
     preFlight(function (err) {

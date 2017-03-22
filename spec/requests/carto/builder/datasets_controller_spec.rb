@@ -14,7 +14,6 @@ describe Carto::Builder::DatasetsController do
     end
 
     before(:each) do
-      @user.stubs(:has_feature_flag?).with('new_geocoder_quota').returns(true)
       login(@user)
     end
 

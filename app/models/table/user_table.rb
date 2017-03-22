@@ -307,7 +307,7 @@ class UserTable < Sequel::Model
   end
 
   def table_visualization
-    @table_visualization ||= CartoDB::Visualization::Collection.new.fetch(
+    @table_visualization ||= map_id && CartoDB::Visualization::Collection.new.fetch(
       map_id: map_id,
       type:   CartoDB::Visualization::Member::TYPE_CANONICAL
     ).first

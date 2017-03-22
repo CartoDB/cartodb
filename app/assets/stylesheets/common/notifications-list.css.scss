@@ -10,6 +10,23 @@ $opacityTransition: 250ms;
 .OrganizationNotifications-button {
   height: 34px;
 }
+.Md-container {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  z-index: 10;
+}
+.Md-button,
+.Md-text {
+  float: left;
+}
+.Md-button {
+  width: 24px;
+  height: 16px;
+  background: #DDD;
+  border-radius: 2px;
+  text-align: center;
+}
 .NotificationsList {
   @include display-flex();
   @include flex-direction(column);

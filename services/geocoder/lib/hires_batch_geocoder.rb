@@ -1,4 +1,5 @@
 # encoding: utf-8
+require 'open3'
 require 'nokogiri'
 require 'csv'
 require 'active_support/core_ext/numeric'
@@ -260,7 +261,8 @@ module CartoDB
     end
 
     def number_of_input_file_rows
-      `wc -l #{input_file}`.to_i
+      stdout, _status = Open3.capture2('wc', '-l', input_file)
+      stdout.to_i
     end
 
     def update_stats(response)

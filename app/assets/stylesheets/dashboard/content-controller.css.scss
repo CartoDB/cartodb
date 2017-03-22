@@ -12,6 +12,27 @@
   min-height: 600px;
   margin: 0 auto;
   top: 40px;
+
+  .RightContent {
+    flex: 1 1 auto;
+  }
+
+  .ContentList {
+    flex: 1 1 auto;
+    padding: 0 10px 0 10px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .SearchBar {
+    padding: 10px;
+    .search-bar-input {
+      color: black;
+      width:100%;
+      height:25px;
+      line-height:25px;
+    }
+  }
 }
 
 .ContentController.on-boarding { 
@@ -19,8 +40,3 @@
   min-height: initial;
 }
 
-.ContentController .ContentList { 
-  float: left;
-  flex: 1 1 auto;
-  padding: 0 10px 0 10px;
-}

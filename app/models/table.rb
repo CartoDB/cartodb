@@ -91,7 +91,7 @@ class Table
   end
 
   def save
-    @user_table.save!
+    @user_table.save
     self
   end
 

@@ -104,13 +104,13 @@ module Carto
 
     describe '#after_create' do
       it 'for non-org notifications should not send the notification to users' do
-        n = Notification.create(icon: 'ok', body: 'Hello, friend!')
+        n = Notification.create(icon: Carto::Notification::ICON_WARNING, body: 'Hello, friend!')
         expect(n.received_notifications).to be_empty
       end
 
       describe 'for org notifications' do
         before(:each) do
-          @notification = Notification.new(icon: 'ok', body: 'Hello, friend!', organization: @organization)
+          @notification = Notification.new(icon: Carto::Notification::ICON_WARNING, body: 'Hello, friend!', organization: @organization)
         end
 
         after(:each) do

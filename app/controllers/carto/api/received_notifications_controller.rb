@@ -6,7 +6,7 @@ module Carto
       include Carto::ControllerHelper
       extend Carto::DefaultRescueFroms
 
-      ssl_required :create, :destroy
+      ssl_required :update
 
       before_filter :load_user
       before_filter :load_notification, only: [:update]

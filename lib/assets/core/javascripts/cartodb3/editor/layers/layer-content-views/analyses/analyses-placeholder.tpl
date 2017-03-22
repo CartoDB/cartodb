@@ -5,7 +5,7 @@
     <li class="HorizontalBlockList-item"></li>
   </ul>
 
-  <button class="CDB-Button CDB-Button--primary js-add-analysis" data-layer-id="<%- layerId %>">
+  <button class="CDB-Button CDB-Button--primary js-add-analysis">
     <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium u-upperCase"><%- _t('editor.layers.layer.add-analysis') %></span>
   </button>
 </div>

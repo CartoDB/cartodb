@@ -25,7 +25,7 @@ module Carto
       private
 
       def load_user_notifications
-        @notifications = Carto::User.find(current_user.id).notifications
+        @notifications = Carto::User.find(current_user.id).static_notifications
       end
     end
   end

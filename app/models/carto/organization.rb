@@ -138,6 +138,14 @@ module Carto
       auth_saml_configuration.present?
     end
 
+    def builder_users
+      users.reject(&:viewer)
+    end
+
+    def viewer_users
+      users.select(&:viewer)
+    end
+
     private
 
     def ensure_auth_saml_configuration

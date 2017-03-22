@@ -100,5 +100,13 @@ describe CartoDB::ServiceUsageMetrics do
                                     Date.new(2017, 02, 15),
                                     Date.new(2017, 03, 22)).should eq 6
     end
+
+    it 'performs just one request/month to redis' do
+      @redis_mock.expects(:zrange).twice
+      @usage_metrics.get_date_range(:dummy_service,
+                                    :dummy_metric,
+                                    Date.new(2017, 02, 15),
+                                    Date.new(2017, 03, 24))
+    end
   end
 end

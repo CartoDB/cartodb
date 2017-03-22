@@ -651,6 +651,11 @@ CartoDB::Application.routes.draw do
       get 'connectors/:provider_id/connect' => 'connectors#connect', as: :api_v1_connectors_connect
     end
   end
+
+  # Load optional engines
+  Carto::CartoGearsSupport.new.gears.each do |gear|
+    mount gear.engine, at: '/'
+  end
 end
 
 # rubocop:enable Metrics/LineLength, Style/ExtraSpacing, Style/SingleSpaceBeforeFirstArg

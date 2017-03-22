@@ -55,6 +55,7 @@ Development
   * Select an icon previously uploaded by the organization admin (#11462)
   * Sets the default initial size for icons to 20px (#11498)
 * Onboarding for layer edition (#10905)
+* Initial support for Rails engines with CARTO Gears.
 * Improved empty bounds map handling (#11711).
 * Updated diagnosis page versions.
 * Improved formula widget description field. (#11469)
@@ -70,8 +71,9 @@ Development
 
 ### Bug fixes
 * Fixed problem removing a layer within the proper layer is throwing a JS error (#11803)
+* Fixed histogram filtering when there is no bucket in that range (#11798)
 * Fixed problem with clipped contextual menu in widgets (#11790)
-* Fix copy for confirm analysis with quota (#11749)
+* Fixed copy for confirm analysis with quota (#11749)
 * Using clean method instead of remove for context-menu-view (#11778)
 * Adds https protocol to WMS Proxy URLs (#11786)
 * Fixed time widget loader (#11754)
@@ -103,6 +105,7 @@ Development
 * Correctly ask for alternative username when signing up with Google/GitHub into an organization
 * Avoid loading all rake code in resque workers (#11069)
 * Fix analysis notification in running state (#11079)
+* Warn about affected maps on dataset deletion (regression, fixed in #11801)
 * Fix color for "Other" category (#11078)
 * Validate that only one legend per type (color/size) is allowed (#11556)
 * Enable more security HTTP headers (#11727)
@@ -139,6 +142,7 @@ Development
 * Fix problem with perfect-scrollbar in Edge browsers (CartoDB/perfect-scrollbar/#2)
 * Fix problem creating analyses without Data Services API (#11745)
 * Fix problem when number column is used like categories in fill component (#11736)
+* Don't let user to apply icons over categories when auto-style is applied (#11761)
 
 4.0.x (2016-12-05)
 ------------------

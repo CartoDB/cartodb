@@ -43,9 +43,9 @@ module CartoDB
         updated_at: object.updated_at
       }
       if object[:permission_id].present? && !object.permission.nil?
-        data[:permission] = object.permission.to_poro.select {|key, val|
+        data[:permission] = CartoDB::PermissionPresenter.new(object.permission).to_poro.select do |key, _val|
           [:id, :owner].include?(key)
-        }
+        end
       end
       data
     end

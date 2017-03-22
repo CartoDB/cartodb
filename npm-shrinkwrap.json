@@ -1,11 +1,11 @@
 {
   "name": "cartodb-ui",
-  "version": "4.6.36",
+  "version": "4.6.37",
   "dependencies": {
     "backbone": {
       "version": "1.2.3",
       "from": "backbone@1.2.3",
-      "resolved": "http://registry.npmjs.org/backbone/-/backbone-1.2.3.tgz"
+      "resolved": "https://registry.npmjs.org/backbone/-/backbone-1.2.3.tgz"
     },
     "backbone-forms": {
       "version": "0.14.0",
@@ -776,7 +776,7 @@
     "bootstrap-colorpicker": {
       "version": "2.3.3",
       "from": "bootstrap-colorpicker@2.3.3",
-      "resolved": "http://registry.npmjs.org/bootstrap-colorpicker/-/bootstrap-colorpicker-2.3.3.tgz"
+      "resolved": "https://registry.npmjs.org/bootstrap-colorpicker/-/bootstrap-colorpicker-2.3.3.tgz"
     },
     "browserify-shim": {
       "version": "3.8.12",
@@ -1152,7 +1152,7 @@
     "cartodb-deep-insights.js": {
       "version": "0.0.2",
       "from": "cartodb/deep-insights.js#master",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#a776962832d45bbe5b59fc4d5f5441756afd6e39",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#a72917e8a7553338b102b7830567cb6d28bd7b9d",
       "dependencies": {
         "cartodb.js": {
           "version": "4.0.0-alpha.1",

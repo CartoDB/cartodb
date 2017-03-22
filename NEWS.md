@@ -73,6 +73,7 @@ Development
 * Update tangram-cartocss to use smooth point outline.
 
 ### Bug fixes
+* Fixed problem removing a layer within the proper layer is throwing a JS error (#11803)
 * Fixed histogram filtering when there is no bucket in that range (#11798)
 * Fixed problem with clipped contextual menu in widgets (#11790)
 * Fixed copy for confirm analysis with quota (#11749)
@@ -107,6 +108,7 @@ Development
 * Correctly ask for alternative username when signing up with Google/GitHub into an organization
 * Avoid loading all rake code in resque workers (#11069)
 * Fix analysis notification in running state (#11079)
+* Warn about affected maps on dataset deletion (regression, fixed in #11801)
 * Fix color for "Other" category (#11078)
 * Validate that only one legend per type (color/size) is allowed (#11556)
 * Enable more security HTTP headers (#11727)

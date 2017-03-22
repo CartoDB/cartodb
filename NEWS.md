@@ -67,6 +67,10 @@ Development
 * Update tangram with smooth point outline.
 * GME users can change to any basemap #11785.
 * Improve affordance of layer item (#11359)
+* Revamp of quota management code (#11784)
+    * **Removed the usage of the feature flag `new_geocoder_quota`**. The behavior is as if it was activated for all users (which's been the case for all cloud users for a long while).
+    * Fixed bug in validation of metrics before storing them.
+    * Removed deprecated methods `Geocoding.get_geocoding_calls`, `User.get_db_system_geocoding_calls`, `get_new_system_geocoding_calls`.
 * Update tangram-cartocss to use smooth point outline.
 
 ### Bug fixes

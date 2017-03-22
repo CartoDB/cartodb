@@ -202,7 +202,8 @@ var VisModel = Backbone.Model.extend({
     // and to make sure everything still works fine during the release and next
     // few moments (e.g: some viz.json files might be cached, etc.).
     var layersData = this._flattenLayers(vizjson.layers);
-    var layerModels = _.map(layersData, function (layerData) {
+    var layerModels = _.map(layersData, function (layerData, layerIndex) {
+      _.extend(layerData, { order: layerIndex });
       return layersFactory.createLayer(layerData.type, layerData);
     });
 

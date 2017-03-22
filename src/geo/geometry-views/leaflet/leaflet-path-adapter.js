@@ -32,7 +32,6 @@ LeafletPathAdapter.prototype.getCoordinates = function () {
       lng: latlng.lng
     };
   });
-
 };
 
 LeafletPathAdapter.prototype.setCoordinates = function (coordinates) {

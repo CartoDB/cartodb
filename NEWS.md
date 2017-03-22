@@ -62,7 +62,7 @@ Development
 * In an organization, only the owner sees the Google API keys.
 * Added support for Zeus for faster testing (#11574). Check `CONTRIBUTING.md` for configuration details.
 * Migrate to use GNIP v2 for twitter search connector (#10051, #11595)
-* Notifications API (WIP) (#11734, #11780, #11734)
+* Organization notifications (WIP) (#11734, #11780, #11734, #11821)
 * Invite to georeference proactively when detecting non-georeferenced data (#11316)
 * Update tangram with smooth point outline.
 * GME users can change to any basemap #11785.

@@ -89,6 +89,7 @@ module ApplicationHelper
       user_name:                  CartoDB.extract_subdomain(request),
       cartodb_com_hosted:         Cartodb.config[:cartodb_com_hosted].present?,
       account_host:               CartoDB.account_host,
+      google_maps_key:            current_user.google_maps_key,
       dropbox_api_key:            Cartodb.get_config(:dropbox_api_key),
       gdrive_api_key:             Cartodb.get_config(:gdrive, 'api_key'),
       gdrive_app_id:              Cartodb.get_config(:gdrive, 'app_id'),

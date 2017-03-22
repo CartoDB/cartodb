@@ -21,7 +21,7 @@ module Carto
           @received_notification.save!
         end
 
-        render_jsonp ReceivedNotificationPresenter.new(@received_notification)
+        render_jsonp ReceivedNotificationPresenter.new(@received_notification).to_hash
 
       rescue ArgumentError => e
         render_jsonp({ errors: { read_at: 'invalid date format' } }, 422)

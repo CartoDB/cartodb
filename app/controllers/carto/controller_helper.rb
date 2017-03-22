@@ -69,5 +69,22 @@ module Carto
         format.json { render json: { errors: message }, status: 500 }
       end
     end
+
+    def rescue_from_validation_error(exception)
+      render_jsonp({ errors: exception.record.errors.messages }, 422)
+    end
+
+    def rescue_from_record_not_found
+      render_jsonp({ errors: 'Record not found' }, 404)
+    end
+  end
+
+  module DefaultRescueFroms
+    def setup_default_rescues
+      rescue_from StandardError, with: :rescue_from_standard_error
+      rescue_from CartoError, with: :rescue_from_carto_error
+      rescue_from ActiveRecord::RecordNotFound, with: :rescue_from_record_not_found
+      rescue_from ActiveRecord::RecordInvalid, with: :rescue_from_validation_error
+    end
   end
 end

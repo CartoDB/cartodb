@@ -23,6 +23,10 @@ module ApplicationHelper
     (controller_name == 'client_applications') || (controller_name == 'users')
   end
 
+  def show_google_api_keys?(user)
+    user.google_maps_geocoder_enabled? && (!user.organization.present? || user.organization_owner?)
+  end
+
   def in_my_tables?
     controller_name == 'tables' && action_name == 'index' && !params[:public]
   end

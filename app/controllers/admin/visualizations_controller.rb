@@ -63,6 +63,8 @@ class Admin::VisualizationsController < Admin::AdminController
     carto_viewer = current_viewer && Carto::User.where(id: current_viewer.id).first
     @dashboard_notifications = carto_viewer ? carto_viewer.notifications_for_category(:dashboard) : {}
 
+    @organization_notifications = carto_viewer.received_notifications.unread
+
     current_user.view_dashboard
 
     respond_to do |format|

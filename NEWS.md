@@ -2,6 +2,8 @@ Development
 -----------
 
 ### Features
+* New dropdown for Data Observatory (#11618)
+* Quota pre-check to analyses that consume quota.
 * Marking 'Do not show me again' in Layer Onboarding affects every tab. (#11586)
 * Adding Google-Maps basemaps (#11447)
 * Improve dialog forms to render them floated. (#7786)
@@ -53,14 +55,28 @@ Development
   * Select an icon previously uploaded by the organization admin (#11462)
   * Sets the default initial size for icons to 20px (#11498)
 * Onboarding for layer edition (#10905)
+* Initial support for Rails engines with CARTO Gears.
 * Improved empty bounds map handling (#11711).
 * Updated diagnosis page versions.
 * Improved formula widget description field. (#11469)
+* In an organization, only the owner sees the Google API keys.
 * Added support for Zeus for faster testing (#11574). Check `CONTRIBUTING.md` for configuration details.
 * Migrate to use GNIP v2 for twitter search connector (#10051, #11595)
+* Notifications API (WIP) (#11734, #11780, #11734)
+* Invite to georeference proactively when detecting non-georeferenced data (#11316)
+* Update tangram with smooth point outline.
+* GME users can change to any basemap #11785.
+* Improve affordance of layer item (#11359)
+* Update tangram-cartocss to use smooth point outline.
 
 ### Bug fixes
-* Fixed problems related with IE11.
+* Fixed histogram filtering when there is no bucket in that range (#11798)
+* Fixed problem with clipped contextual menu in widgets (#11790)
+* Fixed copy for confirm analysis with quota (#11749)
+* Using clean method instead of remove for context-menu-view (#11778)
+* Adds https protocol to WMS Proxy URLs (#11786)
+* Fixed time widget loader (#11754)
+* Fixed problems related with IE11
 * Fixed silent problem with jQuery selector (cartodb/deep-insights.js#527)
 * Form editors remains open if a modal is open even triggering document click or ESC (#11686)
 * Fixed font style for the "You have run out of quota" module (#11690)
@@ -88,8 +104,10 @@ Development
 * Correctly ask for alternative username when signing up with Google/GitHub into an organization
 * Avoid loading all rake code in resque workers (#11069)
 * Fix analysis notification in running state (#11079)
+* Warn about affected maps on dataset deletion (regression, fixed in #11801)
 * Fix color for "Other" category (#11078)
 * Validate that only one legend per type (color/size) is allowed (#11556)
+* Enable more security HTTP headers (#11727)
 * Clean up import directory when importing from URL (#11599)
 * Custom errors for latitude/longitude out of bounds (#11060, #11048)
 * Fix timeseries widget height (#11077)
@@ -114,11 +132,16 @@ Development
 * Speed improvements to parallel tests (#11636)
 * Fix for race condition when importing files and deploying at the same time (#11653)
 * Correctly create custom category legend if style has icons (#11592)
+* Fixed error handling if json "errors" field contains one single string (#11752)
 * Fix problem with perfect-scrollbar in Edge browsers (CartoDB/perfect-scrollbar/#2)
 * Layer onboardings are now aware on sync'd layers and highlighted area is clicked. (#11583)
+* Do not show builder activated notification for new users (#11720)
 * Fixed overflow on loaders.
 * JOIN Analysis Fails Without Error Message (#11184)
 * Fix problem with perfect-scrollbar in Edge browsers (CartoDB/perfect-scrollbar/#2)
+* Fix problem creating analyses without Data Services API (#11745)
+* Fix problem when number column is used like categories in fill component (#11736)
+* Don't let user to apply icons over categories when auto-style is applied (#11761)
 
 4.0.x (2016-12-05)
 ------------------

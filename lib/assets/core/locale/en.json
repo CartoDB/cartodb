@@ -30,7 +30,7 @@
     "max": "MAX"
   },
   "builder-activated-notification": {
-    "message": "CARTO Builder has been activated in your account. <a href='https://carto.com/blog/categories/new-features' class='onboardingNotification-link'>Learn more</a> about it and let us know what you think or <a href='mailto:builder-support@carto.com' class='onboardingNotification-link'>contact us</a>. Happy mapping!"
+    "message": "CARTO Builder has been activated in your account. <a href='https://carto.com/learn/guides' class='onboardingNotification-link'>Learn more</a> about it and let us know what you think or <a href='mailto:builder-support@carto.com' class='onboardingNotification-link'>contact us</a>. Happy mapping!"
   },
   "builder-onboarding": {
     "title": "Welcome to Builder,",
@@ -249,7 +249,8 @@
       "population-segments": "Population segments",
       "race-and-ethnicity": "Race and Ethnicity",
       "religion": "Religion",
-      "transportation": "Transportation"
+      "transportation": "Transportation",
+      "filters": "Filters"
     },
     "merge": {
       "title": "Join columns from 2nd layer",
@@ -646,7 +647,7 @@
         },
         "error": {
           "title": "We couldn't save your data",
-          "subtitle": "We had an error trying to save your data: <span class='CDB-Text is-semibol%{error}</span>"
+          "subtitle": "We had an error trying to save your data: <span class='CDB-Text is-semibold'>%{error}</span>"
         },
         "loading": "Saving your data...",
         "success": "<span class='CDB-Text is-semibold'>Metadata</span> for %{name} map <span class='CDB-Text is-semibold'>was saved</span>."
@@ -1121,7 +1122,19 @@
         "count-message": "If you select 'COUNT' all columns are selected"
       },
       "interval-error": "Value must be between %{minValue} and %{maxValue}",
-      "copy-button": "COPY"
+      "copy-button": "COPY",
+      "data-observatory": {
+        "dropdown": {
+          "measurement": {
+            "search": "Search...",
+            "type": "measurements"
+          },
+          "filter": {
+            "header": "Filter measurements by",
+            "type": "filters"
+          }
+        }
+      }
     },
     "codemirror": {
       "no-errors": "No errors",
@@ -1416,7 +1429,11 @@
     },
     "tab-pane": {
       "layers": {
-        "title-label": "Layers"
+        "title-label": "Layers",
+        "georeference": {
+          "title": "Layer not georeferenced",
+          "body": "The layer <span class='CDB-Text is-semibold'>%{name}</span> include non-georeferenced data."
+        }
       },
       "elements": {
         "title-label": "Elements"
@@ -1437,6 +1454,7 @@
         "export": "Export data",
         "hide": "Hide layer",
         "show": "Show layer",
+        "edit": "Edit layer",
         "center-map": "Center map on layer"
       },
       "drag-n-drop-analysis": {
@@ -1670,12 +1688,29 @@
           "loading": "Obtaining your quotas...",
           "credits-left-body": "This might incur into an extra cost. Extra credits will be charged at $%{blockPrice}/%{blockSize}.",
           "credits-left-message": "%{smart_count} credit left |||| %{smart_count} credits left",
+          "enough-quota": "You need to use approximately %{credits} of your credits.",
+          "hard-limit-not-enough-quota": "We're sorry the current quota is insufficient to enrich your data. Rows will be set to null and analysis may not complete. Please %{contact} us to extend your quota for this function.",
+          "soft-limit-enough-quota": "We're sorry the current quota is insufficient to enrich your data. This might need about %{credits} extra credits. Extra credits will be charged at $%{blockPrice}/%{blockSize}.",
           "no-quota-assigned-body": "To get access to the %{analysis} function, %{contact}.",
-          "no-quota-assigned-contact": "contact our team",
           "no-credits-body": "You have consumed all your credits during this billing cycle. %{contact} to get some more.",
-          "no-credits-contact": "Contact us",
-          "no-credits-mail": "sales@carto.com",
           "no-credits-message": "No credits available",
+          "contact-message": {
+            "no-credits": {
+              "regular": "Contact us",
+              "organization": "Contact your organization admin"
+            },
+            "no-quota-assigned": {
+              "regular": "contact our team",
+              "organization": "contact your organization admin"
+            }
+          },
+          "emails" : {
+            "support": "support@carto.com",
+            "saas": "sales@carto.com"
+          },
+          "quota-error-title": "Error",
+          "quota-fetch-error": "There was an error obtaining your quota: %{error}.",
+          "quota-dataservice-down": "Dataservices API unreacheable.",
           "cancel": "Cancel",
           "confirm": "confirm",
           "analysis-type": {
@@ -1793,6 +1828,11 @@
           "success": "Map centered",
           "error": "Error centering map"
         }
+      },
+      "georeference": {
+        "manually-add": "Please georeference or manually add data to visualize.",
+        "georeference-button": "Georeference",
+        "visualize": "Layer doesn't have geometry"
       }
     },
     "data": {
@@ -1947,6 +1987,7 @@
           "title-label-line": "Lines style",
           "title-label-polygon": "Polygons style",
           "placeholder-text": "There's no geometry in your data that could be styled.",
+          "georeference": "Georeference",
           "desc": "Change the visualization"
         },
         "unanimatable": {

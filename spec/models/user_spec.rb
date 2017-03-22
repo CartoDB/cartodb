@@ -213,12 +213,8 @@ describe User do
       end
       user = FactoryGirl.build(:user, organization: organization)
       user.max_layers = 3
-      user.private_tables_enabled = false
-      user.sync_tables_enabled = false
       user.save
       user.max_layers.should == 3
-      user.private_tables_enabled.should be_false
-      user.sync_tables_enabled.should be_false
       organization.destroy
     end
 

@@ -8,10 +8,12 @@ include Carto::UserAuthenticator
 
 FactoryGirl.define do
   factory :user, class: ::User do
+    to_create(&:save)
 
     username               { unique_name('user') }
     email                  { unique_email }
     password               { email.split('@').first }
+    password_confirmation  { email.split('@').first }
     table_quota            5
     quota_in_bytes         5000000
     id                     { UUIDTools::UUID.timestamp_create.to_s }

@@ -770,4 +770,28 @@ shared_examples_for "user models" do
       @user1.batch_queries_statement_timeout.should eq 42
     end
   end
+
+  describe '#basemaps' do
+    it 'shows all basemaps for Google Maps users' do
+      user = create_user
+      basemaps = user.basemaps
+      basemaps.keys.sort.should eq ['CARTO', 'Stamen']
+      user.google_maps_key = 'client=whatever'
+      user.google_maps_private_key = 'wadus'
+      user.save
+      basemaps = user.basemaps
+      basemaps.keys.sort.should eq ['CARTO', 'GMaps', 'Stamen']
+    end
+  end
+
+  describe '#default_basemap' do
+    it 'defaults to Google for Google Maps users, Positron for others' do
+      user = create_user
+      user.default_basemap['name'].should eq 'Positron'
+      user.google_maps_key = 'client=whatever'
+      user.google_maps_private_key = 'wadus'
+      user.save
+      user.default_basemap['name'].should eq 'GMaps Roadmap'
+    end
+  end
 end

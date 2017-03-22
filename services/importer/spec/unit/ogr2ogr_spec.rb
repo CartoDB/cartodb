@@ -52,22 +52,22 @@ describe Ogr2ogr do
 
   describe '#command' do
     it 'includes an encoding' do
-      (@wrapper.command =~ /PGCLIENTENCODING/).should_not be nil
+      @wrapper.environment.should include 'PGCLIENTENCODING'
     end
 
     it 'includes the postgres options passed at initialization time' do
-      (@wrapper.command =~ /#{@pg_options.fetch(:host)}/).should_not be nil
-      (@wrapper.command =~ /#{@pg_options.fetch(:port)}/).should_not be nil
-      (@wrapper.command =~ /#{@pg_options.fetch(:username)}/).should_not be nil
-      (@wrapper.command =~ /#{@pg_options.fetch(:database)}/).should_not be nil
+      @wrapper.command.any? { |c| c.include?(@pg_options.fetch(:host)) }.should be_true
+      @wrapper.command.any? { |c| c.include?(@pg_options.fetch(:port).to_s) }.should be_true
+      @wrapper.command.any? { |c| c.include?(@pg_options.fetch(:username)) }.should be_true
+      @wrapper.command.any? { |c| c.include?(@pg_options.fetch(:database)) }.should be_true
     end
 
     it 'includes the desired output table name' do
-      (@wrapper.command =~ /#{@full_table_name}/).should_not be nil
+      @wrapper.command.should include @full_table_name
     end
 
     it 'includes the filepath to process' do
-      (@wrapper.command =~ /#{@filepath}/).should_not be nil
+      @wrapper.command.should include @filepath
     end
   end
 
@@ -162,4 +162,3 @@ describe Ogr2ogr do
   end
 
 end
-

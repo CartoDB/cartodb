@@ -1,0 +1,22 @@
+<script type="text/javascript">
+    var config = <%= safe_js_object frontend_config %>;
+    var user_data = <%= safe_js_object current_user.data.to_json %>;
+</script>
+<% if content_for? :dashboard_js %>
+    <%= yield :dashboard_js %>
+<% else %>
+    <%= content_for(:js) do -%>
+        <%= javascript_include_tag 'cdb.js', 'models.js', 'dashboard_templates.js', 'dashboard_deps.js', 'dashboard.js' -%>
+    <% end %>
+<% end %>
+<%= content_for(:css) do -%>
+    <%= stylesheet_link_tag 'dashboard.css', :media => 'all' %>
+<% end %>
+<%= render :partial => 'shared/flash_message' %>
+<%= render :template => 'layouts/application' %>
+<%= yield :dashboard_body %>
+<% if !Cartodb.config[:cartodb_com_hosted].present? %>
+    <div class="SupportBanner" id="support-banner"></div>
+<% end %>
+
+<%= render 'admin/shared/footer' %>

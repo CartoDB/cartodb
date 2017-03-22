@@ -73,3 +73,4 @@ doc/manual/build
 /tags
 /.tags_swap
 .vscode/
+/private_gears

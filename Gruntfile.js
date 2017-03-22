@@ -355,7 +355,7 @@ var SHRINKWRAP_MODULES_TO_VALIDATE = [
     });
 
     grunt.registerTask('bootstrap_webpack_builder_specs', 'Create the webpack compiler', function () {
-      webpackTask.bootstrap.call(this, 'builder_specs');
+      webpackTask.bootstrap.call(this, 'builder_specs', grunt);
     });
 
     grunt.registerTask('webpack:builder_specs', 'Webpack compilation task for builder specs', function () {

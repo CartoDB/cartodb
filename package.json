@@ -89,7 +89,8 @@
     "tpl-loader": "git://github.com/ivanmalagon/tpl-loader.git#master",
     "uglify-js": "2.7.x",
     "watchify": "3.7.0",
-    "webpack": "2.2.1"
+    "webpack": "2.2.1",
+    "webpack-stats-plugin": "0.1.4"
   },
   "browserify": {
     "transform": [

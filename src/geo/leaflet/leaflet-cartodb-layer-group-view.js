@@ -65,7 +65,7 @@ LeafletCartoDBLayerGroupView.prototype = _.extend(
     _createLeafletLayer: function (layerModel) {
       return new L.TileLayer(null, {
         opacity: 0.99,
-        maxZoom: 30,
+        maxZoom: 30
       });
     },
 

@@ -16,11 +16,14 @@ module Carto
       def update
         changed_notification = params[:notification]
         if changed_notification
-          @received_notification.read_at = DateTime.now if changed_notification[:read_at]
+          read_at = changed_notification[:read_at]
+          @received_notification.read_at = DateTime.parse(read_at) if read_at
           @received_notification.save!
         end
 
         render_jsonp ReceivedNotificationPresenter.new(@received_notification)
+      rescue ArgumentError
+        render_jsonp({ errors: { read_at: 'invalid date format' } }, 422)
       end
 
       private

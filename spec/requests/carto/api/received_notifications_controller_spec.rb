@@ -31,12 +31,22 @@ module Carto
       end
 
       it 'marks a notification as read' do
-        put_json(user_notification_url(url_options), notification: { read_at: 'wadus ' }) do |response|
+        put_json(user_notification_url(url_options), notification: { read_at: '2017-01-01' }) do |response|
           expect(response.status).to eq 200
           expect(response.body[:read_at]).to be
 
           @received_notification.reload
           expect(@received_notification.read_at).not_to be_nil
+        end
+      end
+
+      it 'returns 422 for invalid dates' do
+        put_json(user_notification_url(url_options), notification: { read_at: 'wadus ' }) do |response|
+          expect(response.status).to eq 422
+          expect(response.body[:errors]).to include :read_at
+
+          @received_notification.reload
+          expect(@received_notification.read_at).to be_nil
         end
       end
 

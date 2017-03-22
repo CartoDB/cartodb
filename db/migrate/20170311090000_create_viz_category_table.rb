@@ -32,10 +32,7 @@ Sequel.migration do
           RETURN ids;
       END;
 
-      $$ language plpgsql
-           SECURITY DEFINER
-           --Set a secure search_path: trusted schema(s), then 'pg_temp'
-          SET search_path = '$user', public, cartodb, pg_temp;"
+      $$ language plpgsql;"
   end
 
   down do

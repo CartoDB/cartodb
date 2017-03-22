@@ -51,11 +51,21 @@ describe CartoDB::ServiceUsageMetrics do
       }.to raise_exception(ArgumentError, 'Invalid metric amount')
     end
 
-    it 'validates that the amount passed cannot be zero' do
-      expect {
-        @usage_metrics.send(:assert_valid_amount, 0)
-      }.to raise_exception(ArgumentError, 'Invalid metric amount')
+    it 'validates that the amount passed can actually be zero' do
+      @usage_metrics.send(:assert_valid_amount, 0).should eq nil
     end
   end
 
+  describe :incr do
+    before(:each) do
+      @redis_mock = MockRedis.new
+      @usage_metrics = CartoDB::ServiceUsageMetrics.new('rtorre', 'team', @redis_mock)
+      @usage_metrics.stubs(:check_valid_data)
+    end
+
+    it 'validates that the amount passed can actually be zero' do
+      @usage_metrics.incr(:dummy_service, :dummy_metric, _amount = 0)
+      @usage_metrics.get(:dummy_service, :dummy_metric).should eq 0
+    end
+  end
 end

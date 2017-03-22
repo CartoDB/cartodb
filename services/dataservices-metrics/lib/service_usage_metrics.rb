@@ -64,7 +64,7 @@ module CartoDB
     end
 
     def assert_valid_amount(amount)
-      raise ArgumentError.new('Invalid metric amount') if amount.nil? || amount <= 0
+      raise ArgumentError.new('Invalid metric amount') if amount.nil? || amount < 0
     end
 
   end

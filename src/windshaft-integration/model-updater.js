@@ -40,7 +40,7 @@ ModelUpdater.prototype.updateModels = function (windshaftMap, sourceId, forceFet
 
 ModelUpdater.prototype._updateLayerGroupModel = function (windshaftMap) {
   var urls = {
-    tiles: this._calculateTileURLTemplatesForCartoDBLayers(windshaftMap),
+    tiles: this._generateTileURLTemplate(windshaftMap),
     grids: this._calculateGridURLTemplatesForCartoDBLayers(windshaftMap),
     attributes: this._calculateAttributesBaseURLsForCartoDBLayers(windshaftMap)
   };
@@ -51,17 +51,8 @@ ModelUpdater.prototype._updateLayerGroupModel = function (windshaftMap) {
   });
 };
 
-ModelUpdater.prototype._calculateTileURLTemplatesForCartoDBLayers = function (windshaftMap) {
-  var urlTemplates = [];
-  _.each(windshaftMap.getSupportedSubdomains(), function (subdomain) {
-    urlTemplates.push(this._generateTileURLTemplate(windshaftMap, subdomain));
-  }, this);
-
-  return urlTemplates;
-};
-
-ModelUpdater.prototype._generateTileURLTemplate = function (windshaftMap, subdomain) {
-  return windshaftMap.getBaseURL(subdomain) + '/{layerIndexes}/{z}/{x}/{y}.{format}';
+ModelUpdater.prototype._generateTileURLTemplate = function (windshaftMap) {
+  return windshaftMap.getBaseURL() + '/{layerIndexes}/{z}/{x}/{y}.{format}';
 };
 
 ModelUpdater.prototype._calculateGridURLTemplatesForCartoDBLayers = function (windshaftMap) {

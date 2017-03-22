@@ -705,16 +705,33 @@ describe('windshaft/map-base', function () {
   });
 
   describe('.getSupportedSubdomains', function () {
+    beforeEach(function () {
+      this.windshaftMap.set({
+        cdn_url: {
+          templates: {
+            http: {
+              url: 'http://cdn.carto.com',
+              subdomains: ['a', 'b']
+            },
+            https: {
+              url: 'http://cdn.carto.com',
+              subdomains: ['c', 'd']
+            }
+          }
+        }
+      });
+    });
+
     it('should return supported subdomains if urlTemplate uses http', function () {
       this.windshaftSettings.urlTemplate = 'http://{username}.carto.com';
 
-      expect(this.windshaftMap.getSupportedSubdomains()).toEqual(['0', '1', '2', '3']);
+      expect(this.windshaftMap.getSupportedSubdomains()).toEqual(['a', 'b']);
     });
 
-    it('should return no subdomains if urlTemplate uses https', function () {
+    it('should return not subdomains if urlTemplate uses https', function () {
       this.windshaftSettings.urlTemplate = 'https://{username}.carto.com';
 
-      expect(this.windshaftMap.getSupportedSubdomains()).toEqual(['']);
+      expect(this.windshaftMap.getSupportedSubdomains()).toEqual(['c', 'd']);
     });
   });
 });

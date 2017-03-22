@@ -148,13 +148,26 @@ var WindshaftMap = Backbone.Model.extend({
     ].join('/');
   },
 
+  getProtocol: function () {
+    return this._useHTTPS() ? 'https' : 'http';
+  },
+
   _getHost: function (subhost) {
     var urlTemplate = this._windshaftSettings.urlTemplate;
     var userName = this._windshaftSettings.userName;
     var host = urlTemplate.replace('{user}', userName);
-    var protocol = this._useHTTPS() ? 'https' : 'http';
+    var protocol = this.getProtocol();
     subhost = subhost ? subhost + '.' : '';
-    var cdnHost = this.get('cdn_url') && this.get('cdn_url')[protocol];
+    var cdnUrl = this.get('cdn_url');
+    var cdnHost = cdnUrl && cdnUrl[protocol];
+    var templates = cdnUrl && cdnUrl.templates;
+
+    if (templates && templates[protocol]) {
+      var template = templates[protocol];
+      host = template.url + '/' + userName;
+      return host;
+    }
+
     if (cdnHost) {
       host = [protocol, '://', subhost, cdnHost, '/', userName].join('');
     }
@@ -211,7 +224,14 @@ var WindshaftMap = Backbone.Model.extend({
   },
 
   getSupportedSubdomains: function () {
-    if (!this._useHTTPS()) {
+    if (!this.get('cdn_url')) return [];
+
+    var templates = this.get('cdn_url').templates;
+    var protocol = this.getProtocol();
+    if (templates && templates[protocol]) {
+      return templates[protocol].subdomains;
+    }
+    else if(!this._useHTTPS()){
       return ['0', '1', '2', '3'];
     }
 

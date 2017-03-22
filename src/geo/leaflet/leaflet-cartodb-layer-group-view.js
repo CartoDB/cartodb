@@ -65,18 +65,17 @@ LeafletCartoDBLayerGroupView.prototype = _.extend(
     _createLeafletLayer: function (layerModel) {
       return new L.TileLayer(null, {
         opacity: 0.99,
-        maxZoom: 30
+        maxZoom: 30,
       });
     },
 
     _reload: function () {
-      var tileURLTemplates;
-      if (this.model.hasTileURLTemplates()) {
-        tileURLTemplates = this.model.getTileURLTemplates()[0];
-      } else {
-        tileURLTemplates = EMPTY_GIF;
+      var tileURLTemplate = this.model.getTileURLTemplate();
+      if (!tileURLTemplate) {
+        tileURLTemplate = EMPTY_GIF;
       }
-      this.leafletLayer.setUrl(tileURLTemplates);
+
+      this.leafletLayer.setUrl(tileURLTemplate);
 
       this._reloadInteraction();
     },

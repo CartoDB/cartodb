@@ -235,7 +235,7 @@ _.extend(
     _reload: function () {
       var tileURLTemplates;
       if (this.model.hasTileURLTemplates()) {
-        tileURLTemplates = this.model.getTileURLTemplates();
+        tileURLTemplates = [this.model.getTileURLTemplate()];
       } else {
         tileURLTemplates = [ EMPTY_GIF ];
       }

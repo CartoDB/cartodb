@@ -7,7 +7,7 @@ var LeafletCartoDBWebglLayerGroupView = function (layerGroupModel, leafletMap) {
   LeafletLayerView.apply(this, arguments);
 
   layerGroupModel.bind('change:urls',
-    this._onURLsChanged(layerGroupModel.getTileURLTemplates.bind(layerGroupModel))
+    this._onURLsChanged(layerGroupModel.getTileURLTemplate.bind(layerGroupModel))
   );
 
   this.tangram = new TC(leafletMap);

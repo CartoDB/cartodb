@@ -70,6 +70,7 @@ Development
 * Update tangram-cartocss to use smooth point outline.
 
 ### Bug fixes
+* Fixed problem after filtering a widget, where style pane was not working (#11819)
 * Fixed histogram filtering when there is no bucket in that range (#11798)
 * Fixed problem with clipped contextual menu in widgets (#11790)
 * Fixed copy for confirm analysis with quota (#11749)

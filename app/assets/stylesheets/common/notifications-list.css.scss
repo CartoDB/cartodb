@@ -15,24 +15,24 @@ $opacityTransition: 250ms;
 }
 .Md-container {
   position: absolute;
-  bottom: 1px;
   right: 1px;
-  z-index: 10;
-  background: #fff;
+  bottom: 1px;
   padding: 8px;
   border-radius: 4px;
+  background: #FFF;
+  z-index: 10;
 }
 .Md-button,
 .Md-text {
   float: left;
 }
 .Md-button {
+  @include transition(all, 200ms, ease-in);
   width: 24px;
   height: 16px;
-  background: #DDD;
   border-radius: 2px;
+  background: #DDD;
   text-align: center;
-  @include transition(all, 200ms, ease-in);
 
   &:hover {
     background: #CCC;

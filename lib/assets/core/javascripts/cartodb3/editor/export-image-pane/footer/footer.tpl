@@ -1,4 +1,4 @@
-<button class="CDB-Button CDB-Button--primary u-rSpace js-ok track-DO track-export<% if (isLoading) { %> is-disabled <% } %>">
+<button class="CDB-Button CDB-Button--primary u-rSpace js-ok track-ImageExport track-export<% if (isLoading) { %> is-disabled <% } %>">
   <div class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase u-flex">
     <% if (isLoading) { %>
     <div class="CDB-LoaderIcon CDB-LoaderIcon--small u-iBlock">

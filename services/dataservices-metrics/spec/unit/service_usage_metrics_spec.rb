@@ -108,5 +108,12 @@ describe CartoDB::ServiceUsageMetrics do
                                     Date.new(2017, 02, 15),
                                     Date.new(2017, 03, 24))
     end
+
+    it 'returns zero when there are no records' do
+      @usage_metrics.get_date_range(:dummy_service,
+                                    :dummy_metric,
+                                    Date.new(2017, 02, 15),
+                                    Date.new(2017, 03, 22)).should eq 0
+    end
   end
 end

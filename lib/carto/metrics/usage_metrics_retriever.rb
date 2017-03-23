@@ -15,7 +15,7 @@ module Carto::Metrics
     def get_range(user, org, service, metric, date_from, date_to)
       usage_metrics = @cls.new(user.try(:username), org.try(:name))
 
-      if usage_metrics.responds_to? :get_date_range
+      if usage_metrics.respond_to? :get_date_range
         usage_metrics.get_date_range(service, metric, date_from, date_to)
       else
         result = {}

@@ -99,7 +99,7 @@ module DataServicesMetricsHelper
     usage_metrics = CartoDB::RoutingUsageMetrics.new(user.username, orgname)
     mapzen_routing_key = :routing_mapzen
     success = usage_metrics.get_sum_by_date_range(mapzen_routing_key, :success_responses, from, to)
-    empty = usage_metrics.get(mapzen_routing_key, :empty_responses, from, to)
+    empty = usage_metrics.get_sum_by_date_range(mapzen_routing_key, :empty_responses, from, to)
     success + empty
   end
 end

@@ -16,7 +16,9 @@ describe CartoGearsApi::Users::UsersService do
                                          email: 'wadus@carto.com',
                                          organization: nil,
                                          feature_flags: [],
-                                         can_change_email: true)
+                                         can_change_email: true,
+                                         quota_in_bytes: 100000,
+                                         viewer: false)
       warden = double
       warden.should_receive(:user).once.and_return(user)
       request = double

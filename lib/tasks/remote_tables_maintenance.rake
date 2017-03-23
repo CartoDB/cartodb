@@ -96,10 +96,13 @@ namespace :cartodb do
       base_url + "/api/v1/viz?type=table&privacy=public"
     end
 
+    # Removes common data visualizations from users which have not seen activity in some time
+    # e.g: rake cartodb:remotes:remove_from_inactive_users[365,90] will affect all users
+    # whose last activity was between 1 year and 3 months ago
     desc 'Remove common data visualizations from inactive users'
     task :remove_from_inactive_users, [:start_days_ago, :end_days_ago] => :environment do |_t, args|
-      start_days_ago = args[:start_days_ago].try(:to_i) || 5000
-      end_days_ago = args[:end_days_ago].try(:to_i) || 90
+      start_days_ago = args[:start_days_ago].try(:to_i) || 365 * 2
+      end_days_ago = args[:end_days_ago].try(:to_i) || 30 * 3
       raise 'Invalid date interval' unless start_days_ago > end_days_ago && end_days_ago > 0
       start_date = DateTime.now - start_days_ago
       end_date = DateTime.now - end_days_ago
@@ -108,33 +111,32 @@ namespace :cartodb do
       query = Carto::User.where("COALESCE(dashboard_viewed_at, created_at) BETWEEN '#{start_date}' AND '#{end_date}'")
                          .where(account_type: Carto::AccountType::FREE)
       user_count = query.count
-      puts "#{user_count} users will be affected"
+      puts "#{user_count} users will be affected. Starting in 10 seconds unless canceled (ctrl+C)"
       sleep 10
 
       processed = 0
       query.find_each do |user|
+        processed += 1
+        puts "#{user.username} (#{processed} / #{user_count})"
         user.update_column(:last_common_data_update_date, nil)
 
         user.visualizations.where(type: 'remote').each do |v|
           begin
             unless v.external_source
-              puts "Remote visualization #{v.id} does not have a external source. Skipping..."
+              puts "  Remote visualization #{v.id} does not have a external source. Skipping..."
               next
             end
             if v.external_source.external_data_imports.any?
-              puts "Remote visualization #{v.id} has been previously imported. Skipping..."
+              puts "  Remote visualization #{v.id} has been previously imported. Skipping..."
               next
             end
 
             v.external_source.destroy
             v.destroy
           rescue => e
-            puts "Error deleting visualization #{v.id}: #{e.message}"
+            puts "  Error deleting visualization #{v.id}: #{e.message}"
           end
         end
-
-        processed += 1
-        puts "Processed #{processed} out of #{user_count} users"
       end
     end
   end

@@ -67,12 +67,11 @@ describe CartoDB::ServiceUsageMetrics do
     end
   end
 
-  describe :get_sum_by_date_range do
+  describe '#get_sum_by_date_range' do
     it 'gets a sum of the zscores stored in a given date range' do
       @redis_mock.zincrby('org:team:dummy_service:dummy_metric:201703', _amount = 1, _day = '20')
       @redis_mock.zincrby('org:team:dummy_service:dummy_metric:201703', _amount = 2, _day = '21')
       @redis_mock.zincrby('org:team:dummy_service:dummy_metric:201703', _amount = 3, _day = '22')
-
       @usage_metrics.get_sum_by_date_range(:dummy_service,
                                            :dummy_metric,
                                            Date.new(2017, 3, 20),
@@ -83,7 +82,6 @@ describe CartoDB::ServiceUsageMetrics do
       @redis_mock.zincrby('org:team:dummy_service:dummy_metric:201703', _amount = 1, _day = '20')
       @redis_mock.zincrby('org:team:dummy_service:dummy_metric:201703', _amount = 2, _day = '21')
       @redis_mock.zincrby('org:team:dummy_service:dummy_metric:201703', _amount = 3, _day = '22')
-
       @usage_metrics.get_sum_by_date_range(:dummy_service,
                                            :dummy_metric,
                                            Date.new(2017, 3, 15),
@@ -94,30 +92,29 @@ describe CartoDB::ServiceUsageMetrics do
       @redis_mock.zincrby('org:team:dummy_service:dummy_metric:201703', _amount = 1, _day = '20')
       @redis_mock.zincrby('org:team:dummy_service:dummy_metric:201703', _amount = 2, _day = '21')
       @redis_mock.zincrby('org:team:dummy_service:dummy_metric:201703', _amount = 3, _day = '22')
-
       @usage_metrics.get_sum_by_date_range(:dummy_service,
-                                    :dummy_metric,
-                                    Date.new(2017, 2, 15),
-                                    Date.new(2017, 3, 22)).should eq 6
+                                           :dummy_metric,
+                                           Date.new(2017, 2, 15),
+                                           Date.new(2017, 3, 22)).should eq 6
     end
 
     it 'performs just one request/month to redis' do
       @redis_mock.expects(:zrange).twice
       @usage_metrics.get_sum_by_date_range(:dummy_service,
-                                    :dummy_metric,
-                                    Date.new(2017, 2, 15),
-                                    Date.new(2017, 3, 24))
+                                           :dummy_metric,
+                                           Date.new(2017, 2, 15),
+                                           Date.new(2017, 3, 24))
     end
 
     it 'returns zero when there are no records' do
       @usage_metrics.get_sum_by_date_range(:dummy_service,
-                                    :dummy_metric,
-                                    Date.new(2017, 2, 15),
-                                    Date.new(2017, 3, 22)).should eq 0
+                                           :dummy_metric,
+                                           Date.new(2017, 2, 15),
+                                           Date.new(2017, 3, 22)).should eq 0
     end
   end
 
-  describe :get_date_range do
+  describe '#get_date_range' do
     it 'gets a hash of date => value pairs' do
       @redis_mock.zincrby('org:team:dummy_service:dummy_metric:201703', _amount = 1, _day = '20')
       @redis_mock.zincrby('org:team:dummy_service:dummy_metric:201703', _amount = 2, _day = '21')
@@ -161,9 +158,9 @@ describe CartoDB::ServiceUsageMetrics do
       expected = {
         Date.new(2017, 2, 27) => 0,
         Date.new(2017, 2, 28) => 0,
-        Date.new(2017, 3,  1) => 1,
-        Date.new(2017, 3,  2) => 2,
-        Date.new(2017, 3,  3) => 3
+        Date.new(2017, 3, 1) => 1,
+        Date.new(2017, 3, 2) => 2,
+        Date.new(2017, 3, 3) => 3
       }
 
       @usage_metrics.get_date_range(:dummy_service,
@@ -183,13 +180,13 @@ describe CartoDB::ServiceUsageMetrics do
     it 'returns zero when there are no records' do
       expected = {
         Date.new(2017, 2, 28) => 0,
-        Date.new(2017, 3,  1) => 0
+        Date.new(2017, 3, 1) => 0
       }
 
       @usage_metrics.get_date_range(:dummy_service,
                                     :dummy_metric,
                                     Date.new(2017, 2, 28),
-                                    Date.new(2017, 3,  1)).should eq expected
+                                    Date.new(2017, 3, 1)).should eq expected
     end
   end
 end

@@ -1893,7 +1893,7 @@
       }
     },
     "export-image": {
-      "invalid-dimension": "Invalid dimension",
+      "invalid-dimension": "Invalid dimension (%{limit}x%{limit}px)",
       "properties": {
         "width": "width",
         "height": "height",

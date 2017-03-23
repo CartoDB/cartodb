@@ -5,6 +5,15 @@
   z-index: 1;
 }
 
+.ExportImageView {
+  pointer-events: all;
+  cursor: move;
+}
+
+.ExportImageView.is-disabled {
+  pointer-events: none;
+}
+
 .ExportImageView.is-top {
   z-index: 1000;
 }

@@ -46,15 +46,15 @@ module CartoDB
     def get_date_range(service, metric, date_from, date_to)
       check_valid_data(service, metric)
 
-      values = {}
       ret = {}
+      month_values = {}
       (date_from..date_to).each do |date|
         year_month_key = date_year_month(date)
-        if values[year_month_key].nil?
+        if month_values[year_month_key].nil?
           key_prefix = @orgname.nil? ? user_key_prefix(service, metric, date) : org_key_prefix(service, metric, date)
-          values[year_month_key] = @redis.zrange(key_prefix, 0, -1, with_scores: true).to_h
+          month_values[year_month_key] = @redis.zrange(key_prefix, 0, -1, with_scores: true).to_h
         end
-        ret[date] = values[year_month_key][date_day(date)] || 0
+        ret[date] = month_values[year_month_key][date_day(date)] || 0
       end
 
       ret

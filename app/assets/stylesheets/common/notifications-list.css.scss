@@ -10,6 +10,38 @@ $opacityTransition: 250ms;
 .OrganizationNotifications-button {
   height: 34px;
 }
+.OrganizationNotifications-textarea {
+  height: 80px;
+}
+.Md-container {
+  position: absolute;
+  bottom: 1px;
+  right: 1px;
+  z-index: 10;
+  background: #fff;
+  padding: 8px;
+  border-radius: 4px;
+}
+.Md-button,
+.Md-text {
+  float: left;
+}
+.Md-button {
+  width: 24px;
+  height: 16px;
+  background: #DDD;
+  border-radius: 2px;
+  text-align: center;
+  @include transition(all, 200ms, ease-in);
+
+  &:hover {
+    background: #CCC;
+  }
+}
+.Md-buttonInner {
+  position: relative;
+  top: -2px;
+}
 .NotificationsList {
   @include display-flex();
   @include flex-direction(column);
@@ -20,7 +52,6 @@ $opacityTransition: 250ms;
 .NotificationsList-item {
   @include display-flex();
   @include align-items(center);
-  @include transition(border, 200ms, ease-in);
   position: relative;
   margin-bottom: -1px;
   padding: 20px 0;
@@ -105,6 +136,7 @@ $opacityTransition: 250ms;
 .NotificationsList-itemLink {
   font-size: 12px;
 }
+.Md-counter.Md-counter--negative,
 .NotificationsList-itemLink--remove {
   color: $cHighlight-negative;
 }

@@ -29,26 +29,11 @@ module Carto
       require_organization_owner_presence!
       date_to = (options[:to] ? options[:to].to_date : Date.today)
       date_from = (options[:from] ? options[:from].to_date : owner.last_billing_cycle)
-      if owner.has_feature_flag?('new_geocoder_quota')
-        get_organization_geocoding_data(self, date_from, date_to)
-      else
-        users.
-          joins(:geocodings).
-          where('geocodings.kind' => 'high-resolution').
-          where('geocodings.created_at >= ? and geocodings.created_at <= ?', date_from, date_to + 1.days).
-          sum("processed_rows + cache_hits".lit).to_i
-      end
+      get_organization_geocoding_data(self, date_from, date_to)
     end
 
     def period_end_date
       owner && owner.period_end_date
-    end
-
-    def get_new_system_geocoding_calls(options = {})
-      require_organization_owner_presence!
-      date_to = (options[:to] ? options[:to].to_date : Date.current)
-      date_from = (options[:from] ? options[:from].to_date : owner.last_billing_cycle)
-      get_organization_geocoding_data(self, date_from, date_to)
     end
 
     def get_here_isolines_calls(options = {})

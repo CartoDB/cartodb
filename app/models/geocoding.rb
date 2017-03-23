@@ -37,10 +37,6 @@ class Geocoding < Sequel::Model
   attr_reader :started_at, :finished_at
   attr_reader :log
 
-  def self.get_geocoding_calls(dataset, date_from, date_to)
-    dataset.where(kind: 'high-resolution').where('geocodings.created_at >= ? and geocodings.created_at <= ?', date_from, date_to + 1.days).sum("processed_rows + cache_hits".lit).to_i
-  end
-
   def self.get_not_aggregated_user_geocoding_calls(db, user_id, date_from, date_to)
     geocoding_calls_sql = "SELECT date(created_at), sum(processed_rows) as processed_rows, " \
                           "sum(cache_hits) as cache_hits FROM geocodings WHERE kind = 'high-resolution' " \

@@ -1574,6 +1574,11 @@
         "convex-hull": "Convex Hull",
         "country": "Country",
         "create-btn": "Apply",
+        "data-observatory": {
+          "regions": {
+            "error": "Error getting regions."
+          }
+        },
         "data-observatory-measurement-area": "Country",
         "data-observatory-measurement-column": "New col. name",
         "data-observatory-measurement-column-help": "Adds a new column to your layer to store result",

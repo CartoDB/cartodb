@@ -8,8 +8,11 @@ module CartoGearsApi
     # @attr_reader [String] id User id
     # @attr_reader [String] username User name
     # @attr_reader [String] email Email
+    # @attr_reader [Integer] quota_in_bytes Disk quota in bytes
+    # @attr_reader [Boolean] viewer The user is a viewer (cannot create maps, datasets, etc.)
     # @attr_reader [CartoGearsApi::Organizations::Organization] organization Organization
-    class User < Value.new(:id, :username, :email, :organization, :feature_flags, :can_change_email)
+    class User < Value.new(:id, :username, :email, :organization, :feature_flags, :can_change_email, :quota_in_bytes,
+                           :viewer)
       extend ActiveModel::Naming
       include ActiveRecord::AttributeMethods::PrimaryKey
 

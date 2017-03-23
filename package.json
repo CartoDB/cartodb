@@ -70,7 +70,6 @@
     "grunt-exorcise": "2.1.0",
     "grunt-postcss": "0.5.5",
     "grunt-timer": "0.3.3",
-    "hogan.js": "^3.0.2",
     "jasmine": "2.5.2",
     "jasmine-ajax": "git://github.com/nobuti/jasmine-ajax.git#master",
     "jstify": "0.13.0",

@@ -61,9 +61,9 @@ module DataServicesMetricsHelper
     return 0 if user.google_maps_geocoder_enabled?
     geocoder_key = user.google_maps_geocoder_enabled? ? :geocoder_google : :geocoder_here
     cache_hits = 0
-    success = usage_metrics.get_date_range(geocoder_key, :success_responses, from, to)
-    empty = usage_metrics.get_date_range(geocoder_key, :empty_responses, from, to)
-    hit = usage_metrics.get_date_range(:geocoder_cache, :success_responses, from, to)
+    success = usage_metrics.get_sum_by_date_range(geocoder_key, :success_responses, from, to)
+    empty = usage_metrics.get_sum_by_date_range(geocoder_key, :empty_responses, from, to)
+    hit = usage_metrics.get_sum_by_date_range(:geocoder_cache, :success_responses, from, to)
     success + empty + hit
   end
 
@@ -71,8 +71,8 @@ module DataServicesMetricsHelper
     orgname = user.organization.nil? ? nil : user.organization.name
     usage_metrics = CartoDB::IsolinesUsageMetrics.new(user.username, orgname)
     here_isolines_key = :here_isolines
-    success = usage_metrics.get_date_range(here_isolines_key, :isolines_generated, from, to)
-    empty = usage_metrics.get_date_range(here_isolines_key, :empty_responses, from, to)
+    success = usage_metrics.get_sum_by_date_range(here_isolines_key, :isolines_generated, from, to)
+    empty = usage_metrics.get_sum_by_date_range(here_isolines_key, :empty_responses, from, to)
     success + empty
   end
 
@@ -80,8 +80,8 @@ module DataServicesMetricsHelper
     orgname = user.organization.nil? ? nil : user.organization.name
     usage_metrics = CartoDB::ObservatorySnapshotUsageMetrics.new(user.username, orgname)
     obs_snapshot_key = :obs_snapshot
-    success = usage_metrics.get_date_range(obs_snapshot_key, :success_responses, from, to)
-    empty = usage_metrics.get_date_range(obs_snapshot_key, :empty_responses, from, to)
+    success = usage_metrics.get_sum_by_date_range(obs_snapshot_key, :success_responses, from, to)
+    empty = usage_metrics.get_sum_by_date_range(obs_snapshot_key, :empty_responses, from, to)
     success + empty
   end
 
@@ -89,8 +89,8 @@ module DataServicesMetricsHelper
     orgname = user.organization.nil? ? nil : user.organization.name
     usage_metrics = CartoDB::ObservatoryGeneralUsageMetrics.new(user.username, orgname)
     obs_general_key = :obs_general
-    success = usage_metrics.get_date_range(obs_general_key, :success_responses, from, to)
-    empty = usage_metrics.get_date_range(obs_general_key, :empty_responses, from, to)
+    success = usage_metrics.get_sum_by_date_range(obs_general_key, :success_responses, from, to)
+    empty = usage_metrics.get_sum_by_date_range(obs_general_key, :empty_responses, from, to)
     success + empty
   end
 
@@ -98,7 +98,7 @@ module DataServicesMetricsHelper
     orgname = user.organization.nil? ? nil : user.organization.name
     usage_metrics = CartoDB::RoutingUsageMetrics.new(user.username, orgname)
     mapzen_routing_key = :routing_mapzen
-    success = usage_metrics.get_date_range(mapzen_routing_key, :success_responses, from, to)
+    success = usage_metrics.get_sum_by_date_range(mapzen_routing_key, :success_responses, from, to)
     empty = usage_metrics.get(mapzen_routing_key, :empty_responses, from, to)
     success + empty
   end

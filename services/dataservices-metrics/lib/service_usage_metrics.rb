@@ -39,7 +39,7 @@ module CartoDB
       total
     end
 
-    def get_date_range(service, metric, date_from, date_to)
+    def get_sum_by_date_range(service, metric, date_from, date_to)
       check_valid_data(service, metric)
 
       total = 0

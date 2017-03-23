@@ -116,4 +116,22 @@ describe CartoDB::ServiceUsageMetrics do
                                     Date.new(2017, 03, 22)).should eq 0
     end
   end
+
+  describe :get_date_range do
+    it 'gets a hash of date => value pairs' do
+      @redis_mock.zincrby('org:team:dummy_service:dummy_metric:201703', _amount=1, _day='20')
+      @redis_mock.zincrby('org:team:dummy_service:dummy_metric:201703', _amount=2, _day='21')
+      @redis_mock.zincrby('org:team:dummy_service:dummy_metric:201703', _amount=3, _day='22')
+
+      expected = {
+        Date.new(2017, 3, 20) => 1,
+        Date.new(2017, 3, 21) => 2,
+        Date.new(2017, 3, 22) => 3
+      }
+      @usage_metrics.get_date_range(:dummy_service,
+                                    :dummy_metric,
+                                    Date.new(2017, 03, 20),
+                                    Date.new(2017, 03, 22)).should eq expected
+    end
+  end
 end

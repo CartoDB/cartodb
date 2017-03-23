@@ -4,10 +4,12 @@ var colors = require('colors');
 var semver = require('semver');
 var jasmineCfg = require('./lib/build/tasks/jasmine.js');
 var duplicatedDependencies = require('./lib/build/tasks/shrinkwrap-duplicated-dependencies.js');
-var webpackTask = require('./lib/build/tasks/webpack/webpack.js');
+var webpackTask = null;
 
-var REQUIRED_NPM_VERSION = '2.14 - 3';
-var REQUIRED_NODE_VERSION = '6 - 7';
+var NODE_VERSION = '0.10.48 - 0.12';
+var NPM_VERSION = '2.14 - 2.15';
+var WEBPACK_NODE_VERSION = '6 - 7';
+var WEBPACK_NPM_VERSION = '2.14 - 3';
 
 var SHRINKWRAP_MODULES_TO_VALIDATE = [
   'backbone',
@@ -23,16 +25,33 @@ var SHRINKWRAP_MODULES_TO_VALIDATE = [
   'turbo-carto'
 ];
 
+function requireWebpackTask () {
+  if (webpackTask === null) {
+    webpackTask = require('./lib/build/tasks/webpack/webpack.js');
+  }
+  return webpackTask;
+}
+
+function logVersionsError (err, requiredNodeVersion, requiredNpmVersion) {
+  if (err) {
+    grunt.log.fail("############### /!\\ CAUTION /!\\ #################");
+    grunt.log.fail("PLEASE installed required versions to build CARTO:\n- node: " + requiredNodeVersion + "\n- node: " + requiredNpmVersion);
+    grunt.log.fail("#################################################");
+    process.exit(1);
+  }
+}
+
 /**
  *  CartoDB UI assets generation
  */
 
-  module.exports = function(grunt) {
+module.exports = function(grunt) {
 
     if (timer) timer.init(grunt);
 
-    function preFlight(done) {
-      function checkVersion(cmd, versionRange, name, done) {
+    function preFlight(requiredNodeVersion, requiredNpmVersion, logFn) {
+      function checkVersion(cmd, versionRange, name, logFn) {
+        grunt.log.writeln('Required ' + name + ' version: ' + versionRange);
         require("child_process").exec(cmd, function (error, stdout, stderr) {
           var err = null;
           if (error) {
@@ -46,21 +65,20 @@ var SHRINKWRAP_MODULES_TO_VALIDATE = [
           if (err) {
             grunt.log.fail(err);
           }
-          done && done(err ? new Error(err): null);
+          logFn && logFn(err ? new Error(err): null);
         });
       }
-      checkVersion('npm -v', REQUIRED_NPM_VERSION, 'npm', done);
-      checkVersion('node -v', REQUIRED_NODE_VERSION, 'node', done);
+      checkVersion('node -v', requiredNodeVersion, 'node', logFn);
+      checkVersion('npm -v', requiredNpmVersion, 'npm', logFn);
     }
 
-    preFlight(function (err) {
-      if (err) {
-        grunt.log.fail("############### /!\\ CAUTION /!\\ #################");
-        grunt.log.fail("PLEASE installed required versions to build CARTO:\n- npm: " + REQUIRED_NPM_VERSION + "\n- node: " + REQUIRED_NODE_VERSION);
-        grunt.log.fail("#################################################");
-        process.exit(1);
-      }
-    });
+    if (grunt.cli.tasks.indexOf('affected_specs') > - 1) {
+      // Webpack needs a higher version of Node than the rest of the tasks.
+      preFlight(WEBPACK_NODE_VERSION, WEBPACK_NPM_VERSION, logVersionsError);
+    } else {
+      preFlight(NODE_VERSION, NPM_VERSION, logVersionsError);
+    }
+    grunt.log.writeln('');
 
     var duplicatedModules = duplicatedDependencies(require('./npm-shrinkwrap.json'), SHRINKWRAP_MODULES_TO_VALIDATE);
     if (duplicatedModules.length > 0) {
@@ -354,15 +372,15 @@ var SHRINKWRAP_MODULES_TO_VALIDATE = [
     // Affected specs section - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
     grunt.registerTask('affected', 'Generate only affected specs', function () {
-      webpackTask.affected.call(this, grunt);
+      requireWebpackTask().affected.call(this, grunt);
     });
 
     grunt.registerTask('bootstrap_webpack_builder_specs', 'Create the webpack compiler', function () {
-      webpackTask.bootstrap.call(this, 'builder_specs', grunt);
+      requireWebpackTask().bootstrap.call(this, 'builder_specs', grunt);
     });
 
     grunt.registerTask('webpack:builder_specs', 'Webpack compilation task for builder specs', function () {
-      webpackTask.compile.call(this, 'builder_specs');
+      requireWebpackTask().compile.call(this, 'builder_specs');
     });
 
     /**

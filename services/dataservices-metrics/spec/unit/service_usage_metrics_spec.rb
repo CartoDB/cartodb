@@ -166,10 +166,10 @@ describe CartoDB::ServiceUsageMetrics do
         Date.new(2017, 3,  3) => 3
       }
 
-      @usage_metrics.get_sum_by_date_range(:dummy_service,
-                                           :dummy_metric,
-                                           Date.new(2017, 2, 27),
-                                           Date.new(2017, 3, 22)).should eq 6
+      @usage_metrics.get_date_range(:dummy_service,
+                                    :dummy_metric,
+                                    Date.new(2017, 2, 27),
+                                    Date.new(2017, 3, 3)).should eq expected
     end
 
     it 'performs just one request/month to redis' do

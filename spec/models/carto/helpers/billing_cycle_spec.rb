@@ -1,6 +1,6 @@
 require_relative '../../../../app/models/carto/helpers/billing_cycle'
 require 'ostruct'
-require 'timecop'
+require 'delorean'
 
 describe Carto::BillingCycle do
   describe :last_billing_cycle do
@@ -32,7 +32,7 @@ describe Carto::BillingCycle do
         # See commit 83850567
         # Maybe better to throw an error if that happens?
         @user.period_end_date = nil
-        Timecop.freeze(Date.parse(today)) do
+        Delorean.time_travel_to(today) do
           @user.last_billing_cycle.should eq Date.parse(expected)
         end
       end
@@ -51,7 +51,7 @@ describe Carto::BillingCycle do
       it "returns the current month if period_end_date.day <= today.day" \
       " (today = #{today}, period_end_date = #{period_end_date}, expected = #{expected})" do
         @user.period_end_date = Date.parse(period_end_date)
-        Timecop.freeze(Date.parse(today)) do
+        Delorean.time_travel_to(today) do
           @user.last_billing_cycle.should eq Date.parse(expected)
         end
       end
@@ -70,7 +70,7 @@ describe Carto::BillingCycle do
       it "returns the previous month if period_end_date.day > today.day" \
       " (today = #{today}, period_end_date = #{period_end_date}, expected = #{expected})" do
         @user.period_end_date = Date.parse(period_end_date)
-        Timecop.freeze(Date.parse(today)) do
+        Delorean.time_travel_to(today) do
           @user.last_billing_cycle.should eq Date.parse(expected)
         end
       end
@@ -88,7 +88,7 @@ describe Carto::BillingCycle do
       it "returns the previous valid day when dealing with 28, 29 or 30-day month corner cases" \
       " (today = #{today}, period_end_date = #{period_end_date}, expected = #{expected})" do
         @user.period_end_date = Date.parse(period_end_date)
-        Timecop.freeze(Date.parse(today)) do
+        Delorean.time_travel_to(today) do
           @user.last_billing_cycle.should eq Date.parse(expected)
         end
       end

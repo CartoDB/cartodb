@@ -3,9 +3,8 @@ require 'ostruct'
 require 'timecop'
 
 describe Carto::BillingCycle do
-
   describe :last_billing_cycle do
-    class MyDummyUser <  OpenStruct;
+    class MyDummyUser < OpenStruct
       include Carto::BillingCycle
     end
 

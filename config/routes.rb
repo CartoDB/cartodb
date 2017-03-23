@@ -598,11 +598,17 @@ CartoDB::Application.routes.draw do
         get 'download' => 'visualization_exports#download', as: :download
       end
 
-      put 'notifications/:category', to: 'user_notifications#update', as: :api_v3_user_notifications_update
+      put 'notifications/:category', to: 'static_notifications#update', as: :api_v3_static_notifications_update
 
       resources :organizations, only: [] do
         resources :notifications, only: [:create, :destroy],
                                   controller: :organization_notifications,
+                                  constraints: { id: UUID_REGEXP }
+      end
+
+      resources :users, only: [], constraints: { id: UUID_REGEXP } do
+        resources :notifications, only: [:update],
+                                  controller: :received_notifications,
                                   constraints: { id: UUID_REGEXP }
       end
     end
@@ -650,6 +656,11 @@ CartoDB::Application.routes.draw do
       get 'connectors/:provider_id/tables' => 'connectors#tables', as: :api_v1_connectors_tables
       get 'connectors/:provider_id/connect' => 'connectors#connect', as: :api_v1_connectors_connect
     end
+  end
+
+  # Load optional engines
+  Carto::CartoGearsSupport.new.gears.each do |gear|
+    mount gear.engine, at: '/'
   end
 end
 

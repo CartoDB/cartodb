@@ -125,10 +125,15 @@ end
 # segment metrics
 gem 'analytics-ruby', '~> 2.0.0', :require => 'segment/analytics'
 
-# Load optional engines
-# TODO activate when CartoDB plugins are finally included
-# Dir['engines' + '/*/*.gemspec'].each do |gemspec_file|
-#   dir_name = File.dirname(gemspec_file)
-#   gem_name = File.basename(gemspec_file, File.extname(gemspec_file))
-#   gem gem_name, :path => dir_name, :require => false
-# end
+# CARTO Gears engines
+require File.dirname(__FILE__) + '/lib/carto/carto_gears_support'
+
+Carto::CartoGearsSupport.new.gears.each do |gear|
+  if gear.installable
+    gemspec path: gear.path
+  else
+    gear.gemspec.runtime_dependencies.each do |dependency|
+      gem dependency.name, dependency.requirements_list
+    end
+  end
+end

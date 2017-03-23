@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.6.36",
+  "version": "4.6.37",
   "dependencies": {
     "backbone": {
       "version": "1.2.3",
@@ -10,7 +10,7 @@
     "backbone-forms": {
       "version": "0.14.0",
       "from": "backbone-forms@0.14.0",
-      "resolved": "http://registry.npmjs.org/backbone-forms/-/backbone-forms-0.14.0.tgz"
+      "resolved": "https://registry.npmjs.org/backbone-forms/-/backbone-forms-0.14.0.tgz"
     },
     "backbone-model-file-upload": {
       "version": "1.0.0",
@@ -426,7 +426,7 @@
                               "dependencies": {
                                 "assert-plus": {
                                   "version": "1.0.0",
-                                  "from": "assert-plus@>=1.0.0 <2.0.0",
+                                  "from": "assert-plus@1.0.0",
                                   "resolved": "https://registry.npmjs.org/assert-plus/-/assert-plus-1.0.0.tgz"
                                 },
                                 "extsprintf": {
@@ -1106,7 +1106,7 @@
     "camshaft-reference": {
       "version": "0.29.0",
       "from": "camshaft-reference@<2.0.0",
-      "resolved": "http://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.29.0.tgz"
+      "resolved": "https://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.29.0.tgz"
     },
     "carto": {
       "version": "0.15.1-cdb3",
@@ -1152,7 +1152,7 @@
     "cartodb-deep-insights.js": {
       "version": "0.0.2",
       "from": "cartodb/deep-insights.js#master",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#9c2653063445a0bf9811fc087f63561831af2472",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#a72917e8a7553338b102b7830567cb6d28bd7b9d",
       "dependencies": {
         "cartodb.js": {
           "version": "4.0.0-alpha.1",
@@ -1985,7 +1985,7 @@
     "queue-async": {
       "version": "1.2.1",
       "from": "queue-async@1.2.1",
-      "resolved": "http://registry.npmjs.org/queue-async/-/queue-async-1.2.1.tgz"
+      "resolved": "https://registry.npmjs.org/queue-async/-/queue-async-1.2.1.tgz"
     },
     "tangram": {
       "version": "0.11.8",

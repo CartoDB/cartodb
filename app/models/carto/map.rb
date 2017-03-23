@@ -173,7 +173,6 @@ class Carto::Map < ActiveRecord::Base
   end
 
   def recalculate_bounds!
-    CartoDB::Logger.debug(message: "Carto::Map#recalculate_bounds!")
     set_boundaries(get_map_bounds)
     save
   end

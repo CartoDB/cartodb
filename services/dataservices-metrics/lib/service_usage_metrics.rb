@@ -67,7 +67,7 @@ module CartoDB
           key_prefix = @orgname.nil? ? user_key_prefix(service, metric, date) : org_key_prefix(service, metric, date)
           values[year_month_key] = @redis.zrange(key_prefix, 0, -1, with_scores: true).to_h
         end
-        ret[date] = values[year_month_key][date_day(date)]
+        ret[date] = values[year_month_key][date_day(date)] || 0
       end
 
       ret

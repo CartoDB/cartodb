@@ -61,16 +61,10 @@ module DataServicesMetricsHelper
     return 0 if user.google_maps_geocoder_enabled?
     geocoder_key = user.google_maps_geocoder_enabled? ? :geocoder_google : :geocoder_here
     cache_hits = 0
-    countable_requests = 0
-    from.upto(to).each do |date|
-      success = usage_metrics.get(geocoder_key, :success_responses, date)
-      countable_requests += success unless success.nil?
-      empty = usage_metrics.get(geocoder_key, :empty_responses, date)
-      countable_requests += empty unless empty.nil?
-      hit = usage_metrics.get(:geocoder_cache, :success_responses, date)
-      cache_hits += hit unless hit.nil?
-    end
-    countable_requests + cache_hits
+    success = usage_metrics.get_date_range(geocoder_key, :success_responses, from, to)
+    empty = usage_metrics.get_date_range(geocoder_key, :empty_responses, from, to)
+    hit = usage_metrics.get_date_range(:geocoder_cache, :success_responses, from, to)
+    success + empty + hit
   end
 
   def get_here_isolines_data(user, from, to)

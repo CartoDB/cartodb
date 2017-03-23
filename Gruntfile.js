@@ -303,7 +303,8 @@ module.exports = function(grunt) {
     grunt.registerTask('test', '(CI env) Re-build JS files and run all tests. For manual testing use `grunt jasmine` directly', [
         'pre_default',
         'npm-test',
-        'jasmine',
+        'jasmine:cartodbui',
+        'jasmine:cartodb3',
         'lint'
       ]);
     grunt.registerTask('editor3', [

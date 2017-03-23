@@ -224,7 +224,7 @@ var WindshaftMap = Backbone.Model.extend({
   },
 
   getSupportedSubdomains: function () {
-    if (!this.get('cdn_url')) return [];
+    if (!this.get('cdn_url')) return ['0', '1', '2', '3'];
 
     var templates = this.get('cdn_url').templates;
     var protocol = this.getProtocol();

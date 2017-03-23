@@ -133,5 +133,63 @@ describe CartoDB::ServiceUsageMetrics do
                                     Date.new(2017, 03, 20),
                                     Date.new(2017, 03, 22)).should eq expected
     end
+
+    it 'gracefully deals with days without record' do
+      @redis_mock.zincrby('org:team:dummy_service:dummy_metric:201703', _amount=1, _day='20')
+      @redis_mock.zincrby('org:team:dummy_service:dummy_metric:201703', _amount=2, _day='21')
+      @redis_mock.zincrby('org:team:dummy_service:dummy_metric:201703', _amount=3, _day='22')
+
+      expected = {
+        Date.new(2017, 3, 18) => 0,
+        Date.new(2017, 3, 19) => 0,
+        Date.new(2017, 3, 20) => 1,
+        Date.new(2017, 3, 21) => 2,
+        Date.new(2017, 3, 22) => 3
+      }
+
+      @usage_metrics.get_date_range(:dummy_service,
+                                    :dummy_metric,
+                                    Date.new(2017, 03, 18),
+                                    Date.new(2017, 03, 22)).should eq expected
+    end
+
+    it 'gracefully deals with months not stored in redis' do
+      @redis_mock.zincrby('org:team:dummy_service:dummy_metric:201703', _amount=1, _day='01')
+      @redis_mock.zincrby('org:team:dummy_service:dummy_metric:201703', _amount=2, _day='02')
+      @redis_mock.zincrby('org:team:dummy_service:dummy_metric:201703', _amount=3, _day='03')
+
+      expected = {
+        Date.new(2017, 2, 27) => 0,
+        Date.new(2017, 2, 28) => 0,
+        Date.new(2017, 3,  1) => 1,
+        Date.new(2017, 3,  2) => 2,
+        Date.new(2017, 3,  3) => 3
+      }
+
+      @usage_metrics.get_sum_by_date_range(:dummy_service,
+                                    :dummy_metric,
+                                    Date.new(2017, 02, 27),
+                                    Date.new(2017, 03, 22)).should eq 6
+    end
+
+    it 'performs just one request/month to redis' do
+      @redis_mock.expects(:zrange).twice
+      @usage_metrics.get_date_range(:dummy_service,
+                                    :dummy_metric,
+                                    Date.new(2017, 02, 15),
+                                    Date.new(2017, 03, 24))
+    end
+
+    it 'returns zero when there are no records' do
+      expected = {
+        Date.new(2017, 2, 28) => 0,
+        Date.new(2017, 3,  1) => 0
+      }
+
+      @usage_metrics.get_date_range(:dummy_service,
+                                    :dummy_metric,
+                                    Date.new(2017, 02, 28),
+                                    Date.new(2017, 03,  1)).should eq expected
+    end
   end
 end

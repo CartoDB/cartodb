@@ -119,7 +119,6 @@ describe CartoDB::ServiceUsageMetrics do
       @redis_mock.zincrby('org:team:dummy_service:dummy_metric:201703', _amount = 1, _day = '20')
       @redis_mock.zincrby('org:team:dummy_service:dummy_metric:201703', _amount = 2, _day = '21')
       @redis_mock.zincrby('org:team:dummy_service:dummy_metric:201703', _amount = 3, _day = '22')
-
       expected = {
         Date.new(2017, 3, 20) => 1,
         Date.new(2017, 3, 21) => 2,
@@ -135,7 +134,6 @@ describe CartoDB::ServiceUsageMetrics do
       @redis_mock.zincrby('org:team:dummy_service:dummy_metric:201703', _amount = 1, _day = '20')
       @redis_mock.zincrby('org:team:dummy_service:dummy_metric:201703', _amount = 2, _day = '21')
       @redis_mock.zincrby('org:team:dummy_service:dummy_metric:201703', _amount = 3, _day = '22')
-
       expected = {
         Date.new(2017, 3, 18) => 0,
         Date.new(2017, 3, 19) => 0,
@@ -143,7 +141,6 @@ describe CartoDB::ServiceUsageMetrics do
         Date.new(2017, 3, 21) => 2,
         Date.new(2017, 3, 22) => 3
       }
-
       @usage_metrics.get_date_range(:dummy_service,
                                     :dummy_metric,
                                     Date.new(2017, 3, 18),
@@ -154,7 +151,6 @@ describe CartoDB::ServiceUsageMetrics do
       @redis_mock.zincrby('org:team:dummy_service:dummy_metric:201703', _amount = 1, _day = '01')
       @redis_mock.zincrby('org:team:dummy_service:dummy_metric:201703', _amount = 2, _day = '02')
       @redis_mock.zincrby('org:team:dummy_service:dummy_metric:201703', _amount = 3, _day = '03')
-
       expected = {
         Date.new(2017, 2, 27) => 0,
         Date.new(2017, 2, 28) => 0,
@@ -162,7 +158,6 @@ describe CartoDB::ServiceUsageMetrics do
         Date.new(2017, 3, 2) => 2,
         Date.new(2017, 3, 3) => 3
       }
-
       @usage_metrics.get_date_range(:dummy_service,
                                     :dummy_metric,
                                     Date.new(2017, 2, 27),
@@ -182,7 +177,6 @@ describe CartoDB::ServiceUsageMetrics do
         Date.new(2017, 2, 28) => 0,
         Date.new(2017, 3, 1) => 0
       }
-
       @usage_metrics.get_date_range(:dummy_service,
                                     :dummy_metric,
                                     Date.new(2017, 2, 28),

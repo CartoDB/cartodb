@@ -67,9 +67,16 @@ Development
 * Update tangram with smooth point outline.
 * GME users can change to any basemap #11785.
 * Improve affordance of layer item (#11359)
+* Revamp of quota management code (#11784)
+    * **Removed the usage of the feature flag `new_geocoder_quota`**. The behavior is as if it was activated for all users (which's been the case for all cloud users for a long while).
+    * Fixed bug in validation of metrics before storing them.
+    * Removed deprecated methods `Geocoding.get_geocoding_calls`, `User.get_db_system_geocoding_calls`, `get_new_system_geocoding_calls`.
 * Update tangram-cartocss to use smooth point outline.
 
 ### Bug fixes
+* Fixed layers order when creating a new layer dragging from a compound analysis (#11827)
+* Fixed problem after filtering a widget, where style pane was not working (#11819)
+* Fixed problem removing a layer within the proper layer is throwing a JS error (#11803)
 * Fixed histogram filtering when there is no bucket in that range (#11798)
 * Fixed problem with clipped contextual menu in widgets (#11790)
 * Fixed copy for confirm analysis with quota (#11749)
@@ -139,6 +146,7 @@ Development
 * Fixed overflow on loaders.
 * JOIN Analysis Fails Without Error Message (#11184)
 * Fix problem with perfect-scrollbar in Edge browsers (CartoDB/perfect-scrollbar/#2)
+* Correctly autostyle layers based on geometry when adding layers from modal (#11813)
 * Fix problem creating analyses without Data Services API (#11745)
 * Fix problem when number column is used like categories in fill component (#11736)
 * Don't let user to apply icons over categories when auto-style is applied (#11761)

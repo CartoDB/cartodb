@@ -112,10 +112,6 @@ feature "Superadmin's organization API" do
 
   describe "GET /superadmin/organization" do
 
-    before(:all) do
-      @organization1.owner.stubs(:has_feature_flag?).with('new_geocoder_quota').returns(true)
-    end
-
     it "gets all organizations" do
       Organization.where(owner_id: nil).each(&:delete)
       get_json superadmin_organizations_path, {}, superadmin_headers do |response|

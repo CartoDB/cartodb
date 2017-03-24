@@ -6,7 +6,7 @@ var jasmineCfg = require('./lib/build/tasks/jasmine.js');
 var duplicatedDependencies = require('./lib/build/tasks/shrinkwrap-duplicated-dependencies.js');
 var webpackTask = null;
 
-var NODE_VERSION = '0.10.48 - 0.12';
+var NODE_VERSION = '0.10.26 - 0.12';
 var NPM_VERSION = '2.14 - 2.15';
 var WEBPACK_NODE_VERSION = '6 - 7';
 var WEBPACK_NPM_VERSION = '2.14 - 3';

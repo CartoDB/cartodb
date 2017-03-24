@@ -59,7 +59,7 @@ describe('src/vis/model-updater', function () {
     spyOn(this.modelUpdater, '_getProtocol').and.returnValue('http');
   });
 
-  fdescribe('.updateModels', function () {
+  describe('.updateModels', function () {
     beforeEach(function () {
       this.windshaftMap.getBaseURL.and.returnValue('http://{s}.documentation.carto.com/api/v1/map/90e64f1b9145961af7ba36d71b887dd2:0');
     });

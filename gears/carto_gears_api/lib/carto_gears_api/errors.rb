@@ -2,8 +2,8 @@ module CartoGearsApi
   module Errors
     # Thrown when an object could not be found in the database
     class RecordNotFound < StandardError
-      def initialize(object)
-        super("Could not find #{object.class.name.split('::').last} with id #{object.id}")
+      def initialize(object, id)
+        super("Could not find #{object} with id #{id}")
       end
     end
 

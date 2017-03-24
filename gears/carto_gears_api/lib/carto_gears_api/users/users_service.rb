@@ -60,9 +60,9 @@ module CartoGearsApi
       end
 
       def find_user(user_id)
-        db_user = ::User.find(id: updated_user.id)
-        raise CartoGearsApi::Errors::RecordNotFound.new(updated_user) unless db_user
-        db_user
+        user = ::User.find(id: user_id)
+        raise CartoGearsApi::Errors::RecordNotFound.new('User', user_id) unless user
+        user
       end
     end
   end

@@ -478,7 +478,7 @@ describe('windshaft/map-base', function () {
         }
       });
 
-      expect(this.windshaftMap.getBaseURL()).toEqual('http://cdn.http.example.com/rambo/api/v1/map/0123456789');
+      expect(this.windshaftMap.getBaseURL()).toEqual('http://{s}.cdn.http.example.com/rambo/api/v1/map/0123456789');
     });
 
     it('should return the CDN URL for https when CDN info is present', function () {
@@ -492,7 +492,29 @@ describe('windshaft/map-base', function () {
         }
       });
 
-      expect(this.windshaftMap.getBaseURL()).toEqual('https://cdn.https.example.com/rambo/api/v1/map/0123456789');
+      expect(this.windshaftMap.getBaseURL()).toEqual('https://{s}.cdn.https.example.com/rambo/api/v1/map/0123456789');
+    });
+
+    it('should use the CDN template', function () {
+      this.windshaftMap.set({
+        layergroupid: '0123456789',
+        cdn_url: {
+          http: 'cdn1.http.example.com',
+          https: 'cdn1.https.example.com',
+          templates: {
+            http: {
+              url: 'http://{s}.cdn2.http.example.com',
+              subdomains: ['0', '1', '2']
+            },
+            https: {
+              url: 'http://{s}.cdn2.https.example.com',
+              subdomains: ['0', '1', '2']
+            }
+          }
+        }
+      });
+
+      expect(this.windshaftMap.getBaseURL()).toEqual('http://{s}.cdn2.http.example.com/rambo/api/v1/map/0123456789');
     });
   });
 

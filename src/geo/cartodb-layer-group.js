@@ -47,7 +47,7 @@ var CartoDBLayerGroup = Backbone.Model.extend({
   },
 
   getSubdomains: function () {
-    return this.get('urls') && this.get('urls').subdomains;
+    return (this.get('urls') && this.get('urls').subdomains) || ['0'];
   },
 
   getTileURLGrid: function () {
@@ -55,7 +55,7 @@ var CartoDBLayerGroup = Backbone.Model.extend({
     var urls = this.get('urls');
     var urlTemplate = this.getTileURLTemplate();
 
-    return urls.subdomains.map(function (subdomain) {
+    return _.map(urls.subdomains,function (subdomain) {
       return urlTemplate.replace('{s}', subdomain);
     });
   },
@@ -113,10 +113,14 @@ var CartoDBLayerGroup = Backbone.Model.extend({
 
   getGridURLTemplates: function (layerIndex) {
     var gridURLTemplates = (this.get('urls') && this.get('urls').grids && this.get('urls').grids[layerIndex]) || [];
-    var subdomains = this.get('urls').subdomains;
-    gridURLTemplates = _.map(gridURLTemplates, function (url, i) {
-      return url.replace('{s}', subdomains[i]);
-    });
+
+    if (this.get('urls') && this.get('urls').subdomains) {
+      var subdomains = this.get('urls').subdomains;
+      gridURLTemplates = _.map(gridURLTemplates, function (url, i) {
+        return url.replace('{s}', subdomains[i]);
+      });
+    }
+
     return _.map(gridURLTemplates, this._appendAuthParamsToURL, this);
   },
 

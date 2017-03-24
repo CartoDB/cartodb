@@ -1,11 +1,12 @@
 # encoding: utf-8
 
 require 'active_support/time'
+require_relative '../../../lib/carto/metrics/usage_metrics_interface'
 
 module CartoDB
   # The purpose of this class is to encapsulate storage of usage metrics.
   # This shall be used for billing, quota checking and metrics.
-  class ServiceUsageMetrics
+  class ServiceUsageMetrics < Carto::Metrics::UsageMetricsInterface
 
     def initialize(username, orgname = nil, redis=$geocoder_metrics)
       @username = username

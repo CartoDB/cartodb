@@ -1,5 +1,7 @@
+require_relative 'usage_metrics_interface'
+
 module Carto::Metrics
-  class MapviewsUsageMetrics
+  class MapviewsUsageMetrics < UsageMetricsInterface
     VALID_METRICS = [
       :total_views
     ].freeze

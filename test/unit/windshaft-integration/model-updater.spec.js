@@ -135,10 +135,10 @@ describe('src/vis/model-updater', function () {
           this.modelUpdater.updateModels(this.windshaftMap);
 
           // Tile URL template will fetch tiles for layers #0 and #1
-          expect(this.layerGroupModel.getGridURLTemplates(0)).toEqual([
+          expect(this.layerGroupModel.getGridURLTemplatesWithSubdomains(0)).toEqual([
             'http://documentation.carto.com/api/v1/map/90e64f1b9145961af7ba36d71b887dd2:0/0/{z}/{x}/{y}.grid.json'
           ]);
-          expect(this.layerGroupModel.getGridURLTemplates(1)).toEqual([
+          expect(this.layerGroupModel.getGridURLTemplatesWithSubdomains(1)).toEqual([
             'http://documentation.carto.com/api/v1/map/90e64f1b9145961af7ba36d71b887dd2:0/1/{z}/{x}/{y}.grid.json'
           ]);
         });
@@ -157,13 +157,13 @@ describe('src/vis/model-updater', function () {
           this.modelUpdater.updateModels(this.windshaftMap);
 
           // Tile URL template will fetch tiles for layers #0 and #1
-          expect(this.layerGroupModel.getGridURLTemplates(0)).toEqual([
+          expect(this.layerGroupModel.getGridURLTemplatesWithSubdomains(0)).toEqual([
             'http://0.documentation.carto.com/api/v1/map/90e64f1b9145961af7ba36d71b887dd2:0/1/{z}/{x}/{y}.grid.json',
             'http://1.documentation.carto.com/api/v1/map/90e64f1b9145961af7ba36d71b887dd2:0/1/{z}/{x}/{y}.grid.json',
             'http://2.documentation.carto.com/api/v1/map/90e64f1b9145961af7ba36d71b887dd2:0/1/{z}/{x}/{y}.grid.json',
             'http://3.documentation.carto.com/api/v1/map/90e64f1b9145961af7ba36d71b887dd2:0/1/{z}/{x}/{y}.grid.json'
           ]);
-          expect(this.layerGroupModel.getGridURLTemplates(1)).toEqual([
+          expect(this.layerGroupModel.getGridURLTemplatesWithSubdomains(1)).toEqual([
             'http://0.documentation.carto.com/api/v1/map/90e64f1b9145961af7ba36d71b887dd2:0/2/{z}/{x}/{y}.grid.json',
             'http://1.documentation.carto.com/api/v1/map/90e64f1b9145961af7ba36d71b887dd2:0/2/{z}/{x}/{y}.grid.json',
             'http://2.documentation.carto.com/api/v1/map/90e64f1b9145961af7ba36d71b887dd2:0/2/{z}/{x}/{y}.grid.json',

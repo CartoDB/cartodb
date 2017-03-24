@@ -110,7 +110,7 @@ var CartoDBLayerGroup = Backbone.Model.extend({
     return !!this.getTileURLTemplate();
   },
 
-  getGridURLTemplates: function (layerIndex) {
+  getGridURLTemplatesWithSubdomains: function (layerIndex) {
     var gridURLTemplates = (this.get('urls') && this.get('urls').grids && this.get('urls').grids[layerIndex]) || [];
 
     if (this.get('urls') && this.get('urls').subdomains) {

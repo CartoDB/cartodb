@@ -216,7 +216,7 @@ describe('geo/cartodb-layer-group', function () {
     });
   });
 
-  describe('.getGridURLTemplates', function () {
+  describe('.getGridURLTemplatesWithSubdomains', function () {
     beforeEach(function () {
       this.cartoDBLayerGroup = new CartoDBLayerGroup({}, {
         layersCollection: this.layersCollection
@@ -224,8 +224,8 @@ describe('geo/cartodb-layer-group', function () {
     });
 
     it('should return an empty array there are NO urls yet', function () {
-      expect(this.cartoDBLayerGroup.getGridURLTemplates(0)).toEqual([]);
-      expect(this.cartoDBLayerGroup.getGridURLTemplates(1)).toEqual([]);
+      expect(this.cartoDBLayerGroup.getGridURLTemplatesWithSubdomains(0)).toEqual([]);
+      expect(this.cartoDBLayerGroup.getGridURLTemplatesWithSubdomains(1)).toEqual([]);
     });
 
     it('should return an array with the grid URL templates', function () {
@@ -236,8 +236,8 @@ describe('geo/cartodb-layer-group', function () {
         ]
       });
 
-      expect(this.cartoDBLayerGroup.getGridURLTemplates(0)).toEqual([ 'url1' ]);
-      expect(this.cartoDBLayerGroup.getGridURLTemplates(1)).toEqual([ 'url2' ]);
+      expect(this.cartoDBLayerGroup.getGridURLTemplatesWithSubdomains(0)).toEqual([ 'url1' ]);
+      expect(this.cartoDBLayerGroup.getGridURLTemplatesWithSubdomains(1)).toEqual([ 'url2' ]);
     });
 
     it('should append the api_key to urls', function () {
@@ -251,8 +251,8 @@ describe('geo/cartodb-layer-group', function () {
         }
       });
 
-      expect(this.cartoDBLayerGroup.getGridURLTemplates(0)).toEqual([ 'url1?api_key=THE_API_KEY' ]);
-      expect(this.cartoDBLayerGroup.getGridURLTemplates(1)).toEqual([ 'url2?api_key=THE_API_KEY' ]);
+      expect(this.cartoDBLayerGroup.getGridURLTemplatesWithSubdomains(0)).toEqual([ 'url1?api_key=THE_API_KEY' ]);
+      expect(this.cartoDBLayerGroup.getGridURLTemplatesWithSubdomains(1)).toEqual([ 'url2?api_key=THE_API_KEY' ]);
     });
 
     it('should append the auth_token to urls', function () {
@@ -266,8 +266,8 @@ describe('geo/cartodb-layer-group', function () {
         }
       });
 
-      expect(this.cartoDBLayerGroup.getGridURLTemplates(0)).toEqual([ 'url1?auth_token=AUTH_TOKEN' ]);
-      expect(this.cartoDBLayerGroup.getGridURLTemplates(1)).toEqual([ 'url2?auth_token=AUTH_TOKEN' ]);
+      expect(this.cartoDBLayerGroup.getGridURLTemplatesWithSubdomains(0)).toEqual([ 'url1?auth_token=AUTH_TOKEN' ]);
+      expect(this.cartoDBLayerGroup.getGridURLTemplatesWithSubdomains(1)).toEqual([ 'url2?auth_token=AUTH_TOKEN' ]);
     });
   });
 

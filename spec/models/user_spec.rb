@@ -196,6 +196,70 @@ describe User do
       end
     end
 
+    describe 'when updating viewer state' do
+      before(:all) do
+        @organization = create_organization_with_users(quota_in_bytes: 70.megabytes)
+      end
+
+      after(:all) do
+        @organization.destroy
+      end
+
+      it 'should not allow changing to viewer without seats' do
+        @organization.viewer_seats = 0
+        @organization.save
+
+        user = @organization.owner
+        user.reload
+        user.viewer = true
+        expect(user).not_to be_valid
+        expect(user.errors.keys).to include(:organization)
+      end
+
+      it 'should allow changing to viewer with enough seats' do
+        @organization.viewer_seats = 2
+        @organization.save
+
+        user = @organization.owner
+        user.reload
+        user.viewer = true
+        expect(user).to be_valid
+        expect(user.errors.keys).not_to include(:organization)
+      end
+
+      it 'should not allow changing to builder without seats' do
+        @organization.viewer_seats = 10
+        @organization.save
+        user = @organization.owner
+        user.reload
+        user.viewer = true
+        user.save
+        @organization.seats = 0
+        @organization.save
+
+        user.reload
+        user.viewer = false
+        expect(user).not_to be_valid
+        expect(user.errors.keys).to include(:organization)
+      end
+
+      it 'should allow changing to builder without seats' do
+        @organization.viewer_seats = 10
+        @organization.save
+        user = @organization.owner
+        user.reload
+        user.viewer = true
+        user.save
+        @organization.seats = 10
+        @organization.save
+
+        user.reload
+        user.viewer = false
+        expect(user).to be_valid
+        expect(user.errors.keys).not_to include(:organization)
+      end
+    end
+
     it 'should set account_type properly' do
       organization = create_organization_with_users
       organization.users.reject(&:organization_owner?).each do |u|
@@ -2260,7 +2324,7 @@ describe User do
 
   def create_org(org_name, org_quota, org_seats)
     organization = Organization.new
-    organization.name = org_name
+    organization.name = unique_name(org_name)
     organization.quota_in_bytes = org_quota
     organization.seats = org_seats
     organization.save!

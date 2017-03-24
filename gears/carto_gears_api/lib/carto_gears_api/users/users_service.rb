@@ -38,6 +38,7 @@ module CartoGearsApi
         db_user.soft_obs_snapshot_limit = updated_user.soft_obs_snapshot_limit
         db_user.soft_obs_general_limit = updated_user.soft_obs_general_limit
 
+        db_user.update_in_central
         raise CartoGearsApi::Errors::ValidationFailed.new(db_user.errors) unless db_user.save
         user(db_user)
       end

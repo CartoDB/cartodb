@@ -6,7 +6,7 @@ module Carto
   class Notification < ActiveRecord::Base
     MAX_BODY_LENGTH = 140
 
-    ICON_WARNING = 'warning'.freeze
+    ICON_WARNING = 'alert'.freeze
     ICON_SUCCESS = 'success'.freeze
 
     RECIPIENT_ALL = 'all'.freeze

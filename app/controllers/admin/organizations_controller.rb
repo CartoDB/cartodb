@@ -35,6 +35,9 @@ class Admin::OrganizationsController < Admin::AdminController
   end
 
   def notifications
+    carto_viewer = current_user && Carto::User.where(id: current_user.id).first
+    @organization_notifications = carto_viewer ? carto_viewer.received_notifications.unread.map { |n| Carto::Api::ReceivedNotificationPresenter.new(n) } : {}
+
     @notification ||= Carto::Notification.new(recipients: Carto::Notification::RECIPIENT_ALL)
     @notifications = @carto_organization.notifications.limit(12).map { |n| Carto::Api::NotificationPresenter.new(n) }
     respond_to do |format|

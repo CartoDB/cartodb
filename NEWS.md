@@ -64,7 +64,7 @@ Development
 * Migrate to use GNIP v2 for twitter search connector (#10051, #11595).
 * Notifications API (#11734) and administrator UI (#11729).
 * Migrate to use GNIP v2 for twitter search connector (#10051, #11595)
-* Notifications API (WIP) (#11734, #11780, #11734)
+* Organization notifications (WIP) (#11734, #11780, #11734, #11821)
 * Invite to georeference proactively when detecting non-georeferenced data (#11316)
 * Update tangram with smooth point outline.
 * Improve affordance of layer item (#11359).

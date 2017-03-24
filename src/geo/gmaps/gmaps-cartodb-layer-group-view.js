@@ -240,6 +240,7 @@ _.extend(
         tileURLTemplates = [ EMPTY_GIF ];
       }
 
+      // wax uses this
       this.options.tiles = tileURLTemplates;
       this.tiles = 0;
       this.cache = {};

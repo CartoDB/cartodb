@@ -330,7 +330,7 @@ module.exports = function (createLayerGroupView, expectTileURLTemplateToMatch, f
             'http://1.ashbu.cartocdn.com/documentation/api/v1/map/9876543210/1,2/{z}/{x}/{y}.png',
             'http://2.ashbu.cartocdn.com/documentation/api/v1/map/9876543210/1,2/{z}/{x}/{y}.png',
             'http://3.ashbu.cartocdn.com/documentation/api/v1/map/9876543210/1,2/{z}/{x}/{y}.png'
-            ],
+          ],
           'formatter': jasmine.any(Function)
         });
       });

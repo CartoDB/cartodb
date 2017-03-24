@@ -18,12 +18,7 @@ describe CartoGearsApi::Users::UsersService do
         feature_flags: [],
         can_change_email: true,
         quota_in_bytes: 100000,
-        viewer: false,
-        soft_geocoding_limit: false,
-        soft_twitter_datasource_limit: false,
-        soft_here_isolines_limit: false,
-        soft_obs_snapshot_limit: false,
-        soft_obs_general_limit: false
+        viewer: false
       )
       warden = double
       warden.should_receive(:user).once.and_return(user)

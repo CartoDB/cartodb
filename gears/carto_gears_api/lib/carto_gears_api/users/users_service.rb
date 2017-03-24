@@ -13,34 +13,31 @@ module CartoGearsApi
         user(request.env['warden'].user(CartoDB.extract_subdomain(request)))
       end
 
-      # Updates the values of a user.
+      # Converts an user to a viewer, without editing rights.
+      # It also sets all quotas to 0
       #
-      # Only the following values can be updated: +quota_in_bytes+, +viewer+, +soft_*_limit+
-      # @note Setting +viewer = true+ resets all quotas to 0
-      #
-      # @param user [User] the user with updated values
-      # @return [User] the modified user
+      # @param user_id [UUID] the user id
       # @raise [Errors::RecordNotFound] if the user could not be found in the database
       # @raise [Errors::ValidationFailed] if the validation failed
+      def make_viewer(user_id)
+        user = find_user(user_id)
+
+        user.viewer = true
+        raise CartoGearsApi::Errors::ValidationFailed.new(user.errors) unless user.save
+      end
+
+      # Converts an user to a builder, with full editing rights.
       #
-      # @example Change the quota of the logged user
-      #   user_service = CartoGearsApi::Users::UsersService.new
-      #   user_service.update(user_service.logged_user(request).with(quota_in_bytes: 10000000))
-      def update(updated_user)
-        db_user = ::User.find(id: updated_user.id)
-        raise CartoGearsApi::Errors::RecordNotFound.new(updated_user) unless db_user
+      # @param user_id [UUID] the user id
+      # @param quota_in_bytes [Integer] quota for the user. It defaults to the organization default quota
+      # @raise [Errors::RecordNotFound] if the user could not be found in the database
+      # @raise [Errors::ValidationFailed] if the validation failed
+      def make_builder(user_id, quota_in_bytes: nil)
+        user = find_user(user_id)
 
-        db_user.viewer = updated_user.viewer
-        db_user.quota_in_bytes = updated_user.quota_in_bytes
-        db_user.soft_geocoding_limit = updated_user.soft_geocoding_limit
-        db_user.soft_twitter_datasource_limit = updated_user.soft_twitter_datasource_limit
-        db_user.soft_here_isolines_limit = updated_user.soft_here_isolines_limit
-        db_user.soft_obs_snapshot_limit = updated_user.soft_obs_snapshot_limit
-        db_user.soft_obs_general_limit = updated_user.soft_obs_general_limit
-
-        db_user.update_in_central
-        raise CartoGearsApi::Errors::ValidationFailed.new(db_user.errors) unless db_user.save
-        user(db_user)
+        user.viewer = false
+        user.quota_in_bytes = quota_in_bytes || user.organization.default_quota_in_bytes
+        raise CartoGearsApi::Errors::ValidationFailed.new(user.errors) unless user.save
       end
 
       private
@@ -54,17 +51,18 @@ module CartoGearsApi
           feature_flags: user.feature_flags,
           can_change_email: user.can_change_email?,
           quota_in_bytes: user.quota_in_bytes,
-          viewer: user.viewer,
-          soft_geocoding_limit: user.soft_geocoding_limit,
-          soft_twitter_datasource_limit: user.soft_twitter_datasource_limit,
-          soft_here_isolines_limit: user.soft_here_isolines_limit,
-          soft_obs_snapshot_limit: user.soft_obs_snapshot_limit,
-          soft_obs_general_limit: user.soft_obs_general_limit
+          viewer: user.viewer
         )
       end
 
       def organization(organization)
         CartoGearsApi::Organizations::Organization.with(name: organization.name)
+      end
+
+      def find_user(user_id)
+        db_user = ::User.find(id: updated_user.id)
+        raise CartoGearsApi::Errors::RecordNotFound.new(updated_user) unless db_user
+        db_user
       end
     end
   end

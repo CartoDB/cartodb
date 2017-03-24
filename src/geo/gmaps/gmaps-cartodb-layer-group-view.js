@@ -235,7 +235,7 @@ _.extend(
     _reload: function () {
       var tileURLTemplates;
       if (this.model.hasTileURLTemplates()) {
-        tileURLTemplates = [this.model.getTileURLTemplate().replace('{s}', this.model.getSubdomains()[0])];
+        tileURLTemplates = [ this.model.getTileURLTemplatesWithSubdomains()[0] ];
       } else {
         tileURLTemplates = [ EMPTY_GIF ];
       }

@@ -65,7 +65,7 @@ CartoDBLayerGroupViewBase.prototype = {
         tilejson: '2.0.0',
         scheme: 'xyz',
         grids: this.model.getGridURLTemplates(layerIndexInLayerGroup),
-        tiles: this.model.getTileURLGrid(),
+        tiles: this.model.getTileURLTemplatesWithSubdomains(),
         formatter: function (options, data) { return data; }
       };
     }

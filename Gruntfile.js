@@ -11,6 +11,8 @@ var NPM_VERSION = '2.14 - 2.15';
 var WEBPACK_NODE_VERSION = '6 - 7';
 var WEBPACK_NPM_VERSION = '2.14 - 3';
 
+var DEVELOPMENT = 'development';
+
 var SHRINKWRAP_MODULES_TO_VALIDATE = [
   'backbone',
   'camshaft-reference',
@@ -41,6 +43,10 @@ function logVersionsError (err, requiredNodeVersion, requiredNpmVersion) {
   }
 }
 
+function isRunningTask (taskName, grunt) {
+  return grunt.cli.tasks.indexOf(taskName) > -1;
+}
+
 /**
  *  CartoDB UI assets generation
  */
@@ -48,6 +54,16 @@ function logVersionsError (err, requiredNodeVersion, requiredNpmVersion) {
 module.exports = function(grunt) {
 
     if (timer) timer.init(grunt);
+
+    var environment = grunt.option('environment') || DEVELOPMENT;
+    grunt.log.writeln('Environment: ' + environment);
+
+    var runningTasks = grunt.cli.tasks;
+    if (runningTasks.length === 0) {
+      grunt.log.writeln('Running default task.'); 
+    } else {
+      grunt.log.writeln('Running tasks: ' + runningTasks);
+    }
 
     function preFlight(requiredNodeVersion, requiredNpmVersion, logFn) {
       function checkVersion(cmd, versionRange, name, logFn) {
@@ -93,7 +109,8 @@ module.exports = function(grunt) {
     var ASSETS_DIR = './public/assets/<%= pkg.version %>';
 
     // use grunt --environment production
-    var env = './config/grunt_' + (grunt.option('environment') || 'development') + '.json';
+    var env = './config/grunt_' + environment + '.json';
+    grunt.log.writeln('env: ' + env);
     if (grunt.file.exists(env)) {
       env = grunt.file.readJSON(env)
     } else {
@@ -204,8 +221,8 @@ module.exports = function(grunt) {
     });
 
     grunt.registerTask('check_release', "checks release can be done", function() {
-      if (env === 'development') {
-        grunt.log.error("you can't release running development enviorment");
+      if (environment === DEVELOPMENT) {
+        grunt.log.error("you can't release running development environment");
         return false;
       }
       grunt.log.ok("************************************************");
@@ -298,7 +315,7 @@ module.exports = function(grunt) {
       'copy:js_test_jasmine_client_cartodb3'
     ]);
 
-    grunt.registerTask('js', ['cdb', 'pre_client', 'browserify', 'concat:js', 'jst']);
+    grunt.registerTask('js', ['cdb', 'pre_client', 'run_browserify', 'concat:js', 'jst']);
     grunt.registerTask('pre_default', ['clean', 'config', 'js']);
     grunt.registerTask('test', '(CI env) Re-build JS files and run all tests. For manual testing use `grunt jasmine` directly', [
         'pre_default',
@@ -335,7 +352,7 @@ module.exports = function(grunt) {
       .value());
     grunt.registerTask('dev', 'Typical task for frontend development (watch JS/CSS changes)', [
       'setConfig:env.browserify_watch:true',
-      'browserify_but_specs',
+      'run_browserify',
       'watch_but_specs']);
 
     grunt.registerTask('sourcemaps',
@@ -357,9 +374,22 @@ module.exports = function(grunt) {
       grunt.task.run('watch');
     });
 
-    grunt.registerTask('browserify_but_specs', 'All browserify tasks except those that generate specs', function () {
-      delete grunt.config.data.browserify.affected_specs;
-      delete grunt.config.data.browserify['cartodb3-specs'];
+    grunt.registerTask('run_browserify', 'Browserify task with options', function (option) {
+      var skipSpecs = false;
+
+      if (environment !== DEVELOPMENT) {
+        grunt.log.writeln('Skipping specs generation by browserify because not in development environment.');
+        skipSpecs = true;
+      } else if (!isRunningTask('test', grunt)) {
+        grunt.log.writeln('Skipping specs generation by browserify because we are not running the `test` task.');
+        skipSpecs = true;
+      }
+
+      if (skipSpecs) {
+        delete grunt.config.data.browserify['test_specs_for_browserify_modules'];
+        delete grunt.config.data.browserify['cartodb3-specs'];
+      }
+
       grunt.task.run('browserify');
     });
 

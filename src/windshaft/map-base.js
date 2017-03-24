@@ -230,8 +230,7 @@ var WindshaftMap = Backbone.Model.extend({
     var protocol = this.getProtocol();
     if (templates && templates[protocol]) {
       return templates[protocol].subdomains;
-    }
-    else if(!this._useHTTPS()){
+    } else if (!this._useHTTPS()) {
       return ['0', '1', '2', '3'];
     }
 

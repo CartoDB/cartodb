@@ -58,7 +58,7 @@ ModelUpdater.prototype._generateTileURLTemplate = function (windshaftMap) {
 
 ModelUpdater.prototype._getTileSubdomains = function (windshafMap) {
   return windshafMap.getSupportedSubdomains();
-}
+};
 
 ModelUpdater.prototype._calculateGridURLTemplatesForCartoDBLayers = function (windshaftMap) {
   var urlTemplates = [];

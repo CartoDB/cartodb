@@ -110,6 +110,7 @@ ModelUpdater.prototype._updateLayerModels = function (windshaftMap) {
   _.each(this._layersCollection.getTorqueLayers(), function (layerModel, localLayerIndex) {
     var windshaftMapLayerIndex = indexesOfTorqueLayers[localLayerIndex];
     layerModel.set('meta', windshaftMap.getLayerMetadata(windshaftMapLayerIndex));
+    layerModel.set('subdomains', windshaftMap.getSupportedSubdomains());
     layerModel.set('tileURLTemplates', this._calculateTileURLTemplatesForTorqueLayers(windshaftMap));
     this._updateLegendModels(layerModel, windshaftMapLayerIndex, windshaftMap);
 

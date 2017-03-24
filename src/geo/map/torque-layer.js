@@ -24,6 +24,7 @@ var TorqueLayer = LayerModelBase.extend({
       start: undefined,
       end: undefined
     },
+    subdomains: [0, 1, 2, 3],
     steps: 0,
     step: 0,
     time: undefined // should be a Date instance

@@ -131,8 +131,8 @@ namespace :cartodb do
               next
             end
 
-            v.external_source.destroy
-            v.destroy
+            v.external_source.delete
+            v.delete
           rescue => e
             puts "  Error deleting visualization #{v.id}: #{e.message}"
           end

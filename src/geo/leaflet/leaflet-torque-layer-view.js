@@ -45,6 +45,7 @@ LeafletTorqueLayer.prototype = _.extend(
 
       if (model.hasChanged('tileURLTemplates')) {
         this.leafletLayer.provider.templateUrl = model.getTileURLTemplates()[0];
+        this.leafletLayer.provider.options.subdomains = model.get('subdomains');
         // set meta
         var meta = model.get('meta');
         _.extend(this.leafletLayer.provider.options, meta);

@@ -1577,6 +1577,13 @@
         "data-observatory": {
           "regions": {
             "error": "Error getting regions."
+          },
+          "measurements": {
+            "label": "Measurement",
+            "placeholder": "Select a measurement"
+          },
+          "normalize": {
+            "label": "Normalize"
           }
         },
         "data-observatory-measurement-area": "Country",

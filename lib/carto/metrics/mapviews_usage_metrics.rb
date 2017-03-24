@@ -32,7 +32,7 @@ module Carto::Metrics
 
     def get_date_range(_service, _metric, date_from, date_to)
       stats = CartoDB::Stats::APICalls.new
-      ret = {}
+      map_views = {}
       (@organization ? @organization.users.map(&:username) : [@username]).each do |username|
         MAPVIEWS_REDIS_KEYS.each do |redis_key|
           user_map_views = stats.get_api_calls_from_redis_source(
@@ -41,10 +41,16 @@ module Carto::Metrics
             from: date_from,
             to: date_to
           )
-          ret.merge!(user_map_views) { |date, accum, value| accum + value }
+          map_views.merge!(user_map_views) { |_date, accum, value| accum + value }
         end
       end
-      ret.reduce({}) { |h, (key, val)| h[Date.parse(key)] = val; h}
+
+      # Return a hash of {Date => Number} pairs instead of { String => Number }
+      # in order to abide to the interface.
+      map_views.reduce({}) do |new_hash, (date_str_key, value)|
+        new_hash[Date.parse(date_str_key)] = value
+        new_hash
+      end
     end
   end
 end

@@ -37,7 +37,7 @@ module Carto::Metrics
 
       # Return a hash of {Date => Number} pairs instead of { String => Number }
       # in order to abide to the interface.
-      map_views.reduce({}) do |new_hash, (date_str_key, value)|
+      map_views.inject({}) do |new_hash, (date_str_key, value)|
         new_hash[Date.parse(date_str_key)] = value
         new_hash
       end

@@ -11,14 +11,20 @@ describe CartoGearsApi::Users::UsersService do
     # within Gears and should not be used as an example.
     it 'returns the logged user based on subdomain and warden' do
       user = CartoGearsApi::Users::User.with(
-                                         id: 'b51e56fb-f3c9-463f-b950-d9be188551e5',
-                                         username: 'wadus_username',
-                                         email: 'wadus@carto.com',
-                                         organization: nil,
-                                         feature_flags: [],
-                                         can_change_email: true,
-                                         quota_in_bytes: 100000,
-                                         viewer: false)
+        id: 'b51e56fb-f3c9-463f-b950-d9be188551e5',
+        username: 'wadus_username',
+        email: 'wadus@carto.com',
+        organization: nil,
+        feature_flags: [],
+        can_change_email: true,
+        quota_in_bytes: 100000,
+        viewer: false,
+        soft_geocoding_limit: false,
+        soft_twitter_datasource_limit: false,
+        soft_here_isolines_limit: false,
+        soft_obs_snapshot_limit: false,
+        soft_obs_general_limit: false
+      )
       warden = double
       warden.should_receive(:user).once.and_return(user)
       request = double

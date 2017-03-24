@@ -15,7 +15,7 @@ module CartoGearsApi
 
       # Updates the values of a user.
       #
-      # Only the following values can be updated: +quota_in_bytes+, +viewer+
+      # Only the following values can be updated: +quota_in_bytes+, +viewer+, +soft_*_limit+
       # @note Setting +viewer = true+ resets all quotas to 0
       #
       # @param user [User] the user with updated values
@@ -32,6 +32,11 @@ module CartoGearsApi
 
         db_user.viewer = updated_user.viewer
         db_user.quota_in_bytes = updated_user.quota_in_bytes
+        db_user.soft_geocoding_limit = updated_user.soft_geocoding_limit
+        db_user.soft_twitter_datasource_limit = updated_user.soft_twitter_datasource_limit
+        db_user.soft_here_isolines_limit = updated_user.soft_here_isolines_limit
+        db_user.soft_obs_snapshot_limit = updated_user.soft_obs_snapshot_limit
+        db_user.soft_obs_general_limit = updated_user.soft_obs_general_limit
 
         raise CartoGearsApi::Errors::ValidationFailed.new(db_user.errors) unless db_user.save
         user(db_user)
@@ -48,7 +53,12 @@ module CartoGearsApi
           feature_flags: user.feature_flags,
           can_change_email: user.can_change_email?,
           quota_in_bytes: user.quota_in_bytes,
-          viewer: user.viewer
+          viewer: user.viewer,
+          soft_geocoding_limit: user.soft_geocoding_limit,
+          soft_twitter_datasource_limit: user.soft_twitter_datasource_limit,
+          soft_here_isolines_limit: user.soft_here_isolines_limit,
+          soft_obs_snapshot_limit: user.soft_obs_snapshot_limit,
+          soft_obs_general_limit: user.soft_obs_general_limit
         )
       end
 

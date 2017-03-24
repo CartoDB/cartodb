@@ -349,7 +349,8 @@ module.exports = function(grunt) {
     grunt.registerTask('dev', 'Typical task for frontend development (watch JS/CSS changes)', [
       'setConfig:env.browserify_watch:true',
       'run_browserify',
-      'watch_but_specs']);
+      'connect',
+      'run_watch:builder_specs=false']);
 
     grunt.registerTask('sourcemaps',
       'generate sourcemaps, to be used w/ trackjs.com for bughunting', [
@@ -361,28 +362,33 @@ module.exports = function(grunt) {
         'uglify'
       ]);
 
-    grunt.registerTask('watch_but_specs', 'All watch tasks except those that watch spec changes', function () {
-      delete grunt.config.data.watch.js_test_spec_core_cartodb3;
-      delete grunt.config.data.watch.js_test_spec_client_cartodb3;
-      delete grunt.config.data.watch.js_test_jasmine_core_cartodb3;
-      delete grunt.config.data.watch.js_test_jasmine_client_cartodb3;
-      delete grunt.config.data.watch.js_affected;
+    grunt.registerTask('run_watch', 'All watch tasks except those that watch spec changes', function (option) {
+      if (option === 'builder_specs=false') {
+        delete grunt.config.data.watch.js_test_spec_core_cartodb3;
+        delete grunt.config.data.watch.js_test_spec_client_cartodb3;
+        delete grunt.config.data.watch.js_test_jasmine_core_cartodb3;
+        delete grunt.config.data.watch.js_test_jasmine_client_cartodb3;
+        delete grunt.config.data.watch.js_affected;
+      }
       grunt.task.run('watch');
     });
 
     grunt.registerTask('run_browserify', 'Browserify task with options', function (option) {
-      var skipSpecs = false;
+      var skipAllSpecs = false;
+      var skipBuilderSpecs = false;
 
       if (environment !== DEVELOPMENT) {
-        grunt.log.writeln('Skipping specs generation by browserify because not in development environment.');
-        skipSpecs = true;
+        grunt.log.writeln('Skipping all specs generation by browserify because not in development environment.');
+        skipAllSpecs = true;
       } else if (!isRunningTask('test', grunt)) {
-        grunt.log.writeln('Skipping specs generation by browserify because we are not running the `test` task.');
-        skipSpecs = true;
+        grunt.log.writeln('Skipping only Builder specs generation by browserify because we are not running the `test` task.');
+        skipBuilderSpecs = true;
       }
 
-      if (skipSpecs) {
+      if (skipAllSpecs) {
         delete grunt.config.data.browserify['test_specs_for_browserify_modules'];
+        delete grunt.config.data.browserify['cartodb3-specs'];
+      } else if (skipBuilderSpecs) {
         delete grunt.config.data.browserify['cartodb3-specs'];
       }
 

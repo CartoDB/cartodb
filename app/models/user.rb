@@ -904,20 +904,7 @@ class User < Sequel::Model
 
   def get_geocoding_calls(options = {})
     date_from, date_to = quota_dates(options)
-    if has_feature_flag?('new_geocoder_quota')
-      get_user_geocoding_data(self, date_from, date_to)
-    else
-      get_db_system_geocoding_calls(date_from, date_to)
-    end
-  end
-
-  def get_new_system_geocoding_calls(options = {})
-    date_from, date_to = quota_dates(options)
     get_user_geocoding_data(self, date_from, date_to)
-  end
-
-  def get_db_system_geocoding_calls(date_from, date_to)
-    Geocoding.get_geocoding_calls(geocodings_dataset, date_from, date_to)
   end
 
   def get_not_aggregated_geocoding_calls(options = {})
@@ -1405,10 +1392,6 @@ class User < Sequel::Model
     cartodb_com_hosted? ? '' : (account_url(request_protocol) + '/upgrade')
   end
 
-  def organization_username
-    CartoDB.subdomainless_urls? || organization.nil? ? nil : username
-  end
-
   def subdomain
     if CartoDB.subdomainless_urls?
       username
@@ -1419,7 +1402,8 @@ class User < Sequel::Model
 
   # @return String public user url, which is also the base url for a given user
   def public_url(subdomain_override=nil, protocol_override=nil)
-    CartoDB.base_url(subdomain_override.nil? ? subdomain : subdomain_override, organization_username, protocol_override)
+    base_subdomain = subdomain_override.nil? ? subdomain : subdomain_override
+    CartoDB.base_url(base_subdomain, CartoDB.organization_username(self), protocol_override)
   end
 
   # ----------
@@ -1468,19 +1452,9 @@ class User < Sequel::Model
     Rack::Utils.parse_nested_query(google_maps_query_string)['client'] if google_maps_query_string
   end
 
-  # returnd a list of basemaps enabled for the user
-  # when google map key is set it gets the basemaps inside the group "GMaps"
-  # if not it get everything else but GMaps in any case GMaps and other groups can work together
-  # this may have change in the future but in any case this method provides a way to abstract what
-  # basemaps are active for the user
+  # returns a list of basemaps enabled for the user
   def basemaps
-    basemaps = Cartodb.config[:basemaps]
-    if basemaps
-      basemaps.select { |group|
-        g = group == 'GMaps'
-        google_maps_enabled? ? g : !g
-      }
-    end
+    (Cartodb.config[:basemaps] || []).select { |group| group != 'GMaps' || google_maps_enabled? }
   end
 
   def google_maps_enabled?
@@ -1490,16 +1464,14 @@ class User < Sequel::Model
   # return the default basemap based on the default setting. If default attribute is not set, first basemaps is returned
   # it only takes into account basemaps enabled for that user
   def default_basemap
-    default = basemaps.find { |group, group_basemaps |
-      group_basemaps.find { |b, attr| attr['default'] }
-    }
-    if default.nil?
-      default = basemaps.first[1]
-    else
-      default = default[1]
-    end
+    default = if google_maps_enabled? && basemaps['GMaps'].present?
+                ['GMaps', basemaps['GMaps']]
+              else
+                basemaps.find { |_, group_basemaps| group_basemaps.find { |_, attr| attr['default'] } }
+              end
+    default ||= basemaps.first
     # return only the attributes
-    default.first[1]
+    default[1].first[1]
   end
 
   def copy_account_features(to)

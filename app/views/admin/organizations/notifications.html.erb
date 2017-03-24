@@ -51,49 +51,51 @@
       </div>
     <% end %>
 
-    <div class="OrganizationNotifications">
-      <div class="FormAccount-title">
-        <p class="FormAccount-titleText">
-          Past Notifications
-          <span class="FormAccount-subtitleText">
-            (stores up to 12 most recent notifications)
-          </span>
-        </p>
+    <% if @notifications.size > 0 %>
+      <div class="OrganizationNotifications">
+        <div class="FormAccount-title">
+          <p class="FormAccount-titleText">
+            Past Notifications
+            <span class="FormAccount-subtitleText">
+              (stores up to 12 most recent notifications)
+            </span>
+          </p>
+        </div>
+
+        <span class="FormAccount-separator"></span>
+
+        <ul class="NotificationsList">
+          <% @notifications.each do |notification| %>
+            <li class="NotificationsList-item js-NotificationsList-item">
+              <div class="NotificationsList-itemCategory NotificationsList-itemCategory--<%= notification.icon %>">
+              </div>
+
+              <div class="NotificationsList-itemInfo">
+                <div class="NotificationsList-itemPrimaryInfo">
+                  <div class="NotificationsList-itemTitle u-ellipsis CDB-Text CDB-Size-large u-mainTextColor js-html_body" data-body="<%= notification.body %>">
+                    <%= raw notification.html_body %>
+                  </div>
+
+                  <div class="NotificationsList-itemDescription">
+                    <p class="u-ellipsis CDB-Text CDB-Size-medium u-altTextColor"><abbr title="<%= notification.created_at %>" class="u-rSpace--xl"><%= notification.created_at.strftime("%d/%m/%Y") %></abbr> User type: <span class="js-recipients" data-recipients="<%= notification.recipients %>"><%= notification.recipients.capitalize %></span></p>
+                  </div>
+                </div>
+
+                <div class="NotificationsList-itemSecondaryInfo">
+                  <div class="NotificationsList-itemMeta CDB-Text CDB-Size-small">
+                    <button class="FormAccount-link NotificationsList-itemLink js-resend">Resend</button>
+                  </div>
+
+                  <div class="NotificationsList-itemMeta CDB-Text CDB-Size-small">
+                    <button class="FormAccount-link NotificationsList-itemLink NotificationsList-itemLink--remove js-remove" data-id="<%= notification.id %>">Remove for all users</button>
+                  </div>
+                </div>
+              </div>
+            </li>
+          <% end %>
+        </ul>
       </div>
-
-      <span class="FormAccount-separator"></span>
-
-      <ul class="NotificationsList">
-        <% @notifications.each do |notification| %>
-          <li class="NotificationsList-item js-NotificationsList-item">
-            <div class="NotificationsList-itemCategory NotificationsList-itemCategory--<%= notification.icon %>">
-            </div>
-
-            <div class="NotificationsList-itemInfo">
-              <div class="NotificationsList-itemPrimaryInfo">
-                <div class="NotificationsList-itemTitle u-ellipsis CDB-Text CDB-Size-large u-mainTextColor js-html_body" data-body="<%= notification.body %>">
-                  <%= raw notification.html_body %>
-                </div>
-
-                <div class="NotificationsList-itemDescription">
-                  <p class="u-ellipsis CDB-Text CDB-Size-medium u-altTextColor"><abbr title="<%= notification.created_at %>" class="u-rSpace--xl"><%= notification.created_at.strftime("%d/%m/%Y") %></abbr> User type: <span class="js-recipients" data-recipients="<%= notification.recipients %>"><%= notification.recipients.capitalize %></span></p>
-                </div>
-              </div>
-
-              <div class="NotificationsList-itemSecondaryInfo">
-                <div class="NotificationsList-itemMeta CDB-Text CDB-Size-small">
-                  <button class="FormAccount-link NotificationsList-itemLink js-resend">Resend</button>
-                </div>
-
-                <div class="NotificationsList-itemMeta CDB-Text CDB-Size-small">
-                  <button class="FormAccount-link NotificationsList-itemLink NotificationsList-itemLink--remove js-remove" data-id="<%= notification.id %>">Remove for all users</button>
-                </div>
-              </div>
-            </div>
-          </li>
-        <% end %>
-      </ul>
-    </div>
+    <% end %>
   </div>
 <% end %>
 

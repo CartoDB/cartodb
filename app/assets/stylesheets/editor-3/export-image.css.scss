@@ -1,3 +1,5 @@
+$resizeHandlerSize: 8px;
+
 .ExportImageView {
   position: absolute;
   width: 100%;
@@ -31,8 +33,6 @@
 .CanvasExport.draggable .ExportHelper.ExportHelper--legend {
   opacity: 0.2;
 }
-
-$resizeHandlerSize: 8px;
 
 .CanvasExport .ui-resizable {
   position: relative;

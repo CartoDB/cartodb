@@ -3079,7 +3079,7 @@ wax.leaf.interaction = function() {
                         for (var tile in layers[layerId]._tiles) {
                             var _tile = layers[layerId]._tiles[tile].el;
                             // avoid adding tiles without src, grid url can't be found for them
-                            if(_tile.src) {
+                            if(_tile && _tile.src) {
                               var offset = wax.u.offset(_tile);
                               o.push([offset.top, offset.left, _tile]);
                             }

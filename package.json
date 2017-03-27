@@ -33,7 +33,7 @@
     "d3": "3.5.17",
     "tangram.cartodb": "cartodb/tangram.cartodb#master",
     "jquery": "2.1.4",
-    "leaflet": "0.7.3",
+    "leaflet": "1.0.3",
     "mustache": "1.1.0",
     "perfect-scrollbar": "git://github.com/CartoDB/perfect-scrollbar.git#master",
     "torque.js": "CartoDB/torque#master",

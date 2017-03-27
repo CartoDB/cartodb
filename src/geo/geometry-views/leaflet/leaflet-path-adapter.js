@@ -1,3 +1,4 @@
+var _ = require('underscore');
 var PathAdapterBase = require('../base/path-adapter-base');
 
 var LeafletPathAdapter = function (nativePath) {
@@ -20,7 +21,17 @@ LeafletPathAdapter.prototype.isAddedToMap = function (leafletMap) {
 };
 
 LeafletPathAdapter.prototype.getCoordinates = function () {
-  return this._nativePath.getLatLngs();
+  // L.Polygon#getLatLngs returns an array of arrays and
+  // L.Path#getLatLngs returns an array of coordinates but we're
+  // working with an array of coordinates internally and that's why
+  // we're flattening latlngs
+  var latlngs = _.flatten(this._nativePath.getLatLngs());
+  return _.map(latlngs, function (latlng) {
+    return {
+      lat: latlng.lat,
+      lng: latlng.lng
+    };
+  });
 };
 
 LeafletPathAdapter.prototype.setCoordinates = function (coordinates) {

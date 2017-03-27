@@ -101,7 +101,7 @@ Run this task to be sure that everything is OK.
 
 In order to develop tests for the codebase outside Builder (that is, old Editor and dashboard pages) we advise to run
 ```bash
-grunt dev
+grunt && grunt dev
 ```
 After the building process finish, a webpage will show up with a link to the Jasmine page with all the specs. The URL of this page is `http://localhost:8089/_SpecRunner.html`
 

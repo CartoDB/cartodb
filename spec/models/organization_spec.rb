@@ -186,7 +186,7 @@ describe Organization do
       builder = create_validated_user(organization: organization, viewer: false, quota_in_bytes: 2)
       builder.organization.reload
 
-      builder.set_fields({quota_in_bytes: 1}, [:quota_in_bytes])
+      builder.set_fields({ quota_in_bytes: 1 }, [:quota_in_bytes])
       builder.save(raise_on_failure: true)
       builder.reload
 

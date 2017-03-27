@@ -1,5 +1,7 @@
 Development
 -----------
+### Security fixes
+* An attacker could execute commands in the server running the queues by importing a file with a carefully crafted filename. Fixed in #11782
 
 ### Features
 * New dropdown for Data Observatory (#11618)

@@ -24,6 +24,7 @@ module CartoGearsApi
 
         user.viewer = true
         raise CartoGearsApi::Errors::ValidationFailed.new(user.errors) unless user.save
+        user.update_in_central
       end
 
       # Converts an user to a builder, with full editing rights.
@@ -45,6 +46,7 @@ module CartoGearsApi
         user.soft_mapzen_routing_limit = user.organization.owner.soft_mapzen_routing_limit
 
         raise CartoGearsApi::Errors::ValidationFailed.new(user.errors) unless user.save
+        user.update_in_central
       end
 
       private

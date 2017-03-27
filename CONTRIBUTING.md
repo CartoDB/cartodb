@@ -143,7 +143,7 @@ If you want to run simultaneously the application and the specs generation follo
 
 3. In this second terminal run `grunt affected_specs`.
 
-4. You will in the first terminal that a lot of changes build the bundle again. That's normal. The first step of the point 3. is to copy all needed files, so the `watch` of `grunt dev` triggers. Don't worry about it.
+4. You will see in the first terminal that a lot of changes build the bundle again. That's normal. The first step of the point 3 is to copy all needed files, so the `watch` of `grunt dev` triggers. Don't worry about it.
 
 5. That's it. When you change any Builder Javascript file `grunt dev` will build the application bundle and `grunt affected_specs` will build the specs.
 

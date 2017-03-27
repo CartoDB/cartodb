@@ -15,6 +15,10 @@
 
   .RightContent {
     flex: 1 1 auto;
+
+    .IntermediateInfo {
+      min-height: 180px;
+    }
   }
 
   .ContentList {

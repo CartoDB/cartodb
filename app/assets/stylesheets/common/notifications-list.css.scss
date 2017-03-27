@@ -22,6 +22,9 @@ $opacityTransition: 250ms;
   background: #FFF;
   z-index: 10;
 }
+.field_with_errors + .Md-container {
+  bottom: 3px;
+}
 .Md-button,
 .Md-text {
   float: left;
@@ -121,6 +124,12 @@ $opacityTransition: 250ms;
   @include align-items(center);
   margin-bottom: 0;
 
+  p {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
   em {
     font-style: italic;
   }
@@ -132,6 +141,10 @@ $opacityTransition: 250ms;
 .NotificationsList-itemDescription {
   height: 16px;
   margin-top: 4px;
+
+  abbr {
+    border: 0;
+  }
 }
 .NotificationsList-itemLink {
   font-size: 12px;

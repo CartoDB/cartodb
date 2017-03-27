@@ -1157,7 +1157,7 @@
         "cartodb.js": {
           "version": "4.0.0-alpha.1",
           "from": "cartodb/cartodb.js#v4",
-          "resolved": "git://github.com/cartodb/cartodb.js.git#fb3be503e628d5f034f0d953a878363b01610a27",
+          "resolved": "git://github.com/cartodb/cartodb.js.git#7f0e22fc6d37713962b515994e0667da82182568",
           "dependencies": {
             "backbone-poller": {
               "version": "1.1.3",
@@ -1409,7 +1409,7 @@
             "torque.js": {
               "version": "2.16.3",
               "from": "cartodb/torque#master",
-              "resolved": "git://github.com/cartodb/torque.git#f9e6b4f2f901128eaacf8d33225137b3bbda16b5",
+              "resolved": "git://github.com/cartodb/torque.git#813b3b60dc3350c3328234d3d8ea29a39ccfe4a9",
               "dependencies": {
                 "carto": {
                   "version": "0.15.1-cdb3",
@@ -1561,7 +1561,7 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
       "from": "cartodb/cartodb.js#v4",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#fb3be503e628d5f034f0d953a878363b01610a27",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#7f0e22fc6d37713962b515994e0667da82182568",
       "dependencies": {
         "backbone-poller": {
           "version": "1.1.3",
@@ -1818,7 +1818,7 @@
         "torque.js": {
           "version": "2.16.3",
           "from": "cartodb/torque#master",
-          "resolved": "git://github.com/cartodb/torque.git#f9e6b4f2f901128eaacf8d33225137b3bbda16b5",
+          "resolved": "git://github.com/cartodb/torque.git#813b3b60dc3350c3328234d3d8ea29a39ccfe4a9",
           "dependencies": {
             "carto": {
               "version": "0.15.1-cdb3",
@@ -2175,7 +2175,7 @@
     "torque.js": {
       "version": "2.16.3",
       "from": "cartodb/torque#master",
-      "resolved": "git://github.com/cartodb/torque.git#f9e6b4f2f901128eaacf8d33225137b3bbda16b5",
+      "resolved": "git://github.com/cartodb/torque.git#813b3b60dc3350c3328234d3d8ea29a39ccfe4a9",
       "dependencies": {
         "carto": {
           "version": "0.15.1-cdb3",

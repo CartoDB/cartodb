@@ -142,7 +142,7 @@ $opacityTransition: 250ms;
   height: 16px;
   margin-top: 4px;
 
-  abbr {
+  abbr[title] {
     border: 0;
   }
 }

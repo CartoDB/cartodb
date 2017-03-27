@@ -74,6 +74,7 @@ Development
     * Fixed bug in validation of metrics before storing them. (#11784)
     * Removed deprecated methods `Geocoding.get_geocoding_calls`, `User.get_db_system_geocoding_calls`, `get_new_system_geocoding_calls`. (#11784)
     * Optimized access to redis storage (#11809)
+    * Add back FREE users to overquota calculation (#11848)
 * Update tangram-cartocss to use smooth point outline.
 
 ### Bug fixes

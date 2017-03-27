@@ -154,11 +154,21 @@ class User < Sequel::Model
   def organization_validation
     if new?
       organization.validate_for_signup(errors, self)
-      organization.validate_new_user(self, errors)
-    elsif quota_in_bytes.to_i + organization.assigned_quota - initial_value(:quota_in_bytes) > organization.quota_in_bytes
-      # Organization#assigned_quota includes the OLD quota for this user,
-      # so we have to ammend that in the calculation:
-      errors.add(:quota_in_bytes, "not enough disk quota")
+
+      if organization.whitelisted_email_domains.present?
+        email_domain = email.split('@')[1]
+        unless organization.whitelisted_email_domains.include?(email_domain) || invitation_token.present?
+          errors.add(:email, "Email domain '#{email_domain}' not valid for #{organization.name} organization")
+        end
+      end
+    else
+      if quota_in_bytes.to_i + organization.assigned_quota - initial_value(:quota_in_bytes) > organization.quota_in_bytes
+        # Organization#assigned_quota includes the OLD quota for this user,
+        # so we have to ammend that in the calculation:
+        errors.add(:quota_in_bytes, "not enough disk quota")
+      end
+
+      organization.validate_seats(self, errors)
     end
   end
 

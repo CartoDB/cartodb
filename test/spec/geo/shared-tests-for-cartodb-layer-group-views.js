@@ -189,12 +189,7 @@ module.exports = function (createLayerGroupView, expectTileURLTemplateToMatch, f
       });
 
       _.each([
-        'click',
-        'touchend',
-        'touchmove',
-        'mspointerup',
-        'pointerup',
-        'pointermove'
+        'click'
       ], function (eventName) {
         it('should trigger a "featureClick" event when wax fires a "' + eventName + '" event', function () {
           var callback = jasmine.createSpy('callback');

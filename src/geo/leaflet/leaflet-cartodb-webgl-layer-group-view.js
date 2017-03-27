@@ -21,7 +21,7 @@ LeafletCartoDBWebglLayerGroupView.prototype = _.extend(
   LeafletLayerView.prototype,
   {
     _createLeafletLayer: function () {
-      var leafletLayer = new L.Class();
+      var leafletLayer = new L.Layer();
       leafletLayer.onAdd = function () {};
       leafletLayer.onRemove = function () {};
       leafletLayer.setZIndex = function () {};

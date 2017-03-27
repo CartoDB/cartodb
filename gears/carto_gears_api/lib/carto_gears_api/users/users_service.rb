@@ -10,7 +10,7 @@ module CartoGearsApi
       # @param request [ActionDispatch::Request] CARTO request, as received in any controller.
       # @return [User] the user.
       def logged_user(request)
-        gears_user(request.env['warden'].user(CartoDB.extract_subdomain(request)))
+        CartoGearsApi::Users::User.from_model(request.env['warden'].user(CartoDB.extract_subdomain(request)))
       end
 
       # Converts an user to a viewer, without editing rights.
@@ -28,7 +28,7 @@ module CartoGearsApi
         raise CartoGearsApi::Errors::ValidationFailed.new(user.errors) unless user.save
         user.update_in_central
 
-        gears_user(user)
+        CartoGearsApi::Users::User.from_model(user)
       end
 
       # Converts an user to a builder, with full editing rights.
@@ -54,27 +54,10 @@ module CartoGearsApi
         raise CartoGearsApi::Errors::ValidationFailed.new(user.errors) unless user.save
         user.update_in_central
 
-        gears_user(user)
+        CartoGearsApi::Users::User.from_model(user)
       end
 
       private
-
-      def gears_user(user)
-        CartoGearsApi::Users::User.with(
-          id: user.id,
-          username: user.username,
-          email: user.email,
-          organization: user.organization ? gears_organization(user.organization) : nil,
-          feature_flags: user.feature_flags,
-          can_change_email: user.can_change_email?,
-          quota_in_bytes: user.quota_in_bytes,
-          viewer: user.viewer
-        )
-      end
-
-      def gears_organization(organization)
-        CartoGearsApi::Organizations::Organization.with(name: organization.name)
-      end
 
       def find_user(user_id)
         user = ::User.find(id: user_id)

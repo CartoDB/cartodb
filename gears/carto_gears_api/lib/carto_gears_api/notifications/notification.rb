@@ -11,6 +11,18 @@ module CartoGearsApi
     # @attr_reader [String] recipients +builders+, +viewers+, +all+ if this is an org-notification, nil otherwise
     # @attr_reader [DateTime] created_at date this notification was created at
     class Notification < Value.new(:id, :icon, :body, :organization, :recipients, :created_at)
+
+      # @api private
+      def self.from_model(notification)
+        CartoGearsApi::Notifications::Notification.with(
+          id: notification.id,
+          body: notification.body,
+          icon: notification.icon,
+          organization: notification.organization,
+          recipients: notification.recipients,
+          created_at: notification.created_at
+        )
+      end
     end
   end
 end

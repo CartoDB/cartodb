@@ -12,7 +12,7 @@ module CartoGearsApi
       # @return [Notification] the created notification
       # @raise ValidationFailed if there were some invalid parameters
       def create_notification(body:, icon: Carto::Notification::ICON_SUCCESS)
-        gears_notification(Carto::Notification.create!(body: body, icon: icon))
+        CartoGearsApi::Notifications::Notification.from_model(Carto::Notification.create!(body: body, icon: icon))
       rescue ActiveRecord::RecordInvalid => e
         raise Errors::ValidationFailed.new(e.record.errors.messages)
       end
@@ -30,19 +30,6 @@ module CartoGearsApi
 
         user.received_notifications.create!(notification: notification, received_at: DateTime.now)
         nil
-      end
-
-      private
-
-      def gears_notification(notification)
-        Notification.with(
-          id: notification.id,
-          body: notification.body,
-          icon: notification.icon,
-          organization: notification.organization,
-          recipients: notification.recipients,
-          created_at: notification.created_at
-        )
       end
     end
   end

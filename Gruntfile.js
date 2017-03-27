@@ -349,7 +349,7 @@ module.exports = function(grunt) {
     grunt.registerTask('dev', 'Typical task for frontend development (watch JS/CSS changes)', [
       'setConfig:env.browserify_watch:true',
       'run_browserify',
-      'connect',
+      'connect:server',
       'run_watch:builder_specs=false']);
 
     grunt.registerTask('sourcemaps',
@@ -426,7 +426,7 @@ module.exports = function(grunt) {
       'bootstrap_webpack_builder_specs',
       'webpack:builder_specs',
       'jasmine:affected:build',
-      'connect',
+      'connect:specs',
       'watch:js_affected'
     ]);
 

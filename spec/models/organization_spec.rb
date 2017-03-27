@@ -175,6 +175,26 @@ describe Organization do
       organization.destroy_cascade
     end
 
+    it 'allows saving user if organization has no seats left' do
+      organization = FactoryGirl.create(:organization, seats: 2, viewer_seats: 0, quota_in_bytes: 10)
+
+      user = create_validated_user(quota_in_bytes: 1)
+      CartoDB::UserOrganization.new(organization.id, user.id).promote_user_to_admin
+      organization.reload
+      user.reload
+
+      builder = create_validated_user(organization: organization, viewer: false, quota_in_bytes: 2)
+      builder.organization.reload
+
+      builder.set_fields({quota_in_bytes: 1}, [:quota_in_bytes])
+      builder.save(raise_on_failure: true)
+      builder.reload
+
+      builder.quota_in_bytes.should eq 1
+
+      organization.destroy_cascade
+    end
+
     it 'Tests setting a user as the organization owner' do
       org_name = unique_name('org')
       organization = Organization.new(quota_in_bytes: 1234567890, name: org_name, seats: 5).save

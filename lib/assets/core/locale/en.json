@@ -1575,7 +1575,19 @@
         "country": "Country",
         "create-btn": "Apply",
         "data-observatory": {
-          "regions": {
+          "header": {
+            "title": "Enrich from Data Observatory",
+            "description": "Define your input layer"
+          },
+          "parameters": {
+            "title": "Select measurements",
+            "description": "Pick as many as you want"
+          },
+          "source": {
+            "label": "Base layer"
+          },
+          "region": {
+            "label": "Region",
             "error": "Error getting regions."
           },
           "measurements": {
@@ -1586,16 +1598,13 @@
             "label": "Normalize"
           },
           "timespan": {
-            "label": "Timespan"
+            "label": "Timespan",
+            "placeholder": "Select a timespan"
+          },
+          "boundaries": {
+            "label": "Boundaries"
           }
         },
-        "data-observatory-measurement-area": "Country",
-        "data-observatory-measurement-column": "New col. name",
-        "data-observatory-measurement-column-help": "Adds a new column to your layer to store result",
-        "data-observatory-measurement-desc": "enrich your data",
-        "data-observatory-measurement-measurement": "Measurement",
-        "data-observatory-measurement-refine": "Choose a measure",
-        "data-observatory-measurement-segments": "Segments",
         "define-columns": "Define column to find similarities with",
         "define-reference-and-target": "Define reference and target layers",
         "define-two-layers": "Define two layers",

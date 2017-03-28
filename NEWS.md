@@ -1,5 +1,7 @@
 Development
 -----------
+### Security fixes
+* An attacker could execute commands in the server running the queues by importing a file with a carefully crafted filename. Fixed in #11782
 
 ### Features
 * New dropdown for Data Observatory (#11618)
@@ -57,6 +59,7 @@ Development
   * Sets the default initial size for icons to 20px (#11498)
 * Onboarding for layer edition (#10905)
 * Initial support for Rails engines with CARTO Gears.
+  * Notification API (#11850)
 * Improved empty bounds map handling (#11711).
 * Updated diagnosis page versions.
 * Improved formula widget description field. (#11469)
@@ -68,11 +71,14 @@ Development
 * Update tangram with smooth point outline.
 * GME users can change to any basemap #11785.
 * Improve affordance of layer item (#11359)
-* Revamp of quota management code (#11784)
-    * **Removed the usage of the feature flag `new_geocoder_quota`**. The behavior is as if it was activated for all users (which's been the case for all cloud users for a long while).
-    * Fixed bug in validation of metrics before storing them.
-    * Removed deprecated methods `Geocoding.get_geocoding_calls`, `User.get_db_system_geocoding_calls`, `get_new_system_geocoding_calls`.
+* Revamp of quota management code
+    * **Removed the usage of the feature flag `new_geocoder_quota`**. The behavior is as if it was activated for all users (which's been the case for all cloud users for a long while). (#11784)
+    * Fixed bug in validation of metrics before storing them. (#11784)
+    * Removed deprecated methods `Geocoding.get_geocoding_calls`, `User.get_db_system_geocoding_calls`, `get_new_system_geocoding_calls`. (#11784)
+    * Optimized access to redis storage (#11809)
+    * Add back FREE users to overquota calculation (#11848)
 * Update tangram-cartocss to use smooth point outline.
+* Update cartodb.js to use multiple subdomains.
 
 ### Bug fixes
 * Fixed layers order when creating a new layer dragging from a compound analysis (#11827)
@@ -108,6 +114,7 @@ Development
 * Do not trigger visualization hooks on state update (#11701)
 * Refactor Layer model (#10934)
 * Correctly register table dependencies of torque layers (#11549)
+* Validate number of organization seats in user update (#11839, #11859)
 * Fix bugs where legends where being hidden by reordering layers (#11088)
 * Correctly ask for alternative username when signing up with Google/GitHub into an organization
 * Avoid loading all rake code in resque workers (#11069)
@@ -151,6 +158,7 @@ Development
 * Fix problem creating analyses without Data Services API (#11745)
 * Fix problem when number column is used like categories in fill component (#11736)
 * Don't let user to apply icons over categories when auto-style is applied (#11761)
+* Update leaflet from 0.7.x to 1.0.x
 
 4.0.x (2016-12-05)
 ------------------

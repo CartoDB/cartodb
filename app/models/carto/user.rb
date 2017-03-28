@@ -8,6 +8,7 @@ require_relative '../../helpers/data_services_metrics_helper'
 require_dependency 'carto/helpers/auth_token_generator'
 require_dependency 'carto/helpers/has_connector_configuration'
 require_dependency 'carto/helpers/batch_queries_statement_timeout'
+require_dependency 'carto/helpers/billing_cycle'
 
 # TODO: This probably has to be moved as the service of the proper User Model
 class Carto::User < ActiveRecord::Base
@@ -16,6 +17,7 @@ class Carto::User < ActiveRecord::Base
   include Carto::AuthTokenGenerator
   include Carto::HasConnectorConfiguration
   include Carto::BatchQueriesStatementTimeout
+  include Carto::BillingCycle
 
   MIN_PASSWORD_LENGTH = 6
   MAX_PASSWORD_LENGTH = 64
@@ -307,17 +309,6 @@ class Carto::User < ActiveRecord::Base
     synchronization_oauth.save
     synchronization_oauths.append(synchronization_oauth)
     synchronization_oauth
-  end
-
-  def last_billing_cycle
-    day = period_end_date.day rescue 29.days.ago.day
-    date = (day > Date.today.day ? (Date.today - 1.month) : Date.today)
-    begin
-      Date.parse("#{date.year}-#{date.month}-#{day}")
-    rescue ArgumentError
-      day = day - 1
-      retry
-    end
   end
 
   def get_geocoding_calls(options = {})

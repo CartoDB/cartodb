@@ -38,7 +38,7 @@ module Carto
     #
     def overquota(delta)
       overquota_users = []
-      ::User.where(enabled: true, organization_id: nil).exclude(account_type: 'FREE').use_cursor.each do |u|
+      ::User.where(enabled: true, organization_id: nil).use_cursor.each do |u|
         overquota_users << u if services_overquota(u, delta)
       end
       overquota_users

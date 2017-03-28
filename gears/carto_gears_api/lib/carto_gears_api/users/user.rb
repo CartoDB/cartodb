@@ -1,5 +1,6 @@
 require 'values'
 require 'active_record'
+require_dependency 'carto_gears_api/organizations/organization'
 
 module CartoGearsApi
   module Users
@@ -8,8 +9,11 @@ module CartoGearsApi
     # @attr_reader [String] id User id
     # @attr_reader [String] username User name
     # @attr_reader [String] email Email
+    # @attr_reader [Integer] quota_in_bytes Disk quota in bytes
+    # @attr_reader [Boolean] viewer The user is a viewer (cannot create maps, datasets, etc.)
     # @attr_reader [CartoGearsApi::Organizations::Organization] organization Organization
-    class User < Value.new(:id, :username, :email, :organization, :feature_flags, :can_change_email)
+    class User < Value.new(:id, :username, :email, :organization, :feature_flags, :can_change_email, :quota_in_bytes,
+                           :viewer)
       extend ActiveModel::Naming
       include ActiveRecord::AttributeMethods::PrimaryKey
 
@@ -35,6 +39,20 @@ module CartoGearsApi
 
       def can_change_email?
         @can_change_email
+      end
+
+      # @api private
+      def self.from_model(user)
+        CartoGearsApi::Users::User.with(
+          id: user.id,
+          username: user.username,
+          email: user.email,
+          organization: user.organization && CartoGearsApi::Organizations::Organization.from_model(user.organization),
+          feature_flags: user.feature_flags,
+          can_change_email: user.can_change_email?,
+          quota_in_bytes: user.quota_in_bytes,
+          viewer: user.viewer
+        )
       end
     end
   end

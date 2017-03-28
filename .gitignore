@@ -35,7 +35,6 @@ coverage
 .spin.rb
 .sass-cache
 public/js/lib/cdb.js
-*billing*
 services/importer/spec/factories/database.json
 .ruby-version
 cartodb.sublime-workspace

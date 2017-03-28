@@ -16,12 +16,15 @@ module Carto
 
     describe '#validation' do
       it 'passes for valid notification' do
-        n = Notification.new(icon: 'ok', body: 'Hello, friend!')
+        n = Notification.new(icon: Notification::ICON_SUCCESS, body: 'Hello, friend!')
         expect(n).to be_valid
       end
 
       it 'passes for valid organization notification' do
-        n = Notification.new(icon: 'ok', body: 'Hello, friend!', organization: @organization, recipients: 'builders')
+        n = Notification.new(icon: Notification::ICON_SUCCESS,
+                             body: 'Hello, friend!',
+                             organization: @organization,
+                             recipients: 'builders')
         expect(n).to be_valid
       end
 
@@ -95,20 +98,25 @@ module Carto
 
     it 'should be deleted when the organization is destroyed' do
       org = FactoryGirl.create(:organization)
-      n = Notification.create!(organization_id: org.id, icon: 'ok', recipients: 'all', body: 'Hey!')
+      n = Notification.create!(organization_id: org.id,
+                               icon: Notification::ICON_SUCCESS,
+                               recipients: 'all',
+                               body: 'Hey!')
       org.destroy
       expect(Notification.exists?(n.id)).to be_false
     end
 
     describe '#after_create' do
       it 'for non-org notifications should not send the notification to users' do
-        n = Notification.create(icon: 'ok', body: 'Hello, friend!')
+        n = Notification.create(icon: Notification::ICON_SUCCESS, body: 'Hello, friend!')
         expect(n.received_notifications).to be_empty
       end
 
       describe 'for org notifications' do
         before(:each) do
-          @notification = Notification.new(icon: 'ok', body: 'Hello, friend!', organization: @organization)
+          @notification = Notification.new(icon: Notification::ICON_SUCCESS,
+                                           body: 'Hello, friend!',
+                                           organization: @organization)
         end
 
         after(:each) do

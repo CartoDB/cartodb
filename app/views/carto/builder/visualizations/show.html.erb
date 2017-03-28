@@ -3,6 +3,7 @@
 </div>
 
 <%= insert_trackjs('builder') %>
+
 <script>
   var frontendConfig = <%= safe_js_object frontend_config %>;
   var visualizationData = <%= safe_js_object @visualization_data.to_json %>;

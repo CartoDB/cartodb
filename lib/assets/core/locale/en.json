@@ -1578,6 +1578,9 @@
         "country": "Country",
         "create-btn": "Apply",
         "data-observatory": {
+          "list": {
+            "add": "Add new measurement"
+          },
           "header": {
             "title": "Enrich from Data Observatory",
             "description": "Define your input layer"

@@ -47,17 +47,33 @@ var CartoDBLayerGroup = Backbone.Model.extend({
     return !!this.get('urls');
   },
 
-  getTileURLTemplates: function (type) {
+  getSubdomains: function () {
+    return (this.get('urls') && this.get('urls').subdomains) || ['0'];
+  },
+
+  getTileURLTemplatesWithSubdomains: function () {
+    var urls = this.get('urls');
+    var urlTemplate = this.getTileURLTemplate();
+
+    return _.map(urls.subdomains, function (subdomain) {
+      return urlTemplate.replace('{s}', subdomain);
+    });
+  },
+
+  getTileURLTemplate: function (type) {
     type = type || 'png';
 
-    var tileURLTemplates = (this.get('urls') && this.get('urls').tiles) || [];
+    var tileURLTemplate = (this.get('urls') && this.get('urls').tiles);
+
+    if (!tileURLTemplate) return '';
+
     if (type === 'png') {
       if (this._areAllLayersHidden()) {
-        return [];
+        return '';
       }
-      return _.map(tileURLTemplates, this._generatePNGTileURLTemplate.bind(this));
+      return this._generatePNGTileURLTemplate(tileURLTemplate);
     } else if (type === 'mvt') {
-      return this._generateMTVTileURLTemplate(tileURLTemplates[0]);
+      return this._generateMTVTileURLTemplate(tileURLTemplate);
     }
   },
 
@@ -101,11 +117,19 @@ var CartoDBLayerGroup = Backbone.Model.extend({
   },
 
   hasTileURLTemplates: function () {
-    return this.getTileURLTemplates().length > 0;
+    return !!this.getTileURLTemplate();
   },
 
-  getGridURLTemplates: function (layerIndex) {
+  getGridURLTemplatesWithSubdomains: function (layerIndex) {
     var gridURLTemplates = (this.get('urls') && this.get('urls').grids && this.get('urls').grids[layerIndex]) || [];
+
+    if (this.get('urls') && this.get('urls').subdomains) {
+      var subdomains = this.get('urls').subdomains;
+      gridURLTemplates = _.map(gridURLTemplates, function (url, i) {
+        return url.replace('{s}', subdomains[i]);
+      });
+    }
+
     return _.map(gridURLTemplates, this._appendAuthParamsToURL, this);
   },
 

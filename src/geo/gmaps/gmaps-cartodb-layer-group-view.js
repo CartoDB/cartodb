@@ -235,11 +235,12 @@ _.extend(
     _reload: function () {
       var tileURLTemplates;
       if (this.model.hasTileURLTemplates()) {
-        tileURLTemplates = this.model.getTileURLTemplates();
+        tileURLTemplates = [ this.model.getTileURLTemplatesWithSubdomains()[0] ];
       } else {
         tileURLTemplates = [ EMPTY_GIF ];
       }
 
+      // wax uses this
       this.options.tiles = tileURLTemplates;
       this.tiles = 0;
       this.cache = {};

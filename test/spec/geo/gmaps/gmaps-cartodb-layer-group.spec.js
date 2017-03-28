@@ -5,10 +5,6 @@ var FakeWax = require('../fake-wax');
 
 GmapsCartoDBLayerGroupView.prototype.interactionClass = FakeWax;
 
-var removeSubdomainFromTileURL = function (tileURL) {
-  return tileURL.replace(/\/[01234]\./, '0.');
-};
-
 var createLayerGroupView = function (layerGroupModel, container) {
   var gmapsMap = new google.maps.Map(container, {
     center: new google.maps.LatLng(0, 0),
@@ -26,12 +22,11 @@ var createLayerGroupView = function (layerGroupModel, container) {
 };
 
 var expectTileURLTemplateToMatch = function (layerGroupView, expectedTileURLTemplate) {
-  var x = 0;
-  var y = 7;
-  var z = 3;
-  var expectedTileURL = expectedTileURLTemplate.replace('{x}', x).replace('{y}', y).replace('{z}', z);
-  var actualTileURL = layerGroupView.getTile({ x: x, y: y }, z).src;
-  expect(removeSubdomainFromTileURL(actualTileURL)).toEqual(removeSubdomainFromTileURL(expectedTileURL));
+  expect(removeSubdomainFromTileURL(expectedTileURLTemplate)).toEqual(layerGroupView.options.tiles[0]);
+};
+
+var removeSubdomainFromTileURL = function (tileURL) {
+  return tileURL.replace('{s}', '0');
 };
 
 var fireNativeEvent = function (layerGroupView, eventName) {

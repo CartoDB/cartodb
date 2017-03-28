@@ -27,12 +27,8 @@ module.exports = function (createLayerGroupView, expectTileURLTemplateToMatch, f
       ]);
       this.layerGroupModel = new CartoDBLayerGroup({
         urls: {
-          'tiles': [
-            'http://0.ashbu.cartocdn.com/documentation/api/v1/map/0123456789/{layerIndexes}/{z}/{x}/{y}.png',
-            'http://1.ashbu.cartocdn.com/documentation/api/v1/map/0123456789/{layerIndexes}/{z}/{x}/{y}.png',
-            'http://2.ashbu.cartocdn.com/documentation/api/v1/map/0123456789/{layerIndexes}/{z}/{x}/{y}.png',
-            'http://3.ashbu.cartocdn.com/documentation/api/v1/map/0123456789/{layerIndexes}/{z}/{x}/{y}.png'
-          ],
+          'subdomains': [0, 1, 2, 3],
+          'tiles': 'http://{s}.ashbu.cartocdn.com/documentation/api/v1/map/0123456789/{layerIndexes}/{z}/{x}/{y}.png',
           'grids': [
             [
               'http://0.ashbu.cartocdn.com/documentation/api/v1/map/0123456789/0/{z}/{x}/{y}.grid.json',
@@ -66,7 +62,7 @@ module.exports = function (createLayerGroupView, expectTileURLTemplateToMatch, f
     });
 
     it('should fetch tiles', function () {
-      expectTileURLTemplateToMatch(this.layerGroupView, 'http://0.ashbu.cartocdn.com/documentation/api/v1/map/0123456789/1,2/{z}/{x}/{y}.png');
+      expectTileURLTemplateToMatch(this.layerGroupView, 'http://{s}.ashbu.cartocdn.com/documentation/api/v1/map/0123456789/1,2/{z}/{x}/{y}.png');
     });
 
     it('should enable interaction', function () {
@@ -116,7 +112,7 @@ module.exports = function (createLayerGroupView, expectTileURLTemplateToMatch, f
       });
 
       it('should fetch tiles', function () {
-        expectTileURLTemplateToMatch(this.layerGroupView, 'http://0.ashbu.cartocdn.com/documentation/api/v1/map/0123456789/1/{z}/{x}/{y}.png');
+        expectTileURLTemplateToMatch(this.layerGroupView, 'http://{s}.ashbu.cartocdn.com/documentation/api/v1/map/0123456789/1/{z}/{x}/{y}.png');
       });
 
       it('should reload interaction', function () {
@@ -268,12 +264,8 @@ module.exports = function (createLayerGroupView, expectTileURLTemplateToMatch, f
         fakeWax.tilejson.calls.reset();
 
         this.layerGroupModel.set('urls', {
-          'tiles': [
-            'http://0.ashbu.cartocdn.com/documentation/api/v1/map/9876543210/{layerIndexes}/{z}/{x}/{y}.png',
-            'http://1.ashbu.cartocdn.com/documentation/api/v1/map/9876543210/{layerIndexes}/{z}/{x}/{y}.png',
-            'http://2.ashbu.cartocdn.com/documentation/api/v1/map/9876543210/{layerIndexes}/{z}/{x}/{y}.png',
-            'http://3.ashbu.cartocdn.com/documentation/api/v1/map/9876543210/{layerIndexes}/{z}/{x}/{y}.png'
-          ],
+          'subdomains': [0, 1, 2, 3],
+          'tiles': 'http://{s}.ashbu.cartocdn.com/documentation/api/v1/map/9876543210/{layerIndexes}/{z}/{x}/{y}.png',
           'grids': [
             [
               'http://0.ashbu.cartocdn.com/documentation/api/v1/map/9876543210/0/{z}/{x}/{y}.grid.json',
@@ -296,7 +288,7 @@ module.exports = function (createLayerGroupView, expectTileURLTemplateToMatch, f
       });
 
       it('should set the URL template', function () {
-        expectTileURLTemplateToMatch(this.layerGroupView, 'http://0.ashbu.cartocdn.com/documentation/api/v1/map/9876543210/1,2/{z}/{x}/{y}.png');
+        expectTileURLTemplateToMatch(this.layerGroupView, 'http://{s}.ashbu.cartocdn.com/documentation/api/v1/map/9876543210/1,2/{z}/{x}/{y}.png');
       });
 
       it('should reload interaction', function () {
@@ -344,7 +336,7 @@ module.exports = function (createLayerGroupView, expectTileURLTemplateToMatch, f
         fakeWax.tilejson.calls.reset();
 
         this.layerGroupModel.set('urls', {
-          'tiles': [],
+          'tiles': '',
           'grids': [
           ],
           'attributes': [

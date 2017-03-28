@@ -14,8 +14,6 @@ module CartoGearsApi
     class Notification < Value.new(:id, :icon, :body, :organization, :recipients, :created_at)
       ICON_WARNING = Carto::Notification::ICON_WARNING
       ICON_SUCCESS = Carto::Notification::ICON_SUCCESS
-      # List of possible icons
-      ICONS = Carto::Notification::ICONS
 
       # @api private
       def self.from_model(notification)

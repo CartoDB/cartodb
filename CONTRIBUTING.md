@@ -99,10 +99,10 @@ We use [Grunt](http://gruntjs.com/) to automate build tasks related to both CSS 
 
 We use v0.10.x of [node](http://nodejs.org/) (we recommend to use [NVM](https://github.com/creationix/nvm)).
 
-Install dependencies using a normal npm install as such:
+Install dependencies using a [Yarn](https://yarnpkg.com/lang/en/docs/install/) as such:
 ```bash
-npm install
-npm install -g grunt-cli
+yarn
+
 ```
 
 Run `grunt availabletasks` to see available tasks.

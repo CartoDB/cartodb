@@ -4,12 +4,12 @@ node_js:
 
 before_install:
   - git submodule update --init --recursive
+  - curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version 0.18.1
 
 install:
   - yarn
 
 before_script:
-  - curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version 0.18.1
   - npm install -g grunt-cli
 
 script:

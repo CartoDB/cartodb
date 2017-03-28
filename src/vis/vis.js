@@ -20,14 +20,6 @@ var STATE_INIT = 'init'; // vis hasn't been sent to Windshaft
 var STATE_OK = 'ok'; // vis has been sent to Windshaft and everything is ok
 var STATE_ERROR = 'error'; // vis has been sent to Windshaft and there were some issues
 
-var isCartoDBLayer = function (layerModel) {
-  return layerModel.get('type') === 'CartoDB';
-};
-
-var isTorqueLayer = function (layerModel) {
-  return layerModel.get('type') === 'torque';
-};
-
 var VisModel = Backbone.Model.extend({
   defaults: {
     loading: false,
@@ -44,7 +36,39 @@ var VisModel = Backbone.Model.extend({
 
     this.overlaysCollection = new Backbone.Collection();
     this.settings = new SettingsModel();
+
+    this.layerGroupModel = new CartoDBLayerGroup({
+      apiKey: this.get('apiKey'),
+      authToken: this.get('authToken')
+    }, {
+      layersCollection: this._layersCollection
+    });
+
     this._instantiateMapWasCalled = false;
+  },
+
+  getStaticImageURL: function (options) {
+    options = _.defaults({}, options, {
+      zoom: 4,
+      lat: 0,
+      lng: 0,
+      width: 300,
+      height: 300,
+      format: 'png'
+    });
+
+    var url;
+    var urlTemplate = this.layerGroupModel.getStaticImageURLTemplate();
+    if (urlTemplate) {
+      url = urlTemplate
+        .replace('{z}', options.zoom)
+        .replace('{lat}', options.lat)
+        .replace('{lng}', options.lng)
+        .replace('{width}', options.width)
+        .replace('{height}', options.height)
+        .replace('{format}', options.format);
+    }
+    return url;
   },
 
   done: function (callback) {
@@ -117,16 +141,9 @@ var VisModel = Backbone.Model.extend({
 
     var windshaftClient = new WindshaftClient(windshaftSettings);
 
-    var layerGroupModel = this.layerGroupModel = new CartoDBLayerGroup({
-      apiKey: this.get('apiKey'),
-      authToken: this.get('authToken')
-    }, {
-      layersCollection: this._layersCollection
-    });
-
     var modelUpdater = new ModelUpdater({
       visModel: this,
-      layerGroupModel: layerGroupModel,
+      layerGroupModel: this.layerGroupModel,
       dataviewsCollection: this._dataviewsCollection,
       layersCollection: this._layersCollection,
       analysisCollection: this._analysisCollection
@@ -363,19 +380,15 @@ var VisModel = Backbone.Model.extend({
   },
 
   _onLayerAdded: function (layerModel) {
-    if (isCartoDBLayer(layerModel) || isTorqueLayer(layerModel)) {
-      this.reload({
-        sourceId: layerModel.get('id')
-      });
-    }
+    this.reload({
+      sourceId: layerModel.get('id')
+    });
   },
 
   _onLayerRemoved: function (layerModel) {
-    if (isCartoDBLayer(layerModel) || isTorqueLayer(layerModel)) {
-      this.reload({
-        sourceId: layerModel.get('id')
-      });
-    }
+    this.reload({
+      sourceId: layerModel.get('id')
+    });
   },
 
   _onDataviewAdded: function () {

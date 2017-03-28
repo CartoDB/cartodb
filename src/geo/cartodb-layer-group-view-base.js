@@ -16,8 +16,8 @@ CartoDBLayerGroupViewBase.prototype = {
   _reloadInteraction: function () {
     this._clearInteraction();
 
-    this.model.each(function (layer, layerIndex) {
-      if (layer.isVisible()) {
+    this.model.forEachGroupedLayer(function (layerModel, layerIndex) {
+      if (layerModel.isVisible()) {
         this._enableInteraction(layerIndex);
       }
     }, this);

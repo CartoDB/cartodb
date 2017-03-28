@@ -5,14 +5,14 @@ var InfowindowTemplate = require('./infowindow-template');
 var TooltipTemplate = require('./tooltip-template');
 var Legends = require('./legends/legends');
 
+var ATTRIBUTES_THAT_TRIGGER_VIS_RELOAD = ['sql', 'source', 'sql_wrap', 'cartocss'];
+
 var CartoDBLayer = LayerModelBase.extend({
   defaults: {
     type: 'CartoDB',
     attribution: config.get('cartodb_attributions'),
     visible: true
   },
-
-  ATTRIBUTES_THAT_TRIGGER_VIS_RELOAD: ['sql', 'source', 'sql_wrap', 'cartocss'],
 
   initialize: function (attrs, options) {
     attrs = attrs || {};
@@ -42,7 +42,7 @@ var CartoDBLayer = LayerModelBase.extend({
   },
 
   _onAttributeChanged: function () {
-    var reloadVis = _.any(this.ATTRIBUTES_THAT_TRIGGER_VIS_RELOAD, function (attr) {
+    var reloadVis = _.any(ATTRIBUTES_THAT_TRIGGER_VIS_RELOAD, function (attr) {
       if (this.hasChanged(attr)) {
         if (attr === 'cartocss' && this._dataProvider) {
           return false;

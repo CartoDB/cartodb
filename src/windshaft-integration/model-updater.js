@@ -50,13 +50,30 @@ ModelUpdater.prototype._updateLayerGroupModel = function (windshaftMap) {
     tiles: this._generateTileURLTemplate(windshaftMap),
     subdomains: this._getTileSubdomains(windshaftMap),
     grids: this._calculateGridURLTemplatesForCartoDBLayers(windshaftMap),
-    attributes: this._calculateAttributesBaseURLsForCartoDBLayers(windshaftMap)
+    attributes: this._calculateAttributesBaseURLsForCartoDBLayers(windshaftMap),
+    image: this._calculateStaticMapURL(windshaftMap)
   };
 
   this._layerGroupModel.set({
     indexOfLayersInWindshaft: windshaftMap.getLayerIndexesByType('mapnik'),
     urls: urls
   });
+};
+
+ModelUpdater.prototype._calculateStaticMapURL = function (windshaftMap) {
+  return [
+    windshaftMap.getStaticBaseURL(),
+    '{z}/{lat}/{lng}/{width}/{height}.{format}'
+  ].join('/');
+};
+
+ModelUpdater.prototype._calculateTileURLTemplatesForCartoDBLayers = function (windshaftMap) {
+  var urlTemplates = [];
+  _.each(windshaftMap.getSupportedSubdomains(), function (subdomain) {
+    urlTemplates.push(this._generateTileURLTemplate(windshaftMap, subdomain));
+  }, this);
+
+  return urlTemplates;
 };
 
 ModelUpdater.prototype._generateTileURLTemplate = function (windshaftMap) {

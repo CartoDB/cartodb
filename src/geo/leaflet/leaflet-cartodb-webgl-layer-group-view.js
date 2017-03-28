@@ -12,7 +12,7 @@ var LeafletCartoDBWebglLayerGroupView = function (layerGroupModel, leafletMap) {
 
   this.tangram = new TC(leafletMap);
 
-  layerGroupModel.each(this._onLayerAdded, this);
+  layerGroupModel.forEachGroupedLayer(this._onLayerAdded, this);
   layerGroupModel.onLayerAdded(this._onLayerAdded.bind(this));
 };
 

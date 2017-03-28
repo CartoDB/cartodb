@@ -116,7 +116,7 @@ _.extend(
     },
 
     featureOver: function (e, latlon, pixelPos, data, layer) {
-      var layerModel = this.model.getLayerAt(layer);
+      var layerModel = this.model.getLayerInLayerGroupAt(layer);
       if (layerModel) {
         this.trigger('featureOver', {
           layer: layerModel,
@@ -129,7 +129,7 @@ _.extend(
     },
 
     featureOut: function (e, layer) {
-      var layerModel = this.model.getLayerAt(layer);
+      var layerModel = this.model.getLayerInLayerGroupAt(layer);
       if (layerModel) {
         this.trigger('featureOut', {
           layer: layerModel,
@@ -139,7 +139,7 @@ _.extend(
     },
 
     featureClick: function (e, latlon, pixelPos, data, layer) {
-      var layerModel = this.model.getLayerAt(layer);
+      var layerModel = this.model.getLayerInLayerGroupAt(layer);
       if (layerModel) {
         this.trigger('featureClick', {
           layer: layerModel,

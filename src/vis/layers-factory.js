@@ -43,15 +43,15 @@ var LAYER_CONSTRUCTORS = {
   tiled: function (data, options) {
     var visModel = options.vis;
 
-    var url = data.urlTemplate;
     if (visModel.get('https') === true) {
-      url = transformToHTTPS(url);
+      data.urlTemplate = transformToHTTPS(data.urlTemplate);
     } else if (visModel.get('https') === false) { // Checking for an explicit false value. If it's undefined the url is left as is.
-      url = transformToHTTP(url);
+      data.urlTemplate = transformToHTTP(data.urlTemplate);
     }
 
-    data.urlTemplate = url;
-    return new TileLayer(data);
+    return new TileLayer(data, {
+      vis: options.vis
+    });
   },
 
   wms: function (data, options) {
@@ -63,11 +63,15 @@ var LAYER_CONSTRUCTORS = {
   },
 
   plain: function (data, options) {
-    return new PlainLayer(data);
+    return new PlainLayer(data, {
+      vis: options.vis
+    });
   },
 
   background: function (data, options) {
-    return new PlainLayer(data);
+    return new PlainLayer(data, {
+      vis: options.vis
+    });
   },
 
   cartodb: function (data, options) {

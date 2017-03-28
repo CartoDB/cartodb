@@ -162,13 +162,13 @@ describe('core/geo/map', function () {
     expect(map.get('maxZoom')).toEqual(map.defaults.maxZoom);
     expect(map.get('minZoom')).toEqual(map.defaults.minZoom);
 
-    var layer = new PlainLayer({ minZoom: 5, maxZoom: 25 });
+    var layer = new PlainLayer({ minZoom: 5, maxZoom: 25 }, { vis: {} });
     map.layers.reset(layer);
 
     expect(map.get('maxZoom')).toEqual(25);
     expect(map.get('minZoom')).toEqual(5);
 
-    layer = new PlainLayer({ minZoom: '7', maxZoom: '31' });
+    layer = new PlainLayer({ minZoom: '7', maxZoom: '31' }, { vis: {} });
     map.layers.reset(layer);
 
     expect(map.get('maxZoom')).toEqual(31);
@@ -176,7 +176,7 @@ describe('core/geo/map', function () {
   });
 
   it("shouldn't set a NaN zoom", function () {
-    var layer = new PlainLayer({ minZoom: NaN, maxZoom: NaN });
+    var layer = new PlainLayer({ minZoom: NaN, maxZoom: NaN }, { vis: {} });
     map.layers.reset(layer);
 
     expect(map.get('maxZoom')).toEqual(map.defaults.maxZoom);
@@ -251,7 +251,7 @@ describe('core/geo/map', function () {
   describe('Layer action methods', function () {
     beforeEach(function () {
       this.map.layers.add(new CartoDBLayer({}, { vis: this.vis }));
-      this.map.layers.add(new PlainLayer({}));
+      this.map.layers.add(new PlainLayer(null, { vis: {} }));
     });
 
     describe('.moveCartoDBLayer', function () {

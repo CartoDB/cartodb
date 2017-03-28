@@ -1,12 +1,94 @@
 var _ = require('underscore');
 var MapBase = require('./map-base');
+var LayerTypes = require('../geo/map/layer-types.js');
 
 var DEFAULT_CARTOCSS_VERSION = '2.1.0';
 
-var LAYER_TYPES = [
-  'CartoDB',
-  'torque'
-];
+var HTTP_LAYER_TYPE = 'http';
+var PLAIN_LAYER_TYPE = 'plain';
+var MAPNIK_LAYER_TYPE = 'mapnik';
+var TORQUE_LAYER_TYPE = 'torque';
+
+var optionsForHTTPLayer = function (layerModel) {
+  return {
+    id: layerModel.get('id'),
+    type: HTTP_LAYER_TYPE,
+    options: {
+      urlTemplate: layerModel.get('urlTemplate'),
+      subdomains: layerModel.get('subdomains'),
+      tms: layerModel.get('tms')
+    }
+  };
+};
+
+var optionsForWMSLayer = function (layerModel) {
+  return {
+    id: layerModel.get('id'),
+    type: HTTP_LAYER_TYPE,
+    options: {
+      urlTemplate: layerModel.get('urlTemplate'),
+      tms: true
+    }
+  };
+};
+
+var optionsForPlainLayer = function (layerModel) {
+  return {
+    id: layerModel.get('id'),
+    type: PLAIN_LAYER_TYPE,
+    options: {
+      color: layerModel.get('color'),
+      imageUrl: layerModel.get('image')
+    }
+  };
+};
+
+var optionsForMapnikLayer = function (layerModel) {
+  var options = sharedOptionsForMapnikAndTorqueLayers(layerModel);
+  options.interactivity = layerModel.getInteractiveColumnNames();
+
+  if (layerModel.infowindow && layerModel.infowindow.hasFields()) {
+    options.attributes = {
+      id: 'cartodb_id',
+      columns: layerModel.infowindow.getFieldNames()
+    };
+  }
+
+  return {
+    id: layerModel.get('id'),
+    type: MAPNIK_LAYER_TYPE,
+    options: options
+  };
+};
+
+var optionsForTorqueLayer = function (layerModel) {
+  var options = sharedOptionsForMapnikAndTorqueLayers(layerModel);
+  return {
+    id: layerModel.get('id'),
+    type: TORQUE_LAYER_TYPE,
+    options: options
+  };
+};
+
+var sharedOptionsForMapnikAndTorqueLayers = function (layerModel) {
+  var options = {
+    cartocss: layerModel.get('cartocss'),
+    cartocss_version: layerModel.get('cartocss_version') || DEFAULT_CARTOCSS_VERSION
+  };
+
+  var layerSourceId = layerModel.get('source');
+  if (layerSourceId) {
+    options.source = { id: layerSourceId };
+  } else if (layerModel.get('sql')) { // Layer has some SQL that needs to be converted into a "source" analysis
+    options.sql = layerModel.get('sql');
+  }
+
+  if (layerModel.get('sql_wrap')) {
+    options.sql_wrap = layerModel.get('sql_wrap');
+  }
+
+  return options;
+};
 
 var AnonymousMap = MapBase.extend({
   toJSON: function () {
@@ -18,47 +100,24 @@ var AnonymousMap = MapBase.extend({
   },
 
   _calculateLayersSection: function () {
-    return _.chain(this._getCartoDBAndTorqueLayers())
+    return this._layersCollection.chain()
       .map(this._calculateLayerJSON, this)
       .compact()
       .value();
   },
 
   _calculateLayerJSON: function (layerModel) {
-    return {
-      id: layerModel.get('id'),
-      type: layerModel.get('type').toLowerCase(),
-      options: this._calculateLayerOptions(layerModel)
-    };
-  },
-
-  _calculateLayerOptions: function (layerModel) {
-    // TODO: Only send "interactivity" and "attributes" options for "CartoDB" layers
-    var options = {
-      cartocss: layerModel.get('cartocss'),
-      cartocss_version: layerModel.get('cartocss_version') || DEFAULT_CARTOCSS_VERSION,
-      interactivity: layerModel.getInteractiveColumnNames()
-    };
-
-    var layerSourceId = layerModel.get('source');
-    if (layerSourceId) {
-      options.source = { id: layerSourceId };
-    } else if (layerModel.get('sql')) { // Layer has some SQL that needs to be converted into a "source" analysis
-      options.sql = layerModel.get('sql');
+    if (LayerTypes.isTiledLayer(layerModel)) {
+      return optionsForHTTPLayer(layerModel);
+    } else if (LayerTypes.isPlainLayer(layerModel)) {
+      return optionsForPlainLayer(layerModel);
+    } else if (LayerTypes.isWMSLayer(layerModel)) {
+      return optionsForWMSLayer(layerModel);
+    } else if (LayerTypes.isCartoDBLayer(layerModel)) {
+      return optionsForMapnikLayer(layerModel);
+    } else if (LayerTypes.isTorqueLayer(layerModel)) {
+      return optionsForTorqueLayer(layerModel);
     }
-
-    if (layerModel.get('sql_wrap')) {
-      options.sql_wrap = layerModel.get('sql_wrap');
-    }
-
-    if (layerModel.infowindow && layerModel.infowindow.hasFields()) {
-      options.attributes = {
-        id: 'cartodb_id',
-        columns: layerModel.infowindow.getFieldNames()
-      };
-    }
-
-    return options;
   },
 
   _calculateDataviewsSection: function () {
@@ -142,7 +201,8 @@ var AnonymousMap = MapBase.extend({
 
   _getCartoDBAndTorqueLayers: function () {
     return this._layersCollection.select(function (layer) {
-      return LAYER_TYPES.indexOf(layer.get('type')) >= 0;
+      return LayerTypes.isCartoDBLayer(layer) ||
+        LayerTypes.isTorqueLayer(layer);
     });
   }
 });

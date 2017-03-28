@@ -72,7 +72,7 @@ InfowindowManager.prototype._hideInfowindow = function () {
 InfowindowManager.prototype._fetchAttributes = function (featureId) {
   this._currentFeatureId = featureId || this._currentFeatureId;
   this._infowindowModel.setLoading();
-  var layerIndex = this._cartoDBLayerGroupView.model.getIndexOf(this._cartoDBLayerModel);
+  var layerIndex = this._cartoDBLayerGroupView.model.getIndexOfLayerInLayerGroup(this._cartoDBLayerModel);
 
   this._cartoDBLayerGroupView.model.fetchAttributes(layerIndex, this._currentFeatureId, function (attributes) {
     if (attributes) {

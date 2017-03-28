@@ -148,6 +148,15 @@ var WindshaftMap = Backbone.Model.extend({
     ].join('/');
   },
 
+  getStaticBaseURL: function (subhost) {
+    return [
+      this._getHost(subhost),
+      WindshaftConfig.MAPS_API_BASE_URL,
+      'static/center',
+      this.get('layergroupid')
+    ].join('/');
+  },
+
   getProtocol: function () {
     return this._useHTTPS() ? 'https' : 'http';
   },

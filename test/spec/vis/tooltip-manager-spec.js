@@ -9,7 +9,7 @@ var TooltipManager = require('../../../src/vis/tooltip-manager');
 
 var simulateFeatureOverEvent = function (layerView, data) {
   layerView.trigger('featureOver', {
-    layer: layerView.model.getLayerAt(data.layerIndex),
+    layer: layerView.model.getLayerInLayerGroupAt(data.layerIndex),
     layerIndex: data.layerIndex,
     latlng: [100, 200],
     position: data.position || { x: 20, y: 30 },
@@ -19,7 +19,7 @@ var simulateFeatureOverEvent = function (layerView, data) {
 
 var simulateFeatureOutEvent = function (layerView, data) {
   layerView.trigger('featureOut', {
-    layer: layerView.model.getLayerAt(data.layerIndex),
+    layer: layerView.model.getLayerInLayerGroupAt(data.layerIndex),
     layerIndex: data.layerIndex
   });
 };

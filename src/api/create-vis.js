@@ -25,9 +25,16 @@ var createVis = function (el, vizjson, options) {
     throw new TypeError('a vizjson URL or object must be provided');
   }
 
+  var isProtocolHTTPs = window && window.location.protocol && window.location.protocol === 'https:';
   options = _.defaults(options || {}, DEFAULT_OPTIONS);
 
-  var visModel = new VisModel();
+  var visModel = new VisModel({
+    apiKey: options.apiKey,
+    authToken: options.authToken,
+    showEmptyInfowindowFields: options.show_empty_infowindow_fields === true,
+    https: isProtocolHTTPs || options.https === true,
+    interactiveFeatures: options.interactiveFeatures
+  });
 
   if (typeof vizjson === 'string') {
     var url = vizjson;
@@ -49,8 +56,6 @@ var loadVizJSON = function (el, visModel, vizjsonData, options) {
   var vizjson = new VizJSON(vizjsonData);
   applyOptionsToVizJSON(vizjson, options);
 
-  var isProtocolHTTPs = window && window.location.protocol && window.location.protocol === 'https:';
-
   var showLegends = true;
   if (_.isBoolean(options.legends)) {
     showLegends = options.legends;
@@ -71,13 +76,9 @@ var loadVizJSON = function (el, visModel, vizjsonData, options) {
   }
 
   visModel.set({
-    title: options.title || vizjson.title,
-    description: options.description || vizjson.description,
-    apiKey: options.apiKey,
-    authToken: options.authToken,
-    showEmptyInfowindowFields: options.show_empty_infowindow_fields === true,
-    https: isProtocolHTTPs || options.https === true || vizjson.https === true,
-    interactiveFeatures: options.interactiveFeatures
+    title: vizjson.title,
+    description: vizjson.description,
+    https: visModel.get('https') || vizjson.https === true
   });
 
   visModel.setSettings({

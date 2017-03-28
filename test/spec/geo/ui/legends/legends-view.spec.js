@@ -9,7 +9,7 @@ describe('geo/ui/legends/legends-view', function () {
   beforeEach(function () {
     var vis = new Backbone.Model();
     vis.reload = jasmine.createSpy('reload');
-    this.tileLayer = new TileLayer();
+    this.tileLayer = new TileLayer(null, { vis: {} });
     this.cartoDBLayer1 = new CartoDBLayer({ layer_name: 'CartoDB Layer #1', legends: [] }, { vis: vis });
     this.cartoDBLayer2 = new CartoDBLayer({ layer_name: 'CartoDB Layer #2', legends: [] }, { vis: vis });
     this.torqueLayer = new TorqueLayer({ layer_name: 'Torque Layer #3', legends: [] }, { vis: vis });

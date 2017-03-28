@@ -9,6 +9,7 @@ install:
   - yarn
 
 before_script:
+  - curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version 0.18.1
   - npm install -g grunt-cli
 
 script:
@@ -19,4 +20,4 @@ notifications:
     on_success: never
     on_failure: change
 
-cache: false
+cache: yarn

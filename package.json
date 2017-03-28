@@ -159,6 +159,6 @@
     "test-debug": "node-debug --no-preload ./node_modules/.bin/jasmine --",
     "test-watch": "watch 'npm test' $npm_package_config_npmJsDir",
     "preupdate-internal-deps": "echo 'DEPRECATED TASK, use `npm run-script update-internal-deps` instead'",
-    "update-internal-deps": "rm -rf node_modules && npm install --no-shrinkwrap && npm shrinkwrap"
+    "update-internal-deps": "rm -rf node_modules && yarn install"
   }
 }

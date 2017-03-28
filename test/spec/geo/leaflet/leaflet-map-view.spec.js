@@ -35,7 +35,7 @@ describe('geo/leaflet/leaflet-map-view', function () {
 
     this.layerGroupModel = new CartoDBLayerGroup({}, { layersCollection: new LayersCollection() });
     spyOn(this.layerGroupModel, 'hasTileURLTemplates').and.returnValue(true);
-    spyOn(this.layerGroupModel, 'getTileURLTemplates').and.returnValue([ 'http://documentation.cartodb.com/api/v1/map/90e64f1b9145961af7ba36d71b887dd2:0/0/{z}/{x}/{y}.png' ]);
+    spyOn(this.layerGroupModel, 'getTileURLTemplate').and.returnValue('http://documentation.cartodb.com/api/v1/map/90e64f1b9145961af7ba36d71b887dd2:0/0/{z}/{x}/{y}.png');
 
     mapView = new LeafletMapView({
       el: container,

@@ -1,6 +1,13 @@
 var _ = require('underscore');
 var log = require('../cdb.log');
+var util = require('../core/util.js');
 var RuleToLegendModelAdapters = require('./legends/rule-to-legend-model-adapters');
+
+function getSubdomain (subdomains, resource) {
+  var index = util.crc32(resource) % subdomains.length;
+  return subdomains[index];
+}
+
 /**
  * This class exposes a method that knows how to set/update the metadata on internal
  * CartoDB.js models that are linked to a "resource" in the Maps API.
@@ -40,7 +47,8 @@ ModelUpdater.prototype.updateModels = function (windshaftMap, sourceId, forceFet
 
 ModelUpdater.prototype._updateLayerGroupModel = function (windshaftMap) {
   var urls = {
-    tiles: this._calculateTileURLTemplatesForCartoDBLayers(windshaftMap),
+    tiles: this._generateTileURLTemplate(windshaftMap),
+    subdomains: this._getTileSubdomains(windshaftMap),
     grids: this._calculateGridURLTemplatesForCartoDBLayers(windshaftMap),
     attributes: this._calculateAttributesBaseURLsForCartoDBLayers(windshaftMap)
   };
@@ -51,17 +59,12 @@ ModelUpdater.prototype._updateLayerGroupModel = function (windshaftMap) {
   });
 };
 
-ModelUpdater.prototype._calculateTileURLTemplatesForCartoDBLayers = function (windshaftMap) {
-  var urlTemplates = [];
-  _.each(windshaftMap.getSupportedSubdomains(), function (subdomain) {
-    urlTemplates.push(this._generateTileURLTemplate(windshaftMap, subdomain));
-  }, this);
-
-  return urlTemplates;
+ModelUpdater.prototype._generateTileURLTemplate = function (windshaftMap) {
+  return windshaftMap.getBaseURL() + '/{layerIndexes}/{z}/{x}/{y}.{format}';
 };
 
-ModelUpdater.prototype._generateTileURLTemplate = function (windshaftMap, subdomain) {
-  return windshaftMap.getBaseURL(subdomain) + '/{layerIndexes}/{z}/{x}/{y}.{format}';
+ModelUpdater.prototype._getTileSubdomains = function (windshafMap) {
+  return windshafMap.getSupportedSubdomains();
 };
 
 ModelUpdater.prototype._calculateGridURLTemplatesForCartoDBLayers = function (windshaftMap) {
@@ -80,7 +83,8 @@ ModelUpdater.prototype._calculateGridURLTemplatesForCartoDBLayers = function (wi
 };
 
 ModelUpdater.prototype._generateGridURLTemplate = function (windshaftMap, subdomain, index) {
-  return windshaftMap.getBaseURL(subdomain) + '/' + index + '/{z}/{x}/{y}.grid.json';
+  var baseURL = windshaftMap.getBaseURL() + '/' + index + '/{z}/{x}/{y}.grid.json';
+  return baseURL.replace('{s}', subdomain);
 };
 
 ModelUpdater.prototype._calculateAttributesBaseURLsForCartoDBLayers = function (windshaftMap) {
@@ -95,7 +99,12 @@ ModelUpdater.prototype._calculateAttributesBaseURLsForCartoDBLayers = function (
 };
 
 ModelUpdater.prototype._generateAttributesBaseURL = function (windshaftMap, index) {
-  return windshaftMap.getBaseURL() + '/' + index + '/attributes';
+  var baseURL = windshaftMap.getBaseURL() + '/' + index + '/attributes';
+  if (baseURL.indexOf('{s}') >= 0) {
+    var subdomain = getSubdomain(windshaftMap.getSupportedSubdomains(), baseURL);
+    baseURL = baseURL.replace('{s}', subdomain);
+  }
+  return baseURL;
 };
 
 ModelUpdater.prototype._updateLayerModels = function (windshaftMap) {
@@ -114,6 +123,7 @@ ModelUpdater.prototype._updateLayerModels = function (windshaftMap) {
   _.each(this._layersCollection.getTorqueLayers(), function (layerModel, localLayerIndex) {
     var windshaftMapLayerIndex = indexesOfTorqueLayers[localLayerIndex];
     layerModel.set('meta', windshaftMap.getLayerMetadata(windshaftMapLayerIndex));
+    layerModel.set('subdomains', windshaftMap.getSupportedSubdomains());
     layerModel.set('tileURLTemplates', this._calculateTileURLTemplatesForTorqueLayers(windshaftMap));
     this._updateLegendModels(layerModel, windshaftMapLayerIndex, windshaftMap);
 

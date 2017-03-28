@@ -42,7 +42,8 @@ _.extend(
 
       if ('tileURLTemplates' in changed) {
         // REAL HACK
-        this.provider.templateUrl = this.model.getTileURLTemplates()[0];
+        this.provider.templateUrl = this.model.getTileURLTemplate();
+        this.provider.options.subdomains = this.model.get('subdomains');
         // set meta
         _.extend(this.provider.options, this.model.get('meta'));
         this.model.set(this.model.get('meta'));

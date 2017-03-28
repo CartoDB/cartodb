@@ -70,13 +70,18 @@ LeafletCartoDBLayerGroupView.prototype = _.extend(
     },
 
     _reload: function () {
-      var tileURLTemplates;
-      if (this.model.hasTileURLTemplates()) {
-        tileURLTemplates = this.model.getTileURLTemplates()[0];
-      } else {
-        tileURLTemplates = EMPTY_GIF;
+      var tileURLTemplate = this.model.getTileURLTemplate();
+      var subdomains = this.model.getSubdomains();
+
+      if (!tileURLTemplate) {
+        tileURLTemplate = EMPTY_GIF;
       }
-      this.leafletLayer.setUrl(tileURLTemplates);
+
+      if (subdomains) {
+        L.Util.setOptions(this.leafletLayer, {subdomains:subdomains});
+      }
+
+      this.leafletLayer.setUrl(tileURLTemplate);
 
       this._reloadInteraction();
     },

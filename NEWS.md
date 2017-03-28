@@ -77,6 +77,7 @@ Development
     * Optimized access to redis storage (#11809)
     * Add back FREE users to overquota calculation (#11848)
 * Update tangram-cartocss to use smooth point outline.
+* Update cartodb.js to use multiple subdomains.
 
 ### Bug fixes
 * Fixed layers order when creating a new layer dragging from a compound analysis (#11827)

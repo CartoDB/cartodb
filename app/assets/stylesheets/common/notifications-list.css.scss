@@ -113,13 +113,18 @@ $opacityTransition: 250ms;
 .NotificationsList-itemMeta {
   @include display-flex();
   @include align-items(center);
-  @include justify-content(flex-end, end);
+  @include justify-content(flex-start, end);
   margin-bottom: 2 * $sMargin-min;
 }
 .NotificationsList-itemTitle {
   @include display-flex();
   @include align-items(center);
   margin-bottom: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 
   ul,
   ol {

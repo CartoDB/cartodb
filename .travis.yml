@@ -1,16 +1,12 @@
 language: node_js
 node_js:
-  - "0.10"
+  - "6.9.2"
 
 before_install:
   - git submodule update --init --recursive
 
 install:
-  - npm install
-
-before_script:
-  - npm install -g npm@2.14
-  - npm install -g grunt-cli
+  - yarn install
 
 script:
   - grunt test
@@ -19,3 +15,8 @@ notifications:
   email:
     on_success: never
     on_failure: change
+
+cache:
+  yarn: true
+  directories:
+    - node_modules

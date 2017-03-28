@@ -8,11 +8,12 @@ module Carto
 
     ICON_WARNING = 'warning'.freeze
     ICON_SUCCESS = 'success'.freeze
+    ICONS = [ICON_SUCCESS, ICON_WARNING].freeze
 
     belongs_to :organization, inverse_of: :notifications
     has_many :received_notifications, inverse_of: :notification
 
-    validates :icon, presence: true, inclusion: { in: [ICON_WARNING, ICON_SUCCESS] }
+    validates :icon, presence: true, inclusion: { in: ICONS }
     validates :recipients, inclusion: { in: [nil, 'builders', 'viewers', 'all'] }
     validates :recipients, presence: true, if: :organization
     validates :body, presence: true

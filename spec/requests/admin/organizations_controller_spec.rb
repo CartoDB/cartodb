@@ -134,7 +134,7 @@ describe Admin::OrganizationsController do
         notification = @carto_organization.reload.notifications.first
         notification.body.should eq params[:body]
         notification.recipients.should eq params[:recipients]
-        notification.icon.should eq Carto::Notification::ICON_WARNING
+        notification.icon.should eq Carto::Notification::ICON_ALERT
       end
     end
 

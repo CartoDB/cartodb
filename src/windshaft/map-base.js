@@ -140,9 +140,9 @@ var WindshaftMap = Backbone.Model.extend({
     return params;
   },
 
-  getBaseURL: function (subhost) {
+  getBaseURL: function () {
     return [
-      this._getHost(subhost),
+      this._getHost(),
       WindshaftConfig.MAPS_API_BASE_URL,
       this.get('layergroupid')
     ].join('/');
@@ -152,27 +152,24 @@ var WindshaftMap = Backbone.Model.extend({
     return this._useHTTPS() ? 'https' : 'http';
   },
 
-  _getHost: function (subhost) {
+  _getHost: function () {
     var urlTemplate = this._windshaftSettings.urlTemplate;
     var userName = this._windshaftSettings.userName;
-    var host = urlTemplate.replace('{user}', userName);
     var protocol = this.getProtocol();
-    subhost = subhost ? subhost + '.' : '';
     var cdnUrl = this.get('cdn_url');
     var cdnHost = cdnUrl && cdnUrl[protocol];
     var templates = cdnUrl && cdnUrl.templates;
 
     if (templates && templates[protocol]) {
       var template = templates[protocol];
-      host = template.url + '/' + userName;
-      return host;
+      return template.url + '/' + userName;
     }
 
     if (cdnHost) {
-      host = [protocol, '://', subhost, cdnHost, '/', userName].join('');
+      return [protocol, '://{s}.', cdnHost, '/', userName].join('');
     }
 
-    return host;
+    return urlTemplate.replace('{user}', userName);
   },
 
   _useHTTPS: function () {

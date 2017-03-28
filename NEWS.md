@@ -111,7 +111,7 @@ Development
 * Do not trigger visualization hooks on state update (#11701)
 * Refactor Layer model (#10934)
 * Correctly register table dependencies of torque layers (#11549)
-* Validate number of organization seats in user update (#11839)
+* Validate number of organization seats in user update (#11839, #11859)
 * Fix bugs where legends where being hidden by reordering layers (#11088)
 * Correctly ask for alternative username when signing up with Google/GitHub into an organization
 * Avoid loading all rake code in resque workers (#11069)

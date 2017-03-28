@@ -13,6 +13,7 @@ module CartoGearsApi
     # @attr_reader [DateTime] created_at date this notification was created at
     class Notification < Value.new(:id, :icon, :body, :organization, :recipients, :created_at)
       ICON_ALERT = Carto::Notification::ICON_ALERT
+      ICON_SUCCESS = Carto::Notification::ICON_SUCCESS
 
       # @api private
       def self.from_model(notification)

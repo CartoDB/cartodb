@@ -8,7 +8,8 @@ module Carto
 
     # Update CartoGearsAPI::Notifications::Notification when adding constants here
     ICON_ALERT = 'alert'.freeze
-    ICONS = [ICON_ALERT].freeze
+    ICON_SUCCESS = 'success'.freeze
+    ICONS = [ICON_SUCCESS, ICON_ALERT].freeze
 
     RECIPIENT_ALL = 'all'.freeze
     RECIPIENTS = [RECIPIENT_ALL, 'builders'.freeze, 'viewers'.freeze].freeze

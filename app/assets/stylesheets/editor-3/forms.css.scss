@@ -59,6 +59,10 @@
   box-sizing: border-box;
 }
 
+.Editor-formInner--nested .Editor-formInner.Editor-formInner--DataObservatoryDropdown {
+  align-items: flex-start;
+}
+
 .Editor-formInner--nested .Editor-formInner--DataObservatoryDropdown .CDB-Legend {
   width: 96px;
   padding-left: 0;

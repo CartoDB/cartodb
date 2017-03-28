@@ -7,6 +7,7 @@ module Carto
   class Notification < ActiveRecord::Base
     MAX_BODY_LENGTH = 140
 
+    # Update CartoGearsAPI::Notifications::Notification when adding constants here
     ICON_WARNING = 'warning'.freeze
     ICON_SUCCESS = 'success'.freeze
     ICONS = [ICON_SUCCESS, ICON_WARNING].freeze

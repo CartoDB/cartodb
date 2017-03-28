@@ -11,7 +11,9 @@ module CartoGearsApi
     # @attr_reader [String] recipients +builders+, +viewers+ or +all+ if this is an org-notification, nil otherwise
     # @attr_reader [DateTime] created_at date this notification was created at
     class Notification < Value.new(:id, :icon, :body, :organization, :recipients, :created_at)
-      # List of possible icon values
+      ICON_WARNING = Carto::Notification::ICON_WARNING
+      ICON_SUCCESS = Carto::Notification::ICON_SUCCESS
+      # List of possible icons
       ICONS = Carto::Notification::ICONS
 
       # @api private

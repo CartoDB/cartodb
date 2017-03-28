@@ -1,5 +1,6 @@
 require 'values'
 require 'active_record'
+require_dependency 'carto_gears_api/organizations/organization'
 
 module CartoGearsApi
   module Users

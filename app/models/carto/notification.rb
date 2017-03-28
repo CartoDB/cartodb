@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 require_dependency 'carto/notifications_markdown_renderer'
+require_dependency 'carto_gears_api/organizations/organization'
 
 module Carto
   class Notification < ActiveRecord::Base

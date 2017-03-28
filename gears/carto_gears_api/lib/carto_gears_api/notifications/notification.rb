@@ -20,7 +20,7 @@ module CartoGearsApi
           id: notification.id,
           body: notification.body,
           icon: notification.icon,
-          organization: CartoGearsApi::Organizations::Organization.from_model(notification.organization),
+          organization: notification.organization && Organizations::Organization.from_model(notification.organization),
           recipients: notification.recipients,
           created_at: notification.created_at
         )

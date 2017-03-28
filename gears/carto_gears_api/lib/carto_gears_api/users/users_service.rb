@@ -1,5 +1,4 @@
 require_dependency 'carto_gears_api/users/user'
-require_dependency 'carto_gears_api/organizations/organization'
 require_dependency 'carto_gears_api/errors'
 
 module CartoGearsApi

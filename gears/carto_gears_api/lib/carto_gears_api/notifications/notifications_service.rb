@@ -8,10 +8,10 @@ module CartoGearsApi
       # @see send_notification
       #
       # @param [String] body markdown body of the notification
-      # @param [String] icon name of the icon (defaults to +success+)
+      # @param [String] icon name of the icon (defaults to a generic notification icon)
       # @return [Notification] the created notification
       # @raise [Errors::ValidationFailed] if there were some invalid parameters
-      def create_notification(body:, icon: Carto::Notification::ICON_SUCCESS)
+      def create_notification(body:, icon: Notification::ICONS[0])
         CartoGearsApi::Notifications::Notification.from_model(Carto::Notification.create!(body: body, icon: icon))
       rescue ActiveRecord::RecordInvalid => e
         raise Errors::ValidationFailed.new(e.record.errors.messages)

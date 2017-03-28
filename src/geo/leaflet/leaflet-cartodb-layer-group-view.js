@@ -106,11 +106,6 @@ LeafletCartoDBLayerGroupView.prototype = _.extend(
           this._onFeatureOver(latlng, containerPoint, waxEvent.data, waxEvent.layer);
           break;
         case 'click':
-        case 'touchend':
-        case 'touchmove': // for some reason android browser does not send touchend
-        case 'mspointerup':
-        case 'pointerup':
-        case 'pointermove':
           this._onFeatureClicked(latlng, containerPoint, waxEvent.data, waxEvent.layer);
           break;
       }

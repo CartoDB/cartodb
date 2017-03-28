@@ -79,20 +79,13 @@ describe('geo/ui/search', function () {
       this.view.$('.js-form').submit();
       var center = this.map.get('center');
       expect(center[0]).toBe(43.0);
-      expect(center[1]).toBe(-3.0);
+      expect(parseInt(center[1].toFixed(0), 10)).toBe(-3.0);
     });
 
     it('should center map whith bbox when it is defined', function () {
+      spyOn(this.map, 'setBounds');
       this.view.$('form').submit();
-      var ne = this.map.get('view_bounds_ne');
-      var sw = this.map.get('view_bounds_sw');
-      expect(ne[0].toFixed(0)).toBe('6');
-      expect(ne[1].toFixed(0)).toBe('6');
-      expect(sw[0].toFixed(0)).toBe('4');
-      expect(sw[1].toFixed(0)).toBe('4');
-      var center = this.map.get('center');
-      expect(center[0]).not.toBe(43.0);
-      expect(center[1]).not.toBe(-3.0);
+      expect(this.map.setBounds).toHaveBeenCalledWith([[6, 6], [4, 4]]);
     });
 
     describe('result zoom', function () {

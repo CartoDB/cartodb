@@ -173,8 +173,8 @@
   @include flex(1);
   @include flex-direction(column);
   position: relative;
-  max-height: 300px;
   min-height: 0;
+  max-height: 300px;
 
   .ScrollView {
     margin: 0;

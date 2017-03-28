@@ -6,7 +6,7 @@ before_install:
   - git submodule update --init --recursive
 
 install:
-  - yarn install
+  - yarn
 
 before_script:
   - npm install -g grunt-cli

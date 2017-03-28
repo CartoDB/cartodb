@@ -1584,6 +1584,9 @@
           },
           "normalize": {
             "label": "Normalize"
+          },
+          "timespan": {
+            "label": "Timespan"
           }
         },
         "data-observatory-measurement-area": "Country",

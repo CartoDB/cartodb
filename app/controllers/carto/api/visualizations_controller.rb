@@ -63,6 +63,7 @@ module Carto
           end
         end
         parent_category = params.fetch('parent_category', -1)
+        asc_order = params.fetch('asc_order', 'false')
 
         presenter_cache = Carto::Api::PresenterCache.new
 
@@ -70,7 +71,7 @@ module Carto
           # TODO: undesirable table hardcoding, needed for disambiguation. Look for
           # a better approach and/or move it to the query builder
           excludedNames = [emptyDatasetName]
-          query = vqb.with_order("visualizations.#{order}", :desc).with_excluded_names(excludedNames)
+          query = vqb.with_order("visualizations.#{order}", asc_order == 'true' ? :asc : :desc).with_excluded_names(excludedNames)
           if parent_category != -1
             query = query.with_parent_category(parent_category.to_i)
           end
@@ -91,7 +92,7 @@ module Carto
         else
           # TODO: undesirable table hardcoding, needed for disambiguation. Look for
           # a better approach and/or move it to the query builder
-          query = vqb.with_order("visualizations.#{order}", :desc)
+          query = vqb.with_order("visualizations.#{order}", asc_order == 'true' ? :asc : :desc)
           if parent_category != -1
             query = query.with_parent_category(parent_category.to_i)
           end

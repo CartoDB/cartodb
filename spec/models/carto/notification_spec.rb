@@ -79,8 +79,16 @@ module Carto
           expect(n.errors).to include :body
         end
 
-        it 'cannot contain Markdown images' do
+        it 'cannot contain Markdown blocks' do
           n = Notification.new(body: '![this is](an image])')
+          expect(n).not_to be_valid
+          expect(n.errors).to include :body
+
+          n = Notification.new(body: '> a block quote')
+          expect(n).not_to be_valid
+          expect(n.errors).to include :body
+
+          n = Notification.new(body: '# a header')
           expect(n).not_to be_valid
           expect(n.errors).to include :body
         end

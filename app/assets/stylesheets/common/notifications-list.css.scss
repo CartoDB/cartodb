@@ -54,7 +54,6 @@ $opacityTransition: 250ms;
 }
 .NotificationsList-item {
   @include display-flex();
-  @include align-items(center);
   position: relative;
   margin-bottom: -1px;
   padding: 20px 0;
@@ -96,7 +95,6 @@ $opacityTransition: 250ms;
   @include flex(1);
   @include transition(opacity, $opacityTransition);
   @include justify-content(space-between, justify);
-  @include align-items(center);
   position: relative;
   z-index: 1;
 }
@@ -110,7 +108,6 @@ $opacityTransition: 250ms;
 .NotificationsList-itemSecondaryInfo {
   @include display-flex();
   @include flex-direction(column);
-  width: 100%;
   margin-top: 0;
 }
 .NotificationsList-itemMeta {
@@ -124,16 +121,26 @@ $opacityTransition: 250ms;
   @include align-items(center);
   margin-bottom: 0;
 
-  p {
+  ul,
+  ol {
+    padding-left: 20px;
+    list-style-type: disc;
+  }
+  ol {
+    list-style-type: decimal;
+  }
+  ul {
+    list-style-type: disc;
+  }
+  p,
+  ul,
+  ol {
     text-overflow: ellipsis;
-    white-space: nowrap;
     overflow: hidden;
   }
-
   em {
     font-style: italic;
   }
-
   strong {
     font-weight: 600;
   }

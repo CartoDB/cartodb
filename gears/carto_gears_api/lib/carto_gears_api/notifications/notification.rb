@@ -1,4 +1,5 @@
 require 'values'
+require_dependency 'carto_gears_api/organizations/organization'
 
 module CartoGearsApi
   module Notifications

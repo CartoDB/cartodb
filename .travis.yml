@@ -1,6 +1,6 @@
 language: node_js
 node_js:
-  - "6.9.2"
+  - 6
 
 before_install:
   - git submodule update --init --recursive
@@ -19,7 +19,4 @@ notifications:
     on_success: never
     on_failure: change
 
-cache:
-  yarn: true
-  directories:
-    - node_modules
+cache: yarn

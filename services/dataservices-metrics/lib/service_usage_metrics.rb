@@ -1,11 +1,12 @@
 # encoding: utf-8
 
 require 'active_support/time'
+require_relative '../../../lib/carto/metrics/usage_metrics_interface'
 
 module CartoDB
   # The purpose of this class is to encapsulate storage of usage metrics.
   # This shall be used for billing, quota checking and metrics.
-  class ServiceUsageMetrics
+  class ServiceUsageMetrics < Carto::Metrics::UsageMetricsInterface
 
     def initialize(username, orgname = nil, redis=$geocoder_metrics)
       @username = username
@@ -37,6 +38,27 @@ module CartoDB
       end
 
       total
+    end
+
+    def get_sum_by_date_range(service, metric, date_from, date_to)
+      get_date_range(service, metric, date_from, date_to).values.reduce(:+)
+    end
+
+    def get_date_range(service, metric, date_from, date_to)
+      check_valid_data(service, metric)
+
+      ret = {}
+      month_values = {}
+      (date_from..date_to).each do |date|
+        year_month_key = date_year_month(date)
+        if month_values[year_month_key].nil?
+          key_prefix = @orgname.nil? ? user_key_prefix(service, metric, date) : org_key_prefix(service, metric, date)
+          month_values[year_month_key] = @redis.zrange(key_prefix, 0, -1, with_scores: true).to_h
+        end
+        ret[date] = month_values[year_month_key][date_day(date)] || 0
+      end
+
+      ret
     end
 
     protected

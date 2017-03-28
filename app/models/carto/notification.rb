@@ -6,8 +6,9 @@ module Carto
   class Notification < ActiveRecord::Base
     MAX_BODY_LENGTH = 140
 
-    ICON_WARNING = 'warning'.freeze
-    ICON_SUCCESS = 'success'.freeze
+    # Update CartoGearsAPI::Notifications::Notification when adding constants here
+    ICON_ALERT = 'alert'.freeze
+    ICONS = [ICON_ALERT].freeze
 
     RECIPIENT_ALL = 'all'.freeze
     RECIPIENTS = [RECIPIENT_ALL, 'builders'.freeze, 'viewers'.freeze].freeze
@@ -15,7 +16,7 @@ module Carto
     belongs_to :organization, inverse_of: :notifications
     has_many :received_notifications, inverse_of: :notification
 
-    validates :icon, presence: true, inclusion: { in: [ICON_WARNING, ICON_SUCCESS] }
+    validates :icon, presence: true, inclusion: { in: ICONS }
     validates :recipients, inclusion: { in: [nil] + RECIPIENTS }
     validates :recipients, presence: true, if: :organization
     validates :body, presence: true

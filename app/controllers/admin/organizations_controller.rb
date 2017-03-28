@@ -46,7 +46,7 @@ class Admin::OrganizationsController < Admin::AdminController
     carto_organization = Carto::Organization.find(@organization.id)
     attributes = {
       body: params[:carto_notification]['body'],
-      icon: Carto::Notification::ICON_WARNING,
+      icon: Carto::Notification::ICON_ALERT,
       recipients: params[:carto_notification]['recipients']
     }
     @notification = carto_organization.notifications.build(attributes)

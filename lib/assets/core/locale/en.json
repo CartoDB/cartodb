@@ -369,6 +369,9 @@
           "none": "None",
           "show-all": "Show full collections"
         }
+      },
+      "slide": {
+        "no-values": "No values"
       }
     }
   },

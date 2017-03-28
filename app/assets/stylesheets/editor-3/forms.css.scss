@@ -59,6 +59,16 @@
   box-sizing: border-box;
 }
 
+.Editor-formInner--nested .Editor-formInner--DataObservatoryDropdown .CDB-Legend {
+  width: 96px;
+  padding-left: 0;
+  background-color: $cWhite;
+  line-height: 32px;
+
+  &::before {
+    display: none;
+  }
+}
 
 .Editor-formInner .Editor-formSelect {
   max-width: 160px;
@@ -103,7 +113,7 @@
   margin-left: 8px;
 }
 .Editor-checkerComponent {
-  width: 158px;
+  width: 160px;
 }
 
 // TODO: fix this in CartoAsssets

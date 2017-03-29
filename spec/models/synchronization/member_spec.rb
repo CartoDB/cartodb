@@ -6,6 +6,7 @@ require_relative '../../../services/data-repository/backend/sequel'
 require_relative '../../../services/data-repository/repository'
 require_relative '../../../app/models/synchronization/member'
 require 'helpers/unique_names_helper'
+require 'helpers/file_server_helper'
 
 include UniqueNamesHelper
 include CartoDB
@@ -51,34 +52,67 @@ describe Synchronization::Member do
     end
   end
 
-  describe "External sources" do
-    before(:each) do
-      @user_1 = FactoryGirl.create(:valid_user)
-      @user_2 = FactoryGirl.create(:valid_user)
+  describe "synchronizations" do
+    before(:all) do
+      @user_1 = create_user(sync_tables_enabled: true)
+      @user_2 = create_user(sync_tables_enabled: true)
     end
 
-    after(:each) do
+    before(:each) do
+      bypass_named_maps
+      Cartodb.config[:metrics] = {}
+    end
+
+    after(:all) do
       @user_1.destroy
       @user_2.destroy
     end
 
-    it "Authorizes to sync always if from an external source" do
-      member  = Synchronization::Member.new(random_attributes({user_id: @user_1.id})).store
-      member.fetch
+    describe 'external sources' do
+      it "Authorizes to sync always if from an external source" do
+        member  = Synchronization::Member.new(random_attributes({user_id: @user_1.id})).store
+        member.fetch
 
-      member.expects(:from_external_source?)
-            .returns(true)
+        member.expects(:from_external_source?)
+          .returns(true)
 
-      @user_1.sync_tables_enabled = true
-      @user_2.sync_tables_enabled = true
+        @user_1.sync_tables_enabled = true
+        @user_2.sync_tables_enabled = true
 
-      member.authorize?(@user_1).should eq true
-      member.authorize?(@user_2).should eq false
+        member.authorize?(@user_1).should eq true
+        member.authorize?(@user_2).should eq false
 
-      @user_1.sync_tables_enabled = false
-      @user_2.sync_tables_enabled = false
+        @user_1.sync_tables_enabled = false
+        @user_2.sync_tables_enabled = false
 
-      member.authorize?(@user_1).should eq true
+        member.authorize?(@user_1).should eq true
+      end
+    end
+
+    describe "synchronization" do
+      it 'syncs' do
+        # TODO: this is the minimum test valid to reproduce #11889, it's not a complete sync test
+        CartoDB::Logger.stubs(:error).never
+
+        url = 'https://wadus.com/guess_country.csv'
+
+        path = fake_data_path('guess_country.csv')
+        stub_download(url: url, filepath: path, content_disposition: false)
+
+        attrs = random_attributes(user_id: @user_1.id).merge(service_item_id: url, url: url, name: 'guess_country')
+        member  = Synchronization::Member.new(attrs).store
+
+        DataImport.create(
+          user_id: @user_1.id,
+          data_source: fake_data_path('guess_country.csv'),
+          synchronization_id: member.id,
+          service_name: 'public_url',
+          service_item_id: url,
+          updated_at: Time.now
+        ).run_import!
+
+        member.run
+      end
     end
   end
 
@@ -87,7 +121,7 @@ describe Synchronization::Member do
   def random_attributes(attributes={})
     random = unique_integer
     {
-      name:       attributes.fetch(:name, "name #{random}"),
+      name:       attributes.fetch(:name, "name#{random}"),
       interval:   attributes.fetch(:interval, 15 * 60 + random),
       state:      attributes.fetch(:state, 'enabled'),
       user_id:    attributes.fetch(:user_id, nil)

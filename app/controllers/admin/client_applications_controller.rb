@@ -1,6 +1,9 @@
 # coding: utf-8
+require_relative './../helpers/organization_notifications_helper'
 
 class Admin::ClientApplicationsController < Admin::AdminController
+  include OrganizationNotificationsHelper
+
   ssl_required :oauth, :api_key, :regenerate_api_key, :regenerate_oauth
 
   before_filter :invalidate_browser_cache
@@ -70,11 +73,5 @@ class Admin::ClientApplicationsController < Admin::AdminController
     carto_user = Carto::User.where(id: current_user.id).first if current_user
 
     @dashboard_notifications = carto_user ? carto_user.notifications_for_category(:dashboard) : {}
-  end
-
-  def load_organization_notifications
-    carto_user = Carto::User.where(id: current_user.id).first if current_user
-
-    @organization_notifications = carto_user ? carto_user.received_notifications.unread.map { |n| Carto::Api::ReceivedNotificationPresenter.new(n) } : {}
   end
 end

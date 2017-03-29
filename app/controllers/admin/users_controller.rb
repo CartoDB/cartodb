@@ -3,10 +3,12 @@ require_dependency 'google_plus_api'
 require_dependency 'google_plus_config'
 require_relative '../../../services/datasources/lib/datasources'
 require_relative '../helpers/avatar_helper'
+require_relative '../helpers/organization_notifications_helper'
 
 class Admin::UsersController < Admin::AdminController
   include LoginHelper
   include AvatarHelper
+  include OrganizationNotificationsHelper
 
   SERVICE_TITLES = {
     'gdrive' => 'Google Drive',
@@ -208,11 +210,5 @@ class Admin::UsersController < Admin::AdminController
     carto_user = Carto::User.where(id: current_user.id).first if current_user
 
     @dashboard_notifications = carto_user ? carto_user.notifications_for_category(:dashboard) : {}
-  end
-
-  def load_organization_notifications
-    carto_user = Carto::User.where(id: current_user.id).first if current_user
-
-    @organization_notifications = carto_user ? carto_user.received_notifications.unread.map { |n| Carto::Api::ReceivedNotificationPresenter.new(n) } : {}
   end
 end

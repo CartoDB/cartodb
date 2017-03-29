@@ -64,7 +64,7 @@ module FileServerHelper
     response
   end
 
-  def failed_response_for(filepath, headers={})
+  def failed_response_for(_filepath, headers={})
     Typhoeus::Response.new(code: 404, body: nil, headers: {})
   end
 

@@ -54,8 +54,8 @@ describe Synchronization::Member do
 
   describe "synchronizations" do
     before(:all) do
-      @user_1 = create_user(sync_tables_enabled: true)
-      @user_2 = create_user(sync_tables_enabled: true)
+      @user1 = create_user(sync_tables_enabled: true)
+      @user2 = create_user(sync_tables_enabled: true)
     end
 
     before(:each) do
@@ -64,28 +64,27 @@ describe Synchronization::Member do
     end
 
     after(:all) do
-      @user_1.destroy
-      @user_2.destroy
+      @user1.destroy
+      @user2.destroy
     end
 
     describe 'external sources' do
       it "Authorizes to sync always if from an external source" do
-        member  = Synchronization::Member.new(random_attributes({user_id: @user_1.id})).store
+        member = Synchronization::Member.new(random_attributes(user_id: @user1.id)).store
         member.fetch
 
-        member.expects(:from_external_source?)
-          .returns(true)
+        member.expects(:from_external_source?).returns(true)
 
-        @user_1.sync_tables_enabled = true
-        @user_2.sync_tables_enabled = true
+        @user1.sync_tables_enabled = true
+        @user2.sync_tables_enabled = true
 
-        member.authorize?(@user_1).should eq true
-        member.authorize?(@user_2).should eq false
+        member.authorize?(@user1).should eq true
+        member.authorize?(@user2).should eq false
 
-        @user_1.sync_tables_enabled = false
-        @user_2.sync_tables_enabled = false
+        @user1.sync_tables_enabled = false
+        @user2.sync_tables_enabled = false
 
-        member.authorize?(@user_1).should eq true
+        member.authorize?(@user1).should eq true
       end
     end
 
@@ -99,11 +98,11 @@ describe Synchronization::Member do
         path = fake_data_path('guess_country.csv')
         stub_download(url: url, filepath: path, content_disposition: false)
 
-        attrs = random_attributes(user_id: @user_1.id).merge(service_item_id: url, url: url, name: 'guess_country')
-        member  = Synchronization::Member.new(attrs).store
+        attrs = random_attributes(user_id: @user1.id).merge(service_item_id: url, url: url, name: 'guess_country')
+        member = Synchronization::Member.new(attrs).store
 
         DataImport.create(
-          user_id: @user_1.id,
+          user_id: @user1.id,
           data_source: fake_data_path('guess_country.csv'),
           synchronization_id: member.id,
           service_name: 'public_url',

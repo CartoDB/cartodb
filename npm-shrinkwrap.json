@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.6.43",
+  "version": "4.6.44",
   "dependencies": {
     "backbone": {
       "version": "1.2.3",
@@ -10,7 +10,7 @@
     "backbone-forms": {
       "version": "0.14.0",
       "from": "backbone-forms@0.14.0",
-      "resolved": "https://registry.npmjs.org/backbone-forms/-/backbone-forms-0.14.0.tgz"
+      "resolved": "http://registry.npmjs.org/backbone-forms/-/backbone-forms-0.14.0.tgz"
     },
     "backbone-model-file-upload": {
       "version": "1.0.0",
@@ -210,7 +210,7 @@
                                 },
                                 "inherits": {
                                   "version": "2.0.3",
-                                  "from": "inherits@>=2.0.0 <3.0.0",
+                                  "from": "inherits@>=2.0.1 <2.1.0",
                                   "resolved": "https://registry.npmjs.org/inherits/-/inherits-2.0.3.tgz"
                                 },
                                 "minimatch": {
@@ -824,7 +824,7 @@
             },
             "map-obj": {
               "version": "1.0.1",
-              "from": "map-obj@>=1.0.1 <1.1.0",
+              "from": "map-obj@>=1.0.1 <2.0.0",
               "resolved": "https://registry.npmjs.org/map-obj/-/map-obj-1.0.1.tgz"
             },
             "replace-requires": {
@@ -971,7 +971,7 @@
                     },
                     "inherits": {
                       "version": "2.0.3",
-                      "from": "inherits@>=2.0.0 <3.0.0",
+                      "from": "inherits@>=2.0.1 <2.1.0",
                       "resolved": "https://registry.npmjs.org/inherits/-/inherits-2.0.3.tgz"
                     }
                   }
@@ -1017,7 +1017,7 @@
                     },
                     "inherits": {
                       "version": "2.0.3",
-                      "from": "inherits@>=2.0.1 <2.1.0",
+                      "from": "inherits@>=2.0.0 <3.0.0",
                       "resolved": "https://registry.npmjs.org/inherits/-/inherits-2.0.3.tgz"
                     }
                   }
@@ -1106,7 +1106,7 @@
     "camshaft-reference": {
       "version": "0.29.0",
       "from": "camshaft-reference@<2.0.0",
-      "resolved": "https://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.29.0.tgz"
+      "resolved": "http://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.29.0.tgz"
     },
     "carto": {
       "version": "0.15.1-cdb3",
@@ -1985,7 +1985,7 @@
     "queue-async": {
       "version": "1.2.1",
       "from": "queue-async@1.2.1",
-      "resolved": "https://registry.npmjs.org/queue-async/-/queue-async-1.2.1.tgz"
+      "resolved": "http://registry.npmjs.org/queue-async/-/queue-async-1.2.1.tgz"
     },
     "tangram": {
       "version": "0.11.8",

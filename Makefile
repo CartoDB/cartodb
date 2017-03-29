@@ -236,6 +236,7 @@ WORKING_SPECS_9 = \
 	spec/models/carto/invitation_spec.rb \
 	spec/models/carto/user_service_spec.rb \
 	spec/models/carto/user_spec.rb \
+	spec/models/carto/helpers/billing_cycle_spec.rb \
 	spec/models/carto/user_table_spec.rb \
 	spec/models/carto/organization_spec.rb \
 	spec/models/carto/visualization_export_spec.rb \
@@ -255,6 +256,7 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/models/carto/mobile_app_presenter_spec.rb \
 	spec/models/carto/notification_spec.rb \
 	spec/models/carto/overlay_spec.rb \
+	spec/models/carto/received_notification_spec.rb \
 	spec/models/carto/user_migration_spec.rb \
 	spec/models/table_registrar_spec.rb \
 	spec/requests/admin/organization_users_controller_spec.rb \
@@ -263,7 +265,7 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/requests/carto/builder/datasets_controller_spec.rb \
 	spec/requests/carto/api/analyses_controller_spec.rb \
 	spec/requests/carto/api/maps_controller_spec.rb \
-	spec/requests/carto/api/user_notifications_controller_spec.rb \
+	spec/requests/carto/api/static_notifications_controller_spec.rb \
 	spec/requests/carto/api/visualization_exports_controller_spec.rb \
 	spec/requests/carto/api/vizjson3_presenter_spec.rb \
 	spec/requests/carto/superadmin/organizations_controller_spec.rb \
@@ -283,6 +285,7 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/requests/carto/api/states_controller_spec.rb \
 	spec/requests/carto/api/metrics_controller_spec.rb \
 	spec/requests/carto/api/organization_notifications_controller_spec.rb \
+	spec/requests/carto/api/received_notifications_controller_spec.rb \
 	spec/lib/carto/tracking/events_spec.rb \
 	spec/lib/carto/definition_spec.rb \
 	spec/lib/carto/styles/cartography_spec.rb \
@@ -348,11 +351,16 @@ check-carto-db-class:
 check-integrations:
 	CHECK_SPEC=52 RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_INTEGRATIONS)
 
+check-gear/%: %
+	cd $< && bundle install && RAILS_ENV=test bundle exec rspec
+
+check-gears: $(addprefix check-gear/, $(wildcard gears/*))
+
 check-external: prepare-test-db check-integrations
 
 check-prepared: check-1 check-2 check-4 check-5 check-7 check-9 check-spec-helper-min check-carto-db-class
 
-check: prepare-test-db check-prepared
+check: prepare-test-db check-prepared check-gears
 check-frontend:
 	./node_modules/.bin/grunt test
 

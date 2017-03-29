@@ -34,7 +34,7 @@ module Carto
       let(:valid_payload) do
         {
           organization_id: @organization.id,
-          icon: 'success',
+          icon: Carto::Notification::ICON_SUCCESS,
           recipients: 'builders',
           body: 'wadus'
         }
@@ -81,7 +81,8 @@ module Carto
     describe '#destroy' do
       before(:each) do
         @organization.notifications.each(&:destroy)
-        @notification = @organization.notifications.create!(body: 'a', recipients: 'builders', icon: 'error')
+        @notification = @organization.notifications.create!(body: 'a', recipients: 'builders',
+                                                            icon: Carto::Notification::ICON_WARNING)
       end
 
       def destroy_notification_request(org_id, user, notification_id)

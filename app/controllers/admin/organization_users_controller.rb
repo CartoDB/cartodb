@@ -171,7 +171,8 @@ class Admin::OrganizationUsersController < Admin::AdminController
     flash.now[:error] = "There was a problem while updating this user. Please, try again and contact us if the problem persists. #{e.user_message}"
     render 'edit'
   rescue Sequel::ValidationFailed => e
-    render 'edit'
+    flash.now[:error] = e.message
+    render 'edit', status: 422
   end
 
   def destroy

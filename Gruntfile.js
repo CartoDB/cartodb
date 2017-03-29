@@ -2,10 +2,13 @@
  var timer = require("grunt-timer");
  var jasmineCfg = require('./lib/build/tasks/jasmine.js');
  var duplicatedDependencies = require('./lib/build/tasks/shrinkwrap-duplicated-dependencies.js');
+ var parser = require('parse-yarn-lock');
+var fs = require('fs');
+var yarnLockFile = fs.readFileSync('./yarn.lock').toString();
 
- var REQUIRED_NPM_VERSION = /2.14.[0-9]+/;
- var REQUIRED_NODE_VERSION = /0.10.[0-9]+/;
- var SHRINKWRAP_MODULES_TO_VALIDATE = [
+ var REQUIRED_NPM_VERSION = /3.10.[0-9]+/;
+ var REQUIRED_NODE_VERSION = /6.[0-9].[0-9]+/;
+ var YARN_MODULES_TO_VALIDATE = [
   'backbone',
   'camshaft-reference',
   'carto',
@@ -27,44 +30,48 @@
 
     if (timer) timer.init(grunt);
 
-    // function preFlight(done) {
-    //   function checkVersion(cmd, versionRegExp, name, done) {
-    //     require("child_process").exec(cmd, function (error, stdout, stderr) {
-    //       var err = null;
-    //       if (error) {
-    //         err = 'failed to check version for ' + name;
-    //       } else {
-    //         if (!versionRegExp.test(stdout)) {
-    //           err = 'installed ' + name + ' version does not match with required one ' + versionRegExp.toString() + " installed: " +  stdout;
-    //         }
-    //       }
-    //       if (err) {
-    //         grunt.log.fail(err);
-    //       }
-    //       done && done(err ? new Error(err): null);
-    //     });
-    //   }
-    //   checkVersion('npm -v', REQUIRED_NPM_VERSION, 'npm', done);
-    //   checkVersion('node -v', REQUIRED_NODE_VERSION, 'node', done);
-    // }
+    function preFlight(done) {
+      function checkVersion(cmd, versionRegExp, name, done) {
+        require("child_process").exec(cmd, function (error, stdout, stderr) {
+          var err = null;
+          if (error) {
+            err = 'failed to check version for ' + name;
+          } else {
+            if (!versionRegExp.test(stdout)) {
+              err = 'installed ' + name + ' version does not match with required one ' + versionRegExp.toString() + " installed: " +  stdout;
+            }
+          }
+          if (err) {
+            grunt.log.fail(err);
+          }
+          done && done(err ? new Error(err): null);
+        });
+      }
+      checkVersion('npm -v', REQUIRED_NPM_VERSION, 'npm', done);
+      checkVersion('node -v', REQUIRED_NODE_VERSION, 'node', done);
+    }
 
-    // preFlight(function (err) {
-    //   if (err) {
-    //     grunt.log.fail("############### /!\\ CAUTION /!\\ #################");
-    //     grunt.log.fail("PLEASE installed required versions to build CARTO:\n- npm: " + REQUIRED_NPM_VERSION + "\n- node: " + REQUIRED_NODE_VERSION);
-    //     grunt.log.fail("#################################################");
-    //     process.exit(1);
-    //   }
-    // });
+    preFlight(function (err) {
+      if (err) {
+        grunt.log.fail("############### /!\\ CAUTION /!\\ #################");
+        grunt.log.fail("PLEASE installed required versions to build CARTO:\n- npm: " + REQUIRED_NPM_VERSION + "\n- node: " + REQUIRED_NODE_VERSION);
+        grunt.log.fail("#################################################");
+        process.exit(1);
+      }
+    });
 
-    // var duplicatedModules = duplicatedDependencies(require('./npm-shrinkwrap.json'), SHRINKWRAP_MODULES_TO_VALIDATE);
+    // var duplicatedModules = duplicatedDependencies(YARN_MODULES_TO_VALIDATE);
     // if (duplicatedModules.length > 0) {
     //   grunt.log.fail("############### /!\\ CAUTION /!\\ #################");
-    //   grunt.log.fail("Duplicated dependencies found in npm-shrinkwrap.json file.");
+    //   grunt.log.fail("Duplicated dependencies found in yarn.lock file.");
     //   grunt.log.fail(JSON.stringify(duplicatedModules, null, 4));
     //   grunt.log.fail("#################################################");
     //   process.exit(1);
     // }
+
+    parser.parse(yarnLockFile, function (err, parsed) {
+      console.log('-' + parsed + '-');
+    });
 
     var ROOT_ASSETS_DIR = './public/assets/';
     var ASSETS_DIR = './public/assets/<%= pkg.version %>';

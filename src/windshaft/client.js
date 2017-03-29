@@ -53,6 +53,7 @@ WindshaftClient.prototype.instantiateMap = function (options) {
       if (data.errors) {
         errorCallback(data);
       } else {
+        delete data.cdn_url.templates;
         successCallback(data);
       }
     },

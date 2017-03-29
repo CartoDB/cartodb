@@ -1,3 +1,4 @@
+var _ = require('underscore');
 var CartoDBLayer = require('../../../src/geo/map/cartodb-layer');
 var TorqueLayer = require('../../../src/geo/map/torque-layer');
 var LayersCollection = require('../../../src/geo/map/layers');
@@ -66,93 +67,97 @@ describe('src/vis/model-updater', function () {
 
     it('should set vis state to ok', function () {
       this.modelUpdater.updateModels(this.windshaftMap);
-
       expect(this.visModel.setOk).toHaveBeenCalled();
     });
 
     describe('layerGroupModel', function () {
-      it('should set indexOfLayersInWindshaft', function () {
+      beforeEach(function () {
+        var layer1 = new CartoDBLayer({}, { vis: this.visModel });
+        var layer2 = new CartoDBLayer({}, { vis: this.visModel });
+
+        this.layersCollection.reset([ layer1, layer2 ]);
+
         this.windshaftMap.getLayerIndexesByType.and.callFake(function (layerType) {
           if (layerType === 'mapnik') {
             return ([1, 2]);
           }
         });
+      });
 
+      it('should set indexOfLayersInWindshaft', function () {
         this.modelUpdater.updateModels(this.windshaftMap);
-
         expect(this.layerGroupModel.get('indexOfLayersInWindshaft')).toEqual([1, 2]);
       });
 
-      describe('tile urls', function () {
-        it('should generate tile URLs', function () {
-          var layer1 = new CartoDBLayer({}, { vis: this.visModel });
-          var layer2 = new CartoDBLayer({}, { vis: this.visModel });
-
-          this.layersCollection.reset([ layer1, layer2 ]);
-
-          // For Windshaft, layers are in positions 0 and 1
-          this.windshaftMap.getLayerIndexesByType.and.returnValue([0, 1]);
-
-          this.modelUpdater.updateModels(this.windshaftMap);
-
-          // Tile URL template will fetch tiles for layers #0 and #1
-          expect(this.layerGroupModel.getTileURLTemplate()).toEqual(
-            'http://{s}.documentation.carto.com/api/v1/map/90e64f1b9145961af7ba36d71b887dd2:0/0,1/{z}/{x}/{y}.png'
-          );
-        });
-      });
-
-      describe('grid urls', function () {
-        it('should generate grid URLs', function () {
-          this.windshaftMap.getSupportedSubdomains.and.returnValue(['0', '1', '2', '3']);
-
-          var layer1 = new CartoDBLayer({}, { vis: this.visModel });
-          var layer2 = new CartoDBLayer({}, { vis: this.visModel });
-
-          this.layersCollection.reset([ layer1, layer2 ]);
-
-          // For Windshaft, layers are in positions 0 and 1
-          this.windshaftMap.getLayerIndexesByType.and.returnValue([1, 2]);
-
-          this.modelUpdater.updateModels(this.windshaftMap);
-
-          // Tile URL template will fetch tiles for layers #0 and #1
-          expect(this.layerGroupModel.getGridURLTemplatesWithSubdomains(0)).toEqual([
+      var testCases = [{
+        name: 'with subdomains',
+        baseURL: 'http://{s}.documentation.carto.com/api/v1/map/90e64f1b9145961af7ba36d71b887dd2:0',
+        supportedSubdomains: ['0', '1', '2', '3'],
+        expectedTileURLTemplate: 'http://{s}.documentation.carto.com/api/v1/map/90e64f1b9145961af7ba36d71b887dd2:0/1,2/{z}/{x}/{y}.png',
+        expectedGridURLTemplatesWithSubdomains: {
+          0: [
             'http://0.documentation.carto.com/api/v1/map/90e64f1b9145961af7ba36d71b887dd2:0/1/{z}/{x}/{y}.grid.json',
             'http://1.documentation.carto.com/api/v1/map/90e64f1b9145961af7ba36d71b887dd2:0/1/{z}/{x}/{y}.grid.json',
             'http://2.documentation.carto.com/api/v1/map/90e64f1b9145961af7ba36d71b887dd2:0/1/{z}/{x}/{y}.grid.json',
             'http://3.documentation.carto.com/api/v1/map/90e64f1b9145961af7ba36d71b887dd2:0/1/{z}/{x}/{y}.grid.json'
-          ]);
-          expect(this.layerGroupModel.getGridURLTemplatesWithSubdomains(1)).toEqual([
+          ],
+          1: [
             'http://0.documentation.carto.com/api/v1/map/90e64f1b9145961af7ba36d71b887dd2:0/2/{z}/{x}/{y}.grid.json',
             'http://1.documentation.carto.com/api/v1/map/90e64f1b9145961af7ba36d71b887dd2:0/2/{z}/{x}/{y}.grid.json',
             'http://2.documentation.carto.com/api/v1/map/90e64f1b9145961af7ba36d71b887dd2:0/2/{z}/{x}/{y}.grid.json',
             'http://3.documentation.carto.com/api/v1/map/90e64f1b9145961af7ba36d71b887dd2:0/2/{z}/{x}/{y}.grid.json'
-          ]);
-        });
-      });
+          ]
+        },
+        expectedAttributesBaseURL: {
+          0: /http:\/\/[0-3]\.documentation\.carto\.com\/api\/v1\/map\/90e64f1b9145961af7ba36d71b887dd2:0\/1\/attributes/,
+          1: /http:\/\/[0-3]\.documentation\.carto\.com\/api\/v1\/map\/90e64f1b9145961af7ba36d71b887dd2:0\/2\/attributes/
+        }
+      }, {
+        name: 'with no subdomains',
+        baseURL: 'http://documentation.carto.com/api/v1/map/90e64f1b9145961af7ba36d71b887dd2:0',
+        supportedSubdomains: [],
+        expectedTileURLTemplate: 'http://documentation.carto.com/api/v1/map/90e64f1b9145961af7ba36d71b887dd2:0/1,2/{z}/{x}/{y}.png',
+        expectedGridURLTemplatesWithSubdomains: {
+          0: [
+            'http://documentation.carto.com/api/v1/map/90e64f1b9145961af7ba36d71b887dd2:0/1/{z}/{x}/{y}.grid.json'
+          ],
+          1: [
+            'http://documentation.carto.com/api/v1/map/90e64f1b9145961af7ba36d71b887dd2:0/2/{z}/{x}/{y}.grid.json'
+          ]
+        },
+        expectedAttributesBaseURL: {
+          0: /http:\/\/documentation\.carto\.com\/api\/v1\/map\/90e64f1b9145961af7ba36d71b887dd2:0\/1\/attributes/,
+          1: /http:\/\/documentation\.carto\.com\/api\/v1\/map\/90e64f1b9145961af7ba36d71b887dd2:0\/2\/attributes/
+        }
+      }];
 
-      describe('attribute urls', function () {
-        it('should generate attribute URLs', function () {
-          this.windshaftMap.getSupportedSubdomains.and.returnValue(['0', '1', '2', '3']);
+      _.each(testCases, function (testCase) {
+        describe(testCase.name, function () {
+          beforeEach(function () {
+            this.windshaftMap.getBaseURL.and.returnValue(testCase.baseURL);
+            this.windshaftMap.getSupportedSubdomains.and.returnValue(testCase.supportedSubdomains);
+            this.modelUpdater.updateModels(this.windshaftMap);
+          });
 
-          var layer1 = new CartoDBLayer({}, { vis: this.visModel });
-          var layer2 = new CartoDBLayer({}, { vis: this.visModel });
+          describe('tile urls', function () {
+            it('should generate tile URLs', function () {
+              expect(this.layerGroupModel.getTileURLTemplate()).toEqual(testCase.expectedTileURLTemplate);
+            });
+          });
 
-          this.layersCollection.reset([ layer1, layer2 ]);
+          describe('grid urls', function () {
+            it('should generate grid URLs', function () {
+              expect(this.layerGroupModel.getGridURLTemplatesWithSubdomains(0)).toEqual(testCase.expectedGridURLTemplatesWithSubdomains[0]);
+              expect(this.layerGroupModel.getGridURLTemplatesWithSubdomains(1)).toEqual(testCase.expectedGridURLTemplatesWithSubdomains[1]);
+            });
+          });
 
-          // For Windshaft, layers are in positions 0 and 1
-          this.windshaftMap.getLayerIndexesByType.and.returnValue([1, 2]);
-
-          this.modelUpdater.updateModels(this.windshaftMap);
-
-          // Tile URL template will fetch tiles for layers #0 and #1
-          expect(this.layerGroupModel.getAttributesBaseURL(0)).toMatch(
-            /http:\/\/[0-3]\.documentation\.carto\.com\/api\/v1\/map\/90e64f1b9145961af7ba36d71b887dd2:0\/1\/attributes/
-          );
-          expect(this.layerGroupModel.getAttributesBaseURL(1)).toMatch(
-            /http:\/\/[0-3]\.documentation\.carto\.com\/api\/v1\/map\/90e64f1b9145961af7ba36d71b887dd2:0\/2\/attributes/
-          );
+          describe('attribute urls', function () {
+            it('should generate attribute URLs', function () {
+              expect(this.layerGroupModel.getAttributesBaseURL(0)).toMatch(testCase.expectedAttributesBaseURL[0]);
+              expect(this.layerGroupModel.getAttributesBaseURL(1)).toMatch(testCase.expectedAttributesBaseURL[1]);
+            });
+          });
         });
       });
     });

@@ -183,6 +183,46 @@ describe('geo/cartodb-layer-group', function () {
     });
   });
 
+  describe('.getTileURLTemplatesWithSubdomains', function () {
+    beforeEach(function () {
+      this.cartoDBLayerGroup = new CartoDBLayerGroup({
+        indexOfLayersInWindshaft: [1, 2],
+        urls: {
+          tiles: 'http://carto.com/{layerIndexes}/{z}/{x}/{y}.{format}'
+        }
+      }, {
+        layersCollection: this.layersCollection
+      });
+
+      var otherLayer = new Backbone.Model();
+      this.cartoDBLayer1 = new CartoDBLayer({}, { vis: this.vis });
+      this.cartoDBLayer2 = new CartoDBLayer({}, { vis: this.vis });
+      this.layersCollection.reset([
+        otherLayer,
+        this.cartoDBLayer1,
+        this.cartoDBLayer2
+      ]);
+    });
+
+    it('should return one URL when there are NO subdomains', function () {
+      expect(this.cartoDBLayerGroup.getTileURLTemplatesWithSubdomains()).toEqual([ 'http://carto.com/1,2/{z}/{x}/{y}.png' ]);
+    });
+
+    it('should include URLs for different subdomains', function () {
+      this.cartoDBLayerGroup.set('urls', {
+        tiles: 'http://{s}.carto.com/{layerIndexes}/{z}/{x}/{y}.{format}',
+        subdomains: [ '0', '1', '2', '3' ]
+      });
+
+      expect(this.cartoDBLayerGroup.getTileURLTemplatesWithSubdomains()).toEqual([
+        'http://0.carto.com/1,2/{z}/{x}/{y}.png',
+        'http://1.carto.com/1,2/{z}/{x}/{y}.png',
+        'http://2.carto.com/1,2/{z}/{x}/{y}.png',
+        'http://3.carto.com/1,2/{z}/{x}/{y}.png'
+      ]);
+    });
+  });
+
   describe('.hasTileURLTemplates', function () {
     beforeEach(function () {
       this.cartoDBLayer1 = new CartoDBLayer({}, { vis: this.vis });

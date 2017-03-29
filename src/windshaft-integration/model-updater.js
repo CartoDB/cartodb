@@ -48,7 +48,7 @@ ModelUpdater.prototype.updateModels = function (windshaftMap, sourceId, forceFet
 ModelUpdater.prototype._updateLayerGroupModel = function (windshaftMap) {
   var urls = {
     tiles: this._generateTileURLTemplate(windshaftMap),
-    subdomains: windshafMap.getSupportedSubdomains(),
+    subdomains: windshaftMap.getSupportedSubdomains(),
     grids: this._calculateGridURLTemplatesForCartoDBLayers(windshaftMap),
     attributes: this._calculateAttributesBaseURLsForCartoDBLayers(windshaftMap),
     image: this._calculateStaticMapURL(windshaftMap)

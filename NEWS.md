@@ -62,13 +62,16 @@ Development
   * Notification API (#11850)
 * Improved empty bounds map handling (#11711).
 * Updated diagnosis page versions.
-* Improved formula widget description field. (#11469)
+* Improved formula widget description field (#11469).
 * In an organization, only the owner sees the Google API keys.
 * Added support for Zeus for faster testing (#11574). Check `CONTRIBUTING.md` for configuration details.
+* Migrate to use GNIP v2 for twitter search connector (#10051, #11595).
+* Notifications API (#11734) and administrator UI (#11729).
 * Migrate to use GNIP v2 for twitter search connector (#10051, #11595)
 * Organization notifications (WIP) (#11734, #11780, #11734, #11821)
 * Invite to georeference proactively when detecting non-georeferenced data (#11316)
 * Update tangram with smooth point outline.
+* Improve affordance of layer item (#11359).
 * GME users can change to any basemap #11785.
 * Improve affordance of layer item (#11359)
 * Revamp of quota management code

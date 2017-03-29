@@ -233,7 +233,7 @@ shared_examples_for 'Layer model' do
 
   describe '#uses_private_tables?' do
     it 'returns true if any of the affected tables is private' do
-      layers = @table.table_visualization.data_layers
+      layers = @table.table_visualization.layers(:cartodb)
       layers.length.should == 1
       layers.first.uses_private_tables?.should be_true
       @table.privacy = UserTable::PRIVACY_PUBLIC

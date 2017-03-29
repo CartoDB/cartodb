@@ -316,8 +316,7 @@ describe Carto::Api::VisualizationsController do
 
     it 'returns valid information for a user with one table' do
       table1 = create_random_table(@user_1)
-      table1_visualization = CartoDB::Visualization::Member.new(id: table1.table_visualization.id).fetch
-      table1_visualization_hash = table1_visualization.to_hash(
+      table1_visualization_hash = table1.table_visualization.to_hash(
         related: false,
         table_data: true,
         user: @user_1,

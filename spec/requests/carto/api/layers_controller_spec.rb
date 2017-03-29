@@ -698,14 +698,14 @@ describe Carto::Api::LayersController do
             access: CartoDB::Permission::ACCESS_READONLY
           }] }.to_json, @headers
 
-      layer = Carto::Layer.create(
+      layer = Layer.create(
         kind: 'carto',
         tooltip: {},
         options: {},
         infowindow: {}
       )
 
-      table.map.layers << layer
+      table.map.add_layer layer
 
       login_as(user_2, scope: user_2.username)
       get_json api_v1_maps_layers_index_url(user_domain: user_2.username, map_id: table.map.id) do |response|
@@ -760,13 +760,13 @@ describe Carto::Api::LayersController do
     end
 
     it "Gets layers by map id" do
-      layer = Carto::Layer.create(
+      layer = Layer.create(
         kind: 'carto',
         tooltip: {},
         options: {},
         infowindow: {}
       )
-      layer2 = Carto::Layer.create(
+      layer2 = Layer.create(
         kind: 'tiled',
         tooltip: {},
         options: {},
@@ -778,8 +778,8 @@ describe Carto::Api::LayersController do
       existing_layers_ids = @table.map.layers.map(&:id)
       existing_layers_count = @table.map.layers.count
 
-      @table.map.layers << layer
-      @table.map.layers << layer2
+      @table.map.add_layer layer
+      @table.map.add_layer layer2
 
       default_url_options[:host] = "#{@user.subdomain}.localhost.lan"
       get_json api_v1_maps_layers_index_url(params.merge(map_id: @table.map.id)) do |response|

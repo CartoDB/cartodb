@@ -30,7 +30,7 @@ describe 'UserMigration' do
     export.state.should eq Carto::UserMigrationExport::STATE_COMPLETE
 
     carto_user.client_applications.each(&:destroy)
-    table1.table_visualization.layers.each(&:destroy)
+    table1.table_visualization.layers(:named_map).each(&:destroy)
     table1.destroy
     expect { table1.records }.to raise_error
     user.destroy
@@ -67,7 +67,7 @@ describe 'UserMigration' do
       puts export.log.entries if export.state != Carto::UserMigrationExport::STATE_COMPLETE
       export.state.should eq Carto::UserMigrationExport::STATE_COMPLETE
 
-      table1.table_visualization.layers.each(&:destroy)
+      table1.table_visualization.layers(:named_map).each(&:destroy)
       table1.destroy
       expect { table1.records }.to raise_error
       @carto_org_user_2.client_applications.each(&:destroy)

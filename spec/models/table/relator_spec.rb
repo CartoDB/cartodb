@@ -1,0 +1,152 @@
+# encoding: utf-8
+require 'rspec/core'
+require 'rspec/expectations'
+require 'rspec/mocks'
+require_relative '../../spec_helper'
+require 'helpers/unique_names_helper'
+
+describe CartoDB::TableRelator do
+  include UniqueNamesHelper
+  describe '.rows_and_size' do
+    before(:all) do
+      CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+
+      @user = FactoryGirl.create(:valid_user)
+    end
+
+    after(:all) do
+      @user.destroy
+    end
+
+    before do
+      bypass_named_maps
+    end
+
+    it 'checks row_count_and_size relator method' do
+      @user.in_database { |database| @db = database }
+
+      table_name = unique_name('table')
+
+      table = create_table({
+                               user_id: @user.id,
+                               name: table_name
+                           })
+
+      expected_data = { size: 16384, row_count: 0}
+      table.row_count_and_size.should eq expected_data
+
+      @db.drop_table?(table_name)
+    end
+  end
+
+  describe '.serialize_fully_dependent_visualizations' do
+    before :each do
+      bypass_named_maps
+
+      table = Table.new
+      table.stubs(:id).returns(2)
+      @affected_vis_records = [
+        { id: 1, name: '1st', updated_at: Time.now },
+        { id: 2, name: '2nd', updated_at: Time.now },
+        { id: 3, name: '3rd', updated_at: Time.now },
+      ]
+      vis_mock = mock('DB Visualizations')
+      records = mock('records')
+      records.stubs(:to_a).returns(@affected_vis_records)
+      vis_mock.stubs(:with_sql).returns(records)
+      db = { visualizations: vis_mock }
+      @table_relator = CartoDB::TableRelator.new(db, table)
+      table.instance_variable_get(:@user_table).stubs(:relator).returns(@table_relator)
+    end
+
+    describe 'given there are no dependent visualizations' do
+      before :each do
+        @dependents = @table_relator.serialize_fully_dependent_visualizations
+      end
+
+      it 'should return an empty list' do
+        @dependents.should eq []
+      end
+    end
+
+    describe 'given there are at least one dependent visualization' do
+      before :each do
+        bypass_named_maps
+
+        CartoDB::Visualization::Member.any_instance
+                                      .stubs(:fully_dependent_on?)
+                                      .returns(true, false, true)
+        @dependents = @table_relator.serialize_fully_dependent_visualizations
+      end
+
+      it 'should return a list with dependent visualizations' do
+        @dependents.size.should eq 2
+      end
+
+      it 'should contain expected datapoints required for dashboard' do
+        @dependents[0][:id].should eq '1'
+        @dependents[0][:name].should eq '1st'
+        @dependents[0][:updated_at].should eq @affected_vis_records[0][:updated_at]
+
+        @dependents[1][:id].should eq '3'
+        @dependents[1][:name].should eq '3rd'
+        @dependents[1][:updated_at].should eq @affected_vis_records[2][:updated_at]
+      end
+    end
+  end
+
+  describe '.serialize_partially_dependent_visualizations' do
+    before :each do
+      bypass_named_maps
+
+      table = Table.new
+      table.stubs(:id).returns(2)
+      @affected_vis_records = [
+        { id: 1, name: '1st', updated_at: Time.now },
+        { id: 2, name: '2nd', updated_at: Time.now },
+        { id: 3, name: '3rd', updated_at: Time.now },
+      ]
+
+      vis_mock = mock('DB Visualizations')
+      records = mock('records')
+      records.stubs(:to_a).returns(@affected_vis_records)
+      vis_mock.stubs(:with_sql).returns(records)
+      db = { visualizations: vis_mock }
+      @table_relator = CartoDB::TableRelator.new(db, table)
+      table.instance_variable_get(:@user_table).stubs(:relator).returns(@table_relator)
+    end
+
+    describe 'given there are no dependent visualizations' do
+      before :each do
+        bypass_named_maps
+
+        @non_dependents = @table_relator.serialize_partially_dependent_visualizations
+      end
+
+      it 'should return an empty list' do
+        @non_dependents.should eq []
+      end
+    end
+
+    describe 'given there are at least one non_dependent visualization' do
+      before :each do
+        bypass_named_maps
+
+        CartoDB::Visualization::Member.any_instance
+                                      .stubs(:partially_dependent_on?)
+                                      .returns(true, false, false)
+        @non_dependents = @table_relator.serialize_partially_dependent_visualizations
+      end
+
+      it 'should return a list with dependent visualizations' do
+        @non_dependents.size.should eq 1
+      end
+
+      it 'should contain expected datapoints required for dashboard' do
+        @non_dependents[0][:id].should eq '1'
+        @non_dependents[0][:name].should eq '1st'
+        @non_dependents[0][:updated_at].should eq @affected_vis_records[0][:updated_at]
+      end
+    end
+  end
+end

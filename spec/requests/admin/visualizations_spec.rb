@@ -320,7 +320,7 @@ describe Admin::VisualizationsController do
     end
 
     it "redirects to embed_map if visualization is 'derived'" do
-      map = FactoryGirl.create(:map)
+      map = FactoryGirl.create(:map, user_id: @user.id)
       derived_visualization = FactoryGirl.create(:derived_visualization, user_id: @user.id, map_id: map.id)
       id = derived_visualization.id
 

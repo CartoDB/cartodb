@@ -3,6 +3,8 @@ FactoryGirl.define do
   factory :geocoding, class: Geocoding do
     to_create(&:save)
 
+    kind 'namedplace'
+
     factory :high_resolution_geocoding do
       kind 'high-resolution'
     end

@@ -30,6 +30,7 @@ class Admin::UsersController < Admin::AdminController
   before_filter :load_services, only: [:account, :account_update, :delete]
   before_filter :load_account_deletion_info, only: [:account, :delete]
   before_filter :load_dashboard_notifications, only: [:account, :profile]
+  before_filter :load_organization_notifications, only: [:account, :profile]
 
   layout 'application'
 
@@ -207,5 +208,11 @@ class Admin::UsersController < Admin::AdminController
     carto_user = Carto::User.where(id: current_user.id).first if current_user
 
     @dashboard_notifications = carto_user ? carto_user.notifications_for_category(:dashboard) : {}
+  end
+
+  def load_organization_notifications
+    carto_user = Carto::User.where(id: current_user.id).first if current_user
+
+    @organization_notifications = carto_user ? carto_user.received_notifications.unread.map { |n| Carto::Api::ReceivedNotificationPresenter.new(n) } : {}
   end
 end

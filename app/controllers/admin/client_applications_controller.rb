@@ -7,6 +7,7 @@ class Admin::ClientApplicationsController < Admin::AdminController
   before_filter :login_required
   before_filter :enforce_engine_enabled, only: :regenerate_api_key
   before_filter :load_dashboard_notifications, only: :api_key
+  before_filter :load_organization_notifications, only: :api_key
 
   layout 'application'
 
@@ -69,5 +70,11 @@ class Admin::ClientApplicationsController < Admin::AdminController
     carto_user = Carto::User.where(id: current_user.id).first if current_user
 
     @dashboard_notifications = carto_user ? carto_user.notifications_for_category(:dashboard) : {}
+  end
+
+  def load_organization_notifications
+    carto_user = Carto::User.where(id: current_user.id).first if current_user
+
+    @organization_notifications = carto_user ? carto_user.received_notifications.unread.map { |n| Carto::Api::ReceivedNotificationPresenter.new(n) } : {}
   end
 end

@@ -1,5 +1,6 @@
 require 'values'
 require 'active_record'
+require_dependency 'carto_gears_api/organizations/organization'
 
 module CartoGearsApi
   module Users
@@ -38,6 +39,20 @@ module CartoGearsApi
 
       def can_change_email?
         @can_change_email
+      end
+
+      # @api private
+      def self.from_model(user)
+        CartoGearsApi::Users::User.with(
+          id: user.id,
+          username: user.username,
+          email: user.email,
+          organization: user.organization && CartoGearsApi::Organizations::Organization.from_model(user.organization),
+          feature_flags: user.feature_flags,
+          can_change_email: user.can_change_email?,
+          quota_in_bytes: user.quota_in_bytes,
+          viewer: user.viewer
+        )
       end
     end
   end

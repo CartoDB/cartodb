@@ -40,6 +40,7 @@
     <%= yield %>
 
     <%= render 'admin/shared/footer', { light: true } %>
+    <%= insert_trackjs('embeds') %>
     <script type="text/javascript">
       var config = <%= safe_js_object frontend_config_public({https_apis: request.protocol == 'https://' }) %>;
       var account_host = '<%= CartoDB.account_host %>';
@@ -65,7 +66,6 @@
     <% end %>
     <%= javascript_include_tag 'cdb.js', 'templates', 'public_dashboard_deps', 'public_dashboard' %>
     <%= yield :js %>
-    <%= insert_trackjs('embeds') %>
     <%= insert_google_analytics('embeds', true) %>
     <%= insert_hubspot() %>
   </body>

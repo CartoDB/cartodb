@@ -75,23 +75,81 @@ Follow these steps to update to get latest changes:
 
 ### Writing & running tests
 
-Tests reside in the `lib/assets/test` directory. We use
+We use
  - [Jasmine 2.1](jasmine.github.io/2.1/introduction.html) as test framework
  - [SinonJS 1.3.4](sinonjs.org) for test spies/stubs/mocks when Jasmine spies isn't good enough
 
-When adding new files make sure they exist in an appropriate file located in `lib/build/js_files` (will depends
-if you're writing tests for current code or the newer browserify modules).
+There are two test suites: one for the old Editor and one for Builder.
 
-Until our guidelines are publically available follow the existing file/directory and style structure.
+The old Editor specs reside in `lib/assets/test/spec/cartodb`.
 
-All tests can be run by:
+The core Builder specs reside in `lib/assets/core/test/spec/cartodb3`.
+
+#### Running all tests
+
+To check all the application specs, please run the next command through command line.
+
 ```bash
-grunt jasmine
-
+grunt test
 ```
-…or if you want to run tests in browser open http://localhost:8089/ after running `grunt dev`.
 
-If you only want to run a subset of tests the easiest and fastest way is to use [focused tests](jasmine.github.io/2.1/focused_specs.html), but you can also append  `?spec=str-matching-a-describe` to test URL, or use [--filter flag](https://github.com/gruntjs/grunt-contrib-jasmine#filtering-specs) if running tests in a terminal.
+This grunt task pass both Editor and Builder suites and the linting process.
+
+Run this task to be sure that everything is OK.
+
+#### Old Editor specs
+
+In order to develop tests for the codebase outside Builder (that is, old Editor and dashboard pages) we advise to run
+```bash
+grunt && grunt dev
+```
+After the building process finish, a webpage will show up with a link to the Jasmine page with all the specs. The URL of this page is `http://localhost:8089/_SpecRunner.html`
+
+Since this is the command for normal developing, as you modify any file you'll see the changes immediately both in the application and in the specs page.
+
+#### Builder specs
+
+The development of Builder specs is separated from regular development. This means that you can develop new specs or modify the existing ones without having the whole application running. This speeds up the development task.
+
+Another feature of Builder specs is that we only generate the affected ones by default. That means that we check the current branch changes against `master` branch and only build those specs that are affected by those changes. This way, we pass only the needed subset of specs.
+
+To start specs development type the next command:
+
+```bash
+grunt affected_specs
+```
+
+After building the whole suite for the first time, a webpage will show up with a link to the Jasmine page with all the specs. This suite is at `http://localhost:8088/_SpecRunner-affected.html`
+
+Then, the process will watch changes in the codebase and will regenerate the specs as needed. Just refresh the Jasmine page to pass again the tests.
+
+:warning: Node v6+ is required to run `grunt affected_specs`
+
+If you prefer to generate all specs anyway, you can pass a flag to the grunt task:
+
+```bash
+grunt affected_specs --specs=all
+```
+
+This will generate the whole Builder suite, not only the specs affected by the current branch.
+
+**Run specs and regular codebase simultaneously**
+
+If you want to run simultaneously the application and the specs generation follow these steps:
+
+1. Open a terminal with Node v0.10.48 (use nvm) and run `grunt && grunt dev`. This will build the application assets and will watch for changes.
+
+2. Open a second terminal and use nvm to set the Node version to 6+.
+
+3. In this second terminal run `grunt affected_specs`.
+
+4. You will see in the first terminal that a lot of changes build the bundle again. That's normal. The first step of the point 3 is to copy all needed files, so the `watch` of `grunt dev` triggers. Don't worry about it.
+
+5. That's it. When you change any Builder Javascript file `grunt dev` will build the application bundle and `grunt affected_specs` will build the specs.
+
+#### Running a particular spec
+
+If you only want to run a subset of tests the easiest and fastest way is to use [focused specs](jasmine.github.io/2.1/focused_specs.html), but you can also append  `?spec=str-matching-a-describe` to test URL, or use [--filter flag](https://github.com/gruntjs/grunt-contrib-jasmine#filtering-specs) if running tests in a terminal.
 
 ## Grunt
 

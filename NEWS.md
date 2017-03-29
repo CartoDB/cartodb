@@ -79,6 +79,7 @@ Development
     * Add back FREE users to overquota calculation (#11848)
 * Update tangram-cartocss to use smooth point outline.
 * Update cartodb.js to use multiple subdomains.
+* Refactored Builder specs generation using Webpack (#11698)
 
 ### Bug fixes
 * Fixed layers order when creating a new layer dragging from a compound analysis (#11827)
@@ -115,6 +116,7 @@ Development
 * Refactor Layer model (#10934)
 * Correctly register table dependencies of torque layers (#11549)
 * Validate number of organization seats in user update (#11839, #11859)
+* Validate number of organization seats in user update (#11839)
 * Fix bugs where legends where being hidden by reordering layers (#11088)
 * Correctly ask for alternative username when signing up with Google/GitHub into an organization
 * Avoid loading all rake code in resque workers (#11069)

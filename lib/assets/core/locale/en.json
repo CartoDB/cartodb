@@ -152,7 +152,7 @@
     "area-of-influence": {
       "title": "Create areas of influence",
       "description": "Area of influence creates polygons according to the parameters set by the user.",
-      "the-geom": "This column was updated to show the area of influence requested.",
+      "the-geom": "This column was updated to show the area of influence requested."
     },
     "aggregate-intersection": {
       "title": "Intersect second layer",
@@ -581,7 +581,7 @@
           "not-valid": "Insert a valid XYZ URL",
           "eg": "E.g.",
           "tms": "TMS",
-          "couldnt-validate": "We couldn't validate this. If you're sure it contains data click \"add basemap\"",
+          "couldnt-validate": "We couldn't validate this. If you're sure it contains data click \"add basemap\""
         },
         "mapbox": {
           "insert": "Insert your Mapbox URL",
@@ -792,7 +792,7 @@
           },
           "tooltip": {
             "group": "Access is inherited from group %{name}",
-            "org": "Access is inherited from organization",
+            "org": "Access is inherited from organization"
           },
           "toggle": {
             "read": "Read",
@@ -2044,7 +2044,7 @@
           "body": "There is already a torque layer in the layers collection. If you continue, this layer will get the default style.",
           "continue": "CONTINUE",
           "cancel": "CANCEL"
-        },
+        }
       },
       "components": {
         "fill": "Fill",
@@ -2311,7 +2311,7 @@
         "error": "Error saving geometry",
         "success": "Geometry successfully saved"
       },
-      "adding": "Adding geometry…",
+      "adding": "Adding geometry…"
     }
   }
 }

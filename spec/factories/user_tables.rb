@@ -3,9 +3,9 @@ require 'helpers/unique_names_helper'
 include UniqueNamesHelper
 
 FactoryGirl.define do
-  to_create(&:save)
-
   factory :user_table, class: UserTable do
+    to_create(&:save)
+
     name { unique_name('user_table') }
   end
 

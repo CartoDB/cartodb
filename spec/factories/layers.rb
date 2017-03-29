@@ -1,7 +1,7 @@
 FactoryGirl.define do
-  to_create(&:save)
-
   factory :layer, class: Layer do
+    to_create(&:save)
+
     order 1
     kind 'carto'
   end

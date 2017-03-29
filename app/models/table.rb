@@ -91,7 +91,15 @@ class Table
   end
 
   def save
-    @user_table.save!
+    # TODO: kept for compatibility reasons on tests on both models, until 100% removal of ::UserTable support
+    if @user_table.respond_to?(:save!)
+      @user_table.save!
+    else
+      # This should not happen with production code. Trace would lead the refactor
+      CartoDB::Logger.debug(message: "::Table#save invoked on Sequel", user_table: @user_table)
+      @user_table.save
+    end
+
     self
   end
 

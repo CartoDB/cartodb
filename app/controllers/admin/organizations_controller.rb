@@ -10,6 +10,7 @@ class Admin::OrganizationsController < Admin::AdminController
   before_filter :enforce_engine_enabled, only: :regenerate_all_api_keys
   before_filter :load_carto_organization, only: [:notifications, :new_notification]
   before_filter :load_notification, only: [:destroy_notification]
+  before_filter :load_organization_notifications, only: [:settings, :auth, :show, :groups, :notifications, :new_notification]
   helper_method :show_billing
 
   layout 'application'
@@ -35,9 +36,6 @@ class Admin::OrganizationsController < Admin::AdminController
   end
 
   def notifications
-    carto_viewer = current_user && Carto::User.where(id: current_user.id).first
-    @organization_notifications = carto_viewer ? carto_viewer.received_notifications.unread.map { |n| Carto::Api::ReceivedNotificationPresenter.new(n) } : {}
-
     @notification ||= Carto::Notification.new(recipients: Carto::Notification::RECIPIENT_ALL)
     @notifications = @carto_organization.notifications.limit(12).map { |n| Carto::Api::NotificationPresenter.new(n) }
     respond_to do |format|
@@ -186,4 +184,9 @@ class Admin::OrganizationsController < Admin::AdminController
     @notification = Carto::Notification.find(params[:id])
   end
 
+  def load_organization_notifications
+    carto_user = Carto::User.where(id: current_user.id).first if current_user
+
+    @organization_notifications = carto_user ? carto_user.received_notifications.unread.map { |n| Carto::Api::ReceivedNotificationPresenter.new(n) } : {}
+  end
 end

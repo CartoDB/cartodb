@@ -3,11 +3,11 @@ require_dependency 'carto/uuidhelper'
 
 module Carto
   module Api
-    class UserNotificationsController < ::Api::ApplicationController
+    class StaticNotificationsController < ::Api::ApplicationController
       include Carto::ControllerHelper
 
       ssl_required :update
-      before_filter :load_user_notifications, only: [:update]
+      before_filter :load_static_notifications, only: [:update]
 
       rescue_from StandardError, with: :rescue_from_standard_error
       rescue_from Carto::LoadError, with: :rescue_from_carto_error
@@ -24,7 +24,7 @@ module Carto
 
       private
 
-      def load_user_notifications
+      def load_static_notifications
         @notifications = Carto::User.find(current_user.id).static_notifications
       end
     end

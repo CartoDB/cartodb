@@ -117,6 +117,7 @@ Style/CollectionMethods:
     find_all: select
     find:
     detect: find
+    reduce:
     inject: reduce
 Style/CommentAnnotation:
   Description: Checks formatting of special comments (TODO, FIXME, OPTIMIZE, HACK,

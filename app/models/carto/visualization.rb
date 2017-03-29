@@ -742,6 +742,8 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def backup_visualization
+    return true if remote?
+
     if user.has_feature_flag?(Carto::VisualizationsExportService::FEATURE_FLAG_NAME) && map
       Carto::VisualizationsExportService.new.export(id)
     end

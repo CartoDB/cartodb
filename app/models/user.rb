@@ -22,6 +22,7 @@ require_dependency 'carto/helpers/auth_token_generator'
 require_dependency 'carto/helpers/has_connector_configuration'
 require_dependency 'carto/helpers/batch_queries_statement_timeout'
 require_dependency 'carto/user_authenticator'
+require_dependency 'carto/helpers/billing_cycle'
 
 class User < Sequel::Model
   include CartoDB::MiniSequel
@@ -32,6 +33,7 @@ class User < Sequel::Model
   include Carto::AuthTokenGenerator
   include Carto::HasConnectorConfiguration
   include Carto::BatchQueriesStatementTimeout
+  include Carto::BillingCycle
   extend Carto::UserAuthenticator
 
   self.strict_param_setting = false
@@ -152,11 +154,21 @@ class User < Sequel::Model
   def organization_validation
     if new?
       organization.validate_for_signup(errors, self)
-      organization.validate_new_user(self, errors)
-    elsif quota_in_bytes.to_i + organization.assigned_quota - initial_value(:quota_in_bytes) > organization.quota_in_bytes
-      # Organization#assigned_quota includes the OLD quota for this user,
-      # so we have to ammend that in the calculation:
-      errors.add(:quota_in_bytes, "not enough disk quota")
+
+      if organization.whitelisted_email_domains.present?
+        email_domain = email.split('@')[1]
+        unless organization.whitelisted_email_domains.include?(email_domain) || invitation_token.present?
+          errors.add(:email, "Email domain '#{email_domain}' not valid for #{organization.name} organization")
+        end
+      end
+    else
+      if quota_in_bytes.to_i + organization.assigned_quota - initial_value(:quota_in_bytes) > organization.quota_in_bytes
+        # Organization#assigned_quota includes the OLD quota for this user,
+        # so we have to ammend that in the calculation:
+        errors.add(:quota_in_bytes, "not enough disk quota")
+      end
+
+      organization.validate_seats(self, errors)
     end
   end
 
@@ -1055,18 +1067,6 @@ class User < Sequel::Model
       # Manually set updated_at
       api_calls["updated_at"] = Time.now.to_i
       $users_metadata.HMSET key, 'api_calls', api_calls.to_json
-    end
-  end
-
-  def last_billing_cycle
-    day = period_end_date.day rescue 29.days.ago.day
-    # << operator substract 1 month from the date object
-    date = (day > Date.today.day ? Date.today << 1 : Date.today)
-    begin
-      Date.parse("#{date.year}-#{date.month}-#{day}")
-    rescue ArgumentError
-      day = day - 1
-      retry
     end
   end
 

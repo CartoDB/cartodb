@@ -1,4 +1,5 @@
 FactoryGirl.define do
+  to_create(&:save)
 
   factory :layer, class: Layer do
     order 1

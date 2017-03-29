@@ -69,8 +69,7 @@ describe Visualization::Member do
 
     it 'should give read permission to table aka canonical visualization' do
       owner_table = create_table(@owner_user)
-      carto_canonical_vis = owner_table.table_visualization
-      canonical_vis = CartoDB::Visualization::Member.new(id: carto_canonical_vis.id).fetch
+      canonical_vis = owner_table.table_visualization
 
       canonical_vis.has_permission?(@owner_user, CartoDB::Visualization::Member::PERMISSION_READONLY).should eq true
       canonical_vis.has_permission?(@other_user, CartoDB::Visualization::Member::PERMISSION_READONLY).should eq false
@@ -82,8 +81,7 @@ describe Visualization::Member do
 
     it 'other user should not have permission until given' do
       owner_table = create_table(@owner_user)
-      carto_vis = create_vis_from_table(owner_table.table_visualization.user, owner_table)
-      vis = CartoDB::Visualization::Member.new(id: carto_vis.id).fetch
+      vis = create_vis_from_table(@owner_user, owner_table)
       vis.has_permission?(@owner_user, CartoDB::Visualization::Member::PERMISSION_READONLY).should eq true
       vis.has_permission?(@other_user, CartoDB::Visualization::Member::PERMISSION_READONLY).should eq false
 
@@ -94,25 +92,21 @@ describe Visualization::Member do
 
     it 'other user will not get permission in private table when the table owners adds it to the visualization' do
       owner_table = create_table(@owner_user)
-      carto_vis = create_vis_from_table(owner_table.table_visualization.user, owner_table)
-      vis = CartoDB::Visualization::Member.new(id: carto_vis.id).fetch
+      vis = create_vis_from_table(@owner_user, owner_table)
       give_permission(vis, @other_user, CartoDB::Visualization::Member::PERMISSION_READONLY)
       vis.has_permission?(@other_user, CartoDB::Visualization::Member::PERMISSION_READONLY).should eq true
 
       other_table = create_table(@owner_user)
-      other_vis = CartoDB::Visualization::Member.new(id: other_table.table_visualization.id).fetch
       add_layer_from_table(vis, other_table)
 
       vis.has_permission?(@other_user, CartoDB::Visualization::Member::PERMISSION_READONLY).should eq true
-      other_vis.has_permission?(@other_user, CartoDB::Visualization::Member::PERMISSION_READONLY).should eq false
+      other_table.table_visualization.has_permission?(@other_user, CartoDB::Visualization::Member::PERMISSION_READONLY).should eq false
     end
 
     it 'should not remove access to visualization if table privacy is changed to private' do
       owner_table = create_table(@owner_user)
-      carto_canonical_vis = owner_table.table_visualization
-      canonical_vis = CartoDB::Visualization::Member.new(id: carto_canonical_vis.id).fetch
-      carto_vis = create_vis_from_table(owner_table.table_visualization.user, owner_table)
-      vis = CartoDB::Visualization::Member.new(id: carto_vis.id).fetch
+      canonical_vis = owner_table.table_visualization
+      vis = create_vis_from_table(@owner_user, owner_table)
       give_permission(vis, @other_user, CartoDB::Visualization::Member::PERMISSION_READONLY)
 
       # removes access to table

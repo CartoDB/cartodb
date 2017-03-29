@@ -689,7 +689,7 @@ describe Table do
 
         CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
         @doomed_table = create_table(user_id: @user.id)
-        @automatic_geocoding = FactoryGirl.create(:automatic_geocoding, table_id: @doomed_table.id)
+        @automatic_geocoding = FactoryGirl.create(:automatic_geocoding, table: @doomed_table)
         @doomed_table.destroy
       end
 
@@ -1152,12 +1152,6 @@ describe Table do
         }.should raise_error(CartoDB::InvalidAttributes)
       end
 
-      it "fails with long values" do
-        table = create_table(user_id: @user.id)
-        table.add_column!(name: 'text_col', type: 'varchar(3)')
-        expect { table.insert_row!(text_col: 'hola') }.to raise_error(Sequel::DatabaseError, /value too long for type/)
-      end
-
       it "updates data_last_modified when changing data" do
         table = create_table(:user_id => @user.id)
 
@@ -1394,16 +1388,9 @@ describe Table do
       end
 
       it "should raise an error when creating a column with reserved name" do
-        table = create_table(user_id: @user.id)
-        lambda {
-          table.add_column!(:name => "xmin", :type => "number")
-        }.should raise_error(CartoDB::InvalidColumnName)
-      end
-
-      it "should raise an error when renaming a column with reserved name" do
         table = create_table(:user_id => @user.id)
         lambda {
-          table.rename_column('name', 'xmin')
+          table.add_column!(:name => "xmin", :type => "number")
         }.should raise_error(CartoDB::InvalidColumnName)
       end
 
@@ -1797,21 +1784,6 @@ describe Table do
         lambda {
           UserTable.find_by_identifier(666, table.name)
         }.should raise_error
-      end
-    end
-
-    describe '#get_by_table_id' do
-      it 'returns table service' do
-        id = Carto::UserTable.first.id
-        table = Table.get_by_table_id(id)
-        table.should_not be_nil
-        table.id.should eq id
-      end
-    end
-
-    describe '#table_size' do
-      it 'returns nil for unknown tables' do
-        Table.table_size(String.random(10), connection: @user.in_database).should be_nil
       end
     end
 
@@ -2462,6 +2434,28 @@ describe Table do
     end
   end
 
+  describe 'with ::UserTable model' do
+    before(:all) do
+      @user = FactoryGirl.create(:valid_user, quota_in_bytes: 524288000, table_quota: 500, private_tables_enabled: true)
+    end
+
+    before(:each) do
+      CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+      CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
+      Table.any_instance.stubs(:update_cdb_tablemetadata)
+      Table.any_instance.stubs(:model_class).returns(::UserTable)
+
+      bypass_named_maps
+    end
+
+    after(:all) do
+      @user.destroy
+    end
+
+    it_behaves_like 'table service'
+    it_behaves_like 'table service with legacy model'
+  end
+
   describe 'with Carto::UserTable model' do
     before(:all) do
       @user = FactoryGirl.create(:valid_user, quota_in_bytes: 524288000, table_quota: 500, private_tables_enabled: true)
@@ -2471,6 +2465,7 @@ describe Table do
       CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
       CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
       Table.any_instance.stubs(:update_cdb_tablemetadata)
+      Table.any_instance.stubs(:model_class).returns(Carto::UserTable)
 
       bypass_named_maps
     end

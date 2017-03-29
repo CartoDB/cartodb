@@ -1,6 +1,7 @@
 module Carto
   class VisualizationFactory
     def self.create_canonical_visualization(user_table)
+      CartoDB::Logger.debug(message: "Carto::VisualizationFactory#create_canonical_visualization")
       kind = user_table.raster? ? Carto::Visualization::KIND_RASTER : Carto::Visualization::KIND_GEOM
       esv = user_table.external_source_visualization
       user = user_table.user

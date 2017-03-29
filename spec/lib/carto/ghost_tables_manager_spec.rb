@@ -13,7 +13,6 @@ module Carto
 
     before(:each) do
       bypass_named_maps
-      CartoDB::Logger.expects(:error).never
     end
 
     after(:all) do

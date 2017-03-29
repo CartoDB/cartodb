@@ -202,9 +202,9 @@ describe Visualization::Collection do
       table3.name = unique_name('table')
       table3.save
 
-      vis1 = CartoDB::Visualization::Member.new(id: table1.table_visualization.id).fetch
-      vis2 = CartoDB::Visualization::Member.new(id: table2.table_visualization.id).fetch
-      vis3 = CartoDB::Visualization::Member.new(id: table3.table_visualization.id).fetch
+      vis1 = table1.table_visualization
+      vis2 = table2.table_visualization
+      vis3 = table3.table_visualization
 
       # Biggest row count
       vis3.table.add_column!(name: "test_col", type: "text")
@@ -299,11 +299,11 @@ describe Visualization::Collection do
 
     it 'counts total liked' do
       table11 = create_table(@user_1)
-      v11 = CartoDB::Visualization::Member.new(id: table11.table_visualization.id).fetch
+      v11 = table11.table_visualization
       table12 = create_table(@user_1)
-      v12 = CartoDB::Visualization::Member.new(id: table12.table_visualization.id).fetch
+      v12 = table12.table_visualization
       table21 = create_table(@user_2)
-      v21 = CartoDB::Visualization::Member.new(id: table21.table_visualization.id).fetch
+      v21 = table21.table_visualization
       [v11, v12, v21].each do |v|
         v.privacy = Visualization::Member::PRIVACY_PUBLIC
         v.store
@@ -375,7 +375,7 @@ describe Visualization::Collection do
 
       # Sharing a table won't count it as liked
       table22 = create_table(@user_2)
-      v22 = CartoDB::Visualization::Member.new(id: table22.table_visualization.id).fetch
+      v22 = table22.table_visualization
       v22.privacy = Visualization::Member::PRIVACY_PRIVATE
       v22.store
       permission22 = v22.permission
@@ -422,22 +422,22 @@ describe Visualization::Collection do
       table5 = create_table(@user_1, unique_name('table'))
       table6 = create_table(@user_1, unique_name('table'))
 
-      vis2 = CartoDB::Visualization::Member.new(id: table2.table_visualization.id).fetch
+      vis2 = table2.table_visualization
       vis2.privacy = Visualization::Member::PRIVACY_PUBLIC
       vis2.store
 
-      vis3 = CartoDB::Visualization::Member.new(id: table3.table_visualization.id).fetch
+      vis3 = table3.table_visualization
       vis3.privacy = Visualization::Member::PRIVACY_PUBLIC
       vis3.store
 
-      vis4 = CartoDB::Visualization::Member.new(id: table4.table_visualization.id).fetch
+      vis4 = table4.table_visualization
       vis4.privacy.should eq Visualization::Member::PRIVACY_PRIVATE
 
-      vis_link = CartoDB::Visualization::Member.new(id: table5.table_visualization.id).fetch
+      vis_link = table5.table_visualization
       vis_link.privacy = Visualization::Member::PRIVACY_LINK
       vis_link.store
 
-      vis_private = CartoDB::Visualization::Member.new(id: table6.table_visualization.id).fetch
+      vis_private = table6.table_visualization
       vis_private.privacy = Visualization::Member::PRIVACY_PRIVATE
       vis_private.store
 

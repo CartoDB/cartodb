@@ -22,8 +22,16 @@ $opacityTransition: 250ms;
   background: #FFF;
   z-index: 10;
 }
-.field_with_errors + .Md-container {
-  bottom: 3px;
+.field_with_errors {
+  .OrganizationNotifications-textarea {
+    border: 1px solid rgba($cHighlight-negative, 0.48);
+    background: rgba($cHighlight-negative, 0.04);
+    color: $cHighlight-negative;
+  }
+
+  + .Md-container {
+    bottom: 3px;
+  }
 }
 .Md-button,
 .Md-text {
@@ -121,10 +129,6 @@ $opacityTransition: 250ms;
   @include align-items(center);
   display: -webkit-box;
   margin-bottom: 0;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
 
   ul,
   ol {

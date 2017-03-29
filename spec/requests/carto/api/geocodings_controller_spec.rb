@@ -249,14 +249,14 @@ describe 'legacy behaviour tests' do
 
     it 'returns started geocodings but not finished' do
       geocoding1 = FactoryGirl.create(:geocoding, user: @user1, kind: 'high-resolution', created_at: Time.now,
-                                      processed_rows: 1, state: 'started')
+                                      processed_rows: 1, state: 'started', formatter: 'foo')
       FactoryGirl.create(:geocoding, user: @user1, kind: 'high-resolution', created_at: Time.now,
-                         processed_rows: 1, state: 'finished')
+                         processed_rows: 1, state: 'finished', formatter: 'foo')
 
       get api_v1_geocodings_index_url
       last_response.status.should eq 200
 
-      expected = {"geocodings"=>[{"table_name" => nil, "processed_rows" => 1, "remote_id" => nil, "formatter" => nil,
+      expected = {"geocodings"=>[{"table_name" => nil, "processed_rows" => 1, "remote_id" => nil, "formatter" => 'foo',
                                   "geocoder_type" => nil, "state" => "started", "cache_hits" => 0,
                                   "id" => geocoding1.id, "user_id" => @user1.id,"table_id" => nil,
                                   "automatic_geocoding_id" => nil, "kind" => "high-resolution", "country_code" => nil,
@@ -286,14 +286,15 @@ describe 'legacy behaviour tests' do
         kind: 'high-resolution',
         created_at: Time.now,
         processed_rows: 1,
-        state: 'started'
+        state: 'started',
+        formatter: 'foo'
       )
 
       get api_v1_geocodings_show_url(id: geocoding.id)
       last_response.status.should eq 200
 
       expected = {"id" => geocoding.id, "table_id" => nil, "table_name" => nil, "state" => "started",
-                  "kind" => "high-resolution", "country_code" => nil, "region_code" => nil, "formatter" => nil,
+                  "kind" => "high-resolution", "country_code" => nil, "region_code" => nil, "formatter" => 'foo',
                   "geocoder_type" => nil, "geometry_type" => nil, "error" => {"title" => "Geocoding error",
                   "description" => ""}, "processed_rows" => 1, "cache_hits" => 0, "processable_rows" => nil,
                   "real_rows" => nil, "price" => 0, "used_credits" => nil, "remaining_quota" => 0,

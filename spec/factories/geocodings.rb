@@ -4,6 +4,7 @@ FactoryGirl.define do
     to_create(&:save)
 
     kind 'namedplace'
+    formatter 'foo'
 
     factory :high_resolution_geocoding do
       kind 'high-resolution'

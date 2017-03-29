@@ -2,9 +2,7 @@ FactoryGirl.define do
   factory :asset do
     to_create(&:save)
 
-    asset_file { (Rails.root + 'db/fake_data/simple.json').to_s }
-
-    public_url 'https://manolo.es/es/co/simple.json'
+    public_url 'https://manolo.es/es/co/bar.png'
   end
 
   factory :organization_asset, class: Carto::Asset do

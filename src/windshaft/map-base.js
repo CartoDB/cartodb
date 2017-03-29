@@ -175,7 +175,7 @@ var WindshaftMap = Backbone.Model.extend({
     }
 
     if (cdnHost) {
-      return [protocol, '://{s}.', cdnHost, '/', userName].join('');
+      return [protocol, '://', cdnHost, '/', userName].join('');
     }
 
     return urlTemplate.replace('{user}', userName);

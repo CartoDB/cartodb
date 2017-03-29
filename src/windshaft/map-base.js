@@ -175,7 +175,7 @@ var WindshaftMap = Backbone.Model.extend({
     }
 
     if (cdnHost) {
-      return [protocol, '://{s}.', cdnHost, '/', userName].join('');
+      return [protocol, '://', cdnHost, '/', userName].join('');
     }
 
     return urlTemplate.replace('{user}', userName);
@@ -230,17 +230,13 @@ var WindshaftMap = Backbone.Model.extend({
   },
 
   getSupportedSubdomains: function () {
-    if (!this.get('cdn_url')) return ['0', '1', '2', '3'];
-
-    var templates = this.get('cdn_url').templates;
+    var templates = this.get('cdn_url') && this.get('cdn_url').templates;
     var protocol = this.getProtocol();
     if (templates && templates[protocol]) {
       return templates[protocol].subdomains;
-    } else if (!this._useHTTPS()) {
-      return ['0', '1', '2', '3'];
     }
 
-    return [''];
+    return [];
   },
 
   getLayerMetadata: function (layerIndex) {

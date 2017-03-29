@@ -2,24 +2,24 @@
 @import "../variables/colors";
 @import "../variables/sizes";
 
-.NotificationsList {
+.NotificationsDropdown {
   width: 258px;
   padding: 0!important;
   margin: 0!important;
 }
-.NotificationsList-item {
+.NotificationsDropdown-item {
   position: relative;
   padding: 0 0 15px 25px !important;
   margin: 15px !important;
 }
-.NotificationsList-item:not(:last-child) {
+.NotificationsDropdown-item:not(:last-child) {
   margin: 0 15px;
   border-bottom: 1px solid $cStructure-mainLine;
 }
-.NotificationsList-item:last-child {
+.NotificationsDropdown-item:last-child {
   padding: 0 0 0 25px !important;
 }
-.NotificationsList-icon {
+.NotificationsDropdown-icon {
   position: absolute;
   left: 0;
   width: 18px;
@@ -30,13 +30,13 @@
   color: #B1B8C1;
   text-align: center;
 }
-.NotificationsList-title {
+.NotificationsDropdown-title {
   font-size: $sFontSize-large;
   line-height: $sLineHeight-large;
   text-transform: capitalize;
   color: $cTypography-headers;
 }
-.NotificationsList-text {
+.NotificationsDropdown-text {
   margin-top: 0!important;
   color: $cTypography-secondary;
 }
@@ -56,33 +56,33 @@
 .Notifications-iconCount.new--items {
   background: rgba(#C74B43, 1);
 }
-.NotificationsList-header {
+.NotificationsDropdown-header {
   @include display-flex();
   @include align-items(center, center);
   background: none;
 }
-.NotificationsList-item.is-new {
-  .NotificationsList-text {
+.NotificationsDropdown-item.is-new {
+  .NotificationsDropdown-text {
     color: #162945;
   }
-  .NotificationsList-icon {
+  .NotificationsDropdown-icon {
     color: inherit;
   }
 }
 
-.NotificationsList-item.is-new .NotificationsList-itemIcon--alert {
+.NotificationsDropdown-item.is-new .NotificationsDropdown-itemIcon--alert {
   color: $cHighlight-alert;
   border-color: $cHighlight-alert;
 }
-.NotificationsList-item.is-new .NotificationsList-itemIcon--positive {
+.NotificationsDropdown-item.is-new .NotificationsDropdown-itemIcon--positive {
   color: $cHighlight-positive;
   border-color: $cHighlight-positive;
 }
-.NotificationsList-item.is-new .NotificationsList-itemIcon--negative {
+.NotificationsDropdown-item.is-new .NotificationsDropdown-itemIcon--negative {
   color: $cHighlight-negative;
   border-color: $cHighlight-negative;
 }
-.NotificationsList-item.is-new .NotificationsList-itemIcon--main {
+.NotificationsDropdown-item.is-new .NotificationsDropdown-itemIcon--main {
   color: $cHighlight-main;
   border-color: $cHighlight-main;
 }

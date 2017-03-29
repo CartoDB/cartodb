@@ -8,8 +8,16 @@ module Carto
       content
     end
 
-    def image(_link, _title, _content)
-      raise 'cannot contain images'
+    DISABLED_TAGS = [
+      :block_code, :block_quote, :block_html, :footnotes, :footnote_def, :footnote_ref,
+      :image, :header, :table, :table_row, :table_cell
+    ].freeze
+
+    # Defines a method that raises an error for each unsupported tag
+    DISABLED_TAGS.each do |method|
+      define_method method do |*_args|
+        raise "cannot contain #{method.to_s.humanize.downcase}"
+      end
     end
   end
 end

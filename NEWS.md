@@ -10,6 +10,7 @@ Development
 * Adding Google-Maps basemaps (#11447)
 * Improve dialog forms to render them floated. (#7786)
 * Adds slider component to the forms (#11617)
+* Adds export as image (#11789)
 * New organization assets (#11034):
   * REST API available at `/api/v1/organization/<org_id>/assets`
   * Has DB migration
@@ -80,6 +81,7 @@ Development
     * Optimized access to redis storage (#11809)
     * Add back FREE users to overquota calculation (#11848)
 * Update tangram-cartocss to use smooth point outline.
+* Update cartodb.js to use multiple subdomains.
 
 ### Bug fixes
 * Fixed layers order when creating a new layer dragging from a compound analysis (#11827)

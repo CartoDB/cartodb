@@ -150,7 +150,7 @@ var WindshaftMap = Backbone.Model.extend({
 
   getStaticBaseURL: function (subhost) {
     return [
-      this._getHost(subhost),
+      this._getHost(),
       WindshaftConfig.MAPS_API_BASE_URL,
       'static/center',
       this.get('layergroupid')

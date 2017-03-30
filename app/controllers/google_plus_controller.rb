@@ -32,6 +32,12 @@ class GooglePlusController < ApplicationController
     common_data_url = CartoDB::Visualization::CommonDataService.build_url(self)
     user.load_common_data(common_data_url)
 
+    CartoGearsApi::Events::EventManager.instance.notify(
+      CartoGearsApi::Events::UserCreationEvent.new(
+        CartoGearsApi::Events::UserCreationEvent::CREATED_VIA_ORG_SIGNUP, user
+      )
+    )
+
     redirect_to CartoDB.path(self, 'dashboard', {trailing_slash: true})
   end
 

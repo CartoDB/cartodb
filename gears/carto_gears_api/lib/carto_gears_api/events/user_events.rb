@@ -13,7 +13,7 @@ module CartoGearsApi
       CREATED_VIA_LDAP = Carto::UserCreation::CREATED_VIA_LDAP
       # User created via signup up to the org
       CREATED_VIA_ORG_SIGNUP = Carto::UserCreation::CREATED_VIA_ORG_SIGNUP
-      # User created via API
+      # User created via enterprise user management API (EUMAPI)
       CREATED_VIA_API = Carto::UserCreation::CREATED_VIA_API
       # User created via HTTP header authentication
       CREATED_VIA_HTTP_AUTENTICATION = Carto::UserCreation::CREATED_VIA_HTTP_AUTENTICATION

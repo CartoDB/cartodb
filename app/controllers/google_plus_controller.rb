@@ -1,5 +1,7 @@
 # encoding: UTF-8
 require_dependency 'google_plus_api'
+require_dependency 'carto_gears_api/events/event_manager'
+require_dependency 'carto_gears_api/events/user_events'
 
 class GooglePlusController < ApplicationController
 

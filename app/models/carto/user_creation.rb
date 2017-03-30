@@ -1,5 +1,7 @@
 # encoding: UTF-8
 require_dependency 'carto/user_authenticator'
+require_dependency 'carto_gears_api/events/event_manager'
+require_dependency 'carto_gears_api/events/user_events'
 
 class Carto::UserCreation < ActiveRecord::Base
   include Carto::UserAuthenticator

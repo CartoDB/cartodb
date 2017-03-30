@@ -29,7 +29,8 @@ module Carto
 
     belongs_to :data_import
 
-    has_many :automatic_geocodings, inverse_of: :table, class_name: Carto::AutomaticGeocoding, foreign_key: :table_id
+    has_many :automatic_geocodings, inverse_of: :table, class_name: Carto::AutomaticGeocoding,
+                                    foreign_key: :table_id, dependent: :destroy
 
     # Disabled to avoid conflicting with the `tags` field. This relation is updated by ::Table.manage_tags.
     # TODO: We can remove both the `user_tables.tags` field and the `tags` table in favour of the canonical viz tags.
@@ -50,7 +51,7 @@ module Carto
     before_create { service.before_create }
     after_create :create_canonical_visualization
     after_create { service.after_create }
-    after_save { CartoDB::Logger.debug(message: "Carto::UserTable#after_save"); service.after_save }
+    after_save { service.after_save }
 
     # The `destroyed?` check is needed to avoid the hook running twice when deleting a table from the ::Table service
     # as it is triggered directly, and a second time from canonical visualization destruction hooks.
@@ -186,6 +187,11 @@ module Carto
     def tags=(value)
       return unless value
       super(value.split(',').map(&:strip).reject(&:blank?).uniq.join(','))
+    end
+
+    # TODO: Compatibility with Sequel model, can be removed afterwards.
+    def set_tag_array(tag_array)
+      self.tags = tag_array.join(',')
     end
 
     # TODO: This is related to an incompatibility between visualizations models, `get_related_tables`, See #11705

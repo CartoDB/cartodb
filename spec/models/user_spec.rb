@@ -2327,7 +2327,7 @@ describe User do
     organization.name = unique_name(org_name)
     organization.quota_in_bytes = org_quota
     organization.seats = org_seats
-    organization.save!
+    organization.save
     organization
   end
 end

@@ -320,7 +320,7 @@ describe Admin::VisualizationsController do
     end
 
     it "redirects to embed_map if visualization is 'derived'" do
-      map = FactoryGirl.create(:map)
+      map = FactoryGirl.create(:map, user_id: @user.id)
       derived_visualization = FactoryGirl.create(:derived_visualization, user_id: @user.id, map_id: map.id)
       id = derived_visualization.id
 
@@ -647,11 +647,12 @@ describe Admin::VisualizationsController do
 
   describe 'find visualizations by name' do
     before(:all) do
-      @organization = create_organization_with_users(name: 'vizzuality')
+      @organization = create_organization_with_users(name: unique_name('organization'))
       @org_user = @organization.users.first
       bypass_named_maps
       @table = new_table(user_id: @org_user.id, privacy: ::UserTable::PRIVACY_PUBLIC).save.reload
       @faketable = new_table(user_id: @user.id, privacy: ::UserTable::PRIVACY_PUBLIC).save.reload
+      @faketable_name = @faketable.table_visualization.name
     end
 
     it 'finds visualization by org and name' do
@@ -663,7 +664,7 @@ describe Admin::VisualizationsController do
     end
 
     it 'does not find visualizations outside org' do
-      url = CartoDB.url(@mock_context, 'public_table', { id: @faketable.table_visualization.name }, @org_user)
+      url = CartoDB.url(@mock_context, 'public_table', { id: @faketable_name }, @org_user)
       url = url.sub("/u/#{@org_user.username}", '')
 
       get url
@@ -685,7 +686,7 @@ describe Admin::VisualizationsController do
     end
 
     it 'does not find visualizations outside user with public schema' do
-      url = CartoDB.url(@mock_context, 'public_table', { id: "public.#{@faketable.table_visualization.name}" },
+      url = CartoDB.url(@mock_context, 'public_table', { id: "public.#{@faketable_name}" },
                         @org_user)
       url = url.sub("/u/#{@org_user.username}", '')
 

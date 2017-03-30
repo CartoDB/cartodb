@@ -48,7 +48,7 @@ ModelUpdater.prototype.updateModels = function (windshaftMap, sourceId, forceFet
 ModelUpdater.prototype._updateLayerGroupModel = function (windshaftMap) {
   var urls = {
     tiles: this._generateTileURLTemplate(windshaftMap),
-    subdomains: this._getTileSubdomains(windshaftMap),
+    subdomains: windshaftMap.getSupportedSubdomains(),
     grids: this._calculateGridURLTemplatesForCartoDBLayers(windshaftMap),
     attributes: this._calculateAttributesBaseURLsForCartoDBLayers(windshaftMap),
     image: this._calculateStaticMapURL(windshaftMap)
@@ -78,10 +78,6 @@ ModelUpdater.prototype._calculateTileURLTemplatesForCartoDBLayers = function (wi
 
 ModelUpdater.prototype._generateTileURLTemplate = function (windshaftMap) {
   return windshaftMap.getBaseURL() + '/{layerIndexes}/{z}/{x}/{y}.{format}';
-};
-
-ModelUpdater.prototype._getTileSubdomains = function (windshafMap) {
-  return windshafMap.getSupportedSubdomains();
 };
 
 ModelUpdater.prototype._calculateGridURLTemplatesForCartoDBLayers = function (windshaftMap) {

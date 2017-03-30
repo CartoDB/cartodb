@@ -48,7 +48,7 @@ var CartoDBLayerGroup = Backbone.Model.extend({
   },
 
   getSubdomains: function () {
-    return (this.get('urls') && this.get('urls').subdomains) || ['0'];
+    return (this.get('urls') && this.get('urls').subdomains) || [];
   },
 
   getTileURLTemplatesWithSubdomains: function () {
@@ -142,6 +142,7 @@ var CartoDBLayerGroup = Backbone.Model.extend({
     if (staticImageURLTemplate) {
       staticImageURLTemplate = this._appendParamsToURL(staticImageURLTemplate, [ 'layer=' + this._getIndexesOfVisibleLayers() ]);
       staticImageURLTemplate = this._appendAuthParamsToURL(staticImageURLTemplate);
+      staticImageURLTemplate = staticImageURLTemplate.replace('{s}', this.getSubdomains()[0]);
     }
     return staticImageURLTemplate;
   },

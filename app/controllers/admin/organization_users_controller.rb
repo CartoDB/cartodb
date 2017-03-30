@@ -86,6 +86,7 @@ class Admin::OrganizationUsersController < Admin::AdminController
     ::Resque.enqueue(::Resque::UserDBJobs::CommonData::LoadCommonData, @user.id, common_data_url)
     @user.notify_new_organization_user
     @user.organization.notify_if_seat_limit_reached
+    CartoGearsApi::Events::EventManager.instance.notify(CartoGearsApi::Events::UserCreationEvent.new(@user))
     redirect_to CartoDB.url(self, 'organization', {}, current_user), flash: { success: "New user created successfully" }
   rescue Carto::UnprocesableEntityError => e
     CartoDB::Logger.error(exception: e, message: "Validation error")

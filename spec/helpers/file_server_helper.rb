@@ -42,4 +42,35 @@ module FileServerHelper
 
     raise "No ports available on machine."
   end
+
+  def stub_download(url:, filepath:, headers: {}, content_disposition: true)
+    Typhoeus.stub(url).and_return(response_for(filepath, headers, content_disposition: content_disposition))
+  end
+
+  def stub_failed_download(options)
+    url       = options.fetch(:url)
+    filepath  = options.fetch(:filepath)
+    headers   = options.fetch(:headers, {})
+
+    Typhoeus.stub(url).and_return(failed_response_for(filepath, headers))
+  end
+
+  def response_for(filepath, headers = {}, content_disposition: true)
+    response = Typhoeus::Response.new(
+      code:     200,
+      body:     File.new(filepath).read.to_s,
+      headers:  headers.merge(headers_for(filepath, content_disposition: content_disposition))
+    )
+    response
+  end
+
+  def failed_response_for(_filepath, headers={})
+    Typhoeus::Response.new(code: 404, body: nil, headers: {})
+  end
+
+  def headers_for(filepath, content_disposition: true)
+    return {} unless content_disposition
+    filename = filepath.split('/').last
+    { "Content-Disposition" => "attachment; filename=#{filename}" }
+  end
 end

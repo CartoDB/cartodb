@@ -1,4 +1,5 @@
 FactoryGirl.define do
+  to_create(&:save)
 
   factory :search_tweet do
     user_id          nil

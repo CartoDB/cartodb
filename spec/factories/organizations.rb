@@ -6,6 +6,7 @@ FactoryGirl.define do
 
   factory :organization do
     to_create(&:save)
+
     name { unique_name('organization') }
     seats 10
     quota_in_bytes 100.megabytes

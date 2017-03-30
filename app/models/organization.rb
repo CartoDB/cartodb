@@ -375,11 +375,11 @@ class Organization < Sequel::Model
   end
 
   def assigned_seats(excluded_users: [])
-    builder_users.count { |u| !excluded_users.include?(u) }
+    builder_users.count { |u| !excluded_users.map(&:id).include?(u.id) }
   end
 
   def assigned_viewer_seats(excluded_users: [])
-    viewer_users.count { |u| !excluded_users.include?(u) }
+    viewer_users.count { |u| !excluded_users.map(&:id).include?(u.id) }
   end
 
   def builder_users

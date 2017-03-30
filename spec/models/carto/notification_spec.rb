@@ -16,12 +16,15 @@ module Carto
 
     describe '#validation' do
       it 'passes for valid notification' do
-        n = Notification.new(icon: 'ok', body: 'Hello, friend!')
+        n = Notification.new(icon: Carto::Notification::ICON_ALERT, body: 'Hello, friend!')
         expect(n).to be_valid
       end
 
       it 'passes for valid organization notification' do
-        n = Notification.new(icon: 'ok', body: 'Hello, friend!', organization: @organization, recipients: 'builders')
+        n = Notification.new(icon: Carto::Notification::ICON_ALERT,
+                             body: 'Hello, friend!',
+                             organization: @organization,
+                             recipients: 'builders')
         expect(n).to be_valid
       end
 
@@ -34,6 +37,12 @@ module Carto
 
         it 'cannot be blank' do
           n = Notification.new(icon: '')
+          expect(n).not_to be_valid
+          expect(n.errors).to include :icon
+        end
+
+        it 'should exist' do
+          n = Notification.new(icon: 'wadus')
           expect(n).not_to be_valid
           expect(n.errors).to include :icon
         end
@@ -78,8 +87,16 @@ module Carto
           expect(n.errors).to include :body
         end
 
-        it 'cannot contain Markdown images' do
+        it 'cannot contain Markdown blocks' do
           n = Notification.new(body: '![this is](an image])')
+          expect(n).not_to be_valid
+          expect(n.errors).to include :body
+
+          n = Notification.new(body: '> a block quote')
+          expect(n).not_to be_valid
+          expect(n.errors).to include :body
+
+          n = Notification.new(body: '# a header')
           expect(n).not_to be_valid
           expect(n.errors).to include :body
         end
@@ -95,20 +112,25 @@ module Carto
 
     it 'should be deleted when the organization is destroyed' do
       org = FactoryGirl.create(:organization)
-      n = Notification.create!(organization_id: org.id, icon: 'ok', recipients: 'all', body: 'Hey!')
+      n = Notification.create!(organization_id: org.id,
+                               icon: Carto::Notification::ICON_ALERT,
+                               recipients: 'all',
+                               body: 'Hey!')
       org.destroy
       expect(Notification.exists?(n.id)).to be_false
     end
 
     describe '#after_create' do
       it 'for non-org notifications should not send the notification to users' do
-        n = Notification.create(icon: 'ok', body: 'Hello, friend!')
+        n = Notification.create(icon: Carto::Notification::ICON_ALERT, body: 'Hello, friend!')
         expect(n.received_notifications).to be_empty
       end
 
       describe 'for org notifications' do
         before(:each) do
-          @notification = Notification.new(icon: 'ok', body: 'Hello, friend!', organization: @organization)
+          @notification = Notification.new(icon: Carto::Notification::ICON_ALERT,
+                                           body: 'Hello, friend!',
+                                           organization: @organization)
         end
 
         after(:each) do

@@ -1,31 +1,8 @@
-<% content_for(:page_title) do %>
-  <%= current_user.organization.name %> auth settings |
-<% end %>
-<%= content_for(:js) do %>
-  <script type="text/javascript">
-    var username = "<%= current_user.username %>";
-    var config = <%= safe_js_object frontend_config %>;
-    var user_data = <%= safe_js_object current_user.data.to_json.html_safe %>;
-  </script>
-  <%= javascript_include_tag 'cdb.js', 'models.js', 'organization_templates.js', 'organization_deps.js', 'organization.js' -%>
-<% end %>
-<%= content_for(:css) do %>
-  <%= stylesheet_link_tag 'organization.css', :media => 'all' %>
-<% end %>
-
-<%= render :partial => 'shared/flash_message' %>
-
-<div class="FormAccount-Section u-inner">
-  <%= render :partial => 'admin/shared/pages_subheader' %>
-
-  <div class="FormAccount-Content">
-    <%= render :partial => 'admin/shared/org_subheader' %>
-
+<% content_for :settings_body do %>
+  <div class="FormAccount-container">
     <% if @ldap_configuration %>
       <%= render :partial => 'admin/organizations/ldap_configuration' %>
     <% else %>
-      <div class="FormAccount-separator"></div>
-
       <%= form_for @organization, url: CartoDB.url(self, 'organization_auth_update', {}, current_user), multipart: true do |f| %>
         <%= csrf_meta_tags %>
 
@@ -115,13 +92,9 @@
             <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Save changes</span>
           </button>
         </div>
-
       <% end %>
-
     <% end %>
-
   </div>
+<% end %>
 
-</div>
-
-<%= render 'admin/shared/footer' %>
+<%= render template: 'admin/organizations/_organization_settings', locals: { title: 'auth settings' } %>

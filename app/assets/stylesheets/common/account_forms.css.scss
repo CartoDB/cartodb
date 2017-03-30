@@ -12,6 +12,12 @@ $sLabel-width: 140px;
   @include flex-direction(row);
   @include justify-content(space-between);
 }
+.FormAccount-container {
+  margin-top: 25px;
+}
+.FormAccount-container--short {
+  margin-top: 16px;
+}
 .FormAccount-Content {
   display: block;
   position: relative;
@@ -35,6 +41,9 @@ $sLabel-width: 140px;
 .FormAccount-titleText--negative {
   color: $cHighlight-negative;
 }
+.FormAccount-subtitleText {
+  font-size: 75%;
+}
 .FormAccount-list {
   padding: 0 0 20px 160px;
   color: $cTypography-paragraphs;
@@ -54,6 +63,9 @@ $sLabel-width: 140px;
   @include flex-direction(column);
   @include justify-content(flex-start, start);
   margin: 0 0 32px;
+}
+.FormAccount-row--smallMarginBottom {
+  margin-bottom: 16px;
 }
 .FormAccount-row--wideMarginBottom {
   margin-bottom: 100px;
@@ -255,6 +267,9 @@ $sLabel-width: 140px;
 // Sizes
 .FormAccount-input--totalwidth {
   width: 100% !important;
+}
+.field_with_errors {
+  width: 100%;
 }
 .FormAccount-input--longer {
   width: 434px !important;
@@ -698,4 +713,10 @@ $sLabel-width: 140px;
 
 .FormAccount-GooglePlus-iframe {
   display: none;
+}
+
+.OrganizationNotification-submissionRow {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 }

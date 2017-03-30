@@ -1,5 +1,6 @@
 require_dependency 'carto_gears_api/events/base_event'
 require_dependency 'carto_gears_api/users/user'
+require_dependency 'carto/user_creation'
 
 module CartoGearsApi
   module Events

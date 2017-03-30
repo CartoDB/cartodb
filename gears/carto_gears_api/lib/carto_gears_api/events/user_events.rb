@@ -19,6 +19,8 @@ module CartoGearsApi
       CREATED_VIA_HTTP_AUTENTICATION = Carto::UserCreation::CREATED_VIA_HTTP_AUTENTICATION
       # User created by organization administrator
       CREATED_VIA_ORG_ADMIN = 'org_admin'.freeze
+      # User created by superadmin
+      CREATED_VIA_SUPERADMIN = 'superadmin'.freeze
 
       attr_reader :user, :created_via
 

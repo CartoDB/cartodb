@@ -18,4 +18,5 @@ Gem::Specification.new do |s|
 
   s.add_dependency "rails", "4.2.8"
   s.add_dependency 'values', '1.8.0'
+  s.add_dependency 'pg', '0.15'
 end

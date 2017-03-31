@@ -11,12 +11,12 @@ describe Admin::OrganizationUsersController do
     host! "#{@organization.name}.localhost.lan"
   end
 
-  let(:username) { 'user-1' }
+  let(:username) { unique_name('user') }
 
   let(:user_params) do
     {
       username: username,
-      email: 'user-1@org.com',
+      email: "#{username}@org.com",
       password: 'user-1',
       password_confirmation: 'user-1',
       quota_in_bytes: 1000,

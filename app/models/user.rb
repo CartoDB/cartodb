@@ -111,6 +111,10 @@ class User < Sequel::Model
   self.raise_on_typecast_failure = false
   self.raise_on_save_failure = false
 
+  def model_name
+    User.model_name
+  end
+
   def db_service
     @db_service ||= CartoDB::UserModule::DBService.new(self)
   end

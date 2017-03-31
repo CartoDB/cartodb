@@ -25,7 +25,7 @@ class ApplicationController < ActionController::Base
   after_filter  :add_revision_header
 
   rescue_from NoHTML5Compliant, :with => :no_html5_compliant
-  rescue_from RecordNotFound,   :with => :render_404
+  rescue_from ActiveRecord::RecordNotFound, RecordNotFound, with: :render_404
 
   def self.ssl_required(*splat)
     if Rails.env.production? || Rails.env.staging?

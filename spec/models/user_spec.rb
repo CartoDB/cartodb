@@ -1,4 +1,4 @@
-# coding: UTF-8
+# coding: utf-8
 
 require 'ostruct'
 require_relative '../spec_helper'
@@ -81,8 +81,8 @@ describe User do
   end
 
   it "should not allow a username in use by an organization" do
-    create_org('testusername', 10.megabytes, 1)
-    @user.username = 'testusername'
+    org = create_org('testusername', 10.megabytes, 1)
+    @user.username = org.name
     @user.valid?.should be_false
     @user.username = 'wadus'
     @user.valid?.should be_true
@@ -193,6 +193,70 @@ describe User do
         user.valid?.should be_false
         user.errors.keys.should include(:quota_in_bytes)
         organization.destroy
+      end
+    end
+
+    describe 'when updating viewer state' do
+      before(:all) do
+        @organization = create_organization_with_users(quota_in_bytes: 70.megabytes)
+      end
+
+      after(:all) do
+        @organization.destroy
+      end
+
+      it 'should not allow changing to viewer without seats' do
+        @organization.viewer_seats = 0
+        @organization.save
+
+        user = @organization.owner
+        user.reload
+        user.viewer = true
+        expect(user).not_to be_valid
+        expect(user.errors.keys).to include(:organization)
+      end
+
+      it 'should allow changing to viewer with enough seats' do
+        @organization.viewer_seats = 2
+        @organization.save
+
+        user = @organization.owner
+        user.reload
+        user.viewer = true
+        expect(user).to be_valid
+        expect(user.errors.keys).not_to include(:organization)
+      end
+
+      it 'should not allow changing to builder without seats' do
+        @organization.viewer_seats = 10
+        @organization.save
+        user = @organization.owner
+        user.reload
+        user.viewer = true
+        user.save
+        @organization.seats = 0
+        @organization.save
+
+        user.reload
+        user.viewer = false
+        expect(user).not_to be_valid
+        expect(user.errors.keys).to include(:organization)
+      end
+
+      it 'should allow changing to builder without seats' do
+        @organization.viewer_seats = 10
+        @organization.save
+        user = @organization.owner
+        user.reload
+        user.viewer = true
+        user.save
+        @organization.seats = 10
+        @organization.save
+
+        user.reload
+        user.viewer = false
+        expect(user).to be_valid
+        expect(user.errors.keys).not_to include(:organization)
       end
     end
 
@@ -513,9 +577,13 @@ describe User do
     before do
       delete_user_data @user
       @user.stubs(:last_billing_cycle).returns(Date.today)
-      FactoryGirl.create(:geocoding, user: @user, kind: 'high-resolution', created_at: Time.now, processed_rows: 1)
-      FactoryGirl.create(:geocoding, user: @user, kind: 'admin0', created_at: Time.now, processed_rows: 1)
-      FactoryGirl.create(:geocoding, user: @user, kind: 'high-resolution', created_at: Time.now - 5.days, processed_rows: 1, cache_hits: 1)
+      @mock_redis = MockRedis.new
+      @usage_metrics = CartoDB::GeocoderUsageMetrics.new(@user.username, nil, @mock_redis)
+      @usage_metrics.incr(:geocoder_here, :success_responses, 1, Time.now)
+      @usage_metrics.incr(:geocoder_internal, :success_responses, 1, Time.now)
+      @usage_metrics.incr(:geocoder_here, :success_responses, 1, Time.now - 5.days)
+      @usage_metrics.incr(:geocoder_cache, :success_responses, 1, Time.now - 5.days)
+      CartoDB::GeocoderUsageMetrics.stubs(:new).returns(@usage_metrics)
     end
 
     it "should return the sum of geocoded rows for the current billing period" do
@@ -623,7 +691,7 @@ describe User do
   end
 
   describe "organization user deletion" do
-    it "should transfer geocodings and tweet imports to owner" do
+    it "should transfer tweet imports to owner" do
       u1 = create_user(email: 'u1@exampleb.com', username: 'ub1', password: 'admin123')
       org = create_org('cartodbtestb', 1234567890, 5)
 
@@ -636,16 +704,6 @@ describe User do
       u1.reload
 
       u2 = create_user(email: 'u2@exampleb.com', username: 'ub2', password: 'admin123', organization: org)
-
-      geocoding_attributes = {
-        user: u2,
-        kind: 'high-resolution',
-        created_at: Time.now,
-        formatter: 'b'
-      }
-
-      gc1 = FactoryGirl.create(:geocoding, geocoding_attributes.merge(processed_rows: 1))
-      gc2 = FactoryGirl.create(:geocoding, geocoding_attributes.merge(processed_rows: 2))
 
       tweet_attributes = {
         user: u2,
@@ -661,14 +719,11 @@ describe User do
       u1.reload
       u2.reload
 
-      u2.get_geocoding_calls.should == gc1.processed_rows + gc2.processed_rows
       u2.get_twitter_imports_count.should == st1.retrieved_items + st2.retrieved_items
-      u1.get_geocoding_calls.should == 0
       u1.get_twitter_imports_count.should == 0
 
       u2.destroy
       u1.reload
-      u1.get_geocoding_calls.should == gc1.processed_rows + gc2.processed_rows
       u1.get_twitter_imports_count.should == st1.retrieved_items + st2.retrieved_items
 
       org.destroy
@@ -2269,10 +2324,10 @@ describe User do
 
   def create_org(org_name, org_quota, org_seats)
     organization = Organization.new
-    organization.name = org_name
+    organization.name = unique_name(org_name)
     organization.quota_in_bytes = org_quota
     organization.seats = org_seats
-    organization.save!
+    organization.save
     organization
   end
 end

@@ -107,18 +107,6 @@ class UserTable < Sequel::Model
     self.table_id = service.get_table_id
   end
 
-  # Helper methods encapsulating queries. Move to query object?
-  # note this one spams multiple tables
-  def self.find_all_by_user_id_and_tag(user_id, tag_name)
-    fetch("select user_tables.*,
-                    array_to_string(array(select tags.name from tags where tags.table_id = user_tables.id),',') as tags_names
-                        from user_tables, tags
-                        where user_tables.user_id = ?
-                          and user_tables.id = tags.table_id
-                          and tags.name = ?
-                        order by user_tables.id DESC", user_id, tag_name)
-  end
-
   def self.find_by_identifier(user_id, identifier)
     col = 'name'
 
@@ -307,7 +295,7 @@ class UserTable < Sequel::Model
   end
 
   def table_visualization
-    @table_visualization ||= CartoDB::Visualization::Collection.new.fetch(
+    @table_visualization ||= map_id && CartoDB::Visualization::Collection.new.fetch(
       map_id: map_id,
       type:   CartoDB::Visualization::Member::TYPE_CANONICAL
     ).first

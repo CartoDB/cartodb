@@ -3,6 +3,7 @@
 require_relative '../../../spec_helper'
 require_relative '../../api/json/geocodings_controller_shared_examples'
 require_relative '../../../../app/controllers/carto/api/geocodings_controller'
+require 'mock_redis'
 
 describe Carto::Api::GeocodingsController do
   it_behaves_like 'geocoding controllers' do
@@ -42,6 +43,10 @@ describe 'legacy behaviour tests' do
     describe 'GET /api/v1/geocodings/:id' do
 
       it 'returns a geocoding' do
+        redis_mock = MockRedis.new
+        user_geocoder_metrics = CartoDB::GeocoderUsageMetrics.new(@user.username, _orgname = nil, _redis = redis_mock)
+        CartoDB::GeocoderUsageMetrics.stubs(:new).returns(user_geocoder_metrics)
+        user_geocoder_metrics.incr(:geocoder_here, :success_responses, 100)
         geocoding = FactoryGirl.create(:geocoding, table_id: UUIDTools::UUID.timestamp_create.to_s, formatter: 'b', user: @user, used_credits: 100, processed_rows: 100, kind: 'high-resolution')
 
         get_json api_v1_geocodings_show_url(params.merge(id: geocoding.id)) do |response|
@@ -244,14 +249,14 @@ describe 'legacy behaviour tests' do
 
     it 'returns started geocodings but not finished' do
       geocoding1 = FactoryGirl.create(:geocoding, user: @user1, kind: 'high-resolution', created_at: Time.now,
-                                      processed_rows: 1, state: 'started')
+                                      processed_rows: 1, state: 'started', formatter: 'foo')
       FactoryGirl.create(:geocoding, user: @user1, kind: 'high-resolution', created_at: Time.now,
-                         processed_rows: 1, state: 'finished')
+                         processed_rows: 1, state: 'finished', formatter: 'foo')
 
       get api_v1_geocodings_index_url
       last_response.status.should eq 200
 
-      expected = {"geocodings"=>[{"table_name" => nil, "processed_rows" => 1, "remote_id" => nil, "formatter" => nil,
+      expected = {"geocodings"=>[{"table_name" => nil, "processed_rows" => 1, "remote_id" => nil, "formatter" => 'foo',
                                   "geocoder_type" => nil, "state" => "started", "cache_hits" => 0,
                                   "id" => geocoding1.id, "user_id" => @user1.id,"table_id" => nil,
                                   "automatic_geocoding_id" => nil, "kind" => "high-resolution", "country_code" => nil,
@@ -281,14 +286,15 @@ describe 'legacy behaviour tests' do
         kind: 'high-resolution',
         created_at: Time.now,
         processed_rows: 1,
-        state: 'started'
+        state: 'started',
+        formatter: 'foo'
       )
 
       get api_v1_geocodings_show_url(id: geocoding.id)
       last_response.status.should eq 200
 
       expected = {"id" => geocoding.id, "table_id" => nil, "table_name" => nil, "state" => "started",
-                  "kind" => "high-resolution", "country_code" => nil, "region_code" => nil, "formatter" => nil,
+                  "kind" => "high-resolution", "country_code" => nil, "region_code" => nil, "formatter" => 'foo',
                   "geocoder_type" => nil, "geometry_type" => nil, "error" => {"title" => "Geocoding error",
                   "description" => ""}, "processed_rows" => 1, "cache_hits" => 0, "processable_rows" => nil,
                   "real_rows" => nil, "price" => 0, "used_credits" => nil, "remaining_quota" => 0,

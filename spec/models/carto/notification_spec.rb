@@ -5,21 +5,26 @@ require 'spec_helper_min'
 module Carto
   describe Notification do
     before(:all) do
-      @organization = FactoryGirl.create(:organization)
+      @sequel_organization = FactoryGirl.create(:organization_with_users)
+      @organization = Carto::Organization.find(@sequel_organization.id)
+      @organization.users[1].update_attribute(:viewer, true)
     end
 
     after(:all) do
-      @organization.destroy
+      @sequel_organization.destroy
     end
 
     describe '#validation' do
       it 'passes for valid notification' do
-        n = Notification.new(icon: 'ok', body: 'Hello, friend!')
+        n = Notification.new(icon: Carto::Notification::ICON_ALERT, body: 'Hello, friend!')
         expect(n).to be_valid
       end
 
       it 'passes for valid organization notification' do
-        n = Notification.new(icon: 'ok', body: 'Hello, friend!', organization: @organization, recipients: 'builders')
+        n = Notification.new(icon: Carto::Notification::ICON_ALERT,
+                             body: 'Hello, friend!',
+                             organization: @organization,
+                             recipients: 'builders')
         expect(n).to be_valid
       end
 
@@ -32,6 +37,12 @@ module Carto
 
         it 'cannot be blank' do
           n = Notification.new(icon: '')
+          expect(n).not_to be_valid
+          expect(n.errors).to include :icon
+        end
+
+        it 'should exist' do
+          n = Notification.new(icon: 'wadus')
           expect(n).not_to be_valid
           expect(n.errors).to include :icon
         end
@@ -76,8 +87,16 @@ module Carto
           expect(n.errors).to include :body
         end
 
-        it 'cannot contain Markdown images' do
+        it 'cannot contain Markdown blocks' do
           n = Notification.new(body: '![this is](an image])')
+          expect(n).not_to be_valid
+          expect(n.errors).to include :body
+
+          n = Notification.new(body: '> a block quote')
+          expect(n).not_to be_valid
+          expect(n.errors).to include :body
+
+          n = Notification.new(body: '# a header')
           expect(n).not_to be_valid
           expect(n.errors).to include :body
         end
@@ -93,9 +112,59 @@ module Carto
 
     it 'should be deleted when the organization is destroyed' do
       org = FactoryGirl.create(:organization)
-      n = Notification.create!(organization_id: org.id, icon: 'ok', recipients: 'all', body: 'Hey!')
+      n = Notification.create!(organization_id: org.id,
+                               icon: Carto::Notification::ICON_ALERT,
+                               recipients: 'all',
+                               body: 'Hey!')
       org.destroy
       expect(Notification.exists?(n.id)).to be_false
+    end
+
+    describe '#after_create' do
+      it 'for non-org notifications should not send the notification to users' do
+        n = Notification.create(icon: Carto::Notification::ICON_ALERT, body: 'Hello, friend!')
+        expect(n.received_notifications).to be_empty
+      end
+
+      describe 'for org notifications' do
+        before(:each) do
+          @notification = Notification.new(icon: Carto::Notification::ICON_ALERT,
+                                           body: 'Hello, friend!',
+                                           organization: @organization)
+        end
+
+        after(:each) do
+          @notification.destroy
+        end
+
+        it 'should send the notification to all current organization members' do
+          @notification.recipients = 'all'
+          @notification.save!
+
+          expect(@notification.received_notifications.map(&:user_id)).to eq @organization.users.map(&:id)
+        end
+
+        it 'sent notifications should be unread' do
+          @notification.recipients = 'all'
+          @notification.save!
+
+          expect(@notification.received_notifications.map(&:read_at).none?).to be_true
+        end
+
+        it 'should send the notification to current organization builders' do
+          @notification.recipients = 'builders'
+          @notification.save!
+
+          expect(@notification.received_notifications.map(&:user_id)).to eq @organization.builder_users.map(&:id)
+        end
+
+        it 'should send the notification to current organization viewers' do
+          @notification.recipients = 'viewers'
+          @notification.save!
+
+          expect(@notification.received_notifications.map(&:user_id)).to eq @organization.viewer_users.map(&:id)
+        end
+      end
     end
   end
 end

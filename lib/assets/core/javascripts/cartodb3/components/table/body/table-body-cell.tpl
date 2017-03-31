@@ -15,7 +15,7 @@
     </p>
 
     <% if (columnName !== 'cartodb_id') { %>
-      <button class="CDB-Shape-threePoints is-blue is-small js-options">
+      <button class="CDB-Shape-threePoints is-blue is-small Table-cellItemOptions js-cellOptions">
         <div class="CDB-Shape-threePointsItem"></div>
         <div class="CDB-Shape-threePointsItem"></div>
         <div class="CDB-Shape-threePointsItem"></div>

@@ -5,7 +5,10 @@ require 'carto/configuration'
 CartoDB::Application.configure do
   # Settings specified here will take precedence over those in config/application.rb
 
-  # ActiveSupport::Dependencies.autoload_paths << File::join( Rails.root, 'lib')
+  ActiveSupport::Dependencies.autoload_paths << File::join(Rails.root, 'lib')
+  Carto::CartoGearsSupport.new.gears.each do |gear|
+    ActiveSupport::Dependencies.autoload_paths << File::join(gear.full_path, 'lib')
+  end
   # ActiveSupport::Dependencies.autoload_paths << File::join( Rails.root, 'lib/central')
 
   # The production environment is meant for finished, "live" apps.

@@ -39,10 +39,9 @@
       var dataset_base_url = '<%= @dataset_base_url %>';
     </script>
 
+    <%= insert_trackjs() %>
     <%= javascript_include_tag 'cdb.js', 'templates', 'data_library_deps', 'data_library' %>
     <%= yield :js %>
-
-    <%= insert_trackjs() %>
     <%= insert_google_analytics('primary', true) %>
     <%= insert_hubspot() %>
   </body>

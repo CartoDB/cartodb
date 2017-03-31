@@ -1294,7 +1294,7 @@ describe Visualization::Member do
 
     it 'should store correctly a visualization with its license' do
       table = create_table({:name => 'table1', :user_id => @user.id})
-      vis = table.table_visualization
+      vis = CartoDB::Visualization::Member.new(id: table.table_visualization.id).fetch
       vis.license = "apache"
       vis.store
       vis.fetch
@@ -1304,7 +1304,7 @@ describe Visualization::Member do
 
     it 'should return nil if the license is nil, empty or unkown' do
       table = create_table({:name => 'table1', :user_id => @user.id})
-      vis = table.table_visualization
+      vis = CartoDB::Visualization::Member.new(id: table.table_visualization.id).fetch
       vis.license = nil
       vis.store
       vis.fetch
@@ -1320,7 +1320,7 @@ describe Visualization::Member do
 
     it 'should raise exception when try to store a unknown license, empty or nil' do
       table = create_table({:name => 'table1', :user_id => @user.id})
-      vis = table.table_visualization
+      vis = CartoDB::Visualization::Member.new(id: table.table_visualization.id).fetch
       vis.license = "wadus"
       expect {
         vis.store

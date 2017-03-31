@@ -265,7 +265,7 @@ module Helpers
   end
 
   def give_permission(vis, user, access)
-    per = vis.permission
+    per = ::Permission[vis.permission.id]
     per.set_user_permission(user, access)
     per.save
     per.reload

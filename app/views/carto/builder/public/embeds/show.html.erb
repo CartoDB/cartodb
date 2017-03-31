@@ -25,6 +25,8 @@
 <% end %>
 
 <%= content_for(:js) do %>
+  <%= insert_trackjs('builder-embeds') %>
+
   <% if params[:vector] %>
     <%= javascript_include_tag 'tangram.min.js' %>
   <% end %>
@@ -43,6 +45,5 @@
   <%= javascript_include_tag 'common_editor3.js' %>
   <%= javascript_include_tag 'public_editor3.js' %>
 
-  <%= insert_trackjs('builder-embeds') %>
   <%= insert_google_analytics('embeds', true) %>
 <% end %>

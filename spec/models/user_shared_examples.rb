@@ -61,10 +61,9 @@ shared_examples_for "user models" do
     it 'calculates the remaining quota for a non-org user correctly' do
       @user1.geocoding_quota = 500
       @user1.save
-      Geocoding.new(kind: 'high-resolution',
-                    user: @user1,
-                    formatter: '{dummy}',
-                    processed_rows: 100).save
+
+      user1_geocoder_metrics = CartoDB::GeocoderUsageMetrics.new(@user1.username, nil)
+      user1_geocoder_metrics.incr(:geocoder_here, :success_responses, 100)
 
       get_user_by_id(@user1.id).remaining_geocoding_quota.should == 400
     end
@@ -73,15 +72,17 @@ shared_examples_for "user models" do
       @organization.geocoding_quota = 500
       @organization.save.reload
 
-      Geocoding.new(kind: 'high-resolution',
-                    user: @org_user_1,
-                    formatter: '{dummy}',
-                    processed_rows: 100).save
+      org_user_1_geocoder_metrics = CartoDB::GeocoderUsageMetrics.new(
+        @org_user_1.username,
+        @org_user_1.organization.name
+      )
+      org_user_1_geocoder_metrics.incr(:geocoder_here, :success_responses, 100)
 
-      Geocoding.new(kind: 'high-resolution',
-                    user: @org_user_2,
-                    formatter: '{dummy}',
-                    processed_rows: 100).save
+      org_user_2_geocoder_metrics = CartoDB::GeocoderUsageMetrics.new(
+        @org_user_2.username,
+        @org_user_2.organization.name
+      )
+      org_user_2_geocoder_metrics.incr(:geocoder_here, :success_responses, 100)
 
       get_user_by_id(@org_user_1.id).remaining_geocoding_quota.should == 300
       get_user_by_id(@org_user_2.id).remaining_geocoding_quota.should == 300
@@ -131,7 +132,6 @@ shared_examples_for "user models" do
       usage_metrics.incr(:geocoder_here, :success_responses, 100, (DateTime.current - 2))
       usage_metrics.incr(:geocoder_cache, :success_responses, 100, (DateTime.current - 1))
 
-      get_user_by_id(@user1.id).get_new_system_geocoding_calls.should == 210
       get_user_by_id(@user1.id).get_geocoding_calls.should == 210
     end
 
@@ -157,7 +157,7 @@ shared_examples_for "user models" do
       usage_metrics_2.incr(:geocoder_here, :success_responses, 120, DateTime.current - 1)
       usage_metrics_2.incr(:geocoder_cache, :success_responses, 10, DateTime.current - 1)
 
-      @organization.get_new_system_geocoding_calls.should == 230
+      @organization.get_geocoding_calls.should == 230
     end
 
     it 'calculates the used geocoder quota in the current billing cycle including empty requests' do
@@ -168,7 +168,7 @@ shared_examples_for "user models" do
       usage_metrics.incr(:geocoder_here, :empty_responses, 10, (DateTime.current - 2))
       usage_metrics.incr(:geocoder_cache, :success_responses, 100, (DateTime.current - 1))
 
-      get_user_by_id(@user1.id).get_new_system_geocoding_calls.should == 220
+      get_user_by_id(@user1.id).get_geocoding_calls.should == 220
     end
   end
 
@@ -768,6 +768,30 @@ shared_examples_for "user models" do
       $users_metadata.expects(:HMSET).with("limits:batch:#{@user1.username}", 'timeout', 42).once
       @user1.batch_queries_statement_timeout = "42"
       @user1.batch_queries_statement_timeout.should eq 42
+    end
+  end
+
+  describe '#basemaps' do
+    it 'shows all basemaps for Google Maps users' do
+      user = create_user
+      basemaps = user.basemaps
+      basemaps.keys.sort.should eq ['CARTO', 'Stamen']
+      user.google_maps_key = 'client=whatever'
+      user.google_maps_private_key = 'wadus'
+      user.save
+      basemaps = user.basemaps
+      basemaps.keys.sort.should eq ['CARTO', 'GMaps', 'Stamen']
+    end
+  end
+
+  describe '#default_basemap' do
+    it 'defaults to Google for Google Maps users, Positron for others' do
+      user = create_user
+      user.default_basemap['name'].should eq 'Positron'
+      user.google_maps_key = 'client=whatever'
+      user.google_maps_private_key = 'wadus'
+      user.save
+      user.default_basemap['name'].should eq 'GMaps Roadmap'
     end
   end
 end

@@ -311,6 +311,8 @@
 
 
 <%= content_for(:js) do %>
+  <%= insert_trackjs('embeds') %>
+
   <% if @visualization.map.provider == 'googlemaps' %>
     <script type="text/javascript"
         src="//maps.googleapis.com/maps/api/js?sensor=false&v=3.12&<%= @google_maps_query_string %>">
@@ -423,7 +425,7 @@
 
   </script>
 
-  <%= insert_trackjs('embeds') %>
+  
   <%= insert_google_analytics('embeds', true, [{ title: "Public Pages", value: "Other", num: 3 }]) -%>
   <%= insert_hubspot() -%>
 <% end %>

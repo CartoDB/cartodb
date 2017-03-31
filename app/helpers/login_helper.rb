@@ -63,7 +63,7 @@ module LoginHelper
 
     if env['warden']
       env['warden'].logout
-      request.session.select { |k, v|
+      request.session.to_hash.select { |k, v|
         k.start_with?("warden.user") && !k.end_with?(".session")
       }.each { |k, v|
         env['warden'].logout(value) if warden_proxy.authenticated?(value)

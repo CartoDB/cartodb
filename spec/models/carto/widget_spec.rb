@@ -55,13 +55,6 @@ describe Carto::Widget do
       @widget.valid?.should be_true
       @widget.errors[:options].empty?.should be_true
     end
-
-    it 'validates incorrect options format' do
-      @widget.options = 'badformat'
-
-      @widget.valid?.should be_false
-      @widget.errors[:options].empty?.should be_false
-    end
   end
 
   describe '#from_visualization_id' do

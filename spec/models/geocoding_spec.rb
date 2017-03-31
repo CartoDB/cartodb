@@ -96,7 +96,7 @@ describe Geocoding do
   describe '#run!' do
 
     it 'marks the geocoding as failed if the geocoding job fails' do
-      geocoding = FactoryGirl.build(:geocoding, user: @user, formatter: 'a', 
+      geocoding = FactoryGirl.build(:geocoding, user: @user, formatter: 'a',
                                     user_table: @table, geometry_type: 'polygon',
                                     kind: 'admin0')
       geocoding.class.stubs(:processable_rows).returns 10
@@ -109,17 +109,22 @@ describe Geocoding do
     end
 
     it 'sends a payload with duration information' do
-      geocoding = FactoryGirl.build(:geocoding, user: @user, user_table: @table, kind: 'admin0', geometry_type: 'polygon', formatter: 'b')
+      def is_metrics_payload?(str)
+        payload = JSON.parse(str)
+        payload.has_key?('queue_time') && payload.has_key?('processing_time') && payload['queue_time'] > 0 && payload['processing_time'] > 0
+      rescue JSON::ParserError
+        false
+      end
+
+      geocoding = FactoryGirl.create(:geocoding, user: @user, user_table: @table, kind: 'admin0', geometry_type: 'polygon', formatter: 'b')
       geocoding.class.stubs(:processable_rows).returns 10
       CartoDB::InternalGeocoder::Geocoder.any_instance.stubs(:run).returns true
       CartoDB::InternalGeocoder::Geocoder.any_instance.stubs(:process_results).returns true
       CartoDB::InternalGeocoder::Geocoder.any_instance.stubs(:update_geocoding_status).returns(processed_rows: 10, state: 'completed')
 
       # metrics_payload is sent to the log in json
-      Logger.any_instance.expects(:info).once {|str|
-        payload = JSON.parse(str)
-        payload.has_key?('queue_time') && payload.has_key?('processing_time') && payload['queue_time'] > 0 && payload['processing_time'] > 0
-      }
+      Logger.any_instance.expects(:info).once.with { |str| is_metrics_payload?(str) }
+      Logger.any_instance.stubs(:info).with { |str| !is_metrics_payload?(str) }
 
       geocoding.run!
       geocoding.reload.state.should eq 'finished'
@@ -162,7 +167,7 @@ describe Geocoding do
     end
 
     it 'succeeds if there are no rows to geocode' do
-      geocoding = FactoryGirl.build(:geocoding, user: @user, formatter: 'a', 
+      geocoding = FactoryGirl.build(:geocoding, user: @user, formatter: 'a',
                                     user_table: @table, geometry_type: 'polygon',
                                     kind: 'admin0')
       geocoding.class.stubs(:processable_rows).returns 0
@@ -192,7 +197,7 @@ describe Geocoding do
         payload[:email] == @user.email && payload[:processed_rows] == 0
       }
 
-      geocoding = FactoryGirl.build(:geocoding, user: @user, formatter: 'a', 
+      geocoding = FactoryGirl.build(:geocoding, user: @user, formatter: 'a',
                                     user_table: @table, geometry_type: 'polygon',
                                     kind: 'admin0')
       geocoding.class.stubs(:processable_rows).returns 0

@@ -15,7 +15,7 @@ module Carto
     belongs_to :owner, class_name: Carto::User, inverse_of: :owned_organization
     has_many :groups, -> { order(:display_name) }, inverse_of: :organization
     has_many :assets, class_name: Carto::Asset, dependent: :destroy
-    has_many :notifications, dependent: :destroy, order: 'created_at DESC'
+    has_many :notifications, -> { order('created_at DESC') }, dependent: :destroy
 
     before_destroy :destroy_groups_with_extension
 

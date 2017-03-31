@@ -21,6 +21,7 @@ class Organization < Sequel::Model
   include Concerns::CartodbCentralSynchronizable
   include DataServicesMetricsHelper
   include Carto::AuthTokenGenerator
+  include SequelFormCompatibility
 
   Organization.raise_on_save_failure = true
   self.strict_param_setting = false

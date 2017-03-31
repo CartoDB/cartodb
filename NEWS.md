@@ -163,6 +163,7 @@ Development
 * Fix problem when number column is used like categories in fill component (#11736)
 * Don't let user to apply icons over categories when auto-style is applied (#11761)
 * Update leaflet from 0.7.x to 1.0.x
+* No geometry messages are displayed after a new geometry is drawn (#11857)
 * Rearrange Error tracker script order (#11872)
 * Fix subdomain error not loading tiles.
 

@@ -18,7 +18,7 @@ module CartoGearsApi
       #   event_manager.subscribe(CartoGearsApi::Events::UserCreationEvent) { |e| puts e.user.username }
       def subscribe(event_type, &block)
         raise ArgumentError.new('block is mandatory') unless block
-        raise ArgumentError.new('event_type must be a subclass of BaseEvent') unless event_type.superclass == BaseEvent
+        raise ArgumentError.new('event_type must be a subclass of BaseEvent') unless event_type < BaseEvent
         listeners_for(event_type).append(block)
         [event_type, block]
       end

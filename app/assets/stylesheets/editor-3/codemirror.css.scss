@@ -541,3 +541,16 @@ span.CodeMirror-selectedtext { background: none; }
   right: 0;
   width: 100%;
 }
+.CodeMirror-formInput {
+  height: 90px;
+
+  .CodeMirror {
+    border-radius: 4px;
+  }
+  .cm-s-material .CodeMirror-gutters {
+    background: transparent;
+  }
+}
+.CodeMirror pre.CodeMirror-placeholder {
+  color: rgba(#FFF, 0.24);
+}

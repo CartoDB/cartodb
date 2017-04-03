@@ -9,6 +9,12 @@ var GoogleMapsMapView = MapView.extend({
   initialize: function () {
     _.bindAll(this, '_ready');
     this._isReady = false;
+
+    _.extend(Utils, {
+      pixelToLatLng: this.containerPointToLatLng,
+      latLngtoPixel: this.latLngToContainerPoint
+    });
+
     MapView.prototype.initialize.apply(this, arguments);
   },
 
@@ -196,10 +202,6 @@ var GoogleMapsMapView = MapView.extend({
       lng: latlng.lng()
     };
   }
-});
-
-_.extend(Utils, {
-  pixelToLatLng: GoogleMapsMapView.prototype.containerPointToLatLng
 });
 
 module.exports = GoogleMapsMapView;

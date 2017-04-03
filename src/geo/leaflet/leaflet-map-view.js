@@ -6,6 +6,14 @@ var LeafletLayerViewFactory = require('./leaflet-layer-view-factory');
 var Utils = require('../../core/util');
 
 var LeafletMapView = MapView.extend({
+  initialize: function () {
+    _.extend(Utils, {
+      pixelToLatLng: this.containerPointToLatLng,
+      latLngtoPixel: this.latLngToContainerPoint
+    });
+
+    MapView.prototype.initialize.apply(this, arguments);
+  },
 
   _createNativeMap: function () {
     var self = this;
@@ -292,9 +300,5 @@ L.Icon.Default.imagePath = (function () {
     }
   }
 }());
-
-_.extend(Utils, {
-  pixelToLatLng: LeafletMapView.prototype.containerPointToLatLng
-});
 
 module.exports = LeafletMapView;

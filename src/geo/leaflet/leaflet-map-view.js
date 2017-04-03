@@ -3,6 +3,7 @@ var _ = require('underscore');
 var L = require('leaflet');
 var MapView = require('../map-view');
 var LeafletLayerViewFactory = require('./leaflet-layer-view-factory');
+var Utils = require('../../core/util');
 
 var LeafletMapView = MapView.extend({
 
@@ -291,5 +292,9 @@ L.Icon.Default.imagePath = (function () {
     }
   }
 }());
+
+_.extend(Utils, {
+  pixelToLatLng: LeafletMapView.prototype.containerPointToLatLng
+});
 
 module.exports = LeafletMapView;

@@ -164,6 +164,7 @@ Development
 * Update leaflet from 0.7.x to 1.0.x
 * Rearrange Error tracker script order (#11872)
 * Fix subdomain error not loading tiles.
+* Sanitized HTML from map and layer names.
 
 4.0.x (2016-12-05)
 ------------------

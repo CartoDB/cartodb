@@ -971,7 +971,7 @@
                     },
                     "inherits": {
                       "version": "2.0.3",
-                      "from": "inherits@>=2.0.1 <2.1.0",
+                      "from": "inherits@>=2.0.0 <3.0.0",
                       "resolved": "https://registry.npmjs.org/inherits/-/inherits-2.0.3.tgz"
                     }
                   }
@@ -1196,7 +1196,7 @@
             "tangram.cartodb": {
               "version": "0.3.0",
               "from": "cartodb/tangram.cartodb#master",
-              "resolved": "git://github.com/cartodb/tangram.cartodb.git#bee4359dbda27b1afda69f9966278fbc8f546e37",
+              "resolved": "git://github.com/cartodb/tangram.cartodb.git#f973792e341110835393521480672670e2e27dee",
               "dependencies": {
                 "babel-runtime": {
                   "version": "6.18.0",
@@ -1605,7 +1605,7 @@
         "tangram.cartodb": {
           "version": "0.3.0",
           "from": "cartodb/tangram.cartodb#master",
-          "resolved": "git://github.com/cartodb/tangram.cartodb.git#bee4359dbda27b1afda69f9966278fbc8f546e37",
+          "resolved": "git://github.com/cartodb/tangram.cartodb.git#f973792e341110835393521480672670e2e27dee",
           "dependencies": {
             "babel-runtime": {
               "version": "6.18.0",

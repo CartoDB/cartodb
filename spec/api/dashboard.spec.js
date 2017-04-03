@@ -2,6 +2,7 @@ var Backbone = require('backbone');
 var Dashboard = require('../../src/api/dashboard');
 var DashboardView = require('../../src/dashboard-view');
 var URLHelper = require('../../src/api/url-helper');
+
 describe('dashboard', function () {
   beforeEach(function () {
     spyOn(Dashboard.prototype, 'onDataviewsFetched').and.callThrough();
@@ -14,7 +15,7 @@ describe('dashboard', function () {
     var dashboardParameter = new Backbone.Model();
     dashboardParameter.widgets = widgets;
     dashboardParameter.vis = new Backbone.Model();
-    
+
     this.dashboard = new Dashboard(dashboardParameter);
   });
 

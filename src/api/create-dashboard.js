@@ -140,10 +140,10 @@ module.exports = function (selector, vizJSON, opts, callback) {
 
   function _load (vizJSON) {
     createDashboard(selector, vizJSON, opts, function (error, dashboard) {
-      var dashboard = new Dashboard(dashboard);
+      var _dashboard = new Dashboard(dashboard);
 
       if (opts.share_urls) {
-        dashboard.onStateChanged(
+        _dashboard.onStateChanged(
           _.debounce(
             function (state, url) {
               window.history.replaceState('Object', 'Title', url);
@@ -153,7 +153,7 @@ module.exports = function (selector, vizJSON, opts, callback) {
         );
       }
 
-      callback && callback(error, dashboard);
+      callback && callback(error, _dashboard);
     });
   }
 

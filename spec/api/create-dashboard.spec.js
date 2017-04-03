@@ -112,5 +112,24 @@ describe('create-dashboard', function () {
 
       expect(this.visMock.instantiateMap).toHaveBeenCalled();
     });
+
+    describe('state change', function () {
+      beforeEach(function () {
+        spyOn(_, 'debounce').and.callFake(function (func) {
+          return function () {
+            func.apply(this, arguments);
+          };
+        });
+      });
+
+      it('should bind state changes if share_urls is true', function () {
+        spyOn(APIDashboard.prototype, 'onStateChanged').and.callThrough();
+        var callback = jasmine.createSpy('callback');
+        createDashboard(this.selectorId, this.vizJSON, { share_urls: true }, callback);
+        this.visMock.trigger('load', this.visMock);
+        this.visMock.instantiateMap.calls.argsFor(0)[0].success();
+        expect(APIDashboard.prototype.onStateChanged).toHaveBeenCalled();
+      });
+    });
   });
 });

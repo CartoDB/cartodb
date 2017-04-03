@@ -3,11 +3,10 @@ var _ = require('underscore');
 var L = require('leaflet');
 var MapView = require('../map-view');
 var LeafletLayerViewFactory = require('./leaflet-layer-view-factory');
-var Utils = require('../../core/util');
 
 var LeafletMapView = MapView.extend({
   initialize: function () {
-    _.extend(Utils, {
+    this.map.set({
       pixelToLatLng: this.containerPointToLatLng,
       latLngtoPixel: this.latLngToContainerPoint
     });

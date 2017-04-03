@@ -3,14 +3,13 @@ var _ = require('underscore');
 var MapView = require('../map-view');
 var Projector = require('./projector');
 var GMapsLayerViewFactory = require('./gmaps-layer-view-factory');
-var Utils = require('../../core/util');
 
 var GoogleMapsMapView = MapView.extend({
   initialize: function () {
     _.bindAll(this, '_ready');
     this._isReady = false;
 
-    _.extend(Utils, {
+    this.map.set({
       pixelToLatLng: this.containerPointToLatLng,
       latLngtoPixel: this.latLngToContainerPoint
     });

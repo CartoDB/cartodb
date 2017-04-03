@@ -493,7 +493,20 @@ var Map = Model.extend({
     }
 
     return zoom - 1;
+  },
+
+  setPixelToLatLng: function (fn) {
+    this.set({
+      pixelToLatLng: fn
+    });
+  },
+
+  setLatLngToPixel: function (fn) {
+    this.set({
+      latLngToPixel: fn
+    });
   }
+
 }, {
   PROVIDERS: {
     GMAPS: 'googlemaps',

@@ -7,7 +7,7 @@ function Dashboard (dashboard) {
   this.onDataviewsFetched(function () {
     dashboard.widgets._widgetsCollection.initialState();
     dashboard.widgets._widgetsCollection.each(function (m) {
-      m.applyInitialState();
+      m && m.applyInitialState && m.applyInitialState();
     });
   });
 }
@@ -63,9 +63,13 @@ Dashboard.prototype = {
     this._dashboard.vis.mapvis.map.setBounds([state.map.ne, state.map.sw]);
   },
 
+  _widgetsAlreadyInitialized: function () {
+    return this._dashboard.widgets._widgetsCollection.hasInitialState();
+  },
+
   onDataviewsFetched: function (callback) {
-    var areDataViewsFetched = this._dashboard.widgets._widgetsCollection.hasInitialState();
-    if (areDataViewsFetched) {
+    var areDataviewsFetched = this._widgetsAlreadyInitialized();
+    if (areDataviewsFetched) {
       callback && callback();
     } else {
       this._dashboard.vis.once('dataviewsFetched', function () {
@@ -75,9 +79,9 @@ Dashboard.prototype = {
   },
 
   onStateChanged: function (callback) {
-    onDataviewsFetched(function () {
+    this.onDataviewsFetched(function () {
       callback && this._bindChange(callback);
-    });
+    }.bind(this));
   },
 
   _bindChange: function (callback) {

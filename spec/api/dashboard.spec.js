@@ -4,7 +4,58 @@ var DashboardView = require('../../src/dashboard-view');
 var URLHelper = require('../../src/api/url-helper');
 describe('dashboard', function () {
   beforeEach(function () {
-    this.dashboard = new Dashboard();
+    spyOn(Dashboard.prototype, 'onDataviewsFetched').and.callThrough();
+    var widgetsCollection = new Backbone.Collection();
+    widgetsCollection.hasInitialState = function () {};
+    widgetsCollection.initialState = function () {};
+    var widgets = {
+      _widgetsCollection: widgetsCollection
+    };
+    var dashboardParameter = new Backbone.Model();
+    dashboardParameter.widgets = widgets;
+    dashboardParameter.vis = new Backbone.Model();
+    
+    this.dashboard = new Dashboard(dashboardParameter);
+  });
+
+  it('should add bind when dataviews are fetched', function () {
+    expect(Dashboard.prototype.onDataviewsFetched).toHaveBeenCalled();
+  });
+
+  describe('onDataviewsFetched', function () {
+    it('should trigger the callback if widgets are initialized', function () {
+      spyOn(this.dashboard, '_widgetsAlreadyInitialized').and.returnValue(true);
+      var callback = jasmine.createSpy('callback');
+      this.dashboard.onDataviewsFetched(callback);
+      expect(callback).toHaveBeenCalled();
+    });
+
+    it('should trigger the callback when dataviews are fetched if widgets are not initialized yet', function () {
+      spyOn(this.dashboard, '_widgetsAlreadyInitialized').and.returnValue(false);
+      var callback = jasmine.createSpy('callback');
+      this.dashboard.onDataviewsFetched(callback);
+      expect(callback).not.toHaveBeenCalled();
+      this.dashboard._dashboard.vis.trigger('dataviewsFetched');
+      expect(callback).toHaveBeenCalled();
+    });
+  });
+
+  describe('onStateChanged', function () {
+    it('should call onDataviewsFetched function with the proper callback', function () {
+      var callback = jasmine.createSpy('callback');
+      this.dashboard.onStateChanged(callback);
+      expect(this.dashboard.onDataviewsFetched).toHaveBeenCalled();
+    });
+
+    it('should call _bindChange function with all dataviews are fetched', function () {
+      spyOn(this.dashboard, '_bindChange');
+      Dashboard.prototype.onDataviewsFetched.and.callFake(function (callback) {
+        callback();
+      });
+      var callback = jasmine.createSpy('callback');
+      this.dashboard.onStateChanged(callback);
+      expect(this.dashboard._bindChange).toHaveBeenCalledWith(callback);
+    });
   });
 
   it('should not return state query if there aren\'t new states', function () {

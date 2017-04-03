@@ -5,7 +5,6 @@ var DashboardView = require('../dashboard-view');
 var WidgetsCollection = require('../widgets/widgets-collection');
 var WidgetsService = require('../widgets-service');
 var URLHelper = require('./url-helper');
-var ReplaceState = require('./replace-state');
 
 /**
  * Translates a vizJSON v3 datastructure into a working dashboard which will be rendered in given selector.

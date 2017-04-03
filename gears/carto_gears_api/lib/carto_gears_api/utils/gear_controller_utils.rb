@@ -18,8 +18,8 @@ module CartoGearsApi
       include AppAssetsHelper
       include MapsApiHelper
       include SqlApiHelper
+      include PagesHelper
       include CartoGearsApi::Utils::UrlUtils
-      include CartoGearsApi::Utils::PagesUtils
 
       # @return [CartoGearsApi::Users::User] Logged user, `nil` if none.
       def logged_user

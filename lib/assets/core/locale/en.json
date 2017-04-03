@@ -30,7 +30,7 @@
     "max": "MAX"
   },
   "builder-activated-notification": {
-    "message": "CARTO Builder has been activated in your account. <a href='https://carto.com/blog/categories/new-features' class='onboardingNotification-link'>Learn more</a> about it and let us know what you think or <a href='mailto:builder-support@carto.com' class='onboardingNotification-link'>contact us</a>. Happy mapping!"
+    "message": "CARTO Builder has been activated in your account. <a href='https://carto.com/learn/guides' class='onboardingNotification-link'>Learn more</a> about it and let us know what you think or <a href='mailto:builder-support@carto.com' class='onboardingNotification-link'>contact us</a>. Happy mapping!"
   },
   "builder-onboarding": {
     "title": "Welcome to Builder,",
@@ -127,6 +127,7 @@
     "finished": "has finished",
     "style-analysis": "Style this analysis",
     "read-more": "Read more in documentation",
+    "learn-more": "Learn more",
     "never-show-message": "Don't show me this again.",
     "no-new-columns": "No new columns were created.",
     "geometries-updated": "The geometries in your table were updated",
@@ -137,7 +138,7 @@
     "new-columns-included-based-on-input": "New columns have been included with your original data based on the columns chosen for the input.",
     "sampling": {
       "title": "Subsample of rows",
-      "description": "A sample of your original table was randomly selected to give approximately %{percentage}% of the rows from your input dataset."
+      "description": "A sample of your original table was randomly selected to give approximately a percentage of the rows from your input dataset."
     },
     "merge": {
       "title": "Join columns from 2nd layer",
@@ -165,7 +166,7 @@
     },
     "filter-by-node-column": {
       "title": "Filter by layer",
-      "description": "Filter by layer allows you to filter the data in your layer by propagating the filters in the attached layer. Now if you filter on widgets added to the '%{name_of_filter_source_node}' node, the results in the '%{name_of_source_node}' node would be also filtered."
+      "description": "Filter by layer allows you to filter the data in your layer by propagating the filters in the attached layer. Now if you filter on widgets added to the first node, the results in the second node would be also filtered."
     },
     "spatial-markov-trend": {
       "trend": "The normalized trend for each geometry",
@@ -200,13 +201,12 @@
       "line-source-to-target": "Link a source point to a target point based on a shared attribute",
       "line-to-column": "Create lines from a point to to a geometry stored in another column",
       "line-to-single-point": "Connect the coordinate from latitude and longitude columns to the point geometry (`the_geom`) in your dataset."
-
     },
     "group-points": {
       "title": "Group points into polygons",
       "the-geom": "This column was updated to polygons encompassing the input points.",
       "category": "This will be the category over which the polygons were calculated",
-      "description": "Group points into polygons used '%{method}' to create new polygons."
+      "description": "Group points into polygons to create new polygons."
     },
     "georeference": {
       "title": "Georeference",
@@ -222,7 +222,6 @@
       "category": "Stores the category value for each centroid from the source dataset"
     }
   },
-
   "analyses": {
     "connect-with-lines": {
       "title": "Connect with lines",
@@ -248,7 +247,8 @@
       "population-segments": "Population segments",
       "race-and-ethnicity": "Race and Ethnicity",
       "religion": "Religion",
-      "transportation": "Transportation"
+      "transportation": "Transportation",
+      "filters": "Filters"
     },
     "merge": {
       "title": "Join columns from 2nd layer",
@@ -319,7 +319,6 @@
       "short-title": "Routing"
     }
   },
-
   "analysis-category": {
     "all": "All",
     "analyze-predict": "Analyze and predict",
@@ -392,6 +391,14 @@
       "twitter-data": "Twitter data is empty",
       "dataset-copy-undefined": "Dataset copy is not defined",
       "query-undefined": "Query is not provided"
+    },
+    "analysis-definition-node-model": {
+      "validation": {
+        "missing-required": "Required",
+        "invalid-source": "Invalid source",
+        "invalid-value": "Invalid value",
+        "invalid-enum": "Invalid value, must be any of %{expectedValues}"
+      }
     }
   },
   "components": {
@@ -406,7 +413,7 @@
       "geocoding-success-detail": {
         "amount-charged": "<strong>$%{price}</strong> will be charged to your account",
         "credits-consumed": "You have consumed all your credits during this billing cycle, price is $%{price} / 1,000 extra credits.",
-        "description":  "We've successfully geocoded <%- realRowsFormatted %> <%- geometryType %> of <%- processableRowsFormatted %>. |||| We've successfully geocoded <%- realRowsFormatted %> <%- geometryType %>s of <%- processableRowsFormatted %>.",
+        "description": "We've successfully geocoded <%- realRowsFormatted %> <%- geometryType %> of <%- processableRowsFormatted %>. |||| We've successfully geocoded <%- realRowsFormatted %> <%- geometryType %>s of <%- processableRowsFormatted %>.",
         "explanation": "Rows that are not geocoded could have errors in their column values, or don’t exist in our data. Try geocoding again and check the 'override all values' to try again.",
         "no-extra-charge": "No extra charges have been done",
         "remainingQuotaFormatted": "You still have %{remainingQuotaFormatted} credits left for this month.",
@@ -456,7 +463,6 @@
         "unknown-error": "An unknown error has happened"
       },
       "upgrade-errors": {
-        "upgrade": "upgrade",
         "8001": {
           "description": "Remove some of your datasets to gain available space or upgrade your account",
           "info": "Keep your data and get a larger quota by upgrading your plan",
@@ -466,7 +472,8 @@
           "description": "Remove any layer or upgrade your account",
           "info": "Keep your maps and get more layer count quota by upgrading your plan",
           "title": "You have reached your layer count limit"
-        }
+        },
+        "upgrade": "upgrade"
       },
       "twitter-import-details": {
         "new-type-created": "We've created a new dataset containing a total of %{datasetTotalRowsFormatted}<br/>tweet%{tweetPlural} with your search terms",
@@ -502,7 +509,6 @@
       "background-import-limit": {
         "hurry": "In a hurry? <a href='%{upgradeUrl}'>Upgrade your account</a> to import several files at a time",
         "one-file": "Unfortunately, you can only import up to %{importQuota} files at the same time"
-
       },
       "free-trial": "Get a %{days} day free trial",
       "connecting": "Connecting",
@@ -645,7 +651,7 @@
         },
         "error": {
           "title": "We couldn't save your data",
-          "subtitle": "We had an error trying to save your data: <span class='CDB-Text is-semibol%{error}</span>"
+          "subtitle": "We had an error trying to save your data: <span class='CDB-Text is-semibold'>%{error}</span>"
         },
         "loading": "Saving your data...",
         "success": "<span class='CDB-Text is-semibold'>Metadata</span> for %{name} map <span class='CDB-Text is-semibold'>was saved</span>."
@@ -1120,7 +1126,19 @@
         "count-message": "If you select 'COUNT' all columns are selected"
       },
       "interval-error": "Value must be between %{minValue} and %{maxValue}",
-      "copy-button": "COPY"
+      "copy-button": "COPY",
+      "data-observatory": {
+        "dropdown": {
+          "measurement": {
+            "search": "Search...",
+            "type": "measurements"
+          },
+          "filter": {
+            "header": "Filter measurements by",
+            "type": "filters"
+          }
+        }
+      }
     },
     "codemirror": {
       "no-errors": "No errors",
@@ -1224,16 +1242,6 @@
           "error": "There was an error with pagination: %{error}",
           "to": "to"
         }
-      }
-    }
-  },
-  "data": {
-    "analysis-definition-node-model": {
-      "validation": {
-        "missing-required": "Required",
-        "invalid-source": "Invalid source",
-        "invalid-value": "Invalid value",
-        "invalid-enum": "Invalid value, must be any of %{expectedValues}"
       }
     }
   },
@@ -1370,11 +1378,12 @@
     },
     "maps": {
       "options": {
-        "rename": "Rename",
         "duplicate": "Duplicate",
-        "export-map": "Export map",
         "edit-metadata": "Edit metadata…",
-        "remove": "Delete map…"
+        "export-image": "Export as image…",
+        "export-map": "Export map",
+        "remove": "Delete map…",
+        "rename": "Rename"
       },
       "duplicate": {
         "error": "There was an error duplicating %{name}",
@@ -1388,6 +1397,12 @@
         "error": "Error deleting map %{name}: %{error}",
         "loading": "Removing the map %{name}...",
         "success": "Map %{name} deleted"
+      },
+      "export-image": {
+        "title": "Export as image",
+        "export": "Export",
+        "generating": "Generating",
+        "download": "Download"
       },
       "export": {
         "confirmation": {
@@ -1415,7 +1430,11 @@
     },
     "tab-pane": {
       "layers": {
-        "title-label": "Layers"
+        "title-label": "Layers",
+        "georeference": {
+          "title": "Layer not georeferenced",
+          "body": "The layer <span class='CDB-Text is-semibold'>%{name}</span> include non-georeferenced data."
+        }
       },
       "elements": {
         "title-label": "Elements"
@@ -1436,6 +1455,7 @@
         "export": "Export data",
         "hide": "Hide layer",
         "show": "Show layer",
+        "edit": "Edit layer",
         "center-map": "Center map on layer"
       },
       "drag-n-drop-analysis": {
@@ -1577,7 +1597,6 @@
         "enter-longitude": "Enter longitude",
         "filter": "Filter",
         "filter-aggregate": "Aggregate your results",
-        "filter-column": "2nd. layer col.",
         "filter-column": "Filter column",
         "foreign-keys": "Foreign Keys",
         "geometry-from": "Geometry from",
@@ -1669,12 +1688,29 @@
           "loading": "Obtaining your quotas...",
           "credits-left-body": "This might incur into an extra cost. Extra credits will be charged at $%{blockPrice}/%{blockSize}.",
           "credits-left-message": "%{smart_count} credit left |||| %{smart_count} credits left",
+          "enough-quota": "You need to use approximately %{credits} of your credits.",
+          "hard-limit-not-enough-quota": "We're sorry the current quota is insufficient to enrich your data. Rows will be set to null and analysis may not complete. Please %{contact} us to extend your quota for this function.",
+          "soft-limit-enough-quota": "We're sorry the current quota is insufficient to enrich your data. This might need about %{credits} extra credits. Extra credits will be charged at $%{blockPrice}/%{blockSize}.",
           "no-quota-assigned-body": "To get access to the %{analysis} function, %{contact}.",
-          "no-quota-assigned-contact": "contact our team",
           "no-credits-body": "You have consumed all your credits during this billing cycle. %{contact} to get some more.",
-          "no-credits-contact": "Contact us",
-          "no-credits-mail": "sales@carto.com",
           "no-credits-message": "No credits available",
+          "contact-message": {
+            "no-credits": {
+              "regular": "Contact us",
+              "organization": "Contact your organization admin"
+            },
+            "no-quota-assigned": {
+              "regular": "contact our team",
+              "organization": "contact your organization admin"
+            }
+          },
+          "emails": {
+            "support": "support@carto.com",
+            "saas": "sales@carto.com"
+          },
+          "quota-error-title": "Error",
+          "quota-fetch-error": "There was an error obtaining your quota: %{error}.",
+          "quota-dataservice-down": "Dataservices API unreacheable.",
           "cancel": "Cancel",
           "confirm": "confirm",
           "analysis-type": {
@@ -1792,6 +1828,11 @@
           "success": "Map centered",
           "error": "Error centering map"
         }
+      },
+      "georeference": {
+        "manually-add": "Please georeference or manually add data to visualize.",
+        "georeference-button": "Georeference",
+        "visualize": "Layer doesn't have geometry"
       }
     },
     "data": {
@@ -1855,6 +1896,19 @@
           "body": "This layer is hidden, changes won't be shown until you make it visible.",
           "show": "SHOW"
         }
+      }
+    },
+    "export-image": {
+      "invalid-dimension": "Invalid dimension",
+      "properties": {
+        "width": "width",
+        "height": "height",
+        "size": "Size",
+        "size-subtitle": "You can also edit the width and height",
+        "format": "Format",
+        "format-subtitle": "Change column names and type in table mode",
+        "options": "Options",
+        "options-subtitle": "Configure display options"
       }
     },
     "legend": {
@@ -1946,6 +2000,7 @@
           "title-label-line": "Lines style",
           "title-label-polygon": "Polygons style",
           "placeholder-text": "There's no geometry in your data that could be styled.",
+          "georeference": "Georeference",
           "desc": "Change the visualization"
         },
         "unanimatable": {

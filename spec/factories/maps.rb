@@ -1,6 +1,7 @@
 FactoryGirl.define do
 
   factory :map, class: Map do
+    to_create(&:save)
   end
 
   factory :carto_map, class: Carto::Map do

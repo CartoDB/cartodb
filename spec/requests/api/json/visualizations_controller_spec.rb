@@ -360,7 +360,10 @@ describe Api::Json::VisualizationsController do
     it "when a map is liked should send an email to the owner" do
       user_owner = create_user
       table = new_table({user_id: user_owner.id, privacy: ::UserTable::PRIVACY_PUBLIC}).save.reload
-      vis, rejected_layers = CartoDB::Visualization::DerivedCreator.new(user_owner, [table]).create
+      # This user is of the same ORM as the table, so TableBlender works
+      orm_user = table.table_visualization.user
+      orm_user.reload
+      vis, rejected_layers = CartoDB::Visualization::DerivedCreator.new(orm_user, [table]).create
       rejected_layers.empty?.should be true
       Resque.expects(:enqueue).with(::Resque::UserJobs::Mail::MapLiked, vis.id, @user.id, kind_of(String)).returns(true)
       post_json api_v1_visualizations_add_like_url({
@@ -372,7 +375,10 @@ describe Api::Json::VisualizationsController do
 
     it "when a map is liked by the owner, the email should not be sent" do
       table = new_table({user_id: @user.id, privacy: ::UserTable::PRIVACY_PUBLIC}).save.reload
-      vis, rejected_layers = CartoDB::Visualization::DerivedCreator.new(@user, [table]).create
+      # This user is of the same ORM as the table, so TableBlender works
+      orm_user = table.table_visualization.user
+      orm_user.reload
+      vis, rejected_layers = CartoDB::Visualization::DerivedCreator.new(orm_user, [table]).create
       rejected_layers.empty?.should be true
       Resque.expects(:enqueue).with(::Resque::UserJobs::Mail::MapLiked, vis.id, @user.id, kind_of(String)).never
       post_json api_v1_visualizations_add_like_url({

@@ -26,6 +26,11 @@
     padding: 0 10px 0 10px;
     display: flex;
     flex-direction: column;
+
+    .found-sub {
+      font-weight: bold;
+      color: $Grey1;
+    }
   }
 
   .SearchBar {

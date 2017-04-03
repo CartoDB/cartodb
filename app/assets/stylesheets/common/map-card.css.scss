@@ -135,7 +135,6 @@ $sEditButtonSize: 50px;
 .MapCard-header {
   @include background(image-url('layout/default-map-bkg.png') no-repeat center 0);
   @include opacity(1);
-  @include transition(opacity, $opacityTransition);
   display: block;
   position: relative;
   width: 100%;
@@ -231,7 +230,7 @@ $sEditButtonSize: 50px;
   @include animation(pulsate 1.5s linear infinite);
 }
 .MapCard-preview {
-  display: none;
+  display: block;
   position:absolute;
   top: 0;
   left: 0;
@@ -382,7 +381,6 @@ $sEditButtonSize: 50px;
   height: 352px;
   @include background(image-url('layout/map-placeholder.png') no-repeat center center);
   @include opacity(0);
-  @include transition(opacity, $opacityTransition);
   z-index: 0;
 }
 .MapCard-first-map {

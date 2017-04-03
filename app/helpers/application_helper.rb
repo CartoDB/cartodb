@@ -1,6 +1,7 @@
 # coding: utf-8
 require_dependency 'cartodb_config_utils'
-require_dependency 'carto_gears_api/helpers/pages_helper'
+# require_dependency causes random errors on unicorn reload. CartoDB/cartodb-platform/issues/3206.
+require_relative '../../gears/carto_gears_api/lib/carto_gears_api/helpers/pages_helper'
 
 module ApplicationHelper
   include CartoDB::ConfigUtils

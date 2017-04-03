@@ -62,11 +62,10 @@ $cHeader-dark:  rgba(#3A91D7, 1);
 }
 .Header-navigationToggleItem {
   background: #444444;
-  padding: 3px 0 3px 0;
+  padding: 0;
   width: 93px;
   display: inline-block;
   text-align: center;
-  cursor: pointer;
   border: 1px solid #000000;
   &.selected {
     background: #005AB5;
@@ -76,6 +75,7 @@ $cHeader-dark:  rgba(#3A91D7, 1);
     border-right: none;
   }
   & a {
+    padding: 3px 0 3px 0;
     color: #d8d8d8;
     display: block;
     width: 100%;

@@ -1,7 +1,6 @@
 # coding: utf-8
 require_dependency 'cartodb_config_utils'
-# require_dependency causes random errors on unicorn reload. CartoDB/cartodb-platform/issues/3206.
-require_relative '../../gears/carto_gears_api/lib/carto_gears_api/helpers/pages_helper'
+require_dependency 'carto_gears_api/utils/pages_utils'
 
 module ApplicationHelper
   include CartoDB::ConfigUtils
@@ -13,7 +12,7 @@ module ApplicationHelper
   include AppAssetsHelper
   include MapsApiHelper
   include SqlApiHelper
-  include CartoGearsApi::Helpers::PagesHelper
+  include CartoGearsApi::Utils::PagesUtils
 
   def current_user
     super(CartoDB.extract_subdomain(request))

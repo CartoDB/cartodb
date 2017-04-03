@@ -3,6 +3,13 @@ var _ = require('underscore');
 
 function Dashboard (dashboard) {
   this._dashboard = dashboard;
+
+  this.onDataviewsFetched(function () {
+    dashboard.widgets._widgetsCollection.initialState();
+    dashboard.widgets._widgetsCollection.each(function (m) {
+      m.applyInitialState();
+    });
+  });
 }
 
 Dashboard.prototype = {
@@ -56,14 +63,21 @@ Dashboard.prototype = {
     this._dashboard.vis.mapvis.map.setBounds([state.map.ne, state.map.sw]);
   },
 
-  onStateChanged: function (callback, shareURLs) {
-    this._dashboard.vis.once('dataviewsFetched', function () {
-      this._dashboard.widgets._widgetsCollection.initialState();
-      this._dashboard.widgets._widgetsCollection.each(function (m) {
-        m.applyInitialState();
+  onDataviewsFetched: function (callback) {
+    var areDataViewsFetched = this._dashboard.widgets._widgetsCollection.hasInitialState();
+    if (areDataViewsFetched) {
+      callback && callback();
+    } else {
+      this._dashboard.vis.once('dataviewsFetched', function () {
+        callback && callback();
       }, this);
-      shareURLs === true && this._bindChange(callback);
-    }, this);
+    }
+  },
+
+  onStateChanged: function (callback) {
+    onDataviewsFetched(function () {
+      callback && this._bindChange(callback);
+    });
   },
 
   _bindChange: function (callback) {

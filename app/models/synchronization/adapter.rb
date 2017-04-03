@@ -80,7 +80,7 @@ module CartoDB
       end
 
       def fix_oid(table_name)
-        user_table = user.tables.where(name: table_name).first
+        user_table = Carto::UserTable.find(user.tables.where(name: table_name).first.id)
 
         user_table.sync_table_id
         user_table.save
@@ -114,7 +114,7 @@ module CartoDB
       end
 
       def setup_table(table_name, geo_type)
-        table = user.tables.where(name: table_name).first.service
+        table = Carto::UserTable.find(user.tables.where(name: table_name).first.id).service
 
         table.force_schema = true
 

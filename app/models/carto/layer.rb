@@ -109,9 +109,10 @@ module Carto
     end
 
     # Sequel model compatibility (for TableBlender)
+    # TODO: Remove this after `::UserTable` deletion, and inline into TableBlender
     def add_map(map)
       CartoDB::Logger.debug(message: 'Adding map to Carto::Layer with legacy method')
-      maps << map
+      map.layers << self
     end
 
     def user_tables_readable_by(user)

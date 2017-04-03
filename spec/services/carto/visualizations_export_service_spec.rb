@@ -93,7 +93,7 @@ describe Carto::VisualizationsExportService do
     table_1 = create_table(user_id: @user.id)
     table_2 = create_table(user_id: @user.id)
 
-    blender = Visualization::TableBlender.new(@user, [table_1, table_2])
+    blender = Visualization::TableBlender.new(Carto::User.find(@user.id), [table_1, table_2])
     map = blender.blend
 
     visualization = create_vis(@user, map_id: map.id, description: 'description <strong>with tags</strong>')

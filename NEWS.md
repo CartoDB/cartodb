@@ -113,7 +113,7 @@ Development
   * Run `cartodb:db:register_table_dependencies` rake to update caches for existing maps
 * Categories legend are now static (#10972)
 * Fixed a bug with vizjson invalidation (#11092). It was introduced in #10934
-* Refactor Layer model (#10934) and UserTable (#11589, #11700).
+* Refactor Layer model (#10934) and UserTable (#11589, #11700, #11737).
 * Correctly render map previews for maps with google basemaps (#11608)
 * Do not trigger visualization hooks on state update (#11701)
 * Refactor Layer model (#10934)
@@ -164,6 +164,7 @@ Development
 * Fix problem when number column is used like categories in fill component (#11736)
 * Don't let user to apply icons over categories when auto-style is applied (#11761)
 * Update leaflet from 0.7.x to 1.0.x
+* No geometry messages are displayed after a new geometry is drawn (#11857)
 * Rearrange Error tracker script order (#11872)
 * Fix subdomain error not loading tiles.
 

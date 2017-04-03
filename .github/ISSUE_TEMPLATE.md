@@ -1,10 +1,10 @@
 ### Reporter 
-*Please list your full name and email (in case we have follow up questions)
+*Please list your full name and email (in case we have follow up questions)*
 
-*Please list what user type you were logged in as (i.e Admin, Builder, Viewer) & associated login credentials
+*Please list what user type you were logged in as (i.e Admin, Builder, Viewer) & associated login credentials*
 
 ### Context
-*List Test Script: Name & ID 
+*List Test Script: Name & ID*
 
 *Please explain here below what you were doing when the issue happened*
 

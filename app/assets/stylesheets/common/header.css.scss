@@ -21,11 +21,22 @@ $cHeader-dark:  rgba(#3A91D7, 1);
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center);
+  margin: 0px 24px;
+  width: 100%;
 }
 .Header-navigationList {
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center);
+   > .button {
+      @include bb_button_style;
+      margin-right: 12px;
+      height: 21px;
+
+      > a {
+        color: #f2f2f2;
+      }
+  }
 }
 .Header-navigationBreadcrumb {
   @include display-flex();
@@ -49,19 +60,7 @@ $cHeader-dark:  rgba(#3A91D7, 1);
 .Header-navigationItem {
   margin-left: $sMargin-section;
 }
-.Header-navigationLink {
-  font-weight: $sFontWeight-normal;
-  font-size: $sFontSize-smallUpperCase;
-  line-height: $sLineHeight-largest;
-  text-transform: uppercase;
-  color: #fff;
-  transition: all .15s;
 
-  &:hover {
-    text-decoration: none;
-    color: rgba(#fff, .6);;
-  }
-}
 .Header-navigationBreadcrumbItem:first-child { padding-left: 0 }
 .Header-navigationBreadcrumbLink {
   font-size: 15px;
@@ -91,11 +90,8 @@ $cHeader-dark:  rgba(#3A91D7, 1);
 }
 .Header-settingsItem {
   position: relative;
-  margin-left: $sMargin-section;
-  font-weight: $sFontWeight-normal;
-  font-size: $sFontSize-smallUpperCase;
-  line-height: $sLineHeight-larger;
-  text-transform: uppercase;
+  font-size: 15px;
+  margin-right: 24px;
 }
 .Header-settingsItem--avatar {}
 .Header-settingsLink {
@@ -131,6 +127,7 @@ $cHeader-dark:  rgba(#3A91D7, 1);
 
   .Header .Header-inner {
     height: $height;
+
   }
   .Header {
     height: $height;

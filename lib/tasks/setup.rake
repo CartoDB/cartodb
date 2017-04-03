@@ -148,6 +148,45 @@ DESC
       end
     end
 
+    task :create_blp_org_user =>
+      ["rake:db:create", "rake:db:migrate", "cartodb:db:create_publicuser"] do
+      raise "You should provide a valid e-mail"    if ENV['EMAIL'].blank?
+      raise "You should provide a valid password"  if ENV['PASSWORD'].blank?
+      raise "You should provide a valid subdomain" if ENV['SUBDOMAIN'].blank?
+
+      # Reload User model schema to avoid errors
+      # when running this task along with db:migrate
+      ::User.set_dataset :users
+
+      user = ::User.new
+      user.email = ENV['EMAIL']
+      user.password = ENV['PASSWORD']
+      user.password_confirmation = ENV['PASSWORD']
+      user.username = ENV['SUBDOMAIN']
+      user.database_host = ENV['DATABASE_HOST'] || ::Rails::Sequel.configuration.environment_for(Rails.env)['host']
+      puts "get the organization"
+      org = Organization.where(name: 'blp-global').first
+      user.table_quota = 1000;
+      user.max_layers = 20;
+      puts org.name
+      user.organization = org;
+      user.save(raise_on_failure: true)
+      user.create_in_central
+
+      file_size_quota = 1500*1024*1024
+      row_count_quota = 5000000
+
+      user.update(:max_import_file_size => file_size_quota) if file_size_quota > user.max_import_file_size
+      user.update(:max_import_table_row_count => row_count_quota) if row_count_quota > user.max_import_table_row_count
+
+
+      #common_data_url = CartoDB::Visualization::CommonDataService.build_url("test")
+      #::Resque.enqueue(::Resque::UserJobs::CommonData::LoadCommonData, user.id, "test")
+      ::Resque.enqueue(::Resque::UserJobs::CommonData::LoadCommonData, user.id, "http://localhost.localdomain/user/mapsdata/api/v1/viz?privacy=public&type=table")
+
+    end
+
+
     desc "Set the password of the user in the USER_NAME environment variable to the value of the USER_PASSWORD environment variable"
     task :change_user_password => :environment do
       raise "Set USER_NAME environment variable" if ENV['USER_NAME'].blank?

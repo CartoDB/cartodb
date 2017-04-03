@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%= favicon_link_tag "/favicons/favicon.ico" %>
+    <title><%= yield :title %></title>
+    <meta name="description" content="<%= yield :description %>">
+    <meta name="keywords" content="<%= @visualization.name.gsub(/ /,", ").gsub(/_/,", ") %>, datasets, maps, data visualization, spatial data, geospatial, cartodb">
+    <meta name="author" content="<%= @visualization.user.username %>">
+    <meta charset='utf-8' />
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+
+    <meta property="og:title" content="<%= yield :title %>" />
+    <meta property="og:site_name" content="CartoDB" />
+    <meta property="og:description" content="<%= yield :description %>" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="<%= request.original_url %>" />
+    <meta property="og:image" content="<%= yield :facebook_card %>">
+    <% if Cartodb.config[:facebook].present? && Cartodb.config[:facebook]['app_id'].present? %>
+      <meta property="fb:app_id" content="<%= Cartodb.config[:facebook]['app_id'] %>" />
+    <% end %>
+    <% if Cartodb.config[:facebook].present? && Cartodb.config[:facebook]['admins'].present? %>
+      <meta property="fb:admins" content="<%= Cartodb.config[:facebook]['admins'] %>" />
+    <% end %>
+    <meta property="article:publisher" content="https://www.facebook.com/cartodb" />
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@cartodb">
+    <% unless @twitter_username.nil? %>
+      <meta name="twitter:creator" "@#{@twitter_username}" ">
+    <% end %>
+    <meta name="twitter:title" content="<%= yield :title %>">
+    <meta name="twitter:description" content="<%= yield :description %>">
+    <meta name="twitter:image" content="<%= yield :twitter_card %>">
+
+    <%= yield :css %>
+
+    <!--[if lt IE 9]>
+      <%= javascript_include_tag 'modernizr' %>
+    <![endif]-->
+  </head>
+  <body class="<%= yield :body_class %>">
+    <%= yield :content %>
+    <%= yield :js %>
+  </body>
+</html>

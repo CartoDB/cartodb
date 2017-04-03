@@ -22,7 +22,7 @@ class Admin::VisualizationsController < Admin::AdminController
 
   before_filter :login_required, only: [:index]
   before_filter :table_and_schema_from_params, only: [:show, :public_table, :public_map, :show_protected_public_map,
-                                                      :show_protected_embed_map, :embed_map]
+                                                      :show_protected_embed_map, :embed_map, :sample_map]
   before_filter :link_ghost_tables, only: [:index]
   before_filter :user_metadata_propagation, only: [:index]
   before_filter :get_viewed_user, only: [:public_map, :public_table]
@@ -32,7 +32,7 @@ class Admin::VisualizationsController < Admin::AdminController
                                                          :show_organization_public_map, :show_organization_embed_map,
                                                          :show_protected_public_map, :show_protected_embed_map]
 
-  before_filter :resolve_visualization_and_table_if_not_cached, only: [:embed_map]
+  before_filter :resolve_visualization_and_table_if_not_cached, only: [:embed_map, :sample_map]
 
   after_filter :update_user_last_activity, only: [:index, :show]
 
@@ -279,6 +279,117 @@ class Admin::VisualizationsController < Admin::AdminController
     embed_forbidden
   end
 
+  def get_layer_names
+    map_id = Carto::Visualization.where(id:@visualization.id).first.map_id;
+
+    map = Carto::Map.where(id: map_id).first
+    raise RecordNotFound if map.nil?
+
+    layers = []
+    map.layers.each do |layer|
+      options = layer.options
+      if options['type'] == 'CartoDB'
+        layers.append(options.symbolize_keys[:table_name])
+      end
+    end
+
+    layers.delete_if {|item| item == 'shared_empty_dataset'}
+
+    layers
+  end
+
+  def sample_map
+    if current_user.nil? && !request.params[:redirected].present?
+      redirect_url = get_corrected_url_if_proceeds(for_table=false)
+      unless redirect_url.nil?
+        redirect_to redirect_url and return
+      end
+    end
+
+    return(embed_forbidden) unless @visualization.is_accesible_by_user?(current_user)
+    return(public_map_protected) if @visualization.password_protected?
+    if current_user && @visualization.organization? &&
+        @visualization.has_permission?(current_user, Visualization::Member::PERMISSION_READONLY)
+      return(show_organization_public_map)
+    end
+    # Legacy redirect, now all public pages also with org. name
+    if eligible_for_redirect?(@visualization.user)
+      # INFO: here we only want the presenter to rewrite the url of @visualization.user namespacing it like 'schema.id',
+      # so current_user also equals @visualization.user
+      visualization_presenter = Carto::Api::VisualizationPresenter.new(@visualization, @visualization.user, self)
+      redirect_to visualization_presenter.privacy_aware_map_url({ redirected: true },
+                                                                'public_visualizations_public_map') and return
+    end
+
+    if @visualization.can_be_cached?
+      response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
+    end
+
+    if @more_visualizations && @more_visualizations.length > 0
+      additional_keys = []
+      @more_visualizations.each do |vis_adapter|
+        additional_keys << vis_adapter.visualization.surrogate_key
+      end
+      additional_keys = " #{additional_keys.join(' ')}"
+    else
+       additional_keys = ''
+    end
+
+    if @visualization.can_be_cached?
+      response.headers['Surrogate-Key'] =
+        "#{CartoDB::SURROGATE_NAMESPACE_PUBLIC_PAGES} #{@visualization.surrogate_key}#{additional_keys}"
+
+      response.headers['Cache-Control'] = "no-cache,max-age=86400,must-revalidate, public"
+    end
+
+    @name = @visualization.user.name.present? ? @visualization.user.name : @visualization.user.username.truncate(20)
+    @avatar_url             = @visualization.user.avatar
+    @twitter_username       = @visualization.user.twitter_username.present? ? @visualization.user.twitter_username : nil
+    @location               = @visualization.user.location.present? ? @visualization.user.location : nil
+    @google_maps_query_string = @visualization.user.google_maps_query_string
+
+    @mapviews = @visualization.total_mapviews
+
+    @disqus_shortname       = @visualization.user.disqus_shortname.presence || 'cartodb'
+    @visualization_count    = @visualization.user.public_visualization_count
+    @related_tables         = @visualization.related_tables
+    @related_canonical_visualizations = @visualization.related_canonical_visualizations
+    @related_tables_owners = Hash.new
+    @related_tables.each { |table|
+      unless @related_tables_owners.include?(table.user_id)
+        table_owner = ::User.where(id: table.user_id).first
+        if table_owner.nil?
+          # strange scenario, as user has been deleted but his table still exists
+          @related_tables_owners[table.user_id] = nil
+        else
+          @related_tables_owners[table.user_id] = table_owner
+        end
+      end
+    }
+
+    @user_domain = user_domain_variable(request)
+
+    @public_tables_count    = @visualization.user.public_table_count
+    @nonpublic_tables_count = @related_tables.select{|t| !t.public? }.count
+
+    @is_liked    = is_liked(@visualization)
+    @likes_count = @visualization.likes.count
+
+    @datalib_layers = get_layer_names
+
+    # We need to know if visualization logo is visible or not
+    @hide_logo = is_logo_hidden(@visualization, params)
+    respond_to do |format|
+      format.html { render layout: 'application_sample_layout' }
+      format.html { render 'sample_map', content_type: 'application/javascript' }
+      #format.js { render 'public_map', content_type: 'application/javascript' }
+    end
+  rescue => e
+    CartoDB.notify_exception(e, {user:current_user})
+    embed_forbidden
+  end
+
+
   def show_organization_public_map
     return(embed_forbidden) unless org_user_has_map_permissions?(current_user, @visualization)
 
@@ -491,7 +602,7 @@ class Admin::VisualizationsController < Admin::AdminController
   def resolve_visualization_and_table
     filters = { exclude_raster: true }
     @visualization, @table =
-      get_visualization_and_table(@table_id, username_from_schema || CartoDB.extract_subdomain(request), filters)
+      get_visualization_and_table(@table_id, username_from_schema || @sample_user || CartoDB.extract_subdomain(request), filters)
     if @visualization && @visualization.user
       @more_visualizations = more_visualizations(@visualization.user, @visualization)
     end
@@ -551,6 +662,9 @@ class Admin::VisualizationsController < Admin::AdminController
     else
       @table_id, @schema = [params.fetch('id', nil), nil]
     end
+
+    @sample_user = params.fetch(:sample_user, nil)
+
   end
 
   def full_table_id

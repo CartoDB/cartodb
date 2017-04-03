@@ -1,0 +1,169 @@
+<%= content_for(:title) do %><%= @visualization.name %><% end %>
+
+<%= content_for(:description) do %><%= @visualization.description_clean ? "#{@visualization.description_clean} — Map created by #{@name} in CartoDB" : "Map created by #{@name} in CartoDB" %><% end %>
+
+
+<%= content_for(:body_class) do %>SampleMap<% end %>
+
+<%= content_for(:css) do %>
+  <%= stylesheet_link_tag 'cartodb', 'old_common_without_core', 'common', 'public_map', 'editor', 'map' %>
+<% end %>
+
+<%= content_for(:content) do %>
+  <% if @visualization.is_accesible_by_user?(current_user) %>
+    <%= render 'admin/shared/sample_header' %>
+
+  <div class='panes'>
+    <div class="map derived">
+      <div class="cartodb-map js-map" id="map">
+        <div class="Spinner Spinner--center js-spinner"></div>
+      </div>
+    <div>
+  </div>
+  <% end %>
+<% end %>
+
+
+<%= content_for(:js) do %>
+  <% if @visualization.map.provider == 'googlemaps' %>
+    <script type="text/javascript"
+        src="//maps.googleapis.com/maps/api/js?sensor=false&v=3.12&<%= @google_maps_query_string %>">
+    </script>
+  <% end %>
+
+  <script>
+    function get_url_params(conversion) {
+      conversion = conversion || {};
+
+      var tokens = location.search.slice(1).split('&');
+      var params = {};
+
+      for (var i = 0; i < tokens.length; ++i) {
+
+        var tk = tokens[i].split('=');
+        var fn = conversion[tk[0]] || function(v) { return v };
+
+        if (tk.length === 2) {
+          params[tk[0]] = fn(decodeURIComponent(tk[1]));
+        }
+      }
+
+      return params;
+    }
+
+    var user_name = '<%= @user_domain %>';
+    var owner_username = '<%= @visualization.user.username %>';
+    var base_url = '<%= @visualization.user.public_url(nil, request.protocol == 'https://' ? 'https' : 'http') %>';
+    var vis_id = "<%= @visualization.id %>";
+    var vis_name = "<%= @visualization.name %>";
+    var belong_organization = <%= @visualization.user.has_organization? %>;
+    var config = <%= safe_js_object frontend_config_public({https_apis: request.protocol == 'https://' }) %>;
+    var user_data =  <%= safe_js_object current_user.data({ show_api_calls: false }).to_json %>;
+    var datalib_layers = <%= safe_js_object @datalib_layers.to_json %>
+    var vizdata = <%= safe_js_object @visualization.to_vizjson({https_request: request.protocol == 'https://'}).to_json %>;
+
+    // fix header title and description in overlay viz JSON for cartodb.js
+    vizdata.overlays.forEach(function(overlay) {
+      if (overlay.type === 'header') {
+        if (overlay.options && overlay.options.extra) {
+          if (overlay.options.extra.headerType === 'title') {
+            overlay.options.extra.title = overlay.options.extra.text;
+            overlay.options.extra.show_title = true;
+          } else if (overlay.options.extra.headerType === 'description') {
+            overlay.options.extra.description = overlay.options.extra.text;
+            overlay.options.extra.show_description = true;
+          }
+        }
+      }
+    });
+
+    var login_url = "<%= login_url %>";
+
+    // Generating map options
+    var bool_fn = function(v) { return v == 'true' };
+    var is_custom_install = <%= Cartodb.config[:cartodb_com_hosted].present? %>;
+    var logo_fn  = function(v) { return ( <%= !@visualization.user.remove_logo? %> || is_custom_install ) ? true : v == 'true' };
+    var layer_fn = function(v) {
+      if (!v || !v.length) {
+        return null;
+      }
+      return _.map(v.split("|"), function(v) {
+        return { visible: !!parseInt(v, 10) }
+      });
+    };
+
+    var map_options = get_url_params({
+      'search':           bool_fn,
+      'title':            bool_fn,
+      'description':      bool_fn,
+      'shareable':        bool_fn,
+      'fullscreen':       bool_fn,
+      'cartodb_logo':     bool_fn,
+      'scrollwheel':      bool_fn,
+      'sublayer_options': layer_fn,
+      'layer_selector':   bool_fn,
+      'inset_map':        bool_fn,
+      'legends':          bool_fn
+    });
+
+    <% if (@visualization.password_protected? or @visualization.organization?) and @protected_map_tokens %>
+      map_options.auth_token = [];
+      <% @protected_map_tokens.each do |token| %>
+          map_options.auth_token.push('<%= token %>');
+      <% end %>
+      map_options.https = true; // when auth_token is used tiles should be fetch using https
+    <% end %>
+
+    <% if Rails.env.development? || Cartodb.config[:no_cdn] == true %>
+      map_options.no_cdn = true;
+    <% end %>
+
+    // Logo MUST be hidden in this view
+    map_options.cartodb_logo  = false;
+    // Fullscreen button should be hidden
+    // because we already have a full page button
+    map_options.fullscreen    = false;
+    map_options.scrollwheel   = false;
+    map_options.mobile_layout = true;
+    map_options.zoomControl   = true;
+    map_options.shareable     = false;
+
+    // Default to true if not provided, for some reason legends is always set to false in the
+    //  vizjson presenter and I can't seem to track it down.
+    // This doesn't seem to have adverse effects if set to true when no legends are set
+    if (map_options.legends === undefined) {
+      map_options.legends = true;
+    }
+
+    var bSampleView = true;
+
+  </script>
+
+  <%= javascript_include_tag 'cdb.js', 'models.js', 'templates.js', 'public_map_deps', 'dashboard_deps', 'public_map'  %>
+
+  <script>
+
+    $(function() {
+      <% if Cartodb.config[:graphite_public] %>
+        if (location.protocol.indexOf('https') === -1) {
+          jQuery.getScript('<%= javascript_path "statsc.js" %>', function(ready) {
+            statsc.connect('http://<%= Cartodb.config[:graphite_public]['host'] %>:<%= Cartodb.config[:graphite_public]['port'] %>/');
+            cartodb.core.Profiler.backend(function () {
+              statsc.send.apply(statsc, arguments);
+            })
+            // stop sending stats after 11 seconds
+            // statsc send stats in 5 secs interval so allow to send at least twice
+            setTimeout(function() {
+              cartodb.core.Profiler.backend(null);
+            }, 11*1000);
+          })
+        }
+      <% end %>
+    });
+
+  </script>
+
+  <%= insert_trackjs('embeds') %>
+  <%= insert_google_analytics('embeds', true, [{ title: "Public Pages", value: "Other", num: 3 }]) -%>
+  <%= insert_hubspot() -%>
+<% end %>

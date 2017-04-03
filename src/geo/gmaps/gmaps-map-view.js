@@ -9,12 +9,12 @@ var GoogleMapsMapView = MapView.extend({
     _.bindAll(this, '_ready');
     this._isReady = false;
 
+    MapView.prototype.initialize.apply(this, arguments);
+
     this.map.set({
       pixelToLatLng: this.containerPointToLatLng,
       latLngtoPixel: this.latLngToContainerPoint
     });
-
-    MapView.prototype.initialize.apply(this, arguments);
   },
 
   _createNativeMap: function () {

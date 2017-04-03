@@ -6,12 +6,12 @@ var LeafletLayerViewFactory = require('./leaflet-layer-view-factory');
 
 var LeafletMapView = MapView.extend({
   initialize: function () {
+    MapView.prototype.initialize.apply(this, arguments);
+
     this.map.set({
       pixelToLatLng: this.containerPointToLatLng,
       latLngtoPixel: this.latLngToContainerPoint
     });
-
-    MapView.prototype.initialize.apply(this, arguments);
   },
 
   _createNativeMap: function () {

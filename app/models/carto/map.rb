@@ -1,8 +1,8 @@
 require 'active_record'
 
-require_relative '../../helpers/bounding_box_helper'
 require_relative './carto_json_serializer'
 require_dependency 'common/map_common'
+require_dependency 'carto/bounding_box_helper'
 
 class Carto::Map < ActiveRecord::Base
   include Carto::MapBoundaries
@@ -11,14 +11,15 @@ class Carto::Map < ActiveRecord::Base
   has_many :layers, class_name: 'Carto::Layer',
                     order: '"order"',
                     through: :layers_maps,
-                    after_add: Proc.new { |map, layer| layer.after_added_to_map(map) }
+                    after_add: Proc.new { |map, layer| layer.after_added_to_map(map) },
+                    dependent: :destroy
 
   has_many :base_layers, class_name: 'Carto::Layer',
                          order: '"order"',
                          through: :layers_maps,
                          source: :layer
 
-  has_one :user_table, class_name: Carto::UserTable, inverse_of: :map
+  has_one :user_table, class_name: Carto::UserTable, inverse_of: :map, dependent: :destroy
 
   belongs_to :user
 
@@ -29,8 +30,10 @@ class Carto::Map < ActiveRecord::Base
   # So for now, we are just treating them as strings (see the .to_s in the constant below), but this could be improved
   DEFAULT_OPTIONS = {
     zoom:            3,
-    bounding_box_sw: [BoundingBoxHelper::DEFAULT_BOUNDS[:minlat], BoundingBoxHelper::DEFAULT_BOUNDS[:minlon]].to_s,
-    bounding_box_ne: [BoundingBoxHelper::DEFAULT_BOUNDS[:maxlat], BoundingBoxHelper::DEFAULT_BOUNDS[:maxlon]].to_s,
+    bounding_box_sw: [Carto::BoundingBoxHelper::DEFAULT_BOUNDS[:minlat],
+                      Carto::BoundingBoxHelper::DEFAULT_BOUNDS[:minlon]].to_s,
+    bounding_box_ne: [Carto::BoundingBoxHelper::DEFAULT_BOUNDS[:maxlat],
+                      Carto::BoundingBoxHelper::DEFAULT_BOUNDS[:maxlon]].to_s,
     provider:        'leaflet',
     center:          [30, 0].to_s
   }.freeze
@@ -169,6 +172,11 @@ class Carto::Map < ActiveRecord::Base
     end
   end
 
+  def recalculate_bounds!
+    set_boundaries(get_map_bounds)
+    save
+  end
+
   private
 
   def admits_more_data_layers?
@@ -219,5 +227,10 @@ class Carto::Map < ActiveRecord::Base
 
   def table_name
     user_table.try(:name)
+  end
+
+  def get_map_bounds
+    # (lon,lat) as comes out from postgis
+    Carto::BoundingBoxHelper.get_table_bounds(user.in_database, table_name)
   end
 end

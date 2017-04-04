@@ -33,6 +33,10 @@ describe Carto::Api::VisualizationsController do
         visualization['layers'][1]['options']['attribution'].split(',').map(&:strip)
       end
 
+      before(:each) do
+        bypass_named_maps
+      end
+
       it 'marks visualizations as using vizjson2' do
         visualization = FactoryGirl.create(:carto_visualization)
         Carto::Api::VisualizationsController.any_instance.stubs(:generate_vizjson2).returns({})
@@ -312,7 +316,8 @@ describe Carto::Api::VisualizationsController do
 
     it 'returns valid information for a user with one table' do
       table1 = create_random_table(@user_1)
-      table1_visualization_hash = table1.table_visualization.to_hash(
+      table1_visualization = CartoDB::Visualization::Member.new(id: table1.table_visualization.id).fetch
+      table1_visualization_hash = table1_visualization.to_hash(
         related: false,
         table_data: true,
         user: @user_1,

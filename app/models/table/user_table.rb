@@ -1,8 +1,10 @@
 # coding: UTF-8
 require 'cartodb/per_request_sequel_cache'
+require 'forwardable'
 
 # This class is intended to deal exclusively with storage
 class UserTable < Sequel::Model
+  extend Forwardable
 
   INTERFACE = %w{
     pk
@@ -46,6 +48,10 @@ class UserTable < Sequel::Model
     set_except
     update_updated_at
     values
+    affected_visualizations
+    fully_dependent_visualizations
+    partially_dependent_visualizations
+    reload
   }
 
   PRIVACY_PRIVATE = 0
@@ -79,23 +85,7 @@ class UserTable < Sequel::Model
                                     automatic_geocoding:  :destroy
   plugin :dirty
 
-  def_dataset_method(:search) do |query|
-    conditions = <<-EOS
-      to_tsvector('english', coalesce(name, '') || ' ' || coalesce(description, '')) @@ plainto_tsquery('english', ?) OR name ILIKE ?
-      EOS
-    where(conditions, query, "%#{query}%")
-  end
-
-  def_dataset_method(:multiple_order) do |criteria|
-    if criteria.nil? || criteria.empty?
-      order(:id)
-    else
-      order_params = criteria.map do |key, order|
-        Sequel.send(order.to_sym, key.to_sym)
-      end
-      order(*order_params)
-    end
-  end
+  def_delegators :relator, :affected_visualizations
 
   # Ignore mass-asigment on not allowed columns
   self.strict_param_setting = false
@@ -115,18 +105,6 @@ class UserTable < Sequel::Model
 
   def sync_table_id
     self.table_id = service.get_table_id
-  end
-
-  # Helper methods encapsulating queries. Move to query object?
-  # note this one spams multiple tables
-  def self.find_all_by_user_id_and_tag(user_id, tag_name)
-    fetch("select user_tables.*,
-                    array_to_string(array(select tags.name from tags where tags.table_id = user_tables.id),',') as tags_names
-                        from user_tables, tags
-                        where user_tables.user_id = ?
-                          and user_tables.id = tags.table_id
-                          and tags.name = ?
-                        order by user_tables.id DESC", user_id, tag_name)
   end
 
   def self.find_by_identifier(user_id, identifier)
@@ -257,11 +235,6 @@ class UserTable < Sequel::Model
     service.update_cdb_tablemetadata
   end
 
-  def table_visualization
-    service.table_visualization
-  end
-
-
   def privacy_text
     PRIVACY_VALUES_TO_TEXTS[self.privacy].upcase
   end
@@ -293,10 +266,6 @@ class UserTable < Sequel::Model
     self.privacy == PRIVACY_LINK
   end #public_with_link_only?
 
-  def privacy_changed?
-    @user_table.previous_changes.keys.include?(:privacy)
-  end
-
   # TODO move tags to value object. A set is more appropriate
   def tags=(value)
     return unless value
@@ -323,6 +292,29 @@ class UserTable < Sequel::Model
 
   def external_source_visualization
     data_import.try(:external_data_imports).try(:first).try(:external_source).try(:visualization)
+  end
+
+  def table_visualization
+    @table_visualization ||= map_id && CartoDB::Visualization::Collection.new.fetch(
+      map_id: map_id,
+      type:   CartoDB::Visualization::Member::TYPE_CANONICAL
+    ).first
+  end
+
+  def privacy_changed?
+    previous_changes && previous_changes.keys.include?(:privacy)
+  end
+
+  def privacy_was
+    previous_changes[:privacy].first
+  end
+
+  def fully_dependent_visualizations
+    affected_visualizations.select { |v| v.fully_dependent_on?(self) }
+  end
+
+  def partially_dependent_visualizations
+    affected_visualizations.select { |v| v.partially_dependent_on?(self) }
   end
 
   private
@@ -375,5 +367,9 @@ class UserTable < Sequel::Model
     map.reload
 
     CartoDB::Visualization::Overlays.new(member).create_default_overlays
+  end
+
+  def relator
+    @relator ||= CartoDB::TableRelator.new(Rails::Sequel.connection, self)
   end
 end

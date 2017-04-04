@@ -88,6 +88,10 @@ CartoDB::Application.routes.draw do
     get    '(/user/:user_domain)(/u/:user_domain)/organization/auth'        => 'organizations#auth',        as: :organization_auth
     put    '(/user/:user_domain)(/u/:user_domain)/organization/auth'        => 'organizations#auth_update', as: :organization_auth_update
 
+    get    '(/user/:user_domain)(/u/:user_domain)/organization/notifications' => 'organizations#notifications',          as: :organization_notifications_admin
+    post   '(/user/:user_domain)(/u/:user_domain)/organization/notifications' => 'organizations#new_notification',          as: :new_organization_notification_admin
+    delete '(/user/:user_domain)(/u/:user_domain)/organization/notifications/:id' => 'organizations#destroy_notification',          as: :destroy_organization_notification_admin
+
     # Organization users management
     get '(/user/:user_domain)(/u/:user_domain)/organization/users/:id/edit'  => 'organization_users#edit',    as: :edit_organization_user,   constraints: { id: /[0-z\.\-]+/ }
     put '(/user/:user_domain)(/u/:user_domain)/organization/users/:id'       => 'organization_users#update',  as: :update_organization_user, constraints: { id: /[0-z\.\-]+/ }
@@ -598,7 +602,19 @@ CartoDB::Application.routes.draw do
         get 'download' => 'visualization_exports#download', as: :download
       end
 
-      put 'notifications/:category', to: 'user_notifications#update', as: :api_v3_user_notifications_update
+      put 'notifications/:category', to: 'static_notifications#update', as: :api_v3_static_notifications_update
+
+      resources :organizations, only: [] do
+        resources :notifications, only: [:create, :destroy],
+                                  controller: :organization_notifications,
+                                  constraints: { id: UUID_REGEXP }
+      end
+
+      resources :users, only: [], constraints: { id: UUID_REGEXP } do
+        resources :notifications, only: [:update],
+                                  controller: :received_notifications,
+                                  constraints: { id: UUID_REGEXP }
+      end
     end
 
     scope 'v2/' do
@@ -644,6 +660,11 @@ CartoDB::Application.routes.draw do
       get 'connectors/:provider_id/tables' => 'connectors#tables', as: :api_v1_connectors_tables
       get 'connectors/:provider_id/connect' => 'connectors#connect', as: :api_v1_connectors_connect
     end
+  end
+
+  # Load optional engines
+  Carto::CartoGearsSupport.new.gears.each do |gear|
+    mount gear.engine, at: '/'
   end
 end
 

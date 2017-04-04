@@ -1,6 +1,7 @@
 module CartoDB
   module UserDecorator
     include AccountTypeHelper
+    BUILDER_ACTIVATION_DATE = Date.new(2016, 11, 11).freeze
 
     # Options:
     # - show_api_calls: load api calls. Default: true.
@@ -90,6 +91,7 @@ module CartoDB
         upgraded_at: upgraded_at,
         show_trial_reminder: trial_ends_at.present?,
         show_upgraded_message: (account_type.downcase != 'free' && upgraded_at && upgraded_at + 15.days > Date.today ? true : false),
+        show_builder_activated_message: created_at < BUILDER_ACTIVATION_DATE,
         actions: {
           private_tables: private_tables_enabled,
           private_maps: private_maps_enabled?,
@@ -108,6 +110,7 @@ module CartoDB
           import_table_rows: max_import_table_row_count,
           max_layers: max_layers
         },
+        google_maps_key: google_maps_key,
         notification: notification,
         avatar_url: avatar,
         feature_flags: feature_flags,

@@ -114,6 +114,8 @@ module Carto
       end
 
       def bounds_from(map)
+        return nil unless map.view_bounds_sw && map.view_bounds_ne
+
         ::JSON.parse("[#{map.view_bounds_sw}, #{map.view_bounds_ne}]")
       rescue => e
         CartoDB::Logger.debug(
@@ -362,10 +364,13 @@ module Carto
 
       def as_torque
         layer_options = @layer.options.deep_symbolize_keys
+        torque_options = layer_options.select { |k| TORQUE_ATTRS.include? k }
+        torque_options[:attribution] = attribution
+        torque_options[:layer_name] = layer_name
 
         torque = {
-          type:       'torque',
-          options:    layer_options.select { |k| TORQUE_ATTRS.include? k }.merge(attribution: attribution)
+          type: 'torque',
+          options: torque_options
         }
 
         torque[:cartocss] = layer_options[:tile_style]

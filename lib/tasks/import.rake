@@ -31,7 +31,7 @@ namespace :cartodb do
     file_upload_helper = CartoDB::FileUpload.new(Cartodb.config[:importer].fetch("uploads_path", nil))
 
     unless data_import_item.nil?
-      # be 100% safe en rescue blocks when trying to log the failed id
+      # be 100% safe in rescue blocks when trying to log the failed id
       data_import_item_id = data_import_item.id rescue nil
 
       begin
@@ -40,15 +40,13 @@ namespace :cartodb do
         data_import_item.state = DataImport::STATE_PENDING
         data_import_item.save
 
-        filepath = data_import_item.data_source
-        filename = data_import_item.data_source.slice(data_import_item.data_source.rindex('/') + 1,
-                                                      data_import_item.data_source.length)
+        filepath = File.realpath data_import_item.data_source
+        filename = File.basename data_import_item.data_source
 
-        uploads_path = file_upload_helper.get_uploads_path
+        uploads_path = File.realpath file_upload_helper.get_uploads_path
 
-        token = data_import_item.data_source.slice(/#{uploads_path}\/(.)+\//)
-                                            .sub("#{uploads_path}/", '')
-                                            .sub('/', '')
+        # Files are temp stored in "/%{uploads_path}/token/basename.ext"
+        token = File.basename File.dirname filepath
 
         file_uri = file_upload_helper.upload_file_to_s3(filepath, filename, token, Cartodb.config[:importer]['s3'])
         begin

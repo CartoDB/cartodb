@@ -159,6 +159,7 @@ describe Carto::Visualization do
 
   describe '#can_be_private?' do
     before(:all) do
+      bypass_named_maps
       @visualization = FactoryGirl.create(:carto_visualization, user: @carto_user)
       @visualization.reload # to clean up the user relation (see #11134)
     end
@@ -175,6 +176,21 @@ describe Carto::Visualization do
     it 'returns private_maps_enabled for maps' do
       @visualization.type = 'derived'
       @visualization.can_be_private?.should eq @carto_user.private_maps_enabled
+    end
+  end
+
+  describe '#save_named_map' do
+    it 'should not save named map without layers' do
+      @visualization = FactoryGirl.build(:carto_visualization, user: @carto_user)
+      @visualization.expects(:named_maps_api).never
+      @visualization.save
+    end
+
+    it 'should save named map with layers on map creation' do
+      @visualization = FactoryGirl.build(:carto_visualization, user: @carto_user, map: FactoryGirl.build(:carto_map))
+      @visualization.layers << FactoryGirl.build(:carto_layer)
+      @visualization.expects(:named_maps_api).returns(Carto::NamedMaps::Api.new(@visualization)).at_least_once
+      @visualization.save
     end
   end
 end

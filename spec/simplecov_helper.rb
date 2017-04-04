@@ -1,6 +1,6 @@
 # Must be placed at the beginning
 # @see https://github.com/colszowka/simplecov#getting-started
-unless ENV['PARALLEL']
+unless ENV['PARALLEL'] || ENV['NO_COVERAGE']
   if ENV['RAILS_ENV'] =~ /^test(.*)?/
     require 'simplecov'
     require 'simplecov-json'

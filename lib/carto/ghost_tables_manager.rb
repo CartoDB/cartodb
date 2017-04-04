@@ -75,7 +75,7 @@ module Carto
       # Create UserTables for non linked Tables
       find_new_tables(cartodbfied_tables).each(&:create_user_table)
 
-      # Unlink tables that have been created trhought the SQL API. Should go last.
+      # Unlink tables that have been created through the SQL API. Should go last.
       find_dropped_tables(cartodbfied_tables).each(&:drop_user_table)
 
       CartoDB::Logger.debug(message: 'ghost tables', action: 'linkage end', user: user)
@@ -215,10 +215,11 @@ module Carto
                             user: user,
                             table_name: name,
                             table_id: id)
-
-      # TODO: Use Carto::UserTable when it's ready and stop the Table <-> ::UserTable madness
-      new_table = ::Table.new(user_table: ::UserTable.new.set_fields({ user_id: user.id, table_id: id, name: name },
-                                                                     [:user_id, :table_id, :name]))
+      user_table = Carto::UserTable.new
+      user_table.user_id = user.id
+      user_table.table_id = id
+      user_table.name = name
+      new_table = ::Table.new(user_table: user_table)
 
       new_table.register_table_only = true
       new_table.keep_user_database_table = true
@@ -260,7 +261,6 @@ module Carto
                             table_name: name,
                             table_id: id)
 
-      # TODO: Use Carto::UserTable when it's ready and stop the Table <-> ::UserTable madness
       table_to_drop = ::Table.new(user_table: user.tables.where(table_id: id, name: name).first)
 
       table_to_drop.keep_user_database_table = true

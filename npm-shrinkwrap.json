@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.6.12",
+  "version": "4.6.50",
   "dependencies": {
     "backbone": {
       "version": "1.2.3",
@@ -359,9 +359,9 @@
                           "resolved": "https://registry.npmjs.org/form-data/-/form-data-1.0.1.tgz",
                           "dependencies": {
                             "async": {
-                              "version": "2.1.5",
+                              "version": "2.3.0",
                               "from": "async@>=2.0.1 <3.0.0",
-                              "resolved": "https://registry.npmjs.org/async/-/async-2.1.5.tgz",
+                              "resolved": "https://registry.npmjs.org/async/-/async-2.3.0.tgz",
                               "dependencies": {
                                 "lodash": {
                                   "version": "4.17.4",
@@ -378,21 +378,21 @@
                           "resolved": "https://registry.npmjs.org/json-stringify-safe/-/json-stringify-safe-5.0.1.tgz"
                         },
                         "mime-types": {
-                          "version": "2.1.14",
+                          "version": "2.1.15",
                           "from": "mime-types@>=2.1.7 <2.2.0",
-                          "resolved": "https://registry.npmjs.org/mime-types/-/mime-types-2.1.14.tgz",
+                          "resolved": "https://registry.npmjs.org/mime-types/-/mime-types-2.1.15.tgz",
                           "dependencies": {
                             "mime-db": {
-                              "version": "1.26.0",
-                              "from": "mime-db@>=1.26.0 <1.27.0",
-                              "resolved": "https://registry.npmjs.org/mime-db/-/mime-db-1.26.0.tgz"
+                              "version": "1.27.0",
+                              "from": "mime-db@>=1.27.0 <1.28.0",
+                              "resolved": "https://registry.npmjs.org/mime-db/-/mime-db-1.27.0.tgz"
                             }
                           }
                         },
                         "node-uuid": {
-                          "version": "1.4.7",
+                          "version": "1.4.8",
                           "from": "node-uuid@>=1.4.7 <1.5.0",
-                          "resolved": "https://registry.npmjs.org/node-uuid/-/node-uuid-1.4.7.tgz"
+                          "resolved": "https://registry.npmjs.org/node-uuid/-/node-uuid-1.4.8.tgz"
                         },
                         "qs": {
                           "version": "5.2.1",
@@ -420,10 +420,15 @@
                               "resolved": "https://registry.npmjs.org/assert-plus/-/assert-plus-0.2.0.tgz"
                             },
                             "jsprim": {
-                              "version": "1.3.1",
+                              "version": "1.4.0",
                               "from": "jsprim@>=1.2.2 <2.0.0",
-                              "resolved": "https://registry.npmjs.org/jsprim/-/jsprim-1.3.1.tgz",
+                              "resolved": "https://registry.npmjs.org/jsprim/-/jsprim-1.4.0.tgz",
                               "dependencies": {
+                                "assert-plus": {
+                                  "version": "1.0.0",
+                                  "from": "assert-plus@1.0.0",
+                                  "resolved": "https://registry.npmjs.org/assert-plus/-/assert-plus-1.0.0.tgz"
+                                },
                                 "extsprintf": {
                                   "version": "1.0.2",
                                   "from": "extsprintf@1.0.2",
@@ -442,9 +447,9 @@
                               }
                             },
                             "sshpk": {
-                              "version": "1.10.2",
+                              "version": "1.11.0",
                               "from": "sshpk@>=1.7.0 <2.0.0",
-                              "resolved": "https://registry.npmjs.org/sshpk/-/sshpk-1.10.2.tgz",
+                              "resolved": "https://registry.npmjs.org/sshpk/-/sshpk-1.11.0.tgz",
                               "dependencies": {
                                 "asn1": {
                                   "version": "0.2.3",
@@ -685,14 +690,14 @@
                       }
                     },
                     "which": {
-                      "version": "1.2.12",
+                      "version": "1.2.14",
                       "from": "which@>=1.2.2 <1.3.0",
-                      "resolved": "https://registry.npmjs.org/which/-/which-1.2.12.tgz",
+                      "resolved": "https://registry.npmjs.org/which/-/which-1.2.14.tgz",
                       "dependencies": {
                         "isexe": {
-                          "version": "1.1.2",
-                          "from": "isexe@>=1.1.1 <2.0.0",
-                          "resolved": "https://registry.npmjs.org/isexe/-/isexe-1.1.2.tgz"
+                          "version": "2.0.0",
+                          "from": "isexe@>=2.0.0 <3.0.0",
+                          "resolved": "https://registry.npmjs.org/isexe/-/isexe-2.0.0.tgz"
                         }
                       }
                     }
@@ -966,7 +971,7 @@
                     },
                     "inherits": {
                       "version": "2.0.3",
-                      "from": "inherits@>=2.0.1 <2.1.0",
+                      "from": "inherits@>=2.0.0 <3.0.0",
                       "resolved": "https://registry.npmjs.org/inherits/-/inherits-2.0.3.tgz"
                     }
                   }
@@ -1104,9 +1109,9 @@
       "resolved": "http://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.29.0.tgz"
     },
     "carto": {
-      "version": "0.15.1-cdb1",
+      "version": "0.15.1-cdb3",
       "from": "cartodb/carto#master",
-      "resolved": "git://github.com/cartodb/carto.git#b6186d884cc1e3876adedf8a1654cb1a26275c6b",
+      "resolved": "git://github.com/cartodb/carto.git#945f5efb74fd1af1f5e1f69f409f9567f94fb5a7",
       "dependencies": {
         "mapnik-reference": {
           "version": "6.0.5",
@@ -1147,12 +1152,12 @@
     "cartodb-deep-insights.js": {
       "version": "0.0.2",
       "from": "cartodb/deep-insights.js#master",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#db4433f6bd036022add7f1ac4d7a3e9ec4536163",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#a72917e8a7553338b102b7830567cb6d28bd7b9d",
       "dependencies": {
         "cartodb.js": {
           "version": "4.0.0-alpha.1",
           "from": "cartodb/cartodb.js#v4",
-          "resolved": "git://github.com/cartodb/cartodb.js.git#7725805682711725962494dc5dcfd6b5d938a5d5",
+          "resolved": "git://github.com/cartodb/cartodb.js.git#30dfbb6bc55085404abb931af854314a72aa60b5",
           "dependencies": {
             "backbone-poller": {
               "version": "1.1.3",
@@ -1160,9 +1165,9 @@
               "resolved": "https://registry.npmjs.org/backbone-poller/-/backbone-poller-1.1.3.tgz"
             },
             "carto": {
-              "version": "0.15.1-cdb1",
+              "version": "0.15.1-cdb3",
               "from": "cartodb/carto#master",
-              "resolved": "git://github.com/cartodb/carto.git#b6186d884cc1e3876adedf8a1654cb1a26275c6b",
+              "resolved": "git://github.com/cartodb/carto.git#945f5efb74fd1af1f5e1f69f409f9567f94fb5a7",
               "dependencies": {
                 "mapnik-reference": {
                   "version": "6.0.5",
@@ -1189,9 +1194,9 @@
               }
             },
             "tangram.cartodb": {
-              "version": "0.2.6",
+              "version": "0.3.0",
               "from": "cartodb/tangram.cartodb#master",
-              "resolved": "git://github.com/cartodb/tangram.cartodb.git#eee4b9da0e027fc4159fe5caf442d09b26a4a190",
+              "resolved": "git://github.com/cartodb/tangram.cartodb.git#f973792e341110835393521480672670e2e27dee",
               "dependencies": {
                 "babel-runtime": {
                   "version": "6.18.0",
@@ -1210,10 +1215,32 @@
                     }
                   }
                 },
+                "md5": {
+                  "version": "2.2.1",
+                  "from": "md5@>=2.2.1 <3.0.0",
+                  "resolved": "https://registry.npmjs.org/md5/-/md5-2.2.1.tgz",
+                  "dependencies": {
+                    "charenc": {
+                      "version": "0.0.2",
+                      "from": "charenc@>=0.0.1 <0.1.0",
+                      "resolved": "https://registry.npmjs.org/charenc/-/charenc-0.0.2.tgz"
+                    },
+                    "crypt": {
+                      "version": "0.0.2",
+                      "from": "crypt@>=0.0.1 <0.1.0",
+                      "resolved": "https://registry.npmjs.org/crypt/-/crypt-0.0.2.tgz"
+                    },
+                    "is-buffer": {
+                      "version": "1.1.5",
+                      "from": "is-buffer@>=1.1.1 <1.2.0",
+                      "resolved": "https://registry.npmjs.org/is-buffer/-/is-buffer-1.1.5.tgz"
+                    }
+                  }
+                },
                 "tangram-cartocss": {
-                  "version": "0.4.2",
+                  "version": "0.5.0",
                   "from": "cartodb/tangram-carto#master",
-                  "resolved": "git://github.com/cartodb/tangram-carto.git#b107723cd0ff37a6e23fec2a20f0865bdeb7160e",
+                  "resolved": "git://github.com/cartodb/tangram-carto.git#31f701e062ccf641b431497b3e2bd1f2e654f61e",
                   "dependencies": {
                     "babel-runtime": {
                       "version": "6.22.0",
@@ -1233,9 +1260,9 @@
                       }
                     },
                     "carto": {
-                      "version": "0.15.1-cdb1",
+                      "version": "0.15.1-cdb3",
                       "from": "cartodb/carto#master",
-                      "resolved": "git://github.com/cartodb/carto.git#b6186d884cc1e3876adedf8a1654cb1a26275c6b",
+                      "resolved": "git://github.com/cartodb/carto.git#945f5efb74fd1af1f5e1f69f409f9567f94fb5a7",
                       "dependencies": {
                         "mapnik-reference": {
                           "version": "6.0.5",
@@ -1261,28 +1288,6 @@
                         }
                       }
                     },
-                    "md5": {
-                      "version": "2.2.1",
-                      "from": "md5@2.2.1",
-                      "resolved": "https://registry.npmjs.org/md5/-/md5-2.2.1.tgz",
-                      "dependencies": {
-                        "charenc": {
-                          "version": "0.0.2",
-                          "from": "charenc@>=0.0.1 <0.1.0",
-                          "resolved": "https://registry.npmjs.org/charenc/-/charenc-0.0.2.tgz"
-                        },
-                        "crypt": {
-                          "version": "0.0.2",
-                          "from": "crypt@>=0.0.1 <0.1.0",
-                          "resolved": "https://registry.npmjs.org/crypt/-/crypt-0.0.2.tgz"
-                        },
-                        "is-buffer": {
-                          "version": "1.1.4",
-                          "from": "is-buffer@>=1.1.1 <1.2.0",
-                          "resolved": "https://registry.npmjs.org/is-buffer/-/is-buffer-1.1.4.tgz"
-                        }
-                      }
-                    },
                     "ramda": {
                       "version": "0.23.0",
                       "from": "ramda@>=0.23.0 <0.24.0",
@@ -1296,9 +1301,9 @@
                   }
                 },
                 "yamljs": {
-                  "version": "0.2.8",
+                  "version": "0.2.9",
                   "from": "yamljs@>=0.2.8 <0.3.0",
-                  "resolved": "https://registry.npmjs.org/yamljs/-/yamljs-0.2.8.tgz",
+                  "resolved": "https://registry.npmjs.org/yamljs/-/yamljs-0.2.9.tgz",
                   "dependencies": {
                     "argparse": {
                       "version": "1.0.9",
@@ -1387,9 +1392,9 @@
               }
             },
             "leaflet": {
-              "version": "0.7.3",
-              "from": "leaflet@0.7.3",
-              "resolved": "https://registry.npmjs.org/leaflet/-/leaflet-0.7.3.tgz"
+              "version": "1.0.3",
+              "from": "leaflet@1.0.3",
+              "resolved": "https://registry.npmjs.org/leaflet/-/leaflet-1.0.3.tgz"
             },
             "mustache": {
               "version": "1.1.0",
@@ -1404,12 +1409,12 @@
             "torque.js": {
               "version": "2.16.3",
               "from": "cartodb/torque#master",
-              "resolved": "git://github.com/cartodb/torque.git#771c92fb2f97a481e62a8f9ef42f205e4b8b6b70",
+              "resolved": "git://github.com/cartodb/torque.git#813b3b60dc3350c3328234d3d8ea29a39ccfe4a9",
               "dependencies": {
                 "carto": {
-                  "version": "0.15.1-cdb1",
+                  "version": "0.15.1-cdb3",
                   "from": "cartodb/carto#master",
-                  "resolved": "git://github.com/cartodb/carto.git#b6186d884cc1e3876adedf8a1654cb1a26275c6b",
+                  "resolved": "git://github.com/cartodb/carto.git#945f5efb74fd1af1f5e1f69f409f9567f94fb5a7",
                   "dependencies": {
                     "mapnik-reference": {
                       "version": "6.0.5",
@@ -1525,9 +1530,9 @@
           "resolved": "https://registry.npmjs.org/d3-interpolate/-/d3-interpolate-1.1.2.tgz",
           "dependencies": {
             "d3-color": {
-              "version": "1.0.2",
+              "version": "1.0.3",
               "from": "d3-color@>=1.0.0 <2.0.0",
-              "resolved": "https://registry.npmjs.org/d3-color/-/d3-color-1.0.2.tgz"
+              "resolved": "https://registry.npmjs.org/d3-color/-/d3-color-1.0.3.tgz"
             }
           }
         },
@@ -1556,7 +1561,7 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
       "from": "cartodb/cartodb.js#v4",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#7725805682711725962494dc5dcfd6b5d938a5d5",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#30dfbb6bc55085404abb931af854314a72aa60b5",
       "dependencies": {
         "backbone-poller": {
           "version": "1.1.3",
@@ -1564,9 +1569,9 @@
           "resolved": "https://registry.npmjs.org/backbone-poller/-/backbone-poller-1.1.3.tgz"
         },
         "carto": {
-          "version": "0.15.1-cdb1",
+          "version": "0.15.1-cdb3",
           "from": "cartodb/carto#master",
-          "resolved": "git://github.com/cartodb/carto.git#b6186d884cc1e3876adedf8a1654cb1a26275c6b",
+          "resolved": "git://github.com/cartodb/carto.git#945f5efb74fd1af1f5e1f69f409f9567f94fb5a7",
           "dependencies": {
             "mapnik-reference": {
               "version": "6.0.5",
@@ -1598,9 +1603,9 @@
           "resolved": "https://registry.npmjs.org/d3/-/d3-3.5.17.tgz"
         },
         "tangram.cartodb": {
-          "version": "0.2.6",
+          "version": "0.3.0",
           "from": "cartodb/tangram.cartodb#master",
-          "resolved": "git://github.com/cartodb/tangram.cartodb.git#eee4b9da0e027fc4159fe5caf442d09b26a4a190",
+          "resolved": "git://github.com/cartodb/tangram.cartodb.git#f973792e341110835393521480672670e2e27dee",
           "dependencies": {
             "babel-runtime": {
               "version": "6.18.0",
@@ -1619,10 +1624,32 @@
                 }
               }
             },
+            "md5": {
+              "version": "2.2.1",
+              "from": "md5@>=2.2.1 <3.0.0",
+              "resolved": "https://registry.npmjs.org/md5/-/md5-2.2.1.tgz",
+              "dependencies": {
+                "charenc": {
+                  "version": "0.0.2",
+                  "from": "charenc@>=0.0.1 <0.1.0",
+                  "resolved": "https://registry.npmjs.org/charenc/-/charenc-0.0.2.tgz"
+                },
+                "crypt": {
+                  "version": "0.0.2",
+                  "from": "crypt@>=0.0.1 <0.1.0",
+                  "resolved": "https://registry.npmjs.org/crypt/-/crypt-0.0.2.tgz"
+                },
+                "is-buffer": {
+                  "version": "1.1.5",
+                  "from": "is-buffer@>=1.1.1 <1.2.0",
+                  "resolved": "https://registry.npmjs.org/is-buffer/-/is-buffer-1.1.5.tgz"
+                }
+              }
+            },
             "tangram-cartocss": {
-              "version": "0.4.2",
+              "version": "0.5.0",
               "from": "cartodb/tangram-carto#master",
-              "resolved": "git://github.com/cartodb/tangram-carto.git#b107723cd0ff37a6e23fec2a20f0865bdeb7160e",
+              "resolved": "git://github.com/cartodb/tangram-carto.git#31f701e062ccf641b431497b3e2bd1f2e654f61e",
               "dependencies": {
                 "babel-runtime": {
                   "version": "6.22.0",
@@ -1642,9 +1669,9 @@
                   }
                 },
                 "carto": {
-                  "version": "0.15.1-cdb1",
+                  "version": "0.15.1-cdb3",
                   "from": "cartodb/carto#master",
-                  "resolved": "git://github.com/cartodb/carto.git#b6186d884cc1e3876adedf8a1654cb1a26275c6b",
+                  "resolved": "git://github.com/cartodb/carto.git#945f5efb74fd1af1f5e1f69f409f9567f94fb5a7",
                   "dependencies": {
                     "mapnik-reference": {
                       "version": "6.0.5",
@@ -1670,28 +1697,6 @@
                     }
                   }
                 },
-                "md5": {
-                  "version": "2.2.1",
-                  "from": "md5@2.2.1",
-                  "resolved": "https://registry.npmjs.org/md5/-/md5-2.2.1.tgz",
-                  "dependencies": {
-                    "charenc": {
-                      "version": "0.0.2",
-                      "from": "charenc@>=0.0.1 <0.1.0",
-                      "resolved": "https://registry.npmjs.org/charenc/-/charenc-0.0.2.tgz"
-                    },
-                    "crypt": {
-                      "version": "0.0.2",
-                      "from": "crypt@>=0.0.1 <0.1.0",
-                      "resolved": "https://registry.npmjs.org/crypt/-/crypt-0.0.2.tgz"
-                    },
-                    "is-buffer": {
-                      "version": "1.1.4",
-                      "from": "is-buffer@>=1.1.1 <1.2.0",
-                      "resolved": "https://registry.npmjs.org/is-buffer/-/is-buffer-1.1.4.tgz"
-                    }
-                  }
-                },
                 "ramda": {
                   "version": "0.23.0",
                   "from": "ramda@>=0.23.0 <0.24.0",
@@ -1705,9 +1710,9 @@
               }
             },
             "yamljs": {
-              "version": "0.2.8",
+              "version": "0.2.9",
               "from": "yamljs@>=0.2.8 <0.3.0",
-              "resolved": "https://registry.npmjs.org/yamljs/-/yamljs-0.2.8.tgz",
+              "resolved": "https://registry.npmjs.org/yamljs/-/yamljs-0.2.9.tgz",
               "dependencies": {
                 "argparse": {
                   "version": "1.0.9",
@@ -1796,9 +1801,9 @@
           }
         },
         "leaflet": {
-          "version": "0.7.3",
-          "from": "leaflet@0.7.3",
-          "resolved": "https://registry.npmjs.org/leaflet/-/leaflet-0.7.3.tgz"
+          "version": "1.0.3",
+          "from": "leaflet@1.0.3",
+          "resolved": "https://registry.npmjs.org/leaflet/-/leaflet-1.0.3.tgz"
         },
         "mustache": {
           "version": "1.1.0",
@@ -1813,12 +1818,12 @@
         "torque.js": {
           "version": "2.16.3",
           "from": "cartodb/torque#master",
-          "resolved": "git://github.com/cartodb/torque.git#771c92fb2f97a481e62a8f9ef42f205e4b8b6b70",
+          "resolved": "git://github.com/cartodb/torque.git#813b3b60dc3350c3328234d3d8ea29a39ccfe4a9",
           "dependencies": {
             "carto": {
-              "version": "0.15.1-cdb1",
+              "version": "0.15.1-cdb3",
               "from": "cartodb/carto#master",
-              "resolved": "git://github.com/cartodb/carto.git#b6186d884cc1e3876adedf8a1654cb1a26275c6b",
+              "resolved": "git://github.com/cartodb/carto.git#945f5efb74fd1af1f5e1f69f409f9567f94fb5a7",
               "dependencies": {
                 "mapnik-reference": {
                   "version": "6.0.5",
@@ -1924,13 +1929,13 @@
       }
     },
     "clipboard": {
-      "version": "1.5.12",
-      "from": "clipboard@1.5.12",
-      "resolved": "https://registry.npmjs.org/clipboard/-/clipboard-1.5.12.tgz",
+      "version": "1.6.1",
+      "from": "clipboard@1.6.1",
+      "resolved": "https://registry.npmjs.org/clipboard/-/clipboard-1.6.1.tgz",
       "dependencies": {
         "good-listener": {
           "version": "1.2.2",
-          "from": "good-listener@>=1.1.6 <2.0.0",
+          "from": "good-listener@>=1.2.0 <2.0.0",
           "resolved": "https://registry.npmjs.org/good-listener/-/good-listener-1.2.2.tgz",
           "dependencies": {
             "delegate": {
@@ -1942,7 +1947,7 @@
         },
         "select": {
           "version": "1.1.2",
-          "from": "select@>=1.0.6 <2.0.0",
+          "from": "select@>=1.1.2 <2.0.0",
           "resolved": "https://registry.npmjs.org/select/-/select-1.1.2.tgz"
         },
         "tiny-emitter": {
@@ -1983,9 +1988,9 @@
       "resolved": "http://registry.npmjs.org/queue-async/-/queue-async-1.2.1.tgz"
     },
     "tangram": {
-      "version": "0.11.7",
-      "from": "cartodb/tangram-1#race-cond",
-      "resolved": "git://github.com/cartodb/tangram-1.git#c795a2e446c2000a916ca69b90d443b5bc7e7c6b",
+      "version": "0.12.1",
+      "from": "cartodb/tangram-1#master",
+      "resolved": "git://github.com/cartodb/tangram-1.git#05fbe2b438bb8be7cd411587d8d4e4415fe4227c",
       "dependencies": {
         "csscolorparser": {
           "version": "1.0.3",
@@ -2003,9 +2008,9 @@
           "resolved": "https://registry.npmjs.org/fontfaceobserver/-/fontfaceobserver-2.0.7.tgz"
         },
         "geojson-vt": {
-          "version": "2.1.6",
-          "from": "geojson-vt@2.1.6",
-          "resolved": "https://registry.npmjs.org/geojson-vt/-/geojson-vt-2.1.6.tgz"
+          "version": "2.4.0",
+          "from": "geojson-vt@2.4.0",
+          "resolved": "https://registry.npmjs.org/geojson-vt/-/geojson-vt-2.4.0.tgz"
         },
         "gl-mat3": {
           "version": "1.0.0",
@@ -2057,9 +2062,9 @@
               "resolved": "https://registry.npmjs.org/es6-promise/-/es6-promise-3.0.2.tgz"
             },
             "pako": {
-              "version": "1.0.4",
+              "version": "1.0.5",
               "from": "pako@>=1.0.0 <1.1.0",
-              "resolved": "https://registry.npmjs.org/pako/-/pako-1.0.4.tgz"
+              "resolved": "https://registry.npmjs.org/pako/-/pako-1.0.5.tgz"
             },
             "readable-stream": {
               "version": "2.0.6",
@@ -2170,12 +2175,12 @@
     "torque.js": {
       "version": "2.16.3",
       "from": "cartodb/torque#master",
-      "resolved": "git://github.com/cartodb/torque.git#771c92fb2f97a481e62a8f9ef42f205e4b8b6b70",
+      "resolved": "git://github.com/cartodb/torque.git#813b3b60dc3350c3328234d3d8ea29a39ccfe4a9",
       "dependencies": {
         "carto": {
-          "version": "0.15.1-cdb1",
+          "version": "0.15.1-cdb3",
           "from": "cartodb/carto#master",
-          "resolved": "git://github.com/cartodb/carto.git#b6186d884cc1e3876adedf8a1654cb1a26275c6b",
+          "resolved": "git://github.com/cartodb/carto.git#945f5efb74fd1af1f5e1f69f409f9567f94fb5a7",
           "dependencies": {
             "mapnik-reference": {
               "version": "6.0.5",

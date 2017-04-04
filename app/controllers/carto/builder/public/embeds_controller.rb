@@ -1,14 +1,17 @@
 require_dependency 'carto/api/vizjson3_presenter'
+require_dependency 'carto/helpers/frame_options_helper'
 
 module Carto
   module Builder
     module Public
       class EmbedsController < BuilderController
         include VisualizationsControllerHelper
+        include Carto::FrameOptionsHelper
 
         ssl_required :show, :show_protected
 
-        before_filter :load_visualization,
+        before_filter :x_frame_options_allow,
+                      :load_visualization,
                       :redirect_to_old_embed_if_v2, only: [:show, :show_protected]
         before_filter :load_vizjson,
                       :load_state, only: [:show, :show_protected]

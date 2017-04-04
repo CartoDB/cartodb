@@ -6,18 +6,11 @@ require "action_controller/railtie"
 require "sequel-rails/railtie"
 require "action_mailer/railtie"
 require_relative '../lib/carto/configuration'
+require_relative '../lib/carto/carto_gears_support'
 
 if defined?(Bundler)
   Bundler.require(:default, :assets, Rails.env)
 end
-
-# Require optional rails engines
-# TODO reactivate in order to enable CartoDB plugins
-# Dir["engines" + "/*/*.gemspec"].each do |gemspec_file|
-#   gem_name = File.basename(gemspec_file, File.extname(gemspec_file))
-#   puts "** Loading engine #{gem_name}"
-#   require gem_name
-# end
 
 module CartoDB
   class Application < Rails::Application
@@ -200,3 +193,8 @@ require 'cartodb/central'
 require 'importer/lib/cartodb-migrator'
 require 'varnish/lib/cartodb-varnish'
 $pool = CartoDB::ConnectionPool.new
+
+Carto::CartoGearsSupport.new.gears.reject(&:installable).each do |gear|
+  $LOAD_PATH << File::join(gear.full_path, 'lib')
+  require gear.name
+end

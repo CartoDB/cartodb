@@ -1,51 +1,24 @@
 #!/bin/bash
-# Jesus Vazquez
-# executor.sh: This scripts executes the rspec recieved by param and stores it in specsuccess.log or specfailed.log
-# depending on the execution result.
-
-lock() {
-  touch config/$1.lock;
-}
-
-unlock() {
-  rm config/$1 >> executor.log 2>&1;
-}
-
-# Return first database.yml free
-redis_file() {
-  for redisfile in $(ls config -1| grep -v 'lock' | grep redis)
-  do
-    if [ ! -f config/$redisfile.lock ]; then
- #     echo $redisfile;
-      break
-    fi
-  done
-}
 
 main() {
-    # (hack) Choose a redis port for the execution
-    redis_file
-    # Lock the redis file
-    lock $redisfile;
-
-    # Choose redis-server port
-    port=$(cat config/$redisfile)
-
+    port=$((6000 + $2))
     # Run the rspec
-    RAILS_ENV=test PARALLEL=true RAILS_DATABASE_FILE=database_${2}.yml REDIS_PORT=$port bundle exec rspec --require ./spec/rspec_configuration.rb $1 >> $port.log 2>&1;
+    start=$SECONDS
+    ZEUSSOCK=".zeus$port.sock" bundle exec zeus rspec -J#$3 $1 >> parallel_tests/$port.log 2>&1;
+    exitCode=$?
+    taken=$(($SECONDS - $start))
+    formatted_time=$(date -u -d @$taken +'%-0M:%-0S')
 
     # Give some feedback
-    if [ $? -eq 0 ]; then
-      echo "Finished: $1 Port: $port";
-      echo "$1" >> specsuccess.log;
+    if [ $exitCode -eq 0 ]; then
+      echo "[$formatted_time] Finished: $1 Port: $port";
+      echo "$1" >> parallel_tests/specsuccess.log;
     else
-      echo "Finished (FAILED): $1 Port: $port";
-      echo "$1" >> specfailed.log;
+      echo "[$formatted_time] Finished (FAILED): $1 Port: $port";
+      echo "$1" >> parallel_tests/specfailed.log;
     fi
-    # Unlock file
-    unlock $redisfile.lock;
 }
 
 # Init
-main $1 $2];
+main $1 $2 $3;
 exit 0;

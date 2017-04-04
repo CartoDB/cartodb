@@ -179,6 +179,8 @@
   .ScrollView {
     margin: 0;
     padding: 0;
+    -webkit-flex-basis: auto;
+    flex-basis: auto;
 
     .ScrollView-wrapper {
       margin: 0;

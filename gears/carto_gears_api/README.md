@@ -91,6 +91,9 @@ Note: YARD support for ERB files is quite limited, and ERBs documentation is sti
 
 ### Extension points
 
+Most extension points require a registration during intialization. A good
+place to put the code it is inside a file in +config/initializers+.
+
 #### Adding links to profile page
 
 See creation at {CartoGearsApi::Pages::SubheaderLink}.
@@ -109,5 +112,17 @@ CartoGearsApi::Pages::Subheader.instance.links_generators << lambda do |context|
           controller: 'my_gear/something')
     ]
   end
+end
+```
+
+#### Events
+
+See a list of events at {CartoGearsApi::Events::BaseEvent} and how to subscribe to them with
+{CartoGearsApi::Events::EventManager}.
+Example:
+
+```ruby
+CartoGearsApi::Events::EventManager.instance.subscribe(CartoGearsApi::Events::UserCreationEvent) do |event|
+  puts "Welcome #{event.user.username}"
 end
 ```

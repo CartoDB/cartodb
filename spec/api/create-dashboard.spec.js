@@ -82,6 +82,7 @@ describe('create-dashboard', function () {
 
       expect(error).toBe(null);
       expect(dashboard instanceof APIDashboard).toBeTruthy();
+      expect(dashboard._dashboard.areWidgetsInitialised).toBeDefined();
     });
 
     it('should return an API dashboard object and error if there was an error', function () {
@@ -99,6 +100,7 @@ describe('create-dashboard', function () {
 
       expect(error).not.toBe(null);
       expect(dashboard instanceof APIDashboard).toBeTruthy();
+      expect(dashboard._dashboard.areWidgetsInitialised).toBeDefined();
     });
 
     it('should skip map instantiation and explictely isntantiate the map after everything has been loaded', function () {
@@ -112,6 +114,46 @@ describe('create-dashboard', function () {
       this.visMock.trigger('load', this.visMock);
 
       expect(this.visMock.instantiateMap).toHaveBeenCalled();
+    });
+
+    describe('areWidgetsInitialised', function () {
+      beforeEach(function () {
+        var callback = jasmine.createSpy('callback');
+        createDashboard(this.selectorId, this.vizJSON, {}, callback);
+        this.visMock.trigger('load', this.visMock);
+        this.visMock.instantiateMap.calls.argsFor(0)[0].success();
+        this.dashboard = callback.calls.argsFor(0)[1];
+
+        this.widgetsCollection = this.dashboard._dashboard.widgets._widgetsCollection;
+        spyOn(this.widgetsCollection, 'hasInitialState');
+        spyOn(this.widgetsCollection, 'size');
+      });
+
+      describe('if there are widgets', function () {
+        beforeEach(function () {
+          this.widgetsCollection.size.and.returnValue(2);
+        });
+
+        it('should return false when widgets don\'t have initial state', function () {
+          this.widgetsCollection.hasInitialState.and.returnValue(false);
+          expect(this.dashboard._dashboard.areWidgetsInitialised()).toBeFalsy();
+        });
+
+        it('should return true when widgets have initial state', function () {
+          this.widgetsCollection.hasInitialState.and.returnValue(true);
+          expect(this.dashboard._dashboard.areWidgetsInitialised()).toBeTruthy();
+        });
+      });
+
+      describe('if there is no widgets', function () {
+        beforeEach(function () {
+          this.widgetsCollection.size.and.returnValue(0);
+        });
+
+        it('should return true when there are no widgets', function () {
+          expect(this.dashboard._dashboard.areWidgetsInitialised()).toBeTruthy();
+        });
+      });
     });
 
     describe('state change', function () {

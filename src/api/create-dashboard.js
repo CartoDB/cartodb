@@ -111,20 +111,25 @@ var createDashboard = function (selector, vizJSON, opts, callback) {
       vis.centerMapToOrigin();
     }
 
+    var callbackObj = {
+      dashboardView: dashboardView,
+      widgets: widgetsService,
+      areWidgetsInitialised: function () {
+        var widgetsCollection = widgetsService.getCollection();
+        if (widgetsCollection.size() > 0) {
+          return widgetsCollection.hasInitialState();
+        }
+        return true;
+      },
+      vis: vis
+    }
+
     vis.instantiateMap({
       success: function () {
-        callback && callback(null, {
-          dashboardView: dashboardView,
-          widgets: widgetsService,
-          vis: vis
-        });
+        callback && callback(null, callbackObj);
       },
       error: function (errorMessage) {
-        callback && callback(new Error(errorMessage), {
-          dashboardView: dashboardView,
-          widgets: widgetsService,
-          vis: vis
-        });
+        callback && callback(new Error(errorMessage), callbackObj);
       }
     });
   });

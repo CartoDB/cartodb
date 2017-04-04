@@ -44,7 +44,8 @@ Dashboard.prototype = {
     var mapState = this.getMapState();
     if (!_.isEmpty(mapState)) state.map = mapState;
 
-    var widgetsState = this._dashboard.widgets._widgetsCollection.getStates();
+    var widgetsCollection = this._dashboard.widgets.getCollection();
+    var widgetsState = widgetsCollection.getStates();
     if (!_.isEmpty(widgetsState)) state.widgets = widgetsState;
     return state;
   },
@@ -63,17 +64,9 @@ Dashboard.prototype = {
     this._dashboard.vis.mapvis.map.setBounds([state.map.ne, state.map.sw]);
   },
 
-  _widgetsAlreadyInitialized: function () {
-    var widgetsCollection = this._dashboard.widgets._widgetsCollection;
-    if (widgetsCollection.size() > 0) {
-      return this._dashboard.widgets._widgetsCollection.hasInitialState();
-    }
-    return true;
-  },
-
   onDataviewsFetched: function (callback) {
-    var areDataviewsFetched = this._widgetsAlreadyInitialized();
-    if (areDataviewsFetched) {
+    var areWidgetsInitialized = this._dashboard.areWidgetsInitialised();
+    if (areWidgetsInitialized) {
       callback && callback();
     } else {
       this._dashboard.vis.once('dataviewsFetched', function () {
@@ -89,7 +82,8 @@ Dashboard.prototype = {
   },
 
   _bindChange: function (callback) {
-    this._dashboard.widgets._widgetsCollection.bind('change', function () {
+    var widgetsCollection = this._dashboard.widgets.getCollection();
+    widgetsCollection.bind('change', function () {
       callback(this.getState(), this.getDashboardURL());
     }, this);
 

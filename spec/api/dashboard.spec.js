@@ -16,6 +16,7 @@ describe('dashboard', function () {
     dashboardParameter.widgets = widgets;
     dashboardParameter.vis = new Backbone.Model();
     dashboardParameter.vis.map = new Backbone.Model();
+    dashboardParameter.areWidgetsInitialised = function () {};
 
     this.dashboard = new Dashboard(dashboardParameter);
   });
@@ -24,50 +25,16 @@ describe('dashboard', function () {
     expect(Dashboard.prototype.onDataviewsFetched).toHaveBeenCalled();
   });
 
-  describe('_widgetsAlreadyInitialized', function () {
-    beforeEach(function () {
-      this.widgetsCollection = this.dashboard._dashboard.widgets._widgetsCollection;
-      spyOn(this.widgetsCollection, 'hasInitialState');
-      spyOn(this.widgetsCollection, 'size');
-    });
-
-    describe('if there are widgets', function () {
-      beforeEach(function () {
-        this.widgetsCollection.size.and.returnValue(2);
-      });
-
-      it('should return false when widgets don\'t have initial state', function () {
-        this.widgetsCollection.hasInitialState.and.returnValue(false);
-        expect(this.dashboard._widgetsAlreadyInitialized()).toBeFalsy();
-      });
-
-      it('should return true when widgets have initial state', function () {
-        this.widgetsCollection.hasInitialState.and.returnValue(true);
-        expect(this.dashboard._widgetsAlreadyInitialized()).toBeTruthy();
-      });
-    });
-
-    describe('if there is no widgets', function () {
-      beforeEach(function () {
-        this.widgetsCollection.size.and.returnValue(0);
-      });
-
-      it('should return true when there are no widgets', function () {
-        expect(this.dashboard._widgetsAlreadyInitialized()).toBeTruthy();
-      });
-    });
-  });
-
   describe('onDataviewsFetched', function () {
     it('should trigger the callback if widgets are initialized', function () {
-      spyOn(this.dashboard, '_widgetsAlreadyInitialized').and.returnValue(true);
+      spyOn(this.dashboard._dashboard, 'areWidgetsInitialised').and.returnValue(true);
       var callback = jasmine.createSpy('callback');
       this.dashboard.onDataviewsFetched(callback);
       expect(callback).toHaveBeenCalled();
     });
 
     it('should trigger the callback when dataviews are fetched if widgets are not initialized yet', function () {
-      spyOn(this.dashboard, '_widgetsAlreadyInitialized').and.returnValue(false);
+      spyOn(this.dashboard._dashboard, 'areWidgetsInitialised').and.returnValue(false);
       var callback = jasmine.createSpy('callback');
       this.dashboard.onDataviewsFetched(callback);
       expect(callback).not.toHaveBeenCalled();

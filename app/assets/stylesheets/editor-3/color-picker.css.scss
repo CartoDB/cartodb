@@ -16,8 +16,9 @@
 }
 
 .ColorPicker-inputLabel {
-  color: #CBCED3;
   font-size: 9px;
+  color: #CBCED3;
+  line-height: 12px;
 }
 
 .ColorPicker-input {
@@ -26,7 +27,7 @@
   text-align: center;
 
   .ColorPicker--cm & {
-    width: 48px;
+    width: 100%;
   }
 }
 
@@ -58,6 +59,7 @@
   height: 105px;
   border-radius: $halfBaseSize;
   background-image: image-url('layout/colorpicker/saturation.png');
+  background-size: cover;
 }
 .ColorPicker .colorpicker-saturation::before {
   position: absolute;
@@ -81,10 +83,6 @@
   margin-bottom: $baseSize;
   border-radius: 2px;
   background-image: image-url('layout/colorpicker/hue-horizontal.png');
-
-  .ColorPicker--cm & {
-    height: $baseSize * 3;
-  }
 }
 
 .ColorPicker.colorpicker.colorpicker-horizontal .colorpicker-hue::before {
@@ -109,10 +107,6 @@
 
 .ColorPicker.colorpicker.colorpicker-horizontal .colorpicker-alpha.is-hidden {
   visibility: hidden;
-
-  .ColorPicker--cm & {
-    display: none;
-  }
 }
 
 .ColorPicker.colorpicker.colorpicker-horizontal .colorpicker-alpha::before {
@@ -138,6 +132,7 @@
   background-image: image-url('layout/colorpicker/alpha.png');
   background-position: 100%;
   pointer-events: none;
+  overflow: hidden;
 
   .ColorPicker--cm & {
     border: 0;
@@ -169,12 +164,6 @@
   border-radius: 50%;
   background: $cWhite;
   box-shadow: 1px 1px 1px #333;
-
-  .ColorPicker--cm & {
-    height: $baseSize * 3;
-    margin-top: 0;
-    border-radius: 2px;
-  }
 }
 
 .colorpicker-saturation i b {

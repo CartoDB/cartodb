@@ -11,6 +11,7 @@ Development
 * Improve dialog forms to render them floated. (#7786)
 * Adds slider component to the forms (#11617)
 * Adds export as image (#11789)
+  * Exports GMaps basemaps (#11775)
 * New organization assets (#11034):
   * REST API available at `/api/v1/organization/<org_id>/assets`
   * Has DB migration
@@ -82,6 +83,7 @@ Development
     * Add back FREE users to overquota calculation (#11848)
 * Update tangram-cartocss to use smooth point outline.
 * Update cartodb.js to use multiple subdomains.
+* Update tangram to use subdomains.
 
 ### Bug fixes
 * Fixed layers order when creating a new layer dragging from a compound analysis (#11827)
@@ -112,7 +114,7 @@ Development
   * Run `cartodb:db:register_table_dependencies` rake to update caches for existing maps
 * Categories legend are now static (#10972)
 * Fixed a bug with vizjson invalidation (#11092). It was introduced in #10934
-* Refactor Layer model (#10934) and UserTable (#11589, #11700).
+* Refactor Layer model (#10934) and UserTable (#11589, #11700, #11737).
 * Correctly render map previews for maps with google basemaps (#11608)
 * Do not trigger visualization hooks on state update (#11701)
 * Refactor Layer model (#10934)
@@ -151,6 +153,7 @@ Development
 * Fix for race condition when importing files and deploying at the same time (#11653)
 * Correctly create custom category legend if style has icons (#11592)
 * Fixed error handling if json "errors" field contains one single string (#11752)
+* Check for validation errors in EUMAPI user update endpoint (#11906)
 * Fix problem with perfect-scrollbar in Edge browsers (CartoDB/perfect-scrollbar/#2)
 * Layer onboardings are now aware on sync'd layers and highlighted area is clicked. (#11583)
 * Do not show builder activated notification for new users (#11720)
@@ -162,6 +165,7 @@ Development
 * Fix problem when number column is used like categories in fill component (#11736)
 * Don't let user to apply icons over categories when auto-style is applied (#11761)
 * Update leaflet from 0.7.x to 1.0.x
+* No geometry messages are displayed after a new geometry is drawn (#11857)
 * Rearrange Error tracker script order (#11872)
 * Fix subdomain error not loading tiles.
 

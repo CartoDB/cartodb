@@ -11,6 +11,7 @@ Development
 * Improve dialog forms to render them floated. (#7786)
 * Adds slider component to the forms (#11617)
 * Adds export as image (#11789)
+  * Exports GMaps basemaps (#11775)
 * New organization assets (#11034):
   * REST API available at `/api/v1/organization/<org_id>/assets`
   * Has DB migration
@@ -83,6 +84,7 @@ Development
 * Update tangram-cartocss to use smooth point outline.
 * Update cartodb.js to use multiple subdomains.
 * Refactored Builder specs generation using Webpack (#11698)
+* Update tangram to use subdomains.
 
 ### Bug fixes
 * Fixed layers order when creating a new layer dragging from a compound analysis (#11827)
@@ -153,6 +155,7 @@ Development
 * Fix for race condition when importing files and deploying at the same time (#11653)
 * Correctly create custom category legend if style has icons (#11592)
 * Fixed error handling if json "errors" field contains one single string (#11752)
+* Check for validation errors in EUMAPI user update endpoint (#11906)
 * Fix problem with perfect-scrollbar in Edge browsers (CartoDB/perfect-scrollbar/#2)
 * Layer onboardings are now aware on sync'd layers and highlighted area is clicked. (#11583)
 * Do not show builder activated notification for new users (#11720)

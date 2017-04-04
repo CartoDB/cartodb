@@ -218,7 +218,7 @@ class Table
           user_id = owner.id
         end
       end
-      ::UserTable.where(user_id: user_id, name: table_name).first
+      Carto::UserTable.where(user_id: user_id, name: table_name).first
     }
   end
 
@@ -1059,7 +1059,7 @@ class Table
 
   # Simplify certain privacy values for the vizjson
   def privacy_text_for_vizjson
-    privacy == UserTable::PRIVACY_LINK ? 'PUBLIC' : @user_table.privacy_text
+    privacy == Carto::UserTable::PRIVACY_LINK ? 'PUBLIC' : @user_table.privacy_text
   end
 
   def relator

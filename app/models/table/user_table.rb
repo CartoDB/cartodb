@@ -357,7 +357,7 @@ class UserTable < Sequel::Model
       attributions: esv.try(:attributions),
       source:       esv.try(:source),
       tags:         (tags.split(',') if tags),
-      privacy:      UserTable::PRIVACY_VALUES_TO_TEXTS[default_privacy_value],
+      privacy:      Carto::UserTable::PRIVACY_VALUES_TO_TEXTS[default_privacy_value],
       user_id:      user.id,
       kind:         kind
     )

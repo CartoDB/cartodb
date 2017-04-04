@@ -110,7 +110,7 @@ class ExploreAPI
   def tables_geometry_types(user_id, tables)
     geometry_types = {}
     tables.each do |table|
-      user_table = UserTable.where(user_id: user_id, name: table).first
+      user_table = Carto::UserTable.where(user_id: user_id, name: table).first
       geometry_types[table] = user_table.service.geometry_types
     end
     geometry_types

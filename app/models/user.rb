@@ -180,7 +180,7 @@ class User < Sequel::Model
   #   +-------------------------+--------+---------+------+
   #
   def valid_privacy?(privacy)
-    self.private_tables_enabled || privacy == UserTable::PRIVACY_PUBLIC
+    self.private_tables_enabled || privacy == Carto::UserTable::PRIVACY_PUBLIC
   end
 
   def valid_password?(key, value, confirmation_value)
@@ -646,7 +646,7 @@ class User < Sequel::Model
   end #map_tags
 
   def tables
-    ::UserTable.filter(:user_id => self.id).order(:id).reverse
+    Carto::UserTable.where(user_id: self.id).order(:id).reverse
   end
 
   def tables_including_shared

@@ -1643,7 +1643,7 @@
           "street-address-help": "Can compose your address using several columns and free text. <a href='https://carto.com/learn/guides/analysis/georeference' target='_blank'>More info.</a>",
           "street-address": "Street Addresses",
           "advance": "Advance mode",
-          "normal": "Normal mode",
+          "normal": "Normal mode"
         },
         "group-by": "Group by",
         "hide": "Hide",

@@ -84,6 +84,7 @@ Development
 * Update tangram-cartocss to use smooth point outline.
 * Update cartodb.js to use multiple subdomains.
 * Update tangram to use subdomains.
+* New dashboard notifications added (#11807).
 
 ### Bug fixes
 * Fixed layers order when creating a new layer dragging from a compound analysis (#11827)

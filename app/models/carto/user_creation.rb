@@ -82,9 +82,12 @@ class Carto::UserCreation < ActiveRecord::Base
           :validating_user => :saving_user,
           :saving_user => :promoting_user
 
-      transition :promoting_user => :creating_user_in_central, :creating_user_in_central => :load_common_data, :load_common_data => :success, :if => :sync_data_with_cartodb_central?
-
-      transition :promoting_user => :load_common_data, :load_common_data => :success, :unless => :sync_data_with_cartodb_central?
+      transition :promoting_user => :creating_user_in_central, if: :sync_data_with_cartodb_central?
+      transition :promoting_user => :load_common_data, if: lambda { !sync_data_with_cartodb_central? && !viewer? }
+      transition :promoting_user => :success, if: lambda { !sync_data_with_cartodb_central? && viewer? }
+            transition :creating_user_in_central => :load_common_data, unless: :viewer?
+      transition :creating_user_in_central => :success, if: :viewer?
+      transition :load_common_data => :success
     end
 
     event :fail_user_creation do

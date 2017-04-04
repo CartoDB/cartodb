@@ -3,6 +3,8 @@ require_dependency 'google_plus_api'
 require_dependency 'google_plus_config'
 require_dependency 'carto/controller_helper'
 require_dependency 'dummy_password_generator'
+require_dependency 'carto_gears_api/events/event_manager'
+require_dependency 'carto_gears_api/events/user_events'
 
 class Admin::OrganizationUsersController < Admin::AdminController
   include OrganizationUsersHelper
@@ -86,6 +88,11 @@ class Admin::OrganizationUsersController < Admin::AdminController
     ::Resque.enqueue(::Resque::UserDBJobs::CommonData::LoadCommonData, @user.id, common_data_url)
     @user.notify_new_organization_user
     @user.organization.notify_if_seat_limit_reached
+    CartoGearsApi::Events::EventManager.instance.notify(
+      CartoGearsApi::Events::UserCreationEvent.new(
+        CartoGearsApi::Events::UserCreationEvent::CREATED_VIA_ORG_ADMIN, @user
+      )
+    )
     redirect_to CartoDB.url(self, 'organization', {}, current_user), flash: { success: "New user created successfully" }
   rescue Carto::UnprocesableEntityError => e
     CartoDB::Logger.error(exception: e, message: "Validation error")

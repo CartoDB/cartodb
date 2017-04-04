@@ -395,6 +395,9 @@ describe Carto::UserCreation do
 
     it 'with Central and builder, does all the steps' do
       Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
+      User.any_instance.stubs(:validate_credentials_not_taken_in_central).returns(true)
+      @user_creation.expects(:create_in_central).once
+      @user_creation.expects(:load_common_data).once
 
       creation_steps(@user_creation).should eq ["enqueuing", "creating_user", "validating_user", "saving_user",
                                                 "promoting_user", "creating_user_in_central", "load_common_data",
@@ -403,6 +406,8 @@ describe Carto::UserCreation do
 
     it 'without Central, skips creation in central' do
       Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+      @user_creation.expects(:create_in_central).never
+      @user_creation.expects(:load_common_data).once
 
       creation_steps(@user_creation).should eq ["enqueuing", "creating_user", "validating_user", "saving_user",
                                                 "promoting_user", "load_common_data", "success"]
@@ -410,7 +415,10 @@ describe Carto::UserCreation do
 
     it 'with Central as a viewer, skips loading common data' do
       Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
+      User.any_instance.stubs(:validate_credentials_not_taken_in_central).returns(true)
       @user_creation.viewer = true
+      @user_creation.expects(:create_in_central).once
+      @user_creation.expects(:load_common_data).never
 
       creation_steps(@user_creation).should eq ["enqueuing", "creating_user", "validating_user", "saving_user",
                                                 "promoting_user", "creating_user_in_central", "success"]
@@ -419,6 +427,8 @@ describe Carto::UserCreation do
     it 'without Central as a viewer, skips loading common data and creation in central' do
       Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
       @user_creation.viewer = true
+      @user_creation.expects(:create_in_central).never
+      @user_creation.expects(:load_common_data).never
 
       creation_steps(@user_creation).should eq ["enqueuing", "creating_user", "validating_user", "saving_user",
                                                 "promoting_user", "success"]

@@ -25,6 +25,9 @@
 .Editor-formInput:focus {
   outline: none;
 }
+.Editor-formLabel label {
+  cursor: pointer;
+}
 .Editor-formInner--noMargin {
   margin-top: 0;
   padding-top: $baseSize;
@@ -57,6 +60,15 @@
   background: $cWhite;
   content: '';
   box-sizing: border-box;
+}
+.Editor-formInner--Toggle {
+  margin-top: 0;
+}
+.Editor-toggleHelp {
+  margin-top: -12px;
+}
+.Editor-toggleRadio {
+  display: none;
 }
 
 

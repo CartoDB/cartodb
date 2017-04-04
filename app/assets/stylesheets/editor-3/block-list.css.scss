@@ -26,12 +26,17 @@
 .BlockList-item:hover {
   @include transition(border 200ms ease-in);
   border: 1px solid $cHoverLine;
+
+  .BlockList-titleText {
+    text-decoration: underline;
+  }
 }
 .BlockList-item.BlockList-item--noAction {
   cursor: default;
 
   .BlockList-titleText {
     cursor: default;
+    text-decoration: none;
   }
 }
 .BlockList-item.BlockList-item--noAction:hover {

@@ -7,7 +7,7 @@ include Carto::UUIDHelper
 
 shared_context 'layer hierarchy' do
   before(:all) do
-    @user1 = FactoryGirl.create(:valid_user, private_tables_enabled: true)
+    @user1 = FactoryGirl.create(:valid_user, private_tables_enabled: true, private_maps_enabled: true)
     @user2 = FactoryGirl.create(:valid_user, private_tables_enabled: true)
     @map = FactoryGirl.create(:carto_map_with_layers, user_id: @user1.id)
     @layer = @map.layers.first
@@ -59,6 +59,7 @@ shared_context 'layer hierarchy' do
     if payload[:order].present?
       response_widget[:order].should == payload[:order]
     else
+      @visualization.reload
       response_widget[:order].should == @visualization.widgets.count - 1
     end
   end

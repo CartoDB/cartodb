@@ -15,6 +15,7 @@ module Carto
     belongs_to :owner, class_name: Carto::User, inverse_of: :owned_organization
     has_many :groups, inverse_of: :organization, order: :display_name
     has_many :assets, class_name: Carto::Asset, dependent: :destroy
+    has_many :notifications, dependent: :destroy, order: 'created_at DESC'
 
     before_destroy :destroy_groups_with_extension
 
@@ -28,26 +29,11 @@ module Carto
       require_organization_owner_presence!
       date_to = (options[:to] ? options[:to].to_date : Date.today)
       date_from = (options[:from] ? options[:from].to_date : owner.last_billing_cycle)
-      if owner.has_feature_flag?('new_geocoder_quota')
-        get_organization_geocoding_data(self, date_from, date_to)
-      else
-        users.
-          joins(:geocodings).
-          where('geocodings.kind' => 'high-resolution').
-          where('geocodings.created_at >= ? and geocodings.created_at <= ?', date_from, date_to + 1.days).
-          sum("processed_rows + cache_hits".lit).to_i
-      end
+      get_organization_geocoding_data(self, date_from, date_to)
     end
 
     def period_end_date
       owner && owner.period_end_date
-    end
-
-    def get_new_system_geocoding_calls(options = {})
-      require_organization_owner_presence!
-      date_to = (options[:to] ? options[:to].to_date : Date.current)
-      date_from = (options[:from] ? options[:from].to_date : owner.last_billing_cycle)
-      get_organization_geocoding_data(self, date_from, date_to)
     end
 
     def get_here_isolines_calls(options = {})
@@ -150,6 +136,14 @@ module Carto
 
     def auth_saml_enabled?
       auth_saml_configuration.present?
+    end
+
+    def builder_users
+      users.reject(&:viewer)
+    end
+
+    def viewer_users
+      users.select(&:viewer)
     end
 
     private

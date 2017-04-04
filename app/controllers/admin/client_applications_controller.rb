@@ -6,6 +6,7 @@ class Admin::ClientApplicationsController < Admin::AdminController
   before_filter :invalidate_browser_cache
   before_filter :login_required
   before_filter :enforce_engine_enabled, only: :regenerate_api_key
+  before_filter :load_dashboard_notifications, only: :api_key
 
   layout 'application'
 
@@ -62,5 +63,11 @@ class Admin::ClientApplicationsController < Admin::AdminController
     unless current_user.engine_enabled?
       render_403
     end
+  end
+
+  def load_dashboard_notifications
+    carto_user = Carto::User.where(id: current_user.id).first if current_user
+
+    @dashboard_notifications = carto_user ? carto_user.notifications_for_category(:dashboard) : {}
   end
 end

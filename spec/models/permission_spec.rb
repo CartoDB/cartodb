@@ -13,11 +13,6 @@ describe CartoDB::Permission do
     @user = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
   end
 
-  after(:each) do
-    Permission.all.each { |perm| perm.destroy }
-    SharedEntity.all.each { |entity| entity.destroy }
-  end
-
   after(:all) do
     bypass_named_maps
     @user.destroy
@@ -581,7 +576,7 @@ describe CartoDB::Permission do
         entity_type:    CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
       ).save
 
-      CartoDB::SharedEntity.all.count.should eq 2
+      CartoDB::SharedEntity.where(entity_id: entity_id).count.should eq 2
 
       # Leave only user 1
       permission.acl = [
@@ -597,8 +592,8 @@ describe CartoDB::Permission do
       ]
       permission.save
 
-      CartoDB::SharedEntity.all.count.should eq 1
-      shared_entity = CartoDB::SharedEntity.all[0]
+      CartoDB::SharedEntity.where(entity_id: entity_id).count.should eq 1
+      shared_entity = CartoDB::SharedEntity.where(entity_id: entity_id).first
       shared_entity.recipient_id.should eq @user.id
       shared_entity.entity_id.should eq entity_id
 
@@ -615,8 +610,8 @@ describe CartoDB::Permission do
       ]
       permission.save
 
-      CartoDB::SharedEntity.all.count.should eq 1
-      shared_entity = CartoDB::SharedEntity.all[0]
+      CartoDB::SharedEntity.where(entity_id: entity_id).count.should eq 1
+      shared_entity = CartoDB::SharedEntity.where(entity_id: entity_id).first
       shared_entity.recipient_id.should eq user2_mock.id
       shared_entity.entity_id.should eq entity_id
 
@@ -633,8 +628,8 @@ describe CartoDB::Permission do
       ]
       permission.save
 
-      CartoDB::SharedEntity.all.count.should eq 1
-      shared_entity = CartoDB::SharedEntity.all[0]
+      CartoDB::SharedEntity.where(entity_id: entity_id).count.should eq 1
+      shared_entity = CartoDB::SharedEntity.where(entity_id: entity_id).first
       shared_entity.recipient_id.should eq user2_mock.id
       shared_entity.entity_id.should eq entity_id
 
@@ -651,7 +646,7 @@ describe CartoDB::Permission do
       ]
       permission.save
 
-      CartoDB::SharedEntity.all.count.should eq 0
+      CartoDB::SharedEntity.where(entity_id: entity_id).count.should eq 0
 
       permission.destroy
     end

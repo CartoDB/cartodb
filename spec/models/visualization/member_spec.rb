@@ -314,6 +314,8 @@ describe Visualization::Member do
         Carto::Layer.exists?(canonical_layer.id).should be_true
         Carto::UserTable.exists?(@table.id).should be_true
         Carto::Map.exists?(canonical_map.id).should be_true
+
+        Table.any_instance.unstub(:remove_table_from_user_database)
       end
     end
   end
@@ -656,7 +658,6 @@ describe Visualization::Member do
           type: Visualization::Member::TYPE_CANONICAL,
           user_id:  user_id
       )
-      visualization.user_data = { actions: { private_maps: false } }
       # Unchanged visualizations could be
       visualization.valid?.should eq true
 
@@ -1293,7 +1294,7 @@ describe Visualization::Member do
 
     it 'should store correctly a visualization with its license' do
       table = create_table({:name => 'table1', :user_id => @user.id})
-      vis = table.table_visualization
+      vis = CartoDB::Visualization::Member.new(id: table.table_visualization.id).fetch
       vis.license = "apache"
       vis.store
       vis.fetch
@@ -1303,7 +1304,7 @@ describe Visualization::Member do
 
     it 'should return nil if the license is nil, empty or unkown' do
       table = create_table({:name => 'table1', :user_id => @user.id})
-      vis = table.table_visualization
+      vis = CartoDB::Visualization::Member.new(id: table.table_visualization.id).fetch
       vis.license = nil
       vis.store
       vis.fetch
@@ -1319,7 +1320,7 @@ describe Visualization::Member do
 
     it 'should raise exception when try to store a unknown license, empty or nil' do
       table = create_table({:name => 'table1', :user_id => @user.id})
-      vis = table.table_visualization
+      vis = CartoDB::Visualization::Member.new(id: table.table_visualization.id).fetch
       vis.license = "wadus"
       expect {
         vis.store

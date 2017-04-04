@@ -4,6 +4,8 @@ include UniqueNamesHelper
 
 FactoryGirl.define do
   factory :user_table, class: UserTable do
+    to_create(&:save)
+
     name { unique_name('user_table') }
   end
 
@@ -14,18 +16,21 @@ FactoryGirl.define do
       user_table.service.stubs(:before_create)
       user_table.service.stubs(:after_create)
       user_table.stubs(:create_canonical_visualization)
+      CartoDB::TablePrivacyManager.any_instance.stubs(:apply_privacy_change)
     end
 
     after(:create) do |user_table|
       user_table.service.unstub(:before_create)
       user_table.service.unstub(:after_create)
       user_table.unstub(:create_canonical_visualization)
+      CartoDB::TablePrivacyManager.any_instance.unstub(:apply_privacy_change)
     end
 
     trait :with_db_table do
       before(:create) do |user_table|
         user_table.service.unstub(:before_create)
         user_table.service.unstub(:after_create)
+        CartoDB::TablePrivacyManager.any_instance.unstub(:apply_privacy_change)
       end
     end
 
@@ -38,6 +43,11 @@ FactoryGirl.define do
       after(:create) do |user_table|
         user_table.service.unstub(:is_raster?)
       end
+    end
+
+    trait :full do
+      with_canonical_visualization
+      with_db_table
     end
 
     factory :private_user_table do

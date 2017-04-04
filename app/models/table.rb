@@ -82,7 +82,7 @@ class Table
 
   # This is here just for testing purposes (being able to test this service against both models)
   def model_class
-    ::UserTable
+    Carto::UserTable
   end
 
   # forwardable does not work well with this one
@@ -91,12 +91,26 @@ class Table
   end
 
   def save
-    @user_table.save
+    # TODO: kept for compatibility reasons on tests on both models, until 100% removal of ::UserTable support
+    if @user_table.respond_to?(:save!)
+      @user_table.save!
+    else
+      # This should not happen with production code. Trace would lead the refactor
+      CartoDB::Logger.debug(message: "::Table#save invoked on Sequel", user_table: @user_table)
+      @user_table.save
+    end
+
     self
   end
 
   def update(args)
-    @user_table.update(args)
+    # Sequel and ActiveRecord #update don't behave equally, we need this workaround for compatibility reasons
+    if @user_table.is_a?(Carto::UserTable)
+      CartoDB::Logger.debug(message: "::Table#update on ActiveRecord model")
+      @user_table.update_attributes(args)
+    else
+      @user_table.update(args)
+    end
     self
   end
 
@@ -171,7 +185,7 @@ class Table
     table = nil
     return table unless viewer_user
 
-    table_temp = UserTable.where(id: table_id).first.service
+    table_temp = Carto::UserTable.where(id: table_id).first.service
     unless table_temp.nil?
       vis = CartoDB::Visualization::Collection.new.fetch(
           user_id: viewer_user.id,
@@ -186,7 +200,7 @@ class Table
   # Getter by table uuid using canonical visualizations. No privacy checks
   # @param table_id String
   def self.get_by_table_id(table_id)
-    table_temp = UserTable.where(id: table_id).first
+    table_temp = Carto::UserTable.where(id: table_id).first
     table_temp.service unless table_temp.nil?
   end
 
@@ -204,7 +218,7 @@ class Table
           user_id = owner.id
         end
       end
-      UserTable.where(user_id: user_id, name: table_name).first
+      ::UserTable.where(user_id: user_id, name: table_name).first
     }
   end
 
@@ -433,7 +447,6 @@ class Table
     update_name_changes
 
     CartoDB::TablePrivacyManager.new(@user_table).apply_privacy_change(self, previous_privacy, privacy_changed?)
-
     update_cdb_tablemetadata if privacy_changed? || !@name_changed_from.nil?
   end
 
@@ -469,34 +482,15 @@ class Table
     raise e
   end
 
-  def default_baselayer_for_user(user=nil)
-    user ||= self.owner
-    basemap = user.default_basemap
-    if basemap['className'] === 'googlemaps'
-      {
-        kind: 'gmapsbase',
-        options: basemap
-      }
-    else
-      {
-        kind: 'tiled',
-        options: basemap.merge({ 'urlTemplate' => basemap['url'] })
-      }
-    end
-  end
-
   def before_destroy
     @table_visualization                = table_visualization
-    if @table_visualization
-      @table_visualization.user_data = { name: owner.username, api_key: owner.api_key }
-    end
     @fully_dependent_visualizations_cache     = fully_dependent_visualizations.to_a
     @partially_dependent_visualizations_cache = partially_dependent_visualizations.to_a
   end
 
   def after_destroy
     # Delete visualization BEFORE deleting metadata, or named map won't be destroyed properly
-    @table_visualization.delete(from_table_deletion=true) if @table_visualization
+    @table_visualization.delete_from_table if @table_visualization
     Tag.filter(user_id: user_id, table_id: id).delete
     remove_table_from_stats
 
@@ -529,81 +523,9 @@ class Table
     !get_table_id.nil?
   end
 
-  # adds the column if not exists or cast it to timestamp field
-  def normalize_timestamp(database, column)
-    schema = self.schema(reload: true)
-
-    if schema.nil? || !schema.flatten.include?(column)
-      database.run(%Q{
-        ALTER TABLE #{qualified_table_name}
-        ADD COLUMN #{column} timestamptz
-        DEFAULT NOW()
-      })
-    end
-
-    if schema.present?
-      column_type = Hash[schema][column]
-      # if column already exists, cast to timestamp value and set default
-      if column_type == 'string' && schema.flatten.include?(column)
-        success = ms_to_timestamp(database, qualified_table_name, column)
-        string_to_timestamp(database, qualified_table_name, column) unless success
-
-        database.run(%Q{
-          ALTER TABLE #{qualified_table_name}
-          ALTER COLUMN #{column}
-          SET DEFAULT now()
-        })
-      elsif column_type == DATATYPE_DATE || column_type == 'timestamptz'
-        database.run(%Q{
-          ALTER TABLE #{qualified_table_name}
-          ALTER COLUMN #{column}
-          SET DEFAULT now()
-        })
-      end
-    end
-  end #normalize_timestamp_field
-
-  # @param table String Must come fully qualified from above
-  def ms_to_timestamp(database, table, column)
-    database.run(%Q{
-      ALTER TABLE "#{table}"
-      ALTER COLUMN #{column}
-      TYPE timestamptz
-      USING to_timestamp(#{column}::float / 1000)
-    })
-    true
-  rescue
-    false
-  end #normalize_ms_to_timestamp
-
-  # @param table String Must come fully qualified from above
-  def string_to_timestamp(database, table, column)
-    database.run(%Q{
-      ALTER TABLE "#{table}"
-      ALTER COLUMN #{column}
-      TYPE timestamptz
-      USING to_timestamp(#{column}, 'YYYY-MM-DD HH24:MI:SS.MS.US')
-    })
-    true
-  rescue
-    false
-  end #string_to_timestamp
-
-  def make_geom_valid
-    begin
-      owner.db_service.in_database_direct_connection({statement_timeout: STATEMENT_TIMEOUT}) do |user_direct_conn|
-        user_direct_conn.run(%Q{
-          UPDATE #{qualified_table_name} SET the_geom = ST_MakeValid(the_geom);
-        })
-      end
-    rescue => e
-      CartoDB::StdoutLogger.info 'Table#make_geom_valid error', "table #{qualified_table_name} make valid failed: #{e.inspect}"
-    end
-  end
-
   def name=(value)
     value = value.downcase if value
-    return if value == @user_table[:name] || value.blank?
+    return if value == @user_table.name || value.blank?
 
     new_name = register_table_only ? value : get_valid_name(value)
 
@@ -613,11 +535,11 @@ class Table
       update_cdb_tablemetadata
     end
 
-    @user_table[:name] = new_name
+    @user_table.name = new_name
   end
 
   def privacy_changed?
-     @user_table.previous_changes && @user_table.previous_changes.keys.include?(:privacy)
+    @user_table.privacy_changed?
   end
 
   def redis_key
@@ -627,14 +549,6 @@ class Table
   # TODO: change name and refactor for ActiveRecord
   def sequel
     owner.in_database.from(sequel_qualified_table_name)
-  end
-
-  def rows_estimated_query(query)
-    owner.in_database do |user_database|
-      rows = user_database["EXPLAIN #{query}"].all
-      est = Integer( rows[0].to_s.match( /rows=(\d+)/ ).values_at( 1 )[0] )
-      return est
-    end
   end
 
   def rows_estimated(user=nil)
@@ -1164,6 +1078,10 @@ class Table
     record.nil? ? nil : record[:oid]
   end # get_table_id
 
+  def changing_name?
+    @name_changed_from.present?
+  end
+
   def update_name_changes
     if @name_changed_from.present? && @name_changed_from != name
       reload
@@ -1314,6 +1232,20 @@ class Table
                           table_name: name)
   end
 
+  def propagate_attribution_change(attributions)
+    # This includes both the canonical and derived visualizations
+    @user_table.layers.select(&:data_layer?).each do |layer|
+      if layer.options['table_name'] == name
+        layer.options['attribution'] = attributions
+        layer.save
+      end
+    end
+  end
+
+  def table_visualization
+    @user_table.table_visualization
+  end
+
   private
 
   def related_visualizations
@@ -1342,7 +1274,7 @@ class Table
 
   def previous_privacy
     # INFO: @user_table.initial_value(:privacy) weirdly returns incorrect value so using changes index instead
-    privacy_changed? ? @user_table.previous_changes[:privacy].first : nil
+    privacy_changed? ? @user_table.privacy_was : nil
   end
 
   def importer_stats

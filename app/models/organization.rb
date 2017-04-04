@@ -78,26 +78,21 @@ class Organization < Sequel::Model
     end
   end
 
-  def validate_new_user(user, errors)
-    if !whitelisted_email_domains.nil? and !whitelisted_email_domains.empty?
-      email_domain = user.email.split('@')[1]
-      unless whitelisted_email_domains.include?(email_domain) || user.invitation_token.present?
-        errors.add(:email, "Email domain '#{email_domain}' not valid for #{name} organization")
-      end
+  def validate_for_signup(errors, user)
+    validate_seats(user, errors)
+
+    if !valid_disk_quota?(user.quota_in_bytes.to_i)
+      errors.add(:quota_in_bytes, "not enough disk quota")
     end
   end
 
-  def validate_for_signup(errors, user)
+  def validate_seats(user, errors)
     if user.builder? && !valid_builder_seats?([user])
       errors.add(:organization, "not enough seats")
     end
 
     if user.viewer? && remaining_viewer_seats(excluded_users: [user]) <= 0
       errors.add(:organization, "not enough viewer seats")
-    end
-
-    if !valid_disk_quota?(user.quota_in_bytes.to_i)
-      errors.add(:quota_in_bytes, "not enough disk quota")
     end
   end
 
@@ -211,17 +206,6 @@ class Organization < Sequel::Model
   def get_geocoding_calls(options = {})
     require_organization_owner_presence!
     date_from, date_to = quota_dates(options)
-    if owner.has_feature_flag?('new_geocoder_quota')
-      get_organization_geocoding_data(self, date_from, date_to)
-    else
-      Geocoding.get_geocoding_calls(users_dataset.join(:geocodings, :user_id => :id), date_from, date_to)
-    end
-  end
-
-  def get_new_system_geocoding_calls(options = {})
-    require_organization_owner_presence! if !options[:from]
-    date_to = (options[:to] ? options[:to].to_date : Date.current)
-    date_from = (options[:from] ? options[:from].to_date : owner.last_billing_cycle)
     get_organization_geocoding_data(self, date_from, date_to)
   end
 
@@ -391,11 +375,11 @@ class Organization < Sequel::Model
   end
 
   def assigned_seats(excluded_users: [])
-    builder_users.count { |u| !excluded_users.include?(u) }
+    builder_users.count { |u| !excluded_users.map(&:id).include?(u.id) }
   end
 
   def assigned_viewer_seats(excluded_users: [])
-    viewer_users.count { |u| !excluded_users.include?(u) }
+    viewer_users.count { |u| !excluded_users.map(&:id).include?(u.id) }
   end
 
   def builder_users

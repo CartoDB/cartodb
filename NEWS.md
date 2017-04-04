@@ -10,6 +10,8 @@ Development
 * Adding Google-Maps basemaps (#11447)
 * Improve dialog forms to render them floated. (#7786)
 * Adds slider component to the forms (#11617)
+* Adds export as image (#11789)
+  * Exports GMaps basemaps (#11775)
 * New organization assets (#11034):
   * REST API available at `/api/v1/organization/<org_id>/assets`
   * Has DB migration
@@ -61,12 +63,19 @@ Development
 * Improved empty bounds map handling (#11711).
 * Updated diagnosis page versions.
 * Improved formula widget description field. (#11469)
+  * Notification API (#11850)
+* Improved empty bounds map handling (#11711).
+* Updated diagnosis page versions.
+* Improved formula widget description field (#11469).
 * In an organization, only the owner sees the Google API keys.
 * Added support for Zeus for faster testing (#11574). Check `CONTRIBUTING.md` for configuration details.
+* Migrate to use GNIP v2 for twitter search connector (#10051, #11595).
+* Notifications API (#11734) and administrator UI (#11729).
 * Migrate to use GNIP v2 for twitter search connector (#10051, #11595)
 * Organization notifications (WIP) (#11734, #11780, #11734, #11821)
 * Invite to georeference proactively when detecting non-georeferenced data (#11316)
 * Update tangram with smooth point outline.
+* Improve affordance of layer item (#11359).
 * GME users can change to any basemap #11785.
 * Improve affordance of layer item (#11359)
 * Revamp of quota management code
@@ -77,6 +86,8 @@ Development
     * Add back FREE users to overquota calculation (#11848)
 * Update tangram-cartocss to use smooth point outline.
 * Refactored Builder specs generation using Webpack (#11698)
+* Update cartodb.js to use multiple subdomains.
+* Update tangram to use subdomains.
 
 ### Bug fixes
 * Fixed layers order when creating a new layer dragging from a compound analysis (#11827)
@@ -108,11 +119,13 @@ Development
 * Categories legend are now static (#10972)
 * Fixed a bug with vizjson invalidation (#11092). It was introduced in #10934
 * Refactor Layer model (#10934) and UserTable (#11589, #11700).
+* Refactor Layer model (#10934) and UserTable (#11589, #11700, #11737).
 * Correctly render map previews for maps with google basemaps (#11608)
 * Do not trigger visualization hooks on state update (#11701)
 * Refactor Layer model (#10934)
 * Correctly register table dependencies of torque layers (#11549)
 * Validate number of organization seats in user update (#11839)
+* Validate number of organization seats in user update (#11839, #11859)
 * Fix bugs where legends where being hidden by reordering layers (#11088)
 * Correctly ask for alternative username when signing up with Google/GitHub into an organization
 * Avoid loading all rake code in resque workers (#11069)
@@ -146,6 +159,7 @@ Development
 * Fix for race condition when importing files and deploying at the same time (#11653)
 * Correctly create custom category legend if style has icons (#11592)
 * Fixed error handling if json "errors" field contains one single string (#11752)
+* Check for validation errors in EUMAPI user update endpoint (#11906)
 * Fix problem with perfect-scrollbar in Edge browsers (CartoDB/perfect-scrollbar/#2)
 * Layer onboardings are now aware on sync'd layers and highlighted area is clicked. (#11583)
 * Do not show builder activated notification for new users (#11720)
@@ -156,6 +170,10 @@ Development
 * Fix problem creating analyses without Data Services API (#11745)
 * Fix problem when number column is used like categories in fill component (#11736)
 * Don't let user to apply icons over categories when auto-style is applied (#11761)
+* Update leaflet from 0.7.x to 1.0.x
+* No geometry messages are displayed after a new geometry is drawn (#11857)
+* Rearrange Error tracker script order (#11872)
+* Fix subdomain error not loading tiles.
 
 4.0.x (2016-12-05)
 ------------------

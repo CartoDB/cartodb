@@ -76,13 +76,15 @@ var LegendsView = View.extend({
 
   _showOrHideShadows: function () {
     var $el = $(this._container());
-    var currentPos = $el.scrollTop();
-    var max = $el.get(0).scrollHeight;
-    var height = $el.outerHeight();
-    var maxPos = max - height;
+    if ($el.length) {
+      var currentPos = $el.scrollTop();
+      var max = $el.get(0).scrollHeight;
+      var height = $el.outerHeight();
+      var maxPos = max - height;
 
-    this.$shadowTop.toggleClass('is-visible', currentPos > 0);
-    this.$shadowBottom.toggleClass('is-visible', currentPos < maxPos);
+      this.$shadowTop.toggleClass('is-visible', currentPos > 0);
+      this.$shadowBottom.toggleClass('is-visible', currentPos < maxPos);
+    }
   },
 
   _onScrollBottom: function () {

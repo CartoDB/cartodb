@@ -21,6 +21,17 @@ VisView = VisView.extend({
   }
 });
 
+var createVisView = function (container, visModel, settingsModel) {
+  var options = {
+    el: container,
+    widgets: new Backbone.Collection(),
+    model: visModel,
+    settingsModel: settingsModel
+  };
+
+  return new VisView(options);
+};
+
 describe('vis/vis-view', function () {
   beforeEach(function () {
     this.container = $('<div>').css('height', '200px');
@@ -52,17 +63,7 @@ describe('vis/vis-view', function () {
       showLayerSelector: true
     });
 
-    this.createNewVis = function (attrs) {
-      attrs.widgets = new Backbone.Collection();
-      attrs.model = this.visModel;
-      attrs.settingsModel = this.settingsModel;
-      this.visView = new VisView(attrs);
-      return this.visView;
-    };
-
-    this.createNewVis({
-      el: this.container
-    });
+    this.visView = createVisView(this.container, this.visModel, this.settingsModel);
 
     this.visModel.load(new VizJSON(this.mapConfig));
     this.visView.render();
@@ -75,78 +76,64 @@ describe('vis/vis-view', function () {
   describe('map provider', function () {
     beforeEach(function () {
       this.fakeMapViewFactory = this.visView._getMapViewFactory();
-      this.fakeMapViewFactory.createMapView.calls.reset();
-
-      this.visView.render();
     });
 
     it('should have created a LeafletMap by default', function () {
       expect(this.fakeMapViewFactory.createMapView.calls.mostRecent().args[0]).toEqual('leaflet');
     });
 
-    it('should create a gmaps when provider changes to leaflet', function () {
-      this.visModel.map.set('provider', 'something');
-      this.visModel.map.set('provider', 'leaflet');
-
-      this.visView.render();
-
-      expect(this.fakeMapViewFactory.createMapView.calls.mostRecent().args[0]).toEqual('leaflet');
-    });
-
-    it('should create a google maps map when provider is googlemaps', function () {
-      this.visModel.map.set('provider', 'something', { silent: true });
+    it('should create a re-create the map view using a new provider when it changes', function () {
       this.visModel.map.set('provider', 'googlemaps');
-
-      this.visView.render();
-
       expect(this.fakeMapViewFactory.createMapView.calls.mostRecent().args[0]).toEqual('googlemaps');
+
+      this.visModel.map.set('provider', 'leaflet');
+      expect(this.fakeMapViewFactory.createMapView.calls.mostRecent().args[0]).toEqual('leaflet');
     });
   });
 
-  it('should bind resize changes when map height is 0', function () {
+  var CENTER_MAP_TO_ORIGIN_WAIT_IN_MS = 160;
+
+  it('should center map to origin once when map height is 0 initially and window is resized', function () {
     jasmine.clock().install();
     spyOn(this.visModel, 'invalidateSize');
 
     var container = $('<div>').css('height', '0');
-    var vis = this.createNewVis({ el: container });
-    spyOn(vis, '_onResize').and.callThrough();
+    this.visView = createVisView(container, this.visModel, this.settingsModel);
 
-    this.visModel.load(new VizJSON(this.mapConfig));
+    this.visView.render();
 
-    // Wait until view has been rendered after load
-    jasmine.clock().tick(10);
-
+    // First time the window is resized -> map is centered to origin
     $(window).trigger('resize');
 
-    expect(vis._onResize).toHaveBeenCalled();
-    vis._onResize.calls.reset();
-
-    jasmine.clock().tick(160);
+    jasmine.clock().tick(CENTER_MAP_TO_ORIGIN_WAIT_IN_MS);
 
     expect(this.visModel.invalidateSize).toHaveBeenCalled();
 
+    this.visModel.centerMapToOrigin.calls.reset();
+
+    // Second time the window is resized -> map is NOT centered to origin
+
     $(window).trigger('resize');
-    expect(vis._onResize).not.toHaveBeenCalled();
+
+    jasmine.clock().tick(CENTER_MAP_TO_ORIGIN_WAIT_IN_MS);
+
+    expect(this.visModel.centerMapToOrigin).not.toHaveBeenCalled();
+    jasmine.clock().uninstall();
   });
 
-  it('should NOT bind resize changes when map height is greater than 0', function () {
+  it('should NOT center map to origin when map height is greated than O initially and window is resized', function () {
     jasmine.clock().install();
     spyOn(this.visModel, 'invalidateSize');
 
-    var container = $('<div>').css('height', '200px');
-    var vis = this.createNewVis({el: container});
-    spyOn(vis, '_onResize').and.callThrough();
+    var container = $('<div>').css('height', '800px');
+    this.visView = createVisView(container, this.visModel, this.settingsModel);
 
-    this.visModel.load(new VizJSON(this.mapConfig));
+    this.visView.render();
 
-    // Wait until view has been rendered after load
-    jasmine.clock().tick(10);
-
+    // Window is resized by map is not centered since height hasn't changed
     $(window).trigger('resize');
 
-    expect(vis._onResize).not.toHaveBeenCalled();
-
-    jasmine.clock().tick(160);
+    jasmine.clock().tick(CENTER_MAP_TO_ORIGIN_WAIT_IN_MS);
 
     expect(this.visModel.invalidateSize).not.toHaveBeenCalled();
   });

@@ -11,6 +11,7 @@ Development
 * Improve dialog forms to render them floated. (#7786)
 * Adds slider component to the forms (#11617)
 * Adds export as image (#11789)
+  * Exports GMaps basemaps (#11775)
 * New organization assets (#11034):
   * REST API available at `/api/v1/organization/<org_id>/assets`
   * Has DB migration

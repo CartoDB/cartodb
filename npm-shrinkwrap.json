@@ -1152,7 +1152,7 @@
     "cartodb-deep-insights.js": {
       "version": "0.0.2",
       "from": "cartodb/deep-insights.js#11894-builder-issue",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#a74370feb87752632a55229d37eeb846e964d605",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#56550aba43cab901816d6f55f0335547bd323599",
       "dependencies": {
         "cartodb.js": {
           "version": "4.0.0-alpha.1",

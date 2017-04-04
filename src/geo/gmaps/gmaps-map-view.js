@@ -10,11 +10,7 @@ var GoogleMapsMapView = MapView.extend({
     this._isReady = false;
 
     MapView.prototype.initialize.apply(this, arguments);
-
-    this.map.set({
-      pixelToLatLng: this.containerPointToLatLng,
-      latLngtoPixel: this.latLngToContainerPoint
-    });
+    this._linkMapHelpers();
   },
 
   _createNativeMap: function () {
@@ -162,6 +158,7 @@ var GoogleMapsMapView = MapView.extend({
 
   invalidateSize: function () {
     google.maps.event.trigger(this._gmapsMap, 'resize');
+    this.map.set('mapViewSize', this.getSize());
   },
 
   // GEOMETRY

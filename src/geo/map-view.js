@@ -121,6 +121,13 @@ var MapView = View.extend({
     return this;
   },
 
+  _linkMapHelpers: function () {
+    this.map.set({
+      pixelToLatLng: this.containerPointToLatLng.bind(this),
+      latLngtoPixel: this.latLngToContainerPoint.bind(this)
+    });
+  },
+
   _onGeometryAdded: function (geometry) {
     var geometryView = GeometryViewFactory.createGeometryView(this.map.get('provider'), geometry, this);
     geometryView.render();

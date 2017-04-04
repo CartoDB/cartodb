@@ -5,12 +5,11 @@ require 'carto_gears_api/test_mail'
 describe CartoGearsApi::Queue::GenericJob do
   describe '#perform' do
     it 'instantiates the class, and invokes the method with random parameters' do
-      CartoGearsApi::TestMail.any_instance.should_receive(:test_mail).with('param1', 2)
-      CartoGearsApi::Queue::GenericJob.new.perform(CartoGearsApi::Mailer::TestMail,
-                                                   :test_mail,
-                                                   'support@carto.com',
-                                                   'support@carto.com',
-                                                   'Test email')
+      from = 'support@carto.com'
+      to = 'backend@carto.com'
+      subject = 'test email'
+      CartoGearsApi::Mailers::TestMail.any_instance.should_receive(:test_mail).with(from, to, subject)
+      CartoGearsApi::Queue::GenericJob.perform('CartoGearsApi::Mailers::TestMail', :test_mail, from, to, subject)
     end
   end
 end

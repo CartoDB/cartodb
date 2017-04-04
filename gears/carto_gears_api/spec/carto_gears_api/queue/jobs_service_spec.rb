@@ -11,11 +11,11 @@ describe CartoGearsApi::Queue::JobsService do
   describe '#send_job' do
     it 'enqueues a Resque::CartoGearsJobs::GenericJob#perform with the class, method and random parameters' do
       ::Resque.should_receive(:enqueue).with(CartoGearsApi::Queue::GenericJob,
-                                             CartoGearsApi::TestMail,
+                                             'CartoGearsApi::Mailers::TestMail',
                                              :test_mail,
                                              'param1',
                                              2)
-      service.send_job('CartoGearsApi::Mailer::TestMail', :test_mail, 'param1', 2)
+      service.send_job('CartoGearsApi::Mailers::TestMail', :test_mail, 'param1', 2)
     end
   end
 end

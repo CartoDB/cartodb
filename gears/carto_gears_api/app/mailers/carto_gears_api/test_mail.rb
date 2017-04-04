@@ -1,5 +1,5 @@
 module CartoGearsApi
-  module Mailer
+  module Mailers
     class TestMail < ActionMailer::Base
       def test_mail(from, to, subject)
         @from = from

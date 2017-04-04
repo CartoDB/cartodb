@@ -56,6 +56,7 @@ describe Geocoding do
 
     it 'validates formatter' do
       geocoding.raise_on_save_failure = true
+      geocoding.formatter = nil
       expect { geocoding.save }.to raise_error(Sequel::ValidationFailed)
       geocoding.errors[:formatter].join(',').should match /is not present/
     end

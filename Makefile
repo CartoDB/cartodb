@@ -17,7 +17,6 @@ WORKING_SPECS_INTEGRATIONS = \
 WORKING_SPECS_1 = \
 	spec/models/table_spec.rb \
 	spec/models/table_privacy_manager_spec.rb \
-	spec/models/table/relator_spec.rb \
 	spec/models/table/column_typecaster_spec.rb \
 	spec/models/user_spec.rb \
 	spec/models/user_presenter_spec.rb \
@@ -74,14 +73,12 @@ WORKING_SPECS_1 = \
 	spec/lib/carto/users_metadata_redis_cache_spec.rb \
 	spec/lib/carto/visualization_migrator_spec.rb \
 	spec/lib/carto/http/client_spec.rb \
-	spec/lib/carto/bolt_spec.rb \
 	spec/lib/carto/table_utils_spec.rb \
 	spec/helpers/uuidhelper_spec.rb \
 	spec/helpers/url_validator_spec.rb \
 	spec/models/carto/data_import_spec.rb \
 	spec/models/carto/visualization_spec.rb \
 	spec/models/carto/map_spec.rb \
-	spec/requests/superadmin/feature_flag_spec.rb \
 	spec/models/carto/template_spec.rb \
 	spec/models/carto/group_spec.rb \
 	spec/models/carto/widget_spec.rb \
@@ -130,8 +127,8 @@ WORKING_SPECS_2 = \
 	services/importer/spec/unit/url_translator/github_spec.rb \
 	services/importer/spec/unit/url_translator/google_docs_spec.rb \
 	services/importer/spec/unit/url_translator/google_maps_spec.rb \
-	services/importer/spec/unit/url_translator/osm2_spec.rb \
 	services/importer/spec/unit/url_translator/osm_spec.rb \
+	services/importer/spec/unit/url_translator/osm2_spec.rb \
 	services/importer/spec/unit/source_file_spec.rb \
 	services/importer/spec/unit/content_guesser_spec.rb \
 	services/importer/spec/unit/namedplaces_guesser_spec.rb \
@@ -159,8 +156,6 @@ WORKING_SPECS_4 = \
 	spec/connectors/importer_overviews_spec.rb \
 	spec/requests/carto/api/connectors_controller_spec.rb \
 	spec/requests/api/geocodings_spec.rb \
-	services/importer/spec/unit/url_translator/osm_spec.rb \
-	services/importer/spec/unit/url_translator/osm2_spec.rb \
 	$(NULL)
 
 WORKING_SPECS_5 = \
@@ -213,7 +208,6 @@ WORKING_SPECS_9 = \
 	services/datasources/spec/unit/box_spec.rb \
 	services/datasources/spec/unit/gdrive_spec.rb \
 	services/datasources/spec/unit/twitter_spec.rb \
-	services/importer/spec/regression/query_batcher_spec.rb \
 	services/importer/spec/regression/query_batcher_spec.rb \
 	services/platform-limits/spec/unit/input_file_size_spec.rb \
 	spec/models/platform-limits/user_concurrent_imports_amount_spec.rb \

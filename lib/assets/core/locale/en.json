@@ -1906,14 +1906,14 @@
       }
     },
     "export-image": {
-      "invalid-dimension": "Invalid dimension",
+      "invalid-dimension": "Invalid dimension (%{limit}x%{limit}px)",
       "properties": {
         "width": "width",
         "height": "height",
         "size": "Size",
-        "size-subtitle": "You can also edit the width and height",
+        "size-subtitle": "Manually enter the image size",
         "format": "Format",
-        "format-subtitle": "Change column names and type in table mode",
+        "format-subtitle": "Choose a lossless (PNG) or lossy (JPG) format",
         "options": "Options",
         "options-subtitle": "Configure display options"
       }

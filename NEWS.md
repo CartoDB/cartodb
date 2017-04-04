@@ -61,6 +61,7 @@ Development
 * Onboarding for layer edition (#10905)
 * Initial support for Rails engines with CARTO Gears.
   * Notification API (#11850)
+  * Queue and Email support (#11692).
 * Improved empty bounds map handling (#11711).
 * Updated diagnosis page versions.
 * Improved formula widget description field (#11469).

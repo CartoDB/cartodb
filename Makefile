@@ -17,7 +17,6 @@ WORKING_SPECS_INTEGRATIONS = \
 WORKING_SPECS_1 = \
 	spec/models/table_spec.rb \
 	spec/models/table_privacy_manager_spec.rb \
-	spec/models/table/relator_spec.rb \
 	spec/models/table/column_typecaster_spec.rb \
 	spec/models/user_spec.rb \
 	spec/models/user_presenter_spec.rb \
@@ -74,14 +73,12 @@ WORKING_SPECS_1 = \
 	spec/lib/carto/users_metadata_redis_cache_spec.rb \
 	spec/lib/carto/visualization_migrator_spec.rb \
 	spec/lib/carto/http/client_spec.rb \
-	spec/lib/carto/bolt_spec.rb \
 	spec/lib/carto/table_utils_spec.rb \
 	spec/helpers/uuidhelper_spec.rb \
 	spec/helpers/url_validator_spec.rb \
 	spec/models/carto/data_import_spec.rb \
 	spec/models/carto/visualization_spec.rb \
 	spec/models/carto/map_spec.rb \
-	spec/requests/superadmin/feature_flag_spec.rb \
 	spec/models/carto/template_spec.rb \
 	spec/models/carto/group_spec.rb \
 	spec/models/carto/widget_spec.rb \
@@ -130,8 +127,8 @@ WORKING_SPECS_2 = \
 	services/importer/spec/unit/url_translator/github_spec.rb \
 	services/importer/spec/unit/url_translator/google_docs_spec.rb \
 	services/importer/spec/unit/url_translator/google_maps_spec.rb \
-	services/importer/spec/unit/url_translator/osm2_spec.rb \
 	services/importer/spec/unit/url_translator/osm_spec.rb \
+	services/importer/spec/unit/url_translator/osm2_spec.rb \
 	services/importer/spec/unit/source_file_spec.rb \
 	services/importer/spec/unit/content_guesser_spec.rb \
 	services/importer/spec/unit/namedplaces_guesser_spec.rb \
@@ -159,8 +156,6 @@ WORKING_SPECS_4 = \
 	spec/connectors/importer_overviews_spec.rb \
 	spec/requests/carto/api/connectors_controller_spec.rb \
 	spec/requests/api/geocodings_spec.rb \
-	services/importer/spec/unit/url_translator/osm_spec.rb \
-	services/importer/spec/unit/url_translator/osm2_spec.rb \
 	$(NULL)
 
 WORKING_SPECS_5 = \
@@ -214,7 +209,6 @@ WORKING_SPECS_9 = \
 	services/datasources/spec/unit/gdrive_spec.rb \
 	services/datasources/spec/unit/twitter_spec.rb \
 	services/importer/spec/regression/query_batcher_spec.rb \
-	services/importer/spec/regression/query_batcher_spec.rb \
 	services/platform-limits/spec/unit/input_file_size_spec.rb \
 	spec/models/platform-limits/user_concurrent_imports_amount_spec.rb \
 	spec/models/platform-limits/user_concurrent_syncs_amount_spec.rb \
@@ -236,6 +230,7 @@ WORKING_SPECS_9 = \
 	spec/models/carto/invitation_spec.rb \
 	spec/models/carto/user_service_spec.rb \
 	spec/models/carto/user_spec.rb \
+	spec/models/carto/helpers/billing_cycle_spec.rb \
 	spec/models/carto/user_table_spec.rb \
 	spec/models/carto/organization_spec.rb \
 	spec/models/carto/visualization_export_spec.rb \
@@ -253,7 +248,9 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/models/carto/analysis_node_spec.rb \
 	spec/models/carto/layer_spec.rb \
 	spec/models/carto/mobile_app_presenter_spec.rb \
+	spec/models/carto/notification_spec.rb \
 	spec/models/carto/overlay_spec.rb \
+	spec/models/carto/received_notification_spec.rb \
 	spec/models/carto/user_migration_spec.rb \
 	spec/models/table_registrar_spec.rb \
 	spec/requests/admin/organization_users_controller_spec.rb \
@@ -262,7 +259,7 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/requests/carto/builder/datasets_controller_spec.rb \
 	spec/requests/carto/api/analyses_controller_spec.rb \
 	spec/requests/carto/api/maps_controller_spec.rb \
-	spec/requests/carto/api/user_notifications_controller_spec.rb \
+	spec/requests/carto/api/static_notifications_controller_spec.rb \
 	spec/requests/carto/api/visualization_exports_controller_spec.rb \
 	spec/requests/carto/api/vizjson3_presenter_spec.rb \
 	spec/requests/carto/superadmin/organizations_controller_spec.rb \
@@ -281,6 +278,8 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/requests/carto/api/mapcaps_controller_spec.rb \
 	spec/requests/carto/api/states_controller_spec.rb \
 	spec/requests/carto/api/metrics_controller_spec.rb \
+	spec/requests/carto/api/organization_notifications_controller_spec.rb \
+	spec/requests/carto/api/received_notifications_controller_spec.rb \
 	spec/lib/carto/tracking/events_spec.rb \
 	spec/lib/carto/definition_spec.rb \
 	spec/lib/carto/styles/cartography_spec.rb \
@@ -346,11 +345,16 @@ check-carto-db-class:
 check-integrations:
 	CHECK_SPEC=52 RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_INTEGRATIONS)
 
+check-gear/%: %
+	cd $< && bundle install && RAILS_ENV=test bundle exec rspec
+
+check-gears: $(addprefix check-gear/, $(wildcard gears/*))
+
 check-external: prepare-test-db check-integrations
 
 check-prepared: check-1 check-2 check-4 check-5 check-7 check-9 check-spec-helper-min check-carto-db-class
 
-check: prepare-test-db check-prepared
+check: prepare-test-db check-prepared check-gears
 check-frontend:
 	./node_modules/.bin/grunt test
 

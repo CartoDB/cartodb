@@ -112,10 +112,6 @@ feature "Superadmin's organization API" do
 
   describe "GET /superadmin/organization" do
 
-    before(:all) do
-      @organization1.owner.stubs(:has_feature_flag?).with('new_geocoder_quota').returns(true)
-    end
-
     it "gets all organizations" do
       Organization.where(owner_id: nil).each(&:delete)
       get_json superadmin_organizations_path, {}, superadmin_headers do |response|
@@ -190,6 +186,7 @@ feature "Superadmin's organization API" do
       Carto::SharedEntity.where(recipient_id: @org_user_2.id).count.should == 1
 
       permission = table.map.visualization.permission
+      permission.reload
       acl = JSON.parse(permission.access_control_list)
       acl[0]['id'].should == @org_user_2.id
 

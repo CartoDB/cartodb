@@ -4,6 +4,7 @@ module Carto
   module Api
     class UserPresenter
       include AccountTypeHelper
+      BUILDER_ACTIVATION_DATE = Date.new(2016, 11, 11).freeze
 
       # options:
       # - fetch_groups
@@ -160,6 +161,7 @@ module Carto
           upgraded_at: @user.upgraded_at,
           show_trial_reminder: @user.trial_ends_at.present?,
           show_upgraded_message: (@user.account_type.downcase != 'free' && @user.upgraded_at && @user.upgraded_at + 15.days > Date.today ? true : false),
+          show_builder_activated_message: @user.created_at < BUILDER_ACTIVATION_DATE,
           actions: {
             private_tables: @user.private_tables_enabled,
             private_maps: @user.private_maps_enabled?,
@@ -178,11 +180,12 @@ module Carto
             import_table_rows: @user.max_import_table_row_count,
             max_layers: @user.max_layers
           },
+          google_maps_key: @user.google_maps_key,
           notification: @user.notification,
           avatar_url: @user.avatar,
           feature_flags: @user.feature_flag_names,
           base_url: @user.public_url,
-          needs_password_confirmation: @user.needs_password_confirmation?,
+          needs_password_confirmation: @user.needs_password_confirmation?
         }
 
         if @user.organization.present?

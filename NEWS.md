@@ -1,13 +1,18 @@
 Development
 -----------
+### Security fixes
+* An attacker could execute commands in the server running the queues by importing a file with a carefully crafted filename. Fixed in #11782
 
 ### Features
 * Color picker for codemirror component.
+* New dropdown for Data Observatory (#11618)
 * Quota pre-check to analyses that consume quota.
 * Marking 'Do not show me again' in Layer Onboarding affects every tab. (#11586)
 * Adding Google-Maps basemaps (#11447)
 * Improve dialog forms to render them floated. (#7786)
 * Adds slider component to the forms (#11617)
+* Adds export as image (#11789)
+  * Exports GMaps basemaps (#11775)
 * New organization assets (#11034):
   * REST API available at `/api/v1/organization/<org_id>/assets`
   * Has DB migration
@@ -55,18 +60,43 @@ Development
   * Select an icon previously uploaded by the organization admin (#11462)
   * Sets the default initial size for icons to 20px (#11498)
 * Onboarding for layer edition (#10905)
+* Initial support for Rails engines with CARTO Gears.
+  * Notification API (#11850)
 * Improved empty bounds map handling (#11711).
 * Updated diagnosis page versions.
-* Improved formula widget description field. (#11469)
+* Improved formula widget description field (#11469).
+* In an organization, only the owner sees the Google API keys.
 * Added support for Zeus for faster testing (#11574). Check `CONTRIBUTING.md` for configuration details.
+* Migrate to use GNIP v2 for twitter search connector (#10051, #11595).
+* Notifications API (#11734) and administrator UI (#11729).
 * Migrate to use GNIP v2 for twitter search connector (#10051, #11595)
+* Organization notifications (WIP) (#11734, #11780, #11734, #11821)
+* Invite to georeference proactively when detecting non-georeferenced data (#11316)
 * Update tangram with smooth point outline.
+* Improve affordance of layer item (#11359).
+* GME users can change to any basemap #11785.
 * Improve affordance of layer item (#11359)
+* Revamp of quota management code
+    * **Removed the usage of the feature flag `new_geocoder_quota`**. The behavior is as if it was activated for all users (which's been the case for all cloud users for a long while). (#11784)
+    * Fixed bug in validation of metrics before storing them. (#11784)
+    * Removed deprecated methods `Geocoding.get_geocoding_calls`, `User.get_db_system_geocoding_calls`, `get_new_system_geocoding_calls`. (#11784)
+    * Optimized access to redis storage (#11809)
+    * Add back FREE users to overquota calculation (#11848)
 * Update tangram-cartocss to use smooth point outline.
+* Update cartodb.js to use multiple subdomains.
+* Update tangram to use subdomains.
 
 ### Bug fixes
-* Fixed time widget loader (#11754),
-* Fixed problems related with IE11.
+* Fixed layers order when creating a new layer dragging from a compound analysis (#11827)
+* Fixed problem after filtering a widget, where style pane was not working (#11819)
+* Fixed problem removing a layer within the proper layer is throwing a JS error (#11803)
+* Fixed histogram filtering when there is no bucket in that range (#11798)
+* Fixed problem with clipped contextual menu in widgets (#11790)
+* Fixed copy for confirm analysis with quota (#11749)
+* Using clean method instead of remove for context-menu-view (#11778)
+* Adds https protocol to WMS Proxy URLs (#11786)
+* Fixed time widget loader (#11754)
+* Fixed problems related with IE11
 * Fixed silent problem with jQuery selector (cartodb/deep-insights.js#527)
 * Form editors remains open if a modal is open even triggering document click or ESC (#11686)
 * Fixed font style for the "You have run out of quota" module (#11690)
@@ -85,17 +115,20 @@ Development
   * Run `cartodb:db:register_table_dependencies` rake to update caches for existing maps
 * Categories legend are now static (#10972)
 * Fixed a bug with vizjson invalidation (#11092). It was introduced in #10934
-* Refactor Layer model (#10934) and UserTable (#11589, #11700).
+* Refactor Layer model (#10934) and UserTable (#11589, #11700, #11737).
 * Correctly render map previews for maps with google basemaps (#11608)
 * Do not trigger visualization hooks on state update (#11701)
 * Refactor Layer model (#10934)
 * Correctly register table dependencies of torque layers (#11549)
+* Validate number of organization seats in user update (#11839, #11859)
 * Fix bugs where legends where being hidden by reordering layers (#11088)
 * Correctly ask for alternative username when signing up with Google/GitHub into an organization
 * Avoid loading all rake code in resque workers (#11069)
 * Fix analysis notification in running state (#11079)
+* Warn about affected maps on dataset deletion (regression, fixed in #11801)
 * Fix color for "Other" category (#11078)
 * Validate that only one legend per type (color/size) is allowed (#11556)
+* Enable more security HTTP headers (#11727 and 5e2d4f55ee3c19b3c7fc048977ca5901e28798e3)
 * Clean up import directory when importing from URL (#11599)
 * Custom errors for latitude/longitude out of bounds (#11060, #11048)
 * Fix timeseries widget height (#11077)
@@ -121,13 +154,21 @@ Development
 * Fix for race condition when importing files and deploying at the same time (#11653)
 * Correctly create custom category legend if style has icons (#11592)
 * Fixed error handling if json "errors" field contains one single string (#11752)
+* Check for validation errors in EUMAPI user update endpoint (#11906)
 * Fix problem with perfect-scrollbar in Edge browsers (CartoDB/perfect-scrollbar/#2)
 * Layer onboardings are now aware on sync'd layers and highlighted area is clicked. (#11583)
+* Do not show builder activated notification for new users (#11720)
 * Fixed overflow on loaders.
 * JOIN Analysis Fails Without Error Message (#11184)
 * Fix problem with perfect-scrollbar in Edge browsers (CartoDB/perfect-scrollbar/#2)
+* Correctly autostyle layers based on geometry when adding layers from modal (#11813)
 * Fix problem creating analyses without Data Services API (#11745)
 * Fix problem when number column is used like categories in fill component (#11736)
+* Don't let user to apply icons over categories when auto-style is applied (#11761)
+* Update leaflet from 0.7.x to 1.0.x
+* No geometry messages are displayed after a new geometry is drawn (#11857)
+* Rearrange Error tracker script order (#11872)
+* Fix subdomain error not loading tiles.
 
 4.0.x (2016-12-05)
 ------------------

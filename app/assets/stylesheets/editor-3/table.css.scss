@@ -159,8 +159,10 @@ $tableBorderColor: $cSecondaryLine;
 .Table-cellItem.is-highlighted {
   background: rgba($cHighlight, 0.32);
   cursor: pointer;
-  .CDB-Shape-threePoints {
+
+  .Table-cellItemOptions {
     display: block;
+    padding: 2px 4px 0;
   }
 }
 .Table-cellItem:hover::after,

@@ -11,6 +11,7 @@ class ApplicationController < ActionController::Base
 
   around_filter :wrap_in_profiler
 
+  before_filter :set_security_headers
   before_filter :http_header_authentication, if: :http_header_authentication?
   before_filter :store_request_host
   before_filter :ensure_user_organization_valid
@@ -24,7 +25,7 @@ class ApplicationController < ActionController::Base
   after_filter  :add_revision_header
 
   rescue_from NoHTML5Compliant, :with => :no_html5_compliant
-  rescue_from RecordNotFound,   :with => :render_404
+  rescue_from ActiveRecord::RecordNotFound, RecordNotFound, with: :render_404
 
   # this disables SSL requirement in non-production environments (add "|| Rails.env.development?" for local https)
   unless Rails.env.production? || Rails.env.staging?
@@ -364,4 +365,8 @@ class ApplicationController < ActionController::Base
     Carto::HttpHeaderAuthentication.new.valid?(request)
   end
 
+  def set_security_headers
+    headers['X-Frame-Options'] = 'DENY'
+    headers['X-XSS-Protection'] = '1; mode=block'
+  end
 end

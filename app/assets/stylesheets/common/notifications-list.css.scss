@@ -128,12 +128,11 @@ $opacityTransition: 250ms;
   @include display-flex();
   @include align-items(center);
   margin-bottom: 0;
-  
+
   overflow-wrap: break-word;
   word-wrap: break-word;
 
   -ms-word-break: break-all;
-  word-break: break-all;
   word-break: break-word;
 
   ul,

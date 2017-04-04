@@ -15,12 +15,39 @@ describe('dashboard', function () {
     var dashboardParameter = new Backbone.Model();
     dashboardParameter.widgets = widgets;
     dashboardParameter.vis = new Backbone.Model();
+    dashboardParameter.vis.map = new Backbone.Model();
 
     this.dashboard = new Dashboard(dashboardParameter);
   });
 
   it('should add bind when dataviews are fetched', function () {
     expect(Dashboard.prototype.onDataviewsFetched).toHaveBeenCalled();
+  });
+
+  describe('_widgetsAlreadyInitialized', function () {
+    beforeEach(function () {
+      this.widgetsCollection = this.dashboard._dashboard.widgets._widgetsCollection;
+      spyOn(this.widgetsCollection, 'hasInitialState');
+      spyOn(this.widgetsCollection, 'size');
+    });
+
+    it('should return false when widgets don\'t have initial state', function () {
+      this.widgetsCollection.hasInitialState.and.returnValue(false);
+      this.widgetsCollection.size.and.returnValue(2);
+      expect(this.dashboard._widgetsAlreadyInitialized()).toBeFalsy();
+    });
+
+    it('should return true when widgets have initial state', function () {
+      this.widgetsCollection.hasInitialState.and.returnValue(true);
+      this.widgetsCollection.size.and.returnValue(1);
+      expect(this.dashboard._widgetsAlreadyInitialized()).toBeTruthy();
+    });
+
+    it('should return true when there are no widgets', function () {
+      this.widgetsCollection.hasInitialState.and.returnValue(false);
+      this.widgetsCollection.size.and.returnValue(0);
+      expect(this.dashboard._widgetsAlreadyInitialized()).toBeTruthy();
+    });
   });
 
   describe('onDataviewsFetched', function () {

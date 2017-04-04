@@ -64,7 +64,11 @@ Dashboard.prototype = {
   },
 
   _widgetsAlreadyInitialized: function () {
-    return this._dashboard.widgets._widgetsCollection.hasInitialState();
+    var widgetsCollection = this._dashboard.widgets._widgetsCollection;
+    if (widgetsCollection.size() > 0) {
+      return this._dashboard.widgets._widgetsCollection.hasInitialState();
+    }
+    return true;
   },
 
   onDataviewsFetched: function (callback) {
@@ -74,7 +78,7 @@ Dashboard.prototype = {
     } else {
       this._dashboard.vis.once('dataviewsFetched', function () {
         callback && callback();
-      }, this);
+      });
     }
   },
 

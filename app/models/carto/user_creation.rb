@@ -82,12 +82,18 @@ class Carto::UserCreation < ActiveRecord::Base
           :validating_user => :saving_user,
           :saving_user => :promoting_user
 
-      transition :promoting_user => :creating_user_in_central, if: :sync_data_with_cartodb_central?
-      transition :promoting_user => :load_common_data, if: lambda { !sync_data_with_cartodb_central? && !viewer? }
-      transition :promoting_user => :success, if: lambda { !sync_data_with_cartodb_central? && viewer? }
-            transition :creating_user_in_central => :load_common_data, unless: :viewer?
-      transition :creating_user_in_central => :success, if: :viewer?
-      transition :load_common_data => :success
+      # This looks more complex than it actually is. The flow is always:
+      # promoting_user -> creating_user_in_central -> load_common_data -> success
+      #   creating_user_in_central is skipped if central is not configured
+      #   load_common_data is skipped for viewers
+      transition promoting_user: :creating_user_in_central, if: :sync_data_with_cartodb_central?
+      transition promoting_user: :load_common_data, if: ->(uc) { !uc.sync_data_with_cartodb_central? && !uc.viewer? }
+      transition promoting_user: :success, if: ->(uc) { !uc.sync_data_with_cartodb_central? && uc.viewer? }
+
+      transition creating_user_in_central: :load_common_data, unless: :viewer?
+      transition creating_user_in_central: :success, if: :viewer?
+
+      transition load_common_data: :success
     end
 
     event :fail_user_creation do
@@ -157,6 +163,11 @@ class Carto::UserCreation < ActiveRecord::Base
     !valid_invitation.nil?
   end
 
+  # INFO: state_machine needs guard methods to be public instance methods
+  def sync_data_with_cartodb_central?
+    Cartodb::Central.sync_data_with_cartodb_central?
+  end
+
   private
 
   def enabled?
@@ -188,11 +199,6 @@ class Carto::UserCreation < ActiveRecord::Base
 
   def cartodb_user
     @cartodb_user ||= ::User.where(id: user_id).first
-  end
-
-  # INFO: state_machine needs guard methods to be instance methods
-  def sync_data_with_cartodb_central?
-    Cartodb::Central.sync_data_with_cartodb_central?
   end
 
   def log_transition_begin

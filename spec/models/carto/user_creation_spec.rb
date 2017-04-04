@@ -370,4 +370,58 @@ describe Carto::UserCreation do
       initialized_user.organization_id.should be_nil
     end
   end
+
+  describe 'state machine' do
+    before(:each) do
+      CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+      created_via = Carto::UserCreation::CREATED_VIA_HTTP_AUTENTICATION
+      user = FactoryGirl.build(:valid_user)
+      @user_creation = Carto::UserCreation.new_user_signup(user, created_via)
+    end
+
+    after(:each) do
+      @user_creation.user.destroy
+    end
+
+    def creation_steps(user_creation)
+      states = [user_creation.state]
+      while !user_creation.finished?
+        user_creation.next_creation_step
+        states << user_creation.state
+      end
+
+      states
+    end
+
+    it 'with Central and builder, does all the steps' do
+      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
+
+      creation_steps(@user_creation).should eq ["enqueuing", "creating_user", "validating_user", "saving_user",
+                                                "promoting_user", "creating_user_in_central", "load_common_data",
+                                                "success"]
+    end
+
+    it 'without Central, skips creation in central' do
+      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+
+      creation_steps(@user_creation).should eq ["enqueuing", "creating_user", "validating_user", "saving_user",
+                                                "promoting_user", "load_common_data", "success"]
+    end
+
+    it 'with Central as a viewer, skips loading common data' do
+      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
+      @user_creation.viewer = true
+
+      creation_steps(@user_creation).should eq ["enqueuing", "creating_user", "validating_user", "saving_user",
+                                                "promoting_user", "creating_user_in_central", "success"]
+    end
+
+    it 'without Central as a viewer, skips loading common data and creation in central' do
+      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+      @user_creation.viewer = true
+
+      creation_steps(@user_creation).should eq ["enqueuing", "creating_user", "validating_user", "saving_user",
+                                                "promoting_user", "success"]
+    end
+  end
 end

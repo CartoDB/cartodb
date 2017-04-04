@@ -122,7 +122,7 @@ var createDashboard = function (selector, vizJSON, opts, callback) {
         return true;
       },
       vis: vis
-    }
+    };
 
     vis.instantiateMap({
       success: function () {

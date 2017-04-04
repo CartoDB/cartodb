@@ -31,22 +31,30 @@ describe('dashboard', function () {
       spyOn(this.widgetsCollection, 'size');
     });
 
-    it('should return false when widgets don\'t have initial state', function () {
-      this.widgetsCollection.hasInitialState.and.returnValue(false);
-      this.widgetsCollection.size.and.returnValue(2);
-      expect(this.dashboard._widgetsAlreadyInitialized()).toBeFalsy();
+    describe('if there are widgets', function () {
+      beforeEach(function () {
+        this.widgetsCollection.size.and.returnValue(2);
+      });
+
+      it('should return false when widgets don\'t have initial state', function () {
+        this.widgetsCollection.hasInitialState.and.returnValue(false);
+        expect(this.dashboard._widgetsAlreadyInitialized()).toBeFalsy();
+      });
+
+      it('should return true when widgets have initial state', function () {
+        this.widgetsCollection.hasInitialState.and.returnValue(true);
+        expect(this.dashboard._widgetsAlreadyInitialized()).toBeTruthy();
+      });
     });
 
-    it('should return true when widgets have initial state', function () {
-      this.widgetsCollection.hasInitialState.and.returnValue(true);
-      this.widgetsCollection.size.and.returnValue(1);
-      expect(this.dashboard._widgetsAlreadyInitialized()).toBeTruthy();
-    });
+    describe('if there is no widgets', function () {
+      beforeEach(function () {
+        this.widgetsCollection.size.and.returnValue(0);
+      });
 
-    it('should return true when there are no widgets', function () {
-      this.widgetsCollection.hasInitialState.and.returnValue(false);
-      this.widgetsCollection.size.and.returnValue(0);
-      expect(this.dashboard._widgetsAlreadyInitialized()).toBeTruthy();
+      it('should return true when there are no widgets', function () {
+        expect(this.dashboard._widgetsAlreadyInitialized()).toBeTruthy();
+      });
     });
   });
 

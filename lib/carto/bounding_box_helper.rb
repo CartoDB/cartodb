@@ -18,7 +18,7 @@ module Carto::BoundingBoxHelper
     maxlat: 90
   }.freeze
 
-  def self.get_table_bounds(db, table_name)
+  def get_table_bounds(db, table_name)
     # (lon,lat) as comes out from postgis
     result = current_bbox_using_stats(db, table_name)
     {
@@ -29,8 +29,10 @@ module Carto::BoundingBoxHelper
     }
   end
 
+  private
+
   # Postgis stats-based calculation of bounds. Much faster but not always present, so needs a fallback
-  def self.current_bbox_using_stats(db, table_name)
+  def current_bbox_using_stats(db, table_name)
     # Less ugly (for tests at least) than letting an exception generate not having any table name
     return default_bbox unless table_name.present?
 
@@ -50,7 +52,7 @@ module Carto::BoundingBoxHelper
     end
   end
 
-  def self.current_bbox(db, table_name)
+  def current_bbox(db, table_name)
     # (lon, lat) as comes from postgis (ST_X = Longitude, ST_Y = Latitude)
     # map has no geometries
     result = get_bbox_values(db, table_name, "the_geom")
@@ -68,11 +70,11 @@ module Carto::BoundingBoxHelper
     raise BoundingBoxError.new("Can't calculate the bounding box for table #{table_name}. ERROR: #{exception}")
   end
 
-  def self.bound_for(value, minimum, maximum)
+  def bound_for(value, minimum, maximum)
     [[value, DEFAULT_BOUNDS.fetch(minimum)].max, DEFAULT_BOUNDS.fetch(maximum)].min
   end
 
-  def self.default_bbox
+  def default_bbox
     # (lon, lat) to be consistent with postgis queries
     {
       max: [DEFAULT_BOUNDS[:maxlon], DEFAULT_BOUNDS[:maxlat]],
@@ -80,7 +82,7 @@ module Carto::BoundingBoxHelper
     }
   end
 
-  def self.get_bbox_values(db, table_name, column_name)
+  def get_bbox_values(db, table_name, column_name)
     result = db.execute(%{
       SELECT
         ST_XMin(ST_Extent(#{column_name})) AS minx,
@@ -93,7 +95,7 @@ module Carto::BoundingBoxHelper
     result
   end
 
-  def self.parse_bbox_parameters(bounding_box)
+  def parse_bbox_parameters(bounding_box)
     bbox_coords = bounding_box.split(',').map { |coord| Float(coord) rescue nil }.compact
     if bbox_coords.length != 4
       raise CartoDB::BoundingBoxError.new('bounding box must have 4 coordinates: minx, miny, maxx, maxy')

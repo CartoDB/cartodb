@@ -231,6 +231,6 @@ class Carto::Map < ActiveRecord::Base
 
   def get_map_bounds
     # (lon,lat) as comes out from postgis
-    Carto::BoundingBoxHelper.get_table_bounds(user.in_database, table_name)
+    Carto::BoundingBoxHelper.new.get_table_bounds(user.in_database, table_name)
   end
 end

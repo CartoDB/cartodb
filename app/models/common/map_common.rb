@@ -7,8 +7,13 @@ module Carto::MapBoundaries
       set_boundaries(bounds)
       recenter_using_bounds(bounds)
       recalculate_zoom(bounds)
-      save
+    else
+      self.view_bounds_ne = Carto::Map::DEFAULT_OPTIONS[:bounding_box_ne]
+      self.view_bounds_sw = Carto::Map::DEFAULT_OPTIONS[:bounding_box_sw]
+      self.center = Carto::Map::DEFAULT_OPTIONS[:center]
+      self.zoom = Carto::Map::DEFAULT_OPTIONS[:zoom]
     end
+    save
   rescue => exception
     CartoDB::Logger.error(exception: exception, message: 'Error setting default bounds')
   end

@@ -1408,7 +1408,13 @@
         "title": "Export as image",
         "export": "Export",
         "generating": "Generating",
-        "download": "Download"
+        "download": "Download",
+        "errors": {
+          "try-again": "Please, try again. If the problem persists, contact support",
+          "error-attribution": "Error generating attribution.",
+          "error-basemap": "Error loading basemap.",
+          "error-image": "Error generating image."
+        }
       },
       "export": {
         "confirmation": {

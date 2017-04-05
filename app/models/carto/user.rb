@@ -185,7 +185,7 @@ class Carto::User < ActiveRecord::Base
   # returns google maps api key. If the user is in an organization and
   # that organization has api key it's used
   def google_maps_api_key
-    try(:organization).try(:google_maps_key).blank? ? google_maps_key : organization.google_maps_key
+    organization.try(:google_maps_key).blank? ? google_maps_key : organization.google_maps_key
   end
 
   def twitter_datasource_enabled

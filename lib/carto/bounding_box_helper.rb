@@ -19,7 +19,7 @@ class Carto::BoundingBoxHelper
       maxy: bound_for(result[:max][1].to_f, :miny, :maxy),
       minx: bound_for(result[:min][0].to_f, :minx, :maxx),
       miny: bound_for(result[:min][1].to_f, :miny, :maxy)
-    }
+    } if result
   end
 
   private

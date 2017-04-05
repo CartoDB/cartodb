@@ -174,7 +174,8 @@ Development
 * Update leaflet from 0.7.x to 1.0.x
 * No geometry messages are displayed after a new geometry is drawn (#11857)
 * Rearrange Error tracker script order (#11872)
-* Fix subdomain error not loading tiles.
+* Merged fix subdomain error not loading tiles (CartoDB.js#1607)
+* Fixed way to listen Deep-insights.js map or widgets changes (#11894)
 
 4.0.x (2016-12-05)
 ------------------

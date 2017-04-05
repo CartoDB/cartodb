@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.6.50",
+  "version": "4.6.56",
   "dependencies": {
     "backbone": {
       "version": "1.2.3",
@@ -1104,9 +1104,9 @@
       }
     },
     "camshaft-reference": {
-      "version": "0.29.0",
+      "version": "0.30.0",
       "from": "camshaft-reference@<2.0.0",
-      "resolved": "http://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.29.0.tgz"
+      "resolved": "https://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.30.0.tgz"
     },
     "carto": {
       "version": "0.15.1-cdb3",
@@ -1152,7 +1152,7 @@
     "cartodb-deep-insights.js": {
       "version": "0.0.2",
       "from": "cartodb/deep-insights.js#master",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#a72917e8a7553338b102b7830567cb6d28bd7b9d",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#f3420120a2ab02f2e02b630243886084c84cf734",
       "dependencies": {
         "cartodb.js": {
           "version": "4.0.0-alpha.1",
@@ -1240,7 +1240,7 @@
                 "tangram-cartocss": {
                   "version": "0.5.0",
                   "from": "cartodb/tangram-carto#master",
-                  "resolved": "git://github.com/cartodb/tangram-carto.git#31f701e062ccf641b431497b3e2bd1f2e654f61e",
+                  "resolved": "git://github.com/cartodb/tangram-carto.git#0b53ad9d6c81b2811b04416cb015e9481cc9d101",
                   "dependencies": {
                     "babel-runtime": {
                       "version": "6.22.0",
@@ -1649,7 +1649,7 @@
             "tangram-cartocss": {
               "version": "0.5.0",
               "from": "cartodb/tangram-carto#master",
-              "resolved": "git://github.com/cartodb/tangram-carto.git#31f701e062ccf641b431497b3e2bd1f2e654f61e",
+              "resolved": "git://github.com/cartodb/tangram-carto.git#0b53ad9d6c81b2811b04416cb015e9481cc9d101",
               "dependencies": {
                 "babel-runtime": {
                   "version": "6.22.0",

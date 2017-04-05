@@ -399,41 +399,6 @@ describe('core/geo/map', function () {
     }, this);
   });
 
-  describe('.reCenter', function () {
-    it('should set the original bounds if present', function () {
-      var map = new Map({
-        bounds: [[1, 2], [3, 4]],
-        center: '[41.40282319070747, 2.3435211181640625]'
-      }, { layersFactory: fakeLayersFactory });
-
-      // Change internal attributes
-      map.set({
-        view_bounds_sw: 'something',
-        view_bounds_ne: 'else',
-        center: 'different'
-      });
-
-      map.reCenter();
-
-      expect(map.get('view_bounds_sw')).toEqual([1, 2]);
-      expect(map.get('view_bounds_ne')).toEqual([3, 4]);
-    });
-
-    it('should set the original center if bounds are not present', function () {
-      var map = new Map({
-        center: [41.40282319070747, 2.3435211181640625]
-      }, { layersFactory: fakeLayersFactory });
-
-      map.set({
-        center: 'different'
-      });
-
-      map.reCenter();
-
-      expect(map.get('center')).toEqual([ 41.40282319070747, 2.3435211181640625 ]);
-    });
-  });
-
   describe('.getLayerById', function () {
     beforeEach(function () {
       var layer1 = new CartoDBLayer({ id: 'xyz-123', attribution: 'attribution1' }, { vis: this.vis });

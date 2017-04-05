@@ -153,7 +153,7 @@ Example:
 
 ```ruby
 CartoGearsApi::Pages::Subheader.instance.links_generators << lambda do |context|
-  user = CartoGearsApi::UsersService.new.logged_user(context.request)
+  user = CartoGearsApi::Users::UsersService.new.logged_user(context.request)
   if user.has_feature_flag?('carto_experimental_gear')
     include CartoGearsApi::UrlHelper
 

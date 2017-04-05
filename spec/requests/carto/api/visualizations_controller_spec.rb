@@ -1560,6 +1560,13 @@ describe Carto::Api::VisualizationsController do
       end
     end
 
+    describe '#destroy' do
+      it 'returns 404 for nonexisting visualizations' do
+        id = random_uuid
+        delete api_v1_visualizations_destroy_url(id: random_uuid, api_key: @api_key), { id: random_uuid }.to_json, @headers
+        last_response.status.should == 404
+      end
+    end
   end
 
   describe 'index' do

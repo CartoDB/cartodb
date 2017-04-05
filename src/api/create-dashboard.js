@@ -111,20 +111,25 @@ var createDashboard = function (selector, vizJSON, opts, callback) {
       vis.centerMapToOrigin();
     }
 
+    var callbackObj = {
+      dashboardView: dashboardView,
+      widgets: widgetsService,
+      areWidgetsInitialised: function () {
+        var widgetsCollection = widgetsService.getCollection();
+        if (widgetsCollection.size() > 0) {
+          return widgetsCollection.hasInitialState();
+        }
+        return true;
+      },
+      vis: vis
+    };
+
     vis.instantiateMap({
       success: function () {
-        callback && callback(null, {
-          dashboardView: dashboardView,
-          widgets: widgetsService,
-          vis: vis
-        });
+        callback && callback(null, callbackObj);
       },
       error: function (errorMessage) {
-        callback && callback(new Error(errorMessage), {
-          dashboardView: dashboardView,
-          widgets: widgetsService,
-          vis: vis
-        });
+        callback && callback(new Error(errorMessage), callbackObj);
       }
     });
   });
@@ -140,12 +145,20 @@ module.exports = function (selector, vizJSON, opts, callback) {
 
   function _load (vizJSON) {
     createDashboard(selector, vizJSON, opts, function (error, dashboard) {
-      var dash = new Dashboard(dashboard);
-      dash.onStateChanged(_.debounce(function (state, url) {
-        window.history.replaceState('Object', 'Title', url);
-      }, 500), opts.share_urls);
+      var _dashboard = new Dashboard(dashboard);
 
-      callback && callback(error, dash);
+      if (opts.share_urls) {
+        _dashboard.onStateChanged(
+          _.debounce(
+            function (state, url) {
+              window.history.replaceState('Object', 'Title', url);
+            },
+            500
+          )
+        );
+      }
+
+      callback && callback(error, _dashboard);
     });
   }
 

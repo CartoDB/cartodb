@@ -12,6 +12,10 @@ var WidgetsService = function (widgetsCollection, dataviews) {
   this._dataviews = dataviews;
 };
 
+WidgetsService.prototype.getCollection = function () {
+  return this._widgetsCollection;
+};
+
 WidgetsService.prototype.get = function (id) {
   return this._widgetsCollection.get(id);
 };

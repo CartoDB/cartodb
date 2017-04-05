@@ -222,7 +222,10 @@ var LeafletMapView = MapView.extend({
   },
 
   invalidateSize: function () {
-    this._leafletMap.invalidateSize({ animate: false });
+    var center = this.map.get('center');
+    var zoom = this.map.get('zoom');
+    this._leafletMap.invalidateSize({ pan: false, animate: false });
+    this._leafletMap.setView(center, zoom, { pan: false, animate: false });
   },
 
   // GEOMETRY

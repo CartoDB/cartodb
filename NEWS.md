@@ -173,6 +173,7 @@ Development
 * Update leaflet from 0.7.x to 1.0.x
 * No geometry messages are displayed after a new geometry is drawn (#11857)
 * Rearrange Error tracker script order (#11872)
+* Default zoom for newly created maps without data is 3 (#11922)
 * Fix subdomain error not loading tiles.
 
 4.0.x (2016-12-05)

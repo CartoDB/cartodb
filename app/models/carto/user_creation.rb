@@ -87,11 +87,11 @@ class Carto::UserCreation < ActiveRecord::Base
       #   creating_user_in_central is skipped if central is not configured
       #   load_common_data is skipped for viewers
       transition promoting_user: :creating_user_in_central, if: :sync_data_with_cartodb_central?
-      transition promoting_user: :load_common_data, if: ->(uc) { !uc.sync_data_with_cartodb_central? && !uc.viewer? }
-      transition promoting_user: :success, if: ->(uc) { !uc.sync_data_with_cartodb_central? && uc.viewer? }
+      transition promoting_user: :load_common_data, unless: :viewer?
+      transition promoting_user: :success
 
       transition creating_user_in_central: :load_common_data, unless: :viewer?
-      transition creating_user_in_central: :success, if: :viewer?
+      transition creating_user_in_central: :success
 
       transition load_common_data: :success
     end
@@ -161,11 +161,6 @@ class Carto::UserCreation < ActiveRecord::Base
   def has_valid_invitation?
     return false unless invitation_token
     !valid_invitation.nil?
-  end
-
-  # INFO: state_machine needs guard methods to be public instance methods
-  def sync_data_with_cartodb_central?
-    Cartodb::Central.sync_data_with_cartodb_central?
   end
 
   private
@@ -350,4 +345,8 @@ class Carto::UserCreation < ActiveRecord::Base
     self.save
   end
 
+  # INFO: state_machine needs guard methods to be instance methods
+  def sync_data_with_cartodb_central?
+    Cartodb::Central.sync_data_with_cartodb_central?
+  end
 end

@@ -111,7 +111,7 @@ var Vis = View.extend({
     // This timeout is necessary due to GMaps needs time
     // to load tiles and recalculate its bounds :S
     setTimeout(function () {
-      self.model.centerMapToOrigin();
+      self.model.invalidateSize();
     }, 150);
   }
 });

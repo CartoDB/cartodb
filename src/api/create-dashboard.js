@@ -108,7 +108,7 @@ var createDashboard = function (selector, vizJSON, opts, callback) {
     dashboardView.render();
 
     if (widgets.size() > 0) {
-      vis.centerMapToOrigin();
+      vis.invalidateSize();
     }
 
     var callbackObj = {

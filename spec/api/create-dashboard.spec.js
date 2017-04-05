@@ -16,7 +16,7 @@ var newVisMock = function () {
   visMock.done = function (callback) { callback(); };
   visMock.error = function (callback) { callback(); };
   visMock.instantiateMap = jasmine.createSpy('instantiateMap');
-  visMock.centerMapToOrigin = jasmine.createSpy('centerMapToOrigin');
+  visMock.invalidateSize = jasmine.createSpy('invalidateSize');
 
   return visMock;
 };

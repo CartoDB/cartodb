@@ -129,6 +129,18 @@ end
 
 CartoGearsApi::Queue::JobsService.new.send_job('MyMail', :a_mail, 'support@carto.com')
 ```
+
+CARTO Gears API also provides a `CartoGearsApi::Mailers::BaseMail` mailer with CARTO standard layout and from.
+Usage example:
+
+```ruby
+class MyMail < CartoGearsApi::Mailers::BaseMail
+  def a_mail(to)
+    mail(to: to, subject: 'the subject').deliver
+  end
+end
+```
+
 ## Extension points
 
 Most extension points require a registration during intialization. A good

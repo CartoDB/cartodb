@@ -412,20 +412,6 @@ var Map = Model.extend({
     this.geometries.remove(geom);
   },
 
-  reCenter: function () {
-    var originalViewBoundsSW = this.get('original_view_bounds_sw');
-    var originalViewBoundsNE = this.get('original_view_bounds_ne');
-    var originalCenter = this.get('original_center');
-    if (originalViewBoundsSW && originalViewBoundsNE) {
-      this.setBounds([
-        originalViewBoundsSW,
-        originalViewBoundsNE
-      ]);
-    } else {
-      this.setCenter(originalCenter);
-    }
-  },
-
   setBounds: function (b) {
     this.attributes.view_bounds_sw = [
       b[0][0],

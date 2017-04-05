@@ -1424,11 +1424,7 @@ class User < Sequel::Model
   # returns google maps api key. If the user is in an organization and
   # that organization has api key it's used
   def google_maps_api_key
-    if has_organization?
-      self.organization.google_maps_key.blank? ? self.google_maps_key : self.organization.google_maps_key
-    else
-      self.google_maps_key
-    end
+    try(:organization).try(:google_maps_key).blank? ? self.google_maps_key : self.organization.google_maps_key
   end
 
   # TODO: this is the correct name for what's stored in the model, refactor changing that name

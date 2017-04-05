@@ -1,7 +1,7 @@
 # encoding: utf-8
 require_relative '../../lib/carto/table_utils'
 
-module Carto::BoundingBoxHelper
+class Carto::BoundingBoxHelper
   extend Carto::TableUtils
 
   DEFAULT_BOUNDS = {

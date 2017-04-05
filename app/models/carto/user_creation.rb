@@ -1,9 +1,12 @@
 # encoding: UTF-8
 require_dependency 'carto/user_authenticator'
+require_dependency 'carto_gears_api/events/event_manager'
+require_dependency 'carto_gears_api/events/user_events'
 
 class Carto::UserCreation < ActiveRecord::Base
   include Carto::UserAuthenticator
 
+  # Synced with CartoGearsApi::Events::UserCreationEvent
   CREATED_VIA_SAML = 'saml'.freeze
   CREATED_VIA_LDAP = 'ldap'.freeze
   CREATED_VIA_ORG_SIGNUP = 'org_signup'.freeze
@@ -295,6 +298,9 @@ class Carto::UserCreation < ActiveRecord::Base
     cartodb_user.notify_new_organization_user unless has_valid_invitation?
     cartodb_user.organization.notify_if_disk_quota_limit_reached if cartodb_user.organization
     cartodb_user.organization.notify_if_seat_limit_reached if cartodb_user.organization
+    CartoGearsApi::Events::EventManager.instance.notify(
+      CartoGearsApi::Events::UserCreationEvent.new(created_via, cartodb_user)
+    )
   rescue => e
     handle_failure(e, mark_as_failure = false)
   end

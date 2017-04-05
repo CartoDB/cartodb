@@ -1,7 +1,7 @@
 <% _.each(items, function(item, index) { %>
   <% if (item.selected) { %>
     <li class="u-tSpace">
-      <input type="radio" class="Editor-toggleRadio" name="<%= item.name %>" value="<%- item.value %>" id="<%= item.id %>" selected="selected" />
+      <input type="radio" class="Editor-toggleRadio" name="<%= item.name %>" value="<%- item.value %>" id="<%= item.id %>" checked="checked" />
       <% if (item.help) { %><p class="Editor-toggleHelp CDB-Text CDB-Size-small u-altTextColor"><%= item.help %></p><% } %>
     </li>
   <% } else { %>

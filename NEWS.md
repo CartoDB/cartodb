@@ -129,7 +129,7 @@ Development
 * Warn about affected maps on dataset deletion (regression, fixed in #11801)
 * Fix color for "Other" category (#11078)
 * Validate that only one legend per type (color/size) is allowed (#11556)
-* Enable more security HTTP headers (#11727)
+* Enable more security HTTP headers (#11727 and 5e2d4f55ee3c19b3c7fc048977ca5901e28798e3)
 * Clean up import directory when importing from URL (#11599)
 * Custom errors for latitude/longitude out of bounds (#11060, #11048)
 * Fix timeseries widget height (#11077)

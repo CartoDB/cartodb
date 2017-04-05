@@ -396,6 +396,8 @@ module.exports = function(grunt) {
     });
 
     grunt.registerTask('copy_builder', 'Multitask with all the tasks responsible for copying builder files.', [
+     'copy:locale_core',
+     'copy:locale_client',
      'copy:js_core_cartodb3',
      'copy:js_client_cartodb3',
      'copy:js_test_spec_core_cartodb3',

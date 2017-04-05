@@ -201,7 +201,6 @@
       "line-source-to-target": "Link a source point to a target point based on a shared attribute",
       "line-to-column": "Create lines from a point to to a geometry stored in another column",
       "line-to-single-point": "Connect the coordinate from latitude and longitude columns to the point geometry (`the_geom`) in your dataset."
-
     },
     "group-points": {
       "title": "Group points into polygons",
@@ -223,7 +222,6 @@
       "category": "Stores the category value for each centroid from the source dataset"
     }
   },
-
   "analyses": {
     "connect-with-lines": {
       "title": "Connect with lines",
@@ -321,7 +319,6 @@
       "short-title": "Routing"
     }
   },
-
   "analysis-category": {
     "all": "All",
     "analyze-predict": "Analyze and predict",
@@ -394,6 +391,14 @@
       "twitter-data": "Twitter data is empty",
       "dataset-copy-undefined": "Dataset copy is not defined",
       "query-undefined": "Query is not provided"
+    },
+    "analysis-definition-node-model": {
+      "validation": {
+        "missing-required": "Required",
+        "invalid-source": "Invalid source",
+        "invalid-value": "Invalid value",
+        "invalid-enum": "Invalid value, must be any of %{expectedValues}"
+      }
     }
   },
   "components": {
@@ -408,7 +413,7 @@
       "geocoding-success-detail": {
         "amount-charged": "<strong>$%{price}</strong> will be charged to your account",
         "credits-consumed": "You have consumed all your credits during this billing cycle, price is $%{price} / 1,000 extra credits.",
-        "description":  "We've successfully geocoded <%- realRowsFormatted %> <%- geometryType %> of <%- processableRowsFormatted %>. |||| We've successfully geocoded <%- realRowsFormatted %> <%- geometryType %>s of <%- processableRowsFormatted %>.",
+        "description": "We've successfully geocoded <%- realRowsFormatted %> <%- geometryType %> of <%- processableRowsFormatted %>. |||| We've successfully geocoded <%- realRowsFormatted %> <%- geometryType %>s of <%- processableRowsFormatted %>.",
         "explanation": "Rows that are not geocoded could have errors in their column values, or don’t exist in our data. Try geocoding again and check the 'override all values' to try again.",
         "no-extra-charge": "No extra charges have been done",
         "remainingQuotaFormatted": "You still have %{remainingQuotaFormatted} credits left for this month.",
@@ -458,7 +463,6 @@
         "unknown-error": "An unknown error has happened"
       },
       "upgrade-errors": {
-        "upgrade": "upgrade",
         "8001": {
           "description": "Remove some of your datasets to gain available space or upgrade your account",
           "info": "Keep your data and get a larger quota by upgrading your plan",
@@ -468,7 +472,8 @@
           "description": "Remove any layer or upgrade your account",
           "info": "Keep your maps and get more layer count quota by upgrading your plan",
           "title": "You have reached your layer count limit"
-        }
+        },
+        "upgrade": "upgrade"
       },
       "twitter-import-details": {
         "new-type-created": "We've created a new dataset containing a total of %{datasetTotalRowsFormatted}<br/>tweet%{tweetPlural} with your search terms",
@@ -504,7 +509,6 @@
       "background-import-limit": {
         "hurry": "In a hurry? <a href='%{upgradeUrl}'>Upgrade your account</a> to import several files at a time",
         "one-file": "Unfortunately, you can only import up to %{importQuota} files at the same time"
-
       },
       "free-trial": "Get a %{days} day free trial",
       "connecting": "Connecting",
@@ -1241,16 +1245,6 @@
       }
     }
   },
-  "data": {
-    "analysis-definition-node-model": {
-      "validation": {
-        "missing-required": "Required",
-        "invalid-source": "Invalid source",
-        "invalid-value": "Invalid value",
-        "invalid-enum": "Invalid value, must be any of %{expectedValues}"
-      }
-    }
-  },
   "dataset": {
     "sql": "SQL",
     "data": "Metadata",
@@ -1603,7 +1597,6 @@
         "enter-longitude": "Enter longitude",
         "filter": "Filter",
         "filter-aggregate": "Aggregate your results",
-        "filter-column": "2nd. layer col.",
         "filter-column": "Filter column",
         "foreign-keys": "Foreign Keys",
         "geometry-from": "Geometry from",
@@ -1714,7 +1707,7 @@
               "organization": "contact your organization admin"
             }
           },
-          "emails" : {
+          "emails": {
             "support": "support@carto.com",
             "saas": "sales@carto.com"
           },

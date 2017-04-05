@@ -20,9 +20,7 @@ $cHeader-dark:  rgba(#3A91D7, 1);
   position:relative;
   @include display-flex();
   @include justify-content(space-between, justify);
-  @include align-items(center);
-  margin: 0px 24px;
-  width: 100%;
+  @include align-items(center); 
 }
 .Header-navigationList {
   @include display-flex();

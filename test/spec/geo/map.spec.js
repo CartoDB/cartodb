@@ -39,8 +39,6 @@ describe('core/geo/map', function () {
 
       expect(map.get('view_bounds_sw')).toEqual([0, 1]);
       expect(map.get('view_bounds_ne')).toEqual([2, 3]);
-      expect(map.get('original_view_bounds_sw')).toEqual([0, 1]);
-      expect(map.get('original_view_bounds_ne')).toEqual([2, 3]);
       expect(map.get('bounds')).toBeUndefined();
     });
 

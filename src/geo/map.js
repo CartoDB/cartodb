@@ -48,9 +48,7 @@ var Map = Model.extend({
     if (attrs.bounds) {
       this.set({
         view_bounds_sw: attrs.bounds[0],
-        view_bounds_ne: attrs.bounds[1],
-        original_view_bounds_sw: attrs.bounds[0],
-        original_view_bounds_ne: attrs.bounds[1]
+        view_bounds_ne: attrs.bounds[1]
       });
       this.unset('bounds');
     } else {

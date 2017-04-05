@@ -224,4 +224,18 @@ describe('geo/leaflet/leaflet-map-view', function () {
 
     expect(map.trigger).toHaveBeenCalledWith('moveend', jasmine.any(Object));
   });
+
+  describe('.invalidateSize', function () {
+    it('should invalidate size in Leaflet and "re-center"', function () {
+      spyOn(mapView._leafletMap, 'invalidateSize');
+      spyOn(mapView._leafletMap, 'setView');
+      var center = mapView.map.get('center');
+      var zoom = mapView.map.get('zoom');
+
+      mapView.invalidateSize();
+
+      expect(mapView._leafletMap.setView).toHaveBeenCalledWith(center, zoom, jasmine.any(Object));
+      expect(mapView._leafletMap.invalidateSize).toHaveBeenCalled();
+    });
+  });
 });

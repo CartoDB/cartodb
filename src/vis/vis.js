@@ -399,11 +399,6 @@ var VisModel = Backbone.Model.extend({
     this.trigger('invalidateSize');
   },
 
-  centerMapToOrigin: function () {
-    this.invalidateSize();
-    this.map.reCenter();
-  },
-
   _flattenLayers: function (vizjsonLayers) {
     return _.chain(vizjsonLayers)
       .map(function (vizjsonLayer) {

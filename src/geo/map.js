@@ -48,9 +48,7 @@ var Map = Model.extend({
     if (attrs.bounds) {
       this.set({
         view_bounds_sw: attrs.bounds[0],
-        view_bounds_ne: attrs.bounds[1],
-        original_view_bounds_sw: attrs.bounds[0],
-        original_view_bounds_ne: attrs.bounds[1]
+        view_bounds_ne: attrs.bounds[1]
       });
       this.unset('bounds');
     } else {
@@ -410,20 +408,6 @@ var Map = Model.extend({
 
   removeGeometry: function (geom) {
     this.geometries.remove(geom);
-  },
-
-  reCenter: function () {
-    var originalViewBoundsSW = this.get('original_view_bounds_sw');
-    var originalViewBoundsNE = this.get('original_view_bounds_ne');
-    var originalCenter = this.get('original_center');
-    if (originalViewBoundsSW && originalViewBoundsNE) {
-      this.setBounds([
-        originalViewBoundsSW,
-        originalViewBoundsNE
-      ]);
-    } else {
-      this.setCenter(originalCenter);
-    }
   },
 
   setBounds: function (b) {

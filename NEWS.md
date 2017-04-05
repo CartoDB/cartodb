@@ -108,6 +108,7 @@ Development
 * Fixed missing metadata option in header when dataset is sync (#11458)
 * Fixed problem with dates when filtering time series widget
 * Fixed problem switching between qualitative and quantitative attributes (#10654)
+* Fixed problem with Google Maps API key inheritance from organizations (#11923)
 * Fixed problem found in Surfaces related with map panning and widgets filtering
 * Style with icons
   * Reset icon on map when you remove that custom icon

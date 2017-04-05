@@ -1,3 +1,5 @@
+require_dependency 'carto_gears_api/queue/generic_job'
+
 module CartoGearsApi
   module Queue
     class JobsService

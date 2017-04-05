@@ -18,13 +18,6 @@ module Carto::BoundingBoxHelper
     maxlat: 90
   }.freeze
 
-  def self.calculate_bounding_box(db, table_name)
-    get_table_bounds(db, table_name)
-  rescue Sequel::DatabaseError => exception
-    CartoDB::Logger.error(exception: exception, table: table_name)
-    raise BoundingBoxError.new("Can't calculate the bounding box for table #{table_name}. ERROR: #{exception}")
-  end
-
   def self.get_table_bounds(db, table_name)
     # (lon,lat) as comes out from postgis
     result = current_bbox_using_stats(db, table_name)

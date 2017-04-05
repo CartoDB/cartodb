@@ -3,10 +3,12 @@ module Carto::MapBoundaries
 
   def set_default_boundaries!
     bounds = get_map_bounds
-    set_boundaries(bounds)
-    recenter_using_bounds(bounds)
-    recalculate_zoom(bounds)
-    save
+    if bounds
+      set_boundaries(bounds)
+      recenter_using_bounds(bounds)
+      recalculate_zoom(bounds)
+      save
+    end
   rescue => exception
     CartoDB::Logger.error(exception: exception, message: 'Error setting default bounds')
   end

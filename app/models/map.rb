@@ -1,6 +1,7 @@
 # encoding: utf-8
 require_relative '../models/visualization/collection'
 require_relative '../models/table/user_table'
+require_dependency 'carto/bounding_box_utils'
 require_dependency 'common/map_common'
 
 class Map < Sequel::Model
@@ -59,10 +60,10 @@ class Map < Sequel::Model
   # FE code, so (lat,lon)
   DEFAULT_OPTIONS = {
     zoom:            3,
-    bounding_box_sw: [Carto::BoundingBoxService::DEFAULT_BOUNDS[:miny],
-                      Carto::BoundingBoxService::DEFAULT_BOUNDS[:minx]],
-    bounding_box_ne: [Carto::BoundingBoxService::DEFAULT_BOUNDS[:maxy],
-                      Carto::BoundingBoxService::DEFAULT_BOUNDS[:maxx]],
+    bounding_box_sw: [Carto::BoundingBoxUtils::DEFAULT_BOUNDS[:miny],
+                      Carto::BoundingBoxUtils::DEFAULT_BOUNDS[:minx]],
+    bounding_box_ne: [Carto::BoundingBoxUtils::DEFAULT_BOUNDS[:maxy],
+                      Carto::BoundingBoxUtils::DEFAULT_BOUNDS[:maxx]],
     provider:        'leaflet',
     center:          [30, 0]
   }

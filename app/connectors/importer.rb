@@ -2,7 +2,7 @@
 require 'uuidtools'
 
 require_relative '../models/visualization/support_tables'
-require_relative '../helpers/bounding_box_helper'
+require_dependency 'carto/bounding_box_utils'
 require_dependency 'carto/db/user_schema'
 
 module CartoDB

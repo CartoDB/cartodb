@@ -122,8 +122,9 @@
 .PublicMap-mapsList {
   padding-top: 10px;
 }
-
-
+.ol-viewport {
+      position: absolute !important
+}
 @media (min-width: $sMedia-desktop +1) {
   .PublicMap-metaList.PublicMap-metaList--mobile {
     display: inline-block !important;

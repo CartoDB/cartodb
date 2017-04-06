@@ -1,5 +1,6 @@
 # encoding: utf-8
 require_relative '../../lib/carto/table_utils'
+require_dependency 'carto/bounding_box_utils'
 
 class Carto::BoundingBoxService
   extend Carto::TableUtils

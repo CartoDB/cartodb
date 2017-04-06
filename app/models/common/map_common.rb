@@ -1,3 +1,5 @@
+require_dependency 'carto/bounding_box_service'
+
 module Carto::MapBoundaries
   MAXIMUM_ZOOM = 18
 
@@ -8,7 +10,7 @@ module Carto::MapBoundaries
       recenter_using_bounds(bounds)
       recalculate_zoom(bounds)
     else
-      set_boundaries(Carto::BoundingBoxService::DEFAULT_BOUNDS)
+      set_boundaries(Carto::BoundingBoxUtils::DEFAULT_BOUNDS)
       self.center = Carto::Map::DEFAULT_OPTIONS[:center]
       self.zoom = Carto::Map::DEFAULT_OPTIONS[:zoom]
     end
@@ -18,7 +20,7 @@ module Carto::MapBoundaries
   end
 
   def recalculate_bounds!
-    set_boundaries(get_map_bounds || Carto::BoundingBoxService::DEFAULT_BOUNDS)
+    set_boundaries(get_map_bounds || Carto::BoundingBoxUtils::DEFAULT_BOUNDS)
     save
   end
 

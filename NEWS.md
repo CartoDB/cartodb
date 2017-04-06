@@ -64,6 +64,7 @@ Development
 * Updated diagnosis page versions.
 * Improved formula widget description field. (#11469)
   * Notification API (#11850)
+  * Queue and Email support (#11692).
 * Improved empty bounds map handling (#11711).
 * Updated diagnosis page versions.
 * Improved formula widget description field (#11469).

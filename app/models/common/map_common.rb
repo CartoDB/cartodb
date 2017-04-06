@@ -6,13 +6,9 @@ module Carto::MapBoundaries
   def set_default_boundaries!
     bounds = get_map_bounds
     if bounds
-      set_boundaries(bounds)
-      recenter_using_bounds(bounds)
-      recalculate_zoom(bounds)
+      set_viewport_from_bounds(bounds)
     else
-      set_boundaries(Carto::BoundingBoxUtils::DEFAULT_BOUNDS)
-      self.center = Carto::Map::DEFAULT_OPTIONS[:center]
-      self.zoom = Carto::Map::DEFAULT_OPTIONS[:zoom]
+      set_default_viewport
     end
     save
   rescue => exception
@@ -25,6 +21,18 @@ module Carto::MapBoundaries
   end
 
   private
+
+  def set_viewport_from_bounds(bounds)
+    set_boundaries(bounds)
+    recenter_using_bounds(bounds)
+    recalculate_zoom(bounds)
+  end
+
+  def set_default_viewport
+    set_boundaries(Carto::BoundingBoxUtils::DEFAULT_BOUNDS)
+    self.center = Carto::Map::DEFAULT_OPTIONS[:center]
+    self.zoom = Carto::Map::DEFAULT_OPTIONS[:zoom]
+  end
 
   def set_boundaries(bounds)
     # switch to (lat,lon) for the frontend

@@ -1246,6 +1246,12 @@ class Table
     @user_table.table_visualization
   end
 
+  def update_bounding_box
+    update_table_geom_pg_stats
+    bounds = Carto::BoundingBoxService.new(owner).get_table_bounds(name) || Carto::BoundingBoxUtils::DEFAULT_BOUNDS
+    # TODO
+  end
+
   private
 
   def related_visualizations

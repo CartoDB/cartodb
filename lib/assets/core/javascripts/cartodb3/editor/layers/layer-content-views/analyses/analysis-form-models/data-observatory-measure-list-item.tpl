@@ -1,4 +1,4 @@
-<div class="ListItem">
+<div class="ListItem ListItem--fixed">
   <div data-editor class="u-grow">
   </div>
   <button class="ListItem-deteleButton" type="button" data-action="remove">

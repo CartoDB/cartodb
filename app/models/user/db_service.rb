@@ -1250,6 +1250,16 @@ module CartoDB
         end
       end
 
+      # Execute a query in the user database
+      # @param [String] query, using $1, $2 ... for placeholders
+      # @param ... values for the placeholders
+      # @return [Array<Hash<String, Value>>] Something (an actual Array in this case) that behaves like an Array
+      #                                      of Hashes that map column name (as string) to value
+      def execute_in_user_database(query, *binds)
+        placeholder_query = query.gsub(/\$\d+/, '?')
+        @user.in_database.fetch(placeholder_query, *binds).all.map(&:stringify_keys)
+      end
+
       private
 
       def http_client

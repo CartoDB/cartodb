@@ -1594,8 +1594,9 @@ describe Carto::Api::VisualizationsController do
 
       it 'destroys a visualization and all of its dependencies' do
         map, table, table_visualization, visualization = create_full_visualization(@carto_user1)
-        layer_ids = map.layers.map(&:id)
-        delete_json(api_v1_visualizations_destroy_url(id: table_visualization.id, api_key: @api_key), {}, @headers) do |response|
+        layer_ids = visualization.layers.map(&:id) + table_visualization.map.layers.map(&:id)
+
+        delete_json(api_v1_visualizations_destroy_url(id: table_visualization.id, api_key: @api_key)) do |response|
           expect(response.status).to eq 204
           expect(Carto::Visualization.exists?(table_visualization.id)).to be_false
           expect(Carto::Visualization.exists?(visualization.id)).to be_false

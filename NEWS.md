@@ -4,6 +4,11 @@ Development
 * An attacker could execute commands in the server running the queues by importing a file with a carefully crafted filename. Fixed in #11782
 
 ### Features
+* Dataservices configuration rake tasks (#11917)
+  * `cartodb:services:set_user_quota[username,service,quota]` updated to support the `mapzen_routing` provider
+  * `cartodb:services:set_org_quota[orgname,service,quota]` updated to support the `mapzen_routing` provider
+  * `cartodb:services:set_user_soft_limit[username,service,quota]` new task to set configure user soft limits
+  * `cartodb:services:set_org_soft_limit[orgname,service,quota]` new task to set configure organization soft limits
 * New dropdown for Data Observatory (#11618)
 * Quota pre-check to analyses that consume quota.
 * Marking 'Do not show me again' in Layer Onboarding affects every tab. (#11586)

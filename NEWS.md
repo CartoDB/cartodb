@@ -61,7 +61,11 @@ Development
   * Sets the default initial size for icons to 20px (#11498)
 * Onboarding for layer edition (#10905)
 * Initial support for Rails engines with CARTO Gears.
+* Improved empty bounds map handling (#11711).
+* Updated diagnosis page versions.
+* Improved formula widget description field. (#11469)
   * Notification API (#11850)
+  * Queue and Email support (#11692).
 * Improved empty bounds map handling (#11711).
 * Updated diagnosis page versions.
 * Improved formula widget description field (#11469).
@@ -83,6 +87,7 @@ Development
     * Optimized access to redis storage (#11809)
     * Add back FREE users to overquota calculation (#11848)
 * Update tangram-cartocss to use smooth point outline.
+* Refactored Builder specs generation using Webpack (#11698)
 * Update cartodb.js to use multiple subdomains.
 * Update tangram to use subdomains.
 
@@ -105,6 +110,7 @@ Development
 * Fixed missing metadata option in header when dataset is sync (#11458)
 * Fixed problem with dates when filtering time series widget
 * Fixed problem switching between qualitative and quantitative attributes (#10654)
+* Fixed problem with Google Maps API key inheritance from organizations (#11923)
 * Fixed problem found in Surfaces related with map panning and widgets filtering
 * Style with icons
   * Reset icon on map when you remove that custom icon
@@ -115,11 +121,13 @@ Development
   * Run `cartodb:db:register_table_dependencies` rake to update caches for existing maps
 * Categories legend are now static (#10972)
 * Fixed a bug with vizjson invalidation (#11092). It was introduced in #10934
+* Refactor Layer model (#10934) and UserTable (#11589, #11700).
 * Refactor Layer model (#10934) and UserTable (#11589, #11700, #11737).
 * Correctly render map previews for maps with google basemaps (#11608)
 * Do not trigger visualization hooks on state update (#11701)
 * Refactor Layer model (#10934)
 * Correctly register table dependencies of torque layers (#11549)
+* Validate number of organization seats in user update (#11839)
 * Validate number of organization seats in user update (#11839, #11859)
 * Fix bugs where legends where being hidden by reordering layers (#11088)
 * Correctly ask for alternative username when signing up with Google/GitHub into an organization
@@ -169,6 +177,10 @@ Development
 * No geometry messages are displayed after a new geometry is drawn (#11857)
 * Rearrange Error tracker script order (#11872)
 * Fix subdomain error not loading tiles.
+* Sanitized HTML from map and layer names.
+* Merged fix subdomain error not loading tiles (CartoDB.js#1607)
+* Fixed way to listen Deep-insights.js map or widgets changes (#11894)
+* Using latest cartodb.js and deep-insights.js to tackle map zooming problem (support#605)
 
 4.0.x (2016-12-05)
 ------------------

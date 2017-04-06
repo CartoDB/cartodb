@@ -28,6 +28,11 @@ Dashboard.prototype = {
     return this._dashboard.vis;
   },
 
+
+  reloadMap: function () {
+    this.getMap().reload();
+  },
+
   /**
    * @return {Array} of widgets in the dashboard
    */

@@ -14,10 +14,10 @@ class Carto::BoundingBoxService
     result = current_bbox_using_stats(table_name)
     return nil unless result
     {
-      maxx: BoundingBoxUtils.bound_for(result[:max][0].to_f, :minx, :maxx),
-      maxy: BoundingBoxUtils.bound_for(result[:max][1].to_f, :miny, :maxy),
-      minx: BoundingBoxUtils.bound_for(result[:min][0].to_f, :minx, :maxx),
-      miny: BoundingBoxUtils.bound_for(result[:min][1].to_f, :miny, :maxy)
+      maxx: Carto::BoundingBoxUtils.bound_for(result[:max][0].to_f, :minx, :maxx),
+      maxy: Carto::BoundingBoxUtils.bound_for(result[:max][1].to_f, :miny, :maxy),
+      minx: Carto::BoundingBoxUtils.bound_for(result[:min][0].to_f, :minx, :maxx),
+      miny: Carto::BoundingBoxUtils.bound_for(result[:min][1].to_f, :miny, :maxy)
     }
   end
 
@@ -29,7 +29,7 @@ class Carto::BoundingBoxService
     return nil unless table_name.present?
 
     # (lon,lat) as comes from postgis
-    JSON.parse(@user.service.execute_in_user_database(%{
+    JSON.parse(@user.db_service.execute_in_user_database(%{
       SELECT _postgis_stats ('#{table_name}', 'the_geom');
     }).first['_postgis_stats'])['extent'].symbolize_keys
   rescue => e
@@ -61,7 +61,7 @@ class Carto::BoundingBoxService
   end
 
   def get_bbox_values(table_name, column_name)
-    result = @user.service.execute_in_user_database(%{
+    result = @user.db_service.execute_in_user_database(%{
       SELECT
         ST_XMin(ST_Extent(#{column_name})) AS minx,
         ST_YMin(ST_Extent(#{column_name})) AS miny,

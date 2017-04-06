@@ -149,8 +149,8 @@ var Map = Model.extend({
     return layerModel;
   },
 
-  _removeLayerModelFromCollection: function (layerModel) {
-    return this.layers.remove(layerModel);
+  _removeLayerModelFromCollection: function (layerModel, collection, opts) {
+    return this.layers.remove(layerModel, opts);
   },
 
   disableInteractivity: function () {

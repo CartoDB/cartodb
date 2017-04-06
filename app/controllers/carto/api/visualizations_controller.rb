@@ -122,39 +122,37 @@ module Carto
       end
 
       def destroy
-        begin
-          vis = get_priority_visualization(params[:id], user_id: current_user.id)
+        vis = get_priority_visualization(params[:id], user_id: current_user.id)
 
-          return head(404) unless vis
-          return head(403) unless vis.is_owner?(current_user)
+        return head(404) unless vis
+        return head(403) unless vis.is_owner?(current_user)
 
-          current_viewer_id = current_viewer.id
-          properties = {user_id: current_viewer_id, visualization_id: vis.id}
-          if vis.derived?
-            Carto::Tracking::Events::DeletedMap.new(current_viewer_id, properties).report
-          else
-            Carto::Tracking::Events::DeletedDataset.new(current_viewer_id, properties).report
-          end
+        current_viewer_id = current_viewer.id
+        properties = { user_id: current_viewer_id, visualization_id: vis.id }
+        if vis.derived?
+          Carto::Tracking::Events::DeletedMap.new(current_viewer_id, properties).report
+        else
+          Carto::Tracking::Events::DeletedDataset.new(current_viewer_id, properties).report
+        end
 
-          unless vis.table.nil?
-            vis.table.fully_dependent_visualizations.each do |dependent_vis|
-              properties = {user_id: current_viewer_id, visualization_id: dependent_vis.id}
-              if dependent_vis.derived?
-                Carto::Tracking::Events::DeletedMap.new(current_viewer_id, properties).report
-              else
-                Carto::Tracking::Events::DeletedDataset.new(current_viewer_id, properties).report
-              end
+        if vis.table
+          vis.table.fully_dependent_visualizations.each do |dependent_vis|
+            properties = { user_id: current_viewer_id, visualization_id: dependent_vis.id }
+            if dependent_vis.derived?
+              Carto::Tracking::Events::DeletedMap.new(current_viewer_id, properties).report
+            else
+              Carto::Tracking::Events::DeletedDataset.new(current_viewer_id, properties).report
             end
           end
-
-          vis.delete
-
-          return head 204
-        rescue KeyError
-          head(404)
-        rescue Sequel::DatabaseError => e
-          render_jsonp({errors: [e.message]}, 400)
         end
+
+        vis.delete
+
+        return head 204
+      rescue KeyError
+        head(404)
+      rescue Sequel::DatabaseError => e
+        render_jsonp({ errors: [e.message] }, 400)
       end
 
       private

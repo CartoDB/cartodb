@@ -8,8 +8,7 @@ module Carto::MapBoundaries
       recenter_using_bounds(bounds)
       recalculate_zoom(bounds)
     else
-      self.view_bounds_ne = Carto::Map::DEFAULT_OPTIONS[:bounding_box_ne]
-      self.view_bounds_sw = Carto::Map::DEFAULT_OPTIONS[:bounding_box_sw]
+      set_boundaries(Carto::BoundingBoxService::DEFAULT_BOUNDS)
       self.center = Carto::Map::DEFAULT_OPTIONS[:center]
       self.zoom = Carto::Map::DEFAULT_OPTIONS[:zoom]
     end
@@ -43,5 +42,15 @@ module Carto::MapBoundaries
     zoom = [[zoom.round, 1].max, MAXIMUM_ZOOM].min
 
     self.zoom = zoom
+  end
+
+  def get_map_bounds
+    # (lon,lat) as comes out from postgis
+    Carto::BoundingBoxService.new(user).get_table_bounds(table_name)
+  end
+
+  def recalculate_bounds!
+    set_boundaries(get_map_bounds || Carto::BoundingBoxService::DEFAULT_BOUNDS)
+    save
   end
 end

@@ -172,14 +172,6 @@ class Carto::Map < ActiveRecord::Base
     end
   end
 
-  def recalculate_bounds!
-    bounds = get_map_bounds
-    if bounds
-      set_boundaries(bounds)
-      save
-    end
-  end
-
   private
 
   def admits_more_data_layers?
@@ -230,10 +222,5 @@ class Carto::Map < ActiveRecord::Base
 
   def table_name
     user_table.try(:name)
-  end
-
-  def get_map_bounds
-    # (lon,lat) as comes out from postgis
-    Carto::BoundingBoxService.new(user).get_table_bounds(table_name)
   end
 end

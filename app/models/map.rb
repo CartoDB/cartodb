@@ -60,8 +60,10 @@ class Map < Sequel::Model
   # FE code, so (lat,lon)
   DEFAULT_OPTIONS = {
     zoom:            3,
-    bounding_box_sw: [BoundingBoxHelper::DEFAULT_BOUNDS[:minlat], BoundingBoxHelper::DEFAULT_BOUNDS[:minlon]],
-    bounding_box_ne: [BoundingBoxHelper::DEFAULT_BOUNDS[:maxlat], BoundingBoxHelper::DEFAULT_BOUNDS[:maxlon]],
+    bounding_box_sw: [Carto::BoundingBoxService::DEFAULT_BOUNDS[:miny],
+                      Carto::BoundingBoxService::DEFAULT_BOUNDS[:minx]],
+    bounding_box_ne: [Carto::BoundingBoxService::DEFAULT_BOUNDS[:maxy],
+                      Carto::BoundingBoxService::DEFAULT_BOUNDS[:maxx]],
     provider:        'leaflet',
     center:          [30, 0]
   }
@@ -107,13 +109,6 @@ class Map < Sequel::Model
     super
     errors.add(:user_id, "can't be blank") if user_id.blank?
     errors.add(:user, "Viewer users can't save maps") if user && user.viewer
-  end
-
-  def recalculate_bounds!
-    set_boundaries(get_map_bounds)
-    save
-  rescue Sequel::DatabaseError => exception
-    CartoDB::notify_exception(exception, user: user)
   end
 
   def viz_updated_at
@@ -260,10 +255,5 @@ class Map < Sequel::Model
 
   def table_name
     tables.first.nil? ? nil : tables.first.name
-  end
-
-  def get_map_bounds
-    # (lon,lat) as comes out from postgis
-    BoundingBoxHelper.get_table_bounds(user.in_database, table_name)
   end
 end

@@ -105,6 +105,7 @@ Development
 * Fixed missing metadata option in header when dataset is sync (#11458)
 * Fixed problem with dates when filtering time series widget
 * Fixed problem switching between qualitative and quantitative attributes (#10654)
+* Fixed problem with Google Maps API key inheritance from organizations (#11923)
 * Fixed problem found in Surfaces related with map panning and widgets filtering
 * Style with icons
   * Reset icon on map when you remove that custom icon
@@ -170,6 +171,10 @@ Development
 * No geometry messages are displayed after a new geometry is drawn (#11857)
 * Rearrange Error tracker script order (#11872)
 * Fix subdomain error not loading tiles.
+* Sanitized HTML from map and layer names.
+* Merged fix subdomain error not loading tiles (CartoDB.js#1607)
+* Fixed way to listen Deep-insights.js map or widgets changes (#11894)
+* Using latest cartodb.js and deep-insights.js to tackle map zooming problem (support#605)
 
 4.0.x (2016-12-05)
 ------------------

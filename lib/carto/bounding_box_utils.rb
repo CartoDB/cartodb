@@ -28,11 +28,13 @@ module Carto::BoundingBoxUtils
   end
 
   def self.parse_bbox_parameters(bounding_box)
-    bbox_coords = bounding_box.split(',').map { |coord| Float(coord) rescue nil }.compact
-    if bbox_coords.length != 4
+    bbox_coords = bounding_box.split(',').map { |coord| Float(coord) }.compact
+    unless bbox_coords.length == 4
       raise CartoDB::BoundingBoxError.new('bounding box must have 4 coordinates: minx, miny, maxx, maxy')
     end
     { minx: bbox_coords[0], miny: bbox_coords[1], maxx: bbox_coords[2], maxy: bbox_coords[3] }
+  rescue ArgumentError
+    raise CartoDB::BoundingBoxError.new('all bounding box parameters must be floats')
   end
 
   def self.check_bounds_for(x, y)

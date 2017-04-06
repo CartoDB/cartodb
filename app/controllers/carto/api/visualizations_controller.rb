@@ -175,13 +175,34 @@ module Carto
 
       def subcategories
         categoryId = params[:category_id]
+        counts = params[:counts]
 
-        categories = Sequel::Model.db.fetch("
-          SELECT id, name, parent_id, list_order FROM visualization_categories
-            WHERE id = ANY(get_viz_child_category_ids(?))
-            ORDER BY parent_id, list_order, name",
-            categoryId
-          ).all
+        if counts == 'true'
+          categories = Sequel::Model.db.fetch("
+            SELECT categories.*,
+              (SELECT COUNT(*) FROM visualizations
+                LEFT JOIN external_sources es ON es.visualization_id = visualizations.id
+                LEFT JOIN external_data_imports edi
+                  ON edi.external_source_id = es.id
+                    AND (SELECT state FROM data_imports WHERE id = edi.data_import_id) <> 'failure'
+                    AND edi.synchronization_id IS NOT NULL
+            WHERE user_id=? AND
+              edi.id IS NULL AND
+              (type = 'table' OR type = 'remote') AND
+              (category = categories.id OR category = ANY(get_viz_child_category_ids(categories.id)))) AS count FROM
+                (SELECT id, name, parent_id, list_order FROM visualization_categories
+                    WHERE id = ANY(get_viz_child_category_ids(?))
+                    ORDER BY parent_id, list_order, name) AS categories;",
+              current_user.id, categoryId
+            ).all
+        else
+          categories = Sequel::Model.db.fetch("
+            SELECT id, name, parent_id, list_order, -1 AS count FROM visualization_categories
+              WHERE id = ANY(get_viz_child_category_ids(?))
+              ORDER BY parent_id, list_order, name",
+              categoryId
+            ).all
+        end
 
         render :json => categories.to_json
       end

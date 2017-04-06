@@ -19,7 +19,9 @@ module Carto::BoundingBoxUtils
 
   def self.to_polygon(minx, miny, maxx, maxy)
     return nil unless check_bounds_for(minx, miny) && check_bounds_for(maxx, maxy)
-    %{ST_Transform(ST_Envelope('SRID=4326;POLYGON((#{minx} #{miny}, #{minx} #{maxy}, #{maxx} #{maxy}, #{maxx} #{miny}, #{minx} #{miny}))'::geometry), 3857)}
+    "ST_Transform(ST_Envelope('SRID=4326;POLYGON((" \
+      "#{minx} #{miny}, #{minx} #{maxy}, #{maxx} #{maxy}, #{maxx} #{miny}, #{minx} #{miny}" \
+    "))'::geometry), 3857)}"
   end
 
   def self.to_point(x, y)

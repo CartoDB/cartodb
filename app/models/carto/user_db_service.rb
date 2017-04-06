@@ -33,8 +33,11 @@ module Carto
     # @param ... values for the placeholders
     # @return [Array<Hash<String, Value>>] Something ({ActiveRecord::Result} in this case) that behaves like an Array
     #                                      of Hashes that map column name (as string) to value
+    # @raise [PG::Error] if the query fails
     def execute_in_user_database(query, *binds)
       @user.in_database.exec_query(query, 'ExecuteUserDb', binds.map { |v| [nil, v] })
+    rescue ActiveRecord::StatementInvalid >= exception
+      raise exception.cause
     end
   end
 end

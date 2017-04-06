@@ -1255,9 +1255,12 @@ module CartoDB
       # @param ... values for the placeholders
       # @return [Array<Hash<String, Value>>] Something (an actual Array in this case) that behaves like an Array
       #                                      of Hashes that map column name (as string) to value
+      # @raise [PG::Error] if the query fails
       def execute_in_user_database(query, *binds)
         placeholder_query = query.gsub(/\$\d+/, '?')
         @user.in_database.fetch(placeholder_query, *binds).all.map(&:stringify_keys)
+      rescue Sequel::DatabaseError => exception
+        raise exception.cause
       end
 
       private

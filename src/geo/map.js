@@ -493,6 +493,30 @@ var Map = Model.extend({
     }
 
     return zoom - 1;
+  },
+
+  setPixelToLatLngConverter: function (pixelToLatLngConverter) {
+    this._pixelToLatLngConverter = pixelToLatLngConverter;
+  },
+
+  setLatLngToPixelConverter: function (latLngToPixelConverter) {
+    this._latLngToPixelConverter = latLngToPixelConverter;
+  },
+
+  pixelToLatLng: function () {
+    return this._pixelToLatLngConverter;
+  },
+
+  latLngToPixel: function () {
+    return this._latLngToPixelConverter;
+  },
+
+  setMapViewSize: function (size) {
+    this._mapViewSize = size;
+  },
+
+  getMapViewSize: function () {
+    return this._mapViewSize;
   }
 
 }, {

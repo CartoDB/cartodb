@@ -158,7 +158,7 @@ var GoogleMapsMapView = MapView.extend({
 
   invalidateSize: function () {
     google.maps.event.trigger(this._gmapsMap, 'resize');
-    this.map.set('mapViewSize', this.getSize());
+    this.map.setMapViewSize(this.getSize());
   },
 
   // GEOMETRY

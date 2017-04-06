@@ -234,7 +234,7 @@ var LeafletMapView = MapView.extend({
     this._leafletMap.setView(this.map.get('center'), this.map.get('zoom') || 0, {
       animate: false
     });
-    this.map.set('mapViewSize', this.getSize());
+    this.map.setMapViewSize(this.getSize());
   },
 
   // GEOMETRY

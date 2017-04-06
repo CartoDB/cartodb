@@ -117,15 +117,13 @@ var MapView = View.extend({
 
     // Enable geometry management
     this._geometryManagementController.start();
-
+    this.map.setMapViewSize(this.getSize());
     return this;
   },
 
   _linkMapHelpers: function () {
-    this.map.set({
-      pixelToLatLng: this.containerPointToLatLng.bind(this),
-      latLngtoPixel: this.latLngToContainerPoint.bind(this)
-    });
+    this.map.setPixelToLatLngConverter(this.containerPointToLatLng.bind(this));
+    this.map.setLatLngToPixelConverter(this.latLngToContainerPoint.bind(this));
   },
 
   _onGeometryAdded: function (geometry) {

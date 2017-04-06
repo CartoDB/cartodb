@@ -3,7 +3,7 @@ require_relative '../../lib/carto/table_utils'
 require_dependency 'carto/bounding_box_utils'
 
 class Carto::BoundingBoxService
-  extend Carto::TableUtils
+  include Carto::TableUtils
 
   def initialize(user)
     @user = user

@@ -18,16 +18,15 @@ namespace :cartodb do
       if value.blank?
         raise "Please specify the #{parameter}"
       end
-      if accepted_values
-        if accepted_values.is_a?(Array)
-           if !accepted_values.include?(value)
-             values_sentence = accepted_values.to_sentence(last_word_connector: ' or ', two_words_connector: ' or ')
-             raise "Unknown #{parameter}: #{value.inspect}. Please use one of #{values_sentence}"
-           end
-        else
-          if !accepted_values[value]
-            raise "Invalid #{parameter} value: #{value.inspect}."
-          end
+      case accepted_values
+      when Array
+        if !accepted_values.include?(value)
+          values_sentence = accepted_values.to_sentence(last_word_connector: ' or ', two_words_connector: ' or ')
+          raise "Unknown #{parameter}: #{value.inspect}. Please use one of #{values_sentence}"
+        end
+      when Proc, Hash
+        if !accepted_values[value]
+          raise "Invalid #{parameter} value: #{value.inspect}."
         end
       end
     end
@@ -41,7 +40,7 @@ namespace :cartodb do
       provider = args[:provider]
       user = username && ::User.find(username: username)
 
-      assert_valid_arg args, :username, accepted_values: proc{ user.present? }
+      assert_valid_arg args, :username, accepted_values: proc { user.present? }
       assert_valid_arg args, :service,  accepted_values: DS_PROVIDED_SERVICES
       assert_valid_arg args, :provider, accepted_values: DS_PROVIDERS
 
@@ -61,7 +60,7 @@ namespace :cartodb do
       provider = args[:provider]
       org = orgname && ::Organization.find(name: orgname)
 
-      assert_valid_arg args, :orgname,  accepted_values: proc{ org.present? }
+      assert_valid_arg args, :orgname,  accepted_values: proc { org.present? }
       assert_valid_arg args, :service,  accepted_values: DS_PROVIDED_SERVICES
       assert_valid_arg args, :provider, accepted_values: DS_PROVIDERS
 
@@ -82,7 +81,7 @@ namespace :cartodb do
       quota = args[:quota]
       user = username && ::User.find(username: username)
 
-      assert_valid_arg args, :username, accepted_values: proc{ user.present? }
+      assert_valid_arg args, :username, accepted_values: proc { user.present? }
       assert_valid_arg args, :service,  accepted_values: DS_SERVICES
       # assert_valid_arg args, :quota,    accepted_values: ->(value){ value.to_i >= 0 }
       assert_valid_arg args, :quota,    accepted_values: ->(value){ value.to_i >= 0 }
@@ -103,7 +102,7 @@ namespace :cartodb do
       quota = args[:quota]
       org = orgname && ::Organization.find(name: orgname)
 
-      assert_valid_arg args, :orgname, accepted_values: proc{ org.present? }
+      assert_valid_arg args, :orgname, accepted_values: proc { org.present? }
       assert_valid_arg args, :service, accepted_values: DS_SERVICES
       assert_valid_arg args, :quota,   accepted_values: ->(value){ value.to_i >= 0 }
 
@@ -123,7 +122,7 @@ namespace :cartodb do
       soft_limit = args[:soft_limit] == 'false' ? false : true
       user = username && ::User.find(username: username)
 
-      assert_valid_arg args, :username,   accepted_values: proc{ user.present? }
+      assert_valid_arg args, :username,   accepted_values: proc { user.present? }
       assert_valid_arg args, :service,    accepted_values: DS_SERVICES
       assert_valid_arg args, :soft_limit, accepted_values: ['true', 'false']
 
@@ -143,7 +142,7 @@ namespace :cartodb do
       soft_limit = args[:soft_limit] == 'false' ? false : true
       org = orgname && ::Organization.find(name: orgname)
 
-      assert_valid_arg args, :orgname,    accepted_values: proc{ org.present? }
+      assert_valid_arg args, :orgname,    accepted_values: proc { org.present? }
       assert_valid_arg args, :service,    accepted_values: DS_SERVICES
       assert_valid_arg args, :soft_limit, accepted_values: ['true', 'false']
 

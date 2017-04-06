@@ -5,13 +5,14 @@ require_dependency 'carto/bounding_box_utils'
 class Carto::BoundingBoxService
   include Carto::TableUtils
 
-  def initialize(user)
+  def initialize(user, table_name)
     @user = user
+    @table_name = table_name
   end
 
-  def get_table_bounds(table_name)
+  def get_bounds
     # (lon,lat) as comes out from postgis
-    result = current_bbox_using_stats(table_name)
+    result = current_bbox_using_stats
     return nil unless result
     {
       maxx: Carto::BoundingBoxUtils.bound_for(result[:max][0].to_f, :minx, :maxx),
@@ -24,28 +25,28 @@ class Carto::BoundingBoxService
   private
 
   # Postgis stats-based calculation of bounds. Much faster but not always present, so needs a fallback
-  def current_bbox_using_stats(table_name)
+  def current_bbox_using_stats
     # Less ugly (for tests at least) than letting an exception generate not having any table name
-    return nil unless table_name.present?
+    return nil unless @table_name.present?
 
     # (lon,lat) as comes from postgis
     JSON.parse(@user.db_service.execute_in_user_database(%{
-      SELECT _postgis_stats ('#{table_name}', 'the_geom');
+      SELECT _postgis_stats ('#{@table_name}', 'the_geom');
     }).first['_postgis_stats'])['extent'].symbolize_keys
   rescue => e
     if e.message =~ /stats for (.*) do not exist/i
       begin
-        current_bbox(table_name)
+        current_bbox
       rescue
         nil
       end
     end
   end
 
-  def current_bbox(table_name)
+  def current_bbox
     # (lon, lat) as comes from postgis (ST_X = Longitude, ST_Y = Latitude)
     # map has no geometries
-    result = get_bbox_values(table_name, "the_geom")
+    result = get_bbox_values
     if result.all? { |_, value| value.nil? }
       nil
     else
@@ -56,18 +57,18 @@ class Carto::BoundingBoxService
       }
     end
   rescue PG::Error => exception
-    CartoDB::Logger.error(exception: exception, table: table_name)
-    raise BoundingBoxError.new("Can't calculate the bounding box for table #{table_name}. ERROR: #{exception}")
+    CartoDB::Logger.error(exception: exception, table: @table_name)
+    raise BoundingBoxError.new("Can't calculate the bounding box for table #{@table_name}. ERROR: #{exception}")
   end
 
-  def get_bbox_values(table_name, column_name)
+  def get_bbox_values
     result = @user.db_service.execute_in_user_database(%{
       SELECT
-        ST_XMin(ST_Extent(#{column_name})) AS minx,
-        ST_YMin(ST_Extent(#{column_name})) AS miny,
-        ST_XMax(ST_Extent(#{column_name})) AS maxx,
-        ST_YMax(ST_Extent(#{column_name})) AS maxy
-      FROM #{safe_table_name_quoting(table_name)} AS subq
+        ST_XMin(ST_Extent(the_geom)) AS minx,
+        ST_YMin(ST_Extent(the_geom)) AS miny,
+        ST_XMax(ST_Extent(the_geom)) AS maxx,
+        ST_YMax(ST_Extent(the_geom)) AS maxy
+      FROM #{safe_table_name_quoting(@table_name)} AS subq
     }).first
 
     result

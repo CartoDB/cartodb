@@ -56,7 +56,8 @@ module Carto
     # The `destroyed?` check is needed to avoid the hook running twice when deleting a table from the ::Table service
     # as it is triggered directly, and a second time from canonical visualization destruction hooks.
     # TODO: This can be simplified after deleting the old UserTable model
-    before_destroy :ensure_not_viewer, :cache_dependent_visualizations
+    before_destroy :ensure_not_viewer
+    before_destroy :cache_dependent_visualizations, unless: :destroyed?
     after_destroy :destroy_dependent_visualizations
     after_destroy { CartoDB::Logger.debug(message: "Carto::UserTable#after_destroy"); service.after_destroy }
 

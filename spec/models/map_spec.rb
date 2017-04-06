@@ -167,8 +167,8 @@ describe Map do
     it 'checks max-min bounds' do
       new_map = Map.create(user_id: @user.id, table_id: @table.id)
 
-      max_value= :maxlon  # 179
-      min_value= :minlon  # -179
+      max_value = :maxx  # 179
+      min_value = :minx  # -179
       value1 = 5
       value2 = 179
       value3 = -179
@@ -186,14 +186,7 @@ describe Map do
       Carto::BoundingBoxUtils.bound_for(value6, min_value, max_value).should eq value6
 
       # As map has no geometries, bounds should still be default ones instead of zeros
-      map_bounds = new_map.send(:get_map_bounds)
-      default_bounds = Carto::BoundingBoxUtils.DEFAULT_BOUNDS
-
-      map_bounds[:maxx].should eq default_bounds[:maxx]
-      map_bounds[:maxy].should eq default_bounds[:maxy]
-      map_bounds[:minx].should eq default_bounds[:minx]
-      map_bounds[:miny].should eq default_bounds[:miny]
-
+      new_map.send(:get_map_bounds).should be_nil
 
       new_map.destroy
     end

@@ -250,7 +250,13 @@
       "race-and-ethnicity": "Race and Ethnicity",
       "religion": "Religion",
       "transportation": "Transportation",
-      "filters": "Filters"
+      "filters": {
+        "label": "Filters",
+        "applied": {
+          "single": "1 filter applied",
+          "multiple": "%{filters} filters applied"
+        }
+      }
     },
     "merge": {
       "title": "Join columns from 2nd layer",

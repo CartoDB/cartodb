@@ -11,11 +11,13 @@ require_relative '../../../../app/helpers/bounding_box_helper'
 require_relative './vizjson_shared_examples'
 require 'helpers/unique_names_helper'
 require_dependency 'carto/uuidhelper'
+require 'factories/carto_visualizations'
 
 include Carto::UUIDHelper
 
 describe Carto::Api::VisualizationsController do
   include UniqueNamesHelper
+  include Carto::Factories::Visualizations
   it_behaves_like 'visualization controllers' do
   end
 
@@ -376,7 +378,9 @@ describe Carto::Api::VisualizationsController do
       Carto::NamedMaps::Api.any_instance.stubs(get: nil, create: true, update: true)
 
       @user_1 = FactoryGirl.create(:valid_user)
+      @carto_user1 = Carto::User.find(@user_1.id)
       @user_2 = FactoryGirl.create(:valid_user, private_maps_enabled: true)
+      @carto_user2 = Carto::User.find(@user_2.id)
       @api_key = @user_1.api_key
     end
 
@@ -1562,9 +1566,43 @@ describe Carto::Api::VisualizationsController do
 
     describe '#destroy' do
       it 'returns 404 for nonexisting visualizations' do
-        id = random_uuid
-        delete api_v1_visualizations_destroy_url(id: random_uuid, api_key: @api_key), { id: random_uuid }.to_json, @headers
-        last_response.status.should == 404
+        delete_json(api_v1_visualizations_destroy_url(id: random_uuid, api_key: @api_key), {}, @headers) do |response|
+          expect(response.status).to eq 404
+        end
+      end
+
+      it 'returns 404 for not-accessible visualizations' do
+        other_visualization = FactoryGirl.create(:carto_visualization, user: @carto_user2)
+        delete_json(api_v1_visualizations_destroy_url(id: other_visualization.id, api_key: @api_key), {}, @headers) do |response|
+          expect(response.status).to eq 404
+        end
+      end
+
+      it 'destroys a visualization by id' do
+        visualization = FactoryGirl.create(:carto_visualization, user: @carto_user1)
+        delete_json(api_v1_visualizations_destroy_url(id: visualization.id, api_key: @api_key), {}, @headers) do |response|
+          expect(response.status).to eq 204
+        end
+      end
+
+      it 'destroys a visualization by name' do
+        visualization = FactoryGirl.create(:carto_visualization, user: @carto_user1)
+        delete_json(api_v1_visualizations_destroy_url(id: visualization.name, api_key: @api_key), {}, @headers) do |response|
+          expect(response.status).to eq 204
+        end
+      end
+
+      it 'destroys a visualization and all of its dependencies' do
+        map, table, table_visualization, visualization = create_full_visualization(@carto_user1)
+        layer_ids = map.layers.map(&:id)
+        delete_json(api_v1_visualizations_destroy_url(id: table_visualization.id, api_key: @api_key), {}, @headers) do |response|
+          expect(response.status).to eq 204
+          expect(Carto::Visualization.exists?(table_visualization.id)).to be_false
+          expect(Carto::Visualization.exists?(visualization.id)).to be_false
+          expect(Carto::Map.exists?(map.id)).to be_false
+          expect(Carto::UserTable.exists?(table.id)).to be_false
+          layer_ids.each { |layer_id| expect(Carto::Layer.exists?(layer_id)).to be_false }
+        end
       end
     end
   end

@@ -2,7 +2,7 @@ require 'active_record'
 
 require_relative './carto_json_serializer'
 require_dependency 'common/map_common'
-require_dependency 'carto/bounding_box_helper'
+require_dependency 'carto/bounding_box_service'
 
 class Carto::Map < ActiveRecord::Base
   include Carto::MapBoundaries
@@ -30,10 +30,10 @@ class Carto::Map < ActiveRecord::Base
   # So for now, we are just treating them as strings (see the .to_s in the constant below), but this could be improved
   DEFAULT_OPTIONS = {
     zoom:            3,
-    bounding_box_sw: [Carto::BoundingBoxHelper::DEFAULT_BOUNDS[:miny],
-                      Carto::BoundingBoxHelper::DEFAULT_BOUNDS[:minx]].to_s,
-    bounding_box_ne: [Carto::BoundingBoxHelper::DEFAULT_BOUNDS[:maxy],
-                      Carto::BoundingBoxHelper::DEFAULT_BOUNDS[:maxx]].to_s,
+    bounding_box_sw: [Carto::BoundingBoxService::DEFAULT_BOUNDS[:miny],
+                      Carto::BoundingBoxService::DEFAULT_BOUNDS[:minx]].to_s,
+    bounding_box_ne: [Carto::BoundingBoxService::DEFAULT_BOUNDS[:maxy],
+                      Carto::BoundingBoxService::DEFAULT_BOUNDS[:maxx]].to_s,
     provider:        'leaflet',
     center:          [30, 0].to_s
   }.freeze
@@ -234,6 +234,6 @@ class Carto::Map < ActiveRecord::Base
 
   def get_map_bounds
     # (lon,lat) as comes out from postgis
-    Carto::BoundingBoxHelper.new.get_table_bounds(user.in_database, table_name)
+    Carto::BoundingBoxService.new(user).get_table_bounds(table_name)
   end
 end

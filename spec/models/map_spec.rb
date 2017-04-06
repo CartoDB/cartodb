@@ -2,7 +2,7 @@
 require_relative '../spec_helper'
 require_relative '../../app/models/map'
 require_relative '../../app/models/visualization/member'
-require_relative '../../app/helpers/bounding_box_helper'
+require_dependency 'carto/bounding_box_utils'
 
 describe Map do
   before(:each) do

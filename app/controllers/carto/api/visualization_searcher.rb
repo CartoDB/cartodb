@@ -1,4 +1,4 @@
-require_relative '../../../helpers/bounding_box_utils'
+require_dependency 'carto/bounding_box_utils'
 
 module Carto
   module Api

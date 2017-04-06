@@ -83,8 +83,7 @@ namespace :cartodb do
 
       assert_valid_arg args, :username, accepted_values: proc { user.present? }
       assert_valid_arg args, :service,  accepted_values: DS_SERVICES
-      # assert_valid_arg args, :quota,    accepted_values: ->(value){ value.to_i >= 0 }
-      assert_valid_arg args, :quota,    accepted_values: ->(value){ value.to_i >= 0 }
+      assert_valid_arg args, :quota,    accepted_values: ->(value) { value.to_i >= 0 }
 
       service_quota_key = "#{service}_quota="
       user.send(service_quota_key, quota)
@@ -104,7 +103,7 @@ namespace :cartodb do
 
       assert_valid_arg args, :orgname, accepted_values: proc { org.present? }
       assert_valid_arg args, :service, accepted_values: DS_SERVICES
-      assert_valid_arg args, :quota,   accepted_values: ->(value){ value.to_i >= 0 }
+      assert_valid_arg args, :quota,   accepted_values: ->(value) { value.to_i >= 0 }
 
       service_quota_key = "#{service}_quota="
       org.send(service_quota_key, quota)

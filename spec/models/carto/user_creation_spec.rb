@@ -385,7 +385,7 @@ describe Carto::UserCreation do
 
     def creation_steps(user_creation)
       states = [user_creation.state]
-      while !user_creation.finished?
+      until user_creation.finished?
         user_creation.next_creation_step
         states << user_creation.state
       end

@@ -17,6 +17,11 @@ module Carto::MapBoundaries
     CartoDB::Logger.error(exception: exception, message: 'Error setting default bounds')
   end
 
+  def recalculate_bounds!
+    set_boundaries(get_map_bounds || Carto::BoundingBoxService::DEFAULT_BOUNDS)
+    save
+  end
+
   private
 
   def set_boundaries(bounds)
@@ -47,10 +52,5 @@ module Carto::MapBoundaries
   def get_map_bounds
     # (lon,lat) as comes out from postgis
     Carto::BoundingBoxService.new(user).get_table_bounds(table_name)
-  end
-
-  def recalculate_bounds!
-    set_boundaries(get_map_bounds || Carto::BoundingBoxService::DEFAULT_BOUNDS)
-    save
   end
 end

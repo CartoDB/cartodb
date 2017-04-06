@@ -12,12 +12,14 @@ require_relative './vizjson_shared_examples'
 require 'helpers/unique_names_helper'
 require_dependency 'carto/uuidhelper'
 require 'factories/carto_visualizations'
+require 'helpers/visualization_destruction_helper'
 
 include Carto::UUIDHelper
 
 describe Carto::Api::VisualizationsController do
   include UniqueNamesHelper
   include Carto::Factories::Visualizations
+  include VisualizationDestructionHelper
   it_behaves_like 'visualization controllers' do
   end
 
@@ -1594,15 +1596,13 @@ describe Carto::Api::VisualizationsController do
 
       it 'destroys a visualization and all of its dependencies' do
         map, table, table_visualization, visualization = create_full_visualization(@carto_user1)
-        layer_ids = visualization.layers.map(&:id) + table_visualization.map.layers.map(&:id)
 
-        delete_json(api_v1_visualizations_destroy_url(id: table_visualization.id, api_key: @api_key)) do |response|
-          expect(response.status).to eq 204
-          expect(Carto::Visualization.exists?(table_visualization.id)).to be_false
-          expect(Carto::Visualization.exists?(visualization.id)).to be_false
-          expect(Carto::Map.exists?(map.id)).to be_false
-          expect(Carto::UserTable.exists?(table.id)).to be_false
-          layer_ids.each { |layer_id| expect(Carto::Layer.exists?(layer_id)).to be_false }
+        expect_visualization_to_be_destroyed(visualization) do
+          expect_visualization_to_be_destroyed(table_visualization) do
+            delete_json(api_v1_visualizations_destroy_url(id: table_visualization.id, api_key: @api_key)) do |response|
+              expect(response.status).to eq 204
+            end
+          end
         end
       end
     end

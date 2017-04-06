@@ -146,7 +146,7 @@ module Carto
           end
         end
 
-        vis.delete
+        vis.destroy
 
         return head 204
       rescue KeyError

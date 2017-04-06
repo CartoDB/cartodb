@@ -495,7 +495,7 @@ class Table
     remove_table_from_stats
 
     cache.del geometry_types_key
-    @fully_dependent_visualizations_cache.each(&:delete)
+    @fully_dependent_visualizations_cache.each(&:destroy)
     @partially_dependent_visualizations_cache.each do |visualization|
       visualization.unlink_from(self)
     end

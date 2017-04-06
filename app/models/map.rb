@@ -1,7 +1,6 @@
 # encoding: utf-8
 require_relative '../models/visualization/collection'
 require_relative '../models/table/user_table'
-require_relative '../helpers/bounding_box_helper'
 require_dependency 'common/map_common'
 
 class Map < Sequel::Model

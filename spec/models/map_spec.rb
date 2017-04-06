@@ -176,23 +176,23 @@ describe Map do
       value5 = -180
       value6 = 0
 
-      BoundingBoxHelper.bound_for(value1, min_value, max_value).should eq value1
-      BoundingBoxHelper.bound_for(value2, min_value, max_value).should eq value2
-      BoundingBoxHelper.bound_for(value2, min_value, max_value).should eq BoundingBoxHelper::DEFAULT_BOUNDS[max_value]
-      BoundingBoxHelper.bound_for(value3, min_value, max_value).should eq value3
-      BoundingBoxHelper.bound_for(value3, min_value, max_value).should eq BoundingBoxHelper::DEFAULT_BOUNDS[min_value]
-      BoundingBoxHelper.bound_for(value4, min_value, max_value).should eq BoundingBoxHelper::DEFAULT_BOUNDS[max_value]
-      BoundingBoxHelper.bound_for(value5, min_value, max_value).should eq BoundingBoxHelper::DEFAULT_BOUNDS[min_value]
-      BoundingBoxHelper.bound_for(value6, min_value, max_value).should eq value6
+      Carto::BoundingBoxUtils.bound_for(value1, min_value, max_value).should eq value1
+      Carto::BoundingBoxUtils.bound_for(value2, min_value, max_value).should eq value2
+      Carto::BoundingBoxUtils.bound_for(value2, min_value, max_value).should eq Carto::BoundingBoxUtils::DEFAULT_BOUNDS[max_value]
+      Carto::BoundingBoxUtils.bound_for(value3, min_value, max_value).should eq value3
+      Carto::BoundingBoxUtils.bound_for(value3, min_value, max_value).should eq Carto::BoundingBoxUtils::DEFAULT_BOUNDS[min_value]
+      Carto::BoundingBoxUtils.bound_for(value4, min_value, max_value).should eq Carto::BoundingBoxUtils::DEFAULT_BOUNDS[max_value]
+      Carto::BoundingBoxUtils.bound_for(value5, min_value, max_value).should eq Carto::BoundingBoxUtils::DEFAULT_BOUNDS[min_value]
+      Carto::BoundingBoxUtils.bound_for(value6, min_value, max_value).should eq value6
 
       # As map has no geometries, bounds should still be default ones instead of zeros
       map_bounds = new_map.send(:get_map_bounds)
-      default_bounds = BoundingBoxHelper.default_bbox
+      default_bounds = Carto::BoundingBoxUtils.DEFAULT_BOUNDS
 
-      map_bounds[:maxx].should eq default_bounds[:max][0]
-      map_bounds[:maxy].should eq default_bounds[:max][1]
-      map_bounds[:minx].should eq default_bounds[:min][0]
-      map_bounds[:miny].should eq default_bounds[:min][1]
+      map_bounds[:maxx].should eq default_bounds[:maxx]
+      map_bounds[:maxy].should eq default_bounds[:maxy]
+      map_bounds[:minx].should eq default_bounds[:minx]
+      map_bounds[:miny].should eq default_bounds[:miny]
 
 
       new_map.destroy

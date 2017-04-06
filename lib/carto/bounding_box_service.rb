@@ -4,13 +4,6 @@ require_relative '../../lib/carto/table_utils'
 class Carto::BoundingBoxService
   extend Carto::TableUtils
 
-  DEFAULT_BOUNDS = {
-    minx: -179,
-    maxx: 179,
-    miny: -85.0511,
-    maxy: 85.0511
-  }.freeze
-
   def initialize(user)
     @user = user
   end
@@ -20,10 +13,10 @@ class Carto::BoundingBoxService
     result = current_bbox_using_stats(table_name)
     return nil unless result
     {
-      maxx: bound_for(result[:max][0].to_f, :minx, :maxx),
-      maxy: bound_for(result[:max][1].to_f, :miny, :maxy),
-      minx: bound_for(result[:min][0].to_f, :minx, :maxx),
-      miny: bound_for(result[:min][1].to_f, :miny, :maxy)
+      maxx: BoundingBoxUtils.bound_for(result[:max][0].to_f, :minx, :maxx),
+      maxy: BoundingBoxUtils.bound_for(result[:max][1].to_f, :miny, :maxy),
+      minx: BoundingBoxUtils.bound_for(result[:min][0].to_f, :minx, :maxx),
+      miny: BoundingBoxUtils.bound_for(result[:min][1].to_f, :miny, :maxy)
     }
   end
 
@@ -64,10 +57,6 @@ class Carto::BoundingBoxService
   rescue PG::Error => exception
     CartoDB::Logger.error(exception: exception, table: table_name)
     raise BoundingBoxError.new("Can't calculate the bounding box for table #{table_name}. ERROR: #{exception}")
-  end
-
-  def bound_for(value, minimum, maximum)
-    [[value, DEFAULT_BOUNDS.fetch(minimum)].max, DEFAULT_BOUNDS.fetch(maximum)].min
   end
 
   def get_bbox_values(table_name, column_name)

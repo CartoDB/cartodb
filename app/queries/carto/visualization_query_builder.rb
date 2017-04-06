@@ -312,7 +312,7 @@ class Carto::VisualizationQueryBuilder
     end
 
     if @bounding_box
-      bbox_sql = BoundingBoxUtils.to_polygon(@bounding_box[:minx], @bounding_box[:miny], @bounding_box[:maxx], @bounding_box[:maxy])
+      bbox_sql = Carto::BoundingBoxUtils.to_polygon(@bounding_box[:minx], @bounding_box[:miny], @bounding_box[:maxx], @bounding_box[:maxy])
       query = query.where("visualizations.bbox is not null AND visualizations.bbox && #{bbox_sql}")
     end
 

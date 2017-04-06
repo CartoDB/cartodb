@@ -40,7 +40,7 @@ module Carto
                                        .with_tags(tags)
 
         if !bbox_parameter.blank?
-          vqb.with_bounding_box(BoundingBoxUtils.parse_bbox_parameters(bbox_parameter))
+          vqb.with_bounding_box(Carto::BoundingBoxUtils.parse_bbox_parameters(bbox_parameter))
         end
 
         # FIXME Patch to exclude legacy visualization from data-library #5097

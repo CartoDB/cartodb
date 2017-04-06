@@ -1249,7 +1249,10 @@ class Table
   def update_bounding_box
     update_table_geom_pg_stats
     bounds = Carto::BoundingBoxService.new(owner).get_table_bounds(name) || Carto::BoundingBoxUtils::DEFAULT_BOUNDS
-    # TODO
+
+    polygon_sql = Carto::BoundingBoxUtils.to_polygon(bounds[:minx], bounds[:miny], bounds[:maxx], bounds[:maxy])
+    update_sql = %{UPDATE visualizations SET bbox = #{polygon_sql} WHERE id = '#{table_visualization.id}';}
+    Rails::Sequel.connection.run(update_sql)
   end
 
   private

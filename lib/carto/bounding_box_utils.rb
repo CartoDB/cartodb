@@ -6,6 +6,13 @@ module Carto::BoundingBoxUtils
     maxy: 85.0511
   }.freeze
 
+  LIMIT_BOUNDS = {
+    minx: -180,
+    maxx: 180,
+    miny: -90,
+    maxy: 90
+  }.freeze
+
   def self.bound_for(value, minimum, maximum)
     [[value, DEFAULT_BOUNDS.fetch(minimum)].max, DEFAULT_BOUNDS.fetch(maximum)].min
   end
@@ -29,8 +36,8 @@ module Carto::BoundingBoxUtils
   end
 
   def self.check_bounds_for(x, y)
-    return false if x.to_f > LIMIT_BOUNDS[:maxlon].to_f || x.to_f < LIMIT_BOUNDS[:minlon].to_f
-    return false if y.to_f > LIMIT_BOUNDS[:maxlat].to_f || y.to_f < LIMIT_BOUNDS[:minlat].to_f
+    return false if x.to_f > LIMIT_BOUNDS[:maxx].to_f || x.to_f < LIMIT_BOUNDS[:minx].to_f
+    return false if y.to_f > LIMIT_BOUNDS[:maxy].to_f || y.to_f < LIMIT_BOUNDS[:miny].to_f
     true
   rescue
     false

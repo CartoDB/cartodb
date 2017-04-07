@@ -25,7 +25,7 @@ module Carto
 
       before_filter :id_and_schema_from_params
       before_filter :load_visualization, only: [:likes_count, :likes_list, :is_liked, :show, :stats, :list_watching,
-                                                :static_map, :vizjson2, :vizjson3]
+                                                :static_map, :vizjson2, :vizjson3, :destroy]
 
       rescue_from Carto::LoadError, with: :rescue_from_carto_error
       rescue_from Carto::UUIDParameterFormatError, with: :rescue_from_carto_error
@@ -122,21 +122,16 @@ module Carto
       end
 
       def destroy
-        vis = get_priority_visualization(params[:id], user_id: current_user.id)
-
-        return head(404) unless vis
-        return head(403) unless vis.is_owner?(current_user)
-
         current_viewer_id = current_viewer.id
-        properties = { user_id: current_viewer_id, visualization_id: vis.id }
-        if vis.derived?
+        properties = { user_id: current_viewer_id, visualization_id: @visualization.id }
+        if @visualization.derived?
           Carto::Tracking::Events::DeletedMap.new(current_viewer_id, properties).report
         else
           Carto::Tracking::Events::DeletedDataset.new(current_viewer_id, properties).report
         end
 
-        if vis.table
-          vis.table.fully_dependent_visualizations.each do |dependent_vis|
+        if @visualization.table
+          @visualization.table.fully_dependent_visualizations.each do |dependent_vis|
             properties = { user_id: current_viewer_id, visualization_id: dependent_vis.id }
             if dependent_vis.derived?
               Carto::Tracking::Events::DeletedMap.new(current_viewer_id, properties).report
@@ -146,7 +141,7 @@ module Carto
           end
         end
 
-        vis.destroy
+        @visualization.destroy
 
         return head 204
       rescue KeyError

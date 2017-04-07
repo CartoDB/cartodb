@@ -201,7 +201,9 @@ class Map < Sequel::Model
   end
 
   def dup
-    Map.new(to_hash.select { |k, _| k != :id })
+    map = Map.new(to_hash.reject { |k, _| [:id, :options].include?(k) })
+    map.options = options # Manually copied to avoid serialization
+    map
   end
 
   private
@@ -258,5 +260,10 @@ class Map < Sequel::Model
 
   def table_name
     tables.first.nil? ? nil : tables.first.name
+  end
+
+  def get_map_bounds
+    # (lon,lat) as comes out from postgis
+    BoundingBoxHelper.get_table_bounds(user.in_database, table_name)
   end
 end

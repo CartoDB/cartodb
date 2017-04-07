@@ -21,11 +21,11 @@ $resizeHandlerSize: 8px;
 .CanvasExport {
   position: absolute;
   border: 1px dashed #FFF;
+  cursor: move;
 }
 
 /* draggable and resizable plugins style overriding */
 .CanvasExport.draggable {
-  cursor: move;
   z-index: 1000000000;
 }
 .CanvasExport.draggable .ExportHelper.ExportHelper--header,

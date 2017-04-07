@@ -1,6 +1,8 @@
 require_relative '../../../lib/carto/http/client'
 require_dependency 'carto/uuidhelper'
 require_dependency 'carto/overquota_users_service'
+require_dependency 'carto_gears_api/events/event_manager'
+require_dependency 'carto_gears_api/events/user_events'
 
 class Superadmin::UsersController < Superadmin::SuperadminController
   include Carto::UUIDHelper
@@ -45,6 +47,11 @@ class Superadmin::UsersController < Superadmin::SuperadminController
       CartoDB::Visualization::CommonDataService.load_common_data(@user, self) if @user.should_load_common_data?
       @user.set_relationships_from_central(params[:user])
     end
+    CartoGearsApi::Events::EventManager.instance.notify(
+      CartoGearsApi::Events::UserCreationEvent.new(
+        CartoGearsApi::Events::UserCreationEvent::CREATED_VIA_SUPERADMIN, @user
+      )
+    )
     respond_with(:superadmin, @user)
   end
 

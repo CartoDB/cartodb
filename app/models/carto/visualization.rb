@@ -400,7 +400,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def save_named_map
-    return if remote? || mapcapped?
+    return true if remote? || mapcapped? || data_layers.empty?
 
     get_named_map ? named_maps_api.update : named_maps_api.create
   end
@@ -541,7 +541,6 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def store
-    CartoDB::Logger.debug(message: "Carto::Visualization#store")
     save!
     self
   end
@@ -593,7 +592,7 @@ class Carto::Visualization < ActiveRecord::Base
 
   def propagate_privacy
     table.reload
-    if table.privacy_text.casecmp(privacy) != 0 # privacy is different, case insensitive
+    if privacy && table.privacy_text.casecmp(privacy) != 0 # privacy is different, case insensitive
       CartoDB::TablePrivacyManager.new(table).set_from_visualization(self).update_cdb_tablemetadata
     end
   end
@@ -723,7 +722,6 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def remove_password_if_unprotected
-    CartoDB::Logger.debug(message: "Carto::Visualization#remove_password_if_unprotected (before_save)")
     remove_password unless password_protected?
   end
 
@@ -734,7 +732,6 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def save_named_map_or_rollback_privacy
-    CartoDB::Logger.debug(message: "Carto::Visualization#save_named_map_or_rollback_privacy")
     if !save_named_map && privacy_changed?
       # Explicitly set privacy to its previous value so the hooks run and the user db permissions are updated
       # TODO: It would be better to raise an exception to rollback the transaction, but that can break renames
@@ -746,7 +743,7 @@ class Carto::Visualization < ActiveRecord::Base
 
   def backup_visualization
     return true if remote?
-    CartoDB::Logger.debug(message: "Carto::Visualization#backup_visualization");
+
     if user.has_feature_flag?(Carto::VisualizationsExportService::FEATURE_FLAG_NAME) && map
       Carto::VisualizationsExportService.new.export(id)
     end

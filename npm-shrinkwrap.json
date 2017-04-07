@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.6.43",
+  "version": "4.6.59",
   "dependencies": {
     "backbone": {
       "version": "1.2.3",
@@ -10,7 +10,7 @@
     "backbone-forms": {
       "version": "0.14.0",
       "from": "backbone-forms@0.14.0",
-      "resolved": "https://registry.npmjs.org/backbone-forms/-/backbone-forms-0.14.0.tgz"
+      "resolved": "http://registry.npmjs.org/backbone-forms/-/backbone-forms-0.14.0.tgz"
     },
     "backbone-model-file-upload": {
       "version": "1.0.0",
@@ -184,74 +184,7 @@
                         "rimraf": {
                           "version": "2.6.1",
                           "from": "rimraf@>=2.2.8 <3.0.0",
-                          "resolved": "https://registry.npmjs.org/rimraf/-/rimraf-2.6.1.tgz",
-                          "dependencies": {
-                            "glob": {
-                              "version": "7.1.1",
-                              "from": "glob@>=7.0.5 <8.0.0",
-                              "resolved": "https://registry.npmjs.org/glob/-/glob-7.1.1.tgz",
-                              "dependencies": {
-                                "fs.realpath": {
-                                  "version": "1.0.0",
-                                  "from": "fs.realpath@>=1.0.0 <2.0.0",
-                                  "resolved": "https://registry.npmjs.org/fs.realpath/-/fs.realpath-1.0.0.tgz"
-                                },
-                                "inflight": {
-                                  "version": "1.0.6",
-                                  "from": "inflight@>=1.0.4 <2.0.0",
-                                  "resolved": "https://registry.npmjs.org/inflight/-/inflight-1.0.6.tgz",
-                                  "dependencies": {
-                                    "wrappy": {
-                                      "version": "1.0.2",
-                                      "from": "wrappy@>=1.0.0 <2.0.0",
-                                      "resolved": "https://registry.npmjs.org/wrappy/-/wrappy-1.0.2.tgz"
-                                    }
-                                  }
-                                },
-                                "inherits": {
-                                  "version": "2.0.3",
-                                  "from": "inherits@>=2.0.0 <3.0.0",
-                                  "resolved": "https://registry.npmjs.org/inherits/-/inherits-2.0.3.tgz"
-                                },
-                                "minimatch": {
-                                  "version": "3.0.3",
-                                  "from": "minimatch@>=3.0.2 <4.0.0",
-                                  "resolved": "https://registry.npmjs.org/minimatch/-/minimatch-3.0.3.tgz",
-                                  "dependencies": {
-                                    "brace-expansion": {
-                                      "version": "1.1.6",
-                                      "from": "brace-expansion@>=1.0.0 <2.0.0",
-                                      "resolved": "https://registry.npmjs.org/brace-expansion/-/brace-expansion-1.1.6.tgz",
-                                      "dependencies": {
-                                        "balanced-match": {
-                                          "version": "0.4.2",
-                                          "from": "balanced-match@>=0.4.1 <0.5.0",
-                                          "resolved": "https://registry.npmjs.org/balanced-match/-/balanced-match-0.4.2.tgz"
-                                        },
-                                        "concat-map": {
-                                          "version": "0.0.1",
-                                          "from": "concat-map@0.0.1",
-                                          "resolved": "https://registry.npmjs.org/concat-map/-/concat-map-0.0.1.tgz"
-                                        }
-                                      }
-                                    }
-                                  }
-                                },
-                                "once": {
-                                  "version": "1.4.0",
-                                  "from": "once@>=1.3.0 <2.0.0",
-                                  "resolved": "https://registry.npmjs.org/once/-/once-1.4.0.tgz",
-                                  "dependencies": {
-                                    "wrappy": {
-                                      "version": "1.0.2",
-                                      "from": "wrappy@>=1.0.0 <2.0.0",
-                                      "resolved": "https://registry.npmjs.org/wrappy/-/wrappy-1.0.2.tgz"
-                                    }
-                                  }
-                                }
-                              }
-                            }
-                          }
+                          "resolved": "https://registry.npmjs.org/rimraf/-/rimraf-2.6.1.tgz"
                         }
                       }
                     },
@@ -359,9 +292,9 @@
                           "resolved": "https://registry.npmjs.org/form-data/-/form-data-1.0.1.tgz",
                           "dependencies": {
                             "async": {
-                              "version": "2.2.0",
+                              "version": "2.3.0",
                               "from": "async@>=2.0.1 <3.0.0",
-                              "resolved": "https://registry.npmjs.org/async/-/async-2.2.0.tgz",
+                              "resolved": "https://registry.npmjs.org/async/-/async-2.3.0.tgz",
                               "dependencies": {
                                 "lodash": {
                                   "version": "4.17.4",
@@ -774,9 +707,9 @@
       "resolved": "git://github.com/cartodb/Backbone.Undo.js.git#c10e9977d22ecea1fabe894be650c78ac548911f"
     },
     "bootstrap-colorpicker": {
-      "version": "2.3.3",
-      "from": "bootstrap-colorpicker@2.3.3",
-      "resolved": "https://registry.npmjs.org/bootstrap-colorpicker/-/bootstrap-colorpicker-2.3.3.tgz"
+      "version": "2.4.0",
+      "from": "bootstrap-colorpicker@2.4.0",
+      "resolved": "https://registry.npmjs.org/bootstrap-colorpicker/-/bootstrap-colorpicker-2.4.0.tgz"
     },
     "browserify-shim": {
       "version": "3.8.12",
@@ -1104,9 +1037,9 @@
       }
     },
     "camshaft-reference": {
-      "version": "0.29.0",
+      "version": "0.30.0",
       "from": "camshaft-reference@<2.0.0",
-      "resolved": "https://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.29.0.tgz"
+      "resolved": "https://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.30.0.tgz"
     },
     "carto": {
       "version": "0.15.1-cdb3",
@@ -1152,12 +1085,12 @@
     "cartodb-deep-insights.js": {
       "version": "0.0.2",
       "from": "cartodb/deep-insights.js#master",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#a72917e8a7553338b102b7830567cb6d28bd7b9d",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#290c442b56964d338c27004273d800ed4341f657",
       "dependencies": {
         "cartodb.js": {
           "version": "4.0.0-alpha.1",
           "from": "cartodb/cartodb.js#v4",
-          "resolved": "git://github.com/cartodb/cartodb.js.git#1d6cc84e32cd11fa3554d38d9f708419ab0ad6ba",
+          "resolved": "git://github.com/cartodb/cartodb.js.git#e86eba8aec0d915604dbe549fb56fdb6590bdcd5",
           "dependencies": {
             "backbone-poller": {
               "version": "1.1.3",
@@ -1194,9 +1127,9 @@
               }
             },
             "tangram.cartodb": {
-              "version": "0.2.7",
+              "version": "0.3.0",
               "from": "cartodb/tangram.cartodb#master",
-              "resolved": "git://github.com/cartodb/tangram.cartodb.git#18e21d69512e494837171889009038fb0f39f74a",
+              "resolved": "git://github.com/cartodb/tangram.cartodb.git#f973792e341110835393521480672670e2e27dee",
               "dependencies": {
                 "babel-runtime": {
                   "version": "6.18.0",
@@ -1215,10 +1148,32 @@
                     }
                   }
                 },
+                "md5": {
+                  "version": "2.2.1",
+                  "from": "md5@>=2.2.1 <3.0.0",
+                  "resolved": "https://registry.npmjs.org/md5/-/md5-2.2.1.tgz",
+                  "dependencies": {
+                    "charenc": {
+                      "version": "0.0.2",
+                      "from": "charenc@>=0.0.1 <0.1.0",
+                      "resolved": "https://registry.npmjs.org/charenc/-/charenc-0.0.2.tgz"
+                    },
+                    "crypt": {
+                      "version": "0.0.2",
+                      "from": "crypt@>=0.0.1 <0.1.0",
+                      "resolved": "https://registry.npmjs.org/crypt/-/crypt-0.0.2.tgz"
+                    },
+                    "is-buffer": {
+                      "version": "1.1.5",
+                      "from": "is-buffer@>=1.1.1 <1.2.0",
+                      "resolved": "https://registry.npmjs.org/is-buffer/-/is-buffer-1.1.5.tgz"
+                    }
+                  }
+                },
                 "tangram-cartocss": {
-                  "version": "0.4.3",
+                  "version": "0.5.0",
                   "from": "cartodb/tangram-carto#master",
-                  "resolved": "git://github.com/cartodb/tangram-carto.git#96d2975c621cc6422ea33055fef98e435f04f5f9",
+                  "resolved": "git://github.com/cartodb/tangram-carto.git#0b53ad9d6c81b2811b04416cb015e9481cc9d101",
                   "dependencies": {
                     "babel-runtime": {
                       "version": "6.22.0",
@@ -1266,28 +1221,6 @@
                         }
                       }
                     },
-                    "md5": {
-                      "version": "2.2.1",
-                      "from": "md5@2.2.1",
-                      "resolved": "https://registry.npmjs.org/md5/-/md5-2.2.1.tgz",
-                      "dependencies": {
-                        "charenc": {
-                          "version": "0.0.2",
-                          "from": "charenc@>=0.0.1 <0.1.0",
-                          "resolved": "https://registry.npmjs.org/charenc/-/charenc-0.0.2.tgz"
-                        },
-                        "crypt": {
-                          "version": "0.0.2",
-                          "from": "crypt@>=0.0.1 <0.1.0",
-                          "resolved": "https://registry.npmjs.org/crypt/-/crypt-0.0.2.tgz"
-                        },
-                        "is-buffer": {
-                          "version": "1.1.5",
-                          "from": "is-buffer@>=1.1.1 <1.2.0",
-                          "resolved": "https://registry.npmjs.org/is-buffer/-/is-buffer-1.1.5.tgz"
-                        }
-                      }
-                    },
                     "ramda": {
                       "version": "0.23.0",
                       "from": "ramda@>=0.23.0 <0.24.0",
@@ -1301,9 +1234,9 @@
                   }
                 },
                 "yamljs": {
-                  "version": "0.2.8",
+                  "version": "0.2.9",
                   "from": "yamljs@>=0.2.8 <0.3.0",
-                  "resolved": "https://registry.npmjs.org/yamljs/-/yamljs-0.2.8.tgz",
+                  "resolved": "https://registry.npmjs.org/yamljs/-/yamljs-0.2.9.tgz",
                   "dependencies": {
                     "argparse": {
                       "version": "1.0.9",
@@ -1314,76 +1247,6 @@
                           "version": "1.0.3",
                           "from": "sprintf-js@>=1.0.2 <1.1.0",
                           "resolved": "https://registry.npmjs.org/sprintf-js/-/sprintf-js-1.0.3.tgz"
-                        }
-                      }
-                    },
-                    "glob": {
-                      "version": "7.1.1",
-                      "from": "glob@>=7.0.5 <8.0.0",
-                      "resolved": "https://registry.npmjs.org/glob/-/glob-7.1.1.tgz",
-                      "dependencies": {
-                        "fs.realpath": {
-                          "version": "1.0.0",
-                          "from": "fs.realpath@>=1.0.0 <2.0.0",
-                          "resolved": "https://registry.npmjs.org/fs.realpath/-/fs.realpath-1.0.0.tgz"
-                        },
-                        "inflight": {
-                          "version": "1.0.6",
-                          "from": "inflight@>=1.0.4 <2.0.0",
-                          "resolved": "https://registry.npmjs.org/inflight/-/inflight-1.0.6.tgz",
-                          "dependencies": {
-                            "wrappy": {
-                              "version": "1.0.2",
-                              "from": "wrappy@>=1.0.0 <2.0.0",
-                              "resolved": "https://registry.npmjs.org/wrappy/-/wrappy-1.0.2.tgz"
-                            }
-                          }
-                        },
-                        "inherits": {
-                          "version": "2.0.3",
-                          "from": "inherits@>=2.0.0 <3.0.0",
-                          "resolved": "https://registry.npmjs.org/inherits/-/inherits-2.0.3.tgz"
-                        },
-                        "minimatch": {
-                          "version": "3.0.3",
-                          "from": "minimatch@>=3.0.2 <4.0.0",
-                          "resolved": "https://registry.npmjs.org/minimatch/-/minimatch-3.0.3.tgz",
-                          "dependencies": {
-                            "brace-expansion": {
-                              "version": "1.1.6",
-                              "from": "brace-expansion@>=1.0.0 <2.0.0",
-                              "resolved": "https://registry.npmjs.org/brace-expansion/-/brace-expansion-1.1.6.tgz",
-                              "dependencies": {
-                                "balanced-match": {
-                                  "version": "0.4.2",
-                                  "from": "balanced-match@>=0.4.1 <0.5.0",
-                                  "resolved": "https://registry.npmjs.org/balanced-match/-/balanced-match-0.4.2.tgz"
-                                },
-                                "concat-map": {
-                                  "version": "0.0.1",
-                                  "from": "concat-map@0.0.1",
-                                  "resolved": "https://registry.npmjs.org/concat-map/-/concat-map-0.0.1.tgz"
-                                }
-                              }
-                            }
-                          }
-                        },
-                        "once": {
-                          "version": "1.4.0",
-                          "from": "once@>=1.3.0 <2.0.0",
-                          "resolved": "https://registry.npmjs.org/once/-/once-1.4.0.tgz",
-                          "dependencies": {
-                            "wrappy": {
-                              "version": "1.0.2",
-                              "from": "wrappy@>=1.0.0 <2.0.0",
-                              "resolved": "https://registry.npmjs.org/wrappy/-/wrappy-1.0.2.tgz"
-                            }
-                          }
-                        },
-                        "path-is-absolute": {
-                          "version": "1.0.1",
-                          "from": "path-is-absolute@>=1.0.0 <2.0.0",
-                          "resolved": "https://registry.npmjs.org/path-is-absolute/-/path-is-absolute-1.0.1.tgz"
                         }
                       }
                     }
@@ -1561,7 +1424,7 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
       "from": "cartodb/cartodb.js#v4",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#1d6cc84e32cd11fa3554d38d9f708419ab0ad6ba",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#e86eba8aec0d915604dbe549fb56fdb6590bdcd5",
       "dependencies": {
         "backbone-poller": {
           "version": "1.1.3",
@@ -1603,9 +1466,9 @@
           "resolved": "https://registry.npmjs.org/d3/-/d3-3.5.17.tgz"
         },
         "tangram.cartodb": {
-          "version": "0.2.7",
+          "version": "0.3.0",
           "from": "cartodb/tangram.cartodb#master",
-          "resolved": "git://github.com/cartodb/tangram.cartodb.git#18e21d69512e494837171889009038fb0f39f74a",
+          "resolved": "git://github.com/cartodb/tangram.cartodb.git#f973792e341110835393521480672670e2e27dee",
           "dependencies": {
             "babel-runtime": {
               "version": "6.18.0",
@@ -1624,10 +1487,32 @@
                 }
               }
             },
+            "md5": {
+              "version": "2.2.1",
+              "from": "md5@>=2.2.1 <3.0.0",
+              "resolved": "https://registry.npmjs.org/md5/-/md5-2.2.1.tgz",
+              "dependencies": {
+                "charenc": {
+                  "version": "0.0.2",
+                  "from": "charenc@>=0.0.1 <0.1.0",
+                  "resolved": "https://registry.npmjs.org/charenc/-/charenc-0.0.2.tgz"
+                },
+                "crypt": {
+                  "version": "0.0.2",
+                  "from": "crypt@>=0.0.1 <0.1.0",
+                  "resolved": "https://registry.npmjs.org/crypt/-/crypt-0.0.2.tgz"
+                },
+                "is-buffer": {
+                  "version": "1.1.5",
+                  "from": "is-buffer@>=1.1.1 <1.2.0",
+                  "resolved": "https://registry.npmjs.org/is-buffer/-/is-buffer-1.1.5.tgz"
+                }
+              }
+            },
             "tangram-cartocss": {
-              "version": "0.4.3",
+              "version": "0.5.0",
               "from": "cartodb/tangram-carto#master",
-              "resolved": "git://github.com/cartodb/tangram-carto.git#96d2975c621cc6422ea33055fef98e435f04f5f9",
+              "resolved": "git://github.com/cartodb/tangram-carto.git#0b53ad9d6c81b2811b04416cb015e9481cc9d101",
               "dependencies": {
                 "babel-runtime": {
                   "version": "6.22.0",
@@ -1675,28 +1560,6 @@
                     }
                   }
                 },
-                "md5": {
-                  "version": "2.2.1",
-                  "from": "md5@2.2.1",
-                  "resolved": "https://registry.npmjs.org/md5/-/md5-2.2.1.tgz",
-                  "dependencies": {
-                    "charenc": {
-                      "version": "0.0.2",
-                      "from": "charenc@>=0.0.1 <0.1.0",
-                      "resolved": "https://registry.npmjs.org/charenc/-/charenc-0.0.2.tgz"
-                    },
-                    "crypt": {
-                      "version": "0.0.2",
-                      "from": "crypt@>=0.0.1 <0.1.0",
-                      "resolved": "https://registry.npmjs.org/crypt/-/crypt-0.0.2.tgz"
-                    },
-                    "is-buffer": {
-                      "version": "1.1.5",
-                      "from": "is-buffer@>=1.1.1 <1.2.0",
-                      "resolved": "https://registry.npmjs.org/is-buffer/-/is-buffer-1.1.5.tgz"
-                    }
-                  }
-                },
                 "ramda": {
                   "version": "0.23.0",
                   "from": "ramda@>=0.23.0 <0.24.0",
@@ -1710,9 +1573,9 @@
               }
             },
             "yamljs": {
-              "version": "0.2.8",
+              "version": "0.2.9",
               "from": "yamljs@>=0.2.8 <0.3.0",
-              "resolved": "https://registry.npmjs.org/yamljs/-/yamljs-0.2.8.tgz",
+              "resolved": "https://registry.npmjs.org/yamljs/-/yamljs-0.2.9.tgz",
               "dependencies": {
                 "argparse": {
                   "version": "1.0.9",
@@ -1723,76 +1586,6 @@
                       "version": "1.0.3",
                       "from": "sprintf-js@>=1.0.2 <1.1.0",
                       "resolved": "https://registry.npmjs.org/sprintf-js/-/sprintf-js-1.0.3.tgz"
-                    }
-                  }
-                },
-                "glob": {
-                  "version": "7.1.1",
-                  "from": "glob@>=7.0.5 <8.0.0",
-                  "resolved": "https://registry.npmjs.org/glob/-/glob-7.1.1.tgz",
-                  "dependencies": {
-                    "fs.realpath": {
-                      "version": "1.0.0",
-                      "from": "fs.realpath@>=1.0.0 <2.0.0",
-                      "resolved": "https://registry.npmjs.org/fs.realpath/-/fs.realpath-1.0.0.tgz"
-                    },
-                    "inflight": {
-                      "version": "1.0.6",
-                      "from": "inflight@>=1.0.4 <2.0.0",
-                      "resolved": "https://registry.npmjs.org/inflight/-/inflight-1.0.6.tgz",
-                      "dependencies": {
-                        "wrappy": {
-                          "version": "1.0.2",
-                          "from": "wrappy@>=1.0.0 <2.0.0",
-                          "resolved": "https://registry.npmjs.org/wrappy/-/wrappy-1.0.2.tgz"
-                        }
-                      }
-                    },
-                    "inherits": {
-                      "version": "2.0.3",
-                      "from": "inherits@>=2.0.0 <3.0.0",
-                      "resolved": "https://registry.npmjs.org/inherits/-/inherits-2.0.3.tgz"
-                    },
-                    "minimatch": {
-                      "version": "3.0.3",
-                      "from": "minimatch@>=3.0.2 <4.0.0",
-                      "resolved": "https://registry.npmjs.org/minimatch/-/minimatch-3.0.3.tgz",
-                      "dependencies": {
-                        "brace-expansion": {
-                          "version": "1.1.6",
-                          "from": "brace-expansion@>=1.0.0 <2.0.0",
-                          "resolved": "https://registry.npmjs.org/brace-expansion/-/brace-expansion-1.1.6.tgz",
-                          "dependencies": {
-                            "balanced-match": {
-                              "version": "0.4.2",
-                              "from": "balanced-match@>=0.4.1 <0.5.0",
-                              "resolved": "https://registry.npmjs.org/balanced-match/-/balanced-match-0.4.2.tgz"
-                            },
-                            "concat-map": {
-                              "version": "0.0.1",
-                              "from": "concat-map@0.0.1",
-                              "resolved": "https://registry.npmjs.org/concat-map/-/concat-map-0.0.1.tgz"
-                            }
-                          }
-                        }
-                      }
-                    },
-                    "once": {
-                      "version": "1.4.0",
-                      "from": "once@>=1.3.0 <2.0.0",
-                      "resolved": "https://registry.npmjs.org/once/-/once-1.4.0.tgz",
-                      "dependencies": {
-                        "wrappy": {
-                          "version": "1.0.2",
-                          "from": "wrappy@>=1.0.0 <2.0.0",
-                          "resolved": "https://registry.npmjs.org/wrappy/-/wrappy-1.0.2.tgz"
-                        }
-                      }
-                    },
-                    "path-is-absolute": {
-                      "version": "1.0.1",
-                      "from": "path-is-absolute@>=1.0.0 <2.0.0",
-                      "resolved": "https://registry.npmjs.org/path-is-absolute/-/path-is-absolute-1.0.1.tgz"
                     }
                   }
                 }
@@ -1985,12 +1778,12 @@
     "queue-async": {
       "version": "1.2.1",
       "from": "queue-async@1.2.1",
-      "resolved": "https://registry.npmjs.org/queue-async/-/queue-async-1.2.1.tgz"
+      "resolved": "http://registry.npmjs.org/queue-async/-/queue-async-1.2.1.tgz"
     },
     "tangram": {
-      "version": "0.11.8",
+      "version": "0.12.1",
       "from": "cartodb/tangram-1#master",
-      "resolved": "git://github.com/cartodb/tangram-1.git#5d22377c3c78b71929dc357900128077d8a6ab5e",
+      "resolved": "git://github.com/cartodb/tangram-1.git#05fbe2b438bb8be7cd411587d8d4e4415fe4227c",
       "dependencies": {
         "csscolorparser": {
           "version": "1.0.3",

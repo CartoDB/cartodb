@@ -3,6 +3,13 @@ var _ = require('underscore');
 
 function Dashboard (dashboard) {
   this._dashboard = dashboard;
+
+  this.onDataviewsFetched(function () {
+    dashboard.widgets._widgetsCollection.initialState();
+    dashboard.widgets._widgetsCollection.each(function (m) {
+      m && m.applyInitialState && m.applyInitialState();
+    });
+  });
 }
 
 Dashboard.prototype = {
@@ -21,6 +28,10 @@ Dashboard.prototype = {
     return this._dashboard.vis;
   },
 
+  reloadMap: function () {
+    this.getMap().reload();
+  },
+
   /**
    * @return {Array} of widgets in the dashboard
    */
@@ -37,7 +48,8 @@ Dashboard.prototype = {
     var mapState = this.getMapState();
     if (!_.isEmpty(mapState)) state.map = mapState;
 
-    var widgetsState = this._dashboard.widgets._widgetsCollection.getStates();
+    var widgetsCollection = this._dashboard.widgets.getCollection();
+    var widgetsState = widgetsCollection.getStates();
     if (!_.isEmpty(widgetsState)) state.widgets = widgetsState;
     return state;
   },
@@ -62,18 +74,26 @@ Dashboard.prototype = {
     this._dashboard.vis.mapvis.map.setBounds([state.map.ne, state.map.sw]);
   },
 
-  onStateChanged: function (callback, shareURLs) {
-    this._dashboard.vis.once('dataviewsFetched', function () {
-      this._dashboard.widgets._widgetsCollection.initialState();
-      this._dashboard.widgets._widgetsCollection.each(function (m) {
-        m.applyInitialState();
-      }, this);
-      shareURLs === true && this._bindChange(callback);
-    }, this);
+  onDataviewsFetched: function (callback) {
+    var areWidgetsInitialized = this._dashboard.areWidgetsInitialised();
+    if (areWidgetsInitialized) {
+      callback && callback();
+    } else {
+      this._dashboard.vis.once('dataviewsFetched', function () {
+        callback && callback();
+      });
+    }
+  },
+
+  onStateChanged: function (callback) {
+    this.onDataviewsFetched(function () {
+      callback && this._bindChange(callback);
+    }.bind(this));
   },
 
   _bindChange: function (callback) {
-    this._dashboard.widgets._widgetsCollection.bind('change', function () {
+    var widgetsCollection = this._dashboard.widgets.getCollection();
+    widgetsCollection.bind('change', function () {
       callback(this.getState(), this.getDashboardURL());
     }, this);
 

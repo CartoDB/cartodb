@@ -71,8 +71,8 @@
 }
 
 .NotificationsDropdown-item.is-new .NotificationsDropdown-itemIcon--alert {
-  color: $cHighlight-alert;
-  border-color: $cHighlight-alert;
+  color: $cNotification;
+  border-color: $cNotification;
 }
 .NotificationsDropdown-item.is-new .NotificationsDropdown-itemIcon--positive {
   color: $cHighlight-positive;
@@ -85,4 +85,7 @@
 .NotificationsDropdown-item.is-new .NotificationsDropdown-itemIcon--main {
   color: $cHighlight-main;
   border-color: $cHighlight-main;
+}
+.NotificationsDropdown-item.NotificationsDropdown-item--no-notifications {
+  padding-left: 0!important;
 }

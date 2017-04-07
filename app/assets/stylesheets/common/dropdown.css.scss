@@ -178,7 +178,7 @@
 
   .ScrollView {
     margin: 0;
-    padding: 0;
+    padding: 6px 0 6px 0;
     -webkit-flex-basis: auto;
     flex-basis: auto;
 
@@ -191,7 +191,7 @@
     }
   }
   .ps-scrollbar-y-rail {
-    right: 0 !Important;
+    right: 6px !Important;
     width: 4px !Important; // Resets standard scroll track color
     background: #EEE;
     z-index: 3;

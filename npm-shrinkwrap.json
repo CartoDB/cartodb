@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.6.57",
+  "version": "4.6.59",
   "dependencies": {
     "backbone": {
       "version": "1.2.3",
@@ -707,9 +707,9 @@
       "resolved": "git://github.com/cartodb/Backbone.Undo.js.git#c10e9977d22ecea1fabe894be650c78ac548911f"
     },
     "bootstrap-colorpicker": {
-      "version": "2.3.3",
-      "from": "bootstrap-colorpicker@2.3.3",
-      "resolved": "https://registry.npmjs.org/bootstrap-colorpicker/-/bootstrap-colorpicker-2.3.3.tgz"
+      "version": "2.4.0",
+      "from": "bootstrap-colorpicker@2.4.0",
+      "resolved": "https://registry.npmjs.org/bootstrap-colorpicker/-/bootstrap-colorpicker-2.4.0.tgz"
     },
     "browserify-shim": {
       "version": "3.8.12",

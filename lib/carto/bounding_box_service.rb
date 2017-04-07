@@ -32,7 +32,7 @@ class Carto::BoundingBoxService
     JSON.parse(@user.db_service.execute_in_user_database(%{
       SELECT _postgis_stats ('#{table_name}', 'the_geom');
     }).first['_postgis_stats'])['extent'].symbolize_keys
-  rescue => e
+  rescue PG::Error => e
     if e.message =~ /stats for (.*) do not exist/i
       begin
         current_bbox(table_name)

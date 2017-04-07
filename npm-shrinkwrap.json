@@ -1037,9 +1037,9 @@
       }
     },
     "camshaft-reference": {
-      "version": "0.30.0",
+      "version": "0.31.0",
       "from": "camshaft-reference@<2.0.0",
-      "resolved": "https://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.30.0.tgz"
+      "resolved": "https://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.31.0.tgz"
     },
     "carto": {
       "version": "0.15.1-cdb3",
@@ -1424,7 +1424,7 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
       "from": "cartodb/cartodb.js#v4",
-      "resolved": "git+https://github.com/cartodb/cartodb.js.git#46c38c40c1508ee9294d2e7573d334de1c908525",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#46c38c40c1508ee9294d2e7573d334de1c908525",
       "dependencies": {
         "backbone-poller": {
           "version": "1.1.3",

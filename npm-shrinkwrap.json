@@ -308,9 +308,9 @@
       "resolved": "https://registry.npmjs.org/cached-path-relative/-/cached-path-relative-1.0.1.tgz"
     },
     "camshaft-reference": {
-      "version": "0.30.0",
+      "version": "0.31.0",
       "from": "camshaft-reference@<2.0.0",
-      "resolved": "https://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.30.0.tgz"
+      "resolved": "https://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.31.0.tgz"
     },
     "carto": {
       "version": "0.15.1-cdb3",

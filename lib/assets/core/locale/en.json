@@ -519,7 +519,7 @@
     "likes-pluralize": "like |||| likes",
     "custom-list": {
       "placeholder": "Search by %{typeLabel}",
-      "no-items": "There is no %{typeLabel} items",
+      "no-items": "There are no %{typeLabel} items",
       "no-results": "No %{typeLabel} results found with '%{query}'",
       "add-custom-result": "Add custom value"
     },

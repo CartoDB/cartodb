@@ -5,11 +5,7 @@ module Carto::MapBoundaries
 
   def set_default_boundaries!
     bounds = get_map_bounds
-    if bounds
-      set_viewport_from_bounds(bounds)
-    else
-      set_default_viewport
-    end
+    bounds ? set_viewport_from_bounds(bounds) : set_default_viewport
     save
   rescue => exception
     CartoDB::Logger.error(exception: exception, message: 'Error setting default bounds')

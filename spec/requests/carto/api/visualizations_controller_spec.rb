@@ -1567,39 +1567,54 @@ describe Carto::Api::VisualizationsController do
     end
 
     describe '#destroy' do
+      include_context 'organization with users helper'
+      include TableSharing
+
+      def destroy_url(user, vis_id)
+        api_v1_visualizations_destroy_url(id: vis_id, user_domain: user.username, api_key: user.api_key)
+      end
+
       it 'returns 404 for nonexisting visualizations' do
-        delete_json(api_v1_visualizations_destroy_url(id: random_uuid, api_key: @api_key), {}, @headers) do |response|
+        delete_json(destroy_url(@carto_org_user_1, random_uuid)) do |response|
           expect(response.status).to eq 404
         end
       end
 
-      it 'returns 404 for not-accessible visualizations' do
-        other_visualization = FactoryGirl.create(:carto_visualization, user: @carto_user2)
-        delete_json(api_v1_visualizations_destroy_url(id: other_visualization.id, api_key: @api_key), {}, @headers) do |response|
+      it 'returns 404 for not-accesible visualizations' do
+        other_visualization = FactoryGirl.create(:carto_visualization, user: @carto_org_user_2)
+        delete_json(destroy_url(@carto_org_user_1, other_visualization.id)) do |response|
           expect(response.status).to eq 404
+        end
+      end
+
+      it 'returns 403 for not-owned visualizations' do
+        other_visualization = FactoryGirl.create(:carto_visualization, user: @carto_org_user_2)
+        share_visualization_with_user(other_visualization, @carto_org_user_1)
+        delete_json(destroy_url(@carto_org_user_1, other_visualization.id)) do |response|
+          expect(response.status).to eq 403
         end
       end
 
       it 'destroys a visualization by id' do
-        visualization = FactoryGirl.create(:carto_visualization, user: @carto_user1)
-        delete_json(api_v1_visualizations_destroy_url(id: visualization.id, api_key: @api_key), {}, @headers) do |response|
+        visualization = FactoryGirl.create(:carto_visualization, user: @carto_org_user_1)
+        delete_json(destroy_url(@carto_org_user_1, visualization.id)) do |response|
           expect(response.status).to eq 204
         end
       end
 
       it 'destroys a visualization by name' do
-        visualization = FactoryGirl.create(:carto_visualization, user: @carto_user1)
-        delete_json(api_v1_visualizations_destroy_url(id: visualization.name, api_key: @api_key), {}, @headers) do |response|
+        visualization = FactoryGirl.create(:carto_visualization, user: @carto_org_user_1)
+        delete_json(destroy_url(@carto_org_user_1, visualization.name)) do |response|
           expect(response.status).to eq 204
         end
       end
 
       it 'destroys a visualization and all of its dependencies' do
-        map, table, table_visualization, visualization = create_full_visualization(@carto_user1)
+        _, _, table_visualization, visualization = create_full_visualization(@carto_org_user_1)
 
         expect_visualization_to_be_destroyed(visualization) do
           expect_visualization_to_be_destroyed(table_visualization) do
-            delete_json(api_v1_visualizations_destroy_url(id: table_visualization.id, api_key: @api_key)) do |response|
+            delete_json(destroy_url(@carto_org_user_1, table_visualization.id)) do |response|
               expect(response.status).to eq 204
             end
           end

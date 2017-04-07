@@ -26,6 +26,7 @@ module Carto
       before_filter :id_and_schema_from_params
       before_filter :load_visualization, only: [:likes_count, :likes_list, :is_liked, :show, :stats, :list_watching,
                                                 :static_map, :vizjson2, :vizjson3, :destroy]
+      before_filter :ensure_visualization_owned, only: [:destroy]
 
       rescue_from Carto::LoadError, with: :rescue_from_carto_error
       rescue_from Carto::UUIDParameterFormatError, with: :rescue_from_carto_error
@@ -178,6 +179,10 @@ module Carto
         unless request_username_matches_visualization_owner
           raise Carto::LoadError.new('Visualization of that user does not exist', 404)
         end
+      end
+
+      def ensure_visualization_owned
+        raise Carto::LoadError.new('Visualization not editable', 403) unless @visualization.is_owner?(current_user)
       end
 
       # This avoids crossing usernames and visualizations.

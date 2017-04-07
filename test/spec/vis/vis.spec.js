@@ -1062,22 +1062,6 @@ describe('vis/vis', function () {
       });
     });
 
-    describe('.centerMapToOrigin', function () {
-      it('should invalidate size and re-center the map', function () {
-        var callback = jasmine.createSpy('callback');
-        this.vis.bind('invalidateSize', callback);
-
-        this.vis.load(new VizJSON(fakeVizJSON()));
-
-        spyOn(this.vis.map, 'reCenter');
-
-        this.vis.centerMapToOrigin();
-
-        expect(this.vis.map.reCenter).toHaveBeenCalled();
-        expect(callback).toHaveBeenCalled();
-      });
-    });
-
     describe('.getStaticImageURL', function () {
       beforeEach(function () {
         this.vis.layerGroupModel.set('urls', {

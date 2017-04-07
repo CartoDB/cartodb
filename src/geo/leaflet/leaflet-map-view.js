@@ -226,14 +226,10 @@ var LeafletMapView = MapView.extend({
   },
 
   invalidateSize: function () {
-    // there is a race condition in leaflet. If size is invalidated
-    // and at the same time the center is set the final center is displaced
-    // so set pan to false so the map is not moved and then force the map
-    // to be at the place it should be
-    this._leafletMap.invalidateSize({ pan: false }); // , animate: false });
-    this._leafletMap.setView(this.map.get('center'), this.map.get('zoom') || 0, {
-      animate: false
-    });
+    var center = this.map.get('center');
+    var zoom = this.map.get('zoom');
+    this._leafletMap.invalidateSize({ pan: false, animate: false });
+    this._leafletMap.setView(center, zoom, { pan: false, animate: false });
     this.map.setMapViewSize(this.getSize());
   },
 

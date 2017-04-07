@@ -17,7 +17,7 @@ describe('src/geo/leaflet/leaflet-cartodb-webgl-layer-group-view.js', function (
       layersCollection: this.layersCollection
     });
 
-    this.layerGroupModel.set('urls', { tiles: [] });
+    this.layerGroupModel.set('urls', { tiles: [], subdomains: ['a', 'b', 'c'] });
 
     this.vis = new VisModel();
 
@@ -53,9 +53,9 @@ describe('src/geo/leaflet/leaflet-cartodb-webgl-layer-group-view.js', function (
   it('should set a new tile template URL when urls change', function () {
     spyOn(this.view.tangram, 'addDataSource');
 
-    this.layerGroupModel.set('urls', { tiles: 'http://0.ashbu.cartocdn.com/documentation/api/v1/map/90e64f1b9145961af7ba36d71b887dd2:0/{layerIndexes}/{z}/{x}/{y}.{format}' });
+    this.layerGroupModel.set('urls', { tiles: 'http://0.ashbu.cartocdn.com/documentation/api/v1/map/90e64f1b9145961af7ba36d71b887dd2:0/{layerIndexes}/{z}/{x}/{y}.{format}', subdomains: ['a', 'b', 'c'] });
 
-    expect(this.view.tangram.addDataSource).toHaveBeenCalledWith('http://0.ashbu.cartocdn.com/documentation/api/v1/map/90e64f1b9145961af7ba36d71b887dd2:0/mapnik/{z}/{x}/{y}.mvt');
+    expect(this.view.tangram.addDataSource).toHaveBeenCalledWith('http://0.ashbu.cartocdn.com/documentation/api/v1/map/90e64f1b9145961af7ba36d71b887dd2:0/mapnik/{z}/{x}/{y}.mvt', ['a', 'b', 'c']);
   });
 
   it('should set a new tile with token when URL changes', function () {
@@ -63,8 +63,8 @@ describe('src/geo/leaflet/leaflet-cartodb-webgl-layer-group-view.js', function (
 
     spyOn(this.view.tangram, 'addDataSource');
 
-    this.layerGroupModel.set('urls', { tiles: 'http://0.ashbu.cartocdn.com/documentation/api/v1/map/90e64f1b9145961af7ba36d71b887dd2:0/{layerIndexes}/{z}/{x}/{y}.{format}' });
+    this.layerGroupModel.set('urls', { tiles: 'http://0.ashbu.cartocdn.com/documentation/api/v1/map/90e64f1b9145961af7ba36d71b887dd2:0/{layerIndexes}/{z}/{x}/{y}.{format}', subdomains: ['a', 'b', 'c'] });
 
-    expect(this.view.tangram.addDataSource).toHaveBeenCalledWith('http://0.ashbu.cartocdn.com/documentation/api/v1/map/90e64f1b9145961af7ba36d71b887dd2:0/mapnik/{z}/{x}/{y}.mvt?auth_token=hahskdfasd');
+    expect(this.view.tangram.addDataSource).toHaveBeenCalledWith('http://0.ashbu.cartocdn.com/documentation/api/v1/map/90e64f1b9145961af7ba36d71b887dd2:0/mapnik/{z}/{x}/{y}.mvt?auth_token=hahskdfasd', ['a', 'b', 'c']);
   });
 });

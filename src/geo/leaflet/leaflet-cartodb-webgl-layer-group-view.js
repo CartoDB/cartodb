@@ -7,7 +7,7 @@ var LeafletCartoDBWebglLayerGroupView = function (layerGroupModel, leafletMap) {
   LeafletLayerView.apply(this, arguments);
 
   layerGroupModel.bind('change:urls',
-    this._onURLsChanged(layerGroupModel.getTileURLTemplate.bind(layerGroupModel))
+    this._onURLsChanged(layerGroupModel)
   );
 
   this.tangram = new TC(leafletMap);
@@ -35,10 +35,10 @@ LeafletCartoDBWebglLayerGroupView.prototype = _.extend(
       });
     },
 
-    _onURLsChanged: function (getUrl) {
+    _onURLsChanged: function (layerGroupModel) {
       var self = this;
       return function () {
-        self.tangram.addDataSource(getUrl('mvt'));
+        self.tangram.addDataSource(layerGroupModel.getTileURLTemplate('mvt'), layerGroupModel.getSubdomains());
       };
     }
   }

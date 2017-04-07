@@ -74,8 +74,8 @@
     "jasmine": "2.5.2",
     "jasmine-ajax": "git://github.com/nobuti/jasmine-ajax.git#master",
     "jstify": "0.13.0",
-    "loadash": "4.17.4",
     "load-grunt-tasks": "3.2.0",
+    "lodash": "4.17.4",
     "minimist": "1.2.0",
     "open": "0.0.5",
     "parse-yarn-lock": "1.0.2",
@@ -174,7 +174,7 @@
   "scripts": {
     "test": "echo \"Run 'grunt test' to run specs through command line.\"",
     "preupdate-internal-deps": "echo 'DEPRECATED TASK, use `npm run-script update-internal-deps` instead'",
-    "update-internal-deps": "rm -rf node_modules && yarn update",
+    "update-internal-deps": "rm -rf node_modules && yarn upgrade",
     "branch-files": "node lib/build/branchFiles/branchFiles.js",
     "affected_specs": "node lib/build/branchFiles/branchFiles.js | xargs node lib/build/affectedFiles/affectedFiles.js"
   }

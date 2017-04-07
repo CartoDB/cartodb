@@ -10,7 +10,6 @@ var GoogleMapsMapView = MapView.extend({
     this._isReady = false;
 
     MapView.prototype.initialize.apply(this, arguments);
-    this._linkMapHelpers();
   },
 
   _createNativeMap: function () {

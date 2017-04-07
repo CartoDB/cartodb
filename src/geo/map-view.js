@@ -88,6 +88,8 @@ var MapView = View.extend({
     this._mapEventsManager = new MapEventsManager({
       mapModel: this._mapModel
     });
+
+    this._linkMapHelpers();
   },
 
   clean: function () {

@@ -5,11 +5,6 @@ var MapView = require('../map-view');
 var LeafletLayerViewFactory = require('./leaflet-layer-view-factory');
 
 var LeafletMapView = MapView.extend({
-  initialize: function () {
-    MapView.prototype.initialize.apply(this, arguments);
-    this._linkMapHelpers();
-  },
-
   _createNativeMap: function () {
     var self = this;
     var center = this.map.get('center');

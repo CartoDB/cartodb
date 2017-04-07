@@ -13,8 +13,8 @@
 </head>
 <body class="frontend">
   <%= yield %>
+  <%= insert_trackjs() %>
   <%= yield :js %>
   <%= insert_google_analytics('primary', true) %>
-  <%= insert_trackjs() %>
 </body>
 </html>

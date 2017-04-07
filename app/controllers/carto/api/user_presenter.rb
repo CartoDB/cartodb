@@ -180,11 +180,12 @@ module Carto
             import_table_rows: @user.max_import_table_row_count,
             max_layers: @user.max_layers
           },
+          google_maps_key: @user.google_maps_key,
           notification: @user.notification,
           avatar_url: @user.avatar,
           feature_flags: @user.feature_flag_names,
           base_url: @user.public_url,
-          needs_password_confirmation: @user.needs_password_confirmation?,
+          needs_password_confirmation: @user.needs_password_confirmation?
         }
 
         if @user.organization.present?

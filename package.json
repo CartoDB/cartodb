@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.6.43",
+  "version": "4.6.60",
   "description": "CARTO UI frontend",
   "repository": {
     "type": "git",
@@ -18,7 +18,7 @@
     "backbone-forms": "0.14.0",
     "backbone-model-file-upload": "CartoDB/backbone-model-file-upload#1.0.0",
     "backbone-undo": "cartodb/Backbone.Undo.js#c10e997",
-    "bootstrap-colorpicker": "2.3.3",
+    "bootstrap-colorpicker": "2.4.0",
     "browserify-shim": "3.8.12",
     "camshaft-reference": "<2.0",
     "carto": "cartodb/carto#master",
@@ -41,12 +41,17 @@
   "devDependencies": {
     "autoprefixer-core": "5.2.1",
     "aws-sdk": "2.0.0-rc11",
+    "bluebird": "3.5.0",
     "brfs": "^1.4.3",
     "browserify": "13.0.0",
     "browserify-resolutions": "1.1.0",
     "cartoassets": "cartodb/CartoAssets#master",
+    "colors": "1.1.2",
     "csswring": "^3.0.5",
+    "exports-loader": "0.6.4",
+    "fs-extra": "2.0.0",
     "git-rev": "0.2.1",
+    "glob": "7.1.1",
     "grunt": "0.4.5",
     "grunt-available-tasks": "0.5.4",
     "grunt-aws": "0.3.0",
@@ -64,19 +69,29 @@
     "grunt-contrib-uglify": "2.0.x",
     "grunt-contrib-watch": "1.0.0",
     "grunt-exorcise": "2.1.0",
-    "grunt-mustache": "0.1.7",
     "grunt-postcss": "0.5.5",
     "grunt-timer": "0.3.3",
     "jasmine": "2.5.2",
     "jasmine-ajax": "git://github.com/nobuti/jasmine-ajax.git#master",
     "jstify": "0.13.0",
+    "loadash": "4.17.4",
     "load-grunt-tasks": "3.2.0",
+    "minimist": "1.2.0",
     "open": "0.0.5",
     "parse-yarn-lock": "1.0.2",
+    "prettysize": "0.0.3",
+    "raw-loader": "0.5.1",
+    "recursive-readdir": "2.1.1",
     "semistandard": "7.0.4",
+    "semver": "4.3.6",
+    "shim-loader": "0.1.0",
     "source-map-support": "0.4.0",
+    "stringify": "5.1.0",
+    "tpl-loader": "git://github.com/ivanmalagon/tpl-loader.git#master",
     "uglify-js": "2.7.x",
-    "watchify": "3.7.0"
+    "watchify": "3.7.0",
+    "webpack": "2.2.1",
+    "webpack-stats-plugin": "0.1.4"
   },
   "browserify": {
     "transform": [
@@ -157,10 +172,10 @@
     "npmJsDir": "lib/assets"
   },
   "scripts": {
-    "test": "jasmine",
-    "test-debug": "node-debug --no-preload ./node_modules/.bin/jasmine --",
-    "test-watch": "watch 'npm test' $npm_package_config_npmJsDir",
+    "test": "echo \"Run 'grunt test' to run specs through command line.\"",
     "preupdate-internal-deps": "echo 'DEPRECATED TASK, use `npm run-script update-internal-deps` instead'",
-    "update-internal-deps": "rm -rf node_modules && yarn install"
+    "update-internal-deps": "rm -rf node_modules && yarn update",
+    "branch-files": "node lib/build/branchFiles/branchFiles.js",
+    "affected_specs": "node lib/build/branchFiles/branchFiles.js | xargs node lib/build/affectedFiles/affectedFiles.js"
   }
 }

@@ -7,15 +7,18 @@ module Carto
     MAX_BODY_LENGTH = 140
 
     # Update CartoGearsAPI::Notifications::Notification when adding constants here
-    ICON_WARNING = 'warning'.freeze
+    ICON_ALERT = 'alert'.freeze
     ICON_SUCCESS = 'success'.freeze
-    ICONS = [ICON_SUCCESS, ICON_WARNING].freeze
+    ICONS = [ICON_SUCCESS, ICON_ALERT].freeze
+
+    RECIPIENT_ALL = 'all'.freeze
+    RECIPIENTS = [RECIPIENT_ALL, 'builders'.freeze, 'viewers'.freeze].freeze
 
     belongs_to :organization, inverse_of: :notifications
     has_many :received_notifications, inverse_of: :notification
 
     validates :icon, presence: true, inclusion: { in: ICONS }
-    validates :recipients, inclusion: { in: [nil, 'builders', 'viewers', 'all'] }
+    validates :recipients, inclusion: { in: [nil] + RECIPIENTS }
     validates :recipients, presence: true, if: :organization
     validates :body, presence: true
     validate  :valid_markdown

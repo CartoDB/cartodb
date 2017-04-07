@@ -1,8 +1,17 @@
 # encoding utf-8
 
 class Carto::Api::NotificationPresenter
+  extend Forwardable
+  include Carto::HtmlSafe
+
+  delegate [:id, :icon, :recipients, :body, :created_at] => :@notification
+
   def initialize(notification)
     @notification = notification
+  end
+
+  def html_body
+    markdown_html_safe(@notification.body)
   end
 
   def to_hash

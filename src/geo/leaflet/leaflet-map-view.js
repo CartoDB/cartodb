@@ -72,6 +72,10 @@ var LeafletMapView = MapView.extend({
       self.trigger('drag');
     }, this);
 
+    this._leafletMap.on('resize', function () {
+      this.map.setMapViewSize(this.getSize());
+    }, this);
+
     this.map.bind('change:maxZoom', function () {
       L.Util.setOptions(self._leafletMap, { maxZoom: self.map.get('maxZoom') });
     }, this);

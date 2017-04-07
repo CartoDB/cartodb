@@ -66,6 +66,10 @@ var GoogleMapsMapView = MapView.extend({
       self.trigger('dblclick', e);
     });
 
+    google.maps.event.addListener(this._gmapsMap, 'bounds_changed', function (e) {
+      self.map.setMapViewSize(self.getSize());
+    });
+
     this.projector = new Projector(this._gmapsMap);
 
     this.projector.draw = this._ready;

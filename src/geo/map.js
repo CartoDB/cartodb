@@ -497,6 +497,7 @@ var Map = Model.extend({
 
   setMapViewSize: function (size) {
     this._mapViewSize = size;
+    this.trigger('mapViewSizeChanged');
   },
 
   getMapViewSize: function () {

@@ -238,22 +238,41 @@ describe('vis/vis', function () {
       expect(Vis.prototype.reload).toHaveBeenCalled();
     });
 
-    it('should reload the map when a new layer is added', function () {
-      this.vis.map.layers.add({ id: 'layer1' });
-      expect(Vis.prototype.reload).toHaveBeenCalledWith({
-        sourceId: 'layer1'
+    describe('on added layer', function () {
+      it('should reload the map', function () {
+        this.vis.map.layers.add({ id: 'layer1' });
+        expect(Vis.prototype.reload).toHaveBeenCalledWith({
+          sourceId: 'layer1'
+        });
+      });
+
+      it('should not reload the map if silent param is true', function () {
+        this.vis.map.layers.add({ id: 'layer1' }, { silent: true });
+        expect(Vis.prototype.reload).not.toHaveBeenCalled();
       });
     });
 
-    it('should reload the map when layers are removed', function () {
-      var layer = this.vis.map.layers.add({
-        id: 'layer1',
-        type: 'CartoDB'
-      }, { silent: true });
-      this.vis.map.layers.remove(layer);
+    describe('on removed layer', function () {
+      var layer;
+      beforeEach(function () {
+        layer = this.vis.map.layers.add({
+          id: 'layer1',
+          type: 'CartoDB'
+        }, { silent: true });
+      });
 
-      expect(Vis.prototype.reload).toHaveBeenCalledWith({
-        sourceId: 'layer1'
+      it('should reload the map', function () {
+        this.vis.map.layers.remove(layer);
+
+        expect(Vis.prototype.reload).toHaveBeenCalledWith({
+          sourceId: 'layer1'
+        });
+      });
+
+      it('should not reload the map if silent param is true', function () {
+        this.vis.map.layers.remove(layer, { silent: true });
+
+        expect(Vis.prototype.reload).not.toHaveBeenCalled();
       });
     });
 

@@ -393,6 +393,15 @@ describe('core/geo/map', function () {
           expect(this.map.layers.at(1)).toEqual(layer1);
           expect(this.map.layers.at(2)).toEqual(layer2);
         });
+
+        it('should remove the layer after it triggers a destroy event', function () {
+          spyOn(this.map, '_removeLayerModelFromCollection');
+          var layer = this.map[testCase.createMethod](testCase.testAttributes);
+          layer.collection = {};
+          var options = { silent: true };
+          layer.trigger('destroy', layer, layer.collection, options);
+          expect(this.map._removeLayerModelFromCollection).toHaveBeenCalledWith(layer, layer.collection, options);
+        });
       });
     }, this);
   });

@@ -36,7 +36,7 @@ module Carto
     # @raise [PG::Error] if the query fails
     def execute_in_user_database(query, *binds)
       @user.in_database.exec_query(query, 'ExecuteUserDb', binds.map { |v| [nil, v] })
-    rescue ActiveRecord::StatementInvalid >= exception
+    rescue ActiveRecord::StatementInvalid => exception
       raise exception.cause
     end
   end

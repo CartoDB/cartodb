@@ -192,6 +192,9 @@
 .cm-s-default .cm-attribute {color: #00c;}
 .cm-s-default .cm-hr {color: #999;}
 .cm-s-default .cm-link {color: #00c;}
+.cm-color:hover {
+  cursor: pointer;
+}
 
 .cm-s-default .cm-error {color: #f00;}
 .cm-invalidchar {color: #f00;}

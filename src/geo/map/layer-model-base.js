@@ -18,7 +18,7 @@ var MapLayer = Model.extend({
   // PUBLIC API METHODS
 
   remove: function (opts) {
-    opts = opts || {};
+    opts = opts || {};
     this.trigger('destroy', this, this.collection, opts);
   },
 

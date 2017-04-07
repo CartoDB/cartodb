@@ -12,7 +12,7 @@ describe('geo/map/layer-model-base.js', function () {
       var callback = jasmine.createSpy('callback');
       var collection = {};
       var option = { option: 'one' };
-      
+
       this.layer.bind('destroy', callback);
       this.layer.collection = collection;
       this.layer.remove(option);

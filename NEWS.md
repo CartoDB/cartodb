@@ -4,6 +4,7 @@ Development
 * An attacker could execute commands in the server running the queues by importing a file with a carefully crafted filename. Fixed in #11782
 
 ### Features
+* Using Node v6.9.2 and npm v3.10.9 (#11935).
 * Color picker for codemirror component.
 * New dropdown for Data Observatory (#11618)
 * Quota pre-check to analyses that consume quota.

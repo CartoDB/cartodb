@@ -19,6 +19,7 @@
     "backbone-model-file-upload": "CartoDB/backbone-model-file-upload#1.0.0",
     "backbone-undo": "cartodb/Backbone.Undo.js#c10e997",
     "bootstrap-colorpicker": "2.4.0",
+    "browserify": "13.0.0",
     "browserify-shim": "3.8.12",
     "camshaft-reference": "<2.0",
     "carto": "cartodb/carto#master",
@@ -42,7 +43,6 @@
     "aws-sdk": "2.0.0-rc11",
     "bluebird": "3.5.0",
     "brfs": "^1.4.3",
-    "browserify": "13.0.0",
     "browserify-resolutions": "1.1.0",
     "cartoassets": "cartodb/CartoAssets#master",
     "colors": "1.1.2",
@@ -171,7 +171,7 @@
   "scripts": {
     "test": "echo \"Run 'grunt test' to run specs through command line.\"",
     "preupdate-internal-deps": "echo 'DEPRECATED TASK, use `npm run-script update-internal-deps` instead'",
-    "update-internal-deps": "rm -rf node_modules && npm install --no-shrinkwrap && npm shrinkwrap",
+    "update-internal-deps": "rm -rf node_modules && npm install --production --no-shrinkwrap && npm dedupe && npm prune && npm shrinkwrap && npm install",
     "branch-files": "node lib/build/branchFiles/branchFiles.js",
     "affected_specs": "node lib/build/branchFiles/branchFiles.js | xargs node lib/build/affectedFiles/affectedFiles.js"
   }

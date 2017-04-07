@@ -6,10 +6,8 @@ var jasmineCfg = require('./lib/build/tasks/jasmine.js');
 var duplicatedDependencies = require('./lib/build/tasks/shrinkwrap-duplicated-dependencies.js');
 var webpackTask = null;
 
-var NODE_VERSION = '0.10.26 - 0.12';
-var NPM_VERSION = '2.14 - 2.15';
-var WEBPACK_NODE_VERSION = '6 - 7';
-var WEBPACK_NPM_VERSION = '2.14 - 3';
+var REQUIRED_NODE_VERSION = '6.9.2';
+var REQUIRED_NPM_VERSION = '3.10.9';
 
 var DEVELOPMENT = 'development';
 
@@ -88,12 +86,7 @@ module.exports = function(grunt) {
       checkVersion('npm -v', requiredNpmVersion, 'npm', logFn);
     }
 
-    if (grunt.cli.tasks.indexOf('affected_specs') > - 1) {
-      // Webpack needs a higher version of Node than the rest of the tasks.
-      preFlight(WEBPACK_NODE_VERSION, WEBPACK_NPM_VERSION, logVersionsError);
-    } else {
-      preFlight(NODE_VERSION, NPM_VERSION, logVersionsError);
-    }
+    preFlight(REQUIRED_NODE_VERSION, REQUIRED_NPM_VERSION, logVersionsError);
     grunt.log.writeln('');
 
     var duplicatedModules = duplicatedDependencies(require('./npm-shrinkwrap.json'), SHRINKWRAP_MODULES_TO_VALIDATE);

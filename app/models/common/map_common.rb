@@ -57,6 +57,6 @@ module Carto::MapBoundaries
 
   def get_map_bounds
     # (lon,lat) as comes out from postgis
-    Carto::BoundingBoxService.new(user, table_name).get_bounds
+    Carto::BoundingBoxService.new(user, table_name).table_bounds
   end
 end

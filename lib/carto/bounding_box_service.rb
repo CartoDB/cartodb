@@ -10,7 +10,7 @@ class Carto::BoundingBoxService
     @table_name = table_name
   end
 
-  def get_bounds
+  def table_bounds
     # (lon,lat) as comes out from postgis
     result = current_bbox_using_stats
     return nil unless result

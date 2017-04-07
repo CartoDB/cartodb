@@ -125,13 +125,13 @@ module Carto
       def destroy
         current_viewer_id = current_viewer.id
         properties = { user_id: current_viewer_id, visualization_id: @visualization.id }
+
+        # Tracking. Can this be moved to the model?
         if @visualization.derived?
           Carto::Tracking::Events::DeletedMap.new(current_viewer_id, properties).report
         else
           Carto::Tracking::Events::DeletedDataset.new(current_viewer_id, properties).report
-        end
 
-        if @visualization.table
           @visualization.table.fully_dependent_visualizations.each do |dependent_vis|
             properties = { user_id: current_viewer_id, visualization_id: dependent_vis.id }
             if dependent_vis.derived?
@@ -144,7 +144,7 @@ module Carto
 
         @visualization.destroy
 
-        return head 204
+        head 204
       rescue KeyError
         head(404)
       rescue Sequel::DatabaseError => e

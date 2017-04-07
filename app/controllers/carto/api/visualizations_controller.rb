@@ -145,10 +145,10 @@ module Carto
         @visualization.destroy
 
         head 204
-      rescue KeyError
-        head(404)
-      rescue Sequel::DatabaseError => e
-        render_jsonp({ errors: [e.message] }, 400)
+      rescue => exception
+        CartoDB::Logger.error(message: 'Error deleting visualization', exception: exception,
+                              visualization: @visualization)
+        render_jsonp({ errors: [exception.message] }, 400)
       end
 
       private

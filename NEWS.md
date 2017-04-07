@@ -186,6 +186,7 @@ Development
 * Merged fix subdomain error not loading tiles (CartoDB.js#1607)
 * Fixed way to listen Deep-insights.js map or widgets changes (#11894)
 * Using latest cartodb.js and deep-insights.js to tackle map zooming problem (support#605)
+* Disable geometry edition button instead of hide in read-only layers (#11543)
 
 4.0.x (2016-12-05)
 ------------------

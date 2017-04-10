@@ -189,6 +189,7 @@ Development
 * Default zoom for newly created maps without data is 3 (#11922)
 * Rearrange Error tracker script order (#11872)
 * Fix subdomain error not loading tiles.
+* Redirect to last visited page after logging in (#11946)
 * Sanitized HTML from map and layer names.
 * Merged fix subdomain error not loading tiles (CartoDB.js#1607)
 * Fixed way to listen Deep-insights.js map or widgets changes (#11894)

@@ -4,6 +4,7 @@ Development
 * An attacker could execute commands in the server running the queues by importing a file with a carefully crafted filename. Fixed in #11782
 
 ### Features
+* Exposed some cartodb.js methods through map definition model (#11846)
 * Dataservices configuration rake tasks (#11917)
   * `cartodb:services:set_user_quota[username,service,quota]` updated to support the `mapzen_routing` provider
   * `cartodb:services:set_org_quota[orgname,service,quota]` updated to support the `mapzen_routing` provider

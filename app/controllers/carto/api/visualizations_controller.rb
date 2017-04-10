@@ -184,7 +184,7 @@ module Carto
       end
 
       def ensure_visualization_owned
-        raise Carto::LoadError.new('Visualization not editable', 403) unless @visualization.is_owner?(current_user)
+        raise Carto::LoadError.new('Visualization not editable', 403) unless @visualization.is_owner?(current_viewer)
       end
 
       # This avoids crossing usernames and visualizations.

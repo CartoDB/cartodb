@@ -15,6 +15,11 @@ describe('geo/gmaps/gmaps-map-view', function () {
     map = new Map(null, {
       layersFactory: {}
     });
+
+    spyOn(map, 'setMapViewSize').and.callThrough();
+    spyOn(map, 'setPixelToLatLngConverter').and.callThrough();
+    spyOn(map, 'setLatLngToPixelConverter').and.callThrough();
+
     mapView = new GoogleMapsMapView({
       el: container,
       mapModel: map,
@@ -109,5 +114,32 @@ describe('geo/gmaps/gmaps-map-view', function () {
 
     map.trigger.calls.reset();
     mapView.trigger.calls.reset();
+  });
+
+  it('should set mapview size when bounds changes', function () {
+    google.maps.event.trigger(mapView._gmapsMap, 'bounds_changed');
+    expect(map.setMapViewSize).toHaveBeenCalled();
+  });
+
+  describe('converters', function () {
+    it('should set converters', function () {
+      expect(map.setPixelToLatLngConverter).toHaveBeenCalled();
+      expect(map.setLatLngToPixelConverter).toHaveBeenCalled();
+      expect(map._pixelToLatLngConverter).toBeDefined();
+      expect(map._latLngToPixelConverter).toBeDefined();
+    });
+
+    it('should call native methods', function () {
+      spyOn(mapView.projector, 'latLngToPixel').and.callThrough();
+      spyOn(mapView.projector, 'pixelToLatLng').and.callThrough();
+
+      var pixelToLatLng = map.pixelToLatLng();
+      pixelToLatLng({x: 0, y: 0});
+      expect(mapView.projector.pixelToLatLng).toHaveBeenCalled();
+
+      var latLngToPixel = map.latLngToPixel();
+      latLngToPixel([0, 0]);
+      expect(mapView.projector.latLngToPixel).toHaveBeenCalled();
+    });
   });
 });

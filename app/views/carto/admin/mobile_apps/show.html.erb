@@ -8,6 +8,7 @@
     var mobile_app_data = <%= safe_js_object @mobile_app.data(current_user).to_json %>;
     var icon_valid_extensions = <%= raw @icon_valid_extensions %>;
     var authenticity_token = "<%= form_authenticity_token %>";
+    var organization_notifications = <%= safe_js_object @organization_notifications.to_json %>;
   </script>
   <%= javascript_include_tag 'cdb.js', 'models.js', 'mobile_apps_templates.js', 'mobile_apps_deps.js', 'mobile_apps.js' -%>
 <% end %>

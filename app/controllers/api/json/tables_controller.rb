@@ -1,7 +1,6 @@
 # coding: UTF-8
 
 require_relative '../../../models/visualization/presenter'
-require_relative '../../../helpers/bounding_box_helper'
 require_dependency 'carto/db/user_schema'
 require_dependency 'carto/tracking/events'
 
@@ -97,7 +96,7 @@ class Api::Json::TablesController < Api::ApplicationController
           @stats_aggregator.timing('georeference') do
             @table.georeference_from!(:latitude_column => latitude_column, :longitude_column => longitude_column)
           end
-          BoundingBoxHelper.update_visualizations_bbox(@table)
+          @table.update_bounding_box
           render_jsonp(@table.public_values({request:request}).merge(warnings: warnings)) and return
         end
 

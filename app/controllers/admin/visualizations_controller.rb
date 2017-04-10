@@ -3,6 +3,7 @@ require_relative '../../models/map/presenter'
 require_relative '../carto/admin/user_table_public_map_adapter'
 require_relative '../carto/admin/visualization_public_map_adapter'
 require_relative '../carto/api/visualization_presenter'
+require_relative '../carto/api/received_notification_presenter'
 require_relative '../../helpers/embed_redis_cache'
 
 require_dependency 'carto/tracking/events'
@@ -62,6 +63,7 @@ class Admin::VisualizationsController < Admin::AdminController
 
     carto_viewer = current_viewer && Carto::User.where(id: current_viewer.id).first
     @dashboard_notifications = carto_viewer ? carto_viewer.notifications_for_category(:dashboard) : {}
+    @organization_notifications = carto_viewer ? carto_viewer.received_notifications.unread.map { |n| Carto::Api::ReceivedNotificationPresenter.new(n) } : {}
 
     current_user.view_dashboard
 

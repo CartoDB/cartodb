@@ -549,9 +549,20 @@ span.CodeMirror-selectedtext { background: none; }
 
   .CodeMirror {
     border-radius: 4px;
+
+    pre {
+      &.CodeMirror-line,
+      &.CodeMirror-placeholder {
+        padding: 0 4px;
+      }
+    }
   }
   .cm-s-material .CodeMirror-gutters {
     background: transparent;
+  }
+
+  .CodeMirror-selected {
+    left: 4px;
   }
 }
 .CodeMirror pre.CodeMirror-placeholder {

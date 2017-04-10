@@ -1,8 +1,10 @@
 # coding: utf-8
 require_relative './../helpers/avatar_helper'
+require_relative './../helpers/organization_notifications_helper'
 
 class Admin::OrganizationsController < Admin::AdminController
   include AvatarHelper
+  include OrganizationNotificationsHelper
 
   ssl_required :show, :settings, :settings_update, :regenerate_all_api_keys, :groups, :auth, :auth_update,
                :notifications, :new_notification, :destroy_notification
@@ -10,6 +12,7 @@ class Admin::OrganizationsController < Admin::AdminController
   before_filter :enforce_engine_enabled, only: :regenerate_all_api_keys
   before_filter :load_carto_organization, only: [:notifications, :new_notification]
   before_filter :load_notification, only: [:destroy_notification]
+  before_filter :load_organization_notifications, only: [:settings, :auth, :show, :groups, :notifications, :new_notification]
   helper_method :show_billing
 
   layout 'application'
@@ -182,5 +185,4 @@ class Admin::OrganizationsController < Admin::AdminController
   def load_notification
     @notification = Carto::Notification.find(params[:id])
   end
-
 end

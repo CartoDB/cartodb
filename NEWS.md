@@ -5,6 +5,11 @@ Development
 
 ### Features
 * Using Node v6.9.2 and npm v3.10.9 (#11935).
+* Dataservices configuration rake tasks (#11917)
+  * `cartodb:services:set_user_quota[username,service,quota]` updated to support the `mapzen_routing` provider
+  * `cartodb:services:set_org_quota[orgname,service,quota]` updated to support the `mapzen_routing` provider
+  * `cartodb:services:set_user_soft_limit[username,service,quota]` new task to set configure user soft limits
+  * `cartodb:services:set_org_soft_limit[orgname,service,quota]` new task to set configure organization soft limits
 * Color picker for codemirror component.
 * New dropdown for Data Observatory (#11618)
 * Quota pre-check to analyses that consume quota.
@@ -14,6 +19,7 @@ Development
 * Adds slider component to the forms (#11617)
 * Adds export as image (#11789)
   * Exports GMaps basemaps (#11775)
+  * Show error notifications (#11887)
 * New organization assets (#11034):
   * REST API available at `/api/v1/organization/<org_id>/assets`
   * Has DB migration
@@ -91,8 +97,11 @@ Development
 * Refactored Builder specs generation using Webpack (#11698)
 * Update cartodb.js to use multiple subdomains.
 * Update tangram to use subdomains.
+* New dashboard notifications added (#11807).
 
 ### Bug fixes
+* Don't make several requests when basemap is changed to a plain (color) one (#11445)
+* Fixed problem when provider has changed and map instantiation (#11910)
 * Fixed layers order when creating a new layer dragging from a compound analysis (#11827)
 * Fixed problem after filtering a widget, where style pane was not working (#11819)
 * Fixed problem removing a layer within the proper layer is throwing a JS error (#11803)
@@ -176,6 +185,7 @@ Development
 * Don't let user to apply icons over categories when auto-style is applied (#11761)
 * Update leaflet from 0.7.x to 1.0.x
 * No geometry messages are displayed after a new geometry is drawn (#11857)
+* Default zoom for newly created maps without data is 3 (#11922)
 * Rearrange Error tracker script order (#11872)
 * Fix subdomain error not loading tiles.
 * Sanitized HTML from map and layer names.

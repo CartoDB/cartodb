@@ -55,10 +55,16 @@ Dashboard.prototype = {
   },
 
   getMapState: function () {
-    var currentBoundingBox = this._dashboard.vis.map.getViewBounds();
+    var map = this._dashboard.vis.map;
+    var currentBoundingBox = map.getViewBounds();
+    var center = map.get('center');
+    var zoom = map.get('zoom');
+
     return {
       ne: currentBoundingBox[0],
-      sw: currentBoundingBox[1]
+      sw: currentBoundingBox[1],
+      center: center,
+      zoom: zoom
     };
   },
 

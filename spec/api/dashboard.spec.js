@@ -15,7 +15,10 @@ describe('dashboard', function () {
     var dashboardParameter = new Backbone.Model();
     dashboardParameter.widgets = widgets;
     dashboardParameter.vis = new Backbone.Model();
-    dashboardParameter.vis.map = new Backbone.Model();
+    dashboardParameter.vis.map = new Backbone.Model({
+      zoom: 5,
+      center: [24.4, 43.7]
+    });
     dashboardParameter.areWidgetsInitialised = function () {};
 
     this.dashboard = new Dashboard(dashboardParameter);
@@ -111,5 +114,19 @@ describe('dashboard', function () {
     spyOn(this.dashboard, 'getView').and.returnValue(view);
     expect(this.dashboard.getView().render().el).toBeDefined();
     expect(this.dashboard.getView().render().$('.js-map-wrapper').length).toBe(1);
+  });
+
+  it('state should return zoom and center', function () {
+    this.dashboard._dashboard.vis.map.getViewBounds = function () {
+      return [[-22.91792293614603, -205.83984375], [77.8418477505252, 10.8984375]];
+    };
+
+    var state = this.dashboard.getMapState();
+    expect(state.zoom).toBeDefined();
+    expect(state.center).toBeDefined();
+    expect(state.ne).toBeDefined();
+    expect(state.sw).toBeDefined();
+    expect(state.zoom).toBe(5);
+    expect(state.center).toEqual([24.4, 43.7]);
   });
 });

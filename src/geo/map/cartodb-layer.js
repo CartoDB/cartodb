@@ -37,6 +37,7 @@ var CartoDBLayer = LayerModelBase.extend({
 
     this.bind('change', this._onAttributeChanged, this);
     this.infowindow.fields.bind('reset add remove', this._reloadVis, this);
+    this.tooltip.fields.bind('reset add remove', this._reloadVis, this);
 
     LayerModelBase.prototype.initialize.apply(this, arguments);
   },

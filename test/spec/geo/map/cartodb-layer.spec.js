@@ -57,52 +57,99 @@ describe('geo/map/cartodb-layer', function () {
       expect(this.vis.reload).not.toHaveBeenCalled();
     });
 
-    it('should reload the map when infowindow fields are reset', function () {
-      var layer = new CartoDBLayer({}, { vis: this.vis });
-
-      layer.infowindow.fields.reset([
-        {
-          'name': 'name',
-          'title': true,
-          'position': 1
-        }
-      ]);
-
-      expect(this.vis.reload).toHaveBeenCalled();
-    });
-
-    it('should reload the map when infowindow fields are added', function () {
-      var layer = new CartoDBLayer({}, { vis: this.vis });
-
-      layer.infowindow.fields.add({
-        'name': 'name',
-        'title': true,
-        'position': 1
+    describe('popups changes', function () {
+      var layer;
+      beforeEach(function () {
+        layer = new CartoDBLayer({}, { vis: this.vis });
       });
 
-      expect(this.vis.reload).toHaveBeenCalled();
-    });
+      describe('infowindow bind', function () {
+        it('should reload the map when infowindow fields are reset', function () {
+          layer.infowindow.fields.reset([
+            {
+              'name': 'name',
+              'title': true,
+              'position': 1
+            }
+          ]);
 
-    it('should reload the map when infowindow fields are removed', function () {
-      var layer = new CartoDBLayer({}, { vis: this.vis });
+          expect(this.vis.reload).toHaveBeenCalled();
+        });
 
-      layer.infowindow.fields.add({
-        'name': 'name',
-        'title': true,
-        'position': 1
+        it('should reload the map when infowindow fields are added', function () {
+          layer.infowindow.fields.add({
+            'name': 'name',
+            'title': true,
+            'position': 1
+          });
+
+          expect(this.vis.reload).toHaveBeenCalled();
+        });
+
+        it('should reload the map when infowindow fields are removed', function () {
+          layer.infowindow.fields.add({
+            'name': 'name',
+            'title': true,
+            'position': 1
+          });
+
+          this.vis.reload.calls.reset();
+
+          layer.infowindow.fields.add({
+            'name': 'name',
+            'title': true,
+            'position': 1
+          });
+
+          layer.infowindow.fields.remove(layer.infowindow.fields.at(0));
+
+          expect(this.vis.reload).toHaveBeenCalled();
+        });
       });
 
-      this.vis.reload.calls.reset();
+      describe('tooltip bind', function () {
+        it('should reload the map when tooltip fields are reset', function () {
+          layer.tooltip.fields.reset([
+            {
+              'name': 'hello',
+              'title': false,
+              'position': 1
+            }
+          ]);
 
-      layer.infowindow.fields.add({
-        'name': 'name',
-        'title': true,
-        'position': 1
+          expect(this.vis.reload).toHaveBeenCalled();
+        });
+
+        it('should reload the map when tooltip fields are added', function () {
+          layer.tooltip.fields.add({
+            'name': 'pericamen',
+            'title': false,
+            'position': 1
+          });
+
+          expect(this.vis.reload).toHaveBeenCalled();
+        });
+
+        it('should reload the map when tooltip fields are removed', function () {
+          layer.tooltip.fields.add({
+            'name': 'rename',
+            'title': true,
+            'position': 1
+          });
+
+          this.vis.reload.calls.reset();
+
+          layer.tooltip.fields.add({
+            'name': 'name',
+            'title': true,
+            'position': 1
+          });
+
+          layer.tooltip.fields.remove(layer.tooltip.fields.at(0));
+
+          expect(this.vis.reload).toHaveBeenCalled();
+        });
       });
-
-      layer.infowindow.fields.remove(layer.infowindow.fields.at(0));
-
-      expect(this.vis.reload).toHaveBeenCalled();
     });
   });
 

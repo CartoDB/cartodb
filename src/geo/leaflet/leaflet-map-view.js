@@ -5,7 +5,6 @@ var MapView = require('../map-view');
 var LeafletLayerViewFactory = require('./leaflet-layer-view-factory');
 
 var LeafletMapView = MapView.extend({
-
   _createNativeMap: function () {
     var self = this;
     var center = this.map.get('center');
@@ -71,6 +70,10 @@ var LeafletMapView = MapView.extend({
         center: [c.lat, c.lng]
       });
       self.trigger('drag');
+    }, this);
+
+    this._leafletMap.on('resize', function () {
+      this.map.setMapViewSize(this.getSize());
     }, this);
 
     this.map.bind('change:maxZoom', function () {
@@ -226,6 +229,7 @@ var LeafletMapView = MapView.extend({
     var zoom = this.map.get('zoom');
     this._leafletMap.invalidateSize({ pan: false, animate: false });
     this._leafletMap.setView(center, zoom, { pan: false, animate: false });
+    this.map.setMapViewSize(this.getSize());
   },
 
   // GEOMETRY

@@ -33,6 +33,10 @@ describe('geo/leaflet/leaflet-map-view', function () {
       attribution: [ '© CARTO' ]
     });
 
+    spyOn(map, 'setMapViewSize').and.callThrough();
+    spyOn(map, 'setPixelToLatLngConverter').and.callThrough();
+    spyOn(map, 'setLatLngToPixelConverter').and.callThrough();
+
     this.layerGroupModel = new CartoDBLayerGroup({}, { layersCollection: new LayersCollection() });
     spyOn(this.layerGroupModel, 'hasTileURLTemplates').and.returnValue(true);
     spyOn(this.layerGroupModel, 'getTileURLTemplate').and.returnValue('http://documentation.cartodb.com/api/v1/map/90e64f1b9145961af7ba36d71b887dd2:0/0/{z}/{x}/{y}.png');
@@ -223,6 +227,33 @@ describe('geo/leaflet/leaflet-map-view', function () {
     mapView._leafletMap.fire('moveend');
 
     expect(map.trigger).toHaveBeenCalledWith('moveend', jasmine.any(Object));
+  });
+
+  it('should update mapView size on resize', function () {
+    mapView._leafletMap.fire('resize');
+    expect(map.setMapViewSize).toHaveBeenCalled();
+  });
+
+  describe('converters', function () {
+    it('should set converters', function () {
+      expect(map.setPixelToLatLngConverter).toHaveBeenCalled();
+      expect(map.setLatLngToPixelConverter).toHaveBeenCalled();
+      expect(map._pixelToLatLngConverter).toBeDefined();
+      expect(map._latLngToPixelConverter).toBeDefined();
+    });
+
+    it('should call native methods', function () {
+      spyOn(mapView._leafletMap, 'latLngToContainerPoint').and.callThrough();
+      spyOn(mapView._leafletMap, 'containerPointToLatLng').and.callThrough();
+
+      var pixelToLatLng = map.pixelToLatLng();
+      pixelToLatLng({x: 0, y: 0});
+      expect(mapView._leafletMap.containerPointToLatLng).toHaveBeenCalled();
+
+      var latLngToPixel = map.latLngToPixel();
+      latLngToPixel([0, 0]);
+      expect(mapView._leafletMap.latLngToContainerPoint).toHaveBeenCalled();
+    });
   });
 
   describe('.invalidateSize', function () {

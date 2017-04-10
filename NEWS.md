@@ -100,6 +100,7 @@ Development
 * New dashboard notifications added (#11807).
 
 ### Bug fixes
+* Update hover infowindow content when fields have changed (#11921)
 * Don't make several requests when basemap is changed to a plain (color) one (#11445)
 * Fixed problem when provider has changed and map instantiation (#11910)
 * Fixed layers order when creating a new layer dragging from a compound analysis (#11827)

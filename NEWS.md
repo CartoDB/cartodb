@@ -18,6 +18,7 @@ Development
 * Adds slider component to the forms (#11617)
 * Adds export as image (#11789)
   * Exports GMaps basemaps (#11775)
+  * Show error notifications (#11887)
 * New organization assets (#11034):
   * REST API available at `/api/v1/organization/<org_id>/assets`
   * Has DB migration

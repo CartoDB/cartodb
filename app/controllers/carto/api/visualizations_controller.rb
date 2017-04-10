@@ -131,7 +131,9 @@ module Carto
           Carto::Tracking::Events::DeletedMap.new(current_viewer_id, properties).report
         else
           Carto::Tracking::Events::DeletedDataset.new(current_viewer_id, properties).report
+        end
 
+        if @visualization.table
           @visualization.table.fully_dependent_visualizations.each do |dependent_vis|
             properties = { user_id: current_viewer_id, visualization_id: dependent_vis.id }
             if dependent_vis.derived?

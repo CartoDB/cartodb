@@ -11,6 +11,7 @@
     var iframe_src = '';
     var avatar_valid_extensions = <%= raw @avatar_valid_extensions %>;
     var dashboardNotifications = <%= safe_js_object @dashboard_notifications.to_json %>;
+    var organization_notifications = <%= safe_js_object @organization_notifications.to_json %>;
   </script>
   <%= javascript_include_tag 'cdb.js', 'models.js', 'account_templates.js', 'account_deps.js', 'account.js' -%>
 <% end %>

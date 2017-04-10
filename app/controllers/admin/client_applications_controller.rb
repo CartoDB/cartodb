@@ -1,12 +1,16 @@
 # coding: utf-8
+require_relative './../helpers/organization_notifications_helper'
 
 class Admin::ClientApplicationsController < Admin::AdminController
+  include OrganizationNotificationsHelper
+
   ssl_required :oauth, :api_key, :regenerate_api_key, :regenerate_oauth
 
   before_filter :invalidate_browser_cache
   before_filter :login_required
   before_filter :enforce_engine_enabled, only: :regenerate_api_key
   before_filter :load_dashboard_notifications, only: :api_key
+  before_filter :load_organization_notifications, only: :api_key
 
   layout 'application'
 

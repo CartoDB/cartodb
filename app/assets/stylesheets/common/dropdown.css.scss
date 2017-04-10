@@ -168,6 +168,64 @@
     margin-top: 0;
   }
 }
+.Dropdown-content {
+  @include display-flex();
+  @include flex(1);
+  @include flex-direction(column);
+  position: relative;
+  min-height: 0;
+  max-height: 300px;
+
+  .ScrollView {
+    margin: 0;
+    padding: 6px 0;
+    -webkit-flex-basis: auto;
+    flex-basis: auto;
+
+    .ScrollView-wrapper {
+      margin: 0;
+      padding: 0;
+    }
+    .ScrollView-content {
+      padding: 0;
+    }
+  }
+  .ps-scrollbar-y-rail {
+    right: 6px !Important;
+    width: 4px !Important; // Resets standard scroll track color
+    background: #EEE;
+    z-index: 3;
+  }
+  .ps-scrollbar-y {
+    right: 0 !important;
+    width: 4px !Important; // Resets standard scroll bar color
+    background: #AAA;
+    &:hover {
+      cursor: all-scroll;
+      cursor: -webkit-grab;
+    }
+    &:active {
+      cursor: -webkit-grabbing;
+    }
+  }
+  .ps-scrollbar-x-rail {
+    height: 2px !Important; // Resets standard scroll track color
+    border-top: 12px solid #FFF;
+    border-bottom: 2px solid #FFF;
+    background: #EEE;
+    z-index: 3;
+  }
+  .ps-scrollbar-x-rail .ps-scrollbar-x {
+    bottom: -1px !Important; // Resets standard scroll bar position
+    height: 4px !Important; // Resets standard scroll bar color
+    pointer-events: all;
+    opacity: 0.6;
+  }
+  .ps-container > .ps-scrollbar-x-rail,
+  .ps-container > .ps-scrollbar-y-rail {
+    opacity: 0.6;
+  }
+}
 
 // New styles //
 // TODO: clean old styles and use this standard ones + remove

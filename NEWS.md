@@ -173,6 +173,7 @@ Development
 * Fixed error handling if json "errors" field contains one single string (#11752)
 * Check for validation errors in EUMAPI user update endpoint (#11906)
 * Fix problem with perfect-scrollbar in Edge browsers (CartoDB/perfect-scrollbar/#2)
+* Skip loading common data for viewer users created via EUMAPI (#11909)
 * Layer onboardings are now aware on sync'd layers and highlighted area is clicked. (#11583)
 * Do not show builder activated notification for new users (#11720)
 * Fixed overflow on loaders.

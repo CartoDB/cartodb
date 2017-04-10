@@ -99,6 +99,8 @@ Development
 * New dashboard notifications added (#11807).
 
 ### Bug fixes
+* Don't make several requests when basemap is changed to a plain (color) one (#11445)
+* Fixed problem when provider has changed and map instantiation (#11910)
 * Fixed layers order when creating a new layer dragging from a compound analysis (#11827)
 * Fixed problem after filtering a widget, where style pane was not working (#11819)
 * Fixed problem removing a layer within the proper layer is throwing a JS error (#11803)

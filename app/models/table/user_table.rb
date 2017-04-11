@@ -224,6 +224,7 @@ class UserTable < Sequel::Model
     @partially_dependent_visualizations_cache.each do |visualization|
       visualization.unlink_from(self)
     end
+    synchronization.delete if synchronization
 
     service.after_destroy
     super

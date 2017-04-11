@@ -75,7 +75,7 @@ class Carto::Visualization < ActiveRecord::Base
 
   has_many :related_templates, class_name: Carto::Template, foreign_key: :source_visualization_id
 
-  has_one :synchronization, class_name: Carto::Synchronization
+  has_one :synchronization, class_name: Carto::Synchronization, dependent: :destroy
   has_many :external_sources, class_name: Carto::ExternalSource
 
   has_many :analyses, class_name: Carto::Analysis

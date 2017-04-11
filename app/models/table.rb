@@ -483,8 +483,6 @@ class Table
   end
 
   def after_destroy
-    # Delete visualization BEFORE deleting metadata, or named map won't be destroyed properly
-    @table_visualization.delete_from_table if @table_visualization
     Tag.filter(user_id: user_id, table_id: id).delete
     remove_table_from_stats
 
@@ -492,7 +490,6 @@ class Table
 
     update_cdb_tablemetadata if real_table_exists?
     remove_table_from_user_database unless keep_user_database_table
-    synchronization.delete if synchronization
 
     related_templates.each { |template| template.destroy }
   end

@@ -16,7 +16,7 @@ module Carto
       include Carto::ControllerHelper
       include VisualizationsControllerHelper
 
-      ssl_required :index, :show
+      ssl_required :index, :show, :destroy
       ssl_allowed  :vizjson2, :vizjson3, :likes_count, :likes_list, :is_liked, :list_watching, :static_map
 
       # TODO: compare with older, there seems to be more optional authentication endpoints

@@ -197,6 +197,13 @@ Development
 * Fixed way to listen Deep-insights.js map or widgets changes (#11894)
 * Using latest cartodb.js and deep-insights.js to tackle map zooming problem (support#605)
 
+### NOTICE
+This release upgrades the CartoDB PostgreSQL extension to `0.19.0`. Run the following to have it available:
+```shell
+cd $(git rev-parse --show-toplevel)/lib/sql
+sudo make install
+```
+
 4.0.x (2016-12-05)
 ------------------
 

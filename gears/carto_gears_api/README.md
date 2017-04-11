@@ -89,16 +89,71 @@ Documented ERBs are listed in the "Files" top left section at the docs.
 
 Note: YARD support for ERB files is quite limited, and ERBs documentation is still ongoing.
 
-### Extension points
+## Queue system
 
-#### Adding links to profile page
+CARTO provides a queuing system. In order to send a job to the queue, do this:
+
+```ruby
+require 'carto_gears_api/queue/jobs_service'
+CartoGearsApi::Queue::JobsService.new.send_job('MyModule::MyClass', :class_method, 'param1', 2)
+```
+
+See more details at {CartoGearsApi::Queue::JobsService}.
+
+## Sending emails
+
+You can use the queue system and whatever you need for sending emails. The most straightforward way is using
+Rails mailers.
+
+You can send a test email to check that Rails is properly configured:
+
+```ruby
+CartoGearsApi::Mailers::TestMail.test_mail('juanignaciosl@carto.com', 'juanignaciosl@carto.com', 'show!')
+```
+
+Using the queue:
+
+```ruby
+CartoGearsApi::Queue::JobsService.new.send_job('CartoGearsApi::Mailers::TestMail', :test_mail, from, to, subject)
+```
+
+Sending your own email:
+
+
+```ruby
+class MyMail < ActionMailer::Base
+  def a_mail(to)
+    mail(to: to, from: 'contact@carto.com', subject: 'the subject').deliver
+  end
+end
+
+CartoGearsApi::Queue::JobsService.new.send_job('MyMail', :a_mail, 'support@carto.com')
+```
+
+CARTO Gears API also provides a `CartoGearsApi::Mailers::BaseMail` mailer with CARTO standard layout and from.
+Usage example:
+
+```ruby
+class MyMail < CartoGearsApi::Mailers::BaseMail
+  def a_mail(to)
+    mail(to: to, subject: 'the subject').deliver
+  end
+end
+```
+
+## Extension points
+
+Most extension points require a registration during intialization. A good
+place to put the code it is inside a file in +config/initializers+.
+
+### Adding links to profile page
 
 See creation at {CartoGearsApi::Pages::SubheaderLink}.
 Example:
 
 ```ruby
 CartoGearsApi::Pages::Subheader.instance.links_generators << lambda do |context|
-  user = CartoGearsApi::UsersService.new.logged_user(context.request)
+  user = CartoGearsApi::Users::UsersService.new.logged_user(context.request)
   if user.has_feature_flag?('carto_experimental_gear')
     include CartoGearsApi::UrlHelper
 
@@ -109,5 +164,17 @@ CartoGearsApi::Pages::Subheader.instance.links_generators << lambda do |context|
           controller: 'my_gear/something')
     ]
   end
+end
+```
+
+#### Events
+
+See a list of events at {CartoGearsApi::Events::BaseEvent} and how to subscribe to them with
+{CartoGearsApi::Events::EventManager}.
+Example:
+
+```ruby
+CartoGearsApi::Events::EventManager.instance.subscribe(CartoGearsApi::Events::UserCreationEvent) do |event|
+  puts "Welcome #{event.user.username}"
 end
 ```

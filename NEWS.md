@@ -4,6 +4,12 @@ Development
 * An attacker could execute commands in the server running the queues by importing a file with a carefully crafted filename. Fixed in #11782
 
 ### Features
+* Dataservices configuration rake tasks (#11917)
+  * `cartodb:services:set_user_quota[username,service,quota]` updated to support the `mapzen_routing` provider
+  * `cartodb:services:set_org_quota[orgname,service,quota]` updated to support the `mapzen_routing` provider
+  * `cartodb:services:set_user_soft_limit[username,service,quota]` new task to set configure user soft limits
+  * `cartodb:services:set_org_soft_limit[orgname,service,quota]` new task to set configure organization soft limits
+* Color picker for codemirror component.
 * New dropdown for Data Observatory (#11618)
 * Quota pre-check to analyses that consume quota.
 * Marking 'Do not show me again' in Layer Onboarding affects every tab. (#11586)
@@ -11,6 +17,8 @@ Development
 * Improve dialog forms to render them floated. (#7786)
 * Adds slider component to the forms (#11617)
 * Adds export as image (#11789)
+  * Exports GMaps basemaps (#11775)
+  * Show error notifications (#11887)
 * New organization assets (#11034):
   * REST API available at `/api/v1/organization/<org_id>/assets`
   * Has DB migration
@@ -59,7 +67,11 @@ Development
   * Sets the default initial size for icons to 20px (#11498)
 * Onboarding for layer edition (#10905)
 * Initial support for Rails engines with CARTO Gears.
+* Improved empty bounds map handling (#11711).
+* Updated diagnosis page versions.
+* Improved formula widget description field. (#11469)
   * Notification API (#11850)
+  * Queue and Email support (#11692).
 * Improved empty bounds map handling (#11711).
 * Updated diagnosis page versions.
 * Improved formula widget description field (#11469).
@@ -81,9 +93,14 @@ Development
     * Optimized access to redis storage (#11809)
     * Add back FREE users to overquota calculation (#11848)
 * Update tangram-cartocss to use smooth point outline.
+* Refactored Builder specs generation using Webpack (#11698)
 * Update cartodb.js to use multiple subdomains.
+* Update tangram to use subdomains.
+* New dashboard notifications added (#11807).
 
 ### Bug fixes
+* Don't make several requests when basemap is changed to a plain (color) one (#11445)
+* Fixed problem when provider has changed and map instantiation (#11910)
 * Fixed layers order when creating a new layer dragging from a compound analysis (#11827)
 * Fixed problem after filtering a widget, where style pane was not working (#11819)
 * Fixed problem removing a layer within the proper layer is throwing a JS error (#11803)
@@ -102,6 +119,7 @@ Development
 * Fixed missing metadata option in header when dataset is sync (#11458)
 * Fixed problem with dates when filtering time series widget
 * Fixed problem switching between qualitative and quantitative attributes (#10654)
+* Fixed problem with Google Maps API key inheritance from organizations (#11923)
 * Fixed problem found in Surfaces related with map panning and widgets filtering
 * Style with icons
   * Reset icon on map when you remove that custom icon
@@ -112,11 +130,13 @@ Development
   * Run `cartodb:db:register_table_dependencies` rake to update caches for existing maps
 * Categories legend are now static (#10972)
 * Fixed a bug with vizjson invalidation (#11092). It was introduced in #10934
+* Refactor Layer model (#10934) and UserTable (#11589, #11700).
 * Refactor Layer model (#10934) and UserTable (#11589, #11700, #11737).
 * Correctly render map previews for maps with google basemaps (#11608)
 * Do not trigger visualization hooks on state update (#11701)
 * Refactor Layer model (#10934)
 * Correctly register table dependencies of torque layers (#11549)
+* Validate number of organization seats in user update (#11839)
 * Validate number of organization seats in user update (#11839, #11859)
 * Fix bugs where legends where being hidden by reordering layers (#11088)
 * Correctly ask for alternative username when signing up with Google/GitHub into an organization
@@ -125,7 +145,7 @@ Development
 * Warn about affected maps on dataset deletion (regression, fixed in #11801)
 * Fix color for "Other" category (#11078)
 * Validate that only one legend per type (color/size) is allowed (#11556)
-* Enable more security HTTP headers (#11727)
+* Enable more security HTTP headers (#11727 and 5e2d4f55ee3c19b3c7fc048977ca5901e28798e3)
 * Clean up import directory when importing from URL (#11599)
 * Custom errors for latitude/longitude out of bounds (#11060, #11048)
 * Fix timeseries widget height (#11077)
@@ -151,6 +171,7 @@ Development
 * Fix for race condition when importing files and deploying at the same time (#11653)
 * Correctly create custom category legend if style has icons (#11592)
 * Fixed error handling if json "errors" field contains one single string (#11752)
+* Check for validation errors in EUMAPI user update endpoint (#11906)
 * Fix problem with perfect-scrollbar in Edge browsers (CartoDB/perfect-scrollbar/#2)
 * Layer onboardings are now aware on sync'd layers and highlighted area is clicked. (#11583)
 * Do not show builder activated notification for new users (#11720)
@@ -162,8 +183,14 @@ Development
 * Fix problem when number column is used like categories in fill component (#11736)
 * Don't let user to apply icons over categories when auto-style is applied (#11761)
 * Update leaflet from 0.7.x to 1.0.x
+* No geometry messages are displayed after a new geometry is drawn (#11857)
+* Default zoom for newly created maps without data is 3 (#11922)
 * Rearrange Error tracker script order (#11872)
 * Fix subdomain error not loading tiles.
+* Sanitized HTML from map and layer names.
+* Merged fix subdomain error not loading tiles (CartoDB.js#1607)
+* Fixed way to listen Deep-insights.js map or widgets changes (#11894)
+* Using latest cartodb.js and deep-insights.js to tackle map zooming problem (support#605)
 
 4.0.x (2016-12-05)
 ------------------

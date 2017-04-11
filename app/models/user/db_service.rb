@@ -22,7 +22,7 @@ module CartoDB
       SCHEMA_GEOCODING = 'cdb'.freeze
       SCHEMA_CDB_DATASERVICES_API = 'cdb_dataservices_client'.freeze
       SCHEMA_AGGREGATION_TABLES = 'aggregation'.freeze
-      CDB_DATASERVICES_CLIENT_VERSION = '0.15.0'.freeze
+      CDB_DATASERVICES_CLIENT_VERSION = '0.16.0'.freeze
       ODBC_FDW_VERSION = '0.2.0'.freeze
 
       def initialize(user)
@@ -1248,6 +1248,19 @@ module CartoDB
             db.run("GRANT SELECT ON TABLE #{SCHEMA_AGGREGATION_TABLES}.agg_admin1 TO \"#{@user.database_username}\";")
           end
         end
+      end
+
+      # Execute a query in the user database
+      # @param [String] query, using $1, $2 ... for placeholders
+      # @param ... values for the placeholders
+      # @return [Array<Hash<String, Value>>] Something (an actual Array in this case) that behaves like an Array
+      #                                      of Hashes that map column name (as string) to value
+      # @raise [PG::Error] if the query fails
+      def execute_in_user_database(query, *binds)
+        placeholder_query = query.gsub(/\$\d+/, '?')
+        @user.in_database.fetch(placeholder_query, *binds).all.map(&:stringify_keys)
+      rescue Sequel::DatabaseError => exception
+        raise exception.cause
       end
 
       private

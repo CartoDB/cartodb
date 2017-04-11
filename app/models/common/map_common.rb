@@ -1,17 +1,34 @@
+require_dependency 'carto/bounding_box_service'
+
 module Carto::MapBoundaries
   MAXIMUM_ZOOM = 18
 
   def set_default_boundaries!
     bounds = get_map_bounds
-    set_boundaries(bounds)
-    recenter_using_bounds(bounds)
-    recalculate_zoom(bounds)
+    bounds ? set_viewport_from_bounds(bounds) : set_default_viewport
     save
   rescue => exception
     CartoDB::Logger.error(exception: exception, message: 'Error setting default bounds')
   end
 
+  def recalculate_bounds!
+    set_boundaries(get_map_bounds || Carto::BoundingBoxUtils::DEFAULT_BOUNDS)
+    save
+  end
+
   private
+
+  def set_viewport_from_bounds(bounds)
+    set_boundaries(bounds)
+    recenter_using_bounds(bounds)
+    recalculate_zoom(bounds)
+  end
+
+  def set_default_viewport
+    set_boundaries(Carto::BoundingBoxUtils::DEFAULT_BOUNDS)
+    self.center = Carto::Map::DEFAULT_OPTIONS[:center]
+    self.zoom = Carto::Map::DEFAULT_OPTIONS[:zoom]
+  end
 
   def set_boundaries(bounds)
     # switch to (lat,lon) for the frontend
@@ -36,5 +53,10 @@ module Carto::MapBoundaries
     zoom = [[zoom.round, 1].max, MAXIMUM_ZOOM].min
 
     self.zoom = zoom
+  end
+
+  def get_map_bounds
+    # (lon,lat) as comes out from postgis
+    Carto::BoundingBoxService.new(user, table_name).table_bounds
   end
 end

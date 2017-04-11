@@ -15,6 +15,7 @@
           var avatar_valid_extensions = <%= raw @avatar_valid_extensions %>;
         <% end %>
         var mobile_enabled = "<%= current_user.mobile_sdk_enabled? %>";
+        var organization_notifications = <%= safe_js_object @organization_notifications.to_json %>;
     </script>
     <%= javascript_include_tag 'cdb.js', 'models.js', 'organization_templates.js', 'organization_deps.js', 'organization.js' -%>
 <% end %>

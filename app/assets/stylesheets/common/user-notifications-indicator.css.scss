@@ -27,7 +27,7 @@ $selectedColor: white;
   @include transition(all, .5s, ease-in-out);
   @include transform(scale(0));
   color: $cHighlight-negative;
-  background-color: #73C86B;
+  background-color: $cNotification;
 }
 // States
 .UserNotifications.has--alerts {

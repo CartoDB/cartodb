@@ -96,8 +96,8 @@ module CartoDB
         current_directory = Dir.pwd
         Dir.chdir(temporary_directory)
 
-        stdout, stderr, status = safe_unp_path(path) do |path|
-          Open3.capture3(*command_for(path))
+        stdout, stderr, status = safe_unp_path(path) do |safe_path|
+          Open3.capture3(*command_for(safe_path))
         end
 
         Dir.chdir(current_directory)
@@ -242,7 +242,7 @@ module CartoDB
             FileUtils.mv(new_path, path)
           end
         else
-          return yield(path)
+          yield(path)
         end
       end
     end

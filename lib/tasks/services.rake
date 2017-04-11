@@ -146,7 +146,7 @@ namespace :cartodb do
       assert_valid_arg args, :soft_limit, accepted_values: ['true', 'false']
 
       service_quota_key = "soft_#{service}_limit="
-      user.send(service_quota_key, soft_limit)
+      org.send(service_quota_key, soft_limit)
       org.save
 
       puts "Changed the organization soft limit for service #{service} to #{soft_limit}."

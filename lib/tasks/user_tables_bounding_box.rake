@@ -1,5 +1,4 @@
 # encoding: utf-8
-require_relative '../../app/helpers/bounding_box_helper'
 
 namespace :cartodb do
   namespace :tables do
@@ -17,7 +16,7 @@ namespace :cartodb do
       updated = 0
       table_names.each do |table_name|
         table = Helpers::TableLocator.new.get_by_id_or_name(table_name[:name], user)
-        BoundingBoxHelper.update_visualizations_bbox(table)
+        table.update_bounding_box
         updated += 1
       end
       puts "Updated #{updated} tables"

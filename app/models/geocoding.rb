@@ -5,7 +5,6 @@ require_relative '../../services/table-geocoder/lib/exceptions'
 require_relative '../../services/table-geocoder/lib/mail_geocoder'
 require_relative '../../services/geocoder/lib/geocoder_config'
 require_relative '../../lib/cartodb/metrics'
-require_relative '../../app/helpers/bounding_box_helper'
 require_relative 'log'
 require_relative '../../lib/cartodb/stats/geocoding'
 
@@ -351,7 +350,7 @@ class Geocoding < Sequel::Model
     # In the import table_service could be nil
     if !table_service.nil?
       # To store the bbox in visualizations
-      BoundingBoxHelper.update_visualizations_bbox(table_service)
+      table_service.update_bounding_box
     end
     self.report
   end

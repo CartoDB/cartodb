@@ -2223,6 +2223,7 @@
       "cancel": "Cancel",
       "geometry": "Geometry",
       "geometry-edit": "You can also edit it on the map",
+      "geometry-disabled": "Not available for hidden or read only layers",
       "out-of-bounds-lng": "Longitude is out of bounds [-180, 180]",
       "out-of-bounds-lat": "Latitude is out of bounds [-90, 90]",
       "valid-lng": "Must be a valid longitude",

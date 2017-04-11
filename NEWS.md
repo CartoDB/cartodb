@@ -4,6 +4,7 @@ Development
 * An attacker could execute commands in the server running the queues by importing a file with a carefully crafted filename. Fixed in #11782
 
 ### Features
+* Exposed some cartodb.js methods through map definition model (#11846)
 * Dataservices configuration rake tasks (#11917)
   * `cartodb:services:set_user_quota[username,service,quota]` updated to support the `mapzen_routing` provider
   * `cartodb:services:set_org_quota[orgname,service,quota]` updated to support the `mapzen_routing` provider
@@ -101,6 +102,7 @@ Development
 
 ### Bug fixes
 * Disable export image button if not validated (#11949)
+* Update hover infowindow content when fields have changed (#11921)
 * Don't make several requests when basemap is changed to a plain (color) one (#11445)
 * Fixed problem when provider has changed and map instantiation (#11910)
 * Fixed layers order when creating a new layer dragging from a compound analysis (#11827)
@@ -190,6 +192,7 @@ Development
 * Default zoom for newly created maps without data is 3 (#11922)
 * Rearrange Error tracker script order (#11872)
 * Fix subdomain error not loading tiles.
+* Redirect to last visited page after logging in (#11946)
 * Sanitized HTML from map and layer names.
 * Merged fix subdomain error not loading tiles (CartoDB.js#1607)
 * Fixed way to listen Deep-insights.js map or widgets changes (#11894)

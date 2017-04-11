@@ -1,4 +1,4 @@
-<button class="CDB-Button CDB-Button--primary u-rSpace js-ok track-ImageExport track-export
+<button class="CDB-Button CDB-Button--primary js-ok track-ImageExport track-export
   <% if (isLoading || isDisabled) { %> is-disabled <% } %>
   "
   <% if (isDisabled) { %> disabled <% } %>>

@@ -86,8 +86,11 @@ module.exports = function(grunt) {
       checkVersion('npm -v', requiredNpmVersion, 'npm', logFn);
     }
 
-    preFlight(REQUIRED_NODE_VERSION, REQUIRED_NPM_VERSION, logVersionsError);
-    grunt.log.writeln('');
+    var mustCheckNodeVersion = grunt.option('no-node-checker');
+    if (!mustCheckNodeVersion) {
+      preFlight(REQUIRED_NODE_VERSION, REQUIRED_NPM_VERSION, logVersionsError);
+      grunt.log.writeln('');
+    }
 
     var duplicatedModules = duplicatedDependencies(require('./npm-shrinkwrap.json'), SHRINKWRAP_MODULES_TO_VALIDATE);
     if (duplicatedModules.length > 0) {

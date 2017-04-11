@@ -196,6 +196,7 @@ Development
 * Merged fix subdomain error not loading tiles (CartoDB.js#1607)
 * Fixed way to listen Deep-insights.js map or widgets changes (#11894)
 * Using latest cartodb.js and deep-insights.js to tackle map zooming problem (support#605)
+* Fix organization notifications issues (#11957)
 
 4.0.x (2016-12-05)
 ------------------

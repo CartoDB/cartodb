@@ -1869,8 +1869,8 @@
       },
       "messages": {
         "sql-readonly": {
-          "title": "SQL ONLY READ",
-          "body": "You just applied an analysis to this layer. The SQL is now read only.",
+          "title": "SQL READ-ONLY",
+          "body": "You just applied an analysis to this layer. The SQL is now read-only.",
           "accept": "CLOSE"
         },
         "empty-data": {

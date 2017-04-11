@@ -19,11 +19,11 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   include Carto::VisualizationMigrator
 
   ssl_allowed :notify_watching, :list_watching, :add_like, :remove_like
-  ssl_required :create, :update, :destroy, :set_next_id
+  ssl_required :create, :update, :set_next_id
   skip_before_filter :api_authorization_required, only: [:add_like, :remove_like]
 
   before_filter :optional_api_authorization, only: [:add_like, :remove_like]
-  before_filter :table_and_schema_from_params, only: [:update, :destroy, :stats,
+  before_filter :table_and_schema_from_params, only: [:update, :stats,
                                                       :notify_watching, :list_watching,
                                                       :add_like, :remove_like, :set_next_id]
 

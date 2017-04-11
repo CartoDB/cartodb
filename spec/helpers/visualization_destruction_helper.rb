@@ -10,6 +10,7 @@ module VisualizationDestructionHelper
     mapcaps_ids = visualization.mapcaps.map(&:id)
     state_id = visualization.state.id
     snapshots_ids = visualization.snapshots.map(&:id)
+    synchronization_id = visualization.synchronization.id
 
     yield
 
@@ -17,6 +18,7 @@ module VisualizationDestructionHelper
     expect(Carto::Map.exists?(map_id)).to be_false
     expect(Carto::Permission.exists?(permission_id)).to be_false
     expect(Carto::State.exists?(state_id)).to be_false
+    expect(Carto::Synchronization.exists?(synchronization_id)).to be_false
     layers_ids.each { |id| expect(Carto::Layer.exists?(id)).to be_false }
     widgets_ids.each { |id| expect(Carto::Widget.exists?(id)).to be_false }
     analyses_ids.each { |id| expect(Carto::Analysis.exists?(id)).to be_false }

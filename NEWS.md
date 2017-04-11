@@ -101,6 +101,7 @@ Development
 * New dashboard notifications added (#11807).
 
 ### Bug fixes
+* Disable export image button if not validated (#11949)
 * Update hover infowindow content when fields have changed (#11921)
 * Don't make several requests when basemap is changed to a plain (color) one (#11445)
 * Fixed problem when provider has changed and map instantiation (#11910)

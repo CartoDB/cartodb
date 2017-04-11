@@ -100,6 +100,7 @@ Development
 * New dashboard notifications added (#11807).
 
 ### Bug fixes
+* Disable export image button if not validated (#11949)
 * Don't make several requests when basemap is changed to a plain (color) one (#11445)
 * Fixed problem when provider has changed and map instantiation (#11910)
 * Fixed layers order when creating a new layer dragging from a compound analysis (#11827)

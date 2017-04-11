@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    carto_gears_api (0.0.1)
+    carto_gears_api (0.0.4)
       rails (= 3.2.22)
       values (= 1.8.0)
 

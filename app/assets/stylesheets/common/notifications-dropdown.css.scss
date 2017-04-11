@@ -71,18 +71,21 @@
 }
 
 .NotificationsDropdown-item.is-new .NotificationsDropdown-itemIcon--alert {
-  color: $cHighlight-alert;
-  border-color: $cHighlight-alert;
+  border-color: $cNotification;
+  color: $cNotification;
 }
 .NotificationsDropdown-item.is-new .NotificationsDropdown-itemIcon--positive {
-  color: $cHighlight-positive;
   border-color: $cHighlight-positive;
+  color: $cHighlight-positive;
 }
 .NotificationsDropdown-item.is-new .NotificationsDropdown-itemIcon--negative {
-  color: $cHighlight-negative;
   border-color: $cHighlight-negative;
+  color: $cHighlight-negative;
 }
 .NotificationsDropdown-item.is-new .NotificationsDropdown-itemIcon--main {
-  color: $cHighlight-main;
   border-color: $cHighlight-main;
+  color: $cHighlight-main;
+}
+.NotificationsDropdown-item.NotificationsDropdown-item--no-notifications {
+  padding-left: 0 !important;
 }

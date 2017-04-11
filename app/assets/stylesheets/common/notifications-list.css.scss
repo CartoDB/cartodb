@@ -127,8 +127,13 @@ $opacityTransition: 250ms;
 .NotificationsList-itemTitle {
   @include display-flex();
   @include align-items(center);
-  display: -webkit-box;
   margin-bottom: 0;
+
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+
+  -ms-word-break: break-all;
+  word-break: break-word;
 
   ul,
   ol {
@@ -140,12 +145,6 @@ $opacityTransition: 250ms;
   }
   ul {
     list-style-type: disc;
-  }
-  p,
-  ul,
-  ol {
-    text-overflow: ellipsis;
-    overflow: hidden;
   }
   em {
     font-style: italic;

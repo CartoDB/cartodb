@@ -82,9 +82,18 @@ class Carto::UserCreation < ActiveRecord::Base
           :validating_user => :saving_user,
           :saving_user => :promoting_user
 
-      transition :promoting_user => :creating_user_in_central, :creating_user_in_central => :load_common_data, :load_common_data => :success, :if => :sync_data_with_cartodb_central?
+      # This looks more complex than it actually is. The flow is always:
+      # promoting_user -> creating_user_in_central -> load_common_data -> success
+      #   creating_user_in_central is skipped if central is not configured
+      #   load_common_data is skipped for viewers
+      transition promoting_user: :creating_user_in_central, if: :sync_data_with_cartodb_central?
+      transition promoting_user: :load_common_data, unless: :viewer?
+      transition promoting_user: :success
 
-      transition :promoting_user => :load_common_data, :load_common_data => :success, :unless => :sync_data_with_cartodb_central?
+      transition creating_user_in_central: :load_common_data, unless: :viewer?
+      transition creating_user_in_central: :success
+
+      transition load_common_data: :success
     end
 
     event :fail_user_creation do
@@ -185,11 +194,6 @@ class Carto::UserCreation < ActiveRecord::Base
 
   def cartodb_user
     @cartodb_user ||= ::User.where(id: user_id).first
-  end
-
-  # INFO: state_machine needs guard methods to be instance methods
-  def sync_data_with_cartodb_central?
-    Cartodb::Central.sync_data_with_cartodb_central?
   end
 
   def log_transition_begin
@@ -341,4 +345,8 @@ class Carto::UserCreation < ActiveRecord::Base
     self.save
   end
 
+  # INFO: state_machine needs guard methods to be instance methods
+  def sync_data_with_cartodb_central?
+    Cartodb::Central.sync_data_with_cartodb_central?
+  end
 end

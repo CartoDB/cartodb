@@ -27,5 +27,17 @@ module Carto
     def public_user_roles
       @user.organization_user? ? [CartoDB::PUBLIC_DB_USER, @user.database_public_username] : [CartoDB::PUBLIC_DB_USER]
     end
+
+    # Execute a query in the user database
+    # @param [String] query, using $1, $2 ... for placeholders
+    # @param ... values for the placeholders
+    # @return [Array<Hash<String, Value>>] Something ({ActiveRecord::Result} in this case) that behaves like an Array
+    #                                      of Hashes that map column name (as string) to value
+    # @raise [PG::Error] if the query fails
+    def execute_in_user_database(query, *binds)
+      @user.in_database.exec_query(query, 'ExecuteUserDb', binds.map { |v| [nil, v] })
+    rescue ActiveRecord::StatementInvalid => exception
+      raise exception.cause
+    end
   end
 end

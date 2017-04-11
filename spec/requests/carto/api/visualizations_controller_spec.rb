@@ -7,7 +7,6 @@ require_relative '../../../../app/controllers/carto/api/visualizations_controlle
 
 # TODO: Remove once Carto::Visualization is complete enough
 require_relative '../../../../app/models/visualization/member'
-require_relative '../../../../app/helpers/bounding_box_helper'
 require_relative './vizjson_shared_examples'
 require 'helpers/unique_names_helper'
 require_dependency 'carto/uuidhelper'
@@ -2111,7 +2110,7 @@ describe Carto::Api::VisualizationsController do
     table.the_geom_type = "point"
     table.save.reload
     table.insert_row!(the_geom: the_geom)
-    BoundingBoxHelper.update_visualizations_bbox(table)
+    table.update_bounding_box
     table
   end
 

@@ -4,7 +4,7 @@ module Carto::HtmlSafe
 
   def markdown_html_safe(text)
     if text.present?
-      renderer = Redcarpet::Render::Safe
+      renderer = Redcarpet::Render::Safe.new(link_attributes: { target: '_blank' })
       markdown = Redcarpet::Markdown.new(renderer, extensions = {})
       markdown.render text 
     end

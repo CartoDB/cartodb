@@ -14,7 +14,4 @@ Common operations in CartoDB include:
   operations/exporting_importing_visualizations.rst
   operations/run_sync_tables.rst
   operations/http_headers_authentication
-
-
-
-
+  operations/configure_data_services.rst

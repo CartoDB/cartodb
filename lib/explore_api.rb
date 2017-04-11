@@ -26,10 +26,10 @@ class ExploreAPI
     center_coordinates = map.center_data.reverse
     {
       zoom: map.zoom,
-      view_box_polygon: BoundingBoxHelper.to_polygon(
+      view_box_polygon: Carto::BoundingBoxUtils.to_polygon(
         view_box[:west], view_box[:south], view_box[:east], view_box[:north]
       ),
-      center_geometry: BoundingBoxHelper.to_point(center_coordinates[0], center_coordinates[1])
+      center_geometry: Carto::BoundingBoxUtils.to_point(center_coordinates[0], center_coordinates[1])
     }
   end
 

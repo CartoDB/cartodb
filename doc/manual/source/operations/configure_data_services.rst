@@ -65,12 +65,11 @@ Set geocoder quota for organization ``org-name`` to 1000 monthly requests::
 Soft limits
 -----------
 
-The limits for a service can be configured to be *soft*, meaning that the user/organization can exceed the limits (possibly incurring in additional charges).
+The service limits for a user can be configured to be *soft*, meaning that the user can exceed the limits (possibly incurring in additional charges).
 So, when soft limits is set to `false` (the default) and the limits are exceeded, service requests will fail,
-while if the soft limits are set to `true` requests will succeed (and the user/org will be charged for the excess).
+while if the soft limits are set to `true` requests will succeed (and the user will be charged for the excess).
 
 * ``cartodb:services:set_user_soft_limit[username,service,soft_limit_status]``
-* ``cartodb:services:set_org_soft_limit[orgname,service,soft_limit_status]``
 
 The possible values for the soft limits status is either ``true`` or ``false``.
 
@@ -89,6 +88,6 @@ Activate soft geocoding limits for user ``user-name``::
 
     rake cartodb:services:set_user_soft_limit['user-name',geocoder,true]
 
-Disable soft geocoding limits for organization ``org-name``::
+Disable soft geocoding limits for user ``user-name``::
 
-    rake cartodb:services:set_org_soft_limit['org-name',geocoder,false]
+    rake cartodb:services:set_user_soft_limit['user-name',geocoder,false]

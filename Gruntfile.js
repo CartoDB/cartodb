@@ -349,6 +349,7 @@ module.exports = function(grunt) {
     grunt.registerTask('dev', 'Typical task for frontend development (watch JS/CSS changes)', [
       'setConfig:env.browserify_watch:true',
       'run_browserify',
+      'build-jasmine-specrunners',
       'connect:server',
       'run_watch:builder_specs=false']);
 

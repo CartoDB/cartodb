@@ -4,11 +4,11 @@ Development
 * An attacker could execute commands in the server running the queues by importing a file with a carefully crafted filename. Fixed in #11782
 
 ### Features
+* Exposed some cartodb.js methods through map definition model (#11846)
 * Dataservices configuration rake tasks (#11917)
   * `cartodb:services:set_user_quota[username,service,quota]` updated to support the `mapzen_routing` provider
   * `cartodb:services:set_org_quota[orgname,service,quota]` updated to support the `mapzen_routing` provider
-  * `cartodb:services:set_user_soft_limit[username,service,quota]` new task to set configure user soft limits
-  * `cartodb:services:set_org_soft_limit[orgname,service,quota]` new task to set configure organization soft limits
+  * `cartodb:services:set_user_soft_limit[username,service,quota]` new task to set user soft limits
 * Color picker for codemirror component.
 * New dropdown for Data Observatory (#11618)
 * Quota pre-check to analyses that consume quota.
@@ -69,6 +69,7 @@ Development
 * Initial support for Rails engines with CARTO Gears.
 * Improved empty bounds map handling (#11711).
 * Updated diagnosis page versions.
+* set_import_limits rake (#11756).
 * Improved formula widget description field. (#11469)
   * Notification API (#11850)
   * Queue and Email support (#11692).
@@ -97,8 +98,11 @@ Development
 * Update cartodb.js to use multiple subdomains.
 * Update tangram to use subdomains.
 * New dashboard notifications added (#11807).
+* Multiple file upload through "upload file" tab (#11952)
 
 ### Bug fixes
+* Disable export image button if not validated (#11949)
+* Update hover infowindow content when fields have changed (#11921)
 * Don't make several requests when basemap is changed to a plain (color) one (#11445)
 * Fixed problem when provider has changed and map instantiation (#11910)
 * Fixed layers order when creating a new layer dragging from a compound analysis (#11827)
@@ -152,6 +156,7 @@ Development
 * Fix a DB deadlock while simultaneously updating and deleting layers (#11568)
 * Improve speed of map name availability check, improves map creation and renaming times (#11435)
 * Fix redirection after logout for subdomainless URLs (#11361)
+* Fix unp detecting .carto files with "rar" in the name as rar files (#11954)
 * Fix scrollbar in carousel (#11061)
 * Fix layer loading at embeds (#11554)
 * Restrict login from organization pages to organization users, and redirect to Central otherwise
@@ -173,6 +178,7 @@ Development
 * Fixed error handling if json "errors" field contains one single string (#11752)
 * Check for validation errors in EUMAPI user update endpoint (#11906)
 * Fix problem with perfect-scrollbar in Edge browsers (CartoDB/perfect-scrollbar/#2)
+* Skip loading common data for viewer users created via EUMAPI (#11909)
 * Layer onboardings are now aware on sync'd layers and highlighted area is clicked. (#11583)
 * Do not show builder activated notification for new users (#11720)
 * Fixed overflow on loaders.
@@ -187,10 +193,18 @@ Development
 * Default zoom for newly created maps without data is 3 (#11922)
 * Rearrange Error tracker script order (#11872)
 * Fix subdomain error not loading tiles.
+* Redirect to last visited page after logging in (#11946)
 * Sanitized HTML from map and layer names.
 * Merged fix subdomain error not loading tiles (CartoDB.js#1607)
 * Fixed way to listen Deep-insights.js map or widgets changes (#11894)
 * Using latest cartodb.js and deep-insights.js to tackle map zooming problem (support#605)
+
+### NOTICE
+This release upgrades the CartoDB PostgreSQL extension to `0.19.0`. Run the following to have it available:
+```shell
+cd $(git rev-parse --show-toplevel)/lib/sql
+sudo make install
+```
 
 4.0.x (2016-12-05)
 ------------------

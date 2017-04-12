@@ -529,6 +529,22 @@ describe SessionsController do
         response.status.should == 302
       end
     end
+
+    it 'redirects to dashboard if `return_to` url is not present' do
+      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+      post create_session_url(user_domain: @user.username, email: @user.username, password: @user.password)
+      response.status.should == 302
+      response.headers['Location'].should include '/dashboard'
+    end
+
+    it 'redirects to the `return_to` url if present' do
+      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+      get api_key_credentials_url(user_domain: @user.username)
+      cookies["_cartodb_session"] = response.cookies["_cartodb_session"]
+      post create_session_url(user_domain: @user.username, email: @user.username, password: @user.password)
+      response.status.should == 302
+      response.headers['Location'].should include '/your_apps'
+    end
   end
 
   describe '#logout' do

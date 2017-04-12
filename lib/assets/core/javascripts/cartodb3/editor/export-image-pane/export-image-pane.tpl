@@ -1,4 +1,4 @@
-<div class="Editor-HeaderInfoEditor">
+<div class="Editor-HeaderInfoEditor Editor-HeaderInfo--noMargin">
   <div class="u-rSpace--xl u-actionTextColor Editor-HeaderInfoEditorShape">
     <button class="js-back">
       <i class="CDB-IconFont CDB-IconFont-arrowPrev Size-large"></i>

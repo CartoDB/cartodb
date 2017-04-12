@@ -131,25 +131,5 @@ namespace :cartodb do
 
       puts "Changed the user soft limit for service #{service} to #{soft_limit}."
     end
-
-    # usage example: (valid values are true or false)
-    #   bundle exec rake cartodb:services:set_org_soft_limit['orgname','geocoding',true]
-    desc 'Assign the soft limit flag for a service to an organization'
-    task :set_org_soft_limit, [:orgname, :service, :soft_limit] => [:environment] do |_task, args|
-      orgname = args[:orgname]
-      service = args[:service]
-      soft_limit = args[:soft_limit] == 'false' ? false : true
-      org = orgname && ::Organization.find(name: orgname)
-
-      assert_valid_arg args, :orgname,    accepted_values: proc { org.present? }
-      assert_valid_arg args, :service,    accepted_values: DS_SERVICES
-      assert_valid_arg args, :soft_limit, accepted_values: ['true', 'false']
-
-      service_quota_key = "soft_#{service}_limit="
-      user.send(service_quota_key, soft_limit)
-      org.save
-
-      puts "Changed the organization soft limit for service #{service} to #{soft_limit}."
-    end
   end
 end

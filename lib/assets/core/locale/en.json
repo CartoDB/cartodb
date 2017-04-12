@@ -1672,6 +1672,16 @@
         "miles": "mi",
         "min": "Min",
         "mode": "Mode",
+        "find-nearest": {
+          "categorized": "categorized",
+          "criteria": "Define your criteria",
+          "input": "input",
+          "max-results": "max results",
+          "modal-desc": "TODO: a description",
+          "modal-title": "TODO: Find nearest",
+          "target": "target",
+          "title": "Find nearest"
+        },
         "neighbors": "Neighbors",
         "neighbors-help": "Define the local neighborhood as this many nearest-neighbors",
         "no": "No",

@@ -95,7 +95,11 @@ module CartoDB
         path = normalize(local_path)
         current_directory = Dir.pwd
         Dir.chdir(temporary_directory)
-        stdout, stderr, status = Open3.capture3(*command_for(path))
+
+        stdout, stderr, status = safe_unp_path(path) do |safe_path|
+          Open3.capture3(*command_for(safe_path))
+        end
+
         Dir.chdir(current_directory)
 
         if unp_failure?(stdout + stderr, status)
@@ -226,6 +230,21 @@ module CartoDB
 
       attr_reader :job
       attr_writer :temporary_directory
+
+      def safe_unp_path(path)
+        # To avoid wrong format detection by unp (see #11954), force the format
+        if path.end_with?('.carto')
+          new_path = "#{path}.zip"
+          FileUtils.mv(path, new_path)
+          begin
+            return yield(new_path)
+          ensure
+            FileUtils.mv(new_path, path)
+          end
+        else
+          yield(path)
+        end
+      end
     end
   end
 end

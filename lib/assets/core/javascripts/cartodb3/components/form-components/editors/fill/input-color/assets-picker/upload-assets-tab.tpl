@@ -12,8 +12,7 @@
       <label class="Form-fileLabel js-fileLabel CDB-Text CDB-Size-medium"><%- _t('components.modals.assets-picker.drag-and-drop') %></label>
       <label class="Form-fileLabel Form-fileLabel--error CDB-Text CDB-Size-small js-fileError"></label>
       <div class="Form-file">
-        <input type="file" class="js-fileInput" />
-        <span class="CDB-Button CDB-Button--primary Form-fileButton CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase js-fileButton">
+        <span class="CDB-Button CDB-Button--primary Form-fileButton CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase js-upload">
           <%- _t('components.modals.assets-picker.browse') %>
         </span>
       </div>

@@ -98,6 +98,7 @@ Development
 * Refactored Builder specs generation using Webpack (#11698)
 * Update tangram to use subdomains.
 * New dashboard notifications added (#11807).
+* Multiple file upload through "upload file" tab (#11952)
 
 ### Bug fixes
 * Disable export image button if not validated (#11949)
@@ -154,6 +155,7 @@ Development
 * Fix a DB deadlock while simultaneously updating and deleting layers (#11568)
 * Improve speed of map name availability check, improves map creation and renaming times (#11435)
 * Fix redirection after logout for subdomainless URLs (#11361)
+* Fix unp detecting .carto files with "rar" in the name as rar files (#11954)
 * Fix scrollbar in carousel (#11061)
 * Fix layer loading at embeds (#11554)
 * Restrict login from organization pages to organization users, and redirect to Central otherwise

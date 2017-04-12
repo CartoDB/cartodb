@@ -98,6 +98,7 @@ Development
 * Update cartodb.js to use multiple subdomains.
 * Update tangram to use subdomains.
 * New dashboard notifications added (#11807).
+* Multiple file upload through "upload file" tab (#11952)
 
 ### Bug fixes
 * Disable export image button if not validated (#11949)

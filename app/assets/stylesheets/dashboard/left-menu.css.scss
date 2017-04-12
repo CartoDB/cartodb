@@ -5,26 +5,28 @@
 
 .LeftMenu {
   width: 200px;
-  float: left;
-  display: block;
-  border-right: 1px solid #000000;
-  flex: 0 0 200px;
-}
+  border-right: 1px solid $Black;
+} 
 
 .LeftMenuContent {
-  padding: 10px;
   .MenuItem {
     cursor:pointer;
-    padding: 2px 4px 2px 4px;
+    padding: 0px 12px;
+    &:hover {
+      background-color: #292929;
+    }
     &.selected {
-      background: #333333;
+      background: #1E6AB4;
     }
     &.expanded .ParentChevron {
-      background-image: url('../images/beam_dropdown_arrow.png');
+      background-image: url('../images/beam_dropdown_right.png');
     }
   }
-}
 
+  a {
+    color: $White;
+  }
+}
 .CategoryTree {
   .SubCategories {
     display: none;
@@ -47,8 +49,7 @@
     width:12px;
     height:12px;
     margin-right:5px;
-    background-size:contain;
-    background-image: url('../images/beam_dropdown_arrow_right.png');
+    background-image: url('../images/beam_dropdown_arrow_down.png');
     background-repeat: no-repeat;
   }
   .CategoryCount {

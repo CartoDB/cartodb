@@ -234,7 +234,7 @@
   &:active {
     background-color: $Teal7;
     color: white;
-    }
+    } 
   }
 
 //bloomberg theme
@@ -256,7 +256,9 @@
 
       &:hover {
         background-color: $btn_background_hover;
+        color: $Grey1;
         cursor: default;
+
       }
       &:active {
         background-color: $btn_background_press;

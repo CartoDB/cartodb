@@ -6,35 +6,28 @@
 // --------------------------------------------------
 
 .ContentController {
-  background-color: $DarkGrey6;
-  position: relative;
+  background-color: $DarkGrey6;  
   display: flex;
-  min-height: 600px;
-  margin: 0 auto;
-  top: 40px;
 
   .RightContent {
     flex: 1 1 auto;
-
+    flex-flow: column;
+    background: $Black;
+    padding: 5px;
     .IntermediateInfo {
       min-height: 180px;
     }
   }
 
   .ContentList {
-    flex: 1 1 auto;
-    padding: 0 10px 0 10px;
-    display: flex;
-    flex-direction: column;
-
+    background-color: $DarkGrey9;
     .found-sub {
       font-weight: bold;
       color: $Grey1;
     }
   }
 
-  .SearchBar {
-    padding: 10px;
+  .SearchBar {    
     .search-bar-input {
       color: black;
       width:100%;

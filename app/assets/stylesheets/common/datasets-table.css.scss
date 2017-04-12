@@ -15,10 +15,10 @@ $bannedColor: #E1A7A5;
   
 }
 .DatasetsTable thead {
-  background: #333333;
+  background: $DarkGrey5;
 }
 .DatasetsTable th {
-  border-bottom: 1px solid $DarkGrey8;
+  border-bottom: 1px solid $Black;
 }
 .DatasetsTable tr {
   width: 100%;
@@ -28,7 +28,7 @@ $bannedColor: #E1A7A5;
 {
   text-align: left;
   padding: 5px;
-  border-right: 1px solid $DarkGrey8;
+  border-right: 1px solid $Black;
   .DatasetTitle-link {
     border-bottom: 1px $Grey2 dotted;
   }
@@ -47,7 +47,7 @@ $bannedColor: #E1A7A5;
 .DatasetsTable.is-hidden { display: none }
 .DatasetsTable-item {
   border: 1px solid transparent;
-  border-bottom: 1px solid $DarkGrey8;
+  border-bottom: 1px solid $Black;
   padding: 6px;
 }
 

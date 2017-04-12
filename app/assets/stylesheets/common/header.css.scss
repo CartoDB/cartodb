@@ -12,11 +12,9 @@ $cHeader-dark:  rgba(#3A91D7, 1);
 .Header {
   display: block;
   width: 100%;
-  height: $height;
+  height: 30px;
   background-color: $DarkGrey6;
-  border-bottom: 1px solid $Black;
-  position: fixed;
-  z-index: 5;
+  height: 40px;
 }
 .Header-inner {
   position:relative;

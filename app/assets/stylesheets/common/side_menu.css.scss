@@ -105,3 +105,29 @@
   margin-left: 15px;
   font-size: 13px;
 }
+
+//bloomberg styles 
+
+.blp-navigator {
+  background: #1e1e1e;
+}
+
+.blp-navigator-category {
+  color: $White;
+  padding: 0px 12px;
+}
+
+.blp-navigator-item {
+  cursor: pointer;
+  padding: 0px 12px;
+  color: $Grey3;
+  &:hover {
+    background-color: $DarkGrey3;
+  }
+
+  &.blp-selected {
+      background: #1E6AB4;
+  }
+}
+
+

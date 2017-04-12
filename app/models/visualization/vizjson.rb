@@ -22,7 +22,12 @@ module CartoDB
       end
 
       def to_export_poro(version = 1)
-        description = visualization.description.blank? ? "" : clean_description(markdown_html_safe(visualization.description))
+        description = if visualization.description.blank?
+                        ""
+                      else
+                        clean_description(markdown_html_safe(visualization.description))
+                      end
+
         {
           id:             visualization.id,
           version:        VIZJSON_VERSION,

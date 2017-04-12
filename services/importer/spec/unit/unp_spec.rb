@@ -12,7 +12,26 @@ describe Unp do
       unp       = Unp.new
 
       unp.run(zipfile)
-      (Dir.entries(unp.temporary_directory).size > 2).should eq true
+      Dir.entries(unp.temporary_directory).should include('bogus1.csv', 'bogus2.csv')
+      FileUtils.rm_rf(unp.temporary_directory)
+    end
+
+    it 'extracts the contents of a carto file (see #11954)' do
+      zipfile   = zipfile_factory(filename: 'this_is_a_zip_file.carto')
+      unp       = Unp.new
+
+      unp.run(zipfile)
+      Dir.entries(unp.temporary_directory).should include('bogus1.csv', 'bogus2.csv')
+      FileUtils.rm_rf(unp.temporary_directory)
+    end
+
+    it 'extracts the contents of a carto file with rar in the name (see #11954)' do
+      zipfile   = zipfile_factory(filename: 'this_is_not_a_rar_file.carto')
+      unp       = Unp.new
+
+      unp.run(zipfile)
+      Dir.entries(unp.temporary_directory).should include('bogus1.csv', 'bogus2.csv')
+      FileUtils.rm_rf(unp.temporary_directory)
     end
 
     it 'populates a list of source files' do
@@ -254,9 +273,7 @@ describe Unp do
     end
   end
 
-  def zipfile_factory(dir='/var/tmp/bogus')
-    filename = 'bogus.zip'
-
+  def zipfile_factory(dir = '/var/tmp/bogus', filename: 'bogus.zip')
     zipfile = "#{dir}/#{filename}"
 
     FileUtils.rm(zipfile) if File.exists?(zipfile)

@@ -101,6 +101,9 @@ Development
 * New dashboard notifications added (#11807).
 
 ### Bug fixes
+* Fixed bug editing geometries from dataset view (#11855)
+* Fixed pagination position in Safari browser
+* Fixed problem renaming a table and breaking edition until reloaded (#11969)
 * Update hover infowindow content when fields have changed (#11921)
 * Don't make several requests when basemap is changed to a plain (color) one (#11445)
 * Fixed problem when provider has changed and map instantiation (#11910)

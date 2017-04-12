@@ -101,6 +101,7 @@ Development
 * Multiple file upload through "upload file" tab (#11952)
 
 ### Bug fixes
+* Save collapse state for layer list (#11927)
 * Disable export image button if not validated (#11949)
 * Update hover infowindow content when fields have changed (#11921)
 * Don't make several requests when basemap is changed to a plain (color) one (#11445)

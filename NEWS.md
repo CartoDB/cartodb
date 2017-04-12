@@ -8,8 +8,7 @@ Development
 * Dataservices configuration rake tasks (#11917)
   * `cartodb:services:set_user_quota[username,service,quota]` updated to support the `mapzen_routing` provider
   * `cartodb:services:set_org_quota[orgname,service,quota]` updated to support the `mapzen_routing` provider
-  * `cartodb:services:set_user_soft_limit[username,service,quota]` new task to set configure user soft limits
-  * `cartodb:services:set_org_soft_limit[orgname,service,quota]` new task to set configure organization soft limits
+  * `cartodb:services:set_user_soft_limit[username,service,quota]` new task to set user soft limits
 * Color picker for codemirror component.
 * New dropdown for Data Observatory (#11618)
 * Quota pre-check to analyses that consume quota.
@@ -101,6 +100,7 @@ Development
 * New dashboard notifications added (#11807).
 
 ### Bug fixes
+* Disable export image button if not validated (#11949)
 * Update hover infowindow content when fields have changed (#11921)
 * Don't make several requests when basemap is changed to a plain (color) one (#11445)
 * Fixed problem when provider has changed and map instantiation (#11910)
@@ -155,6 +155,7 @@ Development
 * Fix a DB deadlock while simultaneously updating and deleting layers (#11568)
 * Improve speed of map name availability check, improves map creation and renaming times (#11435)
 * Fix redirection after logout for subdomainless URLs (#11361)
+* Fix unp detecting .carto files with "rar" in the name as rar files (#11954)
 * Fix scrollbar in carousel (#11061)
 * Fix layer loading at embeds (#11554)
 * Restrict login from organization pages to organization users, and redirect to Central otherwise
@@ -197,6 +198,13 @@ Development
 * Fixed way to listen Deep-insights.js map or widgets changes (#11894)
 * Using latest cartodb.js and deep-insights.js to tackle map zooming problem (support#605)
 * Fix organization notifications issues (#11957)
+
+### NOTICE
+This release upgrades the CartoDB PostgreSQL extension to `0.19.0`. Run the following to have it available:
+```shell
+cd $(git rev-parse --show-toplevel)/lib/sql
+sudo make install
+```
 
 4.0.x (2016-12-05)
 ------------------

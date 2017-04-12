@@ -23,7 +23,7 @@ They're instantiated with the sleek [values gem](https://github.com/tcrayford/Va
 
 #### What about Rails?
 
-We don't want you to be coupled to CARTO internal models code, that's why Gears API provides POROs.
+We don't want you to be coupled to CARTO internal models code, that's why Gears API returns just POROs.
 Nevertheless, if you want to use some Rails magic you can decorate your classes with the minimum that you
 need to make a class behave like a model without persistence (enabling form integration, for example):
 
@@ -40,7 +40,7 @@ class MyUser < CartoGearsApi::Users::User
 end
 ```
 
-Then ,you can instantiate yours based on the API one:
+Then, you can instantiate yours based on the API one:
 
 ```ruby
 MyUser.with(CartoGearsApi::Users::UsersService.new.logged_user(request).to_h)

@@ -8,6 +8,8 @@ require_relative '../named_map/presenter'
 module CartoDB
   module Visualization
     class VizJSON
+      include Carto::HtmlSafe
+
       VIZJSON_VERSION = '0.1.0'
 
       def initialize(visualization, options = {}, configuration = {}, logger = nil)
@@ -20,8 +22,7 @@ module CartoDB
       end
 
       def to_export_poro(version = 1)
-        description = visualization.description_html_safe.nil? ? "" : clean_description(
-          visualization.description_html_safe)
+        description = visualization.description.blank? ? "" : clean_description(markdown_html_safe(visualization.description))
         {
           id:             visualization.id,
           version:        VIZJSON_VERSION,
@@ -51,7 +52,7 @@ module CartoDB
           version:        VIZJSON_VERSION,
           title:          visualization.qualified_name(@user),
           likes:          visualization.likes.count,
-          description:    visualization.description_html_safe,
+          description:    markdown_html_safe(visualization.description),
           scrollwheel:    map.scrollwheel,
           legends:        map.legends,
           url:            options.delete(:url),
@@ -72,7 +73,7 @@ module CartoDB
 
         unless visualization.parent_id.nil?
           poro_data[:title] = visualization.parent.qualified_name(@user)
-          poro_data[:description] = visualization.parent.description_html_safe
+          poro_data[:description] = markdown_html_safe(visualization.parent.description)
         end
 
         poro_data

@@ -11,3 +11,4 @@ describe Carto::HtmlSafe do
     html_safe.markdown_html_safe("[text](#{link})").should eq "<p><a href=\"#{link}\" target=\"_blank\">text</a></p>\n"
   end
 end
+

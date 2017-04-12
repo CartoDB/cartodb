@@ -85,7 +85,7 @@ class UserTable < Sequel::Model
                                     automatic_geocoding:  :destroy
   plugin :dirty
 
-  def_delegators :relator, :affected_visualizations
+  def_delegators :relator, :affected_visualizations, :synchronization
 
   # Ignore mass-asigment on not allowed columns
   self.strict_param_setting = false

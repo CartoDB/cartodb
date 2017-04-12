@@ -13,6 +13,8 @@ module CartoDB
       def blend
         raise "Viewer users can't blend tables" if user.viewer
 
+        carto_user = Carto::User.find(user.id)
+
         maps            = tables.map(&:map)
         copier          = CartoDB::Map::Copier.new
         destination_map = copier.new_map_from(maps.first)
@@ -20,9 +22,9 @@ module CartoDB
 
         copier.copy_base_layer(maps.first, destination_map)
 
-        maps.each { |map| copier.copy_data_layers(map, destination_map, user) }
+        maps.each { |map| copier.copy_data_layers(map, destination_map, carto_user) }
 
-        destination_map.user = user
+        destination_map.user = carto_user
         destination_map.save
         destination_map
       end

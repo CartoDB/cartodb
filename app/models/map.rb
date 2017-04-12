@@ -214,7 +214,7 @@ class Map < Sequel::Model
     return unless table_id
 
     # Cannot filter by user_id as might be a shared table not owned by us
-    related_table = ::UserTable.filter(id: table_id).first
+    related_table = Carto::UserTable.where(id: table_id).first
     if related_table.map_id != id
       # Manually propagate to visualization (@see Table.after_save) if exists (at table creation won't)
       if related_table.map_id.present?
@@ -224,7 +224,7 @@ class Map < Sequel::Model
         ).each { |entry| entry.store_from_map(map_id: id) }
       end
       # HERE BE DRAGONS! If we try to store using model, callbacks break hell. Manual update required
-      related_table.this.update(map_id: id)
+      related_table.update_column(:map_id, id)
     end
   end
 

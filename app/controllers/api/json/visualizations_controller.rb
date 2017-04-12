@@ -176,12 +176,9 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   end
 
   def destroy
-    @stats_aggregator.timing('visualizations.destroy') do
 
       begin
-        vis,  = @stats_aggregator.timing('locate') do
-          locator.get(@table_id, CartoDB.extract_subdomain(request))
-        end
+        vis, = locator.get(@table_id, CartoDB.extract_subdomain(request))
 
         return head(404) unless vis
         return head(403) unless vis.is_owner?(current_user)
@@ -205,9 +202,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
           end
         end
 
-        @stats_aggregator.timing('delete') do
-          vis.delete
-        end
+        Carto::Visualization.find(vis.id).delete
 
         return head 204
       rescue KeyError
@@ -215,7 +210,6 @@ class Api::Json::VisualizationsController < Api::ApplicationController
       rescue Sequel::DatabaseError => e
         render_jsonp({ errors: [e.message] }, 400)
       end
-    end
   end
 
   def notify_watching

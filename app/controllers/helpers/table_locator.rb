@@ -34,7 +34,7 @@ module Helpers
       table = vis.nil? ? nil : vis.table
 
       if UUID_RX.match(id_or_name) && table.nil?
-        table_temp = ::UserTable.where(id: id_or_name).first.try(:service)
+        table_temp = Carto::UserTable.where(id: id_or_name).first.try(:service)
         unless table_temp.nil?
           # Make sure we're allowed to see the table
           vis = CartoDB::Visualization::Collection.new.fetch(

@@ -80,7 +80,7 @@ module CartoDB
 
       def table
         return nil if map.nil?
-        @table ||= ::UserTable.from_map_id(map.id).try(:service)
+        @table ||= Carto::UserTable.where(map_id: map.id).first.try(:service)
       end
 
       def estimated_row_count

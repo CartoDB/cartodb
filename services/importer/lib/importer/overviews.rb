@@ -40,7 +40,7 @@ module CartoDB
       end
 
       def get_table(table_name)
-        UserTable.find_by_identifier(@user.id, table_name).service
+        Carto::UserTable.where(user_id: @user.id, name: table_name).first.service
       end
 
       def can_create_overviews?

@@ -371,12 +371,12 @@ class DataImport < Sequel::Model
     # We can assume the owner is always who imports the data
     # so no need to change to a Visualization::Collection based load
     # TODO better to use an association for this
-    ::Table.new(user_table: UserTable.where(id: table_id, user_id: user_id).first)
+    ::Table.new(user_table: Carto::UserTable.where(id: table_id, user_id: user_id).first)
   end
 
   def tables
     table_names_array.map do |table_name|
-      UserTable.where(name: table_name, user_id: user_id).first.service
+      Carto::UserTable.where(name: table_name, user_id: user_id).first.service
     end
   end
 
@@ -1074,7 +1074,7 @@ class DataImport < Sequel::Model
                             [{ data_import_id: import_id }, 'copy']
                           end
 
-      user_table = ::UserTable.where(condition).first
+      user_table = Carto::UserTable.where(condition).first
       map = user_table.map if user_table
       if map
         vis = Carto::Visualization.where(map_id: map.id).first

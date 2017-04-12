@@ -236,7 +236,7 @@ shared_examples_for 'Layer model' do
       layers = @table.table_visualization.data_layers
       layers.length.should == 1
       layers.first.uses_private_tables?.should be_true
-      @table.privacy = UserTable::PRIVACY_PUBLIC
+      @table.privacy = Carto::UserTable::PRIVACY_PUBLIC
       @table.save
       @user.reload
 

@@ -1,12 +1,14 @@
-require_dependency 'carto_gears_api/helpers/url_helper'
+require_dependency 'carto_gears_api/utils/url_utils'
 require_dependency 'carto_gears_api/users/users_service'
 
 module CartoGearsApi
-  module Helpers
+  module Utils
     # This should be included in every controller using the following CARTO layouts:
     # - carto_gears_api/dashboard
     # - carto_gears_api/profile
-    module GearControllerHelper
+    # It's not a _helper_ to avoid automatic loading, which causes random errors with Unicorn reloads.
+    # Check CartoDB/cartodb-platform/issues/3206.
+    module GearControllerUtils
       include SafeJsObject
       include CartoDB::ConfigUtils
       include TrackjsHelper
@@ -16,8 +18,8 @@ module CartoGearsApi
       include AppAssetsHelper
       include MapsApiHelper
       include SqlApiHelper
-      include CartoGearsApi::Helpers::UrlHelper
-      include CartoGearsApi::Helpers::PagesHelper
+      include PagesHelper
+      include CartoGearsApi::Utils::UrlUtils
 
       # @return [CartoGearsApi::Users::User] Logged user, `nil` if none.
       def logged_user

@@ -1,6 +1,6 @@
 module CartoGearsApi
-  module Helpers
-    module UrlHelper
+  module Utils
+    module UrlUtils
       # @param gear [Symbol] Gear name.
       # @param context [ActionController::Base]
       # @param path [String] path name defined at the current Gear.

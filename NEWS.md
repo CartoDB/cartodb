@@ -103,6 +103,7 @@ Development
 * Change setView by flyto.
 
 ### Bug fixes
+* Styling falsy categories (#11421)
 * Fixed bug editing geometries from dataset view (#11855)
 * Fixed pagination position in Safari browser
 * Fixed problem renaming a table and breaking edition until reloaded (#11969)

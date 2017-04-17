@@ -88,6 +88,8 @@ var MapView = View.extend({
     this._mapEventsManager = new MapEventsManager({
       mapModel: this._mapModel
     });
+
+    this._linkMapHelpers();
   },
 
   clean: function () {
@@ -117,8 +119,13 @@ var MapView = View.extend({
 
     // Enable geometry management
     this._geometryManagementController.start();
-
+    this.map.setMapViewSize(this.getSize());
     return this;
+  },
+
+  _linkMapHelpers: function () {
+    this.map.setPixelToLatLngConverter(this.containerPointToLatLng.bind(this));
+    this.map.setLatLngToPixelConverter(this.latLngToContainerPoint.bind(this));
   },
 
   _onGeometryAdded: function (geometry) {

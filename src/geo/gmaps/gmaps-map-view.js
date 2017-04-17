@@ -8,6 +8,7 @@ var GoogleMapsMapView = MapView.extend({
   initialize: function () {
     _.bindAll(this, '_ready');
     this._isReady = false;
+
     MapView.prototype.initialize.apply(this, arguments);
   },
 
@@ -63,6 +64,10 @@ var GoogleMapsMapView = MapView.extend({
 
     google.maps.event.addListener(this._gmapsMap, 'dblclick', function (e) {
       self.trigger('dblclick', e);
+    });
+
+    google.maps.event.addListener(this._gmapsMap, 'bounds_changed', function (e) {
+      self.map.setMapViewSize(self.getSize());
     });
 
     this.projector = new Projector(this._gmapsMap);
@@ -156,6 +161,7 @@ var GoogleMapsMapView = MapView.extend({
 
   invalidateSize: function () {
     google.maps.event.trigger(this._gmapsMap, 'resize');
+    this.map.setMapViewSize(this.getSize());
   },
 
   // GEOMETRY

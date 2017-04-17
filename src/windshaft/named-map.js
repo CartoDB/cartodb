@@ -1,4 +1,5 @@
 var MapBase = require('./map-base.js');
+var _ = require('underscore');
 
 var NamedMap = MapBase.extend({
   toJSON: function () {
@@ -13,13 +14,18 @@ var NamedMap = MapBase.extend({
     //       "2": "/** torque visualization */\n\nMap { ... }"
     //     }
     //   }
-    //
-    json.styles = this._layersCollection.reduce(function (p, c, i) {
-      var style = c.get('cartocss');
+
+    var layers = this._layersCollection.filter(function (layer) {
+      return layer.get('type') !== 'GMapsBase';
+    });
+
+    json.styles = _.reduce(layers, function (memo, layer, index) {
+      var style = layer.get('cartocss');
       if (style) {
-        p[i] = style;
+        memo[index] = style;
       }
-      return p;
+
+      return memo;
     }, {});
 
     return json;

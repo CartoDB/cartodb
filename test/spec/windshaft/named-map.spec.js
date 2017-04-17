@@ -80,5 +80,15 @@ describe('windshaft/named-map', function () {
         1: 'cartoCSS1', 2: 'cartoCSS2', 3: 'cartoCSS3'
       });
     });
+
+    it('should send styles using the right indexes with Google basemaps', function () {
+      var gmdLayer = new Backbone.Model({ type: 'GMapsBase' });
+
+      this.layersCollection.reset([gmdLayer, this.cartoDBLayer1, this.cartoDBLayer2, this.cartoDBLayer3]);
+
+      expect(this.map.toJSON().styles).toEqual({
+        0: 'cartoCSS1', 1: 'cartoCSS2', 2: 'cartoCSS3'
+      });
+    });
   });
 });

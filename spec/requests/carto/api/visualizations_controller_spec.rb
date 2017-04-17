@@ -1620,7 +1620,7 @@ describe Carto::Api::VisualizationsController do
         end
       end
 
-      it 'destroys a visualization and all of its dependencies (partially dependent)' do
+      it 'destroys a visualization and affected layers (partially dependent)' do
         _, _, table_visualization, visualization = create_full_visualization(@carto_org_user_1)
         visualization.layers << FactoryGirl.create(:carto_layer)
         visualization.data_layers.count.should eq 2
@@ -1631,6 +1631,7 @@ describe Carto::Api::VisualizationsController do
           end
         end
 
+        expect(Carto::Visualization.exists?(visualization.id)).to be_true
         visualization.reload
         visualization.data_layers.count.should eq 1
       end

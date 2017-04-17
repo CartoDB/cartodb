@@ -102,6 +102,7 @@ Development
 * Change setView by flyto.
 
 ### Bug fixes
+* Trigger change event when item is selected for multiselect component (#11521)
 * Disable export image button if not validated (#11949)
 * Update hover infowindow content when fields have changed (#11921)
 * Don't make several requests when basemap is changed to a plain (color) one (#11445)

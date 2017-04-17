@@ -1,5 +1,6 @@
 var MapBase = require('./map-base.js');
 var _ = require('underscore');
+var LayerTypes = require('../geo/map/layer-types');
 
 var NamedMap = MapBase.extend({
   toJSON: function () {
@@ -16,7 +17,7 @@ var NamedMap = MapBase.extend({
     //   }
 
     var layers = this._layersCollection.filter(function (layer) {
-      return layer.get('type') !== 'GMapsBase';
+      return !LayerTypes.isGoogleMapsBaseLayer(layer);
     });
 
     json.styles = _.reduce(layers, function (memo, layer, index) {

@@ -47,6 +47,14 @@ describe('windshaft/named-map', function () {
 
     this.modelUpdater = jasmine.createSpyObj('modelUpdater', ['updateModels']);
 
+    var isGoogleMapsBaseLayer = function () {
+      return false;
+    }
+
+    this.cartoDBLayer1.isGoogleMapsBaseLayer = isGoogleMapsBaseLayer;
+    this.cartoDBLayer2.isGoogleMapsBaseLayer = isGoogleMapsBaseLayer;
+    this.cartoDBLayer3.isGoogleMapsBaseLayer = isGoogleMapsBaseLayer;
+
     this.layersCollection = new Backbone.Collection([this.cartoDBLayer1, this.cartoDBLayer2, this.cartoDBLayer3]);
 
     this.map = new NamedMap({}, {
@@ -73,6 +81,9 @@ describe('windshaft/named-map', function () {
 
     it('should send styles using the right indexes', function () {
       var tiledLayer = new Backbone.Model({ type: 'Tiled' });
+      tiledLayer.isGoogleMapsBaseLayer = function () {
+        return false;
+      };
 
       this.layersCollection.reset([tiledLayer, this.cartoDBLayer1, this.cartoDBLayer2, this.cartoDBLayer3]);
 
@@ -83,6 +94,9 @@ describe('windshaft/named-map', function () {
 
     it('should send styles using the right indexes with Google basemaps', function () {
       var gmdLayer = new Backbone.Model({ type: 'GMapsBase' });
+      gmdLayer.isGoogleMapsBaseLayer = function () {
+        return true;
+      };
 
       this.layersCollection.reset([gmdLayer, this.cartoDBLayer1, this.cartoDBLayer2, this.cartoDBLayer3]);
 

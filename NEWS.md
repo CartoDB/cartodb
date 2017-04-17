@@ -101,6 +101,7 @@ Development
 * New dashboard notifications added (#11807).
 * Multiple file upload through "upload file" tab (#11952)
 * Change setView by flyto.
+* Update tangram to fix layer geometry conditionals.
 
 ### Bug fixes
 

@@ -1608,7 +1608,7 @@ describe Carto::Api::VisualizationsController do
         end
       end
 
-      it 'destroys a visualization and all of its dependencies' do
+      it 'destroys a visualization and all of its dependencies (fully dependent)' do
         _, _, table_visualization, visualization = create_full_visualization(@carto_org_user_1)
 
         expect_visualization_to_be_destroyed(visualization) do
@@ -1618,6 +1618,21 @@ describe Carto::Api::VisualizationsController do
             end
           end
         end
+      end
+
+      it 'destroys a visualization and all of its dependencies (partially dependent)' do
+        _, _, table_visualization, visualization = create_full_visualization(@carto_org_user_1)
+        visualization.layers << FactoryGirl.create(:carto_layer)
+        visualization.data_layers.count.should eq 2
+
+        expect_visualization_to_be_destroyed(table_visualization) do
+          delete_json(destroy_url(@carto_org_user_1, table_visualization.id)) do |response|
+            expect(response.status).to eq 204
+          end
+        end
+
+        visualization.reload
+        visualization.data_layers.count.should eq 1
       end
     end
   end

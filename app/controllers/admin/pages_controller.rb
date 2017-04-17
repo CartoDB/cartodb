@@ -7,6 +7,7 @@ require_relative '../../models/visualization/member'
 require_relative '../../models/visualization/collection'
 
 class Admin::PagesController < Admin::AdminController
+  include Carto::HtmlSafe
 
   include CartoDB
 
@@ -454,7 +455,7 @@ class Admin::PagesController < Admin::AdminController
         rows_count: dataset.table.rows_counted,
         size_in_bytes: dataset.table.table_size,
         geometry_type: geometry_type,
-        source_html_safe: dataset.source_html_safe
+        source: markdown_html_safe(dataset.source)
       })
     rescue => e
       # A dataset might be invalid. For example, having the table deleted and not yet cleaned.
@@ -472,7 +473,7 @@ class Admin::PagesController < Admin::AdminController
     return {
       id:          vis.id,
       title:       vis.name,
-      description_html_safe: vis.description_html_safe,
+      description: markdown_html_safe(vis.description),
       tags:        vis.tags,
       updated_at:  vis.updated_at,
       owner:       vis.user,

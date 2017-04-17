@@ -104,6 +104,7 @@ Development
 * Update tangram to fix layer geometry conditionals.
 
 ### Bug fixes
+* Autostyling for google basemaps (#11838)
 * Styling falsy categories (#11421)
 * Fixed bug editing geometries from dataset view (#11855)
 * Fixed pagination position in Safari browser

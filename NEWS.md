@@ -80,6 +80,7 @@ Development
 * Added support for Zeus for faster testing (#11574). Check `CONTRIBUTING.md` for configuration details.
 * Migrate to use GNIP v2 for twitter search connector (#10051, #11595).
 * Notifications API (#11734) and administrator UI (#11729).
+* Links generated at Markdown (at notifications or maps description, for example) now open in a new window (#11940).
 * Migrate to use GNIP v2 for twitter search connector (#10051, #11595)
 * Organization notifications (WIP) (#11734, #11780, #11734, #11821)
 * Invite to georeference proactively when detecting non-georeferenced data (#11316)

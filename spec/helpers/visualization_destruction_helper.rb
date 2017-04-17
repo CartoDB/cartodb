@@ -21,7 +21,7 @@ module VisualizationDestructionHelper
     expect(Carto::State.exists?(state_id)).to be_false
     expect(Carto::Synchronization.exists?(synchronization_id)).to be_false if synchronization_id
     layers_ids.each { |id| expect(Carto::Layer.exists?(id)).to be_false }
-    layers_user_tables_ids.each { |id| expect(Carto::LayersUserTables.exists?(id)).to be_false }
+    layers_user_tables_ids.each { |id| expect(Carto::LayersUserTable.exists?(id)).to be_false }
     widgets_ids.each { |id| expect(Carto::Widget.exists?(id)).to be_false }
     analyses_ids.each { |id| expect(Carto::Analysis.exists?(id)).to be_false }
     overlays_ids.each { |id| expect(Carto::Overlay.exists?(id)).to be_false }

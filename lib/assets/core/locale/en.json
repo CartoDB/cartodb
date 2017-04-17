@@ -220,6 +220,12 @@
       "aggregated-value": "Stores the aggregate value for each centroid.",
       "non-aggregated-value": "Contains the count of features considered for each centroid",
       "category": "Stores the category value for each centroid from the source dataset"
+    },
+    "closest": {
+      "description": "Find nearest analysis locates the closest points between two tables.",
+      "source_cdb_id": "This column has been created with the related points id from the source table.",
+      "the-geom": "This column has been updated with the target table geometries.",
+      "title": "Find nearest"
     }
   },
   "analyses": {
@@ -1677,8 +1683,8 @@
           "criteria": "Define your criteria",
           "input": "input",
           "max-results": "max results",
-          "modal-desc": "TODO: a description",
-          "modal-title": "TODO: Find nearest",
+          "modal-desc": "Find nearest analysis locates the closest points between two tables.",
+          "modal-title": "Find nearest",
           "target": "target",
           "title": "Find nearest"
         },

@@ -3,6 +3,7 @@ require_dependency 'carto/api/infowindow_migrator'
 require_dependency 'cartodb/redis_vizjson_cache'
 require_dependency 'carto/named_maps/template'
 require_dependency 'carto/legend_migrator'
+require_dependency 'carto/html_safe'
 
 module Carto
   module Api
@@ -24,6 +25,7 @@ module Carto
     class VizJSON3Presenter
       include ApiTemplates
       include DisplayVizjsonMode
+      include Carto::HtmlSafe
 
       def initialize(visualization,
                      redis_vizjson_cache = CartoDB::Visualization::RedisVizjsonCache.new($tables_metadata, 3))
@@ -82,7 +84,7 @@ module Carto
           bounds:         bounds_from(map),
           center:         map.center,
           datasource:     datasource_vizjson(options, forced_privacy_version),
-          description:    html_safe(@visualization.description),
+          description:    markdown_html_safe(@visualization.description),
           options:        map_options(@visualization),
           id:             @visualization.id,
           layers:         layers_vizjson(forced_privacy_version),
@@ -107,7 +109,7 @@ module Carto
         parent = @visualization.parent
         if parent
           vizjson[:title] = parent.qualified_name(user)
-          vizjson[:description] = html_safe(parent.description)
+          vizjson[:description] = markdown_html_safe(parent.description)
         end
 
         vizjson
@@ -200,14 +202,6 @@ module Carto
       def widgets_vizjson
         @visualization.widgets.map do |widget|
           Carto::Api::WidgetPresenter.new(widget).to_vizjson
-        end
-      end
-
-      def html_safe(string)
-        if string.present?
-          renderer = Redcarpet::Render::Safe
-          markdown = Redcarpet::Markdown.new(renderer, {})
-          markdown.render string
         end
       end
 

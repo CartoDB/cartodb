@@ -80,6 +80,7 @@ Development
 * Added support for Zeus for faster testing (#11574). Check `CONTRIBUTING.md` for configuration details.
 * Migrate to use GNIP v2 for twitter search connector (#10051, #11595).
 * Notifications API (#11734) and administrator UI (#11729).
+* Links generated at Markdown (at notifications or maps description, for example) now open in a new window (#11940).
 * Migrate to use GNIP v2 for twitter search connector (#10051, #11595)
 * Organization notifications (WIP) (#11734, #11780, #11734, #11821)
 * Invite to georeference proactively when detecting non-georeferenced data (#11316)
@@ -99,9 +100,14 @@ Development
 * Update tangram to use subdomains.
 * New dashboard notifications added (#11807).
 * Multiple file upload through "upload file" tab (#11952)
+* Change setView by flyto.
 
 ### Bug fixes
 * Styling falsy categories (#11421)
+* Fixed bug editing geometries from dataset view (#11855)
+* Fixed pagination position in Safari browser
+* Fixed problem renaming a table and breaking edition until reloaded (#11969)
+* Trigger change event when item is selected for multiselect component (#11521)
 * Disable export image button if not validated (#11949)
 * Update hover infowindow content when fields have changed (#11921)
 * Don't make several requests when basemap is changed to a plain (color) one (#11445)
@@ -199,6 +205,8 @@ Development
 * Merged fix subdomain error not loading tiles (CartoDB.js#1607)
 * Fixed way to listen Deep-insights.js map or widgets changes (#11894)
 * Using latest cartodb.js and deep-insights.js to tackle map zooming problem (support#605)
+* Fix organization notifications issues (#11957)
+* Max tracts to 4 for isoline analysis (#11723)
 
 ### NOTICE
 This release upgrades the CartoDB PostgreSQL extension to `0.19.0`. Run the following to have it available:

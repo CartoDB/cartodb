@@ -67,15 +67,6 @@ ModelUpdater.prototype._calculateStaticMapURL = function (windshaftMap) {
   ].join('/');
 };
 
-ModelUpdater.prototype._calculateTileURLTemplatesForCartoDBLayers = function (windshaftMap) {
-  var urlTemplates = [];
-  _.each(windshaftMap.getSupportedSubdomains(), function (subdomain) {
-    urlTemplates.push(this._generateTileURLTemplate(windshaftMap, subdomain));
-  }, this);
-
-  return urlTemplates;
-};
-
 ModelUpdater.prototype._generateTileURLTemplate = function (windshaftMap) {
   return windshaftMap.getBaseURL() + '/{layerIndexes}/{z}/{x}/{y}.{format}';
 };
@@ -86,18 +77,24 @@ ModelUpdater.prototype._calculateGridURLTemplatesForCartoDBLayers = function (wi
   if (indexesOfMapnikLayers.length > 0) {
     _.each(indexesOfMapnikLayers, function (index) {
       var layerUrlTemplates = [];
-      _.each(windshaftMap.getSupportedSubdomains(), function (subdomain) {
-        layerUrlTemplates.push(this._generateGridURLTemplate(windshaftMap, subdomain, index));
-      }, this);
+      var gridURLTemplate = this._generateGridURLTemplate(windshaftMap, index);
+      var subdomains = windshaftMap.getSupportedSubdomains();
+      if (subdomains.length) {
+        _.each(subdomains, function (subdomain) {
+          layerUrlTemplates.push(gridURLTemplate.replace('{s}', subdomain));
+        });
+      } else {
+        layerUrlTemplates.push(gridURLTemplate);
+      }
+
       urlTemplates.push(layerUrlTemplates);
     }, this);
   }
   return urlTemplates;
 };
 
-ModelUpdater.prototype._generateGridURLTemplate = function (windshaftMap, subdomain, index) {
-  var baseURL = windshaftMap.getBaseURL() + '/' + index + '/{z}/{x}/{y}.grid.json';
-  return baseURL.replace('{s}', subdomain);
+ModelUpdater.prototype._generateGridURLTemplate = function (windshaftMap, index) {
+  return windshaftMap.getBaseURL() + '/' + index + '/{z}/{x}/{y}.grid.json';
 };
 
 ModelUpdater.prototype._calculateAttributesBaseURLsForCartoDBLayers = function (windshaftMap) {

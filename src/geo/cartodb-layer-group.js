@@ -52,12 +52,16 @@ var CartoDBLayerGroup = Backbone.Model.extend({
   },
 
   getTileURLTemplatesWithSubdomains: function () {
-    var urls = this.get('urls');
     var urlTemplate = this.getTileURLTemplate();
+    var subdomains = this.getSubdomains();
 
-    return _.map(urls.subdomains, function (subdomain) {
-      return urlTemplate.replace('{s}', subdomain);
-    });
+    if (subdomains && subdomains.length) {
+      return _.map(subdomains, function (subdomain) {
+        return urlTemplate.replace('{s}', subdomain);
+      });
+    }
+
+    return [ urlTemplate ];
   },
 
   getTileURLTemplate: function (type) {

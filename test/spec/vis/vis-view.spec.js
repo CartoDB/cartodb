@@ -105,7 +105,7 @@ describe('vis/vis-view', function () {
 
   it('should bind resize changes when map height is 0', function () {
     jasmine.clock().install();
-    spyOn(this.visModel, 'centerMapToOrigin');
+    spyOn(this.visModel, 'invalidateSize');
 
     var container = $('<div>').css('height', '0');
     var vis = this.createNewVis({ el: container });
@@ -123,7 +123,7 @@ describe('vis/vis-view', function () {
 
     jasmine.clock().tick(160);
 
-    expect(this.visModel.centerMapToOrigin).toHaveBeenCalled();
+    expect(this.visModel.invalidateSize).toHaveBeenCalled();
 
     $(window).trigger('resize');
     expect(vis._onResize).not.toHaveBeenCalled();
@@ -131,7 +131,7 @@ describe('vis/vis-view', function () {
 
   it('should NOT bind resize changes when map height is greater than 0', function () {
     jasmine.clock().install();
-    spyOn(this.visModel, 'centerMapToOrigin');
+    spyOn(this.visModel, 'invalidateSize');
 
     var container = $('<div>').css('height', '200px');
     var vis = this.createNewVis({el: container});
@@ -148,7 +148,7 @@ describe('vis/vis-view', function () {
 
     jasmine.clock().tick(160);
 
-    expect(this.visModel.centerMapToOrigin).not.toHaveBeenCalled();
+    expect(this.visModel.invalidateSize).not.toHaveBeenCalled();
   });
 
   it('should display/hide the loader while loading', function () {

@@ -238,22 +238,41 @@ describe('vis/vis', function () {
       expect(Vis.prototype.reload).toHaveBeenCalled();
     });
 
-    it('should reload the map when a new layer is added', function () {
-      this.vis.map.layers.add({ id: 'layer1' });
-      expect(Vis.prototype.reload).toHaveBeenCalledWith({
-        sourceId: 'layer1'
+    describe('on added layer', function () {
+      it('should reload the map', function () {
+        this.vis.map.layers.add({ id: 'layer1' });
+        expect(Vis.prototype.reload).toHaveBeenCalledWith({
+          sourceId: 'layer1'
+        });
+      });
+
+      it('should not reload the map if silent param is true', function () {
+        this.vis.map.layers.add({ id: 'layer1' }, { silent: true });
+        expect(Vis.prototype.reload).not.toHaveBeenCalled();
       });
     });
 
-    it('should reload the map when layers are removed', function () {
-      var layer = this.vis.map.layers.add({
-        id: 'layer1',
-        type: 'CartoDB'
-      }, { silent: true });
-      this.vis.map.layers.remove(layer);
+    describe('on removed layer', function () {
+      var layer;
+      beforeEach(function () {
+        layer = this.vis.map.layers.add({
+          id: 'layer1',
+          type: 'CartoDB'
+        }, { silent: true });
+      });
 
-      expect(Vis.prototype.reload).toHaveBeenCalledWith({
-        sourceId: 'layer1'
+      it('should reload the map', function () {
+        this.vis.map.layers.remove(layer);
+
+        expect(Vis.prototype.reload).toHaveBeenCalledWith({
+          sourceId: 'layer1'
+        });
+      });
+
+      it('should not reload the map if silent param is true', function () {
+        this.vis.map.layers.remove(layer, { silent: true });
+
+        expect(Vis.prototype.reload).not.toHaveBeenCalled();
       });
     });
 
@@ -1058,22 +1077,6 @@ describe('vis/vis', function () {
 
         this.vis.invalidateSize();
 
-        expect(callback).toHaveBeenCalled();
-      });
-    });
-
-    describe('.centerMapToOrigin', function () {
-      it('should invalidate size and re-center the map', function () {
-        var callback = jasmine.createSpy('callback');
-        this.vis.bind('invalidateSize', callback);
-
-        this.vis.load(new VizJSON(fakeVizJSON()));
-
-        spyOn(this.vis.map, 'reCenter');
-
-        this.vis.centerMapToOrigin();
-
-        expect(this.vis.map.reCenter).toHaveBeenCalled();
         expect(callback).toHaveBeenCalled();
       });
     });

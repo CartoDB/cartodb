@@ -379,16 +379,22 @@ var VisModel = Backbone.Model.extend({
     this.reload();
   },
 
-  _onLayerAdded: function (layerModel) {
-    this.reload({
-      sourceId: layerModel.get('id')
-    });
+  _onLayerAdded: function (layerModel, collection, opts) {
+    opts = opts || {};
+    if (!opts.silent) {
+      this.reload({
+        sourceId: layerModel.get('id')
+      });
+    }
   },
 
-  _onLayerRemoved: function (layerModel) {
-    this.reload({
-      sourceId: layerModel.get('id')
-    });
+  _onLayerRemoved: function (layerModel, collection, opts) {
+    opts = opts || {};
+    if (!opts.silent) {
+      this.reload({
+        sourceId: layerModel.get('id')
+      });
+    }
   },
 
   _onDataviewAdded: function () {
@@ -397,11 +403,6 @@ var VisModel = Backbone.Model.extend({
 
   invalidateSize: function () {
     this.trigger('invalidateSize');
-  },
-
-  centerMapToOrigin: function () {
-    this.invalidateSize();
-    this.map.reCenter();
   },
 
   _flattenLayers: function (vizjsonLayers) {

@@ -8,13 +8,16 @@ describe('geo/map/layer-model-base.js', function () {
   });
 
   describe('.remove', function () {
-    it('should trigger a destroy event', function () {
+    it('should trigger a destroy event with options', function () {
       var callback = jasmine.createSpy('callback');
+      var collection = {};
+      var option = { option: 'one' };
+
       this.layer.bind('destroy', callback);
+      this.layer.collection = collection;
+      this.layer.remove(option);
 
-      this.layer.remove();
-
-      expect(callback).toHaveBeenCalled();
+      expect(callback).toHaveBeenCalledWith(this.layer, this.layer.collection, option);
     });
   });
 

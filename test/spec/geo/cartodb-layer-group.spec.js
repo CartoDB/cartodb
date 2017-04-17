@@ -371,5 +371,14 @@ describe('geo/cartodb-layer-group', function () {
 
       expect(this.cartoDBLayerGroup.getStaticImageURLTemplate()).toEqual('http://carto.com/image?layer=0,1,2,3,4&auth_token=AUTH_TOKEN');
     });
+
+    it('should include subdomains', function () {
+      this.cartoDBLayerGroup.set('urls', {
+        image: 'http://{s}.carto.com/image',
+        subdomains: [ '0', '1' ]
+      });
+
+      expect(this.cartoDBLayerGroup.getStaticImageURLTemplate()).toEqual('http://0.carto.com/image?layer=0,1,2,3,4');
+    });
   });
 });

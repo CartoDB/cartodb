@@ -48,9 +48,7 @@ var Map = Model.extend({
     if (attrs.bounds) {
       this.set({
         view_bounds_sw: attrs.bounds[0],
-        view_bounds_ne: attrs.bounds[1],
-        original_view_bounds_sw: attrs.bounds[0],
-        original_view_bounds_ne: attrs.bounds[1]
+        view_bounds_ne: attrs.bounds[1]
       });
       this.unset('bounds');
     } else {
@@ -151,8 +149,8 @@ var Map = Model.extend({
     return layerModel;
   },
 
-  _removeLayerModelFromCollection: function (layerModel) {
-    return this.layers.remove(layerModel);
+  _removeLayerModelFromCollection: function (layerModel, collection, opts) {
+    return this.layers.remove(layerModel, opts);
   },
 
   disableInteractivity: function () {
@@ -412,20 +410,6 @@ var Map = Model.extend({
     this.geometries.remove(geom);
   },
 
-  reCenter: function () {
-    var originalViewBoundsSW = this.get('original_view_bounds_sw');
-    var originalViewBoundsNE = this.get('original_view_bounds_ne');
-    var originalCenter = this.get('original_center');
-    if (originalViewBoundsSW && originalViewBoundsNE) {
-      this.setBounds([
-        originalViewBoundsSW,
-        originalViewBoundsNE
-      ]);
-    } else {
-      this.setCenter(originalCenter);
-    }
-  },
-
   setBounds: function (b) {
     this.attributes.view_bounds_sw = [
       b[0][0],
@@ -493,7 +477,33 @@ var Map = Model.extend({
     }
 
     return zoom - 1;
+  },
+
+  setPixelToLatLngConverter: function (pixelToLatLngConverter) {
+    this._pixelToLatLngConverter = pixelToLatLngConverter;
+  },
+
+  setLatLngToPixelConverter: function (latLngToPixelConverter) {
+    this._latLngToPixelConverter = latLngToPixelConverter;
+  },
+
+  pixelToLatLng: function () {
+    return this._pixelToLatLngConverter;
+  },
+
+  latLngToPixel: function () {
+    return this._latLngToPixelConverter;
+  },
+
+  setMapViewSize: function (size) {
+    this._mapViewSize = size;
+    this.trigger('mapViewSizeChanged');
+  },
+
+  getMapViewSize: function () {
+    return this._mapViewSize;
   }
+
 }, {
   PROVIDERS: {
     GMAPS: 'googlemaps',

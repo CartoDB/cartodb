@@ -39,8 +39,6 @@ describe('core/geo/map', function () {
 
       expect(map.get('view_bounds_sw')).toEqual([0, 1]);
       expect(map.get('view_bounds_ne')).toEqual([2, 3]);
-      expect(map.get('original_view_bounds_sw')).toEqual([0, 1]);
-      expect(map.get('original_view_bounds_ne')).toEqual([2, 3]);
       expect(map.get('bounds')).toBeUndefined();
     });
 
@@ -395,43 +393,17 @@ describe('core/geo/map', function () {
           expect(this.map.layers.at(1)).toEqual(layer1);
           expect(this.map.layers.at(2)).toEqual(layer2);
         });
+
+        it('should remove the layer after it triggers a destroy event', function () {
+          spyOn(this.map, '_removeLayerModelFromCollection');
+          var layer = this.map[testCase.createMethod](testCase.testAttributes);
+          layer.collection = {};
+          var options = { silent: true };
+          layer.trigger('destroy', layer, layer.collection, options);
+          expect(this.map._removeLayerModelFromCollection).toHaveBeenCalledWith(layer, layer.collection, options);
+        });
       });
     }, this);
-  });
-
-  describe('.reCenter', function () {
-    it('should set the original bounds if present', function () {
-      var map = new Map({
-        bounds: [[1, 2], [3, 4]],
-        center: '[41.40282319070747, 2.3435211181640625]'
-      }, { layersFactory: fakeLayersFactory });
-
-      // Change internal attributes
-      map.set({
-        view_bounds_sw: 'something',
-        view_bounds_ne: 'else',
-        center: 'different'
-      });
-
-      map.reCenter();
-
-      expect(map.get('view_bounds_sw')).toEqual([1, 2]);
-      expect(map.get('view_bounds_ne')).toEqual([3, 4]);
-    });
-
-    it('should set the original center if bounds are not present', function () {
-      var map = new Map({
-        center: [41.40282319070747, 2.3435211181640625]
-      }, { layersFactory: fakeLayersFactory });
-
-      map.set({
-        center: 'different'
-      });
-
-      map.reCenter();
-
-      expect(map.get('center')).toEqual([ 41.40282319070747, 2.3435211181640625 ]);
-    });
   });
 
   describe('.getLayerById', function () {

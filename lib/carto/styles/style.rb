@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-require_dependency 'carto/styles/presenters/cartocss'
+require_relative './presenters/cartocss'
 
 module Carto
   module Styles

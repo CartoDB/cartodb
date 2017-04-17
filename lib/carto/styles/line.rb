@@ -1,7 +1,7 @@
 # encoding: utf-8
 
-require_dependency 'carto/styles/style'
-require_dependency 'carto/definition'
+require_relative './style.rb'
+require_relative '../definition.rb'
 
 module Carto::Styles
   class Line < Style

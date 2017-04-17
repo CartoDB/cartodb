@@ -49,7 +49,7 @@ describe('windshaft/named-map', function () {
 
     var isGoogleMapsBaseLayer = function () {
       return false;
-    }
+    };
 
     this.cartoDBLayer1.isGoogleMapsBaseLayer = isGoogleMapsBaseLayer;
     this.cartoDBLayer2.isGoogleMapsBaseLayer = isGoogleMapsBaseLayer;

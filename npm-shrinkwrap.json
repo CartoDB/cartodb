@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.6.67",
+  "version": "4.6.70",
   "dependencies": {
     "backbone": {
       "version": "1.2.3",
@@ -757,7 +757,7 @@
             },
             "map-obj": {
               "version": "1.0.1",
-              "from": "map-obj@>=1.0.1 <1.1.0",
+              "from": "map-obj@>=1.0.1 <2.0.0",
               "resolved": "https://registry.npmjs.org/map-obj/-/map-obj-1.0.1.tgz"
             },
             "replace-requires": {
@@ -1090,7 +1090,7 @@
         "cartodb.js": {
           "version": "4.0.0-alpha.1",
           "from": "cartodb/cartodb.js#v4",
-          "resolved": "git://github.com/cartodb/cartodb.js.git#2c2eb26ed0b8c874ba12e3816c59bdae4bf8ae67",
+          "resolved": "git://github.com/cartodb/cartodb.js.git#ce8bd38f8975eee225b72ae5ad23ff9094556c65",
           "dependencies": {
             "backbone-poller": {
               "version": "1.1.3",
@@ -1424,7 +1424,7 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
       "from": "cartodb/cartodb.js#v4",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#2c2eb26ed0b8c874ba12e3816c59bdae4bf8ae67",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#ce8bd38f8975eee225b72ae5ad23ff9094556c65",
       "dependencies": {
         "backbone-poller": {
           "version": "1.1.3",

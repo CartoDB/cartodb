@@ -1,10 +1,10 @@
 # encoding: utf-8
 
-require_relative './point'
-require_relative './line'
-require_relative './polygon'
-require_relative './style'
-require_relative '../definition'
+require_dependency 'carto/styles/point'
+require_dependency 'carto/styles/line'
+require_dependency 'carto/styles/polygon'
+require_dependency 'carto/styles/style'
+require_dependency 'carto/definition'
 
 module Carto::Styles
   class Geometry < Style

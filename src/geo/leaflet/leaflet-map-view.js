@@ -173,7 +173,7 @@ var LeafletMapView = MapView.extend({
   },
 
   _setView: function () {
-    this._leafletMap.setView(this.map.get('center'), this.map.get('zoom') || 0);
+    this._leafletMap.flyTo(this.map.get('center'), this.map.get('zoom') || 0);
   },
 
   _getNativeMap: function () {

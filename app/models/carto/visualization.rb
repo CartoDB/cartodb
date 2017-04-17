@@ -554,7 +554,6 @@ class Carto::Visualization < ActiveRecord::Base
     layers_dependent_on(user_table).each do |layer|
       Carto::Analysis.find_by_natural_id(id, layer.source_id).try(:destroy) if layer.source_id
 
-      map.remove_layer(layer)
       layer.destroy
     end
   end

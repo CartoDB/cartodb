@@ -295,7 +295,11 @@ module Carto
     end
 
     def depends_on?(user_table)
-      user_tables.include?(user_table)
+      layers_user_tables.map(&:user_table_id).include?(user_table.id)
+    end
+
+    def source_id
+      options.symbolize_keys[:source]
     end
 
     private
@@ -328,10 +332,6 @@ module Carto
 
     def query
       options.symbolize_keys[:query]
-    end
-
-    def source_id
-      options.symbolize_keys[:source]
     end
 
     def invalidate_maps

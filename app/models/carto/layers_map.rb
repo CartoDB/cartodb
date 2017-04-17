@@ -8,5 +8,12 @@ module Carto
     belongs_to :layer, class_name: Carto::Layer, dependent: :destroy
     belongs_to :map, class_name: Carto::Map
 
+    after_destroy :invalidate_map
+
+    private
+
+    def invalidate_map
+      map.notify_map_change if map
+    end
   end
 end

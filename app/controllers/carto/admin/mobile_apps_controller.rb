@@ -59,11 +59,11 @@ class Carto::Admin::MobileAppsController < Admin::AdminController
 
   rescue CartoDB::CentralCommunicationFailure => e
     if e.response_code == 422
-      if e.errors["app_id"].present?
+      if e.errors.any? { |e| e['app_id'] }
         @mobile_app.errors["app_id"] = 'has already been taken'
         flash.now[:error] = "That application ID has already been taken. Please make sure that it is unique."
       else
-        flash.now[:error] = e.errors
+        flash.now[:error] = e.errors.join('. ')
       end
     else
       CartoDB::Logger.error(message: 'Error creating mobile_app in Central', exception: e)

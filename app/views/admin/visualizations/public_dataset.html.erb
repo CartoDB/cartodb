@@ -168,8 +168,8 @@
         <div class="PublicMap-leftBlock PublicMap-leftBlock--large">
           <div class="js-user-meta">
             <h1 class="PublicMap-title js-PublicMap-title Title Title--m"><%= @visualization.display_name_or_name %></h1>
-            <% if @visualization.description_clean %>
-              <div class="PublicMap-description"><%= raw @visualization.description_html_safe %></div>
+            <% if @visualization.description.present? %>
+              <div class="PublicMap-description"><%= raw markdown_html_safe(@visualization.description) %></div>
             <% end %>
 
             <div class="PublicMap-meta">
@@ -203,7 +203,7 @@
                   <li class="PublicMap-metaItem">
                     <i class="PublicMap-metaIcon CDB-IconFont CDB-IconFont-anchor"></i>
                     <%# Keep on one line to avoid unwanted spaces %>
-                    <span title="<%= @visualization.visualization.source %>"><%= raw @visualization.source_html_safe %></span>
+                    <span title="<%= @visualization.visualization.source %>"><%= raw markdown_html_safe(@visualization.source) %></span>
                   </li>
                 <% end %>
               </ul>

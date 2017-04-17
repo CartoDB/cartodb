@@ -54,18 +54,6 @@ module Carto
         Carto::Admin::UserPublicMapAdapter.new(@visualization.user)
       end
 
-      def description_html_safe
-        markdown_html_safe(description)
-      end
-
-      def source_html_safe
-        markdown_html_safe(source)
-      end
-
-      def description_clean
-        markdown_html_clean(description)
-      end
-
       # TODO: remove is_ prefixed methods from visualization
       def private?
         @visualization.private?

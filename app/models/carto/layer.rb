@@ -67,8 +67,8 @@ module Carto
     has_many :layers_user, dependent: :destroy
     has_many :users, through: :layers_user, after_add: :set_default_order
 
-    has_many :layers_user_table, dependent: :destroy
-    has_many :user_tables, through: :layers_user_table, class_name: Carto::UserTable
+    has_many :layers_user_tables, dependent: :destroy
+    has_many :user_tables, through: :layers_user_tables, class_name: Carto::UserTable
 
     has_many :widgets, class_name: Carto::Widget, order: '"order"'
     has_many :legends,

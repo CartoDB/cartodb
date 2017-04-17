@@ -91,7 +91,7 @@ describe('vis/vis-view', function () {
     });
   });
 
-  var CENTER_MAP_TO_ORIGIN_WAIT_IN_MS = 160;
+  var INVALIDATE_SIZE_WAIT_IN_MS = 160;
 
   it('should center map to origin once when map height is 0 initially and window is resized', function () {
     jasmine.clock().install();
@@ -105,19 +105,19 @@ describe('vis/vis-view', function () {
     // First time the window is resized -> map is centered to origin
     $(window).trigger('resize');
 
-    jasmine.clock().tick(CENTER_MAP_TO_ORIGIN_WAIT_IN_MS);
+    jasmine.clock().tick(INVALIDATE_SIZE_WAIT_IN_MS);
 
     expect(this.visModel.invalidateSize).toHaveBeenCalled();
 
-    this.visModel.centerMapToOrigin.calls.reset();
+    this.visModel.invalidateSize.calls.reset();
 
     // Second time the window is resized -> map is NOT centered to origin
 
     $(window).trigger('resize');
 
-    jasmine.clock().tick(CENTER_MAP_TO_ORIGIN_WAIT_IN_MS);
+    jasmine.clock().tick(INVALIDATE_SIZE_WAIT_IN_MS);
 
-    expect(this.visModel.centerMapToOrigin).not.toHaveBeenCalled();
+    expect(this.visModel.invalidateSize).not.toHaveBeenCalled();
     jasmine.clock().uninstall();
   });
 
@@ -133,7 +133,7 @@ describe('vis/vis-view', function () {
     // Window is resized by map is not centered since height hasn't changed
     $(window).trigger('resize');
 
-    jasmine.clock().tick(CENTER_MAP_TO_ORIGIN_WAIT_IN_MS);
+    jasmine.clock().tick(INVALIDATE_SIZE_WAIT_IN_MS);
 
     expect(this.visModel.invalidateSize).not.toHaveBeenCalled();
   });

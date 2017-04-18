@@ -97,6 +97,7 @@ Development
 * Update cartodb.js to use multiple subdomains.
 * Update tangram to use subdomains.
 * New dashboard notifications added (#11807).
+* New 'Find Nearest' analysis (#11933).
 
 ### Bug fixes
 * Don't make several requests when basemap is changed to a plain (color) one (#11445)

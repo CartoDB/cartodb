@@ -18,6 +18,13 @@ describe('widgets/histogram/title-view', function () {
       column: 'a_column',
       bins: 20
     });
+
+    this.dataviewModel.set('data', [{
+      name: 'foo'
+    }, {
+      name: 'bar'
+    }]);
+
     var cartocss = '#layer {  marker-line-width: 0.5;  marker-line-color: #fcfafa;  marker-line-opacity: 1;  marker-width: 6.076923076923077;  marker-fill: ramp([something], ("#7F3C8D", "#11A579", "#3969AC", "#F2B701", "#E73F74"), ("soccer", "basketball", "baseball", "handball", "hockey"));  marker-fill-opacity: 0.9;  marker-allow-overlap: true;}';
     this.dataviewModel.layer.set({
       cartocss: cartocss,

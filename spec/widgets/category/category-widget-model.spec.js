@@ -13,6 +13,12 @@ describe('widgets/category/category-widget-model', function () {
       column: 'col'
     });
 
+    this.dataviewModel.set('data', [{
+      name: 'foo'
+    }, {
+      name: 'bar'
+    }]);
+
     spyOn(CategoryWidgetModel.prototype, '_updateColors').and.callThrough();
 
     this.widgetModel = new CategoryWidgetModel({}, {

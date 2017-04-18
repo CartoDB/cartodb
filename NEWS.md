@@ -67,12 +67,13 @@ Development
   * Sets the default initial size for icons to 20px (#11498)
 * Onboarding for layer edition (#10905)
 * Initial support for Rails engines with CARTO Gears.
+  * Notification API (#11850)
+  * Queue and Email support (#11692).
+  * User login event (#12010).
 * Improved empty bounds map handling (#11711).
 * Updated diagnosis page versions.
 * set_import_limits rake (#11756).
 * Improved formula widget description field. (#11469)
-  * Notification API (#11850)
-  * Queue and Email support (#11692).
 * Improved empty bounds map handling (#11711).
 * Updated diagnosis page versions.
 * Improved formula widget description field (#11469).

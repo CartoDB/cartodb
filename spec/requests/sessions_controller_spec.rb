@@ -553,7 +553,7 @@ describe SessionsController do
       include Warden::Test::Helpers
 
       it 'triggers CartoGearsApi::Events::UserLoginEvent' do
-        CartoGearsApi::Events::EventManager.any_instance.expects(:notify).once.with() do |event|
+        CartoGearsApi::Events::EventManager.any_instance.expects(:notify).once.with do |event|
           event.class.should eq CartoGearsApi::Events::UserLoginEvent
         end
         post create_session_url(user_domain: @user.username, email: @user.username, password: @user.password)
@@ -566,7 +566,7 @@ describe SessionsController do
         get dashboard_url
         logout
 
-        CartoGearsApi::Events::EventManager.any_instance.expects(:notify).once.with() do |event|
+        CartoGearsApi::Events::EventManager.any_instance.expects(:notify).once.with do |event|
           event.first_login?.should be_false
         end
         post create_session_url(user_domain: @user.username, email: @user.username, password: @user.password)
@@ -574,7 +574,7 @@ describe SessionsController do
 
       it 'triggers CartoGearsApi::Events::UserLoginEvent signaling first login' do
         @new_user = FactoryGirl.create(:carto_user)
-        CartoGearsApi::Events::EventManager.any_instance.expects(:notify).once.with()  do |event|
+        CartoGearsApi::Events::EventManager.any_instance.expects(:notify).once.with do |event|
           event.first_login?.should be_true
         end
         post create_session_url(user_domain: @new_user.username, email: @new_user.username, password: @new_user.password)

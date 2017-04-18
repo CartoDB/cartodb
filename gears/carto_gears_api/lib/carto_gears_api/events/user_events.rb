@@ -30,5 +30,16 @@ module CartoGearsApi
         @user = Users::User.from_model(user)
       end
     end
+
+    # Event triggered when a user logins
+    class UserLoginEvent < BaseEvent
+      def initialize(user)
+        @user = user
+      end
+
+      def first_login?
+        @user.dashboard_viewed_at.nil?
+      end
+    end
   end
 end

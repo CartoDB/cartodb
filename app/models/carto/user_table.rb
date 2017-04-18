@@ -59,7 +59,7 @@ module Carto
     before_destroy :ensure_not_viewer
     before_destroy :cache_dependent_visualizations, unless: :destroyed?
     after_destroy :destroy_dependent_visualizations
-    after_destroy { CartoDB::Logger.debug(message: "Carto::UserTable#after_destroy"); service.after_destroy }
+    after_destroy { service.after_destroy }
 
     def geometry_types
       @geometry_types ||= service.geometry_types

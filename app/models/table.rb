@@ -484,7 +484,7 @@ class Table
 
   def after_destroy
     Tag.filter(user_id: user_id, table_id: id).delete
-    remove_table_from_stats if owner
+    remove_table_from_stats
 
     cache.del geometry_types_key
 

@@ -60,6 +60,14 @@ class SessionsController < ApplicationController
     user = authenticate!(*strategies, scope: username)
     CartoDB::Stats::Authentication.instance.increment_login_counter(user.email)
 
+    CartoGearsApi::Events::EventManager.instance.notify(CartoGearsApi::Events::UserLoginEvent.new(user))
+
+    # From the very beginning it's been assumed that after login you go to the dashboard, and
+    # we're using that event as a synonymous to "last logged in date". Now you can skip dashboard
+    # after login (see #11946), so marking that event on authentication is more accurate with the
+    # meaning (although not with the name).
+    user.view_dashboard
+
     redirect_to session[:return_to] || (user.public_url + CartoDB.path(self, 'dashboard', trailing_slash: true))
   end
 

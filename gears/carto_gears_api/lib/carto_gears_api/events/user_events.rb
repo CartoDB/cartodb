@@ -5,15 +5,15 @@ module CartoGearsApi
     # @attr_reader [Users::User] user user which was created
     class UserCreationEvent < BaseEvent
       # User created via login in with SAML SSO
-      CREATED_VIA_SAML = 'saml'.freeze
+      CREATED_VIA_SAML = Carto::UserCreation::CREATED_VIA_SAML
       # User created via login with LDAP credentials
-      CREATED_VIA_LDAP = 'ldap'.freeze
+      CREATED_VIA_LDAP = Carto::UserCreation::CREATED_VIA_LDAP
       # User created via signup up to the org
-      CREATED_VIA_ORG_SIGNUP = 'org_signup'.freeze
+      CREATED_VIA_ORG_SIGNUP = Carto::UserCreation::CREATED_VIA_ORG_SIGNUP
       # User created via enterprise user management API (EUMAPI)
-      CREATED_VIA_API = 'api'.freeze
+      CREATED_VIA_API = Carto::UserCreation::CREATED_VIA_API
       # User created via HTTP header authentication
-      CREATED_VIA_HTTP_AUTENTICATION = 'http_authentication'.freeze
+      CREATED_VIA_HTTP_AUTENTICATION = Carto::UserCreation::CREATED_VIA_HTTP_AUTENTICATION
       # User created by organization administrator
       CREATED_VIA_ORG_ADMIN = 'org_admin'.freeze
       # User created by superadmin

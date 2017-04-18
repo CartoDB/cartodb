@@ -194,7 +194,6 @@ require 'importer/lib/cartodb-migrator'
 require 'varnish/lib/cartodb-varnish'
 $pool = CartoDB::ConnectionPool.new
 
-Carto::CartoGearsSupport.new.gears.reject(&:installable).each do |gear|
-  $LOAD_PATH << File::join(gear.full_path, 'lib')
-  require gear.name
+Carto::CartoGearsSupport.new.gears.each do |gear|
+  require gear.full_path.join('lib', gear.name)
 end

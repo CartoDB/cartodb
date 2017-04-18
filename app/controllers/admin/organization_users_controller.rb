@@ -3,8 +3,6 @@ require_dependency 'google_plus_api'
 require_dependency 'google_plus_config'
 require_dependency 'carto/controller_helper'
 require_dependency 'dummy_password_generator'
-require_dependency 'carto_gears_api/events/event_manager'
-require_dependency 'carto_gears_api/events/user_events'
 
 class Admin::OrganizationUsersController < Admin::AdminController
   include OrganizationUsersHelper

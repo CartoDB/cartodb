@@ -1,6 +1,3 @@
-require_dependency 'carto_gears_api/helpers/url_helper'
-require_dependency 'carto_gears_api/users/users_service'
-
 module CartoGearsApi
   module Helpers
     # This should be included in every controller using the following CARTO layouts:

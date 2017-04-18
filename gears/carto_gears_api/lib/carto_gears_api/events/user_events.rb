@@ -1,6 +1,3 @@
-require_dependency 'carto_gears_api/events/base_event'
-require_dependency 'carto_gears_api/users/user'
-
 module CartoGearsApi
   module Events
     # Event triggered when a user is created

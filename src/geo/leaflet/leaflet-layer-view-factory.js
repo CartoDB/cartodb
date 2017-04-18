@@ -6,11 +6,11 @@ var LeafletCartoDBLayerGroupView = require('./leaflet-cartodb-layer-group-view')
 var LeafletTorqueLayerView = require('./leaflet-torque-layer-view');
 var LeafletCartoDBWebglLayerGroupView = require('./leaflet-cartodb-webgl-layer-group-view');
 
-var LayerGroupViewConstructor = function (layerGroupModel, mapModel, options) {
+var LayerGroupViewConstructor = function (layerGroupModel, nativeMap, options) {
   if (options.vector) {
-    return new LeafletCartoDBWebglLayerGroupView(layerGroupModel, mapModel);
+    return new LeafletCartoDBWebglLayerGroupView(layerGroupModel, nativeMap);
   }
-  return new LeafletCartoDBLayerGroupView(layerGroupModel, mapModel);
+  return new LeafletCartoDBLayerGroupView(layerGroupModel, nativeMap);
 };
 
 var LeafletLayerViewFactory = function (options) {
@@ -27,13 +27,13 @@ LeafletLayerViewFactory.prototype._constructors = {
   'torque': LeafletTorqueLayerView
 };
 
-LeafletLayerViewFactory.prototype.createLayerView = function (layerModel, mapModel) {
+LeafletLayerViewFactory.prototype.createLayerView = function (layerModel, nativeMap) {
   var layerType = layerModel.get('type').toLowerCase();
   var LayerViewClass = this._constructors[layerType];
 
   if (LayerViewClass) {
     try {
-      return new LayerViewClass(layerModel, mapModel, {
+      return new LayerViewClass(layerModel, nativeMap, {
         vector: this._vector
       });
     } catch (e) {

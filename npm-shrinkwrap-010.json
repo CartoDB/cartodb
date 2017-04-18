@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.6.69",
+  "version": "4.6.73",
   "dependencies": {
     "backbone": {
       "version": "1.2.3",
@@ -239,7 +239,7 @@
               "dependencies": {
                 "browserify-aes": {
                   "version": "1.0.6",
-                  "from": "browserify-aes@>=1.0.4 <2.0.0",
+                  "from": "browserify-aes@>=1.0.0 <2.0.0",
                   "resolved": "https://registry.npmjs.org/browserify-aes/-/browserify-aes-1.0.6.tgz",
                   "dependencies": {
                     "buffer-xor": {
@@ -292,7 +292,7 @@
               "dependencies": {
                 "bn.js": {
                   "version": "4.11.6",
-                  "from": "bn.js@>=4.1.0 <5.0.0",
+                  "from": "bn.js@>=4.1.1 <5.0.0",
                   "resolved": "https://registry.npmjs.org/bn.js/-/bn.js-4.11.6.tgz"
                 },
                 "browserify-rsa": {
@@ -453,7 +453,7 @@
               "dependencies": {
                 "bn.js": {
                   "version": "4.11.6",
-                  "from": "bn.js@>=4.1.0 <5.0.0",
+                  "from": "bn.js@>=4.1.1 <5.0.0",
                   "resolved": "https://registry.npmjs.org/bn.js/-/bn.js-4.11.6.tgz"
                 },
                 "miller-rabin": {

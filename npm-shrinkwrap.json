@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.6.71",
+  "version": "4.6.73",
   "dependencies": {
     "backbone": {
       "version": "1.2.3",
@@ -86,7 +86,7 @@
                             },
                             "readable-stream": {
                               "version": "2.0.6",
-                              "from": "readable-stream@>=2.0.0 <2.1.0",
+                              "from": "readable-stream@>=2.0.5 <2.1.0",
                               "resolved": "https://registry.npmjs.org/readable-stream/-/readable-stream-2.0.6.tgz",
                               "dependencies": {
                                 "core-util-is": {
@@ -904,7 +904,7 @@
                     },
                     "inherits": {
                       "version": "2.0.3",
-                      "from": "inherits@>=2.0.0 <3.0.0",
+                      "from": "inherits@>=2.0.1 <2.1.0",
                       "resolved": "https://registry.npmjs.org/inherits/-/inherits-2.0.3.tgz"
                     }
                   }
@@ -1084,13 +1084,13 @@
     },
     "cartodb-deep-insights.js": {
       "version": "0.0.2",
-      "from": "cartodb/deep-insights.js#master",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#504dd701194d6cc2dc8234f14b4c15d43e17872e",
+      "from": "cartodb/deep-insights.js#11838-no-data-autostyle",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#98f926da1565e1c2f25e9428e7c5d726b72ffa4d",
       "dependencies": {
         "cartodb.js": {
           "version": "4.0.0-alpha.1",
           "from": "cartodb/cartodb.js#v4",
-          "resolved": "git://github.com/cartodb/cartodb.js.git#b82ed88894c4234c7de7f828f4849f0e5e6b965f",
+          "resolved": "git://github.com/cartodb/cartodb.js.git#e355ae1a16db3602a3564f80f2449f8d9dacf1e6",
           "dependencies": {
             "backbone-poller": {
               "version": "1.1.3",
@@ -1272,7 +1272,7 @@
             "torque.js": {
               "version": "2.16.3",
               "from": "cartodb/torque#master",
-              "resolved": "git://github.com/cartodb/torque.git#813b3b60dc3350c3328234d3d8ea29a39ccfe4a9",
+              "resolved": "git://github.com/cartodb/torque.git#44c8e772134cd6344724ff167d7f07d3e20ddffa",
               "dependencies": {
                 "carto": {
                   "version": "0.15.1-cdb3",
@@ -1424,7 +1424,7 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
       "from": "cartodb/cartodb.js#v4",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#b82ed88894c4234c7de7f828f4849f0e5e6b965f",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#e355ae1a16db3602a3564f80f2449f8d9dacf1e6",
       "dependencies": {
         "backbone-poller": {
           "version": "1.1.3",
@@ -1611,7 +1611,7 @@
         "torque.js": {
           "version": "2.16.3",
           "from": "cartodb/torque#master",
-          "resolved": "git://github.com/cartodb/torque.git#813b3b60dc3350c3328234d3d8ea29a39ccfe4a9",
+          "resolved": "git://github.com/cartodb/torque.git#44c8e772134cd6344724ff167d7f07d3e20ddffa",
           "dependencies": {
             "carto": {
               "version": "0.15.1-cdb3",
@@ -1744,9 +1744,9 @@
           "resolved": "https://registry.npmjs.org/select/-/select-1.1.2.tgz"
         },
         "tiny-emitter": {
-          "version": "1.1.0",
+          "version": "1.2.0",
           "from": "tiny-emitter@>=1.0.0 <2.0.0",
-          "resolved": "https://registry.npmjs.org/tiny-emitter/-/tiny-emitter-1.1.0.tgz"
+          "resolved": "https://registry.npmjs.org/tiny-emitter/-/tiny-emitter-1.2.0.tgz"
         }
       }
     },
@@ -1968,7 +1968,7 @@
     "torque.js": {
       "version": "2.16.3",
       "from": "cartodb/torque#master",
-      "resolved": "git://github.com/cartodb/torque.git#813b3b60dc3350c3328234d3d8ea29a39ccfe4a9",
+      "resolved": "git://github.com/cartodb/torque.git#44c8e772134cd6344724ff167d7f07d3e20ddffa",
       "dependencies": {
         "carto": {
           "version": "0.15.1-cdb3",

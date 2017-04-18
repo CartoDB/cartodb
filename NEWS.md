@@ -105,6 +105,8 @@ Development
 
 ### Bug fixes
 * Autostyling for google basemaps (#11838)
+
+* Save collapse state for layer list (#11927)
 * Styling falsy categories (#11421)
 * Fixed bug editing geometries from dataset view (#11855)
 * Fixed pagination position in Safari browser
@@ -191,6 +193,7 @@ Development
 * Layer onboardings are now aware on sync'd layers and highlighted area is clicked. (#11583)
 * Do not show builder activated notification for new users (#11720)
 * Fixed overflow on loaders.
+* Correctly delete map layers on visualization deletion (#11931)
 * JOIN Analysis Fails Without Error Message (#11184)
 * Fix problem with perfect-scrollbar in Edge browsers (CartoDB/perfect-scrollbar/#2)
 * Correctly autostyle layers based on geometry when adding layers from modal (#11813)

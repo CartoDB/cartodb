@@ -559,12 +559,21 @@ describe SessionsController do
         post create_session_url(user_domain: @user.username, email: @user.username, password: @user.password)
       end
 
+      it 'sets dashboard_viewed_at just with login' do
+        @user.update_column(:dashboard_viewed_at, nil)
+        @user.reload
+        @user.dashboard_viewed_at.should be_nil
+
+        post create_session_url(user_domain: @user.username, email: @user.username, password: @user.password)
+
+        @user.reload
+        @user.dashboard_viewed_at.should_not be_nil
+      end
+
       include Warden::Test::Helpers
 
       it 'triggers CartoGearsApi::Events::UserLoginEvent signaling not first login' do
         login(::User.where(id: @user.id).first)
-        get dashboard_url
-        logout
 
         CartoGearsApi::Events::EventManager.any_instance.expects(:notify).once.with do |event|
           event.first_login?.should be_false

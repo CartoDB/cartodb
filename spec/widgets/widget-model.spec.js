@@ -336,7 +336,7 @@ describe('widgets/widget-model', function () {
       });
     });
 
-    describe('.autoStyle', function() {
+    describe('.autoStyle', function () {
       beforeEach(function () {
         spyOn(this.model, 'isAutoStyleEnabled').and.returnValue(true);
         this.model.autoStyler = {

@@ -40,11 +40,14 @@ module CartoGearsApi
     # local authentication system.
     class UserLoginEvent < BaseEvent
       def initialize(user)
-        @user = user
+        @first_login = user.dashboard_viewed_at.nil?
+        @user = Users::User.from_model(user)
       end
 
+      attr_reader :user
+
       def first_login?
-        @user.dashboard_viewed_at.nil?
+        @first_login
       end
     end
   end

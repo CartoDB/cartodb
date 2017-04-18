@@ -580,6 +580,15 @@ describe SessionsController do
         post create_session_url(user_domain: @new_user.username, email: @new_user.username, password: @new_user.password)
         @new_user.destroy
       end
+
+      it 'returns a CartoGearsApi::Users::User matching the logged user' do
+        CartoGearsApi::Events::EventManager.any_instance.expects(:notify).once.with do |event|
+          event_user = event.user
+          event_user.class.should eq CartoGearsApi::Users::User
+          event_user.username.should eq @user.username
+        end
+        post create_session_url(user_domain: @user.username, email: @user.username, password: @user.password)
+      end
     end
   end
 

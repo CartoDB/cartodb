@@ -141,28 +141,6 @@ var VisModel = Backbone.Model.extend({
 
     var windshaftClient = new WindshaftClient(windshaftSettings);
 
-    var modelUpdater = new ModelUpdater({
-      visModel: this,
-      layerGroupModel: this.layerGroupModel,
-      dataviewsCollection: this._dataviewsCollection,
-      layersCollection: this._layersCollection,
-      analysisCollection: this._analysisCollection
-    });
-
-    // Create the WindshaftMap
-    this._windshaftMap = new WindshaftMapClass({
-      apiKey: this.get('apiKey'),
-      authToken: this.get('authToken'),
-      statTag: datasource.stat_tag
-    }, {
-      client: windshaftClient,
-      modelUpdater: modelUpdater,
-      windshaftSettings: windshaftSettings,
-      dataviewsCollection: this._dataviewsCollection,
-      layersCollection: this._layersCollection,
-      analysisCollection: this._analysisCollection
-    });
-
     var layersFactory = new LayersFactory({
       visModel: this,
       windshaftSettings: windshaftSettings
@@ -189,6 +167,29 @@ var VisModel = Backbone.Model.extend({
     });
 
     this.listenTo(this.map, 'cartodbLayerMoved', this.reload);
+
+    var modelUpdater = new ModelUpdater({
+      visModel: this,
+      mapModel: this.map,
+      layerGroupModel: this.layerGroupModel,
+      dataviewsCollection: this._dataviewsCollection,
+      layersCollection: this._layersCollection,
+      analysisCollection: this._analysisCollection
+    });
+
+    // Create the WindshaftMap
+    this._windshaftMap = new WindshaftMapClass({
+      apiKey: this.get('apiKey'),
+      authToken: this.get('authToken'),
+      statTag: datasource.stat_tag
+    }, {
+      client: windshaftClient,
+      modelUpdater: modelUpdater,
+      windshaftSettings: windshaftSettings,
+      dataviewsCollection: this._dataviewsCollection,
+      layersCollection: this._layersCollection,
+      analysisCollection: this._analysisCollection
+    });
 
     // Reset the collection of overlays
     this.overlaysCollection.reset(vizjson.overlays);

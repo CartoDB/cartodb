@@ -22,7 +22,8 @@ var Map = Model.extend({
     // enforce client-side rendering using GeoJSON vector tiles
     vector: false,
     popupsEnabled: true,
-    isFeatureInteractivityEnabled: false
+    isFeatureInteractivityEnabled: false,
+    featureCount: 0
   },
 
   initialize: function (attrs, options) {
@@ -505,7 +506,7 @@ var Map = Model.extend({
   },
 
   getNumberOfFeatures: function () {
-    return this.get('featureCount') || 0;
+    return this.get('featureCount');
   }
 }, {
   PROVIDERS: {

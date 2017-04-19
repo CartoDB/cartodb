@@ -13,23 +13,15 @@ function getSubdomain (subdomains, resource) {
  * CartoDB.js models that are linked to a "resource" in the Maps API.
  */
 var ModelUpdater = function (deps) {
-  if (!deps.visModel) {
-    throw new Error('visModel is required');
-  }
-  if (!deps.layerGroupModel) {
-    throw new Error('layerGroupModel is required');
-  }
-  if (!deps.layersCollection) {
-    throw new Error('layersCollection is required');
-  }
-  if (!deps.dataviewsCollection) {
-    throw new Error('dataviewsCollection is required');
-  }
-  if (!deps.analysisCollection) {
-    throw new Error('analysisCollection is required');
-  }
+  if (!deps.visModel) throw new Error('visModel is required');
+  if (!deps.mapModel) throw new Error('mapModel is required');
+  if (!deps.layerGroupModel) throw new Error('layerGroupModel is required');
+  if (!deps.layersCollection) throw new Error('layersCollection is required');
+  if (!deps.dataviewsCollection) throw new Error('dataviewsCollection is required');
+  if (!deps.analysisCollection) throw new Error('analysisCollection is required');
 
   this._visModel = deps.visModel;
+  this._mapModel = deps.mapModel;
   this._layerGroupModel = deps.layerGroupModel;
   this._layersCollection = deps.layersCollection;
   this._dataviewsCollection = deps.dataviewsCollection;
@@ -37,15 +29,21 @@ var ModelUpdater = function (deps) {
 };
 
 ModelUpdater.prototype.updateModels = function (windshaftMap, sourceId, forceFetch) {
-  this._updateLayerGroupModel(windshaftMap);
+  this._updateVisModel(windshaftMap);
+  this._updateMapModel(windshaftMap);
   this._updateLayerModels(windshaftMap);
+  this._updateLayerGroupModel(windshaftMap);
   this._updateDataviewModels(windshaftMap, sourceId, forceFetch);
   this._updateAnalysisModels(windshaftMap);
+};
 
+ModelUpdater.prototype._updateVisModel = function (windshaftMap) {
   this._visModel.setOk();
+};
 
+ModelUpdater.prototype._updateMapModel = function (windshaftMap) {
   if (windshaftMap.get('stats') && windshaftMap.get('stats').featureCount) {
-    this._visModel.map.set('featureCount', windshaftMap.get('stats').featureCount);
+    this._mapModel.set('featureCount', windshaftMap.get('stats').featureCount);
   }
 };
 

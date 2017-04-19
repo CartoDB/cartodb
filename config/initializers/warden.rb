@@ -11,8 +11,8 @@ module LoginEventTrigger
   def trigger_login_event(user)
     CartoDB::Logger.debug(message: "Login event",
                           username: user.username,
-                          dashboard_viewed_at: user.dashboard_viewed_at,
-                          model_class: user.class)
+                          dashboard_viewed_at: user.dashboard_viewed_at.to_s,
+                          model_class: user.class.name)
     CartoGearsApi::Events::EventManager.instance.notify(CartoGearsApi::Events::UserLoginEvent.new(user))
 
     # From the very beginning it's been assumed that after login you go to the dashboard, and

@@ -738,6 +738,7 @@
     }
 
     .Line {
+      // scss-lint:disable MergeableSelector
       opacity: 1;
       stroke-dasharray: 1000;
       stroke-dashoffset: 1000;

@@ -633,6 +633,123 @@
 }
 
 
+/* FIND NEAREST */
+
+.Analysis-animation.is-closest {
+  &.has-autoplay,
+  &:hover {
+    .Dot--withFadeOut {
+      transform-origin: 50% 50%;
+      animation-name: Analysis-fadeOut;
+      animation-duration: 250ms;
+      animation-fill-mode: forwards;
+      animation-timing-function: ease-in;
+
+    }
+    .Dot--withColorChange {
+      transform-origin: 50% 50%;
+      animation-name: Analysis-dotAnalysisGreenIn;
+      animation-duration: 500ms;
+      animation-fill-mode: forwards;
+      animation-timing-function: ease-in;
+      animation-delay: 400ms;
+    }
+    .Line {
+      stroke: #9DE0AD;
+
+      &.Line-01 {
+        animation-delay: 50ms;
+      }
+      &.Line-02 {
+        animation-delay: 100ms;
+      }
+      &.Line-03 {
+        animation-delay: 150ms;
+      }
+      &.Line-04 {
+        animation-delay: 200ms;
+      }
+      &.Line-05 {
+        animation-delay: 250ms;
+      }
+      &.Line-06 {
+        animation-delay: 300ms;
+      }
+      &.Line-07 {
+        animation-delay: 350ms;
+      }
+      &.Line-08 {
+        animation-delay: 400ms;
+      }
+      &.Line-09 {
+        animation-delay: 450ms;
+      }
+    }
+    .Dot-01 {
+       animation-delay: 50ms;
+    }
+    .Dot-02 {
+       animation-delay: 100ms;
+    }
+    .Dot-03 {
+       animation-delay: 150ms;
+    }
+    .Dot-04 {
+       animation-delay: 200ms;
+    }
+    .Dot-05 {
+       animation-delay: 250ms;
+    }
+    .Dot-06 {
+       animation-delay: 300ms;
+    }
+    .Dot-07 {
+       animation-delay: 350ms;
+    }
+    .Dot-08 {
+       animation-delay: 400ms;
+    }
+    .Dot-09 {
+       animation-delay: 450ms;
+    }
+
+    .Dot-10 {
+      animation-delay: 800ms;
+    }
+    .Dot-11 {
+      animation-delay: 850ms;
+    }
+    .Dot-12 {
+      animation-delay: 900ms;
+    }
+    .Dot-13 {
+      animation-delay: 950ms;
+    }
+    .Dot-14 {
+      animation-delay: 1000ms;
+    }
+    .Dot-15 {
+      animation-delay: 1050ms;
+    }
+    .Dot-16 {
+      animation-delay: 1100ms;
+    }
+
+    .Dot-17 {
+      animation-delay: 1150ms;
+    }
+
+    .Line {
+      opacity: 1;
+      stroke-dasharray: 1000;
+      stroke-dashoffset: 1000;
+      animation: Animation-dash 800ms, Animation-dashOut 1s;
+      animation-timing-function: ease-in, ease-out;
+      animation-delay: 500ms, 1500ms;
+    }
+  }
+}
+
 /* SUBSAMPLE */
 .Analysis-animation.is-sampling {
   &.has-autoplay,
@@ -1167,6 +1284,13 @@
     stroke-dashoffset: 0;
   }
 }
+
+@keyframes Animation-dashOut {
+  to {
+    stroke-dashoffset: 100;
+  }
+}
+
 @keyframes Analysis-dashDotted  {
   to {
     stroke-dashoffset: 0;

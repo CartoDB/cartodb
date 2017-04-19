@@ -104,6 +104,7 @@ Development
 * Update tangram to fix layer geometry conditionals.
 
 ### Bug fixes
+* Autostyling for google basemaps (#11838)
 
 * Save collapse state for layer list (#11927)
 * Styling falsy categories (#11421)

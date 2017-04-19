@@ -13,7 +13,9 @@ $br: 2px;
   margin-bottom: 30px;
 }
 .FormPlaceholder-paragraphLoader {
-  margin-bottom: -18px;
+  position: relative;
+  top: -18px;
+  width: 100%;
 }
 .FormPlaceholder-step {
   min-width: 26px;

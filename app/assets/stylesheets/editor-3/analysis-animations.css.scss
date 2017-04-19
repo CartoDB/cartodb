@@ -654,63 +654,61 @@
       animation-timing-function: ease-in;
       animation-delay: 400ms;
     }
-    .Line {
-      stroke: #9DE0AD;
 
-      &.Line-01 {
-        animation-delay: 50ms;
-      }
-      &.Line-02 {
-        animation-delay: 100ms;
-      }
-      &.Line-03 {
-        animation-delay: 150ms;
-      }
-      &.Line-04 {
-        animation-delay: 200ms;
-      }
-      &.Line-05 {
-        animation-delay: 250ms;
-      }
-      &.Line-06 {
-        animation-delay: 300ms;
-      }
-      &.Line-07 {
-        animation-delay: 350ms;
-      }
-      &.Line-08 {
-        animation-delay: 400ms;
-      }
-      &.Line-09 {
-        animation-delay: 450ms;
-      }
+    .Line.Line-01 {
+      animation-delay: 50ms;
     }
+    .Line.Line-02 {
+      animation-delay: 100ms;
+    }
+    .Line.Line-03 {
+      animation-delay: 150ms;
+    }
+    .Line.Line-04 {
+      animation-delay: 200ms;
+    }
+    .Line.Line-05 {
+      animation-delay: 250ms;
+    }
+    .Line.Line-06 {
+      animation-delay: 300ms;
+    }
+    .Line.Line-07 {
+      animation-delay: 350ms;
+    }
+    .Line.Line-08 {
+      animation-delay: 400ms;
+    }
+    .Line.Line-09 {
+      animation-delay: 450ms;
+    }
+
     .Dot-01 {
-       animation-delay: 50ms;
+      animation-delay: 50ms;
     }
     .Dot-02 {
-       animation-delay: 100ms;
+      animation-delay: 100ms;
     }
     .Dot-03 {
-       animation-delay: 150ms;
+      animation-delay: 150ms;
     }
     .Dot-04 {
-       animation-delay: 200ms;
+      animation-delay: 200ms;
     }
     .Dot-05 {
-       animation-delay: 250ms;
+      animation-delay: 250ms;
     }
     .Dot-06 {
-       animation-delay: 300ms;
+      animation-delay: 300ms;
     }
     .Dot-07 {
-       animation-delay: 350ms;
+      animation-delay: 350ms;
     }
     .Dot-08 {
-       animation-delay: 400ms;
+      animation-delay: 400ms;
     }
     .Dot-09 {
-       animation-delay: 450ms;
+      animation-delay: 450ms;
     }
 
     .Dot-10 {
@@ -734,7 +732,6 @@
     .Dot-16 {
       animation-delay: 1100ms;
     }
-
     .Dot-17 {
       animation-delay: 1150ms;
     }
@@ -742,6 +739,7 @@
     .Line {
       opacity: 1;
       stroke-dasharray: 1000;
+      stroke: #9DE0AD;
       stroke-dashoffset: 1000;
       animation: Animation-dash 800ms, Animation-dashOut 1s;
       animation-timing-function: ease-in, ease-out;

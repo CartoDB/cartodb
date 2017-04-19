@@ -7,20 +7,21 @@ var LeafletCartoDBWebglLayerGroupView = function (layerGroupModel, leafletMap) {
   var self = this;
   LeafletLayerView.apply(this, arguments);
 
-  this.tangram = new TC(leafletMap, function () {
-    var onURLsChanged = self._onURLsChanged(layerGroupModel);
-
-    layerGroupModel.bind('change:urls', onURLsChanged);
-
-    layerGroupModel.forEachGroupedLayer(self._onLayerAdded, self);
-    layerGroupModel.onLayerAdded(self._onLayerAdded.bind(self));
-  });
+  this.tangram = new TC(leafletMap, this.initConfig.bind(this, layerGroupModel));
 };
 
 LeafletCartoDBWebglLayerGroupView.prototype = _.extend(
   {},
   LeafletLayerView.prototype,
   {
+    initConfig: function (layerGroupModel) {
+      var onURLsChanged = this._onURLsChanged(layerGroupModel);
+
+      layerGroupModel.bind('change:urls', onURLsChanged);
+
+      layerGroupModel.forEachGroupedLayer(this._onLayerAdded, this);
+      layerGroupModel.onLayerAdded(this._onLayerAdded.bind(this));
+    },
     _createLeafletLayer: function () {
       var leafletLayer = new L.Layer();
       leafletLayer.onAdd = function () {};

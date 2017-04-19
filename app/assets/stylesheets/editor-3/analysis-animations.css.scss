@@ -655,31 +655,31 @@
       animation-delay: 400ms;
     }
 
-    .Line.Line-01 {
+    .Line-01 {
       animation-delay: 50ms;
     }
-    .Line.Line-02 {
+    .Line-02 {
       animation-delay: 100ms;
     }
-    .Line.Line-03 {
+    .Line-03 {
       animation-delay: 150ms;
     }
-    .Line.Line-04 {
+    .Line-04 {
       animation-delay: 200ms;
     }
-    .Line.Line-05 {
+    .Line-05 {
       animation-delay: 250ms;
     }
-    .Line.Line-06 {
+    .Line-06 {
       animation-delay: 300ms;
     }
-    .Line.Line-07 {
+    .Line-07 {
       animation-delay: 350ms;
     }
-    .Line.Line-08 {
+    .Line-08 {
       animation-delay: 400ms;
     }
-    .Line.Line-09 {
+    .Line-09 {
       animation-delay: 450ms;
     }
 
@@ -732,6 +732,7 @@
     .Dot-16 {
       animation-delay: 1100ms;
     }
+
     .Dot-17 {
       animation-delay: 1150ms;
     }
@@ -739,8 +740,8 @@
     .Line {
       opacity: 1;
       stroke-dasharray: 1000;
-      stroke: #9DE0AD;
       stroke-dashoffset: 1000;
+      stroke: #9DE0AD;
       animation: Animation-dash 800ms, Animation-dashOut 1s;
       animation-timing-function: ease-in, ease-out;
       animation-delay: 500ms, 1500ms;

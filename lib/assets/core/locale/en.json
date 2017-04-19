@@ -1681,6 +1681,8 @@
         "find-nearest": {
           "categorized": "categorized",
           "criteria": "Define your criteria",
+          "define-params": "Define your parameters",
+          "define-params-desc": "categorize and limit your result",
           "input": "input",
           "max-results": "max results",
           "modal-desc": "Find nearest analysis locates the closest points between two tables.",

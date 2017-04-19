@@ -124,6 +124,7 @@ module.exports = cdb.core.Model.extend({
 
   autoStyle: function () {
     if (!this.isAutoStyleEnabled()) return;
+    if (!this.dataForAutoStyle()) return;
 
     var layer = this.dataviewModel.layer;
     var initialStyle = layer.get('cartocss');
@@ -135,6 +136,10 @@ module.exports = cdb.core.Model.extend({
     var style = this.autoStyler.getStyle();
     layer.set('cartocss', style);
     this.set('autoStyle', true);
+  },
+
+  dataForAutoStyle: function () {
+    return this.dataviewModel.get('data').length > 0;
   },
 
   reapplyAutoStyle: function () {

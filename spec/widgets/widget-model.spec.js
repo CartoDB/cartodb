@@ -335,6 +335,38 @@ describe('widgets/widget-model', function () {
         expect(this.model.hasColorsAutoStyle()).toBe(true);
       });
     });
+
+    describe('.autoStyle', function () {
+      beforeEach(function () {
+        spyOn(this.model, 'isAutoStyleEnabled').and.returnValue(true);
+        this.model.autoStyler = {
+          getStyle: jasmine.createSpy('getStyle')
+        };
+
+        this.model.dataviewModel.layer.set('initialStyle', 'foo');
+        this.model.dataviewModel.layer.set('cartocss', 'wadus');
+      });
+
+      it('should generate autostyle styles when dataview has data', function () {
+        this.model.dataviewModel.set('data', [{
+          name: 'foo'
+        }, {
+          name: 'bar'
+        }]);
+        this.model.autoStyle();
+
+        expect(this.model.autoStyler.getStyle).toHaveBeenCalled();
+        expect(this.model.dataviewModel.layer.get('initialStyle')).toBe('wadus');
+      });
+
+      it('should not generate autostyle styles when dataview has data', function () {
+        this.model.dataviewModel.set('data', []);
+        this.model.autoStyle();
+
+        expect(this.model.autoStyler.getStyle).not.toHaveBeenCalled();
+        expect(this.model.dataviewModel.layer.get('initialStyle')).toBe('foo');
+      });
+    });
   });
 
   describe('when autostyle option is disabled', function () {

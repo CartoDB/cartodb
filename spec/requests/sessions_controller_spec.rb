@@ -574,7 +574,6 @@ describe SessionsController do
 
       it 'triggers CartoGearsApi::Events::UserLoginEvent signaling not first login' do
         login(::User.where(id: @user.id).first)
-        logout
 
         CartoGearsApi::Events::EventManager.any_instance.expects(:notify).once.with do |event|
           event.first_login?.should be_false

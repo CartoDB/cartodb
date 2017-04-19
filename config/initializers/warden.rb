@@ -7,6 +7,16 @@ Rails.configuration.middleware.use RailsWarden::Manager do |manager|
   manager.failure_app = SessionsController
 end
 
+Warden::Manager.after_authentication do |user, _auth, _opts|
+  CartoGearsApi::Events::EventManager.instance.notify(CartoGearsApi::Events::UserLoginEvent.new(user))
+
+  # From the very beginning it's been assumed that after login you go to the dashboard, and
+  # we're using that event as a synonymous to "last logged in date". Now you can skip dashboard
+  # after login (see #11946), so marking that event on authentication is more accurate with the
+  # meaning (although not with the name).
+  user.view_dashboard
+end
+
 # Setup Session Serialization
 class Warden::SessionSerializer
   def serialize(user)

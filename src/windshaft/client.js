@@ -53,6 +53,10 @@ WindshaftClient.prototype.instantiateMap = function (options) {
       if (data.errors) {
         errorCallback(data);
       } else {
+        // TODO: Remove this!
+        data.stats = {
+          featureCount: 999
+        };
         successCallback(data);
       }
     },

@@ -248,7 +248,7 @@ var MapView = View.extend({
   },
 
   _createLayerView: function (layerModel) {
-    return this._getLayerViewFactory().createLayerView(layerModel, this.getNativeMap());
+    return this._getLayerViewFactory().createLayerView(layerModel, this.getNativeMap(), this.map);
   },
 
   _removeLayers: function () {

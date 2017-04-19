@@ -502,8 +502,11 @@ var Map = Model.extend({
 
   getMapViewSize: function () {
     return this._mapViewSize;
-  }
+  },
 
+  getNumberOfFeatures: function () {
+    return this.get('featureCount') || 0;
+  }
 }, {
   PROVIDERS: {
     GMAPS: 'googlemaps',

@@ -17,6 +17,7 @@
   <body>
     <div id="map"></div>
 
+    <script src="https://mapzen.com/tangram/tangram.min.js"></script>
     <!-- include cartodb.js library -->
     <script src="../../dist/cartodb.uncompressed.js"></script>
 
@@ -251,7 +252,7 @@
           "next":null,
           "transition_options":{}
         };
-        cartodb.createVis('map', vizjson, {})
+        cartodb.createVis('map', vizjson)
         .done(function(vis, layers) {
         })
         .error(function(err) {

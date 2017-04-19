@@ -43,6 +43,10 @@ ModelUpdater.prototype.updateModels = function (windshaftMap, sourceId, forceFet
   this._updateAnalysisModels(windshaftMap);
 
   this._visModel.setOk();
+
+  if (windshaftMap.get('stats') && windshaftMap.get('stats').featureCount) {
+    this._visModel.map.set('featureCount', windshaftMap.get('stats').featureCount);
+  }
 };
 
 ModelUpdater.prototype._updateLayerGroupModel = function (windshaftMap) {

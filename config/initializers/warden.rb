@@ -11,7 +11,7 @@ module LoginEventTrigger
   def trigger_login_event(user)
     CartoDB::Logger.debug(message: "Login event",
                           username: user.username,
-                          dashboard_viewed_at: dashboard_viewed_at,
+                          dashboard_viewed_at: user.dashboard_viewed_at,
                           model_class: user.class)
     CartoGearsApi::Events::EventManager.instance.notify(CartoGearsApi::Events::UserLoginEvent.new(user))
 

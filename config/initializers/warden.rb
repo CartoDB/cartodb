@@ -7,14 +7,20 @@ Rails.configuration.middleware.use RailsWarden::Manager do |manager|
   manager.failure_app = SessionsController
 end
 
-Warden::Manager.after_authentication do |user, _auth, _opts|
-  CartoGearsApi::Events::EventManager.instance.notify(CartoGearsApi::Events::UserLoginEvent.new(user))
+module LoginEventTrigger
+  def trigger_login_event(user)
+    CartoDB::Logger.debug(message: "Login event",
+                          username: user.username,
+                          dashboard_viewed_at: dashboard_viewed_at,
+                          model_class: user.class)
+    CartoGearsApi::Events::EventManager.instance.notify(CartoGearsApi::Events::UserLoginEvent.new(user))
 
-  # From the very beginning it's been assumed that after login you go to the dashboard, and
-  # we're using that event as a synonymous to "last logged in date". Now you can skip dashboard
-  # after login (see #11946), so marking that event on authentication is more accurate with the
-  # meaning (although not with the name).
-  user.view_dashboard
+    # From the very beginning it's been assumed that after login you go to the dashboard, and
+    # we're using that event as a synonymous to "last logged in date". Now you can skip dashboard
+    # after login (see #11946), so marking that event on authentication is more accurate with the
+    # meaning (although not with the name).
+    user.view_dashboard
+  end
 end
 
 # Setup Session Serialization
@@ -30,6 +36,7 @@ end
 
 Warden::Strategies.add(:password) do
   include Carto::UserAuthenticator
+  include LoginEventTrigger
 
   def valid_password_strategy_for_user(user)
     user.organization.nil? || user.organization.auth_username_password_enabled
@@ -39,6 +46,8 @@ Warden::Strategies.add(:password) do
     if params[:email] && params[:password]
       if (user = authenticate(params[:email], params[:password]))
         if user.enabled? && valid_password_strategy_for_user(user)
+          trigger_login_event(user)
+
           success!(user, :message => "Success")
           request.flash['logged'] = true
         elsif !user.enable_account_token.nil?
@@ -56,12 +65,17 @@ Warden::Strategies.add(:password) do
 end
 
 Warden::Strategies.add(:enable_account_token) do
+  include LoginEventTrigger
+
   def authenticate!
     if params[:id]
       user = ::User.where(enable_account_token: params[:id]).first
       if user
         user.enable_account_token = nil
         user.save
+
+        trigger_login_event(user)
+
         success!(user)
       else
         fail!
@@ -73,6 +87,8 @@ Warden::Strategies.add(:enable_account_token) do
 end
 
 Warden::Strategies.add(:google_access_token) do
+  include LoginEventTrigger
+
   def valid_google_access_token_strategy_for_user(user)
     user.organization.nil? || user.organization.auth_google_enabled
   end
@@ -82,6 +98,8 @@ Warden::Strategies.add(:google_access_token) do
       user = GooglePlusAPI.new.get_user(params[:google_access_token])
       if user && valid_google_access_token_strategy_for_user(user)
         if user.enable_account_token.nil?
+          trigger_login_event(user)
+
           success!(user)
         else
           throw(:warden, :action => 'account_token_authentication_error', :user_id => user.id)
@@ -96,6 +114,8 @@ Warden::Strategies.add(:google_access_token) do
 end
 
 Warden::Strategies.add(:github_oauth) do
+  include LoginEventTrigger
+
   def valid_github_oauth_strategy_for_user(user)
     user.organization.nil? || user.organization.auth_github_enabled
   end
@@ -112,7 +132,13 @@ Warden::Strategies.add(:github_oauth) do
           user.save
         end
       end
-      user && valid_github_oauth_strategy_for_user(user) ? success!(user) : fail!
+      if user && valid_github_oauth_strategy_for_user(user)
+        trigger_login_event(user)
+
+        success!(user)
+      else
+        fail!
+      end
     else
       fail!
     end
@@ -120,6 +146,8 @@ Warden::Strategies.add(:github_oauth) do
 end
 
 Warden::Strategies.add(:ldap) do
+  include LoginEventTrigger
+
   def authenticate!
     (fail! and return) unless (params[:email] && params[:password])
 
@@ -133,6 +161,8 @@ Warden::Strategies.add(:ldap) do
     end
     # Fails, but do not stop processin other strategies (allows fallbacks)
     return unless user
+
+    trigger_login_event(user)
 
     success!(user, :message => "Success")
     request.flash['logged'] = true
@@ -198,6 +228,8 @@ Warden::Strategies.add(:api_key) do
 end
 
 Warden::Strategies.add(:http_header_authentication) do
+  include LoginEventTrigger
+
   def valid?
     Carto::HttpHeaderAuthentication.new.valid?(request)
   end
@@ -205,6 +237,8 @@ Warden::Strategies.add(:http_header_authentication) do
   def authenticate!
     user = Carto::HttpHeaderAuthentication.new.get_user(request)
     return fail! unless user.present?
+
+    trigger_login_event(user)
 
     success!(user)
   rescue => e
@@ -214,6 +248,8 @@ Warden::Strategies.add(:http_header_authentication) do
 end
 
 Warden::Strategies.add(:saml) do
+  include LoginEventTrigger
+
   def organization_from_request
     subdomain = CartoDB.extract_subdomain(request)
     Carto::Organization.where(name: subdomain).first if subdomain
@@ -236,6 +272,8 @@ Warden::Strategies.add(:saml) do
 
     if user
       if user.try(:enabled?)
+        trigger_login_event(user)
+
         success!(user, message: "Success")
         request.flash['logged'] = true
       else
@@ -273,6 +311,8 @@ Warden::Manager.after_set_user except: :fetch do |user, auth, opts|
 end
 
 Warden::Strategies.add(:user_creation) do
+  include LoginEventTrigger
+
   def authenticate!
     username = params[:username]
     user = ::User.where(username: username).first
@@ -282,6 +322,8 @@ Warden::Strategies.add(:user_creation) do
     return fail! unless user_creation
 
     if user_creation.autologin?
+      trigger_login_event(user)
+
       success!(user, :message => "Success")
     else
       fail!

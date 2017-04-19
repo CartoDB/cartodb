@@ -1,3 +1,5 @@
+require_dependency 'cartodb_config_utils'
+
 module CartoGearsApi
   module Helpers
     # This should be included in every controller using the following CARTO layouts:

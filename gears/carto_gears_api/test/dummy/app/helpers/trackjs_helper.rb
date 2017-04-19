@@ -1,0 +1,2 @@
+module TrackjsHelper
+end

@@ -389,7 +389,6 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def delete_from_table
-    CartoDB::Logger.debug(message: "Carto::Visualization#delete_from_table");
     destroy if persisted?
   end
 
@@ -550,7 +549,6 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def unlink_from(user_table)
-    CartoDB::Logger.debug(message: "Carto::Visualization#unlink_from")
     layers_dependent_on(user_table).each do |layer|
       Carto::Analysis.find_by_natural_id(id, layer.source_id).try(:destroy) if layer.source_id
 

@@ -340,7 +340,7 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
       "from": "cartodb/cartodb.js#v4",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#b82ed88894c4234c7de7f828f4849f0e5e6b965f"
+      "resolved": "git://github.com/cartodb/cartodb.js.git#e355ae1a16db3602a3564f80f2449f8d9dacf1e6"
     },
     "caseless": {
       "version": "0.11.0",
@@ -2041,9 +2041,9 @@
       "resolved": "https://registry.npmjs.org/timers-browserify/-/timers-browserify-1.4.2.tgz"
     },
     "tiny-emitter": {
-      "version": "1.1.0",
+      "version": "1.2.0",
       "from": "tiny-emitter@>=1.0.0 <2.0.0",
-      "resolved": "https://registry.npmjs.org/tiny-emitter/-/tiny-emitter-1.1.0.tgz"
+      "resolved": "https://registry.npmjs.org/tiny-emitter/-/tiny-emitter-1.2.0.tgz"
     },
     "tinycolor2": {
       "version": "1.4.1",
@@ -2063,7 +2063,7 @@
     "torque.js": {
       "version": "2.16.3",
       "from": "cartodb/torque#master",
-      "resolved": "git://github.com/cartodb/torque.git#813b3b60dc3350c3328234d3d8ea29a39ccfe4a9"
+      "resolved": "git://github.com/cartodb/torque.git#44c8e772134cd6344724ff167d7f07d3e20ddffa"
     },
     "tough-cookie": {
       "version": "2.3.2",

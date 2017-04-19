@@ -104,6 +104,9 @@ Development
 * Update tangram to fix layer geometry conditionals.
 
 ### Bug fixes
+* Autostyling for google basemaps (#11838)
+
+* Save collapse state for layer list (#11927)
 * Styling falsy categories (#11421)
 * Fixed bug editing geometries from dataset view (#11855)
 * Fixed pagination position in Safari browser
@@ -190,6 +193,7 @@ Development
 * Layer onboardings are now aware on sync'd layers and highlighted area is clicked. (#11583)
 * Do not show builder activated notification for new users (#11720)
 * Fixed overflow on loaders.
+* Correctly delete map layers on visualization deletion (#11931)
 * JOIN Analysis Fails Without Error Message (#11184)
 * Fix problem with perfect-scrollbar in Edge browsers (CartoDB/perfect-scrollbar/#2)
 * Correctly autostyle layers based on geometry when adding layers from modal (#11813)
@@ -209,6 +213,7 @@ Development
 * Fix organization notifications issues (#11957)
 * Max tracts to 4 for isoline analysis (#11723)
 * Check if analysis node is on top before fetching query data (#11874)
+* Fixed error dropping tables from ghost table manager on race condition cases (#12012)
 
 ### NOTICE
 This release upgrades the CartoDB PostgreSQL extension to `0.19.0`. Run the following to have it available:

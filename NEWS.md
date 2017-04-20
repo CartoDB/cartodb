@@ -212,6 +212,7 @@ Development
 * Using latest cartodb.js and deep-insights.js to tackle map zooming problem (support#605)
 * Fix organization notifications issues (#11957)
 * Max tracts to 4 for isoline analysis (#11723)
+* Check if analysis node is on top before fetching query data (#11874)
 * Fixed error dropping tables from ghost table manager on race condition cases (#12012)
 
 ### NOTICE

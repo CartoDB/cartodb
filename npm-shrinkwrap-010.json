@@ -239,7 +239,7 @@
               "dependencies": {
                 "browserify-aes": {
                   "version": "1.0.6",
-                  "from": "browserify-aes@>=1.0.4 <2.0.0",
+                  "from": "browserify-aes@>=1.0.0 <2.0.0",
                   "resolved": "https://registry.npmjs.org/browserify-aes/-/browserify-aes-1.0.6.tgz",
                   "dependencies": {
                     "buffer-xor": {
@@ -249,7 +249,7 @@
                     },
                     "cipher-base": {
                       "version": "1.0.3",
-                      "from": "cipher-base@>=1.0.1 <2.0.0",
+                      "from": "cipher-base@>=1.0.0 <2.0.0",
                       "resolved": "https://registry.npmjs.org/cipher-base/-/cipher-base-1.0.3.tgz"
                     }
                   }
@@ -584,7 +584,7 @@
             },
             "minimatch": {
               "version": "3.0.3",
-              "from": "minimatch@>=3.0.2 <4.0.0",
+              "from": "minimatch@>=2.0.0 <3.0.0||>=3.0.0 <4.0.0",
               "resolved": "https://registry.npmjs.org/minimatch/-/minimatch-3.0.3.tgz",
               "dependencies": {
                 "brace-expansion": {
@@ -703,7 +703,7 @@
             },
             "is-buffer": {
               "version": "1.1.5",
-              "from": "is-buffer@>=1.0.2 <2.0.0",
+              "from": "is-buffer@>=1.1.0 <2.0.0",
               "resolved": "https://registry.npmjs.org/is-buffer/-/is-buffer-1.1.5.tgz"
             },
             "lexical-scope": {
@@ -853,9 +853,9 @@
           }
         },
         "resolve": {
-          "version": "1.3.2",
+          "version": "1.3.3",
           "from": "resolve@>=1.1.4 <2.0.0",
-          "resolved": "https://registry.npmjs.org/resolve/-/resolve-1.3.2.tgz",
+          "resolved": "https://registry.npmjs.org/resolve/-/resolve-1.3.3.tgz",
           "dependencies": {
             "path-parse": {
               "version": "1.0.5",
@@ -883,7 +883,7 @@
             },
             "sha.js": {
               "version": "2.4.8",
-              "from": "sha.js@>=2.3.6 <3.0.0",
+              "from": "sha.js@>=2.4.4 <2.5.0",
               "resolved": "https://registry.npmjs.org/sha.js/-/sha.js-2.4.8.tgz"
             }
           }
@@ -1379,7 +1379,7 @@
     "cartodb-deep-insights.js": {
       "version": "0.0.2",
       "from": "cartodb/deep-insights.js#master",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#504dd701194d6cc2dc8234f14b4c15d43e17872e",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#7f79842bcf9a9354f38ff13ac576baabee63bb62",
       "dependencies": {
         "cartodb.js": {
           "version": "4.0.0-alpha.1",

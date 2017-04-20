@@ -330,7 +330,7 @@
     "cartodb-deep-insights.js": {
       "version": "0.0.2",
       "from": "cartodb/deep-insights.js#master",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#504dd701194d6cc2dc8234f14b4c15d43e17872e"
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#7f79842bcf9a9354f38ff13ac576baabee63bb62"
     },
     "cartodb-pecan": {
       "version": "0.2.0",
@@ -1690,9 +1690,9 @@
       "resolved": "https://registry.npmjs.org/request-progress/-/request-progress-2.0.1.tgz"
     },
     "resolve": {
-      "version": "1.3.2",
+      "version": "1.3.3",
       "from": "resolve@>=1.1.4 <2.0.0",
-      "resolved": "https://registry.npmjs.org/resolve/-/resolve-1.3.2.tgz"
+      "resolved": "https://registry.npmjs.org/resolve/-/resolve-1.3.3.tgz"
     },
     "resolve-protobuf-schema": {
       "version": "2.0.0",

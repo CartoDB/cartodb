@@ -81,7 +81,7 @@ var loadVizJSON = function (el, visModel, vizjsonData, options) {
     renderMode = RenderModes.VECTOR;
   } else if (options.vector === false) {
     renderMode = RenderModes.RASTER;
-  };
+  }
 
   visModel.set({
     title: vizjson.title,

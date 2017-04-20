@@ -39,8 +39,8 @@ var canLayerBeRenderedClientSide = function (layerModel) {
   try {
     TangramCartoCSS.carto2Draw(layerModel.get('meta').cartocss);
   } catch (e) {
-    //TODO: log cartocss / exception so that we can learn why this layer
-    //can't be rendered client side.
+    // TODO: log cartocss / exception so that we can learn why this layer
+    // can't be rendered client side.
     return false;
   }
 

@@ -502,7 +502,7 @@ class Carto::User < ActiveRecord::Base
   end
 
   def view_dashboard
-    update_attribute(:dashboard_viewed_at, Time.now)
+    update_column(:dashboard_viewed_at, Time.now)
   end
 
   private

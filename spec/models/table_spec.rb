@@ -2333,6 +2333,21 @@ describe Table do
           CartoDB::Visualization::Member.new(id: derived.id).fetch
         }.to raise_error KeyError
       end
+
+      it 'deletes layers from derived visualizations that partially depend on this table' do
+        bypass_named_maps
+        table = create_table(name: 'bogus_name', user_id: @user.id)
+
+        map = CartoDB::Visualization::TableBlender.new(@carto_user, [table]).blend
+        derived = FactoryGirl.create(:derived_visualization, user_id: @user.id, map_id: map.id)
+        map.layers << FactoryGirl.create(:carto_layer)
+        CartoDB::Visualization::Member.new(id: derived.id).fetch.data_layers.count.should eq 2
+
+        table.reload
+        table.destroy
+
+        CartoDB::Visualization::Member.new(id: derived.id).fetch.data_layers.count.should eq 1
+      end
     end
 
     describe '#destroy' do

@@ -13,9 +13,9 @@
         </div>
 
         <div class="MapCard-contentBodyRow MapCard-contentBodyRow--flex">
-          <% if vis[:description_html_safe] %>
+          <% if vis[:description].present? %>
             <div class="MapCard-desc">
-              <div class="DefaultDescription" title="<%= vis[:description_html_safe].strip_tags %>"><%= raw vis[:description_html_safe] %></div>
+              <div class="DefaultDescription" title="<%= markdown_html_clean(vis[:description]) %>"><%= raw markdown_html_safe(vis[:description]) %></div>
             </div>
           <% else %>
             <span class="NoResults"></span>

@@ -298,6 +298,7 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/requests/carto/api/snapshots_controller_specs.rb \
 	spec/models/carto/snapshot_spec.rb \
 	spec/helpers/application_helper_spec.rb \
+	spec/helpers/carto/html_safe_spec.rb \
 	spec/models/carto/asset_spec.rb \
 	spec/requests/carto/api/organization_assets_controller_spec.rb \
 	spec/lib/carto/assets_service_spec.rb \

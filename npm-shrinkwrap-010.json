@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.6.73",
+  "version": "4.6.75",
   "dependencies": {
     "backbone": {
       "version": "1.2.3",
@@ -239,7 +239,7 @@
               "dependencies": {
                 "browserify-aes": {
                   "version": "1.0.6",
-                  "from": "browserify-aes@>=1.0.0 <2.0.0",
+                  "from": "browserify-aes@>=1.0.4 <2.0.0",
                   "resolved": "https://registry.npmjs.org/browserify-aes/-/browserify-aes-1.0.6.tgz",
                   "dependencies": {
                     "buffer-xor": {
@@ -1198,7 +1198,7 @@
                     },
                     "inherits": {
                       "version": "2.0.3",
-                      "from": "inherits@>=2.0.1 <2.1.0",
+                      "from": "inherits@>=2.0.0 <3.0.0",
                       "resolved": "https://registry.npmjs.org/inherits/-/inherits-2.0.3.tgz"
                     }
                   }
@@ -1421,9 +1421,9 @@
               }
             },
             "tangram.cartodb": {
-              "version": "0.3.0",
+              "version": "0.3.1",
               "from": "cartodb/tangram.cartodb#master",
-              "resolved": "git://github.com/cartodb/tangram.cartodb.git#f973792e341110835393521480672670e2e27dee",
+              "resolved": "git://github.com/cartodb/tangram.cartodb.git#538136b79f0f401ba806d75fe2f9df534bb99017",
               "dependencies": {
                 "babel-runtime": {
                   "version": "6.18.0",
@@ -1760,9 +1760,9 @@
           "resolved": "https://registry.npmjs.org/d3/-/d3-3.5.17.tgz"
         },
         "tangram.cartodb": {
-          "version": "0.3.0",
+          "version": "0.3.1",
           "from": "cartodb/tangram.cartodb#master",
-          "resolved": "git://github.com/cartodb/tangram.cartodb.git#f973792e341110835393521480672670e2e27dee",
+          "resolved": "git://github.com/cartodb/tangram.cartodb.git#538136b79f0f401ba806d75fe2f9df534bb99017",
           "dependencies": {
             "babel-runtime": {
               "version": "6.18.0",

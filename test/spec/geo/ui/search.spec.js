@@ -18,7 +18,8 @@ describe('geo/ui/search', function () {
       mapModel: this.map,
       visModel: new Backbone.Model(),
       layerViewFactory: jasmine.createSpyObj('layerViewFactory', ['createLayerView']),
-      layerGroupModel: new Backbone.Model()
+      layerGroupModel: new Backbone.Model(),
+      settingsModel: new Backbone.Model()
     });
     this.mapView.render();
 

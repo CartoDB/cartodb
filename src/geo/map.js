@@ -19,8 +19,6 @@ var Map = Model.extend({
     drag: true,
     keyboard: true,
     provider: 'leaflet',
-    // enforce client-side rendering using GeoJSON vector tiles
-    vector: false,
     popupsEnabled: true,
     isFeatureInteractivityEnabled: false,
     featureCount: 0

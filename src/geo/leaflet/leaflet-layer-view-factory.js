@@ -7,19 +7,30 @@ var LeafletCartoDBLayerGroupView = require('./leaflet-cartodb-layer-group-view')
 var LeafletTorqueLayerView = require('./leaflet-torque-layer-view');
 var LeafletCartoDBWebglLayerGroupView = require('./leaflet-cartodb-webgl-layer-group-view');
 var TangramCartoCSS = require('tangram-cartocss');
+var RenderModes = require('../../vis/render-modes');
 
 var MAX_NUMBER_OF_FEATURES_FOR_WEBGL = 1000;
 
-var LayerGroupViewConstructor = function (layerGroupModel, nativeMap, mapModel) {
-  if (canMapBeRenderedClientSide(mapModel)) {
+var LayerGroupViewConstructor = function (layerGroupModel, nativeMap, mapModel, settingsModel) {
+  if (canMapBeRenderedClientSide(mapModel, settingsModel)) {
     return new LeafletCartoDBWebglLayerGroupView(layerGroupModel, nativeMap);
   }
 
   return new LeafletCartoDBLayerGroupView(layerGroupModel, nativeMap);
 };
 
-var canMapBeRenderedClientSide = function (mapModel) {
-  // TODO: Use flag to enforce client or raster rendering modes
+var canMapBeRenderedClientSide = function (mapModel, settingsModel) {
+  var mapRenderMode = settingsModel.get('renderMode');
+
+  if (mapRenderMode === RenderModes.VECTOR) {
+    return true;
+  }
+
+  if (mapRenderMode === RenderModes.RASTER) {
+    return false;
+  }
+
+  // mapRenderMode === RenderModes.AUTO
   return mapModel.getNumberOfFeatures() < MAX_NUMBER_OF_FEATURES_FOR_WEBGL &&
     _.all(mapModel.layers.getCartoDBLayers(), canLayerBeRenderedClientSide);
 };
@@ -46,13 +57,13 @@ LeafletLayerViewFactory.prototype._constructors = {
   'torque': LeafletTorqueLayerView
 };
 
-LeafletLayerViewFactory.prototype.createLayerView = function (layerModel, nativeMap, mapModel) {
+LeafletLayerViewFactory.prototype.createLayerView = function (layerModel, nativeMap, mapModel, settingsModel) {
   var layerType = layerModel.get('type').toLowerCase();
   var LayerViewClass = this._constructors[layerType];
 
   if (LayerViewClass) {
     try {
-      return new LayerViewClass(layerModel, nativeMap, mapModel);
+      return new LayerViewClass(layerModel, nativeMap, mapModel, settingsModel);
     } catch (e) {
       log.error("Error creating an instance of layer view for '" + layerType + "' layer -> " + e.message);
       throw e;

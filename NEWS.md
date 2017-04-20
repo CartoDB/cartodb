@@ -207,6 +207,7 @@ Development
 * Redirect to last visited page after logging in (#11946)
 * Sanitized HTML from map and layer names.
 * Merged fix subdomain error not loading tiles (CartoDB.js#1607)
+* Create users from org panel with the default quota (#11837)
 * Fixed way to listen Deep-insights.js map or widgets changes (#11894)
 * Using latest cartodb.js and deep-insights.js to tackle map zooming problem (support#605)
 * Fix organization notifications issues (#11957)

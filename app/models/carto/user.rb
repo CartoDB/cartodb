@@ -501,6 +501,10 @@ class Carto::User < ActiveRecord::Base
     !Carto::Ldap::Manager.new.configuration_present?
   end
 
+  def view_dashboard
+    update_column(:dashboard_viewed_at, Time.now)
+  end
+
   private
 
   def set_database_host

@@ -3,13 +3,11 @@ var timer = require("grunt-timer");
 var colors = require('colors');
 var semver = require('semver');
 var jasmineCfg = require('./lib/build/tasks/jasmine.js');
-var duplicatedDependencies = require('./lib/build/tasks/shrinkwrap-duplicated-dependencies.js');
+var shrinkwrapDependencies = require('./lib/build/tasks/shrinkwrap-dependencies.js');
 var webpackTask = null;
 
-var NODE_VERSION = '0.10.26 - 0.12';
-var NPM_VERSION = '2.14 - 2.15';
-var WEBPACK_NODE_VERSION = '6 - 7';
-var WEBPACK_NPM_VERSION = '2.14 - 3';
+var REQUIRED_NODE_VERSION = '6.9.2';
+var REQUIRED_NPM_VERSION = '3.10.9';
 
 var DEVELOPMENT = 'development';
 
@@ -88,15 +86,26 @@ module.exports = function(grunt) {
       checkVersion('npm -v', requiredNpmVersion, 'npm', logFn);
     }
 
-    if (grunt.cli.tasks.indexOf('affected_specs') > - 1) {
-      // Webpack needs a higher version of Node than the rest of the tasks.
-      preFlight(WEBPACK_NODE_VERSION, WEBPACK_NPM_VERSION, logVersionsError);
-    } else {
-      preFlight(NODE_VERSION, NPM_VERSION, logVersionsError);
+    var mustCheckNodeVersion = grunt.option('no-node-checker');
+    if (!mustCheckNodeVersion) {
+      preFlight(REQUIRED_NODE_VERSION, REQUIRED_NPM_VERSION, logVersionsError);
+      grunt.log.writeln('');
     }
-    grunt.log.writeln('');
 
-    var duplicatedModules = duplicatedDependencies(require('./npm-shrinkwrap.json'), SHRINKWRAP_MODULES_TO_VALIDATE);
+    var dependenciesWithDifferentVersion = shrinkwrapDependencies.checkDependenciesVersion(
+      require('./npm-shrinkwrap-010.json'),
+      require('./npm-shrinkwrap-69.json'),
+      SHRINKWRAP_MODULES_TO_VALIDATE
+    );
+    if (dependenciesWithDifferentVersion.length > 0) {
+      grunt.log.fail("############### /!\\ CAUTION /!\\ #################");
+      grunt.log.fail("Dependencies with different version in shrinkwraps for node 0.10 and node 6.9.2 found.");
+      grunt.log.fail(JSON.stringify(dependenciesWithDifferentVersion, null, 4));
+      grunt.log.fail("#################################################");
+      process.exit(1);
+    }
+
+    var duplicatedModules = shrinkwrapDependencies.checkDuplicatedDependencies(require('./npm-shrinkwrap.json'), SHRINKWRAP_MODULES_TO_VALIDATE);
     if (duplicatedModules.length > 0) {
       grunt.log.fail("############### /!\\ CAUTION /!\\ #################");
       grunt.log.fail("Duplicated dependencies found in npm-shrinkwrap.json file.");

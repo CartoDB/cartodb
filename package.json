@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.6.74.11662.01",
+  "version": "4.6.78.11662.01",
   "description": "CARTO UI frontend",
   "repository": {
     "type": "git",
@@ -16,9 +16,10 @@
   "dependencies": {
     "backbone": "1.2.3",
     "backbone-forms": "0.14.0",
-    "backbone-model-file-upload": "CartoDB/backbone-model-file-upload#1.0.0",
+    "backbone-model-file-upload": "CartoDB/backbone-model-file-upload#1.0.1",
     "backbone-undo": "cartodb/Backbone.Undo.js#c10e997",
     "bootstrap-colorpicker": "2.5.0",
+    "browserify": "13.0.0",
     "browserify-shim": "3.8.12",
     "camshaft-reference": "<2.0",
     "carto": "cartodb/carto#master",
@@ -42,7 +43,6 @@
     "aws-sdk": "2.0.0-rc11",
     "bluebird": "3.5.0",
     "brfs": "^1.4.3",
-    "browserify": "13.0.0",
     "browserify-resolutions": "1.1.0",
     "cartoassets": "cartodb/CartoAssets#master",
     "colors": "1.1.2",
@@ -62,7 +62,7 @@
     "grunt-contrib-concat": "0.5.1",
     "grunt-contrib-connect": "0.11.2",
     "grunt-contrib-copy": "0.8.1",
-    "grunt-contrib-jasmine": "0.9.1",
+    "grunt-contrib-jasmine": "1.1.0",
     "grunt-contrib-jst": "git://github.com/javisantana/grunt-contrib-jst.git#master",
     "grunt-contrib-sass": "0.9.2",
     "grunt-contrib-uglify": "2.0.x",
@@ -73,6 +73,7 @@
     "jasmine": "2.5.2",
     "jasmine-ajax": "git://github.com/nobuti/jasmine-ajax.git#master",
     "jstify": "0.13.0",
+    "lodash": "4.17.4",
     "load-grunt-tasks": "3.2.0",
     "lodash": "^4.17.4",
     "minimist": "1.2.0",
@@ -169,10 +170,13 @@
   "config": {
     "npmJsDir": "lib/assets"
   },
+  "engine": {
+    "node": "6.9.2"
+  },
   "scripts": {
     "test": "echo \"Run 'grunt test' to run specs through command line.\"",
     "preupdate-internal-deps": "echo 'DEPRECATED TASK, use `npm run-script update-internal-deps` instead'",
-    "update-internal-deps": "rm -rf node_modules && npm install --no-shrinkwrap && npm shrinkwrap",
+    "update-internal-deps": "rm -rf node_modules && npm install --production --no-shrinkwrap && npm dedupe && npm prune && npm shrinkwrap && npm install",
     "branch-files": "node lib/build/branchFiles/branchFiles.js",
     "affected_specs": "node lib/build/branchFiles/branchFiles.js | xargs node lib/build/affectedFiles/affectedFiles.js"
   }

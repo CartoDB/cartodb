@@ -17,13 +17,15 @@
   <body>
     <div id="map"></div>
 
+    <!-- include tangram library -->
     <script src="https://mapzen.com/tangram/tangram.min.js"></script>
+
     <!-- include cartodb.js library -->
     <script src="../../dist/cartodb.uncompressed.js"></script>
 
     <script>
       function main() {
-      	var vizjson = {
+        var vizjson = {
           "id":"2b13c956-e7c1-11e2-806b-5404a6a683d5",
           "version":"0.1.0",
           "title":"european_countries_e 0",
@@ -188,7 +190,7 @@
               "options":{
                 "sql":"select * from european_countries_e",
                 "layer_name":"european_countries_e",
-                "cartocss":"/** choropleth visualization */\n\n#european_countries_e{\n  marker-allow-overlap: true; polygon-fill: #FFFFB2;\n  polygon-opacity: 0.8;\n  line-color: #FFF;\n  line-width: 1;\n  line-opacity: 0.5;\n}\n#european_countries_e [ area <= 1638094] {\n   polygon-fill: #B10026;\n}\n#european_countries_e [ area <= 55010] {\n   polygon-fill: #E31A1C;\n}\n#european_countries_e [ area <= 34895] {\n   marker-allow-overlap: false; polygon-fill: #FC4E2A;\n}\n#european_countries_e [ area <= 12890] {\n   polygon-fill: #FD8D3C;\n}\n#european_countries_e [ area <= 10025] {\n   polygon-fill: #FEB24C;\n}\n#european_countries_e [ area <= 9150] {\n   polygon-fill: #FED976;\n}\n#european_countries_e [ area <= 5592] {\n   polygon-fill: #FFFFB2;\n}",
+                "cartocss":"/** choropleth visualization */\n\n#european_countries_e{\n  polygon-fill: #FFFFB2;\n  polygon-opacity: 0.8;\n  line-color: #FFF;\n  line-width: 1;\n  line-opacity: 0.5;\n}\n#european_countries_e [ area <= 1638094] {\n   polygon-fill: #B10026;\n}\n#european_countries_e [ area <= 55010] {\n   polygon-fill: #E31A1C;\n}\n#european_countries_e [ area <= 34895] {\n   polygon-fill: #FC4E2A;\n}\n#european_countries_e [ area <= 12890] {\n   polygon-fill: #FD8D3C;\n}\n#european_countries_e [ area <= 10025] {\n   polygon-fill: #FEB24C;\n}\n#european_countries_e [ area <= 9150] {\n   polygon-fill: #FED976;\n}\n#european_countries_e [ area <= 5592] {\n   polygon-fill: #FFFFB2;\n}",
                 "cartocss_version":"2.1.1",
                 "table_name":"\"\"."
               }

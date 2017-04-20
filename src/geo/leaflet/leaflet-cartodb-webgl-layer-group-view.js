@@ -4,7 +4,6 @@ var TC = require('tangram.cartodb');
 var LeafletLayerView = require('./leaflet-layer-view');
 
 var LeafletCartoDBWebglLayerGroupView = function (layerGroupModel, leafletMap) {
-  var self = this;
   LeafletLayerView.apply(this, arguments);
 
   this.tangram = new TC(leafletMap, this.initConfig.bind(this, layerGroupModel));

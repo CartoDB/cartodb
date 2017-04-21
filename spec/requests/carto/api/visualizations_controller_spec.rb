@@ -1170,26 +1170,26 @@ describe Carto::Api::VisualizationsController do
       end
 
       def first_layer_definition_from_response(response)
-        index = response.body[:layers].index { |l| l['options'] && l['options']['layer_definition'] }
-        response.body[:layers][index]['options']['layer_definition']
+        index = response.body[:layers].index { |l| l[:options] && l[:options][:layer_definition] }
+        response.body[:layers][index][:options][:layer_definition]
       end
 
       def first_layer_named_map_from_response(response)
-        index = response.body[:layers].index { |l| l['options'] && l['options']['named_map'] }
-        response.body[:layers][index]['options']['named_map']
+        index = response.body[:layers].index { |l| l[:options] && l[:options][:named_map] }
+        response.body[:layers][index][:options][:named_map]
       end
 
       def first_data_layer_from_response(response)
-        index = response.body[:layers].index { |l| l['type'] == 'CartoDB' }
+        index = response.body[:layers].index { |l| l[:type] == 'CartoDB' }
         response.body[:layers][index]
       end
 
       let(:infowindow) do
-        JSON.parse(FactoryGirl.build_stubbed(:carto_layer_with_infowindow).infowindow)
+        FactoryGirl.build_stubbed(:carto_layer_with_infowindow).infowindow
       end
 
       let(:tooltip) do
-        JSON.parse(FactoryGirl.build_stubbed(:carto_layer_with_tooltip).tooltip)
+        FactoryGirl.build_stubbed(:carto_layer_with_tooltip).tooltip
       end
 
       before(:each) do
@@ -1224,15 +1224,15 @@ describe Carto::Api::VisualizationsController do
               response.status.should eq 200
 
               layer_definition = first_layer_definition_from_response(response)
-              response_infowindow = layer_definition['layers'][0]['infowindow']
-              response_infowindow['template_name'].should eq infowindow['template_name']
-              response_infowindow['template'].should include(v2_infowindow_light_template_fragment)
-              response_infowindow['template'].should_not include(v3_infowindow_light_template_fragment)
+              response_infowindow = layer_definition[:layers][0][:infowindow]
+              response_infowindow[:template_name].should eq infowindow[:template_name]
+              response_infowindow[:template].should include(v2_infowindow_light_template_fragment)
+              response_infowindow[:template].should_not include(v3_infowindow_light_template_fragment)
 
-              response_tooltip = layer_definition['layers'][0]['tooltip']
-              response_tooltip['template_name'].should eq tooltip['template_name']
-              response_tooltip['template'].should include(v2_tooltip_light_template_fragment)
-              response_tooltip['template'].should_not include(v3_tooltip_light_template_fragment)
+              response_tooltip = layer_definition[:layers][0][:tooltip]
+              response_tooltip[:template_name].should eq tooltip[:template_name]
+              response_tooltip[:template].should include(v2_tooltip_light_template_fragment)
+              response_tooltip[:template].should_not include(v3_tooltip_light_template_fragment)
 
             end
 
@@ -1240,16 +1240,16 @@ describe Carto::Api::VisualizationsController do
               response.status.should eq 200
 
               layer = first_data_layer_from_response(response)
-              response_infowindow = layer['infowindow']
-              infowindow['template_name'].should eq "table/views/infowindow_light"
-              response_infowindow['template_name'].should eq "infowindow_light"
-              response_infowindow['template'].should include(v3_infowindow_light_template_fragment)
-              response_infowindow['template'].should_not include(v2_infowindow_light_template_fragment)
+              response_infowindow = layer[:infowindow]
+              infowindow[:template_name].should eq "table/views/infowindow_light"
+              response_infowindow[:template_name].should eq "infowindow_light"
+              response_infowindow[:template].should include(v3_infowindow_light_template_fragment)
+              response_infowindow[:template].should_not include(v2_infowindow_light_template_fragment)
 
-              response_tooltip = layer['tooltip']
-              response_tooltip['template_name'].should eq tooltip['template_name']
-              response_tooltip['template'].should include(v3_tooltip_light_template_fragment)
-              response_tooltip['template'].should_not include(v2_tooltip_light_template_fragment)
+              response_tooltip = layer[:tooltip]
+              response_tooltip[:template_name].should eq tooltip[:template_name]
+              response_tooltip[:template].should include(v3_tooltip_light_template_fragment)
+              response_tooltip[:template].should_not include(v2_tooltip_light_template_fragment)
             end
           end
         end
@@ -1271,31 +1271,31 @@ describe Carto::Api::VisualizationsController do
               response.status.should eq 200
 
               layer_named_map = first_layer_named_map_from_response(response)
-              response_infowindow = layer_named_map['layers'][0]['infowindow']
-              response_infowindow['template_name'].should eq infowindow['template_name']
-              response_infowindow['template'].should include(v2_infowindow_light_template_fragment)
-              response_infowindow['template'].should_not include(v3_infowindow_light_template_fragment)
+              response_infowindow = layer_named_map[:layers][0][:infowindow]
+              response_infowindow[:template_name].should eq infowindow[:template_name]
+              response_infowindow[:template].should include(v2_infowindow_light_template_fragment)
+              response_infowindow[:template].should_not include(v3_infowindow_light_template_fragment)
 
-              response_tooltip = layer_named_map['layers'][0]['tooltip']
-              response_tooltip['template_name'].should eq tooltip['template_name']
-              response_tooltip['template'].should include(v2_tooltip_light_template_fragment)
-              response_tooltip['template'].should_not include(v3_tooltip_light_template_fragment)
+              response_tooltip = layer_named_map[:layers][0][:tooltip]
+              response_tooltip[:template_name].should eq tooltip[:template_name]
+              response_tooltip[:template].should include(v2_tooltip_light_template_fragment)
+              response_tooltip[:template].should_not include(v3_tooltip_light_template_fragment)
             end
 
             get_json get_vizjson3_url(@user_1, @visualization), @headers do |response|
               response.status.should eq 200
 
               layer = first_data_layer_from_response(response)
-              response_infowindow = layer['infowindow']
-              infowindow['template_name'].should eq "table/views/infowindow_light"
-              response_infowindow['template_name'].should eq 'infowindow_light'
-              response_infowindow['template'].should include(v3_infowindow_light_template_fragment)
-              response_infowindow['template'].should_not include(v2_infowindow_light_template_fragment)
+              response_infowindow = layer[:infowindow]
+              infowindow[:template_name].should eq "table/views/infowindow_light"
+              response_infowindow[:template_name].should eq 'infowindow_light'
+              response_infowindow[:template].should include(v3_infowindow_light_template_fragment)
+              response_infowindow[:template].should_not include(v2_infowindow_light_template_fragment)
 
-              response_tooltip = layer['tooltip']
-              response_tooltip['template_name'].should eq tooltip['template_name']
-              response_tooltip['template'].should include(v3_tooltip_light_template_fragment)
-              response_tooltip['template'].should_not include(v2_tooltip_light_template_fragment)
+              response_tooltip = layer[:tooltip]
+              response_tooltip[:template_name].should eq tooltip[:template_name]
+              response_tooltip[:template].should include(v3_tooltip_light_template_fragment)
+              response_tooltip[:template].should_not include(v2_tooltip_light_template_fragment)
             end
           end
         end
@@ -1323,26 +1323,26 @@ describe Carto::Api::VisualizationsController do
               response.status.should eq 200
 
               layer_definition = first_layer_definition_from_response(response)
-              response_infowindow = layer_definition['layers'][0]['infowindow']
-              response_infowindow['template_name'].should eq ''
-              response_infowindow['template'].should eq custom_infowindow[:template]
+              response_infowindow = layer_definition[:layers][0][:infowindow]
+              response_infowindow[:template_name].should eq ''
+              response_infowindow[:template].should eq custom_infowindow[:template]
 
-              response_tooltip = layer_definition['layers'][0]['tooltip']
-              response_tooltip['template_name'].should eq ''
-              response_tooltip['template'].should eq custom_tooltip[:template]
+              response_tooltip = layer_definition[:layers][0][:tooltip]
+              response_tooltip[:template_name].should eq ''
+              response_tooltip[:template].should eq custom_tooltip[:template]
             end
 
             get_json get_vizjson3_url(@user_1, @visualization), @headers do |response|
               response.status.should eq 200
 
               layer = first_data_layer_from_response(response)
-              response_infowindow = layer['infowindow']
-              response_infowindow['template_name'].should eq ''
-              response_infowindow['template'].should eq custom_infowindow[:template]
+              response_infowindow = layer[:infowindow]
+              response_infowindow[:template_name].should eq ''
+              response_infowindow[:template].should eq custom_infowindow[:template]
 
-              response_tooltip = layer['tooltip']
-              response_tooltip['template_name'].should eq ''
-              response_tooltip['template'].should eq custom_tooltip[:template]
+              response_tooltip = layer[:tooltip]
+              response_tooltip[:template_name].should eq ''
+              response_tooltip[:template].should eq custom_tooltip[:template]
             end
           end
         end
@@ -1364,26 +1364,26 @@ describe Carto::Api::VisualizationsController do
               response.status.should eq 200
 
               layer_named_map = first_layer_named_map_from_response(response)
-              response_infowindow = layer_named_map['layers'][0]['infowindow']
-              response_infowindow['template_name'].should eq ''
-              response_infowindow['template'].should eq custom_infowindow[:template]
+              response_infowindow = layer_named_map[:layers][0][:infowindow]
+              response_infowindow[:template_name].should eq ''
+              response_infowindow[:template].should eq custom_infowindow[:template]
 
-              response_tooltip = layer_named_map['layers'][0]['tooltip']
-              response_tooltip['template_name'].should eq ''
-              response_tooltip['template'].should eq custom_tooltip[:template]
+              response_tooltip = layer_named_map[:layers][0][:tooltip]
+              response_tooltip[:template_name].should eq ''
+              response_tooltip[:template].should eq custom_tooltip[:template]
             end
 
             get_json get_vizjson3_url(@user_1, @visualization), @headers do |response|
               response.status.should eq 200
 
               layer = first_data_layer_from_response(response)
-              response_infowindow = layer['infowindow']
-              response_infowindow['template_name'].should eq ''
-              response_infowindow['template'].should eq custom_infowindow[:template]
+              response_infowindow = layer[:infowindow]
+              response_infowindow[:template_name].should eq ''
+              response_infowindow[:template].should eq custom_infowindow[:template]
 
-              response_tooltip = layer['tooltip']
-              response_tooltip['template_name'].should eq ''
-              response_tooltip['template'].should eq custom_tooltip[:template]
+              response_tooltip = layer[:tooltip]
+              response_tooltip[:template_name].should eq ''
+              response_tooltip[:template].should eq custom_tooltip[:template]
             end
           end
         end
@@ -1409,8 +1409,8 @@ describe Carto::Api::VisualizationsController do
           vizjson3 = response.body
           vizjson3[:widgets].length.should == 1
 
-          vizjson3[:widgets].map { |w| w['type'] }.should include(widget.type)
-          vizjson3[:widgets].map { |w| w['layer_id'] }.should include(layer.id)
+          vizjson3[:widgets].map { |w| w[:type] }.should include(widget.type)
+          vizjson3[:widgets].map { |w| w[:layer_id] }.should include(layer.id)
 
           widget2.destroy
           widget.destroy
@@ -1460,7 +1460,7 @@ describe Carto::Api::VisualizationsController do
         get_json get_vizjson3_url(@user_1, @visualization), @headers do |response|
           response.status.should == 200
           vizjson3 = response.body
-          vizjson3[:datasource].has_key?('template_name').should be_false
+          vizjson3[:datasource].has_key?(:template_name).should be_false
         end
       end
     end

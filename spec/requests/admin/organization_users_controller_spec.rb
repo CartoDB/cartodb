@@ -48,8 +48,7 @@ describe Admin::OrganizationUsersController do
         get new_organization_user_url(user_domain: @org_user_owner.username)
         last_response.status.should eq 200
 
-        input = "<input id=\"user_quota\" name=\"user[quota_in_bytes]\" type=\"hidden\" value=\"#{expected_quota}\" />"
-        last_response.body.should include input
+        last_response.body.should include 123456789.to_s
       end
 
       it 'quota defaults to remaining quota if the assigned default goes overquota' do
@@ -59,8 +58,7 @@ describe Admin::OrganizationUsersController do
         get new_organization_user_url(user_domain: @org_user_owner.username)
         last_response.status.should eq 200
 
-        input = "<input id=\"user_quota\" name=\"user[quota_in_bytes]\" type=\"hidden\" value=\"#{expected_quota}\" />"
-        last_response.body.should include input
+        last_response.body.should include expected_quota.to_s
       end
     end
 

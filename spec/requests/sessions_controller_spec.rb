@@ -17,7 +17,7 @@ describe SessionsController do
       google_plus_config.stubs(:domain).returns { user_domain }
       GooglePlusConfig.stubs(instance: google_plus_config)
 
-      @user = FactoryGirl.create(:carto_user, username: 'google_user')
+      @user = FactoryGirl.create(:carto_user, username: 'google-user')
     end
 
     after(:all) do

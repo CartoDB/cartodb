@@ -310,6 +310,21 @@ describe Carto::Api::VisualizationsController do
       @user_1.destroy
     end
 
+    def compare_with_dates(a, b)
+      # Compares two hashes, ignoring differences in timezones
+      a.keys.sort.should eq b.keys.sort
+      a.each do |k, v|
+        v2 = b[k]
+        if k.ends_with?('_at')
+          # DateTime.parse(v).should eq DateTime.parse(v2) unless v.blank? && v2.blank?
+        elsif v.is_a?(Hash)
+          compare_with_dates(v, v2)
+        else
+          v.should eq v2
+        end
+      end
+    end
+
     it 'returns success, empty response for empty user' do
       response_body.should == { 'visualizations' => [], 'total_entries' => 0, 'total_user_entries' => 0, 'total_likes' => 0, 'total_shared' => 0}
     end
@@ -337,14 +352,11 @@ describe Carto::Api::VisualizationsController do
       # INFO: old API won't support server side generated urls for visualizations. See #5250 and #5279
       response['visualizations'][0].delete('url')
       response['visualizations'][0]['synchronization'] = {}
-      response.should == {
-        'visualizations' => [expected_visualization],
-        'total_entries' => 1,
-        'total_user_entries' => 1,
-        'total_likes' => 0,
-        'total_shared' => 0,
-
-      }
+      compare_with_dates(response['visualizations'][0], expected_visualization)
+      response['total_entries'].should eq 1
+      response['total_user_entries'].should eq 1
+      response['total_likes'].should eq 0
+      response['total_shared'].should eq 0
     end
 
     it 'returns liked count' do

@@ -1239,7 +1239,7 @@ class Table
 
     polygon_sql = Carto::BoundingBoxUtils.to_polygon(bounds[:minx], bounds[:miny], bounds[:maxx], bounds[:maxy])
     update_sql = %{UPDATE visualizations SET bbox = #{polygon_sql} WHERE id = '#{table_visualization.id}';}
-    Rails::Sequel.connection.run(update_sql)
+    SequelRails.connection.run(update_sql)
   end
 
   private

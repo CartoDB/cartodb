@@ -17,7 +17,7 @@ Development
 * Adding Google-Maps basemaps (#11447)
 * Improve dialog forms to render them floated. (#7786)
 * Adds slider component to the forms (#11617)
-* Adds export as image (#11789)
+* Adds export as image (#11789, #12028)
   * Exports GMaps basemaps (#11775)
   * Show error notifications (#11887)
 * New organization assets (#11034):

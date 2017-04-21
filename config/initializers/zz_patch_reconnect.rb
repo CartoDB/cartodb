@@ -48,9 +48,7 @@ module PostgreSQLAutoReconnectionPatch
 
   def wrap_execute(sql, name = "SQL", binds = [])
     with_auto_reconnect do
-      log(sql, name, binds) do
-        yield
-      end
+      yield
     end
   end
 

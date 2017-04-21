@@ -2,30 +2,30 @@
 
 require 'spec_helper_min'
 
-module Carto
-  describe 'StrongPasswordValidator' do
-    PASSWORD = '2{Patrañas}'.freeze
+describe Carto::StrongPasswordValidator do
+  describe('#validate') do
+    let(:password) { '2{Patrañas}' }
 
     it 'should be invalid when password too short' do
-      validator = Carto::StrongPasswordValidator.new(min_length: PASSWORD.length + 1)
+      validator = Carto::StrongPasswordValidator.new(min_length: password.length + 1)
 
-      errors = validator.validate(PASSWORD)
+      errors = validator.validate(password)
       errors.empty?.should be_false
-      validator.formatted_error_message(errors).should == "must be at least #{PASSWORD.length + 1} characters long"
+      validator.formatted_error_message(errors).should == "must be at least #{password.length + 1} characters long"
     end
 
     it 'should be invalid when password too long' do
-      validator = Carto::StrongPasswordValidator.new(max_length: PASSWORD.length - 1)
+      validator = Carto::StrongPasswordValidator.new(max_length: password.length - 1)
 
-      errors = validator.validate(PASSWORD)
+      errors = validator.validate(password)
       errors.empty?.should be_false
-      validator.formatted_error_message(errors).should == "must be at most #{PASSWORD.length - 1} characters long"
+      validator.formatted_error_message(errors).should == "must be at most #{password.length - 1} characters long"
     end
 
     it 'should be invalid when password does not have enough letters' do
       validator = Carto::StrongPasswordValidator.new(min_letters: 9)
 
-      errors = validator.validate(PASSWORD)
+      errors = validator.validate(password)
       errors.empty?.should be_false
       validator.formatted_error_message(errors).should == "must contain at least 9 letters"
     end
@@ -33,7 +33,7 @@ module Carto
     it 'should be invalid when password does not have enough numbers or symbols' do
       validator = Carto::StrongPasswordValidator.new(min_symbols: 3, min_numbers: 2)
 
-      errors = validator.validate(PASSWORD)
+      errors = validator.validate(password)
       errors.empty?.should be_false
       validator.formatted_error_message(errors).should == "must contain at least 3 symbols or 2 numbers"
     end
@@ -41,7 +41,7 @@ module Carto
     it 'should be valid when password has enough numbers but not enough symbols' do
       validator = Carto::StrongPasswordValidator.new(min_symbols: 3, min_numbers: 1)
 
-      errors = validator.validate(PASSWORD)
+      errors = validator.validate(password)
       errors.empty?.should be_true
       validator.formatted_error_message(errors).should be_nil
     end
@@ -49,7 +49,7 @@ module Carto
     it 'should be valid when password has enough symbols but not enough numbers' do
       validator = Carto::StrongPasswordValidator.new(min_symbols: 2, min_numbers: 3)
 
-      errors = validator.validate(PASSWORD)
+      errors = validator.validate(password)
       errors.empty?.should be_true
       validator.formatted_error_message(errors).should be_nil
     end
@@ -92,9 +92,35 @@ module Carto
     it 'should validate a good password' do
       validator = Carto::StrongPasswordValidator.new
 
-      errors = validator.validate(PASSWORD)
+      errors = validator.validate(password)
       errors.empty?.should be_true
       validator.formatted_error_message(errors).should be_nil
+    end
+  end
+
+  describe('#suggest suggests valid passwords') do
+    it 'for max length' do
+      @validator = Carto::StrongPasswordValidator.new(max_length: 10)
+    end
+
+    it 'for min length' do
+      @validator = Carto::StrongPasswordValidator.new(max_length: 1024)
+    end
+
+    it 'for min symbols' do
+      @validator = Carto::StrongPasswordValidator.new(max_length: 20)
+    end
+
+    it 'for min letters' do
+      @validator = Carto::StrongPasswordValidator.new(max_length: 20)
+    end
+
+    it 'for min numbers' do
+      @validator = Carto::StrongPasswordValidator.new(max_length: 20)
+    end
+
+    after(:each) do
+      @validator.validate(@validator.suggest).should be_empty
     end
   end
 end

@@ -160,7 +160,7 @@ describe Carto::VisualizationQueryBuilder do
     mocked_vis3.stubs(:size).returns(600)
 
     # Careful to not do anything else on this spec after this size assertions
-    ActiveRecord::Relation.any_instance.stubs(:all).returns([mocked_vis3, mocked_vis1, mocked_vis2])
+    Carto::Visualization::ActiveRecord_Relation.any_instance.stubs(:all).returns([mocked_vis3, mocked_vis1, mocked_vis2])
 
     ids = @vqb.with_type(Carto::Visualization::TYPE_CANONICAL).with_order('size', :desc).build.map(&:id)
     ids.should == [table3.table_visualization.id, table1.table_visualization.id, table2.table_visualization.id]

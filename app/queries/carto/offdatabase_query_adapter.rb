@@ -36,7 +36,7 @@ module Carto
     end
 
     def count
-      results.count 
+      results.count
     end
 
     def first
@@ -55,7 +55,7 @@ module Carto
       all = @query.all
       @order_by_asc_or_desc_by_attribute.each { |attribute, asc_or_desc|
         # Cache attribute type
-        is_array = all.count == 0 ? false : all.first.send(attribute).is_a?(Array)
+        is_array = all.count == 0 ? false : all.first.send(attribute).respond_to?(:count)
         all = all.sort { |x, y|
           x_attribute = is_array ? x.send(attribute).count : x.send(attribute)
           y_attribute = is_array ? y.send(attribute).count : y.send(attribute)

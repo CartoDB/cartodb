@@ -110,10 +110,9 @@ describe Carto::VisualizationQueryBuilder do
     # From here on, uses OffdatabaseQueryAdapter
 
     # Likes
-
-    table1.table_visualization.likes.create!(actor: @carto_user1)
-    table1.table_visualization.likes.create!(actor: @carto_user2)
-    table3.table_visualization.likes.create!(actor: @carto_user1)
+    table1.table_visualization.likes.create!(actor: @carto_user1.id)
+    table1.table_visualization.likes.create!(actor: @carto_user2.id)
+    table3.table_visualization.likes.create!(actor: @carto_user1.id)
 
     ids = @vqb.with_type(Carto::Visualization::TYPE_CANONICAL)
               .with_order('likes', :desc)

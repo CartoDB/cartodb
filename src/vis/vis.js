@@ -236,6 +236,10 @@ var VisModel = Backbone.Model.extend({
     }
     // Global variable for easier console debugging / testing
     window.vis = this;
+
+    _.defer(function () {
+      this.trigger('load', this);
+    }.bind(this));
   },
 
   // we provide a method to set some new settings
@@ -318,8 +322,6 @@ var VisModel = Backbone.Model.extend({
     this._initBindsAfterFirstMapInstantiation();
 
     anyDataviewFiltered && this.reload({ includeFilters: anyDataviewFiltered });
-
-    this.trigger('ready', this);
   },
 
   _isAnyDataviewFiltered: function () {

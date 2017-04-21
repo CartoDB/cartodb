@@ -12,24 +12,24 @@ describe Carto::Api::ColumnsController do
 
   before(:all) do
 
-    # Spec the routes so that it uses the new controller. Needed for alternative routes testing
-    Rails.application.routes.draw do
-
-      # new controller
-      scope :module => 'carto/api', :format => :json do
-        get '(/user/:user_domain)(/u/:user_domain)/api/v1/tables/:table_id/columns'           => 'columns#index',   as: :api_v1_tables_columns_index,   constraints: { table_id: /[^\/]+/ }
-        get '(/user/:user_domain)(/u/:user_domain)/api/v1/tables/:table_id/columns/:id'       => 'columns#show',    as: :api_v1_tables_columns_show,    constraints: { table_id: /[^\/]+/ }
-      end
-
-      # old controller
-      scope :module => 'api/json', :format => :json do
-        post   '(/user/:user_domain)(/u/:user_domain)/api/v1/tables/:table_id/columns'     => 'columns#create',  as: :api_v1_tables_columns_create,  constraints: { table_id: /[^\/]+/ }
-        get    '(/user/:user_domain)(/u/:user_domain)/api/v1/tables/:table_id/columns/:id' => 'columns#show',    as: :api_v1_tables_columns_show,    constraints: { table_id: /[^\/]+/ }
-        put    '(/user/:user_domain)(/u/:user_domain)/api/v1/tables/:table_id/columns/:id' => 'columns#update',  as: :api_v1_tables_columns_update,  constraints: { table_id: /[^\/]+/ }
-        delete '(/user/:user_domain)(/u/:user_domain)/api/v1/tables/:table_id/columns/:id' => 'columns#destroy', as: :api_v1_tables_columns_destroy, constraints: { table_id: /[^\/]+/ }
-      end
-
-    end
+    # # Spec the routes so that it uses the new controller. Needed for alternative routes testing
+    # Rails.application.routes.draw do
+    #
+    #   # new controller
+    #   scope :module => 'carto/api', :format => :json do
+    #     get '(/user/:user_domain)(/u/:user_domain)/api/v1/tables/:table_id/columns'           => 'columns#index',   as: :api_v1_tables_columns_index,   constraints: { table_id: /[^\/]+/ }
+    #     get '(/user/:user_domain)(/u/:user_domain)/api/v1/tables/:table_id/columns/:id'       => 'columns#show',    as: :api_v1_tables_columns_show,    constraints: { table_id: /[^\/]+/ }
+    #   end
+    #
+    #   # old controller
+    #   scope :module => 'api/json', :format => :json do
+    #     post   '(/user/:user_domain)(/u/:user_domain)/api/v1/tables/:table_id/columns'     => 'columns#create',  as: :api_v1_tables_columns_create,  constraints: { table_id: /[^\/]+/ }
+    #     get    '(/user/:user_domain)(/u/:user_domain)/api/v1/tables/:table_id/columns/:id' => 'columns#show',    as: :api_v1_tables_columns_show,    constraints: { table_id: /[^\/]+/ }
+    #     put    '(/user/:user_domain)(/u/:user_domain)/api/v1/tables/:table_id/columns/:id' => 'columns#update',  as: :api_v1_tables_columns_update,  constraints: { table_id: /[^\/]+/ }
+    #     delete '(/user/:user_domain)(/u/:user_domain)/api/v1/tables/:table_id/columns/:id' => 'columns#destroy', as: :api_v1_tables_columns_destroy, constraints: { table_id: /[^\/]+/ }
+    #   end
+    #
+    # end
 
   end
 

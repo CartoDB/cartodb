@@ -545,6 +545,61 @@ describe SessionsController do
       response.status.should == 302
       response.headers['Location'].should include '/your_apps'
     end
+
+    describe 'events' do
+      # include HttpAuthenticationHelper
+      require 'rack/test'
+      include Rack::Test::Methods
+      include Warden::Test::Helpers
+
+      it 'triggers CartoGearsApi::Events::UserLoginEvent' do
+        CartoGearsApi::Events::EventManager.any_instance.expects(:notify).once.with do |event|
+          event.class.should eq CartoGearsApi::Events::UserLoginEvent
+        end
+        post create_session_url(user_domain: @user.username, email: @user.username, password: @user.password)
+      end
+
+      it 'sets dashboard_viewed_at just with login' do
+        @user.update_column(:dashboard_viewed_at, nil)
+        @user.reload
+        @user.dashboard_viewed_at.should be_nil
+
+        post create_session_url(user_domain: @user.username, email: @user.username, password: @user.password)
+
+        @user.reload
+        @user.dashboard_viewed_at.should_not be_nil
+      end
+
+      include Warden::Test::Helpers
+
+      it 'triggers CartoGearsApi::Events::UserLoginEvent signaling not first login' do
+        login(::User.where(id: @user.id).first)
+        logout
+
+        CartoGearsApi::Events::EventManager.any_instance.expects(:notify).once.with do |event|
+          event.first_login?.should be_false
+        end
+        post create_session_url(user_domain: @user.username, email: @user.username, password: @user.password)
+      end
+
+      it 'triggers CartoGearsApi::Events::UserLoginEvent signaling first login' do
+        @new_user = FactoryGirl.create(:carto_user)
+        CartoGearsApi::Events::EventManager.any_instance.expects(:notify).once.with do |event|
+          event.first_login?.should be_true
+        end
+        post create_session_url(user_domain: @new_user.username, email: @new_user.username, password: @new_user.password)
+        @new_user.destroy
+      end
+
+      it 'returns a CartoGearsApi::Users::User matching the logged user' do
+        CartoGearsApi::Events::EventManager.any_instance.expects(:notify).once.with do |event|
+          event_user = event.user
+          event_user.class.should eq CartoGearsApi::Users::User
+          event_user.username.should eq @user.username
+        end
+        post create_session_url(user_domain: @user.username, email: @user.username, password: @user.password)
+      end
+    end
   end
 
   describe '#logout' do

@@ -123,8 +123,6 @@ After building the whole suite for the first time, a webpage will show up with a
 
 Then, the process will watch changes in the codebase and will regenerate the specs as needed. Just refresh the Jasmine page to pass again the tests.
 
-:warning: Node v6+ is required to run `grunt affected_specs`
-
 If you prefer to generate all specs anyway, you can pass a flag to the grunt task:
 
 ```bash
@@ -137,15 +135,13 @@ This will generate the whole Builder suite, not only the specs affected by the c
 
 If you want to run simultaneously the application and the specs generation follow these steps:
 
-1. Open a terminal with Node v0.10.48 (use nvm) and run `grunt && grunt dev`. This will build the application assets and will watch for changes.
+1. Open a terminal with Node v6.9.2 (use nvm) and run `grunt && grunt dev`. This will build the application assets and will watch for changes.
 
-2. Open a second terminal and use nvm to set the Node version to 6+.
+2. Open a second terminal and run `grunt affected_specs`.
 
-3. In this second terminal run `grunt affected_specs`.
+3. You will see in the first terminal that a lot of changes build the bundle again. That's normal. The first step of the point 3 is to copy all needed files, so the `watch` of `grunt dev` triggers. Don't worry about it.
 
-4. You will see in the first terminal that a lot of changes build the bundle again. That's normal. The first step of the point 3 is to copy all needed files, so the `watch` of `grunt dev` triggers. Don't worry about it.
-
-5. That's it. When you change any Builder Javascript file `grunt dev` will build the application bundle and `grunt affected_specs` will build the specs.
+4. That's it. When you change any Builder Javascript file `grunt dev` will build the application bundle and `grunt affected_specs` will build the specs.
 
 #### Running a particular spec
 
@@ -155,7 +151,7 @@ If you only want to run a subset of tests the easiest and fastest way is to use 
 
 We use [Grunt](http://gruntjs.com/) to automate build tasks related to both CSS and JS.
 
-We use v0.10.x of [node](http://nodejs.org/) (we recommend to use [NVM](https://github.com/creationix/nvm)).
+We use v6.9.2 of [node](http://nodejs.org/) (we recommend to use [NVM](https://github.com/creationix/nvm)).
 
 Install dependencies using a normal npm install as such:
 ```bash

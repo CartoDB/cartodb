@@ -88,25 +88,25 @@ describe Carto::Api::TemplatesController do
       response.status.should be_success
       response.body[:items].count.should eq 2
 
-      response.body[:items][0]['id'].nil?.should eq false
-      response.body[:items][0]['title'].should eq @template_2_data[:title]
-      response.body[:items][0]['description'].should eq @template_2_data[:description]
-      response.body[:items][0]['code'].should eq @template_2_data[:code]
-      response.body[:items][0]['min_supported_version'].should eq @template_2_data[:min_supported_version]
-      response.body[:items][0]['max_supported_version'].should eq @template_2_data[:max_supported_version]
-      response.body[:items][0]['source_visualization']['id'].should eq @template_2_data[:source_visualization_id]
-      response.body[:items][0]['organization']['id'].should eq @template_2_data[:organization_id]
-      response.body[:items][0]['required_tables'].should eq @template_2_data[:required_tables]
+      response.body[:items][0][:id].nil?.should eq false
+      response.body[:items][0][:title].should eq @template_2_data[:title]
+      response.body[:items][0][:description].should eq @template_2_data[:description]
+      response.body[:items][0][:code].should eq @template_2_data[:code]
+      response.body[:items][0][:min_supported_version].should eq @template_2_data[:min_supported_version]
+      response.body[:items][0][:max_supported_version].should eq @template_2_data[:max_supported_version]
+      response.body[:items][0][:source_visualization][:id].should eq @template_2_data[:source_visualization_id]
+      response.body[:items][0][:organization][:id].should eq @template_2_data[:organization_id]
+      response.body[:items][0][:required_tables].should eq @template_2_data[:required_tables]
 
-      response.body[:items][1]['id'].nil?.should eq false
-      response.body[:items][1]['title'].should eq @template_1_data[:title]
-      response.body[:items][1]['description'].should eq @template_1_data[:description]
-      response.body[:items][1]['code'].should eq @template_1_data[:code]
-      response.body[:items][1]['min_supported_version'].should eq @template_1_data[:min_supported_version]
-      response.body[:items][1]['max_supported_version'].should eq @template_1_data[:max_supported_version]
-      response.body[:items][1]['source_visualization']['id'].should eq @template_1_data[:source_visualization_id]
-      response.body[:items][1]['organization']['id'].should eq @template_1_data[:organization_id]
-      response.body[:items][1]['required_tables'].should eq @template_1_data[:required_tables]
+      response.body[:items][1][:id].nil?.should eq false
+      response.body[:items][1][:title].should eq @template_1_data[:title]
+      response.body[:items][1][:description].should eq @template_1_data[:description]
+      response.body[:items][1][:code].should eq @template_1_data[:code]
+      response.body[:items][1][:min_supported_version].should eq @template_1_data[:min_supported_version]
+      response.body[:items][1][:max_supported_version].should eq @template_1_data[:max_supported_version]
+      response.body[:items][1][:source_visualization][:id].should eq @template_1_data[:source_visualization_id]
+      response.body[:items][1][:organization][:id].should eq @template_1_data[:organization_id]
+      response.body[:items][1][:required_tables].should eq @template_1_data[:required_tables]
     end
   end
 

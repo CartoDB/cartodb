@@ -132,7 +132,10 @@ ModelUpdater.prototype._updateLayerModels = function (windshaftMap) {
   var indexesOfTorqueLayers = windshaftMap.getLayerIndexesByType('torque');
   _.each(this._layersCollection.getTorqueLayers(), function (layerModel, localLayerIndex) {
     var windshaftMapLayerIndex = indexesOfTorqueLayers[localLayerIndex];
-    layerModel.set('meta', windshaftMap.getLayerMetadata(windshaftMapLayerIndex));
+    var meta = windshaftMap.getLayerMetadata(windshaftMapLayerIndex);
+    layerModel.set('meta', meta);
+    // deep-insight.js expects meta attributes as attributes for some reason
+    layerModel.set(meta);
     layerModel.set('subdomains', windshaftMap.getSupportedSubdomains());
     layerModel.set('tileURLTemplates', this._calculateTileURLTemplatesForTorqueLayers(windshaftMap));
     this._updateLegendModels(layerModel, windshaftMapLayerIndex, windshaftMap);

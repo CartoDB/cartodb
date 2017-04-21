@@ -1525,7 +1525,7 @@ class User < Sequel::Model
   end
 
   def builder_enabled?
-    if has_organization? && builder_enabled.nil?
+    if has_organization?
       organization.builder_enabled
     else
       !!builder_enabled

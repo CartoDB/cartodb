@@ -7,11 +7,14 @@ module Carto
     end
 
     def self.load(value)
-      value.nil? ? nil : hash(value).with_indifferent_access
+      if value
+        h = hash(value)
+        h.is_a?(Hash) ? h.with_indifferent_access : h
+      end
     end
 
     def self.hash(value)
-      value.is_a?(Hash) ? value : JSON.parse(value)
+      value.is_a?(Hash) || value.is_a?(Array) ? value : JSON.parse(value)
     end
   end
 

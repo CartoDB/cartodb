@@ -77,7 +77,7 @@ module Carto
       # Added in version 2.0.3
       visualization.state = build_state_from_hash(exported_visualization[:state])
 
-      active_layer_order = exported_layers.index { |l| l['active_layer'] }
+      active_layer_order = exported_layers.index { |l| l[:active_layer] }
       if active_layer_order
         visualization.active_layer = visualization.layers.find { |l| l.order == active_layer_order }
       end

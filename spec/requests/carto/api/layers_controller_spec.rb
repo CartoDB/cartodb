@@ -155,7 +155,7 @@ describe Carto::Api::LayersController do
 
         new_order = 2
         new_layer_json = layer_json.merge(
-          options: { 'random' => '1' },
+          options: { random: '1' },
           order: new_order
         )
         new_layers_json = {
@@ -167,11 +167,10 @@ describe Carto::Api::LayersController do
         put_json update_map_layer_url(map.id), new_layers_json do |response|
           response.status.should eq 200
           layer_response = response.body
-
-          layer_response[:layers].map { |l| l['id'] }.should eq [@layer.id, @layer2.id]
+          layer_response[:layers].map { |l| l[:id] }.should eq [@layer.id, @layer2.id]
           layer_response[:layers].each do |layer|
-            layer['options'].reject { |k| k == 'table_name' }.should eq new_layer_json[:options]
-            layer['order'].should eq new_order
+            layer[:options].reject { |k| k == :table_name }.should eq new_layer_json[:options]
+            layer[:order].should eq new_order
           end
         end
       end
@@ -347,7 +346,7 @@ describe Carto::Api::LayersController do
       let(:params) { { api_key: @user.api_key } }
 
       it "Create a new layer associated to a map" do
-        opts = { type: "GMapsBase", base_type: "roadmap", style: "null", order: "0", query_history: [] }
+        opts = { type: "GMapsBase", base_type: "roadmap", style: "null", order: "0", query_history: nil }
         infowindow = { fields: ['column1', 'column2', 'column3'] }
 
         data = { kind: 'gmapsbase', infowindow: infowindow, options: opts }
@@ -395,9 +394,9 @@ describe Carto::Api::LayersController do
           response.status.should be_success
           response.body[:total_entries].should == 3
           response.body[:layers].size.should == 3
-          response.body[:layers][0]['id'].should == layer3.id
-          response.body[:layers][1]['id'].should == layer2.id
-          response.body[:layers][2]['id'].should == layer.id
+          response.body[:layers][0][:id].should == layer3.id
+          response.body[:layers][1][:id].should == layer2.id
+          response.body[:layers][2][:id].should == layer.id
         end
       end
 
@@ -433,8 +432,8 @@ describe Carto::Api::LayersController do
           response.status.should be_success
           response_layers = response.body[:layers]
           response_layers.count.should == 2
-          response_layers.find { |l| l['id'] == layer1.id }['order'].should == 2
-          response_layers.find { |l| l['id'] == layer2.id }['order'].should == 3
+          response_layers.find { |l| l[:id] == layer1.id }[:order].should == 2
+          response_layers.find { |l| l[:id] == layer2.id }[:order].should == 3
           layer1.reload.order.should == 2
           layer2.reload.order.should == 3
         end

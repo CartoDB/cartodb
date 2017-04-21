@@ -7,11 +7,10 @@ require_dependency 'carto/bounding_box_utils'
 class Carto::Map < ActiveRecord::Base
   include Carto::MapBoundaries
 
-  has_many :layers_maps
+  has_many :layers_maps, dependent: :destroy
   has_many :layers, -> { order(:order) }, class_name: 'Carto::Layer',
                                           through: :layers_maps,
-                                          after_add: Proc.new { |map, layer| layer.after_added_to_map(map) },
-                                          dependent: :destroy
+                                          after_add: Proc.new { |map, layer| layer.after_added_to_map(map) }
 
   has_many :base_layers, -> { order(:order) }, class_name: 'Carto::Layer',
                                                through: :layers_maps,

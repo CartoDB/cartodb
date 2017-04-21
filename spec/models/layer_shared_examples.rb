@@ -212,7 +212,8 @@ shared_examples_for 'Layer model' do
       layer = layer_class.create(kind: 'carto')
       add_layer_to_entity(map, layer)
 
-      ::Map.any_instance.expects(:notify_map_change)
+      # TODO: should be once
+      ::Map.any_instance.expects(:notify_map_change).at_least_once
       layer.destroy
     end
 

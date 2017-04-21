@@ -12,6 +12,7 @@ module ApplicationHelper
   include AppAssetsHelper
   include MapsApiHelper
   include SqlApiHelper
+  include Carto::HtmlSafe
   include CartoGearsApi::Helpers::PagesHelper
 
   def current_user

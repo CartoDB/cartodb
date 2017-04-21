@@ -21,10 +21,6 @@ module Carto
         @redis_cache = redis_cache
       end
 
-      def description_html_safe
-        markdown_html_safe(description)
-      end
-
       def layers(kind)
         @layer_cache[kind] ||= get_layers(kind)
       end

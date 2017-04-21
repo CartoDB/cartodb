@@ -3,10 +3,12 @@ require_dependency 'google_plus_api'
 require_dependency 'google_plus_config'
 require_relative '../../../services/datasources/lib/datasources'
 require_relative '../helpers/avatar_helper'
+require_relative '../helpers/organization_notifications_helper'
 
 class Admin::UsersController < Admin::AdminController
   include LoginHelper
   include AvatarHelper
+  include OrganizationNotificationsHelper
 
   SERVICE_TITLES = {
     'gdrive' => 'Google Drive',
@@ -30,6 +32,7 @@ class Admin::UsersController < Admin::AdminController
   before_filter :load_services, only: [:account, :account_update, :delete]
   before_filter :load_account_deletion_info, only: [:account, :delete]
   before_filter :load_dashboard_notifications, only: [:account, :profile]
+  before_filter :load_organization_notifications, only: [:account, :profile]
 
   layout 'application'
 

@@ -1,17 +1,20 @@
 # coding: utf-8
 require_dependency 'helpers/avatar_helper'
 require_dependency 'cartodb/central'
+require_dependency 'helpers/organization_notifications_helper'
 
 class Carto::Admin::MobileAppsController < Admin::AdminController
   include Carto::ControllerHelper
   include MobileAppsHelper
   include AvatarHelper
+  include OrganizationNotificationsHelper
 
   ssl_required  :index, :show, :new, :create, :update, :destroy
   before_filter :invalidate_browser_cache
   before_filter :login_required
   before_filter :check_user_permissions
   before_filter :initialize_cartodb_central_client
+  before_filter :load_organization_notifications
   before_filter :validate_id, only: [:show, :update, :destroy]
   before_filter :load_mobile_app, only: [:show, :update]
   before_filter :setup_avatar_upload, only: [:new, :create, :show, :update]
@@ -56,11 +59,11 @@ class Carto::Admin::MobileAppsController < Admin::AdminController
 
   rescue CartoDB::CentralCommunicationFailure => e
     if e.response_code == 422
-      if e.errors["app_id"].present?
+      if e.errors.any? { |e| e['app_id'] }
         @mobile_app.errors["app_id"] = 'has already been taken'
         flash.now[:error] = "That application ID has already been taken. Please make sure that it is unique."
       else
-        flash.now[:error] = e.errors
+        flash.now[:error] = e.errors.join('. ')
       end
     else
       CartoDB::Logger.error(message: 'Error creating mobile_app in Central', exception: e)

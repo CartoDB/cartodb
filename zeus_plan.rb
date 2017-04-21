@@ -61,7 +61,7 @@ class CustomPlan < Zeus::Rails
 
   def carto_resque
     ENV['VVERBOSE'] = 'true'
-    ENV['QUEUE'] = 'imports,exports,users,user_dbs,geocodings,synchronizations,tracker,user_migrations'
+    ENV['QUEUE'] = 'imports,exports,users,user_dbs,geocodings,synchronizations,tracker,user_migrations,gears'
     ARGV.replace(['resque:work'])
     Rake.application.run
   end

@@ -9,7 +9,7 @@ GIT
 PATH
   remote: gears/carto_gears_api
   specs:
-    carto_gears_api (0.0.1)
+    carto_gears_api (0.0.6)
       pg (= 0.15)
       rails (= 4.2.8)
       values (= 1.8.0)

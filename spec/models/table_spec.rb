@@ -224,20 +224,16 @@ describe Table do
           }
         }
 
-        # To forget about internals of zooming
-        ::Map.any_instance.stubs(:recalculate_zoom).returns(nil)
-        Carto::Map.any_instance.stubs(:recalculate_zoom).returns(nil)
-
         visualizations = CartoDB::Visualization::Collection.new.fetch.to_a.length
         table = create_table(name: "epaminondas_pantulis", user_id: @user.id)
         CartoDB::Visualization::Collection.new.fetch.to_a.length.should == visualizations + 1
 
         map = table.map
         map.should be
-        map.zoom.should eq 3
-        map.bounding_box_sw.should eq "[#{::Map::DEFAULT_OPTIONS[:bounding_box_sw][0]}, #{::Map::DEFAULT_OPTIONS[:bounding_box_sw][1]}]"
-        map.bounding_box_ne.should eq "[#{::Map::DEFAULT_OPTIONS[:bounding_box_ne][0]}, #{::Map::DEFAULT_OPTIONS[:bounding_box_ne][1]}]"
-        map.center.should eq "[0.0,0.0]"
+        map.zoom.should eq Carto::Map::DEFAULT_OPTIONS[:zoom]
+        map.bounding_box_sw.should eq Carto::Map::DEFAULT_OPTIONS[:bounding_box_sw]
+        map.bounding_box_ne.should eq Carto::Map::DEFAULT_OPTIONS[:bounding_box_ne]
+        map.center.should eq Carto::Map::DEFAULT_OPTIONS[:center]
         map.provider.should eq 'leaflet'
         map.layers.count.should == 2
         map.layers.map(&:kind).should == ['tiled', 'carto']
@@ -2336,6 +2332,21 @@ describe Table do
         expect {
           CartoDB::Visualization::Member.new(id: derived.id).fetch
         }.to raise_error KeyError
+      end
+
+      it 'deletes layers from derived visualizations that partially depend on this table' do
+        bypass_named_maps
+        table = create_table(name: 'bogus_name', user_id: @user.id)
+
+        map = CartoDB::Visualization::TableBlender.new(@carto_user, [table]).blend
+        derived = FactoryGirl.create(:derived_visualization, user_id: @user.id, map_id: map.id)
+        map.layers << FactoryGirl.create(:carto_layer)
+        CartoDB::Visualization::Member.new(id: derived.id).fetch.data_layers.count.should eq 2
+
+        table.reload
+        table.destroy
+
+        CartoDB::Visualization::Member.new(id: derived.id).fetch.data_layers.count.should eq 1
       end
     end
 

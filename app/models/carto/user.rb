@@ -186,11 +186,7 @@ class Carto::User < ActiveRecord::Base
   # returns google maps api key. If the user is in an organization and
   # that organization has api key it's used
   def google_maps_api_key
-    if has_organization?
-      self.organization.google_maps_key || self.google_maps_key
-    else
-      self.google_maps_key
-    end
+    organization.try(:google_maps_key).blank? ? google_maps_key : organization.google_maps_key
   end
 
   def twitter_datasource_enabled
@@ -504,6 +500,10 @@ class Carto::User < ActiveRecord::Base
 
   def can_change_password?
     !Carto::Ldap::Manager.new.configuration_present?
+  end
+
+  def view_dashboard
+    update_column(:dashboard_viewed_at, Time.now)
   end
 
   private

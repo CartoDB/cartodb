@@ -1,5 +1,4 @@
 require 'values'
-require 'active_record'
 require_dependency 'carto_gears_api/organizations/organization'
 
 module CartoGearsApi
@@ -14,15 +13,6 @@ module CartoGearsApi
     # @attr_reader [CartoGearsApi::Organizations::Organization] organization Organization
     class User < Value.new(:id, :username, :email, :organization, :feature_flags, :can_change_email, :quota_in_bytes,
                            :viewer)
-      extend ActiveModel::Naming
-      include ActiveRecord::AttributeMethods::PrimaryKey
-
-      def id
-        # This is needed to make ActiveRecord::AttributeMethods::PrimaryKey work. Otherwise it
-        # won't find the id accessible thanks to Value. Magic is not always compatible.
-        @id
-      end
-
       # @return [String] The subdomain required by this user in the current CARTO configuration.
       #                  It takes into account subdomainless URLs and organizations.
       def subdomain

@@ -326,28 +326,6 @@ module CartoDB
         super(description)
       end
 
-      def description_clean
-        if description.present?
-          description_html_safe.strip_tags
-        end
-      end
-
-      def description_html_safe
-        if description.present?
-          renderer = Redcarpet::Render::Safe
-          markdown = Redcarpet::Markdown.new(renderer, extensions = {})
-          markdown.render description
-        end
-      end
-
-      def source_html_safe
-        if source.present?
-          renderer = Redcarpet::Render::Safe
-          markdown = Redcarpet::Markdown.new(renderer, extensions = {})
-          markdown.render source
-        end
-      end
-
       def attributions=(value)
         self.dirty = true if value != @attributions
         self.attributions_changed = true if value != @attributions

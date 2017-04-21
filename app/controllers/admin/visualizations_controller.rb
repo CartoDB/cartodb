@@ -541,11 +541,11 @@ class Admin::VisualizationsController < Admin::AdminController
       # Might be an org url, try getting the org
       organization = Organization.where(name: org_name).first
       unless organization.nil?
-        authenticated_users = request.session.select { |k, v|
+        authenticated_users = request.session.to_hash.select { |k, v|
           k.start_with?("warden.user") && !k.end_with?(".session")
         }                                    .values
         authenticated_users.each { |username|
-          user = ::User.where(username:username).first
+          user = ::User.where(username: username).first
           if url.nil? && !user.nil? && !user.organization.nil?
             if user.organization.id == organization.id
               if for_table

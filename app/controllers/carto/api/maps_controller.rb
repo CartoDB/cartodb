@@ -47,7 +47,7 @@ module Carto
                      :provider,
                      :view_bounds_ne,
                      :view_bounds_sw,
-                     :zoom)
+                     :zoom).permit!
       end
 
       def map_presentation

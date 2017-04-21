@@ -162,7 +162,7 @@ module Carto
       end
 
       def layer_attributes(param)
-        param.slice(:options, :kind, :infowindow, :tooltip, :order)
+        param.slice(:options, :kind, :infowindow, :tooltip, :order).permit!
       end
 
       def ensure_current_user

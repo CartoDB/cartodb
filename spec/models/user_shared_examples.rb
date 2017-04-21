@@ -599,7 +599,7 @@ shared_examples_for "user models" do
     it 'is false for users within a SAML organization' do
       organization = FactoryGirl.create(:saml_organization)
       organization.auth_saml_enabled?.should == true
-      @user.organization = organization
+      @user.organization = @user.is_a?(Carto::User) ? Carto::Organization.find(organization.id) : organization
       @user.needs_password_confirmation?.should == false
 
       @user.organization = nil

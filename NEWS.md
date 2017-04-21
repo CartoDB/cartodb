@@ -17,7 +17,7 @@ Development
 * Adding Google-Maps basemaps (#11447)
 * Improve dialog forms to render them floated. (#7786)
 * Adds slider component to the forms (#11617)
-* Adds export as image (#11789)
+* Adds export as image (#11789, #12028)
   * Exports GMaps basemaps (#11775)
   * Show error notifications (#11887)
 * New organization assets (#11034):
@@ -209,10 +209,12 @@ Development
 * Redirect to last visited page after logging in (#11946)
 * Sanitized HTML from map and layer names.
 * Merged fix subdomain error not loading tiles (CartoDB.js#1607)
+* Create users from org panel with the default quota (#11837)
 * Fixed way to listen Deep-insights.js map or widgets changes (#11894)
 * Using latest cartodb.js and deep-insights.js to tackle map zooming problem (support#605)
 * Fix organization notifications issues (#11957)
 * Max tracts to 4 for isoline analysis (#11723)
+* Right column validate type match in Join analysis (#11829)
 * Check if analysis node is on top before fetching query data (#11874)
 * Fixed error dropping tables from ghost table manager on race condition cases (#12012)
 

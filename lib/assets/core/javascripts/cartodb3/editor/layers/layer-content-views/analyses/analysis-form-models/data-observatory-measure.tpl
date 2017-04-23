@@ -1,21 +1,21 @@
 <form>
   <div class="Editor-HeaderInfo">
     <div class="Editor-HeaderNumeration CDB-Text is-semibold u-rSpace--m">2</div>
-    <div class="Editor-HeaderInfo-inner CDB-Text" data-fields="source,final_column">
+    <div class="Editor-HeaderInfo-inner CDB-Text" data-fields="source,area">
       <div class="Editor-HeaderInfo-title u-bSpace--m">
-        <h2 class="CDB-Text CDB-HeaderInfo-titleText CDB-Size-large"><%- _t('analyses.data-observatory-measure.title') %></h2>
+        <h2 class="CDB-Text CDB-HeaderInfo-titleText CDB-Size-large"><%- _t('editor.layers.analysis-form.data-observatory.header.title') %></h2>
       </div>
-      <p class="CDB-Text u-upperCase CDB-FontSize-small u-altTextColor u-bSpace--m"><%- _t('editor.layers.analysis-form.data-observatory-measurement-desc') %></p>
+      <p class="CDB-Text u-upperCase CDB-FontSize-small u-altTextColor u-bSpace--m"><%- _t('editor.layers.analysis-form.data-observatory.header.description') %></p>
     </div>
   </div>
 
   <div class="Editor-HeaderInfo">
     <div class="Editor-HeaderNumeration CDB-Text is-semibold u-rSpace--m">3</div>
-        <div class="Editor-HeaderInfo-inner CDB-Text" data-fields="area,measurement,segments">
+        <div class="Editor-HeaderInfo-inner CDB-Text" data-fields="measurements">
       <div class="Editor-HeaderInfo-title u-bSpace--m">
-        <h2 class="CDB-Text CDB-HeaderInfo-titleText CDB-Size-large"><%- _t('editor.layers.analysis-form.parameters') %></h2>
+        <h2 class="CDB-Text CDB-HeaderInfo-titleText CDB-Size-large"><%- _t('editor.layers.analysis-form.data-observatory.parameters.title') %></h2>
       </div>
-      <p class="CDB-Text u-upperCase CDB-FontSize-small u-altTextColor u-bSpace--m"><%- _t('editor.layers.analysis-form.data-observatory-measurement-refine') %></p>
+      <p class="CDB-Text u-upperCase CDB-FontSize-small u-altTextColor u-bSpace--m"><%- _t('editor.layers.analysis-form.data-observatory.parameters.description') %></p>
     </div>
   </div>
 

@@ -14,7 +14,9 @@
     <% if (isEmpty) { %>
       <%- _t('components.backbone-forms.select.empty') %>
     <% } else { %>
-      <%- placeholder || label || _t('components.backbone-forms.select.placeholder', { keyAttr: keyAttr }) %>
+      <%- label || placeholder || _t('components.backbone-forms.select.placeholder', { keyAttr: keyAttr }) %>
     <% } %>
   <% } %>
 </div>
+
+<div class="js-license CDB-Text CDB-FontSize-small u-altTextColor u-tSpace u-bSpace u-isHidden">License: <a href="https://cartodb.github.io/bigmetadata/licenses.html" target="_blank"><span class="u-tSpace u-bSpace"></span></a></div>

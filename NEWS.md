@@ -72,6 +72,7 @@ Development
   * Notification API (#11850)
   * Queue and Email support (#11692).
   * User login event (#12010).
+  * Fixes to loading gems and autoloading of code (#12019)
 * Improved empty bounds map handling (#11711).
 * Updated diagnosis page versions.
 * set_import_limits rake (#11756).

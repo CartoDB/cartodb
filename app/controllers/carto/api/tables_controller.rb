@@ -63,7 +63,7 @@ module Carto
         # Perform name validations
         # TODO move this to the model!
         # TODO consider removing this code. The entry point is only used to set lat/long columns
-        unless params[:name].nil?
+        if params[:name]
           new_name = params[:name].downcase
           if new_name != table.name
             # TODO reverse this logic: make explicit if this needs to start with a letter
@@ -72,8 +72,8 @@ module Carto
             elsif current_user.tables.filter(:name.like(/\A#{params[:name]}/)).select_map(:name).include?(new_name)
               raise "Table '#{new_name}' already exists."
             else
-              table.set_all(name: new_name)
-              table.save(:name)
+              table.name = new_name
+              table.save
             end
           end
         end

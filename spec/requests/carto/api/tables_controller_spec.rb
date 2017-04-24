@@ -131,6 +131,26 @@ describe Carto::Api::TablesController do
       end
     end
 
+    it "renames an existing table" do
+      table = create_table(user_id: @user.id, name: 'Some table')
+
+      put_json api_v1_tables_update_url(params.merge(id: table.id, name: table.name + ' renamed')) do |response|
+        response.status.should be_success
+        response.body[:id].should == table.id
+        response.body[:name].ends_with?('renamed').should be_true
+      end
+    end
+
+    it "does not rename if the destination name is in use" do
+      table1 = create_table(user_id: @user.id, name: 'my_table')
+      table2 = create_table(user_id: @user.id, name: 'other_table')
+
+      put_json api_v1_tables_update_url(params.merge(id: table1.id, name: table2.name)) do |response|
+        response.status.should eq 400
+        table1.reload.name.should eq 'my_table'
+      end
+    end
+
     it "updates with bad values the metadata of an existing table" do
       table1 = create_table :user_id => @user.id, :name => 'My table #1', :tags => "tag 1, tag 2,tag 3, tag 3"
       put_json api_v1_tables_update_url(params.merge(id: table1.id, privacy: 666)) do |response|

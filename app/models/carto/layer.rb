@@ -67,8 +67,8 @@ module Carto
     has_many :layers_user, dependent: :destroy
     has_many :users, through: :layers_user, after_add: :set_default_order
 
-    has_many :layers_user_table, dependent: :destroy
-    has_many :user_tables, through: :layers_user_table, class_name: Carto::UserTable
+    has_many :layers_user_tables, dependent: :destroy
+    has_many :user_tables, through: :layers_user_tables, class_name: Carto::UserTable
 
     has_many :widgets, class_name: Carto::Widget, order: '"order"'
     has_many :legends,
@@ -79,7 +79,6 @@ module Carto
     has_many :layer_node_styles
 
     before_destroy :ensure_not_viewer
-    before_destroy :invalidate_maps
     before_save :lock_user_tables
     after_save :invalidate_maps, :update_layer_node_style
     after_save :register_table_dependencies, if: :data_layer?
@@ -296,7 +295,11 @@ module Carto
     end
 
     def depends_on?(user_table)
-      user_tables.include?(user_table)
+      layers_user_tables.map(&:user_table_id).include?(user_table.id)
+    end
+
+    def source_id
+      options.symbolize_keys[:source]
     end
 
     private
@@ -329,10 +332,6 @@ module Carto
 
     def query
       options.symbolize_keys[:query]
-    end
-
-    def source_id
-      options.symbolize_keys[:source]
     end
 
     def invalidate_maps

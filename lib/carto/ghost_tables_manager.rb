@@ -261,10 +261,11 @@ module Carto
                             table_name: name,
                             table_id: id)
 
-      table_to_drop = ::Table.new(user_table: user.tables.where(table_id: id, name: name).first)
+      user_table_to_drop = user.tables.where(table_id: id, name: name).first
+      return unless user_table_to_drop # The table has already been deleted
 
+      table_to_drop = ::Table.new(user_table: user_table_to_drop)
       table_to_drop.keep_user_database_table = true
-
       table_to_drop.destroy
     rescue => exception
       CartoDB::Logger.error(message: 'Ghost tables: Error dropping Table',

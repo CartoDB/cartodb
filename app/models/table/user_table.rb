@@ -85,7 +85,7 @@ class UserTable < Sequel::Model
                                     automatic_geocoding:  :destroy
   plugin :dirty
 
-  def_delegators :relator, :affected_visualizations
+  def_delegators :relator, :affected_visualizations, :synchronization
 
   # Ignore mass-asigment on not allowed columns
   self.strict_param_setting = false
@@ -210,11 +210,22 @@ class UserTable < Sequel::Model
 
   def before_destroy
     raise CartoDB::InvalidMember.new(user: "Viewer users can't destroy tables") if user && user.viewer
-    service.before_destroy
+
+    @table_visualization = table_visualization
+    @fully_dependent_visualizations_cache = fully_dependent_visualizations.to_a
+    @partially_dependent_visualizations_cache = partially_dependent_visualizations.to_a
+
     super
   end
 
   def after_destroy
+    @table_visualization.delete_from_table if @table_visualization
+    @fully_dependent_visualizations_cache.each(&:delete)
+    @partially_dependent_visualizations_cache.each do |visualization|
+      visualization.unlink_from(self)
+    end
+    synchronization.delete if synchronization
+
     service.after_destroy
     super
   end

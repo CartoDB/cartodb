@@ -822,4 +822,19 @@ shared_examples_for "user models" do
       user.google_maps_api_key.should eq 'wadus'
     end
   end
+
+  describe '#view_dashboard' do
+    it 'sets dashboard_viewed_at time' do
+      user = create_user
+      user.dashboard_viewed_at = nil
+      user.save
+
+      user.view_dashboard
+      last = user.dashboard_viewed_at
+      last.should_not be_nil
+
+      user.view_dashboard
+      user.dashboard_viewed_at.should_not eq last
+    end
+  end
 end

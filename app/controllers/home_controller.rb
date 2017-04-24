@@ -10,20 +10,20 @@ class HomeController < ApplicationController
   OS_VERSION = "Description:\tUbuntu 12.04"
   PG_VERSION = 'PostgreSQL 9.5'.freeze
   POSTGIS_VERSION = '2.2'.freeze
-  CDB_VALID_VERSION = '0.18'.freeze
-  CDB_LATEST_VERSION = '0.18.5'.freeze
+  CDB_VALID_VERSION = '0.19'.freeze
+  CDB_LATEST_VERSION = '0.19.0'.freeze
   REDIS_VERSION = '3'.freeze
   RUBY_BIN_VERSION = 'ruby 2.2.3'.freeze
   NODE_VERSION = 'v0.10'.freeze
   GEOS_VERSION = '3.5.0'.freeze
   GDAL_VERSION = '2.1'.freeze
 
-  WINDSHAFT_VALID_VERSION = '2.88'.freeze
-  WINDSHAFT_LATEST_VERSION = '2.88.4'.freeze
+  WINDSHAFT_VALID_VERSION = '3.6'.freeze
+  WINDSHAFT_LATEST_VERSION = '3.6.0'.freeze
   RUN_WINDSHAFT_INSTRUCTIONS = 'Run Windshaft: <span class="code">cd /Windshaft-cartodb && node app.js development'\
     '</span>'.freeze
-  SQL_API_VALID_VERSION = '1.43'.freeze
-  SQL_API_LATEST_VERSION = '1.43.2'.freeze
+  SQL_API_VALID_VERSION = '1.45'.freeze
+  SQL_API_LATEST_VERSION = '1.45.1'.freeze
   RUN_SQL_API_INSTRUCTIONS = 'Run SQL API <span class="code">cd /CartoDB-SQL-API; node app.js development</span>'.freeze
   RUN_RESQUE_INSTRUCTIONS =  'Run Resque <span class="code">bundle exec script/resque</span>'.freeze
 

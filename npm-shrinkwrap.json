@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.6.75",
+  "version": "4.6.81",
   "dependencies": {
     "abbrev": {
       "version": "1.1.0",
@@ -313,9 +313,9 @@
       "resolved": "https://registry.npmjs.org/cached-path-relative/-/cached-path-relative-1.0.1.tgz"
     },
     "camshaft-reference": {
-      "version": "0.31.0",
+      "version": "0.32.0",
       "from": "camshaft-reference@<2.0.0",
-      "resolved": "https://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.31.0.tgz"
+      "resolved": "https://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.32.0.tgz"
     },
     "carto": {
       "version": "0.15.1-cdb3",
@@ -2225,9 +2225,9 @@
       "resolved": "https://registry.npmjs.org/xtend/-/xtend-4.0.1.tgz"
     },
     "yamljs": {
-      "version": "0.2.9",
+      "version": "0.2.10",
       "from": "yamljs@>=0.2.8 <0.3.0",
-      "resolved": "https://registry.npmjs.org/yamljs/-/yamljs-0.2.9.tgz",
+      "resolved": "https://registry.npmjs.org/yamljs/-/yamljs-0.2.10.tgz",
       "dependencies": {
         "argparse": {
           "version": "1.0.9",

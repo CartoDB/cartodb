@@ -347,6 +347,8 @@ CartoDB::Application.routes.draw do
 
     # Tables
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/tables/:id'                     => 'tables#show',   as: :api_v1_tables_show, constraints: { id: /[^\/]+/ }
+    post '(/user/:user_domain)(/u/:user_domain)/api/v1/tables'                        => 'tables#create', as: :api_v1_tables_create
+    put '(/user/:user_domain)(/u/:user_domain)/api/v1/tables/:id'                     => 'tables#update', as: :api_v1_tables_update, constraints: { id: /[^\/]+/ }
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/tables/:id/related_templates'   => 'templates#related_templates_by_table', as: :api_v1_tables_related_templates, constraints: { id: /[^\/]+/ }
 
     # Table columns
@@ -464,10 +466,6 @@ CartoDB::Application.routes.draw do
 
     # V1
     # --
-
-    # Tables
-    post '(/user/:user_domain)(/u/:user_domain)/api/v1/tables'     => 'tables#create', as: :api_v1_tables_create
-    put '(/user/:user_domain)(/u/:user_domain)/api/v1/tables/:id'  => 'tables#update', as: :api_v1_tables_update, constraints: { id: /[^\/]+/ }
 
     # Table records
     get    '(/user/:user_domain)(/u/:user_domain)/api/v1/tables/:table_id/records'             => 'records#index',   as: :api_v1_tables_records_index,  constraints: { table_id: /[^\/]+/ }

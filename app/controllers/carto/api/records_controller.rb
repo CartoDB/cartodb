@@ -25,64 +25,49 @@ module Carto
       end
 
       def create
-        @stats_aggregator.timing('records.create') do
-          begin
-            primary_key = @stats_aggregator.timing('save') do
-              @user_table.service.insert_row!(filtered_row)
-            end
-            render_jsonp(@user_table.service.record(primary_key))
-          rescue => e
-            render_jsonp({ errors: [e.message] }, 400)
-          end
-
+        primary_key = @stats_aggregator.timing('save') do
+          @user_table.service.insert_row!(filtered_row)
         end
+        render_jsonp(@user_table.service.record(primary_key))
+      rescue => e
+        render_jsonp({ errors: [e.message] }, 400)
       end
 
       def update
-        @stats_aggregator.timing('records.update') do
-          if params[:cartodb_id].present?
-            begin
-              resp = @stats_aggregator.timing('save') do
-                @user_table.service.update_row!(params[:cartodb_id], filtered_row)
-              end
-              if resp > 0
-                render_jsonp(@user_table.service.record(params[:cartodb_id]))
-              else
-                render_jsonp({ errors: ["row identified with #{params[:cartodb_id]} not found"] }, 404)
-              end
-            rescue => e
-              CartoDB::StdoutLogger.info e.backtrace.join('\n')
-              render_jsonp({ errors: [translate_error(e.message.split("\n").first)] }, 400)
+        if params[:cartodb_id].present?
+          begin
+            resp = @user_table.service.update_row!(params[:cartodb_id], filtered_row)
+
+            if resp > 0
+              render_jsonp(@user_table.service.record(params[:cartodb_id]))
+            else
+              render_jsonp({ errors: ["row identified with #{params[:cartodb_id]} not found"] }, 404)
             end
-          else
-            render_jsonp({ errors: ["cartodb_id can't be blank"] }, 404)
+          rescue => e
+            CartoDB::StdoutLogger.info e.backtrace.join('\n')
+            render_jsonp({ errors: [translate_error(e.message.split("\n").first)] }, 400)
           end
+        else
+          render_jsonp({ errors: ["cartodb_id can't be blank"] }, 404)
         end
       end
 
       def destroy
-        @stats_aggregator.timing('records.destroy') do
-          begin
-            id = (params[:cartodb_id] =~ /\A\d+\z/ ? params[:cartodb_id] : params[:cartodb_id].to_s.split(','))
-            schema_name = current_user.database_schema
-            if current_user.id != @user_table.service.owner.id
-              schema_name = @user_table.service.owner.database_schema
-            end
-
-            @stats_aggregator.timing('delete') do
-              current_user.in_database
-                          .select
-                          .from(@user_table.service.name.to_sym.qualify(schema_name.to_sym))
-                          .where(cartodb_id: id)
-                          .delete
-            end
-
-            head :no_content
-          rescue
-            render_jsonp({ errors: ["row identified with #{params[:cartodb_id]} not found"] }, 404)
-          end
-
+        id = (params[:cartodb_id] =~ /\A\d+\z/ ? params[:cartodb_id] : params[:cartodb_id].to_s.split(','))
+        schema_name = current_user.database_schema
+        if current_user.id != @user_table.service.owner.id
+          schema_name = @user_table.service.owner.database_schema
         end
+
+        current_user.in_database
+                    .select
+                    .from(@user_table.service.name.to_sym.qualify(schema_name.to_sym))
+                    .where(cartodb_id: id)
+                    .delete
+
+        head :no_content
+      rescue
+        render_jsonp({ errors: ["row identified with #{params[:cartodb_id]} not found"] }, 404)
       end
 
       protected

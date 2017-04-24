@@ -26,46 +26,28 @@ module Carto
       end
 
       def create
-        @stats_aggregator.timing('columns.create') do
-
-          begin
-            render_jsonp(@user_table.service.add_column!(params.slice(:type, :name)))
-          rescue => e
-            errors = e.is_a?(CartoDB::InvalidType) ? [e.db_message] : [translate_error(e.message.split("\n").first)]
-            render_jsonp({ errors: errors }, 400)
-          end
-
-        end
+        render_jsonp(@user_table.service.add_column!(params.slice(:type, :name)))
+      rescue => e
+        errors = e.is_a?(CartoDB::InvalidType) ? [e.db_message] : [translate_error(e.message.split("\n").first)]
+        render_jsonp({ errors: errors }, 400)
       end
 
       def update
-        @stats_aggregator.timing('columns.update') do
-
-          begin
-            render_jsonp(@user_table.service.modify_column!(name: params[:id],
-                                               type: params[:type],
-                                               new_name: params[:new_name]))
-          rescue => e
-            errors = e.is_a?(CartoDB::InvalidType) ? [e.db_message] : [translate_error(e.message.split("\n").first)]
-            render_jsonp({ errors: errors }, 400)
-          end
-
-        end
+        render_jsonp(@user_table.service.modify_column!(name: params[:id],
+                                           type: params[:type],
+                                           new_name: params[:new_name]))
+      rescue => e
+        errors = e.is_a?(CartoDB::InvalidType) ? [e.db_message] : [translate_error(e.message.split("\n").first)]
+        render_jsonp({ errors: errors }, 400)
       end
 
       def destroy
-        @stats_aggregator.timing('columns.destroy') do
+        @user_table.service.drop_column!(name: params[:id])
 
-          begin
-            @user_table.service.drop_column!(name: params[:id])
-
-            head :no_content
-          rescue => e
-            errors = e.is_a?(CartoDB::InvalidType) ? [e.db_message] : [translate_error(e.message.split("\n").first)]
-            render_jsonp({ errors: errors }, 400)
-          end
-
-        end
+        head :no_content
+      rescue => e
+        errors = e.is_a?(CartoDB::InvalidType) ? [e.db_message] : [translate_error(e.message.split("\n").first)]
+        render_jsonp({ errors: errors }, 400)
       end
 
       protected

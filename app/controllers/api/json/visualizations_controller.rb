@@ -53,8 +53,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
                   origin = 'copy'
                   duplicate_derived_visualization(params[:source_visualization_id], user)
                 else
-                  tables = [Carto::UserTable.find(id: source.user_table.id)]
-                  create_visualization_from_tables(tables, vis_data)
+                  create_visualization_from_tables([source.user_table], vis_data)
                 end
               elsif param_tables
                 subdomain = CartoDB.extract_subdomain(request)
@@ -307,7 +306,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   end
 
   def create_visualization_from_tables(tables, vis_data)
-    blender = Visualization::TableBlender.new(current_user, tables)
+    blender = Visualization::TableBlender.new(Carto::User.find(current_user.id), tables)
     map = blender.blend
 
     vis = Visualization::Member.new(vis_data.merge(name: name_candidate,

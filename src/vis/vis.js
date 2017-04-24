@@ -237,9 +237,7 @@ var VisModel = Backbone.Model.extend({
     // Global variable for easier console debugging / testing
     window.vis = this;
 
-    _.defer(function () {
-      this.trigger('load', this);
-    }.bind(this));
+    this.trigger('load', this);
   },
 
   // we provide a method to set some new settings

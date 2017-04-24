@@ -21,7 +21,7 @@ module.exports = env => {
   return {
     entry: entryPoints,
     output: {
-      filename: `${version}/[name].[chunkhash].js`,
+      filename: `${version}/[name].js`,
       path: resolve(__dirname, 'dist')
     },
     devtool: isProduction ? 'source-map' : 'eval-source-map',

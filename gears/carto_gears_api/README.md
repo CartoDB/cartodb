@@ -57,7 +57,8 @@ CARTO currently supports two directories for Gears:
 `/gears`
 
 Public engines. For example, for new features developed with a component-based approach.
-It's part of the main repo and gears inside it will be automatically added to `Gemfile` and `Gemfile.lock`.
+It's part of the main repo and gears inside it will be automatically loaded. Alternatively, they could
+be extracted to a separate repository and loaded via Gemfile.
 
 `/private_gears`
 
@@ -65,10 +66,10 @@ Private engines. For example, for in-house developments that can't be shipped wi
 It's skipped at `.gitignore`, and it's dynamically loaded, so it won't appear in `Gemfile` or `Gemfile.lock`.
 You can have the code wherever you want, and add symbolic links there.
 
-#### Private gears limitations
+#### Gears limitations
 
-Due to the custom handling of this in order to avoid polluting Gemfile and Gemfile.lock files, private gears
-have several limitations:
+Due to the custom handling of this in order to avoid polluting Gemfile and Gemfile.lock files, gears loaded from a
+directory have several limitations:
 
 - If you specify a runtime dependency of a gem already existing at Gemfile, it must have the exact version.
 - Although the private gem itself doesn't appear in `Gemfile` or `Gemfile.lock`, dependencies do, because they need to
@@ -103,7 +104,7 @@ module MyComponent
   class Engine < ::Rails::Engine
     isolate_namespace MyComponent
 
-    config.autoload_paths << config.root.join('lib').to_s
+    config.autoload_paths << config.root.join('lib').to_s if Rails.env.development?
   end
 end
 ```

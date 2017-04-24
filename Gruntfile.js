@@ -4,14 +4,10 @@ var colors = require('colors');
 var semver = require('semver');
 var webpackTask = null;
 var jasmineCfg = require('./lib/build/tasks/jasmine.js');
-var shrinkwrapDependencies = require('./lib/build/tasks/shrinkwrap-dependencies.js');
-var parser = require('parse-yarn-lock');
-var fs = require('fs');
-var yarnLockFile = fs.readFileSync('./yarn.lock').toString();
+var yarnDependencies = require('./lib/build/tasks/yarn-dependencies.js');
 
 var REQUIRED_NODE_VERSION = '6.9.2';
 var REQUIRED_NPM_VERSION = '3.10.9';
-
 var DEVELOPMENT = 'development';
 
 var YARN_MODULES_TO_VALIDATE = [
@@ -95,14 +91,14 @@ module.exports = function(grunt) {
       grunt.log.writeln('');
     }
 
-    // var duplicatedModules = shrinkwrapDependencies.checkDuplicatedDependencies(require('./npm-shrinkwrap.json'), SHRINKWRAP_MODULES_TO_VALIDATE);
-    // if (duplicatedModules.length > 0) {
-    //   grunt.log.fail("############### /!\\ CAUTION /!\\ #################");
-    //   grunt.log.fail("Duplicated dependencies found in npm-shrinkwrap.json file.");
-    //   grunt.log.fail(JSON.stringify(duplicatedModules, null, 4));
-    //   grunt.log.fail("#################################################");
-    //   process.exit(1);
-    // }
+    var duplicatedModules = yarnDependencies.checkDuplicatedDependencies('./yarn.lock', YARN_MODULES_TO_VALIDATE);
+    if (duplicatedModules.length > 0) {
+      grunt.log.fail("############### /!\\ CAUTION /!\\ #################");
+      grunt.log.fail("Duplicated dependencies found in yarn.lock file.");
+      grunt.log.fail(JSON.stringify(duplicatedModules, null, 4));
+      grunt.log.fail("#################################################");
+      process.exit(1);
+    }
 
     var ROOT_ASSETS_DIR = './public/assets/';
     var ASSETS_DIR = './public/assets/<%= pkg.version %>';

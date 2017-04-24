@@ -153,7 +153,7 @@ We use [Grunt](http://gruntjs.com/) to automate build tasks related to both CSS 
 
 We use v6.9.2 of [node](http://nodejs.org/) (we recommend to use [NVM](https://github.com/creationix/nvm)).
 
-Install dependencies using a [Yarn](https://yarnpkg.com/lang/en/docs/install/) as such:
+Install dependencies using [Yarn](https://yarnpkg.com/lang/en/docs/install/) as such:
 ```bash
 yarn
 

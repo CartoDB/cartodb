@@ -54,6 +54,20 @@ module.exports = env => {
           minChunks: Object.keys(entryPoints).length
         })
       )
+    .concat(
+      isProduction ? new webpack.optimize.UglifyJsPlugin({
+        sourceMap: true,
+        beautify: false,
+        mangle: {
+          screw_ie8: true,
+          keep_fnames: true
+        },
+        compress: {
+          screw_ie8: true
+        },
+        comments: false
+      }) : undefined
+    )
     .filter(p => !!p), // undefined is not a valid plugin, so filter undefined values here
     module: {
       rules: [

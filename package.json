@@ -180,6 +180,6 @@
     "branch-files": "node lib/build/branchFiles/branchFiles.js",
     "affected_specs": "node lib/build/branchFiles/branchFiles.js | xargs node lib/build/affectedFiles/affectedFiles.js",
     "build": "webpack --env.dev",
-    "build:prod": "webpack --env.prod -p"
+    "build:production": "NODE_ENV=production webpack -p"
   }
 }

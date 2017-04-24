@@ -164,7 +164,6 @@ WORKING_SPECS_5 = \
 	spec/requests/carto/api/layers_controller_spec.rb \
 	spec/requests/api/json/records_controller_spec.rb \
 	spec/requests/carto/api/records_controller_spec.rb \
-	spec/requests/api/json/columns_controller_spec.rb \
 	spec/requests/carto/api/columns_controller_spec.rb \
 	spec/requests/api/synchronizations_spec.rb \
 	spec/requests/api/json/synchronizations_controller_spec.rb \

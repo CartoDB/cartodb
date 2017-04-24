@@ -1402,6 +1402,10 @@
         "title": "Export as image",
         "export": "Export",
         "generating": "Generating",
+        "disclaimer": {
+          "title": "Disclaimer",
+          "body": "Legends and widgets won't be exported as part of the image"
+        },
         "download": "Download",
         "errors": {
           "try-again": "Please, try again. If the problem persists, contact support",

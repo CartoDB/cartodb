@@ -19,11 +19,11 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   include Carto::VisualizationMigrator
 
   ssl_allowed :notify_watching, :list_watching, :add_like, :remove_like
-  ssl_required :create, :update, :destroy, :set_next_id
+  ssl_required :create, :update, :set_next_id
   skip_before_filter :api_authorization_required, only: [:add_like, :remove_like]
 
   before_filter :optional_api_authorization, only: [:add_like, :remove_like]
-  before_filter :table_and_schema_from_params, only: [:update, :destroy, :stats,
+  before_filter :table_and_schema_from_params, only: [:update, :stats,
                                                       :notify_watching, :list_watching,
                                                       :add_like, :remove_like, :set_next_id]
 
@@ -171,49 +171,6 @@ class Api::Json::VisualizationsController < Api::ApplicationController
       rescue => e
         CartoDB::Logger.error(message: "Error updating visualization", visualization_id: vis.id, exception: e)
         render_jsonp({ errors: ['Unknown error'] }, 400)
-      end
-    end
-  end
-
-  def destroy
-    @stats_aggregator.timing('visualizations.destroy') do
-
-      begin
-        vis,  = @stats_aggregator.timing('locate') do
-          locator.get(@table_id, CartoDB.extract_subdomain(request))
-        end
-
-        return head(404) unless vis
-        return head(403) unless vis.is_owner?(current_user)
-
-        current_viewer_id = current_viewer.id
-        properties = { user_id: current_viewer_id, visualization_id: vis.id }
-        if vis.derived?
-          Carto::Tracking::Events::DeletedMap.new(current_viewer_id, properties).report
-        else
-          Carto::Tracking::Events::DeletedDataset.new(current_viewer_id, properties).report
-        end
-
-        unless vis.table.nil?
-          vis.table.fully_dependent_visualizations.each do |dependent_vis|
-            properties = { user_id: current_viewer_id, visualization_id: dependent_vis.id }
-            if dependent_vis.derived?
-              Carto::Tracking::Events::DeletedMap.new(current_viewer_id, properties).report
-            else
-              Carto::Tracking::Events::DeletedDataset.new(current_viewer_id, properties).report
-            end
-          end
-        end
-
-        @stats_aggregator.timing('delete') do
-          vis.delete
-        end
-
-        return head 204
-      rescue KeyError
-        head(404)
-      rescue Sequel::DatabaseError => e
-        render_jsonp({ errors: [e.message] }, 400)
       end
     end
   end

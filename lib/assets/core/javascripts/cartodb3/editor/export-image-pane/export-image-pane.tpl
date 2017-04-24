@@ -1,4 +1,4 @@
-<div class="Editor-HeaderInfoEditor">
+<div class="Editor-HeaderInfoEditor Editor-HeaderInfo--noMargin">
   <div class="u-rSpace--xl u-actionTextColor Editor-HeaderInfoEditorShape">
     <button class="js-back">
       <i class="CDB-IconFont CDB-IconFont-arrowPrev Size-large"></i>
@@ -8,4 +8,5 @@
 </div>
 
 <div class="Editor-content js-content"></div>
+<div class="js-disclaimer"></div>
 <div class="Options-bar Options-bar--right u-flex js-footer"></div>

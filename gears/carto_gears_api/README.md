@@ -16,6 +16,38 @@ References:
 - [Component-based Rails Applications, Stephan Hagemann](https://leanpub.com/cbra).
 - [Rails 4 Engines, Brian Leonard](http://tech.taskrabbit.com/blog/2014/02/11/rails-4-engines/).
 
+### Value models
+
+In order to make development as simple as possible, models returned by API services are immutable POROs.
+They're instantiated with the sleek [values gem](https://github.com/tcrayford/Values).
+
+#### What about Rails?
+
+We don't want you to be coupled to CARTO internal models code, that's why Gears API returns just POROs.
+Nevertheless, if you want to use some Rails magic you can decorate your classes with the minimum that you
+need to make a class behave like a model without persistence (enabling form integration, for example):
+
+```ruby
+class MyUser < CartoGearsApi::Users::User
+  extend ActiveModel::Naming
+  include ActiveRecord::AttributeMethods::PrimaryKey
+
+  def id
+    # This is needed to make ActiveRecord::AttributeMethods::PrimaryKey work. Otherwise it
+    # won't find the id accessible thanks to Value. Magic is not always compatible.
+    @id
+  end
+end
+```
+
+Then, you can instantiate yours based on the API one:
+
+```ruby
+MyUser.with(CartoGearsApi::Users::UsersService.new.logged_user(request).to_h)
+```
+
+_PS: you could also "open" `CartoGearsApi::Users::User` and add there what's needed, but you DON'T want to do that ;-)_
+
 ## HOWTO
 
 ### Private vs public gears

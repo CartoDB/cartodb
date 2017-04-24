@@ -482,27 +482,14 @@ class Table
     raise e
   end
 
-  def before_destroy
-    @table_visualization                = table_visualization
-    @fully_dependent_visualizations_cache     = fully_dependent_visualizations.to_a
-    @partially_dependent_visualizations_cache = partially_dependent_visualizations.to_a
-  end
-
   def after_destroy
-    # Delete visualization BEFORE deleting metadata, or named map won't be destroyed properly
-    @table_visualization.delete_from_table if @table_visualization
     Tag.filter(user_id: user_id, table_id: id).delete
     remove_table_from_stats
 
     cache.del geometry_types_key
-    @fully_dependent_visualizations_cache.each(&:delete)
-    @partially_dependent_visualizations_cache.each do |visualization|
-      visualization.unlink_from(self)
-    end
 
     update_cdb_tablemetadata if real_table_exists?
     remove_table_from_user_database unless keep_user_database_table
-    synchronization.delete if synchronization
 
     related_templates.each { |template| template.destroy }
   end
@@ -1244,6 +1231,15 @@ class Table
 
   def table_visualization
     @user_table.table_visualization
+  end
+
+  def update_bounding_box
+    update_table_geom_pg_stats
+    bounds = Carto::BoundingBoxService.new(owner, name).table_bounds || Carto::BoundingBoxUtils::DEFAULT_BOUNDS
+
+    polygon_sql = Carto::BoundingBoxUtils.to_polygon(bounds[:minx], bounds[:miny], bounds[:maxx], bounds[:maxy])
+    update_sql = %{UPDATE visualizations SET bbox = #{polygon_sql} WHERE id = '#{table_visualization.id}';}
+    Rails::Sequel.connection.run(update_sql)
   end
 
   private

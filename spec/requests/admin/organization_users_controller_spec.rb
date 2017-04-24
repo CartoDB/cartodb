@@ -40,6 +40,30 @@ describe Admin::OrganizationUsersController do
       login_as(@org_user_owner, scope: @org_user_owner.username)
     end
 
+    describe '#new' do
+      it 'quota defaults to organization default' do
+        expected_quota = 123456789
+        Organization.any_instance.stubs(:default_quota_in_bytes).returns(expected_quota)
+
+        get new_organization_user_url(user_domain: @org_user_owner.username)
+        last_response.status.should eq 200
+
+        input = "<input id=\"user_quota\" name=\"user[quota_in_bytes]\" type=\"hidden\" value=\"#{expected_quota}\" />"
+        last_response.body.should include input
+      end
+
+      it 'quota defaults to remaining quota if the assigned default goes overquota' do
+        expected_quota = @organization.unassigned_quota
+        Organization.any_instance.stubs(:default_quota_in_bytes).returns(123456789012345)
+
+        get new_organization_user_url(user_domain: @org_user_owner.username)
+        last_response.status.should eq 200
+
+        input = "<input id=\"user_quota\" name=\"user[quota_in_bytes]\" type=\"hidden\" value=\"#{expected_quota}\" />"
+        last_response.body.should include input
+      end
+    end
+
     describe '#show' do
       it 'returns 200 for organization owner users' do
         get organization_users_url(user_domain: @org_user_owner.username)

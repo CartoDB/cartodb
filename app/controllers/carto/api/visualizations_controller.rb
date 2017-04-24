@@ -16,7 +16,7 @@ module Carto
       include Carto::ControllerHelper
       include VisualizationsControllerHelper
 
-      ssl_required :index, :show
+      ssl_required :index, :show, :destroy
       ssl_allowed  :vizjson2, :vizjson3, :likes_count, :likes_list, :is_liked, :list_watching, :static_map
 
       # TODO: compare with older, there seems to be more optional authentication endpoints
@@ -25,7 +25,8 @@ module Carto
 
       before_filter :id_and_schema_from_params
       before_filter :load_visualization, only: [:likes_count, :likes_list, :is_liked, :show, :stats, :list_watching,
-                                                :static_map, :vizjson2, :vizjson3]
+                                                :static_map, :vizjson2, :vizjson3, :destroy]
+      before_filter :ensure_visualization_owned, only: [:destroy]
 
       rescue_from Carto::LoadError, with: :rescue_from_carto_error
       rescue_from Carto::UUIDParameterFormatError, with: :rescue_from_carto_error
@@ -121,6 +122,37 @@ module Carto
         redirect_to Carto::StaticMapsURLHelper.new.url_for_static_map(request, @visualization, map_width, map_height)
       end
 
+      def destroy
+        current_viewer_id = current_viewer.id
+        properties = { user_id: current_viewer_id, visualization_id: @visualization.id }
+
+        # Tracking. Can this be moved to the model?
+        if @visualization.derived?
+          Carto::Tracking::Events::DeletedMap.new(current_viewer_id, properties).report
+        else
+          Carto::Tracking::Events::DeletedDataset.new(current_viewer_id, properties).report
+        end
+
+        if @visualization.table
+          @visualization.table.fully_dependent_visualizations.each do |dependent_vis|
+            properties = { user_id: current_viewer_id, visualization_id: dependent_vis.id }
+            if dependent_vis.derived?
+              Carto::Tracking::Events::DeletedMap.new(current_viewer_id, properties).report
+            else
+              Carto::Tracking::Events::DeletedDataset.new(current_viewer_id, properties).report
+            end
+          end
+        end
+
+        @visualization.destroy
+
+        head 204
+      rescue => exception
+        CartoDB::Logger.error(message: 'Error deleting visualization', exception: exception,
+                              visualization: @visualization)
+        render_jsonp({ errors: [exception.message] }, 400)
+      end
+
       private
 
       def generate_vizjson2
@@ -149,6 +181,10 @@ module Carto
         unless request_username_matches_visualization_owner
           raise Carto::LoadError.new('Visualization of that user does not exist', 404)
         end
+      end
+
+      def ensure_visualization_owned
+        raise Carto::LoadError.new('Visualization not editable', 403) unless @visualization.is_owner?(current_viewer)
       end
 
       # This avoids crossing usernames and visualizations.

@@ -7,15 +7,18 @@ require_relative '../../../../app/controllers/carto/api/visualizations_controlle
 
 # TODO: Remove once Carto::Visualization is complete enough
 require_relative '../../../../app/models/visualization/member'
-require_relative '../../../../app/helpers/bounding_box_helper'
 require_relative './vizjson_shared_examples'
 require 'helpers/unique_names_helper'
 require_dependency 'carto/uuidhelper'
+require 'factories/carto_visualizations'
+require 'helpers/visualization_destruction_helper'
 
 include Carto::UUIDHelper
 
 describe Carto::Api::VisualizationsController do
   include UniqueNamesHelper
+  include Carto::Factories::Visualizations
+  include VisualizationDestructionHelper
   it_behaves_like 'visualization controllers' do
   end
 
@@ -376,7 +379,9 @@ describe Carto::Api::VisualizationsController do
       Carto::NamedMaps::Api.any_instance.stubs(get: nil, create: true, update: true)
 
       @user_1 = FactoryGirl.create(:valid_user)
+      @carto_user1 = Carto::User.find(@user_1.id)
       @user_2 = FactoryGirl.create(:valid_user, private_maps_enabled: true)
+      @carto_user2 = Carto::User.find(@user_2.id)
       @api_key = @user_1.api_key
     end
 
@@ -1560,6 +1565,77 @@ describe Carto::Api::VisualizationsController do
       end
     end
 
+    describe '#destroy' do
+      include_context 'organization with users helper'
+      include TableSharing
+
+      def destroy_url(user, vis_id)
+        api_v1_visualizations_destroy_url(id: vis_id, user_domain: user.username, api_key: user.api_key)
+      end
+
+      it 'returns 404 for nonexisting visualizations' do
+        delete_json(destroy_url(@carto_org_user_1, random_uuid)) do |response|
+          expect(response.status).to eq 404
+        end
+      end
+
+      it 'returns 404 for not-accesible visualizations' do
+        other_visualization = FactoryGirl.create(:carto_visualization, user: @carto_org_user_2)
+        delete_json(destroy_url(@carto_org_user_1, other_visualization.id)) do |response|
+          expect(response.status).to eq 404
+        end
+      end
+
+      it 'returns 403 for not-owned visualizations' do
+        other_visualization = FactoryGirl.create(:carto_visualization, user: @carto_org_user_2)
+        share_visualization_with_user(other_visualization, @carto_org_user_1)
+        delete_json(destroy_url(@carto_org_user_1, other_visualization.id)) do |response|
+          expect(response.status).to eq 403
+        end
+      end
+
+      it 'destroys a visualization by id' do
+        visualization = FactoryGirl.create(:carto_visualization, user: @carto_org_user_1)
+        delete_json(destroy_url(@carto_org_user_1, visualization.id)) do |response|
+          expect(response.status).to eq 204
+        end
+      end
+
+      it 'destroys a visualization by name' do
+        visualization = FactoryGirl.create(:carto_visualization, user: @carto_org_user_1)
+        delete_json(destroy_url(@carto_org_user_1, visualization.name)) do |response|
+          expect(response.status).to eq 204
+        end
+      end
+
+      it 'destroys a visualization and all of its dependencies (fully dependent)' do
+        _, _, table_visualization, visualization = create_full_visualization(@carto_org_user_1)
+
+        expect_visualization_to_be_destroyed(visualization) do
+          expect_visualization_to_be_destroyed(table_visualization) do
+            delete_json(destroy_url(@carto_org_user_1, table_visualization.id)) do |response|
+              expect(response.status).to eq 204
+            end
+          end
+        end
+      end
+
+      it 'destroys a visualization and affected layers (partially dependent)' do
+        _, _, table_visualization, visualization = create_full_visualization(@carto_org_user_1)
+        visualization.layers << FactoryGirl.create(:carto_layer)
+        visualization.data_layers.count.should eq 2
+
+        expect_visualization_to_be_destroyed(table_visualization) do
+          delete_json(destroy_url(@carto_org_user_1, table_visualization.id)) do |response|
+            expect(response.status).to eq 204
+          end
+        end
+
+        expect(Carto::Visualization.exists?(visualization.id)).to be_true
+        visualization.reload
+        visualization.data_layers.count.should eq 1
+      end
+    end
   end
 
   describe 'index' do
@@ -2050,7 +2126,7 @@ describe Carto::Api::VisualizationsController do
     table.the_geom_type = "point"
     table.save.reload
     table.insert_row!(the_geom: the_geom)
-    BoundingBoxHelper.update_visualizations_bbox(table)
+    table.update_bounding_box
     table
   end
 

@@ -519,7 +519,7 @@
     "likes-pluralize": "like |||| likes",
     "custom-list": {
       "placeholder": "Search by %{typeLabel}",
-      "no-items": "There is no %{typeLabel} items",
+      "no-items": "There are no %{typeLabel} items",
       "no-results": "No %{typeLabel} results found with '%{query}'",
       "add-custom-result": "Add custom value"
     },
@@ -1402,7 +1402,17 @@
         "title": "Export as image",
         "export": "Export",
         "generating": "Generating",
-        "download": "Download"
+        "disclaimer": {
+          "title": "Disclaimer",
+          "body": "Legends and widgets won't be exported as part of the image"
+        },
+        "download": "Download",
+        "errors": {
+          "try-again": "Please, try again. If the problem persists, contact support",
+          "error-attribution": "Error generating attribution.",
+          "error-basemap": "Error loading basemap.",
+          "error-image": "Error generating image."
+        }
       },
       "export": {
         "confirmation": {
@@ -1670,6 +1680,7 @@
         "neighbors-help": "Define the local neighborhood as this many nearest-neighbors",
         "no": "No",
         "no-coincidence": "When no coincidence no row will be added",
+        "should-match": "Column types should match",
         "numerator": "Target column",
         "numerator-help": "Measure spatial autocorrelation of this column",
         "operation": "Operation",

@@ -179,6 +179,7 @@ describe Carto::Api::OrganizationUsersController do
     end
 
     it 'can create viewers' do
+      Carto::UserCreation.any_instance.expects(:load_common_data).never
       login(@organization.owner)
       username = 'viewer-user'
       params = user_params(username, viewer: true)

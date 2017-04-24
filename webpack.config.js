@@ -6,17 +6,20 @@ const version = PACKAGE.version;
 
 const isProduction = process.env.NODE_ENV === 'production';
 
-const internalDepsFilter = (module, count) => {
-  return module.resource && /cartodb.js|deep-insights.js/.test(module.resource);
+const isVendor = (module, count) => {
+  const userRequest = module.userRequest;
+  return userRequest && userRequest.indexOf('node_modules') >= 0;
+};
+
+const entryPoints = {
+  public_editor: './lib/assets/core/javascripts/cartodb3/public_editor.js',
+  dataset: './lib/assets/core/javascripts/cartodb3/dataset.js',
+  editor: './lib/assets/core/javascripts/cartodb3/editor.js'
 };
 
 module.exports = env => {
   return {
-    entry: {
-      public_editor: './lib/assets/core/javascripts/cartodb3/public_editor.js',
-      dataset: './lib/assets/core/javascripts/cartodb3/dataset.js',
-      editor: './lib/assets/core/javascripts/cartodb3/editor.js'
-    },
+    entry: entryPoints,
     output: {
       filename: `${version}/[name].[chunkhash].js`,
       path: resolve(__dirname, 'dist')
@@ -25,21 +28,33 @@ module.exports = env => {
     plugins: [
       isProduction ? undefined : new BundleAnalyzerPlugin({
         analyzerMode: 'static'
-      }),
-
-      new webpack.optimize.CommonsChunkPlugin({
-        name: 'vendor',
-        minChunks: function (module) {
-          // this assumes your vendor imports exist in the node_modules directory
-          return module.context && module.context.indexOf('node_modules') !== -1;
-        }
-      }),
-
+      })
+    ].concat(
+      // For each entry point, we generate the vendor file
+      Object.keys(entryPoints)
+        .map(entry => new webpack.optimize.CommonsChunkPlugin({
+          name: `${entry}_vendor`,
+          chunks: [entry],
+          minChunks: isVendor
+        }))
+    )
+    .concat([
       new webpack.optimize.CommonsChunkPlugin({
         name: 'common',
-        minChunks: internalDepsFilter
+        chunks: Object.keys(entryPoints).map(n => `${n}_vendor`),
+        minChunks: (module, count) => {
+          return count >= Object.keys(entryPoints).length && isVendor(module);
+        }
       })
-    ].filter(p => !!p), // undefined is not a valid plugin, so filter undefined values here
+    ])
+    .concat(
+        // Extract common chuncks in the 3 entries
+        new webpack.optimize.CommonsChunkPlugin({
+          children: true,
+          minChunks: Object.keys(entryPoints).length
+        })
+      )
+    .filter(p => !!p), // undefined is not a valid plugin, so filter undefined values here
     module: {
       rules: [
         {

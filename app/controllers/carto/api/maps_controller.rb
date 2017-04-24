@@ -39,15 +39,25 @@ module Carto
         end
       end
 
+      STRING_PARAMS = [:bounding_box_sw, :bounding_box_ne, :center, :view_bounds_sw, :view_bounds_ne].freeze
+
       def update_params
-        params.slice(:bounding_box_ne,
-                     :bounding_box_sw,
-                     :center,
-                     :options,
-                     :provider,
-                     :view_bounds_ne,
-                     :view_bounds_sw,
-                     :zoom)
+        update_params = params.slice(:bounding_box_ne,
+                                     :bounding_box_sw,
+                                     :center,
+                                     :options,
+                                     :provider,
+                                     :view_bounds_ne,
+                                     :view_bounds_sw,
+                                     :zoom,
+                                     :legends,
+                                     :scrollwheel)
+
+        STRING_PARAMS.each do |param|
+          update_params[param] = update_params[param].to_s
+        end
+
+        update_params
       end
 
       def map_presentation

@@ -4,6 +4,7 @@ Development
 * An attacker could execute commands in the server running the queues by importing a file with a carefully crafted filename. Fixed in #11782
 
 ### Features
+* Using Node v6.9.2 and npm v3.10.9 (#11935).
 * Exposed some cartodb.js methods through map definition model (#11846)
 * Dataservices configuration rake tasks (#11917)
   * `cartodb:services:set_user_quota[username,service,quota]` updated to support the `mapzen_routing` provider
@@ -16,9 +17,10 @@ Development
 * Adding Google-Maps basemaps (#11447)
 * Improve dialog forms to render them floated. (#7786)
 * Adds slider component to the forms (#11617)
-* Adds export as image (#11789)
+* Adds export as image (#11789, #12028)
   * Exports GMaps basemaps (#11775)
   * Show error notifications (#11887)
+  * Adds disclaimer (#12024)
 * New organization assets (#11034):
   * REST API available at `/api/v1/organization/<org_id>/assets`
   * Has DB migration
@@ -67,12 +69,13 @@ Development
   * Sets the default initial size for icons to 20px (#11498)
 * Onboarding for layer edition (#10905)
 * Initial support for Rails engines with CARTO Gears.
+  * Notification API (#11850)
+  * Queue and Email support (#11692).
+  * User login event (#12010).
 * Improved empty bounds map handling (#11711).
 * Updated diagnosis page versions.
 * set_import_limits rake (#11756).
 * Improved formula widget description field. (#11469)
-  * Notification API (#11850)
-  * Queue and Email support (#11692).
 * Improved empty bounds map handling (#11711).
 * Updated diagnosis page versions.
 * Improved formula widget description field (#11469).
@@ -104,6 +107,7 @@ Development
 * Update tangram to fix layer geometry conditionals.
 
 ### Bug fixes
+* Autostyling for google basemaps (#11838)
 
 * Save collapse state for layer list (#11927)
 * Styling falsy categories (#11421)
@@ -207,10 +211,14 @@ Development
 * Redirect to last visited page after logging in (#11946)
 * Sanitized HTML from map and layer names.
 * Merged fix subdomain error not loading tiles (CartoDB.js#1607)
+* Create users from org panel with the default quota (#11837)
 * Fixed way to listen Deep-insights.js map or widgets changes (#11894)
 * Using latest cartodb.js and deep-insights.js to tackle map zooming problem (support#605)
 * Fix organization notifications issues (#11957)
 * Max tracts to 4 for isoline analysis (#11723)
+* Right column validate type match in Join analysis (#11829)
+* Check if analysis node is on top before fetching query data (#11874)
+* Fixed error dropping tables from ghost table manager on race condition cases (#12012)
 
 ### NOTICE
 This release upgrades the CartoDB PostgreSQL extension to `0.19.0`. Run the following to have it available:

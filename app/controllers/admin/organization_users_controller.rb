@@ -23,7 +23,7 @@ class Admin::OrganizationUsersController < Admin::AdminController
   def new
     @user = ::User.new
     organization = current_user.organization
-    @user.quota_in_bytes = organization.unassigned_quota < 100.megabytes ? organization.unassigned_quota : 100.megabytes
+    @user.quota_in_bytes = [organization.unassigned_quota, organization.default_quota_in_bytes].min
 
     @user.soft_geocoding_limit = current_user.soft_geocoding_limit
     @user.soft_here_isolines_limit = current_user.soft_here_isolines_limit

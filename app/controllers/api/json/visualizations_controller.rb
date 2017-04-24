@@ -53,7 +53,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
                   origin = 'copy'
                   duplicate_derived_visualization(params[:source_visualization_id], user)
                 else
-                  tables = [UserTable.find(id: source.user_table.id)]
+                  tables = [Carto::UserTable.find(id: source.user_table.id)]
                   create_visualization_from_tables(tables, vis_data)
                 end
               elsif param_tables
@@ -61,7 +61,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
                 viewed_user = ::User.find(username: subdomain)
                 tables = @stats_aggregator.timing('locate-table') do
                   tables = param_tables.map do |table_name|
-                    Helpers::TableLocator.new.get_by_id_or_name(table_name, viewed_user) if viewed_user
+                    Carto::Helpers::TableLocator.new.get_by_id_or_name(table_name, viewed_user) if viewed_user
                   end
 
                   tables.flatten

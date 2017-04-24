@@ -154,7 +154,7 @@ var TorqueLayerViewBase = {
     if (!this.model.hasChanged()) return;
 
     if (this.model.hasChanged('visible')) {
-      this.model.get('visible') ? this.show() : this.hide();
+      this.model.get('visible') ? this.nativeTorqueLayer.show() : this.nativeTorqueLayer.hide();
     }
 
     if (this.model.hasChanged('cartocss')) {

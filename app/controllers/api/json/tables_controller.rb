@@ -116,27 +116,6 @@ class Api::Json::TablesController < Api::ApplicationController
     end
   end
 
-  def destroy
-    @stats_aggregator.timing('tables.destroy') do
-      table_visualization = @table.table_visualization
-
-      @stats_aggregator.timing('ownership-check') do
-        return head(403) unless table_visualization.is_owner?(current_user)
-      end
-
-      @stats_aggregator.timing('delete') do
-        @table.destroy
-      end
-
-      current_viewer_id = current_viewer.id
-      Carto::Tracking::Events::DeletedDataset.new(current_viewer_id,
-                                                  user_id: current_viewer_id,
-                                                  visualization_id: table_visualization.id).report
-
-      head :no_content
-    end
-  end
-
   protected
 
   def load_table

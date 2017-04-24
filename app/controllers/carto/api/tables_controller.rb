@@ -57,12 +57,13 @@ module Carto
       end
 
       def update
+        # TODO This endpoint is only used to geocode from editor, passing `latitude_column` and `longitude_column`
+        # TODO It also supports renames and all attributes assignement, but this is not called from our frontend
         table = @user_table.service
         warnings = []
 
         # Perform name validations
         # TODO move this to the model!
-        # TODO consider removing this code. The entry point is only used to set lat/long columns
         if params[:name]
           new_name = params[:name].downcase
           if new_name != table.name

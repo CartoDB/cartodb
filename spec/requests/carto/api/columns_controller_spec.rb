@@ -1,8 +1,6 @@
 # encoding: utf-8
 
 require_relative '../../../spec_helper'
-require_relative '../../../../app/controllers/carto/api/columns_controller'
-require_relative '../../../../spec/requests/api/json/columns_controller_shared_examples'
 
 describe Carto::Api::ColumnsController do
   describe '#show legacy tests' do

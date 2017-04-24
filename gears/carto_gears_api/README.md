@@ -73,6 +73,8 @@ have several limitations:
 - If you specify a runtime dependency of a gem already existing at Gemfile, it must have the exact version.
 - Although the private gem itself doesn't appear in `Gemfile` or `Gemfile.lock`, dependencies do, because they need to
 be installed.
+- You should avoid adding paths to the `$LOAD_PATH` from the Gemfile. An alternative is to add them in the
+initialization code.
 
 #### Generating a clean Gemfile.lock
 
@@ -94,7 +96,17 @@ bundle exec rails plugin new gears/my_component --full --mountable
 
 It will be mounted at root (`/`) and automatically loaded.
 
-Automatic reload for development is supported right out of the box.
+To enable automatic reload for development, you should add the `lib` path to the `autoload_path` in your `Engine`
+subclass:
+```
+module MyComponent
+  class Engine < ::Rails::Engine
+    isolate_namespace MyComponent
+
+    config.autoload_paths << config.root.join('lib').to_s
+  end
+end
+```
 
 You must use only classes under `CartoGearsApi` namespace. _It's currently under `/gears/carto_gears_api/lib`,
 but it will be documented before first public release._
@@ -175,8 +187,19 @@ end
 
 ## Extension points
 
-Most extension points require a registration during intialization. A good
-place to put the code it is inside a file in +config/initializers+.
+Most extension points require a registration during intialization. Although you can use initializers for your gear,
+everything that depends upon CARTO should be run in an `after_initialize` hook, to ensure it is loaded after CARTO. e.g:
+```
+module MyComponent
+  class Engine < ::Rails::Engine
+    isolate_namespace MyComponent
+
+    config.after_initialize do
+      # Your initialization code
+    end
+  end
+end
+```
 
 ### Adding links to profile page
 

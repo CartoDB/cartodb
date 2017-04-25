@@ -36,7 +36,8 @@
     "queue-async": "1.2.1",
     "torque.js": "CartoDB/torque#master",
     "tangram": "cartodb/tangram-1#master",
-    "underscore": "1.8.3"
+    "underscore": "1.8.3",
+    "webpack": "2.2.1"
   },
   "devDependencies": {
     "autoprefixer-core": "5.2.1",
@@ -74,7 +75,6 @@
     "jasmine": "2.5.2",
     "jasmine-ajax": "git://github.com/nobuti/jasmine-ajax.git#master",
     "jstify": "0.13.0",
-    "lodash": "4.17.4",
     "load-grunt-tasks": "3.2.0",
     "lodash": "^4.17.4",
     "minimist": "1.2.0",
@@ -87,10 +87,10 @@
     "shim-loader": "0.1.0",
     "source-map-support": "0.4.0",
     "stringify": "5.1.0",
-    "tpl-loader": "git://github.com/ivanmalagon/tpl-loader.git#master",
+    "tpl-loader": "git://github.com/ivanmalagon/tpl-loader.git#5cc2b785d10d873f2530fa885d3cb69894569a2f",
     "uglify-js": "2.7.x",
     "watchify": "3.7.0",
-    "webpack": "2.2.1",
+    "webpack-bundle-analyzer": "^2.4.0",
     "webpack-stats-plugin": "0.1.4"
   },
   "browserify": {
@@ -179,6 +179,9 @@
     "preupdate-internal-deps": "echo 'DEPRECATED TASK, use `npm run-script update-internal-deps` instead'",
     "update-internal-deps": "rm -rf node_modules && npm install --production --no-shrinkwrap && npm dedupe && npm prune && npm shrinkwrap && npm install",
     "branch-files": "node lib/build/branchFiles/branchFiles.js",
-    "affected_specs": "node lib/build/branchFiles/branchFiles.js | xargs node lib/build/affectedFiles/affectedFiles.js"
+    "affected_specs": "node lib/build/branchFiles/branchFiles.js | xargs node lib/build/affectedFiles/affectedFiles.js",
+    "build": "NODE_ENV=production webpack -p --config webpack.prod.config.js",
+    "build:stats": "webpack --env.stats --progress --config webpack.dev.config.js",
+    "start": "webpack --progress --watch --display-chunks --config webpack.dev.config.js"
   }
 }

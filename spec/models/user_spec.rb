@@ -140,16 +140,47 @@ describe User do
       organization.destroy
     end
 
-    it 'cannot be admin and viewer at the same time' do
-      organization = create_org('testorg', 10.megabytes, 1)
-      user = ::User.new
-      user.organization = organization
-      user.quota_in_bytes = 1.megabyte
-      user.viewer = true
-      user.org_admin = true
-      user.should_not be_valid
-      user.errors.keys.should include(:org_admin)
-      organization.destroy
+    describe '#org_admin' do
+      before(:all) do
+        @organization = create_organization_with_owner
+      end
+
+      after(:all) do
+        @organization.destroy
+      end
+
+      it 'cannot be admin and viewer at the same time' do
+        user = ::User.new
+        user.organization = @organization
+        user.viewer = true
+        user.org_admin = true
+        user.should_not be_valid
+        user.errors.keys.should include(:org_admin)
+      end
+
+      it 'should not be able to create groups without admin rights' do
+        user = FactoryGirl.create(:valid_user, organization: @organization)
+
+        # NOTE: It's hard to test the real Groups API call here, it needs a Rails server up and running
+        # Instead, we test the main step that this function does internally (creating a role)
+        expect { user.in_database.fetch("CREATE ROLE #{unique_name('role')}").all }.to raise_error
+      end
+
+      it 'should be able to create groups with admin rights' do
+        user = FactoryGirl.create(:valid_user, organization: @organization, org_admin: true)
+
+        expect { user.in_database.fetch("CREATE ROLE #{unique_name('role')}").all }.to_not raise_error
+      end
+
+      it 'should revoke admin rights on demotion' do
+        user = FactoryGirl.create(:valid_user, organization: @organization, org_admin: true)
+        expect { user.in_database.fetch("CREATE ROLE #{unique_name('role')}").all }.to_not raise_error
+
+        user.org_admin = false
+        user.save
+
+        expect { user.in_database.fetch("CREATE ROLE #{unique_name('role')}").all }.to raise_error
+      end
     end
 
     describe 'organization email whitelisting' do

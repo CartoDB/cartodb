@@ -103,7 +103,7 @@
   </div>
 
   <% if current_user.organization.owner.has_feature_flag?('organization-admins') %>
-    <div class="FormAccount-row">
+    <div class="FormAccount-row js-org-admin-row">
       <div class="FormAccount-rowLabel">
         <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Administrator</label>
       </div>

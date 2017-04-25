@@ -105,6 +105,7 @@ Development
 * Multiple file upload through "upload file" tab (#11952)
 * Change setView by flyto.
 * Update tangram to fix layer geometry conditionals.
+* Allow to have multiple administrators per organization (#12052)
 
 ### Bug fixes
 * Autostyling for google basemaps (#11838)

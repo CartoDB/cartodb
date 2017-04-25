@@ -171,7 +171,7 @@ class User < Sequel::Model
       organization.validate_seats(self, errors)
     end
 
-    errors.add(:org_admin, "cannot be enabled for viewers") if org_admin && viewer
+    errors.add(:viewer, "cannot be enabled for organization admin") if organization_admin? && viewer
   end
 
   #                             +--------+---------+------+
@@ -1527,6 +1527,10 @@ class User < Sequel::Model
 
   def viewer?
     viewer
+  end
+
+  def organization_admin?
+    organization_admin? || org_admin
   end
 
   def builder_enabled?

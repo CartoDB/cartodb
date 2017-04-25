@@ -79,7 +79,7 @@ module CartoDB
           setup_organization_owner
         end
 
-        if @user.organization_owner? || @user.org_admin
+        if @user.organization_admin?
           grant_admin_permissions
         end
 

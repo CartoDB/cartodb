@@ -68,8 +68,9 @@ class Admin::OrganizationUsersController < Admin::AdminController
       [
         :username, :email, :password, :quota_in_bytes, :password_confirmation,
         :twitter_datasource_enabled, :soft_geocoding_limit, :soft_here_isolines_limit,
-        :soft_obs_snapshot_limit, :soft_obs_general_limit, :soft_mapzen_routing_limit, :org_admin
+        :soft_obs_snapshot_limit, :soft_obs_general_limit, :soft_mapzen_routing_limit
       ])
+    @user.org_admin = params[:user][:org_admin] == 'true'
     @user.viewer = params[:user][:viewer] == 'true'
     @user.organization = current_user.organization
     current_user.copy_account_features(@user)

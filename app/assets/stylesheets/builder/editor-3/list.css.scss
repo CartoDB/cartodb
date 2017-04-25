@@ -1,6 +1,16 @@
-@import '../variables/mixins';
-@import '../variables/colors';
-@import '../variables/sizes';
+@import 'cdb-utilities/mixins';
+@import 'cdb-variables/colors';
+@import 'cdb-variables/sizes';
+
+// TODO: remove editor
+$sMargin-elementInline: 12px; // To separate inline elements
+$cStructure-mainLine: rgba(#DDD, 1);
+$sCard-borderRadius: 4px;
+$cStructure-mainBkg: rgba(#FFF, 1);
+$cCard-selectedBorder: rgba(#9DC2E0, 1);
+$cCard-selectedFill: rgba(#EFF6FC, 1);
+$sMargin-group: 28px; // To separate groups inside a section
+$cStructure-softLine: rgba(#000, 0.06);
 
 .List {
   @include display-flex();

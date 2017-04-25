@@ -1,0 +1,27 @@
+  
+  /*
+   * Footer of CartoDB
+   */
+
+  footer {
+    display:block;
+    width:100%;
+    height:16px;
+    padding:40px 0;
+    background:white;
+    border-top:1px solid #E5E5E5;
+
+    nav a {
+      vertical-align:top;
+      font-size:13px;
+      margin-right:22px;
+    }
+
+    p {
+      width:279px;
+      font-size:13px;
+      color:#999999;
+      text-align: right;
+      a {color:#999999; &:hover {color:rgb(150,191,81)}}
+    }
+  }

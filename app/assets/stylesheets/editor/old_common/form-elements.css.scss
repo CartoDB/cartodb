@@ -1,0 +1,195 @@
+
+@import "compass/css3/box-shadow";
+@import "compass/css3/border-radius";
+@import "compass/css3/inline-block";
+@import "compass/css3/images";
+@import "compass/css3/transform";
+@import "compass/css3/transition";
+@import "compass/css3/opacity";
+@import "./vars";
+@import "./common-sprite";
+
+@mixin default-input {
+  input {
+    position:relative;
+    margin: 0;
+    padding: 11px;
+    border: 1px solid #C0C1C2;
+    background: #FFF;
+    @include border-radius(4px);
+    font-size: 15px;
+    font-family: $text-fonts;
+    color: #666666;
+    z-index:2;
+
+    &:focus {
+      outline:none;
+      border-color:#999999;
+      @include box-shadow(rgba(0,0,0,0.1) 0 0 2px 2px);
+    }
+
+    &::-webkit-input-placeholder {
+      color:rgba(#666666,0.3);
+    }
+
+    &:-moz-placeholder {
+      color:rgba(#666666,0.3); 
+    }
+  }
+}
+
+@mixin default-textarea {
+  textarea {
+    position:relative;
+    margin: 0;
+    padding: 11px;
+    border: 1px solid #C0C1C2;
+    background: #FFF;
+    @include border-radius(4px);
+    font-size: 15px;
+    font-family: $text-fonts;
+    color: #666666;
+    z-index:2;
+
+    &:focus {
+      outline:none;
+      border-color:#999999;
+      @include box-shadow(rgba(0,0,0,0.1) 0 0 2px 2px);
+    }
+
+    &::-webkit-input-placeholder {
+      color:rgba(#666666,0.3);
+    }
+
+    &:-moz-placeholder {
+      color:rgba(#666666,0.3); 
+    }
+  }
+}
+
+
+@mixin default-upload {}
+
+@mixin default-form-info {
+  div.info {
+    position:relative;
+    display:block;
+    min-height:15px;
+    @include opacity(0);
+    margin-top:-50px;
+    padding:20px 13px 13px;
+    border:1px solid #CCCCCC;
+    @include border-radius(4px);
+    z-index:0;
+    background:#FFF7EA;
+    font-size:13px;
+    @include transform-style("linear");
+    @include transition-property("margin,opacity");
+    @include transition-duration(400ms);
+
+    p {
+      font-style:italic;
+      font-size:13px;
+      word-wrap:break-word;
+
+      a {
+        color:#666666;
+        text-decoration:underline;
+        &:hover {color:#333}
+
+        // Button
+        &.green.button {
+          position:absolute;
+          top:15px; right:10px;
+          padding:4px 10px;
+          text-decoration:none;
+          font-size:13px;
+          font-weight:normal;
+          color:white;
+        }
+      }
+    }
+
+    // Info types
+    &.error { background:#FEEAEB }
+
+    // Sync and no-sync info
+    &.sync, &.no-sync {
+      @include background(sprite($common-sprites, wifi_icon, $offset-x:11px, $offset-y:5px) no-repeat #FFF7EA);
+    }
+
+    // SYNC
+    &.sync { 
+      padding:16px 13px 10px 34px;
+      background-color:#F2F2F2;
+      font-style:normal;
+
+      .select2-container .select2-choice span {
+        margin-right:10px;
+      }
+      
+      div.data {
+        @include inline-block();
+        width:auto;
+        padding:0 6px 0 10px;
+        border-left:1px solid #CCCCCC;
+
+        p {@include inline-block(); padding-right:5px; font-style:normal;}
+
+        div.period { @include inline-block(); }
+      }
+
+      div.custom {
+        @include inline-block();
+        width:auto;
+        padding-left:8px;
+        border-left:1px solid #CCCCCC;
+
+        p {@include inline-block(); padding-right:5px; font-style:normal;}
+
+        div.day {
+          @include inline-block();
+          width:40px;
+          margin-right:10px;
+        }
+        
+        @include default-input();
+        input {
+          width: 32px;
+          padding: 2px 3px;
+          border-color: #9E9E9E;
+          font-size: 13px;
+          vertical-align: bottom;
+        }
+      }
+    }
+
+
+    // Tips info
+    &.tips {
+      padding:20px 13px 13px 34px;
+      @include background(sprite($common-sprites, question_mark, $offset-x:15px, $offset-y:22px) no-repeat #E5F2FF);
+      p { padding-left:10px; border-left:1px solid #CCCCCC; font-style:normal; }
+    }
+
+    // NO SYNC
+    &.no-sync {
+      padding:20px 13px 13px 34px;
+      p { padding-left:10px; border-left:1px solid #CCCCCC; font-style:normal; }
+    }
+
+    &.active {
+      @include opacity(1);
+      margin-top:-7px;
+    }
+  }
+}
+
+@mixin default-select {
+  select {
+    margin-top: 20px;
+    width: 253px;
+    border: 10px solid rgb(242, 242, 242);
+    padding: 11px;
+  }
+}

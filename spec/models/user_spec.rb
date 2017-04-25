@@ -155,13 +155,19 @@ describe User do
         user.in_database["CREATE ROLE \"#{user.database_username}_#{unique_name('role')}\""].all
       end
 
+      it 'cannot be owner and viewer at the same time' do
+        @organization.owner.viewer = true
+        @organization.owner.should_not be_valid
+        @organization.owner.errors.keys.should include(:viewer)
+      end
+
       it 'cannot be admin and viewer at the same time' do
         user = ::User.new
         user.organization = @organization
         user.viewer = true
         user.org_admin = true
         user.should_not be_valid
-        user.errors.keys.should include(:org_admin)
+        user.errors.keys.should include(:viewer)
       end
 
       it 'should not be able to create groups without admin rights' do

@@ -140,6 +140,18 @@ describe User do
       organization.destroy
     end
 
+    it 'cannot be admin and viewer at the same time' do
+      organization = create_org('testorg', 10.megabytes, 1)
+      user = ::User.new
+      user.organization = organization
+      user.quota_in_bytes = 1.megabyte
+      user.viewer = true
+      user.org_admin = true
+      user.should_not be_valid
+      user.errors.keys.should include(:org_admin)
+      organization.destroy
+    end
+
     describe 'organization email whitelisting' do
 
       before(:each) do

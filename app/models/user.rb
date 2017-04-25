@@ -334,6 +334,9 @@ class User < Sequel::Model
       CartoDB::UserModule::DBService.terminate_database_connections(database_name, database_host)
     end
 
+    if changes.include?(:org_admin) && !organization_owner?
+      org_admin ? db_service.grant_admin_permissions : db_service.revoke_admin_permissions
+    end
   end
 
   def can_delete

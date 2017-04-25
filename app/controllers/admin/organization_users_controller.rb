@@ -68,7 +68,7 @@ class Admin::OrganizationUsersController < Admin::AdminController
       [
         :username, :email, :password, :quota_in_bytes, :password_confirmation,
         :twitter_datasource_enabled, :soft_geocoding_limit, :soft_here_isolines_limit,
-        :soft_obs_snapshot_limit, :soft_obs_general_limit, :soft_mapzen_routing_limit
+        :soft_obs_snapshot_limit, :soft_obs_general_limit, :soft_mapzen_routing_limit, :org_admin
       ])
     @user.viewer = params[:user][:viewer] == 'true'
     @user.organization = current_user.organization
@@ -134,6 +134,7 @@ class Admin::OrganizationUsersController < Admin::AdminController
     @user.set_fields(attributes, [:description]) if attributes[:description].present?
     @user.set_fields(attributes, [:twitter_username]) if attributes[:twitter_username].present?
     @user.set_fields(attributes, [:location]) if attributes[:location].present?
+    @user.set_fields(attributes, [:org_admin]) if attributes[:org_admin].present?
 
     @user.viewer = attributes[:viewer] == 'true'
 

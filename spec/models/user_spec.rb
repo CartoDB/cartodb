@@ -149,6 +149,12 @@ describe User do
         @organization.destroy
       end
 
+      def create_role(user)
+        # NOTE: It's hard to test the real Groups API call here, it needs a Rails server up and running
+        # Instead, we test the main step that this function does internally (creating a role)
+        user.in_database["CREATE ROLE \"#{user.database_username}_#{unique_name('role')}\""].all
+      end
+
       it 'cannot be admin and viewer at the same time' do
         user = ::User.new
         user.organization = @organization
@@ -160,26 +166,22 @@ describe User do
 
       it 'should not be able to create groups without admin rights' do
         user = FactoryGirl.create(:valid_user, organization: @organization)
-
-        # NOTE: It's hard to test the real Groups API call here, it needs a Rails server up and running
-        # Instead, we test the main step that this function does internally (creating a role)
-        expect { user.in_database.fetch("CREATE ROLE #{unique_name('role')}").all }.to raise_error
+        expect { create_role(user) }.to raise_error
       end
 
       it 'should be able to create groups with admin rights' do
         user = FactoryGirl.create(:valid_user, organization: @organization, org_admin: true)
-
-        expect { user.in_database.fetch("CREATE ROLE #{unique_name('role')}").all }.to_not raise_error
+        expect { create_role(user) }.to_not raise_error
       end
 
       it 'should revoke admin rights on demotion' do
         user = FactoryGirl.create(:valid_user, organization: @organization, org_admin: true)
-        expect { user.in_database.fetch("CREATE ROLE #{unique_name('role')}").all }.to_not raise_error
+        expect { create_role(user) }.to_not raise_error
 
         user.org_admin = false
         user.save
 
-        expect { user.in_database.fetch("CREATE ROLE #{unique_name('role')}").all }.to raise_error
+        expect { create_role(user) }.to raise_error
       end
     end
 

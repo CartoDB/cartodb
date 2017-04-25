@@ -36,7 +36,8 @@
     "queue-async": "1.2.1",
     "torque.js": "CartoDB/torque#master",
     "tangram": "cartodb/tangram-1#master",
-    "underscore": "1.8.3"
+    "underscore": "1.8.3",
+    "webpack": "2.2.1"
   },
   "devDependencies": {
     "autoprefixer-core": "5.2.1",
@@ -88,7 +89,6 @@
     "tpl-loader": "git://github.com/ivanmalagon/tpl-loader.git#5cc2b785d10d873f2530fa885d3cb69894569a2f",
     "uglify-js": "2.7.x",
     "watchify": "3.7.0",
-    "webpack": "2.2.1",
     "webpack-bundle-analyzer": "^2.4.0",
     "webpack-stats-plugin": "0.1.4"
   },
@@ -179,7 +179,8 @@
     "update-internal-deps": "rm -rf node_modules && npm install --production --no-shrinkwrap && npm dedupe && npm prune && npm shrinkwrap && npm install",
     "branch-files": "node lib/build/branchFiles/branchFiles.js",
     "affected_specs": "node lib/build/branchFiles/branchFiles.js | xargs node lib/build/affectedFiles/affectedFiles.js",
-    "build": "webpack --env.dev",
-    "build:production": "NODE_ENV=production webpack -p"
+    "build": "NODE_ENV=production webpack -p --config webpack.prod.config.js",
+    "build:stats": "webpack --env.stats --progress --config webpack.dev.config.js",
+    "start": "webpack --progress --watch --display-chunks --config webpack.dev.config.js"
   }
 }

@@ -1530,7 +1530,7 @@ class User < Sequel::Model
   end
 
   def organization_admin?
-    organization_admin? || org_admin
+    organization_owner? || org_admin
   end
 
   def builder_enabled?

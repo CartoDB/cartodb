@@ -27,6 +27,7 @@ Development
   * Assets stored in s3 if configured, local storage is used otherwise.
     * S3: bucket must exists and its name be present as `bucket` in conf.
     * Local: automatic as long as S3 is not configured. You may configure max size in bytes for an asset or a custom subdirectory as shown below.
+* Allows using feature flags to enable/disable analyses
 ```yaml
   # app_config.yml example for organization assets
   assets:

@@ -1,0 +1,91 @@
+
+  /**
+   *  Settings navigation styles
+   */
+
+  @import "compass/css3/inline-block";
+  @import "compass/css3/box-shadow";
+  @import "compass/css3/opacity";
+  @import "./mixins";
+  @import "./common-sprite";
+  @import "./vars";
+
+  nav.account-settings {
+    position:relative;
+    display:block;
+    background:white;
+    border-bottom:1px solid #CECECE;
+    @include single-box-shadow(0, 3px, 3px, 0, rgba(0,0,0,0.07), false);
+    overflow:visible;
+
+    div.inner {
+      @include display-flex();
+      @include justify-content(space-around, justify);
+      @include align-items(center, center);
+    }
+
+    a {
+      @include display-flex();
+      @include justify-content(center, center);
+      @include align-items(center, center);
+      width:200px;
+      margin:0;
+      padding:25px;
+      border-right:1px solid #E5E5E5;
+
+      .icon {
+        display:inline-block;
+        width:34px;
+        height:34px;
+        @include common-sprite(settings_icons);
+
+        &.settings {@include common-sprite(settings_icons, $offset-x:-40px)}
+        &.stats {@include common-sprite(settings_icons, $offset-x:-80px)}
+      }
+
+      .info {
+        display:inline-block;
+        width:145px;
+        margin-left:10px;
+
+        h2 {
+          font-size:15px;
+          letter-spacing:0;
+          color:#4580B5;
+          line-height:22px;
+        }
+        
+        p {
+          color:#4580B5;
+          font-size:15px;
+          font-family:$text-fonts2;
+        }
+      }
+
+      // Menu items states
+      &:hover, &.selected {
+        text-decoration:none;
+
+        .icon {
+          &.organization {@include common-sprite(settings_icons, $offset-y:-46px)}
+          &.settings {@include common-sprite(settings_icons, $offset-x:-40px, $offset-y:-46px)}
+          &.stats {@include common-sprite(settings_icons, $offset-x:-80px, $offset-y:-46px)}
+        }
+        p, h2 { color:#666 }
+      }
+
+      &.disabled {
+        opacity:1;
+        cursor:default;
+        
+        .icon { @include opacity(0.3) }
+        p, h2 { color:#CBDCEA}
+      }
+
+      &.selected {
+        &:hover {cursor:default}
+      }
+
+      &:last-child { border:none }
+    }
+  }

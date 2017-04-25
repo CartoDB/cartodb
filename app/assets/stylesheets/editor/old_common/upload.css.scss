@@ -1,0 +1,422 @@
+
+  /*
+   *  Styles for upload forms
+   */
+
+  @import "compass/css3/background-size";
+  @import "./vars";
+  @import "./mixins";
+  @import "./form-elements";
+  @import "./common-sprite";
+
+
+  // Upload tabs
+  .upload-tabs {
+    display: block;
+    height: 38px;
+    margin: 15px 0 0 0;
+    padding-left: 5px;
+    border-bottom: 1px solid #ccc;
+  }
+
+  // Single upload tab
+  .upload-tab {
+    position:relative;
+    float: left;
+    margin: 0 0 0 -1px;
+    border-bottom:0!important;
+
+    a {
+      display: block;
+      line-height: 37px;
+      padding: 0 15px;
+      border: 1px solid #ccc;
+      border-bottom: 1px solid #ccc;
+      background: #fff;
+      @include border-top-radius(5px);
+
+      &.selected {
+        border-bottom-color: #fff;
+        color: #333;
+
+        &:hover {
+          text-decoration: none;
+          cursor: default;
+        }
+      }
+
+      i {
+        position: relative;
+        top: -3px;
+        @include inline-block();
+        height: 15px;
+        width: 15px;
+        margin-right: 5px;
+      }
+
+      &.gdrive i {
+        @include common-sprite(gdrive);
+      }
+
+      &.dropbox i {
+        @include common-sprite(dropbox);
+      }
+    }
+  }
+
+
+  // Common import panes style
+  .import-pane {
+    position:relative;
+    margin:20px 0 45px 5px;
+
+    label {
+      position:absolute;
+      top:51px;
+      left:0;
+      font-size:12px;
+      line-height: 1.2;
+      z-index:1;
+      width: 60%;
+
+      &.light { color: #CCC; }
+
+      a {
+        color: #CCC;
+        text-decoration: underline;
+        margin-left: 5px;
+
+        &:hover { color: #aaa; }
+      }
+    }
+
+    // Common
+    .common_data {
+      position:absolute;
+      top:42px;
+      right: 0;
+      margin: 9px 0 0 0;
+      color: #999;
+      font-size: 13px;
+      a { text-decoration:underline; }
+    }
+
+    &.import-pane-gdrive,
+    &.import-pane-dropbox {
+      
+      div.upload {
+        position:relative;
+        height:22px;
+        padding:11px 10px;
+        border:1px solid #CCCCCC;
+        background:white;
+        @include border-radius(4px);
+        z-index:2;
+
+        p.filename {
+          float:left;
+          @include inline-block();
+          display:none;
+          width:285px;
+          margin:2px 0 0 4px;
+          font-size:15px;
+          font-style:italic;
+          color:#666;
+          @include text-overflow();
+        }
+
+        p.info {
+          float:right;
+          @include inline-block();
+          margin:2px 0 0;
+          font-size:15px;
+          color:#B7B7B7;
+        }
+
+        .gdrive-chooser, .dropbox-dropin-btn {float:left!important}
+
+        input {
+          float:right;
+          @include inline-block();
+          border:none;
+          width:38px;
+          height:16px;
+          padding:0;
+          margin:4px 0 3px 0;
+          background: image-url("layout/loader_transparent.gif") no-repeat 0 0;
+        }
+      }
+
+      div.infobox {
+        @include default-form-info();
+        z-index:2;
+        div.info {
+          position:relative;
+          z-index:1;
+        }
+      }
+
+      // When a value is selected, let's add
+      // this class and move buttons and filename
+      &.value-selected {
+        div.upload {
+          .gdrive-chooser, .dropbox-dropin-btn { float:right!important }
+          p.filename { display:block }
+        } 
+      }
+
+    }
+  }
+
+
+  // File upload
+  form.upload {
+    position:relative;
+
+    .upload {
+      position:relative;
+      display:block;
+      margin:20px 0 10px 0;
+      padding:10px;
+      border:1px solid #CCCCCC;
+      @include border-radius(4px);
+      background:white;
+      z-index:10;
+
+      &.active {
+        outline:none;
+        border-color:#999999;
+        @include box-shadow(rgba(0,0,0,0.1) 0 0 2px 2px);
+      }
+
+      span.drop {
+        display:none;
+        position:absolute;
+        top:0;
+        left:0;
+        bottom:0;
+        right:0;
+        background:rgba(black,0.6);
+        border:4px solid rgba(black,0.1);
+        color:white;
+        font-weight:bold;
+        text-align:center;
+        line-height:37px;
+        @include border-radius(4px);
+        z-index:100;
+      }
+
+      span.file {
+        @include inline-block();
+        vertical-align:middle;
+        width:24px;
+        height:24px;
+        margin:0 8px 0 0;
+        border-right:1px solid #CCCCCC;
+        @include common-sprite(file_type, $offset_y:4px, $offset_x:1px);
+      }
+
+      div {
+        @include inline-block();
+        vertical-align:middle;
+      }
+
+      div.url {
+        position:relative;
+        pointer-events:none;
+
+        p {
+          font-size: 15px;
+          z-index:0;
+        }
+      }
+
+      .fileinput-button {
+        position: relative;
+        overflow: hidden;
+        @include inline-block();
+        margin:0 0 0 5px;
+        color:#397DBA;
+        text-decoration:underline;
+        font-style:italic;
+        font-size:15px!important;
+        cursor:pointer;
+        letter-spacing: 0;
+        &:hover {
+          color:#333333;
+        }
+      }
+
+      .fileinput-button input {
+        position: absolute;
+        top: 0;
+        right: 0;
+        margin: 0;
+        border: solid transparent;
+        border-width: 0 0 100px 200px;
+        opacity: 0;
+        filter: alpha(opacity=0);
+        -moz-transform: translate(-300px, 0) scale(4);
+        direction: ltr;
+        cursor: pointer;
+      }
+
+      input[type="text"] {
+        position:absolute;
+        top:50%;
+        left:43px;
+        width:425px;
+        margin:-10px 0 0 0;
+        font-size:15px;
+        font-style:italic;
+        color:#666;
+        background:none;
+        border:none;
+        outline:none;
+        z-index:0;
+      }
+    }
+
+    @include default-form-info();
+
+    // Upload info
+    div.info {
+      position:relative;
+      z-index: 1;
+      margin:-50px 0 0 0;
+    }
+
+    &.drop div.upload {
+      span.drop {
+        display:block;
+      }
+    }
+  }
+
+
+  // Google drive
+  .gdrive-chooser, .dropbox-dropin-btn {
+    display: block;
+    line-height: 21px;
+    padding-left:10px;
+    padding-right:10px;
+    border: 1px solid #999;
+    @include border-radius(3px);
+    @include background(linear-gradient(#fff, #f2f2f2));
+    font-size: 13px;
+    font-weight: bold;
+    text-align: center;
+    color: #333;
+
+    &:hover {
+      text-decoration: none;
+      border-color: darken(#999, 5%);
+    }
+
+    &:active {
+      @include box-shadow(0 1px 2px 0 rgba(#000, .2) inset);
+    }
+  }
+
+
+  // Progress bar
+  div.upload-progress {
+    position:absolute;
+    display:none;
+    top:150px;
+    left:40px;
+    right:40px;
+    height:44px;
+    padding:1px;
+    border:1px solid #CCCCCC;
+    z-index:10;
+    @include background(#DEDEDE);
+    @include border-radius(4px);
+    @include opacity(0);
+
+    p {
+      position:absolute;
+      top:12px;
+      left:15px;
+      font-weight:bold;
+      font-size:17px;
+      color:white;
+      text-transform: capitalize;
+      text-shadow: 0 1px #204466;
+    }
+
+    span {
+      display:block;
+      height:100%;
+      width:2%;
+      background-color:#5290D0;
+      @include box-sizing(border-box);
+      @include background-size(30px 30px);
+      @include border-radius(4px);
+      @include progress-background(rgba(74, 132, 194, 1));
+      overflow: hidden;
+    }
+
+    a.stop {
+      position:absolute;
+      display:block;
+      top:16px;
+      right:12px;
+      width:14px;
+      height:14px;
+      margin:0;
+      padding:0;
+       @include common-sprite(cancel_upload);
+      @include text-indent();
+      &:hover {
+        @include common-sprite(cancel_upload, $offset-y:-16px);
+      }
+    }
+
+    &.uploading {
+      display:block;
+      @include opacity(1);
+      @include transform-style("linear");
+      @include transition-property("opacity,margin");
+      @include transition-duration(500ms);
+      a.stop {
+        display:block;
+      }
+    }
+
+    &.creating {
+      display:block;
+      @include opacity(1);
+      @include transform-style("linear");
+      @include transition-property("opacity,margin");
+      @include transition-duration(500ms);
+      span {
+        -webkit-animation:progress .7s linear infinite;
+        -moz-animation:progress .7s linear infinite;
+        -ms-animation:progress .7s linear infinite;
+        animation:progress .7s linear infinite;
+      }
+      a.stop {
+        display:none;
+      }
+    }
+  }
+
+
+  // Keyframes for progress bar
+  @-webkit-keyframes progress{
+    0% {background-position: 0 0;}
+    100% {background-position: 30px 30px;}
+  }
+  @-moz-keyframes progress{
+    0% {background-position: 0 0;}
+    100% {background-position: 30px 30px;}
+  }
+  @-ms-keyframes progress{
+    0% {background-position: 0 0;}
+    100% {background-position: 30px 30px;}
+  }
+  @keyframes progress{
+    0% {background-position: 0 0;}
+    100% {background-position: 30px 30px;}
+  }

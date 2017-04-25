@@ -1,0 +1,112 @@
+// Video player
+@import "compass/css3/images";
+@import "compass/css3/box-shadow";
+@import "compass/css3/border-radius";
+@import "compass/css3/box-sizing";
+@import "compass/css3/inline-block";
+@import "./mixins";
+@import "./common-sprite";
+
+.VideoPlayer {
+  position:fixed;
+  width: 0;
+  height: 0;
+  left: 20px;
+  bottom: 20px;
+  @include box-shadow(rgba(0,0,0,0.6) 1px 1px 5px);
+  @include border-radius(3px);
+  background:#000000;
+  overflow: hidden;
+  -webkit-transition: box-shadow 150ms ease-in-out;
+  -o-transition: box-shadow 150ms ease-in-out;
+  -moz-transition: box-shadow 150ms ease-in-out;
+  -ms-transition: box-shadow 150ms ease-in-out;
+  -kthtml-transition: box-shadow 150ms ease-in-out;
+  transition: box-shadow 150ms ease-in-out;
+  cursor:move;
+  z-index: 1000;
+}
+
+.VideoPlayer.ui-draggable-dragging {
+  @include box-shadow(rgba(0,0,0,0.3) 5px 5px 10px);
+}
+
+.VideoPlayer .VideoContent {
+  height: 100%;
+}
+
+.VideoPlayer .VideoContent .VideoControls {
+  display: none;
+  position:absolute;
+  top: 0px;
+  left: 0;
+  width: 100%;
+  height: 100px;
+  padding: 10px;
+  @include box-sizing(border-box);
+
+  background: -moz-linear-gradient(top,  rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.1) 80%, rgba(0,0,0,0.0) 100%); /* FF3.6+ */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(0,0,0,0.6)), color-stop(80%,rgba(0,0,0,0.1)), color-stop(100%,rgba(0,0,0,0.0))); /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(top,  rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.1) 80%, rgba(0,0,0,0.0) 100%); /* Chrome10+,Safari5.1+ */
+  background: -o-linear-gradient(top,  rgba(0,0,0,0.6) 0%,rgba(0,0,0,0.1) 80%,rgba(0,0,0,0.0) 100%); /* Opera 11.10+ */
+  background: -ms-linear-gradient(top,  rgba(0,0,0,0.6) 0%,rgba(0,0,0,0.1) 80%,rgba(0,0,0,0.0) 100%); /* IE10+ */
+  background: linear-gradient(to bottom,  rgba(0,0,0,0.6) 0%,rgba(0,0,0,0.1) 80%,rgba(0,0,0,0.0) 100%); /* W3C */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#99000000', endColorstr='#1a000000',GradientType=0 ); /* IE6-9 */
+}
+.VideoPlayer .VideoContent .VideoPlayer-videoIframe {
+  border: none;
+  width: 100%;
+  height: 100%;
+}
+.VideoPlayer .VideoContent .VideoControls li {
+  float:right;
+  @include inline-block();
+  margin: 0 0 0 10px;
+}
+.VideoPlayer .VideoContent .VideoControls li:first-child {
+  float:left;
+  margin: 0;
+}
+.VideoPlayer .VideoContent .VideoControls li .Button {
+  display: block;
+  height: 28px;
+  padding: 5px 20px;
+  box-sizing: border-box;
+  border: 1px  solid rgba(#FFF, 1);
+  border-color:white;
+  border-radius: 20px;
+  background:rgba(0,0,0, .3);
+  text-shadow: 0px 0px 5px rgba(#000, .3);
+  text-decoration:none;
+  text-align: center;
+  outline: none;
+}
+
+.VideoPlayer .VideoContent .VideoControls li .Button.toggle {
+  display: block;
+  width: 14px;
+  padding: 7px 13px;
+  background: sprite($common-sprites, videoplayer_toggle, $offset-x:6px, $offset-y: 7px) no-repeat rgba(0,0,0,.3);
+}
+.VideoPlayer .VideoContent .VideoControls li .Button.toggle:hover {
+  background: sprite($common-sprites, videoplayer_toggle, $offset-x:6px, $offset-y: -25px) no-repeat rgba(0,0,0,.3);
+}
+
+.VideoPlayer .VideoContent .VideoControls li .Button:hover {
+  border-color:#cccccc;
+}
+.VideoPlayer .VideoContent .VideoControls li .Button:hover span {
+  color: #cccccc;
+}
+.VideoPlayer .VideoContent .VideoControls li .Button,
+.VideoPlayer .VideoContent .VideoControls li .Button span {
+  font-size: 12px;
+  line-height: 15px;
+  font-weight: 700;
+  color: white;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.VideoPlayer .VideoContent .VideoControls li .Button:hover,
+.VideoPlayer .VideoContent .VideoControls li .Button span:hover { text-decoration:none }
+

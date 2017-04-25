@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.6.84",
+  "version": "4.6.84.11962.03",
   "description": "CARTO UI frontend",
   "repository": {
     "type": "git",
@@ -69,6 +69,7 @@
     "grunt-contrib-watch": "1.0.0",
     "grunt-exorcise": "2.1.0",
     "grunt-postcss": "0.5.5",
+    "grunt-sass": "^2.0.0",
     "grunt-timer": "0.3.3",
     "jasmine": "2.5.2",
     "jasmine-ajax": "git://github.com/nobuti/jasmine-ajax.git#master",

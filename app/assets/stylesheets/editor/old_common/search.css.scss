@@ -1,0 +1,53 @@
+
+@import "compass/css3/inline-block";
+@import "compass/css3/opacity";
+@import "./vars";
+@import "./mixins";
+@import "./fonts";
+@import "./common-sprite";
+
+div.search {
+  position:absolute;
+  width: 100%;
+  padding: 9px 0 8px 0;
+
+  border-bottom: 1px solid #E1E1E1;
+
+  @include opacity(0);
+
+  form {
+    float:left;
+    top: 1px;
+    left: 10px;
+    position:relative;
+
+    input[type="text"] {
+
+      width: 600px;
+      height: 40px;
+
+      border:none;
+      background:none;
+      outline:none;
+
+      font-size: 13px;
+      font-family: $text-fonts2;
+      letter-spacing:0;
+
+      &::-webkit-input-placeholder { font-style: italic; color: #397DB8; }
+      &:-moz-placeholder           { font-style: italic; color: #397DB8; }
+      &::-moz-placeholder          { font-style: italic; color: #397DB8; }
+      &:-ms-input-placeholder      { font-style: italic; color: #397DB8; }
+
+    }
+  }
+
+  i {
+    top: 1px;
+    position:relative;
+    display:block;
+    @include size(15px);
+    @include inline-block();
+    @include common-sprite(lens_blue);
+  }
+}

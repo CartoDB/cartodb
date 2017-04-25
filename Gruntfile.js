@@ -80,8 +80,8 @@ module.exports = function(grunt) {
         logFn && logFn(err ? new Error(err): null);
       });
     }
-    // checkVersion('node -v', requiredNodeVersion, 'node', logFn);
-    // checkVersion('npm -v', requiredNpmVersion, 'npm', logFn);
+    checkVersion('node -v', requiredNodeVersion, 'node', logFn);
+    checkVersion('npm -v', requiredNpmVersion, 'npm', logFn);
   }
 
   var mustCheckNodeVersion = grunt.option('no-node-checker');
@@ -247,8 +247,7 @@ module.exports = function(grunt) {
     ];
     var otherFiles = [
       'app',
-      'js_cartodb',
-      'js_test_jasmine_cartodb3'
+      'js_cartodb'
     ];
 
     var COPY_PATHS = [];
@@ -260,14 +259,17 @@ module.exports = function(grunt) {
 
     // Configure copy paths to only run on changed files
     for (var j = 0, m = COPY_PATHS.length; j < m; ++j) {
-      var copy_path = COPY_PATHS[j];
-      var files = grunt.config.get('copy.' + copy_path + '.files');
-      for (var i = 0, l = files.length; i < l; ++i) {
-        var cfg = grunt.config.get('copy.' + copy_path + '.files.' + i);
-        if (filepath.indexOf(cfg.cwd) !== -1) {
-          grunt.config('copy.' + copy_path + '.files.' + i + '.src', filepath.replace(cfg.cwd, ''));
+      var files = 'copy.' + COPY_PATHS[j] + '.files';
+      var filesCfg = grunt.config.get(files);
+
+      for (var i = 0, l = filesCfg.length; i < l; ++i) {
+        var file = files + '.' + i;
+        var fileCfg = grunt.config.get(file);
+
+        if (filepath.indexOf(fileCfg.cwd) !== -1) {
+          grunt.config(file + '.src', filepath.replace(fileCfg.cwd, ''));
         } else {
-          grunt.config('copy.' + copy_path + '.files.' + i + '.src', []);
+          grunt.config(file + '.src', []);
         }
       }
     }
@@ -284,60 +286,20 @@ module.exports = function(grunt) {
   ]);
 
   grunt.registerTask('run_browserify', 'Browserify task with options', function (option) {
-    var skipEditor = false;
-    var skipBuilder = false;
     var skipAllSpecs = false;
-    var skipEditorSpecs = false;
     var skipBuilderSpecs = false;
 
-    if (environment === DEVELOPMENT) {
-      if (!isRunningTask('test', grunt)) {
-        grunt.log.writeln('Skipping only Builder specs generation by browserify because we are not running the `test` task.');
-        skipBuilderSpecs = true;
-      }
-
-      if (option === 'builder') {
-        grunt.log.writeln('Skipping Editor assets and specs generation by browserify because we are running the `dev` task.');
-        skipEditor = true;
-        skipEditorSpecs = true;
-      } else {
-        grunt.log.writeln('Skipping Builder assets generation by browserify because we are running the `dev` task later.');
-        skipBuilder = true;
-      }
-    } else {
+    if (environment !== DEVELOPMENT) {
       grunt.log.writeln('Skipping all specs generation by browserify because not in development environment.');
       skipAllSpecs = true;
-    }
-
-    if (skipEditor) {
-      delete grunt.config.data.browserify['explore'];
-      delete grunt.config.data.browserify['user_feed'];
-      delete grunt.config.data.browserify['account'];
-      delete grunt.config.data.browserify['confirmation'];
-      delete grunt.config.data.browserify['editor'];
-      delete grunt.config.data.browserify['dashboard'];
-      delete grunt.config.data.browserify['keys'];
-      delete grunt.config.data.browserify['new_public_table'];
-      delete grunt.config.data.browserify['organization'];
-      delete grunt.config.data.browserify['public_dashboard'];
-      delete grunt.config.data.browserify['data_library'];
-      delete grunt.config.data.browserify['public_map'];
-      delete grunt.config.data.browserify['mobile_apps'];
-    }
-
-    if (skipBuilder) {
-      delete grunt.config.data.browserify['vendor_editor3'];
-      delete grunt.config.data.browserify['common_editor3'];
-      delete grunt.config.data.browserify['dataset'];
-      delete grunt.config.data.browserify['editor3'];
-      delete grunt.config.data.browserify['public_editor3'];
+    } else if (!isRunningTask('test', grunt)) {
+      grunt.log.writeln('Skipping only Builder specs generation by browserify because we are not running the `test` task.');
+      skipBuilderSpecs = true;
     }
 
     if (skipAllSpecs) {
       delete grunt.config.data.browserify['test_specs_for_browserify_modules'];
       delete grunt.config.data.browserify['cartodb3-specs'];
-    } else if (skipEditorSpecs) {
-      delete grunt.config.data.browserify['test_specs_for_browserify_modules'];
     } else if (skipBuilderSpecs) {
       delete grunt.config.data.browserify['cartodb3-specs'];
     }
@@ -368,7 +330,6 @@ module.exports = function(grunt) {
     'cdb',
     'copy_builder',
     'copy:js_cartodb',
-    'copy:js_test_jasmine_cartodb3',
     'run_browserify',
     'concat:js',
     'jst'
@@ -393,7 +354,6 @@ module.exports = function(grunt) {
   grunt.registerTask('run_watch', 'All watch tasks except those that watch spec changes', function (option) {
     if (option === 'builder_specs=false') {
       delete grunt.config.data.watch.js_test_spec_cartodb3;
-      delete grunt.config.data.watch.js_test_jasmine_cartodb3;
       delete grunt.config.data.watch.js_affected;
     }
     grunt.task.run('watch');
@@ -415,10 +375,9 @@ module.exports = function(grunt) {
    */
   grunt.registerTask('dev', 'Frontend development task (watch JS/CSS changes)', [
     'setConfig:env.browserify_watch:true',
-    'run_browserify:builder',
     'build-jasmine-specrunners',
-    // 'connect:server',
-    // 'run_watch:builder_specs=false'
+    'connect:server',
+    'run_watch:builder_specs=false'
   ]);
 
   // still have to use this custom task because registerCmdTask outputs tons of warnings like:

@@ -128,6 +128,16 @@ describe Carto::Api::MapsController do
       @map.scrollwheel.should eq payload[:scrollwheel]
     end
 
+    it 'only updates passed parameters' do
+      @map.view_bounds_sw.present?.should be_true
+      zoom = @map.zoom + 1
+      put_json create_update_map_url(@user, @map.id), zoom: zoom do |response|
+        @map.reload
+        @map.view_bounds_sw.present?.should be_true
+        @map.zoom.should eq zoom
+      end
+    end
+
     it 'does not update map_id nor user_id' do
       payload = {
         id: 'c3c1030c-9783-45f4-bd08-022593a682aa',

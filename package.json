@@ -29,7 +29,6 @@
     "cartodb.js": "CartoDB/cartodb.js#v4",
     "clipboard": "1.6.1",
     "codemirror": "5.14.2",
-    "fs": "^0.0.1-security",
     "jquery": "2.1.4",
     "moment": "2.10.6",
     "node-polyglot": "1.0.0",
@@ -178,7 +177,7 @@
   "scripts": {
     "test": "echo \"Run 'grunt test' to run specs through command line.\"",
     "preupdate-internal-deps": "echo 'DEPRECATED TASK, use `npm run-script update-internal-deps` instead'",
-    "update-internal-deps": "rm -rf node_modules && yarn upgrade",
+    "update-internal-deps": "yarn upgrade",
     "branch-files": "node lib/build/branchFiles/branchFiles.js",
     "affected_specs": "node lib/build/branchFiles/branchFiles.js | xargs node lib/build/affectedFiles/affectedFiles.js"
   }

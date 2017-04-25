@@ -60,7 +60,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
             end
             create_visualization_from_tables(tables.flatten, vis_data)
           else
-            Visualization::Member.new(vis_data.merge(name: name_candidate, user_id:  current_user_id))
+            Visualization::Member.new(vis_data.merge(name: name_candidate, user_id: current_user_id))
           end
 
     vis.ensure_valid_privacy

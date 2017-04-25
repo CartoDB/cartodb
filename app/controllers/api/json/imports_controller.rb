@@ -222,8 +222,10 @@ class Api::Json::ImportsController < Api::ApplicationController
         Carto::UserTable::PRIVACY_VALUES_TO_TEXTS.values[-1]
       ].join(' and ')
       raise "Unknown value '#{params[:privacy]}' for 'privacy'. Allowed values are: #{valid_privacies}" if privacy.nil?
-      raise "Your account type (#{current_user.account_type.tr('[]', '')}) does not allow to create private datasets." \
-            " Check https://carto.com/pricing for more info." if !current_user.valid_privacy?(privacy)
+      if !current_user.valid_privacy?(privacy)
+        raise "Your account type (#{current_user.account_type.tr('[]', '')}) does not allow to create private "\
+               "datasets. Check https://carto.com/pricing for more info."
+      end
       privacy
     end
   end

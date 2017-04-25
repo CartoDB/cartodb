@@ -904,6 +904,10 @@
           "data-observatory-measure": {
             "title": "Enrich from Data Observatory",
             "desc": "Add a new column with contextual demographic and economic measures."
+          },
+          "deprecated-sql-function": {
+            "title": "SQL Function",
+            "desc": "Some description"
           }
         }
       },

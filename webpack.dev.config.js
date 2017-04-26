@@ -78,6 +78,9 @@ module.exports = env => {
               },
               'html-css-sanitizer': {
                 exports: 'html'
+              },
+              'lzma': {
+                exports: 'LZMA'
               }
             }
           }

@@ -47,16 +47,25 @@ LeafletCartoDBWebglLayerGroupView.prototype = _.extend(
       });
     },
     _getFeatureObject: function (e) {
-      var index = 0;
-      var layer = this.layerGroupModel.getLayerInLayerGroupAt(index);
-
-      return {
-        layer: layer,
-        layerIndex: index,
-        latlng: e.leaflet_event.latlng,
-        position: e.pixel,
-        feature: e.feature
-      };
+      var layer = this.layerGroupModel.getCartoLayerById(e.feature && e.feature.source_layer);
+      if (layer && layer[0]) {
+        var index = this.layerGroupModel.getIndexOfLayerInLayerGroup(layer[0]);
+        this.lastLayer = layer[0];
+        this.lastLayerIndex = index;
+        return {
+          layer: layer[0],
+          layerIndex: index,
+          latlng: e.leaflet_event.latlng,
+          position: e.pixel,
+          feature: e.feature
+        };
+      }
+      else {
+        return {
+          layer: this.lastLayer,
+          layerIndex: this.lastLayerIndex
+        };
+      }
     },
 
     _createLeafletLayer: function () {

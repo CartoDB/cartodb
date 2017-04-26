@@ -48,20 +48,20 @@ module.exports = env => {
         $: 'jquery',
         jQuery: 'jquery',
         ['window.jQuery']: 'jquery'
-      }),
+      // }),
 
-      // Minify
-      new webpack.optimize.UglifyJsPlugin({
-        sourceMap: true,
-        beautify: false,
-        mangle: {
-          screw_ie8: true,
-          keep_fnames: true
-        },
-        compress: {
-          screw_ie8: true
-        },
-        comments: false
+      // // Minify
+      // new webpack.optimize.UglifyJsPlugin({
+      //   sourceMap: true,
+      //   beautify: false,
+      //   mangle: {
+      //     screw_ie8: true,
+      //     keep_fnames: true
+      //   },
+      //   compress: {
+      //     screw_ie8: true
+      //   },
+      //   comments: false
       })
     ]),
     module: {

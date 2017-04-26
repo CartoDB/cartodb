@@ -10,7 +10,15 @@ end
 
 module TableSharing
   def share_table_with_user(table, user, access: CartoDB::Permission::ACCESS_READONLY)
-    vis = table.table_visualization
+    vis = CartoDB::Visualization::Member.new(id: table.table_visualization.id).fetch
+    per = vis.permission
+    per.set_user_permission(user, access)
+    per.save
+    per.reload
+  end
+
+  def share_visualization_with_user(visualization, user, access: CartoDB::Permission::ACCESS_READONLY)
+    vis = CartoDB::Visualization::Member.new(id: visualization.id).fetch
     per = vis.permission
     per.set_user_permission(user, access)
     per.save

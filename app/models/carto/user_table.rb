@@ -29,7 +29,8 @@ module Carto
 
     belongs_to :data_import
 
-    has_many :automatic_geocodings, inverse_of: :table, class_name: Carto::AutomaticGeocoding, foreign_key: :table_id
+    has_many :automatic_geocodings, inverse_of: :table, class_name: Carto::AutomaticGeocoding,
+                                    foreign_key: :table_id, dependent: :destroy
 
     # Disabled to avoid conflicting with the `tags` field. This relation is updated by ::Table.manage_tags.
     # TODO: We can remove both the `user_tables.tags` field and the `tags` table in favour of the canonical viz tags.
@@ -50,13 +51,15 @@ module Carto
     before_create { service.before_create }
     after_create :create_canonical_visualization
     after_create { service.after_create }
-    after_save { CartoDB::Logger.debug(message: "Carto::UserTable#after_save"); service.after_save }
+    after_save { service.after_save }
 
     # The `destroyed?` check is needed to avoid the hook running twice when deleting a table from the ::Table service
     # as it is triggered directly, and a second time from canonical visualization destruction hooks.
     # TODO: This can be simplified after deleting the old UserTable model
-    before_destroy { CartoDB::Logger.debug(message: "Carto::UserTable#before_destroy"); service.before_destroy unless destroyed? }
-    after_destroy { CartoDB::Logger.debug(message: "Carto::UserTable#after_destroy"); service.after_destroy }
+    before_destroy :ensure_not_viewer
+    before_destroy :cache_dependent_visualizations, unless: :destroyed?
+    after_destroy :destroy_dependent_visualizations
+    after_destroy { service.after_destroy }
 
     def geometry_types
       @geometry_types ||= service.geometry_types
@@ -178,7 +181,6 @@ module Carto
     end
 
     def save_changes
-      CartoDB::Logger.debug(message: "Carto::UserTable#save_changes")
       # TODO: Compatibility with Sequel model, can be removed afterwards. Used in ::Table.set_the_geom_column!
       save if changed?
     end
@@ -186,6 +188,11 @@ module Carto
     def tags=(value)
       return unless value
       super(value.split(',').map(&:strip).reject(&:blank?).uniq.join(','))
+    end
+
+    # TODO: Compatibility with Sequel model, can be removed afterwards.
+    def set_tag_array(tag_array)
+      self.tags = tag_array.join(',')
     end
 
     # TODO: This is related to an incompatibility between visualizations models, `get_related_tables`, See #11705
@@ -234,6 +241,23 @@ module Carto
       visualization = Carto::VisualizationFactory.create_canonical_visualization(self)
       update_attribute(:map, visualization.map)
       visualization.map.set_default_boundaries!
+    end
+
+    def cache_dependent_visualizations
+      @fully_dependent_visualizations_cache = fully_dependent_visualizations
+      @partially_dependent_visualizations_cache = partially_dependent_visualizations
+    end
+
+    def destroy_dependent_visualizations
+      table_visualization.try(:delete_from_table)
+      @fully_dependent_visualizations_cache.each(&:destroy)
+      @partially_dependent_visualizations_cache.each do |visualization|
+        visualization.unlink_from(self)
+      end
+    end
+
+    def ensure_not_viewer
+      raise "Viewer users can't destroy tables" if user && user.viewer
     end
   end
 end

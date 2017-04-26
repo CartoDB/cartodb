@@ -8,6 +8,7 @@ require_relative '../../helpers/data_services_metrics_helper'
 require_dependency 'carto/helpers/auth_token_generator'
 require_dependency 'carto/helpers/has_connector_configuration'
 require_dependency 'carto/helpers/batch_queries_statement_timeout'
+require_dependency 'carto/helpers/billing_cycle'
 
 # TODO: This probably has to be moved as the service of the proper User Model
 class Carto::User < ActiveRecord::Base
@@ -16,6 +17,7 @@ class Carto::User < ActiveRecord::Base
   include Carto::AuthTokenGenerator
   include Carto::HasConnectorConfiguration
   include Carto::BatchQueriesStatementTimeout
+  include Carto::BillingCycle
 
   MIN_PASSWORD_LENGTH = 6
   MAX_PASSWORD_LENGTH = 64
@@ -183,11 +185,7 @@ class Carto::User < ActiveRecord::Base
   # returns google maps api key. If the user is in an organization and
   # that organization has api key it's used
   def google_maps_api_key
-    if has_organization?
-      self.organization.google_maps_key || self.google_maps_key
-    else
-      self.google_maps_key
-    end
+    organization.try(:google_maps_key).blank? ? google_maps_key : organization.google_maps_key
   end
 
   def twitter_datasource_enabled
@@ -307,17 +305,6 @@ class Carto::User < ActiveRecord::Base
     synchronization_oauth.save
     synchronization_oauths.append(synchronization_oauth)
     synchronization_oauth
-  end
-
-  def last_billing_cycle
-    day = period_end_date.day rescue 29.days.ago.day
-    date = (day > Date.today.day ? (Date.today - 1.month) : Date.today)
-    begin
-      Date.parse("#{date.year}-#{date.month}-#{day}")
-    rescue ArgumentError
-      day = day - 1
-      retry
-    end
   end
 
   def get_geocoding_calls(options = {})
@@ -512,6 +499,10 @@ class Carto::User < ActiveRecord::Base
 
   def can_change_password?
     !Carto::Ldap::Manager.new.configuration_present?
+  end
+
+  def view_dashboard
+    update_column(:dashboard_viewed_at, Time.now)
   end
 
   private

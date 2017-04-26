@@ -85,7 +85,7 @@ class UserTable < Sequel::Model
                                     automatic_geocoding:  :destroy
   plugin :dirty
 
-  def_delegators :relator, :affected_visualizations
+  def_delegators :relator, :affected_visualizations, :synchronization
 
   # Ignore mass-asigment on not allowed columns
   self.strict_param_setting = false
@@ -105,18 +105,6 @@ class UserTable < Sequel::Model
 
   def sync_table_id
     self.table_id = service.get_table_id
-  end
-
-  # Helper methods encapsulating queries. Move to query object?
-  # note this one spams multiple tables
-  def self.find_all_by_user_id_and_tag(user_id, tag_name)
-    fetch("select user_tables.*,
-                    array_to_string(array(select tags.name from tags where tags.table_id = user_tables.id),',') as tags_names
-                        from user_tables, tags
-                        where user_tables.user_id = ?
-                          and user_tables.id = tags.table_id
-                          and tags.name = ?
-                        order by user_tables.id DESC", user_id, tag_name)
   end
 
   def self.find_by_identifier(user_id, identifier)
@@ -222,11 +210,22 @@ class UserTable < Sequel::Model
 
   def before_destroy
     raise CartoDB::InvalidMember.new(user: "Viewer users can't destroy tables") if user && user.viewer
-    service.before_destroy
+
+    @table_visualization = table_visualization
+    @fully_dependent_visualizations_cache = fully_dependent_visualizations.to_a
+    @partially_dependent_visualizations_cache = partially_dependent_visualizations.to_a
+
     super
   end
 
   def after_destroy
+    @table_visualization.delete_from_table if @table_visualization
+    @fully_dependent_visualizations_cache.each(&:delete)
+    @partially_dependent_visualizations_cache.each do |visualization|
+      visualization.unlink_from(self)
+    end
+    synchronization.delete if synchronization
+
     service.after_destroy
     super
   end

@@ -45,6 +45,11 @@ class Superadmin::UsersController < Superadmin::SuperadminController
       CartoDB::Visualization::CommonDataService.load_common_data(@user, self) if @user.should_load_common_data?
       @user.set_relationships_from_central(params[:user])
     end
+    CartoGearsApi::Events::EventManager.instance.notify(
+      CartoGearsApi::Events::UserCreationEvent.new(
+        CartoGearsApi::Events::UserCreationEvent::CREATED_VIA_SUPERADMIN, @user
+      )
+    )
     respond_with(:superadmin, @user)
   end
 

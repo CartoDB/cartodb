@@ -2,7 +2,7 @@
 require_relative '../spec_helper'
 require_relative '../../app/models/map'
 require_relative '../../app/models/visualization/member'
-require_relative '../../app/helpers/bounding_box_helper'
+require_dependency 'carto/bounding_box_utils'
 
 describe Map do
   before(:each) do
@@ -167,8 +167,8 @@ describe Map do
     it 'checks max-min bounds' do
       new_map = Map.create(user_id: @user.id, table_id: @table.id)
 
-      max_value= :maxlon  # 179
-      min_value= :minlon  # -179
+      max_value = :maxx  # 179
+      min_value = :minx  # -179
       value1 = 5
       value2 = 179
       value3 = -179
@@ -176,24 +176,17 @@ describe Map do
       value5 = -180
       value6 = 0
 
-      BoundingBoxHelper.bound_for(value1, min_value, max_value).should eq value1
-      BoundingBoxHelper.bound_for(value2, min_value, max_value).should eq value2
-      BoundingBoxHelper.bound_for(value2, min_value, max_value).should eq BoundingBoxHelper::DEFAULT_BOUNDS[max_value]
-      BoundingBoxHelper.bound_for(value3, min_value, max_value).should eq value3
-      BoundingBoxHelper.bound_for(value3, min_value, max_value).should eq BoundingBoxHelper::DEFAULT_BOUNDS[min_value]
-      BoundingBoxHelper.bound_for(value4, min_value, max_value).should eq BoundingBoxHelper::DEFAULT_BOUNDS[max_value]
-      BoundingBoxHelper.bound_for(value5, min_value, max_value).should eq BoundingBoxHelper::DEFAULT_BOUNDS[min_value]
-      BoundingBoxHelper.bound_for(value6, min_value, max_value).should eq value6
+      Carto::BoundingBoxUtils.bound_for(value1, min_value, max_value).should eq value1
+      Carto::BoundingBoxUtils.bound_for(value2, min_value, max_value).should eq value2
+      Carto::BoundingBoxUtils.bound_for(value2, min_value, max_value).should eq Carto::BoundingBoxUtils::DEFAULT_BOUNDS[max_value]
+      Carto::BoundingBoxUtils.bound_for(value3, min_value, max_value).should eq value3
+      Carto::BoundingBoxUtils.bound_for(value3, min_value, max_value).should eq Carto::BoundingBoxUtils::DEFAULT_BOUNDS[min_value]
+      Carto::BoundingBoxUtils.bound_for(value4, min_value, max_value).should eq Carto::BoundingBoxUtils::DEFAULT_BOUNDS[max_value]
+      Carto::BoundingBoxUtils.bound_for(value5, min_value, max_value).should eq Carto::BoundingBoxUtils::DEFAULT_BOUNDS[min_value]
+      Carto::BoundingBoxUtils.bound_for(value6, min_value, max_value).should eq value6
 
       # As map has no geometries, bounds should still be default ones instead of zeros
-      map_bounds = new_map.send(:get_map_bounds)
-      default_bounds = BoundingBoxHelper.default_bbox
-
-      map_bounds[:maxx].should eq default_bounds[:max][0]
-      map_bounds[:maxy].should eq default_bounds[:max][1]
-      map_bounds[:minx].should eq default_bounds[:min][0]
-      map_bounds[:miny].should eq default_bounds[:min][1]
-
+      new_map.send(:get_map_bounds).should be_nil
 
       new_map.destroy
     end
@@ -226,7 +219,7 @@ describe Map do
       @table.save
 
       # Upon save of the original map, will sanitize all visualizations pointing to old one, saving with new one
-      CartoDB::Visualization::Member.any_instance.expects(:store_from_map)
+      CartoDB::Visualization::Member.any_instance.expects(:store_from_map).at_least_once
       map.save
 
       map.destroy
@@ -273,9 +266,9 @@ describe Map do
 
   describe '#after_save' do
     it 'invalidates varnish cache' do
-      map = @table.map
+      map = ::Map[@table.map.id]
       # One per save, one per destroy
-      map.expects(:invalidate_vizjson_varnish_cache).twice()
+      map.expects(:invalidate_vizjson_varnish_cache).twice
       map.save
       map.destroy
     end
@@ -423,7 +416,7 @@ describe Map do
 
     describe 'when linked to a table visualization' do
       it 'returns false when passed a data layer and it is already linked to a base layer' do
-        map = @table.map
+        map = ::Map[@table.map.id]
         map.remove_layer(map.data_layers.first)
         map.reload
 
@@ -452,7 +445,7 @@ describe Map do
 
   describe '#before_destroy' do
     it 'invalidates varnish cache' do
-      map = @table.map
+      map = ::Map[@table.map.id]
       map.expects(:invalidate_vizjson_varnish_cache)
       map.destroy
     end
@@ -470,15 +463,15 @@ describe Map do
 
       visualization = @table1.table_visualization
 
-      visualization.layers(:cartodb).length.should eq 1
+      visualization.data_layers.length.should eq 1
       @table1.privacy = UserTable::PRIVACY_PUBLIC
       @table1.save
       visualization.privacy = CartoDB::Visualization::Member::PRIVACY_PUBLIC
       visualization.store
 
-      visualization.fetch.private?.should be_false
+      visualization.private?.should be_false
 
-      layer = Layer.create(
+      layer = Carto::Layer.create(
         kind:     'carto',
         options:  { table_name: @table2.name }
       )
@@ -490,7 +483,7 @@ describe Map do
       layer.uses_private_tables?.should be_true
 
       visualization.map.process_privacy_in(layer)
-      visualization.fetch.private?.should be_true
+      visualization.private?.should be_true
     end
   end
 

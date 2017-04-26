@@ -192,6 +192,9 @@
 .cm-s-default .cm-attribute {color: #00c;}
 .cm-s-default .cm-hr {color: #999;}
 .cm-s-default .cm-link {color: #00c;}
+.cm-color:hover {
+  cursor: pointer;
+}
 
 .cm-s-default .cm-error {color: #f00;}
 .cm-invalidchar {color: #f00;}
@@ -462,6 +465,19 @@ span.CodeMirror-selectedtext { background: none; }
   color: white !important;
 }
 
+// mustache mode
+.cm-mustache,
+.cm-mustache-text {
+  color: #e9eded;
+}
+
+.cm-mustache-error {
+  color: $cError;
+}
+
+.cm-mustache-text {
+  color: #83B1FA;
+}
 
 .CodeMirror-simplescroll-horizontal div, .CodeMirror-simplescroll-vertical div {
   position: absolute;
@@ -527,4 +543,28 @@ span.CodeMirror-selectedtext { background: none; }
 .CodeMirror-overlayscroll-vertical div {
   right: 0;
   width: 100%;
+}
+.CodeMirror-formInput {
+  height: 90px;
+
+  .CodeMirror {
+    border-radius: 4px;
+
+    pre {
+      &.CodeMirror-line,
+      &.CodeMirror-placeholder {
+        padding: 0 4px;
+      }
+    }
+  }
+  .cm-s-material .CodeMirror-gutters {
+    background: transparent;
+  }
+
+  .CodeMirror-selected {
+    left: 4px;
+  }
+}
+.CodeMirror pre.CodeMirror-placeholder {
+  color: rgba(#FFF, 0.24);
 }

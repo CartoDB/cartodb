@@ -23,7 +23,7 @@ class Admin::OrganizationUsersController < Admin::AdminController
   def new
     @user = ::User.new
     organization = current_user.organization
-    @user.quota_in_bytes = organization.unassigned_quota < 100.megabytes ? organization.unassigned_quota : 100.megabytes
+    @user.quota_in_bytes = [organization.unassigned_quota, organization.default_quota_in_bytes].min
 
     @user.soft_geocoding_limit = current_user.soft_geocoding_limit
     @user.soft_here_isolines_limit = current_user.soft_here_isolines_limit
@@ -86,6 +86,11 @@ class Admin::OrganizationUsersController < Admin::AdminController
     ::Resque.enqueue(::Resque::UserDBJobs::CommonData::LoadCommonData, @user.id, common_data_url)
     @user.notify_new_organization_user
     @user.organization.notify_if_seat_limit_reached
+    CartoGearsApi::Events::EventManager.instance.notify(
+      CartoGearsApi::Events::UserCreationEvent.new(
+        CartoGearsApi::Events::UserCreationEvent::CREATED_VIA_ORG_ADMIN, @user
+      )
+    )
     redirect_to CartoDB.url(self, 'organization', {}, current_user), flash: { success: "New user created successfully" }
   rescue Carto::UnprocesableEntityError => e
     CartoDB::Logger.error(exception: e, message: "Validation error")
@@ -171,7 +176,8 @@ class Admin::OrganizationUsersController < Admin::AdminController
     flash.now[:error] = "There was a problem while updating this user. Please, try again and contact us if the problem persists. #{e.user_message}"
     render 'edit'
   rescue Sequel::ValidationFailed => e
-    render 'edit'
+    flash.now[:error] = e.message
+    render 'edit', status: 422
   end
 
   def destroy

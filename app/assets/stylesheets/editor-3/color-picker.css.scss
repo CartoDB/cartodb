@@ -10,20 +10,25 @@
   text-align: center;
 }
 
-.ColorPicker::before, 
+.ColorPicker::before,
 .ColorPicker::after {
   display: none;
 }
 
 .ColorPicker-inputLabel {
-  color: #CBCED3;
   font-size: 9px;
+  color: #CBCED3;
+  line-height: 12px;
 }
 
 .ColorPicker-input {
   width: 37px;
   padding: 3px 4px;
   text-align: center;
+
+  .ColorPicker--cm & {
+    width: 100%;
+  }
 }
 
 .ColorPicker-input.is-disabled {
@@ -32,6 +37,10 @@
 
 .ColorPicker-input.is-color {
   width: 52px;
+
+  .ColorPicker--cm & {
+    width: 70px;
+  }
 }
 
 .ColorPicker-inputWrapper {
@@ -39,11 +48,18 @@
   margin: 0 2px;
 }
 
+.ColorPicker-inputWrapper:last-child {
+  .ColorPicker--cm & {
+    display: none;
+  }
+}
+
 .ColorPicker .colorpicker-saturation {
   width: 216px;
   height: 105px;
   border-radius: $halfBaseSize;
   background-image: image-url('layout/colorpicker/saturation.png');
+  background-size: cover;
 }
 .ColorPicker .colorpicker-saturation::before {
   position: absolute;
@@ -116,6 +132,11 @@
   background-image: image-url('layout/colorpicker/alpha.png');
   background-position: 100%;
   pointer-events: none;
+  overflow: hidden;
+
+  .ColorPicker--cm & {
+    border: 0;
+  }
 }
 
 .ColorPicker.colorpicker.colorpicker-horizontal .colorpicker-color {

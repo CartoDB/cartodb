@@ -7,6 +7,7 @@ class GooglePlusController < ApplicationController
   before_filter :load_button_color
 
   def google_plus
+    headers['X-Frame-Options'] = 'SAMEORIGIN'
     signup_url = Cartodb::Central.sync_data_with_cartodb_central? ? Cartodb::Central.new.google_signup_url : CartoDB.path(self, 'google_plus_signup')
     @config = GooglePlusConfig.new(CartoDB, Cartodb.config, signup_url)
     render 'google_plus'
@@ -30,6 +31,12 @@ class GooglePlusController < ApplicationController
 
     common_data_url = CartoDB::Visualization::CommonDataService.build_url(self)
     user.load_common_data(common_data_url)
+
+    CartoGearsApi::Events::EventManager.instance.notify(
+      CartoGearsApi::Events::UserCreationEvent.new(
+        CartoGearsApi::Events::UserCreationEvent::CREATED_VIA_ORG_SIGNUP, user
+      )
+    )
 
     redirect_to CartoDB.path(self, 'dashboard', {trailing_slash: true})
   end

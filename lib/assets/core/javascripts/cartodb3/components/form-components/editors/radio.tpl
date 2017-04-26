@@ -1,9 +1,9 @@
 <% _.each(items, function(item, index) { %>
   <li class="u-flex u-alignCenter <%- (index === (items.length - 1)) ? '' : 'u-rSpace--xl' %>">
-    <input type="radio" class="CDB-Radio u-iBlock"
-        name="<%- item.name %>" value="<%- item.value %>" id="<%- item.id %>"
+    <input type="radio" class="CDB-Radio u-iBlock<% if (item.className) { %> <%- item.className %> <% } %>"
+    name="<%- item.name %>" value="<%- item.value %>" id="<%- item.id %>" 
         <% if (item.selected) { %>
-          selected="selected"
+          checked="checked"
         <% } else if (item.disabled) { %>
           disabled="disabled"
         <% } %>

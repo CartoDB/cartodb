@@ -15,8 +15,6 @@
   @include flex-direction(column);
   @include flex(1);
   position: relative;
-  // Safari has a bug with height: 100%
-  height: 100vh;
 }
 .Dataset-viewInfo {
   padding: 19px 25px 0;

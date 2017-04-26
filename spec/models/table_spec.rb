@@ -224,20 +224,16 @@ describe Table do
           }
         }
 
-        # To forget about internals of zooming
-        ::Map.any_instance.stubs(:recalculate_zoom).returns(nil)
-        Carto::Map.any_instance.stubs(:recalculate_zoom).returns(nil)
-
         visualizations = CartoDB::Visualization::Collection.new.fetch.to_a.length
         table = create_table(name: "epaminondas_pantulis", user_id: @user.id)
         CartoDB::Visualization::Collection.new.fetch.to_a.length.should == visualizations + 1
 
         map = table.map
         map.should be
-        map.zoom.should eq 3
-        map.bounding_box_sw.should eq "[#{::Map::DEFAULT_OPTIONS[:bounding_box_sw][0]}, #{::Map::DEFAULT_OPTIONS[:bounding_box_sw][1]}]"
-        map.bounding_box_ne.should eq "[#{::Map::DEFAULT_OPTIONS[:bounding_box_ne][0]}, #{::Map::DEFAULT_OPTIONS[:bounding_box_ne][1]}]"
-        map.center.should eq "[0.0,0.0]"
+        map.zoom.should eq Carto::Map::DEFAULT_OPTIONS[:zoom]
+        map.bounding_box_sw.should eq Carto::Map::DEFAULT_OPTIONS[:bounding_box_sw]
+        map.bounding_box_ne.should eq Carto::Map::DEFAULT_OPTIONS[:bounding_box_ne]
+        map.center.should eq Carto::Map::DEFAULT_OPTIONS[:center]
         map.provider.should eq 'leaflet'
         map.layers.count.should == 2
         map.layers.map(&:kind).should == ['tiled', 'carto']
@@ -689,7 +685,7 @@ describe Table do
 
         CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
         @doomed_table = create_table(user_id: @user.id)
-        @automatic_geocoding = FactoryGirl.create(:automatic_geocoding, table: @doomed_table)
+        @automatic_geocoding = FactoryGirl.create(:automatic_geocoding, table_id: @doomed_table.id)
         @doomed_table.destroy
       end
 
@@ -1152,6 +1148,12 @@ describe Table do
         }.should raise_error(CartoDB::InvalidAttributes)
       end
 
+      it "fails with long values" do
+        table = create_table(user_id: @user.id)
+        table.add_column!(name: 'text_col', type: 'varchar(3)')
+        expect { table.insert_row!(text_col: 'hola') }.to raise_error(Sequel::DatabaseError, /value too long for type/)
+      end
+
       it "updates data_last_modified when changing data" do
         table = create_table(:user_id => @user.id)
 
@@ -1388,9 +1390,16 @@ describe Table do
       end
 
       it "should raise an error when creating a column with reserved name" do
-        table = create_table(:user_id => @user.id)
+        table = create_table(user_id: @user.id)
         lambda {
           table.add_column!(:name => "xmin", :type => "number")
+        }.should raise_error(CartoDB::InvalidColumnName)
+      end
+
+      it "should raise an error when renaming a column with reserved name" do
+        table = create_table(:user_id => @user.id)
+        lambda {
+          table.rename_column('name', 'xmin')
         }.should raise_error(CartoDB::InvalidColumnName)
       end
 
@@ -1784,6 +1793,21 @@ describe Table do
         lambda {
           UserTable.find_by_identifier(666, table.name)
         }.should raise_error
+      end
+    end
+
+    describe '#get_by_table_id' do
+      it 'returns table service' do
+        id = Carto::UserTable.first.id
+        table = Table.get_by_table_id(id)
+        table.should_not be_nil
+        table.id.should eq id
+      end
+    end
+
+    describe '#table_size' do
+      it 'returns nil for unknown tables' do
+        Table.table_size(String.random(10), connection: @user.in_database).should be_nil
       end
     end
 
@@ -2309,6 +2333,21 @@ describe Table do
           CartoDB::Visualization::Member.new(id: derived.id).fetch
         }.to raise_error KeyError
       end
+
+      it 'deletes layers from derived visualizations that partially depend on this table' do
+        bypass_named_maps
+        table = create_table(name: 'bogus_name', user_id: @user.id)
+
+        map = CartoDB::Visualization::TableBlender.new(@carto_user, [table]).blend
+        derived = FactoryGirl.create(:derived_visualization, user_id: @user.id, map_id: map.id)
+        map.layers << FactoryGirl.create(:carto_layer)
+        CartoDB::Visualization::Member.new(id: derived.id).fetch.data_layers.count.should eq 2
+
+        table.reload
+        table.destroy
+
+        CartoDB::Visualization::Member.new(id: derived.id).fetch.data_layers.count.should eq 1
+      end
     end
 
     describe '#destroy' do
@@ -2434,28 +2473,6 @@ describe Table do
     end
   end
 
-  describe 'with ::UserTable model' do
-    before(:all) do
-      @user = FactoryGirl.create(:valid_user, quota_in_bytes: 524288000, table_quota: 500, private_tables_enabled: true)
-    end
-
-    before(:each) do
-      CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
-      CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
-      Table.any_instance.stubs(:update_cdb_tablemetadata)
-      Table.any_instance.stubs(:model_class).returns(::UserTable)
-
-      bypass_named_maps
-    end
-
-    after(:all) do
-      @user.destroy
-    end
-
-    it_behaves_like 'table service'
-    it_behaves_like 'table service with legacy model'
-  end
-
   describe 'with Carto::UserTable model' do
     before(:all) do
       @user = FactoryGirl.create(:valid_user, quota_in_bytes: 524288000, table_quota: 500, private_tables_enabled: true)
@@ -2465,7 +2482,6 @@ describe Table do
       CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
       CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
       Table.any_instance.stubs(:update_cdb_tablemetadata)
-      Table.any_instance.stubs(:model_class).returns(Carto::UserTable)
 
       bypass_named_maps
     end

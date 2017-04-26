@@ -1,6 +1,5 @@
 # coding: utf-8
 require_dependency 'cartodb_config_utils'
-require_dependency 'carto_gears_api/helpers/pages_helper'
 
 module ApplicationHelper
   include CartoDB::ConfigUtils
@@ -12,6 +11,7 @@ module ApplicationHelper
   include AppAssetsHelper
   include MapsApiHelper
   include SqlApiHelper
+  include Carto::HtmlSafe
   include CartoGearsApi::Helpers::PagesHelper
 
   def current_user

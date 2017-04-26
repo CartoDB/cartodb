@@ -22,6 +22,7 @@ require_dependency 'carto/helpers/auth_token_generator'
 require_dependency 'carto/helpers/has_connector_configuration'
 require_dependency 'carto/helpers/batch_queries_statement_timeout'
 require_dependency 'carto/user_authenticator'
+require_dependency 'carto/helpers/billing_cycle'
 
 class User < Sequel::Model
   include CartoDB::MiniSequel
@@ -32,6 +33,7 @@ class User < Sequel::Model
   include Carto::AuthTokenGenerator
   include Carto::HasConnectorConfiguration
   include Carto::BatchQueriesStatementTimeout
+  include Carto::BillingCycle
   extend Carto::UserAuthenticator
 
   self.strict_param_setting = false
@@ -152,11 +154,21 @@ class User < Sequel::Model
   def organization_validation
     if new?
       organization.validate_for_signup(errors, self)
-      organization.validate_new_user(self, errors)
-    elsif quota_in_bytes.to_i + organization.assigned_quota - initial_value(:quota_in_bytes) > organization.quota_in_bytes
-      # Organization#assigned_quota includes the OLD quota for this user,
-      # so we have to ammend that in the calculation:
-      errors.add(:quota_in_bytes, "not enough disk quota")
+
+      if organization.whitelisted_email_domains.present?
+        email_domain = email.split('@')[1]
+        unless organization.whitelisted_email_domains.include?(email_domain) || invitation_token.present?
+          errors.add(:email, "Email domain '#{email_domain}' not valid for #{organization.name} organization")
+        end
+      end
+    else
+      if quota_in_bytes.to_i + organization.assigned_quota - initial_value(:quota_in_bytes) > organization.quota_in_bytes
+        # Organization#assigned_quota includes the OLD quota for this user,
+        # so we have to ammend that in the calculation:
+        errors.add(:quota_in_bytes, "not enough disk quota")
+      end
+
+      organization.validate_seats(self, errors)
     end
   end
 
@@ -1058,18 +1070,6 @@ class User < Sequel::Model
     end
   end
 
-  def last_billing_cycle
-    day = period_end_date.day rescue 29.days.ago.day
-    # << operator substract 1 month from the date object
-    date = (day > Date.today.day ? Date.today << 1 : Date.today)
-    begin
-      Date.parse("#{date.year}-#{date.month}-#{day}")
-    rescue ArgumentError
-      day = day - 1
-      retry
-    end
-  end
-
   def set_last_active_time
     $users_metadata.HMSET key, 'last_active_time',  Time.now
   end
@@ -1424,11 +1424,7 @@ class User < Sequel::Model
   # returns google maps api key. If the user is in an organization and
   # that organization has api key it's used
   def google_maps_api_key
-    if has_organization?
-      self.organization.google_maps_key.blank? ? self.google_maps_key : self.organization.google_maps_key
-    else
-      self.google_maps_key
-    end
+    organization.try(:google_maps_key).blank? ? google_maps_key : organization.google_maps_key
   end
 
   # TODO: this is the correct name for what's stored in the model, refactor changing that name

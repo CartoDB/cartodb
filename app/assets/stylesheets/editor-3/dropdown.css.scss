@@ -91,6 +91,12 @@
   box-shadow: 0 $baseSize $baseSize * 2 0 rgba(0, 0, 0, 0.16);
 }
 
+.Editor-boxModal--darked {
+  border: 1px solid rgba(30, 39, 44, 0.34);
+  background: #263239;
+  box-shadow: 0 $baseSize $baseSize * 2 0 rgba(0, 0, 0, 0.36);
+}
+
 .Editor-boxModalHeader {
   border-bottom: 1px solid $cMainLine;
   background: $cSecondaryBackground;

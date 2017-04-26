@@ -419,11 +419,14 @@ module.exports = function(grunt) {
     'uglify'
   ]);
 
+  registerCmdTask('npm-webpack-build', {cmd: 'npm', args: ['run', 'build']});
+
   grunt.registerTask('minimize', [
     'default',
     'copy:js',
     'exorcise',
-    'uglify'
+    'uglify',
+    'npm-webpack-build'
   ]);
 
   /**

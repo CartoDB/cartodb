@@ -109,8 +109,8 @@ Development
 * Update tangram to fix layer geometry conditionals.
 
 ### Bug fixes
+* Fix estimation analysis row count (#11746)
 * Autostyling for google basemaps (#11838)
-
 * Save collapse state for layer list (#11927)
 * Styling falsy categories (#11421)
 * Fixed bug editing geometries from dataset view (#11855)

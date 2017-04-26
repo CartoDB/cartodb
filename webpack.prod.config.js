@@ -21,7 +21,7 @@ module.exports = env => {
       filename: `${version}/javascripts/[name].js`,
       path: resolve(__dirname, 'public/assets')
     },
-    devtool: 'cheap-module-source-map',
+    devtool: 'source-map',
     plugins: Object.keys(entryPoints)
         .map(entry => new webpack.optimize.CommonsChunkPlugin({
           name: `${entry}_vendor`,
@@ -76,6 +76,9 @@ module.exports = env => {
             shim: {
               'wax.cartodb.js': {
                 exports: 'wax'
+              },
+              'lzma': {
+                exports: 'LZMA'
               },
               'html-css-sanitizer': {
                 exports: 'html'

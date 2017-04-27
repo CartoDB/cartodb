@@ -102,6 +102,8 @@ module Carto
         options[:show_likes] = false if params[:show_likes].to_s == 'false'
         options[:show_liked] = false if params[:show_liked].to_s == 'false'
         options[:show_table] = false if params[:show_table].to_s == 'false'
+        options[:show_permission] = false if params[:show_permission].to_s == 'false'
+        options[:show_synchronization] = false if params[:show_synchronization].to_s == 'false'
         options
       end
 

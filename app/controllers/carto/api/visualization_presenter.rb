@@ -31,11 +31,8 @@ module Carto
         show_likes = @options.fetch(:show_likes, true)
         show_liked = @options.fetch(:show_liked, true)
         show_table = @options.fetch(:show_table, true)
-
-        permission = @visualization.permission.nil? ? nil : Carto::Api::PermissionPresenter.new(@visualization.permission,
-                                                                                                current_viewer: @current_viewer)
-                                                                                           .with_presenter_cache(@presenter_cache)
-                                                                                           .to_poro
+        show_permission = @options.fetch(:show_permission, true)
+        show_synchronization = @options.fetch(:show_synchronization, true)
 
         poro = {
           id: @visualization.id,
@@ -50,7 +47,6 @@ module Carto
           stats: show_stats ? @visualization.stats : {},
           created_at: @visualization.created_at,
           updated_at: @visualization.updated_at,
-          permission: permission,
           locked: @visualization.locked,
           source: @visualization.source,
           title: @visualization.title,
@@ -58,7 +54,6 @@ module Carto
           attributions: @visualization.attributions,
           kind: @visualization.kind,
           external_source: Carto::Api::ExternalSourcePresenter.new(@visualization.external_source).to_poro,
-          synchronization: Carto::Api::SynchronizationPresenter.new(@visualization.synchronization).to_poro,
           url: url,
           uses_builder_features: @visualization.uses_builder_features?,
           auth_tokens: auth_tokens,
@@ -78,6 +73,8 @@ module Carto
         poro[:likes] = @visualization.likes_count if show_likes
         poro[:liked] = @current_viewer ? @visualization.liked_by?(@current_viewer.id) : false if show_liked
         poro[:table] = user_table_presentation if show_table
+        poro[:permission] = permission if show_permission
+        poro[:synchronization] = synchronization if show_synchronization
 
         poro
       end
@@ -126,12 +123,20 @@ module Carto
 
       private
 
-
       def user_table_presentation
         Carto::Api::UserTablePresenter.new(@visualization.user_table, @current_viewer)
           .with_presenter_cache(@presenter_cache).to_poro
       end
 
+      def synchronization
+        Carto::Api::SynchronizationPresenter.new(@visualization.synchronization).to_poro
+      end
+
+      def permission
+        @visualization.permission.nil? ? nil : Carto::Api::PermissionPresenter.new(@visualization.permission,
+                                                                                   current_viewer: @current_viewer)
+                                                 .with_presenter_cache(@presenter_cache).to_poro
+      end
 
       def auth_tokens
         if @visualization.password_protected? && @visualization.user.id == @current_viewer.id

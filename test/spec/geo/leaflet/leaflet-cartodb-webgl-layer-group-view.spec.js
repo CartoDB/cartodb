@@ -27,7 +27,7 @@ describe('src/geo/leaflet/leaflet-cartodb-webgl-layer-group-view.js', function (
     this.layersCollection.reset([ this.layer1, this.layer2 ]);
 
     this.view = new LeafletCartoDBWebGLLayerGroupView(this.layerGroupModel, this.leafletMap); // eslint-disable-line
-    this.view.tangram = {addLayer: function () {}, addDataSource: function () {}};
+    this.view.tangram = {addLayer: function () {}, addDataSource: function () {}, layer: {setSelectionEvents: function () {}}};
 
     this.view.initConfig(this.layerGroupModel);
   });

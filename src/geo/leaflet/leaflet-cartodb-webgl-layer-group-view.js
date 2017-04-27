@@ -7,6 +7,7 @@ var LeafletCartoDBWebglLayerGroupView = function (layerGroupModel, leafletMap) {
   LeafletLayerView.apply(this, arguments);
 
   this.tangram = new TC(leafletMap, this.initConfig.bind(this, layerGroupModel));
+  this.layerGroupModel = layerGroupModel;
 };
 
 LeafletCartoDBWebglLayerGroupView.prototype = _.extend(
@@ -20,7 +21,51 @@ LeafletCartoDBWebglLayerGroupView.prototype = _.extend(
 
       layerGroupModel.forEachGroupedLayer(this._onLayerAdded, this);
       layerGroupModel.onLayerAdded(this._onLayerAdded.bind(this));
+
+      this._addInteractiveEvents();
     },
+
+    _addInteractiveEvents: function () {
+      var hovered = false;
+      var self = this;
+      this.tangram.layer.setSelectionEvents({
+        hover: function (e) {
+          if (e.feature) {
+            hovered = true;
+            self.trigger('featureOver', self._getFeatureObject(e));
+          } else if (hovered) {
+            hovered = false;
+            self.trigger('featureOut', self._getFeatureObject(e));
+          }
+        },
+        click: function (e) {
+          if (e.feature) {
+            self.trigger('featureClick', self._getFeatureObject(e));
+          }
+        }
+      });
+    },
+    _getFeatureObject: function (e) {
+      var layer = this.layerGroupModel.getCartoLayerById(e.feature && e.feature.source_layer);
+      if (layer && layer[0]) {
+        var index = this.layerGroupModel.getIndexOfLayerInLayerGroup(layer[0]);
+        this.lastLayer = layer[0];
+        this.lastLayerIndex = index;
+        return {
+          layer: layer[0],
+          layerIndex: index,
+          latlng: e.leaflet_event.latlng,
+          position: e.pixel,
+          feature: e.feature
+        };
+      } else {
+        return {
+          layer: this.lastLayer,
+          layerIndex: this.lastLayerIndex
+        };
+      }
+    },
+
     _createLeafletLayer: function () {
       var leafletLayer = new L.Layer();
       leafletLayer.onAdd = function () {};

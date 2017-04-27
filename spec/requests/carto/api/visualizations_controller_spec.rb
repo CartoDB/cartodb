@@ -407,7 +407,6 @@ describe Carto::Api::VisualizationsController do
         body2 = last_response.body
         no_fetch_time = Time.now
 
-        byebug
         ((full_time - beginning) / (no_fetch_time - full_time)).should be >= 3
 
         body1 = JSON.parse(body1)

@@ -40,9 +40,7 @@ var CartoDBLayerGroup = Backbone.Model.extend({
   },
 
   getCartoLayerById: function (id) {
-    return this._layersCollection.filter(function (ly) {
-      return ly.id === id;
-    });
+    return this._layersCollection.get(id);
   },
 
   isEqual: function () {

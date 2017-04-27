@@ -42,7 +42,7 @@ module Carto
               render_jsonp({ errors: ["row identified with #{params[:cartodb_id]} not found"] }, 404)
             end
           rescue => e
-            CartoDB::StdoutLogger.info e.backtrace.join('\n')
+            CartoDB::Logger.warning(message: 'Error updating record', exception: e)
             render_jsonp({ errors: [translate_error(e.message.split("\n").first)] }, 400)
           end
         else

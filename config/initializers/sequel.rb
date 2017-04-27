@@ -1,4 +1,3 @@
-require 'active_record'
 require_dependency 'carto/configuration'
 
 # Make Sequel messages (SQL stastements) to have debug level.

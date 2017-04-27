@@ -126,7 +126,7 @@ describe Carto::Api::RecordsController do
       the_geom = %{
         \{"type":"Point","coordinates":[#{Float.random_longitude},#{Float.random_latitude}]\}
       }
-      pk = @table.insert_row!(
+      @table.insert_row!(
         name:         String.random(10),
         description:  String.random(50),
         the_geom:     the_geom

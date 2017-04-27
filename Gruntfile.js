@@ -41,10 +41,6 @@ function logVersionsError (err, requiredNodeVersion, requiredNpmVersion) {
   }
 }
 
-function isRunningTask (taskName, grunt) {
-  return grunt.cli.tasks.indexOf(taskName) > -1;
-}
-
 /**
  *  CartoDB UI assets generation
  */
@@ -116,7 +112,7 @@ module.exports = function(grunt) {
   var ASSETS_DIR = './public/assets/<%= pkg.version %>';
 
   /**
-   * `grunt --environment=production`
+   * this is being used by `grunt --environment=production release`
    */
   var env = './config/grunt_' + environment + '.json';
   grunt.log.writeln('env: ' + env);
@@ -275,39 +271,46 @@ module.exports = function(grunt) {
     }
   });
 
-  grunt.registerTask('css', [
-    'copy:vendor',
-    'copy:app',
-    'compass',
-    'sass',
+  grunt.registerTask('css', function(target) {
     // TODO: migrate mixins to postcss
-    // 'postcss',
-    'concat:css'
-  ]);
+
+    if (target === 'builder') {
+      return grunt.task.run([
+        'copy:vendor',
+        'copy:app',
+        'copy:css_cartodb3',
+        'sass',
+        'concat:css'
+      ]);
+    }
+
+    grunt.task.run([
+      'copy:vendor',
+      'copy:app',
+      'copy:css_cartodb',
+      'compass',
+      'copy:css_cartodb3',
+      'sass',
+      'concat:css'
+    ]);
+ });
 
   grunt.registerTask('run_browserify', 'Browserify task with options', function (option) {
     var skipAllSpecs = false;
-    var skipBuilderSpecs = false;
 
     if (environment !== DEVELOPMENT) {
       grunt.log.writeln('Skipping all specs generation by browserify because not in development environment.');
       skipAllSpecs = true;
-    } else if (!isRunningTask('test', grunt)) {
-      grunt.log.writeln('Skipping only Builder specs generation by browserify because we are not running the `test` task.');
-      skipBuilderSpecs = true;
     }
 
     if (skipAllSpecs) {
       delete grunt.config.data.browserify['test_specs_for_browserify_modules'];
-      delete grunt.config.data.browserify['cartodb3-specs'];
-    } else if (skipBuilderSpecs) {
-      delete grunt.config.data.browserify['cartodb3-specs'];
     }
 
     grunt.task.run('browserify');
   });
 
-  grunt.registerTask('cdb', 'builds cartodb.js', function() {
+  grunt.registerTask('cdb', 'build Cartodb.js', function() {
     var done = this.async();
 
     require('child_process').exec('make update_cdb', function (error, stdout, stderr) {
@@ -320,61 +323,58 @@ module.exports = function(grunt) {
     });
   });
 
-  grunt.registerTask('copy_builder', 'Multitask with all the tasks responsible for copying builder files.', [
-    'copy:locale',
-    'copy:js_cartodb3',
-    'copy:js_test_cartodb3'
-  ]);
-
-  grunt.registerTask('js', [
+  grunt.registerTask('js_editor', [
     'cdb',
-    'copy_builder',
     'copy:js_cartodb',
     'run_browserify',
     'concat:js',
     'jst'
   ]);
 
-  grunt.registerTask('prepare', [
-    'clean',
-    'config',
-    'js'
+  grunt.registerTask('js_builder', [
+    'copy:locale',
+    'copy:js_cartodb3',
+    'copy:js_test_cartodb3'
   ]);
 
-  /**
-   * `grunt` default task to compile Editor assets, builder assets will be compiled by `grunt dev` task.
-   * `grunt --environment=production` default task to compile Builder and Editor assets.
-   */
-  grunt.registerTask('default', [
-    'prepare',
-    'css',
-    'manifest'
-  ]);
-
-  grunt.registerTask('run_watch', 'All watch tasks except those that watch spec changes', function (option) {
-    if (option === 'builder_specs=false') {
-      delete grunt.config.data.watch.js_test_cartodb3;
-      delete grunt.config.data.watch.js_affected;
+  grunt.registerTask('js', function(target) {
+    if (target === 'builder') {
+      return grunt.task.run(['js_builder']);
     }
-    grunt.task.run('watch');
+
+    grunt.task.run([
+      'js_editor',
+      'js_builder'
+    ]);
   });
 
-  grunt.registerTask('build-jasmine-specrunners', _.chain(jasmineCfg)
-    .keys()
-    .map(function (name) {
-      return ['jasmine', name, 'build'].join(':');
-    })
-    .value());
+  grunt.registerTask('beforeDefault', [
+    'clean',
+    'config'
+  ]);
 
-  grunt.registerTask('setConfig', 'Set a config property', function(name, val) {
-    grunt.config.set(name, val);
+  grunt.registerTask('default', function(target) {
+    grunt.task.run([
+      'beforeDefault',
+      target ? ('js:' + target) : 'js',
+      target ? ('css:' + target) : 'css',
+      'manifest'
+    ]);
   });
+
+  registerCmdTask('npm-start', {cmd: 'npm', args: ['run', 'start']});
 
   /**
-   * `grunt dev` compile and watch Builder assets.
+   * `grunt dev`
+   * `grunt dev:builder`
    */
 
-  registerCmdTask('dev', {cmd: 'npm', args: ['run', 'start']});
+  grunt.registerTask('dev', function (target) {
+    grunt.task.run([
+      target ? ('default:' + target) : 'default',
+      'npm-start'
+    ]);
+  });
 
   // still have to use this custom task because registerCmdTask outputs tons of warnings like:
   // path/to/some/ignored/files:0:0: File ignored because of your .eslintignore file. Use --no-ignore to override.
@@ -396,16 +396,6 @@ module.exports = function(grunt) {
     });
   });
 
-  /**
-   * `grunt test`
-   */
-  grunt.registerTask('test', '(CI env) Re-build JS files and run all tests. For manual testing use `grunt jasmine` directly', [
-    'prepare',
-    'jasmine:cartodbui',
-    'jasmine:cartodb3',
-    'lint'
-  ]);
-
   grunt.registerTask('sourcemaps', 'generate sourcemaps, to be used w/ trackjs.com for bughunting', [
     'setConfig:assets_dir:./tmp/sourcemaps',
     'config',
@@ -415,28 +405,29 @@ module.exports = function(grunt) {
     'uglify'
   ]);
 
-  registerCmdTask('npm-webpack-build', {cmd: 'npm', args: ['run', 'build']});
+  registerCmdTask('npm-build', {cmd: 'npm', args: ['run', 'build']});
 
-  grunt.registerTask('minimize', [
+  grunt.registerTask('build', [
     'default',
     'copy:js',
     'exorcise',
     'uglify',
-    'npm-webpack-build'
+    'npm-build'
   ]);
 
   /**
    * `grunt release`
+   * `grunt release --environment=production`
    */
   grunt.registerTask('release', [
     'check_release',
-    'minimize',
+    'build',
     's3',
     'invalidate'
   ]);
 
-  grunt.registerTask('affected', 'Generate only affected specs', function () {
-    requireWebpackTask().affected.call(this, grunt);
+  grunt.registerTask('affected', 'Generate only affected specs', function (option) {
+    requireWebpackTask().affected.call(this, option, grunt);
   });
 
   grunt.registerTask('bootstrap_webpack_builder_specs', 'Create the webpack compiler', function () {
@@ -448,11 +439,26 @@ module.exports = function(grunt) {
   });
 
   /**
+   * `grunt test`
+   */
+  grunt.registerTask('test', '(CI env) Re-build JS files and run all tests. For manual testing use `grunt jasmine` directly', [
+    'beforeDefault',
+    'js_editor',
+    'jasmine:cartodbui',
+    'js_builder',
+    'affected:all',
+    'bootstrap_webpack_builder_specs',
+    'webpack:builder_specs',
+    'jasmine:affected',
+    'lint'
+  ]);
+
+  /**
    * `grunt affected_specs` compile Builder specs using only affected ones by the current branch.
    * `grunt affected_specs --specs=all` compile all Builder specs.
    */
   grunt.registerTask('affected_specs', 'Build only specs affected by changes in current branch', [
-    'copy_builder',
+    'js_builder',
     'affected',
     'bootstrap_webpack_builder_specs',
     'webpack:builder_specs',
@@ -461,15 +467,35 @@ module.exports = function(grunt) {
     'watch:js_affected'
   ]);
 
+  grunt.registerTask('run_watch', 'All watch tasks except those that watch spec changes', function (option) {
+    if (option === 'builder_specs=false') {
+      delete grunt.config.data.watch.js_test_cartodb3;
+      delete grunt.config.data.watch.js_affected;
+    }
+
+    grunt.task.run('watch');
+  });
+
+  grunt.registerTask('build-jasmine-specrunners', _.chain(jasmineCfg)
+    .keys()
+    .map(function (name) {
+      return ['jasmine', name, 'build'].join(':');
+    })
+    .value());
+
+  grunt.registerTask('setConfig', 'Set a config property', function(name, val) {
+    grunt.config.set(name, val);
+  });
+
   /**
-   * `grunt test` this has to be run prior and oncurrent to `grunt affected_specs`
+   * `grunt editor_specs`
    */
-   grunt.registerTask('test-watch', [
-     'setConfig:env.browserify_watch:true',
-     'build-jasmine-specrunners',
-     'connect:server',
-     'run_watch:builder_specs=false'
-   ]);
+  grunt.registerTask('editor_specs', [
+    'js_editor',
+    'jasmine:cartodbui:build',
+    'connect:server',
+    'run_watch:builder_specs=false'
+  ]);
 
   /**
    * Delegate task to command line.

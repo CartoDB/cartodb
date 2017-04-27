@@ -9,7 +9,7 @@ var LeafletCartoDBWebglLayerGroupView = require('./leaflet-cartodb-webgl-layer-g
 var TangramCartoCSS = require('tangram-cartocss');
 var RenderModes = require('../../vis/render-modes');
 
-var MAX_NUMBER_OF_FEATURES_FOR_WEBGL = 1000;
+var MAX_NUMBER_OF_FEATURES_FOR_WEBGL = 10e4;
 
 var LayerGroupViewConstructor = function (layerGroupModel, nativeMap, mapModel, settingsModel) {
   if (canMapBeRenderedClientSide(mapModel, settingsModel)) {

@@ -131,7 +131,7 @@ describe Carto::Api::MapsController do
     it 'only updates passed parameters' do
       @map.view_bounds_sw.present?.should be_true
       zoom = @map.zoom + 1
-      put_json create_update_map_url(@user, @map.id), zoom: zoom do |response|
+      put_json create_update_map_url(@user, @map.id), zoom: zoom do
         @map.reload
         @map.view_bounds_sw.present?.should be_true
         @map.zoom.should eq zoom

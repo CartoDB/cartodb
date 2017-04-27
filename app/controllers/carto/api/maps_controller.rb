@@ -58,7 +58,7 @@ module Carto
         end
 
         # Remove empty values, keeping `false`s (`present?` can't be used because of this)
-        update_params.select { |_k, v| !(v.nil? || v == '') }
+        update_params.reject { |_k, v| v.nil? || v == '' }
       end
 
       def map_presentation

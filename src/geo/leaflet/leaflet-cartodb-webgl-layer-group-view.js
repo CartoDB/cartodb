@@ -33,8 +33,7 @@ LeafletCartoDBWebglLayerGroupView.prototype = _.extend(
           if (e.feature) {
             hovered = true;
             self.trigger('featureOver', self._getFeatureObject(e));
-          }
-          else if (hovered) {
+          } else if (hovered) {
             hovered = false;
             self.trigger('featureOut', self._getFeatureObject(e));
           }
@@ -59,8 +58,7 @@ LeafletCartoDBWebglLayerGroupView.prototype = _.extend(
           position: e.pixel,
           feature: e.feature
         };
-      }
-      else {
+      } else {
         return {
           layer: this.lastLayer,
           layerIndex: this.lastLayerIndex

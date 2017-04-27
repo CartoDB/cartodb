@@ -260,7 +260,7 @@ describe User do
         @organization.viewer_seats = 0
         @organization.save
 
-        user = @organization.owner
+        user = @organization.users.find { |u| !u.organization_owner? }
         user.reload
         user.viewer = true
         expect(user).not_to be_valid
@@ -271,7 +271,7 @@ describe User do
         @organization.viewer_seats = 2
         @organization.save
 
-        user = @organization.owner
+        user = @organization.users.find { |u| !u.organization_owner? }
         user.reload
         user.viewer = true
         expect(user).to be_valid
@@ -281,7 +281,7 @@ describe User do
       it 'should not allow changing to builder without seats' do
         @organization.viewer_seats = 10
         @organization.save
-        user = @organization.owner
+        user = @organization.users.find { |u| !u.organization_owner? }
         user.reload
         user.viewer = true
         user.save
@@ -297,7 +297,7 @@ describe User do
       it 'should allow changing to builder without seats' do
         @organization.viewer_seats = 10
         @organization.save
-        user = @organization.owner
+        user = @organization.users.find { |u| !u.organization_owner? }
         user.reload
         user.viewer = true
         user.save

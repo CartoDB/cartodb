@@ -80,8 +80,8 @@ module.exports = function(grunt) {
         logFn && logFn(err ? new Error(err): null);
       });
     }
-    // checkVersion('node -v', requiredNodeVersion, 'node', logFn);
-    // checkVersion('npm -v', requiredNpmVersion, 'npm', logFn);
+    checkVersion('node -v', requiredNodeVersion, 'node', logFn);
+    checkVersion('npm -v', requiredNpmVersion, 'npm', logFn);
   }
 
   var mustCheckNodeVersion = grunt.option('no-node-checker');
@@ -376,13 +376,6 @@ module.exports = function(grunt) {
 
   registerCmdTask('dev', {cmd: 'npm', args: ['run', 'start']});
 
-  // grunt.registerTask('dev', 'Frontend development task (watch JS/CSS changes)', [
-  //   'setConfig:env.browserify_watch:true',
-  //   'build-jasmine-specrunners',
-  //   'connect:server',
-  //   'run_watch:builder_specs=false'
-  // ]);
-
   // still have to use this custom task because registerCmdTask outputs tons of warnings like:
   // path/to/some/ignored/files:0:0: File ignored because of your .eslintignore file. Use --no-ignore to override.
   grunt.registerTask('lint', 'lint source files', function () {
@@ -467,6 +460,16 @@ module.exports = function(grunt) {
     'connect:specs',
     'watch:js_affected'
   ]);
+
+  /**
+   * `grunt test` this has to be run prior and oncurrent to `grunt affected_specs`
+   */
+   grunt.registerTask('test-watch', [
+     'setConfig:env.browserify_watch:true',
+     'build-jasmine-specrunners',
+     'connect:server',
+     'run_watch:builder_specs=false'
+   ]);
 
   /**
    * Delegate task to command line.

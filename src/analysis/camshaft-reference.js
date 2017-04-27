@@ -8,6 +8,7 @@ var PARAM_TYPES = {
 
 var SOURCE_ANALYSIS_TYPE = 'source';
 var ANALYSIS_TYPE_TO_SOURCE_PARAM_NAMES_MAP = {};
+var ANALYSIS_TYPE_TO_OPTIONAL_SOURCE_PARAM_NAMES_MAP = {};
 ANALYSIS_TYPE_TO_SOURCE_PARAM_NAMES_MAP[SOURCE_ANALYSIS_TYPE] = [];
 var ANALYSIS_TYPE_TO_PARAM_NAMES_MAP = {};
 
@@ -24,8 +25,13 @@ for (var analysisType in analysesReference) {
     ANALYSIS_TYPE_TO_PARAM_NAMES_MAP[analysisType].push(paramName);
     ANALYSIS_TYPE_TO_SOURCE_PARAM_NAMES_MAP[analysisType] = ANALYSIS_TYPE_TO_SOURCE_PARAM_NAMES_MAP[analysisType] || [];
     var paramType = analysisParams[paramName].type;
+    var optional = analysisParams[paramName].optional;
     if (paramType === PARAM_TYPES.NODE) {
       ANALYSIS_TYPE_TO_SOURCE_PARAM_NAMES_MAP[analysisType].push(paramName);
+      if (optional) {
+        ANALYSIS_TYPE_TO_OPTIONAL_SOURCE_PARAM_NAMES_MAP[analysisType] = ANALYSIS_TYPE_TO_OPTIONAL_SOURCE_PARAM_NAMES_MAP[analysisType] || [];
+        ANALYSIS_TYPE_TO_OPTIONAL_SOURCE_PARAM_NAMES_MAP[analysisType].push(paramName);
+      }
     }
   }
 }
@@ -38,6 +44,15 @@ module.exports = {
     }
 
     return sourceNames;
+  },
+
+  getOptionalSourceNamesForAnalysisType: function (analysisType) {
+    var optionalSourceNames = ANALYSIS_TYPE_TO_OPTIONAL_SOURCE_PARAM_NAMES_MAP[analysisType];
+    if (!optionalSourceNames) {
+      optionalSourceNames = [];
+    }
+
+    return optionalSourceNames;
   },
 
   getParamNamesForAnalysisType: function (analysisType) {

@@ -238,13 +238,22 @@ ModelUpdater.prototype.setErrors = function (errors) {
 };
 
 ModelUpdater.prototype._setError = function (error) {
+  var errorSet = false;
+
   if (error.isLayerError()) {
     var layerModel = this._layersCollection.get(error.layerId);
-    layerModel && layerModel.setError(error);
+    if (layerModel) {
+      layerModel.setError(error);
+      errorSet = true;
+    }
   } else if (error.isAnalysisError()) {
     var analysisModel = this._analysisCollection.get(error.analysisId);
-    analysisModel && analysisModel.setError(error);
-  } else {
+    if (analysisModel) {
+      analysisModel.setError(error);
+      errorSet = true;
+    }
+  }
+  if (!errorSet) {
     this._visModel.setError(error);
   }
 };

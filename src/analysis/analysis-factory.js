@@ -51,9 +51,14 @@ AnalysisFactory.prototype.analyse = function (analysisDefinition) {
 AnalysisFactory.prototype._getAnalysisAttributesFromAnalysisDefinition = function (analysisDefinition) {
   var analysisType = analysisDefinition.type;
   var sourceNamesForAnalysisType = this._camshaftReference.getSourceNamesForAnalysisType(analysisType);
+  var optionalSourceNamesForAnalysisType = this._camshaftReference.getOptionalSourceNamesForAnalysisType(analysisType);
   var sourceNodes = {};
   _.each(sourceNamesForAnalysisType, function (sourceName) {
-    sourceNodes[sourceName] = this.analyse(analysisDefinition.params[sourceName]);
+    var isOptional = _.indexOf(optionalSourceNamesForAnalysisType, sourceName) > -1;
+    var sourceParams = analysisDefinition.params[sourceName];
+    if (sourceParams || !isOptional) {
+      sourceNodes[sourceName] = this.analyse(sourceParams);
+    }
   }, this);
 
   return _.omit(_.extend(analysisDefinition, analysisDefinition.params, sourceNodes), 'params');

@@ -19,6 +19,13 @@
 .NotificationsDropdown-item:last-child {
   padding: 0 0 0 25px !important;
 }
+.NotificationsDropdown-item ul {
+  padding-left: 16px;
+  list-style-type: disc;
+}
+.NotificationsDropdown-item em {
+  font-style: italic;
+}
 .NotificationsDropdown-icon {
   position: absolute;
   left: 0;

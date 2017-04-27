@@ -96,6 +96,15 @@ module Carto
         vqb
       end
 
+      def presenter_options_from_hash(params)
+        options = {}
+        options[:show_stats] = false if params[:show_stats].to_s == 'false'
+        options[:show_likes] = false if params[:show_likes].to_s == 'false'
+        options[:show_liked] = false if params[:show_liked].to_s == 'false'
+        options[:show_table] = false if params[:show_table].to_s == 'false'
+        options
+      end
+
       private
 
       def get_types_parameters

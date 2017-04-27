@@ -9,6 +9,9 @@ module Carto
       # options
       # - related: load related tables. Default: true.
       # - show_stats: load stats (daily mapview counts). Default: true.
+      # - show_likes: load likes info. Default: true.
+      # - show_liked: load liked info. Default: true.
+      # - show_table: load table info. Default: true.
       def initialize(visualization, current_viewer, context, options = {})
         @visualization = visualization
         @current_viewer = current_viewer
@@ -25,14 +28,14 @@ module Carto
       def to_poro
         return to_public_poro unless @visualization.is_viewable_by_user?(@current_viewer)
         show_stats = @options.fetch(:show_stats, true)
+        show_likes = @options.fetch(:show_likes, true)
+        show_liked = @options.fetch(:show_liked, true)
+        show_table = @options.fetch(:show_table, true)
 
         permission = @visualization.permission.nil? ? nil : Carto::Api::PermissionPresenter.new(@visualization.permission,
                                                                                                 current_viewer: @current_viewer)
                                                                                            .with_presenter_cache(@presenter_cache)
                                                                                            .to_poro
-
-        user_table_presentation = Carto::Api::UserTablePresenter.new(@visualization.user_table, @current_viewer)
-                                                                .with_presenter_cache(@presenter_cache).to_poro
 
         poro = {
           id: @visualization.id,
@@ -54,11 +57,8 @@ module Carto
           license: @visualization.license,
           attributions: @visualization.attributions,
           kind: @visualization.kind,
-          likes: @visualization.likes_count,
-          table: user_table_presentation,
           external_source: Carto::Api::ExternalSourcePresenter.new(@visualization.external_source).to_poro,
           synchronization: Carto::Api::SynchronizationPresenter.new(@visualization.synchronization).to_poro,
-          liked: @current_viewer ? @visualization.liked_by?(@current_viewer.id) : false,
           url: url,
           uses_builder_features: @visualization.uses_builder_features?,
           auth_tokens: auth_tokens,
@@ -73,7 +73,12 @@ module Carto
           active_child: nil,
           children: []
         }
+
         poro[:related_tables] = related_tables if @options.fetch(:related, true)
+        poro[:likes] = @visualization.likes_count if show_likes
+        poro[:liked] = @current_viewer ? @visualization.liked_by?(@current_viewer.id) : false if show_liked
+        poro[:table] = user_table_presentation if show_table
+
         poro
       end
 
@@ -120,6 +125,13 @@ module Carto
       end
 
       private
+
+
+      def user_table_presentation
+        Carto::Api::UserTablePresenter.new(@visualization.user_table, @current_viewer)
+          .with_presenter_cache(@presenter_cache).to_poro
+      end
+
 
       def auth_tokens
         if @visualization.password_protected? && @visualization.user.id == @current_viewer.id

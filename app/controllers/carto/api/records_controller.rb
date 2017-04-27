@@ -25,9 +25,7 @@ module Carto
       end
 
       def create
-        primary_key = @stats_aggregator.timing('save') do
-          @user_table.service.insert_row!(filtered_row)
-        end
+        primary_key = @user_table.service.insert_row!(filtered_row)
         render_jsonp(@user_table.service.record(primary_key))
       rescue => e
         render_jsonp({ errors: [e.message] }, 400)

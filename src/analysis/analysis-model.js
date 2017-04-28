@@ -89,11 +89,11 @@ module.exports = Model.extend({
       return this;
     }
     var sourceNames = this._getSourceNames();
-    var optionalSourceNames = this._getOptionalSourceNames();
+    var optionalSourceNames = this._camshaftReference.getOptionalSourceNamesForAnalysisType(this.get('type'));
     var sources = _.chain(sourceNames)
       .map(function (sourceName) {
         var source = this.get(sourceName);
-        var isOptional = _.indexOf(optionalSourceNames, sourceName) > -1;
+        var isOptional = _.contains(optionalSourceNames, sourceName);
         if (source || !isOptional) {
           return source.findAnalysisById(analysisId);
         }
@@ -106,10 +106,6 @@ module.exports = Model.extend({
 
   _getSourceNames: function () {
     return this._camshaftReference.getSourceNamesForAnalysisType(this.get('type'));
-  },
-
-  _getOptionalSourceNames: function () {
-    return this._camshaftReference.getOptionalSourceNamesForAnalysisType(this.get('type'));
   },
 
   isDone: function () {
@@ -133,13 +129,13 @@ module.exports = Model.extend({
     var json = _.pick(this.attributes, 'id', 'type');
     json.params = _.pick(this.attributes, this.getParamNames());
     var sourceNames = this._getSourceNames();
-    var optionalSourceNames = this._getOptionalSourceNames();
-    _.each(this._getSourceNames(), function (sourceName) {
+    var optionalSourceNames = this._camshaftReference.getOptionalSourceNamesForAnalysisType(this.get('type'));
+    _.each(sourceNames, function (sourceName) {
       var source = {};
-      var isOptional = _.indexOf(optionalSourceNames, sourceName) > -1;
+      var isOptional = _.contains(optionalSourceNames, sourceName);
       var sourceInfo = this.get(sourceName);
       if (sourceInfo || !isOptional) {
-        source[sourceName] = this.get(sourceName).toJSON();
+        source[sourceName] = sourceInfo.toJSON();
         _.extend(json.params, source);
       }
     }, this);

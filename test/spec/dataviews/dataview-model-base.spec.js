@@ -31,6 +31,10 @@ var fakeCamshaftReference = {
       throw new Error('analysis type ' + analysisType + ' not supported');
     }
     return map[analysisType];
+  },
+
+  getOptionalSourceNamesForAnalysisType: function (analysisType) {
+    return [];
   }
 };
 

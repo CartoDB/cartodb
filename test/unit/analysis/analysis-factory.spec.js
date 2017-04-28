@@ -7,7 +7,8 @@ describe('src/analysis/analysis-factory.js', function () {
       getSourceNamesForAnalysisType: function (analysisType) {
         var map = {
           'trade-area': ['source'],
-          'estimated-population': ['source']
+          'estimated-population': ['source'],
+          'sql-function': ['source', 'target']
         };
         return map[analysisType];
       },
@@ -17,6 +18,12 @@ describe('src/analysis/analysis-factory.js', function () {
           'estimated-population': ['columnName']
         };
         return map[analysisType];
+      },
+      getOptionalSourceNamesForAnalysisType: function (analysisType) {
+        if (analysisType === 'sql-function') {
+          return ['target'];
+        }
+        return [];
       }
     };
     this.vis = new Backbone.Model();
@@ -223,6 +230,68 @@ describe('src/analysis/analysis-factory.js', function () {
       );
 
       expect(this.analysisFactory.findNodeById('something')).toBeUndefined();
+    });
+  });
+
+  describe('._getAnalysisAttributesFromAnalysisDefinition', function () {
+    it('should analyse all source nodes if no one in optional', function () {
+      var analysisDefinition = {
+        type: 'trade-area',
+        params: {
+          source: 'a0'
+        }
+      };
+      spyOn(this.analysisFactory, 'analyse').and.returnValue('node');
+
+      var result = this.analysisFactory._getAnalysisAttributesFromAnalysisDefinition(analysisDefinition);
+
+      expect(this.analysisFactory.analyse.calls.count()).toEqual(1);
+      expect(this.analysisFactory.analyse).toHaveBeenCalledWith('a0');
+      expect(result).toEqual({
+        type: 'trade-area',
+        source: 'node'
+      });
+    });
+
+    it('should analyse only non optional source nodes', function () {
+      var analysisDefinition = {
+        type: 'sql-function',
+        params: {
+          source: 'a0'
+        }
+      };
+      spyOn(this.analysisFactory, 'analyse').and.returnValue('node');
+
+      var result = this.analysisFactory._getAnalysisAttributesFromAnalysisDefinition(analysisDefinition);
+
+      expect(this.analysisFactory.analyse.calls.count()).toEqual(1);
+      expect(this.analysisFactory.analyse).toHaveBeenCalledWith('a0');
+      expect(result).toEqual({
+        type: 'sql-function',
+        source: 'node'
+      });
+    });
+
+    it('should analyse only source nodes if it has value even if it is optional', function () {
+      var analysisDefinition = {
+        type: 'sql-function',
+        params: {
+          source: 'a0',
+          target: 'b0'
+        }
+      };
+      spyOn(this.analysisFactory, 'analyse').and.returnValue('node');
+
+      var result = this.analysisFactory._getAnalysisAttributesFromAnalysisDefinition(analysisDefinition);
+
+      expect(this.analysisFactory.analyse.calls.count()).toEqual(2);
+      expect(this.analysisFactory.analyse).toHaveBeenCalledWith('a0');
+      expect(this.analysisFactory.analyse).toHaveBeenCalledWith('b0');
+      expect(result).toEqual({
+        type: 'sql-function',
+        source: 'node',
+        target: 'node'
+      });
     });
   });
 });

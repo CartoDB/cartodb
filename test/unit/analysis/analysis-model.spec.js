@@ -122,7 +122,8 @@ describe('src/analysis/analysis-model.js', function () {
             'analysis-type-1': ['source1', 'source2'],
             'analysis-type-2': [],
             'analysis-type-3': ['source3'],
-            'analysis-type-4': []
+            'analysis-type-4': [],
+            'analysis-type-5': ['source4', 'source5']
           };
           return map[analysisType];
         },
@@ -131,10 +132,17 @@ describe('src/analysis/analysis-model.js', function () {
             'analysis-type-1': ['a'],
             'analysis-type-2': [],
             'analysis-type-3': [],
-            'analysis-type-4': ['a4']
+            'analysis-type-4': ['a4'],
+            'analysis-type-5': []
           };
 
           return map[analysisType];
+        },
+        getOptionalSourceNamesForAnalysisType: function (analysisType) {
+          if (analysisType === 'analysis-type-5') {
+            return ['source5'];
+          }
+          return [];
         }
       };
 
@@ -160,10 +168,16 @@ describe('src/analysis/analysis-model.js', function () {
             type: 'analysis-type-3',
             params: {
               source3: {
-                id: 'a4',
-                type: 'analysis-type-4',
+                id: 'a5',
+                type: 'analysis-type-5',
                 params: {
-                  a4: 4
+                  source4: {
+                    id: 'a4',
+                    type: 'analysis-type-4',
+                    params: {
+                      a4: 4
+                    }
+                  }
                 }
               }
             }
@@ -174,6 +188,7 @@ describe('src/analysis/analysis-model.js', function () {
       expect(analysisModel.findAnalysisById('a1')).toEqual(analysisModel);
       expect(analysisModel.findAnalysisById('a2').get('id')).toEqual('a2');
       expect(analysisModel.findAnalysisById('a3').get('id')).toEqual('a3');
+      expect(analysisModel.findAnalysisById('a5').get('id')).toEqual('a5');
       expect(analysisModel.findAnalysisById('b9')).toBeUndefined();
     });
   });
@@ -186,7 +201,8 @@ describe('src/analysis/analysis-model.js', function () {
             'analysis-type-1': ['source1', 'source2'],
             'analysis-type-2': [],
             'analysis-type-3': ['source3'],
-            'analysis-type-4': []
+            'analysis-type-4': [],
+            'analysis-type-5': ['source4', 'source5']
           };
           return map[analysisType];
         },
@@ -195,10 +211,17 @@ describe('src/analysis/analysis-model.js', function () {
             'analysis-type-1': ['a'],
             'analysis-type-2': ['a2'],
             'analysis-type-3': [],
-            'analysis-type-4': ['a4']
+            'analysis-type-4': ['a4'],
+            'analysis-type-5': []
           };
 
           return map[analysisType];
+        },
+        getOptionalSourceNamesForAnalysisType: function (analysisType) {
+          if (analysisType === 'analysis-type-5') {
+            return ['source5'];
+          }
+          return [];
         }
       };
 
@@ -227,7 +250,19 @@ describe('src/analysis/analysis-model.js', function () {
                 id: 'a4',
                 type: 'analysis-type-4',
                 params: {
-                  a4: 4
+                  a4: {
+                    id: 'a5',
+                    type: 'analysis-type-5',
+                    params: {
+                      source4: {
+                        id: 'a6',
+                        type: 'analysis-type-2',
+                        params: {
+                          a2: 2
+                        }
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -255,7 +290,19 @@ describe('src/analysis/analysis-model.js', function () {
                 id: 'a4',
                 type: 'analysis-type-4',
                 params: {
-                  a4: 4
+                  a4: {
+                    id: 'a5',
+                    type: 'analysis-type-5',
+                    params: {
+                      source4: {
+                        id: 'a6',
+                        type: 'analysis-type-2',
+                        params: {
+                          a2: 2
+                        }
+                      }
+                    }
+                  }
                 }
               }
             }

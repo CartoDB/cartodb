@@ -356,6 +356,10 @@ describe('windshaft/anonymous-map', function () {
               throw new Error('analysis type ' + analysisType + ' not supported');
             }
             return map[analysisType];
+          },
+
+          getOptionalSourceNamesForAnalysisType: function (analysisType) {
+            return [];
           }
         };
 

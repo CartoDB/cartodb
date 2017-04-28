@@ -16,4 +16,11 @@ describe('src/analysis/camshaft-reference', function () {
       expect(camshaftReference.getParamNamesForAnalysisType('trade-area')).toEqual([ 'source', 'kind', 'time', 'isolines', 'dissolved' ]);
     });
   });
+
+  describe('.getOptionalSourceNamesForAnalysisType', function () {
+    it('should return the optional source names for a given analysus type', function () {
+      expect(camshaftReference.getOptionalSourceNamesForAnalysisType('trade-area')).toEqual([]);
+      expect(camshaftReference.getOptionalSourceNamesForAnalysisType('deprecated-sql-function')).toEqual([ 'secondary_source' ]);
+    });
+  });
 });

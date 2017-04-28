@@ -1,6 +1,3 @@
-require_dependency 'carto_gears_api/notifications/notification'
-require_dependency 'carto_gears_api/errors'
-
 module CartoGearsApi
   module Notifications
     class NotificationsService

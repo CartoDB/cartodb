@@ -72,6 +72,7 @@ Development
   * Notification API (#11850)
   * Queue and Email support (#11692).
   * User login event (#12010).
+  * Fixes to loading gems and autoloading of code (#12019)
 * Improved empty bounds map handling (#11711).
 * Updated diagnosis page versions.
 * set_import_limits rake (#11756).
@@ -98,10 +99,11 @@ Development
     * Optimized access to redis storage (#11809)
     * Add back FREE users to overquota calculation (#11848)
 * Update tangram-cartocss to use smooth point outline.
-* Refactored Builder specs generation using Webpack (#11698)
 * Update cartodb.js to use multiple subdomains.
+* Refactored Builder specs generation using Webpack (#11698)
 * Update tangram to use subdomains.
 * New dashboard notifications added (#11807).
+* New 'Find Nearest' analysis (#11933).
 * Multiple file upload through "upload file" tab (#11952)
 * Change setView by flyto.
 * Update tangram to fix layer geometry conditionals.
@@ -152,8 +154,8 @@ Development
 * Correctly render map previews for maps with google basemaps (#11608)
 * Do not trigger visualization hooks on state update (#11701)
 * Correctly register table dependencies of torque layers (#11549)
-* Validate number of organization seats in user update (#11839)
 * Validate number of organization seats in user update (#11839, #11859)
+* Validate number of organization seats in user update (#11839)
 * Fix bugs where legends where being hidden by reordering layers (#11088)
 * Correctly ask for alternative username when signing up with Google/GitHub into an organization
 * Avoid loading all rake code in resque workers (#11069)

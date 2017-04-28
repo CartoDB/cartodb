@@ -2,7 +2,11 @@
   "rules": {},
   "env": {
     "es6": true,
-    "browser": true
+    "browser": true,
+    "jasmine": true
   },
-  "extends": "semistandard"
+  "extends": "semistandard",
+  "globals": {
+    "_t": true
+  }
 }

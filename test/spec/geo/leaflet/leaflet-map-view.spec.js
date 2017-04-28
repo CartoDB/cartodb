@@ -45,7 +45,8 @@ describe('geo/leaflet/leaflet-map-view', function () {
       el: container,
       mapModel: map,
       visModel: new Backbone.Model(),
-      layerGroupModel: this.layerGroupModel
+      layerGroupModel: this.layerGroupModel,
+      settingsModel: new Backbone.Model()
     });
 
     mapView.render();
@@ -145,8 +146,8 @@ describe('geo/leaflet/leaflet-map-view', function () {
   });
 
   it('should remove all layers when map view is cleaned', function () {
-    var cartoDBLayer1 = new CartoDBLayer({}, { vis: this.vis });
-    var cartoDBLayer2 = new CartoDBLayer({}, { vis: this.vis });
+    var cartoDBLayer1 = new CartoDBLayer({ meta: { cartocss: '#layer {}' } }, { vis: this.vis });
+    var cartoDBLayer2 = new CartoDBLayer({ meta: { cartocss: '#layer {}' } }, { vis: this.vis });
     var tileLayer = new TileLayer({ urlTemplate: 'test' }, { vis: {} });
 
     map.addLayer(cartoDBLayer1);
@@ -196,7 +197,8 @@ describe('geo/leaflet/leaflet-map-view', function () {
       el: container,
       mapModel: map,
       visModel: new Backbone.Model(),
-      layerGroupModel: new Backbone.Model()
+      layerGroupModel: new Backbone.Model(),
+      settingsModel: new Backbone.Model()
     });
     mapView.render();
 
@@ -218,7 +220,8 @@ describe('geo/leaflet/leaflet-map-view', function () {
       el: container,
       mapModel: map,
       visModel: new Backbone.Model(),
-      layerGroupModel: new Backbone.Model()
+      layerGroupModel: new Backbone.Model(),
+      settingsModel: new Backbone.Model()
     });
     mapView.render();
 

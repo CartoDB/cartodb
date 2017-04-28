@@ -83,9 +83,7 @@ var GoogleMapsMapView = MapView.extend({
   },
 
   _getLayerViewFactory: function () {
-    this._layerViewFactory = this._layerViewFactory || new GMapsLayerViewFactory({
-      vector: this.map.get('vector')
-    });
+    this._layerViewFactory = this._layerViewFactory || new GMapsLayerViewFactory();
 
     return this._layerViewFactory;
   },

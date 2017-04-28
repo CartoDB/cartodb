@@ -43,7 +43,8 @@ describe('core/geo/map-view', function () {
       visModel: new Backbone.Model(),
       layerGroupModel: new LayerGroupModel(null, {
         layersCollection: this.map.layers
-      })
+      }),
+      settingsModel: new Backbone.Model()
     });
     spyOn(this.mapView, 'setCursor');
     spyOn(this.mapView, 'getNativeMap');
@@ -65,7 +66,8 @@ describe('core/geo/map-view', function () {
         layerGroupModel: new LayerGroupModel(null, {
           windshaftMap: this.windshaftMap,
           layersCollection: this.map.layers
-        })
+        }),
+        settingsModel: new Backbone.Model()
       });
       spyOn(this.mapView, 'getNativeMap');
       spyOn(this.mapView, '_addLayerToMap');

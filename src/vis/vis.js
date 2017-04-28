@@ -141,8 +141,34 @@ var VisModel = Backbone.Model.extend({
 
     var windshaftClient = new WindshaftClient(windshaftSettings);
 
+    var layersFactory = new LayersFactory({
+      visModel: this,
+      windshaftSettings: windshaftSettings
+    });
+
+    // Create the Map
+    var allowDragging = util.isMobileDevice() || vizjson.hasZoomOverlay() || vizjson.scrollwheel;
+
+    this.map = new Map({
+      title: vizjson.title,
+      description: vizjson.description,
+      bounds: vizjson.bounds,
+      center: vizjson.center,
+      zoom: vizjson.zoom,
+      scrollwheel: !!this.scrollwheel,
+      drag: allowDragging,
+      provider: vizjson.map_provider,
+      isFeatureInteractivityEnabled: this.get('interactiveFeatures')
+    }, {
+      layersCollection: this._layersCollection,
+      layersFactory: layersFactory
+    });
+
+    this.listenTo(this.map, 'cartodbLayerMoved', this.reload);
+
     var modelUpdater = new ModelUpdater({
       visModel: this,
+      mapModel: this.map,
       layerGroupModel: this.layerGroupModel,
       dataviewsCollection: this._dataviewsCollection,
       layersCollection: this._layersCollection,
@@ -162,33 +188,6 @@ var VisModel = Backbone.Model.extend({
       layersCollection: this._layersCollection,
       analysisCollection: this._analysisCollection
     });
-
-    var layersFactory = new LayersFactory({
-      visModel: this,
-      windshaftSettings: windshaftSettings
-    });
-
-    // Create the Map
-    var allowDragging = util.isMobileDevice() || vizjson.hasZoomOverlay() || vizjson.scrollwheel;
-
-    this.map = new Map({
-      title: vizjson.title,
-      description: vizjson.description,
-      bounds: vizjson.bounds,
-      center: vizjson.center,
-      zoom: vizjson.zoom,
-      scrollwheel: !!this.scrollwheel,
-      drag: allowDragging,
-      provider: vizjson.map_provider,
-      vector: vizjson.vector,
-      webgl: vizjson.webgl,
-      isFeatureInteractivityEnabled: this.get('interactiveFeatures')
-    }, {
-      layersCollection: this._layersCollection,
-      layersFactory: layersFactory
-    });
-
-    this.listenTo(this.map, 'cartodbLayerMoved', this.reload);
 
     // Reset the collection of overlays
     this.overlaysCollection.reset(vizjson.overlays);

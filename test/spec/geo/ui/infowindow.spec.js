@@ -18,7 +18,8 @@ describe('geo/ui/infowindow-view', function() {
       mapModel: map,
       visModel: new Backbone.Model(),
       layerViewFactory: jasmine.createSpyObj('layerViewFactory', ['createLayerView']),
-      layerGroupModel: new Backbone.Model()
+      layerGroupModel: new Backbone.Model(),
+      settingsModel: new Backbone.Model()
     });
 
     model = new InfowindowModel({
@@ -292,7 +293,8 @@ describe('geo/ui/infowindow-view', function() {
         mapModel: map,
         visModel: new Backbone.Model(),
         layerViewFactory: jasmine.createSpyObj('layerViewFactory', ['createLayerView']),
-        layerGroupModel: new Backbone.Model()
+        layerGroupModel: new Backbone.Model(),
+        settingsModel: new Backbone.Model()
       });
 
       model = new InfowindowModel({
@@ -421,7 +423,8 @@ describe('geo/ui/infowindow-view', function() {
         mapModel: map,
         visModel: new Backbone.Model(),
         layerViewFactory: jasmine.createSpyObj('layerViewFactory', ['createLayerView']),
-        layerGroupModel: new Backbone.Model()
+        layerGroupModel: new Backbone.Model(),
+        settingsModel: new Backbone.Model()
       });
 
       model = new InfowindowModel({

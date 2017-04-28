@@ -28,10 +28,12 @@ var MapView = View.extend({
     if (!deps.mapModel) throw new Error('mapModel is required');
     if (!deps.visModel) throw new Error('visModel is required');
     if (!deps.layerGroupModel) throw new Error('layerGroupModel is required');
+    if (!deps.settingsModel) throw new Error('settingsModel is required');
 
     this._mapModel = this.map = deps.mapModel;
     this._visModel = deps.visModel;
     this._cartoDBLayerGroup = deps.layerGroupModel;
+    this._settingsModel = deps.settingsModel;
 
     this.add_related_model(this.map);
 
@@ -248,7 +250,7 @@ var MapView = View.extend({
   },
 
   _createLayerView: function (layerModel) {
-    return this._getLayerViewFactory().createLayerView(layerModel, this.getNativeMap());
+    return this._getLayerViewFactory().createLayerView(layerModel, this.getNativeMap(), this.map, this._settingsModel);
   },
 
   _removeLayers: function () {

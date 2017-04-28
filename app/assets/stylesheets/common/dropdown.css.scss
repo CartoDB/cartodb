@@ -143,6 +143,10 @@
     width: 105px !important;
   }
 }
+.Dropdown--withScroll {
+  height: 100%;
+  max-height: 300px;
+}
 
 .Dropdown > ul {
   position: relative;
@@ -178,7 +182,7 @@
 
   .ScrollView {
     margin: 0;
-    padding: 6px 0;
+    padding: 0;
     -webkit-flex-basis: auto;
     flex-basis: auto;
 
@@ -225,6 +229,12 @@
   .ps-container > .ps-scrollbar-y-rail {
     opacity: 0.6;
   }
+}
+.Dropdown-content--withScroll {
+  height: 100%;
+  max-height: 288px;
+  padding: 6px 0;
+  overflow: hidden;
 }
 
 // New styles //

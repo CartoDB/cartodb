@@ -58,26 +58,9 @@ module Carto
 
       def update
         # TODO This endpoint is only used to geocode from editor, passing `latitude_column` and `longitude_column`
-        # TODO It also supports renames and all attributes assignement, but this is not called from our frontend
+        # TODO It also supports attributes assignement, but this is not called from our frontend
         table = @user_table.service
         warnings = []
-
-        # Perform name validations
-        # TODO move this to the model!
-        if params[:name]
-          new_name = params[:name].downcase
-          if new_name != table.name
-            # TODO reverse this logic: make explicit if this needs to start with a letter
-            if params[:name] =~ /\A[0-9_]/
-              raise "Table names can't start with numbers or dashes."
-            elsif current_user.tables.filter(:name.like(/\A#{params[:name]}/)).select_map(:name).include?(new_name)
-              raise "Table '#{new_name}' already exists."
-            else
-              @user_table.name = new_name
-              @user_table.save
-            end
-          end
-        end
 
         # TODO: this is bad, passing all params blindly to the table object
         @user_table.assign_attributes(params.symbolize_keys.reject { |k, _| k == :name })

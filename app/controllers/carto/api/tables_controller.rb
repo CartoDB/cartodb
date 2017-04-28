@@ -34,7 +34,7 @@ module Carto
         table.tags           = params[:tags]          if params[:tags]
         table.import_from_query = params[:from_query] if params[:from_query]
 
-        if table.save
+        if table.valid? && table.save
           render_jsonp(table.public_values(request: request), 200, location: "/tables/#{table.id}")
 
           table_visualization = table.table_visualization

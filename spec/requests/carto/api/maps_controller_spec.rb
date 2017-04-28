@@ -86,7 +86,7 @@ describe Carto::Api::MapsController do
     end
 
     def create_update_map_url(user, map_id)
-      api_v1_maps_update_url(user_domain: user.username, api_key: user.api_key, id: map_id)
+      map_url(user_domain: user.username, api_key: user.api_key, id: map_id)
     end
 
     it 'updates existing map by id' do
@@ -157,7 +157,7 @@ describe Carto::Api::MapsController do
     end
 
     it 'returns 401 for unathorized user' do
-      put_json api_v1_maps_update_url(user_domain: @user2.username, api_key: 'wadus', id: @map.id) do |response|
+      put_json map_url(user_domain: @user2.username, api_key: 'wadus', id: @map.id) do |response|
         response.status.should eq 401
       end
     end

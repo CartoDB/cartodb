@@ -93,8 +93,10 @@ module.exports = Model.extend({
       .map(function (sourceName) {
         var source = this.get(sourceName);
         var isOptional = this._camshaftReference.isSourceNameOptionalForAnalysisType(this.get('type'), sourceName);
-        if (source || !isOptional) {
+        if (source) {
           return source.findAnalysisById(analysisId);
+        } else if (!isOptional) {
+          throw new Error(source + ' param is required for ' + this.get('type') + ' analysis.');
         }
       }, this)
       .compact()
@@ -132,9 +134,11 @@ module.exports = Model.extend({
       var source = {};
       var isOptional = this._camshaftReference.isSourceNameOptionalForAnalysisType(this.get('type'), sourceName);
       var sourceInfo = this.get(sourceName);
-      if (sourceInfo || !isOptional) {
+      if (sourceInfo) {
         source[sourceName] = sourceInfo.toJSON();
         _.extend(json.params, source);
+      } else if (!isOptional) {
+        throw new Error(sourceName + ' param is required.');
       }
     }, this);
 

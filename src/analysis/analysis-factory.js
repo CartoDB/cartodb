@@ -55,8 +55,10 @@ AnalysisFactory.prototype._getAnalysisAttributesFromAnalysisDefinition = functio
   _.each(sourceNamesForAnalysisType, function (sourceName) {
     var isOptional = this._camshaftReference.isSourceNameOptionalForAnalysisType(analysisType, sourceName);
     var sourceParams = analysisDefinition.params[sourceName];
-    if (sourceParams || !isOptional) {
+    if (sourceParams) {
       sourceNodes[sourceName] = this.analyse(sourceParams);
+    } else if (!isOptional) {
+      throw new Error(sourceName + ' param is required for ' + analysisType + ' analysis.');
     }
   }, this);
 

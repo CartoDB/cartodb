@@ -467,15 +467,6 @@ module.exports = function(grunt) {
     'watch:js_affected'
   ]);
 
-  grunt.registerTask('run_watch', 'All watch tasks except those that watch spec changes', function (option) {
-    if (option === 'builder_specs=false') {
-      delete grunt.config.data.watch.js_test_cartodb3;
-      delete grunt.config.data.watch.js_affected;
-    }
-
-    grunt.task.run('watch');
-  });
-
   grunt.registerTask('build-jasmine-specrunners', _.chain(jasmineCfg)
     .keys()
     .map(function (name) {
@@ -493,8 +484,7 @@ module.exports = function(grunt) {
   grunt.registerTask('editor_specs', [
     'js_editor',
     'jasmine:cartodbui:build',
-    'connect:server',
-    'run_watch:builder_specs=false'
+    'connect:server'
   ]);
 
   /**

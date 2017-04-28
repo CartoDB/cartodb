@@ -107,6 +107,10 @@ Development
 * Multiple file upload through "upload file" tab (#11952)
 * Change setView by flyto.
 * Update tangram to fix layer geometry conditionals.
+* Update tangram to fix layer geometry conditionals.
+* Improve assets build process (#11962)
+    * Frontend development task has changed from `grunt && grunt dev` to `grunt dev`
+    * Test task remains the same, but internals changed `grunt test`
 
 ### Bug fixes
 * Autostyling for google basemaps (#11838)

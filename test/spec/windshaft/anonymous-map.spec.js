@@ -358,9 +358,7 @@ describe('windshaft/anonymous-map', function () {
             return map[analysisType];
           },
 
-          getOptionalSourceNamesForAnalysisType: function (analysisType) {
-            return [];
-          }
+          isSourceNameOptionalForAnalysisType: function () { return false; }
         };
 
         this.analysisFactory = new AnalysisFactory({

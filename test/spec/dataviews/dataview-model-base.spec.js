@@ -33,9 +33,7 @@ var fakeCamshaftReference = {
     return map[analysisType];
   },
 
-  getOptionalSourceNamesForAnalysisType: function (analysisType) {
-    return [];
-  }
+  isSourceNameOptionalForAnalysisType: function () { return false; }
 };
 
 describe('dataviews/dataview-model-base', function () {

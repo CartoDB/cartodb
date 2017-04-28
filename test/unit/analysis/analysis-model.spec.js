@@ -138,11 +138,8 @@ describe('src/analysis/analysis-model.js', function () {
 
           return map[analysisType];
         },
-        getOptionalSourceNamesForAnalysisType: function (analysisType) {
-          if (analysisType === 'analysis-type-5') {
-            return ['source5'];
-          }
-          return [];
+        isSourceNameOptionalForAnalysisType: function (analysisType, sourceName) {
+          return (analysisType === 'analysis-type-5' && sourceName === 'source5');
         }
       };
 
@@ -217,11 +214,8 @@ describe('src/analysis/analysis-model.js', function () {
 
           return map[analysisType];
         },
-        getOptionalSourceNamesForAnalysisType: function (analysisType) {
-          if (analysisType === 'analysis-type-5') {
-            return ['source5'];
-          }
-          return [];
+        isSourceNameOptionalForAnalysisType: function (analysisType, sourceName) {
+          return (analysisType === 'analysis-type-5' && sourceName === 'source5');
         }
       };
 

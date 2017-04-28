@@ -19,11 +19,8 @@ describe('src/analysis/analysis-factory.js', function () {
         };
         return map[analysisType];
       },
-      getOptionalSourceNamesForAnalysisType: function (analysisType) {
-        if (analysisType === 'sql-function') {
-          return ['target'];
-        }
-        return [];
+      isSourceNameOptionalForAnalysisType: function (analysisType, sourceName) {
+        return (analysisType === 'sql-function' && sourceName === 'target');
       }
     };
     this.vis = new Backbone.Model();

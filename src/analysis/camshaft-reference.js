@@ -1,3 +1,4 @@
+var _ = require('underscore');
 var camshaftReference = require('camshaft-reference').getVersion('latest');
 var PARAM_TYPES = {
   NODE: 'node',
@@ -46,13 +47,13 @@ module.exports = {
     return sourceNames;
   },
 
-  getOptionalSourceNamesForAnalysisType: function (analysisType) {
+  isSourceNameOptionalForAnalysisType: function (analysisType, sourceName) {
     var optionalSourceNames = ANALYSIS_TYPE_TO_OPTIONAL_SOURCE_PARAM_NAMES_MAP[analysisType];
     if (!optionalSourceNames) {
       optionalSourceNames = [];
     }
 
-    return optionalSourceNames;
+    return _.contains(optionalSourceNames, sourceName);
   },
 
   getParamNamesForAnalysisType: function (analysisType) {

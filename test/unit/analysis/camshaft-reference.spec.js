@@ -17,10 +17,10 @@ describe('src/analysis/camshaft-reference', function () {
     });
   });
 
-  describe('.getOptionalSourceNamesForAnalysisType', function () {
-    it('should return the optional source names for a given analysus type', function () {
-      expect(camshaftReference.getOptionalSourceNamesForAnalysisType('trade-area')).toEqual([]);
-      expect(camshaftReference.getOptionalSourceNamesForAnalysisType('deprecated-sql-function')).toEqual([ 'secondary_source' ]);
+  describe('.isSourceNameOptionalForAnalysisType', function () {
+    it('should return true for optional source names for a given analysis type', function () {
+      expect(camshaftReference.isSourceNameOptionalForAnalysisType('trade-area', 'source')).toBe(false);
+      expect(camshaftReference.isSourceNameOptionalForAnalysisType('deprecated-sql-function', 'secondary_source')).toBe(true);
     });
   });
 });

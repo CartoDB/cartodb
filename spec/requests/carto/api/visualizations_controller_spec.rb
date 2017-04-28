@@ -2143,7 +2143,7 @@ describe Carto::Api::VisualizationsController do
   end
 
   def response_body(params = nil)
-    get base_url, params.dup, @headers
+    get base_url, params.nil? ? nil : params.dup, @headers
     last_response.status.should == 200
     body = JSON.parse(last_response.body)
     body['visualizations'] = body['visualizations'].map { |v| normalize_hash(v) }.map { |v| remove_data_only_in_new_controllers(v) }

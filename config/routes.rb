@@ -334,9 +334,6 @@ CartoDB::Application.routes.draw do
   end
 
   scope module: 'carto/api', format: :json do
-    # Maps
-    put '(/user/:user_domain)(/u/:user_domain)/api/v1/maps/:id' => 'maps#update',  as: :api_v1_maps_update
-
     # Visualizations
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/viz'                                => 'visualizations#index',           as: :api_v1_visualizations_index
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id'                            => 'visualizations#show',            as: :api_v1_visualizations_show,            constraints: { id: /[^\/]+/ }
@@ -632,7 +629,7 @@ CartoDB::Application.routes.draw do
     end
 
     scope 'v1/' do
-      resources :maps, only: [:show], constraints: { id: UUID_REGEXP }
+      resources :maps, only: [:show, :update], constraints: { id: UUID_REGEXP }
 
       # Organization assets
       scope '/organization/:organization_id', constraints: { id: UUID_REGEXP } do

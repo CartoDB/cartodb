@@ -73,8 +73,8 @@ module Carto
             elsif current_user.tables.filter(:name.like(/\A#{params[:name]}/)).select_map(:name).include?(new_name)
               raise "Table '#{new_name}' already exists."
             else
-              table.name = new_name
-              table.save
+              @user_table.name = new_name
+              @user_table.save
             end
           end
         end

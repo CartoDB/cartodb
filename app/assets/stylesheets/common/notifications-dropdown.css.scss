@@ -26,6 +26,16 @@
 .NotificationsDropdown-item em {
   font-style: italic;
 }
+.NotificationsDropdown-item strong {
+  font-weight: bold;
+}
+.NotificationsDropdown-item code {
+  padding: 3px;
+  margin: 0;
+  font-size: 85%;
+  background-color: rgba(#000,0.05);
+  border-radius: 3px;
+}
 .NotificationsDropdown-icon {
   position: absolute;
   left: 0;

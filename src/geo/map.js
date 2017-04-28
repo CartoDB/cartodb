@@ -19,10 +19,9 @@ var Map = Model.extend({
     drag: true,
     keyboard: true,
     provider: 'leaflet',
-    // enforce client-side rendering using GeoJSON vector tiles
-    vector: false,
     popupsEnabled: true,
-    isFeatureInteractivityEnabled: false
+    isFeatureInteractivityEnabled: false,
+    featureCount: 0
   },
 
   initialize: function (attrs, options) {
@@ -502,8 +501,11 @@ var Map = Model.extend({
 
   getMapViewSize: function () {
     return this._mapViewSize;
-  }
+  },
 
+  getNumberOfFeatures: function () {
+    return this.get('featureCount');
+  }
 }, {
   PROVIDERS: {
     GMAPS: 'googlemaps',

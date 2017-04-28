@@ -142,7 +142,8 @@ module Carto
         :soft_obs_snapshot_limit,
         :soft_twitter_datasource_limit,
         :soft_mapzen_routing_limit,
-        :viewer
+        :viewer,
+        :org_admin
       ].freeze
 
       # TODO: Use native strong params when in Rails 4+

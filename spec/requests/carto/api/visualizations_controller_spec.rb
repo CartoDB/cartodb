@@ -368,11 +368,11 @@ describe Carto::Api::VisualizationsController do
       body['total_user_entries'].should == 4
     end
 
-    describe 'performance' do
-      VISUALIZATION_N = 2000
+    describe 'performance with many tables' do
+      VISUALIZATION_N = 200
 
       before(:all) do
-        @visualizations = (1..VISUALIZATION_N).map { FactoryGirl.create(:table_visualization, user_id: @user_1.id)}
+        @visualizations = (1..VISUALIZATION_N).map { FactoryGirl.create(:carto_user_table_with_canonical, user_id: @user_1.id) }
       end
 
       LIST_NAMES_PARAMS = {
@@ -391,11 +391,12 @@ describe Carto::Api::VisualizationsController do
         show_table: false,
         show_permission: false,
         show_synchronization: false,
+        show_uses_builder_features: false,
         load_totals: false
       }.freeze
 
 
-      it 'with reduced fetching should improve performance at least a 66% for users with >=2000 tables (see #12058)' do
+      it 'should improve with reduced fetching (see #12058)' do
         no_fetching_params = LIST_NAMES_PARAMS.merge(NO_FETCHING_PARAMS)
 
         beginning = Time.now
@@ -407,16 +408,17 @@ describe Carto::Api::VisualizationsController do
         body2 = last_response.body
         no_fetch_time = Time.now
 
-        ((full_time - beginning) / (no_fetch_time - full_time)).should be >= 3
+        # This actually improves loading by 1 order of magnitude
+        ((full_time - beginning) / (no_fetch_time - full_time)).should be >= 5
 
         body1 = JSON.parse(body1)
-        body2 = JSON.parse(body2)
         body1['visualizations'].count.should eq VISUALIZATION_N
         body1['total_entries'].should eq VISUALIZATION_N
         body1['total_shared'].should_not be_nil
+        body2 = JSON.parse(body2)
         body2['visualizations'].count.should eq VISUALIZATION_N
         body2['total_entries'].should eq VISUALIZATION_N
-        body1['total_shared'].should be_nil
+        body2['total_shared'].should be_nil
       end
     end
 

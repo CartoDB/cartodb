@@ -53,7 +53,7 @@ module Carto
           },
           total_entries: vqb.build.count
         }
-        if current_user && (!params[:load_totals].to_s == 'false')
+        if current_user && (params[:load_totals].to_s != 'false')
           # Prefetching at counts removes duplicates
           response.merge!({
             total_user_entries: VisualizationQueryBuilder.new.with_types(total_types).with_user_id(current_user.id).build.count,

@@ -33,6 +33,7 @@ module Carto
         show_table = @options.fetch(:show_table, true)
         show_permission = @options.fetch(:show_permission, true)
         show_synchronization = @options.fetch(:show_synchronization, true)
+        show_uses_builder_features = @options.fetch(:show_uses_builder_features, true)
 
         poro = {
           id: @visualization.id,
@@ -55,7 +56,6 @@ module Carto
           kind: @visualization.kind,
           external_source: Carto::Api::ExternalSourcePresenter.new(@visualization.external_source).to_poro,
           url: url,
-          uses_builder_features: @visualization.uses_builder_features?,
           auth_tokens: auth_tokens,
           version: @visualization.version || 2,
           # TODO: The following are Odyssey fields and could be removed
@@ -75,6 +75,7 @@ module Carto
         poro[:table] = user_table_presentation if show_table
         poro[:permission] = permission if show_permission
         poro[:synchronization] = synchronization if show_synchronization
+        poro[:uses_builder_features] = @visualization.uses_builder_features? if show_uses_builder_features
 
         poro
       end

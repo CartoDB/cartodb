@@ -110,7 +110,7 @@ Development
 
 ### Bug fixes
 * Autostyling for google basemaps (#11838)
-
+* Fixed problem with markdown in organization notifications (#12045)
 * Save collapse state for layer list (#11927)
 * Styling falsy categories (#11421)
 * Fixed bug editing geometries from dataset view (#11855)

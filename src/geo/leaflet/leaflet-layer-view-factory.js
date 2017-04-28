@@ -22,7 +22,7 @@ var LayerGroupViewConstructor = function (layerGroupModel, nativeMap, mapModel, 
 var canMapBeRenderedClientSide = function (mapModel, settingsModel) {
   var mapRenderMode = settingsModel.get('renderMode');
 
-  if (mapRenderMode === RenderModes.VECTOR) {
+  if (mapRenderMode === RenderModes.VECTOR && isWebGLSupported()) {
     return true;
   }
 
@@ -31,8 +31,13 @@ var canMapBeRenderedClientSide = function (mapModel, settingsModel) {
   }
 
   // mapRenderMode === RenderModes.AUTO
-  return mapModel.getNumberOfFeatures() < MAX_NUMBER_OF_FEATURES_FOR_WEBGL &&
+  return isWebGLSupported() &&
+    mapModel.getNumberOfFeatures() < MAX_NUMBER_OF_FEATURES_FOR_WEBGL &&
     _.all(mapModel.layers.getCartoDBLayers(), canLayerBeRenderedClientSide);
+};
+
+var isWebGLSupported = function () {
+  return !!window.webGLRenderingContext;
 };
 
 var canLayerBeRenderedClientSide = function (layerModel) {
@@ -40,7 +45,7 @@ var canLayerBeRenderedClientSide = function (layerModel) {
   try {
     TangramCartoCSS.carto2Draw(cartoCSS);
   } catch (e) {
-    log.error("[Tangram] Unable to render layer with the following cartoCSS:\n" + cartoCSS);
+    log.error('[Tangram] Unable to render layer with the following cartoCSS:\n' + cartoCSS);
     return false;
   }
 

@@ -146,8 +146,8 @@ describe('geo/leaflet/leaflet-map-view', function () {
   });
 
   it('should remove all layers when map view is cleaned', function () {
-    var cartoDBLayer1 = new CartoDBLayer({ meta: { cartocss: '#layer {}' }}, { vis: this.vis });
-    var cartoDBLayer2 = new CartoDBLayer({ meta: { cartocss: '#layer {}' }}, { vis: this.vis });
+    var cartoDBLayer1 = new CartoDBLayer({ meta: { cartocss: '#layer {}' } }, { vis: this.vis });
+    var cartoDBLayer2 = new CartoDBLayer({ meta: { cartocss: '#layer {}' } }, { vis: this.vis });
     var tileLayer = new TileLayer({ urlTemplate: 'test' }, { vis: {} });
 
     map.addLayer(cartoDBLayer1);

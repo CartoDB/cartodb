@@ -31,7 +31,7 @@
     "camshaft-reference": "<2.0",
     "carto": "cartodb/carto#master",
     "d3": "3.5.17",
-    "tangram.cartodb": "cartodb/tangram.cartodb#master",
+    "tangram.cartodb": "cartodb/tangram.cartodb#events-release",
     "jquery": "2.1.4",
     "leaflet": "1.0.3",
     "mustache": "1.1.0",

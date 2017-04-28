@@ -49,7 +49,8 @@ module Carto
         # a better approach and/or move it to the query builder
         response = {
           visualizations: vqb.with_order("visualizations.#{order}", :desc).build_paged(page, per_page).map { |v|
-              VisualizationPresenter.new(v, current_viewer, self, presenter_options).with_presenter_cache(presenter_cache).to_poro
+              VisualizationPresenter.new(v, current_viewer, self, presenter_options)
+                                    .with_presenter_cache(presenter_cache).to_poro
           },
           total_entries: vqb.build.count
         }

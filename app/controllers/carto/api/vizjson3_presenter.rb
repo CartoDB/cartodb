@@ -384,8 +384,8 @@ module Carto
       def as_carto
         {
           type:       'CartoDB',
-          infowindow: whitelisted_attrs(migrate_builder_infowindow(@layer.infowindow, mustache_dir: 'infowindows')),
-          tooltip:    whitelisted_attrs(migrate_builder_infowindow(@layer.tooltip, mustache_dir: 'tooltips')),
+          infowindow: whitelisted_attrs(migrate_builder_infowindow(@layer)),
+          tooltip:    whitelisted_attrs(migrate_builder_tooltip(@layer)),
           visible:    @layer.options['visible'],
           options:    options_data
         }

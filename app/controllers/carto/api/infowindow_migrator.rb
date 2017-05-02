@@ -3,7 +3,33 @@ module Carto
     module InfowindowMigrator
       MUSTACHE_ROOT_PATH = 'lib/assets/core/javascripts/cartodb3/mustache-templates'.freeze
 
-      def migrate_builder_infowindow(templated_element, mustache_dir: 'infowindows')
+      def migrate_builder_infowindow(layer, alternate_infowindow = nil)
+        return default_infowindow(layer) if needs_default?(layer, layer.infowindow, alternate_infowindow)
+
+        migrate_templated(alternate_infowindow || layer.infowindow, 'infowindows')
+      end
+
+      def migrate_builder_tooltip(layer, alternate_tooltip = nil)
+        return default_tooltip(layer) if needs_default?(layer, layer.tooltip, alternate_tooltip)
+
+        migrate_templated(alternate_tooltip || layer.tooltip, 'tooltips')
+      end
+
+      private
+
+      def needs_default?(layer, templated_element, alternate_templated_element)
+        layer.data_layer? && templated_element.blank? && alternate_templated_element.blank?
+      end
+
+      def default_infowindow(layer)
+        Carto::Api::InfowindowGenerator.new(layer).default_infowindow
+      end
+
+      def default_tooltip(layer)
+        Carto::Api::InfowindowGenerator.new(layer).default_tooltip
+      end
+
+      def migrate_templated(templated_element, mustache_dir)
         return nil if templated_element.nil?
 
         template = templated_element['template']

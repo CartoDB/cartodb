@@ -31,10 +31,6 @@ module Carto
         visible
       )
 
-      INFOWINDOW_KEYS = %w(
-        fields template_name template alternative_names width maxHeight
-      )
-
       # Options:
       # - viewer_user
       # - user: owner user
@@ -53,12 +49,8 @@ module Carto
       def to_poro(migrate_builder_infowindows: false)
         poro = base_poro(@layer)
         if migrate_builder_infowindows
-          if poro['infowindow'].present?
-            poro['infowindow'] = migrate_builder_infowindow(poro['infowindow'])
-          end
-          if poro['tooltip'].present?
-            poro['tooltip'] = migrate_builder_infowindow(poro['tooltip'], mustache_dir: 'tooltips')
-          end
+          poro['infowindow'] = migrate_builder_infowindow(@layer, poro['infowindow'])
+          poro['tooltip'] = migrate_builder_tooltip(@layer, poro['tooltip'])
         end
         poro
       end
@@ -80,11 +72,13 @@ module Carto
         elsif torque?(@layer)
           as_torque
         else
+          infowindow_generator = InfowindowGenerator.new(@layer)
+
           {
             id:         @layer.id,
             type:       'CartoDB',
-            infowindow: infowindow_data_v2,
-            tooltip:    tooltip_data_v2,
+            infowindow: infowindow_generator.infowindow_data_v2,
+            tooltip:    infowindow_generator.tooltip_data_v2,
             legend:     @layer.legend,
             order:      @layer.order,
             visible:    public_values(@layer).symbolize_keys[:options]['visible'],
@@ -98,7 +92,7 @@ module Carto
         {
           id:         @layer.id,
           kind:       'CartoDB',
-          infowindow: infowindow_data_v1,
+          infowindow: InfowindowGenerator.new(@layer).infowindow_data_v1,
           order:      @layer.order,
           options:    options_data_v1
         }
@@ -165,20 +159,6 @@ module Carto
 
       def torque?(layer)
         layer.kind == 'torque'
-      end
-
-      def with_template(infowindow, path)
-        # Careful with this logic:
-        # - nil means absolutely no infowindow (e.g. a torque)
-        # - path = nil or template filled: either pre-filled or custom infowindow, nothing to do here
-        # - template and path not nil but template not filled: stay and fill
-        return nil if infowindow.nil?
-
-        template = infowindow['template']
-        return infowindow if (!template.nil? && !template.empty?) || path.nil?
-
-        infowindow[:template] = File.read(path)
-        infowindow
       end
 
       def layer_options
@@ -259,27 +239,6 @@ module Carto
         }
       end
 
-      def infowindow_data_v1
-        with_template(@layer.infowindow, @layer.infowindow_template_path)
-      rescue => e
-        CartoDB::Logger.error(exception: e)
-        throw e
-      end
-
-      def infowindow_data_v2
-        whitelisted_infowindow(with_template(@layer.infowindow, @layer.infowindow_template_path))
-      rescue => e
-        CartoDB::Logger.error(exception: e)
-        throw e
-      end
-
-      def tooltip_data_v2
-        whitelisted_infowindow(with_template(@layer.tooltip, @layer.tooltip_template_path))
-      rescue => e
-        CartoDB::Logger.error(exception: e)
-        throw e
-      end
-
       def name_for(layer)
         layer_alias = layer.options.fetch('table_name_alias', nil)
         table_name  = layer.options['table_name']
@@ -316,12 +275,6 @@ module Carto
       def public_options
         return @configuration if @configuration.empty?
         @configuration.fetch(:layer_opts).fetch('public_opts')
-      end
-
-      def whitelisted_infowindow(infowindow)
-        infowindow.nil? ? nil : infowindow.select { |key, value|
-                                                    INFOWINDOW_KEYS.include?(key) || INFOWINDOW_KEYS.include?(key.to_s)
-                                                  }
       end
     end
 

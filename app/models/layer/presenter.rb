@@ -45,11 +45,13 @@ module CartoDB
         elsif torque?(layer)
           as_torque
         else
+          infowindow_generator = Carto::Api::InfowindowGenerator.new(@layer)
+
           {
             id:         layer.id,
             type:       'CartoDB',
-            infowindow: infowindow_data_v2,
-            tooltip:    tooltip_data_v2,
+            infowindow: infowindow_generator.infowindow_data_v2,
+            tooltip:    infowindow_generator.tooltip_data_v2,
             legend:     layer.legend,
             order:      layer.order,
             visible:    layer.public_values['options']['visible'],
@@ -69,7 +71,7 @@ module CartoDB
         {
           id:         layer.id,
           kind:       'CartoDB',
-          infowindow: infowindow_data_v1,
+          infowindow: Carto::Api::InfowindowGenerator.new(layer).infowindow_data_v1,
           order:      layer.order,
           options:    options_data_v1
         }
@@ -157,40 +159,6 @@ module CartoDB
           }.merge(
             layer_options.select { |k| TORQUE_ATTRS.include? k })
         }
-      end
-
-      def infowindow_data_v1
-        with_template(layer.infowindow, layer.infowindow_template_path)
-      rescue => e
-        CartoDB::Logger.error(exception: e)
-        throw e
-      end
-
-      def infowindow_data_v2
-        whitelisted_infowindow(with_template(layer.infowindow, layer.infowindow_template_path))
-      rescue => e
-        CartoDB::Logger.error(exception: e)
-        throw e
-      end
-
-      def tooltip_data_v2
-        whitelisted_infowindow(with_template(layer.tooltip, layer.tooltip_template_path))
-      rescue => e
-        CartoDB::Logger.error(exception: e)
-        throw e
-      end
-
-      def with_template(infowindow, path)
-        # Careful with this logic:
-        # - nil means absolutely no infowindow (e.g. a torque)
-        # - path = nil or template filled: either pre-filled or custom infowindow, nothing to do here
-        # - template and path not nil but template not filled: stay and fill
-        return nil if infowindow.nil?
-        template = infowindow['template']
-        return infowindow if (!template.nil? && !template.empty?) || path.nil?
-
-        infowindow.merge!(template: File.read(path))
-        infowindow
       end
 
       def options_data_v2

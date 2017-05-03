@@ -16,6 +16,7 @@ class Admin::OrganizationUsersController < Admin::AdminController
   before_filter :get_config
   before_filter :login_required, :check_permissions
   before_filter :get_user, only: [:edit, :update, :destroy, :regenerate_api_key]
+  before_filter :ensure_edit_permissions, only: [:update, :destroy, :regenerate_api_key]
   before_filter :initialize_google_plus_config, only: [:edit, :update]
 
   layout 'application'
@@ -270,5 +271,12 @@ class Admin::OrganizationUsersController < Admin::AdminController
   def get_user
     @user = current_user.organization.users_dataset.where(username: params[:id]).first
     raise RecordNotFound unless @user
+  end
+
+  def ensure_edit_permissions
+    unless @user.editable_by?(current_user)
+      flash[:error] = "You don't have permissions to edit this user. Contact the organization owner."
+      render 'edit'
+    end
   end
 end

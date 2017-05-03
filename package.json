@@ -25,7 +25,7 @@
     "carto": "cartodb/carto#master",
     "cartodb-deep-insights.js": "cartodb/deep-insights.js#master",
     "cartodb-pecan": "0.2.x",
-    "cartodb.js": "CartoDB/cartodb.js#v4",
+    "cartodb.js": "CartoDB/cartodb.js#12018-sql-function",
     "cartocolor": "4.0.0",
     "clipboard": "1.6.1",
     "codemirror": "5.14.2",

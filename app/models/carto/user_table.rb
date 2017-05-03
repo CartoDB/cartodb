@@ -200,6 +200,10 @@ module Carto
       privacy == PRIVACY_LINK ? 'PUBLIC' : privacy_text
     end
 
+    def automatic_geocoding
+      automatic_geocodings.first
+    end
+
     private
 
     def default_privacy_value

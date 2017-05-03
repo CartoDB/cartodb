@@ -302,6 +302,10 @@ module Carto
       options.symbolize_keys[:source]
     end
 
+    def qualify_for_organization(owner_username)
+      options['query'] = qualify_query(query, options['table_name'], owner_username) if query
+    end
+
     private
 
     # The table dependencies will only be updated after the layer. However, when deleting them, they need to be deleted

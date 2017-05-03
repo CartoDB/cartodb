@@ -220,6 +220,12 @@
       "aggregated-value": "Stores the aggregate value for each centroid.",
       "non-aggregated-value": "Contains the count of features considered for each centroid",
       "category": "Stores the category value for each centroid from the source dataset"
+    },
+    "closest": {
+      "description": "Find nearest analysis locates the closest points between two tables.",
+      "source_cdb_id": "This column has been created with the related points id from the source table.",
+      "the-geom": "This column has been updated with the target table geometries.",
+      "title": "Find nearest"
     }
   },
   "analyses": {
@@ -1406,6 +1412,10 @@
         "title": "Export as image",
         "export": "Export",
         "generating": "Generating",
+        "disclaimer": {
+          "title": "Disclaimer",
+          "body": "Legends and widgets won't be exported as part of the image"
+        },
         "download": "Download",
         "errors": {
           "try-again": "Please, try again. If the problem persists, contact support",
@@ -1652,8 +1662,11 @@
           "select-street-address": "Select an address column",
           "state-help": "Specify a state or select a column with state names",
           "street-address-column": "Street Address",
-          "street-address-help": "Select a column with street addresses",
-          "street-address": "Street Addresses"
+          "street-address-column-help": "Select a column with street addresses",
+          "street-address-help": "Use columns or free text to compose your address schema. <a href='https://carto.com/learn/guides/analysis/georeference' target='_blank'>More info.</a>",
+          "street-address": "Street Addresses",
+          "advance": "Advance mode",
+          "normal": "Normal mode"
         },
         "group-by": "Group by",
         "hide": "Hide",
@@ -1686,6 +1699,18 @@
         "miles": "mi",
         "min": "Min",
         "mode": "Mode",
+        "find-nearest": {
+          "categorized": "categorize",
+          "criteria": "Select the target point layer",
+          "define-params": "Define your parameters",
+          "define-params-desc": "Define and categorize the number of results",
+          "input": "input",
+          "max-results": "max results",
+          "modal-desc": "Find nearest analysis locates the closest points between two tables.",
+          "modal-title": "Find nearest",
+          "target": "target",
+          "title": "Find nearest"
+        },
         "neighbors": "Neighbors",
         "neighbors-help": "Define the local neighborhood as this many nearest-neighbors",
         "no": "No",

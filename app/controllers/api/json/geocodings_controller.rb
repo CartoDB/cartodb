@@ -86,6 +86,6 @@ class Api::Json::GeocodingsController < Api::ApplicationController
   protected
 
   def load_table
-    @table = Helpers::TableLocator.new.get_by_id_or_name(params.fetch('table_name'), current_user)
+    @table = Carto::Helpers::TableLocator.new.get_by_id_or_name(params.fetch('table_name'), current_user).try(:service)
   end
 end

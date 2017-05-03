@@ -58,9 +58,9 @@ module CartoDB
 
     def set_from_table_privacy(table_privacy)
       case table_privacy
-      when ::UserTable::PRIVACY_PUBLIC
+      when Carto::UserTable::PRIVACY_PUBLIC
         set_public
-      when ::UserTable::PRIVACY_LINK
+      when Carto::UserTable::PRIVACY_LINK
         set_public_with_link_only
       else
         set_private
@@ -72,7 +72,7 @@ module CartoDB
       visualizations.each do |visualization|
         if visualization.type == CartoDB::Visualization::Member::TYPE_CANONICAL
           # Each table has a canonical visualization which must have privacy synced
-          visualization.privacy = ::UserTable::PRIVACY_VALUES_TO_TEXTS[privacy]
+          visualization.privacy = Carto::UserTable::PRIVACY_VALUES_TO_TEXTS[privacy]
           visualization.store_using_table(table_privacy_changed)
         else
           visualization.invalidate_cache
@@ -83,7 +83,7 @@ module CartoDB
     end
 
     def set_public
-      self.privacy = ::UserTable::PRIVACY_PUBLIC
+      self.privacy = Carto::UserTable::PRIVACY_PUBLIC
       set_database_permissions(grant_query)
       overviews_service = Carto::OverviewsService.new(owner.in_database)
       overviews_service.overview_tables(fully_qualified_table_name(table.name)).each do |overview_table|
@@ -93,7 +93,7 @@ module CartoDB
     end
 
     def set_private
-      self.privacy = ::UserTable::PRIVACY_PRIVATE
+      self.privacy = Carto::UserTable::PRIVACY_PRIVATE
       set_database_permissions(revoke_query)
       overviews_service = Carto::OverviewsService.new(owner.in_database)
       overviews_service.overview_tables(fully_qualified_table_name(table.name)).each do |overview_table|
@@ -103,7 +103,7 @@ module CartoDB
     end
 
     def set_public_with_link_only
-      self.privacy = ::UserTable::PRIVACY_LINK
+      self.privacy = Carto::UserTable::PRIVACY_LINK
       set_database_permissions(grant_query)
       overviews_service = Carto::OverviewsService.new(owner.in_database)
       overviews_service.overview_tables(fully_qualified_table_name(table.name)).each do |overview_table|

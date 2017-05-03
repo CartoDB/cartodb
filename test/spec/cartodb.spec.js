@@ -106,15 +106,7 @@ describe('cartodb.js bundle', function() {
     });
 
     it('should have a cdb.ui.common object', function() {
-      expect(cdb.ui.common.Dialog).toEqual(jasmine.any(Function));
-      expect(cdb.ui.common.Dropdown).toEqual(jasmine.any(Function));
       expect(cdb.ui.common.FullScreen).toEqual(jasmine.any(Function));
-      expect(cdb.ui.common.Notification).toEqual(jasmine.any(Function));
-      expect(cdb.ui.common.Row).toEqual(jasmine.any(Function));
-      expect(cdb.ui.common.TableData).toEqual(jasmine.any(Function));
-      expect(cdb.ui.common.TableProperties).toEqual(jasmine.any(Function));
-      expect(cdb.ui.common.RowView).toEqual(jasmine.any(Function));
-      expect(cdb.ui.common.Table).toEqual(jasmine.any(Function));
     });
 
     it('should have a cdb.geo object', function() {

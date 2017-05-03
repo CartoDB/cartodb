@@ -264,13 +264,11 @@ class Admin::OrganizationUsersController < Admin::AdminController
 
   def check_permissions
     raise RecordNotFound unless current_user.organization.present?
-    raise RecordNotFound unless current_user.organization_owner? || ['edit', 'update'].include?(params[:action])
+    raise RecordNotFound unless current_user.organization_admin?
   end
 
   def get_user
     @user = current_user.organization.users_dataset.where(username: params[:id]).first
     raise RecordNotFound unless @user
-    raise RecordNotFound unless current_user.organization_owner? || current_user == @user
   end
-
 end

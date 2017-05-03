@@ -170,6 +170,8 @@ class User < Sequel::Model
 
       organization.validate_seats(self, errors)
     end
+
+    errors.add(:viewer, "cannot be enabled for organization admin") if organization_admin? && viewer
   end
 
   #                             +--------+---------+------+
@@ -180,7 +182,7 @@ class User < Sequel::Model
   #   +-------------------------+--------+---------+------+
   #
   def valid_privacy?(privacy)
-    self.private_tables_enabled || privacy == UserTable::PRIVACY_PUBLIC
+    private_tables_enabled || privacy == Carto::UserTable::PRIVACY_PUBLIC
   end
 
   def valid_password?(key, value, confirmation_value)
@@ -332,6 +334,9 @@ class User < Sequel::Model
       CartoDB::UserModule::DBService.terminate_database_connections(database_name, database_host)
     end
 
+    if changes.include?(:org_admin) && !organization_owner?
+      org_admin ? db_service.grant_admin_permissions : db_service.revoke_admin_permissions
+    end
   end
 
   def can_delete
@@ -1522,6 +1527,10 @@ class User < Sequel::Model
 
   def viewer?
     viewer
+  end
+
+  def organization_admin?
+    organization_owner? || org_admin
   end
 
   def builder_enabled?

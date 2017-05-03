@@ -37,7 +37,7 @@ var canMapBeRenderedClientSide = function (mapModel, settingsModel) {
 };
 
 var isWebGLSupported = function () {
-  return !!window.webGLRenderingContext;
+  return !!window.WebGLRenderingContext;
 };
 
 var canLayerBeRenderedClientSide = function (layerModel) {

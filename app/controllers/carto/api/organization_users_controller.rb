@@ -40,6 +40,9 @@ module Carto
         param_viewer = create_params[:viewer]
         account_creator.with_viewer(param_viewer) if param_viewer
 
+        param_org_admin = create_params[:org_admin]
+        account_creator.with_org_admin(param_org_admin) if param_org_admin
+
         if create_params[:soft_geocoding_limit].present?
           account_creator.with_soft_geocoding_limit(create_params[:soft_geocoding_limit])
         end
@@ -142,7 +145,8 @@ module Carto
         :soft_obs_snapshot_limit,
         :soft_twitter_datasource_limit,
         :soft_mapzen_routing_limit,
-        :viewer
+        :viewer,
+        :org_admin
       ].freeze
 
       # TODO: Use native strong params when in Rails 4+

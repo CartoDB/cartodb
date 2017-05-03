@@ -50,7 +50,8 @@ describe Carto::Api::OrganizationUsersController do
                   soft_here_isolines_limit: nil,
                   soft_obs_snapshot_limit: nil,
                   soft_obs_general_limit: nil,
-                  viewer: nil)
+                  viewer: nil,
+                  org_admin: nil)
 
     params = {
       password: '2{Patrañas}',
@@ -66,6 +67,7 @@ describe Carto::Api::OrganizationUsersController do
     params[:soft_obs_snapshot_limit] = soft_obs_snapshot_limit unless soft_obs_snapshot_limit.nil?
     params[:soft_obs_general_limit] = soft_obs_general_limit unless soft_obs_general_limit.nil?
     params[:viewer] = viewer if viewer
+    params[:org_admin] = org_admin if org_admin
 
     params
   end
@@ -155,7 +157,7 @@ describe Carto::Api::OrganizationUsersController do
 
       last_response.status.should eq 200
 
-      last_user_created = @organization.users.detect { |u| u.username == username }
+      last_user_created = @organization.users.find { |u| u.username == username }
       last_user_created.username.should eq username
       last_user_created.email.should eq "#{username}@carto.com"
       last_user_created.soft_geocoding_limit.should eq false
@@ -173,7 +175,7 @@ describe Carto::Api::OrganizationUsersController do
       last_response.status.should eq 200
 
       @organization.reload
-      last_user_created = @organization.users.detect { |u| u.username == username }
+      last_user_created = @organization.users.find { |u| u.username == username }
       last_user_created.soft_geocoding_limit.should eq false
       last_user_created.destroy
     end
@@ -188,12 +190,12 @@ describe Carto::Api::OrganizationUsersController do
       last_response.status.should eq 200
 
       @organization.reload
-      last_user_created = @organization.users.detect { |u| u.username == username }
+      last_user_created = @organization.users.find { |u| u.username == username }
       last_user_created.viewer.should eq true
       last_user_created.destroy
     end
 
-    it 'creates builders by default' do
+    it 'creates non-admin builders by default' do
       login(@organization.owner)
       username = 'builder-user'
       params = user_params(username)
@@ -202,8 +204,23 @@ describe Carto::Api::OrganizationUsersController do
       last_response.status.should eq 200
 
       @organization.reload
-      last_user_created = @organization.users.detect { |u| u.username == username }
+      last_user_created = @organization.users.find { |u| u.username == username }
       last_user_created.viewer.should eq false
+      last_user_created.org_admin.should eq false
+      last_user_created.destroy
+    end
+
+    it 'can create organization admins' do
+      login(@organization.owner)
+      username = 'admin-user'
+      params = user_params(username, org_admin: true)
+      post api_v2_organization_users_create_url(id_or_name: @organization.name), params
+
+      last_response.status.should eq 200
+
+      @organization.reload
+      last_user_created = @organization.users.find { |u| u.username == username }
+      last_user_created.org_admin.should eq true
       last_user_created.destroy
     end
 
@@ -219,7 +236,7 @@ describe Carto::Api::OrganizationUsersController do
       last_response.status.should eq 200
 
       @organization.reload
-      last_user_created = @organization.users.detect { |u| u.username == username }
+      last_user_created = @organization.users.find { |u| u.username == username }
 
       verify_soft_limits(last_user_created, true)
 
@@ -238,7 +255,7 @@ describe Carto::Api::OrganizationUsersController do
       last_response.status.should eq 200
 
       @organization.reload
-      last_user_created = @organization.users.detect { |u| u.username == username }
+      last_user_created = @organization.users.find { |u| u.username == username }
 
       verify_soft_limits(last_user_created, false)
 
@@ -258,7 +275,7 @@ describe Carto::Api::OrganizationUsersController do
       errors.count.should eq 5
 
       @organization.reload
-      @organization.users.detect { |u| u.username == username }.should be_nil
+      @organization.users.find { |u| u.username == username }.should be_nil
     end
   end
 
@@ -330,6 +347,31 @@ describe Carto::Api::OrganizationUsersController do
 
         user_to_update.reload.viewer.should == new_viewer
       end
+    end
+
+    it 'should update org_admin' do
+      login(@organization.owner)
+
+      user_to_update = @organization.non_owner_users[0]
+      2.times do
+        new_org_admin = !user_to_update.org_admin
+        params = { org_admin: new_org_admin }
+        put(api_v2_organization_users_update_url(id_or_name: @organization.name, u_username: user_to_update.username),
+            params)
+        last_response.status.should eq 200
+
+        user_to_update.reload.org_admin.should == new_org_admin
+      end
+    end
+
+    it 'should reject viewers who are also admins' do
+      login(@organization.owner)
+
+      user_to_update = @organization.non_owner_users[0]
+      params = { org_admin: true, viewer: true }
+      put(api_v2_organization_users_update_url(id_or_name: @organization.name, u_username: user_to_update.username),
+          params)
+      last_response.status.should eq 410
     end
 
     it 'should update quota_in_bytes' do

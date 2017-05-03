@@ -51,6 +51,7 @@ class Carto::UserCreation < ActiveRecord::Base
     user_creation.log = Carto::Log.new_user_creation
     user_creation.created_via = created_via
     user_creation.viewer = user.viewer || false
+    user_creation.org_admin = user.org_admin || false
 
     user_creation
   end
@@ -232,6 +233,7 @@ class Carto::UserCreation < ActiveRecord::Base
     @cartodb_user.soft_twitter_datasource_limit = soft_twitter_datasource_limit unless soft_twitter_datasource_limit.nil?
     @cartodb_user.soft_mapzen_routing_limit = soft_mapzen_routing_limit unless soft_mapzen_routing_limit.nil?
     @cartodb_user.viewer = viewer if viewer
+    @cartodb_user.org_admin = org_admin if org_admin
 
     if pertinent_invitation
       @cartodb_user.viewer = pertinent_invitation.viewer

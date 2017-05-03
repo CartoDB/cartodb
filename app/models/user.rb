@@ -847,7 +847,7 @@ class User < Sequel::Model
   end
 
   def viewable_by?(user)
-    self.id == user.id || (has_organization? && self.organization.owner.id == user.id)
+    id == user.id || (has_organization? && user.organization.id == organization.id && user.organization_admin?)
   end
 
   def view_dashboard

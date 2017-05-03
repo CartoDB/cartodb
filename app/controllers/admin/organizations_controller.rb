@@ -145,7 +145,7 @@ class Admin::OrganizationsController < Admin::AdminController
 
   def load_organization_and_members
     @organization = current_user.organization
-    raise RecordNotFound unless @organization.present? && current_user.organization_owner?
+    raise RecordNotFound unless @organization.present? && current_user.organization_admin?
 
     display_signup_warnings if @organization.signup_page_enabled
 

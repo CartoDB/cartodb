@@ -56,7 +56,7 @@ LeafletCartoDBWebglLayerGroupView.prototype = _.extend(
           layerIndex: index,
           latlng: e.leaflet_event.latlng,
           position: e.pixel,
-          feature: e.feature
+          feature: e.feature.properties
         };
       } else {
         return {

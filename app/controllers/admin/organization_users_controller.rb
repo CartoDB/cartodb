@@ -76,6 +76,10 @@ class Admin::OrganizationUsersController < Admin::AdminController
 
     # Validate password first, so nicer errors are displayed
     model_validation_ok = @user.valid_password?(:password, @user.password, @user.password_confirmation) && @user.valid?
+    if @user.organization_admin? && !current_user.organization_owner?
+      @user.errors.add(:org_admin, 'can only be set by organization owner')
+      model_validation_ok = false
+    end
 
     unless model_validation_ok
       raise Sequel::ValidationFailed.new("Validation failed: #{@user.errors.full_messages.join(', ')}")
@@ -274,11 +278,6 @@ class Admin::OrganizationUsersController < Admin::AdminController
   end
 
   def ensure_edit_permissions
-    unless @user.editable_by?(current_user)
-      redirect_to(
-        CartoDB.url(self, 'organization', {}, current_user),
-        flash: { error: "You don't have permissions to edit this user. Contact the organization owner." }
-      )
-    end
+    render_403 unless @user.editable_by?(current_user)
   end
 end

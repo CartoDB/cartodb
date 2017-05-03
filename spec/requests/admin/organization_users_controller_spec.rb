@@ -97,11 +97,12 @@ describe Admin::OrganizationUsersController do
         last_response.status.should == 404
       end
 
-      it 'returns 422 for admin users trying to create an admin' do
+      it 'returns 200 for admin users trying to create an admin' do
         login_as(@admin, scope: @admin.username)
 
         post create_organization_user_url(user_domain: @admin.username), user: user_params.merge(org_admin: true)
-        last_response.status.should == 422
+        last_response.status.should == 200
+        last_response.body.should include 'Validation failed: org_admin can only be set by organization owner'
       end
 
       it 'returns 302 for admin users trying to create a non-admin' do

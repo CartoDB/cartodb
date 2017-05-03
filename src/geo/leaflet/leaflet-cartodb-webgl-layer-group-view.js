@@ -47,12 +47,12 @@ LeafletCartoDBWebglLayerGroupView.prototype = _.extend(
     },
     _getFeatureObject: function (e) {
       var layer = this.layerGroupModel.getCartoLayerById(e.feature && e.feature.source_layer);
-      if (layer && layer[0]) {
-        var index = this.layerGroupModel.getIndexOfLayerInLayerGroup(layer[0]);
-        this.lastLayer = layer[0];
+      if (layer) {
+        var index = this.layerGroupModel.getIndexOfLayerInLayerGroup(layer);
+        this.lastLayer = layer;
         this.lastLayerIndex = index;
         return {
-          layer: layer[0],
+          layer: layer,
           layerIndex: index,
           latlng: e.leaflet_event.latlng,
           position: e.pixel,

@@ -110,8 +110,9 @@ Development
 * Allow to have multiple administrators per organization (#12052)
 
 ### Bug fixes
-* Fixed problem with the textarea editor (cartodb/support#656)
+* Fix estimation analysis row count (#11746)
 * Autostyling for google basemaps (#11838)
+* Fixed problem with the textarea editor (cartodb/support#656)
 * Fixed problem with markdown in organization notifications (#12045)
 * Save collapse state for layer list (#11927)
 * Styling falsy categories (#11421)

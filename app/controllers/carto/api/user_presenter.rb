@@ -9,14 +9,15 @@ module Carto
       # options:
       # - fetch_groups
       # - current_viewer
-      def initialize(user, options = {})
+      def initialize(user, fetch_groups: false, current_viewer: nil)
         @user = user
-        @options = options
+        @fetch_groups = fetch_groups
+        @current_viewer = current_viewer
       end
 
       def to_poro
         return {} if @user.nil?
-        return to_public_poro unless !@options[:current_viewer].nil? && @user.viewable_by?(@options[:current_viewer])
+        return to_public_poro unless @current_viewer && @user.viewable_by?(@current_viewer)
 
         poro = {
           id:               @user.id,
@@ -32,8 +33,8 @@ module Carto
           all_visualization_count: @user.all_visualization_count
         }
 
-        if @options[:fetch_groups] == true
-          poro.merge!(groups: @user.groups ? @user.groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro } : [])
+        if @fetch_groups
+          poro[:groups] = @user.groups ? @user.groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro } : []
         end
 
         poro
@@ -58,8 +59,8 @@ module Carto
           viewer:           @user.viewer?
         }
 
-        if @options[:fetch_groups] == true
-          poro.merge!(groups: @user.groups ? @user.groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro } : [])
+        if @fetch_groups
+          poro[:groups] = @user.groups ? @user.groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro } : []
         end
 
         poro

@@ -1,4 +1,3 @@
-var _ = require('underscore');
 var camshaftReference = require('camshaft-reference').getVersion('latest');
 var PARAM_TYPES = {
   NODE: 'node',

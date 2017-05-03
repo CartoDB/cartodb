@@ -132,8 +132,6 @@ module.exports = Model.extend({
       if (sourceInfo) {
         source[sourceName] = sourceInfo.toJSON();
         _.extend(json.params, source);
-      } else {
-        source[sourceName] = null;
       }
     }, this);
 

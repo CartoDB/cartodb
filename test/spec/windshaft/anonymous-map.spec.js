@@ -356,9 +356,7 @@ describe('windshaft/anonymous-map', function () {
               throw new Error('analysis type ' + analysisType + ' not supported');
             }
             return map[analysisType];
-          },
-
-          isSourceNameOptionalForAnalysisType: function () { return false; }
+          }
         };
 
         this.analysisFactory = new AnalysisFactory({

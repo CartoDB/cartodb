@@ -137,9 +137,6 @@ describe('src/analysis/analysis-model.js', function () {
           };
 
           return map[analysisType];
-        },
-        isSourceNameOptionalForAnalysisType: function (analysisType, sourceName) {
-          return (analysisType === 'analysis-type-5' && sourceName === 'source5');
         }
       };
 

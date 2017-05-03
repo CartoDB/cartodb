@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.6.87-11746-mismatch-estimation",
+  "version": "4.6.88",
   "description": "CARTO UI frontend",
   "repository": {
     "type": "git",

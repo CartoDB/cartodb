@@ -88,11 +88,9 @@ module.exports = Model.extend({
     if (this.get('id') === analysisId) {
       return this;
     }
-    var sourceNames = this._getSourceNames();
-    var sources = _.chain(sourceNames)
+    var sources = _.chain(this._getSourceNames())
       .map(function (sourceName) {
         var source = this.get(sourceName);
-        var isOptional = this._camshaftReference.isSourceNameOptionalForAnalysisType(this.get('type'), sourceName);
         if (source) {
           return source.findAnalysisById(analysisId);
         }
@@ -130,12 +128,11 @@ module.exports = Model.extend({
     var sourceNames = this._getSourceNames();
     _.each(sourceNames, function (sourceName) {
       var source = {};
-      var isOptional = this._camshaftReference.isSourceNameOptionalForAnalysisType(this.get('type'), sourceName);
       var sourceInfo = this.get(sourceName);
       if (sourceInfo) {
         source[sourceName] = sourceInfo.toJSON();
         _.extend(json.params, source);
-      } else if (!isOptional) {
+      } else {
         source[sourceName] = null;
       }
     }, this);

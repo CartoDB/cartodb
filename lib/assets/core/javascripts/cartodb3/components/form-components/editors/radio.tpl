@@ -3,7 +3,7 @@
     <input type="radio" class="CDB-Radio u-iBlock<% if (item.className) { %> <%- item.className %> <% } %>"
     name="<%- item.name %>" value="<%- item.value %>" id="<%- item.id %>" 
         <% if (item.selected) { %>
-          selected="selected"
+          checked="checked"
         <% } else if (item.disabled) { %>
           disabled="disabled"
         <% } %>

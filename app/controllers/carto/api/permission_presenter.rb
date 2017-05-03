@@ -71,12 +71,7 @@ module Carto
       def user_decoration(user_id)
         user = ::User.where(id: user_id).first
         return {} if user.nil?
-        {
-            id:         user.id,
-            username:   user.username,
-            avatar_url: user.avatar_url,
-            base_url:   user.public_url
-        }
+        Carto::Api::UserPresenter.new(user, fetch_groups: true).to_public_poro
       end
 
       def organization_decoration(org_id)

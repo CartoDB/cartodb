@@ -256,6 +256,11 @@ class Carto::Visualization < ActiveRecord::Base
     type == TYPE_CANONICAL
   end
 
+  # TODO: remove. Kept for backwards compatibility with ::Permission model
+  def table?
+    type == TYPE_CANONICAL
+  end
+
   def derived?
     type == TYPE_DERIVED
   end

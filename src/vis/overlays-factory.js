@@ -1,5 +1,4 @@
 var _ = require('underscore');
-var Model = require('../core/model');
 var Template = require('../core/template');
 var Search = require('../geo/ui/search/search');
 var TilesLoader = require('../geo/ui/tiles-loader');

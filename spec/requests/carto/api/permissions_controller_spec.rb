@@ -3,18 +3,17 @@ require 'sequel'
 require 'rack/test'
 require 'json'
 require 'uri'
-require_relative './../../factories/organizations_contexts'
 
-require_relative '../../spec_helper'
-require_relative '../../../app/controllers/api/json/synchronizations_controller'
+require 'spec_helper'
+require_relative './../../../factories/organizations_contexts'
+require 'api/json/synchronizations_controller'
 
-include CartoDB
 
 def app
   CartoDB::Application.new
 end
 
-describe Api::Json::PermissionsController do
+describe Carto::Api::PermissionsController do
   include Rack::Test::Methods
 
   before(:all) do

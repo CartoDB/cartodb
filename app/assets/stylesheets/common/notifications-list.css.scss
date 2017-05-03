@@ -152,6 +152,14 @@ $opacityTransition: 250ms;
   strong {
     font-weight: 600;
   }
+  code {
+    margin: 0;
+    padding: 3px;
+    border-radius: 3px;
+    background-color: rgba(#000, 0.05);
+    font-size: 85%;
+    line-height: 25px;
+  }
 }
 .NotificationsList-itemDescription {
   height: 16px;

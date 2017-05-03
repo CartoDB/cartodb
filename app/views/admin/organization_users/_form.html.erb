@@ -81,7 +81,7 @@
       </div>
     </div>
     <div class="FormAccount-rowInfo u-lspace-23 u-bSpace--xl">
-      <p class="FormAccount-rowInfoText">Build and read</p>
+      <p class="FormAccount-rowInfoText">Write and Read access</p>
     </div>
 
     <div class="FormAccount-rowData">
@@ -94,9 +94,9 @@
     <div class="FormAccount-rowInfo u-lspace-23">
       <p class="FormAccount-rowInfoText">
         <% if current_user.organization.remaining_viewer_seats == 0 %>
-          You don't have viewer seats activated. <a href="mailto:enterprise-support@carto.com">Contact support</a> for more information.
+          You do not have viewer seats activated. <a href="mailto:enterprise-support@carto.com">Contact support</a> for more information.
         <% else %>
-          Only read
+          Read-only
         <% end %>
       </p>
     </div>

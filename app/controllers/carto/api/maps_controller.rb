@@ -39,15 +39,26 @@ module Carto
         end
       end
 
+      STRING_PARAMS = [:bounding_box_sw, :bounding_box_ne, :center, :view_bounds_sw, :view_bounds_ne].freeze
+
       def update_params
-        params.slice(:bounding_box_ne,
-                     :bounding_box_sw,
-                     :center,
-                     :options,
-                     :provider,
-                     :view_bounds_ne,
-                     :view_bounds_sw,
-                     :zoom)
+        update_params = params.slice(:bounding_box_ne,
+                                     :bounding_box_sw,
+                                     :center,
+                                     :options,
+                                     :provider,
+                                     :view_bounds_ne,
+                                     :view_bounds_sw,
+                                     :zoom,
+                                     :legends,
+                                     :scrollwheel)
+
+        STRING_PARAMS.each do |param|
+          update_params[param] = update_params[param].to_s
+        end
+
+        # Remove empty values, keeping `false`s (`present?` can't be used because of this)
+        update_params.reject { |_k, v| v.nil? || v == '' }
       end
 
       def map_presentation

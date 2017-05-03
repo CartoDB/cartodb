@@ -486,9 +486,6 @@ CartoDB::Application.routes.draw do
     post   '(/user/:user_domain)(/u/:user_domain)/api/v1/users/:user_id/assets'     => 'assets#create',  as: :api_v1_users_assets_create
     delete '(/user/:user_domain)(/u/:user_domain)/api/v1/users/:user_id/assets/:id' => 'assets#destroy', as: :api_v1_users_assets_destroy
 
-    # Maps
-    put    '(/user/:user_domain)(/u/:user_domain)/api/v1/maps/:id' => 'maps#update',  as: :api_v1_maps_update
-
     # Geocodings
     post '(/user/:user_domain)(/u/:user_domain)/api/v1/geocodings'                                => 'geocodings#create',               as: :api_v1_geocodings_create
     put  '(/user/:user_domain)(/u/:user_domain)/api/v1/geocodings/:id'                            => 'geocodings#update',               as: :api_v1_geocodings_update
@@ -625,7 +622,7 @@ CartoDB::Application.routes.draw do
     end
 
     scope 'v1/' do
-      resources :maps, only: [:show], constraints: { id: UUID_REGEXP }
+      resources :maps, only: [:show, :update], constraints: { id: UUID_REGEXP }
 
       # Organization assets
       scope '/organization/:organization_id', constraints: { id: UUID_REGEXP } do

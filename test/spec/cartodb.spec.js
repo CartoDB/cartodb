@@ -126,20 +126,10 @@ describe('cartodb.js bundle', function() {
     });
 
     it('should have a cdb.geo.ui object', function() {
-      expect(cdb.geo.ui.Text).toEqual(jasmine.any(Function));
-      expect(cdb.geo.ui.Annotation).toEqual(jasmine.any(Function));
-      expect(cdb.geo.ui.Image).toEqual(jasmine.any(Function));
-      expect(cdb.geo.ui.Zoom).toEqual(jasmine.any(Function));
-
       expect(cdb.geo.ui.InfowindowModel).toEqual(jasmine.any(Function));
       expect(cdb.geo.ui.Infowindow).toEqual(jasmine.any(Function));
-
       expect(cdb.geo.ui.Search).toEqual(jasmine.any(Function));
-
-      expect(cdb.geo.ui.LayerView).toEqual(jasmine.any(Function));
-
       expect(cdb.geo.ui.TilesLoader).toEqual(jasmine.any(Function));
-      expect(cdb.geo.ui.InfoBox).toEqual(jasmine.any(Function));
       expect(cdb.geo.ui.Tooltip).toEqual(jasmine.any(Function));
     });
 

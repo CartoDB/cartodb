@@ -86,7 +86,7 @@
 
     <div class="FormAccount-rowData">
       <div class="CDB-Text CDB-Size-medium u-rSpace--xl">
-        <input class="CDB-Radio js-userViewerOption" type="radio" name="user[viewer]" value="true" <%= @user.viewer? ? 'checked' : '' %> <%= (current_user.organization.remaining_viewer_seats > 0 || @user.viewer?) && !@user.organization_owner? ? '' : 'disabled' %> required>
+        <input class="CDB-Radio js-userViewerOption" type="radio" name="user[viewer]" value="true" <%= @user.viewer? ? 'checked' : '' %> <%= (current_user.organization.remaining_viewer_seats > 0 || @user.viewer?) && !@user.organization_owner? && !(@user.organization_admin? && !current_user.organization_owner?) ? '' : 'disabled' %> required>
         <span class="u-iBlock CDB-Radio-face"></span>
         <label class="u-iBlock u-lSpace CDB-Text CDB-Size-medium u-secondaryTextColor is-semibold">Viewer (<%= current_user.organization.assigned_viewer_seats %>/<%= current_user.organization.viewer_seats %>)</label>
       </div>
@@ -95,6 +95,8 @@
       <p class="FormAccount-rowInfoText">
         <% if @user.organization_owner? %>
           The organization owner cannot be a viewer user.
+        <% elsif @user.organization_admin? && !current_user.organization_owner? %>
+          Organization admins can only be builder users.
         <% elsif current_user.organization.remaining_viewer_seats == 0 %>
           You don't have viewer seats activated. <a href="mailto:enterprise-support@carto.com">Contact support</a> for more information.
         <% else %>

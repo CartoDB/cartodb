@@ -10,8 +10,9 @@ module Carto
       ssl_required :index, :show, :create, :update, :destroy
 
       before_filter :load_organization
-      before_filter :owners_only
+      before_filter :admins_only
       before_filter :load_user, only: [:show, :update, :destroy]
+      before_filter :ensure_edit_permissions, only: [:show, :update, :destroy]
 
       def index
         presentations = @organization.users.each do |user|
@@ -67,7 +68,13 @@ module Carto
           account_creator.with_soft_mapzen_routing_limit(create_params[:soft_mapzen_routing_limit])
         end
 
-        render_jsonp(account_creator.validation_errors.full_messages, 410) && return unless account_creator.valid?
+        validation_ok = account_creator.valid?
+        if param_org_admin && !current_viewer.organization_owner?
+          account_creator.validation_errors.add(:org_admin, 'can only be set by organization owner')
+          validation_ok = false
+        end
+
+        render_jsonp(account_creator.validation_errors.full_messages, 410) && return unless validation_ok
 
         account_creator.enqueue_creation(self)
 
@@ -158,6 +165,12 @@ module Carto
       # TODO: Use native strong params when in Rails 4+
       def update_params
         @update_params ||= permit(COMMON_MUTABLE_ATTRIBUTES)
+      end
+
+      def ensure_edit_permissions
+        unless @user.editable_by?(current_viewer)
+          render_jsonp({ errors: ['You do not have permissions to edit that user'] }, 401)
+        end
       end
     end
   end

@@ -111,11 +111,17 @@
       </div>
       <div class="FormAccount-rowData">
         <div class="Toggler">
-          <%= f.check_box :org_admin, id: "org_admin" %>
+          <%= f.check_box :org_admin, id: "org_admin", disabled: !current_user.organization_owner? %>
           <%= label_tag(:org_admin, '') %>
         </div>
         <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
-          <p class="CDB-Text CDB-Size-small u-altTextColor">User has permission to manage users and groups and send notifications</p>
+          <p class="CDB-Text CDB-Size-small u-altTextColor">
+            <% if current_user.organization_owner? %>
+              User has permission to manage users and groups and send notifications
+            <% else %>
+              Only the organization owner can assign administrator rights
+            <% end %>
+          </p>
         </div>
       </div>
     </div>

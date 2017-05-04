@@ -106,17 +106,17 @@ describe Admin::OrganizationsController do
     end
   end
 
-  describe 'notifications' do
+  shared_examples_for 'notifications' do
     before(:each) do
       host! "#{@organization.name}.localhost.lan"
-      login_as(@org_user_owner, scope: @org_user_owner.username)
+      login_as(@admin_user, scope: @admin_user.username)
     end
 
     describe '#notifications' do
       it 'displays last notification' do
         body = 'Free meal today'
         FactoryGirl.create(:notification, organization: @carto_organization, body: body)
-        get organization_notifications_admin_url(user_domain: @org_user_owner.username)
+        get organization_notifications_admin_url(user_domain: @admin_user.username)
         response.status.should eq 200
         response.body.should include(body)
       end
@@ -128,7 +128,7 @@ describe Admin::OrganizationsController do
           body: 'the body',
           recipients: Carto::Notification::RECIPIENT_ALL
         }
-        post new_organization_notification_admin_url(user_domain: @org_user_owner.username), carto_notification: params
+        post new_organization_notification_admin_url(user_domain: @admin_user.username), carto_notification: params
         response.status.should eq 302
         flash[:success].should eq 'Notification sent!'
         notification = @carto_organization.reload.notifications.first
@@ -141,10 +141,28 @@ describe Admin::OrganizationsController do
     describe '#destroy_notification' do
       it 'destroys a notification' do
         notification = @carto_organization.notifications.first
-        delete destroy_organization_notification_admin_url(user_domain: @org_user_owner.username, id: notification.id)
+        delete destroy_organization_notification_admin_url(user_domain: @admin_user.username, id: notification.id)
         response.status.should eq 302
         flash[:success].should eq 'Notification was successfully deleted!'
         @carto_organization.reload.notifications.should_not include(notification)
+      end
+    end
+  end
+
+  describe 'with organization owner' do
+    it_behaves_like 'notifications' do
+      before(:all) do
+        @admin_user = @org_user_owner
+      end
+    end
+  end
+
+  describe 'with organization admin' do
+    it_behaves_like 'notifications' do
+      before(:all) do
+        @org_user_2.org_admin = true
+        @org_user_2.save
+        @admin_user = @org_user_2
       end
     end
   end

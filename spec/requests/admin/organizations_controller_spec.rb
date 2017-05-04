@@ -8,10 +8,103 @@ describe Admin::OrganizationsController do
   let(:out_of_quota_message) { "Your organization has run out of quota" }
   let(:out_of_seats_message) { "Your organization has run out of seats" }
 
+  before(:all) do
+    @org_user_2.org_admin = true
+    @org_user_2.save
+  end
+
+  describe '#settings' do
+    let(:payload) do
+      {
+        organization: { color: '#ff0000' }
+      }
+    end
+
+    before(:each) do
+      host! "#{@organization.name}.localhost.lan"
+    end
+
+    it 'cannot be accessed by non owner users' do
+      login_as(@org_user_1, scope: @org_user_1.username)
+      get organization_settings_url(user_domain: @org_user_1.username)
+      response.status.should eq 404
+
+      login_as(@org_user_2, scope: @org_user_2.username)
+      get organization_settings_url(user_domain: @org_user_2.username)
+      response.status.should eq 404
+    end
+
+    it 'cannot be updated by non owner users' do
+      login_as(@org_user_1, scope: @org_user_1.username)
+      put organization_settings_update_url(user_domain: @org_user_1.username), payload
+      response.status.should eq 404
+
+      login_as(@org_user_2, scope: @org_user_2.username)
+      put organization_settings_update_url(user_domain: @org_user_2.username), payload
+      response.status.should eq 404
+    end
+
+    it 'can be accessed by owner user' do
+      login_as(@org_user_owner, scope: @org_user_owner.username)
+      get organization_settings_url(user_domain: @org_user_owner.username)
+      response.status.should eq 200
+    end
+
+    it 'can be updated by owner user' do
+      login_as(@org_user_owner, scope: @org_user_owner.username)
+      put organization_settings_update_url(user_domain: @org_user_owner.username), payload
+      response.status.should eq 200
+    end
+  end
+
   describe '#auth' do
+    let(:payload) do
+      {
+        organization: {
+          whitelisted_email_domains: '',
+          auth_username_password_enabled: true,
+          auth_google_enabled: true,
+          auth_github_enabled: true,
+          strong_passwords_enabled: false
+        }
+      }
+    end
+
     before(:each) do
       host! "#{@organization.name}.localhost.lan"
       login_as(@org_user_owner, scope: @org_user_owner.username)
+    end
+
+    it 'cannot be accessed by non owner users' do
+      login_as(@org_user_1, scope: @org_user_1.username)
+      get organization_auth_url(user_domain: @org_user_1.username)
+      response.status.should eq 404
+
+      login_as(@org_user_2, scope: @org_user_2.username)
+      get organization_auth_url(user_domain: @org_user_2.username)
+      response.status.should eq 404
+    end
+
+    it 'cannot be updated by non owner users' do
+      login_as(@org_user_1, scope: @org_user_1.username)
+      put organization_auth_update_url(user_domain: @org_user_1.username), payload
+      response.status.should eq 404
+
+      login_as(@org_user_2, scope: @org_user_2.username)
+      put organization_auth_update_url(user_domain: @org_user_2.username), payload
+      response.status.should eq 404
+    end
+
+    it 'can be accessed by owner user' do
+      login_as(@org_user_owner, scope: @org_user_owner.username)
+      get organization_auth_url(user_domain: @org_user_owner.username)
+      response.status.should eq 200
+    end
+
+    it 'can be updated by owner user' do
+      login_as(@org_user_owner, scope: @org_user_owner.username)
+      put organization_auth_update_url(user_domain: @org_user_owner.username), payload
+      response.status.should eq 200
     end
 
     describe 'signup enabled' do
@@ -160,8 +253,6 @@ describe Admin::OrganizationsController do
   describe 'with organization admin' do
     it_behaves_like 'notifications' do
       before(:all) do
-        @org_user_2.org_admin = true
-        @org_user_2.save
         @admin_user = @org_user_2
       end
     end

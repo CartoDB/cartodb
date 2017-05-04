@@ -133,6 +133,10 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
   border-color: $cTypography-linkHover;
   cursor: pointer;
 }
+.OrganizationList-userLink.disabled {
+  opacity: 0.5;
+  cursor: initial;
+}
 .OrganizationList-paginator {
   @include display-flex();
   @include justify-content(flex-end, end);

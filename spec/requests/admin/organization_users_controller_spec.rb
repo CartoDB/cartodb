@@ -176,6 +176,14 @@ describe Admin::OrganizationUsersController do
         last_response.status.should == 403
       end
 
+      it 'returns 200 with error for admin users trying to convert a user into an admin' do
+        login_as(@admin, scope: @admin.username)
+
+        put update_organization_user_url(user_domain: @admin.username, id: @user.username), user: { org_admin: true }
+        last_response.status.should == 422
+        expect(last_response.body).to include 'org_admin can only be set by organization owner'
+      end
+
       it 'returns 302 for admin users trying to edit a non-admin' do
         login_as(@admin, scope: @admin.username)
 

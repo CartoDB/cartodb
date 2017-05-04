@@ -157,6 +157,11 @@ class Admin::OrganizationUsersController < Admin::AdminController
       model_validation_ok &&= @user.valid_password?(:password, attributes[:password], attributes[:password_confirmation])
     end
 
+    if @user.column_changed?(:org_admin) && !current_user.organization_owner?
+      @user.errors.add(:org_admin, 'can only be set by organization owner')
+      model_validation_ok = false
+    end
+
     unless model_validation_ok
       raise Sequel::ValidationFailed.new("Validation failed: #{@user.errors.full_messages.join(', ')}")
     end

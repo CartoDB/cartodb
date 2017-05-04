@@ -913,7 +913,7 @@
           },
           "deprecated-sql-function": {
             "title": "SQL Function",
-            "desc": "Some description"
+            "desc": "Run your custom SQL function"
           }
         }
       },

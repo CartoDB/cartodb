@@ -178,6 +178,7 @@ WORKING_SPECS_5 = \
 	spec/models/user_organization_spec.rb \
 	spec/models/synchronization/synchronization_oauth_spec.rb \
 	spec/models/permission_spec.rb \
+	spec/models/carto/permission_spec.rb \
 	spec/lib/carto/ghost_tables_manager_spec.rb \
 	spec/lib/carto/bolt_spec.rb \
 	spec/lib/carto/valid_table_name_proposer_spec.rb \
@@ -214,7 +215,7 @@ WORKING_SPECS_9 = \
 	spec/requests/carto/api/oembed_controller_spec.rb \
 	spec/models/asset_spec.rb \
 	spec/models/access_token_spec.rb \
-	spec/requests/api/permissions_controller_spec.rb \
+	spec/requests/carto/api/permissions_controller_spec.rb \
 	spec/models/shared_entity_spec.rb \
 	spec/requests/signup_controller_spec.rb \
 	spec/requests/account_tokens_controller_spec.rb \

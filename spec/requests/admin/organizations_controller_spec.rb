@@ -22,6 +22,7 @@ describe Admin::OrganizationsController do
 
     before(:each) do
       host! "#{@organization.name}.localhost.lan"
+      Organization.any_instance.stubs(:update_in_central).returns(true)
     end
 
     it 'cannot be accessed by non owner users' do
@@ -53,7 +54,7 @@ describe Admin::OrganizationsController do
     it 'can be updated by owner user' do
       login_as(@org_user_owner, scope: @org_user_owner.username)
       put organization_settings_update_url(user_domain: @org_user_owner.username), payload
-      response.status.should eq 200
+      response.status.should eq 302
     end
   end
 
@@ -73,6 +74,7 @@ describe Admin::OrganizationsController do
     before(:each) do
       host! "#{@organization.name}.localhost.lan"
       login_as(@org_user_owner, scope: @org_user_owner.username)
+      Organization.any_instance.stubs(:update_in_central).returns(true)
     end
 
     it 'cannot be accessed by non owner users' do
@@ -104,7 +106,7 @@ describe Admin::OrganizationsController do
     it 'can be updated by owner user' do
       login_as(@org_user_owner, scope: @org_user_owner.username)
       put organization_auth_update_url(user_domain: @org_user_owner.username), payload
-      response.status.should eq 200
+      response.status.should eq 302
     end
 
     describe 'signup enabled' do

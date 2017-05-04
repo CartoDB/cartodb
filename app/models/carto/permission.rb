@@ -43,7 +43,7 @@ class Carto::Permission < ActiveRecord::Base
       entity_id = entry[:id]
       case entry[:type]
       when TYPE_USER
-        Carto::User.where(id: entity_id).first
+        Carto::User.find(entity_id)
       when TYPE_ORGANIZATION
         Carto::Organization.where(id: entity_id).first
       when TYPE_GROUP
@@ -172,6 +172,17 @@ class Carto::Permission < ActiveRecord::Base
       end
     rescue => e
       CartoDB::Logger.error(message: "Problem sending notification mail", exception: e)
+    end
+  end
+
+  def set_user_permission(subject, access)
+    set_subject_permission(subject.id, access, TYPE_USER)
+  end
+
+  def remove_user_permission(user)
+    granted_access = granted_access_for_user(user)
+    if granted_access != ACCESS_NONE
+      self.acl = inputable_acl.select { |entry| entry[:entity][:id] != user.id }
     end
   end
 
@@ -332,7 +343,7 @@ class Carto::Permission < ActiveRecord::Base
           end
           users.each { |user|
             # Cleaning, see #5668
-            u = Carto::User[user[:id]]
+            u = Carto::User.find(user[:id])
             entity.table.remove_access(u) if u
           }
           # update_db_group_permission check is needed to avoid updating db requests
@@ -399,7 +410,7 @@ class Carto::Permission < ActiveRecord::Base
     if shared_entity.recipient_type == CartoDB::SharedEntity::RECIPIENT_TYPE_ORGANIZATION
       permission_strategy = CartoDB::OrganizationPermission.new
     else
-      u = Carto::User.where(id: shared_entity[:recipient_id]).first
+      u = Carto::User.find(shared_entity[:recipient_id])
       permission_strategy = CartoDB::UserPermission.new(u)
     end
 
@@ -430,6 +441,57 @@ class Carto::Permission < ActiveRecord::Base
   def invalidate_for_permissions_change(visualization)
     visualization.invalidate_cache
     visualization.save_named_map
+  end
+
+  def set_subject_permission(subject_id, access, type)
+    new_acl = inputable_acl
+
+    new_acl << {
+      type: type,
+      entity: {
+        id: subject_id,
+        avatar_url: '',
+        username: '',
+        name: ''
+      },
+      access: access
+    }
+
+    self.acl = new_acl
+  end
+
+  # acl write method expects entries to have entity, although they're not
+  # stored.
+  # TODO: fix this, since this is coupled to representation.
+  def inputable_acl
+    self.acl.map { |entry|
+      {
+        type: entry[:type],
+        entity: {
+          id: entry[:id],
+          avatar_url: '',
+          username: '',
+          name: ''
+        },
+        access: entry[:access]
+      }
+    }
+  end
+
+  def granted_access_for_user(user)
+    granted_access_for_entry_type(TYPE_USER, user)
+  end
+
+  def granted_access_for_entry_type(type, entity)
+    permission = nil
+
+    acl.map do |entry|
+      if entry[:type] == type && entry[:id] == entity.id
+        permission = entry[:access]
+      end
+    end
+    permission = ACCESS_NONE if permission.nil?
+    permission
   end
 
 end

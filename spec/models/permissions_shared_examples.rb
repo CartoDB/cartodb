@@ -599,4 +599,34 @@ shared_examples_for 'permission models' do
       CartoDB::Permission.compare_new_acl(acl1, acl2).should == expected_diff
     end
   end
+
+  describe '#set_user_permission and #remove_user_permission' do
+    it 'sets and removes user permission' do
+      map, table, table_visualization, visualization = create_full_visualization(@carto_user)
+      permission = permission_from_visualization_id(table_visualization.id)
+
+      permission.set_user_permission(@user2, Permission::ACCESS_READONLY)
+      permission.save
+      visualization = visualization_from_id(table_visualization.id)
+      visualization.has_permission?(@user2, Permission::ACCESS_READONLY).should be_true
+      visualization.has_permission?(@user2, Permission::ACCESS_READWRITE).should be_false
+
+      # Permission is reassigned because current design doesn't works well with several changes in a row.
+      permission = permission_from_visualization_id(table_visualization.id)
+      permission.remove_user_permission(@user2)
+      permission.save
+      visualization = visualization_from_id(table_visualization.id)
+      visualization.has_permission?(@user2, Permission::ACCESS_READONLY).should be_false
+      visualization.has_permission?(@user2, Permission::ACCESS_READWRITE).should be_false
+
+      permission = permission_from_visualization_id(table_visualization.id)
+      permission.set_user_permission(@user2, Permission::ACCESS_READWRITE)
+      permission.save
+      visualization = visualization_from_id(table_visualization.id)
+      visualization.has_permission?(@user2, Permission::ACCESS_READONLY).should be_true
+      visualization.has_permission?(@user2, Permission::ACCESS_READWRITE).should be_true
+
+      destroy_full_visualization(map, table, table_visualization, visualization)
+    end
+  end
 end

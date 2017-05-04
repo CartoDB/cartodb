@@ -6,7 +6,11 @@ require 'models/permissions_shared_examples'
 describe Carto::Permission do
   it_behaves_like 'permission models' do
     def permission_from_visualization_id(entity_id)
-      Carto::Visualization.find(entity_id).permission
+      visualization_from_id(entity_id).permission
+    end
+
+    def visualization_from_id(entity_id)
+      Carto::Visualization.find(entity_id)
     end
 
     def permission_klass

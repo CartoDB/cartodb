@@ -4,6 +4,7 @@ Development
 * An attacker could execute commands in the server running the queues by importing a file with a carefully crafted filename. Fixed in #11782
 
 ### Features
+* Overiviews are synchronized now (#12092)
 * Using Node v6.9.2 and npm v3.10.9 (#11935).
 * Exposed some cartodb.js methods through map definition model (#11846)
 * Dataservices configuration rake tasks (#11917)

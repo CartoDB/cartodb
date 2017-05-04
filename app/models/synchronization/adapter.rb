@@ -9,11 +9,12 @@ module CartoDB
 
       attr_accessor :table
 
-      def initialize(table_name, runner, database, user)
+      def initialize(table_name, runner, database, user, overviews_creator)
         @table_name   = table_name
         @runner       = runner
         @database     = database
         @user         = user
+        @overviews_creator = overviews_creator
         @failed       = false
       end
 
@@ -36,6 +37,7 @@ module CartoDB
           overwrite(table_name, result)
           setup_table(table_name, geo_type)
           run_index_statements(index_statements)
+          recreate_overviews(result)
         end
         self
       rescue => exception
@@ -46,6 +48,28 @@ module CartoDB
         puts '=================='
         drop(result.table_name) if result && exists?(result.table_name)
         raise exception
+      end
+
+      def recreate_overviews(result)
+        dataset = @overviews_creator.dataset(result.name)
+        dataset.delete_overviews!
+        if dataset.should_create_overviews?
+          dataset.create_overviews!
+        end
+      rescue => exception
+        # In case of overview creation failure we'll just omit the
+        # overviews creation and continue with the process.
+        # Since the actual creation is handled by a single SQL
+        # function, and thus executed in a transaction, we shouldn't
+        # need any clean up here. (Either all overviews were created
+        # or nothing changed)
+        runner.log.append("Overviews recreation failed: #{exception.message}")
+        CartoDB::Logger.error(
+          message:    "Overviews recreation failed",
+          exception:  exception,
+          user:       @user,
+          table_name: result.name
+        )
       end
 
       def overwrite(table_name, result)

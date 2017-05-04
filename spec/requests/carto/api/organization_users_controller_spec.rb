@@ -335,6 +335,15 @@ describe Carto::Api::OrganizationUsersController do
       last_response.status.should == 401
     end
 
+    it 'org admins cannot convert other users into admins' do
+      login(@org_user_2)
+
+      put api_v2_organization_users_update_url(id_or_name: @organization.name, u_username: @org_user_1.username),
+          org_admin: true
+      last_response.status.should == 410
+      expect(last_response.body).to include 'org_admin can only be set by organization owner'
+    end
+
     it 'should do nothing if no update params are provided' do
       login(@organization.owner)
 

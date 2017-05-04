@@ -68,13 +68,13 @@ module Carto
           account_creator.with_soft_mapzen_routing_limit(create_params[:soft_mapzen_routing_limit])
         end
 
-        validation_ok = account_creator.valid?
+        model_validation_ok = account_creator.valid?
         if param_org_admin && !current_viewer.organization_owner?
           account_creator.validation_errors.add(:org_admin, 'can only be set by organization owner')
-          validation_ok = false
+          model_validation_ok = false
         end
 
-        render_jsonp(account_creator.validation_errors.full_messages, 410) && return unless validation_ok
+        render_jsonp(account_creator.validation_errors.full_messages, 410) && return unless model_validation_ok
 
         account_creator.enqueue_creation(self)
 
@@ -103,6 +103,10 @@ module Carto
         model_validation_ok &&= @user.valid_password?(:password, password, password) if password.present?
         @user.set_fields(params_to_update, params_to_update.keys)
         model_validation_ok &&= @user.valid?
+        if @user.column_changed?(:org_admin) && !current_viewer.organization_owner?
+          @user.errors.add(:org_admin, 'can only be set by organization owner')
+          model_validation_ok = false
+        end
 
         unless model_validation_ok
           render_jsonp(@user.errors.full_messages, 410)

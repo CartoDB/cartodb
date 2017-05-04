@@ -70,13 +70,13 @@ describe('windshaft/named-map', function () {
 
   describe('.toJSON', function () {
     it('should generate the payload to instantiate the map', function () {
-      expect(this.map.toJSON()).toEqual({ styles: { 0: 'cartoCSS1', 1: 'cartoCSS2', 2: 'cartoCSS3' } });
+      expect(this.map.toJSON()).toEqual({ buffersize: {mvt: 0}, styles: { 0: 'cartoCSS1', 1: 'cartoCSS2', 2: 'cartoCSS3' } });
     });
 
     it('should mark hidden layers as hidden', function () {
       this.cartoDBLayer1.set('visible', false, { silent: true });
       this.cartoDBLayer3.set('visible', false, { silent: true });
-      expect(this.map.toJSON()).toEqual({ styles: { 0: 'cartoCSS1', 1: 'cartoCSS2', 2: 'cartoCSS3' } });
+      expect(this.map.toJSON()).toEqual({ buffersize: {mvt: 0}, styles: { 0: 'cartoCSS1', 1: 'cartoCSS2', 2: 'cartoCSS3' } });
     });
 
     it('should send styles using the right indexes', function () {

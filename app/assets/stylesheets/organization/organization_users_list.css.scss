@@ -134,8 +134,8 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
   cursor: pointer;
 }
 .OrganizationList-userLink.disabled {
-  opacity: 0.5;
   cursor: initial;
+  opacity: 0.5;
 }
 .OrganizationList-paginator {
   @include display-flex();

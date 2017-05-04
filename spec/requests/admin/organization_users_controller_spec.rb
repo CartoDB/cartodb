@@ -34,6 +34,15 @@ describe Admin::OrganizationUsersController do
       @user = @org_user_1
     end
 
+    before(:each) do
+      User.any_instance.stubs(:validate_credentials_not_taken_in_central).returns(true)
+      User.any_instance.stubs(:create_in_central).returns(true)
+      User.any_instance.stubs(:update_in_central).returns(true)
+      User.any_instance.stubs(:delete_in_central).returns(true)
+      User.any_instance.stubs(:load_common_data).returns(true)
+      User.any_instance.stubs(:reload_avatar).returns(true)
+    end
+
     describe '#show' do
       it 'returns 404 for non admin users' do
         login_as(@user, scope: @user.username)
@@ -81,11 +90,6 @@ describe Admin::OrganizationUsersController do
     end
 
     describe '#create' do
-      before(:each) do
-        User.any_instance.stubs(:create_in_central).returns(true)
-        User.any_instance.stubs(:load_common_data).returns(true)
-      end
-
       after(:each) do
         Carto::User.find_by_username(user_params[:username]).try(:destroy)
       end
@@ -172,25 +176,25 @@ describe Admin::OrganizationUsersController do
         last_response.status.should == 403
       end
 
-      it 'returns 200 for admin users trying to edit a non-admin' do
+      it 'returns 302 for admin users trying to edit a non-admin' do
         login_as(@admin, scope: @admin.username)
 
         put update_organization_user_url(user_domain: @admin.username, id: @user.username), user: { quota_in_bytes: 7 }
-        last_response.status.should == 200
+        last_response.status.should == 302
       end
 
-      it 'returns 200 for admin users trying to edit themselves' do
+      it 'returns 302 for admin users trying to edit themselves' do
         login_as(@admin, scope: @admin.username)
 
         put update_organization_user_url(user_domain: @admin.username, id: @admin.username), user: { quota_in_bytes: 7 }
-        last_response.status.should == 200
+        last_response.status.should == 302
       end
 
-      it 'returns 200 for owner' do
+      it 'returns 302 for owner' do
         login_as(@owner, scope: @owner.username)
 
         put update_organization_user_url(user_domain: @owner.username, id: @admin.username), user: { quota_in_bytes: 7 }
-        last_response.status.should == 200
+        last_response.status.should == 302
       end
     end
 

@@ -110,6 +110,7 @@ Development
 * Allow to have multiple administrators per organization (#12052)
 
 ### Bug fixes
+* Removed link to markdown support in organization notifications
 * Fix estimation analysis row count (#11746)
 * Autostyling for google basemaps (#11838)
 * Fixed problem with the textarea editor (cartodb/support#656)

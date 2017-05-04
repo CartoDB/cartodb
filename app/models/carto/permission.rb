@@ -86,12 +86,12 @@ class Carto::Permission < ActiveRecord::Base
   # @throws CartoDB::PermissionError
   def acl=(value)
     incoming_acl = value.nil? ? DEFAULT_ACL_VALUE : value
-    raise CartoDB::PermissionError.new('ACL is not an array') unless incoming_acl.kind_of? Array
-    incoming_acl.map { |item|
-      unless item.kind_of?(Hash) && acl_has_required_fields?(item) && acl_has_valid_access?(item)
+    raise CartoDB::PermissionError.new('ACL is not an array') unless incoming_acl.is_a? Array
+    incoming_acl.map do |item|
+      unless item.is_a?(Hash) && acl_has_required_fields?(item) && acl_has_valid_access?(item)
         raise CartoDB::PermissionError.new('Wrong ACL entry format')
       end
-    }
+    end
 
     acl_items = incoming_acl.map do |item|
       {
@@ -134,45 +134,44 @@ class Carto::Permission < ActiveRecord::Base
   end
 
   def notify_permissions_change(permissions_changes)
-    begin
-      permissions_changes.each do |c, v|
-        # At the moment we just check users permissions
-        if c == 'user'
-          v.each do |affected_id, perm|
-            # Perm is an array. For the moment just one type of permission can
-            # be applied to a type of object. But with an array this is open
-            # to more than one permission change at a time
-            perm.each do |p|
-              if real_entity_type == CartoDB::Visualization::Member::TYPE_DERIVED
-                if p['action'] == 'grant'
-                  # At this moment just inform as read grant
-                  if p['type'].include?('r')
-                    ::Resque.enqueue(::Resque::UserJobs::Mail::ShareVisualization, self.entity.id, affected_id)
-                  end
-                elsif p['action'] == 'revoke'
-                  if p['type'].include?('r')
-                    ::Resque.enqueue(::Resque::UserJobs::Mail::UnshareVisualization, self.entity.name, self.owner_username, affected_id)
-                  end
+    permissions_changes.each do |c, v|
+      # At the moment we just check users permissions
+      if c == 'user'
+        v.each do |affected_id, perm|
+          # Perm is an array. For the moment just one type of permission can
+          # be applied to a type of object. But with an array this is open
+          # to more than one permission change at a time
+          perm.each do |p|
+            if real_entity_type == CartoDB::Visualization::Member::TYPE_DERIVED
+              if p['action'] == 'grant'
+                # At this moment just inform as read grant
+                if p['type'].include?('r')
+                  ::Resque.enqueue(::Resque::UserJobs::Mail::ShareVisualization, entity.id, affected_id)
                 end
-              elsif real_entity_type == CartoDB::Visualization::Member::TYPE_CANONICAL
-                if p['action'] == 'grant'
-                  # At this moment just inform as read grant
-                  if p['type'].include?('r')
-                    ::Resque.enqueue(::Resque::UserJobs::Mail::ShareTable, self.entity.id, affected_id)
-                  end
-                elsif p['action'] == 'revoke'
-                  if p['type'].include?('r')
-                    ::Resque.enqueue(::Resque::UserJobs::Mail::UnshareTable, self.entity.name, self.owner_username, affected_id)
-                  end
+              elsif p['action'] == 'revoke'
+                if p['type'].include?('r')
+                  ::Resque.enqueue(::Resque::UserJobs::Mail::UnshareVisualization,
+                                   entity.name, owner_username, affected_id)
+                end
+              end
+            elsif real_entity_type == CartoDB::Visualization::Member::TYPE_CANONICAL
+              if p['action'] == 'grant'
+                # At this moment just inform as read grant
+                if p['type'].include?('r')
+                  ::Resque.enqueue(::Resque::UserJobs::Mail::ShareTable, entity.id, affected_id)
+                end
+              elsif p['action'] == 'revoke'
+                if p['type'].include?('r')
+                  ::Resque.enqueue(::Resque::UserJobs::Mail::UnshareTable, entity.name, owner_username, affected_id)
                 end
               end
             end
           end
         end
       end
-    rescue => e
-      CartoDB::Logger.error(message: "Problem sending notification mail", exception: e)
     end
+  rescue => e
+    CartoDB::Logger.error(message: "Problem sending notification mail", exception: e)
   end
 
   def set_user_permission(subject, access)
@@ -206,7 +205,7 @@ class Carto::Permission < ActiveRecord::Base
 
   ENTITY_TYPE_VISUALIZATION = 'vis'.freeze
 
-  ALLOWED_ENTITY_KEYS = [:id, :username, :name, :avatar_url]
+  ALLOWED_ENTITY_KEYS = [:id, :username, :name, :avatar_url].freeze
 
   def owner?(user)
     owner_id == user.id
@@ -243,7 +242,8 @@ class Carto::Permission < ActiveRecord::Base
   end
 
   def acl_has_required_fields?(acl_item)
-    acl_item[:entity].present? && acl_item[:type].present? && acl_item[:access].present? && acl_has_valid_entity_field?(acl_item)
+    acl_item[:entity].present? && acl_item[:type].present? && acl_item[:access].present? &&
+      acl_has_valid_entity_field?(acl_item)
   end
 
   def acl_has_valid_entity_field?(acl_item)
@@ -260,7 +260,7 @@ class Carto::Permission < ActiveRecord::Base
 
   def update_changes
     if !@old_acl.nil?
-      notify_permissions_change(CartoDB::Permission.compare_new_acl(@old_acl, self.acl))
+      notify_permissions_change(CartoDB::Permission.compare_new_acl(@old_acl, acl))
     end
     update_shared_entities
   end
@@ -270,7 +270,7 @@ class Carto::Permission < ActiveRecord::Base
     # considered revokes
     # We need to pass the current acl as old_acl and the new_acl as something
     # empty to recreate a revoke by deletion
-    notify_permissions_change(CartoDB::Permission.compare_new_acl(self.acl, []))
+    notify_permissions_change(CartoDB::Permission.compare_new_acl(acl, []))
   end
 
   def update_shared_entities

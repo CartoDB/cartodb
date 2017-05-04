@@ -24,22 +24,12 @@ describe Carto::Api::PermissionsController do
   end
 
   before(:each) do
-    # @entity_id = UUIDTools::UUID.timestamp_create.to_s
-    # bypass_named_maps
     delete_user_data @user
     delete_user_data @user2
     @headers = {
       'CONTENT_TYPE' => 'application/json'
     }
     host! "#{@user.username}.localhost.lan"
-    # Permission.any_instance.stubs(:revoke_previous_permissions).returns(nil)
-    # Permission.any_instance.stubs(:grant_db_permission).returns(nil)
-    # Permission.any_instance.stubs(:notify_permissions_change).returns(nil)
-    # vis_entity_mock = mock
-    # vis_entity_mock.stubs(:table?).returns(false)
-    # vis_entity_mock.stubs(:id).returns(@entity_id)
-    # vis_entity_mock.stubs(:invalidate_for_permissions_change)
-    # Permission.any_instance.stubs(:entity).returns(vis_entity_mock)
     @visualization = FactoryGirl.create(:carto_visualization, user: Carto::User.find(@user.id))
     @entity_id = @visualization.id
   end

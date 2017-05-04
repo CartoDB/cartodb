@@ -79,6 +79,10 @@ module CartoDB
           @service.create_overviews! @table_name
         end
 
+        def delete_overviews!
+          @service.delete_overviews! @table_name
+        end
+
         private
 
         def table_row_count

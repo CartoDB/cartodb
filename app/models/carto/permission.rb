@@ -336,26 +336,26 @@ class Carto::Permission < ActiveRecord::Base
     org = relevant_org_acl_entry(@old_acl.nil? ? [] : @old_acl)
     groups = relevant_groups_acl_entries(@old_acl.nil? ? [] : @old_acl)
     case entity.class.name
-      when Carto::Visualization.to_s
-        if entity.table
-          if org
-            entity.table.remove_organization_access
-          end
-          users.each { |user|
-            # Cleaning, see #5668
-            u = Carto::User.find(user[:id])
-            entity.table.remove_access(u) if u
-          }
-          # update_db_group_permission check is needed to avoid updating db requests
-          if @update_db_group_permission != false
-            groups.each { |group|
-              Carto::Group.find(group[:id]).grant_db_permission(entity.table, ACCESS_NONE)
-            }
-          end
-          check_related_visualizations(entity.table)
+    when Carto::Visualization.to_s
+      if entity.table
+        if org
+          entity.table.remove_organization_access
         end
-      else
-        raise CartoDB::PermissionError.new("Unsupported entity type trying to grant permission: #{entity.class.name}")
+        users.each do |user|
+          # Cleaning, see #5668
+          u = Carto::User.find(user[:id])
+          entity.table.remove_access(u) if u
+        end
+        # update_db_group_permission check is needed to avoid updating db requests
+        if @update_db_group_permission != false
+          groups.each do |group|
+            Carto::Group.find(group[:id]).grant_db_permission(entity.table, ACCESS_NONE)
+          end
+        end
+        check_related_visualizations(entity.table)
+      end
+    else
+      raise CartoDB::PermissionError.new("Unsupported entity type trying to grant permission: #{entity.class.name}")
     end
   end
 
@@ -372,14 +372,9 @@ class Carto::Permission < ActiveRecord::Base
   end
 
   def relevant_acl_entries(acl_list, type)
-    acl_list.select { |entry|
-      entry[:type] == type && entry[:access] != ACCESS_NONE
-    }.map { |entry|
-      {
-        id:     entry[:id],
-        access: entry[:access]
-      }
-    }
+    acl_list.select { |entry| entry[:type] == type && entry[:access] != ACCESS_NONE }.map do |entry|
+      { id: entry[:id], access: entry[:access] }
+    end
   end
 
   # TODO: send a notification to the visualizations owner
@@ -415,26 +410,26 @@ class Carto::Permission < ActiveRecord::Base
     end
 
     case entity.class.name
-      when Carto::Visualization.to_s
-        # assert database permissions for non canonical tables are assigned
-        # its canonical vis
-        if not entity.table
-          raise CartoDB::PermissionError.new('Trying to change permissions to a table without ownership')
-        end
-        table = entity.table
+    when Carto::Visualization.to_s
+      # assert database permissions for non canonical tables are assigned
+      # its canonical vis
+      if not entity.table
+        raise CartoDB::PermissionError.new('Trying to change permissions to a table without ownership')
+      end
+      table = entity.table
 
-        # check ownership
-        if not self.owner_id == entity.permission.owner_id
-          raise CartoDB::PermissionError.new('Trying to change permissions to a table without ownership')
-        end
-        # give permission
-        if access == ACCESS_READONLY
-          permission_strategy.add_read_permission(table)
-        elsif access == ACCESS_READWRITE
-          permission_strategy.add_read_write_permission(table)
-        end
-      else
-        raise CartoDB::PermissionError.new('Unsupported entity type trying to grant permission')
+      # check ownership
+      if not owner_id == entity.permission.owner_id
+        raise CartoDB::PermissionError.new('Trying to change permissions to a table without ownership')
+      end
+      # give permission
+      if access == ACCESS_READONLY
+        permission_strategy.add_read_permission(table)
+      elsif access == ACCESS_READWRITE
+        permission_strategy.add_read_write_permission(table)
+      end
+    else
+      raise CartoDB::PermissionError.new('Unsupported entity type trying to grant permission')
     end
   end
 
@@ -464,7 +459,7 @@ class Carto::Permission < ActiveRecord::Base
   # stored.
   # TODO: fix this, since this is coupled to representation.
   def inputable_acl
-    self.acl.map { |entry|
+    acl.map do |entry|
       {
         type: entry[:type],
         entity: {
@@ -475,7 +470,7 @@ class Carto::Permission < ActiveRecord::Base
         },
         access: entry[:access]
       }
-    }
+    end
   end
 
   def granted_access_for_user(user)

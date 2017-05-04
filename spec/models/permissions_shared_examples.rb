@@ -4,7 +4,7 @@ shared_examples_for 'permission models' do
   before(:all) do
     CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
     ::User.any_instance.stubs(:gravatar).returns(nil)
-    @user = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
+    @user = create_user(quota_in_bytes: 524288000, table_quota: 500)
     @carto_user = Carto::User.find(@user.id)
 
     @user2 = create_user
@@ -164,7 +164,10 @@ shared_examples_for 'permission models' do
     end
 
     it 'allows granting read permission for viewer users' do
-      map, table, table_visualization, visualization = create_full_visualization(@carto_user, visualization_attributes: { type: Carto::Visualization::TYPE_CANONICAL })
+      map, table, table_visualization, visualization = create_full_visualization(
+        @carto_user,
+        visualization_attributes: { type: Carto::Visualization::TYPE_CANONICAL }
+      )
       permission = permission_from_visualization_id(table_visualization.id)
       permission.acl = [
         {
@@ -440,8 +443,8 @@ shared_examples_for 'permission models' do
           },
           access: Permission::ACCESS_READONLY
         }
-      # shared entry of user 2 should dissapear
       ]
+      # shared entry of user 2 should dissapear
       permission.save
 
       CartoDB::SharedEntity.where(entity_id: entity_id).count.should eq 1
@@ -514,15 +517,16 @@ shared_examples_for 'permission models' do
       user3_id = "28d09bc0-0d14-11e4-a3ef-0800274a1928"
       permissions_changes = {
         "user" => {
-          user2_id => [{ "action"=>"grant", "type"=>"r" }],
-          user3_id => [{ "action"=>"revoke", "type"=>"r" }]
+          user2_id => [{ "action" => "grant", "type" => "r" }],
+          user3_id => [{ "action" => "revoke", "type" => "r" }]
         }
       }
 
       ::Resque.stubs(:enqueue).returns(nil)
 
       ::Resque.expects(:enqueue).with(::Resque::UserJobs::Mail::ShareVisualization, permission.entity.id, user2_id).once
-      ::Resque.expects(:enqueue).with(::Resque::UserJobs::Mail::UnshareVisualization, permission.entity.name, permission.owner_username, user3_id).once
+      ::Resque.expects(:enqueue).with(::Resque::UserJobs::Mail::UnshareVisualization,
+                                      permission.entity.name, permission.owner_username, user3_id).once
 
       permission.notify_permissions_change(permissions_changes)
       destroy_full_visualization(map, table, table_visualization, visualization)
@@ -571,7 +575,6 @@ shared_examples_for 'permission models' do
       ]
       acl2 = permission.acl
 
-
       CartoDB::Permission.expects(:compare_new_acl).with(acl1, acl2).once
       permission.save
 
@@ -586,13 +589,19 @@ shared_examples_for 'permission models' do
     end
 
     it "permission comparisson function should return right diff hash" do
-      acl1 = [{:type=>"user", :id=>"17d09bc0-0d14-11e4-a3ef-0800274a1928", :access=>"r"}, {:type=>"user", :id=>"28d09bc0-0d14-11e4-a3ef-0800274a1928", :access=>"r"}]
-      acl2 = [{:type=>"user", :id=>"17d09bc0-0d14-11e4-a3ef-0800274a1928", :access=>"r"}, {:type=>"user", :id=>"17d5b1e6-0d14-11e4-a3ef-0800274a1928", :access=>"r"}]
+      acl1 = [
+        { type: "user", id: "17d09bc0-0d14-11e4-a3ef-0800274a1928", access: "r" },
+        { type: "user", id: "28d09bc0-0d14-11e4-a3ef-0800274a1928", access: "r" }
+      ]
+      acl2 = [
+        { type: "user", id: "17d09bc0-0d14-11e4-a3ef-0800274a1928", access: "r" },
+        { type: "user", id: "17d5b1e6-0d14-11e4-a3ef-0800274a1928", access: "r" }
+      ]
 
       expected_diff = {
         "user" => {
-          "17d5b1e6-0d14-11e4-a3ef-0800274a1928" => [{ "action"=>"grant", "type"=>"r" }],
-          "28d09bc0-0d14-11e4-a3ef-0800274a1928" => [{ "action"=>"revoke", "type"=>"r" }]
+          "17d5b1e6-0d14-11e4-a3ef-0800274a1928" => [{ "action" => "grant", "type" => "r" }],
+          "28d09bc0-0d14-11e4-a3ef-0800274a1928" => [{ "action" => "revoke", "type" => "r" }]
         }
       }
 

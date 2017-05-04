@@ -14,7 +14,7 @@
       viewer_seats: <%= current_user.organization.viewer_seats %>,
       assigned_seats: <%= current_user.organization.assigned_seats %>,
       assigned_viewer_seats: <%= current_user.organization.assigned_viewer_seats %>,
-      owner: { id: "<%= current_user.id %>" },
+      owner: { id: "<%= current_user.organization.owner.id %>" },
       signup_enabled: <%= current_user.organization.auth_username_password_enabled || current_user.organization.auth_google_enabled %>
     };
     var user_data = <%= safe_js_object current_user.data.to_json.html_safe %>;

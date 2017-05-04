@@ -15,6 +15,8 @@ class Carto::Permission < ActiveRecord::Base
   belongs_to :owner, class_name: Carto::User, select: Carto::User::DEFAULT_SELECT
   has_one :visualization, inverse_of: :permission, class_name: Carto::Visualization, foreign_key: :permission_id
 
+  validate :not_w_permission_to_viewers
+
   after_update :update_changes
   after_destroy :update_changes_deletion
 
@@ -83,7 +85,7 @@ class Carto::Permission < ActiveRecord::Base
   # @param value Array
   # @throws PermissionError
   def acl=(value)
-    incoming_acl = value.nil? ? ::JSON.parse(DEFAULT_ACL_VALUE) : value
+    incoming_acl = value.nil? ? DEFAULT_ACL_VALUE : value
     raise PermissionError.new('ACL is not an array') unless incoming_acl.kind_of? Array
     incoming_acl.map { |item|
       unless item.kind_of?(Hash) && acl_has_required_fields?(item) && acl_has_valid_access?(item)
@@ -108,18 +110,9 @@ class Carto::Permission < ActiveRecord::Base
     self.access_control_list = ::JSON.dump(cleaned_acl)
   end
 
-  private
-
-  ENTITY_TYPE_VISUALIZATION = 'vis'.freeze
-
-  ALLOWED_ENTITY_KEYS = [:id, :username, :name, :avatar_url]
-
-  def permitted?(user, permission_type)
-    SORTED_ACCESSES.index(permission_for_user(user)) <= SORTED_ACCESSES.index(permission_type)
-  end
-
-  def owner?(user)
-    owner_id == user.id
+  def owner=(value)
+    self.owner_id = value.id
+    self.owner_username = value.username
   end
 
   def permission_for_user(user)
@@ -130,6 +123,82 @@ class Carto::Permission < ActiveRecord::Base
     end
 
     higher_access(accesses)
+  end
+
+  def permitted?(user, permission_type)
+    SORTED_ACCESSES.index(permission_for_user(user)) <= SORTED_ACCESSES.index(permission_type)
+  end
+
+  def entity
+    @visualization ||= Carto::Visualization::where(permission_id: id).first
+  end
+
+  def notify_permissions_change(permissions_changes)
+    begin
+      permissions_changes.each do |c, v|
+        # At the moment we just check users permissions
+        if c == 'user'
+          v.each do |affected_id, perm|
+            # Perm is an array. For the moment just one type of permission can
+            # be applied to a type of object. But with an array this is open
+            # to more than one permission change at a time
+            perm.each do |p|
+              if real_entity_type == CartoDB::Visualization::Member::TYPE_DERIVED
+                if p['action'] == 'grant'
+                  # At this moment just inform as read grant
+                  if p['type'].include?('r')
+                    ::Resque.enqueue(::Resque::UserJobs::Mail::ShareVisualization, self.entity.id, affected_id)
+                  end
+                elsif p['action'] == 'revoke'
+                  if p['type'].include?('r')
+                    ::Resque.enqueue(::Resque::UserJobs::Mail::UnshareVisualization, self.entity.name, self.owner_username, affected_id)
+                  end
+                end
+              elsif real_entity_type == CartoDB::Visualization::Member::TYPE_CANONICAL
+                if p['action'] == 'grant'
+                  # At this moment just inform as read grant
+                  if p['type'].include?('r')
+                    ::Resque.enqueue(::Resque::UserJobs::Mail::ShareTable, self.entity.id, affected_id)
+                  end
+                elsif p['action'] == 'revoke'
+                  if p['type'].include?('r')
+                    ::Resque.enqueue(::Resque::UserJobs::Mail::UnshareTable, self.entity.name, self.owner_username, affected_id)
+                  end
+                end
+              end
+            end
+          end
+        end
+      end
+    rescue => e
+      CartoDB::Logger.error(message: "Problem sending notification mail", exception: e)
+    end
+  end
+
+  private
+
+  def real_entity_type
+    entity.type
+  end
+
+  def not_w_permission_to_viewers
+    viewer_writers = users_with_permissions(ACCESS_READWRITE).select(&:viewer)
+    unless viewer_writers.empty?
+      errors.add(:access_control_list, "grants write to viewers: #{viewer_writers.map(&:username).join(',')}")
+    end
+  end
+
+  def users_with_permissions(access)
+    user_ids = relevant_user_acl_entries(acl).select { |e| access == e[:access] }.map { |e| e[:id] }
+    Carto::User.where(id: user_ids).all
+  end
+
+  ENTITY_TYPE_VISUALIZATION = 'vis'.freeze
+
+  ALLOWED_ENTITY_KEYS = [:id, :username, :name, :avatar_url]
+
+  def owner?(user)
+    owner_id == user.id
   end
 
   def higher_access(accesses)
@@ -178,10 +247,6 @@ class Carto::Permission < ActiveRecord::Base
     valid_access.include?(acl_item[:access])
   end
 
-  def entity
-    @visualization ||= Carto::Visualization::where(permission_id: id).first
-  end
-
   def update_changes
     if !@old_acl.nil?
       notify_permissions_change(CartoDB::Permission.compare_new_acl(@old_acl, self.acl))
@@ -195,48 +260,6 @@ class Carto::Permission < ActiveRecord::Base
     # We need to pass the current acl as old_acl and the new_acl as something
     # empty to recreate a revoke by deletion
     notify_permissions_change(CartoDB::Permission.compare_new_acl(self.acl, []))
-  end
-
-  def notify_permissions_change(permissions_changes)
-    begin
-      permissions_changes.each do |c, v|
-        # At the moment we just check users permissions
-        if c == 'user'
-          v.each do |affected_id, perm|
-            # Perm is an array. For the moment just one type of permission can
-            # be applied to a type of object. But with an array this is open
-            # to more than one permission change at a time
-            perm.each do |p|
-              if self.real_entity_type == CartoDB::Visualization::Member::TYPE_DERIVED
-                if p['action'] == 'grant'
-                  # At this moment just inform as read grant
-                  if p['type'].include?('r')
-                    ::Resque.enqueue(::Resque::UserJobs::Mail::ShareVisualization, self.entity.id, affected_id)
-                  end
-                elsif p['action'] == 'revoke'
-                  if p['type'].include?('r')
-                    ::Resque.enqueue(::Resque::UserJobs::Mail::UnshareVisualization, self.entity.name, self.owner_username, affected_id)
-                  end
-                end
-              elsif self.real_entity_type == CartoDB::Visualization::Member::TYPE_CANONICAL
-                if p['action'] == 'grant'
-                  # At this moment just inform as read grant
-                  if p['type'].include?('r')
-                    ::Resque.enqueue(::Resque::UserJobs::Mail::ShareTable, self.entity.id, affected_id)
-                  end
-                elsif p['action'] == 'revoke'
-                  if p['type'].include?('r')
-                    ::Resque.enqueue(::Resque::UserJobs::Mail::UnshareTable, self.entity.name, self.owner_username, affected_id)
-                  end
-                end
-              end
-            end
-          end
-        end
-      end
-    rescue => e
-      CartoDB::Logger.info(message: "Problem sending notification mail", exception: e)
-    end
   end
 
   def update_shared_entities
@@ -309,7 +332,7 @@ class Carto::Permission < ActiveRecord::Base
           end
           users.each { |user|
             # Cleaning, see #5668
-            u = ::User[user[:id]]
+            u = Carto::User[user[:id]]
             entity.table.remove_access(u) if u
           }
           # update_db_group_permission check is needed to avoid updating db requests
@@ -348,16 +371,40 @@ class Carto::Permission < ActiveRecord::Base
     }
   end
 
+  # TODO: send a notification to the visualizations owner
+  def check_related_visualizations(table)
+    fully_dependent_visualizations = table.fully_dependent_visualizations.to_a
+    partially_dependent_visualizations = table.partially_dependent_visualizations.to_a
+    table_visualization = table.table_visualization
+    partially_dependent_visualizations.each do |visualization|
+      # check permissions, if the owner does not have permissions
+      # to see the table the layers using this table are removed
+      perm = visualization.permission
+      unless table_visualization.has_permission?(perm.owner, CartoDB::Visualization::Member::PERMISSION_READONLY)
+        visualization.unlink_from(table)
+      end
+    end
+
+    fully_dependent_visualizations.each do |visualization|
+      # check permissions, if the owner does not have permissions
+      # to see the table the visualization is removed
+      perm = visualization.permission
+      unless table_visualization.has_permission?(perm.owner, CartoDB::Visualization::Member::PERMISSION_READONLY)
+        visualization.delete
+      end
+    end
+  end
+
   def grant_db_permission(entity, access, shared_entity)
     if shared_entity.recipient_type == CartoDB::SharedEntity::RECIPIENT_TYPE_ORGANIZATION
       permission_strategy = OrganizationPermission.new
     else
-      u = ::User.where(id: shared_entity[:recipient_id]).first
+      u = Carto::User.where(id: shared_entity[:recipient_id]).first
       permission_strategy = UserPermission.new(u)
     end
 
     case entity.class.name
-      when CartoDB::Visualization::Member.to_s
+      when Carto::Visualization.to_s
         # assert database permissions for non canonical tables are assigned
         # its canonical vis
         if not entity.table

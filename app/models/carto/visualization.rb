@@ -561,6 +561,12 @@ class Carto::Visualization < ActiveRecord::Base
     end
   end
 
+  def has_permission?(user, permission_type)
+    return false if user.viewer && permission_type == PERMISSION_READWRITE
+    return is_owner?(user) if permission_id.nil?
+    is_owner?(user) || permission.permitted?(user, permission_type)
+  end
+
   private
 
   def remove_password

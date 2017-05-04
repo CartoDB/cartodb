@@ -3,26 +3,26 @@
 require 'spec_helper'
 require 'models/permissions_shared_examples'
 
-describe CartoDB::Permission do
+describe Carto::Permission do
   it_behaves_like 'permission models' do
     def permission_from_visualization_id(entity_id)
-      ::Visualization::Member.new(id: entity_id).fetch.permission
+      Carto::Visualization.find(entity_id).permission
     end
 
     def permission_klass
-      ::Permission
+      Carto::Permission
     end
 
     def user_for_association_from_id(user_id)
-      ::User[user_id]
+      Carto::User.find(user_id)
     end
 
     def save_permission(permission)
-      permission.save
+      permission.save!
     end
 
     def validation_error_klass
-      Sequel::ValidationFailed
+      ActiveRecord::RecordInvalid
     end
   end
 end

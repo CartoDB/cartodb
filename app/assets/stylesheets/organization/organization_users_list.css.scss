@@ -103,6 +103,9 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
   color: white;
   text-transform: uppercase;
   text-align: center;
+  &.grey {
+    background: #979EA1;
+  }
 }
 .OrganizationList-userInfoData {
   @include display-flex();

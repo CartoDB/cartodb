@@ -124,14 +124,12 @@ class Carto::Map < ActiveRecord::Base
   end
 
   def notify_map_change
-    map = ::Map[id]
-    map.notify_map_change if map
+    if visualization
+      visualization.save_named_map
+      visualization.invalidate_cache
+    end
   end
-
-  def force_notify_map_change
-    map = ::Map[id]
-    map.force_notify_map_change if map
-  end
+  alias :force_notify_map_change :notify_map_change
 
   def update_dataset_dependencies
     data_layers.each(&:register_table_dependencies)

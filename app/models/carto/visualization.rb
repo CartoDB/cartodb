@@ -399,7 +399,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def save_named_map
-    return true if remote? || mapcapped? || data_layers.empty?
+    return true if remote? || data_layers.empty?
 
     get_named_map ? named_maps_api.update : named_maps_api.create
   end
@@ -655,7 +655,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def named_maps_api
-    Carto::NamedMaps::Api.new(self)
+    Carto::NamedMaps::Api.new(for_presentation)
   end
 
   def redis_vizjson_cache

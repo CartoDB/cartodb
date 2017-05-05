@@ -6,17 +6,25 @@ module Carto
   module Api
     class VisualizationPresenter
 
-      # options
-      # - related: load related tables. Default: true.
-      # - show_stats: load stats (daily mapview counts). Default: true.
-      # - show_likes: load likes info. Default: true.
-      # - show_liked: load liked info. Default: true.
-      # - show_table: load table info. Default: true.
-      def initialize(visualization, current_viewer, context, options = {})
+      def initialize(visualization, current_viewer, context,
+                     related: true,
+                     show_stats: true, show_likes: true, show_liked: true, show_table: true,
+                     show_permission: true, show_synchronization: true, show_uses_builder_features: true,
+                     show_table_size_and_row_count: true)
         @visualization = visualization
         @current_viewer = current_viewer
         @context = context
-        @options = options
+
+        @related = related
+        @show_stats = show_stats
+        @show_likes = show_likes
+        @show_liked = show_liked
+        @show_table = show_table
+        @show_permission = show_permission
+        @show_synchronization = show_synchronization
+        @show_uses_builder_features = show_uses_builder_features
+        @show_table_size_and_row_count = show_table_size_and_row_count
+
         @presenter_cache = Carto::Api::PresenterCache.new
       end
 
@@ -27,14 +35,6 @@ module Carto
 
       def to_poro
         return to_public_poro unless @visualization.is_viewable_by_user?(@current_viewer)
-        show_stats = @options.fetch(:show_stats, true)
-        show_likes = @options.fetch(:show_likes, true)
-        show_liked = @options.fetch(:show_liked, true)
-        show_table = @options.fetch(:show_table, true)
-        show_permission = @options.fetch(:show_permission, true)
-        show_synchronization = @options.fetch(:show_synchronization, true)
-        show_uses_builder_features = @options.fetch(:show_uses_builder_features, true)
-
         poro = {
           id: @visualization.id,
           name: @visualization.name,
@@ -69,7 +69,7 @@ module Carto
           children: []
         }
 
-        poro[:related_tables] = related_tables if @options.fetch(:related, true)
+        poro[:related_tables] = related_tables if related
         poro[:likes] = @visualization.likes_count if show_likes
         poro[:liked] = @current_viewer ? @visualization.liked_by?(@current_viewer.id) : false if show_liked
         poro[:table] = user_table_presentation if show_table
@@ -124,8 +124,14 @@ module Carto
 
       private
 
+      attr_reader :related,
+                  :show_stats, :show_likes, :show_liked, :show_table,
+                  :show_permission, :show_synchronization, :show_uses_builder_features,
+                  :show_table_size_and_row_count
+
       def user_table_presentation
-        Carto::Api::UserTablePresenter.new(@visualization.user_table, @current_viewer)
+        Carto::Api::UserTablePresenter.new(@visualization.user_table, @current_viewer,
+                                           show_size_and_row_count: show_table_size_and_row_count)
                                       .with_presenter_cache(@presenter_cache).to_poro
       end
 

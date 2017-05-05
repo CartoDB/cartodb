@@ -7,6 +7,7 @@ require 'helpers/visualization_destruction_helper'
 describe Carto::Visualization do
   include UniqueNamesHelper
   include VisualizationDestructionHelper
+  include Carto::Factories::Visualizations
 
   before(:all) do
     @user = create_user
@@ -193,6 +194,93 @@ describe Carto::Visualization do
       @visualization.layers << FactoryGirl.build(:carto_layer)
       @visualization.expects(:named_maps_api).returns(Carto::NamedMaps::Api.new(@visualization)).at_least_once
       @visualization.save
+    end
+
+    describe 'without mapcap' do
+      before(:all) do
+        @map, @table, @table_visualization, @visualization = create_full_visualization(@carto_user2)
+      end
+
+      after(:all) do
+        destroy_full_visualization(@map, @table, @table_visualization, @visualization)
+      end
+
+      it 'publishes layer style changes' do
+        fake_style = 'this_is_a_very_fake_cartocss'
+        layer = @visualization.data_layers.first
+        layer.options[:tile_style] = fake_style
+
+        named_maps_api_mock = mock
+        named_maps_api_mock.stubs(show: nil)
+        named_maps_api_mock.expects(:create)
+
+        Carto::NamedMaps::Api.expects(:new).with { |v| v.data_layers.first.options[:tile_style] == fake_style }
+                             .returns(named_maps_api_mock).at_least_once
+        layer.save
+      end
+
+      it 'publishes privacy changes' do
+        @visualization.privacy = Carto::Visualization::PRIVACY_PUBLIC
+
+        named_maps_api_mock = mock
+        named_maps_api_mock.stubs(show: nil)
+        named_maps_api_mock.expects(:create)
+
+        Carto::NamedMaps::Api.expects(:new).returns(named_maps_api_mock).at_least_once
+        @visualization.save
+      end
+    end
+
+    describe 'with mapcap' do
+      before(:all) do
+        @map, @table, @table_visualization, @visualization = create_full_visualization(@carto_user2)
+        @visualization.create_mapcap!
+        @visualization.reload
+      end
+
+      after(:all) do
+        destroy_full_visualization(@map, @table, @table_visualization, @visualization)
+      end
+
+      it 'does not publish layer style changes' do
+        fake_style = 'this_is_a_very_fake_cartocss'
+        layer = @visualization.data_layers.first
+        layer.options[:tile_style] = fake_style
+
+        named_maps_api_mock = mock
+        named_maps_api_mock.stubs(show: nil, create: true)
+
+        Carto::NamedMaps::Api.stubs(:new).with { |v| v.data_layers.first.options[:tile_style] != fake_style }
+                             .returns(named_maps_api_mock)
+        Carto::NamedMaps::Api.expects(:new).with { |v| v.data_layers.first.options[:tile_style] == fake_style }
+                             .never
+        layer.save
+      end
+
+      it 'publishes layer style changes after mapcapping' do
+        fake_style = 'changed_style_again'
+        layer = @visualization.data_layers.first
+        layer.options[:tile_style] = fake_style
+        layer.save
+
+        named_maps_api_mock = mock
+        named_maps_api_mock.stubs(show: nil, update: true)
+        named_maps_api_mock.expects(:create).at_least_once
+        Carto::NamedMaps::Api.expects(:new).with { |v| v.data_layers.first.options[:tile_style] == fake_style }
+                             .returns(named_maps_api_mock).at_least_once
+        @visualization.create_mapcap!
+      end
+
+      it 'publishes privacy changes' do
+        @visualization.privacy = Carto::Visualization::PRIVACY_PUBLIC
+
+        named_maps_api_mock = mock
+        named_maps_api_mock.stubs(show: nil)
+        named_maps_api_mock.expects(:create)
+
+        Carto::NamedMaps::Api.expects(:new).returns(named_maps_api_mock).at_least_once
+        @visualization.save
+      end
     end
   end
 

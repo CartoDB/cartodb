@@ -43,11 +43,11 @@ class Carto::Permission < ActiveRecord::Base
       entity_id = entry[:id]
       case entry[:type]
       when TYPE_USER
-        Carto::User.find(entity_id)
+        Carto::User.where(id: entity_id).first
       when TYPE_ORGANIZATION
-        Carto::Organization.find(entity_id)
+        Carto::Organization.where(id: entity_id).first
       when TYPE_GROUP
-        Carto::Group.find(entity_id)
+        Carto::Group.where(id: entity_id).first
       end
     end
     entities.compact.uniq

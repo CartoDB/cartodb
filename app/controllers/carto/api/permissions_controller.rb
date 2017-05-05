@@ -1,4 +1,6 @@
 class Carto::Api::PermissionsController < ::Api::ApplicationController
+  include Carto::ControllerHelper
+  extend Carto::DefaultRescueFroms
 
   ssl_required :update
 
@@ -17,7 +19,7 @@ class Carto::Api::PermissionsController < ::Api::ApplicationController
       return head(400)
     end
 
-    permission.save
+    permission.save!
 
     render json: Carto::Api::PermissionPresenter.new(permission,
                                                      current_viewer: current_viewer, fetch_user_groups: true).to_poro

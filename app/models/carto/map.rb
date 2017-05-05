@@ -124,10 +124,7 @@ class Carto::Map < ActiveRecord::Base
   end
 
   def notify_map_change
-    if visualization
-      visualization.save_named_map
-      visualization.invalidate_cache
-    end
+    visualization.try(:invalidate_map_changes)
   end
   alias :force_notify_map_change :notify_map_change
 

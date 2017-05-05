@@ -552,6 +552,11 @@ class Carto::Visualization < ActiveRecord::Base
     end
   end
 
+  def invalidate_map_changes
+    save_named_map
+    invalidate_cache
+  end
+
   private
 
   def remove_password

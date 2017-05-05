@@ -1600,6 +1600,13 @@
         "convex-hull": "Convex Hull",
         "country": "Country",
         "create-btn": "Apply",
+        "data-observatory-measurement-area": "Country",
+        "data-observatory-measurement-column": "New col. name",
+        "data-observatory-measurement-column-help": "Adds a new column to your layer to store result",
+        "data-observatory-measurement-desc": "enrich your data",
+        "data-observatory-measurement-measurement": "Measurement",
+        "data-observatory-measurement-refine": "Choose a measure",
+        "data-observatory-measurement-segments": "Segments",
         "data-observatory": {
           "list": {
             "add": "Add new measurement"

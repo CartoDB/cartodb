@@ -45,9 +45,9 @@ class Carto::Permission < ActiveRecord::Base
       when TYPE_USER
         Carto::User.find(entity_id)
       when TYPE_ORGANIZATION
-        Carto::Organization.where(id: entity_id).first
+        Carto::Organization.find(entity_id)
       when TYPE_GROUP
-        Carto::Group.where(id: entity_id).first
+        Carto::Group.find(entity_id)
       end
     end
     entities.compact.uniq

@@ -19,7 +19,8 @@ class Carto::Api::PermissionsController < ::Api::ApplicationController
 
     permission.save
 
-    render json: Carto::Api::PermissionPresenter.new(permission, current_viewer: current_viewer).to_poro
+    render json: Carto::Api::PermissionPresenter.new(permission,
+                                                     current_viewer: current_viewer, fetch_user_groups: true).to_poro
   end
 
 end

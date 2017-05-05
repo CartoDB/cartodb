@@ -62,7 +62,7 @@ class Carto::Permission < ActiveRecord::Base
   end
 
   def is_owner?(subject)
-    self.owner_id == subject.id
+    owner_id == subject.id
   end
 
   # Format:

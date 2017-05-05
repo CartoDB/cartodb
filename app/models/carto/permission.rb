@@ -130,19 +130,19 @@ class Carto::Permission < ActiveRecord::Base
   end
 
   def entity
-    @visualization ||= Carto::Visualization::where(permission_id: id).first
+    visualization
   end
 
   def notify_permissions_change(permissions_changes)
     permissions_changes.each do |c, v|
       # At the moment we just check users permissions
-      if c == 'user'
+      if c == TYPE_USER
         v.each do |affected_id, perm|
           # Perm is an array. For the moment just one type of permission can
           # be applied to a type of object. But with an array this is open
           # to more than one permission change at a time
           perm.each do |p|
-            if real_entity_type == CartoDB::Visualization::Member::TYPE_DERIVED
+            if visualization.derived?
               if p['action'] == 'grant'
                 # At this moment just inform as read grant
                 if p['type'].include?('r')
@@ -154,7 +154,7 @@ class Carto::Permission < ActiveRecord::Base
                                    entity.name, owner_username, affected_id)
                 end
               end
-            elsif real_entity_type == CartoDB::Visualization::Member::TYPE_CANONICAL
+            elsif visualization.canonical?
               if p['action'] == 'grant'
                 # At this moment just inform as read grant
                 if p['type'].include?('r')
@@ -377,7 +377,6 @@ class Carto::Permission < ActiveRecord::Base
     end
   end
 
-  # TODO: send a notification to the visualizations owner
   def check_related_visualizations(table)
     fully_dependent_visualizations = table.fully_dependent_visualizations.to_a
     partially_dependent_visualizations = table.partially_dependent_visualizations.to_a

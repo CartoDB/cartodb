@@ -230,6 +230,7 @@ Development
 * Check if analysis node is on top before fetching query data (#11874)
 * Fixed error dropping tables from ghost table manager on race condition cases (#12012)
 * IE11 fix for dropdowns with scrollview (#12073)
+* Fixed problem resetting styles per node after adding a new analysis (#12085)
 
 ### NOTICE
 This release upgrades the CartoDB PostgreSQL extension to `0.19.0`. Run the following to have it available:

@@ -283,12 +283,12 @@ class Carto::Permission < ActiveRecord::Base
     users = relevant_user_acl_entries(acl)
     # Avoid entries without recipient id. See #5668.
     users.select { |u| u[:id] }.each do |user|
-      shared_entity = CartoDB::SharedEntity.new(
+      shared_entity = Carto::SharedEntity.create(
         recipient_id:   user[:id],
-        recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_USER,
+        recipient_type: Carto::SharedEntity::RECIPIENT_TYPE_USER,
         entity_id:      entity.id,
-        entity_type:    CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
-      ).save
+        entity_type:    Carto::SharedEntity::ENTITY_TYPE_VISUALIZATION
+      )
 
       if e.table?
         grant_db_permission(e, user[:access], shared_entity)
@@ -297,12 +297,12 @@ class Carto::Permission < ActiveRecord::Base
 
     org = relevant_org_acl_entry(acl)
     if org
-      shared_entity = CartoDB::SharedEntity.new(
+      shared_entity = Carto::SharedEntity.create(
         recipient_id:   org[:id],
-        recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_ORGANIZATION,
+        recipient_type: Carto::SharedEntity::RECIPIENT_TYPE_ORGANIZATION,
         entity_id:      entity.id,
-        entity_type:    CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
-      ).save
+        entity_type:    Carto::SharedEntity::ENTITY_TYPE_VISUALIZATION
+      )
 
       if e.table?
         grant_db_permission(e, org[:access], shared_entity)
@@ -311,12 +311,12 @@ class Carto::Permission < ActiveRecord::Base
 
     groups = relevant_groups_acl_entries(acl)
     groups.each do |group|
-      CartoDB::SharedEntity.new(
+      Carto::SharedEntity.create(
         recipient_id:   group[:id],
-        recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_GROUP,
+        recipient_type: Carto::SharedEntity::RECIPIENT_TYPE_GROUP,
         entity_id:      entity.id,
-        entity_type:    CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
-      ).save
+        entity_type:    Carto::SharedEntity::ENTITY_TYPE_VISUALIZATION
+      )
 
       # You only want to switch it off when request is a permission request coming from database
       if e.table? && @update_db_group_permission != false
@@ -328,7 +328,7 @@ class Carto::Permission < ActiveRecord::Base
   end
 
   def destroy_shared_entities
-    CartoDB::SharedEntity.where(entity_id: entity.id).delete
+    Carto::SharedEntity.where(entity_id: entity.id).each(&:destroy)
   end
 
   def revoke_previous_permissions(entity)
@@ -401,7 +401,7 @@ class Carto::Permission < ActiveRecord::Base
   end
 
   def grant_db_permission(entity, access, shared_entity)
-    if shared_entity.recipient_type == CartoDB::SharedEntity::RECIPIENT_TYPE_ORGANIZATION
+    if shared_entity.recipient_type == Carto::SharedEntity::RECIPIENT_TYPE_ORGANIZATION
       permission_strategy = CartoDB::OrganizationPermission.new
     else
       u = Carto::User.find(shared_entity[:recipient_id])

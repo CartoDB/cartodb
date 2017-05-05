@@ -110,6 +110,9 @@ Development
 * Allow to have multiple administrators per organization (#12052)
 
 ### Bug fixes
+* Fix image export in Safari and IE (#12066)
+* Autostyling for google basemaps (#11838)
+* Fixed problem with the textarea editor (cartodb/support#656)
 * Fix estimation analysis row count (#11746)
 * Autostyling for google basemaps (#11838)
 * Fixed problem with the textarea editor (cartodb/support#656)

@@ -407,7 +407,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def perform_save_named_map
-    return true if remote? || data_layers.empty?
+    return true if destroyed? || remote? || data_layers.empty? 
 
     get_named_map ? named_maps_api.update : named_maps_api.create
   end

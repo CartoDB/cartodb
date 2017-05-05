@@ -404,10 +404,11 @@ class Carto::Visualization < ActiveRecord::Base
     # This marks this visualization as affected by this transaction, so AR will call its `after_commit` hook, which
     # performs the actual named map save. This takes this operation outside of the DB transaction to avoid long locks
     add_to_transaction
+    true
   end
 
   def perform_save_named_map
-    return true if destroyed? || remote? || data_layers.empty? 
+    return true if destroyed? || remote? || data_layers.empty?
 
     get_named_map ? named_maps_api.update : named_maps_api.create
   end

@@ -106,6 +106,8 @@ class Carto::Visualization < ActiveRecord::Base
   before_create :delay_saving_tags
   after_create :save_tags
 
+  after_commit :perform_save_named_map
+
   attr_accessor :register_table_only
 
   def set_register_table_only
@@ -399,6 +401,12 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def save_named_map
+    # This marks this visualization as affected by this transaction, so AR will call its `after_commit` hook, which
+    # performs the actual named map save. This takes this operation outside of the DB transaction to avoid long locks
+    add_to_transaction
+  end
+
+  def perform_save_named_map
     return true if remote? || data_layers.empty?
 
     get_named_map ? named_maps_api.update : named_maps_api.create

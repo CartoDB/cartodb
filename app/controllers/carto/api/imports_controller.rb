@@ -1,5 +1,14 @@
 module Carto
   module Api
+    # In order to test Dropbox in local, do the following:
+    # 1. In Dropbox, change OAuth2 configuration, adding this (replace username and API key as needed):
+    #    http://localhost:3000/u/juanignaciosl/api/v1/imports/service/dropbox/oauth_callback/?api_key=3312b39c6360862e13217a8aec540e57367f4a4b
+    # 2. Configure it in app_config.yml:
+    #    dropbox:
+    #      app_key:              '528omteaww7fj86'
+    #      app_secret:           'rhx2ovpuni266ra'
+    #      callback_url:         'http://localhost:3000/u/juanignaciosl/api/v1/imports/service/dropbox/oauth_callback/?api_key=3312b39c6360862e13217a8aec540e57367f4a4b'
+    #    This obviously will work for a single user.
     class ImportsController < ::Api::ApplicationController
 
       ssl_required :index, :show

@@ -385,7 +385,7 @@ class Carto::Permission < ActiveRecord::Base
       # check permissions, if the owner does not have permissions
       # to see the table the layers using this table are removed
       perm = visualization.permission
-      unless table_visualization.has_permission?(perm.owner, CartoDB::Visualization::Member::PERMISSION_READONLY)
+      unless table_visualization.has_permission?(perm.owner, ACCESS_READONLY)
         visualization.unlink_from(table)
       end
     end
@@ -394,7 +394,7 @@ class Carto::Permission < ActiveRecord::Base
       # check permissions, if the owner does not have permissions
       # to see the table the visualization is removed
       perm = visualization.permission
-      unless table_visualization.has_permission?(perm.owner, CartoDB::Visualization::Member::PERMISSION_READONLY)
+      unless table_visualization.has_permission?(perm.owner, ACCESS_READONLY)
         visualization.delete
       end
     end

@@ -5,22 +5,22 @@
 .UserRoleIndicator {
   display: inline-block;
   padding: 0 8px;
-  line-height: 20px;
   border-width: 1px;
   border-style: solid;
   border-radius: 2px;
   background: $cWhite;
   font: bold 10px 'Open Sans';
+  line-height: 20px;
   text-transform: uppercase;
 }
 .UserRoleIndicator--filled {
-  color: white;
+  color: $cWhite;
 }
 .UserRoleIndicator--filled.is-green {
-  background: #8EB83F;
   border-color: #8EB83F;
+  background: #8EB83F;
 }
 .UserRoleIndicator--filled.is-grey {
-  background: #979EA1;
   border-color: #979EA1;
+  background: #979EA1;
 }

@@ -77,8 +77,8 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
   @include flex-direction(column);
   @include align-content(space-between);
   @include justify-content(space-between, start);
-  height: 40px;
   max-width: 350px;
+  height: 40px;
   padding: 1px 0;
 }
 .OrganizationList-userInfoSubtitle {

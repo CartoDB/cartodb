@@ -106,7 +106,7 @@ class Carto::Visualization < ActiveRecord::Base
   before_create :delay_saving_tags
   after_create :save_tags
 
-  after_commit :perform_save_named_map
+  after_commit :perform_save_named_map, :perform_invalidate_cache
 
   attr_accessor :register_table_only
 
@@ -406,6 +406,7 @@ class Carto::Visualization < ActiveRecord::Base
     add_to_transaction
     true
   end
+  alias :invalidate_cache :save_named_map
 
   def perform_save_named_map
     return true if destroyed? || remote? || data_layers.empty?
@@ -413,7 +414,7 @@ class Carto::Visualization < ActiveRecord::Base
     get_named_map ? named_maps_api.update : named_maps_api.create
   end
 
-  def invalidate_cache
+  def perform_invalidate_cache
     redis_vizjson_cache.invalidate(id)
     embed_redis_cache.invalidate(id)
     CartoDB::Varnish.new.purge(varnish_vizjson_key)

@@ -273,7 +273,6 @@ class Admin::OrganizationUsersController < Admin::AdminController
   end
 
   def check_permissions
-    raise RecordNotFound unless current_user.organization.present?
     raise RecordNotFound unless current_user.organization_admin?
   end
 

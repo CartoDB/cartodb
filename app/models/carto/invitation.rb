@@ -23,7 +23,7 @@ module Carto
     private_class_method :new
 
     def self.create_new(inviter_user, users_emails, welcome_text, viewer)
-      raise CartoDB::InvalidUser.new(" ") unless inviter_user.organization_admin?
+      raise CartoDB::InvalidUser.new("Only admins can create invitations") unless inviter_user.organization_admin?
 
       # ActiveRecord validation for all values
       invitation = new(inviter_user: inviter_user,

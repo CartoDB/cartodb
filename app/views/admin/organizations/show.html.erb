@@ -15,6 +15,7 @@
       assigned_seats: <%= current_user.organization.assigned_seats %>,
       assigned_viewer_seats: <%= current_user.organization.assigned_viewer_seats %>,
       owner: { id: "<%= current_user.organization.owner.id %>" },
+      admins: <%= current_user.organization.users.select(&:org_admin).map { |u| { id: u.id } }.to_json.html_safe %>,
       signup_enabled: <%= current_user.organization.auth_username_password_enabled || current_user.organization.auth_google_enabled %>
     };
     var user_data = <%= safe_js_object current_user.data.to_json.html_safe %>;

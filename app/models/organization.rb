@@ -292,6 +292,7 @@ class Organization < Sequel::Model
         email:      owner ? owner.email : nil,
         groups:     owner && owner.groups ? owner.groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro } : []
       },
+      admins:                    users.select(&:org_admin).map { |u| { id: u.id } },
       quota_in_bytes:            quota_in_bytes,
       unassigned_quota:          unassigned_quota,
       geocoding_quota:           geocoding_quota,

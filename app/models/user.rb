@@ -143,7 +143,11 @@ class User < Sequel::Model
     end
     validate_password_change
 
-    organization_validation if organization.present?
+    if organization.present?
+      organization_validation
+    elsif org_admin
+      errors.add(:org_admin, "cannot be set for non-organization user")
+    end
 
     errors.add(:geocoding_quota, "cannot be nil") if geocoding_quota.nil?
     errors.add(:here_isolines_quota, "cannot be nil") if here_isolines_quota.nil?
@@ -203,6 +207,24 @@ class User < Sequel::Model
     end
 
     errors[key].empty?
+  end
+
+  def valid_creation?(creator_user)
+    if organization_admin? && !creator_user.organization_owner?
+      errors.add(:org_admin, 'can only be set by organization owner')
+      false
+    else
+      valid?
+    end
+  end
+
+  def valid_update?(updater_user)
+    if column_changed?(:org_admin) && !updater_user.organization_owner?
+      errors.add(:org_admin, 'can only be set by organization owner')
+      false
+    else
+      valid?
+    end
   end
 
   ## Callbacks
@@ -1534,7 +1556,7 @@ class User < Sequel::Model
   end
 
   def organization_admin?
-    organization_owner? || org_admin
+    organization_user? && (organization_owner? || org_admin)
   end
 
   def builder_enabled?

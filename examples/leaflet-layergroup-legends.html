@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Easy example | CartoDB.js</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <link rel="shortcut icon" href="http://cartodb.com/assets/favicon.ico" />
+    <link rel="stylesheet" href="../../dist/themes/css/cartodb.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <style>
+      html, body, #map {
+        height: 100%;
+        padding: 0;
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+
+    <!-- include tangram library -->
+    <script src="https://mapzen.com/tangram/tangram.min.js"></script>
+
+    <!-- include cartodb.js library -->
+    <script src="../../dist/cartodb.uncompressed.js"></script>
+
+    <script>
+      function main() {
+         var vizjson = {
+          "bounds": [
+            [
+              -85.0511,
+              -179
+            ],
+            [
+              83.5702686309814,
+              179
+            ]
+          ],
+          "center": "[30, 0]",
+          "datasource": {
+            "user_name": "cdb",
+            "maps_api_template": "http://{user}.localhost.lan:8181",
+            "stat_tag": "0ec692d4-fb68-4541-a977-629f7d0a8eaf",
+            "template_name": "tpl_0ec692d4_fb68_4541_a977_629f7d0a8eaf"
+          },
+          "description": null,
+          "options": {
+            "legends": true,
+            "scrollwheel": false,
+            "layer_selector": true,
+            "dashboard_menu": true
+          },
+          "id": "0ec692d4-fb68-4541-a977-629f7d0a8eaf",
+          "layers": [
+            {
+              "id": "a3f8915e-3b19-4cbc-9be5-e62ad3aa3604",
+              "type": "tiled",
+              "options": {
+                "default": "true",
+                "url": "https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png",
+                "subdomains": "abcd",
+                "minZoom": "0",
+                "maxZoom": "18",
+                "name": "Positron",
+                "className": "positron_rainbow",
+                "attribution": "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"https://carto.com/attributions#basemaps\">CARTO</a>",
+                "urlTemplate": "https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png",
+                "type": "Tiled"
+              }
+            },
+            {
+              "id": "763fd438-ee62-472e-9430-fad06c0bbcc7",
+              "type": "CartoDB",
+              "visible": true,
+              "options": {
+                "layer_name": "world_borders",
+                "attribution": "",
+                "source": "a0"
+              },
+              "legends": [
+                {
+                  "conf": {
+                    "columns": []
+                  },
+                  "created_at": "2017-01-09T12:15:34+00:00",
+                  "definition": {
+                    "categories": [
+                      {
+                        "title": "Untitled",
+                        "color": "#3EBCAE"
+                      },
+                      {
+                        "title": "Untitled",
+                        "color": "#E54C1F"
+                      }
+                    ],
+                    "html": "<p class=\\\"CDB-Text CDB-Size-small u-mainTextColor u-upperCase\\\">Some markup that gets sanitised<script>alert(\\\"hola\\\");<\\\\/script></p>"
+                  },
+                  "id": "58041c88-d952-400a-8336-20dacab2eb6d",
+                  "layer_id": "763fd438-ee62-472e-9430-fad06c0bbcc7",
+                  "post_html": "",
+                  "pre_html": "",
+                  "title": "",
+                  "type": "custom",
+                  "updated_at": "2017-01-09T12:32:48+00:00"
+                }
+              ]
+            },
+            {
+              "id": "cdf29905-ba4f-4486-8c74-12bd0117d75b",
+              "type": "CartoDB",
+              "visible": true,
+              "options": {
+                "layer_name": "world_borders",
+                "attribution": "",
+                "source": "c0"
+              },
+              "legends": [
+                {
+                  "conf": {
+                    "columns": []
+                  },
+                  "created_at": "2017-01-09T12:42:26+00:00",
+                  "definition": {},
+                  "id": "c7821d3e-d203-4e5d-b35f-5fbc4ea221f8",
+                  "layer_id": "cdf29905-ba4f-4486-8c74-12bd0117d75b",
+                  "post_html": "",
+                  "pre_html": "",
+                  "title": "pop2005",
+                  "type": "choropleth",
+                  "updated_at": "2017-01-09T12:42:26+00:00"
+                }, {
+                  "conf": {
+                    "columns": []
+                  },
+                  "created_at": "2017-01-09T12:15:34+00:00",
+                  "definition": {
+                    "categories": [
+                      {
+                        "title": "Item 1",
+                        "color": "#CACACA"
+                      },
+                      {
+                        "title": "Item 2",
+                        "color": "#FABADA"
+                      },
+                      {
+                        "title": "Item 3",
+                        "color": "#cc607d",
+                        "icon": "https://s3.amazonaws.com/com.cartodb.users-assets.production/maki-icons/circle-stroked-18.svg"
+                      },
+                      {
+                        "title": "Item 4",
+                        "icon": "https://s3.amazonaws.com/com.cartodb.users-assets.staging/development/matatageom/assets/20170112145621a18f902726b8fdc0.png"
+                      }
+                    ]
+                  },
+                  "id": "58041c88-d952-400a-8336-20dacab2eb6d",
+                  "layer_id": "763fd438-ee62-472e-9430-fad06c0bbcc7",
+                  "post_html": "",
+                  "pre_html": "",
+                  "title": "",
+                  "type": "custom",
+                  "updated_at": "2017-01-09T12:15:50+00:00"
+                }
+              ]
+            },
+            {
+              "id": "37630e3a-fee6-4eaa-8b6b-5af5f220c97e",
+              "type": "CartoDB",
+              "visible": true,
+              "options": {
+                "layer_name": "ne_10m_populated_places_simple",
+                "attribution": "",
+                "source": "b0"
+              },
+              "legends": [
+                {
+                  "conf": {},
+                  "created_at": "2017-01-09T12:07:54+00:00",
+                  "definition": {},
+                  "id": "ec1f7cf4-9d4a-4451-9c13-73d8a68679f4",
+                  "layer_id": "37630e3a-fee6-4eaa-8b6b-5af5f220c97e",
+                  "post_html": "",
+                  "pre_html": "",
+                  "title": "adm0name",
+                  "type": "category",
+                  "updated_at": "2017-01-09T12:07:54+00:00"
+                },
+                {
+                  "conf": {},
+                  "created_at": "2017-01-09T12:07:54+00:00",
+                  "definition": {
+                    "color": "#5F4690",
+                    "top_label": "",
+                    "bottom_label": ""
+                  },
+                  "id": "7facefae-9e5c-421f-9c06-b9d6d8d5917a",
+                  "layer_id": "37630e3a-fee6-4eaa-8b6b-5af5f220c97e",
+                  "post_html": "",
+                  "pre_html": "",
+                  "title": "pop_max",
+                  "type": "bubble",
+                  "updated_at": "2017-01-09T12:07:54+00:00"
+                }
+              ]
+            }
+          ],
+          "likes": 0,
+          "map_provider": "leaflet",
+          "overlays": [
+            {
+              "type": "share",
+              "order": 1,
+              "options": {
+                "display": true,
+                "x": 20,
+                "y": 20
+              },
+              "template": ""
+            },
+            {
+              "type": "search",
+              "order": 2,
+              "options": {
+                "display": true,
+                "x": 60,
+                "y": 20
+              },
+              "template": ""
+            },
+            {
+              "type": "zoom",
+              "order": 3,
+              "options": {
+                "display": true,
+                "x": 20,
+                "y": 20
+              },
+              "template": "<a href=\"#zoom_in\" class=\"zoom_in\">+</a> <a href=\"#zoom_out\" class=\"zoom_out\">-</a>"
+            },
+            {
+              "type": "loader",
+              "order": 4,
+              "options": {
+                "display": true,
+                "x": 20,
+                "y": 150
+              },
+              "template": "<div class=\"loader\" original-title=\"\"></div>"
+            },
+            {
+              "type": "logo",
+              "order": 5,
+              "options": {
+                "display": true,
+                "x": 10,
+                "y": 40
+              },
+              "template": ""
+            }
+          ],
+          "title": "Untitled Map Import",
+          "updated_at": "2017-01-09T12:42:27+00:00",
+          "user": {
+            "fullname": "cdb",
+            "avatar_url": "example.com/avatars/avatar_stars_red.png",
+            "profile_url": "http://cdb.localhost.lan:3000"
+          },
+          "version": "3.0.0",
+          "widgets": [],
+          "zoom": 3,
+          "analyses": [
+            {
+              "id": "c0",
+              "type": "source",
+              "options": {
+                "table_name": "world_borders",
+                "simple_geom": "polygon"
+              }
+            },
+            {
+              "id": "a0",
+              "type": "source",
+              "options": {
+                "table_name": "world_borders",
+                "simple_geom": "polygon"
+              }
+            },
+            {
+              "id": "b0",
+              "type": "source",
+              "options": {
+                "table_name": "ne_10m_populated_places_simple",
+                "simple_geom": "point"
+              }
+            }
+          ],
+          "vector": false
+        };
+        cartodb.createVis('map', vizjson, {})
+        .done(function(vis, layers) {
+
+          
+
+        })
+        .error(function(err) {
+          console.log(err);
+        });
+      }
+
+      window.onload = main;
+
+    </script>
+  </body>
+</html>

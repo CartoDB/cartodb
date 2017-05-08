@@ -453,7 +453,7 @@ class Carto::User < ActiveRecord::Base
   end
 
   def organization_admin?
-    organization_owner? || org_admin
+    organization_user? && (organization_owner? || org_admin)
   end
 
   def mobile_sdk_enabled?

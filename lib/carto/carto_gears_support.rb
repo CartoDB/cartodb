@@ -43,7 +43,11 @@ module Carto
     end
 
     def gemspec
-      Gem::Specification::load(File::join(path, "#{name}.gemspec"))
+      pwd = Dir.pwd
+      Dir.chdir(path)
+      Gem::Specification::load("#{name}.gemspec")
+    ensure
+      Dir.chdir(pwd)
     end
 
     def full_path

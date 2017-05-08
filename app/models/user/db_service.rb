@@ -79,6 +79,10 @@ module CartoDB
           setup_organization_owner
         end
 
+        if @user.organization_admin?
+          grant_admin_permissions
+        end
+
         # Rebuild the geocoder api user config to reflect that is an organization user
         install_and_configure_geocoder_api_extension
         install_odbc_fdw
@@ -276,9 +280,15 @@ module CartoDB
         end
       end
 
-      def setup_owner_permissions
+      def grant_admin_permissions
         @user.in_database(as: :superuser) do |database|
           database.run(%{ SELECT cartodb.CDB_Organization_AddAdmin('#{@user.username}') })
+        end
+      end
+
+      def revoke_admin_permissions
+        @user.in_database(as: :superuser) do |database|
+          database.run(%{ SELECT cartodb.CDB_Organization_RemoveAdmin('#{@user.username}') })
         end
       end
 
@@ -489,7 +499,6 @@ module CartoDB
 
       def setup_organization_owner
         setup_organization_role_permissions
-        setup_owner_permissions
         configure_extension_org_metadata_api_endpoint
       end
 

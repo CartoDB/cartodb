@@ -23,6 +23,7 @@ module CartoDB
     PARAM_SOFT_MAPZEN_ROUTING_LIMIT = :soft_mapzen_routing_limit
     PARAM_QUOTA_IN_BYTES = :quota_in_bytes
     PARAM_VIEWER = :viewer
+    PARAM_ORG_ADMIN = :org_admin
 
     def initialize(created_via)
       @built = false
@@ -76,6 +77,10 @@ module CartoDB
 
     def with_viewer(value)
       with_param(PARAM_VIEWER, value)
+    end
+
+    def with_org_admin(value)
+      with_param(PARAM_ORG_ADMIN, value)
     end
 
     def with_organization(organization)
@@ -219,6 +224,7 @@ module CartoDB
       @user.soft_mapzen_routing_limit = @user_params[PARAM_SOFT_MAPZEN_ROUTING_LIMIT] == 'true'
       @user.quota_in_bytes = @user_params[PARAM_QUOTA_IN_BYTES] if @user_params[PARAM_QUOTA_IN_BYTES]
       @user.viewer = @user_params[PARAM_VIEWER] if @user_params[PARAM_VIEWER]
+      @user.org_admin = @user_params[PARAM_ORG_ADMIN] if @user_params[PARAM_ORG_ADMIN]
 
       @built = true
       @user

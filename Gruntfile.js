@@ -52,7 +52,7 @@ module.exports = function(grunt) {
 
   var runningTasks = grunt.cli.tasks;
   if (runningTasks.length === 0) {
-    grunt.log.writeln('Running default task.'); 
+    grunt.log.writeln('Running default task.');
   } else {
     grunt.log.writeln('Running tasks: ' + runningTasks);
   }
@@ -84,19 +84,6 @@ module.exports = function(grunt) {
   if (!mustCheckNodeVersion) {
     preFlight(REQUIRED_NODE_VERSION, REQUIRED_NPM_VERSION, logVersionsError);
     grunt.log.writeln('');
-  }
-
-  var dependenciesWithDifferentVersion = shrinkwrapDependencies.checkDependenciesVersion(
-    require('./npm-shrinkwrap-010.json'),
-    require('./npm-shrinkwrap-69.json'),
-    SHRINKWRAP_MODULES_TO_VALIDATE
-  );
-  if (dependenciesWithDifferentVersion.length > 0) {
-    grunt.log.fail("############### /!\\ CAUTION /!\\ #################");
-    grunt.log.fail("Dependencies with different version in shrinkwraps for node 0.10 and node 6.9.2 found.");
-    grunt.log.fail(JSON.stringify(dependenciesWithDifferentVersion, null, 4));
-    grunt.log.fail("#################################################");
-    process.exit(1);
   }
 
   var duplicatedModules = shrinkwrapDependencies.checkDuplicatedDependencies(require('./npm-shrinkwrap.json'), SHRINKWRAP_MODULES_TO_VALIDATE);

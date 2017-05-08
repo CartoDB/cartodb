@@ -104,7 +104,7 @@ describe 'ExploreAPI' do
     user_table = FactoryGirl.build(:user_table)
     user_table.stubs(:service).returns(table)
     user_table.stubs(:first).returns(user_table)
-    UserTable.stubs(where: user_table)
+    Carto::UserTable.stubs(where: user_table)
     table_data = @explore_api.get_visualizations_table_data([visualization, visualization_2])
     expected_data = {
       user.id => {
@@ -143,7 +143,7 @@ describe 'ExploreAPI' do
     user_table = FactoryGirl.build(:user_table)
     user_table.stubs(:service).returns(table)
     user_table.stubs(:first).returns(user_table)
-    UserTable.stubs(where: user_table)
+    Carto::UserTable.stubs(where: user_table)
     table_data = @explore_api.get_visualizations_table_data([visualization, visualization_2])
     expected_data = {
       user.id => {

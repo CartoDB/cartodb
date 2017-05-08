@@ -162,9 +162,7 @@ WORKING_SPECS_5 = \
 	spec/requests/api/assets_spec.rb \
 	spec/requests/carto/api/assets_controller_spec.rb \
 	spec/requests/carto/api/layers_controller_spec.rb \
-	spec/requests/api/json/records_controller_spec.rb \
 	spec/requests/carto/api/records_controller_spec.rb \
-	spec/requests/api/json/columns_controller_spec.rb \
 	spec/requests/carto/api/columns_controller_spec.rb \
 	spec/requests/api/synchronizations_spec.rb \
 	spec/requests/api/json/synchronizations_controller_spec.rb \
@@ -254,7 +252,6 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/models/carto/user_migration_spec.rb \
 	spec/models/table_registrar_spec.rb \
 	spec/requests/admin/organization_users_controller_spec.rb \
-	spec/requests/api/json/maps_controller_spec.rb \
 	spec/requests/carto/admin/mobile_apps_controller_spec.rb \
 	spec/requests/carto/builder/datasets_controller_spec.rb \
 	spec/requests/carto/api/analyses_controller_spec.rb \

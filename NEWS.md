@@ -111,10 +111,17 @@ Development
 * Improve assets build process (#11962)
     * Frontend development task has changed from `grunt && grunt dev` to `grunt dev`
     * Test task remains the same, but internals changed `grunt test`
+* Allow to have multiple administrators per organization (#12052)
 
 ### Bug fixes
+* Removed link to markdown support in organization notifications
+* Fix image export in Safari and IE (#12066)
 * Autostyling for google basemaps (#11838)
-
+* Fixed problem with the textarea editor (cartodb/support#656)
+* Fix estimation analysis row count (#11746)
+* Autostyling for google basemaps (#11838)
+* Fixed problem with the textarea editor (cartodb/support#656)
+* Fixed problem with markdown in organization notifications (#12045)
 * Save collapse state for layer list (#11927)
 * Styling falsy categories (#11421)
 * Fixed bug editing geometries from dataset view (#11855)
@@ -154,10 +161,13 @@ Development
   * Run `cartodb:db:register_table_dependencies` rake to update caches for existing maps
 * Categories legend are now static (#10972)
 * Fixed a bug with vizjson invalidation (#11092). It was introduced in #10934
+* Refactor:
+  * Layer model: #10934
+  * UserTable: #11589, #11700, #11737
+  * Map model and controller: #12039, #12011
 * Refactor Layer model (#10934) and UserTable (#11589, #11700, #11737).
 * Correctly render map previews for maps with google basemaps (#11608)
 * Do not trigger visualization hooks on state update (#11701)
-* Refactor Layer model (#10934)
 * Correctly register table dependencies of torque layers (#11549)
 * Validate number of organization seats in user update (#11839, #11859)
 * Validate number of organization seats in user update (#11839)
@@ -224,6 +234,8 @@ Development
 * Right column validate type match in Join analysis (#11829)
 * Check if analysis node is on top before fetching query data (#11874)
 * Fixed error dropping tables from ghost table manager on race condition cases (#12012)
+* IE11 fix for dropdowns with scrollview (#12073)
+* Fixed problem resetting styles per node after adding a new analysis (#12085)
 
 ### NOTICE
 This release upgrades the CartoDB PostgreSQL extension to `0.19.0`. Run the following to have it available:

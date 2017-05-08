@@ -77,52 +77,19 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
   @include flex-direction(column);
   @include align-content(space-between);
   @include justify-content(space-between, start);
-  height: 42px;
-}
-.OrganizationList-userInfoTitle {
+  height: 40px;
   max-width: 350px;
-  font-size: 14px;
-  font-weight: $sFontWeight-normal;
-  color: $cHighlight-main;
+  padding: 1px 0;
 }
 .OrganizationList-userInfoSubtitle {
-  max-width: 350px;
   color: $cTypography-secondary;
   font-size: 13px;
   font-weight: 300;
-}
-.OrganizationList-userInfoLabel {
-  display: inline-block;
-  padding: 0 8px;
-  margin-left: 4px;
-  height: 18px;
-  background: #8EB83F;
-  border-radius: 5px;
-  font-size: $sFontSize-smaller;
-  line-height: 18px;
-  color: white;
-  text-transform: uppercase;
-  text-align: center;
-  &.grey {
-    background: #979EA1;
-  }
+  line-height: 15px;
 }
 .OrganizationList-userInfoData {
   @include display-flex();
   @include flex-direction(row);
-}
-
-.OrganizationList-userInfoData--paragraph {
-  color: $cTypography-linkSecondary;
-  font-size: 14px;
-  font-weight: normal;
-
-  &:not(:last-child) { margin-right: 20px; }
-}
-
-.OrganizationList-userInfoData--paragraph-icon {
-  font-size: 10px;
-  margin-right: 4px;
 }
 .OrganizationList-userStats {
   width: 200px;
@@ -130,10 +97,13 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
   @include progress-bar(6px, 20px, false, 4px);
 }
 .OrganizationList-userLink:hover {
-  border-color: $cTypography-linkHover;
   cursor: pointer;
+
+  .OrganizationList-userInfoName {
+    color: $cTypography-linkHover;
+  }
 }
-.OrganizationList-userLink.disabled {
+.OrganizationList-userLink.is-disabled {
   cursor: initial;
   opacity: 0.5;
 }

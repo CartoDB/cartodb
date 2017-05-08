@@ -99,7 +99,7 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
 .OrganizationList-userLink:hover {
   cursor: pointer;
 
-  .OrganizationList-userInfoName {
+  &:not(.is-disabled) .OrganizationList-userInfoName {
     color: $cTypography-linkHover;
   }
 }

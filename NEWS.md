@@ -110,6 +110,7 @@ Development
 * Allow to have multiple administrators per organization (#12052)
 
 ### Bug fixes
+* Update Data Observatory Analysis UI (#9991)
 * Removed link to markdown support in organization notifications
 * Fix image export in Safari and IE (#12066)
 * Autostyling for google basemaps (#11838)

@@ -5,6 +5,7 @@ require_dependency 'cartodb/redis_vizjson_cache'
 require_dependency 'carto/named_maps/api'
 require_dependency 'carto/helpers/auth_token_generator'
 require_dependency 'carto/uuidhelper'
+require_dependency 'carto/visualization_invalidation_service'
 
 module Carto::VisualizationDependencies
   def fully_dependent_on?(user_table)
@@ -106,7 +107,7 @@ class Carto::Visualization < ActiveRecord::Base
   before_create :delay_saving_tags
   after_create :save_tags
 
-  after_commit :perform_save_named_map, :perform_invalidate_cache
+  after_commit :perform_invalidations
 
   attr_accessor :register_table_only
 
@@ -408,16 +409,8 @@ class Carto::Visualization < ActiveRecord::Base
   end
   alias :invalidate_cache :save_named_map
 
-  def perform_save_named_map
-    return true if destroyed? || remote? || data_layers.empty?
-
-    get_named_map ? named_maps_api.update : named_maps_api.create
-  end
-
-  def perform_invalidate_cache
-    redis_vizjson_cache.invalidate(id)
-    embed_redis_cache.invalidate(id)
-    CartoDB::Varnish.new.purge(varnish_vizjson_key)
+  def perform_invalidations
+    invalidation_service.invalidate
   end
 
   def allowed_auth_tokens
@@ -766,5 +759,9 @@ class Carto::Visualization < ActiveRecord::Base
 
   def destroy_named_map
     named_maps_api.destroy
+  end
+
+  def invalidation_service
+    @invalidation_service ||= Carto::VisualizationInvalidationService.new(self)
   end
 end

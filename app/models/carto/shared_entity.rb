@@ -3,11 +3,11 @@ require_relative '../shared_entity'
 
 module Carto
   class SharedEntity < ActiveRecord::Base
-    ENTITY_TYPE_VISUALIZATION = 'vis'
+    ENTITY_TYPE_VISUALIZATION = 'vis'.freeze
 
-    RECIPIENT_TYPE_USER         = 'user'
-    RECIPIENT_TYPE_ORGANIZATION = 'org'
-    RECIPIENT_TYPE_GROUP = 'group'
+    RECIPIENT_TYPE_USER         = 'user'.freeze
+    RECIPIENT_TYPE_ORGANIZATION = 'org'.freeze
+    RECIPIENT_TYPE_GROUP        = 'group'.freeze
 
     scope :shared_visualizations, where(entity_type: ENTITY_TYPE_VISUALIZATION)
 

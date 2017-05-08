@@ -68,18 +68,16 @@ class Admin::OrganizationUsersController < Admin::AdminController
         :username, :email, :password, :quota_in_bytes, :password_confirmation,
         :twitter_datasource_enabled, :soft_geocoding_limit, :soft_here_isolines_limit,
         :soft_obs_snapshot_limit, :soft_obs_general_limit, :soft_mapzen_routing_limit
-      ])
+      ]
+    )
     @user.org_admin = params[:user][:org_admin] == 'true'
     @user.viewer = params[:user][:viewer] == 'true'
     @user.organization = current_user.organization
     current_user.copy_account_features(@user)
 
     # Validate password first, so nicer errors are displayed
-    model_validation_ok = @user.valid_password?(:password, @user.password, @user.password_confirmation) && @user.valid?
-    if @user.organization_admin? && !current_user.organization_owner?
-      @user.errors.add(:org_admin, 'can only be set by organization owner')
-      model_validation_ok = false
-    end
+    model_validation_ok = @user.valid_password?(:password, @user.password, @user.password_confirmation) &&
+                          @user.valid_creation?(current_user)
 
     unless model_validation_ok
       raise Sequel::ValidationFailed.new("Validation failed: #{@user.errors.full_messages.join(', ')}")
@@ -152,14 +150,9 @@ class Admin::OrganizationUsersController < Admin::AdminController
     @user.soft_twitter_datasource_limit = attributes[:soft_twitter_datasource_limit] if attributes[:soft_twitter_datasource_limit].present?
     @user.soft_mapzen_routing_limit = attributes[:soft_mapzen_routing_limit] if attributes[:soft_mapzen_routing_limit].present?
 
-    model_validation_ok = @user.valid?
+    model_validation_ok = @user.valid_update?(current_user)
     if attributes[:password].present? || attributes[:password_confirmation].present?
       model_validation_ok &&= @user.valid_password?(:password, attributes[:password], attributes[:password_confirmation])
-    end
-
-    if @user.column_changed?(:org_admin) && !current_user.organization_owner?
-      @user.errors.add(:org_admin, 'can only be set by organization owner')
-      model_validation_ok = false
     end
 
     unless model_validation_ok

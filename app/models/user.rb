@@ -209,6 +209,24 @@ class User < Sequel::Model
     errors[key].empty?
   end
 
+  def valid_creation?(creator_user)
+    if organization_admin? && !creator_user.organization_owner?
+      errors.add(:org_admin, 'can only be set by organization owner')
+      false
+    else
+      valid?
+    end
+  end
+
+  def valid_update?(updater_user)
+    if column_changed?(:org_admin) && !updater_user.organization_owner?
+      errors.add(:org_admin, 'can only be set by organization owner')
+      false
+    else
+      valid?
+    end
+  end
+
   ## Callbacks
   def before_validation
     self.email = self.email.to_s.strip.downcase

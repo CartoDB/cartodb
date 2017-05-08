@@ -181,6 +181,6 @@
     "affected_specs": "node lib/build/branchFiles/branchFiles.js | xargs node lib/build/affectedFiles/affectedFiles.js",
     "build": "NODE_ENV=production webpack -p --config webpack.prod.config.js",
     "build:stats": "webpack --env.stats --progress --config webpack.dev.config.js",
-    "start": "webpack --progress --watch --display-chunks --config webpack.dev.config.js"
+    "start": "webpack --progress --watch --config webpack.dev.config.js"
   }
 }

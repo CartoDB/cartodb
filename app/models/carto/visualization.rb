@@ -1,7 +1,5 @@
 require 'active_record'
 require_relative '../visualization/stats'
-require_relative '../../helpers/embed_redis_cache'
-require_dependency 'cartodb/redis_vizjson_cache'
 require_dependency 'carto/named_maps/api'
 require_dependency 'carto/helpers/auth_token_generator'
 require_dependency 'carto/uuidhelper'
@@ -94,7 +92,7 @@ class Carto::Visualization < ActiveRecord::Base
   before_create :set_random_id, :set_default_permission
 
   before_save :remove_password_if_unprotected, :invalidate
-  after_save :save_named_map_or_rollback_privacy, :propagate_attribution_change
+  after_save :propagate_attribution_change
   after_save :propagate_privacy_and_name_to, if: :table
 
   before_destroy :backup_visualization
@@ -395,24 +393,6 @@ class Carto::Visualization < ActiveRecord::Base
     destroy if persisted?
   end
 
-  def get_named_map
-    return false if remote?
-
-    named_maps_api.show
-  end
-
-  def save_named_map
-    # This marks this visualization as affected by this transaction, so AR will call its `after_commit` hook, which
-    # performs the actual named map save. This takes this operation outside of the DB transaction to avoid long locks
-    add_to_transaction
-    true
-  end
-  alias :invalidate_cache :save_named_map
-
-  def perform_invalidations
-    invalidation_service.invalidate
-  end
-
   def allowed_auth_tokens
     entities = [user] + permission.entities_with_read_permission
     entities.map(&:get_auth_token)
@@ -555,20 +535,21 @@ class Carto::Visualization < ActiveRecord::Base
     end
   end
 
-  def invalidate_map_changes
-    save_named_map
-    invalidate_cache
+  def invalidate_later
+    # This marks this visualization as affected by this transaction, so AR will call its `after_commit` hook, which
+    # performs the actual invalidations. This takes this operation outside of the DB transaction to avoid long locks
+    add_to_transaction
+    true
   end
 
   private
 
-  def remove_password
-    self.password_salt = nil
-    self.encrypted_password = nil
+  def perform_invalidations
+    invalidation_service.invalidate
   end
 
   def invalidate
-    invalidate_cache
+    invalidate_later
 
     # When a table's relevant data is changed, propagate to all who use it or relate to it
     if canonical? && (description_changed? || attributions_changed?)
@@ -576,9 +557,9 @@ class Carto::Visualization < ActiveRecord::Base
     end
   end
 
-  # Attributes that cause an invalidation to be triggered (they are presented in public pages)
-  def cached_data_changed?
-    description_changed? || attributions_changed? || version_changed? || encrypted_password_changed?
+  def remove_password
+    self.password_salt = nil
+    self.encrypted_password = nil
   end
 
   def propagate_privacy_and_name_to
@@ -653,18 +634,6 @@ class Carto::Visualization < ActiveRecord::Base
     update_attribute(:tags, @cached_tags)
   end
 
-  def named_maps_api
-    Carto::NamedMaps::Api.new(for_presentation)
-  end
-
-  def redis_vizjson_cache
-    @redis_vizjson_cache ||= CartoDB::Visualization::RedisVizjsonCache.new
-  end
-
-  def embed_redis_cache
-    @embed_redis_cache ||= EmbedRedisCache.new($tables_metadata)
-  end
-
   def password_digest(password, salt)
     digest = AUTH_DIGEST
     10.times do
@@ -674,7 +643,6 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def secure_digest(*args)
-    #noinspection RubyArgCount
     Digest::SHA256.hexdigest(args.flatten.join)
   end
 
@@ -710,10 +678,6 @@ class Carto::Visualization < ActiveRecord::Base
     user_id == user.id
   end
 
-  def varnish_vizjson_key
-    ".*#{id}:vizjson"
-  end
-
   def validate_password_presence
     errors.add(:password, 'required for protected visualization') if password_protected? && !has_password?
   end
@@ -725,16 +689,6 @@ class Carto::Visualization < ActiveRecord::Base
   def validate_privacy_changes
     if derived? && is_privacy_private? && privacy_changed? && !user.try(:private_maps_enabled?)
       errors.add(:privacy, 'cannot be set to private')
-    end
-  end
-
-  def save_named_map_or_rollback_privacy
-    if !save_named_map && privacy_changed?
-      # Explicitly set privacy to its previous value so the hooks run and the user db permissions are updated
-      # TODO: It would be better to raise an exception to rollback the transaction, but that can break renames
-      # as we don't explicitly rollback those in the user database. Consider an `after_rollback` hook in user table?
-      self.privacy = privacy_was
-      save
     end
   end
 
@@ -751,10 +705,6 @@ class Carto::Visualization < ActiveRecord::Base
       exception: exception,
       visualization_id: id
     )
-  end
-
-  def destroy_named_map
-    named_maps_api.destroy
   end
 
   def invalidation_service

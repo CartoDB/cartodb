@@ -77,8 +77,8 @@ class Organization < Sequel::Model
       errors.add(:whitelisted_email_domains, 'enable at least one auth. system or clear whitelisted email domains')
     end
 
-    errors.add(:seats, 'cannot be less than the number of builders') if remaining_seats < 0
-    errors.add(:viewer_seats, 'cannot be less than the number of viewers') if remaining_viewer_seats < 0
+    errors.add(:seats, 'cannot be less than the number of builders') if seats && remaining_seats < 0
+    errors.add(:viewer_seats, 'cannot be less than the number of viewers') if viewer_seats && remaining_viewer_seats < 0
   end
 
   def validate_for_signup(errors, user)

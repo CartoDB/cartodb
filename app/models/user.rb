@@ -869,7 +869,7 @@ class User < Sequel::Model
   end
 
   def viewable_by?(viewer)
-    id == viewer.id || organization.admin?(viewer)
+    id == viewer.id || organization.try(:admin?, viewer)
   end
 
   def editable_by?(user)

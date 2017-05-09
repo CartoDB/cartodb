@@ -229,6 +229,7 @@ Development
 * Max tracts to 4 for isoline analysis (#11723)
 * Right column validate type match in Join analysis (#11829)
 * Check if analysis node is on top before fetching query data (#11874)
+* Validate amount of organization seats (#12101)
 * Fixed error dropping tables from ghost table manager on race condition cases (#12012)
 * IE11 fix for dropdowns with scrollview (#12073)
 * Fixed problem resetting styles per node after adding a new analysis (#12085)

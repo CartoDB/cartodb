@@ -16,13 +16,15 @@ module Carto
       self
     end
 
-    private
+    protected
 
     def invalidate_caches
       invalidate_embeds_from_redis
       invalidate_vizjson_from_redis
       invalidate_vizjson_from_varnish
     end
+
+    private
 
     def update_or_destroy_named_map
       return if @visualization.remote?

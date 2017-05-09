@@ -301,6 +301,7 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/lib/carto/assets_service_spec.rb \
 	spec/lib/carto/organization_assets_service_spec.rb \
 	spec/lib/carto/storage_options/local_spec.rb \
+	spec/lib/carto/visualization_invalidation_service.rb \
 	spec/models/carto/username_proposer_spec.rb \
 	spec/services/carto/overquota_users_service_spec.rb \
 	$(NULL)

@@ -1,5 +1,4 @@
 var $ = require('jquery');
-var cdb = require('cdb');
 var _ = require('underscore');
 var templates = require('cdb.templates');
 var View = require('../../core/view');

@@ -17,7 +17,9 @@ module CartoDB
     rescue => rollbar_exception
       # Last chance to report error
       begin
-        Rollbar.error(rollbar_exception)
+        Rollbar.with_config(use_async: false) do
+          Rollbar.error(rollbar_exception)
+        end
       rescue
       end
     end

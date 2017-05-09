@@ -391,6 +391,10 @@ class Organization < Sequel::Model
     (users || []).select(&:viewer?)
   end
 
+  def admin?(user)
+    user.belongs_to_organization?(self) && user.organization_admin?
+  end
+
   def notify_if_disk_quota_limit_reached
     ::Resque.enqueue(::Resque::OrganizationJobs::Mail::DiskQuotaLimitReached, id) if disk_quota_limit_reached?
   end

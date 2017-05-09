@@ -23,7 +23,7 @@ module OrganizationUsersHelper
   end
 
   def admins_only
-    unless current_viewer.belongs_to_organization?(@organization) && current_viewer.organization_admin?
+    unless @organization.admin?(current_viewer)
       render_jsonp({}, 401)
       false
     end

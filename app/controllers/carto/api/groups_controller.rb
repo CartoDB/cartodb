@@ -139,7 +139,7 @@ module Carto
       end
 
       def org_admin_only
-        unless current_user.belongs_to_organization?(@organization) && current_user.organization_admin?
+        unless @organization.admin?(current_user)
           render json: { errors: ["Not org. admin"] }, status: 400
         end
       end

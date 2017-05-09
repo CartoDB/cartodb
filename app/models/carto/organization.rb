@@ -147,6 +147,10 @@ module Carto
       users.select(&:viewer)
     end
 
+    def admin?(user)
+      user.belongs_to_organization?(self) && user.organization_admin?
+    end
+
     private
 
     def ensure_auth_saml_configuration

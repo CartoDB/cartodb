@@ -425,8 +425,8 @@ class Carto::User < ActiveRecord::Base
     end
   end
 
-  def viewable_by?(user)
-    id == user.id || (user.belongs_to_organization?(organization) && user.organization_admin?)
+  def viewable_by?(viewer)
+    id == viewer.id || organization.admin?(viewer)
   end
 
   def editable_by?(user)

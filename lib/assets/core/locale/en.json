@@ -1651,7 +1651,7 @@
           "street-address-column-help": "Select a column with street addresses",
           "street-address-help": "Use columns or free text to compose your address schema. <a href='https://carto.com/learn/guides/analysis/georeference' target='_blank'>More info.</a>",
           "street-address": "Street Addresses",
-          "advance": "Advance mode",
+          "advance": "Advanced mode",
           "normal": "Normal mode"
         },
         "group-by": "Group by",

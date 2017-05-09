@@ -44,7 +44,7 @@ class Carto::Map < ActiveRecord::Base
   validate :validate_options
 
   after_initialize :ensure_options
-  after_commit :force_notify_map_change
+  after_save :notify_map_change
 
   def data_layers
     layers.select(&:data_layer?)

@@ -32,7 +32,8 @@ module Carto
 
     before_validation :ensure_definition, :ensure_conf
 
-    after_commit :force_notify_layer_change
+    after_save :force_notify_layer_change
+    after_destroy :force_notify_layer_change
 
     private
 

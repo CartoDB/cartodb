@@ -217,14 +217,14 @@ module CartoDB
         # @throws AuthError
         # @throws mixed
         def handle_error(original_exception, message)
-          if original_exception.kind_of? DropboxApi::Errors::BasicError
+          if original_exception.is_a? DropboxApi::Errors::BasicError
             error_code = original_exception.http_response.code.to_i
             if error_code == 401 || error_code == 403
               raise TokenExpiredOrInvalidError.new(message, DATASOURCE_NAME)
             else
               raise AuthError.new(message)
             end
-          elsif original_exception.kind_of? ArgumentError
+          elsif original_exception.is_a? ArgumentError
             raise DataDownloadError.new(message, DATASOURCE_NAME)
           else
             raise original_exception

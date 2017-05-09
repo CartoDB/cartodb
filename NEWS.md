@@ -10,6 +10,7 @@ Development
   * `cartodb:services:set_user_quota[username,service,quota]` updated to support the `mapzen_routing` provider
   * `cartodb:services:set_org_quota[orgname,service,quota]` updated to support the `mapzen_routing` provider
   * `cartodb:services:set_user_soft_limit[username,service,quota]` new task to set user soft limits
+* Dropbox API v2 (#8303).
 * Color picker for codemirror component.
 * New dropdown for Data Observatory (#11618)
 * Quota pre-check to analyses that consume quota.

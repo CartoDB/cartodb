@@ -2,7 +2,7 @@ module Carto
   class VisualizationInvalidationService
     def initialize(visualization)
       @visualization = visualization
-      @invalidate_affected_maps = false
+      @invalidate_affected_visualizations = false
     end
 
     def invalidate
@@ -12,7 +12,7 @@ module Carto
     end
 
     def with_invalidation_of_affected_visualizations
-      @invalidate_affected_maps = true
+      @invalidate_affected_visualizations = true
       self
     end
 

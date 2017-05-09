@@ -67,7 +67,6 @@
     "gulp-iconfont-css": "0.0.9",
     "gulp-install": "0.2.0",
     "gulp-sketch": "0.0.7",
-    "jasmine": "2.5.2",
     "jasmine-ajax": "git://github.com/nobuti/jasmine-ajax.git#master",
     "jshint-stylish": "~0.1.3",
     "jstify": "0.12.0",
@@ -161,8 +160,5 @@
     "root": "."
   },
   "scripts": {
-    "test": "jasmine JASMINE_CONFIG_PATH=test/support/jasmine.json",
-    "test-debug": "node-debug --no-preload ./node_modules/.bin/jasmine JASMINE_CONFIG_PATH=test/support/jasmine.json --",
-    "test-watch": "watch 'npm test' $npm_package_config_root"
   }
 }

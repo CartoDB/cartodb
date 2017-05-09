@@ -91,13 +91,11 @@ class Carto::Visualization < ActiveRecord::Base
   before_validation :set_default_version, :set_register_table_only
   before_create :set_random_id, :set_default_permission
 
-  before_save :remove_password_if_unprotected, :invalidate
+  before_save :remove_password_if_unprotected, :invalidate_related_visualizations
   after_save :propagate_attribution_change
   after_save :propagate_privacy_and_name_to, if: :table
 
   before_destroy :backup_visualization
-  after_destroy :invalidate_cache
-  after_destroy :destroy_named_map
 
   # INFO: workaround for array saves not working. There is a bug in `activerecord-postgresql-array` which
   # makes inserting including array fields to save, but updates work. Wo se insert without tags and add them
@@ -548,9 +546,7 @@ class Carto::Visualization < ActiveRecord::Base
     invalidation_service.invalidate
   end
 
-  def invalidate
-    invalidate_later
-
+  def invalidate_related_visualizations
     # When a table's relevant data is changed, propagate to all who use it or relate to it
     if canonical? && (description_changed? || attributions_changed?)
       invalidation_service.with_invalidation_of_affected_visualizations

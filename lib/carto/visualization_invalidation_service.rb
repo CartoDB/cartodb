@@ -26,10 +26,10 @@ module Carto
 
     def update_or_destroy_named_map
       return if @visualization.remote?
+      named_maps_api = Carto::NamedMaps::Api.new(@visualization.for_presentation)
       if @visualization.destroyed?
-        @visualization.destroy_named_map
+        named_maps_api.destroy
       elsif @visualization.data_layers.any?
-        named_maps_api = Carto::NamedMaps::Api.new(@visualization.for_presentation)
         named_maps_api.show ? named_maps_api.update : named_maps_api.create
       end
     end

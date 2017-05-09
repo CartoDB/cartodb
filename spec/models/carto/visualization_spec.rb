@@ -135,7 +135,7 @@ describe Carto::Visualization do
 
   describe '#published?' do
     before(:each) do
-      @visualization = FactoryGirl.build(:carto_visualization)
+      @visualization = FactoryGirl.build(:carto_visualization, user: @carto_user)
     end
 
     it 'returns true for visualizations without version' do
@@ -192,7 +192,7 @@ describe Carto::Visualization do
     it 'should save named map with layers on map creation' do
       @visualization = FactoryGirl.build(:carto_visualization, user: @carto_user, map: FactoryGirl.build(:carto_map))
       @visualization.layers << FactoryGirl.build(:carto_layer)
-      @visualization.expects(:named_maps_api).returns(Carto::NamedMaps::Api.new(@visualization)).at_least_once
+      Carto::VisualizationInvalidationService.any_instance.expects(:invalidate).once
       @visualization.save
     end
 
@@ -295,8 +295,7 @@ describe Carto::Visualization do
       visualization.create_mapcap!
       visualization.state.save
 
-      visualization.expects(:destroy_named_map).at_least_once
-      visualization.expects(:invalidate_cache).at_least_once
+      Carto::VisualizationInvalidationService.any_instance.expects(:invalidate).once
       expect_visualization_to_be_destroyed(visualization) { visualization.destroy }
     end
   end

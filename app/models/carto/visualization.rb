@@ -568,15 +568,11 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def invalidate
-    # previously we used 'invalidate_cache' but due to public_map displaying all the user public visualizations,
-    # now we need to purgue everything to avoid cached stale data or public->priv still showing scenarios
-    if privacy_changed? || name_changed? || cached_data_changed?
-      invalidate_cache
-    end
+    invalidate_cache
 
     # When a table's relevant data is changed, propagate to all who use it or relate to it
-    if cached_data_changed? && table
-      user_table.dependent_visualizations.each(&:invalidate_cache)
+    if canonical? && (description_changed? || attributions_changed?)
+      invalidation_service.with_invalidation_of_affected_visualizations
     end
   end
 

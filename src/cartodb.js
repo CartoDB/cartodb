@@ -11,6 +11,14 @@ if (window) {
 
 if (isLeafletAlreadyLoaded) L.noConflict();
 
+cdb.core = {};
+cdb.core.sanitize = require('./core/sanitize');
+cdb.core.Template = require('./core/template');
+cdb.core.Model = require('./core/model');
+cdb.core.View = require('./core/view');
+
+cdb.SQL = require('./api/sql');
+
 cdb.createVis = require('./api/create-vis');
 
 module.exports = cdb;

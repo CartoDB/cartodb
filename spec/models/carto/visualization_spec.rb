@@ -299,4 +299,32 @@ describe Carto::Visualization do
       expect_visualization_to_be_destroyed(visualization) { visualization.destroy }
     end
   end
+
+  describe '#invalidation_service' do
+    before(:all) do
+      @visualization = FactoryGirl.create(:carto_visualization, user: @carto_user, type: 'table')
+    end
+
+    it 'triggers invalidation after saving' do
+      @visualization.send(:invalidation_service).expects(:invalidate)
+      @visualization.update_attributes(name: @visualization.name + '-renamed')
+    end
+
+    it 'triggers invalidation of related entities after updating description field' do
+      @visualization.send(:invalidation_service).expects(:with_invalidation_of_affected_visualizations)
+      @visualization.send(:invalidation_service).expects(:invalidate)
+      @visualization.update_attributes(description: 'something')
+    end
+
+    it 'triggers invalidation of related wntities after updating attributions field' do
+      @visualization.send(:invalidation_service).expects(:with_invalidation_of_affected_visualizations)
+      @visualization.send(:invalidation_service).expects(:invalidate)
+      @visualization.update_attributes(attributions: 'something')
+    end
+
+    it 'triggers invalidation after destroying' do
+      @visualization.send(:invalidation_service).expects(:invalidate)
+      @visualization.destroy
+    end
+  end
 end

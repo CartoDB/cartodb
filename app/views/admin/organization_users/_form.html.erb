@@ -178,11 +178,11 @@
       </div>
       <div class="FormAccount-rowData">
         <div class="Toggler">
-          <%= f.check_box :soft_geocoding_limit, id: "soft_geocoding_limit", disabled: !current_user.soft_geocoding_limit %>
+          <%= f.check_box :soft_geocoding_limit, id: "soft_geocoding_limit", disabled: !current_user.organization.owner.soft_geocoding_limit %>
           <%= label_tag(:soft_geocoding_limit, '') %>
         </div>
         <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
-          <% if current_user.soft_geocoding_limit %>
+          <% if current_user.organization.owner.soft_geocoding_limit %>
             <p class="CDB-Text CDB-Size-small u-altTextColor">User has permission to exceed organization's geocoding quota</p>
           <% else %>
             <p class="CDB-Text CDB-Size-small u-altTextColor">You can't enable extra quota. Contact support for more information.</p>
@@ -197,11 +197,11 @@
       </div>
       <div class="FormAccount-rowData">
         <div class="Toggler">
-          <%= f.check_box :soft_here_isolines_limit, id: "soft_here_isolines_limit", disabled: !current_user.soft_here_isolines_limit %>
+          <%= f.check_box :soft_here_isolines_limit, id: "soft_here_isolines_limit", disabled: !current_user.organization.owner.soft_here_isolines_limit %>
           <%= label_tag(:soft_here_isolines_limit, '') %>
         </div>
         <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
-          <% if current_user.soft_here_isolines_limit %>
+          <% if current_user.organization.owner.soft_here_isolines_limit %>
             <p class="CDB-Text CDB-Size-small u-altTextColor">User has permission to exceed organization's isolines quota from Here provider</p>
           <% else %>
             <p class="CDB-Text CDB-Size-small u-altTextColor">You can't enable extra quota. Contact support for more information.</p>
@@ -216,11 +216,11 @@
       </div>
       <div class="FormAccount-rowData">
         <div class="Toggler">
-          <%= f.check_box :soft_mapzen_routing_limit, id: "soft_mapzen_routing_limit", disabled: !current_user.soft_mapzen_routing_limit %>
+          <%= f.check_box :soft_mapzen_routing_limit, id: "soft_mapzen_routing_limit", disabled: !current_user.organization.owner.soft_mapzen_routing_limit %>
           <%= label_tag(:soft_mapzen_routing_limit, '') %>
         </div>
         <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
-          <% if current_user.soft_mapzen_routing_limit %>
+          <% if current_user.organization.owner.soft_mapzen_routing_limit %>
             <p class="CDB-Text CDB-Size-small u-altTextColor">User has permission to exceed organization's routing quota from Mapzen provider</p>
           <% else %>
             <p class="CDB-Text CDB-Size-small u-altTextColor">You can't enable extra quota. Contact support for more information.</p>
@@ -229,18 +229,18 @@
       </div>
     </div>
 
-    <% if current_user && current_user.organization && current_user.organization.twitter_datasource_enabled %>
+    <% if current_user.organization.twitter_datasource_enabled %>
       <div class="FormAccount-row">
         <div class="FormAccount-rowLabel">
           <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Extra tweets</label>
         </div>
         <div class="FormAccount-rowData">
           <div class="Toggler">
-            <%= f.check_box :soft_twitter_datasource_limit, id: "soft_twitter_datasource_limit", disabled: !current_user.soft_twitter_datasource_limit %>
+            <%= f.check_box :soft_twitter_datasource_limit, id: "soft_twitter_datasource_limit", disabled: !current_user.organization.owner.soft_twitter_datasource_limit %>
             <%= label_tag(:soft_twitter_datasource_limit, '') %>
           </div>
           <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
-            <% if current_user.soft_twitter_datasource_limit %>
+            <% if current_user.organization.owner.soft_twitter_datasource_limit %>
               <p class="CDB-Text CDB-Size-small u-altTextColor">User has permission to exceed organization's Twitter credits</p>
             <% else %>
               <p class="CDB-Text CDB-Size-small u-altTextColor">You can't enable extra quota. Contact support for more information.</p>

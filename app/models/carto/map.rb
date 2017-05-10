@@ -124,7 +124,7 @@ class Carto::Map < ActiveRecord::Base
   end
 
   def notify_map_change
-    visualization.try(:invalidate_later)
+    visualization.try(:invalidate_after_commit)
   end
   alias :force_notify_map_change :notify_map_change
 

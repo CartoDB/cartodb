@@ -533,14 +533,14 @@ class Carto::Visualization < ActiveRecord::Base
     end
   end
 
-  def invalidate_later
+  def invalidate_after_commit
     # This marks this visualization as affected by this transaction, so AR will call its `after_commit` hook, which
     # performs the actual invalidations. This takes this operation outside of the DB transaction to avoid long locks
     add_to_transaction
     true
   end
   # TODO: Privacy manager compatibility, can be removed after removing ::usUserTable
-  alias :invalidate_cache :invalidate_later
+  alias :invalidate_cache :invalidate_after_commit
 
   private
 

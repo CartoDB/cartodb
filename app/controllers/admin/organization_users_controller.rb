@@ -127,7 +127,7 @@ class Admin::OrganizationUsersController < Admin::AdminController
 
     attributes = params[:user]
     @user.set_fields(attributes, [:email]) if attributes[:email].present? && !@user.google_sign_in
-    @user.set_fields(attributes, [:quota_in_bytes]) if attributes[:quota_in_bytes].present? && current_user.organization_owner?
+    @user.set_fields(attributes, [:quota_in_bytes]) if attributes[:quota_in_bytes].present?
 
     @user.set_fields(attributes, [:disqus_shortname]) if attributes[:disqus_shortname].present?
     @user.set_fields(attributes, [:available_for_hire]) if attributes[:available_for_hire].present?

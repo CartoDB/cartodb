@@ -384,14 +384,6 @@ var Map = Model.extend({
   },
 
   /**
-  * Checks if the base layer is already in the map as base map
-  */
-  isBaseLayerAdded: function (layer) {
-    var baselayer = this.getBaseLayer();
-    return baselayer && layer.isEqual(baselayer);
-  },
-
-  /**
   * gets the url of the template of the tile layer
   * @method getLayerTemplate
   */

@@ -1,73 +1,24 @@
 var isLeafletAlreadyLoaded = !!window.L;
 
-var _ = require('underscore');
 var L = require('leaflet');
 require('mousewheel'); // registers itself to $.event; TODO what's this required for? still relevant for supported browsers?
 require('mwheelIntent'); // registers itself to $.event; TODO what's this required for? still relevant for supported browsers?
 
 var cdb = require('cdb');
-
 if (window) {
   window.cartodb = window.cdb = cdb;
 }
 
-cdb.Backbone = require('backbone');
-cdb.Mustache = require('mustache');
-cdb.$ = require('jquery');
-cdb._ = _;
-cdb.L = L;
-
 if (isLeafletAlreadyLoaded) L.noConflict();
-_.extend(cdb.geo, require('./geo/leaflet'));
 
-cdb.SQL = require('./api/sql');
-
-cdb.config = require('cdb.config');
-cdb.log = require('cdb.log');
-cdb.errors = require('cdb.errors');
-cdb.templates = require('cdb.templates');
-cdb.createVis = require('./api/create-vis');
-cdb.LZMA = require('lzma');
-
-cdb.core.Profiler = require('cdb.core.Profiler');
-cdb.core.util = require('cdb.core.util');
-cdb.core.Loader = cdb.vis.Loader = require('./core/loader');
+cdb.core = {};
 cdb.core.sanitize = require('./core/sanitize');
 cdb.core.Template = require('./core/template');
-cdb.core.TemplateList = require('./core/template-list');
 cdb.core.Model = require('./core/model');
 cdb.core.View = require('./core/view');
 
-cdb.ui.common.FullScreen = require('./ui/common/fullscreen/fullscreen-view');
+cdb.SQL = require('./api/sql');
 
-cdb.geo.geocoder.NOKIA = require('./geo/geocoder/nokia-geocoder');
-cdb.geo.geocoder.YAHOO = require('./geo/geocoder/yahoo-geocoder');
-
-cdb.geo.TileLayer = require('./geo/map/tile-layer');
-cdb.geo.GMapsBaseLayer = require('./geo/map/gmaps-base-layer');
-cdb.geo.WMSLayer = require('./geo/map/wms-layer');
-cdb.geo.PlainLayer = require('./geo/map/plain-layer');
-cdb.geo.TorqueLayer = require('./geo/map/torque-layer');
-cdb.geo.CartoDBLayer = require('./geo/map/cartodb-layer');
-cdb.geo.Map = require('./geo/map');
-cdb.geo.MapView = require('./geo/map-view');
-
-_.extend(cdb.geo, require('./geo/gmaps'));
-
-// overwrites the Promise defined from the core bundle
-cdb.Promise = require('./api/promise');
-
-cdb.geo.ui.Zoom = require('./geo/ui/zoom/zoom-view');
-
-cdb.geo.ui.InfowindowModel = require('./geo/ui/infowindow-model');
-cdb.geo.ui.Infowindow = require('./geo/ui/infowindow-view');
-
-cdb.geo.ui.Search = require('./geo/ui/search/search');
-
-cdb.geo.ui.TilesLoader = require('./geo/ui/tiles-loader');
-cdb.geo.ui.Tooltip = require('./geo/ui/tooltip-view');
-
-cdb.vis.INFOWINDOW_TEMPLATE = require('./vis/vis/infowindow-template');
-cdb.vis.Vis = require('./vis/vis');
+cdb.createVis = require('./api/create-vis');
 
 module.exports = cdb;

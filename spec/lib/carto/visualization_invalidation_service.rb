@@ -64,10 +64,11 @@ describe Carto::VisualizationInvalidationService do
         @canonical_service.invalidate
       end
 
-      describe 'should invalidate cache of related maps with option' do
+      describe 'should invalidate cache of related maps when description changes' do
         before(:each) do
           @service = @canonical_service
-          @service.with_invalidation_of_affected_visualizations
+          @table_visualization.description = 'wadus'
+          @table_visualization.save
 
           CartoDB::Visualization::RedisVizjsonCache.any_instance.expects(:invalidate).with(@table_visualization.id)
           CartoDB::Varnish.any_instance.expects(:purge).with(".*#{@table_visualization.id}:vizjson")

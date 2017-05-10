@@ -91,7 +91,7 @@ class Carto::Visualization < ActiveRecord::Base
   before_validation :set_default_version, :set_register_table_only
   before_create :set_random_id, :set_default_permission
 
-  before_save :remove_password_if_unprotected, :invalidate_related_visualizations
+  before_save :remove_password_if_unprotected
   after_save :propagate_attribution_change
   after_save :propagate_privacy_and_name_to, if: :table
 
@@ -546,13 +546,6 @@ class Carto::Visualization < ActiveRecord::Base
 
   def perform_invalidations
     invalidation_service.invalidate
-  end
-
-  def invalidate_related_visualizations
-    # When a table's relevant data is changed, propagate to all who use it or relate to it
-    if canonical? && (description_changed? || attributions_changed?)
-      invalidation_service.with_invalidation_of_affected_visualizations
-    end
   end
 
   def remove_password

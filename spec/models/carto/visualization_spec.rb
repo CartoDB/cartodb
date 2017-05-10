@@ -310,15 +310,14 @@ describe Carto::Visualization do
       @visualization.update_attributes(name: @visualization.name + '-renamed')
     end
 
-    it 'triggers invalidation of related entities after updating description field' do
-      @visualization.send(:invalidation_service).expects(:with_invalidation_of_affected_visualizations)
-      @visualization.send(:invalidation_service).expects(:invalidate)
+    it 'triggers invalidation of affected maps after updating description field' do
+      # Not a great test, it tests invalidation service internal implementation
+      @visualization.send(:invalidation_service).expects(:invalidate_affected_visualizations)
       @visualization.update_attributes(description: 'something')
     end
 
-    it 'triggers invalidation of related wntities after updating attributions field' do
-      @visualization.send(:invalidation_service).expects(:with_invalidation_of_affected_visualizations)
-      @visualization.send(:invalidation_service).expects(:invalidate)
+    it 'triggers invalidation of affected maps after updating attributions field' do
+      @visualization.send(:invalidation_service).expects(:invalidate_affected_visualizations)
       @visualization.update_attributes(attributions: 'something')
     end
 

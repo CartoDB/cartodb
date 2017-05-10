@@ -2,18 +2,12 @@ module Carto
   class VisualizationInvalidationService
     def initialize(visualization)
       @visualization = visualization
-      @invalidate_affected_visualizations = false
     end
 
     def invalidate
       invalidate_caches
+      invalidate_affected_visualizations if attributes_affecting_visualizations_changed?
       update_or_destroy_named_map
-      invalidate_affected_visualizations if @invalidate_affected_visualizations
-    end
-
-    def with_invalidation_of_affected_visualizations
-      @invalidate_affected_visualizations = true
-      self
     end
 
     protected
@@ -52,6 +46,14 @@ module Carto
 
     def invalidate_vizjson_from_varnish
       CartoDB::Varnish.new.purge(".*#{@visualization.id}:vizjson")
+    end
+
+    def attributes_affecting_visualizations_changed?
+      @visualization.canonical? &&
+        (
+          @visualization.previous_changes.include?(:description) ||
+          @visualization.previous_changes.include?(:attributions)
+        )
     end
   end
 end

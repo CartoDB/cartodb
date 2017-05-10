@@ -162,6 +162,7 @@ Development
   * Layer model: #10934
   * UserTable: #11589, #11700, #11737
   * Map model and controller: #12039, #12011
+  * Permission: #12077
 * Refactor Layer model (#10934) and UserTable (#11589, #11700, #11737).
 * Correctly render map previews for maps with google basemaps (#11608)
 * Do not trigger visualization hooks on state update (#11701)

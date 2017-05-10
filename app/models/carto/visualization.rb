@@ -256,6 +256,11 @@ class Carto::Visualization < ActiveRecord::Base
     type == TYPE_CANONICAL
   end
 
+  # TODO: remove. Kept for backwards compatibility with ::Permission model
+  def table?
+    type == TYPE_CANONICAL
+  end
+
   def derived?
     type == TYPE_DERIVED
   end
@@ -554,6 +559,12 @@ class Carto::Visualization < ActiveRecord::Base
 
       layer.destroy
     end
+  end
+
+  def has_permission?(user, permission_type)
+    return false if user.viewer && permission_type == PERMISSION_READWRITE
+    return is_owner?(user) if permission_id.nil?
+    is_owner?(user) || permission.permitted?(user, permission_type)
   end
 
   private

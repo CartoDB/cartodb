@@ -285,7 +285,7 @@ describe User do
         user.reload
         user.viewer = true
         user.save
-        @organization.seats = 0
+        @organization.seats = @organization.users.reject(&:viewer).count
         @organization.save
 
         user.reload
@@ -294,14 +294,14 @@ describe User do
         expect(user.errors.keys).to include(:organization)
       end
 
-      it 'should allow changing to builder without seats' do
+      it 'should allow changing to builder with seats' do
+        @organization.seats = 10
         @organization.viewer_seats = 10
         @organization.save
         user = @organization.users.find { |u| !u.organization_owner? }
         user.reload
         user.viewer = true
         user.save
-        @organization.seats = 10
         @organization.save
 
         user.reload

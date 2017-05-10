@@ -3,7 +3,6 @@ var cdb = require('../cdb'); // cdb.VERSION
 var errors = require('../cdb.errors');
 var config = require('../cdb.config');
 
-
 var Log = Backbone.Model.extend({
 
   error: function() {

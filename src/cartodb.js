@@ -21,4 +21,8 @@ cdb.SQL = require('./api/sql');
 
 cdb.createVis = require('./api/create-vis');
 
+// log cartodb.js version
+var logger = require('./core/log');
+logger.log('cartodb.js ' + cdb.VERSION);
+
 module.exports = cdb;

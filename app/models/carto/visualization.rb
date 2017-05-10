@@ -255,6 +255,11 @@ class Carto::Visualization < ActiveRecord::Base
     type == TYPE_CANONICAL
   end
 
+  # TODO: remove. Kept for backwards compatibility with ::Permission model
+  def table?
+    type == TYPE_CANONICAL
+  end
+
   def derived?
     type == TYPE_DERIVED
   end
@@ -525,7 +530,7 @@ class Carto::Visualization < ActiveRecord::Base
     user.id == user_id
   end
 
-  def unlink_from(user_table)
+  def unlink_from(user_table)app/models/carto/visualization.rb
     layers_dependent_on(user_table).each do |layer|
       Carto::Analysis.find_by_natural_id(id, layer.source_id).try(:destroy) if layer.source_id
 
@@ -543,15 +548,21 @@ class Carto::Visualization < ActiveRecord::Base
   # TODO: Privacy manager compatibility, can be removed after removing ::UserTable
   alias :invalidate_cache :invalidate_after_commit
 
-  private
-
-  def perform_invalidations
-    invalidation_service.invalidate
+  def has_permission?(user, permission_type)
+    return false if user.viewer && permission_type == PERMISSION_READWRITE
+    return is_owner?(user) if permission_id.nil?
+    is_owner?(user) || permission.permitted?(user, permission_type)
   end
+
+  private
 
   def remove_password
     self.password_salt = nil
     self.encrypted_password = nil
+  end
+
+  def perform_invalidations
+    invalidation_service.invalidate
   end
 
   def propagate_privacy_and_name_to

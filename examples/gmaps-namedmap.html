@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Easy example | CartoDB.js</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <link rel="shortcut icon" href="http://cartodb.com/assets/favicon.ico" />
+    <style>
+      html, body, #map {
+        height: 100%;
+        padding: 0;
+        margin: 0;
+      }
+    </style>
+
+    <link rel="stylesheet" href="../../dist/themes/css/cartodb.css" />
+  </head>
+  <body>
+    <div id="map"></div>
+
+    <!-- include google maps library -->
+    <script type="text/javascript" src="http://www.maps.google.com/maps/api/js?key=AIzaSyCk5gRspKeHNJ0sS6iZotUsQvlAkXsieFg&v=3.25"></script>
+
+    <!-- include tangram library -->
+    <script src="https://mapzen.com/tangram/tangram.min.js"></script>
+
+    <!-- include cartodb.js library -->
+    <script src="../../dist/cartodb.uncompressed.js"></script>
+
+    <script>
+      function main() {
+        var vizjson = {
+          "id": "318ab654-c989-11e4-97c6-0e9d821ea90d",
+          "version": "0.1.0",
+          "title": "tests_cartodb_js",
+          "likes": 0,
+          "description": null,
+          "scrollwheel": true,
+          "legends": true,
+          "url": null,
+          "map_provider": "leaflet",
+          "bounds": [
+            [
+              29.727414884638474,
+              -95.89279174804688
+            ],
+            [
+              30.026894075241593,
+              -95.07843017578125
+            ]
+          ],
+          "center": "[29.877266890848308, -95.48561096191405]",
+          "zoom": 11,
+          "updated_at": "2015-03-13T13:59:40+00:00",
+          "datasource": {
+            "user_name": "documentation",
+            "maps_api_template": "http://{user}.cartodb.com:80",
+            "force_cors": true, // This is sometimes set in the editor,
+            "stat_tag": "84ec6844-4b4b-11e5-9c1d-080027880ca6",
+            "template_name": "tpl_318ab654_c989_11e4_97c6_0e9d821ea90d"
+          },
+          "layers": [
+            {
+              "options": {
+                "visible": true,
+                "type": "Tiled",
+                "urlTemplate": "https://{s}.maps.nlp.nokia.com/maptile/2.1/maptile/newest/normal.day/{z}/{x}/{y}/256/png8?lg=eng&token=A7tBPacePg9Mj_zghvKt9Q&app_id=KuYppsdXZznpffJsKT24",
+                "subdomains": "1234",
+                "name": "Nokia Day",
+                "className": "nokia_day",
+                "attribution": "©2012 Nokia <a href='http://here.net/services/terms' target='_blank'>Terms of use</a>"
+              },
+              "infowindow": null,
+              "tooltip": null,
+              "id": "2c4a8c5e-2ba5-4068-8807-d916a01b48d5",
+              "order": 0,
+              "type": "tiled"
+            },
+            {
+              "type": "namedmap",
+              "order": 1,
+              "options": {
+                "named_map": {
+                  "params": {
+                    "layer0": 1
+                  },
+                  "layers": [
+                    {
+                      "layer_name": "walgreens_stores_houston",
+                      "interactivity": "cartodb_id",
+                      "visible": true
+                    }
+                  ]
+                },
+                "attribution": ""
+              }
+            }
+          ],
+          "overlays": [
+            {
+              "type": "logo",
+              "order": 9,
+              "options": {
+                "display": true,
+                "x": 10,
+                "y": 40
+              },
+              "template": ""
+            },
+            {
+              "type": "loader",
+              "order": 8,
+              "options": {
+                "display": true,
+                "x": 20,
+                "y": 150
+              },
+              "template": "<div class=\"loader\" original-title=\"\"></div>"
+            },
+            {
+              "type": "zoom",
+              "order": 6,
+              "options": {
+                "display": true,
+                "x": 20,
+                "y": 20
+              },
+              "template": "<a href=\"#zoom_in\" class=\"zoom_in\">+</a> <a href=\"#zoom_out\" class=\"zoom_out\">-</a>"
+            },
+            {
+              "type": "search",
+              "order": 3,
+              "options": {
+                "display": true,
+                "x": 60,
+                "y": 20
+              },
+              "template": ""
+            },
+            {
+              "type": "share",
+              "order": 2,
+              "options": {
+                "display": true,
+                "x": 20,
+                "y": 20
+              },
+              "template": ""
+            }
+          ],
+          "prev": null,
+          "next": null,
+          "transition_options": {
+            "time": 0
+          }
+        };
+        cartodb.createVis('map', vizjson, {
+          gmaps_base_type: 'roadmap'
+        })
+        .done(function(vis, layers) {
+        })
+        .error(function(err) {
+          console.log(err);
+        });
+      }
+
+      window.onload = main;
+
+    </script>
+  </body>
+</html>

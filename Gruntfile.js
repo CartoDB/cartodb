@@ -196,45 +196,15 @@ module.exports = function (grunt) {
     });
   });
 
-  registerCmdTask('npm-test', {cmd: 'npm', args: ['test']});
-  registerCmdTask('npm-test-watch', {cmd: 'npm', args: ['run', 'test-watch']});
-
   grunt.registerTask('default', [ 'build' ]);
   grunt.registerTask('build', _.uniq(buildJS.concat(css)));
   grunt.registerTask('build:js', _.uniq(buildJS));
   grunt.registerTask('build:css', _.uniq(css));
   grunt.registerTask('test', _.uniq(js.concat([
-    'npm-test',
     'jasmine',
     'lint'
   ])));
   grunt.registerTask('dev', _.uniq(css.concat(devJS).concat('gitinfo').concat(watch)));
   grunt.registerTask('dev:css', _.uniq(css.concat(watch)));
   grunt.registerTask('dev:js', _.uniq(devJS.concat(watch)));
-
-  /**
-   * Delegate task to commandline.
-   * @param {String} name - If taskname starts with npm it's run a npm script (i.e. `npm run foobar`
-   * @param {Object} d - d as in data
-   * @param {Array} d.args - arguments to pass to the d.cmd
-   * @param {String} [d.cmd = process.execPath]
-   * @param {String} [d.desc = ''] - description
-   * @param {...string} args space-separated arguments passed to the cmd
-   */
-  function registerCmdTask (name, opts) {
-    opts = _.extend({
-      cmd: process.execPath,
-      desc: '',
-      args: []
-    }, opts);
-    grunt.registerTask(name, opts.desc, function () {
-      // adapted from http://stackoverflow.com/a/24796749
-      var done = this.async();
-      grunt.util.spawn({
-        cmd: opts.cmd,
-        args: opts.args,
-        opts: { stdio: 'inherit' }
-      }, done);
-    });
-  }
 };

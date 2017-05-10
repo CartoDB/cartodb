@@ -14,7 +14,7 @@ var WindshaftError = function (error) {
   }
   if (this.isAnalysisError(error.type)) {
     this.context = error.analysis && error.analysis.context;
-    this.analysisId = error.analysis && (error.analysis.node_id || error.analysis.id);
+    this.analysisId = error.analysis && error.analysis.node_id;
   }
 };
 

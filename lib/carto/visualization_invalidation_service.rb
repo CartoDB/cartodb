@@ -31,6 +31,9 @@ module Carto
     end
 
     def invalidate_affected_visualizations
+      # Invalidate the maps where this table is used. This is needed because the attributions of the datasets used
+      # in a map is used in the vizjson, and the description is shown in the public pages/embed.
+      # There is no need to invalidate the named maps, as nothing from the dataset is included there.
       @visualization.user_table.dependent_visualizations.each do |affected_visualization|
         VisualizationInvalidationService.new(affected_visualization).invalidate_caches
       end

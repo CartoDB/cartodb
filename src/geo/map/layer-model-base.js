@@ -1,4 +1,3 @@
-var _ = require('underscore');
 var log = require('../../cdb.log');
 var Model = require('../../core/model');
 

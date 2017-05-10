@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Basemap selector | CartoDB.js</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <link rel="shortcut icon" href="http://cartodb.com/assets/favicon.ico" />
+    <link rel="stylesheet" href="../../dist/themes/css/cartodb.css" />
+    <style>
+      html {
+        font-family: 'Open Sans';
+      }
+      html, body, #map {
+        height: 100%;
+        padding: 0;
+        margin: 0;
+      }
+      #basemapSelector {
+        background: white;
+        right: 30px;
+        top: 30px;
+        padding: 10px;
+        position: absolute;
+      }
+      #basemapSelector h1 {
+        font-size: 1.6em;
+        line-height: 120%;
+      }
+      #basemapSelector h2 {
+        font-size: 1.2em;
+        line-height: 120%;
+      }
+      #basemapSelector ul {
+        margin: 10px 0;
+      }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+  </head>
+  <body>
+    <div id="map"></div>
+
+    <div id="basemapSelector">
+      <h1>Basemap selector</h1>
+      <h2>CartoDB</h2>
+      <ul>
+        <li><a href="#" class="js-basemap" data-basemap-id="cartodb-positron" data-provider="leaflet">Positron</a></li>
+        <li><a href="#" class="js-basemap" data-basemap-id="cartodb-dark-matter" data-provider="leaflet">Dark Matter</a></li>
+      </ul>
+      <h2>Google Maps</h2>
+      <ul>
+        <li><a href="#" class="js-basemap" data-basemap-id="gmaps-roadmap" data-provider="googlemaps">Roadmap</a></li>
+        <li><a href="#" class="js-basemap" data-basemap-id="gmaps-satellite" data-provider="googlemaps">Satellite</a></li>
+      </ul>
+    </div>
+
+    <!-- include google maps library -->
+    <script type="text/javascript" src="http://www.maps.google.com/maps/api/js?key=AIzaSyCk5gRspKeHNJ0sS6iZotUsQvlAkXsieFg&v=3.25"></script>
+
+    <!-- include tangram library -->
+    <script src="https://mapzen.com/tangram/tangram.min.js"></script>
+
+    <!-- include cartodb.js library -->
+    <script src="../../dist/cartodb.uncompressed.js"></script>
+
+    <script>
+      var BASEMAPS = {
+        'cartodb-positron': {
+          'urlTemplate': 'https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png',
+          'attribution': '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        },
+        'cartodb-dark-matter': {
+          'urlTemplate': 'https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png',
+          'attribution': '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        },
+        'gmaps-roadmap': {
+          'baseType': 'roadmap',
+          'style': '[]'
+        },
+        'gmaps-satellite': {
+          'baseType': 'satellite',
+          'style': '[]'
+        }
+      };
+
+      var currentProvider = 'leaflet';
+      var cartoDBMap;
+
+      function replaceBasemap (newProvider, basemapId) {
+        var basemapAttrs = BASEMAPS[basemapId];
+        if (!cartoDBMap) throw new Error('map not initialised yet');
+        if (!basemapAttrs) throw new Error('unknown basemap');
+
+        // Remove the current baselayer
+        cartoDBMap.removeLayerAt(0);
+
+        var changingProvider = currentProvider !== newProvider;
+        var createLayerMethod;
+
+        if (newProvider === 'googlemaps') {
+          createLayerMethod = cartoDBMap.createGMapsBaseLayer;
+        } else { // leaflet
+          createLayerMethod = cartoDBMap.createTileLayer;
+        }
+
+        createLayerMethod.call(cartoDBMap, basemapAttrs, {
+          at: 0,
+          silent: changingProvider
+        });
+
+        if (changingProvider) {
+          cartoDBMap.set('provider', newProvider);
+          currentProvider = newProvider;
+        }
+      }
+
+      $('.js-basemap').click(function (e) {
+        e.preventDefault();
+        replaceBasemap($(this).data('provider'), $(this).data('basemap-id'));
+      });
+
+      function main() {
+      	var vizjson = {
+          "id":"2b13c956-e7c1-11e2-806b-5404a6a683d5",
+          "version":"0.1.0",
+          "title":"european_countries_e 0",
+          "likes":0,
+          "description":null,
+          "scrollwheel":true,
+          "legends":true,
+          "url":null,
+          "map_provider":"leaflet",
+          "center":"[52.5897007687178, 52.734375]",
+          "zoom":4,
+          "updated_at":"2015-03-13T11:24:37+00:00",
+          "datasource": {
+            "user_name": "documentation",
+            "maps_api_template": "http://{user}.cartodb.com:80",
+            "force_cors": true, // This is sometimes set in the editor,
+            "stat_tag": "84ec6844-4b4b-11e5-9c1d-080027880ca6"
+          },
+          "layers":[
+            {
+              "options":{
+                "id":"0a3d9104-99c6-482b-9f8c-7c6134bddcdc",
+                "order":0,
+                "visible":true,
+                "type":"Tiled",
+                "name":"Positron",
+                "className":"default positron_rainbow",
+                "baseType":"positron_rainbow",
+                "urlTemplate":"http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
+                "read_only":true,
+                "minZoom":"0",
+                "maxZoom":"18",
+                "attribution":"&copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors",
+                "subdomains":"abcd",
+                "category":"CartoDB"
+              },
+              "infowindow":null,
+              "tooltip":null,
+              "id":"0a3d9104-99c6-482b-9f8c-7c6134bddcdc",
+              "order":0,
+              "type":"tiled"
+            },
+            {
+              "id":"923b7812-2d56-41c6-ac15-3ce430db090f",
+              "type":"CartoDB",
+              "infowindow":{
+                "fields":[
+                  {
+                    "name":"name",
+                    "title":true,
+                    "position":4
+                  }
+                ],
+                "template": '' +
+                  '<div class="CDB-infowindow CDB-infowindow--custom js-infowindow" style="max-width: 200px;">' +
+                    '<div class="CDB-infowindow-close js-close"></div>' +
+                    '<div class="CDB-infowindow-container">' +
+                      '<div class="CDB-infowindow-header CDB-infowindow-headerBg CDB-infowindow-headerBg--dark">' +
+                        '<div class="CDB-infowindow-list">' +
+                          '<div class="CDB-infowindow-listItem">' +
+                            '<h4 class="CDB-infowindow-title">{{ name }}</h4>' +
+                          '</div>' +
+                        '</div>' +
+                      '</div>' +
+                      '<div class="CDB-hook CDB-hook--white">' +
+                        '<div class="CDB-hook-inner">' +
+                        '</div>' +
+                      '</div>' +
+                    '</div>' +
+                  '</div>',
+                "alternative_names":{},
+                "width":226,
+                "maxHeight":180
+              },
+              "tooltip":{
+                "fields": [
+                  {
+                    "name": "name",
+                    "title": true,
+                    "position": 1
+                  }
+                ],
+                "template_name":"tooltip_light",
+                "template": ' '+
+                    '<div class="CDB-Tooltip CDB-Tooltip--isDark js-content">'+
+                      '<ul class="CDB-Tooltip-list">'+
+                        '{{#fields}}'+
+                        '<li class="CDB-Tooltip-listItem">'+
+                          '<h3 class="CDB-Tooltip-listTitle">NAME</h3>'+
+                          '<h4 class="CDB-Tooltip-listText">{{value}}</h4>'+
+                        '</li>'+
+                        '{{/fields}}'+
+                      '</ul>'+
+                    '</div>',
+                "alternative_names":{},
+                "maxHeight":180
+              },
+              "legend":{
+                "type":"choropleth",
+                "show_title":false,
+                "title":"",
+                "template":"",
+                "items":[
+                  {
+                    "name":"Left label",
+                    "visible":true,
+                    "value":"5592.00",
+                    "type":"text"
+                  },
+                  {
+                    "name":"Right label",
+                    "visible":true,
+                    "value":"1638094.00",
+                    "type":"text"
+                  },
+                  {
+                    "name":"Color",
+                    "visible":true,
+                    "value":"#FFFFB2",
+                    "type":"color"
+                  },
+                  {
+                    "name":"Color",
+                    "visible":true,
+                    "value":"#FED976",
+                    "type":"color"
+                  },
+                  {
+                    "name":"Color",
+                    "visible":true,
+                    "value":"#FEB24C",
+                    "type":"color"
+                  },
+                  {
+                    "name":"Color",
+                    "visible":true,
+                    "value":"#FD8D3C",
+                    "type":"color"
+                  },
+                  {
+                    "name":"Color",
+                    "visible":true,
+                    "value":"#FC4E2A",
+                    "type":"color"
+                  },
+                  {
+                    "name":"Color",
+                    "visible":true,
+                    "value":"#E31A1C",
+                    "type":"color"
+                  },
+                  {
+                    "name":"Color",
+                    "visible":true,
+                    "value":"#B10026",
+                    "type":"color"
+                  }
+                ]
+              },
+              "order":1,
+              "visible":true,
+              "options":{
+                "sql":"select * from european_countries_e",
+                "layer_name":"european_countries_e",
+                "cartocss":"/** choropleth visualization */\n\n#european_countries_e{\n  polygon-fill: #FFFFB2;\n  polygon-opacity: 0.8;\n  line-color: #FFF;\n  line-width: 1;\n  line-opacity: 0.5;\n}\n#european_countries_e [ area <= 1638094] {\n   polygon-fill: #B10026;\n}\n#european_countries_e [ area <= 55010] {\n   polygon-fill: #E31A1C;\n}\n#european_countries_e [ area <= 34895] {\n   polygon-fill: #FC4E2A;\n}\n#european_countries_e [ area <= 12890] {\n   polygon-fill: #FD8D3C;\n}\n#european_countries_e [ area <= 10025] {\n   polygon-fill: #FEB24C;\n}\n#european_countries_e [ area <= 9150] {\n   polygon-fill: #FED976;\n}\n#european_countries_e [ area <= 5592] {\n   polygon-fill: #FFFFB2;\n}",
+                "cartocss_version":"2.1.1",
+                "table_name":"\"\"."
+              }
+            }
+          ],
+          "overlays":[
+            {
+              "type":"loader",
+              "options":{
+                "display":true,
+                "x":20,
+                "y":150
+              }
+            },
+            {
+              "type":"search",
+              "options":{
+                "display":true
+              }
+            },
+            {
+              "type":"zoom",
+              "options":{
+                "x":20,
+                "y":20,
+                "display":true
+              }
+            }
+          ],
+          "prev":null,
+          "next":null,
+          "transition_options":{}
+        };
+        cartodb.createVis('map', vizjson, {})
+        .done(function(vis, layers) {
+          cartoDBMap = vis.map;
+        })
+        .error(function (err) {
+          console.log(err);
+        });
+      }
+
+      window.onload = main;
+    </script>
+  </body>
+</html>

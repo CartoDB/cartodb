@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Geometry Editor | CartoDB.js</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <link rel="shortcut icon" href="http://cartodb.com/assets/favicon.ico" />
+    <link rel="stylesheet" href="../../dist/themes/css/cartodb.css" />
+    <style>
+      html, body {
+        height: 100%;
+        padding: 0;
+        margin: 0;
+      }
+
+      body {
+        font-family: 'Open Sans';
+        display: flex;
+        flex-direction: row;
+      }
+
+      .sidebar-title {
+        line-height: 2em;
+        padding: 0 10px;
+        text-transform: uppercase;
+      }
+      .sidebar-title-dark {
+        background: black;
+        color: white;
+      }
+
+      #sidebar {
+        width: 300px;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+      }
+      #map {
+        height: 100%;
+        flex: 1;
+        position: relative;
+      }
+
+      #controls {
+        padding: 10px;
+      }
+
+      #controls button {
+        font-size: 14px;
+        color: blue;
+        text-decoration: underline;
+        display: block;
+        margin-bottom: 10px; 
+      }
+      #controls button.is-enabled {
+        color: red;
+        text-decoration: none;
+      }
+
+      #geojsonViewer {
+        flex:1;
+        padding: 10px;
+        background: black;
+      }
+
+      #geojsonViewer textarea {
+        background: black;
+        font-family: "Lucida Console", Monaco, monospace;
+        font-size: 12px;
+        border: none;
+        color: #CDCDCD;
+        width: 100%;
+        height: 100%;
+        outline: none;
+      }
+
+      h1 {
+        font-size: 2em;
+        line-height: 1em;
+        margin: 10px;
+      }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+  </head>
+  <body>
+    <div id="sidebar">
+      <h1>Geometry Editor</h1>
+      <p class="sidebar-title">Tools</p>
+      <div id="controls">
+        <button class="js-drawing-control js-draw-point">Draw Point</button>
+        <button class="js-drawing-control js-draw-line">Draw Polyline</button>
+        <button class="js-drawing-control js-draw-polygon">Draw Polygon</button>
+        <br/>
+        <button class="js-drawing-control js-edit-geometry-point">Edit Point</button>
+        <button class="js-drawing-control js-edit-geometry-polyline">Edit Polyline</button>
+        <button class="js-drawing-control js-edit-geometry-polygon">Edit Polygon</button>
+        <br/>
+        <button class="js-drawing-control js-edit-geometry-multi-point">Edit MultiPoint</button>
+        <button class="js-drawing-control js-edit-geometry-multi-polyline">Edit MultiPolyline</button>
+        <button class="js-drawing-control js-edit-geometry-multi-polygon">Edit MultiPolygon</button>
+        <br/>
+        <button class="js-drawing-control js-edit-features">Click & Edit</button>
+      </div>
+      <p class="sidebar-title sidebar-title-dark">GeoJSON</p>
+      <div id="geojsonViewer">
+        <textarea class="js-geojson-textarea" readonly></textarea>
+      </div>
+    </div>
+    <div id="map"></div>
+
+    <!-- include tangram library -->
+    <script src="https://mapzen.com/tangram/tangram.min.js"></script>
+
+    <!-- include cartodb.js library -->
+    <script src="../../dist/cartodb.uncompressed.js"></script>
+
+    <script>
+      var vizjson = {
+        "id":"2b13c956-e7c1-11e2-806b-5404a6a683d5",
+        "version":"0.1.0",
+        "title":"european_countries_e 0",
+        "likes":0,
+        "description":null,
+        "scrollwheel":true,
+        "legends":true,
+        "url":null,
+        "map_provider":"leaflet",
+        "center":"[52.5897007687178, 52.734375]",
+        "zoom":4,
+        "updated_at":"2015-03-13T11:24:37+00:00",
+        "datasource": {
+          "user_name": "documentation",
+          "maps_api_template": "http://{user}.cartodb.com:80",
+          "force_cors": true, // This is sometimes set in the editor,
+          "stat_tag": "84ec6844-4b4b-11e5-9c1d-080027880ca6"
+        },
+        "layers":[
+          {
+            "options":{
+              "id":"0a3d9104-99c6-482b-9f8c-7c6134bddcdc",
+              "order":0,
+              "visible":true,
+              "type":"Tiled",
+              "name":"Positron",
+              "className":"default positron_rainbow",
+              "baseType":"positron_rainbow",
+              "urlTemplate":"http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
+              "read_only":true,
+              "minZoom":"0",
+              "maxZoom":"18",
+              "attribution":"&copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors",
+              "subdomains":"abcd",
+              "category":"CartoDB"
+            },
+            "infowindow":null,
+            "tooltip":null,
+            "id":"0a3d9104-99c6-482b-9f8c-7c6134bddcdc",
+            "order":0,
+            "type":"tiled"
+          },
+          {
+            "type":"layergroup",
+            "options":{
+              "layer_definition":{
+                "layers":[
+                  {
+                    "id":"923b7812-2d56-41c6-ac15-3ce430db090f",
+                    "type":"CartoDB",
+                    "infowindow":{
+                      "fields":[
+                        {
+                          "name":"area",
+                          "title":true,
+                          "position":0
+                        },
+                        {
+                          "name":"gmi_cntry",
+                          "title":true,
+                          "position":1
+                        },
+                        {
+                          "name":"iso_2_code",
+                          "title":true,
+                          "position":2
+                        },
+                        {
+                          "name":"iso_3_code",
+                          "title":true,
+                          "position":3
+                        },
+                        {
+                          "name":"name",
+                          "title":true,
+                          "position":4
+                        },
+                        {
+                          "name":"name_1",
+                          "title":true,
+                          "position":5
+                        },
+                        {
+                          "name":"name_12",
+                          "title":true,
+                          "position":6
+                        },
+                        {
+                          "name":"pop2005",
+                          "title":true,
+                          "position":7
+                        },
+                        {
+                          "name":"region",
+                          "title":true,
+                          "position":8
+                        }
+                      ],
+                      "template_name":"table/views/infowindow_light",
+                      "template": " " +
+                        '<div class="CDB-infowindow CDB-infowindow--custom js-infowindow" style="max-width: 200px;">' +
+                          '<div class="CDB-infowindow-close js-close"></div>' +
+                          '<div class="CDB-infowindow-container">' +
+                            '<div class="CDB-infowindow-header CDB-infowindow-headerBg CDB-infowindow-headerBg--dark">' +
+                              '<div class="CDB-infowindow-list">' +
+                                '<div class="CDB-infowindow-listItem">' +
+                                  '<h4 class="CDB-infowindow-title">{{ name }}</h4>' +
+                                '</div>' +
+                              '</div>' +
+                            '</div>' +
+                            '<div class="CDB-hook CDB-hook--white">' +
+                              '<div class="CDB-hook-inner">' +
+                              '</div>' +
+                            '</div>' +
+                          '</div>' +
+                        '</div>',
+                      "alternative_names":{},
+                      "width":226,
+                      "maxHeight":180
+                    },
+                    "tooltip":{
+                      "fields": [
+                        {
+                          "name": "iso_2_code",
+                          "title": true,
+                          "position": 1
+                        }
+                      ],
+                      "template_name":"tooltip_light",
+                      "template": ' '+
+                          '<div class="CDB-Tooltip CDB-Tooltip--isDark js-content">'+
+                            '<ul class="CDB-Tooltip-list">'+
+                              '{{#fields}}'+
+                              '<li class="CDB-Tooltip-listItem">'+
+                                '<h3 class="CDB-Tooltip-listTitle">ISO CODE</h3>'+
+                                '<h4 class="CDB-Tooltip-listText">{{value}}</h4>'+
+                              '</li>'+
+                              '{{/fields}}'+
+                            '</ul>'+
+                          '</div>',
+                      "alternative_names":{},
+                      "maxHeight":180
+                    },
+                    "legend":{
+                      "type":"choropleth",
+                      "show_title":false,
+                      "title":"",
+                      "template":"",
+                      "items":[
+                        {
+                          "name":"Left label",
+                          "visible":true,
+                          "value":"5592.00",
+                          "type":"text"
+                        },
+                        {
+                          "name":"Right label",
+                          "visible":true,
+                          "value":"1638094.00",
+                          "type":"text"
+                        },
+                        {
+                          "name":"Color",
+                          "visible":true,
+                          "value":"#FFFFB2",
+                          "type":"color"
+                        },
+                        {
+                          "name":"Color",
+                          "visible":true,
+                          "value":"#FED976",
+                          "type":"color"
+                        },
+                        {
+                          "name":"Color",
+                          "visible":true,
+                          "value":"#FEB24C",
+                          "type":"color"
+                        },
+                        {
+                          "name":"Color",
+                          "visible":true,
+                          "value":"#FD8D3C",
+                          "type":"color"
+                        },
+                        {
+                          "name":"Color",
+                          "visible":true,
+                          "value":"#FC4E2A",
+                          "type":"color"
+                        },
+                        {
+                          "name":"Color",
+                          "visible":true,
+                          "value":"#E31A1C",
+                          "type":"color"
+                        },
+                        {
+                          "name":"Color",
+                          "visible":true,
+                          "value":"#B10026",
+                          "type":"color"
+                        }
+                      ]
+                    },
+                    "order":1,
+                    "visible":true,
+                    "options":{
+                      "sql":"select * from european_countries_e",
+                      "layer_name":"european_countries_e",
+                      "cartocss":"/** choropleth visualization */\n\n#european_countries_e{\n  polygon-fill: #FFFFB2;\n  polygon-opacity: 0.8;\n  line-color: #FFF;\n  line-width: 1;\n  line-opacity: 0.5;\n}\n#european_countries_e [ area <= 1638094] {\n   polygon-fill: #B10026;\n}\n#european_countries_e [ area <= 55010] {\n   polygon-fill: #E31A1C;\n}\n#european_countries_e [ area <= 34895] {\n   polygon-fill: #FC4E2A;\n}\n#european_countries_e [ area <= 12890] {\n   polygon-fill: #FD8D3C;\n}\n#european_countries_e [ area <= 10025] {\n   polygon-fill: #FEB24C;\n}\n#european_countries_e [ area <= 9150] {\n   polygon-fill: #FED976;\n}\n#european_countries_e [ area <= 5592] {\n   polygon-fill: #FFFFB2;\n}",
+                      "cartocss_version":"2.1.1",
+                      "interactivity":"cartodb_id",
+                      "table_name":"\"\"."
+                    }
+                  }
+                ]
+              },
+              "attribution":""
+            }
+          },
+          {
+            "options": {
+              "visible": true,
+              "type": "Tiled",
+              "default": "true",
+              "url": "http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png",
+              "subdomains": "abcd",
+              "minZoom": "0",
+              "maxZoom": "18",
+              "attribution": "&copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors",
+              "urlTemplate": "http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png",
+              "name": "Positron Labels",
+              "id": "bc054932-1ae8-4d4a-96d6-d49ce4247a59",
+              "className": "httpsbasemapscartocdncomlight_only_labelszxypng",
+              "order": 3
+            },
+            "infowindow": null,
+            "tooltip": null,
+            "id": "bc054932-1ae8-4d4a-96d6-d49ce4247a59",
+            "order": 3,
+            "type": "tiled"
+          }
+        ],
+        "overlays":[
+          {
+            "type":"loader",
+            "options":{
+              "display":true,
+              "x":20,
+              "y":150
+            }
+          },
+          {
+            "type":"fullscreen",
+            "options":{
+              "x":20,
+              "y":140,
+              "display":true
+            }
+          },
+          {
+            "type":"search",
+            "options":{
+              "display":true
+            }
+          },
+          {
+            "type":"zoom",
+            "options":{
+              "x":20,
+              "y":20,
+              "display":true
+            }
+          }
+        ],
+        "prev":null,
+        "next":null,
+        "transition_options":{}
+      };
+
+      var point = {
+        "type": "Feature",
+        "properties": {},
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            -3.779296875,
+            40.245991504199026
+          ]
+        }
+      };
+  
+      var polygon = {
+        "type": "Feature",
+        "properties": {},
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                -8.96484375,
+                41.918628865183045
+              ],
+              [
+                -7.84423828125,
+                43.74728909225908
+              ],
+              [
+                -1.69189453125,
+                43.34914966389313
+              ],
+              [
+                3.1091308593749996,
+                42.35042512243457
+              ],
+              [
+                3.1640625,
+                41.828642001860544
+              ],
+              [
+                -1.9555664062500002,
+                36.94111143010769
+              ],
+              [
+                -5.55908203125,
+                36.00467348670187
+              ],
+              [
+                -7.31689453125,
+                37.3002752813443
+              ],
+              [
+                -6.39404296875,
+                41.74672584176937
+              ],
+              [
+                -8.96484375,
+                41.918628865183045
+              ]
+            ]
+          ]
+        }
+      };
+
+      var polyline = {
+        "type": "Feature",
+        "properties": {},
+        "geometry": {
+          "type": "LineString",
+          "coordinates": [
+            [
+              -2.021484375,
+              43.51668853502906
+            ],
+            [
+              3.6035156249999996,
+              42.293564192170095
+            ]
+          ]
+        }
+      };
+
+      var multiPoint = {
+        "type": "MultiPoint",
+        "coordinates": [ [100.0, 0.0], [101.0, 1.0] ]
+      };
+      var multiPolyline = {
+        "type": "MultiLineString",
+        "coordinates": [
+          [ [100.0, 0.0], [101.0, 1.0] ],
+          [ [102.0, 2.0], [103.0, 3.0] ]
+        ]
+      };
+      var multiPolygon = {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [ [102.0, 2.0], [103.0, 2.0], [103.0, 3.0], [102.0, 3.0], [102.0, 2.0] ]
+          ],
+          [
+            [ [100.0, 0.0], [101.0, 0.0], [101.0, 1.0], [100.0, 1.0], [100.0, 0.0] ]
+          ]
+        ]
+      };
+      function displayGeoJSON (geometry) {
+        updateDisplayedGeoJSON(geometry);
+        geometry.on('change', updateDisplayedGeoJSON);
+      }
+      
+      function updateDisplayedGeoJSON (geometry) {
+        if (geometry.isComplete()) {
+          $('.js-geojson-textarea').val(JSON.stringify(geometry.toGeoJSON(), null, 2));
+        }
+      }
+
+      function clearGeoJSON () {
+        $('.js-geojson-textarea').val('');
+      }
+
+      function drawPoint (vis) {
+        return drawGeometry(vis, vis.map.drawPoint());
+      }
+
+      function drawPolyline (vis) {
+        return drawGeometry(vis, vis.map.drawPolyline());
+      }
+
+      function drawPolygon (vis) {
+        return drawGeometry(vis, vis.map.drawPolygon());
+      }
+
+      function editGeometry (vis, geoJSON) {
+        var geometry = window.geometry = vis.map.editGeometry(geoJSON);
+        displayGeoJSON(geometry);
+      }
+
+      function enableClickToEdit (vis) {
+        vis.map.enableFeatureInteractivity();
+        vis.map.on('featureClick', fetchFeatureAndEditGeometry, this);
+      }
+
+      function disableClickToEdit (vis) {
+        vis.map.disableFeatureInteractivity();
+        vis.map.stopDrawingGeometry();
+        vis.map.off('featureClick', fetchFeatureAndEditGeometry, this);
+      }
+
+      function fetchFeatureAndEditGeometry (event) {
+        var featureID = event.feature.cartodb_id;
+        var tableName = 'european_countries_e';
+
+        var sql = new cartodb.SQL({
+          protocol: 'https',
+          user: 'documentation',
+          host: 'cartodb.com'
+        });
+        sql.execute("SELECT ST_AsGeoJSON(the_geom) AS geojson FROM {{tableName }} WHERE cartodb_id = {{id}}", { tableName: tableName, id: featureID })
+          .done(function(data) {
+            var geoJSON = JSON.parse(data.rows[0].geojson);
+            editGeometry(vis, geoJSON);
+          })
+          .error(function(errors) {
+            // errors contains a list of errors
+            console.log("errors:" + errors);
+          });
+      }
+
+      function drawGeometry (vis, geometry) {
+        window.geometry = geometry;
+        clearGeoJSON();
+        displayGeoJSON(geometry);
+
+        return geometry;
+      }
+
+      function enableControls (vis) {
+        $('.js-drawing-control').click(function () {
+          var clickedControl = this;
+          $('.js-drawing-control').each(function (index) {
+            var isEnabled = false;
+            if (clickedControl === this) {
+              isEnabled = !($(this).hasClass('is-enabled'));
+            }
+            $(this).toggleClass('is-enabled', isEnabled);
+          });
+          vis.map.stopDrawingGeometry();
+          vis.map.stopEditingGeometry();
+        });
+
+        document.querySelector('.js-draw-point').addEventListener('click', function () {
+          if ($(this).hasClass('is-enabled')) {
+            drawPoint(vis);
+          }
+        });
+        document.querySelector('.js-draw-line').addEventListener('click', function () {
+          if ($(this).hasClass('is-enabled')) {
+            drawPolyline(vis);
+          }
+        });
+        document.querySelector('.js-draw-polygon').addEventListener('click', function () {
+          if ($(this).hasClass('is-enabled')) {
+            drawPolygon(vis);
+          }
+        });
+        document.querySelector('.js-edit-geometry-point').addEventListener('click', function () {
+          if ($(this).hasClass('is-enabled')) {
+            editGeometry(vis, point);
+          }
+        });
+        document.querySelector('.js-edit-geometry-polyline').addEventListener('click', function () {
+          if ($(this).hasClass('is-enabled')) {
+            editGeometry(vis, polyline);
+          }
+        });
+        document.querySelector('.js-edit-geometry-polygon').addEventListener('click', function () {
+          if ($(this).hasClass('is-enabled')) {
+            editGeometry(vis, polygon);
+          }
+        });
+        document.querySelector('.js-edit-geometry-multi-point').addEventListener('click', function () {
+          if ($(this).hasClass('is-enabled')) {
+            editGeometry(vis, multiPoint);
+          }
+        });
+        document.querySelector('.js-edit-geometry-multi-polyline').addEventListener('click', function () {
+          if ($(this).hasClass('is-enabled')) {
+            editGeometry(vis, multiPolyline);
+          }
+        });
+        document.querySelector('.js-edit-geometry-multi-polygon').addEventListener('click', function () {
+          if ($(this).hasClass('is-enabled')) {
+            editGeometry(vis, multiPolygon);
+          }
+        });
+        document.querySelector('.js-edit-features').addEventListener('click', function () {
+          if ($(this).hasClass('is-enabled')) {
+            enableClickToEdit(vis);
+          } else {
+            disableClickToEdit(vis);
+          }
+        });
+      }
+
+      function main () {
+        cartodb.createVis('map', vizjson, {
+          legends: false
+        })
+        .done(function (vis, layers) {
+          enableControls(vis);
+        })
+        .error(function (err) {
+          console.log(err);
+        });
+      }
+
+      window.onload = main;
+    </script>
+  </body>
+</html>

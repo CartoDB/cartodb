@@ -1649,7 +1649,7 @@
           "state-help": "Specify a state or select a column with state names",
           "street-address-column": "Street Address",
           "street-address-column-help": "Select a column with street addresses",
-          "street-address-help": "Use columns or free text to compose your address schema. <a href='https://carto.com/learn/guides/analysis/georeference' target='_blank'>More info.</a>",
+          "street-address-help": "Use columns or free text to compose your address schema. <a href='https://carto.com/learn/guides/analysis/geocode-street-addresses-into-point-geometries' target='_blank'>More info.</a>",
           "street-address": "Street Addresses",
           "advance": "Advanced mode",
           "normal": "Normal mode"

@@ -44,12 +44,9 @@ describe('vis/overlays-factory', function () {
   _.each([
     { type: 'logo', data: {} },
     { type: 'attribution', data: {} },
-    { type: 'text', data: { options: { extra: { rendered_text: 'something' }, style: {} } } },
-    { type: 'annotation', data: { options: { extra: { rendered_text: 'something' }, style: {} } } },
     { type: 'zoom', data: {} },
     { type: 'loader', data: {} },
     { type: 'fullscreen', data: {} },
-    { type: 'share', data: {} },
     { type: 'search', data: {} }
   ], function (testCase) {
     var overlayType = testCase.type;

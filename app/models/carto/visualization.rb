@@ -536,6 +536,7 @@ class Carto::Visualization < ActiveRecord::Base
   def invalidate_after_commit
     # This marks this visualization as affected by this transaction, so AR will call its `after_commit` hook, which
     # performs the actual invalidations. This takes this operation outside of the DB transaction to avoid long locks
+    raise 'invalidate_after_commit should be called within a transaction' if connection.open_transactions.zero?
     add_to_transaction
     true
   end

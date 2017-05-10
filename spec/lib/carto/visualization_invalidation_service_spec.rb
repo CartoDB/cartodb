@@ -28,7 +28,7 @@ describe Carto::VisualizationInvalidationService do
       @service = Carto::VisualizationInvalidationService.new(@visualization)
     end
 
-    # NOTE: Not destroying the visualizations in an after hook to avoid it triggering the wrogn expectations
+    # NOTE: Not destroying the visualizations in an after hook to avoid it triggering the wrong expectations
 
     it_behaves_like 'cache invalidator'
 

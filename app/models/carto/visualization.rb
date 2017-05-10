@@ -539,7 +539,7 @@ class Carto::Visualization < ActiveRecord::Base
     add_to_transaction
     true
   end
-  # TODO: Privacy manager compatibility, can be removed after removing ::usUserTable
+  # TODO: Privacy manager compatibility, can be removed after removing ::UserTable
   alias :invalidate_cache :invalidate_after_commit
 
   private

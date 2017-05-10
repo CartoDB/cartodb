@@ -6,9 +6,6 @@ module Carto
       include AccountTypeHelper
       BUILDER_ACTIVATION_DATE = Date.new(2016, 11, 11).freeze
 
-      # options:
-      # - fetch_groups
-      # - current_viewer
       def initialize(user, fetch_groups: false, current_viewer: nil)
         @user = user
         @fetch_groups = fetch_groups
@@ -17,7 +14,7 @@ module Carto
 
       def to_poro
         return {} if @user.nil?
-        return to_public_poro unless @current_viewer && @user.viewable_by?(@current_viewer)
+        return to_public_poro unless current_viewer && @user.viewable_by?(current_viewer)
 
         poro = {
           id:               @user.id,
@@ -34,7 +31,7 @@ module Carto
           all_visualization_count: @user.all_visualization_count
         }
 
-        if @fetch_groups
+        if fetch_groups
           poro[:groups] = @user.groups ? @user.groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro } : []
         end
 
@@ -60,7 +57,7 @@ module Carto
           viewer:           @user.viewer?
         }
 
-        if @fetch_groups
+        if fetch_groups
           poro[:groups] = @user.groups ? @user.groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro } : []
         end
 
@@ -217,6 +214,8 @@ module Carto
       end
 
       private
+
+      attr_reader :current_viewer, :current_user, :fetch_groups
 
       def failed_import_count
         Carto::DataImport.where(user_id: @user.id, state: 'failure').count

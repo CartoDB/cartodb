@@ -172,6 +172,11 @@ describe Organization do
       organization.remaining_viewer_seats.should eq 0
       organization.users.should_not include(viewer2)
 
+      organization.seats = 0
+      organization.viewer_seats = 0
+      organization.valid?.should be_false
+      organization.errors.should include :seats, :viewer_seats
+
       organization.destroy_cascade
     end
 

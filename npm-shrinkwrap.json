@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.6.88-12018e",
+  "version": "4.6.88-12018g",
   "dependencies": {
     "abbrev": {
       "version": "1.1.0",
@@ -330,14 +330,7 @@
     "cartodb-deep-insights.js": {
       "version": "0.0.2",
       "from": "cartodb/deep-insights.js#master",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#7f79842bcf9a9354f38ff13ac576baabee63bb62",
-      "dependencies": {
-        "cartodb.js": {
-          "version": "4.0.0-alpha.1",
-          "from": "cartodb/cartodb.js#12018-sql-function",
-          "resolved": "git://github.com/cartodb/cartodb.js.git#40f471ab403c3ba62811c126630281ef2f2d221e"
-        }
-      }
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#7f79842bcf9a9354f38ff13ac576baabee63bb62"
     },
     "cartodb-pecan": {
       "version": "0.2.0",
@@ -346,8 +339,8 @@
     },
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
-      "from": "cartodb/cartodb.js#12018-sql-function",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#40f471ab403c3ba62811c126630281ef2f2d221e"
+      "from": "cartodb/cartodb.js#v4",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#9874d4ffdd8aba2da23cebdb64e2115eccb5f203"
     },
     "caseless": {
       "version": "0.11.0",

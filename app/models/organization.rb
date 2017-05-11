@@ -5,6 +5,7 @@ require_relative './organization/organization_decorator'
 require_relative '../helpers/data_services_metrics_helper'
 require_relative './permission'
 require_dependency 'carto/helpers/auth_token_generator'
+require_dependency 'common/organization_common'
 
 class Organization < Sequel::Model
 
@@ -21,6 +22,7 @@ class Organization < Sequel::Model
   include Concerns::CartodbCentralSynchronizable
   include DataServicesMetricsHelper
   include Carto::AuthTokenGenerator
+  include Carto::OrganizationSoftLimits
 
   Organization.raise_on_save_failure = true
   self.strict_param_setting = false

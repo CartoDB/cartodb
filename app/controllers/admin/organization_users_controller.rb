@@ -14,7 +14,7 @@ class Admin::OrganizationUsersController < Admin::AdminController
   ssl_required  :profile, :account, :oauth, :api_key, :regenerate_api_key
 
   before_filter :get_config
-  before_filter :login_required, :check_permissions
+  before_filter :login_required, :check_permissions, :load_organization
   before_filter :get_user, only: [:edit, :update, :destroy, :regenerate_api_key]
   before_filter :ensure_edit_permissions, only: [:edit, :update, :destroy, :regenerate_api_key]
   before_filter :initialize_google_plus_config, only: [:edit, :update]
@@ -23,8 +23,7 @@ class Admin::OrganizationUsersController < Admin::AdminController
 
   def new
     @user = ::User.new
-    organization = current_user.organization
-    @user.quota_in_bytes = [organization.unassigned_quota, organization.default_quota_in_bytes].min
+    @user.quota_in_bytes = [@organization.unassigned_quota, @organization.default_quota_in_bytes].min
 
     @user.soft_geocoding_limit = current_user.soft_geocoding_limit
     @user.soft_here_isolines_limit = current_user.soft_here_isolines_limit
@@ -33,7 +32,7 @@ class Admin::OrganizationUsersController < Admin::AdminController
     @user.soft_twitter_datasource_limit = current_user.soft_twitter_datasource_limit
     @user.soft_mapzen_routing_limit = current_user.soft_mapzen_routing_limit
 
-    @user.viewer = organization.remaining_seats <= 0 && organization.remaining_viewer_seats > 0
+    @user.viewer = @organization.remaining_seats <= 0 && @organization.remaining_viewer_seats > 0
 
     respond_to do |format|
       format.html { render 'new' }
@@ -52,9 +51,9 @@ class Admin::OrganizationUsersController < Admin::AdminController
 
     # Validation is done on params to allow checking the change of the value.
     # The error is deferred to display values in the form in the error scenario.
-    validation_failure = !soft_limits_validation(@user, params[:user], current_user.organization.owner)
+    validation_failure = !soft_limits_validation(@user, params[:user], @organization.owner)
 
-    if (!current_user.organization.auth_username_password_enabled &&
+    if (!@organization.auth_username_password_enabled &&
             !params[:user][:password].present? &&
             !params[:user][:password_confirmation].present?)
       dummy_password = generate_dummy_password
@@ -72,7 +71,7 @@ class Admin::OrganizationUsersController < Admin::AdminController
     )
     @user.org_admin = params[:user][:org_admin] == 'true'
     @user.viewer = params[:user][:viewer] == 'true'
-    @user.organization = current_user.organization
+    @user.organization = @organization
     current_user.copy_account_features(@user)
 
     # Validate password first, so nicer errors are displayed
@@ -270,8 +269,12 @@ class Admin::OrganizationUsersController < Admin::AdminController
   end
 
   def get_user
-    @user = current_user.organization.users_dataset.where(username: params[:id]).first
+    @user = @organization.users_dataset.where(username: params[:id]).first
     raise RecordNotFound unless @user
+  end
+
+  def load_organization
+    @organization = current_user.organization
   end
 
   def ensure_edit_permissions

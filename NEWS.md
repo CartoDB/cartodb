@@ -91,6 +91,7 @@ Development
 * Invite to georeference proactively when detecting non-georeferenced data (#11316)
 * Update tangram with smooth point outline.
 * Improve affordance of layer item (#11359).
+* Improved performance of visualizations with reduced fetching (#12058).
 * GME users can change to any basemap #11785.
 * Improve affordance of layer item (#11359)
 * Revamp of quota management code

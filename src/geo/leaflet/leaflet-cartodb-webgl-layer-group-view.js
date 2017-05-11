@@ -2,11 +2,22 @@ var _ = require('underscore');
 var L = require('leaflet');
 var TC = require('tangram.cartodb');
 var LeafletLayerView = require('./leaflet-layer-view');
+var Profiler = require('../../core/profiler');
 
 var LeafletCartoDBWebglLayerGroupView = function (layerGroupModel, leafletMap) {
   LeafletLayerView.apply(this, arguments);
+  var metric = Profiler.metric('tangram.rendering');
 
+  metric.start();
   this.tangram = new TC(leafletMap, this.initConfig.bind(this, layerGroupModel));
+
+  this.tangram.onLoaded(function () {
+    if (metric) {
+      metric.end();
+      metric = void 0;
+    }
+  });
+
   this.layerGroupModel = layerGroupModel;
 };
 

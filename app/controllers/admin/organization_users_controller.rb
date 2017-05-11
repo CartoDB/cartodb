@@ -53,9 +53,9 @@ class Admin::OrganizationUsersController < Admin::AdminController
     # The error is deferred to display values in the form in the error scenario.
     validation_failure = !soft_limits_validation(@user, params[:user], @organization.owner)
 
-    if (!@organization.auth_username_password_enabled &&
-            !params[:user][:password].present? &&
-            !params[:user][:password_confirmation].present?)
+    if !@organization.auth_username_password_enabled &&
+       !params[:user][:password].present? &&
+       !params[:user][:password_confirmation].present?
       dummy_password = generate_dummy_password
       params[:user][:password] = dummy_password
       params[:user][:password_confirmation] = dummy_password

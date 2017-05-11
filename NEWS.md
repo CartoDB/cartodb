@@ -115,6 +115,7 @@ Development
 * Added explanation tooltip to the categorize label on the Find Nearest analysis (#12100)
 
 ### Bug fixes
+* Fixed problem with feature flag in analyses (cartodb/support#691)
 * Removed link to markdown support in organization notifications
 * Fix image export in Safari and IE (#12066)
 * Autostyling for google basemaps (#11838)

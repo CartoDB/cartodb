@@ -211,8 +211,7 @@ describe Carto::Visualization do
         layer.options[:tile_style] = fake_style
 
         named_maps_api_mock = mock
-        named_maps_api_mock.stubs(show: nil)
-        named_maps_api_mock.expects(:create)
+        named_maps_api_mock.expects(:upsert)
 
         Carto::NamedMaps::Api.expects(:new).with { |v| v.data_layers.first.options[:tile_style] == fake_style }
                              .returns(named_maps_api_mock).at_least_once
@@ -223,8 +222,7 @@ describe Carto::Visualization do
         @visualization.privacy = Carto::Visualization::PRIVACY_PUBLIC
 
         named_maps_api_mock = mock
-        named_maps_api_mock.stubs(show: nil)
-        named_maps_api_mock.expects(:create)
+        named_maps_api_mock.expects(:upsert)
 
         Carto::NamedMaps::Api.expects(:new).returns(named_maps_api_mock).at_least_once
         @visualization.save
@@ -248,7 +246,7 @@ describe Carto::Visualization do
         layer.options[:tile_style] = fake_style
 
         named_maps_api_mock = mock
-        named_maps_api_mock.stubs(show: nil, create: true)
+        named_maps_api_mock.stubs(upsert: true)
 
         Carto::NamedMaps::Api.stubs(:new).with { |v| v.data_layers.first.options[:tile_style] != fake_style }
                              .returns(named_maps_api_mock)
@@ -264,8 +262,8 @@ describe Carto::Visualization do
         layer.save
 
         named_maps_api_mock = mock
-        named_maps_api_mock.stubs(show: nil, update: true)
-        named_maps_api_mock.expects(:create).at_least_once
+        named_maps_api_mock.expects(:upsert).at_least_once
+
         Carto::NamedMaps::Api.expects(:new).with { |v| v.data_layers.first.options[:tile_style] == fake_style }
                              .returns(named_maps_api_mock).at_least_once
         @visualization.create_mapcap!
@@ -275,8 +273,7 @@ describe Carto::Visualization do
         @visualization.privacy = Carto::Visualization::PRIVACY_PUBLIC
 
         named_maps_api_mock = mock
-        named_maps_api_mock.stubs(show: nil)
-        named_maps_api_mock.expects(:create)
+        named_maps_api_mock.expects(:upsert)
 
         Carto::NamedMaps::Api.expects(:new).returns(named_maps_api_mock).at_least_once
         @visualization.save

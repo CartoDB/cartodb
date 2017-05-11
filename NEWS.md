@@ -109,6 +109,7 @@ Development
 * Change setView by flyto.
 * Update tangram to fix layer geometry conditionals.
 * Allow to have multiple administrators per organization (#12052)
+* Added explanation tooltip to the categorize label on the Find Nearest analysis (#12100)
 
 ### Bug fixes
 * Removed link to markdown support in organization notifications

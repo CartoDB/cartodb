@@ -26,7 +26,7 @@ module Carto
       if @visualization.destroyed?
         named_maps_api.destroy
       elsif @visualization.data_layers.any?
-        named_maps_api.show ? named_maps_api.update : named_maps_api.create
+        named_maps_api.upsert
       end
     end
 

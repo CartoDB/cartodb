@@ -22,7 +22,7 @@ module CartoDB
       SCHEMA_GEOCODING = 'cdb'.freeze
       SCHEMA_CDB_DATASERVICES_API = 'cdb_dataservices_client'.freeze
       SCHEMA_AGGREGATION_TABLES = 'aggregation'.freeze
-      CDB_DATASERVICES_CLIENT_VERSION = '0.16.0'.freeze
+      CDB_DATASERVICES_CLIENT_VERSION = '0.17.0'.freeze
       ODBC_FDW_VERSION = '0.2.0'.freeze
 
       def initialize(user)
@@ -77,6 +77,10 @@ module CartoDB
         # INFO: organization privileges are set for org_member_role, which is assigned to each org user
         if @user.organization_owner?
           setup_organization_owner
+        end
+
+        if @user.organization_admin?
+          grant_admin_permissions
         end
 
         # Rebuild the geocoder api user config to reflect that is an organization user
@@ -276,9 +280,15 @@ module CartoDB
         end
       end
 
-      def setup_owner_permissions
+      def grant_admin_permissions
         @user.in_database(as: :superuser) do |database|
           database.run(%{ SELECT cartodb.CDB_Organization_AddAdmin('#{@user.username}') })
+        end
+      end
+
+      def revoke_admin_permissions
+        @user.in_database(as: :superuser) do |database|
+          database.run(%{ SELECT cartodb.CDB_Organization_RemoveAdmin('#{@user.username}') })
         end
       end
 
@@ -489,7 +499,6 @@ module CartoDB
 
       def setup_organization_owner
         setup_organization_role_permissions
-        setup_owner_permissions
         configure_extension_org_metadata_api_endpoint
       end
 

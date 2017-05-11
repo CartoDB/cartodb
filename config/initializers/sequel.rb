@@ -1,4 +1,3 @@
-require 'active_record'
 require_dependency 'carto/configuration'
 require 'sequel_rails/railties/legacy_model_config'
 

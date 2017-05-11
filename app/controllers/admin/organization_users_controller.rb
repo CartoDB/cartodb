@@ -3,8 +3,6 @@ require_dependency 'google_plus_api'
 require_dependency 'google_plus_config'
 require_dependency 'carto/controller_helper'
 require_dependency 'dummy_password_generator'
-require_dependency 'carto_gears_api/events/event_manager'
-require_dependency 'carto_gears_api/events/user_events'
 
 class Admin::OrganizationUsersController < Admin::AdminController
   include OrganizationUsersHelper
@@ -70,6 +68,7 @@ class Admin::OrganizationUsersController < Admin::AdminController
         :twitter_datasource_enabled, :soft_geocoding_limit, :soft_here_isolines_limit,
         :soft_obs_snapshot_limit, :soft_obs_general_limit, :soft_mapzen_routing_limit
       ])
+    @user.org_admin = params[:user][:org_admin] == 'true'
     @user.viewer = params[:user][:viewer] == 'true'
     @user.organization = current_user.organization
     current_user.copy_account_features(@user)
@@ -134,6 +133,7 @@ class Admin::OrganizationUsersController < Admin::AdminController
     @user.set_fields(attributes, [:description]) if attributes[:description].present?
     @user.set_fields(attributes, [:twitter_username]) if attributes[:twitter_username].present?
     @user.set_fields(attributes, [:location]) if attributes[:location].present?
+    @user.set_fields(attributes, [:org_admin]) if attributes[:org_admin].present?
 
     @user.viewer = attributes[:viewer] == 'true'
 

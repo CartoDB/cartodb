@@ -1,6 +1,4 @@
 require_dependency 'carto/user_authenticator'
-require_dependency 'carto_gears_api/events/user_events'
-require_dependency 'carto_gears_api/events/event_manager'
 
 Rails.configuration.middleware.use RailsWarden::Manager do |manager|
   manager.default_strategies :password, :api_authentication

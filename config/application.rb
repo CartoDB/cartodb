@@ -5,6 +5,7 @@ require File.expand_path('../boot', __FILE__)
 require "action_controller/railtie"
 #require "sequel-rails/railtie"
 require "action_mailer/railtie"
+require "active_record"
 require_relative '../lib/carto/configuration'
 require_relative '../lib/carto/carto_gears_support'
 
@@ -194,7 +195,6 @@ require 'importer/lib/cartodb-migrator'
 require 'varnish/lib/cartodb-varnish'
 $pool = CartoDB::ConnectionPool.new
 
-Carto::CartoGearsSupport.new.gears.reject(&:installable).each do |gear|
-  $LOAD_PATH << File::join(gear.full_path, 'lib')
-  require gear.name
+Carto::CartoGearsSupport.new.gears.each do |gear|
+  require gear.full_path.join('lib', gear.name)
 end

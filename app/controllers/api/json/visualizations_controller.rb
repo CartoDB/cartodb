@@ -28,85 +28,73 @@ class Api::Json::VisualizationsController < Api::ApplicationController
                                                       :add_like, :remove_like, :set_next_id]
 
   def create
-    @stats_aggregator.timing('visualizations.create') do
+    vis_data = payload
 
-      begin
-        vis_data = payload
+    vis_data.delete(:permission)
+    vis_data.delete(:permission_id)
 
-        vis_data.delete(:permission)
-        vis_data.delete(:permission_id)
+    # Don't allow to modify next_id/prev_id, force to use set_next_id()
+    prev_id = vis_data.delete(:prev_id) || vis_data.delete('prev_id')
+    next_id = vis_data.delete(:next_id) || vis_data.delete('next_id')
 
-        # Don't allow to modify next_id/prev_id, force to use set_next_id()
-        prev_id = vis_data.delete(:prev_id) || vis_data.delete('prev_id')
-        next_id = vis_data.delete(:next_id) || vis_data.delete('next_id')
+    param_tables = params[:tables]
+    current_user_id = current_user.id
 
-        param_tables = params[:tables]
-        current_user_id = current_user.id
+    origin = 'blank'
+    source_id = params[:source_visualization_id]
+    vis = if source_id
+            user = Carto::User.find(current_user_id)
+            source = Carto::Visualization.where(id: source_id).first
+            return head(403) unless source && source.is_viewable_by_user?(user) && !source.kind_raster?
+            if source.derived?
+              origin = 'copy'
+              duplicate_derived_visualization(params[:source_visualization_id], user)
+            else
+              create_visualization_from_tables([source.user_table], vis_data)
+            end
+          elsif param_tables
+            subdomain = CartoDB.extract_subdomain(request)
+            viewed_user = ::User.find(username: subdomain)
+            tables = param_tables.map do |table_name|
+              Carto::Helpers::TableLocator.new.get_by_id_or_name(table_name, viewed_user) if viewed_user
+            end
+            create_visualization_from_tables(tables.flatten, vis_data)
+          else
+            Visualization::Member.new(vis_data.merge(name: name_candidate, user_id: current_user_id))
+          end
 
-        origin = 'blank'
-        source_id = params[:source_visualization_id]
-        vis = if source_id
-                user = Carto::User.find(current_user_id)
-                source = Carto::Visualization.where(id: source_id).first
-                return head(403) unless source && source.is_viewable_by_user?(user) && !source.kind_raster?
-                if source.derived?
-                  origin = 'copy'
-                  duplicate_derived_visualization(params[:source_visualization_id], user)
-                else
-                  tables = [UserTable.find(id: source.user_table.id)]
-                  create_visualization_from_tables(tables, vis_data)
-                end
-              elsif param_tables
-                subdomain = CartoDB.extract_subdomain(request)
-                viewed_user = ::User.find(username: subdomain)
-                tables = @stats_aggregator.timing('locate-table') do
-                  tables = param_tables.map do |table_name|
-                    Helpers::TableLocator.new.get_by_id_or_name(table_name, viewed_user) if viewed_user
-                  end
+    vis.ensure_valid_privacy
+    # both null, make sure is the first children or automatically link to the tail of the list
+    if !vis.parent_id.nil? && prev_id.nil? && next_id.nil?
+      parent_vis = Visualization::Member.new(id: vis.parent_id).fetch
+      return head(403) unless parent_vis.has_permission?(current_user, Visualization::Member::PERMISSION_READWRITE)
 
-                  tables.flatten
-                end
-                create_visualization_from_tables(tables, vis_data)
-              else
-                Visualization::Member.new(vis_data.merge(name: name_candidate, user_id:  current_user_id))
-              end
+      children = parent_vis.children
 
-        vis.ensure_valid_privacy
-        # both null, make sure is the first children or automatically link to the tail of the list
-        if !vis.parent_id.nil? && prev_id.nil? && next_id.nil?
-          parent_vis = Visualization::Member.new(id: vis.parent_id).fetch
-          return head(403) unless parent_vis.has_permission?(current_user, Visualization::Member::PERMISSION_READWRITE)
-
-          children = parent_vis.children
-
-          prev_id = children.last.id unless children.empty?
-        end
-
-        vis = @stats_aggregator.timing('default-overlays') do
-          vis.store
-        end
-
-        vis = set_visualization_prev_next(vis, prev_id, next_id)
-
-        current_viewer_id = current_viewer.id
-        properties = {
-          user_id: current_viewer_id,
-          origin: origin,
-          visualization_id: vis.id
-        }
-
-        if vis.derived?
-          Carto::Tracking::Events::CreatedMap.new(current_viewer_id, properties).report
-        else
-          Carto::Tracking::Events::CreatedDataset.new(current_viewer_id, properties).report
-        end
-
-        render_jsonp(vis)
-      rescue CartoDB::InvalidMember => e
-        CartoDB::Logger.error(message: "Invalid member creating visualization", visualization_id: vis.id, exception: e)
-        render_jsonp({ errors: vis.full_errors }, 400)
-      end
+      prev_id = children.last.id unless children.empty?
     end
+
+    vis.store
+
+    vis = set_visualization_prev_next(vis, prev_id, next_id)
+
+    current_viewer_id = current_viewer.id
+    properties = {
+      user_id: current_viewer_id,
+      origin: origin,
+      visualization_id: vis.id
+    }
+
+    if vis.derived?
+      Carto::Tracking::Events::CreatedMap.new(current_viewer_id, properties).report
+    else
+      Carto::Tracking::Events::CreatedDataset.new(current_viewer_id, properties).report
+    end
+
+    render_jsonp(vis)
+  rescue CartoDB::InvalidMember => e
+    CartoDB::Logger.error(message: "Invalid member creating visualization", visualization_id: vis.id, exception: e)
+    render_jsonp({ errors: vis.full_errors }, 400)
   end
 
   def update
@@ -307,7 +295,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   end
 
   def create_visualization_from_tables(tables, vis_data)
-    blender = Visualization::TableBlender.new(current_user, tables)
+    blender = Visualization::TableBlender.new(Carto::User.find(current_user.id), tables)
     map = blender.blend
 
     vis = Visualization::Member.new(vis_data.merge(name: name_candidate,

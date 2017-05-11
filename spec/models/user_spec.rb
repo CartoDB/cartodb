@@ -140,6 +140,57 @@ describe User do
       organization.destroy
     end
 
+    describe '#org_admin' do
+      before(:all) do
+        @organization = create_organization_with_owner
+      end
+
+      after(:all) do
+        @organization.destroy
+      end
+
+      def create_role(user)
+        # NOTE: It's hard to test the real Groups API call here, it needs a Rails server up and running
+        # Instead, we test the main step that this function does internally (creating a role)
+        user.in_database["CREATE ROLE \"#{user.database_username}_#{unique_name('role')}\""].all
+      end
+
+      it 'cannot be owner and viewer at the same time' do
+        @organization.owner.viewer = true
+        @organization.owner.should_not be_valid
+        @organization.owner.errors.keys.should include(:viewer)
+      end
+
+      it 'cannot be admin and viewer at the same time' do
+        user = ::User.new
+        user.organization = @organization
+        user.viewer = true
+        user.org_admin = true
+        user.should_not be_valid
+        user.errors.keys.should include(:viewer)
+      end
+
+      it 'should not be able to create groups without admin rights' do
+        user = FactoryGirl.create(:valid_user, organization: @organization)
+        expect { create_role(user) }.to raise_error
+      end
+
+      it 'should be able to create groups with admin rights' do
+        user = FactoryGirl.create(:valid_user, organization: @organization, org_admin: true)
+        expect { create_role(user) }.to_not raise_error
+      end
+
+      it 'should revoke admin rights on demotion' do
+        user = FactoryGirl.create(:valid_user, organization: @organization, org_admin: true)
+        expect { create_role(user) }.to_not raise_error
+
+        user.org_admin = false
+        user.save
+
+        expect { create_role(user) }.to raise_error
+      end
+    end
+
     describe 'organization email whitelisting' do
 
       before(:each) do
@@ -205,11 +256,17 @@ describe User do
         @organization.destroy
       end
 
+      before(:each) do
+        @organization.viewer_seats = 10
+        @organization.seats = 10
+        @organization.save
+      end
+
       it 'should not allow changing to viewer without seats' do
         @organization.viewer_seats = 0
         @organization.save
 
-        user = @organization.owner
+        user = @organization.users.find { |u| !u.organization_owner? }
         user.reload
         user.viewer = true
         expect(user).not_to be_valid
@@ -217,10 +274,7 @@ describe User do
       end
 
       it 'should allow changing to viewer with enough seats' do
-        @organization.viewer_seats = 2
-        @organization.save
-
-        user = @organization.owner
+        user = @organization.users.find { |u| !u.organization_owner? }
         user.reload
         user.viewer = true
         expect(user).to be_valid
@@ -228,13 +282,12 @@ describe User do
       end
 
       it 'should not allow changing to builder without seats' do
-        @organization.viewer_seats = 10
-        @organization.save
-        user = @organization.owner
+        user = @organization.users.find { |u| !u.organization_owner? }
         user.reload
         user.viewer = true
         user.save
-        @organization.seats = 0
+
+        @organization.seats = 1
         @organization.save
 
         user.reload
@@ -243,15 +296,11 @@ describe User do
         expect(user.errors.keys).to include(:organization)
       end
 
-      it 'should allow changing to builder without seats' do
-        @organization.viewer_seats = 10
-        @organization.save
-        user = @organization.owner
+      it 'should allow changing to builder with seats' do
+        user = @organization.users.find { |u| !u.organization_owner? }
         user.reload
         user.viewer = true
         user.save
-        @organization.seats = 10
-        @organization.save
 
         user.reload
         user.viewer = false

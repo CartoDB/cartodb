@@ -1,7 +1,5 @@
-$:.push File.expand_path("../lib", __FILE__)
-
 # Maintain your gem's version:
-require "carto_gears_api/version"
+require_relative "lib/carto_gears_api/version"
 
 # Describe your gem and declare its dependencies:
 Gem::Specification.new do |s|
@@ -18,5 +16,5 @@ Gem::Specification.new do |s|
 
   s.add_dependency "rails", "4.2.8"
   s.add_dependency 'values', '1.8.0'
-  s.add_dependency 'pg', '0.15'
+  s.add_dependency 'pg', '0.15.0'
 end

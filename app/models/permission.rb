@@ -87,8 +87,7 @@ module CartoDB
           end
         end
       rescue => e
-        CartoDB::StdoutLogger.info "Problem sending notification mail"
-        CartoDB::StdoutLogger.info e
+        CartoDB::Logger.error(message: "Problem sending notification mail", exception: e)
       end
     end
 

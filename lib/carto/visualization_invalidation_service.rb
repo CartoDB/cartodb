@@ -31,6 +31,7 @@ module Carto
     end
 
     def invalidate_affected_visualizations
+      return unless @visualization.user_table
       # Invalidate the maps where this table is used. This is needed because the attributions of the datasets used
       # in a map is used in the vizjson, and the description is shown in the public pages/embed.
       # There is no need to invalidate the named maps, as nothing from the dataset is included there.

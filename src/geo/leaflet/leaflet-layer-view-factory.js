@@ -30,9 +30,10 @@ var canMapBeRenderedClientSide = function (mapModel, settingsModel) {
     return false;
   }
 
-  // mapRenderMode === RenderModes.AUTO
+  // RenderModes.AUTO
+  var featureCount = mapModel.getFeatureCount();
   return isWebGLSupported() &&
-    mapModel.getNumberOfFeatures() < MAX_NUMBER_OF_FEATURES_FOR_WEBGL &&
+    featureCount && featureCount < MAX_NUMBER_OF_FEATURES_FOR_WEBGL &&
     _.all(mapModel.layers.getCartoDBLayers(), canLayerBeRenderedClientSide);
 };
 

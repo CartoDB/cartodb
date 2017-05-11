@@ -30,7 +30,6 @@ var ModelUpdater = function (deps) {
 
 ModelUpdater.prototype.updateModels = function (windshaftMap, sourceId, forceFetch) {
   this._updateVisModel(windshaftMap);
-  this._updateMapModel(windshaftMap);
   this._updateLayerModels(windshaftMap);
   this._updateLayerGroupModel(windshaftMap);
   this._updateDataviewModels(windshaftMap, sourceId, forceFetch);
@@ -39,12 +38,6 @@ ModelUpdater.prototype.updateModels = function (windshaftMap, sourceId, forceFet
 
 ModelUpdater.prototype._updateVisModel = function (windshaftMap) {
   this._visModel.setOk();
-};
-
-ModelUpdater.prototype._updateMapModel = function (windshaftMap) {
-  if (windshaftMap.get('stats') && windshaftMap.get('stats').featureCount) {
-    this._mapModel.set('featureCount', windshaftMap.get('stats').featureCount);
-  }
 };
 
 ModelUpdater.prototype._updateLayerGroupModel = function (windshaftMap) {

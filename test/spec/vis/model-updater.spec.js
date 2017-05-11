@@ -77,16 +77,6 @@ describe('src/vis/model-updater', function () {
       expect(this.visModel.setOk).toHaveBeenCalled();
     });
 
-    it('should update the map with stats if present', function () {
-      this.windshaftMap.set('stats', {
-        featureCount: 1234
-      });
-
-      this.modelUpdater.updateModels(this.windshaftMap);
-
-      expect(this.mapModel.getNumberOfFeatures()).toEqual(1234);
-    });
-
     describe('layerGroupModel', function () {
       beforeEach(function () {
         var layer1 = new CartoDBLayer({}, { vis: this.visModel });

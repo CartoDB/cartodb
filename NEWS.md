@@ -106,6 +106,8 @@ Development
 * Update tangram to use subdomains.
 * New dashboard notifications added (#11807).
 * New 'Find Nearest' analysis (#11933).
+* New 'SQL function' analysis (#12018).
+* Allows to enable / disable analyses using feature flags (#12056).
 * Multiple file upload through "upload file" tab (#11952)
 * Change setView by flyto.
 * Update tangram to fix layer geometry conditionals.

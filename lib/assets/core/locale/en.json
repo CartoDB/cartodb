@@ -910,6 +910,10 @@
           "data-observatory-measure": {
             "title": "Enrich from Data Observatory",
             "desc": "Add a new column with contextual demographic and economic measures."
+          },
+          "deprecated-sql-function": {
+            "title": "SQL Function",
+            "desc": "Run your custom SQL function"
           }
         }
       },
@@ -1603,6 +1607,16 @@
         "define-two-layers": "Define two layers",
         "denominator": "Denominator",
         "denominator-help": "A column to normalize the target column",
+        "deprecated-sql-function": {
+          "choose-function": "Choose the function to run on this node",
+          "choose-function-small": "Choose function",
+          "define-params": "define your parameters below",
+          "function": "function",
+          "input": "input",
+          "params": "Your Function's Parameters",
+          "target": "target node",
+          "title": "SQL Function"
+        },
         "desc": "DESC",
         "direction": "Direction",
         "disabled-by-config": "This analysis type is disabled",

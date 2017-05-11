@@ -3,7 +3,6 @@ require 'cartodb/per_request_sequel_cache'
 require_relative './user/user_decorator'
 require_relative './user/oauths'
 require_relative './synchronization/synchronization_oauth'
-require_relative './visualization/member'
 require_relative '../helpers/data_services_metrics_helper'
 require_relative './visualization/collection'
 require_relative './user/user_organization'
@@ -23,6 +22,7 @@ require_dependency 'carto/helpers/has_connector_configuration'
 require_dependency 'carto/helpers/batch_queries_statement_timeout'
 require_dependency 'carto/user_authenticator'
 require_dependency 'carto/helpers/billing_cycle'
+require_dependency 'carto/visualization'
 
 class User < Sequel::Model
   include CartoDB::MiniSequel
@@ -631,13 +631,13 @@ class User < Sequel::Model
   end
 
   # List all public visualization tags of the user
-  def tags(exclude_shared=false, type=CartoDB::Visualization::Member::TYPE_DERIVED)
+  def tags(exclude_shared=false, type=Carto::Visualization::TYPE_DERIVED)
     require_relative './visualization/tags'
     options = {}
     options[:exclude_shared] = true if exclude_shared
     CartoDB::Visualization::Tags.new(self, options).names({
       type: type,
-      privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC
+      privacy: Carto::Visualization::PRIVACY_PUBLIC
     })
   end #tags
 
@@ -645,8 +645,8 @@ class User < Sequel::Model
   def map_tags
     require_relative './visualization/tags'
     CartoDB::Visualization::Tags.new(self).names({
-       type: CartoDB::Visualization::Member::TYPE_CANONICAL,
-       privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC
+       type: Carto::Visualization::TYPE_CANONICAL,
+       privacy: Carto::Visualization::PRIVACY_PUBLIC
     })
   end #map_tags
 
@@ -657,7 +657,7 @@ class User < Sequel::Model
   def tables_including_shared
     CartoDB::Visualization::Collection.new.fetch(
         user_id: self.id,
-        type: CartoDB::Visualization::Member::TYPE_CANONICAL
+        type: Carto::Visualization::TYPE_CANONICAL
     ).map { |item|
       item.table
     }
@@ -1200,7 +1200,7 @@ class User < Sequel::Model
 
   def public_table_count
     table_count({
-      privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC,
+      privacy: Carto::Visualization::PRIVACY_PUBLIC,
       exclude_raster: true
     })
   end
@@ -1208,7 +1208,7 @@ class User < Sequel::Model
   # Only returns owned tables (not shared ones)
   def table_count(filters={})
     filters.merge!(
-      type: CartoDB::Visualization::Member::TYPE_CANONICAL,
+      type: Carto::Visualization::TYPE_CANONICAL,
       exclude_shared: true
     )
 
@@ -1230,8 +1230,8 @@ class User < Sequel::Model
   # Get the count of public visualizations
   def public_visualization_count
     visualization_count({
-      type: CartoDB::Visualization::Member::TYPE_DERIVED,
-      privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC,
+      type: Carto::Visualization::TYPE_DERIVED,
+      privacy: Carto::Visualization::PRIVACY_PUBLIC,
       exclude_shared: true,
       exclude_raster: true
     })
@@ -1240,7 +1240,7 @@ class User < Sequel::Model
   # Get the count of all visualizations
   def all_visualization_count
     visualization_count({
-      type: CartoDB::Visualization::Member::TYPE_DERIVED,
+      type: Carto::Visualization::TYPE_DERIVED,
       exclude_shared: false,
       exclude_raster: false
     })
@@ -1249,7 +1249,7 @@ class User < Sequel::Model
   # Get user owned visualizations
   def owned_visualizations_count
     visualization_count({
-      type: CartoDB::Visualization::Member::TYPE_DERIVED,
+      type: Carto::Visualization::TYPE_DERIVED,
       exclude_shared: true,
       exclude_raster: false
     })
@@ -1561,7 +1561,7 @@ class User < Sequel::Model
 
   def destroy_shared_with
     CartoDB::SharedEntity.where(recipient_id: id).each do |se|
-      viz = CartoDB::Visualization::Member.new(id: se.entity_id).fetch
+      viz = Carto::Visualization.find(se.entity_id)
       permission = viz.permission
       permission.remove_user_permission(self)
       permission.save
@@ -1648,11 +1648,7 @@ class User < Sequel::Model
   end
 
   def visualizations_shared_with_this_user
-    Carto::VisualizationQueryBuilder
-      .new
-      .with_shared_with_user_id(id)
-      .build
-      .map { |v| CartoDB::Visualization::Member.new(id: v.id).fetch }
+    Carto::VisualizationQueryBuilder.new.with_shared_with_user_id(id).build.all
   end
 
   def setup_aggregation_tables

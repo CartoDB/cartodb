@@ -10,8 +10,8 @@
 
 CartoDB::Application.routes.draw do
   # Double use: for user public dashboard AND org dashboard
-  get   '/[(user/:user_domain)(u/:user_domain)]'                 => 'admin/pages#public'
-  root :to => 'admin/pages#index'
+  get '/[(user/:user_domain)(u/:user_domain)]' => 'admin/pages#public'
+  root to: 'admin/pages#index'
 
   get   '/signup'           => 'signup#signup',     as: :signup
   post  '/signup'           => 'signup#create',  as: :signup_organization_user
@@ -470,7 +470,7 @@ CartoDB::Application.routes.draw do
     put '(/user/:user_domain)(/u/:user_domain)/api/v1/perm/:id' => 'permissions#update', as: :api_v1_permissions_update
   end
 
-  scope :module => 'api/json', defaults: { format: :json } do
+  scope module: 'api/json', defaults: { format: :json } do
 
     # V1
     # --
@@ -545,7 +545,7 @@ CartoDB::Application.routes.draw do
     end
   end
 
-  scope :module => 'superadmin', defaults: { format: :json } do
+  scope module: 'superadmin', defaults: { format: :json } do
     get '/superadmin/get_databases_info' => 'platform#databases_info'
     get '/superadmin/stats/total_users' => 'platform#total_users'
     get '/superadmin/stats/total_pay_users' => 'platform#total_pay_users'

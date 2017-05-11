@@ -109,6 +109,7 @@ Development
 * Change setView by flyto.
 * Update tangram to fix layer geometry conditionals.
 * Allow to have multiple administrators per organization (#12052)
+* Added explanation tooltip to the categorize label on the Find Nearest analysis (#12100)
 
 ### Bug fixes
 * Removed link to markdown support in organization notifications
@@ -231,11 +232,13 @@ Development
 * Max tracts to 4 for isoline analysis (#11723)
 * Right column validate type match in Join analysis (#11829)
 * Check if analysis node is on top before fetching query data (#11874)
+* Validate amount of organization seats (#12101)
 * Fixed error dropping tables from ghost table manager on race condition cases (#12012)
 * IE11 fix for dropdowns with scrollview (#12073)
 * Fixed problem resetting styles per node after adding a new analysis (#12085)
 * Docs, fixed some minor spelling and grammar errors in the content.
 * Docs, updated "More Info" url from street addresses georeference options to new, related guide.
+* Color picker disappears in CartoCSS editor after clicking (#12097).
 
 ### NOTICE
 This release upgrades the CartoDB PostgreSQL extension to `0.19.0`. Run the following to have it available:

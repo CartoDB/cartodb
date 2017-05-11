@@ -1686,7 +1686,8 @@
         "min": "Min",
         "mode": "Mode",
         "find-nearest": {
-          "categorized": "categorize",
+          "categorized": "Per group",
+          "categorized-help": "Calculate results per each category of the chosen column",
           "criteria": "Select the target point layer",
           "define-params": "Define your parameters",
           "define-params-desc": "Define and categorize the number of results",

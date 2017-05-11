@@ -7,7 +7,8 @@ describe('src/analysis/analysis-factory.js', function () {
       getSourceNamesForAnalysisType: function (analysisType) {
         var map = {
           'trade-area': ['source'],
-          'estimated-population': ['source']
+          'estimated-population': ['source'],
+          'sql-function': ['source', 'target']
         };
         return map[analysisType];
       },
@@ -223,6 +224,46 @@ describe('src/analysis/analysis-factory.js', function () {
       );
 
       expect(this.analysisFactory.findNodeById('something')).toBeUndefined();
+    });
+  });
+
+  describe('._getAnalysisAttributesFromAnalysisDefinition', function () {
+    it('should analyse all source nodes if everyone has params', function () {
+      var analysisDefinition = {
+        type: 'trade-area',
+        params: {
+          source: 'a0'
+        }
+      };
+      spyOn(this.analysisFactory, 'analyse').and.returnValue('node');
+
+      var result = this.analysisFactory._getAnalysisAttributesFromAnalysisDefinition(analysisDefinition);
+
+      expect(this.analysisFactory.analyse.calls.count()).toEqual(1);
+      expect(this.analysisFactory.analyse).toHaveBeenCalledWith('a0');
+      expect(result).toEqual({
+        type: 'trade-area',
+        source: 'node'
+      });
+    });
+
+    it('should analyse only source nodes that has params', function () {
+      var analysisDefinition = {
+        type: 'sql-function',
+        params: {
+          source: 'a0'
+        }
+      };
+      spyOn(this.analysisFactory, 'analyse').and.returnValue('node');
+
+      var result = this.analysisFactory._getAnalysisAttributesFromAnalysisDefinition(analysisDefinition);
+
+      expect(this.analysisFactory.analyse.calls.count()).toEqual(1);
+      expect(this.analysisFactory.analyse).toHaveBeenCalledWith('a0');
+      expect(result).toEqual({
+        type: 'sql-function',
+        source: 'node'
+      });
     });
   });
 });

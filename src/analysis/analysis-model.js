@@ -91,7 +91,9 @@ module.exports = Model.extend({
     var sources = _.chain(this._getSourceNames())
       .map(function (sourceName) {
         var source = this.get(sourceName);
-        return source.findAnalysisById(analysisId);
+        if (source) {
+          return source.findAnalysisById(analysisId);
+        }
       }, this)
       .compact()
       .value();
@@ -123,10 +125,14 @@ module.exports = Model.extend({
   toJSON: function () {
     var json = _.pick(this.attributes, 'id', 'type');
     json.params = _.pick(this.attributes, this.getParamNames());
-    _.each(this._getSourceNames(), function (sourceName) {
+    var sourceNames = this._getSourceNames();
+    _.each(sourceNames, function (sourceName) {
       var source = {};
-      source[sourceName] = this.get(sourceName).toJSON();
-      _.extend(json.params, source);
+      var sourceInfo = this.get(sourceName);
+      if (sourceInfo) {
+        source[sourceName] = sourceInfo.toJSON();
+        _.extend(json.params, source);
+      }
     }, this);
 
     return json;

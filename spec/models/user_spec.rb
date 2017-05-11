@@ -256,6 +256,12 @@ describe User do
         @organization.destroy
       end
 
+      before(:each) do
+        @organization.viewer_seats = 10
+        @organization.seats = 10
+        @organization.save
+      end
+
       it 'should not allow changing to viewer without seats' do
         @organization.viewer_seats = 0
         @organization.save
@@ -268,9 +274,6 @@ describe User do
       end
 
       it 'should allow changing to viewer with enough seats' do
-        @organization.viewer_seats = 2
-        @organization.save
-
         user = @organization.users.find { |u| !u.organization_owner? }
         user.reload
         user.viewer = true
@@ -279,13 +282,12 @@ describe User do
       end
 
       it 'should not allow changing to builder without seats' do
-        @organization.viewer_seats = 10
-        @organization.save
         user = @organization.users.find { |u| !u.organization_owner? }
         user.reload
         user.viewer = true
         user.save
-        @organization.seats = 0
+
+        @organization.seats = 1
         @organization.save
 
         user.reload
@@ -294,15 +296,11 @@ describe User do
         expect(user.errors.keys).to include(:organization)
       end
 
-      it 'should allow changing to builder without seats' do
-        @organization.viewer_seats = 10
-        @organization.save
+      it 'should allow changing to builder with seats' do
         user = @organization.users.find { |u| !u.organization_owner? }
         user.reload
         user.viewer = true
         user.save
-        @organization.seats = 10
-        @organization.save
 
         user.reload
         user.viewer = false

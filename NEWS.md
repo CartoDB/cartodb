@@ -5,6 +5,7 @@ Development
 
 ### Features
 * Using Node v6.9.2 and npm v3.10.9 (#11935).
+* Updates Dataservices API client default version to `0.17.0` (#12093)
 * Exposed some cartodb.js methods through map definition model (#11846)
 * Dataservices configuration rake tasks (#11917)
   * `cartodb:services:set_user_quota[username,service,quota]` updated to support the `mapzen_routing` provider
@@ -109,8 +110,10 @@ Development
 * Change setView by flyto.
 * Update tangram to fix layer geometry conditionals.
 * Allow to have multiple administrators per organization (#12052)
+* Added explanation tooltip to the categorize label on the Find Nearest analysis (#12100)
 
 ### Bug fixes
+* Removed link to markdown support in organization notifications
 * Fix image export in Safari and IE (#12066)
 * Autostyling for google basemaps (#11838)
 * Fixed problem with the textarea editor (cartodb/support#656)
@@ -161,6 +164,7 @@ Development
   * Layer model: #10934
   * UserTable: #11589, #11700, #11737
   * Map model and controller: #12039, #12011
+  * Permission: #12077
 * Refactor Layer model (#10934) and UserTable (#11589, #11700, #11737).
 * Correctly render map previews for maps with google basemaps (#11608)
 * Do not trigger visualization hooks on state update (#11701)
@@ -229,8 +233,12 @@ Development
 * Max tracts to 4 for isoline analysis (#11723)
 * Right column validate type match in Join analysis (#11829)
 * Check if analysis node is on top before fetching query data (#11874)
+* Validate amount of organization seats (#12101)
 * Fixed error dropping tables from ghost table manager on race condition cases (#12012)
 * IE11 fix for dropdowns with scrollview (#12073)
+* Fixed problem resetting styles per node after adding a new analysis (#12085)
+* Docs, fixed some minor spelling and grammar errors in the content.
+* Color picker disappears in CartoCSS editor after clicking (#12097).
 
 ### NOTICE
 This release upgrades the CartoDB PostgreSQL extension to `0.19.0`. Run the following to have it available:

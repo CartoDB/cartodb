@@ -238,6 +238,7 @@ Development
 * IE11 fix for dropdowns with scrollview (#12073)
 * Fixed problem resetting styles per node after adding a new analysis (#12085)
 * Docs, fixed some minor spelling and grammar errors in the content.
+* Docs, updated "More Info" url from street addresses georeference options to new, related guide.
 * Color picker disappears in CartoCSS editor after clicking (#12097).
 
 ### NOTICE

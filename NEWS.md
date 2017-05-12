@@ -116,6 +116,7 @@ Development
 
 ### Bug fixes
 * Fixed styles in numeric fields when editing a feature (#12026)
+* Fixed disabling button while export image is running (#12029)
 * Solved problem with file input in connect dataset dialog (cartodb/support#690)
 * Fixed problem with feature flag in analyses (cartodb/support#691)
 * Removed link to markdown support in organization notifications

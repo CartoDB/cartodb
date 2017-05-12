@@ -115,6 +115,7 @@ Development
 * Added explanation tooltip to the categorize label on the Find Nearest analysis (#12100)
 
 ### Bug fixes
+* Fixed styles in numeric fields when editing a feature (#12026)
 * Solved problem with file input in connect dataset dialog (cartodb/support#690)
 * Fixed problem with feature flag in analyses (cartodb/support#691)
 * Removed link to markdown support in organization notifications

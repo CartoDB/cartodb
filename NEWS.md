@@ -116,6 +116,7 @@ Development
 
 ### Bug fixes
 * Update table view on adding or removing a feature (#11978)
+* Reload vis when a row is deleted in table view (#11759)
 * Solved problem with file input in connect dataset dialog (cartodb/support#690)
 * Fixed problem with feature flag in analyses (cartodb/support#691)
 * Removed link to markdown support in organization notifications

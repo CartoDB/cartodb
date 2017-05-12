@@ -44,7 +44,7 @@ module HelperMethods
   end
 
   def put_json(path, params = {}, headers = http_json_headers)
-    headers = headers.merge("CONTENT-TYPE" => "application/json", 'HTTP_ACCEPT' => 'application/json')
+    headers = headers.merge("CONTENT_TYPE" => "application/json", 'HTTP_ACCEPT' => 'application/json')
     put path, JSON.dump(params), headers
     the_response = response || get_last_response
     response_parsed = the_response.body.blank? ? {} : ::JSON.parse(the_response.body)
@@ -56,7 +56,7 @@ module HelperMethods
   end
 
   def post_json(path, params = {}, headers = http_json_headers)
-    headers = headers.merge("CONTENT-TYPE" => "application/json", 'HTTP_ACCEPT' => 'application/json')
+    headers = headers.merge("CONTENT_TYPE" => "application/json", 'HTTP_ACCEPT' => 'application/json')
     post path, JSON.dump(params), headers
     the_response = response || get_last_response
     response_parsed = the_response.body.blank? ? {} : ::JSON.parse(the_response.body)
@@ -68,7 +68,7 @@ module HelperMethods
   end
 
   def delete_json(path, params = {}, headers = http_json_headers)
-    headers = headers.merge("CONTENT-TYPE" => "application/json", 'HTTP_ACCEPT' => 'application/json')
+    headers = headers.merge("CONTENT_TYPE" => "application/json", 'HTTP_ACCEPT' => 'application/json')
     delete path, JSON.dump(params), headers
     the_response = response || get_last_response
     response_parsed = (the_response.body.blank? || the_response.body.to_s.length < 2) ? {} : ::JSON.parse(the_response.body)

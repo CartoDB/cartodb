@@ -443,6 +443,7 @@ $sLabel-width: 140px;
   -moz-transform: translate(26px, 0) scale(1);
   direction: ltr;
   cursor: pointer;
+  z-index: 3;
 }
 .Form-fileLabel {
   width: 130px;

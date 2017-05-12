@@ -502,18 +502,18 @@ var Map = Model.extend({
     return this._mapViewSize;
   },
 
-  getFeatureCount: function () {
-    if (this.hasFeatureCount()) {
+  getEstimatedFeatureCount: function () {
+    if (this.hasEstimatedFeatureCount()) {
       return _.reduce(this.layers.getCartoDBLayers(), function (memo, layerModel) {
-        return memo + layerModel.getFeatureCount();
+        return memo + layerModel.getEstimatedFeatureCount();
       }, 0);
     }
   },
 
-  hasFeatureCount: function () {
+  hasEstimatedFeatureCount: function () {
     return _.every(this.layers.getCartoDBLayers(), function (layerModel) {
-      var featureCount = layerModel.getFeatureCount();
-      return featureCount && featureCount >= 0;
+      var estimatedFeatureCount = layerModel.getEstimatedFeatureCount();
+      return estimatedFeatureCount && estimatedFeatureCount >= 0;
     });
   }
 }, {

@@ -23,7 +23,7 @@ var LayerGroupViewConstructor = function (layerGroupModel, nativeMap, mapModel) 
 var canMapBeRenderedClientSide = function (mapModel) {
   var mapRenderMode = mapModel.get('renderMode');
 
-  if (mapRenderMode === RenderModes.VECTOR && isWebGLSupported()) {
+  if (mapRenderMode === RenderModes.VECTOR && util.isWebGLSupported()) {
     return true;
   }
 
@@ -37,7 +37,6 @@ var canMapBeRenderedClientSide = function (mapModel) {
     estimatedFeatureCount && estimatedFeatureCount < MAX_NUMBER_OF_FEATURES_FOR_WEBGL &&
     _.all(mapModel.layers.getCartoDBLayers(), canLayerBeRenderedClientSide);
 };
-
 
 var canLayerBeRenderedClientSide = function (layerModel) {
   var cartoCSS = layerModel.get('meta').cartocss;

@@ -20,8 +20,7 @@ var Map = Model.extend({
     keyboard: true,
     provider: 'leaflet',
     popupsEnabled: true,
-    isFeatureInteractivityEnabled: false,
-    featureCount: 0
+    isFeatureInteractivityEnabled: false
   },
 
   initialize: function (attrs, options) {

@@ -55,7 +55,7 @@ describe('src/api/create-vis', function () {
     var vis = createVis(this.containerId, 'http://example.com/vizjson', {
       skipMapInstantiation: true
     });
-    spyOn(vis, 'load');
+    spyOn(vis, 'load').and.callThrough();
 
     // Simulate a successful response from Loader.get
     var loaderCallback = Loader.get.calls.mostRecent().args[1];

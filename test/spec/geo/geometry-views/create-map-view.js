@@ -64,7 +64,6 @@ module.exports = function (MapViewBase) {
   return new MapView({
     mapModel: map,
     visModel: new Backbone.Model(),
-    layerGroupModel: {},
-    settingsModel: new Backbone.Model()
+    layerGroupModel: {}
   });
 };

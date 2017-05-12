@@ -3,7 +3,7 @@ var VisView = require('../vis/vis-view');
 var VisModel = require('../vis/vis');
 var Loader = require('../core/loader');
 var VizJSON = require('./vizjson');
-var RenderModes = require('../vis/render-modes');
+var RenderModes = require('../geo/render-modes');
 
 var DEFAULT_OPTIONS = {
   tiles_loader: true,
@@ -76,13 +76,6 @@ var loadVizJSON = function (el, visModel, vizjsonData, options) {
     layerSelectorEnabled = options.layerSelectorEnabled;
   }
 
-  var renderMode = RenderModes.AUTO;
-  if (options.vector === true) {
-    renderMode = RenderModes.VECTOR;
-  } else if (options.vector === false) {
-    renderMode = RenderModes.RASTER;
-  }
-
   visModel.set({
     title: vizjson.title,
     description: vizjson.description,
@@ -92,8 +85,7 @@ var loadVizJSON = function (el, visModel, vizjsonData, options) {
   visModel.setSettings({
     showLegends: showLegends,
     showLayerSelector: showLayerSelector,
-    layerSelectorEnabled: layerSelectorEnabled,
-    renderMode: renderMode
+    layerSelectorEnabled: layerSelectorEnabled
   });
 
   new VisView({ // eslint-disable-line
@@ -103,6 +95,17 @@ var loadVizJSON = function (el, visModel, vizjsonData, options) {
   });
 
   visModel.load(vizjson);
+
+  var renderMode = RenderModes.AUTO;
+  if (options.vector === true) {
+    renderMode = RenderModes.VECTOR;
+  } else if (options.vector === false) {
+    renderMode = RenderModes.RASTER;
+  }
+
+  // visModel.map is not available until visModel.load has
+  // been called
+  visModel.map.set('renderMode', renderMode);
 
   if (!options.skipMapInstantiation) {
     visModel.instantiateMap();

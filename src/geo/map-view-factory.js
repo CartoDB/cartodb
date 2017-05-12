@@ -3,7 +3,7 @@ var cdb = require('cdb');
 
 var MapViewFactory = function () {};
 
-MapViewFactory.prototype.createMapView = function (provider, visModel, mapModel, layerGroupModel, settingsModel) {
+MapViewFactory.prototype.createMapView = function (provider, visModel, mapModel, layerGroupModel) {
   var MapViewClass;
 
   if (provider === 'leaflet') {
@@ -21,8 +21,7 @@ MapViewFactory.prototype.createMapView = function (provider, visModel, mapModel,
   return new MapViewClass({
     mapModel: mapModel,
     visModel: visModel,
-    layerGroupModel: layerGroupModel,
-    settingsModel: settingsModel
+    layerGroupModel: layerGroupModel
   });
 };
 

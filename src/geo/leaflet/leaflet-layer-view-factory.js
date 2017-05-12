@@ -7,21 +7,21 @@ var LeafletCartoDBLayerGroupView = require('./leaflet-cartodb-layer-group-view')
 var LeafletTorqueLayerView = require('./leaflet-torque-layer-view');
 var LeafletCartoDBWebglLayerGroupView = require('./leaflet-cartodb-webgl-layer-group-view');
 var TangramCartoCSS = require('tangram-cartocss');
-var RenderModes = require('../../vis/render-modes');
+var RenderModes = require('../../geo/render-modes');
 var util = require('../../core/util');
 
 var MAX_NUMBER_OF_FEATURES_FOR_WEBGL = 10e4;
 
-var LayerGroupViewConstructor = function (layerGroupModel, nativeMap, mapModel, settingsModel) {
-  if (canMapBeRenderedClientSide(mapModel, settingsModel)) {
+var LayerGroupViewConstructor = function (layerGroupModel, nativeMap, mapModel) {
+  if (canMapBeRenderedClientSide(mapModel)) {
     return new LeafletCartoDBWebglLayerGroupView(layerGroupModel, nativeMap);
   }
 
   return new LeafletCartoDBLayerGroupView(layerGroupModel, nativeMap);
 };
 
-var canMapBeRenderedClientSide = function (mapModel, settingsModel) {
-  var mapRenderMode = settingsModel.get('renderMode');
+var canMapBeRenderedClientSide = function (mapModel) {
+  var mapRenderMode = mapModel.get('renderMode');
 
   if (mapRenderMode === RenderModes.VECTOR && isWebGLSupported()) {
     return true;
@@ -61,13 +61,13 @@ LeafletLayerViewFactory.prototype._constructors = {
   'torque': LeafletTorqueLayerView
 };
 
-LeafletLayerViewFactory.prototype.createLayerView = function (layerModel, nativeMap, mapModel, settingsModel) {
+LeafletLayerViewFactory.prototype.createLayerView = function (layerModel, nativeMap, mapModel) {
   var layerType = layerModel.get('type').toLowerCase();
   var LayerViewClass = this._constructors[layerType];
 
   if (LayerViewClass) {
     try {
-      return new LayerViewClass(layerModel, nativeMap, mapModel, settingsModel);
+      return new LayerViewClass(layerModel, nativeMap, mapModel);
     } catch (e) {
       log.error("Error creating an instance of layer view for '" + layerType + "' layer -> " + e.message);
       throw e;

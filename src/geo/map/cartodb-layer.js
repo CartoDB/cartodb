@@ -117,6 +117,10 @@ var CartoDBLayer = LayerModelBase.extend({
   },
 
   getFeatureCount: function () {
+    if (this.isHidden()) {
+      return 0;
+    }
+
     var meta = this.get('meta');
     var stats = meta && meta.stats;
     return stats && stats.estimatedFeatureCount;

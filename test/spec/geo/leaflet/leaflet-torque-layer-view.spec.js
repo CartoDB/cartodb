@@ -23,8 +23,7 @@ describe('geo/leaflet/leaflet-torque-layer-view', function () {
       mapModel: this.map,
       visModel: new Backbone.Model(),
       layerViewFactory: new LeafletLayerViewFactory(),
-      layerGroupModel: new Backbone.Model(),
-      settingsModel: new Backbone.Model()
+      layerGroupModel: new Backbone.Model()
     });
     this.mapView.render();
 

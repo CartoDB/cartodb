@@ -8,6 +8,7 @@ var LeafletTorqueLayerView = require('./leaflet-torque-layer-view');
 var LeafletCartoDBWebglLayerGroupView = require('./leaflet-cartodb-webgl-layer-group-view');
 var TangramCartoCSS = require('tangram-cartocss');
 var RenderModes = require('../../vis/render-modes');
+var util = require('../../core/util');
 
 var MAX_NUMBER_OF_FEATURES_FOR_WEBGL = 10e4;
 
@@ -32,14 +33,11 @@ var canMapBeRenderedClientSide = function (mapModel, settingsModel) {
 
   // RenderModes.AUTO
   var featureCount = mapModel.getFeatureCount();
-  return isWebGLSupported() &&
+  return util.isWebGLSupported() &&
     featureCount && featureCount < MAX_NUMBER_OF_FEATURES_FOR_WEBGL &&
     _.all(mapModel.layers.getCartoDBLayers(), canLayerBeRenderedClientSide);
 };
 
-var isWebGLSupported = function () {
-  return !!window.WebGLRenderingContext;
-};
 
 var canLayerBeRenderedClientSide = function (layerModel) {
   var cartoCSS = layerModel.get('meta').cartocss;

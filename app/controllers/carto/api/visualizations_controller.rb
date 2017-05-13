@@ -43,16 +43,18 @@ module Carto
         vqb = query_builder_with_filter_from_hash(params)
 
         presenter_cache = Carto::Api::PresenterCache.new
+        presenter_options = presenter_options_from_hash(params).merge(related: false)
 
         # TODO: undesirable table hardcoding, needed for disambiguation. Look for
         # a better approach and/or move it to the query builder
         response = {
           visualizations: vqb.with_order("visualizations.#{order}", :desc).build_paged(page, per_page).map { |v|
-              VisualizationPresenter.new(v, current_viewer, self, { related: false }).with_presenter_cache(presenter_cache).to_poro
+              VisualizationPresenter.new(v, current_viewer, self, presenter_options)
+                                    .with_presenter_cache(presenter_cache).to_poro
           },
           total_entries: vqb.build.count
         }
-        if current_user
+        if current_user && (params[:load_totals].to_s != 'false')
           # Prefetching at counts removes duplicates
           response.merge!({
             total_user_entries: VisualizationQueryBuilder.new.with_types(total_types).with_user_id(current_user.id).build.count,

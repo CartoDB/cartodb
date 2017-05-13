@@ -6,17 +6,16 @@ module Carto
       include AccountTypeHelper
       BUILDER_ACTIVATION_DATE = Date.new(2016, 11, 11).freeze
 
-      # options:
-      # - fetch_groups
-      # - current_viewer
-      def initialize(user, options = {})
+      def initialize(user, current_viewer: nil, current_user: nil, fetch_groups: false)
         @user = user
-        @options = options
+        @current_viewer = current_viewer
+        @current_user = current_user
+        @fetch_groups = fetch_groups
       end
 
       def to_poro
         return {} if @user.nil?
-        return to_public_poro unless !@options[:current_viewer].nil? && @user.viewable_by?(@options[:current_viewer])
+        return to_public_poro unless current_viewer && @user.viewable_by?(current_viewer)
 
         poro = {
           id:               @user.id,
@@ -32,7 +31,7 @@ module Carto
           all_visualization_count: @user.all_visualization_count
         }
 
-        if @options[:fetch_groups] == true
+        if fetch_groups
           poro.merge!(groups: @user.groups ? @user.groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro } : [])
         end
 
@@ -58,11 +57,11 @@ module Carto
           viewer:           @user.viewer?
         }
 
-        if @options[:fetch_groups] == true
+        if fetch_groups
           poro.merge!(groups: @user.groups ? @user.groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro } : [])
         end
 
-        if @options[:current_user] && @options[:current_user].organization_owner? && @user.belongs_to_organization?(@options[:current_user].organization)
+        if current_user && current_user.organization_owner? && @user.belongs_to_organization?(current_user.organization)
           poro[:email] = @user.email
           poro[:table_count] = @user.table_count
           poro[:all_visualization_count] = @user.all_visualization_count
@@ -220,6 +219,8 @@ module Carto
       end
 
       private
+
+      attr_reader :current_viewer, :current_user, :fetch_groups
 
       def failed_import_count
         Carto::DataImport.where(user_id: @user.id, state: 'failure').count

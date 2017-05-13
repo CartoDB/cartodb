@@ -910,6 +910,10 @@
           "data-observatory-measure": {
             "title": "Enrich from Data Observatory",
             "desc": "Add a new column with contextual demographic and economic measures."
+          },
+          "deprecated-sql-function": {
+            "title": "SQL Function",
+            "desc": "Run your custom SQL function"
           }
         }
       },
@@ -1603,6 +1607,16 @@
         "define-two-layers": "Define two layers",
         "denominator": "Denominator",
         "denominator-help": "A column to normalize the target column",
+        "deprecated-sql-function": {
+          "choose-function": "Choose the function to run on this node",
+          "choose-function-small": "Choose function",
+          "define-params": "define your parameters below",
+          "function": "function",
+          "input": "input",
+          "params": "Your Function's Parameters",
+          "target": "target node",
+          "title": "SQL Function"
+        },
         "desc": "DESC",
         "direction": "Direction",
         "disabled-by-config": "This analysis type is disabled",
@@ -1649,9 +1663,9 @@
           "state-help": "Specify a state or select a column with state names",
           "street-address-column": "Street Address",
           "street-address-column-help": "Select a column with street addresses",
-          "street-address-help": "Use columns or free text to compose your address schema. <a href='https://carto.com/learn/guides/analysis/georeference' target='_blank'>More info.</a>",
+          "street-address-help": "Use columns or free text to compose your address schema. <a href='https://carto.com/learn/guides/analysis/geocode-street-addresses-into-point-geometries' target='_blank'>More info.</a>",
           "street-address": "Street Addresses",
-          "advance": "Advance mode",
+          "advance": "Advanced mode",
           "normal": "Normal mode"
         },
         "group-by": "Group by",
@@ -1686,7 +1700,8 @@
         "min": "Min",
         "mode": "Mode",
         "find-nearest": {
-          "categorized": "categorize",
+          "categorized": "Per group",
+          "categorized-help": "Calculate results per each category of the chosen column",
           "criteria": "Select the target point layer",
           "define-params": "Define your parameters",
           "define-params-desc": "Define and categorize the number of results",
@@ -1711,7 +1726,7 @@
         "parameters": "Parameters",
         "parameters-description": "Tune your analysis",
         "permutations": "Permutations",
-        "placeholder-text": "You have not added any analysis yet. Add new analysis to discover new things.",
+        "placeholder-text": "You have not added any analysis yet. Add an analysis to discover new things.",
         "points_source": "Point source",
         "polygons_source": "Polygon source",
         "postal-code": "Postal Code",
@@ -1895,8 +1910,8 @@
       },
       "messages": {
         "sql-readonly": {
-          "title": "SQL ONLY READ",
-          "body": "You just applied an analysis to this layer. The SQL is now read only.",
+          "title": "SQL READ-ONLY",
+          "body": "You just applied an analysis to this layer. The SQL is now read- only.",
           "accept": "CLOSE"
         },
         "empty-data": {
@@ -1925,7 +1940,7 @@
         },
         "layer-hidden": {
           "title": "LAYER HIDDEN",
-          "body": "This layer is hidden, changes won't be shown until you make it visible.",
+          "body": "This layer is hidden, changes will not be shown until you make it visible.",
           "show": "SHOW"
         }
       }
@@ -2052,10 +2067,10 @@
         "fetched": "Schema fetched, select a style",
         "fetching": "Schema is being fetched, when it is done, different styles will be avaiable",
         "unavailable": "There was a problem getting schema, try to reload",
-        "none": "Your styles were reset, choose new styles for your layer, or get back to your previous style.",
+        "none": "Your styles were reset, choose new styles for your layer, or go back to your previous style.",
         "cartocss-applied": {
           "title": "CARTOCSS APPLIED",
-          "body": "You just applied styles with CartoCSS editor. You can continue or clear all styles.",
+          "body": "You just applied styles with CartoCSS. You can continue or clear all styles.",
           "continue": "CONTINUE",
           "clear": "CLEAR"
         },
@@ -2066,7 +2081,7 @@
         },
         "torque-exists": {
           "title": "TORQUE LAYER",
-          "body": "There is already a torque layer in the layers collection. If you continue, this layer will get the default style.",
+          "body": "There is already a torque layer in the layers collection. If you continue, this layer will use the default style.",
           "continue": "CONTINUE",
           "cancel": "CANCEL"
         }
@@ -2164,7 +2179,7 @@
       }
     },
     "widgets": {
-      "no-geometry-data": "Your dataset lacks geometry data and it's not possible to add a widget.",
+      "no-geometry-data": "Your dataset lacks geometry data, it is not possible to add a widget.",
       "options": {
         "remove": "Delete...",
         "rename": "Rename",
@@ -2189,7 +2204,7 @@
         "time-series": "Time series"
       },
       "widgets-form": {
-        "placeholder-text": "You have not added any widgets yet. Add new widgets to discover new things.",
+        "placeholder-text": "You have not added any widgets yet. Add widgets to discover new things.",
         "type": {
           "title-label": "Type",
           "description": "Choose the widget type",

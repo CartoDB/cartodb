@@ -368,6 +368,60 @@ describe Carto::Api::VisualizationsController do
       body['total_user_entries'].should == 4
     end
 
+    describe 'performance with many tables' do
+      # The bigger the number the better the improvement, but test gets too slow
+      VIZS_N = 20
+
+      before(:all) do
+        @visualizations = (1..VIZS_N).map { FactoryGirl.create(:carto_user_table_with_canonical, user_id: @user_1.id) }
+      end
+
+      LIST_NAMES_PARAMS = {
+        type: CartoDB::Visualization::Member::TYPE_CANONICAL,
+        order: :updated_at,
+        page: 1,
+        per_page: 3000,
+        exclude_shared: false,
+        exclude_raster: true
+      }.freeze
+
+      NO_FETCHING_PARAMS = {
+        show_likes: false,
+        show_liked: false,
+        show_stats: false,
+        show_table: false,
+        show_permission: false,
+        show_synchronization: false,
+        show_uses_builder_features: false,
+        load_totals: false
+      }.freeze
+
+      it 'should improve with reduced fetching (see #12058)' do
+        no_fetching_params = LIST_NAMES_PARAMS.merge(NO_FETCHING_PARAMS)
+
+        beginning = Time.now
+        get base_url, LIST_NAMES_PARAMS.dup, @headers
+        body1 = last_response.body
+        full_time = Time.now
+
+        get base_url, no_fetching_params.dup, @headers
+        body2 = last_response.body
+        no_fetch_time = Time.now
+
+        # This actually improves loading by 1 order of magnitude
+        ((full_time - beginning) / (no_fetch_time - full_time)).should be >= 5
+
+        body1 = JSON.parse(body1)
+        body1['visualizations'].count.should eq VIZS_N
+        body1['total_entries'].should eq VIZS_N
+        body1['total_shared'].should_not be_nil
+        body2 = JSON.parse(body2)
+        body2['visualizations'].count.should eq VIZS_N
+        body2['total_entries'].should eq VIZS_N
+        body2['total_shared'].should be_nil
+      end
+    end
+
   end
 
   describe 'main behaviour' do
@@ -2088,8 +2142,8 @@ describe Carto::Api::VisualizationsController do
     '/api/v1/viz'
   end
 
-  def response_body(params=nil)
-    get base_url, params, @headers
+  def response_body(params = nil)
+    get base_url, params.nil? ? nil : params.dup, @headers
     last_response.status.should == 200
     body = JSON.parse(last_response.body)
     body['visualizations'] = body['visualizations'].map { |v| normalize_hash(v) }.map { |v| remove_data_only_in_new_controllers(v) }

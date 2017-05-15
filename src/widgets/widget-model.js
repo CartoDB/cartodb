@@ -24,7 +24,8 @@ module.exports = cdb.core.Model.extend({
     this.dataviewModel = models.dataviewModel;
 
     // Autostyle could be disabled initially if the styles have an aggregation
-    this._autoStyleEnabledWhenCreated = opts.autoStyleEnabled;
+    // If no option, autoStyleEnabled by default
+    this._autoStyleEnabledWhenCreated = opts.autoStyleEnabled === undefined ? true : opts.autoStyleEnabled;
 
     this.activeAutoStyler();
     this.bind('change:style', this.activeAutoStyler, this);

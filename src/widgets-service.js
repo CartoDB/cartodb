@@ -16,7 +16,8 @@ var makeWidgetStyleOptions = function (attrs) {
       return memo;
     }
   }, {});
-}
+};
+
 /**
  * Public API to interact with dashboard widgets.
  */

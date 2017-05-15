@@ -23,7 +23,7 @@
     "browserify-shim": "3.8.12",
     "camshaft-reference": "0.32.0",
     "carto": "cartodb/carto#master",
-    "cartodb-deep-insights.js": "cartodb/deep-insights.js#master",
+    "cartodb-deep-insights.js": "cartodb/deep-insights.js#8468-autostyle-aggregation",
     "cartodb-pecan": "0.2.x",
     "cartodb.js": "CartoDB/cartodb.js#v4",
     "cartocolor": "4.0.0",

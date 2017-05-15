@@ -115,6 +115,7 @@ Development
 * Added explanation tooltip to the categorize label on the Find Nearest analysis (#12100)
 
 ### Bug fixes
+* Fixed a problem with autostyle when styles has aggregation (#8648)
 * Fixed styles in numeric fields when editing a feature (#12026)
 * Fixed disabling button while export image is running (#12029)
 * Solved problem with file input in connect dataset dialog (cartodb/support#690)

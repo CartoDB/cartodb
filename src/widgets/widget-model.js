@@ -76,7 +76,7 @@ module.exports = cdb.core.Model.extend({
     if (this.get('type') === 'category' || this.get('type') === 'histogram') {
       if (!styles || !styles.auto_style) {
         // Only when styles are undefined we check the autostyle option
-        return this._autoStyleEnabledWhenCreated
+        return this._autoStyleEnabledWhenCreated;
       }
 
       return styles && styles.auto_style && styles.auto_style.allowed;

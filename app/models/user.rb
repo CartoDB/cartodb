@@ -655,12 +655,8 @@ class User < Sequel::Model
   end
 
   def tables_including_shared
-    CartoDB::Visualization::Collection.new.fetch(
-        user_id: self.id,
-        type: Carto::Visualization::TYPE_CANONICAL
-    ).map { |item|
-      item.table
-    }
+    Carto::VisualizationQueryBuilder.new
+      .with_owned_by_or_shared_with_user_id(id).with_type(Carto::Visualization::TYPE_CANONICAL).build.map(&:table)
   end
 
   def load_avatar

@@ -408,8 +408,7 @@ describe Carto::Api::VisualizationsController do
         body2 = last_response.body
         no_fetch_time = Time.now
 
-        # This actually improves loading by 1 order of magnitude
-        ((full_time - beginning) / (no_fetch_time - full_time)).should be >= 5
+        ((full_time - beginning) / (no_fetch_time - full_time)).should be >= 3
 
         body1 = JSON.parse(body1)
         body1['visualizations'].count.should eq VIZS_N

@@ -111,6 +111,7 @@ Development
 * Multiple file upload through "upload file" tab (#11952)
 * Change setView by flyto.
 * Update tangram to fix layer geometry conditionals.
+* Allow to have multiple administrators per organization (#12052, #12083)
 * Allow to have multiple administrators per organization (#12052)
 * Added explanation tooltip to the categorize label on the Find Nearest analysis (#12100)
 

@@ -6,11 +6,10 @@ module Carto
       include AccountTypeHelper
       BUILDER_ACTIVATION_DATE = Date.new(2016, 11, 11).freeze
 
-      def initialize(user, current_viewer: nil, current_user: nil, fetch_groups: false)
+      def initialize(user, fetch_groups: false, current_viewer: nil)
         @user = user
-        @current_viewer = current_viewer
-        @current_user = current_user
         @fetch_groups = fetch_groups
+        @current_viewer = current_viewer
       end
 
       def to_poro
@@ -27,12 +26,13 @@ module Carto
           db_size_in_bytes: @user.db_size_in_bytes,
           table_count:      @user.table_count,
           viewer:           @user.viewer?,
+          org_admin:        @user.organization_admin?,
           public_visualization_count: @user.public_visualization_count,
           all_visualization_count: @user.all_visualization_count
         }
 
         if fetch_groups
-          poro.merge!(groups: @user.groups ? @user.groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro } : [])
+          poro[:groups] = @user.groups ? @user.groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro } : []
         end
 
         poro
@@ -58,13 +58,7 @@ module Carto
         }
 
         if fetch_groups
-          poro.merge!(groups: @user.groups ? @user.groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro } : [])
-        end
-
-        if current_user && current_user.organization_owner? && @user.belongs_to_organization?(current_user.organization)
-          poro[:email] = @user.email
-          poro[:table_count] = @user.table_count
-          poro[:all_visualization_count] = @user.all_visualization_count
+          poro[:groups] = @user.groups ? @user.groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro } : []
         end
 
         poro
@@ -88,6 +82,7 @@ module Carto
           table_quota: @user.table_quota,
           table_count: @user.table_count,
           viewer: @user.viewer?,
+          org_admin: @user.organization_admin?,
           public_visualization_count: @user.public_visualization_count,
           owned_visualization_count: @user.owned_visualization_count,
           all_visualization_count: @user.all_visualization_count,

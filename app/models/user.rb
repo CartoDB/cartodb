@@ -4,7 +4,6 @@ require_relative './user/user_decorator'
 require_relative './user/oauths'
 require_relative './synchronization/synchronization_oauth'
 require_relative '../helpers/data_services_metrics_helper'
-require_relative './visualization/collection'
 require_relative './user/user_organization'
 require_relative './synchronization/collection.rb'
 require_relative '../services/visualization/common_data_service'
@@ -382,12 +381,14 @@ class User < Sequel::Model
     end
 
     begin
-      # Remove user tables
-      tables.all.each(&:destroy)
-
       # Remove user data imports, maps, layers and assets
       delete_external_data_imports
       delete_external_sources
+      Carto::VisualizationQueryBuilder.new.with_user_id(id).build.all.each(&:destroy)
+
+      # Remove user tables
+      tables.all.each(&:destroy)
+
       # There's a FK from geocodings to data_import.id so must be deleted in proper order
       if organization.nil? || organization.owner.nil? || id == organization.owner.id
         geocodings.each(&:destroy)
@@ -402,7 +403,6 @@ class User < Sequel::Model
       end
       assets.each(&:destroy)
       CartoDB::Synchronization::Collection.new.fetch(user_id: id).destroy
-      CartoDB::Visualization::Collection.new.fetch(user_id: id, exclude_shared: true).destroy
 
       destroy_shared_with
 
@@ -437,8 +437,7 @@ class User < Sequel::Model
   end
 
   def delete_external_data_imports
-    external_data_imports = ExternalDataImport.by_user_id(self.id)
-    external_data_imports.each { |edi| edi.destroy }
+    Carto::ExternalDataImport.by_user_id(id).each(&:destroy)
   rescue => e
     CartoDB.notify_error('Error deleting external data imports at user deletion', user: self, error: e.inspect)
   end

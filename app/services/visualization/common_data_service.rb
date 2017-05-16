@@ -125,16 +125,11 @@ module CartoDB
         #should be move to AR and paginate removing the extra query
         deleted = 0
         vqb = Carto::VisualizationQueryBuilder.new
-                                              .with_type(Carto::Visualization::TYPE_REMOTE)
-                                              .with_user_id(user.id)
-                                              .build
-
-        vis_ids = vqb.pluck(:id)
-        vis_ids.each do |vis_id|
-          vis = CartoDB::Visualization::Member.new(id: vis_id).fetch
-          delete_remote_visualization(vis)
+        vqb.with_type(Carto::Visualization::TYPE_REMOTE).with_user_id(user.id).build.each do |v|
+          delete_remote_visualization(v)
           deleted += 1
         end
+
         deleted
       end
 
@@ -146,8 +141,8 @@ module CartoDB
 
       def delete_remote_visualization(visualization)
         begin
-          ExternalSource.where(visualization_id: visualization.id).delete
-          visualization.delete
+          visualization.external_source.destroy
+          visualization.destroy
           true
         rescue Sequel::DatabaseError => e
           match = e.message =~ /violates foreign key constraint "external_data_imports_external_source_id_fkey"/

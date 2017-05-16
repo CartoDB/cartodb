@@ -4,6 +4,7 @@ Development
 * An attacker could execute commands in the server running the queues by importing a file with a carefully crafted filename. Fixed in #11782
 
 ### Features
+* Adding tracking classes for any Backbone.Form editor (#12095)
 * Using Node v6.9.2 and npm v3.10.9 (#11935).
 * Updates Dataservices API client default version to `0.17.0` (#12093)
 * Exposed some cartodb.js methods through map definition model (#11846)

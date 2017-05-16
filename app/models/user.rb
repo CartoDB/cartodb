@@ -630,7 +630,7 @@ class User < Sequel::Model
   end
 
   # List all public visualization tags of the user
-  def tags(exclude_shared=false, type=Carto::Visualization::TYPE_DERIVED)
+  def tags(exclude_shared = false, type = Carto::Visualization::TYPE_DERIVED)
     require_relative './visualization/tags'
     options = {}
     options[:exclude_shared] = true if exclude_shared
@@ -644,8 +644,8 @@ class User < Sequel::Model
   def map_tags
     require_relative './visualization/tags'
     CartoDB::Visualization::Tags.new(self).names({
-       type: Carto::Visualization::TYPE_CANONICAL,
-       privacy: Carto::Visualization::PRIVACY_PUBLIC
+      type: Carto::Visualization::TYPE_CANONICAL,
+      privacy: Carto::Visualization::PRIVACY_PUBLIC
     })
   end #map_tags
 
@@ -655,7 +655,9 @@ class User < Sequel::Model
 
   def tables_including_shared
     Carto::VisualizationQueryBuilder.new
-      .with_owned_by_or_shared_with_user_id(id).with_type(Carto::Visualization::TYPE_CANONICAL).build.map(&:table)
+                                    .with_owned_by_or_shared_with_user_id(id)
+                                    .with_type(Carto::Visualization::TYPE_CANONICAL)
+                                    .build.map(&:table)
   end
 
   def load_avatar
@@ -1194,10 +1196,7 @@ class User < Sequel::Model
   end
 
   def public_table_count
-    table_count({
-      privacy: Carto::Visualization::PRIVACY_PUBLIC,
-      exclude_raster: true
-    })
+    table_count({ privacy: Carto::Visualization::PRIVACY_PUBLIC, exclude_raster: true })
   end
 
   # Only returns owned tables (not shared ones)

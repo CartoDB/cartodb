@@ -201,7 +201,7 @@ module Carto
     end
 
     def map
-      maps.first
+      maps[0]
     end
 
     def visualization

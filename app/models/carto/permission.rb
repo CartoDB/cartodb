@@ -324,7 +324,7 @@ class Carto::Permission < ActiveRecord::Base
       end
     end
 
-    invalidate_for_permissions_change(e)
+    e.invalidate_after_commit
   end
 
   def destroy_shared_entities
@@ -430,11 +430,6 @@ class Carto::Permission < ActiveRecord::Base
     else
       raise CartoDB::PermissionError.new('Unsupported entity type trying to grant permission')
     end
-  end
-
-  def invalidate_for_permissions_change(visualization)
-    visualization.invalidate_cache
-    visualization.save_named_map
   end
 
   def set_subject_permission(subject_id, access, type)

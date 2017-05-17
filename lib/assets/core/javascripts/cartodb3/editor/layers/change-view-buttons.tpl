@@ -32,10 +32,10 @@
   </li>
 </ul>
 
-<% if (!isReadOnly) { %>
   <div class="EditOverlay js-editOverlay is-hidden"><p class="EditOverlay-inner CDB-Text CDB-Size-medium u-whiteTextColor js-editOverlay-text"></p></div>
 
   <ul class="u-flex u-alignRight Editor-contextSwitcher Editor-contextSwitcher--geom js-mapTableView js-newGeometryView
+  <% if (isReadOnly || !isVisible) { %>is-disabled<% } %>
   <% if (context === 'table') { %>in-table<% } %>
   <% if (isThereOtherWidgets && context === 'map') { %>is-moved<% } %>
   <% if (isThereTimeSeries && context === 'map') { %>
@@ -46,7 +46,7 @@
   <% } %>
   ">
     <% if (queryGeometryModel === 'point' || !queryGeometryModel) { %>
-      <li class="Editor-contextSwitcherItem js-newGeometryItem <% if (!isVisible) { %>is-disabled<% } %>">
+      <li class="Editor-contextSwitcherItem js-newGeometryItem">
         <div class="Editor-contextSwitcherButton js-newGeometry" data-feature-type='point'>
           <svg width="12" height="12" viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
             <defs>
@@ -80,7 +80,7 @@
       </li>
     <% } %>
     <% if (queryGeometryModel === 'line' || !queryGeometryModel) { %>
-      <li class="Editor-contextSwitcherItem js-newGeometryItem <% if (!isVisible) { %>is-disabled<% } %>">
+      <li class="Editor-contextSwitcherItem js-newGeometryItem">
         <div class="Editor-contextSwitcherButton js-newGeometry" data-feature-type='line'>
           <svg width="14" height="14" viewBox="0 0 14 14" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
             <defs>
@@ -108,7 +108,7 @@
       </li>
     <% } %>
     <% if (queryGeometryModel === 'polygon' || !queryGeometryModel) { %>
-      <li class="Editor-contextSwitcherItem js-newGeometryItem <% if (!isVisible) { %>is-disabled<% } %>">
+      <li class="Editor-contextSwitcherItem js-newGeometryItem">
         <div class="Editor-contextSwitcherButton js-newGeometry" data-feature-type='polygon'>
           <svg width="14" height="14" viewBox="0 0 14 14" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
             <defs>
@@ -143,4 +143,3 @@
       </li>
     <% } %>
   </ul>
-<% } %>

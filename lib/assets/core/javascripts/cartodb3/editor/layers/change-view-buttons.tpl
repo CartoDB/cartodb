@@ -43,11 +43,11 @@
     has-timeSeries--animated
   <% } %>
 <% } %>
-">
+"
+<% if (isReadOnly || !isVisible) { %>data-tooltip="<%- _t('editor.edit-feature.geometry-disabled') %>"<% } %>
+>
   <% if (queryGeometryModel === 'point' || !queryGeometryModel) { %>
-    <li class="Editor-contextSwitcherItem js-newGeometryItem <% if (isReadOnly || !isVisible) { %>is-disabled<% } %>"
-    <% if (isReadOnly || !isVisible) { %>data-tooltip="<%- _t('editor.edit-feature.geometry-disabled') %>"<% } %>
-    >
+    <li class="Editor-contextSwitcherItem js-newGeometryItem <% if (isReadOnly || !isVisible) { %>is-disabled<% } %>">
       <div class="Editor-contextSwitcherButton js-newGeometry" data-feature-type='point'>
         <svg width="12" height="12" viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
           <defs>
@@ -81,9 +81,7 @@
     </li>
   <% } %>
   <% if (queryGeometryModel === 'line' || !queryGeometryModel) { %>
-    <li class="Editor-contextSwitcherItem js-newGeometryItem <% if (isReadOnly || !isVisible) { %>is-disabled<% } %>"
-    <% if (isReadOnly || !isVisible) { %>data-tooltip="<%- _t('editor.edit-feature.geometry-disabled') %>"<% } %>
-    >
+    <li class="Editor-contextSwitcherItem js-newGeometryItem <% if (isReadOnly || !isVisible) { %>is-disabled<% } %>">
       <div class="Editor-contextSwitcherButton js-newGeometry" data-feature-type='line'>
         <svg width="14" height="14" viewBox="0 0 14 14" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
           <defs>
@@ -111,9 +109,7 @@
     </li>
   <% } %>
   <% if (queryGeometryModel === 'polygon' || !queryGeometryModel) { %>
-    <li class="Editor-contextSwitcherItem js-newGeometryItem <% if (isReadOnly || !isVisible) { %>is-disabled<% } %>"
-    <% if (isReadOnly || !isVisible) { %>data-tooltip="<%- _t('editor.edit-feature.geometry-disabled') %>"<% } %>
-    >
+    <li class="Editor-contextSwitcherItem js-newGeometryItem <% if (isReadOnly || !isVisible) { %>is-disabled<% } %>">
       <div class="Editor-contextSwitcherButton js-newGeometry" data-feature-type='polygon'>
         <svg width="14" height="14" viewBox="0 0 14 14" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
           <defs>

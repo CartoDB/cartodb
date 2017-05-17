@@ -2,11 +2,13 @@ require 'active_record'
 require_relative '../../helpers/data_services_metrics_helper'
 require_dependency 'carto/helpers/auth_token_generator'
 require_dependency 'carto/carto_json_serializer'
+require_dependency 'common/organization_common'
 
 module Carto
   class Organization < ActiveRecord::Base
     include DataServicesMetricsHelper
     include AuthTokenGenerator
+    include Carto::OrganizationSoftLimits
 
     serialize :auth_saml_configuration, CartoJsonSymbolizerSerializer
     before_validation :ensure_auth_saml_configuration
@@ -145,6 +147,10 @@ module Carto
 
     def viewer_users
       users.select(&:viewer)
+    end
+
+    def admin?(user)
+      user.belongs_to_organization?(self) && user.organization_admin?
     end
 
     private

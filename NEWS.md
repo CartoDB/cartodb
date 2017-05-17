@@ -4,6 +4,7 @@ Development
 * An attacker could execute commands in the server running the queues by importing a file with a carefully crafted filename. Fixed in #11782
 
 ### Features
+* Adding tracking classes for any Backbone.Form editor (#12095)
 * Using Node v6.9.2 and npm v3.10.9 (#11935).
 * Updates Dataservices API client default version to `0.17.0` (#12093)
 * Exposed some cartodb.js methods through map definition model (#11846)
@@ -111,11 +112,16 @@ Development
 * Multiple file upload through "upload file" tab (#11952)
 * Change setView by flyto.
 * Update tangram to fix layer geometry conditionals.
+* Allow to have multiple administrators per organization (#12052, #12083)
 * Allow to have multiple administrators per organization (#12052)
 * Added explanation tooltip to the categorize label on the Find Nearest analysis (#12100)
 
 ### Bug fixes
 * Update Data Observatory Analysis UI (#9991)
+* Fixed styles in numeric fields when editing a feature (#12026)
+* Fixed disabling button while export image is running (#12029)
+* Solved problem with file input in connect dataset dialog (cartodb/support#690)
+* Fixed problem with feature flag in analyses (cartodb/support#691)
 * Removed link to markdown support in organization notifications
 * Fix image export in Safari and IE (#12066)
 * Autostyling for google basemaps (#11838)
@@ -167,6 +173,7 @@ Development
   * Layer model: #10934
   * UserTable: #11589, #11700, #11737
   * Map model and controller: #12039, #12011
+  * Extract visualization invalidation to a service: #12096
   * Permission: #12077
 * Refactor Layer model (#10934) and UserTable (#11589, #11700, #11737).
 * Correctly render map previews for maps with google basemaps (#11608)

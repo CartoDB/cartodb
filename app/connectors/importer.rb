@@ -3,6 +3,7 @@ require 'uuidtools'
 
 require_relative '../models/visualization/support_tables'
 require_dependency 'carto/db/user_schema'
+require_dependency 'visualization/derived_creator'
 
 module CartoDB
   module Connector

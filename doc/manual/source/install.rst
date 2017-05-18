@@ -244,7 +244,7 @@ If npm version is wrong you should update it:
 
     npm install npm@3.10.9 -g
 
-We will also install some development libraries that will be neccesary to build some Node modules:
+We will also install some development libraries that will be necessary to build some Node modules:
 
   .. code-block:: bash
 

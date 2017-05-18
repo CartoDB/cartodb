@@ -45,7 +45,7 @@ class SessionsController < ApplicationController
   end
 
   def create
-    strategies, username = ldap_strategy_username || saml_strategy_username ||
+    strategies, username = saml_strategy_username || ldap_strategy_username ||
                            google_strategy_username || credentials_strategy_username
     return render(action: 'new') unless strategies
 

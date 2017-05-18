@@ -17,8 +17,6 @@ module Carto
     end
 
     def get_user_email(saml_response_param)
-      require 'delorean'
-      Delorean.time_travel_to "1 day ago"
       response = get_saml_response(saml_response_param)
       response.is_valid? && email_from_saml_response(response)
     rescue OneLogin::RubySaml::ValidationError

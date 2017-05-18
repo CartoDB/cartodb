@@ -118,6 +118,8 @@ Development
 * Disable geometry edition button instead of hide in read-only layers (#11543)
 
 ### Bug fixes
+* Fixed a problem with shared dataset's title (#12144)
+* Fixed reset autostyle after clicking on more than 1 auto-style buttons without unchecking them (#11795)
 * Fixed styles in numeric fields when editing a feature (#12026)
 * Fixed disabling button while export image is running (#12029)
 * Solved problem with file input in connect dataset dialog (cartodb/support#690)

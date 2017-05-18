@@ -32,8 +32,8 @@ module Carto
       def load_organization
         @organization = Carto::Organization.where(id: params[:organization_id]).first
         render_404 && return unless @organization
-        unless @organization.owner.id == current_user.id
-          render_jsonp({ errors: { organization: 'not owner' } }, 401) && return
+        unless @organization.admin?(current_user)
+          render_jsonp({ errors: { organization: 'not admin' } }, 401) && return
         end
       end
 

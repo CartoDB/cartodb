@@ -667,10 +667,8 @@ describe Table do
 
       id = table.table_visualization.id
 
-      # Old models call this 6 times, new ones only two for the moment
-      # TODO: this will probably be fixed when refactor is needed
       CartoDB::Varnish.any_instance.expects(:purge)
-                      .times(2..6)
+                      .once
                       .with(".*#{id}:vizjson")
                       .returns(true)
 

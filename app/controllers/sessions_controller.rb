@@ -223,7 +223,7 @@ class SessionsController < ApplicationController
       if email
         [:saml, username_from_user_by_email(email)]
       else
-         # This stops trying other strategies. Important because CSRF is not checked for SAML.
+        # This stops trying other strategies. Important because CSRF is not checked for SAML.
         [nil, nil]
       end
     end

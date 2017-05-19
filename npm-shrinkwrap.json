@@ -851,9 +851,9 @@
           "resolved": "https://registry.npmjs.org/babel-runtime/-/babel-runtime-6.23.0.tgz"
         },
         "debug": {
-          "version": "2.6.7",
+          "version": "2.6.8",
           "from": "debug@>=2.2.0 <3.0.0",
-          "resolved": "https://registry.npmjs.org/debug/-/debug-2.6.7.tgz"
+          "resolved": "https://registry.npmjs.org/debug/-/debug-2.6.8.tgz"
         },
         "lodash": {
           "version": "4.17.4",
@@ -2777,7 +2777,7 @@
     "tangram-cartocss": {
       "version": "0.5.3",
       "from": "cartodb/tangram-carto#master",
-      "resolved": "git://github.com/cartodb/tangram-carto.git#c244332f529565e01fd6b1531d70f60633fd1bb1",
+      "resolved": "git://github.com/cartodb/tangram-carto.git#04b45c7e47adf3ebdeb63a50e11652e67a22a453",
       "dependencies": {
         "babel-runtime": {
           "version": "6.23.0",
@@ -2799,7 +2799,7 @@
     "tangram.cartodb": {
       "version": "0.4.1",
       "from": "cartodb/tangram.cartodb#master",
-      "resolved": "git://github.com/cartodb/tangram.cartodb.git#cdb7801827926519d391f10bb26c682bec784606"
+      "resolved": "git://github.com/cartodb/tangram.cartodb.git#dbd91c9fa8cafc8eefd1563af12250aa6a0574f6"
     },
     "temporary": {
       "version": "0.0.8",

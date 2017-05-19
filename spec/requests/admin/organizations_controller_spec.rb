@@ -66,7 +66,7 @@ describe Admin::OrganizationsController do
       helper = TestUserFactory.new
       @delete_org_owner = helper.create_owner(@delete_org)
 
-      @delete_org_user_1 = @helper.create_test_user(unique_name('user'), @delete_org)
+      @delete_org_user1 = @helper.create_test_user(unique_name('user'), @delete_org)
     end
 
     after(:all) do
@@ -79,8 +79,8 @@ describe Admin::OrganizationsController do
     end
 
     it 'cannot be accessed by non owner users' do
-      login_as(@delete_org_user_1, scope: @delete_org_user_1.username)
-      delete organization_delete_url(user_domain: @delete_org_user_1.username)
+      login_as(@delete_org_user1, scope: @delete_org_user1.username)
+      delete organization_delete_url(user_domain: @delete_org_user1.username)
       response.status.should eq 404
     end
 

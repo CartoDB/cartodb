@@ -1464,9 +1464,7 @@ describe User do
           table = create_random_table(@not_to_be_deleted)
           share_table_with_user(table, @org_user_owner)
 
-          expect do
-            @not_to_be_deleted.destroy
-          end.to raise_error(/Cannot delete user, has shared entities/)
+          expect { @not_to_be_deleted.destroy }.to raise_error(/Cannot delete user, has shared entities/)
 
           ::User[@not_to_be_deleted.id].should be
         end

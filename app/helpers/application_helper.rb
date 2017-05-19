@@ -191,4 +191,8 @@ module ApplicationHelper
   def model_errors(model)
     model.errors.full_messages.map(&:capitalize).join(', ') if model.errors.present?
   end
+
+  def saas?
+    Cartodb.config[:cartodb_com_hosted] == false
+  end
 end

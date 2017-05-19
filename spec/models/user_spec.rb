@@ -1460,14 +1460,15 @@ describe User do
         include TableSharing
 
         it 'blocks deletion even with shared entities' do
-          table = create_random_table(@org_user_1)
-          share_table_with_user(table, @org_user_1)
+          @not_to_be_deleted = TestUserFactory.new.create_test_user(unique_name('user'), @organization)
+          table = create_random_table(@not_to_be_deleted)
+          share_table_with_user(table, @org_user_owner)
 
           expect do
-            @org_user_1.destroy
+            @not_to_be_deleted.destroy
           end.to raise_error(/Cannot delete user, has shared entities/)
 
-          ::User[@org_user_1.id].should be
+          ::User[@not_to_be_deleted.id].should be
         end
       end
     end

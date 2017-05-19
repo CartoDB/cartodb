@@ -240,6 +240,7 @@ Development
 * Rearrange Error tracker script order (#11872)
 * Fix subdomain error not loading tiles.
 * Redirect to last visited page after logging in (#11946)
+* Better error handling in LDAP (#12165)
 * Sanitized HTML from map and layer names.
 * Merged fix subdomain error not loading tiles (CartoDB.js#1607)
 * Create users from org panel with the default quota (#11837)

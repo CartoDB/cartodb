@@ -1,10 +1,9 @@
 require 'active_record'
 require_relative '../visualization/stats'
-require_relative '../../helpers/embed_redis_cache'
-require_dependency 'cartodb/redis_vizjson_cache'
 require_dependency 'carto/named_maps/api'
 require_dependency 'carto/helpers/auth_token_generator'
 require_dependency 'carto/uuidhelper'
+require_dependency 'carto/visualization_invalidation_service'
 
 module Carto::VisualizationDependencies
   def fully_dependent_on?(user_table)
@@ -92,19 +91,19 @@ class Carto::Visualization < ActiveRecord::Base
   before_validation :set_default_version, :set_register_table_only
   before_create :set_random_id, :set_default_permission
 
-  before_save :remove_password_if_unprotected, :invalidate
-  after_save :save_named_map_or_rollback_privacy, :propagate_attribution_change
+  before_save :remove_password_if_unprotected
+  after_save :propagate_attribution_change
   after_save :propagate_privacy_and_name_to, if: :table
 
   before_destroy :backup_visualization
-  after_destroy :invalidate_cache
-  after_destroy :destroy_named_map
 
   # INFO: workaround for array saves not working. There is a bug in `activerecord-postgresql-array` which
   # makes inserting including array fields to save, but updates work. Wo se insert without tags and add them
   # with an update after creation. This is fixed in Rails 4.
   before_create :delay_saving_tags
   after_create :save_tags
+
+  after_commit :perform_invalidations
 
   attr_accessor :register_table_only
 
@@ -397,24 +396,6 @@ class Carto::Visualization < ActiveRecord::Base
     destroy if persisted?
   end
 
-  def get_named_map
-    return false if remote?
-
-    named_maps_api.show
-  end
-
-  def save_named_map
-    return true if remote? || mapcapped? || data_layers.empty?
-
-    get_named_map ? named_maps_api.update : named_maps_api.create
-  end
-
-  def invalidate_cache
-    redis_vizjson_cache.invalidate(id)
-    embed_redis_cache.invalidate(id)
-    CartoDB::Varnish.new.purge(varnish_vizjson_key)
-  end
-
   def allowed_auth_tokens
     entities = [user] + permission.entities_with_read_permission
     entities.map(&:get_auth_token)
@@ -468,10 +449,6 @@ class Carto::Visualization < ActiveRecord::Base
         CartoDB::Logger.warning(message: 'Couldn\'t add source analysis for layer', user: user, layer: layer)
       end
     end
-
-    # This is needed because Carto::Layer does not yet triggers invalidations on save
-    # It can be safely removed once it does
-    map.notify_map_change
   end
 
   def ids_json
@@ -561,6 +538,16 @@ class Carto::Visualization < ActiveRecord::Base
     end
   end
 
+  def invalidate_after_commit
+    # This marks this visualization as affected by this transaction, so AR will call its `after_commit` hook, which
+    # performs the actual invalidations. This takes this operation outside of the DB transaction to avoid long locks
+    raise 'invalidate_after_commit should be called within a transaction' if connection.open_transactions.zero?
+    add_to_transaction
+    true
+  end
+  # TODO: Privacy manager compatibility, can be removed after removing ::UserTable
+  alias :invalidate_cache :invalidate_after_commit
+
   def has_permission?(user, permission_type)
     return false if user.viewer && permission_type == PERMISSION_READWRITE
     return is_owner?(user) if permission_id.nil?
@@ -574,22 +561,8 @@ class Carto::Visualization < ActiveRecord::Base
     self.encrypted_password = nil
   end
 
-  def invalidate
-    # previously we used 'invalidate_cache' but due to public_map displaying all the user public visualizations,
-    # now we need to purgue everything to avoid cached stale data or public->priv still showing scenarios
-    if privacy_changed? || name_changed? || cached_data_changed?
-      invalidate_cache
-    end
-
-    # When a table's relevant data is changed, propagate to all who use it or relate to it
-    if cached_data_changed? && table
-      user_table.dependent_visualizations.each(&:invalidate_cache)
-    end
-  end
-
-  # Attributes that cause an invalidation to be triggered (they are presented in public pages)
-  def cached_data_changed?
-    description_changed? || attributions_changed? || version_changed? || encrypted_password_changed?
+  def perform_invalidations
+    invalidation_service.invalidate
   end
 
   def propagate_privacy_and_name_to
@@ -664,18 +637,6 @@ class Carto::Visualization < ActiveRecord::Base
     update_attribute(:tags, @cached_tags)
   end
 
-  def named_maps_api
-    Carto::NamedMaps::Api.new(self)
-  end
-
-  def redis_vizjson_cache
-    @redis_vizjson_cache ||= CartoDB::Visualization::RedisVizjsonCache.new
-  end
-
-  def embed_redis_cache
-    @embed_redis_cache ||= EmbedRedisCache.new($tables_metadata)
-  end
-
   def password_digest(password, salt)
     digest = AUTH_DIGEST
     10.times do
@@ -685,7 +646,6 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def secure_digest(*args)
-    #noinspection RubyArgCount
     Digest::SHA256.hexdigest(args.flatten.join)
   end
 
@@ -721,10 +681,6 @@ class Carto::Visualization < ActiveRecord::Base
     user_id == user.id
   end
 
-  def varnish_vizjson_key
-    ".*#{id}:vizjson"
-  end
-
   def validate_password_presence
     errors.add(:password, 'required for protected visualization') if password_protected? && !has_password?
   end
@@ -736,16 +692,6 @@ class Carto::Visualization < ActiveRecord::Base
   def validate_privacy_changes
     if derived? && is_privacy_private? && privacy_changed? && !user.try(:private_maps_enabled?)
       errors.add(:privacy, 'cannot be set to private')
-    end
-  end
-
-  def save_named_map_or_rollback_privacy
-    if !save_named_map && privacy_changed?
-      # Explicitly set privacy to its previous value so the hooks run and the user db permissions are updated
-      # TODO: It would be better to raise an exception to rollback the transaction, but that can break renames
-      # as we don't explicitly rollback those in the user database. Consider an `after_rollback` hook in user table?
-      self.privacy = privacy_was
-      save
     end
   end
 
@@ -764,7 +710,7 @@ class Carto::Visualization < ActiveRecord::Base
     )
   end
 
-  def destroy_named_map
-    named_maps_api.destroy
+  def invalidation_service
+    @invalidation_service ||= Carto::VisualizationInvalidationService.new(self)
   end
 end

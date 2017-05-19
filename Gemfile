@@ -15,7 +15,7 @@ gem 'vizzuality-sequel-rails', '0.3.7', git: 'https://github.com/Vizzuality/sequ
 
 gem 'rails_warden',            '0.5.8' # Auth via the Warden Rack framework
 gem 'ruby-saml',               '1.4.1'
-gem 'oauth',                   '0.4.5'
+gem 'oauth',                   '0.5.1'
 gem 'oauth-plugin',            '0.4.0.pre4'
 
 gem 'redis',                   '3.3.0'

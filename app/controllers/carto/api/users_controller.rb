@@ -68,7 +68,7 @@ module Carto
           avatar_url: user.avatar_url,
           email: user.email,
           organization: Carto::Api::OrganizationPresenter.new(user.organization).to_poro,
-          base_url: user.public_url,
+          base_url: user.public_url
         }
       end
 

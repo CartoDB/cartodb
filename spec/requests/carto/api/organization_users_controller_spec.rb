@@ -80,6 +80,11 @@ describe Carto::Api::OrganizationUsersController do
     user.soft_obs_general_limit.should eq value
   end
 
+  before(:all) do
+    @org_user_2.org_admin = true
+    @org_user_2.save
+  end
+
   before(:each) do
     ::User.any_instance.stubs(:validate_credentials_not_taken_in_central).returns(true)
     ::User.any_instance.stubs(:create_in_central).returns(true)
@@ -113,6 +118,13 @@ describe Carto::Api::OrganizationUsersController do
 
     it 'accepts org owners' do
       login(@organization.owner)
+
+      post api_v2_organization_users_create_url(id_or_name: @organization.name)
+      last_response.status.should == 410
+    end
+
+    it 'accepts org admins' do
+      login(@org_user_2)
 
       post api_v2_organization_users_create_url(id_or_name: @organization.name)
       last_response.status.should == 410
@@ -224,6 +236,16 @@ describe Carto::Api::OrganizationUsersController do
       last_user_created.destroy
     end
 
+    it 'admins cannot create other organization admins' do
+      login(@org_user_2)
+      username = 'admin-user'
+      params = user_params(username, org_admin: true)
+      post api_v2_organization_users_create_url(id_or_name: @organization.name), params
+
+      last_response.status.should eq 410
+      expect(last_response.body).to include 'org_admin can only be set by organization owner'
+    end
+
     it 'can enable soft geocoding_limit, twitter_datasource_limit, here_isolines_limit, obs_snapshot_limit and obs_general_limit if owner has them' do
       replace_soft_limits(@organization.owner, [true, true, true, true, true])
 
@@ -299,6 +321,29 @@ describe Carto::Api::OrganizationUsersController do
       last_response.status.should == 410
     end
 
+    it 'accepts org admins' do
+      login(@org_user_2)
+
+      put api_v2_organization_users_update_url(id_or_name: @organization.name, u_username: @org_user_1.username)
+      last_response.status.should == 410
+    end
+
+    it 'org admins cannot update other admins' do
+      login(@org_user_2)
+
+      put api_v2_organization_users_update_url(id_or_name: @organization.name, u_username: @organization.owner.username)
+      last_response.status.should == 401
+    end
+
+    it 'org admins cannot convert other users into admins' do
+      login(@org_user_2)
+
+      put api_v2_organization_users_update_url(id_or_name: @organization.name, u_username: @org_user_1.username),
+          org_admin: true
+      last_response.status.should == 410
+      expect(last_response.body).to include 'org_admin can only be set by organization owner'
+    end
+
     it 'should do nothing if no update params are provided' do
       login(@organization.owner)
 
@@ -337,7 +382,7 @@ describe Carto::Api::OrganizationUsersController do
       login(@organization.owner)
 
       2.times do
-        user_to_update = @organization.non_owner_users[0]
+        user_to_update = @org_user_1
         new_viewer = !user_to_update.viewer?
         params = { viewer: new_viewer }
         put api_v2_organization_users_update_url(id_or_name: @organization.name,
@@ -552,7 +597,7 @@ describe Carto::Api::OrganizationUsersController do
       last_response.status.should == 401
     end
 
-    it 'should delete users' do
+    it 'should delete users as owner' do
       login(@organization.owner)
 
       user_to_be_deleted = @organization.non_owner_users[0]
@@ -562,6 +607,30 @@ describe Carto::Api::OrganizationUsersController do
       last_response.status.should eq 200
 
       User[user_to_be_deleted.id].should be_nil
+    end
+
+    it 'should delete users as admin' do
+      login(@org_user_2)
+
+      victim = FactoryGirl.create(:valid_user, organization: @organization)
+      delete api_v2_organization_users_delete_url(id_or_name: @organization.name,
+                                                  u_username: victim.username)
+
+      last_response.status.should eq 200
+
+      User[victim.id].should be_nil
+    end
+
+    it 'should not delete other admins as admin' do
+      login(@org_user_2)
+
+      victim = FactoryGirl.create(:valid_user, organization: @organization, org_admin: true)
+      delete api_v2_organization_users_delete_url(id_or_name: @organization.name,
+                                                  u_username: victim.username)
+
+      last_response.status.should eq 401
+
+      User[victim.id].should be
     end
 
     it 'should not allow to delete the org owner' do

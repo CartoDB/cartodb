@@ -380,14 +380,14 @@ describe('widgets/widget-model', function () {
     });
 
     describe('isAutoStyleEnabled', function () {
-      it('should be false if without autostyle option', function () {
+      it('should be true if without autostyle option', function () {
         var model = new WidgetModel(null, {
           dataviewModel: this.dataviewModel
         });
 
         model.set('type', 'category');
 
-        expect(model.isAutoStyleEnabled()).toBe(false);
+        expect(model.isAutoStyleEnabled()).toBe(true);
       });
 
       it('should be false if passed autostyle option as false', function () {

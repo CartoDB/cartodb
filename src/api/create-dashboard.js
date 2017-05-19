@@ -99,7 +99,7 @@ var createDashboard = function (selector, vizJSON, opts, callback) {
           layer = vis.map.layers.at(d.layerIndex);
         }
 
-        newWidgetModel(attrs, layer, state, {autoStyleEnabled: opts.autoStyle});
+        newWidgetModel(attrs, layer, state);
       } else {
         cdb.log.error('No widget found for type ' + d.type);
       }

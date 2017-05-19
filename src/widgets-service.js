@@ -4,6 +4,20 @@ var CategoryWidgetModel = require('./widgets/category/category-widget-model');
 var HistogramWidgetModel = require('./widgets/histogram/histogram-widget-model');
 var TimeSeriesWidgetModel = require('./widgets/time-series/time-series-widget-model');
 
+var WIDGETSTYLEPARAMS = {
+  auto_style_allowed: 'autoStyleEnabled'
+};
+
+// We create an object with options off the attributes
+var makeWidgetStyleOptions = function (attrs) {
+  return _.reduce(WIDGETSTYLEPARAMS, function (memo, value, key) {
+    if (attrs[key] !== undefined) {
+      memo[value] = attrs[key];
+      return memo;
+    }
+  }, {});
+};
+
 /**
  * Public API to interact with dashboard widgets.
  */
@@ -35,18 +49,20 @@ WidgetsService.prototype.getList = function () {
  * @param {Object} layer Instance of a layer model (cartodb.js)
  * @return {CategoryWidgetModel}
  */
-WidgetsService.prototype.createCategoryModel = function (attrs, layer, state, opts) {
+WidgetsService.prototype.createCategoryModel = function (attrs, layer, state) {
   _checkProperties(attrs, ['title']);
   attrs = _.extend(attrs, state, {hasInitialState: this._widgetsCollection.hasInitialState()}); // Will overwrite preset attributes with the ones passed on the state
   var dataviewModel = this._dataviews.createCategoryModel(layer, attrs);
 
   var attrsNames = ['id', 'title', 'order', 'collapsed', 'prefix', 'suffix', 'show_stats', 'style', 'hasInitialState'];
   var widgetAttrs = _.pick(attrs, attrsNames);
+  var options = makeWidgetStyleOptions(attrs);
+
   widgetAttrs.attrsNames = attrsNames;
 
   var widgetModel = new CategoryWidgetModel(widgetAttrs, {
     dataviewModel: dataviewModel
-  }, opts);
+  }, options);
   widgetModel.setInitialState(state);
   this._widgetsCollection.add(widgetModel);
 
@@ -68,12 +84,14 @@ WidgetsService.prototype.createHistogramModel = function (attrs, layer, state, o
 
   var attrsNames = ['id', 'title', 'order', 'collapsed', 'bins', 'show_stats', 'normalized', 'style', 'hasInitialState'];
   var widgetAttrs = _.pick(attrs, attrsNames);
+  var options = makeWidgetStyleOptions(attrs);
+
   widgetAttrs.type = 'histogram';
   widgetAttrs.attrsNames = attrsNames;
 
   var widgetModel = new HistogramWidgetModel(widgetAttrs, {
     dataviewModel: dataviewModel
-  }, opts);
+  }, options);
   widgetModel.setInitialState(state);
   this._widgetsCollection.add(widgetModel);
 

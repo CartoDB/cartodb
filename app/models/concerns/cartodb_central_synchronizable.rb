@@ -56,7 +56,7 @@ module Concerns
             raise "Can't destroy the organization owner"
           end
         end
-      elsif self.is_a?(Organization)
+      elsif is_a?(Organization)
         # See Organization#destroy_cascade
         raise "Delete organizations is not allowed" if saas?
         cartodb_central_client.delete_organization(name)

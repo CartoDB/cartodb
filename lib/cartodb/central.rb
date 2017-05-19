@@ -117,7 +117,7 @@ module Cartodb
     end # update_organization
 
     def delete_organization(organization_name)
-      return send_request("api/organizations/#{ organization_name }", nil, :delete, [204, 404])
+      send_request("api/organizations/#{organization_name}", nil, :delete, [204, 404])
     end # delete_organization
 
     ############################################################################

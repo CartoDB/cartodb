@@ -255,6 +255,7 @@ Development
 * Docs, fixed some minor spelling and grammar errors in the content.
 * Docs, updated "More Info" url from street addresses georeference options to new, related guide.
 * Color picker disappears in CartoCSS editor after clicking (#12097).
+* Bug found in dataset view when user had Google basemaps enabled (#12155)
 
 ### NOTICE
 This release upgrades the CartoDB PostgreSQL extension to `0.19.0`. Run the following to have it available:

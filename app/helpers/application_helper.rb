@@ -1,7 +1,9 @@
 # coding: utf-8
 require_dependency 'cartodb_config_utils'
+require_dependency 'carto/configuration'
 
 module ApplicationHelper
+  include Carto::Configuration
   include CartoDB::ConfigUtils
   include SafeJsObject
   include TrackjsHelper
@@ -190,9 +192,5 @@ module ApplicationHelper
 
   def model_errors(model)
     model.errors.full_messages.map(&:capitalize).join(', ') if model.errors.present?
-  end
-
-  def saas?
-    Cartodb.config[:cartodb_com_hosted] == false
   end
 end

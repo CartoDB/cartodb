@@ -57,17 +57,8 @@ module CartoDB
       end
 
       @table_created = true
-      rows_imported = @db_connection["SELECT count(*) as count from #{@suggested_name}"].first[:count]
 
-      payload = OpenStruct.new({
-                              :name => @suggested_name,
-                              :rows_imported => rows_imported,
-                              :import_type => "external_table",
-                              :log => @runlog
-                              })
-
-      # construct return variables
-      return payload
+      return @suggested_name
 
     rescue => e
       log "====================="

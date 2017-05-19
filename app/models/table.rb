@@ -269,16 +269,16 @@ class Table
         :schema => owner.database_schema,
         :current_name => migrate_existing_table || uniname,
         :suggested_name => uniname,
-        :debug => (Rails.env.development?),
+        :debug => Rails.env.development?,
         :remaining_quota => owner.remaining_quota,
         :remaining_tables => owner.remaining_table_quota,
         :data_import_id => @data_import.id
       ).symbolize_keys
-      importer = CartoDB::Migrator.new hash_in
-      importer = importer.migrate!
+      importer = CartoDB::Migrator.new(hash_in)
+      imported_name = importer.migrate!
       @data_import.reload
       @data_import.save
-      importer.name
+      imported_name
     end
   end
 

@@ -115,8 +115,15 @@ Development
 * Allow to have multiple administrators per organization (#12052, #12083)
 * Allow to have multiple administrators per organization (#12052)
 * Added explanation tooltip to the categorize label on the Find Nearest analysis (#12100)
+* Disable geometry edition button instead of hide in read-only layers (#11543)
 
 ### Bug fixes
+* Fixed a problem with autostyle when styles has aggregation (#8648)
+* Provide the possibility to add the current source node to the target options list in analysis forms (#12057)
+* Update table view on adding or removing a feature (#11978)
+* Reload vis when a row is deleted in table view (#11759)
+* Fixed operator view edition (#12133)
+* Fixed a problem with shared dataset's title (#12144)
 * Fixed reset autostyle after clicking on more than 1 auto-style buttons without unchecking them (#11795)
 * Fixed styles in numeric fields when editing a feature (#12026)
 * Fixed disabling button while export image is running (#12029)
@@ -250,6 +257,7 @@ Development
 * Docs, fixed some minor spelling and grammar errors in the content.
 * Docs, updated "More Info" url from street addresses georeference options to new, related guide.
 * Color picker disappears in CartoCSS editor after clicking (#12097).
+* Bug found in dataset view when user had Google basemaps enabled (#12155)
 
 ### NOTICE
 This release upgrades the CartoDB PostgreSQL extension to `0.19.0`. Run the following to have it available:

@@ -1109,7 +1109,7 @@
     "carto": {
       "version": "0.15.1-cdb3",
       "from": "cartodb/carto#master",
-      "resolved": "git://github.com/cartodb/carto.git#945f5efb74fd1af1f5e1f69f409f9567f94fb5a7"
+      "resolved": "git://github.com/cartodb/carto.git#f4a2605a231ef96046075a396670a6fdf89fc756"
     },
     "cartocolor": {
       "version": "4.0.0",
@@ -2777,17 +2777,12 @@
     "tangram-cartocss": {
       "version": "0.5.3",
       "from": "cartodb/tangram-carto#master",
-      "resolved": "git://github.com/cartodb/tangram-carto.git#c25450ee50a8ba0426ecd18eab8fdd4d7171e47d",
+      "resolved": "git://github.com/cartodb/tangram-carto.git#3f3c485233faa70f1c17575986fa407ed631f8b4",
       "dependencies": {
         "babel-runtime": {
           "version": "6.23.0",
           "from": "babel-runtime@6.23.0",
           "resolved": "https://registry.npmjs.org/babel-runtime/-/babel-runtime-6.23.0.tgz"
-        },
-        "carto": {
-          "version": "0.15.1-cdb1",
-          "from": "cartodb/carto#tangram-release",
-          "resolved": "git://github.com/cartodb/carto.git#f2e49864d94b327a12d0f948b0f1d8e5b15a1747"
         },
         "regenerator-runtime": {
           "version": "0.10.5",

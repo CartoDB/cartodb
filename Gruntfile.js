@@ -1,6 +1,5 @@
 var _ = require('underscore');
-var timer = require("grunt-timer");
-var colors = require('colors');
+var timer = require('grunt-timer');
 var semver = require('semver');
 var jasmineCfg = require('./lib/build/tasks/jasmine.js');
 var shrinkwrapDependencies = require('./lib/build/tasks/shrinkwrap-dependencies.js');
@@ -44,7 +43,7 @@ function logVersionsError (err, requiredNodeVersion, requiredNpmVersion) {
 /**
  *  CartoDB UI assets generation
  */
-module.exports = function(grunt) {
+module.exports = function (grunt) {
   if (timer) timer.init(grunt);
 
   var environment = grunt.option('environment') || DEVELOPMENT;

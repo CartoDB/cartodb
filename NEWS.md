@@ -118,6 +118,7 @@ Development
 * Disable geometry edition button instead of hide in read-only layers (#11543)
 
 ### Bug fixes
+* Boolean fields are visible in the filter by column value analysis (#11546)
 * Provide the possibility to add the current source node to the target options list in analysis forms (#12057)
 * Update table view on adding or removing a feature (#11978)
 * Reload vis when a row is deleted in table view (#11759)

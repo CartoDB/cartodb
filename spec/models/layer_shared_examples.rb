@@ -211,7 +211,7 @@ shared_examples_for 'Layer model' do
       layer = layer_class.create(kind: 'carto')
       add_layer_to_entity(map, layer)
 
-      ::Map.any_instance.expects(:notify_map_change)
+      map.class.any_instance.expects(:notify_map_change)
       layer.destroy
     end
 

@@ -15,10 +15,11 @@ module Carto
           PRIVACY_LINK => 'link'
       }
 
-      def initialize(user_table, current_viewer)
+      def initialize(user_table, current_viewer, show_size_and_row_count: true)
         @user_table = user_table
         @current_viewer = current_viewer
         @presenter_cache = Carto::Api::PresenterCache.new
+        @show_size_and_row_count = show_size_and_row_count
       end
 
       def with_presenter_cache(presenter_cache)
@@ -28,8 +29,6 @@ module Carto
 
       def to_poro(accessible_dependent_derived_maps: false, context: nil)
         return {} if @user_table.nil?
-        row_count_and_size = @user_table.row_count_and_size
-
         permission = @user_table.permission
         permission_presentation = Carto::Api::PermissionPresenter.new(
           permission, current_viewer: @current_viewer
@@ -42,10 +41,14 @@ module Carto
           synchronization: Carto::Api::SynchronizationPresenter.new(@user_table.synchronization).to_poro,
           geometry_types: @user_table.geometry_types,
           privacy: privacy_text(@user_table.privacy).upcase,
-          updated_at: @user_table.updated_at,
-          size: row_count_and_size[:size],
-          row_count: row_count_and_size[:row_count]
+          updated_at: @user_table.updated_at
         }
+
+        if show_size_and_row_count
+          row_count_and_size = @user_table.row_count_and_size
+          poro[:size] = row_count_and_size[:size]
+          poro[:row_count] = row_count_and_size[:row_count]
+        end
 
         if accessible_dependent_derived_maps && context
           poro[:accessible_dependent_derived_maps] = derived_maps_to_presenter(context)
@@ -60,6 +63,8 @@ module Carto
       end
 
       private
+
+      attr_reader :show_size_and_row_count
 
       def derived_maps_to_presenter(context)
         visualizations = @user_table.accessible_dependent_derived_maps

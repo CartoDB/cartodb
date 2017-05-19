@@ -1,11 +1,36 @@
 # coding: UTF-8
 
 require_relative '../spec_helper'
+require_relative '../factories/organizations_contexts'
 
 describe Carto::Api::UserPresenter do
 
   before(:each) do
     CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+  end
+
+  describe '#current_viewer' do
+    include_context 'organization with users helper'
+
+    it 'displays full data for user administrator' do
+      presentation = Carto::Api::UserPresenter.new(@carto_org_user_1, current_viewer: @carto_org_user_owner).to_poro
+      expect(presentation.keys).to include :email
+    end
+
+    it 'displays full data for own user' do
+      presentation = Carto::Api::UserPresenter.new(@carto_org_user_1, current_viewer: @carto_org_user_1).to_poro
+      expect(presentation.keys).to include :email
+    end
+
+    it 'displays filtered data for other users' do
+      presentation = Carto::Api::UserPresenter.new(@carto_org_user_1, current_viewer: @carto_org_user_2).to_poro
+      expect(presentation.keys).to_not include :email
+    end
+
+    it 'displays filtered data for public' do
+      presentation = Carto::Api::UserPresenter.new(@carto_org_user_1).to_poro
+      expect(presentation.keys).to_not include :email
+    end
   end
 
   it "Compares old and new ways of 'presenting' user data" do

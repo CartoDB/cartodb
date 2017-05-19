@@ -130,6 +130,10 @@ module CartoDB
       self
     end
 
+    def valid_creation?(creator_user)
+      valid? && @user.valid_creation?(creator_user)
+    end
+
     def valid?
       build
 

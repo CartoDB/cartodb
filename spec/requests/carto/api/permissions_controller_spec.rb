@@ -3,18 +3,17 @@ require 'sequel'
 require 'rack/test'
 require 'json'
 require 'uri'
-require_relative './../../factories/organizations_contexts'
 
-require_relative '../../spec_helper'
-require_relative '../../../app/controllers/api/json/synchronizations_controller'
+require 'spec_helper'
+require_relative './../../../factories/organizations_contexts'
+require 'api/json/synchronizations_controller'
 
-include CartoDB
 
 def app
   CartoDB::Application.new
 end
 
-describe Api::Json::PermissionsController do
+describe Carto::Api::PermissionsController do
   include Rack::Test::Methods
 
   before(:all) do
@@ -25,22 +24,14 @@ describe Api::Json::PermissionsController do
   end
 
   before(:each) do
-    @entity_id = UUIDTools::UUID.timestamp_create.to_s
-    bypass_named_maps
     delete_user_data @user
     delete_user_data @user2
     @headers = {
       'CONTENT_TYPE' => 'application/json'
     }
     host! "#{@user.username}.localhost.lan"
-    Permission.any_instance.stubs(:revoke_previous_permissions).returns(nil)
-    Permission.any_instance.stubs(:grant_db_permission).returns(nil)
-    Permission.any_instance.stubs(:notify_permissions_change).returns(nil)
-    vis_entity_mock = mock
-    vis_entity_mock.stubs(:table?).returns(false)
-    vis_entity_mock.stubs(:id).returns(@entity_id)
-    vis_entity_mock.stubs(:invalidate_for_permissions_change)
-    Permission.any_instance.stubs(:entity).returns(vis_entity_mock)
+    @visualization = FactoryGirl.create(:carto_visualization, user: Carto::User.find(@user.id))
+    @entity_id = @visualization.id
   end
 
   after(:all) do
@@ -80,10 +71,9 @@ describe Api::Json::PermissionsController do
       ]
       client_acl_final = [ ]
 
-      permission = CartoDB::Permission.new(
-          owner_id: @user.id,
-          owner_username: @user.username
-      )
+      permission = @visualization.permission
+      permission.owner_id.should eq @user.id
+      permission.owner_username.should eq @user.username
       permission.acl = acl_initial
       permission.save
       # To force updated_at to change
@@ -153,14 +143,8 @@ describe 'group permission support' do
   end
 
   it 'adds group read permission' do
-    entity_id = UUIDTools::UUID.timestamp_create.to_s
-
-    vis_entity_mock = mock
-    vis_entity_mock.stubs(:table?).returns(false)
-    vis_entity_mock.stubs(:id).returns(entity_id)
-    vis_entity_mock.stubs(:invalidate_for_permissions_change)
-    Permission.any_instance.stubs(:entity).returns(vis_entity_mock)
-    Permission.any_instance.stubs(:revoke_previous_permissions).returns(nil)
+    visualization = FactoryGirl.create(:carto_visualization, user: Carto::User.find(@org_user_1.id))
+    entity_id = visualization.id
 
     entity_type = Permission::ENTITY_TYPE_VISUALIZATION
 
@@ -185,10 +169,9 @@ describe 'group permission support' do
         }
     ]
 
-    permission = CartoDB::Permission.new(
-        owner_id: @org_user_1.id,
-        owner_username: @org_user_1.username
-    )
+    permission = visualization.permission
+    permission.owner_id.should eq @org_user_1.id
+    permission.owner_username.should eq @org_user_1.username
     permission.acl = acl_initial
     permission.save
 
@@ -204,26 +187,18 @@ describe 'group permission support' do
       entity_fragment[:type].should eq entity_type
       response_body.fetch(:acl).map { |acl| acl.deep_symbolize_keys }.should eq client_acl_modified_expected
     end
+
+    visualization.delete
   end
 
   it 'creates a shared entity per shared group' do
-    entity_id = UUIDTools::UUID.timestamp_create.to_s
-    vis_entity_mock = mock
-    vis_entity_mock.stubs(:table?).returns(false)
-    vis_entity_mock.stubs(:id).returns(entity_id)
-    vis_entity_mock.stubs(:invalidate_for_permissions_change)
-    Permission.any_instance.stubs(:entity).returns(vis_entity_mock)
-    Permission.any_instance.stubs(:revoke_previous_permissions).returns(nil)
+    visualization = FactoryGirl.create(:carto_visualization, user: Carto::User.find(@org_user_1.id))
+    entity_id = visualization.id
 
-    entity_type = Permission::ENTITY_TYPE_VISUALIZATION
-
-    acl_initial = [ ]
-
-    permission = CartoDB::Permission.new(
-        owner_id: @org_user_1.id,
-        owner_username: @org_user_1.username
-    )
-    permission.acl = acl_initial
+    permission = visualization.permission
+    permission.owner_id.should eq @org_user_1.id
+    permission.owner_username.should eq @org_user_1.username
+    permission.acl.should eq []
     permission.save
 
     client_acl = [
@@ -245,6 +220,8 @@ describe 'group permission support' do
       response.status.should == 200
       Carto::SharedEntity.where(entity_id: entity_id).count.should == 2
     end
+
+    visualization.delete
   end
 
 end

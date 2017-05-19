@@ -9,6 +9,7 @@ class Admin::OrganizationsController < Admin::AdminController
   ssl_required :show, :settings, :settings_update, :regenerate_all_api_keys, :groups, :auth, :auth_update,
                :notifications, :new_notification, :destroy_notification
   before_filter :login_required, :load_organization_and_members, :load_ldap_configuration
+  before_filter :owners_only, only: [:settings, :settings_update, :regenerate_all_api_keys, :auth, :auth_update]
   before_filter :enforce_engine_enabled, only: :regenerate_all_api_keys
   before_filter :load_carto_organization, only: [:notifications, :new_notification]
   before_filter :load_notification, only: [:destroy_notification]
@@ -144,14 +145,18 @@ class Admin::OrganizationsController < Admin::AdminController
   private
 
   def load_organization_and_members
+    raise RecordNotFound unless current_user.organization_admin?
     @organization = current_user.organization
-    raise RecordNotFound unless @organization.present? && current_user.organization_owner?
 
     display_signup_warnings if @organization.signup_page_enabled
 
     # INFO: Special scenario of handcrafted URL to go to organization-based signup page
     @organization_signup_url =
       "#{CartoDB.protocol}://#{@organization.name}.#{CartoDB.account_host}#{CartoDB.path(self, 'signup_organization_user')}"
+  end
+
+  def owners_only
+    raise RecordNotFound unless current_user.organization_owner?
   end
 
   def display_signup_warnings

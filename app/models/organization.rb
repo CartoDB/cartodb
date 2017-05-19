@@ -5,6 +5,7 @@ require_relative './organization/organization_decorator'
 require_relative '../helpers/data_services_metrics_helper'
 require_relative './permission'
 require_dependency 'carto/helpers/auth_token_generator'
+require_dependency 'common/organization_common'
 
 class Organization < Sequel::Model
 
@@ -21,6 +22,7 @@ class Organization < Sequel::Model
   include Concerns::CartodbCentralSynchronizable
   include DataServicesMetricsHelper
   include Carto::AuthTokenGenerator
+  include Carto::OrganizationSoftLimits
 
   Organization.raise_on_save_failure = true
   self.strict_param_setting = false
@@ -76,6 +78,9 @@ class Organization < Sequel::Model
     if whitelisted_email_domains.present? && !auth_enabled?
       errors.add(:whitelisted_email_domains, 'enable at least one auth. system or clear whitelisted email domains')
     end
+
+    errors.add(:seats, 'cannot be less than the number of builders') if seats && remaining_seats < 0
+    errors.add(:viewer_seats, 'cannot be less than the number of viewers') if viewer_seats && remaining_viewer_seats < 0
   end
 
   def validate_for_signup(errors, user)
@@ -292,6 +297,7 @@ class Organization < Sequel::Model
         email:      owner ? owner.email : nil,
         groups:     owner && owner.groups ? owner.groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro } : []
       },
+      admins:                    users.select(&:org_admin).map { |u| { id: u.id } },
       quota_in_bytes:            quota_in_bytes,
       unassigned_quota:          unassigned_quota,
       geocoding_quota:           geocoding_quota,
@@ -388,6 +394,10 @@ class Organization < Sequel::Model
 
   def viewer_users
     (users || []).select(&:viewer?)
+  end
+
+  def admin?(user)
+    user.belongs_to_organization?(self) && user.organization_admin?
   end
 
   def notify_if_disk_quota_limit_reached

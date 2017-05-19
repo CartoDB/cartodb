@@ -56,30 +56,6 @@ module CartoDB
         @current_name = @suggested_name
       end
 
-      # attempt to transform the_geom to 4326
-      if column_names.include? "the_geom"
-        begin
-          if srid = @db_connection["select st_srid(the_geom::geometry) from #{@suggested_name} limit 1"].first
-            srid = srid[:st_srid] if srid.is_a?(Hash)
-            begin
-              if srid.to_s != "4326"
-                # move original geometry column around
-                @db_connection.run("UPDATE #{@suggested_name} SET the_geom = ST_Transform(the_geom, 4326);")
-              end
-            rescue => e
-              @runlog.err << "Failed to transform the_geom from #{srid} to 4326 #{@suggested_name}. #{e.inspect}"
-            end
-          end
-        rescue => e
-          # if no SRID or invalid the_geom, we need to remove it from the table
-          begin
-            @db_connection.run("ALTER TABLE #{@suggested_name} RENAME COLUMN the_geom TO invalid_the_geom")
-            column_names.delete("the_geom")
-          rescue => exception
-          end
-        end
-      end
-
       @table_created = true
       rows_imported = @db_connection["SELECT count(*) as count from #{@suggested_name}"].first[:count]
 

@@ -93,6 +93,11 @@ describe Organization do
       @organization.destroy
       Carto::Asset.exists?(asset.id).should be_false
     end
+
+    it 'calls :delete_in_central if delete_in_central parameter is true' do
+      @organization.expects(:delete_in_central).once
+      @organization.destroy_cascade(delete_in_central: true)
+    end
   end
 
   describe '#add_user_to_org' do

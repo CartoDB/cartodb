@@ -150,11 +150,15 @@ class Organization < Sequel::Model
 
   # INFO: replacement for destroy because destroying owner triggers
   # organization destroy
-  def destroy_cascade
+  def destroy_cascade(delete_in_central: false)
+    # Central asks for usage information before deleting, so organization must be first deleted there
+    # Corollary: you need multithreading for organization to work if you run Central
+    self.delete_in_central if delete_in_central
+
     destroy_groups
     destroy_non_owner_users
     if owner
-      owner.destroy
+      owner.destroy_cascade
     else
       destroy
     end
@@ -163,7 +167,7 @@ class Organization < Sequel::Model
   def destroy_non_owner_users
     non_owner_users.each do |user|
       user.shared_entities.map(&:entity).each(&:delete)
-      user.destroy
+      user.destroy_cascade
     end
   end
 

@@ -397,7 +397,7 @@ class User < Sequel::Model
         end
       end
 
-      unless can_delete
+      unless can_delete || @force_destroy
         raise CartoDB::BaseCartoDBError.new('Cannot delete user, has shared entities')
       end
 
@@ -1578,6 +1578,11 @@ class User < Sequel::Model
 
   def new_visualizations_version
     builder_enabled? ? 3 : 2
+  end
+
+  def destroy_cascade
+    @force_destroy = true
+    destroy
   end
 
   private

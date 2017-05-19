@@ -53,6 +53,8 @@ module Concerns
             raise "Can't destroy the organization owner"
           end
         end
+      elsif self.is_a?(Organization)
+        cartodb_central_client.delete_organization(name)
       end
       return true
     end

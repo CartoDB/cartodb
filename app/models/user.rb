@@ -1223,7 +1223,7 @@ class User < Sequel::Model
   end
 
   def public_table_count
-    table_count({ privacy: Carto::Visualization::PRIVACY_PUBLIC, exclude_raster: true })
+    table_count(privacy: Carto::Visualization::PRIVACY_PUBLIC, exclude_raster: true)
   end
 
   # Only returns owned tables (not shared ones)
@@ -1251,29 +1251,29 @@ class User < Sequel::Model
   # Get the count of public visualizations
   def public_visualization_count
     visualization_count({
-      type: Carto::Visualization::TYPE_DERIVED,
-      privacy: Carto::Visualization::PRIVACY_PUBLIC,
-      exclude_shared: true,
-      exclude_raster: true
-    })
+                          type: Carto::Visualization::TYPE_DERIVED,
+                          privacy: Carto::Visualization::PRIVACY_PUBLIC,
+                          exclude_shared: true,
+                          exclude_raster: true
+                        })
   end
 
   # Get the count of all visualizations
   def all_visualization_count
     visualization_count({
-      type: Carto::Visualization::TYPE_DERIVED,
-      exclude_shared: false,
-      exclude_raster: false
-    })
+                          type: Carto::Visualization::TYPE_DERIVED,
+                          exclude_shared: false,
+                          exclude_raster: false
+                        })
   end
 
   # Get user owned visualizations
   def owned_visualizations_count
     visualization_count({
-      type: Carto::Visualization::TYPE_DERIVED,
-      exclude_shared: true,
-      exclude_raster: false
-    })
+                          type: Carto::Visualization::TYPE_DERIVED,
+                          exclude_shared: true,
+                          exclude_raster: false
+                        })
   end
 
   # Get a count of visualizations with some optional filters

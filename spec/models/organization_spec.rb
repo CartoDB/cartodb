@@ -95,6 +95,8 @@ describe Organization do
     end
 
     it 'calls :delete_in_central if delete_in_central parameter is true' do
+      pending "Don't implemented. See Organization#destroy_cascade"
+
       @organization.expects(:delete_in_central).once
       @organization.destroy_cascade(delete_in_central: true)
     end

@@ -39,7 +39,7 @@
     </div>
   </div>
 
-  <% if current_user.organization.auth_username_password_enabled %>
+  <% if @organization.auth_username_password_enabled %>
 
     <div class="VerticalAligned--FormRow">
       <div class="FormAccount-row">
@@ -75,27 +75,30 @@
 
     <div class="FormAccount-rowData">
       <div class="CDB-Text CDB-Size-medium u-rSpace--xl">
-        <input class="CDB-Radio js-userViewerOption" type="radio" name="user[viewer]" value="false" <%= @user.builder? ? 'checked' : '' %> <%= current_user.organization.remaining_seats > 0 || @user.builder? ? '' : 'disabled' %> required>
+        <input class="CDB-Radio js-userViewerOption" type="radio" name="user[viewer]" value="false" <%= @user.builder? ? 'checked' : '' %> <%= @organization.remaining_seats > 0 || @user.builder? ? '' : 'disabled' %> required>
         <span class="u-iBlock CDB-Radio-face"></span>
-        <label class="u-iBlock u-lSpace CDB-Text CDB-Size-medium u-secondaryTextColor is-semibold">Builder (<%= current_user.organization.assigned_seats %>/<%= current_user.organization.seats %>)</label>
+        <label class="u-iBlock u-lSpace CDB-Text CDB-Size-medium u-secondaryTextColor is-semibold">Builder (<%= @organization.assigned_seats %>/<%= @organization.seats %>)</label>
       </div>
     </div>
     <div class="FormAccount-rowInfo u-lspace-23 u-bSpace--xl">
       <p class="FormAccount-rowInfoText">Build and read</p>
     </div>
 
+    <% admin_editing_admin = @user.organization_admin? && !current_user.organization_owner? %>
     <div class="FormAccount-rowData">
       <div class="CDB-Text CDB-Size-medium u-rSpace--xl">
-        <input class="CDB-Radio js-userViewerOption" type="radio" name="user[viewer]" value="true" <%= @user.viewer? ? 'checked' : '' %> <%= (current_user.organization.remaining_viewer_seats > 0 || @user.viewer?) && !@user.organization_owner? ? '' : 'disabled' %> required>
+        <input class="CDB-Radio js-userViewerOption" type="radio" name="user[viewer]" value="true" <%= @user.viewer? ? 'checked' : '' %> <%= (@organization.remaining_viewer_seats == 0 && !@user.viewer?) || @user.organization_owner? || admin_editing_admin ? 'disabled' : '' %> required>
         <span class="u-iBlock CDB-Radio-face"></span>
-        <label class="u-iBlock u-lSpace CDB-Text CDB-Size-medium u-secondaryTextColor is-semibold">Viewer (<%= current_user.organization.assigned_viewer_seats %>/<%= current_user.organization.viewer_seats %>)</label>
+        <label class="u-iBlock u-lSpace CDB-Text CDB-Size-medium u-secondaryTextColor is-semibold">Viewer (<%= @organization.assigned_viewer_seats %>/<%= @organization.viewer_seats %>)</label>
       </div>
     </div>
     <div class="FormAccount-rowInfo u-lspace-23">
       <p class="FormAccount-rowInfoText">
         <% if @user.organization_owner? %>
           The organization owner cannot be a viewer user.
-        <% elsif current_user.organization.remaining_viewer_seats == 0 %>
+        <% elsif admin_editing_admin %>
+          Organization admins can only be builder users.
+        <% elsif @organization.viewer_seats == 0 %>
           You don't have viewer seats activated. <a href="mailto:enterprise-support@carto.com">Contact support</a> for more information.
         <% else %>
           Only read
@@ -104,18 +107,24 @@
     </div>
   </div>
 
-  <% if !@user.organization_owner? && current_user.organization.owner.has_feature_flag?('organization-admins') %>
+  <% if !@user.organization_owner? && @organization.owner.has_feature_flag?('organization-admins') %>
     <div class="FormAccount-row js-org-admin-row" <%= @user.builder? ? 'style="display: none;"' : '' %>>
       <div class="FormAccount-rowLabel">
         <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Administrator</label>
       </div>
       <div class="FormAccount-rowData">
         <div class="Toggler">
-          <%= f.check_box :org_admin, id: "org_admin" %>
+          <%= f.check_box :org_admin, id: "org_admin", disabled: !current_user.organization_owner? %>
           <%= label_tag(:org_admin, '') %>
         </div>
         <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
-          <p class="CDB-Text CDB-Size-small u-altTextColor">User has permission to manage users and groups and send notifications</p>
+          <p class="CDB-Text CDB-Size-small u-altTextColor">
+            <% if current_user.organization_owner? %>
+              User has permission to manage users and groups and send notifications
+            <% else %>
+              Only the organization owner can assign administrator rights
+            <% end %>
+          </p>
         </div>
       </div>
     </div>
@@ -132,7 +141,7 @@
       <div class="OrganizationUser-quota js-userQuota">
         <div class="FormAccount-rowData FormAccount-rowData--med OrganizationUser-quotaProgress js-userQuotaSlider">
           <div class="UISlider UserQuotaDropdown-slider js-slider progress-bar overflow-visible">
-          <% available_quota_for_user = current_user.organization.unassigned_quota + current_user.quota_in_bytes %>
+          <% available_quota_for_user = @organization.unassigned_quota + current_user.quota_in_bytes %>
             <% assignedPer = ((@user.quota_in_bytes.to_f * 100) / available_quota_for_user) %>
             <% if !@user.new? %>
               <% usedPer = ((@user.db_size_in_bytes.to_f * 100) / available_quota_for_user) %>
@@ -169,11 +178,11 @@
       </div>
       <div class="FormAccount-rowData">
         <div class="Toggler">
-          <%= f.check_box :soft_geocoding_limit, id: "soft_geocoding_limit", disabled: !current_user.soft_geocoding_limit %>
+          <%= f.check_box :soft_geocoding_limit, id: "soft_geocoding_limit", disabled: !@organization.soft_geocoding_limit? %>
           <%= label_tag(:soft_geocoding_limit, '') %>
         </div>
         <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
-          <% if current_user.soft_geocoding_limit %>
+          <% if @organization.soft_geocoding_limit? %>
             <p class="CDB-Text CDB-Size-small u-altTextColor">User has permission to exceed organization's geocoding quota</p>
           <% else %>
             <p class="CDB-Text CDB-Size-small u-altTextColor">You can't enable extra quota. Contact support for more information.</p>
@@ -188,11 +197,11 @@
       </div>
       <div class="FormAccount-rowData">
         <div class="Toggler">
-          <%= f.check_box :soft_here_isolines_limit, id: "soft_here_isolines_limit", disabled: !current_user.soft_here_isolines_limit %>
+          <%= f.check_box :soft_here_isolines_limit, id: "soft_here_isolines_limit", disabled: !@organization.soft_here_isolines_limit? %>
           <%= label_tag(:soft_here_isolines_limit, '') %>
         </div>
         <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
-          <% if current_user.soft_here_isolines_limit %>
+          <% if @organization.soft_here_isolines_limit? %>
             <p class="CDB-Text CDB-Size-small u-altTextColor">User has permission to exceed organization's isolines quota from Here provider</p>
           <% else %>
             <p class="CDB-Text CDB-Size-small u-altTextColor">You can't enable extra quota. Contact support for more information.</p>
@@ -207,11 +216,11 @@
       </div>
       <div class="FormAccount-rowData">
         <div class="Toggler">
-          <%= f.check_box :soft_mapzen_routing_limit, id: "soft_mapzen_routing_limit", disabled: !current_user.soft_mapzen_routing_limit %>
+          <%= f.check_box :soft_mapzen_routing_limit, id: "soft_mapzen_routing_limit", disabled: !@organization.soft_mapzen_routing_limit? %>
           <%= label_tag(:soft_mapzen_routing_limit, '') %>
         </div>
         <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
-          <% if current_user.soft_mapzen_routing_limit %>
+          <% if @organization.soft_mapzen_routing_limit? %>
             <p class="CDB-Text CDB-Size-small u-altTextColor">User has permission to exceed organization's routing quota from Mapzen provider</p>
           <% else %>
             <p class="CDB-Text CDB-Size-small u-altTextColor">You can't enable extra quota. Contact support for more information.</p>
@@ -220,18 +229,18 @@
       </div>
     </div>
 
-    <% if current_user && current_user.organization && current_user.organization.twitter_datasource_enabled %>
+    <% if @organization.twitter_datasource_enabled %>
       <div class="FormAccount-row">
         <div class="FormAccount-rowLabel">
           <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Extra tweets</label>
         </div>
         <div class="FormAccount-rowData">
           <div class="Toggler">
-            <%= f.check_box :soft_twitter_datasource_limit, id: "soft_twitter_datasource_limit", disabled: !current_user.soft_twitter_datasource_limit %>
+            <%= f.check_box :soft_twitter_datasource_limit, id: "soft_twitter_datasource_limit", disabled: !@organization.soft_twitter_datasource_limit? %>
             <%= label_tag(:soft_twitter_datasource_limit, '') %>
           </div>
           <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
-            <% if current_user.soft_twitter_datasource_limit %>
+            <% if @organization.soft_twitter_datasource_limit? %>
               <p class="CDB-Text CDB-Size-small u-altTextColor">User has permission to exceed organization's Twitter credits</p>
             <% else %>
               <p class="CDB-Text CDB-Size-small u-altTextColor">You can't enable extra quota. Contact support for more information.</p>
@@ -256,7 +265,22 @@
     </div>
   <% end %>
 
-  <% if !@user.new? && current_user.organization_owner? -%>
+  <% if @user.new? -%>
+    <% if @organization.remaining_seats > 0 || @organization.remaining_viewer_seats > 0 %>
+      <div class="FormAccount-footer u-justifyEnd">
+        <button type="submit" class="CDB-Button CDB-Button--primary">
+          <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Create user</span>
+        </button>
+      </div>
+    <% else %>
+      <div class="FormAccount-footer">
+        <p class="FormAccount-rowInfoText FormAccount-rowInfoText--maxWidth">You can't create new users because you've run out of seats. <a href="mailto:enterprise-support@carto.com">Contact support</a> for more information.</p>
+        <button type="submit" class="CDB-Button CDB-Button--primary is-disabled">
+          <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Create user</span>
+        </button>
+      </div>
+    <% end %>
+  <% elsif @user.editable_by?(current_user) %>
     <% if @user != current_user %>
       <div class="FormAccount-footer">
         <button href="<%= CartoDB.url(self, 'delete_organization_user', {id: @user.username}, current_user) %>" type="button" class="CDB-Button CDB-Button--error js-deleteAccount">
@@ -271,21 +295,6 @@
       <div class="FormAccount-footer u-justifyEnd">
         <button type="submit" class="CDB-Button CDB-Button--primary">
           <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Save changes</span>
-        </button>
-      </div>
-    <% end %>
-  <% else %>
-    <% if current_user.organization.remaining_seats > 0 || current_user.organization.remaining_viewer_seats > 0 %>
-      <div class="FormAccount-footer u-justifyEnd">
-        <button type="submit" class="CDB-Button CDB-Button--primary">
-          <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Create user</span>
-        </button>
-      </div>
-    <% else %>
-      <div class="FormAccount-footer">
-        <p class="FormAccount-rowInfoText FormAccount-rowInfoText--maxWidth">You can't create new users because you've run out of seats. <a href="mailto:enterprise-support@carto.com">Contact support</a> for more information.</p>
-        <button type="submit" class="CDB-Button CDB-Button--primary is-disabled">
-          <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Create user</span>
         </button>
       </div>
     <% end %>

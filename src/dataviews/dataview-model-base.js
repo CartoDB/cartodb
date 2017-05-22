@@ -48,11 +48,15 @@ module.exports = Model.extend({
     var boundingBoxFilter;
 
     if (this.get('sync_on_bbox_change')) {
-      boundingBoxFilter = new WindshaftFiltersBoundingBoxFilter(this._map.getViewBounds());
+      boundingBoxFilter = new WindshaftFiltersBoundingBoxFilter(this._getMapViewBounds());
       result = 'bbox=' + boundingBoxFilter.toString();
     }
 
     return result;
+  },
+
+  _getMapViewBounds: function () {
+    return this._map.getViewBounds();
   },
 
   /**
@@ -109,15 +113,26 @@ module.exports = Model.extend({
       this.listenTo(layerDataProvider, 'dataChanged', this.fetch);
     } else {
       this.listenToOnce(this, 'change:url', function () {
-        this.fetch({
-          success: this._onChangeBinds.bind(this)
-        });
+        if (this.get('sync_on_bbox_change') && !this._getMapViewBounds()) {
+          // wait until map gets bounds from view
+          this._map.on('change:view_bounds_ne', function () {
+            this._initialFetch();
+          }, this);
+        } else {
+          this._initialFetch();
+        }
       });
     }
 
     if (this.filter) {
       this.listenTo(this.filter, 'change', this._onFilterChanged);
     }
+  },
+
+  _initialFetch: function () {
+    this.fetch({
+      success: this._onChangeBinds.bind(this)
+    });
   },
 
   _setupAnalysisStatusEvents: function () {
@@ -237,7 +252,7 @@ module.exports = Model.extend({
     }
 
     return this.get('sync_on_data_change') &&
-      this.get('enabled') &&
+      this.isEnabled() &&
         (!sourceId || sourceId && this._sourceAffectsMyOwnSource(sourceId));
   },
 
@@ -247,7 +262,7 @@ module.exports = Model.extend({
   },
 
   _shouldFetchOnBoundingBoxChange: function () {
-    return this.get('enabled') && this.get('sync_on_bbox_change');
+    return this.isEnabled() && this.get('sync_on_bbox_change');
   },
 
   refresh: function () {
@@ -345,6 +360,10 @@ module.exports = Model.extend({
 
   isUnavailable: function () {
     return this.get('status') === FETCH_ERROR_STATUS;
+  },
+
+  isEnabled: function () {
+    return this.get('enabled');
   }
 },
 

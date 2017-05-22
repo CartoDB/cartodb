@@ -319,7 +319,7 @@ module.exports = Model.extend({
   },
 
   getSource: function () {
-    var sourceId = this.getSourceId()
+    var sourceId = this.getSourceId();
     return sourceId && this._analysisCollection.get(sourceId);
   },
 

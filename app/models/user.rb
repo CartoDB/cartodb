@@ -409,7 +409,8 @@ class User < Sequel::Model
       delete_external_sources
       Carto::VisualizationQueryBuilder.new.with_user_id(id).build.all.each(&:destroy)
 
-      # Remove user tables
+      # Remove user tables. This shouldn't be needed, because previous step deletes canonical visualizations.
+      # Kept in order to support old data.
       tables.all.each(&:destroy)
 
       # There's a FK from geocodings to data_import.id so must be deleted in proper order

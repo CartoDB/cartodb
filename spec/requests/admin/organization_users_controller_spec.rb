@@ -20,7 +20,8 @@ describe Admin::OrganizationUsersController do
       password: 'user-1',
       password_confirmation: 'user-1',
       quota_in_bytes: 1000,
-      twitter_datasource_enabled: false
+      twitter_datasource_enabled: false,
+      org_admin: false
     }
   end
 

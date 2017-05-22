@@ -64,12 +64,11 @@ class Admin::OrganizationUsersController < Admin::AdminController
     @user.set_fields(
       params[:user],
       [
-        :username, :email, :password, :quota_in_bytes, :password_confirmation,
+        :username, :email, :password, :quota_in_bytes, :password_confirmation, :org_admin,
         :twitter_datasource_enabled, :soft_geocoding_limit, :soft_here_isolines_limit,
         :soft_obs_snapshot_limit, :soft_obs_general_limit, :soft_mapzen_routing_limit
       ]
     )
-    @user.org_admin = params[:user][:org_admin] == 'true'
     @user.viewer = params[:user][:viewer] == 'true'
     @user.organization = @organization
     current_user.copy_account_features(@user)

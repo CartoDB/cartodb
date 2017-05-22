@@ -329,10 +329,9 @@ class ApplicationController < ActionController::Base
       if current_user && env["warden"].authenticated?(current_user.username)
         @current_viewer = current_user if validate_session(current_user)
       else
-        authenticated_usernames = request.session.select {|k, v|
+        authenticated_usernames = request.session.to_hash.select { |k, _|
           k.start_with?("warden.user") && !k.end_with?(".session")
-        }
-                                                    .values
+        }.values
         # See if there's a session of the viewed subdomain corresponding user
         current_user_present = authenticated_usernames.select { |username|
           CartoDB.extract_subdomain(request) == username

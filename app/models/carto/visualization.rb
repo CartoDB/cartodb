@@ -549,7 +549,7 @@ class Carto::Visualization < ActiveRecord::Base
   alias :invalidate_cache :invalidate_after_commit
 
   def has_permission?(user, permission_type)
-    return false if user.viewer && permission_type == PERMISSION_READWRITE
+    return false if user.viewer && permission_type == Visualization::Member::PERMISSION_READWRITE
     return is_owner?(user) if permission_id.nil?
     is_owner?(user) || permission.permitted?(user, permission_type)
   end

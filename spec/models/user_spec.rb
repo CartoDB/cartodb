@@ -1371,7 +1371,7 @@ describe User do
       table4.save.reload
 
       # Only owned tables
-      user_tables = @user.tables_including_shared
+      user_tables = tables_including_shared(@user)
       user_tables.count.should eq 2
 
       # Grant permission
@@ -1390,7 +1390,7 @@ describe User do
       permission.save
 
       # Now owned + shared...
-      user_tables = @user.tables_including_shared
+      user_tables = tables_including_shared(@user)
       user_tables.count.should eq 3
 
       contains_shared_table = false
@@ -2378,5 +2378,12 @@ describe User do
     organization.seats = org_seats
     organization.save
     organization
+  end
+
+  def tables_including_shared(user)
+    Carto::VisualizationQueryBuilder.new
+      .with_owned_by_or_shared_with_user_id(user.id)
+      .with_type(Carto::Visualization::TYPE_CANONICAL)
+      .build.map(&:table)
   end
 end

@@ -409,7 +409,7 @@ class User < Sequel::Model
       delete_external_sources
       Carto::VisualizationQueryBuilder.new.with_user_id(id).build.all.each(&:destroy)
 
-      # Remove user tables. This shouldn't be needed, because previous step deletes canonical visualizations.
+      # This shouldn't be needed, because previous step deletes canonical visualizations.
       # Kept in order to support old data.
       tables.all.each(&:destroy)
 
@@ -426,6 +426,8 @@ class User < Sequel::Model
         l.destroy
       end
       assets.each(&:destroy)
+      # This shouldn't be needed, because previous step deletes canonical visualizations.
+      # Kept in order to support old data.
       CartoDB::Synchronization::Collection.new.fetch(user_id: id).destroy
 
       destroy_shared_with
@@ -675,13 +677,6 @@ class User < Sequel::Model
 
   def tables
     ::UserTable.filter(:user_id => self.id).order(:id).reverse
-  end
-
-  def tables_including_shared
-    Carto::VisualizationQueryBuilder.new
-                                    .with_owned_by_or_shared_with_user_id(id)
-                                    .with_type(Carto::Visualization::TYPE_CANONICAL)
-                                    .build.map(&:table)
   end
 
   def load_avatar

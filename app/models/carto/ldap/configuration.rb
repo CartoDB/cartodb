@@ -66,7 +66,7 @@ class Carto::Ldap::Configuration < ActiveRecord::Base
   # @param String username. No full CN, just the username, e.g. 'administrator1'
   # @param String password
   def authenticate(username, password)
-    ldap_connection = Net::LDAP.new
+    ldap_connection = Net::LDAP.new(connect_timeout: CONNECTION_TIMEOUT)
     ldap_connection.host = self.host
     ldap_connection.port = self.port
     configure_encryption(ldap_connection)
@@ -123,6 +123,8 @@ class Carto::Ldap::Configuration < ActiveRecord::Base
 
   private
 
+  CONNECTION_TIMEOUT = 8
+
   def search_filter(username)
     user_id_filter = "(#{user_id_field}=#{username})"
     if additional_search_filter.present?
@@ -164,7 +166,7 @@ class Carto::Ldap::Configuration < ActiveRecord::Base
   # @param String password Connection password
   # @throws InvalidConfigurationEncryptionError
   def connect(user = self.connection_user, password = self.connection_password)
-    ldap = Net::LDAP.new
+    ldap = Net::LDAP.new(connect_timeout: CONNECTION_TIMEOUT)
     ldap.host = self.host
     ldap.port = self.port
     configure_encryption(ldap)

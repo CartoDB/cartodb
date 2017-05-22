@@ -47,12 +47,16 @@ module.exports = Model.extend({
     var result = '';
     var boundingBoxFilter;
 
-    if (this.get('sync_on_bbox_change')) {
-      boundingBoxFilter = new WindshaftFiltersBoundingBoxFilter(this._map.getViewBounds());
+    if (this.syncsOnBoundingBoxChanges()) {
+      boundingBoxFilter = new WindshaftFiltersBoundingBoxFilter(this._getMapViewBounds());
       result = 'bbox=' + boundingBoxFilter.toString();
     }
 
     return result;
+  },
+
+  _getMapViewBounds: function () {
+    return this._map.getViewBounds();
   },
 
   /**
@@ -109,9 +113,14 @@ module.exports = Model.extend({
       this.listenTo(layerDataProvider, 'dataChanged', this.fetch);
     } else {
       this.listenToOnce(this, 'change:url', function () {
-        this.fetch({
-          success: this._onChangeBinds.bind(this)
-        });
+        if (this.syncsOnBoundingBoxChanges() && !this._getMapViewBounds()) {
+          // wait until map gets bounds from view
+          this._map.on('change:view_bounds_ne', function () {
+            this._initialFetch();
+          }, this);
+        } else {
+          this._initialFetch();
+        }
       });
     }
 
@@ -120,9 +129,15 @@ module.exports = Model.extend({
     }
   },
 
+  _initialFetch: function () {
+    this.fetch({
+      success: this._onChangeBinds.bind(this)
+    });
+  },
+
   _setupAnalysisStatusEvents: function () {
     this._removeExistingAnalysisBindings();
-    this._analysis = this._analysisCollection.get(this.getSourceId());
+    this._analysis = this.getSource();
     if (this._analysis) {
       this._analysis.on('change:status', this._onAnalysisStatusChange, this);
     }
@@ -201,7 +216,7 @@ module.exports = Model.extend({
     this.listenTo(this._map, 'change:center change:zoom', _.debounce(this._onMapBoundsChanged.bind(this), BOUNDING_BOX_FILTER_WAIT));
 
     this.on('change:url', function (model, value, opts) {
-      if (this.get('sync_on_data_change')) {
+      if (this.syncsOnDataChanges()) {
         this._newDataAvailable = true;
       }
       if (this._shouldFetchOnURLChange(opts && _.pick(opts, ['forceFetch', 'sourceId']))) {
@@ -222,7 +237,7 @@ module.exports = Model.extend({
       this.fetch();
     }
 
-    if (this.get('sync_on_bbox_change')) {
+    if (this.syncsOnBoundingBoxChanges()) {
       this._newDataAvailable = true;
     }
   },
@@ -236,18 +251,22 @@ module.exports = Model.extend({
       return true;
     }
 
-    return this.get('sync_on_data_change') &&
-      this.get('enabled') &&
-        (!sourceId || sourceId && this._sourceAffectsMyOwnSource(sourceId));
+    return this.isEnabled() &&
+      this.syncsOnDataChanges() &&
+        this._sourceAffectsMyOwnSource(sourceId);
   },
 
   _sourceAffectsMyOwnSource: function (sourceId) {
-    var sourceAnalysis = this._analysisCollection.get(this.getSourceId());
+    if (!sourceId) {
+      return true;
+    }
+    var sourceAnalysis = this.getSource();
     return sourceAnalysis && sourceAnalysis.findAnalysisById(sourceId);
   },
 
   _shouldFetchOnBoundingBoxChange: function () {
-    return this.get('enabled') && this.get('sync_on_bbox_change');
+    return this.isEnabled() &&
+      this.syncsOnBoundingBoxChanges();
   },
 
   refresh: function () {
@@ -300,8 +319,9 @@ module.exports = Model.extend({
     throw new Error('toJSON should be defined for each dataview');
   },
 
-  hasSameSourceAsLayer: function () {
-    return this.getSourceId() === this.layer.get('source');
+  getSource: function () {
+    var sourceId = this.getSourceId();
+    return sourceId && this._analysisCollection.get(sourceId);
   },
 
   getSourceId: function () {
@@ -345,6 +365,18 @@ module.exports = Model.extend({
 
   isUnavailable: function () {
     return this.get('status') === FETCH_ERROR_STATUS;
+  },
+
+  isEnabled: function () {
+    return this.get('enabled');
+  },
+
+  syncsOnDataChanges: function () {
+    return this.get('sync_on_data_change');
+  },
+
+  syncsOnBoundingBoxChanges: function () {
+    return this.get('sync_on_bbox_change');
   }
 },
 

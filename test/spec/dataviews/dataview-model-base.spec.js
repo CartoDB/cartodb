@@ -40,6 +40,8 @@ describe('dataviews/dataview-model-base', function () {
     this.map = new MapModel(null, {
       layersFactory: {}
     });
+    this.map.setBounds([102, 200], [300, 400]);
+
     this.vis = new VisModel();
     spyOn(this.vis, 'reload');
     this.vis._onMapInstantiatedForTheFirstTime();
@@ -151,7 +153,7 @@ describe('dataviews/dataview-model-base', function () {
 
     describe('when map view bounds are NOT ready', function () {
       beforeEach(function () {
-        expect(this.map.getViewBounds()).toBe(null);
+        spyOn(this.map, 'getViewBounds').and.returnValue(null);
       });
 
       describe('when sync_on_bbox_change is true', function () {
@@ -186,7 +188,7 @@ describe('dataviews/dataview-model-base', function () {
     });
   });
 
-  describe('after first load', function () {
+  describe('after first successful fetch', function () {
     beforeEach(function () {
       this.model.fetch = function (opts) {
         opts.success();
@@ -636,50 +638,6 @@ describe('dataviews/dataview-model-base', function () {
       });
 
       expect(dataview.getSourceId()).toEqual('a1');
-    });
-  });
-
-  describe('.hasSameSourceAsLayer', function () {
-    it("should return true if dataview has the same source as it's layer", function () {
-      var layer = new Backbone.Model({
-        id: 'layerId',
-        source: 'SOURCE_ID'
-      });
-      layer.getDataProvider = jasmine.createSpy('getDataProvider').and.returnValue(undefined);
-
-      var dataview = new DataviewModelBase({
-        source: {
-          id: 'SOURCE_ID'
-        }
-      }, { // eslint-disable-line
-        layer: layer,
-        map: this.map,
-        vis: this.vis,
-        analysisCollection: this.analysisCollection
-      });
-
-      expect(dataview.hasSameSourceAsLayer()).toBe(true);
-    });
-
-    it("should return false if dataview doen't have the same source as it's layer", function () {
-      var layer = new Backbone.Model({
-        id: 'layerId',
-        source: 'SOURCE_ID'
-      });
-      layer.getDataProvider = jasmine.createSpy('getDataProvider').and.returnValue(undefined);
-
-      var dataview = new DataviewModelBase({
-        source: {
-          id: 'DIFFERENT_SOURCE_ID'
-        }
-      }, { // eslint-disable-line
-        layer: layer,
-        map: this.map,
-        vis: this.vis,
-        analysisCollection: this.analysisCollection
-      });
-
-      expect(dataview.hasSameSourceAsLayer()).toBe(false);
     });
   });
 

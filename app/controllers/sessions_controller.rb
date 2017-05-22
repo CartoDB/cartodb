@@ -45,9 +45,12 @@ class SessionsController < ApplicationController
   end
 
   def create
-    strategies, username = ldap_strategy_username || saml_strategy_username ||
+    strategies, username = saml_strategy_username || ldap_strategy_username ||
                            google_strategy_username || credentials_strategy_username
-    return render(action: 'new') unless strategies
+
+    unless strategies
+      return saml_authentication? ? render_403 : render(action: 'new')
+    end
 
     candidate_user = Carto::User.where(username: username).first
 
@@ -220,8 +223,8 @@ class SessionsController < ApplicationController
       if email
         [:saml, username_from_user_by_email(email)]
       else
-        verify_authenticity_token
-        nil
+        # This stops trying other strategies. Important because CSRF is not checked for SAML.
+        [nil, nil]
       end
     end
   end

@@ -117,8 +117,10 @@ Development
 * Allow to have multiple administrators per organization (#12052)
 * Added explanation tooltip to the categorize label on the Find Nearest analysis (#12100)
 * Disable geometry edition button instead of hide in read-only layers (#11543)
+* Updated copies for export image & download map (#12114)
 
 ### Bug fixes
+* Google customers don't need quota checks for hires geocoding (support/#674)
 * Fixed a problem with autostyle when styles has aggregation (#8648)
 * Provide the possibility to add the current source node to the target options list in analysis forms (#12057)
 * Update table view on adding or removing a feature (#11978)
@@ -242,6 +244,7 @@ Development
 * Rearrange Error tracker script order (#11872)
 * Fix subdomain error not loading tiles.
 * Redirect to last visited page after logging in (#11946)
+* Better error handling in LDAP (#12165)
 * Sanitized HTML from map and layer names.
 * Merged fix subdomain error not loading tiles (CartoDB.js#1607)
 * Create users from org panel with the default quota (#11837)
@@ -254,9 +257,11 @@ Development
 * Validate amount of organization seats (#12101)
 * Fixed error dropping tables from ghost table manager on race condition cases (#12012)
 * IE11 fix for dropdowns with scrollview (#12073)
+* Better display and logging of errors when SAML authentication fails (#12151)
 * Fixed problem resetting styles per node after adding a new analysis (#12085)
 * Docs, fixed some minor spelling and grammar errors in the content.
 * Docs, updated "More Info" url from street addresses georeference options to new, related guide.
+* Organizations users now get engine_enabled from the organization by default (#12153)
 * Color picker disappears in CartoCSS editor after clicking (#12097).
 * Bug found in dataset view when user had Google basemaps enabled (#12155)
 

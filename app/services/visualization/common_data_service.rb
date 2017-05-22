@@ -141,10 +141,9 @@ module CartoDB
 
       def delete_remote_visualization(visualization)
         begin
-          visualization.external_source.destroy
           visualization.destroy
           true
-        rescue Sequel::DatabaseError => e
+        rescue => e
           match = e.message =~ /violates foreign key constraint "external_data_imports_external_source_id_fkey"/
           if match.present? && match >= 0
             # TODO: "mark as deleted" or similar to disable old, imported visualizations

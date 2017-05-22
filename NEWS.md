@@ -117,8 +117,14 @@ Development
 * Added explanation tooltip to the categorize label on the Find Nearest analysis (#12100)
 * Disable geometry edition button instead of hide in read-only layers (#11543)
 * New loading button styles (#12132)
+* Updated copies for export image & download map (#12114)
 
 ### Bug fixes
+* Fixed a problem with autostyle when styles has aggregation (#8648)
+* Provide the possibility to add the current source node to the target options list in analysis forms (#12057)
+* Update table view on adding or removing a feature (#11978)
+* Reload vis when a row is deleted in table view (#11759)
+* Fixed operator view edition (#12133)
 * Fixed a problem with shared dataset's title (#12144)
 * Fixed reset autostyle after clicking on more than 1 auto-style buttons without unchecking them (#11795)
 * Fixed styles in numeric fields when editing a feature (#12026)
@@ -249,10 +255,12 @@ Development
 * Validate amount of organization seats (#12101)
 * Fixed error dropping tables from ghost table manager on race condition cases (#12012)
 * IE11 fix for dropdowns with scrollview (#12073)
+* Better display and logging of errors when SAML authentication fails (#12151)
 * Fixed problem resetting styles per node after adding a new analysis (#12085)
 * Docs, fixed some minor spelling and grammar errors in the content.
 * Docs, updated "More Info" url from street addresses georeference options to new, related guide.
 * Color picker disappears in CartoCSS editor after clicking (#12097).
+* Bug found in dataset view when user had Google basemaps enabled (#12155)
 
 ### NOTICE
 This release upgrades the CartoDB PostgreSQL extension to `0.19.0`. Run the following to have it available:

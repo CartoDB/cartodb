@@ -1390,8 +1390,8 @@
       "options": {
         "duplicate": "Duplicate",
         "edit-metadata": "Edit metadata…",
-        "export-image": "Export as image…",
-        "export-map": "Export map",
+        "export-image": "Export image…",
+        "export-map": "Download map…",
         "remove": "Delete map…",
         "rename": "Rename"
       },
@@ -1426,10 +1426,10 @@
       },
       "export": {
         "confirmation": {
-          "confirm": "Ok, export",
+          "confirm": "Download",
           "cancel": "Cancel",
-          "desc": "This map, and the connected data, will be exported as a .carto file",
-          "title": "Export \"%{name}\""
+          "desc": "This map, and the connected data, will be downloaded as a .carto file",
+          "title": "Download \"%{name}\""
         },
         "download": {
           "confirm": "Download",

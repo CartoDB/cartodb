@@ -216,7 +216,7 @@ module.exports = Model.extend({
     this.listenTo(this._map, 'change:center change:zoom', _.debounce(this._onMapBoundsChanged.bind(this), BOUNDING_BOX_FILTER_WAIT));
 
     this.on('change:url', function (model, value, opts) {
-      if (this.syncsDataChanges()) {
+      if (this.syncsOnDataChanges()) {
         this._newDataAvailable = true;
       }
       if (this._shouldFetchOnURLChange(opts && _.pick(opts, ['forceFetch', 'sourceId']))) {
@@ -251,8 +251,8 @@ module.exports = Model.extend({
       return true;
     }
 
-    return this.syncsDataChanges() &&
-      this.isEnabled() &&
+    return this.isEnabled() &&
+      this.syncsOnDataChanges() &&
         this._sourceAffectsMyOwnSource(sourceId);
   },
 
@@ -265,7 +265,8 @@ module.exports = Model.extend({
   },
 
   _shouldFetchOnBoundingBoxChange: function () {
-    return this.isEnabled() && this.get('sync_on_bbox_change');
+    return this.isEnabled() &&
+      this.syncsOnBoundingBoxChanges();
   },
 
   refresh: function () {
@@ -370,7 +371,7 @@ module.exports = Model.extend({
     return this.get('enabled');
   },
 
-  syncsDataChanges: function () {
+  syncsOnDataChanges: function () {
     return this.get('sync_on_data_change');
   },
 

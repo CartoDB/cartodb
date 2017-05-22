@@ -21,7 +21,7 @@
     "bootstrap-colorpicker": "2.5.0",
     "browserify": "13.0.0",
     "browserify-shim": "3.8.12",
-    "camshaft-reference": "0.32.0",
+    "camshaft-reference": "0.33.0",
     "carto": "cartodb/carto#master",
     "cartodb-deep-insights.js": "cartodb/deep-insights.js#master",
     "cartodb-pecan": "0.2.x",

@@ -1981,7 +1981,7 @@ describe Table do
         table.save
         check_schema(table, [
             [:cartodb_id, 'bigint'],
-            [:the_geom, 'geometry', 'geometry', 'point'],
+            [:the_geom, 'geometry', 'geometry', 'geometry'],
             [:the_geom_str, 'unknown']
         ])
 

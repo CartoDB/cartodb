@@ -119,6 +119,7 @@ Development
 * Updated copies for export image & download map (#12114)
 
 ### Bug fixes
+* Google customers don't need quota checks for hires geocoding (support/#674)
 * Fixed a problem with autostyle when styles has aggregation (#8648)
 * Provide the possibility to add the current source node to the target options list in analysis forms (#12057)
 * Update table view on adding or removing a feature (#11978)

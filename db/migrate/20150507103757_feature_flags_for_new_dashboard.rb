@@ -7,12 +7,12 @@ class FeatureFlagsForNewDashboard < Sequel::Migration
 
   def up
     # Update the flags if they exist to make them unrestricted
-    Rails::Sequel.connection.run(%Q{
+    SequelRails.connection.run(%Q{
       UPDATE feature_flags SET restricted = FALSE WHERE name IN (#{sql_flag_list}) AND restricted = TRUE;
     })
 
     # Create the flags if they don't exist
-    Rails::Sequel.connection.run(%Q{
+    SequelRails.connection.run(%Q{
       INSERT INTO feature_flags (id, name, restricted)
         WITH flags_to_add as (
           SELECT * FROM (SELECT unnest(array[#{sql_flag_list}]) as name) as flag EXCEPT (SELECT name from feature_flags)
@@ -23,7 +23,7 @@ class FeatureFlagsForNewDashboard < Sequel::Migration
 
   def down
     # Delete automatically-added flags
-    Rails::Sequel.connection.run(%Q{
+    SequelRails.connection.run(%Q{
       DELETE FROM feature_flags WHERE id <= #{SequenceForAutomatedFeatureFlags::START_SEQ_NUMBER} AND name IN (#{sql_flag_list});
     })
   end

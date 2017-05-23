@@ -381,6 +381,6 @@ class UserTable < Sequel::Model
   end
 
   def relator
-    @relator ||= CartoDB::TableRelator.new(Rails::Sequel.connection, self)
+    @relator ||= CartoDB::TableRelator.new(SequelRails.connection, self)
   end
 end

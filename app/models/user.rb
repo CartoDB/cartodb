@@ -1438,7 +1438,7 @@ class User < Sequel::Model
   # @see RedisVizjsonCache
   # @see EmbedRedisCache
   def purge_redis_vizjson_cache
-    vizs = CartoDB::Visualization::Collection.new.fetch(user_id: self.id)
+    vizs = Carto::VisualizationQueryBuilder.new.with_user_id(id).build.all
     CartoDB::Visualization::RedisVizjsonCache.new().purge(vizs)
     EmbedRedisCache.new().purge(vizs)
   end

@@ -201,7 +201,7 @@ module Carto
     end
 
     def map
-      maps.first
+      maps[0]
     end
 
     def visualization
@@ -300,6 +300,10 @@ module Carto
 
     def source_id
       options.symbolize_keys[:source]
+    end
+
+    def qualify_for_organization(owner_username)
+      options['query'] = qualify_query(query, options['table_name'], owner_username) if query
     end
 
     private

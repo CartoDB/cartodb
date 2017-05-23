@@ -143,7 +143,11 @@ class User < Sequel::Model
     end
     validate_password_change
 
-    organization_validation if organization.present?
+    if organization.present?
+      organization_validation
+    elsif org_admin
+      errors.add(:org_admin, "cannot be set for non-organization user")
+    end
 
     errors.add(:geocoding_quota, "cannot be nil") if geocoding_quota.nil?
     errors.add(:here_isolines_quota, "cannot be nil") if here_isolines_quota.nil?
@@ -170,6 +174,8 @@ class User < Sequel::Model
 
       organization.validate_seats(self, errors)
     end
+
+    errors.add(:viewer, "cannot be enabled for organization admin") if organization_admin? && viewer
   end
 
   #                             +--------+---------+------+
@@ -180,7 +186,7 @@ class User < Sequel::Model
   #   +-------------------------+--------+---------+------+
   #
   def valid_privacy?(privacy)
-    self.private_tables_enabled || privacy == UserTable::PRIVACY_PUBLIC
+    private_tables_enabled || privacy == Carto::UserTable::PRIVACY_PUBLIC
   end
 
   def valid_password?(key, value, confirmation_value)
@@ -203,6 +209,24 @@ class User < Sequel::Model
     errors[key].empty?
   end
 
+  def valid_creation?(creator_user)
+    if organization_admin? && !creator_user.organization_owner?
+      errors.add(:org_admin, 'can only be set by organization owner')
+      false
+    else
+      valid?
+    end
+  end
+
+  def valid_update?(updater_user)
+    if column_changed?(:org_admin) && !updater_user.organization_owner?
+      errors.add(:org_admin, 'can only be set by organization owner')
+      false
+    else
+      valid?
+    end
+  end
+
   ## Callbacks
   def before_validation
     self.email = self.email.to_s.strip.downcase
@@ -215,7 +239,7 @@ class User < Sequel::Model
 
   def before_create
     super
-    self.database_host ||= ::Rails::Sequel.configuration.environment_for(Rails.env)['host']
+    self.database_host ||= ::SequelRails.configuration.environment_for(Rails.env)['host']
     self.api_key ||= self.class.make_token
   end
 
@@ -257,6 +281,7 @@ class User < Sequel::Model
       # Make the default of new organization users nil (inherit from organization) instead of the DB default
       # but only if not explicitly set otherwise
       self.builder_enabled = nil if new? && !changed_columns.include?(:builder_enabled)
+      self.engine_enabled = nil if new? && !changed_columns.include?(:engine_enabled)
     end
 
     if viewer
@@ -332,6 +357,9 @@ class User < Sequel::Model
       CartoDB::UserModule::DBService.terminate_database_connections(database_name, database_host)
     end
 
+    if changes.include?(:org_admin) && !organization_owner?
+      org_admin ? db_service.grant_admin_permissions : db_service.revoke_admin_permissions
+    end
   end
 
   def can_delete
@@ -841,8 +869,12 @@ class User < Sequel::Model
     !!private_maps_enabled
   end
 
-  def viewable_by?(user)
-    self.id == user.id || (has_organization? && self.organization.owner.id == user.id)
+  def viewable_by?(viewer)
+    id == viewer.id || organization.try(:admin?, viewer)
+  end
+
+  def editable_by?(user)
+    id == user.id || user.belongs_to_organization?(organization) && (user.organization_owner? || !organization_admin?)
   end
 
   def view_dashboard
@@ -1270,7 +1302,7 @@ class User < Sequel::Model
   end
 
   def last_visualization_created_at
-    Rails::Sequel.connection.fetch("SELECT created_at FROM visualizations WHERE " +
+    SequelRails.connection.fetch("SELECT created_at FROM visualizations WHERE " +
       "map_id IN (select id FROM maps WHERE user_id=?) ORDER BY created_at DESC " +
       "LIMIT 1;", id)
       .to_a.fetch(0, {}).fetch(:created_at, nil)
@@ -1522,6 +1554,10 @@ class User < Sequel::Model
 
   def viewer?
     viewer
+  end
+
+  def organization_admin?
+    organization_user? && (organization_owner? || org_admin)
   end
 
   def builder_enabled?

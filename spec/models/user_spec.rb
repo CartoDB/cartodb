@@ -140,6 +140,57 @@ describe User do
       organization.destroy
     end
 
+    describe '#org_admin' do
+      before(:all) do
+        @organization = create_organization_with_owner
+      end
+
+      after(:all) do
+        @organization.destroy
+      end
+
+      def create_role(user)
+        # NOTE: It's hard to test the real Groups API call here, it needs a Rails server up and running
+        # Instead, we test the main step that this function does internally (creating a role)
+        user.in_database["CREATE ROLE \"#{user.database_username}_#{unique_name('role')}\""].all
+      end
+
+      it 'cannot be owner and viewer at the same time' do
+        @organization.owner.viewer = true
+        @organization.owner.should_not be_valid
+        @organization.owner.errors.keys.should include(:viewer)
+      end
+
+      it 'cannot be admin and viewer at the same time' do
+        user = ::User.new
+        user.organization = @organization
+        user.viewer = true
+        user.org_admin = true
+        user.should_not be_valid
+        user.errors.keys.should include(:viewer)
+      end
+
+      it 'should not be able to create groups without admin rights' do
+        user = FactoryGirl.create(:valid_user, organization: @organization)
+        expect { create_role(user) }.to raise_error
+      end
+
+      it 'should be able to create groups with admin rights' do
+        user = FactoryGirl.create(:valid_user, organization: @organization, org_admin: true)
+        expect { create_role(user) }.to_not raise_error
+      end
+
+      it 'should revoke admin rights on demotion' do
+        user = FactoryGirl.create(:valid_user, organization: @organization, org_admin: true)
+        expect { create_role(user) }.to_not raise_error
+
+        user.org_admin = false
+        user.save
+
+        expect { create_role(user) }.to raise_error
+      end
+    end
+
     describe 'organization email whitelisting' do
 
       before(:each) do
@@ -205,11 +256,17 @@ describe User do
         @organization.destroy
       end
 
+      before(:each) do
+        @organization.viewer_seats = 10
+        @organization.seats = 10
+        @organization.save
+      end
+
       it 'should not allow changing to viewer without seats' do
         @organization.viewer_seats = 0
         @organization.save
 
-        user = @organization.owner
+        user = @organization.users.find { |u| !u.organization_owner? }
         user.reload
         user.viewer = true
         expect(user).not_to be_valid
@@ -217,10 +274,7 @@ describe User do
       end
 
       it 'should allow changing to viewer with enough seats' do
-        @organization.viewer_seats = 2
-        @organization.save
-
-        user = @organization.owner
+        user = @organization.users.find { |u| !u.organization_owner? }
         user.reload
         user.viewer = true
         expect(user).to be_valid
@@ -228,13 +282,12 @@ describe User do
       end
 
       it 'should not allow changing to builder without seats' do
-        @organization.viewer_seats = 10
-        @organization.save
-        user = @organization.owner
+        user = @organization.users.find { |u| !u.organization_owner? }
         user.reload
         user.viewer = true
         user.save
-        @organization.seats = 0
+
+        @organization.seats = 1
         @organization.save
 
         user.reload
@@ -243,15 +296,11 @@ describe User do
         expect(user.errors.keys).to include(:organization)
       end
 
-      it 'should allow changing to builder without seats' do
-        @organization.viewer_seats = 10
-        @organization.save
-        user = @organization.owner
+      it 'should allow changing to builder with seats' do
+        user = @organization.users.find { |u| !u.organization_owner? }
         user.reload
         user.viewer = true
         user.save
-        @organization.seats = 10
-        @organization.save
 
         user.reload
         user.viewer = false
@@ -355,8 +404,8 @@ describe User do
     user.save
     user_id = user.id
     user.destroy
-    Rails::Sequel.connection["select count(*) from feature_flags_users where user_id = '#{user_id}'"].first[:count].should eq 0
-    Rails::Sequel.connection["select count(*) from feature_flags where id = '#{ff.id}'"].first[:count].should eq 1
+    SequelRails.connection["select count(*) from feature_flags_users where user_id = '#{user_id}'"].first[:count].should eq 0
+    SequelRails.connection["select count(*) from feature_flags where id = '#{ff.id}'"].first[:count].should eq 1
   end
 
   it "should have a default dashboard_viewed? false" do
@@ -804,7 +853,7 @@ describe User do
   it "should create a dabase user that only can read it's own database" do
 
     connection = ::Sequel.connect(
-      ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+      ::SequelRails.configuration.environment_for(Rails.env).merge(
         'database' => @user.database_name, :logger => ::Rails.logger,
         'username' => @user.database_username, 'password' => @user.database_password
       )
@@ -814,7 +863,7 @@ describe User do
 
     connection = nil
     connection = ::Sequel.connect(
-      ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+      ::SequelRails.configuration.environment_for(Rails.env).merge(
         'database' => @user2.database_name, :logger => ::Rails.logger,
         'username' => @user.database_username, 'password' => @user.database_password
       )
@@ -829,7 +878,7 @@ describe User do
     end
 
     connection = ::Sequel.connect(
-      ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+      ::SequelRails.configuration.environment_for(Rails.env).merge(
         'database' => @user2.database_name, :logger => ::Rails.logger,
         'username' => @user2.database_username, 'password' => @user2.database_password
       )
@@ -838,7 +887,7 @@ describe User do
     connection.disconnect
 
     connection = ::Sequel.connect(
-      ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+      ::SequelRails.configuration.environment_for(Rails.env).merge(
         'database' => @user.database_name, :logger => ::Rails.logger,
         'username' => @user2.database_username, 'password' => @user2.database_password
       )
@@ -1033,16 +1082,16 @@ describe User do
     doomed_user = create_user :email => 'doomed1@example.com', :username => 'doomed1', :password => 'doomed123'
     create_table :user_id => doomed_user.id, :name => 'My first table', :privacy => UserTable::PRIVACY_PUBLIC
     doomed_user.reload
-    Rails::Sequel.connection["select count(*) from pg_catalog.pg_database where datname = '#{doomed_user.database_name}'"]
+    SequelRails.connection["select count(*) from pg_catalog.pg_database where datname = '#{doomed_user.database_name}'"]
       .first[:count].should == 1
-    Rails::Sequel.connection["select count(*) from pg_catalog.pg_user where usename = '#{doomed_user.database_username}'"]
+    SequelRails.connection["select count(*) from pg_catalog.pg_user where usename = '#{doomed_user.database_username}'"]
       .first[:count].should == 1
 
     doomed_user.destroy
 
-    Rails::Sequel.connection["select count(*) from pg_catalog.pg_database where datname = '#{doomed_user.database_name}'"]
+    SequelRails.connection["select count(*) from pg_catalog.pg_database where datname = '#{doomed_user.database_name}'"]
       .first[:count].should == 0
-    Rails::Sequel.connection["select count(*) from pg_catalog.pg_user where usename = '#{doomed_user.database_username}'"]
+    SequelRails.connection["select count(*) from pg_catalog.pg_user where usename = '#{doomed_user.database_username}'"]
       .first[:count].should == 0
   end
 
@@ -1708,7 +1757,7 @@ describe User do
 
       data_import_id = '11111111-1111-1111-1111-111111111111'
 
-      Rails::Sequel.connection.run(%Q{
+      SequelRails.connection.run(%Q{
         INSERT INTO data_imports("data_source","data_type","table_name","state","success","logger","updated_at",
           "created_at","tables_created_count",
           "table_names","append","id","table_id","user_id",
@@ -1721,7 +1770,7 @@ describe User do
             '[{"type":".csv","size":5015}]','t','f','t','test','0.0.0.0','13204','test','f','{"twitter_credits_limit":0}');
         })
 
-      Rails::Sequel.connection.run(%Q{
+      SequelRails.connection.run(%Q{
         INSERT INTO geocodings("table_name","processed_rows","created_at","updated_at","formatter","state",
           "id","user_id",
           "cache_hits","kind","geometry_type","processable_rows","real_rows","used_credits",

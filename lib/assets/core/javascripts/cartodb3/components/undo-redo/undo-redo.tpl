@@ -11,8 +11,15 @@
   </button>
   <% } %>
   <% if (canApply) { %>
-  <button class="u-lSpace--xl CDB-Button CDB-Button--primary js-apply">
+  <button class="u-lSpace--xl CDB-Button CDB-Button--loading CDB-Button--primary js-apply
+    <% if (isLoading) {%> is-loading is-disabled<% } %>
+  ">
     <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small"><%- _t('components.undo-redo.apply') %></span>
+    <div class="CDB-Button-loader CDB-LoaderIcon is-white">
+      <svg class="CDB-LoaderIcon-spinner" viewbox="0 0 50 50">
+        <circle class="CDB-LoaderIcon-path" cx="25" cy="25" r="20" fill="none"/>
+      </svg>
+    </div>
   </button>
   <% } %>
 </div>

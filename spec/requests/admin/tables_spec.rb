@@ -28,7 +28,7 @@ describe Admin::TablesController do
   before(:each) do
     bypass_named_maps
     CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
-    @db = Rails::Sequel.connection
+    @db = SequelRails.connection
     delete_user_data @user
     @headers = {
       'CONTENT_TYPE'  => 'application/json',

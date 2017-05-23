@@ -525,7 +525,7 @@ describe Table do
         @user.save
         table = create_table({:name => 'Wadus table', :user_id => @user.id})
 
-        Rails::Sequel.connection.table_exists?(table.name.to_sym).should be_false
+        SequelRails.connection.table_exists?(table.name.to_sym).should be_false
 
         @user.in_database do |user_database|
           user_database.table_exists?(table.name.to_sym).should be_true
@@ -547,7 +547,7 @@ describe Table do
 
         table = create_table(name: 'Wadus table', user_id: @user.id)
 
-        Rails::Sequel.connection.table_exists?(table.name.to_sym).should be_false
+        SequelRails.connection.table_exists?(table.name.to_sym).should be_false
         @user.in_database do |user_database|
           user_database.table_exists?(table.name.to_sym).should be_true
         end
@@ -578,7 +578,7 @@ describe Table do
         table = create_table({:name => 'Wadus table', :user_id => @user.id})
         table.name.should == 'wadus_table'
 
-        Rails::Sequel.connection.table_exists?(table.name.to_sym).should be_false
+        SequelRails.connection.table_exists?(table.name.to_sym).should be_false
         @user.in_database do |user_database|
           user_database.table_exists?(table.name.to_sym).should be_true
         end
@@ -667,10 +667,8 @@ describe Table do
 
       id = table.table_visualization.id
 
-      # Old models call this 6 times, new ones only two for the moment
-      # TODO: this will probably be fixed when refactor is needed
       CartoDB::Varnish.any_instance.expects(:purge)
-                      .times(2..6)
+                      .once
                       .with(".*#{id}:vizjson")
                       .returns(true)
 

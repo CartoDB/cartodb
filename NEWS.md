@@ -120,6 +120,7 @@ Development
 * Updated copies for export image & download map (#12114)
 
 ### Bug fixes
+* Google customers don't need quota checks for hires geocoding (support/#674)
 * Fixed a problem with autostyle when styles has aggregation (#8648)
 * Provide the possibility to add the current source node to the target options list in analysis forms (#12057)
 * Update table view on adding or removing a feature (#11978)
@@ -185,6 +186,9 @@ Development
   * Extract visualization invalidation to a service: #12096
   * Permission: #12077
 * Refactor Layer model (#10934) and UserTable (#11589, #11700, #11737).
+* [WIP] Update to Rails 4
+  * Update `rails-sequel` (#12118)
+  * Changes compatible with Rails 3 (#12117)
 * Correctly render map previews for maps with google basemaps (#11608)
 * Do not trigger visualization hooks on state update (#11701)
 * Correctly register table dependencies of torque layers (#11549)
@@ -243,6 +247,7 @@ Development
 * Rearrange Error tracker script order (#11872)
 * Fix subdomain error not loading tiles.
 * Redirect to last visited page after logging in (#11946)
+* Better error handling in LDAP (#12165)
 * Sanitized HTML from map and layer names.
 * Merged fix subdomain error not loading tiles (CartoDB.js#1607)
 * Create users from org panel with the default quota (#11837)
@@ -259,6 +264,7 @@ Development
 * Fixed problem resetting styles per node after adding a new analysis (#12085)
 * Docs, fixed some minor spelling and grammar errors in the content.
 * Docs, updated "More Info" url from street addresses georeference options to new, related guide.
+* Organizations users now get engine_enabled from the organization by default (#12153)
 * Color picker disappears in CartoCSS editor after clicking (#12097).
 * Bug found in dataset view when user had Google basemaps enabled (#12155)
 

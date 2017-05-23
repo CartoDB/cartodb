@@ -266,7 +266,8 @@
           "multiple": "%{filters} filters applied"
         }
       },
-      "area": "Per sq km"
+      "area": "Per sq km",
+      "license": "License"
     },
     "merge": {
       "title": "Join columns from 2nd layer",

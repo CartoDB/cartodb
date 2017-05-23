@@ -26,7 +26,7 @@ class Admin::OrganizationsController < Admin::AdminController
     end
   end
 
-  def delete
+  def destroy
     deletion_password_confirmation = params[:deletion_password_confirmation]
     if current_user.needs_password_confirmation? && !current_user.validate_old_password(deletion_password_confirmation)
       flash.now[:error] = "Password doesn't match"

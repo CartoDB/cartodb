@@ -93,7 +93,7 @@ class Carto::User < ActiveRecord::Base
   end
 
   def name_or_username
-    name.present? ? [name, last_name].compact.join(' ') : username
+    (name.present? || last_name.present?) ? [name, last_name].select(&:present?).join(' ') : username
   end
 
   def password=(value)

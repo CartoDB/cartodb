@@ -260,7 +260,7 @@ class Table
       uniname = get_valid_name(name ? name : migrate_existing_table) unless uniname
 
       # with table #{uniname} table created now run migrator to CartoDBify
-      hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+      hash_in = ::SequelRails.configuration.environment_for(Rails.env).merge(
         'host' => owner.database_host,
         'database' => owner.database_name,
         :logger => ::Rails.logger,
@@ -1050,7 +1050,7 @@ class Table
   end
 
   def relator
-    @relator ||= CartoDB::TableRelator.new(Rails::Sequel.connection, self)
+    @relator ||= CartoDB::TableRelator.new(SequelRails.connection, self)
   end
 
   def set_table_id
@@ -1239,7 +1239,7 @@ class Table
 
     polygon_sql = Carto::BoundingBoxUtils.to_polygon(bounds[:minx], bounds[:miny], bounds[:maxx], bounds[:maxy])
     update_sql = %{UPDATE visualizations SET bbox = #{polygon_sql} WHERE id = '#{table_visualization.id}';}
-    Rails::Sequel.connection.run(update_sql)
+    SequelRails.connection.run(update_sql)
   end
 
   private

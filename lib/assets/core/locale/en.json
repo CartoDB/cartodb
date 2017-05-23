@@ -1450,7 +1450,7 @@
     },
     "tab-pane": {
       "layers": {
-        "title-label": "Layers",
+        "title-label": "Layers (%{count}/%{maxCount})",
         "georeference": {
           "title": "Layer not georeferenced",
           "body": "The layer <span class='CDB-Text is-semibold'>%{name}</span> include non-georeferenced data."

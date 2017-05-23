@@ -42,7 +42,7 @@ var canLayerBeRenderedClientSide = function (layerModel) {
   var cartoCSS = layerModel.get('meta').cartocss;
 
   try {
-      TangramCartoCSS.carto2Draw(cartoCSS);
+    TangramCartoCSS.carto2Draw(cartoCSS);
   } catch (e) {
     e.message = '[Tangram] Unable to render layer with the following cartoCSS:\n' + cartoCSS + '\nError: ' + e.message;
     log.error(e);

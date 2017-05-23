@@ -1274,21 +1274,16 @@ class User < Sequel::Model
 
   # Get a count of visualizations with some optional filters
   def visualization_count(filters = {})
-    type_filter           = filters.fetch(:type, nil)
-    privacy_filter        = filters.fetch(:privacy, nil)
-    exclude_shared_filter = filters.fetch(:exclude_shared, false)
-    exclude_raster_filter = filters.fetch(:exclude_raster, false)
-
-    parameters = {
-      user_id:        self.id,
-      per_page:       CartoDB::Visualization::Collection::ALL_RECORDS,
-      exclude_shared: exclude_shared_filter
-    }
-
-    parameters.merge!(type: type_filter)      unless type_filter.nil?
-    parameters.merge!(privacy: privacy_filter)   unless privacy_filter.nil?
-    parameters.merge!(exclude_raster: exclude_raster_filter) if exclude_raster_filter
-    CartoDB::Visualization::Collection.new.count_query(parameters)
+    vqb = Carto::VisualizationQueryBuilder.new
+    vqb.with_type(filters[:type]) if filters[:type]
+    vqb.with_privacy(filters[:privacy]) if filters[:privacy]
+    if(filters[:exclude_shared] == true)
+      vqb.with_user_id(id)
+    else
+      vqb.with_owned_by_or_shared_with_user_id(id)
+    end
+    vqb.without_raster if filters[:exclude_raster] == true
+    vqb.build.count
   end
 
   def last_visualization_created_at

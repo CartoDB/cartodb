@@ -117,6 +117,7 @@ Development
 * Added explanation tooltip to the categorize label on the Find Nearest analysis (#12100)
 * Disable geometry edition button instead of hide in read-only layers (#11543)
 * Updated copies for export image & download map (#12114)
+* Show infowindow when user reaches max layer limit (#12167)
 
 ### Bug fixes
 * Google customers don't need quota checks for hires geocoding (support/#674)

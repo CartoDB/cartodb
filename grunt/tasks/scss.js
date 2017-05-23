@@ -17,7 +17,7 @@ module.exports = {
         files: [{
           expand: true,
           src: [
-            'node_modules/cartoassets/src/scss/**/*.scss',
+            'node_modules/cartoassets/src/scss/entry.scss',
             'node_modules/perfect-scrollbar/**/main.scss',
             'themes/scss/entry.scss'
           ],

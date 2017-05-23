@@ -1277,7 +1277,7 @@ class User < Sequel::Model
     vqb = Carto::VisualizationQueryBuilder.new
     vqb.with_type(filters[:type]) if filters[:type]
     vqb.with_privacy(filters[:privacy]) if filters[:privacy]
-    if(filters[:exclude_shared] == true)
+    if filters[:exclude_shared] == true
       vqb.with_user_id(id)
     else
       vqb.with_owned_by_or_shared_with_user_id(id)

@@ -2327,8 +2327,9 @@ describe User do
     end
 
     it 'filters by privacy if asked' do
-      vis = FactoryGirl.create(:carto_visualization, user_id: @org_user_1.id,
-                                privacy: Carto::Visualization::PRIVACY_PUBLIC)
+      vis = FactoryGirl.create(:carto_visualization,
+                               user_id: @org_user_1.id,
+                               privacy: Carto::Visualization::PRIVACY_PUBLIC)
 
       @org_user_1.visualization_count.should eq 1
       @org_user_1.visualization_count(privacy: Carto::Visualization::PRIVACY_PUBLIC).should eq 1
@@ -2434,7 +2435,8 @@ describe User do
   end
 
   def tables_including_shared(user)
-    Carto::VisualizationQueryBuilder.new
+    Carto::VisualizationQueryBuilder
+      .new
       .with_owned_by_or_shared_with_user_id(user.id)
       .with_type(Carto::Visualization::TYPE_CANONICAL)
       .build.map(&:table)

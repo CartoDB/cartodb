@@ -80,7 +80,7 @@ describe Admin::OrganizationsController do
 
     it 'cannot be accessed by non owner users' do
       login_as(@delete_org_user1, scope: @delete_org_user1.username)
-      delete organization_delete_url(user_domain: @delete_org_user1.username)
+      delete organization_destroy_url(user_domain: @delete_org_user1.username)
       response.status.should eq 404
     end
 
@@ -90,20 +90,20 @@ describe Admin::OrganizationsController do
       end
 
       it 'returns 400 if no password confirmation is provided' do
-        delete organization_delete_url(user_domain: @delete_org_owner.username)
+        delete organization_destroy_url(user_domain: @delete_org_owner.username)
         response.status.should eq 400
         response.body.should include("Password doesn't match")
       end
 
       it 'returns 400 if password confirmation is wrong' do
         payload = { deletion_password_confirmation: @delete_org_owner.password + 'wadus' }
-        delete organization_delete_url(user_domain: @delete_org_owner.username), payload
+        delete organization_destroy_url(user_domain: @delete_org_owner.username), payload
         response.status.should eq 400
       end
 
       it 'deletes organization and redirects if passwords match' do
         payload = { deletion_password_confirmation: @delete_org_owner.password }
-        delete organization_delete_url(user_domain: @delete_org_owner.username), payload
+        delete organization_destroy_url(user_domain: @delete_org_owner.username), payload
         response.status.should eq 302
         Carto::Organization.exists?(@delete_org.id).should be_false
       end

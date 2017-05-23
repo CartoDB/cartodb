@@ -1880,6 +1880,21 @@
         "manually-add": "Please georeference or manually add data to visualize.",
         "georeference-button": "Georeference",
         "visualize": "Layer doesn't have geometry"
+      },
+      "max-layers-infowindow": {
+        "title": "You have reached the %{maxLayers} layer limit",
+        "regular": {
+          "body": "Upgrade your account to add more than %{maxLayers} layers to your map",
+          "upgrade": "Upgrade your account"
+        },
+        "org": {
+          "body": "Contact your organization admin to upgrade your account",
+          "upgrade": "Contact admin"
+        },
+        "org-admin": {
+          "body": "Contact support to upgrade your account",
+          "upgrade": "Contact support"
+        }
       }
     },
     "data": {

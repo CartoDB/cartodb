@@ -13,7 +13,7 @@ Development
   * `cartodb:services:set_org_quota[orgname,service,quota]` updated to support the `mapzen_routing` provider
   * `cartodb:services:set_user_soft_limit[username,service,quota]` new task to set user soft limits
 * Color picker for codemirror component.
-* Delete organization account (#12049).
+* Owner can delete organization account (not at SaaS, #12049).
 * New dropdown for Data Observatory (#11618)
 * Quota pre-check to analyses that consume quota.
 * Marking 'Do not show me again' in Layer Onboarding affects every tab. (#11586)

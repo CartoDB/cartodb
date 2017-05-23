@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.7.1-2.stg1",
+  "version": "4.7.12",
   "dependencies": {
     "abbrev": {
       "version": "1.1.0",
@@ -809,9 +809,9 @@
       }
     },
     "babel-preset-env": {
-      "version": "1.5.0",
+      "version": "1.5.1",
       "from": "babel-preset-env@>=1.4.0 <2.0.0",
-      "resolved": "https://registry.npmjs.org/babel-preset-env/-/babel-preset-env-1.5.0.tgz"
+      "resolved": "https://registry.npmjs.org/babel-preset-env/-/babel-preset-env-1.5.1.tgz"
     },
     "babel-runtime": {
       "version": "6.18.0",
@@ -1119,7 +1119,7 @@
     "cartodb-deep-insights.js": {
       "version": "0.0.2",
       "from": "cartodb/deep-insights.js#master",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#beb6bf9b78d272e36d5b932a4b7e02ef89d41e2e"
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#0a886e052c3a95de6903c517278fe33573468bda"
     },
     "cartodb-pecan": {
       "version": "0.2.0",
@@ -1129,7 +1129,7 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
       "from": "cartodb/cartodb.js#v4",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#9874d4ffdd8aba2da23cebdb64e2115eccb5f203"
+      "resolved": "git://github.com/cartodb/cartodb.js.git#06ed29722765bd11f668fcdb81b1eb32eaf903ed"
     },
     "caseless": {
       "version": "0.11.0",
@@ -2777,7 +2777,7 @@
     "tangram-cartocss": {
       "version": "0.5.3",
       "from": "cartodb/tangram-carto#master",
-      "resolved": "git://github.com/cartodb/tangram-carto.git#3f3c485233faa70f1c17575986fa407ed631f8b4",
+      "resolved": "git://github.com/cartodb/tangram-carto.git#04b45c7e47adf3ebdeb63a50e11652e67a22a453",
       "dependencies": {
         "babel-runtime": {
           "version": "6.23.0",

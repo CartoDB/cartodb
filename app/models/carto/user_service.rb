@@ -201,7 +201,7 @@ module Carto
       logger = (Rails.env.development? || Rails.env.test? ? ::Rails.logger : nil)
 
       # TODO: proper AR config when migration is complete
-      base_config = ::Rails::Sequel.configuration.environment_for(Rails.env)
+      base_config = ::SequelRails.configuration.environment_for(Rails.env)
       config = {
         orm:      'ar',
         adapter:  "postgresql",

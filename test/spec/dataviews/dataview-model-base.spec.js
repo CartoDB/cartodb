@@ -1,6 +1,7 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
 var VisModel = require('../../../src/vis/vis.js');
+var MapModel = require('../../../src/geo/map.js');
 var DataviewModelBase = require('../../../src/dataviews/dataview-model-base');
 var AnalysisFactory = require('../../../src/analysis/analysis-factory.js');
 
@@ -36,11 +37,13 @@ var fakeCamshaftReference = {
 
 describe('dataviews/dataview-model-base', function () {
   beforeEach(function () {
-    this.map = new Backbone.Model();
-    this.map.getViewBounds = function () {};
+    this.map = new MapModel(null, {
+      layersFactory: {}
+    });
+    this.map.setBounds([102, 200], [300, 400]);
+
     this.vis = new VisModel();
     spyOn(this.vis, 'reload');
-    spyOn(this.map, 'getViewBounds').and.returnValue([[1, 2], [3, 4]]);
     this.vis._onMapInstantiatedForTheFirstTime();
 
     this.analysisCollection = new Backbone.Collection();
@@ -71,14 +74,14 @@ describe('dataviews/dataview-model-base', function () {
 
   describe('url', function () {
     it('should include the bbox param', function () {
-      this.map.getViewBounds.and.returnValue([['south', 'west'], ['north', 'east']]);
+      this.map.setBounds([['south', 'west'], ['north', 'east']]);
 
       this.model.set('url', 'http://example.com');
       expect(this.model.url()).toEqual('http://example.com?bbox=west,south,east,north');
     });
 
     it('should allow subclasses to define specific URL params', function () {
-      this.map.getViewBounds.and.returnValue([['south', 'west'], ['north', 'east']]);
+      this.map.setBounds([['south', 'west'], ['north', 'east']]);
 
       this.model.set('url', 'http://example.com');
 
@@ -88,7 +91,7 @@ describe('dataviews/dataview-model-base', function () {
     });
 
     it('should append an api_key param if apiKey attr is present (and not use the auth_token)', function () {
-      this.map.getViewBounds.and.returnValue([['south', 'west'], ['north', 'east']]);
+      this.map.setBounds([['south', 'west'], ['north', 'east']]);
 
       this.model.set({
         url: 'http://example.com',
@@ -102,7 +105,7 @@ describe('dataviews/dataview-model-base', function () {
     });
 
     it('should append an auth_token param if authToken is present', function () {
-      this.map.getViewBounds.and.returnValue([['south', 'west'], ['north', 'east']]);
+      this.map.setBounds([['south', 'west'], ['north', 'east']]);
 
       this.model.set({
         url: 'http://example.com',
@@ -120,29 +123,72 @@ describe('dataviews/dataview-model-base', function () {
       spyOn(this.model, 'fetch');
       spyOn(this.model, 'listenTo');
       spyOn(this.model, 'on');
-      this.model.set('url', 'new-url');
     });
 
-    it('should fetch', function () {
-      expect(this.model.fetch).toHaveBeenCalled();
-    });
-
-    describe('when fetch succeeds', function () {
+    describe('when map view bounds are ready', function () {
       beforeEach(function () {
-        this.model.fetch.calls.argsFor(0)[0].success();
+        this.map.setBounds([[1, 2], [3, 4]]);
+
+        this.model.set('url', 'http://example.com');
       });
 
-      it('should change bounds', function () {
-        expect(this.model.listenTo.calls.argsFor(0)[0]).toEqual(this.model._map);
-        expect(this.model.listenTo.calls.argsFor(0)[1]).toEqual('change:center change:zoom');
-        expect(this.model.on.calls.argsFor(0)[0]).toEqual('change:sync_on_bbox_change');
-        expect(this.model.on.calls.argsFor(1)[0]).toEqual('change:url');
-        expect(this.model.on.calls.argsFor(2)[0]).toEqual('change:enabled');
+      it('should fetch', function () {
+        expect(this.model.fetch).toHaveBeenCalled();
+      });
+
+      describe('when fetch succeeds', function () {
+        beforeEach(function () {
+          this.model.fetch.calls.argsFor(0)[0].success();
+        });
+
+        it('should change bounds', function () {
+          expect(this.model.listenTo.calls.argsFor(0)[0]).toEqual(this.model._map);
+          expect(this.model.listenTo.calls.argsFor(0)[1]).toEqual('change:center change:zoom');
+          expect(this.model.on.calls.argsFor(0)[0]).toEqual('change:sync_on_bbox_change');
+          expect(this.model.on.calls.argsFor(1)[0]).toEqual('change:url');
+          expect(this.model.on.calls.argsFor(2)[0]).toEqual('change:enabled');
+        });
+      });
+    });
+
+    describe('when map view bounds are NOT ready', function () {
+      beforeEach(function () {
+        spyOn(this.map, 'getViewBounds').and.returnValue(null);
+      });
+
+      describe('when sync_on_bbox_change is true', function () {
+        beforeEach(function () {
+          this.model.set({
+            'sync_on_bbox_change': true,
+            'url': 'http://example.com'
+          });
+        });
+
+        it('should wait until view bounds are ready', function () {
+          expect(this.model.fetch).not.toHaveBeenCalled();
+
+          this.map.setBounds([[5, 6], [7, 8]]);
+
+          expect(this.model.fetch).toHaveBeenCalled();
+        });
+      });
+
+      describe('when sync_on_bbox_change is false', function () {
+        beforeEach(function () {
+          this.model.set({
+            'sync_on_bbox_change': false,
+            'url': 'http://example.com'
+          });
+        });
+
+        it('should fetch', function () {
+          expect(this.model.fetch).toHaveBeenCalled();
+        });
       });
     });
   });
 
-  describe('after first load', function () {
+  describe('after first successful fetch', function () {
     beforeEach(function () {
       this.model.fetch = function (opts) {
         opts.success();
@@ -262,7 +308,7 @@ describe('dataviews/dataview-model-base', function () {
 
     it('should fetch if the bounding box have changed while the dataview was disabled', function () {
       // Map bounds have changed
-      this.map.getViewBounds.and.returnValue([102, 200], [300, 400]);
+      this.map.setBounds([102, 200], [300, 400]);
       this.map.trigger('change:center');
 
       this.model.set('enabled', true);
@@ -285,7 +331,7 @@ describe('dataviews/dataview-model-base', function () {
       this.model.fetch.calls.reset();
 
       // Map bounds have changed
-      this.map.getViewBounds.and.returnValue([102, 200], [300, 400]);
+      this.map.setBounds([102, 200], [300, 400]);
       this.map.trigger('change:center');
 
       this.model.set('enabled', true);
@@ -331,7 +377,7 @@ describe('dataviews/dataview-model-base', function () {
     });
 
     it('should fetch when the bounding box has changed', function () {
-      this.map.getViewBounds.and.returnValue([102, 200], [300, 400]);
+      this.map.setBounds([102, 200], [300, 400]);
       this.map.trigger('change:center');
 
       expect(this.model.fetch).toHaveBeenCalled();
@@ -340,7 +386,7 @@ describe('dataviews/dataview-model-base', function () {
     it('should NOT fetch when the bounding box has changed and the dataview is not enabled', function () {
       this.model.set('enabled', false);
 
-      this.map.getViewBounds.and.returnValue([102, 200], [300, 400]);
+      this.map.setBounds([102, 200], [300, 400]);
       this.map.trigger('change:center');
 
       expect(this.model.fetch).not.toHaveBeenCalled();
@@ -352,7 +398,7 @@ describe('dataviews/dataview-model-base', function () {
       expect(this.model.fetch).toHaveBeenCalled();
       this.model.fetch.calls.reset();
 
-      this.map.getViewBounds.and.returnValue([102, 200], [300, 400]);
+      this.map.setBounds([102, 200], [300, 400]);
       this.map.trigger('change:center');
 
       expect(this.model.fetch).not.toHaveBeenCalled();
@@ -500,7 +546,7 @@ describe('dataviews/dataview-model-base', function () {
       spyOn(dataview, 'fetch');
 
       // Map bounds change
-      this.map.getViewBounds.and.returnValue([100, 200], [300, 400]);
+      this.map.setBounds([100, 200], [300, 400]);
       this.map.trigger('change:center');
 
       expect(dataview.fetch).toHaveBeenCalled();
@@ -592,50 +638,6 @@ describe('dataviews/dataview-model-base', function () {
       });
 
       expect(dataview.getSourceId()).toEqual('a1');
-    });
-  });
-
-  describe('.hasSameSourceAsLayer', function () {
-    it("should return true if dataview has the same source as it's layer", function () {
-      var layer = new Backbone.Model({
-        id: 'layerId',
-        source: 'SOURCE_ID'
-      });
-      layer.getDataProvider = jasmine.createSpy('getDataProvider').and.returnValue(undefined);
-
-      var dataview = new DataviewModelBase({
-        source: {
-          id: 'SOURCE_ID'
-        }
-      }, { // eslint-disable-line
-        layer: layer,
-        map: this.map,
-        vis: this.vis,
-        analysisCollection: this.analysisCollection
-      });
-
-      expect(dataview.hasSameSourceAsLayer()).toBe(true);
-    });
-
-    it("should return false if dataview doen't have the same source as it's layer", function () {
-      var layer = new Backbone.Model({
-        id: 'layerId',
-        source: 'SOURCE_ID'
-      });
-      layer.getDataProvider = jasmine.createSpy('getDataProvider').and.returnValue(undefined);
-
-      var dataview = new DataviewModelBase({
-        source: {
-          id: 'DIFFERENT_SOURCE_ID'
-        }
-      }, { // eslint-disable-line
-        layer: layer,
-        map: this.map,
-        vis: this.vis,
-        analysisCollection: this.analysisCollection
-      });
-
-      expect(dataview.hasSameSourceAsLayer()).toBe(false);
     });
   });
 

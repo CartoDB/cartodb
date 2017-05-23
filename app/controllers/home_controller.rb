@@ -89,7 +89,7 @@ class HomeController < ApplicationController
 
   def pg_diagnosis
     version_diagnosis(PG_VERSION) {
-      version = Rails::Sequel.connection.fetch('select version()').first.values[0]
+      version = SequelRails.connection.fetch('select version()').first.values[0]
       [version, [version]]
     }
   end
@@ -181,7 +181,7 @@ class HomeController < ApplicationController
   end
 
   def check_db
-    Rails::Sequel.connection.select('OK').first.values.include?('OK')
+    SequelRails.connection.select('OK').first.values.include?('OK')
   end
 
   def check_redis
@@ -203,7 +203,7 @@ class HomeController < ApplicationController
   end
 
   def extension_diagnosis(extension, supported_version, latest_version = nil)
-    version = Rails::Sequel.connection.fetch("select default_version from pg_available_extensions where name = '#{extension}'").first.values[0]
+    version = SequelRails.connection.fetch("select default_version from pg_available_extensions where name = '#{extension}'").first.values[0]
 
     status_and_messages(version, [], supported_version, latest_version)
   end

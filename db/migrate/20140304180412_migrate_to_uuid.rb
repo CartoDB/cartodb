@@ -67,14 +67,14 @@ These are the steps you need to follow in order to run the manual script:
     tables_data = true
     TABLE_LIST.each do |table_name,columns|
       fields_count = fields_count + columns.length
-      table_rows = Rails::Sequel.connection[table_name.to_sym].count
+      table_rows = SequelRails.connection[table_name.to_sym].count
       if table_rows == 0
         tables_data = false
       else
         tables_data = true
       end
       columns.each do |column|
-        result = Rails::Sequel.connection.fetch(%Q{
+        result = SequelRails.connection.fetch(%Q{
           SELECT data_type 
           FROM information_schema.columns 
           WHERE table_name='#{table_name}' AND column_name='#{column}';
@@ -96,7 +96,7 @@ These are the steps you need to follow in order to run the manual script:
     #
     if tables_data == false
       if outdated_fields_count > 0 # one or more ids are not uuid
-        uuid_extension = Rails::Sequel.connection.fetch(%Q{
+        uuid_extension = SequelRails.connection.fetch(%Q{
         SELECT count(*) as count
         FROM pg_available_extensions
         WHERE name='uuid-ossp'
@@ -104,24 +104,24 @@ These are the steps you need to follow in order to run the manual script:
         if uuid_extension[:count] == 0
           puts "This migration cannot continue. You need to have postgresql extension 'uuid-ossp' installed"
         else
-          Rails::Sequel.connection.run(%Q{
+          SequelRails.connection.run(%Q{
           CREATE EXTENSION IF NOT EXISTS "uuid-ossp"
           })
         end
-        Rails::Sequel.connection.transaction do
+        SequelRails.connection.transaction do
           TABLE_LIST.each do |table_name,columns|
             columns.each do |column|
-              Rails::Sequel.connection.run(%Q{
+              SequelRails.connection.run(%Q{
               ALTER TABLE #{table_name}
               DROP COLUMN #{column}
               })
               if column == 'id'
-                Rails::Sequel.connection.run(%Q{
+                SequelRails.connection.run(%Q{
                 ALTER TABLE #{table_name}
                 ADD COLUMN id uuid UNIQUE PRIMARY KEY NOT NULL DEFAULT uuid_generate_v4()
                 })
               else
-                Rails::Sequel.connection.run(%Q{
+                SequelRails.connection.run(%Q{
                 ALTER TABLE #{table_name}
                 ADD COLUMN #{column} uuid
                 })

@@ -6,6 +6,8 @@ require_relative '../controller_helper'
 require_dependency 'carto/uuidhelper'
 require_dependency 'static_maps_url_helper'
 require_relative 'vizjson3_presenter'
+require_dependency 'visualization/name_generator'
+require_dependency 'visualization/table_blender'
 
 module Carto
   module Api
@@ -16,7 +18,7 @@ module Carto
       include Carto::ControllerHelper
       include VisualizationsControllerHelper
 
-      ssl_required :index, :show, :destroy
+      ssl_required :index, :show, :create, :destroy
       ssl_allowed  :vizjson2, :vizjson3, :likes_count, :likes_list, :is_liked, :list_watching, :static_map
 
       # TODO: compare with older, there seems to be more optional authentication endpoints
@@ -122,6 +124,76 @@ module Carto
         response.headers['Cache-Control']   = "max-age=86400,must-revalidate, public"
 
         redirect_to Carto::StaticMapsURLHelper.new.url_for_static_map(request, @visualization, map_width, map_height)
+      end
+
+      def create
+        vis_data = payload
+
+        vis_data.delete(:permission)
+        vis_data.delete(:permission_id)
+
+        # Don't allow to modify next_id/prev_id, force to use set_next_id()
+        prev_id = vis_data.delete(:prev_id) || vis_data.delete('prev_id')
+        next_id = vis_data.delete(:next_id) || vis_data.delete('next_id')
+
+        param_tables = vis_data.delete(:tables)
+        current_user_id = current_user.id
+
+        origin = 'blank'
+        source_id = vis_data.delete(:source_visualization_id)
+        vis = if source_id
+                user = Carto::User.find(current_user_id)
+                source = Carto::Visualization.where(id: source_id).first
+                return head(403) unless source && source.is_viewable_by_user?(user) && !source.kind_raster?
+                if source.derived?
+                  origin = 'copy'
+                  duplicate_derived_visualization(source_id, user)
+                else
+                  create_visualization_from_tables([source.user_table], vis_data)
+                end
+              elsif param_tables
+                subdomain = CartoDB.extract_subdomain(request)
+                viewed_user = ::User.find(username: subdomain)
+                tables = param_tables.map do |table_name|
+                  Carto::Helpers::TableLocator.new.get_by_id_or_name(table_name, viewed_user) if viewed_user
+                end
+                create_visualization_from_tables(tables.flatten, vis_data)
+              else
+                Carto::Visualization.new(vis_data.merge(name: name_candidate, user_id: current_user_id))
+              end
+
+        vis.ensure_valid_privacy
+        # both null, make sure is the first children or automatically link to the tail of the list
+        if !vis.parent_id.nil? && prev_id.nil? && next_id.nil?
+          parent_vis = vis.parent
+          return head(403) unless parent_vis.has_permission?(current_user, Carto::Visualization::PERMISSION_READWRITE)
+
+          children = parent_vis.children
+
+          prev_id = children.last.id unless children.empty?
+        end
+
+        vis.store
+
+        vis = set_visualization_prev_next(vis, prev_id, next_id)
+
+        current_viewer_id = current_viewer.id
+        properties = {
+          user_id: current_viewer_id,
+          origin: origin,
+          visualization_id: vis.id
+        }
+
+        if vis.derived?
+          Carto::Tracking::Events::CreatedMap.new(current_viewer_id, properties).report
+        else
+          Carto::Tracking::Events::CreatedDataset.new(current_viewer_id, properties).report
+        end
+
+        render_jsonp(Carto::Api::VisualizationPresenter.new(vis, current_viewer, self).to_poro)
+      rescue CartoDB::InvalidMember => e
+        CartoDB::Logger.error(message: "Invalid member creating visualization", visualization_id: vis.id, exception: e)
+        render_jsonp({ errors: vis.full_errors }, 400)
       end
 
       def destroy
@@ -235,6 +307,51 @@ module Carto
         referer_host && (referer_host.ends_with?('carto.com') || referer_host.ends_with?('cartodb.com'))
       rescue URI::InvalidURIError
         false
+      end
+
+      def payload
+        request.body.rewind
+        ::JSON.parse(request.body.read.to_s || String.new, {symbolize_names: true})
+      end
+
+      def duplicate_derived_visualization(source, user)
+        export_service = Carto::VisualizationsExportService2.new
+        visualization_hash = export_service.export_visualization_json_hash(source, user)
+        visualization_copy = export_service.build_visualization_from_hash_export(visualization_hash)
+        visualization_copy.name = name_candidate
+        visualization_copy.version = user.new_visualizations_version
+        Carto::VisualizationsExportPersistenceService.new.save_import(user, visualization_copy)
+
+        Carto::Visualization.find(visualization_copy.id)
+      end
+
+      def name_candidate
+        CartoDB::Visualization::NameGenerator.new(current_user).name(params[:name])
+      end
+
+      def set_visualization_prev_next(vis, prev_id, next_id)
+        if !prev_id.nil?
+          prev_vis = Carto::Visualization.find(prev_id)
+          return head(403) unless prev_vis.has_permission?(current_user, Carto::Visualization::PERMISSION_READWRITE)
+          prev_vis.set_next_list_item!(vis)
+        elsif !next_id.nil?
+          next_vis = Carto::Visualization.find(next_id)
+          return head(403) unless next_vis.has_permission?(current_user, Carto::Visualization::PERMISSION_READWRITE)
+          next_vis.set_prev_list_item!(vis)
+        end
+        vis
+      end
+
+      def create_visualization_from_tables(tables, vis_data)
+        blender = CartoDB::Visualization::TableBlender.new(Carto::User.find(current_user.id), tables)
+        map = blender.blend
+
+        Carto::Visualization.new(vis_data.merge(name: name_candidate,
+                                                map_id: map.id,
+                                                type: 'derived',
+                                                privacy: blender.blended_privacy,
+                                                user_id: current_user.id,
+                                                overlays: Carto::OverlayFactory.build_default_overlays(current_user)))
       end
     end
   end

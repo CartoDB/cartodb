@@ -554,6 +554,11 @@ class Carto::Visualization < ActiveRecord::Base
     is_owner?(user) || permission.permitted?(user, permission_type)
   end
 
+  def ensure_valid_privacy
+    self.privacy = default_privacy if privacy.nil?
+    self.privacy = PRIVACY_PUBLIC unless can_be_private?
+  end
+
   private
 
   def remove_password

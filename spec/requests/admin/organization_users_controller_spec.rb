@@ -11,6 +11,14 @@ describe Admin::OrganizationUsersController do
     host! "#{@organization.name}.localhost.lan"
   end
 
+  before(:all) do
+    @ff_org_admins = FactoryGirl.create(:feature_flag, name: 'organization-admins', restricted: false)
+  end
+
+  after(:all) do
+    @ff_org_admins.destroy
+  end
+
   let(:username) { 'user-1' }
 
   let(:user_params) do

@@ -264,6 +264,7 @@ Development
 * Better display and logging of errors when SAML authentication fails (#12151)
 * Fixed problem resetting styles per node after adding a new analysis (#12085)
 * Docs, fixed some minor spelling and grammar errors in the content.
+* Fix `BUILDER_ENABLED` parameter in `create_dev_user` rake (#12189)
 * Docs, updated "More Info" url from street addresses georeference options to new, related guide.
 * Organizations users now get engine_enabled from the organization by default (#12153)
 * Color picker disappears in CartoCSS editor after clicking (#12097).

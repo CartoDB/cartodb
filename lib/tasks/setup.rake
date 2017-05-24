@@ -65,7 +65,7 @@ DESC
       user.database_host = ENV['DATABASE_HOST'] || ::SequelRails.configuration.environment_for(Rails.env)['host']
 
       if ENV['BUILDER_ENABLED'] == "true"
-        u.builder_enabled = true
+        user.builder_enabled = true
       end
 
       unless user.valid?

@@ -4,6 +4,7 @@ require_relative '../../app/models/organization.rb'
 require_relative 'organization_shared_examples'
 require 'helpers/unique_names_helper'
 require 'helpers/storage_helper'
+require 'factories/organizations_contexts'
 
 include CartoDB, StorageHelper, UniqueNamesHelper
 
@@ -45,8 +46,12 @@ describe Organization do
   end
 
   describe '#destroy_cascade' do
+    include TableSharing
+
     before(:each) do
       @organization = FactoryGirl.create(:organization)
+      ::User.any_instance.stubs(:create_in_central).returns(true)
+      ::User.any_instance.stubs(:update_in_central).returns(true)
     end
 
     after(:each) do
@@ -54,9 +59,6 @@ describe Organization do
     end
 
     it 'Destroys users and owner as well' do
-      ::User.any_instance.stubs(:create_in_central).returns(true)
-      ::User.any_instance.stubs(:update_in_central).returns(true)
-
       organization = Organization.new(quota_in_bytes: 1234567890, name: 'wadus', seats: 5).save
 
       owner = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
@@ -78,33 +80,33 @@ describe Organization do
       ::User.where(id: owner.id).first.should be nil
     end
 
-    it 'Destroys viewer users with visualizations' do
-      ::User.any_instance.stubs(:create_in_central).returns(true)
-      ::User.any_instance.stubs(:update_in_central).returns(true)
+    it 'Destroys viewer users with shared visualizations' do
+      organization = Organization.new(quota_in_bytes: 1234567890, name: 'wadus', seats: 2, viewer_seats: 2).save
 
-      organization = Organization.new(quota_in_bytes: 1234567890, name: 'wadus', seats: 5).save
-
-      owner = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
+      owner = create_user(quota_in_bytes: 524288000, table_quota: 500)
       owner_org = CartoDB::UserOrganization.new(organization.id, owner.id)
       owner_org.promote_user_to_admin
-      owner.reload
-      organization.reload
+      user1 = create_user(organization_id: organization.id)
+      user2 = create_user(organization_id: organization.id)
 
-      user = create_user(quota_in_bytes: 0, table_quota: 0, organization_id: organization.id, viewer: true)
-      user.save
-      user.reload
-      organization.reload
+      table1 = create_table(user_id: user1.id)
+      table2 = create_table(user_id: user2.id)
+      share_table_with_user(table1, user2)
+      share_table_with_user(table2, user1)
 
-      vis = FactoryGirl.create(:carto_visualization, user_id: user.id)
-      Carto::Visualization.exists?(vis.id).should be_true
-
-      organization.users.count.should eq 2
+      user1.viewer = true
+      user1.save
+      user2.viewer = true
+      user2.save
 
       organization.destroy_cascade
+
       Organization.where(id: organization.id).first.should be nil
-      ::User.where(id: user.id).first.should be nil
+      ::User.where(id: user1.id).first.should be nil
+      ::User.where(id: user2.id).first.should be nil
       ::User.where(id: owner.id).first.should be nil
-      Carto::Visualization.exists?(vis.id).should be_false
+      Carto::UserTable.exists?(table1.id)
+      Carto::UserTable.exists?(table2.id)
     end
 
     it 'destroys its groups through the extension' do

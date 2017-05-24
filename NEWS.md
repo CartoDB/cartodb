@@ -117,6 +117,7 @@ Development
 * Allow to have multiple administrators per organization (#12052)
 * Added explanation tooltip to the categorize label on the Find Nearest analysis (#12100)
 * Disable geometry edition button instead of hide in read-only layers (#11543)
+* New loading button styles (#12132)
 * Updated copies for export image & download map (#12114)
 
 ### Bug fixes

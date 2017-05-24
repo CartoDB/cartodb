@@ -70,7 +70,7 @@ class Admin::OrganizationUsersController < Admin::AdminController
       ]
     )
     @user.viewer = params[:user][:viewer] == 'true'
-    @user.org_admin = params[:user][:org_admin] if @organization.owner.has_feature_flag?('organization-admins')
+    @user.org_admin = params[:user][:org_admin] unless params[:user][:org_admin].nil?
     @user.organization = @organization
     current_user.copy_account_features(@user)
 

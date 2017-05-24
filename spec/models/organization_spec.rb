@@ -105,8 +105,8 @@ describe Organization do
       ::User.where(id: user1.id).first.should be nil
       ::User.where(id: user2.id).first.should be nil
       ::User.where(id: owner.id).first.should be nil
-      Carto::UserTable.exists?(table1.id)
-      Carto::UserTable.exists?(table2.id)
+      Carto::UserTable.exists?(table1.id).should be_false
+      Carto::UserTable.exists?(table2.id).should be_false
     end
 
     it 'destroys its groups through the extension' do

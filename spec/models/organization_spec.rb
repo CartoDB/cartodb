@@ -78,6 +78,35 @@ describe Organization do
       ::User.where(id: owner.id).first.should be nil
     end
 
+    it 'Destroys viewer users with visualizations' do
+      ::User.any_instance.stubs(:create_in_central).returns(true)
+      ::User.any_instance.stubs(:update_in_central).returns(true)
+
+      organization = Organization.new(quota_in_bytes: 1234567890, name: 'wadus', seats: 5).save
+
+      owner = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
+      owner_org = CartoDB::UserOrganization.new(organization.id, owner.id)
+      owner_org.promote_user_to_admin
+      owner.reload
+      organization.reload
+
+      user = create_user(quota_in_bytes: 0, table_quota: 0, organization_id: organization.id, viewer: true)
+      user.save
+      user.reload
+      organization.reload
+
+      vis = FactoryGirl.create(:carto_visualization, user_id: user.id)
+      Carto::Visualization.exists?(vis.id).should be_true
+
+      organization.users.count.should eq 2
+
+      organization.destroy_cascade
+      Organization.where(id: organization.id).first.should be nil
+      ::User.where(id: user.id).first.should be nil
+      ::User.where(id: owner.id).first.should be nil
+      Carto::Visualization.exists?(vis.id).should be_false
+    end
+
     it 'destroys its groups through the extension' do
       Carto::Group.any_instance.expects(:destroy_group_with_extension).once
 

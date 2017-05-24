@@ -1914,6 +1914,35 @@ describe Carto::Api::VisualizationsController do
           end
         end
       end
+
+      describe "#update" do
+        before(:each) do
+          login(@user)
+        end
+
+        it "Updates changes even if named maps communication fails" do
+          @user.private_tables_enabled = true
+          @user.save
+
+          table = new_table(user_id: @user.id, privacy: ::UserTable::PRIVACY_PUBLIC).save.reload
+
+          Carto::NamedMaps::Api.any_instance.stubs(:create).raises('fake named maps failure')
+
+          put_json api_v1_visualizations_update_url(id: table.table_visualization.id),
+                   {
+                     id: table.table_visualization.id,
+                     privacy: Carto::Visualization::PRIVACY_PRIVATE
+                   } do |response|
+            response.status.should be_success
+          end
+
+          table.reload
+          table.privacy.should eq ::UserTable::PRIVACY_PRIVATE
+
+          @user.private_tables_enabled = false
+          @user.save
+        end
+      end
     end
 
     describe '#destroy' do

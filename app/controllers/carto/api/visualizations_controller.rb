@@ -8,6 +8,7 @@ require_dependency 'static_maps_url_helper'
 require_relative 'vizjson3_presenter'
 require_dependency 'visualization/name_generator'
 require_dependency 'visualization/table_blender'
+require_dependency 'carto/visualization_migrator'
 
 module Carto
   module Api
@@ -17,6 +18,7 @@ module Carto
       include Carto::UUIDHelper
       include Carto::ControllerHelper
       include VisualizationsControllerHelper
+      include Carto::VisualizationMigrator
 
       ssl_required :index, :show, :create, :destroy
       ssl_allowed  :vizjson2, :vizjson3, :likes_count, :likes_list, :is_liked, :list_watching, :static_map
@@ -27,7 +29,7 @@ module Carto
 
       before_filter :id_and_schema_from_params
       before_filter :load_visualization, only: [:likes_count, :likes_list, :is_liked, :show, :stats, :list_watching,
-                                                :static_map, :vizjson2, :vizjson3, :destroy]
+                                                :static_map, :vizjson2, :vizjson3, :update, :destroy]
       before_filter :ensure_visualization_owned, only: [:destroy]
 
       rescue_from Carto::LoadError, with: :rescue_from_carto_error
@@ -165,13 +167,14 @@ module Carto
         vis.ensure_valid_privacy
         # both null, make sure is the first children or automatically link to the tail of the list
         if !vis.parent_id.nil? && prev_id.nil? && next_id.nil?
-          parent_vis = vis.parent
-          return head(403) unless parent_vis.has_permission?(current_user, Carto::Visualization::PERMISSION_READWRITE)
+          parent_vis = Carto::Visualization.find(vis.parent_id)
+          return head(403) unless parent_vis.has_permission?(current_user, Carto::Permission::ACCESS_READWRITE)
 
           children = parent_vis.children
 
           prev_id = children.last.id unless children.empty?
         end
+
 
         vis.store
 
@@ -194,6 +197,72 @@ module Carto
       rescue CartoDB::InvalidMember => e
         CartoDB::Logger.error(message: "Invalid member creating visualization", visualization_id: vis.id, exception: e)
         render_jsonp({ errors: vis.full_errors }, 400)
+      end
+
+      def update
+        begin
+          vis = @visualization
+
+          return head(404) unless vis
+          return head(403) unless payload[:id] == vis.id
+          return head(403) unless vis.has_permission?(current_user, Carto::Permission::ACCESS_READWRITE)
+
+          vis_data = payload
+
+          vis_data.delete(:permission) || vis_data.delete('permission')
+          vis_data.delete(:permission_id)  || vis_data.delete('permission_id')
+
+          # Don't allow to modify next_id/prev_id, force to use set_next_id()
+          vis_data.delete(:prev_id) || vis_data.delete('prev_id')
+          vis_data.delete(:next_id) || vis_data.delete('next_id')
+          # when a table gets renamed, first it's canonical visualization is renamed, so we must revert renaming if that failed
+          # This is far from perfect, but works without messing with table-vis sync and their two backends
+
+          if vis.table?
+            old_vis_name = vis.name
+
+            vis.attributes = vis_data
+            new_vis_name = vis.name
+            old_table_name = vis.table.name
+            vis = @stats_aggregator.timing('save-table') do
+              vis.store
+            end
+            vis = @stats_aggregator.timing('save-rename') do
+              if new_vis_name != old_vis_name && vis.table.name == old_table_name
+                vis.name = old_vis_name
+                vis.store
+              else
+                vis
+              end
+            end
+          else
+            old_version = vis.version
+
+            vis.attributes = vis_data
+            vis = @stats_aggregator.timing('save') do
+              vis.store
+            end
+
+            if version_needs_migration?(old_version, vis.version)
+              migrate_visualization_to_v3(vis)
+            end
+          end
+
+          # TODO: sometimes an attribute changes. Example: visualization name because of sanitization.
+          # Avoid this reload by updating the entity properly.
+          vis.reload
+
+          render_jsonp(Carto::Api::VisualizationPresenter.new(vis, current_viewer, self).to_poro)
+        rescue KeyError => e
+          CartoDB::Logger.error(message: "KeyError updating visualization", visualization_id: vis.id, exception: e)
+          head(404)
+        rescue CartoDB::InvalidMember => e
+          CartoDB::Logger.error(message: "InvalidMember updating visualization", visualization_id: vis.id, exception: e)
+          render_jsonp({ errors: vis.full_errors.empty? ? ['Error saving data'] : vis.full_errors }, 400)
+        rescue => e
+          CartoDB::Logger.error(message: "Error updating visualization", visualization_id: vis.id, exception: e)
+          render_jsonp({ errors: ["Unknown error: #{e.message}"] }, 400)
+        end
       end
 
       def destroy
@@ -332,11 +401,11 @@ module Carto
       def set_visualization_prev_next(vis, prev_id, next_id)
         if !prev_id.nil?
           prev_vis = Carto::Visualization.find(prev_id)
-          return head(403) unless prev_vis.has_permission?(current_user, Carto::Visualization::PERMISSION_READWRITE)
+          return head(403) unless prev_vis.has_permission?(current_user, Carto::Permission::ACCESS_READWRITE)
           prev_vis.set_next_list_item!(vis)
         elsif !next_id.nil?
           next_vis = Carto::Visualization.find(next_id)
-          return head(403) unless next_vis.has_permission?(current_user, Carto::Visualization::PERMISSION_READWRITE)
+          return head(403) unless next_vis.has_permission?(current_user, Carto::Permission::ACCESS_READWRITE)
           next_vis.set_prev_list_item!(vis)
         end
         vis

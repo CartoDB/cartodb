@@ -10,11 +10,9 @@ require_relative '../../../../lib/static_maps_url_helper'
 
 require_dependency 'carto/tracking/events'
 require_dependency 'carto/visualizations_export_service_2'
-require_dependency 'carto/visualization_migrator'
 
 class Api::Json::VisualizationsController < Api::ApplicationController
   include CartoDB
-  include Carto::VisualizationMigrator
 
   ssl_allowed :notify_watching, :list_watching, :add_like, :remove_like
   ssl_required :create, :update, :set_next_id
@@ -24,72 +22,6 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   before_filter :table_and_schema_from_params, only: [:update, :stats,
                                                       :notify_watching, :list_watching,
                                                       :add_like, :remove_like, :set_next_id]
-
-  def update
-    @stats_aggregator.timing('visualizations.update') do
-      begin
-        vis, = @stats_aggregator.timing('locate') do
-          locator.get(@table_id, CartoDB.extract_subdomain(request))
-        end
-
-        return head(404) unless vis
-        return head(403) unless payload[:id] == vis.id
-        return head(403) unless vis.has_permission?(current_user, Visualization::Member::PERMISSION_READWRITE)
-
-        vis_data = payload
-
-        vis_data.delete(:permission) || vis_data.delete('permission')
-        vis_data.delete(:permission_id)  || vis_data.delete('permission_id')
-
-        # Don't allow to modify next_id/prev_id, force to use set_next_id()
-        vis_data.delete(:prev_id) || vis_data.delete('prev_id')
-        vis_data.delete(:next_id) || vis_data.delete('next_id')
-        # when a table gets renamed, first it's canonical visualization is renamed, so we must revert renaming if that failed
-        # This is far from perfect, but works without messing with table-vis sync and their two backends
-
-        if vis.table?
-          old_vis_name = vis.name
-
-          vis.attributes = vis_data
-          new_vis_name = vis.name
-          old_table_name = vis.table.name
-          vis = @stats_aggregator.timing('save-table') do
-            vis.store.fetch
-          end
-          vis = @stats_aggregator.timing('save-rename') do
-            if new_vis_name != old_vis_name && vis.table.name == old_table_name
-              vis.name = old_vis_name
-              vis.store.fetch
-            else
-              vis
-            end
-          end
-        else
-          old_version = vis.version
-
-          vis.attributes = vis_data
-          vis = @stats_aggregator.timing('save') do
-            vis.store.fetch
-          end
-
-          if version_needs_migration?(old_version, vis.version)
-            migrate_visualization_to_v3(vis)
-          end
-        end
-
-        render_jsonp(vis)
-      rescue KeyError => e
-        CartoDB::Logger.error(message: "KeyError updating visualization", visualization_id: vis.id, exception: e)
-        head(404)
-      rescue CartoDB::InvalidMember => e
-        CartoDB::Logger.error(message: "InvalidMember updating visualization", visualization_id: vis.id, exception: e)
-        render_jsonp({ errors: vis.full_errors.empty? ? ['Error saving data'] : vis.full_errors }, 400)
-      rescue => e
-        CartoDB::Logger.error(message: "Error updating visualization", visualization_id: vis.id, exception: e)
-        render_jsonp({ errors: ['Unknown error'] }, 400)
-      end
-    end
-  end
 
   def notify_watching
     vis = Visualization::Member.new(id: @table_id).fetch
@@ -233,15 +165,6 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
   def current_user_is_owner?(table)
     current_user.present? && (table.owner.id == current_user.id)
-  end
-
-  def set_vizjson_response_headers_for(visualization)
-    # We don't cache non-public vis
-    if visualization.public? || visualization.public_with_link?
-      response.headers['X-Cache-Channel'] = "#{visualization.varnish_key}:vizjson"
-      response.headers['Surrogate-Key'] = "#{CartoDB::SURROGATE_NAMESPACE_VIZJSON} #{visualization.surrogate_key}"
-      response.headers['Cache-Control']   = 'no-cache,max-age=86400,must-revalidate, public'
-    end
   end
 
   def payload

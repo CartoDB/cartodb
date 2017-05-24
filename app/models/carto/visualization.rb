@@ -67,6 +67,8 @@ class Carto::Visualization < ActiveRecord::Base
   has_many :overlays, order: '"order"', dependent: :destroy
 
   belongs_to :parent, class_name: Carto::Visualization, primary_key: :parent_id
+  belongs_to :prev_list_item, class_name: Carto::Visualization, primary_key: :prev_id
+  belongs_to :next_list_item, class_name: Carto::Visualization, primary_key: :next_id
 
   belongs_to :active_layer, class_name: Carto::Layer
 
@@ -559,6 +561,68 @@ class Carto::Visualization < ActiveRecord::Base
     self.privacy = PRIVACY_PUBLIC unless can_be_private?
   end
 
+  def default_privacy
+    can_be_private? ? PRIVACY_LINK : PRIVACY_PUBLIC
+  end
+
+  # @param other_vis CartoDB::Visualization::Member|nil
+  # Note: Changes state both of self, other_vis and other affected list items, but only reloads self & other_vis
+  def set_next_list_item!(other_vis)
+    close_list_gap(other_vis)
+
+    # Now insert other_vis after self
+    unless other_vis.nil?
+      if self.next_list_item.nil?
+        other_vis.next_list_item = nil
+      else
+        other_vis.next_list_item = self.next_list_item
+        next_item = next_list_item
+        next_item.prev_list_item = other_vis
+        next_item.store
+      end
+      self.next_list_item = other_vis
+      other_vis.prev_list_item = self
+      other_vis.store
+
+      # TODO: remove this reload
+      other_vis.reload
+    end
+
+    store
+
+    # TODO: remove this reload
+    reload
+  end
+
+  # @param other_vis CartoDB::Visualization::Member|nil
+  # Note: Changes state both of self, other_vis and other affected list items, but only reloads self & other_vis
+  def set_prev_list_item!(other_vis)
+    close_list_gap(other_vis)
+
+    # Now insert other_vis after self
+    unless other_vis.nil?
+      if self.prev_list_item.nil?
+        other_vis.prev_list_item = nil
+      else
+        other_vis.prev_list_item = self.prev_list_item
+        prev_item = prev_list_item
+        prev_item.next_list_item = other_vis
+        prev_item.store
+      end
+      self.prev_list_item = other_vis
+      other_vis.next_list_item = self
+      other_vis.store
+
+      # TODO: remove this reload
+      other_vis.reload
+    end
+
+    store
+
+    # TODO: remove this reload
+    reload
+  end
+
   private
 
   def remove_password
@@ -717,5 +781,33 @@ class Carto::Visualization < ActiveRecord::Base
 
   def invalidation_service
     @invalidation_service ||= Carto::VisualizationInvalidationService.new(self)
+  end
+
+  def close_list_gap(other_vis)
+    reload_self = false
+
+    if other_vis.nil?
+      self.next_list_item = nil
+      old_prev = nil
+      old_next = nil
+    else
+      old_prev = other_vis.prev_list_item
+      old_next = other_vis.next_list_item
+    end
+
+    # First close gap left by other_vis
+    unless old_prev.nil?
+      old_prev.next_list_item = old_next.nil? ? nil : old_next
+      old_prev.store
+      reload_self |= old_prev.id == self.id
+    end
+    unless old_next.nil?
+      old_next.prev_list_item = old_prev.nil? ? nil : old_prev
+      old_next.store
+      reload_self |= old_next.id == self.id
+    end
+
+    # TODO: remove this reload
+    reload if reload_self
   end
 end

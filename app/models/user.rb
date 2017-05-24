@@ -375,13 +375,17 @@ class User < Sequel::Model
     shared_entities.any?
   end
 
-  def before_destroy
+  def ensure_nonviewer
     # A viewer can't destroy data, this allows the cleanup. Down to dataset level
     # to skip model hooks.
     if viewer
       this.update(viewer: false)
       self.viewer = false
     end
+  end
+
+  def before_destroy
+    ensure_nonviewer
 
     @org_id_for_org_wipe = nil
     error_happened = false

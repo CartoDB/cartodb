@@ -4,7 +4,7 @@ Sequel.migration do
       add_column :visualization_id, 'uuid'
     end
 
-    Rails::Sequel.connection.run(%Q{
+    SequelRails.connection.run(%Q{
       ALTER TABLE "synchronizations"
         ADD CONSTRAINT  visualization_id_fkey
         FOREIGN KEY (visualization_id)

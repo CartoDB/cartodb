@@ -12,7 +12,7 @@ migration(
     end
 
     # The following code should be executed to restore the index for state_id
-    # Rails::Sequel.connection.run %{
+    # SequelRails.connection.run %{
     #   CREATE INDEX CONCURRENTLY "visualizations_state_id_index"
     #     ON "visualizations" ("state_id");
     # }

@@ -30,7 +30,7 @@
 }
 
 .ie11-hotfix {
-  & .ScrollView--horizontal {
+  .ScrollView--horizontal {
     /* Temporary hack. Apply necessary fixed height to parent .ie11-hotfix */
     height: inherit;
   }

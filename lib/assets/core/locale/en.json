@@ -1883,6 +1883,7 @@
       },
       "max-layers-infowindow": {
         "title": "You have reached the %{maxLayers} layer limit",
+        "pricing": "https://carto.com/pricing/",
         "regular": {
           "body": "Upgrade your account to add more than %{maxLayers} layers to your map",
           "upgrade": "Upgrade your account"

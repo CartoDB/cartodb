@@ -35,7 +35,7 @@ DESC
       u.password = ENV['PASSWORD']
       u.password_confirmation = ENV['PASSWORD']
       u.username = ENV['SUBDOMAIN']
-      u.database_host = ENV['DATABASE_HOST'] || ::Rails::Sequel.configuration.environment_for(Rails.env)['host']
+      u.database_host = ENV['DATABASE_HOST'] || ::SequelRails.configuration.environment_for(Rails.env)['host']
 
       if ENV['BUILDER_ENABLED'] == "true"
         u.builder_enabled = true
@@ -62,7 +62,7 @@ DESC
       user.password = ENV['PASSWORD']
       user.password_confirmation = ENV['PASSWORD']
       user.username = ENV['SUBDOMAIN']
-      user.database_host = ENV['DATABASE_HOST'] || ::Rails::Sequel.configuration.environment_for(Rails.env)['host']
+      user.database_host = ENV['DATABASE_HOST'] || ::SequelRails.configuration.environment_for(Rails.env)['host']
 
       if ENV['BUILDER_ENABLED'] == "true"
         u.builder_enabled = true
@@ -115,7 +115,7 @@ DESC
     task :create_publicuser => :environment do
       [CartoDB::PUBLIC_DB_USER, CartoDB::TILE_DB_USER].each do |u|
         puts "Creating user #{u}"
-        ::Rails::Sequel.connection.run("DO $$
+        ::SequelRails.connection.run("DO $$
         BEGIN
           IF NOT EXISTS ( SELECT * FROM pg_user WHERE usename = '#{u}') THEN
             CREATE USER #{u}; -- TODO: with password '...'
@@ -142,7 +142,7 @@ DESC
         u.password_confirmation = ENV['PASSWORD']
         u.username = ENV['SUBDOMAIN']
         if ENV['DATABASE_HOST'].blank?
-          u.database_host = ::Rails::Sequel.configuration.environment_for(Rails.env)['host']
+          u.database_host = ::SequelRails.configuration.environment_for(Rails.env)['host']
         else
           u.database_host = ENV['DATABASE_HOST']
         end

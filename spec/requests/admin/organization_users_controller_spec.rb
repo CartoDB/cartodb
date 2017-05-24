@@ -291,6 +291,7 @@ describe Admin::OrganizationUsersController do
         user.quota_in_bytes.should eq user_params[:quota_in_bytes]
         user.twitter_datasource_enabled.should be_nil
         user.builder_enabled.should be_nil
+        user.engine_enabled.should be_nil
 
         user.destroy
       end

@@ -53,6 +53,10 @@ module Carto
       (config && config['custom_paths'] && config['custom_paths']['views']) || Array.new
     end
 
+    def saas?
+      Cartodb.config[:cartodb_com_hosted] == false
+    end
+
     private
 
     def config_files_root

@@ -404,8 +404,8 @@ describe User do
     user.save
     user_id = user.id
     user.destroy
-    Rails::Sequel.connection["select count(*) from feature_flags_users where user_id = '#{user_id}'"].first[:count].should eq 0
-    Rails::Sequel.connection["select count(*) from feature_flags where id = '#{ff.id}'"].first[:count].should eq 1
+    SequelRails.connection["select count(*) from feature_flags_users where user_id = '#{user_id}'"].first[:count].should eq 0
+    SequelRails.connection["select count(*) from feature_flags where id = '#{ff.id}'"].first[:count].should eq 1
   end
 
   it "should have a default dashboard_viewed? false" do
@@ -853,7 +853,7 @@ describe User do
   it "should create a dabase user that only can read it's own database" do
 
     connection = ::Sequel.connect(
-      ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+      ::SequelRails.configuration.environment_for(Rails.env).merge(
         'database' => @user.database_name, :logger => ::Rails.logger,
         'username' => @user.database_username, 'password' => @user.database_password
       )
@@ -863,7 +863,7 @@ describe User do
 
     connection = nil
     connection = ::Sequel.connect(
-      ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+      ::SequelRails.configuration.environment_for(Rails.env).merge(
         'database' => @user2.database_name, :logger => ::Rails.logger,
         'username' => @user.database_username, 'password' => @user.database_password
       )
@@ -878,7 +878,7 @@ describe User do
     end
 
     connection = ::Sequel.connect(
-      ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+      ::SequelRails.configuration.environment_for(Rails.env).merge(
         'database' => @user2.database_name, :logger => ::Rails.logger,
         'username' => @user2.database_username, 'password' => @user2.database_password
       )
@@ -887,7 +887,7 @@ describe User do
     connection.disconnect
 
     connection = ::Sequel.connect(
-      ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+      ::SequelRails.configuration.environment_for(Rails.env).merge(
         'database' => @user.database_name, :logger => ::Rails.logger,
         'username' => @user2.database_username, 'password' => @user2.database_password
       )
@@ -1082,16 +1082,16 @@ describe User do
     doomed_user = create_user :email => 'doomed1@example.com', :username => 'doomed1', :password => 'doomed123'
     create_table :user_id => doomed_user.id, :name => 'My first table', :privacy => UserTable::PRIVACY_PUBLIC
     doomed_user.reload
-    Rails::Sequel.connection["select count(*) from pg_catalog.pg_database where datname = '#{doomed_user.database_name}'"]
+    SequelRails.connection["select count(*) from pg_catalog.pg_database where datname = '#{doomed_user.database_name}'"]
       .first[:count].should == 1
-    Rails::Sequel.connection["select count(*) from pg_catalog.pg_user where usename = '#{doomed_user.database_username}'"]
+    SequelRails.connection["select count(*) from pg_catalog.pg_user where usename = '#{doomed_user.database_username}'"]
       .first[:count].should == 1
 
     doomed_user.destroy
 
-    Rails::Sequel.connection["select count(*) from pg_catalog.pg_database where datname = '#{doomed_user.database_name}'"]
+    SequelRails.connection["select count(*) from pg_catalog.pg_database where datname = '#{doomed_user.database_name}'"]
       .first[:count].should == 0
-    Rails::Sequel.connection["select count(*) from pg_catalog.pg_user where usename = '#{doomed_user.database_username}'"]
+    SequelRails.connection["select count(*) from pg_catalog.pg_user where usename = '#{doomed_user.database_username}'"]
       .first[:count].should == 0
   end
 
@@ -1455,6 +1455,34 @@ describe User do
         db = @org_user_owner.in_database
         db["SELECT COUNT(*) FROM cdb_analysis_catalog WHERE username='#{@org_user_2.username}'"].first[:count].should eq 0
       end
+
+      describe 'User#destroy' do
+        include TableSharing
+
+        it 'blocks deletion with shared entities' do
+          @not_to_be_deleted = TestUserFactory.new.create_test_user(unique_name('user'), @organization)
+          table = create_random_table(@not_to_be_deleted)
+          share_table_with_user(table, @org_user_owner)
+
+          expect { @not_to_be_deleted.destroy }.to raise_error(/Cannot delete user, has shared entities/)
+
+          ::User[@not_to_be_deleted.id].should be
+        end
+      end
+    end
+  end
+
+  describe 'User#destroy_cascade' do
+    include_context 'organization with users helper'
+    include TableSharing
+
+    it 'allows deletion even with shared entities' do
+      table = create_random_table(@org_user_1)
+      share_table_with_user(table, @org_user_1)
+
+      @org_user_1.destroy_cascade
+
+      ::User[@org_user_1.id].should_not be
     end
   end
 
@@ -1757,7 +1785,7 @@ describe User do
 
       data_import_id = '11111111-1111-1111-1111-111111111111'
 
-      Rails::Sequel.connection.run(%Q{
+      SequelRails.connection.run(%Q{
         INSERT INTO data_imports("data_source","data_type","table_name","state","success","logger","updated_at",
           "created_at","tables_created_count",
           "table_names","append","id","table_id","user_id",
@@ -1770,7 +1798,7 @@ describe User do
             '[{"type":".csv","size":5015}]','t','f','t','test','0.0.0.0','13204','test','f','{"twitter_credits_limit":0}');
         })
 
-      Rails::Sequel.connection.run(%Q{
+      SequelRails.connection.run(%Q{
         INSERT INTO geocodings("table_name","processed_rows","created_at","updated_at","formatter","state",
           "id","user_id",
           "cache_hits","kind","geometry_type","processable_rows","real_rows","used_credits",

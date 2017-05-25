@@ -359,7 +359,7 @@ describe SessionsController do
 
       post create_session_url(user_domain: user_domain, SAMLResponse: 'xx')
 
-      response.status.should == 200
+      response.status.should == 403
     end
 
     describe 'SAML logout' do

@@ -1,5 +1,8 @@
+require_dependency 'carto/configuration'
+
 module Concerns
   module CartodbCentralSynchronizable
+    include Carto::Configuration
 
     # This validation can't be added to the model because if a user creation begins at Central we can't know if user is the same or existing
     def validate_credentials_not_taken_in_central
@@ -53,6 +56,10 @@ module Concerns
             raise "Can't destroy the organization owner"
           end
         end
+      elsif is_a?(Organization)
+        # See Organization#destroy_cascade
+        raise "Delete organizations is not allowed" if saas?
+        cartodb_central_client.delete_organization(name)
       end
       return true
     end
@@ -136,7 +143,7 @@ module Concerns
           :google_maps_key, :google_maps_private_key, :here_isolines_quota, :here_isolines_block_price,
           :soft_here_isolines_limit, :obs_snapshot_quota, :obs_snapshot_block_price, :soft_obs_snapshot_limit,
           :obs_general_quota, :obs_general_block_price, :soft_obs_general_limit,
-          :viewer, :geocoder_provider, :isolines_provider, :routing_provider, :builder_enabled,
+          :viewer, :geocoder_provider, :isolines_provider, :routing_provider, :builder_enabled, :engine_enabled,
           :mapzen_routing_quota, :mapzen_routing_block_price, :soft_mapzen_routing_limit
         )
         case action

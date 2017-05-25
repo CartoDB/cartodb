@@ -69,8 +69,8 @@ class Admin::OrganizationUsersController < Admin::AdminController
         :soft_obs_snapshot_limit, :soft_obs_general_limit, :soft_mapzen_routing_limit
       ]
     )
-    @user.org_admin = params[:user][:org_admin] == 'true'
     @user.viewer = params[:user][:viewer] == 'true'
+    @user.org_admin = params[:user][:org_admin] unless params[:user][:org_admin].nil?
     @user.organization = @organization
     current_user.copy_account_features(@user)
 

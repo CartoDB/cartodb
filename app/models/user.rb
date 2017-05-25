@@ -239,7 +239,7 @@ class User < Sequel::Model
 
   def before_create
     super
-    self.database_host ||= ::Rails::Sequel.configuration.environment_for(Rails.env)['host']
+    self.database_host ||= ::SequelRails.configuration.environment_for(Rails.env)['host']
     self.api_key ||= self.class.make_token
   end
 
@@ -281,6 +281,7 @@ class User < Sequel::Model
       # Make the default of new organization users nil (inherit from organization) instead of the DB default
       # but only if not explicitly set otherwise
       self.builder_enabled = nil if new? && !changed_columns.include?(:builder_enabled)
+      self.engine_enabled = nil if new? && !changed_columns.include?(:engine_enabled)
     end
 
     if viewer
@@ -374,13 +375,17 @@ class User < Sequel::Model
     shared_entities.any?
   end
 
-  def before_destroy
+  def ensure_nonviewer
     # A viewer can't destroy data, this allows the cleanup. Down to dataset level
     # to skip model hooks.
     if viewer
       this.update(viewer: false)
       self.viewer = false
     end
+  end
+
+  def before_destroy
+    ensure_nonviewer
 
     @org_id_for_org_wipe = nil
     error_happened = false
@@ -396,7 +401,7 @@ class User < Sequel::Model
         end
       end
 
-      unless can_delete
+      unless can_delete || @force_destroy
         raise CartoDB::BaseCartoDBError.new('Cannot delete user, has shared entities')
       end
 
@@ -1301,7 +1306,7 @@ class User < Sequel::Model
   end
 
   def last_visualization_created_at
-    Rails::Sequel.connection.fetch("SELECT created_at FROM visualizations WHERE " +
+    SequelRails.connection.fetch("SELECT created_at FROM visualizations WHERE " +
       "map_id IN (select id FROM maps WHERE user_id=?) ORDER BY created_at DESC " +
       "LIMIT 1;", id)
       .to_a.fetch(0, {}).fetch(:created_at, nil)
@@ -1577,6 +1582,11 @@ class User < Sequel::Model
 
   def new_visualizations_version
     builder_enabled? ? 3 : 2
+  end
+
+  def destroy_cascade
+    @force_destroy = true
+    destroy
   end
 
   private

@@ -258,6 +258,7 @@ Development
 * IE11 fix for dropdowns with scrollview (#12073)
 * Better display and logging of errors when SAML authentication fails (#12151)
 * Fixed problem resetting styles per node after adding a new analysis (#12085)
+* Ensure Google services activation rake writes the api keys to Redis (#12209)
 * Docs, fixed some minor spelling and grammar errors in the content.
 * Docs, updated "More Info" url from street addresses georeference options to new, related guide.
 * Organizations users now get engine_enabled from the organization by default (#12153)

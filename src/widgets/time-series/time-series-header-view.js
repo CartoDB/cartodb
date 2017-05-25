@@ -37,10 +37,11 @@ module.exports = cdb.core.View.extend({
     var columnType = this._getColumnType();
     var scale = this._scale;
     var filter = this._rangeFilter;
+    var showSelection = !filter.isEmpty();
     var start;
     var end;
 
-    if (!filter.isEmpty()) {
+    if (showSelection) {
       if (columnType === 'date') {
         var startDate = new Date(scale.invert(filter.get('min')));
         var endDate = new Date(scale.invert(filter.get('max')));
@@ -51,17 +52,16 @@ module.exports = cdb.core.View.extend({
         start = FORMATTER_TYPES['number'](scale(filter.get('min')));
         end = FORMATTER_TYPES['number'](scale(filter.get('max')));
       }
-
-      this.$el.html(
-        template({
-          start: start,
-          end: end,
-          showClearButton: this.options.showClearButton
-        })
-      );
-    } else {
-      this.$el.empty();
     }
+
+    this.$el.html(
+      template({
+        start: start,
+        end: end,
+        showClearButton: this.options.showClearButton && showSelection,
+        showSelection: showSelection
+      })
+    );
 
     return this;
   },

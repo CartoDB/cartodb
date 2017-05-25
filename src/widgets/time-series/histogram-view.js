@@ -1,14 +1,11 @@
 var $ = require('jquery');
 var cdb = require('cartodb.js');
 var HistogramChartView = require('../histogram/chart');
-var TimeSeriesHeaderView = require('./time-series-header-view');
 
 /**
  * Time-series histogram view.
  */
 module.exports = cdb.core.View.extend({
-  className: 'CDB-Widget-content CDB-Widget-content--timeSeries',
-
   defaults: {
     mobileThreshold: 960, // px; should match CSS media-query
     histogramChartHeight: 48 + // inline bars height
@@ -28,23 +25,18 @@ module.exports = cdb.core.View.extend({
 
   render: function () {
     this.clearSubViews();
-    this._createHeaderView();
     this._createHistogramView();
     return this;
   },
 
-  _createHeaderView: function () {
-    var headerView = new TimeSeriesHeaderView({
-      dataviewModel: this.model,
-      rangeFilter: this._rangeFilter
-    });
-    headerView.bind('resetFilter', this._onResetFilter, this);
-    this.addView(headerView);
-    this.$el.append(headerView.render().el);
-  },
-
   selectRange: function (loBarIndex, hiBarIndex) {
     this._chartView.selectRange(loBarIndex, hiBarIndex);
+  },
+
+  resetFilter: function () {
+    this._rangeFilter.unsetRange();
+    this._chartView.removeSelection();
+    this._timeseriesModel.set({lo_index: null, hi_index: null});
   },
 
   _createHistogramView: function () {
@@ -83,12 +75,6 @@ module.exports = cdb.core.View.extend({
       this._chartView.updateXScale();
       this._chartView.updateYScale();
     }
-  },
-
-  _onResetFilter: function () {
-    this._rangeFilter.unsetRange();
-    this._chartView.removeSelection();
-    this._timeseriesModel.set({lo_index: null, hi_index: null});
   },
 
   _onBrushEnd: function (loBarIndex, hiBarIndex) {

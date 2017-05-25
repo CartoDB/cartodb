@@ -1,7 +1,9 @@
 var _ = require('underscore');
 var cdb = require('cartodb.js');
 var placeholderTemplate = require('./placeholder.tpl');
+var contentTemplate = require('./content.tpl');
 var HistogramView = require('./histogram-view');
+var TimeSeriesHeaderView = require('./time-series-header-view');
 
 /**
  * Widget content view for a time-series
@@ -24,7 +26,9 @@ module.exports = cdb.core.View.extend({
         hasTorqueLayer: false
       }));
     } else {
+      this.$el.append(contentTemplate());
       this._createHistogramView();
+      this._createHeaderView();
       this._updateRange();
     }
     return this;
@@ -42,7 +46,25 @@ module.exports = cdb.core.View.extend({
       torqueLayerModel: this._dataviewModel.layer
     });
 
-    this._appendView(this._histogramView);
+    this.addView(this._histogramView);
+    this.$('.js-content').append(this._histogramView.render().el);
+  },
+
+  _createHeaderView: function () {
+    if (this._headerView) {
+      this._headerView.remove();
+    }
+
+    this._headerView = new TimeSeriesHeaderView({
+      dataviewModel: this._dataviewModel,
+      rangeFilter: this._dataviewModel.filter
+    });
+    if (!this._histogramView) {
+      throw new Error('Histogram view must be instantiated before the header view');
+    }
+    this._headerView.bind('resetFilter', this._histogramView.resetFilter, this._histogramView);
+    this.addView(this._headerView);
+    this.$('.js-header').append(this._headerView.render().el);
   },
 
   _updateRange: function () {

@@ -120,6 +120,7 @@ Development
 * Updated copies for export image & download map (#12114)
 
 ### Bug fixes
+* Fixed UI when editing merge analysis (#10850)
 * Fixed uninitialized constant in Carto::Visualization when a viewer shares a visualization (#12129).
 * Google customers don't need quota checks for hires geocoding (support/#674)
 * Fixed a problem with autostyle when styles has aggregation (#8648)

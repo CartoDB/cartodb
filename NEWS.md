@@ -256,6 +256,7 @@ Development
 * Validate amount of organization seats (#12101)
 * Fixed error dropping tables from ghost table manager on race condition cases (#12012)
 * IE11 fix for dropdowns with scrollview (#12073)
+* Add last name field to users (#12174)
 * Better display and logging of errors when SAML authentication fails (#12151)
 * Fixed problem resetting styles per node after adding a new analysis (#12085)
 * Docs, fixed some minor spelling and grammar errors in the content.

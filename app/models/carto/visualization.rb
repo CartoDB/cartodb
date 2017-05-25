@@ -67,8 +67,8 @@ class Carto::Visualization < ActiveRecord::Base
   has_many :overlays, order: '"order"', dependent: :destroy
 
   belongs_to :parent, class_name: Carto::Visualization, primary_key: :parent_id
-  belongs_to :prev_list_item, class_name: Carto::Visualization, primary_key: :prev_id
-  belongs_to :next_list_item, class_name: Carto::Visualization, primary_key: :next_id
+  belongs_to :prev_list_item, class_name: Carto::Visualization, foreign_key: :prev_id
+  belongs_to :next_list_item, class_name: Carto::Visualization, foreign_key: :next_id
 
   belongs_to :active_layer, class_name: Carto::Layer
 

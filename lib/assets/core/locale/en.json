@@ -1882,18 +1882,18 @@
         "visualize": "Layer doesn't have geometry"
       },
       "max-layers-infowindow": {
-        "title": "You have reached the %{maxLayers} layer limit",
+        "title": "You have reached the maximum layer limit for this account.",
         "pricing": "https://carto.com/pricing/",
         "regular": {
-          "body": "Upgrade your account to add more than %{maxLayers} layers to your map",
+          "body": "Upgrade your account to add more than %{maxLayers} layers to your map.",
           "upgrade": "Upgrade your account"
         },
         "org": {
-          "body": "Contact your organization admin to upgrade your account",
+          "body": "Increase your layer limit by contacting the account's administrator.",
           "upgrade": "Contact admin"
         },
         "org-admin": {
-          "body": "Contact support to upgrade your account",
+          "body": "ncrease the layer limit for your organization by contacting CARTO support.",
           "upgrade": "Contact support"
         }
       }

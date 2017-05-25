@@ -1455,6 +1455,34 @@ describe User do
         db = @org_user_owner.in_database
         db["SELECT COUNT(*) FROM cdb_analysis_catalog WHERE username='#{@org_user_2.username}'"].first[:count].should eq 0
       end
+
+      describe 'User#destroy' do
+        include TableSharing
+
+        it 'blocks deletion with shared entities' do
+          @not_to_be_deleted = TestUserFactory.new.create_test_user(unique_name('user'), @organization)
+          table = create_random_table(@not_to_be_deleted)
+          share_table_with_user(table, @org_user_owner)
+
+          expect { @not_to_be_deleted.destroy }.to raise_error(/Cannot delete user, has shared entities/)
+
+          ::User[@not_to_be_deleted.id].should be
+        end
+      end
+    end
+  end
+
+  describe 'User#destroy_cascade' do
+    include_context 'organization with users helper'
+    include TableSharing
+
+    it 'allows deletion even with shared entities' do
+      table = create_random_table(@org_user_1)
+      share_table_with_user(table, @org_user_1)
+
+      @org_user_1.destroy_cascade
+
+      ::User[@org_user_1.id].should_not be
     end
   end
 

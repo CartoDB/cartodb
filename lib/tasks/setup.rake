@@ -48,7 +48,7 @@ DESC
     end
 
     task :create_dev_user =>
-      ["rake:db:create", "rake:db:migrate", "cartodb:db:create_publicuser"] do
+      ["cartodb:db:create_publicuser"] do
       raise "You should provide a valid e-mail"    if ENV['EMAIL'].blank?
       raise "You should provide a valid password"  if ENV['PASSWORD'].blank?
       raise "You should provide a valid subdomain" if ENV['SUBDOMAIN'].blank?
@@ -65,7 +65,7 @@ DESC
       user.database_host = ENV['DATABASE_HOST'] || ::SequelRails.configuration.environment_for(Rails.env)['host']
 
       if ENV['BUILDER_ENABLED'] == "true"
-        u.builder_enabled = true
+        user.builder_enabled = true
       end
 
       unless user.valid?

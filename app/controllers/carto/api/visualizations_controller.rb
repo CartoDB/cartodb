@@ -175,7 +175,6 @@ module Carto
           prev_id = children.last.id unless children.empty?
         end
 
-
         vis.store
 
         vis = set_visualization_prev_next(vis, prev_id, next_id)
@@ -200,60 +199,58 @@ module Carto
       end
 
       def update
-        begin
-          vis = @visualization
+        vis = @visualization
 
-          return head(404) unless vis
-          return head(403) unless payload[:id] == vis.id
-          return head(403) unless vis.has_permission?(current_user, Carto::Permission::ACCESS_READWRITE)
+        return head(404) unless vis
+        return head(403) unless payload[:id] == vis.id
+        return head(403) unless vis.has_permission?(current_user, Carto::Permission::ACCESS_READWRITE)
 
-          vis_data = payload
+        vis_data = payload
 
-          vis_data.delete(:permission) || vis_data.delete('permission')
-          vis_data.delete(:permission_id)  || vis_data.delete('permission_id')
+        vis_data.delete(:permission) || vis_data.delete('permission')
+        vis_data.delete(:permission_id) || vis_data.delete('permission_id')
 
-          # Don't allow to modify next_id/prev_id, force to use set_next_id()
-          vis_data.delete(:prev_id) || vis_data.delete('prev_id')
-          vis_data.delete(:next_id) || vis_data.delete('next_id')
-          # when a table gets renamed, first it's canonical visualization is renamed, so we must revert renaming if that failed
-          # This is far from perfect, but works without messing with table-vis sync and their two backends
+        # Don't allow to modify next_id/prev_id, force to use set_next_id()
+        vis_data.delete(:prev_id) || vis_data.delete('prev_id')
+        vis_data.delete(:next_id) || vis_data.delete('next_id')
+        # when a table gets renamed, its canonical visualization is renamed, so we must revert renaming if that failed
+        # This is far from perfect, but works without messing with table-vis sync and their two backends
 
-          if vis.table?
-            old_vis_name = vis.name
+        if vis.table?
+          old_vis_name = vis.name
 
-            vis.attributes = vis_data
-            new_vis_name = vis.name
-            old_table_name = vis.table.name
+          vis.attributes = vis_data
+          new_vis_name = vis.name
+          old_table_name = vis.table.name
+          vis.store
+          if new_vis_name != old_vis_name && vis.table.name == old_table_name
+            vis.name = old_vis_name
             vis.store
-            if new_vis_name != old_vis_name && vis.table.name == old_table_name
-              vis.name = old_vis_name
-              vis.store
-            else
-              vis
-            end
           else
-            old_version = vis.version
-
-            vis.attributes = vis_data
-            vis.store
-
-            if version_needs_migration?(old_version, vis.version)
-              migrate_visualization_to_v3(vis)
-            end
+            vis
           end
+        else
+          old_version = vis.version
 
-          # TODO: sometimes an attribute changes. Example: visualization name because of sanitization.
-          # Avoid this reload by updating the entity properly.
-          vis.reload
+          vis.attributes = vis_data
+          vis.store
 
-          render_jsonp(Carto::Api::VisualizationPresenter.new(vis, current_viewer, self).to_poro)
-        rescue KeyError => e
-          CartoDB::Logger.error(message: "KeyError updating visualization", visualization_id: vis.id, exception: e)
-          head(404)
-        rescue => e
-          CartoDB::Logger.error(message: "Error updating visualization", visualization_id: vis.id, exception: e)
-          render_jsonp({ errors: vis.full_errors.empty? ? ['Error saving data'] : vis.full_errors }, 400)
+          if version_needs_migration?(old_version, vis.version)
+            migrate_visualization_to_v3(vis)
+          end
         end
+
+        # TODO: sometimes an attribute changes. Example: visualization name because of sanitization.
+        # Avoid this reload by updating the entity properly.
+        vis.reload
+
+        render_jsonp(Carto::Api::VisualizationPresenter.new(vis, current_viewer, self).to_poro)
+      rescue KeyError => e
+        CartoDB::Logger.error(message: "KeyError updating visualization", visualization_id: vis.id, exception: e)
+        head(404)
+      rescue => e
+        CartoDB::Logger.error(message: "Error updating visualization", visualization_id: vis.id, exception: e)
+        render_jsonp({ errors: vis.full_errors.empty? ? ['Error saving data'] : vis.full_errors }, 400)
       end
 
       def destroy
@@ -371,7 +368,7 @@ module Carto
 
       def payload
         request.body.rewind
-        ::JSON.parse(request.body.read.to_s || String.new, {symbolize_names: true})
+        ::JSON.parse(request.body.read.to_s || String.new, symbolize_names: true)
       end
 
       def duplicate_derived_visualization(source, user)

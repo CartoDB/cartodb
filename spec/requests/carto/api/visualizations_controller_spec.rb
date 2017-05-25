@@ -1650,7 +1650,9 @@ describe Carto::Api::VisualizationsController do
             bypass_named_maps
 
             @map = Map.create(user_id: @user.id, table_id: create_table(user_id: @user.id).id)
-            @visualization = FactoryGirl.create(:derived_visualization, map_id: @map.id, user_id: @user.id,
+            @visualization = FactoryGirl.create(:derived_visualization,
+                                                map_id: @map.id,
+                                                user_id: @user.id,
                                                 privacy: Visualization::Member::PRIVACY_PRIVATE)
           end
 
@@ -1928,11 +1930,8 @@ describe Carto::Api::VisualizationsController do
 
           Carto::NamedMaps::Api.any_instance.stubs(:create).raises('fake named maps failure')
 
-          put_json api_v1_visualizations_update_url(id: table.table_visualization.id),
-                   {
-                     id: table.table_visualization.id,
-                     privacy: Carto::Visualization::PRIVACY_PRIVATE
-                   } do |response|
+          payload = { id: table.table_visualization.id, privacy: Carto::Visualization::PRIVACY_PRIVATE }
+          put_json api_v1_visualizations_update_url(id: table.table_visualization.id), payload do |response|
             response.status.should be_success
           end
 

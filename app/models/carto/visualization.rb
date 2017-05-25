@@ -572,10 +572,10 @@ class Carto::Visualization < ActiveRecord::Base
 
     # Now insert other_vis after self
     unless other_vis.nil?
-      if self.next_list_item.nil?
+      if next_list_item.nil?
         other_vis.next_list_item = nil
       else
-        other_vis.next_list_item = self.next_list_item
+        other_vis.next_list_item = next_list_item
         next_item = next_list_item
         next_item.prev_list_item = other_vis
         next_item.store
@@ -601,10 +601,10 @@ class Carto::Visualization < ActiveRecord::Base
 
     # Now insert other_vis after self
     unless other_vis.nil?
-      if self.prev_list_item.nil?
+      if prev_list_item.nil?
         other_vis.prev_list_item = nil
       else
-        other_vis.prev_list_item = self.prev_list_item
+        other_vis.prev_list_item = prev_list_item
         prev_item = prev_list_item
         prev_item.next_list_item = other_vis
         prev_item.store

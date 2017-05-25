@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.7.14",
+  "version": "4.7.22",
   "dependencies": {
     "abbrev": {
       "version": "1.1.0",
@@ -1102,9 +1102,9 @@
       "resolved": "https://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.32.0.tgz"
     },
     "caniuse-lite": {
-      "version": "1.0.30000670",
+      "version": "1.0.30000671",
       "from": "caniuse-lite@>=1.0.30000670 <2.0.0",
-      "resolved": "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30000670.tgz"
+      "resolved": "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30000671.tgz"
     },
     "carto": {
       "version": "0.15.1-cdb3",
@@ -1118,8 +1118,8 @@
     },
     "cartodb-deep-insights.js": {
       "version": "0.0.2",
-      "from": "cartodb/deep-insights.js#scss-task",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#dda61f54f7413fdc245d69d94ea5fc104dbdd871"
+      "from": "cartodb/deep-insights.js#master",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#c8113f47d022593634f8ecd83d7b8f004c63e665"
     },
     "cartodb-pecan": {
       "version": "0.2.0",
@@ -1128,8 +1128,8 @@
     },
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
-      "from": "cartodb/cartodb.js#scss-task",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#373fcc7f2f3e089a01fa82b8ae8dcd17f4bb3b81"
+      "from": "cartodb/cartodb.js#v4",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#269f9e94c74e515be31d744820b2541140b21b03"
     },
     "caseless": {
       "version": "0.11.0",

@@ -627,6 +627,10 @@ class Carto::Visualization < ActiveRecord::Base
     reload
   end
 
+  def privacy=(privacy)
+    super(privacy ? privacy.downcase : nil)
+  end
+
   private
 
   def remove_password

@@ -224,24 +224,18 @@ module Carto
             vis.attributes = vis_data
             new_vis_name = vis.name
             old_table_name = vis.table.name
-            vis = @stats_aggregator.timing('save-table') do
+            vis.store
+            if new_vis_name != old_vis_name && vis.table.name == old_table_name
+              vis.name = old_vis_name
               vis.store
-            end
-            vis = @stats_aggregator.timing('save-rename') do
-              if new_vis_name != old_vis_name && vis.table.name == old_table_name
-                vis.name = old_vis_name
-                vis.store
-              else
-                vis
-              end
+            else
+              vis
             end
           else
             old_version = vis.version
 
             vis.attributes = vis_data
-            vis = @stats_aggregator.timing('save') do
-              vis.store
-            end
+            vis.store
 
             if version_needs_migration?(old_version, vis.version)
               migrate_visualization_to_v3(vis)

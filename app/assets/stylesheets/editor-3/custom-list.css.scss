@@ -39,7 +39,7 @@
 .CustomList-list.is-customized .CustomList-item--add {
   display: none;
 }
-.CustomList-itemLink {
+.CustomList--full {
   width: 100%;
 }
 .CustomList-message {
@@ -118,8 +118,4 @@
 }
 .CustomList-list.ps-container > .ps-scrollbar-x-rail {
   margin-bottom: 2px;
-}
-
-.CustomList-search {
-  width: 100%;
 }

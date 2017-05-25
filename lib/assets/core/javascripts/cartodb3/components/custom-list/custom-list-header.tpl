@@ -1,2 +1,3 @@
-<div class="CDB-Box-modalHeader CDB-Box-modalHeaderItem js-header u-alignCenter u-justifySpace u-flex">
+<div class="CDB-Box-modalHeader">
+  <div class="CDB-Box-modalHeaderItem js-header u-alignCenter u-justifySpace"></div>
 </div>

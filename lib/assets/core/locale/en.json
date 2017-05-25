@@ -1893,7 +1893,7 @@
           "upgrade": "Contact admin"
         },
         "org-admin": {
-          "body": "ncrease the layer limit for your organization by contacting CARTO support.",
+          "body": "Increase the layer limit for your organization by contacting CARTO support.",
           "upgrade": "Contact support"
         }
       }

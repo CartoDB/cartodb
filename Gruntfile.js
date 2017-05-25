@@ -257,29 +257,16 @@ module.exports = function (grunt) {
     }
   });
 
-  grunt.registerTask('css', function(target) {
-    // TODO: migrate mixins to postcss
-
-    if (target === 'builder') {
-      return grunt.task.run([
-        'copy:vendor',
-        'copy:app',
-        'copy:css_cartodb3',
-        'sass',
-        'concat:css'
-      ]);
-    }
-
-    grunt.task.run([
-      'copy:vendor',
-      'copy:app',
-      'copy:css_cartodb',
-      'compass',
-      'copy:css_cartodb3',
-      'sass',
-      'concat:css'
-    ]);
-  });
+  // TODO: migrate mixins to postcss
+  grunt.registerTask('css', [
+    'copy:vendor',
+    'copy:app',
+    'copy:css_cartodb',
+    'compass',
+    'copy:css_cartodb3',
+    'sass',
+    'concat:css'
+  ]);
 
   grunt.registerTask('run_browserify', 'Browserify task with options', function (option) {
     var skipAllSpecs = false;
@@ -323,44 +310,33 @@ module.exports = function (grunt) {
     'copy:js_test_cartodb3'
   ]);
 
-  grunt.registerTask('js', function(target) {
-    if (target === 'builder') {
-      return grunt.task.run(['js_builder']);
-    }
-
-    grunt.task.run([
-      'js_editor',
-      'js_builder'
-    ]);
-  });
+  grunt.registerTask('js', [
+    'js_editor',
+    'js_builder'
+  ]);
 
   grunt.registerTask('beforeDefault', [
     'clean',
     'config'
   ]);
 
-  grunt.registerTask('default', function(target) {
-    grunt.task.run([
-      'beforeDefault',
-      target ? ('js:' + target) : 'js',
-      target ? ('css:' + target) : 'css',
-      'manifest'
-    ]);
-  });
+  grunt.registerTask('default', [
+    'beforeDefault',
+    'js',
+    'css',
+    'manifest'
+  ]);
 
   registerCmdTask('npm-start', {cmd: 'npm', args: ['run', 'start']});
 
   /**
    * `grunt dev`
-   * `grunt dev:builder`
    */
 
-  grunt.registerTask('dev', function (target) {
-    grunt.task.run([
-      target ? ('default:' + target) : 'default',
-      'npm-start'
-    ]);
-  });
+  grunt.registerTask('dev', [
+    'default',
+    'npm-start'
+  ]);
 
   // still have to use this custom task because registerCmdTask outputs tons of warnings like:
   // path/to/some/ignored/files:0:0: File ignored because of your .eslintignore file. Use --no-ignore to override.

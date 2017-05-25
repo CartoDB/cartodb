@@ -265,6 +265,7 @@ Development
 * `create_dev_user` rake no longer tries to auto-create the database, `cartodb:db:setup` should be run first (#12187).
 * Better display and logging of errors when SAML authentication fails (#12151)
 * Fixed problem resetting styles per node after adding a new analysis (#12085)
+* Ensure Google services activation rake writes the api keys to Redis (#12209)
 * Docs, fixed some minor spelling and grammar errors in the content.
 * Fix `BUILDER_ENABLED` parameter in `create_dev_user` rake (#12189)
 * Docs, updated "More Info" url from street addresses georeference options to new, related guide.

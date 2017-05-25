@@ -17,7 +17,7 @@ Sequel.migration do
   up do
     TABLE_LIST.each do |table_name,columns|
       columns.each do |column|
-        Rails::Sequel.connection.run(%Q{
+        SequelRails.connection.run(%Q{
           ALTER TABLE #{table_name}
           ALTER COLUMN #{column} 
           TYPE timestamptz
@@ -29,7 +29,7 @@ Sequel.migration do
   down do
     TABLE_LIST.each do |table_name,columns|
       columns.each do |column|
-        Rails::Sequel.connection.run(%Q{
+        SequelRails.connection.run(%Q{
           ALTER TABLE #{table_name}
           ALTER COLUMN #{column} 
           TYPE timestamp

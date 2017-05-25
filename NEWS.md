@@ -112,8 +112,7 @@ Development
 * Multiple file upload through "upload file" tab (#11952)
 * Change setView by flyto.
 * Update tangram to fix layer geometry conditionals.
-* Allow to have multiple administrators per organization (#12052, #12083)
-* Allow to have multiple administrators per organization (#12052)
+* Allow to have multiple administrators per organization (#12052, #12083, #12069)
 * Added explanation tooltip to the categorize label on the Find Nearest analysis (#12100)
 * Disable geometry edition button instead of hide in read-only layers (#11543)
 * New loading button styles (#12132)
@@ -261,9 +260,11 @@ Development
 * Validate amount of organization seats (#12101)
 * Fixed error dropping tables from ghost table manager on race condition cases (#12012)
 * IE11 fix for dropdowns with scrollview (#12073)
+* `create_dev_user` rake no longer tries to auto-create the database, `cartodb:db:setup` should be run first (#12187).
 * Better display and logging of errors when SAML authentication fails (#12151)
 * Fixed problem resetting styles per node after adding a new analysis (#12085)
 * Docs, fixed some minor spelling and grammar errors in the content.
+* Fix `BUILDER_ENABLED` parameter in `create_dev_user` rake (#12189)
 * Docs, updated "More Info" url from street addresses georeference options to new, related guide.
 * Organizations users now get engine_enabled from the organization by default (#12153)
 * Color picker disappears in CartoCSS editor after clicking (#12097).

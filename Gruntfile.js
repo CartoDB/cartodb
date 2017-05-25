@@ -279,7 +279,7 @@ module.exports = function (grunt) {
       'sass',
       'concat:css'
     ]);
- });
+  });
 
   grunt.registerTask('run_browserify', 'Browserify task with options', function (option) {
     var skipAllSpecs = false;

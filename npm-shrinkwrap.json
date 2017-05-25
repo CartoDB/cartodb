@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.7.201",
+  "version": "4.7.202",
   "dependencies": {
     "abbrev": {
       "version": "1.1.0",
@@ -13,9 +13,9 @@
       "resolved": "https://registry.npmjs.org/accessory/-/accessory-1.0.1.tgz"
     },
     "acorn": {
-      "version": "4.0.11",
+      "version": "4.0.13",
       "from": "acorn@>=4.0.3 <5.0.0",
-      "resolved": "https://registry.npmjs.org/acorn/-/acorn-4.0.11.tgz"
+      "resolved": "https://registry.npmjs.org/acorn/-/acorn-4.0.13.tgz"
     },
     "amdefine": {
       "version": "1.0.1",
@@ -427,7 +427,7 @@
     "backbone-forms": {
       "version": "0.14.0",
       "from": "backbone-forms@0.14.0",
-      "resolved": "http://registry.npmjs.org/backbone-forms/-/backbone-forms-0.14.0.tgz"
+      "resolved": "https://registry.npmjs.org/backbone-forms/-/backbone-forms-0.14.0.tgz"
     },
     "backbone-model-file-upload": {
       "version": "1.0.0",
@@ -622,9 +622,9 @@
       "resolved": "https://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.32.0.tgz"
     },
     "caniuse-lite": {
-      "version": "1.0.30000670",
+      "version": "1.0.30000671",
       "from": "caniuse-lite@>=1.0.30000670 <2.0.0",
-      "resolved": "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30000670.tgz"
+      "resolved": "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30000671.tgz"
     },
     "carto": {
       "version": "0.15.1-cdb3",
@@ -649,7 +649,7 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
       "from": "cartodb/cartodb.js#render-view-after-first-reload",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#dfa155a8c5c087681ea7d7cbc139fdd3beca0a65"
+      "resolved": "git://github.com/cartodb/cartodb.js.git#4f7742e4137d39786f1968a651970747cd364718"
     },
     "caseless": {
       "version": "0.11.0",
@@ -1892,7 +1892,7 @@
     "queue-async": {
       "version": "1.2.1",
       "from": "queue-async@1.2.1",
-      "resolved": "http://registry.npmjs.org/queue-async/-/queue-async-1.2.1.tgz"
+      "resolved": "https://registry.npmjs.org/queue-async/-/queue-async-1.2.1.tgz"
     },
     "quote-stream": {
       "version": "1.0.2",

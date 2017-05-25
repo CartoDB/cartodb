@@ -194,8 +194,8 @@ module Carto
         end
 
         render_jsonp(Carto::Api::VisualizationPresenter.new(vis, current_viewer, self).to_poro)
-      rescue CartoDB::InvalidMember => e
-        CartoDB::Logger.error(message: "Invalid member creating visualization", visualization_id: vis.id, exception: e)
+      rescue => e
+        CartoDB::Logger.error(message: "Error creating visualization", visualization_id: vis.id, exception: e)
         render_jsonp({ errors: vis.full_errors }, 400)
       end
 
@@ -256,12 +256,9 @@ module Carto
         rescue KeyError => e
           CartoDB::Logger.error(message: "KeyError updating visualization", visualization_id: vis.id, exception: e)
           head(404)
-        rescue CartoDB::InvalidMember => e
-          CartoDB::Logger.error(message: "InvalidMember updating visualization", visualization_id: vis.id, exception: e)
-          render_jsonp({ errors: vis.full_errors.empty? ? ['Error saving data'] : vis.full_errors }, 400)
         rescue => e
           CartoDB::Logger.error(message: "Error updating visualization", visualization_id: vis.id, exception: e)
-          render_jsonp({ errors: ["Unknown error: #{e.message}"] }, 400)
+          render_jsonp({ errors: vis.full_errors.empty? ? ['Error saving data'] : vis.full_errors }, 400)
         end
       end
 

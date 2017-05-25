@@ -1933,7 +1933,7 @@ describe Table do
         table.save
         check_schema(table, [
             [:cartodb_id, 'bigint'],
-            [:the_geom, 'geometry', 'geometry', 'geometry'],
+            [:the_geom, 'geometry', 'geometry', 'point'],
         ])
 
         # same as above (single multipoint), but with a SRID=4326 (latlong)
@@ -1982,7 +1982,7 @@ describe Table do
         check_schema(table, [
             [:cartodb_id, 'bigint'],
             [:the_geom, 'geometry', 'geometry', 'geometry'],
-            [:invalid_the_geom, 'unknown']
+            [:the_geom_str, 'unknown']
         ])
 
         # geometrycollection (concrete type) Unsupported

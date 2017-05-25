@@ -55,7 +55,7 @@ namespace :cartodb do
         task :enable_for_user, [:google_maps_key, :google_maps_private_key, :username] => [:environment] do |task, args|
           add_feature_flag_if_not_exists('google_maps')
 
-          user = Carto::User.where(username: args[:username]).first
+          user = ::User.where(username: args[:username]).first
           raise "No user with username '#{args[:username]}'" if user.nil?
 
           puts "Enabling 'google_maps' feature flag for user '#{user.username}'"
@@ -73,7 +73,7 @@ namespace :cartodb do
              [:google_maps_key, :google_maps_private_key, :org_name] => [:environment] do |task, args|
           add_feature_flag_if_not_exists('google_maps')
 
-          organization = Carto::Organization.where(name: args[:org_name]).first
+          organization = ::Organization.where(name: args[:org_name]).first
 
           raise "No organization with name '#{args[:org_name]}'" if organization.nil?
 
@@ -97,7 +97,7 @@ namespace :cartodb do
         task :enable_for_all, [:google_maps_key, :google_maps_private_key] => [:environment] do |task, args|
           add_feature_flag_if_not_exists('google_maps')
 
-          Carto::Organization.all.each do |organization|
+          ::Organization.all.each do |organization|
             puts "Enabling 'google_maps' feature flag for users in '#{organization.name}'"
             organization.users.each do |user|
               puts "\tenabling 'google_maps' feature flag for user '#{user.username}'"
@@ -115,7 +115,7 @@ namespace :cartodb do
           end
 
           # For users not in organizations
-          Carto::User.where(organization_id: nil).each do |user|
+          ::User.where(organization_id: nil).each do |user|
             puts "Enabling 'google_maps' feature flag for user '#{user.username}'"
             add_feature_flag_to_user('google_maps', user)
 
@@ -129,7 +129,7 @@ namespace :cartodb do
 
         desc 'Disable Google Services for a given user'
         task :disable_for_user, [:username] => [:environment] do |task, args|
-          user = Carto::User.where(username: args[:username]).first
+          user = ::User.where(username: args[:username]).first
 
           raise "No user with username '#{args[:username]}'" if user.nil?
 
@@ -145,7 +145,7 @@ namespace :cartodb do
 
         desc 'Disable Google Services for an organization'
         task :disable_for_organization, [:org_name] => [:environment] do |task, args|
-          organization = Carto::Organization.where(name: args[:org_name]).first
+          organization = ::Organization.where(name: args[:org_name]).first
 
           raise "No organization with name '#{args[:org_name]}'" if organization.nil?
 
@@ -166,7 +166,7 @@ namespace :cartodb do
         task :disable_for_all => [:environment] do |task|
           remove_feature_flag_if_exists('google_maps')
 
-          Carto::Organization.all.each do |organization|
+          ::Organization.all.each do |organization|
             puts "Disabling google services for organization '#{organization.name}'..."
 
             organization.google_maps_key = nil
@@ -176,7 +176,7 @@ namespace :cartodb do
           end
 
           # For users not in organizations
-          Carto::User.where(organization_id: nil).each do |user|
+          ::User.where(organization_id: nil).each do |user|
             puts "Disabling google services for non-organization user '#{user.username}'..."
 
             user.google_maps_key = nil

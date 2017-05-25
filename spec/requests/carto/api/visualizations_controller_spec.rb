@@ -1938,8 +1938,27 @@ describe Carto::Api::VisualizationsController do
           table.reload
           table.privacy.should eq ::UserTable::PRIVACY_PRIVATE
 
+          table.destroy
+
           @user.private_tables_enabled = false
           @user.save
+        end
+
+
+        it 'filters attributes' do
+          table = new_table(user_id: @user.id, privacy: ::UserTable::PRIVACY_PUBLIC).save.reload
+
+          table.table_visualization.description.should_not eq "something"
+
+          payload = { id: table.table_visualization.id, description: "something", fake: "NO!" }
+          put_json api_v1_visualizations_update_url(id: table.table_visualization.id), payload do |response|
+            response.status.should be_success
+          end
+
+          table.reload
+          table.table_visualization.description.should eq "something"
+
+          table.destroy
         end
       end
     end

@@ -195,7 +195,7 @@ module Carto
         render_jsonp(Carto::Api::VisualizationPresenter.new(vis, current_viewer, self).to_poro)
       rescue => e
         CartoDB::Logger.error(message: "Error creating visualization", visualization_id: vis.id, exception: e)
-        render_jsonp({ errors: vis.full_errors }, 400)
+        render_jsonp({ errors: vis.errors.full_messages }, 400)
       end
 
       def update
@@ -210,16 +210,19 @@ module Carto
         vis_data.delete(:permission) || vis_data.delete('permission')
         vis_data.delete(:permission_id) || vis_data.delete('permission_id')
 
+        vis.transition_options = params[:transition_options] if params[:transition_options]
+
         # Don't allow to modify next_id/prev_id, force to use set_next_id()
         vis_data.delete(:prev_id) || vis_data.delete('prev_id')
         vis_data.delete(:next_id) || vis_data.delete('next_id')
         # when a table gets renamed, its canonical visualization is renamed, so we must revert renaming if that failed
         # This is far from perfect, but works without messing with table-vis sync and their two backends
 
+        valid_attributes = valid_update_visualization_attributes(vis_data)
         if vis.table?
           old_vis_name = vis.name
 
-          vis.attributes = vis_data
+          vis.attributes = valid_attributes
           new_vis_name = vis.name
           old_table_name = vis.table.name
           vis.store
@@ -232,7 +235,7 @@ module Carto
         else
           old_version = vis.version
 
-          vis.attributes = vis_data
+          vis.attributes = valid_attributes
           vis.store
 
           if version_needs_migration?(old_version, vis.version)
@@ -250,7 +253,7 @@ module Carto
         head(404)
       rescue => e
         CartoDB::Logger.error(message: "Error updating visualization", visualization_id: vis.id, exception: e)
-        render_jsonp({ errors: vis.full_errors.empty? ? ['Error saving data'] : vis.full_errors }, 400)
+        render_jsonp({ errors: vis.errors.full_messages.empty? ? ['Error saving data'] : vis.errors.full_messages }, 400)
       end
 
       def destroy
@@ -409,6 +412,15 @@ module Carto
                                                 privacy: blender.blended_privacy,
                                                 user_id: current_user.id,
                                                 overlays: Carto::OverlayFactory.build_default_overlays(current_user)))
+      end
+
+      def valid_update_visualization_attributes(hash)
+        # excluded: :id, :map_id, :type, :created_at, :external_source, :url, :version, :likes, :liked, :table,
+        #           :synchronization, :uses_builder_features, :auth_tokens, :transition_options
+        hash.slice(
+          :name, :display_name, :active_layer_id, :tags, :description, :privacy, :updated_at, :locked, :source,
+          :title, :license, :attributions, :kind, :prev_id, :next_id, :parent_id, :active_child, :permission
+        )
       end
     end
   end

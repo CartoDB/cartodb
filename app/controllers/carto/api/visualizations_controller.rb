@@ -135,10 +135,6 @@ module Carto
         vis_data.delete(:permission)
         vis_data.delete(:permission_id)
 
-        # Don't allow to modify next_id/prev_id, force to use set_next_id()
-        prev_id = vis_data.delete(:prev_id) || vis_data.delete('prev_id')
-        next_id = vis_data.delete(:next_id) || vis_data.delete('next_id')
-
         param_tables = vis_data.delete(:tables)
         current_user_id = current_user.id
 
@@ -166,19 +162,8 @@ module Carto
               end
 
         vis.ensure_valid_privacy
-        # both null, make sure is the first children or automatically link to the tail of the list
-        if !vis.parent_id.nil? && prev_id.nil? && next_id.nil?
-          parent_vis = Carto::Visualization.find(vis.parent_id)
-          return head(403) unless parent_vis.has_permission?(current_user, Carto::Permission::ACCESS_READWRITE)
-
-          children = parent_vis.children
-
-          prev_id = children.last.id unless children.empty?
-        end
 
         vis.save!
-
-        vis = set_visualization_prev_next(vis, prev_id, next_id)
 
         current_viewer_id = current_viewer.id
         properties = {
@@ -212,12 +197,8 @@ module Carto
 
         vis.transition_options = params[:transition_options] if params[:transition_options]
 
-        # Don't allow to modify next_id/prev_id, force to use set_next_id()
-        vis_data.delete(:prev_id) || vis_data.delete('prev_id')
-        vis_data.delete(:next_id) || vis_data.delete('next_id')
         # when a table gets renamed, its canonical visualization is renamed, so we must revert renaming if that failed
         # This is far from perfect, but works without messing with table-vis sync and their two backends
-
         valid_attributes = valid_update_visualization_attributes(vis_data)
         if vis.table?
           old_vis_name = vis.name
@@ -382,19 +363,6 @@ module Carto
         CartoDB::Visualization::NameGenerator.new(current_user).name(params[:name])
       end
 
-      def set_visualization_prev_next(vis, prev_id, next_id)
-        if !prev_id.nil?
-          prev_vis = Carto::Visualization.find(prev_id)
-          return head(403) unless prev_vis.has_permission?(current_user, Carto::Permission::ACCESS_READWRITE)
-          prev_vis.set_next_list_item!(vis)
-        elsif !next_id.nil?
-          next_vis = Carto::Visualization.find(next_id)
-          return head(403) unless next_vis.has_permission?(current_user, Carto::Permission::ACCESS_READWRITE)
-          next_vis.set_prev_list_item!(vis)
-        end
-        vis
-      end
-
       def create_visualization_from_tables(tables, vis_data)
         blender = CartoDB::Visualization::TableBlender.new(Carto::User.find(current_user.id), tables)
         map = blender.blend
@@ -408,11 +376,12 @@ module Carto
       end
 
       def valid_update_visualization_attributes(hash)
-        # excluded: :id, :map_id, :type, :created_at, :external_source, :url, :version, :likes, :liked, :table,
-        #           :synchronization, :uses_builder_features, :auth_tokens, :transition_options
+        # excluded:
+        #   :id, :map_id, :type, :created_at, :external_source, :url, :version, :likes, :liked, :table,
+        #   :synchronization, :uses_builder_features, :auth_tokens, :transition_options, :prev_id, :next_id, :parent_id
         hash.slice(
           :name, :display_name, :active_layer_id, :tags, :description, :privacy, :updated_at, :locked, :source,
-          :title, :license, :attributions, :kind, :prev_id, :next_id, :parent_id, :active_child, :permission
+          :title, :license, :attributions, :kind, :active_child, :permission
         )
       end
     end

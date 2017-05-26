@@ -20,7 +20,7 @@ module Carto
       include VisualizationsControllerHelper
       include Carto::VisualizationMigrator
 
-      ssl_required :index, :show, :create, :destroy
+      ssl_required :index, :show, :create, :update, :destroy
       ssl_allowed  :vizjson2, :vizjson3, :likes_count, :likes_list, :is_liked, :list_watching, :static_map
 
       # TODO: compare with older, there seems to be more optional authentication endpoints
@@ -37,7 +37,8 @@ module Carto
 
       def show
         render_jsonp(to_json(@visualization))
-      rescue KeyError
+      rescue => e
+        CartoDB::Logger.error(exception: e)
         head(404)
       end
 
@@ -155,7 +156,7 @@ module Carto
                 end
               elsif param_tables
                 subdomain = CartoDB.extract_subdomain(request)
-                viewed_user = ::User.find(username: subdomain)
+                viewed_user = Carto::User.where(username: subdomain).first
                 tables = param_tables.map do |table_name|
                   Carto::Helpers::TableLocator.new.get_by_id_or_name(table_name, viewed_user) if viewed_user
                 end
@@ -175,7 +176,7 @@ module Carto
           prev_id = children.last.id unless children.empty?
         end
 
-        vis.store
+        vis.save!
 
         vis = set_visualization_prev_next(vis, prev_id, next_id)
 
@@ -194,14 +195,13 @@ module Carto
 
         render_jsonp(Carto::Api::VisualizationPresenter.new(vis, current_viewer, self).to_poro)
       rescue => e
-        CartoDB::Logger.error(message: "Error creating visualization", visualization_id: vis.id, exception: e)
-        render_jsonp({ errors: vis.errors.full_messages }, 400)
+        CartoDB::Logger.error(message: "Error creating visualization", visualization_id: vis.try(:id), exception: e)
+        render_jsonp({ errors: vis.try(:errors).try(:full_messages) }, 400)
       end
 
       def update
         vis = @visualization
 
-        return head(404) unless vis
         return head(403) unless payload[:id] == vis.id
         return head(403) unless vis.has_permission?(current_user, Carto::Permission::ACCESS_READWRITE)
 
@@ -225,18 +225,16 @@ module Carto
           vis.attributes = valid_attributes
           new_vis_name = vis.name
           old_table_name = vis.table.name
-          vis.store
+          vis.save!
           if new_vis_name != old_vis_name && vis.table.name == old_table_name
             vis.name = old_vis_name
-            vis.store
-          else
-            vis
+            vis.save!
           end
         else
           old_version = vis.version
 
           vis.attributes = valid_attributes
-          vis.store
+          vis.save!
 
           if version_needs_migration?(old_version, vis.version)
             migrate_visualization_to_v3(vis)
@@ -248,9 +246,6 @@ module Carto
         vis.reload
 
         render_jsonp(Carto::Api::VisualizationPresenter.new(vis, current_viewer, self).to_poro)
-      rescue KeyError => e
-        CartoDB::Logger.error(message: "KeyError updating visualization", visualization_id: vis.id, exception: e)
-        head(404)
       rescue => e
         CartoDB::Logger.error(message: "Error updating visualization", visualization_id: vis.id, exception: e)
         render_jsonp({ errors: vis.errors.full_messages.empty? ? ['Error saving data'] : vis.errors.full_messages }, 400)
@@ -296,8 +291,6 @@ module Carto
       def render_vizjson(vizjson)
         set_vizjson_response_headers_for(@visualization)
         render_jsonp(vizjson)
-      rescue KeyError => exception
-        render(text: exception.message, status: 403)
       rescue => exception
         CartoDB.notify_exception(exception)
         raise exception

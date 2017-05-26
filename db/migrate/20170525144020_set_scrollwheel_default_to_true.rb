@@ -1,9 +1,12 @@
-Sequel.migration do
-  up do
-    set_column_default :maps, :scrollwheel, true
-  end
+require 'carto/db/migration_helper'
 
-  down do
+include Carto::Db::MigrationHelper
+
+migration(
+  Proc.new do
+    set_column_default :maps, :scrollwheel, true
+  end,
+  Proc.new do
     set_column_default :maps, :scrollwheel, false
   end
-end
+)

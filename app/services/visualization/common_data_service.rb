@@ -141,7 +141,13 @@ module CartoDB
 
       def delete_remote_visualization(visualization)
         begin
-          visualization.destroy
+          # TODO: Compatibility with ::Member. Remove the `else` branch once that is gone.
+          if visualization.respond_to?(:destroy)
+            visualization.destroy
+          else
+            ExternalSource.where(visualization_id: visualization.id).delete
+            visualization.delete
+          end
           true
         rescue => e
           match = e.message =~ /violates foreign key constraint "external_data_imports_external_source_id_fkey"/

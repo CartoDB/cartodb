@@ -705,7 +705,8 @@ $sLabel-width: 140px;
   font-style: italic;
 }
 
-.FormAccount-button--deleteAccount {
+.FormAccount-button--deleteAccount,
+.FormAccount-button--deleteOrganization {
   color: rgba(247, 24, 0, 1);
   cursor: pointer;
 

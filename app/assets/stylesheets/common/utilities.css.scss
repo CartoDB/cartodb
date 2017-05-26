@@ -23,6 +23,7 @@
   text-overflow: ellipsis;
   display: block; // required for text-overflow to work with some elements that are inline by default (e.g. <a> tags)
 }
+.u-hide,
 .u-showOnMobile,
 .u-showOnTablet {
   display: none !important;

@@ -222,10 +222,6 @@ module Carto
           end
         end
 
-        # TODO: sometimes an attribute changes. Example: visualization name because of sanitization.
-        # Avoid this reload by updating the entity properly.
-        vis.reload
-
         render_jsonp(Carto::Api::VisualizationPresenter.new(vis, current_viewer, self).to_poro)
       rescue => e
         CartoDB::Logger.error(message: "Error updating visualization", visualization_id: vis.id, exception: e)

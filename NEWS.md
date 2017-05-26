@@ -258,6 +258,7 @@ Development
 * Using latest cartodb.js and deep-insights.js to tackle map zooming problem (support#605)
 * Fix organization notifications issues (#11957)
 * Max tracts to 4 for isoline analysis (#11723)
+* Make scrollwheel zoom on by default (#12214)
 * Right column validate type match in Join analysis (#11829)
 * Check if analysis node is on top before fetching query data (#11874)
 * Validate amount of organization seats (#12101)

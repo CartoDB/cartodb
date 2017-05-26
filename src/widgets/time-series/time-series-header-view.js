@@ -1,6 +1,6 @@
 var cdb = require('cartodb.js');
-var template = require('./time-series-header.tpl');
 var d3 = require('d3');
+var template = require('./time-series-header.tpl');
 
 var FORMATTER_TYPES = {
   'number': d3.format(',.0f'),
@@ -12,7 +12,7 @@ var FORMATTER_TYPES = {
  * View to reset render range.
  */
 module.exports = cdb.core.View.extend({
-  className: 'CDB-Widget-header--timeSeries js-header CDB-Widget-contentSpaced',
+  className: 'CDB-Widget-header--timeSeries CDB-Widget-contentSpaced',
 
   events: {
     'click .js-clear': '_onClick'

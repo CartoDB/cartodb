@@ -32,14 +32,23 @@ module.exports = cdb.core.View.extend({
   },
 
   render: function () {
-    this.$el.html(template(_.defaults({},
-      this.model.attributes,
-      { flags: this.options.flags || {} }, {
+    var flags = _.defaults(
+      this.options.flags || {}, {
+        canCollapse: true
+      }
+    );
+
+    var templateData = _.defaults({},
+      this.model.attributes, {
+        flags: flags
+      }, {
         'normalized': false,
         'collapsed': false,
-        'show_options': false
+        'show_options': false,
       }
-    )));
+    );
+
+    this.$el.html(template(templateData));
     return this;
   },
 

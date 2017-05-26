@@ -1,17 +1,20 @@
 <ul class="CDB-Dropdown-list CDB-Text CDB-Size-medium">
-  <li class="CDB-Dropdown-item">
-    <button class="CDB-Dropdown-link js-toggleCollapsed">
-      Toggle widget
-        <div class="CDB-Dropdown-toggle">
-        <% if (collapsed) { %>
-          <input class="CDB-Toggle js-inputCollapsed" checked="checked" type="checkbox" name="collapsed">
-        <% } else { %>
-          <input class="CDB-Toggle js-inputCollapsed" type="checkbox" name="collapsed">
-        <% } %>
-          <span class="u-iBlock CDB-ToggleFace"></span>
-        </div>
-    </button>
-  </li>
+
+  <% if (flags.canCollapse) { %>
+    <li class="CDB-Dropdown-item">
+      <button class="CDB-Dropdown-link js-toggleCollapsed">
+        Toggle widget
+          <div class="CDB-Dropdown-toggle">
+          <% if (collapsed) { %>
+            <input class="CDB-Toggle js-inputCollapsed" checked="checked" type="checkbox" name="collapsed">
+          <% } else { %>
+            <input class="CDB-Toggle js-inputCollapsed" type="checkbox" name="collapsed">
+          <% } %>
+            <span class="u-iBlock CDB-ToggleFace"></span>
+          </div>
+      </button>
+    </li>
+  <% } %>
 
   <% if (flags.normalizeHistogram) { %>
   <li class="CDB-Dropdown-item">
@@ -28,6 +31,7 @@
     </button>
   </li>
   <% } %>
+
   <% if (show_options) { %>
     <li class="CDB-Dropdown-item">
       <button type="button" class="CDB-Dropdown-link u-ellipsis u-actionTextColor js-editWidget" title="Edit">Edit</button>

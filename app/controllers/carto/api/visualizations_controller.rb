@@ -248,7 +248,7 @@ module Carto
         render_jsonp(Carto::Api::VisualizationPresenter.new(vis, current_viewer, self).to_poro)
       rescue => e
         CartoDB::Logger.error(message: "Error updating visualization", visualization_id: vis.id, exception: e)
-        render_jsonp({ errors: vis.errors.full_messages.empty? ? ['Error saving data'] : vis.errors.full_messages }, 400)
+        render_jsonp({ errors: vis.errors.full_messages.empty? ? ['Error updating'] : vis.errors.full_messages }, 400)
       end
 
       def destroy

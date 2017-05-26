@@ -195,7 +195,7 @@ class Admin::OrganizationsController < Admin::AdminController
   end
 
   def enforce_engine_enabled
-    unless @organization.engine_enabled?
+    unless @organization.engine_enabled
       render_403
     end
   end

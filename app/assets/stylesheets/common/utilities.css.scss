@@ -2,6 +2,10 @@
 @import '../variables/colors';
 @import '../variables/sizes';
 
+.u-transparent {
+  @include opacity(0);
+}
+
 // Center the content within the defined layout width
 .u-inner {
   margin: 0 auto;

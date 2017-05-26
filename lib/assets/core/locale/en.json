@@ -267,7 +267,11 @@
         }
       },
       "area": "Per sq km",
-      "license": "License"
+      "license": "License",
+      "count": {
+        "top": "Top %{items} results",
+        "search": "%{items} results"
+      }
     },
     "merge": {
       "title": "Join columns from 2nd layer",

@@ -306,6 +306,7 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/lib/carto/visualization_invalidation_service_spec.rb \
 	spec/models/carto/username_proposer_spec.rb \
 	spec/services/carto/overquota_users_service_spec.rb \
+	spec/services/visualization/common_data_service_spec.rb \
 	$(NULL)
 
 # This class must be tested isolated as pollutes namespace

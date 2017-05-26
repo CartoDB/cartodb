@@ -628,7 +628,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def privacy=(privacy)
-    super(privacy ? privacy.downcase : nil)
+    super(privacy.try(:downcase))
   end
 
   private

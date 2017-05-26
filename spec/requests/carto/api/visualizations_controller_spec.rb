@@ -1944,7 +1944,6 @@ describe Carto::Api::VisualizationsController do
           @user.save
         end
 
-
         it 'filters attributes' do
           table = new_table(user_id: @user.id, privacy: ::UserTable::PRIVACY_PUBLIC).save.reload
 

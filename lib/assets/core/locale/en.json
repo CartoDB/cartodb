@@ -271,7 +271,8 @@
       "count": {
         "top": "Top %{items} results",
         "search": "%{items} results"
-      }
+      },
+      "search-by-name": "Search by name..."
     },
     "merge": {
       "title": "Join columns from 2nd layer",

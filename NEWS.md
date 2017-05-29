@@ -121,6 +121,7 @@ Development
 * New style for add analysis button (#11902)
 
 ### Bug fixes
+* Fixed overlay for legends view (#11825)
 * Fixed UI when editing merge analysis (#10850)
 * Fixed uninitialized constant in Carto::Visualization when a viewer shares a visualization (#12129).
 * Google customers don't need quota checks for hires geocoding (support/#674)

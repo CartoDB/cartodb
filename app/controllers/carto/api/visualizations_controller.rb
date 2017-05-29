@@ -352,7 +352,7 @@ module Carto
         visualization_copy.version = user.new_visualizations_version
         Carto::VisualizationsExportPersistenceService.new.save_import(user, visualization_copy)
 
-        Carto::Visualization.find(visualization_copy.id)
+        visualization_copy
       end
 
       def name_candidate

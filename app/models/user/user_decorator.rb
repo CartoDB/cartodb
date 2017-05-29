@@ -111,7 +111,7 @@ module CartoDB
           import_table_rows: max_import_table_row_count,
           max_layers: max_layers
         },
-        google_maps_key: google_maps_key,
+        google_maps_api_key: google_maps_api_key,
         notification: notification,
         avatar_url: avatar,
         feature_flags: feature_flags,

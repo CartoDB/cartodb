@@ -95,6 +95,7 @@ class Admin::UsersController < Admin::AdminController
 
     # This fields are optional
     @user.name = attributes.fetch(:name, nil)
+    @user.last_name = attributes.fetch(:last_name, nil)
     @user.website = attributes.fetch(:website, nil)
     @user.description = attributes.fetch(:description, nil)
     @user.location = attributes.fetch(:location, nil)

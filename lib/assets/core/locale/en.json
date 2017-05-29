@@ -1882,8 +1882,13 @@
         "visualize": "Layer doesn't have geometry"
       },
       "max-layers-infowindow": {
-        "title": "You have reached the maximum layer limit for this account.",
+        "title": "You have reached your maximum layer limit.",
         "pricing": "https://carto.com/pricing/",
+        "custom": {
+          "body": "Your account does not support more than %{maxLayers} layers.",
+          "contact": "Contact us",
+          "contact-url": "https://carto.com/contact/"
+        },
         "regular": {
           "body": "Upgrade your account to add more than %{maxLayers} layers to your map.",
           "upgrade": "Upgrade your account"

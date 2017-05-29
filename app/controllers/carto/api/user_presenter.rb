@@ -177,7 +177,7 @@ module Carto
             import_table_rows: @user.max_import_table_row_count,
             max_layers: @user.max_layers
           },
-          google_maps_key: @user.google_maps_key,
+          google_maps_api_key: @user.google_maps_api_key,
           notification: @user.notification,
           avatar_url: @user.avatar,
           feature_flags: @user.feature_flag_names,

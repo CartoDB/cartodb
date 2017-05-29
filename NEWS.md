@@ -118,6 +118,7 @@ Development
 * Disable geometry edition button instead of hide in read-only layers (#11543)
 * New loading button styles (#12132)
 * Updated copies for export image & download map (#12114)
+* Add all/none buttons to multi-select component (#9502)
 * New style for add analysis button (#11902)
 
 ### Bug fixes

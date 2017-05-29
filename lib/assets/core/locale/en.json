@@ -1130,7 +1130,9 @@
         "placeholder": "Select a %{keyAttr}",
         "loading": "loading…",
         "empty": "No values",
-        "selected": "%{count} selected"
+        "selected": "%{count} selected",
+        "all": "All",
+        "none": "None"
       },
       "operators": {
         "count-message": "If you select 'COUNT' all columns are selected"

@@ -58,7 +58,7 @@ module.exports = function(grunt) {
 
     var runningTasks = grunt.cli.tasks;
     if (runningTasks.length === 0) {
-      grunt.log.writeln('Running default task.'); 
+      grunt.log.writeln('Running default task.');
     } else {
       grunt.log.writeln('Running tasks: ' + runningTasks);
     }
@@ -326,7 +326,6 @@ module.exports = function(grunt) {
       'copy:cartofonts',
       'copy:iconfont',
       'copy:cartoassets',
-      'copy:perfect_scrollbar',
       'copy:colorpicker',
       'copy:deep_insights',
       'copy:cartodbjs_v4'

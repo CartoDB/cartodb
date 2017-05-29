@@ -7,13 +7,15 @@ class Admin::OrganizationsController < Admin::AdminController
   include OrganizationNotificationsHelper
 
   ssl_required :show, :settings, :settings_update, :regenerate_all_api_keys, :groups, :auth, :auth_update,
-               :notifications, :new_notification, :destroy_notification
+               :notifications, :new_notification, :destroy_notification, :destroy
   before_filter :login_required, :load_organization_and_members, :load_ldap_configuration
-  before_filter :owners_only, only: [:settings, :settings_update, :regenerate_all_api_keys, :auth, :auth_update]
+  before_filter :owners_only, only: [:settings, :settings_update, :regenerate_all_api_keys, :auth, :auth_update,
+                                     :destroy]
   before_filter :enforce_engine_enabled, only: :regenerate_all_api_keys
   before_filter :load_carto_organization, only: [:notifications, :new_notification]
   before_filter :load_notification, only: [:destroy_notification]
-  before_filter :load_organization_notifications, only: [:settings, :auth, :show, :groups, :notifications, :new_notification]
+  before_filter :load_organization_notifications, only: [:settings, :auth, :show, :groups, :notifications,
+                                                         :new_notification]
   helper_method :show_billing
 
   layout 'application'
@@ -22,6 +24,21 @@ class Admin::OrganizationsController < Admin::AdminController
     respond_to do |format|
       format.html { render 'show' }
     end
+  end
+
+  def destroy
+    deletion_password_confirmation = params[:deletion_password_confirmation]
+    if current_user.needs_password_confirmation? && !current_user.validate_old_password(deletion_password_confirmation)
+      flash.now[:error] = "Password doesn't match"
+      render 'show', status: 400
+    else
+      @organization.destroy_cascade(delete_in_central: true)
+      redirect_to logout_url
+    end
+  rescue => e
+    CartoDB::Logger.error(message: "Error deleting organization", exception: e, organization: @organization)
+    flash.now[:error] = "Error deleting organization: #{e.message}"
+    render 'show', status: 500
   end
 
   def settings
@@ -178,7 +195,7 @@ class Admin::OrganizationsController < Admin::AdminController
   end
 
   def enforce_engine_enabled
-    unless @organization.engine_enabled?
+    unless @organization.engine_enabled
       render_403
     end
   end

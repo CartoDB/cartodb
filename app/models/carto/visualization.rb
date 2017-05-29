@@ -61,7 +61,7 @@ class Carto::Visualization < ActiveRecord::Base
   has_many :likes, foreign_key: :subject
   has_many :shared_entities, foreign_key: :entity_id, inverse_of: :visualization, dependent: :destroy
 
-  has_one :external_source
+  has_one :external_source, class_name: Carto::ExternalSource, dependent: :destroy
   has_many :unordered_children, class_name: Carto::Visualization, foreign_key: :parent_id
 
   has_many :overlays, order: '"order"', dependent: :destroy
@@ -549,7 +549,7 @@ class Carto::Visualization < ActiveRecord::Base
   alias :invalidate_cache :invalidate_after_commit
 
   def has_permission?(user, permission_type)
-    return false if user.viewer && permission_type == PERMISSION_READWRITE
+    return false if user.viewer && permission_type == Carto::Permission::ACCESS_READWRITE
     return is_owner?(user) if permission_id.nil?
     is_owner?(user) || permission.permitted?(user, permission_type)
   end

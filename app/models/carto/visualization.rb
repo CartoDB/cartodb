@@ -599,7 +599,7 @@ class Carto::Visualization < ActiveRecord::Base
     table.register_table_only = register_table_only
     table.name = name
     if table.name != name
-      # Sanitization, for example
+      # Sanitization. For example, spaces -> _
       self.name = table.name
     end
     table.update(name: name)

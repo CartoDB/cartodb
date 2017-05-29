@@ -182,6 +182,20 @@ describe Api::Json::VisualizationsController do
       response.fetch('table').fetch('updated_at').should_not == table_attributes.fetch('updated_at')
     end
 
+    it 'returns a downcased name' do
+      table_attributes = table_factory
+      id = table_attributes.fetch('table_visualization').fetch('id')
+
+      put "/api/v1/viz/#{id}?api_key=#{@api_key}", { name: 'CHANGED_NAME', id: id }.to_json, @headers
+      last_response.status.should == 200
+      response = JSON.parse(last_response.body)
+      response.fetch('name').should == 'changed_name'
+
+      get "/api/v1/viz/#{id}?api_key=#{@api_key}", {}, @headers
+      response = JSON.parse(last_response.body)
+      response.fetch('name').should == 'changed_name'
+    end
+
     it 'returns a sanitized name' do
       table_attributes = table_factory
       id = table_attributes.fetch('table_visualization').fetch('id')

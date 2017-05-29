@@ -28,8 +28,7 @@ module Carto
           viewer:           @user.viewer?,
           org_admin:        @user.organization_admin?,
           public_visualization_count: @user.public_visualization_count,
-          all_visualization_count: @user.all_visualization_count,
-          soft_geocoding_limit: @user.soft_geocoding_limit
+          all_visualization_count: @user.all_visualization_count
         }
 
         if fetch_groups
@@ -41,10 +40,11 @@ module Carto
         poro
       end
 
-      def to_poro_without_id
+      def to_eumapi_poro
         presentation = to_poro
 
         presentation.delete(:id)
+        presentation[:soft_geocoding_limit] = @user.soft_geocoding_limit
 
         presentation
       end

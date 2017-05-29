@@ -121,6 +121,7 @@ Development
 * New style for add analysis button (#11902)
 
 ### Bug fixes
+* Fixed UI when editing merge analysis (#10850)
 * Fixed uninitialized constant in Carto::Visualization when a viewer shares a visualization (#12129).
 * Google customers don't need quota checks for hires geocoding (support/#674)
 * Fixed a problem with autostyle when styles has aggregation (#8648)
@@ -187,6 +188,7 @@ Development
   * Map model and controller: #12039, #12011
   * Extract visualization invalidation to a service: #12096
   * Permission: #12077
+  * ::User <-> CartoDB::Visualization::Member dependency: #12116, #12221
 * Refactor Layer model (#10934) and UserTable (#11589, #11700, #11737).
 * [WIP] Update to Rails 4
   * Update `rails-sequel` (#12118)
@@ -257,6 +259,7 @@ Development
 * Using latest cartodb.js and deep-insights.js to tackle map zooming problem (support#605)
 * Fix organization notifications issues (#11957)
 * Max tracts to 4 for isoline analysis (#11723)
+* Make scrollwheel zoom on by default (#12214)
 * Right column validate type match in Join analysis (#11829)
 * Check if analysis node is on top before fetching query data (#11874)
 * Validate amount of organization seats (#12101)
@@ -266,6 +269,7 @@ Development
 * `create_dev_user` rake no longer tries to auto-create the database, `cartodb:db:setup` should be run first (#12187).
 * Better display and logging of errors when SAML authentication fails (#12151)
 * Fixed problem resetting styles per node after adding a new analysis (#12085)
+* Ensure Google services activation rake writes the api keys to Redis (#12209)
 * Docs, fixed some minor spelling and grammar errors in the content.
 * Fix `BUILDER_ENABLED` parameter in `create_dev_user` rake (#12189)
 * Docs, updated "More Info" url from street addresses georeference options to new, related guide.

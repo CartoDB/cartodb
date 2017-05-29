@@ -234,6 +234,9 @@ class User < Sequel::Model
     self.obs_snapshot_quota ||= DEFAULT_OBS_SNAPSHOT_QUOTA
     self.obs_general_quota ||= DEFAULT_OBS_GENERAL_QUOTA
     self.mapzen_routing_quota ||= DEFAULT_MAPZEN_ROUTING_QUOTA
+    self.viewer = false if viewer.nil?
+    self.org_admin = false if org_admin.nil?
+    true
   end
 
   def before_create

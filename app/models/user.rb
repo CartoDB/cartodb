@@ -1430,7 +1430,7 @@ class User < Sequel::Model
   # ----------
 
   def name_or_username
-    name.present? ? name : username
+    name.present? || last_name.present? ? [name, last_name].select(&:present?).join(' ') : username
   end
 
   # Probably not needed with versioning of keys

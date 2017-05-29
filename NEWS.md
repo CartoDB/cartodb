@@ -118,10 +118,13 @@ Development
 * Disable geometry edition button instead of hide in read-only layers (#11543)
 * New loading button styles (#12132)
 * Updated copies for export image & download map (#12114)
+* Add all/none buttons to multi-select component (#9502)
 * New style for add analysis button (#11902)
 * Fix onboarding in layers (#12192)
+* Show infowindow when user reaches max layer limit (#12167)
 
 ### Bug fixes
+* Fixed overlay for legends view (#11825)
 * Fixed UI when editing merge analysis (#10850)
 * Fixed uninitialized constant in Carto::Visualization when a viewer shares a visualization (#12129).
 * Google customers don't need quota checks for hires geocoding (support/#674)
@@ -148,6 +151,7 @@ Development
 * Styling falsy categories (#11421)
 * Fixed bug editing geometries from dataset view (#11855)
 * Fixed pagination position in Safari browser
+* Fix regenerate all api keys in an organization (#12218)
 * Fixed problem renaming a table and breaking edition until reloaded (#11969)
 * Trigger change event when item is selected for multiselect component (#11521)
 * Disable export image button if not validated (#11949)
@@ -266,6 +270,7 @@ Development
 * Validate amount of organization seats (#12101)
 * Fixed error dropping tables from ghost table manager on race condition cases (#12012)
 * IE11 fix for dropdowns with scrollview (#12073)
+* Add last name field to users (#12174)
 * Fix error where a sync of a big dataset without geometry would be deleted from dashboard (#12162)
 * `create_dev_user` rake no longer tries to auto-create the database, `cartodb:db:setup` should be run first (#12187).
 * Better display and logging of errors when SAML authentication fails (#12151)

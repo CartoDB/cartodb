@@ -147,6 +147,7 @@ Development
 * Styling falsy categories (#11421)
 * Fixed bug editing geometries from dataset view (#11855)
 * Fixed pagination position in Safari browser
+* Fix regenerate all api keys in an organization (#12218)
 * Fixed problem renaming a table and breaking edition until reloaded (#11969)
 * Trigger change event when item is selected for multiselect component (#11521)
 * Disable export image button if not validated (#11949)

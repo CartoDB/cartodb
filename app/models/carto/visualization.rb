@@ -598,6 +598,10 @@ class Carto::Visualization < ActiveRecord::Base
     return if table.changing_name?
     table.register_table_only = register_table_only
     table.name = name
+    if table.name != name
+      # Sanitization, for example
+      self.name = table.name
+    end
     table.update(name: name)
     if name_changed?
       support_tables.rename(name_was, name, true, name_was)

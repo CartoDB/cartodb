@@ -9,10 +9,14 @@ var LeafletCartoDBWebglLayerGroupView = function (layerGroupModel, leafletMap) {
   var metric = Profiler.metric('tangram.rendering');
 
   metric.start();
+  
+  this.trigger('loading');
+  
   this.tangram = new TC(leafletMap, this.initConfig.bind(this, layerGroupModel));
 
   this.tangram.onLoaded(function () {
     if (metric) {
+      this.trigger('load');
       metric.end();
       metric = void 0;
     }

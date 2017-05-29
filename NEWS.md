@@ -119,6 +119,7 @@ Development
 * New loading button styles (#12132)
 * Updated copies for export image & download map (#12114)
 * New style for add analysis button (#11902)
+* Fix onboarding in layers (#12192)
 
 ### Bug fixes
 * Fixed UI when editing merge analysis (#10850)

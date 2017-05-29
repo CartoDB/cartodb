@@ -314,6 +314,22 @@ describe Api::Json::VisualizationsController do
           v.privacy.should eq CartoDB::Visualization::Member::PRIVACY_PUBLIC
         end
       end
+
+      it 'enables scrollwheel zoom by default' do
+        table1 = create_table(user_id: @org_user_2.id)
+        table1.map.scrollwheel = false
+        table1.map.options[:scrollwheel] = false
+        table1.map.save
+
+        post_json(api_v1_visualizations_create_url(user_domain: @org_user_2.username, api_key: @org_user_2.api_key),
+                  tables: [table1.name]) do |response|
+          response.status.should eq 200
+          vid = response.body[:id]
+          v = Carto::Visualization.find(vid)
+          v.map.scrollwheel.should eq true
+          v.map.options[:scrollwheel].should eq true
+        end
+      end
     end
   end
 

@@ -5,6 +5,7 @@ var LeafletLayerView = require('./leaflet-layer-view');
 var Profiler = require('../../core/profiler');
 
 var LeafletCartoDBWebglLayerGroupView = function (layerGroupModel, leafletMap) {
+  var self = this;
   LeafletLayerView.apply(this, arguments);
   var metric = Profiler.metric('tangram.rendering');
 
@@ -16,7 +17,7 @@ var LeafletCartoDBWebglLayerGroupView = function (layerGroupModel, leafletMap) {
 
   this.tangram.onLoaded(function () {
     if (metric) {
-      this.trigger('load');
+      self.trigger('load');
       metric.end();
       metric = void 0;
     }

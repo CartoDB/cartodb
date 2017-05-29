@@ -1,7 +1,14 @@
+@import 'cdb-variables/colors';
+
 .data-observatory-add-measure {
   width: 100%;
 }
 
 .data-observatory-license {
   white-space: normal;
+}
+
+.data-observatory-count {
+  padding: 8px 16px;
+  border-bottom: 1px solid $cMainLine;
 }

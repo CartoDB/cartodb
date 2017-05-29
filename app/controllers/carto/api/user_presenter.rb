@@ -28,7 +28,8 @@ module Carto
           viewer:           @user.viewer?,
           org_admin:        @user.organization_admin?,
           public_visualization_count: @user.public_visualization_count,
-          all_visualization_count: @user.all_visualization_count
+          all_visualization_count: @user.all_visualization_count,
+          soft_geocoding_limit: @user.soft_geocoding_limit
         }
 
         if fetch_groups

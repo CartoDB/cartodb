@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.7.22",
+  "version": "4.7.26",
   "dependencies": {
     "abbrev": {
       "version": "1.1.0",
@@ -1102,9 +1102,9 @@
       "resolved": "https://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.32.0.tgz"
     },
     "caniuse-lite": {
-      "version": "1.0.30000671",
+      "version": "1.0.30000674",
       "from": "caniuse-lite@>=1.0.30000670 <2.0.0",
-      "resolved": "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30000671.tgz"
+      "resolved": "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30000674.tgz"
     },
     "carto": {
       "version": "0.15.1-cdb3",
@@ -1365,9 +1365,9 @@
       "optional": true
     },
     "electron-to-chromium": {
-      "version": "1.3.11",
+      "version": "1.3.13",
       "from": "electron-to-chromium@>=1.3.11 <2.0.0",
-      "resolved": "https://registry.npmjs.org/electron-to-chromium/-/electron-to-chromium-1.3.11.tgz"
+      "resolved": "https://registry.npmjs.org/electron-to-chromium/-/electron-to-chromium-1.3.13.tgz"
     },
     "elliptic": {
       "version": "6.4.0",

@@ -44,7 +44,7 @@
     "bluebird": "3.5.0",
     "brfs": "^1.4.3",
     "browserify-resolutions": "1.1.0",
-    "cartoassets": "cartodb/CartoAssets#master",
+    "cartoassets": "cartodb/CartoAssets#reorder-cbd-icon-font",
     "colors": "1.1.2",
     "csswring": "^3.0.5",
     "exports-loader": "0.6.4",

@@ -55,20 +55,31 @@
   height: 10px;
   margin-top: -5px;
   margin-left: -5px;
-  border: 1px solid $cBlue;
+  border: 1px solid $cMainLine;
   border-radius: 50%;
   outline: none;
   background: #FFF;
   box-shadow: none;
-  cursor: pointer;
   z-index: 3;
 
-  &.ui-state-active,
-  &:hover {
-    transform: scale(1.5);
+  &.ui-state-focus {
     box-shadow: none;
   }
-  &.ui-state-focus {
+}
+
+.UISlider.ui-slider-disabled .ui-slider-handle {
+  cursor: not-allowed;
+}
+
+.UISlider:not(.ui-slider-disabled) {
+  .ui-slider-handle {
+    border: 1px solid $cBlue;
+    cursor: pointer;
+  }
+
+  .ui-slider-handle:hover,
+  .ui-state-active {
+    transform: scale(1.5);
     box-shadow: none;
   }
 }
@@ -86,13 +97,16 @@
 }
 
 .UISlider-scale {
+  @include transform(translateY(-50%));
   position: absolute;
+  top: 0;
 }
 
 .UISlider-label {
   position: absolute;
   top: 28px;
+  left: 0;
   width: 100%;
-  text-align: center;
+  text-align: left;
 }
 

@@ -120,6 +120,7 @@ Development
 * Updated copies for export image & download map (#12114)
 * Add all/none buttons to multi-select component (#9502)
 * New style for add analysis button (#11902)
+* Show infowindow when user reaches max layer limit (#12167)
 
 ### Bug fixes
 * Fixed UI when editing merge analysis (#10850)

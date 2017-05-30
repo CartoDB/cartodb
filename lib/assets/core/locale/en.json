@@ -267,7 +267,6 @@
         }
       },
       "area": "Per sq km",
-      "license": "License",
       "count": {
         "top": "Top %{items} results",
         "search": "%{items} results"

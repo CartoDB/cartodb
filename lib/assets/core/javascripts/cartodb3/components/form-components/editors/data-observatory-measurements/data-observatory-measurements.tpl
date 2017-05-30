@@ -20,7 +20,7 @@
 </div>
 
 <div class="js-license CDB-Text CDB-FontSize-small u-altTextColor u-tSpace u-bSpace u-isHidden u-flex">
-  <%- _t('analyses.data-observatory-measure.license') %>: <a class="u-lSpace" href="https://cartodb.github.io/bigmetadata/licenses.html" target="_blank">
+  <a href="https://cartodb.github.io/bigmetadata/licenses.html" target="_blank">
     <span class="u-tSpace u-bSpace data-observatory-license"></span>
   </a>
 </div>

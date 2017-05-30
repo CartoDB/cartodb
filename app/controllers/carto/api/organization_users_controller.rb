@@ -16,7 +16,7 @@ module Carto
 
       def index
         presentations = @organization.users.each do |user|
-          Carto::Api::UserPresenter.new(user, current_viewer: current_viewer).to_poro_without_id
+          Carto::Api::UserPresenter.new(user, current_viewer: current_viewer).to_eumapi_poro
         end
 
         render_jsonp presentations, 200
@@ -24,7 +24,7 @@ module Carto
 
       def show
         presentation = Carto::Api::UserPresenter.new(@user, current_viewer: current_viewer)
-                                                .to_poro_without_id
+                                                .to_eumapi_poro
 
         render_jsonp presentation, 200
       end
@@ -77,7 +77,7 @@ module Carto
 
         presentation = Carto::Api::UserPresenter.new(account_creator.user,
                                                      current_viewer: current_viewer)
-                                                .to_poro_without_id
+                                                .to_eumapi_poro
 
         render_jsonp presentation, 200
       rescue => e
@@ -110,7 +110,7 @@ module Carto
         @user.save
 
         presentation = Carto::Api::UserPresenter.new(@user, current_viewer: current_viewer)
-                                                .to_poro_without_id
+                                                .to_eumapi_poro
 
         render_jsonp presentation, 200
       rescue CartoDB::CentralCommunicationFailure => e

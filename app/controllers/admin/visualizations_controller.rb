@@ -166,7 +166,7 @@ class Admin::VisualizationsController < Admin::AdminController
       @user = @visualization.user
     end
 
-    @name = @visualization.user.name.present? ? @visualization.user.name : @visualization.user.username.truncate(20)
+    @name = @visualization.user.name_or_username
     @user_url = CartoDB.url(self, 'public_user_feed_home', {}, @visualization.user)
 
     @is_data_library = data_library_user?
@@ -258,7 +258,7 @@ class Admin::VisualizationsController < Admin::AdminController
       response.headers['Cache-Control'] = "no-cache,max-age=86400,must-revalidate, public"
     end
 
-    @name = @visualization.user.name.present? ? @visualization.user.name : @visualization.user.username.truncate(20)
+    @name = @visualization.user.name_or_username
     @avatar_url             = @visualization.user.avatar
     @twitter_username       = @visualization.user.twitter_username.present? ? @visualization.user.twitter_username : nil
     @location               = @visualization.user.location.present? ? @visualization.user.location : nil
@@ -310,7 +310,7 @@ class Admin::VisualizationsController < Admin::AdminController
 
     @protected_map_tokens = current_user.get_auth_tokens
 
-    @name = @visualization.user.name.present? ? @visualization.user.name : @visualization.user.username.truncate(20)
+    @name = @visualization.user.name_or_username
     @avatar_url = @visualization.user.avatar
 
     @disqus_shortname       = @visualization.user.disqus_shortname.presence || 'cartodb'
@@ -358,7 +358,7 @@ class Admin::VisualizationsController < Admin::AdminController
 
     @protected_map_tokens = @visualization.get_auth_tokens
 
-    @name = @visualization.user.name.present? ? @visualization.user.name : @visualization.user.username.truncate(20)
+    @name = @visualization.user.name_or_username
     @avatar_url = @visualization.user.avatar
 
     @user_domain = user_domain_variable(request)

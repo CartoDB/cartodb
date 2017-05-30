@@ -13,6 +13,7 @@ Development
   * `cartodb:services:set_org_quota[orgname,service,quota]` updated to support the `mapzen_routing` provider
   * `cartodb:services:set_user_soft_limit[username,service,quota]` new task to set user soft limits
 * Color picker for codemirror component.
+* Owner can delete organization account (not at SaaS, #12049).
 * New dropdown for Data Observatory (#11618)
 * Quota pre-check to analyses that consume quota.
 * Marking 'Do not show me again' in Layer Onboarding affects every tab. (#11586)
@@ -117,8 +118,13 @@ Development
 * Disable geometry edition button instead of hide in read-only layers (#11543)
 * New loading button styles (#12132)
 * Updated copies for export image & download map (#12114)
+* Add all/none buttons to multi-select component (#9502)
+* New style for add analysis button (#11902)
+* Show infowindow when user reaches max layer limit (#12167)
 
 ### Bug fixes
+* Fixed overlay for legends view (#11825)
+* Fixed UI when editing merge analysis (#10850)
 * Fixed uninitialized constant in Carto::Visualization when a viewer shares a visualization (#12129).
 * Google customers don't need quota checks for hires geocoding (support/#674)
 * Fixed a problem with autostyle when styles has aggregation (#8648)
@@ -144,6 +150,7 @@ Development
 * Styling falsy categories (#11421)
 * Fixed bug editing geometries from dataset view (#11855)
 * Fixed pagination position in Safari browser
+* Fix regenerate all api keys in an organization (#12218)
 * Fixed problem renaming a table and breaking edition until reloaded (#11969)
 * Trigger change event when item is selected for multiselect component (#11521)
 * Disable export image button if not validated (#11949)
@@ -185,6 +192,7 @@ Development
   * Map model and controller: #12039, #12011
   * Extract visualization invalidation to a service: #12096
   * Permission: #12077
+  * ::User <-> CartoDB::Visualization::Member dependency: #12116, #12221
 * Refactor Layer model (#10934) and UserTable (#11589, #11700, #11737).
 * [WIP] Update to Rails 4
   * Update `rails-sequel` (#12118)
@@ -255,15 +263,20 @@ Development
 * Using latest cartodb.js and deep-insights.js to tackle map zooming problem (support#605)
 * Fix organization notifications issues (#11957)
 * Max tracts to 4 for isoline analysis (#11723)
+* Make scrollwheel zoom on by default (#12214)
 * Right column validate type match in Join analysis (#11829)
 * Check if analysis node is on top before fetching query data (#11874)
 * Validate amount of organization seats (#12101)
 * Fixed error dropping tables from ghost table manager on race condition cases (#12012)
 * IE11 fix for dropdowns with scrollview (#12073)
+* Add last name field to users (#12174)
+* Fix error where a sync of a big dataset without geometry would be deleted from dashboard (#12162)
 * `create_dev_user` rake no longer tries to auto-create the database, `cartodb:db:setup` should be run first (#12187).
 * Better display and logging of errors when SAML authentication fails (#12151)
 * Fixed problem resetting styles per node after adding a new analysis (#12085)
+* Ensure Google services activation rake writes the api keys to Redis (#12209)
 * Docs, fixed some minor spelling and grammar errors in the content.
+* Fix EUMAPI response as per documentation (#12233)
 * Fix `BUILDER_ENABLED` parameter in `create_dev_user` rake (#12189)
 * Docs, updated "More Info" url from street addresses georeference options to new, related guide.
 * Organizations users now get engine_enabled from the organization by default (#12153)

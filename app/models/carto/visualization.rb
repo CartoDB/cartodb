@@ -61,7 +61,7 @@ class Carto::Visualization < ActiveRecord::Base
   has_many :likes, foreign_key: :subject
   has_many :shared_entities, foreign_key: :entity_id, inverse_of: :visualization, dependent: :destroy
 
-  has_one :external_source
+  has_one :external_source, class_name: Carto::ExternalSource, dependent: :destroy
   has_many :unordered_children, class_name: Carto::Visualization, foreign_key: :parent_id
 
   has_many :overlays, order: '"order"', dependent: :destroy

@@ -58,6 +58,75 @@ describe Admin::OrganizationsController do
     end
   end
 
+  describe '#regenerate_api_keys' do
+    it 'regenerate api keys for all org users' do
+      @organization.engine_enabled = true
+      @organization.save
+      host! "#{@organization.name}.localhost.lan"
+      login_as(@org_user_owner, scope: @org_user_owner.username)
+      post regenerate_organization_users_api_key_url(user_domain: @org_user_owner.username)
+      response.status.should eq 302
+
+      @organization.users.each do |u|
+        old_api_key = u.api_key
+        u.reload
+        expect(u.api_key).to_not eq old_api_key
+      end
+    end
+  end
+
+  describe '#delete' do
+    before(:all) do
+      @delete_org = test_organization
+      @delete_org.save
+
+      helper = TestUserFactory.new
+      @delete_org_owner = helper.create_owner(@delete_org)
+
+      @delete_org_user1 = @helper.create_test_user(unique_name('user'), @delete_org)
+    end
+
+    after(:all) do
+      @delete_org.destroy_cascade if Carto::Organization.exists?(@delete_org.id)
+    end
+
+    before(:each) do
+      host! "#{@delete_org.name}.localhost.lan"
+      Organization.any_instance.stubs(:update_in_central).returns(true)
+    end
+
+    it 'cannot be accessed by non owner users' do
+      login_as(@delete_org_user1, scope: @delete_org_user1.username)
+      delete organization_destroy_url(user_domain: @delete_org_user1.username)
+      response.status.should eq 404
+    end
+
+    describe 'as owner' do
+      before(:each) do
+        login_as(@delete_org_owner, scope: @delete_org_owner.username)
+      end
+
+      it 'returns 400 if no password confirmation is provided' do
+        delete organization_destroy_url(user_domain: @delete_org_owner.username)
+        response.status.should eq 400
+        response.body.should include("Password doesn't match")
+      end
+
+      it 'returns 400 if password confirmation is wrong' do
+        payload = { deletion_password_confirmation: @delete_org_owner.password + 'wadus' }
+        delete organization_destroy_url(user_domain: @delete_org_owner.username), payload
+        response.status.should eq 400
+      end
+
+      it 'deletes organization and redirects if passwords match' do
+        payload = { deletion_password_confirmation: @delete_org_owner.password }
+        delete organization_destroy_url(user_domain: @delete_org_owner.username), payload
+        response.status.should eq 302
+        Carto::Organization.exists?(@delete_org.id).should be_false
+      end
+    end
+  end
+
   describe '#auth' do
     let(:payload) do
       {

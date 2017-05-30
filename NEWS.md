@@ -119,6 +119,7 @@ Development
 * Updated copies for export image & download map (#12114)
 
 ### Bug fixes
+* Better handling and reporting of "table with no map associated" error in map privacy changes (#12137).
 * Fixed uninitialized constant in Carto::Visualization when a viewer shares a visualization (#12129).
 * Google customers don't need quota checks for hires geocoding (support/#674)
 * Fixed a problem with autostyle when styles has aggregation (#8648)

@@ -172,6 +172,14 @@ class Carto::Visualization < ActiveRecord::Base
     @stats ||= CartoDB::Visualization::Stats.new(self).to_poro
   end
 
+  def transition_options
+    @transition_options ||= (slide_transition_options.nil? ? {} : JSON.parse(slide_transition_options).symbolize_keys)
+  end
+
+  def transition_options=(value)
+    self.slide_transition_options = ::JSON.dump(value.nil? ? DEFAULT_OPTIONS_VALUE : value)
+  end
+
   def children
     ordered = []
     children_vis = self.unordered_children

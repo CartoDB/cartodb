@@ -30,12 +30,12 @@
 }
 
 .ListItem-deteleButton {
-  visibility: hidden;
   position: absolute;
   top: 6px;
   left: 100%;
-  opacity: 0;
   padding: 0 5px;
+  opacity: 0;
+  visibility: hidden;
 
   .ListItem:not(:first-child):hover & {
     @include opacity(1);

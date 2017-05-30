@@ -27,12 +27,12 @@ module CartoDB
           notify_privacy_affected_entities(metadata_table) if privacy_changed
         end
       else
-        CartoDB::Logger.debug(
-          message: 'Privacy change of table with no map',
+        CartoDB::Logger.warning(
+          message: 'Trying to change privacy of table with no map associated',
           exception: exception,
           table_id: @table.id,
           table_name: @table.name,
-          user: User.where(id: @table.user_id),
+          user: Carto::User.find(@table.user_id),
           data_import_id: @table.data_import_id
         )
       end

@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.7.27",
+  "version": "4.7.29",
   "description": "CARTO UI frontend",
   "repository": {
     "type": "git",
@@ -85,7 +85,7 @@
     "shim-loader": "0.1.0",
     "source-map-support": "0.4.0",
     "stringify": "5.1.0",
-    "tpl-loader": "git://github.com/ivanmalagon/tpl-loader.git#5cc2b785d10d873f2530fa885d3cb69894569a2f",
+    "tpl-loader": "git://github.com/CartoDB/tpl-loader.git#master",
     "uglify-js": "2.7.x",
     "watchify": "3.7.0",
     "webpack-bundle-analyzer": "^2.4.0",

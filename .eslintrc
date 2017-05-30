@@ -1,11 +1,17 @@
 {
-  "rules": {},
+  "extends": "standard",
+
+  "rules": {
+    "semi": [2, "always"],
+    "no-extra-semi": 2
+  },
+
   "env": {
     "es6": true,
     "browser": true,
     "jasmine": true
   },
-  "extends": "semistandard",
+
   "globals": {
     "_t": true
   }

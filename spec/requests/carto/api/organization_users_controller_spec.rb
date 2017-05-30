@@ -165,9 +165,24 @@ describe Carto::Api::OrganizationUsersController do
       login(@organization.owner)
       username = 'manolo-escobar'
       params = user_params(username)
-      post api_v2_organization_users_create_url(id_or_name: @organization.name), params
-
-      last_response.status.should eq 200
+      post_json api_v2_organization_users_create_url(id_or_name: @organization.name), params do |response|
+        response.status.should eq 200
+        response.body[:username].should eq username
+        response.body[:email].should eq "#{username}@carto.com"
+        response.body[:quota_in_bytes].should eq 1024
+        response.body[:builder_enabled].should be_nil
+        response.body[:engine_enabled].should be_nil
+        response.body[:viewer].should eq false
+        response.body[:org_admin].should eq false
+        response.body[:base_url].should include(username, @organization.name)
+        response.body[:db_size_in_bytes].should eq 0
+        response.body[:table_count].should eq 0
+        response.body[:public_visualization_count].should eq 0
+        response.body[:all_visualization_count].should eq 0
+        response.body[:soft_geocoding_limit].should eq false
+        # We are returning a nil avatar on creation since this is chosen during creation (Resque)
+        # response.body[:avatar_url].should be
+      end
 
       last_user_created = @organization.users.find { |u| u.username == username }
       last_user_created.username.should eq username
@@ -176,6 +191,8 @@ describe Carto::Api::OrganizationUsersController do
       last_user_created.quota_in_bytes.should eq 1024
       last_user_created.builder_enabled.should be_nil
       last_user_created.engine_enabled.should be_nil
+      last_user_created.viewer.should eq false
+      last_user_created.org_admin.should eq false
       last_user_created.destroy
     end
 
@@ -481,10 +498,24 @@ describe Carto::Api::OrganizationUsersController do
                  password: 'pataton',
                  soft_geocoding_limit: true,
                  quota_in_bytes: 2048 }
-      put api_v2_organization_users_update_url(id_or_name: @organization.name, u_username: user_to_update.username),
-          params
-
-      last_response.status.should eq 200
+      put_json api_v2_organization_users_update_url(id_or_name: @organization.name,
+                                                    u_username: user_to_update.username), params do |response|
+        response.status.should eq 200
+        response.body[:username].should eq user_to_update.username
+        response.body[:email].should eq new_email
+        response.body[:quota_in_bytes].should eq 2048
+        response.body[:builder_enabled].should user_to_update.builder_enabled
+        response.body[:engine_enabled].should user_to_update.engine_enabled
+        response.body[:viewer].should eq user_to_update.viewer
+        response.body[:org_admin].should eq user_to_update.org_admin
+        response.body[:base_url].should include(user_to_update.username, @organization.name)
+        response.body[:db_size_in_bytes].should eq 0
+        response.body[:table_count].should eq 0
+        response.body[:public_visualization_count].should eq 0
+        response.body[:all_visualization_count].should eq 0
+        response.body[:avatar_url].should be
+        response.body[:soft_geocoding_limit].should eq true
+      end
 
       user_to_update.reload
 

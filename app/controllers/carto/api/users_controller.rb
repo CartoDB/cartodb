@@ -64,7 +64,8 @@ module Carto
         render json: {
           urls: ["#{CartoDB.base_url(user.username, organization_name)}#{CartoDB.path(self, 'dashboard_bis')}"],
           username: user.username,
-          name: user.name_or_username,
+          name: user.name,
+          last_name: user.last_name,
           avatar_url: user.avatar_url,
           email: user.email,
           organization: Carto::Api::OrganizationPresenter.new(user.organization).to_poro,

@@ -1,7 +1,9 @@
 # coding: utf-8
 require_dependency 'cartodb_config_utils'
+require_dependency 'carto/configuration'
 
 module ApplicationHelper
+  include Carto::Configuration
   include CartoDB::ConfigUtils
   include SafeJsObject
   include TrackjsHelper

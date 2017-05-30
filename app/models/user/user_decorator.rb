@@ -16,6 +16,7 @@ module CartoDB
         id: id,
         email: email,
         name: name,
+        last_name: last_name,
         username: username,
         account_type: account_type,
         account_type_display_name: plan_name(account_type),

@@ -23,10 +23,10 @@
     "browserify-shim": "3.8.12",
     "camshaft-reference": "0.33.0",
     "carto": "cartodb/carto#master",
+    "cartocolor": "4.0.0",
     "cartodb-deep-insights.js": "cartodb/deep-insights.js#master",
     "cartodb-pecan": "0.2.x",
     "cartodb.js": "CartoDB/cartodb.js#v4",
-    "cartocolor": "4.0.0",
     "clipboard": "1.6.1",
     "codemirror": "5.14.2",
     "jquery": "2.1.4",
@@ -34,8 +34,9 @@
     "node-polyglot": "1.0.0",
     "perfect-scrollbar": "git://github.com/CartoDB/perfect-scrollbar.git#master",
     "queue-async": "1.2.1",
-    "torque.js": "CartoDB/torque#master",
+    "rangeslider.js": "2.3.0",
     "tangram": "cartodb/tangram-1#master",
+    "torque.js": "CartoDB/torque#master",
     "underscore": "1.8.3"
   },
   "devDependencies": {

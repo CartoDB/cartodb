@@ -137,8 +137,11 @@ module CartoDB
       cartodb.css
       front.css
       editor.css
+
+      common_editor3.css
       editor3.css
       public_editor3.css
+
       table.css
       leaflet.css
       map.css

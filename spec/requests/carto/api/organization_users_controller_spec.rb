@@ -504,8 +504,8 @@ describe Carto::Api::OrganizationUsersController do
         response.body[:username].should eq user_to_update.username
         response.body[:email].should eq new_email
         response.body[:quota_in_bytes].should eq 2048
-        response.body[:builder_enabled].should user_to_update.builder_enabled
-        response.body[:engine_enabled].should user_to_update.engine_enabled
+        response.body[:builder_enabled].should eq user_to_update.builder_enabled
+        response.body[:engine_enabled].should eq user_to_update.engine_enabled
         response.body[:viewer].should eq user_to_update.viewer
         response.body[:org_admin].should eq user_to_update.org_admin
         response.body[:base_url].should include(user_to_update.username, @organization.name)

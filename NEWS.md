@@ -120,6 +120,7 @@ Development
 * Updated copies for export image & download map (#12114)
 * Add all/none buttons to multi-select component (#9502)
 * New style for add analysis button (#11902)
+* Fix onboarding in layers (#12192)
 * Show infowindow when user reaches max layer limit (#12167)
 * Format quota infowindow numbers (#11743)
 

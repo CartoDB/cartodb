@@ -1118,8 +1118,8 @@
     },
     "cartodb-deep-insights.js": {
       "version": "0.0.2",
-      "from": "cartodb/deep-insights.js#reorder-cdb-icon-font",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#378f7a4f66194b7534d443f64b4dc458bff23930"
+      "from": "cartodb/deep-insights.js#master",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#c8113f47d022593634f8ecd83d7b8f004c63e665"
     },
     "cartodb-pecan": {
       "version": "0.2.0",
@@ -1128,8 +1128,8 @@
     },
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
-      "from": "cartodb/cartodb.js#reorder-cdb-icon-font",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#16ef6945e6ea78d00ee03b2e0f43c759a3d13393"
+      "from": "cartodb/cartodb.js#v4",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#e6632da3664748f275c032d4865aaf0f3b191bbb"
     },
     "caseless": {
       "version": "0.11.0",

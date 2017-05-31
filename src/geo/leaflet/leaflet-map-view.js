@@ -169,11 +169,11 @@ var LeafletMapView = MapView.extend({
     this._setView();
   },
 
-  _setView: function () {
+  _setView: _.debounce(function () {
     if (this.map.hasChanged('zoom') || this.map.hasChanged('center')) {
       this._leafletMap.flyTo(this.map.get('center'), this.map.get('zoom') || 0);
     }
-  },
+  }, 50, LeafletMapView),
 
   _getNativeMap: function () {
     return this._leafletMap;

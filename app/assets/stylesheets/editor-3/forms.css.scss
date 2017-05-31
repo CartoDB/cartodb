@@ -12,8 +12,10 @@
   margin-top: $baseSize;
 }
 .Editor-formInner.Editor-formInner--Slider {
-  margin-bottom: 60px;
+  align-items: flex-start;
+  margin-top: $baseSize * 2;
 }
+
 .Options-form .Editor-formInner {
   margin-top: 0;
 }

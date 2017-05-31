@@ -15,17 +15,6 @@
   width: 90px;
   height: 2px;
 }
-.UISlider.without-line .ui-slider-range-min,
-.UISlider.without-line .ui-slider-range,
-.UISlider.without-line .ui-slider-range-max {
-  display: none;
-}
-.UISlider.is-standalone {
-  width: 160px;
-}
-.UISlider.without-line {
-  height: 0;
-}
 .UISlider.ui-slider {
   border-radius: 0;
   background: $cMainLine;
@@ -83,31 +72,3 @@
     box-shadow: none;
   }
 }
-
-.UISlider-tick {
-  position: absolute;
-  top: 13px;
-  width: 1px;
-  height: 4px;
-  background: #CCC;
-}
-
-.UISlider-tick.is-highlighted {
-  background: #333;
-}
-
-.UISlider-scale {
-  @include transform(translateY(-50%));
-  position: absolute;
-  top: 0;
-}
-
-.UISlider-label {
-  position: absolute;
-  top: 28px;
-  left: 0;
-  width: 100%;
-  line-height: 16px;
-  text-align: left;
-}
-

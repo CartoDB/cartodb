@@ -121,6 +121,7 @@ Development
 * Add all/none buttons to multi-select component (#9502)
 * New style for add analysis button (#11902)
 * Show infowindow when user reaches max layer limit (#12167)
+* Format quota infowindow numbers (#11743)
 
 ### Bug fixes
 * Boolean fields are visible in the filter by column value analysis (#11546)

@@ -7,6 +7,6 @@ ruby:
 javascript:
   enabled: false
 eslint:
-  enabled: true
+  enabled: false
   config_file: .eslintrc
   ignore_file: .eslintignore

@@ -121,9 +121,11 @@ Development
 * Add all/none buttons to multi-select component (#9502)
 * New style for add analysis button (#11902)
 * Show infowindow when user reaches max layer limit (#12167)
+* Format quota infowindow numbers (#11743)
 
 ### Bug fixes
 * Fixed layer counter (#12236)
+* Boolean fields are visible in the filter by column value analysis (#11546)
 * Fixed legend's color mismatch with empty values (#11632)
 * Fixed overlay for legends view (#11825)
 * Fixed UI when editing merge analysis (#10850)

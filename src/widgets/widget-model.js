@@ -22,7 +22,10 @@ module.exports = cdb.core.Model.extend({
   initialize: function (attrs, models, opts) {
     opts = opts || {};
     this.dataviewModel = models.dataviewModel;
-    this.defaults.autoStyleEnabled = opts.autoStyleEnabled;
+
+    // Autostyle could be disabled initially if the styles have an aggregation
+    // If no option, autoStyleEnabled by default
+    this._autoStyleEnabledWhenCreated = opts.autoStyleEnabled === undefined ? true : opts.autoStyleEnabled;
 
     this.activeAutoStyler();
     this.bind('change:style', this.activeAutoStyler, this);
@@ -68,13 +71,12 @@ module.exports = cdb.core.Model.extend({
   },
 
   isAutoStyleEnabled: function () {
-    if (!this.defaults.autoStyleEnabled) return false;
-
     var styles = this.get('style');
 
     if (this.get('type') === 'category' || this.get('type') === 'histogram') {
       if (!styles || !styles.auto_style) {
-        return true;
+        // Only when styles are undefined we check the autostyle option
+        return this._autoStyleEnabledWhenCreated;
       }
 
       return styles && styles.auto_style && styles.auto_style.allowed;

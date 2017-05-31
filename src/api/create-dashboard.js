@@ -51,10 +51,16 @@ var createDashboard = function (selector, vizJSON, opts, callback) {
     widgets: widgets,
     model: model
   });
-  var stateFromURL = opts.state || URLHelper.getStateFromCurrentURL();
-  if (stateFromURL && !_.isEmpty(stateFromURL.map)) {
-    if (stateFromURL.map.ne && stateFromURL.map.sw) {
-      vizJSON.bounds = [stateFromURL.map.ne, stateFromURL.map.sw];
+  var dashboardState = opts.state || URLHelper.getStateFromCurrentURL();
+  if (dashboardState && !_.isEmpty(dashboardState.map)) {
+    if (_.isArray(dashboardState.map.center)) {
+      vizJSON.center = dashboardState.map.center;
+    }
+    if (_.isNumber(dashboardState.map.zoom)) {
+      vizJSON.zoom = dashboardState.map.zoom;
+    }
+    if (dashboardState.map.ne && dashboardState.map.sw) {
+      vizJSON.bounds = [dashboardState.map.ne, dashboardState.map.sw];
     }
   }
 
@@ -63,15 +69,7 @@ var createDashboard = function (selector, vizJSON, opts, callback) {
   }));
 
   vis.once('load', function (vis) {
-    if (stateFromURL && !_.isEmpty(stateFromURL.map)) {
-      if (!_.isUndefined(stateFromURL.map.ne) && !_.isUndefined(stateFromURL.map.sw)) {
-        vis.map.setBounds([stateFromURL.map.ne, stateFromURL.map.sw]);
-      } else if (!_.isUndefined(stateFromURL.map.center) && !_.isUndefined(stateFromURL.map.zoom)) {
-        vis.map.setView(stateFromURL.map.center, stateFromURL.map.zoom);
-      }
-    }
-
-    var widgetsState = stateFromURL && stateFromURL.widgets || {};
+    var widgetsState = dashboardState && dashboardState.widgets || {};
 
     // Create widgets
     var widgetsService = new WidgetsService(widgets, vis.dataviews);
@@ -99,7 +97,7 @@ var createDashboard = function (selector, vizJSON, opts, callback) {
           layer = vis.map.layers.at(d.layerIndex);
         }
 
-        newWidgetModel(attrs, layer, state, {autoStyleEnabled: opts.autoStyle});
+        newWidgetModel(attrs, layer, state);
       } else {
         cdb.log.error('No widget found for type ' + d.type);
       }

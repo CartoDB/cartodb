@@ -123,6 +123,7 @@ Development
 * Show infowindow when user reaches max layer limit (#12167)
 
 ### Bug fixes
+* Boolean fields are visible in the filter by column value analysis (#11546)
 * Fixed legend's color mismatch with empty values (#11632)
 * Fixed overlay for legends view (#11825)
 * Fixed UI when editing merge analysis (#10850)

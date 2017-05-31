@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.7.205",
+  "version": "4.7.206",
   "dependencies": {
     "abbrev": {
       "version": "1.1.0",
@@ -649,7 +649,7 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
       "from": "cartodb/cartodb.js#render-view-after-first-reload",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#4fd506849fedb65f63a61cd4481cef242f5897b3"
+      "resolved": "git://github.com/cartodb/cartodb.js.git#384787de6b3dbdaa9dd4d3f23a269ce748d857a8"
     },
     "caseless": {
       "version": "0.11.0",

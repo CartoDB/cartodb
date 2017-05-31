@@ -17,6 +17,9 @@
   @include justify-content(flex-start, start);
   text-align: left;
 }
+.CDB-Widget-contentSpaced--end {
+  @include justify-content(flex-end);
+}
 .CDB-Widget-contentFlex {
   @include display-flex();
   @include align-items(center);

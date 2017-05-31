@@ -21,6 +21,7 @@ module.exports = cdb.core.View.extend({
     this._rangeFilter = this.options.rangeFilter;
     this._originalData = this.model.getUnfilteredDataModel();
     this.model.bind('change:data', this._onChangeData, this);
+    this._initBinds();
   },
 
   render: function () {
@@ -37,6 +38,10 @@ module.exports = cdb.core.View.extend({
     this._rangeFilter.unsetRange();
     this._chartView.removeSelection();
     this._timeseriesModel.set({lo_index: null, hi_index: null});
+  },
+
+  _initBinds: function () {
+    this.listenTo(this._timeseriesModel, 'change:normalized', this._onNormalizedChanged);
   },
 
   _createHistogramView: function () {
@@ -57,7 +62,8 @@ module.exports = cdb.core.View.extend({
       height: this.defaults.histogramChartHeight,
       data: this.model.getData(),
       originalData: this._originalData,
-      displayShadowBars: true,
+      displayShadowBars: !this._timeseriesModel.get('normalized'),
+      normalized: this._timeseriesModel.get('normalized'),
       widgetModel: this._timeseriesModel
     });
     this.addView(this._chartView);
@@ -95,6 +101,11 @@ module.exports = cdb.core.View.extend({
       ? this.defaults.histogramChartMobileHeight
       : this.defaults.histogramChartHeight;
     this._chartView.model.set('height', height);
-  }
+  },
 
+  _onNormalizedChanged: function () {
+    if (this._chartView) {
+      this._chartView.setNormalized(this._timeseriesModel.get('normalized'));
+    }
+  }
 });

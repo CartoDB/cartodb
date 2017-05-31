@@ -44,11 +44,6 @@ module.exports = cdb.core.View.extend({
     this._dataviewModel.once('change:data', this.render, this);
     this._dataviewModel.bind('change:bins', this._onChangeBins, this);
 
-    this.model.bind('change:normalized', function () {
-      var normalized = this.model.get('normalized');
-      this._histogramView._chartView.setNormalized(normalized);
-    }, this);
-
     this.add_related_model(this._dataviewModel);
     this.add_related_model(this._originalData);
   },
@@ -62,7 +57,9 @@ module.exports = cdb.core.View.extend({
       timeseriesModel: this.model,
       model: this._dataviewModel,
       rangeFilter: this._dataviewModel.filter,
-      torqueLayerModel: this._dataviewModel.layer
+      torqueLayerModel: this._dataviewModel.layer,
+      displayShadowBars: !this.model.get('normalized'),
+      normalized: this.model.get('normalized')
     });
 
     this.addView(this._histogramView);

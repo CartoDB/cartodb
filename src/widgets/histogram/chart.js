@@ -511,11 +511,10 @@ module.exports = cdb.core.View.extend({
     }
 
     if (this._originalData) {
-      this._originalData.on('change:data', function () {
+      this.listenTo(this._originalData, 'change:data', function (mdl) {
         this._removeShadowBars();
         this._generateShadowBars();
-      }, this);
-      this.add_related_model(this._originalData);
+      });
     }
   },
 

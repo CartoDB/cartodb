@@ -40,10 +40,11 @@ module Carto
         poro
       end
 
-      def to_poro_without_id
+      def to_eumapi_poro
         presentation = to_poro
 
         presentation.delete(:id)
+        presentation[:soft_geocoding_limit] = @user.soft_geocoding_limit
 
         presentation
       end
@@ -78,6 +79,7 @@ module Carto
           id: @user.id,
           email: @user.email,
           name: @user.name,
+          last_name: @user.last_name,
           username: @user.username,
           account_type: @user.account_type,
           account_type_display_name: plan_name(@user.account_type),

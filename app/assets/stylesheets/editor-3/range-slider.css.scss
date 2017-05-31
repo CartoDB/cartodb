@@ -10,22 +10,22 @@
 .rangeslider {
   position: relative;
 
-  &:before {
-    content: '';
-    width: 0;
-    height: 0;
+  &::before {
     position: absolute;
     top: 2px;
     left: 0;
-    border-style: solid;
+    width: 0;
+    height: 0;
     border-width: 4px 160px 4px 0;
-    border-color: transparent #eee transparent transparent;
+    border-style: solid;
+    border-color: transparent #EEE transparent transparent;
+    content: '';
   }
 }
 
 .rangeslider--horizontal {
-  height: 20px;
   width: 160px;
+  height: 20px;
 }
 
 .rangeslider--vertical {
@@ -40,8 +40,8 @@
 }
 
 .rangesliderFill {
-  background: $cMainLine;
   position: absolute;
+  background: $cMainLine;
 }
 
 .rangeslider--horizontal .rangesliderFill {
@@ -70,8 +70,8 @@
   border-radius: 50%;
   outline: none;
   background: #FFF;
-  z-index: 3;
   cursor: pointer;
+  z-index: 3;
 
   &:hover {
     transform: scale(1.5);
@@ -87,15 +87,6 @@
   }
 }
 
-// .rangeslider--active .rangesliderHandle {
-//   border: 1px solid $cBlue;
-//   cursor: pointer;
-
-//   &:hover {
-//     transform: scale(1.5);
-//   }
-// }
-
 .rangeslider--horizontal .rangesliderHandle {
   top: 5px;
   touch-action: pan-y;
@@ -110,8 +101,8 @@
 
 .rangeslider-label {
   width: 100%;
-  text-align: left;
   min-height: 32px;
+  text-align: left;
 }
 
 .rangeslider-ticks {

@@ -123,6 +123,7 @@ Development
 * Show infowindow when user reaches max layer limit (#12167)
 
 ### Bug fixes
+* Fixed legend's color mismatch with empty values (#11632)
 * Fixed overlay for legends view (#11825)
 * Fixed UI when editing merge analysis (#10850)
 * Fixed uninitialized constant in Carto::Visualization when a viewer shares a visualization (#12129).

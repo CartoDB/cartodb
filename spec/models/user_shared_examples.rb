@@ -837,4 +837,38 @@ shared_examples_for "user models" do
       user.dashboard_viewed_at.should_not eq last
     end
   end
+
+  describe '#name_or_username' do
+    before(:all) do
+      @user = create_user
+    end
+
+    after(:all) do
+      @user.destroy
+    end
+
+    it 'returns username if no name available' do
+      @user.name = ''
+      @user.last_name = nil
+      expect(@user.name_or_username).to eq @user.username
+    end
+
+    it 'returns first name if available' do
+      @user.name = 'Petete'
+      @user.last_name = nil
+      expect(@user.name_or_username).to eq 'Petete'
+    end
+
+    it 'returns last name if available' do
+      @user.name = ''
+      @user.last_name = 'Trapito'
+      expect(@user.name_or_username).to eq 'Trapito'
+    end
+
+    it 'returns first+last name if available' do
+      @user.name = 'Petete'
+      @user.last_name = 'Trapito'
+      expect(@user.name_or_username).to eq 'Petete Trapito'
+    end
+  end
 end

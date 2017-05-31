@@ -58,6 +58,23 @@ describe Admin::OrganizationsController do
     end
   end
 
+  describe '#regenerate_api_keys' do
+    it 'regenerate api keys for all org users' do
+      @organization.engine_enabled = true
+      @organization.save
+      host! "#{@organization.name}.localhost.lan"
+      login_as(@org_user_owner, scope: @org_user_owner.username)
+      post regenerate_organization_users_api_key_url(user_domain: @org_user_owner.username)
+      response.status.should eq 302
+
+      @organization.users.each do |u|
+        old_api_key = u.api_key
+        u.reload
+        expect(u.api_key).to_not eq old_api_key
+      end
+    end
+  end
+
   describe '#delete' do
     before(:all) do
       @delete_org = test_organization

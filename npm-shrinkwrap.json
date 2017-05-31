@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.7.12",
+  "version": "4.7.27",
   "dependencies": {
     "abbrev": {
       "version": "1.1.0",
@@ -13,9 +13,9 @@
       "resolved": "https://registry.npmjs.org/accessory/-/accessory-1.0.1.tgz"
     },
     "acorn": {
-      "version": "4.0.11",
+      "version": "4.0.13",
       "from": "acorn@>=4.0.3 <5.0.0",
-      "resolved": "https://registry.npmjs.org/acorn/-/acorn-4.0.11.tgz"
+      "resolved": "https://registry.npmjs.org/acorn/-/acorn-4.0.13.tgz"
     },
     "amdefine": {
       "version": "1.0.1",
@@ -1102,9 +1102,9 @@
       "resolved": "https://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.32.0.tgz"
     },
     "caniuse-lite": {
-      "version": "1.0.30000670",
+      "version": "1.0.30000676",
       "from": "caniuse-lite@>=1.0.30000670 <2.0.0",
-      "resolved": "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30000670.tgz"
+      "resolved": "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30000676.tgz"
     },
     "carto": {
       "version": "0.15.1-cdb3",
@@ -1119,7 +1119,7 @@
     "cartodb-deep-insights.js": {
       "version": "0.0.2",
       "from": "cartodb/deep-insights.js#master",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#0a886e052c3a95de6903c517278fe33573468bda"
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#c8113f47d022593634f8ecd83d7b8f004c63e665"
     },
     "cartodb-pecan": {
       "version": "0.2.0",
@@ -1129,7 +1129,7 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
       "from": "cartodb/cartodb.js#v4",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#06ed29722765bd11f668fcdb81b1eb32eaf903ed"
+      "resolved": "git://github.com/cartodb/cartodb.js.git#e6632da3664748f275c032d4865aaf0f3b191bbb"
     },
     "caseless": {
       "version": "0.11.0",
@@ -1314,9 +1314,9 @@
       "resolved": "https://registry.npmjs.org/delayed-stream/-/delayed-stream-1.0.0.tgz"
     },
     "delegate": {
-      "version": "3.1.2",
+      "version": "3.1.3",
       "from": "delegate@>=3.1.2 <4.0.0",
-      "resolved": "https://registry.npmjs.org/delegate/-/delegate-3.1.2.tgz"
+      "resolved": "https://registry.npmjs.org/delegate/-/delegate-3.1.3.tgz"
     },
     "deps-sort": {
       "version": "2.0.0",
@@ -1365,9 +1365,9 @@
       "optional": true
     },
     "electron-to-chromium": {
-      "version": "1.3.11",
+      "version": "1.3.13",
       "from": "electron-to-chromium@>=1.3.11 <2.0.0",
-      "resolved": "https://registry.npmjs.org/electron-to-chromium/-/electron-to-chromium-1.3.11.tgz"
+      "resolved": "https://registry.npmjs.org/electron-to-chromium/-/electron-to-chromium-1.3.13.tgz"
     },
     "elliptic": {
       "version": "6.4.0",
@@ -2777,7 +2777,7 @@
     "tangram-cartocss": {
       "version": "0.5.3",
       "from": "cartodb/tangram-carto#master",
-      "resolved": "git://github.com/cartodb/tangram-carto.git#04b45c7e47adf3ebdeb63a50e11652e67a22a453",
+      "resolved": "git://github.com/cartodb/tangram-carto.git#3f3c485233faa70f1c17575986fa407ed631f8b4",
       "dependencies": {
         "babel-runtime": {
           "version": "6.23.0",

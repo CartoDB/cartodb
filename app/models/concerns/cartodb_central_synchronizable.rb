@@ -98,7 +98,7 @@ module Concerns
          :geocoding_block_price, :geocoding_quota, :map_view_block_price,
          :map_view_quota, :max_layers,
          :max_import_file_size, :max_import_table_row_count, :max_concurrent_import_count,
-         :name, :notification, :organization_id,
+         :name, :last_name, :notification, :organization_id,
          :period_end_date, :private_tables_enabled, :quota_in_bytes, :salt,
          :sync_tables_enabled, :table_quota, :twitter_username, :upgraded_at,
          :user_timeout, :username, :website, :soft_geocoding_limit,
@@ -129,12 +129,13 @@ module Concerns
           :discus_shortname, :twitter_username, :auth_username_password_enabled, :auth_google_enabled)
         end
       elsif self.is_a?(::User)
-        attrs = self.values.slice(:account_type, :admin, :crypted_password,
+        attrs = values.slice(
+          :account_type, :admin, :crypted_password,
           :database_host, :database_timeout, :description, :disqus_shortname, :available_for_hire,
           :email, :geocoding_block_price, :geocoding_quota, :map_view_block_price,
           :map_view_quota, :max_layers,
           :max_import_file_size, :max_import_table_row_count, :max_concurrent_import_count,
-          :name, :notification, :organization_id,
+          :name, :last_name, :notification, :organization_id,
           :period_end_date, :private_tables_enabled, :quota_in_bytes, :salt,
           :sync_tables_enabled, :table_quota, :twitter_username, :upgraded_at,
           :user_timeout, :username, :website, :soft_geocoding_limit,

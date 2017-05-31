@@ -120,8 +120,13 @@ Development
 * Updated copies for export image & download map (#12114)
 * Add all/none buttons to multi-select component (#9502)
 * New style for add analysis button (#11902)
+* Show infowindow when user reaches max layer limit (#12167)
+* Format quota infowindow numbers (#11743)
 
 ### Bug fixes
+* Boolean fields are visible in the filter by column value analysis (#11546)
+* Fixed legend's color mismatch with empty values (#11632)
+* Fixed overlay for legends view (#11825)
 * Fixed UI when editing merge analysis (#10850)
 * Fixed uninitialized constant in Carto::Visualization when a viewer shares a visualization (#12129).
 * Google customers don't need quota checks for hires geocoding (support/#674)
@@ -274,6 +279,7 @@ Development
 * Fixed problem resetting styles per node after adding a new analysis (#12085)
 * Ensure Google services activation rake writes the api keys to Redis (#12209)
 * Docs, fixed some minor spelling and grammar errors in the content.
+* Fix EUMAPI response as per documentation (#12233)
 * Fix `BUILDER_ENABLED` parameter in `create_dev_user` rake (#12189)
 * Docs, updated "More Info" url from street addresses georeference options to new, related guide.
 * Organizations users now get engine_enabled from the organization by default (#12153)

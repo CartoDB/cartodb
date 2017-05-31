@@ -49,11 +49,6 @@ var LeafletMapView = MapView.extend({
       self.trigger('zoomend');
     }, this);
 
-    this._leafletMap.on('move', function () {
-      var c = self._leafletMap.getCenter();
-      self._setModelProperty({ center: [c.lat, c.lng] });
-    });
-
     this._leafletMap.on('dragend', function () {
       var c = self._leafletMap.getCenter();
       this.trigger('dragend', [c.lat, c.lng]);
@@ -169,11 +164,11 @@ var LeafletMapView = MapView.extend({
     this._setView();
   },
 
-  _setView: _.debounce(function () {
+  _setView: function () {
     if (this.map.hasChanged('zoom') || this.map.hasChanged('center')) {
       this._leafletMap.flyTo(this.map.get('center'), this.map.get('zoom') || 0);
     }
-  }, 50, LeafletMapView),
+  },
 
   _getNativeMap: function () {
     return this._leafletMap;

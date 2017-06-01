@@ -140,6 +140,7 @@ module Carto
 
         origin = 'blank'
         source_id = vis_data.delete(:source_visualization_id)
+        valid_attributes = valid_update_visualization_attributes(vis_data)
         vis = if source_id
                 user = Carto::User.find(current_user_id)
                 source = Carto::Visualization.where(id: source_id).first
@@ -148,7 +149,7 @@ module Carto
                   origin = 'copy'
                   duplicate_derived_visualization(source_id, user)
                 else
-                  create_visualization_from_tables([source.user_table], vis_data)
+                  create_visualization_from_tables([source.user_table], valid_attributes)
                 end
               elsif param_tables
                 subdomain = CartoDB.extract_subdomain(request)
@@ -156,9 +157,9 @@ module Carto
                 tables = param_tables.map do |table_name|
                   Carto::Helpers::TableLocator.new.get_by_id_or_name(table_name, viewed_user) if viewed_user
                 end
-                create_visualization_from_tables(tables.flatten, vis_data)
+                create_visualization_from_tables(tables.flatten, valid_attributes)
               else
-                Carto::Visualization.new(vis_data.merge(name: name_candidate, user_id: current_user_id))
+                Carto::Visualization.new(valid_attributes.merge(name: name_candidate, user_id: current_user_id))
               end
 
         vis.ensure_valid_privacy
@@ -373,11 +374,12 @@ module Carto
 
       def valid_update_visualization_attributes(hash)
         # excluded:
-        #   :id, :map_id, :type, :created_at, :external_source, :url, :version, :likes, :liked, :table,
+        #   :id, :map_id, :type, :created_at, :external_source, :url, :version, :likes, :liked, :table, :user_id
         #   :synchronization, :uses_builder_features, :auth_tokens, :transition_options, :prev_id, :next_id, :parent_id
+        #   :active_child, :permission
         hash.slice(
           :name, :display_name, :active_layer_id, :tags, :description, :privacy, :updated_at, :locked, :source,
-          :title, :license, :attributions, :kind, :active_child, :permission
+          :title, :license, :attributions, :kind
         )
       end
     end

@@ -125,6 +125,7 @@ Development
 * Format quota infowindow numbers (#11743)
 
 ### Bug fixes
+* Fixed layer counter (#12236)
 * Fixed problem when icon upload fails (#11980)
 * Boolean fields are visible in the filter by column value analysis (#11546)
 * Fixed legend's color mismatch with empty values (#11632)

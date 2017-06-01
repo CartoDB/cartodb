@@ -136,10 +136,9 @@
   background: rd;
 }
 .HorizontalBlockList-item.is-add {
-  border: 1px dashed $cMainLine;
-  background: $cWhite;
+  background: $cBlue;
   &:hover {
-    border: 1px solid $cHoverLine;
+    background: darken($cBlue, 8%);
   }
 }
 .HorizontalBlockList-item.is-selected {

@@ -16,6 +16,7 @@ module CartoDB
         id: id,
         email: email,
         name: name,
+        last_name: last_name,
         username: username,
         account_type: account_type,
         account_type_display_name: plan_name(account_type),
@@ -110,7 +111,7 @@ module CartoDB
           import_table_rows: max_import_table_row_count,
           max_layers: max_layers
         },
-        google_maps_key: google_maps_key,
+        google_maps_api_key: google_maps_api_key,
         notification: notification,
         avatar_url: avatar,
         feature_flags: feature_flags,

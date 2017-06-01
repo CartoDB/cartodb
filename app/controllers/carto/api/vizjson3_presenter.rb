@@ -194,7 +194,7 @@ module Carto
 
       def user_info_vizjson(user)
         {
-          fullname: user.name.present? ? user.name : user.username,
+          fullname: user.name_or_username,
           avatar_url: user.avatar_url,
           profile_url: user.public_url
         }

@@ -54,10 +54,9 @@ module.exports = cdb.core.View.extend({
     }
 
     this._histogramView = new HistogramView({
-      timeseriesModel: this.model,
+      timeSeriesModel: this.model,
       model: this._dataviewModel,
       rangeFilter: this._dataviewModel.filter,
-      torqueLayerModel: this._dataviewModel.layer,
       displayShadowBars: !this.model.get('normalized'),
       normalized: this.model.get('normalized')
     });

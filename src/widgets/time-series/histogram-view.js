@@ -17,10 +17,10 @@ module.exports = cdb.core.View.extend({
   },
 
   initialize: function () {
-    this._timeseriesModel = this.options.timeseriesModel;
+    this._timeSeriesModel = this.options.timeSeriesModel;
     this._rangeFilter = this.options.rangeFilter;
     this._originalData = this.model.getUnfilteredDataModel();
-    this.model.bind('change:data', this._onChangeData, this);
+    this._chartType = 'time';
     this._initBinds();
   },
 
@@ -37,17 +37,18 @@ module.exports = cdb.core.View.extend({
   resetFilter: function () {
     this._rangeFilter.unsetRange();
     this._chartView.removeSelection();
-    this._timeseriesModel.set({lo_index: null, hi_index: null});
+    this._timeSeriesModel.set({lo_index: null, hi_index: null});
   },
 
   _initBinds: function () {
-    this.listenTo(this._timeseriesModel, 'change:normalized', this._onNormalizedChanged);
+    this.model.bind('change:data', this._onChangeData, this);
+    this.listenTo(this._timeSeriesModel, 'change:normalized', this._onNormalizedChanged);
   },
 
   _createHistogramView: function () {
     this._chartView = new HistogramChartView({
-      type: 'time',
-      chartBarColor: this._timeseriesModel.getWidgetColor() || '#F2CC8F',
+      type: this._chartType,
+      chartBarColor: this._timeSeriesModel.getWidgetColor() || '#F2CC8F',
       animationSpeed: 100,
       margin: {
         top: 4,
@@ -62,9 +63,9 @@ module.exports = cdb.core.View.extend({
       height: this.defaults.histogramChartHeight,
       data: this.model.getData(),
       originalData: this._originalData,
-      displayShadowBars: !this._timeseriesModel.get('normalized'),
-      normalized: this._timeseriesModel.get('normalized'),
-      widgetModel: this._timeseriesModel
+      displayShadowBars: !this._timeSeriesModel.get('normalized'),
+      normalized: this._timeSeriesModel.get('normalized'),
+      widgetModel: this._timeSeriesModel
     });
     this.addView(this._chartView);
     this.$el.append(this._chartView.render().el);
@@ -89,7 +90,7 @@ module.exports = cdb.core.View.extend({
       data[loBarIndex].start,
       data[hiBarIndex - 1].end
     );
-    this._timeseriesModel.set({lo_index: loBarIndex, hi_index: hiBarIndex});
+    this._timeSeriesModel.set({lo_index: loBarIndex, hi_index: hiBarIndex});
   },
 
   _onChangeChartWidth: function () {
@@ -105,7 +106,7 @@ module.exports = cdb.core.View.extend({
 
   _onNormalizedChanged: function () {
     if (this._chartView) {
-      this._chartView.setNormalized(this._timeseriesModel.get('normalized'));
+      this._chartView.setNormalized(this._timeSeriesModel.get('normalized'));
     }
   }
 });

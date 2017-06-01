@@ -1,87 +1,39 @@
 var $ = require('jquery');
 var cdb = require('cartodb.js');
+var HistogramView = require('./histogram-view');
 var HistogramChartView = require('../histogram/chart');
 var TorqueTimeSliderView = require('./torque-time-slider-view');
 
 /**
  * Torque time-series histogram view.
  * Extends the common histogram chart view with time-control
- * this._dataviewModel is a histogram model
+ * this.model is a histogram model
  */
-module.exports = cdb.core.View.extend({
+module.exports = HistogramView.extend({
   className: 'CDB-Widget-content CDB-Widget-content--timeSeries',
-
-  // TODO could be calculated from element styles instead of duplicated numbers here?
-  defaults: {
-    mobileThreshold: 960, // px; should match CSS media-query
-    histogramChartHeight: 48 + // inline bars height
-      4 + // bottom margin
-      16 + // bottom labels
-      4, // margins
-    histogramChartMobileHeight: 20 + // inline bars height (no bottom labels)
-      4 // margins
-  },
 
   initialize: function () {
     if (!this.options.torqueLayerModel) throw new Error('torqeLayerModel is required');
     if (!this.options.rangeFilter) throw new Error('rangeFilter is required');
 
-    this._dataviewModel = this.options.dataviewModel;
-    this._rangeFilter = this.options.rangeFilter;
-    this._originalData = this._dataviewModel.getUnfilteredDataModel();
     this._torqueLayerModel = this.options.torqueLayerModel;
-    this._initBinds();
-  },
-
-  render: function () {
-    this.clearSubViews();
-    this._createHistogramView();
-    return this;
+    HistogramView.prototype.initialize.call(this);
   },
 
   _initBinds: function () {
+    HistogramView.prototype._initBinds.call(this);
+
     this._torqueLayerModel.bind('change:renderRange', this._onRenderRangeChanged, this);
     this._torqueLayerModel.bind('change:steps change:start change:end', this._reSelectRange, this);
     this.add_related_model(this._torqueLayerModel);
-    this._dataviewModel.bind('change:data', this._onChangeData, this);
-    this.add_related_model(this._dataviewModel);
   },
 
   _createHistogramView: function () {
-    var chartType = this._torqueLayerModel.get('column_type') === 'date' ? 'time' : 'number';
-    var widgetModel = this._parent.model;
-
-    this._chartView = new HistogramChartView({
-      type: chartType,
-      animationSpeed: 100,
-      animationBarDelay: function (d, i) {
-        return (i * 3);
-      },
-      chartBarColor: widgetModel.getWidgetColor() || '#F2CC8F',
-      margin: {
-        top: 4,
-        right: 4,
-        bottom: 4,
-        left: 4
-      },
-      hasHandles: true,
-      height: this.defaults.histogramChartHeight,
-      data: this._dataviewModel.getData(),
-      originalData: this._originalData,
-      widgetModel: widgetModel,
-      displayShadowBars: true
-    });
-
-    this.addView(this._chartView);
-    this.$el.append(this._chartView.render().el);
-    this._chartView.show();
-
-    this._chartView.bind('on_brush_end', this._onBrushEnd, this);
-    this._chartView.model.bind('change:width', this._onChangeChartWidth, this);
-    this.add_related_model(this._chartView.model);
+    this._chartType = this._torqueLayerModel.get('column_type') === 'date' ? 'time' : 'number';
+    HistogramView.prototype._createHistogramView.call(this);
 
     var timeSliderView = new TorqueTimeSliderView({
-      dataviewModel: this._dataviewModel, // a histogram model
+      dataviewModel: this.model, // a histogram model
       chartView: this._chartView,
       torqueLayerModel: this._torqueLayerModel
     });
@@ -90,10 +42,9 @@ module.exports = cdb.core.View.extend({
   },
 
   _onChangeData: function () {
+    HistogramView.prototype._onChangeData.call(this);
+
     if (this._chartView) {
-      this._chartView.replaceData(this._dataviewModel.getData());
-      this._chartView.updateXScale();
-      this._chartView.updateYScale();
       this._reSelectRange();
     }
   },
@@ -106,16 +57,12 @@ module.exports = cdb.core.View.extend({
   },
 
   _onBrushEnd: function (loBarIndex, hiBarIndex) {
-    // TODO setting range filter causes selected-range to be reset, how to fix?
-    var data = this._dataviewModel.getData();
-    this._rangeFilter.setRange(
-       data[loBarIndex].start,
-       data[hiBarIndex - 1].end
-    );
+    HistogramView.prototype._onBrushEnd.apply(this, arguments);
+
     this._reSelectRange();
   },
 
-  timeToStep: function (timestamp) {
+  _timeToStep: function (timestamp) {
     var steps = this._torqueLayerModel.get('steps');
     var start = this._torqueLayerModel.get('start');
     var end = this._torqueLayerModel.get('end');
@@ -125,8 +72,8 @@ module.exports = cdb.core.View.extend({
 
   _reSelectRange: function () {
     if (!this._rangeFilter.isEmpty()) {
-      var loStep = this.timeToStep(this._rangeFilter.get('min'));
-      var hiStep = this.timeToStep(this._rangeFilter.get('max'));
+      var loStep = this._timeToStep(this._rangeFilter.get('min'));
+      var hiStep = this._timeToStep(this._rangeFilter.get('max'));
 
       // clamp values since the range can be outside of the current torque thing
       var steps = this._torqueLayerModel.get('steps');
@@ -139,17 +86,5 @@ module.exports = cdb.core.View.extend({
 
   _clampRangeVal: function (a, b, t) {
     return Math.max(a, Math.min(b, t));
-  },
-
-  _onChangeChartWidth: function () {
-    var isMobileSize = $(window).width() < this.defaults.mobileThreshold;
-
-    this._chartView.toggleLabels(!isMobileSize);
-
-    var height = isMobileSize
-      ? this.defaults.histogramChartMobileHeight
-      : this.defaults.histogramChartHeight;
-    this._chartView.model.set('height', height);
   }
-
 });

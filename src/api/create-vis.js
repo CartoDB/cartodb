@@ -3,7 +3,6 @@ var VisView = require('../vis/vis-view');
 var VisModel = require('../vis/vis');
 var Loader = require('../core/loader');
 var VizJSON = require('./vizjson');
-var RenderModes = require('../geo/render-modes');
 
 var DEFAULT_OPTIONS = {
   tiles_loader: true,

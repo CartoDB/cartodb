@@ -1727,7 +1727,9 @@ describe Carto::Api::VisualizationsController do
           it 'creates a visualization from a dataset given the viz id' do
             table1 = create_table(user_id: @org_user_1.id)
             payload = {
-              source_visualization_id: table1.table_visualization.id
+              source_visualization_id: table1.table_visualization.id,
+              visChanges: 0,
+              name: "untitled_table_XXX_map"
             }
             post_json(api_v1_visualizations_create_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key),
                       payload) do |response|

@@ -19,6 +19,7 @@ module Carto
     end
 
     def soft_geocoding_limit?(user)
+      return false if user.geocoding_block_price.nil?
       if user[:soft_geocoding_limit].nil?
         !(user.account_type.nil? || user.account_type =~ NO_SOFT_GEOCODING_PLANS_REGEXP)
       else

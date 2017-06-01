@@ -15,6 +15,7 @@ var AnalysisPoller = require('../analysis/analysis-poller');
 var LayersFactory = require('./layers-factory');
 var SettingsModel = require('./settings');
 var whenAllDataviewsFetched = require('./dataviews-tracker');
+var RenderModes = require('../geo/render-modes');
 
 var STATE_INIT = 'init'; // vis hasn't been sent to Windshaft
 var STATE_OK = 'ok'; // vis has been sent to Windshaft and everything is ok
@@ -149,6 +150,13 @@ var VisModel = Backbone.Model.extend({
     // Create the Map
     var allowDragging = util.isMobileDevice() || vizjson.hasZoomOverlay() || vizjson.scrollwheel;
 
+    var renderMode = RenderModes.AUTO;
+    if (vizjson.vector === true) {
+      renderMode = RenderModes.VECTOR;
+    } else if (vizjson.vector === false) {
+      renderMode = RenderModes.RASTER;
+    }
+
     this.map = new Map({
       title: vizjson.title,
       description: vizjson.description,
@@ -158,7 +166,8 @@ var VisModel = Backbone.Model.extend({
       scrollwheel: !!this.scrollwheel,
       drag: allowDragging,
       provider: vizjson.map_provider,
-      isFeatureInteractivityEnabled: this.get('interactiveFeatures')
+      isFeatureInteractivityEnabled: this.get('interactiveFeatures'),
+      renderMode: renderMode
     }, {
       layersCollection: this._layersCollection,
       layersFactory: layersFactory

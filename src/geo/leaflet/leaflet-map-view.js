@@ -56,6 +56,9 @@ var LeafletMapView = MapView.extend({
 
     this._leafletMap.on('moveend', function () {
       var c = self._leafletMap.getCenter();
+      self._setModelProperty({
+        center: [c.lat, c.lng]
+      });
       self.map.trigger('moveend', [c.lat, c.lng]);
     }, this);
 

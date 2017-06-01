@@ -96,17 +96,6 @@ var loadVizJSON = function (el, visModel, vizjsonData, options) {
 
   visModel.load(vizjson);
 
-  var renderMode = RenderModes.AUTO;
-  if (options.vector === true) {
-    renderMode = RenderModes.VECTOR;
-  } else if (options.vector === false) {
-    renderMode = RenderModes.RASTER;
-  }
-
-  // visModel.map is not available until visModel.load has
-  // been called
-  visModel.map.set('renderMode', renderMode);
-
   if (!options.skipMapInstantiation) {
     visModel.instantiateMap();
   }

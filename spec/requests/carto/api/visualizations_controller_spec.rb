@@ -1975,6 +1975,20 @@ describe Carto::Api::VisualizationsController do
 
           table.destroy
         end
+
+        it "renames datasets" do
+          table = new_table(user_id: @user.id).save.reload
+
+          payload = { id: table.table_visualization.id, name: 'vis_rename_test1' }
+          put_json api_v1_visualizations_update_url(id: table.table_visualization.id), payload do |response|
+            response.status.should be_success
+          end
+
+          table.reload
+          table.name.should eq 'vis_rename_test1'
+
+          table.destroy
+        end
       end
     end
 

@@ -140,7 +140,7 @@ module Carto
 
         origin = 'blank'
         source_id = vis_data.delete(:source_visualization_id)
-        valid_attributes = valid_create_visualization_attributes(vis_data)
+        valid_attributes = vis_data.slice(*VALID_CREATE_ATTRIBUTES)
         vis = if source_id
                 user = Carto::User.find(current_user_id)
                 source = Carto::Visualization.where(id: source_id).first
@@ -200,7 +200,7 @@ module Carto
 
         # when a table gets renamed, its canonical visualization is renamed, so we must revert renaming if that failed
         # This is far from perfect, but works without messing with table-vis sync and their two backends
-        valid_attributes = valid_update_visualization_attributes(vis_data)
+        valid_attributes = vis_data.slice(*VALID_UPDATE_ATTRIBUTES)
         if vis.table?
           old_vis_name = vis.name
 
@@ -261,6 +261,16 @@ module Carto
       end
 
       private
+
+      # excluded:
+      #   :id, :map_id, :type, :created_at, :external_source, :url, :version, :likes, :liked, :table, :user_id
+      #   :synchronization, :uses_builder_features, :auth_tokens, :transition_options, :prev_id, :next_id, :parent_id
+      #   :active_child, :permission
+      VALID_UPDATE_ATTRIBUTES = [:name, :display_name, :active_layer_id, :tags, :description, :privacy, :updated_at,
+                                 :locked, :source, :title, :license, :attributions, :kind].freeze
+      # TODO: This lets more things through than it should. This is due to tests using this endpoint to create
+      #       test visualizations.
+      VALID_CREATE_ATTRIBUTES = (VALID_UPDATE_ATTRIBUTES + [:type, :map_id]).freeze
 
       def generate_vizjson2
         Carto::Api::VizJSONPresenter.new(@visualization, $tables_metadata).to_vizjson(https_request: is_https?)
@@ -370,30 +380,6 @@ module Carto
                                                 privacy: blender.blended_privacy,
                                                 user_id: current_user.id,
                                                 overlays: Carto::OverlayFactory.build_default_overlays(current_user)))
-      end
-
-      def valid_create_visualization_attributes(hash)
-        # TODO: This lets more things through than it should. This is due to tests using this endpoint to create
-        #       test visualizations.
-        # excluded:
-        #   :id, :created_at, :external_source, :url, :version, :likes, :liked, :table, :user_id
-        #   :synchronization, :uses_builder_features, :auth_tokens, :transition_options, :prev_id, :next_id, :parent_id
-        #   :active_child, :permission
-        hash.slice(
-          :name, :display_name, :active_layer_id, :tags, :description, :privacy, :updated_at, :locked, :source,
-          :title, :license, :attributions, :kind, :type, :map_id
-        )
-      end
-
-      def valid_update_visualization_attributes(hash)
-        # excluded:
-        #   :id, :map_id, :type, :created_at, :external_source, :url, :version, :likes, :liked, :table, :user_id
-        #   :synchronization, :uses_builder_features, :auth_tokens, :transition_options, :prev_id, :next_id, :parent_id
-        #   :active_child, :permission
-        hash.slice(
-          :name, :display_name, :active_layer_id, :tags, :description, :privacy, :updated_at, :locked, :source,
-          :title, :license, :attributions, :kind
-        )
       end
     end
   end

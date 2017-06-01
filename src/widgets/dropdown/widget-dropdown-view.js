@@ -57,9 +57,7 @@ module.exports = cdb.core.View.extend({
 
     this.model.bind('change:widget_dropdown_open', this._onChangeOpen, this);
 
-    this._$container.delegate(this._target, 'click',
-      _.bind(this._toggleClick, this)
-    );
+    this._$container.delegate(this._target, 'click', _.bind(this._toggleClick, this));
   },
 
   _removeWidget: function () {

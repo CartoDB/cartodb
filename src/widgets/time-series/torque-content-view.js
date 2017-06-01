@@ -41,7 +41,7 @@ module.exports = cdb.core.View.extend({
     }
 
     this._headerView = new TorqueHeaderView({
-      el: this.$('.js-header'),
+      el: this.$('.js-torque-header'),
       dataviewModel: this._dataviewModel,
       torqueLayerModel: this._dataviewModel.layer
     });
@@ -81,7 +81,6 @@ module.exports = cdb.core.View.extend({
         canCollapse: false
       }
     });
-
     this.addView(this._dropdownView);
   },
 

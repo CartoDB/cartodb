@@ -22,7 +22,6 @@ module.exports = cdb.core.View.extend({
   render: function () {
     var showClearButton = true;
     this.clearSubViews();
-    this.$el.empty();
     this.$el.addClass(this.className);
     this.$el.html(template());
 
@@ -41,8 +40,6 @@ module.exports = cdb.core.View.extend({
       showClearButton = false;
     }
     this._createTimeSeriesHeaderView(showClearButton);
-
-    this.$el.attr('data-component', 'torque-header-view');
 
     return this;
   },

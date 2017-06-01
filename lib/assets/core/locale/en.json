@@ -1452,7 +1452,7 @@
     },
     "tab-pane": {
       "layers": {
-        "title-label": "Layers",
+        "title-label": "Layers (%{count}/%{maxCount})",
         "georeference": {
           "title": "Layer not georeferenced",
           "body": "The layer <span class='CDB-Text is-semibold'>%{name}</span> include non-georeferenced data."
@@ -1882,6 +1882,27 @@
         "manually-add": "Please georeference or manually add data to visualize.",
         "georeference-button": "Georeference",
         "visualize": "Layer doesn't have geometry"
+      },
+      "max-layers-infowindow": {
+        "title": "You have reached your maximum layer limit.",
+        "pricing": "https://carto.com/pricing/",
+        "custom": {
+          "body": "Your account does not support more than %{maxLayers} layers.",
+          "contact": "Contact us",
+          "contact-url": "https://carto.com/contact/"
+        },
+        "regular": {
+          "body": "Upgrade your account to add more than %{maxLayers} layers to your map.",
+          "upgrade": "Upgrade your account"
+        },
+        "org": {
+          "body": "Increase your layer limit by contacting the account's administrator.",
+          "upgrade": "Contact admin"
+        },
+        "org-admin": {
+          "body": "Increase the layer limit for your organization by contacting CARTO support.",
+          "upgrade": "Contact support"
+        }
       }
     },
     "data": {

@@ -39,6 +39,10 @@
   }
 }
 
+.Infobox-title {
+  @include flex(1);
+}
+
 .Infobox-buttonLink {
   padding: 4px 0;
   color: $cBlue;

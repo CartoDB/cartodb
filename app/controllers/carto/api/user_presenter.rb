@@ -40,10 +40,11 @@ module Carto
         poro
       end
 
-      def to_poro_without_id
+      def to_eumapi_poro
         presentation = to_poro
 
         presentation.delete(:id)
+        presentation[:soft_geocoding_limit] = @user.soft_geocoding_limit
 
         presentation
       end

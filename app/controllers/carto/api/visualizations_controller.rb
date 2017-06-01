@@ -140,7 +140,7 @@ module Carto
 
         origin = 'blank'
         source_id = vis_data.delete(:source_visualization_id)
-        valid_attributes = valid_update_visualization_attributes(vis_data)
+        valid_attributes = valid_create_visualization_attributes(vis_data)
         vis = if source_id
                 user = Carto::User.find(current_user_id)
                 source = Carto::Visualization.where(id: source_id).first
@@ -370,6 +370,19 @@ module Carto
                                                 privacy: blender.blended_privacy,
                                                 user_id: current_user.id,
                                                 overlays: Carto::OverlayFactory.build_default_overlays(current_user)))
+      end
+
+      def valid_create_visualization_attributes(hash)
+        # TODO: This lets more things through than it should. This is due to tests using this endpoint to create
+        #       test visualizations.
+        # excluded:
+        #   :id, :created_at, :external_source, :url, :version, :likes, :liked, :table, :user_id
+        #   :synchronization, :uses_builder_features, :auth_tokens, :transition_options, :prev_id, :next_id, :parent_id
+        #   :active_child, :permission
+        hash.slice(
+          :name, :display_name, :active_layer_id, :tags, :description, :privacy, :updated_at, :locked, :source,
+          :title, :license, :attributions, :kind, :type, :map_id
+        )
       end
 
       def valid_update_visualization_attributes(hash)

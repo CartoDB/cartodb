@@ -25,20 +25,17 @@
     </div>
   </div>
 <% } else if (val === 'change') { %>
-  <div class="CDB-ListDecoration-itemLink u-actionTextColor u-flex u-justifySpace u-alignCenter" title="<%- name %>">
-    <span><%- name %></span>
-    <i class="CDB-Text CDB-Size-small is-semibold CDB-IconFont CDB-IconFont-rArrowLight"></i>
+  <div class="CDB-ListDecoration-itemLink u-actionTextColor" title="<%- name %>">
+    <div class="u-flex u-justifySpace u-alignCenter">
+      <span><%- name %></span>
+      <i class="CDB-Text CDB-Size-small is-semibold CDB-IconFont CDB-IconFont-rArrowLight"></i>
+    </div>
   </div>
 <% } else { %>
-  <div class="CDB-ListDecoration-itemLink
-    <% if (isDestructive) { %>  u-errorTextColor <% } else { %> u-actionTextColor <% } %>
-    <% if (val === 'change') { %> u-flex <% } %>
-    " title="<%- name %>">
+  <div
+    class="CDB-ListDecoration-itemLink <% if (isDestructive) { %> u-errorTextColor <% } else { %> u-actionTextColor <% } %>"
+    title="<%- name %>"
+  >
     <%- name %>
-    <% if (val === 'change') { %>
-      <span>
-        <i class="CDB-Text CDB-Size-small is-semibold CDB-IconFont CDB-IconFont-rArrowLight"></i>
-      </span>
-    <% } %>
   </div>
 <% } %>

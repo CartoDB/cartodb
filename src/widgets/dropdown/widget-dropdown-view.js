@@ -9,8 +9,6 @@ var template = require('./template.tpl');
  */
 module.exports = cdb.core.View.extend({
 
-  _WIDGET_BOTTOM_PADDING: 20,
-
   className: 'CDB-Dropdown',
 
   events: {
@@ -131,13 +129,16 @@ module.exports = cdb.core.View.extend({
     var bodyHeight = $('body').height();
     var bottom = this.$el.offset().top + this.$el.height();
 
-    this.$el.toggleClass('has-top-position', bottom + this._WIDGET_BOTTOM_PADDING > bodyHeight);
+    if (bottom > bodyHeight) {
+      this.$el.addClass('has-top-position');  
+    }
   },
 
   _close: function () {
     this._unbindESC();
     this._unbindGlobalClick();
     this.$el.hide();
+    this.$el.removeClass('has-top-position');
   },
 
   _toggleClick: function () {

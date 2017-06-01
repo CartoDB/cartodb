@@ -6,7 +6,3 @@ ruby:
   config_file: .rubocop.yml
 javascript:
   enabled: false
-eslint:
-  enabled: false
-  config_file: .eslintrc
-  ignore_file: .eslintignore

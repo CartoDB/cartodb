@@ -37,12 +37,14 @@ module CartoDB
         )
       end
     rescue NoMethodError => exception
-      CartoDB.notify_debug("#{exception.message} #{exception.backtrace}", {
+      CartoDB::Logger.debug(
+        exception: exception,
+        message: "#{exception.message} #{exception.backtrace}",
+        user: Carto::User.find(@table.user_id),
         table_id: @table.id,
-        user_id: @table.user_id,
-        data_import_id: @table.data_import_id,
-        database_name: @table.database_name
-      })
+        table_name: @table.name,
+        data_import_id: @table.data_import_id
+      )
 
       raise exception
     end

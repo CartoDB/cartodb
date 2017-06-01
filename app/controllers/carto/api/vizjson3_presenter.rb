@@ -33,23 +33,23 @@ module Carto
         @redis_vizjson_cache = redis_vizjson_cache
       end
 
-      def to_vizjson(https_request: false)
-        generate_vizjson(https_request: https_request, forced_privacy_version: nil)
+      def to_vizjson(https_request: false, vector: false)
+        generate_vizjson(https_request: https_request, vector: vector, forced_privacy_version: nil)
       end
 
-      def to_named_map_vizjson(https_request: false)
-        generate_vizjson(https_request: https_request, forced_privacy_version: :force_named)
+      def to_named_map_vizjson(https_request: false, vector: false)
+        generate_vizjson(https_request: https_request, vector: vector, forced_privacy_version: :force_named)
       end
 
-      def to_anonymous_map_vizjson(https_request: false)
-        generate_vizjson(https_request: https_request, forced_privacy_version: :force_anonymous)
+      def to_anonymous_map_vizjson(https_request: false, vector: false)
+        generate_vizjson(https_request: https_request, vector: vector, forced_privacy_version: :force_anonymous)
       end
 
       private
 
-      def generate_vizjson(https_request:, forced_privacy_version:)
+      def generate_vizjson(https_request:, vector:, forced_privacy_version:)
         https_request ||= false
-
+        vector ||= false
         version = case forced_privacy_version
                   when :force_named
                     '3n'
@@ -66,6 +66,8 @@ module Carto
                   else
                     calculate_vizjson(https_request: https_request, forced_privacy_version: forced_privacy_version)
                   end
+
+        vizjson[:vector] = vector
 
         vizjson
       end
@@ -94,8 +96,7 @@ module Carto
           user:           user_info_vizjson(user),
           version:        VIZJSON_VERSION,
           widgets:        widgets_vizjson,
-          zoom:           map.zoom,
-          vector:         user.has_feature_flag?('vector_vs_raster')
+          zoom:           map.zoom
         }
 
         visualization_analyses = @visualization.analyses

@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.7.206",
+  "version": "4.7.210",
   "dependencies": {
     "abbrev": {
       "version": "1.1.0",
@@ -415,9 +415,9 @@
       }
     },
     "babylon": {
-      "version": "6.17.1",
+      "version": "6.17.2",
       "from": "babylon@>=6.11.0 <7.0.0",
-      "resolved": "https://registry.npmjs.org/babylon/-/babylon-6.17.1.tgz"
+      "resolved": "https://registry.npmjs.org/babylon/-/babylon-6.17.2.tgz"
     },
     "backbone": {
       "version": "1.2.3",
@@ -649,7 +649,7 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
       "from": "cartodb/cartodb.js#render-view-after-first-reload",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#384787de6b3dbdaa9dd4d3f23a269ce748d857a8"
+      "resolved": "git://github.com/cartodb/cartodb.js.git#0feca333374eb73d0542c21926e70d860d87c3a2"
     },
     "caseless": {
       "version": "0.11.0",

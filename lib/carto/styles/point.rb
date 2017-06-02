@@ -19,17 +19,27 @@ module Carto::Styles
 
     private
 
-    def parse_fill(fill)
+    def parse_fill(fill, style_type)
       width = fill[:size][:fixed]
       color = fill[:color][:fixed]
       opacity = fill[:color][:opacity]
 
-      ["marker-width: #{width};",
-       "marker-fill: #{color};",
-       "marker-fill-opacity: #{opacity};"]
+      css = ["marker-width: #{width};",
+        "marker-fill: #{color};",
+        "marker-fill-opacity: #{opacity};"]
+
+      if style_type == 'tvt'
+        css = ["dot-width: #{width};",
+         "dot-fill: #{color};",
+         "dot-opacity: #{opacity};"]
+      end
+
+      css
     end
 
-    def parse_stroke(stroke)
+    def parse_stroke(stroke, style_type)
+      return [] if style_type == 'tvt'
+
       width = stroke[:size][:fixed]
       color = stroke[:color][:fixed]
       opacity = stroke[:color][:opacity]

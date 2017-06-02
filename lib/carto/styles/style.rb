@@ -12,16 +12,16 @@ module Carto
         @definition = definition
       end
 
-      def to_cartocss_array
+      def to_cartocss_array(style_type)
         return [] unless @definition
         return @cartocss_array if @cartocss_array
 
         nested_cartocss_array = @definition.map do |key, value|
           case key.to_s
           when 'fill'
-            parse_fill(value)
+            parse_fill(value, style_type)
           when 'stroke'
-            parse_stroke(value)
+            parse_stroke(value, style_type)
           else
             CartoDB::Logger.warning(message: 'Carto::Styles: Tried parsing an unkown attribute',
                                     attribute: key,
@@ -32,8 +32,8 @@ module Carto
         @cartocss_array = nested_cartocss_array.flatten
       end
 
-      def to_cartocss
-        Carto::Styles::Presenters::CartoCSS.new(cartocss_array: to_cartocss_array).to_s
+      def to_cartocss(style_type)
+        Carto::Styles::Presenters::CartoCSS.new(cartocss_array: to_cartocss_array(style_type)).to_s
       end
 
       def self.accepted_geometry_types
@@ -57,12 +57,12 @@ module Carto
       private
 
       # NOTE: This method should be overwritten by child classes if needed
-      def parse_fill(_)
+      def parse_fill(_, _)
         []
       end
 
       # NOTE: This method should be overwritten by child classes if needed
-      def parse_stroke(_)
+      def parse_stroke(_, _)
         []
       end
     end

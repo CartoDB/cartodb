@@ -56,9 +56,9 @@ module ModelFactories
       )
     end
 
-    def self.style_properties(geometry_type)
+    def self.style_properties(geometry_type, style_type)
       {
-        type: 'simple',
+        type: style_type,
         properties: Carto::Form.new(geometry_type).to_hash
       }
     end
@@ -67,10 +67,10 @@ module ModelFactories
       user.builder_enabled? ? builder_tile_style(geometry_type) : legacy_tile_style(geometry_type)
     end
 
-    def self.builder_tile_style(geometry_type)
+    def self.builder_tile_style(geometry_type, style_type)
       style_class = Carto::Styles::Style.style_for_geometry_type(geometry_type)
 
-      style_class ? style_class.new.to_cartocss : legacy_tile_style(geometry_type)
+      style_class ? style_class.new.to_cartocss(style_type) : legacy_tile_style(geometry_type)
     end
 
     def self.legacy_tile_style(geometry_type)

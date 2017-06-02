@@ -98,6 +98,8 @@ module CartoDB
         layer.save
       end
 
+      TVT_PREFIX = 'tt_'
+
       def reset_layer_styles(old_layer, new_layer)
         user_table = old_layer.user_tables.first
         return new_layer unless user_table
@@ -105,10 +107,12 @@ module CartoDB
         geometry_type = user_table.service.geometry_types.first
         return new_layer unless geometry_type
 
-        tile_style = ModelFactories::LayerFactory.builder_tile_style(geometry_type)
+        style_type = user_table.service.name.start_with?(TVT_PREFIX) ? 'tvt' : 'simple'
+
+        tile_style = ModelFactories::LayerFactory.builder_tile_style(geometry_type, style_type)
         new_layer.options['tile_style'] = tile_style
 
-        style_properties = ModelFactories::LayerFactory.style_properties(geometry_type)
+        style_properties = ModelFactories::LayerFactory.style_properties(geometry_type, style_type)
         new_layer.options['style_properties'] = style_properties
 
         new_layer

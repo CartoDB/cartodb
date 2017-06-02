@@ -5,6 +5,7 @@ Development
 * New loading button styles (#12132)
 
 ### Bug fixes / enhancements
+* Fixed arrow keys exceeding min/max values in number editor (#12212)
 * Fixed aligment problems after cartoassets update (#12234)
 * Fixed layer counter (#12236)
 * Fixed problem when icon upload fails (#11980)

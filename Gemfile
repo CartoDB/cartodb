@@ -11,11 +11,11 @@ gem 'activerecord-postgresql-adapter'
 # NOTE: Forced on purpose due to this bug https://github.com/tlconnor/activerecord-postgres-array/issues/37
 gem 'activerecord-postgres-array', '0.0.9'
 
-gem 'vizzuality-sequel-rails', '0.3.7', git: 'https://github.com/Vizzuality/sequel-rails.git'
+gem 'sequel-rails', '0.9.15'
 
 gem 'rails_warden',            '0.5.8' # Auth via the Warden Rack framework
 gem 'ruby-saml',               '1.4.1'
-gem 'oauth',                   '0.4.5'
+gem 'oauth',                   '0.5.1'
 gem 'oauth-plugin',            '0.4.0.pre4'
 
 gem 'redis',                   '3.3.0'
@@ -33,7 +33,7 @@ gem 'addressable',             '2.3.2', require: 'addressable/uri'
 gem 'ejs',                     '~> 1.1.1'
 gem 'execjs',                  '~> 0.4' # Required by ejs
 
-gem 'net-ldap',                '0.11'
+gem 'net-ldap',                '0.16.0'
 gem 'json-schema',             '2.0.0'
 
 group :production, :staging do

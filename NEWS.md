@@ -4,13 +4,16 @@ Development
 * An attacker could execute commands in the server running the queues by importing a file with a carefully crafted filename. Fixed in #11782
 
 ### Features
+* Adding tracking classes for any Backbone.Form editor (#12095)
 * Using Node v6.9.2 and npm v3.10.9 (#11935).
+* Updates Dataservices API client default version to `0.17.0` (#12093)
 * Exposed some cartodb.js methods through map definition model (#11846)
 * Dataservices configuration rake tasks (#11917)
   * `cartodb:services:set_user_quota[username,service,quota]` updated to support the `mapzen_routing` provider
   * `cartodb:services:set_org_quota[orgname,service,quota]` updated to support the `mapzen_routing` provider
   * `cartodb:services:set_user_soft_limit[username,service,quota]` new task to set user soft limits
 * Color picker for codemirror component.
+* Owner can delete organization account (not at SaaS, #12049).
 * New dropdown for Data Observatory (#11618)
 * Quota pre-check to analyses that consume quota.
 * Marking 'Do not show me again' in Layer Onboarding affects every tab. (#11586)
@@ -90,6 +93,7 @@ Development
 * Invite to georeference proactively when detecting non-georeferenced data (#11316)
 * Update tangram with smooth point outline.
 * Improve affordance of layer item (#11359).
+* Improved performance of visualizations with reduced fetching (#12058).
 * GME users can change to any basemap #11785.
 * Improve affordance of layer item (#11359)
 * Revamp of quota management code
@@ -104,12 +108,40 @@ Development
 * Update tangram to use subdomains.
 * New dashboard notifications added (#11807).
 * New 'Find Nearest' analysis (#11933).
+* New 'SQL function' analysis (#12018).
+* Allows to enable / disable analyses using feature flags (#12056).
 * Multiple file upload through "upload file" tab (#11952)
 * Change setView by flyto.
 * Update tangram to fix layer geometry conditionals.
-* Allow to have multiple administrators per organization (#12052)
+* Allow to have multiple administrators per organization (#12052, #12083, #12069)
+* Added explanation tooltip to the categorize label on the Find Nearest analysis (#12100)
+* Disable geometry edition button instead of hide in read-only layers (#11543)
+* New loading button styles (#12132)
+* Updated copies for export image & download map (#12114)
+* Add all/none buttons to multi-select component (#9502)
+* New style for add analysis button (#11902)
+* Fix onboarding in layers (#12192)
+* Show infowindow when user reaches max layer limit (#12167)
+* Format quota infowindow numbers (#11743)
 
 ### Bug fixes
+* Boolean fields are visible in the filter by column value analysis (#11546)
+* Fixed legend's color mismatch with empty values (#11632)
+* Fixed overlay for legends view (#11825)
+* Fixed UI when editing merge analysis (#10850)
+* Fixed uninitialized constant in Carto::Visualization when a viewer shares a visualization (#12129).
+* Google customers don't need quota checks for hires geocoding (support/#674)
+* Fixed a problem with autostyle when styles has aggregation (#8648)
+* Provide the possibility to add the current source node to the target options list in analysis forms (#12057)
+* Update table view on adding or removing a feature (#11978)
+* Reload vis when a row is deleted in table view (#11759)
+* Fixed operator view edition (#12133)
+* Fixed a problem with shared dataset's title (#12144)
+* Fixed reset autostyle after clicking on more than 1 auto-style buttons without unchecking them (#11795)
+* Fixed styles in numeric fields when editing a feature (#12026)
+* Fixed disabling button while export image is running (#12029)
+* Solved problem with file input in connect dataset dialog (cartodb/support#690)
+* Fixed problem with feature flag in analyses (cartodb/support#691)
 * Removed link to markdown support in organization notifications
 * Fix image export in Safari and IE (#12066)
 * Autostyling for google basemaps (#11838)
@@ -122,6 +154,7 @@ Development
 * Styling falsy categories (#11421)
 * Fixed bug editing geometries from dataset view (#11855)
 * Fixed pagination position in Safari browser
+* Fix regenerate all api keys in an organization (#12218)
 * Fixed problem renaming a table and breaking edition until reloaded (#11969)
 * Trigger change event when item is selected for multiselect component (#11521)
 * Disable export image button if not validated (#11949)
@@ -161,7 +194,13 @@ Development
   * Layer model: #10934
   * UserTable: #11589, #11700, #11737
   * Map model and controller: #12039, #12011
+  * Extract visualization invalidation to a service: #12096
+  * Permission: #12077
+  * ::User <-> CartoDB::Visualization::Member dependency: #12116, #12221
 * Refactor Layer model (#10934) and UserTable (#11589, #11700, #11737).
+* [WIP] Update to Rails 4
+  * Update `rails-sequel` (#12118)
+  * Changes compatible with Rails 3 (#12117)
 * Correctly render map previews for maps with google basemaps (#11608)
 * Do not trigger visualization hooks on state update (#11701)
 * Correctly register table dependencies of torque layers (#11549)
@@ -220,6 +259,7 @@ Development
 * Rearrange Error tracker script order (#11872)
 * Fix subdomain error not loading tiles.
 * Redirect to last visited page after logging in (#11946)
+* Better error handling in LDAP (#12165)
 * Sanitized HTML from map and layer names.
 * Merged fix subdomain error not loading tiles (CartoDB.js#1607)
 * Create users from org panel with the default quota (#11837)
@@ -227,11 +267,25 @@ Development
 * Using latest cartodb.js and deep-insights.js to tackle map zooming problem (support#605)
 * Fix organization notifications issues (#11957)
 * Max tracts to 4 for isoline analysis (#11723)
+* Make scrollwheel zoom on by default (#12214)
 * Right column validate type match in Join analysis (#11829)
 * Check if analysis node is on top before fetching query data (#11874)
+* Validate amount of organization seats (#12101)
 * Fixed error dropping tables from ghost table manager on race condition cases (#12012)
 * IE11 fix for dropdowns with scrollview (#12073)
+* Add last name field to users (#12174)
+* Fix error where a sync of a big dataset without geometry would be deleted from dashboard (#12162)
+* `create_dev_user` rake no longer tries to auto-create the database, `cartodb:db:setup` should be run first (#12187).
+* Better display and logging of errors when SAML authentication fails (#12151)
 * Fixed problem resetting styles per node after adding a new analysis (#12085)
+* Ensure Google services activation rake writes the api keys to Redis (#12209)
+* Docs, fixed some minor spelling and grammar errors in the content.
+* Fix EUMAPI response as per documentation (#12233)
+* Fix `BUILDER_ENABLED` parameter in `create_dev_user` rake (#12189)
+* Docs, updated "More Info" url from street addresses georeference options to new, related guide.
+* Organizations users now get engine_enabled from the organization by default (#12153)
+* Color picker disappears in CartoCSS editor after clicking (#12097).
+* Bug found in dataset view when user had Google basemaps enabled (#12155)
 
 ### NOTICE
 This release upgrades the CartoDB PostgreSQL extension to `0.19.0`. Run the following to have it available:

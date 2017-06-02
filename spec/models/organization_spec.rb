@@ -4,6 +4,7 @@ require_relative '../../app/models/organization.rb'
 require_relative 'organization_shared_examples'
 require 'helpers/unique_names_helper'
 require 'helpers/storage_helper'
+require 'factories/organizations_contexts'
 
 include CartoDB, StorageHelper, UniqueNamesHelper
 
@@ -45,8 +46,12 @@ describe Organization do
   end
 
   describe '#destroy_cascade' do
+    include TableSharing
+
     before(:each) do
       @organization = FactoryGirl.create(:organization)
+      ::User.any_instance.stubs(:create_in_central).returns(true)
+      ::User.any_instance.stubs(:update_in_central).returns(true)
     end
 
     after(:each) do
@@ -54,9 +59,6 @@ describe Organization do
     end
 
     it 'Destroys users and owner as well' do
-      ::User.any_instance.stubs(:create_in_central).returns(true)
-      ::User.any_instance.stubs(:update_in_central).returns(true)
-
       organization = Organization.new(quota_in_bytes: 1234567890, name: 'wadus', seats: 5).save
 
       owner = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
@@ -78,6 +80,35 @@ describe Organization do
       ::User.where(id: owner.id).first.should be nil
     end
 
+    it 'Destroys viewer users with shared visualizations' do
+      organization = Organization.new(quota_in_bytes: 1234567890, name: 'wadus', seats: 2, viewer_seats: 2).save
+
+      owner = create_user(quota_in_bytes: 524288000, table_quota: 500)
+      owner_org = CartoDB::UserOrganization.new(organization.id, owner.id)
+      owner_org.promote_user_to_admin
+      user1 = create_user(organization_id: organization.id)
+      user2 = create_user(organization_id: organization.id)
+
+      table1 = create_table(user_id: user1.id)
+      table2 = create_table(user_id: user2.id)
+      share_table_with_user(table1, user2)
+      share_table_with_user(table2, user1)
+
+      user1.viewer = true
+      user1.save
+      user2.viewer = true
+      user2.save
+
+      organization.destroy_cascade
+
+      Organization.where(id: organization.id).first.should be nil
+      ::User.where(id: user1.id).first.should be nil
+      ::User.where(id: user2.id).first.should be nil
+      ::User.where(id: owner.id).first.should be nil
+      Carto::UserTable.exists?(table1.id).should be_false
+      Carto::UserTable.exists?(table2.id).should be_false
+    end
+
     it 'destroys its groups through the extension' do
       Carto::Group.any_instance.expects(:destroy_group_with_extension).once
 
@@ -92,6 +123,13 @@ describe Organization do
 
       @organization.destroy
       Carto::Asset.exists?(asset.id).should be_false
+    end
+
+    it 'calls :delete_in_central if delete_in_central parameter is true' do
+      pending "Don't implemented. See Organization#destroy_cascade"
+
+      @organization.expects(:delete_in_central).once
+      @organization.destroy_cascade(delete_in_central: true)
     end
   end
 
@@ -171,6 +209,11 @@ describe Organization do
       organization.remaining_seats.should eq 0
       organization.remaining_viewer_seats.should eq 0
       organization.users.should_not include(viewer2)
+
+      organization.seats = 0
+      organization.viewer_seats = 0
+      organization.valid?.should be_false
+      organization.errors.should include :seats, :viewer_seats
 
       organization.destroy_cascade
     end

@@ -5,6 +5,6 @@ Sequel.migration do
 
   down do
     add_column :user_creations, :created_via_api, :boolean, null: false, default: false
-    Rails::Sequel.connection.run("update user_creations set created_via_api = 'true' where created_via = 'api'")
+    SequelRails.connection.run("update user_creations set created_via_api = 'true' where created_via = 'api'")
   end
 end

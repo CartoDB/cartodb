@@ -1,4 +1,5 @@
 require_dependency 'carto/configuration'
+require 'sequel_rails/railties/legacy_model_config'
 
 # Make Sequel messages (SQL stastements) to have debug level.
 # They'll' appear in the logs only if the Logger's level is 0 (debug).
@@ -17,3 +18,6 @@ if Rails.env == 'development'
   ActiveRecord::Base.logger = Logger.new(STDOUT)
   ActiveRecord::Base.logger.level = Logger::DEBUG
 end
+
+# Disable schema dumping, it is broken with the combination of sequel-rails >= 0.4.4 and sequel < 3.47
+Rails.application.config.sequel.schema_dump = false

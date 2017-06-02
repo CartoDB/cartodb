@@ -641,7 +641,7 @@ module CartoDB
         return true if named_map_updates_disabled?
 
         unless @updating_named_maps
-          Rails::Sequel.connection.after_commit do
+          SequelRails.connection.after_commit do
             @updating_named_maps = false
             (get_named_map ? update_named_map : create_named_map) if carto_visualization
           end

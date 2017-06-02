@@ -215,7 +215,7 @@
                           <% if vis.user.username != @visualization.user.username %>
                             by
                             <span class="UserAvatar">
-                              <img class="UserAvatar-img UserAvatar-img--smaller" src="<%= vis.user.avatar_url %>" alt="<%= vis.user.name || vis.user.username %>" title="<%= vis.user.name || vis.user.username %>" />
+                              <img class="UserAvatar-img UserAvatar-img--smaller" src="<%= vis.user.avatar_url %>" alt="<%= vis.user.name_or_username %>" title="<%= vis.user.name_or_username %>" />
                             </span>
                           <% end %>
                         </span>
@@ -425,7 +425,7 @@
 
   </script>
 
-  
+
   <%= insert_google_analytics('embeds', true, [{ title: "Public Pages", value: "Other", num: 3 }]) -%>
   <%= insert_hubspot() -%>
 <% end %>

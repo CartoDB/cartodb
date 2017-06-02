@@ -16,6 +16,7 @@ module CartoDB
         id: id,
         email: email,
         name: name,
+        last_name: last_name,
         username: username,
         account_type: account_type,
         account_type_display_name: plan_name(account_type),
@@ -116,7 +117,8 @@ module CartoDB
         feature_flags: feature_flags,
         base_url: public_url,
         needs_password_confirmation: needs_password_confirmation?,
-        viewer: viewer
+        viewer: viewer,
+        org_admin: organization_admin?
       }
 
       if organization.present?

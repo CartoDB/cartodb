@@ -599,7 +599,7 @@ shared_examples_for "user models" do
     it 'is false for users within a SAML organization' do
       organization = FactoryGirl.create(:saml_organization)
       organization.auth_saml_enabled?.should == true
-      @user.organization = organization
+      @user.organization = @user.is_a?(Carto::User) ? Carto::Organization.find(organization.id) : organization
       @user.needs_password_confirmation?.should == false
 
       @user.organization = nil
@@ -641,7 +641,7 @@ shared_examples_for "user models" do
     end
 
     it "should set a default database_host" do
-      @user.database_host.should eq ::Rails::Sequel.configuration.environment_for(Rails.env)['host']
+      @user.database_host.should eq ::SequelRails.configuration.environment_for(Rails.env)['host']
     end
 
     it "should set a default api_key" do
@@ -835,6 +835,40 @@ shared_examples_for "user models" do
 
       user.view_dashboard
       user.dashboard_viewed_at.should_not eq last
+    end
+  end
+
+  describe '#name_or_username' do
+    before(:all) do
+      @user = create_user
+    end
+
+    after(:all) do
+      @user.destroy
+    end
+
+    it 'returns username if no name available' do
+      @user.name = ''
+      @user.last_name = nil
+      expect(@user.name_or_username).to eq @user.username
+    end
+
+    it 'returns first name if available' do
+      @user.name = 'Petete'
+      @user.last_name = nil
+      expect(@user.name_or_username).to eq 'Petete'
+    end
+
+    it 'returns last name if available' do
+      @user.name = ''
+      @user.last_name = 'Trapito'
+      expect(@user.name_or_username).to eq 'Trapito'
+    end
+
+    it 'returns first+last name if available' do
+      @user.name = 'Petete'
+      @user.last_name = 'Trapito'
+      expect(@user.name_or_username).to eq 'Petete Trapito'
     end
   end
 end

@@ -6,6 +6,7 @@ Development
 
 ### Bug fixes / enhancements
 * Improve formula widget form (#12242)
+* Fixed aligment problems after cartoassets update (#12234)
 * Fixed layer counter (#12236)
 * Fixed problem when icon upload fails (#11980)
 * Boolean fields are visible in the filter by column value analysis (#11546)
@@ -26,6 +27,7 @@ Development
 * `create_dev_user` rake no longer tries to auto-create the database, `cartodb:db:setup` should be run first (#12187).
 * Fix EUMAPI response as per documentation (#12233)
 * Fix `BUILDER_ENABLED` parameter in `create_dev_user` rake (#12189)
+* User organization or user key for google maps (#12232)
 
 4.1.x (2017-05-31)
 -----------
@@ -298,6 +300,7 @@ Development
 * Organizations users now get engine_enabled from the organization by default (#12153)
 * Color picker disappears in CartoCSS editor after clicking (#12097).
 * Bug found in dataset view when user had Google basemaps enabled (#12155)
+* Fixed incorrect analysis node being selected after deleting (#11899)
 
 ### NOTICE
 This release upgrades the CartoDB PostgreSQL extension to `0.19.0`. Run the following to have it available:

@@ -12,6 +12,8 @@ module CartoDB
 
     def apply_privacy_change(metadata_table, old_privacy, privacy_changed = false)
       if @table.map
+        affected_entities = [@table.table_visualization] + metadata_table.affected_visualizations
+
         @table.map.save
 
         # Separate on purpose as if fails here no need to revert visualizations' privacy
@@ -21,8 +23,7 @@ module CartoDB
           set_from_table_privacy(@table.privacy)
         end
 
-        revertable_privacy_change(metadata_table, old_privacy,
-          [@table.table_visualization] + metadata_table.affected_visualizations) do
+        revertable_privacy_change(metadata_table, old_privacy, affected_entities) do
           propagate_to([@table.table_visualization])
           notify_privacy_affected_entities(metadata_table) if privacy_changed
         end

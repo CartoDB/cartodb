@@ -1,7 +1,4 @@
-var $ = require('jquery');
-var cdb = require('cartodb.js');
 var HistogramView = require('./histogram-view');
-var HistogramChartView = require('../histogram/chart');
 var TorqueTimeSliderView = require('./torque-time-slider-view');
 
 /**

@@ -42,7 +42,7 @@ module.exports = cdb.core.View.extend({
       }, {
         'normalized': false,
         'collapsed': false,
-        'show_options': false,
+        'show_options': false
       }
     );
 
@@ -130,7 +130,7 @@ module.exports = cdb.core.View.extend({
     var bottom = this.$el.offset().top + this.$el.height();
 
     if (bottom > bodyHeight) {
-      this.$el.addClass('has-top-position');  
+      this.$el.addClass('has-top-position');
     }
   },
 

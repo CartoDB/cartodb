@@ -39,5 +39,4 @@ module.exports = cdb.core.View.extend({
     }, this);
     this.model.bind('loaded', this.hide, this);
   }
-
 });

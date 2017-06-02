@@ -6,9 +6,6 @@ Development
 
 ### Bug fixes / enhancements
 * Better handling and reporting of "table with no map associated" error in map privacy changes (#12137).
-* Fixed overlay for legends view (#11825)
-* Fixed UI when editing merge analysis (#10850)
-* Fixed uninitialized constant in Carto::Visualization when a viewer shares a visualization (#12129).
 * Fixed aligment problems after cartoassets update (#12234)
 * Fixed layer counter (#12236)
 * Fixed problem when icon upload fails (#11980)

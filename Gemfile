@@ -1,4 +1,4 @@
-source 'https://rubygems.org'
+source 'http://rubygems.org'
 
 gem 'rails',                   '3.2.22'
 
@@ -120,10 +120,6 @@ group :development, :test do
 
   # Server
   gem 'thin',                           require: false
-end
-
-group :development do
-  gem 'rubocop', '~> 0.49.0'
 end
 
 # segment metrics

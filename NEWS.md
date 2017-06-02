@@ -5,6 +5,7 @@ Development
 * New loading button styles (#12132)
 
 ### Bug fixes / enhancements
+* Improve formula widget form (#12242)
 * Fixed aligment problems after cartoassets update (#12234)
 * Fixed layer counter (#12236)
 * Fixed problem when icon upload fails (#11980)

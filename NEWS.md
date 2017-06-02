@@ -2506,4 +2506,4 @@ bundle exec rake cartodb:db:load_functions
 
 2.0.0 (30/11/12)
 -----
-* CartoDB 2.0
+* CartoDB 2.0 

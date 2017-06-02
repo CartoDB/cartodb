@@ -155,6 +155,7 @@ Development
 * Format quota infowindow numbers (#11743)
 
 ### Bug fixes
+* Made checkboxes actionable clicking on its label (#11535)
 * Google customers don't need quota checks for hires geocoding (support/#674)
 * Fixed a problem with autostyle when styles has aggregation (#8648)
 * Provide the possibility to add the current source node to the target options list in analysis forms (#12057)

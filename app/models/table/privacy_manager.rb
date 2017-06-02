@@ -11,32 +11,43 @@ module CartoDB
     end
 
     def apply_privacy_change(metadata_table, old_privacy, privacy_changed = false)
-      @table.map.save
+      if @table.map
+        affected_entities = [@table.table_visualization] + metadata_table.affected_visualizations
 
-      # Separate on purpose as if fails here no need to revert visualizations' privacy
-      revertable_privacy_change(metadata_table, old_privacy) do
-        # Map saving actually doesn't changes privacy, but to keep on same reverting logic
         @table.map.save
-        set_from_table_privacy(@table.privacy)
-      end
 
-      revertable_privacy_change(metadata_table, old_privacy,
-                                [@table.table_visualization] + metadata_table.affected_visualizations) do
-        propagate_to([@table.table_visualization])
-        notify_privacy_affected_entities(metadata_table) if privacy_changed
-      end
+        # Separate on purpose as if fails here no need to revert visualizations' privacy
+        revertable_privacy_change(metadata_table, old_privacy) do
+          # Map saving actually doesn't changes privacy, but to keep on same reverting logic
+          @table.map.save
+          set_from_table_privacy(@table.privacy)
+        end
 
-    rescue NoMethodError => exception
-      if @table.map.nil? && exception.message =~ /undefined method `save' for nil:NilClass/
-        CartoDB::Logger.debug(message: 'Privacy change of table with no map',
-                              exception: exception,
-                              table_id: @table.id,
-                              table_name: @table.name,
-                              user: User.where(id: @table.user_id),
-                              data_import_id: @table.data_import_id)
+        revertable_privacy_change(metadata_table, old_privacy, affected_entities) do
+          propagate_to([@table.table_visualization])
+          notify_privacy_affected_entities(metadata_table) if privacy_changed
+        end
       else
-        raise exception
+        CartoDB::Logger.warning(
+          message: 'Trying to change privacy of table with no map associated',
+          exception: exception,
+          table_id: @table.id,
+          table_name: @table.name,
+          user: Carto::User.find(@table.user_id),
+          data_import_id: @table.data_import_id
+        )
       end
+    rescue NoMethodError => exception
+      CartoDB::Logger.debug(
+        exception: exception,
+        message: "#{exception.message} #{exception.backtrace}",
+        user: Carto::User.find(@table.user_id),
+        table_id: @table.id,
+        table_name: @table.name,
+        data_import_id: @table.data_import_id
+      )
+
+      raise exception
     end
 
     def set_from_visualization(visualization)

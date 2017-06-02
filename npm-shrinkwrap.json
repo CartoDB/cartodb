@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.7.211",
+  "version": "4.7.212",
   "dependencies": {
     "abbrev": {
       "version": "1.1.0",
@@ -596,11 +596,6 @@
       "from": "buffer-equal@0.0.1",
       "resolved": "https://registry.npmjs.org/buffer-equal/-/buffer-equal-0.0.1.tgz"
     },
-    "buffer-shims": {
-      "version": "1.0.0",
-      "from": "buffer-shims@>=1.0.0 <1.1.0",
-      "resolved": "https://registry.npmjs.org/buffer-shims/-/buffer-shims-1.0.0.tgz"
-    },
     "buffer-xor": {
       "version": "1.0.3",
       "from": "buffer-xor@>=1.0.2 <2.0.0",
@@ -639,7 +634,7 @@
     "cartodb-deep-insights.js": {
       "version": "0.0.2",
       "from": "cartodb/deep-insights.js#remove-invalidate-size",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#7bc0f2be57bc44eb80471d098d4545c1218a95d3"
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#4f9ace871b9d0b614854fdd58298ee814022a3f0"
     },
     "cartodb-pecan": {
       "version": "0.2.0",
@@ -649,7 +644,7 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
       "from": "cartodb/cartodb.js#render-view-after-first-reload",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#0feca333374eb73d0542c21926e70d860d87c3a2"
+      "resolved": "git://github.com/cartodb/cartodb.js.git#7e37ffc6a484ab75ec79e3c7e147297eedbab427"
     },
     "caseless": {
       "version": "0.11.0",
@@ -1912,9 +1907,9 @@
       "resolved": "https://registry.npmjs.org/ramda/-/ramda-0.23.0.tgz"
     },
     "randombytes": {
-      "version": "2.0.3",
+      "version": "2.0.4",
       "from": "randombytes@>=2.0.0 <3.0.0",
-      "resolved": "https://registry.npmjs.org/randombytes/-/randombytes-2.0.3.tgz"
+      "resolved": "https://registry.npmjs.org/randombytes/-/randombytes-2.0.4.tgz"
     },
     "read-only-stream": {
       "version": "2.0.0",
@@ -2115,9 +2110,9 @@
           "resolved": "https://registry.npmjs.org/concat-stream/-/concat-stream-1.6.0.tgz",
           "dependencies": {
             "readable-stream": {
-              "version": "2.2.9",
+              "version": "2.2.10",
               "from": "readable-stream@>=2.2.2 <3.0.0",
-              "resolved": "https://registry.npmjs.org/readable-stream/-/readable-stream-2.2.9.tgz"
+              "resolved": "https://registry.npmjs.org/readable-stream/-/readable-stream-2.2.10.tgz"
             }
           }
         },
@@ -2214,9 +2209,9 @@
       "resolved": "https://registry.npmjs.org/stream-http/-/stream-http-2.7.1.tgz",
       "dependencies": {
         "readable-stream": {
-          "version": "2.2.9",
+          "version": "2.2.10",
           "from": "readable-stream@>=2.2.6 <3.0.0",
-          "resolved": "https://registry.npmjs.org/readable-stream/-/readable-stream-2.2.9.tgz"
+          "resolved": "https://registry.npmjs.org/readable-stream/-/readable-stream-2.2.10.tgz"
         },
         "string_decoder": {
           "version": "1.0.1",
@@ -2347,9 +2342,9 @@
       "resolved": "https://registry.npmjs.org/through2/-/through2-2.0.3.tgz",
       "dependencies": {
         "readable-stream": {
-          "version": "2.2.9",
+          "version": "2.2.10",
           "from": "readable-stream@>=2.1.5 <3.0.0",
-          "resolved": "https://registry.npmjs.org/readable-stream/-/readable-stream-2.2.9.tgz"
+          "resolved": "https://registry.npmjs.org/readable-stream/-/readable-stream-2.2.10.tgz"
         },
         "string_decoder": {
           "version": "1.0.1",

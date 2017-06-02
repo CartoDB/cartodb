@@ -47,11 +47,9 @@ describe('widgets/time-series/torque-content-view', function () {
       var startTime = (new Date()).getTime() - timeOffset;
       this.dataviewModel.fetch();
       this.options.success({
-        data: [{
-          start: startTime,
-          end: startTime + timeOffset,
-          freq: 3
-        }]
+        bins_start: startTime,
+        bin_width: timeOffset,
+        bins_count: 3
       });
     });
 

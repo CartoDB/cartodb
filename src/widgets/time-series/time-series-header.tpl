@@ -1,14 +1,13 @@
 <div class="CDB-Widget-contentSpaced CDB-Widget-contentFull">
 
   <div class="CDB-Widget-contentSpaced--start">
-    <h3 class="CDB-Text CDB-Size-large u-ellipsis" title=""></h3>
     <% if (showSelection) { %>
-      <div>
-        <p class="CDB-Text CDB-Size-large u-iBlock">Selected from</p>
-        <p class="CDB-Text CDB-Size-large u-secondaryTextColor u-iBlock"><%- start %></p>
-        <p class="CDB-Text CDB-Size-large u-iBlock">to</p>
-        <p class="CDB-Text CDB-Size-large u-secondaryTextColor u-iBlock"><%- end %></p>
-      </div>
+      <p class="CDB-Text">
+        Selected from
+        <span class="u-secondaryTextColor"><%- start %></span>
+        to
+        <span class="u-secondaryTextColor"><%- end %></span>
+      </p>
     <% } %>
   </div>
   <div class="CDB-Widget-contentSpaced--end">

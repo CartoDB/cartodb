@@ -213,7 +213,7 @@ shared_examples_for 'Layer model' do
       add_layer_to_entity(map, layer)
 
       # TODO: should be once
-      ::Map.any_instance.expects(:notify_map_change).at_least_once
+      map.class.any_instance.expects(:notify_map_change).at_least_once
       layer.destroy
     end
 

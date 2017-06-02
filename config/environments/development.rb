@@ -73,6 +73,9 @@ CartoDB::Application.configure do
   # Generate digests for assets URLs
   config.assets.digest = true
 
+  # Serve gzipped files
+  config.middleware.insert_before ActionDispatch::Static, Rack::Deflater
+
   config.assets.initialize_on_precompile = true
 
   config.action_controller.asset_host = Proc.new do

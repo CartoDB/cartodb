@@ -6,11 +6,11 @@ module Carto
       include AccountTypeHelper
       BUILDER_ACTIVATION_DATE = Date.new(2016, 11, 11).freeze
 
-      def initialize(user, current_viewer: nil, current_user: nil, fetch_groups: false)
+      def initialize(user, fetch_groups: false, current_viewer: nil, fetch_db_size: true)
         @user = user
-        @current_viewer = current_viewer
-        @current_user = current_user
         @fetch_groups = fetch_groups
+        @current_viewer = current_viewer
+        @fetch_db_size = fetch_db_size
       end
 
       def to_poro
@@ -24,24 +24,27 @@ module Carto
           avatar_url:       @user.avatar_url,
           base_url:         @user.public_url,
           quota_in_bytes:   @user.quota_in_bytes,
-          db_size_in_bytes: @user.db_size_in_bytes,
           table_count:      @user.table_count,
           viewer:           @user.viewer?,
+          org_admin:        @user.organization_admin?,
           public_visualization_count: @user.public_visualization_count,
           all_visualization_count: @user.all_visualization_count
         }
 
         if fetch_groups
-          poro.merge!(groups: @user.groups ? @user.groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro } : [])
+          poro[:groups] = @user.groups ? @user.groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro } : []
         end
+
+        poro[:db_size_in_bytes] = @user.db_size_in_bytes if fetch_db_size
 
         poro
       end
 
-      def to_poro_without_id
+      def to_eumapi_poro
         presentation = to_poro
 
         presentation.delete(:id)
+        presentation[:soft_geocoding_limit] = @user.soft_geocoding_limit
 
         presentation
       end
@@ -58,13 +61,7 @@ module Carto
         }
 
         if fetch_groups
-          poro.merge!(groups: @user.groups ? @user.groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro } : [])
-        end
-
-        if current_user && current_user.organization_owner? && @user.belongs_to_organization?(current_user.organization)
-          poro[:email] = @user.email
-          poro[:table_count] = @user.table_count
-          poro[:all_visualization_count] = @user.all_visualization_count
+          poro[:groups] = @user.groups ? @user.groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro } : []
         end
 
         poro
@@ -82,12 +79,14 @@ module Carto
           id: @user.id,
           email: @user.email,
           name: @user.name,
+          last_name: @user.last_name,
           username: @user.username,
           account_type: @user.account_type,
           account_type_display_name: plan_name(@user.account_type),
           table_quota: @user.table_quota,
           table_count: @user.table_count,
           viewer: @user.viewer?,
+          org_admin: @user.organization_admin?,
           public_visualization_count: @user.public_visualization_count,
           owned_visualization_count: @user.owned_visualization_count,
           all_visualization_count: @user.all_visualization_count,
@@ -179,7 +178,7 @@ module Carto
             import_table_rows: @user.max_import_table_row_count,
             max_layers: @user.max_layers
           },
-          google_maps_key: @user.google_maps_key,
+          google_maps_api_key: @user.google_maps_api_key,
           notification: @user.notification,
           avatar_url: @user.avatar,
           feature_flags: @user.feature_flag_names,
@@ -220,7 +219,7 @@ module Carto
 
       private
 
-      attr_reader :current_viewer, :current_user, :fetch_groups
+      attr_reader :current_viewer, :current_user, :fetch_groups, :fetch_db_size
 
       def failed_import_count
         Carto::DataImport.where(user_id: @user.id, state: 'failure').count

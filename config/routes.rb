@@ -10,8 +10,8 @@
 
 CartoDB::Application.routes.draw do
   # Double use: for user public dashboard AND org dashboard
-  get   '/[(user/:user_domain)(u/:user_domain)]'                 => 'admin/pages#public'
-  root :to => 'admin/pages#index'
+  get '/[(user/:user_domain)(u/:user_domain)]' => 'admin/pages#public'
+  root to: 'admin/pages#index'
 
   get   '/signup'           => 'signup#signup',     as: :signup
   post  '/signup'           => 'signup#create',  as: :signup_organization_user
@@ -26,8 +26,8 @@ CartoDB::Application.routes.draw do
   get   '(/user/:user_domain)(/u/:user_domain)/logout'          => 'sessions#destroy', as: :logout
   match '(/user/:user_domain)(/u/:user_domain)/sessions/create' => 'sessions#create',  as: :create_session, via: [:get, :post]
 
-  match '(/user/:user_domain)(/u/:user_domain)/status'          => 'home#app_status', via: [:get, :post]
-  match '(/user/:user_domain)(/u/:user_domain)/diagnosis'       => 'home#app_diagnosis', via: [:get, :post]
+  get '(/user/:user_domain)(/u/:user_domain)/status'          => 'home#app_status'
+  get '(/user/:user_domain)(/u/:user_domain)/diagnosis'       => 'home#app_diagnosis'
 
   # Explore
   get   '(/user/:user_domain)(/u/:user_domain)/explore'         => 'explore#index',     as: :explore_index
@@ -44,7 +44,7 @@ CartoDB::Application.routes.draw do
   get   '(/user/:user_domain)(/u/:user_domain)/oauth/identity'       => 'sessions#show',       as: :oauth_show_sessions
 
   # This is what an external SAML endpoint should redirect to after successful auth.
-  match '(/user/:user_domain)(/u/:user_domain)/saml/finalize' => 'sessions#create', via: [:get, :post]
+  post '(/user/:user_domain)(/u/:user_domain)/saml/finalize' => 'sessions#create'
 
   get '/google_plus' => 'google_plus#google_plus', as: :google_plus
   post '/google/signup' => 'google_plus#google_signup', as: :google_plus_signup
@@ -79,6 +79,7 @@ CartoDB::Application.routes.draw do
 
     # Organization dashboard page
     get    '(/user/:user_domain)(/u/:user_domain)/organization'                 => 'organizations#show',            as: :organization
+    delete '(/user/:user_domain)(/u/:user_domain)/organization'                 => 'organizations#destroy',          as: :organization_destroy
     get    '(/user/:user_domain)(/u/:user_domain)/organization/settings'        => 'organizations#settings',        as: :organization_settings
     put    '(/user/:user_domain)(/u/:user_domain)/organization/settings'        => 'organizations#settings_update', as: :organization_settings_update
     post '(/user/:user_domain)(/u/:user_domain)/organization/regenerate_api_keys'       => 'organizations#regenerate_all_api_keys', as: :regenerate_organization_users_api_key
@@ -470,7 +471,7 @@ CartoDB::Application.routes.draw do
     put '(/user/:user_domain)(/u/:user_domain)/api/v1/perm/:id' => 'permissions#update', as: :api_v1_permissions_update
   end
 
-  scope :module => 'api/json', defaults: { format: :json } do
+  scope module: 'api/json', defaults: { format: :json } do
 
     # V1
     # --
@@ -545,7 +546,7 @@ CartoDB::Application.routes.draw do
     end
   end
 
-  scope :module => 'superadmin', defaults: { format: :json } do
+  scope module: 'superadmin', defaults: { format: :json } do
     get '/superadmin/get_databases_info' => 'platform#databases_info'
     get '/superadmin/stats/total_users' => 'platform#total_users'
     get '/superadmin/stats/total_pay_users' => 'platform#total_pay_users'

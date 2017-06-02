@@ -18,7 +18,9 @@ module Carto
 
     def get_user_email(saml_response_param)
       response = get_saml_response(saml_response_param)
-      response.is_valid? ? email_from_saml_response(response) : debug_response("Invalid SAML response", response)
+      response.is_valid? && email_from_saml_response(response)
+    rescue OneLogin::RubySaml::ValidationError
+      debug_response("Invalid SAML response", response)
     end
 
     def logout_url_configured?
@@ -82,7 +84,7 @@ module Carto
     def debug_response(message, response)
       CartoDB::Logger.debug(
         message: message,
-        response_settings: response.settings,
+        response_settings: response.settings.to_json,
         response_options: response.options,
         response_errors: response.errors
       )

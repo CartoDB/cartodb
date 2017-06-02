@@ -4,7 +4,7 @@ require_relative '../../../app/models/visualization/watcher'
 
 include CartoDB::Visualization
 
-describe TableBlender do
+describe Watcher do
 
   before(:all) do
     $tables_metadata.flushdb
@@ -81,4 +81,3 @@ describe TableBlender do
   end
 
 end
-

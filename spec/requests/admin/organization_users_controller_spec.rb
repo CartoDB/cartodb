@@ -25,18 +25,224 @@ describe Admin::OrganizationUsersController do
   end
 
   describe 'security' do
-    describe '#show' do
-      it 'returns 404 for non authorized users' do
-        login_as(@org_user_1, scope: @org_user_1.username)
+    before(:all) do
+      @org_user_2.org_admin = true
+      @org_user_2.save
 
-        get organization_users_url(user_domain: @org_user_1.username)
+      @owner = @org_user_owner
+      @admin = @org_user_2
+      @user = @org_user_1
+    end
+
+    before(:each) do
+      User.any_instance.stubs(:validate_credentials_not_taken_in_central).returns(true)
+      User.any_instance.stubs(:create_in_central).returns(true)
+      User.any_instance.stubs(:update_in_central).returns(true)
+      User.any_instance.stubs(:delete_in_central).returns(true)
+      User.any_instance.stubs(:load_common_data).returns(true)
+      User.any_instance.stubs(:reload_avatar).returns(true)
+    end
+
+    describe '#show' do
+      it 'returns 404 for non admin users' do
+        login_as(@user, scope: @user.username)
+
+        get organization_users_url(user_domain: @user.username)
         last_response.status.should == 404
+      end
+
+      it 'returns 200 for admin users' do
+        login_as(@admin, scope: @admin.username)
+
+        get organization_users_url(user_domain: @admin.username)
+        last_response.status.should == 200
+      end
+
+      it 'returns 200 for owner' do
+        login_as(@owner, scope: @owner.username)
+
+        get organization_users_url(user_domain: @owner.username)
+        last_response.status.should == 200
+      end
+    end
+
+    describe '#new' do
+      it 'returns 404 for non admin users' do
+        login_as(@user, scope: @user.username)
+
+        get new_organization_user_url(user_domain: @user.username)
+        last_response.status.should == 404
+      end
+
+      it 'returns 200 for admin users' do
+        login_as(@admin, scope: @admin.username)
+
+        get new_organization_user_url(user_domain: @admin.username)
+        last_response.status.should == 200
+      end
+
+      it 'returns 200 for owner' do
+        login_as(@owner, scope: @owner.username)
+
+        get new_organization_user_url(user_domain: @owner.username)
+        last_response.status.should == 200
+      end
+    end
+
+    describe '#create' do
+      after(:each) do
+        Carto::User.find_by_username(user_params[:username]).try(:destroy)
+      end
+
+      it 'returns 404 for non admin users' do
+        login_as(@user, scope: @user.username)
+
+        post create_organization_user_url(user_domain: @user.username), user: user_params
+        last_response.status.should == 404
+      end
+
+      it 'returns 200 for admin users trying to create an admin' do
+        login_as(@admin, scope: @admin.username)
+
+        post create_organization_user_url(user_domain: @admin.username), user: user_params.merge(org_admin: true)
+        last_response.status.should == 200
+        last_response.body.should include 'Validation failed: org_admin can only be set by organization owner'
+      end
+
+      it 'returns 302 for admin users trying to create a non-admin' do
+        login_as(@admin, scope: @admin.username)
+
+        post create_organization_user_url(user_domain: @admin.username), user: user_params
+        last_response.status.should == 302
+      end
+
+      it 'returns 302 for owner' do
+        login_as(@owner, scope: @owner.username)
+
+        post create_organization_user_url(user_domain: @owner.username), user: user_params.merge(org_admin: true)
+        last_response.status.should == 302
+      end
+    end
+
+    describe '#edit' do
+      it 'returns 404 for non admin users' do
+        login_as(@user, scope: @user.username)
+
+        get edit_organization_user_url(user_domain: @user.username, id: @user.username)
+        last_response.status.should == 404
+      end
+
+      it 'returns 403 for admin users trying to edit an admin' do
+        login_as(@admin, scope: @admin.username)
+
+        get edit_organization_user_url(user_domain: @admin.username, id: @owner.username)
+        last_response.status.should == 403
+      end
+
+      it 'returns 200 for admin users trying to edit a non-admin' do
+        login_as(@admin, scope: @admin.username)
+
+        get edit_organization_user_url(user_domain: @admin.username, id: @user.username)
+        last_response.status.should == 200
+      end
+
+      it 'returns 200 for admin users trying to edit themselves' do
+        login_as(@admin, scope: @admin.username)
+
+        get edit_organization_user_url(user_domain: @admin.username, id: @admin.username)
+        last_response.status.should == 200
+      end
+
+      it 'returns 200 for owner' do
+        login_as(@owner, scope: @owner.username)
+
+        get edit_organization_user_url(user_domain: @owner.username, id: @admin.username)
+        last_response.status.should == 200
+      end
+    end
+
+    describe '#update' do
+      it 'returns 404 for non admin users' do
+        login_as(@user, scope: @user.username)
+
+        put update_organization_user_url(user_domain: @user.username, id: @user.username), user: { quota_in_bytes: 7 }
+        last_response.status.should == 404
+      end
+
+      it 'returns 403 for admin users trying to edit an admin' do
+        login_as(@admin, scope: @admin.username)
+
+        put update_organization_user_url(user_domain: @admin.username, id: @owner.username), user: { quota_in_bytes: 7 }
+        last_response.status.should == 403
+      end
+
+      it 'returns 200 with error for admin users trying to convert a user into an admin' do
+        login_as(@admin, scope: @admin.username)
+
+        put update_organization_user_url(user_domain: @admin.username, id: @user.username), user: { org_admin: true }
+        last_response.status.should == 422
+        expect(last_response.body).to include 'org_admin can only be set by organization owner'
+      end
+
+      it 'returns 302 for admin users trying to edit a non-admin' do
+        login_as(@admin, scope: @admin.username)
+
+        put update_organization_user_url(user_domain: @admin.username, id: @user.username), user: { quota_in_bytes: 7 }
+        last_response.status.should == 302
+      end
+
+      it 'returns 302 for admin users trying to edit themselves' do
+        login_as(@admin, scope: @admin.username)
+
+        put update_organization_user_url(user_domain: @admin.username, id: @admin.username), user: { quota_in_bytes: 7 }
+        last_response.status.should == 302
+      end
+
+      it 'returns 302 for owner' do
+        login_as(@owner, scope: @owner.username)
+
+        put update_organization_user_url(user_domain: @owner.username, id: @admin.username), user: { quota_in_bytes: 7 }
+        last_response.status.should == 302
+      end
+    end
+
+    describe '#destroy' do
+      it 'returns 404 for non admin users' do
+        login_as(@user, scope: @user.username)
+
+        delete delete_organization_user_url(user_domain: @user.username, id: @user.username)
+        last_response.status.should == 404
+      end
+
+      it 'returns 403 for admin users trying to destroy an admin' do
+        login_as(@admin, scope: @admin.username)
+
+        delete delete_organization_user_url(user_domain: @admin.username, id: @owner.username)
+        last_response.status.should == 403
+      end
+
+      it 'returns 302 for admin users trying to destroy a non-admin' do
+        doomed_user = FactoryGirl.create(:valid_user, organization: @organization)
+        login_as(@admin, scope: @admin.username)
+
+        delete delete_organization_user_url(user_domain: @admin.username, id: doomed_user.username)
+        last_response.status.should == 302
+      end
+
+      it 'returns 302 for owner' do
+        doomed_user = FactoryGirl.create(:valid_user, organization: @organization, org_admin: true)
+        login_as(@owner, scope: @owner.username)
+
+        delete delete_organization_user_url(user_domain: @owner.username, id: doomed_user.username)
+        last_response.status.should == 302
       end
     end
   end
 
   describe 'owner behaviour' do
     before(:each) do
+      User.any_instance.stubs(:update_in_central).returns(true)
+      User.any_instance.stubs(:create_in_central).returns(true)
       login_as(@org_user_owner, scope: @org_user_owner.username)
     end
 
@@ -82,6 +288,7 @@ describe Admin::OrganizationUsersController do
         user.quota_in_bytes.should eq user_params[:quota_in_bytes]
         user.twitter_datasource_enabled.should be_nil
         user.builder_enabled.should be_nil
+        user.engine_enabled.should be_nil
 
         user.destroy
       end

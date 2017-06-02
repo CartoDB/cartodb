@@ -667,10 +667,8 @@ describe Table do
 
       id = table.table_visualization.id
 
-      # Old models call this 6 times, new ones only two for the moment
-      # TODO: this will probably be fixed when refactor is needed
       CartoDB::Varnish.any_instance.expects(:purge)
-                      .times(2..6)
+                      .once
                       .with(".*#{id}:vizjson")
                       .returns(true)
 
@@ -1935,7 +1933,7 @@ describe Table do
         table.save
         check_schema(table, [
             [:cartodb_id, 'bigint'],
-            [:the_geom, 'geometry', 'geometry', 'geometry'],
+            [:the_geom, 'geometry', 'geometry', 'point'],
         ])
 
         # same as above (single multipoint), but with a SRID=4326 (latlong)
@@ -1984,7 +1982,7 @@ describe Table do
         check_schema(table, [
             [:cartodb_id, 'bigint'],
             [:the_geom, 'geometry', 'geometry', 'geometry'],
-            [:invalid_the_geom, 'unknown']
+            [:the_geom_str, 'unknown']
         ])
 
         # geometrycollection (concrete type) Unsupported

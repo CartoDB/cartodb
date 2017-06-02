@@ -33,7 +33,7 @@ class Carto::User < ActiveRecord::Base
                    "users.disqus_shortname, users.account_type, users.twitter_username, users.google_maps_key, " \
                    "users.viewer, users.quota_in_bytes, users.database_host, users.crypted_password, " \
                    "users.builder_enabled, users.private_tables_enabled, users.private_maps_enabled, " \
-                   "users.no_map_logo".freeze
+                   "users.no_map_logo, users.org_admin, users.last_name".freeze
 
   has_many :tables, class_name: Carto::UserTable, inverse_of: :user
   has_many :visualizations, inverse_of: :user
@@ -93,7 +93,7 @@ class Carto::User < ActiveRecord::Base
   end
 
   def name_or_username
-    self.name.present? ? self.name : self.username
+    name.present? || last_name.present? ? [name, last_name].select(&:present?).join(' ') : username
   end
 
   def password=(value)
@@ -425,8 +425,12 @@ class Carto::User < ActiveRecord::Base
     end
   end
 
-  def viewable_by?(user)
-    self.id == user.id || (has_organization? && self.organization.owner.id == user.id)
+  def viewable_by?(viewer)
+    id == viewer.id || organization.try(:admin?, viewer)
+  end
+
+  def editable_by?(user)
+    id == user.id || user.belongs_to_organization?(organization) && (user.organization_owner? || !organization_admin?)
   end
 
   # Some operations, such as user deletion, won't ask for password confirmation if password is not set (because of Google sign in, for example)
@@ -446,6 +450,10 @@ class Carto::User < ActiveRecord::Base
 
   def organization_owner?
     organization && organization.owner_id == id
+  end
+
+  def organization_admin?
+    organization_user? && (organization_owner? || org_admin)
   end
 
   def mobile_sdk_enabled?

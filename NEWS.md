@@ -27,6 +27,7 @@ Development
 * Fix EUMAPI response as per documentation (#12233)
 * Fix `BUILDER_ENABLED` parameter in `create_dev_user` rake (#12189)
 * User organization or user key for google maps (#12232)
+* "vector" key in vizjson is skipped in embeds if user has "vector_vs_raster" feature flag enabled.
 
 4.1.x (2017-05-31)
 -----------

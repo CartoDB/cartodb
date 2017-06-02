@@ -5,6 +5,7 @@ Development
 * New loading button styles (#12132)
 
 ### Bug fixes / enhancements
+* Better handling and reporting of "table with no map associated" error in map privacy changes (#12137).
 * Improve formula widget form (#12242)
 * Fixed aligment problems after cartoassets update (#12234)
 * Fixed layer counter (#12236)

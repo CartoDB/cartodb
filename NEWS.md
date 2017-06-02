@@ -6,6 +6,9 @@ Development
 
 ### Bug fixes / enhancements
 * Better handling and reporting of "table with no map associated" error in map privacy changes (#12137).
+* Fixed overlay for legends view (#11825)
+* Fixed UI when editing merge analysis (#10850)
+* Fixed uninitialized constant in Carto::Visualization when a viewer shares a visualization (#12129).
 * Fixed aligment problems after cartoassets update (#12234)
 * Fixed layer counter (#12236)
 * Fixed problem when icon upload fails (#11980)
@@ -155,9 +158,6 @@ Development
 * Format quota infowindow numbers (#11743)
 
 ### Bug fixes
-* Fixed overlay for legends view (#11825)
-* Fixed UI when editing merge analysis (#10850)
-* Fixed uninitialized constant in Carto::Visualization when a viewer shares a visualization (#12129).
 * Google customers don't need quota checks for hires geocoding (support/#674)
 * Fixed a problem with autostyle when styles has aggregation (#8648)
 * Provide the possibility to add the current source node to the target options list in analysis forms (#12057)

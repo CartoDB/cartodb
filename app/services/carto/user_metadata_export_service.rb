@@ -49,7 +49,22 @@ module Carto
       user = ::User.new(exported_user.slice(*EXPORTED_USER_ATTRIBUTES))
       user.id = exported_user[:id]
 
+      user.feature_flags_user = exported_user[:feature_flags].map { |ff_name| build_feature_flag_from_name(ff_name) }
+                                                             .compact
+
+      user.assets
+
       user
+    end
+
+    def build_feature_flag_from_name(ff_name)
+      ff = ::FeatureFlag.where(name: ff_name)
+      if ff
+        FeatureFlagsUser.new(feature_flag_id: ff.id)
+      else
+        CartoDB::Logger.warning(message: 'Feature flag not found in user import', feature_flag: ff_name)
+        nil
+      end
     end
   end
 
@@ -72,7 +87,39 @@ module Carto
     def export(user)
       user_hash = EXPORTED_USER_ATTRIBUTES.map { |att| [att, user.send(att)] }.to_h
 
+      user_hash[:feature_flags] = user.feature_flags.map(&:name)
+
+      user_hash[:assets] = user.assets.map { |a| export_asset(a) }
+
+      user_hash[:layers] = user.layers.map { |l| export_layer(l) }
+
+      # Visualizations
+        # datasets
+        # permissions
+        # id
+        # mapcap
+
+      # Notifications ?
+
+      # Imports, syncs?
+
       user_hash
+    end
+
+    def export_asset(asset)
+      {
+        public_url: asset.public_url,
+        kind: asset.kind,
+        storage_info: asset.storage_info
+      }
+    end
+
+    def export_layer(layer)
+      # Only custom basemap layers, many fields are unused
+      {
+        options: layer.options,
+        kind: layer.kind
+      }
     end
   end
 

@@ -46,25 +46,42 @@ module Carto
     private
 
     def build_user_from_hash(exported_user)
-      user = ::User.new(exported_user.slice(*EXPORTED_USER_ATTRIBUTES))
+      user = User.new(exported_user.slice(*EXPORTED_USER_ATTRIBUTES))
       user.id = exported_user[:id]
 
       user.feature_flags_user = exported_user[:feature_flags].map { |ff_name| build_feature_flag_from_name(ff_name) }
                                                              .compact
 
-      user.assets
+      user.assets = exported_user[:assets].map { |a| build_asset_from_hash(a) }
+
+      user.layers = exported_user[:layers].map { |l| build_layer_from_hash(l) }
 
       user
     end
 
     def build_feature_flag_from_name(ff_name)
-      ff = ::FeatureFlag.where(name: ff_name)
+      ff = FeatureFlag.where(name: ff_name)
       if ff
         FeatureFlagsUser.new(feature_flag_id: ff.id)
       else
         CartoDB::Logger.warning(message: 'Feature flag not found in user import', feature_flag: ff_name)
         nil
       end
+    end
+
+    def build_asset_from_hash(exported_asset)
+      Asset.new(
+        public_url: exported_asset[:public_url],
+        kind: exported_asset[:kind],
+        storage_info: exported_asset[:storage_info]
+      )
+    end
+
+    def build_layer_from_hash(exported_layer)
+      Layer.new(
+        options: exported_layer[:options],
+        kind: exported_layer[:kind]
+      )
     end
   end
 
@@ -78,7 +95,7 @@ module Carto
     def export_user_json_hash(user_id)
       {
         version: CURRENT_VERSION,
-        user: export(Carto::User.find(user_id))
+        user: export(::User.find(user_id))
       }
     end
 

@@ -47,7 +47,6 @@ module Carto
 
     def build_user_from_hash(exported_user)
       user = User.new(exported_user.slice(*EXPORTED_USER_ATTRIBUTES))
-      user.id = exported_user[:id]
 
       user.feature_flags_user = exported_user[:feature_flags].map { |ff_name| build_feature_flag_from_name(ff_name) }
                                                              .compact
@@ -56,6 +55,8 @@ module Carto
 
       user.layers = exported_user[:layers].map.with_index { |layer, i| build_layer_from_hash(layer, order: i) }
 
+      # Must be the last one to avoid attribute assignments to try to run SQL
+      user.id = exported_user[:id]
       user
     end
 
@@ -96,7 +97,7 @@ module Carto
     def export_user_json_hash(user_id)
       {
         version: CURRENT_VERSION,
-        user: export(::User.find(id: user_id))
+        user: export(User.find(user_id))
       }
     end
 

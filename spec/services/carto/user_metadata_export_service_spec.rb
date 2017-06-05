@@ -65,12 +65,16 @@ describe Carto::UserMetadataExportService do
     it 'export + import' do
       create_user
       export = service.export_user_json_hash(@user.id)
+      expect_export_matches_user(export[:user], @user)
       destroy_user
 
       imported_user = service.build_user_from_hash_export(export)
       Carto::UserMetadataExportPersistenceService.new.save_import(imported_user)
+      imported_user.reload
 
-      # TODO: Check imported_user and @user match
+      expect_export_matches_user(export[:user], imported_user)
+      expect(imported_user.attributes).to eq @user.attributes
+      expect(imported_user.visualizations.map(&:attributes)).to eq @user.visualizations.map(&:attributes)
     end
   end
 

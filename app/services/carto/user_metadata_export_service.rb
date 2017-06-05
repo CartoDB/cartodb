@@ -52,15 +52,15 @@ module Carto
       user.feature_flags_user = exported_user[:feature_flags].map { |ff_name| build_feature_flag_from_name(ff_name) }
                                                              .compact
 
-      user.assets = exported_user[:assets].map { |a| build_asset_from_hash(a) }
+      user.assets = exported_user[:assets].map { |asset| build_asset_from_hash(asset) }
 
-      user.layers = exported_user[:layers].map { |l| build_layer_from_hash(l) }
+      user.layers = exported_user[:layers].map.with_index { |layer, i| build_layer_from_hash(layer, order: i) }
 
       user
     end
 
     def build_feature_flag_from_name(ff_name)
-      ff = FeatureFlag.where(name: ff_name)
+      ff = FeatureFlag.where(name: ff_name).first
       if ff
         FeatureFlagsUser.new(feature_flag_id: ff.id)
       else
@@ -77,10 +77,11 @@ module Carto
       )
     end
 
-    def build_layer_from_hash(exported_layer)
+    def build_layer_from_hash(exported_layer, order:)
       Layer.new(
         options: exported_layer[:options],
-        kind: exported_layer[:kind]
+        kind: exported_layer[:kind],
+        order: order
       )
     end
   end
@@ -95,7 +96,7 @@ module Carto
     def export_user_json_hash(user_id)
       {
         version: CURRENT_VERSION,
-        user: export(::User.find(user_id))
+        user: export(::User.find(id: user_id))
       }
     end
 
@@ -104,7 +105,7 @@ module Carto
     def export(user)
       user_hash = EXPORTED_USER_ATTRIBUTES.map { |att| [att, user.send(att)] }.to_h
 
-      user_hash[:feature_flags] = user.feature_flags.map(&:name)
+      user_hash[:feature_flags] = user.feature_flags_user.map(&:feature_flag).map(&:name)
 
       user_hash[:assets] = user.assets.map { |a| export_asset(a) }
 

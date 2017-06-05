@@ -118,17 +118,14 @@ module Carto
       user_hash[:layers] = user.layers.map { |l| export_layer(l) }
 
       vis_exporter = VisualizationsExportService2.new
-      user_hash[:visualizations] = user.visualizations.map do |vis|
-        vis_exporter.export_visualization_json_hash(vis, user, full_export: true)
-      end
+      user_hash[:visualizations] = user.visualizations.map { |vis|
+        vis_exporter.export_visualization_json_hash(vis, user, full_export: true) if vis.canonical? || vis.derived?
+      }.compact
 
-      # Visualizations
-        # permissions
-        # mapcap
-
-      # Notifications ?
-
-      # Imports, syncs?
+      # TODO
+      # Visualizations: permissions, mapcaps
+      # Organization notifications
+      # Imports, syncs, external_sources
 
       user_hash
     end

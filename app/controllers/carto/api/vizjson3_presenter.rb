@@ -106,12 +106,6 @@ module Carto
                                visualization_analyses.map(&:analysis_definition)
                              end
 
-        parent = @visualization.parent
-        if parent
-          vizjson[:title] = parent.qualified_name(user)
-          vizjson[:description] = markdown_html_safe(parent.description)
-        end
-
         vizjson
       end
 

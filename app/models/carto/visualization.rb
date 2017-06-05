@@ -66,8 +66,6 @@ class Carto::Visualization < ActiveRecord::Base
 
   has_many :overlays, order: '"order"', dependent: :destroy
 
-  belongs_to :parent, class_name: Carto::Visualization, primary_key: :parent_id
-
   belongs_to :active_layer, class_name: Carto::Layer
 
   belongs_to :map, class_name: Carto::Map, inverse_of: :visualization, dependent: :destroy
@@ -176,6 +174,10 @@ class Carto::Visualization < ActiveRecord::Base
 
   def transition_options
     @transition_options ||= (slide_transition_options.nil? ? {} : JSON.parse(slide_transition_options).symbolize_keys)
+  end
+
+  def transition_options=(value)
+    self.slide_transition_options = ::JSON.dump(value.nil? ? DEFAULT_OPTIONS_VALUE : value)
   end
 
   def children
@@ -554,6 +556,19 @@ class Carto::Visualization < ActiveRecord::Base
     is_owner?(user) || permission.permitted?(user, permission_type)
   end
 
+  def ensure_valid_privacy
+    self.privacy = default_privacy if privacy.nil?
+    self.privacy = PRIVACY_PUBLIC unless can_be_private?
+  end
+
+  def default_privacy
+    can_be_private? ? PRIVACY_LINK : PRIVACY_PUBLIC
+  end
+
+  def privacy=(privacy)
+    super(privacy.try(:downcase))
+  end
+
   private
 
   def remove_password
@@ -583,6 +598,10 @@ class Carto::Visualization < ActiveRecord::Base
     return if table.changing_name?
     table.register_table_only = register_table_only
     table.name = name
+    if table.name != name
+      # Sanitization. For example, spaces -> _
+      self.name = table.name
+    end
     table.update(name: name)
     if name_changed?
       support_tables.rename(name_was, name, true, name_was)

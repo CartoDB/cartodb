@@ -1618,6 +1618,382 @@ describe Carto::Api::VisualizationsController do
       end
     end
 
+    describe 'legacy controller migration' do
+      before(:all) do
+        @user = create_user
+      end
+
+      after(:all) do
+        bypass_named_maps
+        @user.destroy
+      end
+
+      before(:each) do
+        bypass_named_maps
+        # bypass_metrics
+
+        host! "#{@user.username}.localhost.lan"
+      end
+
+      after(:each) do
+        bypass_named_maps
+        delete_user_data @user
+      end
+
+      describe '#create' do
+        describe '#duplicate map' do
+          before(:all) do
+            @other_user = create_user
+          end
+
+          before(:each) do
+            bypass_named_maps
+
+            @map = Map.create(user_id: @user.id, table_id: create_table(user_id: @user.id).id)
+            @visualization = FactoryGirl.create(:derived_visualization,
+                                                map_id: @map.id,
+                                                user_id: @user.id,
+                                                privacy: Visualization::Member::PRIVACY_PRIVATE)
+          end
+
+          after(:each) do
+            @map.destroy
+          end
+
+          after(:all) do
+            @other_user.destroy
+          end
+
+          it 'duplicates a map' do
+            new_name = @visualization.name + ' patatas'
+
+            post_json api_v1_visualizations_create_url(api_key: @user.api_key),
+                      source_visualization_id: @visualization.id,
+                      name: new_name
+
+            last_response.status.should be_success
+
+            Carto::Visualization.exists?(user_id: @user.id, type: 'derived', name: new_name).should be_true
+          end
+
+          it 'registers table dependencies for duplicated maps' do
+            map, table, table_visualization, visualization = create_full_visualization(Carto::User.find(@user.id))
+            new_name = visualization.name + ' registered'
+
+            post_json api_v1_visualizations_create_url(api_key: @user.api_key),
+                      source_visualization_id: visualization.id,
+                      name: new_name
+
+            last_response.status.should be_success
+
+            visualization = Carto::Visualization.where(user_id: @user.id, type: 'derived', name: new_name).first
+            visualization.should be
+            visualization.data_layers.first.user_tables.count.should eq 1
+
+            destroy_full_visualization(map, table, table_visualization, visualization)
+          end
+
+          it "duplicates someone else's map if has at least read permission to it" do
+            new_name = @visualization.name + ' patatas'
+
+            Carto::Visualization.any_instance.stubs(:is_viewable_by_user?).returns(true)
+
+            post_json api_v1_visualizations_create_url(user_domain: @other_user.username, api_key: @other_user.api_key),
+                      source_visualization_id: @visualization.id,
+                      name: new_name
+
+            last_response.status.should be_success
+
+            Carto::Visualization.exists?(user_id: @other_user.id, type: 'derived', name: new_name).should be_true
+          end
+
+          it "doesn't duplicate someone else's map without permission" do
+            new_name = @visualization.name + ' patatatosky'
+
+            post_json api_v1_visualizations_create_url(user_domain: @other_user.username, api_key: @other_user.api_key),
+                      source_visualization_id: @visualization.id,
+                      name: new_name
+
+            last_response.status.should == 403
+
+            Carto::Visualization.exists?(user_id: @other_user.id, type: 'derived', name: new_name).should be_false
+          end
+        end
+
+        describe '#creates map from datasets' do
+          include_context 'organization with users helper'
+          include TableSharing
+
+          it 'creates a visualization from a dataset given the viz id' do
+            table1 = create_table(user_id: @org_user_1.id)
+            payload = {
+              source_visualization_id: table1.table_visualization.id,
+              visChanges: 0,
+              name: "untitled_table_XXX_map"
+            }
+            post_json(api_v1_visualizations_create_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key),
+                      payload) do |response|
+              response.status.should eq 200
+              vid = response.body[:id]
+              v = CartoDB::Visualization::Member.new(id: vid).fetch
+
+              v.user_id.should eq @org_user_1.id
+              v.map.user_id.should eq @org_user_1.id
+            end
+          end
+
+          it 'creates a visualization from a dataset given the table id' do
+            table1 = create_table(user_id: @org_user_1.id)
+            payload = {
+              tables: [table1.name]
+            }
+            post_json(api_v1_visualizations_create_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key),
+                      payload) do |response|
+              response.status.should eq 200
+              vid = response.body[:id]
+              v = CartoDB::Visualization::Member.new(id: vid).fetch
+
+              v.user_id.should eq @org_user_1.id
+              v.map.user_id.should eq @org_user_1.id
+            end
+          end
+
+          it 'correctly creates a visualization from two dataset of different users' do
+            table1 = create_table(user_id: @org_user_1.id)
+            table2 = create_table(user_id: @org_user_2.id)
+            share_table_with_user(table1, @org_user_2)
+            payload = {
+              type: 'derived',
+              tables: ["#{@org_user_1.username}.#{table1.name}", table2.name]
+            }
+            post_json(api_v1_visualizations_create_url(user_domain: @org_user_2.username, api_key: @org_user_2.api_key),
+                      payload) do |response|
+              response.status.should eq 200
+              vid = response.body[:id]
+              v = CartoDB::Visualization::Member.new(id: vid).fetch
+
+              v.user_id.should eq @org_user_2.id
+              v.map.user_id.should eq @org_user_2.id
+            end
+          end
+
+          it 'copies the styles for editor users' do
+            table1 = create_table(user_id: @org_user_1.id)
+            payload = {
+              tables: [table1.name]
+            }
+            Carto::User.any_instance.stubs(:builder_enabled?).returns(false)
+            post_json(api_v1_visualizations_create_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key),
+                      payload) do |response|
+              response.status.should eq 200
+              vid = response.body[:id]
+              v = CartoDB::Visualization::Member.new(id: vid).fetch
+              original_layer = table1.map.data_layers.first
+              layer = v.map.data_layers.first
+              layer.options['tile_style'].should eq original_layer.options['tile_style']
+            end
+          end
+
+          it 'resets the styles for builder users' do
+            table1 = create_table(user_id: @org_user_1.id)
+            Table.any_instance.stubs(:geometry_types).returns(['ST_Point'])
+            payload = {
+              tables: [table1.name]
+            }
+            Carto::User.any_instance.stubs(:builder_enabled?).returns(true)
+            post_json(api_v1_visualizations_create_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key),
+                      payload) do |response|
+              response.status.should eq 200
+              vid = response.body[:id]
+              v = CartoDB::Visualization::Member.new(id: vid).fetch
+
+              original_layer = table1.map.data_layers.first
+              layer = v.map.data_layers.first
+              layer.options['tile_style'].should_not eq original_layer.options['tile_style']
+            end
+          end
+
+          it 'doesn\'t add style properites for editor users' do
+            table1 = create_table(user_id: @org_user_1.id)
+            payload = {
+              tables: [table1.name]
+            }
+            Carto::User.any_instance.stubs(:builder_enabled?).returns(false)
+            post_json(api_v1_visualizations_create_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key),
+                      payload) do |response|
+              response.status.should eq 200
+              vid = response.body[:id]
+              v = CartoDB::Visualization::Member.new(id: vid).fetch
+
+              layer = v.map.data_layers.first
+              layer.options['style_properties'].should be_nil
+            end
+          end
+
+          it 'adds style properites for builder users' do
+            table1 = create_table(user_id: @org_user_1.id)
+            Table.any_instance.stubs(:geometry_types).returns(['ST_Point'])
+            payload = {
+              tables: [table1.name]
+            }
+            Carto::User.any_instance.stubs(:builder_enabled?).returns(true)
+            post_json(api_v1_visualizations_create_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key),
+                      payload) do |response|
+              response.status.should eq 200
+              vid = response.body[:id]
+              v = CartoDB::Visualization::Member.new(id: vid).fetch
+
+              layer = v.map.data_layers.first
+              layer.options['style_properties'].should_not be_nil
+            end
+          end
+
+          it 'rewrites queries for other user datasets' do
+            table1 = create_table(user_id: @org_user_1.id)
+            layer = table1.map.data_layers.first
+            layer.options['query'] = "SELECT * FROM #{table1.name} LIMIT 1"
+            layer.save
+            share_table_with_user(table1, @org_user_2)
+            payload = {
+              type: 'derived',
+              tables: ["#{@org_user_1.username}.#{table1.name}"]
+            }
+            post_json(api_v1_visualizations_create_url(user_domain: @org_user_2.username, api_key: @org_user_2.api_key),
+                      payload) do |response|
+              response.status.should eq 200
+              vid = response.body[:id]
+              v = CartoDB::Visualization::Member.new(id: vid).fetch
+              layer = v.map.data_layers.first
+              layer.options['query'].should eq "SELECT * FROM #{@org_user_1.username}.#{table1.name} LIMIT 1"
+            end
+          end
+
+          it 'does not rewrite queries for same user datasets' do
+            table1 = create_table(user_id: @org_user_1.id)
+            layer = table1.map.data_layers.first
+            layer.options['query'] = "SELECT * FROM #{table1.name} LIMIT 1"
+            layer.save
+            share_table_with_user(table1, @org_user_1)
+            payload = {
+              type: 'derived',
+              tables: ["#{@org_user_1.username}.#{table1.name}"]
+            }
+            post_json(api_v1_visualizations_create_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key),
+                      payload) do |response|
+              response.status.should eq 200
+              vid = response.body[:id]
+              v = CartoDB::Visualization::Member.new(id: vid).fetch
+              new_layer = v.map.data_layers.first
+              new_layer.options['query'].should eq layer.options['query']
+            end
+          end
+
+          it 'sets table privacy if the user has private_maps' do
+            table1 = create_table(user_id: @org_user_1.id)
+            payload = {
+              tables: [table1.name]
+            }
+            post_json(api_v1_visualizations_create_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key),
+                      payload) do |response|
+              response.status.should eq 200
+              vid = response.body[:id]
+              v = CartoDB::Visualization::Member.new(id: vid).fetch
+              v.privacy.should eq CartoDB::Visualization::Member::PRIVACY_PRIVATE
+            end
+          end
+
+          it 'sets PUBLIC privacy if the user doesn\'t have private_maps' do
+            @carto_org_user_2.update_column(:private_maps_enabled, false) # Direct to DB to skip validations
+            table1 = create_table(user_id: @org_user_2.id)
+            payload = {
+              tables: [table1.name]
+            }
+            post_json(api_v1_visualizations_create_url(user_domain: @org_user_2.username, api_key: @org_user_2.api_key),
+                      payload) do |response|
+              response.status.should eq 200
+              vid = response.body[:id]
+              v = CartoDB::Visualization::Member.new(id: vid).fetch
+              v.privacy.should eq CartoDB::Visualization::Member::PRIVACY_PUBLIC
+            end
+          end
+
+          it 'enables scrollwheel zoom by default' do
+            table1 = create_table(user_id: @org_user_2.id)
+            table1.map.scrollwheel = false
+            table1.map.options[:scrollwheel] = false
+            table1.map.save
+
+            post_json(api_v1_visualizations_create_url(user_domain: @org_user_2.username, api_key: @org_user_2.api_key),
+                      tables: [table1.name]) do |response|
+              response.status.should eq 200
+              vid = response.body[:id]
+              v = Carto::Visualization.find(vid)
+              v.map.scrollwheel.should eq true
+              v.map.options[:scrollwheel].should eq true
+            end
+          end
+        end
+      end
+
+      describe "#update" do
+        before(:each) do
+          login(@user)
+        end
+
+        it "Updates changes even if named maps communication fails" do
+          @user.private_tables_enabled = true
+          @user.save
+
+          table = new_table(user_id: @user.id, privacy: ::UserTable::PRIVACY_PUBLIC).save.reload
+
+          Carto::NamedMaps::Api.any_instance.stubs(:create).raises('fake named maps failure')
+
+          payload = { id: table.table_visualization.id, privacy: Carto::Visualization::PRIVACY_PRIVATE }
+          put_json api_v1_visualizations_update_url(id: table.table_visualization.id), payload do |response|
+            response.status.should be_success
+          end
+
+          table.reload
+          table.privacy.should eq ::UserTable::PRIVACY_PRIVATE
+
+          table.destroy
+
+          @user.private_tables_enabled = false
+          @user.save
+        end
+
+        it 'filters attributes' do
+          table = new_table(user_id: @user.id, privacy: ::UserTable::PRIVACY_PUBLIC).save.reload
+
+          table.table_visualization.description.should_not eq "something"
+
+          payload = { id: table.table_visualization.id, description: "something", fake: "NO!" }
+          put_json api_v1_visualizations_update_url(id: table.table_visualization.id), payload do |response|
+            response.status.should be_success
+          end
+
+          table.reload
+          table.table_visualization.description.should eq "something"
+
+          table.destroy
+        end
+
+        it "renames datasets" do
+          table = new_table(user_id: @user.id).save.reload
+
+          payload = { id: table.table_visualization.id, name: 'vis_rename_test1' }
+          put_json api_v1_visualizations_update_url(id: table.table_visualization.id), payload do |response|
+            response.status.should be_success
+          end
+
+          table.reload
+          table.name.should eq 'vis_rename_test1'
+
+          table.destroy
+        end
+      end
+    end
+
     describe '#destroy' do
       include_context 'organization with users helper'
       include TableSharing

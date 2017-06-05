@@ -5,6 +5,9 @@ Development
 * New loading button styles (#12132)
 
 ### Bug fixes / enhancements
+* Fixed arrow keys exceeding min/max values in number editor (#12212)
+* Better handling and reporting of "table with no map associated" error in map privacy changes (#12137).
+* Improve formula widget form (#12242)
 * Fixed aligment problems after cartoassets update (#12234)
 * Fixed layer counter (#12236)
 * Fixed problem when icon upload fails (#11980)
@@ -16,6 +19,7 @@ Development
 * Fix regenerate all api keys in an organization (#12218)
 * Refactor:
   * ::User <-> CartoDB::Visualization::Member dependency: #12116, #12221
+  * Removed CartoDB::Visualization::Member from controllers: #12185
 * Refactor Layer model (#10934) and UserTable (#11589, #11700, #11737).
 * [WIP] Update to Rails 4
   * Update `rails-sequel` (#12118)

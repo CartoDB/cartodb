@@ -49,6 +49,14 @@ describe Carto::Visualization do
     end
   end
 
+  describe '#privacy=' do
+    it 'downcases privacy' do
+      visualization = Carto::Visualization.new
+      visualization.privacy = Carto::Visualization::PRIVACY_LINK.upcase
+      visualization.privacy.should eq Carto::Visualization::PRIVACY_LINK.downcase
+    end
+  end
+
   describe 'children' do
     it 'should correctly count children' do
       map = ::Map.create(user_id: @user.id)

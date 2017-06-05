@@ -7,6 +7,14 @@ describe Carto::UserMetadataExportService do
 
   before(:all) do
     bypass_named_maps
+    @feature_flag = FactoryGirl.create(:carto_feature_flag)
+  end
+
+  after(:all) do
+    @feature_flag.destroy
+  end
+
+  def create_user
     @user = FactoryGirl.create(:carto_user)
     @map, @table, @table_visualization, @visualization = create_full_visualization(@user)
 
@@ -15,39 +23,55 @@ describe Carto::UserMetadataExportService do
 
     @asset = FactoryGirl.create(:carto_asset, user: @user)
 
-    @feature_flag = FactoryGirl.create(:carto_feature_flag)
     Carto::FeatureFlagsUser.create(feature_flag: @feature_flag, user: @user)
 
     @user.reload
   end
 
-  after(:all) do
+  def destroy_user
     destroy_full_visualization(@map, @table, @table_visualization, @visualization)
     @tiled_layer.destroy
     @asset.destroy
-    @feature_flag.destroy
     @user.destroy
   end
 
   let(:service) { Carto::UserMetadataExportService.new }
 
-  it 'export' do
-    export = service.export_user_json_hash(@user.id)
+  describe '#export' do
+    before(:all) do
+      create_user
+    end
 
-    expect_export_matches_user(export[:user], @user)
+    after(:all) do
+      destroy_user
+    end
+
+    it 'exports' do
+      export = service.export_user_json_hash(@user.id)
+
+      expect_export_matches_user(export[:user], @user)
+    end
   end
 
-  it 'import' do
-    user = service.build_user_from_hash_export(full_export)
+  describe '#import' do
+    it 'imports' do
+      user = service.build_user_from_hash_export(full_export)
 
-    expect_export_matches_user(full_export[:user], user)
+      expect_export_matches_user(full_export[:user], user)
+    end
   end
 
-  it 'export + import' do
-    export = service.export_user_json_hash(@user.id)
-    imported_user = service.build_user_from_hash_export(export)
+  describe '#export + import' do
+    it 'export + import' do
+      create_user
+      export = service.export_user_json_hash(@user.id)
+      destroy_user
 
-    # TODO: Check imported_user and @user match
+      imported_user = service.build_user_from_hash_export(export)
+      Carto::UserMetadataExportPersistenceService.new.save_import(imported_user)
+
+      # TODO: Check imported_user and @user match
+    end
   end
 
   def expect_export_matches_user(export, user)

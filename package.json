@@ -36,6 +36,7 @@
     "leaflet": "1.0.3",
     "mustache": "1.1.0",
     "perfect-scrollbar": "git://github.com/CartoDB/perfect-scrollbar.git#master",
+    "tangram-cartocss": "cartodb/tangram-carto#master",
     "torque.js": "CartoDB/torque#master",
     "underscore": "1.8.3"
   },

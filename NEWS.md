@@ -32,6 +32,13 @@ Development
 * Fix `BUILDER_ENABLED` parameter in `create_dev_user` rake (#12189)
 * User organization or user key for google maps (#12232)
 
+### NOTICE
+This release upgrades the CartoDB PostgreSQL extension to `0.19.1`. Run the following to have it available:
+```shell
+cd $(git rev-parse --show-toplevel)/lib/sql
+sudo make install
+```
+
 4.1.x (2017-05-31)
 -----------
 ### Security fixes

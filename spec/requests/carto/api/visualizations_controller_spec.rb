@@ -12,6 +12,7 @@ require 'helpers/unique_names_helper'
 require_dependency 'carto/uuidhelper'
 require 'factories/carto_visualizations'
 require 'helpers/visualization_destruction_helper'
+require 'helpers/feature_flag_helper'
 
 include Carto::UUIDHelper
 
@@ -19,6 +20,8 @@ describe Carto::Api::VisualizationsController do
   include UniqueNamesHelper
   include Carto::Factories::Visualizations
   include VisualizationDestructionHelper
+  include FeatureFlagHelper
+
   it_behaves_like 'visualization controllers' do
   end
 
@@ -436,6 +439,7 @@ describe Carto::Api::VisualizationsController do
       @user_2 = FactoryGirl.create(:valid_user, private_maps_enabled: true)
       @carto_user2 = Carto::User.find(@user_2.id)
       @api_key = @user_1.api_key
+      @feature_flag = FactoryGirl.create(:feature_flag, name: 'vector_vs_raster', restricted: true)
     end
 
     before(:each) do
@@ -455,6 +459,7 @@ describe Carto::Api::VisualizationsController do
     after(:all) do
       @user_1.destroy
       @user_2.destroy
+      @feature_flag.destroy
     end
 
     it 'tests exclude_shared and only_shared filters' do
@@ -1496,11 +1501,12 @@ describe Carto::Api::VisualizationsController do
         end
       end
 
-      it 'includes vector flag (true if requested)' do
+      it 'doesn\'t include vector flag if vector_vs_raster feature flag is enabled' do
+        set_feature_flag @visualization.user, 'vector_vs_raster', true
         get_json get_vizjson3_url(@user_1, @visualization, vector: true), @headers do |response|
           response.status.should == 200
           vizjson3 = response.body
-          vizjson3[:vector].should == true
+          vizjson3.has_key?(:vector).should be_false
         end
       end
 

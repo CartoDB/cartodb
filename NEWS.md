@@ -20,7 +20,7 @@ Development
 * Fix regenerate all api keys in an organization (#12218)
 * Refactor:
   * ::User <-> CartoDB::Visualization::Member dependency: #12116, #12221
-  * Removed CartoDB::Visualization::Member from controllers: #12185
+  * Removed CartoDB::Visualization::Member from controllers: #12185, #12267
 * Refactor Layer model (#10934) and UserTable (#11589, #11700, #11737).
 * [WIP] Update to Rails 4
   * Update `rails-sequel` (#12118)
@@ -32,6 +32,7 @@ Development
 * Fix EUMAPI response as per documentation (#12233)
 * Fix `BUILDER_ENABLED` parameter in `create_dev_user` rake (#12189)
 * User organization or user key for google maps (#12232)
+* "vector" key in vizjson is skipped in embeds if user has "vector_vs_raster" feature flag enabled.
 
 4.1.x (2017-05-31)
 -----------

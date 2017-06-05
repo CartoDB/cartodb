@@ -27,9 +27,8 @@
 <%= content_for(:js) do %>
   <%= insert_trackjs('builder-embeds') %>
 
-  <% if params[:vector] %>
-    <%= javascript_include_tag 'tangram.min.js' %>
-  <% end %>
+  <!-- Make available if FF auto or vector -->
+  <%= javascript_include_tag 'tangram.min.js' %>
 
   <% if @vizjson[:map_provider] == 'googlemaps' %>
     <%= render(partial: 'shared/visualizations/google_maps', locals: { google_maps_qs: @google_maps_qs }) %>
@@ -44,6 +43,21 @@
   <%= javascript_include_tag 'vendor_editor3.js' %>
   <%= javascript_include_tag 'common_editor3.js' %>
   <%= javascript_include_tag 'public_editor3.js' %>
+
+  <script>
+    (function () {
+      <% if Cartodb.config[:graphite_public] %>
+        if (location.protocol.indexOf('https') === -1) {
+          jQuery.getScript('<%= javascript_path "statsc.js" %>', function(ready) {
+            statsc.connect('http://<%= Cartodb.config[:graphite_public]['host'] %>:<%= Cartodb.config[:graphite_public]['port'] %>/');
+            cartodb.core.Profiler.backend(function () {
+              statsc.send.apply(statsc, arguments);
+            });
+          });
+        }
+      <% end %>
+    }());
+  </script>
 
   <%= insert_google_analytics('embeds', true) %>
 <% end %>

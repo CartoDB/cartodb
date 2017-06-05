@@ -112,6 +112,12 @@ module Carto
 
       user_hash[:layers] = user.layers.map { |l| export_layer(l) }
 
+      vis_exporter = VisualizationsExportService2.new
+
+      user_hash[:visualizations] = user.visualizations.map do |vis|
+        vis_exporter.export_visualization_json_hash(vis, user, full_export: true)
+      end
+
       # Visualizations
         # datasets
         # permissions

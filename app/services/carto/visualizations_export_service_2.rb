@@ -23,8 +23,8 @@ module Carto
   end
 
   module VisualizationsExportService2Validator
-    def check_valid_visualization(visualization)
-      raise 'Only derived visualizations can be exported' unless visualization.derived?
+    def check_valid_visualization(visualization, force_dataset:)
+      raise 'Only derived visualizations can be exported' unless force_dataset || visualization.derived?
     end
   end
 
@@ -203,32 +203,32 @@ module Carto
     include VisualizationsExportService2Configuration
     include VisualizationsExportService2Validator
 
-    def export_visualization_json_string(visualization_id, user)
-      export_visualization_json_hash(visualization_id, user).to_json
+    def export_visualization_json_string(visualization_id, user, full_export: false)
+      export_visualization_json_hash(visualization_id, user, full_export: full_export).to_json
     end
 
-    def export_visualization_json_hash(visualization_id, user)
+    def export_visualization_json_hash(visualization_id, user, full_export: false)
       {
         version: CURRENT_VERSION,
-        visualization: export(Carto::Visualization.find(visualization_id), user)
+        visualization: export(Carto::Visualization.find(visualization_id), user, full_export: full_export)
       }
     end
 
     private
 
-    def export(visualization, user)
-      check_valid_visualization(visualization)
-      export_visualization(visualization, user)
+    def export(visualization, user, full_export:)
+      check_valid_visualization(visualization) unless full_export
+      export_visualization(visualization, user, full_export: full_export)
     end
 
-    def export_visualization(visualization, user)
+    def export_visualization(visualization, user, full_export:)
       layers = visualization.layers_with_data_readable_by(user)
       active_layer_id = visualization.active_layer_id
       layer_exports = layers.map do |layer|
         export_layer(layer, active_layer: active_layer_id == layer.id)
       end
 
-      {
+      visualization_export = {
         name: visualization.name,
         description: visualization.description,
         version: visualization.version,
@@ -249,6 +249,7 @@ module Carto
         user: export_user(visualization.user),
         state: export_state(visualization.state)
       }
+      visualization_export[:id] = visualization.id if full_export
     end
 
     def export_user(user)

@@ -55,6 +55,8 @@ describe Carto::UserMetadataExportService do
     export[:assets].zip(user.assets).each { |exported_asset, asset| expect_export_matches_asset(exported_asset, asset) }
 
     expect(export[:feature_flags]).to eq user.feature_flags_user.map(&:feature_flag).map(&:name)
+
+    expect(export[:visualizations].count).to eq user.visualizations.size
   end
 
   def expect_export_matches_layer(exported_layer, layer)
@@ -182,7 +184,8 @@ describe Carto::UserMetadataExportService do
             },
             kind: "tiled"
           }
-        ]
+        ],
+        visualizations: []
       }
     }
   end

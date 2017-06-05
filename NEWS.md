@@ -5,6 +5,7 @@ Development
 * New loading button styles (#12132)
 
 ### Bug fixes / enhancements
+* Fixed error where analysis overlay/infobox wasn't shown when hiding a layer (#11767)
 * Fixed arrow keys exceeding min/max values in number editor (#12212)
 * Better handling and reporting of "table with no map associated" error in map privacy changes (#12137).
 * Improve formula widget form (#12242)

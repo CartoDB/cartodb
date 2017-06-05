@@ -43,6 +43,13 @@ describe Carto::UserMetadataExportService do
     expect_export_matches_user(full_export[:user], user)
   end
 
+  it 'export + import' do
+    export = service.export_user_json_hash(@user.id)
+    imported_user = service.build_user_from_hash_export(export)
+
+    # TODO: Check imported_user and @user match
+  end
+
   def expect_export_matches_user(export, user)
     Carto::UserMetadataExportService::EXPORTED_USER_ATTRIBUTES.each do |att|
       expect(export[att]).to eq user.send(att)

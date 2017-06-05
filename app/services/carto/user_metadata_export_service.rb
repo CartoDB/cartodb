@@ -55,6 +55,11 @@ module Carto
 
       user.layers = exported_user[:layers].map.with_index { |layer, i| build_layer_from_hash(layer, order: i) }
 
+      vis_exporter = VisualizationsExportService2.new
+      user.visualizations = exported_user[:visualizations].map do |vis|
+        vis_exporter.build_visualization_from_hash_export(vis)
+      end
+
       # Must be the last one to avoid attribute assignments to try to run SQL
       user.id = exported_user[:id]
       user
@@ -113,15 +118,12 @@ module Carto
       user_hash[:layers] = user.layers.map { |l| export_layer(l) }
 
       vis_exporter = VisualizationsExportService2.new
-
       user_hash[:visualizations] = user.visualizations.map do |vis|
         vis_exporter.export_visualization_json_hash(vis, user, full_export: true)
       end
 
       # Visualizations
-        # datasets
         # permissions
-        # id
         # mapcap
 
       # Notifications ?

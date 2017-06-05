@@ -82,6 +82,7 @@ module Carto
         visualization.active_layer = visualization.layers.find { |l| l.order == active_layer_order }
       end
 
+      visualization.id = exported_visualization[:id] if exported_visualization.key?(:id)
       visualization
     end
 
@@ -250,6 +251,8 @@ module Carto
         state: export_state(visualization.state)
       }
       visualization_export[:id] = visualization.id if full_export
+
+      visualization_export
     end
 
     def export_user(user)

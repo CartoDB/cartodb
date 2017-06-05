@@ -569,7 +569,18 @@ class Carto::Visualization < ActiveRecord::Base
     super(privacy.try(:downcase))
   end
 
+  def password=(value)
+    if value.present?
+      self.password_salt = generate_salt if password_salt.nil?
+      self.encrypted_password = password_digest(value, password_salt)
+    end
+  end
+
   private
+
+  def generate_salt
+    secure_digest(Time.now, (1..10).map{ rand.to_s })
+  end
 
   def remove_password
     self.password_salt = nil

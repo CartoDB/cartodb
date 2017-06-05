@@ -267,7 +267,7 @@ module Carto
       #   :synchronization, :uses_builder_features, :auth_tokens, :transition_options, :prev_id, :next_id, :parent_id
       #   :active_child, :permission
       VALID_UPDATE_ATTRIBUTES = [:name, :display_name, :active_layer_id, :tags, :description, :privacy, :updated_at,
-                                 :locked, :source, :title, :license, :attributions, :kind].freeze
+                                 :locked, :source, :title, :license, :attributions, :kind, :password].freeze
       # TODO: This lets more things through than it should. This is due to tests using this endpoint to create
       #       test visualizations.
       VALID_CREATE_ATTRIBUTES = (VALID_UPDATE_ATTRIBUTES + [:type, :map_id]).freeze

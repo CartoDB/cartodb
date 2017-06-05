@@ -579,7 +579,7 @@ class Carto::Visualization < ActiveRecord::Base
   private
 
   def generate_salt
-    secure_digest(Time.now, (1..10).map{ rand.to_s })
+    secure_digest(Time.now, (1..10).map { rand.to_s })
   end
 
   def remove_password

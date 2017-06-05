@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.7.212",
+  "version": "4.7.214",
   "dependencies": {
     "abbrev": {
       "version": "1.1.0",
@@ -617,9 +617,9 @@
       "resolved": "https://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.32.0.tgz"
     },
     "caniuse-lite": {
-      "version": "1.0.30000676",
+      "version": "1.0.30000677",
       "from": "caniuse-lite@>=1.0.30000670 <2.0.0",
-      "resolved": "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30000676.tgz"
+      "resolved": "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30000677.tgz"
     },
     "carto": {
       "version": "0.15.1-cdb3",
@@ -633,8 +633,8 @@
     },
     "cartodb-deep-insights.js": {
       "version": "0.0.2",
-      "from": "cartodb/deep-insights.js#remove-invalidate-size",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#4f9ace871b9d0b614854fdd58298ee814022a3f0"
+      "from": "cartodb/deep-insights.js#master",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#8d0601c6554b813503349b2aa593242a834cc2f0"
     },
     "cartodb-pecan": {
       "version": "0.2.0",
@@ -643,8 +643,8 @@
     },
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
-      "from": "cartodb/cartodb.js#render-view-after-first-reload",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#7e37ffc6a484ab75ec79e3c7e147297eedbab427"
+      "from": "cartodb/cartodb.js#v4",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#4dfbc033a802e153763dd5d2368f4c9a4bddfb32"
     },
     "caseless": {
       "version": "0.11.0",
@@ -2011,9 +2011,9 @@
       "resolved": "https://registry.npmjs.org/ripemd160/-/ripemd160-2.0.1.tgz"
     },
     "safe-buffer": {
-      "version": "5.0.1",
+      "version": "5.1.0",
       "from": "safe-buffer@>=5.0.1 <6.0.0",
-      "resolved": "https://registry.npmjs.org/safe-buffer/-/safe-buffer-5.0.1.tgz"
+      "resolved": "https://registry.npmjs.org/safe-buffer/-/safe-buffer-5.1.0.tgz"
     },
     "select": {
       "version": "1.1.2",
@@ -2300,9 +2300,9 @@
       "resolved": "https://registry.npmjs.org/tangram-reference/-/tangram-reference-1.0.17.tgz"
     },
     "tangram.cartodb": {
-      "version": "0.4.0",
-      "from": "cartodb/tangram.cartodb#events-release",
-      "resolved": "git://github.com/cartodb/tangram.cartodb.git#5e4fca09070d3ae8691b99f5d788df521a06fd3e",
+      "version": "0.4.2",
+      "from": "cartodb/tangram.cartodb#master",
+      "resolved": "git://github.com/cartodb/tangram.cartodb.git#7771f09a0e0e69b6a2330a2b6e0e7f6b8a40f620",
       "dependencies": {
         "babel-runtime": {
           "version": "6.18.0",

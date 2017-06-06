@@ -2377,5 +2377,8 @@
       },
       "adding": "Adding geometry…"
     }
+  },
+  "validations": {
+    "only-numeric-column": "Only numeric columns allowed"
   }
 }

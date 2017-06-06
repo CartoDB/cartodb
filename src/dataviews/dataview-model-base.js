@@ -1,6 +1,6 @@
 var _ = require('underscore');
 var Model = require('../core/model');
-var BackboneCancelSync = require('../util/backbone-abort-sync');
+var BackboneAbortSync = require('../util/backbone-abort-sync');
 var WindshaftFiltersBoundingBoxFilter = require('../windshaft/filters/bounding-box');
 var BOUNDING_BOX_FILTER_WAIT = 500;
 
@@ -86,7 +86,7 @@ module.exports = Model.extend({
     this._vis = opts.vis;
     this._analysisCollection = opts.analysisCollection;
 
-    this.sync = BackboneCancelSync.bind(this);
+    this.sync = BackboneAbortSync.bind(this);
 
     // filter is optional, so have to guard before using it
     this.filter = opts.filter;

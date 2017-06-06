@@ -33,6 +33,13 @@ Development
 * User organization or user key for google maps (#12232)
 * "vector" key in vizjson is skipped in embeds if user has "vector_vs_raster" feature flag enabled.
 
+### NOTICE
+This release upgrades the CartoDB PostgreSQL extension to `0.19.1`. Run the following to have it available:
+```shell
+cd $(git rev-parse --show-toplevel)/lib/sql
+sudo make install
+```
+
 4.1.x (2017-05-31)
 -----------
 ### Security fixes

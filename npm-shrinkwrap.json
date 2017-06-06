@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.7.38",
+  "version": "4.7.39",
   "dependencies": {
     "abbrev": {
       "version": "1.1.0",
@@ -427,7 +427,7 @@
     "backbone-forms": {
       "version": "0.14.0",
       "from": "backbone-forms@0.14.0",
-      "resolved": "https://registry.npmjs.org/backbone-forms/-/backbone-forms-0.14.0.tgz"
+      "resolved": "http://registry.npmjs.org/backbone-forms/-/backbone-forms-0.14.0.tgz"
     },
     "backbone-model-file-upload": {
       "version": "1.0.0",
@@ -617,9 +617,9 @@
       "resolved": "https://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.32.0.tgz"
     },
     "caniuse-lite": {
-      "version": "1.0.30000677",
+      "version": "1.0.30000679",
       "from": "caniuse-lite@>=1.0.30000670 <2.0.0",
-      "resolved": "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30000677.tgz"
+      "resolved": "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30000679.tgz"
     },
     "carto": {
       "version": "0.15.1-cdb3",
@@ -644,7 +644,7 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
       "from": "cartodb/cartodb.js#v4",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#4dfbc033a802e153763dd5d2368f4c9a4bddfb32"
+      "resolved": "git://github.com/cartodb/cartodb.js.git#b7e0af32287034054a3170bffcfe54b097afa256"
     },
     "caseless": {
       "version": "0.11.0",
@@ -1887,7 +1887,7 @@
     "queue-async": {
       "version": "1.2.1",
       "from": "queue-async@1.2.1",
-      "resolved": "https://registry.npmjs.org/queue-async/-/queue-async-1.2.1.tgz"
+      "resolved": "http://registry.npmjs.org/queue-async/-/queue-async-1.2.1.tgz"
     },
     "quote-stream": {
       "version": "1.0.2",

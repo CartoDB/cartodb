@@ -83,7 +83,7 @@ module Carto
         visualization.active_layer = visualization.layers.find { |l| l.order == active_layer_order }
       end
 
-      visualization.id = exported_visualization[:id] if exported_visualization[:id].present?
+      visualization.id = exported_visualization[:id] unless exported_visualization[:id].nil?
       visualization
     end
 

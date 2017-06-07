@@ -72,6 +72,7 @@ describe Carto::UserMetadataExportService do
       create_user
       export = service.export_user_json_hash(@user.id)
       expect_export_matches_user(export[:user], @user)
+      source_user = @user.attributes
       destroy_user
 
       imported_user = service.build_user_from_hash_export(export)
@@ -79,8 +80,7 @@ describe Carto::UserMetadataExportService do
       imported_user.reload
 
       expect_export_matches_user(export[:user], imported_user)
-      expect(imported_user.attributes).to eq @user.attributes
-      expect(imported_user.visualizations.map(&:attributes)).to eq @user.visualizations.map(&:attributes)
+      compare_excluding_dates(imported_user.attributes, source_user)
     end
   end
 
@@ -89,12 +89,17 @@ describe Carto::UserMetadataExportService do
       Dir.mktmpdir do |path|
         create_user
         service.export_user_to_directory(@user.id, path)
+        source_user = @user.attributes
+        source_visualizations = @user.visualizations.map(&:attributes)
         destroy_user
 
         imported_user = service.import_user_from_directory(path)
 
-        compare_excluding_dates(imported_user, @user)
-        expect(imported_user.visualizations.map(&:attributes)).to eq @user.visualizations.map(&:attributes)
+        compare_excluding_dates(imported_user.attributes, source_user)
+        expect(imported_user.visualizations.count).to eq source_visualizations.count
+        imported_user.visualizations.zip(source_visualizations).each do |v1, v2|
+          compare_excluding_dates(v1.attributes, v2)
+        end
       end
     end
   end
@@ -102,8 +107,8 @@ describe Carto::UserMetadataExportService do
   EXCLUDED_FIELDS = ['created_at', 'updated_at'].freeze
 
   def compare_excluding_dates(u1, u2)
-    filtered1 = u1.attributes.reject { |k, _| EXCLUDED_FIELDS.include?(k) }
-    filtered2 = u2.attributes.reject { |k, _| EXCLUDED_FIELDS.include?(k) }
+    filtered1 = u1.reject { |k, _| EXCLUDED_FIELDS.include?(k) }
+    filtered2 = u2.reject { |k, _| EXCLUDED_FIELDS.include?(k) }
     expect(filtered1).to eq filtered2
   end
 

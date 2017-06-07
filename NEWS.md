@@ -3,6 +3,7 @@ Development
 
 ### Features
 * New loading button styles (#12132)
+* [WIP] Export/import organization/user metadata to allow user migration (#12271)
 
 ### Bug fixes / enhancements
 * Better handling and reporting of "table with no map associated" error in map privacy changes (#12137).

@@ -3,6 +3,7 @@ Development
 
 ### Features
 * New loading button styles (#12132)
+* New force param in EUMAPI organization users destroy operation to force deletion even with unregistered tables (#11654).
 
 ### Bug fixes / enhancements
 * Fixed error where analysis overlay/infobox wasn't shown when hiding a layer (#11767)

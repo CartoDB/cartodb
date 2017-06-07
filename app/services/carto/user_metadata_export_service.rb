@@ -186,7 +186,7 @@ module Carto
       root_dir = Pathname.new(path)
       user.visualizations.where(type: type).each do |visualization|
         visualization_export = Carto::VisualizationsExportService2.new.export_visualization_json_string(
-          visualization.id, user, full_export: true
+          visualization.id, user
         )
         filename = "#{visualization.type}_#{visualization.id}#{Carto::VisualizationExporter::EXPORT_EXTENSION}"
         root_dir.join(filename).open('w') { |file| file.write(visualization_export) }

@@ -31,7 +31,7 @@ module Carto
     def export_in_memory_visualization(visualization, user)
       {
         version: CURRENT_VERSION,
-        visualization: export(visualization, user, full_export: false)
+        visualization: export(visualization, user)
       }
     end
   end

@@ -30,7 +30,7 @@ describe Carto::Visualization do
 
   it_behaves_like 'visualization models' do
     def build_visualization(attrs = {})
-      v = Carto::Visualization.new(attrs)
+      v = Carto::Visualization.new
       v.assign_attributes(attrs, without_protection: true)
       v
     end

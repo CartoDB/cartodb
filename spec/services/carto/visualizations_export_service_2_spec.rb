@@ -10,12 +10,13 @@ describe Carto::VisualizationsExportService2 do
   let(:export) do
     {
       visualization: base_visualization_export,
-      version: '2.0.8'
+      version: '2.0.9'
     }
   end
 
   let(:base_visualization_export) do
     {
+      id: '138110e4-7425-4978-843d-d7307bd70d1c',
       name: 'the name',
       description: 'the description',
       version: 3,
@@ -226,6 +227,7 @@ describe Carto::VisualizationsExportService2 do
   CHANGING_LAYER_OPTIONS_KEYS = [:user_name, :id, :stat_tag].freeze
 
   def verify_visualization_vs_export(visualization, visualization_export, importing_user: nil)
+    visualization.id.should eq visualization_export[:id]
     visualization.name.should eq visualization_export[:name]
     visualization.description.should eq visualization_export[:description]
     visualization.type.should eq visualization_export[:type]
@@ -614,6 +616,16 @@ describe Carto::VisualizationsExportService2 do
       end
 
       describe 'maintains backwards compatibility with' do
+        it '2.0.8 (without id)' do
+          export_2_0_8 = export
+          export_2_0_8[:visualization].delete(:id)
+
+          service = Carto::VisualizationsExportService2.new
+          visualization = service.build_visualization_from_json_export(export_2_0_8.to_json)
+
+          visualization.id.should be_nil
+        end
+
         it '2.0.7 (without Widget.style)' do
           export_2_0_7 = export
           export_2_0_7[:visualization][:layers].each do |layer|

@@ -122,7 +122,7 @@ describe Carto::UserMetadataExportService do
 
   def expect_export_matches_user(export, user)
     Carto::UserMetadataExportService::EXPORTED_USER_ATTRIBUTES.each do |att|
-      expect(export[att]).to eq user.send(att)
+      expect(export[att]).to eq user.attributes[att.to_s]
     end
 
     expect(export[:layers].count).to eq user.layers.size

@@ -76,12 +76,6 @@ FactoryGirl.define do
     id { UUIDTools::UUID.timestamp_create.to_s }
     builder_enabled nil # Most tests still assume editor
 
-    soft_geocoding_limit false
-    soft_here_isolines_limit false
-    soft_mapzen_routing_limit false
-    soft_obs_general_limit false
-    soft_obs_snapshot_limit false
-
     before(:create) do
       CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
     end

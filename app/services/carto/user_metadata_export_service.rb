@@ -111,7 +111,7 @@ module Carto
     private
 
     def export(user)
-      user_hash = EXPORTED_USER_ATTRIBUTES.map { |att| [att, user.send(att)] }.to_h
+      user_hash = EXPORTED_USER_ATTRIBUTES.map { |att| [att, user.attributes[att.to_s]] }.to_h
 
       user_hash[:feature_flags] = user.feature_flags_user.map(&:feature_flag).map(&:name)
 

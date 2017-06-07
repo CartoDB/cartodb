@@ -1,4 +1,5 @@
 require 'json'
+require_dependency 'carto/export/layer_exporter'
 
 # Version History
 # 1.0.0: export user metadata
@@ -32,6 +33,7 @@ module Carto
 
   module UserMetadataExportServiceImporter
     include UserMetadataExportServiceConfiguration
+    include LayerImporter
 
     def build_user_from_json_export(exported_json_string)
       build_user_from_hash_export(JSON.parse(exported_json_string).deep_symbolize_keys)
@@ -58,9 +60,7 @@ module Carto
 
       user.assets = exported_user[:assets].map { |asset| build_asset_from_hash(asset.symbolize_keys) }
 
-      user.layers = exported_user[:layers].map.with_index do |layer, i|
-        build_layer_from_hash(layer.symbolize_keys, order: i)
-      end
+      user.layers = build_layers_from_hash(exported_user[:layers])
 
       # Must be the last one to avoid attribute assignments to try to run SQL
       user.id = exported_user[:id]
@@ -84,18 +84,11 @@ module Carto
         storage_info: exported_asset[:storage_info]
       )
     end
-
-    def build_layer_from_hash(exported_layer, order:)
-      Layer.new(
-        options: exported_layer[:options],
-        kind: exported_layer[:kind],
-        order: order
-      )
-    end
   end
 
   module UserMetadataExportServiceExporter
     include UserMetadataExportServiceConfiguration
+    include LayerExporter
 
     def export_user_json_string(user_id)
       export_user_json_hash(user_id).to_json
@@ -130,14 +123,6 @@ module Carto
         public_url: asset.public_url,
         kind: asset.kind,
         storage_info: asset.storage_info
-      }
-    end
-
-    def export_layer(layer)
-      # Only custom basemap layers, many fields are unused
-      {
-        options: layer.options,
-        kind: layer.kind
       }
     end
   end

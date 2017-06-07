@@ -33,5 +33,4 @@ shared_examples_for 'visualization models' do
       visualization.password_valid?(password_value).should be_false
     end
   end
-
 end

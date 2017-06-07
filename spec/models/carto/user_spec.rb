@@ -39,7 +39,7 @@ describe Carto::User do
 
   describe '#soft_geocoding_limit' do
     before(:all) do
-      @carto_user = FactoryGirl.build(:carto_user)
+      @carto_user = FactoryGirl.build(:carto_user, soft_geocoding_limit: nil)
     end
 
     it 'false for free accounts' do

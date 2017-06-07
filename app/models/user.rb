@@ -458,7 +458,9 @@ class User < Sequel::Model
 
     # Delete the DB or the schema
     if has_organization
-      db_service.drop_organization_user(organization_id, !@org_id_for_org_wipe.nil?, @force_destroy) unless error_happened
+      unless error_happened
+        db_service.drop_organization_user(organization_id, !@org_id_for_org_wipe.nil?, @force_destroy)
+      end
     elsif ::User.where(database_name: database_name).count > 1
       raise CartoDB::BaseCartoDBError.new(
         'The user is not supposed to be in a organization but another user has the same database_name. Not dropping it')

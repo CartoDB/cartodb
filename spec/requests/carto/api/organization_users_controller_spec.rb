@@ -647,9 +647,11 @@ describe Carto::Api::OrganizationUsersController do
       user_with_unregistered_tables = create_test_user('foobarbaz', @organization)
       user_with_unregistered_tables.in_database.run('CREATE TABLE wadus (id serial)')
 
-
-      delete api_v2_organization_users_delete_url(id_or_name: @organization.name,
-        u_username: user_with_unregistered_tables.username, force: true)
+      delete api_v2_organization_users_delete_url(
+        id_or_name: @organization.name,
+        u_username: user_with_unregistered_tables.username,
+        force: true
+      )
 
       last_response.status.should eq 200
 

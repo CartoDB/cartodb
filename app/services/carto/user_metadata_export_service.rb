@@ -178,15 +178,17 @@ module Carto
     def import_user_visualizations_from_directory(user, type, path)
       Dir["#{path}/#{type}_*#{Carto::VisualizationExporter::EXPORT_EXTENSION}"].each do |filename|
         imported_vis = Carto::VisualizationsExportService2.new.build_visualization_from_json_export(File.read(filename))
-        Carto::VisualizationsExportPersistenceService.new.save_import(user, imported_vis)
+        Carto::VisualizationsExportPersistenceService.new.save_import(user, imported_vis, keep_id: true)
       end
     end
 
     def export_user_visualizations_to_directory(user, type, path)
       root_dir = Pathname.new(path)
-      user.visualizations.where(type: type).each do |vis|
-        visualization_export = Carto::VisualizationsExportService2.new.export_visualization_json_string(vis.id, user)
-        filename = "#{vis.type}_#{vis.id}#{Carto::VisualizationExporter::EXPORT_EXTENSION}"
+      user.visualizations.where(type: type).each do |visualization|
+        visualization_export = Carto::VisualizationsExportService2.new.export_visualization_json_string(
+          visualization.id, user, full_export: true
+        )
+        filename = "#{visualization.type}_#{visualization.id}#{Carto::VisualizationExporter::EXPORT_EXTENSION}"
         root_dir.join(filename).open('w') { |file| file.write(visualization_export) }
       end
     end

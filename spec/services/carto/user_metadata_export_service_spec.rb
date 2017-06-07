@@ -90,6 +90,7 @@ describe Carto::UserMetadataExportService do
         create_user
         service.export_user_to_directory(@user.id, path)
         source_user = @user.attributes
+
         source_visualizations = @user.visualizations.map(&:attributes)
         destroy_user
 
@@ -98,17 +99,24 @@ describe Carto::UserMetadataExportService do
         compare_excluding_dates(imported_user.attributes, source_user)
         expect(imported_user.visualizations.count).to eq source_visualizations.count
         imported_user.visualizations.zip(source_visualizations).each do |v1, v2|
-          compare_excluding_dates(v1.attributes, v2)
+          compare_excluding_dates_and_ids(v1.attributes, v2)
         end
       end
     end
   end
 
-  EXCLUDED_FIELDS = ['created_at', 'updated_at'].freeze
+  EXCLUDED_DATE_FIELDS = ['created_at', 'updated_at'].freeze
+  EXCLUDED_ID_FIELDS = ['map_id', 'permission_id', 'active_layer_id', 'tags'].freeze
+
+  def compare_excluding_dates_and_ids(v1, v2)
+    filtered1 = v1.reject { |k, _| EXCLUDED_ID_FIELDS.include?(k) }
+    filtered2 = v2.reject { |k, _| EXCLUDED_ID_FIELDS.include?(k) }
+    compare_excluding_dates(filtered1, filtered2)
+  end
 
   def compare_excluding_dates(u1, u2)
-    filtered1 = u1.reject { |k, _| EXCLUDED_FIELDS.include?(k) }
-    filtered2 = u2.reject { |k, _| EXCLUDED_FIELDS.include?(k) }
+    filtered1 = u1.reject { |k, _| EXCLUDED_DATE_FIELDS.include?(k) }
+    filtered2 = u2.reject { |k, _| EXCLUDED_DATE_FIELDS.include?(k) }
     expect(filtered1).to eq filtered2
   end
 

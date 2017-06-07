@@ -51,6 +51,12 @@ describe Carto::UserMetadataExportService do
 
       expect_export_matches_user(export[:user], @user)
     end
+
+    it 'includes all user model attributes' do
+      export = service.export_user_json_hash(@user.id)
+
+      expect(export[:user].keys).to include(*@user.attributes.symbolize_keys.keys)
+    end
   end
 
   describe '#import' do

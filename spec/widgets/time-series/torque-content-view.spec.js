@@ -5,6 +5,17 @@ var HistogramChartView = require('../../../src/widgets/histogram/chart');
 var cdb = require('cartodb.js');
 
 describe('widgets/time-series/torque-content-view', function () {
+  function provideData () {
+    var timeOffset = 10000;
+    var startTime = (new Date()).getTime() - timeOffset;
+    this.dataviewModel.fetch();
+    this.options.success({
+      bins_start: startTime,
+      bin_width: timeOffset,
+      bins_count: 3
+    });
+  }
+
   beforeEach(function () {
     var vis = specHelper.createDefaultVis();
     this.dataviewModel = vis.dataviews.createHistogramModel(vis.map.layers.first(), {
@@ -24,7 +35,9 @@ describe('widgets/time-series/torque-content-view', function () {
     this.torqueLayerModel = new cdb.geo.TorqueLayer({}, {
       vis: vis
     });
-    var widgetModel = new WidgetModel({}, {
+    var widgetModel = new WidgetModel({
+      normalized: false
+    }, {
       dataviewModel: this.dataviewModel
     });
 
@@ -43,18 +56,29 @@ describe('widgets/time-series/torque-content-view', function () {
 
   describe('when data is provided', function () {
     beforeEach(function () {
-      var timeOffset = 10000;
-      var startTime = (new Date()).getTime() - timeOffset;
-      this.dataviewModel.fetch();
-      this.options.success({
-        bins_start: startTime,
-        bin_width: timeOffset,
-        bins_count: 3
-      });
+      provideData.call(this);
     });
 
     it('should render a time-slider', function () {
       expect(this.view.$('.CDB-TimeSlider').length).toEqual(1);
+    });
+  });
+
+  describe('.render', function () {
+    it('should create header, histogram and dropdown views', function () {
+      provideData.call(this);
+
+      this.view.render();
+      this.view.$('.js-actions').click();
+
+      expect(this.view._headerView).toBeDefined();
+      expect(this.view._histogramView).toBeDefined();
+      expect(this.view._dropdownView).toBeDefined();
+      expect(this.view.$('.js-torque-header').length).toBe(1);
+      expect(this.view.$('.js-header .CDB-Dropdown').length).toBe(1);
+      expect(this.view.$('svg').length).toBe(1);
+      expect(this.view._histogramView.options.displayShadowBars).toBe(true);
+      expect(this.view._histogramView.options.normalized).toBe(false);
     });
   });
 });

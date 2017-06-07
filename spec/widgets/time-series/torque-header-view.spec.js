@@ -1,0 +1,59 @@
+var Backbone = require('backbone');
+var TorqueHeaderView = require('../../../src/widgets/time-series/torque-header-view');
+
+describe('widgets/time-series/torque-header-view', function () {
+  var filterIsEmpty = true;
+
+  beforeEach(function () {
+    this.dataviewModel = new Backbone.Model({
+      data: [{}]
+    });
+    this.dataviewModel.layer = new Backbone.Model();
+    this.dataviewModel.filter = new Backbone.Model();
+    this.dataviewModel.filter.isEmpty = function () {
+      return filterIsEmpty;
+    };
+    this.torqueLayerModel = new Backbone.Model();
+    this.view = new TorqueHeaderView({
+      dataviewModel: this.dataviewModel,
+      torqueLayerModel: this.torqueLayerModel
+    });
+  });
+
+  afterEach(function () {
+    filterIsEmpty = true;
+  });
+
+  describe('.render', function () {
+    it('should render the proper template', function () {
+      this.view.render();
+
+      expect(this.view.$('.js-torque-controls').length).toBe(1);
+      expect(this.view.$('.js-time-series-header').length).toBe(1);
+    });
+
+    it('should render torque controls and hide clear button if filter is empty', function () {
+      this.view.render();
+
+      // Torque controls rendered
+      expect(this.view.$('.CDB-Widget-controlButtonContent').length).toBe(1);
+      // Torque time info rendered
+      expect(this.view.$('.CDB-Widget-timeSeriesTimeInfo').length).toBe(1);
+      // Header clear button not present
+      expect(this.view.$('.js-clear').length).toBe(0);
+    });
+
+    it('should not render torque controls and show clear button if filter has value', function () {
+      filterIsEmpty = false;
+
+      this.view.render();
+
+      // Torque controls not rendered
+      expect(this.view.$('.CDB-Widget-controlButtonContent').length).toBe(0);
+      // Torque time info not rendered
+      expect(this.view.$('.CDB-Widget-timeSeriesTimeInfo').length).toBe(0);
+      // Header clear button present
+      expect(this.view.$('.js-clear').length).toBe(1);
+    });
+  });
+});

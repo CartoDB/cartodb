@@ -61,7 +61,7 @@ module.exports = cdb.core.View.extend({
       rangeFilter: this._dataviewModel.filter,
       torqueLayerModel: this._dataviewModel.layer,
       displayShadowBars: !this.model.get('normalized'),
-      normalized: this.model.get('normalized')
+      normalized: !!this.model.get('normalized')
     });
     this.addView(this._histogramView);
     this.$el.append(this._histogramView.render().el);
@@ -77,7 +77,7 @@ module.exports = cdb.core.View.extend({
       target: '.js-actions',
       container: this.$('.js-header'),
       flags: {
-        normalizeHistogram: true,
+        normalizeHistogram: !!this.model.get('normalized'),
         canCollapse: false
       }
     });

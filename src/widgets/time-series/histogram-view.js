@@ -46,7 +46,18 @@ module.exports = cdb.core.View.extend({
   },
 
   _createHistogramView: function () {
-    this._chartView = new HistogramChartView({
+    this._chartView = this._instantiateChartView();
+    this.addView(this._chartView);
+    this.$el.append(this._chartView.render().el);
+    this._chartView.show();
+
+    this._chartView.bind('on_brush_end', this._onBrushEnd, this);
+    this._chartView.model.bind('change:width', this._onChangeChartWidth, this);
+    this.add_related_model(this._chartView.model);
+  },
+
+  _instantiateChartView: function () {
+    return new HistogramChartView({
       type: this._chartType,
       chartBarColor: this._timeSeriesModel.getWidgetColor() || '#F2CC8F',
       animationSpeed: 100,
@@ -64,16 +75,9 @@ module.exports = cdb.core.View.extend({
       data: this.model.getData(),
       originalData: this._originalData,
       displayShadowBars: !this._timeSeriesModel.get('normalized'),
-      normalized: this._timeSeriesModel.get('normalized'),
+      normalized: !!this._timeSeriesModel.get('normalized'),
       widgetModel: this._timeSeriesModel
     });
-    this.addView(this._chartView);
-    this.$el.append(this._chartView.render().el);
-    this._chartView.show();
-
-    this._chartView.bind('on_brush_end', this._onBrushEnd, this);
-    this._chartView.model.bind('change:width', this._onChangeChartWidth, this);
-    this.add_related_model(this._chartView.model);
   },
 
   _onChangeData: function () {

@@ -58,7 +58,7 @@ module.exports = cdb.core.View.extend({
       model: this._dataviewModel,
       rangeFilter: this._dataviewModel.filter,
       displayShadowBars: !this.model.get('normalized'),
-      normalized: this.model.get('normalized')
+      normalized: !!this.model.get('normalized')
     });
 
     this.addView(this._histogramView);
@@ -174,11 +174,5 @@ module.exports = cdb.core.View.extend({
 
   _onChangeBins: function (mdl, bins) {
     this._originalData.setBins(bins);
-    // this.model.set({
-    //   zoom_enabled: false,
-    //   filter_enabled: false,
-    //   lo_index: null,
-    //   hi_index: null
-    // });
   }
 });

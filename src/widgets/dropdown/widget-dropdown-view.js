@@ -126,12 +126,17 @@ module.exports = cdb.core.View.extend({
   },
 
   _adjustVerticalPosition: function () {
-    var bodyHeight = $('body').height();
-    var bottom = this.$el.offset().top + this.$el.height();
-
-    if (bottom > bodyHeight) {
+    if (this._getDropdownBottom() > this._getBodyHeight()) {
       this.$el.addClass('has-top-position');
     }
+  },
+
+  _getDropdownBottom: function () {
+    return this.$el.offset().top + this.$el.height();
+  },
+
+  _getBodyHeight: function () {
+    return $('body').height();
   },
 
   _close: function () {

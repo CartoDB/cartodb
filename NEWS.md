@@ -35,6 +35,7 @@ Development
 * User organization or user key for google maps (#12232)
 * "vector" key in vizjson is skipped in embeds if user has "vector_vs_raster" feature flag enabled.
 * Fixed 'not a function' bug related to a tooltip (#12279)
+* Disable edit geometry for Layers with aggregated styles (#11714)
 
 ### NOTICE
 This release upgrades the CartoDB PostgreSQL extension to `0.19.1`. Run the following to have it available:

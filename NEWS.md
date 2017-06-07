@@ -118,6 +118,7 @@ Development
 * Disable geometry edition button instead of hide in read-only layers (#11543)
 * New loading button styles (#12132)
 * Updated copies for export image & download map (#12114)
+* Added context menu to time-series widgets. (#12177)
 
 ### Bug fixes
 * Fixed uninitialized constant in Carto::Visualization when a viewer shares a visualization (#12129).

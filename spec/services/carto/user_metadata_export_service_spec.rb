@@ -37,7 +37,7 @@ describe Carto::UserMetadataExportService do
 
   let(:service) { Carto::UserMetadataExportService.new }
 
-  describe '#export' do
+  describe '#user export' do
     before(:all) do
       create_user
     end
@@ -59,7 +59,7 @@ describe Carto::UserMetadataExportService do
     end
   end
 
-  describe '#import' do
+  describe '#user import' do
     it 'imports' do
       user = service.build_user_from_hash_export(full_export)
 
@@ -67,7 +67,7 @@ describe Carto::UserMetadataExportService do
     end
   end
 
-  describe '#export + import' do
+  describe '#user export + import' do
     it 'export + import' do
       create_user
       export = service.export_user_json_hash(@user.id)
@@ -75,13 +75,36 @@ describe Carto::UserMetadataExportService do
       destroy_user
 
       imported_user = service.build_user_from_hash_export(export)
-      Carto::UserMetadataExportPersistenceService.new.save_import(imported_user)
+      service.save_imported_user(imported_user)
       imported_user.reload
 
       expect_export_matches_user(export[:user], imported_user)
       expect(imported_user.attributes).to eq @user.attributes
       expect(imported_user.visualizations.map(&:attributes)).to eq @user.visualizations.map(&:attributes)
     end
+  end
+
+  describe '#full export + import (user and visualizations)' do
+    it 'export + import user and visualizations' do
+      Dir.mktmpdir do |path|
+        create_user
+        service.export_user_to_directory(@user.id, path)
+        destroy_user
+
+        imported_user = service.import_user_from_directory(path)
+
+        compare_excluding_dates(imported_user, @user)
+        expect(imported_user.visualizations.map(&:attributes)).to eq @user.visualizations.map(&:attributes)
+      end
+    end
+  end
+
+  EXCLUDED_FIELDS = ['created_at', 'updated_at'].freeze
+
+  def compare_excluding_dates(u1, u2)
+    filtered1 = u1.attributes.reject { |k, _| EXCLUDED_FIELDS.include?(k) }
+    filtered2 = u2.attributes.reject { |k, _| EXCLUDED_FIELDS.include?(k) }
+    expect(filtered1).to eq filtered2
   end
 
   def expect_export_matches_user(export, user)
@@ -96,8 +119,6 @@ describe Carto::UserMetadataExportService do
     export[:assets].zip(user.assets).each { |exported_asset, asset| expect_export_matches_asset(exported_asset, asset) }
 
     expect(export[:feature_flags]).to eq user.feature_flags_user.map(&:feature_flag).map(&:name)
-
-    expect(export[:visualizations].count).to eq user.visualizations.size
   end
 
   def expect_export_matches_layer(exported_layer, layer)

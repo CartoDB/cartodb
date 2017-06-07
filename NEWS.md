@@ -5,6 +5,7 @@ Development
 * New loading button styles (#12132)
 
 ### Bug fixes / enhancements
+* Fixed error where analysis overlay/infobox wasn't shown when hiding a layer (#11767)
 * Size of 'Add analysis' button reduced (#11580)
 * Fixed arrow keys exceeding min/max values in number editor (#12212)
 * Better handling and reporting of "table with no map associated" error in map privacy changes (#12137).
@@ -34,6 +35,7 @@ Development
 * User organization or user key for google maps (#12232)
 * "vector" key in vizjson is skipped in embeds if user has "vector_vs_raster" feature flag enabled.
 * Inline editor saves on blur, discard changes on 'ESC' (#11567)
+* Updated look and feel of sync interval dialog (#12145)
 * Fixed 'not a function' bug related to a tooltip (#12279)
 
 ### NOTICE

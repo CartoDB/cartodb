@@ -225,8 +225,7 @@ describe Carto::UserMetadataExportService do
             },
             kind: "tiled"
           }
-        ],
-        visualizations: []
+        ]
       }
     }
   end

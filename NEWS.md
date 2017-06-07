@@ -33,6 +33,7 @@ Development
 * Fix `BUILDER_ENABLED` parameter in `create_dev_user` rake (#12189)
 * User organization or user key for google maps (#12232)
 * "vector" key in vizjson is skipped in embeds if user has "vector_vs_raster" feature flag enabled.
+* Inline editor saves on blur, discard changes on 'ESC' (#11567)
 
 ### NOTICE
 This release upgrades the CartoDB PostgreSQL extension to `0.19.1`. Run the following to have it available:

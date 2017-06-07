@@ -43,6 +43,11 @@ module Carto
       build_user_from_hash(exported_hash[:user])
     end
 
+    def save_imported_user(user)
+      user.save!
+      ::User[user.id].after_save
+    end
+
     private
 
     def build_user_from_hash(exported_user)
@@ -152,26 +157,35 @@ module Carto
       root_dir.join("user_#{user_id}.json").open('w') { |file| file.write(user_json) }
 
       # Export visualizations (include type in the name to be able to import datasets before maps)
-      user.visualizations.where("type in ('table', 'derived')").each do |vis|
-        visualization_export = Carto::VisualizationsExportService2.new.export_visualization_json_string(vis.id, user)
-        filename = "#{vis.type}_#{vis.id}#{Carto::VisualizationExporter::EXPORT_EXTENSION}"
-        root_dir.join(filename).open('w') { |file| file.write(visualization_export) }
-      end
+      export_user_visualizations_to_directory(user, Carto::Visualization::TYPE_CANONICAL, path)
+      export_user_visualizations_to_directory(user, Carto::Visualization::TYPE_DERIVED, path)
     end
 
     def import_user_from_directory(path)
       # Import user
       user_file = Dir["#{path}/user_*.json"].first
       user = build_user_from_json_export(File.read(user_file))
-      user.save!
-      ::User[user.id].after_save
+      save_imported_user(user)
 
-      # Import datasets and maps (in that order)
-      dataset_files = Dir["table_*#{Carto::VisualizationExporter::EXPORT_EXTENSION}"]
-      map_files = Dir["derived_*#{Carto::VisualizationExporter::EXPORT_EXTENSION}"]
-      (dataset_files + map_files).each do |filename|
+      import_user_visualizations_from_directory(user, Carto::Visualization::TYPE_CANONICAL, path)
+      import_user_visualizations_from_directory(user, Carto::Visualization::TYPE_DERIVED, path)
+    end
+
+    private
+
+    def import_user_visualizations_from_directory(user, type, path)
+      Dir["#{path}/#{type}_*#{Carto::VisualizationExporter::EXPORT_EXTENSION}"].each do |filename|
         imported_visualization = Carto::VisualizationsExportService2.new.build_visualization_from_json_export(filename)
         Carto::VisualizationsExportPersistenceService.save_import(user, imported_visualization)
+      end
+    end
+
+    def export_user_visualizations_to_directory(user, type, path)
+      root_dir = Pathname.new(path)
+      user.visualizations.where(type: type).each do |vis|
+        visualization_export = Carto::VisualizationsExportService2.new.export_visualization_json_string(vis.id, user)
+        filename = "#{vis.type}_#{vis.id}#{Carto::VisualizationExporter::EXPORT_EXTENSION}"
+        root_dir.join(filename).open('w') { |file| file.write(visualization_export) }
       end
     end
   end

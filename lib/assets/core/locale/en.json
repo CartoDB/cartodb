@@ -2257,9 +2257,10 @@
         },
         "style": {
           "custom-categories": "Custom categ.",
+          "custom-help-categories": "Custom categories: colors used when Autostyle (drop icon) is applied",
           "custom-disabled": "If an aggregated style is applied, auto style is disabled",
-          "custom-help": "Represent the widget's values with custom colors in the map",
           "custom-ramp": "Custom ramp",
+          "custom-help-ramp": "Custom ramp: colors used when Autostyle (drop icon) is applied",
           "define": "Define how your widget interacts with the data",
           "description": "Description",
           "fill": "Fill",

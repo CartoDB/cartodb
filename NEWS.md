@@ -6,6 +6,7 @@ Development
 
 ### Bug fixes / enhancements
 * Updated text of widget tooltips (#11467)
+* Fixed error where analysis overlay/infobox wasn't shown when hiding a layer (#11767)
 * Size of 'Add analysis' button reduced (#11580)
 * Fixed arrow keys exceeding min/max values in number editor (#12212)
 * Better handling and reporting of "table with no map associated" error in map privacy changes (#12137).
@@ -34,6 +35,7 @@ Development
 * Fix `BUILDER_ENABLED` parameter in `create_dev_user` rake (#12189)
 * User organization or user key for google maps (#12232)
 * "vector" key in vizjson is skipped in embeds if user has "vector_vs_raster" feature flag enabled.
+* Fixed 'not a function' bug related to a tooltip (#12279)
 
 ### NOTICE
 This release upgrades the CartoDB PostgreSQL extension to `0.19.1`. Run the following to have it available:
@@ -168,6 +170,7 @@ sudo make install
 * Format quota infowindow numbers (#11743)
 
 ### Bug fixes
+* Made checkboxes actionable clicking on its label (#11535)
 * Google customers don't need quota checks for hires geocoding (support/#674)
 * Fixed a problem with autostyle when styles has aggregation (#8648)
 * Provide the possibility to add the current source node to the target options list in analysis forms (#12057)

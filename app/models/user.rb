@@ -387,16 +387,23 @@ class User < Sequel::Model
     end
   end
 
+  def set_force_destroy
+    @force_destroy = true
+  end
+
   def before_destroy
     ensure_nonviewer
 
     @org_id_for_org_wipe = nil
     error_happened = false
     has_organization = false
+
     unless organization.nil?
       organization.reload # Avoid ORM caching
+
       if organization.owner_id == id
         @org_id_for_org_wipe = organization.id # after_destroy will wipe the organization too
+
         if organization.users.count > 1
           msg = 'Attempted to delete owner from organization with other users'
           CartoDB::StdoutLogger.info msg
@@ -404,7 +411,7 @@ class User < Sequel::Model
         end
       end
 
-      unless can_delete || @force_destroy
+      unless can_delete || (@force_destroy == true)
         raise CartoDB::BaseCartoDBError.new('Cannot delete user, has shared entities')
       end
 
@@ -451,7 +458,7 @@ class User < Sequel::Model
 
     # Delete the DB or the schema
     if has_organization
-      db_service.drop_organization_user(organization_id, !@org_id_for_org_wipe.nil?) unless error_happened
+      db_service.drop_organization_user(organization_id, !@org_id_for_org_wipe.nil?, @force_destroy) unless error_happened
     elsif ::User.where(database_name: database_name).count > 1
       raise CartoDB::BaseCartoDBError.new(
         'The user is not supposed to be in a organization but another user has the same database_name. Not dropping it')
@@ -1574,7 +1581,7 @@ class User < Sequel::Model
   end
 
   def destroy_cascade
-    @force_destroy = true
+    set_force_destroy
     destroy
   end
 

@@ -4,19 +4,15 @@ require_relative '../../../models/visualization/member'
 require_relative '../../../models/visualization/collection'
 require_relative '../../../models/visualization/presenter'
 require_relative '../../../models/visualization/locator'
-require_relative '../../../models/visualization/name_generator'
-require_relative '../../../models/visualization/table_blender'
 require_relative '../../../models/visualization/watcher'
 require_relative '../../../models/map/presenter'
 require_relative '../../../../lib/static_maps_url_helper'
 
 require_dependency 'carto/tracking/events'
 require_dependency 'carto/visualizations_export_service_2'
-require_dependency 'carto/visualization_migrator'
 
 class Api::Json::VisualizationsController < Api::ApplicationController
   include CartoDB
-  include Carto::VisualizationMigrator
 
   ssl_allowed :notify_watching, :list_watching, :add_like, :remove_like
   ssl_required :create, :update, :set_next_id
@@ -26,142 +22,6 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   before_filter :table_and_schema_from_params, only: [:update, :stats,
                                                       :notify_watching, :list_watching,
                                                       :add_like, :remove_like, :set_next_id]
-
-  def create
-    vis_data = payload
-
-    vis_data.delete(:permission)
-    vis_data.delete(:permission_id)
-
-    # Don't allow to modify next_id/prev_id, force to use set_next_id()
-    prev_id = vis_data.delete(:prev_id) || vis_data.delete('prev_id')
-    next_id = vis_data.delete(:next_id) || vis_data.delete('next_id')
-
-    param_tables = params[:tables]
-    current_user_id = current_user.id
-
-    origin = 'blank'
-    source_id = params[:source_visualization_id]
-    vis = if source_id
-            user = Carto::User.find(current_user_id)
-            source = Carto::Visualization.where(id: source_id).first
-            return head(403) unless source && source.is_viewable_by_user?(user) && !source.kind_raster?
-            if source.derived?
-              origin = 'copy'
-              duplicate_derived_visualization(params[:source_visualization_id], user)
-            else
-              create_visualization_from_tables([source.user_table], vis_data)
-            end
-          elsif param_tables
-            subdomain = CartoDB.extract_subdomain(request)
-            viewed_user = ::User.find(username: subdomain)
-            tables = param_tables.map do |table_name|
-              Carto::Helpers::TableLocator.new.get_by_id_or_name(table_name, viewed_user) if viewed_user
-            end
-            create_visualization_from_tables(tables.flatten, vis_data)
-          else
-            Visualization::Member.new(vis_data.merge(name: name_candidate, user_id: current_user_id))
-          end
-
-    vis.ensure_valid_privacy
-    # both null, make sure is the first children or automatically link to the tail of the list
-    if !vis.parent_id.nil? && prev_id.nil? && next_id.nil?
-      parent_vis = Visualization::Member.new(id: vis.parent_id).fetch
-      return head(403) unless parent_vis.has_permission?(current_user, Visualization::Member::PERMISSION_READWRITE)
-
-      children = parent_vis.children
-
-      prev_id = children.last.id unless children.empty?
-    end
-
-    vis.store
-
-    vis = set_visualization_prev_next(vis, prev_id, next_id)
-
-    current_viewer_id = current_viewer.id
-    properties = {
-      user_id: current_viewer_id,
-      origin: origin,
-      visualization_id: vis.id
-    }
-
-    if vis.derived?
-      Carto::Tracking::Events::CreatedMap.new(current_viewer_id, properties).report
-    else
-      Carto::Tracking::Events::CreatedDataset.new(current_viewer_id, properties).report
-    end
-
-    render_jsonp(vis)
-  rescue CartoDB::InvalidMember => e
-    CartoDB::Logger.error(message: "Invalid member creating visualization", visualization_id: vis.id, exception: e)
-    render_jsonp({ errors: vis.full_errors }, 400)
-  end
-
-  def update
-    @stats_aggregator.timing('visualizations.update') do
-      begin
-        vis, = @stats_aggregator.timing('locate') do
-          locator.get(@table_id, CartoDB.extract_subdomain(request))
-        end
-
-        return head(404) unless vis
-        return head(403) unless payload[:id] == vis.id
-        return head(403) unless vis.has_permission?(current_user, Visualization::Member::PERMISSION_READWRITE)
-
-        vis_data = payload
-
-        vis_data.delete(:permission) || vis_data.delete('permission')
-        vis_data.delete(:permission_id)  || vis_data.delete('permission_id')
-
-        # Don't allow to modify next_id/prev_id, force to use set_next_id()
-        vis_data.delete(:prev_id) || vis_data.delete('prev_id')
-        vis_data.delete(:next_id) || vis_data.delete('next_id')
-        # when a table gets renamed, first it's canonical visualization is renamed, so we must revert renaming if that failed
-        # This is far from perfect, but works without messing with table-vis sync and their two backends
-
-        if vis.table?
-          old_vis_name = vis.name
-
-          vis.attributes = vis_data
-          new_vis_name = vis.name
-          old_table_name = vis.table.name
-          vis = @stats_aggregator.timing('save-table') do
-            vis.store.fetch
-          end
-          vis = @stats_aggregator.timing('save-rename') do
-            if new_vis_name != old_vis_name && vis.table.name == old_table_name
-              vis.name = old_vis_name
-              vis.store.fetch
-            else
-              vis
-            end
-          end
-        else
-          old_version = vis.version
-
-          vis.attributes = vis_data
-          vis = @stats_aggregator.timing('save') do
-            vis.store.fetch
-          end
-
-          if version_needs_migration?(old_version, vis.version)
-            migrate_visualization_to_v3(vis)
-          end
-        end
-
-        render_jsonp(vis)
-      rescue KeyError => e
-        CartoDB::Logger.error(message: "KeyError updating visualization", visualization_id: vis.id, exception: e)
-        head(404)
-      rescue CartoDB::InvalidMember => e
-        CartoDB::Logger.error(message: "InvalidMember updating visualization", visualization_id: vis.id, exception: e)
-        render_jsonp({ errors: vis.full_errors.empty? ? ['Error saving data'] : vis.full_errors }, 400)
-      rescue => e
-        CartoDB::Logger.error(message: "Error updating visualization", visualization_id: vis.id, exception: e)
-        render_jsonp({ errors: ['Unknown error'] }, 400)
-      end
-    end
-  end
 
   def notify_watching
     vis = Visualization::Member.new(id: @table_id).fetch
@@ -280,37 +140,6 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
   private
 
-  def duplicate_derived_visualization(source, user)
-    visualization_copy_id = @stats_aggregator.timing('copy') do
-      export_service = Carto::VisualizationsExportService2.new
-      visualization_hash = export_service.export_visualization_json_hash(source, user)
-      visualization_copy = export_service.build_visualization_from_hash_export(visualization_hash)
-      visualization_copy.name = name_candidate
-      visualization_copy.version = user.new_visualizations_version
-      Carto::VisualizationsExportPersistenceService.new.save_import(user, visualization_copy)
-      visualization_copy.id
-    end
-
-    CartoDB::Visualization::Member.new(id: visualization_copy_id).fetch
-  end
-
-  def create_visualization_from_tables(tables, vis_data)
-    blender = Visualization::TableBlender.new(Carto::User.find(current_user.id), tables)
-    map = blender.blend
-
-    vis = Visualization::Member.new(vis_data.merge(name: name_candidate,
-                                                   map_id: map.id,
-                                                   type: 'derived',
-                                                   privacy: blender.blended_privacy,
-                                                   user_id: current_user.id))
-
-    @stats_aggregator.timing('default-overlays') do
-      Visualization::Overlays.new(vis).create_default_overlays
-    end
-
-    vis
-  end
-
   def table_and_schema_from_params
     if params.fetch('id', nil) =~ /\./
       @table_id, @schema = params.fetch('id').split('.').reverse
@@ -338,23 +167,9 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     current_user.present? && (table.owner.id == current_user.id)
   end
 
-  def set_vizjson_response_headers_for(visualization)
-    # We don't cache non-public vis
-    if visualization.public? || visualization.public_with_link?
-      response.headers['X-Cache-Channel'] = "#{visualization.varnish_key}:vizjson"
-      response.headers['Surrogate-Key'] = "#{CartoDB::SURROGATE_NAMESPACE_VIZJSON} #{visualization.surrogate_key}"
-      response.headers['Cache-Control']   = 'no-cache,max-age=86400,must-revalidate, public'
-    end
-  end
-
   def payload
     request.body.rewind
     ::JSON.parse(request.body.read.to_s || String.new, {symbolize_names: true})
-  end
-
-  def name_candidate
-    Visualization::NameGenerator.new(current_user)
-                                .name(params[:name])
   end
 
   def tables_by_map_id(map_ids)
@@ -397,18 +212,5 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     elsif vis.type == Carto::Visualization::TYPE_DERIVED
       ::Resque.enqueue(::Resque::UserJobs::Mail::MapLiked, vis.id, current_viewer.id, vis_preview_image)
     end
-  end
-
-  def set_visualization_prev_next(vis, prev_id, next_id)
-    if !prev_id.nil?
-      prev_vis = Visualization::Member.new(id: prev_id).fetch
-      return head(403) unless prev_vis.has_permission?(current_user, Visualization::Member::PERMISSION_READWRITE)
-      prev_vis.set_next_list_item!(vis)
-    elsif !next_id.nil?
-      next_vis = Visualization::Member.new(id: next_id).fetch
-      return head(403) unless next_vis.has_permission?(current_user, Visualization::Member::PERMISSION_READWRITE)
-      next_vis.set_prev_list_item!(vis)
-    end
-    vis
   end
 end

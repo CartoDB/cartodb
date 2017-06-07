@@ -1346,6 +1346,26 @@ describe Carto::VisualizationsExportService2 do
       destroy_visualization(imported_viz.id)
     end
 
+    describe 'if keep_id is' do
+      it 'false, it should generate a random uuid' do
+        exported_string = export_service.export_visualization_json_string(@visualization.id, @user)
+        built_viz = export_service.build_visualization_from_json_export(exported_string)
+
+        imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user2, built_viz)
+        imported_viz.id.should_not eq built_viz.id
+        destroy_visualization(imported_viz.id)
+      end
+
+      it 'true, it should keep the imported uuid' do
+        exported_string = export_service.export_visualization_json_string(@visualization.id, @user)
+        built_viz = export_service.build_visualization_from_json_export(exported_string)
+
+        imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user2, built_viz, keep_id: true)
+        imported_viz.id.should eq built_viz.id
+        destroy_visualization(imported_viz.id)
+      end
+    end
+
     describe 'basemaps' do
       describe 'custom' do
         before(:each) do

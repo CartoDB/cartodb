@@ -14,7 +14,7 @@ describe Carto::UserMetadataExportService do
     @feature_flag.destroy
   end
 
-  def create_user
+  def create_user_with_basemaps_assets_visualizations
     @user = FactoryGirl.create(:carto_user)
     @map, @table, @table_visualization, @visualization = create_full_visualization(@user)
 
@@ -39,7 +39,7 @@ describe Carto::UserMetadataExportService do
 
   describe '#user export' do
     before(:all) do
-      create_user
+      create_user_with_basemaps_assets_visualizations
     end
 
     after(:all) do
@@ -69,7 +69,7 @@ describe Carto::UserMetadataExportService do
 
   describe '#user export + import' do
     it 'export + import' do
-      create_user
+      create_user_with_basemaps_assets_visualizations
       export = service.export_user_json_hash(@user.id)
       expect_export_matches_user(export[:user], @user)
       source_user = @user.attributes
@@ -87,7 +87,7 @@ describe Carto::UserMetadataExportService do
   describe '#full export + import (user and visualizations)' do
     it 'export + import user and visualizations' do
       Dir.mktmpdir do |path|
-        create_user
+        create_user_with_basemaps_assets_visualizations
         service.export_user_to_directory(@user.id, path)
         source_user = @user.attributes
 

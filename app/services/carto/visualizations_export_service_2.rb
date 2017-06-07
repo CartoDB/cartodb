@@ -23,8 +23,9 @@ module Carto
   end
 
   module VisualizationsExportService2Validator
-    def check_valid_visualization(visualization, force_dataset:)
-      raise 'Only derived visualizations can be exported' unless force_dataset || visualization.derived?
+    def check_valid_visualization(visualization)
+      raise 'Only derived or canonical visualizations can be exported' unless visualization.derived? ||
+                                                                              visualization.canonical?
     end
   end
 
@@ -218,7 +219,7 @@ module Carto
     private
 
     def export(visualization, user, full_export:)
-      check_valid_visualization(visualization) unless full_export
+      check_valid_visualization(visualization)
       export_visualization(visualization, user, full_export: full_export)
     end
 

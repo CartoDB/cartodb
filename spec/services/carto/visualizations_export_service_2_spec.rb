@@ -765,23 +765,24 @@ describe Carto::VisualizationsExportService2 do
       describe 'visualization types' do
         before(:all) do
           bypass_named_maps
-          @table_visualization = FactoryGirl.create(:carto_visualization, type: 'table')
           @remote_visualization = FactoryGirl.create(:carto_visualization, type: 'remote')
         end
 
         after(:all) do
-          @table_visualization.destroy
           @remote_visualization.destroy
         end
 
-        it 'fails for visualizations that are not derived' do
+        it 'fails for remote visualizations and works for derived/canonical visualizations' do
           exporter = Carto::VisualizationsExportService2.new
           expect {
             exporter.export_visualization_json_hash(@table_visualization.id, @user)
-          }.to raise_error("Only derived visualizations can be exported")
+          }.not_to raise_error
+          expect {
+            exporter.export_visualization_json_hash(@visualization.id, @user)
+          }.not_to raise_error
           expect {
             exporter.export_visualization_json_hash(@remote_visualization.id, @user)
-          }.to raise_error("Only derived visualizations can be exported")
+          }.to raise_error("Only derived or canonical visualizations can be exported")
         end
       end
 

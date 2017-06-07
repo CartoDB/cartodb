@@ -227,7 +227,6 @@ describe Carto::VisualizationsExportService2 do
   CHANGING_LAYER_OPTIONS_KEYS = [:user_name, :id, :stat_tag].freeze
 
   def verify_visualization_vs_export(visualization, visualization_export, importing_user: nil)
-    visualization.id.should eq visualization_export[:id]
     visualization.name.should eq visualization_export[:name]
     visualization.description.should eq visualization_export[:description]
     visualization.type.should eq visualization_export[:type]
@@ -442,7 +441,7 @@ describe Carto::VisualizationsExportService2 do
         visualization_export = export[:visualization]
         verify_visualization_vs_export(visualization, visualization_export)
 
-        visualization.id.should be_nil # Not set until persistence
+        visualization.id.should eq visualization_export[:id]
         visualization.user_id.should be_nil # Import build step is "user-agnostic"
         visualization.created_at.should be_nil # Not set until persistence
         visualization.updated_at.should be_nil # Not set until persistence
@@ -461,7 +460,6 @@ describe Carto::VisualizationsExportService2 do
 
         visualization.analyses.each do |analysis|
           analysis.id.should be_nil
-          analysis.visualization_id.should eq visualization.id
           analysis.user_id.should be_nil
           analysis.created_at.should be_nil
           analysis.updated_at.should be_nil
@@ -1350,18 +1348,21 @@ describe Carto::VisualizationsExportService2 do
       it 'false, it should generate a random uuid' do
         exported_string = export_service.export_visualization_json_string(@visualization.id, @user)
         built_viz = export_service.build_visualization_from_json_export(exported_string)
+        original_id = built_viz.id
 
         imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user2, built_viz)
-        imported_viz.id.should_not eq built_viz.id
+        imported_viz.id.should_not eq original_id
         destroy_visualization(imported_viz.id)
       end
 
       it 'true, it should keep the imported uuid' do
         exported_string = export_service.export_visualization_json_string(@visualization.id, @user)
         built_viz = export_service.build_visualization_from_json_export(exported_string)
+        test_id = random_uuid
+        built_viz.id = test_id
 
         imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user2, built_viz, keep_id: true)
-        imported_viz.id.should eq built_viz.id
+        imported_viz.id.should eq test_id
         destroy_visualization(imported_viz.id)
       end
     end

@@ -19,7 +19,7 @@ module Carto::Styles
 
     private
 
-    def parse_fill(fill, style_type)
+    def parse_fill(fill, _)
       color = fill[:color][:fixed]
       opacity = fill[:color][:opacity]
 
@@ -28,7 +28,7 @@ module Carto::Styles
        "polygon-gamma: 0.5;"]
     end
 
-    def parse_stroke(stroke, style_type)
+    def parse_stroke(stroke, _)
       width = stroke[:size][:fixed]
       color = stroke[:color][:fixed]
       opacity = stroke[:color][:opacity]

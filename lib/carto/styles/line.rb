@@ -19,7 +19,7 @@ module Carto::Styles
 
     private
 
-    def parse_stroke(stroke, style_type)
+    def parse_stroke(stroke, _)
       width = stroke[:size][:fixed]
       color = stroke[:color][:fixed]
       opacity = stroke[:color][:opacity]

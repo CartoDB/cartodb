@@ -33,6 +33,7 @@ Development
 * Fix EUMAPI response as per documentation (#12233)
 * Fix `BUILDER_ENABLED` parameter in `create_dev_user` rake (#12189)
 * User organization or user key for google maps (#12232)
+* Redesigned LEARN MORE buttons behaviour (#12135)
 * "vector" key in vizjson is skipped in embeds if user has "vector_vs_raster" feature flag enabled.
 * Updated look and feel of sync interval dialog (#12145)
 * Fixed 'not a function' bug related to a tooltip (#12279)

@@ -22,9 +22,9 @@ module Carto::Styles
       "layer['mapnik::geometry_type'=3]" => Carto::Styles::Polygon
     }.freeze
 
-    def to_cartocss
+    def to_cartocss(style_type)
       cartocss_classes = NAMES_CLASSES_MAP.keys.map do |class_name|
-        cartocss_array = NAMES_CLASSES_MAP[class_name].new.to_cartocss_array
+        cartocss_array = NAMES_CLASSES_MAP[class_name].new.to_cartocss_array(style_type)
         Carto::Styles::Presenters::CartoCSS.new(cartocss_array: cartocss_array,
                                                 class_name: class_name)
                                            .to_s

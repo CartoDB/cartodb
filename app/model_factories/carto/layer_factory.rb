@@ -26,15 +26,18 @@ module Carto
       )
     end
 
+    TVT_PREFIX = 'tt_'
+
     def self.build_data_layer(user_table)
       user = user_table.user
       geometry_type = user_table.geometry_type
+      style_type = user_table.service.name.start_with?(TVT_PREFIX) ? 'tvt' : 'simple'
 
       data_layer = Carto::Layer.new(Cartodb.config[:layer_opts]['data'])
       layer_options = data_layer.options
       layer_options['table_name'] = user_table.name
       layer_options['user_name'] = user.username
-      layer_options['tile_style'] = tile_style(user, geometry_type)
+      layer_options['tile_style'] = tile_style(user, geometry_type, style_type)
       data_layer.infowindow ||= {}
       data_layer.infowindow['fields'] = []
       data_layer.tooltip ||= {}
@@ -57,15 +60,15 @@ module Carto
     end
     private_class_method :style_properties
 
-    def self.tile_style(user, geometry_type)
-      user.builder_enabled? ? builder_tile_style(geometry_type) : legacy_tile_style(geometry_type)
+    def self.tile_style(user, geometry_type, style_type)
+      user.builder_enabled? ? builder_tile_style(geometry_type, style_type) : legacy_tile_style(geometry_type)
     end
     private_class_method :tile_style
 
-    def self.builder_tile_style(geometry_type)
+    def self.builder_tile_style(geometry_type, style_type)
       style_class = Carto::Styles::Style.style_for_geometry_type(geometry_type)
 
-      style_class ? style_class.new.to_cartocss : legacy_tile_style(geometry_type)
+      style_class ? style_class.new.to_cartocss(style_type) : legacy_tile_style(geometry_type)
     end
     private_class_method :builder_tile_style
 

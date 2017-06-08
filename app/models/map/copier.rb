@@ -84,7 +84,7 @@ module CartoDB
           new_layer = layer.dup
           new_layer.qualify_for_organization(map.user.username) if user.id != map.user.id
 
-          user.builder_enabled? ? reset_layer_styles(layer, new_layer) : new_layer
+          user.builder_enabled? ? reset_layer_styles(layer, new_layer, user) : new_layer
         end
       end
 
@@ -100,14 +100,14 @@ module CartoDB
 
       TVT_PREFIX = 'tt_'
 
-      def reset_layer_styles(old_layer, new_layer)
+      def reset_layer_styles(old_layer, new_layer, user)
         user_table = old_layer.user_tables.first
         return new_layer unless user_table
 
         geometry_type = user_table.service.geometry_types.first
         return new_layer unless geometry_type
 
-        style_type = user_table.service.name.start_with?(TVT_PREFIX) ? 'tvt' : 'simple'
+        style_type = (user_table.service.name.start_with?(TVT_PREFIX) && user.has_feature_flag?('dot_properties')) ? 'tvt' : 'simple'
 
         tile_style = ModelFactories::LayerFactory.builder_tile_style(geometry_type, style_type)
         new_layer.options['tile_style'] = tile_style

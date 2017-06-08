@@ -31,7 +31,7 @@ module Carto
     def self.build_data_layer(user_table)
       user = user_table.user
       geometry_type = user_table.geometry_type
-      style_type = user_table.service.name.start_with?(TVT_PREFIX) ? 'tvt' : 'simple'
+      style_type = (user_table.service.name.start_with?(TVT_PREFIX) && user.has_feature_flag?('dot_properties')) ? 'tvt' : 'simple'
 
       data_layer = Carto::Layer.new(Cartodb.config[:layer_opts]['data'])
       layer_options = data_layer.options

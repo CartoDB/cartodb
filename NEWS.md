@@ -31,6 +31,7 @@ Development
 * Fix error where a sync of a big dataset without geometry would be deleted from dashboard (#12162)
 * `create_dev_user` rake no longer tries to auto-create the database, `cartodb:db:setup` should be run first (#12187).
 * Fix EUMAPI response as per documentation (#12233)
+* Visualization models no longer raise an error checking `password_valid?` (#12270).
 * Fix `BUILDER_ENABLED` parameter in `create_dev_user` rake (#12189)
 * User organization or user key for google maps (#12232)
 * Redesigned LEARN MORE buttons behaviour (#12135)

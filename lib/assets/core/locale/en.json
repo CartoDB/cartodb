@@ -196,7 +196,7 @@
     "data-observatory-multiple-measures": {
       "title": "Enrich from the Data Observatory",
       "custom-columns": "These columns contain the data requested from the Data Observatory",
-      "description": "The Data Observatory enrichment is the result of the geometry location and the measure requested."
+      "description": "The Data Observatory enrichment is the result of the geometry location and the measures requested."
     },
     "connect-with-lines": {
       "title": "Connect with lines",

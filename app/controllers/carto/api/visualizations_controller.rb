@@ -103,7 +103,12 @@ module Carto
       end
 
       def vizjson3
-        render_vizjson(generate_vizjson3(@visualization, params))
+        options = {}
+        if @visualization.user.has_feature_flag?('vector_vs_raster')
+          options[:vector] = nil
+        end
+
+        render_vizjson(generate_vizjson3(@visualization, options))
       end
 
       def list_watching
@@ -267,7 +272,7 @@ module Carto
       #   :synchronization, :uses_builder_features, :auth_tokens, :transition_options, :prev_id, :next_id, :parent_id
       #   :active_child, :permission
       VALID_UPDATE_ATTRIBUTES = [:name, :display_name, :active_layer_id, :tags, :description, :privacy, :updated_at,
-                                 :locked, :source, :title, :license, :attributions, :kind].freeze
+                                 :locked, :source, :title, :license, :attributions, :kind, :password].freeze
       # TODO: This lets more things through than it should. This is due to tests using this endpoint to create
       #       test visualizations.
       VALID_CREATE_ATTRIBUTES = (VALID_UPDATE_ATTRIBUTES + [:type, :map_id]).freeze

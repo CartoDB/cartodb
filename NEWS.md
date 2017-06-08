@@ -6,6 +6,8 @@ Development
 
 ### Bug fixes / enhancements
 * Validate widget form when widget type changes (#11536)
+* Fixed error where analysis overlay/infobox wasn't shown when hiding a layer (#11767)
+* Size of 'Add analysis' button reduced (#11580)
 * Fixed arrow keys exceeding min/max values in number editor (#12212)
 * Better handling and reporting of "table with no map associated" error in map privacy changes (#12137).
 * Improve formula widget form (#12242)
@@ -20,7 +22,7 @@ Development
 * Fix regenerate all api keys in an organization (#12218)
 * Refactor:
   * ::User <-> CartoDB::Visualization::Member dependency: #12116, #12221
-  * Removed CartoDB::Visualization::Member from controllers: #12185
+  * Removed CartoDB::Visualization::Member from controllers: #12185, #12267
 * Refactor Layer model (#10934) and UserTable (#11589, #11700, #11737).
 * [WIP] Update to Rails 4
   * Update `rails-sequel` (#12118)
@@ -32,6 +34,17 @@ Development
 * Fix EUMAPI response as per documentation (#12233)
 * Fix `BUILDER_ENABLED` parameter in `create_dev_user` rake (#12189)
 * User organization or user key for google maps (#12232)
+* Redesigned LEARN MORE buttons behaviour (#12135)
+* "vector" key in vizjson is skipped in embeds if user has "vector_vs_raster" feature flag enabled.
+* Updated look and feel of sync interval dialog (#12145)
+* Fixed 'not a function' bug related to a tooltip (#12279)
+
+### NOTICE
+This release upgrades the CartoDB PostgreSQL extension to `0.19.1`. Run the following to have it available:
+```shell
+cd $(git rev-parse --show-toplevel)/lib/sql
+sudo make install
+```
 
 4.1.x (2017-05-31)
 -----------
@@ -157,8 +170,10 @@ Development
 * Fix onboarding in layers (#12192)
 * Show infowindow when user reaches max layer limit (#12167)
 * Format quota infowindow numbers (#11743)
+* Improved analysis error tooltip (#12250)
 
 ### Bug fixes
+* Made checkboxes actionable clicking on its label (#11535)
 * Google customers don't need quota checks for hires geocoding (support/#674)
 * Fixed a problem with autostyle when styles has aggregation (#8648)
 * Provide the possibility to add the current source node to the target options list in analysis forms (#12057)

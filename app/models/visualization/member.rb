@@ -484,8 +484,7 @@ module CartoDB
       end
 
       def password_valid?(password)
-        raise CartoDB::InvalidMember unless ( privacy == PRIVACY_PROTECTED && has_password? )
-        ( password_digest(password, @password_salt) == @encrypted_password )
+        has_password? && (password_digest(password, @password_salt) == @encrypted_password)
       end
 
       def remove_password

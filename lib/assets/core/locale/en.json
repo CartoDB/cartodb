@@ -2257,10 +2257,9 @@
           "operation-column": "operation column"
         },
         "style": {
-          "custom-categories": "Custom categ.",
           "custom-disabled": "If an aggregated style is applied, auto style is disabled",
-          "custom-help": "Represent the widget's values with custom colors in the map",
-          "custom-ramp": "Custom ramp",
+          "custom-colors": "Custom colors",
+          "custom-help": "Custom colors: colors used when Autostyle (drop icon) is applied",
           "define": "Define how your widget interacts with the data",
           "description": "Description",
           "fill": "Fill",
@@ -2298,8 +2297,9 @@
       "edit": "Edit %{featureType}",
       "analysis": "layers with analysis nodes",
       "custom-sql": "layers with custom SQL applied",
+      "aggregated": "layers with aggregated styles",
       "sync": "read only layers",
-      "disabled": "Feature editing is disabled in %{disabledLayerType}. To edit the data, export this layer and import it as a new layer."
+      "disabled": "Feature editing is disabled for %{disabledLayerType}. To edit data, export this layer and import it as a new layer."
     }
   },
   "notifications": {

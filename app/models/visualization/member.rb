@@ -161,11 +161,6 @@ module CartoDB
         self.id == other_vis.id
       end
 
-      def ensure_valid_privacy
-        self.privacy = default_privacy if privacy.nil?
-        self.privacy = PRIVACY_PUBLIC unless can_be_private?
-      end
-
       def default_privacy
         can_be_private? ? PRIVACY_LINK : PRIVACY_PUBLIC
       end

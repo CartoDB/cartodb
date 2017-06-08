@@ -30,7 +30,6 @@ module CartoDB
       else
         CartoDB::Logger.warning(
           message: 'Trying to change privacy of table with no map associated',
-          exception: exception,
           table_id: @table.id,
           table_name: @table.name,
           user: Carto::User.find(@table.user_id),

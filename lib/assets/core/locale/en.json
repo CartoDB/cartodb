@@ -2296,8 +2296,9 @@
       "edit": "Edit %{featureType}",
       "analysis": "layers with analysis nodes",
       "custom-sql": "layers with custom SQL applied",
+      "aggregated": "layers with aggregated styles",
       "sync": "read only layers",
-      "disabled": "Feature editing is disabled in %{disabledLayerType}. To edit the data, export this layer and import it as a new layer."
+      "disabled": "Feature editing is disabled for %{disabledLayerType}. To edit data, export this layer and import it as a new layer."
     }
   },
   "notifications": {

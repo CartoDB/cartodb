@@ -341,7 +341,7 @@ Ruby
 
   .. code-block:: bash
 
-    export PATH=$PATH:/opt/rubies/ruby-2.2.3/bin
+    export PATH=/opt/rubies/ruby-2.2.3/bin:$PATH
 
 * Install bundler. Bundler is an app used to manage ruby dependencies. It is needed by CartoDB's editor
 

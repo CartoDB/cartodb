@@ -169,6 +169,7 @@ sudo make install
 * Fix onboarding in layers (#12192)
 * Show infowindow when user reaches max layer limit (#12167)
 * Format quota infowindow numbers (#11743)
+* Improved analysis error tooltip (#12250)
 
 ### Bug fixes
 * Made checkboxes actionable clicking on its label (#11535)

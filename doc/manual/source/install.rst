@@ -21,6 +21,14 @@ Installations assume you use UTF8. You can set the locale by doing this:
   sudo locale-gen en_US.UTF-8
   sudo update-locale LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8
 
+APT tools
+~~~~~~~~~
+In order to easily install some packages repositories sources is suggested to install this tool:
+
+.. code-block:: bash
+
+  sudo apt-get install python-software-properties
+
 Build essentials
 ~~~~~~~~~~~~~~~~
 
@@ -47,15 +55,6 @@ You will need git commands in order to handle some repositories and install some
 .. code-block:: bash
 
   sudo apt-get install git
-
-APT tools
-~~~~~~~~~
-In order to easily install some packages repositories sources is suggested to install this tool:
-
-.. code-block:: bash
-
-  sudo apt-get install python-software-properties
-
 
 PostgreSQL
 ----------

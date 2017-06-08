@@ -411,7 +411,7 @@ class User < Sequel::Model
         end
       end
 
-      unless can_delete || (@force_destroy == true)
+      unless can_delete || @force_destroy
         raise CartoDB::BaseCartoDBError.new('Cannot delete user, has shared entities')
       end
 
@@ -459,7 +459,11 @@ class User < Sequel::Model
     # Delete the DB or the schema
     if has_organization
       unless error_happened
-        db_service.drop_organization_user(organization_id, !@org_id_for_org_wipe.nil?, @force_destroy)
+        db_service.drop_organization_user(
+          org_id: organization_id,
+          is_owner: !@org_id_for_org_wipe.nil?,
+          force_destroy: @force_destroy
+        )
       end
     elsif ::User.where(database_name: database_name).count > 1
       raise CartoDB::BaseCartoDBError.new(

@@ -658,6 +658,20 @@ describe Carto::Api::OrganizationUsersController do
       User[user_with_unregistered_tables.id].should be_nil
     end
 
+    it 'should fail trying to delete users with unregistered tables and no force parameter present' do
+      login(@organization.owner)
+
+      user_with_unregistered_tables = create_test_user('foobarbaz', @organization)
+      user_with_unregistered_tables.in_database.run('CREATE TABLE wadus (id serial)')
+
+      delete api_v2_organization_users_delete_url(
+        id_or_name: @organization.name,
+        u_username: user_with_unregistered_tables.username
+      )
+
+      last_response.status.should eq 401
+    end
+
     it 'should delete users as admin' do
       login(@org_user_2)
 

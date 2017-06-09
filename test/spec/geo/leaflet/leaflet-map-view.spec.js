@@ -71,24 +71,6 @@ describe('geo/leaflet/leaflet-map-view', function () {
     expect(map.getViewBounds).not.toHaveBeenCalled();
   });
 
-  it('should change center and zoom when bounds are changed', function (done) {
-    var spy = jasmine.createSpy('change:center');
-    mapView.getSize = function () { return {x: 200, y: 200}; };
-    map.bind('change:center', spy);
-    spyOn(mapView, '_setCenter');
-    mapView._bindModel();
-
-    map.set({
-      'view_bounds_ne': [1, 1],
-      'view_bounds_sw': [-0.3, -1.2]
-    });
-
-    setTimeout(function () {
-      expect(mapView._setCenter).toHaveBeenCalled();
-      done();
-    }, 1000);
-  });
-
   it('should allow adding a layer', function () {
     map.addLayer(layer);
     expect(map.layers.length).toEqual(1);
@@ -145,8 +127,8 @@ describe('geo/leaflet/leaflet-map-view', function () {
   });
 
   it('should remove all layers when map view is cleaned', function () {
-    var cartoDBLayer1 = new CartoDBLayer({}, { vis: this.vis });
-    var cartoDBLayer2 = new CartoDBLayer({}, { vis: this.vis });
+    var cartoDBLayer1 = new CartoDBLayer({ meta: { cartocss: '#layer {}' } }, { vis: this.vis });
+    var cartoDBLayer2 = new CartoDBLayer({ meta: { cartocss: '#layer {}' } }, { vis: this.vis });
     var tileLayer = new TileLayer({ urlTemplate: 'test' }, { vis: {} });
 
     map.addLayer(cartoDBLayer1);

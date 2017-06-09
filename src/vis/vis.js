@@ -15,6 +15,7 @@ var AnalysisPoller = require('../analysis/analysis-poller');
 var LayersFactory = require('./layers-factory');
 var SettingsModel = require('./settings');
 var whenAllDataviewsFetched = require('./dataviews-tracker');
+var RenderModes = require('../geo/render-modes');
 
 var STATE_INIT = 'init'; // vis hasn't been sent to Windshaft
 var STATE_OK = 'ok'; // vis has been sent to Windshaft and everything is ok
@@ -141,8 +142,42 @@ var VisModel = Backbone.Model.extend({
 
     var windshaftClient = new WindshaftClient(windshaftSettings);
 
+    var layersFactory = new LayersFactory({
+      visModel: this,
+      windshaftSettings: windshaftSettings
+    });
+
+    // Create the Map
+    var allowDragging = util.isMobileDevice() || vizjson.hasZoomOverlay() || vizjson.scrollwheel;
+
+    var renderMode = RenderModes.AUTO;
+    if (vizjson.vector === true) {
+      renderMode = RenderModes.VECTOR;
+    } else if (vizjson.vector === false) {
+      renderMode = RenderModes.RASTER;
+    }
+
+    this.map = new Map({
+      title: vizjson.title,
+      description: vizjson.description,
+      bounds: vizjson.bounds,
+      center: vizjson.center,
+      zoom: vizjson.zoom,
+      scrollwheel: !!this.scrollwheel,
+      drag: allowDragging,
+      provider: vizjson.map_provider,
+      isFeatureInteractivityEnabled: this.get('interactiveFeatures'),
+      renderMode: renderMode
+    }, {
+      layersCollection: this._layersCollection,
+      layersFactory: layersFactory
+    });
+
+    this.listenTo(this.map, 'cartodbLayerMoved', this.reload);
+
     var modelUpdater = new ModelUpdater({
       visModel: this,
+      mapModel: this.map,
       layerGroupModel: this.layerGroupModel,
       dataviewsCollection: this._dataviewsCollection,
       layersCollection: this._layersCollection,
@@ -162,33 +197,6 @@ var VisModel = Backbone.Model.extend({
       layersCollection: this._layersCollection,
       analysisCollection: this._analysisCollection
     });
-
-    var layersFactory = new LayersFactory({
-      visModel: this,
-      windshaftSettings: windshaftSettings
-    });
-
-    // Create the Map
-    var allowDragging = util.isMobileDevice() || vizjson.hasZoomOverlay() || vizjson.scrollwheel;
-
-    this.map = new Map({
-      title: vizjson.title,
-      description: vizjson.description,
-      bounds: vizjson.bounds,
-      center: vizjson.center,
-      zoom: vizjson.zoom,
-      scrollwheel: !!this.scrollwheel,
-      drag: allowDragging,
-      provider: vizjson.map_provider,
-      vector: vizjson.vector,
-      webgl: vizjson.webgl,
-      isFeatureInteractivityEnabled: this.get('interactiveFeatures')
-    }, {
-      layersCollection: this._layersCollection,
-      layersFactory: layersFactory
-    });
-
-    this.listenTo(this.map, 'cartodbLayerMoved', this.reload);
 
     // Reset the collection of overlays
     this.overlaysCollection.reset(vizjson.overlays);

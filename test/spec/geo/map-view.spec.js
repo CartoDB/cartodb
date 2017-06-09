@@ -85,6 +85,15 @@ describe('core/geo/map-view', function () {
     });
   });
 
+  describe('bindings to map', function () {
+    it('should fitBounds when view bounds change', function () {
+      spyOn(this.map, 'fitBounds');
+
+      this.map.setBounds([ [0, 0], [180, 180] ]);
+      expect(this.map.fitBounds).toHaveBeenCalled();
+    });
+  });
+
   describe('bindings to map.layers', function () {
     describe('when layers of map.layers are resetted', function () {
       it('should group CartoDB layers into a single layerView and add one layerView for each non-CartoDB layer', function () {

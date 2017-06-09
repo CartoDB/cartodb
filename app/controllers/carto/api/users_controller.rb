@@ -11,10 +11,13 @@ module Carto
       end
 
       def google_maps_static_image
-        style_definition = params[:style]
-        style_definition[:featureType] ||= 'all'
-        style_definition[:elementType] ||= 'all'
-        style_string = style_definition.map { |k, v| "#{k}:#{v.replace('#', '0x')}" }.join('|')
+        styles_definition = JSON.parse(params[:style])
+        styles = styles_definition.map do |style_definition|
+          style_definition[:featureType] ||= 'all'
+          style_definition[:elementType] ||= 'all'
+          '&style=' + style_definition.map { |k, v| "#{k}:#{v.replace('#', '0x')}" }.join('|')
+        end
+        style_string = styles.join('')
 
         base_url = "https://maps.googleapis.com/maps/api/staticmap?center=#{params[:center]}" \
                    "&mapType=#{params[:mapType]}&size=#{params[:size]}&style=#{style_string}&zoom=#{zoom}"

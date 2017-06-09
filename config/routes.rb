@@ -471,6 +471,9 @@ CartoDB::Application.routes.draw do
 
     # Permissions
     put '(/user/:user_domain)(/u/:user_domain)/api/v1/perm/:id' => 'permissions#update', as: :api_v1_permissions_update
+
+    # URL for Google Maps API
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1/google_maps_static_image' => 'users#google_maps_static_image'
   end
 
   scope module: 'api/json', defaults: { format: :json } do
@@ -605,7 +608,6 @@ CartoDB::Application.routes.draw do
         resources :notifications, only: [:update],
                                   controller: :received_notifications,
                                   constraints: { id: UUID_REGEXP }
-        get 'google_maps_static_image'
       end
     end
 

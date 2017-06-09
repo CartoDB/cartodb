@@ -10,6 +10,20 @@ module Carto
         render json: Carto::Api::UserPresenter.new(uri_user).data
       end
 
+      def google_maps_static_image
+        style_definition = params[:style]
+        style_definition[:featureType] ||= 'all'
+        style_definition[:elementType] ||= 'all'
+        style_string = style_definition.map { |k, v| "#{k}:#{v.replace('#', '0x')}" }.join('|')
+
+        base_url = "https://maps.googleapis.com/maps/api/staticmap?center=#{params[:center]}" \
+                   "&mapType=#{params[:mapType]}&size=#{params[:size]}&style=#{style_string}&zoom=#{zoom}"
+
+        render(json: { url: Carto::GoogleMapsApiSigner.new(current_user).sign(base_url) })
+      rescue => e
+        render(json: { errors: [e.message] })
+      end
+
       def get_authenticated_users
         referer = request.env["HTTP_ORIGIN"].blank? ? request.env["HTTP_REFERER"] : %[#{request.env['HTTP_X_FORWARDED_PROTO']}://#{request.env["HTTP_HOST"]}]
         referer_match = /https?:\/\/([\w\-\.]+)(:[\d]+)?(\/((u|user)\/([\w\-\.]+)))?/.match(referer)

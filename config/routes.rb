@@ -605,6 +605,7 @@ CartoDB::Application.routes.draw do
         resources :notifications, only: [:update],
                                   controller: :received_notifications,
                                   constraints: { id: UUID_REGEXP }
+        get 'google_maps_static_image'
       end
     end
 

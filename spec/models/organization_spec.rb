@@ -109,6 +109,31 @@ describe Organization do
       Carto::UserTable.exists?(table2.id).should be_false
     end
 
+    it 'destroys users with unregistered tables' do
+      organization = Organization.new(quota_in_bytes: 1234567890, name: 'wadus', seats: 5).save
+
+      owner = create_user(quota_in_bytes: 524288000, table_quota: 500)
+      owner_org = CartoDB::UserOrganization.new(organization.id, owner.id)
+      owner_org.promote_user_to_admin
+      owner.reload
+      organization.reload
+
+      user = create_user(quota_in_bytes: 524288000, table_quota: 500, organization_id: organization.id)
+      user.save
+      user.reload
+      organization.reload
+
+      user.in_database.run('CREATE TABLE foobarbaz (id serial)')
+
+      organization.users.count.should eq 2
+
+      organization.destroy_cascade
+
+      Organization.where(id: organization.id).first.should be nil
+      ::User.where(id: user.id).first.should be nil
+      ::User.where(id: owner.id).first.should be nil
+    end
+
     it 'destroys its groups through the extension' do
       Carto::Group.any_instance.expects(:destroy_group_with_extension).once
 

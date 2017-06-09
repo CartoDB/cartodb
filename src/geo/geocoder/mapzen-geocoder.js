@@ -9,7 +9,7 @@ var $ = require('jquery');
  */
 var MAPZEN = {
   keys: {
-    app_id: 'search-DH1Lkhw'
+    app_id: 'mapzen-YfBeDWS'
   },
 
   geocode: function (address, callback) {

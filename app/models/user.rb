@@ -3,9 +3,7 @@ require 'cartodb/per_request_sequel_cache'
 require_relative './user/user_decorator'
 require_relative './user/oauths'
 require_relative './synchronization/synchronization_oauth'
-require_relative './visualization/member'
 require_relative '../helpers/data_services_metrics_helper'
-require_relative './visualization/collection'
 require_relative './user/user_organization'
 require_relative './synchronization/collection.rb'
 require_relative '../services/visualization/common_data_service'
@@ -23,6 +21,7 @@ require_dependency 'carto/helpers/has_connector_configuration'
 require_dependency 'carto/helpers/batch_queries_statement_timeout'
 require_dependency 'carto/user_authenticator'
 require_dependency 'carto/helpers/billing_cycle'
+require_dependency 'carto/visualization'
 
 class User < Sequel::Model
   include CartoDB::MiniSequel
@@ -235,6 +234,10 @@ class User < Sequel::Model
     self.obs_snapshot_quota ||= DEFAULT_OBS_SNAPSHOT_QUOTA
     self.obs_general_quota ||= DEFAULT_OBS_GENERAL_QUOTA
     self.mapzen_routing_quota ||= DEFAULT_MAPZEN_ROUTING_QUOTA
+    self.soft_geocoding_limit = false if soft_geocoding_limit.nil?
+    self.viewer = false if viewer.nil?
+    self.org_admin = false if org_admin.nil?
+    true
   end
 
   def before_create
@@ -409,12 +412,15 @@ class User < Sequel::Model
     end
 
     begin
-      # Remove user tables
-      tables.all.each(&:destroy)
-
       # Remove user data imports, maps, layers and assets
       delete_external_data_imports
       delete_external_sources
+      Carto::VisualizationQueryBuilder.new.with_user_id(id).build.all.each(&:destroy)
+
+      # This shouldn't be needed, because previous step deletes canonical visualizations.
+      # Kept in order to support old data.
+      tables.all.each(&:destroy)
+
       # There's a FK from geocodings to data_import.id so must be deleted in proper order
       if organization.nil? || organization.owner.nil? || id == organization.owner.id
         geocodings.each(&:destroy)
@@ -428,8 +434,9 @@ class User < Sequel::Model
         l.destroy
       end
       assets.each(&:destroy)
+      # This shouldn't be needed, because previous step deletes canonical visualizations.
+      # Kept in order to support old data.
       CartoDB::Synchronization::Collection.new.fetch(user_id: id).destroy
-      CartoDB::Visualization::Collection.new.fetch(user_id: id, exclude_shared: true).destroy
 
       destroy_shared_with
 
@@ -464,8 +471,7 @@ class User < Sequel::Model
   end
 
   def delete_external_data_imports
-    external_data_imports = ExternalDataImport.by_user_id(self.id)
-    external_data_imports.each { |edi| edi.destroy }
+    Carto::ExternalDataImport.by_user_id(id).each(&:destroy)
   rescue => e
     CartoDB.notify_error('Error deleting external data imports at user deletion', user: self, error: e.inspect)
   end
@@ -658,13 +664,13 @@ class User < Sequel::Model
   end
 
   # List all public visualization tags of the user
-  def tags(exclude_shared=false, type=CartoDB::Visualization::Member::TYPE_DERIVED)
+  def tags(exclude_shared = false, type = Carto::Visualization::TYPE_DERIVED)
     require_relative './visualization/tags'
     options = {}
     options[:exclude_shared] = true if exclude_shared
     CartoDB::Visualization::Tags.new(self, options).names({
       type: type,
-      privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC
+      privacy: Carto::Visualization::PRIVACY_PUBLIC
     })
   end #tags
 
@@ -672,22 +678,13 @@ class User < Sequel::Model
   def map_tags
     require_relative './visualization/tags'
     CartoDB::Visualization::Tags.new(self).names({
-       type: CartoDB::Visualization::Member::TYPE_CANONICAL,
-       privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC
+      type: Carto::Visualization::TYPE_CANONICAL,
+      privacy: Carto::Visualization::PRIVACY_PUBLIC
     })
   end #map_tags
 
   def tables
     ::UserTable.filter(:user_id => self.id).order(:id).reverse
-  end
-
-  def tables_including_shared
-    CartoDB::Visualization::Collection.new.fetch(
-        user_id: self.id,
-        type: CartoDB::Visualization::Member::TYPE_CANONICAL
-    ).map { |item|
-      item.table
-    }
   end
 
   def load_avatar
@@ -1230,16 +1227,13 @@ class User < Sequel::Model
   end
 
   def public_table_count
-    table_count({
-      privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC,
-      exclude_raster: true
-    })
+    table_count(privacy: Carto::Visualization::PRIVACY_PUBLIC, exclude_raster: true)
   end
 
   # Only returns owned tables (not shared ones)
   def table_count(filters={})
     filters.merge!(
-      type: CartoDB::Visualization::Member::TYPE_CANONICAL,
+      type: Carto::Visualization::TYPE_CANONICAL,
       exclude_shared: true
     )
 
@@ -1261,48 +1255,43 @@ class User < Sequel::Model
   # Get the count of public visualizations
   def public_visualization_count
     visualization_count({
-      type: CartoDB::Visualization::Member::TYPE_DERIVED,
-      privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC,
-      exclude_shared: true,
-      exclude_raster: true
-    })
+                          type: Carto::Visualization::TYPE_DERIVED,
+                          privacy: Carto::Visualization::PRIVACY_PUBLIC,
+                          exclude_shared: true,
+                          exclude_raster: true
+                        })
   end
 
   # Get the count of all visualizations
   def all_visualization_count
     visualization_count({
-      type: CartoDB::Visualization::Member::TYPE_DERIVED,
-      exclude_shared: false,
-      exclude_raster: false
-    })
+                          type: Carto::Visualization::TYPE_DERIVED,
+                          exclude_shared: false,
+                          exclude_raster: false
+                        })
   end
 
   # Get user owned visualizations
   def owned_visualizations_count
     visualization_count({
-      type: CartoDB::Visualization::Member::TYPE_DERIVED,
-      exclude_shared: true,
-      exclude_raster: false
-    })
+                          type: Carto::Visualization::TYPE_DERIVED,
+                          exclude_shared: true,
+                          exclude_raster: false
+                        })
   end
 
   # Get a count of visualizations with some optional filters
   def visualization_count(filters = {})
-    type_filter           = filters.fetch(:type, nil)
-    privacy_filter        = filters.fetch(:privacy, nil)
-    exclude_shared_filter = filters.fetch(:exclude_shared, false)
-    exclude_raster_filter = filters.fetch(:exclude_raster, false)
-
-    parameters = {
-      user_id:        self.id,
-      per_page:       CartoDB::Visualization::Collection::ALL_RECORDS,
-      exclude_shared: exclude_shared_filter
-    }
-
-    parameters.merge!(type: type_filter)      unless type_filter.nil?
-    parameters.merge!(privacy: privacy_filter)   unless privacy_filter.nil?
-    parameters.merge!(exclude_raster: exclude_raster_filter) if exclude_raster_filter
-    CartoDB::Visualization::Collection.new.count_query(parameters)
+    vqb = Carto::VisualizationQueryBuilder.new
+    vqb.with_type(filters[:type]) if filters[:type]
+    vqb.with_privacy(filters[:privacy]) if filters[:privacy]
+    if filters[:exclude_shared] == true
+      vqb.with_user_id(id)
+    else
+      vqb.with_owned_by_or_shared_with_user_id(id)
+    end
+    vqb.without_raster if filters[:exclude_raster] == true
+    vqb.build.count
   end
 
   def last_visualization_created_at
@@ -1445,14 +1434,14 @@ class User < Sequel::Model
   # ----------
 
   def name_or_username
-    name.present? ? name : username
+    name.present? || last_name.present? ? [name, last_name].select(&:present?).join(' ') : username
   end
 
   # Probably not needed with versioning of keys
   # @see RedisVizjsonCache
   # @see EmbedRedisCache
   def purge_redis_vizjson_cache
-    vizs = CartoDB::Visualization::Collection.new.fetch(user_id: self.id)
+    vizs = Carto::VisualizationQueryBuilder.new.with_user_id(id).build.all
     CartoDB::Visualization::RedisVizjsonCache.new().purge(vizs)
     EmbedRedisCache.new().purge(vizs)
   end
@@ -1597,7 +1586,7 @@ class User < Sequel::Model
 
   def destroy_shared_with
     CartoDB::SharedEntity.where(recipient_id: id).each do |se|
-      viz = CartoDB::Visualization::Member.new(id: se.entity_id).fetch
+      viz = Carto::Visualization.find(se.entity_id)
       permission = viz.permission
       permission.remove_user_permission(self)
       permission.save
@@ -1684,11 +1673,7 @@ class User < Sequel::Model
   end
 
   def visualizations_shared_with_this_user
-    Carto::VisualizationQueryBuilder
-      .new
-      .with_shared_with_user_id(id)
-      .build
-      .map { |v| CartoDB::Visualization::Member.new(id: v.id).fetch }
+    Carto::VisualizationQueryBuilder.new.with_shared_with_user_id(id).build.all
   end
 
   def setup_aggregation_tables

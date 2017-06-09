@@ -251,6 +251,7 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/models/carto/notification_spec.rb \
 	spec/models/carto/overlay_spec.rb \
 	spec/models/carto/received_notification_spec.rb \
+	spec/models/carto/user_db_service_spec.rb \
 	spec/models/carto/user_migration_spec.rb \
 	spec/models/table_registrar_spec.rb \
 	spec/requests/admin/organization_users_controller_spec.rb \
@@ -306,6 +307,7 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/lib/carto/visualization_invalidation_service_spec.rb \
 	spec/models/carto/username_proposer_spec.rb \
 	spec/services/carto/overquota_users_service_spec.rb \
+	spec/services/visualization/common_data_service_spec.rb \
 	$(NULL)
 
 # This class must be tested isolated as pollutes namespace

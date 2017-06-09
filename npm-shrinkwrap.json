@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.7.15-12177",
+  "version": "4.7.39",
   "dependencies": {
     "abbrev": {
       "version": "1.1.0",
@@ -2011,9 +2011,9 @@
       "resolved": "https://registry.npmjs.org/ripemd160/-/ripemd160-2.0.1.tgz"
     },
     "safe-buffer": {
-      "version": "5.0.1",
-      "from": "safe-buffer@>=5.0.1 <5.1.0",
-      "resolved": "https://registry.npmjs.org/safe-buffer/-/safe-buffer-5.0.1.tgz"
+      "version": "5.1.0",
+      "from": "safe-buffer@>=5.0.1 <6.0.0",
+      "resolved": "https://registry.npmjs.org/safe-buffer/-/safe-buffer-5.1.0.tgz"
     },
     "select": {
       "version": "1.1.2",
@@ -2110,9 +2110,9 @@
           "resolved": "https://registry.npmjs.org/concat-stream/-/concat-stream-1.6.0.tgz",
           "dependencies": {
             "readable-stream": {
-              "version": "2.2.11",
+              "version": "2.2.10",
               "from": "readable-stream@>=2.2.2 <3.0.0",
-              "resolved": "https://registry.npmjs.org/readable-stream/-/readable-stream-2.2.11.tgz"
+              "resolved": "https://registry.npmjs.org/readable-stream/-/readable-stream-2.2.10.tgz"
             }
           }
         },
@@ -2209,9 +2209,9 @@
       "resolved": "https://registry.npmjs.org/stream-http/-/stream-http-2.7.1.tgz",
       "dependencies": {
         "readable-stream": {
-          "version": "2.2.11",
+          "version": "2.2.10",
           "from": "readable-stream@>=2.2.6 <3.0.0",
-          "resolved": "https://registry.npmjs.org/readable-stream/-/readable-stream-2.2.11.tgz"
+          "resolved": "https://registry.npmjs.org/readable-stream/-/readable-stream-2.2.10.tgz"
         },
         "string_decoder": {
           "version": "1.0.2",
@@ -2342,9 +2342,9 @@
       "resolved": "https://registry.npmjs.org/through2/-/through2-2.0.3.tgz",
       "dependencies": {
         "readable-stream": {
-          "version": "2.2.11",
+          "version": "2.2.10",
           "from": "readable-stream@>=2.1.5 <3.0.0",
-          "resolved": "https://registry.npmjs.org/readable-stream/-/readable-stream-2.2.11.tgz"
+          "resolved": "https://registry.npmjs.org/readable-stream/-/readable-stream-2.2.10.tgz"
         },
         "string_decoder": {
           "version": "1.0.2",

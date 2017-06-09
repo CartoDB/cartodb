@@ -1371,7 +1371,7 @@ describe User do
       table4.save.reload
 
       # Only owned tables
-      user_tables = @user.tables_including_shared
+      user_tables = tables_including_shared(@user)
       user_tables.count.should eq 2
 
       # Grant permission
@@ -1390,7 +1390,7 @@ describe User do
       permission.save
 
       # Now owned + shared...
-      user_tables = @user.tables_including_shared
+      user_tables = tables_including_shared(@user)
       user_tables.count.should eq 3
 
       contains_shared_table = false
@@ -2338,6 +2338,60 @@ describe User do
     end
   end
 
+  describe '#visualization_count' do
+    include_context 'organization with users helper'
+    include TableSharing
+
+    it 'filters by type if asked' do
+      vis = FactoryGirl.create(:carto_visualization, user_id: @org_user_1.id, type: Carto::Visualization::TYPE_DERIVED)
+
+      @org_user_1.visualization_count.should eq 1
+      @org_user_1.visualization_count(type: Carto::Visualization::TYPE_DERIVED).should eq 1
+      [Carto::Visualization::TYPE_CANONICAL, Carto::Visualization::TYPE_REMOTE].each do |type|
+        @org_user_1.visualization_count(type: type).should eq 0
+      end
+
+      vis.destroy
+    end
+
+    it 'filters by privacy if asked' do
+      vis = FactoryGirl.create(:carto_visualization,
+                               user_id: @org_user_1.id,
+                               privacy: Carto::Visualization::PRIVACY_PUBLIC)
+
+      @org_user_1.visualization_count.should eq 1
+      @org_user_1.visualization_count(privacy: Carto::Visualization::PRIVACY_PUBLIC).should eq 1
+      [
+        Carto::Visualization::PRIVACY_PRIVATE,
+        Carto::Visualization::PRIVACY_LINK,
+        Carto::Visualization::PRIVACY_PROTECTED
+      ].each do |privacy|
+        @org_user_1.visualization_count(privacy: privacy).should eq 0
+      end
+
+      vis.destroy
+    end
+
+    it 'filters by shared exclusion if asked' do
+      vis = FactoryGirl.create(:carto_visualization, user_id: @org_user_1.id, type: Carto::Visualization::TYPE_DERIVED)
+      share_visualization_with_user(vis, @org_user_2)
+
+      @org_user_2.visualization_count.should eq 1
+      @org_user_2.visualization_count(exclude_shared: true).should eq 0
+
+      vis.destroy
+    end
+
+    it 'filters by raster exclusion if asked' do
+      vis = FactoryGirl.create(:carto_visualization, user_id: @org_user_1.id, kind: Carto::Visualization::KIND_RASTER)
+
+      @org_user_1.visualization_count.should eq 1
+      @org_user_1.visualization_count(exclude_raster: true).should eq 0
+
+      vis.destroy
+    end
+  end
+
   describe 'viewer user' do
     after(:each) do
       @user.destroy if @user
@@ -2406,5 +2460,13 @@ describe User do
     organization.seats = org_seats
     organization.save
     organization
+  end
+
+  def tables_including_shared(user)
+    Carto::VisualizationQueryBuilder
+      .new
+      .with_owned_by_or_shared_with_user_id(user.id)
+      .with_type(Carto::Visualization::TYPE_CANONICAL)
+      .build.map(&:table)
   end
 end

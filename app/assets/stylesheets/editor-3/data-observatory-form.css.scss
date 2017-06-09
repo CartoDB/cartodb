@@ -12,3 +12,11 @@
   padding: 8px 16px;
   border-bottom: 1px solid $cMainLine;
 }
+
+.Measurement + .Measurement {
+  margin-top: 32px;
+}
+
+.Measurements {
+  margin-bottom: 32px;
+}

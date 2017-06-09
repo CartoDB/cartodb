@@ -460,7 +460,7 @@ class User < Sequel::Model
     if has_organization
       unless error_happened
         db_service.drop_organization_user(
-          org_id: organization_id,
+          organization_id,
           is_owner: !@org_id_for_org_wipe.nil?,
           force_destroy: @force_destroy
         )

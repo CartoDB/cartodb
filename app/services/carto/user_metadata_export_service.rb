@@ -1,5 +1,5 @@
 require 'json'
-require_dependency 'carto/export/layer_exporter'
+require 'carto/export/layer_exporter'
 
 # Version History
 # 1.0.0: export user metadata

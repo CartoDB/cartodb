@@ -27,13 +27,12 @@
 
 .Editor-dropdownOperators {
   display: none;
-  max-width: 244px;
+  max-width: 248px;
 
   &.is-visible {
     @include display-flex();
   }
 }
-
 .Editor-dropdownCalculations {
   padding: $sMargin-element;
   border-right: 1px solid $cMainLine;
@@ -112,6 +111,9 @@
 .Editor-boxModalContent {
   padding: $baseSize * 2;
 }
+.Editor-boxModalContentOperators {
+  @include display-flex();
+}
 
 .Editor-boxModal .Editor-formInner {
   margin-top: 0;
@@ -128,4 +130,6 @@
     border-bottom: 0;
   }
 }
-
+.CDB-Dropdown-options {
+  width: 164px;
+}

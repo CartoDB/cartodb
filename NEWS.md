@@ -5,6 +5,7 @@ Development
 * New loading button styles (#12132)
 
 ### Bug fixes / enhancements
+* Updated text of widget tooltips (#11467)
 * Fixed error where analysis overlay/infobox wasn't shown when hiding a layer (#11767)
 * Size of 'Add analysis' button reduced (#11580)
 * Fixed arrow keys exceeding min/max values in number editor (#12212)
@@ -38,6 +39,7 @@ Development
 * "vector" key in vizjson is skipped in embeds if user has "vector_vs_raster" feature flag enabled.
 * Updated look and feel of sync interval dialog (#12145)
 * Fixed 'not a function' bug related to a tooltip (#12279)
+* Disable edit geometry for Layers with aggregated styles (#11714)
 
 ### NOTICE
 This release upgrades the CartoDB PostgreSQL extension to `0.19.1`. Run the following to have it available:

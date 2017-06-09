@@ -25,7 +25,7 @@ module CartoDB
       include CartoDB::DataMover::Utils
       def dump_db
         # find database host for user
-        run_command("pg_dump #{conn_string(
+        run_command("#{pg_dump_bin_path} #{conn_string(
           CartoDB::DataMover::Config[:dbuser],
           @database_host,
           CartoDB::DataMover::Config[:user_dbport],
@@ -49,12 +49,18 @@ module CartoDB
       end
 
       def dump_schema
-        run_command("pg_dump #{conn_string(
+        run_command("#{pg_dump_bin_path} #{conn_string(
           CartoDB::DataMover::Config[:dbuser],
           @database_host,
           CartoDB::DataMover::Config[:user_dbport],
           @database_name
         )} -f #{@path}#{@database_schema}.schema.sql -n #{@database_schema} --verbose --no-tablespaces --quote-all-identifiers -Z 0")
+      end
+
+      private
+
+      def pg_dump_bin_path
+        Cartodb.get_config(:user_migrator, 'pg_dump_bin_path') || 'pg_dump'
       end
     end
   end

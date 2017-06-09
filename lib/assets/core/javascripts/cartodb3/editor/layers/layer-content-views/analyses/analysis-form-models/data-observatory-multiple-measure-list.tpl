@@ -1,5 +1,5 @@
 <div class="u-grow">
-  <div data-items class="u-bSpace--xl">
+  <div data-items class="Measurements">
 
   </div>
   <div class="u-flex u-justifyEnd data-observatory-add-measure">

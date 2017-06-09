@@ -60,7 +60,7 @@ module CartoDB
       private
 
       def pg_dump_bin_path
-        CartoDB.get_config(:user_migrator, 'pg_dump_bin_path') || 'pg_dump'
+        Cartodb.get_config(:user_migrator, 'pg_dump_bin_path') || 'pg_dump'
       end
     end
   end

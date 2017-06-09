@@ -628,7 +628,7 @@ module CartoDB
       end
 
       def pg_restore_bin_path
-        CartoDB.get_config(:user_migrator, 'pg_restore_bin_path') || 'pg_restore'
+        Cartodb.get_config(:user_migrator, 'pg_restore_bin_path') || 'pg_restore'
       end
     end
   end

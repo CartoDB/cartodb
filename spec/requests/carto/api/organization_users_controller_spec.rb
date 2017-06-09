@@ -669,7 +669,7 @@ describe Carto::Api::OrganizationUsersController do
         u_username: user_with_unregistered_tables.username
       )
 
-      last_response.status.should eq 401
+      last_response.status.should eq 500
     end
 
     it 'should delete users as admin' do

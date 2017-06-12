@@ -8,11 +8,11 @@ module Carto
     include Carto::UUIDHelper
     include Carto::QueryRewriter
 
-    def save_import(user, visualization, renamed_tables: {})
+    def save_import(user, visualization, renamed_tables: {}, keep_id: false)
       old_username = visualization.user.username if visualization.user
       apply_user_limits(user, visualization)
       ActiveRecord::Base.transaction do
-        visualization.id = random_uuid
+        visualization.id = random_uuid unless visualization.id && keep_id
         visualization.user = user
 
         ensure_unique_name(user, visualization)

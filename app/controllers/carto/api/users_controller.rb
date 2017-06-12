@@ -17,7 +17,7 @@ module Carto
         base_url = "https://maps.googleapis.com/maps/api/staticmap?center=#{params[:center]}" \
                    "&mapType=#{params[:mapType]}&size=#{params[:size]}#{style_string}&zoom=#{params[:zoom]}"
 
-        render(json: { url: Carto::GoogleMapsApiSigner.new(current_user).sign(base_url) })
+        render(json: { url: Carto::GoogleMapsApiSigner.new.sign(current_user, base_url) })
       rescue => e
         CartoDB::Logger.error(message: 'Error generating Google API URL', exception: e)
         render(json: { errors: 'Error generating static image URL' }, status: 400)

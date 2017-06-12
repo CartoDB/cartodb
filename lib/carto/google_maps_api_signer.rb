@@ -17,11 +17,11 @@ module Carto
     private
 
     def client_id_signed_url(user, url)
-      uri = URI.parse(url)
+      uri = URI.parse("#{url}&#{user.google_maps_query_string}")
       payload_to_sign = uri.path + '?' + uri.query
       signature = hmac(user.google_maps_private_key, payload_to_sign)
 
-      "#{url}&#{user.google_maps_query_string}&signature=#{signature}"
+      "#{uri}&signature=#{signature}"
     end
 
     def key_signed_url(user, url)

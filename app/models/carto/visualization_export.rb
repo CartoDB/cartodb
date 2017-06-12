@@ -110,9 +110,7 @@ module Carto
     end
 
     def valid_visualization_type?
-      check_valid_visualization(visualization)
-    rescue => e
-      errors.add(:visualization, e.message)
+      errors.add(:visualization, 'Only derived visualizations can be exported') unless visualization.derived?
     end
   end
 end

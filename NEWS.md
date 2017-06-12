@@ -3,6 +3,7 @@ Development
 
 ### Features
 * New loading button styles (#12132)
+* [WIP] Export/import organization/user metadata to allow user migration (#12271)
 
 ### Bug fixes / enhancements
 * Updated text of widget tooltips (#11467)
@@ -35,6 +36,7 @@ Development
 * Visualization models no longer raise an error checking `password_valid?` (#12270).
 * Fix `BUILDER_ENABLED` parameter in `create_dev_user` rake (#12189)
 * User organization or user key for google maps (#12232)
+* Configurable pg_dump/restore bin path (#12297)
 * Redesigned LEARN MORE buttons behaviour (#12135)
 * "vector" key in vizjson is skipped in embeds if user has "vector_vs_raster" feature flag enabled.
 * Updated look and feel of sync interval dialog (#12145)
@@ -47,6 +49,20 @@ This release upgrades the CartoDB PostgreSQL extension to `0.19.1`. Run the foll
 cd $(git rev-parse --show-toplevel)/lib/sql
 sudo make install
 ```
+
+#### Dropbox API v2 migration
+
+Dropbox API v2 (#8303): [Dropbox deprecated API v1](https://blogs.dropbox.com/developers/2016/06/api-v1-deprecated/)
+so CARTO must migrate. If you are using Dropbox integration, you must:
+* Check which permission does your application has in Dropbox. If it's "Full", just upgrading CARTO is enough.
+* If it's not "Full", you must:
+   1. Create a new application in Dropbox, with "Full" permission.
+   2. Delete existing tokens. You can do this at Rails console with `SynchronizationOauth.where(service: 'dropbox').each(&:destroy)`.
+   3. Change Dropbox configuration at app_config.yml to the new application and restart server and Resque.
+   4. Connect users again (at profile page).
+   5. Trigger sync datasets manually.
+
+More information at [Dropbox migration guide](https://www.dropbox.com/developers/reference/migration-guide).
 
 4.1.x (2017-05-31)
 -----------

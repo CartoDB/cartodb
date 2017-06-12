@@ -14,8 +14,8 @@ module Carto
       end
 
       it 'signs google maps urls' do
-        gmas = GoogleMapsApiSigner.new(user)
-        expect(gmas.sign(url)).to eq "#{url}&client=wds&signature=fK5mHV9MLROw4xZnBPcrCOUdjio="
+        gmas = GoogleMapsApiSigner.new
+        expect(gmas.sign(user, url)).to eq "#{url}&client=wds&signature=fK5mHV9MLROw4xZnBPcrCOUdjio="
       end
     end
 
@@ -25,8 +25,8 @@ module Carto
       end
 
       it 'signs google maps urls' do
-        gmas = GoogleMapsApiSigner.new(user)
-        expect(gmas.sign(url)).to eq "#{url}&key=xxx"
+        gmas = GoogleMapsApiSigner.new
+        expect(gmas.sign(user, url)).to eq "#{url}&key=xxx"
       end
     end
   end

@@ -268,12 +268,13 @@ module Carto
       end
 
       def google_maps_static_image
+        base_layer_options = @visualization.base_layers.first.options
         base_url = Carto::GoogleMapsApi.new.build_static_image_url(
           center: params[:center],
-          map_type: params[:mapType],
+          map_type: base_layer_options[:baseType],
           size: params[:size],
           zoom: params[:zoom],
-          style: JSON.parse(params[:style], symbolize_names: true)
+          style: JSON.parse(base_layer_options[:style], symbolize_names: true)
         )
 
         render(json: { url: Carto::GoogleMapsApi.new.sign_url(@visualization.user, base_url) })

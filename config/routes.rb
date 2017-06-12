@@ -346,6 +346,7 @@ CartoDB::Application.routes.draw do
     post    '(/user/:user_domain)(/u/:user_domain)/api/v1/viz'                            => 'visualizations#create',          as: :api_v1_visualizations_create
     put     '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id'                        => 'visualizations#update',          as: :api_v1_visualizations_update,          constraints: { id: /[^\/]+/ }
     delete '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id'                         => 'visualizations#destroy',         as: :api_v1_visualizations_destroy,         constraints: { id: /[^\/]+/ }
+    post '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/google_maps_static_image'  => 'visualizations#google_maps_static_image', as: :api_v1_google_maps_static_image, constraints: { id: /[^\/]+/ }
 
     # Tables
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/tables/:id'                     => 'tables#show',   as: :api_v1_tables_show, constraints: { id: /[^\/]+/ }
@@ -471,9 +472,6 @@ CartoDB::Application.routes.draw do
 
     # Permissions
     put '(/user/:user_domain)(/u/:user_domain)/api/v1/perm/:id' => 'permissions#update', as: :api_v1_permissions_update
-
-    # URL for Google Maps API
-    post '(/user/:user_domain)(/u/:user_domain)/api/v1/google_maps_static_image' => 'users#google_maps_static_image', as: :api_v1_google_maps_static_image
   end
 
   scope module: 'api/json', defaults: { format: :json } do

@@ -2,7 +2,7 @@ require 'base64'
 require 'openssl'
 
 module Carto
-  class GoogleMapsApiSigner
+  class GoogleMapsApi
     def sign(user, url)
       raise 'User does not have Google configured' unless user.google_maps_query_string.present?
       if user.google_maps_client_id.present? && user.google_maps_private_key.present?

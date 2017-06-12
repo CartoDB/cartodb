@@ -196,6 +196,8 @@ defaults: &defaults
       url_ttl: 7200
       async_long_uploads: false
     uploads_path: 'public/uploads'
+    pg_dump_bin_path: 'pg_dump'
+    pg_restore_bin_path: 'pg_restore'
   exporter:
     exporter_temporal_folder: '/tmp/exporter'
     s3:

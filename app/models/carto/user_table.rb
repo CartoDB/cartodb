@@ -48,10 +48,10 @@ module Carto
     validates :privacy, inclusion: [PRIVACY_PRIVATE, PRIVACY_PUBLIC, PRIVACY_LINK].freeze
     validate :validate_privacy_changes
 
-    before_create { service.before_create }
+    before_create :service_before_create
     after_create :create_canonical_visualization
-    after_create { service.after_create }
-    after_save { service.after_save }
+    after_create :service_after_create
+    after_save :service_after_save
 
     # The `destroyed?` check is needed to avoid the hook running twice when deleting a table from the ::Table service
     # as it is triggered directly, and a second time from canonical visualization destruction hooks.
@@ -59,7 +59,7 @@ module Carto
     before_destroy :ensure_not_viewer
     before_destroy :cache_dependent_visualizations, unless: :destroyed?
     after_destroy :destroy_dependent_visualizations
-    after_destroy { service.after_destroy }
+    after_destroy :service_after_destroy
 
     def geometry_types
       @geometry_types ||= service.geometry_types
@@ -261,7 +261,24 @@ module Carto
     end
 
     def ensure_not_viewer
-      raise "Viewer users can't destroy tables" if user && user.viewer
+      # Loading ::User is a workaround for User deletion: viewer attribute change is not visible at AR transaction
+      raise "Viewer users can't destroy tables" if user && user.viewer && ::User[user_id].viewer
+    end
+
+    def service_before_create
+      service.before_create
+    end
+
+    def service_after_create
+      service.after_create
+    end
+
+    def service_after_save
+      service.after_save
+    end
+
+    def service_after_destroy
+      service.after_destroy
     end
   end
 end

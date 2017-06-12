@@ -1,8 +1,10 @@
 require_relative '../../../../spec_helper'
 require_relative '../../../../factories/organizations_contexts.rb'
+require 'helpers/feature_flag_helper'
 
 describe Carto::Builder::Public::EmbedsController do
   include Warden::Test::Helpers, Carto::Factories::Visualizations, HelperMethods
+  include FeatureFlagHelper
 
   before(:all) do
     bypass_named_maps
@@ -12,6 +14,7 @@ describe Carto::Builder::Public::EmbedsController do
     @visualization = FactoryGirl.create(:carto_visualization, user: @carto_user, map_id: @map.id, version: 3)
     # Only mapcapped visualizations are presented by default
     Carto::Mapcap.create!(visualization_id: @visualization.id)
+    @feature_flag = FactoryGirl.create(:feature_flag, name: 'vector_vs_raster', restricted: true)
   end
 
   before(:each) do
@@ -24,6 +27,7 @@ describe Carto::Builder::Public::EmbedsController do
     @map.destroy
     @visualization.destroy
     User[@user.id].destroy
+    @feature_flag.destroy
   end
 
   def stub_passwords(password)
@@ -103,11 +107,13 @@ describe Carto::Builder::Public::EmbedsController do
       response.body.should include('\"vector\":false')
     end
 
-    it 'generates vizjson with vector=true with flag' do
+    it 'doesn\'t include vector flag if vector_vs_raster feature flag is enabled' do
+      set_feature_flag @visualization.user, 'vector_vs_raster', true
+
       get builder_visualization_public_embed_url(visualization_id: @visualization.id, vector: true)
 
       response.status.should == 200
-      response.body.should include('\"vector\":true')
+      response.body.should_not include('\"vector\"')
     end
 
     it 'does not include auth tokens for public/link visualizations' do

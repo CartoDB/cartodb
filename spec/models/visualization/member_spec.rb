@@ -1,5 +1,6 @@
 # encoding: utf-8
 require_relative '../../spec_helper'
+require_relative '../visualization_shared_examples'
 require_relative '../../../services/data-repository/backend/sequel'
 require_relative '../../../app/models/visualization/member'
 require_relative '../../../app/models/visualization/collection'
@@ -11,7 +12,7 @@ include CartoDB
 
 describe Visualization::Member do
   before(:all) do
-    @db = Rails::Sequel.connection
+    @db = SequelRails.connection
     Sequel.extension(:pagination)
 
     Visualization.repository  = DataRepository::Backend::Sequel.new(@db, :visualizations)
@@ -41,6 +42,12 @@ describe Visualization::Member do
 
     support_tables_mock = Doubles::Visualization::SupportTables.new
     Visualization::Relator.any_instance.stubs(:support_tables).returns(support_tables_mock)
+  end
+
+  it_behaves_like 'visualization models' do
+    def build_visualization(attrs = {})
+      Visualization::Member.new(attrs)
+    end
   end
 
   describe '#initialize' do
@@ -527,41 +534,6 @@ describe Visualization::Member do
       visualization.derived?.should be_false
       visualization.table?.should be_false
       visualization.type_slide?.should be_false
-    end
-  end
-
-  describe '#password' do
-    it 'checks that when using password protected type, encrypted password is generated and stored correctly' do
-      password_value = '123456'
-      password_second_value = '456789'
-
-      visualization = Visualization::Member.new(type: Visualization::Member::TYPE_DERIVED)
-      visualization.privacy = Visualization::Member::PRIVACY_PROTECTED
-
-      visualization.password = password_value
-      visualization.has_password?.should be_true
-      visualization.password_valid?(password_value).should be_true
-
-      # Shouldn't remove the password, and be equal
-      visualization.password = ''
-      visualization.has_password?.should be_true
-      visualization.password_valid?(password_value).should be_true
-      visualization.password = nil
-      visualization.has_password?.should be_true
-      visualization.password_valid?(password_value).should be_true
-
-      # Modify the password
-      visualization.password = password_second_value
-      visualization.has_password?.should be_true
-      visualization.password_valid?(password_second_value).should be_true
-      visualization.password_valid?(password_value).should be_false
-
-      # Test removing the password, should work
-      visualization.remove_password
-      visualization.has_password?.should be_false
-      lambda {
-        visualization.password_valid?(password_value)
-      }.should raise_error CartoDB::InvalidMember
     end
   end
 

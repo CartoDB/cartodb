@@ -39,6 +39,7 @@ module Carto
               run 'ROLLBACK TO SAVEPOINT before_migration'
               sleep WAIT_BETWEEN_RETRIES_S
             else
+              puts e.message
               raise e
             end
           end

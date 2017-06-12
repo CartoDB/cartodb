@@ -2,6 +2,8 @@
 require_relative '../../spec_helper'
 
 describe Carto::Map do
+  include Carto::Factories::Visualizations
+
   before(:all) do
     @user = create_user
     @carto_user = Carto::User.find(@user.id)
@@ -100,4 +102,9 @@ describe Carto::Map do
     end
   end
 
+  it '#save should trigger invalidation' do
+    @map, @table, @table_visualization, @visualization = create_full_visualization(@carto_user)
+    @visualization.send(:invalidation_service).expects(:invalidate)
+    @map.save
+  end
 end

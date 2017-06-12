@@ -3,42 +3,35 @@ require 'openssl'
 
 module Carto
   class GoogleMapsApiSigner
-    def initialize(user)
-      @user = user
-    end
-
-    def sign(url)
-      raise 'User does not have Google configured' unless @user.google_maps_query_string.present?
-      url_with_qs = "#{url}&#{@user.google_maps_query_string}"
-      if @user.google_maps_client_id.present? && @user.google_maps_private_key.present?
+    def sign(user, url)
+      raise 'User does not have Google configured' unless user.google_maps_query_string.present?
+      if user.google_maps_client_id.present? && user.google_maps_private_key.present?
         # Add client=xxx + signature
-        cryptographically_sign_url(url_with_qs)
+        client_id_signed_url(user, url)
       else
         # Just add key=xxx
-        url_with_qs
+        key_signed_url(user, url)
       end
     end
 
     private
 
-    def cryptographically_sign_url(url)
-      binary_signature = hmac(uri_path_and_query(url))
-      signature = Base64.urlsafe_encode64(binary_signature)
-
-      "#{url}&signature=#{signature}"
-    end
-
-    def uri_path_and_query(url)
+    def client_id_signed_url(user, url)
       uri = URI.parse(url)
-      uri.path + '?' + uri.query
+      payload_to_sign = uri.path + '?' + uri.query
+      signature = hmac(user.google_maps_private_key, payload_to_sign)
+
+      "#{url}&#{user.google_maps_query_string}&signature=#{signature}"
     end
 
-    def hmac(data)
-      OpenSSL::HMAC.digest(OpenSSL::Digest.new('sha1'), binary_key, data)
+    def key_signed_url(user, url)
+      "#{url}&#{user.google_maps_query_string}"
     end
 
-    def binary_key
-      Base64.urlsafe_decode64(@user.google_maps_private_key)
+    def hmac(key, data)
+      binary_key = Base64.urlsafe_decode64(key)
+      binary_signature = OpenSSL::HMAC.digest(OpenSSL::Digest.new('sha1'), binary_key, data)
+      Base64.urlsafe_encode64(binary_signature)
     end
   end
 end

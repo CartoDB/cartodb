@@ -15,9 +15,10 @@ require 'carto/export/layer_exporter'
 # 2.0.7: export map options
 # 2.0.8: export widget style
 # 2.0.9: export visualization id
+# 2.1.0: export permissions and syncs
 module Carto
   module VisualizationsExportService2Configuration
-    CURRENT_VERSION = '2.0.9'.freeze
+    CURRENT_VERSION = '2.1.0'.freeze
 
     def compatible_version?(version)
       version.to_i == CURRENT_VERSION.split('.')[0].to_i
@@ -69,7 +70,8 @@ module Carto
           exported_visualization[:map],
           layers: build_layers_from_hash(exported_layers)),
         overlays: build_overlays_from_hash(exported_overlays),
-        analyses: exported_visualization[:analyses].map { |a| build_analysis_from_hash(a.deep_symbolize_keys) }
+        analyses: exported_visualization[:analyses].map { |a| build_analysis_from_hash(a.deep_symbolize_keys) },
+        permission: build_permission_fron_hash(exported_visualization[:permission])
       )
 
       # This is optional as it was added in version 2.0.2
@@ -132,6 +134,10 @@ module Carto
     def build_state_from_hash(exported_state)
       Carto::State.new(json: exported_state ? exported_state[:json] : nil)
     end
+
+    def build_permission_fron_hash(exported_permission)
+      Carto::Permission.new(access_control_list: JSON.dump(exported_permission[:access_control_list]))
+    end
   end
 
   module VisualizationsExportService2Exporter
@@ -184,7 +190,8 @@ module Carto
         overlays: visualization.overlays.map { |o| export_overlay(o) },
         analyses: visualization.analyses.map { |a| exported_analysis(a) },
         user: export_user(visualization.user),
-        state: export_state(visualization.state)
+        state: export_state(visualization.state),
+        permission: export_permission(visualization.permission)
       }
     end
 
@@ -226,6 +233,12 @@ module Carto
     def export_state(state)
       {
         json: state.json
+      }
+    end
+
+    def export_permission(permission)
+      {
+        access_control_list: JSON.parse(permission.access_control_list, symbolize_names: true)
       }
     end
   end

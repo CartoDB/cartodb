@@ -3,7 +3,7 @@ Development
 
 ### Features
 * New loading button styles (#12132)
-* [WIP] Export/import organization/user metadata to allow user migration (#12271)
+* [WIP] Export/import organization/user metadata to allow user migration (#12271, #12304)
 
 ### Bug fixes / enhancements
 * Updated text of widget tooltips (#11467)

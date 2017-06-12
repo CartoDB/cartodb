@@ -1,7 +1,7 @@
 # encoding: utf-8
 
 require_relative '../../spec_helper_min.rb'
-require 'carto/google_maps_api_signer'
+require 'carto/google_maps_api'
 
 module Carto
   describe GoogleMapsApi do
@@ -16,7 +16,7 @@ module Carto
 
         it 'signs google maps urls' do
           gmas = GoogleMapsApi.new
-          expect(gmas.sign(user, url)).to eq "#{url}&client=wds&signature=fK5mHV9MLROw4xZnBPcrCOUdjio="
+          expect(gmas.sign_url(user, url)).to eq "#{url}&client=wds&signature=fK5mHV9MLROw4xZnBPcrCOUdjio="
         end
       end
 
@@ -27,7 +27,7 @@ module Carto
 
         it 'signs google maps urls' do
           gmas = GoogleMapsApi.new
-          expect(gmas.sign(user, url)).to eq "#{url}&key=xxx"
+          expect(gmas.sign_url(user, url)).to eq "#{url}&key=xxx"
         end
       end
     end

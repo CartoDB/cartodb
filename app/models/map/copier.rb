@@ -107,7 +107,8 @@ module CartoDB
         geometry_type = user_table.service.geometry_types.first
         return new_layer unless geometry_type
 
-        style_type = user_table.service.name.start_with?(TVT_PREFIX) && user.has_feature_flag?('dot_properties') ? 'tvt' : 'simple'
+        # style_type = user_table.service.name.start_with?(TVT_PREFIX) && user.has_feature_flag?('dot_properties') ? 'tvt' : 'simple'
+        style_type = user_table.service.name.start_with?(TVT_PREFIX) ? 'tvt' : 'simple'
 
         tile_style = ModelFactories::LayerFactory.builder_tile_style(geometry_type, style_type)
         new_layer.options['tile_style'] = tile_style

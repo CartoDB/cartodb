@@ -20,7 +20,7 @@ module Carto
         style_string = styles.join('')
 
         base_url = "https://maps.googleapis.com/maps/api/staticmap?center=#{params[:center]}" \
-                   "&mapType=#{params[:mapType]}&size=#{params[:size]}&style=#{style_string}&zoom=#{zoom}"
+                   "&mapType=#{params[:mapType]}&size=#{params[:size]}&style=#{style_string}&zoom=#{params[:zoom]}"
 
         render(json: { url: Carto::GoogleMapsApiSigner.new(current_user).sign(base_url) })
       rescue => e

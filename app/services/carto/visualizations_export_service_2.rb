@@ -71,7 +71,7 @@ module Carto
           layers: build_layers_from_hash(exported_layers)),
         overlays: build_overlays_from_hash(exported_overlays),
         analyses: exported_visualization[:analyses].map { |a| build_analysis_from_hash(a.deep_symbolize_keys) },
-        permission: build_permission_fron_hash(exported_visualization[:permission])
+        permission: build_permission_from_hash(exported_visualization[:permission])
       )
 
       # This is optional as it was added in version 2.0.2
@@ -138,7 +138,9 @@ module Carto
       Carto::State.new(json: exported_state ? exported_state[:json] : nil)
     end
 
-    def build_permission_fron_hash(exported_permission)
+    def build_permission_from_hash(exported_permission)
+      return nil unless exported_permission
+
       Carto::Permission.new(access_control_list: JSON.dump(exported_permission[:access_control_list]))
     end
 

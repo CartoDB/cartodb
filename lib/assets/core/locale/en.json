@@ -268,7 +268,7 @@
       },
       "area": "Per sq km",
       "count": {
-        "top": "Top %{items} results",
+        "suggested": "Suggested measurements",
         "search": "%{items} results"
       },
       "search-by-name": "Search by name..."

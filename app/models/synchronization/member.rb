@@ -136,6 +136,8 @@ module CartoDB
 
       def enqueue
         Resque.enqueue(Resque::SynchronizationJobs, job_id: id)
+        self.error_code = nil
+        self.error_message = nil
         self.state = CartoDB::Synchronization::Member::STATE_QUEUED
         self.store
       end

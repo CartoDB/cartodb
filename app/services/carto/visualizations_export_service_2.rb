@@ -14,9 +14,10 @@ require 'carto/export/layer_exporter'
 # 2.0.6: export version
 # 2.0.7: export map options
 # 2.0.8: export widget style
+# 2.0.9: export visualization id
 module Carto
   module VisualizationsExportService2Configuration
-    CURRENT_VERSION = '2.0.8'.freeze
+    CURRENT_VERSION = '2.0.9'.freeze
 
     def compatible_version?(version)
       version.to_i == CURRENT_VERSION.split('.')[0].to_i

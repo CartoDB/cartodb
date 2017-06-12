@@ -51,7 +51,7 @@ sudo make install
 
 #### Dropbox API v2 migration
 
-Dropbox API v2 (#8303): [Dropbox deprecated API v1](https://blogs.dropbox.com/developers/2016/06/api-v1-deprecated/)
+Dropbox API v2 (#8303, #12300): [Dropbox deprecated API v1](https://blogs.dropbox.com/developers/2016/06/api-v1-deprecated/)
 so CARTO must migrate. If you are using Dropbox integration, you must:
 * Check which permission does your application has in Dropbox. If it's "Full", just upgrading CARTO is enough.
 * If it's not "Full", you must:

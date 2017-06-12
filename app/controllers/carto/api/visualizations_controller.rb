@@ -273,7 +273,7 @@ module Carto
           map_type: params[:mapType],
           size: params[:size],
           zoom: params[:zoom],
-          style: params[:style]
+          style: JSON.parse(params[:style], symbolize_names: true)
         )
 
         render(json: { url: Carto::GoogleMapsApi.new.sign_url(@visualization.user, base_url) })

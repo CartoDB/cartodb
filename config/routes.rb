@@ -473,7 +473,7 @@ CartoDB::Application.routes.draw do
     put '(/user/:user_domain)(/u/:user_domain)/api/v1/perm/:id' => 'permissions#update', as: :api_v1_permissions_update
 
     # URL for Google Maps API
-    post '(/user/:user_domain)(/u/:user_domain)/api/v1/google_maps_static_image' => 'users#google_maps_static_image'
+    post '(/user/:user_domain)(/u/:user_domain)/api/v1/google_maps_static_image' => 'users#google_maps_static_image', as: :api_v1_google_maps_static_image
   end
 
   scope module: 'api/json', defaults: { format: :json } do

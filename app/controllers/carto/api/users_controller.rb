@@ -1,3 +1,5 @@
+require_dependency 'carto/google_maps_api_signer'
+
 module Carto
   module Api
     class UsersController < ::Api::ApplicationController
@@ -11,25 +13,14 @@ module Carto
       end
 
       def google_maps_static_image
-        styles_definition = JSON.parse(params[:style], symbolize_names: true)
-        styles = styles_definition.map do |style_definition|
-          style_parts = []
-          style_parts << "feature:#{style_definition[:featureType] || 'all'}"
-          style_parts << "element:#{style_definition[:elementType] || 'all'}"
-          style_definition[:stylers].each do |styler|
-            style_parts += styler.map { |k, v| "#{k}:#{v.to_s.gsub('#', '0x')}" }
-          end
-          '&style=' + style_parts.join('|')
-        end
-        style_string = styles.join('')
-
+        style_string = parse_google_maps_styles(params[:style])
         base_url = "https://maps.googleapis.com/maps/api/staticmap?center=#{params[:center]}" \
-                   "&mapType=#{params[:mapType]}&size=#{params[:size]}&style=#{style_string}&zoom=#{params[:zoom]}"
+                   "&mapType=#{params[:mapType]}&size=#{params[:size]}#{style_string}&zoom=#{params[:zoom]}"
 
         render(json: { url: Carto::GoogleMapsApiSigner.new(current_user).sign(base_url) })
       rescue => e
         CartoDB::Logger.error(message: 'Error generating Google API URL', exception: e)
-        render(json: { errors: 'Error generating static image URL' })
+        render(json: { errors: 'Error generating static image URL' }, status: 400)
       end
 
       def get_authenticated_users
@@ -54,6 +45,21 @@ module Carto
       end
 
       private
+
+      def parse_google_maps_styles(style_json)
+        return '' unless style_json
+        styles_definition = JSON.parse(style_json, symbolize_names: true)
+        styles = styles_definition.map do |style_definition|
+          style_parts = []
+          style_parts << "feature:#{style_definition[:featureType] || 'all'}"
+          style_parts << "element:#{style_definition[:elementType] || 'all'}"
+          style_definition[:stylers].each do |styler|
+            style_parts += styler.map { |k, v| "#{k}:#{v.to_s.gsub('#', '0x')}" }
+          end
+          '&style=' + style_parts.join('|')
+        end
+        styles.join('')
+      end
 
       def render_auth_users_data(user, referrer, subdomain, referrer_organization_username=nil)
         organization_name = nil

@@ -1,4 +1,3 @@
-require_dependency 'carto/google_maps_api'
 
 module Carto
   module Api
@@ -10,21 +9,6 @@ module Carto
 
       def show
         render json: Carto::Api::UserPresenter.new(uri_user).data
-      end
-
-      def google_maps_static_image
-        base_url = Carto::GoogleMapsApi.new.build_static_image_url(
-          center: params[:center],
-          map_type: params[:mapType],
-          size: params[:size],
-          zoom: params[:zoom],
-          style: params[:style]
-        )
-
-        render(json: { url: Carto::GoogleMapsApi.new.sign(current_user, base_url) })
-      rescue => e
-        CartoDB::Logger.error(message: 'Error generating Google API URL', exception: e)
-        render(json: { errors: 'Error generating static image URL' }, status: 400)
       end
 
       def get_authenticated_users

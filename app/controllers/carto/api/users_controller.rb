@@ -1,4 +1,4 @@
-require_dependency 'carto/google_maps_api_signer'
+require_dependency 'carto/google_maps_api'
 
 module Carto
   module Api
@@ -13,11 +13,15 @@ module Carto
       end
 
       def google_maps_static_image
-        style_string = parse_google_maps_styles(params[:style])
-        base_url = "https://maps.googleapis.com/maps/api/staticmap?center=#{params[:center]}" \
-                   "&mapType=#{params[:mapType]}&size=#{params[:size]}#{style_string}&zoom=#{params[:zoom]}"
+        base_url = Carto::GoogleMapsApi.new.build_static_image_url(
+          center: params[:center],
+          map_type: params[:mapType],
+          size: params[:size],
+          zoom: params[:zoom],
+          style: params[:style]
+        )
 
-        render(json: { url: Carto::GoogleMapsApiSigner.new.sign(current_user, base_url) })
+        render(json: { url: Carto::GoogleMapsApi.new.sign(current_user, base_url) })
       rescue => e
         CartoDB::Logger.error(message: 'Error generating Google API URL', exception: e)
         render(json: { errors: 'Error generating static image URL' }, status: 400)
@@ -45,21 +49,6 @@ module Carto
       end
 
       private
-
-      def parse_google_maps_styles(style_json)
-        return '' unless style_json
-        styles_definition = JSON.parse(style_json, symbolize_names: true)
-        styles = styles_definition.map do |style_definition|
-          style_parts = []
-          style_parts << "feature:#{style_definition[:featureType] || 'all'}"
-          style_parts << "element:#{style_definition[:elementType] || 'all'}"
-          style_definition[:stylers].each do |styler|
-            style_parts += styler.map { |k, v| "#{k}:#{v.to_s.gsub('#', '0x')}" }
-          end
-          '&style=' + style_parts.join('|')
-        end
-        styles.join('')
-      end
 
       def render_auth_users_data(user, referrer, subdomain, referrer_organization_username=nil)
         organization_name = nil

@@ -11,11 +11,15 @@ module Carto
       end
 
       def google_maps_static_image
-        styles_definition = JSON.parse(params[:style])
+        styles_definition = JSON.parse(params[:style], symbolize_names: true)
         styles = styles_definition.map do |style_definition|
-          style_definition[:featureType] ||= 'all'
-          style_definition[:elementType] ||= 'all'
-          '&style=' + style_definition.map { |k, v| "#{k}:#{v.replace('#', '0x')}" }.join('|')
+          style_parts = []
+          style_parts << "feature:#{style_definition[:featureType] || 'all'}"
+          style_parts << "element:#{style_definition[:elementType] || 'all'}"
+          style_definition[:stylers].each do |styler|
+            style_parts += styler.map { |k, v| "#{k}:#{v.to_s.gsub('#', '0x')}" }
+          end
+          '&style=' + style_parts.join('|')
         end
         style_string = styles.join('')
 
@@ -24,7 +28,8 @@ module Carto
 
         render(json: { url: Carto::GoogleMapsApiSigner.new(current_user).sign(base_url) })
       rescue => e
-        render(json: { errors: [e.message] })
+        CartoDB::Logger.error(message: 'Error generating Google API URL', exception: e)
+        render(json: { errors: 'Error generating static image URL' })
       end
 
       def get_authenticated_users

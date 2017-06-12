@@ -8,11 +8,11 @@ module Carto
     include Carto::UUIDHelper
     include Carto::QueryRewriter
 
-    def save_import(user, visualization, renamed_tables: {}, keep_id: false)
+    def save_import(user, visualization, renamed_tables: {}, restore_id: false, restore_permission: false)
       old_username = visualization.user.username if visualization.user
       apply_user_limits(user, visualization)
       ActiveRecord::Base.transaction do
-        visualization.id = random_uuid unless visualization.id && keep_id
+        visualization.id = random_uuid unless visualization.id && restore_id
         visualization.user = user
 
         ensure_unique_name(user, visualization)
@@ -22,8 +22,9 @@ module Carto
           analysis.analysis_node.fix_analysis_node_queries(old_username, user, renamed_tables)
         end
 
-        permission = Carto::Permission.new(owner: user, owner_username: user.username)
-        visualization.permission = permission
+        visualization.permission = Carto::Permission.new unless restore_permission
+        visualization.permission.owner = user
+        visualization.permission.owner_username = user.username
 
         map = visualization.map
         map.user = user
@@ -59,6 +60,8 @@ module Carto
       # Propagate changes (named maps, default permissions and so on)
       visualization_member = CartoDB::Visualization::Member.new(id: visualization.id).fetch
       visualization_member.store
+
+      visualization.permission.update_changes if restore_permission
 
       visualization
     end

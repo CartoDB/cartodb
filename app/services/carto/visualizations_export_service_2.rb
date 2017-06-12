@@ -88,6 +88,9 @@ module Carto
         visualization.active_layer = visualization.layers.find { |l| l.order == active_layer_order }
       end
 
+      exported_sync = exported_visualization[:synchronization]
+      visualization.synchronization = build_synchronization_from_hash(exported_sync) if exported_sync
+
       visualization.id = exported_visualization[:id] if exported_visualization[:id]
       visualization
     end
@@ -137,6 +140,35 @@ module Carto
 
     def build_permission_fron_hash(exported_permission)
       Carto::Permission.new(access_control_list: JSON.dump(exported_permission[:access_control_list]))
+    end
+
+    def build_synchronization_from_hash(exported_synchronization)
+      Carto::Synchronization.new(
+        name: exported_synchronization[:name],
+        interval: exported_synchronization[:interval],
+        url: exported_synchronization[:url],
+        state: exported_synchronization[:state],
+        created_at: exported_synchronization[:created_at],
+        updated_at: exported_synchronization[:updated_at],
+        run_at: exported_synchronization[:run_at],
+        retried_times: exported_synchronization[:retried_times],
+        log: build_log_from_hash(exported_synchronization[:log]),
+        error_code: exported_synchronization[:error_code],
+        error_message: exported_synchronization[:error_message],
+        ran_at: exported_synchronization[:ran_at],
+        modified_at: exported_synchronization[:modified_at],
+        etag: exported_synchronization[:etag],
+        checksum: exported_synchronization[:checksum],
+        service_name: exported_synchronization[:service_name],
+        service_item_id: exported_synchronization[:service_item_id],
+        type_guessing: exported_synchronization[:type_guessing],
+        quoted_fields_guessing: exported_synchronization[:quoted_fields_guessing],
+        content_guessing: exported_synchronization[:content_guessing]
+      )
+    end
+
+    def build_log_from_hash(exported_log)
+      Carto::Log.new(type: exported_log[:type], entries: exported_log[:entries])
     end
   end
 
@@ -191,7 +223,8 @@ module Carto
         analyses: visualization.analyses.map { |a| exported_analysis(a) },
         user: export_user(visualization.user),
         state: export_state(visualization.state),
-        permission: export_permission(visualization.permission)
+        permission: export_permission(visualization.permission),
+        synchronization: export_syncronization(visualization.synchronization)
       }
     end
 
@@ -239,6 +272,39 @@ module Carto
     def export_permission(permission)
       {
         access_control_list: JSON.parse(permission.access_control_list, symbolize_names: true)
+      }
+    end
+
+    def export_syncronization(synchronization)
+      return nil unless synchronization
+      {
+        name: synchronization.name,
+        interval: synchronization.interval,
+        url: synchronization.url,
+        state: synchronization.state,
+        created_at: synchronization.created_at,
+        updated_at: synchronization.updated_at,
+        run_at: synchronization.run_at,
+        retried_times: synchronization.retried_times,
+        log: export_log(synchronization.log),
+        error_code: synchronization.error_code,
+        error_message: synchronization.error_message,
+        ran_at: synchronization.ran_at,
+        modified_at: synchronization.modified_at,
+        etag: synchronization.etag,
+        checksum: synchronization.checksum,
+        service_name: synchronization.service_name,
+        service_item_id: synchronization.service_item_id,
+        type_guessing: synchronization.type_guessing,
+        quoted_fields_guessing: synchronization.quoted_fields_guessing,
+        content_guessing: synchronization.content_guessing
+      }
+    end
+
+    def export_log(log)
+      {
+        type: log.type,
+        entries: log.entries
       }
     end
   end

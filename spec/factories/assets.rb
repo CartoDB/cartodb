@@ -5,6 +5,10 @@ FactoryGirl.define do
     public_url 'https://manolo.es/es/co/bar.png'
   end
 
+  factory :carto_asset, class: Carto::Asset do
+    public_url 'https://manolo.es/es/co/bar.png'
+  end
+
   factory :organization_asset, class: Carto::Asset do
     storage_info do
       {

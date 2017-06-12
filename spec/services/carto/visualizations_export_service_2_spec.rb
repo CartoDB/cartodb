@@ -10,7 +10,7 @@ describe Carto::VisualizationsExportService2 do
   let(:export) do
     {
       visualization: base_visualization_export,
-      version: '2.0.9'
+      version: '2.1.0'
     }
   end
 
@@ -220,7 +220,9 @@ describe Carto::VisualizationsExportService2 do
       analyses: [
         { analysis_definition: { id: 'a1', type: 'source' } }
       ],
-      user: { username: 'juanignaciosl' }
+      user: { username: 'juanignaciosl' },
+      permission: { access_control_list: [] },
+      synchronization: nil
     }
   end
 
@@ -614,6 +616,18 @@ describe Carto::VisualizationsExportService2 do
       end
 
       describe 'maintains backwards compatibility with' do
+        it '2.0.9 (without permission nor sync)' do
+          export_2_0_9 = export
+          export_2_0_9[:visualization].delete(:synchronization)
+          export_2_0_9[:visualization].delete(:permission)
+
+          service = Carto::VisualizationsExportService2.new
+          visualization = service.build_visualization_from_json_export(export_2_0_9.to_json)
+
+          visualization.permission.should be_nil
+          visualization.synchronization.should be_nil
+        end
+
         it '2.0.8 (without id)' do
           export_2_0_8 = export
           export_2_0_8[:visualization].delete(:id)
@@ -1340,6 +1354,22 @@ describe Carto::VisualizationsExportService2 do
 
       imported_viz = Carto::Visualization.find(imported_viz.id)
       verify_visualizations_match(imported_viz, @visualization, importing_user: @user2)
+
+      destroy_visualization(imported_viz.id)
+    end
+
+    it 'importing a synced dataset should keep the sync' do
+      @table_visualization.active_layer_id = @table_visualization.data_layers.first.id
+      @table_visualization.save
+      FactoryGirl.create(:carto_synchronization, visualization: @table_visualization)
+      exported_string = export_service.export_visualization_json_string(@table_visualization.id, @user)
+      built_viz = export_service.build_visualization_from_json_export(exported_string)
+      @table_visualization.delete
+      imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user, built_viz)
+
+      imported_viz = Carto::Visualization.find(imported_viz.id)
+      verify_visualizations_match(imported_viz, @table_visualization, importing_user: @user)
+      imported_viz.synchronization.should be
 
       destroy_visualization(imported_viz.id)
     end

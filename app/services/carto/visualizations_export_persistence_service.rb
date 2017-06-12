@@ -32,6 +32,12 @@ module Carto
           analysis.user_id = user.id
         end
 
+        sync = visualization.synchronization
+        if sync
+          sync.id = random_uuid
+          sync.user = user
+        end
+
         unless visualization.save
           raise "Errors saving imported visualization: #{visualization.errors.full_messages}"
         end

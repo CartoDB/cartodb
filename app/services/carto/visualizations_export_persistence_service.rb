@@ -22,9 +22,8 @@ module Carto
           analysis.analysis_node.fix_analysis_node_queries(old_username, user, renamed_tables)
         end
 
-        visualization.permission = Carto::Permission.new unless restore_permission
-        visualization.permission.owner = user
-        visualization.permission.owner_username = user.username
+        saved_acl = visualization.permission.access_control_list if restore_permission
+        visualization.permission = Carto::Permission.new(owner: user, owner_username: user.username)
 
         map = visualization.map
         map.user = user
@@ -35,6 +34,12 @@ module Carto
 
         unless visualization.save
           raise "Errors saving imported visualization: #{visualization.errors.full_messages}"
+        end
+
+        # Save permissions after visualization, in order to be able to regenerate shared_entities
+        if saved_acl
+          visualization.permission.access_control_list = saved_acl
+          visualization.permission.save
         end
 
         visualization.layers.map do |layer|
@@ -60,8 +65,6 @@ module Carto
       # Propagate changes (named maps, default permissions and so on)
       visualization_member = CartoDB::Visualization::Member.new(id: visualization.id).fetch
       visualization_member.store
-
-      visualization.permission.update_changes if restore_permission
 
       visualization
     end

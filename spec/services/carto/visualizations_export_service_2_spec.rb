@@ -1367,6 +1367,43 @@ describe Carto::VisualizationsExportService2 do
       end
     end
 
+    describe 'if restore_permission is' do
+      before(:each) do
+        @visualization.permission.acl = [{
+          type: 'user',
+          entity: {
+            id: @user2.id,
+            username: @user2.username
+          },
+          access: 'r'
+        }]
+        @visualization.permission.save
+      end
+
+      it 'false, it should generate a blank permission' do
+        exported_string = export_service.export_visualization_json_string(@visualization.id, @user)
+        built_viz = export_service.build_visualization_from_json_export(exported_string)
+        imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user, built_viz)
+
+        imported_viz.permission.acl.should be_empty
+        imported_viz.shared_entities.count.should be_zero
+
+        destroy_visualization(imported_viz.id)
+      end
+
+      it 'true, it should keep the imported permission' do
+        exported_string = export_service.export_visualization_json_string(@visualization.id, @user)
+        built_viz = export_service.build_visualization_from_json_export(exported_string)
+        imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user, built_viz, restore_permission: true)
+
+        imported_viz.permission.acl.should_not be_empty
+        imported_viz.shared_entities.count.should eq 1
+        imported_viz.shared_entities.first.recipient_id.should eq @user2.id
+
+        destroy_visualization(imported_viz.id)
+      end
+    end
+
     describe 'basemaps' do
       describe 'custom' do
         before(:each) do

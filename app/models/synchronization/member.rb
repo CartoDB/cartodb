@@ -203,12 +203,46 @@ module CartoDB
 
         notify
 
-      rescue CartoDB::Datasources::NotFoundDownloadError => exception
-        CartoDB::Logger.debug(exception: exception, sync_id: id)
-        handle_run_error(log, exception, importer)
       rescue => exception
-        CartoDB::Logger.error(exception: exception, sync_id: id)
-        handle_run_error(log, exception, importer)
+        if exception.is_a? CartoDB::Datasources::NotFoundDownloadError
+          CartoDB::Logger.debug(exception: exception, sync_id: id)
+        else
+          CartoDB::Logger.error(exception: exception, sync_id: id)
+        end
+        log.append_and_store exception.message, truncate = false
+        log.append exception.backtrace.join("\n"), truncate = false
+
+        if importer.nil?
+          if exception.is_a?(NotFoundDownloadError)
+            set_general_failure_state_from(exception, 1017, 'File not found, you must import it again')
+          elsif exception.is_a?(CartoDB::Importer2::FileTooBigError)
+            set_general_failure_state_from(exception, exception.error_code,
+                                           CartoDB::IMPORTER_ERROR_CODES[exception.error_code][:title])
+          elsif exception.is_a?(AuthError)
+            set_general_failure_state_from(exception, 1011, 'Unauthorized')
+          else
+            set_general_failure_state_from(exception)
+          end
+        else
+          set_failure_state_from(importer)
+        end
+
+        store
+
+        if exception.is_a?(TokenExpiredOrInvalidError)
+          begin
+            user.oauths.remove(exception.service_name)
+          rescue => ex
+            log.append "Exception removing OAuth: #{ex.message}"
+            log.append ex.backtrace
+          end
+        end
+        notify
+        self
+      ensure
+        CartoDB::PlatformLimits::Importer::UserConcurrentSyncsAmount.new(
+          user: user, redis: { db: $users_metadata }
+        ).decrement!
       end
 
       def get_runner
@@ -527,45 +561,6 @@ module CartoDB
 
       attr_accessor :log_trace, :service_name, :service_item_id
 
-    end
-
-    private
-
-    def handle_run_error(log, exception, importer)
-      log.append_and_store exception.message, truncate = false
-      log.append exception.backtrace.join("\n"), truncate = false
-
-      if importer.nil?
-        if exception.is_a?(NotFoundDownloadError)
-          set_general_failure_state_from(exception, 1017, 'File not found, you must import it again')
-        elsif exception.is_a?(CartoDB::Importer2::FileTooBigError)
-          set_general_failure_state_from(exception, exception.error_code,
-                                         CartoDB::IMPORTER_ERROR_CODES[exception.error_code][:title])
-        elsif exception.is_a?(AuthError)
-          set_general_failure_state_from(exception, 1011, 'Unauthorized')
-        else
-          set_general_failure_state_from(exception)
-        end
-      else
-        set_failure_state_from(importer)
-      end
-
-      store
-
-      if exception.is_a?(TokenExpiredOrInvalidError)
-        begin
-          user.oauths.remove(exception.service_name)
-        rescue => ex
-          log.append "Exception removing OAuth: #{ex.message}"
-          log.append ex.backtrace
-        end
-      end
-      notify
-      self
-    ensure
-      CartoDB::PlatformLimits::Importer::UserConcurrentSyncsAmount.new(
-        user: user, redis: { db: $users_metadata }
-      ).decrement!
     end
   end
 end

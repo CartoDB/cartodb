@@ -6,7 +6,7 @@ before_install:
   - git submodule update --init --recursive
 
 install:
-  - npm install
+  - npm install --no-optional
 
 before_script:
   - npm install -g npm@3.10.9

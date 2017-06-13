@@ -91,6 +91,9 @@
     "webpack-bundle-analyzer": "^2.4.0",
     "webpack-stats-plugin": "0.1.4"
   },
+  "optionalDependencies": {
+    "fsevents": "*"
+  },
   "browserify": {
     "transform": [
       "browserify-shim",

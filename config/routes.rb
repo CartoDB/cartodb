@@ -346,6 +346,7 @@ CartoDB::Application.routes.draw do
     post    '(/user/:user_domain)(/u/:user_domain)/api/v1/viz'                            => 'visualizations#create',          as: :api_v1_visualizations_create
     put     '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id'                        => 'visualizations#update',          as: :api_v1_visualizations_update,          constraints: { id: /[^\/]+/ }
     delete '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id'                         => 'visualizations#destroy',         as: :api_v1_visualizations_destroy,         constraints: { id: /[^\/]+/ }
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/google_maps_static_image'  => 'visualizations#google_maps_static_image', as: :api_v1_google_maps_static_image, constraints: { id: /[^\/]+/ }
 
     # Tables
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/tables/:id'                     => 'tables#show',   as: :api_v1_tables_show, constraints: { id: /[^\/]+/ }

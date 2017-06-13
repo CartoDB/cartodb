@@ -1997,6 +1997,26 @@ describe Carto::Api::VisualizationsController do
 
           table.destroy
         end
+
+        it 'sets password protection' do
+          visualization = FactoryGirl.create(:carto_visualization, user_id: @user.id)
+          visualization.password_protected?.should be_false
+
+          payload = {
+            id: visualization.id,
+            password: 'the_pass',
+            privacy: Carto::Visualization::PRIVACY_PROTECTED
+          }
+          put_json api_v1_visualizations_update_url(id: visualization.id), payload do |response|
+            response.status.should be_success
+          end
+
+          visualization.reload
+          visualization.password_protected?.should be_true
+          visualization.password_valid?('the_pass').should be_true
+
+          visualization.destroy
+        end
       end
     end
 

@@ -303,7 +303,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def password_valid?(password)
-    has_password? && ( password_digest(password, password_salt) == encrypted_password )
+    has_password? && (password_digest(password, password_salt) == encrypted_password)
   end
 
   def organization?

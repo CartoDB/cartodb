@@ -1655,7 +1655,7 @@ describe Carto::Api::VisualizationsController do
           before(:each) do
             bypass_named_maps
 
-            @map = Map.create(user_id: @user.id, table_id: create_table(user_id: @user.id).id)
+            @map = Map.create(user_id: @user.id)
             @visualization = FactoryGirl.create(:derived_visualization,
                                                 map_id: @map.id,
                                                 user_id: @user.id,

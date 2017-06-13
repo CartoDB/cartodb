@@ -4,6 +4,7 @@ Development
 ### Features
 * New loading button styles (#12132)
 * [WIP] Export/import organization/user metadata to allow user migration (#12271)
+* Removed the usage of the `organizations_admin` feature flag (#12131)
 
 ### Bug fixes / enhancements
 * Updated text of widget tooltips (#11467)

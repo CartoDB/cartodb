@@ -97,6 +97,7 @@ module Carto
       existing_names = Carto::Visualization.uniq
                                            .where(user_id: user.id)
                                            .where("name ~ ?", "#{Regexp.escape(visualization.name)}( Import)?( \d*)?$")
+                                           .where(type: visualization.type)
                                            .pluck(:name)
       if existing_names.include?(visualization.name)
         raise 'Cannot rename a dataset during import' if visualization.canonical?

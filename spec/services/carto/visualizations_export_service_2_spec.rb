@@ -222,7 +222,8 @@ describe Carto::VisualizationsExportService2 do
       ],
       user: { username: 'juanignaciosl' },
       permission: { access_control_list: [] },
-      synchronization: nil
+      synchronization: nil,
+      user_table: nil
     }
   end
 
@@ -616,9 +617,10 @@ describe Carto::VisualizationsExportService2 do
       end
 
       describe 'maintains backwards compatibility with' do
-        it '2.0.9 (without permission nor sync)' do
+        it '2.0.9 (without permission, sync nor user_table)' do
           export_2_0_9 = export
           export_2_0_9[:visualization].delete(:synchronization)
+          export_2_0_9[:visualization].delete(:user_table)
           export_2_0_9[:visualization].delete(:permission)
 
           service = Carto::VisualizationsExportService2.new

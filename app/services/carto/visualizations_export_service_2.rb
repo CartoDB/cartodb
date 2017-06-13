@@ -15,7 +15,7 @@ require 'carto/export/layer_exporter'
 # 2.0.7: export map options
 # 2.0.8: export widget style
 # 2.0.9: export visualization id
-# 2.1.0: export permissions and syncs
+# 2.1.0: export datasets: permissions, user_tables and syncs
 module Carto
   module VisualizationsExportService2Configuration
     CURRENT_VERSION = '2.1.0'.freeze
@@ -88,8 +88,10 @@ module Carto
         visualization.active_layer = visualization.layers.find { |l| l.order == active_layer_order }
       end
 
-      exported_sync = exported_visualization[:synchronization]
-      visualization.synchronization = build_synchronization_from_hash(exported_sync) if exported_sync
+      # Dataset-specific
+      user_table = build_user_table_from_hash(exported_visualization[:user_table])
+      visualization.map.user_table = user_table if user_table
+      visualization.synchronization = build_synchronization_from_hash(exported_visualization[:synchronization])
 
       visualization.id = exported_visualization[:id] if exported_visualization[:id]
       visualization
@@ -145,6 +147,8 @@ module Carto
     end
 
     def build_synchronization_from_hash(exported_synchronization)
+      return nil unless exported_synchronization
+
       Carto::Synchronization.new(
         name: exported_synchronization[:name],
         interval: exported_synchronization[:interval],
@@ -171,6 +175,23 @@ module Carto
 
     def build_log_from_hash(exported_log)
       Carto::Log.new(type: exported_log[:type], entries: exported_log[:entries])
+    end
+
+    def build_user_table_from_hash(exported_user_table)
+      return nil unless exported_user_table
+
+      Carto::UserTable.new(
+        name: exported_user_table[:name],
+        privacy: exported_user_table[:privacy],
+        tags: exported_user_table[:tags],
+        geometry_columns: exported_user_table[:geometry_columns],
+        rows_counted: exported_user_table[:rows_counted],
+        rows_estimated: exported_user_table[:rows_estimated],
+        indexes: exported_user_table[:indexes],
+        database_name: exported_user_table[:database_name],
+        description: exported_user_table[:description],
+        table_id: exported_user_table[:table_id]
+      )
     end
   end
 
@@ -226,7 +247,8 @@ module Carto
         user: export_user(visualization.user),
         state: export_state(visualization.state),
         permission: export_permission(visualization.permission),
-        synchronization: export_syncronization(visualization.synchronization)
+        synchronization: export_syncronization(visualization.synchronization),
+        user_table: export_user_table(visualization.map.user_table)
       }
     end
 
@@ -307,6 +329,23 @@ module Carto
       {
         type: log.type,
         entries: log.entries
+      }
+    end
+
+    def export_user_table(user_table)
+      return nil unless user_table
+
+      {
+        name: user_table.name,
+        privacy: user_table.privacy,
+        tags: user_table.tags,
+        geometry_columns: user_table.geometry_columns,
+        rows_counted: user_table.rows_counted,
+        rows_estimated: user_table.rows_estimated,
+        indexes: user_table.indexes,
+        database_name: user_table.database_name,
+        description: user_table.description,
+        table_id: user_table.table_id
       }
     end
   end

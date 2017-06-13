@@ -58,7 +58,7 @@ module Carto
     end
 
     def mapzen_api_key
-      Cartodb.get_config(:geocoder, 'mapzen', 'api_key')
+      Cartodb.get_config(:geocoder, 'mapzen', 'search_bar_api_key')
     end
 
     private

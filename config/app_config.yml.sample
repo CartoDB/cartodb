@@ -187,7 +187,7 @@ defaults: &defaults
       api_key: ''
       table_name: ''
     mapzen:
-      api_key: ''
+      search_bar_api_key: ''
   user_migrator:
     user_exports_folder: '/tmp/user_exports'
     user_imports_folder: '/tmp/user_imports'

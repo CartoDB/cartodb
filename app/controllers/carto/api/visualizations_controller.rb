@@ -268,8 +268,9 @@ module Carto
       end
 
       def google_maps_static_image
+        gmaps_api = Carto::GoogleMapsApi.new
         base_layer_options = @visualization.base_layers.first.options
-        base_url = Carto::GoogleMapsApi.new.build_static_image_url(
+        base_url = gmaps_api.build_static_image_url(
           center: params[:center],
           map_type: base_layer_options[:baseType],
           size: params[:size],
@@ -277,7 +278,7 @@ module Carto
           style: JSON.parse(base_layer_options[:style], symbolize_names: true)
         )
 
-        render(json: { url: Carto::GoogleMapsApi.new.sign_url(@visualization.user, base_url) })
+        render(json: { url: gmaps_api.sign_url(@visualization.user, base_url) })
       rescue => e
         CartoDB::Logger.error(message: 'Error generating Google API URL', exception: e)
         render(json: { errors: 'Error generating static image URL' }, status: 400)

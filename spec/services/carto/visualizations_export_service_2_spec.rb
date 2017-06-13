@@ -1293,149 +1293,175 @@ describe Carto::VisualizationsExportService2 do
       imported_overlay.template.should eq original_overlay.template
     end
 
-    before(:all) do
-      @user = FactoryGirl.create(:carto_user, private_maps_enabled: true)
-      @user2 = FactoryGirl.create(:carto_user, private_maps_enabled: true)
-    end
-
-    after(:all) do
-      # This avoids connection leaking.
-      ::User[@user.id].destroy
-      ::User[@user2.id].destroy
-    end
-
-    before(:each) do
-      bypass_named_maps
-      @map, @table, @table_visualization, @visualization = create_full_visualization(@user)
-      carto_layer = @visualization.layers.find { |l| l.kind == 'carto' }
-      carto_layer.options[:user_name] = @user.username
-      carto_layer.save
-      @analysis = FactoryGirl.create(:source_analysis, visualization: @visualization, user: @user)
-    end
-
-    after(:each) do
-      @analysis.destroy
-      destroy_full_visualization(@map, @table, @table_visualization, @visualization)
-    end
-
-    let(:export_service) { Carto::VisualizationsExportService2.new }
-
-    it 'importing an exported visualization should create a new visualization with matching metadata' do
-      exported_string = export_service.export_visualization_json_string(@visualization.id, @user)
-      built_viz = export_service.build_visualization_from_json_export(exported_string)
-      imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user, built_viz)
-
-      imported_viz = Carto::Visualization.find(imported_viz.id)
-      verify_visualizations_match(imported_viz,
-                                  @visualization,
-                                  importing_user: @user,
-                                  imported_name: "#{@visualization.name} Import")
-
-      destroy_visualization(imported_viz.id)
-    end
-
-    it 'importing an exported visualization several times should change imported name' do
-      exported_string = export_service.export_visualization_json_string(@visualization.id, @user)
-
-      built_viz = export_service.build_visualization_from_json_export(exported_string)
-      imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user, built_viz)
-      imported_viz.name.should eq "#{@visualization.name} Import"
-
-      built_viz = export_service.build_visualization_from_json_export(exported_string)
-      imported_viz2 = Carto::VisualizationsExportPersistenceService.new.save_import(@user, built_viz)
-      imported_viz2.name.should eq "#{@visualization.name} Import 2"
-
-      destroy_visualization(imported_viz.id)
-      destroy_visualization(imported_viz2.id)
-    end
-
-    it 'importing an exported visualization into another account should change layer user_name option' do
-      exported_string = export_service.export_visualization_json_string(@visualization.id, @user)
-      built_viz = export_service.build_visualization_from_json_export(exported_string)
-      imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user2, built_viz)
-
-      imported_viz = Carto::Visualization.find(imported_viz.id)
-      verify_visualizations_match(imported_viz, @visualization, importing_user: @user2)
-
-      destroy_visualization(imported_viz.id)
-    end
-
-    it 'importing a synced dataset should keep the sync' do
-      @table_visualization.active_layer_id = @table_visualization.data_layers.first.id
-      @table_visualization.save
-      FactoryGirl.create(:carto_synchronization, visualization: @table_visualization)
-      exported_string = export_service.export_visualization_json_string(@table_visualization.id, @user)
-      built_viz = export_service.build_visualization_from_json_export(exported_string)
-      @table_visualization.delete
-      imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user, built_viz)
-
-      imported_viz = Carto::Visualization.find(imported_viz.id)
-      verify_visualizations_match(imported_viz, @table_visualization, importing_user: @user)
-      sync = imported_viz.synchronization
-      sync.should be
-      sync.user_id.should eq @user.id
-      sync.log.user_id.should eq @user.id
-
-      destroy_visualization(imported_viz.id)
-    end
-
-    describe 'if restore_id is' do
-      it 'false, it should generate a random uuid' do
-        exported_string = export_service.export_visualization_json_string(@visualization.id, @user)
-        built_viz = export_service.build_visualization_from_json_export(exported_string)
-        original_id = built_viz.id
-
-        imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user2, built_viz)
-        imported_viz.id.should_not eq original_id
-        destroy_visualization(imported_viz.id)
+    describe 'maps' do
+      before(:all) do
+        @user = FactoryGirl.create(:carto_user, private_maps_enabled: true)
+        @user2 = FactoryGirl.create(:carto_user, private_maps_enabled: true)
       end
 
-      it 'true, it should keep the imported uuid' do
-        exported_string = export_service.export_visualization_json_string(@visualization.id, @user)
-        built_viz = export_service.build_visualization_from_json_export(exported_string)
-        test_id = random_uuid
-        built_viz.id = test_id
-
-        imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user2, built_viz, restore_id: true)
-        imported_viz.id.should eq test_id
-        destroy_visualization(imported_viz.id)
+      after(:all) do
+        # This avoids connection leaking.
+        ::User[@user.id].destroy
+        ::User[@user2.id].destroy
       end
-    end
 
-    describe 'if restore_permission is' do
       before(:each) do
-        @visualization.permission.acl = [{
-          type: 'user',
-          entity: {
-            id: @user2.id,
-            username: @user2.username
-          },
-          access: 'r'
-        }]
-        @visualization.permission.save
+        bypass_named_maps
+        @map, @table, @table_visualization, @visualization = create_full_visualization(@user)
+        carto_layer = @visualization.layers.find { |l| l.kind == 'carto' }
+        carto_layer.options[:user_name] = @user.username
+        carto_layer.save
+        @analysis = FactoryGirl.create(:source_analysis, visualization: @visualization, user: @user)
       end
 
-      it 'false, it should generate a blank permission' do
+      after(:each) do
+        @analysis.destroy
+        destroy_full_visualization(@map, @table, @table_visualization, @visualization)
+      end
+
+      let(:export_service) { Carto::VisualizationsExportService2.new }
+
+      it 'importing an exported visualization should create a new visualization with matching metadata' do
         exported_string = export_service.export_visualization_json_string(@visualization.id, @user)
         built_viz = export_service.build_visualization_from_json_export(exported_string)
         imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user, built_viz)
 
-        imported_viz.permission.acl.should be_empty
-        imported_viz.shared_entities.count.should be_zero
+        imported_viz = Carto::Visualization.find(imported_viz.id)
+        verify_visualizations_match(imported_viz,
+                                    @visualization,
+                                    importing_user: @user,
+                                    imported_name: "#{@visualization.name} Import")
 
         destroy_visualization(imported_viz.id)
       end
 
-      it 'true, it should keep the imported permission' do
+      it 'importing an exported visualization several times should change imported name' do
         exported_string = export_service.export_visualization_json_string(@visualization.id, @user)
-        built_viz = export_service.build_visualization_from_json_export(exported_string)
-        imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user, built_viz, restore_permission: true)
 
-        imported_viz.permission.acl.should_not be_empty
-        imported_viz.shared_entities.count.should eq 1
-        imported_viz.shared_entities.first.recipient_id.should eq @user2.id
+        built_viz = export_service.build_visualization_from_json_export(exported_string)
+        imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user, built_viz)
+        imported_viz.name.should eq "#{@visualization.name} Import"
+
+        built_viz = export_service.build_visualization_from_json_export(exported_string)
+        imported_viz2 = Carto::VisualizationsExportPersistenceService.new.save_import(@user, built_viz)
+        imported_viz2.name.should eq "#{@visualization.name} Import 2"
 
         destroy_visualization(imported_viz.id)
+        destroy_visualization(imported_viz2.id)
+      end
+
+      it 'importing an exported visualization into another account should change layer user_name option' do
+        exported_string = export_service.export_visualization_json_string(@visualization.id, @user)
+        built_viz = export_service.build_visualization_from_json_export(exported_string)
+        imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user2, built_viz)
+
+        imported_viz = Carto::Visualization.find(imported_viz.id)
+        verify_visualizations_match(imported_viz, @visualization, importing_user: @user2)
+
+        destroy_visualization(imported_viz.id)
+      end
+
+      describe 'if restore_id is' do
+        it 'false, it should generate a random uuid' do
+          exported_string = export_service.export_visualization_json_string(@visualization.id, @user)
+          built_viz = export_service.build_visualization_from_json_export(exported_string)
+          original_id = built_viz.id
+
+          imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user2, built_viz)
+          imported_viz.id.should_not eq original_id
+          destroy_visualization(imported_viz.id)
+        end
+
+        it 'true, it should keep the imported uuid' do
+          exported_string = export_service.export_visualization_json_string(@visualization.id, @user)
+          built_viz = export_service.build_visualization_from_json_export(exported_string)
+          test_id = random_uuid
+          built_viz.id = test_id
+
+          imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user2, built_viz, restore_id: true)
+          imported_viz.id.should eq test_id
+          destroy_visualization(imported_viz.id)
+        end
+      end
+
+      describe 'if restore_permission is' do
+        before(:each) do
+          @visualization.permission.acl = [{
+            type: 'user',
+            entity: {
+              id: @user2.id,
+              username: @user2.username
+            },
+            access: 'r'
+          }]
+          @visualization.permission.save
+        end
+
+        it 'false, it should generate a blank permission' do
+          exported_string = export_service.export_visualization_json_string(@visualization.id, @user)
+          built_viz = export_service.build_visualization_from_json_export(exported_string)
+          imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user, built_viz)
+
+          imported_viz.permission.acl.should be_empty
+          imported_viz.shared_entities.count.should be_zero
+
+          destroy_visualization(imported_viz.id)
+        end
+
+        it 'true, it should keep the imported permission' do
+          exported_string = export_service.export_visualization_json_string(@visualization.id, @user)
+          built_viz = export_service.build_visualization_from_json_export(exported_string)
+          imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user, built_viz, restore_permission: true)
+
+          imported_viz.permission.acl.should_not be_empty
+          imported_viz.shared_entities.count.should eq 1
+          imported_viz.shared_entities.first.recipient_id.should eq @user2.id
+
+          destroy_visualization(imported_viz.id)
+        end
+      end
+
+      describe 'datasets' do
+        before(:all) do
+          @sequel_user = FactoryGirl.create(:valid_user, private_maps_enabled: true)
+          @user = Carto::User.find(@sequel_user.id)
+        end
+
+        after(:all) do
+          @sequel_user.destroy
+        end
+
+        before(:each) do
+          bypass_named_maps
+          @map, @table, @table_visualization, @visualization = create_full_visualization(@user)
+        end
+
+        after(:each) do
+          destroy_full_visualization(@map, @table, @table_visualization, @visualization)
+        end
+
+        let(:export_service) { Carto::VisualizationsExportService2.new }
+
+        it 'importing an exported dataset should keep the sync and user_table' do
+          @table_visualization.active_layer_id = @table_visualization.data_layers.first.id
+          @table_visualization.save
+          FactoryGirl.create(:carto_synchronization, visualization: @table_visualization)
+          exported_string = export_service.export_visualization_json_string(@table_visualization.id, @user)
+          built_viz = export_service.build_visualization_from_json_export(exported_string)
+          @table_visualization.map.user_table.delete
+          @table_visualization.delete
+          imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user, built_viz)
+
+          imported_viz = Carto::Visualization.find(imported_viz.id)
+          verify_visualizations_match(imported_viz, @table_visualization, importing_user: @user)
+          sync = imported_viz.synchronization
+          sync.should be
+          sync.user_id.should eq @user.id
+          sync.log.user_id.should eq @user.id
+          imported_viz.map.user_table.should be
+
+          destroy_visualization(imported_viz.id)
+        end
       end
     end
 

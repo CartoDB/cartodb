@@ -180,6 +180,12 @@ More information at [Dropbox migration guide](https://www.dropbox.com/developers
 * Multiple file upload through "upload file" tab (#11952)
 * Change setView by flyto.
 * Update tangram to fix layer geometry conditionals.
+* Update tangram to fix layer geometry conditionals.
+* Improve assets build process (#11962)
+    * Frontend development task has changed from `grunt && grunt dev` to `grunt dev`
+    * Test task remains the same, but internals changed `grunt test`
+* Allow to have multiple administrators per organization (#12052, #12083)
+* Allow to have multiple administrators per organization (#12052)
 * Allow to have multiple administrators per organization (#12052, #12083, #12069)
 * Added explanation tooltip to the categorize label on the Find Nearest analysis (#12100)
 * Disable geometry edition button instead of hide in read-only layers (#11543)

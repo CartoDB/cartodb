@@ -1423,8 +1423,11 @@ describe Carto::VisualizationsExportService2 do
 
       describe 'datasets' do
         before(:all) do
-          @sequel_user = FactoryGirl.create(:valid_user, private_maps_enabled: true)
+          @sequel_user = FactoryGirl.create(:valid_user, private_maps_enabled: true, table_quota: nil)
           @user = Carto::User.find(@sequel_user.id)
+
+          @sequel_user2 = FactoryGirl.create(:valid_user, private_maps_enabled: true, table_quota: nil)
+          @user2 = Carto::User.find(@sequel_user2.id)
         end
 
         after(:all) do
@@ -1433,32 +1436,63 @@ describe Carto::VisualizationsExportService2 do
 
         before(:each) do
           bypass_named_maps
-          @map, @table, @table_visualization, @visualization = create_full_visualization(@user)
+          @table = FactoryGirl.create(:carto_user_table, :full, user: @user)
+          @table_visualization = @table.table_visualization
+          @table_visualization.reload
+          @table_visualization.active_layer = @table_visualization.data_layers.first
+          @table_visualization.save
         end
 
         after(:each) do
-          destroy_full_visualization(@map, @table, @table_visualization, @visualization)
+          @table_visualization.destroy
         end
 
         let(:export_service) { Carto::VisualizationsExportService2.new }
 
-        it 'importing an exported dataset should keep the sync and user_table' do
-          @table_visualization.active_layer_id = @table_visualization.data_layers.first.id
-          @table_visualization.save
+        it 'importing an exported dataset should keep the user_table' do
+          exported_string = export_service.export_visualization_json_string(@table_visualization.id, @user)
+          built_viz = export_service.build_visualization_from_json_export(exported_string)
+
+          # Create user db table (destroyed above)
+          @user2.in_database.execute("CREATE TABLE #{@table_visualization.name} (cartodb_id int)")
+          imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user2, built_viz)
+
+          imported_viz = Carto::Visualization.find(imported_viz.id)
+          verify_visualizations_match(imported_viz, @table_visualization, importing_user: @user2)
+          imported_viz.map.user_table.should be
+
+          destroy_visualization(imported_viz.id)
+        end
+
+        it 'importing a dataset with an existing name should raise an error' do
+          exported_string = export_service.export_visualization_json_string(@table_visualization.id, @user)
+          built_viz = export_service.build_visualization_from_json_export(exported_string)
+
+          expect { Carto::VisualizationsExportPersistenceService.new.save_import(@user, built_viz) }.to raise_error
+        end
+
+        it 'importing a dataset without a table should raise an error' do
+          exported_string = export_service.export_visualization_json_string(@table_visualization.id, @user)
+          built_viz = export_service.build_visualization_from_json_export(exported_string)
+
+          expect { Carto::VisualizationsExportPersistenceService.new.save_import(@user2, built_viz) }.to raise_error
+        end
+
+        it 'importing an exported dataset should keep the synchronization' do
           FactoryGirl.create(:carto_synchronization, visualization: @table_visualization)
           exported_string = export_service.export_visualization_json_string(@table_visualization.id, @user)
           built_viz = export_service.build_visualization_from_json_export(exported_string)
-          @table_visualization.map.user_table.delete
-          @table_visualization.delete
-          imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user, built_viz)
+
+          # Create user db table (destroyed above)
+          @user2.in_database.execute("CREATE TABLE #{@table_visualization.name} (cartodb_id int)")
+          imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user2, built_viz)
 
           imported_viz = Carto::Visualization.find(imported_viz.id)
-          verify_visualizations_match(imported_viz, @table_visualization, importing_user: @user)
+          verify_visualizations_match(imported_viz, @table_visualization, importing_user: @user2)
           sync = imported_viz.synchronization
           sync.should be
-          sync.user_id.should eq @user.id
-          sync.log.user_id.should eq @user.id
-          imported_viz.map.user_table.should be
+          sync.user_id.should eq @user2.id
+          sync.log.user_id.should eq @user2.id
 
           destroy_visualization(imported_viz.id)
         end

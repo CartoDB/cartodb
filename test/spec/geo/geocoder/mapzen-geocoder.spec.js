@@ -4,41 +4,41 @@ var MAPZEN = require('../../../../src/geo/geocoder/mapzen-geocoder');
 var log = require('cdb.log');
 
 var mapzenResponse = {
-  "geocoding": {},
-  "type": "FeatureCollection",
-  "features": [
+  'geocoding': {},
+  'type': 'FeatureCollection',
+  'features': [
     {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
+      'type': 'Feature',
+      'geometry': {
+        'type': 'Point',
+        'coordinates': [
           -3.669245,
           40.429913
         ]
       },
-      "properties": {
-        "id": "101748283",
-        "gid": "whosonfirst:locality:101748283",
-        "layer": "locality",
-        "source": "whosonfirst",
-        "source_id": "101748283",
-        "name": "Madrid",
-        "confidence": 0.951,
-        "accuracy": "centroid",
-        "country": "Spain",
-        "country_gid": "whosonfirst:country:85633129",
-        "country_a": "ESP",
-        "macroregion": "Comunidad De Madrid",
-        "macroregion_gid": "whosonfirst:macroregion:404227387",
-        "region": "Madrid",
-        "region_gid": "whosonfirst:region:85682783",
-        "localadmin": "Madrid",
-        "localadmin_gid": "whosonfirst:localadmin:404338863",
-        "locality": "Madrid",
-        "locality_gid": "whosonfirst:locality:101748283",
-        "label": "Madrid, Spain"
+      'properties': {
+        'id': '101748283',
+        'gid': 'whosonfirst:locality:101748283',
+        'layer': 'locality',
+        'source': 'whosonfirst',
+        'source_id': '101748283',
+        'name': 'Madrid',
+        'confidence': 0.951,
+        'accuracy': 'centroid',
+        'country': 'Spain',
+        'country_gid': 'whosonfirst:country:85633129',
+        'country_a': 'ESP',
+        'macroregion': 'Comunidad De Madrid',
+        'macroregion_gid': 'whosonfirst:macroregion:404227387',
+        'region': 'Madrid',
+        'region_gid': 'whosonfirst:region:85682783',
+        'localadmin': 'Madrid',
+        'localadmin_gid': 'whosonfirst:localadmin:404338863',
+        'locality': 'Madrid',
+        'locality_gid': 'whosonfirst:locality:101748283',
+        'label': 'Madrid, Spain'
       },
-      "bbox": [
+      'bbox': [
         -3.83213999304,
         40.3120207163,
         -3.53212,
@@ -46,7 +46,7 @@ var mapzenResponse = {
       ]
     }
   ],
-  "bbox": [
+  'bbox': [
     -103.878731891,
     4.73245,
     125.93368,
@@ -66,18 +66,18 @@ describe('geo/geocoder/mapzen-geocoder', function () {
     });
 
     it('should trigger a request to the service', function () {
-      MAPZEN.geocode('Madrid', function () { });
-      expect($.ajax.calls.mostRecent().args[0].url).toEqual('//search.mapzen.com/v1/search?text=madrid&api_key=MAPZEN_API_KEY');
+      MAPZEN.geocode('Madrid', function () {});
+      expect($.ajax.calls.mostRecent().args[0].url).toEqual('http://search.mapzen.com/v1/search?text=madrid&api_key=MAPZEN_API_KEY');
     });
 
     it('should remove accents from address', function () {
-      MAPZEN.geocode('áéíóú', function () { });
-      expect($.ajax.calls.mostRecent().args[0].url).toEqual('//search.mapzen.com/v1/search?text=aeiou&api_key=MAPZEN_API_KEY');
+      MAPZEN.geocode('áéíóú', function () {});
+      expect($.ajax.calls.mostRecent().args[0].url).toEqual('http://search.mapzen.com/v1/search?text=aeiou&api_key=MAPZEN_API_KEY');
     });
 
     it('should lowercase the address', function () {
-      MAPZEN.geocode('AEIOU', function () { });
-      expect($.ajax.calls.mostRecent().args[0].url).toEqual('//search.mapzen.com/v1/search?text=aeiou&api_key=MAPZEN_API_KEY');
+      MAPZEN.geocode('AEIOU', function () {});
+      expect($.ajax.calls.mostRecent().args[0].url).toEqual('http://search.mapzen.com/v1/search?text=aeiou&api_key=MAPZEN_API_KEY');
     });
 
     describe('when geocoding succeeds', function () {

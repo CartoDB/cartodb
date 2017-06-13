@@ -24,7 +24,7 @@ var MAPZEN = {
       .replace(/ó/g, 'o')
       .replace(/ú/g, 'u');
 
-    var protocol = '';
+    var protocol = window.location.protocol;
     if (window.location.protocol.indexOf('http') === -1) {
       protocol = 'http:';
     }
@@ -57,7 +57,7 @@ var MAPZEN = {
     jqxhr.fail(function (jqxhr, error) {
       log.error('[Mapzen Geocoder] error: ' + error);
     });
-  },
+  }
 };
 
 module.exports = MAPZEN;

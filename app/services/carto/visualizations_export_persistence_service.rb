@@ -43,6 +43,7 @@ module Carto
         if user_table
           user_table.user = user
           user_table.service.register_table_only = true
+          raise 'Cannot import a dataset without physical table' unless user_table.service.real_table_exists?
         end
 
         unless visualization.save

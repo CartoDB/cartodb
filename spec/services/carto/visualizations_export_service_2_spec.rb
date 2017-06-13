@@ -1546,14 +1546,16 @@ describe Carto::VisualizationsExportService2 do
         exported_string = export_service.export_visualization_json_string(@table_visualization.id, @user)
         built_viz = export_service.build_visualization_from_json_export(exported_string)
 
-        expect { Carto::VisualizationsExportPersistenceService.new.save_import(@user, built_viz) }.to raise_error
+        expect { Carto::VisualizationsExportPersistenceService.new.save_import(@user, built_viz) }.to raise_error(
+          'Cannot rename a dataset during import')
       end
 
       it 'importing a dataset without a table should raise an error' do
         exported_string = export_service.export_visualization_json_string(@table_visualization.id, @user)
         built_viz = export_service.build_visualization_from_json_export(exported_string)
 
-        expect { Carto::VisualizationsExportPersistenceService.new.save_import(@user2, built_viz) }.to raise_error
+        expect { Carto::VisualizationsExportPersistenceService.new.save_import(@user2, built_viz) }.to raise_error(
+          'Cannot import a dataset without physical table')
       end
 
       it 'importing an exported dataset should keep the synchronization' do

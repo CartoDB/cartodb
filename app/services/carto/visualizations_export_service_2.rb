@@ -174,6 +174,8 @@ module Carto
     end
 
     def build_log_from_hash(exported_log)
+      return nil unless exported_log
+
       Carto::Log.new(type: exported_log[:type], entries: exported_log[:entries])
     end
 
@@ -327,6 +329,8 @@ module Carto
     end
 
     def export_log(log)
+      return nil unless log
+
       {
         type: log.type,
         entries: log.entries

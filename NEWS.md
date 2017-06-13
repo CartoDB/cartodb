@@ -29,6 +29,7 @@ Development
   * Update `rails-sequel` (#12118)
   * Changes compatible with Rails 3 (#12117)
 * Make scrollwheel zoom on by default (#12214)
+* You can configure your API key for the search bar, powered by Mapzen, with `geocoder.mapzen.search_bar_api_key` (#12296).
 * Add last name field to users (#12174)
 * Fix error where a sync of a big dataset without geometry would be deleted from dashboard (#12162)
 * `create_dev_user` rake no longer tries to auto-create the database, `cartodb:db:setup` should be run first (#12187).

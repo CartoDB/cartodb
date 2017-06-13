@@ -1,5 +1,6 @@
 # coding: UTF-8
 require_relative '../../spec_helper'
+require_relative '../visualization_shared_examples'
 require_relative '../../../app/models/visualization/member'
 require 'helpers/unique_names_helper'
 require 'helpers/visualization_destruction_helper'
@@ -27,6 +28,14 @@ describe Carto::Visualization do
     @user2.destroy
   end
 
+  it_behaves_like 'visualization models' do
+    def build_visualization(attrs = {})
+      v = Carto::Visualization.new
+      v.assign_attributes(attrs, without_protection: true)
+      v
+    end
+  end
+
   describe '#estimated_row_count and #actual_row_count' do
 
     it 'should query Table estimated an actual row count methods' do
@@ -46,6 +55,14 @@ describe Carto::Visualization do
       vis.tags = ["tag1", " ", ""]
 
       vis.tags.should eq ["tag1"]
+    end
+  end
+
+  describe '#privacy=' do
+    it 'downcases privacy' do
+      visualization = Carto::Visualization.new
+      visualization.privacy = Carto::Visualization::PRIVACY_LINK.upcase
+      visualization.privacy.should eq Carto::Visualization::PRIVACY_LINK.downcase
     end
   end
 

@@ -343,6 +343,8 @@ CartoDB::Application.routes.draw do
     match '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/like'                     => 'visualizations#is_liked',        as: :api_v1_visualizations_is_liked,        constraints: { id: /[^\/]+/ }, via: [:get, :options]
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/related_templates'          => 'templates#related_templates_by_visualization', as: :api_v1_visualizations_related_templates, constraints: { id: /[^\/]+/ }
 
+    post    '(/user/:user_domain)(/u/:user_domain)/api/v1/viz'                            => 'visualizations#create',          as: :api_v1_visualizations_create
+    put     '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id'                        => 'visualizations#update',          as: :api_v1_visualizations_update,          constraints: { id: /[^\/]+/ }
     delete '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id'                         => 'visualizations#destroy',         as: :api_v1_visualizations_destroy,         constraints: { id: /[^\/]+/ }
 
     # Tables
@@ -494,8 +496,6 @@ CartoDB::Application.routes.draw do
     put  '(/user/:user_domain)(/u/:user_domain)/api/v1/geocodings/:id'                            => 'geocodings#update',               as: :api_v1_geocodings_update
 
     # Visualizations
-    post    '(/user/:user_domain)(/u/:user_domain)/api/v1/viz'                                => 'visualizations#create',          as: :api_v1_visualizations_create
-    put     '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id'                            => 'visualizations#update',          as: :api_v1_visualizations_update,          constraints: { id: /[^\/]+/ }
     # TODO: deprecate?
     put     '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/watching'                   => 'visualizations#notify_watching', as: :api_v1_visualizations_list_watching,   constraints: { id: /[^\/]+/ }
     put     '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/next_id'                    => 'visualizations#set_next_id',     as: :api_v1_visualizations_set_next_id,     constraints: { id: /[^\/]+/ }

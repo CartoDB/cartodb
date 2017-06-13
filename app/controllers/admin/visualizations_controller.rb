@@ -13,6 +13,7 @@ require_dependency 'static_maps_url_helper'
 require_dependency 'carto/user_db_size_cache'
 require_dependency 'carto/ghost_tables_manager'
 require_dependency 'carto/helpers/frame_options_helper'
+require_dependency 'carto/visualization'
 
 class Admin::VisualizationsController < Admin::AdminController
   include CartoDB, VisualizationsControllerHelper
@@ -189,19 +190,19 @@ class Admin::VisualizationsController < Admin::AdminController
     @public_tables_count    = @visualization.user.public_table_count
 
     @partially_dependent_visualizations = @table.partially_dependent_visualizations.select do |vis|
-      vis.privacy == Visualization::Member::PRIVACY_PUBLIC
+      vis.privacy == Carto::Visualization::PRIVACY_PUBLIC
     end
 
     @fully_dependent_visualizations = @table.fully_dependent_visualizations.select do |vis|
-      vis.privacy == Visualization::Member::PRIVACY_PUBLIC
+      vis.privacy == Carto::Visualization::PRIVACY_PUBLIC
     end
 
     @total_visualizations = @partially_dependent_visualizations + @fully_dependent_visualizations
 
     @total_nonpublic_total_vis_count = @table.partially_dependent_visualizations.select { |vis|
-      vis.privacy != Visualization::Member::PRIVACY_PUBLIC
+      vis.privacy != Carto::Visualization::PRIVACY_PUBLIC
     }.count + @table.fully_dependent_visualizations.select { |vis|
-      vis.privacy != Visualization::Member::PRIVACY_PUBLIC
+      vis.privacy != Carto::Visualization::PRIVACY_PUBLIC
     }.count
 
     # Public export API SQL url
@@ -447,7 +448,6 @@ class Admin::VisualizationsController < Admin::AdminController
 
   protected
 
-  # @param visualization CartoDB::Visualization::Member
   def disallowed_type?(visualization)
     return true if visualization.nil?
     visualization.type_slide?
@@ -650,7 +650,7 @@ class Admin::VisualizationsController < Admin::AdminController
     end
 
     return get_visualization_and_table_from_table_id(table_id) if visualization.nil?
-    render_pretty_404 if visualization.kind == CartoDB::Visualization::Member::KIND_RASTER
+    render_pretty_404 if visualization.kind == Carto::Visualization::KIND_RASTER
     return Carto::Admin::VisualizationPublicMapAdapter.new(visualization, current_user, self), visualization.table_service
   end
 

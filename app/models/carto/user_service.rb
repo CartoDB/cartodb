@@ -123,6 +123,10 @@ module Carto
       end
     end
 
+    def database_public_username
+      @user.database_schema != CartoDB::DEFAULT_DB_SCHEMA ? "cartodb_publicuser_#{@user.id}" : CartoDB::PUBLIC_DB_USER
+    end
+
     private
 
     # Returns a tree elements array with [major, minor, patch] as in http://semver.org/
@@ -141,10 +145,6 @@ module Carto
 
     def database_password
       @user.crypted_password + database_username
-    end
-
-    def database_public_username
-      (@user.database_schema != CartoDB::DEFAULT_DB_SCHEMA) ? "cartodb_publicuser_#{@user.id}" : CartoDB::PUBLIC_DB_USER
     end
 
     def in_database(options = {}, &block)

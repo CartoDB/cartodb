@@ -1,7 +1,10 @@
 var _ = require('underscore');
 var cdb = require('cartodb.js');
 var placeholderTemplate = require('./placeholder.tpl');
+var contentTemplate = require('./content.tpl');
 var HistogramView = require('./histogram-view');
+var TimeSeriesHeaderView = require('./time-series-header-view');
+var DropdownView = require('../dropdown/widget-dropdown-view');
 
 /**
  * Widget content view for a time-series
@@ -24,10 +27,25 @@ module.exports = cdb.core.View.extend({
         hasTorqueLayer: false
       }));
     } else {
+      this.$el.append(contentTemplate());
       this._createHistogramView();
+      this._createHeaderView();
+      this._createDropdownView();
       this._updateRange();
     }
     return this;
+  },
+
+  _initBinds: function () {
+    this._originalData.once('change:data', this._onOriginalDataChange, this);
+    this._dataviewModel.once('error', function () {
+      console.log('the tiler does not support non-torque layers just yet…');
+    });
+    this._dataviewModel.once('change:data', this.render, this);
+    this._dataviewModel.bind('change:bins', this._onChangeBins, this);
+
+    this.add_related_model(this._dataviewModel);
+    this.add_related_model(this._originalData);
   },
 
   _createHistogramView: function () {
@@ -36,13 +54,50 @@ module.exports = cdb.core.View.extend({
     }
 
     this._histogramView = new HistogramView({
-      timeseriesModel: this.model,
+      timeSeriesModel: this.model,
       model: this._dataviewModel,
       rangeFilter: this._dataviewModel.filter,
-      torqueLayerModel: this._dataviewModel.layer
+      displayShadowBars: !this.model.get('normalized'),
+      normalized: !!this.model.get('normalized')
     });
 
-    this._appendView(this._histogramView);
+    this.addView(this._histogramView);
+    this.$('.js-content').append(this._histogramView.render().el);
+  },
+
+  _createHeaderView: function () {
+    if (this._headerView) {
+      this._headerView.remove();
+    }
+
+    this._headerView = new TimeSeriesHeaderView({
+      dataviewModel: this._dataviewModel,
+      rangeFilter: this._dataviewModel.filter
+    });
+    if (!this._histogramView) {
+      throw new Error('Histogram view must be instantiated before the header view');
+    }
+    this._headerView.bind('resetFilter', this._histogramView.resetFilter, this._histogramView);
+    this.addView(this._headerView);
+    this.$('.js-header').append(this._headerView.render().el);
+  },
+
+  _createDropdownView: function () {
+    if (this._dropdownView) {
+      this._dropdownView.remove();
+    }
+
+    this._dropdownView = new DropdownView({
+      model: this.model,
+      target: '.js-actions',
+      container: this.$('.js-header'),
+      flags: {
+        normalizeHistogram: true,
+        canCollapse: false
+      }
+    });
+
+    this.addView(this._dropdownView);
   },
 
   _updateRange: function () {
@@ -101,16 +156,6 @@ module.exports = cdb.core.View.extend({
     };
   },
 
-  _initBinds: function () {
-    this._originalData.once('change:data', this._onOriginalDataChange, this);
-    this._dataviewModel.once('error', function () {
-      console.log('the tiler does not support non-torque layers just yet…');
-    });
-    this._dataviewModel.once('change:data', this.render, this);
-    this.add_related_model(this._dataviewModel);
-    this.add_related_model(this._originalData);
-  },
-
   _appendView: function (view) {
     this.addView(view);
     this.$el.append(view.render().el);
@@ -125,5 +170,9 @@ module.exports = cdb.core.View.extend({
     // do an explicit fetch in order to get actual data
     // with the filters applied (e.g. bbox)
     this._dataviewModel.fetch();
+  },
+
+  _onChangeBins: function (mdl, bins) {
+    this._originalData.setBins(bins);
   }
 });

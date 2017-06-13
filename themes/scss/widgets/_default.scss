@@ -26,7 +26,6 @@
   width: 100%; // override default width
   margin-bottom: 0;
   border-radius: $baseSize / 2;
-  overflow-x: hidden;
 }
 .CDB-Widget-title {
   @include display-flex();
@@ -88,6 +87,14 @@
   -ms-touch-action: none;
 }
 
+.CDB-Widget-loader {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  overflow: hidden;
+}
 
 // Widget media query
 @media (max-width: 1300px) {
@@ -108,7 +115,6 @@
     padding: 12px 0;
     border-left-width: 1px;
     border-left-style: solid;
-    overflow-x: hidden;
   }
   .CDB-Widget .CDB-Loader {
     height: 2px;
@@ -118,12 +124,6 @@
     min-height: auto; // override default min-height
     max-height: auto;
     margin-bottom: 2px;
-  }
-  .CDB-Widget-body--timeSeries {
-    @include display-flex();
-    @include justify-content(flex-start, start);
-    @include align-items(flex-start, start);
-    @include flex-direction(row);
   }
   .CDB-Widget-header--timeSeries {
     margin-right: 0; //override default, set on header to avoid double margin for the torque use-case

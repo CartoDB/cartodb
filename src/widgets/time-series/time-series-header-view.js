@@ -1,6 +1,6 @@
 var cdb = require('cartodb.js');
-var template = require('./time-series-header.tpl');
 var d3 = require('d3');
+var template = require('./time-series-header.tpl');
 
 var FORMATTER_TYPES = {
   'number': d3.format(',.0f'),
@@ -12,7 +12,7 @@ var FORMATTER_TYPES = {
  * View to reset render range.
  */
 module.exports = cdb.core.View.extend({
-  className: 'CDB-Widget-header--timeSeries js-header CDB-Widget-contentSpaced',
+  className: 'CDB-Widget-header--timeSeries CDB-Widget-contentSpaced',
 
   events: {
     'click .js-clear': '_onClick'
@@ -37,10 +37,11 @@ module.exports = cdb.core.View.extend({
     var columnType = this._getColumnType();
     var scale = this._scale;
     var filter = this._rangeFilter;
+    var showSelection = !filter.isEmpty();
     var start;
     var end;
 
-    if (!filter.isEmpty()) {
+    if (showSelection) {
       if (columnType === 'date') {
         var startDate = new Date(scale.invert(filter.get('min')));
         var endDate = new Date(scale.invert(filter.get('max')));
@@ -51,17 +52,16 @@ module.exports = cdb.core.View.extend({
         start = FORMATTER_TYPES['number'](scale(filter.get('min')));
         end = FORMATTER_TYPES['number'](scale(filter.get('max')));
       }
-
-      this.$el.html(
-        template({
-          start: start,
-          end: end,
-          showClearButton: this.options.showClearButton
-        })
-      );
-    } else {
-      this.$el.empty();
     }
+
+    this.$el.html(
+      template({
+        start: start,
+        end: end,
+        showClearButton: this.options.showClearButton && showSelection,
+        showSelection: showSelection
+      })
+    );
 
     return this;
   },

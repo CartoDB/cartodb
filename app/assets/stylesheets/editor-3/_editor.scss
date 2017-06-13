@@ -67,15 +67,15 @@
 
 .Editor-panel .ps-scrollbar-y-rail,
 .CDB-Widget-canvas .ps-container>.ps-scrollbar-y-rail {
-  right: 0 !Important;
-  width: 4px !Important; // Resets standard scroll track color
+  right: 0 !important;
+  width: 4px !important; // Resets standard scroll track color
   background: #EEE;
   z-index: 3;
 }
 .Editor-panel .ps-scrollbar-y,
 .CDB-Widget-canvas .ps-container>.ps-scrollbar-y-rail>.ps-scrollbar-y {
   right: 0 !important;
-  width: 4px !Important; // Resets standard scroll bar color
+  width: 4px !important; // Resets standard scroll bar color
   background: #AAA;
   &:hover {
     cursor: all-scroll;
@@ -86,15 +86,15 @@
   }
 }
 .Editor-panel .ps-scrollbar-x-rail {
-  height: 2px !Important; // Resets standard scroll track color
+  height: 2px !important; // Resets standard scroll track color
   border-top: 12px solid $cWhite;
   border-bottom: 2px solid $cWhite;
   background: #EEE;
   z-index: 3;
 }
 .Editor-panel .ps-scrollbar-x-rail .ps-scrollbar-x {
-  bottom: -1px !Important; // Resets standard scroll bar position
-  height: 4px !Important; // Resets standard scroll bar color
+  bottom: -1px !important; // Resets standard scroll bar position
+  height: 4px !important; // Resets standard scroll bar color
   pointer-events: all;
   opacity: 0.6;
 }

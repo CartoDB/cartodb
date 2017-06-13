@@ -56,7 +56,7 @@ module.exports = DataviewModelBase.extend({
       this._onChangeBinds();
     }, this);
 
-    this.once('change:url', function () {
+    this.on('change:url', function () {
       this._unfilteredData.setUrl(this.get('url'));
     }, this);
 

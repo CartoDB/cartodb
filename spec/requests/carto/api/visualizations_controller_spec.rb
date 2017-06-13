@@ -1997,6 +1997,26 @@ describe Carto::Api::VisualizationsController do
 
           table.destroy
         end
+
+        it 'sets password protection' do
+          visualization = FactoryGirl.create(:carto_visualization, user_id: @user.id)
+          visualization.password_protected?.should be_false
+
+          payload = {
+            id: visualization.id,
+            password: 'the_pass',
+            privacy: Carto::Visualization::PRIVACY_PROTECTED
+          }
+          put_json api_v1_visualizations_update_url(id: visualization.id), payload do |response|
+            response.status.should be_success
+          end
+
+          visualization.reload
+          visualization.password_protected?.should be_true
+          visualization.password_valid?('the_pass').should be_true
+
+          visualization.destroy
+        end
       end
     end
 
@@ -2479,6 +2499,53 @@ describe Carto::Api::VisualizationsController do
           response.status.should == 404
           response.body[:errors].should == 'Visualization of that user does not exist'
         end
+      end
+    end
+  end
+
+  describe '#google_maps_static_image' do
+    before(:all) do
+      @user = FactoryGirl.create(:carto_user)
+      @map, @table, @table_visualization, @visualization = create_full_visualization(@user)
+      base_layer = @visualization.base_layers.first
+      base_layer.options[:baseType] = 'roadmap'
+      base_layer.options[:style] = '[]'
+      base_layer.save
+    end
+
+    before(:each) do
+      host! "#{@user.username}.localhost.lan"
+      login_as(@user, scope: @user.username)
+    end
+
+    after(:all) do
+      destroy_full_visualization(@map, @table, @table_visualization, @visualization)
+      @user.destroy
+    end
+
+    let(:params) do
+      {
+        size: '300x200',
+        zoom: 14,
+        center: '0.12,-7.56'
+      }
+    end
+
+    it 'returns error if user does not have Google configured' do
+      @user.google_maps_key = nil
+      @user.save
+      get_json api_v1_google_maps_static_image_url(params.merge(id: @visualization.id)) do |response|
+        expect(response.status).to eq 400
+        expect(response.body[:errors]).to be
+      end
+    end
+
+    it 'returns signed google maps URL' do
+      @user.google_maps_key = 'key=GAdhfasjkd'
+      @user.save
+      get_json api_v1_google_maps_static_image_url(params.merge(id: @visualization.id)) do |response|
+        response.status.should be_success
+        response.body[:url].should eq 'https://maps.googleapis.com/maps/api/staticmap?center=0.12,-7.56&mapType=roadmap&size=300x200&zoom=14&key=GAdhfasjkd'
       end
     end
   end

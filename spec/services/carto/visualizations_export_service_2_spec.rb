@@ -1361,30 +1361,7 @@ describe Carto::VisualizationsExportService2 do
         destroy_visualization(imported_viz.id)
       end
 
-      describe 'if restore_id is' do
-        it 'false, it should generate a random uuid' do
-          exported_string = export_service.export_visualization_json_string(@visualization.id, @user)
-          built_viz = export_service.build_visualization_from_json_export(exported_string)
-          original_id = built_viz.id
-
-          imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user2, built_viz)
-          imported_viz.id.should_not eq original_id
-          destroy_visualization(imported_viz.id)
-        end
-
-        it 'true, it should keep the imported uuid' do
-          exported_string = export_service.export_visualization_json_string(@visualization.id, @user)
-          built_viz = export_service.build_visualization_from_json_export(exported_string)
-          test_id = random_uuid
-          built_viz.id = test_id
-
-          imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user2, built_viz, restore_id: true)
-          imported_viz.id.should eq test_id
-          destroy_visualization(imported_viz.id)
-        end
-      end
-
-      describe 'if restore_permission is' do
+      describe 'if full_restore is' do
         before(:each) do
           @visualization.permission.acl = [{
             type: 'user',
@@ -1397,22 +1374,26 @@ describe Carto::VisualizationsExportService2 do
           @visualization.permission.save
         end
 
-        it 'false, it should generate a blank permission' do
+        it 'false, it should generate a random uuid and blank permission' do
           exported_string = export_service.export_visualization_json_string(@visualization.id, @user)
           built_viz = export_service.build_visualization_from_json_export(exported_string)
-          imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user, built_viz)
+          original_id = built_viz.id
 
+          imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user2, built_viz)
+          imported_viz.id.should_not eq original_id
           imported_viz.permission.acl.should be_empty
           imported_viz.shared_entities.count.should be_zero
-
           destroy_visualization(imported_viz.id)
         end
 
-        it 'true, it should keep the imported permission' do
+        it 'true, it should keep the imported uuid and permission' do
           exported_string = export_service.export_visualization_json_string(@visualization.id, @user)
           built_viz = export_service.build_visualization_from_json_export(exported_string)
-          imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user, built_viz, restore_permission: true)
+          test_id = random_uuid
+          built_viz.id = test_id
 
+          imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user2, built_viz, full_restore: true)
+          imported_viz.id.should eq test_id
           imported_viz.permission.acl.should_not be_empty
           imported_viz.shared_entities.count.should eq 1
           imported_viz.shared_entities.first.recipient_id.should eq @user2.id

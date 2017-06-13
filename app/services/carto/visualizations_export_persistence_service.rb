@@ -8,11 +8,11 @@ module Carto
     include Carto::UUIDHelper
     include Carto::QueryRewriter
 
-    def save_import(user, visualization, renamed_tables: {}, restore_id: false, restore_permission: false)
+    def save_import(user, visualization, renamed_tables: {}, full_restore: false)
       old_username = visualization.user.username if visualization.user
       apply_user_limits(user, visualization)
       ActiveRecord::Base.transaction do
-        visualization.id = random_uuid unless visualization.id && restore_id
+        visualization.id = random_uuid unless visualization.id && full_restore
         visualization.user = user
 
         ensure_unique_name(user, visualization)
@@ -22,7 +22,7 @@ module Carto
           analysis.analysis_node.fix_analysis_node_queries(old_username, user, renamed_tables)
         end
 
-        saved_acl = visualization.permission.access_control_list if restore_permission
+        saved_acl = visualization.permission.access_control_list if full_restore
         visualization.permission = Carto::Permission.new(owner: user, owner_username: user.username)
 
         map = visualization.map

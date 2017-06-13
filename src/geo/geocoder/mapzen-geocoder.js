@@ -1,4 +1,6 @@
 var $ = require('jquery');
+var config = require('../../cdb.config');
+var log = require('cdb.log');
 
 /**
  * geocoders for different services
@@ -8,11 +10,13 @@ var $ = require('jquery');
  * (at least)
  */
 var MAPZEN = {
-  keys: {
-    app_id: 'mapzen-YfBeDWS'
-  },
-
   geocode: function (address, callback) {
+    var mapzenApiKey = config.get('mapzenApiKey');
+    if (!mapzenApiKey) {
+      log.error('[Mapzen Geocoder] API Key is missing');
+      return;
+    }
+
     address = address.toLowerCase()
       .replace(/é/g, 'e')
       .replace(/á/g, 'a')
@@ -25,7 +29,8 @@ var MAPZEN = {
       protocol = 'http:';
     }
 
-    $.getJSON(protocol + '//search.mapzen.com/v1/search?text=' + encodeURIComponent(address) + '&api_key=' + this.keys.app_id, function (data) {
+    var jqxhr = $.getJSON(protocol + '//search.mapzen.com/v1/search?text=' + encodeURIComponent(address) + '&api_key=' + mapzenApiKey);
+    jqxhr.done(function (data) {
       var coordinates = [];
       if (data && data.features && data.features.length > 0) {
         var res = data.features;
@@ -49,7 +54,10 @@ var MAPZEN = {
         callback.call(this, coordinates);
       }
     });
-  }
+    jqxhr.fail(function (jqxhr, error) {
+      log.error('[Mapzen Geocoder] error: ' + error);
+    });
+  },
 };
 
 module.exports = MAPZEN;

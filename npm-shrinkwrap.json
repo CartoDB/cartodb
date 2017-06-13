@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.7.39",
+  "version": "4.7.48-11536",
   "dependencies": {
     "abbrev": {
       "version": "1.1.0",
@@ -359,9 +359,9 @@
       "resolved": "https://registry.npmjs.org/babel-plugin-transform-strict-mode/-/babel-plugin-transform-strict-mode-6.24.1.tgz"
     },
     "babel-preset-env": {
-      "version": "1.5.1",
+      "version": "1.5.2",
       "from": "babel-preset-env@>=1.4.0 <2.0.0",
-      "resolved": "https://registry.npmjs.org/babel-preset-env/-/babel-preset-env-1.5.1.tgz"
+      "resolved": "https://registry.npmjs.org/babel-preset-env/-/babel-preset-env-1.5.2.tgz"
     },
     "babel-runtime": {
       "version": "6.23.0",
@@ -369,9 +369,9 @@
       "resolved": "https://registry.npmjs.org/babel-runtime/-/babel-runtime-6.23.0.tgz"
     },
     "babel-template": {
-      "version": "6.24.1",
+      "version": "6.25.0",
       "from": "babel-template@>=6.24.1 <7.0.0",
-      "resolved": "https://registry.npmjs.org/babel-template/-/babel-template-6.24.1.tgz",
+      "resolved": "https://registry.npmjs.org/babel-template/-/babel-template-6.25.0.tgz",
       "dependencies": {
         "lodash": {
           "version": "4.17.4",
@@ -381,9 +381,9 @@
       }
     },
     "babel-traverse": {
-      "version": "6.24.1",
+      "version": "6.25.0",
       "from": "babel-traverse@>=6.24.1 <7.0.0",
-      "resolved": "https://registry.npmjs.org/babel-traverse/-/babel-traverse-6.24.1.tgz",
+      "resolved": "https://registry.npmjs.org/babel-traverse/-/babel-traverse-6.25.0.tgz",
       "dependencies": {
         "debug": {
           "version": "2.6.8",
@@ -398,9 +398,9 @@
       }
     },
     "babel-types": {
-      "version": "6.24.1",
+      "version": "6.25.0",
       "from": "babel-types@>=6.24.1 <7.0.0",
-      "resolved": "https://registry.npmjs.org/babel-types/-/babel-types-6.24.1.tgz",
+      "resolved": "https://registry.npmjs.org/babel-types/-/babel-types-6.25.0.tgz",
       "dependencies": {
         "esutils": {
           "version": "2.0.2",
@@ -415,9 +415,9 @@
       }
     },
     "babylon": {
-      "version": "6.17.2",
-      "from": "babylon@>=6.11.0 <7.0.0",
-      "resolved": "https://registry.npmjs.org/babylon/-/babylon-6.17.2.tgz"
+      "version": "6.17.3",
+      "from": "babylon@>=6.17.2 <7.0.0",
+      "resolved": "https://registry.npmjs.org/babylon/-/babylon-6.17.3.tgz"
     },
     "backbone": {
       "version": "1.2.3",
@@ -445,9 +445,9 @@
       "resolved": "git://github.com/cartodb/Backbone.Undo.js.git#c10e9977d22ecea1fabe894be650c78ac548911f"
     },
     "balanced-match": {
-      "version": "0.4.2",
-      "from": "balanced-match@>=0.4.1 <0.5.0",
-      "resolved": "https://registry.npmjs.org/balanced-match/-/balanced-match-0.4.2.tgz"
+      "version": "1.0.0",
+      "from": "balanced-match@>=1.0.0 <2.0.0",
+      "resolved": "https://registry.npmjs.org/balanced-match/-/balanced-match-1.0.0.tgz"
     },
     "base64-js": {
       "version": "1.2.0",
@@ -481,9 +481,9 @@
       "resolved": "https://registry.npmjs.org/bower/-/bower-1.8.0.tgz"
     },
     "brace-expansion": {
-      "version": "1.1.7",
+      "version": "1.1.8",
       "from": "brace-expansion@>=1.1.7 <2.0.0",
-      "resolved": "https://registry.npmjs.org/brace-expansion/-/brace-expansion-1.1.7.tgz"
+      "resolved": "https://registry.npmjs.org/brace-expansion/-/brace-expansion-1.1.8.tgz"
     },
     "brfs": {
       "version": "1.4.3",
@@ -617,9 +617,9 @@
       "resolved": "https://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.32.0.tgz"
     },
     "caniuse-lite": {
-      "version": "1.0.30000679",
+      "version": "1.0.30000684",
       "from": "caniuse-lite@>=1.0.30000670 <2.0.0",
-      "resolved": "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30000679.tgz"
+      "resolved": "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30000684.tgz"
     },
     "carto": {
       "version": "0.15.1-cdb3",
@@ -634,7 +634,14 @@
     "cartodb-deep-insights.js": {
       "version": "0.0.2",
       "from": "cartodb/deep-insights.js#master",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#8d0601c6554b813503349b2aa593242a834cc2f0"
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#8d0601c6554b813503349b2aa593242a834cc2f0",
+      "dependencies": {
+        "cartodb.js": {
+          "version": "4.0.0-alpha.1",
+          "from": "cartodb/cartodb.js#v4",
+          "resolved": "git://github.com/cartodb/cartodb.js.git#a17f1d35ae040dc769e3b7bdc77f5b59aa4255bd"
+        }
+      }
     },
     "cartodb-pecan": {
       "version": "0.2.0",
@@ -643,8 +650,8 @@
     },
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
-      "from": "cartodb/cartodb.js#v4",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#b7e0af32287034054a3170bffcfe54b097afa256"
+      "from": "cartodb/cartodb.js#carto-11536-histogram-widget",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#46de177878230d43b431de3a91664929f9d74ade"
     },
     "caseless": {
       "version": "0.11.0",
@@ -880,9 +887,9 @@
       "optional": true
     },
     "electron-to-chromium": {
-      "version": "1.3.13",
+      "version": "1.3.14",
       "from": "electron-to-chromium@>=1.3.11 <2.0.0",
-      "resolved": "https://registry.npmjs.org/electron-to-chromium/-/electron-to-chromium-1.3.13.tgz"
+      "resolved": "https://registry.npmjs.org/electron-to-chromium/-/electron-to-chromium-1.3.14.tgz"
     },
     "elliptic": {
       "version": "6.4.0",
@@ -1145,9 +1152,9 @@
       }
     },
     "globals": {
-      "version": "9.17.0",
+      "version": "9.18.0",
       "from": "globals@>=9.0.0 <10.0.0",
-      "resolved": "https://registry.npmjs.org/globals/-/globals-9.17.0.tgz"
+      "resolved": "https://registry.npmjs.org/globals/-/globals-9.18.0.tgz"
     },
     "globo": {
       "version": "1.0.2",
@@ -1430,12 +1437,6 @@
       "version": "2.4.1",
       "from": "jasmine-core@>=2.4.0 <2.5.0",
       "resolved": "https://registry.npmjs.org/jasmine-core/-/jasmine-core-2.4.1.tgz"
-    },
-    "jodid25519": {
-      "version": "1.0.2",
-      "from": "jodid25519@>=1.0.0 <2.0.0",
-      "resolved": "https://registry.npmjs.org/jodid25519/-/jodid25519-1.0.2.tgz",
-      "optional": true
     },
     "jquery": {
       "version": "2.1.4",
@@ -1907,9 +1908,16 @@
       "resolved": "https://registry.npmjs.org/ramda/-/ramda-0.23.0.tgz"
     },
     "randombytes": {
-      "version": "2.0.4",
+      "version": "2.0.5",
       "from": "randombytes@>=2.0.0 <3.0.0",
-      "resolved": "https://registry.npmjs.org/randombytes/-/randombytes-2.0.4.tgz"
+      "resolved": "https://registry.npmjs.org/randombytes/-/randombytes-2.0.5.tgz",
+      "dependencies": {
+        "safe-buffer": {
+          "version": "5.1.0",
+          "from": "safe-buffer@>=5.1.0 <6.0.0",
+          "resolved": "https://registry.npmjs.org/safe-buffer/-/safe-buffer-5.1.0.tgz"
+        }
+      }
     },
     "read-only-stream": {
       "version": "2.0.0",
@@ -2011,9 +2019,9 @@
       "resolved": "https://registry.npmjs.org/ripemd160/-/ripemd160-2.0.1.tgz"
     },
     "safe-buffer": {
-      "version": "5.1.0",
-      "from": "safe-buffer@>=5.0.1 <6.0.0",
-      "resolved": "https://registry.npmjs.org/safe-buffer/-/safe-buffer-5.1.0.tgz"
+      "version": "5.0.1",
+      "from": "safe-buffer@>=5.0.1 <5.1.0",
+      "resolved": "https://registry.npmjs.org/safe-buffer/-/safe-buffer-5.0.1.tgz"
     },
     "select": {
       "version": "1.1.2",
@@ -2071,9 +2079,9 @@
       "resolved": "https://registry.npmjs.org/sprintf-js/-/sprintf-js-1.0.3.tgz"
     },
     "sshpk": {
-      "version": "1.13.0",
+      "version": "1.13.1",
       "from": "sshpk@>=1.7.0 <2.0.0",
-      "resolved": "https://registry.npmjs.org/sshpk/-/sshpk-1.13.0.tgz",
+      "resolved": "https://registry.npmjs.org/sshpk/-/sshpk-1.13.1.tgz",
       "dependencies": {
         "assert-plus": {
           "version": "1.0.0",
@@ -2110,9 +2118,9 @@
           "resolved": "https://registry.npmjs.org/concat-stream/-/concat-stream-1.6.0.tgz",
           "dependencies": {
             "readable-stream": {
-              "version": "2.2.10",
+              "version": "2.2.11",
               "from": "readable-stream@>=2.2.2 <3.0.0",
-              "resolved": "https://registry.npmjs.org/readable-stream/-/readable-stream-2.2.10.tgz"
+              "resolved": "https://registry.npmjs.org/readable-stream/-/readable-stream-2.2.11.tgz"
             }
           }
         },
@@ -2177,9 +2185,9 @@
           "optional": true
         },
         "string_decoder": {
-          "version": "1.0.1",
+          "version": "1.0.2",
           "from": "string_decoder@>=1.0.0 <1.1.0",
-          "resolved": "https://registry.npmjs.org/string_decoder/-/string_decoder-1.0.1.tgz"
+          "resolved": "https://registry.npmjs.org/string_decoder/-/string_decoder-1.0.2.tgz"
         },
         "through2": {
           "version": "0.4.2",
@@ -2204,19 +2212,19 @@
       "resolved": "https://registry.npmjs.org/stream-combiner2/-/stream-combiner2-1.1.1.tgz"
     },
     "stream-http": {
-      "version": "2.7.1",
+      "version": "2.7.2",
       "from": "stream-http@>=2.0.0 <3.0.0",
-      "resolved": "https://registry.npmjs.org/stream-http/-/stream-http-2.7.1.tgz",
+      "resolved": "https://registry.npmjs.org/stream-http/-/stream-http-2.7.2.tgz",
       "dependencies": {
         "readable-stream": {
-          "version": "2.2.10",
+          "version": "2.2.11",
           "from": "readable-stream@>=2.2.6 <3.0.0",
-          "resolved": "https://registry.npmjs.org/readable-stream/-/readable-stream-2.2.10.tgz"
+          "resolved": "https://registry.npmjs.org/readable-stream/-/readable-stream-2.2.11.tgz"
         },
         "string_decoder": {
-          "version": "1.0.1",
+          "version": "1.0.2",
           "from": "string_decoder@>=1.0.0 <1.1.0",
-          "resolved": "https://registry.npmjs.org/string_decoder/-/string_decoder-1.0.1.tgz"
+          "resolved": "https://registry.npmjs.org/string_decoder/-/string_decoder-1.0.2.tgz"
         }
       }
     },
@@ -2290,19 +2298,19 @@
       }
     },
     "tangram-cartocss": {
-      "version": "0.5.3",
+      "version": "0.5.4",
       "from": "cartodb/tangram-carto#master",
-      "resolved": "git://github.com/cartodb/tangram-carto.git#3f3c485233faa70f1c17575986fa407ed631f8b4"
+      "resolved": "git://github.com/cartodb/tangram-carto.git#bdf4814bab04096cf0ffa6b9ce3b19c46649a2b7"
     },
     "tangram-reference": {
-      "version": "1.0.17",
-      "from": "tangram-reference@1.0.17",
-      "resolved": "https://registry.npmjs.org/tangram-reference/-/tangram-reference-1.0.17.tgz"
+      "version": "1.0.18",
+      "from": "tangram-reference@>=1.0.18 <2.0.0",
+      "resolved": "https://registry.npmjs.org/tangram-reference/-/tangram-reference-1.0.18.tgz"
     },
     "tangram.cartodb": {
-      "version": "0.4.2",
+      "version": "0.4.3",
       "from": "cartodb/tangram.cartodb#master",
-      "resolved": "git://github.com/cartodb/tangram.cartodb.git#7771f09a0e0e69b6a2330a2b6e0e7f6b8a40f620",
+      "resolved": "git://github.com/cartodb/tangram.cartodb.git#295263464066009e305f3e2aece6f4bb2c777cfe",
       "dependencies": {
         "babel-runtime": {
           "version": "6.18.0",
@@ -2342,14 +2350,14 @@
       "resolved": "https://registry.npmjs.org/through2/-/through2-2.0.3.tgz",
       "dependencies": {
         "readable-stream": {
-          "version": "2.2.10",
+          "version": "2.2.11",
           "from": "readable-stream@>=2.1.5 <3.0.0",
-          "resolved": "https://registry.npmjs.org/readable-stream/-/readable-stream-2.2.10.tgz"
+          "resolved": "https://registry.npmjs.org/readable-stream/-/readable-stream-2.2.11.tgz"
         },
         "string_decoder": {
-          "version": "1.0.1",
+          "version": "1.0.2",
           "from": "string_decoder@>=1.0.0 <1.1.0",
-          "resolved": "https://registry.npmjs.org/string_decoder/-/string_decoder-1.0.1.tgz"
+          "resolved": "https://registry.npmjs.org/string_decoder/-/string_decoder-1.0.2.tgz"
         }
       }
     },
@@ -2386,7 +2394,7 @@
     "torque.js": {
       "version": "2.16.3",
       "from": "cartodb/torque#master",
-      "resolved": "git://github.com/cartodb/torque.git#44c8e772134cd6344724ff167d7f07d3e20ddffa"
+      "resolved": "git://github.com/cartodb/torque.git#c998860ad3359f06b6d4f22c30205f7d14c0801a"
     },
     "tough-cookie": {
       "version": "2.3.2",

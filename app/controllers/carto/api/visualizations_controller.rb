@@ -32,7 +32,7 @@ module Carto
       before_filter :load_visualization, only: [:likes_count, :likes_list, :is_liked, :show, :stats, :list_watching,
                                                 :static_map, :vizjson2, :vizjson3, :update, :destroy,
                                                 :google_maps_static_image]
-      before_filter :ensure_visualization_owned, only: [:destroy]
+      before_filter :ensure_visualization_owned, only: [:destroy, :google_maps_static_image]
 
       rescue_from Carto::LoadError, with: :rescue_from_carto_error
       rescue_from Carto::UUIDParameterFormatError, with: :rescue_from_carto_error

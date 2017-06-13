@@ -36,6 +36,7 @@ module Carto
         if sync
           sync.id = random_uuid
           sync.user = user
+          sync.log.user_id = user.id
         end
 
         unless visualization.save

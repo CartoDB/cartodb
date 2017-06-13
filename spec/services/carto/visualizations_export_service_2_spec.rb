@@ -1369,7 +1369,10 @@ describe Carto::VisualizationsExportService2 do
 
       imported_viz = Carto::Visualization.find(imported_viz.id)
       verify_visualizations_match(imported_viz, @table_visualization, importing_user: @user)
-      imported_viz.synchronization.should be
+      sync = imported_viz.synchronization
+      sync.should be
+      sync.user_id.should eq @user.id
+      sync.log.user_id.should eq @user.id
 
       destroy_visualization(imported_viz.id)
     end

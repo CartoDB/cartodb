@@ -39,6 +39,12 @@ module Carto
           sync.log.user_id = user.id
         end
 
+        user_table = visualization.map.user_table
+        if user_table
+          user_table.user = user
+          user_table.service.register_table_only = true
+        end
+
         unless visualization.save
           raise "Errors saving imported visualization: #{visualization.errors.full_messages}"
         end
@@ -46,7 +52,7 @@ module Carto
         # Save permissions after visualization, in order to be able to regenerate shared_entities
         if saved_acl
           visualization.permission.access_control_list = saved_acl
-          visualization.permission.save
+          visualization.permission.save!
         end
 
         visualization.layers.map do |layer|

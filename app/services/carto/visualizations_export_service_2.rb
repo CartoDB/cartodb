@@ -180,18 +180,19 @@ module Carto
     def build_user_table_from_hash(exported_user_table)
       return nil unless exported_user_table
 
-      Carto::UserTable.new(
-        name: exported_user_table[:name],
-        privacy: exported_user_table[:privacy],
-        tags: exported_user_table[:tags],
-        geometry_columns: exported_user_table[:geometry_columns],
-        rows_counted: exported_user_table[:rows_counted],
-        rows_estimated: exported_user_table[:rows_estimated],
-        indexes: exported_user_table[:indexes],
-        database_name: exported_user_table[:database_name],
-        description: exported_user_table[:description],
-        table_id: exported_user_table[:table_id]
-      )
+      user_table = Carto::UserTable.new
+      user_table.name = exported_user_table[:name]
+      user_table.privacy = exported_user_table[:privacy]
+      user_table.tags = exported_user_table[:tags]
+      user_table.geometry_columns = exported_user_table[:geometry_columns]
+      user_table.rows_counted = exported_user_table[:rows_counted]
+      user_table.rows_estimated = exported_user_table[:rows_estimated]
+      user_table.indexes = exported_user_table[:indexes]
+      user_table.database_name = exported_user_table[:database_name]
+      user_table.description = exported_user_table[:description]
+      user_table.table_id = exported_user_table[:table_id]
+
+      user_table
     end
   end
 

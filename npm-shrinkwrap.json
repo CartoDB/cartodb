@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.8.0",
+  "version": "4.8.2",
   "dependencies": {
     "abbrev": {
       "version": "1.1.0",
@@ -671,9 +671,9 @@
       "resolved": "https://registry.npmjs.org/browserify-zlib/-/browserify-zlib-0.1.4.tgz"
     },
     "browserslist": {
-      "version": "2.1.4",
+      "version": "2.1.5",
       "from": "browserslist@>=2.1.2 <3.0.0",
-      "resolved": "https://registry.npmjs.org/browserslist/-/browserslist-2.1.4.tgz"
+      "resolved": "https://registry.npmjs.org/browserslist/-/browserslist-2.1.5.tgz"
     },
     "buffer": {
       "version": "4.9.1",
@@ -717,7 +717,7 @@
     },
     "caniuse-lite": {
       "version": "1.0.30000684",
-      "from": "caniuse-lite@>=1.0.30000670 <2.0.0",
+      "from": "caniuse-lite@>=1.0.30000684 <2.0.0",
       "resolved": "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30000684.tgz"
     },
     "carto": {
@@ -733,7 +733,7 @@
     "cartodb-deep-insights.js": {
       "version": "0.0.2",
       "from": "cartodb/deep-insights.js#master",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#8d0601c6554b813503349b2aa593242a834cc2f0"
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#d072c1631ebc76584b64ef1d170b00ad3aa817e0"
     },
     "cartodb-pecan": {
       "version": "0.2.0",
@@ -1034,7 +1034,7 @@
     },
     "electron-to-chromium": {
       "version": "1.3.14",
-      "from": "electron-to-chromium@>=1.3.11 <2.0.0",
+      "from": "electron-to-chromium@>=1.3.14 <2.0.0",
       "resolved": "https://registry.npmjs.org/electron-to-chromium/-/electron-to-chromium-1.3.14.tgz"
     },
     "elliptic": {
@@ -1302,7 +1302,7 @@
     },
     "fsevents": {
       "version": "1.1.2",
-      "from": "fsevents@>=1.0.0 <2.0.0",
+      "from": "fsevents@*",
       "resolved": "https://registry.npmjs.org/fsevents/-/fsevents-1.1.2.tgz",
       "optional": true
     },

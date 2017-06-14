@@ -191,6 +191,7 @@ More information at [Dropbox migration guide](https://www.dropbox.com/developers
 * Added explanation tooltip to the categorize label on the Find Nearest analysis (#12100)
 * Disable geometry edition button instead of hide in read-only layers (#11543)
 * Updated copies for export image & download map (#12114)
+* Added context menu to time-series widgets. (#12177)
 * Add all/none buttons to multi-select component (#9502)
 * New style for add analysis button (#11902)
 * Fix onboarding in layers (#12192)

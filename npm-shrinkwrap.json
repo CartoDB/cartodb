@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.8.8",
+  "version": "4.8.9",
   "dependencies": {
     "abbrev": {
       "version": "1.1.0",
@@ -3076,9 +3076,9 @@
       "resolved": "https://registry.npmjs.org/tangram-reference/-/tangram-reference-1.0.18.tgz"
     },
     "tangram.cartodb": {
-      "version": "0.4.4",
+      "version": "0.4.5",
       "from": "cartodb/tangram.cartodb#master",
-      "resolved": "git://github.com/cartodb/tangram.cartodb.git#097180df4c22a5d52a39a8331af63a1ef06efda9",
+      "resolved": "git://github.com/cartodb/tangram.cartodb.git#136c3894b9490bd3e89f4fe56f4576b3af7ac0d4",
       "dependencies": {
         "argparse": {
           "version": "1.0.9",

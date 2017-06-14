@@ -205,9 +205,9 @@ class Carto::User < ActiveRecord::Base
   def google_maps_private_key
     if organization.try(:google_maps_private_key).blank?
       read_attribute(:google_maps_private_key)
-      else
-        organization.google_maps_private_key
-      end
+    else
+      organization.google_maps_private_key
+    end
   end
 
   def google_maps_geocoder_enabled?

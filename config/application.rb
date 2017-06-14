@@ -121,8 +121,8 @@ module CartoDB
 
       builder.js
       builder_vendor.js
-      embed.js
-      embed_vendor.js
+      builder_embed.js
+      builder_embed_vendor.js
       dataset.js
       dataset_vendor.js
       common.js

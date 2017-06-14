@@ -25,7 +25,7 @@ var MAPZEN = {
       .replace(/ú/g, 'u');
 
     var protocol = window.location.protocol;
-    if (window.location.protocol.indexOf('http') === -1) {
+    if (protocol.indexOf('http') === -1) {
       protocol = 'http:';
     }
 

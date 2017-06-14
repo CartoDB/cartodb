@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.8.0",
+  "version": "4.8.3",
   "dependencies": {
     "abbrev": {
       "version": "1.1.0",
@@ -671,9 +671,9 @@
       "resolved": "https://registry.npmjs.org/browserify-zlib/-/browserify-zlib-0.1.4.tgz"
     },
     "browserslist": {
-      "version": "2.1.4",
+      "version": "2.1.5",
       "from": "browserslist@>=2.1.2 <3.0.0",
-      "resolved": "https://registry.npmjs.org/browserslist/-/browserslist-2.1.4.tgz"
+      "resolved": "https://registry.npmjs.org/browserslist/-/browserslist-2.1.5.tgz"
     },
     "buffer": {
       "version": "4.9.1",
@@ -717,7 +717,7 @@
     },
     "caniuse-lite": {
       "version": "1.0.30000684",
-      "from": "caniuse-lite@>=1.0.30000670 <2.0.0",
+      "from": "caniuse-lite@>=1.0.30000684 <2.0.0",
       "resolved": "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30000684.tgz"
     },
     "carto": {
@@ -733,7 +733,7 @@
     "cartodb-deep-insights.js": {
       "version": "0.0.2",
       "from": "cartodb/deep-insights.js#master",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#8d0601c6554b813503349b2aa593242a834cc2f0"
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#d072c1631ebc76584b64ef1d170b00ad3aa817e0"
     },
     "cartodb-pecan": {
       "version": "0.2.0",
@@ -743,7 +743,7 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
       "from": "cartodb/cartodb.js#v4",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#a17f1d35ae040dc769e3b7bdc77f5b59aa4255bd"
+      "resolved": "git://github.com/cartodb/cartodb.js.git#90bdb18389da056b300e421baf7af79e3120d71c"
     },
     "caseless": {
       "version": "0.11.0",
@@ -1034,7 +1034,7 @@
     },
     "electron-to-chromium": {
       "version": "1.3.14",
-      "from": "electron-to-chromium@>=1.3.11 <2.0.0",
+      "from": "electron-to-chromium@>=1.3.14 <2.0.0",
       "resolved": "https://registry.npmjs.org/electron-to-chromium/-/electron-to-chromium-1.3.14.tgz"
     },
     "elliptic": {
@@ -1302,7 +1302,7 @@
     },
     "fsevents": {
       "version": "1.1.2",
-      "from": "fsevents@>=1.0.0 <2.0.0",
+      "from": "fsevents@*",
       "resolved": "https://registry.npmjs.org/fsevents/-/fsevents-1.1.2.tgz",
       "optional": true
     },
@@ -2972,9 +2972,9 @@
       }
     },
     "tangram-cartocss": {
-      "version": "0.5.4",
+      "version": "0.5.5",
       "from": "cartodb/tangram-carto#master",
-      "resolved": "git://github.com/cartodb/tangram-carto.git#bdf4814bab04096cf0ffa6b9ce3b19c46649a2b7"
+      "resolved": "git://github.com/cartodb/tangram-carto.git#98fb17381ec4102a5c7dc428514d1337ed4abd66"
     },
     "tangram-reference": {
       "version": "1.0.18",
@@ -2982,19 +2982,39 @@
       "resolved": "https://registry.npmjs.org/tangram-reference/-/tangram-reference-1.0.18.tgz"
     },
     "tangram.cartodb": {
-      "version": "0.4.3",
+      "version": "0.4.4",
       "from": "cartodb/tangram.cartodb#master",
-      "resolved": "git://github.com/cartodb/tangram.cartodb.git#295263464066009e305f3e2aece6f4bb2c777cfe",
+      "resolved": "git://github.com/cartodb/tangram.cartodb.git#0c256d09594ace3014ad7d86e3741024336b76be",
       "dependencies": {
+        "argparse": {
+          "version": "1.0.9",
+          "from": "argparse@>=1.0.2 <2.0.0",
+          "resolved": "https://registry.npmjs.org/argparse/-/argparse-1.0.9.tgz"
+        },
         "babel-runtime": {
           "version": "6.18.0",
           "from": "babel-runtime@6.18.0",
           "resolved": "https://registry.npmjs.org/babel-runtime/-/babel-runtime-6.18.0.tgz"
         },
+        "esprima": {
+          "version": "2.7.3",
+          "from": "esprima@>=2.6.0 <3.0.0",
+          "resolved": "https://registry.npmjs.org/esprima/-/esprima-2.7.3.tgz"
+        },
+        "js-yaml": {
+          "version": "3.5.3",
+          "from": "tangrams/js-yaml#read-only",
+          "resolved": "git://github.com/tangrams/js-yaml.git#1637976c6f593bed33ed088aedb6d01390a947c0"
+        },
         "regenerator-runtime": {
           "version": "0.9.6",
           "from": "regenerator-runtime@>=0.9.5 <0.10.0",
           "resolved": "https://registry.npmjs.org/regenerator-runtime/-/regenerator-runtime-0.9.6.tgz"
+        },
+        "tangram": {
+          "version": "0.12.5",
+          "from": "tangrams/tangram#master",
+          "resolved": "git://github.com/tangrams/tangram.git#70a7bd7cb3103cbbd9528ea68750dfb4c98b678b"
         }
       }
     },
@@ -3157,9 +3177,9 @@
       "resolved": "https://registry.npmjs.org/typedarray/-/typedarray-0.0.6.tgz"
     },
     "uglify-js": {
-      "version": "2.8.28",
+      "version": "2.8.29",
       "from": "uglify-js@>=2.8.5 <3.0.0",
-      "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-2.8.28.tgz",
+      "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-2.8.29.tgz",
       "dependencies": {
         "yargs": {
           "version": "3.10.0",

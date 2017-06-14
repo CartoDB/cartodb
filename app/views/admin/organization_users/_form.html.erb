@@ -107,7 +107,7 @@
     </div>
   </div>
 
-  <% if !@user.organization_owner? && @organization.owner.has_feature_flag?('organization-admins') %>
+  <% if !@user.organization_owner? %>
     <div class="FormAccount-row js-org-admin-row" <%= @user.builder? ? 'style="display: none;"' : '' %>>
       <div class="FormAccount-rowLabel">
         <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Administrator</label>

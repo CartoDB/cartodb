@@ -67,15 +67,15 @@
 
 .Editor-panel .ps-scrollbar-y-rail,
 .CDB-Widget-canvas .ps-container>.ps-scrollbar-y-rail {
-  right: 0 !Important;
-  width: 4px !Important; // Resets standard scroll track color
+  right: 0 !important;
+  width: 4px !important; // Resets standard scroll track color
   background: #EEE;
   z-index: 3;
 }
 .Editor-panel .ps-scrollbar-y,
 .CDB-Widget-canvas .ps-container>.ps-scrollbar-y-rail>.ps-scrollbar-y {
   right: 0 !important;
-  width: 4px !Important; // Resets standard scroll bar color
+  width: 4px !important; // Resets standard scroll bar color
   background: #AAA;
   &:hover {
     cursor: all-scroll;
@@ -86,15 +86,15 @@
   }
 }
 .Editor-panel .ps-scrollbar-x-rail {
-  height: 2px !Important; // Resets standard scroll track color
+  height: 2px !important; // Resets standard scroll track color
   border-top: 12px solid $cWhite;
   border-bottom: 2px solid $cWhite;
   background: #EEE;
   z-index: 3;
 }
 .Editor-panel .ps-scrollbar-x-rail .ps-scrollbar-x {
-  bottom: -1px !Important; // Resets standard scroll bar position
-  height: 4px !Important; // Resets standard scroll bar color
+  bottom: -1px !important; // Resets standard scroll bar position
+  height: 4px !important; // Resets standard scroll bar color
   pointer-events: all;
   opacity: 0.6;
 }
@@ -126,10 +126,10 @@
     }
     .CDB-Widget.CDB-Widget--timeSeries {
       min-height: auto;
-      padding: 12px 0;
+      padding: 18px 0 16px;
       .CDB-Widget-content {
-        margin-right: 12px;
-        margin-left: 12px;
+        margin-right: 20px;
+        margin-left: 20px;
       }
     }
     .CDB-Widget--timeSeries {
@@ -144,8 +144,13 @@
 
 @media (max-width: $sViewport-xl) {
   .Editor {
-    .CDB-Widget {
-      overflow-x: hidden;
+    .CDB-Widget.CDB-Widget--timeSeries {
+      min-height: auto;
+      padding: 18px 0 16px;
+      .CDB-Widget-content {
+        margin-right: 20px;
+        margin-left: 20px;
+      }
     }
     .CDB-Widget-options,
     .CDB-Widget-actions {

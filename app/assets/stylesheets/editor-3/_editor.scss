@@ -126,10 +126,10 @@
     }
     .CDB-Widget.CDB-Widget--timeSeries {
       min-height: auto;
-      padding: 12px 0;
+      padding: 18px 0 16px;
       .CDB-Widget-content {
-        margin-right: 12px;
-        margin-left: 12px;
+        margin-right: 20px;
+        margin-left: 20px;
       }
     }
     .CDB-Widget--timeSeries {
@@ -144,8 +144,13 @@
 
 @media (max-width: $sViewport-xl) {
   .Editor {
-    .CDB-Widget {
-      overflow-x: hidden;
+    .CDB-Widget.CDB-Widget--timeSeries {
+      min-height: auto;
+      padding: 18px 0 16px;
+      .CDB-Widget-content {
+        margin-right: 20px;
+        margin-left: 20px;
+      }
     }
     .CDB-Widget-options,
     .CDB-Widget-actions {

@@ -1137,6 +1137,7 @@
       "operators": {
         "count-message": "If you select 'COUNT' all columns are selected"
       },
+      "column-type-error": "Column type must be a %{columnType}",
       "interval-error": "Value must be between %{minValue} and %{maxValue}",
       "copy-button": "COPY",
       "data-observatory": {

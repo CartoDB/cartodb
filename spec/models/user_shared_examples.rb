@@ -795,31 +795,74 @@ shared_examples_for "user models" do
     end
   end
 
+  shared_examples_for 'google maps key inheritance' do
+    before(:all) do
+      @user = create_user
+    end
+
+    after(:all) do
+      @user.destroy
+    end
+
+    def set_user_field(value)
+      @user.send(write_field + '=', value)
+    end
+
+    def set_organization_field(value)
+      @user.stubs(:organization).returns(mock)
+      @user.organization.stubs(write_field).returns(value)
+    end
+
+    def get_field
+      @user.send(read_field)
+    end
+
+    it 'returns user key for users without organization' do
+      set_user_field('wadus')
+      get_field.should eq 'wadus'
+    end
+
+    it 'returns nil for users without organization nor key' do
+      set_user_field(nil)
+      get_field.should eq nil
+    end
+
+    it 'takes key from user if organization is not set' do
+      set_user_field('wadus')
+      set_organization_field(nil)
+      get_field.should eq 'wadus'
+    end
+
+    it 'takes key from user if organization is blank' do
+      set_user_field('wadus')
+      set_organization_field('')
+      get_field.should eq 'wadus'
+    end
+
+    it 'takes key from organization if both set' do
+      set_user_field('wadus')
+      set_organization_field('org_key')
+      get_field.should eq 'org_key'
+    end
+
+    it 'returns nil if key is not set at user nor organization' do
+      set_user_field(nil)
+      set_organization_field(nil)
+      get_field.should be_nil
+    end
+  end
+
   describe '#google_maps_api_key' do
-    it 'overrides organization if organization is nil or blank' do
-      user = create_user
-      user.google_maps_api_key.should eq nil
+    it_behaves_like 'google maps key inheritance' do
+      let(:write_field) { 'google_maps_key' }
+      let(:read_field) { 'google_maps_api_key' }
+    end
+  end
 
-      user.google_maps_key = 'wadus'
-      user.google_maps_api_key.should eq 'wadus'
-
-      user.google_maps_key = nil
-      user.stubs(:organization).returns(mock)
-
-      user.organization.stubs(:google_maps_key).returns(nil)
-      user.google_maps_api_key.should eq nil
-
-      user.organization.stubs(:google_maps_key).returns('org')
-      user.google_maps_api_key.should eq 'org'
-
-      user.google_maps_key = 'wadus'
-      user.google_maps_api_key.should eq 'org'
-
-      user.organization.stubs(:google_maps_key).returns('')
-      user.google_maps_api_key.should eq 'wadus'
-
-      user.organization.stubs(:google_maps_key).returns(nil)
-      user.google_maps_api_key.should eq 'wadus'
+  describe '#google_maps_private_key' do
+    it_behaves_like 'google maps key inheritance' do
+      let(:write_field) { 'google_maps_private_key' }
+      let(:read_field) { 'google_maps_private_key' }
     end
   end
 

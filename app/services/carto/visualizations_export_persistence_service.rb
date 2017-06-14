@@ -8,6 +8,9 @@ module Carto
     include Carto::UUIDHelper
     include Carto::QueryRewriter
 
+    # `full_restore = true` means keeping the visualization id and permission. Its intended use is to restore an exact
+    # copy of a visualization (e.g: user migration). When it's `false` it will skip restoring ids and permissions. This
+    # is the default, and how it's used by the Import API to allow to import a visualization into a different user
     def save_import(user, visualization, renamed_tables: {}, full_restore: false)
       old_username = visualization.user.username if visualization.user
       apply_user_limits(user, visualization)

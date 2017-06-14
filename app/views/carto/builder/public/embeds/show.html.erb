@@ -45,14 +45,14 @@
   <%= javascript_include_tag 'builder_embed_vendor.js' %>
   <%= javascript_include_tag 'builder_embed.js' %>
 
-  <% if Cartodb.config[:graphite_public] %>
+  <% if Cartodb.get_config(:graphite_public, 'host') %>
     <%= javascript_include_tag "statsc.js" %>
   <% end %>
   <script>
     (function () {
-      <% if Cartodb.config[:graphite_public] %>
+      <% if Cartodb.get_config(:graphite_public, 'host') %>
         if (location.protocol.indexOf('https') === -1) {
-          statsc.connect('http://<%= Cartodb.config[:graphite_public]['host'] %>:<%= Cartodb.config[:graphite_public]['port'] %>/');
+          statsc.connect('http://<%= Cartodb.get_config(:graphite_public, 'host') %>:<%= Cartodb.get_config(:graphite_public, 'port') %>/');
           cartodb.core.Profiler.backend(function () {
             statsc.send.apply(statsc, arguments);
           });

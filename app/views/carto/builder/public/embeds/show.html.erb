@@ -51,7 +51,7 @@
   <script>
     (function () {
       <% if Cartodb.get_config(:graphite_public, 'host') %>
-        if (location.protocol.indexOf('https') === -1) {
+        if (location.protocol.indexOf('https') === 0) {
           statsc.connect('http://<%= Cartodb.get_config(:graphite_public, 'host') %>:<%= Cartodb.get_config(:graphite_public, 'port') %>/');
           cartodb.core.Profiler.backend(function () {
             statsc.send.apply(statsc, arguments);

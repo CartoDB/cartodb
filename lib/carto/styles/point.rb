@@ -29,7 +29,7 @@ module Carto::Styles
         "marker-fill-opacity: #{opacity};"]
 
       if style_type == 'tvt'
-        css = ["dot-width: #{width};",
+        css = ["dot-width: 2;",
          "dot-fill: #{color};",
          "dot-opacity: #{opacity};"]
       end

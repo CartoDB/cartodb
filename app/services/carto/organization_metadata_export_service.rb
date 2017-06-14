@@ -119,7 +119,7 @@ module Carto
       end
     end
 
-    def import_organization_from_directory(path)
+    def import_organization_and_users_from_directory(path)
       # Import organization
       organization_file = Dir["#{path}/organization_*.json"].first
       organization = build_organization_from_json_export(File.read(organization_file))
@@ -132,6 +132,10 @@ module Carto
         Carto::UserMetadataExportService.new.import_user_from_directory(user_path, import_visualizations: false)
       end
 
+      organization
+    end
+
+    def import_organization_visualizations_from_directory(organization, path)
       organization.users.each do |user|
         Carto::UserMetadataExportService.new.import_user_visualizations_from_directory(
           user, Carto::Visualization::TYPE_CANONICAL, "#{path}/user_#{user.id}"

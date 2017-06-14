@@ -23,7 +23,37 @@ describe Carto::OrganizationMetadataExportService do
   def destroy_organization
     Organization[@organization.id].destroy_cascade
   end
+    def import_organization_and_users_from_directory(path)
+      # Import organization
+      organization_file = Dir["#{path}/organization_*.json"].first
+      organization = build_organization_from_json_export(File.read(organization_file))
+      save_imported_organization(organization)
 
+      user_list = Dir["#{path}/user_*"]
+
+      # In order to get permissions right, we first import all users, then all datasets and finally, all maps
+      organization.users = user_list.map do |user_path|
+        Carto::UserMetadataExportService.new.import_user_from_directory(user_path, import_visualizations: false)
+      end
+
+      organization
+    end
+
+    def import_organization_visualizations_from_directory(organization, path)
+      organization.users.each do |user|
+        Carto::UserMetadataExportService.new.import_user_visualizations_from_directory(
+          user, Carto::Visualization::TYPE_CANONICAL, "#{path}/user_#{user.id}"
+        )
+      end
+
+      organization.users.each do |user|
+        Carto::UserMetadataExportService.new.import_user_visualizations_from_directory(
+          user, Carto::Visualization::TYPE_DERIVED, "#{path}/user_#{user.id}"
+        )
+      end
+
+      organization
+    end
   let(:service) { Carto::OrganizationMetadataExportService.new }
 
   describe '#organization export' do
@@ -80,9 +110,15 @@ describe Carto::OrganizationMetadataExportService do
         service.export_organization_to_directory(@organization.id, path)
         source_organization = @organization.attributes
         source_users = @organization.users.map(&:attributes)
-        destroy_organization
 
-        imported_organization = service.import_organization_from_directory(path)
+        # Destroy, keeping the database
+        Table.any_instance.stubs(:remove_table_from_user_database)
+        @organization.users.flat_map(&:visualizations).each(&:destroy)
+        @organization.users.each(&:destroy)
+        @organization.destroy
+
+        imported_organization = service.import_organization_and_users_from_directory(path)
+        import_organization_visualizations_from_directory(imported_organization, path)
 
         compare_excluding_dates(imported_organization.attributes, source_organization)
         expect(imported_organization.users.count).to eq source_users.count

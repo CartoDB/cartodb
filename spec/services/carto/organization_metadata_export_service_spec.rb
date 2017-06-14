@@ -76,32 +76,24 @@ describe Carto::OrganizationMetadataExportService do
   describe '#full export + import (organization, users and visualizations)' do
     it 'export + import organization, users and visualizations' do
       Dir.mktmpdir do |path|
-        create_user_with_basemaps_assets_visualizations
-        service.export_user_to_directory(@user.id, path)
-        source_user = @user.attributes
+        create_organization_with_dependencies
+        service.export_organization_to_directory(@organization.id, path)
+        source_organization = @organization.attributes
+        source_users = @organization.users.map(&:attributes)
+        destroy_organization
 
-        source_visualizations = @user.visualizations.map(&:attributes)
-        destroy_user
+        imported_organization = service.import_organization_from_directory(path)
 
-        imported_user = service.import_user_from_directory(path)
-
-        compare_excluding_dates(imported_user.attributes, source_user)
-        expect(imported_user.visualizations.count).to eq source_visualizations.count
-        imported_user.visualizations.zip(source_visualizations).each do |v1, v2|
-          compare_excluding_dates_and_ids(v1.attributes, v2)
+        compare_excluding_dates(imported_organization.attributes, source_organization)
+        expect(imported_organization.users.count).to eq source_users.count
+        imported_organization.users.zip(source_users).each do |u1, u2|
+          compare_excluding_dates(u1.attributes, u2)
         end
       end
     end
   end
 
-  EXCLUDED_DATE_FIELDS = ['created_at', 'updated_at'].freeze
-  EXCLUDED_ID_FIELDS = ['map_id', 'permission_id', 'active_layer_id', 'tags'].freeze
-
-  def compare_excluding_dates_and_ids(v1, v2)
-    filtered1 = v1.reject { |k, _| EXCLUDED_ID_FIELDS.include?(k) }
-    filtered2 = v2.reject { |k, _| EXCLUDED_ID_FIELDS.include?(k) }
-    compare_excluding_dates(filtered1, filtered2)
-  end
+  EXCLUDED_DATE_FIELDS = ['created_at', 'updated_at', 'period_end_date'].freeze
 
   def compare_excluding_dates(u1, u2)
     filtered1 = u1.reject { |k, _| EXCLUDED_DATE_FIELDS.include?(k) }

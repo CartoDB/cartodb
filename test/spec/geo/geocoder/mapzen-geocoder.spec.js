@@ -120,7 +120,6 @@ describe('geo/geocoder/mapzen-geocoder', function () {
       config.unset('mapzenApiKey');
 
       MAPZEN.geocode('Madrid', this.callback);
-      this.jqxhr.reject('error');
     });
 
     it('should log an error', function () {

@@ -3,6 +3,7 @@ Development
 
 ### Features
 * New loading button styles (#12132)
+* New force param in EUMAPI organization users destroy operation to force deletion even with unregistered tables (#11654).
 * [WIP] Export/import organization/user metadata to allow user migration (#12271)
 * Removed the usage of the `organizations_admin` feature flag (#12131)
 

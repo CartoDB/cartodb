@@ -348,7 +348,6 @@
     var config = <%= safe_js_object frontend_config_public({https_apis: request.protocol == 'https://' }) %>;
     var vizdata = <%= safe_js_object @visualization.to_vizjson({https_request: request.protocol == 'https://'}).to_json %>;
     var login_url = "<%= CartoDB.url(self, 'login') %>";
-    var mapzenApiKey = '<%= mapzen_api_key %>';
 
     // Generating map options
     var bool_fn = function(v) { return v == 'true' };

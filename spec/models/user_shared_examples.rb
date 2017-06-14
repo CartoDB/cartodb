@@ -823,6 +823,34 @@ shared_examples_for "user models" do
     end
   end
 
+  describe '#google_maps_private_key' do
+    it 'overrides organization if organization is nil or blank' do
+      user = create_user
+      user.google_maps_api_key.should eq nil
+
+      user.google_maps_private_key = 'wadus'
+      user.google_maps_private_key.should eq 'wadus'
+
+      user.google_maps_private_key = nil
+      user.stubs(:organization).returns(mock)
+
+      user.organization.stubs(:google_maps_private_key).returns(nil)
+      user.google_maps_private_key.should eq nil
+
+      user.organization.stubs(:google_maps_private_key).returns('org')
+      user.google_maps_private_key.should eq 'org'
+
+      user.google_maps_private_key = 'wadus'
+      user.google_maps_private_key.should eq 'org'
+
+      user.organization.stubs(:google_maps_private_key).returns('')
+      user.google_maps_private_key.should eq 'wadus'
+
+      user.organization.stubs(:google_maps_private_key).returns(nil)
+      user.google_maps_private_key.should eq 'wadus'
+    end
+  end
+
   describe '#view_dashboard' do
     it 'sets dashboard_viewed_at time' do
       user = create_user

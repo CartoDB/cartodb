@@ -182,6 +182,7 @@
     "affected_specs": "node lib/build/branchFiles/branchFiles.js | xargs node lib/build/affectedFiles/affectedFiles.js",
     "build": "NODE_ENV=production webpack -p --config webpack.prod.config.js",
     "build:stats": "webpack --env.stats --progress --config webpack.dev.config.js",
-    "start": "grunt watch:css & webpack --progress --watch --config webpack.dev.config.js"
+    "start": "grunt watch:css & webpack --progress --watch --config webpack.dev.config.js",
+    "dev": "webpack --progress --config webpack.dev.config.js"
   }
 }

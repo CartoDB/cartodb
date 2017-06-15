@@ -18,6 +18,7 @@
   var builderNotifications = <%= safe_js_object @builder_notifications.to_json %>;
   var dashboardNotifications = <%= safe_js_object @dashboard_notifications.to_json %>;
   var ACTIVE_LOCALE = 'en';
+  var mapzenApiKey = '<%= mapzen_api_key %>';
 </script>
 
 <%= render(partial: 'shared/visualizations/google_maps', locals: { google_maps_qs: @google_maps_qs }) %>

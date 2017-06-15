@@ -320,13 +320,14 @@ module.exports = function (grunt) {
     'config'
   ]);
 
-  grunt.registerTask('default', [
+  grunt.registerTask('pre', [
     'beforeDefault',
     'js',
     'css',
     'manifest'
   ]);
 
+  registerCmdTask('npm-dev', {cmd: 'npm', args: ['run', 'dev']});
   registerCmdTask('npm-start', {cmd: 'npm', args: ['run', 'start']});
 
   /**
@@ -334,8 +335,13 @@ module.exports = function (grunt) {
    */
 
   grunt.registerTask('dev', [
-    'default',
+    'pre',
     'npm-start'
+  ]);
+
+  grunt.registerTask('default', [
+    'pre',
+    'npm-dev'
   ]);
 
   // still have to use this custom task because registerCmdTask outputs tons of warnings like:
@@ -370,7 +376,7 @@ module.exports = function (grunt) {
   registerCmdTask('npm-build', {cmd: 'npm', args: ['run', 'build']});
 
   grunt.registerTask('build', [
-    'default',
+    'pre',
     'copy:js',
     'exorcise',
     'uglify',

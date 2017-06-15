@@ -25,6 +25,8 @@ module ModelFactories
     end
 
     def self.get_default_data_layer(table_name, user, geometry_type)
+      style_type = table_name.start_with?(TVT_PREFIX) ? 'tvt' : 'simple'
+
       data_layer = ::Layer.new(Cartodb.config[:layer_opts]['data'])
       data_layer.options['table_name'] = table_name
       data_layer.options['user_name'] = user.username
@@ -35,7 +37,7 @@ module ModelFactories
       data_layer.tooltip['fields'] = []
 
       if user.builder_enabled?
-        data_layer.options['style_properties'] = style_properties(geometry_type)
+        data_layer.options['style_properties'] = style_properties(geometry_type, style_type)
       end
 
       data_layer
@@ -59,7 +61,7 @@ module ModelFactories
     def self.style_properties(geometry_type, style_type)
       {
         type: style_type,
-        properties: Carto::Form.new(geometry_type).to_hash
+        properties: Carto::Form.new(geometry_type, style_type).to_hash
       }
     end
 
@@ -70,7 +72,7 @@ module ModelFactories
     def self.builder_tile_style(geometry_type, style_type)
       style_class = Carto::Styles::Style.style_for_geometry_type(geometry_type)
 
-      style_class ? style_class.new.to_cartocss(style_type) : legacy_tile_style(geometry_type)
+      style_class ? style_class.new(style_type).to_cartocss(style_type) : legacy_tile_style(geometry_type)
     end
 
     def self.legacy_tile_style(geometry_type)

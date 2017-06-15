@@ -7,8 +7,10 @@ module Carto
     class Style
       CARTOGRAPHY_DEFINITION_LOCATION =
         "#{Rails.root}/lib/assets/core/javascripts/cartodb3/data/default-cartography.json".freeze
+      TVT_DEFINITION_LOCATION =
+        "#{Rails.root}/lib/assets/core/javascripts/cartodb3/data/tvt-cartography.json".freeze
 
-      def initialize(definition)
+      def initialize(style_type, definition)
         @definition = definition
       end
 

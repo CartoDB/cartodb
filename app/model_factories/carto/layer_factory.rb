@@ -31,8 +31,8 @@ module Carto
     def self.build_data_layer(user_table)
       user = user_table.user
       geometry_type = user_table.geometry_type
-      # style_type = user_table.service.name.start_with?(TVT_PREFIX) && user.has_feature_flag?('dot_properties') ? 'tvt' : 'simple'
-      style_type = user_table.service.name.start_with?(TVT_PREFIX) ? 'tvt' : 'simple'
+      # style_type = user_table.name.start_with?(TVT_PREFIX) && user.has_feature_flag?('dot_properties') ? 'tvt' : 'simple'
+      style_type = user_table.name.start_with?(TVT_PREFIX) ? 'tvt' : 'simple'
 
       data_layer = Carto::Layer.new(Cartodb.config[:layer_opts]['data'])
       layer_options = data_layer.options
@@ -45,7 +45,7 @@ module Carto
       data_layer.tooltip['fields'] = []
 
       if user.builder_enabled?
-        data_layer.options['style_properties'] = style_properties(geometry_type)
+        data_layer.options['style_properties'] = style_properties(geometry_type, style_type)
       end
 
       data_layer
@@ -53,10 +53,10 @@ module Carto
 
     # private
 
-    def self.style_properties(geometry_type)
+    def self.style_properties(geometry_type, style_type)
       {
-        type: 'simple',
-        properties: Carto::Form.new(geometry_type).to_hash
+        type: style_type,
+        properties: Carto::Form.new(geometry_type, style_type).to_hash
       }
     end
     private_class_method :style_properties
@@ -69,7 +69,7 @@ module Carto
     def self.builder_tile_style(geometry_type, style_type)
       style_class = Carto::Styles::Style.style_for_geometry_type(geometry_type)
 
-      style_class ? style_class.new.to_cartocss(style_type) : legacy_tile_style(geometry_type)
+      style_class ? style_class.new(style_type).to_cartocss(style_type) : legacy_tile_style(geometry_type)
     end
     private_class_method :builder_tile_style
 

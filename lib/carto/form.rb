@@ -5,10 +5,13 @@ require_relative './definition'
 module Carto
   class Form
     DEFAULT_FORMS_DEFINITION_LOCATION =
-      "#{Rails.root}/lib/assets/core/javascripts/cartodb3/data/default-form-styles.json".freeze
+      "#{Rails.root}/lib/assets/core/javascripts/cartodb3/data/default-form-styles.json"
+    TVT_FORMS_DEFINITION_LOCATION =
+      "#{Rails.root}/lib/assets/core/javascripts/cartodb3/data/tvt-form-styles.json"
 
-    def initialize(geometry_type)
+    def initialize(geometry_type, style_type)
       @geometry_type = geometry_type
+      @style_type = style_type
     end
 
     def to_hash
@@ -27,8 +30,10 @@ module Carto
     private
 
     def forms_definition
+      forms_definition_location = @style_type == 'tvt' ? TVT_FORMS_DEFINITION_LOCATION : DEFAULT_FORMS_DEFINITION_LOCATION
+
       @forms_definition ||= Carto::Definition.instance
-                                             .load_from_file(DEFAULT_FORMS_DEFINITION_LOCATION)
+                                             .load_from_file(forms_definition_location)
     end
 
     def style_definition
@@ -44,7 +49,7 @@ module Carto
     end
 
     def style
-      @style ||= style_class.new
+      @style ||= style_class.new(@style_type)
     end
   end
 end

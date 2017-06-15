@@ -8,8 +8,10 @@ require_relative '../definition'
 
 module Carto::Styles
   class Geometry < Style
-    def initialize
-      super(nil)
+    def initialize(style_type)
+      @style_type = style_type
+
+      super(style_type, nil)
     end
 
     def self.accepted_geometry_types
@@ -24,7 +26,7 @@ module Carto::Styles
 
     def to_cartocss(style_type)
       cartocss_classes = NAMES_CLASSES_MAP.keys.map do |class_name|
-        cartocss_array = NAMES_CLASSES_MAP[class_name].new.to_cartocss_array(style_type)
+        cartocss_array = NAMES_CLASSES_MAP[class_name].new(style_type).to_cartocss_array(style_type)
         Carto::Styles::Presenters::CartoCSS.new(cartocss_array: cartocss_array,
                                                 class_name: class_name)
                                            .to_s
@@ -34,11 +36,9 @@ module Carto::Styles
     end
 
     def default_definition
-      definition_instance = Carto::Definition.instance
-      definition = definition_instance
-                   .load_from_file(CARTOGRAPHY_DEFINITION_LOCATION)
+      definition_location = @style_type == 'tvt' ? TVT_DEFINITION_LOCATION : CARTOGRAPHY_DEFINITION_LOCATION
 
-      definition[:simple][:point]
+      Carto::Definition.instance.load_from_file(definition_location)[:simple][:point]
     end
   end
 end

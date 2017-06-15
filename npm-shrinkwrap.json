@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.8.2",
+  "version": "4.8.10",
   "dependencies": {
     "abbrev": {
       "version": "1.1.0",
@@ -47,8 +47,7 @@
     "amdefine": {
       "version": "1.0.1",
       "from": "amdefine@>=0.0.4",
-      "resolved": "https://registry.npmjs.org/amdefine/-/amdefine-1.0.1.tgz",
-      "optional": true
+      "resolved": "https://registry.npmjs.org/amdefine/-/amdefine-1.0.1.tgz"
     },
     "ansi-regex": {
       "version": "2.1.1",
@@ -68,14 +67,12 @@
     "aproba": {
       "version": "1.1.1",
       "from": "aproba@1.1.1",
-      "resolved": "https://registry.npmjs.org/aproba/-/aproba-1.1.1.tgz",
-      "optional": true
+      "resolved": "https://registry.npmjs.org/aproba/-/aproba-1.1.1.tgz"
     },
     "are-we-there-yet": {
       "version": "1.1.4",
       "from": "are-we-there-yet@1.1.4",
-      "resolved": "https://registry.npmjs.org/are-we-there-yet/-/are-we-there-yet-1.1.4.tgz",
-      "optional": true
+      "resolved": "https://registry.npmjs.org/are-we-there-yet/-/are-we-there-yet-1.1.4.tgz"
     },
     "argparse": {
       "version": "0.1.16",
@@ -496,7 +493,7 @@
     "backbone-forms": {
       "version": "0.14.0",
       "from": "backbone-forms@0.14.0",
-      "resolved": "http://registry.npmjs.org/backbone-forms/-/backbone-forms-0.14.0.tgz"
+      "resolved": "https://registry.npmjs.org/backbone-forms/-/backbone-forms-0.14.0.tgz"
     },
     "backbone-model-file-upload": {
       "version": "1.0.0",
@@ -743,7 +740,7 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
       "from": "cartodb/cartodb.js#v4",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#90bdb18389da056b300e421baf7af79e3120d71c"
+      "resolved": "git://github.com/cartodb/cartodb.js.git#ec2e158b6c45174c2643f0d2aee8f02c6d125161"
     },
     "caseless": {
       "version": "0.11.0",
@@ -983,8 +980,7 @@
     "delegates": {
       "version": "1.0.0",
       "from": "delegates@1.0.0",
-      "resolved": "https://registry.npmjs.org/delegates/-/delegates-1.0.0.tgz",
-      "optional": true
+      "resolved": "https://registry.npmjs.org/delegates/-/delegates-1.0.0.tgz"
     },
     "deps-sort": {
       "version": "2.0.0",
@@ -1309,13 +1305,28 @@
     "fstream": {
       "version": "1.0.11",
       "from": "fstream@1.0.11",
-      "resolved": "https://registry.npmjs.org/fstream/-/fstream-1.0.11.tgz"
+      "resolved": "https://registry.npmjs.org/fstream/-/fstream-1.0.11.tgz",
+      "dependencies": {
+        "graceful-fs": {
+          "version": "4.1.11",
+          "from": "graceful-fs@>=4.1.2 <5.0.0",
+          "resolved": "https://registry.npmjs.org/graceful-fs/-/graceful-fs-4.1.11.tgz"
+        }
+      }
     },
     "fstream-ignore": {
       "version": "1.0.5",
       "from": "fstream-ignore@1.0.5",
       "resolved": "https://registry.npmjs.org/fstream-ignore/-/fstream-ignore-1.0.5.tgz",
-      "optional": true
+      "optional": true,
+      "dependencies": {
+        "minimatch": {
+          "version": "3.0.4",
+          "from": "minimatch@^3.0.0",
+          "resolved": "https://registry.npmjs.org/minimatch/-/minimatch-3.0.4.tgz",
+          "optional": true
+        }
+      }
     },
     "function-bind": {
       "version": "1.1.0",
@@ -1325,8 +1336,7 @@
     "gauge": {
       "version": "2.7.4",
       "from": "gauge@2.7.4",
-      "resolved": "https://registry.npmjs.org/gauge/-/gauge-2.7.4.tgz",
-      "optional": true
+      "resolved": "https://registry.npmjs.org/gauge/-/gauge-2.7.4.tgz"
     },
     "generate-function": {
       "version": "2.0.0",
@@ -1517,6 +1527,12 @@
       "from": "grunt-template-jasmine-requirejs@>=0.2.0 <0.3.0",
       "resolved": "https://registry.npmjs.org/grunt-template-jasmine-requirejs/-/grunt-template-jasmine-requirejs-0.2.3.tgz"
     },
+    "har-schema": {
+      "version": "1.0.5",
+      "from": "har-schema@>=1.0.5 <2.0.0",
+      "resolved": "https://registry.npmjs.org/har-schema/-/har-schema-1.0.5.tgz",
+      "optional": true
+    },
     "har-validator": {
       "version": "2.0.6",
       "from": "har-validator@>=2.0.6 <2.1.0",
@@ -1545,8 +1561,7 @@
     "has-unicode": {
       "version": "2.0.1",
       "from": "has-unicode@2.0.1",
-      "resolved": "https://registry.npmjs.org/has-unicode/-/has-unicode-2.0.1.tgz",
-      "optional": true
+      "resolved": "https://registry.npmjs.org/has-unicode/-/has-unicode-2.0.1.tgz"
     },
     "hash-base": {
       "version": "2.0.2",
@@ -1631,8 +1646,7 @@
     "ini": {
       "version": "1.3.4",
       "from": "ini@1.3.4",
-      "resolved": "https://registry.npmjs.org/ini/-/ini-1.3.4.tgz",
-      "optional": true
+      "resolved": "https://registry.npmjs.org/ini/-/ini-1.3.4.tgz"
     },
     "inline-source-map": {
       "version": "0.6.2",
@@ -2099,8 +2113,7 @@
     "nan": {
       "version": "2.6.2",
       "from": "nan@>=2.3.0 <3.0.0",
-      "resolved": "https://registry.npmjs.org/nan/-/nan-2.6.2.tgz",
-      "optional": true
+      "resolved": "https://registry.npmjs.org/nan/-/nan-2.6.2.tgz"
     },
     "node-libs-browser": {
       "version": "2.0.0",
@@ -2128,7 +2141,69 @@
       "version": "0.6.36",
       "from": "node-pre-gyp@^0.6.36",
       "resolved": "https://registry.npmjs.org/node-pre-gyp/-/node-pre-gyp-0.6.36.tgz",
-      "optional": true
+      "optional": true,
+      "dependencies": {
+        "caseless": {
+          "version": "0.12.0",
+          "from": "caseless@>=0.12.0 <0.13.0",
+          "resolved": "https://registry.npmjs.org/caseless/-/caseless-0.12.0.tgz",
+          "optional": true
+        },
+        "glob": {
+          "version": "7.1.2",
+          "from": "glob@>=7.0.5 <8.0.0",
+          "resolved": "https://registry.npmjs.org/glob/-/glob-7.1.2.tgz",
+          "optional": true
+        },
+        "har-validator": {
+          "version": "4.2.1",
+          "from": "har-validator@>=4.2.1 <4.3.0",
+          "resolved": "https://registry.npmjs.org/har-validator/-/har-validator-4.2.1.tgz",
+          "optional": true
+        },
+        "minimatch": {
+          "version": "3.0.4",
+          "from": "minimatch@>=3.0.4 <4.0.0",
+          "resolved": "https://registry.npmjs.org/minimatch/-/minimatch-3.0.4.tgz",
+          "optional": true
+        },
+        "mkdirp": {
+          "version": "0.5.1",
+          "from": "mkdirp@>=0.5.1 <0.6.0",
+          "resolved": "https://registry.npmjs.org/mkdirp/-/mkdirp-0.5.1.tgz",
+          "optional": true
+        },
+        "nopt": {
+          "version": "4.0.1",
+          "from": "nopt@>=4.0.1 <5.0.0",
+          "resolved": "https://registry.npmjs.org/nopt/-/nopt-4.0.1.tgz",
+          "optional": true
+        },
+        "qs": {
+          "version": "6.4.0",
+          "from": "qs@>=6.4.0 <6.5.0",
+          "resolved": "https://registry.npmjs.org/qs/-/qs-6.4.0.tgz",
+          "optional": true
+        },
+        "request": {
+          "version": "2.81.0",
+          "from": "request@>=2.81.0 <3.0.0",
+          "resolved": "https://registry.npmjs.org/request/-/request-2.81.0.tgz",
+          "optional": true
+        },
+        "rimraf": {
+          "version": "2.6.1",
+          "from": "rimraf@>=2.6.1 <3.0.0",
+          "resolved": "https://registry.npmjs.org/rimraf/-/rimraf-2.6.1.tgz",
+          "optional": true
+        },
+        "tunnel-agent": {
+          "version": "0.6.0",
+          "from": "tunnel-agent@>=0.6.0 <0.7.0",
+          "resolved": "https://registry.npmjs.org/tunnel-agent/-/tunnel-agent-0.6.0.tgz",
+          "optional": true
+        }
+      }
     },
     "nopt": {
       "version": "1.0.10",
@@ -2148,8 +2223,7 @@
     "npmlog": {
       "version": "4.1.0",
       "from": "npmlog@4.1.0",
-      "resolved": "https://registry.npmjs.org/npmlog/-/npmlog-4.1.0.tgz",
-      "optional": true
+      "resolved": "https://registry.npmjs.org/npmlog/-/npmlog-4.1.0.tgz"
     },
     "number-is-nan": {
       "version": "1.0.1",
@@ -2196,10 +2270,25 @@
       "from": "os-browserify@>=0.1.1 <0.2.0",
       "resolved": "https://registry.npmjs.org/os-browserify/-/os-browserify-0.1.2.tgz"
     },
+    "os-homedir": {
+      "version": "1.0.2",
+      "from": "os-homedir@>=1.0.0 <2.0.0",
+      "resolved": "https://registry.npmjs.org/os-homedir/-/os-homedir-1.0.2.tgz"
+    },
     "os-locale": {
       "version": "1.4.0",
       "from": "os-locale@>=1.4.0 <2.0.0",
       "resolved": "https://registry.npmjs.org/os-locale/-/os-locale-1.4.0.tgz"
+    },
+    "os-tmpdir": {
+      "version": "1.0.2",
+      "from": "os-tmpdir@>=1.0.0 <2.0.0",
+      "resolved": "https://registry.npmjs.org/os-tmpdir/-/os-tmpdir-1.0.2.tgz"
+    },
+    "osenv": {
+      "version": "0.1.4",
+      "from": "osenv@>=0.1.4 <0.2.0",
+      "resolved": "https://registry.npmjs.org/osenv/-/osenv-0.1.4.tgz"
     },
     "package": {
       "version": "1.0.1",
@@ -2292,6 +2381,12 @@
       "version": "0.6.16",
       "from": "git://github.com/CartoDB/perfect-scrollbar.git#master",
       "resolved": "git://github.com/CartoDB/perfect-scrollbar.git#085cd7abdd8426d6fa1e8527dcf6c2734e2318c6"
+    },
+    "performance-now": {
+      "version": "0.2.0",
+      "from": "performance-now@>=0.2.0 <0.3.0",
+      "resolved": "https://registry.npmjs.org/performance-now/-/performance-now-0.2.0.tgz",
+      "optional": true
     },
     "phantomjs-prebuilt": {
       "version": "2.1.14",
@@ -2405,7 +2500,7 @@
     "queue-async": {
       "version": "1.2.1",
       "from": "queue-async@1.2.1",
-      "resolved": "http://registry.npmjs.org/queue-async/-/queue-async-1.2.1.tgz"
+      "resolved": "https://registry.npmjs.org/queue-async/-/queue-async-1.2.1.tgz"
     },
     "quote-stream": {
       "version": "1.0.2",
@@ -2693,8 +2788,7 @@
     "signal-exit": {
       "version": "3.0.2",
       "from": "signal-exit@3.0.2",
-      "resolved": "https://registry.npmjs.org/signal-exit/-/signal-exit-3.0.2.tgz",
-      "optional": true
+      "resolved": "https://registry.npmjs.org/signal-exit/-/signal-exit-3.0.2.tgz"
     },
     "simple-statistics": {
       "version": "0.9.2",
@@ -2972,9 +3066,9 @@
       }
     },
     "tangram-cartocss": {
-      "version": "0.5.5",
+      "version": "0.5.6",
       "from": "cartodb/tangram-carto#master",
-      "resolved": "git://github.com/cartodb/tangram-carto.git#98fb17381ec4102a5c7dc428514d1337ed4abd66"
+      "resolved": "git://github.com/cartodb/tangram-carto.git#403320d15ea49603ba6d94fe6112b49c5b9bbb84"
     },
     "tangram-reference": {
       "version": "1.0.18",
@@ -2982,9 +3076,9 @@
       "resolved": "https://registry.npmjs.org/tangram-reference/-/tangram-reference-1.0.18.tgz"
     },
     "tangram.cartodb": {
-      "version": "0.4.4",
+      "version": "0.4.6",
       "from": "cartodb/tangram.cartodb#master",
-      "resolved": "git://github.com/cartodb/tangram.cartodb.git#0c256d09594ace3014ad7d86e3741024336b76be",
+      "resolved": "git://github.com/cartodb/tangram.cartodb.git#9797d1390b798c04871f44ad51887e56041cb682",
       "dependencies": {
         "argparse": {
           "version": "1.0.9",
@@ -3032,7 +3126,45 @@
       "version": "3.4.0",
       "from": "tar-pack@3.4.0",
       "resolved": "https://registry.npmjs.org/tar-pack/-/tar-pack-3.4.0.tgz",
-      "optional": true
+      "optional": true,
+      "dependencies": {
+        "debug": {
+          "version": "2.6.8",
+          "from": "debug@>=2.2.0 <3.0.0",
+          "resolved": "https://registry.npmjs.org/debug/-/debug-2.6.8.tgz",
+          "optional": true
+        },
+        "glob": {
+          "version": "7.1.2",
+          "from": "glob@^7.0.5",
+          "resolved": "https://registry.npmjs.org/glob/-/glob-7.1.2.tgz",
+          "optional": true
+        },
+        "minimatch": {
+          "version": "3.0.4",
+          "from": "minimatch@^3.0.4",
+          "resolved": "https://registry.npmjs.org/minimatch/-/minimatch-3.0.4.tgz",
+          "optional": true
+        },
+        "readable-stream": {
+          "version": "2.2.11",
+          "from": "readable-stream@>=2.1.4 <3.0.0",
+          "resolved": "https://registry.npmjs.org/readable-stream/-/readable-stream-2.2.11.tgz",
+          "optional": true
+        },
+        "rimraf": {
+          "version": "2.6.1",
+          "from": "rimraf@^2.5.1",
+          "resolved": "https://registry.npmjs.org/rimraf/-/rimraf-2.6.1.tgz",
+          "optional": true
+        },
+        "string_decoder": {
+          "version": "1.0.2",
+          "from": "string_decoder@>=1.0.0 <1.1.0",
+          "resolved": "https://registry.npmjs.org/string_decoder/-/string_decoder-1.0.2.tgz",
+          "optional": true
+        }
+      }
     },
     "temporary": {
       "version": "0.0.8",
@@ -3177,9 +3309,9 @@
       "resolved": "https://registry.npmjs.org/typedarray/-/typedarray-0.0.6.tgz"
     },
     "uglify-js": {
-      "version": "2.8.28",
+      "version": "2.8.29",
       "from": "uglify-js@>=2.8.5 <3.0.0",
-      "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-2.8.28.tgz",
+      "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-2.8.29.tgz",
       "dependencies": {
         "yargs": {
           "version": "3.10.0",
@@ -3191,8 +3323,7 @@
     "uglify-to-browserify": {
       "version": "1.0.2",
       "from": "uglify-to-browserify@>=1.0.0 <1.1.0",
-      "resolved": "https://registry.npmjs.org/uglify-to-browserify/-/uglify-to-browserify-1.0.2.tgz",
-      "optional": true
+      "resolved": "https://registry.npmjs.org/uglify-to-browserify/-/uglify-to-browserify-1.0.2.tgz"
     },
     "uid-number": {
       "version": "0.0.6",
@@ -3336,8 +3467,7 @@
     "wide-align": {
       "version": "1.1.2",
       "from": "wide-align@1.1.2",
-      "resolved": "https://registry.npmjs.org/wide-align/-/wide-align-1.1.2.tgz",
-      "optional": true
+      "resolved": "https://registry.npmjs.org/wide-align/-/wide-align-1.1.2.tgz"
     },
     "window-size": {
       "version": "0.1.0",

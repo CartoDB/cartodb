@@ -29,11 +29,11 @@ module.exports = cdb.core.View.extend({
   initialize: function (opts) {
     if (!opts.dataviewModel) throw new Error('dataviewModel is required');
     if (!opts.rangeFilter) throw new Error('rangeFilter is required');
-    if (!opts.selectionTotal) throw new Error('selectionTotal is required');
+    if (opts.selectedAmount === void 0) throw new Error('selectedAmount is required');
 
     this._dataviewModel = opts.dataviewModel;
     this._rangeFilter = opts.rangeFilter;
-    this._selectionTotal = opts.selectionTotal;
+    this._selectedAmount = opts.selectedAmount;
     this._layer = this._dataviewModel.layer;
     this._setupScales();
     this._initBinds();
@@ -69,58 +69,38 @@ module.exports = cdb.core.View.extend({
       })
     );
 
-    this._selectionTotal.set('total', this._calculateTotal());
+    this._animateValue();
 
     return this;
   },
 
-  _onTotalChange: function () {
+  _animateValue: function () {
     var animator = new AnimateValues({
       el: this.$el
     });
+    var property = this._rangeFilter.isEmpty() ? 'totalAmount' : 'filteredAmount';
+    var to = this._dataviewModel.get(property);
 
-    animator.animateValue.call(this, this._selectionTotal, 'total', '.js-val', animationTemplate, {
+    animator.animateFromValues.call(this, this._selectedAmount, to, '.js-val', animationTemplate, {
       formatter: formatter.formatNumber,
       templateData: { suffix: ' Selected' }
     });
-  },
 
-  _calculateTotal: function () {
-    var data = this._dataviewModel.get('data');
-    var start = this._rangeFilter.get('min');
-    var end = this._rangeFilter.get('max');
-    var binStart = 0;
-    var binEnd = data.length - 1;
-
-    if (start && end) {
-      var bins = this._findBinsIndexes(data, start, end);
-      binStart = bins.start;
-      binEnd = bins.end;
-    }
-
-    return this._calcSum(data, binStart, binEnd);
-  },
-
-  _findBinsIndexes: function (data, start, end) {
-    var startBin = _.find(data, { start: start });
-    var endBin = _.find(data, { end: end });
-
-    return {
-      start: Math.min(startBin.bin, endBin.bin),
-      end: Math.max(startBin.bin, endBin.bin)
-    };
-  },
-
-  _calcSum: function (data, start, end) {
-    return _.reduce(data.slice(start, end + 1), function (memo, d) {
-      return d.freq + memo;
-    }, 0);
+    this._selectedAmount = to;
   },
 
   _initBinds: function () {
-    this.listenTo(this._selectionTotal, 'change:total', this._onTotalChange);
-    this._rangeFilter.bind('change', this.render, this);
-    this.add_related_model(this._rangeFilter);
+    this.listenTo(this._dataviewModel, 'change:totalAmount', this._animateValue);
+    this.listenTo(this._dataviewModel, 'change:filteredAmount', this._animateValue);
+    this.listenTo(this._rangeFilter, 'change', this.render);
+  },
+
+  _onTotalAmountChanged: function () {
+    this._onAmountChanged();
+  },
+
+  _onFilteredAmountChanged: function () {
+    this._onAmountChanged();
   },
 
   _getColumnType: function () {
@@ -143,7 +123,6 @@ module.exports = cdb.core.View.extend({
   },
 
   _onClick: function () {
-    this._selectionTotal.set('total', 0);
     this.trigger('resetFilter', this);
   }
 });

@@ -16,7 +16,7 @@ module.exports = cdb.core.View.extend({
   initialize: function () {
     this._dataviewModel = this.model.dataviewModel;
     this._originalData = this.model.dataviewModel.getUnfilteredDataModel();
-    this._selectionTotal = new Backbone.Model({ total: 0 });
+    this._selectedAmount = 0;
     this._initBinds();
   },
 
@@ -73,10 +73,11 @@ module.exports = cdb.core.View.extend({
     }
 
     this._headerView = new TimeSeriesHeaderView({
-      selectionTotal: this._selectionTotal,
       dataviewModel: this._dataviewModel,
-      rangeFilter: this._dataviewModel.filter
+      rangeFilter: this._dataviewModel.filter,
+      selectedAmount: this._selectedAmount
     });
+
     if (!this._histogramView) {
       throw new Error('Histogram view must be instantiated before the header view');
     }

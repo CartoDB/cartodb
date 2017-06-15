@@ -10,7 +10,7 @@ module Carto
       TVT_DEFINITION_LOCATION =
         "#{Rails.root}/lib/assets/core/javascripts/cartodb3/data/tvt-cartography.json".freeze
 
-      def initialize(style_type, definition)
+      def initialize(_, definition)
         @definition = definition
       end
 

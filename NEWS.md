@@ -4,6 +4,7 @@ Development
 ### Features
 * New loading button styles (#12132)
 * [WIP] Export/import organization/user metadata to allow user migration (#12271, #12304)
+* New force param in EUMAPI organization users destroy operation to force deletion even with unregistered tables (#11654).
 * Removed the usage of the `organizations_admin` feature flag (#12131)
 
 ### Bug fixes / enhancements
@@ -46,6 +47,7 @@ Development
 * Fixed 'not a function' bug related to a tooltip (#12279)
 * Disable edit geometry for Layers with aggregated styles (#11714)
 * Retrieve google static api url from backend to allow using both client_id and api_key (#12301, #12318)
+* Fix vector problem with lines
 
 ### NOTICE
 This release upgrades the CartoDB PostgreSQL extension to `0.19.1`. Run the following to have it available:
@@ -56,7 +58,7 @@ sudo make install
 
 #### Dropbox API v2 migration
 
-Dropbox API v2 (#8303): [Dropbox deprecated API v1](https://blogs.dropbox.com/developers/2016/06/api-v1-deprecated/)
+Dropbox API v2 (#8303, #12300): [Dropbox deprecated API v1](https://blogs.dropbox.com/developers/2016/06/api-v1-deprecated/)
 so CARTO must migrate. If you are using Dropbox integration, you must:
 * Check which permission does your application has in Dropbox. If it's "Full", just upgrading CARTO is enough.
 * If it's not "Full", you must:

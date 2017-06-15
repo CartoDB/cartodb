@@ -94,6 +94,11 @@ describe Carto::UserMetadataExportService do
         source_visualizations = @user.visualizations.map(&:attributes)
         destroy_user
 
+        # At this point, the user database is still there, but the tables got destroyed. We recreate some dummy ones
+        source_visualizations.select { |v| v['type'] == 'table' }.each do |v|
+          @user.in_database.execute("CREATE TABLE #{v['name']} (cartodb_id int)")
+        end
+
         imported_user = service.import_user_from_directory(path)
 
         compare_excluding_dates(imported_user.attributes, source_user)

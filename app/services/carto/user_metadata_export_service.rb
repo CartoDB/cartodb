@@ -163,7 +163,7 @@ module Carto
     def import_user_visualizations_from_directory(user, type, path)
       Dir["#{path}/#{type}_*#{Carto::VisualizationExporter::EXPORT_EXTENSION}"].each do |filename|
         imported_vis = Carto::VisualizationsExportService2.new.build_visualization_from_json_export(File.read(filename))
-        Carto::VisualizationsExportPersistenceService.new.save_import(user, imported_vis, keep_id: true)
+        Carto::VisualizationsExportPersistenceService.new.save_import(user, imported_vis, full_restore: true)
       end
     end
 

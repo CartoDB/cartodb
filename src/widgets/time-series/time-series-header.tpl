@@ -12,8 +12,9 @@
   </div>
   <div class="CDB-Widget-contentSpaced--end">
     <div class="CDB-Widget-options CDB-Widget-contentSpaced">
+      <p class="CDB-Text CDB-Size-small is-semibold u-upperCase u-rSpace--m js-val">…</p>
       <% if (showClearButton) { %>
-        <button class="CDB-Text CDB-Size-small u-upperCase u-actionTextColor CDB-Widget-filterButton js-clear">Clear selection</button>
+        <button class="CDB-Text CDB-Size-small is-semibold u-upperCase u-actionTextColor CDB-Widget-filterButton js-clear">Clear</button>
       <% } %>
       <button class="CDB-Shape CDB-Widget-actions js-actions u-lSpace">
         <div class="CDB-Shape-threePoints is-blue is-small">

@@ -1,4 +1,5 @@
 var _ = require('underscore');
+var Backbone = require('backbone');
 var cdb = require('cartodb.js');
 var placeholderTemplate = require('./placeholder.tpl');
 var contentTemplate = require('./content.tpl');
@@ -15,6 +16,7 @@ module.exports = cdb.core.View.extend({
   initialize: function () {
     this._dataviewModel = this.model.dataviewModel;
     this._originalData = this.model.dataviewModel.getUnfilteredDataModel();
+    this._selectionTotal = new Backbone.Model({ total: 0 });
     this._initBinds();
   },
 
@@ -71,6 +73,7 @@ module.exports = cdb.core.View.extend({
     }
 
     this._headerView = new TimeSeriesHeaderView({
+      selectionTotal: this._selectionTotal,
       dataviewModel: this._dataviewModel,
       rangeFilter: this._dataviewModel.filter
     });

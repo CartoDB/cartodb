@@ -1,4 +1,5 @@
 var _ = require('underscore');
+var Backbone = require('backbone');
 var cdb = require('cartodb.js');
 var torqueTemplate = require('./torque-template.tpl');
 var placeholderTemplate = require('./placeholder.tpl');
@@ -15,6 +16,7 @@ module.exports = cdb.core.View.extend({
   initialize: function () {
     this._dataviewModel = this.model.dataviewModel;
     this._originalData = this._dataviewModel.getUnfilteredDataModel();
+    this._selectionTotal = new Backbone.Model({ total: 0 });
     this._initBinds();
   },
 
@@ -42,6 +44,7 @@ module.exports = cdb.core.View.extend({
 
     this._headerView = new TorqueHeaderView({
       el: this.$('.js-torque-header'),
+      selectionTotal: this._selectionTotal,
       dataviewModel: this._dataviewModel,
       torqueLayerModel: this._dataviewModel.layer
     });

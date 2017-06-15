@@ -14,6 +14,7 @@ module.exports = cdb.core.View.extend({
     this._dataviewModel = this.options.dataviewModel;
     this._torqueLayerModel = this.options.torqueLayerModel;
     this._rangeFilter = this._dataviewModel.filter;
+    this._selectionTotal = this.options.selectionTotal;
 
     this._rangeFilter.bind('change', this.render, this);
     this.add_related_model(this._rangeFilter);
@@ -46,6 +47,7 @@ module.exports = cdb.core.View.extend({
 
   _createTimeSeriesHeaderView: function (showClearButton) {
     var headerView = new TimeSeriesHeaderView({
+      selectionTotal: this._selectionTotal,
       dataviewModel: this._dataviewModel,
       rangeFilter: this._dataviewModel.filter,
       showClearButton: showClearButton

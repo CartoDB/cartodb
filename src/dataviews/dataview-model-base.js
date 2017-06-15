@@ -166,8 +166,9 @@ module.exports = Model.extend({
   },
 
   /**
-   * @private
+   * @protected
    */
+
   _onFilterChanged: function (filter) {
     var layerDataProvider = this._getLayerDataProvider();
     if (layerDataProvider && layerDataProvider.canApplyFilterTo(this)) {
@@ -177,9 +178,6 @@ module.exports = Model.extend({
     }
   },
 
-  /**
-   * @protected
-   */
   _reloadVis: function (opts) {
     opts = opts || {};
     this._vis.reload(

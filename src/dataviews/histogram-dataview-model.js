@@ -9,7 +9,9 @@ module.exports = DataviewModelBase.extend({
   defaults: _.extend(
     {
       type: 'histogram',
-      bins: 10
+      bins: 10,
+      totalAmount: 0,
+      filteredAmount: 0
     },
     DataviewModelBase.prototype.defaults
   ),
@@ -115,6 +117,12 @@ module.exports = DataviewModelBase.extend({
       }, buckets[i]);
     }
 
+    var totalAmount = _.reduce(buckets, function (memo, bucket) {
+      return memo + bucket.freq;
+    }, 0);
+
+    this._calculateFilteredAmount(this.filter);
+
     // FIXME - Update the end of last bin due https://github.com/CartoDB/cartodb.js/issues/926
     var lastBucket = buckets[numberOfBins - 1];
     if (lastBucket && lastBucket.end < lastBucket.max) {
@@ -125,8 +133,40 @@ module.exports = DataviewModelBase.extend({
 
     return {
       data: buckets,
-      nulls: data.nulls
+      nulls: data.nulls,
+      totalAmount: totalAmount
     };
+  },
+
+  _onFilterChanged: function (filter) {
+    this._calculateFilteredAmount(filter);
+
+    DataviewModelBase.prototype._onFilterChanged.apply(this, arguments);
+  },
+
+  _calculateFilteredAmount:  function (filter) {
+    var filteredAmount = 0;
+    if (filter && filter.get('min') !== void 0 && filter.get('max') !== void 0) {
+      var indexes = this._findBinsIndexes(this._data, filter.get('min'), filter.get('max'));
+      filteredAmount = this._sumBinsFreq(this._data, indexes.start, indexes.end);
+    }
+    this.set('filteredAmount', filteredAmount);
+  },
+
+  _findBinsIndexes: function (data, start, end) {
+    var startBin = data.findWhere({ start: Math.min(start, end) });
+    var endBin = data.findWhere({ end: Math.max(start, end) });
+ 
+    return {
+      start: startBin && startBin.get('bin'),
+      end: endBin && endBin.get('bin')
+    };
+  },
+
+  _sumBinsFreq: function (data, start, end) {
+    return _.reduce(data.slice(start, end + 1), function (acum, d) {
+      return (d.get('freq') || 0) + acum;
+    }, 0);
   },
 
   /*

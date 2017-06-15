@@ -204,6 +204,7 @@ More information at [Dropbox migration guide](https://www.dropbox.com/developers
 * Improved analysis error tooltip (#12250)
 
 ### Bug fixes
+* Revamp grunt default task to compile assets (#12325)
 * Made checkboxes actionable clicking on its label (#11535)
 * Google customers don't need quota checks for hires geocoding (support/#674)
 * Fixed a problem with autostyle when styles has aggregation (#8648)

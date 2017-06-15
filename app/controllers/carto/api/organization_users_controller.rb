@@ -120,12 +120,18 @@ module Carto
       end
 
       def destroy
-        render_jsonp("Can't delete org owner", 401) && return if @organization.owner_id == @user.id
-
-        unless @user.can_delete
-          render_jsonp "Can't delete @user. #{'Has shared entities' if @user.has_shared_entities?}", 410
+        if @organization.owner_id == @user.id
+          render_jsonp("Can't delete org owner", 401) and return
         end
 
+        force_destroy = params[:force].present?
+
+        unless @user.can_delete || force_destroy
+          error_message = "Can't delete @user. #{'Has shared entities' if @user.has_shared_entities?}"
+          render_jsonp(error_message, 410 ) and return
+        end
+
+        @user.set_force_destroy if force_destroy
         @user.destroy
         @user.delete_in_central
 

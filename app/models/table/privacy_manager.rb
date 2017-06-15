@@ -11,7 +11,7 @@ module CartoDB
     end
 
     def apply_privacy_change(metadata_table, old_privacy, privacy_changed = false)
-      if @table.map
+      if @table.table_visualization
         affected_entities = [@table.table_visualization] + metadata_table.affected_visualizations
 
         @table.map.save

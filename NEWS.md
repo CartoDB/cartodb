@@ -3,9 +3,12 @@ Development
 
 ### Features
 * New loading button styles (#12132)
-* [WIP] Export/import organization/user metadata to allow user migration (#12271)
+* [WIP] Export/import organization/user metadata to allow user migration (#12271, #12304)
+* New force param in EUMAPI organization users destroy operation to force deletion even with unregistered tables (#11654).
+* Removed the usage of the `organizations_admin` feature flag (#12131)
 
 ### Bug fixes / enhancements
+* Validate widget form when widget type changes (#11536)
 * Updated text of widget tooltips (#11467)
 * Fixed error where analysis overlay/infobox wasn't shown when hiding a layer (#11767)
 * Size of 'Add analysis' button reduced (#11580)
@@ -40,9 +43,12 @@ Development
 * Configurable pg_dump/restore bin path (#12297)
 * Redesigned LEARN MORE buttons behaviour (#12135)
 * "vector" key in vizjson is skipped in embeds if user has "vector_vs_raster" feature flag enabled.
+* Inline editor saves on blur, discard changes on 'ESC' (#11567)
 * Updated look and feel of sync interval dialog (#12145)
 * Fixed 'not a function' bug related to a tooltip (#12279)
 * Disable edit geometry for Layers with aggregated styles (#11714)
+* Retrieve google static api url from backend to allow using both client_id and api_key (#12301, #12318)
+* Fix vector problem with lines
 
 ### NOTICE
 This release upgrades the CartoDB PostgreSQL extension to `0.19.1`. Run the following to have it available:
@@ -53,7 +59,7 @@ sudo make install
 
 #### Dropbox API v2 migration
 
-Dropbox API v2 (#8303): [Dropbox deprecated API v1](https://blogs.dropbox.com/developers/2016/06/api-v1-deprecated/)
+Dropbox API v2 (#8303, #12300): [Dropbox deprecated API v1](https://blogs.dropbox.com/developers/2016/06/api-v1-deprecated/)
 so CARTO must migrate. If you are using Dropbox integration, you must:
 * Check which permission does your application has in Dropbox. If it's "Full", just upgrading CARTO is enough.
 * If it's not "Full", you must:
@@ -180,10 +186,17 @@ More information at [Dropbox migration guide](https://www.dropbox.com/developers
 * Multiple file upload through "upload file" tab (#11952)
 * Change setView by flyto.
 * Update tangram to fix layer geometry conditionals.
+* Update tangram to fix layer geometry conditionals.
+* Improve assets build process (#11962)
+    * Frontend development task has changed from `grunt && grunt dev` to `grunt dev`
+    * Test task remains the same, but internals changed `grunt test`
+* Allow to have multiple administrators per organization (#12052, #12083)
+* Allow to have multiple administrators per organization (#12052)
 * Allow to have multiple administrators per organization (#12052, #12083, #12069)
 * Added explanation tooltip to the categorize label on the Find Nearest analysis (#12100)
 * Disable geometry edition button instead of hide in read-only layers (#11543)
 * Updated copies for export image & download map (#12114)
+* Added context menu to time-series widgets. (#12177)
 * Add all/none buttons to multi-select component (#9502)
 * New style for add analysis button (#11902)
 * Fix onboarding in layers (#12192)
@@ -192,6 +205,7 @@ More information at [Dropbox migration guide](https://www.dropbox.com/developers
 * Improved analysis error tooltip (#12250)
 
 ### Bug fixes
+* Revamp grunt default task to compile assets (#12325)
 * Made checkboxes actionable clicking on its label (#11535)
 * Google customers don't need quota checks for hires geocoding (support/#674)
 * Fixed a problem with autostyle when styles has aggregation (#8648)

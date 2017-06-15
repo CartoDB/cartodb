@@ -1137,6 +1137,7 @@
       "operators": {
         "count-message": "If you select 'COUNT' all columns are selected"
       },
+      "column-type-error": "Column type must be a %{columnType}",
       "interval-error": "Value must be between %{minValue} and %{maxValue}",
       "copy-button": "COPY",
       "data-observatory": {
@@ -1969,7 +1970,7 @@
       }
     },
     "export-image": {
-      "invalid-dimension": "Invalid dimension (%{limit}x%{limit}px)",
+      "invalid-dimension": "Invalid dimension, max %{limit}x%{limit}px",
       "properties": {
         "width": "width",
         "height": "height",

@@ -18,7 +18,7 @@ var LayerGroupViewConstructor = function (layerGroupModel, nativeMap, mapModel) 
     return new LeafletCartoDBWebglLayerGroupView(layerGroupModel, nativeMap);
   }
 
-  log('RASTER RENDER MODE');
+  log.info('RASTER RENDER MODE');
   return new LeafletCartoDBLayerGroupView(layerGroupModel, nativeMap);
 };
 

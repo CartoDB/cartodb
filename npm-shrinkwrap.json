@@ -733,7 +733,7 @@
     "cartodb-deep-insights.js": {
       "version": "0.0.2",
       "from": "cartodb/deep-insights.js#12179-time-series-selected-text",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#368510fae06990ffea804ff69302a50a580de41b"
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#e47a445ec16c92c386684d2ef2fe2b4bf6b1d362"
     },
     "cartodb-pecan": {
       "version": "0.2.0",

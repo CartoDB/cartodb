@@ -22,7 +22,7 @@ var LeafletCartoDBWebglLayerGroupView = function (layerGroupModel, leafletMap) {
       metric.end();
       metric = void 0;
 
-      log('Rendered Geometries Count: ', self.tangram.getTotalGeometries());
+      log.info('Rendered Geometries Count: ', self.tangram.getTotalGeometries());
     }
   });
 

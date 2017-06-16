@@ -117,12 +117,6 @@ module.exports = DataviewModelBase.extend({
       }, buckets[i]);
     }
 
-    var totalAmount = _.reduce(buckets, function (memo, bucket) {
-      return memo + bucket.freq;
-    }, 0);
-
-    this._calculateFilteredAmount(this.filter);
-
     // FIXME - Update the end of last bin due https://github.com/CartoDB/cartodb.js/issues/926
     var lastBucket = buckets[numberOfBins - 1];
     if (lastBucket && lastBucket.end < lastBucket.max) {
@@ -131,26 +125,38 @@ module.exports = DataviewModelBase.extend({
 
     this._data.reset(buckets);
 
+    // Calculate totals
+    var totalAmount = this._calculateTotalAmount(buckets);
+    var filteredAmount = this._calculateFilteredAmount(this.filter, this._data);
+
     return {
       data: buckets,
       nulls: data.nulls,
-      totalAmount: totalAmount
+      totalAmount: totalAmount,
+      filteredAmount: filteredAmount
     };
   },
 
   _onFilterChanged: function (filter) {
-    this._calculateFilteredAmount(filter);
+    this.set('filteredAmount', this._calculateFilteredAmount(filter, this._data));
 
     DataviewModelBase.prototype._onFilterChanged.apply(this, arguments);
   },
 
-  _calculateFilteredAmount:  function (filter) {
+  _calculateTotalAmount: function (buckets) {
+    return _.reduce(buckets, function (memo, bucket) {
+      return memo + bucket.freq;
+    }, 0);
+  },
+
+  _calculateFilteredAmount:  function (filter, data) {
     var filteredAmount = 0;
     if (filter && filter.get('min') !== void 0 && filter.get('max') !== void 0) {
-      var indexes = this._findBinsIndexes(this._data, filter.get('min'), filter.get('max'));
-      filteredAmount = this._sumBinsFreq(this._data, indexes.start, indexes.end);
+      var indexes = this._findBinsIndexes(data, filter.get('min'), filter.get('max'));
+      filteredAmount = this._sumBinsFreq(data, indexes.start, indexes.end);
     }
-    this.set('filteredAmount', filteredAmount);
+
+    return filteredAmount;
   },
 
   _findBinsIndexes: function (data, start, end) {

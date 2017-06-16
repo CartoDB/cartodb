@@ -250,7 +250,7 @@ describe('dataviews/histogram-dataview-model', function () {
     expect(JSON.stringify(parsedData)).toBe('[{"bin":0,"start":55611,"end":70101.25,"freq":2,"max":70151,"min":55611},{"bin":1,"start":70101.25,"end":84591.5,"freq":2,"max":79017,"min":78448},{"bin":2,"start":84591.5,"end":99081.75,"freq":0},{"bin":3,"start":99081.75,"end":113572,"freq":1,"max":113572,"min":113572}]');
   });
 
-  it('should calculate total amount and filtered amount in parse', function () {
+  it('should calculate total amount and filtered amount in parse when a filter is present', function () {
     var data = {
       bin_width: 1,
       bins: [
@@ -269,6 +269,26 @@ describe('dataviews/histogram-dataview-model', function () {
 
     expect(parsedData.totalAmount).toBe(12);
     expect(parsedData.filteredAmount).toBe(5);
+  });
+
+  it('should calculate only total amount in parse when there is no filter', function () {
+    var data = {
+      bin_width: 1,
+      bins: [
+        { bin: 0, freq: 2 },
+        { bin: 1, freq: 3 },
+        { bin: 2, freq: 7 }
+      ],
+      bins_count: 3,
+      bins_start: 1,
+      nulls: 0,
+      type: 'histogram'
+    };
+
+    var parsedData = this.model.parse(data);
+
+    expect(parsedData.totalAmount).toBe(12);
+    expect(parsedData.filteredAmount).toBe(0);
   });
 
   it('parser do not fails when there are no bins', function () {
@@ -360,78 +380,12 @@ describe('dataviews/histogram-dataview-model', function () {
     });
   });
 
-  describe('.disabeFilter', function () {
+  describe('.disableFilter', function () {
     it('should unset the own_filter attribute', function () {
       this.model.enableFilter();
       this.model.disableFilter();
 
       expect(this.model.get('own_filter')).toBeUndefined();
-    });
-  });
-
-  describe('._sumBinsFreq', function () {
-    it('returns the sum of the freq in a range', function () {
-      var data = new Backbone.Collection([
-        { freq: 33 },
-        { freq: 44 }
-      ]);
-      expect(this.model._sumBinsFreq(data, 0, 1)).toEqual(77);
-    });
-  });
-
-  describe('._findBinsIndexes', function () {
-    it('returns an object with the start and end bins', function () {
-      var data = new Backbone.Collection([
-        { bin: 0, start: 1, end: 4 },
-        { bin: 1, start: 4, end: 7 },
-        { bin: 1, start: 7, end: 9 }
-      ]);
-      expect(this.model._findBinsIndexes(data, 1, 7)).toEqual({
-        start: 0,
-        end: 1
-      });
-    });
-  });
-
-  describe('._calculateTotalAmount', function () {
-    it('returns the sum of all the freqs', function () {
-      var data = [
-        { freq: 10 },
-        { freq: 20 },
-        { freq: 30 }
-      ];
-      expect(this.model._calculateTotalAmount(data)).toEqual(60);
-    });
-  });
-
-  describe('._calculateFilteredAmount', function () {
-    it('calls ._findBinsIndexes and ._sumBinsFreq with the correct data', function () {
-      spyOn(this.model, '_findBinsIndexes').and.callThrough();
-      spyOn(this.model, '_sumBinsFreq').and.callThrough();
-
-      var data = new Backbone.Collection([
-        { bin: 0, start: 1, end: 4, freq: 33 },
-        { bin: 1, start: 4, end: 7, freq: 44 }
-      ]);
-      this.filter = new RangeFilter({ min: 1, max: 7 });
-
-      var filteredAmount = this.model._calculateFilteredAmount(this.filter, data);
-
-      expect(this.model._findBinsIndexes).toHaveBeenCalledWith(data, 1, 7);
-      expect(this.model._sumBinsFreq).toHaveBeenCalledWith(data, 0, 1);
-      expect(filteredAmount).toEqual(77);
-    });
-  });
-
-  describe('._onFilterChanged', function () {
-    it('sets the model filteredAmount to ._calculateFilterAmount value', function () {
-      spyOn(this.model, '_calculateFilteredAmount').and.returnValue(123);
-      var filter = new RangeFilter({ min: 1, max: 7 });
-
-      this.model._onFilterChanged(filter);
-
-      expect(this.model._calculateFilteredAmount).toHaveBeenCalled();
-      expect(this.model.get('filteredAmount')).toEqual(123);
     });
   });
 });

@@ -113,6 +113,9 @@
 }
 .Editor-boxModalContentOperators {
   @include display-flex();
+  .CDB-Dropdown-options {
+    width: 179px;
+  }
 }
 
 .Editor-boxModal .Editor-formInner {

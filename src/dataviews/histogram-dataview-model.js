@@ -162,7 +162,7 @@ module.exports = DataviewModelBase.extend({
   _findBinsIndexes: function (data, start, end) {
     var startBin = data.findWhere({ start: Math.min(start, end) });
     var endBin = data.findWhere({ end: Math.max(start, end) });
- 
+
     return {
       start: startBin && startBin.get('bin'),
       end: endBin && endBin.get('bin')

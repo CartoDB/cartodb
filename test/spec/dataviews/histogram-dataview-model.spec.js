@@ -370,7 +370,7 @@ describe('dataviews/histogram-dataview-model', function () {
       var data = [
         { freq: 10 },
         { freq: 20 },
-        { freq: 30 },  
+        { freq: 30 }
       ];
       expect(this.model._calculateTotalAmount(data)).toEqual(60);
     });
@@ -386,12 +386,12 @@ describe('dataviews/histogram-dataview-model', function () {
         { bin: 1, start: 4, end: 7, freq: 44 }
       ]);
       this.filter = new RangeFilter({ min: 1, max: 7 });
-      
+
       var filteredAmount = this.model._calculateFilteredAmount(this.filter, data);
 
-      expect(this.model._findBinsIndexes).toHaveBeenCalledWith(data, 1, 7)
-      expect(this.model._sumBinsFreq).toHaveBeenCalledWith(data, 0, 1)
-      expect(filteredAmount).toEqual(77)
+      expect(this.model._findBinsIndexes).toHaveBeenCalledWith(data, 1, 7);
+      expect(this.model._sumBinsFreq).toHaveBeenCalledWith(data, 0, 1);
+      expect(filteredAmount).toEqual(77);
     });
   });
 
@@ -400,10 +400,10 @@ describe('dataviews/histogram-dataview-model', function () {
       spyOn(this.model, '_calculateFilteredAmount').and.returnValue(123);
       var filter = new RangeFilter({ min: 1, max: 7 });
 
-      this.model._onFilterChanged(filter)
+      this.model._onFilterChanged(filter);
 
-      expect(this.model._calculateFilteredAmount).toHaveBeenCalled()
-      expect(this.model.get('filteredAmount')).toEqual(123)
+      expect(this.model._calculateFilteredAmount).toHaveBeenCalled();
+      expect(this.model.get('filteredAmount')).toEqual(123);
     });
   });
 });

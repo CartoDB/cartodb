@@ -340,4 +340,70 @@ describe('dataviews/histogram-dataview-model', function () {
       expect(this.model.get('own_filter')).toBeUndefined();
     });
   });
+
+  describe('._sumBinsFreq', function () {
+    it('returns the sum of the freq in a range', function () {
+      var data = new Backbone.Collection([
+        { freq: 33 },
+        { freq: 44 }
+      ]);
+      expect(this.model._sumBinsFreq(data, 0, 1)).toEqual(77);
+    });
+  });
+
+  describe('._findBinsIndexes', function () {
+    it('returns an object with the start and end bins', function () {
+      var data = new Backbone.Collection([
+        { bin: 0, start: 1, end: 4 },
+        { bin: 1, start: 4, end: 7 },
+        { bin: 1, start: 7, end: 9 }
+      ]);
+      expect(this.model._findBinsIndexes(data, 1, 7)).toEqual({
+        start: 0,
+        end: 1
+      });
+    });
+  });
+
+  describe('._calculateTotalAmount', function () {
+    it('returns the sum of all the freqs', function () {
+      var data = [
+        { freq: 10 },
+        { freq: 20 },
+        { freq: 30 },  
+      ];
+      expect(this.model._calculateTotalAmount(data)).toEqual(60);
+    });
+  });
+
+  describe('._calculateFilteredAmount', function () {
+    it('calls ._findBinsIndexes and ._sumBinsFreq with the correct data', function () {
+      spyOn(this.model, '_findBinsIndexes').and.callThrough();
+      spyOn(this.model, '_sumBinsFreq').and.callThrough();
+
+      var data = new Backbone.Collection([
+        { bin: 0, start: 1, end: 4, freq: 33 },
+        { bin: 1, start: 4, end: 7, freq: 44 }
+      ]);
+      this.filter = new RangeFilter({ min: 1, max: 7 });
+      
+      var filteredAmount = this.model._calculateFilteredAmount(this.filter, data);
+
+      expect(this.model._findBinsIndexes).toHaveBeenCalledWith(data, 1, 7)
+      expect(this.model._sumBinsFreq).toHaveBeenCalledWith(data, 0, 1)
+      expect(filteredAmount).toEqual(77)
+    });
+  });
+
+  describe('._onFilterChanged', function () {
+    it('sets the model filteredAmount to ._calculateFilterAmount value', function () {
+      spyOn(this.model, '_calculateFilteredAmount').and.returnValue(123);
+      var filter = new RangeFilter({ min: 1, max: 7 });
+
+      this.model._onFilterChanged(filter)
+
+      expect(this.model._calculateFilteredAmount).toHaveBeenCalled()
+      expect(this.model.get('filteredAmount')).toEqual(123)
+    });
+  });
 });

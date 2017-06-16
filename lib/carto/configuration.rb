@@ -57,6 +57,10 @@ module Carto
       Cartodb.config[:cartodb_com_hosted] == false
     end
 
+    def mapzen_api_key
+      Cartodb.get_config(:geocoder, 'mapzen', 'search_bar_api_key')
+    end
+
     private
 
     def config_files_root

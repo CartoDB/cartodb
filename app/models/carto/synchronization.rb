@@ -4,6 +4,7 @@ class Carto::Synchronization < ActiveRecord::Base
 
   belongs_to :user
   belongs_to :visualization, class_name: Carto::Visualization
+  belongs_to :log, class_name: Carto::Log
 
   has_many :external_data_imports
 
@@ -35,10 +36,4 @@ class Carto::Synchronization < ActiveRecord::Base
   def from_external_source?
     ::ExternalDataImport.where(synchronization_id: self.id).first != nil
   end
-
-  # TODO: Properly migrate log to AR and remove this
-  def log
-    CartoDB::Log[self.log_id]
-  end
-
 end

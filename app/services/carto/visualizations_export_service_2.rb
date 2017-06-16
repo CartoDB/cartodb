@@ -1,4 +1,5 @@
 require 'json'
+require 'carto/export/layer_exporter'
 
 # Version History
 # TODO: documentation at http://cartodb.readthedocs.org/en/latest/operations/exporting_importing_visualizations.html
@@ -13,9 +14,11 @@ require 'json'
 # 2.0.6: export version
 # 2.0.7: export map options
 # 2.0.8: export widget style
+# 2.0.9: export visualization id
+# 2.1.0: export datasets: permissions, user_tables and syncs
 module Carto
   module VisualizationsExportService2Configuration
-    CURRENT_VERSION = '2.0.8'.freeze
+    CURRENT_VERSION = '2.1.0'.freeze
 
     def compatible_version?(version)
       version.to_i == CURRENT_VERSION.split('.')[0].to_i
@@ -24,12 +27,14 @@ module Carto
 
   module VisualizationsExportService2Validator
     def check_valid_visualization(visualization)
-      raise 'Only derived visualizations can be exported' unless visualization.derived?
+      raise 'Only derived or canonical visualizations can be exported' unless visualization.derived? ||
+                                                                              visualization.canonical?
     end
   end
 
   module VisualizationsExportService2Importer
     include VisualizationsExportService2Configuration
+    include LayerImporter
 
     def build_visualization_from_json_export(exported_json_string)
       build_visualization_from_hash_export(JSON.parse(exported_json_string).deep_symbolize_keys)
@@ -65,7 +70,8 @@ module Carto
           exported_visualization[:map],
           layers: build_layers_from_hash(exported_layers)),
         overlays: build_overlays_from_hash(exported_overlays),
-        analyses: exported_visualization[:analyses].map { |a| build_analysis_from_hash(a.deep_symbolize_keys) }
+        analyses: exported_visualization[:analyses].map { |a| build_analysis_from_hash(a.deep_symbolize_keys) },
+        permission: build_permission_from_hash(exported_visualization[:permission])
       )
 
       # This is optional as it was added in version 2.0.2
@@ -82,6 +88,12 @@ module Carto
         visualization.active_layer = visualization.layers.find { |l| l.order == active_layer_order }
       end
 
+      # Dataset-specific
+      user_table = build_user_table_from_hash(exported_visualization[:user_table])
+      visualization.map.user_table = user_table if user_table
+      visualization.synchronization = build_synchronization_from_hash(exported_visualization[:synchronization])
+
+      visualization.id = exported_visualization[:id] if exported_visualization[:id]
       visualization
     end
 
@@ -101,43 +113,6 @@ module Carto
       )
     end
 
-    def build_layers_from_hash(exported_layers)
-      return [] unless exported_layers
-
-      exported_layers.map.with_index.map { |layer, i| build_layer_from_hash(layer.deep_symbolize_keys, order: i) }
-    end
-
-    # user_name is not cleaned to ease username replacement at sql rewriting (see #7380)
-    LAYER_OPTIONS_WITH_IDS = [:id, :stat_tag].freeze
-
-    def build_layer_from_hash(exported_layer, order:)
-      options = exported_layer[:options]
-      LAYER_OPTIONS_WITH_IDS.each do |option_key|
-        options[option_key] = nil if options.has_key?(option_key)
-      end
-
-      # Indifferent access is used to keep symbol/string hash coherence with Layer serializers.
-
-      options_with_indifferent_access = options.with_indifferent_access
-
-      infowindow = exported_layer[:infowindow]
-      infowindow_with_indifferent_access = infowindow.with_indifferent_access if infowindow
-
-      tooltip = exported_layer[:tooltip]
-      tooltip_with_indifferent_access = tooltip.with_indifferent_access if tooltip
-
-      layer = Carto::Layer.new(
-        options: options_with_indifferent_access,
-        kind: exported_layer[:kind],
-        infowindow: infowindow_with_indifferent_access,
-        order: order,
-        tooltip: tooltip_with_indifferent_access
-      )
-      layer.widgets = build_widgets_from_hash(exported_layer[:widgets], layer: layer)
-      layer.legends = build_legends_from_hash(exported_layer[:legends], layer)
-      layer
-    end
-
     def build_overlays_from_hash(exported_overlays)
       return [] unless exported_overlays
 
@@ -155,53 +130,78 @@ module Carto
       )
     end
 
-    def build_legends_from_hash(exported_legends, layer)
-      return [] unless exported_legends
-
-      exported_legends.map do |exported_legend|
-        legend = Legend.new(exported_legend)
-        legend.layer = layer
-
-        legend
-      end
-    end
-
     def build_analysis_from_hash(exported_analysis)
       return nil unless exported_analysis
 
       Carto::Analysis.new(analysis_definition: exported_analysis[:analysis_definition])
     end
 
-    def build_widgets_from_hash(exported_widgets, layer:)
-      return [] unless exported_widgets
-
-      exported_widgets.map.with_index.map do |widget, index|
-        build_widget_from_hash(widget.deep_symbolize_keys, order: index, layer: layer)
-      end
+    def build_state_from_hash(exported_state)
+      Carto::State.new(json: exported_state ? exported_state[:json] : nil)
     end
 
-    def build_widget_from_hash(exported_widget, order:, layer:)
-      return nil unless exported_widget
+    def build_permission_from_hash(exported_permission)
+      return nil unless exported_permission
 
-      Carto::Widget.new(
-        order: exported_widget[:order] || order, # Order added to export on 2.0.5
-        layer: layer,
-        type: exported_widget[:type],
-        title: exported_widget[:title],
-        options: exported_widget[:options],
-        source_id: exported_widget[:source_id],
-        style: exported_widget[:style]
+      Carto::Permission.new(access_control_list: JSON.dump(exported_permission[:access_control_list]))
+    end
+
+    def build_synchronization_from_hash(exported_synchronization)
+      return nil unless exported_synchronization
+
+      Carto::Synchronization.new(
+        name: exported_synchronization[:name],
+        interval: exported_synchronization[:interval],
+        url: exported_synchronization[:url],
+        state: exported_synchronization[:state],
+        created_at: exported_synchronization[:created_at],
+        updated_at: exported_synchronization[:updated_at],
+        run_at: exported_synchronization[:run_at],
+        retried_times: exported_synchronization[:retried_times],
+        log: build_log_from_hash(exported_synchronization[:log]),
+        error_code: exported_synchronization[:error_code],
+        error_message: exported_synchronization[:error_message],
+        ran_at: exported_synchronization[:ran_at],
+        modified_at: exported_synchronization[:modified_at],
+        etag: exported_synchronization[:etag],
+        checksum: exported_synchronization[:checksum],
+        service_name: exported_synchronization[:service_name],
+        service_item_id: exported_synchronization[:service_item_id],
+        type_guessing: exported_synchronization[:type_guessing],
+        quoted_fields_guessing: exported_synchronization[:quoted_fields_guessing],
+        content_guessing: exported_synchronization[:content_guessing]
       )
     end
 
-    def build_state_from_hash(exported_state)
-      Carto::State.new(json: exported_state ? exported_state[:json] : nil)
+    def build_log_from_hash(exported_log)
+      return nil unless exported_log
+
+      Carto::Log.new(type: exported_log[:type], entries: exported_log[:entries])
+    end
+
+    def build_user_table_from_hash(exported_user_table)
+      return nil unless exported_user_table
+
+      user_table = Carto::UserTable.new
+      user_table.name = exported_user_table[:name]
+      user_table.privacy = exported_user_table[:privacy]
+      user_table.tags = exported_user_table[:tags]
+      user_table.geometry_columns = exported_user_table[:geometry_columns]
+      user_table.rows_counted = exported_user_table[:rows_counted]
+      user_table.rows_estimated = exported_user_table[:rows_estimated]
+      user_table.indexes = exported_user_table[:indexes]
+      user_table.database_name = exported_user_table[:database_name]
+      user_table.description = exported_user_table[:description]
+      user_table.table_id = exported_user_table[:table_id]
+
+      user_table
     end
   end
 
   module VisualizationsExportService2Exporter
     include VisualizationsExportService2Configuration
     include VisualizationsExportService2Validator
+    include LayerExporter
 
     def export_visualization_json_string(visualization_id, user)
       export_visualization_json_hash(visualization_id, user).to_json
@@ -229,6 +229,7 @@ module Carto
       end
 
       {
+        id: visualization.id,
         name: visualization.name,
         description: visualization.description,
         version: visualization.version,
@@ -247,7 +248,10 @@ module Carto
         overlays: visualization.overlays.map { |o| export_overlay(o) },
         analyses: visualization.analyses.map { |a| exported_analysis(a) },
         user: export_user(visualization.user),
-        state: export_state(visualization.state)
+        state: export_state(visualization.state),
+        permission: export_permission(visualization.permission),
+        synchronization: export_syncronization(visualization.synchronization),
+        user_table: export_user_table(visualization.map.user_table)
       }
     end
 
@@ -272,37 +276,11 @@ module Carto
       }
     end
 
-    def export_layer(layer, active_layer: false)
-      layer = {
-        options: layer.options,
-        kind: layer.kind,
-        infowindow: layer.infowindow,
-        tooltip: layer.tooltip,
-        widgets: layer.widgets.map { |widget| export_widget(widget) },
-        legends: layer.legends.map { |legend| export_legend(legend) }
-      }
-
-      layer[:active_layer] = true if active_layer
-
-      layer
-    end
-
     def export_overlay(overlay)
       {
         options: overlay.options,
         type: overlay.type,
         template: overlay.template
-      }
-    end
-
-    def export_widget(widget)
-      {
-        options: widget.options,
-        type: widget.type,
-        title: widget.title,
-        source_id: widget.source_id,
-        order: widget.order,
-        style: widget.style
       }
     end
 
@@ -318,13 +296,61 @@ module Carto
       }
     end
 
-    def export_legend(legend)
+    def export_permission(permission)
       {
-        definition: legend.definition,
-        post_html: legend.post_html,
-        pre_html: legend.pre_html,
-        title: legend.title,
-        type: legend.type
+        access_control_list: JSON.parse(permission.access_control_list, symbolize_names: true)
+      }
+    end
+
+    def export_syncronization(synchronization)
+      return nil unless synchronization
+      {
+        name: synchronization.name,
+        interval: synchronization.interval,
+        url: synchronization.url,
+        state: synchronization.state,
+        created_at: synchronization.created_at,
+        updated_at: synchronization.updated_at,
+        run_at: synchronization.run_at,
+        retried_times: synchronization.retried_times,
+        log: export_log(synchronization.log),
+        error_code: synchronization.error_code,
+        error_message: synchronization.error_message,
+        ran_at: synchronization.ran_at,
+        modified_at: synchronization.modified_at,
+        etag: synchronization.etag,
+        checksum: synchronization.checksum,
+        service_name: synchronization.service_name,
+        service_item_id: synchronization.service_item_id,
+        type_guessing: synchronization.type_guessing,
+        quoted_fields_guessing: synchronization.quoted_fields_guessing,
+        content_guessing: synchronization.content_guessing
+      }
+    end
+
+    def export_log(log)
+      return nil unless log
+
+      {
+        type: log.type,
+        entries: log.entries
+      }
+    end
+
+    def export_user_table(user_table)
+      return nil unless user_table
+
+      {
+        name: user_table.name,
+        privacy: user_table.privacy,
+        tags: user_table.tags,
+        geometry_columns: user_table.geometry_columns,
+        rows_counted: user_table.rows_counted,
+        rows_estimated: user_table.rows_estimated,
+        indexes: user_table.indexes,
+        database_name: user_table.database_name,
+        description: user_table.description,
+        table_id: user_table.table_id
       }
     end
   end

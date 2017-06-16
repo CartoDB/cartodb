@@ -49,7 +49,7 @@ module Carto
     validate :validate_privacy_changes
 
     before_create :service_before_create
-    after_create :create_canonical_visualization
+    after_create :create_canonical_visualization, unless: :map
     after_create :service_after_create
     after_save :service_after_save
 

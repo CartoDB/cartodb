@@ -9,6 +9,7 @@ require_relative 'vizjson3_presenter'
 require_dependency 'visualization/name_generator'
 require_dependency 'visualization/table_blender'
 require_dependency 'carto/visualization_migrator'
+require_dependency 'carto/google_maps_api'
 
 module Carto
   module Api
@@ -20,7 +21,7 @@ module Carto
       include VisualizationsControllerHelper
       include Carto::VisualizationMigrator
 
-      ssl_required :index, :show, :create, :update, :destroy
+      ssl_required :index, :show, :create, :update, :destroy, :google_maps_static_image
       ssl_allowed  :vizjson2, :vizjson3, :likes_count, :likes_list, :is_liked, :list_watching, :static_map
 
       # TODO: compare with older, there seems to be more optional authentication endpoints
@@ -29,8 +30,9 @@ module Carto
 
       before_filter :id_and_schema_from_params
       before_filter :load_visualization, only: [:likes_count, :likes_list, :is_liked, :show, :stats, :list_watching,
-                                                :static_map, :vizjson2, :vizjson3, :update, :destroy]
-      before_filter :ensure_visualization_owned, only: [:destroy]
+                                                :static_map, :vizjson2, :vizjson3, :update, :destroy,
+                                                :google_maps_static_image]
+      before_filter :ensure_visualization_owned, only: [:destroy, :google_maps_static_image]
 
       rescue_from Carto::LoadError, with: :rescue_from_carto_error
       rescue_from Carto::UUIDParameterFormatError, with: :rescue_from_carto_error
@@ -263,6 +265,23 @@ module Carto
         CartoDB::Logger.error(message: 'Error deleting visualization', exception: exception,
                               visualization: @visualization)
         render_jsonp({ errors: [exception.message] }, 400)
+      end
+
+      def google_maps_static_image
+        gmaps_api = Carto::GoogleMapsApi.new
+        base_layer_options = @visualization.base_layers.first.options
+        base_url = gmaps_api.build_static_image_url(
+          center: params[:center],
+          map_type: base_layer_options[:baseType],
+          size: params[:size],
+          zoom: params[:zoom],
+          style: JSON.parse(base_layer_options[:style], symbolize_names: true)
+        )
+
+        render(json: { url: gmaps_api.sign_url(@visualization.user, base_url) })
+      rescue => e
+        CartoDB::Logger.error(message: 'Error generating Google API URL', exception: e)
+        render(json: { errors: 'Error generating static image URL' }, status: 400)
       end
 
       private

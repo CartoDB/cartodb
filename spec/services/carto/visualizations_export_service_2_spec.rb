@@ -10,12 +10,13 @@ describe Carto::VisualizationsExportService2 do
   let(:export) do
     {
       visualization: base_visualization_export,
-      version: '2.0.8'
+      version: '2.1.0'
     }
   end
 
   let(:base_visualization_export) do
     {
+      id: '138110e4-7425-4978-843d-d7307bd70d1c',
       name: 'the name',
       description: 'the description',
       version: 3,
@@ -219,7 +220,10 @@ describe Carto::VisualizationsExportService2 do
       analyses: [
         { analysis_definition: { id: 'a1', type: 'source' } }
       ],
-      user: { username: 'juanignaciosl' }
+      user: { username: 'juanignaciosl' },
+      permission: { access_control_list: [] },
+      synchronization: nil,
+      user_table: nil
     }
   end
 
@@ -440,7 +444,7 @@ describe Carto::VisualizationsExportService2 do
         visualization_export = export[:visualization]
         verify_visualization_vs_export(visualization, visualization_export)
 
-        visualization.id.should be_nil # Not set until persistence
+        visualization.id.should eq visualization_export[:id]
         visualization.user_id.should be_nil # Import build step is "user-agnostic"
         visualization.created_at.should be_nil # Not set until persistence
         visualization.updated_at.should be_nil # Not set until persistence
@@ -459,7 +463,6 @@ describe Carto::VisualizationsExportService2 do
 
         visualization.analyses.each do |analysis|
           analysis.id.should be_nil
-          analysis.visualization_id.should eq visualization.id
           analysis.user_id.should be_nil
           analysis.created_at.should be_nil
           analysis.updated_at.should be_nil
@@ -614,6 +617,29 @@ describe Carto::VisualizationsExportService2 do
       end
 
       describe 'maintains backwards compatibility with' do
+        it '2.0.9 (without permission, sync nor user_table)' do
+          export_2_0_9 = export
+          export_2_0_9[:visualization].delete(:synchronization)
+          export_2_0_9[:visualization].delete(:user_table)
+          export_2_0_9[:visualization].delete(:permission)
+
+          service = Carto::VisualizationsExportService2.new
+          visualization = service.build_visualization_from_json_export(export_2_0_9.to_json)
+
+          visualization.permission.should be_nil
+          visualization.synchronization.should be_nil
+        end
+
+        it '2.0.8 (without id)' do
+          export_2_0_8 = export
+          export_2_0_8[:visualization].delete(:id)
+
+          service = Carto::VisualizationsExportService2.new
+          visualization = service.build_visualization_from_json_export(export_2_0_8.to_json)
+
+          visualization.id.should be_nil
+        end
+
         it '2.0.7 (without Widget.style)' do
           export_2_0_7 = export
           export_2_0_7[:visualization][:layers].each do |layer|
@@ -765,23 +791,24 @@ describe Carto::VisualizationsExportService2 do
       describe 'visualization types' do
         before(:all) do
           bypass_named_maps
-          @table_visualization = FactoryGirl.create(:carto_visualization, type: 'table')
           @remote_visualization = FactoryGirl.create(:carto_visualization, type: 'remote')
         end
 
         after(:all) do
-          @table_visualization.destroy
           @remote_visualization.destroy
         end
 
-        it 'fails for visualizations that are not derived' do
+        it 'fails for remote visualizations and works for derived/canonical visualizations' do
           exporter = Carto::VisualizationsExportService2.new
           expect {
             exporter.export_visualization_json_hash(@table_visualization.id, @user)
-          }.to raise_error("Only derived visualizations can be exported")
+          }.not_to raise_error
+          expect {
+            exporter.export_visualization_json_hash(@visualization.id, @user)
+          }.not_to raise_error
           expect {
             exporter.export_visualization_json_hash(@remote_visualization.id, @user)
-          }.to raise_error("Only derived visualizations can be exported")
+          }.to raise_error("Only derived or canonical visualizations can be exported")
         end
       end
 
@@ -1266,147 +1293,269 @@ describe Carto::VisualizationsExportService2 do
       imported_overlay.template.should eq original_overlay.template
     end
 
-    before(:all) do
-      @user = FactoryGirl.create(:carto_user, private_maps_enabled: true)
-      @user2 = FactoryGirl.create(:carto_user, private_maps_enabled: true)
-    end
+    describe 'maps' do
+      before(:all) do
+        @user = FactoryGirl.create(:carto_user, private_maps_enabled: true)
+        @user2 = FactoryGirl.create(:carto_user, private_maps_enabled: true)
+      end
 
-    after(:all) do
-      # This avoids connection leaking.
-      ::User[@user.id].destroy
-      ::User[@user2.id].destroy
-    end
+      after(:all) do
+        # This avoids connection leaking.
+        ::User[@user.id].destroy
+        ::User[@user2.id].destroy
+      end
 
-    before(:each) do
-      bypass_named_maps
-      @map, @table, @table_visualization, @visualization = create_full_visualization(@user)
-      carto_layer = @visualization.layers.find { |l| l.kind == 'carto' }
-      carto_layer.options[:user_name] = @user.username
-      carto_layer.save
-      @analysis = FactoryGirl.create(:source_analysis, visualization: @visualization, user: @user)
-    end
+      before(:each) do
+        bypass_named_maps
+        @map, @table, @table_visualization, @visualization = create_full_visualization(@user)
+        carto_layer = @visualization.layers.find { |l| l.kind == 'carto' }
+        carto_layer.options[:user_name] = @user.username
+        carto_layer.save
+        @analysis = FactoryGirl.create(:source_analysis, visualization: @visualization, user: @user)
+      end
 
-    after(:each) do
-      @analysis.destroy
-      destroy_full_visualization(@map, @table, @table_visualization, @visualization)
-    end
+      after(:each) do
+        @analysis.destroy
+        destroy_full_visualization(@map, @table, @table_visualization, @visualization)
+      end
 
-    let(:export_service) { Carto::VisualizationsExportService2.new }
+      let(:export_service) { Carto::VisualizationsExportService2.new }
 
-    it 'importing an exported visualization should create a new visualization with matching metadata' do
-      exported_string = export_service.export_visualization_json_string(@visualization.id, @user)
-      built_viz = export_service.build_visualization_from_json_export(exported_string)
-      imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user, built_viz)
+      it 'importing an exported visualization should create a new visualization with matching metadata' do
+        exported_string = export_service.export_visualization_json_string(@visualization.id, @user)
+        built_viz = export_service.build_visualization_from_json_export(exported_string)
+        imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user, built_viz)
 
-      imported_viz = Carto::Visualization.find(imported_viz.id)
-      verify_visualizations_match(imported_viz,
-                                  @visualization,
-                                  importing_user: @user,
-                                  imported_name: "#{@visualization.name} Import")
+        imported_viz = Carto::Visualization.find(imported_viz.id)
+        verify_visualizations_match(imported_viz,
+                                    @visualization,
+                                    importing_user: @user,
+                                    imported_name: "#{@visualization.name} Import")
 
-      destroy_visualization(imported_viz.id)
-    end
+        destroy_visualization(imported_viz.id)
+      end
 
-    it 'importing an exported visualization several times should change imported name' do
-      exported_string = export_service.export_visualization_json_string(@visualization.id, @user)
+      it 'importing an exported visualization several times should change imported name' do
+        exported_string = export_service.export_visualization_json_string(@visualization.id, @user)
 
-      built_viz = export_service.build_visualization_from_json_export(exported_string)
-      imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user, built_viz)
-      imported_viz.name.should eq "#{@visualization.name} Import"
+        built_viz = export_service.build_visualization_from_json_export(exported_string)
+        imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user, built_viz)
+        imported_viz.name.should eq "#{@visualization.name} Import"
 
-      built_viz = export_service.build_visualization_from_json_export(exported_string)
-      imported_viz2 = Carto::VisualizationsExportPersistenceService.new.save_import(@user, built_viz)
-      imported_viz2.name.should eq "#{@visualization.name} Import 2"
+        built_viz = export_service.build_visualization_from_json_export(exported_string)
+        imported_viz2 = Carto::VisualizationsExportPersistenceService.new.save_import(@user, built_viz)
+        imported_viz2.name.should eq "#{@visualization.name} Import 2"
 
-      destroy_visualization(imported_viz.id)
-      destroy_visualization(imported_viz2.id)
-    end
+        destroy_visualization(imported_viz.id)
+        destroy_visualization(imported_viz2.id)
+      end
 
-    it 'importing an exported visualization into another account should change layer user_name option' do
-      exported_string = export_service.export_visualization_json_string(@visualization.id, @user)
-      built_viz = export_service.build_visualization_from_json_export(exported_string)
-      imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user2, built_viz)
+      it 'importing an exported visualization into another account should change layer user_name option' do
+        exported_string = export_service.export_visualization_json_string(@visualization.id, @user)
+        built_viz = export_service.build_visualization_from_json_export(exported_string)
+        imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user2, built_viz)
 
-      imported_viz = Carto::Visualization.find(imported_viz.id)
-      verify_visualizations_match(imported_viz, @visualization, importing_user: @user2)
+        imported_viz = Carto::Visualization.find(imported_viz.id)
+        verify_visualizations_match(imported_viz, @visualization, importing_user: @user2)
 
-      destroy_visualization(imported_viz.id)
-    end
+        destroy_visualization(imported_viz.id)
+      end
 
-    describe 'basemaps' do
-      describe 'custom' do
+      describe 'if full_restore is' do
         before(:each) do
-          @user2.reload
-          @user2.layers.clear
-
-          carto_layer = @visualization.layers.find { |l| l.kind == 'carto' }
-          carto_layer.options[:user_name] = @user.username
-          carto_layer.save
+          @visualization.permission.acl = [{
+            type: 'user',
+            entity: {
+              id: @user2.id,
+              username: @user2.username
+            },
+            access: 'r'
+          }]
+          @visualization.permission.save
         end
 
-        let(:mapbox_layer) do
-          {
-            urlTemplate: 'https://api.mapbox.com/styles/v1/wadus/ciu4g7i1500t62iqgcgt9xwez/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IaoianVhcmlnbmFjaW9zbCIsImEiOiJjaXU1ZzZmcXMwMDJ0MnpwYWdiY284dTFiIn0.uZuarRtgWTv20MdNCq856A',
-            attribution: nil,
-            maxZoom: 21,
-            minZoom: 0,
-            name: '',
-            category: 'Mapbox',
-            type: 'Tiled',
-            className: 'httpsapimapboxcomstylesv1wadusiu4g7i1500t62iqgcgt9xweztiles256zxy2xaccess_tokenpkeyj1iaoianvhbmlnbmfjaw9zbcisimeioijjaxu1zzzmcxmwmdj0mnpwywdiy284dtfiin0uzuarrtgwtv20mdncq856a'
-          }
-        end
-
-        it 'importing an exported visualization with a custom basemap should add the layer to user layers' do
-          base_layer = @visualization.base_layers.first
-          base_layer.options = mapbox_layer
-          base_layer.save
-
-          user_layers = @user2.layers
-          user_layers.find { |l| l.options['urlTemplate'] == base_layer.options['urlTemplate'] }.should be_nil
-          user_layers_count = user_layers.count
-
+        it 'false, it should generate a random uuid and blank permission' do
           exported_string = export_service.export_visualization_json_string(@visualization.id, @user)
           built_viz = export_service.build_visualization_from_json_export(exported_string)
+          original_id = built_viz.id
+
           imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user2, built_viz)
-
-          @user2.reload
-          new_user_layers = @user2.layers
-
-          new_user_layers.count.should eq user_layers_count + 1
-          new_user_layers.find { |l| l.options['urlTemplate'] == base_layer.options['urlTemplate'] }.should_not be_nil
-
+          imported_viz.id.should_not eq original_id
+          imported_viz.permission.acl.should be_empty
+          imported_viz.shared_entities.count.should be_zero
           destroy_visualization(imported_viz.id)
-
-          # Layer should not be the map one
-          @user2.reload
-          new_user_layers = @user2.layers
-
-          new_user_layers.count.should eq user_layers_count + 1
         end
 
-        it 'importing an exported visualization with a custom basemap twice should add the layer to user layers only once' do
-          base_layer = @visualization.base_layers.first
-          base_layer.options = mapbox_layer
-          base_layer.save
-
-          user_layers = @user2.layers
-          user_layers.find { |l| l.options['urlTemplate'] == base_layer.options['urlTemplate'] }.should be_nil
-          user_layers_count = user_layers.count
-
+        it 'true, it should keep the imported uuid and permission' do
           exported_string = export_service.export_visualization_json_string(@visualization.id, @user)
           built_viz = export_service.build_visualization_from_json_export(exported_string)
-          imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user2, built_viz)
-          built_viz = export_service.build_visualization_from_json_export(exported_string)
-          imported_viz2 = Carto::VisualizationsExportPersistenceService.new.save_import(@user2, built_viz)
+          test_id = random_uuid
+          built_viz.id = test_id
 
-          @user2.reload
-          new_user_layers = @user2.layers
+          imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user2, built_viz, full_restore: true)
+          imported_viz.id.should eq test_id
+          imported_viz.permission.acl.should_not be_empty
+          imported_viz.shared_entities.count.should eq 1
+          imported_viz.shared_entities.first.recipient_id.should eq @user2.id
 
-          new_user_layers.count.should eq user_layers_count + 1
-          destroy_visualization(imported_viz2.id)
           destroy_visualization(imported_viz.id)
         end
+      end
+
+      describe 'basemaps' do
+        describe 'custom' do
+          before(:each) do
+            @user2.reload
+            @user2.layers.clear
+
+            carto_layer = @visualization.layers.find { |l| l.kind == 'carto' }
+            carto_layer.options[:user_name] = @user.username
+            carto_layer.save
+          end
+
+          let(:mapbox_layer) do
+            {
+              urlTemplate: 'https://api.mapbox.com/styles/v1/wadus/ciu4g7i1500t62iqgcgt9xwez/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IaoianVhcmlnbmFjaW9zbCIsImEiOiJjaXU1ZzZmcXMwMDJ0MnpwYWdiY284dTFiIn0.uZuarRtgWTv20MdNCq856A',
+              attribution: nil,
+              maxZoom: 21,
+              minZoom: 0,
+              name: '',
+              category: 'Mapbox',
+              type: 'Tiled',
+              className: 'httpsapimapboxcomstylesv1wadusiu4g7i1500t62iqgcgt9xweztiles256zxy2xaccess_tokenpkeyj1iaoianvhbmlnbmfjaw9zbcisimeioijjaxu1zzzmcxmwmdj0mnpwywdiy284dtfiin0uzuarrtgwtv20mdncq856a'
+            }
+          end
+
+          it 'importing an exported visualization with a custom basemap should add the layer to user layers' do
+            base_layer = @visualization.base_layers.first
+            base_layer.options = mapbox_layer
+            base_layer.save
+
+            user_layers = @user2.layers
+            user_layers.find { |l| l.options['urlTemplate'] == base_layer.options['urlTemplate'] }.should be_nil
+            user_layers_count = user_layers.count
+
+            exported_string = export_service.export_visualization_json_string(@visualization.id, @user)
+            built_viz = export_service.build_visualization_from_json_export(exported_string)
+            imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user2, built_viz)
+
+            @user2.reload
+            new_user_layers = @user2.layers
+
+            new_user_layers.count.should eq user_layers_count + 1
+            new_user_layers.find { |l| l.options['urlTemplate'] == base_layer.options['urlTemplate'] }.should_not be_nil
+
+            destroy_visualization(imported_viz.id)
+
+            # Layer should not be the map one
+            @user2.reload
+            new_user_layers = @user2.layers
+
+            new_user_layers.count.should eq user_layers_count + 1
+          end
+
+          it 'importing an exported visualization with a custom basemap twice should add the layer to user layers only once' do
+            base_layer = @visualization.base_layers.first
+            base_layer.options = mapbox_layer
+            base_layer.save
+
+            user_layers = @user2.layers
+            user_layers.find { |l| l.options['urlTemplate'] == base_layer.options['urlTemplate'] }.should be_nil
+            user_layers_count = user_layers.count
+
+            exported_string = export_service.export_visualization_json_string(@visualization.id, @user)
+            built_viz = export_service.build_visualization_from_json_export(exported_string)
+            imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user2, built_viz)
+            built_viz = export_service.build_visualization_from_json_export(exported_string)
+            imported_viz2 = Carto::VisualizationsExportPersistenceService.new.save_import(@user2, built_viz)
+
+            @user2.reload
+            new_user_layers = @user2.layers
+
+            new_user_layers.count.should eq user_layers_count + 1
+            destroy_visualization(imported_viz2.id)
+            destroy_visualization(imported_viz.id)
+          end
+        end
+      end
+    end
+
+    describe 'datasets' do
+      before(:all) do
+        @sequel_user = FactoryGirl.create(:valid_user, private_maps_enabled: true, table_quota: nil)
+        @user = Carto::User.find(@sequel_user.id)
+
+        @sequel_user2 = FactoryGirl.create(:valid_user, private_maps_enabled: true, table_quota: nil)
+        @user2 = Carto::User.find(@sequel_user2.id)
+      end
+
+      after(:all) do
+        @sequel_user.destroy
+      end
+
+      before(:each) do
+        bypass_named_maps
+        @table = FactoryGirl.create(:carto_user_table, :full, user: @user)
+        @table_visualization = @table.table_visualization
+        @table_visualization.reload
+        @table_visualization.active_layer = @table_visualization.data_layers.first
+        @table_visualization.save
+      end
+
+      after(:each) do
+        @table_visualization.destroy
+      end
+
+      let(:export_service) { Carto::VisualizationsExportService2.new }
+
+      it 'importing an exported dataset should keep the user_table' do
+        exported_string = export_service.export_visualization_json_string(@table_visualization.id, @user)
+        built_viz = export_service.build_visualization_from_json_export(exported_string)
+
+        # Create user db table (destroyed above)
+        @user2.in_database.execute("CREATE TABLE #{@table_visualization.name} (cartodb_id int)")
+        imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user2, built_viz)
+
+        imported_viz = Carto::Visualization.find(imported_viz.id)
+        verify_visualizations_match(imported_viz, @table_visualization, importing_user: @user2)
+        imported_viz.map.user_table.should be
+
+        destroy_visualization(imported_viz.id)
+      end
+
+      it 'importing a dataset with an existing name should raise an error' do
+        exported_string = export_service.export_visualization_json_string(@table_visualization.id, @user)
+        built_viz = export_service.build_visualization_from_json_export(exported_string)
+
+        expect { Carto::VisualizationsExportPersistenceService.new.save_import(@user, built_viz) }.to raise_error(
+          'Cannot rename a dataset during import')
+      end
+
+      it 'importing a dataset without a table should raise an error' do
+        exported_string = export_service.export_visualization_json_string(@table_visualization.id, @user)
+        built_viz = export_service.build_visualization_from_json_export(exported_string)
+
+        expect { Carto::VisualizationsExportPersistenceService.new.save_import(@user2, built_viz) }.to raise_error(
+          'Cannot import a dataset without physical table')
+      end
+
+      it 'importing an exported dataset should keep the synchronization' do
+        FactoryGirl.create(:carto_synchronization, visualization: @table_visualization)
+        exported_string = export_service.export_visualization_json_string(@table_visualization.id, @user)
+        built_viz = export_service.build_visualization_from_json_export(exported_string)
+
+        # Create user db table (destroyed above)
+        @user2.in_database.execute("CREATE TABLE #{@table_visualization.name} (cartodb_id int)")
+        imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user2, built_viz)
+
+        imported_viz = Carto::Visualization.find(imported_viz.id)
+        verify_visualizations_match(imported_viz, @table_visualization, importing_user: @user2)
+        sync = imported_viz.synchronization
+        sync.should be
+        sync.user_id.should eq @user2.id
+        sync.log.user_id.should eq @user2.id
+
+        destroy_visualization(imported_viz.id)
       end
     end
   end

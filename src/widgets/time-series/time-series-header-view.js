@@ -91,16 +91,7 @@ module.exports = cdb.core.View.extend({
 
   _initBinds: function () {
     this.listenTo(this._dataviewModel, 'change:totalAmount', this._animateValue);
-    this.listenTo(this._dataviewModel, 'change:filteredAmount', this._animateValue);
     this.listenTo(this._rangeFilter, 'change', this.render);
-  },
-
-  _onTotalAmountChanged: function () {
-    this._onAmountChanged();
-  },
-
-  _onFilteredAmountChanged: function () {
-    this._onAmountChanged();
   },
 
   _getColumnType: function () {

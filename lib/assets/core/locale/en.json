@@ -301,8 +301,8 @@
       "short-title": "Aggregate intersection"
     },
     "tt-aggregate-intersection": {
-      "title": "Filter points in polygons (TVT)",
-      "desc": "Filter points intersecting your polygons layer, and calculate aggregations on the fly."
+      "title": "Aggregate intersection (TVT)",
+      "short-title": "Aggregate intersection (TVT)"
     },
     "filter": {
       "title": "Filter by column value",
@@ -864,8 +864,8 @@
             "desc": "Intersect with a second layer and calculate aggregations on the fly."
           },
           "tt-aggregate-intersection": {
-            "title": "Filter points in polygons (TVT)",
-            "desc": "Filter points intersecting your polygons layer, and calculate aggregations on the fly."
+            "title": "Intersect second layer (TVT)",
+            "desc": "Intersect with a second layer and calculate aggregations on the fly."
           },
           "area-of-influence": {
             "title": "Create areas of influence",

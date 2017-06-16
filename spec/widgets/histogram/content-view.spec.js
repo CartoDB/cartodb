@@ -239,7 +239,7 @@ describe('widgets/histogram/content-view', function () {
           'bins_count': 2,
           'bins_start': i++,
           'nulls': 0,
-          'bins': [{ bin: 10 }, { bin: 1 }]
+          'bins': [{ bin: 0 }, { bin: 1 }]
         });
       };
 

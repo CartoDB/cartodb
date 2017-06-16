@@ -1,4 +1,3 @@
-var _ = require('underscore');
 var cdb = require('cartodb.js');
 var d3 = require('d3');
 var template = require('./time-series-header.tpl');

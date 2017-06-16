@@ -1,5 +1,4 @@
 var _ = require('underscore');
-var Backbone = require('backbone');
 var cdb = require('cartodb.js');
 var torqueTemplate = require('./torque-template.tpl');
 var placeholderTemplate = require('./placeholder.tpl');

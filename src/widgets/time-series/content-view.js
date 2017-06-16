@@ -1,5 +1,4 @@
 var _ = require('underscore');
-var Backbone = require('backbone');
 var cdb = require('cartodb.js');
 var placeholderTemplate = require('./placeholder.tpl');
 var contentTemplate = require('./content.tpl');

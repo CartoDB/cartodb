@@ -31,6 +31,13 @@ describe('dataviews/histogram-dataview-model', function () {
     });
   });
 
+  it('defaults', function () {
+    expect(this.model.get('type')).toBe('histogram');
+    expect(this.model.get('bins')).toBe(10);
+    expect(this.model.get('totalAmount')).toBe(0);
+    expect(this.model.get('filteredAmount')).toBe(0);
+  });
+
   it('should not listen any url change from the beginning', function () {
     this.model.set('url', 'https://carto.com');
     expect(this.model.fetch).not.toHaveBeenCalled();
@@ -243,6 +250,27 @@ describe('dataviews/histogram-dataview-model', function () {
     expect(JSON.stringify(parsedData)).toBe('[{"bin":0,"start":55611,"end":70101.25,"freq":2,"max":70151,"min":55611},{"bin":1,"start":70101.25,"end":84591.5,"freq":2,"max":79017,"min":78448},{"bin":2,"start":84591.5,"end":99081.75,"freq":0},{"bin":3,"start":99081.75,"end":113572,"freq":1,"max":113572,"min":113572}]');
   });
 
+  it('should calculate total amount and filtered amount in parse', function () {
+    var data = {
+      bin_width: 1,
+      bins: [
+        { bin: 0, freq: 2 },
+        { bin: 1, freq: 3 },
+        { bin: 2, freq: 7 }
+      ],
+      bins_count: 3,
+      bins_start: 1,
+      nulls: 0,
+      type: 'histogram'
+    };
+    this.model.filter = new RangeFilter({ min: 1, max: 3 });
+
+    var parsedData = this.model.parse(data);
+
+    expect(parsedData.totalAmount).toBe(12);
+    expect(parsedData.filteredAmount).toBe(5);
+  });
+
   it('parser do not fails when there are no bins', function () {
     var data = {
       bin_width: 0,
@@ -370,7 +398,7 @@ describe('dataviews/histogram-dataview-model', function () {
       var data = [
         { freq: 10 },
         { freq: 20 },
-        { freq: 30 },  
+        { freq: 30 }
       ];
       expect(this.model._calculateTotalAmount(data)).toEqual(60);
     });
@@ -386,12 +414,12 @@ describe('dataviews/histogram-dataview-model', function () {
         { bin: 1, start: 4, end: 7, freq: 44 }
       ]);
       this.filter = new RangeFilter({ min: 1, max: 7 });
-      
+
       var filteredAmount = this.model._calculateFilteredAmount(this.filter, data);
 
-      expect(this.model._findBinsIndexes).toHaveBeenCalledWith(data, 1, 7)
-      expect(this.model._sumBinsFreq).toHaveBeenCalledWith(data, 0, 1)
-      expect(filteredAmount).toEqual(77)
+      expect(this.model._findBinsIndexes).toHaveBeenCalledWith(data, 1, 7);
+      expect(this.model._sumBinsFreq).toHaveBeenCalledWith(data, 0, 1);
+      expect(filteredAmount).toEqual(77);
     });
   });
 
@@ -400,10 +428,10 @@ describe('dataviews/histogram-dataview-model', function () {
       spyOn(this.model, '_calculateFilteredAmount').and.returnValue(123);
       var filter = new RangeFilter({ min: 1, max: 7 });
 
-      this.model._onFilterChanged(filter)
+      this.model._onFilterChanged(filter);
 
-      expect(this.model._calculateFilteredAmount).toHaveBeenCalled()
-      expect(this.model.get('filteredAmount')).toEqual(123)
+      expect(this.model._calculateFilteredAmount).toHaveBeenCalled();
+      expect(this.model.get('filteredAmount')).toEqual(123);
     });
   });
 });

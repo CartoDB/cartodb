@@ -149,7 +149,7 @@ module.exports = DataviewModelBase.extend({
     }, 0);
   },
 
-  _calculateFilteredAmount:  function (filter, data) {
+  _calculateFilteredAmount: function (filter, data) {
     var filteredAmount = 0;
     if (filter && filter.get('min') !== void 0 && filter.get('max') !== void 0) {
       var indexes = this._findBinsIndexes(data, filter.get('min'), filter.get('max'));

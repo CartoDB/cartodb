@@ -5,12 +5,8 @@ describe('widgets/time-series/torque-header-view', function () {
   var filterIsEmpty = true;
 
   beforeEach(function () {
-    this.selectionTotal = new Backbone.Model({ total: 0 });
     this.dataviewModel = new Backbone.Model({
-      data: [
-        { bin: 0, start: 1, end: 2, freq: 1, min: 1, max: 1, avg: 1 },
-        { bin: 1, start: 2, end: 3, freq: 1, min: 2, max: 3, avg: 4 }
-      ]
+      data: [{}]
     });
     this.dataviewModel.layer = new Backbone.Model();
     this.dataviewModel.filter = new Backbone.Model();
@@ -19,9 +15,9 @@ describe('widgets/time-series/torque-header-view', function () {
     };
     this.torqueLayerModel = new Backbone.Model();
     this.view = new TorqueHeaderView({
-      selectionTotal: this.selectionTotal,
       dataviewModel: this.dataviewModel,
-      torqueLayerModel: this.torqueLayerModel
+      torqueLayerModel: this.torqueLayerModel,
+      selectedAmount: 0
     });
   });
 

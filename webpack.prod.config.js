@@ -50,6 +50,10 @@ module.exports = env => {
         ['window.jQuery']: 'jquery'
       }),
 
+      new webpack.DefinePlugin({
+        __IN_DEV__: JSON.stringify(false)
+      }),
+
       // Minify
       new webpack.optimize.UglifyJsPlugin({
         sourceMap: true,

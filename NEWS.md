@@ -3,7 +3,7 @@ Development
 
 ### Features
 * New loading button styles (#12132)
-* [WIP] Export/import organization/user metadata to allow user migration (#12271, #12304)
+* [WIP] Export/import organization/user metadata to allow user migration (#12271, #12304, #12323)
 * New force param in EUMAPI organization users destroy operation to force deletion even with unregistered tables (#11654).
 * Removed the usage of the `organizations_admin` feature flag (#12131)
 * Show number of selected items in Time-Series widgets (#12179).
@@ -50,6 +50,7 @@ Development
 * Disable edit geometry for Layers with aggregated styles (#11714)
 * Retrieve google static api url from backend to allow using both client_id and api_key (#12301, #12318)
 * Fix vector problem with lines
+* Fixed "see all formats" url, from the Connect Dataset module, to open in new windown and changed the url.
 
 ### NOTICE
 This release upgrades the CartoDB PostgreSQL extension to `0.19.1`. Run the following to have it available:

@@ -334,7 +334,7 @@ module Carto
 
       {
         type: log.type,
-        entries: log.entries.length > MAX_LOG_SIZE ? log.entries.slice(-MAX_LOG_SIZE..-1) : log.entries
+        entries: log.entries && log.entries.length > MAX_LOG_SIZE ? log.entries.slice(-MAX_LOG_SIZE..-1) : log.entries
       }
     end
 

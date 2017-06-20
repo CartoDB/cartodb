@@ -36,6 +36,7 @@ module.exports = cdb.core.View.extend({
   _createHeaderView: function () {
     var headerView = new TimeSeriesHeaderView({
       dataviewModel: this.model,
+      timeSeriesModel: this._timeseriesModel,
       rangeFilter: this._rangeFilter
     });
     headerView.bind('resetFilter', this._onResetFilter, this);

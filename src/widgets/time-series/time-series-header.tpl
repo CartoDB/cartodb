@@ -1,8 +1,5 @@
 <div>
-  <p class="CDB-Text CDB-Size-large u-iBlock">Selected from</p>
-  <p class="CDB-Text CDB-Size-large u-secondaryTextColor u-iBlock"><%- start %></p>
-  <p class="CDB-Text CDB-Size-large u-iBlock">to</p>
-  <p class="CDB-Text CDB-Size-large u-secondaryTextColor u-iBlock"><%- end %></p>
+  <p class="CDB-Text CDB-Size-large u-iBlock"><%- title %></p>
 </div>
 <% if (showClearButton) { %>
   <div>

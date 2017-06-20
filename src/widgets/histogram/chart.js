@@ -34,7 +34,7 @@ module.exports = cdb.core.View.extend({
 
     if (!_.isNumber(this.options.height)) throw new Error('height is required');
 
-    _.bindAll(this, '_selectBars', '_adjustBrushHandles', '_onBrushMove', '_onBrushStart', '_onMouseMove', '_onMouseOut');
+    _.bindAll(this, '_selectBars', '_adjustBrushHandles', '_onBrushMove', '_onBrushStart', '_onBrushEnd', '_onMouseMove', '_onMouseOut');
 
     // Use this special setup for each view instance ot have its own debounced listener
     // TODO in theory there's the possiblity that the callback is called before the view is rendered in the DOM,
@@ -229,11 +229,6 @@ module.exports = cdb.core.View.extend({
       .attr('transform', 'translate(' + (margin.left + x) + ', ' + (margin.top + y) + ')');
   },
 
-  _onBrushStart: function () {
-    this.chart.classed('is-selectable', true);
-    this._axis.classed('is-disabled', true);
-  },
-
   _onChangeDragging: function () {
     this.chart.classed('is-dragging', this.model.get('dragging'));
     this._updateAxisTipOpacity('right');
@@ -267,71 +262,6 @@ module.exports = cdb.core.View.extend({
   _updateAxisTipOpacity: function (className) {
     if (this.model.get('dragging')) {
       this._showAxisTip(className);
-    }
-  },
-
-  _onBrushMove: function () {
-    this.model.set({ dragging: true });
-    this._selectBars();
-    this._setupFillColor();
-    this._refreshBarsColor();
-    this._adjustBrushHandles();
-  },
-
-  _onMouseOut: function () {
-    var bars = this.chart.selectAll('.CDB-Chart-bar');
-
-    bars
-      .classed('is-highlighted', false)
-      .attr('fill', this._getFillColor.bind(this));
-    this.trigger('hover', { value: null });
-  },
-
-  _onMouseMove: function () {
-    var x = d3.event.offsetX;
-
-    var barIndex = Math.floor(x / this.barWidth);
-    var data = this.model.get('data');
-
-    if (data[barIndex] === undefined || data[barIndex] === null) {
-      return;
-    }
-
-    var freq = data[barIndex].freq;
-    var hoverProperties = {};
-
-    var bar = this.chart.select('.CDB-Chart-bar:nth-child(' + (barIndex + 1) + ')');
-
-    if (bar && bar.node() && !bar.classed('is-selected')) {
-      var left = (barIndex * this.barWidth) + (this.barWidth / 2);
-      var top = this.yScale(freq);
-      var h = this.chartHeight() - this.yScale(freq);
-
-      if (h < this.options.minimumBarHeight && h > 0) {
-        top = this.chartHeight() - this.options.minimumBarHeight;
-      }
-
-      if (!this._isDragging() && freq > 0) {
-        var d = formatter.formatNumber(freq);
-        hoverProperties = { top: top, left: left, data: d };
-      } else {
-        hoverProperties = null;
-      }
-    } else {
-      hoverProperties = null;
-    }
-
-    this.trigger('hover', hoverProperties);
-
-    this.chart.selectAll('.CDB-Chart-bar')
-      .classed('is-highlighted', false)
-      .attr('fill', this._getFillColor.bind(this));
-
-    if (bar && bar.node()) {
-      bar.attr('fill', function (d, i) {
-        return this._getHoverFillColor(data[barIndex], barIndex);
-      }.bind(this));
-      bar.classed('is-highlighted', true);
     }
   },
 
@@ -733,67 +663,147 @@ module.exports = cdb.core.View.extend({
   },
 
   _setupBrush: function () {
-    var self = this;
+    // define brush control element and its events
+    var brush = d3.svg.brush()
+        .x(this.xScale)
+        // .on('brushstart', this._onBrushStart)
+        .on('brush', this._onBrushMove)
+        .on('brushend', this._onBrushEnd);
 
-    var brush = this.brush = d3.svg.brush().x(this.xScale);
+    // create svg group with class brush and call brush on it
+    var brushg = this.chart.append("g")
+        .attr("class", "Brush")
+        .call(brush);
 
-    function onBrushEnd () {
-      var data = self.model.get('data');
-      var loPosition, hiPosition;
+    // set brush extent to rect and define objects height
+    brushg.selectAll("rect")
+        .attr('y', 0)
+        .attr('height', this.chartHeight())
+        .on('mouseout', this._onMouseOut)
+        .on('mousemove', this._onMouseMove);
 
-      self.model.set({ dragging: false });
+    this.brush = brush;
+  },
 
-      if (brush.empty()) {
-        self.chart.selectAll('.CDB-Chart-bar').classed('is-selected', false);
-        d3.select(this).call(brush.extent([0, 0]));
-      } else {
-        var loBarIndex = self._getLoBarIndex();
-        var hiBarIndex = self._getHiBarIndex();
+  _onBrushStart: function () {
+    // this.chart.classed('is-selectable', true);
+    // this._axis.classed('is-disabled', true);
+  },
 
-        loPosition = self._getBarPosition(loBarIndex);
-        hiPosition = self._getBarPosition(hiBarIndex);
+  _onBrushMove: function () {
+    if (!this.brush.empty()) {
+      this.chart.classed('is-selectable', true)
+      this._axis.classed('is-disabled', true)
+      this.model.set({ dragging: true });
+      this._selectBars();
+      this._setupFillColor();
+      this._refreshBarsColor();
+      this._adjustBrushHandles();
+    }
+  },
 
-        if (!d3.event.sourceEvent) {
-          return;
-        }
+  _onBrushEnd: function () {
+    var data = this.model.get('data');
+    var brush = this.brush;
+    var loPosition, hiPosition;
 
-        if (loBarIndex === hiBarIndex) {
-          if (hiBarIndex >= data.length) {
-            loPosition = self._getBarPosition(loBarIndex - 1);
-          } else {
-            hiPosition = self._getBarPosition(hiBarIndex + 1);
-          }
-        }
-        self.model.set({ lo_index: loBarIndex, hi_index: hiBarIndex });
+    this.model.set({ dragging: false });
+
+    if (brush.empty()) {
+      // this.chart.selectAll('.CDB-Chart-bar').classed('is-selected', false);
+      this.removeSelection();
+      d3.select('.Brush').call(brush.extent([0, 0]));
+      console.log('click');
+      return;
+    } else {
+      var loBarIndex = this._getLoBarIndex();
+      var hiBarIndex = this._getHiBarIndex();
+
+      loPosition = this._getBarPosition(loBarIndex);
+      hiPosition = this._getBarPosition(hiBarIndex);
+
+      if (!d3.event.sourceEvent) {
+        return;
       }
 
-      if (d3.event.sourceEvent && loPosition === undefined && hiPosition === undefined) {
-        var barIndex = self._getBarIndex();
-
-        loPosition = self._getBarPosition(barIndex);
-        hiPosition = self._getBarPosition(barIndex + 1);
-
-        self.model.set({ lo_index: barIndex, hi_index: barIndex + 1 });
+      if (loBarIndex === hiBarIndex) {
+        if (hiBarIndex >= data.length) {
+          loPosition = this._getBarPosition(loBarIndex - 1);
+        } else {
+          hiPosition = this._getBarPosition(hiBarIndex + 1);
+        }
       }
-
-      self._setupFillColor();
-      self._refreshBarsColor();
+      this.model.set({ lo_index: loBarIndex, hi_index: hiBarIndex });
     }
 
-    this.brush
-      .on('brushstart', this._onBrushStart)
-      .on('brush', this._onBrushMove)
-      .on('brushend', onBrushEnd);
+    if (d3.event.sourceEvent && loPosition === undefined && hiPosition === undefined) {
+      var barIndex = this._getBarIndex();
 
-    this.chart.append('g')
-      .attr('class', 'Brush')
-      .call(this.brush)
-      .selectAll('rect')
-      .attr('class', 'ps-prevent-touchmove')
-      .attr('y', 0)
-      .attr('height', this.chartHeight())
-      .on('mouseout', this._onMouseOut)
-      .on('mousemove', this._onMouseMove);
+      loPosition = this._getBarPosition(barIndex);
+      hiPosition = this._getBarPosition(barIndex + 1);
+
+      this.model.set({ lo_index: barIndex, hi_index: barIndex + 1 });
+    }
+
+    this._setupFillColor();
+    this._refreshBarsColor();
+  },
+
+  _onMouseOut: function () {
+    var bars = this.chart.selectAll('.CDB-Chart-bar');
+
+    bars
+      .classed('is-highlighted', false)
+      .attr('fill', this._getFillColor.bind(this));
+    this.trigger('hover', { value: null });
+  },
+
+  _onMouseMove: function () {
+    var x = d3.event.offsetX;
+
+    var barIndex = Math.floor(x / this.barWidth);
+    var data = this.model.get('data');
+
+    if (data[barIndex] === undefined || data[barIndex] === null) {
+      return;
+    }
+
+    var freq = data[barIndex].freq;
+    var hoverProperties = {};
+
+    var bar = this.chart.select('.CDB-Chart-bar:nth-child(' + (barIndex + 1) + ')');
+
+    if (bar && bar.node() && !bar.classed('is-selected')) {
+      var left = (barIndex * this.barWidth) + (this.barWidth / 2);
+      var top = this.yScale(freq);
+      var h = this.chartHeight() - this.yScale(freq);
+
+      if (h < this.options.minimumBarHeight && h > 0) {
+        top = this.chartHeight() - this.options.minimumBarHeight;
+      }
+
+      if (!this._isDragging() && freq > 0) {
+        var d = formatter.formatNumber(freq);
+        hoverProperties = { top: top, left: left, data: d };
+      } else {
+        hoverProperties = null;
+      }
+    } else {
+      hoverProperties = null;
+    }
+
+    this.trigger('hover', hoverProperties);
+
+    this.chart.selectAll('.CDB-Chart-bar')
+      .classed('is-highlighted', false)
+      .attr('fill', this._getFillColor.bind(this));
+
+    if (bar && bar.node()) {
+      bar.attr('fill', function (d, i) {
+        return this._getHoverFillColor(data[barIndex], barIndex);
+      }.bind(this));
+      bar.classed('is-highlighted', true);
+    }
   },
 
   _adjustBrushHandles: function () {
@@ -892,14 +902,14 @@ module.exports = cdb.core.View.extend({
     this.rightHandle = this._generateHandle('right');
   },
 
-  _generateHandleLine: function () {
-    return this.chart.select('.CDB-Chart-handles').append('line')
-      .attr('class', 'CDB-Chart-handleLine')
-      .attr('x1', 0)
-      .attr('y1', 0)
-      .attr('x2', 0)
-      .attr('y2', this.chartHeight());
-  },
+  // _generateHandleLine: function () {
+  //   return this.chart.select('.CDB-Chart-handles').append('line')
+  //     .attr('class', 'CDB-Chart-handleLine')
+  //     .attr('x1', 0)
+  //     .attr('y1', 0)
+  //     .attr('x2', 0)
+  //     .attr('y2', this.chartHeight());
+  // },
 
   _removeHandles: function () {
     this.chart.select('.CDB-Chart-handles').remove();

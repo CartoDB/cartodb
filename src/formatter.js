@@ -40,6 +40,14 @@ format.formatDate = function (value) {
   return d3.time.format('%Y-%m-%d')(value);
 };
 
+format.formatTime = function (value) {
+  return d3.time.format('%H:%M:%S %d/%m/%Y')(value);
+};
+
+format.timeFactory = function (format) {
+  return d3.time.format(format);
+}
+
 format.formatValue = function (value) {
   if (_.isNumber(value)) {
     return format.formatNumber(value);

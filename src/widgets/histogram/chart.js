@@ -7,6 +7,11 @@ var tinycolor = require('tinycolor2');
 var formatter = require('../../formatter');
 var FILTERED_COLOR = '#1181FB';
 var UNFILTERED_COLOR = 'rgba(0, 0, 0, 0.06)';
+var TIP_RECT_HEIGHT = 19;
+var TIP_H_PADDING = 6;
+var TRIANGLE_SIDE = 8;
+// Equilateral triangle height formula
+var TRIANGLE_HEIGHT = Math.sqrt(Math.pow(TRIANGLE_SIDE, 2) - Math.pow(TRIANGLE_SIDE / 2, 2))
 
 module.exports = cdb.core.View.extend({
 
@@ -19,7 +24,7 @@ module.exports = cdb.core.View.extend({
     hasAxisTip: false,
     minimumBarHeight: 2,
     animationSpeed: 750,
-    handleWidth: 6,
+    handleWidth: 10,
     handleHeight: 23,
     handleRadius: 3,
     divisionWidth: 80,
@@ -51,6 +56,7 @@ module.exports = cdb.core.View.extend({
     this._dataviewModel = this.options.dataviewModel;
 
     this.canvas = d3.select(this.el)
+      .style('overflow', 'visible')
       .attr('width', 0)
       .attr('height', this.options.height);
 
@@ -65,6 +71,8 @@ module.exports = cdb.core.View.extend({
     this._setupFillColor();
 
     this.hide(); // will be toggled on width change
+
+    this.formatter = this.options.type === 'time' ? formatter.timeFactory('%H:%M:%S %d/%m/%Y') : formatter.formatNumber;
   },
 
   render: function () {
@@ -124,34 +132,49 @@ module.exports = cdb.core.View.extend({
     this._updateAxisTip('right');
   },
 
+  _overlap: function (first, second) {
+    var bFirst = first.node().getBoundingClientRect();
+    var bSecond = second.node().getBoundingClientRect();
+
+    return !(bFirst.right < bSecond.left || 
+                bFirst.left > bSecond.right ||
+                bFirst.bottom < bSecond.top || 
+                bFirst.top > bSecond.bottom);
+  },
+
   _updateAxisTip: function (className) {
     var textLabel = this.chart.select('.CDB-Chart-axisTipText.CDB-Chart-axisTip-' + className);
     var axisTip = this.chart.select('.CDB-Chart-axisTip.CDB-Chart-axisTip-' + className);
     var rectLabel = this.chart.select('.CDB-Chart-axisTipRect.CDB-Chart-axisTip-' + className);
     var handle = this.chart.select('.CDB-Chart-handle.CDB-Chart-handle-' + className);
+    var triangle = handle.select('.CDB-Chart-axisTipTriangle');
 
+    triangle.style('opacity', '1');
+    
     textLabel.data([this.model.get(className + '_axis_tip')]).text(function (d) {
-      return formatter.formatNumber(d);
-    });
+      return this.formatter(d);
+    }.bind(this));
 
-    var width = textLabel.node().getBBox().width;
-    rectLabel.attr('width', width + 4);
+    var textBBox = textLabel.node().getBBox();
+    var width = textBBox.width;
+    var height = axisTip.node().getBBox().height;
+    rectLabel.attr('width', width + TIP_H_PADDING);
+    textLabel.attr('dx', TIP_H_PADDING / 2);
+    textLabel.attr('dy', textBBox.height - Math.abs((textBBox.height - rectLabel.node().getBBox().height) / 2));
 
-    var parts = /translate\((\d*)/.exec(handle.attr('transform'));
-    var xPos = +parts[0] + 3;
+    var parts = d3.transform(handle.attr('transform')).translate;
+    var xPos = +parts[0] + (this.options.handleWidth / 2);
+
+    var yPos = className === 'left' ? -30 : 60;
 
     if ((xPos - width / 2) < 0) {
-      axisTip.attr('transform', 'translate(0, 52)');
-      textLabel.attr('dx', -xPos);
-      rectLabel.attr('x', -xPos);
+      axisTip.attr('transform', 'translate(-' + xPos + ',' + yPos + ' )');
     } else if ((xPos + width / 2 + 2) >= this.chartWidth()) {
-      axisTip.attr('transform', 'translate(0, 52)');
-      textLabel.attr('dx', this.chartWidth() - (xPos + width - 2));
-      rectLabel.attr('x', this.chartWidth() - (xPos + width));
+      var newX = this.chartWidth() - (xPos + width);
+      newX += this.options.handleWidth / 2;
+      axisTip.attr('transform', 'translate(' + newX + ', ' + yPos + ')');
     } else {
-      axisTip.attr('transform', 'translate(-' + (width / 2) + ', 52)');
-      rectLabel.attr('x', 0);
-      textLabel.attr('dx', +2);
+      axisTip.attr('transform', 'translate(-' + (width / 2) + ', ' + yPos + ')');
     }
   },
 
@@ -243,6 +266,7 @@ module.exports = cdb.core.View.extend({
   _showAxisTip: function (className) {
     var textLabel = this.chart.select('.CDB-Chart-axisTipText.CDB-Chart-axisTip-' + className);
     var rectLabel = this.chart.select('.CDB-Chart-axisTipRect.CDB-Chart-axisTip-' + className);
+    var triangle = this.chart.select('.CDB-Chart-axisTip-' + className + ' .CDB-Chart-axisTipTriangle');
 
     if (textLabel) {
       textLabel.transition().duration(200).attr('opacity', 1);
@@ -250,19 +274,11 @@ module.exports = cdb.core.View.extend({
     if (rectLabel) {
       rectLabel.transition().duration(200).attr('opacity', 1);
     }
-  },
-
-  _hideAxisTip: function (className) {
-    var textLabel = this.chart.select('.CDB-Chart-axisTipText.CDB-Chart-axisTip-' + className);
-    var rectLabel = this.chart.select('.CDB-Chart-axisTipRect.CDB-Chart-axisTip-' + className);
-
-    if (textLabel) {
-      textLabel.transition().duration(200).attr('opacity', 0);
-    }
-    if (rectLabel) {
-      rectLabel.transition().duration(200).attr('opacity', 0);
+    if (triangle) {
+      triangle.transition().duration(200).attr('opacity', 1);
     }
   },
+
 
   _updateAxisTipOpacity: function (className) {
     if (this.model.get('dragging')) {
@@ -525,16 +541,21 @@ module.exports = cdb.core.View.extend({
     this._onWindowResize();
   },
 
+  _getData: function () {
+    return (this._originalData && this._originalData.getData()) || this.model.get('data');
+  },
+
+  _getMaxData: function (data) {
+    return d3.max(data, function (d) { return _.isEmpty(d) ? 0 : d.freq; });
+  },
+
   _getXScale: function () {
     return d3.scale.linear().domain([0, 100]).range([0, this.chartWidth()]);
   },
 
   _getYScale: function () {
-    var data = (this._originalData && this._originalData.getData()) || this.model.get('data');
-    if (this.model.get('normalized')) {
-      data = this.model.get('data');
-    }
-    return d3.scale.linear().domain([0, d3.max(data, function (d) { return _.isEmpty(d) ? 0 : d.freq; })]).range([this.chartHeight(), 0]);
+    var data = this.model.get('normalized') ? this.model.get('data') : this._getData();
+    return d3.scale.linear().domain([0, this._getMaxData(data)]).range([this.chartHeight(), 0]);
   },
 
   updateXScale: function () {
@@ -795,6 +816,11 @@ module.exports = cdb.core.View.extend({
       .attr('height', this.chartHeight())
       .on('mouseout', this._onMouseOut)
       .on('mousemove', this._onMouseMove);
+
+    // Make grabby handles as big as the display handles
+    this.chart.selectAll('g.resize rect')
+      .attr('width', this.options.handleWidth)
+      .attr('x', -this.options.handleWidth / 2);
   },
 
   _adjustBrushHandles: function () {
@@ -813,28 +839,46 @@ module.exports = cdb.core.View.extend({
       .attr('transform', 'translate(' + rightX + ', 0)');
 
     if (this.options.hasAxisTip) {
-      this.model.set({
-        left_axis_tip: this.xAxisScale(leftX + 3),
-        right_axis_tip: this.xAxisScale(rightX + 3)
-      });
+      if (this.options.type === 'time') {
+        this.model.set({
+          left_axis_tip: this.xAxisScale.invert(leftX + this.options.handleWidth / 2),
+          right_axis_tip: this.xAxisScale.invert(rightX + this.options.handleWidth / 2)
+        });
+      } else {
+        this.model.set({
+            left_axis_tip: this.xAxisScale(leftX + this.options.handleWidth / 2),
+            right_axis_tip: this.xAxisScale(rightX + this.options.handleWidth / 2)
+        });
+      }
     }
   },
 
   _generateAxisTip: function (className) {
     var handle = this.chart.select('.CDB-Chart-handle.CDB-Chart-handle-' + className);
 
+    var yPos = className === 'right' ? 60 : -30;
+    var yOffset = className === 'right' ? 60 : -12;
+    var sign = className === 'right' ? '-' : ' ';
+
     var axisTip = handle.selectAll('g')
       .data([''])
       .enter().append('g')
       .attr('class', 'CDB-Chart-axisTip CDB-Chart-axisTip-' + className)
-      .attr('transform', function (d, i) { return 'translate(0,52)'; });
+      .attr('transform', 'translate(0,' + yPos + ')');
 
-    this.rectLabel = axisTip.append('rect')
+    var triangle = handle.append('path')
+      .attr('class', 'CDB-Chart-axisTipRect CDB-Chart-axisTipTriangle')
+      .attr('transform', 'translate(' + ((this.options.handleWidth / 2) - 4) + ', ' + yOffset + ')')
+      .attr('d', 'M 0 0 L ' + TRIANGLE_SIDE + ' 0 L ' + (TRIANGLE_SIDE / 2) + sign + TRIANGLE_HEIGHT + ' L 0 0 z')
+      .style('opacity', '0');
+
+    var rectLabel = axisTip.append('rect')
       .attr('class', 'CDB-Chart-axisTipRect CDB-Chart-axisTip-' + className)
-      .attr('height', 12)
-      .attr('width', 10);
+      .attr('rx', "2")
+      .attr('ry', "2")
+      .attr('height', TIP_RECT_HEIGHT);
 
-    this.textLabel = axisTip.append('text')
+    var textLabel = axisTip.append('text')
       .attr('class', 'CDB-Text CDB-Size-small CDB-Chart-axisTipText CDB-Chart-axisTip-' + className)
       .attr('dy', '11')
       .attr('dx', '0')
@@ -853,25 +897,17 @@ module.exports = cdb.core.View.extend({
       this._generateAxisTip(className);
     }
 
-    handle
-      .append('line')
-      .attr('class', 'CDB-Chart-handleLine')
-      .attr('x1', 3)
-      .attr('y1', -4)
-      .attr('x2', 3)
-      .attr('y2', this.chartHeight() + 4);
-
     if (this.options.hasHandles) {
       handle
         .append('rect')
         .attr('class', 'CDB-Chart-handleRect')
-        .attr('transform', 'translate(0, ' + yPos + ')')
         .attr('width', opts.width)
-        .attr('height', opts.height)
+        .attr('height', this.chartHeight())
         .attr('rx', opts.radius)
         .attr('ry', opts.radius);
 
-      var y = 21; // initial position of the first grip
+      var y = this.chartHeight() / 2;
+      y -= 3;
 
       for (var i = 0; i < 3; i++) {
         handle
@@ -879,7 +915,7 @@ module.exports = cdb.core.View.extend({
           .attr('class', 'CDB-Chart-handleGrip')
           .attr('x1', 2)
           .attr('y1', y + i * 3)
-          .attr('x2', 4)
+          .attr('x2', opts.width - 2)
           .attr('y2', y + i * 3);
       }
     }
@@ -1288,7 +1324,7 @@ module.exports = cdb.core.View.extend({
   },
 
   _generateShadowBars: function () {
-    var data = this._originalData && this._originalData.getData() || this.model.get('data');
+    var data = this._getData();
 
     if (!data || !data.length || !this.model.get('show_shadow_bars') || this.model.get('normalized')) {
       this._removeShadowBars();
@@ -1299,7 +1335,7 @@ module.exports = cdb.core.View.extend({
 
     var self = this;
 
-    var yScale = d3.scale.linear().domain([0, d3.max(data, function (d) { return _.isEmpty(d) ? 0 : d.freq; })]).range([this.chartHeight(), 0]);
+    var yScale = d3.scale.linear().domain([0, this._getMaxData(data)]).range([this.chartHeight(), 0]);
 
     var barWidth = this.chartWidth() / data.length;
 

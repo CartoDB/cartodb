@@ -205,6 +205,12 @@ More information at [Dropbox migration guide](https://www.dropbox.com/developers
 * Improved analysis error tooltip (#12250)
 
 ### Bug fixes
+* Update Data Observatory Analysis UI (#9991)
+* Boolean fields are visible in the filter by column value analysis (#11546)
+* Fixed legend's color mismatch with empty values (#11632)
+* Fixed overlay for legends view (#11825)
+* Fixed UI when editing merge analysis (#10850)
+* Fixed uninitialized constant in Carto::Visualization when a viewer shares a visualization (#12129).
 * Revamp grunt default task to compile assets (#12325)
 * Made checkboxes actionable clicking on its label (#11535)
 * Google customers don't need quota checks for hires geocoding (support/#674)

@@ -4,6 +4,7 @@
 @import '../cartoassets/entry';
 @import '../colorpicker/bootstrap-colorpicker/bootstrap-colorpicker';
 
+@import 'vars';
 @import 'fill/fill';
 @import 'fill/input-color-category';
 @import 'fill/ramps';
@@ -60,5 +61,6 @@
 @import 'table';
 @import 'tag';
 @import 'tipsy-tooltip';
-@import 'vars';
 @import 'widget-list';
+@import 'range-slider';
+@import 'data-observatory-form';

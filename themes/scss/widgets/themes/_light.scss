@@ -25,6 +25,7 @@ $chartHandleGrip: rgba(#CCC, 1);
 $chartLine: rgba(#EEE, 1);
 $chartAxis: rgba(#979EA1, 1);
 $chartMiniSelected: rgba(#333, 1);
+$timeSliderBorder: rgba(#fff, 1);
 
 .CDB-Widget--light {
   border-color: $canvasBkg;
@@ -258,8 +259,8 @@ $chartMiniSelected: rgba(#333, 1);
   // TimeSlider
   .CDB-TimeSlider {
     fill: $link;
-    stroke-width: 32px;
-    stroke: transparent;
+    stroke-width: 1px;
+    stroke: $timeSliderBorder;
   }
 
   .CDB-Dropdown {

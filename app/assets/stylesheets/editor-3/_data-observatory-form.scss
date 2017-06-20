@@ -1,14 +1,19 @@
 @import 'cdb-variables/colors';
 
-.data-observatory-add-measure {
+.DataObservatory-addMeasure {
   width: 100%;
 }
 
-.data-observatory-license {
+.DataObservatory-addMeasure .is-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.DataObservatory-license {
   white-space: normal;
 }
 
-.data-observatory-count {
+.DataObservatory-count {
   padding: 8px 16px;
   border-bottom: 1px solid $cMainLine;
 }

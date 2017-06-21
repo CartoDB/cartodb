@@ -21,6 +21,6 @@
 
 <div class="js-license CDB-Text CDB-FontSize-small u-altTextColor u-tSpace u-bSpace u-isHidden u-flex">
   <a href="https://cartodb.github.io/bigmetadata/licenses.html" target="_blank">
-    <span class="u-tSpace u-bSpace data-observatory-license"></span>
+    <span class="u-tSpace u-bSpace DataObservatory-license"></span>
   </a>
 </div>

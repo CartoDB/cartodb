@@ -1148,6 +1148,7 @@
     "backbone-forms": {
       "select": {
         "placeholder": "Select a %{keyAttr}",
+        "disabled-placeholder": "Enable %{keyAttr}",
         "loading": "loading…",
         "empty": "No values",
         "selected": "%{count} selected",

@@ -9,8 +9,6 @@ var template = require('./template.tpl');
  */
 module.exports = cdb.core.View.extend({
 
-  _WIDGET_BOTTOM_PADDING: 20,
-
   className: 'CDB-Dropdown',
 
   events: {
@@ -32,14 +30,23 @@ module.exports = cdb.core.View.extend({
   },
 
   render: function () {
-    this.$el.html(template(_.defaults({},
-      this.model.attributes,
-      { flags: this.options.flags || {} }, {
+    var flags = _.defaults(
+      this.options.flags || {}, {
+        canCollapse: true
+      }
+    );
+
+    var templateData = _.defaults({},
+      this.model.attributes, {
+        flags: flags
+      }, {
         'normalized': false,
         'collapsed': false,
         'show_options': false
       }
-    )));
+    );
+
+    this.$el.html(template(templateData));
     return this;
   },
 
@@ -48,9 +55,7 @@ module.exports = cdb.core.View.extend({
 
     this.model.bind('change:widget_dropdown_open', this._onChangeOpen, this);
 
-    this._$container.delegate(this._target, 'click',
-      _.bind(this._toggleClick, this)
-    );
+    this._$container.delegate(this._target, 'click', _.bind(this._toggleClick, this));
   },
 
   _removeWidget: function () {
@@ -121,16 +126,24 @@ module.exports = cdb.core.View.extend({
   },
 
   _adjustVerticalPosition: function () {
-    var bodyHeight = $('body').height();
-    var bottom = this.$el.offset().top + this.$el.height();
+    if (this._getDropdownBottom() > this._getBodyHeight()) {
+      this.$el.addClass('has-top-position');
+    }
+  },
 
-    this.$el.toggleClass('has-top-position', bottom + this._WIDGET_BOTTOM_PADDING > bodyHeight);
+  _getDropdownBottom: function () {
+    return this.$el.offset().top + this.$el.height();
+  },
+
+  _getBodyHeight: function () {
+    return $('body').height();
   },
 
   _close: function () {
     this._unbindESC();
     this._unbindGlobalClick();
     this.$el.hide();
+    this.$el.removeClass('has-top-position');
   },
 
   _toggleClick: function () {

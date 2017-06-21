@@ -5,6 +5,17 @@ var _ = require('underscore');
  * Model for a time-series widget
  */
 module.exports = WidgetModel.extend({
+  defaults: {
+    normalized: true
+  },
+
+  defaultState: _.extend(
+    {
+      normalized: false
+    },
+    WidgetModel.prototype.defaultState
+  ),
+
   getState: function () {
     var state = WidgetModel.prototype.getState.call(this);
     var start = this.dataviewModel.get('start');

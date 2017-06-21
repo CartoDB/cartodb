@@ -20,6 +20,7 @@
 }
 .CDB-Widget-timeSeriesTimeInfo {
   margin-left: $baseSize * 2;
+  margin-right: $baseSize;
   white-space: nowrap;
 }
 .CDB-Widget-timeSeriesTimeInfo--fake {
@@ -41,10 +42,6 @@
   @include flex-grow(1);
   display: inline-block;
   margin-right: $baseSize / 4;
-}
-
-.CDB-Widget-header--timeSeries {
-  margin-bottom: $baseSize + 4;
 }
 
 @media (max-width: 759px) {

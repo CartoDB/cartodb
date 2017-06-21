@@ -366,6 +366,10 @@ describe('widgets-service', function () {
         expect(this.widgetModel.dataviewModel.get('type')).toEqual('histogram');
       });
 
+      it('should have normalized attribute', function () {
+        expect(this.widgetModel.get('normalized')).toBeDefined();
+      });
+
       it('should enable dataview by default', function () {
         expect(this.widgetModel.dataviewModel.get('sync_on_bbox_change')).toBe(true);
         expect(this.widgetModel.dataviewModel.get('sync_on_data_change')).toBe(true);

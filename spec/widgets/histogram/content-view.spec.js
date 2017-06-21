@@ -235,6 +235,13 @@ describe('widgets/histogram/content-view', function () {
       expect(this.view.$('.CDB-Widget-info').length).toBe(1);
     });
 
+    it('should show source when show_source is true', function () {
+      expect(this.view.$('.CDB-Widget-info').length).toBe(0);
+      this.model.set('show_source', true);
+      this.view.render();
+      expect(this.view.$('.CDB-Widget-info').length).toBe(1);
+    });
+
     it('should collapse properly', function () {
       expect(this.view.$('.CDB-Widget-content').length).toBe(1);
       this.widgetModel.set('collapsed', true);

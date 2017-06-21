@@ -56,4 +56,11 @@ describe('widgets/formula/content-view', function () {
     this.view.render();
     expect(this.view.$('.CDB-Widget-info').length).toBe(1);
   });
+
+  it('should render widget source if show_source is enabled', function () {
+    expect(this.view.$('.CDB-Widget-info').length).toBe(0);
+    this.model.set('show_source', true);
+    this.view.render();
+    expect(this.view.$('.CDB-Widget-info').length).toBe(1);
+  });
 });

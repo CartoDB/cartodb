@@ -273,7 +273,8 @@
       },
       "search-by-name": "Search by name...",
       "errors": {
-        "measurement-required": "Measurement is required."
+        "measurement-required": "Measurement is required",
+        "measurement-twice": "Two or more measurements are equal"
       }
     },
     "merge": {

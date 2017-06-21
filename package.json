@@ -18,17 +18,19 @@
     "Raul Ochoa <rochoa@cartodb.com>",
     "Nicklas Gummesson <nicklas@cartodb.com>",
     "Pablo Alonso <pablo@cartodb.com>",
-    "Antonio Santiago Pérez <asantiago@cartodb.com>"
+    "Antonio Santiago Pérez <asantiago@cartodb.com>",
+    "Carlos Matallín <matallo@carto.com>"
   ],
   "license": "BSD-3-Clause",
   "dependencies": {
     "backbone": "1.2.3",
     "cartocolor": "4.0.0",
-    "cartodb.js": "CartoDB/cartodb.js#v4",
+    "cartodb.js": "CartoDB/cartodb.js#9956-widgets-color",
     "d3": "3.5.17",
     "d3-interpolate": "1.1.2",
     "jquery": "2.1.4",
     "moment": "2.10.6",
+    "node-polyglot": "^2.2.2",
     "perfect-scrollbar": "git://github.com/CartoDB/perfect-scrollbar.git#master",
     "tinycolor2": "1.4.1",
     "underscore": "1.8.3",
@@ -37,7 +39,7 @@
   "devDependencies": {
     "browserify": "13.0.0",
     "browserify-resolutions": "1.1.0",
-    "cartoassets": "CartoDB/CartoAssets#master",
+    "cartoassets": "CartoDB/CartoAssets#9956-widgets-color",
     "grunt": "0.4.5",
     "grunt-aws": "^0.4.0",
     "grunt-browserify": "5.0.0",

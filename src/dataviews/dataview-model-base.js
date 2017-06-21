@@ -321,7 +321,7 @@ module.exports = Model.extend({
 
   getSourceType: function () {
     var sourceAnalysis = this.getSource();
-    return sourceAnalysis.get('type');
+    return sourceAnalysis && sourceAnalysis.get('type');
   },
 
   getSource: function () {

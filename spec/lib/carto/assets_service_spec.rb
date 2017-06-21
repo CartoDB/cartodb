@@ -7,8 +7,8 @@ describe Carto::AssetsService do
       IO.stubs(:copy_stream).returns(max_size + 1)
 
       expect {
-        Carto::AssetsService.new.fetch_file(Tempfile.new('manolo'))
-      }.to raise_error(Carto::UnprocesableEntityError)
+        Carto::AssetsService.new.fetch_file(Tempfile.new(['manolo', '.png']))
+      }.to raise_error(Carto::UnprocesableEntityError, "resource is too big (> #{max_size} bytes)")
     end
 
     it 'keeps original extension' do
@@ -29,7 +29,7 @@ describe Carto::AssetsService do
 
       expect {
         Carto::AssetsService.new.fetch_file(uploaded_file)
-      }.to raise_error(Carto::UnprocesableEntityError)
+      }.to raise_error(Carto::UnprocesableEntityError, "extension not accepted")
     end
   end
 end

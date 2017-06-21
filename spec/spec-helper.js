@@ -10,5 +10,9 @@ module.exports = {
       },
       layers: [{type: 'cartodb'}, {type: 'torque'}]
     });
+  },
+
+  _t: function (attrs) {
+    return attrs;
   }
 };

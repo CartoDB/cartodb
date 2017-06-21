@@ -102,7 +102,7 @@ describe('widgets/category/stats-view', function () {
       expect(this.view.$el.css('display')).not.toBe('none');
     });
 
-    it('should hide stats if show_stats attribute is enabled', function () {
+    it('should hide stats if show_stats attribute is not enabled', function () {
       this.widgetModel.set('show_stats', false);
       expect(this.view.$el.css('display')).toBe('none');
     });

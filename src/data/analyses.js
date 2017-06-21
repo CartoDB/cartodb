@@ -1,5 +1,3 @@
-var _ = require('underscore');
-
 var MAP = {
   'aggregate-intersection': {
     title: _t('analyses.aggregate-intersection.short-title'),

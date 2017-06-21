@@ -3,6 +3,7 @@
 require 'spec_helper_min'
 require 'helpers/storage_helper'
 require 'helpers/subdomainless_helper'
+require 'models/assets_shared_examples'
 
 describe Carto::Asset do
   # Needed so subdomainless_helper works
@@ -28,6 +29,10 @@ describe Carto::Asset do
 
   let(:public_url) do
     'https://manolo.es/es/co/bar'
+  end
+
+  it_behaves_like 'Asset models' do
+    let(:asset_class) { Carto::Asset }
   end
 
   describe('#.for_organization') do

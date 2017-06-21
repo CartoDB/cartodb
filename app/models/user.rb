@@ -230,7 +230,7 @@ class User < Sequel::Model
 
   ## Callbacks
   def before_validation
-    self.email = clean_email(email)
+    self.email = clean_email(email.to_s)
     self.geocoding_quota ||= DEFAULT_GEOCODING_QUOTA
     self.here_isolines_quota ||= DEFAULT_HERE_ISOLINES_QUOTA
     self.obs_snapshot_quota ||= DEFAULT_OBS_SNAPSHOT_QUOTA

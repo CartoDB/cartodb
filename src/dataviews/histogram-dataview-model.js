@@ -8,8 +8,7 @@ module.exports = DataviewModelBase.extend({
 
   defaults: _.extend(
     {
-      type: 'histogram',
-      bins: 10
+      type: 'histogram'
     },
     DataviewModelBase.prototype.defaults
   ),
@@ -23,13 +22,16 @@ module.exports = DataviewModelBase.extend({
     if (_.isNumber(this.get('own_filter'))) {
       params.push('own_filter=' + this.get('own_filter'));
     } else {
-      if (_.isNumber(this.get('start'))) {
-        params.push('start=' + this.get('start'));
+      // if (_.isNumber(this.get('start'))) {
+      //   params.push('start=' + this.get('start'));
+      // }
+      // if (_.isNumber(this.get('end'))) {
+      //   params.push('end=' + this.get('end'));
+      // }
+      if (this.get('aggregation')) {
+        params.push('aggregation=' + this.get('aggregation'));
       }
-      if (_.isNumber(this.get('end'))) {
-        params.push('end=' + this.get('end'));
-      }
-      if (_.isNumber(parseInt(this.get('bins'), 10))) {
+      if (this.get('bins')) {
         params.push('bins=' + this.get('bins'));
       }
     }
@@ -43,6 +45,8 @@ module.exports = DataviewModelBase.extend({
     // Internal model for calculating all the data in the histogram (without filters)
     this._unfilteredData = new HistogramDataModel({
       bins: this.get('bins'),
+      aggregation: this.get('aggregation'),
+      column_type: this.get('column_type'),
       apiKey: this.get('apiKey'),
       authToken: this.get('authToken')
     });
@@ -61,8 +65,10 @@ module.exports = DataviewModelBase.extend({
     }, this);
 
     this.listenTo(this.layer, 'change:meta', this._onChangeLayerMeta);
-    this.on('change:column', this._reloadVisAndForceFetch, this);
-    this.on('change:bins change:start change:end', this._fetchAndResetFilter, this);
+    this.on('change:column', this._onColumnChanged, this);
+    this.on('change:start change:end', this._fetchAndResetFilter, this);
+    this.on('change:bins', this._onBinsChanged, this);
+    this.on('change:aggregation', this._onAggregationChanged, this);
     if (attrs && (attrs.min || attrs.max)) {
       this.filter.setRange(this.get('min'), this.get('max'));
     }
@@ -175,13 +181,16 @@ module.exports = DataviewModelBase.extend({
   },
 
   toJSON: function (d) {
+    var options = {
+      column: this.get('column'),
+      aggregation: this.get('aggregation'),
+      bins: this.get('bins')
+    };
+
     return {
       type: 'histogram',
       source: { id: this.getSourceId() },
-      options: {
-        column: this.get('column'),
-        bins: this.get('bins')
-      }
+      options: options
     };
   },
 
@@ -197,6 +206,23 @@ module.exports = DataviewModelBase.extend({
     this.fetch();
     this.disableFilter();
     this.filter.unsetRange();
+  },
+
+  _onColumnChanged: function () {
+    this._reloadVisAndForceFetch();
+  },
+
+  _onBinsChanged: function () {
+    if (this.get('bins')) {
+      this._fetchAndResetFilter();
+    }
+  },
+
+  _onAggregationChanged: function() {
+    if (this.get('aggregation')) {
+      this._fetchAndResetFilter();
+    }
+    this._unfilteredData.setAggregation(this.get('aggregation'));
   }
 },
 
@@ -207,7 +233,8 @@ module.exports = DataviewModelBase.extend({
       'column_type',
       'bins',
       'min',
-      'max'
+      'max',
+      'aggregation'
     ])
   }
 );

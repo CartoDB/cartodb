@@ -14,9 +14,13 @@ module.exports = Model.extend({
   },
 
   url: function () {
-    var params = [
-      'bins=' + this.get('bins')
-    ];
+    var params = [];
+    if (this.get('aggregation')) {
+      params.push('aggregation=' + this.get('aggregation'));
+    }
+    if (this.get('bins')) {
+      params.push('bins=' + this.get('bins'));
+    }
     if (this.get('apiKey')) {
       params.push('api_key=' + this.get('apiKey'));
     } else if (this.get('authToken')) {
@@ -33,8 +37,9 @@ module.exports = Model.extend({
   },
 
   initialize: function () {
+    console.log('Datamodel initialize. Column type: ' + this.get('column_type'));
     this.sync = BackboneAbortSync.bind(this);
-    this.bind('change:url change:bins', function () {
+    this.bind('change:url change:bins change:aggregation', function () {
       this.fetch();
     }, this);
   },
@@ -46,11 +51,16 @@ module.exports = Model.extend({
     this.set('url', url);
   },
 
-  setBins: function (num) {
-    if (!num) {
-      throw new Error('bins not specified');
-    }
-    this.set('bins', num);
+  setBins: function (bins) {
+    this.set('bins', bins, { silent: bins !== void 0 });
+  },
+
+  setColumnType: function (columnType) {
+    this.set('column_type', columnType);
+  },
+
+  setAggregation: function (aggregation) {
+    this.set('aggregation', aggregation, { silent: aggregation !== void 0 });
   },
 
   getData: function () {

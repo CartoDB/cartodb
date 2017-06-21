@@ -63,13 +63,6 @@ describe Carto::SamlService do
 
         user.delete
       end
-
-      it 'returns a downcased user email (matches User.before_validation behaviour)' do
-        response_mock.stubs(:is_valid?).returns(true)
-        response_mock.stubs(:attributes).returns(saml_config[:email_attribute] => ' Juan.Perez@example.com')
-
-        service.get_user_email(saml_response_param_mock).should eq 'juan.perez@example.com'
-      end
     end
 
     def create_test_saml_user

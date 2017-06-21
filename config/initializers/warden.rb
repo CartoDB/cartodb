@@ -1,4 +1,5 @@
 require_dependency 'carto/user_authenticator'
+require_dependency 'carto/email_cleaner'
 
 Rails.configuration.middleware.use RailsWarden::Manager do |manager|
   manager.default_strategies :password, :api_authentication
@@ -30,6 +31,7 @@ end
 
 Warden::Strategies.add(:password) do
   include Carto::UserAuthenticator
+  include Carto::EmailCleaner
   include LoginEventTrigger
 
   def valid_password_strategy_for_user(user)
@@ -38,7 +40,7 @@ Warden::Strategies.add(:password) do
 
   def authenticate!
     if params[:email] && params[:password]
-      if (user = authenticate(params[:email], params[:password]))
+      if (user = authenticate(clean_email(params[:email]), params[:password]))
         if user.enabled? && valid_password_strategy_for_user(user)
           trigger_login_event(user)
 
@@ -109,6 +111,7 @@ end
 
 Warden::Strategies.add(:github_oauth) do
   include LoginEventTrigger
+  include Carto::EmailCleaner
 
   def valid_github_oauth_strategy_for_user(user)
     user.organization.nil? || user.organization.auth_github_enabled
@@ -120,7 +123,7 @@ Warden::Strategies.add(:github_oauth) do
       github_id = github_api.id
       user = User.where(github_user_id: github_id).first
       unless user
-        user = User.where(email: github_api.email, github_user_id: nil).first
+        user = User.where(email: clean_email(github_api.email), github_user_id: nil).first
         if user && valid_github_oauth_strategy_for_user(user)
           user.github_user_id = github_id
           user.save
@@ -243,6 +246,7 @@ end
 
 Warden::Strategies.add(:saml) do
   include LoginEventTrigger
+  include Carto::EmailCleaner
 
   def organization_from_request
     subdomain = CartoDB.extract_subdomain(request)
@@ -261,7 +265,7 @@ Warden::Strategies.add(:saml) do
     organization = organization_from_request
     saml_service = Carto::SamlService.new(organization)
 
-    email = saml_service.get_user_email(params[:SAMLResponse])
+    email = clean_email(saml_service.get_user_email(params[:SAMLResponse]))
     user = organization.users.where(email: email).first
 
     if user

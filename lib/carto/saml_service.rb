@@ -18,7 +18,7 @@ module Carto
 
     def get_user_email(saml_response_param)
       response = get_saml_response(saml_response_param)
-      response.is_valid? && email_from_saml_response(response).try(:strip).try(:downcase)
+      response.is_valid? && email_from_saml_response(response)
     rescue OneLogin::RubySaml::ValidationError
       debug_response("Invalid SAML response", response)
     end

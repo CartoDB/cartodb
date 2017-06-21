@@ -76,7 +76,6 @@ module Carto
     private
 
     def email_from_saml_response(saml_response)
-      CartoDB::Logger.info(message: 'SAML attributes', attributes: saml_response.attributes.to_h)
       email = saml_response.attributes[email_attribute]
 
       email.present? ? email : debug_response("SAML response lacks email", saml_response)
@@ -88,7 +87,8 @@ module Carto
         response_settings: response.settings.to_json,
         response_options: response.options,
         response_errors: response.errors,
-        response_body: response.response
+        response_body: response.response,
+        response_attributes: response.attributes.try(:to_h)
       )
       nil
     end

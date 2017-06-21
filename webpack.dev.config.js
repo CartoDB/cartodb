@@ -67,6 +67,10 @@ module.exports = env => {
         $: 'jquery',
         jQuery: 'jquery',
         ['window.jQuery']: 'jquery'
+      }),
+
+      new webpack.DefinePlugin({
+        __IN_DEV__: JSON.stringify(true)
       })
     ])
     .filter(p => !!p), // undefined is not a valid plugin, so filter undefined values here

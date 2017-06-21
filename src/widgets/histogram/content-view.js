@@ -8,6 +8,8 @@ var template = require('./content.tpl');
 var DropdownView = require('../dropdown/widget-dropdown-view');
 var AnimateValues = require('../animate-values.js');
 var animationTemplate = require('./animation-template.tpl');
+var layerColors = require('../../util/layer-colors');
+var analyses = require('../../data/analyses');
 
 /**
  * Widget content view for a histogram
@@ -221,12 +223,21 @@ module.exports = cdb.core.View.extend({
     var originalData = this._originalData.getData();
     var isDataEmpty = !_.size(data) && !_.size(originalData);
 
+    var sourceId = this._dataviewModel.get('source').id;
+    var letter = layerColors.letter(sourceId);
+    var sourceColor = layerColors.getColorForLetter(letter);
+
     this.$el.html(
       template({
         title: this.model.get('title'),
+        sourceId: sourceId,
+        sourceType: analyses.title(this._dataviewModel.getSourceType()),
         showStats: this.model.get('show_stats'),
+        showSource: this.model.get('show_source') && letter !== '',
         itemsCount: !isDataEmpty ? data.length : '-',
-        isCollapsed: !!this.model.get('collapsed')
+        isCollapsed: !!this.model.get('collapsed'),
+        sourceColor: sourceColor,
+        layerName: this._dataviewModel.get('layerName')
       })
     );
 

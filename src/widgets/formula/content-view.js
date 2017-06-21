@@ -6,6 +6,8 @@ var template = require('./template.tpl');
 var DropdownView = require('../dropdown/widget-dropdown-view');
 var animationTemplate = require('./animation-template.tpl');
 var AnimateValues = require('../animate-values.js');
+var layerColors = require('../../util/layer-colors');
+var analyses = require('../../data/analyses');
 
 /**
  * Default widget content view:
@@ -47,10 +49,17 @@ module.exports = cdb.core.View.extend({
     var prefix = this.model.get('prefix');
     var suffix = this.model.get('suffix');
 
+    var sourceId = this._dataviewModel.get('source').id;
+    var letter = layerColors.letter(sourceId);
+    var sourceColor = layerColors.getColorForLetter(letter);
+
     this.$el.html(
       template({
         title: this.model.get('title'),
+        sourceId: sourceId,
+        sourceType: analyses.title(this._dataviewModel.getSourceType()),
         showStats: this.model.get('show_stats'),
+        showSource: this.model.get('show_source') && letter !== '',
         operation: this._dataviewModel.get('operation'),
         value: value,
         formatedValue: format(value),
@@ -58,7 +67,9 @@ module.exports = cdb.core.View.extend({
         nulls: nulls,
         prefix: prefix,
         suffix: suffix,
-        isCollapsed: isCollapsed
+        isCollapsed: isCollapsed,
+        sourceColor: sourceColor,
+        layerName: this._dataviewModel.get('layerName')
       })
     );
 

@@ -54,7 +54,7 @@ WidgetsService.prototype.createCategoryModel = function (attrs, layer, state) {
   attrs = _.extend(attrs, state, {hasInitialState: this._widgetsCollection.hasInitialState()}); // Will overwrite preset attributes with the ones passed on the state
   var dataviewModel = this._dataviews.createCategoryModel(layer, attrs);
 
-  var attrsNames = ['id', 'title', 'order', 'collapsed', 'prefix', 'suffix', 'show_stats', 'style', 'hasInitialState'];
+  var attrsNames = ['id', 'title', 'order', 'collapsed', 'prefix', 'suffix', 'show_stats', 'show_source', 'style', 'hasInitialState'];
   var widgetAttrs = _.pick(attrs, attrsNames);
   var options = makeWidgetStyleOptions(attrs);
 
@@ -82,7 +82,7 @@ WidgetsService.prototype.createHistogramModel = function (attrs, layer, state, o
   var dataAttrs = _.extend(attrs, state, {hasInitialState: this._widgetsCollection.hasInitialState()}); // Will overwrite preset attributes with the ones passed on the state
   var dataviewModel = this._dataviews.createHistogramModel(layer, dataAttrs);
 
-  var attrsNames = ['id', 'title', 'order', 'collapsed', 'bins', 'show_stats', 'normalized', 'style', 'hasInitialState'];
+  var attrsNames = ['id', 'title', 'order', 'collapsed', 'bins', 'show_stats', 'show_source', 'normalized', 'style', 'hasInitialState'];
   var widgetAttrs = _.pick(attrs, attrsNames);
   var options = makeWidgetStyleOptions(attrs);
 
@@ -111,7 +111,7 @@ WidgetsService.prototype.createFormulaModel = function (attrs, layer, state) {
   attrs = _.extend(attrs, state, {hasInitialState: this._widgetsCollection.hasInitialState()}); // Will overwrite preset attributes with the ones passed on the state
   var dataviewModel = this._dataviews.createFormulaModel(layer, attrs);
 
-  var attrsNames = ['id', 'title', 'order', 'collapsed', 'prefix', 'suffix', 'show_stats', 'description', 'hasInitialState'];
+  var attrsNames = ['id', 'title', 'order', 'collapsed', 'prefix', 'suffix', 'show_stats', 'show_source', 'description', 'hasInitialState'];
   var widgetAttrs = _.pick(attrs, attrsNames);
   widgetAttrs.type = 'formula';
   widgetAttrs.attrsNames = attrsNames;
@@ -138,7 +138,7 @@ WidgetsService.prototype.createListModel = function (attrs, layer) {
 
   var dataviewModel = this._dataviews.createListModel(layer, attrs);
 
-  var attrsNames = ['id', 'title', 'order', 'columns_title', 'show_stats'];
+  var attrsNames = ['id', 'title', 'order', 'columns_title', 'show_stats', 'show_source'];
   var widgetAttrs = _.pick(attrs, attrsNames);
   widgetAttrs.type = 'list';
   widgetAttrs.attrsNames = attrsNames;

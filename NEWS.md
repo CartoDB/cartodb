@@ -7,6 +7,7 @@ Development
 * New force param in EUMAPI organization users destroy operation to force deletion even with unregistered tables (#11654).
 * Removed the usage of the `organizations_admin` feature flag (#12131)
 * Show number of selected items in Time-Series widgets (#12179).
+* Add source to widgets (#12369).
 
 ### Bug fixes / enhancements
 * Validate widget form when widget type changes (#11536)

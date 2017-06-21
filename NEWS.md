@@ -8,6 +8,7 @@ Development
 * Removed the usage of the `organizations_admin` feature flag (#12131)
 
 ### Bug fixes / enhancements
+* Don't try to lowercase null values in custom-list-collection object (support/#744)
 * Validate widget form when widget type changes (#11536)
 * Updated text of widget tooltips (#11467)
 * Fixed error where analysis overlay/infobox wasn't shown when hiding a layer (#11767)

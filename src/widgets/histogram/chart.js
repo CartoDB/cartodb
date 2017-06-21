@@ -11,7 +11,9 @@ var TIP_RECT_HEIGHT = 19;
 var TIP_H_PADDING = 6;
 var TRIANGLE_SIDE = 8;
 // Equilateral triangle height formula
-var TRIANGLE_HEIGHT = Math.sqrt(Math.pow(TRIANGLE_SIDE, 2) - Math.pow(TRIANGLE_SIDE / 2, 2))
+var TRIANGLE_HEIGHT = Math.sqrt(Math.pow(TRIANGLE_SIDE, 2) - Math.pow(TRIANGLE_SIDE / 2, 2));
+// How much lower (based on height) will the triangle be on the right side
+var TRIANGLE_RIGHT_FACTOR = 1.5;
 
 module.exports = cdb.core.View.extend({
 
@@ -165,7 +167,7 @@ module.exports = cdb.core.View.extend({
     var parts = d3.transform(handle.attr('transform')).translate;
     var xPos = +parts[0] + (this.options.handleWidth / 2);
 
-    var yPos = className === 'left' ? -30 : 60;
+    var yPos = className === 'left' ? -30 : this.chartHeight() + (TRIANGLE_HEIGHT * TRIANGLE_RIGHT_FACTOR);
 
     if ((xPos - width / 2) < 0) {
       axisTip.attr('transform', 'translate(-' + xPos + ',' + yPos + ' )');
@@ -855,8 +857,8 @@ module.exports = cdb.core.View.extend({
   _generateAxisTip: function (className) {
     var handle = this.chart.select('.CDB-Chart-handle.CDB-Chart-handle-' + className);
 
-    var yPos = className === 'right' ? 60 : -30;
-    var yOffset = className === 'right' ? 60 : -12;
+    var yPos = className === 'right' ? this.chartHeight() + (TRIANGLE_HEIGHT * TRIANGLE_RIGHT_FACTOR) : -30;
+    var yTriangle = className === 'right' ? this.chartHeight() + (TRIANGLE_HEIGHT * TRIANGLE_RIGHT_FACTOR) : -11;
     var sign = className === 'right' ? '-' : ' ';
 
     var axisTip = handle.selectAll('g')
@@ -867,7 +869,7 @@ module.exports = cdb.core.View.extend({
 
     var triangle = handle.append('path')
       .attr('class', 'CDB-Chart-axisTipRect CDB-Chart-axisTipTriangle')
-      .attr('transform', 'translate(' + ((this.options.handleWidth / 2) - 4) + ', ' + yOffset + ')')
+      .attr('transform', 'translate(' + ((this.options.handleWidth / 2) - 4) + ', ' + yTriangle + ')')
       .attr('d', 'M 0 0 L ' + TRIANGLE_SIDE + ' 0 L ' + (TRIANGLE_SIDE / 2) + sign + TRIANGLE_HEIGHT + ' L 0 0 z')
       .style('opacity', '0');
 

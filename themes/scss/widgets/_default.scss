@@ -77,6 +77,7 @@
 
 .CDB-Widget-content--histogram,
 .CDB-Widget-content--timeSeries {
+  margin-bottom: $baseSize * 2;
   margin-top: $baseSize * 4;
   touch-action: none;
   -ms-touch-action: none;

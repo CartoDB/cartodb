@@ -206,13 +206,13 @@ module.exports = DataviewModelBase.extend({
   },
 
   _onChanged: function () {
-    if (_.has(this.changed, 'column')) {
+    if (this.hasChanged('column') || this.hasChanged('aggregation')) {
       this._reloadVisAndForceFetch();
-    } else if (!_.has(this.changed, 'status') && (_.has(this.changed, 'bins') || _.has(this.changed, 'aggregation'))) {
+    } else if (!this.hasChanged('status') && this.hasChanged('bins')) {
       this._fetchAndResetFilter();      
     }
 
-    if (_.has(this.changed, 'aggregation')) {
+    if (this.hasChanged('aggregation')) {
       this._unfilteredData.setAggregation(this.get('aggregation'));
     }
 

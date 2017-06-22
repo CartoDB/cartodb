@@ -215,15 +215,19 @@ module.exports = Model.extend({
 
     this.listenTo(this._map, 'change:center change:zoom', _.debounce(this._onMapBoundsChanged.bind(this), BOUNDING_BOX_FILTER_WAIT));
 
-    this.off('change:url');
-    this.on('change:url', function (model, value, opts) {
+    var onChangedUrl = function (model, value, opts) {
       if (this.syncsOnDataChanges()) {
         this._newDataAvailable = true;
       }
       if (this._shouldFetchOnURLChange(opts && _.pick(opts, ['forceFetch', 'sourceId']))) {
         this.fetch();
       }
-    }, this);
+    }.bind(this);
+
+    // We need to unbind the event because we end up with one more
+    // event binding everytime this function is called
+    this.off('change:url', onChangedUrl, this);
+    this.on('change:url', onChangedUrl, this);
 
     this.on('change:enabled', function (mdl, isEnabled) {
       if (isEnabled && this._newDataAvailable) {

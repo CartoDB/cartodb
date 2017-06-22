@@ -38,7 +38,8 @@ module.exports = Model.extend({
 
   initialize: function () {
     this.sync = BackboneAbortSync.bind(this);
-    this.bind('change:url change:bins change:aggregation', function () {
+    this.bind('change:url change:aggregation change:bins', function () {
+      if (this.hasChanged('bins') && this.get('aggregation')) return;
       this.fetch();
     }, this);
   },

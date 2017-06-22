@@ -145,6 +145,9 @@ module.exports = cdb.core.View.extend({
   },
 
   _updateAxisTip: function (className) {
+    var model = this.model.get(className + '_axis_tip');
+    if (model === undefined) { return; }
+  
     var textLabel = this.chart.select('.CDB-Chart-axisTipText.CDB-Chart-axisTip-' + className);
     var axisTip = this.chart.select('.CDB-Chart-axisTip.CDB-Chart-axisTip-' + className);
     var rectLabel = this.chart.select('.CDB-Chart-axisTipRect.CDB-Chart-axisTip-' + className);
@@ -152,10 +155,14 @@ module.exports = cdb.core.View.extend({
     var triangle = handle.select('.CDB-Chart-axisTipTriangle');
 
     triangle.style('opacity', '1');
-    
-    textLabel.data([this.model.get(className + '_axis_tip')]).text(function (d) {
+
+    textLabel.data([model]).text(function (d) {
       return this.formatter(d);
     }.bind(this));
+
+    if (!textLabel.node()) {
+      return;
+    }
 
     var textBBox = textLabel.node().getBBox();
     var width = textBBox.width;
@@ -359,6 +366,8 @@ module.exports = cdb.core.View.extend({
     this._calcBarWidth();
     this._generateChartContent();
     this._generateShadowBars();
+    this._updateAxisTip('left');
+    this._updateAxisTip('right');
   },
 
   refresh: function () {

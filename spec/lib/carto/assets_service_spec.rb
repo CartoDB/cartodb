@@ -11,6 +11,13 @@ describe Carto::AssetsService do
       }.to raise_error(Carto::UnprocesableEntityError, "resource is too big (> #{max_size} bytes)")
     end
 
+    it 'validates file dimensions' do
+      file = File.new(Rails.root + 'spec/support/data/images/1025x1.jpg')
+      expect {
+        Carto::AssetsService.new.fetch_file(file)
+      }.to raise_error(Carto::UnprocesableEntityError, "file is too big, 1024x1024 max")
+    end
+
     it 'keeps original extension' do
       file = Tempfile.new(['test', '.svg'])
       file.write('wadus')

@@ -271,7 +271,11 @@
         "suggested": "Suggested measurements",
         "search": "%{items} results"
       },
-      "search-by-name": "Search by name..."
+      "search-by-name": "Search by name...",
+      "errors": {
+        "measurement-required": "Measurement is required",
+        "measurement-twice": "Two or more measurements are equal"
+      }
     },
     "merge": {
       "title": "Join columns from 2nd layer",

@@ -9,6 +9,7 @@ Development
 * Show number of selected items in Time-Series widgets (#12179).
 
 ### Bug fixes / enhancements
+* Don't try to lowercase null values in custom-list-collection object (support/#744)
 * Validate widget form when widget type changes (#11536)
 * Updated text of widget tooltips (#11467)
 * Fixed error where analysis overlay/infobox wasn't shown when hiding a layer (#11767)
@@ -22,6 +23,7 @@ Development
 * Boolean fields are visible in the filter by column value analysis (#11546)
 * Fixed legend's color mismatch with empty values (#11632)
 * Fixed overlay for legends view (#11825)
+* Fix error when revoking a Dropbox token that was revoked from Dropbox side (#12359)
 * Fixed UI when editing merge analysis (#10850)
 * Fixed uninitialized constant in Carto::Visualization when a viewer shares a visualization (#12129).
 * Fix regenerate all api keys in an organization (#12218)
@@ -33,6 +35,7 @@ Development
   * Update `rails-sequel` (#12118)
   * Changes compatible with Rails 3 (#12117)
 * Make scrollwheel zoom on by default (#12214)
+* Fix SAML login error with uppercased emails (#12367)
 * You can configure your API key for the search bar, powered by Mapzen, with `geocoder.mapzen.search_bar_api_key` (#12296).
 * Add last name field to users (#12174)
 * Fix error where a sync of a big dataset without geometry would be deleted from dashboard (#12162)

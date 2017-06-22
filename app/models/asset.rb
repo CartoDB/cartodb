@@ -134,7 +134,7 @@ class Asset < Sequel::Model
   end
 
   def use_s3?
-    Cartodb.get_config(:assets, "s3_bucket_name").present? && Cartodb.get_config(:aws, "s3").present?
+    Cartodb.get_config(:assets, "s3_bucket_name") && Cartodb.get_config(:aws, "s3")
   end
 
   def remove

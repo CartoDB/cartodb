@@ -38,7 +38,7 @@ module.exports = cdb.core.View.extend({
 
     if (columnType === 'number') {
       html = template({
-        number: FORMATTER_TYPES['number'](scale(scale.invert(step)))
+        number: FORMATTER_TYPES['number'](scale(step))
       });
     } else if (columnType === 'date' && !isNaN(time && time.getTime())) {
       html = template({

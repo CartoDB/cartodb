@@ -215,6 +215,7 @@ module.exports = Model.extend({
 
     this.listenTo(this._map, 'change:center change:zoom', _.debounce(this._onMapBoundsChanged.bind(this), BOUNDING_BOX_FILTER_WAIT));
 
+    this.off('change:url');
     this.on('change:url', function (model, value, opts) {
       if (this.syncsOnDataChanges()) {
         this._newDataAvailable = true;

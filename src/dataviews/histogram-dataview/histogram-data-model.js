@@ -37,7 +37,6 @@ module.exports = Model.extend({
   },
 
   initialize: function () {
-    console.log('Datamodel initialize. Column type: ' + this.get('column_type'));
     this.sync = BackboneAbortSync.bind(this);
     this.bind('change:url change:bins change:aggregation', function () {
       this.fetch();
@@ -52,15 +51,11 @@ module.exports = Model.extend({
   },
 
   setBins: function (bins) {
-    this.set('bins', bins, { silent: bins !== void 0 });
-  },
-
-  setColumnType: function (columnType) {
-    this.set('column_type', columnType);
+    this.set('bins', bins, { silent: bins === void 0 });
   },
 
   setAggregation: function (aggregation) {
-    this.set('aggregation', aggregation, { silent: aggregation !== void 0 });
+    this.set('aggregation', aggregation, { silent: aggregation === void 0 });
   },
 
   getData: function () {

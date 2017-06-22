@@ -16,9 +16,6 @@ module.exports = DataviewModelBase.extend({
   _getDataviewSpecificURLParams: function () {
     var params = [];
 
-    if (this.get('column_type')) {
-      params.push('column_type=' + this.get('column_type'));
-    }
     if (_.isNumber(this.get('own_filter'))) {
       params.push('own_filter=' + this.get('own_filter'));
     } else {
@@ -30,8 +27,7 @@ module.exports = DataviewModelBase.extend({
       // }
       if (this.get('aggregation')) {
         params.push('aggregation=' + this.get('aggregation'));
-      }
-      if (this.get('bins')) {
+      } else if (this.get('bins')) {
         params.push('bins=' + this.get('bins'));
       }
     }
@@ -46,7 +42,6 @@ module.exports = DataviewModelBase.extend({
     this._unfilteredData = new HistogramDataModel({
       bins: this.get('bins'),
       aggregation: this.get('aggregation'),
-      column_type: this.get('column_type'),
       apiKey: this.get('apiKey'),
       authToken: this.get('authToken')
     });
@@ -65,10 +60,8 @@ module.exports = DataviewModelBase.extend({
     }, this);
 
     this.listenTo(this.layer, 'change:meta', this._onChangeLayerMeta);
-    this.on('change:column', this._onColumnChanged, this);
-    this.on('change:start change:end', this._fetchAndResetFilter, this);
-    this.on('change:bins', this._onBinsChanged, this);
-    this.on('change:aggregation', this._onAggregationChanged, this);
+    this.on('change', this._onChanged, this);
+
     if (attrs && (attrs.min || attrs.max)) {
       this.filter.setRange(this.get('min'), this.get('max'));
     }
@@ -212,17 +205,20 @@ module.exports = DataviewModelBase.extend({
     this._reloadVisAndForceFetch();
   },
 
-  _onBinsChanged: function () {
-    if (this.get('bins')) {
-      this._fetchAndResetFilter();
+  _onChanged: function () {
+    if (_.has(this.changed, 'column')) {
+      this._reloadVisAndForceFetch();
+    } else if (!_.has(this.changed, 'status') && (_.has(this.changed, 'bins') || _.has(this.changed, 'aggregation'))) {
+      this._fetchAndResetFilter();      
     }
-  },
 
-  _onAggregationChanged: function() {
-    if (this.get('aggregation')) {
-      this._fetchAndResetFilter();
+    if (_.has(this.changed, 'aggregation')) {
+      this._unfilteredData.setAggregation(this.get('aggregation'));
     }
-    this._unfilteredData.setAggregation(this.get('aggregation'));
+
+    // this.on('change:column', this._onColumnChanged, this);
+    // this.on('change:start change:end', this._fetchAndResetFilter, this);
+    // this.on('change:bins change:aggregation', this._onChanged, this);
   }
 },
 

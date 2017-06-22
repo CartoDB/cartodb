@@ -1266,6 +1266,8 @@ module.exports = cdb.core.View.extend({
     var data = this.model.get('data');
 
     this._calcBarWidth();
+    // Remove spacing if not enough room for the smallest case
+    var spacing = ((data.length * 2) - 1) > this.chartWidth() ? 0 : 1; 
 
     var bars = this.chart.append('g')
       .attr('transform', 'translate(0, 0)')
@@ -1283,7 +1285,7 @@ module.exports = cdb.core.View.extend({
       })
       .attr('y', self.chartHeight())
       .attr('height', 0)
-      .attr('width', Math.max(0.5, this.barWidth - 1));
+      .attr('width', Math.max(1, this.barWidth - spacing));
 
     bars
       .transition()

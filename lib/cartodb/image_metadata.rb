@@ -33,13 +33,13 @@ module CartoDB
 
     def identify_file_prefix
       case @extension.to_s.downcase
-        when '.svg'
-          # Some SVGs don't have the XML header, and sometimes they don't have the
-          # svg extension either (lost during upload). In those cases, ImageMagick can't parse
-          # the file unless we force it.
-          'svg:'
-        else
-          ''
+      when '.svg'
+        # Some SVGs don't have the XML header, and sometimes they don't have the
+        # svg extension either (lost during upload). In those cases, ImageMagick can't parse
+        # the file unless we force it.
+        'svg:'
+      else
+        ''
       end
     end
   end

@@ -7,7 +7,7 @@ describe CartoDB::ImageMetadata do
   let(:png_path) { File.expand_path('../../support/data/images/pattern.png', __FILE__) }
   let(:jpg_path) { File.expand_path('../../support/data/images/pattern.jpg', __FILE__) }
   let(:svg_path) { File.expand_path('../../support/data/images/pattern.svg', __FILE__) }
-  let(:svg_no_xml_header_path) { File.expand_path('../../support/data/images/svg_without_xml_header',  __FILE__) }
+  let(:svg_no_xml_header_path) { File.expand_path('../../support/data/images/svg_without_xml_header', __FILE__) }
 
   describe '#extract_metadata' do
     let(:metadata) { CartoDB::ImageMetadata.new(png_path) }

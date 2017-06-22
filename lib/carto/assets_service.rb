@@ -64,9 +64,13 @@ module Carto
       extension
     end
 
+    MAX_IMAGE_SIDE = 1024
+
     def validate_image_file(file, extension)
       metadata = CartoDB::ImageMetadata.new(file.path, extension: extension)
-      raise UnprocesableEntityError.new("file is too big, 1024x1024 max") if metadata.width > 1024 || metadata.height > 1024
+      if metadata.width > MAX_IMAGE_SIDE || metadata.height > MAX_IMAGE_SIDE
+        raise UnprocesableEntityError.new("file is too big, #{MAX_IMAGE_SIDE}x#{MAX_IMAGE_SIDE} max")
+      end
     end
   end
 end

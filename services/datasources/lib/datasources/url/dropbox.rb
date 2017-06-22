@@ -213,6 +213,9 @@ module CartoDB
         def revoke_token
           @client.revoke
           true
+        rescue DropboxApi::Errors::HttpError => ex
+          CartoDB::Logger.debug(message: 'Error revoking Dropbox token', exception: ex, user: @user)
+          true
         rescue => ex
           raise AuthError.new("revoke_token: #{ex.message}", DATASOURCE_NAME)
         end

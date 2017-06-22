@@ -23,6 +23,7 @@ Development
 * Boolean fields are visible in the filter by column value analysis (#11546)
 * Fixed legend's color mismatch with empty values (#11632)
 * Fixed overlay for legends view (#11825)
+* Fix error when revoking a Dropbox token that was revoked from Dropbox side (#12359)
 * Fixed UI when editing merge analysis (#10850)
 * Fixed uninitialized constant in Carto::Visualization when a viewer shares a visualization (#12129).
 * Fix regenerate all api keys in an organization (#12218)

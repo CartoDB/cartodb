@@ -68,7 +68,8 @@ module Carto
         name: exported_group[:name],
         display_name: exported_group[:display_name],
         database_role: exported_group[:database_role],
-        auth_token: exported_group[:auth_token]
+        auth_token: exported_group[:auth_token],
+        users_group: exported_group[:users].map { |uid| UsersGroup.new(user_id: uid) }
       )
     end
   end
@@ -112,7 +113,8 @@ module Carto
         name: group.name,
         display_name: group.display_name,
         database_role: group.database_role,
-        auth_token: group.auth_token
+        auth_token: group.auth_token,
+        users: group.users.map(&:id)
       }
     end
   end
@@ -143,6 +145,10 @@ module Carto
       # Import organization
       organization_file = Dir["#{path}/organization_*.json"].first
       organization = build_organization_from_json_export(File.read(organization_file))
+
+      # Groups must be saved after users
+      groups = organization.groups.dup
+      organization.groups.clear
       save_imported_organization(organization)
 
       user_list = Dir["#{path}/user_*"]
@@ -151,6 +157,9 @@ module Carto
       organization.users = user_list.map do |user_path|
         Carto::UserMetadataExportService.new.import_user_from_directory(user_path, import_visualizations: false)
       end
+
+      organization.groups = groups
+      organization.save
 
       organization
     end

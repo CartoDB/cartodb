@@ -94,9 +94,7 @@ module CartoDB
 
       def create_overviews(result)
         dataset = @overviews_creator.dataset(result.name)
-        if dataset.should_create_overviews?
-          dataset.create_overviews!
-        end
+        dataset.create_overviews!
       rescue => exception
         # In case of overview creation failure we'll just omit the
         # overviews creation and continue with the process.

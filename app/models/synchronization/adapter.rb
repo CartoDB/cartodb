@@ -52,10 +52,7 @@ module CartoDB
 
       def recreate_overviews(table_name)
         dataset = @overviews_creator.dataset(table_name)
-        dataset.delete_overviews!
-        if dataset.should_create_overviews?
-          dataset.create_overviews!
-        end
+        dataset.update_overviews!
       rescue => exception
         # In case of overview creation failure we'll just omit the
         # overviews creation and continue with the process.
@@ -65,7 +62,7 @@ module CartoDB
         # or nothing changed)
         runner.log.append("Overviews recreation failed: #{exception.message}")
         CartoDB::Logger.error(
-          message:    "Overviews recreation failed",
+          message:    "Overviews recreation failed:  #{exception}",
           exception:  exception,
           user:       @user,
           table_name: table_name

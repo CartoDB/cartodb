@@ -35,12 +35,7 @@ describe('core/util', function() {
     beforeEach(function () {
       currentOnTouchStartValue = window.ontouchstart;
       currentTouchPointsValue = navigator.msMaxTouchPoints;
-    });
-
-    it('should not support it if ontouchstart and msMaxTouchPoints are not valid', function () {
-      delete window.ontouchstart;
-      navigator.msMaxTouchPoints = 0;
-      expect(util.supportsTouch()).toBeFalsy();
+      window.ontouchstart = function () {};
     });
 
     it('should support it if ontouchstart event is defined', function () {

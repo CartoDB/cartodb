@@ -1,5 +1,4 @@
 var cdb = require('cartodb.js');
-var d3 = require('d3');
 var template = require('./time-series-header.tpl');
 var formatter = require('../../formatter');
 var AnimateValues = require('../animate-values.js');
@@ -35,7 +34,6 @@ module.exports = cdb.core.View.extend({
 
   render: function () {
     var title = this._timeSeriesModel.get('title');
-    var scale = this._scale;
     var filter = this._rangeFilter;
     var showSelection = !filter.isEmpty();
     var start;

@@ -15,10 +15,9 @@ var TRIANGLE_HEIGHT = Math.sqrt(Math.pow(TRIANGLE_SIDE, 2) - Math.pow(TRIANGLE_S
 // How much lower (based on height) will the triangle be on the right side
 var TRIANGLE_RIGHT_FACTOR = 1.5;
 
-var SVG_CLASS = "CDB-Chart--histogram";
+var SVG_CLASS = 'CDB-Chart--histogram';
 
 module.exports = cdb.core.View.extend({
-
   options: {
     // render the chart once the width is set as default, provide false value for this prop to disable this behavior
     // e.g. for "mini" histogram behavior
@@ -144,16 +143,16 @@ module.exports = cdb.core.View.extend({
     var bFirst = first.node().getBoundingClientRect();
     var bSecond = second.node().getBoundingClientRect();
 
-    return !(bFirst.right < bSecond.left || 
-                bFirst.left > bSecond.right ||
-                bFirst.bottom < bSecond.top || 
-                bFirst.top > bSecond.bottom);
+    return !(bFirst.right < bSecond.left ||
+    bFirst.left > bSecond.right ||
+    bFirst.bottom < bSecond.top ||
+    bFirst.top > bSecond.bottom);
   },
 
   _updateAxisTip: function (className) {
     var model = this.model.get(className + '_axis_tip');
     if (model === undefined) { return; }
-  
+
     var textLabel = this.chart.select('.CDB-Chart-axisTipText.CDB-Chart-axisTip-' + className);
     var axisTip = this.chart.select('.CDB-Chart-axisTip.CDB-Chart-axisTip-' + className);
     var rectLabel = this.chart.select('.CDB-Chart-axisTipRect.CDB-Chart-axisTip-' + className);
@@ -172,7 +171,7 @@ module.exports = cdb.core.View.extend({
 
     var textBBox = textLabel.node().getBBox();
     var width = textBBox.width;
-    var height = axisTip.node().getBBox().height;
+
     rectLabel.attr('width', width + TIP_H_PADDING);
     textLabel.attr('dx', TIP_H_PADDING / 2);
     textLabel.attr('dy', textBBox.height - Math.abs((textBBox.height - rectLabel.node().getBBox().height) / 2));
@@ -295,7 +294,6 @@ module.exports = cdb.core.View.extend({
       triangle.transition().duration(200).attr('opacity', 1);
     }
   },
-
 
   _updateAxisTipOpacity: function (className) {
     if (this.model.get('dragging')) {
@@ -860,8 +858,8 @@ module.exports = cdb.core.View.extend({
         });
       } else {
         this.model.set({
-            left_axis_tip: this.xAxisScale(leftX + this.options.handleWidth / 2),
-            right_axis_tip: this.xAxisScale(rightX + this.options.handleWidth / 2)
+          left_axis_tip: this.xAxisScale(leftX + this.options.handleWidth / 2),
+          right_axis_tip: this.xAxisScale(rightX + this.options.handleWidth / 2)
         });
       }
     }
@@ -880,19 +878,19 @@ module.exports = cdb.core.View.extend({
       .attr('class', 'CDB-Chart-axisTip CDB-Chart-axisTip-' + className)
       .attr('transform', 'translate(0,' + yPos + ')');
 
-    var triangle = handle.append('path')
+    handle.append('path')
       .attr('class', 'CDB-Chart-axisTipRect CDB-Chart-axisTipTriangle')
       .attr('transform', 'translate(' + ((this.options.handleWidth / 2) - 4) + ', ' + yTriangle + ')')
       .attr('d', 'M 0 0 L ' + TRIANGLE_SIDE + ' 0 L ' + (TRIANGLE_SIDE / 2) + sign + TRIANGLE_HEIGHT + ' L 0 0 z')
       .style('opacity', '0');
 
-    var rectLabel = axisTip.append('rect')
+    axisTip.append('rect')
       .attr('class', 'CDB-Chart-axisTipRect CDB-Chart-axisTip-' + className)
-      .attr('rx', "2")
-      .attr('ry', "2")
+      .attr('rx', '2')
+      .attr('ry', '2')
       .attr('height', TIP_RECT_HEIGHT);
 
-    var textLabel = axisTip.append('text')
+    axisTip.append('text')
       .attr('class', 'CDB-Text CDB-Size-small CDB-Chart-axisTipText CDB-Chart-axisTip-' + className)
       .attr('dy', '11')
       .attr('dx', '0')
@@ -901,7 +899,6 @@ module.exports = cdb.core.View.extend({
 
   _generateHandle: function (className) {
     var opts = { width: this.options.handleWidth, height: this.options.handleHeight, radius: this.options.handleRadius };
-    var yPos = (this.chartHeight() / 2) - (this.options.handleHeight / 2);
 
     var handle = this.chart.select('.CDB-Chart-handles')
       .append('g')
@@ -1129,7 +1126,7 @@ module.exports = cdb.core.View.extend({
     var domain = this._calculateDataDomain();
     var domainScale = d3.scale.linear().domain(domain).range([0, 1]);
     var defs = d3.select(this.el).append('defs');
-    var stopsNumber = 4;  // It is not necessary to create as many stops as colors
+    var stopsNumber = 4; // It is not necessary to create as many stops as colors
 
     this._linearGradients = defs
       .selectAll('linearGradient')
@@ -1280,7 +1277,7 @@ module.exports = cdb.core.View.extend({
 
     this._calcBarWidth();
     // Remove spacing if not enough room for the smallest case
-    var spacing = ((data.length * 2) - 1) > this.chartWidth() ? 0 : 1; 
+    var spacing = ((data.length * 2) - 1) > this.chartWidth() ? 0 : 1;
 
     var bars = this.chart.append('g')
       .attr('transform', 'translate(0, 0)')

@@ -46,7 +46,7 @@ format.formatTime = function (value) {
 
 format.timeFactory = function (format) {
   return d3.time.format(format);
-}
+};
 
 format.formatValue = function (value) {
   if (_.isNumber(value)) {

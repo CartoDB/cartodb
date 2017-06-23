@@ -46,6 +46,7 @@ WORKING_SPECS_1 = \
 	spec/models/visualization/collection_spec.rb \
 	spec/models/visualization/locator_spec.rb \
 	spec/models/visualization/member_spec.rb \
+	spec/models/visualization/member_overviews_spec.rb \
 	spec/models/visualization/name_checker_spec.rb \
 	spec/models/visualization/name_generator_spec.rb \
 	spec/models/visualization/organization_visualization_spec.rb \

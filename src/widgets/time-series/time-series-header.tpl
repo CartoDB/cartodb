@@ -1,5 +1,5 @@
 <div class="CDB-Widget-contentSpaced CDB-Widget-contentFull">
-  <p class="CDB-Text CDB-Size-large u-iBlock"><%- title %></p>
+  <p class="CDB-Text CDB-Size-large js-widget-title u-iBlock"><%- title %></p>
   <div class="CDB-Widget-contentSpaced--end">
     <div class="CDB-Widget-options CDB-Widget-contentSpaced">
       <p class="CDB-Text CDB-Size-small is-semibold u-upperCase u-rSpace--m js-val">…</p>

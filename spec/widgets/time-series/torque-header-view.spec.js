@@ -3,6 +3,9 @@ var TorqueHeaderView = require('../../../src/widgets/time-series/torque-header-v
 
 describe('widgets/time-series/torque-header-view', function () {
   var filterIsEmpty = true;
+  var timeSeriesModel = new Backbone.Model({
+    title: 'Morty'
+  });
 
   beforeEach(function () {
     this.dataviewModel = new Backbone.Model({
@@ -17,6 +20,7 @@ describe('widgets/time-series/torque-header-view', function () {
     this.view = new TorqueHeaderView({
       dataviewModel: this.dataviewModel,
       torqueLayerModel: this.torqueLayerModel,
+      timeSeriesModel: timeSeriesModel,
       selectedAmount: 0
     });
   });
@@ -31,6 +35,16 @@ describe('widgets/time-series/torque-header-view', function () {
 
       expect(this.view.$('.js-torque-controls').length).toBe(1);
       expect(this.view.$('.js-time-series-header').length).toBe(1);
+    });
+
+    it('should render and update the title', function () {
+      this.view.render();
+
+      expect(this.view.$('.js-widget-title').text()).toBe('Morty');
+
+      timeSeriesModel.set('title', 'Rick');
+
+      expect(this.view.$('.js-widget-title').text()).toBe('Rick');
     });
 
     it('should render torque controls and hide clear button if filter is empty', function () {

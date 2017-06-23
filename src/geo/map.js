@@ -17,7 +17,7 @@ var Map = Model.extend({
     maxZoom: 20,
     scrollwheel: true,
     drag: true,
-    keyboard: true,
+    keyboard: false, // #cartodb.js/1652
     provider: 'leaflet',
     // enforce client-side rendering using GeoJSON vector tiles
     vector: false,

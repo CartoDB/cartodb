@@ -705,44 +705,23 @@ module.exports = cdb.core.View.extend({
   _onBrushEnd: function () {
     var data = this.model.get('data');
     var brush = this.brush;
-    var loPosition, hiPosition;
+    var loBarIndex = this._getLoBarIndex();
+    var hiBarIndex = this._getHiBarIndex();
 
     this.model.set({ dragging: false });
 
     if (brush.empty()) {
-      // this.chart.selectAll('.CDB-Chart-bar').classed('is-selected', false);
-      this.removeSelection();
-      d3.select('.Brush').call(brush.extent([0, 0]));
-      console.log('click');
+      // loPosition & hiPosition are the same value
+      this.trigger('on_brush_click', loBarIndex);
+
       return;
     } else {
-      var loBarIndex = this._getLoBarIndex();
-      var hiBarIndex = this._getHiBarIndex();
-
-      loPosition = this._getBarPosition(loBarIndex);
-      hiPosition = this._getBarPosition(hiBarIndex);
-
+      // for some reason d3 launches several brushend
       if (!d3.event.sourceEvent) {
         return;
       }
 
-      if (loBarIndex === hiBarIndex) {
-        if (hiBarIndex >= data.length) {
-          loPosition = this._getBarPosition(loBarIndex - 1);
-        } else {
-          hiPosition = this._getBarPosition(hiBarIndex + 1);
-        }
-      }
       this.model.set({ lo_index: loBarIndex, hi_index: hiBarIndex });
-    }
-
-    if (d3.event.sourceEvent && loPosition === undefined && hiPosition === undefined) {
-      var barIndex = this._getBarIndex();
-
-      loPosition = this._getBarPosition(barIndex);
-      hiPosition = this._getBarPosition(barIndex + 1);
-
-      this.model.set({ lo_index: barIndex, hi_index: barIndex + 1 });
     }
 
     this._setupFillColor();

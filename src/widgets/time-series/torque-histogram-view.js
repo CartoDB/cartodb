@@ -28,6 +28,7 @@ module.exports = HistogramView.extend({
   _createHistogramView: function () {
     this._chartType = this._torqueLayerModel.get('column_type') === 'date' ? 'time' : 'number';
     HistogramView.prototype._createHistogramView.call(this);
+    this._chartView.bind('on_brush_click', this._onBrushClick, this);
 
     var timeSliderView = new TorqueTimeSliderView({
       dataviewModel: this.model, // a histogram model
@@ -51,6 +52,18 @@ module.exports = HistogramView.extend({
       this._chartView.removeSelection();
       this._rangeFilter.unsetRange();
     }
+  },
+
+  _onBrushClick: function (loBarIndex) {
+    // when there are fewer data entries than the expected steps the torqueLayerModel has wrong number of steps,
+    // thus we need to calculate the "proper" step, this is a hack
+    var dataLength = this.model.get('data').length;
+    var steps = this._torqueLayerModel.get('steps');
+    var step = steps < dataLength ? loBarIndex * steps / dataLength : loBarIndex;
+
+    HistogramView.prototype.resetFilter.apply(this);
+
+    this._torqueLayerModel.set({ step: step });
   },
 
   _onBrushEnd: function (loBarIndex, hiBarIndex) {

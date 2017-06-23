@@ -19,7 +19,7 @@
   right: 392px;
 }
 .Editor-contextSwitcher.has-timeSeries {
-  bottom: 167px;
+  bottom: 220px;
 }
 .Editor-contextSwitcher.has-timeSeries.has-timeSeries--animated {
   bottom: 190px;
@@ -71,7 +71,7 @@
     bottom: 32px;
   }
   .Editor-contextSwitcher.has-timeSeries {
-    bottom: 151px;
+    bottom: 219px;
   }
   .Editor-contextSwitcher.has-timeSeries.has-timeSeries--animated {
     bottom: 174px;
@@ -89,26 +89,18 @@
   .Editor-contextSwitcher--geom.is-moved {
     right: 101px;
   }
-  .Editor-contextSwitcher.has-timeSeries {
-    bottom: 341px;
-  }
-  .Editor-contextSwitcher.has-timeSeries.has-timeSeries--animated {
-    bottom: 364px;
-  }
-}
-@media (max-width: $sViewport-xl) {
   .Editor-contextSwitcher.in-table {
     right: 16px;
     bottom: 16px;
   }
   .Editor-contextSwitcher.is-moved {
-    bottom: 214px;
+    bottom: 259px;
   }
   .Editor-contextSwitcher.has-timeSeries {
-    bottom: 333px;
+    bottom: 446px;
   }
   .Editor-contextSwitcher.has-timeSeries.has-timeSeries--animated {
-    bottom: 358px;
+    bottom: 448px;
   }
 }
 

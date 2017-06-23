@@ -38,6 +38,7 @@ module Carto
     end
 
     def save_imported_organization(organization)
+      organization.groups.each { |g| g.users_group.clear }
       organization.save!
       ::Organization[organization.id].after_save
     end

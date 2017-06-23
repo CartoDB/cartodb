@@ -24,6 +24,8 @@ describe Carto::OrganizationMetadataExportService do
   end
 
   def destroy_organization
+    @organization.groups.each(&:destroy)
+    @organization.groups.clear
     Organization[@organization.id].destroy_cascade
   end
 
@@ -218,7 +220,8 @@ describe Carto::OrganizationMetadataExportService do
           name: 'g_group',
           display_name: '#group',
           database_role: 'a98f3bc6391fadfe4d1487e2b6912d24_g_g_group',
-          auth_token: 'TE7rg6_4RU8vAeTeEeITIQ'
+          auth_token: 'TE7rg6_4RU8vAeTeEeITIQ',
+          users: []
         }]
       }
     }

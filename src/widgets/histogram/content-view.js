@@ -333,7 +333,7 @@ module.exports = cdb.core.View.extend({
     var $tooltip = this.$('.js-tooltip');
 
     if (info && info.data) {
-      var bottom = this.defaults.chartHeight + 3 - info.top;
+      var bottom = this.defaults.chartHeight + 23 - info.top;
 
       $tooltip.css({ bottom: bottom, left: info.left });
       $tooltip.text(info.data);

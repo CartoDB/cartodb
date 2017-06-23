@@ -9,6 +9,7 @@ Development
 * Show number of selected items in Time-Series widgets (#12179).
 
 ### Bug fixes / enhancements
+* Refactor Visualization::Member like and notification actions into Carto::Visualization (#12309)
 * Don't try to lowercase null values in custom-list-collection object (support/#744)
 * Validate widget form when widget type changes (#11536)
 * Updated text of widget tooltips (#11467)

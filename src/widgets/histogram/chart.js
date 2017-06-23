@@ -52,7 +52,7 @@ module.exports = cdb.core.View.extend({
 
     // using tagName: 'svg' doesn't work,
     // and w/o class="" d3 won't instantiate properly
-    this.setElement($('<svg class=""></svg>')[0]);
+    this.setElement($('<svg class="CDB-Chart--histogram"></svg>')[0]);
 
     this._widgetModel = this.options.widgetModel;
     this._dataviewModel = this.options.dataviewModel;

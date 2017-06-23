@@ -75,10 +75,13 @@
   margin-right: -7px;
 }
 
-.CDB-Widget-content--histogram,
-.CDB-Widget-content--timeSeries {
+.CDB-Chart--histogram {
   margin-bottom: $baseSize * 2;
   margin-top: $baseSize * 4;
+}
+
+.CDB-Widget-content--histogram,
+.CDB-Widget-content--timeSeries {
   touch-action: none;
   -ms-touch-action: none;
 }

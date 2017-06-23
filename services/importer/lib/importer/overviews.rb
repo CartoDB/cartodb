@@ -68,14 +68,6 @@ module CartoDB
         end
       end
 
-      def overview_tables(table_name)
-        res = []
-        @user.transaction_with_timeout statement_timeout: @statement_timeout do |db|
-          res = Carto::OverviewsService.new(db).overview_tables(table_name)
-        end
-        return res
-      end
-
       # Dataset overview creation
       class Dataset
         def initialize(overviews_service, table_name)

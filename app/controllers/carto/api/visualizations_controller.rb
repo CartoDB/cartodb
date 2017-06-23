@@ -26,16 +26,21 @@ module Carto
         :notify_watching, :list_watching, :add_like, :remove_like
 
       # TODO: compare with older, there seems to be more optional authentication endpoints
-      skip_before_filter :api_authorization_required, only: [:index, :vizjson2, :vizjson3, :is_liked, :static_map]
-      before_filter :optional_api_authorization, only: [:index, :vizjson2, :vizjson3, :is_liked, :static_map]
+      skip_before_filter :api_authorization_required, only: [:index, :vizjson2, :vizjson3, :is_liked, :add_like,
+                                                             :remove_like, :notify_watching, :list_watching,
+                                                             :static_map]
+
+      before_filter :optional_api_authorization, only: [:index, :vizjson2, :vizjson3, :is_liked, :add_like,
+                                                        :remove_like, :notify_watching, :list_watching, :static_map]
 
       before_filter :id_and_schema_from_params
-      before_filter :load_visualization, only: [
-        :likes_count, :likes_list, :is_liked, :add_like, :remove_like, :show, :stats,
-        :list_watching, :notify_watching, :static_map, :vizjson2, :vizjson3, :update, :destroy,
-        :google_maps_static_image
-      ]
+
+      before_filter :load_visualization, only: [:likes_count, :likes_list, :is_liked, :add_like, :remove_like, :show,
+                                                :stats, :list_watching, :notify_watching, :static_map, :vizjson2,
+                                                :vizjson3, :update, :destroy, :google_maps_static_image]
+
       before_filter :ensure_visualization_owned, only: [:destroy, :google_maps_static_image]
+      before_filter :ensure_visualization_is_viewable, only: [:add_like, :remove_like, :notify_watching, :list_watching]
 
       rescue_from Carto::LoadError, with: :rescue_from_carto_error
       rescue_from Carto::UUIDParameterFormatError, with: :rescue_from_carto_error
@@ -103,71 +108,45 @@ module Carto
       end
 
       def add_like
-        @stats_aggregator.timing('visualizations.like') do
-          begin
-            return(head 403) unless current_viewer
+        current_viewer_id = current_viewer.id
 
-            @stats_aggregator.timing('authorization') do
-              raise KeyError unless @visualization.is_viewable_by_user?(current_viewer)
-            end
+        @visualization.add_like_from(current_viewer_id)
 
-            @stats_aggregator.timing('save') do
-              @visualization.add_like_from(current_viewer.id)
-            end
-
-            current_viewer_id = current_viewer.id
-
-            if current_viewer_id != @visualization.user.id
-              protocol = request.protocol.sub('://', '')
-              vis_url =
-                Carto::StaticMapsURLHelper.new.url_for_static_map_with_visualization(@visualization, protocol, 600, 300)
-              send_like_email(@visualization, current_viewer, vis_url)
-            end
-
-            event_properties = { user_id: current_viewer_id, visualization_id: @visualization.id, action: 'like' }
-            Carto::Tracking::Events::LikedMap.new(current_viewer_id, event_properties).report
-
-            render_jsonp(
-              id: @visualization.id,
-              likes: @visualization.likes.count,
-              liked: @visualization.liked_by?(current_viewer_id)
-            )
-          rescue Carto::Visualization::AlreadyLikedError
-            render(text: "You've already liked this visualization", status: 400)
-          rescue KeyError => exception
-            render(text: exception.message, status: 403)
-          end
+        if current_viewer_id != @visualization.user.id
+          protocol = request.protocol.sub('://', '')
+          vis_url =
+            Carto::StaticMapsURLHelper.new.url_for_static_map_with_visualization(@visualization, protocol, 600, 300)
+          send_like_email(@visualization, current_viewer, vis_url)
         end
+
+        event_properties = { user_id: current_viewer_id, visualization_id: @visualization.id, action: 'like' }
+        Carto::Tracking::Events::LikedMap.new(current_viewer_id, event_properties).report
+
+        render_jsonp(
+          id: @visualization.id,
+          likes: @visualization.likes.count,
+          liked: @visualization.liked_by?(current_viewer_id)
+        )
+      rescue Carto::Visualization::AlreadyLikedError
+        render(text: "You've already liked this visualization", status: 400)
+      rescue KeyError => exception
+        render(text: exception.message, status: 403)
       end
 
       def remove_like
-        @stats_aggregator.timing('visualizations.unlike') do
-          begin
-            return(head 403) unless current_viewer
+        current_viewer_id = current_viewer.id
 
-            @stats_aggregator.timing('authorization') do
-              raise KeyError unless @visualization.is_viewable_by_user?(current_viewer)
-            end
+        @visualization.remove_like_from(current_viewer_id)
 
-            current_viewer_id = current_viewer.id
+        event_properties = { user_id: current_viewer_id, visualization_id: @visualization.id, action: 'remove' }
+        Carto::Tracking::Events::LikedMap.new(current_viewer_id, event_properties).report
 
-            @stats_aggregator.timing('destroy') do
-              @visualization.remove_like_from(current_viewer_id)
-            end
-
-            event_properties = { user_id: current_viewer_id, visualization_id: @visualization.id, action: 'remove' }
-            Carto::Tracking::Events::LikedMap.new(current_viewer_id, event_properties).report
-
-            render_jsonp(id: @visualization.id, likes: @visualization.likes.count, liked: false)
-          rescue KeyError => exception
-            render(text: exception.message, status: 403)
-          end
-        end
+        render_jsonp(id: @visualization.id, likes: @visualization.likes.count, liked: false)
+      rescue KeyError => exception
+        render(text: exception.message, status: 403)
       end
 
       def notify_watching
-        return(head 403) unless @visualization.is_viewable_by_user?(current_user)
-
         watcher = CartoDB::Visualization::Watcher.new(current_user, @visualization)
         watcher.notify
 
@@ -175,8 +154,6 @@ module Carto
       end
 
       def list_watching
-        return(head 403) unless @visualization.is_viewable_by_user?(current_user)
-
         watcher = CartoDB::Visualization::Watcher.new(current_user, @visualization)
 
         render_jsonp(watcher.list)
@@ -402,6 +379,12 @@ module Carto
 
       def ensure_visualization_owned
         raise Carto::LoadError.new('Visualization not editable', 403) unless @visualization.is_owner?(current_viewer)
+      end
+
+      def ensure_visualization_is_viewable
+        return(head 403) unless current_viewer
+
+        raise KeyError unless @visualization.is_viewable_by_user?(current_viewer)
       end
 
       # This avoids crossing usernames and visualizations.

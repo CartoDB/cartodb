@@ -2,7 +2,6 @@ var _ = require('underscore');
 var Backbone = require('backbone');
 var VisModel = require('../../../src/vis/vis');
 var PlainLayer = require('../../../src/geo/map/plain-layer');
-var util = require('../../../src/core/util');
 var CartoDBLayer = require('../../../src/geo/map/cartodb-layer');
 var TorqueLayer = require('../../../src/geo/map/torque-layer');
 var TileLayer = require('../../../src/geo/map/tile-layer');

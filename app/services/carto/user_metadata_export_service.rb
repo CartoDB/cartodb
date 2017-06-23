@@ -153,8 +153,10 @@ module Carto
       save_imported_user(user)
 
       if import_visualizations
-        import_user_visualizations_from_directory(user, Carto::Visualization::TYPE_CANONICAL, path)
-        import_user_visualizations_from_directory(user, Carto::Visualization::TYPE_DERIVED, path)
+        with_non_viewer_user(user) do
+          import_user_visualizations_from_directory(user, Carto::Visualization::TYPE_CANONICAL, path)
+          import_user_visualizations_from_directory(user, Carto::Visualization::TYPE_DERIVED, path)
+        end
       end
 
       user
@@ -175,6 +177,24 @@ module Carto
         )
         filename = "#{visualization.type}_#{visualization.id}#{Carto::VisualizationExporter::EXPORT_EXTENSION}"
         root_dir.join(filename).open('w') { |file| file.write(visualization_export) }
+      end
+    end
+
+    private
+
+    def with_non_viewer_user(user)
+      was_viewer = user.viewer
+      if user.viewer
+        user.update_attributes(viewer: false)
+        ::User[user.id].reload
+      end
+
+      yield
+
+    ensure
+      if was_viewer
+        user.update_attributes(viewer: true)
+        ::User[user.id].reload
       end
     end
   end

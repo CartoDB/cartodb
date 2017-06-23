@@ -108,6 +108,32 @@ describe Carto::UserMetadataExportService do
         end
       end
     end
+
+    it 'export + import user and visualizations for a viewer user' do
+      Dir.mktmpdir do |path|
+        create_user_with_basemaps_assets_visualizations
+        @user.update_attribute(:viewer, true)
+        ::User[@user.id].reload # Refresh Sequel cache
+        service.export_user_to_directory(@user.id, path)
+        source_user = @user.attributes
+
+        source_visualizations = @user.visualizations.map(&:attributes)
+        destroy_user
+
+        # At this point, the user database is still there, but the tables got destroyed. We recreate some dummy ones
+        source_visualizations.select { |v| v['type'] == 'table' }.each do |v|
+          @user.in_database.execute("CREATE TABLE #{v['name']} (cartodb_id int)")
+        end
+
+        imported_user = service.import_user_from_directory(path)
+
+        compare_excluding_dates(imported_user.attributes, source_user)
+        expect(imported_user.visualizations.count).to eq source_visualizations.count
+        imported_user.visualizations.zip(source_visualizations).each do |v1, v2|
+          compare_excluding_dates_and_ids(v1.attributes, v2)
+        end
+      end
+    end
   end
 
   EXCLUDED_DATE_FIELDS = ['created_at', 'updated_at'].freeze

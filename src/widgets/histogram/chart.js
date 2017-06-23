@@ -34,7 +34,7 @@ module.exports = cdb.core.View.extend({
 
     if (!_.isNumber(this.options.height)) throw new Error('height is required');
 
-    _.bindAll(this, '_selectBars', '_adjustBrushHandles', '_onBrushMove', '_onBrushStart', '_onBrushEnd', '_onMouseMove', '_onMouseOut');
+    _.bindAll(this, '_selectBars', '_adjustBrushHandles', '_onBrushMove', '_onBrushEnd', '_onMouseMove', '_onMouseOut');
 
     // Use this special setup for each view instance ot have its own debounced listener
     // TODO in theory there's the possiblity that the callback is called before the view is rendered in the DOM,
@@ -674,7 +674,6 @@ module.exports = cdb.core.View.extend({
     // define brush control element and its events
     var brush = d3.svg.brush()
         .x(this.xScale)
-        // .on('brushstart', this._onBrushStart)
         .on('brush', this._onBrushMove)
         .on('brushend', this._onBrushEnd);
 
@@ -691,11 +690,6 @@ module.exports = cdb.core.View.extend({
         .on('mousemove', this._onMouseMove);
 
     this.brush = brush;
-  },
-
-  _onBrushStart: function () {
-    // this.chart.classed('is-selectable', true);
-    // this._axis.classed('is-disabled', true);
   },
 
   _onBrushMove: function () {

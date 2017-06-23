@@ -4,12 +4,11 @@ module Carto
   module Api
     class PermissionPresenter
 
-      # options
-      # - current_viewer
-      def initialize(permission, options = {})
+      def initialize(permission, current_viewer: nil, fetch_user_groups: false)
         @permission = permission
         @presenter_cache = Carto::Api::PresenterCache.new
-        @options = options
+        @current_viewer = current_viewer
+        @fetch_user_groups = fetch_user_groups
       end
 
       def with_presenter_cache(presenter_cache)
@@ -18,11 +17,11 @@ module Carto
       end
 
       def to_poro
-        return to_public_poro unless !@options[:current_viewer].nil? && @permission.user_has_read_permission?(@options[:current_viewer])
+        return to_public_poro unless current_viewer && @permission.user_has_read_permission?(current_viewer)
 
         owner = @presenter_cache.get_poro(@permission.owner) do
-          Carto::Api::UserPresenter.new(@permission.owner, fetch_groups: false,
-                                                           current_viewer: @options[:current_viewer])
+          Carto::Api::UserPresenter.new(@permission.owner,
+                                        fetch_groups: fetch_user_groups, current_viewer: current_viewer)
         end
 
         {
@@ -46,8 +45,8 @@ module Carto
 
       def to_public_poro
         owner = @presenter_cache.get_poro(@permission.owner) do
-          Carto::Api::UserPresenter.new(@permission.owner, fetch_groups: false,
-                                                           current_viewer: @options[:current_viewer])
+          Carto::Api::UserPresenter.new(@permission.owner,
+                                        fetch_groups: fetch_user_groups, current_viewer: current_viewer)
         end
 
         {
@@ -71,12 +70,7 @@ module Carto
       def user_decoration(user_id)
         user = ::User.where(id: user_id).first
         return {} if user.nil?
-        {
-            id:         user.id,
-            username:   user.username,
-            avatar_url: user.avatar_url,
-            base_url:   user.public_url
-        }
+        Carto::Api::UserPresenter.new(user, fetch_groups: fetch_user_groups).to_public_poro
       end
 
       def organization_decoration(org_id)
@@ -98,6 +92,9 @@ module Carto
         }
       end
 
+      private
+
+      attr_reader :current_viewer, :fetch_user_groups
     end
   end
 end

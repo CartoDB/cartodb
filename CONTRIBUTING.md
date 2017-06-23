@@ -99,13 +99,15 @@ Run this task to be sure that everything is OK.
 
 #### Old Editor specs
 
-In order to develop tests for the codebase outside Builder (that is, old Editor and dashboard pages) we advise to run
+In order to develop tests for the codebase outside Builder (that is, old Editor and dashboard pages) we advise to run:
+
 ```bash
-grunt && grunt dev
+grunt editor_specs
 ```
+
 After the building process finish, a webpage will show up with a link to the Jasmine page with all the specs. The URL of this page is `http://localhost:8089/_SpecRunner.html`
 
-Since this is the command for normal developing, as you modify any file you'll see the changes immediately both in the application and in the specs page.
+Editor specs process won't watch for changes, so every time you modify any file you'll have to run again the Editor specs command.
 
 #### Builder specs
 
@@ -135,7 +137,7 @@ This will generate the whole Builder suite, not only the specs affected by the c
 
 If you want to run simultaneously the application and the specs generation follow these steps:
 
-1. Open a terminal with Node v6.9.2 (use nvm) and run `grunt && grunt dev`. This will build the application assets and will watch for changes.
+1. Open a terminal with Node v6.9.2 (use nvm) and run `grunt dev`. This will build the application assets and will watch for changes.
 
 2. Open a second terminal and run `grunt affected_specs`.
 
@@ -161,17 +163,13 @@ npm install -g grunt-cli
 
 Run `grunt availabletasks` to see available tasks.
 
-First time starting to work you need to run `grunt`, to build all static assets (will be written to `public/assets/:version`).
-
-After that, for typical frontend work, it's recommended to run once:
-```bash
-grunt
-```
-This will generate all necessary frontend assets, and then:
+First time starting to work you need to run `grunt dev`, to build all necessary frontend assets (will be written to `public/assets/:version`).
 
 ```bash
 grunt dev
+
 ```
+
 That enables CSS and JS watchers for rebuilding bundles automatically upon changes.
 
 **Note!** Make sure `config/app_config.yml` don't contain the `app_assets` configuration, i.e.:
@@ -245,6 +243,7 @@ Then to use it for testing, you can pass `STELLAR=stellar` (you can pass the exe
 testing environment will use it to clean up the database (instead of manually truncating tables).
 
 #### For development
+
 Stellar can also be useful for development, to quickly restore the database to its original configuration. Just create
 a different configuration (by going to a different directory, stellar always reads `stellar.yaml` in the current path)
 for the development environment.

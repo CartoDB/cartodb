@@ -1,6 +1,6 @@
 Sequel.migration do
   up do
-    Rails::Sequel::connection.run 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp"'
+    SequelRails::connection.run 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp"'
 
     create_table :widgets do
       Uuid :id, primary_key: true, default: 'uuid_generate_v4()'.lit

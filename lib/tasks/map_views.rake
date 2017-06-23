@@ -20,7 +20,7 @@ namespace :cartodb do
       total_visualizations = 0
       offset = 0
       stats_manager = CartoDB::Stats::APICalls.new
-      while (torque_vis = Rails::Sequel.connection.fetch(get_torque_visualization(offset, 1000)).all).length > 0
+      while (torque_vis = SequelRails.connection.fetch(get_torque_visualization(offset, 1000)).all).length > 0
         torque_vis.each do |vis|
           total_visualizations += 1
           total_torque_mapviews += get_total_vis_mapviews(vis, stats_manager)

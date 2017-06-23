@@ -52,7 +52,7 @@ module Carto
     end
 
     def update_named_map
-      Carto::NamedMaps::Api.new(regenerate_visualization).update
+      Carto::NamedMaps::Api.new(regenerate_visualization).upsert
     end
   end
 end

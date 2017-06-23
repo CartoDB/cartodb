@@ -7,7 +7,7 @@ include CartoDB
 
 describe Visualization::Member do
   before do
-    @db = Rails::Sequel.connection
+    @db = SequelRails.connection
     Sequel.extension(:pagination)
 
     Visualization.repository  = DataRepository::Backend::Sequel.new(@db, :visualizations)

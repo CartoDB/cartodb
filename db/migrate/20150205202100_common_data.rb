@@ -1,7 +1,7 @@
 Sequel.migration do
 
   up do
-    Rails::Sequel::connection.run 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp"'
+    SequelRails::connection.run 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp"'
 
     create_table :external_sources do
       Uuid      :id,                primary_key: true, null: false, unique: false, default: 'uuid_generate_v4()'.lit
@@ -14,7 +14,7 @@ Sequel.migration do
       String    :username
     end
 
-    Rails::Sequel.connection.run(%q{
+    SequelRails.connection.run(%q{
         ALTER TABLE "external_sources"
         ADD COLUMN geometry_types text[]
     })

@@ -29,8 +29,8 @@
       <% if !Cartodb.config[:cartodb_com_hosted].present? && !current_user.organization.present? %>
         <li class="SideMenu-typeItem"><a href="<%= current_user.plan_url(request.protocol) %>" class="SideMenu-typeLink">Billing</a></li>
       <% end %>
-      <% if current_user.organization_owner? %>
-        <li class="SideMenu-typeItem"><a href="<%= CartoDB.url(self, 'organization_settings', {}, current_user) %>" class="SideMenu-typeLink <%= 'is-selected' if ["admin/organizations", "admin/organization", "admin/organization_users"].include?("#{params[:controller]}") %>" class="SideMenu-typeLink">Organization settings</a></li>
+      <% if current_user.organization_admin? %>
+        <li class="SideMenu-typeItem"><a href="<%= CartoDB.url(self, current_user.organization_owner? ? 'organization_settings' : 'organization', {}, current_user) %>" class="SideMenu-typeLink <%= 'is-selected' if ["admin/organizations", "admin/organization", "admin/organization_users"].include?("#{params[:controller]}") %>" class="SideMenu-typeLink">Organization settings</a></li>
       <% end %>
       <% pages_subheader_instance.links(self).each do |link| %>
           <li class="SideMenu-typeItem"><a href="<%= link.path %>" class="SideMenu-typeLink <%= 'is-selected' if [link.controller].include?("#{params[:controller]}") %>" class="SideMenu-typeLink"><%= link.text %></a></li>

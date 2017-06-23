@@ -14,16 +14,16 @@ class Admin::OrganizationUsersController < Admin::AdminController
   ssl_required  :profile, :account, :oauth, :api_key, :regenerate_api_key
 
   before_filter :get_config
-  before_filter :login_required, :check_permissions
+  before_filter :login_required, :check_permissions, :load_organization
   before_filter :get_user, only: [:edit, :update, :destroy, :regenerate_api_key]
+  before_filter :ensure_edit_permissions, only: [:edit, :update, :destroy, :regenerate_api_key]
   before_filter :initialize_google_plus_config, only: [:edit, :update]
 
   layout 'application'
 
   def new
     @user = ::User.new
-    organization = current_user.organization
-    @user.quota_in_bytes = [organization.unassigned_quota, organization.default_quota_in_bytes].min
+    @user.quota_in_bytes = [@organization.unassigned_quota, @organization.default_quota_in_bytes].min
 
     @user.soft_geocoding_limit = current_user.soft_geocoding_limit
     @user.soft_here_isolines_limit = current_user.soft_here_isolines_limit
@@ -32,7 +32,7 @@ class Admin::OrganizationUsersController < Admin::AdminController
     @user.soft_twitter_datasource_limit = current_user.soft_twitter_datasource_limit
     @user.soft_mapzen_routing_limit = current_user.soft_mapzen_routing_limit
 
-    @user.viewer = organization.remaining_seats <= 0 && organization.remaining_viewer_seats > 0
+    @user.viewer = @organization.remaining_seats <= 0 && @organization.remaining_viewer_seats > 0
 
     respond_to do |format|
       format.html { render 'new' }
@@ -51,11 +51,11 @@ class Admin::OrganizationUsersController < Admin::AdminController
 
     # Validation is done on params to allow checking the change of the value.
     # The error is deferred to display values in the form in the error scenario.
-    validation_failure = !soft_limits_validation(@user, params[:user], current_user.organization.owner)
+    validation_failure = !soft_limits_validation(@user, params[:user], @organization.owner)
 
-    if (!current_user.organization.auth_username_password_enabled &&
-            !params[:user][:password].present? &&
-            !params[:user][:password_confirmation].present?)
+    if !@organization.auth_username_password_enabled &&
+       !params[:user][:password].present? &&
+       !params[:user][:password_confirmation].present?
       dummy_password = generate_dummy_password
       params[:user][:password] = dummy_password
       params[:user][:password_confirmation] = dummy_password
@@ -67,14 +67,16 @@ class Admin::OrganizationUsersController < Admin::AdminController
         :username, :email, :password, :quota_in_bytes, :password_confirmation,
         :twitter_datasource_enabled, :soft_geocoding_limit, :soft_here_isolines_limit,
         :soft_obs_snapshot_limit, :soft_obs_general_limit, :soft_mapzen_routing_limit
-      ])
-    @user.org_admin = params[:user][:org_admin] == 'true'
+      ]
+    )
     @user.viewer = params[:user][:viewer] == 'true'
-    @user.organization = current_user.organization
+    @user.org_admin = params[:user][:org_admin] unless params[:user][:org_admin].nil?
+    @user.organization = @organization
     current_user.copy_account_features(@user)
 
     # Validate password first, so nicer errors are displayed
-    model_validation_ok = @user.valid_password?(:password, @user.password, @user.password_confirmation) && @user.valid?
+    model_validation_ok = @user.valid_password?(:password, @user.password, @user.password_confirmation) &&
+                          @user.valid_creation?(current_user)
 
     unless model_validation_ok
       raise Sequel::ValidationFailed.new("Validation failed: #{@user.errors.full_messages.join(', ')}")
@@ -124,7 +126,7 @@ class Admin::OrganizationUsersController < Admin::AdminController
 
     attributes = params[:user]
     @user.set_fields(attributes, [:email]) if attributes[:email].present? && !@user.google_sign_in
-    @user.set_fields(attributes, [:quota_in_bytes]) if attributes[:quota_in_bytes].present? && current_user.organization_owner?
+    @user.set_fields(attributes, [:quota_in_bytes]) if attributes[:quota_in_bytes].present?
 
     @user.set_fields(attributes, [:disqus_shortname]) if attributes[:disqus_shortname].present?
     @user.set_fields(attributes, [:available_for_hire]) if attributes[:available_for_hire].present?
@@ -147,7 +149,7 @@ class Admin::OrganizationUsersController < Admin::AdminController
     @user.soft_twitter_datasource_limit = attributes[:soft_twitter_datasource_limit] if attributes[:soft_twitter_datasource_limit].present?
     @user.soft_mapzen_routing_limit = attributes[:soft_mapzen_routing_limit] if attributes[:soft_mapzen_routing_limit].present?
 
-    model_validation_ok = @user.valid?
+    model_validation_ok = @user.valid_update?(current_user)
     if attributes[:password].present? || attributes[:password_confirmation].present?
       model_validation_ok &&= @user.valid_password?(:password, attributes[:password], attributes[:password_confirmation])
     end
@@ -263,14 +265,19 @@ class Admin::OrganizationUsersController < Admin::AdminController
   end
 
   def check_permissions
-    raise RecordNotFound unless current_user.organization.present?
-    raise RecordNotFound unless current_user.organization_owner? || ['edit', 'update'].include?(params[:action])
+    raise RecordNotFound unless current_user.organization_admin?
   end
 
   def get_user
-    @user = current_user.organization.users_dataset.where(username: params[:id]).first
+    @user = @organization.users_dataset.where(username: params[:id]).first
     raise RecordNotFound unless @user
-    raise RecordNotFound unless current_user.organization_owner? || current_user == @user
   end
 
+  def load_organization
+    @organization = current_user.organization
+  end
+
+  def ensure_edit_permissions
+    render_403 unless @user.editable_by?(current_user)
+  end
 end

@@ -126,7 +126,7 @@ class Admin::PagesController < Admin::AdminController
       dataset_builder = user_datasets_public_builder(@viewed_user)
       maps_builder = user_maps_public_builder(@viewed_user)
 
-      @name               = @viewed_user.name.blank? ? @viewed_user.username : @viewed_user.name
+      @name               = @viewed_user.name_or_username
       @avatar_url         = @viewed_user.avatar
       @tables_num         = dataset_builder.build.count
       @maps_count         = maps_builder.build.count

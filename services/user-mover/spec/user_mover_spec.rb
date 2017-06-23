@@ -46,8 +46,8 @@ describe CartoDB::DataMover::ExportJob do
 
     it_behaves_like "a migrated user"
     it "matches old and new user" do
-      expect((first_user.as_json.reject { |x| x == :updated_at || x == :database_host }))
-        .to eq((subject.as_json.reject { |x| x == :updated_at || x == :database_host }))
+      expect((first_user.as_json.reject { |x| [:updated_at, :database_host].include?(x.to_sym) }))
+        .to eq((subject.as_json.reject { |x| [:updated_at, :database_host].include?(x.to_sym) }))
     end
   end
 
@@ -77,8 +77,9 @@ describe CartoDB::DataMover::ExportJob do
     it_behaves_like "a migrated user"
 
     it "matches old and new user except database_name and database_host" do
-      expect(first_user.as_json.reject { |x| [:updated_at, :database_name, :database_host, :organization_id, :database_schema].include? x })
-        .to eq(subject.as_json.reject { |x| [:updated_at, :database_name, :database_host, :organization_id, :database_schema].include? x })
+      IGNORED_KEYS = [:updated_at, :database_name, :database_host, :organization_id, :database_schema].freeze
+      expect(first_user.as_json.reject { |x| IGNORED_KEYS.include? x.to_sym })
+        .to eq(subject.as_json.reject { |x| IGNORED_KEYS.include? x.to_sym })
       expect(subject.database_name).to eq(@org.owner.database_name)
       expect(subject.database_schema).to eq(subject.username)
       expect(subject.database_host).to eq('127.0.0.2')

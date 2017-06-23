@@ -2,7 +2,7 @@
 
 class VisualizationsFixMigration < Sequel::Migration
   def up
-    Rails::Sequel.connection.run(%Q{
+    SequelRails.connection.run(%Q{
       ALTER TABLE visualizations
       ALTER COLUMN map_id 
       TYPE integer

@@ -1,6 +1,6 @@
 Sequel.migration do
   up do
-    Rails::Sequel.connection.run(%Q{
+    SequelRails.connection.run(%Q{
       UPDATE users SET geocoding_quota = 0 WHERE geocoding_quota IS NULL
     })
     alter_table :users do

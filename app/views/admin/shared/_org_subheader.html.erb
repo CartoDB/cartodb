@@ -3,16 +3,18 @@
     <span class="Filters-separator"></span>
     <div class="Filters-row">
       <ul class="Filters-group CDB-Text CDB-Size-medium">
-        <li class="Filters-typeItem">
-          <a href="<%= current_user_url('organization_settings') %>" class="Filters-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/organizations_settings" %>">
-            Organization profile
-          </a>
-        </li>
-        <li class="Filters-typeItem">
-          <a href="<%= current_user_url('organization_auth') %>" class="Filters-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/organizations_auth" %>">
-            Auth settings
-          </a>
-        </li>
+        <% if current_user.organization_owner? %>
+          <li class="Filters-typeItem">
+            <a href="<%= current_user_url('organization_settings') %>" class="Filters-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/organizations_settings" %>">
+              Organization profile
+            </a>
+          </li>
+          <li class="Filters-typeItem">
+            <a href="<%= current_user_url('organization_auth') %>" class="Filters-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/organizations_auth" %>">
+              Auth settings
+            </a>
+          </li>
+        <% end %>
         <li class="Filters-typeItem">
           <a href="<%= current_user_url('organization') %>" class="Filters-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/organizations_show" %>">
             <%= current_user.organization.users.count %>/<%= current_user.organization.total_seats %> users

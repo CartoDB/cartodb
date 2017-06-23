@@ -903,7 +903,7 @@ namespace :cartodb do
       u.password_confirmation = username
       u.username = username
       u.quota_in_bytes = quota_in_bytes
-      #u.database_host = ::Rails::Sequel.configuration.environment_for(Rails.env)['host']
+      #u.database_host = ::SequelRails.configuration.environment_for(Rails.env)['host']
 
       if organization.owner_id.nil?
         u.save(raise_on_failure: true)

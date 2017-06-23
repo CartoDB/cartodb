@@ -71,7 +71,7 @@ FactoryGirl.define do
     salt 'kkkkkkkkk'
 
     api_key '21ee521b8a107ea55d61fd7b485dd93d54c0b9d2'
-    table_quota 5
+    table_quota nil
     quota_in_bytes 5000000
     id { UUIDTools::UUID.timestamp_create.to_s }
     builder_enabled nil # Most tests still assume editor

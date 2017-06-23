@@ -149,6 +149,7 @@ module CartoDB
       user_mock.stubs(:invalidate_varnish_cache).returns(nil)
       user_mock.stubs(:has_feature_flag?).returns(false)
       user_mock.stubs(:viewer).returns(false)
+      user_mock.stubs(:organization_admin?).returns(false)
       user_mock.stubs(:groups).returns(groups)
       user_mock.stubs(:public_url).returns(public_url)
       user_mock.stubs(:avatar_url).returns(avatar_url)

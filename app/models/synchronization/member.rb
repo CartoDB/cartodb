@@ -138,6 +138,8 @@ module CartoDB
 
       def enqueue
         Resque.enqueue(Resque::SynchronizationJobs, job_id: id)
+        self.error_code = nil
+        self.error_message = nil
         self.state = CartoDB::Synchronization::Member::STATE_QUEUED
         self.store
       end
@@ -205,7 +207,11 @@ module CartoDB
         notify
 
       rescue => exception
-        CartoDB::Logger.error(exception: exception, sync_id: id)
+        if exception.is_a? CartoDB::Datasources::NotFoundDownloadError
+          CartoDB::Logger.debug(exception: exception, sync_id: id)
+        else
+          CartoDB::Logger.error(exception: exception, sync_id: id)
+        end
         log.append_and_store exception.message, truncate = false
         log.append exception.backtrace.join("\n"), truncate = false
 

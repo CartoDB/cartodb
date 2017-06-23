@@ -9,7 +9,7 @@ Sequel.migration do
       # Weird scenario that column already exists. probably due to a file timestamp change
     end
 
-    Rails::Sequel.connection.run(%Q{
+    SequelRails.connection.run(%Q{
       update organizations o set admin_email = (select email from users u where o.owner_id = u.id);
     })
   end

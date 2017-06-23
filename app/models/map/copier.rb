@@ -18,6 +18,11 @@ module CartoDB
         if map.user
           @new_map.user ||= map.user
         end
+
+        # Default is to copy all attributes from the canonical map. This overrides it
+        @new_map.scrollwheel = true
+        @new_map.options[:scrollwheel] = true if @new_map.options
+
         @new_map
       end
 

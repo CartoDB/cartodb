@@ -77,7 +77,7 @@ namespace :cartodb do
           SET last_common_data_update_date = null
           WHERE last_common_data_update_date >= now() - '#{::User::COMMON_DATA_ACTIVE_DAYS} day'::interval;
         ]
-      updated_rows = Rails::Sequel.connection.fetch(invalidate_sql).update
+      updated_rows = SequelRails.connection.fetch(invalidate_sql).update
       CommonDataRedisCache.new.invalidate
       puts "#{updated_rows} users invalidated"
 

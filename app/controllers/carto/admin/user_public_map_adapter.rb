@@ -4,9 +4,10 @@ module Carto
     class UserPublicMapAdapter
       extend Forwardable
 
-      delegate [ :id, :name, :username, :disqus_shortname, :avatar, :avatar_url, :remove_logo?, :has_organization?, 
+      delegate [:id, :name, :username, :disqus_shortname, :avatar, :avatar_url, :remove_logo?, :has_organization?,
                 :organization, :organization_id, :twitter_username, :location, :public_url, :subdomain,
-                :sql_safe_database_schema, :account_type, :google_maps_query_string, :basemaps, :default_basemap ] => :user
+                :sql_safe_database_schema, :account_type, :google_maps_query_string, :basemaps, :default_basemap,
+                :name_or_username] => :user
 
       attr_reader :user
 

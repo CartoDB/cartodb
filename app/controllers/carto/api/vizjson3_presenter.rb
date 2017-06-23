@@ -49,7 +49,6 @@ module Carto
 
       def generate_vizjson(https_request:, vector:, forced_privacy_version:)
         https_request ||= false
-        vector ||= false
         version = case forced_privacy_version
                   when :force_named
                     '3n'
@@ -67,7 +66,9 @@ module Carto
                     calculate_vizjson(https_request: https_request, forced_privacy_version: forced_privacy_version)
                   end
 
-        vizjson[:vector] = vector
+        unless vector.nil? # true or false
+          vizjson[:vector] = vector
+        end
 
         vizjson
       end
@@ -105,12 +106,6 @@ module Carto
                              else
                                visualization_analyses.map(&:analysis_definition)
                              end
-
-        parent = @visualization.parent
-        if parent
-          vizjson[:title] = parent.qualified_name(user)
-          vizjson[:description] = markdown_html_safe(parent.description)
-        end
 
         vizjson
       end
@@ -193,7 +188,7 @@ module Carto
 
       def user_info_vizjson(user)
         {
-          fullname: user.name.present? ? user.name : user.username,
+          fullname: user.name_or_username,
           avatar_url: user.avatar_url,
           profile_url: user.public_url
         }

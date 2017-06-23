@@ -18,7 +18,7 @@ module CartoDB
       DEFAULT_RELATION      = 'synchronizations'
 
       def initialize(pg_options={}, relation=DEFAULT_RELATION)
-        @db = Rails::Sequel.connection
+        @db = SequelRails.connection
         @relation = relation
         @records  = []
       end

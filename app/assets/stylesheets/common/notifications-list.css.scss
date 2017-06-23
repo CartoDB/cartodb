@@ -19,7 +19,7 @@ $opacityTransition: 250ms;
   bottom: 1px;
   padding: 8px;
   border-radius: 4px;
-  background: #FFF;
+  background: rgba(#FFF, 0.6);
   z-index: 10;
 }
 .field_with_errors {
@@ -33,21 +33,16 @@ $opacityTransition: 250ms;
     bottom: 3px;
   }
 }
-.Md-button,
+.Md-icon,
 .Md-text {
   float: left;
 }
-.Md-button {
-  @include transition(all, 200ms, ease-in);
+.Md-icon {
   width: 24px;
   height: 16px;
   border-radius: 2px;
   background: #DDD;
   text-align: center;
-
-  &:hover {
-    background: #CCC;
-  }
 }
 .Md-buttonInner {
   position: relative;

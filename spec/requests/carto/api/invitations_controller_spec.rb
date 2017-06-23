@@ -52,6 +52,15 @@ describe Carto::Api::InvitationsController do
       end
     end
 
+    it 'registers invitations as an org admin' do
+      @org_user_2.org_admin = true
+      @org_user_2.save
+      post_api_v1_organization_invitations(@org_user_2, invitation) do |response|
+        response.status.should == 200
+        Carto::Invitation.find(response.body[:id]).seed.should_not be_nil
+      end
+    end
+
     it 'registers viewer invitations' do
       post_api_v1_organization_invitations(@org_user_owner, invitation.merge(viewer: true)) do |response|
         response.status.should == 200

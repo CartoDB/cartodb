@@ -21,6 +21,14 @@ Installations assume you use UTF8. You can set the locale by doing this:
   sudo locale-gen en_US.UTF-8
   sudo update-locale LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8
 
+APT tools
+~~~~~~~~~
+In order to easily install some packages repositories sources is suggested to install this tool:
+
+.. code-block:: bash
+
+  sudo apt-get install python-software-properties
+
 Build essentials
 ~~~~~~~~~~~~~~~~
 
@@ -30,6 +38,15 @@ Although we try to maintain packaged versions of almost every part of the stack,
 
   sudo apt-get install autoconf binutils-doc bison build-essential flex
 
+You will also need to install GCC 4.9 in order to build some Node modules later. You can install it doing this:
+
+.. code-block:: bash
+
+  sudo add-apt-repository ppa:cartodb/gcc && sudo apt-get update
+  sudo apt-get install gcc-4.9 g++-4.9
+  export CC=/usr/bin/gcc-4.9
+  export CXX=/usr/bin/g++-4.9
+
 GIT
 ~~~
 
@@ -38,15 +55,6 @@ You will need git commands in order to handle some repositories and install some
 .. code-block:: bash
 
   sudo apt-get install git
-
-APT tools
-~~~~~~~~~
-In order to easily install some packages repositories sources is suggested to install this tool:
-
-.. code-block:: bash
-
-  sudo apt-get install python-software-properties
-
 
 PostgreSQL
 ----------
@@ -214,7 +222,7 @@ NodeJS is required by different parts of the stack. The more significant are the
 
   .. code-block:: bash
 
-    sudo add-apt-repository ppa:cartodb/nodejs-010 && sudo apt-get update
+    sudo add-apt-repository ppa:cartodb/nodejs && sudo apt-get update
 
 * Install NodeJS
 
@@ -222,7 +230,7 @@ NodeJS is required by different parts of the stack. The more significant are the
 
     sudo apt-get install nodejs
 
-  Note this should install both NodeJS 0.10.26 and npm 2.14.16. You can verify the installation went as expected with:
+  Note this should install both NodeJS 6.9.2 and npm 3.10.9. You can verify the installation went as expected with:
 
   .. code-block:: bash
 
@@ -233,8 +241,14 @@ If npm version is wrong you should update it:
 
   .. code-block:: bash
 
-    npm install npm@2.14.16 -g
+    npm install npm@3.10.9 -g
 
+We will also install some development libraries that will be necessary to build some Node modules:
+
+  .. code-block:: bash
+
+    sudo apt-get install libpixman-1-0 libpixman-1-dev
+    sudo apt-get install libcairo2-dev libjpeg-dev libgif-dev libpango1.0-dev
 
 SQL API
 -------
@@ -284,16 +298,6 @@ MAPS API
 
     npm install
 
-.. warning::
-    If this fails due to package cairo not found in the pkg-config search path, you can install it like this
-
-    ::
-
-        $  sudo apt-get install libpango1.0-dev
-
-    After this change, re-run npm install, and it should be OK.
-
-
 
 * Create configuration. The name of the filename of the configuration must be the same than the environment you are going to use to start the service. Let's assume it's development.
 
@@ -337,7 +341,7 @@ Ruby
 
   .. code-block:: bash
 
-    export PATH=$PATH:/opt/rubies/ruby-2.2.3/bin
+    export PATH=/opt/rubies/ruby-2.2.3/bin:$PATH
 
 * Install bundler. Bundler is an app used to manage ruby dependencies. It is needed by CartoDB's editor
 

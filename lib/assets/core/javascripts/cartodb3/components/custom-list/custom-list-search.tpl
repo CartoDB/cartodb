@@ -1,6 +1,6 @@
-<div class="CDB-Box-modalHeaderItem">
+<div class="u-flex">
   <input type="text" name="text" autocomplete="off" placeholder="<%- searchPlaceholder %>" class="CDB-InputTextPlain CDB-Text js-search">
-  <button type="button" style="display:none" class="u-lSpace--xl js-clear">
+  <button type="button" class="u-lSpace--xl u-transparent js-clear">
     <div class="CDB-Shape">
       <div class="CDB-Shape-close is-blue is-large"></div>
     </div>

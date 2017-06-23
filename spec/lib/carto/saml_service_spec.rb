@@ -42,7 +42,7 @@ describe Carto::SamlService do
 
     describe '#get_user_email' do
       it 'returns nil if response is invalid' do
-        response_mock.stubs(:is_valid?).returns(false)
+        response_mock.stubs(:is_valid?).raises(OneLogin::RubySaml::ValidationError.new)
 
         service.get_user_email(saml_response_param_mock).should be_nil
       end

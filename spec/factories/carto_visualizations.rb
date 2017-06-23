@@ -6,7 +6,8 @@ module Carto
       include CartoDB::Factories
 
       def full_visualization_table(carto_user, map)
-        Carto::UserTable.find(create_table(name: unique_name('fvt_table'), user_id: carto_user.id).id)
+        map_id = map.nil? ? nil : map.id
+        Carto::UserTable.find(create_table(name: unique_name('fvt_table'), user_id: carto_user.id, map_id: map_id).id)
       end
 
       def create_full_builder_vis(carto_user, privacy: Carto::Visualization::PRIVACY_PUBLIC)

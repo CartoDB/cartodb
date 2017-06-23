@@ -8,10 +8,10 @@
       <svg class="CDB-LoaderIcon-spinner" viewBox="0 0 50 50">
         <circle class="CDB-LoaderIcon-path" cx="25" cy="25" r="20" fill="none"></circle>
       </svg>
+      <span class="u-lSpace u-secondaryTextColor"><%- _t('components.backbone-forms.select.loading') %></span>
     </div>
-    <span class="u-lSpace u-secondaryTextColor"><%- _t('components.backbone-forms.select.loading') %></span>
   <% } else { %>
-    <% if (isEmpty) { %>
+    <% if (isEmpty && isNull) { %>
       <%- _t('components.backbone-forms.select.empty') %>
     <% } else { %>
       <%- placeholder || label || _t('components.backbone-forms.select.placeholder', { keyAttr: keyAttr }) %>

@@ -1,6 +1,6 @@
 Sequel.migration do
   up do
-    Rails::Sequel::connection.run 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp"'
+    SequelRails::connection.run 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp"'
 
     create_table :groups do
       Uuid      :id,                primary_key: true, default: 'uuid_generate_v4()'.lit
@@ -15,7 +15,7 @@ Sequel.migration do
       DateTime  :updated_at,        default: Sequel::CURRENT_TIMESTAMP
     end
 
-    Rails::Sequel.connection.run(%Q{
+    SequelRails.connection.run(%Q{
       ALTER TABLE "groups"
         ADD CONSTRAINT  groups_organization_id_fk
         FOREIGN KEY (organization_id)
@@ -23,19 +23,19 @@ Sequel.migration do
         ON DELETE CASCADE
       })
 
-    Rails::Sequel.connection.run(%Q{
+    SequelRails.connection.run(%Q{
       ALTER TABLE "groups"
         ADD CONSTRAINT groups_organization_id_name_uq
         UNIQUE (organization_id, name)
     })
 
-    Rails::Sequel.connection.run(%Q{
+    SequelRails.connection.run(%Q{
       ALTER TABLE "groups"
         ADD CONSTRAINT groups_organization_id_display_name_uq
         UNIQUE (organization_id, display_name)
     })
 
-    Rails::Sequel.connection.run(%Q{
+    SequelRails.connection.run(%Q{
       ALTER TABLE "groups"
         ADD CONSTRAINT groups_organization_id_database_role_uq
         UNIQUE (organization_id, database_role)
@@ -47,7 +47,7 @@ Sequel.migration do
       Uuid    :group_id,        null: false
     end
 
-    Rails::Sequel.connection.run(%Q{
+    SequelRails.connection.run(%Q{
       ALTER TABLE "users_groups"
         ADD CONSTRAINT  users_groups_user_id_fk
         FOREIGN KEY (user_id)
@@ -55,7 +55,7 @@ Sequel.migration do
         ON DELETE CASCADE
       })
 
-    Rails::Sequel.connection.run(%Q{
+    SequelRails.connection.run(%Q{
       ALTER TABLE "users_groups"
         ADD CONSTRAINT  users_groups_group_id_fk
         FOREIGN KEY (group_id)
@@ -63,7 +63,7 @@ Sequel.migration do
         ON DELETE CASCADE
       })
 
-    Rails::Sequel.connection.run(%Q{
+    SequelRails.connection.run(%Q{
       ALTER TABLE "users_groups"
         ADD CONSTRAINT users_groups_user_id_group_id_uq
         UNIQUE (user_id, group_id)

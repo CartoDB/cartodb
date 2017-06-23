@@ -30,7 +30,7 @@ module CartoDB
       def shared_objects_among_orgs
         shared_objects = {}
         visualization_types_sql = "SELECT COUNT(*), visualizations.type FROM shared_entities, visualizations WHERE entity_id=visualizations.id::uuid GROUP BY type"
-        db = ::Rails::Sequel.configuration.environment_for(Rails.env)
+        db = ::SequelRails.configuration.environment_for(Rails.env)
         conn = Sequel.connect(db)
         conn.fetch(visualization_types_sql).all.each do |vt|
           if vt[:type] == 'table'
@@ -56,7 +56,7 @@ module CartoDB
       # Total active users
       def active_users
         active_users = "select count(distinct(user_id)) from visualizations where type in ('derived', 'table', 'slide')"
-        db = ::Rails::Sequel.configuration.environment_for(Rails.env)
+        db = ::SequelRails.configuration.environment_for(Rails.env)
         conn = Sequel.connect(db)
         au_count = conn.fetch(active_users).first[:count]
         conn.disconnect

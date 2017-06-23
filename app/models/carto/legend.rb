@@ -10,9 +10,9 @@ module Carto
 
     belongs_to :layer, class_name: Carto::Layer
 
-    VALID_LEGEND_TYPES = %(category bubble choropleth custom custom_choropleth).freeze
+    VALID_LEGEND_TYPES = %w(category bubble choropleth custom custom_choropleth).freeze
     LEGEND_TYPES_PER_ATTRIBUTE = {
-      color: %(category choropleth custom custom_choropleth),
+      color: %w(category choropleth custom custom_choropleth),
       size: %(bubble)
     }.freeze
 
@@ -32,7 +32,8 @@ module Carto
 
     before_validation :ensure_definition, :ensure_conf
 
-    after_commit :force_notify_layer_change
+    after_save :force_notify_layer_change
+    after_destroy :force_notify_layer_change
 
     private
 

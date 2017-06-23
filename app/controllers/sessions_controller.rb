@@ -4,12 +4,14 @@ require_dependency 'google_plus_api'
 require_dependency 'oauth/github/config'
 require_dependency 'carto/saml_service'
 require_dependency 'carto/username_proposer'
+require_dependency 'carto/email_cleaner'
 
 require_relative '../../lib/user_account_creator'
 require_relative '../../lib/cartodb/stats/authentication'
 
 class SessionsController < ApplicationController
   include LoginHelper
+  include Carto::EmailCleaner
 
   layout 'frontend'
   ssl_required :new, :create, :destroy, :show, :unauthenticated, :account_token_authentication_error,
@@ -45,9 +47,12 @@ class SessionsController < ApplicationController
   end
 
   def create
-    strategies, username = ldap_strategy_username || saml_strategy_username ||
+    strategies, username = saml_strategy_username || ldap_strategy_username ||
                            google_strategy_username || credentials_strategy_username
-    return render(action: 'new') unless strategies
+
+    unless strategies
+      return saml_authentication? ? render_403 : render(action: 'new')
+    end
 
     candidate_user = Carto::User.where(username: username).first
 
@@ -203,7 +208,7 @@ class SessionsController < ApplicationController
   end
 
   def username_from_user_by_email(email)
-    ::User.where(email: email).first.try(:username)
+    ::User.where(email: clean_email(email)).first.try(:username)
   end
 
   def ldap_strategy_username
@@ -220,8 +225,8 @@ class SessionsController < ApplicationController
       if email
         [:saml, username_from_user_by_email(email)]
       else
-        verify_authenticity_token
-        nil
+        # This stops trying other strategies. Important because CSRF is not checked for SAML.
+        [nil, nil]
       end
     end
   end

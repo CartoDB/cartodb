@@ -241,6 +241,8 @@ describe Carto::Api::VizJSON3Presenter do
       @torque_layer = FactoryGirl.create(:carto_layer, kind: 'torque', maps: [@map])
       @torque_layer.options[:table_name] = 'wadus'
       @torque_layer.save
+
+      @visualization.reload
     end
 
     shared_examples 'common layer checks' do

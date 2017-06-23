@@ -8,7 +8,7 @@ include CartoDB
 
 describe Visualization::Member do
   before do
-    db = Rails::Sequel.connection
+    db = SequelRails.connection
     Visualization.repository  = DataRepository::Backend::Sequel.new(db, :visualizations)
 
     CartoDB::UserModule::DBService.any_instance.stubs(:move_to_own_schema).returns(nil)

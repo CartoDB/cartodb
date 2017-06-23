@@ -1,6 +1,6 @@
 <div class="Infobox <%- type %>">
-  <div class="u-flex u-justifySpace u-alignCenter u-bSpace--m">
-    <h2 class="CDB-Text is-semibold CDB-Size-small u-upperCase"><%- title %></h2>
+  <div class="u-flex u-justifySpace u-bSpace--m">
+    <h2 class="Infobox-title CDB-Text is-semibold CDB-Size-small u-upperCase u-bSpace--m u-rSpace--m"><%- title %></h2>
 
     <% if (isClosable) { %>
     <button class="CDB-Shape js-close">

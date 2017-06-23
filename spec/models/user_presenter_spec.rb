@@ -1,11 +1,36 @@
 # coding: UTF-8
 
 require_relative '../spec_helper'
+require_relative '../factories/organizations_contexts'
 
 describe Carto::Api::UserPresenter do
 
   before(:each) do
     CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+  end
+
+  describe '#current_viewer' do
+    include_context 'organization with users helper'
+
+    it 'displays full data for user administrator' do
+      presentation = Carto::Api::UserPresenter.new(@carto_org_user_1, current_viewer: @carto_org_user_owner).to_poro
+      expect(presentation.keys).to include :email
+    end
+
+    it 'displays full data for own user' do
+      presentation = Carto::Api::UserPresenter.new(@carto_org_user_1, current_viewer: @carto_org_user_1).to_poro
+      expect(presentation.keys).to include :email
+    end
+
+    it 'displays filtered data for other users' do
+      presentation = Carto::Api::UserPresenter.new(@carto_org_user_1, current_viewer: @carto_org_user_2).to_poro
+      expect(presentation.keys).to_not include :email
+    end
+
+    it 'displays filtered data for public' do
+      presentation = Carto::Api::UserPresenter.new(@carto_org_user_1).to_poro
+      expect(presentation.keys).to_not include :email
+    end
   end
 
   it "Compares old and new ways of 'presenting' user data" do
@@ -30,7 +55,7 @@ describe Carto::Api::UserPresenter do
 
     # Some sample data
     data_import_id = '11111111-1111-1111-1111-111111111111'
-    Rails::Sequel.connection.run(%Q{
+    SequelRails.connection.run(%Q{
       INSERT INTO data_imports("data_source","data_type","table_name","state","success","logger","updated_at",
         "created_at","tables_created_count",
         "table_names","append","id","table_id","user_id",
@@ -42,7 +67,7 @@ describe Carto::Api::UserPresenter do
           '#{user.id}','public_url', 'test',
           '[{"type":".csv","size":5015}]','t','f','t','test','0.0.0.0','13204','test','f','{"twitter_credits_limit":0}');
       })
-    Rails::Sequel.connection.run(%Q{
+    SequelRails.connection.run(%Q{
       INSERT INTO geocodings("table_name","processed_rows","created_at","updated_at","formatter","state",
         "id","user_id",
         "cache_hits","kind","geometry_type","processable_rows","real_rows","used_credits",
@@ -99,8 +124,8 @@ describe Carto::Api::UserPresenter do
 
     compare_data(owner.data, Carto::Api::UserPresenter.new(Carto::User.where(id: owner.id).first).data, true)
 
-    Rails::Sequel.connection.run( %Q{ DELETE FROM geocodings } )
-    Rails::Sequel.connection.run( %Q{ DELETE FROM data_imports } )
+    SequelRails.connection.run( %Q{ DELETE FROM geocodings } )
+    SequelRails.connection.run( %Q{ DELETE FROM data_imports } )
     user.destroy
     organization.destroy
   end

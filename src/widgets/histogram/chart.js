@@ -15,6 +15,8 @@ var TRIANGLE_HEIGHT = Math.sqrt(Math.pow(TRIANGLE_SIDE, 2) - Math.pow(TRIANGLE_S
 // How much lower (based on height) will the triangle be on the right side
 var TRIANGLE_RIGHT_FACTOR = 1.5;
 
+var SVG_CLASS = "CDB-Chart--histogram";
+
 module.exports = cdb.core.View.extend({
 
   options: {
@@ -52,7 +54,11 @@ module.exports = cdb.core.View.extend({
 
     // using tagName: 'svg' doesn't work,
     // and w/o class="" d3 won't instantiate properly
-    this.setElement($('<svg class="CDB-Chart--histogram"></svg>')[0]);
+    this.setElement($('<svg class=""></svg>')[0]);
+
+    if (!this.options.mini) {
+      this.$el.attr('class', SVG_CLASS);
+    }
 
     this._widgetModel = this.options.widgetModel;
     this._dataviewModel = this.options.dataviewModel;

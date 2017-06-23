@@ -512,35 +512,33 @@ module.exports = cdb.core.View.extend({
   },
 
   _setupBindings: function () {
-    this.model.bind('change:data', this._onChangeData, this);
-    this.model.bind('change:display', this._onChangeDisplay, this);
-    this.model.bind('change:dragging', this._onChangeDragging, this);
-    this.model.bind('change:height', this._onChangeHeight, this);
-    this.model.bind('change:left_axis_tip', this._onChangeLeftAxisTip, this);
-    this.model.bind('change:lo_index change:hi_index', this._onChangeRange, this);
-    this.model.bind('change:pos', this._onChangePos, this);
-    this.model.bind('change:right_axis_tip', this._onChangeRightAxisTip, this);
-    this.model.bind('change:showLabels', this._onChangShowLabels, this);
-    this.model.bind('change:show_shadow_bars', this._onChangeShowShadowBars, this);
-    this.model.bind('change:width', this._onChangeWidth, this);
-    this.model.bind('change:normalized', this._onChangeNormalized, this);
+    this.listenTo(this.model, 'change:data', this._onChangeData);
+    this.listenTo(this.model, 'change:display', this._onChangeDisplay);
+    this.listenTo(this.model, 'change:dragging', this._onChangeDragging);
+    this.listenTo(this.model, 'change:height', this._onChangeHeight);
+    this.listenTo(this.model, 'change:left_axis_tip', this._onChangeLeftAxisTip);
+    this.listenTo(this.model, 'change:lo_index change:hi_index', this._onChangeRange);
+    this.listenTo(this.model, 'change:pos', this._onChangePos);
+    this.listenTo(this.model, 'change:right_axis_tip', this._onChangeRightAxisTip);
+    this.listenTo(this.model, 'change:showLabels', this._onChangShowLabels);
+    this.listenTo(this.model, 'change:show_shadow_bars', this._onChangeShowShadowBars);
+    this.listenTo(this.model, 'change:width', this._onChangeWidth);
+    this.listenTo(this.model, 'change:normalized', this._onChangeNormalized);
 
     if (this._widgetModel) {
-      this._widgetModel.bind('change:autoStyle', this._refreshBarsColor, this);
-      this._widgetModel.bind('change:style', function () {
+      this.listenTo(this._widgetModel, 'change:autoStyle', this._refreshBarsColor);
+      this.listenTo(this._widgetModel, 'change:style', function () {
         this._setupFillColor();
         this._refreshBarsColor();
-      }, this);
-      this.add_related_model(this._widgetModel);
+      });
     }
 
     if (this._dataviewModel) {
-      this._dataviewModel.layer.bind('change:cartocss', function () {
+      this.listenTo(this._dataviewModel.layer, 'change:cartocss', function () {
         if (!this._areGradientsAlreadyGenerated()) {
           this._setupFillColor();
         }
-      }, this);
-      this.add_related_model(this._dataviewModel.layer);
+      });
     }
 
     if (this._originalData) {

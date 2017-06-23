@@ -48,6 +48,7 @@ module Carto
       organization = Organization.new(exported_organization.slice(*EXPORTED_ORGANIZATION_ATTRIBUTES))
 
       organization.assets = exported_organization[:assets].map { |asset| build_asset_from_hash(asset.symbolize_keys) }
+      organization.groups = exported_organization[:groups].map { |group| build_group_from_hash(group.symbolize_keys) }
 
       # Must be the last one to avoid attribute assignments to try to run SQL
       organization.id = exported_organization[:id]
@@ -59,6 +60,15 @@ module Carto
         public_url: exported_asset[:public_url],
         kind: exported_asset[:kind],
         storage_info: exported_asset[:storage_info]
+      )
+    end
+
+    def build_group_from_hash(exported_group)
+      Group.new(
+        name: exported_group[:name],
+        display_name: exported_group[:display_name],
+        database_role: exported_group[:database_role],
+        auth_token: exported_group[:auth_token]
       )
     end
   end
@@ -84,6 +94,7 @@ module Carto
       organization_hash = EXPORTED_ORGANIZATION_ATTRIBUTES.map { |att| [att, organization.attributes[att.to_s]] }.to_h
 
       organization_hash[:assets] = organization.assets.map { |a| export_asset(a) }
+      organization_hash[:groups] = organization.groups.map { |g| export_group(g) }
 
       organization_hash
     end
@@ -93,6 +104,15 @@ module Carto
         public_url: asset.public_url,
         kind: asset.kind,
         storage_info: asset.storage_info
+      }
+    end
+
+    def export_group(group)
+      {
+        name: group.name,
+        display_name: group.display_name,
+        database_role: group.database_role,
+        auth_token: group.auth_token
       }
     end
   end

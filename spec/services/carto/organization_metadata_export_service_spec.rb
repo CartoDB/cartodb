@@ -114,12 +114,22 @@ describe Carto::OrganizationMetadataExportService do
 
     expect(export[:assets].count).to eq organization.assets.size
     export[:assets].zip(organization.assets).each { |exported_asset, asset| expect_export_matches_asset(exported_asset, asset) }
+
+    expect(export[:groups].count).to eq organization.groups.size
+    export[:groups].zip(organization.groups).each { |exported_group, group| expect_export_matches_group(exported_group, group) }
   end
 
   def expect_export_matches_asset(exported_asset, asset)
     expect(exported_asset[:public_url]).to eq asset.public_url
     expect(exported_asset[:kind]).to eq asset.kind
     expect(exported_asset[:storage_info]).to eq asset.storage_info
+  end
+
+  def expect_export_matches_group(exported_group, group)
+    expect(exported_group[:name]).to eq group.name
+    expect(exported_group[:display_name]).to eq group.display_name
+    expect(exported_group[:database_role]).to eq group.database_role
+    expect(exported_group[:auth_token]).to eq group.auth_token
   end
 
   let(:full_export) do
@@ -184,6 +194,12 @@ describe Carto::OrganizationMetadataExportService do
             location: "organization_assets",
             identifier: "public/uploads/organization_assets/189d642c-c7da-40aa-bffd-517aa0eb7999/asset_download_148430456220170113-20961-67b7r0"
           }
+        }],
+        groups: [{
+          name: 'g_group',
+          display_name: '#group',
+          database_role: 'a98f3bc6391fadfe4d1487e2b6912d24_g_g_group',
+          auth_token: 'TE7rg6_4RU8vAeTeEeITIQ'
         }]
       }
     }

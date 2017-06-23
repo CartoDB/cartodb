@@ -65,10 +65,10 @@ describe('geo/ui/search', function () {
 
     it('should change map center when geocoder returns any result', function () {
       var onBoundsChanged = jasmine.createSpy('onBoundsChange');
-      this.map.bind('change:view_bounds_sw', onBoundsChanged, this.view);
+      this.map.bind('change:view_bounds_ne', onBoundsChanged, this.view);
       this.view.$('.js-form').submit();
       expect(onBoundsChanged).toHaveBeenCalled();
-      this.map.unbind('change:view_bounds_sw', onBoundsChanged, this.view);
+      this.map.unbind('change:view_bounds_ne', onBoundsChanged, this.view);
     });
 
     it('should center map to lat,lon when bbox is not defined', function () {

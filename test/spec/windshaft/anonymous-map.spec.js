@@ -94,6 +94,9 @@ describe('windshaft/anonymous-map', function () {
   describe('.toJSON', function () {
     it('should generate the payload to instantiate the map', function () {
       expect(this.map.toJSON()).toEqual({
+        'buffersize': {
+          'mvt': 0
+        },
         'layers': [
           {
             'id': 'layer1',
@@ -151,6 +154,9 @@ describe('windshaft/anonymous-map', function () {
       this.cartoDBLayer1.infowindow.fields.add({ name: 'something' });
 
       expect(this.map.toJSON()).toEqual({
+        'buffersize': {
+          'mvt': 0
+        },
         'layers': [
           {
             'id': 'layer1',

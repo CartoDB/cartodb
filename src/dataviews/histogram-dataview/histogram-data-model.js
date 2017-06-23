@@ -1,4 +1,5 @@
 var _ = require('underscore');
+var BackboneAbortSync = require('../../util/backbone-abort-sync');
 var Model = require('../../core/model');
 
 /**
@@ -32,6 +33,7 @@ module.exports = Model.extend({
   },
 
   initialize: function () {
+    this.sync = BackboneAbortSync.bind(this);
     this.bind('change:url change:bins', function () {
       this.fetch();
     }, this);

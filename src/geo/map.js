@@ -19,8 +19,6 @@ var Map = Model.extend({
     drag: true,
     keyboard: true,
     provider: 'leaflet',
-    // enforce client-side rendering using GeoJSON vector tiles
-    vector: false,
     popupsEnabled: true,
     isFeatureInteractivityEnabled: false
   },
@@ -502,8 +500,22 @@ var Map = Model.extend({
 
   getMapViewSize: function () {
     return this._mapViewSize;
-  }
+  },
 
+  getEstimatedFeatureCount: function () {
+    if (this.hasEstimatedFeatureCount()) {
+      return _.reduce(this.layers.getCartoDBLayers(), function (memo, layerModel) {
+        return memo + layerModel.getEstimatedFeatureCount();
+      }, 0);
+    }
+  },
+
+  hasEstimatedFeatureCount: function () {
+    return _.every(this.layers.getCartoDBLayers(), function (layerModel) {
+      var estimatedFeatureCount = layerModel.getEstimatedFeatureCount();
+      return estimatedFeatureCount && estimatedFeatureCount >= 0;
+    });
+  }
 }, {
   PROVIDERS: {
     GMAPS: 'googlemaps',

@@ -671,12 +671,12 @@ module.exports = cdb.core.View.extend({
         .on('brushend', this._onBrushEnd);
 
     // create svg group with class brush and call brush on it
-    var brushg = this.chart.append("g")
-        .attr("class", "Brush")
+    var brushg = this.chart.append('g')
+        .attr('class', 'Brush')
         .call(brush);
 
     // set brush extent to rect and define objects height
-    brushg.selectAll("rect")
+    brushg.selectAll('rect')
         .attr('y', 0)
         .attr('height', this.chartHeight())
         .on('mouseout', this._onMouseOut)
@@ -692,8 +692,8 @@ module.exports = cdb.core.View.extend({
 
   _onBrushMove: function () {
     if (!this.brush.empty()) {
-      this.chart.classed('is-selectable', true)
-      this._axis.classed('is-disabled', true)
+      this.chart.classed('is-selectable', true);
+      this._axis.classed('is-disabled', true);
       this.model.set({ dragging: true });
       this._selectBars();
       this._setupFillColor();
@@ -703,7 +703,6 @@ module.exports = cdb.core.View.extend({
   },
 
   _onBrushEnd: function () {
-    var data = this.model.get('data');
     var brush = this.brush;
     var loBarIndex = this._getLoBarIndex();
     var hiBarIndex = this._getHiBarIndex();
@@ -716,7 +715,7 @@ module.exports = cdb.core.View.extend({
 
       return;
     } else {
-      // for some reason d3 launches several brushend
+      // for some reason d3 launches several brushend events
       if (!d3.event.sourceEvent) {
         return;
       }

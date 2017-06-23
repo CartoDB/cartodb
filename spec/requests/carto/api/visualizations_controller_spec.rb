@@ -681,39 +681,47 @@ describe Carto::Api::VisualizationsController do
     end
 
     context 'visualization likes endpoints' do
+      before(:all) do
+        @map, @table, @table_visualization, @map_visualization = create_full_visualization(@carto_user1, visualization_attributes: { version: nil, privacy: Carto::Visualization::PRIVACY_PUBLIC })
+      end
+
       before(:each) do
-        bypass_named_maps
-        @vis = FactoryGirl.create(:carto_visualization, user: Carto::User.find(@user_1.id))
-        @user_domain = @user_1.username
+        @vis = FactoryGirl.create(:carto_visualization, user: @carto_user1)
+        @user_domain = @carto_user1.username
       end
 
       describe 'GET likes_count' do
         it 'returns the number of likes for a given visualization' do
-          get api_v1_visualizations_likes_count_url(user_domain: @user_domain, id: @vis.id, api_key: @user_1.api_key)
+          get api_v1_visualizations_likes_count_url(user_domain: @user_domain, id: @vis.id, api_key: @carto_user1.api_key)
+          expect(last_response.status).to eq(200)
           expect(JSON.parse(last_response.body).fetch('likes').to_i).to eq(0)
 
-          @vis.add_like_from(@user_1.id)
+          @vis.add_like_from(@carto_user1.id)
 
-          get api_v1_visualizations_likes_count_url(user_domain: @user_domain, id: @vis.id, api_key: @user_1.api_key)
+          get api_v1_visualizations_likes_count_url(user_domain: @user_domain, id: @vis.id, api_key: @carto_user1.api_key)
+          expect(last_response.status).to eq(200)
           expect(JSON.parse(last_response.body).fetch('likes').to_i).to eq(1)
         end
       end
 
       describe 'GET likes_list' do
         it 'returns the likes for a given visualization' do
-          get api_v1_visualizations_likes_list_url(user_domain: @user_domain, id: @vis.id, api_key: @user_1.api_key)
+          get api_v1_visualizations_likes_list_url(user_domain: @user_domain, id: @vis.id, api_key: @carto_user1.api_key)
+          expect(last_response.status).to eq(200)
           expect(JSON.parse(last_response.body).fetch('likes')).to eq([])
 
-          @vis.add_like_from(@user_1.id)
+          @vis.add_like_from(@carto_user1.id)
 
-          get api_v1_visualizations_likes_list_url(user_domain: @user_domain, id: @vis.id, api_key: @user_1.api_key)
+          get api_v1_visualizations_likes_list_url(user_domain: @user_domain, id: @vis.id, api_key: @carto_user1.api_key)
+          expect(last_response.status).to eq(200)
           expect(JSON.parse(last_response.body).fetch('likes')).to eq([{'actor_id' => @user_1.id}])
 
-          @vis.add_like_from(@user_2.id)
-          @vis.remove_like_from(@user_1.id)
+          @vis.add_like_from(@carto_user2.id)
+          @vis.remove_like_from(@carto_user1.id)
 
-          get api_v1_visualizations_likes_list_url(user_domain: @user_domain, id: @vis.id, api_key: @user_1.api_key)
-          expect(JSON.parse(last_response.body).fetch('likes')).to eq([{'actor_id' => @user_2.id}])
+          get api_v1_visualizations_likes_list_url(user_domain: @user_domain, id: @vis.id, api_key: @carto_user1.api_key)
+          expect(last_response.status).to eq(200)
+          expect(JSON.parse(last_response.body).fetch('likes')).to eq([{'actor_id' => @carto_user2.id}])
         end
       end
 
@@ -721,97 +729,83 @@ describe Carto::Api::VisualizationsController do
         it 'return true when a given user liked a visualization, false otherwise' do
           @vis.add_like_from(@user_1.id)
 
-          get api_v1_visualizations_is_liked_url(user_domain: @user_domain, id: @vis.id, api_key: @user_1.api_key)
+          get api_v1_visualizations_is_liked_url(user_domain: @user_domain, id: @vis.id, api_key: @carto_user1.api_key)
+          expect(last_response.status).to eq(200)
           expect(JSON.parse(last_response.body).fetch('liked')).to be_true
 
-          get api_v1_visualizations_is_liked_url(user_domain: @user_domain, id: @vis.id, api_key: @user_2.api_key)
+          get api_v1_visualizations_is_liked_url(user_domain: @user_domain, id: @vis.id, api_key: @carto_user2.api_key)
+          expect(last_response.status).to eq(200)
           expect(JSON.parse(last_response.body).fetch('liked')).to be_false
         end
       end
 
       describe 'POST add_like' do
         it 'returns an error if you try to like twice a visualization' do
-          post api_v1_visualizations_add_like_url(user_domain: @user_domain, id: @vis.id, api_key: @user_1.api_key)
+          post api_v1_visualizations_add_like_url(user_domain: @user_domain, id: @vis.id, api_key: @carto_user1.api_key)
           expect(last_response.status).to eq(200)
 
-          post api_v1_visualizations_add_like_url(user_domain: @user_domain, id: @vis.id, api_key: @user_1.api_key)
+          post api_v1_visualizations_add_like_url(user_domain: @user_domain, id: @vis.id, api_key: @carto_user1.api_key)
           expect(last_response.status).to eq(400)
           expect(last_response.body).to eq("You've already liked this visualization")
         end
 
         it 'sends an email to the owner when a map is liked' do
-          table = new_table({user_id: @user_1.id, privacy: ::UserTable::PRIVACY_PUBLIC}).save.reload
-
-          # This user is of the same ORM as the table, so TableBlender works
-          orm_user = table.table_visualization.user
-          orm_user.reload
-          vis, rejected_layers = CartoDB::Visualization::DerivedCreator.new(orm_user, [table]).create
-          expect(rejected_layers).to be_empty
+          vis = @map_visualization
 
           Resque.expects(:enqueue)
-            .with(::Resque::UserJobs::Mail::MapLiked, vis.id, @user_2.id, kind_of(String))
-            .returns(true)
+                .with(::Resque::UserJobs::Mail::MapLiked, vis.id, @carto_user2.id, kind_of(String))
+                .returns(true)
 
-          post api_v1_visualizations_add_like_url(user_domain: @user_domain, id: vis.id, api_key: @user_2.api_key)
-          puts last_response.body
+          post api_v1_visualizations_add_like_url(user_domain: @user_domain, id: vis.id, api_key: @carto_user2.api_key)
           expect(last_response.status).to eq(200)
         end
 
         it 'does not send an email when a map is liked by the owner' do
-          table = new_table({user_id: @user_1.id, privacy: ::UserTable::PRIVACY_PUBLIC}).save.reload
-          # This user is of the same ORM as the table, so TableBlender works
-          orm_user = table.table_visualization.user
-          orm_user.reload
-          vis, rejected_layers = CartoDB::Visualization::DerivedCreator.new(orm_user, [table]).create
-          rejected_layers.empty?.should be true
+          vis = @map_visualization
 
           Resque.expects(:enqueue)
-            .with(::Resque::UserJobs::Mail::MapLiked, vis.id, @user_1.id, kind_of(String))
-            .never
+                .with(::Resque::UserJobs::Mail::MapLiked, vis.id, @carto_user2.id, kind_of(String))
+                .never
 
-          post api_v1_visualizations_add_like_url(user_domain: @user_domain, id: vis.id, api_key: @user_1.api_key)
+          post api_v1_visualizations_add_like_url(user_domain: @user_domain, id: vis.id, api_key: @carto_user1.api_key)
           expect(last_response.status).to eq(200)
         end
 
         it 'sends an email to the owner when a dataset is liked' do
-          vis = new_table({user_id: @user_1.id, privacy: ::UserTable::PRIVACY_PUBLIC}).save.reload.table_visualization
+          vis = @table_visualization
 
-          Resque.expects(:enqueue)
-            .with(::Resque::UserJobs::Mail::TableLiked, vis.id, @user_2.id, kind_of(String))
-            .returns(true)
-
-          post api_v1_visualizations_add_like_url(user_domain: @user_domain, id: vis.id, api_key: @user_2.api_key)
+          post api_v1_visualizations_add_like_url(user_domain: @user_domain, id: vis.id, api_key: @carto_user2.api_key)
           expect(last_response.status).to eq(200)
         end
 
         it 'does not send an email when when a dataset is liked by the owner' do
-          vis = new_table({user_id: @user_1.id, privacy: ::UserTable::PRIVACY_PUBLIC}).save.reload.table_visualization
+          vis = @table_visualization
 
           Resque.expects(:enqueue)
-            .with(::Resque::UserJobs::Mail::TableLiked, vis.id, @user_1.id, kind_of(String))
-            .never
+                .with(::Resque::UserJobs::Mail::TableLiked, vis.id, @carto_user1.id, kind_of(String))
+                .never
 
-          post api_v1_visualizations_add_like_url(user_domain: @user_domain, id: vis.id, api_key: @user_1.api_key)
+          post api_v1_visualizations_add_like_url(user_domain: @user_domain, id: vis.id, api_key: @carto_user1.api_key)
           expect(last_response.status).to eq(200)
         end
       end
 
       describe 'POST remove_like' do
         it 'removes a like from a given visualization and returns the number of likes' do
-          @vis.add_like_from(@user_1.id)
-          @vis.add_like_from(@user_2.id)
+          @vis.add_like_from(@carto_user1.id)
+          @vis.add_like_from(@carto_user2.id)
 
-          post api_v1_visualizations_remove_like_url(user_domain: @user_domain, id: @vis.id, api_key: @user_1.api_key)
+          delete api_v1_visualizations_remove_like_url(user_domain: @user_domain, id: @vis.id, api_key: @carto_user1.api_key)
           expect(last_response.status).to eq(200)
           expect(JSON.parse(last_response.body).fetch('likes').to_i).to eq(1)
 
-          post api_v1_visualizations_remove_like_url(user_domain: @user_domain, id: @vis.id, api_key: @user_2.api_key)
+          delete api_v1_visualizations_remove_like_url(user_domain: @user_domain, id: @vis.id, api_key: @carto_user2.api_key)
           expect(last_response.status).to eq(200)
           expect(JSON.parse(last_response.body).fetch('likes').to_i).to eq(0)
         end
 
         it 'does not returns error if you try to remove a non-existent like' do
-          post api_v1_visualizations_remove_like_url(user_domain: @user_domain, id: @vis.id, api_key: @user_1.api_key)
+          delete api_v1_visualizations_remove_like_url(user_domain: @user_domain, id: @vis.id, api_key: @carto_user1.api_key)
           expect(last_response.status).to eq(200)
           expect(JSON.parse(last_response.body).fetch('likes').to_i).to eq(0)
         end
@@ -821,13 +815,13 @@ describe Carto::Api::VisualizationsController do
     context 'notification endpoints' do
       before(:each) do
         bypass_named_maps
-        @vis = FactoryGirl.create(:carto_visualization, user: Carto::User.find(@user_1.id))
-        @user_domain = @user_1.username
+        @vis = FactoryGirl.create(:carto_visualization, user: Carto::User.find(@carto_user1.id))
+        @user_domain = @carto_user1.username
       end
 
       describe 'PUT notify_watching' do
         it '' do
-          put api_v1_visualizations_notify_watching_url(user_domain: @user_domain, id: @vis.id, api_key: @user_1.api_key)
+          put api_v1_visualizations_notify_watching_url(user_domain: @user_domain, id: @vis.id, api_key: @carto_user1.api_key)
           expect(last_response.status).to eq(200)
           expect(JSON.parse(last_response.body)).to eq('')
         end
@@ -835,7 +829,7 @@ describe Carto::Api::VisualizationsController do
 
       describe 'GET list_watching' do
         it '' do
-          get api_v1_visualizations_notify_watching_url(user_domain: @user_domain, id: @vis.id, api_key: @user_1.api_key)
+          get api_v1_visualizations_notify_watching_url(user_domain: @user_domain, id: @vis.id, api_key: @carto_user1.api_key)
           expect(last_response.status).to eq(200)
           expect(JSON.parse(last_response.body)).to eq('')
         end

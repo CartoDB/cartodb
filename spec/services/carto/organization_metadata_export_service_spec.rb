@@ -17,6 +17,9 @@ describe Carto::OrganizationMetadataExportService do
 
     @asset = FactoryGirl.create(:carto_asset, organization: @organization)
 
+    @group = FactoryGirl.create(:carto_group, organization: @organization)
+    @group.add_user(@non_owner.username)
+
     @organization.reload
   end
 
@@ -80,30 +83,46 @@ describe Carto::OrganizationMetadataExportService do
         service.export_organization_to_directory(@organization.id, path)
         source_organization = @organization.attributes
         source_users = @organization.users.map(&:attributes)
+        source_groups = @organization.groups.map(&:attributes)
+        source_group_users = @group.users.map(&:id)
 
         # Destroy, keeping the database
         Table.any_instance.stubs(:remove_table_from_user_database)
         @organization.users.flat_map(&:visualizations).each(&:destroy)
         @organization.users.each(&:destroy)
+        @organization.groups.each(&:destroy)
+        @organization.groups.clear
         @organization.destroy
 
         imported_organization = service.import_organization_and_users_from_directory(path)
         service.import_organization_visualizations_from_directory(imported_organization, path)
 
         compare_excluding_dates(imported_organization.attributes, source_organization)
+
         expect(imported_organization.users.count).to eq source_users.count
         imported_organization.users.zip(source_users).each do |u1, u2|
           compare_excluding_dates(u1.attributes, u2)
         end
+
+        expect(imported_organization.groups.count).to eq source_groups.count
+        imported_organization.groups.zip(source_groups).each do |g1, g2|
+          compare_excluding_fields(g1.attributes, g2, EXCLUDED_DATE_FIELDS + EXCLUDED_ID_FIELDS)
+        end
+        expect(imported_organization.groups.first.users.map(&:id)).to eq source_group_users
       end
     end
   end
 
   EXCLUDED_DATE_FIELDS = ['created_at', 'updated_at', 'period_end_date'].freeze
+  EXCLUDED_ID_FIELDS = ['id', 'organization_id'].freeze
 
   def compare_excluding_dates(u1, u2)
-    filtered1 = u1.reject { |k, _| EXCLUDED_DATE_FIELDS.include?(k) }
-    filtered2 = u2.reject { |k, _| EXCLUDED_DATE_FIELDS.include?(k) }
+    compare_excluding_fields(u1, u2, EXCLUDED_DATE_FIELDS)
+  end
+
+  def compare_excluding_fields(u1, u2, fields)
+    filtered1 = u1.reject { |k, _| fields.include?(k) }
+    filtered2 = u2.reject { |k, _| fields.include?(k) }
     expect(filtered1).to eq filtered2
   end
 

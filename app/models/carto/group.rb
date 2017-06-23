@@ -24,7 +24,7 @@ module Carto
     has_many :users_group, dependent: :destroy, class_name: Carto::UsersGroup
     has_many :users, through: :users_group
 
-    validates :name, :database_role, :organization_id, presence: true
+    validates :name, :database_role, :organization, presence: true
 
     # Constructor for groups already existing in the database
     def self.new_instance(database_name, name, database_role, display_name = name)

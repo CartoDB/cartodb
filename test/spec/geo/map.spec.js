@@ -2,6 +2,7 @@ var _ = require('underscore');
 var Backbone = require('backbone');
 var VisModel = require('../../../src/vis/vis');
 var PlainLayer = require('../../../src/geo/map/plain-layer');
+var util = require('../../../src/core/util');
 var CartoDBLayer = require('../../../src/geo/map/cartodb-layer');
 var TorqueLayer = require('../../../src/geo/map/torque-layer');
 var TileLayer = require('../../../src/geo/map/tile-layer');
@@ -30,11 +31,6 @@ describe('core/geo/map', function () {
   });
 
   describe('.initialize', function () {
-    it('should have keyboard attribute falsy by default', function () {
-      expect(map.get('keyboard')).toBeFalsy();
-      expect(Map.prototype.defaults.keyboard).toBeFalsy();
-    });
-
     it('should parse bounds and set attributes', function () {
       var map = new Map({
         bounds: [[0, 1], [2, 3]]

@@ -4,6 +4,7 @@ var Backbone = require('backbone');
 var config = require('cdb.config');
 var log = require('cdb.log');
 var Model = require('../core/model');
+var util = require('../core/util');
 var Layers = require('./map/layers');
 var sanitize = require('../core/sanitize');
 var GeometryFactory = require('./geometry-models/geometry-factory');
@@ -17,7 +18,7 @@ var Map = Model.extend({
     maxZoom: 20,
     scrollwheel: true,
     drag: true,
-    keyboard: false, // #cartodb.js/1652
+    keyboard: !util.supportsTouch(), // #cartodb.js/1652
     provider: 'leaflet',
     popupsEnabled: true,
     isFeatureInteractivityEnabled: false

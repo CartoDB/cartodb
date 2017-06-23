@@ -127,6 +127,10 @@ util.isMobileDevice = function () {
   return /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 };
 
+util.supportsTouch = function () {
+  return 'ontouchstart' in window || navigator.msMaxTouchPoints;
+};
+
 util.isWebGLSupported = function () {
   return !!window.WebGLRenderingContext;
 };

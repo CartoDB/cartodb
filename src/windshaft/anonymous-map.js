@@ -93,6 +93,7 @@ var sharedOptionsForMapnikAndTorqueLayers = function (layerModel) {
 var AnonymousMap = MapBase.extend({
   toJSON: function () {
     return {
+      buffersize: {mvt: 0},
       layers: this._calculateLayersSection(),
       dataviews: this._calculateDataviewsSection(),
       analyses: this._calculateAnalysesSection()

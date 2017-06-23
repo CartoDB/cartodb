@@ -42,8 +42,8 @@ var View = Backbone.View.extend({
   },
 
   /**
-   * this methid clean removes the view
-   * and clean and events associated. call it when
+   * this method clean removes the view
+   * and clean and events associated. Call it when
    * the view is not going to be used anymore
    */
   clean: function() {
@@ -57,6 +57,7 @@ var View = Backbone.View.extend({
     }
     this.remove();
     this.unbind();
+    this.stopListening();
     // remove this model binding
     if (this.model && this.model.unbind) this.model.unbind(null, null, this);
     // remove model binding

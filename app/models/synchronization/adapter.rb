@@ -37,7 +37,7 @@ module CartoDB
           overwrite(table_name, result)
           setup_table(table_name, geo_type)
           run_index_statements(index_statements)
-          recreate_overviews(result)
+          recreate_overviews(table_name)
         end
         self
       rescue => exception
@@ -50,8 +50,8 @@ module CartoDB
         raise exception
       end
 
-      def recreate_overviews(result)
-        dataset = @overviews_creator.dataset(result.name)
+      def recreate_overviews(table_name)
+        dataset = @overviews_creator.dataset(table_name)
         dataset.delete_overviews!
         if dataset.should_create_overviews?
           dataset.create_overviews!
@@ -68,7 +68,7 @@ module CartoDB
           message:    "Overviews recreation failed",
           exception:  exception,
           user:       @user,
-          table_name: result.name
+          table_name: table_name
         )
       end
 

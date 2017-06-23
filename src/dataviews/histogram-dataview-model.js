@@ -19,12 +19,12 @@ module.exports = DataviewModelBase.extend({
     if (_.isNumber(this.get('own_filter'))) {
       params.push('own_filter=' + this.get('own_filter'));
     } else {
-      // if (_.isNumber(this.get('start'))) {
-      //   params.push('start=' + this.get('start'));
-      // }
-      // if (_.isNumber(this.get('end'))) {
-      //   params.push('end=' + this.get('end'));
-      // }
+      if (_.isNumber(this.get('start'))) {
+        params.push('start=' + this.get('start'));
+      }
+      if (_.isNumber(this.get('end'))) {
+        params.push('end=' + this.get('end'));
+      }
       if (this.get('aggregation')) {
         params.push('aggregation=' + this.get('aggregation'));
       } else if (this.get('bins')) {
@@ -60,6 +60,7 @@ module.exports = DataviewModelBase.extend({
     }, this);
 
     this.listenTo(this.layer, 'change:meta', this._onChangeLayerMeta);
+    this.on('change:start change:end', this._fetchAndResetFilter, this);
     this.on('change', this._onChanged, this);
 
     if (attrs && (attrs.min || attrs.max)) {
@@ -208,17 +209,13 @@ module.exports = DataviewModelBase.extend({
   _onChanged: function () {
     if (this.hasChanged('column') || this.hasChanged('aggregation')) {
       this._reloadVisAndForceFetch();
-    } else if (!this.hasChanged('status') && this.hasChanged('bins')) {
+    } else if (!this.hasChanged('status') && (this.hasChanged('bins'))) {
       this._fetchAndResetFilter();      
     }
 
     if (this.hasChanged('aggregation')) {
       this._unfilteredData.setAggregation(this.get('aggregation'));
     }
-
-    // this.on('change:column', this._onColumnChanged, this);
-    // this.on('change:start change:end', this._fetchAndResetFilter, this);
-    // this.on('change:bins change:aggregation', this._onChanged, this);
   }
 },
 

@@ -217,19 +217,19 @@ $chartMiniSelected: rgba(#333, 1);
     fill: $commonBkg;
   }
   .CDB-Chart-axisTipRect {
-    fill: #eeeeee;
+    fill: #eee;
   }
-  .CDB-Chart-axisTipRect--inverted {
+  .CDB-Chart-axisTipRect--inverted {
     font-weight: bold;
     fill: $primary;
   }
   .CDB-Chart-axisTipText {
+    font-size: 11px;
     font-weight: bold;
     fill: $primary;
-    font-size: 11px;
   }
   .CDB-Chart-axisTipText--inverted {
-    stroke: #eeeeee;
+    stroke: #eee;
   }
   .CDB-Chart-handleLine {
     stroke: $link;

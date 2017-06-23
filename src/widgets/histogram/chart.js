@@ -592,6 +592,14 @@ module.exports = cdb.core.View.extend({
     return this.model.get('dragging');
   },
 
+  setAnimated: function () {
+    return this.model.set('animated', true);
+  },
+
+  _isAnimated: function () {
+    return this.model.get('animated');
+  },
+
   _move: function (pos) {
     this.model.set({ pos: pos });
   },
@@ -703,24 +711,48 @@ module.exports = cdb.core.View.extend({
   },
 
   _onBrushEnd: function () {
+    var data = this.model.get('data');
     var brush = this.brush;
+    var loPosition, hiPosition;
+
     var loBarIndex = this._getLoBarIndex();
     var hiBarIndex = this._getHiBarIndex();
 
     this.model.set({ dragging: false });
 
-    if (brush.empty()) {
-      // loPosition & hiPosition are the same value
+    // click in animated histogram
+    if (brush.empty() && this._isAnimated()) {
+      // loBarIndex & hiBarIndex are the same value
       this.trigger('on_brush_click', loBarIndex);
 
       return;
     } else {
+      loPosition = this._getBarPosition(loBarIndex);
+      hiPosition = this._getBarPosition(hiBarIndex);
+
       // for some reason d3 launches several brushend events
       if (!d3.event.sourceEvent) {
         return;
       }
 
+      // click in first and last indexes
+      if (loBarIndex === hiBarIndex) {
+        if (hiBarIndex >= data.length) {
+          loBarIndex = data.length - 1;
+          hiBarIndex = data.length;
+        } else {
+          hiBarIndex = hiBarIndex + 1;
+        }
+      }
+
       this.model.set({ lo_index: loBarIndex, hi_index: hiBarIndex });
+    }
+
+    // click in non animated histogram
+    if (d3.event.sourceEvent && loPosition === undefined && hiPosition === undefined) {
+      var barIndex = this._getBarIndex();
+
+      this.model.set({ lo_index: barIndex, hi_index: barIndex + 1 });
     }
 
     this._setupFillColor();

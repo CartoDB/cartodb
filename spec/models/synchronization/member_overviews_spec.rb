@@ -161,10 +161,9 @@ describe Synchronization::Member do
     end
   end
 
-
   private
 
-  def random_attributes(attributes={})
+  def random_attributes(attributes = {})
     random = unique_integer
     {
       name:       attributes.fetch(:name, "name#{random}"),

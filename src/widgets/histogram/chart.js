@@ -881,15 +881,6 @@ module.exports = cdb.core.View.extend({
     this.rightHandle = this._generateHandle('right');
   },
 
-  // _generateHandleLine: function () {
-  //   return this.chart.select('.CDB-Chart-handles').append('line')
-  //     .attr('class', 'CDB-Chart-handleLine')
-  //     .attr('x1', 0)
-  //     .attr('y1', 0)
-  //     .attr('x2', 0)
-  //     .attr('y2', this.chartHeight());
-  // },
-
   _removeHandles: function () {
     this.chart.select('.CDB-Chart-handles').remove();
   },

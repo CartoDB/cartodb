@@ -228,6 +228,8 @@ module.exports = cdb.core.View.extend({
     var loBarIndex = this.model.get('lo_index');
     var hiBarIndex = this.model.get('hi_index');
     this.selectRange(loBarIndex, hiBarIndex);
+    this._updateAxisTip('left');
+    this._updateAxisTip('right');
   },
 
   _onChangeNormalized: function () {
@@ -372,8 +374,6 @@ module.exports = cdb.core.View.extend({
     this._calcBarWidth();
     this._generateChartContent();
     this._generateShadowBars();
-    this._updateAxisTip('left');
-    this._updateAxisTip('right');
   },
 
   refresh: function () {

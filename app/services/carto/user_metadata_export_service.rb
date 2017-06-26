@@ -190,7 +190,6 @@ module Carto
       end
 
       yield
-
     ensure
       if was_viewer
         user.update_attributes(viewer: true)

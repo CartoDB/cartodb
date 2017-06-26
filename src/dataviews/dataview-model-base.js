@@ -129,6 +129,40 @@ module.exports = Model.extend({
     }
   },
 
+  _onChangeBinds: function () {
+    this.on('change:sync_on_bbox_change', function () {
+      this.refresh();
+    }, this);
+
+    this.listenTo(this._map, 'change:center change:zoom', _.debounce(this._onMapBoundsChanged.bind(this), BOUNDING_BOX_FILTER_WAIT));
+
+    this.on('change:url', function (model, value, opts) {
+      if (this.syncsOnDataChanges()) {
+        this._newDataAvailable = true;
+      }
+      if (this._shouldFetchOnURLChange(opts && _.pick(opts, ['forceFetch', 'sourceId']))) {
+        this.fetch();
+      }
+    }, this);
+
+    this.on('change:enabled', function (mdl, isEnabled) {
+      if (isEnabled && this._newDataAvailable) {
+        this.fetch();
+        this._newDataAvailable = false;
+      }
+    }, this);
+  },
+
+  _onMapBoundsChanged: function () {
+    if (this._shouldFetchOnBoundingBoxChange()) {
+      this.fetch();
+    }
+
+    if (this.syncsOnBoundingBoxChanges()) {
+      this._newDataAvailable = true;
+    }
+  },
+
   _initialFetch: function () {
     this.fetch({
       success: this._onChangeBinds.bind(this)
@@ -206,45 +240,6 @@ module.exports = Model.extend({
    */
   _onLayerVisibilityChanged: function (model, value) {
     this.set({enabled: value});
-  },
-
-  _onChangeBinds: function () {
-    this.on('change:sync_on_bbox_change', function () {
-      this.refresh();
-    }, this);
-
-    this.listenTo(this._map, 'change:center change:zoom', _.debounce(this._onMapBoundsChanged.bind(this), BOUNDING_BOX_FILTER_WAIT));
-
-    var onChangedUrl = function (model, value, opts) {
-      if (this.syncsOnDataChanges()) {
-        this._newDataAvailable = true;
-      }
-      if (this._shouldFetchOnURLChange(opts && _.pick(opts, ['forceFetch', 'sourceId']))) {
-        this.fetch();
-      }
-    }.bind(this);
-
-    // We need to unbind the event because we end up with one more
-    // event binding everytime this function is called
-    this.off('change:url', onChangedUrl, this);
-    this.on('change:url', onChangedUrl, this);
-
-    this.on('change:enabled', function (mdl, isEnabled) {
-      if (isEnabled && this._newDataAvailable) {
-        this.fetch();
-        this._newDataAvailable = false;
-      }
-    }, this);
-  },
-
-  _onMapBoundsChanged: function () {
-    if (this._shouldFetchOnBoundingBoxChange()) {
-      this.fetch();
-    }
-
-    if (this.syncsOnBoundingBoxChanges()) {
-      this._newDataAvailable = true;
-    }
   },
 
   _shouldFetchOnURLChange: function (options) {

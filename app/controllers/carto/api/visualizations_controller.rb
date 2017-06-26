@@ -36,8 +36,12 @@ module Carto
       before_filter :id_and_schema_from_params
 
       before_filter :load_visualization, only: [:likes_count, :likes_list, :is_liked, :add_like, :remove_like, :show,
-                                                :stats, :list_watching, :notify_watching, :static_map, :vizjson2,
-                                                :vizjson3, :update, :destroy, :google_maps_static_image]
+                                                :list_watching, :notify_watching, :static_map, :vizjson2, :vizjson3,
+                                                :update, :destroy, :google_maps_static_image]
+
+      before_filter :ensure_username_matches_visualization_owner, only: [:show, :static_map, :vizjson2, :vizjson3,
+                                                                         :list_watching, :notify_watching, :update,
+                                                                         :destroy, :google_maps_static_image]
 
       before_filter :ensure_visualization_owned, only: [:destroy, :google_maps_static_image]
       before_filter :ensure_visualization_is_viewable, only: [:add_like, :remove_like, :notify_watching, :list_watching]
@@ -369,9 +373,13 @@ module Carto
         if @visualization.nil?
           raise Carto::LoadError.new('Visualization does not exist', 404)
         end
+
         if !@visualization.is_viewable_by_user?(current_viewer)
           raise Carto::LoadError.new('Visualization not viewable', 403)
         end
+      end
+
+      def ensure_username_matches_visualization_owner
         unless request_username_matches_visualization_owner
           raise Carto::LoadError.new('Visualization of that user does not exist', 404)
         end

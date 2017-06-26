@@ -681,13 +681,15 @@ describe Carto::Api::VisualizationsController do
     end
 
     context 'visualization likes endpoints' do
-      before(:all) do
-        @map, @table, @table_visualization, @map_visualization = create_full_visualization(@carto_user1, visualization_attributes: { version: nil, privacy: Carto::Visualization::PRIVACY_PUBLIC })
-      end
-
       before(:each) do
+        @map, @table, @table_visualization, @map_visualization = create_full_visualization(@carto_user1, visualization_attributes: { version: nil, privacy: Carto::Visualization::PRIVACY_PUBLIC })
         @vis = FactoryGirl.create(:carto_visualization, user: @carto_user1)
         @user_domain = @carto_user1.username
+        @user_domain2 = @carto_user2.username
+      end
+
+      after(:each) do
+        destroy_full_visualization(@map, @table, @table_visualization, @map_visualization)
       end
 
       describe 'GET likes_count' do
@@ -733,13 +735,21 @@ describe Carto::Api::VisualizationsController do
           expect(last_response.status).to eq(200)
           expect(JSON.parse(last_response.body).fetch('liked')).to be_true
 
-          get api_v1_visualizations_is_liked_url(user_domain: @user_domain, id: @vis.id, api_key: @carto_user2.api_key)
+          get api_v1_visualizations_is_liked_url(user_domain: @user_domain2, id: @vis.id, api_key: @carto_user2.api_key)
           expect(last_response.status).to eq(200)
           expect(JSON.parse(last_response.body).fetch('liked')).to be_false
         end
       end
 
       describe 'POST add_like' do
+        it 'add likes to a given visualization' do
+          post api_v1_visualizations_add_like_url(user_domain: @user_domain, id: @vis.id, api_key: @carto_user1.api_key)
+          expect(last_response.status).to eq(200)
+
+          post api_v1_visualizations_add_like_url(user_domain: @user_domain2, id: @vis.id, api_key: @carto_user2.api_key)
+          expect(last_response.status).to eq(200)
+        end
+
         it 'returns an error if you try to like twice a visualization' do
           post api_v1_visualizations_add_like_url(user_domain: @user_domain, id: @vis.id, api_key: @carto_user1.api_key)
           expect(last_response.status).to eq(200)
@@ -756,7 +766,7 @@ describe Carto::Api::VisualizationsController do
                 .with(::Resque::UserJobs::Mail::MapLiked, vis.id, @carto_user2.id, kind_of(String))
                 .returns(true)
 
-          post api_v1_visualizations_add_like_url(user_domain: @user_domain, id: vis.id, api_key: @carto_user2.api_key)
+          post api_v1_visualizations_add_like_url(user_domain: @user_domain2, id: vis.id, api_key: @carto_user2.api_key)
           expect(last_response.status).to eq(200)
         end
 
@@ -774,7 +784,7 @@ describe Carto::Api::VisualizationsController do
         it 'sends an email to the owner when a dataset is liked' do
           vis = @table_visualization
 
-          post api_v1_visualizations_add_like_url(user_domain: @user_domain, id: vis.id, api_key: @carto_user2.api_key)
+          post api_v1_visualizations_add_like_url(user_domain: @user_domain2, id: vis.id, api_key: @carto_user2.api_key)
           expect(last_response.status).to eq(200)
         end
 
@@ -799,7 +809,7 @@ describe Carto::Api::VisualizationsController do
           expect(last_response.status).to eq(200)
           expect(JSON.parse(last_response.body).fetch('likes').to_i).to eq(1)
 
-          delete api_v1_visualizations_remove_like_url(user_domain: @user_domain, id: @vis.id, api_key: @carto_user2.api_key)
+          delete api_v1_visualizations_remove_like_url(user_domain: @user_domain2, id: @vis.id, api_key: @carto_user2.api_key)
           expect(last_response.status).to eq(200)
           expect(JSON.parse(last_response.body).fetch('likes').to_i).to eq(0)
         end
@@ -812,32 +822,37 @@ describe Carto::Api::VisualizationsController do
       end
     end
 
-    context 'notification endpoints' do
+
+    describe 'tests visualization likes endpoints in organizations' do
+      include_context 'organization with users helper'
+
       before(:each) do
-        bypass_named_maps
-        @vis = FactoryGirl.create(:carto_visualization, user: Carto::User.find(@carto_user1.id))
-        @user_domain = @carto_user1.username
+        @vis = FactoryGirl.create(:carto_visualization, user: @carto_org_user_1)
+        @user_domain = @carto_org_user_1.username
       end
 
       describe 'PUT notify_watching' do
-        it '' do
-          put api_v1_visualizations_notify_watching_url(user_domain: @user_domain, id: @vis.id, api_key: @carto_user1.api_key)
+        it 'adds the user to the watching list' do
+          put api_v1_visualizations_notify_watching_url(user_domain: @user_domain, id: @vis.id, api_key: @carto_org_user_1.api_key)
           expect(last_response.status).to eq(200)
-          expect(JSON.parse(last_response.body)).to eq('')
+          expect(JSON.parse(last_response.body)).to eq([@carto_org_user_1.username])
         end
       end
 
       describe 'GET list_watching' do
-        it '' do
-          get api_v1_visualizations_notify_watching_url(user_domain: @user_domain, id: @vis.id, api_key: @carto_user1.api_key)
+        it 'returns the users currently on the watching list' do
+          get api_v1_visualizations_notify_watching_url(user_domain: @user_domain, id: @vis.id, api_key: @carto_org_user_1.api_key)
           expect(last_response.status).to eq(200)
-          expect(JSON.parse(last_response.body)).to eq('')
+          expect(JSON.parse(last_response.body)).to eq([])
+
+          put api_v1_visualizations_notify_watching_url(user_domain: @user_domain, id: @vis.id, api_key: @carto_org_user_1.api_key)
+          expect(last_response.status).to eq(200)
+
+          get api_v1_visualizations_notify_watching_url(user_domain: @user_domain, id: @vis.id, api_key: @carto_org_user_1.api_key)
+          expect(last_response.status).to eq(200)
+          expect(JSON.parse(last_response.body)).to eq([@carto_org_user_1.username])
         end
       end
-    end
-
-    describe 'tests visualization likes endpoints in organizations' do
-      include_context 'organization with users helper'
 
       it 'tests totals calculations' do
         bypass_named_maps

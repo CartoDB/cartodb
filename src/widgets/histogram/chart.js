@@ -159,12 +159,18 @@ module.exports = cdb.core.View.extend({
     var xLimit = className === 'right' ? this.chartWidth() : 0;
     var xDiff = Math.abs(xLimit - xPos);
 
+    var transform = d3.transform(triangle.attr('transform'));
+
     if (xDiff <= (TRIANGLE_SIDE / 2)) {
       xDiff = className === 'right' ? TRIANGLE_SIDE - xDiff : xDiff;
       triangle.attr('d', trianglePath(0, 0, TRIANGLE_SIDE, 0, xDiff, y3Factor * TRIANGLE_HEIGHT));
+      transform.translate[0] = className === 'left' ? 0 : Math.max(0, this.options.handleWidth - TRIANGLE_SIDE);
     } else {
       triangle.attr('d', trianglePath(0, 0, TRIANGLE_SIDE, 0, (TRIANGLE_SIDE / 2), y3Factor * TRIANGLE_HEIGHT));
+      transform.translate[0] = ((this.options.handleWidth / 2) - (TRIANGLE_SIDE / 2));
     }
+
+    triangle.attr('transform', transform.toString());
   },
 
   _updateAxisTip: function (className) {
@@ -902,7 +908,7 @@ module.exports = cdb.core.View.extend({
 
     handle.append('path')
       .attr('class', 'CDB-Chart-axisTipRect CDB-Chart-axisTipTriangle')
-      .attr('transform', 'translate(' + ((this.options.handleWidth / 2) - 4) + ', ' + yTriangle + ')')
+      .attr('transform', 'translate(' + ((this.options.handleWidth / 2) - (TRIANGLE_SIDE / 2)) + ', ' + yTriangle + ')')
       .attr('d', trianglePath(0, 0, TRIANGLE_SIDE, 0, (TRIANGLE_SIDE / 2), triangleHeight))
       .style('opacity', '0');
 

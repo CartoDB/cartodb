@@ -54,29 +54,28 @@ module.exports = DataviewModelBase.extend({
   _initBinds: function () {
     DataviewModelBase.prototype._initBinds.apply(this);
 
-    // We shouldn't listen url change for fetching the data (with filter) because
-    // we have to wait until we know all the data available (without any filter).
-    this.stopListening(this, 'change:url', null);
-    this.on('change:url', function () {
-      this._originalData.setUrl(this.get('url'));
-    }, this);
+    this._updateURLBinding();
 
     // When original data gets fetched
-    this._originalData.bind('change:data', function (model) {
-      this.set({
-        start: model.get('start'),
-        end: model.get('end'),
-        bins: model.get('bins')
-      }, { silent: true });
-      this._fetchAndResetFilter();
-    }, this);
-    this._originalData.once('change:data', this._onChangeBinds, this);
+    this._originalData.bind('change:data', this._onDataChanged, this);
+    this._originalData.once('change:data', this._updateBindings, this);
 
+    this.on('change:column', this._reloadVisAndForceFetch, this);
 
-
+    // this.on('change:aggregation change:bins change:start change:end', this._onFieldsChanged, this);
     // this.listenTo(this.layer, 'change:meta', this._onChangeLayerMeta);
-    // this.on('change:column change:aggregation', this._reloadVisAndForceFetch, this);
-    // //this.on('change:bins change:start change:end', this._fetchAndResetFilter(true), this);
+  },
+
+  _updateURLBinding: function () {
+    // We shouldn't listen url change for fetching the data (with filter) because
+    // we have to wait until we know all the data available (without any filter).
+    this.off('change:url');
+    this.on('change:url', this._onUrlChanged, this);
+  },
+
+  _updateBindings: function () {
+    this._onChangeBinds();
+    this._updateURLBinding();
   },
 
   enableFilter: function () {
@@ -103,7 +102,7 @@ module.exports = DataviewModelBase.extend({
     var numberOfBins = data.bins_count;
     var isAggregation = !!this.get('aggregation');
     var width = data.bin_width;
-    var start = isAggregation ? data.bins_start : data.bins_start;
+    var start = data.bins_start;
 
     // Temporary hack
     if (this._originalData.get('bins') && this._originalData.get('bins') < numberOfBins) {
@@ -199,14 +198,36 @@ module.exports = DataviewModelBase.extend({
     DataviewModelBase.prototype._onChangeBinds.call(this);
   },
 
+  _onUrlChanged: function () {
+    this._originalData.set({
+      aggregation: this.get('aggregation'),
+      bins: this.get('bins')
+    }, { silent: true });
+    
+    this._originalData.setUrl(this.get('url'));
+  },
+
+  _onDataChanged: function (model) {
+    this.set({
+      start: model.get('start'),
+      end: model.get('end'),
+      bins: model.get('bins')
+    }, { silent: true });
+    
+    this._fetchAndResetFilter();
+  },
+
+  _onFieldsChanged: function () {
+    this._originalData.set({
+      aggregation: this.get('aggregation'),
+      bins: this.get('bins')
+    });
+  },
+
   _fetchAndResetFilter: function () {    
     this.fetch();
     this.disableFilter();
     this.filter.unsetRange();
-  },
-
-  _onColumnChanged: function () {
-    this._reloadVisAndForceFetch();
   }
 },
 

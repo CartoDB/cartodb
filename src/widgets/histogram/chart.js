@@ -7,13 +7,14 @@ var tinycolor = require('tinycolor2');
 var formatter = require('../../formatter');
 var FILTERED_COLOR = '#1181FB';
 var UNFILTERED_COLOR = 'rgba(0, 0, 0, 0.06)';
-var TIP_RECT_HEIGHT = 19;
+var TIP_RECT_HEIGHT = 17;
 var TIP_H_PADDING = 6;
 var TRIANGLE_SIDE = 8;
 // Equilateral triangle height formula
 var TRIANGLE_HEIGHT = Math.sqrt(Math.pow(TRIANGLE_SIDE, 2) - Math.pow(TRIANGLE_SIDE / 2, 2));
 // How much lower (based on height) will the triangle be on the right side
-var TRIANGLE_RIGHT_FACTOR = 1.5;
+var TRIANGLE_RIGHT_FACTOR = 1.3;
+var TOOLTIP_MARGIN = 2;
 
 var SVG_CLASS = 'CDB-Chart--histogram';
 
@@ -174,12 +175,13 @@ module.exports = cdb.core.View.extend({
 
     rectLabel.attr('width', width + TIP_H_PADDING);
     textLabel.attr('dx', TIP_H_PADDING / 2);
-    textLabel.attr('dy', textBBox.height - Math.abs((textBBox.height - rectLabel.node().getBBox().height) / 2));
+    textLabel.attr('dy', textBBox.height - Math.abs((textBBox.height - TIP_RECT_HEIGHT) / 2));
 
     var parts = d3.transform(handle.attr('transform')).translate;
     var xPos = +parts[0] + (this.options.handleWidth / 2);
 
-    var yPos = className === 'left' ? -30 : this.chartHeight() + (TRIANGLE_HEIGHT * TRIANGLE_RIGHT_FACTOR);
+    var yPos = className === 'left' ? -(TRIANGLE_HEIGHT + TIP_RECT_HEIGHT + TOOLTIP_MARGIN) : this.chartHeight() + (TRIANGLE_HEIGHT * TRIANGLE_RIGHT_FACTOR);
+    yPos = Math.floor(yPos);
 
     if ((xPos - width / 2) < 0) {
       axisTip.attr('transform', 'translate(-' + xPos + ',' + yPos + ' )');
@@ -868,8 +870,8 @@ module.exports = cdb.core.View.extend({
   _generateAxisTip: function (className) {
     var handle = this.chart.select('.CDB-Chart-handle.CDB-Chart-handle-' + className);
 
-    var yPos = className === 'right' ? this.chartHeight() + (TRIANGLE_HEIGHT * TRIANGLE_RIGHT_FACTOR) : -30;
-    var yTriangle = className === 'right' ? this.chartHeight() + (TRIANGLE_HEIGHT * TRIANGLE_RIGHT_FACTOR) : -11;
+    var yPos = className === 'right' ? this.chartHeight() + (TRIANGLE_HEIGHT * TRIANGLE_RIGHT_FACTOR) : -(TRIANGLE_HEIGHT + TIP_RECT_HEIGHT + TOOLTIP_MARGIN);
+    var yTriangle = className === 'right' ? this.chartHeight() + (TRIANGLE_HEIGHT * TRIANGLE_RIGHT_FACTOR) : -(TRIANGLE_HEIGHT + TOOLTIP_MARGIN);
     var sign = className === 'right' ? '-' : ' ';
 
     var axisTip = handle.selectAll('g')

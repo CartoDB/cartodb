@@ -20,6 +20,8 @@ describe Carto::OrganizationMetadataExportService do
     @group = FactoryGirl.create(:carto_group, organization: @organization)
     @group.add_user(@non_owner.username)
 
+    FactoryGirl.create(:notification, organization: @organization)
+
     @organization.reload
   end
 
@@ -134,10 +136,19 @@ describe Carto::OrganizationMetadataExportService do
     end
 
     expect(export[:assets].count).to eq organization.assets.size
-    export[:assets].zip(organization.assets).each { |exported_asset, asset| expect_export_matches_asset(exported_asset, asset) }
+    export[:assets].zip(organization.assets).each do |exported_asset, asset|
+      expect_export_matches_asset(exported_asset, asset)
+    end
 
     expect(export[:groups].count).to eq organization.groups.size
-    export[:groups].zip(organization.groups).each { |exported_group, group| expect_export_matches_group(exported_group, group) }
+    export[:groups].zip(organization.groups).each do |exported_group, group|
+      expect_export_matches_group(exported_group, group)
+    end
+
+    expect(export[:notifications].count).to eq organization.notifications.size
+    export[:notifications].zip(organization.notifications).each do |exported_notification, notification|
+      expect_export_matches_notification(exported_notification, notification)
+    end
   end
 
   def expect_export_matches_asset(exported_asset, asset)
@@ -151,6 +162,19 @@ describe Carto::OrganizationMetadataExportService do
     expect(exported_group[:display_name]).to eq group.display_name
     expect(exported_group[:database_role]).to eq group.database_role
     expect(exported_group[:auth_token]).to eq group.auth_token
+  end
+
+  def expect_export_matches_notification(exported_notification, notification)
+    expect(exported_notification[:icon]).to eq notification.icon
+    expect(exported_notification[:recipients]).to eq notification.recipients
+    expect(exported_notification[:body]).to eq notification.body
+    expect(exported_notification[:created_at]).to eq notification.created_at
+  end
+
+  def expect_export_matches_received_notification(exported_received_notification, received_notification)
+    expect(exported_received_notification[:user_id]).to eq received_notification.user_id
+    expect(exported_received_notification[:received_at]).to eq received_notification.received_at
+    expect(exported_received_notification[:read_at]).to eq received_notification.read_at
   end
 
   let(:full_export) do
@@ -216,13 +240,24 @@ describe Carto::OrganizationMetadataExportService do
             identifier: "public/uploads/organization_assets/189d642c-c7da-40aa-bffd-517aa0eb7999/asset_download_148430456220170113-20961-67b7r0"
           }
         }],
-        groups: [{
-          name: 'g_group',
-          display_name: '#group',
-          database_role: 'a98f3bc6391fadfe4d1487e2b6912d24_g_g_group',
-          auth_token: 'TE7rg6_4RU8vAeTeEeITIQ',
-          users: []
-        }]
+        groups: [
+          {
+            name: 'g_group',
+            display_name: '#group',
+            database_role: 'a98f3bc6391fadfe4d1487e2b6912d24_g_g_group',
+            auth_token: 'TE7rg6_4RU8vAeTeEeITIQ',
+            users: []
+          }
+        ],
+        notifications: [
+          {
+            icon: "alert",
+            recipients: "all",
+            body: "Empty body",
+            created_at: DateTime.now,
+            received_by: []
+          }
+        ]
       }
     }
   end

@@ -52,10 +52,11 @@ module.exports = Model.extend({
     this.on('change:url', function () {
       this.fetch();
     }, this);
-    // this.bind('change:url change:aggregation change:bins', function () {
-    //   if (this.hasChanged('bins') && this.get('aggregation')) return;
-    //   this.fetch();
-    // }, this);
+
+    this.bind('change:aggregation change:bins', function () {
+      if (this.hasChanged('bins') && this.get('aggregation')) return;
+      this.fetch();
+    }, this);
   },
 
   setUrl: function (url) {
@@ -120,5 +121,9 @@ module.exports = Model.extend({
         freq: 0
       }, buckets[i]);
     }
+
+    // Temporary Hack
+    var lastBucket = _.last(buckets);
+    lastBucket.end = lastBucket.end - 1;
   }
 });

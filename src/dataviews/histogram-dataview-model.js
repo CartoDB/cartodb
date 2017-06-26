@@ -61,8 +61,8 @@ module.exports = DataviewModelBase.extend({
     this._originalData.once('change:data', this._updateBindings, this);
 
     this.on('change:column', this._reloadVisAndForceFetch, this);
+    this.on('change:aggregation', this._onFieldsChanged, this); //  change:bins change:start change:end
 
-    // this.on('change:aggregation change:bins change:start change:end', this._onFieldsChanged, this);
     // this.listenTo(this.layer, 'change:meta', this._onChangeLayerMeta);
   },
 
@@ -105,9 +105,9 @@ module.exports = DataviewModelBase.extend({
     var start = data.bins_start;
 
     // Temporary hack
-    if (this._originalData.get('bins') && this._originalData.get('bins') < numberOfBins) {
-      numberOfBins = this._originalData.get('bins');
-    }
+    // if (this._originalData.get('bins') && this._originalData.get('bins') < numberOfBins) {
+    //   numberOfBins = this._originalData.get('bins');
+    // }
 
     var buckets = new Array(numberOfBins);
 

@@ -31,12 +31,13 @@
     "camshaft-reference": "<2.0",
     "carto": "cartodb/carto#master",
     "d3": "3.5.17",
-    "tangram.cartodb": "cartodb/tangram.cartodb#master",
     "jquery": "2.1.4",
     "leaflet": "1.0.3",
+    "moment": "^2.18.1",
     "mustache": "1.1.0",
     "perfect-scrollbar": "git://github.com/CartoDB/perfect-scrollbar.git#master",
     "tangram-cartocss": "cartodb/tangram-carto#master",
+    "tangram.cartodb": "cartodb/tangram.cartodb#master",
     "torque.js": "CartoDB/torque#master",
     "underscore": "1.8.3"
   },
@@ -160,6 +161,5 @@
   "config": {
     "root": "."
   },
-  "scripts": {
-  }
+  "scripts": {}
 }

@@ -148,7 +148,7 @@ describe Carto::OrganizationMetadataExportService do
         twitter_datasource_block_price: 100,
         twitter_datasource_block_size: 1000,
         twitter_datasource_quota: 1,
-        google_maps_key: "key=AIzaSyBYumNYEyM18D9te7PeArJ_pinDIPyYVts",
+        google_maps_key: "key=AIzaEa12DxNYEyM257DwzuieArJ_pinDIPyYVts",
         google_maps_private_key: nil,
         color: "#FF9900",
         default_quota_in_bytes: 209715200,

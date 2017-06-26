@@ -35,33 +35,16 @@ module.exports = DataviewModelBase.extend({
   },
 
   initialize: function (attrs, opts) {
-    DataviewModelBase.prototype.initialize.apply(this, arguments);
-    this._data = new Backbone.Collection(this.get('data'));
-
     // Internal model for calculating all the data in the histogram (without filters)
-    this._unfilteredData = new HistogramDataModel({
+    this._originalData = new HistogramDataModel({
       bins: this.get('bins'),
       aggregation: this.get('aggregation'),
       apiKey: this.get('apiKey'),
       authToken: this.get('authToken')
     });
 
-    this._unfilteredData.bind('change:data', function (mdl, data) {
-      this.set({
-        start: mdl.get('start'),
-        end: mdl.get('end'),
-        bins: mdl.get('bins')
-      }, { silent: true });
-      this._onChangeBinds();
-    }, this);
-
-    this.on('change:url', function () {
-      this._unfilteredData.setUrl(this.get('url'));
-    }, this);
-
-    this.listenTo(this.layer, 'change:meta', this._onChangeLayerMeta);
-    this.on('change:start change:end', this._fetchAndResetFilter, this);
-    this.on('change', this._onChanged, this);
+    DataviewModelBase.prototype.initialize.apply(this, arguments);
+    this._data = new Backbone.Collection(this.get('data'));
 
     if (attrs && (attrs.min || attrs.max)) {
       this.filter.setRange(this.get('min'), this.get('max'));
@@ -70,9 +53,30 @@ module.exports = DataviewModelBase.extend({
 
   _initBinds: function () {
     DataviewModelBase.prototype._initBinds.apply(this);
+
     // We shouldn't listen url change for fetching the data (with filter) because
     // we have to wait until we know all the data available (without any filter).
     this.stopListening(this, 'change:url', null);
+    this.on('change:url', function () {
+      this._originalData.setUrl(this.get('url'));
+    }, this);
+
+    // When original data gets fetched
+    this._originalData.bind('change:data', function (model) {
+      this.set({
+        start: model.get('start'),
+        end: model.get('end'),
+        bins: model.get('bins')
+      }, { silent: true });
+      this._fetchAndResetFilter();
+    }, this);
+    this._originalData.once('change:data', this._onChangeBinds, this);
+
+
+
+    // this.listenTo(this.layer, 'change:meta', this._onChangeLayerMeta);
+    // this.on('change:column change:aggregation', this._reloadVisAndForceFetch, this);
+    // //this.on('change:bins change:start change:end', this._fetchAndResetFilter(true), this);
   },
 
   enableFilter: function () {
@@ -88,7 +92,7 @@ module.exports = DataviewModelBase.extend({
   },
 
   getUnfilteredDataModel: function () {
-    return this._unfilteredData;
+    return this._originalData;
   },
 
   getSize: function () {
@@ -97,8 +101,14 @@ module.exports = DataviewModelBase.extend({
 
   parse: function (data) {
     var numberOfBins = data.bins_count;
+    var isAggregation = !!this.get('aggregation');
     var width = data.bin_width;
-    var start = data.bins_start;
+    var start = isAggregation ? data.bins_start : data.bins_start;
+
+    // Temporary hack
+    if (this._originalData.get('bins') && this._originalData.get('bins') < numberOfBins) {
+      numberOfBins = this._originalData.get('bins');
+    }
 
     var buckets = new Array(numberOfBins);
 
@@ -106,14 +116,7 @@ module.exports = DataviewModelBase.extend({
       buckets[b.bin] = b;
     });
 
-    for (var i = 0; i < numberOfBins; i++) {
-      buckets[i] = _.extend({
-        bin: i,
-        start: start + (i * width),
-        end: start + ((i + 1) * width),
-        freq: 0
-      }, buckets[i]);
-    }
+   isAggregation ? this._originalData.fillTimestampBuckets(buckets, start, this.get('aggregation'), numberOfBins) : this._originalData.fillNumericBuckets(buckets, start, width, numberOfBins);
 
     // FIXME - Update the end of last bin due https://github.com/CartoDB/cartodb.js/issues/926
     var lastBucket = buckets[numberOfBins - 1];
@@ -196,7 +199,7 @@ module.exports = DataviewModelBase.extend({
     DataviewModelBase.prototype._onChangeBinds.call(this);
   },
 
-  _fetchAndResetFilter: function () {
+  _fetchAndResetFilter: function () {    
     this.fetch();
     this.disableFilter();
     this.filter.unsetRange();
@@ -204,18 +207,6 @@ module.exports = DataviewModelBase.extend({
 
   _onColumnChanged: function () {
     this._reloadVisAndForceFetch();
-  },
-
-  _onChanged: function () {
-    if (this.hasChanged('column') || this.hasChanged('aggregation')) {
-      this._reloadVisAndForceFetch();
-    } else if (!this.hasChanged('status') && (this.hasChanged('bins'))) {
-      this._fetchAndResetFilter();      
-    }
-
-    if (this.hasChanged('aggregation')) {
-      this._unfilteredData.setAggregation(this.get('aggregation'));
-    }
   }
 },
 

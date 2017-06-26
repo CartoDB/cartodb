@@ -15,7 +15,7 @@ var TRIANGLE_HEIGHT = Math.sqrt(Math.pow(TRIANGLE_SIDE, 2) - Math.pow(TRIANGLE_S
 // How much lower (based on height) will the triangle be on the right side
 var TRIANGLE_RIGHT_FACTOR = 1.3;
 var TOOLTIP_MARGIN = 2;
-
+var DASH_WIDTH = 4;
 var SVG_CLASS = 'CDB-Chart--histogram';
 
 var trianglePath = function (x1, y1, x2, y2, x3, y3) {
@@ -947,14 +947,15 @@ module.exports = cdb.core.View.extend({
 
       var y = this.chartHeight() / 2;
       y -= 3;
+      var x1 = (opts.width - DASH_WIDTH) / 2;
 
       for (var i = 0; i < 3; i++) {
         handle
           .append('line')
           .attr('class', 'CDB-Chart-handleGrip')
-          .attr('x1', 2)
+          .attr('x1', x1)
           .attr('y1', y + i * 3)
-          .attr('x2', opts.width - 2)
+          .attr('x2', x1 + DASH_WIDTH)
           .attr('y2', y + i * 3);
       }
     }

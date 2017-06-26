@@ -20,7 +20,7 @@ var SVG_CLASS = 'CDB-Chart--histogram';
 
 var trianglePath = function (x1, y1, x2, y2, x3, y3) {
   return 'M ' + x1 + ' ' + y1 + ' L ' + x2 + ' ' + y2 + ' L ' + x3 + ' ' + y3 + ' ' + x1 + ' ' + y1 + ' z';
-}
+};
 
 module.exports = cdb.core.View.extend({
   options: {
@@ -157,11 +157,10 @@ module.exports = cdb.core.View.extend({
   _updateTriangle: function (className, triangle, xPos) {
     var y3Factor = className === 'right' ? -1 : 1;
     var xLimit = className === 'right' ? this.chartWidth() : 0;
-    var x3 = className === 'right' ? TRIANGLE_SIDE : 0;
     var xDiff = Math.abs(xLimit - xPos);
-    
+
     if (xDiff <= (TRIANGLE_SIDE / 2)) {
-      xDiff = className == 'right' ? TRIANGLE_SIDE - xDiff : xDiff;
+      xDiff = className === 'right' ? TRIANGLE_SIDE - xDiff : xDiff;
       triangle.attr('d', trianglePath(0, 0, TRIANGLE_SIDE, 0, xDiff, y3Factor * TRIANGLE_HEIGHT));
     } else {
       triangle.attr('d', trianglePath(0, 0, TRIANGLE_SIDE, 0, (TRIANGLE_SIDE / 2), y3Factor * TRIANGLE_HEIGHT));
@@ -190,7 +189,6 @@ module.exports = cdb.core.View.extend({
 
     var textBBox = textLabel.node().getBBox();
     var width = textBBox.width;
-    var rectBBox = rectLabel.node().getBBox();
     var rectWidth = width + TIP_H_PADDING;
 
     rectLabel.attr('width', width + TIP_H_PADDING);

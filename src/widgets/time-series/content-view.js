@@ -14,7 +14,6 @@ module.exports = cdb.core.View.extend({
 
   initialize: function () {
     this._dataviewModel = this.model.dataviewModel;
-    this._originalData = this.model.dataviewModel.getUnfilteredDataModel();
     this._selectedAmount = 0;
     this._initBinds();
   },
@@ -38,15 +37,11 @@ module.exports = cdb.core.View.extend({
   },
 
   _initBinds: function () {
-    this._originalData.once('change:data', this._onOriginalDataChange, this);
     this._dataviewModel.once('error', function () {
       console.log('the tiler does not support non-torque layers just yet…');
     });
-    this._dataviewModel.once('change:data', this.render, this);
-    this._dataviewModel.bind('change:bins', this._onChangeBins, this);
 
-    this.add_related_model(this._dataviewModel);
-    this.add_related_model(this._originalData);
+    this.listenTo(this._dataviewModel, 'change:data', this.render);
   },
 
   _createHistogramView: function () {
@@ -167,15 +162,5 @@ module.exports = cdb.core.View.extend({
   _isDataEmpty: function () {
     var data = this._dataviewModel.getData();
     return _.isEmpty(data) || _.size(data) === 0;
-  },
-
-  _onOriginalDataChange: function () {
-    // do an explicit fetch in order to get actual data
-    // with the filters applied (e.g. bbox)
-    this._dataviewModel.fetch();
-  },
-
-  _onChangeBins: function (mdl, bins) {
-    this._originalData.setBins(bins);
   }
 });

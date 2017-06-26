@@ -204,11 +204,10 @@ module.exports = cdb.core.View.extend({
     this._updateTriangle(className, triangle, xPos);
 
     if ((xPos - width / 2) < 0) {
-      xPos = (-xPos) + 1;
-      axisTip.attr('transform', 'translate(' + xPos + ',' + yPos + ' )');
+      axisTip.attr('transform', 'translate(' + -xPos + ',' + yPos + ' )');
     } else if ((xPos + width / 2 + 2) >= this.chartWidth()) {
       var newX = this.chartWidth() - (xPos + rectWidth);
-      newX += this.options.handleWidth - 1;
+      newX += this.options.handleWidth;
       axisTip.attr('transform', 'translate(' + newX + ', ' + yPos + ')');
     } else {
       axisTip.attr('transform', 'translate(-' + ((rectWidth / 2) - (this.options.handleWidth / 2)) + ', ' + yPos + ')');

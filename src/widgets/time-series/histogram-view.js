@@ -68,7 +68,7 @@ module.exports = cdb.core.View.extend({
         left: 4
       },
       hasHandles: true,
-      handleWidth: 10,
+      handleWidth: 8,
       hasAxisTip: true,
       animationBarDelay: function (d, i) {
         return (i * 3);

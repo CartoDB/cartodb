@@ -18,6 +18,10 @@ var TOOLTIP_MARGIN = 2;
 
 var SVG_CLASS = 'CDB-Chart--histogram';
 
+var trianglePath = function (x1, y1, x2, y2, x3, y3) {
+  return 'M ' + x1 + ' ' + y1 + ' L ' + x2 + ' ' + y2 + ' L ' + x3 + ' ' + y3 + ' ' + x1 + ' ' + y1 + ' z';
+}
+
 module.exports = cdb.core.View.extend({
   options: {
     // render the chart once the width is set as default, provide false value for this prop to disable this behavior
@@ -150,6 +154,20 @@ module.exports = cdb.core.View.extend({
     bFirst.top > bSecond.bottom);
   },
 
+  _updateTriangle: function (className, triangle, xPos) {
+    var y3Factor = className === 'right' ? -1 : 1;
+    var xLimit = className === 'right' ? this.chartWidth() : 0;
+    var x3 = className === 'right' ? TRIANGLE_SIDE : 0;
+    var xDiff = Math.abs(xLimit - xPos);
+    
+    if (xDiff <= (TRIANGLE_SIDE / 2)) {
+      xDiff = className == 'right' ? TRIANGLE_SIDE - xDiff : xDiff;
+      triangle.attr('d', trianglePath(0, 0, TRIANGLE_SIDE, 0, xDiff, y3Factor * TRIANGLE_HEIGHT));
+    } else {
+      triangle.attr('d', trianglePath(0, 0, TRIANGLE_SIDE, 0, (TRIANGLE_SIDE / 2), y3Factor * TRIANGLE_HEIGHT));
+    }
+  },
+
   _updateAxisTip: function (className) {
     var model = this.model.get(className + '_axis_tip');
     if (model === undefined) { return; }
@@ -172,6 +190,8 @@ module.exports = cdb.core.View.extend({
 
     var textBBox = textLabel.node().getBBox();
     var width = textBBox.width;
+    var rectBBox = rectLabel.node().getBBox();
+    var rectWidth = width + TIP_H_PADDING;
 
     rectLabel.attr('width', width + TIP_H_PADDING);
     textLabel.attr('dx', TIP_H_PADDING / 2);
@@ -183,14 +203,17 @@ module.exports = cdb.core.View.extend({
     var yPos = className === 'left' ? -(TRIANGLE_HEIGHT + TIP_RECT_HEIGHT + TOOLTIP_MARGIN) : this.chartHeight() + (TRIANGLE_HEIGHT * TRIANGLE_RIGHT_FACTOR);
     yPos = Math.floor(yPos);
 
+    this._updateTriangle(className, triangle, xPos);
+
     if ((xPos - width / 2) < 0) {
-      axisTip.attr('transform', 'translate(-' + xPos + ',' + yPos + ' )');
+      xPos = (-xPos) + 1;
+      axisTip.attr('transform', 'translate(' + xPos + ',' + yPos + ' )');
     } else if ((xPos + width / 2 + 2) >= this.chartWidth()) {
-      var newX = this.chartWidth() - (xPos + width);
-      newX += this.options.handleWidth / 2;
+      var newX = this.chartWidth() - (xPos + rectWidth);
+      newX += this.options.handleWidth - 1;
       axisTip.attr('transform', 'translate(' + newX + ', ' + yPos + ')');
     } else {
-      axisTip.attr('transform', 'translate(-' + (width / 2) + ', ' + yPos + ')');
+      axisTip.attr('transform', 'translate(-' + ((rectWidth / 2) - (this.options.handleWidth / 2)) + ', ' + yPos + ')');
     }
   },
 
@@ -871,8 +894,8 @@ module.exports = cdb.core.View.extend({
     var handle = this.chart.select('.CDB-Chart-handle.CDB-Chart-handle-' + className);
 
     var yPos = className === 'right' ? this.chartHeight() + (TRIANGLE_HEIGHT * TRIANGLE_RIGHT_FACTOR) : -(TRIANGLE_HEIGHT + TIP_RECT_HEIGHT + TOOLTIP_MARGIN);
-    var yTriangle = className === 'right' ? this.chartHeight() + (TRIANGLE_HEIGHT * TRIANGLE_RIGHT_FACTOR) : -(TRIANGLE_HEIGHT + TOOLTIP_MARGIN);
-    var sign = className === 'right' ? '-' : ' ';
+    var yTriangle = className === 'right' ? this.chartHeight() + (TRIANGLE_HEIGHT * TRIANGLE_RIGHT_FACTOR) + 1 : -(TRIANGLE_HEIGHT + TOOLTIP_MARGIN) - 1;
+    var triangleHeight = className === 'right' ? -TRIANGLE_HEIGHT : TRIANGLE_HEIGHT;
 
     var axisTip = handle.selectAll('g')
       .data([''])
@@ -883,7 +906,7 @@ module.exports = cdb.core.View.extend({
     handle.append('path')
       .attr('class', 'CDB-Chart-axisTipRect CDB-Chart-axisTipTriangle')
       .attr('transform', 'translate(' + ((this.options.handleWidth / 2) - 4) + ', ' + yTriangle + ')')
-      .attr('d', 'M 0 0 L ' + TRIANGLE_SIDE + ' 0 L ' + (TRIANGLE_SIDE / 2) + sign + TRIANGLE_HEIGHT + ' L 0 0 z')
+      .attr('d', trianglePath(0, 0, TRIANGLE_SIDE, 0, (TRIANGLE_SIDE / 2), triangleHeight))
       .style('opacity', '0');
 
     axisTip.append('rect')

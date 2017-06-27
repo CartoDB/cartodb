@@ -976,7 +976,7 @@
             "import-url": "Import your data from a %{brand} URL",
             "file-selected": "File selected",
             "paste-url": "Paste a URL %{fileEnabled} ",
-            "select-a-file": "or select a file like CSV, XLS, ZIP, KML, GPX,",
+            "select-a-file": "or select a file such as CSV, XLS, ZIP, KML, GPX,",
             "see-all-formats": "see all formats",
             "sync-enabled": "Keep it synchronized with the source",
             "sync-disabled": "Sync options are not available",
@@ -1137,6 +1137,7 @@
       "operators": {
         "count-message": "If you select 'COUNT' all columns are selected"
       },
+      "column-type-error": "Column type must be a %{columnType}",
       "interval-error": "Value must be between %{minValue} and %{maxValue}",
       "copy-button": "COPY",
       "data-observatory": {
@@ -1969,7 +1970,7 @@
       }
     },
     "export-image": {
-      "invalid-dimension": "Invalid dimension (%{limit}x%{limit}px)",
+      "invalid-dimension": "Invalid dimension, max %{limit}x%{limit}px",
       "properties": {
         "width": "width",
         "height": "height",

@@ -5,6 +5,7 @@
     "browser": true,
     "jasmine": true
   },
+  "extends": "semistandard",
   "globals": {
     "_t": true
   }

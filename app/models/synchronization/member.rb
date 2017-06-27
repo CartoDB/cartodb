@@ -204,7 +204,11 @@ module CartoDB
         notify
 
       rescue => exception
-        CartoDB::Logger.error(exception: exception, sync_id: id)
+        if exception.is_a? CartoDB::Datasources::NotFoundDownloadError
+          CartoDB::Logger.debug(exception: exception, sync_id: id)
+        else
+          CartoDB::Logger.error(exception: exception, sync_id: id)
+        end
         log.append_and_store exception.message, truncate = false
         log.append exception.backtrace.join("\n"), truncate = false
 

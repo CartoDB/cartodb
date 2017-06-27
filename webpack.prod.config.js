@@ -9,7 +9,7 @@ const isVendor = (module, count) => {
 };
 
 const entryPoints = {
-  embed: './lib/assets/core/javascripts/cartodb3/public_editor.js',
+  builder_embed: './lib/assets/core/javascripts/cartodb3/public_editor.js',
   dataset: './lib/assets/core/javascripts/cartodb3/dataset.js',
   builder: './lib/assets/core/javascripts/cartodb3/editor.js'
 };
@@ -48,6 +48,10 @@ module.exports = env => {
         $: 'jquery',
         jQuery: 'jquery',
         ['window.jQuery']: 'jquery'
+      }),
+
+      new webpack.DefinePlugin({
+        __IN_DEV__: JSON.stringify(false)
       }),
 
       // Minify

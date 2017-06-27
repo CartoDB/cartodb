@@ -14,9 +14,12 @@ require 'carto/export/layer_exporter'
 # 2.0.6: export version
 # 2.0.7: export map options
 # 2.0.8: export widget style
+# 2.0.9: export visualization id
+# 2.1.0: export datasets: permissions, user_tables and syncs
 module Carto
   module VisualizationsExportService2Configuration
-    CURRENT_VERSION = '2.0.8'.freeze
+    CURRENT_VERSION = '2.1.0'.freeze
+    MAX_LOG_SIZE = 8192
 
     def compatible_version?(version)
       version.to_i == CURRENT_VERSION.split('.')[0].to_i
@@ -68,7 +71,8 @@ module Carto
           exported_visualization[:map],
           layers: build_layers_from_hash(exported_layers)),
         overlays: build_overlays_from_hash(exported_overlays),
-        analyses: exported_visualization[:analyses].map { |a| build_analysis_from_hash(a.deep_symbolize_keys) }
+        analyses: exported_visualization[:analyses].map { |a| build_analysis_from_hash(a.deep_symbolize_keys) },
+        permission: build_permission_from_hash(exported_visualization[:permission])
       )
 
       # This is optional as it was added in version 2.0.2
@@ -84,6 +88,11 @@ module Carto
       if active_layer_order
         visualization.active_layer = visualization.layers.find { |l| l.order == active_layer_order }
       end
+
+      # Dataset-specific
+      user_table = build_user_table_from_hash(exported_visualization[:user_table])
+      visualization.map.user_table = user_table if user_table
+      visualization.synchronization = build_synchronization_from_hash(exported_visualization[:synchronization])
 
       visualization.id = exported_visualization[:id] if exported_visualization[:id]
       visualization
@@ -130,6 +139,63 @@ module Carto
 
     def build_state_from_hash(exported_state)
       Carto::State.new(json: exported_state ? exported_state[:json] : nil)
+    end
+
+    def build_permission_from_hash(exported_permission)
+      return nil unless exported_permission
+
+      Carto::Permission.new(access_control_list: JSON.dump(exported_permission[:access_control_list]))
+    end
+
+    def build_synchronization_from_hash(exported_synchronization)
+      return nil unless exported_synchronization
+
+      Carto::Synchronization.new(
+        name: exported_synchronization[:name],
+        interval: exported_synchronization[:interval],
+        url: exported_synchronization[:url],
+        state: exported_synchronization[:state],
+        created_at: exported_synchronization[:created_at],
+        updated_at: exported_synchronization[:updated_at],
+        run_at: exported_synchronization[:run_at],
+        retried_times: exported_synchronization[:retried_times],
+        log: build_log_from_hash(exported_synchronization[:log]),
+        error_code: exported_synchronization[:error_code],
+        error_message: exported_synchronization[:error_message],
+        ran_at: exported_synchronization[:ran_at],
+        modified_at: exported_synchronization[:modified_at],
+        etag: exported_synchronization[:etag],
+        checksum: exported_synchronization[:checksum],
+        service_name: exported_synchronization[:service_name],
+        service_item_id: exported_synchronization[:service_item_id],
+        type_guessing: exported_synchronization[:type_guessing],
+        quoted_fields_guessing: exported_synchronization[:quoted_fields_guessing],
+        content_guessing: exported_synchronization[:content_guessing]
+      )
+    end
+
+    def build_log_from_hash(exported_log)
+      return nil unless exported_log
+
+      Carto::Log.new(type: exported_log[:type], entries: exported_log[:entries])
+    end
+
+    def build_user_table_from_hash(exported_user_table)
+      return nil unless exported_user_table
+
+      user_table = Carto::UserTable.new
+      user_table.name = exported_user_table[:name]
+      user_table.privacy = exported_user_table[:privacy]
+      user_table.tags = exported_user_table[:tags]
+      user_table.geometry_columns = exported_user_table[:geometry_columns]
+      user_table.rows_counted = exported_user_table[:rows_counted]
+      user_table.rows_estimated = exported_user_table[:rows_estimated]
+      user_table.indexes = exported_user_table[:indexes]
+      user_table.database_name = exported_user_table[:database_name]
+      user_table.description = exported_user_table[:description]
+      user_table.table_id = exported_user_table[:table_id]
+
+      user_table
     end
   end
 
@@ -183,7 +249,10 @@ module Carto
         overlays: visualization.overlays.map { |o| export_overlay(o) },
         analyses: visualization.analyses.map { |a| exported_analysis(a) },
         user: export_user(visualization.user),
-        state: export_state(visualization.state)
+        state: export_state(visualization.state),
+        permission: export_permission(visualization.permission),
+        synchronization: export_syncronization(visualization.synchronization),
+        user_table: export_user_table(visualization.map.user_table)
       }
     end
 
@@ -225,6 +294,64 @@ module Carto
     def export_state(state)
       {
         json: state.json
+      }
+    end
+
+    def export_permission(permission)
+      {
+        access_control_list: JSON.parse(permission.access_control_list, symbolize_names: true)
+      }
+    end
+
+    def export_syncronization(synchronization)
+      return nil unless synchronization
+      {
+        name: synchronization.name,
+        interval: synchronization.interval,
+        url: synchronization.url,
+        state: synchronization.state,
+        created_at: synchronization.created_at,
+        updated_at: synchronization.updated_at,
+        run_at: synchronization.run_at,
+        retried_times: synchronization.retried_times,
+        log: export_log(synchronization.log),
+        error_code: synchronization.error_code,
+        error_message: synchronization.error_message,
+        ran_at: synchronization.ran_at,
+        modified_at: synchronization.modified_at,
+        etag: synchronization.etag,
+        checksum: synchronization.checksum,
+        service_name: synchronization.service_name,
+        service_item_id: synchronization.service_item_id,
+        type_guessing: synchronization.type_guessing,
+        quoted_fields_guessing: synchronization.quoted_fields_guessing,
+        content_guessing: synchronization.content_guessing
+      }
+    end
+
+    def export_log(log)
+      return nil unless log
+
+      {
+        type: log.type,
+        entries: log.entries && log.entries.length > MAX_LOG_SIZE ? log.entries.slice(-MAX_LOG_SIZE..-1) : log.entries
+      }
+    end
+
+    def export_user_table(user_table)
+      return nil unless user_table
+
+      {
+        name: user_table.name,
+        privacy: user_table.privacy,
+        tags: user_table.tags,
+        geometry_columns: user_table.geometry_columns,
+        rows_counted: user_table.rows_counted,
+        rows_estimated: user_table.rows_estimated,
+        indexes: user_table.indexes,
+        database_name: user_table.database_name,
+        description: user_table.description,
+        table_id: user_table.table_id
       }
     end
   end

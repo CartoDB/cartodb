@@ -14,7 +14,7 @@ const isVendor = (module, count) => {
 };
 
 const entryPoints = {
-  embed: './lib/assets/core/javascripts/cartodb3/public_editor.js',
+  builder_embed: './lib/assets/core/javascripts/cartodb3/public_editor.js',
   dataset: './lib/assets/core/javascripts/cartodb3/dataset.js',
   builder: './lib/assets/core/javascripts/cartodb3/editor.js'
 };
@@ -25,6 +25,13 @@ module.exports = env => {
     output: {
       filename: `${version}/javascripts/[name].js`,
       path: resolve(__dirname, 'public/assets')
+    },
+    resolve: {
+      symlinks: false,
+      modules: [
+        resolve(__dirname, 'node_modules'),
+        resolve(__dirname, 'lib/assets/node_modules')
+      ]
     },
     devtool: 'cheap-module-eval-source-map',
     plugins: [
@@ -60,6 +67,10 @@ module.exports = env => {
         $: 'jquery',
         jQuery: 'jquery',
         ['window.jQuery']: 'jquery'
+      }),
+
+      new webpack.DefinePlugin({
+        __IN_DEV__: JSON.stringify(true)
       })
     ])
     .filter(p => !!p), // undefined is not a valid plugin, so filter undefined values here

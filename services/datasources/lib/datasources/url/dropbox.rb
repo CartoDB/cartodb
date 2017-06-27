@@ -122,7 +122,7 @@ module CartoDB
 
           @formats.each do |search_query|
             response = @client.search(search_query, '')
-            response.matches.each do |item|
+            response.matches.select { |item| item.resource.is_a?(DropboxApi::Metadata::File) }.each do |item|
               all_results.push(format_item_data(item.resource))
             end
           end
@@ -213,6 +213,9 @@ module CartoDB
         def revoke_token
           @client.revoke
           true
+        rescue DropboxApi::Errors::HttpError => ex
+          CartoDB::Logger.debug(message: 'Error revoking Dropbox token', exception: ex, user: @user)
+          true
         rescue => ex
           raise AuthError.new("revoke_token: #{ex.message}", DATASOURCE_NAME)
         end
@@ -226,7 +229,9 @@ module CartoDB
         # @throws AuthError
         # @throws mixed
         def handle_error(original_exception, message)
-          if original_exception.is_a? DropboxApi::Errors::BasicError
+          if original_exception.is_a? DropboxApi::Errors::NotFoundError
+            raise NotFoundDownloadError.new(message, DATASOURCE_NAME)
+          elsif original_exception.is_a? DropboxApi::Errors::BasicError
             error_code = original_exception.http_response.code.to_i
             if error_code == 401 || error_code == 403
               raise TokenExpiredOrInvalidError.new(message, DATASOURCE_NAME)

@@ -27,8 +27,9 @@
 <%= content_for(:js) do %>
   <%= insert_trackjs('builder-embeds') %>
 
-  <!-- Make available if FF auto or vector -->
-  <%= javascript_include_tag 'tangram.min.js' %>
+  <% if @visualization.user.has_feature_flag?('vector_vs_raster') %>
+    <%= javascript_include_tag 'tangram.min.js' %>
+  <% end %>
 
   <% if @vizjson[:map_provider] == 'googlemaps' %>
     <%= render(partial: 'shared/visualizations/google_maps', locals: { google_maps_qs: @google_maps_qs }) %>
@@ -39,20 +40,22 @@
     var layersData = <%= safe_js_object @layers_data.to_json %>;
     var stateJSON = <%= safe_js_object @state.to_json %>;
     var authTokens = <%= safe_js_object @auth_tokens.to_json %>;
+    var mapzenApiKey = '<%= mapzen_api_key %>';
   </script>
   <%= javascript_include_tag 'common.js' %>
-  <%= javascript_include_tag 'embed_vendor.js' %>
-  <%= javascript_include_tag 'embed.js' %>
+  <%= javascript_include_tag 'builder_embed_vendor.js' %>
+  <%= javascript_include_tag 'builder_embed.js' %>
 
+  <% if Cartodb.get_config(:graphite_public, 'host') %>
+    <%= javascript_include_tag "statsc.js" %>
+  <% end %>
   <script>
     (function () {
-      <% if Cartodb.config[:graphite_public] %>
+      <% if Cartodb.get_config(:graphite_public, 'host') %>
         if (location.protocol.indexOf('https') === -1) {
-          jQuery.getScript('<%= javascript_path "statsc.js" %>', function(ready) {
-            statsc.connect('http://<%= Cartodb.config[:graphite_public]['host'] %>:<%= Cartodb.config[:graphite_public]['port'] %>/');
-            cartodb.core.Profiler.backend(function () {
-              statsc.send.apply(statsc, arguments);
-            });
+          statsc.connect('http://<%= Cartodb.get_config(:graphite_public, 'host') %>:<%= Cartodb.get_config(:graphite_public, 'port') %>/');
+          cartodb.core.Profiler.backend(function () {
+            statsc.send.apply(statsc, arguments);
           });
         }
       <% end %>

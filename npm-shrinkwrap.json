@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.8.13-12291",
+  "version": "4.8.13-12291-4",
   "dependencies": {
     "abbrev": {
       "version": "1.1.0",
@@ -733,7 +733,7 @@
     "cartodb-deep-insights.js": {
       "version": "0.0.2",
       "from": "cartodb/deep-insights.js#12291-range-filter-tags",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#3d01e544261b37fac8ac7c1a52637cc39b1a1bf1"
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#13868ee219c9f039dc313357ee6cf28dc8a55600"
     },
     "cartodb-pecan": {
       "version": "0.2.0",
@@ -743,7 +743,7 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
       "from": "cartodb/cartodb.js#v4",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#474468b8d4e90ebf5f46dd7a6e9f537f61ed2db0"
+      "resolved": "git://github.com/cartodb/cartodb.js.git#5d59c910c4395b89f24a02c64689a065f001edb8"
     },
     "caseless": {
       "version": "0.11.0",
@@ -2977,39 +2977,7 @@
     "tangram.cartodb": {
       "version": "0.4.6",
       "from": "cartodb/tangram.cartodb#master",
-      "resolved": "git://github.com/cartodb/tangram.cartodb.git#9797d1390b798c04871f44ad51887e56041cb682",
-      "dependencies": {
-        "argparse": {
-          "version": "1.0.9",
-          "from": "argparse@>=1.0.2 <2.0.0",
-          "resolved": "https://registry.npmjs.org/argparse/-/argparse-1.0.9.tgz"
-        },
-        "babel-runtime": {
-          "version": "6.18.0",
-          "from": "babel-runtime@6.18.0",
-          "resolved": "https://registry.npmjs.org/babel-runtime/-/babel-runtime-6.18.0.tgz"
-        },
-        "esprima": {
-          "version": "2.7.3",
-          "from": "esprima@>=2.6.0 <3.0.0",
-          "resolved": "https://registry.npmjs.org/esprima/-/esprima-2.7.3.tgz"
-        },
-        "js-yaml": {
-          "version": "3.5.3",
-          "from": "tangrams/js-yaml#read-only",
-          "resolved": "git://github.com/tangrams/js-yaml.git#1637976c6f593bed33ed088aedb6d01390a947c0"
-        },
-        "regenerator-runtime": {
-          "version": "0.9.6",
-          "from": "regenerator-runtime@>=0.9.5 <0.10.0",
-          "resolved": "https://registry.npmjs.org/regenerator-runtime/-/regenerator-runtime-0.9.6.tgz"
-        },
-        "tangram": {
-          "version": "0.13.0",
-          "from": "tangrams/tangram#master",
-          "resolved": "git://github.com/tangrams/tangram.git#07b3df2d98cd305ae4cde14e9da92acd3a955498"
-        }
-      }
+      "resolved": "git://github.com/cartodb/tangram.cartodb.git#9426a99dd8add7def6a5564ec3b341ff71997294"
     },
     "tapable": {
       "version": "0.2.6",

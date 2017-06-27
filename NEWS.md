@@ -9,7 +9,8 @@ Development
 * Show number of selected items in Time-Series widgets (#12179).
 
 ### Bug fixes / enhancements
-* Don't try to lowercase null values in custom-list-collection object (support/#744)
+* Tap on iOS10 mobile embed doesn't jump to page bottom (#cartodb.js/1652)
+* Don't try to lowercase null values in custom-list-collection object (#support/744)
 * Validate widget form when widget type changes (#11536)
 * Updated text of widget tooltips (#11467)
 * Fixed error where analysis overlay/infobox wasn't shown when hiding a layer (#11767)
@@ -24,6 +25,7 @@ Development
 * Fixed legend's color mismatch with empty values (#11632)
 * Fixed overlay for legends view (#11825)
 * Fix error when revoking a Dropbox token that was revoked from Dropbox side (#12359)
+* Fix error when a Dropbox folder has an extension matching valid extensions.
 * Fixed UI when editing merge analysis (#10850)
 * Fixed uninitialized constant in Carto::Visualization when a viewer shares a visualization (#12129).
 * Fix regenerate all api keys in an organization (#12218)
@@ -41,6 +43,7 @@ Development
 * Fix error where a sync of a big dataset without geometry would be deleted from dashboard (#12162)
 * `create_dev_user` rake no longer tries to auto-create the database, `cartodb:db:setup` should be run first (#12187).
 * Fix EUMAPI response as per documentation (#12233)
+* Fix dimension check and support for SVG without extension and XML header (#12374).
 * Visualization models no longer raise an error checking `password_valid?` (#12270).
 * Fix `BUILDER_ENABLED` parameter in `create_dev_user` rake (#12189)
 * User organization or user key for google maps (#12232)

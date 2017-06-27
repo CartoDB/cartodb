@@ -274,7 +274,10 @@
       "search-by-name": "Search by name...",
       "errors": {
         "measurement-required": "Measurement is required",
-        "measurement-twice": "Two or more measurements are equal"
+        "measurement-twice": "Two or more measurements are equal",
+        "column-name-mismatch": "Segment names and column names don't match",
+        "invalid-selection": "Invalid DO selection",
+        "mandatory-region": "Region is mandatory"
       }
     },
     "merge": {

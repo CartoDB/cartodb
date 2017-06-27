@@ -8,7 +8,9 @@ module.exports = DataviewModelBase.extend({
 
   defaults: _.extend(
     {
-      type: 'histogram'
+      type: 'histogram',
+      totalAmount: 0,
+      filteredAmount: 0
     },
     DataviewModelBase.prototype.defaults
   ),
@@ -125,10 +127,54 @@ module.exports = DataviewModelBase.extend({
 
     this._data.reset(buckets);
 
+    // Calculate totals
+    var totalAmount = this._calculateTotalAmount(buckets);
+    var filteredAmount = this._calculateFilteredAmount(this.filter, this._data);
+
     return {
       data: buckets,
-      nulls: data.nulls
+      nulls: data.nulls,
+      totalAmount: totalAmount,
+      filteredAmount: filteredAmount
     };
+  },
+
+  _onFilterChanged: function (filter) {
+    this.set('filteredAmount', this._calculateFilteredAmount(filter, this._data));
+
+    DataviewModelBase.prototype._onFilterChanged.apply(this, arguments);
+  },
+
+  _calculateTotalAmount: function (buckets) {
+    return _.reduce(buckets, function (memo, bucket) {
+      return memo + bucket.freq;
+    }, 0);
+  },
+
+  _calculateFilteredAmount: function (filter, data) {
+    var filteredAmount = 0;
+    if (filter && filter.get('min') !== void 0 && filter.get('max') !== void 0) {
+      var indexes = this._findBinsIndexes(data, filter.get('min'), filter.get('max'));
+      filteredAmount = this._sumBinsFreq(data, indexes.start, indexes.end);
+    }
+
+    return filteredAmount;
+  },
+
+  _findBinsIndexes: function (data, start, end) {
+    var startBin = data.findWhere({ start: Math.min(start, end) });
+    var endBin = data.findWhere({ end: Math.max(start, end) });
+
+    return {
+      start: startBin && startBin.get('bin'),
+      end: endBin && endBin.get('bin')
+    };
+  },
+
+  _sumBinsFreq: function (data, start, end) {
+    return _.reduce(data.slice(start, end + 1), function (acum, d) {
+      return (d.get('freq') || 0) + acum;
+    }, 0);
   },
 
   /*
@@ -218,7 +264,7 @@ module.exports = DataviewModelBase.extend({
   },
 
   _onFieldsChanged: function () {
-    if (!this._hasChangedSomeOf(['bins', 'aggregation'], this.changed)) {
+    if (!this._hasChangedSomeOf(['bins', 'aggregation(', 'start', 'end'], this.changed)) {
       return;
     }
 
@@ -226,6 +272,13 @@ module.exports = DataviewModelBase.extend({
       this._originalData.set('bins', this.get('bins'))
     } else if (this._onlyAggregationHasChanged(this.changed)) {
       this._originalData.set('aggregation', this.get('aggregation'))
+    }
+
+    if (this.hasChanged('start')) {
+      console.log('start:' + this.get('start'));
+    }
+    if (this.hasChanged('end')) {
+      console.log('end:' + this.get('end'));
     }
   },
 

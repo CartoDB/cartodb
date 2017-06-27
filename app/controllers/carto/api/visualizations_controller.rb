@@ -116,11 +116,11 @@ module Carto
 
         @visualization.add_like_from(current_viewer_id)
 
-        if current_viewer_id != @visualization.user.id
+        unless @visualization.is_owner?
           protocol = request.protocol.sub('://', '')
           vis_url =
             Carto::StaticMapsURLHelper.new.url_for_static_map_with_visualization(@visualization, protocol, 600, 300)
-          send_like_email(@visualization, current_viewer, vis_url)
+          @visualization.send_like_email(current_viewer, vis_url)
         end
 
         event_properties = { user_id: current_viewer_id, visualization_id: @visualization.id, action: 'like' }
@@ -158,9 +158,7 @@ module Carto
       end
 
       def list_watching
-        watcher = CartoDB::Visualization::Watcher.new(current_user, @visualization)
-
-        render_jsonp(watcher.list)
+        render_jsonp(CartoDB::Visualization::Watcher.new(current_user, @visualization).list)
       end
 
       def vizjson2
@@ -474,15 +472,6 @@ module Carto
                                                 user_id: current_user.id,
                                                 overlays: Carto::OverlayFactory.build_default_overlays(current_user)))
       end
-
-      def send_like_email(vis, current_viewer, vis_preview_image)
-        if vis.type == Carto::Visualization::TYPE_CANONICAL
-          ::Resque.enqueue(::Resque::UserJobs::Mail::TableLiked, vis.id, current_viewer.id, vis_preview_image)
-        elsif vis.type == Carto::Visualization::TYPE_DERIVED
-          ::Resque.enqueue(::Resque::UserJobs::Mail::MapLiked, vis.id, current_viewer.id, vis_preview_image)
-        end
-      end
-
     end
   end
 end

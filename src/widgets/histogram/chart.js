@@ -9,17 +9,24 @@ var FILTERED_COLOR = '#1181FB';
 var UNFILTERED_COLOR = 'rgba(0, 0, 0, 0.06)';
 var TIP_RECT_HEIGHT = 17;
 var TIP_H_PADDING = 6;
-var TRIANGLE_SIDE = 8;
-// Equilateral triangle height formula
-var TRIANGLE_HEIGHT = Math.sqrt(Math.pow(TRIANGLE_SIDE, 2) - Math.pow(TRIANGLE_SIDE / 2, 2));
+var TRIANGLE_SIDE = 14;
+var TRIANGLE_HEIGHT = 7;
 // How much lower (based on height) will the triangle be on the right side
 var TRIANGLE_RIGHT_FACTOR = 1.3;
 var TOOLTIP_MARGIN = 2;
 var DASH_WIDTH = 4;
 var SVG_CLASS = 'CDB-Chart--histogram';
 
-var trianglePath = function (x1, y1, x2, y2, x3, y3) {
-  return 'M ' + x1 + ' ' + y1 + ' L ' + x2 + ' ' + y2 + ' L ' + x3 + ' ' + y3 + ' ' + x1 + ' ' + y1 + ' z';
+var BEZIER_MARGIN_X = 0.1;
+var BEZIER_MARGIN_Y = 1;
+
+var trianglePath = function (x1, y1, x2, y2, x3, y3, yFactor) {
+  // Bezier Control point y
+  var cy = y3 + (yFactor * BEZIER_MARGIN_Y);
+  // Bezier Control point x 1
+  var cx1 = x3 + BEZIER_MARGIN_X;
+  var cx2 = x3 - BEZIER_MARGIN_X;
+  return 'M ' + x1 + ' ' + y1 + ' L ' + x2 + ' ' + y2 + ' C ' + cx1 + ' ' + cy + ' ' + cx2 + ' ' + cy + ' ' + x1 + ' ' + y1 + ' z';
 };
 
 module.exports = cdb.core.View.extend({
@@ -163,10 +170,10 @@ module.exports = cdb.core.View.extend({
 
     if (xDiff <= (TRIANGLE_SIDE / 2)) {
       xDiff = className === 'right' ? TRIANGLE_SIDE - xDiff : xDiff;
-      triangle.attr('d', trianglePath(0, 0, TRIANGLE_SIDE, 0, xDiff, y3Factor * TRIANGLE_HEIGHT));
-      transform.translate[0] = className === 'left' ? 0 : Math.max(0, this.options.handleWidth - TRIANGLE_SIDE);
+      triangle.attr('d', trianglePath(0, 0, TRIANGLE_SIDE, 0, xDiff, y3Factor * TRIANGLE_HEIGHT, y3Factor));
+      transform.translate[0] = className === 'left' ? 0 : -Math.max(0, Math.abs(this.options.handleWidth - TRIANGLE_SIDE));
     } else {
-      triangle.attr('d', trianglePath(0, 0, TRIANGLE_SIDE, 0, (TRIANGLE_SIDE / 2), y3Factor * TRIANGLE_HEIGHT));
+      triangle.attr('d', trianglePath(0, 0, TRIANGLE_SIDE, 0, (TRIANGLE_SIDE / 2), y3Factor * TRIANGLE_HEIGHT, y3Factor));
       transform.translate[0] = ((this.options.handleWidth / 2) - (TRIANGLE_SIDE / 2));
     }
 
@@ -897,8 +904,9 @@ module.exports = cdb.core.View.extend({
     var handle = this.chart.select('.CDB-Chart-handle.CDB-Chart-handle-' + className);
 
     var yPos = className === 'right' ? this.chartHeight() + (TRIANGLE_HEIGHT * TRIANGLE_RIGHT_FACTOR) : -(TRIANGLE_HEIGHT + TIP_RECT_HEIGHT + TOOLTIP_MARGIN);
-    var yTriangle = className === 'right' ? this.chartHeight() + (TRIANGLE_HEIGHT * TRIANGLE_RIGHT_FACTOR) + 1 : -(TRIANGLE_HEIGHT + TOOLTIP_MARGIN) - 1;
-    var triangleHeight = className === 'right' ? -TRIANGLE_HEIGHT : TRIANGLE_HEIGHT;
+    var yTriangle = className === 'right' ? this.chartHeight() + (TRIANGLE_HEIGHT * TRIANGLE_RIGHT_FACTOR) + 2 : -(TRIANGLE_HEIGHT + TOOLTIP_MARGIN) - 2;
+    var yFactor = className === 'right' ? -1 : 1;
+    var triangleHeight = TRIANGLE_HEIGHT * yFactor;
 
     var axisTip = handle.selectAll('g')
       .data([''])
@@ -909,7 +917,7 @@ module.exports = cdb.core.View.extend({
     handle.append('path')
       .attr('class', 'CDB-Chart-axisTipRect CDB-Chart-axisTipTriangle')
       .attr('transform', 'translate(' + ((this.options.handleWidth / 2) - (TRIANGLE_SIDE / 2)) + ', ' + yTriangle + ')')
-      .attr('d', trianglePath(0, 0, TRIANGLE_SIDE, 0, (TRIANGLE_SIDE / 2), triangleHeight))
+      .attr('d', trianglePath(0, 0, TRIANGLE_SIDE, 0, (TRIANGLE_SIDE / 2), triangleHeight, yFactor))
       .style('opacity', '0');
 
     axisTip.append('rect')

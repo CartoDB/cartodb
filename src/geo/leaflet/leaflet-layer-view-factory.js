@@ -23,7 +23,7 @@ var LayerGroupViewConstructor = function (layerGroupModel, nativeMap, mapModel) 
   return new LeafletCartoDBLayerGroupView(layerGroupModel, nativeMap);
 };
 
-function getRenderModeResult(mapModel) {
+function getRenderModeResult (mapModel) {
   var mapRenderMode = mapModel.get('renderMode');
 
   if (mapRenderMode === RenderModes.RASTER) {
@@ -45,7 +45,7 @@ function getRenderModeResult(mapModel) {
   }
 
   if (estimatedFeatureCount > MAX_NUMBER_OF_FEATURES_FOR_WEBGL) {
-    return { mode: RenderModes.RASTER, reason: 'too-many-estimated-features='+estimatedFeatureCount };
+    return { mode: RenderModes.RASTER, reason: 'too-many-estimated-features=' + estimatedFeatureCount };
   }
 
   if (!_.all(mapModel.layers.getCartoDBLayers(), canLayerBeRenderedClientSide)) {
@@ -54,7 +54,7 @@ function getRenderModeResult(mapModel) {
 
   return {
     mode: RenderModes.VECTOR,
-    reason: 'webgl=yes,cartocss=supported,valid-estimated-features='+estimatedFeatureCount
+    reason: 'webgl=yes,cartocss=supported,valid-estimated-features=' + estimatedFeatureCount
   };
 }
 

@@ -70,11 +70,11 @@ describe('api/sql', function() {
     expect(ajaxParams.crossDomain).toEqual(true);
   });
 
-  it('should be cancellable', function() {
+  it('should be abortable', function() {
     sql = new SQL({
       user: USER,
       protocol: 'https',
-      cancellable: true
+      abortable: true
     });
 
     sql.execute('select * from table');

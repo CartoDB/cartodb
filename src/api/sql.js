@@ -25,7 +25,7 @@ function SQL(options) {
     version: 'v2',
     protocol: loc,
     jsonp: !$.support.cors,
-    cancellable: false
+    abortable: false
   });
 
   if (!this.options.sql_api_template) {
@@ -72,7 +72,7 @@ SQL.prototype.execute = function(sql, vars, options, callback) {
     crossDomain: true
   };
 
-  if (this._xhr && this.options.cancellable === true) {
+  if (this._xhr && this.options.abortable === true) {
     this._xhr.abort();
   }
 

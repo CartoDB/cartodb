@@ -14,7 +14,7 @@ var MAX_NUMBER_OF_FEATURES_FOR_WEBGL = 10e4;
 
 var LayerGroupViewConstructor = function (layerGroupModel, nativeMap, mapModel) {
   var renderModeResult = getRenderModeResult(mapModel);
-  log.info(renderModeResult);
+  log.info('MAP RENDER MODE', renderModeResult);
 
   if (renderModeResult.mode === RenderModes.VECTOR) {
     return new LeafletCartoDBWebglLayerGroupView(layerGroupModel, nativeMap);

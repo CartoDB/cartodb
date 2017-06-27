@@ -84,4 +84,6 @@ cdb.geo.ui.Tooltip = require('./geo/ui/tooltip-view');
 cdb.vis.INFOWINDOW_TEMPLATE = require('./vis/vis/infowindow-template');
 cdb.vis.Vis = require('./vis/vis');
 
+cdb.helpers.GeoJSONHelper = require('./geo/geometry-models/geojson-helper');
+
 module.exports = cdb;

@@ -61,11 +61,9 @@ module.exports = DataviewModelBase.extend({
     this._originalData.once('change:data', this._updateBindings, this);
 
     this.on('change:column', this._reloadVisAndForceFetch, this);
-    //this.on('change:aggregation', this._onFieldsChanged, this); //  change:bins change:start change:end
     this.on('change', this._onFieldsChanged, this);
 
-
-    // this.listenTo(this.layer, 'change:meta', this._onChangeLayerMeta);
+    this.listenTo(this.layer, 'change:meta', this._onChangeLayerMeta);
   },
 
   _updateURLBinding: function () {
@@ -117,7 +115,7 @@ module.exports = DataviewModelBase.extend({
       buckets[b.bin] = b;
     });
 
-   isAggregation ? this._originalData.fillTimestampBuckets(buckets, start, this.get('aggregation'), numberOfBins) : this._originalData.fillNumericBuckets(buckets, start, width, numberOfBins);
+    isAggregation ? this._originalData.fillTimestampBuckets(buckets, start, this.get('aggregation'), numberOfBins) : this._originalData.fillNumericBuckets(buckets, start, width, numberOfBins);
 
     // FIXME - Update the end of last bin due https://github.com/CartoDB/cartodb.js/issues/926
     var lastBucket = buckets[numberOfBins - 1];
@@ -205,7 +203,7 @@ module.exports = DataviewModelBase.extend({
       aggregation: this.get('aggregation'),
       bins: this.get('bins')
     }, { silent: true });
-    
+
     this._originalData.setUrl(this.get('url'));
   },
 
@@ -215,7 +213,7 @@ module.exports = DataviewModelBase.extend({
       end: model.get('end'),
       bins: model.get('bins')
     }, { silent: true });
-    
+
     this._fetchAndResetFilter();
   },
 
@@ -224,24 +222,27 @@ module.exports = DataviewModelBase.extend({
       return;
     }
 
-    // LOG
-    var changes = [];
-    if (_.has(this.changed, 'bins')) {
-      changes.push('bins:' + this.get('bins'));
-    }
-    if (_.has(this.changed, 'aggregation')) {
-      changes.push('aggregation:' + this.get('aggregation'));
-    }
-    console.log('Changes ' + changes.join(', '));
-
-    // Logic
-    if (this._hasKeyWithValue(this.changed, 'bins') && !_.has(this.changed, 'aggregation')) {
-      console.log('Cambio solo bins');
+    if (this._onlyBinsHasChanged(this.changed)) {
       this._originalData.set('bins', this.get('bins'))
-    } else if (this._hasKeyWithValue(this.changed, 'aggregation') && !_.has(this.changed, 'bins')) {
-      console.log('Cambio solo aggregation');
+    } else if (this._onlyAggregationHasChanged(this.changed)) {
       this._originalData.set('aggregation', this.get('aggregation'))
     }
+  },
+
+  _fetchAndResetFilter: function () {
+    this.fetch();
+    this.disableFilter();
+    this.filter.unsetRange();
+  },
+
+  // Helper functions - - - -
+
+  _onlyBinsHasChanged: function (changed) {
+    return this._hasKeyWithValue(changed, 'bins') && !_.has(changed, 'aggregation');
+  },
+
+  _onlyAggregationHasChanged: function (changed) {
+    return this._hasKeyWithValue(changed, 'aggregation') && !_.has(changed, 'bins');
   },
 
   _hasUndefinedKey: function (obj, key) {
@@ -256,12 +257,6 @@ module.exports = DataviewModelBase.extend({
     return _.some(_.keys(changed), function (key) {
       return _.contains(list, key);
     });
-  },
-
-  _fetchAndResetFilter: function () {
-    this.fetch();
-    this.disableFilter();
-    this.filter.unsetRange();
   }
 },
 

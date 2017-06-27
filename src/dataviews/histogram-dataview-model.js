@@ -310,7 +310,6 @@ module.exports = DataviewModelBase.extend({
   {
     ATTRS_NAMES: DataviewModelBase.ATTRS_NAMES.concat([
       'column',
-      'column_type',
       'bins',
       'min',
       'max',

@@ -260,7 +260,7 @@ module.exports = DataviewModelBase.extend({
       bins: model.get('bins')
     }, { silent: true });
 
-    this._fetchAndResetFilter();
+    this._resetFilterAndFetch();
   },
 
   _onFieldsChanged: function () {
@@ -275,10 +275,10 @@ module.exports = DataviewModelBase.extend({
     }
   },
 
-  _fetchAndResetFilter: function () {
-    this.fetch();
+  _resetFilterAndFetch: function () {
     this.disableFilter();
     this.filter.unsetRange();
+    this.fetch();
   },
 
   // Helper functions - - - -

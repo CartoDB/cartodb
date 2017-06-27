@@ -61,7 +61,9 @@ module.exports = DataviewModelBase.extend({
     this._originalData.once('change:data', this._updateBindings, this);
 
     this.on('change:column', this._reloadVisAndForceFetch, this);
-    this.on('change:aggregation', this._onFieldsChanged, this); //  change:bins change:start change:end
+    //this.on('change:aggregation', this._onFieldsChanged, this); //  change:bins change:start change:end
+    this.on('change', this._onFieldsChanged, this);
+
 
     // this.listenTo(this.layer, 'change:meta', this._onChangeLayerMeta);
   },
@@ -218,13 +220,45 @@ module.exports = DataviewModelBase.extend({
   },
 
   _onFieldsChanged: function () {
-    this._originalData.set({
-      aggregation: this.get('aggregation'),
-      bins: this.get('bins')
+    if (!this._hasChangedSomeOf(['bins', 'aggregation'], this.changed)) {
+      return;
+    }
+
+    // LOG
+    var changes = [];
+    if (_.has(this.changed, 'bins')) {
+      changes.push('bins:' + this.get('bins'));
+    }
+    if (_.has(this.changed, 'aggregation')) {
+      changes.push('aggregation:' + this.get('aggregation'));
+    }
+    console.log('Changes ' + changes.join(', '));
+
+    // Logic
+    if (this._hasKeyWithValue(this.changed, 'bins') && !_.has(this.changed, 'aggregation')) {
+      console.log('Cambio solo bins');
+      this._originalData.set('bins', this.get('bins'))
+    } else if (this._hasKeyWithValue(this.changed, 'aggregation') && !_.has(this.changed, 'bins')) {
+      console.log('Cambio solo aggregation');
+      this._originalData.set('aggregation', this.get('aggregation'))
+    }
+  },
+
+  _hasUndefinedKey: function (obj, key) {
+    return _.has(obj, key) && obj[key] === void 0;
+  },
+
+  _hasKeyWithValue: function (obj, key) {
+    return _.has(obj, key) && obj[key] !== void 0;
+  },
+
+  _hasChangedSomeOf: function (list, changed) {
+    return _.some(_.keys(changed), function (key) {
+      return _.contains(list, key);
     });
   },
 
-  _fetchAndResetFilter: function () {    
+  _fetchAndResetFilter: function () {
     this.fetch();
     this.disableFilter();
     this.filter.unsetRange();

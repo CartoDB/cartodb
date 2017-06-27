@@ -57,6 +57,7 @@ module.exports = Model.extend({
       if (this.hasChanged('bins') && this.get('aggregation')) return;
       this.fetch();
     }, this);
+    window.moment = moment;
   },
 
   setUrl: function (url) {
@@ -117,13 +118,9 @@ module.exports = Model.extend({
       buckets[i] = _.extend({
         bin: i,
         start: startDate.clone().add(i, MOMENT_AGGREGATIONS[aggregation]).unix(),
-        end: startDate.clone().add(i + 1, MOMENT_AGGREGATIONS[aggregation]).unix(),
+        end: startDate.clone().add(i + 1, MOMENT_AGGREGATIONS[aggregation]).unix() - 1,
         freq: 0
       }, buckets[i]);
     }
-
-    // Temporary Hack
-    var lastBucket = _.last(buckets);
-    lastBucket.end = lastBucket.end - 1;
   }
 });

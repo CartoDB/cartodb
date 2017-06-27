@@ -826,14 +826,12 @@ describe Carto::Api::VisualizationsController do
     describe 'tests visualization likes endpoints in organizations' do
       include_context 'organization with users helper'
 
-      before(:each) do
-        @vis = FactoryGirl.create(:carto_visualization, user: @carto_org_user_1)
-        @user_domain = @carto_org_user_1.username
-      end
-
       describe 'PUT notify_watching' do
         it 'adds the user to the watching list' do
-          put api_v1_visualizations_notify_watching_url(user_domain: @user_domain, id: @vis.id, api_key: @carto_org_user_1.api_key)
+          vis = FactoryGirl.create(:carto_visualization, user: @carto_org_user_1)
+          user_domain = @carto_org_user_1.username
+
+          put api_v1_visualizations_notify_watching_url(user_domain: user_domain, id: vis.id, api_key: @carto_org_user_1.api_key)
           expect(last_response.status).to eq(200)
           expect(JSON.parse(last_response.body)).to eq([@carto_org_user_1.username])
         end
@@ -841,14 +839,17 @@ describe Carto::Api::VisualizationsController do
 
       describe 'GET list_watching' do
         it 'returns the users currently on the watching list' do
-          get api_v1_visualizations_notify_watching_url(user_domain: @user_domain, id: @vis.id, api_key: @carto_org_user_1.api_key)
+          vis = FactoryGirl.create(:carto_visualization, user: @carto_org_user_1)
+          user_domain = @carto_org_user_1.username
+
+          get api_v1_visualizations_notify_watching_url(user_domain: user_domain, id: vis.id, api_key: @carto_org_user_1.api_key)
           expect(last_response.status).to eq(200)
           expect(JSON.parse(last_response.body)).to eq([])
 
-          put api_v1_visualizations_notify_watching_url(user_domain: @user_domain, id: @vis.id, api_key: @carto_org_user_1.api_key)
+          put api_v1_visualizations_notify_watching_url(user_domain: user_domain, id: vis.id, api_key: @carto_org_user_1.api_key)
           expect(last_response.status).to eq(200)
 
-          get api_v1_visualizations_notify_watching_url(user_domain: @user_domain, id: @vis.id, api_key: @carto_org_user_1.api_key)
+          get api_v1_visualizations_notify_watching_url(user_domain: user_domain, id: vis.id, api_key: @carto_org_user_1.api_key)
           expect(last_response.status).to eq(200)
           expect(JSON.parse(last_response.body)).to eq([@carto_org_user_1.username])
         end

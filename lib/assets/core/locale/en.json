@@ -1658,8 +1658,8 @@
           },
           "normalize": {
             "label": "Normalize",
-            "placeholder": "Enable Normalization",
-            "disabled-placeholder": "Metric for Normalization"
+            "placeholder": "Metric for Normalization",
+            "disabled-placeholder": "Enable Normalization"
           },
           "timespan": {
             "label": "Timespan",

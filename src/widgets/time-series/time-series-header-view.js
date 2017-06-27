@@ -1,14 +1,35 @@
 var cdb = require('cartodb.js');
 var d3 = require('d3');
+var moment = require('moment');
 var template = require('./time-series-header.tpl');
 var formatter = require('../../formatter');
 var AnimateValues = require('../animate-values.js');
 var animationTemplate = require('./animation-template.tpl');
 
 var FORMATTER_TYPES = {
-  'number': d3.format(',.0f'),
-  'time': d3.time.format('%H:%M'),
-  'date': d3.time.format('%x')
+  'number': d3.format(',.0f')
+};
+
+var AGGREGATION_FORMATS = {
+  // minute:
+  // hour:
+  // day:
+  week: {
+    display: 'Do MMM YYYY',
+    unit: 'w'
+  },
+  month:{
+    display: 'MMM YYYY',
+    unit: 'M'
+  },
+  quarter: {
+    display: '[Q]Q YYYY',
+    unit: 'Q'
+  },
+  year: {
+    display: 'YYYY',
+    unit: 'y'
+  }
 };
 
 /**
@@ -48,11 +69,8 @@ module.exports = cdb.core.View.extend({
 
     if (showSelection) {
       if (columnType === 'date') {
-        var startDate = new Date(scale.invert(filter.get('min')));
-        var endDate = new Date(scale.invert(filter.get('max')));
-
-        start = FORMATTER_TYPES['time'](startDate) + ' ' + FORMATTER_TYPES['date'](startDate);
-        end = FORMATTER_TYPES['time'](endDate) + ' ' + FORMATTER_TYPES['date'](endDate);
+        start = this._formatTimestamp(filter.get('min'), this._dataviewModel.get('aggregation'));
+        end = this._formatTimestamp(filter.get('max'), this._dataviewModel.get('aggregation'), true);
       } else {
         start = FORMATTER_TYPES['number'](scale(filter.get('min')));
         end = FORMATTER_TYPES['number'](scale(filter.get('max')));
@@ -94,7 +112,7 @@ module.exports = cdb.core.View.extend({
   },
 
   _getColumnType: function () {
-    return this._layer.get('column_type') || this._dataviewModel.get('column_type');
+    return this._dataviewModel.has('aggregation') ? 'date' : 'number';
   },
 
   _setupScales: function () {
@@ -114,5 +132,14 @@ module.exports = cdb.core.View.extend({
 
   _onClick: function () {
     this.trigger('resetFilter', this);
+  },
+
+  _formatTimestamp: function (timestamp, aggregation, isEnd) {
+    var format = AGGREGATION_FORMATS[aggregation];
+    var date = moment.unix(timestamp).utc();
+    if (isEnd) {
+      date.add(1, format.unit);
+    }
+    return date.format(format.display);
   }
 });

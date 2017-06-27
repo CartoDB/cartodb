@@ -36,13 +36,13 @@ module.exports = cdb.core.View.extend({
 
   resetFilter: function () {
     this._rangeFilter.unsetRange();
-    this._chartView.removeSelection();
-    this._timeSeriesModel.set({lo_index: null, hi_index: null});
+    this._resetFilterInDI();
   },
 
   _initBinds: function () {
     this.model.bind('change:data', this._onChangeData, this);
     this.listenTo(this._timeSeriesModel, 'change:normalized', this._onNormalizedChanged);
+    this.listenTo(this._rangeFilter, 'change', this._onFilterChanged);
   },
 
   _createHistogramView: function () {
@@ -111,6 +111,17 @@ module.exports = cdb.core.View.extend({
   _onNormalizedChanged: function () {
     if (this._chartView) {
       this._chartView.setNormalized(this._timeSeriesModel.get('normalized'));
+    }
+  },
+
+  _resetFilterInDI: function () {
+    this._chartView.removeSelection();
+    this._timeSeriesModel.set({lo_index: null, hi_index: null});
+  },
+
+  _onFilterChanged: function () {
+    if (!this._rangeFilter.has('min') && !this._rangeFilter.has('max')) {
+      this._resetFilterInDI();
     }
   }
 });

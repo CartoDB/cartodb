@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.8.15.808.01",
+  "version": "4.8.16",
   "description": "CARTO UI frontend",
   "repository": {
     "type": "git",
@@ -37,7 +37,7 @@
     "tangram": "cartodb/tangram-1#master",
     "torque.js": "CartoDB/torque#master",
     "underscore": "1.8.3",
-    "webpack": "3.0.0"
+    "webpack": "2.3.2"
   },
   "devDependencies": {
     "autoprefixer-core": "5.2.1",
@@ -83,7 +83,7 @@
     "semistandard": "7.0.4",
     "semver": "4.3.6",
     "shim-loader": "0.1.0",
-    "source-map-support": "0.4.3",
+    "source-map-support": "0.4.0",
     "stringify": "5.1.0",
     "tpl-loader": "CartoDB/tpl-loader#master",
     "uglify-js": "2.7.x",

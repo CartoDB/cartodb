@@ -264,7 +264,7 @@ module.exports = DataviewModelBase.extend({
   },
 
   _onFieldsChanged: function () {
-    if (!this._hasChangedSomeOf(['bins', 'aggregation(', 'start', 'end'], this.changed)) {
+    if (!this._hasChangedSomeOf(['bins', 'aggregation'], this.changed)) {
       return;
     }
 
@@ -272,13 +272,6 @@ module.exports = DataviewModelBase.extend({
       this._originalData.set('bins', this.get('bins'))
     } else if (this._onlyAggregationHasChanged(this.changed)) {
       this._originalData.set('aggregation', this.get('aggregation'))
-    }
-
-    if (this.hasChanged('start')) {
-      console.log('start:' + this.get('start'));
-    }
-    if (this.hasChanged('end')) {
-      console.log('end:' + this.get('end'));
     }
   },
 

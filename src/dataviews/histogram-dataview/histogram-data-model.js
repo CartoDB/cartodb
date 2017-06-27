@@ -112,7 +112,7 @@ module.exports = Model.extend({
   },
 
   fillTimestampBuckets: function (buckets, start, aggregation, numberOfBins) {
-    var startDate = moment.unix(start);
+    var startDate = moment.unix(start).utc();
 
     for (var i = 0; i < numberOfBins; i++) {
       buckets[i] = _.extend({

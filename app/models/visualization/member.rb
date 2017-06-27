@@ -589,6 +589,31 @@ module CartoDB
         end
       end
 
+      # @param user_id String UUID of the actor that likes the visualization
+      # @throws AlreadyLikedError
+      def add_like_from(user_id)
+        Like.create(actor: user_id, subject: id)
+        reload_likes
+        self
+      rescue Sequel::DatabaseError => exception
+        if exception.message =~ /duplicate key/i
+          raise AlreadyLikedError
+        else
+          raise exception
+        end
+      end
+
+      def remove_like_from(user_id)
+        item = likes.select { |like| like.actor == user_id }
+        item.first.destroy unless item.first.nil?
+        reload_likes
+        self
+      end
+
+      def liked_by?(user_id)
+        !(likes.select { |like| like.actor == user_id }.first.nil?)
+      end
+
       # @param viewer_user ::User
       def qualified_name(viewer_user=nil)
         if viewer_user.nil? || is_owner?(viewer_user)

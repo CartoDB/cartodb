@@ -58,8 +58,7 @@ module Carto
           user_age_in_days_with_decimals = days_with_decimals(now - user_created_at)
 
           {
-            username: @user.username,
-            email: @user.email,
+            user_id: @user.id,
             event_origin: @user.builder_enabled? ? 'Builder' : 'Editor',
             plan: @user.account_type,
             user_active_for: user_age_in_days_with_decimals,

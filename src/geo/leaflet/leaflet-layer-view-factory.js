@@ -6,7 +6,7 @@ var LeafletPlainLayerView = require('./leaflet-plain-layer-view');
 var LeafletCartoDBLayerGroupView = require('./leaflet-cartodb-layer-group-view');
 var LeafletTorqueLayerView = require('./leaflet-torque-layer-view');
 var LeafletCartoDBWebglLayerGroupView = require('./leaflet-cartodb-webgl-layer-group-view');
-var TangramCartoCSS = require('tangram-cartocss');
+var TC = require('tangram.cartodb');
 var RenderModes = require('../../geo/render-modes');
 var util = require('../../core/util');
 
@@ -60,16 +60,11 @@ function getRenderModeResult (mapModel) {
 
 var canLayerBeRenderedClientSide = function (layerModel) {
   var cartoCSS = layerModel.get('meta').cartocss;
-
-  try {
-    TangramCartoCSS.carto2Draw(cartoCSS);
-  } catch (e) {
-    e.message = '[Tangram] Unable to render layer with the following cartoCSS:\n' + cartoCSS + '\nError: ' + e.message;
-    log.error(e);
-    return false;
+  var result = TC.getSupportedCartoCSSResult(cartoCSS);
+  if (!result.supported) {
+    log.error(new Error('[Vector] Unable to render due "' + result.reason + '". Full CartoCSS:\n' + cartoCSS));
   }
-
-  return true;
+  return result.supported;
 };
 
 var LeafletLayerViewFactory = function () {};

@@ -1,7 +1,7 @@
 var log = require('cdb.log');
 var _ = require('underscore');
 var L = require('leaflet');
-var TC = require('tangram.cartodb');
+var TC = require('tangram.cartodb').default;
 var LeafletLayerView = require('./leaflet-layer-view');
 var Profiler = require('../../core/profiler');
 

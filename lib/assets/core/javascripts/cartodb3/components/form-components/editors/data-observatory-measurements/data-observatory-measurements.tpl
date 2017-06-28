@@ -2,7 +2,8 @@
   <% if (isDisabled) { %> is-disabled <% } %>
   <% if (!label) { %> is-empty <% } %>
   <% if (isNull) { %> is-empty <% } %>"
-  tabindex="0">
+  tabindex="0"
+  title="<%- title %>">
   <% if (isLoading) { %>
     <div class="CDB-LoaderIcon CDB-LoaderIcon--small is-dark u-iBlock">
       <svg class="CDB-LoaderIcon-spinner" viewBox="0 0 50 50">
@@ -14,7 +15,7 @@
     <% if (isEmpty) { %>
       <%- _t('components.backbone-forms.select.empty') %>
     <% } else { %>
-      <%- label || placeholder || _t('components.backbone-forms.select.placeholder', { keyAttr: keyAttr }) %>
+      <%- label %>
     <% } %>
   <% } %>
 </div>

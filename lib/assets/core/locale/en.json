@@ -1155,6 +1155,7 @@
     "backbone-forms": {
       "select": {
         "placeholder": "Select a %{keyAttr}",
+        "disabled-placeholder": "Enable %{keyAttr}",
         "loading": "loading…",
         "empty": "No values",
         "selected": "%{count} selected",
@@ -1656,7 +1657,9 @@
             "placeholder": "Select a measurement"
           },
           "normalize": {
-            "label": "Normalize"
+            "label": "Normalize",
+            "placeholder": "Metric for Normalization",
+            "disabled-placeholder": "Enable Normalization"
           },
           "timespan": {
             "label": "Timespan",

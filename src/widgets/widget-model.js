@@ -88,11 +88,11 @@ module.exports = cdb.core.Model.extend({
   getWidgetColor: function () {
     var styles = this.get('style');
     var widgetStyle = styles && styles.widget_style;
-    var widgetColor = widgetStyle.definition &&
+    var widgetColor = widgetStyle && widgetStyle.definition &&
       widgetStyle.definition.color &&
       widgetStyle.definition.color.fixed;
-    var widgetColorChanged = widgetStyle.widget_color_changed ||
-      !widgetStyle.widget_color_changed && widgetColor !== '#9DE0AD';
+    var widgetColorChanged = widgetStyle && widgetStyle.widget_color_changed ||
+      widgetStyle && !widgetStyle.widget_color_changed && widgetColor !== '#9DE0AD';
 
     return widgetColorChanged && widgetColor;
   },

@@ -1,4 +1,3 @@
-var _ = require('underscore');
 var specHelper = require('../../spec-helper');
 var TimeSeriesContentView = require('../../../src/widgets/time-series/content-view');
 var WidgetModel = require('../../../src/widgets/widget-model');
@@ -31,12 +30,6 @@ describe('widgets/time-series/content-view', function () {
     this.view = new TimeSeriesContentView({
       model: widgetModel
     });
-  });
-
-  it('should not fetch new data until unfilteredData is loaded', function () {
-    expect(this.dataviewModel.fetch).not.toHaveBeenCalled();
-    this.originalData.trigger('change:data', this.originalData);
-    expect(this.dataviewModel.fetch).toHaveBeenCalled();
   });
 
   describe('when unfilteredData is loaded', function () {
@@ -90,38 +83,14 @@ describe('widgets/time-series/content-view', function () {
 
   describe('.initBinds', function () {
     it('should hook up events properly', function () {
-      this.view._originalData.off();
       this.view._dataviewModel.off();
-      spyOn(this.view, '_onOriginalDataChange');
       spyOn(this.view, 'render');
-      spyOn(this.view, '_onChangeBins');
 
       this.view._initBinds();
-
-      // Original data change:data
-      this.view._originalData.trigger('change:data');
-      expect(this.view._onOriginalDataChange).toHaveBeenCalled();
 
       // DataviewModel events
       this.view._dataviewModel.trigger('change:data');
       expect(this.view.render).toHaveBeenCalled();
-
-      this.view._dataviewModel.trigger('change:bins');
-      expect(this.view._onChangeBins).toHaveBeenCalled();
-
-      // Related models
-      expect(_.findWhere(this.view._models, { cid: this.view._dataviewModel.cid })).toBeDefined();
-      expect(_.findWhere(this.view._models, { cid: this.view._originalData.cid })).toBeDefined();
-    });
-  });
-
-  describe('._onChangeBins', function () {
-    it('should call setBins on original data', function () {
-      spyOn(this.view._originalData, 'setBins');
-
-      this.view._onChangeBins(null, 7);
-
-      expect(this.view._originalData.setBins).toHaveBeenCalledWith(7);
     });
   });
 });

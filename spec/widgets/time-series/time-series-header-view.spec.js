@@ -95,4 +95,16 @@ describe('widgets/time-series/time-series-header-view', function () {
       expect(args[1]).toBe(89);
     });
   });
+
+  describe('._getColumnType', function () {
+    it('should return "date" if dataviewModel has aggregation', function () {
+      this.view._dataviewModel.set('aggregation', 'day');
+      expect(this.view._getColumnType()).toEqual('date');
+    });
+
+    it('should return "number" if dataviewModel does not have aggregation', function () {
+      this.view._dataviewModel.unset('aggregation');
+      expect(this.view._getColumnType()).toEqual('number');
+    });
+  });
 });

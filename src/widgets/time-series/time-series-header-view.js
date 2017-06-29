@@ -18,7 +18,7 @@ var AGGREGATION_FORMATS = {
     display: 'Do MMM YYYY',
     unit: 'w'
   },
-  month:{
+  month: {
     display: 'MMM YYYY',
     unit: 'M'
   },

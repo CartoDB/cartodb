@@ -8,7 +8,7 @@ describe('widgets/time-series/histogram-view', function () {
     this.timeSeriesModel.getWidgetColor = function () {};
 
     this.dataviewModel = new Backbone.Model();
-    this.dataviewModel.filter = {};
+    this.dataviewModel.filter = new Backbone.Model();
     this.dataviewModel.getUnfilteredDataModel = function () {
       return new Backbone.Model();
     };
@@ -38,10 +38,14 @@ describe('widgets/time-series/histogram-view', function () {
 
   describe('._initBinds', function () {
     it('should hook up events properly', function () {
-      this.view.stopListening();
       this.view.model.off();
+      this.view._chartView = {
+        setNormalized: function () {},
+        removeSelection: function () {}
+      };
       spyOn(this.view, '_onChangeData');
       spyOn(this.view, '_onNormalizedChanged');
+      spyOn(this.view, '_onFilterChanged');
 
       this.view._initBinds();
 
@@ -50,6 +54,9 @@ describe('widgets/time-series/histogram-view', function () {
 
       this.view._timeSeriesModel.trigger('change:normalized');
       expect(this.view._onNormalizedChanged).toHaveBeenCalled();
+
+      this.view._rangeFilter.trigger('change');
+      expect(this.view._onFilterChanged).toHaveBeenCalled();
     });
   });
 
@@ -94,6 +101,47 @@ describe('widgets/time-series/histogram-view', function () {
       this.view._onNormalizedChanged();
 
       expect(arg).toBe(true);
+    });
+  });
+
+  describe('_onFilterChanged', function () {
+    it('should call _resetFilterInDI if filter doesnt have min and max', function () {
+      this.view._rangeFilter.set({ min: undefined, max: undefined }, { unset: true });
+      spyOn(this.view, '_resetFilterInDI');
+      this.view._initBinds();
+      this.view._onFilterChanged();
+
+      expect(this.view._resetFilterInDI).toHaveBeenCalled();
+    });
+
+    it('should not call _resetFilterInDI if filter have min or max', function () {
+      this.view._rangeFilter.set({ min: 10, max: 50 });
+      spyOn(this.view, '_resetFilterInDI');
+      this.view._initBinds();
+      this.view._onFilterChanged();
+
+      expect(this.view._resetFilterInDI).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('_resetFilterInDI', function () {
+    beforeEach(function () {
+      this.view._rangeFilter.set({ min: 33, max: 77 });
+      this.view._chartView = {
+        removeSelection: function () {}
+      };
+      spyOn(this.view._chartView, 'removeSelection');
+      this.view._initBinds();
+      this.view._resetFilterInDI();
+    });
+
+    it('should call _chartView.removeSelection()', function () {
+      expect(this.view._chartView.removeSelection).toHaveBeenCalled();
+    });
+
+    it('should set _timeSeriesModel lo_index and hi_index to null', function () {
+      expect(this.view._timeSeriesModel.get('lo_index')).toEqual(null);
+      expect(this.view._timeSeriesModel.get('hi_index')).toEqual(null);
     });
   });
 });

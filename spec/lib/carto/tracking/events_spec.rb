@@ -110,6 +110,7 @@ module Carto
                                        :plan,
                                        :user_active_for,
                                        :user_created_at,
+                                       :event_user_id,
                                        :event_origin,
                                        :creation_time]
 
@@ -198,6 +199,7 @@ module Carto
                                        :plan,
                                        :user_active_for,
                                        :user_created_at,
+                                       :event_user_id,
                                        :event_origin,
                                        :creation_time]
 
@@ -963,6 +965,7 @@ module Carto
           it 'matches current prod properites' do
             current_prod_properties = [:action,
                                        :creation_time,
+                                       :event_user_id,
                                        :event_origin,
                                        :plan,
                                        :user_active_for,
@@ -1079,6 +1082,7 @@ module Carto
                                        :plan,
                                        :user_active_for,
                                        :user_created_at,
+                                       :event_user_id,
                                        :event_origin,
                                        :creation_time,
                                        :analysis_id,
@@ -1192,6 +1196,7 @@ module Carto
                                        :plan,
                                        :user_active_for,
                                        :user_created_at,
+                                       :event_user_id,
                                        :event_origin,
                                        :creation_time,
                                        :analysis_id,
@@ -1333,6 +1338,7 @@ module Carto
                                        :plan,
                                        :user_active_for,
                                        :user_created_at,
+                                       :event_user_id,
                                        :event_origin,
                                        :creation_time,
                                        :analysis_id,

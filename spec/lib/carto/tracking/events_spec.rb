@@ -967,8 +967,6 @@ module Carto
                                        :plan,
                                        :user_active_for,
                                        :user_created_at,
-                                       :vis_author,
-                                       :vis_author_email,
                                        :vis_author_id,
                                        :vis_id,
                                        :vis_name,

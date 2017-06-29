@@ -35,6 +35,11 @@ describe Carto::RedisExportService do
   let(:service) { Carto::RedisExportService.new }
 
   describe '#export' do
+    it 'exports an empty dictionary' do
+      export = service.export_user_json_hash(@user.id)
+      expect(export[:redis][:users_metadata]).to eq({})
+    end
+
     it 'includes all keys under org:name for organizations' do
       prefix = "org:#{@organization.name}"
       with_redis_keys(prefix) do

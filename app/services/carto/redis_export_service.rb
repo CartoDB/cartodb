@@ -77,7 +77,7 @@ module Carto
     end
 
     def export_dataservices(prefix)
-      $users_metadata.keys("#{prefix}:*").map { |key| export_key($users_metadata, key) }.reduce(&:merge)
+      $users_metadata.keys("#{prefix}:*").map { |key| export_key($users_metadata, key) }.reduce({}, &:merge)
     end
 
     def export_key(redis_db, key)

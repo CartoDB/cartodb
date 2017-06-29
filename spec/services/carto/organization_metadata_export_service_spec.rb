@@ -22,13 +22,22 @@ describe Carto::OrganizationMetadataExportService do
 
     FactoryGirl.create(:notification, organization: @organization)
 
+    CartoDB::GeocoderUsageMetrics.new(@owner.username, @organization.name).incr(:geocoder_here, :success_responses)
+
     @organization.reload
   end
 
   def destroy_organization
+    clean_redis
     @organization.groups.each(&:destroy)
     @organization.groups.clear
     Organization[@organization.id].destroy_cascade
+  end
+
+  def clean_redis
+    gum = CartoDB::GeocoderUsageMetrics.new(@owner.username, @organization.name)
+    $users_metadata.DEL(gum.send(:user_key_prefix, :geocoder_here, :success_responses, DateTime.now))
+    $users_metadata.DEL(gum.send(:org_key_prefix, :geocoder_here, :success_responses, DateTime.now))
   end
 
   let(:service) { Carto::OrganizationMetadataExportService.new }
@@ -91,6 +100,7 @@ describe Carto::OrganizationMetadataExportService do
         source_group_users = @group.users.map(&:id)
 
         # Destroy, keeping the database
+        clean_redis
         Table.any_instance.stubs(:remove_table_from_user_database)
         @organization.users.flat_map(&:visualizations).each(&:destroy)
         @organization.users.each(&:destroy)
@@ -109,6 +119,7 @@ describe Carto::OrganizationMetadataExportService do
         end
 
         expect(imported_organization.groups.count).to eq source_groups.count
+        expect_redis_restored(imported_organization)
         imported_organization.groups.zip(source_groups).each do |g1, g2|
           compare_excluding_fields(g1.attributes, g2, EXCLUDED_DATE_FIELDS + EXCLUDED_ID_FIELDS)
         end
@@ -175,6 +186,11 @@ describe Carto::OrganizationMetadataExportService do
     expect(exported_received_notification[:user_id]).to eq received_notification.user_id
     expect(exported_received_notification[:received_at]).to eq received_notification.received_at
     expect(exported_received_notification[:read_at]).to eq received_notification.read_at
+  end
+
+  def expect_redis_restored(org)
+    expect(CartoDB::GeocoderUsageMetrics.new(org.owner.username, org.name).get(:geocoder_here, :success_responses)).to eq(1)
+    expect(CartoDB::GeocoderUsageMetrics.new(org.owner.username).get(:geocoder_here, :success_responses)).to eq(1)
   end
 
   let(:full_export) do

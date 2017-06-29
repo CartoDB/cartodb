@@ -32,8 +32,7 @@ describe Carto::UserMetadataExportService do
 
   def destroy_user
     gum = CartoDB::GeocoderUsageMetrics.new(@user.username)
-    key = gum.send(:user_key_prefix, :geocoder_here, :success_responses, DateTime.now)
-    $users_metadata.DEL(key)
+    $users_metadata.DEL(gum.send(:user_key_prefix, :geocoder_here, :success_responses, DateTime.now))
 
     destroy_full_visualization(@map, @table, @table_visualization, @visualization)
     @tiled_layer.destroy

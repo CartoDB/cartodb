@@ -25,14 +25,14 @@ describe Carto::UserMetadataExportService do
 
     Carto::FeatureFlagsUser.create(feature_flag: @feature_flag, user: @user)
 
-    key = CartoDB::Stats::APICalls.new.redis_api_call_key(@user.username, 'mapviews')
-    $users_metadata.ZADD(key, 23, "20160915")
+    CartoDB::GeocoderUsageMetrics.new(@user.username).incr(:geocoder_here, :success_responses)
 
     @user.reload
   end
 
   def destroy_user
-    key = CartoDB::Stats::APICalls.new.redis_api_call_key(@user.username, 'mapviews')
+    gum = CartoDB::GeocoderUsageMetrics.new(@user.username)
+    key = gum.send(:user_key_prefix, :geocoder_here, :success_responses, DateTime.now)
     $users_metadata.DEL(key)
 
     destroy_full_visualization(@map, @table, @table_visualization, @visualization)
@@ -186,8 +186,7 @@ describe Carto::UserMetadataExportService do
   end
 
   def expect_redis_restored(user)
-    key = CartoDB::Stats::APICalls.new.redis_api_call_key(user.username, 'mapviews')
-    expect($users_metadata.zscore(key, '20160915')).to eq(23)
+    expect(CartoDB::GeocoderUsageMetrics.new(user.username).get(:geocoder_here, :success_responses)).to eq(1)
   end
 
   let(:full_export) do

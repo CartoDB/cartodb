@@ -121,18 +121,18 @@ describe Carto::OrganizationMetadataExportService do
         expect(imported_organization.groups.count).to eq source_groups.count
         expect_redis_restored(imported_organization)
         imported_organization.groups.zip(source_groups).each do |g1, g2|
-          compare_excluding_fields(g1.attributes, g2, EXCLUDED_DATE_FIELDS + EXCLUDED_ID_FIELDS)
+          compare_excluding_fields(g1.attributes, g2, EXCLUDED_ORG_META_DATE_FIELDS + EXCLUDED_ORG_META_ID_FIELDS)
         end
         expect(imported_organization.groups.first.users.map(&:id)).to eq source_group_users
       end
     end
   end
 
-  EXCLUDED_DATE_FIELDS = ['created_at', 'updated_at', 'period_end_date'].freeze
-  EXCLUDED_ID_FIELDS = ['id', 'organization_id'].freeze
+  EXCLUDED_ORG_META_DATE_FIELDS = ['created_at', 'updated_at', 'period_end_date'].freeze
+  EXCLUDED_ORG_META_ID_FIELDS = ['id', 'organization_id'].freeze
 
   def compare_excluding_dates(u1, u2)
-    compare_excluding_fields(u1, u2, EXCLUDED_DATE_FIELDS)
+    compare_excluding_fields(u1, u2, EXCLUDED_ORG_META_DATE_FIELDS)
   end
 
   def compare_excluding_fields(u1, u2, fields)

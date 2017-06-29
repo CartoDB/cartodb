@@ -72,23 +72,6 @@ describe Carto::OrganizationMetadataExportService do
     end
   end
 
-  describe '#organization export + import' do
-    it 'export + import' do
-      create_organization_with_dependencies
-      export = service.export_organization_json_hash(@organization.id)
-      expect_export_matches_organization(export[:organization], @organization)
-      source_organization = @organization.attributes
-      destroy_organization
-
-      imported_organization = service.build_organization_from_hash_export(export)
-      service.save_imported_organization(imported_organization)
-      imported_organization.reload
-
-      expect_export_matches_organization(export[:organization], imported_organization)
-      compare_excluding_dates(imported_organization.attributes, source_organization)
-    end
-  end
-
   describe '#full export + import (organization, users and visualizations)' do
     it 'export + import organization, users and visualizations' do
       Dir.mktmpdir do |path|

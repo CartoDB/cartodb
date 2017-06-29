@@ -37,14 +37,12 @@ module Carto
       build_organization_from_hash(exported_hash[:organization])
     end
 
+    private
+
     def save_imported_organization(organization)
-      organization.groups.each { |g| g.users_group.clear }
-      organization.notifications.each { |n| n.received_notifications.clear }
       organization.save!
       ::Organization[organization.id].after_save
     end
-
-    private
 
     def build_organization_from_hash(exported_organization)
       organization = Organization.new(exported_organization.slice(*EXPORTED_ORGANIZATION_ATTRIBUTES))

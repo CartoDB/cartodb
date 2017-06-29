@@ -69,13 +69,15 @@ module Carto
     end
 
     def build_group_from_hash(exported_group)
-      Group.new(
+      g = Group.new_instance_without_validation(
         name: exported_group[:name],
         display_name: exported_group[:display_name],
         database_role: exported_group[:database_role],
-        auth_token: exported_group[:auth_token],
-        users_group: exported_group[:users].map { |uid| UsersGroup.new(user_id: uid) }
+        auth_token: exported_group[:auth_token]
       )
+      g.users_group = exported_group[:user_ids].map { |uid| UsersGroup.new(user_id: uid) }
+
+      g
     end
 
     def build_notification_from_hash(notification)
@@ -140,7 +142,7 @@ module Carto
         display_name: group.display_name,
         database_role: group.database_role,
         auth_token: group.auth_token,
-        users: group.users.map(&:id)
+        user_ids: group.users.map(&:id)
       }
     end
 

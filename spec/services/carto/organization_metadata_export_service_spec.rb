@@ -262,7 +262,7 @@ describe Carto::OrganizationMetadataExportService do
             display_name: '#group',
             database_role: 'a98f3bc6391fadfe4d1487e2b6912d24_g_g_group',
             auth_token: 'TE7rg6_4RU8vAeTeEeITIQ',
-            users: []
+            user_ids: []
           }
         ],
         notifications: [

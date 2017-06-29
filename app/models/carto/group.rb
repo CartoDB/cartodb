@@ -52,6 +52,16 @@ module Carto
       group
     end
 
+    # Constructor for groups metadata, ignores database roles. Should be generally avoided.
+    def self.new_instance_without_validation(name:, database_role:, display_name: name, auth_token: nil)
+      new(
+        name: name,
+        display_name: display_name,
+        database_role: database_role,
+        auth_token: auth_token
+      )
+    end
+
     def rename_group_with_extension(new_display_name)
       raise CartoDB::ModelAlreadyExistsError if Group.find_by_organization_id_and_display_name(organization.id, new_display_name)
 

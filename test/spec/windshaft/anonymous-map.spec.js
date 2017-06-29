@@ -310,24 +310,26 @@ describe('windshaft/anonymous-map', function () {
       this.dataviewsCollection.reset([ dataview1, dataview2 ]);
 
       expect(this.map.toJSON().dataviews).toEqual({
-        'dataviewId1': {
-          'type': 'histogram',
-          'source': {
-            'id': 'a0'
+        dataviewId1: {
+          type: 'histogram',
+          source: {
+            id: 'a0'
           },
-          'options': {
-            'column': 'column1',
-            'bins': 5
+          options: {
+            column: 'column1',
+            bins: 5,
+            aggregation: undefined
           }
         },
-        'dataviewId2': {
-          'type': 'histogram',
-          'source': {
-            'id': 'a1'
+        dataviewId2: {
+          type: 'histogram',
+          source: {
+            id: 'a1'
           },
-          'options': {
-            'column': 'column2',
-            'bins': 5
+          options: {
+            column: 'column2',
+            bins: 5,
+            aggregation: undefined
           }
         }
       });

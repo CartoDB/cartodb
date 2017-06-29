@@ -12,7 +12,7 @@ var MOMENT_AGGREGATIONS = {
   second: 's',
   week: 'w',
   year: 'y'
-}
+};
 
 /**
  *  This model is used for getting the total amount of data
@@ -83,7 +83,7 @@ module.exports = Model.extend({
     var numberOfBins = data.bins_count;
     var isAggregation = !!this.get('aggregation');
     var width = data.bin_width;
-    var start = isAggregation ? data.bins_start : data.bins_start;
+    var start = data.bins_start;
     var buckets = new Array(numberOfBins);
 
     _.each(data.bins, function (bin) {

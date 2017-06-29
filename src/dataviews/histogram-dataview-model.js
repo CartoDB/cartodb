@@ -105,12 +105,6 @@ module.exports = DataviewModelBase.extend({
     var isAggregation = !!this.get('aggregation');
     var width = data.bin_width;
     var start = data.bins_start;
-
-    // Temporary hack
-    // if (this._originalData.get('bins') && this._originalData.get('bins') < numberOfBins) {
-    //   numberOfBins = this._originalData.get('bins');
-    // }
-
     var buckets = new Array(numberOfBins);
 
     _.each(data.bins, function (b) {
@@ -269,9 +263,9 @@ module.exports = DataviewModelBase.extend({
     }
 
     if (this._onlyBinsHasChanged(this.changed)) {
-      this._originalData.set('bins', this.get('bins'))
+      this._originalData.set('bins', this.get('bins'));
     } else if (this._onlyAggregationHasChanged(this.changed)) {
-      this._originalData.set('aggregation', this.get('aggregation'))
+      this._originalData.set('aggregation', this.get('aggregation'));
     }
   },
 

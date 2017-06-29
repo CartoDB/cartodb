@@ -177,6 +177,9 @@ module Carto
       organization_json = export_organization_json_string(organization_id)
       root_dir.join("organization_#{organization_id}.json").open('w') { |file| file.write(organization_json) }
 
+      redis_json = Carto::RedisExportService.new.export_organizatio_json_string(user_id)
+      root_dir.join("redis_organization_#{user_id}.json").open('w') { |file| file.write(redis_json) }
+
       # Export users
       organization.users.each do |user|
         user_path = root_dir.join("user_#{user.id}")
@@ -189,6 +192,9 @@ module Carto
       # Import organization
       organization_file = Dir["#{path}/organization_*.json"].first
       organization = build_organization_from_json_export(File.read(organization_file))
+
+      organization_file = Dir["#{path}/redis_organization_*.json"].first
+      Carto::RedisExportService.new.restore_redis_from_json_export(organization_file)
 
       # Groups and notifications must be saved after users
       groups = organization.groups.dup

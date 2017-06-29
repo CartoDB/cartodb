@@ -1,4 +1,4 @@
-<% if (status === 'loading') { %>
+<% if (status === 'fetching') { %>
   <div class="InputColorCategory-loader js-loader">
     <div class="CDB-LoaderIcon is-dark">
       <svg class="CDB-LoaderIcon-spinner" viewBox="0 0 50 50">

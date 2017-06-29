@@ -7,5 +7,7 @@
     </div>
   </div>
 <% } else if (status === 'error') { %>
-  <div class="u-flex u-alignCenter u-justifyCenter CDB-Text CDB-Size-medium u-bSpace--m u-tSpace--m u-errorTextColor"><%- _t('form-components.editors.fill.error') %></div>
+  <div class="u-flex u-alignCenter u-justifyCenter CDB-Text CDB-Size-medium u-bSpace--m u-tSpace--m u-errorTextColor"><%- _t('components.backbone-forms.data-observatory.dropdown.error', {
+    type: type
+  }) %></div>
 <% } %>

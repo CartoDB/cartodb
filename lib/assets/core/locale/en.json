@@ -1183,7 +1183,8 @@
                 "multiple": "%{filters} filters applied"
               }
             }
-          }
+          },
+          "error": "Error fetching %{type}"
         }
       }
     },

@@ -5,7 +5,7 @@
     </div>
 
     <div>
-      <button class="CDB-Text CDB-Size-medium u-actionTextColor js-filters u-rSpace--m"><%- _t('analyses.data-observatory-measure.filters.label') %></button>
+      <button class="CDB-Text CDB-Size-medium u-actionTextColor js-filters u-rSpace--m"><%- label %></button>
     </div>
   </div>
 </div>

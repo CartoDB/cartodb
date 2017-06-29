@@ -25,10 +25,16 @@ describe Carto::UserMetadataExportService do
 
     Carto::FeatureFlagsUser.create(feature_flag: @feature_flag, user: @user)
 
+    key = CartoDB::Stats::APICalls.new.redis_api_call_key(@user.username, 'mapviews')
+    $users_metadata.ZADD(key, 23, "20160915")
+
     @user.reload
   end
 
   def destroy_user
+    key = CartoDB::Stats::APICalls.new.redis_api_call_key(@user.username, 'mapviews')
+    $users_metadata.DEL(key)
+
     destroy_full_visualization(@map, @table, @table_visualization, @visualization)
     @tiled_layer.destroy
     @asset.destroy
@@ -102,6 +108,7 @@ describe Carto::UserMetadataExportService do
         imported_user = service.import_user_from_directory(path)
 
         compare_excluding_dates(imported_user.attributes, source_user)
+        expect_redis_restored(imported_user)
         expect(imported_user.visualizations.count).to eq source_visualizations.count
         imported_user.visualizations.zip(source_visualizations).each do |v1, v2|
           compare_excluding_dates_and_ids(v1.attributes, v2)
@@ -129,6 +136,7 @@ describe Carto::UserMetadataExportService do
         imported_user = service.import_user_from_directory(path)
 
         compare_excluding_dates(imported_user.attributes, source_user)
+        expect_redis_restored(imported_user)
         expect(imported_user.visualizations.count).to eq source_visualizations.count
         imported_user.visualizations.zip(source_visualizations).each do |v1, v2|
           compare_excluding_dates_and_ids(v1.attributes, v2)
@@ -175,6 +183,11 @@ describe Carto::UserMetadataExportService do
     expect(exported_asset[:public_url]).to eq asset.public_url
     expect(exported_asset[:kind]).to eq asset.kind
     expect(exported_asset[:storage_info]).to eq asset.storage_info
+  end
+
+  def expect_redis_restored(user)
+    key = CartoDB::Stats::APICalls.new.redis_api_call_key(user.username, 'mapviews')
+    expect($users_metadata.zscore(key, '20160915')).to eq(23)
   end
 
   let(:full_export) do

@@ -141,6 +141,9 @@ module Carto
       user_json = export_user_json_string(user_id)
       root_dir.join("user_#{user_id}.json").open('w') { |file| file.write(user_json) }
 
+      redis_json = Carto::RedisExportService.new.export_user_json_string(user_id)
+      root_dir.join("redis_user_#{user_id}.json").open('w') { |file| file.write(redis_json) }
+
       # Export visualizations (include type in the name to be able to import datasets before maps)
       export_user_visualizations_to_directory(user, Carto::Visualization::TYPE_CANONICAL, path)
       export_user_visualizations_to_directory(user, Carto::Visualization::TYPE_DERIVED, path)
@@ -151,6 +154,8 @@ module Carto
       user_file = Dir["#{path}/user_*.json"].first
       user = build_user_from_json_export(File.read(user_file))
       save_imported_user(user)
+
+      Carto::RedisExportService.new.restore_redis_from_json_export(File.read(Dir["#{path}/redis_user_*.json"].first))
 
       if import_visualizations
         with_non_viewer_user(user) do

@@ -87,12 +87,14 @@ module.exports = cdb.core.Model.extend({
 
   getWidgetColor: function () {
     var styles = this.get('style');
+    var widgetStyle = styles && styles.widget_style;
+    var widgetColor = widgetStyle.definition &&
+      widgetStyle.definition.color &&
+      widgetStyle.definition.color.fixed;
+    var widgetColorChanged = widgetStyle.widget_color_changed ||
+      !widgetStyle.widget_color_changed && widgetColor !== '#9DE0AD';
 
-    return styles && styles.widget_style &&
-          styles.widget_style.widget_color_changed &&
-          styles.widget_style.definition &&
-          styles.widget_style.definition.color &&
-          styles.widget_style.definition.color.fixed;
+    return widgetColorChanged && widgetColor;
   },
 
   hasColorsAutoStyle: function () {

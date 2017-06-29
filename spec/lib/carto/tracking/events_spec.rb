@@ -107,8 +107,6 @@ module Carto
                                        :type,
                                        :object_created_at,
                                        :lifetime,
-                                       :username,
-                                       :email,
                                        :plan,
                                        :user_active_for,
                                        :user_created_at,
@@ -197,8 +195,6 @@ module Carto
                                        :object_created_at,
                                        :lifetime,
                                        :origin,
-                                       :username,
-                                       :email,
                                        :plan,
                                        :user_active_for,
                                        :user_created_at,
@@ -287,8 +283,6 @@ module Carto
                                        :type,
                                        :object_created_at,
                                        :lifetime,
-                                       :username,
-                                       :email,
                                        :plan,
                                        :user_active_for,
                                        :user_created_at,
@@ -372,7 +366,6 @@ module Carto
 
           it 'matches current prod properites' do
             current_prod_properties = [:creation_time,
-                                       :email,
                                        :event_origin,
                                        :lifetime,
                                        :object_created_at,
@@ -381,7 +374,6 @@ module Carto
                                        :type,
                                        :user_active_for,
                                        :user_created_at,
-                                       :username,
                                        :vis_id]
 
             format = @event_class.new(@user.id,
@@ -458,8 +450,6 @@ module Carto
                                        :imported_from,
                                        :sync,
                                        :file_type,
-                                       :username,
-                                       :email,
                                        :plan,
                                        :user_active_for,
                                        :user_created_at,
@@ -537,8 +527,6 @@ module Carto
                                        :imported_from,
                                        :sync,
                                        :file_type,
-                                       :username,
-                                       :email,
                                        :plan,
                                        :user_active_for,
                                        :user_created_at,
@@ -596,13 +584,11 @@ module Carto
 
           it 'matches current prod properites' do
             current_prod_properties = [:creation_time,
-                                       :email,
                                        :event_origin,
                                        :plan,
                                        :quota_overage,
                                        :user_active_for,
-                                       :user_created_at,
-                                       :username]
+                                       :user_created_at]
 
             format = @event_class.new(@user.id, user_id: @user.id, quota_overage: 123)
                                  .instance_eval { @format }
@@ -693,15 +679,13 @@ module Carto
 
           it 'matches current prod properites' do
             current_prod_properties = [:creation_time,
-                                       :email,
                                        :event_origin,
                                        :map_id,
                                        :map_name,
                                        :mapviews,
                                        :plan,
                                        :user_active_for,
-                                       :user_created_at,
-                                       :username]
+                                       :user_created_at]
 
             format = @event_class.new(@user.id,
                                       visualization_id: @visualization.id,
@@ -790,8 +774,6 @@ module Carto
                                        :object_created_at,
                                        :lifetime,
                                        :origin,
-                                       :username,
-                                       :email,
                                        :plan,
                                        :user_active_for,
                                        :user_created_at,
@@ -880,8 +862,6 @@ module Carto
                                        :type,
                                        :object_created_at,
                                        :lifetime,
-                                       :username,
-                                       :email,
                                        :plan,
                                        :user_active_for,
                                        :user_created_at,
@@ -983,12 +963,10 @@ module Carto
           it 'matches current prod properites' do
             current_prod_properties = [:action,
                                        :creation_time,
-                                       :email,
                                        :event_origin,
                                        :plan,
                                        :user_active_for,
                                        :user_created_at,
-                                       :username,
                                        :vis_author,
                                        :vis_author_email,
                                        :vis_author_id,
@@ -1100,8 +1078,6 @@ module Carto
                                        :type,
                                        :object_created_at,
                                        :lifetime,
-                                       :username,
-                                       :email,
                                        :plan,
                                        :user_active_for,
                                        :user_created_at,
@@ -1215,8 +1191,6 @@ module Carto
                                        :type,
                                        :object_created_at,
                                        :lifetime,
-                                       :username,
-                                       :email,
                                        :plan,
                                        :user_active_for,
                                        :user_created_at,
@@ -1358,8 +1332,6 @@ module Carto
                                        :type,
                                        :object_created_at,
                                        :lifetime,
-                                       :username,
-                                       :email,
                                        :plan,
                                        :user_active_for,
                                        :user_created_at,

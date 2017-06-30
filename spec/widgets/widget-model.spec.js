@@ -429,7 +429,7 @@ describe('widgets/widget-model', function () {
       it('should return color', function () {
         var style = {
           widget_style: {
-            definition:  {
+            definition: {
               color: {
                 fixed: '#fabada'
               }
@@ -447,9 +447,9 @@ describe('widgets/widget-model', function () {
       it('should not return color', function () {
         var style = {
           widget_style: {
-            definition:  {
+            definition: {
               color: {
-                fixed: '#9DE0AD',
+                fixed: '#9DE0AD'
               }
             },
             widget_color_changed: false
@@ -464,12 +464,12 @@ describe('widgets/widget-model', function () {
         it('should return color', function () {
           var style = {
             widget_style: {
-              definition:  {
+              definition: {
                 color: {
                   fixed: '#fabada',
                   opacity: 1
                 }
-              },
+              }
             }
           };
           this.model.set('style', style);

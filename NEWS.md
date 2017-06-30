@@ -61,7 +61,7 @@ Development
 * Fix permission model and added tests (#12393)
 
 ### NOTICE
-This release upgrades the CartoDB PostgreSQL extension to `0.19.1`. Run the following to have it available:
+This release upgrades the CartoDB PostgreSQL extension to `0.19.2`. Run the following to have it available:
 ```shell
 cd $(git rev-parse --show-toplevel)/lib/sql
 sudo make install

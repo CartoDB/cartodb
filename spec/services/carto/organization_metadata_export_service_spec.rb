@@ -152,6 +152,7 @@ describe Carto::OrganizationMetadataExportService do
   end
 
   def expect_export_matches_group(exported_group, group)
+    expect(exported_group[:id]).to eq group.id
     expect(exported_group[:name]).to eq group.name
     expect(exported_group[:display_name]).to eq group.display_name
     expect(exported_group[:database_role]).to eq group.database_role

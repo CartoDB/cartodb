@@ -74,6 +74,7 @@ module Carto
         auth_token: exported_group[:auth_token]
       )
       g.users_group = exported_group[:user_ids].map { |uid| UsersGroup.new(user_id: uid) }
+      g.id = exported_group[:id]
 
       g
     end
@@ -136,6 +137,7 @@ module Carto
 
     def export_group(group)
       {
+        id: group.id,
         name: group.name,
         display_name: group.display_name,
         database_role: group.database_role,

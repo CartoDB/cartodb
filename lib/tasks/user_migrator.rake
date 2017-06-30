@@ -30,7 +30,7 @@ namespace :cartodb do
 
     namespace :import do
       desc 'Import an organization'
-      task :organization, [:export_file] => :environment do |_task, args|
+      task :organization, [:export_file, :database_ip] => :environment do |_task, args|
         export_file = args[:export_file]
         Dir.mktmpdir do |work_dir|
           `cd #{work_dir}/ && unzip -u #{export_file} && cd -`
@@ -42,7 +42,7 @@ namespace :cartodb do
             file: Dir["#{path}/data/org*json"].first,
             data: true,
             metadata: false,
-            host: '127.0.0.1',
+            host: args[:database_ip],
             rollback: false,
             mode: :import,
             set_banner: false

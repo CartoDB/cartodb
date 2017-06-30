@@ -158,19 +158,19 @@ module Carto
       Carto::RedisExportService.new.restore_redis_from_json_export(File.read(Dir["#{path}/redis_user_*.json"].first))
 
       if import_visualizations
-        with_non_viewer_user(user) do
-          import_user_visualizations_from_directory(user, Carto::Visualization::TYPE_CANONICAL, path)
-          import_user_visualizations_from_directory(user, Carto::Visualization::TYPE_DERIVED, path)
-        end
+        import_user_visualizations_from_directory(user, Carto::Visualization::TYPE_CANONICAL, path)
+        import_user_visualizations_from_directory(user, Carto::Visualization::TYPE_DERIVED, path)
       end
 
       user
     end
 
     def import_user_visualizations_from_directory(user, type, path)
-      Dir["#{path}/#{type}_*#{Carto::VisualizationExporter::EXPORT_EXTENSION}"].each do |filename|
-        imported_vis = Carto::VisualizationsExportService2.new.build_visualization_from_json_export(File.read(filename))
-        Carto::VisualizationsExportPersistenceService.new.save_import(user, imported_vis, full_restore: true)
+      with_non_viewer_user(user) do
+        Dir["#{path}/#{type}_*#{Carto::VisualizationExporter::EXPORT_EXTENSION}"].each do |fname|
+          imported_vis = Carto::VisualizationsExportService2.new.build_visualization_from_json_export(File.read(fname))
+          Carto::VisualizationsExportPersistenceService.new.save_import(user, imported_vis, full_restore: true)
+        end
       end
     end
 

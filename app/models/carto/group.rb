@@ -24,6 +24,8 @@ module Carto
     has_many :users_group, dependent: :destroy, class_name: Carto::UsersGroup
     has_many :users, through: :users_group
 
+    private_class_method :new
+
     validates :name, :database_role, :organization, presence: true
 
     # Constructor for groups already existing in the database

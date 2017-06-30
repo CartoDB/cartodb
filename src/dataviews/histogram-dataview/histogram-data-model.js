@@ -81,7 +81,6 @@ module.exports = Model.extend({
 
   parse: function (data) {
     var numberOfBins = data.bins_count;
-    var isAggregation = !!this.get('aggregation');
     var width = data.bin_width;
     var start = data.bins_start;
     var buckets = new Array(numberOfBins);
@@ -90,9 +89,12 @@ module.exports = Model.extend({
       buckets[bin.bin] = bin;
     });
 
-    isAggregation ? this.fillTimestampBuckets(buckets, start, this.get('aggregation'), numberOfBins) : this.fillNumericBuckets(buckets, start, width, numberOfBins);
+    this.set('aggregation', data.aggregation, { silent: true });
+
+    _.has(data, 'aggregation') ? this.fillTimestampBuckets(buckets, start, data.aggregation, numberOfBins) : this.fillNumericBuckets(buckets, start, width, numberOfBins);
 
     return {
+      aggregation: data.aggregation,
       data: buckets,
       start: buckets[0].start,
       end: buckets[buckets.length - 1].end,

@@ -249,6 +249,7 @@ module.exports = DataviewModelBase.extend({
 
   _onDataChanged: function (model) {
     this.set({
+      aggregation: model.get('aggregation'),
       start: model.get('start'),
       end: model.get('end'),
       bins: model.get('bins')

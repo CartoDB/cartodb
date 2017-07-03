@@ -58,9 +58,6 @@ module.exports = HistogramView.extend({
   },
 
   _onBrushClick: function (loBarIndex) {
-    // when there are fewer data entries than the expected steps the torqueLayerModel has wrong number of steps,
-    // thus we need to calculate the "proper" step, this is a hack
-    var dataLength = this.model.get('data').length;
     var steps = this._torqueLayerModel.get('steps');
     var step = Math.round(steps * loBarIndex);
 
@@ -68,11 +65,11 @@ module.exports = HistogramView.extend({
     if (step === steps) step -= 1;
 
     HistogramView.prototype.resetFilter.apply(this);
-    
+
     this._torqueLayerModel.set({ step: step });
   },
 
-  _onBrushEnd: function (loBarIndex, hiBarIndex) {
+  _onBrushEnd: function () {
     HistogramView.prototype._onBrushEnd.apply(this, arguments);
 
     this._reSelectRange();

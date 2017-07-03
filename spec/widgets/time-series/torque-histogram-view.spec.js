@@ -5,8 +5,6 @@ var HistogramChartView = require('../../../src/widgets/histogram/chart');
 var HistogramView = require('../../../src/widgets/time-series/histogram-view');
 
 describe('widgets/time-series/torque-histogram-view', function () {
-  var isFilterEmpty = true;
-
   beforeEach(function () {
     var vis = specHelper.createDefaultVis();
 

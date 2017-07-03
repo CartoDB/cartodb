@@ -20,7 +20,8 @@ describe Carto::OrganizationMetadataExportService do
     @group = FactoryGirl.create(:carto_group, organization: @organization)
     @group.add_user(@non_owner.username)
 
-    FactoryGirl.create(:notification, organization: @organization)
+    notification = FactoryGirl.create(:notification, organization: @organization)
+    notification.received_notifications.find_by_user_id(@owner.id).update_attribute(:read_at, DateTime.now)
 
     CartoDB::GeocoderUsageMetrics.new(@owner.username, @organization.name).incr(:geocoder_here, :success_responses)
 
@@ -62,6 +63,14 @@ describe Carto::OrganizationMetadataExportService do
 
       expect(export[:organization].keys).to include(*@organization.attributes.symbolize_keys.keys)
     end
+
+    it 'exports notifications and received notifications' do
+      export = service.export_organization_json_hash(@organization.id)
+
+      exported_notifications = export[:organization][:notifications]
+      exported_notifications.length.should eq 1
+      exported_notifications.first[:received_by].length.should eq @organization.users.length
+    end
   end
 
   describe '#organization import' do
@@ -81,6 +90,10 @@ describe Carto::OrganizationMetadataExportService do
         source_users = @organization.users.map(&:attributes)
         source_groups = @organization.groups.map(&:attributes)
         source_group_users = @group.users.map(&:id)
+        source_notifications = @organization.notifications.map(&:attributes)
+        source_received_notifications = @organization.notifications.map { |n|
+          [n.id, n.received_notifications.map(&:attributes)]
+        }.to_h
 
         # Destroy, keeping the database
         clean_redis
@@ -107,12 +120,37 @@ describe Carto::OrganizationMetadataExportService do
           compare_excluding_fields(g1.attributes, g2, EXCLUDED_ORG_META_DATE_FIELDS + EXCLUDED_ORG_META_ID_FIELDS)
         end
         expect(imported_organization.groups.first.users.map(&:id)).to eq source_group_users
+
+        expect(imported_organization.notifications.length).to eq source_notifications.length
+        imported_organization.notifications.zip(source_notifications).each do |i_n, s_n|
+          compare_excluding_fields(
+            stringify_fields(i_n.attributes, ['created_at']),
+            stringify_fields(s_n, ['created_at']),
+            EXCLUDED_NOTIFICATIONS_FIELDS)
+          i_received = i_n.received_notifications.map(&:attributes)
+          s_received = source_received_notifications[s_n['id']]
+
+          i_received.length.should eq s_received.length
+
+          i_received.zip(s_received).each do |i_rn, s_rn|
+            compare_excluding_fields(
+              stringify_fields(i_rn, ['received_at', 'read_at']),
+              stringify_fields(s_rn, ['received_at', 'read_at']),
+              ['id', 'notification_id'])
+          end
+        end
       end
     end
   end
 
   EXCLUDED_ORG_META_DATE_FIELDS = ['created_at', 'updated_at', 'period_end_date'].freeze
   EXCLUDED_ORG_META_ID_FIELDS = ['id', 'organization_id'].freeze
+  EXCLUDED_NOTIFICATIONS_FIELDS = ['id'].freeze
+
+  # DateTime comparisons fail if they're not stringified
+  def stringify_fields(hash, fields)
+    hash.merge(Hash[hash.slice(*fields).map { |k, v| [k, v.to_s] }])
+  end
 
   def compare_excluding_dates(u1, u2)
     compare_excluding_fields(u1, u2, EXCLUDED_ORG_META_DATE_FIELDS)
@@ -164,6 +202,16 @@ describe Carto::OrganizationMetadataExportService do
     expect(exported_notification[:recipients]).to eq notification.recipients
     expect(exported_notification[:body]).to eq notification.body
     expect(exported_notification[:created_at]).to eq notification.created_at
+    # This check forces test data to have notification receptions, so they will be tested
+    expect(exported_notification[:received_by].length).to be > 0
+    expect(exported_notification[:received_by].length).to eq notification.received_notifications.length
+    exported_notification[:received_by].each do |exported_received_notification|
+      received_notification = notification.received_notifications.find { |rn|
+        rn.user_id == exported_received_notification[:user_id]
+      }
+      expect(exported_received_notification[:received_at]).to eq received_notification.received_at
+      expect(exported_received_notification[:read_at]).to eq received_notification.read_at
+    end
   end
 
   def expect_export_matches_received_notification(exported_received_notification, received_notification)
@@ -255,7 +303,13 @@ describe Carto::OrganizationMetadataExportService do
             recipients: "all",
             body: "Empty body",
             created_at: DateTime.now,
-            received_by: []
+            received_by: [
+              {
+                user_id: '06b974db-de0d-49b7-ae9b-76c63af8c122',
+                received_at: DateTime.now,
+                read_at: nil
+              }
+            ]
           }
         ]
       }

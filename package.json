@@ -1,6 +1,6 @@
 {
   "name": "cartodb-deep-insights.js",
-  "version": "0.0.2",
+  "version": "0.0.2-c12324",
   "description": "CARTO Deep Insights JS library",
   "repository": {
     "type": "git",
@@ -28,7 +28,7 @@
     "d3": "3.5.17",
     "d3-interpolate": "1.1.2",
     "jquery": "2.1.4",
-    "moment": "2.10.6",
+    "moment": "^2.18.1",
     "perfect-scrollbar": "git://github.com/CartoDB/perfect-scrollbar.git#master",
     "tinycolor2": "1.4.1",
     "underscore": "1.8.3",

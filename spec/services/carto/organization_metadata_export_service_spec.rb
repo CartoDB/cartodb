@@ -126,7 +126,8 @@ describe Carto::OrganizationMetadataExportService do
           compare_excluding_fields(
             stringify_fields(i_n.attributes, ['created_at']),
             stringify_fields(s_n, ['created_at']),
-            EXCLUDED_NOTIFICATIONS_FIELDS)
+            EXCLUDED_NOTIFICATIONS_FIELDS
+          )
           i_received = i_n.received_notifications.map(&:attributes)
           s_received = source_received_notifications[s_n['id']]
 
@@ -136,7 +137,8 @@ describe Carto::OrganizationMetadataExportService do
             compare_excluding_fields(
               stringify_fields(i_rn, ['received_at', 'read_at']),
               stringify_fields(s_rn, ['received_at', 'read_at']),
-              ['id', 'notification_id'])
+              ['id', 'notification_id']
+            )
           end
         end
       end
@@ -206,9 +208,9 @@ describe Carto::OrganizationMetadataExportService do
     expect(exported_notification[:received_by].length).to be > 0
     expect(exported_notification[:received_by].length).to eq notification.received_notifications.length
     exported_notification[:received_by].each do |exported_received_notification|
-      received_notification = notification.received_notifications.find { |rn|
+      received_notification = notification.received_notifications.find do |rn|
         rn.user_id == exported_received_notification[:user_id]
-      }
+      end
       expect(exported_received_notification[:received_at]).to eq received_notification.received_at
       expect(exported_received_notification[:read_at]).to eq received_notification.read_at
     end

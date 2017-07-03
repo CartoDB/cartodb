@@ -1730,7 +1730,6 @@ describe Carto::Api::VisualizationsController do
     end
 
     describe '/api/v1/viz/:id/watching' do
-
       before(:all) do
         @user_1_1 = create_test_user
         @user_1_2 = create_test_user
@@ -1746,7 +1745,7 @@ describe Carto::Api::VisualizationsController do
       end
 
       it 'returns an empty array if no other user is watching' do
-        CartoDB::Visualization::Watcher.any_instance.stubs(:list).returns([])
+        Carto::Visualization::Watcher.any_instance.stubs(:list).returns([])
 
         bypass_named_maps
 
@@ -1757,7 +1756,8 @@ describe Carto::Api::VisualizationsController do
         login(@user_1_1)
         get api_v1_visualizations_notify_watching_url(id: id, api_key: @user_1_1.api_key)
         body = JSON.parse(last_response.body)
-        body.should == []
+
+        expect(body).to eq([])
       end
     end
 

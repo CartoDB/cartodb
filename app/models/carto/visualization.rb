@@ -222,7 +222,7 @@ class Carto::Visualization < ActiveRecord::Base
   def send_like_email(current_viewer, vis_preview_image)
     if self.type == Carto::Visualization::TYPE_CANONICAL
       ::Resque.enqueue(::Resque::UserJobs::Mail::TableLiked, self.id, current_viewer.id, vis_preview_image)
-    elsif vis.type == Carto::Visualization::TYPE_DERIVED
+    elsif self.type == Carto::Visualization::TYPE_DERIVED
       ::Resque.enqueue(::Resque::UserJobs::Mail::MapLiked, self.id, current_viewer.id, vis_preview_image)
     end
   end

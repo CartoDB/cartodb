@@ -17,7 +17,7 @@ var AGGREGATION_FORMATS = {
   },
   hour: {
     display: 'HH:mm L',
-    unit: 'm'
+    unit: 'h'
   },
   day: {
     display: 'Do MMM YYYY',

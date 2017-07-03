@@ -59,6 +59,7 @@ Development
 * Fixed "see all formats" url, from the Connect Dataset module, to open in new windown and changed the url.
 * Added a data attribute for Backbone views that points to the module that implements it (Leapfrog #12341)
 * Add geometry validation for polygons and lines in edit feature form (#12397)
+* Fix permission model and added tests (#12393)
 
 ### NOTICE
 This release upgrades the CartoDB PostgreSQL extension to `0.19.1`. Run the following to have it available:

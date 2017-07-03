@@ -911,6 +911,10 @@ class User < Sequel::Model
     "rails:users:#{username}"
   end
 
+  def timeout_key
+    "limits:timeout:#{username}"
+  end
+
   # save users basic metadata to redis for other services (node sql api, geocoder api, etc)
   # to use
   def save_metadata
@@ -938,6 +942,9 @@ class User < Sequel::Model
       'geocoder_provider', geocoder_provider,
       'isolines_provider', isolines_provider,
       'routing_provider', routing_provider
+    $users_metadata.HMSET timeout_key,
+      'db', user_timeout,
+      'db_public', database_timeout # TODO: render, render_public
   end
 
   def get_auth_tokens

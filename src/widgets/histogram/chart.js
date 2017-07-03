@@ -716,8 +716,8 @@ module.exports = cdb.core.View.extend({
 
     // click in animated histogram
     if (brush.empty() && this._isAnimated()) {
-      // loBarIndex & hiBarIndex are the same value
-      this.trigger('on_brush_click', loBarIndex);
+      // Send 0..1 factor of position of click in graph
+      this.trigger('on_brush_click', brush.extent()[0] / 100);
 
       return;
     } else {

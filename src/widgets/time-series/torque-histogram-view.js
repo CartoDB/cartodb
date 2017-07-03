@@ -62,10 +62,13 @@ module.exports = HistogramView.extend({
     // thus we need to calculate the "proper" step, this is a hack
     var dataLength = this.model.get('data').length;
     var steps = this._torqueLayerModel.get('steps');
-    var step = steps < dataLength ? loBarIndex * steps / dataLength : loBarIndex;
+    var step = Math.round(steps * loBarIndex);
+
+    // Going to the last step causes a jump to the beginning immediately
+    if (step === steps) step -= 1;
 
     HistogramView.prototype.resetFilter.apply(this);
-
+    
     this._torqueLayerModel.set({ step: step });
   },
 

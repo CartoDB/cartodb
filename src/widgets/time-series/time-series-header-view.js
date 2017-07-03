@@ -11,9 +11,18 @@ var FORMATTER_TYPES = {
 };
 
 var AGGREGATION_FORMATS = {
-  // minute:
-  // hour:
-  // day:
+  minute: {
+    display: 'HH:mm L',
+    unit: 'm'
+  },
+  hour: {
+    display: 'HH:mm L',
+    unit: 'm'
+  },
+  day: {
+    display: 'Do MMM YYYY',
+    unit: 'd'
+  },
   week: {
     display: 'Do MMM YYYY',
     unit: 'w'

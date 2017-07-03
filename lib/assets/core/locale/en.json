@@ -1176,8 +1176,16 @@
           },
           "filter": {
             "header": "Filter measurements by",
-            "type": "filters"
-          }
+            "type": "filters",
+            "filters": {
+              "label": "Filters",
+              "applied": {
+                "single": "1 filter applied",
+                "multiple": "%{filters} filters applied"
+              }
+            }
+          },
+          "error": "Error fetching %{type}"
         }
       }
     },

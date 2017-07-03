@@ -2,5 +2,5 @@
     <% if (isSelected) { %> is-selected <% } %>
   " title="<%- name %>">
   <div class="u-bSpace"><%- name %></div>
-  <div class="CDB-Size-small u-altTextColor"><%- description %></div>
+  <div class="CDB-Size-small u-altTextColor DataObservatory-description"><%- description %></div>
 </button>

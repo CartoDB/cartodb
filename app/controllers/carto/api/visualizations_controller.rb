@@ -44,7 +44,7 @@ module Carto
                                                                          :destroy, :google_maps_static_image]
 
       before_filter :ensure_visualization_owned, only: [:destroy, :google_maps_static_image]
-      before_filter :ensure_visualization_is_viewable, only: [:add_like, :remove_like, :notify_watching, :list_watching]
+      before_filter :ensure_visualization_is_viewable, only: [:add_like, :remove_like]
 
       rescue_from Carto::LoadError, with: :rescue_from_carto_error
       rescue_from Carto::UUIDParameterFormatError, with: :rescue_from_carto_error
@@ -134,6 +134,7 @@ module Carto
       rescue Carto::Visualization::AlreadyLikedError
         render(text: "You've already liked this visualization", status: 400)
       rescue KeyError => exception
+        CartoDB::Logger.error(exception: exception)
         render(text: exception.message, status: 403)
       end
 
@@ -146,19 +147,21 @@ module Carto
         Carto::Tracking::Events::LikedMap.new(current_viewer_id, event_properties).report
 
         render_jsonp(id: @visualization.id, likes: @visualization.likes.count, liked: false)
-      rescue KeyError => exception
-        render(text: exception.message, status: 403)
       end
 
       def notify_watching
-        watcher = CartoDB::Visualization::Watcher.new(current_user, @visualization)
+        return(head 403) unless @visualization.has_read_permission?(current_viewer)
+
+        watcher = Carto::Visualization::Watcher.new(current_user, @visualization)
         watcher.notify
 
         render_jsonp(watcher.list)
       end
 
       def list_watching
-        render_jsonp(CartoDB::Visualization::Watcher.new(current_user, @visualization).list)
+        return(head 403) unless @visualization.has_read_permission?(current_viewer)
+
+        render_jsonp(Carto::Visualization::Watcher.new(current_user, @visualization).list)
       end
 
       def vizjson2

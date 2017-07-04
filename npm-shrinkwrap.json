@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.8.13",
+  "version": "4.8.15",
   "dependencies": {
     "abbrev": {
       "version": "1.1.0",
@@ -987,9 +987,9 @@
       "resolved": "https://registry.npmjs.org/balanced-match/-/balanced-match-1.0.0.tgz"
     },
     "base64-js": {
-      "version": "1.2.0",
+      "version": "1.2.1",
       "from": "base64-js@>=1.0.2 <2.0.0",
-      "resolved": "https://registry.npmjs.org/base64-js/-/base64-js-1.2.0.tgz"
+      "resolved": "https://registry.npmjs.org/base64-js/-/base64-js-1.2.1.tgz"
     },
     "bcrypt-pbkdf": {
       "version": "1.0.1",
@@ -1179,9 +1179,9 @@
       "resolved": "https://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.32.0.tgz"
     },
     "caniuse-lite": {
-      "version": "1.0.30000692",
+      "version": "1.0.30000693",
       "from": "caniuse-lite@>=1.0.30000684 <2.0.0",
-      "resolved": "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30000692.tgz"
+      "resolved": "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30000693.tgz"
     },
     "carto": {
       "version": "0.15.1-cdb4",
@@ -1213,7 +1213,7 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
       "from": "cartodb/cartodb.js#9956-widgets-color",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#bc7d8f14c380076ce5fac226d0a45905d0aea8f1"
+      "resolved": "git://github.com/cartodb/cartodb.js.git#9dfc787a6bd51732f7ad6a197a4e5d39c43c51c1"
     },
     "caseless": {
       "version": "0.11.0",
@@ -1303,9 +1303,9 @@
       "resolved": "https://registry.npmjs.org/combined-stream/-/combined-stream-1.0.5.tgz"
     },
     "commander": {
-      "version": "2.9.0",
+      "version": "2.10.0",
       "from": "commander@>=2.9.0 <3.0.0",
-      "resolved": "https://registry.npmjs.org/commander/-/commander-2.9.0.tgz"
+      "resolved": "https://registry.npmjs.org/commander/-/commander-2.10.0.tgz"
     },
     "concat-map": {
       "version": "0.0.1",
@@ -3141,9 +3141,9 @@
       "resolved": "https://registry.npmjs.org/ripemd160/-/ripemd160-2.0.1.tgz"
     },
     "safe-buffer": {
-      "version": "5.1.0",
+      "version": "5.1.1",
       "from": "safe-buffer@>=5.1.0 <5.2.0",
-      "resolved": "https://registry.npmjs.org/safe-buffer/-/safe-buffer-5.1.0.tgz"
+      "resolved": "https://registry.npmjs.org/safe-buffer/-/safe-buffer-5.1.1.tgz"
     },
     "select": {
       "version": "1.1.2",
@@ -3275,9 +3275,9 @@
           "resolved": "https://registry.npmjs.org/concat-stream/-/concat-stream-1.6.0.tgz",
           "dependencies": {
             "readable-stream": {
-              "version": "2.3.0",
+              "version": "2.3.2",
               "from": "readable-stream@>=2.2.2 <3.0.0",
-              "resolved": "https://registry.npmjs.org/readable-stream/-/readable-stream-2.3.0.tgz"
+              "resolved": "https://registry.npmjs.org/readable-stream/-/readable-stream-2.3.2.tgz"
             }
           }
         },
@@ -3342,16 +3342,9 @@
           "optional": true
         },
         "string_decoder": {
-          "version": "1.0.2",
+          "version": "1.0.3",
           "from": "string_decoder@>=1.0.0 <1.1.0",
-          "resolved": "https://registry.npmjs.org/string_decoder/-/string_decoder-1.0.2.tgz",
-          "dependencies": {
-            "safe-buffer": {
-              "version": "5.0.1",
-              "from": "safe-buffer@>=5.0.1 <5.1.0",
-              "resolved": "https://registry.npmjs.org/safe-buffer/-/safe-buffer-5.0.1.tgz"
-            }
-          }
+          "resolved": "https://registry.npmjs.org/string_decoder/-/string_decoder-1.0.3.tgz"
         },
         "through2": {
           "version": "0.4.2",
@@ -3381,21 +3374,14 @@
       "resolved": "https://registry.npmjs.org/stream-http/-/stream-http-2.7.2.tgz",
       "dependencies": {
         "readable-stream": {
-          "version": "2.3.0",
+          "version": "2.3.2",
           "from": "readable-stream@>=2.2.6 <3.0.0",
-          "resolved": "https://registry.npmjs.org/readable-stream/-/readable-stream-2.3.0.tgz"
+          "resolved": "https://registry.npmjs.org/readable-stream/-/readable-stream-2.3.2.tgz"
         },
         "string_decoder": {
-          "version": "1.0.2",
+          "version": "1.0.3",
           "from": "string_decoder@>=1.0.0 <1.1.0",
-          "resolved": "https://registry.npmjs.org/string_decoder/-/string_decoder-1.0.2.tgz",
-          "dependencies": {
-            "safe-buffer": {
-              "version": "5.0.1",
-              "from": "safe-buffer@>=5.0.1 <5.1.0",
-              "resolved": "https://registry.npmjs.org/safe-buffer/-/safe-buffer-5.0.1.tgz"
-            }
-          }
+          "resolved": "https://registry.npmjs.org/string_decoder/-/string_decoder-1.0.3.tgz"
         }
       }
     },
@@ -3526,9 +3512,9 @@
           "resolved": "git://github.com/tangrams/js-yaml.git#1637976c6f593bed33ed088aedb6d01390a947c0"
         },
         "tangram": {
-          "version": "0.12.5",
+          "version": "0.13.0",
           "from": "tangrams/tangram#master",
-          "resolved": "git://github.com/tangrams/tangram.git#02f1de28153bd0bd0a591b5e0dfa28a07b85cf64"
+          "resolved": "git://github.com/tangrams/tangram.git#07b3df2d98cd305ae4cde14e9da92acd3a955498"
         }
       }
     },
@@ -3563,21 +3549,14 @@
       "resolved": "https://registry.npmjs.org/through2/-/through2-2.0.3.tgz",
       "dependencies": {
         "readable-stream": {
-          "version": "2.3.0",
+          "version": "2.3.2",
           "from": "readable-stream@>=2.1.5 <3.0.0",
-          "resolved": "https://registry.npmjs.org/readable-stream/-/readable-stream-2.3.0.tgz"
+          "resolved": "https://registry.npmjs.org/readable-stream/-/readable-stream-2.3.2.tgz"
         },
         "string_decoder": {
-          "version": "1.0.2",
+          "version": "1.0.3",
           "from": "string_decoder@>=1.0.0 <1.1.0",
-          "resolved": "https://registry.npmjs.org/string_decoder/-/string_decoder-1.0.2.tgz",
-          "dependencies": {
-            "safe-buffer": {
-              "version": "5.0.1",
-              "from": "safe-buffer@>=5.0.1 <5.1.0",
-              "resolved": "https://registry.npmjs.org/safe-buffer/-/safe-buffer-5.0.1.tgz"
-            }
-          }
+          "resolved": "https://registry.npmjs.org/string_decoder/-/string_decoder-1.0.3.tgz"
         }
       }
     },

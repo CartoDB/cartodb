@@ -7,6 +7,7 @@ Development
 * New force param in EUMAPI organization users destroy operation to force deletion even with unregistered tables (#11654).
 * Removed the usage of the `organizations_admin` feature flag (#12131)
 * Show number of selected items in Time-Series widgets (#12179).
+* Show ranges in time series widget selection (#12291)
 
 ### Bug fixes / enhancements
 * Tap on iOS10 mobile embed doesn't jump to page bottom (#cartodb.js/1652)

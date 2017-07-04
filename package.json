@@ -22,6 +22,9 @@
   ],
   "license": "BSD-3-Clause",
   "dependencies": {
+    "babelify": "*",
+    "babel-preset-es2015": "*",
+    "babel-preset-stage-2": "*",
     "backbone": "1.2.3",
     "cartocolor": "4.0.0",
     "cartodb.js": "CartoDB/cartodb.js#v4",
@@ -30,6 +33,7 @@
     "jquery": "2.1.4",
     "moment": "2.10.6",
     "perfect-scrollbar": "git://github.com/CartoDB/perfect-scrollbar.git#master",
+    "postcss": "~5.2.8",
     "tinycolor2": "1.4.1",
     "underscore": "1.8.3",
     "urijs": "1.17.1"

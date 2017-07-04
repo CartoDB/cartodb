@@ -43,7 +43,7 @@ module.exports = AutoStyler.extend({
     var categories = model.get('data');
     var column = model.get('column');
 
-    return sym + ': ' + this._getCategoryRamp(categories, column);
+    return this._getCategoryRamp(categories, column);
   },
 
   _getCategoryRamp: function (categories, column) {
@@ -65,6 +65,6 @@ module.exports = AutoStyler.extend({
       }
     }
 
-    return ramp + '(' + catListColors + '), (' + catListValues + '));';
+    return ramp + '(' + catListColors + '), (' + catListValues + '))';
   }
 });

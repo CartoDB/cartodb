@@ -37,9 +37,9 @@ var HistogramAutoStyler = AutoStyler.extend({
     var ramp = 'ramp([' + this.dataviewModel.get('column') + '], ';
     var colors = custom ? "('" + scales.range.join("', '") + "'), "
       : 'cartocolor(' + scales.palette + ', ' + this.dataviewModel.get('bins') + '), ';
-    var cuantification = scales.quantification + ');';
+    var cuantification = scales.quantification + ')';
 
-    return sym + ': ' + ramp + colors + cuantification;
+    return ramp + colors + cuantification;
   },
 
   getDef: function (cartocss) {

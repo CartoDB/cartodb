@@ -9,6 +9,7 @@ describe('widgets/time-series/histogram-view', function () {
 
     this.dataviewModel = new Backbone.Model();
     this.dataviewModel.filter = new Backbone.Model();
+    this.dataviewModel.filter.unsetRange = function () {};
     this.dataviewModel.getUnfilteredDataModel = function () {
       return new Backbone.Model();
     };
@@ -57,6 +58,18 @@ describe('widgets/time-series/histogram-view', function () {
 
       this.view._rangeFilter.trigger('change');
       expect(this.view._onFilterChanged).toHaveBeenCalled();
+    });
+  });
+
+  describe('.resetFilter', function () {
+    it('should unset range in filter and reset filter internally', function () {
+      spyOn(this.view._rangeFilter, 'unsetRange');
+      spyOn(this.view, '_resetFilterInDI');
+
+      this.view.resetFilter();
+
+      expect(this.view._rangeFilter.unsetRange).toHaveBeenCalled();
+      expect(this.view._resetFilterInDI).toHaveBeenCalled();
     });
   });
 

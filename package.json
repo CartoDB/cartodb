@@ -18,7 +18,9 @@
     "Raul Ochoa <rochoa@cartodb.com>",
     "Nicklas Gummesson <nicklas@cartodb.com>",
     "Pablo Alonso <pablo@cartodb.com>",
-    "Antonio Santiago Pérez <asantiago@cartodb.com>"
+    "Antonio Santiago Pérez <asantiago@cartodb.com>",
+    "Ivan Malagon <ivan@cartodb.com>",
+    "Ruben Moya <ruben@cartodb.com>"
   ],
   "license": "BSD-3-Clause",
   "dependencies": {

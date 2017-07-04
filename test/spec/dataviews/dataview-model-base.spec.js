@@ -615,6 +615,22 @@ describe('dataviews/dataview-model-base', function () {
     });
   });
 
+  describe('getLayerName', function () {
+    it('should return the name of the source', function () {
+      var dataview = new DataviewModelBase({
+        source: { id: 'a0' }
+      }, {
+        layer: this.layer,
+        map: this.map,
+        vis: this.vis,
+        analysisCollection: this.analysisCollection
+      });
+      this.layer.set('layer_name', 'the name');
+
+      expect(dataview.getLayerName()).toEqual('the name');
+    });
+  });
+
   describe('getSourceId', function () {
     it('should return the id of the source', function () {
       var layer = new Backbone.Model({

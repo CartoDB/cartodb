@@ -96,7 +96,6 @@ module.exports = Model.extend({
   _generateAttrsForDataview: function (layerModel, attrs, whitelistedAttrs) {
     attrs = _.pick(attrs, whitelistedAttrs);
     attrs.source = attrs.source || { id: layerModel.id };
-    attrs.layerName = attrs.layerName || layerModel.get('layer_name');
     if (this.get('apiKey')) {
       attrs.apiKey = this.get('apiKey');
     }

@@ -322,6 +322,10 @@ module.exports = Model.extend({
     return sourceAnalysis && sourceAnalysis.get('type');
   },
 
+  getLayerName: function () {
+    return this.layer.get('layer_name');
+  },
+
   getSource: function () {
     var sourceId = this.getSourceId();
     return sourceId && this._analysisCollection.get(sourceId);

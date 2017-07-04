@@ -15,6 +15,7 @@ module.exports = cdb.core.View.extend({
   initialize: function () {
     this._dataviewModel = this.model.dataviewModel;
     this._originalData = this._dataviewModel.getUnfilteredDataModel();
+    this._selectedAmount = 0;
     this._initBinds();
   },
 
@@ -43,7 +44,8 @@ module.exports = cdb.core.View.extend({
     this._headerView = new TorqueHeaderView({
       el: this.$('.js-torque-header'),
       dataviewModel: this._dataviewModel,
-      torqueLayerModel: this._dataviewModel.layer
+      torqueLayerModel: this._dataviewModel.layer,
+      selectedAmount: this._selectedAmount
     });
 
     this.addView(this._headerView);

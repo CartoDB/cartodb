@@ -87,7 +87,13 @@ describe('widgets/histogram/content-view', function () {
       spyOn(this.view, '_unsetRange').and.callThrough();
 
       this.dataviewModel.sync = function (method, model, options) {
-        options.success({ 'response': true });
+        options.success({
+          'bin_width': 10,
+          'bins_count': 2,
+          'bins_start': 1,
+          'nulls': 0,
+          'bins': []
+        });
       };
 
       this.widgetModel.set('zoomed', true);
@@ -103,7 +109,13 @@ describe('widgets/histogram/content-view', function () {
 
     it("shouldn't revert the lockedByUser state when the url is changed and the histogram is zoomed", function () {
       this.dataviewModel.sync = function (method, model, options) {
-        options.success({ 'response': true });
+        options.success({
+          'bin_width': 10,
+          'bins_count': 2,
+          'bins_start': 1,
+          'nulls': 0,
+          'bins': []
+        });
       };
 
       this.view.lockedByUser = true;
@@ -114,7 +126,13 @@ describe('widgets/histogram/content-view', function () {
 
     it('should unset the range when the data is changed', function () {
       this.dataviewModel.sync = function (method, model, options) {
-        options.success({ 'response': true });
+        options.success({
+          'bin_width': 10,
+          'bins_count': 2,
+          'bins_start': 1,
+          'nulls': 0,
+          'bins': []
+        });
       };
 
       spyOn(this.view, '_unsetRange').and.callThrough();
@@ -129,7 +147,13 @@ describe('widgets/histogram/content-view', function () {
       spyOn(this.view, '_unsetRange').and.callThrough();
 
       this.dataviewModel.sync = function (method, model, options) {
-        options.success({ 'response': true });
+        options.success({
+          'bin_width': 10,
+          'bins_count': 2,
+          'bins_start': 1,
+          'nulls': 0,
+          'bins': []
+        });
       };
 
       this.widgetModel.set('zoomed', true);
@@ -215,7 +239,7 @@ describe('widgets/histogram/content-view', function () {
           'bins_count': 2,
           'bins_start': i++,
           'nulls': 0,
-          'bins': [{ bin: 10 }, { bin: 1 }]
+          'bins': [{ bin: 0 }, { bin: 1 }]
         });
       };
 

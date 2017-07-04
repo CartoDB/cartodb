@@ -53,7 +53,7 @@ describe('widgets/time-series/torque-header-view', function () {
       // Torque controls rendered
       expect(this.view.$('.CDB-Widget-controlButtonContent').length).toBe(1);
       // Torque time info rendered
-      expect(this.view.$('.CDB-Widget-timeSeriesTimeInfo').length).toBe(1);
+      expect(this.view.$('.CDB-Widget-timeSeriesTimeInfo').length).toBe(2);
       // Header clear button not present
       expect(this.view.$('.js-clear').length).toBe(0);
     });
@@ -67,7 +67,7 @@ describe('widgets/time-series/torque-header-view', function () {
       // Torque controls not rendered
       expect(this.view.$('.CDB-Widget-controlButtonContent').length).toBe(0);
       // Torque time info not rendered
-      expect(this.view.$('.CDB-Widget-timeSeriesTimeInfo').length).toBe(0);
+      expect(this.view.$('.CDB-Widget-timeSeriesTimeInfo').length).toBe(1);
       // Header clear button present
       expect(this.view.$('.js-clear').length).toBe(1);
     });

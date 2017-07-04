@@ -8,6 +8,7 @@ Development
 * Removed the usage of the `organizations_admin` feature flag (#12131)
 * Show number of selected items in Time-Series widgets (#12179).
 * Show ranges in time series widget selection (#12291)
+* Bump Webpack version (#12392).
 
 ### Bug fixes / enhancements
 * Tap on iOS10 mobile embed doesn't jump to page bottom (#cartodb.js/1652)
@@ -59,9 +60,10 @@ Development
 * Fix vector problem with lines
 * Fixed "see all formats" url, from the Connect Dataset module, to open in new windown and changed the url.
 * Added a data attribute for Backbone views that points to the module that implements it (Leapfrog #12341)
+* Fix permission model and added tests (#12393)
 
 ### NOTICE
-This release upgrades the CartoDB PostgreSQL extension to `0.19.1`. Run the following to have it available:
+This release upgrades the CartoDB PostgreSQL extension to `0.19.2`. Run the following to have it available:
 ```shell
 cd $(git rev-parse --show-toplevel)/lib/sql
 sudo make install

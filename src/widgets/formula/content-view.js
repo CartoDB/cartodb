@@ -52,12 +52,13 @@ module.exports = cdb.core.View.extend({
     var sourceId = this._dataviewModel.get('source').id;
     var letter = layerColors.letter(sourceId);
     var sourceColor = layerColors.getColorForLetter(letter);
+    var sourceType = this.dataviewModel.getSourceType() || '';
 
     this.$el.html(
       template({
         title: this.model.get('title'),
         sourceId: sourceId,
-        sourceType: analyses.title(this._dataviewModel.getSourceType()),
+        sourceType: analyses.title(sourceType),
         showStats: this.model.get('show_stats'),
         showSource: this.model.get('show_source') && letter !== '',
         operation: this._dataviewModel.get('operation'),

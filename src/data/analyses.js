@@ -1,3 +1,12 @@
+var ACTIVE_LOCALE = 'en';
+var Locale = require('./locale/index');
+var Polyglot = require('node-polyglot');
+var polyglot = new Polyglot({
+  locale: ACTIVE_LOCALE, // Needed for pluralize behaviour
+  phrases: Locale[ACTIVE_LOCALE]
+});
+var _t = polyglot.t.bind(polyglot);
+
 var MAP = {
   'aggregate-intersection': {
     title: _t('analyses.aggregate-intersection.short-title'),

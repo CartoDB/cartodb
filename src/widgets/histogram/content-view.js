@@ -228,7 +228,8 @@ module.exports = cdb.core.View.extend({
     var sourceId = this._dataviewModel.get('source').id;
     var letter = layerColors.letter(sourceId);
     var sourceColor = layerColors.getColorForLetter(letter);
-    var sourceType = this.dataviewModel.getSourceType() || '';
+    var sourceType = this._dataviewModel.getSourceType() || '';
+    var layerName = this._dataviewModel.getLayerName() || '';
 
     this.$el.html(
       template({
@@ -240,7 +241,7 @@ module.exports = cdb.core.View.extend({
         itemsCount: !isDataEmpty ? data.length : '-',
         isCollapsed: !!this.model.get('collapsed'),
         sourceColor: sourceColor,
-        layerName: this._dataviewModel.get('layerName')
+        layerName: layerName
       })
     );
 

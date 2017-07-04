@@ -52,7 +52,8 @@ module.exports = cdb.core.View.extend({
     var sourceId = this._dataviewModel.get('source').id;
     var letter = layerColors.letter(sourceId);
     var sourceColor = layerColors.getColorForLetter(letter);
-    var sourceType = this.dataviewModel.getSourceType() || '';
+    var sourceType = this._dataviewModel.getSourceType() || '';
+    var layerName = this._dataviewModel.getLayerName() || '';
 
     this.$el.html(
       template({
@@ -70,7 +71,7 @@ module.exports = cdb.core.View.extend({
         suffix: suffix,
         isCollapsed: isCollapsed,
         sourceColor: sourceColor,
-        layerName: this._dataviewModel.get('layerName')
+        layerName: layerName
       })
     );
 

@@ -36,6 +36,7 @@ module.exports = cdb.core.View.extend({
     var letter = layerColors.letter(sourceId);
     var sourceColor = layerColors.getColorForLetter(letter);
     var sourceType = this.dataviewModel.getSourceType() || '';
+    var layerName = this.dataviewModel.getLayerName() || '';
 
     this.$el.html(
       template({
@@ -47,7 +48,7 @@ module.exports = cdb.core.View.extend({
         sourceType: analyses.title(sourceType),
         showSource: this.model.get('show_source') && letter !== '',
         sourceColor: sourceColor,
-        layerName: this.dataviewModel.get('layerName'),
+        layerName: layerName,
         columnName: this.dataviewModel.get('column'),
         q: this.dataviewModel.getSearchQuery(),
         isLocked: this.model.isLocked(),

@@ -16,7 +16,8 @@ describe('widgets/time-series/torque-header-view', function () {
     this.torqueLayerModel = new Backbone.Model();
     this.view = new TorqueHeaderView({
       dataviewModel: this.dataviewModel,
-      torqueLayerModel: this.torqueLayerModel
+      torqueLayerModel: this.torqueLayerModel,
+      selectedAmount: 0
     });
   });
 
@@ -45,6 +46,7 @@ describe('widgets/time-series/torque-header-view', function () {
 
     it('should not render torque controls and show clear button if filter has value', function () {
       filterIsEmpty = false;
+      this.dataviewModel.filter.set({ min: 1, max: 2 });
 
       this.view.render();
 

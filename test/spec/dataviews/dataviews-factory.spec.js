@@ -101,13 +101,5 @@ describe('dataviews/dataviews-factory', function () {
 
       expect(model.get('apiKey')).toEqual('API_KEY');
     });
-
-    it(factoryMethod + ' should set the layerName from layer model when not given one', function () {
-      var attributes = generateFakeAttributes(requiredAttributes);
-      this.layer.set('layer_name', 'something');
-      var model = this.factory[factoryMethod](this.layer, attributes);
-
-      expect(model.get('layerName')).toEqual('something');
-    });
   }, this);
 });

@@ -74,6 +74,8 @@ module.exports = cdb.core.View.extend({
     this._headerView = new TimeSeriesHeaderView({
       dataviewModel: this._dataviewModel,
       rangeFilter: this._dataviewModel.filter,
+      timeSeriesModel: this.model,
+      showClearButton: true,
       selectedAmount: this._selectedAmount
     });
 

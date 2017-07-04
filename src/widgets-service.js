@@ -79,8 +79,14 @@ WidgetsService.prototype.createCategoryModel = function (attrs, layer, state) {
  */
 WidgetsService.prototype.createHistogramModel = function (attrs, layer, state, opts) {
   _checkProperties(attrs, ['title']);
-  var dataAttrs = _.extend(attrs, state, {hasInitialState: this._widgetsCollection.hasInitialState()}); // Will overwrite preset attributes with the ones passed on the state
+  var dataAttrs = _.extend(attrs, state, { hasInitialState: this._widgetsCollection.hasInitialState() }); // Will overwrite preset attributes with the ones passed on the state
   var dataviewModel = this._dataviews.createHistogramModel(layer, dataAttrs);
+
+  // Default bins attribute was removed from dataViewModel because of time-series aggregation.
+  // Just in case it's needed for histogram models we added it here.
+  if (!dataviewModel.has('bins')) {
+    dataviewModel.set('bins', 10, { silent: true });
+  }
 
   var attrsNames = ['id', 'title', 'order', 'collapsed', 'bins', 'show_stats', 'normalized', 'style', 'hasInitialState'];
   var widgetAttrs = _.pick(attrs, attrsNames);

@@ -741,7 +741,7 @@ describe Carto::Api::VisualizationsController do
           expect(last_response.status).to eq(200)
           expect(JSON.parse(last_response.body).fetch('liked')).to be_true
 
-          get api_v1_visualizations_is_liked_url(user_domain: @user_domain2, id: @vis.id, api_key: @carto_user2.api_key)
+          get api_v1_visualizations_is_liked_url(user_domain: @user_domain, id: @vis.id, api_key: @carto_user2.api_key)
 
           expect(last_response.status).to eq(200)
           expect(JSON.parse(last_response.body).fetch('liked')).to be_false

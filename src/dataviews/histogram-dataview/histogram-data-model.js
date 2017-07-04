@@ -57,7 +57,6 @@ module.exports = Model.extend({
       if (this.hasChanged('bins') && this.get('aggregation')) return;
       this.fetch();
     }, this);
-    window.moment = moment;
   },
 
   setUrl: function (url) {

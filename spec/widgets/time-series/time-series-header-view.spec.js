@@ -6,7 +6,7 @@ describe('widgets/time-series/time-series-header-view', function () {
   var isFilterEmpty = true;
 
   beforeEach(function () {
-    var dataviewModel = new Backbone.Model({
+    this.dataviewModel = new Backbone.Model({
       data: [{}]
     });
 
@@ -15,9 +15,9 @@ describe('widgets/time-series/time-series-header-view', function () {
       return isFilterEmpty;
     };
 
-    dataviewModel.layer = new Backbone.Model();
+    this.dataviewModel.layer = new Backbone.Model();
     this.view = new TimeSeriesHeaderView({
-      dataviewModel: dataviewModel,
+      dataviewModel: this.dataviewModel,
       rangeFilter: this.rangeFilter,
       selectedAmount: 0
     });
@@ -46,6 +46,68 @@ describe('widgets/time-series/time-series-header-view', function () {
       this.view.render();
 
       expect(this.view._animateValue).toHaveBeenCalled();
+    });
+
+    it('should apply correct format types if selected and column is date', function () {
+      isFilterEmpty = false;
+      spyOn(this.view, '_getColumnType').and.returnValue('date');
+      this.rangeFilter.set('min', 1451606400, { silent: true }); // 2016-01-01 00:00:00
+      this.rangeFilter.set('max', 1483228799, { silent: true }); // 2016-12-31 23:59:59
+
+      // Year
+      this.dataviewModel.set('aggregation', 'year');
+
+      this.view.render();
+
+      expect(this.view.$('.CDB-Text').text()).toContain('Selected from 2016 to 2017');
+
+      // Quarter
+      this.dataviewModel.set('aggregation', 'quarter');
+
+      this.view.render();
+
+      expect(this.view.$('.CDB-Text').text()).toContain('Selected from Q1 2016 to Q1 2017');
+
+      // Month
+      this.dataviewModel.set('aggregation', 'month');
+
+      this.view.render();
+
+      expect(this.view.$('.CDB-Text').text()).toContain('Selected from Jan 2016 to Jan 2017');
+
+      // Week
+      this.dataviewModel.set('aggregation', 'week');
+
+      this.view.render();
+
+      expect(this.view.$('.CDB-Text').text()).toContain('Selected from 1st Jan 2016 to 7th Jan 2017');
+
+      // Day
+      this.dataviewModel.set('aggregation', 'day');
+
+      this.view.render();
+
+      expect(this.view.$('.CDB-Text').text()).toContain('Selected from 1st Jan 2016 to 1st Jan 2017');
+
+      // Hour
+      this.dataviewModel.set('aggregation', 'hour');
+
+      this.view.render();
+
+      expect(this.view.$('.CDB-Text').text()).toContain('Selected from 00:00 01/01/2016 to 00:59 01/01/2017');
+
+      // Minute
+      this.dataviewModel.set('aggregation', 'minute');
+
+      this.view.render();
+
+      expect(this.view.$('.CDB-Text').text()).toContain('Selected from 00:00 01/01/2016 to 00:00 01/01/2017');
+
+      // Clean up
+      this.rangeFilter.unset('min', { silent: true }); // 2016-01-01 00:00:00
+      this.rangeFilter.unset('max', { silent: true }); // 2016-12-31 23:59:59
+      this.dataviewModel.unset('aggregation');
+      isFilterEmpty = true;
     });
   });
 

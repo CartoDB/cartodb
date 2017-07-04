@@ -749,6 +749,11 @@ describe Carto::Api::VisualizationsController do
       end
 
       describe 'POST add_like' do
+        it 'triggers error 403 if not authenticated' do
+          post api_v1_visualizations_add_like_url(user_domain: @user_domain, id: @vis.id, api_key: 'foo')
+          expect(last_response.status).to eq(403)
+        end
+
         it 'add likes to a given visualization' do
           post api_v1_visualizations_add_like_url(user_domain: @user_domain, id: @vis.id, api_key: @carto_user1.api_key)
 
@@ -816,6 +821,11 @@ describe Carto::Api::VisualizationsController do
       end
 
       describe 'POST remove_like' do
+        it 'triggers error 403 if not authenticated' do
+          post api_v1_visualizations_add_like_url(user_domain: @user_domain, id: @vis.id, api_key: 'foo')
+          expect(last_response.status).to eq(403)
+        end
+
         it 'removes a like from a given visualization and returns the number of likes' do
           @vis.add_like_from(@carto_user1.id)
           @vis.add_like_from(@carto_user2.id)

@@ -133,9 +133,6 @@ module Carto
         )
       rescue Carto::Visualization::AlreadyLikedError
         render(text: "You've already liked this visualization", status: 400)
-      rescue KeyError => exception
-        CartoDB::Logger.error(exception: exception)
-        render(text: exception.message, status: 403)
       end
 
       def remove_like
@@ -391,9 +388,7 @@ module Carto
       end
 
       def ensure_visualization_is_viewable
-        return(head 403) unless current_viewer
-
-        raise KeyError unless @visualization.is_viewable_by_user?(current_viewer)
+        return(head 403) unless (current_viewer && @visualization.is_viewable_by_user?(current_viewer))
       end
 
       # This avoids crossing usernames and visualizations.

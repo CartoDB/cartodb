@@ -1,23 +1,16 @@
 var _ = require('underscore');
 
-var ATTR_TO_NUMBER = {
-  'marker-fill': 1,
-  'line-color': 2,
-  'polygon-fill': 3
-};
-
 function getAttrRegex (attr, multi) {
   return new RegExp('\\' + 's' + attr + ':.*?(;|\n)', multi ? 'g' : '');
 }
 
-function removeEmptyLayer (cartocss) {
-  return cartocss.replace(/[^;}{]*{((\s|\n)*?)}/g, '');
-}
-
 function setFlagInCartocss (cartocss, attr, flag) {
-  var exist = cartocss.search(getAttrRegex(attr, false)) >= 0;
+  var pos = cartocss.search(getAttrRegex(attr, false));
+  var insertString = function (str, index, value) {
+    return str.substr(0, index) + value + str.substr(index);
+  };
 
-  return exist ? cartocss.replace('{', '{ ' + flag) : cartocss;
+  return pos > -1 ? insertString(cartocss, pos, flag) : cartocss;
 }
 
 function removeAttr (cartocss, attr) {
@@ -26,10 +19,6 @@ function removeAttr (cartocss, attr) {
 
 function insertCartoCSSAttribute (cartocss, attrib, flag) {
   return cartocss.replace(flag, attrib);
-}
-
-function createEmtpyLayer (cartocss, attr) {
-  return "#layer ['mapnik::geometry_type'=" + ATTR_TO_NUMBER[attr] + '] {  } ' + cartocss;
 }
 
 function replaceWrongSpaceChar (cartocss) {
@@ -43,16 +32,13 @@ function replaceWrongSpaceChar (cartocss) {
  * @return {String}          Cartocss modified String
  */
 function changeStyle (cartocss, attr, newStyle) {
-  var flag = '##' + attr + '##;';
+  var flag = '\n   ##' + attr + '##;\n';
 
   return insertCartoCSSAttribute(
-            removeEmptyLayer(
-              removeAttr(
-                setFlagInCartocss(createEmtpyLayer(cartocss, attr), attr, flag),
-                attr
-              )
+            removeAttr(
+              setFlagInCartocss(cartocss, attr, flag),
+              attr
             ),
-
             newStyle,
             flag
           );

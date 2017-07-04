@@ -9,6 +9,9 @@ describe('widgets/formula/content-view', function () {
     var vis = specHelper.createDefaultVis();
     this.dataviewModel = vis.dataviews.createFormulaModel(vis.map.layers.first(), {
       column: 'col',
+      source: {
+        id: 'a0'
+      },
       operation: 'avg'
     });
     this.model = new WidgetModel({

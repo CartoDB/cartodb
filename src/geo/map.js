@@ -4,6 +4,7 @@ var Backbone = require('backbone');
 var config = require('cdb.config');
 var log = require('cdb.log');
 var Model = require('../core/model');
+var util = require('../core/util');
 var Layers = require('./map/layers');
 var sanitize = require('../core/sanitize');
 var GeometryFactory = require('./geometry-models/geometry-factory');
@@ -17,10 +18,8 @@ var Map = Model.extend({
     maxZoom: 20,
     scrollwheel: true,
     drag: true,
-    keyboard: true,
+    keyboard: !util.supportsTouch(), // #cartodb.js/1652
     provider: 'leaflet',
-    // enforce client-side rendering using GeoJSON vector tiles
-    vector: false,
     popupsEnabled: true,
     isFeatureInteractivityEnabled: false
   },
@@ -502,8 +501,22 @@ var Map = Model.extend({
 
   getMapViewSize: function () {
     return this._mapViewSize;
-  }
+  },
 
+  getEstimatedFeatureCount: function () {
+    if (this.hasEstimatedFeatureCount()) {
+      return _.reduce(this.layers.getCartoDBLayers(), function (memo, layerModel) {
+        return memo + layerModel.getEstimatedFeatureCount();
+      }, 0);
+    }
+  },
+
+  hasEstimatedFeatureCount: function () {
+    return _.every(this.layers.getCartoDBLayers(), function (layerModel) {
+      var estimatedFeatureCount = layerModel.getEstimatedFeatureCount();
+      return estimatedFeatureCount && estimatedFeatureCount >= 0;
+    });
+  }
 }, {
   PROVIDERS: {
     GMAPS: 'googlemaps',

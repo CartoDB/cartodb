@@ -35,10 +35,11 @@ var Infowindow = View.extend({
     'touchstart .js-close': '_closeInfowindow',
     'MSPointerDown .js-close': '_closeInfowindow',
     // Rest infowindow bindings
-    'dragstart': '_checkOrigin',
-    'mousedown': '_checkOrigin',
-    'touchstart': '_checkOrigin',
-    'MSPointerDown': '_checkOrigin',
+    'dragstart': '_stopPropagation',
+    'mousedown': '_stopPropagation',
+    'pointerdown': '_stopPropagation',
+    'touchstart': '_stopPropagation',
+    'MSPointerDown': '_stopPropagation',
     'dblclick': '_stopPropagation',
     'DOMMouseScroll': '_stopBubbling',
     'MozMousePixelScroll': '_stopBubbling',
@@ -242,20 +243,6 @@ var Infowindow = View.extend({
     }
 
     this.render();
-  },
-
-  /**
-   *  Check event origin
-   */
-  _checkOrigin: function (ev) {
-    // If the mouse down come from jspVerticalBar
-    // dont stop the propagation, but if the event
-    // is a touchstart, stop the propagation
-    var come_from_scroll = (($(ev.target).closest('.jspVerticalBar').length > 0) && (ev.type !== 'touchstart'));
-
-    if (!come_from_scroll) {
-      ev.stopPropagation();
-    }
   },
 
   _sanitizeValue: function (key, val) {

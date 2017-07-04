@@ -109,6 +109,7 @@ var TorqueLayerViewBase = {
     this.listenTo(this.model, 'change:step', this._stepChanged);
     this.listenTo(this.model, 'change:steps', this._stepsChanged);
     this.listenTo(this.model, 'change:renderRange', this._renderRangeChanged);
+    this.listenTo(this.model, 'change', this._onModelChanged);
   },
 
   _unonModel: function () {
@@ -117,6 +118,7 @@ var TorqueLayerViewBase = {
     this.stopListening(this.model, 'change:step', this._stepChanged);
     this.stopListening(this.model, 'change:steps', this._stepsChanged);
     this.stopListening(this.model, 'change:renderRange', this._renderRangeChanged);
+    this.stopListening(this.model, 'change', this._onModelChanged);
   },
 
   _isRunningChanged: function (m, isRunning) {
@@ -144,6 +146,34 @@ var TorqueLayerViewBase = {
       this.nativeTorqueLayer.renderRange(r.start, r.end);
     } else {
       this.nativeTorqueLayer.resetRenderRange();
+    }
+  },
+
+  // TODO: This could be "exploded" into different bindings / methods
+  _onModelChanged: function () {
+    if (!this.model.hasChanged()) return;
+
+    if (this.model.hasChanged('visible')) {
+      this.model.get('visible') ? this.nativeTorqueLayer.show() : this.nativeTorqueLayer.hide();
+    }
+
+    if (this.model.hasChanged('cartocss')) {
+      this.nativeTorqueLayer.setCartoCSS(this.model.get('cartocss'));
+    }
+
+    if (this.model.hasChanged('tileURLTemplates')) {
+      // REAL HACK
+      this.nativeTorqueLayer.provider.templateUrl = this.model.getTileURLTemplates()[0];
+      this.nativeTorqueLayer.provider.options.subdomains = this.model.get('subdomains');
+      _.extend(this.nativeTorqueLayer.provider.options, this.model.get('meta'));
+      // this needs to be deferred in order to break the infinite loop
+      // of setReady changing keys and keys updating the model
+      // If we do this in the next iteration 'urls' will not be in changedAttributes
+      // so this will not pass through this code
+      setTimeout(function () {
+        this.nativeTorqueLayer.provider._setReady(true);
+        this.nativeTorqueLayer._reloadTiles();
+      }.bind(this), 0);
     }
   },
 

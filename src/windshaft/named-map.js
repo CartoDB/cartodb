@@ -4,7 +4,11 @@ var LayerTypes = require('../geo/map/layer-types');
 
 var NamedMap = MapBase.extend({
   toJSON: function () {
-    var json = {};
+    var json = {
+      buffersize: {
+        mvt: 0
+      }
+    };
 
     // Named map templates include both http, cartodb and torque layers
     // so we need to iterate through all the layers in the collection to

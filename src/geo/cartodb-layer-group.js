@@ -39,6 +39,10 @@ var CartoDBLayerGroup = Backbone.Model.extend({
     return this._getGroupedLayers()[index];
   },
 
+  getCartoLayerById: function (id) {
+    return this._layersCollection.get(id);
+  },
+
   isEqual: function () {
     return false;
   },

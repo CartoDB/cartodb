@@ -9,7 +9,9 @@ module.exports = DataviewModelBase.extend({
   defaults: _.extend(
     {
       type: 'histogram',
-      bins: 10
+      bins: 10,
+      totalAmount: 0,
+      filteredAmount: 0
     },
     DataviewModelBase.prototype.defaults
   ),
@@ -56,7 +58,7 @@ module.exports = DataviewModelBase.extend({
       this._onChangeBinds();
     }, this);
 
-    this.once('change:url', function () {
+    this.on('change:url', function () {
       this._unfilteredData.setUrl(this.get('url'));
     }, this);
 
@@ -123,10 +125,54 @@ module.exports = DataviewModelBase.extend({
 
     this._data.reset(buckets);
 
+    // Calculate totals
+    var totalAmount = this._calculateTotalAmount(buckets);
+    var filteredAmount = this._calculateFilteredAmount(this.filter, this._data);
+
     return {
       data: buckets,
-      nulls: data.nulls
+      nulls: data.nulls,
+      totalAmount: totalAmount,
+      filteredAmount: filteredAmount
     };
+  },
+
+  _onFilterChanged: function (filter) {
+    this.set('filteredAmount', this._calculateFilteredAmount(filter, this._data));
+
+    DataviewModelBase.prototype._onFilterChanged.apply(this, arguments);
+  },
+
+  _calculateTotalAmount: function (buckets) {
+    return _.reduce(buckets, function (memo, bucket) {
+      return memo + bucket.freq;
+    }, 0);
+  },
+
+  _calculateFilteredAmount: function (filter, data) {
+    var filteredAmount = 0;
+    if (filter && filter.get('min') !== void 0 && filter.get('max') !== void 0) {
+      var indexes = this._findBinsIndexes(data, filter.get('min'), filter.get('max'));
+      filteredAmount = this._sumBinsFreq(data, indexes.start, indexes.end);
+    }
+
+    return filteredAmount;
+  },
+
+  _findBinsIndexes: function (data, start, end) {
+    var startBin = data.findWhere({ start: Math.min(start, end) });
+    var endBin = data.findWhere({ end: Math.max(start, end) });
+
+    return {
+      start: startBin && startBin.get('bin'),
+      end: endBin && endBin.get('bin')
+    };
+  },
+
+  _sumBinsFreq: function (data, start, end) {
+    return _.reduce(data.slice(start, end + 1), function (acum, d) {
+      return (d.get('freq') || 0) + acum;
+    }, 0);
   },
 
   /*

@@ -57,9 +57,9 @@ module.exports = HistogramView.extend({
     }
   },
 
-  _onBrushClick: function (loBarIndex) {
+  _onBrushClick: function (indexPct) {
     var steps = this._torqueLayerModel.get('steps');
-    var step = Math.round(steps * loBarIndex);
+    var step = Math.round(steps * indexPct);
 
     // Going to the last step causes a jump to the beginning immediately
     if (step === steps) step -= 1;

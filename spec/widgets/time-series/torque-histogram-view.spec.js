@@ -47,10 +47,10 @@ describe('widgets/time-series/torque-histogram-view', function () {
     it('should set torque layer step', function () {
       spyOn(HistogramView.prototype, 'resetFilter');
 
-      this.view._onBrushClick(12);
+      this.view._onBrushClick(0.5);
 
       expect(HistogramView.prototype.resetFilter).toHaveBeenCalled();
-      expect(this.torqueLayerModel.get('step')).toBe(12);
+      expect(this.torqueLayerModel.get('step')).toBe(128);
     });
   });
 });

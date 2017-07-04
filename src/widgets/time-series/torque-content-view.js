@@ -45,6 +45,7 @@ module.exports = cdb.core.View.extend({
       el: this.$('.js-torque-header'),
       dataviewModel: this._dataviewModel,
       torqueLayerModel: this._dataviewModel.layer,
+      timeSeriesModel: this.model,
       selectedAmount: this._selectedAmount
     });
 

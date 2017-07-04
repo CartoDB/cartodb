@@ -4,10 +4,15 @@ var AnimateValues = require('../../../src/widgets/animate-values.js');
 
 describe('widgets/time-series/time-series-header-view', function () {
   var isFilterEmpty = true;
+  var timeSeriesModel;
 
   beforeEach(function () {
     var dataviewModel = new Backbone.Model({
       data: [{}]
+    });
+
+    timeSeriesModel = new Backbone.Model({
+      title: 'Title'
     });
 
     this.rangeFilter = new Backbone.Model();
@@ -19,33 +24,28 @@ describe('widgets/time-series/time-series-header-view', function () {
     this.view = new TimeSeriesHeaderView({
       dataviewModel: dataviewModel,
       rangeFilter: this.rangeFilter,
+      timeSeriesModel: timeSeriesModel,
       selectedAmount: 0
     });
   });
 
   describe('.render', function () {
-    it('should show selection if filter has any value', function () {
-      isFilterEmpty = false;
-
-      this.view.render();
-
-      expect(this.view.$el.html().indexOf('Selected from')).toBeGreaterThan(-1);
-    });
-
-    it('should not show selection if filter is empty', function () {
-      isFilterEmpty = true;
-
-      this.view.render();
-
-      expect(this.view.$el.html().indexOf('Selected from')).toBe(-1);
-    });
-
     it('should call to _animateValue', function () {
       spyOn(this.view, '_animateValue');
 
       this.view.render();
 
       expect(this.view._animateValue).toHaveBeenCalled();
+    });
+
+    it('should update the title', function () {
+      this.view.render();
+
+      expect(this.view.$('.js-widget-title').text()).toBe('Title');
+
+      timeSeriesModel.set('title', 'Rick');
+
+      expect(this.view.$('.js-widget-title').text()).toBe('Rick');
     });
   });
 

@@ -731,9 +731,9 @@
       "resolved": "https://registry.npmjs.org/cartocolor/-/cartocolor-4.0.0.tgz"
     },
     "cartodb-deep-insights.js": {
-      "version": "0.0.2",
+      "version": "0.0.2-c12324",
       "from": "cartodb/deep-insights.js#c12324-time-series-aggregations",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#e5e03ea9bab35791acb658c02443ba0b7b791a1d"
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#47e940261cac43fd5e56bd63e4c898294e92aaf2"
     },
     "cartodb-pecan": {
       "version": "0.2.0",
@@ -743,14 +743,7 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
       "from": "cartodb/cartodb.js#c12324-time-series-aggregations",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#1395a2edd8133e19a98ba03925149065b437f925",
-      "dependencies": {
-        "moment": {
-          "version": "2.18.1",
-          "from": "moment@>=2.18.1 <3.0.0",
-          "resolved": "https://registry.npmjs.org/moment/-/moment-2.18.1.tgz"
-        }
-      }
+      "resolved": "git://github.com/cartodb/cartodb.js.git#1395a2edd8133e19a98ba03925149065b437f925"
     },
     "caseless": {
       "version": "0.11.0",
@@ -2079,9 +2072,9 @@
       "resolved": "https://registry.npmjs.org/module-deps/-/module-deps-4.1.1.tgz"
     },
     "moment": {
-      "version": "2.10.6",
-      "from": "moment@2.10.6",
-      "resolved": "https://registry.npmjs.org/moment/-/moment-2.10.6.tgz"
+      "version": "2.18.1",
+      "from": "moment@2.18.1",
+      "resolved": "https://registry.npmjs.org/moment/-/moment-2.18.1.tgz"
     },
     "mothership": {
       "version": "0.2.0",

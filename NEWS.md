@@ -10,6 +10,8 @@ Development
 * Bump Webpack version (#12392).
 
 ### Bug fixes / enhancements
+* Refactor Visualization::Member like and notification actions into Carto::Visualization (#12309)
+* Don't try to lowercase null values in custom-list-collection object (support/#744)
 * Tap on iOS10 mobile embed doesn't jump to page bottom (#cartodb.js/1652)
 * Don't try to lowercase null values in custom-list-collection object (#support/744)
 * Validate widget form when widget type changes (#11536)

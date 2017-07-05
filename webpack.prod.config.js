@@ -91,6 +91,14 @@ module.exports = env => {
           }
         },
         {
+          test: /\.js$/,
+          loader: 'babel-loader',
+          include: [resolve(__dirname, 'node_modules/tangram.cartodb')],
+          options: {
+            presets: ['es2015']
+          }
+        },
+        {
           test: /\.tpl$/,
           use: 'tpl-loader',
           include: [

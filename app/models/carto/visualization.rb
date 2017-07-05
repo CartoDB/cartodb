@@ -533,6 +533,10 @@ class Carto::Visualization < ActiveRecord::Base
     overlays.builder_incompatible.none?
   end
 
+  def state
+    super ? super : build_state
+  end
+
   def can_be_private?
     derived? ? user.try(:private_maps_enabled) : user.try(:private_tables_enabled)
   end

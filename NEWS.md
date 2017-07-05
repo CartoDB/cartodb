@@ -8,6 +8,7 @@ Development
 * Removed the usage of the `organizations_admin` feature flag (#12131)
 * Show number of selected items in Time-Series widgets (#12179).
 * Bump Webpack version (#12392).
+* New user render timeouts and propagation of timeout values to Redis (#12425)
 
 ### Bug fixes / enhancements
 * Tap on iOS10 mobile embed doesn't jump to page bottom (#cartodb.js/1652)

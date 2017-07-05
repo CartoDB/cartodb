@@ -732,8 +732,8 @@
     },
     "cartodb-deep-insights.js": {
       "version": "0.0.2",
-      "from": "cartodb/deep-insights.js#768-add-geometry-v4",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#42b5f74f28dc4bbac8f4db361db4879b5b91cae3"
+      "from": "cartodb/deep-insights.js#master",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#d340b02989df36eb771df2adfbea4a6b704cf9b4"
     },
     "cartodb-pecan": {
       "version": "0.2.0",
@@ -742,8 +742,8 @@
     },
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
-      "from": "cartodb/cartodb.js#768-add-geometry-v4",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#a6671db7fb984aed9e4bf973090d90cfc5c2148a"
+      "from": "cartodb/cartodb.js#v4",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#4a34bb051ef404964afd2cccc41a5b7e28c84659"
     },
     "caseless": {
       "version": "0.11.0",

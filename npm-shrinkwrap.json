@@ -1196,7 +1196,7 @@
     "cartodb-deep-insights.js": {
       "version": "0.0.2",
       "from": "cartodb/deep-insights.js#9956-widgets-color",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#f4e5dae2b4bb69a50460fad921557b278baa3717",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#af0281ea98af27ea3dfe1c63fbb7487cbfdc7be5",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",

@@ -10,7 +10,6 @@ module.exports = {
         // Load & install the source-map-support lib (get proper stack traces from inlined source-maps)
         "node_modules/source-map-support/browser-source-map-support.js",
         "spec/install-source-map-support.js",
-        'spec/specHelper.js',
         '<%= config.tmp %>/vendor.js'
       ],
       specs: '<%= config.tmp %>/specs.js', // built by browserify

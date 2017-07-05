@@ -6,6 +6,7 @@ require_relative 'providers/postgresql'
 require_relative 'providers/sqlserver'
 require_relative 'providers/hive'
 require_relative 'providers/pg_fdw'
+require_relative 'providers/bigquery'
 
 module Carto
   class Connector
@@ -40,6 +41,11 @@ module Carto
       'hive' => {
         name: 'Hive',
         class: HiveProvider,
+        public: true
+      },
+      'bigquery' => {
+        name: 'Google BigQuery 64',
+        class: BigQueryProvider,
         public: true
       }
     }

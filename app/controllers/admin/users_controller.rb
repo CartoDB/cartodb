@@ -15,7 +15,8 @@ class Admin::UsersController < Admin::AdminController
     'dropbox' => 'Dropbox',
     'box' => 'Box',
     'mailchimp' => 'MailChimp',
-    'instagram' => 'Instagram'
+    'instagram' => 'Instagram',
+    'bigquery' => 'Google BigQuery'
   }
 
   SERVICE_REVOKE_URLS = {
@@ -184,6 +185,8 @@ class Admin::UsersController < Admin::AdminController
           Cartodb.config[:oauth]['mailchimp']['app_key'].present? && current_user.has_feature_flag?('mailchimp_import')
         when 'instagram'
           Cartodb.config[:oauth]['instagram']['app_key'].present? && current_user.has_feature_flag?('instagram_import')
+        when 'bigquery'
+          Cartodb.config[:oauth][serv]['client_id'].present?
         else
           true
       end

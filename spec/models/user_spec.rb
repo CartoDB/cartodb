@@ -1066,6 +1066,81 @@ describe User do
     user.destroy
   end
 
+  it "should have a method that generates users redis limits metadata key" do
+    @user.timeout_key.should == "limits:timeout:#{@user.username}"
+  end
+
+  it "replicates db timeout limits in redis after saving and applies them to db" do
+    @user.user_timeout = 200007
+    @user.database_timeout = 100007
+    @user.save
+    $users_metadata.HGET(@user.timeout_key, 'db').should == '200007'
+    $users_metadata.HGET(@user.timeout_key, 'db_public').should == '100007'
+    @user.in_database do |db|
+      db[%Q{SHOW statement_timeout}].first.should eq({ statement_timeout: '200007ms' })
+    end
+    @user.in_database(as: :public_user) do |db|
+      db[%Q{SHOW statement_timeout}].first.should eq({ statement_timeout: '100007ms' })
+    end
+  end
+
+  it "replicates render timeout limits in redis after saving" do
+    @user.user_render_timeout = 200001
+    @user.database_render_timeout = 100001
+    @user.save
+    $users_metadata.HGET(@user.timeout_key, 'render').should == '200001'
+    $users_metadata.HGET(@user.timeout_key, 'render_public').should == '100001'
+  end
+
+  it "should store db timeout limits in redis after creation" do
+    user = FactoryGirl.create :user, user_timeout: 200002, database_timeout: 100002
+    user.user_timeout.should == 200002
+    user.database_timeout.should == 100002
+    $users_metadata.HGET(user.timeout_key, 'db').should == '200002'
+    $users_metadata.HGET(user.timeout_key, 'db_public').should == '100002'
+    user.in_database do |db|
+      db[%Q{SHOW statement_timeout}].first.should eq({ statement_timeout: '200002ms' })
+    end
+    user.in_database(as: :public_user) do |db|
+      db[%Q{SHOW statement_timeout}].first.should eq({ statement_timeout: '100002ms' })
+    end
+    user.destroy
+  end
+
+  it "should store render timeout limits in redis after creation" do
+    user = FactoryGirl.create :user, user_render_timeout: 200003, database_render_timeout: 100003
+    user.reload
+    user.user_render_timeout.should == 200003
+    user.database_render_timeout.should == 100003
+    $users_metadata.HGET(user.timeout_key, 'render').should == '200003'
+    $users_metadata.HGET(user.timeout_key, 'render_public').should == '100003'
+    user.destroy
+  end
+
+  it "should have valid non-zero db timeout limits by default" do
+    user = FactoryGirl.create :user
+    user.user_timeout.should > 0
+    user.database_timeout.should > 0
+    $users_metadata.HGET(user.timeout_key, 'db').should == user.user_timeout.to_s
+    $users_metadata.HGET(user.timeout_key, 'db_public').should == user.database_timeout.to_s
+    user.in_database do |db|
+      db[%{SELECT setting FROM pg_settings WHERE name = 'statement_timeout'}].first.should eq({ setting: user.user_timeout.to_s })
+    end
+    user.in_database(as: :public_user) do |db|
+      db[%{SELECT setting FROM pg_settings WHERE name = 'statement_timeout'}].first.should eq({ setting: user.database_timeout.to_s })
+    end
+    user.destroy
+  end
+
+  it "should have null render timeout limits by default" do
+    user = FactoryGirl.create :user
+    user.user_render_timeout.should eq nil
+    user.database_render_timeout.should eq nil
+    $users_metadata.HGET(user.timeout_key, 'render').should eq ''
+    $users_metadata.HGET(user.timeout_key, 'render_public').should eq ''
+    user.destroy
+  end
+
   it "should not regenerate the api_key after saving" do
     expect { @user.save }.to_not change { @user.api_key }
   end

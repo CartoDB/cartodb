@@ -323,7 +323,7 @@ module.exports = Model.extend({
   },
 
   getLayerName: function () {
-    return this.layer.get('layer_name');
+    return this.layer && this.layer.get('layer_name');
   },
 
   getSource: function () {

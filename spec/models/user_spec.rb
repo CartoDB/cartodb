@@ -1077,10 +1077,10 @@ describe User do
     $users_metadata.HGET(@user.timeout_key, 'db').should == '200007'
     $users_metadata.HGET(@user.timeout_key, 'db_public').should == '100007'
     @user.in_database do |db|
-      db[%Q{SHOW statement_timeout}].first.should eq({ statement_timeout: '200007ms' })
+      db[%{SHOW statement_timeout}].first.should eq({ statement_timeout: '200007ms' })
     end
     @user.in_database(as: :public_user) do |db|
-      db[%Q{SHOW statement_timeout}].first.should eq({ statement_timeout: '100007ms' })
+      db[%{SHOW statement_timeout}].first.should eq({ statement_timeout: '100007ms' })
     end
   end
 
@@ -1099,10 +1099,10 @@ describe User do
     $users_metadata.HGET(user.timeout_key, 'db').should == '200002'
     $users_metadata.HGET(user.timeout_key, 'db_public').should == '100002'
     user.in_database do |db|
-      db[%Q{SHOW statement_timeout}].first.should eq({ statement_timeout: '200002ms' })
+      db[%{SHOW statement_timeout}].first.should eq({ statement_timeout: '200002ms' })
     end
     user.in_database(as: :public_user) do |db|
-      db[%Q{SHOW statement_timeout}].first.should eq({ statement_timeout: '100002ms' })
+      db[%{SHOW statement_timeout}].first.should eq({ statement_timeout: '100002ms' })
     end
     user.destroy
   end
@@ -1124,10 +1124,12 @@ describe User do
     $users_metadata.HGET(user.timeout_key, 'db').should == user.user_timeout.to_s
     $users_metadata.HGET(user.timeout_key, 'db_public').should == user.database_timeout.to_s
     user.in_database do |db|
-      db[%{SELECT setting FROM pg_settings WHERE name = 'statement_timeout'}].first.should eq({ setting: user.user_timeout.to_s })
+      result = db[%{SELECT setting FROM pg_settings WHERE name = 'statement_timeout'}]
+      result.first.should eq(setting: user.user_timeout.to_s)
     end
     user.in_database(as: :public_user) do |db|
-      db[%{SELECT setting FROM pg_settings WHERE name = 'statement_timeout'}].first.should eq({ setting: user.database_timeout.to_s })
+      result = db[%{SELECT setting FROM pg_settings WHERE name = 'statement_timeout'}]
+      result.first.should eq(setting: user.database_timeout.to_s)
     end
     user.destroy
   end

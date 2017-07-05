@@ -100,6 +100,10 @@ module.exports = DataviewModelBase.extend({
     return this._data.size();
   },
 
+  getColumnType: function () {
+    return this.has('aggregation') ? 'date' : 'number';
+  },
+
   parse: function (data) {
     var numberOfBins = data.bins_count;
     var isAggregation = !!this.get('aggregation');

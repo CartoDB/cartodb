@@ -1,6 +1,6 @@
-// cartodb.js version: 3.15.10
+// cartodb.js version: 3.15.12
 // uncompressed version: cartodb.uncompressed.js
-// sha: a316f4c786ae84597f7931cdaeea4540e914d7d4
+// sha: f7f983fde52ce647b4c03faee91dd995aca12552
 (function() {
   var define;  // Undefine define (require.js), see https://github.com/CartoDB/cartodb.js/issues/543
   var root = this;
@@ -25659,7 +25659,7 @@ if (typeof window !== 'undefined') {
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = "3.15.10";
+    cdb.VERSION = "3.15.12";
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -26908,7 +26908,7 @@ cdb.geo.geocoder.YAHOO = {
 
 cdb.geo.geocoder.MAPZEN = {
   keys:{
-    app_id:  "search-DH1Lkhw"
+    app_id:  "mapzen-YfBeDWS"
   },
 
   geocode: function(address, callback){

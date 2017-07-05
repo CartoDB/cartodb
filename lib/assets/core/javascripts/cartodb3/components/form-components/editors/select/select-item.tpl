@@ -8,9 +8,5 @@
     <span class="u-lSpace u-secondaryTextColor"><%- _t('components.backbone-forms.select.loading') %></span>
   </div>
 <% } else { %>
-  <% if (isEmpty && isNull) { %>
-    <%- _t('components.backbone-forms.select.empty') %>
-  <% } else { %>
-    <%- label %>
-  <% } %>
+  <%- label %>
 <% } %>

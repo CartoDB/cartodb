@@ -11,6 +11,8 @@ Development
 * Bump Webpack version (#12392).
 
 ### Bug fixes / enhancements
+* Refactor Visualization::Member like and notification actions into Carto::Visualization (#12309)
+* Don't try to lowercase null values in custom-list-collection object (support/#744)
 * Tap on iOS10 mobile embed doesn't jump to page bottom (#cartodb.js/1652)
 * Don't try to lowercase null values in custom-list-collection object (#support/744)
 * Validate widget form when widget type changes (#11536)
@@ -60,6 +62,7 @@ Development
 * Fix vector problem with lines
 * Fixed "see all formats" url, from the Connect Dataset module, to open in new windown and changed the url.
 * Added a data attribute for Backbone views that points to the module that implements it (Leapfrog #12341)
+* Add geometry validation for polygons and lines in edit feature form (#12397)
 * Fix permission model and added tests (#12393)
 
 ### NOTICE

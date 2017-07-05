@@ -743,7 +743,7 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
       "from": "cartodb/cartodb.js#v4",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#6b4156e9fabbde5f473c76753747ba4d7835dd6f"
+      "resolved": "git://github.com/cartodb/cartodb.js.git#4a34bb051ef404964afd2cccc41a5b7e28c84659"
     },
     "caseless": {
       "version": "0.11.0",

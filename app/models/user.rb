@@ -944,7 +944,9 @@ class User < Sequel::Model
       'routing_provider', routing_provider
     $users_metadata.HMSET timeout_key,
       'db', user_timeout,
-      'db_public', database_timeout # TODO: render, render_public
+      'db_public', database_timeout,
+      'render', user_render_timeout,
+      'render_public', database_render_timeout
   end
 
   def get_auth_tokens

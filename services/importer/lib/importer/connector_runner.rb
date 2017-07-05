@@ -2,6 +2,7 @@
 
 require 'carto/connector'
 require_relative 'exceptions'
+require_relative 'georeferencer'
 require_relative 'runner_helper'
 
 module CartoDB
@@ -28,6 +29,7 @@ module CartoDB
         @job        = options[:job] || new_job(@log, @pg_options)
         @user       = options[:user]
         @collision_strategy = options[:collision_strategy]
+        @georeferencer = options[:georeferencer]
 
         @id = @job.id
         @unique_suffix = @id.delete('-')
@@ -49,6 +51,9 @@ module CartoDB
         if should_import?(@connector.remote_table_name)
           @job.log "Copy connected table"
           warnings = @connector.copy_table(schema_name: @job.schema, table_name: @job.table_name)
+
+          georeference
+
           @warnings.merge! warnings if warnings.present?
         else
           @job.log "Table #{table_name} won't be imported"
@@ -70,6 +75,14 @@ module CartoDB
 
       def tracker
         @tracker || lambda { |state| state }
+      end
+
+      def georeference
+        georeferencer = Georeferencer.new(@job.db, @job.table_name, {}, 'cdb_importer', @job)
+
+        job.log 'Georeferencing...'
+        georeferencer.run
+        job.log 'Georeferenced'
       end
 
       def visualizations

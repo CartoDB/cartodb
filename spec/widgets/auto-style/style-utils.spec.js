@@ -5,9 +5,9 @@ describe('src/widgets/auto-style/style-utils', function () {
     it('should change style attribute', function () {
       var cartocss = '#layer { marker-line-color: white; marker-fill: #adadad;}';
       var attr = 'marker-fill';
-      var newStyle = 'marker-fill: blue;';
+      var newStyle = 'blue';
 
-      var expected = "#layer ['mapnik::geometry_type'=1] { marker-fill: blue;  } #layer { marker-line-color: white;}";
+      var expected = '#layer { marker-line-color: white; marker-fill: blue;}';
 
       expect(StyleUtils.changeStyle(cartocss, attr, newStyle)).toBe(expected);
     });
@@ -15,9 +15,9 @@ describe('src/widgets/auto-style/style-utils', function () {
     it('should change style and remove duplicated', function () {
       var cartocss = '#layer { marker-line-color: white; marker-fill: #adadad; marker-fill: #fafafa;}';
       var attr = 'marker-fill';
-      var newStyle = 'marker-fill: blue;';
+      var newStyle = 'blue';
 
-      var expected = "#layer ['mapnik::geometry_type'=1] { marker-fill: blue;  } #layer { marker-line-color: white;}";
+      var expected = '#layer { marker-line-color: white; marker-fill: blue;}';
 
       expect(StyleUtils.changeStyle(cartocss, attr, newStyle)).toBe(expected);
     });
@@ -25,9 +25,9 @@ describe('src/widgets/auto-style/style-utils', function () {
     it('should change style, remove duplicated and remove empty braces', function () {
       var cartocss = '#layer { marker-line-color: white; marker-fill: #adadad; [me>gasol] { marker-fill: #fafafa; }}';
       var attr = 'marker-fill';
-      var newStyle = 'marker-fill: blue;';
+      var newStyle = 'blue';
 
-      var expected = "#layer ['mapnik::geometry_type'=1] { marker-fill: blue;  } #layer { marker-line-color: white;}";
+      var expected = '#layer { marker-line-color: white; marker-fill: blue; [me>gasol] { }}';
 
       expect(StyleUtils.changeStyle(cartocss, attr, newStyle)).toBe(expected);
     });
@@ -35,9 +35,9 @@ describe('src/widgets/auto-style/style-utils', function () {
     it('should change style, remove duplicated and don\'t remove braces', function () {
       var cartocss = '#layer { marker-line-color: white; marker-fill: #adadad; [me>gasol] { marker-fill: #fafafa; marker-line-color: green; }}';
       var attr = 'marker-fill';
-      var newStyle = 'marker-fill: blue;';
+      var newStyle = 'blue';
 
-      var expected = "#layer ['mapnik::geometry_type'=1] { marker-fill: blue;  } #layer { marker-line-color: white; [me>gasol] { marker-line-color: green; }}";
+      var expected = '#layer { marker-line-color: white; marker-fill: blue; [me>gasol] { marker-line-color: green; }}';
 
       expect(StyleUtils.changeStyle(cartocss, attr, newStyle)).toBe(expected);
     });

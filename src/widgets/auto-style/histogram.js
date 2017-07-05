@@ -53,7 +53,7 @@ var HistogramAutoStyler = AutoStyler.extend({
     var isCustomDefinition = this.styles && this.styles.custom || false;
 
     ['marker-fill', 'polygon-fill', 'line-color'].forEach(function (item) {
-      if (cartocss.search(StyleUtils.getAttrRegex(item, false)) >= 0) {
+      if (StyleUtils.isPropertyIncluded(cartocss, item)) {
         var scales = HistogramAutoStyler.SCALES_MAP[item][shape];
         var geom = item.substring(0, item.indexOf('-'));
         var definition = {};

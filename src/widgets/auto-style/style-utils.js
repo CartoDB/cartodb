@@ -1,8 +1,29 @@
 var _ = require('underscore');
 var postcss = require('postcss');
 
-function getAttrRegex (attr, multi) {
-  return new RegExp('\\' + 's' + attr + ':.*?(;|\n)', multi ? 'g' : '');
+function isPropertyIncluded (cartocss, attr) {
+  var cssTree = postcss().process(cartocss);
+  var root = cssTree.result.root;
+  var propertyIncluded = false;
+
+  root.walk(function (node) {
+    var parentNode = node.parent;
+    if (node.type === 'decl' && node.prop === attr) {
+      if (!isSelectorRule(parentNode) || isMapnikGeometrySelectorRule(parentNode)) {
+        propertyIncluded = true;
+      }
+    }
+  });
+
+  return propertyIncluded;
+}
+
+function isMapnikGeometrySelectorRule (node) {
+  return node.type === 'rule' && node.selector.search('mapnik::geometry_type') !== -1;
+}
+
+function isSelectorRule (node) {
+  return node.type === 'rule' && node.selector.search(/\[(.)+\]/g) !== -1;
 }
 
 function replaceWrongSpaceChar (cartocss) {
@@ -13,16 +34,26 @@ function replaceWrongSpaceChar (cartocss) {
  * Change attr style and remove all the duplicates
  * @param  {String} cartocss cartocss original String
  * @param  {String} attr     CSS Attribute ex, polygon-fill
- * @param  {String} newStyle New attribute style ex, red;
+ * @param  {String} newStyle New style value ex, red;
  * @return {String}          Cartocss modified String
  */
 function changeStyle (cartocss, attr, newStyle) {
   var cssTree = postcss().process(cartocss);
   var root = cssTree.result.root;
+  var attributeAlreadyChanged = false;
 
   root.walk(function (node) {
+    var parentNode = node.parent;
     if (node.type === 'decl' && node.prop === attr) {
-      node.value = newStyle;
+      if (isSelectorRule(parentNode) || attributeAlreadyChanged) {
+        // If the attribute is inside a conditional selection, it is removed
+        node.remove();
+      } else {
+        // If the attribute is inside a regular root (or symbolizer), it just
+        // changes the value
+        node.value = newStyle;
+        attributeAlreadyChanged = true;
+      }
     }
   });
 
@@ -33,6 +64,6 @@ module.exports = {
   changeStyle: _.memoize(changeStyle, function (css, attr, style) {
     return css + attr + style;
   }),
-  getAttrRegex: getAttrRegex,
+  isPropertyIncluded: isPropertyIncluded,
   replaceWrongSpaceChar: replaceWrongSpaceChar
 };

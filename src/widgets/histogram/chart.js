@@ -505,7 +505,7 @@ module.exports = cdb.core.View.extend({
     }
 
     if (this._originalData) {
-      this.listenTo(this._originalData, 'change:data', function (mdl) {
+      this.listenTo(this._originalData, 'change:data', function () {
         this._removeShadowBars();
         this._generateShadowBars();
       });
@@ -754,11 +754,19 @@ module.exports = cdb.core.View.extend({
     // set brush extent to rect and define objects height
     brushg.selectAll('rect')
         .attr('y', 0)
-        .attr('height', this.chartHeight())
+        .attr('height', this.chartHeight());
+    
+    // Only bind on the background element
+    brushg.selectAll('rect.background')
         .on('mouseout', this._onMouseOut)
         .on('mousemove', this._onMouseMove);
 
     this.brush = brush;
+
+    // Make grabby handles as big as the display handles
+    this.chart.selectAll('g.resize rect')
+      .attr('width', this.options.handleWidth)
+      .attr('x', -this.options.handleWidth / 2);
   },
 
   _onBrushMove: function () {
@@ -872,16 +880,11 @@ module.exports = cdb.core.View.extend({
       .attr('fill', this._getFillColor.bind(this));
 
     if (bar && bar.node()) {
-      bar.attr('fill', function (d, i) {
+      bar.attr('fill', function () {
         return this._getHoverFillColor(data[barIndex], barIndex);
       }.bind(this));
       bar.classed('is-highlighted', true);
     }
-
-    // Make grabby handles as big as the display handles
-    this.chart.selectAll('g.resize rect')
-      .attr('width', this.options.handleWidth)
-      .attr('x', -this.options.handleWidth / 2);
   },
 
   _adjustBrushHandles: function () {
@@ -1032,7 +1035,7 @@ module.exports = cdb.core.View.extend({
       .data(this.verticalRange)
       .enter().append('text')
       .attr('x', function (d) { return d; })
-      .attr('y', function (d) { return self.chartHeight() + 15; })
+      .attr('y', function () { return self.chartHeight() + 15; })
       .attr('text-anchor', adjustTextAnchor)
       .text(function (d) {
         if (self.xAxisScale) {
@@ -1196,7 +1199,7 @@ module.exports = cdb.core.View.extend({
         var offset = this.__offset__ = Math.floor(((i) / stopsNumber) * 100);
         return (offset + '%');
       })
-      .attr('stop-color', function (d, i) {
+      .attr('stop-color', function () {
         var localScale = this.parentNode.__scale__;
         var interpolateValue = domainScale(localScale(this.__offset__ / 100));
         return interpolatedColors(interpolateValue);
@@ -1298,10 +1301,10 @@ module.exports = cdb.core.View.extend({
       .exit()
       .transition()
       .duration(200)
-      .attr('height', function (d) {
+      .attr('height', function () {
         return 0;
       })
-      .attr('y', function (d) {
+      .attr('y', function () {
         return self.chartHeight();
       });
   },

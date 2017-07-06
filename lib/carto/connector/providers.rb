@@ -42,13 +42,12 @@ module Carto
         name: 'Hive',
         class: HiveProvider,
         public: true
+      },
+      'bigquery' => {
+        name: 'Google BigQuery 64',
+        class: BigQueryProvider,
+        public: true
       }
-      #,
-      # 'bigquery' => {
-      #   name: 'Google BigQuery 64',
-      #   class: BigQueryProvider,
-      #   public: true
-      # }
     }
 
     DEFAULT_PROVIDER = nil # No default provider

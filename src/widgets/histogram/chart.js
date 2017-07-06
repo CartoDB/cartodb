@@ -7,9 +7,29 @@ var tinycolor = require('tinycolor2');
 var formatter = require('../../formatter');
 var FILTERED_COLOR = '#1181FB';
 var UNFILTERED_COLOR = 'rgba(0, 0, 0, 0.06)';
+var TIP_RECT_HEIGHT = 17;
+var TIP_H_PADDING = 6;
+var TRIANGLE_SIDE = 14;
+var TRIANGLE_HEIGHT = 7;
+// How much lower (based on height) will the triangle be on the right side
+var TRIANGLE_RIGHT_FACTOR = 1.3;
+var TOOLTIP_MARGIN = 2;
+var DASH_WIDTH = 4;
+var SVG_CLASS = 'CDB-Chart--histogram';
+
+var BEZIER_MARGIN_X = 0.1;
+var BEZIER_MARGIN_Y = 1;
+
+var trianglePath = function (x1, y1, x2, y2, x3, y3, yFactor) {
+  // Bezier Control point y
+  var cy = y3 + (yFactor * BEZIER_MARGIN_Y);
+  // Bezier Control point x 1
+  var cx1 = x3 + BEZIER_MARGIN_X;
+  var cx2 = x3 - BEZIER_MARGIN_X;
+  return 'M ' + x1 + ' ' + y1 + ' L ' + x2 + ' ' + y2 + ' C ' + cx1 + ' ' + cy + ' ' + cx2 + ' ' + cy + ' ' + x1 + ' ' + y1 + ' z';
+};
 
 module.exports = cdb.core.View.extend({
-
   options: {
     // render the chart once the width is set as default, provide false value for this prop to disable this behavior
     // e.g. for "mini" histogram behavior
@@ -19,7 +39,7 @@ module.exports = cdb.core.View.extend({
     hasAxisTip: false,
     minimumBarHeight: 2,
     animationSpeed: 750,
-    handleWidth: 6,
+    handleWidth: 10,
     handleHeight: 23,
     handleRadius: 3,
     divisionWidth: 80,
@@ -47,10 +67,15 @@ module.exports = cdb.core.View.extend({
     // and w/o class="" d3 won't instantiate properly
     this.setElement($('<svg class=""></svg>')[0]);
 
+    if (!this.options.mini) {
+      this.$el.attr('class', SVG_CLASS);
+    }
+
     this._widgetModel = this.options.widgetModel;
     this._dataviewModel = this.options.dataviewModel;
 
     this.canvas = d3.select(this.el)
+      .style('overflow', 'visible')
       .attr('width', 0)
       .attr('height', this.options.height);
 
@@ -65,6 +90,8 @@ module.exports = cdb.core.View.extend({
     this._setupFillColor();
 
     this.hide(); // will be toggled on width change
+
+    this.formatter = this.options.type === 'time' ? formatter.timeFactory('%H:%M:%S %d/%m/%Y') : formatter.formatNumber;
   },
 
   render: function () {
@@ -124,34 +151,79 @@ module.exports = cdb.core.View.extend({
     this._updateAxisTip('right');
   },
 
+  _overlap: function (first, second) {
+    var bFirst = first.node().getBoundingClientRect();
+    var bSecond = second.node().getBoundingClientRect();
+
+    return !(bFirst.right < bSecond.left ||
+    bFirst.left > bSecond.right ||
+    bFirst.bottom < bSecond.top ||
+    bFirst.top > bSecond.bottom);
+  },
+
+  _updateTriangle: function (className, triangle, xPos) {
+    var y3Factor = className === 'right' ? -1 : 1;
+    var xLimit = className === 'right' ? this.chartWidth() : 0;
+    var xDiff = Math.abs(xLimit - xPos);
+
+    var transform = d3.transform(triangle.attr('transform'));
+
+    if (xDiff <= (TRIANGLE_SIDE / 2)) {
+      xDiff = className === 'right' ? TRIANGLE_SIDE - xDiff : xDiff;
+      triangle.attr('d', trianglePath(0, 0, TRIANGLE_SIDE, 0, xDiff, y3Factor * TRIANGLE_HEIGHT, y3Factor));
+      transform.translate[0] = className === 'left' ? 0 : -Math.max(0, Math.abs(this.options.handleWidth - TRIANGLE_SIDE));
+    } else {
+      triangle.attr('d', trianglePath(0, 0, TRIANGLE_SIDE, 0, (TRIANGLE_SIDE / 2), y3Factor * TRIANGLE_HEIGHT, y3Factor));
+      transform.translate[0] = ((this.options.handleWidth / 2) - (TRIANGLE_SIDE / 2));
+    }
+
+    triangle.attr('transform', transform.toString());
+  },
+
   _updateAxisTip: function (className) {
+    var model = this.model.get(className + '_axis_tip');
+    if (model === undefined) { return; }
+
     var textLabel = this.chart.select('.CDB-Chart-axisTipText.CDB-Chart-axisTip-' + className);
     var axisTip = this.chart.select('.CDB-Chart-axisTip.CDB-Chart-axisTip-' + className);
     var rectLabel = this.chart.select('.CDB-Chart-axisTipRect.CDB-Chart-axisTip-' + className);
     var handle = this.chart.select('.CDB-Chart-handle.CDB-Chart-handle-' + className);
+    var triangle = handle.select('.CDB-Chart-axisTipTriangle');
 
-    textLabel.data([this.model.get(className + '_axis_tip')]).text(function (d) {
-      return formatter.formatNumber(d);
-    });
+    triangle.style('opacity', '1');
 
-    var width = textLabel.node().getBBox().width;
-    rectLabel.attr('width', width + 4);
+    textLabel.data([model]).text(function (d) {
+      return this.formatter(d);
+    }.bind(this));
 
-    var parts = /translate\((\d*)/.exec(handle.attr('transform'));
-    var xPos = +parts[0] + 3;
+    if (!textLabel.node()) {
+      return;
+    }
+
+    var textBBox = textLabel.node().getBBox();
+    var width = textBBox.width;
+    var rectWidth = width + TIP_H_PADDING;
+
+    rectLabel.attr('width', width + TIP_H_PADDING);
+    textLabel.attr('dx', TIP_H_PADDING / 2);
+    textLabel.attr('dy', textBBox.height - Math.abs((textBBox.height - TIP_RECT_HEIGHT) / 2));
+
+    var parts = d3.transform(handle.attr('transform')).translate;
+    var xPos = +parts[0] + (this.options.handleWidth / 2);
+
+    var yPos = className === 'left' ? -(TRIANGLE_HEIGHT + TIP_RECT_HEIGHT + TOOLTIP_MARGIN) : this.chartHeight() + (TRIANGLE_HEIGHT * TRIANGLE_RIGHT_FACTOR);
+    yPos = Math.floor(yPos);
+
+    this._updateTriangle(className, triangle, xPos);
 
     if ((xPos - width / 2) < 0) {
-      axisTip.attr('transform', 'translate(0, 52)');
-      textLabel.attr('dx', -xPos);
-      rectLabel.attr('x', -xPos);
+      axisTip.attr('transform', 'translate(' + -xPos + ',' + yPos + ' )');
     } else if ((xPos + width / 2 + 2) >= this.chartWidth()) {
-      axisTip.attr('transform', 'translate(0, 52)');
-      textLabel.attr('dx', this.chartWidth() - (xPos + width - 2));
-      rectLabel.attr('x', this.chartWidth() - (xPos + width));
+      var newX = this.chartWidth() - (xPos + rectWidth);
+      newX += this.options.handleWidth;
+      axisTip.attr('transform', 'translate(' + newX + ', ' + yPos + ')');
     } else {
-      axisTip.attr('transform', 'translate(-' + (width / 2) + ', 52)');
-      rectLabel.attr('x', 0);
-      textLabel.attr('dx', +2);
+      axisTip.attr('transform', 'translate(-' + ((rectWidth / 2) - (this.options.handleWidth / 2)) + ', ' + yPos + ')');
     }
   },
 
@@ -190,6 +262,8 @@ module.exports = cdb.core.View.extend({
     var loBarIndex = this.model.get('lo_index');
     var hiBarIndex = this.model.get('hi_index');
     this.selectRange(loBarIndex, hiBarIndex);
+    this._updateAxisTip('left');
+    this._updateAxisTip('right');
   },
 
   _onChangeNormalized: function () {
@@ -238,6 +312,7 @@ module.exports = cdb.core.View.extend({
   _showAxisTip: function (className) {
     var textLabel = this.chart.select('.CDB-Chart-axisTipText.CDB-Chart-axisTip-' + className);
     var rectLabel = this.chart.select('.CDB-Chart-axisTipRect.CDB-Chart-axisTip-' + className);
+    var triangle = this.chart.select('.CDB-Chart-axisTip-' + className + ' .CDB-Chart-axisTipTriangle');
 
     if (textLabel) {
       textLabel.transition().duration(200).attr('opacity', 1);
@@ -245,17 +320,8 @@ module.exports = cdb.core.View.extend({
     if (rectLabel) {
       rectLabel.transition().duration(200).attr('opacity', 1);
     }
-  },
-
-  _hideAxisTip: function (className) {
-    var textLabel = this.chart.select('.CDB-Chart-axisTipText.CDB-Chart-axisTip-' + className);
-    var rectLabel = this.chart.select('.CDB-Chart-axisTipRect.CDB-Chart-axisTip-' + className);
-
-    if (textLabel) {
-      textLabel.transition().duration(200).attr('opacity', 0);
-    }
-    if (rectLabel) {
-      rectLabel.transition().duration(200).attr('opacity', 0);
+    if (triangle) {
+      triangle.transition().duration(200).attr('opacity', 1);
     }
   },
 
@@ -409,35 +475,33 @@ module.exports = cdb.core.View.extend({
   },
 
   _setupBindings: function () {
-    this.model.bind('change:data', this._onChangeData, this);
-    this.model.bind('change:display', this._onChangeDisplay, this);
-    this.model.bind('change:dragging', this._onChangeDragging, this);
-    this.model.bind('change:height', this._onChangeHeight, this);
-    this.model.bind('change:left_axis_tip', this._onChangeLeftAxisTip, this);
-    this.model.bind('change:lo_index change:hi_index', this._onChangeRange, this);
-    this.model.bind('change:pos', this._onChangePos, this);
-    this.model.bind('change:right_axis_tip', this._onChangeRightAxisTip, this);
-    this.model.bind('change:showLabels', this._onChangShowLabels, this);
-    this.model.bind('change:show_shadow_bars', this._onChangeShowShadowBars, this);
-    this.model.bind('change:width', this._onChangeWidth, this);
-    this.model.bind('change:normalized', this._onChangeNormalized, this);
+    this.listenTo(this.model, 'change:data', this._onChangeData);
+    this.listenTo(this.model, 'change:display', this._onChangeDisplay);
+    this.listenTo(this.model, 'change:dragging', this._onChangeDragging);
+    this.listenTo(this.model, 'change:height', this._onChangeHeight);
+    this.listenTo(this.model, 'change:left_axis_tip', this._onChangeLeftAxisTip);
+    this.listenTo(this.model, 'change:lo_index change:hi_index', this._onChangeRange);
+    this.listenTo(this.model, 'change:pos', this._onChangePos);
+    this.listenTo(this.model, 'change:right_axis_tip', this._onChangeRightAxisTip);
+    this.listenTo(this.model, 'change:showLabels', this._onChangShowLabels);
+    this.listenTo(this.model, 'change:show_shadow_bars', this._onChangeShowShadowBars);
+    this.listenTo(this.model, 'change:width', this._onChangeWidth);
+    this.listenTo(this.model, 'change:normalized', this._onChangeNormalized);
 
     if (this._widgetModel) {
-      this._widgetModel.bind('change:autoStyle', this._refreshBarsColor, this);
-      this._widgetModel.bind('change:style', function () {
+      this.listenTo(this._widgetModel, 'change:autoStyle', this._refreshBarsColor);
+      this.listenTo(this._widgetModel, 'change:style', function () {
         this._setupFillColor();
         this._refreshBarsColor();
-      }, this);
-      this.add_related_model(this._widgetModel);
+      });
     }
 
     if (this._dataviewModel) {
-      this._dataviewModel.layer.bind('change:cartocss', function () {
+      this.listenTo(this._dataviewModel.layer, 'change:cartocss', function () {
         if (!this._areGradientsAlreadyGenerated()) {
           this._setupFillColor();
         }
-      }, this);
-      this.add_related_model(this._dataviewModel.layer);
+      });
     }
 
     if (this._originalData) {
@@ -454,16 +518,21 @@ module.exports = cdb.core.View.extend({
     this._onWindowResize();
   },
 
+  _getData: function () {
+    return (this._originalData && this._originalData.getData()) || this.model.get('data');
+  },
+
+  _getMaxData: function (data) {
+    return d3.max(data, function (d) { return _.isEmpty(d) ? 0 : d.freq; });
+  },
+
   _getXScale: function () {
     return d3.scale.linear().domain([0, 100]).range([0, this.chartWidth()]);
   },
 
   _getYScale: function () {
-    var data = (this._originalData && this._originalData.getData()) || this.model.get('data');
-    if (this.model.get('normalized')) {
-      data = this.model.get('data');
-    }
-    return d3.scale.linear().domain([0, d3.max(data, function (d) { return _.isEmpty(d) ? 0 : d.freq; })]).range([this.chartHeight(), 0]);
+    var data = this.model.get('normalized') ? this.model.get('data') : this._getData();
+    return d3.scale.linear().domain([0, this._getMaxData(data)]).range([this.chartHeight(), 0]);
   },
 
   updateXScale: function () {
@@ -808,6 +877,11 @@ module.exports = cdb.core.View.extend({
       }.bind(this));
       bar.classed('is-highlighted', true);
     }
+
+    // Make grabby handles as big as the display handles
+    this.chart.selectAll('g.resize rect')
+      .attr('width', this.options.handleWidth)
+      .attr('x', -this.options.handleWidth / 2);
   },
 
   _adjustBrushHandles: function () {
@@ -826,28 +900,47 @@ module.exports = cdb.core.View.extend({
       .attr('transform', 'translate(' + rightX + ', 0)');
 
     if (this.options.hasAxisTip) {
-      this.model.set({
-        left_axis_tip: this.xAxisScale(leftX + 3),
-        right_axis_tip: this.xAxisScale(rightX + 3)
-      });
+      if (this.options.type === 'time') {
+        this.model.set({
+          left_axis_tip: this.xAxisScale.invert(leftX + this.options.handleWidth / 2),
+          right_axis_tip: this.xAxisScale.invert(rightX + this.options.handleWidth / 2)
+        });
+      } else {
+        this.model.set({
+          left_axis_tip: this.xAxisScale(leftX + this.options.handleWidth / 2),
+          right_axis_tip: this.xAxisScale(rightX + this.options.handleWidth / 2)
+        });
+      }
     }
   },
 
   _generateAxisTip: function (className) {
     var handle = this.chart.select('.CDB-Chart-handle.CDB-Chart-handle-' + className);
 
+    var yPos = className === 'right' ? this.chartHeight() + (TRIANGLE_HEIGHT * TRIANGLE_RIGHT_FACTOR) : -(TRIANGLE_HEIGHT + TIP_RECT_HEIGHT + TOOLTIP_MARGIN);
+    var yTriangle = className === 'right' ? this.chartHeight() + (TRIANGLE_HEIGHT * TRIANGLE_RIGHT_FACTOR) + 2 : -(TRIANGLE_HEIGHT + TOOLTIP_MARGIN) - 2;
+    var yFactor = className === 'right' ? -1 : 1;
+    var triangleHeight = TRIANGLE_HEIGHT * yFactor;
+
     var axisTip = handle.selectAll('g')
       .data([''])
       .enter().append('g')
       .attr('class', 'CDB-Chart-axisTip CDB-Chart-axisTip-' + className)
-      .attr('transform', function (d, i) { return 'translate(0,52)'; });
+      .attr('transform', 'translate(0,' + yPos + ')');
 
-    this.rectLabel = axisTip.append('rect')
+    handle.append('path')
+      .attr('class', 'CDB-Chart-axisTipRect CDB-Chart-axisTipTriangle')
+      .attr('transform', 'translate(' + ((this.options.handleWidth / 2) - (TRIANGLE_SIDE / 2)) + ', ' + yTriangle + ')')
+      .attr('d', trianglePath(0, 0, TRIANGLE_SIDE, 0, (TRIANGLE_SIDE / 2), triangleHeight, yFactor))
+      .style('opacity', '0');
+
+    axisTip.append('rect')
       .attr('class', 'CDB-Chart-axisTipRect CDB-Chart-axisTip-' + className)
-      .attr('height', 12)
-      .attr('width', 10);
+      .attr('rx', '2')
+      .attr('ry', '2')
+      .attr('height', TIP_RECT_HEIGHT);
 
-    this.textLabel = axisTip.append('text')
+    axisTip.append('text')
       .attr('class', 'CDB-Text CDB-Size-small CDB-Chart-axisTipText CDB-Chart-axisTip-' + className)
       .attr('dy', '11')
       .attr('dx', '0')
@@ -856,7 +949,6 @@ module.exports = cdb.core.View.extend({
 
   _generateHandle: function (className) {
     var opts = { width: this.options.handleWidth, height: this.options.handleHeight, radius: this.options.handleRadius };
-    var yPos = (this.chartHeight() / 2) - (this.options.handleHeight / 2);
 
     var handle = this.chart.select('.CDB-Chart-handles')
       .append('g')
@@ -866,33 +958,26 @@ module.exports = cdb.core.View.extend({
       this._generateAxisTip(className);
     }
 
-    handle
-      .append('line')
-      .attr('class', 'CDB-Chart-handleLine')
-      .attr('x1', 3)
-      .attr('y1', -4)
-      .attr('x2', 3)
-      .attr('y2', this.chartHeight() + 4);
-
     if (this.options.hasHandles) {
       handle
         .append('rect')
         .attr('class', 'CDB-Chart-handleRect')
-        .attr('transform', 'translate(0, ' + yPos + ')')
         .attr('width', opts.width)
-        .attr('height', opts.height)
+        .attr('height', this.chartHeight())
         .attr('rx', opts.radius)
         .attr('ry', opts.radius);
 
-      var y = 21; // initial position of the first grip
+      var y = this.chartHeight() / 2;
+      y -= 3;
+      var x1 = (opts.width - DASH_WIDTH) / 2;
 
       for (var i = 0; i < 3; i++) {
         handle
           .append('line')
           .attr('class', 'CDB-Chart-handleGrip')
-          .attr('x1', 2)
+          .attr('x1', x1)
           .attr('y1', y + i * 3)
-          .attr('x2', 4)
+          .attr('x2', x1 + DASH_WIDTH)
           .attr('y2', y + i * 3);
       }
     }
@@ -1083,7 +1168,7 @@ module.exports = cdb.core.View.extend({
     var domain = this._calculateDataDomain();
     var domainScale = d3.scale.linear().domain(domain).range([0, 1]);
     var defs = d3.select(this.el).append('defs');
-    var stopsNumber = 4;  // It is not necessary to create as many stops as colors
+    var stopsNumber = 4; // It is not necessary to create as many stops as colors
 
     this._linearGradients = defs
       .selectAll('linearGradient')
@@ -1233,6 +1318,8 @@ module.exports = cdb.core.View.extend({
     var data = this.model.get('data');
 
     this._calcBarWidth();
+    // Remove spacing if not enough room for the smallest case
+    var spacing = ((data.length * 2) - 1) > this.chartWidth() ? 0 : 1;
 
     var bars = this.chart.append('g')
       .attr('transform', 'translate(0, 0)')
@@ -1250,7 +1337,7 @@ module.exports = cdb.core.View.extend({
       })
       .attr('y', self.chartHeight())
       .attr('height', 0)
-      .attr('width', Math.max(0.5, this.barWidth - 1));
+      .attr('width', Math.max(1, this.barWidth - spacing));
 
     bars
       .transition()
@@ -1292,7 +1379,7 @@ module.exports = cdb.core.View.extend({
   },
 
   _generateShadowBars: function () {
-    var data = this._originalData && this._originalData.getData() || this.model.get('data');
+    var data = this._getData();
 
     if (!data || !data.length || !this.model.get('show_shadow_bars') || this.model.get('normalized')) {
       this._removeShadowBars();
@@ -1303,7 +1390,7 @@ module.exports = cdb.core.View.extend({
 
     var self = this;
 
-    var yScale = d3.scale.linear().domain([0, d3.max(data, function (d) { return _.isEmpty(d) ? 0 : d.freq; })]).range([this.chartHeight(), 0]);
+    var yScale = d3.scale.linear().domain([0, this._getMaxData(data)]).range([this.chartHeight(), 0]);
 
     var barWidth = this.chartWidth() / data.length;
 

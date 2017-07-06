@@ -9,6 +9,9 @@ describe('widgets/formula/content-view', function () {
     var vis = specHelper.createDefaultVis();
     this.dataviewModel = vis.dataviews.createFormulaModel(vis.map.layers.first(), {
       column: 'col',
+      source: {
+        id: 'a0'
+      },
       operation: 'avg'
     });
     this.model = new WidgetModel({
@@ -53,6 +56,13 @@ describe('widgets/formula/content-view', function () {
   it('should render formula stats if show_stats is enabled', function () {
     expect(this.view.$('.CDB-Widget-info').length).toBe(0);
     this.model.set('show_stats', true);
+    this.view.render();
+    expect(this.view.$('.CDB-Widget-info').length).toBe(1);
+  });
+
+  it('should render widget source if show_source is enabled', function () {
+    expect(this.view.$('.CDB-Widget-info').length).toBe(0);
+    this.model.set('show_source', true);
     this.view.render();
     expect(this.view.$('.CDB-Widget-info').length).toBe(1);
   });

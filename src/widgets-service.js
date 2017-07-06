@@ -54,11 +54,11 @@ WidgetsService.prototype.createCategoryModel = function (attrs, layer, state) {
   attrs = _.extend(attrs, state, {hasInitialState: this._widgetsCollection.hasInitialState()}); // Will overwrite preset attributes with the ones passed on the state
   var dataviewModel = this._dataviews.createCategoryModel(layer, attrs);
 
-  var attrsNames = ['id', 'title', 'order', 'collapsed', 'prefix', 'suffix', 'show_stats', 'style', 'hasInitialState'];
-  var widgetAttrs = _.pick(attrs, attrsNames);
+  var ATTRS_NAMES = ['id', 'title', 'order', 'collapsed', 'prefix', 'suffix', 'show_stats', 'show_source', 'style', 'hasInitialState'];
+  var widgetAttrs = _.pick(attrs, ATTRS_NAMES);
   var options = makeWidgetStyleOptions(attrs);
 
-  widgetAttrs.attrsNames = attrsNames;
+  widgetAttrs.attrsNames = ATTRS_NAMES;
 
   var widgetModel = new CategoryWidgetModel(widgetAttrs, {
     dataviewModel: dataviewModel
@@ -82,12 +82,12 @@ WidgetsService.prototype.createHistogramModel = function (attrs, layer, state, o
   var dataAttrs = _.extend(attrs, state, {hasInitialState: this._widgetsCollection.hasInitialState()}); // Will overwrite preset attributes with the ones passed on the state
   var dataviewModel = this._dataviews.createHistogramModel(layer, dataAttrs);
 
-  var attrsNames = ['id', 'title', 'order', 'collapsed', 'bins', 'show_stats', 'normalized', 'style', 'hasInitialState'];
-  var widgetAttrs = _.pick(attrs, attrsNames);
+  var ATTRS_NAMES = ['id', 'title', 'order', 'collapsed', 'bins', 'show_stats', 'show_source', 'normalized', 'style', 'hasInitialState'];
+  var widgetAttrs = _.pick(attrs, ATTRS_NAMES);
   var options = makeWidgetStyleOptions(attrs);
 
   widgetAttrs.type = 'histogram';
-  widgetAttrs.attrsNames = attrsNames;
+  widgetAttrs.attrsNames = ATTRS_NAMES;
 
   var widgetModel = new HistogramWidgetModel(widgetAttrs, {
     dataviewModel: dataviewModel
@@ -111,10 +111,10 @@ WidgetsService.prototype.createFormulaModel = function (attrs, layer, state) {
   attrs = _.extend(attrs, state, {hasInitialState: this._widgetsCollection.hasInitialState()}); // Will overwrite preset attributes with the ones passed on the state
   var dataviewModel = this._dataviews.createFormulaModel(layer, attrs);
 
-  var attrsNames = ['id', 'title', 'order', 'collapsed', 'prefix', 'suffix', 'show_stats', 'description', 'hasInitialState'];
-  var widgetAttrs = _.pick(attrs, attrsNames);
+  var ATTRS_NAMES = ['id', 'title', 'order', 'collapsed', 'prefix', 'suffix', 'show_stats', 'show_source', 'description', 'hasInitialState'];
+  var widgetAttrs = _.pick(attrs, ATTRS_NAMES);
   widgetAttrs.type = 'formula';
-  widgetAttrs.attrsNames = attrsNames;
+  widgetAttrs.attrsNames = ATTRS_NAMES;
 
   var widgetModel = new WidgetModel(widgetAttrs, {
     dataviewModel: dataviewModel
@@ -138,10 +138,10 @@ WidgetsService.prototype.createListModel = function (attrs, layer) {
 
   var dataviewModel = this._dataviews.createListModel(layer, attrs);
 
-  var attrsNames = ['id', 'title', 'order', 'columns_title', 'show_stats'];
-  var widgetAttrs = _.pick(attrs, attrsNames);
+  var ATTRS_NAMES = ['id', 'title', 'order', 'columns_title', 'show_stats', 'show_source'];
+  var widgetAttrs = _.pick(attrs, ATTRS_NAMES);
   widgetAttrs.type = 'list';
-  widgetAttrs.attrsNames = attrsNames;
+  widgetAttrs.attrsNames = ATTRS_NAMES;
 
   var widgetModel = new WidgetModel(widgetAttrs, {
     dataviewModel: dataviewModel
@@ -163,10 +163,10 @@ WidgetsService.prototype.createTimeSeriesModel = function (attrs, layer, state, 
   attrs.column_type = attrs.column_type || 'date';
   var dataviewModel = this._dataviews.createHistogramModel(layer, attrs);
 
-  var attrsNames = ['id', 'style', 'normalized'];
-  var widgetAttrs = _.pick(attrs, attrsNames);
+  var ATTRS_NAMES = ['id', 'style', 'title', 'normalized'];
+  var widgetAttrs = _.pick(attrs, ATTRS_NAMES);
   widgetAttrs.type = 'time-series';
-  widgetAttrs.attrsNames = attrsNames;
+  widgetAttrs.attrsNames = ATTRS_NAMES;
 
   var widgetModel = new TimeSeriesWidgetModel(widgetAttrs, {
     dataviewModel: dataviewModel

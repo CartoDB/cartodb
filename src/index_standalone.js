@@ -4,3 +4,4 @@ cdb.deepInsights = {
   createDashboard: require('./api/create-dashboard')
 };
 module.exports = cdb;
+

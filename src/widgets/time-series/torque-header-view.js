@@ -8,13 +8,14 @@ var template = require('./torque-header-view.tpl');
  * View for the header in the torque time-series view
  */
 module.exports = cdb.core.View.extend({
-  className: 'CDB-Widget-header CDB-Widget-header--timeSeries CDB-Widget-contentSpaced',
+  className: 'CDB-Widget-header CDB-Widget-contentSpaced',
 
   initialize: function () {
     this._dataviewModel = this.options.dataviewModel;
     this._torqueLayerModel = this.options.torqueLayerModel;
     this._rangeFilter = this._dataviewModel.filter;
     this._selectedAmount = this.options.selectedAmount;
+    this._timeSeriesModel = this.options.timeSeriesModel;
 
     this.listenTo(this._rangeFilter, 'change', this.render);
   },
@@ -49,6 +50,7 @@ module.exports = cdb.core.View.extend({
       dataviewModel: this._dataviewModel,
       rangeFilter: this._dataviewModel.filter,
       showClearButton: showClearButton,
+      timeSeriesModel: this._timeSeriesModel,
       selectedAmount: this._selectedAmount
     });
     this._appendView('.js-time-series-header', headerView);

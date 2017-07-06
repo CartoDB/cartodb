@@ -9,7 +9,10 @@ describe('widgets/histogram/content-view', function () {
     var vis = specHelper.createDefaultVis();
     this.dataviewModel = vis.dataviews.createHistogramModel(vis.map.layers.first(), {
       id: 'widget_3',
-      column: 'col'
+      column: 'col',
+      source: {
+        id: 'a0'
+      }
     });
 
     this.originalData = this.dataviewModel._unfilteredData;
@@ -255,6 +258,13 @@ describe('widgets/histogram/content-view', function () {
     it('should show stats when show_stats is true', function () {
       expect(this.view.$('.CDB-Widget-info').length).toBe(0);
       this.widgetModel.set('show_stats', true);
+      this.view.render();
+      expect(this.view.$('.CDB-Widget-info').length).toBe(1);
+    });
+
+    it('should show source when show_source is true', function () {
+      expect(this.view.$('.CDB-Widget-info').length).toBe(0);
+      this.widgetModel.set('show_source', true);
       this.view.render();
       expect(this.view.$('.CDB-Widget-info').length).toBe(1);
     });

@@ -1,11 +1,8 @@
 # encoding: utf-8
-require_relative '../../spec_helper'
-require_relative '../../../app/models/visualization/watcher'
 
-include CartoDB::Visualization
+require_relative '../../../spec_helper'
 
-describe Watcher do
-
+describe Carto::Visualization::Watcher do
   before(:all) do
     $tables_metadata.flushdb
   end
@@ -42,10 +39,10 @@ describe Watcher do
       expect {
         non_org_user_mock = mock
         non_org_user_mock.stubs(:organization).returns(nil)
-        Watcher.new(non_org_user_mock, visualization_mock)
-      }.to raise_exception WatcherError
+        Carto::Visualization::Watcher.new(non_org_user_mock, visualization_mock)
+      }.to raise_exception Carto::Visualization::WatcherError
 
-      u1_watcher = Watcher.new(user1_mock, visualization_mock, watcher_ttl)
+      u1_watcher = Carto::Visualization::Watcher.new(user1_mock, visualization_mock, watcher_ttl)
       u1_watcher.nil?.should eq false
       u1_watcher.list.should eq []
 
@@ -58,7 +55,7 @@ describe Watcher do
       u1_watcher.notify
       u1_watcher.list.should eq [user1_mock.username]
 
-      u2_watcher = Watcher.new(user2_mock, visualization_mock, watcher_ttl)
+      u2_watcher = Carto::Visualization::Watcher.new(user2_mock, visualization_mock, watcher_ttl)
       u2_watcher.nil?.should eq false
       # All watchers must notify all users
       u2_watcher.list.should eq [user1_mock.username]
@@ -79,5 +76,4 @@ describe Watcher do
       u2_watcher.list.should eq [user2_mock.username]
     end
   end
-
 end

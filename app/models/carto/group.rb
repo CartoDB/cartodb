@@ -26,7 +26,7 @@ module Carto
 
     private_class_method :new
 
-    validates :name, :database_role, :organization_id, presence: true
+    validates :name, :database_role, :organization, presence: true
 
     # Constructor for groups already existing in the database
     def self.new_instance(database_name, name, database_role, display_name = name)
@@ -52,6 +52,16 @@ module Carto
       group.display_name = display_name
       group.save
       group
+    end
+
+    # Constructor for groups metadata, ignores database roles. Should be generally avoided.
+    def self.new_instance_without_validation(name:, database_role:, display_name: name, auth_token: nil)
+      new(
+        name: name,
+        display_name: display_name,
+        database_role: database_role,
+        auth_token: auth_token
+      )
     end
 
     def rename_group_with_extension(new_display_name)

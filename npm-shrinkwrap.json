@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.8.21",
+  "version": "4.8.22",
   "dependencies": {
     "abbrev": {
       "version": "1.1.0",
@@ -88,9 +88,9 @@
       "resolved": "https://registry.npmjs.org/arr-diff/-/arr-diff-2.0.0.tgz"
     },
     "arr-flatten": {
-      "version": "1.0.3",
+      "version": "1.1.0",
       "from": "arr-flatten@>=1.0.1 <2.0.0",
-      "resolved": "https://registry.npmjs.org/arr-flatten/-/arr-flatten-1.0.3.tgz"
+      "resolved": "https://registry.npmjs.org/arr-flatten/-/arr-flatten-1.1.0.tgz"
     },
     "array-filter": {
       "version": "0.0.1",

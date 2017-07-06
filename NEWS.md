@@ -7,6 +7,7 @@ Development
 * New force param in EUMAPI organization users destroy operation to force deletion even with unregistered tables (#11654).
 * Removed the usage of the `organizations_admin` feature flag (#12131)
 * Show number of selected items in Time-Series widgets (#12179).
+* Add source to widgets (#12369).
 * Show ranges in time series widget selection (#12291)
 * Bump Webpack version (#12392).
 
@@ -64,6 +65,7 @@ Development
 * Added a data attribute for Backbone views that points to the module that implements it (Leapfrog #12341)
 * Add geometry validation for polygons and lines in edit feature form (#12397)
 * Fix permission model and added tests (#12393)
+* Fixed bounds and center of thumbnails after updating a map
 
 ### NOTICE
 This release upgrades the CartoDB PostgreSQL extension to `0.19.2`. Run the following to have it available:

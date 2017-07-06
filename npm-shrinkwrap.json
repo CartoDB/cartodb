@@ -1,10 +1,6 @@
 {
   "name": "cartodb-ui",
-<<<<<<< HEAD
-  "version": "4.8.24",
-=======
-  "version": "4.8.23-PR553-1",
->>>>>>> 7c8b14cfb252ede3d3c6272007daab2349416f6c
+  "version": "4.8.25",
   "dependencies": {
     "abbrev": {
       "version": "1.1.0",
@@ -736,13 +732,8 @@
     },
     "cartodb-deep-insights.js": {
       "version": "0.0.2",
-<<<<<<< HEAD
       "from": "cartodb/deep-insights.js#master",
       "resolved": "git://github.com/cartodb/deep-insights.js.git#14e604a2e9f595e3ae1397397ba9c566ec27fd30",
-=======
-      "from": "cartodb/deep-insights.js#12180-timeseries-draggable",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#7d1d0b3545e9721b28fe36bf30425ea07b4a66b9",
->>>>>>> 7c8b14cfb252ede3d3c6272007daab2349416f6c
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",

@@ -251,6 +251,7 @@ module Carto
           bounds_data = map.view_bounds_data
         else
           # Use state information when present
+          center_data = state[:map][:center]
           data = {
             zoom: state[:map][:zoom],
             center: {

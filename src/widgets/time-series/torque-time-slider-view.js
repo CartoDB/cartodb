@@ -6,7 +6,7 @@ var cdb = require('cartodb.js');
  */
 module.exports = cdb.core.View.extend({
   defaults: {
-    width: 4,
+    width: 6,
     height: 8
   },
 

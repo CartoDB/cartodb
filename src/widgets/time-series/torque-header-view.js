@@ -58,6 +58,8 @@ module.exports = cdb.core.View.extend({
   },
 
   _resetFilter: function () {
+    // Move it to 0 so it doesn't stutter as much
+    this._torqueLayerModel.set({ step: 0 });
     this._torqueLayerModel.resetRenderRange();
   },
 

@@ -22,12 +22,16 @@ module.exports = HistogramView.extend({
 
     this._torqueLayerModel.bind('change:renderRange', this._onRenderRangeChanged, this);
     this._torqueLayerModel.bind('change:steps change:start change:end', this._reSelectRange, this);
+
     this.add_related_model(this._torqueLayerModel);
   },
 
   _createHistogramView: function () {
     this._chartType = this._torqueLayerModel.get('column_type') === 'date' ? 'time' : 'number';
     HistogramView.prototype._createHistogramView.call(this);
+
+    this._chartView.setAnimated();
+    this._chartView.bind('on_brush_click', this._onBrushClick, this);
 
     var timeSliderView = new TorqueTimeSliderView({
       dataviewModel: this.model, // a histogram model
@@ -53,7 +57,19 @@ module.exports = HistogramView.extend({
     }
   },
 
-  _onBrushEnd: function (loBarIndex, hiBarIndex) {
+  _onBrushClick: function (indexPct) {
+    var steps = this._torqueLayerModel.get('steps');
+    var step = Math.round(steps * indexPct);
+
+    // Going to the last step causes a jump to the beginning immediately
+    if (step === steps) step -= 1;
+
+    HistogramView.prototype.resetFilter.apply(this);
+
+    this._torqueLayerModel.set({ step: step });
+  },
+
+  _onBrushEnd: function () {
     HistogramView.prototype._onBrushEnd.apply(this, arguments);
 
     this._reSelectRange();

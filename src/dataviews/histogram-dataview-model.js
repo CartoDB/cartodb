@@ -27,10 +27,10 @@ module.exports = DataviewModelBase.extend({
       if (_.isNumber(this.get('end'))) {
         params.push('end=' + this.get('end'));
       }
-      if (this.get('aggregation')) {
-        params.push('aggregation=' + this.get('aggregation'));
-      } else if (this.get('bins')) {
+      if (this.get('column_type') === 'number' && this.get('bins')) {
         params.push('bins=' + this.get('bins'));
+      } else if (this.get('column_type') === 'date' && this.get('aggregation')) {
+        params.push('aggregation=' + this.get('aggregation'));        
       }
     }
     return params;
@@ -41,6 +41,7 @@ module.exports = DataviewModelBase.extend({
     this._originalData = new HistogramDataModel({
       bins: this.get('bins'),
       aggregation: this.get('aggregation'),
+      column_type: this.get('column_type'),
       apiKey: this.get('apiKey'),
       authToken: this.get('authToken')
     });
@@ -62,7 +63,7 @@ module.exports = DataviewModelBase.extend({
     this._originalData.bind('change:data', this._onDataChanged, this);
     this._originalData.once('change:data', this._updateBindings, this);
 
-    this.on('change:column', this._reloadVisAndForceFetch, this);
+    this.on('change:column', this._onColumnChanged, this);
     this.on('change', this._onFieldsChanged, this);
 
     this.listenTo(this.layer, 'change:meta', this._onChangeLayerMeta);
@@ -101,12 +102,11 @@ module.exports = DataviewModelBase.extend({
   },
 
   getColumnType: function () {
-    return this.has('aggregation') ? 'date' : 'number';
+    return this.get('column_type');
   },
 
   parse: function (data) {
     var numberOfBins = data.bins_count;
-    var isAggregation = !!this.get('aggregation');
     var width = data.bin_width;
     var start = data.bins_start;
     var buckets = new Array(numberOfBins);
@@ -115,7 +115,12 @@ module.exports = DataviewModelBase.extend({
       buckets[b.bin] = b;
     });
 
-    isAggregation ? this._originalData.fillTimestampBuckets(buckets, start, this.get('aggregation'), numberOfBins) : this._originalData.fillNumericBuckets(buckets, start, width, numberOfBins);
+    this.set('aggregation', data.aggregation, { silent: true });
+    if (this.get('column_type') === 'date') {
+      this._originalData.fillTimestampBuckets(buckets, start, data.aggregation, numberOfBins)
+    } else {
+      this._originalData.fillNumericBuckets(buckets, start, width, numberOfBins);
+    }
 
     // FIXME - Update the end of last bin due https://github.com/CartoDB/cartodb.js/issues/926
     var lastBucket = buckets[numberOfBins - 1];
@@ -141,6 +146,12 @@ module.exports = DataviewModelBase.extend({
     this.set('filteredAmount', this._calculateFilteredAmount(filter, this._data));
 
     DataviewModelBase.prototype._onFilterChanged.apply(this, arguments);
+  },
+
+  _onColumnChanged: function () {
+    this._originalData.set('column_type', this.get('column_type'));
+    this.set('aggregation', undefined, { silent: true });
+    this._reloadVisAndForceFetch();
   },
 
   _calculateTotalAmount: function (buckets) {
@@ -222,10 +233,14 @@ module.exports = DataviewModelBase.extend({
 
   toJSON: function (d) {
     var options = {
-      column: this.get('column'),
-      aggregation: this.get('aggregation'),
-      bins: this.get('bins')
+      column: this.get('column')
     };
+
+    if (this.get('column_type') === 'number' && this.get('bins')) {
+      options.bins = this.get('bins');
+    } else if (this.get('column_type') === 'date' && this.get('aggregation')) {
+      options.aggregation = this.get('aggregation')
+    }
 
     return {
       type: 'histogram',
@@ -267,10 +282,11 @@ module.exports = DataviewModelBase.extend({
       return;
     }
 
-    if (this._onlyBinsHasChanged(this.changed)) {
+    if (this.get('column_type') === 'number') {
       this._originalData.set('bins', this.get('bins'));
-    } else if (this._onlyAggregationHasChanged(this.changed)) {
-      this._originalData.set('aggregation', this.get('aggregation'));
+    }
+    if (this.get('column_type') === 'date') {
+      this._originalData.set('aggregation', this.get('aggregation'))
     }
   },
 
@@ -290,10 +306,6 @@ module.exports = DataviewModelBase.extend({
     return this._hasKeyWithValue(changed, 'aggregation') && !_.has(changed, 'bins');
   },
 
-  _hasUndefinedKey: function (obj, key) {
-    return _.has(obj, key) && obj[key] === void 0;
-  },
-
   _hasKeyWithValue: function (obj, key) {
     return _.has(obj, key) && obj[key] !== void 0;
   },
@@ -309,6 +321,7 @@ module.exports = DataviewModelBase.extend({
   {
     ATTRS_NAMES: DataviewModelBase.ATTRS_NAMES.concat([
       'column',
+      'column_type',
       'bins',
       'min',
       'max',

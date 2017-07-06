@@ -27,10 +27,10 @@ module.exports = Model.extend({
 
   url: function () {
     var params = [];
-    if (this.get('aggregation')) {
-      params.push('aggregation=' + this.get('aggregation'));
-    } else if (this.get('bins')) {
+    if (this.get('column_type') === 'number' && this.get('bins')) {
       params.push('bins=' + this.get('bins'));
+    } else if (this.get('column_type') === 'date' && this.get('aggregation')) {
+      params.push('aggregation=' + this.get('aggregation'));
     }
     if (this.get('apiKey')) {
       params.push('api_key=' + this.get('apiKey'));
@@ -89,8 +89,11 @@ module.exports = Model.extend({
     });
 
     this.set('aggregation', data.aggregation, { silent: true });
-
-    _.has(data, 'aggregation') ? this.fillTimestampBuckets(buckets, start, data.aggregation, numberOfBins) : this.fillNumericBuckets(buckets, start, width, numberOfBins);
+    if (this.get('column_type') === 'date') {
+      this.fillTimestampBuckets(buckets, start, data.aggregation, numberOfBins)
+    } else {
+      this.fillNumericBuckets(buckets, start, width, numberOfBins);
+    }
 
     return {
       aggregation: data.aggregation,

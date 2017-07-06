@@ -19,10 +19,10 @@
   right: 392px;
 }
 .Editor-contextSwitcher.has-timeSeries {
-  bottom: 167px;
+  bottom: 209px;
 }
 .Editor-contextSwitcher.has-timeSeries.has-timeSeries--animated {
-  bottom: 190px;
+  bottom: 211px;
 }
 .Editor-contextSwitcher--geom {
   right: 102px;
@@ -71,10 +71,10 @@
     bottom: 32px;
   }
   .Editor-contextSwitcher.has-timeSeries {
-    bottom: 151px;
+    bottom: 203px;
   }
   .Editor-contextSwitcher.has-timeSeries.has-timeSeries--animated {
-    bottom: 174px;
+    bottom: 205px;
   }
   .Editor-contextSwitcher--geom.is-moved {
     right: 390px;
@@ -89,26 +89,18 @@
   .Editor-contextSwitcher--geom.is-moved {
     right: 101px;
   }
-  .Editor-contextSwitcher.has-timeSeries {
-    bottom: 341px;
-  }
-  .Editor-contextSwitcher.has-timeSeries.has-timeSeries--animated {
-    bottom: 364px;
-  }
-}
-@media (max-width: $sViewport-xl) {
   .Editor-contextSwitcher.in-table {
     right: 16px;
     bottom: 16px;
   }
   .Editor-contextSwitcher.is-moved {
-    bottom: 214px;
+    bottom: 243px;
   }
   .Editor-contextSwitcher.has-timeSeries {
-    bottom: 333px;
+    bottom: 414px;
   }
   .Editor-contextSwitcher.has-timeSeries.has-timeSeries--animated {
-    bottom: 358px;
+    bottom: 416px;
   }
 }
 

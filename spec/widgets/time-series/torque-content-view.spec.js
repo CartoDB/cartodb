@@ -28,7 +28,7 @@ describe('widgets/time-series/torque-content-view', function () {
       start: 0,
       end: 256,
       bins: 2
-    });
+    }, { silent: true });
     this.dataviewModel.sync = function (method, model, options) {
       this.options = options;
     }.bind(this);

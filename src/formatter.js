@@ -91,15 +91,15 @@ format.formatValue = function (value) {
 };
 
 format.timestampFactory = function (aggregation) {
-    return function (timestamp) {
-      if (!_.has(AGGREGATION_FORMATS, aggregation)) {
-        return '-';
-      }
-
-      var format = AGGREGATION_FORMATS[aggregation];
-      var date = moment.unix(timestamp).utc();
-      return date.format(format.display);
+  return function (timestamp) {
+    if (!_.has(AGGREGATION_FORMATS, aggregation)) {
+      return '-';
     }
+
+    var format = AGGREGATION_FORMATS[aggregation];
+    var date = moment.unix(timestamp).utc();
+    return date.format(format.display);
+  };
 };
 
 module.exports = format;

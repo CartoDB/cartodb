@@ -1,22 +1,19 @@
 var Backbone = require('backbone');
 var HistogramView = require('../../../src/widgets/time-series/histogram-view');
 var HistogramChartView = require('../../../src/widgets/histogram/chart');
+var specHelper = require('../../spec-helper');
 
 describe('widgets/time-series/histogram-view', function () {
   beforeEach(function () {
     this.timeSeriesModel = new Backbone.Model();
     this.timeSeriesModel.getWidgetColor = function () {};
 
-    this.dataviewModel = new Backbone.Model();
-    this.dataviewModel.filter = new Backbone.Model();
-    this.dataviewModel.filter.unsetRange = function () {};
-    this.dataviewModel.getUnfilteredDataModel = function () {
-      return new Backbone.Model();
-    };
-    this.dataviewModel.getData = function () {};
-    this.dataviewModel.getColumnType = function () {
-      return 'date';
-    };
+    var vis = specHelper.createDefaultVis();
+    this.dataviewModel = vis.dataviews.createHistogramModel(vis.map.layers.first(), {
+      id: 'widget_3',
+      column: 'col',
+      column_type: 'date'
+    });
 
     spyOn(HistogramChartView.prototype, 'initialize');
     spyOn(HistogramChartView.prototype, 'render').and.callFake(function () {

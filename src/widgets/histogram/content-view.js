@@ -9,6 +9,8 @@ var DropdownView = require('../dropdown/widget-dropdown-view');
 var AnimateValues = require('../animate-values.js');
 var animationTemplate = require('./animation-template.tpl');
 
+var TOOLTIP_TRIANGLE_HEIGHT = 4;
+
 /**
  * Widget content view for a histogram
  */
@@ -284,6 +286,7 @@ module.exports = cdb.core.View.extend({
   _renderMiniChart: function () {
     this.miniHistogramChartView = new HistogramChartView(({
       className: 'CDB-Chart--mini',
+      mini: true,
       margin: { top: 0, right: 4, bottom: 4, left: 4 },
       height: 40,
       showOnWidthChange: false,
@@ -332,11 +335,13 @@ module.exports = cdb.core.View.extend({
     var $tooltip = this.$('.js-tooltip');
 
     if (info && info.data) {
-      var bottom = this.defaults.chartHeight + 3 - info.top;
+      var bottom = this.defaults.chartHeight - info.top;
 
       $tooltip.css({ bottom: bottom, left: info.left });
       $tooltip.text(info.data);
-      $tooltip.css({ left: info.left - $tooltip.width() / 2 });
+      $tooltip.css({
+        left: info.left - $tooltip.width() / 2,
+        bottom: bottom + $tooltip.height() + (TOOLTIP_TRIANGLE_HEIGHT * 1.5) });
       $tooltip.fadeIn(70);
     } else {
       this._clearTooltip();

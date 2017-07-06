@@ -51,7 +51,7 @@ module.exports = cdb.core.View.extend({
 
     this._histogramView = new HistogramView({
       timeSeriesModel: this.model,
-      model: this._dataviewModel,
+      dataviewModel: this._dataviewModel,
       rangeFilter: this._dataviewModel.filter,
       displayShadowBars: !this.model.get('normalized'),
       normalized: !!this.model.get('normalized')
@@ -69,6 +69,8 @@ module.exports = cdb.core.View.extend({
     this._headerView = new TimeSeriesHeaderView({
       dataviewModel: this._dataviewModel,
       rangeFilter: this._dataviewModel.filter,
+      timeSeriesModel: this.model,
+      showClearButton: true,
       selectedAmount: this._selectedAmount
     });
 

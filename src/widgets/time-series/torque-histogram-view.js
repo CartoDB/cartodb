@@ -4,7 +4,7 @@ var TorqueTimeSliderView = require('./torque-time-slider-view');
 /**
  * Torque time-series histogram view.
  * Extends the common histogram chart view with time-control
- * this.model is a histogram model
+ * this.dataviewModel is a histogram model
  */
 module.exports = HistogramView.extend({
   className: 'CDB-Widget-content CDB-Widget-content--timeSeries',
@@ -12,8 +12,10 @@ module.exports = HistogramView.extend({
   initialize: function () {
     if (!this.options.torqueLayerModel) throw new Error('torqeLayerModel is required');
     if (!this.options.rangeFilter) throw new Error('rangeFilter is required');
+    if (!this.options.dataviewModel) throw new Error('dataviewModel is required');
 
     this._torqueLayerModel = this.options.torqueLayerModel;
+    this._dataviewModel = this.options.dataviewModel;
     HistogramView.prototype.initialize.call(this);
   },
 
@@ -30,7 +32,7 @@ module.exports = HistogramView.extend({
     HistogramView.prototype._createHistogramView.call(this);
 
     var timeSliderView = new TorqueTimeSliderView({
-      dataviewModel: this.model, // a histogram model
+      dataviewModel: this._dataviewModel, // a histogram model
       chartView: this._chartView,
       torqueLayerModel: this._torqueLayerModel
     });

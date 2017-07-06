@@ -45,6 +45,7 @@ module.exports = cdb.core.View.extend({
       el: this.$('.js-torque-header'),
       dataviewModel: this._dataviewModel,
       torqueLayerModel: this._dataviewModel.layer,
+      timeSeriesModel: this.model,
       selectedAmount: this._selectedAmount
     });
 
@@ -59,7 +60,7 @@ module.exports = cdb.core.View.extend({
 
     this._histogramView = new TorqueHistogramView({
       timeSeriesModel: this.model,
-      model: this._dataviewModel,
+      dataviewModel: this._dataviewModel,
       rangeFilter: this._dataviewModel.filter,
       torqueLayerModel: this._dataviewModel.layer,
       displayShadowBars: !this.model.get('normalized'),

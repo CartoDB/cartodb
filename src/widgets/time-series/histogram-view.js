@@ -18,9 +18,9 @@ module.exports = cdb.core.View.extend({
 
   initialize: function () {
     this._timeSeriesModel = this.options.timeSeriesModel;
+    this._dataviewModel = this.options.dataviewModel;
     this._rangeFilter = this.options.rangeFilter;
-    this._originalData = this.model.getUnfilteredDataModel();
-    this._chartType = 'time';
+    this._originalData = this._dataviewModel.getUnfilteredDataModel();
     this._initBinds();
   },
 
@@ -40,7 +40,7 @@ module.exports = cdb.core.View.extend({
   },
 
   _initBinds: function () {
-    this.model.bind('change:data', this._onChangeData, this);
+    this._dataviewModel.bind('change:data', this._onChangeData, this);
     this.listenTo(this._timeSeriesModel, 'change:normalized', this._onNormalizedChanged);
     this.listenTo(this._rangeFilter, 'change', this._onFilterChanged);
   },
@@ -58,7 +58,7 @@ module.exports = cdb.core.View.extend({
 
   _instantiateChartView: function () {
     return new HistogramChartView({
-      type: this._chartType,
+      type: this._getChartType(),
       chartBarColor: this._timeSeriesModel.getWidgetColor() || '#F2CC8F',
       animationSpeed: 100,
       margin: {
@@ -68,11 +68,14 @@ module.exports = cdb.core.View.extend({
         left: 4
       },
       hasHandles: true,
+      handleWidth: 10,
+      hasAxisTip: true,
       animationBarDelay: function (d, i) {
         return (i * 3);
       },
       height: this.defaults.histogramChartHeight,
-      data: this.model.getData(),
+      dataviewModel: this._dataviewModel,
+      data: this._dataviewModel.getData(),
       originalData: this._originalData,
       displayShadowBars: !this._timeSeriesModel.get('normalized'),
       normalized: !!this._timeSeriesModel.get('normalized'),
@@ -80,16 +83,20 @@ module.exports = cdb.core.View.extend({
     });
   },
 
+  _getChartType: function () {
+    return 'time-' + this._dataviewModel.getColumnType();
+  },
+
   _onChangeData: function () {
     if (this._chartView) {
-      this._chartView.replaceData(this.model.getData());
+      this._chartView.replaceData(this._dataviewModel.getData());
       this._chartView.updateXScale();
       this._chartView.updateYScale();
     }
   },
 
   _onBrushEnd: function (loBarIndex, hiBarIndex) {
-    var data = this.model.getData();
+    var data = this._dataviewModel.getData();
     this._rangeFilter.setRange(
       data[loBarIndex].start,
       data[hiBarIndex - 1].end

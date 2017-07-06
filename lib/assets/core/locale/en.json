@@ -1160,7 +1160,8 @@
         "empty": "No values",
         "selected": "%{count} selected",
         "all": "All",
-        "none": "None"
+        "none": "None",
+        "error": "Error fetching %{type}"
       },
       "operators": {
         "count-message": "If you select 'COUNT' all columns are selected"

@@ -755,7 +755,7 @@ module.exports = cdb.core.View.extend({
     brushg.selectAll('rect')
         .attr('y', 0)
         .attr('height', this.chartHeight());
-    
+
     // Only bind on the background element
     brushg.selectAll('rect.background')
         .on('mouseout', this._onMouseOut)

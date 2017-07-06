@@ -14,6 +14,9 @@ describe('widgets/time-series/histogram-view', function () {
       return new Backbone.Model();
     };
     this.dataviewModel.getData = function () {};
+    this.dataviewModel.getColumnType = function () {
+      return 'date';
+    };
 
     spyOn(HistogramChartView.prototype, 'initialize');
     spyOn(HistogramChartView.prototype, 'render').and.callFake(function () {
@@ -24,22 +27,16 @@ describe('widgets/time-series/histogram-view', function () {
 
     this.view = new HistogramView({
       timeSeriesModel: this.timeSeriesModel,
-      model: this.dataviewModel,
+      dataviewModel: this.dataviewModel,
       rangeFilter: this.dataviewModel.filter,
       displayShadowBars: false,
       normalized: true
     });
   });
 
-  describe('.initialize', function () {
-    it('should set type to `time` by default', function () {
-      expect(this.view._chartType).toEqual('time');
-    });
-  });
-
   describe('._initBinds', function () {
     it('should hook up events properly', function () {
-      this.view.model.off();
+      this.view._dataviewModel.off();
       this.view._chartView = {
         setNormalized: function () {},
         removeSelection: function () {}
@@ -50,7 +47,7 @@ describe('widgets/time-series/histogram-view', function () {
 
       this.view._initBinds();
 
-      this.view.model.trigger('change:data');
+      this.view._dataviewModel.trigger('change:data');
       expect(this.view._onChangeData).toHaveBeenCalled();
 
       this.view._timeSeriesModel.trigger('change:normalized');
@@ -75,14 +72,13 @@ describe('widgets/time-series/histogram-view', function () {
 
   describe('._instantiateChartView', function () {
     it('should have been called with proper values', function () {
-      this.view._chartType = 'mahou';
       this.timeSeriesModel.set('normalized', true);
 
       this.view._instantiateChartView();
 
       expect(HistogramChartView.prototype.initialize).toHaveBeenCalled();
       var args = HistogramChartView.prototype.initialize.calls.mostRecent().args[0];
-      expect(args.type).toEqual('mahou');
+      expect(args.type).toEqual('time-date');
       expect(args.displayShadowBars).toBe(false);
       expect(args.normalized).toBe(true);
     });
@@ -156,5 +152,14 @@ describe('widgets/time-series/histogram-view', function () {
       expect(this.view._timeSeriesModel.get('lo_index')).toEqual(null);
       expect(this.view._timeSeriesModel.get('hi_index')).toEqual(null);
     });
+  });
+
+  describe('._getChartType', function () {
+    it('should return time- plus the dataview column type', function () {
+      var chartType = this.view._getChartType();
+
+      expect(chartType).toEqual('time-date');
+    });
+    
   });
 });

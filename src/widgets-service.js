@@ -93,7 +93,7 @@ WidgetsService.prototype.createHistogramModel = function (attrs, layer, state, o
   var options = makeWidgetStyleOptions(attrs);
 
   widgetAttrs.type = 'histogram';
-  widgetAttrs.attrsNames = ATTRS_NAMES;
+  widgetAttrs.attrsNames = attrsNames;
 
   var widgetModel = new HistogramWidgetModel(widgetAttrs, {
     dataviewModel: dataviewModel

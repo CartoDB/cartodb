@@ -236,20 +236,38 @@ module Carto
       end
 
       def view
-        map = @visualization.map
-        center_data = map.center_data
-
-        data = {
-          zoom: map.zoom,
-          center: {
-            lng: center_data[1].to_f,
-            lat: center_data[0].to_f
+        state = @visualization.state.json
+        if state.empty?
+          # Use map info when there's no state info
+          map = @visualization.map
+          center_data = map.center_data
+          data = {
+            zoom: map.zoom,
+            center: {
+              lng: center_data[1].to_f,
+              lat: center_data[0].to_f
+            }
           }
-        }
+          bounds_data = map.view_bounds_data
+        else
+          # Use state information when present
+          center_data = state[:map][:center]
+          data = {
+            zoom: state[:map][:zoom],
+            center: {
+              lng: center_data[1],
+              lat: center_data[0]
+            }
+          }
+          bounds_data = {
+            west: state[:map][:sw][0],
+            south: state[:map][:sw][1],
+            east: state[:map][:ne][0],
+            north: state[:map][:ne][1]
+          }
+        end
 
-        bounds_data = map.view_bounds_data
-
-        # INFO: Don't return 'bounds' if all points are 0 to avoid static map trying to go too small zoom level
+        # INFO: Don't return 'bounds' if any of the points is 0 to avoid static map trying to go too small zoom level
         if bounds_data[:west] != 0 || bounds_data[:south] != 0 || bounds_data[:east] != 0 || bounds_data[:north] != 0
           data[:bounds] = bounds_data
         end

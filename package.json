@@ -37,7 +37,7 @@
     "tangram": "cartodb/tangram-1#master",
     "torque.js": "CartoDB/torque#master",
     "underscore": "1.8.3",
-    "webpack": "3.0.0"
+    "webpack": "2.3.2"
   },
   "devDependencies": {
     "autoprefixer-core": "5.2.1",

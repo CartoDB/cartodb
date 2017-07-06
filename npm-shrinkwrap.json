@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.8.19",
+  "version": "4.8.23",
   "dependencies": {
     "abbrev": {
       "version": "1.1.0",
@@ -88,9 +88,9 @@
       "resolved": "https://registry.npmjs.org/arr-diff/-/arr-diff-2.0.0.tgz"
     },
     "arr-flatten": {
-      "version": "1.0.3",
+      "version": "1.1.0",
       "from": "arr-flatten@>=1.0.1 <2.0.0",
-      "resolved": "https://registry.npmjs.org/arr-flatten/-/arr-flatten-1.0.3.tgz"
+      "resolved": "https://registry.npmjs.org/arr-flatten/-/arr-flatten-1.1.0.tgz"
     },
     "array-filter": {
       "version": "0.0.1",
@@ -715,8 +715,8 @@
     },
     "cartodb-deep-insights.js": {
       "version": "0.0.2",
-      "from": "cartodb/deep-insights.js#9956-widgets-color",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#af0281ea98af27ea3dfe1c63fbb7487cbfdc7be5",
+      "from": "cartodb/deep-insights.js#master",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#813945a073cced4ee97330fd4d467aefef0d732d",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",
@@ -732,8 +732,8 @@
     },
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
-      "from": "cartodb/cartodb.js#9956-widgets-color",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#37038f64e4b11a670b29393c6cc6eb193c7e473d"
+      "from": "cartodb/cartodb.js#v4",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#017bd70331afd36a2a426bc17ece1e4692904f65"
     },
     "caseless": {
       "version": "0.11.0",
@@ -3276,9 +3276,9 @@
       "resolved": "https://registry.npmjs.org/webpack/-/webpack-3.0.0.tgz",
       "dependencies": {
         "acorn": {
-          "version": "5.0.3",
+          "version": "5.1.1",
           "from": "acorn@>=5.0.0 <6.0.0",
-          "resolved": "https://registry.npmjs.org/acorn/-/acorn-5.0.3.tgz"
+          "resolved": "https://registry.npmjs.org/acorn/-/acorn-5.1.1.tgz"
         },
         "async": {
           "version": "2.5.0",

@@ -1,6 +1,5 @@
 var cdb = require('cartodb.js');
 var d3 = require('d3');
-var moment = require('moment');
 var template = require('./time-series-header.tpl');
 var formatter = require('../../formatter');
 var AnimateValues = require('../animate-values.js');

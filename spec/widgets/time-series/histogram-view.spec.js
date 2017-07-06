@@ -157,6 +157,5 @@ describe('widgets/time-series/histogram-view', function () {
 
       expect(chartType).toEqual('time-date');
     });
-    
   });
 });

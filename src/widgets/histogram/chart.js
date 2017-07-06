@@ -93,7 +93,7 @@ module.exports = cdb.core.View.extend({
 
     this.formatter = formatter.formatNumber;
     if (this._dataviewModel && this.options.type === 'time-date') {
-      this.formatter =  formatter.timestampFactory(this._dataviewModel.get('aggregation'));
+      this.formatter = formatter.timestampFactory(this._dataviewModel.get('aggregation'));
     }
   },
 

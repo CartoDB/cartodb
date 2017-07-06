@@ -12,7 +12,8 @@ var AutoStylerFactory = require('./auto-style/factory');
 module.exports = cdb.core.Model.extend({
   defaults: {
     attrsNames: [],
-    show_stats: false
+    show_stats: false,
+    show_source: false
   },
 
   defaultState: {

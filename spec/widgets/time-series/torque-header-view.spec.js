@@ -3,6 +3,9 @@ var TorqueHeaderView = require('../../../src/widgets/time-series/torque-header-v
 
 describe('widgets/time-series/torque-header-view', function () {
   var filterIsEmpty = true;
+  var timeSeriesModel = new Backbone.Model({
+    title: 'Morty'
+  });
 
   beforeEach(function () {
     this.dataviewModel = new Backbone.Model({
@@ -17,6 +20,7 @@ describe('widgets/time-series/torque-header-view', function () {
     this.view = new TorqueHeaderView({
       dataviewModel: this.dataviewModel,
       torqueLayerModel: this.torqueLayerModel,
+      timeSeriesModel: timeSeriesModel,
       selectedAmount: 0
     });
   });
@@ -33,13 +37,23 @@ describe('widgets/time-series/torque-header-view', function () {
       expect(this.view.$('.js-time-series-header').length).toBe(1);
     });
 
+    it('should render and update the title', function () {
+      this.view.render();
+
+      expect(this.view.$('.js-widget-title').text()).toBe('Morty');
+
+      timeSeriesModel.set('title', 'Rick');
+
+      expect(this.view.$('.js-widget-title').text()).toBe('Rick');
+    });
+
     it('should render torque controls and hide clear button if filter is empty', function () {
       this.view.render();
 
       // Torque controls rendered
       expect(this.view.$('.CDB-Widget-controlButtonContent').length).toBe(1);
       // Torque time info rendered
-      expect(this.view.$('.CDB-Widget-timeSeriesTimeInfo').length).toBe(1);
+      expect(this.view.$('.CDB-Widget-timeSeriesTimeInfo').length).toBe(2);
       // Header clear button not present
       expect(this.view.$('.js-clear').length).toBe(0);
     });
@@ -53,7 +67,7 @@ describe('widgets/time-series/torque-header-view', function () {
       // Torque controls not rendered
       expect(this.view.$('.CDB-Widget-controlButtonContent').length).toBe(0);
       // Torque time info not rendered
-      expect(this.view.$('.CDB-Widget-timeSeriesTimeInfo').length).toBe(0);
+      expect(this.view.$('.CDB-Widget-timeSeriesTimeInfo').length).toBe(1);
       // Header clear button present
       expect(this.view.$('.js-clear').length).toBe(1);
     });

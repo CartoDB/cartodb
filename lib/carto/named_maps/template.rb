@@ -237,7 +237,7 @@ module Carto
 
       def view
         state = @visualization.state.json
-        if state.empty?
+        if state.empty? || state[:map].empty? || state[:map][:center].empty?
           # Use map info when there's no state info
           map = @visualization.map
           center_data = map.center_data

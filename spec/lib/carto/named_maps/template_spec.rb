@@ -684,7 +684,9 @@ module Carto
 
         describe 'it should use the state when it is present' do
           before do
-            @visualization.state.json = {"map":{"ne":[-58.9,-143.9],"sw":[37.4,41.6],"center":[-16.2,-51.1],"zoom":4}}
+            @visualization.state.json = {
+              map: { ne: [-58.9, -143.9], sw: [37.4, 41.6], center: [-16.2, -51.1], zoom: 4 }
+            }
             @template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
           end
 
@@ -697,7 +699,7 @@ module Carto
             template_center = @template_hash[:view][:center]
             template_center[:lat].should eq -16.2
             template_center[:lng].should eq -51.1
-            expected_bounds = {west: 37.4, south: 41.6, east: -58.9, north: -143.9}
+            expected_bounds = { west: 37.4, south: 41.6, east: -58.9, north: -143.9 }
             @template_hash[:view][:bounds].should eq expected_bounds
           end
         end

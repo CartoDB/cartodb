@@ -411,4 +411,72 @@ describe('widgets/widget-model', function () {
       });
     });
   });
+
+  describe('.getWidgetColor', function () {
+    beforeEach(function () {
+      var vis = specHelper.createDefaultVis();
+      // Use a category dataview as example
+      this.dataviewModel = vis.dataviews.createCategoryModel(vis.map.layers.first(), {
+        column: 'col'
+      });
+
+      this.model = new WidgetModel(null, {
+        dataviewModel: this.dataviewModel
+      }, {autoStyleEnabled: false});
+    });
+
+    describe('when widget_color_changed is true', function () {
+      it('should return color', function () {
+        var style = {
+          widget_style: {
+            definition: {
+              color: {
+                fixed: '#fabada'
+              }
+            },
+            widget_color_changed: true
+          }
+        };
+        this.model.set('style', style);
+
+        expect(this.model.getWidgetColor()).toBe('#fabada');
+      });
+    });
+
+    describe('when widget_color_changed is false', function () {
+      it('should not return color', function () {
+        var style = {
+          widget_style: {
+            definition: {
+              color: {
+                fixed: '#9DE0AD'
+              }
+            },
+            widget_color_changed: false
+          }
+        };
+        this.model.set('style', style);
+
+        expect(this.model.getWidgetColor()).toBe(false);
+      });
+
+      describe('and widget color value has changed', function () { // this is the case for existing widgets
+        it('should return color', function () {
+          var style = {
+            widget_style: {
+              definition: {
+                color: {
+                  fixed: '#fabada',
+                  opacity: 1
+                }
+              }
+            }
+          };
+          this.model.set('style', style);
+
+          expect(this.model.getWidgetColor()).toBe('#fabada');
+        });
+      });
+    });
+  });
 });

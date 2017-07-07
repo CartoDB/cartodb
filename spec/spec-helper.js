@@ -8,7 +8,7 @@ module.exports = {
         maps_api_template: 'asd',
         user_name: 'pepe'
       },
-      layers: [{type: 'cartodb'}, {type: 'torque'}]
+      layers: [{type: 'cartodb', source: {id: 'a0'}}, {type: 'torque'}]
     });
   }
 };

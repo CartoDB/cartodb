@@ -19,8 +19,9 @@
     "Nicklas Gummesson <nicklas@cartodb.com>",
     "Pablo Alonso <pablo@cartodb.com>",
     "Antonio Santiago Pérez <asantiago@cartodb.com>",
-    "Ivan Malagon <ivan@cartodb.com>",
-    "Ruben Moya <ruben@cartodb.com>"
+    "Ivan Malagon <ivan@carto.com>",
+    "Ruben Moya <ruben@carto.com>",
+    "Carlos Matallín <matallo@carto.com>"
   ],
   "license": "BSD-3-Clause",
   "dependencies": {
@@ -31,6 +32,7 @@
     "d3-interpolate": "1.1.2",
     "jquery": "2.1.4",
     "moment": "2.18.1",
+    "node-polyglot": "^2.2.2",
     "perfect-scrollbar": "git://github.com/CartoDB/perfect-scrollbar.git#master",
     "tinycolor2": "1.4.1",
     "underscore": "1.8.3",

@@ -761,6 +761,12 @@ module.exports = cdb.core.View.extend({
         .on('mouseout', this._onMouseOut)
         .on('mousemove', this._onMouseMove);
 
+    // Prevent scroll while touching selections
+    brushg.selectAll('rect')
+      .classed('ps-prevent-touchmove', true);
+    brushg.selectAll('g')
+      .classed('ps-prevent-touchmove', true);
+
     this.brush = brush;
 
     // Make grabby handles as big as the display handles

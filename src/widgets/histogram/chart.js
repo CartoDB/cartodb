@@ -4,7 +4,6 @@ var d3 = require('d3');
 var d3Interpolate = require('d3-interpolate');
 var cdb = require('cartodb.js');
 var tinycolor = require('tinycolor2');
-var moment = require('moment');
 var formatter = require('../../formatter');
 var FILTERED_COLOR = '#1181FB';
 var UNFILTERED_COLOR = 'rgba(0, 0, 0, 0.06)';
@@ -250,7 +249,7 @@ module.exports = cdb.core.View.extend({
     var hi_index = this.model.get('hi_index');
     if ((lo_index === 0 && hi_index === 0) || (lo_index === null && hi_index === null)) {
       return;
-    }    
+    }
     this.selectRange(lo_index, hi_index);
     this._adjustBrushHandles();
     this._setAxisTipAccordingToBins();

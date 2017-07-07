@@ -31,7 +31,7 @@
     "d3": "3.5.17",
     "d3-interpolate": "1.1.2",
     "jquery": "2.1.4",
-    "moment": "2.18.1",
+    "moment": "^2.18.1",
     "node-polyglot": "^2.2.2",
     "perfect-scrollbar": "git://github.com/CartoDB/perfect-scrollbar.git#master",
     "tinycolor2": "1.4.1",

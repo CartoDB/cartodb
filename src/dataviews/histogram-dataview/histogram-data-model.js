@@ -123,6 +123,7 @@ module.exports = Model.extend({
         bin: i,
         start: startDate.clone().add(i, MOMENT_AGGREGATIONS[aggregation]).unix(),
         end: startDate.clone().add(i + 1, MOMENT_AGGREGATIONS[aggregation]).unix() - 1,
+        next: startDate.clone().add(i + 1, MOMENT_AGGREGATIONS[aggregation]).unix(),
         freq: 0
       }, buckets[i]);
     }

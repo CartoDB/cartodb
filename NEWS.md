@@ -68,6 +68,7 @@ Development
 * Change category widget color to blue when filtered. (#12409)
 * Add geometry validation for polygons and lines in edit feature form (#12397)
 * Fix permission model and added tests (#12393)
+* Country dropdown should be mandatory in postal code georeference (#12420)
 * Fixed bounds and center of thumbnails after updating a map
 
 ### NOTICE

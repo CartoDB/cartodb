@@ -317,6 +317,15 @@ module.exports = Model.extend({
     throw new Error('toJSON should be defined for each dataview');
   },
 
+  getSourceType: function () {
+    var sourceAnalysis = this.getSource();
+    return sourceAnalysis && sourceAnalysis.get('type');
+  },
+
+  getLayerName: function () {
+    return this.layer && this.layer.get('layer_name');
+  },
+
   getSource: function () {
     var sourceId = this.getSourceId();
     return sourceId && this._analysisCollection.get(sourceId);

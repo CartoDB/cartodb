@@ -26,4 +26,6 @@ cdb.ui.common = {};
 
 cdb.vis = {};
 
+cdb.helpers = {};
+
 module.exports = cdb;

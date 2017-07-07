@@ -27,10 +27,10 @@ module.exports = Model.extend({
 
   url: function () {
     var params = [];
-    if (this.get('column_type') === 'number' && this.get('bins')) {
-      params.push('bins=' + this.get('bins'));
-    } else if (this.get('column_type') === 'date' && this.get('aggregation')) {
+    if (this.get('column_type') === 'date' && this.get('aggregation')) {
       params.push('aggregation=' + this.get('aggregation'));
+    } else if (this.get('bins')) {
+      params.push('bins=' + this.get('bins'));
     }
     if (this.get('apiKey')) {
       params.push('api_key=' + this.get('apiKey'));

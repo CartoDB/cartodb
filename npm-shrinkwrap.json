@@ -100,9 +100,9 @@
       "resolved": "https://registry.npmjs.org/arr-diff/-/arr-diff-2.0.0.tgz"
     },
     "arr-flatten": {
-      "version": "1.0.3",
+      "version": "1.1.0",
       "from": "arr-flatten@>=1.0.1 <2.0.0",
-      "resolved": "https://registry.npmjs.org/arr-flatten/-/arr-flatten-1.0.3.tgz"
+      "resolved": "https://registry.npmjs.org/arr-flatten/-/arr-flatten-1.1.0.tgz"
     },
     "array-filter": {
       "version": "0.0.1",
@@ -428,9 +428,9 @@
       "resolved": "https://registry.npmjs.org/babel-plugin-transform-strict-mode/-/babel-plugin-transform-strict-mode-6.24.1.tgz"
     },
     "babel-preset-env": {
-      "version": "1.5.2",
+      "version": "1.6.0",
       "from": "babel-preset-env@>=1.4.0 <2.0.0",
-      "resolved": "https://registry.npmjs.org/babel-preset-env/-/babel-preset-env-1.5.2.tgz"
+      "resolved": "https://registry.npmjs.org/babel-preset-env/-/babel-preset-env-1.6.0.tgz"
     },
     "babel-runtime": {
       "version": "6.23.0",
@@ -716,9 +716,9 @@
       "resolved": "https://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.32.0.tgz"
     },
     "caniuse-lite": {
-      "version": "1.0.30000696",
+      "version": "1.0.30000697",
       "from": "caniuse-lite@>=1.0.30000684 <2.0.0",
-      "resolved": "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30000696.tgz"
+      "resolved": "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30000697.tgz"
     },
     "carto": {
       "version": "0.15.1-cdb4",
@@ -733,7 +733,7 @@
     "cartodb-deep-insights.js": {
       "version": "0.0.2-c12324",
       "from": "cartodb/deep-insights.js#c12324-time-series-aggregations",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#47e940261cac43fd5e56bd63e4c898294e92aaf2"
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#2608a131928123f756e5231c488f046b26dd44dd"
     },
     "cartodb-pecan": {
       "version": "0.2.0",
@@ -743,7 +743,7 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
       "from": "cartodb/cartodb.js#c12324-time-series-aggregations",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#1395a2edd8133e19a98ba03925149065b437f925"
+      "resolved": "git://github.com/cartodb/cartodb.js.git#dc8ecbc8ae737c930564cbc72e1541aebc388b22"
     },
     "caseless": {
       "version": "0.11.0",

@@ -680,75 +680,222 @@ describe Carto::Api::VisualizationsController do
       body['visualizations'][0]['id'].should eq u1_t_1_id
     end
 
-    describe 'tests visualization likes endpoints' do
-      # TODO: currently new endpoint doesn't match this endpoint
-
-      it 'tests like endpoints' do
-        bypass_named_maps
-
-        vis_1_id = create_visualization(@user_1).id
-
-        get api_v1_visualizations_likes_count_url(user_domain: @user_1.username, id: vis_1_id, api_key: @user_1.api_key)
-        JSON.parse(last_response.body).fetch('likes').to_i.should eq 0
-
-        get api_v1_visualizations_likes_list_url(user_domain: @user_1.username, id: vis_1_id, api_key: @user_1.api_key)
-        JSON.parse(last_response.body).fetch('likes').should eq []
-
-        get api_v1_visualizations_is_liked_url(user_domain: @user_1.username, id: vis_1_id, api_key: @user_1.api_key)
-
-        post api_v1_visualizations_add_like_url(user_domain: @user_1.username, id: vis_1_id, api_key: @user_1.api_key)
-        last_response.status.should == 200
-        JSON.parse(last_response.body).fetch('likes').to_i.should eq 1
-
-        get api_v1_visualizations_is_liked_url(user_domain: @user_1.username, id: vis_1_id, api_key: @user_1.api_key)
-        JSON.parse(last_response.body).fetch('liked').should eq true
-
-        get api_v1_visualizations_likes_count_url(user_domain: @user_1.username, id: vis_1_id, api_key: @user_1.api_key)
-        JSON.parse(last_response.body).fetch('likes').to_i.should eq 1
-
-        get api_v1_visualizations_likes_list_url(user_domain: @user_1.username, id: vis_1_id, api_key: @user_1.api_key)
-        JSON.parse(last_response.body).fetch('likes').should eq [{'actor_id' => @user_1.id}]
-
-        post api_v1_visualizations_add_like_url(user_domain: @user_2.username, id: vis_1_id, api_key: @user_2.api_key)
-        last_response.status.should == 200
-        JSON.parse(last_response.body).fetch('likes').to_i.should eq 2
-
-        get api_v1_visualizations_likes_list_url(user_domain: @user_1.username, id: vis_1_id, api_key: @user_1.api_key)
-        # Careful with order of array items
-        (JSON.parse(last_response.body).fetch('likes') - [
-                                                           {'actor_id' => @user_1.id},
-                                                           {'actor_id' => @user_2.id}
-                                                         ]).should eq []
-
-        delete api_v1_visualizations_remove_like_url(user_domain: @user_2.username, id: vis_1_id, api_key: @user_2.api_key)
-        last_response.status.should == 200
-        JSON.parse(last_response.body).fetch('likes').to_i.should eq 1
-
-        # No effect expected
-        delete api_v1_visualizations_remove_like_url(user_domain: @user_2.username, id: vis_1_id, api_key: @user_2.api_key)
-        last_response.status.should == 200
-        JSON.parse(last_response.body).fetch('likes').to_i.should eq 1
-
-        post api_v1_visualizations_add_like_url(user_domain: @user_1.username, id: vis_1_id, api_key: @user_1.api_key)
-        last_response.status.should == 400
-        last_response.body.should eq "You've already liked this visualization"
-
-        delete api_v1_visualizations_remove_like_url(user_domain: @user_1.username, id: vis_1_id, api_key: @user_1.api_key)
-        last_response.status.should == 200
-        JSON.parse(last_response.body).fetch('likes').to_i.should eq 0
-
-        post api_v1_visualizations_add_like_url(user_domain: @user_1.username, id: vis_1_id, api_key: @user_1.api_key)
-        last_response.status.should == 200
-        JSON.parse(last_response.body).fetch('likes').to_i.should eq 1
-
-        get api_v1_visualizations_likes_list_url(user_domain: @user_1.username, id: vis_1_id, api_key: @user_1.api_key)
-        JSON.parse(last_response.body).fetch('likes').should eq [{'actor_id' => @user_1.id}]
+    context 'visualization likes endpoints' do
+      before(:each) do
+        @map, @table, @table_visualization, @map_visualization = create_full_visualization(@carto_user1, visualization_attributes: { version: nil, privacy: Carto::Visualization::PRIVACY_PUBLIC })
+        @vis = FactoryGirl.create(:carto_visualization, user: @carto_user1)
+        @user_domain = @carto_user1.username
+        @user_domain2 = @carto_user2.username
       end
 
+      after(:each) do
+        destroy_full_visualization(@map, @table, @table_visualization, @map_visualization)
+      end
+
+      describe 'GET likes_count' do
+        it 'returns the number of likes for a given visualization' do
+          get api_v1_visualizations_likes_count_url(user_domain: @user_domain, id: @vis.id, api_key: @carto_user1.api_key)
+
+          expect(last_response.status).to eq(200)
+          expect(JSON.parse(last_response.body).fetch('likes').to_i).to eq(0)
+
+          @vis.add_like_from(@carto_user1.id)
+
+          get api_v1_visualizations_likes_count_url(user_domain: @user_domain, id: @vis.id, api_key: @carto_user1.api_key)
+
+          expect(last_response.status).to eq(200)
+          expect(JSON.parse(last_response.body).fetch('likes').to_i).to eq(1)
+        end
+      end
+
+      describe 'GET likes_list' do
+        it 'returns the likes for a given visualization' do
+          get api_v1_visualizations_likes_list_url(user_domain: @user_domain, id: @vis.id, api_key: @carto_user1.api_key)
+
+          expect(last_response.status).to eq(200)
+          expect(JSON.parse(last_response.body).fetch('likes')).to eq([])
+
+          @vis.add_like_from(@carto_user1.id)
+
+          get api_v1_visualizations_likes_list_url(user_domain: @user_domain, id: @vis.id, api_key: @carto_user1.api_key)
+
+          expect(last_response.status).to eq(200)
+          expect(JSON.parse(last_response.body).fetch('likes')).to eq([{'actor_id' => @user_1.id}])
+
+          @vis.add_like_from(@carto_user2.id)
+          @vis.remove_like_from(@carto_user1.id)
+
+          get api_v1_visualizations_likes_list_url(user_domain: @user_domain, id: @vis.id, api_key: @carto_user1.api_key)
+
+          expect(last_response.status).to eq(200)
+          expect(JSON.parse(last_response.body).fetch('likes')).to eq([{'actor_id' => @carto_user2.id}])
+        end
+      end
+
+      describe 'GET is_liked' do
+        it 'return true when a given user liked a visualization, false otherwise' do
+          @vis.add_like_from(@user_1.id)
+
+          get api_v1_visualizations_is_liked_url(user_domain: @user_domain, id: @vis.id, api_key: @carto_user1.api_key)
+
+          expect(last_response.status).to eq(200)
+          expect(JSON.parse(last_response.body).fetch('liked')).to be_true
+
+          get api_v1_visualizations_is_liked_url(user_domain: @user_domain, id: @vis.id, api_key: @carto_user2.api_key)
+
+          expect(last_response.status).to eq(200)
+          expect(JSON.parse(last_response.body).fetch('liked')).to be_false
+        end
+      end
+
+      describe 'POST add_like' do
+        it 'triggers error 403 if not authenticated' do
+          post api_v1_visualizations_add_like_url(user_domain: @user_domain, id: @vis.id, api_key: 'foo')
+          expect(last_response.status).to eq(403)
+        end
+
+        it 'add likes to a given visualization' do
+          post api_v1_visualizations_add_like_url(user_domain: @user_domain, id: @vis.id, api_key: @carto_user1.api_key)
+
+          expect(last_response.status).to eq(200)
+
+          post api_v1_visualizations_add_like_url(user_domain: @user_domain2, id: @vis.id, api_key: @carto_user2.api_key)
+
+          expect(last_response.status).to eq(200)
+        end
+
+        it 'returns an error if you try to like twice a visualization' do
+          post api_v1_visualizations_add_like_url(user_domain: @user_domain, id: @vis.id, api_key: @carto_user1.api_key)
+
+          expect(last_response.status).to eq(200)
+
+          post api_v1_visualizations_add_like_url(user_domain: @user_domain, id: @vis.id, api_key: @carto_user1.api_key)
+
+          expect(last_response.status).to eq(400)
+          expect(last_response.body).to eq("You've already liked this visualization")
+        end
+
+        it 'sends an email to the owner when a map is liked' do
+          vis = @map_visualization
+
+          Resque.expects(:enqueue)
+                .with(::Resque::UserJobs::Mail::MapLiked, vis.id, @carto_user2.id, kind_of(String))
+                .returns(true)
+
+          post api_v1_visualizations_add_like_url(user_domain: @user_domain2, id: vis.id, api_key: @carto_user2.api_key)
+
+          expect(last_response.status).to eq(200)
+        end
+
+        it 'does not send an email when a map is liked by the owner' do
+          vis = @map_visualization
+
+          Resque.expects(:enqueue)
+                .with(::Resque::UserJobs::Mail::MapLiked, vis.id, @carto_user2.id, kind_of(String))
+                .never
+
+          post api_v1_visualizations_add_like_url(user_domain: @user_domain, id: vis.id, api_key: @carto_user1.api_key)
+
+          expect(last_response.status).to eq(200)
+        end
+
+        it 'sends an email to the owner when a dataset is liked' do
+          vis = @table_visualization
+
+          post api_v1_visualizations_add_like_url(user_domain: @user_domain2, id: vis.id, api_key: @carto_user2.api_key)
+
+          expect(last_response.status).to eq(200)
+        end
+
+        it 'does not send an email when when a dataset is liked by the owner' do
+          vis = @table_visualization
+
+          Resque.expects(:enqueue)
+                .with(::Resque::UserJobs::Mail::TableLiked, vis.id, @carto_user1.id, kind_of(String))
+                .never
+
+          post api_v1_visualizations_add_like_url(user_domain: @user_domain, id: vis.id, api_key: @carto_user1.api_key)
+
+          expect(last_response.status).to eq(200)
+        end
+      end
+
+      describe 'POST remove_like' do
+        it 'triggers error 403 if not authenticated' do
+          post api_v1_visualizations_add_like_url(user_domain: @user_domain, id: @vis.id, api_key: 'foo')
+          expect(last_response.status).to eq(403)
+        end
+
+        it 'removes a like from a given visualization and returns the number of likes' do
+          @vis.add_like_from(@carto_user1.id)
+          @vis.add_like_from(@carto_user2.id)
+
+          delete api_v1_visualizations_remove_like_url(user_domain: @user_domain, id: @vis.id, api_key: @carto_user1.api_key)
+
+          expect(last_response.status).to eq(200)
+          expect(JSON.parse(last_response.body).fetch('likes').to_i).to eq(1)
+
+          delete api_v1_visualizations_remove_like_url(user_domain: @user_domain2, id: @vis.id, api_key: @carto_user2.api_key)
+
+          expect(last_response.status).to eq(200)
+          expect(JSON.parse(last_response.body).fetch('likes').to_i).to eq(0)
+        end
+
+        it 'does not returns error if you try to remove a non-existent like' do
+          delete api_v1_visualizations_remove_like_url(user_domain: @user_domain, id: @vis.id, api_key: @carto_user1.api_key)
+
+          expect(last_response.status).to eq(200)
+          expect(JSON.parse(last_response.body).fetch('likes').to_i).to eq(0)
+        end
+      end
     end
+
 
     describe 'tests visualization likes endpoints in organizations' do
       include_context 'organization with users helper'
+
+      describe 'PUT notify_watching' do
+        it 'adds the user to the watching list' do
+          vis = FactoryGirl.create(:carto_visualization, user: @carto_org_user_1)
+          user_domain = @carto_org_user_1.username
+
+          put api_v1_visualizations_notify_watching_url(user_domain: user_domain, id: vis.id, api_key: @carto_org_user_1.api_key)
+          expect(last_response.status).to eq(200)
+          expect(JSON.parse(last_response.body)).to eq([@carto_org_user_1.username])
+        end
+
+        it 'returns 403 if user does not have read permissions on the visualization' do
+          private_vis = FactoryGirl.create(:carto_visualization, user: @carto_org_user_1, privacy: Carto::Visualization::PRIVACY_PRIVATE)
+
+          put api_v1_visualizations_notify_watching_url(user_domain: @carto_org_user_2.username, id: private_vis.id, api_key: @carto_org_user_2.api_key)
+          expect(last_response.status).to eq(403)
+        end
+      end
+
+      describe 'GET list_watching' do
+        it 'returns the users currently on the watching list' do
+          vis = FactoryGirl.create(:carto_visualization, user: @carto_org_user_1)
+          user_domain = @carto_org_user_1.username
+
+          get api_v1_visualizations_notify_watching_url(user_domain: user_domain, id: vis.id, api_key: @carto_org_user_1.api_key)
+          expect(last_response.status).to eq(200)
+          expect(JSON.parse(last_response.body)).to eq([])
+
+          put api_v1_visualizations_notify_watching_url(user_domain: user_domain, id: vis.id, api_key: @carto_org_user_1.api_key)
+          expect(last_response.status).to eq(200)
+
+          get api_v1_visualizations_notify_watching_url(user_domain: user_domain, id: vis.id, api_key: @carto_org_user_1.api_key)
+          expect(last_response.status).to eq(200)
+          expect(JSON.parse(last_response.body)).to eq([@carto_org_user_1.username])
+        end
+
+        it 'returns 403 if user does not have read permissions on the visualization' do
+          private_vis = FactoryGirl.create(:carto_visualization, user: @carto_org_user_1, privacy: Carto::Visualization::PRIVACY_PRIVATE)
+
+          get api_v1_visualizations_notify_watching_url(user_domain: @carto_org_user_2.username, id: private_vis.id, api_key: @carto_org_user_2.api_key)
+          expect(last_response.status).to eq(403)
+        end
+      end
 
       it 'tests totals calculations' do
         bypass_named_maps
@@ -1593,7 +1740,6 @@ describe Carto::Api::VisualizationsController do
     end
 
     describe '/api/v1/viz/:id/watching' do
-
       before(:all) do
         @user_1_1 = create_test_user
         @user_1_2 = create_test_user
@@ -1609,7 +1755,7 @@ describe Carto::Api::VisualizationsController do
       end
 
       it 'returns an empty array if no other user is watching' do
-        CartoDB::Visualization::Watcher.any_instance.stubs(:list).returns([])
+        Carto::Visualization::Watcher.any_instance.stubs(:list).returns([])
 
         bypass_named_maps
 
@@ -1620,7 +1766,8 @@ describe Carto::Api::VisualizationsController do
         login(@user_1_1)
         get api_v1_visualizations_notify_watching_url(id: id, api_key: @user_1_1.api_key)
         body = JSON.parse(last_response.body)
-        body.should == []
+
+        expect(body).to eq([])
       end
     end
 

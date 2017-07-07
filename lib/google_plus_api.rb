@@ -1,8 +1,10 @@
 require_dependency 'google_plus_api_user_data'
 require_dependency 'google_plus_config'
 require_relative 'carto/http/client'
+require_dependency 'carto/email_cleaner'
 
 class GooglePlusAPI
+  include Carto::EmailCleaner
 
   def get_user_data(access_token)
     response = request_user_data(access_token)
@@ -21,7 +23,7 @@ class GooglePlusAPI
   def get_user(access_token)
     google_user_data = GooglePlusAPI.new.get_user_data(access_token)
     # INFO: we assume if a user is queried at a CartoDB instance, user is local
-    google_user_data.present? ? ::User.where(email: google_user_data.email).first : false
+    google_user_data.present? ? ::User.where(email: clean_email(google_user_data.email)).first : false
   end
 
   def request_user_data(access_token)
@@ -35,5 +37,3 @@ class GooglePlusAPI
   end
 
 end
-
-

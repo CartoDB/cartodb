@@ -3,6 +3,7 @@ const {resolve} = require('path');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const PACKAGE = require('./package.json');
 const version = PACKAGE.version;
+var DashboardPlugin = require('webpack-dashboard/plugin');
 
 const stats = (env) => {
   return env && env.stats;
@@ -72,6 +73,9 @@ module.exports = env => {
       new webpack.DefinePlugin({
         __IN_DEV__: JSON.stringify(true)
       })
+    ])
+    .concat([
+      new DashboardPlugin({ port: 1987 })
     ])
     .filter(p => !!p), // undefined is not a valid plugin, so filter undefined values here
     module: {

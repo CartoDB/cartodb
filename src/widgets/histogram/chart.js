@@ -4,6 +4,7 @@ var d3 = require('d3');
 var d3Interpolate = require('d3-interpolate');
 var cdb = require('cartodb.js');
 var tinycolor = require('tinycolor2');
+var moment = require('moment');
 var formatter = require('../../formatter');
 var FILTERED_COLOR = '#1181FB';
 var UNFILTERED_COLOR = 'rgba(0, 0, 0, 0.06)';
@@ -53,6 +54,7 @@ module.exports = cdb.core.View.extend({
     this._originalData = this.options.originalData;
 
     if (!_.isNumber(this.options.height)) throw new Error('height is required');
+    if (!this.options.dataviewModel) throw new Error('dataviewModel is required');
 
     _.bindAll(this, '_selectBars', '_adjustBrushHandles', '_onBrushMove', '_onBrushStart', '_onMouseMove', '_onMouseOut');
 
@@ -92,8 +94,9 @@ module.exports = cdb.core.View.extend({
     this.hide(); // will be toggled on width change
 
     this.formatter = formatter.formatNumber;
-    if (this._dataviewModel && this.options.type === 'time-date') {
+    if (this._isDateTimeSeries()) {
       this.formatter = formatter.timestampFactory(this._dataviewModel.get('aggregation'));
+      this.options.divisionWidth = 120;
     }
   },
 
@@ -246,9 +249,10 @@ module.exports = cdb.core.View.extend({
     var hi_index = this.model.get('hi_index');
     if ((lo_index === 0 && hi_index === 0) || (lo_index === null && hi_index === null)) {
       return;
-    }
+    }    
     this.selectRange(lo_index, hi_index);
     this._adjustBrushHandles();
+    this._setAxisTipAccordingToBins();
     this._selectBars();
     this.trigger('on_brush_end', lo_index, hi_index);
   },
@@ -289,7 +293,7 @@ module.exports = cdb.core.View.extend({
     this.reset();
   },
 
-  _onChangShowLabels: function () {
+  _onChangeShowLabels: function () {
     this._axis.style('opacity', this.model.get('showLabels') ? 1 : 0);
   },
 
@@ -336,6 +340,21 @@ module.exports = cdb.core.View.extend({
   _updateAxisTipOpacity: function (className) {
     if (this.model.get('dragging')) {
       this._showAxisTip(className);
+    }
+  },
+
+  _setAxisTipAccordingToBins: function () {
+    var left = this._getTimestampFromBinIndex(this._getLoBarIndex());
+    var right = this._getTimestampFromBinIndex(this._getHiBarIndex());
+    this._setAxisTip(left, right);
+  },
+
+  _setAxisTip: function (left, right) {
+    if (this.options.hasAxisTip) {
+      this.model.set({
+        left_axis_tip: left,
+        right_axis_tip: right
+      });
     }
   },
 
@@ -471,7 +490,7 @@ module.exports = cdb.core.View.extend({
   _generateLines: function () {
     this._generateHorizontalLines();
 
-    if (this.options.type !== 'time') {
+    if (!this._isTimeSeries()) {
       this._generateVerticalLines();
     }
   },
@@ -556,7 +575,7 @@ module.exports = cdb.core.View.extend({
     this.listenTo(this.model, 'change:lo_index change:hi_index', this._onChangeRange);
     this.listenTo(this.model, 'change:pos', this._onChangePos);
     this.listenTo(this.model, 'change:right_axis_tip', this._onChangeRightAxisTip);
-    this.listenTo(this.model, 'change:showLabels', this._onChangShowLabels);
+    this.listenTo(this.model, 'change:showLabels', this._onChangeShowLabels);
     this.listenTo(this.model, 'change:show_shadow_bars', this._onChangeShowShadowBars);
     this.listenTo(this.model, 'change:width', this._onChangeWidth);
     this.listenTo(this.model, 'change:normalized', this._onChangeNormalized);
@@ -640,17 +659,24 @@ module.exports = cdb.core.View.extend({
       return;
     }
 
-    if (this.options.type === 'time') {
-      this.xAxisScale = d3.time.scale().domain([data[0].start * 1000, data[data.length - 1].end * 1000]).range([0, this.chartWidth()]);
-    } else {
-      this.xAxisScale = d3.scale.linear().range([data[0].start, data[data.length - 1].end]).domain([0, this.chartWidth()]);
-    }
+    var start = data[0].start;
+    var end = data[data.length - 1].end;
+
+    this.xAxisScale = d3.scale.linear().range([start, end]).domain([0, this.chartWidth()]);
   },
 
   _setupRanges: function () {
-    var n = Math.round(this.chartWidth() / this.options.divisionWidth);
+    var n = this._calculateRangeDivisions();
     this.verticalRange = d3.range(0, this.chartWidth() + this.chartWidth() / n, this.chartWidth() / n);
     this.horizontalRange = d3.range(0, this.chartHeight() + this.chartHeight() / 2, this.chartHeight() / 2);
+  },
+
+  _calculateRangeDivisions: function () {
+    var divisionWidth = this.options.divisionWidth;
+    if (this._isDateTimeSeries() && this.model.get('data').length > 0) {
+      divisionWidth = Math.max(Math.round(this.chartWidth() / this.model.get('data').length), this.options.divisionWidth);
+    }
+    return Math.round(this.chartWidth() / divisionWidth);
   },
 
   _calcBarWidth: function () {
@@ -847,7 +873,6 @@ module.exports = cdb.core.View.extend({
 
         self.model.set({ lo_index: barIndex, hi_index: barIndex + 1 });
       }
-
       self._setupFillColor();
       self._refreshBarsColor();
     }
@@ -888,19 +913,7 @@ module.exports = cdb.core.View.extend({
     this.chart.select('.CDB-Chart-handle-right')
       .attr('transform', 'translate(' + rightX + ', 0)');
 
-    if (this.options.hasAxisTip) {
-      if (this.options.type === 'time') {
-        this.model.set({
-          left_axis_tip: this.xAxisScale.invert(leftX + this.options.handleWidth / 2),
-          right_axis_tip: this.xAxisScale.invert(rightX + this.options.handleWidth / 2)
-        });
-      } else {
-        this.model.set({
-          left_axis_tip: this.xAxisScale(leftX + this.options.handleWidth / 2),
-          right_axis_tip: this.xAxisScale(rightX + this.options.handleWidth / 2)
-        });
-      }
-    }
+    this._setAxisTipAccordingToBins();
   },
 
   _generateAxisTip: function (className) {
@@ -1010,16 +1023,15 @@ module.exports = cdb.core.View.extend({
   },
 
   _generateAxis: function () {
-    this._axis = this.options.type === 'time'
-      ? this._generateTimeAxis()
-      : this._generateNumericAxis();
+    this._axis = this._generateNumericAxis();
 
-    this._onChangShowLabels();
+    this._onChangeShowLabels();
   },
 
   _generateNumericAxis: function () {
     var self = this;
     var adjustTextAnchor = this._generateAdjustAnchorMethod(this.verticalRange);
+    var index = 0;
 
     var axis = this.chart.append('g')
       .attr('class', 'CDB-Chart-axis CDB-Text CDB-Size-small');
@@ -1033,31 +1045,17 @@ module.exports = cdb.core.View.extend({
       .attr('y', function (d) { return self.chartHeight() + 15; })
       .attr('text-anchor', adjustTextAnchor)
       .text(function (d) {
+        var value;
         if (self.xAxisScale) {
-          return formatter.formatNumber(self.xAxisScale(d));
+          if (self._isDateTimeSeries() && self.verticalRange.length === self.model.get('data').length + 1) {
+            value = self._getTimestampFromBinIndex(index);
+          } else {
+            value = self.xAxisScale(d);
+          }
+          index++;
+          return self.formatter(value);
         }
       });
-
-    return axis;
-  },
-
-  _generateTimeAxis: function () {
-    var adjustTextAnchor = this._generateAdjustAnchorMethod(this.xAxisScale.ticks());
-
-    var xAxis = d3.svg.axis()
-      .orient('bottom')
-      .tickPadding(5)
-      .innerTickSize(-this.chartHeight())
-      .scale(this.xAxisScale)
-      .orient('bottom');
-
-    var axis = this.canvas.append('g')
-      .attr('class', 'CDB-Chart-axis CDB-Text CDB-Size-small')
-      .attr('transform', 'translate(0,' + (this.chartHeight() + 5) + ')')
-      .call(xAxis);
-
-    axis.selectAll('text').style('text-anchor', adjustTextAnchor);
-    axis.moveToBack();
 
     return axis;
   },
@@ -1073,13 +1071,43 @@ module.exports = cdb.core.View.extend({
   },
 
   _getMaxValueFromBinIndex: function (binIndex) {
+    var result = null;
     var data = this.model.get('data');
     var dataBin = data[binIndex];
     if (dataBin) {
-      return dataBin.min != null ? dataBin.max : dataBin.end;
-    } else {
+      if (this._isDateTimeSeries() && !_.isUndefined(dataBin.next)) {
+        result = dataBin.next;
+      } else {
+        result = dataBin.min != null ? dataBin.max : dataBin.end;
+      }
+    }
+
+    return result;
+  },
+
+  _getTimestampFromBinIndex: function (index) {
+    if (!_.isNumber(index)) {
       return null;
     }
+    var result = null;
+    var fromStart = true;
+    var data = this.model.get('data');
+    if (index >= data.length) {
+      index = data.length - 1;
+      fromStart = false;
+    }
+    var dataBin = data[index];
+    if (dataBin) {
+      result = fromStart ? dataBin.start : dataBin.next;
+    }
+
+    return result;
+  },
+
+  _getIndexFromValue: function (value) {
+    return _.findIndex(this.model.get('data'), function (bin) {
+      return bin.start <= value && value <= bin.end;
+    });
   },
 
   // Calculates the domain ([ min, max ]) of the selected data. If there is no selection ongoing,
@@ -1437,6 +1465,14 @@ module.exports = cdb.core.View.extend({
 
   _hasFilterApplied: function () {
     return this.model.get('lo_index') != null && this.model.get('hi_index') != null;
+  },
+
+  _isTimeSeries: function () {
+    return this.options.type.indexOf('time') === 0;
+  },
+
+  _isDateTimeSeries: function () {
+    return this.options.type === 'time-date';
   },
 
   unsetBounds: function () {

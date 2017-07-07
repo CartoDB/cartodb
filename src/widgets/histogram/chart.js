@@ -55,6 +55,7 @@ module.exports = cdb.core.View.extend({
 
     if (!_.isNumber(this.options.height)) throw new Error('height is required');
     if (!this.options.dataviewModel) throw new Error('dataviewModel is required');
+    if (!this.options.type) throw new Error('type is required');
 
     _.bindAll(this, '_selectBars', '_adjustBrushHandles', '_onBrushMove', '_onBrushStart', '_onMouseMove', '_onMouseOut');
 

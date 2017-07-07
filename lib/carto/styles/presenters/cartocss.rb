@@ -26,7 +26,18 @@ module Carto
         end
 
         def format_cartocss_property(cartocss_property)
-          "  #{cartocss_property}"
+          case cartocss_property.class.to_s
+            when 'String'
+              "  #{cartocss_property}"
+            when 'Hash'
+              formatted_cartocss_property = cartocss_property.keys.map do |key|
+                "  #{key} {\n"\
+                "#{cartocss_property[key].map {|v| "    #{v}"}.join("\n")}\n"\
+                "  }"
+              end
+
+              formatted_cartocss_property.join("\n")
+          end
         end
       end
     end

@@ -1150,9 +1150,16 @@ describe User do
   it "should remove its metadata from redis after deletion" do
     doomed_user = create_user :email => 'doomed@example.com', :username => 'doomed', :password => 'doomed123'
     $users_metadata.HGET(doomed_user.key, 'id').should == doomed_user.id.to_s
+    $users_metadata.HGET(doomed_user.timeout_key, 'db').should_not be_nil
+    $users_metadata.HGET(doomed_user.timeout_key, 'db_public').should_not be_nil
     key = doomed_user.key
+    timeout_key = doomed_user.timeout_key
     doomed_user.destroy
-    $users_metadata.HGET(doomed_user.key, 'id').should be_nil
+    $users_metadata.HGET(key, 'id').should be_nil
+    $users_metadata.HGET(timeout_key, 'db').should be_nil
+    $users_metadata.HGET(timeout_key, 'db_public').should be_nil
+    $users_metadata.HGET(timeout_key, 'render').should be_nil
+    $users_metadata.HGET(timeout_key, 'render_public').should be_nil
   end
 
   it "should remove its database and database user after deletion" do

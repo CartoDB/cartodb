@@ -480,7 +480,10 @@ class User < Sequel::Model
     end
 
     # Remove metadata from redis last (to avoid cutting off access to SQL API if db deletion fails)
-    $users_metadata.DEL(key) unless error_happened
+    unless error_happened
+      $users_metadata.DEL(key)
+      $users_metadata.DEL(timeout_key)
+    end
 
     feature_flags_user.each(&:delete)
   end

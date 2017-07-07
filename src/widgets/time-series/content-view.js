@@ -22,7 +22,7 @@ module.exports = cdb.core.View.extend({
     this.clearSubViews();
     this.$el.empty();
 
-    if (this._isDataEmpty()) {
+    if (this._isDataEmpty() || this._hasError()) {
       this.$el.append(placeholderTemplate({
         hasTorqueLayer: false
       }));
@@ -164,5 +164,9 @@ module.exports = cdb.core.View.extend({
   _isDataEmpty: function () {
     var data = this._dataviewModel.getData();
     return _.isEmpty(data) || _.size(data) === 0;
+  },
+
+  _hasError: function () {
+    return this._dataviewModel.has('error');
   }
 });

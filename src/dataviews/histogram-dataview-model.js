@@ -30,7 +30,7 @@ module.exports = DataviewModelBase.extend({
       if (this.get('column_type') === 'number' && this.get('bins')) {
         params.push('bins=' + this.get('bins'));
       } else if (this.get('column_type') === 'date' && this.get('aggregation')) {
-        params.push('aggregation=' + this.get('aggregation'));        
+        params.push('aggregation=' + this.get('aggregation'));
       }
     }
     return params;
@@ -106,40 +106,50 @@ module.exports = DataviewModelBase.extend({
   },
 
   parse: function (data) {
+    var aggregation = data.aggregation;
     var numberOfBins = data.bins_count;
-    var width = data.bin_width;
     var start = data.bins_start;
-    var buckets = new Array(numberOfBins);
+    var width = data.bin_width;
 
-    _.each(data.bins, function (b) {
-      buckets[b.bin] = b;
+    var parsedData = {
+      data: [],
+      filteredAmount: 0,
+      nulls: 0,
+      totalAmount: 0
+    };
+
+    if (this.has('error')) {
+      return parsedData;
+    }
+
+    parsedData.data = new Array(numberOfBins);
+
+    _.each(data.bins, function (bin) {
+      parsedData.data[bin.bin] = bin;
     });
 
-    this.set('aggregation', data.aggregation, { silent: true });
+    this.set('aggregation', aggregation, { silent: true });
+
     if (this.get('column_type') === 'date') {
-      this._originalData.fillTimestampBuckets(buckets, start, data.aggregation, numberOfBins)
+      this._originalData.fillTimestampBuckets(parsedData.data, start, aggregation, numberOfBins)
     } else {
-      this._originalData.fillNumericBuckets(buckets, start, width, numberOfBins);
+      this._originalData.fillNumericBuckets(parsedData.data, start, width, numberOfBins);
     }
 
     // FIXME - Update the end of last bin due https://github.com/CartoDB/cartodb.js/issues/926
-    var lastBucket = buckets[numberOfBins - 1];
+    var lastBucket = parsedData.data[numberOfBins - 1];
     if (lastBucket && lastBucket.end < lastBucket.max) {
       lastBucket.end = lastBucket.max;
     }
 
-    this._data.reset(buckets);
+    this._data.reset(parsedData.data);
 
     // Calculate totals
-    var totalAmount = this._calculateTotalAmount(buckets);
-    var filteredAmount = this._calculateFilteredAmount(this.filter, this._data);
+    parsedData.totalAmount = this._calculateTotalAmount(parsedData.data);
+    parsedData.filteredAmount = this._calculateFilteredAmount(this.filter, this._data);
+    parsedData.nulls = data.nulls;
 
-    return {
-      data: buckets,
-      nulls: data.nulls,
-      totalAmount: totalAmount,
-      filteredAmount: filteredAmount
-    };
+    return parsedData;
   },
 
   _onFilterChanged: function (filter) {
@@ -269,9 +279,10 @@ module.exports = DataviewModelBase.extend({
   _onDataChanged: function (model) {
     this.set({
       aggregation: model.get('aggregation'),
-      start: model.get('start'),
+      bins: model.get('bins'),
       end: model.get('end'),
-      bins: model.get('bins')
+      error: model.get('error'),
+      start: model.get('start')
     }, { silent: true });
 
     this._resetFilterAndFetch();

@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.8.2-3.12394.1",
+  "version": "4.8.2-4.12394.1",
   "dependencies": {
     "abbrev": {
       "version": "1.1.0",
@@ -484,7 +484,7 @@
     "backbone-forms": {
       "version": "0.14.0",
       "from": "backbone-forms@0.14.0",
-      "resolved": "https://registry.npmjs.org/backbone-forms/-/backbone-forms-0.14.0.tgz"
+      "resolved": "http://registry.npmjs.org/backbone-forms/-/backbone-forms-0.14.0.tgz"
     },
     "backbone-model-file-upload": {
       "version": "1.0.0",
@@ -715,8 +715,8 @@
     },
     "cartodb-deep-insights.js": {
       "version": "0.0.2",
-      "from": "cartodb/deep-insights.js#12394-widget-color-changed",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#86584366e1e6f7c6e0026397cb48e36fb8af24a5",
+      "from": "cartodb/deep-insights.js#master",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#5cfd7269c8fc575f8130eeda217af5029fd571f6",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",
@@ -2372,7 +2372,7 @@
     "queue-async": {
       "version": "1.2.1",
       "from": "queue-async@1.2.1",
-      "resolved": "https://registry.npmjs.org/queue-async/-/queue-async-1.2.1.tgz"
+      "resolved": "http://registry.npmjs.org/queue-async/-/queue-async-1.2.1.tgz"
     },
     "quote-stream": {
       "version": "1.0.2",

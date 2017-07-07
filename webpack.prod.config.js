@@ -50,6 +50,10 @@ module.exports = env => {
         ['window.jQuery']: 'jquery'
       }),
 
+      new webpack.DefinePlugin({
+        __IN_DEV__: JSON.stringify(false)
+      }),
+
       // Minify
       new webpack.optimize.UglifyJsPlugin({
         sourceMap: true,
@@ -84,6 +88,14 @@ module.exports = env => {
                 exports: 'html'
               }
             }
+          }
+        },
+        {
+          test: /\.js$/,
+          loader: 'babel-loader',
+          include: [resolve(__dirname, 'node_modules/tangram.cartodb')],
+          options: {
+            presets: ['es2015']
           }
         },
         {

@@ -28,11 +28,15 @@ module.exports = cdb.core.View.extend({
         this.show();
       }
     }, this);
-    this.model.bind('loading loaded', this.hide, this);
+    this.model.bind('loading loaded', this._onLoadStatusChanged, this);
   },
 
   _onRefreshClick: function () {
     this.model.refresh();
+  },
+
+  _onLoadStatusChanged: function () {
+    this.model.has('error') ? this.show() : this.hide();
   },
 
   show: function () {
@@ -42,5 +46,4 @@ module.exports = cdb.core.View.extend({
   hide: function () {
     this.$el.addClass('is-hidden');
   }
-
 });

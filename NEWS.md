@@ -10,6 +10,8 @@ Development
 * Add source to widgets (#12369).
 * Show ranges in time series widget selection (#12291)
 * Bump Webpack version (#12392).
+* The selection window on a histogram widget can be dragged (#12180)
+* Move playback on animated time series by clicking on it (#12180)
 
 ### Bug fixes / enhancements
 * Refactor Visualization::Member like and notification actions into Carto::Visualization (#12309)
@@ -63,6 +65,7 @@ Development
 * Fix vector problem with lines
 * Fixed "see all formats" url, from the Connect Dataset module, to open in new windown and changed the url.
 * Added a data attribute for Backbone views that points to the module that implements it (Leapfrog #12341)
+* Change category widget color to blue when filtered. (#12409)
 * Add geometry validation for polygons and lines in edit feature form (#12397)
 * Fix permission model and added tests (#12393)
 * Country dropdown should be mandatory in postal code georeference (#12420)

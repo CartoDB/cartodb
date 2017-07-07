@@ -894,8 +894,7 @@ module.exports = cdb.core.View.extend({
       }
 
       if (!this._isDragging() && freq > 0) {
-        console.log('Esto no va a funcionar');
-        var d = formatter.formatNumber(freq);
+        var d = this.formatter(freq);
         hoverProperties = { top: top, left: left, data: d };
       } else {
         hoverProperties = null;

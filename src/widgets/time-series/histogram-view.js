@@ -65,7 +65,7 @@ module.exports = cdb.core.View.extend({
         top: 4,
         right: 4,
         bottom: 4,
-        left: 4
+        left: this._getMarginLeft()
       },
       hasHandles: true,
       handleWidth: 10,
@@ -114,5 +114,9 @@ module.exports = cdb.core.View.extend({
     if (this._chartView) {
       this._chartView.setNormalized(this._timeSeriesModel.get('normalized'));
     }
+  },
+
+  _getMarginLeft: function () {
+    return 4;
   }
 });

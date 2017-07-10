@@ -28,11 +28,6 @@ module.exports = cdb.core.View.extend({
 
     if (this._rangeFilter.isEmpty()) {
       this._appendView('.js-torque-controls',
-        new TorqueControlsView({
-          torqueLayerModel: this._torqueLayerModel
-        })
-      );
-      this._appendView('.js-torque-controls',
         new TorqueTimeInfoView({
           dataviewModel: this._dataviewModel,
           torqueLayerModel: this._torqueLayerModel

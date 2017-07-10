@@ -1,5 +1,6 @@
 var HistogramView = require('./histogram-view');
 var TorqueTimeSliderView = require('./torque-time-slider-view');
+var TorqueControlsView = require('./torque-controls-view');
 
 /**
  * Torque time-series histogram view.
@@ -7,7 +8,7 @@ var TorqueTimeSliderView = require('./torque-time-slider-view');
  * this.model is a histogram model
  */
 module.exports = HistogramView.extend({
-  className: 'CDB-Widget-content CDB-Widget-content--timeSeries',
+  className: 'CDB-Widget-content CDB-Widget-content--timeSeries u-flex u-alignCenter',
 
   initialize: function () {
     if (!this.options.torqueLayerModel) throw new Error('torqeLayerModel is required');
@@ -22,13 +23,19 @@ module.exports = HistogramView.extend({
 
     this._torqueLayerModel.bind('change:renderRange', this._onRenderRangeChanged, this);
     this._torqueLayerModel.bind('change:steps change:start change:end', this._reSelectRange, this);
-
     this.add_related_model(this._torqueLayerModel);
   },
 
   _createHistogramView: function () {
     this._chartType = this._torqueLayerModel.get('column_type') === 'date' ? 'time' : 'number';
     HistogramView.prototype._createHistogramView.call(this);
+
+    this._torqueControls = new TorqueControlsView({
+      torqueLayerModel: this._torqueLayerModel
+    });
+    this.addView(this._torqueControls);
+
+    this.$el.prepend(this._torqueControls.render().el);
 
     this._chartView.setAnimated();
     this._chartView.bind('on_brush_click', this._onBrushClick, this);
@@ -99,5 +106,9 @@ module.exports = HistogramView.extend({
 
   _clampRangeVal: function (a, b, t) {
     return Math.max(a, Math.min(b, t));
+  },
+
+  _getMarginLeft: function () {
+    return 16;
   }
 });

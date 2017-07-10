@@ -606,25 +606,28 @@ module.exports = cdb.core.View.extend({
 
   _calculateTimelySpacedDivisions: function () 
   {
+    this._calcBarWidth();
     var divisions = Math.round(this.chartWidth() / this.options.divisionWidth);
-    var i = 0;
-    var offset = 0;
+    var bucketsPerDivision = Math.ceil(this.model.get('data').length / divisions);
     var range = [0];
-    var timestamp;
-    var binIndex;
-    var divisionPixel;
-    var bins = [0];
+    var index = 0;
 
     for (i = 0; i < divisions; i++) {
-      offset += this.options.divisionWidth;
-      timestamp = this.xAxisScale(offset);
-      binIndex = (i < (divisions - 1)) ? this._getIndexFromValue(timestamp) : this.model.get('data').length;
-      bins.push(binIndex);
-      divisionPixel = Math.ceil(this.xAxisScale.invert(this._getTimestampFromBinIndex(binIndex)));
-      range.push(divisionPixel);
+      index = (i < (divisions - 1)) ? index + bucketsPerDivision : this.model.get('data').length;
+      range.push(Math.ceil(this.xAxisScale.invert(this._getTimestampFromBinIndex(index))));
     }
 
-    return _.uniq(range);
+    range = _.uniq(range);
+
+    // Sometimes the last two ticks are too close. In those cases, we get rid of the second to last
+    if (range.length >= 3) {
+      var lastTwo = _.last(range, 2);
+      if ((lastTwo[1] - lastTwo[0]) < this.options.divisionWidth) {
+        range = _.without(range, lastTwo[0]);
+      }
+    }
+
+    return range;
   },
 
   _calculateEvenlySpacedDivisions: function () {

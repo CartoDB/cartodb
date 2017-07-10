@@ -93,6 +93,10 @@ module.exports = DataviewModelBase.extend({
     return this._data.toJSON();
   },
 
+  getUnfilteredData: function () {
+    return this._originalData.get('data');
+  },
+
   getUnfilteredDataModel: function () {
     return this._originalData;
   },

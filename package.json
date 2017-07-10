@@ -188,6 +188,7 @@
     "build:stats": "webpack --env.stats --progress --config webpack.dev.config.js",
     "start": "grunt watch:css & webpack --progress --watch --config webpack.dev.config.js",
     "dashboard": "webpack-dashboard -p 1987",
+    "dashboard-affected": "webpack-dashboard -p 2017",
     "dev": "webpack --progress --config webpack.dev.config.js"
   }
 }

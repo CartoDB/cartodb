@@ -26,7 +26,9 @@ module Carto
         end
 
         def format_cartocss_property(cartocss_property)
-          case cartocss_property.class.to_s
+          property_class = cartocss_property.class.to_s
+
+          case property_class
           when 'String'
             "  #{cartocss_property}"
           when 'Hash'
@@ -37,6 +39,9 @@ module Carto
             end
 
             formatted_cartocss_property.join("\n")
+          else
+            CartoDB::Logger.error(message: "Unrecognized property class given to CartoCSS: #{property_class}")
+            " "
           end
         end
       end

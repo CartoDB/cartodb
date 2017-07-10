@@ -86,7 +86,9 @@ module Carto
         message: message,
         response_settings: response.settings.to_json,
         response_options: response.options,
-        response_errors: response.errors
+        response_errors: response.errors,
+        response_body: response.response,
+        response_attributes: response.attributes.try(:to_h)
       )
       nil
     end

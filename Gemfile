@@ -55,7 +55,7 @@ gem 'dbf',                     '2.0.6'
 gem 'faraday',                 '0.9.0'
 gem 'retriable',               '1.4.1'  # google-api-client needs this
 gem 'google-api-client',       '0.7.0'
-gem 'dropbox-sdk',             '1.6.3'
+gem 'dropbox_api',             '0.1.6'
 gem 'instagram',               '1.1.6'
 gem 'gibbon',                  '1.1.4'
 

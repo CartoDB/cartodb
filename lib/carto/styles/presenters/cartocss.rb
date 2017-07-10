@@ -41,7 +41,7 @@ module Carto
             formatted_cartocss_property.join("\n")
           else
             CartoDB::Logger.error(message: "Unrecognized property class given to CartoCSS: #{property_class}")
-            " "
+            ""
           end
         end
       end

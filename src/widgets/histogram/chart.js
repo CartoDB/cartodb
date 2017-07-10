@@ -96,7 +96,7 @@ module.exports = cdb.core.View.extend({
     this.formatter = formatter.formatNumber;
     if (this._isDateTimeSeries()) {
       this.formatter = formatter.timestampFactory(this._dataviewModel.get('aggregation'));
-      this.options.divisionWidth = 120;
+      this.options.divisionWidth = this._calculateDivisionWithByAggregation(this._dataviewModel.get('aggregation'));
     }
   },
 
@@ -419,10 +419,7 @@ module.exports = cdb.core.View.extend({
 
   _generateLines: function () {
     this._generateHorizontalLines();
-
-    if (!this._isTimeSeries()) {
-      this._generateVerticalLines();
-    }
+    this._generateVerticalLines();
   },
 
   _generateVerticalLines: function () {
@@ -596,17 +593,43 @@ module.exports = cdb.core.View.extend({
   },
 
   _setupRanges: function () {
-    var n = this._calculateRangeDivisions();
-    this.verticalRange = d3.range(0, this.chartWidth() + this.chartWidth() / n, this.chartWidth() / n);
+    this.verticalRange = this._calculateVerticalRangeDivisions();
     this.horizontalRange = d3.range(0, this.chartHeight() + this.chartHeight() / 2, this.chartHeight() / 2);
   },
 
-  _calculateRangeDivisions: function () {
-    var divisionWidth = this.options.divisionWidth;
+  _calculateVerticalRangeDivisions: function () {
     if (this._isDateTimeSeries() && this.model.get('data').length > 0) {
-      divisionWidth = Math.max(Math.round(this.chartWidth() / this.model.get('data').length), this.options.divisionWidth);
+      return this._calculateTimelySpacedDivisions();
     }
-    return Math.round(this.chartWidth() / divisionWidth);
+    return this._calculateEvenlySpacedDivisions();
+  },
+
+  _calculateTimelySpacedDivisions: function () 
+  {
+    var divisions = Math.round(this.chartWidth() / this.options.divisionWidth);
+    var i = 0;
+    var offset = 0;
+    var range = [0];
+    var timestamp;
+    var binIndex;
+    var divisionPixel;
+    var bins = [0];
+
+    for (i = 0; i < divisions; i++) {
+      offset += this.options.divisionWidth;
+      timestamp = this.xAxisScale(offset);
+      binIndex = (i < (divisions - 1)) ? this._getIndexFromValue(timestamp) : this.model.get('data').length;
+      bins.push(binIndex);
+      divisionPixel = Math.ceil(this.xAxisScale.invert(this._getTimestampFromBinIndex(binIndex)));
+      range.push(divisionPixel);
+    }
+
+    return _.uniq(range);
+  },
+
+  _calculateEvenlySpacedDivisions: function () {
+    var space = Math.round(this.chartWidth() / this.options.divisionWidth);
+    return d3.range(0, this.chartWidth() + this.chartWidth() / space, this.chartWidth() / space);
   },
 
   _calcBarWidth: function () {
@@ -1040,7 +1063,6 @@ module.exports = cdb.core.View.extend({
   _generateNumericAxis: function () {
     var self = this;
     var adjustTextAnchor = this._generateAdjustAnchorMethod(this.verticalRange);
-    var index = 0;
 
     var axis = this.chart.append('g')
       .attr('class', 'CDB-Chart-axis CDB-Text CDB-Size-small');
@@ -1056,12 +1078,7 @@ module.exports = cdb.core.View.extend({
       .text(function (d) {
         var value;
         if (self.xAxisScale) {
-          if (self._isDateTimeSeries() && self.verticalRange.length === self.model.get('data').length + 1) {
-            value = self._getTimestampFromBinIndex(index);
-          } else {
-            value = self.xAxisScale(d);
-          }
-          index++;
+          value = self.xAxisScale(d);
           return self.formatter(value);
         }
       });
@@ -1114,9 +1131,16 @@ module.exports = cdb.core.View.extend({
   },
 
   _getIndexFromValue: function (value) {
-    return _.findIndex(this.model.get('data'), function (bin) {
+    var index = _.findIndex(this.model.get('data'), function (bin) {
       return bin.start <= value && value <= bin.end;
     });
+    return index;
+  },
+
+  _getMaxFromData: function () {
+    return this.model.get('data').length > 0
+      ? _.last(this.model.get('data')).end
+      : null;
   },
 
   // Calculates the domain ([ min, max ]) of the selected data. If there is no selection ongoing,
@@ -1482,6 +1506,18 @@ module.exports = cdb.core.View.extend({
 
   _isDateTimeSeries: function () {
     return this.options.type === 'time-date';
+  },
+
+  _calculateDivisionWithByAggregation: function (aggregation) {
+    switch (aggregation) {
+      case 'year':
+        return 50;
+      case 'quarter':
+      case 'month':
+        return 80;
+      default:
+        return 120;
+    }
   },
 
   unsetBounds: function () {

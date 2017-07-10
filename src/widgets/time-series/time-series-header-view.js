@@ -8,7 +8,7 @@ var animationTemplate = require('./animation-template.tpl');
  * View to reset render range.
  */
 module.exports = cdb.core.View.extend({
-  className: 'CDB-Widget-contentSpaced',
+  className: 'CDB-Widget-contentSpaced CDB-Widget-contentFull',
 
   events: {
     'click .js-clear': '_onClick'

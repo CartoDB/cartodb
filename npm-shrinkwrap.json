@@ -735,9 +735,9 @@
       "resolved": "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30000698.tgz"
     },
     "carto": {
-      "version": "0.15.1-cdb3",
+      "version": "0.15.1-cdb4",
       "from": "cartodb/carto#fallback-reference",
-      "resolved": "git://github.com/cartodb/carto.git#a37b4da7211e1f60455b0530441dfe43f9902057"
+      "resolved": "git://github.com/cartodb/carto.git#68aa940795217600fd9d081857b5af45e9f26b49"
     },
     "cartocolor": {
       "version": "4.0.0",
@@ -3046,8 +3046,8 @@
       "dependencies": {
         "carto": {
           "version": "0.15.1-cdb4",
-          "from": "cartodb/carto#master",
-          "resolved": "git://github.com/cartodb/carto.git#7d00bfdf23a6e765d3561d30dd3aab4946d81cc4"
+          "from": "cartodb/carto#fallback-reference",
+          "resolved": "git://github.com/cartodb/carto.git#68aa940795217600fd9d081857b5af45e9f26b49"
         }
       }
     },
@@ -3500,8 +3500,8 @@
       "dependencies": {
         "carto": {
           "version": "0.15.1-cdb4",
-          "from": "cartodb/carto#master",
-          "resolved": "git://github.com/cartodb/carto.git#7d00bfdf23a6e765d3561d30dd3aab4946d81cc4"
+          "from": "cartodb/carto#fallback-reference",
+          "resolved": "git://github.com/cartodb/carto.git#68aa940795217600fd9d081857b5af45e9f26b49"
         }
       }
     },

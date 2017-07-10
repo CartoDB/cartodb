@@ -61,9 +61,6 @@ module.exports = cdb.core.View.extend({
 
     this._dataviewModel.on('change:bins', this._updateChartandTimeslider, this);
     this.add_related_model(this._dataviewModel);
-
-    this._dataviewModel.filter.on('change:min change:max', this._onFilterMinMaxChange, this);
-    this.add_related_model(this._dataviewModel.filter);
   },
 
   clean: function () {
@@ -124,10 +121,6 @@ module.exports = cdb.core.View.extend({
           .attr('transform', this._translateXY);
       }
     }
-  },
-
-  _onFilterMinMaxChange: function (m, isFiltering) {
-    this.$el.toggle(!isFiltering);
   },
 
   _onChangeChartHeight: function () {

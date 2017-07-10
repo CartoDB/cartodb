@@ -2243,6 +2243,7 @@
           "aggregation_column": "Aggregation Column",
           "bins": "Buckets",
           "column": "Column",
+          "timezone": "Time zone",
           "description": "Configure your values",
           "end": "End",
           "loading": "loading…",

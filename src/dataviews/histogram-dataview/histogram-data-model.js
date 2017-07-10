@@ -14,6 +14,8 @@ var MOMENT_AGGREGATIONS = {
   year: 'y'
 };
 
+var DEFAULT_MAX_BUCKETS = 366;
+
 /**
  *  This model is used for getting the total amount of data
  *  from the histogram widget (without any filter).
@@ -79,29 +81,42 @@ module.exports = Model.extend({
   },
 
   parse: function (data) {
+    var aggregation = data.aggregation;
     var numberOfBins = data.bins_count;
-    var width = data.bin_width;
     var start = data.bins_start;
-    var buckets = new Array(numberOfBins);
+    var width = data.bin_width;
+
+    var parsedData = {
+      aggregation: aggregation,
+      bins: numberOfBins,
+      data: new Array(numberOfBins)
+    };
 
     _.each(data.bins, function (bin) {
-      buckets[bin.bin] = bin;
+      parsedData.data[bin.bin] = bin;
     });
 
-    this.set('aggregation', data.aggregation, { silent: true });
-    if (this.get('column_type') === 'date') {
-      this.fillTimestampBuckets(buckets, start, data.aggregation, numberOfBins)
-    } else {
-      this.fillNumericBuckets(buckets, start, width, numberOfBins);
+    this.set('aggregation', aggregation, { silent: true });
+
+    if (numberOfBins > DEFAULT_MAX_BUCKETS) {
+      parsedData.error = 'Max bins limit reached';
+      return parsedData;
     }
 
-    return {
-      aggregation: data.aggregation,
-      data: buckets,
-      start: buckets[0].start,
-      end: buckets[buckets.length - 1].end,
-      bins: numberOfBins
-    };
+    parsedData.error = undefined;
+
+    if (this.get('column_type') === 'date') {
+      this.fillTimestampBuckets(parsedData.data, start, aggregation, numberOfBins)
+    } else {
+      this.fillNumericBuckets(parsedData.data, start, width, numberOfBins);
+    }
+
+    if (parsedData.data.length > 0) {
+      parsedData.start = parsedData.data[0].start;
+      parsedData.end = parsedData.data[parsedData.data.length - 1].end;
+    }
+
+    return parsedData;
   },
 
   fillNumericBuckets: function (buckets, start, width, numberOfBins) {

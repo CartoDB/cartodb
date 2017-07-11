@@ -250,6 +250,7 @@ module.exports = cdb.core.View.extend({
     if ((lo_index === 0 && hi_index === 0) || (lo_index === null && hi_index === null)) {
       return;
     }
+
     this.selectRange(lo_index, hi_index);
     this._adjustBrushHandles();
     this._setAxisTipAccordingToBins();
@@ -604,7 +605,7 @@ module.exports = cdb.core.View.extend({
     return this._calculateEvenlySpacedDivisions();
   },
 
-  _calculateTimelySpacedDivisions: function () 
+  _calculateTimelySpacedDivisions: function ()
   {
     this._calcBarWidth();
     var divisions = Math.round(this.chartWidth() / this.options.divisionWidth);
@@ -760,10 +761,16 @@ module.exports = cdb.core.View.extend({
       return;
     }
 
+    // -- HACK: Reset filter if any of the indexes is out of the scope
+    var data = this._dataviewModel.get('data');
+    if (!data[loBarIndex] || !data[hiBarIndex - 1]) {
+      return this.trigger('on_reset_filter');
+    }
+
     var loPosition = this._getBarPosition(loBarIndex);
     var hiPosition = this._getBarPosition(hiBarIndex);
 
-    this.model.set({lo_index: loBarIndex, hi_index: hiBarIndex});
+    this.model.set({ lo_index: loBarIndex, hi_index: hiBarIndex });
     this._selectRange(loPosition, hiPosition);
   },
 

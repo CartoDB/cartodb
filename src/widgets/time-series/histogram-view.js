@@ -122,8 +122,13 @@ module.exports = cdb.core.View.extend({
   },
 
   _resetFilterInDI: function () {
+    this._timeSeriesModel.set({
+      min: undefined,
+      max: undefined,
+      lo_index: undefined,
+      hi_index: undefined
+    }, { silent: true });
     this._chartView.removeSelection();
-    this._timeSeriesModel.set({lo_index: null, hi_index: null});
   },
 
   _onFilterChanged: function () {

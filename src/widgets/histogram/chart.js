@@ -229,7 +229,7 @@ module.exports = cdb.core.View.extend({
       newX += this.options.handleWidth;
       axisTip.attr('transform', 'translate(' + newX + ', ' + yPos + ')');
     } else {
-      axisTip.attr('transform', 'translate(-' + ((rectWidth / 2) - (this.options.handleWidth / 2)) + ', ' + yPos + ')');
+      axisTip.attr('transform', 'translate(-' + Math.max(((rectWidth / 2) - (this.options.handleWidth / 2)), 0) + ', ' + yPos + ')');
     }
   },
 
@@ -870,14 +870,12 @@ module.exports = cdb.core.View.extend({
           hiBarIndex = hiBarIndex + 1;
         }
       }
-
       this.model.set({ lo_index: loBarIndex, hi_index: hiBarIndex });
     }
 
     // click in non animated histogram
     if (d3.event.sourceEvent && loPosition === undefined && hiPosition === undefined) {
       var barIndex = this._getBarIndex();
-
       this.model.set({ lo_index: barIndex, hi_index: barIndex + 1 });
     }
 

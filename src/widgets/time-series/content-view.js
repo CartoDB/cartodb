@@ -109,19 +109,6 @@ module.exports = cdb.core.View.extend({
     }
   },
 
-  _setRange: function (loBarIndex, hiBarIndex) {
-    var data = this._dataviewModel.getData();
-    var filter = this._dataviewModel.filter;
-    if ((!data || !data.length) || !loBarIndex || !hiBarIndex) {
-      return;
-    }
-
-    filter.setRange(
-      data[loBarIndex].start,
-      data[hiBarIndex - 1].end
-    );
-  },
-
   _calculateBars: function () {
     var data = this._dataviewModel.getData();
     var min = this.model.get('min');

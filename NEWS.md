@@ -7,10 +7,14 @@ Development
 * New force param in EUMAPI organization users destroy operation to force deletion even with unregistered tables (#11654).
 * Removed the usage of the `organizations_admin` feature flag (#12131)
 * Show number of selected items in Time-Series widgets (#12179).
+* Add source to widgets (#12369).
 * Show ranges in time series widget selection (#12291)
 * Bump Webpack version (#12392).
+* The selection window on a histogram widget can be dragged (#12180)
+* Move playback on animated time series by clicking on it (#12180)
 
 ### Bug fixes / enhancements
+* Fixing problem parsing formula widget creation (#support/843)
 * Refactor Visualization::Member like and notification actions into Carto::Visualization (#12309)
 * Don't try to lowercase null values in custom-list-collection object (support/#744)
 * Tap on iOS10 mobile embed doesn't jump to page bottom (#cartodb.js/1652)
@@ -62,8 +66,11 @@ Development
 * Fix vector problem with lines
 * Fixed "see all formats" url, from the Connect Dataset module, to open in new windown and changed the url.
 * Added a data attribute for Backbone views that points to the module that implements it (Leapfrog #12341)
+* Change category widget color to blue when filtered. (#12409)
 * Add geometry validation for polygons and lines in edit feature form (#12397)
 * Fix permission model and added tests (#12393)
+* Country dropdown should be mandatory in postal code georeference (#12420)
+* Fixed bounds and center of thumbnails after updating a map
 
 ### NOTICE
 This release upgrades the CartoDB PostgreSQL extension to `0.19.2`. Run the following to have it available:

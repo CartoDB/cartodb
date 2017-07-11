@@ -26,6 +26,10 @@ function isSelectorRule (node) {
   return node.type === 'rule' && node.selector.search(/\[(.)+\]/g) !== -1;
 }
 
+function isOutlineRule (node) {
+  return node.type === 'rule' && node.selector.search('::outline') === 0;
+}
+
 function replaceWrongSpaceChar (cartocss) {
   return cartocss.replace(new RegExp(String.fromCharCode(160), 'g'), ' ');
 }
@@ -45,14 +49,17 @@ function changeStyle (cartocss, attr, newStyle) {
   root.walk(function (node) {
     var parentNode = node.parent;
     if (node.type === 'decl' && node.prop === attr) {
-      if (isSelectorRule(parentNode) || attributeAlreadyChanged) {
-        // If the attribute is inside a conditional selection, it is removed
-        node.remove();
-      } else {
-        // If the attribute is inside a regular root (or symbolizer), it just
-        // changes the value
-        node.value = newStyle;
-        attributeAlreadyChanged = true;
+      // Don't change/remove declarations under ::ouline symbolizer
+      if (!(isOutlineRule(parentNode) && attr === 'line-color')) {
+        if (isSelectorRule(parentNode) || attributeAlreadyChanged) {
+          // If the attribute is inside a conditional selection, it has to be removed
+          node.remove();
+        } else {
+          // If the attribute is inside a regular root (or symbolizer), it just
+          // changes the value
+          node.value = newStyle;
+          attributeAlreadyChanged = true;
+        }
       }
     }
   });

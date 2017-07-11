@@ -41,6 +41,16 @@ describe('src/widgets/auto-style/style-utils', function () {
 
       expect(StyleUtils.changeStyle(cartocss, attr, newStyle)).toBe(expected);
     });
+
+    it('should not replace line-color if it is included under an outline symbolizer', function () {
+      var cartocss = '#layer { polygon-fill: white; polygon-opacity: 0.1; ::outline { line-width: 0.5; line-color: green; }}';
+      var attr = 'line-color';
+      var newStyle = 'blue';
+
+      var expected = '#layer { polygon-fill: white; polygon-opacity: 0.1; ::outline { line-width: 0.5; line-color: green; }}';
+
+      expect(StyleUtils.changeStyle(cartocss, attr, newStyle)).toBe(expected);
+    });
   });
 
   describe('.replaceWrongSpaceChar', function () {

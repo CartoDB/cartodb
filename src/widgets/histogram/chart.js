@@ -946,16 +946,20 @@ module.exports = cdb.core.View.extend({
     var loExtent = extent[0];
     var hiExtent = extent[1];
 
-    var leftX = this.xScale(loExtent) - this.options.handleWidth / 2;
-    var rightX = this.xScale(hiExtent) - this.options.handleWidth / 2;
-
-    this.chart.select('.CDB-Chart-handle-left')
-      .attr('transform', 'translate(' + leftX + ', 0)');
-
-    this.chart.select('.CDB-Chart-handle-right')
-      .attr('transform', 'translate(' + rightX + ', 0)');
+    this._moveHandle(loExtent, 'left');
+    this._moveHandle(hiExtent, 'right');
 
     this._setAxisTipAccordingToBins();
+  },
+
+  _moveHandle: function (position, selector) {
+    var handle = this.chart.select('.CDB-Chart-handle-' + selector);
+    var x = this.xScale(position) - this.options.handleWidth / 2;
+    var display = (position >= 0 && position <= 100) ? 'inline' : 'none';
+
+    handle
+      .style('display', display)
+      .attr('transform', 'translate(' + x + ', 0)');
   },
 
   _generateAxisTip: function (className) {

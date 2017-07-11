@@ -18,12 +18,12 @@ function isPropertyIncluded (cartocss, attr) {
   return propertyIncluded;
 }
 
-function isMapnikGeometrySelectorRule (node) {
-  return node.type === 'rule' && node.selector.search('mapnik::geometry_type') !== -1;
-}
-
 function isSelectorRule (node) {
   return node.type === 'rule' && node.selector.search(/\[(.)+\]/g) !== -1;
+}
+
+function isMapnikGeometrySelectorRule (node) {
+  return isSelectorRule(node) && node.selector.search('mapnik::geometry_type') !== -1;
 }
 
 function isOutlineRule (node) {

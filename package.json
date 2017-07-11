@@ -33,7 +33,7 @@
     "jquery": "2.1.4",
     "moment": "2.10.6",
     "perfect-scrollbar": "git://github.com/CartoDB/perfect-scrollbar.git#master",
-    "postcss": "~5.2.8",
+    "postcss": "5.0.19",
     "tinycolor2": "1.4.1",
     "underscore": "1.8.3",
     "urijs": "1.17.1"

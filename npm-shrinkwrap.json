@@ -869,7 +869,7 @@
     "cartodb-deep-insights.js": {
       "version": "0.0.2",
       "from": "cartodb/deep-insights.js#557-issue",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#c3f08106fe191e9547fa4586f0eb123f9b8f6437"
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#f1c68633930ec5bfac574fbfe89d53dadf2df298"
     },
     "cartodb-pecan": {
       "version": "0.2.0",
@@ -2482,13 +2482,13 @@
       "resolved": "https://registry.npmjs.org/point-geometry/-/point-geometry-0.0.0.tgz"
     },
     "postcss": {
-      "version": "5.2.17",
-      "from": "postcss@>=5.2.8 <5.3.0",
-      "resolved": "https://registry.npmjs.org/postcss/-/postcss-5.2.17.tgz",
+      "version": "5.0.19",
+      "from": "postcss@5.0.19",
+      "resolved": "https://registry.npmjs.org/postcss/-/postcss-5.0.19.tgz",
       "dependencies": {
         "supports-color": {
           "version": "3.2.3",
-          "from": "supports-color@>=3.2.3 <4.0.0",
+          "from": "supports-color@>=3.1.2 <4.0.0",
           "resolved": "https://registry.npmjs.org/supports-color/-/supports-color-3.2.3.tgz"
         }
       }
@@ -3294,16 +3294,6 @@
           "version": "0.7.1",
           "from": "ms@0.7.1",
           "resolved": "https://registry.npmjs.org/ms/-/ms-0.7.1.tgz"
-        },
-        "postcss": {
-          "version": "5.0.19",
-          "from": "postcss@5.0.19",
-          "resolved": "https://registry.npmjs.org/postcss/-/postcss-5.0.19.tgz"
-        },
-        "supports-color": {
-          "version": "3.2.3",
-          "from": "supports-color@>=3.1.2 <4.0.0",
-          "resolved": "https://registry.npmjs.org/supports-color/-/supports-color-3.2.3.tgz"
         }
       }
     },

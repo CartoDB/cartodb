@@ -60,7 +60,7 @@ module.exports = DataviewModelBase.extend({
     this._updateURLBinding();
 
     // When original data gets fetched
-    this._originalData.bind('change:data', this._onDataChanged, this);
+    this._originalData.bind('sync', this._onDataChanged, this);
     this._originalData.once('change:data', this._updateBindings, this);
 
     this.on('change:column', this._onColumnChanged, this);
@@ -289,7 +289,17 @@ module.exports = DataviewModelBase.extend({
       start: model.get('start')
     }, { silent: true });
 
-    this._resetFilterAndFetch();
+    var resetFilter = false;
+
+    if (this.get('column_type') === 'date' && _.has(this.changed, 'aggregation')) {
+      resetFilter = true;
+    } else if (this.get('column_type') === 'number' && _.has(this.changed, 'bins')) {
+      resetFilter = true;
+    }
+
+    resetFilter
+      ? this._resetFilterAndFetch()
+      : this.fetch();
   },
 
   _onFieldsChanged: function () {
@@ -306,9 +316,13 @@ module.exports = DataviewModelBase.extend({
   },
 
   _resetFilterAndFetch: function () {
+    this._resetFilter();
+    this.fetch();
+  },
+
+  _resetFilter: function () {
     this.disableFilter();
     this.filter.unsetRange();
-    this.fetch();
   },
 
   // Helper functions - - - -

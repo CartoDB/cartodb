@@ -8,7 +8,7 @@ module.exports = AutoStyler.extend({
     if (!style) return;
 
     ['marker-fill', 'polygon-fill', 'line-color'].forEach(function (item) {
-      style = StyleUtils.changeStyle(style, item, this._generateCategoryRamp(item));
+      style = StyleUtils.changeStyle(style, item, this._generateCategoryRamp());
     }.bind(this));
 
     return StyleUtils.replaceWrongSpaceChar(style);
@@ -38,7 +38,7 @@ module.exports = AutoStyler.extend({
     return definitions;
   },
 
-  _generateCategoryRamp: function (sym) {
+  _generateCategoryRamp: function () {
     var model = this.dataviewModel;
     var categories = model.get('data');
     var column = model.get('column');

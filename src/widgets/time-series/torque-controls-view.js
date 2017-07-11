@@ -20,10 +20,7 @@ module.exports = cdb.core.View.extend({
   render: function () {
     this.$el.html(
       template({
-        iconClass: 'CDB-Widget-controlButtonIcon CDB-Widget-controlButtonIcon--' + (
-          this._torqueLayerModel.get('isRunning')
-            ? 'pause'
-            : 'play')
+        running: this._torqueLayerModel.get('isRunning')
       })
     );
 

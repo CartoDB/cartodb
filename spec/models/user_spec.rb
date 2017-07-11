@@ -600,6 +600,35 @@ describe User do
       user1.reload_avatar
       user1.avatar_url.should == "//#{user1.gravatar_user_url}"
     end
+
+    describe '#gravatar_enabled?' do
+      before(:each) do
+        @avatars_config = Cartodb::config[:avatars]
+      end
+
+      after(:each) do
+        Cartodb::config[:avatars] = @avatars_config
+      end
+
+      it 'should be enabled by default' do
+        user = ::User.new
+        user.gravatar_enabled?.should be_true
+        Cartodb::config[:avatars] = {}
+        user.gravatar_enabled?.should be_true
+        Cartodb::config[:avatars] = { 'gravatar_enabled' => true }
+        user.gravatar_enabled?.should be_true
+        Cartodb::config[:avatars] = { 'gravatar_enabled' => 'true' }
+        user.gravatar_enabled?.should be_true
+      end
+
+      it 'can be disabled' do
+        user = ::User.new
+        Cartodb::config[:avatars] = { 'gravatar_enabled' => false }
+        user.gravatar_enabled?.should be_false
+        Cartodb::config[:avatars] = { 'gravatar_enabled' => 'false' }
+        user.gravatar_enabled?.should be_false
+      end
+    end
   end
 
   describe '#private_maps_enabled?' do

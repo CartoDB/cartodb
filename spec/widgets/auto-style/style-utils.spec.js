@@ -22,7 +22,7 @@ describe('src/widgets/auto-style/style-utils', function () {
       expect(StyleUtils.changeStyle(cartocss, attr, newStyle)).toBe(expected);
     });
 
-    it('should change style, remove duplicated and remove empty braces', function () {
+    it('should change style, remove duplicated and remove styles under conditional symbolizers', function () {
       var cartocss = '#layer { marker-line-color: white; marker-fill: #adadad; [me>gasol] { marker-fill: #fafafa; }}';
       var attr = 'marker-fill';
       var newStyle = 'blue';
@@ -43,11 +43,11 @@ describe('src/widgets/auto-style/style-utils', function () {
     });
 
     it('should not replace line-color if it is included under an outline symbolizer', function () {
-      var cartocss = '#layer { polygon-fill: white; polygon-opacity: 0.1; ::outline { line-width: 0.5; line-color: green; }}';
+      var cartocss = '#layer { polygon-fill: white; line-color: red; polygon-opacity: 0.1; ::outline { line-width: 0.5; line-color: green; }}';
       var attr = 'line-color';
       var newStyle = 'blue';
 
-      var expected = '#layer { polygon-fill: white; polygon-opacity: 0.1; ::outline { line-width: 0.5; line-color: green; }}';
+      var expected = '#layer { polygon-fill: white; line-color: blue; polygon-opacity: 0.1; ::outline { line-width: 0.5; line-color: green; }}';
 
       expect(StyleUtils.changeStyle(cartocss, attr, newStyle)).toBe(expected);
     });

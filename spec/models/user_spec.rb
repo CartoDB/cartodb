@@ -610,14 +610,15 @@ describe User do
         Cartodb::config[:avatars] = @avatars_config
       end
 
-      it 'should be enabled by default' do
+      it 'should be enabled by default (every setting but false will enable it)' do
         user = ::User.new
-        user.gravatar_enabled?.should be_true
         Cartodb::config[:avatars] = {}
         user.gravatar_enabled?.should be_true
         Cartodb::config[:avatars] = { 'gravatar_enabled' => true }
         user.gravatar_enabled?.should be_true
         Cartodb::config[:avatars] = { 'gravatar_enabled' => 'true' }
+        user.gravatar_enabled?.should be_true
+        Cartodb::config[:avatars] = { 'gravatar_enabled' => 'wadus' }
         user.gravatar_enabled?.should be_true
       end
 

@@ -609,15 +609,14 @@ module.exports = cdb.core.View.extend({
     return this._calculateEvenlySpacedDivisions();
   },
 
-  _calculateTimelySpacedDivisions: function ()
-  {
+  _calculateTimelySpacedDivisions: function () {
     this._calcBarWidth();
     var divisions = Math.round(this.chartWidth() / this.options.divisionWidth);
     var bucketsPerDivision = Math.ceil(this.model.get('data').length / divisions);
     var range = [0];
     var index = 0;
 
-    for (i = 0; i < divisions; i++) {
+    for (var i = 0; i < divisions; i++) {
       index = (i < (divisions - 1)) ? index + bucketsPerDivision : this.model.get('data').length;
       range.push(Math.ceil(this.xAxisScale.invert(this._getValueFromBinIndex(index))));
     }

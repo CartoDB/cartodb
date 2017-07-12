@@ -32,10 +32,8 @@ describe('widgets/time-series/content-view', function () {
     });
   });
 
-
-
   describe('.render', function () {
-    describe('with data', function() {
+    describe('with data', function () {
       beforeEach(function () {
         this.originalData.set('data', [], { silent: true });
         this.view.render();

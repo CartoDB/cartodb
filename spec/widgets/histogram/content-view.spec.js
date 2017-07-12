@@ -314,7 +314,7 @@ describe('widgets/histogram/content-view', function () {
       spyOn(this.dataviewModel, 'disableFilter');
       spyOn(this.view.filter, 'unsetRange');
       // Change data
-      this.originalData.set('bins', 122, { silent: true })
+      this.originalData.set('bins', 122, { silent: true });
       this.originalData.trigger('change:data', this.originalData);
       expect(this.dataviewModel.disableFilter).toHaveBeenCalled();
       expect(this.view.filter.unsetRange).toHaveBeenCalled();

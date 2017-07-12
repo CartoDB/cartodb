@@ -60,7 +60,7 @@ module.exports = DataviewModelBase.extend({
     this._updateURLBinding();
 
     // When original data gets fetched
-    this._originalData.bind('change:data', this._onSynced, this);
+    this._originalData.bind('change:data', this._onDataChanged, this);
     this._originalData.once('change:data', this._updateBindings, this);
 
     this.on('change:column', this._onColumnChanged, this);
@@ -280,7 +280,7 @@ module.exports = DataviewModelBase.extend({
     this._originalData.setUrl(this.get('url'));
   },
 
-  _onSynced: function (model) {
+  _onDataChanged: function (model) {
     this.set({
       aggregation: model.get('aggregation'),
       bins: model.get('bins'),

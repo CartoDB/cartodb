@@ -51,6 +51,16 @@ describe('src/widgets/auto-style/style-utils', function () {
 
       expect(StyleUtils.changeStyle(cartocss, attr, newStyle)).toBe(expected);
     });
+
+    it('should not replace line-color if it is included under an layer::outline symbolizer', function () {
+      var cartocss = '#layer { polygon-fill: white; line-color: red; polygon-opacity: 0.1; } #layer::outline { line-width: 0.5; line-color: green; }';
+      var attr = 'line-color';
+      var newStyle = 'blue';
+
+      var expected = '#layer { polygon-fill: white; line-color: blue; polygon-opacity: 0.1; } #layer::outline { line-width: 0.5; line-color: green; }';
+
+      expect(StyleUtils.changeStyle(cartocss, attr, newStyle)).toBe(expected);
+    });
   });
 
   describe('.isPropertyIncluded', function () {

@@ -27,7 +27,7 @@ function isMapnikGeometrySelectorRule (node) {
 }
 
 function isOutlineRule (node) {
-  return node.type === 'rule' && node.selector.search('::outline') === 0;
+  return node.type === 'rule' && node.selector.search('::outline') !== -1;
 }
 
 function replaceWrongSpaceChar (cartocss) {

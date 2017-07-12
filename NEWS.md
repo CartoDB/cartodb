@@ -14,6 +14,7 @@ Development
 * Move playback on animated time series by clicking on it (#12180)
 
 ### Bug fixes / enhancements
+* Fixed typo in content_no_datasets.jst.ejs and en.json (Docs)
 * Fixing problem parsing formula widget creation (#support/843)
 * Refactor Visualization::Member like and notification actions into Carto::Visualization (#12309)
 * Don't try to lowercase null values in custom-list-collection object (support/#744)

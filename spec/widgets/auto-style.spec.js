@@ -1,5 +1,6 @@
 var specHelper = require('../spec-helper');
 var CategoryWidgetModel = require('../../src/widgets/category/category-widget-model');
+
 describe('auto-style', function () {
   beforeEach(function () {
     var vis = specHelper.createDefaultVis();
@@ -21,8 +22,8 @@ describe('auto-style', function () {
 
   it('should generate category ramps', function () {
     this.dataviewModel.set('allCategoryNames', ['manolo', 'jacinto', 'eustaquio']);
-    expect(this.autoStyler._generateCategoryRamp('marker-fill').indexOf('marker-fill')).not.toBeLessThan(0);
-    expect(this.autoStyler._generateCategoryRamp('polygon-fill').indexOf('polygon-fill')).not.toBeLessThan(0);
-    expect(this.autoStyler._generateCategoryRamp('line-color').indexOf('line-color')).not.toBeLessThan(0);
+    expect(this.autoStyler._generateCategoryRamp('marker-fill')).toContain('ramp([col],');
+    expect(this.autoStyler._generateCategoryRamp('polygon-fill')).toContain('ramp([col],');
+    expect(this.autoStyler._generateCategoryRamp('line-color')).toContain('ramp([col],');
   });
 });

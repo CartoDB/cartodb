@@ -21,6 +21,7 @@ Development
 * Don't try to lowercase null values in custom-list-collection object (#support/744)
 * Validate widget form when widget type changes (#11536)
 * Updated text of widget tooltips (#11467)
+* Fixes gravatar enabled check (support#840)
 * Fixed error where analysis overlay/infobox wasn't shown when hiding a layer (#11767)
 * Size of 'Add analysis' button reduced (#11580)
 * Fixed arrow keys exceeding min/max values in number editor (#12212)

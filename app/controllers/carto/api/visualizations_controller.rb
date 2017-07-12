@@ -394,11 +394,11 @@ module Carto
       end
 
       def ensure_visualization_is_viewable
-        return(head 403) unless (current_viewer && @visualization.is_viewable_by_user?(current_viewer))
+        return(head 403) unless current_viewer && @visualization.is_viewable_by_user?(current_viewer)
       end
 
       def ensure_user_can_create
-        return (head 403) unless (current_viewer && !current_viewer.viewer)
+        return (head 403) unless current_viewer && !current_viewer.viewer
       end
 
       # This avoids crossing usernames and visualizations.

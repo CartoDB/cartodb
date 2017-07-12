@@ -6,6 +6,7 @@ Development
 * [WIP] Export/import organization/user metadata to allow user migration (#12271, #12304, #12323)
 * New force param in EUMAPI organization users destroy operation to force deletion even with unregistered tables (#11654).
 * Removed the usage of the `organizations_admin` feature flag (#12131)
+* Time-series widgets aggregated by time (#12324)
 
 ### Bug fixes / enhancements
 * Validate widget form when widget type changes (#11536)

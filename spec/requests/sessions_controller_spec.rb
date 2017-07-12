@@ -362,6 +362,19 @@ describe SessionsController do
       response.status.should == 403
     end
 
+    it "authenticates users with casing differences in email" do
+      Carto::SamlService.any_instance.stubs(:enabled?).returns(true)
+      Carto::SamlService.any_instance.stubs(:get_user_email).returns(@user.email.upcase)
+
+      post create_session_url(user_domain: user_domain, SAMLResponse: 'xx')
+
+      response.status.should eq 302
+
+      # Double check authentication is correct
+      get response.redirect_url
+      response.status.should eq 200
+    end
+
     describe 'SAML logout' do
       it 'calls SamlService#sp_logout_request from user-initiated logout' do
         stub_saml_service(@user)

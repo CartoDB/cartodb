@@ -847,6 +847,14 @@ describe Carto::VisualizationsExportService2 do
 
         destroy_full_visualization(map, table, table_visualization, visualization)
       end
+
+      it 'truncates long sync logs' do
+        FactoryGirl.create(:carto_synchronization, visualization: @table_visualization)
+        @table_visualization.reload
+        @table_visualization.synchronization.log.update_attribute(:entries, 'X' * 15000)
+        export = Carto::VisualizationsExportService2.new.export_visualization_json_hash(@table_visualization.id, @user)
+        expect(export[:visualization][:synchronization][:log][:entries].length).to be < 10000
+      end
     end
 
     describe 'exporting + importing visualizations with shared tables' do

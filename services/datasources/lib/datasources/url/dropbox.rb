@@ -122,7 +122,7 @@ module CartoDB
 
           @formats.each do |search_query|
             response = @client.search(search_query, '')
-            response.matches.each do |item|
+            response.matches.select { |item| item.resource.is_a?(DropboxApi::Metadata::File) }.each do |item|
               all_results.push(format_item_data(item.resource))
             end
           end
@@ -212,6 +212,9 @@ module CartoDB
         # Revokes current set token
         def revoke_token
           @client.revoke
+          true
+        rescue DropboxApi::Errors::HttpError => ex
+          CartoDB::Logger.debug(message: 'Error revoking Dropbox token', exception: ex, user: @user)
           true
         rescue => ex
           raise AuthError.new("revoke_token: #{ex.message}", DATASOURCE_NAME)

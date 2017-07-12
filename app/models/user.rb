@@ -21,6 +21,7 @@ require_dependency 'carto/helpers/has_connector_configuration'
 require_dependency 'carto/helpers/batch_queries_statement_timeout'
 require_dependency 'carto/user_authenticator'
 require_dependency 'carto/helpers/billing_cycle'
+require_dependency 'carto/email_cleaner'
 require_dependency 'carto/visualization'
 
 class User < Sequel::Model
@@ -33,6 +34,7 @@ class User < Sequel::Model
   include Carto::HasConnectorConfiguration
   include Carto::BatchQueriesStatementTimeout
   include Carto::BillingCycle
+  include Carto::EmailCleaner
   extend Carto::UserAuthenticator
 
   self.strict_param_setting = false
@@ -228,7 +230,7 @@ class User < Sequel::Model
 
   ## Callbacks
   def before_validation
-    self.email = self.email.to_s.strip.downcase
+    self.email = clean_email(email.to_s)
     self.geocoding_quota ||= DEFAULT_GEOCODING_QUOTA
     self.here_isolines_quota ||= DEFAULT_HERE_ISOLINES_QUOTA
     self.obs_snapshot_quota ||= DEFAULT_OBS_SNAPSHOT_QUOTA

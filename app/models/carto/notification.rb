@@ -29,6 +29,8 @@ module Carto
 
     def send_to_organization_members
       return unless organization
+      # This avoids resending an already sent notification. Example: importing notifications
+      return unless received_notifications.empty?
       users = if recipients == 'builders'
                 organization.builder_users
               elsif recipients == 'viewers'

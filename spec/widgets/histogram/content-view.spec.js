@@ -10,6 +10,7 @@ describe('widgets/histogram/content-view', function () {
     this.dataviewModel = vis.dataviews.createHistogramModel(vis.map.layers.first(), {
       id: 'widget_3',
       column: 'col',
+      column_type: 'number',
       source: {
         id: 'a0'
       }
@@ -313,6 +314,7 @@ describe('widgets/histogram/content-view', function () {
       spyOn(this.dataviewModel, 'disableFilter');
       spyOn(this.view.filter, 'unsetRange');
       // Change data
+      this.originalData.set('bins', 122, { silent: true })
       this.originalData.trigger('change:data', this.originalData);
       expect(this.dataviewModel.disableFilter).toHaveBeenCalled();
       expect(this.view.filter.unsetRange).toHaveBeenCalled();

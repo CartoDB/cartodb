@@ -41,7 +41,7 @@ module.exports = cdb.core.View.extend({
       console.log('the tiler does not support non-torque layers just yet…');
     });
 
-    this.listenTo(this._dataviewModel, 'sync error', this.render);
+    this.listenTo(this._dataviewModel, 'change:data', this.render);
   },
 
   _createHistogramView: function () {

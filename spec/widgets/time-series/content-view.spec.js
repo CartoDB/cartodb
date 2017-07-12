@@ -32,22 +32,26 @@ describe('widgets/time-series/content-view', function () {
     });
   });
 
-  describe('when unfilteredData is loaded', function () {
-    beforeEach(function () {
-      this.originalData.trigger('change:data', this.originalData);
-      this.dataviewModel.trigger('change:data');
+
+
+  describe('.render', function () {
+    describe('with data', function() {
+      beforeEach(function () {
+        this.originalData.set('data', [], { silent: true });
+        this.view.render();
+      });
+
+      it('should render placeholder', function () {
+        expect(this.view.$el.html()).not.toBe('');
+        expect(this.view.$('.CDB-Widget-content--timeSeries').length).toBe(1);
+      });
+
+      it('should not render chart just yet since have no data', function () {
+        expect(this.view.$el.html()).not.toContain('<svg');
+      });
     });
 
-    it('should render placeholder', function () {
-      expect(this.view.$el.html()).not.toBe('');
-      expect(this.view.$('.CDB-Widget-content--timeSeries').length).toBe(1);
-    });
-
-    it('should not render chart just yet since have no data', function () {
-      expect(this.view.$el.html()).not.toContain('<svg');
-    });
-
-    describe('when data is provided', function () {
+    describe('without data', function () {
       beforeEach(function () {
         var timeOffset = 10000;
         var startTime = (new Date()).getTime() - timeOffset;
@@ -66,17 +70,15 @@ describe('widgets/time-series/content-view', function () {
         });
       });
 
-      describe('.render', function () {
-        it('should render chart', function () {
-          this.view.render();
+      it('should render chart', function () {
+        this.view.render();
 
-          expect(this.view.$('.js-header').length).toBe(1);
-          expect(this.view.$('.js-content').length).toBe(1);
-          expect(this.view._histogramView).toBeDefined();
-          expect(this.view._headerView).toBeDefined();
-          expect(this.view._dropdownView).toBeDefined();
-          expect(this.view.render().$el.html()).toContain('<svg');
-        });
+        expect(this.view.$('.js-header').length).toBe(1);
+        expect(this.view.$('.js-content').length).toBe(1);
+        expect(this.view._histogramView).toBeDefined();
+        expect(this.view._headerView).toBeDefined();
+        expect(this.view._dropdownView).toBeDefined();
+        expect(this.view.render().$el.html()).toContain('<svg');
       });
     });
   });

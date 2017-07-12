@@ -145,9 +145,9 @@ describe('widgets/time-series/histogram-view', function () {
       expect(this.view._chartView.removeSelection).toHaveBeenCalled();
     });
 
-    it('should set _timeSeriesModel lo_index and hi_index to null', function () {
-      expect(this.view._timeSeriesModel.get('lo_index')).toEqual(null);
-      expect(this.view._timeSeriesModel.get('hi_index')).toEqual(null);
+    it('should set _timeSeriesModel lo_index and hi_index to undefined', function () {
+      expect(this.view._timeSeriesModel.get('lo_index')).toEqual(undefined);
+      expect(this.view._timeSeriesModel.get('hi_index')).toEqual(undefined);
     });
   });
 

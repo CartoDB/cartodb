@@ -33,6 +33,7 @@ describe('widgets/time-series/torque-histogram-view', function () {
     spyOn(HistogramChartView.prototype, '_setupFillColor').and.returnValue('red');
 
     this.view = new TorqueHistogramView({
+      dataviewModel: this.dataviewModel,
       timeSeriesModel: this.timeSeriesModel,
       model: this.dataviewModel,
       rangeFilter: this.dataviewModel.filter,

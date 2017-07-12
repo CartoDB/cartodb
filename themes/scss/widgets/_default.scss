@@ -49,12 +49,6 @@
   }
 }
 
-.CDB-Widget-header--timeSeries {
-  @include display-flex();
-  @include justify-content(flex-start, start);
-  @include align-items(center);
-  margin-bottom: $baseSize + 4;
-}
 .CDB-Widget-content {
   position: relative;
 }
@@ -79,6 +73,11 @@
 
 .CDB-Widget-options {
   margin-right: -7px;
+}
+
+.CDB-Chart--histogram {
+  margin-top: $baseSize * 3;
+  margin-bottom: $baseSize;
 }
 
 .CDB-Widget-content--histogram,
@@ -125,13 +124,10 @@
     max-height: auto;
     margin-bottom: 2px;
   }
-  .CDB-Widget-header--timeSeries {
-    margin-right: 0; //override default, set on header to avoid double margin for the torque use-case
-    margin-bottom: 0;
-  }
-  .CDB-Widget-content--timeSeries {
+  .CDB-Widget-content.CDB-Widget-content--timeSeries {
     width: 100%;
-    margin-top: 0; // override default
+    margin-right: 0;
+    margin-left: 0;
   }
   .CDB-Widget-header,
   .CDB-Widget-footer,

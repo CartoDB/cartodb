@@ -11,6 +11,16 @@
       </button>
     </div>
   </div>
+  <% if (showSource) { %>
+    <dl class="CDB-Widget-info u-tSpace">
+      <div class="u-ellipsis u-flex">
+        <span class="CDB-SelectorLayer-letter CDB-Text CDB-Size-small u-whiteTextColor u-rSpace u-upperCase" style="background-color: <%= sourceColor %>;"><%= sourceId %></span>
+        <p class="CDB-Text CDB-Size-small u-mainTextColor u-ellipsis u-flex">
+          <%= sourceType %> <span class="u-altTextColor u-lSpace u-ellipsis" title="<%= layerName %>"><%= layerName %></span>
+        </p>
+      </div>
+    </dl>
+  <% } %>
   <% if (showStats) { %>
     <dl class="CDB-Widget-info CDB-Text CDB-Size-small u-secondaryTextColor u-upperCase u-tSpace">
       <dt class="CDB-Widget-infoCount"><%- nulls %></dt><dd class="CDB-Widget-infoDescription">null rows</dd>

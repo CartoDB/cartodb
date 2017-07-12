@@ -1,0 +1,71 @@
+{
+  "analyses": {
+    "source": "Source",
+    "connect-with-lines": {
+      "short-title": "Connect with lines"
+    },
+    "georeference": {
+      "short-title": "Georeference"
+    },
+    "data-observatory-measure": {
+      "short-title": "Data observatory"
+    },
+    "merge": {
+      "short-title": "Join columns"
+    },
+    "filter-by-node-column": {
+      "short-title": "Filter by layer"
+    },
+    "centroid": {
+      "short-title": "Centroid"
+    },
+    "group-points": {
+      "short-title": "Group points"
+    },
+    "convex-hull": {
+      "short-title": "Convex Hull"
+    },
+    "concave-hull": {
+      "short-title": "Concave Hull"
+    },
+    "bounding-box": {
+      "short-title": "Bounding Box"
+    },
+    "bounding-circle": {
+      "short-title": "Bounding Circle"
+    },
+    "area-of-influence": {
+      "short-title": "AOI"
+    },
+    "filter-intersection": {
+      "short-title": "Filter points in polygons"
+    },
+    "aggregate-intersection": {
+      "short-title": "Aggregate intersection"
+    },
+    "filter": {
+      "short-title": "Filter"
+    },
+    "sampling": {
+      "short-title": "Sampling"
+    },
+    "kmeans": {
+      "short-title": "Clusters"
+    },
+    "moran-cluster": {
+      "short-title": "Outliers & clusters"
+    },
+    "spatial-markov-trend": {
+      "short-title": "Trends"
+    },
+    "routing": {
+      "short-title": "Routing"
+    },
+    "deprecated-sql-function": {
+      "short-title": "SQL Function"
+    },
+    "find-nearest": {
+      "short-title": "Find nearest"
+    }
+  }
+}

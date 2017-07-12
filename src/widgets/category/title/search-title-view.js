@@ -4,6 +4,8 @@ var cdb = require('cartodb.js');
 var DropdownView = require('../../dropdown/widget-dropdown-view');
 var TooltipView = require('../../widget-tooltip-view');
 var template = require('./search-title-template.tpl');
+var layerColors = require('../../../util/layer-colors');
+var analyses = require('../../../data/analyses');
 
 /**
  *  Show category title or search any category
@@ -29,12 +31,24 @@ module.exports = cdb.core.View.extend({
 
   render: function () {
     this.clearSubViews();
+
+    var sourceId = this.dataviewModel.get('source').id;
+    var letter = layerColors.letter(sourceId);
+    var sourceColor = layerColors.getColorForLetter(letter);
+    var sourceType = this.dataviewModel.getSourceType() || '';
+    var layerName = this.dataviewModel.getLayerName() || '';
+
     this.$el.html(
       template({
         isCollapsed: this.model.get('collapsed'),
         isAutoStyleEnabled: this._isAutoStyleButtonVisible(),
         isAutoStyle: this.model.isAutoStyle(),
         title: this.model.get('title'),
+        sourceId: sourceId,
+        sourceType: analyses.title(sourceType),
+        showSource: this.model.get('show_source') && letter !== '',
+        sourceColor: sourceColor,
+        layerName: layerName,
         columnName: this.dataviewModel.get('column'),
         q: this.dataviewModel.getSearchQuery(),
         isLocked: this.model.isLocked(),

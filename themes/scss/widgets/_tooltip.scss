@@ -20,8 +20,7 @@
   display: inline-block;
   position: absolute;
   bottom: -$baseSize / 2;
-  left: 50%;
-  margin-left: -7px;
+  left: calc(50% - #{$baseSize / 2});
   border-right: $baseSize / 2 solid transparent;
   border-left: $baseSize / 2 solid transparent;
   border-top-width: $baseSize / 2;

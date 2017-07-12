@@ -30,6 +30,9 @@ module Carto
                                                              :remove_like, :notify_watching, :list_watching,
                                                              :static_map]
 
+      # :update and :destroy are correctly handled by permission check on the model
+      before_filter :ensure_user_can_create, only: [:create]
+
       before_filter :optional_api_authorization, only: [:index, :vizjson2, :vizjson3, :is_liked, :add_like,
                                                         :remove_like, :notify_watching, :list_watching, :static_map]
 
@@ -295,6 +298,8 @@ module Carto
       end
 
       def destroy
+        return head(403) unless @visualization.has_permission?(current_viewer, Carto::Permission::ACCESS_READWRITE)
+
         current_viewer_id = current_viewer.id
         properties = { user_id: current_viewer_id, visualization_id: @visualization.id }
 
@@ -390,6 +395,10 @@ module Carto
 
       def ensure_visualization_is_viewable
         return(head 403) unless (current_viewer && @visualization.is_viewable_by_user?(current_viewer))
+      end
+
+      def ensure_user_can_create
+        return (head 403) unless (current_viewer && !current_viewer.viewer)
       end
 
       # This avoids crossing usernames and visualizations.

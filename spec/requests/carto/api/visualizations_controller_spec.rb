@@ -1895,6 +1895,26 @@ describe Carto::Api::VisualizationsController do
             end
           end
 
+          it 'does not create visualizations if user is viewer' do
+            table1 = create_table(user_id: @org_user_1.id)
+            payload = {
+              source_visualization_id: table1.table_visualization.id,
+              visChanges: 0,
+              name: "untitled_table_XXX_map"
+            }
+
+            @org_user_1.viewer = true
+            @org_user_1.save
+
+            post_json(api_v1_visualizations_create_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key),
+                      payload) do |response|
+              response.status.should eq 403
+            end
+
+            @org_user_1.viewer = false
+            @org_user_1.save
+          end
+
           it 'creates a visualization from a dataset given the table id' do
             table1 = create_table(user_id: @org_user_1.id)
             payload = {
@@ -2093,6 +2113,23 @@ describe Carto::Api::VisualizationsController do
           login(@user)
         end
 
+        it "Does not update visualizations if user is viewer" do
+          table = new_table(user_id: @user.id, privacy: ::UserTable::PRIVACY_PUBLIC).save.reload
+
+          @user.viewer = true
+          @user.save
+
+          payload = { id: table.table_visualization.id, privacy: Carto::Visualization::PRIVACY_PRIVATE }
+          put_json api_v1_visualizations_update_url(id: table.table_visualization.id), payload do |response|
+            response.status.should eq 403
+          end
+
+          @user.viewer = false
+          @user.save
+
+          table.destroy
+        end
+
         it "Updates changes even if named maps communication fails" do
           @user.private_tables_enabled = true
           @user.save
@@ -2194,6 +2231,15 @@ describe Carto::Api::VisualizationsController do
         delete_json(destroy_url(@carto_org_user_1, other_visualization.id)) do |response|
           expect(response.status).to eq 403
         end
+      end
+
+      it 'returns 403 for viewer users' do
+        visualization = FactoryGirl.create(:carto_visualization, user: @carto_org_user_1)
+        @carto_org_user_1.update_attribute(:viewer, true)
+        delete_json(destroy_url(@carto_org_user_1, visualization.id)) do |response|
+          expect(response.status).to eq 403
+        end
+        @carto_org_user_1.update_attribute(:viewer, false)
       end
 
       it 'destroys a visualization by id' do

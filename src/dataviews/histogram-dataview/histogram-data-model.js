@@ -29,8 +29,14 @@ module.exports = Model.extend({
 
   url: function () {
     var params = [];
-    if (this.get('column_type') === 'date' && this.get('aggregation')) {
-      params.push('aggregation=' + this.get('aggregation'));
+    var aggregation = this.get('aggregation');
+
+    if (this.get('column_type') === 'date' && aggregation) {
+      params.push('aggregation=' + aggregation);
+
+      if (this.get('timezone')) {
+        params.push('timezone=' + this.get('timezone'));
+      }
     } else if (this.get('bins')) {
       params.push('bins=' + this.get('bins'));
     }
@@ -55,7 +61,7 @@ module.exports = Model.extend({
       this.fetch();
     }, this);
 
-    this.bind('change:aggregation change:bins', function () {
+    this.bind('change:timezone change:aggregation change:bins', function () {
       if (this.hasChanged('bins') && this.get('aggregation')) return;
       this.fetch();
     }, this);
@@ -70,10 +76,6 @@ module.exports = Model.extend({
 
   setBins: function (bins) {
     this.set('bins', bins, { silent: bins === void 0 });
-  },
-
-  setAggregation: function (aggregation) {
-    this.set('aggregation', aggregation, { silent: aggregation === void 0 });
   },
 
   getData: function () {

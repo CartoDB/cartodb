@@ -17,20 +17,40 @@ module.exports = DataviewModelBase.extend({
 
   _getDataviewSpecificURLParams: function () {
     var params = [];
+    var start = this.get('start');
+    var end = this.get('end');
+    var aggregation = this.get('aggregation');
 
     if (_.isNumber(this.get('own_filter'))) {
       params.push('own_filter=' + this.get('own_filter'));
     } else {
-      if (_.isNumber(this.get('start'))) {
-        params.push('start=' + this.get('start'));
-      }
-      if (_.isNumber(this.get('end'))) {
-        params.push('end=' + this.get('end'));
-      }
       if (this.get('column_type') === 'number' && this.get('bins')) {
         params.push('bins=' + this.get('bins'));
-      } else if (this.get('column_type') === 'date' && this.get('aggregation')) {
-        params.push('aggregation=' + this.get('aggregation'));
+
+        if (_.isNumber(start)) {
+          params.push('start=' + start);
+        }
+        if (_.isNumber(end)) {
+          params.push('end=' + end);
+        }
+      } else if (this.get('column_type') === 'date' && aggregation) {
+        var timezone = this.get('timezone');
+
+        if (_.isNumber(start)) {
+          var start = timezone ? start + timezone : start;
+          params.push('start=' + start);
+        }
+
+        if (_.isNumber(end)) {
+          var end = timezone ? end + timezone : end;
+          params.push('end=' + end);
+        }
+
+        params.push('aggregation=' + aggregation);
+
+        if (this.get('timezone')) {
+          params.push('timezone=' + timezone);
+        }
       }
     }
     return params;
@@ -41,6 +61,7 @@ module.exports = DataviewModelBase.extend({
     this._originalData = new HistogramDataModel({
       bins: this.get('bins'),
       aggregation: this.get('aggregation'),
+      timezone: this.get('timezone'),
       column_type: this.get('column_type'),
       apiKey: this.get('apiKey'),
       authToken: this.get('authToken')
@@ -64,6 +85,7 @@ module.exports = DataviewModelBase.extend({
     this._originalData.once('change:data', this._updateBindings, this);
 
     this.on('change:column', this._onColumnChanged, this);
+    this.on('change:timezone', this._onTimezoneChanged, this);
     this.on('change', this._onFieldsChanged, this);
 
     this.listenTo(this.layer, 'change:meta', this._onChangeLayerMeta);
@@ -111,6 +133,7 @@ module.exports = DataviewModelBase.extend({
 
   parse: function (data) {
     var aggregation = data.aggregation;
+    var timezone = data.timezone;
     var numberOfBins = data.bins_count;
     var start = data.bins_start;
     var width = data.bin_width;
@@ -132,10 +155,13 @@ module.exports = DataviewModelBase.extend({
       parsedData.data[bin.bin] = bin;
     });
 
-    this.set('aggregation', aggregation, { silent: true });
+    this.set({
+      aggregation: aggregation,
+      timezone: timezone
+    }, { silent: true });
 
     if (this.get('column_type') === 'date') {
-      this._originalData.fillTimestampBuckets(parsedData.data, start, aggregation, numberOfBins)
+      this._originalData.fillTimestampBuckets(parsedData.data, start, timezone, aggregation, numberOfBins)
     } else {
       this._originalData.fillNumericBuckets(parsedData.data, start, width, numberOfBins);
     }
@@ -164,13 +190,20 @@ module.exports = DataviewModelBase.extend({
 
   _onColumnChanged: function () {
     this._originalData.set('column_type', this.get('column_type'));
-    this.set('aggregation', undefined, { silent: true });
+    this.set({
+      aggregation: undefined,
+      timezone: undefined
+    }, { silent: true });
+    this._reloadVisAndForceFetch();
+  },
+
+  _onTimezoneChanged: function () {
     this._reloadVisAndForceFetch();
   },
 
   _calculateTotalAmount: function (buckets) {
     return _.reduce(buckets, function (memo, bucket) {
-      return memo + bucket.freq;
+      return bucket && memo + bucket.freq;
     }, 0);
   },
 
@@ -246,14 +279,18 @@ module.exports = DataviewModelBase.extend({
   },
 
   toJSON: function (d) {
+    var aggregation = this.get('aggregation');
+    var columnType = this.get('column_type');
+
     var options = {
       column: this.get('column')
     };
 
-    if (this.get('column_type') === 'number' && this.get('bins')) {
+    if (columnType === 'number' && this.get('bins')) {
       options.bins = this.get('bins');
-    } else if (this.get('column_type') === 'date' && this.get('aggregation')) {
-      options.aggregation = this.get('aggregation')
+    } else if (columnType === 'date' && aggregation) {
+      options.aggregation = aggregation;
+      options.timezone = this.get('timezone');
     }
 
     return {
@@ -274,6 +311,7 @@ module.exports = DataviewModelBase.extend({
   _onUrlChanged: function () {
     this._originalData.set({
       aggregation: this.get('aggregation'),
+      timezone: this.get('timezone'),
       bins: this.get('bins')
     }, { silent: true });
 
@@ -283,6 +321,7 @@ module.exports = DataviewModelBase.extend({
   _onDataChanged: function (model) {
     this.set({
       aggregation: model.get('aggregation'),
+      timezone: model.get('timezone') || 0,
       bins: model.get('bins'),
       end: model.get('end'),
       error: model.get('error'),
@@ -293,7 +332,7 @@ module.exports = DataviewModelBase.extend({
   },
 
   _onFieldsChanged: function () {
-    if (!this._hasChangedSomeOf(['bins', 'aggregation'], this.changed)) {
+    if (!this._hasChangedSomeOf(['timezone', 'bins', 'aggregation'], this.changed)) {
       return;
     }
 
@@ -301,7 +340,10 @@ module.exports = DataviewModelBase.extend({
       this._originalData.set('bins', this.get('bins'));
     }
     if (this.get('column_type') === 'date') {
-      this._originalData.set('aggregation', this.get('aggregation'))
+      this._originalData.set({
+        timezone: this.get('timezone'),
+        aggregation: this.get('aggregation'),
+      });
     }
   },
 
@@ -312,18 +354,6 @@ module.exports = DataviewModelBase.extend({
   },
 
   // Helper functions - - - -
-
-  _onlyBinsHasChanged: function (changed) {
-    return this._hasKeyWithValue(changed, 'bins') && !_.has(changed, 'aggregation');
-  },
-
-  _onlyAggregationHasChanged: function (changed) {
-    return this._hasKeyWithValue(changed, 'aggregation') && !_.has(changed, 'bins');
-  },
-
-  _hasKeyWithValue: function (obj, key) {
-    return _.has(obj, key) && obj[key] !== void 0;
-  },
 
   _hasChangedSomeOf: function (list, changed) {
     return _.some(_.keys(changed), function (key) {
@@ -340,7 +370,8 @@ module.exports = DataviewModelBase.extend({
       'bins',
       'min',
       'max',
-      'aggregation'
+      'aggregation',
+      'timezone'
     ])
   }
 );

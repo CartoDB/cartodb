@@ -1,3 +1,4 @@
+var _ = require('underscore');
 var HistogramView = require('./histogram-view');
 var TorqueTimeSliderView = require('./torque-time-slider-view');
 
@@ -52,8 +53,8 @@ module.exports = HistogramView.extend({
     }
   },
 
-  _onRenderRangeChanged: function (m, r) {
-    if (r.start === undefined && r.end === undefined) {
+  _onRenderRangeChanged: function (_model, range) {
+    if (range.start === undefined && range.end === undefined) {
       this._chartView.removeSelection();
       this._rangeFilter.unsetRange();
     }
@@ -73,7 +74,6 @@ module.exports = HistogramView.extend({
 
   _onBrushEnd: function () {
     HistogramView.prototype._onBrushEnd.apply(this, arguments);
-
     this._reSelectRange();
   },
 
@@ -87,8 +87,18 @@ module.exports = HistogramView.extend({
 
   _reSelectRange: function () {
     if (!this._rangeFilter.isEmpty()) {
-      var loStep = this._timeToStep(this._rangeFilter.get('min'));
-      var hiStep = this._timeToStep(this._rangeFilter.get('max'));
+      var min = this._rangeFilter.get('min');
+      var max = this._rangeFilter.get('max');
+      var loStep = this._timeToStep(min);
+      var hiStep = this._timeToStep(max);
+
+      // -- HACK: Reset filter if the min/max values are out of the scope
+      var data = this._dataviewModel.get('data');
+      var loBar = _.findWhere(data, { start: min });
+      var hiBar = _.findWhere(data, { end: max });
+      if (!loBar || !hiBar) {
+        return this._torqueLayerModel.resetRenderRange();
+      }
 
       // clamp values since the range can be outside of the current torque thing
       var steps = this._torqueLayerModel.get('steps');

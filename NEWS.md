@@ -23,12 +23,14 @@ Development
 * Move playback on animated time series by clicking on it (#12180)
 
 ### Bug fixes / enhancements
+* Fixing problem parsing formula widget creation (#support/843)
 * Refactor Visualization::Member like and notification actions into Carto::Visualization (#12309)
 * Don't try to lowercase null values in custom-list-collection object (support/#744)
 * Tap on iOS10 mobile embed doesn't jump to page bottom (#cartodb.js/1652)
 * Don't try to lowercase null values in custom-list-collection object (#support/744)
 * Validate widget form when widget type changes (#11536)
 * Updated text of widget tooltips (#11467)
+* Fixes gravatar enabled check (support#840)
 * Fixed error where analysis overlay/infobox wasn't shown when hiding a layer (#11767)
 * Size of 'Add analysis' button reduced (#11580)
 * Fixed arrow keys exceeding min/max values in number editor (#12212)

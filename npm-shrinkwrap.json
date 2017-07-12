@@ -852,9 +852,9 @@
       "resolved": "https://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.32.0.tgz"
     },
     "caniuse-lite": {
-      "version": "1.0.30000699",
+      "version": "1.0.30000700",
       "from": "caniuse-lite@>=1.0.30000684 <2.0.0",
-      "resolved": "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30000699.tgz"
+      "resolved": "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30000700.tgz"
     },
     "carto": {
       "version": "0.15.1-cdb4",
@@ -869,7 +869,7 @@
     "cartodb-deep-insights.js": {
       "version": "0.0.2",
       "from": "cartodb/deep-insights.js#557-issue",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#f1c68633930ec5bfac574fbfe89d53dadf2df298"
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#85f080dc514e992dd118579d0959d9dfeddce597"
     },
     "cartodb-pecan": {
       "version": "0.2.0",
@@ -1039,9 +1039,9 @@
       "resolved": "https://registry.npmjs.org/cryptiles/-/cryptiles-2.0.5.tgz"
     },
     "crypto-browserify": {
-      "version": "3.11.0",
+      "version": "3.11.1",
       "from": "crypto-browserify@>=3.0.0 <4.0.0",
-      "resolved": "https://registry.npmjs.org/crypto-browserify/-/crypto-browserify-3.11.0.tgz"
+      "resolved": "https://registry.npmjs.org/crypto-browserify/-/crypto-browserify-3.11.1.tgz"
     },
     "csscolorparser": {
       "version": "1.0.3",
@@ -1326,14 +1326,14 @@
       "resolved": "https://registry.npmjs.org/extsprintf/-/extsprintf-1.0.2.tgz"
     },
     "falafel": {
-      "version": "1.2.0",
-      "from": "falafel@>=1.0.0 <2.0.0",
-      "resolved": "https://registry.npmjs.org/falafel/-/falafel-1.2.0.tgz",
+      "version": "2.1.0",
+      "from": "falafel@>=2.1.0 <3.0.0",
+      "resolved": "https://registry.npmjs.org/falafel/-/falafel-2.1.0.tgz",
       "dependencies": {
         "acorn": {
-          "version": "1.2.2",
-          "from": "acorn@>=1.0.3 <2.0.0",
-          "resolved": "https://registry.npmjs.org/acorn/-/acorn-1.2.2.tgz"
+          "version": "5.1.1",
+          "from": "acorn@>=5.0.0 <6.0.0",
+          "resolved": "https://registry.npmjs.org/acorn/-/acorn-5.1.1.tgz"
         },
         "isarray": {
           "version": "0.0.1",
@@ -2930,9 +2930,9 @@
       }
     },
     "static-module": {
-      "version": "1.3.2",
+      "version": "1.4.0",
       "from": "static-module@>=1.1.0 <2.0.0",
-      "resolved": "https://registry.npmjs.org/static-module/-/static-module-1.3.2.tgz",
+      "resolved": "https://registry.npmjs.org/static-module/-/static-module-1.4.0.tgz",
       "dependencies": {
         "concat-stream": {
           "version": "1.6.0",

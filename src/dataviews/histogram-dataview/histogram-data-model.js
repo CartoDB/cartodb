@@ -106,7 +106,7 @@ module.exports = Model.extend({
     parsedData.error = undefined;
 
     if (this.get('column_type') === 'date') {
-      this.fillTimestampBuckets(parsedData.data, start, aggregation, numberOfBins)
+      this.fillTimestampBuckets(parsedData.data, start, aggregation, numberOfBins);
     } else {
       this.fillNumericBuckets(parsedData.data, start, width, numberOfBins);
     }

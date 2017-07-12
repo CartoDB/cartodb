@@ -278,7 +278,8 @@ describe('windshaft/anonymous-map', function () {
       var dataview1 = new HistogramDataviewModel({
         id: 'dataviewId1',
         column: 'column1',
-        bins: 5,
+        column_type: 'date',
+        aggregation: 'week',
         source: {
           id: 'a0'
         }
@@ -293,6 +294,7 @@ describe('windshaft/anonymous-map', function () {
       var dataview2 = new HistogramDataviewModel({
         id: 'dataviewId2',
         column: 'column2',
+        column_type: 'number',
         bins: 5,
         source: {
           id: 'a1'
@@ -317,8 +319,7 @@ describe('windshaft/anonymous-map', function () {
           },
           options: {
             column: 'column1',
-            bins: 5,
-            aggregation: undefined
+            aggregation: 'week'
           }
         },
         dataviewId2: {
@@ -328,8 +329,7 @@ describe('windshaft/anonymous-map', function () {
           },
           options: {
             column: 'column2',
-            bins: 5,
-            aggregation: undefined
+            bins: 5
           }
         }
       });

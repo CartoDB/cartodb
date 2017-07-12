@@ -135,7 +135,7 @@ module.exports = DataviewModelBase.extend({
     this.set('aggregation', aggregation, { silent: true });
 
     if (this.get('column_type') === 'date') {
-      this._originalData.fillTimestampBuckets(parsedData.data, start, aggregation, numberOfBins)
+      this._originalData.fillTimestampBuckets(parsedData.data, start, aggregation, numberOfBins);
     } else {
       this._originalData.fillNumericBuckets(parsedData.data, start, width, numberOfBins);
     }
@@ -253,7 +253,7 @@ module.exports = DataviewModelBase.extend({
     if (this.get('column_type') === 'number' && this.get('bins')) {
       options.bins = this.get('bins');
     } else if (this.get('column_type') === 'date' && this.get('aggregation')) {
-      options.aggregation = this.get('aggregation')
+      options.aggregation = this.get('aggregation');
     }
 
     return {
@@ -311,7 +311,7 @@ module.exports = DataviewModelBase.extend({
       this._originalData.set('bins', this.get('bins'));
     }
     if (this.get('column_type') === 'date') {
-      this._originalData.set('aggregation', this.get('aggregation'))
+      this._originalData.set('aggregation', this.get('aggregation'));
     }
   },
 

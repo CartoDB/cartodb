@@ -25,8 +25,7 @@ module Carto::Styles
 
       [
         "polygon-fill: #{color};",
-        "polygon-opacity: #{opacity};",
-        "polygon-gamma: 0.5;"
+        "polygon-opacity: #{opacity};"
       ]
     end
 
@@ -39,8 +38,7 @@ module Carto::Styles
         "::outline" => [
           "line-color: #{color};",
           "line-width: #{width};",
-          "line-opacity: #{opacity};",
-          "line-comp-op: soft-light;"
+          "line-opacity: #{opacity};"
         ]
       ]
     end

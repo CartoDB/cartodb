@@ -5,6 +5,7 @@ var d3Interpolate = require('d3-interpolate');
 var cdb = require('cartodb.js');
 var tinycolor = require('tinycolor2');
 var formatter = require('../../formatter');
+var timestampHelper = require('../../util/timestamp-helper');
 var FILTERED_COLOR = '#1181FB';
 var UNFILTERED_COLOR = 'rgba(0, 0, 0, 0.06)';
 var TIP_RECT_HEIGHT = 17;
@@ -340,8 +341,11 @@ module.exports = cdb.core.View.extend({
   },
 
   _setAxisTipAccordingToBins: function () {
-    var left = this._getTimestampFromBinIndex(this._getLoBarIndex());
-    var right = this._getTimestampFromBinIndex(this._getHiBarIndex());
+    var left = this._getValueFromBinIndex(this._getLoBarIndex());
+    var right = this._getValueFromBinIndex(this._getHiBarIndex());
+    if (this._isDateTimeSeries()) {
+      right = timestampHelper.substractOneUnit(right, this._dataviewModel.get('aggregation'));
+    }
     this._setAxisTip(left, right);
   },
 
@@ -615,7 +619,7 @@ module.exports = cdb.core.View.extend({
 
     for (i = 0; i < divisions; i++) {
       index = (i < (divisions - 1)) ? index + bucketsPerDivision : this.model.get('data').length;
-      range.push(Math.ceil(this.xAxisScale.invert(this._getTimestampFromBinIndex(index))));
+      range.push(Math.ceil(this.xAxisScale.invert(this._getValueFromBinIndex(index))));
     }
 
     range = _.uniq(range);
@@ -1123,7 +1127,7 @@ module.exports = cdb.core.View.extend({
     return result;
   },
 
-  _getTimestampFromBinIndex: function (index) {
+  _getValueFromBinIndex: function (index) {
     if (!_.isNumber(index)) {
       return null;
     }

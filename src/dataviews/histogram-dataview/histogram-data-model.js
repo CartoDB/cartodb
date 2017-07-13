@@ -73,7 +73,7 @@ module.exports = Model.extend({
     var aggregation = data.aggregation;
     var numberOfBins = data.bins_count;
     var width = data.bin_width;
-    var start = data.bins_start;
+    var start = this.get('column_type') === 'date' ? helper.calculateStart(data.bins, data.bins_start, aggregation) : data.bins_start;
 
     var parsedData = {
       aggregation: aggregation,

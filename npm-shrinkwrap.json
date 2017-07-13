@@ -750,7 +750,7 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
       "from": "cartodb/cartodb.js#c12324-time-series-aggregations",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#a19e141bdcfdbaa54ab2df3232556231d56238cc"
+      "resolved": "git://github.com/cartodb/cartodb.js.git#fd97a237c92461fd8880b7d2960e030a33d7d906"
     },
     "caseless": {
       "version": "0.11.0",

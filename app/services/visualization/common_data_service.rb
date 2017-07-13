@@ -96,9 +96,9 @@ module CartoDB
           end
         end
 
-        remotes_by_name.each { |_, remote|
+        remotes_by_name.each do |_, remote|
           deleted += 1 if delete_remote_visualization(remote)
-        }
+        end
 
         return added, updated, not_modified, deleted, failed
       end

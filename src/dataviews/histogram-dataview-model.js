@@ -2,6 +2,7 @@ var _ = require('underscore');
 var Backbone = require('backbone');
 var DataviewModelBase = require('./dataview-model-base');
 var HistogramDataModel = require('./histogram-dataview/histogram-data-model');
+var helper = require('./helpers/histogram-helper');
 var d3 = require('d3');
 var moment = require('moment');
 var momentTimezone = require('moment-timezone');
@@ -141,8 +142,8 @@ module.exports = DataviewModelBase.extend({
     var aggregation = data.aggregation;
     var timezone = data.timezone;
     var numberOfBins = data.bins_count;
-    var start = data.bins_start;
     var width = data.bin_width;
+    var start = this.get('column_type') === 'date' ? helper.calculateStart(data.bins, data.bins_start, aggregation) : data.bins_start;
 
     var parsedData = {
       data: [],
@@ -167,9 +168,9 @@ module.exports = DataviewModelBase.extend({
     }, { silent: true });
 
     if (this.get('column_type') === 'date') {
-      this._originalData.fillTimestampBuckets(parsedData.data, start, timezone, aggregation, numberOfBins)
+      helper.fillTimestampBuckets(parsedData.data, start, aggregation, numberOfBins, timezone);
     } else {
-      this._originalData.fillNumericBuckets(parsedData.data, start, width, numberOfBins);
+      helper.fillNumericBuckets(parsedData.data, start, width, numberOfBins);
     }
 
     // FIXME - Update the end of last bin due https://github.com/CartoDB/cartodb.js/issues/926
@@ -334,7 +335,17 @@ module.exports = DataviewModelBase.extend({
       start: model.get('start')
     }, { silent: true });
 
-    this._resetFilterAndFetch();
+    var resetFilter = false;
+
+    if (this.get('column_type') === 'date' && _.has(this.changed, 'aggregation')) {
+      resetFilter = true;
+    } else if (this.get('column_type') === 'number' && _.has(this.changed, 'bins')) {
+      resetFilter = true;
+    }
+
+    resetFilter
+      ? this._resetFilterAndFetch()
+      : this.fetch();
   },
 
   _onFieldsChanged: function () {
@@ -354,9 +365,13 @@ module.exports = DataviewModelBase.extend({
   },
 
   _resetFilterAndFetch: function () {
+    this._resetFilter();
+    this.fetch();
+  },
+
+  _resetFilter: function () {
     this.disableFilter();
     this.filter.unsetRange();
-    this.fetch();
   },
 
   // Helper functions - - - -

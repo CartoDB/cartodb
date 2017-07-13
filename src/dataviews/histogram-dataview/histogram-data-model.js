@@ -3,17 +3,7 @@ var moment = require('moment');
 var momentTimezone = require('moment-timezone');
 var BackboneAbortSync = require('../../util/backbone-abort-sync');
 var Model = require('../../core/model');
-
-var MOMENT_AGGREGATIONS = {
-  day: 'd',
-  hour: 'h',
-  minute: 'm',
-  month: 'M',
-  quarter: 'Q',
-  second: 's',
-  week: 'w',
-  year: 'y'
-};
+var helper = require('../helpers/histogram-helper');
 
 var DEFAULT_MAX_BUCKETS = 366;
 
@@ -87,8 +77,8 @@ module.exports = Model.extend({
   parse: function (data) {
     var aggregation = data.aggregation;
     var numberOfBins = data.bins_count;
-    var start = data.bins_start;
     var width = data.bin_width;
+    var start = this.get('column_type') === 'date' ? helper.calculateStart(data.bins, data.bins_start, aggregation) : data.bins_start;
 
     var parsedData = {
       aggregation: aggregation,
@@ -110,9 +100,9 @@ module.exports = Model.extend({
     parsedData.error = undefined;
 
     if (this.get('column_type') === 'date') {
-      this.fillTimestampBuckets(parsedData.data, start, aggregation, numberOfBins)
+      helper.fillTimestampBuckets(parsedData.data, start, aggregation, numberOfBins);
     } else {
-      this.fillNumericBuckets(parsedData.data, start, width, numberOfBins);
+      helper.fillNumericBuckets(parsedData.data, start, width, numberOfBins);
     }
 
     if (parsedData.data.length > 0) {
@@ -121,30 +111,5 @@ module.exports = Model.extend({
     }
 
     return parsedData;
-  },
-
-  fillNumericBuckets: function (buckets, start, width, numberOfBins) {
-    for (var i = 0; i < numberOfBins; i++) {
-      buckets[i] = _.extend({
-        bin: i,
-        start: start + (i * width),
-        end: start + ((i + 1) * width),
-        freq: 0
-      }, buckets[i]);
-    }
-  },
-
-  fillTimestampBuckets: function (buckets, start, aggregation, numberOfBins) {
-    var startDate = moment.unix(start).utc();
-
-    for (var i = 0; i < numberOfBins; i++) {
-      buckets[i] = _.extend({
-        bin: i,
-        start: startDate.clone().add(i, MOMENT_AGGREGATIONS[aggregation]).unix(),
-        end: startDate.clone().add(i + 1, MOMENT_AGGREGATIONS[aggregation]).unix() - 1,
-        next: startDate.clone().add(i + 1, MOMENT_AGGREGATIONS[aggregation]).unix(),
-        freq: 0
-      }, buckets[i]);
-    }
   }
 });

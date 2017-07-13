@@ -1,5 +1,6 @@
 var _ = require('underscore');
 var moment = require('moment');
+var momentTimezone = require('moment-timezone');
 var BackboneAbortSync = require('../../util/backbone-abort-sync');
 var Model = require('../../core/model');
 
@@ -34,8 +35,9 @@ module.exports = Model.extend({
     if (this.get('column_type') === 'date' && aggregation) {
       params.push('aggregation=' + aggregation);
 
-      if (this.get('timezone')) {
-        params.push('timezone=' + this.get('timezone'));
+      var timezone = this.get('timezone');
+      if (timezone) {
+        params.push('timezone=' + moment.tz(timezone).utcOffset() * 60);
       }
     } else if (this.get('bins')) {
       params.push('bins=' + this.get('bins'));

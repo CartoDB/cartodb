@@ -3,6 +3,8 @@ var Backbone = require('backbone');
 var DataviewModelBase = require('./dataview-model-base');
 var HistogramDataModel = require('./histogram-dataview/histogram-data-model');
 var d3 = require('d3');
+var moment = require('moment');
+var momentTimezone = require('moment-timezone');
 
 module.exports = DataviewModelBase.extend({
 
@@ -35,22 +37,23 @@ module.exports = DataviewModelBase.extend({
         }
       } else if (this.get('column_type') === 'date' && aggregation) {
         var timezone = this.get('timezone');
+        var offset = timezone && moment.tz(timezone).utcOffset() * 60;
+
+        if (offset) {
+          params.push('timezone=' + offset);
+        }
 
         if (_.isNumber(start)) {
-          var start = timezone ? start + timezone : start;
+          var start = offset ? start + offset : start;
           params.push('start=' + start);
         }
 
         if (_.isNumber(end)) {
-          var end = timezone ? end + timezone : end;
+          var end = offset ? end + offset : end;
           params.push('end=' + end);
         }
 
         params.push('aggregation=' + aggregation);
-
-        if (this.get('timezone')) {
-          params.push('timezone=' + timezone);
-        }
       }
     }
     return params;

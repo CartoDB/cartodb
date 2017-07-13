@@ -53,12 +53,14 @@ module CartoDB
         deleted = 0
         failed = 0
 
+        carto_user = Carto::User.find(user.id)
         remotes_by_name = Carto::Visualization.remotes.where(user_id: user.id).map { |v| [v.name, v] }.to_h
         get_datasets(visualizations_api_url).each do |dataset|
           begin
             visualization = remotes_by_name.delete(dataset['name'])
             if visualization
-              if update_remote_data(visualization, dataset)
+              visualization.attributes = dataset_visualization_attributes(dataset)
+              if visualization.changed?
                 visualization.save!
                 updated += 1
               else
@@ -66,11 +68,12 @@ module CartoDB
               end
             else
               visualization = Carto::Visualization.new(
-                name: dataset['name'],
-                user_id: user.id,
-                type: Carto::Visualization::TYPE_REMOTE
+                dataset_visualization_attributes(dataset).merge(
+                  name: dataset['name'],
+                  user: carto_user,
+                  type: Carto::Visualization::TYPE_REMOTE
+                )
               )
-              update_remote_data(visualization, dataset)
               visualization.save!
               added += 1
             end
@@ -152,8 +155,8 @@ module CartoDB
         end
       end
 
-      def update_remote_data(visualization, dataset)
-        visualization.attributes = {
+      def dataset_visualization_attributes(dataset)
+        {
           privacy: Carto::Visualization::PRIVACY_PUBLIC,
           description: dataset['description'],
           tags: dataset['tags'],
@@ -162,7 +165,6 @@ module CartoDB
           attributions: dataset['attributions'],
           display_name: dataset['display_name']
         }
-        visualization.changed?
       end
 
     end

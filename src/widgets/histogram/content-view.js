@@ -272,6 +272,7 @@ module.exports = cdb.core.View.extend({
 
   _renderMainChart: function () {
     this.histogramChartView = new HistogramChartView(({
+      type: 'histogram',
       margin: { top: 4, right: 4, bottom: 4, left: 4 },
       hasHandles: true,
       hasAxisTip: true,
@@ -298,11 +299,13 @@ module.exports = cdb.core.View.extend({
 
   _renderMiniChart: function () {
     this.miniHistogramChartView = new HistogramChartView(({
+      type: 'histogram',
       className: 'CDB-Chart--mini',
       mini: true,
       margin: { top: 0, right: 4, bottom: 4, left: 4 },
       height: 40,
       showOnWidthChange: false,
+      dataviewModel: this._dataviewModel,
       data: this._dataviewModel.getData(),
       normalized: this.model.get('normalized'),
       chartBarColor: this.model.getColor() || '#9DE0AD',

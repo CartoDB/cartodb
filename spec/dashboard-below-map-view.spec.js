@@ -23,7 +23,7 @@ describe('dashboard-below-map-view', function () {
       timeSeriesWidgetModelFake.dataviewModel.getUnfilteredDataModel = function () {
         return new Backbone.Model();
       };
-      timeSeriesWidgetModelFake.dataviewModel.getData = function () {
+      timeSeriesWidgetModelFake.dataviewModel.getUnfilteredData = function () {
         return {};
       };
       timeSeriesWidgetModelFake.dataviewModel.layer = new Backbone.Model();

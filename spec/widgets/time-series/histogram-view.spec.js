@@ -1,18 +1,19 @@
 var Backbone = require('backbone');
 var HistogramView = require('../../../src/widgets/time-series/histogram-view');
 var HistogramChartView = require('../../../src/widgets/histogram/chart');
+var specHelper = require('../../spec-helper');
 
 describe('widgets/time-series/histogram-view', function () {
   beforeEach(function () {
     this.timeSeriesModel = new Backbone.Model();
     this.timeSeriesModel.getWidgetColor = function () {};
 
-    this.dataviewModel = new Backbone.Model();
-    this.dataviewModel.filter = {};
-    this.dataviewModel.getUnfilteredDataModel = function () {
-      return new Backbone.Model();
-    };
-    this.dataviewModel.getData = function () {};
+    var vis = specHelper.createDefaultVis();
+    this.dataviewModel = vis.dataviews.createHistogramModel(vis.map.layers.first(), {
+      id: 'widget_3',
+      column: 'col',
+      column_type: 'date'
+    });
 
     spyOn(HistogramChartView.prototype, 'initialize');
     spyOn(HistogramChartView.prototype, 'render').and.callFake(function () {
@@ -23,46 +24,58 @@ describe('widgets/time-series/histogram-view', function () {
 
     this.view = new HistogramView({
       timeSeriesModel: this.timeSeriesModel,
-      model: this.dataviewModel,
+      dataviewModel: this.dataviewModel,
       rangeFilter: this.dataviewModel.filter,
       displayShadowBars: false,
       normalized: true
     });
   });
 
-  describe('.initialize', function () {
-    it('should set type to `time` by default', function () {
-      expect(this.view._chartType).toEqual('time');
-    });
-  });
-
   describe('._initBinds', function () {
     it('should hook up events properly', function () {
-      this.view.stopListening();
-      this.view.model.off();
+      this.view._dataviewModel.off();
+      this.view._chartView = {
+        setNormalized: function () {},
+        removeSelection: function () {}
+      };
       spyOn(this.view, '_onChangeData');
       spyOn(this.view, '_onNormalizedChanged');
+      spyOn(this.view, '_onFilterChanged');
 
       this.view._initBinds();
 
-      this.view.model.trigger('change:data');
+      this.view._dataviewModel.trigger('change:data');
       expect(this.view._onChangeData).toHaveBeenCalled();
 
       this.view._timeSeriesModel.trigger('change:normalized');
       expect(this.view._onNormalizedChanged).toHaveBeenCalled();
+
+      this.view._rangeFilter.trigger('change');
+      expect(this.view._onFilterChanged).toHaveBeenCalled();
+    });
+  });
+
+  describe('.resetFilter', function () {
+    it('should unset range in filter and reset filter internally', function () {
+      spyOn(this.view._rangeFilter, 'unsetRange');
+      spyOn(this.view, '_resetFilterInDI');
+
+      this.view.resetFilter();
+
+      expect(this.view._rangeFilter.unsetRange).toHaveBeenCalled();
+      expect(this.view._resetFilterInDI).toHaveBeenCalled();
     });
   });
 
   describe('._instantiateChartView', function () {
     it('should have been called with proper values', function () {
-      this.view._chartType = 'mahou';
       this.timeSeriesModel.set('normalized', true);
 
       this.view._instantiateChartView();
 
       expect(HistogramChartView.prototype.initialize).toHaveBeenCalled();
       var args = HistogramChartView.prototype.initialize.calls.mostRecent().args[0];
-      expect(args.type).toEqual('mahou');
+      expect(args.type).toEqual('time-date');
       expect(args.displayShadowBars).toBe(false);
       expect(args.normalized).toBe(true);
     });
@@ -94,6 +107,55 @@ describe('widgets/time-series/histogram-view', function () {
       this.view._onNormalizedChanged();
 
       expect(arg).toBe(true);
+    });
+  });
+
+  describe('_onFilterChanged', function () {
+    it('should call _resetFilterInDI if filter doesnt have min and max', function () {
+      this.view._rangeFilter.set({ min: undefined, max: undefined }, { unset: true });
+      spyOn(this.view, '_resetFilterInDI');
+      this.view._initBinds();
+      this.view._onFilterChanged();
+
+      expect(this.view._resetFilterInDI).toHaveBeenCalled();
+    });
+
+    it('should not call _resetFilterInDI if filter have min or max', function () {
+      this.view._rangeFilter.set({ min: 10, max: 50 });
+      spyOn(this.view, '_resetFilterInDI');
+      this.view._initBinds();
+      this.view._onFilterChanged();
+
+      expect(this.view._resetFilterInDI).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('_resetFilterInDI', function () {
+    beforeEach(function () {
+      this.view._rangeFilter.set({ min: 33, max: 77 });
+      this.view._chartView = {
+        removeSelection: function () {}
+      };
+      spyOn(this.view._chartView, 'removeSelection');
+      this.view._initBinds();
+      this.view._resetFilterInDI();
+    });
+
+    it('should call _chartView.removeSelection()', function () {
+      expect(this.view._chartView.removeSelection).toHaveBeenCalled();
+    });
+
+    it('should set _timeSeriesModel lo_index and hi_index to undefined', function () {
+      expect(this.view._timeSeriesModel.get('lo_index')).toEqual(undefined);
+      expect(this.view._timeSeriesModel.get('hi_index')).toEqual(undefined);
+    });
+  });
+
+  describe('._getChartType', function () {
+    it('should return time- plus the dataview column type', function () {
+      var chartType = this.view._getChartType();
+
+      expect(chartType).toEqual('time-date');
     });
   });
 });

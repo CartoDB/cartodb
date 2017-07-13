@@ -14,7 +14,6 @@ module.exports = cdb.core.View.extend({
 
   initialize: function () {
     this._dataviewModel = this.model.dataviewModel;
-    this._originalData = this.model.dataviewModel.getUnfilteredDataModel();
     this._selectedAmount = 0;
     this._initBinds();
   },
@@ -23,7 +22,7 @@ module.exports = cdb.core.View.extend({
     this.clearSubViews();
     this.$el.empty();
 
-    if (this._isDataEmpty()) {
+    if (this._isDataEmpty() || this._hasError()) {
       this.$el.append(placeholderTemplate({
         hasTorqueLayer: false
       }));
@@ -38,15 +37,11 @@ module.exports = cdb.core.View.extend({
   },
 
   _initBinds: function () {
-    this._originalData.once('change:data', this._onOriginalDataChange, this);
     this._dataviewModel.once('error', function () {
       console.log('the tiler does not support non-torque layers just yet…');
     });
-    this._dataviewModel.once('change:data', this.render, this);
-    this._dataviewModel.bind('change:bins', this._onChangeBins, this);
 
-    this.add_related_model(this._dataviewModel);
-    this.add_related_model(this._originalData);
+    this.listenTo(this._dataviewModel, 'change:data', this.render);
   },
 
   _createHistogramView: function () {
@@ -56,7 +51,7 @@ module.exports = cdb.core.View.extend({
 
     this._histogramView = new HistogramView({
       timeSeriesModel: this.model,
-      model: this._dataviewModel,
+      dataviewModel: this._dataviewModel,
       rangeFilter: this._dataviewModel.filter,
       displayShadowBars: !this.model.get('normalized'),
       normalized: !!this.model.get('normalized')
@@ -114,19 +109,6 @@ module.exports = cdb.core.View.extend({
     }
   },
 
-  _setRange: function (loBarIndex, hiBarIndex) {
-    var data = this._dataviewModel.getData();
-    var filter = this._dataviewModel.filter;
-    if ((!data || !data.length) || !loBarIndex || !hiBarIndex) {
-      return;
-    }
-
-    filter.setRange(
-      data[loBarIndex].start,
-      data[hiBarIndex - 1].end
-    );
-  },
-
   _calculateBars: function () {
     var data = this._dataviewModel.getData();
     var min = this.model.get('min');
@@ -167,17 +149,11 @@ module.exports = cdb.core.View.extend({
   },
 
   _isDataEmpty: function () {
-    var data = this._dataviewModel.getData();
+    var data = this._dataviewModel.getUnfilteredData();
     return _.isEmpty(data) || _.size(data) === 0;
   },
 
-  _onOriginalDataChange: function () {
-    // do an explicit fetch in order to get actual data
-    // with the filters applied (e.g. bbox)
-    this._dataviewModel.fetch();
-  },
-
-  _onChangeBins: function (mdl, bins) {
-    this._originalData.setBins(bins);
+  _hasError: function () {
+    return this._dataviewModel.has('error');
   }
 });

@@ -10,12 +10,13 @@ describe('widgets/histogram/content-view', function () {
     this.dataviewModel = vis.dataviews.createHistogramModel(vis.map.layers.first(), {
       id: 'widget_3',
       column: 'col',
+      column_type: 'number',
       source: {
         id: 'a0'
       }
     });
 
-    this.originalData = this.dataviewModel._unfilteredData;
+    this.originalData = this.dataviewModel._originalData;
     this.originalData.set({
       data: [{ bin: 10, max: 0 }, { bin: 3, max: 10 }],
       start: 0,
@@ -49,15 +50,15 @@ describe('widgets/histogram/content-view', function () {
     });
   });
 
-  describe('unfilteredData is not loaded', function () {
-    it('should render histogram when unfilteredData changes', function () {
+  describe('originalData is not loaded', function () {
+    it('should render histogram when originalData changes', function () {
       spyOn(this.view, 'render').and.callThrough();
       this.originalData.trigger('change:data', this.originalData);
       expect(this.view.render).toHaveBeenCalled();
       expect(this.view.$('h3').text()).toBe('Howdy');
     });
 
-    it('should not fetch data until unfilteredData changes', function () {
+    it('should not fetch data until originalData changes', function () {
       expect(this.dataviewModel.fetch).not.toHaveBeenCalled();
       this.originalData.trigger('change:data', this.originalData);
       expect(this.dataviewModel.fetch).toHaveBeenCalled();
@@ -81,7 +82,7 @@ describe('widgets/histogram/content-view', function () {
     });
   });
 
-  describe('unfilteredData is loaded', function () {
+  describe('originalData is loaded', function () {
     beforeEach(function () {
       this.originalData.trigger('change:data', this.originalData);
     });
@@ -275,7 +276,7 @@ describe('widgets/histogram/content-view', function () {
       expect(this.view.$('.CDB-Widget-content').length).toBe(0);
     });
 
-    it('should update data and original data of the mini histogram if there is a bins change and it is not zoomed', function () {
+    it('should update data and original data of the mini histogram if there is a data change and it is not zoomed', function () {
       var i = 0;
       this.dataviewModel.sync = function (method, model, options) {
         options.success({
@@ -289,16 +290,14 @@ describe('widgets/histogram/content-view', function () {
 
       this.dataviewModel.fetch();
 
-      spyOn(this.originalData, 'setBins');
       spyOn(this.view, '_isZoomed').and.returnValue(false);
       spyOn(this.view.miniHistogramChartView, 'replaceData');
       // Change data
-      this.dataviewModel.update({bins: 10});
+      this.originalData.trigger('change:data', this.originalData);
       expect(this.view.miniHistogramChartView.replaceData).toHaveBeenCalled();
-      expect(this.originalData.setBins).toHaveBeenCalled();
     });
 
-    it('should remove previous filter if there is a bins change', function () {
+    it('should remove previous filter if there is a data change', function () {
       var i = 0;
       this.dataviewModel.sync = function (method, model, options) {
         options.success({
@@ -315,7 +314,8 @@ describe('widgets/histogram/content-view', function () {
       spyOn(this.dataviewModel, 'disableFilter');
       spyOn(this.view.filter, 'unsetRange');
       // Change data
-      this.dataviewModel.update({bins: 10});
+      this.originalData.set('bins', 122, { silent: true });
+      this.originalData.trigger('change:data', this.originalData);
       expect(this.dataviewModel.disableFilter).toHaveBeenCalled();
       expect(this.view.filter.unsetRange).toHaveBeenCalled();
       expect(this.view.model.get('filter_enabled')).toBeFalsy();

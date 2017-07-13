@@ -22,9 +22,9 @@ module.exports = HistogramView.extend({
   _initBinds: function () {
     HistogramView.prototype._initBinds.call(this);
 
-    this._torqueLayerModel.bind('change:renderRange', this._onRenderRangeChanged, this);
-    this._torqueLayerModel.bind('change:steps change:start change:end', this._reSelectRange, this);
-    this.add_related_model(this._torqueLayerModel);
+    this.listenTo(this._torqueLayerModel, 'change:renderRange', this._onRenderRangeChanged);
+    this.listenTo(this._torqueLayerModel, 'change:steps change:start change:end', this._reSelectRange);
+    this.listenTo(this._torqueLayerModel, 'change:cartocss', this._onUpdateCartocss);
   },
 
   _createHistogramView: function () {
@@ -91,10 +91,7 @@ module.exports = HistogramView.extend({
     return step;
   },
 
-  _reSelectRange: function () {
-    var cartocss = this._torqueLayerModel.get('cartocss');
-    var duration = this._getAnimationDuration(cartocss);
-
+  _reSelectRange: function (model, data, options) {
     if (!this._rangeFilter.isEmpty()) {
       var loStep = this._timeToStep(this._rangeFilter.get('min'));
       var hiStep = this._timeToStep(this._rangeFilter.get('max'));
@@ -102,14 +99,35 @@ module.exports = HistogramView.extend({
       // clamp values since the range can be outside of the current torque thing
       var steps = this._torqueLayerModel.get('steps');
       var ratio = (hiStep - loStep) / steps;
-      this._torqueLayerModel.set('customDuration', Math.round(duration * ratio));
+      this._updateDuration(ratio);
       this._torqueLayerModel.renderRange(
         this._clampRangeVal(0, steps, loStep), // start
         this._clampRangeVal(0, steps, hiStep) // end
       );
     } else {
-      this._torqueLayerModel.set('customDuration', duration);
+      this._updateDuration(1);
     }
+  },
+
+  _updateDuration: function (ratio, cartocss) {
+    var duration = this._torqueLayerModel.getAnimationDuration(cartocss || this._torqueLayerModel.get('cartocss'));
+
+    this._torqueLayerModel.set('customDuration', Math.round(duration * ratio));
+  },
+
+  _onUpdateCartocss: function (m, cartocss) {
+    var ratio;
+    if (!this._rangeFilter.isEmpty()) {
+      var loStep = this._timeToStep(this._rangeFilter.get('min'));
+      var hiStep = this._timeToStep(this._rangeFilter.get('max'));
+      var steps = this._torqueLayerModel.get('steps');
+      ratio = (hiStep - loStep) / steps;
+    } else {
+      ratio = 1;
+    }
+
+    // Update silently, when carto.js updates the cartoCSS for torque, it will apply the new duration.
+    this._updateDuration(ratio, cartocss, { silent: true });
   },
 
   _clampRangeVal: function (a, b, t) {
@@ -118,10 +136,5 @@ module.exports = HistogramView.extend({
 
   _getMarginLeft: function () {
     return 16;
-  },
-
-  _getAnimationDuration: function (cartocss) {
-    var duration = cartocss.match(this._animationDurationRegex)[1];
-    return parseInt(duration, 10);
   }
 });

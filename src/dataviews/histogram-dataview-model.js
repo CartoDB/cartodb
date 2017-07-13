@@ -36,8 +36,7 @@ module.exports = DataviewModelBase.extend({
           params.push('end=' + end);
         }
       } else if (this.get('column_type') === 'date' && aggregation) {
-        var timezone = this.get('timezone');
-        var offset = timezone && moment.tz(timezone).utcOffset() * 60;
+        var offset = this._getOffset(this.get('timezone'));
 
         if (offset) {
           params.push('timezone=' + offset);
@@ -112,6 +111,10 @@ module.exports = DataviewModelBase.extend({
 
   disableFilter: function () {
     this.unset('own_filter');
+  },
+
+  _getOffset: function (timezone) {
+    return timezone && moment.tz(timezone).utcOffset() * 60;
   },
 
   getData: function () {
@@ -293,7 +296,7 @@ module.exports = DataviewModelBase.extend({
       options.bins = this.get('bins');
     } else if (columnType === 'date' && aggregation) {
       options.aggregation = aggregation;
-      options.timezone = this.get('timezone');
+      options.timezone = this._getOffset(this.get('timezone'));
     }
 
     return {
@@ -324,7 +327,7 @@ module.exports = DataviewModelBase.extend({
   _onDataChanged: function (model) {
     this.set({
       aggregation: model.get('aggregation'),
-      timezone: model.get('timezone') || 0,
+      timezone: model.get('timezone') || '',
       bins: model.get('bins'),
       end: model.get('end'),
       error: model.get('error'),

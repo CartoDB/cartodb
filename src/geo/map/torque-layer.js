@@ -11,6 +11,7 @@ var TORQUE_LAYER_CARTOCSS_PROPS = [
   '-torque-resolution'
 ];
 var LAYER_NAME_IN_CARTO_CSS = 'Map';
+var DEFAULT_ANIMATION_DURATION = 30;
 
 /**
  * Model for a Torque Layer
@@ -28,6 +29,20 @@ var TorqueLayer = LayerModelBase.extend({
     steps: 0,
     step: 0,
     time: undefined // should be a Date instance
+  },
+
+  _animationDurationRegex: /-torque-animation-duration: ([0-9]+)/,
+
+  // Helper method to be used from a few places, it parses torque cartocss to get
+  // the animation duration or a default duration
+  getAnimationDuration: function (cartocss) {
+    var match = cartocss.match(this._animationDurationRegex);
+
+    if (match === null) {
+      return DEFAULT_ANIMATION_DURATION;
+    }
+
+    return parseInt(match[1], 10);
   },
 
   initialize: function (attrs, options) {

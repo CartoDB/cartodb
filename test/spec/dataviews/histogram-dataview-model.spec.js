@@ -3,6 +3,7 @@ var Model = require('../../../src/core/model');
 var VisModel = require('../../../src/vis/vis');
 var RangeFilter = require('../../../src/windshaft/filters/range');
 var HistogramDataviewModel = require('../../../src/dataviews/histogram-dataview-model');
+var helper = require('../../../src/dataviews/helpers/histogram-helper');
 
 describe('dataviews/histogram-dataview-model', function () {
   beforeEach(function () {
@@ -298,7 +299,7 @@ describe('dataviews/histogram-dataview-model', function () {
     });
 
     it('should call .fillNumericBuckets if aggregation is not present', function () {
-      spyOn(this.model._originalData, 'fillNumericBuckets');
+      spyOn(helper, 'fillNumericBuckets');
       this.model._initBinds();
       this.model.set('column_type', 'number');
       var data = {
@@ -312,11 +313,11 @@ describe('dataviews/histogram-dataview-model', function () {
 
       this.model.parse(data);
 
-      expect(this.model._originalData.fillNumericBuckets).toHaveBeenCalled();
+      expect(helper.fillNumericBuckets).toHaveBeenCalled();
     });
 
     it('should call .fillTimestampBuckets if aggregation is present', function () {
-      spyOn(this.model._originalData, 'fillTimestampBuckets');
+      spyOn(helper, 'fillTimestampBuckets');
       this.model._initBinds();
       this.model.set({
         aggregation: 'month',
@@ -333,7 +334,7 @@ describe('dataviews/histogram-dataview-model', function () {
 
       this.model.parse(data);
 
-      expect(this.model._originalData.fillTimestampBuckets).toHaveBeenCalled();
+      expect(helper.fillTimestampBuckets).toHaveBeenCalled();
     });
   });
 

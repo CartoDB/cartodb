@@ -714,15 +714,10 @@
       "resolved": "https://registry.npmjs.org/cartocolor/-/cartocolor-4.0.0.tgz"
     },
     "cartodb-deep-insights.js": {
-      "version": "0.0.2",
+      "version": "0.0.2-c12324",
       "from": "cartodb/deep-insights.js#11649-play-c12324-time-series-aggregations",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#233461f41b2134b9cff41eba10f722fac9b2093b",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#8527ffb778d487e803d534919757f9c8be4d9c5a",
       "dependencies": {
-        "moment": {
-          "version": "2.10.6",
-          "from": "moment@2.10.6",
-          "resolved": "https://registry.npmjs.org/moment/-/moment-2.10.6.tgz"
-        },
         "node-polyglot": {
           "version": "2.2.2",
           "from": "node-polyglot@>=2.2.2 <3.0.0",
@@ -738,7 +733,7 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
       "from": "cartodb/cartodb.js#11649-play-c12324-time-series-aggregations",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#1bb6e7f176366c36f3ebfb65c913e231c1e79b9f"
+      "resolved": "git://github.com/cartodb/cartodb.js.git#244c7068f3f2affbefd1b5dfa77b63d70dc32b59"
     },
     "caseless": {
       "version": "0.11.0",

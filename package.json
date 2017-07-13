@@ -25,7 +25,7 @@
   "dependencies": {
     "backbone": "1.2.3",
     "cartocolor": "4.0.0",
-    "cartodb.js": "CartoDB/cartodb.js#ea80d272bdb07c80dc1c3abb938124f94cb5c569",
+    "cartodb.js": "CartoDB/cartodb.js#3134e2d6da5b67436e0f01c6b1bf4fe8fcab2db2",
     "d3": "3.5.17",
     "d3-interpolate": "1.1.2",
     "jquery": "2.1.4",

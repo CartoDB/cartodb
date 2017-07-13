@@ -110,7 +110,7 @@ var TorqueLayerViewBase = {
     this.listenTo(this.model, 'change:steps', this._stepsChanged);
     this.listenTo(this.model, 'change:renderRange', this._renderRangeChanged);
     this.listenTo(this.model, 'change', this._onModelChanged);
-    this.listenTo(this.model, 'change:cartoCSS', this._cartoCSSChanged);
+    this.listenTo(this.model, 'change:cartocss', this._cartoCSSChanged);
     this.listenTo(this.model, 'change:customDuration', this._onUpdateDuration);
   },
 
@@ -121,7 +121,7 @@ var TorqueLayerViewBase = {
     this.stopListening(this.model, 'change:steps', this._stepsChanged);
     this.stopListening(this.model, 'change:renderRange', this._renderRangeChanged);
     this.stopListening(this.model, 'change', this._onModelChanged);
-    this.stopListening(this.model, 'change:cartoCSS', this._cartoCSSChanged);
+    this.stopListening(this.model, 'change:cartocss', this._cartoCSSChanged);
     this.stopListening(this.model, 'change:customDuration', this._onUpdateDuration);
   },
 

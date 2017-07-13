@@ -2,6 +2,7 @@ Development
 -----------
 
 ### Features
+* Support for nested properties in CartoCSS (#12411)
 * New loading button styles (#12132)
 * [WIP] Export/import organization/user metadata to allow user migration (#12271, #12304, #12323)
 * Start using ::outline symbolizer for polygon stroke (#12412)
@@ -23,6 +24,7 @@ Development
 * Move playback on animated time series by clicking on it (#12180)
 
 ### Bug fixes / enhancements
+* Remove unsupported CartoCSS rules for vector rendering (#12410)
 * Fixed typo in content_no_datasets.jst.ejs and en.json (Docs)
 * Fixing problem parsing formula widget creation (#support/843)
 * Refactor Visualization::Member like and notification actions into Carto::Visualization (#12309)

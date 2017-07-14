@@ -143,6 +143,13 @@ module.exports = cdb.core.View.extend({
 
       var width = this.$el.parent().width() || 0;
 
+      if (this.model.get('animated')) {
+        // We could just substract 24, width of play/pause but imho this is more future proof
+        this.$el.siblings().each(function () {
+          width -= $(this).width();
+        });
+      }
+
       if (wasHidden) {
         this.hide();
       } else {

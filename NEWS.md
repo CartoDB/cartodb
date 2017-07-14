@@ -2,7 +2,17 @@ Development
 -----------
 
 ### Features
+* Support for nested properties in CartoCSS (#12411)
 * New loading button styles (#12132)
+* [WIP] Export/import organization/user metadata to allow user migration (#12271, #12304, #12323)
+* Start using ::outline symbolizer for polygon stroke (#12412)
+* [WIP] Export/import organization/user metadata to allow user migration (#12271, #12304, #12323, #12380)
+* New force param in EUMAPI organization users destroy operation to force deletion even with unregistered tables (#11654)
+* Removed the usage of the `organizations_admin` feature flag (#12131)
+* Show number of selected items in Time-Series widgets (#12179)
+* Show ranges in time series widget selection (#12291)
+* Bump Webpack version (#12392)
+* Start using ::outline symbolizer for polygon stroke (#12412)
 * [WIP] Export/import organization/user metadata to allow user migration (#12271, #12304, #12323, #12380)
 * New force param in EUMAPI organization users destroy operation to force deletion even with unregistered tables (#11654).
 * Removed the usage of the `organizations_admin` feature flag (#12131)
@@ -14,6 +24,9 @@ Development
 * Move playback on animated time series by clicking on it (#12180)
 
 ### Bug fixes / enhancements
+* Display dashboard notifications for open-source instances (#12421)
+* Remove unsupported CartoCSS rules for vector rendering (#12410)
+* Fixed typo in content_no_datasets.jst.ejs and en.json (Docs)
 * Fixing problem parsing formula widget creation (#support/843)
 * Refactor Visualization::Member like and notification actions into Carto::Visualization (#12309)
 * Don't try to lowercase null values in custom-list-collection object (support/#744)
@@ -21,6 +34,7 @@ Development
 * Don't try to lowercase null values in custom-list-collection object (#support/744)
 * Validate widget form when widget type changes (#11536)
 * Updated text of widget tooltips (#11467)
+* Fixes gravatar enabled check (support#840)
 * Fixed error where analysis overlay/infobox wasn't shown when hiding a layer (#11767)
 * Size of 'Add analysis' button reduced (#11580)
 * Fixed arrow keys exceeding min/max values in number editor (#12212)

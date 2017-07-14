@@ -28,6 +28,7 @@ module.exports = env => {
     },
     resolve: {
       symlinks: false,
+      extensions: ['.js', '.ts'],
       modules: [
         resolve(__dirname, 'node_modules'),
         resolve(__dirname, 'lib/assets/node_modules')
@@ -95,6 +96,10 @@ module.exports = env => {
               }
             }
           }
+        },
+        {
+          test: /\.ts$/,
+          loader: 'ts-loader'
         },
         {
           test: /\.tpl$/,

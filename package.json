@@ -40,6 +40,7 @@
     "webpack": "2.3.2"
   },
   "devDependencies": {
+    "@types/underscore": "^1.8.1",
     "autoprefixer-core": "5.2.1",
     "aws-sdk": "2.0.0-rc11",
     "babel-core": "6.25.0",
@@ -89,6 +90,8 @@
     "source-map-support": "0.4.0",
     "stringify": "5.1.0",
     "tpl-loader": "CartoDB/tpl-loader#master",
+    "ts-loader": "^2.2.2",
+    "typescript": "^2.4.1",
     "uglify-js": "2.7.x",
     "watchify": "3.7.0",
     "webpack-bundle-analyzer": "^2.4.0",

@@ -9,7 +9,6 @@ var TorqueControlsView = require('./torque-controls-view');
  */
 module.exports = HistogramView.extend({
   className: 'CDB-Widget-content CDB-Widget-content--timeSeries u-flex u-alignCenter',
-  _animationDurationRegex: /-torque-animation-duration: ([0-9]+);/,
 
   initialize: function () {
     if (!this.options.torqueLayerModel) throw new Error('torqeLayerModel is required');

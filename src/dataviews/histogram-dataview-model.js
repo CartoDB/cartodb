@@ -306,7 +306,7 @@ module.exports = DataviewModelBase.extend({
   },
 
   _onFieldsChanged: function () {
-    if (!this._hasChangedSomeOf(['bins', 'aggregation'], this.changed)) {
+    if (!helper.hasChangedSomeOf(['bins', 'aggregation'], this.changed)) {
       return;
     }
 
@@ -326,26 +326,6 @@ module.exports = DataviewModelBase.extend({
   _resetFilter: function () {
     this.disableFilter();
     this.filter.unsetRange();
-  },
-
-  // Helper functions - - - -
-
-  _onlyBinsHasChanged: function (changed) {
-    return this._hasKeyWithValue(changed, 'bins') && !_.has(changed, 'aggregation');
-  },
-
-  _onlyAggregationHasChanged: function (changed) {
-    return this._hasKeyWithValue(changed, 'aggregation') && !_.has(changed, 'bins');
-  },
-
-  _hasKeyWithValue: function (obj, key) {
-    return _.has(obj, key) && obj[key] !== void 0;
-  },
-
-  _hasChangedSomeOf: function (list, changed) {
-    return _.some(_.keys(changed), function (key) {
-      return _.contains(list, key);
-    });
   }
 },
 

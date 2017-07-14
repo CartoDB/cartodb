@@ -53,4 +53,10 @@ helper.calculateStart = function (buckets, start, aggregation) {
   return subtractAggregation(start, aggregation, firstBucket.bin);
 };
 
+helper.hasChangedSomeOf = function (list, changed) {
+  return _.some(_.keys(changed), function (key) {
+    return _.contains(list, key);
+  });
+};
+
 module.exports = helper;

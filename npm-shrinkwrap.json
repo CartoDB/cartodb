@@ -733,7 +733,7 @@
     "cartodb-deep-insights.js": {
       "version": "0.0.2",
       "from": "cartodb/deep-insights.js#12387-play-pause",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#8754981839e671bc082463ac1d1379b35951d6b3",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#f45d131e49601255cf29668c24571048e6ce446a",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",

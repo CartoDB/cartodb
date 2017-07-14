@@ -60,7 +60,10 @@ module.exports = cdb.core.View.extend({
     this.add_related_model(this._chartView.model);
 
     this._dataviewModel.on('change:bins', this._updateChartandTimeslider, this);
+    this._dataviewModel.filter.on('change:min change:max', this._onFilterMinMaxChange, this);
+
     this.add_related_model(this._dataviewModel);
+    this.add_related_model(this._dataviewModel.filter);
   },
 
   clean: function () {
@@ -68,6 +71,10 @@ module.exports = cdb.core.View.extend({
       this.timeSlider.remove();
     }
     cdb.core.View.prototype.clean.call(this);
+  },
+
+  _onFilterMinMaxChange: function (m, isFiltering) {
+    this.$el.toggle(!isFiltering);
   },
 
   _onDragStart: function () {

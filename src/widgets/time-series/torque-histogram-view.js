@@ -31,7 +31,8 @@ module.exports = HistogramView.extend({
     HistogramView.prototype._createHistogramView.call(this);
 
     this._torqueControls = new TorqueControlsView({
-      torqueLayerModel: this._torqueLayerModel
+      torqueLayerModel: this._torqueLayerModel,
+      rangeFilter: this._rangeFilter
     });
     this.addView(this._torqueControls);
 
@@ -40,13 +41,13 @@ module.exports = HistogramView.extend({
     this._chartView.setAnimated();
     this._chartView.bind('on_brush_click', this._onBrushClick, this);
 
-    var timeSliderView = new TorqueTimeSliderView({
+    this._timeSliderView = new TorqueTimeSliderView({
       dataviewModel: this.model, // a histogram model
       chartView: this._chartView,
       torqueLayerModel: this._torqueLayerModel
     });
-    this.addView(timeSliderView);
-    timeSliderView.render();
+    this.addView(this._timeSliderView);
+    this._timeSliderView.render();
   },
 
   _onChangeData: function () {
@@ -92,6 +93,7 @@ module.exports = HistogramView.extend({
 
   _reSelectRange: function (model, data, options) {
     if (!this._rangeFilter.isEmpty()) {
+      this._torqueLayerModel.pause();
       var loStep = this._timeToStep(this._rangeFilter.get('min'));
       var hiStep = this._timeToStep(this._rangeFilter.get('max'));
 
@@ -104,11 +106,13 @@ module.exports = HistogramView.extend({
         this._clampRangeVal(0, steps, hiStep) // end
       );
     } else {
+      this._torqueLayerModel.play();
       this._updateDuration(1);
     }
   },
 
   _updateDuration: function (ratio, cartocss) {
+    if (!this._torqueLayerModel.getAnimationDuration) return;
     var duration = this._torqueLayerModel.getAnimationDuration(cartocss || this._torqueLayerModel.get('cartocss'));
 
     this._torqueLayerModel.set('customDuration', Math.round(duration * ratio));

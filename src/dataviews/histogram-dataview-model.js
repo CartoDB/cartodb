@@ -165,6 +165,8 @@ module.exports = DataviewModelBase.extend({
   _onColumnChanged: function () {
     this._originalData.set('column_type', this.get('column_type'));
     this.set('aggregation', undefined, { silent: true });
+
+    this._resetFilter();
     this._reloadVisAndForceFetch();
   },
 

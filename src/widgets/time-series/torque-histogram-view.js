@@ -85,9 +85,9 @@ module.exports = HistogramView.extend({
 
   _timeToStep: function (timestamp) {
     var steps = this._torqueLayerModel.get('steps');
-    var start = this._originalData.get('start');
-    var end = this._originalData.get('end');
-    var step = (steps * (timestamp - start)) / (end - start);
+    var start = this._torqueLayerModel.get('start');
+    var end = this._torqueLayerModel.get('end');
+    var step = (steps * (1000 * timestamp - start)) / (end - start);
     return step;
   },
 
@@ -99,7 +99,7 @@ module.exports = HistogramView.extend({
 
       // clamp values since the range can be outside of the current torque thing
       var steps = this._torqueLayerModel.get('steps');
-      var ratio = (hiStep - loStep) / steps;
+      var ratio = this._chartView.getSelectionExtent() / 100;
       this._updateDuration(ratio);
       this._torqueLayerModel.renderRange(
         this._clampRangeVal(0, steps, loStep), // start

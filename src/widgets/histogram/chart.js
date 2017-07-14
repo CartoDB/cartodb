@@ -124,6 +124,16 @@ module.exports = cdb.core.View.extend({
     return this.model.get('height') - m.top - m.bottom - labelsMargin;
   },
 
+  getSelectionExtent: function () {
+    if (this.brush && this.brush.extent()) {
+      var extent = this.brush.extent();
+
+      return extent[1] - extent[0];
+    }
+
+    return 0;
+  },
+
   _resizeToParentElement: function () {
     if (this.$el.parent()) {
       // Hide this view temporarily to get actual size of the parent container

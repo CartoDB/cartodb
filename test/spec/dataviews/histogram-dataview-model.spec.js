@@ -3,6 +3,7 @@ var Model = require('../../../src/core/model');
 var VisModel = require('../../../src/vis/vis');
 var RangeFilter = require('../../../src/windshaft/filters/range');
 var HistogramDataviewModel = require('../../../src/dataviews/histogram-dataview-model');
+var helper = require('../../../src/dataviews/helpers/histogram-helper');
 
 describe('dataviews/histogram-dataview-model', function () {
   beforeEach(function () {
@@ -138,7 +139,8 @@ describe('dataviews/histogram-dataview-model', function () {
         bin_width: 10,
         bins_count: 3,
         bins_start: 1,
-        nulls: 0
+        nulls: 0,
+        aggregation: 'quarter'
       };
 
       spyOn(this.model._originalData, 'sync').and.callFake(function (method, model, options) {
@@ -146,7 +148,7 @@ describe('dataviews/histogram-dataview-model', function () {
       });
     });
 
-    it('should calculate start, end and bins', function () {
+    it('should set start, end, bins and aggregation', function () {
       expect(this.model.get('start')).toBeUndefined();
       expect(this.model.get('end')).toBeUndefined();
 
@@ -155,11 +157,7 @@ describe('dataviews/histogram-dataview-model', function () {
       expect(this.model.get('start')).toEqual(1);
       expect(this.model.get('end')).toEqual(31);
       expect(this.model.get('bins')).toEqual(3);
-    });
-
-    it('should call _resetFilterAndFetch', function () {
-      this.model._originalData.fetch();
-      expect(this.model._resetFilterAndFetch).toHaveBeenCalled();
+      expect(this.model.get('aggregation')).toEqual('quarter');
     });
 
     it('should call _updateBindings only once', function () {
@@ -174,24 +172,18 @@ describe('dataviews/histogram-dataview-model', function () {
   });
 
   describe('when column changes', function () {
-    it('should reload map and force fetch', function () {
+    it('should set column_type to original data, set undefined aggregation and reload map and force fetch', function () {
       this.vis.reload.calls.reset();
-      this.model.set('column', 'random_col');
+
+      this.model.set({
+        aggregation: 'quarter',
+        column: 'random_col',
+        column_type: 'aColumnType'
+      });
+
+      expect(this.model._originalData.get('column_type')).toEqual('aColumnType');
+      expect(this.model.get('aggregation')).toBeUndefined();
       expect(this.vis.reload).toHaveBeenCalledWith({ forceFetch: true, sourceId: 'a0' });
-    });
-  });
-
-  describe('when only bins changes', function () {
-    it('should set _originalData bins', function () {
-      this.model.set('bins', 43);
-      expect(this.model._originalData.get('bins')).toEqual(43);
-    });
-  });
-
-  describe('when only aggregation changes', function () {
-    it('should set _originalData aggregation', function () {
-      this.model.set('aggregation', 'month');
-      expect(this.model._originalData.get('aggregation')).toEqual('month');
     });
   });
 
@@ -307,8 +299,9 @@ describe('dataviews/histogram-dataview-model', function () {
     });
 
     it('should call .fillNumericBuckets if aggregation is not present', function () {
-      spyOn(this.model._originalData, 'fillNumericBuckets');
+      spyOn(helper, 'fillNumericBuckets');
       this.model._initBinds();
+      this.model.set('column_type', 'number');
       var data = {
         bin_width: 0,
         bins: [],
@@ -319,13 +312,17 @@ describe('dataviews/histogram-dataview-model', function () {
       };
 
       this.model.parse(data);
-      expect(this.model._originalData.fillNumericBuckets).toHaveBeenCalled();
+
+      expect(helper.fillNumericBuckets).toHaveBeenCalled();
     });
 
-    it('should call .fillNumericBuckets if aggregation is present', function () {
-      spyOn(this.model._originalData, 'fillTimestampBuckets');
+    it('should call .fillTimestampBuckets if aggregation is present', function () {
+      spyOn(helper, 'fillTimestampBuckets');
       this.model._initBinds();
-      this.model.set('aggregation', 'month', { silent: true });
+      this.model.set({
+        aggregation: 'month',
+        column_type: 'date'
+      }, { silent: true });
       var data = {
         bin_width: 0,
         bins: [],
@@ -337,7 +334,7 @@ describe('dataviews/histogram-dataview-model', function () {
 
       this.model.parse(data);
 
-      expect(this.model._originalData.fillTimestampBuckets).toHaveBeenCalled();
+      expect(helper.fillTimestampBuckets).toHaveBeenCalled();
     });
   });
 
@@ -375,15 +372,19 @@ describe('dataviews/histogram-dataview-model', function () {
       expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&end=22');
     });
 
-    it('should include bins if present', function () {
-      this.model.set('bins', 33);
+    it('should include bins if present and the column type is number', function () {
+      this.model.set({
+        bins: 33,
+        column_type: 'number'
+      });
       expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&bins=33');
     });
 
-    it('should only include aggregation if aggregation and bins present', function () {
+    it('should only include aggregation if aggregation and bins present and column type is date', function () {
       this.model.set({
         aggregation: 'month',
-        bins: 33
+        bins: 33,
+        column_type: 'date'
       });
       expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&aggregation=month');
     });
@@ -393,7 +394,8 @@ describe('dataviews/histogram-dataview-model', function () {
         'url': 'http://example.com',
         'start': 0,
         'end': 10,
-        'bins': 25
+        'bins': 25,
+        column_type: 'number'
       });
       expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&start=0&end=10&bins=25');
       this.model.enableFilter();
@@ -421,20 +423,48 @@ describe('dataviews/histogram-dataview-model', function () {
   });
 
   describe('._onDataChanged', function () {
-    beforeEach(function () {
+    it('should call _resetFilterAndFetch if column is data and aggregation changes', function () {
+      var model = new Backbone.Model({
+        aggregation: 'week'
+      });
+      this.model.set('column_type', 'date', { silent: true });
+
+      this.model._onDataChanged(model);
+
+      expect(this.model._resetFilterAndFetch).toHaveBeenCalled();
+    });
+
+    it('should call _resetFilterAndFetch if column is number and bins changes', function () {
+      var model = new Backbone.Model({
+        bins: 5
+      });
+      this.model.set('column_type', 'number', { silent: true });
+
+      this.model._onDataChanged(model);
+
+      expect(this.model._resetFilterAndFetch).toHaveBeenCalled();
+    });
+
+    it('should call only fetch in the rest of cases', function () {
+      var model = new Backbone.Model({
+        start: this.model.get('start') + 1,
+        end: 22
+      });
+
+      this.model._onDataChanged(model);
+
+      expect(this.model.fetch).toHaveBeenCalled();
+    });
+
+    it('should set the data fetched', function () {
       var model = new Backbone.Model({
         start: 11,
         end: 22,
         bins: 5
       });
+
       this.model._onDataChanged(model);
-    });
 
-    it('should call _resetFilterAndFetch', function () {
-      expect(this.model._resetFilterAndFetch).toHaveBeenCalled();
-    });
-
-    it('should set the data fetched', function () {
       expect(this.model.get('start')).toEqual(11);
       expect(this.model.get('end')).toEqual(22);
       expect(this.model.get('bins')).toEqual(5);

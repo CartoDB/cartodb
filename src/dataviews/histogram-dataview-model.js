@@ -2,6 +2,7 @@ var _ = require('underscore');
 var Backbone = require('backbone');
 var DataviewModelBase = require('./dataview-model-base');
 var HistogramDataModel = require('./histogram-dataview/histogram-data-model');
+var helper = require('./helpers/histogram-helper');
 var d3 = require('d3');
 
 module.exports = DataviewModelBase.extend({
@@ -112,8 +113,8 @@ module.exports = DataviewModelBase.extend({
   parse: function (data) {
     var aggregation = data.aggregation;
     var numberOfBins = data.bins_count;
-    var start = data.bins_start;
     var width = data.bin_width;
+    var start = this.get('column_type') === 'date' ? helper.calculateStart(data.bins, data.bins_start, aggregation) : data.bins_start;
 
     var parsedData = {
       data: [],
@@ -135,9 +136,9 @@ module.exports = DataviewModelBase.extend({
     this.set('aggregation', aggregation, { silent: true });
 
     if (this.get('column_type') === 'date') {
-      this._originalData.fillTimestampBuckets(parsedData.data, start, aggregation, numberOfBins)
+      helper.fillTimestampBuckets(parsedData.data, start, aggregation, numberOfBins);
     } else {
-      this._originalData.fillNumericBuckets(parsedData.data, start, width, numberOfBins);
+      helper.fillNumericBuckets(parsedData.data, start, width, numberOfBins);
     }
 
     // FIXME - Update the end of last bin due https://github.com/CartoDB/cartodb.js/issues/926
@@ -255,7 +256,7 @@ module.exports = DataviewModelBase.extend({
     if (this.get('column_type') === 'number' && this.get('bins')) {
       options.bins = this.get('bins');
     } else if (this.get('column_type') === 'date' && this.get('aggregation')) {
-      options.aggregation = this.get('aggregation')
+      options.aggregation = this.get('aggregation');
     }
 
     return {
@@ -313,7 +314,7 @@ module.exports = DataviewModelBase.extend({
       this._originalData.set('bins', this.get('bins'));
     }
     if (this.get('column_type') === 'date') {
-      this._originalData.set('aggregation', this.get('aggregation'))
+      this._originalData.set('aggregation', this.get('aggregation'));
     }
   },
 

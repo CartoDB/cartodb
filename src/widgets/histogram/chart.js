@@ -856,7 +856,7 @@ module.exports = cdb.core.View.extend({
   },
 
   _onMouseMove: function () {
-    var x = d3.event.offsetX;
+    var x = d3.event.offsetX - this.model.get('margin').left;
 
     var barIndex = Math.floor(x / this.barWidth);
     var data = this.model.get('data');

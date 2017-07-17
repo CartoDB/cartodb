@@ -22,6 +22,7 @@ Development
 * Bump Webpack version (#12392).
 * The selection window on a histogram widget can be dragged (#12180)
 * Move playback on animated time series by clicking on it (#12180)
+* Updates Dataservices API client default version to `0.18.0` (#12466)
 
 ### Bug fixes / enhancements
 * Display dashboard notifications for open-source instances (#12421)

@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.8.51",
+  "version": "4.8.52-12387",
   "dependencies": {
     "abbrev": {
       "version": "1.1.0",
@@ -733,7 +733,7 @@
     "cartodb-deep-insights.js": {
       "version": "0.0.2",
       "from": "cartodb/deep-insights.js#12387-play-pause",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#f45d131e49601255cf29668c24571048e6ce446a",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#02fd963dbaef41f37bcf2103f4e328e37f47de00",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",

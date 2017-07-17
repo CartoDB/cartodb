@@ -65,7 +65,7 @@ describe('widgets/time-series/torque-content-view', function () {
   });
 
   describe('.render', function () {
-    it('should create header, histogram and dropdown views', function () {
+    it('should create header, histogram, slider and dropdown views', function () {
       provideData.call(this);
 
       this.view.render();
@@ -76,7 +76,7 @@ describe('widgets/time-series/torque-content-view', function () {
       expect(this.view._dropdownView).toBeDefined();
       expect(this.view.$('.js-torque-header').length).toBe(1);
       expect(this.view.$('.js-header .CDB-Dropdown').length).toBe(1);
-      expect(this.view.$('svg').length).toBe(1);
+      expect(this.view.$('svg').length).toBe(2);
       expect(this.view._histogramView.options.displayShadowBars).toBe(true);
       expect(this.view._histogramView.options.normalized).toBe(false);
     });

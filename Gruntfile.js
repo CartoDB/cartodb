@@ -410,10 +410,10 @@ module.exports = function (grunt) {
    * `grunt test`
    */
   grunt.registerTask('test', '(CI env) Re-build JS files and run all tests. For manual testing use `grunt jasmine` directly', [
-    'beforeDefault',
-    'js_editor',
-    'jasmine:cartodbui',
-    'js_builder',
+    // 'beforeDefault',
+    // 'js_editor',
+    // 'jasmine:cartodbui',
+    // 'js_builder',
     'affected:all',
     'bootstrap_webpack_builder_specs',
     'webpack:builder_specs',

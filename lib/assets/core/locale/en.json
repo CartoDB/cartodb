@@ -2321,7 +2321,7 @@
           "aggregation_column": "Aggregation Column",
           "bins": "Buckets",
           "column": "Column",
-          "timezone": "Time zone",
+          "timezone": "Default Time Zone",
           "description": "Configure your values",
           "end": "End",
           "loading": "loading…",

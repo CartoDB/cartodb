@@ -286,7 +286,7 @@ module.exports = cdb.core.View.extend({
       widgetModel: this.model
     }));
 
-    this.$('.js-content').append(this.histogramChartView.el);
+    this.$('.js-chart').append(this.histogramChartView.el);
     this.addView(this.histogramChartView);
 
     this.histogramChartView.bind('on_brush_end', this._onBrushEnd, this);
@@ -311,7 +311,7 @@ module.exports = cdb.core.View.extend({
     }));
 
     this.addView(this.miniHistogramChartView);
-    this.$('.js-content').append(this.miniHistogramChartView.el);
+    this.$('.js-mini-chart').append(this.miniHistogramChartView.el);
     this.miniHistogramChartView.bind('on_brush_end', this._onMiniRangeUpdated, this);
     this.miniHistogramChartView.render();
   },

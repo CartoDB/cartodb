@@ -16,6 +16,8 @@ module.exports = cdb.core.View.extend({
       4 // margins
   },
 
+  className: 'CDB-Chart--histogram',
+
   initialize: function () {
     this._timeSeriesModel = this.options.timeSeriesModel;
     this._rangeFilter = this.options.rangeFilter;

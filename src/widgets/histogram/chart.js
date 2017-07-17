@@ -15,7 +15,6 @@ var TRIANGLE_HEIGHT = 7;
 var TRIANGLE_RIGHT_FACTOR = 1.3;
 var TOOLTIP_MARGIN = 2;
 var DASH_WIDTH = 4;
-var SVG_CLASS = 'CDB-Chart--histogram';
 
 var BEZIER_MARGIN_X = 0.1;
 var BEZIER_MARGIN_Y = 1;
@@ -66,10 +65,6 @@ module.exports = cdb.core.View.extend({
     // using tagName: 'svg' doesn't work,
     // and w/o class="" d3 won't instantiate properly
     this.setElement($('<svg class=""></svg>')[0]);
-
-    if (!this.options.mini) {
-      this.$el.attr('class', SVG_CLASS);
-    }
 
     this._widgetModel = this.options.widgetModel;
     this._dataviewModel = this.options.dataviewModel;

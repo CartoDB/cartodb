@@ -8,7 +8,9 @@ var TorqueControlsView = require('./torque-controls-view');
  * this.model is a histogram model
  */
 module.exports = HistogramView.extend({
-  className: 'CDB-Widget-content CDB-Widget-content--timeSeries u-flex u-alignCenter',
+  className: function () {
+    return HistogramView.prototype.className + ' CDB-Widget-content CDB-Widget-content--timeSeries u-flex u-alignCenter';
+  },
 
   initialize: function () {
     if (!this.options.torqueLayerModel) throw new Error('torqeLayerModel is required');

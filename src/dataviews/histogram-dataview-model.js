@@ -189,10 +189,12 @@ module.exports = DataviewModelBase.extend({
 
   _onColumnChanged: function () {
     this._originalData.set('column_type', this.get('column_type'));
+
     this.set({
       aggregation: undefined,
       offset: undefined
     }, { silent: true });
+
     this._reloadVisAndForceFetch();
   },
 
@@ -334,14 +336,14 @@ module.exports = DataviewModelBase.extend({
     } else if (this.get('column_type') === 'number' && _.has(this.changed, 'bins')) {
       resetFilter = true;
     }
-debugger;
+
     resetFilter
       ? this._resetFilterAndFetch()
       : this.fetch();
   },
 
   _onFieldsChanged: function () {
-    if (!this._hasChangedSomeOf(['offset', 'bins', 'aggregation'], this.changed)) {
+    if (!helper.hasChangedSomeOf(['offset', 'bins', 'aggregation'], this.changed)) {
       return;
     }
 
@@ -364,14 +366,6 @@ debugger;
   _resetFilter: function () {
     this.disableFilter();
     this.filter.unsetRange();
-  },
-
-  // Helper functions - - - -
-
-  _hasChangedSomeOf: function (list, changed) {
-    return _.some(_.keys(changed), function (key) {
-      return _.contains(list, key);
-    });
   }
 },
 

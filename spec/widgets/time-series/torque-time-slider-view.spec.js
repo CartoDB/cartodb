@@ -25,10 +25,10 @@ describe('widgets/time-series/torque-time-slider-view', function () {
     });
 
     this.histogramChartMargins = {
-      top: 1,
-      right: 2,
-      bottom: 3,
-      left: 4
+      top: 0,
+      right: 0,
+      bottom: 0,
+      left: 0
     };
 
     spyOn(HistogramChartView.prototype, '_setupFillColor').and.returnValue('red');

@@ -85,6 +85,7 @@ class Carto::Visualization < ActiveRecord::Base
   validates :version, presence: true
   validate :validate_password_presence
   validate :validate_privacy_changes
+  validate :validate_user_not_viewer, on: :create
 
   before_validation :set_default_version, :set_register_table_only
   before_create :set_random_id, :set_default_permission
@@ -745,6 +746,12 @@ class Carto::Visualization < ActiveRecord::Base
   def validate_privacy_changes
     if derived? && is_privacy_private? && privacy_changed? && !user.try(:private_maps_enabled?)
       errors.add(:privacy, 'cannot be set to private')
+    end
+  end
+
+  def validate_user_not_viewer
+    if user.viewer
+      errors.add(:user, 'cannot be viewer')
     end
   end
 

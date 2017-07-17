@@ -131,6 +131,28 @@ describe Carto::Mapcap do
       regenerated_visualization.permission.id.should eq @visualization.permission.id
     end
 
+    describe 'without user DB' do
+      before(:all) do
+        @user_nodb = FactoryGirl.create(:carto_user, private_tables_enabled: true)
+        @map_nodb, @table_nodb, @table_visualization_nodb, @visualization_nodb = create_full_visualization(@user_nodb)
+        @mapcap_nodb = Carto::Mapcap.create!(visualization_id: @visualization_nodb.id)
+        @actual_db_name = @user_nodb.database_name
+        @user_nodb.update_attribute(:database_name, 'wadus')
+        @mapcap_nodb.reload
+      end
+
+      after(:all) do
+        @user_nodb.update_attribute(:database_name, @actual_db_name)
+        destroy_full_visualization(@map_nodb, @table_nodb, @table_visualization_nodb, @visualization_nodb)
+        @user_nodb.destroy
+      end
+
+      it 'should work' do
+        CartoDB::Logger.expects(:warning).never
+        @mapcap_nodb.regenerate_visualization
+      end
+    end
+
     describe 'with layers' do
       before(:all) do
         @carto_layer = FactoryGirl.create(:carto_layer, kind: 'carto', maps: [@map])

@@ -147,7 +147,7 @@ module.exports = cdb.core.View.extend({
       }
 
       // This should match the one on _default.css
-      if (window.matchMedia('(max-width: 759px)').matches) {
+      if (parent.outerWidth && window.matchMedia('(max-width: 759px)').matches) {
         var margins = parent.outerWidth(true) - parent.width();
         width -= margins;
       }

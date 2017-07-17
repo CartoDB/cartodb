@@ -4,8 +4,6 @@ var DataviewModelBase = require('./dataview-model-base');
 var HistogramDataModel = require('./histogram-dataview/histogram-data-model');
 var helper = require('./helpers/histogram-helper');
 var d3 = require('d3');
-var moment = require('moment');
-var momentTimezone = require('moment-timezone');
 
 module.exports = DataviewModelBase.extend({
 
@@ -37,19 +35,17 @@ module.exports = DataviewModelBase.extend({
           params.push('end=' + end);
         }
       } else if (this.get('column_type') === 'date' && aggregation) {
-        var offset = this._getOffset(this.get('timezone'));
+        var offset = this.get('offset');
 
         if (offset) {
-          params.push('timezone=' + offset);
+          params.push('offset=' + offset);
         }
 
         if (_.isNumber(start)) {
-          var start = offset ? start + offset : start;
           params.push('start=' + start);
         }
 
         if (_.isNumber(end)) {
-          var end = offset ? end + offset : end;
           params.push('end=' + end);
         }
 
@@ -64,7 +60,7 @@ module.exports = DataviewModelBase.extend({
     this._originalData = new HistogramDataModel({
       bins: this.get('bins'),
       aggregation: this.get('aggregation'),
-      timezone: this.get('timezone'),
+      offset: this.get('offset'),
       column_type: this.get('column_type'),
       apiKey: this.get('apiKey'),
       authToken: this.get('authToken')
@@ -88,7 +84,7 @@ module.exports = DataviewModelBase.extend({
     this._originalData.once('change:data', this._updateBindings, this);
 
     this.on('change:column', this._onColumnChanged, this);
-    this.on('change:timezone', this._onTimezoneChanged, this);
+    this.on('change:offset', this._onOffsetChanged, this);
     this.on('change', this._onFieldsChanged, this);
 
     this.listenTo(this.layer, 'change:meta', this._onChangeLayerMeta);
@@ -114,10 +110,6 @@ module.exports = DataviewModelBase.extend({
     this.unset('own_filter');
   },
 
-  _getOffset: function (timezone) {
-    return timezone && moment.tz(timezone).utcOffset() * 60;
-  },
-
   getData: function () {
     return this._data.toJSON();
   },
@@ -140,7 +132,7 @@ module.exports = DataviewModelBase.extend({
 
   parse: function (data) {
     var aggregation = data.aggregation;
-    var timezone = data.timezone;
+    var offset = data.offset;
     var numberOfBins = data.bins_count;
     var width = data.bin_width;
     var start = this.get('column_type') === 'date' ? helper.calculateStart(data.bins, data.bins_start, aggregation) : data.bins_start;
@@ -164,11 +156,11 @@ module.exports = DataviewModelBase.extend({
 
     this.set({
       aggregation: aggregation,
-      timezone: timezone
+      offset: offset
     }, { silent: true });
 
     if (this.get('column_type') === 'date') {
-      helper.fillTimestampBuckets(parsedData.data, start, aggregation, numberOfBins, timezone);
+      helper.fillTimestampBuckets(parsedData.data, start, aggregation, numberOfBins, offset);
     } else {
       helper.fillNumericBuckets(parsedData.data, start, width, numberOfBins);
     }
@@ -199,12 +191,12 @@ module.exports = DataviewModelBase.extend({
     this._originalData.set('column_type', this.get('column_type'));
     this.set({
       aggregation: undefined,
-      timezone: undefined
+      offset: undefined
     }, { silent: true });
     this._reloadVisAndForceFetch();
   },
 
-  _onTimezoneChanged: function () {
+  _onOffsetChanged: function () {
     this._reloadVisAndForceFetch();
   },
 
@@ -297,7 +289,7 @@ module.exports = DataviewModelBase.extend({
       options.bins = this.get('bins');
     } else if (columnType === 'date' && aggregation) {
       options.aggregation = aggregation;
-      options.timezone = this._getOffset(this.get('timezone'));
+      options.offset = this.get('offset');
     }
 
     return {
@@ -318,7 +310,7 @@ module.exports = DataviewModelBase.extend({
   _onUrlChanged: function () {
     this._originalData.set({
       aggregation: this.get('aggregation'),
-      timezone: this.get('timezone'),
+      offset: this.get('offset'),
       bins: this.get('bins')
     }, { silent: true });
 
@@ -328,7 +320,7 @@ module.exports = DataviewModelBase.extend({
   _onDataChanged: function (model) {
     this.set({
       aggregation: model.get('aggregation'),
-      timezone: model.get('timezone') || '',
+      offset: model.get('offset') || 0,
       bins: model.get('bins'),
       end: model.get('end'),
       error: model.get('error'),
@@ -342,14 +334,14 @@ module.exports = DataviewModelBase.extend({
     } else if (this.get('column_type') === 'number' && _.has(this.changed, 'bins')) {
       resetFilter = true;
     }
-
+debugger;
     resetFilter
       ? this._resetFilterAndFetch()
       : this.fetch();
   },
 
   _onFieldsChanged: function () {
-    if (!this._hasChangedSomeOf(['timezone', 'bins', 'aggregation'], this.changed)) {
+    if (!this._hasChangedSomeOf(['offset', 'bins', 'aggregation'], this.changed)) {
       return;
     }
 
@@ -358,7 +350,7 @@ module.exports = DataviewModelBase.extend({
     }
     if (this.get('column_type') === 'date') {
       this._originalData.set({
-        timezone: this.get('timezone'),
+        offset: this.get('offset'),
         aggregation: this.get('aggregation'),
       });
     }
@@ -392,7 +384,7 @@ module.exports = DataviewModelBase.extend({
       'min',
       'max',
       'aggregation',
-      'timezone'
+      'offset'
     ])
   }
 );

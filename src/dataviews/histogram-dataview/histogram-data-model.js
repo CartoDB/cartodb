@@ -1,6 +1,4 @@
 var _ = require('underscore');
-var moment = require('moment');
-var momentTimezone = require('moment-timezone');
 var BackboneAbortSync = require('../../util/backbone-abort-sync');
 var Model = require('../../core/model');
 var helper = require('../helpers/histogram-helper');
@@ -25,9 +23,9 @@ module.exports = Model.extend({
     if (this.get('column_type') === 'date' && aggregation) {
       params.push('aggregation=' + aggregation);
 
-      var timezone = this.get('timezone');
-      if (timezone) {
-        params.push('timezone=' + moment.tz(timezone).utcOffset() * 60);
+      var offset = this.get('offset');
+      if (offset) {
+        params.push('offset=' + offset);
       }
     } else if (this.get('bins')) {
       params.push('bins=' + this.get('bins'));
@@ -53,7 +51,7 @@ module.exports = Model.extend({
       this.fetch();
     }, this);
 
-    this.bind('change:timezone change:aggregation change:bins', function () {
+    this.bind('change:offset change:aggregation change:bins', function () {
       if (this.hasChanged('bins') && this.get('aggregation')) return;
       this.fetch();
     }, this);
@@ -79,8 +77,10 @@ module.exports = Model.extend({
     var numberOfBins = data.bins_count;
     var width = data.bin_width;
     var start = this.get('column_type') === 'date' ? helper.calculateStart(data.bins, data.bins_start, aggregation) : data.bins_start;
+    var offset = data.offset;
 
     var parsedData = {
+      offset: offset,
       aggregation: aggregation,
       bins: numberOfBins,
       data: new Array(numberOfBins)
@@ -98,9 +98,8 @@ module.exports = Model.extend({
     }
 
     parsedData.error = undefined;
-
     if (this.get('column_type') === 'date') {
-      helper.fillTimestampBuckets(parsedData.data, start, aggregation, numberOfBins);
+      helper.fillTimestampBuckets(parsedData.data, start, aggregation, numberOfBins, offset);
     } else {
       helper.fillNumericBuckets(parsedData.data, start, width, numberOfBins);
     }

@@ -90,14 +90,14 @@ format.formatValue = function (value) {
   return value;
 };
 
-format.timestampFactory = function (aggregation) {
+format.timestampFactory = function (aggregation, offset) {
   return function (timestamp) {
     if (!_.has(AGGREGATION_FORMATS, aggregation)) {
       return '-';
     }
 
     var format = AGGREGATION_FORMATS[aggregation];
-    var date = moment.unix(timestamp).utc();
+    var date = moment.unix(timestamp + offset).utc();
     return date.format(format.display);
   };
 };

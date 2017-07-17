@@ -96,7 +96,7 @@ module.exports = cdb.core.View.extend({
 
     this.formatter = formatter.formatNumber;
     if (this._isDateTimeSeries()) {
-      this.formatter = formatter.timestampFactory(this._dataviewModel.get('aggregation'));
+      this.formatter = formatter.timestampFactory(this._dataviewModel.get('aggregation'), this._dataviewModel.get('offset'));
       this.options.divisionWidth = this._calculateDivisionWithByAggregation(this._dataviewModel.get('aggregation'));
     }
   },
@@ -1087,7 +1087,9 @@ module.exports = cdb.core.View.extend({
       .selectAll('.Label')
       .data(this.verticalRange)
       .enter().append('text')
-      .attr('x', function (d) { return d; })
+      .attr('x', function (d) {
+        return d;
+      })
       .attr('y', function () { return self.chartHeight() + 15; })
       .attr('text-anchor', adjustTextAnchor)
       .text(function (d) {

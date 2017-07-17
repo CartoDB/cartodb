@@ -92,6 +92,7 @@ module.exports = cdb.core.View.extend({
       target: '.js-actions',
       container: this.$('.js-header'),
       flags: {
+        localTimezone: true,
         normalizeHistogram: true,
         canCollapse: false
       }

@@ -16,6 +16,22 @@
     </li>
   <% } %>
 
+  <% if (flags.localTimezone) { %>
+  <li class="CDB-Dropdown-item">
+    <button class="CDB-Dropdown-link js-toggleLocalTimezone">
+      Local Time Zone
+      <div class="CDB-Dropdown-toggle">
+        <% if (local_timezone) { %>
+        <input class="CDB-Toggle u-iBlock js-localTimezone" type="checkbox" name="localtimezone">
+        <% } else { %>
+        <input class="CDB-Toggle u-iBlock js-localTimezone" checked="checked" type="checkbox" name="localtimezone">
+        <% } %>
+        <span class="u-iBlock CDB-ToggleFace"></span>
+      </div>
+    </button>
+  </li>
+  <% } %>
+
   <% if (flags.normalizeHistogram) { %>
   <li class="CDB-Dropdown-item">
     <button class="CDB-Dropdown-link js-toggleNormalized">

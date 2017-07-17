@@ -22,6 +22,7 @@ Development
 * Bump Webpack version (#12392).
 * The selection window on a histogram widget can be dragged (#12180)
 * Move playback on animated time series by clicking on it (#12180)
+* Move play/pause button to besides the time series (#12387)
 
 ### Bug fixes / enhancements
 * Display dashboard notifications for open-source instances (#12421)

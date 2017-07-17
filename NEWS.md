@@ -25,6 +25,7 @@ Development
 * Updates Dataservices API client default version to `0.18.0` (#12466)
 
 ### Bug fixes / enhancements
+* Remove tracking of liked map events (#12404).
 * Display dashboard notifications for open-source instances (#12421)
 * Remove unsupported CartoCSS rules for vector rendering (#12410)
 * Fixed typo in content_no_datasets.jst.ejs and en.json (Docs)

@@ -136,13 +136,20 @@ module.exports = cdb.core.View.extend({
 
       this.hide();
 
-      var width = this.$el.parent().width() || 0;
+      var parent = this.$el.parent();
+      var width = parent.width() || 0;
 
       if (this.model.get('animated')) {
         // We could just substract 24, width of play/pause but imho this is more future proof
         this.$el.siblings().each(function () {
           width -= $(this).width();
         });
+      }
+
+      // This should match the one on _default.css
+      if (window.matchMedia('(max-width: 759px)').matches) {
+        var margins = parent.outerWidth(true) - parent.width();
+        width -= margins;
       }
 
       if (wasHidden) {

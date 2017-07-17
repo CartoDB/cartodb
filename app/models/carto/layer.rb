@@ -38,7 +38,7 @@ module Carto
     rescue => e
       # INFO: this covers changes that CartoDB can't track.
       # For example, if layer SQL contains wrong SQL (uses a table that doesn't exist, or uses an invalid operator).
-      CartoDB::Logger.debug(message: 'Could not retrieve tables from query', exception: e, user: user, layer: self)
+      CartoDB::Logger.warning(message: 'Could not retrieve tables from query', exception: e, user: user, layer: self)
       []
     end
 
@@ -290,6 +290,9 @@ module Carto
     end
 
     def after_added_to_map(map)
+      # This avoids unnecessary operations for in-memory logic. Example: Mapcap recreation. See #12473.
+      return unless map.persisted?
+
       set_default_order(map)
       register_table_dependencies
     end

@@ -104,29 +104,31 @@ describe Carto::Mapcap do
   describe '#regenerate_visualization' do
     before(:all) do
       @mapcap = Carto::Mapcap.create!(visualization_id: @visualization.id)
-      @regenerated_visualization = @mapcap.regenerate_visualization
     end
 
     after(:all) do
       @mapcap.destroy
       @ids_json = nil
-      @regenerated_visualization = nil
     end
 
     it 'should preserve map' do
-      @regenerated_visualization.map.id.should eq @map.id
+      regenerated_visualization = @mapcap.regenerate_visualization
+      regenerated_visualization.map.id.should eq @map.id
     end
 
     it 'should preserve visualization' do
-      @regenerated_visualization.id.should eq @visualization.id
+      regenerated_visualization = @mapcap.regenerate_visualization
+      regenerated_visualization.id.should eq @visualization.id
     end
 
     it 'should preserve user' do
-      @regenerated_visualization.user.id.should eq @visualization.user.id
+      regenerated_visualization = @mapcap.regenerate_visualization
+      regenerated_visualization.user.id.should eq @visualization.user.id
     end
 
     it 'should preserve permission' do
-      @regenerated_visualization.permission.id.should eq @visualization.permission.id
+      regenerated_visualization = @mapcap.regenerate_visualization
+      regenerated_visualization.permission.id.should eq @visualization.permission.id
     end
 
     describe 'with layers' do
@@ -135,20 +137,24 @@ describe Carto::Mapcap do
         @visualization.reload
 
         @mapcap = Carto::Mapcap.create!(visualization_id: @visualization.id)
-        @regenerated_visualization = @mapcap.regenerate_visualization
       end
 
       after(:all) do
         @mapcap.destroy
         @carto_layer.destroy
         @visualization.reload
-        @regenerated_visualization = nil
       end
 
       it 'should contain same layers in same order' do
-        @regenerated_visualization.layers.each_with_index do |layer, index|
-          layer.id == @regenerated_visualization.layers[index].id
+        CartoDB::Logger.expects(:warning).never
+        User.any_instance.stubs(:in_database).raises("Mapcap regeneration shouldn't touch user database")
+        Carto::User.any_instance.stubs(:in_database).raises("Mapcap regeneration shouldn't touch user database")
+        regenerated_visualization = @mapcap.regenerate_visualization
+        regenerated_visualization.layers.each_with_index do |layer, index|
+          layer.id == regenerated_visualization.layers[index].id
         end
+        Carto::User.any_instance.unstub(:in_database)
+        User.any_instance.unstub(:in_database)
       end
 
       describe 'with widgets' do
@@ -157,19 +163,18 @@ describe Carto::Mapcap do
           @visualization.reload
 
           @mapcap = Carto::Mapcap.create!(visualization_id: @visualization.id)
-          @regenerated_visualization = @mapcap.regenerate_visualization
         end
 
         after(:all) do
           @widget.destroy
           @visualization.reload
           @mapcap.destroy
-          @regenerated_visualization = nil
         end
 
         it 'should contain widgets only for layers with widgets and in the right order' do
           @visualization.layers.each_with_index do |layer, index|
-            regenerated_layer = @regenerated_visualization.layers[index]
+            regenerated_visualization = @mapcap.regenerate_visualization
+            regenerated_layer = regenerated_visualization.layers[index]
 
             layer.widgets.length.should eq regenerated_layer.widgets.length
 

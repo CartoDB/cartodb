@@ -36,8 +36,10 @@ module Carto
     def tables_from_query(query)
       query.present? ? tables_from_names(affected_table_names(query), user) : []
     rescue => e
-      # INFO: this covers changes that CartoDB can't track.
+      # INFO: this covers changes that CartoDB can't track, so we must handle it gracefully.
       # For example, if layer SQL contains wrong SQL (uses a table that doesn't exist, or uses an invalid operator).
+      # This warning level is checked in tests to ensure that embed view does not need user DB connection,
+      # so we need to keep it (or change the tests accordingly)
       CartoDB::Logger.warning(message: 'Could not retrieve tables from query', exception: e, user: user, layer: self)
       []
     end

@@ -149,7 +149,9 @@ describe Carto::Mapcap do
 
       it 'should work' do
         CartoDB::Logger.expects(:warning).never
+        User.any_instance.expects(:in_database).never
         @mapcap_nodb.regenerate_visualization
+        User.any_instance.unstub(:in_database)
       end
     end
 
@@ -173,7 +175,7 @@ describe Carto::Mapcap do
         Carto::User.any_instance.stubs(:in_database).raises("Mapcap regeneration shouldn't touch user database")
         regenerated_visualization = @mapcap.regenerate_visualization
         regenerated_visualization.layers.each_with_index do |layer, index|
-          layer.id == regenerated_visualization.layers[index].id
+          expect(layer.id).to eq(regenerated_visualization.layers[index].id)
         end
         Carto::User.any_instance.unstub(:in_database)
         User.any_instance.unstub(:in_database)

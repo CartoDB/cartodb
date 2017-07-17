@@ -21,6 +21,20 @@ module Carto
         @map.reload
       end
 
+      describe '#to_hash' do
+        after(:all) do
+          destroy_full_visualization(@map1, @table1, @table_visualization1, @visualization1)
+        end
+
+        it 'should get view info from the map when the state center does not exist' do
+          @map1, @table1, @table_visualization1, @visualization1 = create_full_visualization(@user)
+          @visualization1.state = FactoryGirl.create(:state, visualization: @visualization1)
+          @visualization1.state.json[:map].delete(:center)
+          template_hash = Carto::NamedMaps::Template.new(@visualization1).to_hash
+          template_hash[:view][:center].values.reverse.should eq @visualization1.map.center_data.map(&:to_f)
+        end
+      end
+
       describe '#name' do
         it 'should generate the template name correctly' do
           template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash

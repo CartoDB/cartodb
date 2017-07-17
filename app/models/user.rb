@@ -160,9 +160,9 @@ class User < Sequel::Model
     if new?
       organization.validate_for_signup(errors, self)
 
-      if organization.whitelisted_email_domains.present?
+      if whitelisted_email_domains
         email_domain = email.split('@')[1]
-        unless organization.whitelisted_email_domains.include?(email_domain) || invitation_token.present?
+        unless whitelisted_email_domains.include?(email_domain) || invitation_token.present?
           errors.add(:email, "Email domain '#{email_domain}' not valid for #{organization.name} organization")
         end
       end
@@ -511,6 +511,10 @@ class User < Sequel::Model
 
   # allow extra vars for auth
   attr_reader :password
+
+  def created_via=(created_via)
+    @created_via = created_via
+  end
 
   def validate_password_change
     return if @changing_passwords.nil?  # Called always, validate whenever proceeds
@@ -1612,7 +1616,7 @@ class User < Sequel::Model
   end
 
   def get_user_creation
-    Carto::UserCreation.find_by_user_id(id)
+    @user_creation ||= Carto::UserCreation.find_by_user_id(id)
   end
 
   def quota_dates(options)
@@ -1691,5 +1695,17 @@ class User < Sequel::Model
     if Cartodb.get_config(:aggregation_tables).present?
       db_service.connect_to_aggregation_tables
     end
+  end
+
+  def whitelisted_email_domains
+    if organization.try(:whitelisted_email_domains).try(:blank?) || created_via == Carto::UserCreation::CREATED_VIA_API
+      return nil
+    end
+
+    organization.whitelisted_email_domains
+  end
+
+  def created_via
+    @created_via || get_user_creation.created_via
   end
 end

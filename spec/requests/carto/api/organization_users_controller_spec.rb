@@ -51,7 +51,8 @@ describe Carto::Api::OrganizationUsersController do
                   soft_obs_snapshot_limit: nil,
                   soft_obs_general_limit: nil,
                   viewer: nil,
-                  org_admin: nil)
+                  org_admin: nil,
+                  email: "#{username}@carto.com")
 
     params = {
       password: '2{Patrañas}',
@@ -59,7 +60,7 @@ describe Carto::Api::OrganizationUsersController do
     }
     unless username.nil?
       params[:username] = username
-      params[:email] = "#{username}@carto.com"
+      params[:email] = email
     end
     params[:soft_geocoding_limit] = soft_geocoding_limit unless soft_geocoding_limit.nil?
     params[:soft_twitter_datasource_limit] = soft_twitter_datasource_limit unless soft_twitter_datasource_limit.nil?
@@ -184,6 +185,7 @@ describe Carto::Api::OrganizationUsersController do
         # response.body[:avatar_url].should be
       end
 
+      @organization.reload
       last_user_created = @organization.users.find { |u| u.username == username }
       last_user_created.username.should eq username
       last_user_created.email.should eq "#{username}@carto.com"
@@ -194,6 +196,31 @@ describe Carto::Api::OrganizationUsersController do
       last_user_created.viewer.should eq false
       last_user_created.org_admin.should eq false
       last_user_created.destroy
+    end
+
+    it 'does not take email whitelisting into account for user creation' do
+      login(@organization.owner)
+      username = 'notwhitelisted'
+      domain = 'notwhitelisted.com'
+      email = "#{username}@#{domain}"
+      params = user_params(username, email: email)
+
+      old_whitelisted_email_domains = @organization.whitelisted_email_domains
+      @organization.whitelisted_email_domains = ['carto.com']
+      @organization.save
+
+      post_json api_v2_organization_users_create_url(id_or_name: @organization.name), params do |response|
+        response.status.should eq 200
+        response.body[:username].should eq username
+        response.body[:email].should eq email
+      end
+
+      @organization.reload
+      last_user_created = @organization.users.find { |u| u.username == username }
+      last_user_created.username.should eq username
+      last_user_created.email.should eq email
+      @organization.whitelisted_email_domains = old_whitelisted_email_domains
+      @organization.save
     end
 
     it 'assigns soft_geocoding_limit to false by default' do
@@ -500,6 +527,8 @@ describe Carto::Api::OrganizationUsersController do
                  quota_in_bytes: 2048 }
       put_json api_v2_organization_users_update_url(id_or_name: @organization.name,
                                                     u_username: user_to_update.username), params do |response|
+        user_to_update.reload
+
         response.status.should eq 200
         response.body[:username].should eq user_to_update.username
         response.body[:email].should eq new_email
@@ -513,11 +542,9 @@ describe Carto::Api::OrganizationUsersController do
         response.body[:table_count].should eq 0
         response.body[:public_visualization_count].should eq 0
         response.body[:all_visualization_count].should eq 0
-        response.body[:avatar_url].should be
+        response.body[:avatar_url].should eq user_to_update.avatar_url
         response.body[:soft_geocoding_limit].should eq true
       end
-
-      user_to_update.reload
 
       user_to_update.email.should eq new_email
       user_to_update.soft_geocoding_limit.should be true

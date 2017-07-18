@@ -130,6 +130,26 @@ describe('widgets/histogram/chart', function () {
     });
   });
 
+  describe('local timezone', function () {
+    it('should set local timezone', function () {
+      spyOn(this.view, '_updateAxisTip');
+      this.view.setLocalTimezone(true);
+      expect(this.view.model.get('local_timezone')).toEqual(true);
+      expect(this.view._updateAxisTip).toHaveBeenCalledWith('left');
+      expect(this.view._updateAxisTip).toHaveBeenCalledWith('right');
+      expect(this.view.refresh).toHaveBeenCalled();
+    });
+
+    it('should unset local timezone', function () {
+      spyOn(this.view, '_updateAxisTip');
+      this.view.setLocalTimezone(false);
+      expect(this.view.model.get('local_timezone')).toEqual(false);
+      expect(this.view._updateAxisTip).toHaveBeenCalledWith('left');
+      expect(this.view._updateAxisTip).toHaveBeenCalledWith('right');
+      expect(this.view.refresh).toHaveBeenCalled();
+    });
+  });
+
   describe('shadow bars', function () {
     it('should not show shadow bars', function () {
       this.view.options.displayShadowBars = false;

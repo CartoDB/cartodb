@@ -27,7 +27,8 @@ describe('widgets/time-series/histogram-view', function () {
       dataviewModel: this.dataviewModel,
       rangeFilter: this.dataviewModel.filter,
       displayShadowBars: false,
-      normalized: true
+      normalized: true,
+      local_timezone: false
     });
   });
 
@@ -36,10 +37,12 @@ describe('widgets/time-series/histogram-view', function () {
       this.view._dataviewModel.off();
       this.view._chartView = {
         setNormalized: function () {},
+        setLocalTimezone: function () {},
         removeSelection: function () {}
       };
       spyOn(this.view, '_onChangeData');
       spyOn(this.view, '_onNormalizedChanged');
+      spyOn(this.view, '_onChangeLocalTimezone');
       spyOn(this.view, '_onFilterChanged');
 
       this.view._initBinds();
@@ -49,6 +52,9 @@ describe('widgets/time-series/histogram-view', function () {
 
       this.view._timeSeriesModel.trigger('change:normalized');
       expect(this.view._onNormalizedChanged).toHaveBeenCalled();
+
+      this.view._timeSeriesModel.trigger('change:local_timezone');
+      expect(this.view._onChangeLocalTimezone).toHaveBeenCalled();
 
       this.view._rangeFilter.trigger('change');
       expect(this.view._onFilterChanged).toHaveBeenCalled();
@@ -69,7 +75,10 @@ describe('widgets/time-series/histogram-view', function () {
 
   describe('._instantiateChartView', function () {
     it('should have been called with proper values', function () {
-      this.timeSeriesModel.set('normalized', true);
+      this.timeSeriesModel.set({
+        normalized: true,
+        local_timezone: true
+      });
 
       this.view._instantiateChartView();
 
@@ -78,6 +87,7 @@ describe('widgets/time-series/histogram-view', function () {
       expect(args.type).toEqual('time-date');
       expect(args.displayShadowBars).toBe(false);
       expect(args.normalized).toBe(true);
+      expect(args.local_timezone).toBe(true);
     });
   });
 
@@ -105,6 +115,22 @@ describe('widgets/time-series/histogram-view', function () {
       };
 
       this.view._onNormalizedChanged();
+
+      expect(arg).toBe(true);
+    });
+  });
+
+  describe('_onChangeLocalTimezone', function () {
+    it('should call `setLocalTimezone` on its chart view', function () {
+      this.view._timeSeriesModel.set('local_timezone', true);
+      var arg = null;
+      this.view._chartView = {
+        setLocalTimezone: function (local_timezone) {
+          arg = local_timezone;
+        }
+      };
+
+      this.view._onChangeLocalTimezone();
 
       expect(arg).toBe(true);
     });

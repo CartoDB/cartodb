@@ -235,6 +235,13 @@ describe Admin::PagesController do
     end
   end
 
+  describe '#sitemap' do
+    it 'should return 404 if no user or organization is provided' do
+      get '/sitemap.xml'
+      last_response.status.should == 404
+    end
+  end
+
   def mock_explore_feature_flag
     anyuser = prepare_user('anyuser')
     ::User.any_instance.stubs(:has_feature_flag?)

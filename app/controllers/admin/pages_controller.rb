@@ -51,7 +51,7 @@ class Admin::PagesController < Admin::AdminController
     if @viewed_user.nil?
       username = CartoDB.extract_subdomain(request)
       org = get_organization_if_exists(username)
-      return if org.nil?
+      render_404 and return if org.nil?
       visualizations = (org.public_visualizations.to_a || [])
       visualizations += (org.public_datasets.to_a || [])
     else

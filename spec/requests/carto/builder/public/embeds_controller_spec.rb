@@ -93,6 +93,23 @@ describe Carto::Builder::Public::EmbedsController do
       response.body.include?(@visualization.name).should be true
     end
 
+    describe 'connectivity issues' do
+      it 'does not need connection to the user db' do
+        @map, @table, @table_visualization, @visualization = create_full_builder_vis(@carto_user)
+        Carto::Mapcap.create!(visualization_id: @visualization.id)
+
+        @actual_database_name = @visualization.user.database_name
+        @visualization.user.update_attribute(:database_name, 'wadus')
+
+        CartoDB::Logger.expects(:warning).never
+        get builder_visualization_public_embed_url(visualization_id: @visualization.id)
+        response.status.should == 200
+
+        @visualization.user.update_attribute(:database_name, @actual_database_name)
+        destroy_full_visualization(@map, @table, @table_visualization, @visualization)
+      end
+    end
+
     it 'redirects to builder for v2 visualizations' do
       Carto::Visualization.any_instance.stubs(:version).returns(2)
       get builder_visualization_public_embed_url(visualization_id: @visualization.id)

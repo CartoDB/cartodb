@@ -160,7 +160,7 @@ class User < Sequel::Model
     if new?
       organization.validate_for_signup(errors, self)
 
-      unless valid_email_domain(email)
+      unless valid_email_domain?(email)
         errors.add(:email, "The domain of '#{email}' is not valid for #{organization.name} organization")
       end
     else
@@ -1694,7 +1694,7 @@ class User < Sequel::Model
     end
   end
 
-  def valid_email_domain(email)
+  def valid_email_domain?(email)
     if created_via == Carto::UserCreation::CREATED_VIA_API || # Overrides domain check for owner actions
        organization.try(:whitelisted_email_domains).try(:blank?) ||
        invitation_token.present? # Overrides domain check for users (invited by owners)

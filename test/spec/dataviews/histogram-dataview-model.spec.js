@@ -362,44 +362,77 @@ describe('dataviews/histogram-dataview-model', function () {
       expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3');
     });
 
-    it('should include start if present', function () {
-      this.model.set('start', 11);
-      expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&start=11');
-    });
+    describe('column type is number', function () {
+      describe('if bins present', function () {
+        it('should include start if present', function () {
+          this.model.set({
+            bins: 33,
+            start: 11,
+            column_type: 'number'
+          });
 
-    it('should include end if present', function () {
-      this.model.set('end', 22);
-      expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&end=22');
-    });
+          expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&bins=33&start=11');
+        });
 
-    it('should include bins if present and the column type is number', function () {
-      this.model.set({
-        bins: 33,
-        column_type: 'number'
+        it('should include end if present', function () {
+          this.model.set({
+            bins: 33,
+            end: 22,
+            column_type: 'number'
+          });
+
+          expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&bins=33&end=22');
+        });
+
+        it('should include bins', function () {
+          this.model.set({
+            bins: 33,
+            column_type: 'number'
+          });
+
+          expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&bins=33');
+        });
       });
-      expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&bins=33');
+
+      describe('if bins not present', function () {
+        it('should not include start, end', function () {
+          this.model.set({
+            start: 0,
+            end: 10,
+            column_type: 'number'
+          });
+
+          expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3');
+        });
+      });
+
+      it('should not include start, end and bins when own_filter is enabled', function () {
+        this.model.set({
+          url: 'http://example.com',
+          start: 0,
+          end: 10,
+          bins: 25,
+          column_type: 'number'
+        });
+
+        expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&bins=25&start=0&end=10');
+
+        this.model.enableFilter();
+
+        expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&own_filter=1');
+      });
     });
 
-    it('should only include aggregation if aggregation and bins present and column type is date', function () {
-      this.model.set({
-        aggregation: 'month',
-        bins: 33,
-        column_type: 'date'
-      });
-      expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&aggregation=month');
-    });
+    describe('column type is date', function () {
+      it('should only include aggregation if aggregation and bins present', function () {
+        this.model.set({
+          aggregation: 'month',
+          bins: 33,
+          column_type: 'date'
+        });
 
-    it('should not include start, end and bins when own_filter is enabled', function () {
-      this.model.set({
-        'url': 'http://example.com',
-        'start': 0,
-        'end': 10,
-        'bins': 25,
-        column_type: 'number'
+        expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&aggregation=month');
       });
-      expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&start=0&end=10&bins=25');
-      this.model.enableFilter();
-      expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&own_filter=1');
     });
   });
 

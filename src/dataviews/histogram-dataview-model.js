@@ -361,7 +361,7 @@ module.exports = DataviewModelBase.extend({
     if (this.get('column_type') === 'date') {
       this._originalData.set({
         offset: this.get('offset'),
-        aggregation: this.get('aggregation'),
+        aggregation: this.get('aggregation')
       });
     }
   },

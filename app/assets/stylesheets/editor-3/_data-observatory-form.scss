@@ -4,6 +4,12 @@
   width: 100%;
 }
 
+.DataObservatory-description {
+  word-break: break-word;
+  word-wrap: break-word;
+  hyphens: auto;
+}
+
 .DataObservatory-addMeasure .is-disabled {
   cursor: not-allowed;
   opacity: 0.5;

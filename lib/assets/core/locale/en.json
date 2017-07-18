@@ -1161,7 +1161,8 @@
         "empty": "No values",
         "selected": "%{count} selected",
         "all": "All",
-        "none": "None"
+        "none": "None",
+        "error": "Error fetching %{type}"
       },
       "operators": {
         "count-message": "If you select 'COUNT' all columns are selected"
@@ -1177,8 +1178,16 @@
           },
           "filter": {
             "header": "Filter measurements by",
-            "type": "filters"
-          }
+            "type": "filters",
+            "filters": {
+              "label": "Filters",
+              "applied": {
+                "single": "1 filter applied",
+                "multiple": "%{filters} filters applied"
+              }
+            }
+          },
+          "error": "Error fetching %{type}"
         }
       }
     },

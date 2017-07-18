@@ -161,7 +161,7 @@ class User < Sequel::Model
       organization.validate_for_signup(errors, self)
 
       unless valid_email_domain(email)
-        errors.add(:email, "Email domain from '#{email}' not valid for #{organization.name} organization")
+        errors.add(:email, "The domain of '#{email}' is not valid for #{organization.name} organization")
       end
     else
       if quota_in_bytes.to_i + organization.assigned_quota - initial_value(:quota_in_bytes) > organization.quota_in_bytes

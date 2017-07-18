@@ -1706,6 +1706,6 @@ class User < Sequel::Model
   end
 
   def created_via
-    @created_via || get_user_creation.created_via
+    @created_via || get_user_creation.try(:created_via)
   end
 end

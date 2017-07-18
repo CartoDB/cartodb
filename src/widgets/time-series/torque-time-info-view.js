@@ -1,13 +1,8 @@
 var d3 = require('d3');
 var cdb = require('cartodb.js');
-var timeTemplate = require('./torque-time-info.tpl');
-var numberTemplate = require('./torque-number-info.tpl');
-// for format rules see https://github.com/mbostock/d3/wiki/Time-Formatting
-var FORMATTER_TYPES = {
-  'number': d3.format(',.0f'),
-  'time': d3.time.format('%H:%M'),
-  'date': d3.time.format('%x')
-};
+var moment = require('moment');
+var formatter = require('../../formatter');
+var template = require('./torque-time-info.tpl');
 
 /**
  * View rendering the current step time
@@ -18,32 +13,33 @@ module.exports = cdb.core.View.extend({
   initialize: function (opts) {
     if (!opts.torqueLayerModel) throw new Error('torqueLayerModel is required');
     if (!opts.dataviewModel) throw new Error('dataviewModel is required');
+    if (!opts.timeSeriesModel) throw new Error('timeSeriesModel is required');
 
     this._torqueLayerModel = this.options.torqueLayerModel;
     this._dataviewModel = this.options.dataviewModel;
+    this._timeSeriesModel = this.options.timeSeriesModel;
 
     this._initBinds();
   },
 
   render: function () {
-    var data = this._dataviewModel.get('data');
     var time = this._torqueLayerModel.get('time');
-    var step = this._torqueLayerModel.get('step');
     var columnType = this._torqueLayerModel.get('column_type');
-    var template = columnType === 'number' ? numberTemplate : timeTemplate;
     var scale = d3.scale.linear()
-      .domain([0, data.length])
+      .domain([0, this._dataviewModel.get('data').length])
       .range([this._dataviewModel.get('start'), this._dataviewModel.get('end')]);
     var html = '';
+    var timeFormatter = formatter.formatNumber;
 
     if (columnType === 'number') {
       html = template({
-        number: FORMATTER_TYPES['number'](scale(step))
+        time: timeFormatter(scale(this._torqueLayerModel.get('step')))
       });
     } else if (columnType === 'date' && !isNaN(time && time.getTime())) {
+      timeFormatter = formatter.timestampFactory(this._dataviewModel.get('aggregation'), this._dataviewModel.get('offset'));
+
       html = template({
-        time: FORMATTER_TYPES['time'](time),
-        date: FORMATTER_TYPES['date'](time)
+        time: timeFormatter(moment(time).unix(), this._timeSeriesModel.get('local_timezone'))
       });
     }
 

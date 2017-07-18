@@ -80,6 +80,7 @@ module.exports = cdb.core.View.extend({
       target: '.js-actions',
       container: this.$('.js-header'),
       flags: {
+        localTimezone: true,
         normalizeHistogram: !!this.model.get('normalized'),
         canCollapse: false
       }
@@ -88,12 +89,10 @@ module.exports = cdb.core.View.extend({
   },
 
   _initBinds: function () {
-    this._originalData.once('change:data', this._onOriginalDataChange, this);
-    this.add_related_model(this._originalData);
+    this.listenTo(this._originalData, 'change:data', this._onOriginalDataChange);
 
-    this._dataviewModel.once('change:data', this.render, this);
-    this._dataviewModel.bind('change:bins', this._onChangeBins, this);
-    this.add_related_model(this._dataviewModel);
+    this.listenTo(this._dataviewModel, 'change:data', this.render);
+    this.listenTo(this._dataviewModel, 'change:bins', this._onChangeBins);
   },
 
   _isDataEmpty: function () {

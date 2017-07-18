@@ -22,9 +22,9 @@
       Local Time Zone
       <div class="CDB-Dropdown-toggle">
         <% if (local_timezone) { %>
-        <input class="CDB-Toggle u-iBlock js-localTimezone" type="checkbox" name="localtimezone">
+          <input class="CDB-Toggle u-iBlock js-localTimezone" checked="checked" type="checkbox" name="localtimezone">
         <% } else { %>
-        <input class="CDB-Toggle u-iBlock js-localTimezone" checked="checked" type="checkbox" name="localtimezone">
+          <input class="CDB-Toggle u-iBlock js-localTimezone" type="checkbox" name="localtimezone">
         <% } %>
         <span class="u-iBlock CDB-ToggleFace"></span>
       </div>
@@ -38,9 +38,9 @@
       Show totals
       <div class="CDB-Dropdown-toggle">
         <% if (normalized) { %>
-        <input class="CDB-Toggle u-iBlock js-inputNormalized" type="checkbox" name="normalized">
+          <input class="CDB-Toggle u-iBlock js-inputNormalized" type="checkbox" name="normalized">
         <% } else { %>
-        <input class="CDB-Toggle u-iBlock js-inputNormalized" checked="checked" type="checkbox" name="normalized">
+          <input class="CDB-Toggle u-iBlock js-inputNormalized" checked="checked" type="checkbox" name="normalized">
         <% } %>
         <span class="u-iBlock CDB-ToggleFace"></span>
       </div>

@@ -1,5 +1,6 @@
 var _ = require('underscore');
 var moment = require('moment');
+var momentTimezone = require('moment-timezone');
 var d3 = require('d3');
 
 var AGGREGATION_FORMATS = {
@@ -91,13 +92,15 @@ format.formatValue = function (value) {
 };
 
 format.timestampFactory = function (aggregation, offset) {
-  return function (timestamp) {
+  return function (timestamp, localTimezone) {
     if (!_.has(AGGREGATION_FORMATS, aggregation)) {
       return '-';
     }
 
+    var localOffset = localTimezone ? moment.tz(moment.tz.guess()).utcOffset() * 60 : offset;
+
     var format = AGGREGATION_FORMATS[aggregation];
-    var date = moment.unix(timestamp + offset).utc();
+    var date = moment.unix(timestamp + localOffset).utc();
     return date.format(format.display);
   };
 };

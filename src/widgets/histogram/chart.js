@@ -200,7 +200,7 @@ module.exports = cdb.core.View.extend({
     triangle.style('opacity', '1');
 
     textLabel.data([model]).text(function (d) {
-      return this.formatter(d);
+      return this.formatter(d, this.model.get('local_timezone'));
     }.bind(this));
 
     if (!textLabel.node()) {
@@ -280,6 +280,12 @@ module.exports = cdb.core.View.extend({
     this.model.set('show_shadow_bars', !this.model.get('normalized'));
     this._generateShadowBars();
     this.updateYScale();
+    this.refresh();
+  },
+
+  _onLocalTimezoneChanged: function () {
+    this._updateAxisTip('left');
+    this._updateAxisTip('right');
     this.refresh();
   },
 
@@ -494,7 +500,8 @@ module.exports = cdb.core.View.extend({
       margin: _.clone(this.options.margin),
       width: 0, // will be set on resize listener
       pos: { x: 0, y: 0 },
-      normalized: this.options.normalized
+      normalized: this.options.normalized,
+      local_timezone: this.options.local_timezone
     });
   },
 
@@ -511,6 +518,7 @@ module.exports = cdb.core.View.extend({
     this.listenTo(this.model, 'change:show_shadow_bars', this._onChangeShowShadowBars);
     this.listenTo(this.model, 'change:width', this._onChangeWidth);
     this.listenTo(this.model, 'change:normalized', this._onChangeNormalized);
+    this.listenTo(this.model, 'change:local_timezone', this._onLocalTimezoneChanged);
 
     if (this._widgetModel) {
       this.listenTo(this._widgetModel, 'change:autoStyle', this._refreshBarsColor);
@@ -751,6 +759,11 @@ module.exports = cdb.core.View.extend({
     return this;
   },
 
+  setLocalTimezone: function (localTimezone) {
+    this.model.set('local_timezone', !!localTimezone);
+    return this;
+  },
+
   removeSelection: function () {
     this.resetIndexes();
     this.chart.selectAll('.CDB-Chart-bar').classed({'is-selected': false, 'is-filtered': false});
@@ -927,7 +940,7 @@ module.exports = cdb.core.View.extend({
       }
 
       if (!this._isDragging() && freq > 0) {
-        var d = this.formatter(freq);
+        var d = this.formatter(freq, this.model.get('local_timezone'));
         hoverProperties = { top: top, left: left, data: d };
       } else {
         hoverProperties = null;
@@ -1096,7 +1109,7 @@ module.exports = cdb.core.View.extend({
         var value;
         if (self.xAxisScale) {
           value = self.xAxisScale(d);
-          return self.formatter(value);
+          return self.formatter(value, self.model.get('local_timezone'));
         }
       });
 

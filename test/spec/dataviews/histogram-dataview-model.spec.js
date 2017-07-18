@@ -317,24 +317,45 @@ describe('dataviews/histogram-dataview-model', function () {
     });
 
     it('should call .fillTimestampBuckets if aggregation is present', function () {
-      spyOn(helper, 'fillTimestampBuckets');
+      spyOn(helper, 'fillTimestampBuckets').and.callThrough();
       this.model._initBinds();
       this.model.set({
-        aggregation: 'month',
+        aggregation: 'minute',
         column_type: 'date'
       }, { silent: true });
+
       var data = {
-        bin_width: 0,
-        bins: [],
-        bins_count: 0,
-        bins_start: 0,
+        aggregation: 'minute',
+        offset: 3600,
+        timestamp_start: 1496690940,
+        bin_width: 59.5833333333333,
+        bins_count: 2,
+        bins_start: 1496690940,
         nulls: 0,
+        bins: [
+          {
+            bin: 0,
+            timestamp: 1496690940,
+            min: 1496690944,
+            max: 1496690999,
+            avg: 1496690971.58824,
+            freq: 17
+          },
+          {
+            bin: 1,
+            timestamp: 1496691000,
+            min: 1496691003,
+            max: 1496691059,
+            avg: 1496691031.22222,
+            freq: 18
+          }
+        ],
         type: 'histogram'
       };
 
-      this.model.parse(data);
-
+      var parsedData = this.model.parse(data);
       expect(helper.fillTimestampBuckets).toHaveBeenCalled();
+      expect(JSON.stringify(parsedData)).toBe('{"data":[{"offset":3600,"bin":0,"start":1496690940,"end":1496690999,"next":1496691000,"freq":17,"timestamp":1496690940,"min":1496690944,"max":1496690999,"avg":1496690971.58824},{"offset":3600,"bin":1,"start":1496691000,"end":1496691059,"next":1496691060,"freq":18,"timestamp":1496691000,"min":1496691003,"max":1496691059,"avg":1496691031.22222}],"filteredAmount":0,"nulls":0,"totalAmount":35}');
     });
   });
 
@@ -455,10 +476,49 @@ describe('dataviews/histogram-dataview-model', function () {
     });
   });
 
+  describe('._onOffsetChanged', function () {
+    it('should call ._reloadVisAndForceFetch', function () {
+      this.vis.reload.calls.reset();
+
+      this.model._onOffsetChanged();
+
+      expect(this.vis.reload).toHaveBeenCalled();
+    });
+  });
+
+  describe('._onColumnChanged', function () {
+    it('should unset aggregation and offset, and call _reloadVisAndForceFetch', function () {
+      this.vis.reload.calls.reset();
+
+      this.model.set({
+        column: 'time',
+        aggregation: 'week',
+        offset: 3600
+      });
+
+      this.model._onColumnChanged();
+
+      expect(this.vis.reload).toHaveBeenCalled();
+      expect(this.model.get('aggregation')).toBeUndefined();
+      expect(this.model.get('offset')).toBeUndefined();
+    });
+  });
+
   describe('._onDataChanged', function () {
-    it('should call _resetFilterAndFetch if column is data and aggregation changes', function () {
+    it('should call _resetFilterAndFetch if column is date and aggregation', function () {
       var model = new Backbone.Model({
         aggregation: 'week'
+      });
+      this.model.set('column_type', 'date', { silent: true });
+
+      this.model._onDataChanged(model);
+
+      expect(this.model._resetFilterAndFetch).toHaveBeenCalled();
+    });
+
+    it('should call _resetFilterAndFetch if column is date and offset changes', function () {
+      var model = new Backbone.Model({
+        offset: 3600
       });
       this.model.set('column_type', 'date', { silent: true });
 

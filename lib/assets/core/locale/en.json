@@ -395,7 +395,8 @@
           "recently-title": "Most used",
           "none": "None",
           "show-all": "Show full collections"
-        }
+        },
+        "error": "There was an error"
       },
       "slide": {
         "no-values": "No values"
@@ -1111,7 +1112,7 @@
           },
           "no-datasets": {
             "title": "You have not connected any datasets yet",
-            "desc": "You can %{connectDataset} or %{search} in all our data library",
+            "desc": "You can %{connectDataset} or %{search} our data library",
             "connect-datasets": "connect datasets",
             "search": "search"
           },

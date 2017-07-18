@@ -1695,10 +1695,9 @@ class User < Sequel::Model
   end
 
   def valid_email_domain(email)
-    if created_via_api? || # Overrides domain check for owner actions
-      organization.try(:whitelisted_email_domains).try(:blank?) ||
-      invitation_token.present? # Overrides domain check for users (invited by owners)
-
+    if created_via == Carto::UserCreation::CREATED_VIA_API || # Overrides domain check for owner actions
+       organization.try(:whitelisted_email_domains).try(:blank?) ||
+       invitation_token.present? # Overrides domain check for users (invited by owners)
       return true
     end
 
@@ -1707,9 +1706,5 @@ class User < Sequel::Model
 
   def created_via
     @created_via || get_user_creation.try(:created_via)
-  end
-
-  def created_via_api?
-     created_via == Carto::UserCreation::CREATED_VIA_API
   end
 end

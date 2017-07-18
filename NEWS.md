@@ -23,6 +23,7 @@ Development
 * The selection window on a histogram widget can be dragged (#12180)
 * Move playback on animated time series by clicking on it (#12180)
 * Updates Dataservices API client default version to `0.18.0` (#12466)
+* Time-series: add timezone selector to timeseries histogram (#12464)
 
 ### Bug fixes / enhancements
 * Remove tracking of liked map events (#12404).

@@ -24,6 +24,8 @@ Development
 * Move playback on animated time series by clicking on it (#12180)
 
 ### Bug fixes / enhancements
+* Fix torque categories layer rendering (#cartodb.js/1698)
+* Don't provide quantification option when layer is animated (#10947)
 * Display dashboard notifications for open-source instances (#12421)
 * Remove unsupported CartoCSS rules for vector rendering (#12410)
 * Fixed typo in content_no_datasets.jst.ejs and en.json (Docs)

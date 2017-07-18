@@ -22,10 +22,12 @@ Development
 * Bump Webpack version (#12392).
 * The selection window on a histogram widget can be dragged (#12180)
 * Move playback on animated time series by clicking on it (#12180)
+* Updates Dataservices API client default version to `0.18.0` (#12466)
 
 ### Bug fixes / enhancements
 * Fix torque categories layer rendering (#cartodb.js/1698)
 * Don't provide quantification option when layer is animated (#10947)
+* Remove tracking of liked map events (#12404)
 * Display dashboard notifications for open-source instances (#12421)
 * Remove unsupported CartoCSS rules for vector rendering (#12410)
 * Fixed typo in content_no_datasets.jst.ejs and en.json (Docs)
@@ -61,6 +63,7 @@ Development
 * [WIP] Update to Rails 4
   * Update `rails-sequel` (#12118)
   * Changes compatible with Rails 3 (#12117)
+  * Removed Visualization::Member usage from CommonDataService (#12459). Includes performance improvements on user signup.
 * Make scrollwheel zoom on by default (#12214)
 * Fix SAML login error with uppercased emails (#12367)
 * You can configure your API key for the search bar, powered by Mapzen, with `geocoder.mapzen.search_bar_api_key` (#12296).
@@ -70,6 +73,7 @@ Development
 * `create_dev_user` rake no longer tries to auto-create the database, `cartodb:db:setup` should be run first (#12187).
 * Fix EUMAPI response as per documentation (#12233)
 * Fix dimension check and support for SVG without extension and XML header (#12374).
+* Builder embed doesn't need user DB connection anymore (#12473).
 * Visualization models no longer raise an error checking `password_valid?` (#12270).
 * Fix `BUILDER_ENABLED` parameter in `create_dev_user` rake (#12189)
 * User organization or user key for google maps (#12232)

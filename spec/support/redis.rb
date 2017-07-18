@@ -43,7 +43,7 @@ module CartoDB
         "timeout"       => 300,
         "dbfilename"    => REDIS_DB_NAME,
         "dir"           => new_cache_path || REDIS_CACHE_PATH,
-        "loglevel"      => "debug",
+        "loglevel"      => "notice",
         "logfile"       => new_logfile || "stdout"
       }.map { |k, v| "#{k} #{v}" }.join("\n")
       output = `printf '#{redis_options}' | redis-server - 2>&1`

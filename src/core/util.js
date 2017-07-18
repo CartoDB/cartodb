@@ -127,8 +127,18 @@ util.isMobileDevice = function () {
   return /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 };
 
+util.supportsTouch = function () {
+  return 'ontouchstart' in window || navigator.msMaxTouchPoints;
+};
+
+var webGLSupportedAndEnabled = null;
 util.isWebGLSupported = function () {
-  return !!window.WebGLRenderingContext;
+  if (webGLSupportedAndEnabled === null) {
+    var canvas = document.createElement('canvas');
+    webGLSupportedAndEnabled = !!window.WebGLRenderingContext &&
+      !!(canvas.getContext('webgl') || canvas.getContext('experimental-webgl'));
+  }
+  return webGLSupportedAndEnabled;
 };
 
 /**

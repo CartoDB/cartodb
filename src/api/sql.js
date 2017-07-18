@@ -5,6 +5,9 @@ var Promise = require('./promise');
 
 var NO_BOUNDS_ERROR_MESSAGE = 'No bounds';
 
+//Variable that defines if a query should be using get method or post method
+var MAX_LENGTH_GET_QUERY = 1024;
+
 function SQL(options) {
   if(window.cdb === this || window === this) {
     return new SQL(options);
@@ -21,8 +24,9 @@ function SQL(options) {
   this.options = _.defaults(options, {
     version: 'v2',
     protocol: loc,
-    jsonp: !$.support.cors
-  })
+    jsonp: !$.support.cors,
+    abortable: false
+  });
 
   if (!this.options.sql_api_template) {
     var opts = this.options;
@@ -51,10 +55,6 @@ SQL.prototype._host = function() {
  * })
  */
 SQL.prototype.execute = function(sql, vars, options, callback) {
-
-  //Variable that defines if a query should be using get method or post method
-  var MAX_LENGTH_GET_QUERY = 1024;
-
   var promise = new Promise();
   if(!sql) {
     throw new TypeError("sql should not be null");
@@ -71,6 +71,10 @@ SQL.prototype.execute = function(sql, vars, options, callback) {
     dataType: 'json',
     crossDomain: true
   };
+
+  if (this._xhr && this.options.abortable === true) {
+    this._xhr.abort();
+  }
 
   if(options.cache !== undefined) {
     params.cache = options.cache;
@@ -163,9 +167,14 @@ SQL.prototype.execute = function(sql, vars, options, callback) {
     }, 0);
   }
 
+  params.complete = function () {
+    this._xhr = null;
+  }.bind(this);
+
   // call ajax
   delete options.jsonp;
-  $.ajax(_.extend(params, options));
+  this._xhr = $.ajax(_.extend(params, options));
+
   return promise;
 }
 

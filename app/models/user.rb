@@ -160,11 +160,8 @@ class User < Sequel::Model
     if new?
       organization.validate_for_signup(errors, self)
 
-      if whitelisted_email_domains
-        email_domain = email.split('@')[1]
-        unless whitelisted_email_domains.include?(email_domain) || invitation_token.present?
-          errors.add(:email, "Email domain '#{email_domain}' not valid for #{organization.name} organization")
-        end
+      unless valid_email_domain(email)
+        errors.add(:email, "Email domain '#{email_domain}' not valid for #{organization.name} organization")
       end
     else
       if quota_in_bytes.to_i + organization.assigned_quota - initial_value(:quota_in_bytes) > organization.quota_in_bytes
@@ -1697,15 +1694,22 @@ class User < Sequel::Model
     end
   end
 
-  def whitelisted_email_domains
-    if organization.try(:whitelisted_email_domains).try(:blank?) || created_via == Carto::UserCreation::CREATED_VIA_API
-      return nil
+  def valid_email_domain(email)
+    if created_via_api? || # Overrides domain check for owner actions
+      organization.try(:whitelisted_email_domains).try(:blank?) ||
+      invitation_token.present? # Overrides domain check for users (invited by owners)
+
+      return true
     end
 
-    organization.whitelisted_email_domains
+    organization.whitelisted_email_domains.include?(email.split('@')[1])
   end
 
   def created_via
     @created_via || get_user_creation.try(:created_via)
+  end
+
+  def created_via_api?
+     created_via == Carto::UserCreation::CREATED_VIA_API
   end
 end

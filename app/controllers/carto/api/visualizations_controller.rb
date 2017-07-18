@@ -127,9 +127,6 @@ module Carto
           @visualization.send_like_email(current_viewer, vis_url)
         end
 
-        event_properties = { user_id: current_viewer_id, visualization_id: @visualization.id, action: 'like' }
-        Carto::Tracking::Events::LikedMap.new(current_viewer_id, event_properties).report
-
         render_jsonp(
           id: @visualization.id,
           likes: @visualization.likes.count,
@@ -143,9 +140,6 @@ module Carto
         current_viewer_id = current_viewer.id
 
         @visualization.remove_like_from(current_viewer_id)
-
-        event_properties = { user_id: current_viewer_id, visualization_id: @visualization.id, action: 'remove' }
-        Carto::Tracking::Events::LikedMap.new(current_viewer_id, event_properties).report
 
         render_jsonp(id: @visualization.id, likes: @visualization.likes.count, liked: false)
       end

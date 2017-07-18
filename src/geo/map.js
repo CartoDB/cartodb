@@ -190,7 +190,7 @@ var Map = Model.extend({
     return !this.arePopupsEnabled();
   },
 
- // GEOMETRY MANAGEMENT
+  // GEOMETRY MANAGEMENT
 
   drawPoint: function () {
     return this._drawGeometry(GeometryFactory.createPoint({
@@ -239,8 +239,8 @@ var Map = Model.extend({
       center: latlng,
       zoom: zoom
     }, {
-      silent: true
-    });
+        silent: true
+      });
     this.trigger('set_view');
   },
 
@@ -504,35 +504,37 @@ var Map = Model.extend({
   },
 
   getEstimatedFeatureCount: function () {
-    if (this.hasEstimatedFeatureCount()) {
-      return _.reduce(this.layers.getCartoDBLayers(), function (memo, layerModel) {
-        return memo + layerModel.getEstimatedFeatureCount();
-      }, 0);
+    var acum = 0;
+    var count = 0;
+    var layers = this.layers.getCartoDBLayers();
+    if (!layers) {
+      return;
     }
+    for (var i = 0; i < layers.length; i++) {
+      count = layers[i].getEstimatedFeatureCount();
+      if (count === undefined) {
+        return;
+      }
+      acum += count;
+    }
+    return acum;
   },
-
-  hasEstimatedFeatureCount: function () {
-    return _.every(this.layers.getCartoDBLayers(), function (layerModel) {
-      var estimatedFeatureCount = layerModel.getEstimatedFeatureCount();
-      return estimatedFeatureCount && estimatedFeatureCount >= 0;
-    });
-  }
 }, {
-  PROVIDERS: {
-    GMAPS: 'googlemaps',
-    LEAFLET: 'leaflet'
-  },
+    PROVIDERS: {
+      GMAPS: 'googlemaps',
+      LEAFLET: 'leaflet'
+    },
 
-  latlngToMercator: function (latlng, zoom) {
-    var ll = new L.LatLng(latlng[0], latlng[1]);
-    var pp = L.CRS.EPSG3857.latLngToPoint(ll, zoom);
-    return [pp.x, pp.y];
-  },
+    latlngToMercator: function (latlng, zoom) {
+      var ll = new L.LatLng(latlng[0], latlng[1]);
+      var pp = L.CRS.EPSG3857.latLngToPoint(ll, zoom);
+      return [pp.x, pp.y];
+    },
 
-  mercatorToLatLng: function (point, zoom) {
-    var ll = L.CRS.EPSG3857.pointToLatLng(point, zoom);
-    return [ll.lat, ll.lng];
-  }
-});
+    mercatorToLatLng: function (point, zoom) {
+      var ll = L.CRS.EPSG3857.pointToLatLng(point, zoom);
+      return [ll.lat, ll.lng];
+    }
+  });
 
 module.exports = Map;

@@ -203,7 +203,7 @@ describe('geo/map/cartodb-layer', function () {
       layer.show();
       layer.set('meta', {
         stats: {
-          estimatedFeatureCount: 27,
+          estimatedFeatureCount: 27
         }
       });
       expect(layer.getEstimatedFeatureCount()).toEqual(27);
@@ -212,7 +212,7 @@ describe('geo/map/cartodb-layer', function () {
       layer.hide();
       layer.set('meta', {
         stats: {
-          estimatedFeatureCount: 27,
+          estimatedFeatureCount: 27
         }
       });
       expect(layer.getEstimatedFeatureCount()).toEqual(27);

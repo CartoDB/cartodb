@@ -20,11 +20,13 @@ module.exports = DataviewModelBase.extend({
     var params = [];
     var start = this.get('start');
     var end = this.get('end');
-    var aggregation = this.get('aggregation');
 
     if (_.isNumber(this.get('own_filter'))) {
       params.push('own_filter=' + this.get('own_filter'));
     } else {
+      var aggregation = this.get('aggregation');
+      var offset = this.get('offset');
+
       if (this.get('column_type') === 'number' && this.get('bins')) {
         params.push('bins=' + this.get('bins'));
 
@@ -34,11 +36,13 @@ module.exports = DataviewModelBase.extend({
         if (_.isNumber(end)) {
           params.push('end=' + end);
         }
-      } else if (this.get('column_type') === 'date' && aggregation) {
-        var offset = this.get('offset');
-
+      } else if (this.get('column_type') === 'date' && (aggregation || offset)) {
         if (offset) {
           params.push('offset=' + offset);
+        }
+
+        if (aggregation) {
+          params.push('aggregation=' + aggregation);
         }
 
         if (_.isNumber(start)) {
@@ -48,8 +52,6 @@ module.exports = DataviewModelBase.extend({
         if (_.isNumber(end)) {
           params.push('end=' + end);
         }
-
-        params.push('aggregation=' + aggregation);
       }
     }
     return params;
@@ -280,8 +282,9 @@ module.exports = DataviewModelBase.extend({
   },
 
   toJSON: function (d) {
-    var aggregation = this.get('aggregation');
     var columnType = this.get('column_type');
+    var aggregation = this.get('aggregation');
+    var offset = this.get('offset');
 
     var options = {
       column: this.get('column')
@@ -289,9 +292,14 @@ module.exports = DataviewModelBase.extend({
 
     if (columnType === 'number' && this.get('bins')) {
       options.bins = this.get('bins');
-    } else if (columnType === 'date' && aggregation) {
-      options.aggregation = aggregation;
-      options.offset = this.get('offset');
+    } else if (columnType === 'date' && (aggregation || offset)) {
+      if (aggregation) {
+        options.aggregation = this.get('aggregation');
+      }
+
+      if (offset) {
+        options.offset = this.get('offset');
+      }
     }
 
     return {
@@ -321,7 +329,7 @@ module.exports = DataviewModelBase.extend({
 
   _onDataChanged: function (model) {
     this.set({
-      aggregation: model.get('aggregation'),
+      aggregation: model.get('aggregation') || 'minute',
       offset: model.get('offset') || 0,
       bins: model.get('bins'),
       end: model.get('end'),
@@ -331,7 +339,7 @@ module.exports = DataviewModelBase.extend({
 
     var resetFilter = false;
 
-    if (this.get('column_type') === 'date' && _.has(this.changed, 'aggregation')) {
+    if (this.get('column_type') === 'date' && (_.has(this.changed, 'aggregation') || _.has(this.changed, 'offset'))) {
       resetFilter = true;
     } else if (this.get('column_type') === 'number' && _.has(this.changed, 'bins')) {
       resetFilter = true;

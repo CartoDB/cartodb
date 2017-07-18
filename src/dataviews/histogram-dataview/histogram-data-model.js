@@ -19,11 +19,13 @@ module.exports = Model.extend({
   url: function () {
     var params = [];
     var aggregation = this.get('aggregation');
+    var offset = this.get('offset');
 
-    if (this.get('column_type') === 'date' && aggregation) {
-      params.push('aggregation=' + aggregation);
+    if (this.get('column_type') === 'date' && (aggregation || offset)) {
+      if (aggregation) {
+        params.push('aggregation=' + aggregation);
+      }
 
-      var offset = this.get('offset');
       if (offset) {
         params.push('offset=' + offset);
       }

@@ -156,6 +156,7 @@ module CartoDB
         end
       end
 
+      @user.created_via = @created_via
       @user.valid? && @user.validate_credentials_not_taken_in_central && @custom_errors.empty?
     end
 

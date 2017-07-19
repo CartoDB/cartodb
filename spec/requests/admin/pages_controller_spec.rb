@@ -1,6 +1,8 @@
 # encoding: utf-8
 require_relative '../../spec_helper'
 require_relative '../../../app/controllers/admin/pages_controller'
+require 'spec/factories/organizations_contexts'
+require 'spec/factories/carto_visualizations'
 
 def app
   CartoDB::Application.new
@@ -25,33 +27,33 @@ describe Admin::PagesController do
     @user_org = true
   end
 
-  before(:each) do
-    host! "#{@org_name}.localhost.lan"
-  end
-
-  after(:each) do
-    ::User.all.each {|u| u.delete}
-  end
-
   describe '#index' do
+    before(:each) do
+      host! "#{@org_name}.localhost.lan"
+    end
+
     it 'returns 404 if user does not belongs to host organization' do
-      prepare_user(@non_org_user_name)
+      user = prepare_user(@non_org_user_name)
 
       get "/u/#{@non_org_user_name}", {}, JSON_HEADER
 
       last_response.status.should == 404
+
+      user.delete
     end
 
     it 'returns 200 if it is an org user and belongs to host organization' do
-      prepare_user(@org_user_name, @user_org, @belongs_to_org)
+      user = prepare_user(@org_user_name, @user_org, @belongs_to_org)
 
       get "/u/#{@org_user_name}", {}, JSON_HEADER
 
       last_response.status.should == 200
+
+      user.delete
     end
 
     it 'redirects if it is an org user but gets called without organization' do
-      prepare_user(@org_user_name, @user_org, @belongs_to_org)
+      user = prepare_user(@org_user_name, @user_org, @belongs_to_org)
 
       host! "#{@org_user_name}.localhost.lan"
       get "", {}, JSON_HEADER
@@ -59,14 +61,18 @@ describe Admin::PagesController do
       last_response.status.should == 302
       follow_redirect!
       last_response.status.should == 200
+
+      user.delete
     end
 
     it 'returns 404 if it is an org user but does NOT belong to host organization' do
-      prepare_user(@other_org_user_name, @user_org, !@belongs_to_org)
+      user = prepare_user(@other_org_user_name, @user_org, !@belongs_to_org)
 
       get "/u/#{@other_org_user_name}", {}, JSON_HEADER
 
       last_response.status.should == 404
+
+      user.delete
     end
 
     it 'returns 404 if user does NOT exist' do
@@ -89,10 +95,12 @@ describe Admin::PagesController do
       uri = URI.parse(last_request.url)
       uri.host.should == 'anyuser.localhost.lan'
       uri.path.should == '/me'
+
+      [anyuser, anyviewer].each(&:delete)
     end
 
     it 'redirects to user feed if not logged in' do
-      prepare_user('anyuser')
+      user = prepare_user('anyuser')
       host! 'anyuser.localhost.lan'
 
       get '', {}, JSON_HEADER
@@ -103,12 +111,14 @@ describe Admin::PagesController do
       uri.path.should == '/me'
       follow_redirect!
       last_response.status.should == 200
+
+      user.delete
     end
 
     it 'redirects to local login page if no user is specified and Central is not enabled' do
       old_cartodb_central_api = Cartodb.config[:cartodb_central_api]
       Cartodb.config[:cartodb_central_api] = {}
-      prepare_user('anyuser')
+      user = prepare_user('anyuser')
       host! 'localhost.lan'
       CartoDB.stubs(:session_domain).returns('localhost.lan')
       CartoDB.stubs(:subdomainless_urls?).returns(true)
@@ -123,6 +133,8 @@ describe Admin::PagesController do
       last_response.status.should == 200
 
       Cartodb.config[:cartodb_central_api] = old_cartodb_central_api
+
+      user.delete
     end
 
     it 'redirects to Central login page if no user is specified and Central is enabled' do
@@ -135,7 +147,7 @@ describe Admin::PagesController do
         'username' => 'api',
         'password' => 'test'
       }
-      prepare_user('anyuser')
+      user = prepare_user('anyuser')
       host! 'localhost.lan'
       CartoDB.stubs(:session_domain).returns('localhost.lan')
       CartoDB.stubs(:subdomainless_urls?).returns(true)
@@ -156,6 +168,8 @@ describe Admin::PagesController do
       follow_redirect!
 
       Cartodb.config[:cartodb_central_api] = old_cartodb_central_api
+
+      user.delete
     end
 
     it 'redirects and loads the dashboard if the user is logged in' do
@@ -171,6 +185,8 @@ describe Admin::PagesController do
       uri = URI.parse(last_response.location)
       uri.host.should == 'localhost.lan'
       uri.path.should == '/user/anyuser/dashboard'
+
+      anyuser.delete
     end
 
     it 'extracts username from redirection for dashboard with subdomainless' do
@@ -193,13 +209,19 @@ describe Admin::PagesController do
       User.any_instance.stubs(:db_size_in_bytes).returns(0)
       get location
       last_response.status.should == 200
+
+      anyuser.delete
     end
 
   end
 
   describe '#explore' do
+    before(:each) do
+      host! "#{@org_name}.localhost.lan"
+    end
+
     it 'should go to explore page' do
-      mock_explore_feature_flag
+      user = mock_explore_feature_flag
       host! 'localhost.lan'
 
       get '/explore', {}, JSON_HEADER
@@ -208,10 +230,12 @@ describe Admin::PagesController do
       uri = URI.parse(last_request.url)
       uri.host.should == 'localhost.lan'
       uri.path.should == '/explore'
+
+      user.delete
     end
 
     it 'should go to explore search page' do
-      mock_explore_feature_flag
+      user = mock_explore_feature_flag
       host! 'localhost.lan'
 
       get '/search', {}, JSON_HEADER
@@ -220,10 +244,12 @@ describe Admin::PagesController do
       uri = URI.parse(last_request.url)
       uri.host.should == 'localhost.lan'
       uri.path.should == '/search'
+
+      user.delete
     end
 
     it 'should go to explore search page with a query variable' do
-      mock_explore_feature_flag
+      user = mock_explore_feature_flag
       host! 'localhost.lan'
 
       get '/search/lala', {}, JSON_HEADER
@@ -232,13 +258,68 @@ describe Admin::PagesController do
       uri = URI.parse(last_request.url)
       uri.host.should == 'localhost.lan'
       uri.path.should == '/search/lala'
+
+      user.delete
     end
   end
 
   describe '#sitemap' do
+    include Carto::Factories::Visualizations
     it 'should return 404 if no user or organization is provided' do
       get '/sitemap.xml'
       last_response.status.should == 404
+    end
+
+    describe 'for organizations' do
+      include_context 'organization with users helper'
+
+      before(:each) do
+        host! "#{@carto_organization.name}.localhost.lan:#{Cartodb.config[:http_port]}"
+      end
+
+      it 'returns an empty body if there are not visualizations' do
+        get public_sitemap_url(user_domain: @carto_organization.name)
+        document = Nokogiri::XML(last_response.body)
+        document.child.child.text.should eq "\n"
+      end
+
+      it 'returns public visualizations' do
+        private_attrs = { privacy: Carto::Visualization::PRIVACY_PRIVATE }
+        create_full_visualization(@carto_org_user_1, visualization_attributes: private_attrs)
+        public_attrs = { privacy: Carto::Visualization::PRIVACY_PUBLIC }
+        _, _, _, visualization = create_full_visualization(@carto_org_user_1, visualization_attributes: public_attrs)
+        get public_sitemap_url(user_domain: @carto_organization.name)
+        last_response.status.should eq 200
+        document = Nokogiri::XML(last_response.body)
+        url_and_dates = document.search('url').map { |url| [url.at('loc').text, url.at('lastmod').text ] }
+        url_and_dates.count.should eq 1
+
+        url1 = public_visualizations_public_map_url(user_domain: @carto_org_user_1.username, id: visualization.id)
+        url_and_dates.map { |url_and_date| url_and_date[0] }.should eq [url1.gsub(/\/user\/[^\/]*\//, '/')]
+      end
+    end
+
+    describe 'for users' do
+      include_context 'users helper'
+
+      before(:each) do
+        host! "#{@carto_user1.username}.localhost.lan:#{Cartodb.config[:http_port]}"
+      end
+
+      it 'returns public visualizations' do
+        private_attrs = { privacy: Carto::Visualization::PRIVACY_PRIVATE }
+        create_full_visualization(@carto_user1, visualization_attributes: private_attrs)
+        public_attrs = { privacy: Carto::Visualization::PRIVACY_PUBLIC }
+        _, _, _, visualization = create_full_visualization(@carto_user1, visualization_attributes: public_attrs)
+        get public_sitemap_url(user_domain: @carto_user1.username)
+        last_response.status.should eq 200
+        document = Nokogiri::XML(last_response.body)
+        url_and_dates = document.search('url').map { |url| [url.at('loc').text, url.at('lastmod').text ] }
+        url_and_dates.count.should eq 1
+
+        url1 = public_visualizations_public_map_url(id: visualization.id)
+        url_and_dates.map { |url_and_date| url_and_date[0] }.should eq [url1.gsub(/\/user\/[^\/]*\//, '/')]
+      end
     end
   end
 
@@ -249,6 +330,7 @@ describe Admin::PagesController do
                           .returns(true)
     ::User.stubs(:where).returns(anyuser)
     anyuser.stubs(:first).returns(anyuser)
+    anyuser
   end
 
   def prepare_user(user_name, org_user=false, belongs_to_org=false)

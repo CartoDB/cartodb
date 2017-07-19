@@ -1,5 +1,4 @@
 var cdb = require('cartodb.js');
-var TorqueControlsView = require('./torque-controls-view');
 var TorqueTimeInfoView = require('./torque-time-info-view');
 var TimeSeriesHeaderView = require('./time-series-header-view');
 var template = require('./torque-header-view.tpl');

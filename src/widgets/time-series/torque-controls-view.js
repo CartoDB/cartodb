@@ -5,22 +5,22 @@ var template = require('./torque-controls.tpl');
  * Torque animation controls, to manage run state
  */
 module.exports = cdb.core.View.extend({
-  tagName: 'button',
-  className: 'CDB-Widget-controlButton',
-
   events: {
-    'click': '_onClick'
+    'click .CDB-Widget-controlButton': '_onClick'
   },
 
   initialize: function () {
     this._torqueLayerModel = this.options.torqueLayerModel;
+    this._rangeFilter = this.options.rangeFilter;
     this.listenTo(this._torqueLayerModel, 'change:isRunning', this.render);
+    this.listenTo(this._torqueLayerModel, 'change:start change.end', this.render);
   },
 
   render: function () {
     this.$el.html(
       template({
-        running: this._torqueLayerModel.get('isRunning')
+        running: this._torqueLayerModel.get('isRunning'),
+        disabled: !this._rangeFilter.isEmpty()
       })
     );
 

@@ -8,8 +8,9 @@ var TorqueControlsView = require('./torque-controls-view');
  * this.model is a histogram model
  */
 module.exports = HistogramView.extend({
-  className: 'CDB-Widget-content CDB-Widget-content--timeSeries u-flex u-alignCenter',
-  _animationDurationRegex: /-torque-animation-duration: ([0-9]+);/,
+  className: function () {
+    return HistogramView.prototype.className + ' CDB-Widget-content CDB-Widget-content--timeSeries u-flex u-alignCenter';
+  },
 
   initialize: function () {
     if (!this.options.torqueLayerModel) throw new Error('torqeLayerModel is required');
@@ -32,7 +33,8 @@ module.exports = HistogramView.extend({
     HistogramView.prototype._createHistogramView.call(this);
 
     this._torqueControls = new TorqueControlsView({
-      torqueLayerModel: this._torqueLayerModel
+      torqueLayerModel: this._torqueLayerModel,
+      rangeFilter: this._rangeFilter
     });
     this.addView(this._torqueControls);
 
@@ -41,13 +43,13 @@ module.exports = HistogramView.extend({
     this._chartView.setAnimated();
     this._chartView.bind('on_brush_click', this._onBrushClick, this);
 
-    var timeSliderView = new TorqueTimeSliderView({
+    this._timeSliderView = new TorqueTimeSliderView({
       dataviewModel: this.model, // a histogram model
       chartView: this._chartView,
       torqueLayerModel: this._torqueLayerModel
     });
-    this.addView(timeSliderView);
-    timeSliderView.render();
+    this.addView(this._timeSliderView);
+    this._timeSliderView.render();
   },
 
   _onChangeData: function () {
@@ -85,31 +87,34 @@ module.exports = HistogramView.extend({
 
   _timeToStep: function (timestamp) {
     var steps = this._torqueLayerModel.get('steps');
-    var start = this._originalData.get('start');
-    var end = this._originalData.get('end');
-    var step = (steps * (timestamp - start)) / (end - start);
+    var start = this._torqueLayerModel.get('start');
+    var end = this._torqueLayerModel.get('end');
+    var step = (steps * (1000 * timestamp - start)) / (end - start);
     return step;
   },
 
   _reSelectRange: function (model, data, options) {
     if (!this._rangeFilter.isEmpty()) {
+      this._torqueLayerModel.pause();
       var loStep = this._timeToStep(this._rangeFilter.get('min'));
       var hiStep = this._timeToStep(this._rangeFilter.get('max'));
 
       // clamp values since the range can be outside of the current torque thing
       var steps = this._torqueLayerModel.get('steps');
-      var ratio = (hiStep - loStep) / steps;
+      var ratio = this._chartView.getSelectionExtent() / 100;
       this._updateDuration(ratio);
       this._torqueLayerModel.renderRange(
         this._clampRangeVal(0, steps, loStep), // start
         this._clampRangeVal(0, steps, hiStep) // end
       );
     } else {
+      this._torqueLayerModel.play();
       this._updateDuration(1);
     }
   },
 
   _updateDuration: function (ratio, cartocss) {
+    if (!this._torqueLayerModel.getAnimationDuration) return;
     var duration = this._torqueLayerModel.getAnimationDuration(cartocss || this._torqueLayerModel.get('cartocss'));
 
     this._torqueLayerModel.set('customDuration', Math.round(duration * ratio));

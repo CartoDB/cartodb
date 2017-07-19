@@ -2,7 +2,17 @@ Development
 -----------
 
 ### Features
+* Support for nested properties in CartoCSS (#12411)
 * New loading button styles (#12132)
+* [WIP] Export/import organization/user metadata to allow user migration (#12271, #12304, #12323)
+* Start using ::outline symbolizer for polygon stroke (#12412)
+* [WIP] Export/import organization/user metadata to allow user migration (#12271, #12304, #12323, #12380)
+* New force param in EUMAPI organization users destroy operation to force deletion even with unregistered tables (#11654)
+* Removed the usage of the `organizations_admin` feature flag (#12131)
+* Show number of selected items in Time-Series widgets (#12179)
+* Show ranges in time series widget selection (#12291)
+* Bump Webpack version (#12392)
+* Start using ::outline symbolizer for polygon stroke (#12412)
 * [WIP] Export/import organization/user metadata to allow user migration (#12271, #12304, #12323, #12380)
 * New force param in EUMAPI organization users destroy operation to force deletion even with unregistered tables (#11654).
 * Removed the usage of the `organizations_admin` feature flag (#12131)
@@ -12,14 +22,23 @@ Development
 * Bump Webpack version (#12392).
 * The selection window on a histogram widget can be dragged (#12180)
 * Move playback on animated time series by clicking on it (#12180)
+* Updates Dataservices API client default version to `0.18.0` (#12466)
 
 ### Bug fixes / enhancements
+* Fix torque categories layer rendering (#cartodb.js/1698)
+* Don't provide quantification option when layer is animated (#10947)
+* Remove tracking of liked map events (#12404)
+* Display dashboard notifications for open-source instances (#12421)
+* Remove unsupported CartoCSS rules for vector rendering (#12410)
+* Fixed typo in content_no_datasets.jst.ejs and en.json (Docs)
+* Fixing problem parsing formula widget creation (#support/843)
 * Refactor Visualization::Member like and notification actions into Carto::Visualization (#12309)
 * Don't try to lowercase null values in custom-list-collection object (support/#744)
 * Tap on iOS10 mobile embed doesn't jump to page bottom (#cartodb.js/1652)
 * Don't try to lowercase null values in custom-list-collection object (#support/744)
 * Validate widget form when widget type changes (#11536)
 * Updated text of widget tooltips (#11467)
+* Fixes gravatar enabled check (support#840)
 * Fixed error where analysis overlay/infobox wasn't shown when hiding a layer (#11767)
 * Size of 'Add analysis' button reduced (#11580)
 * Fixed arrow keys exceeding min/max values in number editor (#12212)
@@ -35,6 +54,7 @@ Development
 * Fix error when a Dropbox folder has an extension matching valid extensions.
 * Fixed UI when editing merge analysis (#10850)
 * Fixed uninitialized constant in Carto::Visualization when a viewer shares a visualization (#12129).
+* Fix template generation without center at state (#12453).
 * Fix regenerate all api keys in an organization (#12218)
 * Refactor:
   * ::User <-> CartoDB::Visualization::Member dependency: #12116, #12221
@@ -43,14 +63,17 @@ Development
 * [WIP] Update to Rails 4
   * Update `rails-sequel` (#12118)
   * Changes compatible with Rails 3 (#12117)
+  * Removed Visualization::Member usage from CommonDataService (#12459). Includes performance improvements on user signup.
 * Make scrollwheel zoom on by default (#12214)
 * Fix SAML login error with uppercased emails (#12367)
 * You can configure your API key for the search bar, powered by Mapzen, with `geocoder.mapzen.search_bar_api_key` (#12296).
+* Fix viewer handling by visualizations controller (#12379).
 * Add last name field to users (#12174)
 * Fix error where a sync of a big dataset without geometry would be deleted from dashboard (#12162)
 * `create_dev_user` rake no longer tries to auto-create the database, `cartodb:db:setup` should be run first (#12187).
 * Fix EUMAPI response as per documentation (#12233)
 * Fix dimension check and support for SVG without extension and XML header (#12374).
+* Builder embed doesn't need user DB connection anymore (#12473).
 * Visualization models no longer raise an error checking `password_valid?` (#12270).
 * Fix `BUILDER_ENABLED` parameter in `create_dev_user` rake (#12189)
 * User organization or user key for google maps (#12232)
@@ -59,6 +82,7 @@ Development
 * "vector" key in vizjson is skipped in embeds if user has "vector_vs_raster" feature flag enabled.
 * Inline editor saves on blur, discard changes on 'ESC' (#11567)
 * Updated look and feel of sync interval dialog (#12145)
+* Organization owner can skip domain whitelisting on user creation (#12452).
 * Fixed 'not a function' bug related to a tooltip (#12279)
 * Disable edit geometry for Layers with aggregated styles (#11714)
 * Retrieve google static api url from backend to allow using both client_id and api_key (#12301, #12318)

@@ -59,11 +59,11 @@ Development
 * Refactor:
   * ::User <-> CartoDB::Visualization::Member dependency: #12116, #12221
   * Removed CartoDB::Visualization::Member from controllers: #12185, #12267
+  * Removed Visualization::Member usage from CommonDataService (#12459, #12488). Includes performance improvements on user signup.
 * Refactor Layer model (#10934) and UserTable (#11589, #11700, #11737).
 * [WIP] Update to Rails 4
   * Update `rails-sequel` (#12118)
   * Changes compatible with Rails 3 (#12117)
-  * Removed Visualization::Member usage from CommonDataService (#12459). Includes performance improvements on user signup.
 * Make scrollwheel zoom on by default (#12214)
 * Fix SAML login error with uppercased emails (#12367)
 * You can configure your API key for the search bar, powered by Mapzen, with `geocoder.mapzen.search_bar_api_key` (#12296).

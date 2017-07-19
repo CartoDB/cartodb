@@ -1,6 +1,6 @@
 require 'rollbar'
 require_relative '../../models/carto/visualization'
-require_relative '../../models/visualization/external_source'
+require_relative '../../models/carto/external_source'
 require_relative '../../models/common_data/singleton'
 
 module CartoDB
@@ -78,11 +78,27 @@ module CartoDB
               added += 1
             end
 
-            external_source = ExternalSource.where(visualization_id: visualization.id).first
+            external_source = Carto::ExternalSource.where(visualization_id: visualization.id).first
             if external_source
-              external_source.save if !(external_source.update_data(dataset['url'], dataset['geometry_types'], dataset['rows'], dataset['size'], 'common-data').changed_columns.empty?)
+              if external_source.update_data(
+                dataset['url'],
+                dataset['geometry_types'],
+                dataset['rows'],
+                dataset['size'],
+                'common-data'
+              ).changed?
+                external_source.save!
+              end
             else
-              ExternalSource.new(visualization.id, dataset['url'], dataset['geometry_types'], dataset['rows'], dataset['size'], 'common-data').save
+              external_source = Carto::ExternalSource.create(
+                visualization_id: visualization.id,
+                import_url: dataset['url'],
+                rows_counted: dataset['rows'],
+                size: dataset['size'],
+                username: 'common-data')
+              # ActiveRecord array issue
+              external_source.update_attribute(:geometry_types, dataset['geometry_types'])
+              external_source.save!
             end
           rescue => e
             CartoDB.notify_exception(e, {

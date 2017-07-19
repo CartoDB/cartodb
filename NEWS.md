@@ -82,6 +82,7 @@ Development
 * "vector" key in vizjson is skipped in embeds if user has "vector_vs_raster" feature flag enabled.
 * Inline editor saves on blur, discard changes on 'ESC' (#11567)
 * Updated look and feel of sync interval dialog (#12145)
+* Organization owner can skip domain whitelisting on user creation (#12452).
 * Fixed 'not a function' bug related to a tooltip (#12279)
 * Disable edit geometry for Layers with aggregated styles (#11714)
 * Retrieve google static api url from backend to allow using both client_id and api_key (#12301, #12318)

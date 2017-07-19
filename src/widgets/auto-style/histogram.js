@@ -37,9 +37,9 @@ var HistogramAutoStyler = AutoStyler.extend({
     var ramp = 'ramp([' + this.dataviewModel.get('column') + '], ';
     var colors = custom ? "('" + scales.range.join("', '") + "'), "
       : 'cartocolor(' + scales.palette + ', ' + this.dataviewModel.get('bins') + '), ';
-    var cuantification = scales.quantification + ');';
+    var cuantification = scales.quantification + ')';
 
-    return sym + ': ' + ramp + colors + cuantification;
+    return ramp + colors + cuantification;
   },
 
   getDef: function (cartocss) {
@@ -53,7 +53,7 @@ var HistogramAutoStyler = AutoStyler.extend({
     var isCustomDefinition = this.styles && this.styles.custom || false;
 
     ['marker-fill', 'polygon-fill', 'line-color'].forEach(function (item) {
-      if (cartocss.search(StyleUtils.getAttrRegex(item, false)) >= 0) {
+      if (StyleUtils.isPropertyIncluded(cartocss, item)) {
         var scales = HistogramAutoStyler.SCALES_MAP[item][shape];
         var geom = item.substring(0, item.indexOf('-'));
         var definition = {};

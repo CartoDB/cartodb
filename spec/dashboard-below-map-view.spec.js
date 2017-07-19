@@ -19,12 +19,22 @@ describe('dashboard-below-map-view', function () {
       var timeSeriesWidgetModelFake = new Backbone.Model({
         type: 'time-series'
       });
-      timeSeriesWidgetModelFake.dataviewModel = new Backbone.Model();
+      timeSeriesWidgetModelFake.dataviewModel = new Backbone.Model({
+        source: {
+          id: 'a0'
+        }
+      });
       timeSeriesWidgetModelFake.dataviewModel.getUnfilteredDataModel = function () {
         return new Backbone.Model();
       };
       timeSeriesWidgetModelFake.dataviewModel.getData = function () {
         return {};
+      };
+      timeSeriesWidgetModelFake.dataviewModel.getSourceType = function () {
+        return '';
+      };
+      timeSeriesWidgetModelFake.dataviewModel.getLayerName = function () {
+        return '';
       };
       timeSeriesWidgetModelFake.dataviewModel.layer = new Backbone.Model();
       this.widgetsCollection.add(timeSeriesWidgetModelFake);

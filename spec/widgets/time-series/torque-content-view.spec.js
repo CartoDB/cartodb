@@ -19,7 +19,10 @@ describe('widgets/time-series/torque-content-view', function () {
   beforeEach(function () {
     var vis = specHelper.createDefaultVis();
     this.dataviewModel = vis.dataviews.createHistogramModel(vis.map.layers.first(), {
-      column: 'col'
+      column: 'col',
+      source: {
+        id: 'a0'
+      }
     });
     spyOn(this.dataviewModel, 'fetch').and.callThrough();
     this.originalData = this.dataviewModel.getUnfilteredDataModel();
@@ -36,7 +39,8 @@ describe('widgets/time-series/torque-content-view', function () {
       vis: vis
     });
     var widgetModel = new WidgetModel({
-      normalized: false
+      normalized: false,
+      show_source: true
     }, {
       dataviewModel: this.dataviewModel
     });
@@ -76,6 +80,7 @@ describe('widgets/time-series/torque-content-view', function () {
       expect(this.view._dropdownView).toBeDefined();
       expect(this.view.$('.js-torque-header').length).toBe(1);
       expect(this.view.$('.js-header .CDB-Dropdown').length).toBe(1);
+      expect(this.view.$('.js-header .CDB-Widget-info').length).toBe(1);
       expect(this.view.$('svg').length).toBe(1);
       expect(this.view._histogramView.options.displayShadowBars).toBe(true);
       expect(this.view._histogramView.options.normalized).toBe(false);

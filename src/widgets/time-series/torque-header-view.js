@@ -8,7 +8,7 @@ var template = require('./torque-header-view.tpl');
  * View for the header in the torque time-series view
  */
 module.exports = cdb.core.View.extend({
-  className: 'CDB-Widget-header CDB-Widget-contentSpaced',
+  className: 'CDB-Widget-contentSpaced',
 
   initialize: function () {
     this._dataviewModel = this.options.dataviewModel;

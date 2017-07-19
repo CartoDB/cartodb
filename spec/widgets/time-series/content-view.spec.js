@@ -8,7 +8,10 @@ describe('widgets/time-series/content-view', function () {
   beforeEach(function () {
     var vis = specHelper.createDefaultVis();
     this.dataviewModel = vis.dataviews.createHistogramModel(vis.map.layers.first(), {
-      column: 'col'
+      column: 'col',
+      source: {
+        id: 'a0'
+      }
     });
     this.originalData = this.dataviewModel.getUnfilteredDataModel();
     this.originalData.set({
@@ -21,7 +24,9 @@ describe('widgets/time-series/content-view', function () {
       this.options = options;
     }.bind(this);
 
-    var widgetModel = new WidgetModel({}, {
+    var widgetModel = new WidgetModel({
+      show_source: true
+    }, {
       dataviewModel: this.dataviewModel
     });
 
@@ -82,6 +87,7 @@ describe('widgets/time-series/content-view', function () {
           expect(this.view._histogramView).toBeDefined();
           expect(this.view._headerView).toBeDefined();
           expect(this.view._dropdownView).toBeDefined();
+          expect(this.view.$('.js-header .CDB-Widget-info').length).toBe(1);
           expect(this.view.render().$el.html()).toContain('<svg');
         });
       });

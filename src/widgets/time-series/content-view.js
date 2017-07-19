@@ -5,6 +5,8 @@ var contentTemplate = require('./content.tpl');
 var HistogramView = require('./histogram-view');
 var TimeSeriesHeaderView = require('./time-series-header-view');
 var DropdownView = require('../dropdown/widget-dropdown-view');
+var layerColors = require('../../util/layer-colors');
+var analyses = require('../../data/analyses');
 
 /**
  * Widget content view for a time-series
@@ -23,12 +25,24 @@ module.exports = cdb.core.View.extend({
     this.clearSubViews();
     this.$el.empty();
 
+    var sourceId = this._dataviewModel.get('source').id;
+    var letter = layerColors.letter(sourceId);
+    var sourceColor = layerColors.getColorForLetter(letter);
+    var sourceType = this._dataviewModel.getSourceType() || '';
+    var layerName = this._dataviewModel.getLayerName() || '';
+
     if (this._isDataEmpty()) {
       this.$el.append(placeholderTemplate({
         hasTorqueLayer: false
       }));
     } else {
-      this.$el.append(contentTemplate());
+      this.$el.append(contentTemplate({
+        sourceId: sourceId,
+        sourceType: analyses.title(sourceType),
+        showSource: this.model.get('show_source') && letter !== '',
+        sourceColor: sourceColor,
+        layerName: layerName
+      }));
       this._createHistogramView();
       this._createHeaderView();
       this._createDropdownView();
@@ -84,7 +98,7 @@ module.exports = cdb.core.View.extend({
     }
     this._headerView.bind('resetFilter', this._histogramView.resetFilter, this._histogramView);
     this.addView(this._headerView);
-    this.$('.js-header').append(this._headerView.render().el);
+    this.$('.js-title').append(this._headerView.render().el);
   },
 
   _createDropdownView: function () {

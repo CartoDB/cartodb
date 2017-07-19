@@ -1,6 +1,7 @@
 var _ = require('underscore');
-var moment = require('moment');
 var d3 = require('d3');
+var moment = require('moment');
+require('moment-timezone');
 
 var AGGREGATION_FORMATS = {
   minute: {

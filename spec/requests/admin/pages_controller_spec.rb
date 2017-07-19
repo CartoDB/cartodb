@@ -291,7 +291,7 @@ describe Admin::PagesController do
         get public_sitemap_url(user_domain: @carto_organization.name)
         last_response.status.should eq 200
         document = Nokogiri::XML(last_response.body)
-        url_and_dates = document.search('url').map { |url| [url.at('loc').text, url.at('lastmod').text ] }
+        url_and_dates = document.search('url').map { |url| [url.at('loc').text, url.at('lastmod').text] }
         url_and_dates.count.should eq 1
 
         url1 = public_visualizations_public_map_url(user_domain: @carto_org_user_1.username, id: visualization.id)
@@ -314,7 +314,7 @@ describe Admin::PagesController do
         get public_sitemap_url(user_domain: @carto_user1.username)
         last_response.status.should eq 200
         document = Nokogiri::XML(last_response.body)
-        url_and_dates = document.search('url').map { |url| [url.at('loc').text, url.at('lastmod').text ] }
+        url_and_dates = document.search('url').map { |url| [url.at('loc').text, url.at('lastmod').text] }
         url_and_dates.count.should eq 1
 
         url1 = public_visualizations_public_map_url(id: visualization.id)

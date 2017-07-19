@@ -60,7 +60,8 @@ class Admin::PagesController < Admin::AdminController
         redirect_to CartoDB.base_url(@viewed_user.organization.name) << CartoDB.path(self, 'public_sitemap') and return
       end
 
-      visualizations = Carto::VisualizationQueryBuilder.new.
+      visualizations = Carto::VisualizationQueryBuilder.
+        new.
         with_user_id(@viewed_user.id).
         with_privacy(Carto::Visualization::PRIVACY_PUBLIC).
         with_order('visualizations.updated_at', :desc).
@@ -71,18 +72,18 @@ class Admin::PagesController < Admin::AdminController
 
     @urls = visualizations.map { |vis|
       case vis.type
-        when Carto::Visualization::TYPE_DERIVED
-          {
-            loc: CartoDB.url(self, 'public_visualizations_public_map', { id: vis.id }, vis.user),
-            lastfreq: vis.updated_at.strftime("%Y-%m-%dT%H:%M:%S%:z")
-          }
-        when Carto::Visualization::TYPE_CANONICAL
-          {
-            loc: CartoDB.url(self, 'public_table', { id: vis.name }, vis.user),
-            lastfreq: vis.updated_at.strftime("%Y-%m-%dT%H:%M:%S%:z")
-          }
-        else
-          nil
+      when Carto::Visualization::TYPE_DERIVED
+        {
+          loc: CartoDB.url(self, 'public_visualizations_public_map', { id: vis.id }, vis.user),
+          lastfreq: vis.updated_at.strftime("%Y-%m-%dT%H:%M:%S%:z")
+        }
+      when Carto::Visualization::TYPE_CANONICAL
+        {
+          loc: CartoDB.url(self, 'public_table', { id: vis.name }, vis.user),
+          lastfreq: vis.updated_at.strftime("%Y-%m-%dT%H:%M:%S%:z")
+        }
+      else
+        nil
       end
     }.compact
     render :formats => [:xml]

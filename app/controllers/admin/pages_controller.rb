@@ -60,14 +60,13 @@ class Admin::PagesController < Admin::AdminController
         redirect_to CartoDB.base_url(@viewed_user.organization.name) << CartoDB.path(self, 'public_sitemap') and return
       end
 
-      visualizations = Carto::VisualizationQueryBuilder
-        .new
-        .with_user_id(@viewed_user.id)
-        .with_privacy(Carto::Visualization::PRIVACY_PUBLIC)
-        .with_order('visualizations.updated_at', :desc)
-        .without_raster
-        .with_prefetch_user(true)
-        .build
+      visualizations = Carto::VisualizationQueryBuilder.new
+                                                       .with_user_id(@viewed_user.id)
+                                                       .with_privacy(Carto::Visualization::PRIVACY_PUBLIC)
+                                                       .with_order('visualizations.updated_at', :desc)
+                                                       .without_raster
+                                                       .with_prefetch_user(true)
+                                                       .build
     end
 
     @urls = visualizations.map { |vis|
@@ -82,8 +81,6 @@ class Admin::PagesController < Admin::AdminController
           loc: CartoDB.url(self, 'public_table', { id: vis.name }, vis.user),
           lastfreq: vis.updated_at.strftime("%Y-%m-%dT%H:%M:%S%:z")
         }
-      else
-        nil
       end
     }.compact
     render :formats => [:xml]

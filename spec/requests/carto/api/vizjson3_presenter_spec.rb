@@ -182,7 +182,7 @@ describe Carto::Api::VizJSON3Presenter do
     it 'includes cartocss at layers options' do
       cartocss = '#layer { marker-fill: #fabada; }'
       layer = @visualization.data_layers.first
-      layer.options['cartocss'] = cartocss
+      layer.options['tile_style'] = cartocss
       layer.save
       @table.privacy = Carto::UserTable::PRIVACY_PRIVATE
       @table.save!
@@ -331,11 +331,9 @@ describe Carto::Api::VizJSON3Presenter do
 
       include_examples 'common layer checks'
 
-      it 'should not include sql nor cartocss fields in data layers' do
+      it 'should not include sql field in data layers' do
         data_layer_options = vizjson[:layers][1][:options]
         data_layer_options.should_not include :sql
-        data_layer_options.should_not include :cartocss
-        data_layer_options.should_not include :cartocss_version
       end
 
       it 'should include cartocss but not sql in torque layers' do

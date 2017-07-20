@@ -23,6 +23,7 @@ Development
 * The selection window on a histogram widget can be dragged (#12180)
 * Move playback on animated time series by clicking on it (#12180)
 * Updates Dataservices API client default version to `0.18.0` (#12466)
+* Updates Dataservices API client default version to `0.19.0` (#12494)
 
 ### Bug fixes / enhancements
 * Fix torque categories layer rendering (#cartodb.js/1698)
@@ -32,7 +33,6 @@ Development
 * Remove unsupported CartoCSS rules for vector rendering (#12410)
 * Fixed typo in content_no_datasets.jst.ejs and en.json (Docs)
 * Fixing problem parsing formula widget creation (#support/843)
-* Refactor Visualization::Member like and notification actions into Carto::Visualization (#12309)
 * Don't try to lowercase null values in custom-list-collection object (support/#744)
 * Tap on iOS10 mobile embed doesn't jump to page bottom (#cartodb.js/1652)
 * Don't try to lowercase null values in custom-list-collection object (#support/744)
@@ -58,8 +58,9 @@ Development
 * Fix regenerate all api keys in an organization (#12218)
 * Refactor:
   * ::User <-> CartoDB::Visualization::Member dependency: #12116, #12221
-  * Removed CartoDB::Visualization::Member from controllers: #12185, #12267
-* Refactor Layer model (#10934) and UserTable (#11589, #11700, #11737).
+  * Removed CartoDB::Visualization::Member and CartoDB::Visualization::Collection from controllers: #12185, #12267, #12485.
+  * Visualization::Member like and notification actions into Carto::Visualization (#12309)
+  * Layer model (#10934) and UserTable (#11589, #11700, #11737).
 * [WIP] Update to Rails 4
   * Update `rails-sequel` (#12118)
   * Changes compatible with Rails 3 (#12117)
@@ -82,6 +83,7 @@ Development
 * "vector" key in vizjson is skipped in embeds if user has "vector_vs_raster" feature flag enabled.
 * Inline editor saves on blur, discard changes on 'ESC' (#11567)
 * Updated look and feel of sync interval dialog (#12145)
+* Organization owner can skip domain whitelisting on user creation (#12452).
 * Fixed 'not a function' bug related to a tooltip (#12279)
 * Disable edit geometry for Layers with aggregated styles (#11714)
 * Retrieve google static api url from backend to allow using both client_id and api_key (#12301, #12318)
@@ -93,6 +95,7 @@ Development
 * Fix permission model and added tests (#12393)
 * Country dropdown should be mandatory in postal code georeference (#12420)
 * Fixed bounds and center of thumbnails after updating a map
+* Fixed a bug in cartodb.js regarding the featureCount (#12490)
 
 ### NOTICE
 This release upgrades the CartoDB PostgreSQL extension to `0.19.2`. Run the following to have it available:

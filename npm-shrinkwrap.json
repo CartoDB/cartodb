@@ -699,9 +699,9 @@
       "resolved": "https://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.32.0.tgz"
     },
     "caniuse-lite": {
-      "version": "1.0.30000703",
+      "version": "1.0.30000704",
       "from": "caniuse-lite@>=1.0.30000701 <2.0.0",
-      "resolved": "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30000703.tgz"
+      "resolved": "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30000704.tgz"
     },
     "carto": {
       "version": "0.15.1-cdb4",
@@ -716,7 +716,7 @@
     "cartodb-deep-insights.js": {
       "version": "0.0.2",
       "from": "cartodb/deep-insights.js#12387-play-pause",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#5dfbb14a9f904438a4ff1a885f4e9272b7dda4ac",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#53dfc4ce9472d80931457e7a21fa5ac86cb42258",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",
@@ -732,8 +732,8 @@
     },
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
-      "from": "cartodb/cartodb.js#v4",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#6dba128ff3a9d5e544e2bc0dfd103957f8de707a"
+      "from": "cartodb/cartodb.js#12387-play-pause",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#4e20dec8d26edeb96128b15f5873c6b5a199e8ce"
     },
     "caseless": {
       "version": "0.11.0",
@@ -2926,9 +2926,9 @@
       "resolved": "git://github.com/cartodb/tangram.cartodb.git#4a6359fb86f8bb0aec5b8a0cefa3c23a3312201f"
     },
     "tapable": {
-      "version": "0.2.6",
+      "version": "0.2.7",
       "from": "tapable@>=0.2.5 <0.3.0",
-      "resolved": "https://registry.npmjs.org/tapable/-/tapable-0.2.6.tgz"
+      "resolved": "https://registry.npmjs.org/tapable/-/tapable-0.2.7.tgz"
     },
     "temporary": {
       "version": "0.0.8",

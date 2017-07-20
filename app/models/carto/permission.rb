@@ -200,7 +200,7 @@ class Carto::Permission < ActiveRecord::Base
 
   def users_with_permissions(access)
     user_ids = relevant_user_acl_entries(acl).select { |e| access == e[:access] }.map { |e| e[:id] }
-    Carto::User.where(id: user_ids).all
+    user_ids.empty? ? [] : Carto::User.where(id: user_ids).all
   end
 
   ENTITY_TYPE_VISUALIZATION = 'vis'.freeze

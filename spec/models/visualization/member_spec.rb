@@ -1308,7 +1308,6 @@ describe Visualization::Member do
     end
   end
   describe 'remote member' do
-
     before(:all) do
       @user = create_user
       @name = "example_name"
@@ -1336,15 +1335,5 @@ describe Visualization::Member do
       remote_member.attributions.should eq @attributions
       remote_member.display_name.should eq @display_name
     end
-
-    it 'should update a remote member' do
-      remote_member = CartoDB::Visualization::Member.remote_member(
-        @name, @user_id, @privacy, @description, @tags, @license, @source, @attributions, @display_name
-      )
-      remote_member.update_remote_data(@privacy, "Another description", @tags, @license, @source, @attributions, @display_name)
-      remote_member.store
-      remote_member.description.should eq "Another description"
-    end
-
   end
 end

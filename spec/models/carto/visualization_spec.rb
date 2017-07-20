@@ -298,6 +298,16 @@ describe Carto::Visualization do
     end
   end
 
+  describe 'creation' do
+    it 'is not valid if user is viewer' do
+      viewer = FactoryGirl.build(:carto_user, viewer: true)
+      visualization = FactoryGirl.build(:carto_visualization, user: viewer)
+      visualization.valid?.should be_false
+      visualization.errors[:user].should_not be_empty
+      visualization.errors[:user].first.should eq "cannot be viewer"
+    end
+  end
+
   describe '#destroy' do
     it 'destroys all visualization dependencies' do
       map = FactoryGirl.create(:carto_map_with_layers, user: @carto_user)

@@ -178,6 +178,19 @@ describe Carto::Api::VizJSON3Presenter do
       v3_vizjson = Carto::Api::VizJSON3Presenter.new(@visualization, viewer_user).send :calculate_vizjson
       v3_vizjson[:layers][1][:options][:source].should eq source
     end
+
+    it 'includes cartocss at layers options' do
+      cartocss = '#layer { marker-fill: #fabada; }'
+      layer = @visualization.data_layers.first
+      layer.options['cartocss'] = cartocss
+      layer.save
+      @table.privacy = Carto::UserTable::PRIVACY_PRIVATE
+      @table.save!
+      @visualization.reload
+
+      v3_vizjson = Carto::Api::VizJSON3Presenter.new(@visualization, viewer_user).send :calculate_vizjson
+      v3_vizjson[:layers][1][:options][:cartocss].should eq cartocss
+    end
   end
 
   describe 'analyses' do

@@ -23,6 +23,7 @@ Development
 * The selection window on a histogram widget can be dragged (#12180)
 * Move playback on animated time series by clicking on it (#12180)
 * Updates Dataservices API client default version to `0.18.0` (#12466)
+* Updates Dataservices API client default version to `0.19.0` (#12494)
 
 ### Bug fixes / enhancements
 * Fix torque categories layer rendering (#cartodb.js/1698)

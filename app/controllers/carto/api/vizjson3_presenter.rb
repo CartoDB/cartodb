@@ -251,7 +251,8 @@ module Carto
           visible: layer_vizjson[:visible],
           options: {
             layer_name: layer_options[:layer_name],
-            attribution: layer_options[:attribution]
+            attribution: layer_options[:attribution],
+            cartocss: layer_options[:cartocss]
           }
         }
 

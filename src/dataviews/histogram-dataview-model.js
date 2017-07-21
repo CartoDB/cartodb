@@ -11,7 +11,8 @@ module.exports = DataviewModelBase.extend({
     {
       type: 'histogram',
       totalAmount: 0,
-      filteredAmount: 0
+      filteredAmount: 0,
+      hasNulls: false
     },
     DataviewModelBase.prototype.defaults
   ),
@@ -110,6 +111,10 @@ module.exports = DataviewModelBase.extend({
     return this.get('column_type');
   },
 
+  hasNulls: function () {
+    return this.get('hasNulls');
+  },
+
   parse: function (data) {
     var aggregation = data.aggregation;
     var numberOfBins = data.bins_count;
@@ -147,12 +152,20 @@ module.exports = DataviewModelBase.extend({
       lastBucket.end = lastBucket.max;
     }
 
-    this._data.reset(parsedData.data);
+    // if parse option is passed in the constructor, this._data is not created yet at this point
+    this._data && this._data.reset(parsedData.data);
 
     // Calculate totals
     parsedData.totalAmount = this._calculateTotalAmount(parsedData.data);
     parsedData.filteredAmount = this._calculateFilteredAmount(this.filter, this._data);
     parsedData.nulls = data.nulls;
+
+    if (data.nulls != null) {
+      parsedData = _.extend({}, parsedData, {
+        nulls: data.nulls,
+        hasNulls: true
+      });
+    }
 
     return parsedData;
   },

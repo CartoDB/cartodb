@@ -187,7 +187,7 @@ describe('dataviews/histogram-dataview-model', function () {
     });
   });
 
-  describe('.parse', function () {
+  describe('parse', function () {
     it('should parse the bins', function () {
       var data = {
         bin_width: 14490.25,
@@ -198,7 +198,7 @@ describe('dataviews/histogram-dataview-model', function () {
         ],
         bins_count: 4,
         bins_start: 55611,
-        nulls: 0,
+        nulls: 1,
         type: 'histogram'
       };
 
@@ -206,9 +206,66 @@ describe('dataviews/histogram-dataview-model', function () {
 
       var parsedData = this.model.getData();
 
-      expect(data.nulls).toBe(0);
+      expect(data.nulls).toBe(1);
       expect(parsedData.length).toBe(4);
       expect(JSON.stringify(parsedData)).toBe('[{"bin":0,"start":55611,"end":70101.25,"freq":2,"max":70151,"min":55611},{"bin":1,"start":70101.25,"end":84591.5,"freq":2,"max":79017,"min":78448},{"bin":2,"start":84591.5,"end":99081.75,"freq":0},{"bin":3,"start":99081.75,"end":113572,"freq":1,"max":113572,"min":113572}]');
+    });
+
+    it('should set hasNulls to true if null is set in the response', function () {
+      var data = {
+        bin_width: 14490.25,
+        bins: [
+          { bin: 0, freq: 2, max: 70151, min: 55611 },
+          { bin: 1, freq: 2, max: 79017, min: 78448 },
+          { bin: 3, freq: 1, max: 113572, min: 113572 }
+        ],
+        bins_count: 4,
+        bins_start: 55611,
+        source: {
+          id: 'a0'
+        },
+        nulls: 0,
+        type: 'histogram'
+      };
+
+      var model = new HistogramDataviewModel(data, {
+        map: this.map,
+        vis: this.vis,
+        layer: this.layer,
+        filter: this.filter,
+        analysisCollection: new Backbone.Collection(),
+        parse: true
+      });
+
+      expect(model.hasNulls()).toBe(true);
+    });
+
+    it('should set hasNulls to false if null is undefined in the response', function () {
+      var data = {
+        bin_width: 14490.25,
+        bins: [
+          { bin: 0, freq: 2, max: 70151, min: 55611 },
+          { bin: 1, freq: 2, max: 79017, min: 78448 },
+          { bin: 3, freq: 1, max: 113572, min: 113572 }
+        ],
+        bins_count: 4,
+        bins_start: 55611,
+        source: {
+          id: 'a0'
+        },
+        type: 'histogram'
+      };
+
+      var model = new HistogramDataviewModel(data, {
+        map: this.map,
+        vis: this.vis,
+        layer: this.layer,
+        filter: this.filter,
+        analysisCollection: new Backbone.Collection(),
+        parse: true
+      });
+
+      expect(model.hasNulls()).toBe(false);
     });
 
     it('should calculate total amount and filtered amount in parse when a filter is present', function () {

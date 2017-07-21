@@ -222,6 +222,7 @@ module.exports = cdb.core.View.extend({
     this._unbinds();
 
     var data = this._dataviewModel.getData();
+    var hasNulls = this._dataviewModel.hasNulls();
     var originalData = this._originalData.getData();
     var isDataEmpty = !_.size(data) && !_.size(originalData);
 
@@ -237,6 +238,7 @@ module.exports = cdb.core.View.extend({
         sourceId: sourceId,
         sourceType: analyses.title(sourceType),
         showStats: this.model.get('show_stats'),
+        showNulls: hasNulls,
         showSource: this.model.get('show_source') && letter !== '',
         itemsCount: !isDataEmpty ? data.length : '-',
         isCollapsed: !!this.model.get('collapsed'),

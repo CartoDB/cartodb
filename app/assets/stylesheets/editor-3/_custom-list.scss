@@ -5,7 +5,8 @@
 @import 'cdb-variables/colors';
 @import 'cdb-variables/sizes';
 
-.CustomList {
+.CustomList,
+.CustomList-inner {
   display: none;
   position: absolute;
   top: 36px;
@@ -13,6 +14,11 @@
   min-width: 246px;
   max-width: 272px;
   z-index: 100;
+}
+.CustomList-inner {
+  top: 0;
+  right: auto;
+  left: 0;
 }
 .CustomList--small {
   width: 215px;

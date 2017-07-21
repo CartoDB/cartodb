@@ -23,6 +23,7 @@ Development
 * The selection window on a histogram widget can be dragged (#12180)
 * Move playback on animated time series by clicking on it (#12180)
 * Updates Dataservices API client default version to `0.18.0` (#12466)
+* Updates Dataservices API client default version to `0.19.0` (#12494)
 
 ### Bug fixes / enhancements
 * Fix torque categories layer rendering (#cartodb.js/1698)
@@ -32,7 +33,6 @@ Development
 * Remove unsupported CartoCSS rules for vector rendering (#12410)
 * Fixed typo in content_no_datasets.jst.ejs and en.json (Docs)
 * Fixing problem parsing formula widget creation (#support/843)
-* Refactor Visualization::Member like and notification actions into Carto::Visualization (#12309)
 * Don't try to lowercase null values in custom-list-collection object (support/#744)
 * Tap on iOS10 mobile embed doesn't jump to page bottom (#cartodb.js/1652)
 * Don't try to lowercase null values in custom-list-collection object (#support/744)
@@ -44,7 +44,7 @@ Development
 * Fixed arrow keys exceeding min/max values in number editor (#12212)
 * Better handling and reporting of "table with no map associated" error in map privacy changes (#12137).
 * Improve formula widget form (#12242)
-* Fixed aligment problems after cartoassets update (#12234)
+* Fixed alignment problems after CartoAssets update (#12234)
 * Fixed layer counter (#12236)
 * Fixed problem when icon upload fails (#11980)
 * Boolean fields are visible in the filter by column value analysis (#11546)
@@ -61,6 +61,9 @@ Development
   * Removed CartoDB::Visualization::Member from controllers: #12185, #12267
   * Removed Visualization::Member usage from CommonDataService (#12459, #12488). Includes performance improvements on user signup.
 * Refactor Layer model (#10934) and UserTable (#11589, #11700, #11737).
+  * Removed CartoDB::Visualization::Member and CartoDB::Visualization::Collection from controllers: #12185, #12267, #12485.
+  * Visualization::Member like and notification actions into Carto::Visualization (#12309)
+  * Layer model (#10934) and UserTable (#11589, #11700, #11737).
 * [WIP] Update to Rails 4
   * Update `rails-sequel` (#12118)
   * Changes compatible with Rails 3 (#12117)
@@ -94,6 +97,7 @@ Development
 * Fix permission model and added tests (#12393)
 * Country dropdown should be mandatory in postal code georeference (#12420)
 * Fixed bounds and center of thumbnails after updating a map
+* Fixed a bug in cartodb.js regarding the featureCount (#12490)
 
 ### NOTICE
 This release upgrades the CartoDB PostgreSQL extension to `0.19.2`. Run the following to have it available:
@@ -250,6 +254,12 @@ More information at [Dropbox migration guide](https://www.dropbox.com/developers
 * Improved analysis error tooltip (#12250)
 
 ### Bug fixes
+* Update Data Observatory Analysis UI (#9991)
+* Boolean fields are visible in the filter by column value analysis (#11546)
+* Fixed legend's color mismatch with empty values (#11632)
+* Fixed overlay for legends view (#11825)
+* Fixed UI when editing merge analysis (#10850)
+* Fixed uninitialized constant in Carto::Visualization when a viewer shares a visualization (#12129).
 * Revamp grunt default task to compile assets (#12325)
 * Made checkboxes actionable clicking on its label (#11535)
 * Google customers don't need quota checks for hires geocoding (support/#674)

@@ -140,13 +140,13 @@ module.exports = DataviewModelBase.extend({
       totalAmount: totalAmount,
       filteredAmount: filteredAmount,
       hasNulls: false
-    }
+    };
 
     if (data.nulls != null) {
       attrs = _.extend({}, attrs, {
         nulls: data.nulls,
         hasNulls: true
-      })
+      });
     }
 
     return attrs;

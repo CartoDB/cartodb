@@ -1,4 +1,5 @@
 var Backbone = require('backbone');
+var _ = require('underscore');
 var Model = require('../../../src/core/model');
 var VisModel = require('../../../src/vis/vis');
 var RangeFilter = require('../../../src/windshaft/filters/range');
@@ -243,7 +244,7 @@ describe('dataviews/histogram-dataview-model', function () {
           bins_start: 55611,
           type: 'histogram'
         }, attrs);
-      }
+      };
     });
 
     it('should parse the bins', function () {
@@ -260,8 +261,7 @@ describe('dataviews/histogram-dataview-model', function () {
       expect(JSON.stringify(parsedData)).toBe('[{"bin":0,"start":55611,"end":70101.25,"freq":2,"max":70151,"min":55611},{"bin":1,"start":70101.25,"end":84591.5,"freq":2,"max":79017,"min":78448},{"bin":2,"start":84591.5,"end":99081.75,"freq":0},{"bin":3,"start":99081.75,"end":113572,"freq":1,"max":113572,"min":113572}]');
     });
 
-
-    it('should set hasNulls to true if null is set in the response', function() {
+    it('should set hasNulls to true if null is set in the response', function () {
       var data = createData({
         source: {
           id: 'a0'
@@ -281,7 +281,7 @@ describe('dataviews/histogram-dataview-model', function () {
       expect(model.hasNulls()).toBe(true);
     });
 
-    it('should set hasNulls to false if null is undefined in the response', function() {
+    it('should set hasNulls to false if null is undefined in the response', function () {
       var data = createData({
         source: {
           id: 'a0'
@@ -299,9 +299,7 @@ describe('dataviews/histogram-dataview-model', function () {
 
       expect(model.hasNulls()).toBe(false);
     });
-
-  })
-
+  });
 
   it('should calculate total amount and filtered amount in parse when a filter is present', function () {
     var data = {

@@ -44,7 +44,7 @@ Development
 * Fixed arrow keys exceeding min/max values in number editor (#12212)
 * Better handling and reporting of "table with no map associated" error in map privacy changes (#12137).
 * Improve formula widget form (#12242)
-* Fixed aligment problems after cartoassets update (#12234)
+* Fixed alignment problems after CartoAssets update (#12234)
 * Fixed layer counter (#12236)
 * Fixed problem when icon upload fails (#11980)
 * Boolean fields are visible in the filter by column value analysis (#11546)
@@ -252,6 +252,12 @@ More information at [Dropbox migration guide](https://www.dropbox.com/developers
 * Improved analysis error tooltip (#12250)
 
 ### Bug fixes
+* Update Data Observatory Analysis UI (#9991)
+* Boolean fields are visible in the filter by column value analysis (#11546)
+* Fixed legend's color mismatch with empty values (#11632)
+* Fixed overlay for legends view (#11825)
+* Fixed UI when editing merge analysis (#10850)
+* Fixed uninitialized constant in Carto::Visualization when a viewer shares a visualization (#12129).
 * Revamp grunt default task to compile assets (#12325)
 * Made checkboxes actionable clicking on its label (#11535)
 * Google customers don't need quota checks for hires geocoding (support/#674)

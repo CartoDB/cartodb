@@ -2,7 +2,8 @@
 @import 'cdb-variables/sizes';
 @import 'cdb-variables/colors';
 
-.LegendItem {
+.LegendItem,
+.ListItem {
   @include flex(1);
   position: relative;
   cursor: move;
@@ -11,6 +12,10 @@
   [data-fields] {
     @include flex(1);
   }
+}
+
+.ListItem--fixed {
+  cursor: auto;
 }
 
 .LegendItem-deteleButton {
@@ -23,6 +28,21 @@
     @include opacity(1);
   }
 }
+
+.ListItem-deteleButton {
+  position: absolute;
+  top: 6px;
+  left: 100%;
+  padding: 0 5px;
+  opacity: 0;
+  visibility: hidden;
+
+  .ListItem:not(:first-child):hover & {
+    @include opacity(1);
+    visibility: visible;
+  }
+}
+
 
 .LegendItem-listFieldsOrder {
   @include opacity(0);

@@ -711,9 +711,9 @@
       "resolved": "https://registry.npmjs.org/camelcase/-/camelcase-1.2.1.tgz"
     },
     "camshaft-reference": {
-      "version": "0.32.0",
-      "from": "camshaft-reference@0.32.0",
-      "resolved": "https://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.32.0.tgz"
+      "version": "0.33.0",
+      "from": "camshaft-reference@0.33.0",
+      "resolved": "https://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.33.0.tgz"
     },
     "caniuse-lite": {
       "version": "1.0.30000703",
@@ -2520,6 +2520,11 @@
           "optional": true
         }
       }
+    },
+    "rangeslider.js": {
+      "version": "2.3.0",
+      "from": "rangeslider.js@2.3.0",
+      "resolved": "https://registry.npmjs.org/rangeslider.js/-/rangeslider.js-2.3.0.tgz"
     },
     "read-only-stream": {
       "version": "2.0.0",

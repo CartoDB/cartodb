@@ -44,6 +44,7 @@
     "babelify": "~7.3.0",
     "browserify": "13.0.0",
     "cartoassets": "CartoDB/CartoAssets#master",
+    "clip-path-polygon": "0.1.12",
     "findup-sync": "0.1.3",
     "grunt": "0.4.5",
     "grunt-aws": "^0.4.0",
@@ -95,7 +96,6 @@
     "cdb.templates": "./src/cdb.templates.js",
     "geojson": "./vendor/GeoJSON.js",
     "html-css-sanitizer": "./vendor/html-css-sanitizer-bundle.js",
-    "clip-path": "./vendor/clip-path.js",
     "lzma": "./vendor/lzma.js",
     "mousewheel": "./vendor/mousewheel.js",
     "mwheelIntent": "./vendor/mwheelIntent.js",
@@ -106,12 +106,6 @@
     "geojson": "GeoJSON",
     "html-css-sanitizer": "html",
     "lzma": "LZMA",
-    "clip-path": {
-      "depends": [
-        "underscore:_",
-        "jquery:jQuery"
-      ]
-    },
     "mousewheel": {
       "depends": [
         "jquery:jQuery"

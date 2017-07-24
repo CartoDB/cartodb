@@ -97,6 +97,7 @@ Development
 * Country dropdown should be mandatory in postal code georeference (#12420)
 * Fixed bounds and center of thumbnails after updating a map
 * Fixed a bug in cartodb.js regarding the featureCount (#12490)
+* Add tip about sanitising values in popup's InfoWindow (#11340)
 
 ### NOTICE
 This release upgrades the CartoDB PostgreSQL extension to `0.19.2`. Run the following to have it available:

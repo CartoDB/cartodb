@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.8.6-3.12387.1",
+  "version": "4.9.0-12387.1",
   "dependencies": {
     "abbrev": {
       "version": "1.1.0",
@@ -535,9 +535,9 @@
       "resolved": "https://registry.npmjs.org/big.js/-/big.js-3.1.3.tgz"
     },
     "binary-extensions": {
-      "version": "1.8.0",
+      "version": "1.9.0",
       "from": "binary-extensions@>=1.0.0 <2.0.0",
-      "resolved": "https://registry.npmjs.org/binary-extensions/-/binary-extensions-1.8.0.tgz"
+      "resolved": "https://registry.npmjs.org/binary-extensions/-/binary-extensions-1.9.0.tgz"
     },
     "block-stream": {
       "version": "0.0.9",
@@ -671,9 +671,9 @@
       "resolved": "https://registry.npmjs.org/browserify-zlib/-/browserify-zlib-0.1.4.tgz"
     },
     "browserslist": {
-      "version": "2.2.0",
+      "version": "2.2.2",
       "from": "browserslist@>=2.1.2 <3.0.0",
-      "resolved": "https://registry.npmjs.org/browserslist/-/browserslist-2.2.0.tgz"
+      "resolved": "https://registry.npmjs.org/browserslist/-/browserslist-2.2.2.tgz"
     },
     "buffer": {
       "version": "4.9.1",
@@ -717,7 +717,7 @@
     },
     "caniuse-lite": {
       "version": "1.0.30000704",
-      "from": "caniuse-lite@>=1.0.30000701 <2.0.0",
+      "from": "caniuse-lite@>=1.0.30000704 <2.0.0",
       "resolved": "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30000704.tgz"
     },
     "carto": {
@@ -733,7 +733,7 @@
     "cartodb-deep-insights.js": {
       "version": "0.0.2",
       "from": "cartodb/deep-insights.js#12387-play-pause",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#53dfc4ce9472d80931457e7a21fa5ac86cb42258",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#02f366a52b6f6c56152be14d4ab304d884d64599",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",
@@ -750,7 +750,7 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
       "from": "cartodb/cartodb.js#12387-play-pause",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#4e20dec8d26edeb96128b15f5873c6b5a199e8ce"
+      "resolved": "git://github.com/cartodb/cartodb.js.git#e2c96fc93e3415929741b44c2e792d8ae0e19ed6"
     },
     "caseless": {
       "version": "0.11.0",
@@ -1053,7 +1053,7 @@
     },
     "electron-to-chromium": {
       "version": "1.3.16",
-      "from": "electron-to-chromium@>=1.3.15 <2.0.0",
+      "from": "electron-to-chromium@>=1.3.16 <2.0.0",
       "resolved": "https://registry.npmjs.org/electron-to-chromium/-/electron-to-chromium-1.3.16.tgz"
     },
     "elliptic": {
@@ -1067,9 +1067,9 @@
       "resolved": "https://registry.npmjs.org/emojis-list/-/emojis-list-2.1.0.tgz"
     },
     "enhanced-resolve": {
-      "version": "3.3.0",
+      "version": "3.4.1",
       "from": "enhanced-resolve@>=3.0.0 <4.0.0",
-      "resolved": "https://registry.npmjs.org/enhanced-resolve/-/enhanced-resolve-3.3.0.tgz",
+      "resolved": "https://registry.npmjs.org/enhanced-resolve/-/enhanced-resolve-3.4.1.tgz",
       "dependencies": {
         "graceful-fs": {
           "version": "4.1.11",
@@ -1872,9 +1872,9 @@
       "resolved": "https://registry.npmjs.org/jsesc/-/jsesc-0.5.0.tgz"
     },
     "json-loader": {
-      "version": "0.5.4",
+      "version": "0.5.7",
       "from": "json-loader@>=0.5.4 <0.6.0",
-      "resolved": "https://registry.npmjs.org/json-loader/-/json-loader-0.5.4.tgz"
+      "resolved": "https://registry.npmjs.org/json-loader/-/json-loader-0.5.7.tgz"
     },
     "json-schema": {
       "version": "0.2.3",
@@ -2507,6 +2507,11 @@
       "from": "randombytes@>=2.0.0 <3.0.0",
       "resolved": "https://registry.npmjs.org/randombytes/-/randombytes-2.0.5.tgz"
     },
+    "rangeslider.js": {
+      "version": "2.3.0",
+      "from": "rangeslider.js@2.3.0",
+      "resolved": "https://registry.npmjs.org/rangeslider.js/-/rangeslider.js-2.3.0.tgz"
+    },
     "rc": {
       "version": "1.2.1",
       "from": "rc@1.2.1",
@@ -2520,11 +2525,6 @@
           "optional": true
         }
       }
-    },
-    "rangeslider.js": {
-      "version": "2.3.0",
-      "from": "rangeslider.js@2.3.0",
-      "resolved": "https://registry.npmjs.org/rangeslider.js/-/rangeslider.js-2.3.0.tgz"
     },
     "read-only-stream": {
       "version": "2.0.0",

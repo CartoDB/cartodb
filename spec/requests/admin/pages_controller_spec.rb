@@ -1,8 +1,8 @@
 # encoding: utf-8
 require_relative '../../spec_helper'
 require_relative '../../../app/controllers/admin/pages_controller'
-require 'spec/factories/organizations_contexts'
-require 'spec/factories/carto_visualizations'
+require_relative '../../factories/organizations_contexts'
+require_relative '../../factories/carto_visualizations'
 
 def app
   CartoDB::Application.new

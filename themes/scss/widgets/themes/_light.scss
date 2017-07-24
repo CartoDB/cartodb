@@ -62,7 +62,7 @@ $timeSliderBorder: rgba(#FFF, 1);
     }
   }
 
-  .CDB-Widget-controlButton--disabled {
+  .CDB-Widget-controlButton.is-disabled {
     opacity: 0.24;
     pointer-events: none;
     &:hover {

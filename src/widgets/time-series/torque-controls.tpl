@@ -1,7 +1,7 @@
-<button class="CDB-Widget-controlButton <% if (disabled) { %>CDB-Widget-controlButton--disabled <% } %>" <% if (disabled) { %> disabled <% } %>>
+<button class="CDB-Widget-controlButton <% if (disabled) { %>is-disabled <% } %>" <% if (disabled) { %> disabled <% } %>>
     <div class="CDB-Widget-controlButtonContent">
-    
-    <% if (running) { %> 
+
+    <% if (running) { %>
         <svg width="6px" height="10px" viewBox="0 0 6 10" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
         <g id="Time-series" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
             <g id="Time-Series" transform="translate(-201.000000, -543.000000)" fill="#FFFFFF">

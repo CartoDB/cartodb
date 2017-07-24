@@ -1,6 +1,6 @@
 require 'rollbar'
 require_relative '../../models/carto/visualization'
-require_relative '../../models/visualization/external_source'
+require_relative '../../models/carto/external_source'
 require_relative '../../models/common_data/singleton'
 
 module CartoDB
@@ -55,44 +55,62 @@ module CartoDB
 
         carto_user = Carto::User.find(user.id)
         remotes_by_name = Carto::Visualization.remotes.where(user_id: user.id).map { |v| [v.name, v] }.to_h
-        get_datasets(visualizations_api_url).each do |dataset|
-          begin
-            visualization = remotes_by_name.delete(dataset['name'])
-            if visualization
-              visualization.attributes = dataset_visualization_attributes(dataset)
-              if visualization.changed?
-                visualization.save!
-                updated += 1
+        ActiveRecord::Base.transaction do
+          get_datasets(visualizations_api_url).each do |dataset|
+            begin
+              visualization = remotes_by_name.delete(dataset['name'])
+              if visualization
+                visualization.attributes = dataset_visualization_attributes(dataset)
+                if visualization.changed?
+                  visualization.save!
+                  updated += 1
+                else
+                  not_modified += 1
+                end
               else
-                not_modified += 1
-              end
-            else
-              visualization = Carto::Visualization.new(
-                dataset_visualization_attributes(dataset).merge(
-                  name: dataset['name'],
-                  user: carto_user,
-                  type: Carto::Visualization::TYPE_REMOTE
+                visualization = Carto::Visualization.new(
+                  dataset_visualization_attributes(dataset).merge(
+                    name: dataset['name'],
+                    user: carto_user,
+                    type: Carto::Visualization::TYPE_REMOTE
+                  )
                 )
-              )
-              visualization.save!
-              added += 1
-            end
+                visualization.save!
+                added += 1
+              end
 
-            external_source = ExternalSource.where(visualization_id: visualization.id).first
-            if external_source
-              external_source.save if !(external_source.update_data(dataset['url'], dataset['geometry_types'], dataset['rows'], dataset['size'], 'common-data').changed_columns.empty?)
-            else
-              ExternalSource.new(visualization.id, dataset['url'], dataset['geometry_types'], dataset['rows'], dataset['size'], 'common-data').save
+              external_source = Carto::ExternalSource.where(visualization_id: visualization.id).first
+              if external_source
+                if external_source.update_data(
+                  dataset['url'],
+                  dataset['geometry_types'],
+                  dataset['rows'],
+                  dataset['size'],
+                  'common-data'
+                ).changed?
+                  external_source.save!
+                end
+              else
+                external_source = Carto::ExternalSource.create(
+                  visualization_id: visualization.id,
+                  import_url: dataset['url'],
+                  rows_counted: dataset['rows'],
+                  size: dataset['size'],
+                  username: 'common-data'
+                )
+                # ActiveRecord array issue
+                external_source.update_attribute(:geometry_types, dataset['geometry_types'])
+              end
+            rescue => e
+              CartoDB.notify_exception(e, {
+                name: dataset.fetch('name', 'ERR: name'),
+                source: dataset.fetch('source', 'ERR: source'),
+                rows: dataset.fetch('rows', 'ERR: rows'),
+                updated_at: dataset.fetch('updated_at', 'ERR: updated_at'),
+                url: dataset.fetch('url', 'ERR: url')
+              })
+              failed += 1
             end
-          rescue => e
-            CartoDB.notify_exception(e, {
-              name: dataset.fetch('name', 'ERR: name'),
-              source: dataset.fetch('source', 'ERR: source'),
-              rows: dataset.fetch('rows', 'ERR: rows'),
-              updated_at: dataset.fetch('updated_at', 'ERR: updated_at'),
-              url: dataset.fetch('url', 'ERR: url')
-            })
-            failed += 1
           end
         end
 

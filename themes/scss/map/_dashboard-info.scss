@@ -234,6 +234,9 @@
   }
 }
 @media (max-width: 759px) {
+  .CDB-Dashboard-hideMobile {
+    display: none;
+  }
   .CDB-Dashboard-menu {
     display: block;
     order: 4;

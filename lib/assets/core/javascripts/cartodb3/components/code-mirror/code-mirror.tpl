@@ -4,7 +4,7 @@
 
 <% if (tip) { %>
 <div class="CodeMirror-console js-console">
-  <%- tip %>
+  <%= tip %>
   <div class="js-console-error"></div>
 </div>
 <% } %>

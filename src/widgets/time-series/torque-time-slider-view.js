@@ -50,21 +50,15 @@ module.exports = cdb.core.View.extend({
   },
 
   _initBinds: function () {
-    this._torqueLayerModel.bind('change:start change:end', this._updateChartandTimeslider, this);
-    this._torqueLayerModel.bind('change:step', this._onChangeStep, this);
-    this._torqueLayerModel.bind('change:steps', this._updateChartandTimeslider, this);
+    this.listenTo(this._torqueLayerModel, 'change:start change:end', this._updateChartandTimeslider);
+    this.listenTo(this._torqueLayerModel, 'change:step', this._onChangeStep);
+    this.listenTo(this._torqueLayerModel, 'change:steps', this._updateChartandTimeslider);
 
-    this.add_related_model(this._torqueLayerModel);
+    this.listenTo(this._chartView.model, 'change:width', this._updateChartandTimeslider);
+    this.listenTo(this._chartView.model, 'change:height', this._onChangeChartHeight);
 
-    this._chartView.model.bind('change:width', this._updateChartandTimeslider, this);
-    this._chartView.model.bind('change:height', this._onChangeChartHeight, this);
-    this.add_related_model(this._chartView.model);
-
-    this._dataviewModel.on('change:bins', this._updateChartandTimeslider, this);
-    this._dataviewModel.filter.on('change:min change:max', this._onFilterMinMaxChange, this);
-
-    this.add_related_model(this._dataviewModel);
-    this.add_related_model(this._dataviewModel.filter);
+    this.listenTo(this._dataviewModel, 'change:bins', this._updateChartandTimeslider);
+    this.listenTo(this._dataviewModel.filter, 'change:min change:max', this._onFilterMinMaxChange);
   },
 
   clean: function () {

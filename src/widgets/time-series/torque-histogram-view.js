@@ -1,6 +1,7 @@
 var _ = require('underscore');
 var HistogramView = require('./histogram-view');
 var TorqueTimeSliderView = require('./torque-time-slider-view');
+var TorqueControlsView = require('./torque-controls-view');
 
 /**
  * Torque time-series histogram view.
@@ -8,7 +9,9 @@ var TorqueTimeSliderView = require('./torque-time-slider-view');
  * this.dataviewModel is a histogram model
  */
 module.exports = HistogramView.extend({
-  className: 'CDB-Widget-content CDB-Widget-content--timeSeries',
+  className: function () {
+    return HistogramView.prototype.className + ' CDB-Widget-content CDB-Widget-content--timeSeries u-flex u-alignCenter';
+  },
 
   initialize: function () {
     if (!this.options.torqueLayerModel) throw new Error('torqeLayerModel is required');
@@ -23,26 +26,33 @@ module.exports = HistogramView.extend({
   _initBinds: function () {
     HistogramView.prototype._initBinds.call(this);
 
-    this._torqueLayerModel.bind('change:renderRange', this._onRenderRangeChanged, this);
-    this._torqueLayerModel.bind('change:steps change:start change:end', this._reSelectRange, this);
-
-    this.add_related_model(this._torqueLayerModel);
+    this.listenTo(this._torqueLayerModel, 'change:renderRange', this._onRenderRangeChanged);
+    this.listenTo(this._torqueLayerModel, 'change:steps change:start change:end', this._reSelectRange);
+    this.listenTo(this._torqueLayerModel, 'change:cartocss', this._onUpdateCartocss);
   },
 
   _createHistogramView: function () {
     this._chartType = this._torqueLayerModel.get('column_type') === 'date' ? 'time' : 'number';
     HistogramView.prototype._createHistogramView.call(this);
 
+    this._torqueControls = new TorqueControlsView({
+      torqueLayerModel: this._torqueLayerModel,
+      rangeFilter: this._rangeFilter
+    });
+    this.addView(this._torqueControls);
+
+    this.$el.prepend(this._torqueControls.render().el);
+
     this._chartView.setAnimated();
     this._chartView.bind('on_brush_click', this._onBrushClick, this);
 
-    var timeSliderView = new TorqueTimeSliderView({
+    this._timeSliderView = new TorqueTimeSliderView({
       dataviewModel: this._dataviewModel, // a histogram model
       chartView: this._chartView,
       torqueLayerModel: this._torqueLayerModel
     });
-    this.addView(timeSliderView);
-    timeSliderView.render();
+    this.addView(this._timeSliderView);
+    this._timeSliderView.render();
   },
 
   _onChangeData: function () {
@@ -85,7 +95,7 @@ module.exports = HistogramView.extend({
     return step;
   },
 
-  _reSelectRange: function () {
+  _reSelectRange: function (model, data, options) {
     if (!this._rangeFilter.isEmpty()) {
       var min = this._rangeFilter.get('min');
       var max = this._rangeFilter.get('max');
@@ -102,14 +112,45 @@ module.exports = HistogramView.extend({
 
       // clamp values since the range can be outside of the current torque thing
       var steps = this._torqueLayerModel.get('steps');
+      var ratio = this._chartView.getSelectionExtent() / 100;
+      this._updateDuration(ratio);
       this._torqueLayerModel.renderRange(
         this._clampRangeVal(0, steps, loStep), // start
         this._clampRangeVal(0, steps, hiStep) // end
       );
+    } else {
+      this._torqueLayerModel.play();
+      this._updateDuration(1);
     }
+  },
+
+  _updateDuration: function (ratio, cartocss) {
+    if (!this._torqueLayerModel.getAnimationDuration) return;
+    var duration = this._torqueLayerModel.getAnimationDuration(cartocss || this._torqueLayerModel.get('cartocss'));
+
+    this._torqueLayerModel.set('customDuration', Math.round(duration * ratio));
+  },
+
+  _onUpdateCartocss: function (m, cartocss) {
+    var ratio;
+    if (!this._rangeFilter.isEmpty()) {
+      var loStep = this._timeToStep(this._rangeFilter.get('min'));
+      var hiStep = this._timeToStep(this._rangeFilter.get('max'));
+      var steps = this._torqueLayerModel.get('steps');
+      ratio = (hiStep - loStep) / steps;
+    } else {
+      ratio = 1;
+    }
+
+    // Update silently, when carto.js updates the cartoCSS for torque, it will apply the new duration.
+    this._updateDuration(ratio, cartocss, { silent: true });
   },
 
   _clampRangeVal: function (a, b, t) {
     return Math.max(a, Math.min(b, t));
+  },
+
+  _getMarginLeft: function () {
+    return 16;
   }
 });

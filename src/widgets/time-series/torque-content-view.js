@@ -5,6 +5,8 @@ var placeholderTemplate = require('./placeholder.tpl');
 var TorqueHistogramView = require('./torque-histogram-view');
 var TorqueHeaderView = require('./torque-header-view');
 var DropdownView = require('../dropdown/widget-dropdown-view');
+var layerColors = require('../../util/layer-colors');
+var analyses = require('../../data/analyses');
 
 /**
  * Widget content view for a Torque time-series
@@ -22,12 +24,24 @@ module.exports = cdb.core.View.extend({
   render: function () {
     this.clearSubViews();
 
+    var sourceId = this._dataviewModel.get('source').id;
+    var letter = layerColors.letter(sourceId);
+    var sourceColor = layerColors.getColorForLetter(letter);
+    var sourceType = this._dataviewModel.getSourceType() || '';
+    var layerName = this._dataviewModel.getLayerName() || '';
+
     if (this._isDataEmpty()) {
       this.$el.html(placeholderTemplate({
         hasTorqueLayer: true
       }));
     } else {
-      this.$el.html(torqueTemplate());
+      this.$el.html(torqueTemplate({
+        sourceId: sourceId,
+        sourceType: analyses.title(sourceType),
+        showSource: this.model.get('show_source') && letter !== '',
+        sourceColor: sourceColor,
+        layerName: layerName
+      }));
       this._createHeaderView();
       this._createTorqueHistogramView();
       this._createDropdownView();

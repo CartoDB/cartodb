@@ -15,11 +15,11 @@
 // ------------------------------------------------------
 
 .CDB-Widget-timeSeriesFakeControl {
-  width: $baseSize * 2;
-  height: $baseSize * 2;
+  width: $baseSize * 3;
+  height: $baseSize * 3;
+  margin-right: $baseSize * 3;
 }
 .CDB-Widget-timeSeriesTimeInfo {
-  margin-left: $baseSize * 2;
   margin-right: $baseSize;
   white-space: nowrap;
 }
@@ -33,11 +33,11 @@
   @include justify-content(space-between, justify);
   @include align-items(flex-end);
   width: 100%;
-  height: 100px; // value to match real widget content height, to avoid "jumpy" behavior
+  height: 92px; // value to match real widget content height, to avoid "jumpy" behavior
   margin-top: 29px;
 }
 .CDB-Widget-timeSeriesFakeChart--torque {
-  height: 79px; // value to match real widget content height, to avoid "jumpy" behavior
+  height: 89px; // value to match real widget content height, to avoid "jumpy" behavior
 }
 .CDB-Widget-timeSeriesFakeChartItem {
   @include flex-grow(1);

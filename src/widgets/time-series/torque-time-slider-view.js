@@ -20,6 +20,7 @@ module.exports = cdb.core.View.extend({
     this._chartView = this.options.chartView;
     this._torqueLayerModel = this.options.torqueLayerModel;
 
+    this._chartMargins = this._chartView.model.get('margin');
     this._initBinds();
     this._updateXScale();
   },
@@ -49,21 +50,15 @@ module.exports = cdb.core.View.extend({
   },
 
   _initBinds: function () {
-    this._torqueLayerModel.bind('change:start change:end', this._updateChartandTimeslider, this);
-    this._torqueLayerModel.bind('change:step', this._onChangeStep, this);
-    this._torqueLayerModel.bind('change:steps', this._updateChartandTimeslider, this);
+    this.listenTo(this._torqueLayerModel, 'change:start change:end', this._updateChartandTimeslider);
+    this.listenTo(this._torqueLayerModel, 'change:step', this._onChangeStep);
+    this.listenTo(this._torqueLayerModel, 'change:steps', this._updateChartandTimeslider);
 
-    this.add_related_model(this._torqueLayerModel);
+    this.listenTo(this._chartView.model, 'change:width', this._updateChartandTimeslider);
+    this.listenTo(this._chartView.model, 'change:height', this._onChangeChartHeight);
 
-    this._chartView.model.bind('change:width', this._updateChartandTimeslider, this);
-    this._chartView.model.bind('change:height', this._onChangeChartHeight, this);
-    this.add_related_model(this._chartView.model);
-
-    this._dataviewModel.on('change:bins', this._updateChartandTimeslider, this);
-    this.add_related_model(this._dataviewModel);
-
-    this._dataviewModel.filter.on('change:min change:max', this._onFilterMinMaxChange, this);
-    this.add_related_model(this._dataviewModel.filter);
+    this.listenTo(this._dataviewModel, 'change:bins', this._updateChartandTimeslider);
+    this.listenTo(this._dataviewModel.filter, 'change:min change:max', this._onFilterMinMaxChange);
   },
 
   clean: function () {
@@ -71,6 +66,10 @@ module.exports = cdb.core.View.extend({
       this.timeSlider.remove();
     }
     cdb.core.View.prototype.clean.call(this);
+  },
+
+  _onFilterMinMaxChange: function (m, isFiltering) {
+    this.$el.toggle(!isFiltering);
   },
 
   _onDragStart: function () {
@@ -107,7 +106,7 @@ module.exports = cdb.core.View.extend({
   },
 
   _isWithinRange: function (x) {
-    return x >= 0 && x <= this._width();
+    return x >= this._chartMargins.left && x <= this._width() - this._chartMargins.right;
   },
 
   _onChangeStep: function () {
@@ -124,10 +123,6 @@ module.exports = cdb.core.View.extend({
           .attr('transform', this._translateXY);
       }
     }
-  },
-
-  _onFilterMinMaxChange: function (m, isFiltering) {
-    this.$el.toggle(!isFiltering);
   },
 
   _onChangeChartHeight: function () {
@@ -152,7 +147,7 @@ module.exports = cdb.core.View.extend({
 
     this._xScale = d3.scale.linear()
       .domain([0, this._torqueLayerModel.get('steps')])
-      .range([start * this._width(), end * this._width()]);
+      .range([(start * this._width()) + this._chartMargins.left, (end * this._width()) - this._chartMargins.right]);
   },
 
   _width: function () {

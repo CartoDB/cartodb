@@ -31,5 +31,7 @@
       <button class="CDB-Text CDB-Size-small u-upperCase u-actionTextColor CDB-Widget-filterButton js-clear">clear</button>
     </div>
   </div>
+  <div class="js-mini-chart"></div>
+  <div class="CDB-Chart--histogram js-chart"></div>
 </div>
 <% } %>

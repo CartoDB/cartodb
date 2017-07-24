@@ -16,6 +16,7 @@ module FrontendConfigHelper
       oauth_instagram:            Cartodb.get_config(:oauth, 'instagram', 'app_key'),
       oauth_mailchimp:            Cartodb.get_config(:oauth, 'mailchimp', 'app_key'),
       oauth_bigquery:             Cartodb.get_config(:oauth, 'bigquery', 'client_id'),
+      oauth_mechanism_bigquery:   Cartodb.get_config(:oauth, 'bigquery', 'oauth_mechanism'),
       arcgis_enabled:             Cartodb.get_config(:datasources, 'arcgis_enabled'),
       salesforce_enabled:         Cartodb.get_config(:datasources, 'salesforce_enabled'),
       datasource_search_twitter:  nil,

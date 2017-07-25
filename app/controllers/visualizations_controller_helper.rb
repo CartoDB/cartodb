@@ -112,13 +112,13 @@ module VisualizationsControllerHelper
                                  .to_anonymous_map_vizjson(https_request: is_https?, vector: vector)
   end
 
-  def vizjson3_options(params)
+  def vizjson3_options(visualization, params)
     options = {}
 
     if params[:vector].present?
       # This forces vector. Useful for testing purposes
       options[:vector] = params[:vector] == 'true'
-    elsif @visualization.user.has_feature_flag?('vector_vs_raster')
+    elsif visualization.user.has_feature_flag?('vector_vs_raster')
       # This enables autodetection at cartodb.js
       options[:vector] = nil
     end

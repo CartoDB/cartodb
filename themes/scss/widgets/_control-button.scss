@@ -24,3 +24,9 @@
   width: $baseSize;
   height: $baseSize;
 }
+
+@include media-query-mobile() {
+  .CDB-Widget-controlButton {
+    margin-top: 0;
+  }
+}

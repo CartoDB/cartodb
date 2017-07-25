@@ -25,7 +25,7 @@
   height: $baseSize;
 }
 
-@include media-query-mobile() {
+@media (max-width: 960px) {
   .CDB-Widget-controlButton {
     margin-top: 0;
   }

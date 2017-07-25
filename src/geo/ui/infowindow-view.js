@@ -7,6 +7,8 @@ var Template = require('../../core/template');
 var View = require('../../core/view');
 var util = require('../../core/util');
 
+var ESC_KEY = 27;
+
 /**
  * Usage:
  * var infowindow = new Infowindow({
@@ -145,8 +147,8 @@ var Infowindow = View.extend({
     return $el;
   },
 
-  _onKeyUp: function (e) {
-    if (e && e.keyCode === 27) {
+  _onKeyUp: function (event) {
+    if (event && event.keyCode === ESC_KEY) {
       this._closeInfowindow();
     }
   },
@@ -311,12 +313,8 @@ var Infowindow = View.extend({
     $cover.append($img);
 
     $img
-      .load(function () {
-        this._onLoadImageSuccess();
-      }.bind(this))
-      .error(function () {
-        this._onLoadImageError();
-      }.bind(this))
+      .load(this._onLoadImageSuccess)
+      .error(this._onLoadImageError)
       .attr('src', url);
   },
 

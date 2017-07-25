@@ -85,7 +85,8 @@ module Carto
           layers: build_layers_from_hash(exported_layers)),
         overlays: build_overlays_from_hash(exported_overlays),
         analyses: exported_visualization[:analyses].map { |a| build_analysis_from_hash(a.deep_symbolize_keys) },
-        permission: build_permission_from_hash(exported_visualization[:permission])
+        permission: build_permission_from_hash(exported_visualization[:permission]),
+        mapcaps: [build_mapcap_from_hash(exported_visualization[:mapcap])].compact
       )
 
       # This is optional as it was added in version 2.0.2
@@ -210,6 +211,16 @@ module Carto
 
       user_table
     end
+
+    def build_mapcap_from_hash(exported_mapcap)
+      return nil unless exported_mapcap
+
+      Carto::Mapcap.new(
+        ids_json: exported_mapcap[:ids_json],
+        export_json: exported_mapcap[:export_json],
+        created_at: exported_mapcap[:created_at]
+      )
+    end
   end
 
   module VisualizationsExportService2Exporter
@@ -266,7 +277,8 @@ module Carto
         permission: export_permission(visualization.permission),
         synchronization: export_syncronization(visualization.synchronization),
         user_table: export_user_table(visualization.map.user_table),
-        uses_vizjson2: visualization.uses_vizjson2?
+        uses_vizjson2: visualization.uses_vizjson2?,
+        mapcap: export_mapcap(visualization.latest_mapcap)
       }
     end
 
@@ -366,6 +378,16 @@ module Carto
         database_name: user_table.database_name,
         description: user_table.description,
         table_id: user_table.table_id
+      }
+    end
+
+    def export_mapcap(mapcap)
+      return nil unless mapcap
+
+      {
+        ids_json: mapcap.ids_json,
+        export_json: mapcap.export_json,
+        created_at: mapcap.created_at
       }
     end
   end

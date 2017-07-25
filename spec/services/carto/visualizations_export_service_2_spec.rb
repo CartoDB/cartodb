@@ -1455,9 +1455,10 @@ describe Carto::VisualizationsExportService2 do
             access: 'r'
           }]
           @visualization.permission.save
+          @visualization.create_mapcap!
         end
 
-        it 'false, it should generate a random uuid and blank permission' do
+        it 'false, it should generate a random uuid and blank permission and no mapcap' do
           exported_string = export_service.export_visualization_json_string(@visualization.id, @user)
           built_viz = export_service.build_visualization_from_json_export(exported_string)
           original_id = built_viz.id
@@ -1466,10 +1467,12 @@ describe Carto::VisualizationsExportService2 do
           imported_viz.id.should_not eq original_id
           imported_viz.permission.acl.should be_empty
           imported_viz.shared_entities.count.should be_zero
+          imported_viz.mapcapped?.should be_false
+
           destroy_visualization(imported_viz.id)
         end
 
-        it 'true, it should keep the imported uuid and permission' do
+        it 'true, it should keep the imported uuid, permission and mapcap' do
           exported_string = export_service.export_visualization_json_string(@visualization.id, @user)
           built_viz = export_service.build_visualization_from_json_export(exported_string)
           test_id = random_uuid
@@ -1480,6 +1483,7 @@ describe Carto::VisualizationsExportService2 do
           imported_viz.permission.acl.should_not be_empty
           imported_viz.shared_entities.count.should eq 1
           imported_viz.shared_entities.first.recipient_id.should eq @user2.id
+          imported_viz.mapcapped?.should be_true
 
           destroy_visualization(imported_viz.id)
         end

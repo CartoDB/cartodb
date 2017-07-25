@@ -49,6 +49,8 @@ module Carto
           raise 'Cannot import a dataset without physical table' unless user_table.service.real_table_exists?
         end
 
+        visualization.mapcaps.clear unless full_restore
+
         unless visualization.save
           raise "Errors saving imported visualization: #{visualization.errors.full_messages}"
         end

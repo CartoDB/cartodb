@@ -32,6 +32,7 @@ Development
 * Remove tracking of liked map events (#12404)
 * Display dashboard notifications for open-source instances (#12421)
 * Remove unsupported CartoCSS rules for vector rendering (#12410)
+* Force parameter `vector` for vector rendering (#12478).
 * Fixed typo in content_no_datasets.jst.ejs and en.json (Docs)
 * Fixing problem parsing formula widget creation (#support/843)
 * Don't try to lowercase null values in custom-list-collection object (support/#744)

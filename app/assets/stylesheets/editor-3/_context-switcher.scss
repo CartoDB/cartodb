@@ -67,9 +67,7 @@
     right: 317px;
     bottom: 32px;
   }
-  .Editor-contextSwitcher.has-timeSeries {
-    bottom: 203px;
-  }
+  .Editor-contextSwitcher.has-timeSeries,
   .Editor-contextSwitcher.has-timeSeries.has-timeSeries--animated {
     bottom: 213px;
   }
@@ -96,9 +94,7 @@
   .Editor-contextSwitcher.has-timeSeries {
     bottom: 204px;
   }
-  .Editor-contextSwitcher.has-timeSeries.is-moved {
-    bottom: 414px;
-  }
+  .Editor-contextSwitcher.has-timeSeries.is-moved,
   .Editor-contextSwitcher.has-timeSeries.is-moved.has-timeSeries--animated {
     bottom: 426px;
   }

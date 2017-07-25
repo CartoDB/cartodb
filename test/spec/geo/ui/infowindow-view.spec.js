@@ -534,11 +534,21 @@ describe('geo/ui/infowindow-view', function () {
       expect(view.$el.find('.has-fields').length).toEqual(1);
     });
 
-    it('should load image hook if fields is 2 or less', function () {
+    it('should load image hook if fields is 2 or less and image height is equal or less than content height', function () {
+      model.set('template', '<div class="js-infowindow" data-cover="true"><div class="js-cover" style="height: 123px"><img src="http://fake.url" class="CDB-infowindow-media-item"></div><div class="CDB-hook"></div></div>');
       spyOn(view, '_loadImageHook').and.callThrough();
+
+      view.$el.height(100);
+      view.$('.CDB-infowindow-media-item').height(200);
       view._onLoadImageSuccess();
       expect(view._loadImageHook).toHaveBeenCalled();
 
+      view.$('.CDB-infowindow-media-item').height(90);
+      view._loadImageHook.calls.reset();
+      view._onLoadImageSuccess();
+      expect(view._loadImageHook).not.toHaveBeenCalled();
+
+      view.$('.CDB-infowindow-media-item').height(200);
       view._loadImageHook.calls.reset();
       fields.push({ title: 'test3', position: 3, value: 'c' });
       model.set('fields', fields);

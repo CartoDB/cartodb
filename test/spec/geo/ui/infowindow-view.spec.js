@@ -540,7 +540,7 @@ describe('geo/ui/infowindow-view', function () {
       expect(view._loadImageHook).toHaveBeenCalled();
 
       view._loadImageHook.calls.reset();
-      fields.push( { title: 'test3', position: 3, value: 'c' });
+      fields.push({ title: 'test3', position: 3, value: 'c' });
       model.set('fields', fields);
       view._onLoadImageSuccess();
       expect(view._loadImageHook).not.toHaveBeenCalled();

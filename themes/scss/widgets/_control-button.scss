@@ -5,6 +5,7 @@
   width: $baseSize * 3;
   min-width: $baseSize * 3; // to avoid the element to be "squashed" due to limited space in container
   height: $baseSize * 3;
+  margin-top: $baseSize * 2;
   border: 1px solid transparent; // border used for :hover, color set in theme
   border-radius: 4px;
   &:hover {
@@ -24,3 +25,8 @@
   height: $baseSize;
 }
 
+@media (max-width: 960px) {
+  .CDB-Widget-controlButton {
+    margin-top: 0;
+  }
+}

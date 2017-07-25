@@ -342,7 +342,7 @@ var Infowindow = View.extend({
 
     $img.fadeIn(150);
 
-    if (numFields < 3) {
+    if (numFields < 3 && imageDimensions.height >= this.$el.height()) {
       this._loadImageHook(imageDimensions, coverDimensions, url);
     }
   },

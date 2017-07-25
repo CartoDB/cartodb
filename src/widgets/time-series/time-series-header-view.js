@@ -31,14 +31,20 @@ module.exports = cdb.core.View.extend({
     this._selectedAmount = opts.selectedAmount;
     this._layer = this._dataviewModel.layer;
     this._initBinds();
+
+    this.formatter = formatter.formatNumber;
+
+    if (this._dataviewModel.getColumnType() === 'date') {
+      this.formatter = formatter.timestampFactory(this._dataviewModel.get('aggregation'), this._dataviewModel.get('offset'));
+    }
   },
 
   render: function () {
     var title = this._timeSeriesModel.get('title');
     var filter = this._rangeFilter;
     var showSelection = !filter.isEmpty();
-    var start;
-    var end;
+    var start = showSelection && this.formatter(filter.get('min'));
+    var end = showSelection && this.formatter(filter.get('max'));
 
     this.$el.html(
       template({

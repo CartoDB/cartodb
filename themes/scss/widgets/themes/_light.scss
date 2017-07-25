@@ -217,6 +217,13 @@ $timeSliderBorder: rgba(#FFF, 1);
     stroke-width: 1;
     fill: $commonBkg;
   }
+  .CDB-Chart-staticTip {
+    background: $chartLine;
+  }
+  .CDB-Chart-staticTipText {
+    font-weight: bold;
+    color: $primary;
+  }
   .CDB-Chart-axisTipRect {
     fill: $chartLine;
   }

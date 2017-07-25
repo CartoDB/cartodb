@@ -75,6 +75,27 @@
   stroke-width: 2;
 }
 
+.CDB-Chart-staticTips {
+  margin-left: 8px;
+  display: none;
+}
+
+@media (min-width:480px) and (max-width:960px) {
+  .CDB-Chart-staticTips {
+    display: block;
+  }
+
+  .CDB-Chart-axisTip,
+  .CDB-Chart-axisTipRect {
+    display: none;
+  }
+}
+
+.CDB-Chart-staticTip {
+  border-radius: 2px;
+  padding: 0 4px;
+}
+
 .CDB-Chart-axis {
   @include css3-prefix(user-select, none);
   shape-rendering: crispEdges;
@@ -89,6 +110,10 @@
   shape-rendering: crispEdges;
 }
 
+.CDB-Chart-staticTipText {
+  line-height: 20px;
+}
+
 .CDB-Chart-axisTipText {
   @include css3-prefix(user-select, none);
   font-size: $sFontSize-small;
@@ -97,4 +122,3 @@
 .CDB-Chart-shadowBar {
   shape-rendering: crispEdges;
 }
-

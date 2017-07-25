@@ -750,7 +750,7 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
       "from": "cartodb/cartodb.js#underscore-problem",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#f8cc4efef97e86ce43f784b1b45ad3a0b9acb089"
+      "resolved": "git://github.com/cartodb/cartodb.js.git#a2e55f0e4e2c85c52c4a7ec68e23d104ccc9fc5b"
     },
     "caseless": {
       "version": "0.11.0",

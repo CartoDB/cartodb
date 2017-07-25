@@ -733,7 +733,7 @@
     "cartodb-deep-insights.js": {
       "version": "0.0.2",
       "from": "cartodb/deep-insights.js#12387-play-pause",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#02f366a52b6f6c56152be14d4ab304d884d64599",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#80c8bf5fbcc4d2d4dbecc5b1a094cf3236a6386f",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",
@@ -2091,14 +2091,14 @@
       "resolved": "https://registry.npmjs.org/miller-rabin/-/miller-rabin-4.0.0.tgz"
     },
     "mime-db": {
-      "version": "1.27.0",
-      "from": "mime-db@>=1.27.0 <1.28.0",
-      "resolved": "https://registry.npmjs.org/mime-db/-/mime-db-1.27.0.tgz"
+      "version": "1.29.0",
+      "from": "mime-db@>=1.29.0 <1.30.0",
+      "resolved": "https://registry.npmjs.org/mime-db/-/mime-db-1.29.0.tgz"
     },
     "mime-types": {
-      "version": "2.1.15",
+      "version": "2.1.16",
       "from": "mime-types@>=2.1.7 <2.2.0",
-      "resolved": "https://registry.npmjs.org/mime-types/-/mime-types-2.1.15.tgz"
+      "resolved": "https://registry.npmjs.org/mime-types/-/mime-types-2.1.16.tgz"
     },
     "minimalistic-assert": {
       "version": "1.0.0",
@@ -2698,9 +2698,9 @@
       "resolved": "https://registry.npmjs.org/select/-/select-1.1.2.tgz"
     },
     "semver": {
-      "version": "5.3.0",
+      "version": "5.4.1",
       "from": "semver@>=5.1.0 <6.0.0",
-      "resolved": "https://registry.npmjs.org/semver/-/semver-5.3.0.tgz"
+      "resolved": "https://registry.npmjs.org/semver/-/semver-5.4.1.tgz"
     },
     "set-blocking": {
       "version": "2.0.0",

@@ -458,15 +458,15 @@ describe('geo/ui/infowindow-view', function () {
 
     it('shouldn\'t modify the height of the cover when there are several fields', function () {
       model.set('content', { fields: fieldsWithoutURL });
-      model.set('template', '<div class="js-infowindow" data-cover="true"><div class="js-cover" style="height:123px"><div class="js-hook"></div></div>');
+      model.set('template', '<div class="js-infowindow" data-cover="true"><div class="js-cover" style="height:123px"><div class="CDB-hook"></div></div>');
       expect(view._containsCover()).toEqual(true);
       expect(view.$('.js-cover').height()).toEqual(123);
-      expect(view.$('.js-hook img').length).toEqual(0);
+      expect(view.$('.CDB-hook img').length).toEqual(0);
     });
 
     it('should add the image cover class in the custom template', function () {
       spyOn(view, '_loadCoverFromTemplate').and.callThrough();
-      model.set('template', '<div class="js-infowindow" data-cover="true"><div class="js-cover" style="height: 123px"><img src="http://fake.url" style="height: 100px"></div><div class="js-hook"></div></div>');
+      model.set('template', '<div class="js-infowindow" data-cover="true"><div class="js-cover" style="height: 123px"><img src="http://fake.url" style="height: 100px"></div><div class="CDB-hook"></div></div>');
       expect(view._loadCoverFromTemplate).toHaveBeenCalled();
       expect(view._containsCover()).toEqual(true);
       expect(view.$('.CDB-infowindow-media-item').length).toEqual(1);
@@ -475,13 +475,13 @@ describe('geo/ui/infowindow-view', function () {
     it('should setup the hook correctly', function () {
       spyOn(view, '_loadCoverFromUrl').and.callThrough();
       model.set('content', { fields: fields });
-      model.set('template', '<div class="js-infowindow" data-cover="true"><div class="js-cover"></div><div class="js-hook"></div></div>');
+      model.set('template', '<div class="js-infowindow" data-cover="true"><div class="js-cover"></div><div class="CDB-hook"></div></div>');
 
       expect(view._loadCoverFromUrl).toHaveBeenCalled();
 
       view._onLoadImageSuccess();
-      expect(view.$('.js-hook svg').length).toEqual(1);
-      expect(view.$('.js-hook svg path').attr('d')).toEqual('M0,0 L0,16 L24,0 L0,0 Z');
+      expect(view.$('.CDB-hook img').length).toEqual(1);
+      expect(view.$('.CDB-hook img').attr('src')).toEqual('http://fake.url/image.jpg');
     });
 
     it('should detect if the infowindow has a cover', function () {
@@ -532,6 +532,62 @@ describe('geo/ui/infowindow-view', function () {
       model.set('content', { fields: fields });
       model.set('template', '<div class="js-infowindow"><div class="js-content"></div></div>');
       expect(view.$el.find('.has-fields').length).toEqual(1);
+    });
+
+    it('should load image hook if fields is 2 or less', function () {
+      spyOn(view, '_loadImageHook').and.callThrough();
+      view._onLoadImageSuccess();
+      expect(view._loadImageHook).toHaveBeenCalled();
+
+      view._loadImageHook.calls.reset();
+      fields.push( { title: 'test3', position: 3, value: 'c' });
+      model.set('fields', fields);
+      view._onLoadImageSuccess();
+      expect(view._loadImageHook).not.toHaveBeenCalled();
+    });
+
+    it('should stop the loader and show an error if url is invalid', function () {
+      spyOn(view, '_stopCoverLoader').and.callThrough();
+      spyOn(view, '_showInfowindowImageError').and.callThrough();
+      model.set({
+        fields: fieldsWithInvalidURL,
+        template: '<div class="js-infowindow" data-cover="true"><div class="js-cover" style="height: 123px"><img src="invalid.url" style="height: 100px"></div><div class="CDB-hook"></div></div>'
+      });
+      view.render();
+      expect(view._stopCoverLoader).toHaveBeenCalled();
+      expect(view._showInfowindowImageError).toHaveBeenCalled();
+    });
+
+    it('should stop the loader and show an error if url is invalid', function () {
+      spyOn(view, '_stopCoverLoader').and.callThrough();
+      spyOn(view, '_showInfowindowImageError').and.callThrough();
+      model.set({
+        fields: fieldsWithInvalidURL,
+        template: '<div class="js-infowindow" data-cover="true"><div class="js-cover" style="height: 123px"><img src="invalid.url" style="height: 100px"></div><div class="CDB-hook"></div></div>'
+      });
+      view.render();
+      expect(view._stopCoverLoader).toHaveBeenCalled();
+      expect(view._showInfowindowImageError).toHaveBeenCalled();
+    });
+
+    it('should load the cover from template if it already contains the template', function () {
+      spyOn(view, '_loadCoverFromTemplate').and.callThrough();
+      model.set({
+        fields: fieldsWithInvalidURL,
+        template: '<div class="js-infowindow" data-cover="true"><div class="js-cover" style="height: 123px"><img src="http://fake.url" style="height: 100px"></div><div class="CDB-hook"></div></div>'
+      });
+      view.render();
+      expect(view._loadCoverFromTemplate).toHaveBeenCalled();
+    });
+
+    it('should load the cover from url if it doesn\'t contain the template', function () {
+      spyOn(view, '_loadCoverFromUrl').and.callThrough();
+      model.set({
+        fields: fieldsWithInvalidURL,
+        template: '<div class="js-infowindow" data-cover="true"><div class="CDB-hook"></div></div>'
+      });
+      view.render();
+      expect(view._loadCoverFromUrl).toHaveBeenCalled();
     });
   });
 });

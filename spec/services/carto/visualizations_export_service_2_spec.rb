@@ -9,12 +9,33 @@ describe Carto::VisualizationsExportService2 do
 
   let(:export) do
     {
-      visualization: base_visualization_export,
+      visualization: mapcapped_visualization_export,
       version: '2.1.1'
     }
   end
 
-  let(:base_visualization_export) do
+  let(:mapcapped_visualization_export) do
+    mapcap = {
+      ids_json: {
+        visualization_id: "04e0ddac-bea8-4e79-a362-f06b9a7396cf",
+        map_id: "bf727caa-f05a-45df-baa5-c29cb4542ecd",
+        layers: [
+          { layer_id: "c2be46d2-d44e-49fa-a604-8814fcd150f7", widgets: [] },
+          { layer_id: "dd1a006b-5791-4221-b120-4b9e1f2e93e7", widgets: [] },
+          { layer_id: "f4a9823b-8de2-474f-bcc0-8b230f881a75", widgets: ["b5dcb89b-0c4a-466c-b459-cc5c8053f4ec"] },
+          { layer_id: "4ffea696-e127-40bc-90cf-9e34b9a77d89", widgets: [] }
+        ]
+      },
+      export_json: {
+        visualization: base_visualization_export,
+        version: '2.1.1'
+      }
+    }
+
+    base_visualization_export.merge(mapcap: mapcap)
+  end
+
+  def base_visualization_export
     {
       id: '138110e4-7425-4978-843d-d7307bd70d1c',
       name: 'the name',
@@ -265,6 +286,8 @@ describe Carto::VisualizationsExportService2 do
     verify_overlays_vs_export(visualization.overlays, visualization_export[:overlays])
 
     verify_analyses_vs_export(visualization.analyses, visualization_export[:analyses])
+
+    verify_mapcap_vs_export(visualization.latest_mapcap, visualization_export[:mapcap])
   end
 
   def verify_map_vs_export(map, map_export)
@@ -287,6 +310,17 @@ describe Carto::VisualizationsExportService2 do
     state_export_json ||= {}
 
     state.json.should eq state_export_json
+  end
+
+  def verify_mapcap_vs_export(mapcap, mapcap_export)
+    return true if mapcap.nil? && mapcap_export.nil?
+
+    deep_symbolize(mapcap.try(:ids_json)).should eq deep_symbolize(mapcap_export[:ids_json])
+    deep_symbolize(mapcap.try(:export_json)).should eq deep_symbolize(mapcap_export[:export_json])
+  end
+
+  def deep_symbolize(h)
+    JSON.parse(JSON.dump(h), symbolize_names: true)
   end
 
   def verify_layers_vs_export(layers, layers_export, importing_user: nil)
@@ -625,6 +659,15 @@ describe Carto::VisualizationsExportService2 do
 
             service = Carto::VisualizationsExportService2.new
             expect(service.marked_as_vizjson2_from_json_export?(export_2_1_0.to_json)).to be_false
+          end
+
+          it 'without mapcap' do
+            export_2_1_0 = export
+            export_2_1_0[:visualization].delete(:mapcap)
+
+            service = Carto::VisualizationsExportService2.new
+            visualization = service.build_visualization_from_json_export(export_2_1_0.to_json)
+            expect(visualization.mapcapped?).to be_false
           end
         end
 
@@ -1195,6 +1238,8 @@ describe Carto::VisualizationsExportService2 do
       verify_overlays_match(imported_visualization.overlays, original_visualization.overlays)
 
       verify_analyses_match(imported_visualization.analyses, original_visualization.analyses)
+
+      verify_mapcap_match(imported_visualization.latest_mapcap, original_visualization.latest_mapcap)
     end
 
     def verify_maps_match(imported_map, original_map)
@@ -1310,6 +1355,13 @@ describe Carto::VisualizationsExportService2 do
       imported_overlay.options.should eq original_overlay.options
       imported_overlay.type.should eq original_overlay.type
       imported_overlay.template.should eq original_overlay.template
+    end
+
+    def verify_mapcap_match(imported_mapcap, original_mapcap)
+      return true if imported_mapcap.nil? && original_mapcap.nil?
+
+      imported_mapcap.export_json.should eq original_mapcap.export_json
+      imported_mapcap.ids_json.should eq original_mapcap.ids_json
     end
 
     describe 'maps' do

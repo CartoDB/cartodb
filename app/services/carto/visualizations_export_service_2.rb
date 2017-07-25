@@ -217,8 +217,7 @@ module Carto
 
       Carto::Mapcap.new(
         ids_json: exported_mapcap[:ids_json],
-        export_json: exported_mapcap[:export_json],
-        created_at: exported_mapcap[:created_at]
+        export_json: exported_mapcap[:export_json]
       )
     end
   end
@@ -386,8 +385,7 @@ module Carto
 
       {
         ids_json: mapcap.ids_json,
-        export_json: mapcap.export_json,
-        created_at: mapcap.created_at
+        export_json: mapcap.export_json
       }
     end
   end

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Carto Base example</title>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    <link rel="shortcut icon" href="http://cartodb.com/assets/favicon.ico" />
+    <!--Include carto styles  -->
+    <link rel="stylesheet" href="../../dist/themes/css/cartodb.css" />
+    <!-- Include cartodb.js Library -->
+    <script src="../../dist/cartodb.uncompressed.js"></script>
+    <!-- Include Tangram Library  -->
+    <script src="https://mapzen.com/tangram/tangram.min.js"></script>
+    <!-- Custom Map styles  -->
+    <style>
+        html,
+        body,
+        #map {
+            font-family: "Open sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+            background: #162945;
+            position: relative;
+        }
+    </style>
+    <style>
+        nav {
+            padding: 15px;
+            display: flex;
+            flex-direction: row;
+            background: white;
+            color: #162945;
+            border-bottom: 1px solid #eee;
+            font-size: 13px;
+        }
+
+        input {
+            background: none;
+            border: none;
+        }
+
+        button {
+            color: #FFF;
+            padding: 5px 10px;
+            background-color: #1785FB;
+            border-radius: 3px;
+        }
+    </style>
+    <script>
+        function load(url) {
+            fetch(url)
+                .then(data => data.json())
+                .then(vizjson => {
+                    cartodb.createVis('map', vizjson)
+                        .done(console.log)
+                        .error(console.error);
+                });
+        }
+    </script>
+</head>
+
+<body>
+    <nav>
+        <input type="text" name="url" value="viz/viz1.json">
+        <button onclick="load(document.querySelector('input').value)" type="button">LOAD VIZ</button>
+    </nav>
+    <div id="map"></div>
+</body>
+
+</html>

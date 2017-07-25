@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.9.0",
+  "version": "4.9.1-cjs170",
   "dependencies": {
     "abbrev": {
       "version": "1.1.0",
@@ -732,8 +732,8 @@
     },
     "cartodb-deep-insights.js": {
       "version": "0.0.2",
-      "from": "cartodb/deep-insights.js#master",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#e25bbdd4226edb932c2bddd39b4271d697025551",
+      "from": "cartodb/deep-insights.js#cjs1703-error-infowindow",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#a5e863b221d1c7afef1da6a385781dfccd83d431",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",
@@ -749,8 +749,8 @@
     },
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
-      "from": "cartodb/cartodb.js#v4",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#6dba128ff3a9d5e544e2bc0dfd103957f8de707a"
+      "from": "cartodb/cartodb.js#underscore-problem",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#f8cc4efef97e86ce43f784b1b45ad3a0b9acb089"
     },
     "caseless": {
       "version": "0.11.0",
@@ -781,6 +781,11 @@
       "version": "1.0.4",
       "from": "cipher-base@>=1.0.0 <2.0.0",
       "resolved": "https://registry.npmjs.org/cipher-base/-/cipher-base-1.0.4.tgz"
+    },
+    "clip-path-polygon": {
+      "version": "0.1.12",
+      "from": "clip-path-polygon@0.1.12",
+      "resolved": "https://registry.npmjs.org/clip-path-polygon/-/clip-path-polygon-0.1.12.tgz"
     },
     "clipboard": {
       "version": "1.6.1",

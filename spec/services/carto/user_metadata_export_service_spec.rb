@@ -93,6 +93,7 @@ describe Carto::UserMetadataExportService do
     it 'export + import user and visualizations' do
       Dir.mktmpdir do |path|
         create_user_with_basemaps_assets_visualizations
+        @visualization.mark_as_vizjson2
         service.export_user_to_directory(@user.id, path)
         source_user = @user.attributes
 
@@ -104,6 +105,10 @@ describe Carto::UserMetadataExportService do
           @user.in_database.execute("CREATE TABLE #{v['name']} (cartodb_id int)")
         end
 
+        # Clean redis for vizjson2 marking
+        $tables_metadata.del(Carto::Visualization::V2_VISUALIZATIONS_REDIS_KEY)
+        expect(@visualization.uses_vizjson2?).to be_false
+
         imported_user = service.import_user_from_directory(path)
 
         compare_excluding_dates(imported_user.attributes, source_user)
@@ -112,6 +117,7 @@ describe Carto::UserMetadataExportService do
         imported_user.visualizations.zip(source_visualizations).each do |v1, v2|
           compare_excluding_dates_and_ids(v1.attributes, v2)
         end
+        expect(@visualization.uses_vizjson2?).to be_true
       end
     end
 

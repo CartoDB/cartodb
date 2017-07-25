@@ -16,9 +16,10 @@ require 'carto/export/layer_exporter'
 # 2.0.8: export widget style
 # 2.0.9: export visualization id
 # 2.1.0: export datasets: permissions, user_tables and syncs
+# 2.1.1: export vizjson2 mark
 module Carto
   module VisualizationsExportService2Configuration
-    CURRENT_VERSION = '2.1.0'.freeze
+    CURRENT_VERSION = '2.1.1'.freeze
     MAX_LOG_SIZE = 8192
 
     def compatible_version?(version)
@@ -38,7 +39,7 @@ module Carto
     include LayerImporter
 
     def build_visualization_from_json_export(exported_json_string)
-      build_visualization_from_hash_export(JSON.parse(exported_json_string).deep_symbolize_keys)
+      build_visualization_from_hash_export(parse_json(exported_json_string))
     end
 
     def build_visualization_from_hash_export(exported_hash)
@@ -47,7 +48,19 @@ module Carto
       build_visualization_from_hash(exported_hash[:visualization])
     end
 
+    def marked_as_vizjson2_from_json_export?(exported_json_string)
+      marked_as_vizjson2_from_hash_export?(parse_json(exported_json_string))
+    end
+
+    def marked_as_vizjson2_from_hash_export?(exported_hash)
+      exported_hash[:visualization][:uses_vizjson2]
+    end
+
     private
+
+    def parse_json(exported_json_string)
+      JSON.parse(exported_json_string).deep_symbolize_keys
+    end
 
     def build_visualization_from_hash(exported_visualization)
       exported_layers = exported_visualization[:layers]
@@ -252,7 +265,8 @@ module Carto
         state: export_state(visualization.state),
         permission: export_permission(visualization.permission),
         synchronization: export_syncronization(visualization.synchronization),
-        user_table: export_user_table(visualization.map.user_table)
+        user_table: export_user_table(visualization.map.user_table),
+        uses_vizjson2: visualization.uses_vizjson2?
       }
     end
 

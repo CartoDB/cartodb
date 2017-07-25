@@ -170,6 +170,9 @@ module Carto
         Dir["#{path}/#{type}_*#{Carto::VisualizationExporter::EXPORT_EXTENSION}"].each do |fname|
           imported_vis = Carto::VisualizationsExportService2.new.build_visualization_from_json_export(File.read(fname))
           Carto::VisualizationsExportPersistenceService.new.save_import(user, imported_vis, full_restore: true)
+          if Carto::VisualizationsExportService2.new.marked_as_vizjson2_from_json_export?(File.read(fname))
+            imported_vis.mark_as_vizjson2
+          end
         end
       end
     end

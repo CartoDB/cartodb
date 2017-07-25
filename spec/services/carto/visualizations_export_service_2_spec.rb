@@ -315,6 +315,8 @@ describe Carto::VisualizationsExportService2 do
   def verify_mapcap_vs_export(mapcap, mapcap_export)
     return true if mapcap.nil? && mapcap_export.nil?
 
+    byebug
+
     deep_symbolize(mapcap.try(:ids_json)).should eq deep_symbolize(mapcap_export[:ids_json])
     deep_symbolize(mapcap.try(:export_json)).should eq deep_symbolize(mapcap_export[:export_json])
   end
@@ -512,6 +514,7 @@ describe Carto::VisualizationsExportService2 do
         visualization = Carto::Visualization.find(visualization.id)
 
         visualization_export = export[:visualization]
+        visualization_export.delete(:mapcap) # Not imported here
         verify_visualization_vs_export(visualization, visualization_export, importing_user: @user)
 
         visualization.id.should_not be_nil
@@ -548,6 +551,7 @@ describe Carto::VisualizationsExportService2 do
         visualization = Carto::Visualization.find(visualization.id)
 
         visualization_export = export[:visualization]
+        visualization_export.delete(:mapcap) # Not imported here
         verify_visualization_vs_export(visualization, visualization_export, importing_user: @user)
 
         visualization.id.should_not be_nil

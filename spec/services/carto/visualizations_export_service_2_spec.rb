@@ -10,7 +10,7 @@ describe Carto::VisualizationsExportService2 do
   let(:export) do
     {
       visualization: base_visualization_export,
-      version: '2.1.0'
+      version: '2.1.1'
     }
   end
 
@@ -32,6 +32,7 @@ describe Carto::VisualizationsExportService2 do
         '0418A9C928550D5614101D5E410F03E7041A83916DE775E51C131118AC72D246AC1A83916DE775E51C1',
       state: { json: { manolo: 'escobar' } },
       display_name: 'the display_name',
+      uses_vizjson2: true,
       map: {
         provider: 'leaflet',
         bounding_box_sw: '[-85.0511, -179]',
@@ -617,6 +618,16 @@ describe Carto::VisualizationsExportService2 do
       end
 
       describe 'maintains backwards compatibility with' do
+        describe '2.1.0' do
+          it 'without mark_as_vizjson2' do
+            export_2_1_0 = export
+            export_2_1_0[:visualization].delete(:uses_vizjson2)
+
+            service = Carto::VisualizationsExportService2.new
+            expect(service.marked_as_vizjson2_from_json_export?(export_2_1_0.to_json)).to be_false
+          end
+        end
+
         it '2.0.9 (without permission, sync nor user_table)' do
           export_2_0_9 = export
           export_2_0_9[:visualization].delete(:synchronization)
@@ -1365,6 +1376,18 @@ describe Carto::VisualizationsExportService2 do
 
         imported_viz = Carto::Visualization.find(imported_viz.id)
         verify_visualizations_match(imported_viz, @visualization, importing_user: @user2)
+
+        destroy_visualization(imported_viz.id)
+      end
+
+      it 'importing an exported visualization should not keep the vizjson2 flag, but should return it' do
+        @visualization.mark_as_vizjson2
+        exported_string = export_service.export_visualization_json_string(@visualization.id, @user)
+        built_viz = export_service.build_visualization_from_json_export(exported_string)
+        imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user2, built_viz)
+
+        expect(imported_viz.uses_vizjson2?).to be_false
+        expect(export_service.marked_as_vizjson2_from_json_export?(exported_string)).to be_true
 
         destroy_visualization(imported_viz.id)
       end

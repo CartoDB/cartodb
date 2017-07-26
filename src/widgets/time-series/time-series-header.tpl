@@ -1,10 +1,10 @@
 <p class="CDB-Text CDB-Size-large js-widget-title u-iBlock u-ellipsis u-rSpace"><%- title %></p>
 <div class="CDB-Widget-contentSpaced--end">
   <div class="CDB-Widget-options CDB-Widget-contentSpaced">
-    <p class="CDB-Widget-timeSeriesTimeInfo CDB-Text CDB-Size-small is-semibold u-upperCase u-rSpace--m js-val">…</p>
+    <p class="CDB-Text CDB-Size-small is-semibold u-upperCase u-rSpace--m js-val">…</p>
 
     <% if (start && end) { %>
-      <div class="CDB-Chart-staticTips CDB-Widget-timeSeriesTimeInfo">
+      <div class="CDB-Chart-staticTips">
         <div class="CDB-Chart-staticTip u-iBlock u-rSpace">
           <p class="CDB-Text CDB-Size-small CDB-Chart-staticTipText"><%= start %></p>
         </div>

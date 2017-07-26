@@ -123,6 +123,9 @@
     max-height: auto;
     margin-bottom: 2px;
   }
+  .CDB-Widget-timeSeriesTimeInfo {
+    display: none;
+  }
   .CDB-Widget-content.CDB-Widget-content--timeSeries {
     width: 100%;
   }
@@ -153,5 +156,8 @@
   }
   .CDB-Widget-list {
     max-width: 314px;
+  }
+  .CDB-Chart--histogram {
+    margin-top: 12px;
   }
 }

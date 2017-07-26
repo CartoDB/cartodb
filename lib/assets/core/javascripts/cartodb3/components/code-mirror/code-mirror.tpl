@@ -2,9 +2,9 @@
   <textarea class="js-editor"><%- content %></textarea>
 </div>
 
-<% if (tip) { %>
+<% if (tips) { %>
 <div class="CodeMirror-console js-console">
-  <%- tip %>
+  <%- tips %>
   <div class="js-console-error"></div>
 </div>
 <% } %>

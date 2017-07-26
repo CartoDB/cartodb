@@ -45,10 +45,13 @@ class Carto::Visualization < ActiveRecord::Base
   PRIVACY_PRIVATE = 'private'.freeze
   PRIVACY_LINK = 'link'.freeze
   PRIVACY_PROTECTED = 'password'.freeze
+  PRIVACIES = [PRIVACY_LINK, PRIVACY_PROTECTED, PRIVACY_PUBLIC, PRIVACY_PRIVATE].freeze
 
   VERSION_BUILDER = 3
 
   V2_VISUALIZATIONS_REDIS_KEY = 'vizjson2_visualizations'.freeze
+
+  scope :remotes, where(type: TYPE_REMOTE)
 
   # INFO: disable ActiveRecord inheritance column
   self.inheritance_column = :_type
@@ -82,9 +85,11 @@ class Carto::Visualization < ActiveRecord::Base
 
   has_many :snapshots, class_name: Carto::Snapshot, dependent: :destroy
 
-  validates :version, presence: true
+  validates :name, :privacy, :type, :user_id, :version, presence: true
+  validates :privacy, inclusion: { in: PRIVACIES }
   validate :validate_password_presence
   validate :validate_privacy_changes
+  validate :validate_user_not_viewer, on: :create
 
   before_validation :set_default_version, :set_register_table_only
   before_create :set_random_id, :set_default_permission
@@ -745,6 +750,12 @@ class Carto::Visualization < ActiveRecord::Base
   def validate_privacy_changes
     if derived? && is_privacy_private? && privacy_changed? && !user.try(:private_maps_enabled?)
       errors.add(:privacy, 'cannot be set to private')
+    end
+  end
+
+  def validate_user_not_viewer
+    if user.viewer
+      errors.add(:user, 'cannot be viewer')
     end
   end
 

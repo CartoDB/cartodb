@@ -12,8 +12,10 @@
   margin-top: $baseSize;
 }
 .Editor-formInner.Editor-formInner--Slider {
-  margin-bottom: 40px;
+  align-items: flex-start;
+  margin-top: $baseSize * 2;
 }
+
 .Options-form .Editor-formInner {
   margin-top: 0;
 }
@@ -71,6 +73,20 @@
   display: none;
 }
 
+.Editor-formInner--nested .Editor-formInner.Editor-formInner--DataObservatoryDropdown {
+  align-items: flex-start;
+}
+
+.Editor-formInner--nested .Editor-formInner--DataObservatoryDropdown .CDB-Legend {
+  width: 96px;
+  padding-left: 0;
+  background-color: $cWhite;
+  line-height: 32px;
+
+  &::before {
+    display: none;
+  }
+}
 
 .Editor-formInner .Editor-formSelect {
   max-width: 160px;
@@ -141,4 +157,9 @@
 }
 .RampItem-bar {
   width: 20px;
+}
+
+// TODO: fix this in CartoAssets
+.u-isHidden {
+  display: none;
 }

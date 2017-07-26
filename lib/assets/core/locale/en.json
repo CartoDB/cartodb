@@ -193,6 +193,11 @@
       "custom-column": "This column contains the data requested from the Data Observatory",
       "description": "The Data Observatory enrichment is the result of the geometry location and the measure requested."
     },
+    "data-observatory-multiple-measures": {
+      "title": "Enrich from the Data Observatory",
+      "custom-columns": "These columns contain the data requested from the Data Observatory",
+      "description": "The Data Observatory enrichment is the result of the geometry location and the measures requested."
+    },
     "connect-with-lines": {
       "title": "Connect with lines",
       "description": "Create lines from point datasets using a variety of methods",
@@ -254,7 +259,26 @@
       "race-and-ethnicity": "Race and Ethnicity",
       "religion": "Religion",
       "transportation": "Transportation",
-      "filters": "Filters"
+      "filters": {
+        "label": "Filters",
+        "applied": {
+          "single": "1 filter applied",
+          "multiple": "%{filters} filters applied"
+        }
+      },
+      "area": "Per sq km",
+      "count": {
+        "suggested": "Suggested measurements",
+        "search": "%{items} results"
+      },
+      "search-by-name": "Search by name...",
+      "errors": {
+        "measurement-required": "Measurement is required",
+        "measurement-twice": "Two or more measurements are equal",
+        "column-name-mismatch": "Segment names and column names don't match",
+        "invalid-selection": "Invalid DO selection",
+        "mandatory-region": "Region is mandatory"
+      }
     },
     "merge": {
       "title": "Join columns from 2nd layer",
@@ -371,7 +395,11 @@
           "recently-title": "Most used",
           "none": "None",
           "show-all": "Show full collections"
-        }
+        },
+        "error": "There was an error"
+      },
+      "slide": {
+        "no-values": "No values"
       }
     }
   },
@@ -1128,11 +1156,13 @@
     "backbone-forms": {
       "select": {
         "placeholder": "Select a %{keyAttr}",
+        "disabled-placeholder": "Enable %{keyAttr}",
         "loading": "loading…",
         "empty": "No values",
         "selected": "%{count} selected",
         "all": "All",
-        "none": "None"
+        "none": "None",
+        "error": "Error fetching %{type}"
       },
       "operators": {
         "count-message": "If you select 'COUNT' all columns are selected"
@@ -1148,8 +1178,16 @@
           },
           "filter": {
             "header": "Filter measurements by",
-            "type": "filters"
-          }
+            "type": "filters",
+            "filters": {
+              "label": "Filters",
+              "applied": {
+                "single": "1 filter applied",
+                "multiple": "%{filters} filters applied"
+              }
+            }
+          },
+          "error": "Error fetching %{type}"
         }
       }
     },
@@ -1605,6 +1643,42 @@
         "data-observatory-measurement-measurement": "Measurement",
         "data-observatory-measurement-refine": "Choose a measure",
         "data-observatory-measurement-segments": "Segments",
+        "data-observatory": {
+          "list": {
+            "add": "Add new measurement"
+          },
+          "header": {
+            "title": "Enrich from Data Observatory",
+            "description": "Define your input layer"
+          },
+          "parameters": {
+            "title": "Select measurements",
+            "description": "Pick as many as you want"
+          },
+          "source": {
+            "label": "Base layer"
+          },
+          "region": {
+            "label": "Region",
+            "error": "Error getting regions."
+          },
+          "measurements": {
+            "label": "Measurement",
+            "placeholder": "Select a measurement"
+          },
+          "normalize": {
+            "label": "Normalize",
+            "placeholder": "Metric for Normalization",
+            "disabled-placeholder": "Enable Normalization"
+          },
+          "timespan": {
+            "label": "Timespan",
+            "placeholder": "Select a timespan"
+          },
+          "boundaries": {
+            "label": "Boundaries"
+          }
+        },
         "define-columns": "Define column to find similarities with",
         "define-reference-and-target": "Define reference and target layers",
         "define-two-layers": "Define two layers",
@@ -1952,6 +2026,7 @@
       },
       "code-mirror": {
         "save": "CMD + S to apply your html.",
+        "sanitize": "Use {{{column}}} to sanitize values.",
         "errors": {
           "empty": "Template can't be empty."
         }

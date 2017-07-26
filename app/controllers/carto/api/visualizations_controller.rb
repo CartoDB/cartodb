@@ -30,6 +30,9 @@ module Carto
                                                              :remove_like, :notify_watching, :list_watching,
                                                              :static_map]
 
+      # :update and :destroy are correctly handled by permission check on the model
+      before_filter :ensure_user_can_create, only: [:create]
+
       before_filter :optional_api_authorization, only: [:index, :vizjson2, :vizjson3, :is_liked, :add_like,
                                                         :remove_like, :notify_watching, :list_watching, :static_map]
 
@@ -124,9 +127,6 @@ module Carto
           @visualization.send_like_email(current_viewer, vis_url)
         end
 
-        event_properties = { user_id: current_viewer_id, visualization_id: @visualization.id, action: 'like' }
-        Carto::Tracking::Events::LikedMap.new(current_viewer_id, event_properties).report
-
         render_jsonp(
           id: @visualization.id,
           likes: @visualization.likes.count,
@@ -140,9 +140,6 @@ module Carto
         current_viewer_id = current_viewer.id
 
         @visualization.remove_like_from(current_viewer_id)
-
-        event_properties = { user_id: current_viewer_id, visualization_id: @visualization.id, action: 'remove' }
-        Carto::Tracking::Events::LikedMap.new(current_viewer_id, event_properties).report
 
         render_jsonp(id: @visualization.id, likes: @visualization.likes.count, liked: false)
       end
@@ -168,12 +165,7 @@ module Carto
       end
 
       def vizjson3
-        options = {}
-        if @visualization.user.has_feature_flag?('vector_vs_raster')
-          options[:vector] = nil
-        end
-
-        render_vizjson(generate_vizjson3(@visualization, options))
+        render_vizjson(generate_vizjson3(@visualization, vizjson3_options(@visualization, params)))
       end
 
 
@@ -295,6 +287,8 @@ module Carto
       end
 
       def destroy
+        return head(403) unless @visualization.has_permission?(current_viewer, Carto::Permission::ACCESS_READWRITE)
+
         current_viewer_id = current_viewer.id
         properties = { user_id: current_viewer_id, visualization_id: @visualization.id }
 
@@ -389,7 +383,11 @@ module Carto
       end
 
       def ensure_visualization_is_viewable
-        return(head 403) unless (current_viewer && @visualization.is_viewable_by_user?(current_viewer))
+        return(head 403) unless current_viewer && @visualization.is_viewable_by_user?(current_viewer)
+      end
+
+      def ensure_user_can_create
+        return (head 403) unless current_viewer && !current_viewer.viewer
       end
 
       # This avoids crossing usernames and visualizations.

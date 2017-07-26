@@ -11,13 +11,13 @@ describe CartoDB::Visualization::CommonDataService do
   end
 
   before(:each) do
-    remote_visualizations.each(&:destroy)
+    remote_visualizations(@user).each(&:destroy)
   end
 
   let(:service) { CartoDB::Visualization::CommonDataService.new }
 
-  def remote_visualizations
-    Carto::Visualization.where(user_id: @user.id)
+  def remote_visualizations(user)
+    Carto::Visualization.where(user_id: user.id, type: Carto::Visualization::TYPE_REMOTE)
   end
 
   def dataset(name, description: 'A very creative description')
@@ -46,8 +46,18 @@ describe CartoDB::Visualization::CommonDataService do
     expect(deleted).to eq 0
     expect(failed).to eq 0
 
-    expect(remote_visualizations.count).to eq 1
-    expect(remote_visualizations.first.name).to eq 'ds1'
+    expect(remote_visualizations(@user).count).to eq 1
+    expect(remote_visualizations(@user).first.name).to eq 'ds1'
+  end
+
+  it 'should import common data datasets within an ActiveRecord transaction (see #12488)' do
+    # This would trigger an exception because of data integrity
+    expect {
+      ActiveRecord::Base.transaction do
+        service.stubs(:get_datasets).returns([dataset('ds1')])
+        service.load_common_data_for_user(@user, 'some_url')
+      end
+    }.not_to raise_error
   end
 
   it 'should update common data datasets' do
@@ -63,9 +73,9 @@ describe CartoDB::Visualization::CommonDataService do
     expect(deleted).to eq 0
     expect(failed).to eq 0
 
-    expect(remote_visualizations.count).to eq 1
-    expect(remote_visualizations.first.name).to eq 'ds1'
-    expect(remote_visualizations.first.description).to eq 'desc'
+    expect(remote_visualizations(@user).count).to eq 1
+    expect(remote_visualizations(@user).first.name).to eq 'ds1'
+    expect(remote_visualizations(@user).first.description).to eq 'desc'
   end
 
   it 'should not touch unmodified common data datasets' do
@@ -80,14 +90,16 @@ describe CartoDB::Visualization::CommonDataService do
     expect(deleted).to eq 0
     expect(failed).to eq 0
 
-    expect(remote_visualizations.count).to eq 1
-    expect(remote_visualizations.first.name).to eq 'ds1'
+    expect(remote_visualizations(@user).count).to eq 1
+    expect(remote_visualizations(@user).first.name).to eq 'ds1'
   end
 
   it 'should delete removed common data datasets' do
     service.stubs(:get_datasets).returns([dataset('ds1'), dataset('ds2')])
     service.load_common_data_for_user(@user, 'some_url')
-    expect(remote_visualizations.count).to eq 2
+    expect(remote_visualizations(@user).count).to eq 2
+
+    Carto::ExternalSource.count.should eq 2
 
     service.stubs(:get_datasets).returns([dataset('ds1')])
     added, updated, not_modified, deleted, failed = service.load_common_data_for_user(@user, 'some_url')
@@ -98,8 +110,10 @@ describe CartoDB::Visualization::CommonDataService do
     expect(deleted).to eq 1
     expect(failed).to eq 0
 
-    expect(remote_visualizations.count).to eq 1
-    expect(remote_visualizations.first.name).to eq 'ds1'
+    Carto::ExternalSource.count.should eq 1
+
+    expect(remote_visualizations(@user).count).to eq 1
+    expect(remote_visualizations(@user).first.name).to eq 'ds1'
   end
 
   it 'should fail when missing some fields, but still import the rest' do
@@ -112,7 +126,7 @@ describe CartoDB::Visualization::CommonDataService do
     expect(deleted).to eq 0
     expect(failed).to eq 1
 
-    expect(remote_visualizations.count).to eq 1
-    expect(remote_visualizations.first.name).to eq 'ds1'
+    expect(remote_visualizations(@user).count).to eq 1
+    expect(remote_visualizations(@user).first.name).to eq 'ds1'
   end
 end

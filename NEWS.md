@@ -35,6 +35,7 @@ Development
 * Remove tracking of liked map events (#12404)
 * Display dashboard notifications for open-source instances (#12421)
 * Remove unsupported CartoCSS rules for vector rendering (#12410)
+* Force parameter `vector` for vector rendering (#12478).
 * Fixed typo in content_no_datasets.jst.ejs and en.json (Docs)
 * Fixing problem parsing formula widget creation (#support/843)
 * Don't try to lowercase null values in custom-list-collection object (support/#744)
@@ -102,6 +103,7 @@ Development
 * Country dropdown should be mandatory in postal code georeference (#12420)
 * Fixed bounds and center of thumbnails after updating a map
 * Fixed a bug in cartodb.js regarding the featureCount (#12490)
+* Add tip about sanitising values in popup's InfoWindow (#11340)
 * Fix a problem with responsive in deep-insights.js
 * Fix 403 error in password protected embed maps (#12469)
 

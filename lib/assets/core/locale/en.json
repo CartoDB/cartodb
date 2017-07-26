@@ -2104,6 +2104,7 @@
       },
       "code-mirror": {
         "save": "CMD + S to apply your html.",
+        "sanitize": "Use {{{column}}} to sanitize values.",
         "errors": {
           "empty": "Template can't be empty."
         }

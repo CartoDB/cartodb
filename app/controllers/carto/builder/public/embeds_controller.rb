@@ -65,11 +65,8 @@ module Carto
         end
 
         def load_vizjson
-          options = {}
-          if @visualization.user.has_feature_flag?('vector_vs_raster')
-            options[:vector] = nil
-          end
-          @vizjson = generate_named_map_vizjson3(visualization_for_presentation, options)
+          vis = visualization_for_presentation
+          @vizjson = generate_named_map_vizjson3(vis, vizjson3_options(vis, params))
         end
 
         def load_state

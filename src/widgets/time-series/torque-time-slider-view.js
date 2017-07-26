@@ -6,6 +6,7 @@ var formatter = require('../../formatter');
 var TIP_RECT_HEIGHT = 17;
 var TIP_H_PADDING = 6;
 var TOOLTIP_MARGIN = 2;
+var CHART_MARGIN = 16;
 
 /**
  * Time-slider, expected to be used in a histogram view
@@ -66,9 +67,9 @@ module.exports = cdb.core.View.extend({
   _generateTimeSliderTip: function () {
     var yPos = this._calcHeight() + TOOLTIP_MARGIN;
 
-    var timeSliderTip = this._chartView.canvas.append('g')
+    var timeSliderTip = this._chartView.canvas.select('.CDB-WidgetCanvas').append('g')
       .attr('class', 'CDB-Chart-timeSliderTip')
-      .attr('transform', 'translate(0,' + yPos + ')');
+      .attr('transform', 'translate(' + CHART_MARGIN + ',' + yPos + ')');
 
     timeSliderTip.append('rect')
       .attr('class', 'CDB-Chart-timeSliderTipRect')
@@ -90,10 +91,7 @@ module.exports = cdb.core.View.extend({
     }
 
     var chart = this._chartView.canvas;
-    var timeslider = chart.select('.CDB-TimeSlider');
     var textLabel = chart.select('.CDB-Chart-timeSliderTipText');
-    var timeSliderTip = chart.select('.CDB-Chart-timeSliderTip');
-    var rectLabel = chart.select('.CDB-Chart-timeSliderTipRect');
 
     textLabel
       .data([time])
@@ -105,23 +103,37 @@ module.exports = cdb.core.View.extend({
       return;
     }
 
+    var timeslider = chart.select('.CDB-TimeSlider');
+    var timeSliderTip = chart.select('.CDB-Chart-timeSliderTip');
+    var rectLabel = chart.select('.CDB-Chart-timeSliderTipRect');
     var textBBox = textLabel.node().getBBox();
     var width = textBBox.width;
     var rectWidth = width + TIP_H_PADDING;
+    var chartWidth = this._chartView.chartWidth() + CHART_MARGIN;
 
     rectLabel.attr('width', rectWidth);
     textLabel.attr('dx', TIP_H_PADDING / 2);
     textLabel.attr('dy', textBBox.height - Math.abs((textBBox.height - TIP_RECT_HEIGHT) / 2));
 
     var parts = d3.transform(timeslider.attr('transform')).translate;
-    var xPos = parts[0] + (this.defaults.width / 2);
+    var xPos = parts[0] + this.defaults.width - rectWidth / 2;
     var yPos = this._calcHeight() + TOOLTIP_MARGIN;
     yPos = Math.floor(yPos);
+
+    var translate = '';
+
+    if (xPos < CHART_MARGIN) {
+      translate = 'translate(' + CHART_MARGIN + ',' + yPos + ')';
+    } else if ((xPos + rectWidth) >= chartWidth) {
+      translate = 'translate(' + (chartWidth - rectWidth) + ',' + yPos + ')';
+    } else {
+      translate = 'translate(' + xPos + ', ' + yPos + ')';
+    }
 
     timeSliderTip
       .transition()
       .ease('linear')
-      .attr('transform', 'translate(' + xPos + ',' + yPos + ' )');
+      .attr('transform', translate);
   },
 
   _initBinds: function () {

@@ -230,7 +230,7 @@ module.exports = cdb.core.View.extend({
     var width = textBBox.width;
     var rectWidth = width + TIP_H_PADDING;
 
-    rectLabel.attr('width', width + TIP_H_PADDING);
+    rectLabel.attr('width', rectWidth);
     textLabel.attr('dx', TIP_H_PADDING / 2);
     textLabel.attr('dy', textBBox.height - Math.abs((textBBox.height - TIP_RECT_HEIGHT) / 2));
 

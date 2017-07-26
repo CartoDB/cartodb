@@ -21,6 +21,7 @@ module Carto
                       :load_google_maps_qs, only: [:show, :show_protected]
 
         skip_before_filter :builder_users_only # This is supposed to be public even in beta
+        skip_before_filter :verify_authenticity_token, only: [:show_protected]
 
         layout false
 

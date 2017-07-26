@@ -750,7 +750,7 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
       "from": "cartodb/cartodb.js#v4",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#1696045a9691583043f3c7cc0abe878539b26813"
+      "resolved": "git://github.com/cartodb/cartodb.js.git#bc349b4c010957532055fc1ed739e5cfc0e27d8c"
     },
     "caseless": {
       "version": "0.11.0",
@@ -781,6 +781,11 @@
       "version": "1.0.4",
       "from": "cipher-base@>=1.0.0 <2.0.0",
       "resolved": "https://registry.npmjs.org/cipher-base/-/cipher-base-1.0.4.tgz"
+    },
+    "clip-path-polygon": {
+      "version": "0.1.12",
+      "from": "clip-path-polygon@0.1.12",
+      "resolved": "https://registry.npmjs.org/clip-path-polygon/-/clip-path-polygon-0.1.12.tgz"
     },
     "clipboard": {
       "version": "1.6.1",

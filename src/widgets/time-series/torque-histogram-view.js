@@ -95,7 +95,7 @@ module.exports = HistogramView.extend({
     return step;
   },
 
-  _reSelectRange: function (model, data, options) {
+  _reSelectRange: function () {
     if (!this._rangeFilter.isEmpty()) {
       this._torqueLayerModel.pause();
       var min = this._rangeFilter.get('min');

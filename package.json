@@ -34,6 +34,7 @@
     "moment": "^2.18.1",
     "node-polyglot": "^2.2.2",
     "perfect-scrollbar": "git://github.com/CartoDB/perfect-scrollbar.git#master",
+    "postcss": "5.0.19",
     "tinycolor2": "1.4.1",
     "underscore": "1.8.3",
     "urijs": "1.17.1"
@@ -60,7 +61,7 @@
     "grunt-fastly": "~0.1.3",
     "grunt-gh-pages": "1.0.0",
     "grunt-sass": "2.0.0",
-    "jstify": "0.12.0",
+    "jstify": "0.13.0",
     "load-grunt-tasks": "3.3.0",
     "semistandard": "7.0.4",
     "source-map-support": "0.4.0",

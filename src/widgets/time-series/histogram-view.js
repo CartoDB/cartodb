@@ -16,6 +16,8 @@ module.exports = cdb.core.View.extend({
       4 // margins
   },
 
+  className: 'CDB-Chart--histogram',
+
   initialize: function () {
     this._timeSeriesModel = this.options.timeSeriesModel;
     this._dataviewModel = this.options.dataviewModel;
@@ -66,7 +68,7 @@ module.exports = cdb.core.View.extend({
         top: 4,
         right: 4,
         bottom: 4,
-        left: 4
+        left: this._getMarginLeft()
       },
       hasHandles: true,
       handleWidth: 10,
@@ -136,5 +138,9 @@ module.exports = cdb.core.View.extend({
     if (!this._rangeFilter.has('min') && !this._rangeFilter.has('max')) {
       this._resetFilterInDI();
     }
+  },
+
+  _getMarginLeft: function () {
+    return 4;
   }
 });

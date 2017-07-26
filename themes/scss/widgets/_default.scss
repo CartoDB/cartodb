@@ -77,7 +77,6 @@
 
 .CDB-Chart--histogram {
   margin-top: $baseSize * 3;
-  margin-bottom: $baseSize;
 }
 
 .CDB-Widget-content--histogram,
@@ -126,8 +125,6 @@
   }
   .CDB-Widget-content.CDB-Widget-content--timeSeries {
     width: 100%;
-    margin-right: 0;
-    margin-left: 0;
   }
   .CDB-Widget-header,
   .CDB-Widget-footer,

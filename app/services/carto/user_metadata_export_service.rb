@@ -145,6 +145,7 @@ module Carto
       root_dir.join("redis_user_#{user_id}.json").open('w') { |file| file.write(redis_json) }
 
       # Export visualizations (include type in the name to be able to import datasets before maps)
+      export_user_visualizations_to_directory(user, Carto::Visualization::TYPE_REMOTE, path)
       export_user_visualizations_to_directory(user, Carto::Visualization::TYPE_CANONICAL, path)
       export_user_visualizations_to_directory(user, Carto::Visualization::TYPE_DERIVED, path)
     end
@@ -158,6 +159,7 @@ module Carto
       Carto::RedisExportService.new.restore_redis_from_json_export(File.read(Dir["#{path}/redis_user_*.json"].first))
 
       if import_visualizations
+        import_user_visualizations_from_directory(user, Carto::Visualization::TYPE_REMOTE, path)
         import_user_visualizations_from_directory(user, Carto::Visualization::TYPE_CANONICAL, path)
         import_user_visualizations_from_directory(user, Carto::Visualization::TYPE_DERIVED, path)
       end

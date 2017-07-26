@@ -121,9 +121,14 @@ module CartoDB
           self.filter = filter
 
           @formats.each do |search_query|
-            response = @client.search(search_query, '')
-            response.matches.select { |item| item.resource.is_a?(DropboxApi::Metadata::File) }.each do |item|
-              all_results.push(format_item_data(item.resource))
+            loop do
+              start = 0
+              response = @client.search(search_query, '', { max_results: SEARCH_BATCH_SIZE, start: start })
+              response.matches.select { |item| item.resource.is_a?(DropboxApi::Metadata::File) }.each do |item|
+                all_results.push(format_item_data(item.resource))
+              end
+              break unless response.has_more?
+              start += SEARCH_BATCH_SIZE
             end
           end
           all_results
@@ -221,6 +226,8 @@ module CartoDB
         end
 
         private
+
+        SEARCH_BATCH_SIZE = 1000
 
         # Handles
         # @param original_exception mixed

@@ -231,21 +231,21 @@ module Carto
       export_visualization_json_hash(visualization_id, user).to_json
     end
 
-    def export_visualization_json_hash(visualization_id, user)
+    def export_visualization_json_hash(visualization_id, user, with_mapcaps: true)
       {
         version: CURRENT_VERSION,
-        visualization: export(Carto::Visualization.find(visualization_id), user)
+        visualization: export(Carto::Visualization.find(visualization_id), user, with_mapcaps: with_mapcaps)
       }
     end
 
     private
 
-    def export(visualization, user)
+    def export(visualization, user, with_mapcaps: true)
       check_valid_visualization(visualization)
-      export_visualization(visualization, user)
+      export_visualization(visualization, user, with_mapcaps: with_mapcaps)
     end
 
-    def export_visualization(visualization, user)
+    def export_visualization(visualization, user, with_mapcaps: true)
       layers = visualization.layers_with_data_readable_by(user)
       active_layer_id = visualization.active_layer_id
       layer_exports = layers.map do |layer|
@@ -277,7 +277,7 @@ module Carto
         synchronization: export_syncronization(visualization.synchronization),
         user_table: export_user_table(visualization.map.user_table),
         uses_vizjson2: visualization.uses_vizjson2?,
-        mapcap: export_mapcap(visualization.latest_mapcap)
+        mapcap: with_mapcaps ? export_mapcap(visualization.latest_mapcap) : nil
       }
     end
 

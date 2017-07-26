@@ -40,7 +40,7 @@ module Carto
     private
 
     def lazy_export_json
-      self.export_json ||= export_visualization_json_hash(visualization_id, visualization.user)
+      self.export_json ||= export_visualization_json_hash(visualization_id, visualization.user, with_mapcaps: false)
     end
 
     def lazy_ids_json

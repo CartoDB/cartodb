@@ -58,7 +58,17 @@
   color: $cAltText;
 }
 
-
 .Tag--Builder {
   color: $cMainText;
+}
+
+.Tag--disabled {
+  opacity: 0.3;
+}
+
+.Tag--pointer {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+  cursor: pointer;
 }

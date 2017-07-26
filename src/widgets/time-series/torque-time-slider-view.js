@@ -1,30 +1,11 @@
 var d3 = require('d3');
 var cdb = require('cartodb.js');
+var moment = require('moment');
+var formatter = require('../../formatter');
 
-
-var FILTERED_COLOR = '#1181FB';
-var UNFILTERED_COLOR = 'rgba(0, 0, 0, 0.06)';
 var TIP_RECT_HEIGHT = 17;
 var TIP_H_PADDING = 6;
-var TRIANGLE_SIDE = 14;
-var TRIANGLE_HEIGHT = 7;
-// How much lower (based on height) will the triangle be on the right side
-var TRIANGLE_RIGHT_FACTOR = 1.3;
 var TOOLTIP_MARGIN = 2;
-var DASH_WIDTH = 4;
-
-var BEZIER_MARGIN_X = 0.1;
-var BEZIER_MARGIN_Y = 1;
-
-var trianglePath = function (x1, y1, x2, y2, x3, y3, yFactor) {
-  // Bezier Control point y
-  var cy = y3 + (yFactor * BEZIER_MARGIN_Y);
-  // Bezier Control point x 1
-  var cx1 = x3 + BEZIER_MARGIN_X;
-  var cx2 = x3 - BEZIER_MARGIN_X;
-  return 'M ' + x1 + ' ' + y1 + ' L ' + x2 + ' ' + y2 + ' C ' + cx1 + ' ' + cy + ' ' + cx2 + ' ' + cy + ' ' + x1 + ' ' + y1 + ' z';
-};
-
 
 /**
  * Time-slider, expected to be used in a histogram view
@@ -38,15 +19,21 @@ module.exports = cdb.core.View.extend({
   initialize: function () {
     if (!this.options.chartView) throw new Error('chartView is required');
     if (!this.options.torqueLayerModel) throw new Error('torqeLayerModel is required');
+    if (!this.options.timeSeriesModel) throw new Error('timeSeriesModel is required');
 
     this.model = new cdb.core.Model();
 
     this._dataviewModel = this.options.dataviewModel;
     this._chartView = this.options.chartView;
     this._torqueLayerModel = this.options.torqueLayerModel;
+    this._timeSeriesModel = this.options.timeSeriesModel;
 
     this._chartMargins = this._chartView.model.get('margin');
+
+    this.formatter = formatter.formatNumber;
+
     this._initBinds();
+    this._updateFormatter();
     this._updateXScale();
   },
 
@@ -77,83 +64,64 @@ module.exports = cdb.core.View.extend({
   },
 
   _generateTimeSliderTip: function () {
-    var yPos = -(TRIANGLE_HEIGHT + TIP_RECT_HEIGHT + TOOLTIP_MARGIN);
-    var yTriangle = -(TRIANGLE_HEIGHT + TOOLTIP_MARGIN) - 2;
-    var yFactor = 1;
-    var triangleHeight = TRIANGLE_HEIGHT * yFactor;
+    var yPos = this._calcHeight() + TOOLTIP_MARGIN;
 
-    var timeSliderTip = this.timeSlider.selectAll('g')
-      .data([''])
-      .enter().append('g')
-      .attr('class', 'CDB-Chart-axisTip CDB-Chart-axisTip-left')
+    var timeSliderTip = this._chartView.canvas.append('g')
+      .attr('class', 'CDB-Chart-timeSliderTip')
       .attr('transform', 'translate(0,' + yPos + ')');
 
-    this.timeSlider.append('path')
-      .attr('class', 'CDB-Chart-axisTipRect CDB-Chart-axisTipTriangle')
-      // .attr('transform', 'translate(' + ((this.options.handleWidth / 2) - (TRIANGLE_SIDE / 2)) + ', ' + yTriangle + ')')
-      .attr('transform', 'translate(' + ((10 / 2) - (TRIANGLE_SIDE / 2)) + ', ' + yTriangle + ')')
-      .attr('d', trianglePath(0, 0, TRIANGLE_SIDE, 0, (TRIANGLE_SIDE / 2), triangleHeight, yFactor))
-      .style('opacity', '0');
-
     timeSliderTip.append('rect')
-      .attr('class', 'CDB-Chart-axisTipRect CDB-Chart-axisTip-left')
+      .attr('class', 'CDB-Chart-timeSliderTipRect')
       .attr('rx', '2')
       .attr('ry', '2')
       .attr('height', TIP_RECT_HEIGHT);
 
     timeSliderTip.append('text')
-      .attr('class', 'CDB-Text CDB-Size-small CDB-Chart-axisTipText CDB-Chart-axisTip-left')
+      .attr('class', 'CDB-Text CDB-Size-small CDB-Chart-timeSliderTipText')
       .attr('dy', '11')
       .attr('dx', '0')
       .text(function (d) { return d; });
   },
 
   _updateTimeSliderTip: function () {
-    debugger;
-    // var model = this.model.get(className + '_axis_tip');
-    // if (model === undefined) { return; }
+    var time = this._torqueLayerModel.get('time');
+    if (time === void 0) {
+      return;
+    }
 
-    // var textLabel = this.chart.select('.CDB-Chart-axisTipText.CDB-Chart-axisTip-' + className);
-    // var axisTip = this.chart.select('.CDB-Chart-axisTip.CDB-Chart-axisTip-' + className);
-    // var rectLabel = this.chart.select('.CDB-Chart-axisTipRect.CDB-Chart-axisTip-' + className);
-    // var handle = this.chart.select('.CDB-Chart-handle.CDB-Chart-handle-' + className);
-    // var triangle = handle.select('.CDB-Chart-axisTipTriangle');
+    var chart = this._chartView.canvas;
+    var timeslider = chart.select('.CDB-TimeSlider');
+    var textLabel = chart.select('.CDB-Chart-timeSliderTipText');
+    var timeSliderTip = chart.select('.CDB-Chart-timeSliderTip');
+    var rectLabel = chart.select('.CDB-Chart-timeSliderTipRect');
 
-    // triangle.style('opacity', '1');
+    textLabel
+      .data([time])
+      .text(function (d) {
+        return this.formatter(moment(d).unix(), this._timeSeriesModel.get('local_timezone'));
+      }.bind(this));
 
-    // textLabel.data([model]).text(function (d) {
-    //   return this.formatter(d, this.model.get('local_timezone'));
-    // }.bind(this));
+    if (!textLabel.node()) {
+      return;
+    }
 
-    // if (!textLabel.node()) {
-    //   return;
-    // }
+    var textBBox = textLabel.node().getBBox();
+    var width = textBBox.width;
+    var rectWidth = width + TIP_H_PADDING;
 
-    // var textBBox = textLabel.node().getBBox();
-    // var width = textBBox.width;
-    // var rectWidth = width + TIP_H_PADDING;
+    rectLabel.attr('width', rectWidth);
+    textLabel.attr('dx', TIP_H_PADDING / 2);
+    textLabel.attr('dy', textBBox.height - Math.abs((textBBox.height - TIP_RECT_HEIGHT) / 2));
 
-    // rectLabel.attr('width', width + TIP_H_PADDING);
-    // textLabel.attr('dx', TIP_H_PADDING / 2);
-    // textLabel.attr('dy', textBBox.height - Math.abs((textBBox.height - TIP_RECT_HEIGHT) / 2));
+    var parts = d3.transform(timeslider.attr('transform')).translate;
+    var xPos = parts[0] + (this.defaults.width / 2);;
+    var yPos = this._calcHeight() + TOOLTIP_MARGIN;
+    yPos = Math.floor(yPos);
 
-    // var parts = d3.transform(handle.attr('transform')).translate;
-    // var xPos = +parts[0] + (this.options.handleWidth / 2);
-
-    // var yPos = className === 'left' ? -(TRIANGLE_HEIGHT + TIP_RECT_HEIGHT + TOOLTIP_MARGIN) : this.chartHeight() + (TRIANGLE_HEIGHT * TRIANGLE_RIGHT_FACTOR);
-    // yPos = Math.floor(yPos);
-
-    // this._updateTriangle(className, triangle, xPos);
-
-    // if ((xPos - width / 2) < 0) {
-    //   axisTip.attr('transform', 'translate(' + -xPos + ',' + yPos + ' )');
-    // } else if ((xPos + width / 2 + 2) >= this.chartWidth()) {
-    //   var newX = this.chartWidth() - (xPos + rectWidth);
-    //   newX += this.options.handleWidth;
-    //   axisTip.attr('transform', 'translate(' + newX + ', ' + yPos + ')');
-    // } else {
-    //   axisTip.attr('transform', 'translate(-' + Math.max(((rectWidth / 2) - (this.options.handleWidth / 2)), 0) + ', ' + yPos + ')');
-    // }
+    timeSliderTip
+      .transition()
+      .ease('linear')
+      .attr('transform', 'translate(' + xPos + ',' + yPos + ' )');
   },
 
   _initBinds: function () {
@@ -163,8 +131,10 @@ module.exports = cdb.core.View.extend({
 
     this.listenTo(this._chartView.model, 'change:width', this._updateChartandTimeslider);
     this.listenTo(this._chartView.model, 'change:height', this._onChangeChartHeight);
+    this.listenTo(this._chartView.model, 'change:local_timezone', this._onChangeLocalTimezone);
 
     this.listenTo(this._dataviewModel, 'change:bins', this._updateChartandTimeslider);
+    this.listenTo(this._dataviewModel, 'change:column_type', this._updateFormatter);
     this.listenTo(this._dataviewModel.filter, 'change:min change:max', this._onFilterMinMaxChange);
   },
 
@@ -221,6 +191,7 @@ module.exports = cdb.core.View.extend({
     if (this.timeSlider && !this.model.get('isDragging')) {
       var data = this.timeSlider.data();
       var newX = this._xScale(this._torqueLayerModel.get('step'));
+
       if (!isNaN(newX)) {
         data[0].x = newX;
         this.timeSlider
@@ -238,6 +209,11 @@ module.exports = cdb.core.View.extend({
     this.timeSlider.attr('height', this._calcHeight());
   },
 
+  _onChangeLocalTimezone: function () {
+    this.timeSlider.attr('height', this._calcHeight());
+    this._updateTimeSliderTip();
+  },
+
   _updateChartandTimeslider: function () {
     this._updateXScale();
     this._onChangeStep();
@@ -245,6 +221,12 @@ module.exports = cdb.core.View.extend({
 
   _calcHeight: function () {
     return this._chartView.chartHeight() + this.defaults.height;
+  },
+
+  _updateFormatter: function () {
+    if (this._dataviewModel.getColumnType() === 'date') {
+      this.formatter = formatter.timestampFactory(this._dataviewModel.get('aggregation'), this._dataviewModel.get('offset'));
+    }
   },
 
   _updateXScale: function () {

@@ -220,9 +220,18 @@ $timeSliderBorder: rgba(#FFF, 1);
   .CDB-Chart-staticTip {
     background: $chartLine;
   }
-  .CDB-Chart-staticTipText {
+  .CDB-Chart-staticTipText,
+  .CDB-Chart-timeSliderTipText {
     font-weight: bold;
+  }
+  .CDB-Chart-staticTipText {
     color: $primary;
+  }
+  .CDB-Chart-timeSliderTip {
+    fill: $primary;
+  }
+  .CDB-Chart-timeSliderTipText {
+    fill: $chartLine;
   }
   .CDB-Chart-axisTipRect {
     fill: $chartLine;

@@ -110,6 +110,8 @@ var TorqueLayerViewBase = {
     this.listenTo(this.model, 'change:steps', this._stepsChanged);
     this.listenTo(this.model, 'change:renderRange', this._renderRangeChanged);
     this.listenTo(this.model, 'change', this._onModelChanged);
+    this.listenTo(this.model, 'change:cartocss', this._cartoCSSChanged);
+    this.listenTo(this.model, 'change:customDuration', this._onUpdateDuration);
   },
 
   _unonModel: function () {
@@ -119,6 +121,16 @@ var TorqueLayerViewBase = {
     this.stopListening(this.model, 'change:steps', this._stepsChanged);
     this.stopListening(this.model, 'change:renderRange', this._renderRangeChanged);
     this.stopListening(this.model, 'change', this._onModelChanged);
+    this.stopListening(this.model, 'change:cartocss', this._cartoCSSChanged);
+    this.stopListening(this.model, 'change:customDuration', this._onUpdateDuration);
+  },
+
+  _onUpdateDuration: function () {
+    var duration = this.model.get('customDuration');
+    duration = duration || this.model.getAnimationDuration(this.model.get('cartocss'));
+    if (duration) {
+      this.nativeTorqueLayer.animator.duration(duration);
+    }
   },
 
   _isRunningChanged: function (m, isRunning) {
@@ -141,6 +153,11 @@ var TorqueLayerViewBase = {
     this.nativeTorqueLayer.setSteps(steps);
   },
 
+  _cartoCSSChanged: function (m, cartocss) {
+    this.nativeTorqueLayer.setCartoCSS(this.model.get('cartocss'));
+    this._onUpdateDuration();
+  },
+
   _renderRangeChanged: function (m, r) {
     if (_.isObject(r) && _.isNumber(r.start) && _.isNumber(r.end)) {
       this.nativeTorqueLayer.renderRange(r.start, r.end);
@@ -155,10 +172,6 @@ var TorqueLayerViewBase = {
 
     if (this.model.hasChanged('visible')) {
       this.model.get('visible') ? this.nativeTorqueLayer.show() : this.nativeTorqueLayer.hide();
-    }
-
-    if (this.model.hasChanged('cartocss')) {
-      this.nativeTorqueLayer.setCartoCSS(this.model.get('cartocss'));
     }
 
     if (this.model.hasChanged('tileURLTemplates')) {

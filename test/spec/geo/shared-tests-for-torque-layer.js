@@ -145,8 +145,8 @@ module.exports = function () {
     });
 
     it('should set the new cartoCSS on the torque layer', function () {
-      this.view.model.set('cartocss', 'some shiny new cartocss');
-      expect(this.nativeTorqueLayer.setCartoCSS).toHaveBeenCalledWith('some shiny new cartocss');
+      this.view.model.set('cartocss', '#layer { marker-fill: whatever; }');
+      expect(this.nativeTorqueLayer.setCartoCSS).toHaveBeenCalledWith('#layer { marker-fill: whatever; }');
     });
   });
 

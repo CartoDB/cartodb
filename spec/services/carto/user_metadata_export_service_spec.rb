@@ -27,6 +27,15 @@ describe Carto::UserMetadataExportService do
 
     CartoDB::GeocoderUsageMetrics.new(@user.username).incr(:geocoder_here, :success_responses)
 
+    # Convert @table_visualization into a common data imported table
+    sync = FactoryGirl.create(:carto_synchronization, user: @user)
+    @table_visualization.update_attributes!(synchronization: sync)
+    data_import = FactoryGirl.create(:data_import, user: @user, synchronization_id: sync.id, table_id: @table.id)
+    @table.update_attributes!(data_import: data_import)
+    edi = FactoryGirl.create(:external_data_import_with_external_source, data_import: data_import, synchronization: sync)
+    @remote_visualization = edi.external_source.visualization
+    @remote_visualization.update_attributes!(user: @user)
+
     @user.reload
   end
 
@@ -35,6 +44,7 @@ describe Carto::UserMetadataExportService do
     $users_metadata.DEL(gum.send(:user_key_prefix, :geocoder_here, :success_responses, DateTime.now))
 
     destroy_full_visualization(@map, @table, @table_visualization, @visualization)
+    @remote_visualization.destroy
     @tiled_layer.destroy
     @asset.destroy
     @user.destroy

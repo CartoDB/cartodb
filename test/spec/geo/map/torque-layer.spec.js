@@ -73,4 +73,28 @@ describe('geo/map/torque-layer', function () {
       });
     });
   });
+
+  describe('.getAnimationDuration', function () {
+    var layer;
+
+    beforeEach(function () {
+      layer = new TorqueLayer({}, { vis: this.vis });
+    });
+
+    it('should take the animation duration if it is defined', function () {
+      var cartocss = 'Map { -torque-animation-duration: 22; }';
+      expect(layer.getAnimationDuration(cartocss)).toBe(22);
+
+      cartocss = 'Map { -torque-animation-duration:15; }';
+      expect(layer.getAnimationDuration(cartocss)).toBe(15);
+    });
+
+    it('should take the defualt animation duration if the attribute isn\'t defined', function () {
+      var cartocss = 'Map { -torque-animation-aggregation: cartodb_id; }';
+      expect(layer.getAnimationDuration(cartocss)).toBe(30);
+
+      cartocss = 'Map { something: "a"; -torque-time-attribute: "column"; }';
+      expect(layer.getAnimationDuration(cartocss)).toBe(30);
+    });
+  });
 });

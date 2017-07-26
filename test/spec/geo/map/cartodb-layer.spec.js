@@ -170,7 +170,7 @@ describe('geo/map/cartodb-layer', function () {
         }
       }, { vis: this.vis });
 
-      expect(this.layer.getInteractiveColumnNames()).toEqual([ 'cartodb_id', 'a', 'b', 'c' ]);
+      expect(this.layer.getInteractiveColumnNames()).toEqual(['cartodb_id', 'a', 'b', 'c']);
     });
 
     it("should return the 'cartodb_id' if no fields are present", function () {
@@ -183,7 +183,39 @@ describe('geo/map/cartodb-layer', function () {
         }
       }, { vis: this.vis });
 
-      expect(this.layer.getInteractiveColumnNames()).toEqual([ 'cartodb_id' ]);
+      expect(this.layer.getInteractiveColumnNames()).toEqual(['cartodb_id']);
+    });
+  });
+
+  describe('.getEstimatedFeatureCount', function () {
+    var layer;
+
+    beforeEach(function () {
+      layer = new CartoDBLayer({}, { vis: this.vis });
+    });
+    it('should return undefined when there is no meta information', function () {
+      layer.set('meta', {
+        stats: {}
+      });
+      expect(layer.getEstimatedFeatureCount()).toBeUndefined();
+    });
+    it('should return the number of features extracted from the meta-information when the layer is visible', function () {
+      layer.show();
+      layer.set('meta', {
+        stats: {
+          estimatedFeatureCount: 27
+        }
+      });
+      expect(layer.getEstimatedFeatureCount()).toEqual(27);
+    });
+    it('should return the number of features extracted from the meta-information when the layer is invisible', function () {
+      layer.hide();
+      layer.set('meta', {
+        stats: {
+          estimatedFeatureCount: 27
+        }
+      });
+      expect(layer.getEstimatedFeatureCount()).toEqual(27);
     });
   });
 });

@@ -3,6 +3,7 @@
 .grunt
 .rvmrc
 .tmp
+.vscode
 *.swp
 bower_components
 cartodb.js-bower/

@@ -29,7 +29,8 @@ module Carto
   module VisualizationsExportService2Validator
     def check_valid_visualization(visualization)
       raise 'Only derived or canonical visualizations can be exported' unless visualization.derived? ||
-                                                                              visualization.canonical?
+                                                                              visualization.canonical? ||
+                                                                              visualization.remote?
     end
   end
 
@@ -72,7 +73,8 @@ module Carto
           layers: build_layers_from_hash(exported_layers)),
         overlays: build_overlays_from_hash(exported_overlays),
         analyses: exported_visualization[:analyses].map { |a| build_analysis_from_hash(a.deep_symbolize_keys) },
-        permission: build_permission_from_hash(exported_visualization[:permission])
+        permission: build_permission_from_hash(exported_visualization[:permission]),
+        external_source: build_external_source_from_hash(exported_visualization[:external_source])
       )
 
       # This is optional as it was added in version 2.0.2
@@ -99,6 +101,8 @@ module Carto
     end
 
     def build_map_from_hash(exported_map, layers:)
+      return nil unless exported_map
+
       Carto::Map.new(
         provider: exported_map[:provider],
         bounding_box_sw: exported_map[:bounding_box_sw],
@@ -194,8 +198,67 @@ module Carto
       user_table.database_name = exported_user_table[:database_name]
       user_table.description = exported_user_table[:description]
       user_table.table_id = exported_user_table[:table_id]
+      user_table.data_import = build_data_import_from_hash(exported_user_table[:data_import])
 
       user_table
+    end
+
+    def build_data_import_from_hash(exported_data_import)
+      Carto::DataImport.new(
+        data_source: exported_data_import[:data_source],
+        data_type: exported_data_import[:data_type],
+        table_name: exported_data_import[:table_name],
+        state: exported_data_import[:state],
+        success: exported_data_import[:success],
+        log: build_log_from_hash(exported_data_import[:log]),
+        updated_at: exported_data_import[:updated_at],
+        created_at: exported_data_import[:created_at],
+        error_code: exported_data_import[:error_code],
+        queue_id: exported_data_import[:queue_id],
+        tables_created_count: exported_data_import[:tables_created_count],
+        table_names: exported_data_import[:table_names],
+        append: exported_data_import[:append],
+        migrate_table: exported_data_import[:migrate_table],
+        table_copy: exported_data_import[:table_copy],
+        from_query: exported_data_import[:from_query],
+        id: exported_data_import[:id],
+        service_name: exported_data_import[:service_name],
+        service_item_id: exported_data_import[:service_item_id],
+        stats: exported_data_import[:stats],
+        type_guessing: exported_data_import[:type_guessing],
+        quoted_fields_guessing: exported_data_import[:quoted_fields_guessing],
+        content_guessing: exported_data_import[:content_guessing],
+        server: exported_data_import[:server],
+        host: exported_data_import[:host],
+        upload_host: exported_data_import[:upload_host],
+        resque_ppid: exported_data_import[:resque_ppid],
+        create_visualization: exported_data_import[:create_visualization],
+        visualization_id: exported_data_import[:visualization_id],
+        user_defined_limits: exported_data_import[:user_defined_limits],
+        import_extra_options: exported_data_import[:import_extra_options],
+        original_url: exported_data_import[:original_url],
+        privacy: exported_data_import[:privacy],
+        cartodbfy_time: exported_data_import[:cartodbfy_time],
+        http_response_code: exported_data_import[:http_response_code],
+        rejected_layers: exported_data_import[:rejected_layers],
+        runner_warnings: exported_data_import[:runner_warnings],
+        collision_strategy: exported_data_import[:collision_strategy],
+        external_data_imports: exported_data_import[:external_data_imports].map { |edi| build_external_data_import_from_hash(edi) }
+      )
+    end
+
+    def build_external_data_import_from_hash(exported_external_data_import)
+      Carto::ExternalDataImport.new(external_source_id: exported_external_data_import[:external_source_id])
+    end
+
+    def build_external_source_from_hash(exported_external_source)
+      Carto::ExternalSource.new(
+        import_url: exported_external_source[:import_url],
+        rows_counted: exported_external_source[:rows_counted],
+        size: exported_external_source[:size],
+        username: exported_external_source[:username],
+        geometry_types: exported_external_source[:geometry_types]
+      )
     end
   end
 
@@ -252,7 +315,8 @@ module Carto
         state: export_state(visualization.state),
         permission: export_permission(visualization.permission),
         synchronization: export_syncronization(visualization.synchronization),
-        user_table: export_user_table(visualization.map.user_table)
+        user_table: export_user_table(visualization.map.try(:user_table)),
+        external_source: export_external_source(visualization.external_source)
       }
     end
 
@@ -263,6 +327,8 @@ module Carto
     end
 
     def export_map(map)
+      return nil unless map
+
       {
         provider: map.provider,
         bounding_box_sw: map.bounding_box_sw,
@@ -351,7 +417,72 @@ module Carto
         indexes: user_table.indexes,
         database_name: user_table.database_name,
         description: user_table.description,
-        table_id: user_table.table_id
+        table_id: user_table.table_id,
+        data_import: export_data_import(user_table.data_import)
+      }
+    end
+
+    def export_data_import(data_import)
+      return nil unless data_import
+
+      {
+        data_source: data_import.data_source,
+        data_type: data_import.data_type,
+        table_name: data_import.table_name,
+        state: data_import.state,
+        success: data_import.success,
+        log: export_log(data_import.log),
+        updated_at: data_import.updated_at,
+        created_at: data_import.created_at,
+        error_code: data_import.error_code,
+        queue_id: data_import.queue_id,
+        tables_created_count: data_import.tables_created_count,
+        table_names: data_import.table_names,
+        append: data_import.append,
+        migrate_table: data_import.migrate_table,
+        table_copy: data_import.table_copy,
+        from_query: data_import.from_query,
+        id: data_import.id,
+        service_name: data_import.service_name,
+        service_item_id: data_import.service_item_id,
+        stats: data_import.stats,
+        type_guessing: data_import.type_guessing,
+        quoted_fields_guessing: data_import.quoted_fields_guessing,
+        content_guessing: data_import.content_guessing,
+        server: data_import.server,
+        host: data_import.host,
+        upload_host: data_import.upload_host,
+        resque_ppid: data_import.resque_ppid,
+        create_visualization: data_import.create_visualization,
+        visualization_id: data_import.visualization_id,
+        user_defined_limits: data_import.user_defined_limits,
+        import_extra_options: data_import.import_extra_options,
+        original_url: data_import.original_url,
+        privacy: data_import.privacy,
+        cartodbfy_time: data_import.cartodbfy_time,
+        http_response_code: data_import.http_response_code,
+        rejected_layers: data_import.rejected_layers,
+        runner_warnings: data_import.runner_warnings,
+        collision_strategy: data_import.collision_strategy,
+        external_data_imports: data_import.external_data_imports.map { |edi| export_external_data_import(edi) }
+      }
+    end
+
+    def export_external_data_import(external_data_import)
+      {
+        external_source_id: external_data_import.external_source_id
+      }
+    end
+
+    def export_external_source(external_source)
+      return nil unless external_source
+
+      {
+        import_url: external_source.import_url,
+        rows_counted: external_source.rows_counted,
+        size: external_source.size,
+        username: external_source.username,
+        geometry_types: external_source.geometry_types
       }
     end
   end

@@ -315,8 +315,6 @@ describe Carto::VisualizationsExportService2 do
   def verify_mapcap_vs_export(mapcap, mapcap_export)
     return true if mapcap.nil? && mapcap_export.nil?
 
-    byebug
-
     deep_symbolize(mapcap.try(:ids_json)).should eq deep_symbolize(mapcap_export[:ids_json])
     deep_symbolize(mapcap.try(:export_json)).should eq deep_symbolize(mapcap_export[:export_json])
   end

@@ -98,7 +98,7 @@ module.exports = HistogramView.extend({
     return step;
   },
 
-  _reSelectRange: function (model, data, options) {
+  _reSelectRange: function () {
     if (!this._rangeFilter.isEmpty()) {
       var min = this._rangeFilter.get('min');
       var max = this._rangeFilter.get('max');

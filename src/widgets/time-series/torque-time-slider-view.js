@@ -114,7 +114,7 @@ module.exports = cdb.core.View.extend({
     textLabel.attr('dy', textBBox.height - Math.abs((textBBox.height - TIP_RECT_HEIGHT) / 2));
 
     var parts = d3.transform(timeslider.attr('transform')).translate;
-    var xPos = parts[0] + (this.defaults.width / 2);;
+    var xPos = parts[0] + (this.defaults.width / 2);
     var yPos = this._calcHeight() + TOOLTIP_MARGIN;
     yPos = Math.floor(yPos);
 
@@ -200,7 +200,7 @@ module.exports = cdb.core.View.extend({
           .ease('linear')
           .attr('transform', this._translateXY);
 
-          this._updateTimeSliderTip();
+        this._updateTimeSliderTip();
       }
     }
   },

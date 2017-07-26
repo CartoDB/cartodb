@@ -407,7 +407,7 @@ class Table
     self.new_table = true
 
     # finally, close off the data import
-    if @user_table.data_import_id
+    if @user_table.data_import_id && !register_table_only.present?
       @data_import = DataImport.find(id: @user_table.data_import_id)
       @data_import.table_id   = id
       @data_import.table_name = name

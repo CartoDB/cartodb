@@ -252,6 +252,8 @@ module Carto
     end
 
     def build_external_source_from_hash(exported_external_source)
+      return nil unless exported_external_source
+
       Carto::ExternalSource.new(
         import_url: exported_external_source[:import_url],
         rows_counted: exported_external_source[:rows_counted],

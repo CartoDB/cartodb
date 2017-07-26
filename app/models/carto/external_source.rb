@@ -37,6 +37,6 @@ class Carto::ExternalSource < ActiveRecord::Base
   end
 
   def fix_geometry_types_for_insert
-    self.geometry_types = Carto::InsertableArray.new(geometry_types)
+    self.geometry_types = Carto::InsertableArray.new(geometry_types) if geometry_types
   end
 end

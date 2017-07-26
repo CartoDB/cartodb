@@ -30,6 +30,7 @@
     "browserify-shim": "3.8.12",
     "camshaft-reference": "<2.0",
     "carto": "cartodb/carto#master",
+    "clip-path-polygon": "0.1.12",
     "d3": "3.5.17",
     "jquery": "2.1.4",
     "leaflet": "1.0.3",
@@ -96,7 +97,6 @@
     "cdb.templates": "./src/cdb.templates.js",
     "geojson": "./vendor/GeoJSON.js",
     "html-css-sanitizer": "./vendor/html-css-sanitizer-bundle.js",
-    "clip-path": "./vendor/clip-path.js",
     "lzma": "./vendor/lzma.js",
     "mousewheel": "./vendor/mousewheel.js",
     "mwheelIntent": "./vendor/mwheelIntent.js",
@@ -107,12 +107,6 @@
     "geojson": "GeoJSON",
     "html-css-sanitizer": "html",
     "lzma": "LZMA",
-    "clip-path": {
-      "depends": [
-        "underscore:_",
-        "jquery:jQuery"
-      ]
-    },
     "mousewheel": {
       "depends": [
         "jquery:jQuery"

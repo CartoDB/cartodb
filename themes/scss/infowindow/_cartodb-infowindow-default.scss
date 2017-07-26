@@ -36,6 +36,9 @@
 .CDB-infowindow.has-header .CDB-infowindow-inner {
   padding-top: 12px;
 }
+.CDB-infowindow.no-content .CDB-infowindow-inner {
+  display: none;
+}
 .CDB-infowindow-header .CDB-infowindow-tabs {
   margin: -20px -24px 18px;
 }
@@ -115,6 +118,8 @@
 
 .CDB-infowindow-fail {
   display: block;
+  padding: 3px;
+  background: #FFF7F6;
   color: rgb(243, 86, 60);
   font-size: 9px;
   text-align: center;
@@ -197,6 +202,12 @@
   position: absolute;
   bottom: 1px;
   left: 24px;
+  z-index: 10;
+}
+.CDB-hookImage {
+  position: absolute;
+  top: 0;
+  left: -24px;
   z-index: 10;
 }
 
@@ -381,9 +392,6 @@
   }
 }
 
-img[data-clipPath] {
-  visibility: hidden;
-}
 .CDB-infowindow-mask {
   pointer-events: none;
 }

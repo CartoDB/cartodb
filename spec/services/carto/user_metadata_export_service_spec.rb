@@ -30,9 +30,10 @@ describe Carto::UserMetadataExportService do
     # Convert @table_visualization into a common data imported table
     sync = FactoryGirl.create(:carto_synchronization, user: @user)
     @table_visualization.update_attributes!(synchronization: sync)
-    data_import = FactoryGirl.create(:data_import, user: @user, synchronization_id: sync.id, table_id: @table.id)
-    @table.update_attributes!(data_import: data_import)
-    edi = FactoryGirl.create(:external_data_import_with_external_source, data_import: data_import, synchronization: sync)
+    @table.data_import = FactoryGirl.create(:data_import, user: @user, synchronization_id: sync.id, table_id: @table.id)
+    @table.save
+    edi = FactoryGirl.create(:external_data_import_with_external_source,
+                             data_import: @table.data_import, synchronization: sync)
     @remote_visualization = edi.external_source.visualization
     @remote_visualization.update_attributes!(user: @user)
 
@@ -106,7 +107,7 @@ describe Carto::UserMetadataExportService do
         service.export_user_to_directory(@user.id, path)
         source_user = @user.attributes
 
-        source_visualizations = @user.visualizations.map(&:attributes)
+        source_visualizations = @user.visualizations.order(:id).map(&:attributes)
         destroy_user
 
         # At this point, the user database is still there, but the tables got destroyed. We recreate some dummy ones
@@ -119,7 +120,7 @@ describe Carto::UserMetadataExportService do
         compare_excluding_dates(imported_user.attributes, source_user)
         expect_redis_restored(imported_user)
         expect(imported_user.visualizations.count).to eq source_visualizations.count
-        imported_user.visualizations.zip(source_visualizations).each do |v1, v2|
+        imported_user.visualizations.order(:id).zip(source_visualizations).each do |v1, v2|
           compare_excluding_dates_and_ids(v1.attributes, v2)
         end
       end
@@ -133,7 +134,7 @@ describe Carto::UserMetadataExportService do
         service.export_user_to_directory(@user.id, path)
         source_user = @user.attributes
 
-        source_visualizations = @user.visualizations.map(&:attributes)
+        source_visualizations = @user.visualizations.order(:id).map(&:attributes)
         @user.update_attributes(viewer: false) # For destruction purposes
         destroy_user
 
@@ -147,7 +148,7 @@ describe Carto::UserMetadataExportService do
         compare_excluding_dates(imported_user.attributes, source_user)
         expect_redis_restored(imported_user)
         expect(imported_user.visualizations.count).to eq source_visualizations.count
-        imported_user.visualizations.zip(source_visualizations).each do |v1, v2|
+        imported_user.visualizations.order(:id).zip(source_visualizations).each do |v1, v2|
           compare_excluding_dates_and_ids(v1.attributes, v2)
         end
       end

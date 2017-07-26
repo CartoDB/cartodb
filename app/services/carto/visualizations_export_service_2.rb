@@ -39,7 +39,7 @@ module Carto
     include LayerImporter
 
     def build_visualization_from_json_export(exported_json_string)
-      build_visualization_from_hash_export(JSON.parse(exported_json_string).deep_symbolize_keys)
+      build_visualization_from_hash_export(JSON.parse(exported_json_string, symbolize_names: true))
     end
 
     def build_visualization_from_hash_export(exported_hash)
@@ -72,7 +72,7 @@ module Carto
           exported_visualization[:map],
           layers: build_layers_from_hash(exported_layers)),
         overlays: build_overlays_from_hash(exported_overlays),
-        analyses: exported_visualization[:analyses].map { |a| build_analysis_from_hash(a.deep_symbolize_keys) },
+        analyses: exported_visualization[:analyses].map { |a| build_analysis_from_hash(a) },
         permission: build_permission_from_hash(exported_visualization[:permission]),
         external_source: build_external_source_from_hash(exported_visualization[:external_source])
       )
@@ -122,7 +122,7 @@ module Carto
       return [] unless exported_overlays
 
       exported_overlays.map.with_index.map do |overlay, i|
-        build_overlay_from_hash(overlay.deep_symbolize_keys, order: (i + 1))
+        build_overlay_from_hash(overlay, order: (i + 1))
       end
     end
 
@@ -254,13 +254,16 @@ module Carto
     def build_external_source_from_hash(exported_external_source)
       return nil unless exported_external_source
 
-      Carto::ExternalSource.new(
+      es = Carto::ExternalSource.new(
         import_url: exported_external_source[:import_url],
         rows_counted: exported_external_source[:rows_counted],
         size: exported_external_source[:size],
         username: exported_external_source[:username],
         geometry_types: exported_external_source[:geometry_types]
       )
+      es.id = exported_external_source[:id]
+
+      es
     end
   end
 
@@ -480,6 +483,7 @@ module Carto
       return nil unless external_source
 
       {
+        id: external_source.id,
         import_url: external_source.import_url,
         rows_counted: external_source.rows_counted,
         size: external_source.size,

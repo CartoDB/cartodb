@@ -227,7 +227,7 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
 
   def get_external_source(remote_visualization_id)
     external_source = CartoDB::Visualization::ExternalSource.where(visualization_id: remote_visualization_id).first
-    unless remote_visualization_id.present? && external_source.importable_by(current_user)
+    unless remote_visualization_id.present? && external_source.importable_by?(current_user)
       raise CartoDB::Datasources::AuthError.new('Illegal external load')
     end
     external_source

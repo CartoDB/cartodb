@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.8.61.12324",
+  "version": "4.9.8-aggregations",
   "description": "CARTO UI frontend",
   "repository": {
     "type": "git",
@@ -21,7 +21,7 @@
     "bootstrap-colorpicker": "2.5.0",
     "browserify": "13.0.0",
     "browserify-shim": "3.8.12",
-    "camshaft-reference": "0.32.0",
+    "camshaft-reference": "0.33.0",
     "carto": "cartodb/carto#master",
     "cartocolor": "4.0.0",
     "cartodb-deep-insights.js": "cartodb/deep-insights.js#c12324-time-series-aggregations",
@@ -34,6 +34,7 @@
     "node-polyglot": "1.0.0",
     "perfect-scrollbar": "git://github.com/CartoDB/perfect-scrollbar.git#master",
     "queue-async": "1.2.1",
+    "rangeslider.js": "2.3.0",
     "tangram": "cartodb/tangram-1#master",
     "torque.js": "CartoDB/torque#master",
     "underscore": "1.8.3",

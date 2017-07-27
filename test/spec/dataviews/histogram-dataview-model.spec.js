@@ -1,4 +1,5 @@
 var Backbone = require('backbone');
+var _ = require('underscore');
 var Model = require('../../../src/core/model');
 var VisModel = require('../../../src/vis/vis');
 var RangeFilter = require('../../../src/windshaft/filters/range');
@@ -227,27 +228,77 @@ describe('dataviews/histogram-dataview-model', function () {
     });
   });
 
-  it('should parse the bins', function () {
-    var data = {
-      bin_width: 14490.25,
-      bins: [
-        { bin: 0, freq: 2, max: 70151, min: 55611 },
-        { bin: 1, freq: 2, max: 79017, min: 78448 },
-        { bin: 3, freq: 1, max: 113572, min: 113572 }
-      ],
-      bins_count: 4,
-      bins_start: 55611,
-      nulls: 0,
-      type: 'histogram'
-    };
+  describe('parse', function () {
+    var createData;
 
-    this.model.parse(data);
+    beforeEach(function () {
+      createData = function (attrs) {
+        return _.extend({
+          bin_width: 14490.25,
+          bins: [
+            { bin: 0, freq: 2, max: 70151, min: 55611 },
+            { bin: 1, freq: 2, max: 79017, min: 78448 },
+            { bin: 3, freq: 1, max: 113572, min: 113572 }
+          ],
+          bins_count: 4,
+          bins_start: 55611,
+          type: 'histogram'
+        }, attrs);
+      };
+    });
 
-    var parsedData = this.model.getData();
+    it('should parse the bins', function () {
+      var data = createData({
+        nulls: 1
+      });
 
-    expect(data.nulls).toBe(0);
-    expect(parsedData.length).toBe(4);
-    expect(JSON.stringify(parsedData)).toBe('[{"bin":0,"start":55611,"end":70101.25,"freq":2,"max":70151,"min":55611},{"bin":1,"start":70101.25,"end":84591.5,"freq":2,"max":79017,"min":78448},{"bin":2,"start":84591.5,"end":99081.75,"freq":0},{"bin":3,"start":99081.75,"end":113572,"freq":1,"max":113572,"min":113572}]');
+      this.model.parse(data);
+
+      var parsedData = this.model.getData();
+
+      expect(data.nulls).toBe(1);
+      expect(parsedData.length).toBe(4);
+      expect(JSON.stringify(parsedData)).toBe('[{"bin":0,"start":55611,"end":70101.25,"freq":2,"max":70151,"min":55611},{"bin":1,"start":70101.25,"end":84591.5,"freq":2,"max":79017,"min":78448},{"bin":2,"start":84591.5,"end":99081.75,"freq":0},{"bin":3,"start":99081.75,"end":113572,"freq":1,"max":113572,"min":113572}]');
+    });
+
+    it('should set hasNulls to true if null is set in the response', function () {
+      var data = createData({
+        source: {
+          id: 'a0'
+        },
+        nulls: 0
+      });
+
+      var model = new HistogramDataviewModel(data, {
+        map: this.map,
+        vis: this.vis,
+        layer: this.layer,
+        filter: this.filter,
+        analysisCollection: new Backbone.Collection(),
+        parse: true
+      });
+
+      expect(model.hasNulls()).toBe(true);
+    });
+
+    it('should set hasNulls to false if null is undefined in the response', function () {
+      var data = createData({
+        source: {
+          id: 'a0'
+        }
+      });
+
+      var model = new HistogramDataviewModel(data, {
+        map: this.map,
+        vis: this.vis,
+        layer: this.layer,
+        filter: this.filter,
+        analysisCollection: new Backbone.Collection(),
+        parse: true
+      });
+
+      expect(model.hasNulls()).toBe(false);
+    });
   });
 
   it('should calculate total amount and filtered amount in parse when a filter is present', function () {

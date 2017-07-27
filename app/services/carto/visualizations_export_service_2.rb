@@ -20,7 +20,6 @@ require 'carto/export/data_import_exporter'
 module Carto
   module VisualizationsExportService2Configuration
     CURRENT_VERSION = '2.1.0'.freeze
-    MAX_LOG_SIZE = 8192
 
     def compatible_version?(version)
       version.to_i == CURRENT_VERSION.split('.')[0].to_i

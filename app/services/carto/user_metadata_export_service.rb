@@ -39,7 +39,7 @@ module Carto
     include DataImportImporter
 
     def build_user_from_json_export(exported_json_string)
-      build_user_from_hash_export(JSON.parse(exported_json_string, symbolize_names: true))
+      build_user_from_hash_export(parse_json(exported_json_string))
     end
 
     def build_user_from_hash_export(exported_hash)
@@ -48,12 +48,31 @@ module Carto
       build_user_from_hash(exported_hash[:user])
     end
 
+    def build_search_tweets_from_json_export(exported_json_string)
+      build_search_tweets_from_hash_export(parse_json(exported_json_string))
+    end
+
+    def build_search_tweets_from_hash_export(exported_hash)
+      exported_hash[:user].fetch(:search_tweets, []).map { |st| build_search_tweet_from_hash(st) }
+    end
+
     def save_imported_user(user)
       user.save!
       ::User[user.id].after_save
     end
 
+    def save_imported_search_tweet(search_tweet, user)
+      persisted_import = Carto::DataImport.where(id: search_tweet.data_import.id).first
+      search_tweet.data_import = persisted_import if persisted_import
+      search_tweet.user = user
+      search_tweet.save!
+    end
+
     private
+
+    def parse_json(exported_json_string)
+      JSON.parse(exported_json_string, symbolize_names: true)
+    end
 
     def build_user_from_hash(exported_user)
       user = User.new(exported_user.slice(*EXPORTED_USER_ATTRIBUTES))
@@ -64,8 +83,6 @@ module Carto
       user.assets = exported_user[:assets].map { |asset| build_asset_from_hash(asset.symbolize_keys) }
 
       user.layers = build_layers_from_hash(exported_user[:layers])
-
-      user.search_tweets = exported_user.fetch(:search_tweets, []).map { |st| build_search_tweet_from_hash(st) }
 
       # Must be the last one to avoid attribute assignments to try to run SQL
       user.id = exported_user[:id]
@@ -184,8 +201,6 @@ module Carto
       # Import user
       user_file = Dir["#{path}/user_*.json"].first
       user = build_user_from_json_export(File.read(user_file))
-      search_tweets = user.search_tweets.dup
-      user.search_tweets.clear
 
       save_imported_user(user)
 
@@ -195,16 +210,18 @@ module Carto
         import_user_visualizations_from_directory(user, Carto::Visualization::TYPE_REMOTE, path)
         import_user_visualizations_from_directory(user, Carto::Visualization::TYPE_CANONICAL, path)
         import_user_visualizations_from_directory(user, Carto::Visualization::TYPE_DERIVED, path)
-      end
 
-      search_tweets.each do |st|
-        persisted_import = Carto::DataImport.where(id: st.data_import.id).first
-        st.data_import = persisted_import if persisted_import
-        st.user = user
-        st.save
+        import_search_tweets_from_directory(path, user)
       end
 
       user
+    end
+
+    def import_search_tweets_from_directory(path, user)
+      user_file = Dir["#{path}/user_*.json"].first
+      search_tweets = build_search_tweets_from_json_export(File.read(user_file))
+
+      search_tweets.each { |st| save_imported_search_tweet(st, user) }
     end
 
     def import_user_visualizations_from_directory(user, type, path)

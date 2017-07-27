@@ -91,6 +91,8 @@ describe Carto::UserMetadataExportService do
   describe '#user import' do
     it 'imports' do
       user = service.build_user_from_hash_export(full_export)
+      search_tweets = service.build_search_tweets_from_hash_export(full_export)
+      search_tweets.each { |st| service.save_imported_search_tweet(st, user) }
 
       expect_export_matches_user(full_export[:user], user)
     end
@@ -107,6 +109,9 @@ describe Carto::UserMetadataExportService do
       imported_user = service.build_user_from_hash_export(export)
       service.save_imported_user(imported_user)
       imported_user.reload
+
+      search_tweets = service.build_search_tweets_from_hash_export(export)
+      search_tweets.each { |st| service.save_imported_search_tweet(st, imported_user) }
 
       expect_export_matches_user(export[:user], imported_user)
       compare_excluding_dates(imported_user.attributes, source_user)

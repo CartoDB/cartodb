@@ -1134,12 +1134,12 @@ describe User do
     user.destroy
   end
 
-  it "should have null render timeout limits by default" do
+  it "should have zero render timeout limits by default" do
     user = FactoryGirl.create :user
-    user.user_render_timeout.should eq nil
-    user.database_render_timeout.should eq nil
-    $users_metadata.HGET(user.timeout_key, 'render').should eq ''
-    $users_metadata.HGET(user.timeout_key, 'render_public').should eq ''
+    user.user_render_timeout.should eq 0
+    user.database_render_timeout.should eq 0
+    $users_metadata.HGET(user.timeout_key, 'render').should eq '0'
+    $users_metadata.HGET(user.timeout_key, 'render_public').should eq '0'
     user.destroy
   end
 

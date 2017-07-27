@@ -52,7 +52,6 @@ module Carto
           if data_import
             data_import.synchronization_id = sync.id if sync
             data_import.user_id = user.id
-            data_import.table_id = user_table.id
           end
         end
 
@@ -88,6 +87,8 @@ module Carto
 
           data_import = map.user_table.try(:data_import)
           if data_import
+            data_import.table_id = map.user_table.id
+            data_import.save
             data_import.external_data_imports.each do |edi|
               edi.synchronization_id = sync.id
               edi.save!

@@ -64,6 +64,7 @@ module Carto
     def save_imported_search_tweet(search_tweet, user)
       persisted_import = Carto::DataImport.where(id: search_tweet.data_import.id).first
       search_tweet.data_import = persisted_import if persisted_import
+      search_tweet.table_id = search_tweet.data_import.table_id
       search_tweet.user = user
       search_tweet.save!
     end

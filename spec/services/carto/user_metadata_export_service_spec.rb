@@ -126,6 +126,7 @@ describe Carto::UserMetadataExportService do
         source_user = @user.attributes
 
         source_visualizations = @user.visualizations.order(:id).map(&:attributes)
+        source_tweets = @user.search_tweets.map(&:attributes)
         destroy_user
 
         # At this point, the user database is still there, but the tables got destroyed. We recreate some dummy ones
@@ -141,6 +142,12 @@ describe Carto::UserMetadataExportService do
         imported_user.visualizations.order(:id).zip(source_visualizations).each do |v1, v2|
           compare_excluding_dates_and_ids(v1.attributes, v2)
         end
+        imported_user.search_tweets.zip(source_tweets).each do |st1, st2|
+          expect(st1.user_id).to eq imported_user.id
+          expect(st1.service_item_id).to eq st2['service_item_id']
+          expect(st1.retrieved_items).to eq st2['retrieved_items']
+          expect(st1.state).to eq st2['state']
+        end
       end
     end
 
@@ -153,6 +160,7 @@ describe Carto::UserMetadataExportService do
         source_user = @user.attributes
 
         source_visualizations = @user.visualizations.order(:id).map(&:attributes)
+        source_tweets = @user.search_tweets.map(&:attributes)
         @user.update_attributes(viewer: false) # For destruction purposes
         destroy_user
 
@@ -168,6 +176,12 @@ describe Carto::UserMetadataExportService do
         expect(imported_user.visualizations.count).to eq source_visualizations.count
         imported_user.visualizations.order(:id).zip(source_visualizations).each do |v1, v2|
           compare_excluding_dates_and_ids(v1.attributes, v2)
+        end
+        imported_user.search_tweets.zip(source_tweets).each do |st1, st2|
+          expect(st1.user_id).to eq imported_user.id
+          expect(st1.service_item_id).to eq st2['service_item_id']
+          expect(st1.retrieved_items).to eq st2['retrieved_items']
+          expect(st1.state).to eq st2['state']
         end
       end
     end

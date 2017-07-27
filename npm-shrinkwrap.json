@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.9.10",
+  "version": "4.9.11-12513",
   "dependencies": {
     "abbrev": {
       "version": "1.1.0",
@@ -732,8 +732,8 @@
     },
     "cartodb-deep-insights.js": {
       "version": "0.0.2",
-      "from": "cartodb/deep-insights.js#master",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#f8574309c99163b5a4369abcf2dd41ae40b92183",
+      "from": "cartodb/deep-insights.js#c12513-override-vizjson-vector",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#3a20149da69221ce7607bb03a42775a10bd9e10b",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",
@@ -749,8 +749,8 @@
     },
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
-      "from": "cartodb/cartodb.js#v4",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#15887a50d2f865465cd65407d938aadc20266394"
+      "from": "cartodb/cartodb.js#c12513-override-vizjson-vector",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#0a5a29658c2bf440d5af7fe3f2c77e9423432a9d"
     },
     "caseless": {
       "version": "0.11.0",

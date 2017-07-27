@@ -4,8 +4,9 @@ include Carto::Db::MigrationHelper
 
 migration(
   Proc.new do
-    add_column :users, :user_render_timeout, :integer, null: true
-    add_column :users, :database_render_timeout, :integer, null: true
+    # The 0 value means: "apply default render timeouts" (defined by the tiler)
+    add_column :users, :user_render_timeout, :integer, default: 0, null: false
+    add_column :users, :database_render_timeout, :integer, default: 0, null: false
   end,
   Proc.new do
     drop_column :users, :user_render_timeout

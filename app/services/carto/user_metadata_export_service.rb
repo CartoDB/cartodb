@@ -39,7 +39,7 @@ module Carto
     include DataImportImporter
 
     def build_user_from_json_export(exported_json_string)
-      build_user_from_hash_export(JSON.parse(exported_json_string).deep_symbolize_keys)
+      build_user_from_hash_export(JSON.parse(exported_json_string, symbolize_names: true))
     end
 
     def build_user_from_hash_export(exported_hash)
@@ -184,6 +184,9 @@ module Carto
       # Import user
       user_file = Dir["#{path}/user_*.json"].first
       user = build_user_from_json_export(File.read(user_file))
+      search_tweets = user.search_tweets.dup
+      user.search_tweets.clear
+
       save_imported_user(user)
 
       Carto::RedisExportService.new.restore_redis_from_json_export(File.read(Dir["#{path}/redis_user_*.json"].first))
@@ -192,6 +195,13 @@ module Carto
         import_user_visualizations_from_directory(user, Carto::Visualization::TYPE_REMOTE, path)
         import_user_visualizations_from_directory(user, Carto::Visualization::TYPE_CANONICAL, path)
         import_user_visualizations_from_directory(user, Carto::Visualization::TYPE_DERIVED, path)
+      end
+
+      search_tweets.each do |st|
+        persisted_import = Carto::DataImport.where(id: st.data_import.id).first
+        st.data_import = persisted_import if persisted_import
+        st.user = user
+        st.save
       end
 
       user

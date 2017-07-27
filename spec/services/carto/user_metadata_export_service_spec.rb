@@ -31,15 +31,18 @@ describe Carto::UserMetadataExportService do
     sync = FactoryGirl.create(:carto_synchronization, user: @user)
     @table_visualization.update_attributes!(synchronization: sync)
     @table.data_import = FactoryGirl.create(:data_import, user: @user, synchronization_id: sync.id, table_id: @table.id)
-    @table.save
+    @table.save!
     edi = FactoryGirl.create(:external_data_import_with_external_source,
                              data_import: @table.data_import, synchronization: sync)
     @remote_visualization = edi.external_source.visualization
     @remote_visualization.update_attributes!(user: @user)
 
-    # Create SearchTweets: one associated to the current table, and one with invalid table
-    @st1 = FactoryGirl.create(:search_tweet, user_id: @user.id, data_import_id: @table.data_import.id)
-    @st2 = FactoryGirl.create(:search_tweet, user_id: @user.id, data_import_id: FactoryGirl.create(:data_import).id)
+    # Create SearchTweets: one associated to an existing table, and one with invalid table
+    @map2, @table2, @table_visualization2, @visualization2 = create_full_visualization(@user, visualization_attributes: { name: 'waduswadus22' })
+    @table2.data_import = FactoryGirl.create(:data_import, user: @user, table_id: @table2.id)
+    @table2.save!
+    @st1 = FactoryGirl.create(:carto_search_tweet, user_id: @user.id, data_import_id: @table2.data_import.id)
+    @st2 = FactoryGirl.create(:carto_search_tweet, user_id: @user.id, data_import_id: FactoryGirl.create(:data_import).id)
 
     @user.reload
   end
@@ -49,11 +52,15 @@ describe Carto::UserMetadataExportService do
     $users_metadata.DEL(gum.send(:user_key_prefix, :geocoder_here, :success_responses, DateTime.now))
 
     destroy_full_visualization(@map, @table, @table_visualization, @visualization)
+    destroy_full_visualization(@map2, @table2, @table_visualization2, @visualization2)
     @remote_visualization.destroy
+    @table.data_import.destroy
     @tiled_layer.destroy
     @asset.destroy
-    @st1.destroy
-    @st2.destroy
+    [@st1, @st2].each do |st|
+      st.data_import.destroy
+      st.destroy
+    end
     @user.destroy
   end
 
@@ -332,6 +339,59 @@ describe Carto::UserMetadataExportService do
               "name" => "Positron Labels"
             },
             kind: "tiled"
+          }
+        ],
+        search_tweets: [
+          {
+            data_import: {
+              data_source: '/path',
+              data_type: 'file',
+              table_name: 'twitter_cartodb',
+              state: 'complete',
+              success: true,
+              log: {
+                type: 'import',
+                entries: ''
+              },
+              updated_at: DateTime.now,
+              created_at: DateTime.now,
+              error_code: nil,
+              queue_id: nil,
+              tables_created_count: nil,
+              table_names: nil,
+              append: false,
+              migrate_table: nil,
+              table_copy: nil,
+              from_query: nil,
+              id: '118813f4-c943-4583-822e-111ed0b51ca4',
+              service_name: 'twitter_search',
+              service_item_id: '{\"dates\":{\"fromDate\":\"2014-07-29\",\"fromHour\":0,\"fromMin\":0,\"toDate\":\"2014-08-27\",\"toHour\":23,\"toMin\":59,\"user_timezone\":0,\"max_days\":30},\"categories\":[{\"terms\":[\"cartodb\"],\"category\":\"1\",\"counter\":1007}]}',
+              stats: '{}',
+              type_guessing: true,
+              quoted_fields_guessing: true,
+              content_guessing: false,
+              server: nil,
+              host: nil,
+              upload_host: nil,
+              resque_ppid: nil,
+              create_visualization: false,
+              visualization_id: nil,
+              user_defined_limits: '{}',
+              import_extra_options: nil,
+              original_url: '',
+              privacy: nil,
+              cartodbfy_time: 0.0,
+              http_response_code: nil,
+              rejected_layers: nil,
+              runner_warnings: nil,
+              collision_strategy: nil,
+              external_data_imports: []
+            },
+            service_item_id: '{\"dates\":{\"fromDate\":\"2014-07-29\",\"fromHour\":0,\"fromMin\":0,\"toDate\":\"2014-08-27\",\"toHour\":23,\"toMin\":59,\"user_timezone\":0,\"max_days\":30},\"categories\":[{\"terms\":[\"cartodb\"],\"category\":\"1\",\"counter\":1007}]}',
+            retrieved_items: 123,
+            state: 'complete',
+            created_at: DateTime.now,
+            updated_at: DateTime.now
           }
         ]
       }

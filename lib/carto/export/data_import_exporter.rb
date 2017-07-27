@@ -5,7 +5,7 @@ module Carto
     def build_data_import_from_hash(exported_data_import)
       return nil unless exported_data_import
 
-      Carto::DataImport.new(
+      di = Carto::DataImport.new(
         data_source: exported_data_import[:data_source],
         data_type: exported_data_import[:data_type],
         table_name: exported_data_import[:table_name],
@@ -22,7 +22,6 @@ module Carto
         migrate_table: exported_data_import[:migrate_table],
         table_copy: exported_data_import[:table_copy],
         from_query: exported_data_import[:from_query],
-        id: exported_data_import[:id],
         service_name: exported_data_import[:service_name],
         service_item_id: exported_data_import[:service_item_id],
         stats: exported_data_import[:stats],
@@ -46,6 +45,9 @@ module Carto
         collision_strategy: exported_data_import[:collision_strategy],
         external_data_imports: exported_data_import[:external_data_imports].map { |edi| build_external_data_import_from_hash(edi) }
       )
+
+      di.id = exported_data_import[:id]
+      di
     end
 
     def build_external_data_import_from_hash(exported_external_data_import)

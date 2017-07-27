@@ -65,7 +65,7 @@ module Carto
 
       user.layers = build_layers_from_hash(exported_user[:layers])
 
-      user.search_tweets = exported_user.fetch(:search_tweets, []).map { |st| build_search_tweets_from_hash(st) }
+      user.search_tweets = exported_user.fetch(:search_tweets, []).map { |st| build_search_tweet_from_hash(st) }
 
       # Must be the last one to avoid attribute assignments to try to run SQL
       user.id = exported_user[:id]
@@ -91,14 +91,14 @@ module Carto
     end
 
     def build_search_tweet_from_hash(exported_search_tweet)
-      {
+      SearchTweet.new(
         data_import: build_data_import_from_hash(exported_search_tweet[:data_import]),
         service_item_id: exported_search_tweet[:service_item_id],
         retrieved_items: exported_search_tweet[:retrieved_items],
         state: exported_search_tweet[:state],
         created_at: exported_search_tweet[:created_at],
         updated_at: exported_search_tweet[:updated_at]
-      }
+      )
     end
   end
 

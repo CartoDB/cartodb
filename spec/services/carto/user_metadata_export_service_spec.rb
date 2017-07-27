@@ -37,6 +37,10 @@ describe Carto::UserMetadataExportService do
     @remote_visualization = edi.external_source.visualization
     @remote_visualization.update_attributes!(user: @user)
 
+    # Create SearchTweets: one associated to the current table, and one with invalid table
+    @st1 = FactoryGirl.create(:search_tweet, user_id: @user.id, data_import_id: @table.data_import.id)
+    @st2 = FactoryGirl.create(:search_tweet, user_id: @user.id, data_import_id: FactoryGirl.create(:data_import).id)
+
     @user.reload
   end
 
@@ -48,6 +52,8 @@ describe Carto::UserMetadataExportService do
     @remote_visualization.destroy
     @tiled_layer.destroy
     @asset.destroy
+    @st1.destroy
+    @st2.destroy
     @user.destroy
   end
 
@@ -182,6 +188,11 @@ describe Carto::UserMetadataExportService do
     export[:assets].zip(user.assets).each { |exported_asset, asset| expect_export_matches_asset(exported_asset, asset) }
 
     expect(export[:feature_flags]).to eq user.feature_flags_user.map(&:feature_flag).map(&:name)
+
+    expect(export[:search_tweets].count).to eq user.search_tweets.size
+    export[:search_tweets].zip(user.search_tweets).each do |exported_search_tweet, search_tweet|
+      expect_export_matches_search_tweet(exported_search_tweet, search_tweet)
+    end
   end
 
   def expect_export_matches_layer(exported_layer, layer)
@@ -197,6 +208,15 @@ describe Carto::UserMetadataExportService do
 
   def expect_redis_restored(user)
     expect(CartoDB::GeocoderUsageMetrics.new(user.username).get(:geocoder_here, :success_responses)).to eq(1)
+  end
+
+  def expect_export_matches_search_tweet(exported_search_tweet, search_tweet)
+    expect(exported_search_tweet[:data_import][:id]).to eq search_tweet.data_import.id
+    expect(exported_search_tweet[:service_item_id]).to eq search_tweet.service_item_id
+    expect(exported_search_tweet[:retrieved_items]).to eq search_tweet.retrieved_items
+    expect(exported_search_tweet[:state]).to eq search_tweet.state
+    expect(exported_search_tweet[:created_at]).to eq search_tweet.created_at
+    expect(exported_search_tweet[:updated_at]).to eq search_tweet.updated_at
   end
 
   let(:full_export) do

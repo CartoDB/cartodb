@@ -1,19 +1,18 @@
 var $ = require('jquery');
 var cdb = require('cartodb.js');
 var HistogramChartView = require('../histogram/chart');
+var viewportUtils = require('../../viewport-utils');
 
 /**
  * Time-series histogram view.
  */
 module.exports = cdb.core.View.extend({
   defaults: {
-    mobileThreshold: 960, // px; should match CSS media-query
     histogramChartHeight: 48 + // inline bars height
       4 + // bottom margin
       16 + // labels
       4, // margins
-    histogramChartMobileHeight: 20 + // inline bars height (no bottom labels)
-      4 // margins
+    histogramChartMobileHeight: 16 // inline bars height (no bottom labels)
   },
 
   className: 'CDB-Chart--histogram',
@@ -66,13 +65,13 @@ module.exports = cdb.core.View.extend({
       chartBarColor: this._timeSeriesModel.getWidgetColor() || '#F2CC8F',
       animationSpeed: 100,
       margin: {
-        top: 4,
+        top: this._getMarginTop(),
         right: 4,
         bottom: 4,
         left: this._getMarginLeft()
       },
       hasHandles: true,
-      handleWidth: 10,
+      handleWidth: 8,
       hasAxisTip: true,
       animationBarDelay: function (d, i) {
         return (i * 3);
@@ -110,13 +109,13 @@ module.exports = cdb.core.View.extend({
   },
 
   _onChangeChartWidth: function () {
-    var isMobileSize = $(window).width() < this.defaults.mobileThreshold;
+    var isTablet = viewportUtils.isTabletViewport();
 
-    this._chartView.toggleLabels(!isMobileSize);
+    this._chartView.toggleLabels(!isTablet);
 
-    var height = isMobileSize
-      ? this.defaults.histogramChartMobileHeight
-      : this.defaults.histogramChartHeight;
+    var height = isTablet ?
+      this.defaults.histogramChartMobileHeight : this.defaults.histogramChartHeight;
+
     this._chartView.model.set('height', height);
   },
 
@@ -150,5 +149,9 @@ module.exports = cdb.core.View.extend({
 
   _getMarginLeft: function () {
     return 4;
+  },
+
+  _getMarginTop: function () {
+    return viewportUtils.isTabletViewport() ? 0 : 4;
   }
 });

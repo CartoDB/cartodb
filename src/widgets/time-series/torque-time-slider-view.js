@@ -2,11 +2,13 @@ var d3 = require('d3');
 var cdb = require('cartodb.js');
 var moment = require('moment');
 var formatter = require('../../formatter');
+var viewportUtils = require('../../viewport-utils');
 
 var TIP_RECT_HEIGHT = 17;
 var TIP_H_PADDING = 6;
-var TOOLTIP_MARGIN = 2;
 var CHART_MARGIN = 16;
+var MOBILE_BAR_HEIGHT = 3;
+var TOOLTIP_MARGIN = 2;
 
 /**
  * Time-slider, expected to be used in a histogram view
@@ -61,7 +63,7 @@ module.exports = cdb.core.View.extend({
     }
     this.setElement(d3el.node());
 
-    if (window.matchMedia('(max-width: 759px)').matches) {
+    if (viewportUtils.isTabletViewport()) {
       this._generateTimeSliderTip();
     }
 
@@ -69,7 +71,7 @@ module.exports = cdb.core.View.extend({
   },
 
   _generateTimeSliderTip: function () {
-    var yPos = this._calcHeight() + TOOLTIP_MARGIN;
+    var yPos = this._calcHeight() / 2 + MOBILE_BAR_HEIGHT + TOOLTIP_MARGIN;
 
     this.timeSliderTip = this._chartView.canvas.select('.CDB-WidgetCanvas').append('g')
       .attr('class', 'CDB-Chart-timeSliderTip')
@@ -120,7 +122,7 @@ module.exports = cdb.core.View.extend({
 
     var parts = d3.transform(timeslider.attr('transform')).translate;
     var xPos = parts[0] + this.defaults.width - rectWidth / 2;
-    var yPos = this._calcHeight() + TOOLTIP_MARGIN;
+    var yPos = this._calcHeight() / 2 + MOBILE_BAR_HEIGHT + TOOLTIP_MARGIN;
     yPos = Math.floor(yPos);
 
     var translate = '';
@@ -221,11 +223,12 @@ module.exports = cdb.core.View.extend({
   },
 
   _onChangeChartHeight: function () {
-    this.timeSlider.attr('height', this._calcHeight());
+    var height = viewportUtils.isTabletViewport() ? this._calcHeight() / 2 + MOBILE_BAR_HEIGHT : this._calcHeight();
+
+    this.timeSlider.attr('height', height);
   },
 
   _onChangeLocalTimezone: function () {
-    this.timeSlider.attr('height', this._calcHeight());
     this._updateTimeSliderTip();
   },
 
@@ -233,7 +236,7 @@ module.exports = cdb.core.View.extend({
     if (!this._rangeFilter.isEmpty()) {
       this._removeTimeSliderTip();
     } else {
-      if (window.matchMedia('(max-width: 759px)').matches) {
+      if (viewportUtils.isTabletViewport()) {
         var timeSliderTip = this._chartView.canvas.select('.CDB-Chart-timeSliderTip');
 
         if (!timeSliderTip.node()) {

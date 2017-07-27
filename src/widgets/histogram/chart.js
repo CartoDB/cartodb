@@ -6,6 +6,8 @@ var cdb = require('cartodb.js');
 var tinycolor = require('tinycolor2');
 var formatter = require('../../formatter');
 var timestampHelper = require('../../util/timestamp-helper');
+var viewportUtils = require('../../viewport-utils');
+
 var FILTERED_COLOR = '#1181FB';
 var UNFILTERED_COLOR = 'rgba(0, 0, 0, 0.06)';
 var TIP_RECT_HEIGHT = 17;
@@ -15,7 +17,8 @@ var TRIANGLE_HEIGHT = 7;
 // How much lower (based on height) will the triangle be on the right side
 var TRIANGLE_RIGHT_FACTOR = 1.3;
 var TOOLTIP_MARGIN = 2;
-var DASH_WIDTH = 4;
+var DASH_WIDTH = 2;
+var MOBILE_BAR_HEIGHT = 3;
 
 var BEZIER_MARGIN_X = 0.1;
 var BEZIER_MARGIN_Y = 1;
@@ -39,8 +42,7 @@ module.exports = cdb.core.View.extend({
     hasAxisTip: false,
     minimumBarHeight: 2,
     animationSpeed: 750,
-    handleWidth: 10,
-    handleHeight: 23,
+    handleWidth: 8,
     handleRadius: 3,
     divisionWidth: 80,
     animationBarDelay: function (d, i) {
@@ -154,7 +156,7 @@ module.exports = cdb.core.View.extend({
       }
 
       // This should match the one on _default.css
-      if (parent.outerWidth && window.matchMedia('(max-width: 759px)').matches) {
+      if (parent.outerWidth && this._isTabletViewport()) {
         var margins = parent.outerWidth(true) - parent.width();
         width -= margins;
       }
@@ -188,7 +190,7 @@ module.exports = cdb.core.View.extend({
   },
 
   _updateTriangle: function (className, triangle, xPos) {
-    var y3Factor = className === 'right' ? -1 : 1;
+    var y3Factor = className === 'right' && !this._isTabletViewport() ? -1 : 1;
     var xLimit = className === 'right' ? this.chartWidth() : 0;
     var xDiff = Math.abs(xLimit - xPos);
 
@@ -237,7 +239,7 @@ module.exports = cdb.core.View.extend({
     var parts = d3.transform(handle.attr('transform')).translate;
     var xPos = +parts[0] + (this.options.handleWidth / 2);
 
-    var yPos = className === 'left' ? -(TRIANGLE_HEIGHT + TIP_RECT_HEIGHT + TOOLTIP_MARGIN) : this.chartHeight() + (TRIANGLE_HEIGHT * TRIANGLE_RIGHT_FACTOR);
+    var yPos = className === 'left' || this._isMobileViewport() ? -(TRIANGLE_HEIGHT + TIP_RECT_HEIGHT + TOOLTIP_MARGIN) : this.chartHeight() + (TRIANGLE_HEIGHT * TRIANGLE_RIGHT_FACTOR);
     yPos = Math.floor(yPos);
 
     this._updateTriangle(className, triangle, xPos);
@@ -439,12 +441,19 @@ module.exports = cdb.core.View.extend({
 
   _generateChartContent: function () {
     this._generateAxis();
-    this._generateLines();
+
+    if (!this._isMobileViewport()) {
+      this._generateLines();
+    }
 
     this._generateBars();
+
+    if (!this._isMobileViewport()) {
+      this._generateBottomLine();
+    }
+
     this._generateHandles();
     this._setupBrush();
-    this._generateBottomLine();
   },
 
   _generateLines: function () {
@@ -848,10 +857,11 @@ module.exports = cdb.core.View.extend({
         .attr('class', 'Brush')
         .call(brush);
 
+    var height = this._isTabletViewport() ? this.chartHeight() * 2 : this.chartHeight();
     // set brush extent to rect and define objects height
     brushg.selectAll('rect')
         .attr('y', 0)
-        .attr('height', this.chartHeight());
+        .attr('height', height);
 
     // Only bind on the background element
     brushg.selectAll('rect.background')
@@ -1014,7 +1024,7 @@ module.exports = cdb.core.View.extend({
     var handle = this.chart.select('.CDB-Chart-handle.CDB-Chart-handle-' + className);
 
     var yPos = className === 'right' ? this.chartHeight() + (TRIANGLE_HEIGHT * TRIANGLE_RIGHT_FACTOR) : -(TRIANGLE_HEIGHT + TIP_RECT_HEIGHT + TOOLTIP_MARGIN);
-    var yTriangle = className === 'right' ? this.chartHeight() + (TRIANGLE_HEIGHT * TRIANGLE_RIGHT_FACTOR) + 2 : -(TRIANGLE_HEIGHT + TOOLTIP_MARGIN) - 2;
+    var yTriangle = className === 'right' && !this._isMobileViewport() ? this.chartHeight() + (TRIANGLE_HEIGHT * TRIANGLE_RIGHT_FACTOR) + 2 : -(TRIANGLE_HEIGHT + TOOLTIP_MARGIN) - 2;
     var yFactor = className === 'right' ? -1 : 1;
     var triangleHeight = TRIANGLE_HEIGHT * yFactor;
 
@@ -1043,8 +1053,13 @@ module.exports = cdb.core.View.extend({
       .text(function (d) { return d; });
   },
 
+  _isTabletViewport: function () {
+    return viewportUtils.isTabletViewport();
+  },
+
   _generateHandle: function (className) {
-    var opts = { width: this.options.handleWidth, height: this.options.handleHeight, radius: this.options.handleRadius };
+    var height = this._isTabletViewport() ? this.chartHeight() * 2 : this.chartHeight();
+    var opts = { width: this.options.handleWidth, height: height, radius: this.options.handleRadius };
 
     var handle = this.chart.select('.CDB-Chart-handles')
       .append('g')
@@ -1059,11 +1074,11 @@ module.exports = cdb.core.View.extend({
         .append('rect')
         .attr('class', 'CDB-Chart-handleRect')
         .attr('width', opts.width)
-        .attr('height', this.chartHeight())
+        .attr('height', opts.height)
         .attr('rx', opts.radius)
         .attr('ry', opts.radius);
 
-      var y = this.chartHeight() / 2;
+      var y = this._isTabletViewport() ? this.chartHeight() : this.chartHeight() / 2;
       y -= 3;
       var x1 = (opts.width - DASH_WIDTH) / 2;
 
@@ -1427,13 +1442,18 @@ module.exports = cdb.core.View.extend({
       .attr('fill', this._getFillColor.bind(this));
   },
 
+  _isMobileViewport: function () {
+    return viewportUtils.isMobileViewport();
+  },
+
   _generateBars: function () {
     var self = this;
     var data = this.model.get('data');
 
     this._calcBarWidth();
-    // Remove spacing if not enough room for the smallest case
-    var spacing = ((data.length * 2) - 1) > this.chartWidth() ? 0 : 1;
+    // Remove spacing if not enough room for the smallest case, or mobile viewport
+    var spacing = (((data.length * 2) - 1) > this.chartWidth() ||
+      this._isMobileViewport()) ? 0 : 1;
 
     var bars = this.chart.append('g')
       .attr('transform', 'translate(0, 0)')
@@ -1460,18 +1480,26 @@ module.exports = cdb.core.View.extend({
       .delay(this.options.animationBarDelay)
       .transition()
       .attr('height', function (d) {
+        if (self._isMobileViewport()) {
+          return MOBILE_BAR_HEIGHT;
+        }
+
         if (_.isEmpty(d)) {
           return 0;
         }
 
         var h = self.chartHeight() - self.yScale(d.freq);
-
         if (h < self.options.minimumBarHeight && h > 0) {
           h = self.options.minimumBarHeight;
         }
+
         return h;
       })
       .attr('y', function (d) {
+        if (self._isMobileViewport()) {
+          return self.chartHeight() / 2 + MOBILE_BAR_HEIGHT;
+        }
+
         if (_.isEmpty(d)) {
           return self.chartHeight();
         }

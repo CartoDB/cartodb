@@ -1,7 +1,5 @@
 module Carto
   module DataImportImporter
-    MAX_LOG_SIZE = 8192
-
     private
 
     def build_data_import_from_hash(exported_data_import)
@@ -64,6 +62,8 @@ module Carto
   end
 
   module DataImportExporter
+    MAX_LOG_SIZE = 8192
+
     private
 
     def export_data_import(data_import)

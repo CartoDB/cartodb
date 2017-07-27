@@ -204,6 +204,8 @@ module Carto
     end
 
     def build_data_import_from_hash(exported_data_import)
+      return nil unless exported_data_import
+
       Carto::DataImport.new(
         data_source: exported_data_import[:data_source],
         data_type: exported_data_import[:data_type],

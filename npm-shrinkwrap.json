@@ -732,8 +732,8 @@
     },
     "cartodb-deep-insights.js": {
       "version": "0.0.2",
-      "from": "cartodb/deep-insights.js#12477-histogram-nulls",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#1b5e297bb7eb6727866cc2f92859ed628e58d74b",
+      "from": "cartodb/deep-insights.js#master",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#f8574309c99163b5a4369abcf2dd41ae40b92183",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",
@@ -749,8 +749,8 @@
     },
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
-      "from": "cartodb/cartodb.js#12477-histogram-nulls",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#9550d46093eb01b8eee564ab02f13d156f0450ed"
+      "from": "cartodb/cartodb.js#v4",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#15887a50d2f865465cd65407d938aadc20266394"
     },
     "caseless": {
       "version": "0.11.0",
@@ -781,6 +781,11 @@
       "version": "1.0.4",
       "from": "cipher-base@>=1.0.0 <2.0.0",
       "resolved": "https://registry.npmjs.org/cipher-base/-/cipher-base-1.0.4.tgz"
+    },
+    "clip-path-polygon": {
+      "version": "0.1.12",
+      "from": "clip-path-polygon@0.1.12",
+      "resolved": "https://registry.npmjs.org/clip-path-polygon/-/clip-path-polygon-0.1.12.tgz"
     },
     "clipboard": {
       "version": "1.6.1",
@@ -3041,7 +3046,7 @@
     "tangram.cartodb": {
       "version": "0.4.6",
       "from": "cartodb/tangram.cartodb#master",
-      "resolved": "git://github.com/cartodb/tangram.cartodb.git#65325fc75de410fe6c89e71105772bea5ee83125"
+      "resolved": "git://github.com/cartodb/tangram.cartodb.git#a7c0ed5a9a4b01aa50cf03a04233a132bc6b71f2"
     },
     "tapable": {
       "version": "0.2.7",

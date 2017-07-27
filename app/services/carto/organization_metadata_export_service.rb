@@ -235,6 +235,8 @@ module Carto
         Carto::UserMetadataExportService.new.import_user_visualizations_from_directory(
           user, Carto::Visualization::TYPE_DERIVED, "#{path}/user_#{user.id}"
         )
+
+        Carto::UserMetadataExportService.new.import_search_tweets_from_directory("#{path}/user_#{user.id}", user)
       end
 
       organization

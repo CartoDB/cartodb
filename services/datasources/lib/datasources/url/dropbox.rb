@@ -121,8 +121,8 @@ module CartoDB
           self.filter = filter
 
           @formats.each do |search_query|
+            start = 0
             loop do
-              start = 0
               response = @client.search(search_query, '', { max_results: SEARCH_BATCH_SIZE, start: start })
               response.matches.select { |item| item.resource.is_a?(DropboxApi::Metadata::File) }.each do |item|
                 all_results.push(format_item_data(item.resource))

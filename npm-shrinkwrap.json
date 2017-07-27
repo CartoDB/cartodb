@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.9.6",
+  "version": "4.9.10",
   "dependencies": {
     "abbrev": {
       "version": "1.1.0",
@@ -716,9 +716,9 @@
       "resolved": "https://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.33.0.tgz"
     },
     "caniuse-lite": {
-      "version": "1.0.30000706",
+      "version": "1.0.30000708",
       "from": "caniuse-lite@>=1.0.30000704 <2.0.0",
-      "resolved": "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30000706.tgz"
+      "resolved": "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30000708.tgz"
     },
     "carto": {
       "version": "0.15.1-cdb4",
@@ -733,7 +733,7 @@
     "cartodb-deep-insights.js": {
       "version": "0.0.2",
       "from": "cartodb/deep-insights.js#master",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#418d60aea5fd600d31364e07cff60a1fdb9de594",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#f8574309c99163b5a4369abcf2dd41ae40b92183",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",
@@ -750,7 +750,7 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
       "from": "cartodb/cartodb.js#v4",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#d8fbcd03aff1f63219be47fe771781f6498b9295"
+      "resolved": "git://github.com/cartodb/cartodb.js.git#15887a50d2f865465cd65407d938aadc20266394"
     },
     "caseless": {
       "version": "0.11.0",
@@ -2668,9 +2668,9 @@
       "resolved": "https://registry.npmjs.org/require-main-filename/-/require-main-filename-1.0.1.tgz"
     },
     "resolve": {
-      "version": "1.3.3",
+      "version": "1.4.0",
       "from": "resolve@>=1.1.4 <2.0.0",
-      "resolved": "https://registry.npmjs.org/resolve/-/resolve-1.3.3.tgz"
+      "resolved": "https://registry.npmjs.org/resolve/-/resolve-1.4.0.tgz"
     },
     "resolve-protobuf-schema": {
       "version": "2.0.0",
@@ -3046,7 +3046,7 @@
     "tangram.cartodb": {
       "version": "0.4.6",
       "from": "cartodb/tangram.cartodb#master",
-      "resolved": "git://github.com/cartodb/tangram.cartodb.git#4a6359fb86f8bb0aec5b8a0cefa3c23a3312201f"
+      "resolved": "git://github.com/cartodb/tangram.cartodb.git#a7c0ed5a9a4b01aa50cf03a04233a132bc6b71f2"
     },
     "tapable": {
       "version": "0.2.7",

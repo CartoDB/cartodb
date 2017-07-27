@@ -369,7 +369,7 @@ describe Carto::VisualizationsExportService2 do
   def verify_legends_vs_export(legends, legends_export)
     legends.each_with_index do |legend, index|
       legend_presentation = {
-        definition: legend.definition,
+        definition: JSON.parse(JSON.dump(legend.definition), symbolize_names: true), # Recursive symbolize, with arrays
         post_html: legend.post_html,
         pre_html: legend.pre_html,
         title: legend.title,

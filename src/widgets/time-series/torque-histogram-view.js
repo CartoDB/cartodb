@@ -52,7 +52,8 @@ module.exports = HistogramView.extend({
       dataviewModel: this._dataviewModel, // a histogram model
       chartView: this._chartView,
       torqueLayerModel: this._torqueLayerModel,
-      timeSeriesModel: this._timeSeriesModel
+      timeSeriesModel: this._timeSeriesModel,
+      rangeFilter: this._rangeFilter
     });
     this.addView(this._timeSliderView);
     this._timeSliderView.render();

@@ -21,6 +21,7 @@ module.exports = cdb.core.View.extend({
     if (!this.options.chartView) throw new Error('chartView is required');
     if (!this.options.torqueLayerModel) throw new Error('torqeLayerModel is required');
     if (!this.options.timeSeriesModel) throw new Error('timeSeriesModel is required');
+    if (!this.options.rangeFilter) throw new Error('rangeFilter is required');
 
     this.model = new cdb.core.Model();
 
@@ -28,6 +29,7 @@ module.exports = cdb.core.View.extend({
     this._chartView = this.options.chartView;
     this._torqueLayerModel = this.options.torqueLayerModel;
     this._timeSeriesModel = this.options.timeSeriesModel;
+    this._rangeFilter = this.options.rangeFilter;
 
     this._chartMargins = this._chartView.model.get('margin');
 
@@ -59,7 +61,9 @@ module.exports = cdb.core.View.extend({
     }
     this.setElement(d3el.node());
 
-    this._generateTimeSliderTip();
+    if (window.matchMedia('(max-width: 759px)').matches) {
+      this._generateTimeSliderTip();
+    }
 
     return this;
   },
@@ -67,17 +71,17 @@ module.exports = cdb.core.View.extend({
   _generateTimeSliderTip: function () {
     var yPos = this._calcHeight() + TOOLTIP_MARGIN;
 
-    var timeSliderTip = this._chartView.canvas.select('.CDB-WidgetCanvas').append('g')
+    this.timeSliderTip = this._chartView.canvas.select('.CDB-WidgetCanvas').append('g')
       .attr('class', 'CDB-Chart-timeSliderTip')
       .attr('transform', 'translate(' + CHART_MARGIN + ',' + yPos + ')');
 
-    timeSliderTip.append('rect')
+    this.timeSliderTip.append('rect')
       .attr('class', 'CDB-Chart-timeSliderTipRect')
       .attr('rx', '2')
       .attr('ry', '2')
       .attr('height', TIP_RECT_HEIGHT);
 
-    timeSliderTip.append('text')
+    this.timeSliderTip.append('text')
       .attr('class', 'CDB-Text CDB-Size-small CDB-Chart-timeSliderTipText')
       .attr('dy', '11')
       .attr('dx', '0')
@@ -104,7 +108,6 @@ module.exports = cdb.core.View.extend({
     }
 
     var timeslider = chart.select('.CDB-TimeSlider');
-    var timeSliderTip = chart.select('.CDB-Chart-timeSliderTip');
     var rectLabel = chart.select('.CDB-Chart-timeSliderTipRect');
     var textBBox = textLabel.node().getBBox();
     var width = textBBox.width;
@@ -130,7 +133,7 @@ module.exports = cdb.core.View.extend({
       translate = 'translate(' + xPos + ', ' + yPos + ')';
     }
 
-    timeSliderTip
+    this.timeSliderTip
       .transition()
       .ease('linear')
       .attr('transform', translate);
@@ -212,7 +215,7 @@ module.exports = cdb.core.View.extend({
           .ease('linear')
           .attr('transform', this._translateXY);
 
-        this._updateTimeSliderTip();
+        this._checkTimeSliderTip();
       }
     }
   },
@@ -224,6 +227,32 @@ module.exports = cdb.core.View.extend({
   _onChangeLocalTimezone: function () {
     this.timeSlider.attr('height', this._calcHeight());
     this._updateTimeSliderTip();
+  },
+
+  _checkTimeSliderTip: function () {
+    if (!this._rangeFilter.isEmpty()) {
+      this._removeTimeSliderTip();
+    } else {
+      if (window.matchMedia('(max-width: 759px)').matches) {
+        var timeSliderTip = this._chartView.canvas.select('.CDB-Chart-timeSliderTip');
+
+        if (!timeSliderTip.node()) {
+          this._generateTimeSliderTip();
+        }
+
+        this._updateTimeSliderTip();
+      } else {
+        this._removeTimeSliderTip();
+      }
+    }
+  },
+
+  _removeTimeSliderTip: function () {
+    var timeSliderTip = this._chartView.canvas.select('.CDB-Chart-timeSliderTip');
+
+    if (timeSliderTip.node()) {
+      timeSliderTip.remove();
+    }
   },
 
   _updateChartandTimeslider: function () {

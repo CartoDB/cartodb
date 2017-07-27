@@ -88,6 +88,7 @@ Development
 * Configurable pg_dump/restore bin path (#12297)
 * Redesigned LEARN MORE buttons behaviour (#12135)
 * "vector" key in vizjson is skipped in embeds if user has "vector_vs_raster" feature flag enabled.
+* Allow whitespace as layer name at vizJSONv3 (#12526)
 * Inline editor saves on blur, discard changes on 'ESC' (#11567)
 * Updated look and feel of sync interval dialog (#12145)
 * Organization owner can skip domain whitelisting on user creation (#12452).

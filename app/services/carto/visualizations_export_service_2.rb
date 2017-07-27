@@ -180,12 +180,6 @@ module Carto
       )
     end
 
-    def build_log_from_hash(exported_log)
-      return nil unless exported_log
-
-      Carto::Log.new(type: exported_log[:type], entries: exported_log[:entries])
-    end
-
     def build_user_table_from_hash(exported_user_table)
       return nil unless exported_user_table
 
@@ -352,15 +346,6 @@ module Carto
         type_guessing: synchronization.type_guessing,
         quoted_fields_guessing: synchronization.quoted_fields_guessing,
         content_guessing: synchronization.content_guessing
-      }
-    end
-
-    def export_log(log)
-      return nil unless log
-
-      {
-        type: log.type,
-        entries: log.entries && log.entries.length > MAX_LOG_SIZE ? log.entries.slice(-MAX_LOG_SIZE..-1) : log.entries
       }
     end
 

@@ -1,5 +1,5 @@
 require 'json'
-require 'carto/export/layer_exporter'
+require_dependency 'carto/export/layer_exporter'
 
 # Version History
 # TODO: documentation at http://cartodb.readthedocs.org/en/latest/operations/exporting_importing_visualizations.html

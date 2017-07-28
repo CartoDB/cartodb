@@ -166,6 +166,16 @@ describe Carto::Api::VizJSON3Presenter do
       source_analysis_definition[:params].should be_nil
     end
 
+    it 'allows whitespace layer names' do
+      layer = @visualization.data_layers.first
+      layer.options['table_name_alias'] = ' '
+      layer.save
+      @visualization.reload
+
+      v3_vizjson = Carto::Api::VizJSON3Presenter.new(@visualization, viewer_user).send :calculate_vizjson
+      v3_vizjson[:layers][1][:options][:layer_name].should eq ' '
+    end
+
     it 'includes source at layers options' do
       source = 'a1'
       layer = @visualization.data_layers.first

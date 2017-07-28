@@ -51,7 +51,7 @@ class Carto::Visualization < ActiveRecord::Base
 
   V2_VISUALIZATIONS_REDIS_KEY = 'vizjson2_visualizations'.freeze
 
-  scope :remotes, where(type: TYPE_REMOTE)
+  scope :remotes, -> { where(type: TYPE_REMOTE) }
 
   # INFO: disable ActiveRecord inheritance column
   self.inheritance_column = :_type

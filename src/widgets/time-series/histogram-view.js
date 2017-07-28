@@ -41,7 +41,8 @@ module.exports = cdb.core.View.extend({
   },
 
   _initBinds: function () {
-    this._dataviewModel.bind('change:data', this._onChangeData, this);
+    this.listenTo(this._dataviewModel, 'change:data', this._onChangeData, this);
+    this.listenTo(this._dataviewModel, 'change:column', this.resetFilter, this);
     this.listenTo(this._timeSeriesModel, 'change:normalized', this._onNormalizedChanged);
     this.listenTo(this._timeSeriesModel, 'change:local_timezone', this._onChangeLocalTimezone);
     this.listenTo(this._rangeFilter, 'change', this._onFilterChanged);
@@ -53,10 +54,9 @@ module.exports = cdb.core.View.extend({
     this.$el.append(this._chartView.render().el);
     this._chartView.show();
 
-    this._chartView.bind('on_brush_end', this._onBrushEnd, this);
-    this._chartView.bind('on_reset_filter', this.resetFilter, this);
-    this._chartView.model.bind('change:width', this._onChangeChartWidth, this);
-    this.add_related_model(this._chartView.model);
+    this.listenTo(this._chartView, 'on_brush_end', this._onBrushEnd, this);
+    this.listenTo(this._chartView, 'on_reset_filter', this.resetFilter, this);
+    this.listenTo(this._chartView, 'change:width', this._onChangeChartWidth, this);
   },
 
   _instantiateChartView: function () {

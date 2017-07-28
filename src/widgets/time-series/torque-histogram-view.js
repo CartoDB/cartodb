@@ -101,6 +101,8 @@ module.exports = HistogramView.extend({
 
   _reSelectRange: function () {
     if (!this._rangeFilter.isEmpty()) {
+      this._torqueLayerModel.pause();
+
       var min = this._rangeFilter.get('min');
       var max = this._rangeFilter.get('max');
       var loStep = this._timeToStep(min);

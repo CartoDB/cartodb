@@ -8,7 +8,8 @@ module TrackjsHelper
       app_key = Cartodb.get_config(:trackjs, 'app_keys', app)
       version = frontend_version
 
-      render(:partial => 'shared/trackjs', :locals => { customer: customer, enabled: enabled, app_key: app_key, version: version })
+      locals = { customer: customer, enabled: enabled, app_key: app_key, version: version }
+      render(partial: 'shared/trackjs', locals: locals)
     end
   end
 end

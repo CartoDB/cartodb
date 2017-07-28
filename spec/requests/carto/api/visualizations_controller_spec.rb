@@ -12,6 +12,7 @@ require 'helpers/unique_names_helper'
 require_dependency 'carto/uuidhelper'
 require 'factories/carto_visualizations'
 require 'helpers/visualization_destruction_helper'
+require 'helpers/feature_flag_helper'
 
 include Carto::UUIDHelper
 
@@ -19,6 +20,8 @@ describe Carto::Api::VisualizationsController do
   include UniqueNamesHelper
   include Carto::Factories::Visualizations
   include VisualizationDestructionHelper
+  include FeatureFlagHelper
+
   it_behaves_like 'visualization controllers' do
   end
 
@@ -448,6 +451,7 @@ describe Carto::Api::VisualizationsController do
       @user_2 = FactoryGirl.create(:valid_user, private_maps_enabled: true)
       @carto_user2 = Carto::User.find(@user_2.id)
       @api_key = @user_1.api_key
+      @feature_flag = FactoryGirl.create(:feature_flag, name: 'vector_vs_raster', restricted: true)
     end
 
     before(:each) do
@@ -467,6 +471,7 @@ describe Carto::Api::VisualizationsController do
     after(:all) do
       @user_1.destroy
       @user_2.destroy
+      @feature_flag.destroy
     end
 
     it 'tests exclude_shared and only_shared filters' do
@@ -687,75 +692,222 @@ describe Carto::Api::VisualizationsController do
       body['visualizations'][0]['id'].should eq u1_t_1_id
     end
 
-    describe 'tests visualization likes endpoints' do
-      # TODO: currently new endpoint doesn't match this endpoint
-
-      it 'tests like endpoints' do
-        bypass_named_maps
-
-        vis_1_id = create_visualization(@user_1).id
-
-        get api_v1_visualizations_likes_count_url(user_domain: @user_1.username, id: vis_1_id, api_key: @user_1.api_key)
-        JSON.parse(last_response.body).fetch('likes').to_i.should eq 0
-
-        get api_v1_visualizations_likes_list_url(user_domain: @user_1.username, id: vis_1_id, api_key: @user_1.api_key)
-        JSON.parse(last_response.body).fetch('likes').should eq []
-
-        get api_v1_visualizations_is_liked_url(user_domain: @user_1.username, id: vis_1_id, api_key: @user_1.api_key)
-
-        post api_v1_visualizations_add_like_url(user_domain: @user_1.username, id: vis_1_id, api_key: @user_1.api_key)
-        last_response.status.should == 200
-        JSON.parse(last_response.body).fetch('likes').to_i.should eq 1
-
-        get api_v1_visualizations_is_liked_url(user_domain: @user_1.username, id: vis_1_id, api_key: @user_1.api_key)
-        JSON.parse(last_response.body).fetch('liked').should eq true
-
-        get api_v1_visualizations_likes_count_url(user_domain: @user_1.username, id: vis_1_id, api_key: @user_1.api_key)
-        JSON.parse(last_response.body).fetch('likes').to_i.should eq 1
-
-        get api_v1_visualizations_likes_list_url(user_domain: @user_1.username, id: vis_1_id, api_key: @user_1.api_key)
-        JSON.parse(last_response.body).fetch('likes').should eq [{'actor_id' => @user_1.id}]
-
-        post api_v1_visualizations_add_like_url(user_domain: @user_2.username, id: vis_1_id, api_key: @user_2.api_key)
-        last_response.status.should == 200
-        JSON.parse(last_response.body).fetch('likes').to_i.should eq 2
-
-        get api_v1_visualizations_likes_list_url(user_domain: @user_1.username, id: vis_1_id, api_key: @user_1.api_key)
-        # Careful with order of array items
-        (JSON.parse(last_response.body).fetch('likes') - [
-                                                           {'actor_id' => @user_1.id},
-                                                           {'actor_id' => @user_2.id}
-                                                         ]).should eq []
-
-        delete api_v1_visualizations_remove_like_url(user_domain: @user_2.username, id: vis_1_id, api_key: @user_2.api_key)
-        last_response.status.should == 200
-        JSON.parse(last_response.body).fetch('likes').to_i.should eq 1
-
-        # No effect expected
-        delete api_v1_visualizations_remove_like_url(user_domain: @user_2.username, id: vis_1_id, api_key: @user_2.api_key)
-        last_response.status.should == 200
-        JSON.parse(last_response.body).fetch('likes').to_i.should eq 1
-
-        post api_v1_visualizations_add_like_url(user_domain: @user_1.username, id: vis_1_id, api_key: @user_1.api_key)
-        last_response.status.should == 400
-        last_response.body.should eq "You've already liked this visualization"
-
-        delete api_v1_visualizations_remove_like_url(user_domain: @user_1.username, id: vis_1_id, api_key: @user_1.api_key)
-        last_response.status.should == 200
-        JSON.parse(last_response.body).fetch('likes').to_i.should eq 0
-
-        post api_v1_visualizations_add_like_url(user_domain: @user_1.username, id: vis_1_id, api_key: @user_1.api_key)
-        last_response.status.should == 200
-        JSON.parse(last_response.body).fetch('likes').to_i.should eq 1
-
-        get api_v1_visualizations_likes_list_url(user_domain: @user_1.username, id: vis_1_id, api_key: @user_1.api_key)
-        JSON.parse(last_response.body).fetch('likes').should eq [{'actor_id' => @user_1.id}]
+    context 'visualization likes endpoints' do
+      before(:each) do
+        @map, @table, @table_visualization, @map_visualization = create_full_visualization(@carto_user1, visualization_attributes: { version: nil, privacy: Carto::Visualization::PRIVACY_PUBLIC })
+        @vis = FactoryGirl.create(:carto_visualization, user: @carto_user1)
+        @user_domain = @carto_user1.username
+        @user_domain2 = @carto_user2.username
       end
 
+      after(:each) do
+        destroy_full_visualization(@map, @table, @table_visualization, @map_visualization)
+      end
+
+      describe 'GET likes_count' do
+        it 'returns the number of likes for a given visualization' do
+          get api_v1_visualizations_likes_count_url(user_domain: @user_domain, id: @vis.id, api_key: @carto_user1.api_key)
+
+          expect(last_response.status).to eq(200)
+          expect(JSON.parse(last_response.body).fetch('likes').to_i).to eq(0)
+
+          @vis.add_like_from(@carto_user1.id)
+
+          get api_v1_visualizations_likes_count_url(user_domain: @user_domain, id: @vis.id, api_key: @carto_user1.api_key)
+
+          expect(last_response.status).to eq(200)
+          expect(JSON.parse(last_response.body).fetch('likes').to_i).to eq(1)
+        end
+      end
+
+      describe 'GET likes_list' do
+        it 'returns the likes for a given visualization' do
+          get api_v1_visualizations_likes_list_url(user_domain: @user_domain, id: @vis.id, api_key: @carto_user1.api_key)
+
+          expect(last_response.status).to eq(200)
+          expect(JSON.parse(last_response.body).fetch('likes')).to eq([])
+
+          @vis.add_like_from(@carto_user1.id)
+
+          get api_v1_visualizations_likes_list_url(user_domain: @user_domain, id: @vis.id, api_key: @carto_user1.api_key)
+
+          expect(last_response.status).to eq(200)
+          expect(JSON.parse(last_response.body).fetch('likes')).to eq([{'actor_id' => @user_1.id}])
+
+          @vis.add_like_from(@carto_user2.id)
+          @vis.remove_like_from(@carto_user1.id)
+
+          get api_v1_visualizations_likes_list_url(user_domain: @user_domain, id: @vis.id, api_key: @carto_user1.api_key)
+
+          expect(last_response.status).to eq(200)
+          expect(JSON.parse(last_response.body).fetch('likes')).to eq([{'actor_id' => @carto_user2.id}])
+        end
+      end
+
+      describe 'GET is_liked' do
+        it 'return true when a given user liked a visualization, false otherwise' do
+          @vis.add_like_from(@user_1.id)
+
+          get api_v1_visualizations_is_liked_url(user_domain: @user_domain, id: @vis.id, api_key: @carto_user1.api_key)
+
+          expect(last_response.status).to eq(200)
+          expect(JSON.parse(last_response.body).fetch('liked')).to be_true
+
+          get api_v1_visualizations_is_liked_url(user_domain: @user_domain, id: @vis.id, api_key: @carto_user2.api_key)
+
+          expect(last_response.status).to eq(200)
+          expect(JSON.parse(last_response.body).fetch('liked')).to be_false
+        end
+      end
+
+      describe 'POST add_like' do
+        it 'triggers error 403 if not authenticated' do
+          post api_v1_visualizations_add_like_url(user_domain: @user_domain, id: @vis.id, api_key: 'foo')
+          expect(last_response.status).to eq(403)
+        end
+
+        it 'add likes to a given visualization' do
+          post api_v1_visualizations_add_like_url(user_domain: @user_domain, id: @vis.id, api_key: @carto_user1.api_key)
+
+          expect(last_response.status).to eq(200)
+
+          post api_v1_visualizations_add_like_url(user_domain: @user_domain2, id: @vis.id, api_key: @carto_user2.api_key)
+
+          expect(last_response.status).to eq(200)
+        end
+
+        it 'returns an error if you try to like twice a visualization' do
+          post api_v1_visualizations_add_like_url(user_domain: @user_domain, id: @vis.id, api_key: @carto_user1.api_key)
+
+          expect(last_response.status).to eq(200)
+
+          post api_v1_visualizations_add_like_url(user_domain: @user_domain, id: @vis.id, api_key: @carto_user1.api_key)
+
+          expect(last_response.status).to eq(400)
+          expect(last_response.body).to eq("You've already liked this visualization")
+        end
+
+        it 'sends an email to the owner when a map is liked' do
+          vis = @map_visualization
+
+          Resque.expects(:enqueue)
+                .with(::Resque::UserJobs::Mail::MapLiked, vis.id, @carto_user2.id, kind_of(String))
+                .returns(true)
+
+          post api_v1_visualizations_add_like_url(user_domain: @user_domain2, id: vis.id, api_key: @carto_user2.api_key)
+
+          expect(last_response.status).to eq(200)
+        end
+
+        it 'does not send an email when a map is liked by the owner' do
+          vis = @map_visualization
+
+          Resque.expects(:enqueue)
+                .with(::Resque::UserJobs::Mail::MapLiked, vis.id, @carto_user2.id, kind_of(String))
+                .never
+
+          post api_v1_visualizations_add_like_url(user_domain: @user_domain, id: vis.id, api_key: @carto_user1.api_key)
+
+          expect(last_response.status).to eq(200)
+        end
+
+        it 'sends an email to the owner when a dataset is liked' do
+          vis = @table_visualization
+
+          post api_v1_visualizations_add_like_url(user_domain: @user_domain2, id: vis.id, api_key: @carto_user2.api_key)
+
+          expect(last_response.status).to eq(200)
+        end
+
+        it 'does not send an email when when a dataset is liked by the owner' do
+          vis = @table_visualization
+
+          Resque.expects(:enqueue)
+                .with(::Resque::UserJobs::Mail::TableLiked, vis.id, @carto_user1.id, kind_of(String))
+                .never
+
+          post api_v1_visualizations_add_like_url(user_domain: @user_domain, id: vis.id, api_key: @carto_user1.api_key)
+
+          expect(last_response.status).to eq(200)
+        end
+      end
+
+      describe 'POST remove_like' do
+        it 'triggers error 403 if not authenticated' do
+          post api_v1_visualizations_add_like_url(user_domain: @user_domain, id: @vis.id, api_key: 'foo')
+          expect(last_response.status).to eq(403)
+        end
+
+        it 'removes a like from a given visualization and returns the number of likes' do
+          @vis.add_like_from(@carto_user1.id)
+          @vis.add_like_from(@carto_user2.id)
+
+          delete api_v1_visualizations_remove_like_url(user_domain: @user_domain, id: @vis.id, api_key: @carto_user1.api_key)
+
+          expect(last_response.status).to eq(200)
+          expect(JSON.parse(last_response.body).fetch('likes').to_i).to eq(1)
+
+          delete api_v1_visualizations_remove_like_url(user_domain: @user_domain2, id: @vis.id, api_key: @carto_user2.api_key)
+
+          expect(last_response.status).to eq(200)
+          expect(JSON.parse(last_response.body).fetch('likes').to_i).to eq(0)
+        end
+
+        it 'does not returns error if you try to remove a non-existent like' do
+          delete api_v1_visualizations_remove_like_url(user_domain: @user_domain, id: @vis.id, api_key: @carto_user1.api_key)
+
+          expect(last_response.status).to eq(200)
+          expect(JSON.parse(last_response.body).fetch('likes').to_i).to eq(0)
+        end
+      end
     end
+
 
     describe 'tests visualization likes endpoints in organizations' do
       include_context 'organization with users helper'
+
+      describe 'PUT notify_watching' do
+        it 'adds the user to the watching list' do
+          vis = FactoryGirl.create(:carto_visualization, user: @carto_org_user_1)
+          user_domain = @carto_org_user_1.username
+
+          put api_v1_visualizations_notify_watching_url(user_domain: user_domain, id: vis.id, api_key: @carto_org_user_1.api_key)
+          expect(last_response.status).to eq(200)
+          expect(JSON.parse(last_response.body)).to eq([@carto_org_user_1.username])
+        end
+
+        it 'returns 403 if user does not have read permissions on the visualization' do
+          private_vis = FactoryGirl.create(:carto_visualization, user: @carto_org_user_1, privacy: Carto::Visualization::PRIVACY_PRIVATE)
+
+          put api_v1_visualizations_notify_watching_url(user_domain: @carto_org_user_2.username, id: private_vis.id, api_key: @carto_org_user_2.api_key)
+          expect(last_response.status).to eq(403)
+        end
+      end
+
+      describe 'GET list_watching' do
+        it 'returns the users currently on the watching list' do
+          vis = FactoryGirl.create(:carto_visualization, user: @carto_org_user_1)
+          user_domain = @carto_org_user_1.username
+
+          get api_v1_visualizations_notify_watching_url(user_domain: user_domain, id: vis.id, api_key: @carto_org_user_1.api_key)
+          expect(last_response.status).to eq(200)
+          expect(JSON.parse(last_response.body)).to eq([])
+
+          put api_v1_visualizations_notify_watching_url(user_domain: user_domain, id: vis.id, api_key: @carto_org_user_1.api_key)
+          expect(last_response.status).to eq(200)
+
+          get api_v1_visualizations_notify_watching_url(user_domain: user_domain, id: vis.id, api_key: @carto_org_user_1.api_key)
+          expect(last_response.status).to eq(200)
+          expect(JSON.parse(last_response.body)).to eq([@carto_org_user_1.username])
+        end
+
+        it 'returns 403 if user does not have read permissions on the visualization' do
+          private_vis = FactoryGirl.create(:carto_visualization, user: @carto_org_user_1, privacy: Carto::Visualization::PRIVACY_PRIVATE)
+
+          get api_v1_visualizations_notify_watching_url(user_domain: @carto_org_user_2.username, id: private_vis.id, api_key: @carto_org_user_2.api_key)
+          expect(last_response.status).to eq(403)
+        end
+      end
 
       it 'tests totals calculations' do
         bypass_named_maps
@@ -1235,7 +1387,7 @@ describe Carto::Api::VisualizationsController do
 
       def get_vizjson3_url(user, visualization, vector: nil)
         args = { user_domain: user.username, id: visualization.id, api_key: user.api_key }
-        args[:vector] = vector if vector
+        args[:vector] = vector unless vector.nil?
         api_v3_visualizations_vizjson_url(args)
       end
 
@@ -1508,10 +1660,35 @@ describe Carto::Api::VisualizationsController do
         end
       end
 
-      it 'includes vector flag (true if requested)' do
+      it 'doesn\'t include vector flag if vector_vs_raster feature flag is enabled and vector param is not present' do
+        set_feature_flag @visualization.user, 'vector_vs_raster', true
+        get_json get_vizjson3_url(@user_1, @visualization), @headers do |response|
+          response.status.should == 200
+          vizjson3 = response.body
+          vizjson3.has_key?(:vector).should be_false
+        end
+      end
+
+      it 'includes vector flag if vector_vs_raster feature flag is enabled and vector param is present' do
+        set_feature_flag @visualization.user, 'vector_vs_raster', true
+
         get_json get_vizjson3_url(@user_1, @visualization, vector: true), @headers do |response|
           response.status.should == 200
           vizjson3 = response.body
+          vizjson3[:vector].should eq true
+        end
+
+        get_json get_vizjson3_url(@user_1, @visualization, vector: false), @headers do |response|
+          response.status.should == 200
+          vizjson3 = response.body
+          vizjson3[:vector].should eq false
+        end
+      end
+
+      it 'includes vector flag (true if requested)' do
+        get_json api_v3_visualizations_vizjson_url(user_domain: @user_1.username, id: @visualization.id, api_key: @user_1.api_key, vector: true), @headers do |request|
+          request.status.should == 200
+          vizjson3 = request.body
           vizjson3[:vector].should == true
         end
       end
@@ -1599,7 +1776,6 @@ describe Carto::Api::VisualizationsController do
     end
 
     describe '/api/v1/viz/:id/watching' do
-
       before(:all) do
         @user_1_1 = create_test_user
         @user_1_2 = create_test_user
@@ -1615,7 +1791,7 @@ describe Carto::Api::VisualizationsController do
       end
 
       it 'returns an empty array if no other user is watching' do
-        CartoDB::Visualization::Watcher.any_instance.stubs(:list).returns([])
+        Carto::Visualization::Watcher.any_instance.stubs(:list).returns([])
 
         bypass_named_maps
 
@@ -1626,7 +1802,441 @@ describe Carto::Api::VisualizationsController do
         login(@user_1_1)
         get api_v1_visualizations_notify_watching_url(id: id, api_key: @user_1_1.api_key)
         body = JSON.parse(last_response.body)
-        body.should == []
+
+        expect(body).to eq([])
+      end
+    end
+
+    describe 'legacy controller migration' do
+      before(:all) do
+        @user = create_user
+      end
+
+      after(:all) do
+        bypass_named_maps
+        @user.destroy
+      end
+
+      before(:each) do
+        bypass_named_maps
+        # bypass_metrics
+
+        host! "#{@user.username}.localhost.lan"
+      end
+
+      after(:each) do
+        bypass_named_maps
+        delete_user_data @user
+      end
+
+      describe '#create' do
+        describe '#duplicate map' do
+          before(:all) do
+            @other_user = create_user
+          end
+
+          before(:each) do
+            bypass_named_maps
+
+            @map = Map.create(user_id: @user.id)
+            @visualization = FactoryGirl.create(:derived_visualization,
+                                                map_id: @map.id,
+                                                user_id: @user.id,
+                                                privacy: Visualization::Member::PRIVACY_PRIVATE)
+          end
+
+          after(:each) do
+            @map.destroy
+          end
+
+          after(:all) do
+            @other_user.destroy
+          end
+
+          it 'duplicates a map' do
+            new_name = @visualization.name + ' patatas'
+
+            post_json api_v1_visualizations_create_url(api_key: @user.api_key),
+                      source_visualization_id: @visualization.id,
+                      name: new_name
+
+            last_response.status.should be_success
+
+            Carto::Visualization.exists?(user_id: @user.id, type: 'derived', name: new_name).should be_true
+          end
+
+          it 'registers table dependencies for duplicated maps' do
+            map, table, table_visualization, visualization = create_full_visualization(Carto::User.find(@user.id))
+            new_name = visualization.name + ' registered'
+
+            post_json api_v1_visualizations_create_url(api_key: @user.api_key),
+                      source_visualization_id: visualization.id,
+                      name: new_name
+
+            last_response.status.should be_success
+
+            visualization = Carto::Visualization.where(user_id: @user.id, type: 'derived', name: new_name).first
+            visualization.should be
+            visualization.data_layers.first.user_tables.count.should eq 1
+
+            destroy_full_visualization(map, table, table_visualization, visualization)
+          end
+
+          it "duplicates someone else's map if has at least read permission to it" do
+            new_name = @visualization.name + ' patatas'
+
+            Carto::Visualization.any_instance.stubs(:is_viewable_by_user?).returns(true)
+
+            post_json api_v1_visualizations_create_url(user_domain: @other_user.username, api_key: @other_user.api_key),
+                      source_visualization_id: @visualization.id,
+                      name: new_name
+
+            last_response.status.should be_success
+
+            Carto::Visualization.exists?(user_id: @other_user.id, type: 'derived', name: new_name).should be_true
+          end
+
+          it "doesn't duplicate someone else's map without permission" do
+            new_name = @visualization.name + ' patatatosky'
+
+            post_json api_v1_visualizations_create_url(user_domain: @other_user.username, api_key: @other_user.api_key),
+                      source_visualization_id: @visualization.id,
+                      name: new_name
+
+            last_response.status.should == 403
+
+            Carto::Visualization.exists?(user_id: @other_user.id, type: 'derived', name: new_name).should be_false
+          end
+        end
+
+        describe '#creates map from datasets' do
+          include_context 'organization with users helper'
+          include TableSharing
+
+          it 'creates a visualization from a dataset given the viz id' do
+            table1 = create_table(user_id: @org_user_1.id)
+            payload = {
+              source_visualization_id: table1.table_visualization.id,
+              visChanges: 0,
+              name: "untitled_table_XXX_map"
+            }
+            post_json(api_v1_visualizations_create_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key),
+                      payload) do |response|
+              response.status.should eq 200
+              vid = response.body[:id]
+              v = CartoDB::Visualization::Member.new(id: vid).fetch
+
+              v.user_id.should eq @org_user_1.id
+              v.map.user_id.should eq @org_user_1.id
+            end
+          end
+
+          it 'does not create visualizations if user is viewer' do
+            table1 = create_table(user_id: @org_user_1.id)
+            payload = {
+              source_visualization_id: table1.table_visualization.id,
+              visChanges: 0,
+              name: "untitled_table_XXX_map"
+            }
+
+            @org_user_1.viewer = true
+            @org_user_1.save
+
+            post_json(api_v1_visualizations_create_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key),
+                      payload) do |response|
+              response.status.should eq 403
+            end
+
+            @org_user_1.viewer = false
+            @org_user_1.save
+          end
+
+          it 'creates a visualization from a dataset given the table id' do
+            table1 = create_table(user_id: @org_user_1.id)
+            payload = {
+              tables: [table1.name]
+            }
+            post_json(api_v1_visualizations_create_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key),
+                      payload) do |response|
+              response.status.should eq 200
+              vid = response.body[:id]
+              v = CartoDB::Visualization::Member.new(id: vid).fetch
+
+              v.user_id.should eq @org_user_1.id
+              v.map.user_id.should eq @org_user_1.id
+            end
+          end
+
+          it 'correctly creates a visualization from two dataset of different users' do
+            table1 = create_table(user_id: @org_user_1.id)
+            table2 = create_table(user_id: @org_user_2.id)
+            share_table_with_user(table1, @org_user_2)
+            payload = {
+              type: 'derived',
+              tables: ["#{@org_user_1.username}.#{table1.name}", table2.name]
+            }
+            post_json(api_v1_visualizations_create_url(user_domain: @org_user_2.username, api_key: @org_user_2.api_key),
+                      payload) do |response|
+              response.status.should eq 200
+              vid = response.body[:id]
+              v = CartoDB::Visualization::Member.new(id: vid).fetch
+
+              v.user_id.should eq @org_user_2.id
+              v.map.user_id.should eq @org_user_2.id
+            end
+          end
+
+          it 'copies the styles for editor users' do
+            table1 = create_table(user_id: @org_user_1.id)
+            payload = {
+              tables: [table1.name]
+            }
+            Carto::User.any_instance.stubs(:builder_enabled?).returns(false)
+            post_json(api_v1_visualizations_create_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key),
+                      payload) do |response|
+              response.status.should eq 200
+              vid = response.body[:id]
+              v = CartoDB::Visualization::Member.new(id: vid).fetch
+              original_layer = table1.map.data_layers.first
+              layer = v.map.data_layers.first
+              layer.options['tile_style'].should eq original_layer.options['tile_style']
+            end
+          end
+
+          it 'resets the styles for builder users' do
+            table1 = create_table(user_id: @org_user_1.id)
+            Table.any_instance.stubs(:geometry_types).returns(['ST_Point'])
+            payload = {
+              tables: [table1.name]
+            }
+            Carto::User.any_instance.stubs(:builder_enabled?).returns(true)
+            post_json(api_v1_visualizations_create_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key),
+                      payload) do |response|
+              response.status.should eq 200
+              vid = response.body[:id]
+              v = CartoDB::Visualization::Member.new(id: vid).fetch
+
+              original_layer = table1.map.data_layers.first
+              layer = v.map.data_layers.first
+              layer.options['tile_style'].should_not eq original_layer.options['tile_style']
+            end
+          end
+
+          it 'doesn\'t add style properites for editor users' do
+            table1 = create_table(user_id: @org_user_1.id)
+            payload = {
+              tables: [table1.name]
+            }
+            Carto::User.any_instance.stubs(:builder_enabled?).returns(false)
+            post_json(api_v1_visualizations_create_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key),
+                      payload) do |response|
+              response.status.should eq 200
+              vid = response.body[:id]
+              v = CartoDB::Visualization::Member.new(id: vid).fetch
+
+              layer = v.map.data_layers.first
+              layer.options['style_properties'].should be_nil
+            end
+          end
+
+          it 'adds style properites for builder users' do
+            table1 = create_table(user_id: @org_user_1.id)
+            Table.any_instance.stubs(:geometry_types).returns(['ST_Point'])
+            payload = {
+              tables: [table1.name]
+            }
+            Carto::User.any_instance.stubs(:builder_enabled?).returns(true)
+            post_json(api_v1_visualizations_create_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key),
+                      payload) do |response|
+              response.status.should eq 200
+              vid = response.body[:id]
+              v = CartoDB::Visualization::Member.new(id: vid).fetch
+
+              layer = v.map.data_layers.first
+              layer.options['style_properties'].should_not be_nil
+            end
+          end
+
+          it 'rewrites queries for other user datasets' do
+            table1 = create_table(user_id: @org_user_1.id)
+            layer = table1.map.data_layers.first
+            layer.options['query'] = "SELECT * FROM #{table1.name} LIMIT 1"
+            layer.save
+            share_table_with_user(table1, @org_user_2)
+            payload = {
+              type: 'derived',
+              tables: ["#{@org_user_1.username}.#{table1.name}"]
+            }
+            post_json(api_v1_visualizations_create_url(user_domain: @org_user_2.username, api_key: @org_user_2.api_key),
+                      payload) do |response|
+              response.status.should eq 200
+              vid = response.body[:id]
+              v = CartoDB::Visualization::Member.new(id: vid).fetch
+              layer = v.map.data_layers.first
+              layer.options['query'].should eq "SELECT * FROM #{@org_user_1.username}.#{table1.name} LIMIT 1"
+            end
+          end
+
+          it 'does not rewrite queries for same user datasets' do
+            table1 = create_table(user_id: @org_user_1.id)
+            layer = table1.map.data_layers.first
+            layer.options['query'] = "SELECT * FROM #{table1.name} LIMIT 1"
+            layer.save
+            share_table_with_user(table1, @org_user_1)
+            payload = {
+              type: 'derived',
+              tables: ["#{@org_user_1.username}.#{table1.name}"]
+            }
+            post_json(api_v1_visualizations_create_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key),
+                      payload) do |response|
+              response.status.should eq 200
+              vid = response.body[:id]
+              v = CartoDB::Visualization::Member.new(id: vid).fetch
+              new_layer = v.map.data_layers.first
+              new_layer.options['query'].should eq layer.options['query']
+            end
+          end
+
+          it 'sets table privacy if the user has private_maps' do
+            table1 = create_table(user_id: @org_user_1.id)
+            payload = {
+              tables: [table1.name]
+            }
+            post_json(api_v1_visualizations_create_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key),
+                      payload) do |response|
+              response.status.should eq 200
+              vid = response.body[:id]
+              v = CartoDB::Visualization::Member.new(id: vid).fetch
+              v.privacy.should eq CartoDB::Visualization::Member::PRIVACY_PRIVATE
+            end
+          end
+
+          it 'sets PUBLIC privacy if the user doesn\'t have private_maps' do
+            @carto_org_user_2.update_column(:private_maps_enabled, false) # Direct to DB to skip validations
+            table1 = create_table(user_id: @org_user_2.id)
+            payload = {
+              tables: [table1.name]
+            }
+            post_json(api_v1_visualizations_create_url(user_domain: @org_user_2.username, api_key: @org_user_2.api_key),
+                      payload) do |response|
+              response.status.should eq 200
+              vid = response.body[:id]
+              v = CartoDB::Visualization::Member.new(id: vid).fetch
+              v.privacy.should eq CartoDB::Visualization::Member::PRIVACY_PUBLIC
+            end
+          end
+
+          it 'enables scrollwheel zoom by default' do
+            table1 = create_table(user_id: @org_user_2.id)
+            table1.map.scrollwheel = false
+            table1.map.options[:scrollwheel] = false
+            table1.map.save
+
+            post_json(api_v1_visualizations_create_url(user_domain: @org_user_2.username, api_key: @org_user_2.api_key),
+                      tables: [table1.name]) do |response|
+              response.status.should eq 200
+              vid = response.body[:id]
+              v = Carto::Visualization.find(vid)
+              v.map.scrollwheel.should eq true
+              v.map.options[:scrollwheel].should eq true
+            end
+          end
+        end
+      end
+
+      describe "#update" do
+        before(:each) do
+          login(@user)
+        end
+
+        it "Does not update visualizations if user is viewer" do
+          table = new_table(user_id: @user.id, privacy: ::UserTable::PRIVACY_PUBLIC).save.reload
+
+          @user.viewer = true
+          @user.save
+
+          payload = { id: table.table_visualization.id, privacy: Carto::Visualization::PRIVACY_PRIVATE }
+          put_json api_v1_visualizations_update_url(id: table.table_visualization.id), payload do |response|
+            response.status.should eq 403
+          end
+
+          @user.viewer = false
+          @user.save
+
+          table.destroy
+        end
+
+        it "Updates changes even if named maps communication fails" do
+          @user.private_tables_enabled = true
+          @user.save
+
+          table = new_table(user_id: @user.id, privacy: ::UserTable::PRIVACY_PUBLIC).save.reload
+
+          Carto::NamedMaps::Api.any_instance.stubs(:create).raises('fake named maps failure')
+
+          payload = { id: table.table_visualization.id, privacy: Carto::Visualization::PRIVACY_PRIVATE }
+          put_json api_v1_visualizations_update_url(id: table.table_visualization.id), payload do |response|
+            response.status.should be_success
+          end
+
+          table.reload
+          table.privacy.should eq ::UserTable::PRIVACY_PRIVATE
+
+          table.destroy
+
+          @user.private_tables_enabled = false
+          @user.save
+        end
+
+        it 'filters attributes' do
+          table = new_table(user_id: @user.id, privacy: ::UserTable::PRIVACY_PUBLIC).save.reload
+
+          table.table_visualization.description.should_not eq "something"
+
+          payload = { id: table.table_visualization.id, description: "something", fake: "NO!" }
+          put_json api_v1_visualizations_update_url(id: table.table_visualization.id), payload do |response|
+            response.status.should be_success
+          end
+
+          table.reload
+          table.table_visualization.description.should eq "something"
+
+          table.destroy
+        end
+
+        it "renames datasets" do
+          table = new_table(user_id: @user.id).save.reload
+
+          payload = { id: table.table_visualization.id, name: 'vis_rename_test1' }
+          put_json api_v1_visualizations_update_url(id: table.table_visualization.id), payload do |response|
+            response.status.should be_success
+          end
+
+          table.reload
+          table.name.should eq 'vis_rename_test1'
+
+          table.destroy
+        end
+
+        it 'sets password protection' do
+          visualization = FactoryGirl.create(:carto_visualization, user_id: @user.id)
+          visualization.password_protected?.should be_false
+
+          payload = {
+            id: visualization.id,
+            password: 'the_pass',
+            privacy: Carto::Visualization::PRIVACY_PROTECTED
+          }
+          put_json api_v1_visualizations_update_url(id: visualization.id), payload do |response|
+            response.status.should be_success
+          end
+
+          visualization.reload
+          visualization.password_protected?.should be_true
+          visualization.password_valid?('the_pass').should be_true
+
+          visualization.destroy
+        end
       end
     end
 
@@ -1657,6 +2267,15 @@ describe Carto::Api::VisualizationsController do
         delete_json(destroy_url(@carto_org_user_1, other_visualization.id)) do |response|
           expect(response.status).to eq 403
         end
+      end
+
+      it 'returns 403 for viewer users' do
+        visualization = FactoryGirl.create(:carto_visualization, user: @carto_org_user_1)
+        @carto_org_user_1.update_attribute(:viewer, true)
+        delete_json(destroy_url(@carto_org_user_1, visualization.id)) do |response|
+          expect(response.status).to eq 403
+        end
+        @carto_org_user_1.update_attribute(:viewer, false)
       end
 
       it 'destroys a visualization by id' do
@@ -2109,6 +2728,63 @@ describe Carto::Api::VisualizationsController do
           response.status.should == 404
           response.body[:errors].should == 'Visualization of that user does not exist'
         end
+      end
+    end
+  end
+
+  describe '#google_maps_static_image' do
+    before(:all) do
+      @user = FactoryGirl.create(:carto_user)
+      @map, @table, @table_visualization, @visualization = create_full_visualization(@user)
+      base_layer = @visualization.base_layers.first
+      base_layer.options[:baseType] = 'roadmap'
+      base_layer.options[:style] = '[]'
+      base_layer.save
+    end
+
+    before(:each) do
+      host! "#{@user.username}.localhost.lan"
+      login_as(@user, scope: @user.username)
+    end
+
+    after(:all) do
+      destroy_full_visualization(@map, @table, @table_visualization, @visualization)
+      @user.destroy
+    end
+
+    let(:params) do
+      {
+        size: '300x200',
+        zoom: 14,
+        center: '0.12,-7.56'
+      }
+    end
+
+    it 'returns error if user does not have Google configured' do
+      @user.google_maps_key = nil
+      @user.save
+      get_json api_v1_google_maps_static_image_url(params.merge(id: @visualization.id)) do |response|
+        expect(response.status).to eq 400
+        expect(response.body[:errors]).to be
+      end
+    end
+
+    it 'returns signed google maps URL (key)' do
+      @user.google_maps_key = 'key=GAdhfasjkd'
+      @user.save
+      get_json api_v1_google_maps_static_image_url(params.merge(id: @visualization.id)) do |response|
+        response.status.should be_success
+        response.body[:url].should eq 'https://maps.googleapis.com/maps/api/staticmap?center=0.12,-7.56&mapType=roadmap&size=300x200&zoom=14&key=GAdhfasjkd'
+      end
+    end
+
+    it 'returns signed google maps URL (client + signature)' do
+      @user.google_maps_key = 'client=GAdhfasjkd'
+      @user.google_maps_private_key = 'MjM0MzJk-3N_czQzJmFkc2Rhc2Q='
+      @user.save
+      get_json api_v1_google_maps_static_image_url(params.merge(id: @visualization.id)) do |response|
+        response.status.should be_success
+        response.body[:url].should eq 'https://maps.googleapis.com/maps/api/staticmap?center=0.12,-7.56&mapType=roadmap&size=300x200&zoom=14&client=GAdhfasjkd&signature=q3E0WXgV1XlglotqoRXUZ4O8d10='
       end
     end
   end

@@ -202,7 +202,7 @@
       </div>
     <% end %>
 
-    <% if !saas? && current_user.organization_owner? && current_user.has_feature_flag?('organization-admins')  %>
+    <% if !saas? && current_user.organization_owner? %>
         <div class="FormAccount-title">
           <p class="FormAccount-titleText">Delete organization</p>
         </div>

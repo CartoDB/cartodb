@@ -170,11 +170,11 @@ describe Carto::Builder::VisualizationsController do
       response.body.should include('\"vector\":false')
     end
 
-    it 'generates vizjson with vector=true with flag' do
+    it 'does not generate vizjson with vector=true with flag (Builder should always be raster right now)' do
       get builder_visualization_url(id: @visualization.id, vector: true)
 
       response.status.should == 200
-      response.body.should include('\"vector\":true')
+      response.body.should_not include('\"vector\":true')
     end
 
     it 'displays analysesData' do

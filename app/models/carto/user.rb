@@ -33,7 +33,7 @@ class Carto::User < ActiveRecord::Base
                    "users.disqus_shortname, users.account_type, users.twitter_username, users.google_maps_key, " \
                    "users.viewer, users.quota_in_bytes, users.database_host, users.crypted_password, " \
                    "users.builder_enabled, users.private_tables_enabled, users.private_maps_enabled, " \
-                   "users.no_map_logo, users.org_admin, users.last_name".freeze
+                   "users.no_map_logo, users.org_admin, users.last_name, users.google_maps_private_key".freeze
 
   has_many :tables, class_name: Carto::UserTable, inverse_of: :user
   has_many :visualizations, inverse_of: :user
@@ -203,10 +203,10 @@ class Carto::User < ActiveRecord::Base
   # Returns the google maps private key. If the user is in an organization and
   # that organization has a private key, the org's private key is returned.
   def google_maps_private_key
-    if has_organization?
-      organization.google_maps_private_key || read_attribute(:google_maps_private_key)
-    else
+    if organization.try(:google_maps_private_key).blank?
       read_attribute(:google_maps_private_key)
+    else
+      organization.google_maps_private_key
     end
   end
 

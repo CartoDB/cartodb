@@ -8,11 +8,14 @@ module Carto
     include Carto::UUIDHelper
     include Carto::QueryRewriter
 
-    def save_import(user, visualization, renamed_tables: {})
+    # `full_restore = true` means keeping the visualization id and permission. Its intended use is to restore an exact
+    # copy of a visualization (e.g: user migration). When it's `false` it will skip restoring ids and permissions. This
+    # is the default, and how it's used by the Import API to allow to import a visualization into a different user
+    def save_import(user, visualization, renamed_tables: {}, full_restore: false)
       old_username = visualization.user.username if visualization.user
       apply_user_limits(user, visualization)
       ActiveRecord::Base.transaction do
-        visualization.id = random_uuid
+        visualization.id = random_uuid unless visualization.id && full_restore
         visualization.user = user
 
         ensure_unique_name(user, visualization)
@@ -22,8 +25,8 @@ module Carto
           analysis.analysis_node.fix_analysis_node_queries(old_username, user, renamed_tables)
         end
 
-        permission = Carto::Permission.new(owner: user, owner_username: user.username)
-        visualization.permission = permission
+        saved_acl = visualization.permission.access_control_list if full_restore
+        visualization.permission = Carto::Permission.new(owner: user, owner_username: user.username)
 
         map = visualization.map
         map.user = user
@@ -32,8 +35,28 @@ module Carto
           analysis.user_id = user.id
         end
 
+        sync = visualization.synchronization
+        if sync
+          sync.id = random_uuid
+          sync.user = user
+          sync.log.user_id = user.id
+        end
+
+        user_table = visualization.map.user_table
+        if user_table
+          user_table.user = user
+          user_table.service.register_table_only = true
+          raise 'Cannot import a dataset without physical table' unless user_table.service.real_table_exists?
+        end
+
         unless visualization.save
           raise "Errors saving imported visualization: #{visualization.errors.full_messages}"
+        end
+
+        # Save permissions after visualization, in order to be able to regenerate shared_entities
+        if saved_acl
+          visualization.permission.access_control_list = saved_acl
+          visualization.permission.save!
         end
 
         visualization.layers.map do |layer|
@@ -77,8 +100,10 @@ module Carto
       existing_names = Carto::Visualization.uniq
                                            .where(user_id: user.id)
                                            .where("name ~ ?", "#{Regexp.escape(visualization.name)}( Import)?( \d*)?$")
+                                           .where(type: visualization.type)
                                            .pluck(:name)
       if existing_names.include?(visualization.name)
+        raise 'Cannot rename a dataset during import' if visualization.canonical?
         import_name = "#{visualization.name} Import"
         i = 1
         while existing_names.include?(import_name)

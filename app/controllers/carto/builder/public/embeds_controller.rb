@@ -21,6 +21,7 @@ module Carto
                       :load_google_maps_qs, only: [:show, :show_protected]
 
         skip_before_filter :builder_users_only # This is supposed to be public even in beta
+        skip_before_filter :verify_authenticity_token, only: [:show_protected]
 
         layout false
 
@@ -64,7 +65,8 @@ module Carto
         end
 
         def load_vizjson
-          @vizjson = generate_named_map_vizjson3(visualization_for_presentation, params)
+          vis = visualization_for_presentation
+          @vizjson = generate_named_map_vizjson3(vis, vizjson3_options(vis, params))
         end
 
         def load_state

@@ -45,10 +45,13 @@ class Carto::Visualization < ActiveRecord::Base
   PRIVACY_PRIVATE = 'private'.freeze
   PRIVACY_LINK = 'link'.freeze
   PRIVACY_PROTECTED = 'password'.freeze
+  PRIVACIES = [PRIVACY_LINK, PRIVACY_PROTECTED, PRIVACY_PUBLIC, PRIVACY_PRIVATE].freeze
 
   VERSION_BUILDER = 3
 
   V2_VISUALIZATIONS_REDIS_KEY = 'vizjson2_visualizations'.freeze
+
+  scope :remotes, where(type: TYPE_REMOTE)
 
   # INFO: disable ActiveRecord inheritance column
   self.inheritance_column = :_type
@@ -66,8 +69,6 @@ class Carto::Visualization < ActiveRecord::Base
 
   has_many :overlays, -> { order(:order) }, dependent: :destroy
 
-  belongs_to :parent, class_name: Carto::Visualization, primary_key: :parent_id
-
   belongs_to :active_layer, class_name: Carto::Layer
 
   belongs_to :map, class_name: Carto::Map, inverse_of: :visualization, dependent: :destroy
@@ -84,9 +85,11 @@ class Carto::Visualization < ActiveRecord::Base
 
   has_many :snapshots, class_name: Carto::Snapshot, dependent: :destroy
 
-  validates :version, presence: true
+  validates :name, :privacy, :type, :user_id, :version, presence: true
+  validates :privacy, inclusion: { in: PRIVACIES }
   validate :validate_password_presence
   validate :validate_privacy_changes
+  validate :validate_user_not_viewer, on: :create
 
   before_validation :set_default_version, :set_register_table_only
   before_create :set_random_id, :set_default_permission
@@ -178,6 +181,10 @@ class Carto::Visualization < ActiveRecord::Base
     @transition_options ||= (slide_transition_options.nil? ? {} : JSON.parse(slide_transition_options).symbolize_keys)
   end
 
+  def transition_options=(value)
+    self.slide_transition_options = ::JSON.dump(value.nil? ? DEFAULT_OPTIONS_VALUE : value)
+  end
+
   def children
     ordered = []
     children_vis = self.unordered_children
@@ -200,6 +207,29 @@ class Carto::Visualization < ActiveRecord::Base
 
   def likes_by_user_id(user_id)
     likes.where(actor: user_id)
+  end
+
+  def add_like_from(user_id)
+    likes.create!(actor: user_id)
+
+    self
+  rescue ActiveRecord::RecordNotUnique
+    raise AlreadyLikedError
+  end
+
+  def remove_like_from(user_id)
+    item = likes.where(actor: user_id)
+    item.first.destroy unless item.first.nil?
+
+    self
+  end
+
+  def send_like_email(current_viewer, vis_preview_image)
+    if self.type == Carto::Visualization::TYPE_CANONICAL
+      ::Resque.enqueue(::Resque::UserJobs::Mail::TableLiked, self.id, current_viewer.id, vis_preview_image)
+    elsif self.type == Carto::Visualization::TYPE_DERIVED
+      ::Resque.enqueue(::Resque::UserJobs::Mail::MapLiked, self.id, current_viewer.id, vis_preview_image)
+    end
   end
 
   def is_viewable_by_user?(user)
@@ -301,7 +331,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def password_valid?(password)
-    has_password? && ( password_digest(password, password_salt) == encrypted_password )
+    has_password? && (password_digest(password, password_salt) == encrypted_password)
   end
 
   def organization?
@@ -554,7 +584,31 @@ class Carto::Visualization < ActiveRecord::Base
     is_owner?(user) || permission.permitted?(user, permission_type)
   end
 
+  def ensure_valid_privacy
+    self.privacy = default_privacy if privacy.nil?
+    self.privacy = PRIVACY_PUBLIC unless can_be_private?
+  end
+
+  def default_privacy
+    can_be_private? ? PRIVACY_LINK : PRIVACY_PUBLIC
+  end
+
+  def privacy=(privacy)
+    super(privacy.try(:downcase))
+  end
+
+  def password=(value)
+    if value.present?
+      self.password_salt = generate_salt if password_salt.nil?
+      self.encrypted_password = password_digest(value, password_salt)
+    end
+  end
+
   private
+
+  def generate_salt
+    secure_digest(Time.now, (1..10).map { rand.to_s })
+  end
 
   def remove_password
     self.password_salt = nil
@@ -583,6 +637,10 @@ class Carto::Visualization < ActiveRecord::Base
     return if table.changing_name?
     table.register_table_only = register_table_only
     table.name = name
+    if table.name != name
+      # Sanitization. For example, spaces -> _
+      self.name = table.name
+    end
     table.update(name: name)
     if name_changed?
       support_tables.rename(name_was, name, true, name_was)
@@ -695,6 +753,12 @@ class Carto::Visualization < ActiveRecord::Base
     end
   end
 
+  def validate_user_not_viewer
+    if user.viewer
+      errors.add(:user, 'cannot be viewer')
+    end
+  end
+
   def backup_visualization
     return true if remote?
 
@@ -713,4 +777,48 @@ class Carto::Visualization < ActiveRecord::Base
   def invalidation_service
     @invalidation_service ||= Carto::VisualizationInvalidationService.new(self)
   end
+
+  class Watcher
+    # watcher:_orgid_:_vis_id_:_user_id_
+    KEY_FORMAT = "watcher:%s".freeze
+
+    # @params user Carto::User
+    # @params visualization Carto::Visualization
+    # @throws Carto::Visualization::WatcherError
+    def initialize(user, visualization, notification_ttl = nil)
+      raise WatcherError.new('User must belong to an organization') if user.organization.nil?
+      @user = user
+      @visualization = visualization
+
+      default_ttl = Cartodb.config[:watcher].present? ? Cartodb.config[:watcher].try("fetch", 'ttl', 60) : 60
+      @notification_ttl = notification_ttl.nil? ? default_ttl : notification_ttl
+    end
+
+    # Notifies that is editing the visualization
+    # NOTE: Expiration is handled internally by redis
+    def notify
+      key = KEY_FORMAT % @visualization.id
+      $tables_metadata.multi do
+        $tables_metadata.hset(key, @user.username, current_timestamp + @notification_ttl)
+        $tables_metadata.expire(key, @notification_ttl)
+      end
+    end
+
+    # Returns a list of usernames currently editing the visualization
+    def list
+      key = KEY_FORMAT % @visualization.id
+      users_expiry = $tables_metadata.hgetall(key)
+      now = current_timestamp
+      users_expiry.select { |_, expiry| expiry.to_i > now }.keys
+    end
+
+    private
+
+    def current_timestamp
+      Time.now.getutc.to_i
+    end
+  end
+
+  class WatcherError < CartoDB::BaseCartoDBError; end
+  class AlreadyLikedError < StandardError; end
 end

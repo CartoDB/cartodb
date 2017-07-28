@@ -116,39 +116,6 @@ module CartoDB
           type: TYPE_REMOTE})
       end
 
-      def update_remote_data(privacy, description, tags, license, source, attributions, display_name)
-        changed = false
-        if self.privacy != privacy
-          changed = true
-          self.privacy = privacy
-        end
-        if self.display_name != display_name
-          changed = true
-          self.display_name = display_name
-        end
-        if self.description != description
-          changed = true
-          self.description = description
-        end
-        if self.tags != tags
-          changed = true
-          self.tags = tags
-        end
-        if self.license != license
-          changed = true
-          self.license = license
-        end
-        if self.source != source
-          changed = true
-          self.source = source
-        end
-        if self.attributions != attributions
-          changed = true
-          self.attributions = attributions
-        end
-        changed
-      end
-
       def transition_options
         ::JSON.parse(self.slide_transition_options).symbolize_keys
       end
@@ -159,11 +126,6 @@ module CartoDB
 
       def ==(other_vis)
         self.id == other_vis.id
-      end
-
-      def ensure_valid_privacy
-        self.privacy = default_privacy if privacy.nil?
-        self.privacy = PRIVACY_PUBLIC unless can_be_private?
       end
 
       def default_privacy
@@ -489,8 +451,7 @@ module CartoDB
       end
 
       def password_valid?(password)
-        raise CartoDB::InvalidMember unless ( privacy == PRIVACY_PROTECTED && has_password? )
-        ( password_digest(password, @password_salt) == @encrypted_password )
+        has_password? && (password_digest(password, @password_salt) == @encrypted_password)
       end
 
       def remove_password

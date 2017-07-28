@@ -2,32 +2,136 @@ Development
 -----------
 
 ### Features
+* Provide CartoCSS attribute within layer info in vizjson v3 (CartoDB/support#858)
+* Support for nested properties in CartoCSS (#12411)
 * New loading button styles (#12132)
+* [WIP] Export/import organization/user metadata to allow user migration (#12271, #12304, #12323)
+* Start using ::outline symbolizer for polygon stroke (#12412)
+* [WIP] Export/import organization/user metadata to allow user migration (#12271, #12304, #12323, #12380)
+* New force param in EUMAPI organization users destroy operation to force deletion even with unregistered tables (#11654)
+* Removed the usage of the `organizations_admin` feature flag (#12131)
+* Show number of selected items in Time-Series widgets (#12179)
+* Show ranges in time series widget selection (#12291)
+* Bump Webpack version (#12392)
+* Start using ::outline symbolizer for polygon stroke (#12412)
+* [WIP] Export/import organization/user metadata to allow user migration (#12271, #12304, #12323, #12380)
+* New force param in EUMAPI organization users destroy operation to force deletion even with unregistered tables (#11654).
+* Removed the usage of the `organizations_admin` feature flag (#12131)
+* Show number of selected items in Time-Series widgets (#12179).
+* Add source to widgets (#12369).
+* Show ranges in time series widget selection (#12291)
+* Bump Webpack version (#12392).
+* The selection window on a histogram widget can be dragged (#12180)
+* Move playback on animated time series by clicking on it (#12180)
+* Move play/pause button to besides the time series (#12387)
+* Updates Dataservices API client default version to `0.18.0` (#12466)
+* Updates Dataservices API client default version to `0.19.0` (#12494)
 
 ### Bug fixes / enhancements
+* Break down deep-insights-integrations class (#11581)
+* Fix torque categories layer rendering (#cartodb.js/1698)
+* Don't provide quantification option when layer is animated (#10947)
+* Remove tracking of liked map events (#12404)
+* Display dashboard notifications for open-source instances (#12421)
+* Remove unsupported CartoCSS rules for vector rendering (#12410)
+* Force parameter `vector` for vector rendering (#12478).
+* Fixed typo in content_no_datasets.jst.ejs and en.json (Docs)
+* Fixing problem parsing formula widget creation (#support/843)
+* Don't try to lowercase null values in custom-list-collection object (support/#744)
+* Fixes named map creation for datasets imports on users with Google Maps (CartoDB/cartodb/pull/12519).
+* Tap on iOS10 mobile embed doesn't jump to page bottom (#cartodb.js/1652)
+* Don't try to lowercase null values in custom-list-collection object (#support/744)
+* Validate widget form when widget type changes (#11536)
+* Updated text of widget tooltips (#11467)
+* Fixes gravatar enabled check (support#840)
+* Fixed error where analysis overlay/infobox wasn't shown when hiding a layer (#11767)
+* Size of 'Add analysis' button reduced (#11580)
+* Fixed arrow keys exceeding min/max values in number editor (#12212)
+* Better handling and reporting of "table with no map associated" error in map privacy changes (#12137).
 * Improve formula widget form (#12242)
-* Fixed aligment problems after cartoassets update (#12234)
+* Fixed alignment problems after CartoAssets update (#12234)
 * Fixed layer counter (#12236)
 * Fixed problem when icon upload fails (#11980)
 * Boolean fields are visible in the filter by column value analysis (#11546)
 * Fixed legend's color mismatch with empty values (#11632)
 * Fixed overlay for legends view (#11825)
+* Fix error when revoking a Dropbox token that was revoked from Dropbox side (#12359)
+* Dropbox searches now don't have limit of number of files (#12521)
+* Fix error when a Dropbox folder has an extension matching valid extensions.
 * Fixed UI when editing merge analysis (#10850)
 * Fixed uninitialized constant in Carto::Visualization when a viewer shares a visualization (#12129).
+* Fix template generation without center at state (#12453).
 * Fix regenerate all api keys in an organization (#12218)
 * Refactor:
   * ::User <-> CartoDB::Visualization::Member dependency: #12116, #12221
+  * Removed CartoDB::Visualization::Member from controllers: #12185, #12267
+  * Removed Visualization::Member usage from CommonDataService (#12459, #12488). Includes performance improvements on user signup.
 * Refactor Layer model (#10934) and UserTable (#11589, #11700, #11737).
+  * Removed CartoDB::Visualization::Member and CartoDB::Visualization::Collection from controllers: #12185, #12267, #12485.
+  * Visualization::Member like and notification actions into Carto::Visualization (#12309)
+  * Layer model (#10934) and UserTable (#11589, #11700, #11737).
 * [WIP] Update to Rails 4
   * Update `rails-sequel` (#12118)
   * Changes compatible with Rails 3 (#12117)
 * Make scrollwheel zoom on by default (#12214)
+* Fix SAML login error with uppercased emails (#12367)
+* You can configure your API key for the search bar, powered by Mapzen, with `geocoder.mapzen.search_bar_api_key` (#12296).
+* Fix viewer handling by visualizations controller (#12379).
 * Add last name field to users (#12174)
 * Fix error where a sync of a big dataset without geometry would be deleted from dashboard (#12162)
 * `create_dev_user` rake no longer tries to auto-create the database, `cartodb:db:setup` should be run first (#12187).
 * Fix EUMAPI response as per documentation (#12233)
+* Fix dimension check and support for SVG without extension and XML header (#12374).
+* Builder embed doesn't need user DB connection anymore (#12473).
+* Visualization models no longer raise an error checking `password_valid?` (#12270).
 * Fix `BUILDER_ENABLED` parameter in `create_dev_user` rake (#12189)
 * User organization or user key for google maps (#12232)
+* Configurable pg_dump/restore bin path (#12297)
+* Redesigned LEARN MORE buttons behaviour (#12135)
+* "vector" key in vizjson is skipped in embeds if user has "vector_vs_raster" feature flag enabled.
+* Allow whitespace as layer name at vizJSONv3 (#12526)
+* Inline editor saves on blur, discard changes on 'ESC' (#11567)
+* Updated look and feel of sync interval dialog (#12145)
+* Organization owner can skip domain whitelisting on user creation (#12452).
+* Fixed 'not a function' bug related to a tooltip (#12279)
+* Disable edit geometry for Layers with aggregated styles (#11714)
+* Retrieve google static api url from backend to allow using both client_id and api_key (#12301, #12318)
+* Fix vector problem with lines
+* Fixed "see all formats" url, from the Connect Dataset module, to open in new windown and changed the url.
+* Added a data attribute for Backbone views that points to the module that implements it (Leapfrog #12341)
+* Change category widget color to blue when filtered. (#12409)
+* Add geometry validation for polygons and lines in edit feature form (#12397)
+* Fix permission model and added tests (#12393)
+* Country dropdown should be mandatory in postal code georeference (#12420)
+* Fixed bounds and center of thumbnails after updating a map
+* Fixed a bug in cartodb.js regarding the featureCount (#12490)
+* Add tip about sanitising values in popup's InfoWindow (#11340)
+* Fix a problem with responsive in deep-insights.js
+* Fix 403 error in password protected embed maps (#12469)
+* Fixed JS error for InfoWindows/Pop-ups (cartodb.js#1703)
+* Lowered log level from error to info for supported cartocss in vector maps (cartodb.js#1706)
+* Histogram UI: Do not show "NULL ROWS" value if it is not received (#12477)
+
+### NOTICE
+This release upgrades the CartoDB PostgreSQL extension to `0.19.2`. Run the following to have it available:
+```shell
+cd $(git rev-parse --show-toplevel)/lib/sql
+sudo make install
+```
+
+#### Dropbox API v2 migration
+
+Dropbox API v2 (#8303, #12300): [Dropbox deprecated API v1](https://blogs.dropbox.com/developers/2016/06/api-v1-deprecated/)
+so CARTO must migrate. If you are using Dropbox integration, you must:
+* Check which permission does your application has in Dropbox. If it's "Full", just upgrading CARTO is enough.
+* If it's not "Full", you must:
+   1. Create a new application in Dropbox, with "Full" permission.
+   2. Delete existing tokens. You can do this at Rails console with `SynchronizationOauth.where(service: 'dropbox').each(&:destroy)`.
+   3. Change Dropbox configuration at app_config.yml to the new application and restart server and Resque.
+   4. Connect users again (at profile page).
+   5. Trigger sync datasets manually.
+
+More information at [Dropbox migration guide](https://www.dropbox.com/developers/reference/migration-guide).
 
 4.1.x (2017-05-31)
 -----------
@@ -144,17 +248,33 @@ Development
 * Multiple file upload through "upload file" tab (#11952)
 * Change setView by flyto.
 * Update tangram to fix layer geometry conditionals.
+* Update tangram to fix layer geometry conditionals.
+* Improve assets build process (#11962)
+    * Frontend development task has changed from `grunt && grunt dev` to `grunt dev`
+    * Test task remains the same, but internals changed `grunt test`
+* Allow to have multiple administrators per organization (#12052, #12083)
+* Allow to have multiple administrators per organization (#12052)
 * Allow to have multiple administrators per organization (#12052, #12083, #12069)
 * Added explanation tooltip to the categorize label on the Find Nearest analysis (#12100)
 * Disable geometry edition button instead of hide in read-only layers (#11543)
 * Updated copies for export image & download map (#12114)
+* Added context menu to time-series widgets. (#12177)
 * Add all/none buttons to multi-select component (#9502)
 * New style for add analysis button (#11902)
 * Fix onboarding in layers (#12192)
 * Show infowindow when user reaches max layer limit (#12167)
 * Format quota infowindow numbers (#11743)
+* Improved analysis error tooltip (#12250)
 
 ### Bug fixes
+* Update Data Observatory Analysis UI (#9991)
+* Boolean fields are visible in the filter by column value analysis (#11546)
+* Fixed legend's color mismatch with empty values (#11632)
+* Fixed overlay for legends view (#11825)
+* Fixed UI when editing merge analysis (#10850)
+* Fixed uninitialized constant in Carto::Visualization when a viewer shares a visualization (#12129).
+* Revamp grunt default task to compile assets (#12325)
+* Made checkboxes actionable clicking on its label (#11535)
 * Google customers don't need quota checks for hires geocoding (support/#674)
 * Fixed a problem with autostyle when styles has aggregation (#8648)
 * Provide the possibility to add the current source node to the target options list in analysis forms (#12057)

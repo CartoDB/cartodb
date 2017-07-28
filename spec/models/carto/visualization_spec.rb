@@ -1,5 +1,6 @@
 # coding: UTF-8
 require_relative '../../spec_helper'
+require_relative '../visualization_shared_examples'
 require_relative '../../../app/models/visualization/member'
 require 'helpers/unique_names_helper'
 require 'helpers/visualization_destruction_helper'
@@ -27,6 +28,14 @@ describe Carto::Visualization do
     @user2.destroy
   end
 
+  it_behaves_like 'visualization models' do
+    def build_visualization(attrs = {})
+      v = Carto::Visualization.new
+      v.assign_attributes(attrs, without_protection: true)
+      v
+    end
+  end
+
   describe '#estimated_row_count and #actual_row_count' do
 
     it 'should query Table estimated an actual row count methods' do
@@ -46,6 +55,14 @@ describe Carto::Visualization do
       vis.tags = ["tag1", " ", ""]
 
       vis.tags.should eq ["tag1"]
+    end
+  end
+
+  describe '#privacy=' do
+    it 'downcases privacy' do
+      visualization = Carto::Visualization.new
+      visualization.privacy = Carto::Visualization::PRIVACY_LINK.upcase
+      visualization.privacy.should eq Carto::Visualization::PRIVACY_LINK.downcase
     end
   end
 
@@ -281,6 +298,16 @@ describe Carto::Visualization do
     end
   end
 
+  describe 'creation' do
+    it 'is not valid if user is viewer' do
+      viewer = FactoryGirl.build(:carto_user, viewer: true)
+      visualization = FactoryGirl.build(:carto_visualization, user: viewer)
+      visualization.valid?.should be_false
+      visualization.errors[:user].should_not be_empty
+      visualization.errors[:user].first.should eq "cannot be viewer"
+    end
+  end
+
   describe '#destroy' do
     it 'destroys all visualization dependencies' do
       map = FactoryGirl.create(:carto_map_with_layers, user: @carto_user)
@@ -321,6 +348,86 @@ describe Carto::Visualization do
     it 'triggers invalidation after destroying' do
       @visualization.send(:invalidation_service).expects(:invalidate)
       @visualization.destroy
+    end
+  end
+
+  context 'like actions' do
+    before(:each) do
+      @visualization = FactoryGirl.create(:carto_visualization, user: @carto_user, type: 'table')
+    end
+
+    describe '#add_like_from' do
+      it 'registers the like action from a user' do
+        user_id = UUIDTools::UUID.timestamp_create.to_s
+        expect(@visualization.likes.count).to eq(0)
+
+        @visualization.add_like_from(user_id)
+
+        expect(@visualization.likes.count).to eq(1)
+        expect(@visualization.liked_by?(user_id)).to be_true
+      end
+
+      it 'raises an error if same user tries to like again the same content' do
+        user_id  = UUIDTools::UUID.timestamp_create.to_s
+        user2_id = UUIDTools::UUID.timestamp_create.to_s
+
+        @visualization.add_like_from(user_id)
+
+        expect(@visualization.likes.count).to eq(1)
+        expect(@visualization.liked_by?(user_id)).to be_true
+
+        expect {
+          @visualization.add_like_from(user_id)
+        }.to raise_error Carto::Visualization::AlreadyLikedError
+        expect(@visualization.likes.count).to eq(1)
+
+        @visualization.add_like_from(user2_id)
+        expect(@visualization.likes.count).to eq(2)
+      end
+    end
+
+    describe '#remove_like_from' do
+      it 'removes an existent like from a user' do
+        user_id = UUIDTools::UUID.timestamp_create.to_s
+
+        @visualization.add_like_from(user_id)
+        expect(@visualization.likes.count).to eq(1)
+
+        @visualization.remove_like_from(user_id)
+        expect(@visualization.likes.count).to eq(0)
+        expect(@visualization.liked_by?(user_id)).to be_false
+      end
+
+      it 'does not return an error if I try to remove a non-existent like' do
+        user_id = UUIDTools::UUID.timestamp_create.to_s
+        user2_id = UUIDTools::UUID.timestamp_create.to_s
+
+        @visualization.add_like_from(user_id)
+        expect(@visualization.likes.count).to eq(1)
+
+        @visualization.remove_like_from(user2_id)
+        expect(@visualization.likes.count).to eq(1)
+      end
+    end
+
+    describe '#liked_by?' do
+      it 'returns true when the user liked the visualization' do
+        user_id = UUIDTools::UUID.timestamp_create.to_s
+
+        @visualization.add_like_from(user_id)
+        expect(@visualization.liked_by?(user_id)).to be_true
+      end
+
+      it 'returns false when checking a user without likes on the visualization' do
+        user_id = UUIDTools::UUID.timestamp_create.to_s
+        user2_id = UUIDTools::UUID.timestamp_create.to_s
+
+        @visualization.add_like_from(user_id)
+        expect(@visualization.liked_by?(user2_id)).to be_false
+
+        @visualization.remove_like_from(user_id)
+        expect(@visualization.liked_by?(user_id)).to be_false
+      end
     end
   end
 end

@@ -21,6 +21,7 @@ require_dependency 'carto/helpers/has_connector_configuration'
 require_dependency 'carto/helpers/batch_queries_statement_timeout'
 require_dependency 'carto/user_authenticator'
 require_dependency 'carto/helpers/billing_cycle'
+require_dependency 'carto/email_cleaner'
 require_dependency 'carto/visualization'
 
 class User < Sequel::Model
@@ -33,6 +34,7 @@ class User < Sequel::Model
   include Carto::HasConnectorConfiguration
   include Carto::BatchQueriesStatementTimeout
   include Carto::BillingCycle
+  include Carto::EmailCleaner
   extend Carto::UserAuthenticator
   include SequelFormCompatibility
 
@@ -159,11 +161,8 @@ class User < Sequel::Model
     if new?
       organization.validate_for_signup(errors, self)
 
-      if organization.whitelisted_email_domains.present?
-        email_domain = email.split('@')[1]
-        unless organization.whitelisted_email_domains.include?(email_domain) || invitation_token.present?
-          errors.add(:email, "Email domain '#{email_domain}' not valid for #{organization.name} organization")
-        end
+      unless valid_email_domain?(email)
+        errors.add(:email, "The domain of '#{email}' is not valid for #{organization.name} organization")
       end
     else
       if quota_in_bytes.to_i + organization.assigned_quota - initial_value(:quota_in_bytes) > organization.quota_in_bytes
@@ -229,7 +228,7 @@ class User < Sequel::Model
 
   ## Callbacks
   def before_validation
-    self.email = self.email.to_s.strip.downcase
+    self.email = clean_email(email.to_s)
     self.geocoding_quota ||= DEFAULT_GEOCODING_QUOTA
     self.here_isolines_quota ||= DEFAULT_HERE_ISOLINES_QUOTA
     self.obs_snapshot_quota ||= DEFAULT_OBS_SNAPSHOT_QUOTA
@@ -388,16 +387,23 @@ class User < Sequel::Model
     end
   end
 
+  def set_force_destroy
+    @force_destroy = true
+  end
+
   def before_destroy
     ensure_nonviewer
 
     @org_id_for_org_wipe = nil
     error_happened = false
     has_organization = false
+
     unless organization.nil?
       organization.reload # Avoid ORM caching
+
       if organization.owner_id == id
         @org_id_for_org_wipe = organization.id # after_destroy will wipe the organization too
+
         if organization.users.count > 1
           msg = 'Attempted to delete owner from organization with other users'
           CartoDB::StdoutLogger.info msg
@@ -452,7 +458,13 @@ class User < Sequel::Model
 
     # Delete the DB or the schema
     if has_organization
-      db_service.drop_organization_user(organization_id, !@org_id_for_org_wipe.nil?) unless error_happened
+      unless error_happened
+        db_service.drop_organization_user(
+          organization_id,
+          is_owner: !@org_id_for_org_wipe.nil?,
+          force_destroy: @force_destroy
+        )
+      end
     elsif ::User.where(database_name: database_name).count > 1
       raise CartoDB::BaseCartoDBError.new(
         'The user is not supposed to be in a organization but another user has the same database_name. Not dropping it')
@@ -497,6 +509,10 @@ class User < Sequel::Model
 
   # allow extra vars for auth
   attr_reader :password
+
+  def created_via=(created_via)
+    @created_via = created_via
+  end
 
   def validate_password_change
     return if @changing_passwords.nil?  # Called always, validate whenever proceeds
@@ -741,8 +757,8 @@ class User < Sequel::Model
 
   def gravatar_enabled?
     # Enabled by default, only disabled if specified in the config
-    value = Cartodb.get_config(:avatars, 'gravatar_enabled')
-    value.nil? || value
+    value = Cartodb.config[:avatars] && Cartodb.config[:avatars]['gravatar_enabled']
+    value.to_s != 'false'
   end
 
   def gravatar(protocol = "http://", size = 128, default_image = default_avatar)
@@ -1459,11 +1475,7 @@ class User < Sequel::Model
   # Returns the google maps private key. If the user is in an organization and
   # that organization has a private key, the org's private key is returned.
   def google_maps_private_key
-    if has_organization?
-      organization.google_maps_private_key || super
-    else
-      super
-    end
+    organization.try(:google_maps_private_key).blank? ? super : organization.google_maps_private_key
   end
 
   def google_maps_geocoder_enabled?
@@ -1575,7 +1587,7 @@ class User < Sequel::Model
   end
 
   def destroy_cascade
-    @force_destroy = true
+    set_force_destroy
     destroy
   end
 
@@ -1602,7 +1614,7 @@ class User < Sequel::Model
   end
 
   def get_user_creation
-    Carto::UserCreation.find_by_user_id(id)
+    @user_creation ||= Carto::UserCreation.find_by_user_id(id)
   end
 
   def quota_dates(options)
@@ -1681,5 +1693,19 @@ class User < Sequel::Model
     if Cartodb.get_config(:aggregation_tables).present?
       db_service.connect_to_aggregation_tables
     end
+  end
+
+  def valid_email_domain?(email)
+    if created_via == Carto::UserCreation::CREATED_VIA_API || # Overrides domain check for owner actions
+       organization.try(:whitelisted_email_domains).try(:blank?) ||
+       invitation_token.present? # Overrides domain check for users (invited by owners)
+      return true
+    end
+
+    organization.whitelisted_email_domains.include?(email.split('@')[1])
+  end
+
+  def created_via
+    @created_via || get_user_creation.try(:created_via)
   end
 end

@@ -336,14 +336,23 @@ CartoDB::Application.routes.draw do
 
   scope module: 'carto/api', defaults: { format: :json } do
     # Visualizations
-    get '(/user/:user_domain)(/u/:user_domain)/api/v1/viz'                                => 'visualizations#index',           as: :api_v1_visualizations_index
-    get '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id'                            => 'visualizations#show',            as: :api_v1_visualizations_show,            constraints: { id: /[^\/]+/ }
-    get '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/likes'                      => 'visualizations#likes_count',     as: :api_v1_visualizations_likes_count,     constraints: { id: /[^\/]+/ }
-    get '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/likes/detailed'             => 'visualizations#likes_list',      as: :api_v1_visualizations_likes_list,      constraints: { id: /[^\/]+/ }
-    match '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/like'                     => 'visualizations#is_liked',        as: :api_v1_visualizations_is_liked,        constraints: { id: /[^\/]+/ }, via: [:get, :options]
-    get '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/related_templates'          => 'templates#related_templates_by_visualization', as: :api_v1_visualizations_related_templates, constraints: { id: /[^\/]+/ }
+    get    '(/user/:user_domain)(/u/:user_domain)/api/v1/viz'                              => 'visualizations#index',                         as: :api_v1_visualizations_index
+    get    '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id'                          => 'visualizations#show',                          as: :api_v1_visualizations_show,              constraints: { id: /[^\/]+/ }
+    get    '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/related_templates'        => 'templates#related_templates_by_visualization', as: :api_v1_visualizations_related_templates, constraints: { id: /[^\/]+/ }
 
-    delete '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id'                         => 'visualizations#destroy',         as: :api_v1_visualizations_destroy,         constraints: { id: /[^\/]+/ }
+    get    '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/likes'                    => 'visualizations#likes_count',                   as: :api_v1_visualizations_likes_count,       constraints: { id: /[^\/]+/ }
+    get    '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/likes/detailed'           => 'visualizations#likes_list',                    as: :api_v1_visualizations_likes_list,        constraints: { id: /[^\/]+/ }
+    match  '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/like'                     => 'visualizations#is_liked',                      as: :api_v1_visualizations_is_liked,          constraints: { id: /[^\/]+/ }, via: [:get, :options]
+    post   '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/like'                     => 'visualizations#add_like',                      as: :api_v1_visualizations_add_like,          constraints: { id: /[^\/]+/ }
+    delete '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/like'                     => 'visualizations#remove_like',                   as: :api_v1_visualizations_remove_like,       constraints: { id: /[^\/]+/ }
+
+    put    '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/watching'                 => 'visualizations#notify_watching',               as: :api_v1_visualizations_list_watching,     constraints: { id: /[^\/]+/ }
+    get    '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/watching'                 => 'visualizations#list_watching',                 as: :api_v1_visualizations_notify_watching,   constraints: { id: /[^\/]+/ }
+
+    post   '(/user/:user_domain)(/u/:user_domain)/api/v1/viz'                              => 'visualizations#create',                        as: :api_v1_visualizations_create
+    put    '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id'                          => 'visualizations#update',                        as: :api_v1_visualizations_update,            constraints: { id: /[^\/]+/ }
+    delete '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id'                          => 'visualizations#destroy',                       as: :api_v1_visualizations_destroy,           constraints: { id: /[^\/]+/ }
+    get    '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/google_maps_static_image' => 'visualizations#google_maps_static_image',      as: :api_v1_google_maps_static_image,         constraints: { id: /[^\/]+/ }
 
     # Tables
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/tables/:id'                     => 'tables#show',   as: :api_v1_tables_show, constraints: { id: /[^\/]+/ }
@@ -395,9 +404,6 @@ CartoDB::Application.routes.draw do
     get    '(/user/:user_domain)(/u/:user_domain)/api/v1/synchronizations/:id'            => 'synchronizations#show',     as: :api_v1_synchronizations_show
     # INFO: sync_now is public API
     get    '(/user/:user_domain)(/u/:user_domain)/api/v1/synchronizations/:id/sync_now'   => 'synchronizations#syncing?', as: :api_v1_synchronizations_syncing
-
-    # Watching
-    get     '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/watching'                   => 'visualizations#list_watching',   as: :api_v1_visualizations_notify_watching, constraints: { id: /[^\/]+/ }
 
     # Oembed
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/oembed' => 'oembed#show', as: :api_v1_oembed
@@ -492,15 +498,6 @@ CartoDB::Application.routes.draw do
     # Geocodings
     post '(/user/:user_domain)(/u/:user_domain)/api/v1/geocodings'                                => 'geocodings#create',               as: :api_v1_geocodings_create
     put  '(/user/:user_domain)(/u/:user_domain)/api/v1/geocodings/:id'                            => 'geocodings#update',               as: :api_v1_geocodings_update
-
-    # Visualizations
-    post    '(/user/:user_domain)(/u/:user_domain)/api/v1/viz'                                => 'visualizations#create',          as: :api_v1_visualizations_create
-    put     '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id'                            => 'visualizations#update',          as: :api_v1_visualizations_update,          constraints: { id: /[^\/]+/ }
-    # TODO: deprecate?
-    put     '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/watching'                   => 'visualizations#notify_watching', as: :api_v1_visualizations_list_watching,   constraints: { id: /[^\/]+/ }
-    put     '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/next_id'                    => 'visualizations#set_next_id',     as: :api_v1_visualizations_set_next_id,     constraints: { id: /[^\/]+/ }
-    post    '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/like'                       => 'visualizations#add_like',        as: :api_v1_visualizations_add_like,        constraints: { id: /[^\/]+/ }
-    delete  '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/like'                       => 'visualizations#remove_like',     as: :api_v1_visualizations_remove_like,     constraints: { id: /[^\/]+/ }
 
     # Synchronizations
     post   '(/user/:user_domain)(/u/:user_domain)/api/v1/synchronizations'              => 'synchronizations#create',   as: :api_v1_synchronizations_create

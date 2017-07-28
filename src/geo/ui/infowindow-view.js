@@ -1,11 +1,13 @@
 var _ = require('underscore');
 var $ = require('jquery');
 var Ps = require('perfect-scrollbar');
-require('clip-path');
+require('clip-path-polygon');
 var sanitize = require('../../core/sanitize');
 var Template = require('../../core/template');
 var View = require('../../core/view');
 var util = require('../../core/util');
+
+var ESC_KEY = 27;
 
 /**
  * Usage:
@@ -41,9 +43,9 @@ var Infowindow = View.extend({
     'touchstart': '_stopPropagation',
     'MSPointerDown': '_stopPropagation',
     'dblclick': '_stopPropagation',
-    'DOMMouseScroll': '_stopBubbling',
-    'MozMousePixelScroll': '_stopBubbling',
-    'mousewheel': '_stopBubbling',
+    'DOMMouseScroll': 'killEvent',
+    'MozMousePixelScroll': 'killEvent',
+    'mousewheel': 'killEvent',
     'dbclick': '_stopPropagation',
     'click': '_stopPropagation'
   },
@@ -59,49 +61,12 @@ var Infowindow = View.extend({
   },
 
   /**
-   *  Adjust pan to show correctly the infowindow
-   */
-  // TODO: This can be private
-  adjustPan: function () {
-    var offset = this.model.get('offset');
-
-    if (!this.model.get('autoPan') || this.isHidden()) { return; }
-
-    var containerHeight = this.$el.outerHeight(true) + 15; // Adding some more space
-    var containerWidth = this.$el.width();
-    var pos = this.mapView.latLngToContainerPoint(this.model.get('latlng'));
-    var adjustOffset = {x: 0, y: 0};
-    var size = this.mapView.getSize();
-    var wait_callback = 0;
-
-    if (pos.x - offset[0] < 0) {
-      adjustOffset.x = pos.x - offset[0] - 10;
-    }
-
-    if (pos.x - offset[0] + containerWidth > size.x) {
-      adjustOffset.x = pos.x + containerWidth - size.x - offset[0] + 10;
-    }
-
-    if (pos.y - containerHeight < 0) {
-      adjustOffset.y = pos.y - containerHeight - 10;
-    }
-
-    if (pos.y - containerHeight > size.y) {
-      adjustOffset.y = pos.y + containerHeight - size.y;
-    }
-
-    if (adjustOffset.x || adjustOffset.y) {
-      this.mapView.panBy(adjustOffset);
-      wait_callback = 300;
-    }
-
-    return wait_callback;
-  },
-
-  /**
    *  Render infowindow content
    */
   render: function () {
+    this.clearSubViews();
+    this.$el.empty();
+
     if (this.template) {
       // Clone fields and template name
       var fields = _.map(this.model.attributes.content.fields, function (field) {
@@ -154,25 +119,22 @@ var Infowindow = View.extend({
   },
 
   _initBinds: function () {
-    _.bindAll(this, '_onKeyUp', '_onLoadImage', '_onLoadImageError');
+    _.bindAll(this, '_onKeyUp', '_onLoadImageSuccess', '_onLoadImageError');
 
-    this.model.bind('change:content change:alternative_names change:width change:maxHeight', this.render, this);
-    this.model.bind('change:latlng', this._updateAndAdjustPan, this);
-    this.model.bind('change:visibility', this.toggle, this);
-    this.model.bind('change:template change:sanitizeTemplate', this._compileTemplate, this);
+    this.listenTo(this.model, 'change:content change:alternative_names change:width change:maxHeight', this.render, this);
+    this.listenTo(this.model, 'change:latlng', this._updateAndAdjustPan, this);
+    this.listenTo(this.model, 'change:visibility', this.toggle, this);
+    this.listenTo(this.model, 'change:template change:sanitizeTemplate', this._compileTemplate, this);
 
-    this.mapView.map.bind('change', this._updatePosition, this);
+    this.listenTo(this.mapView.map, 'change', this._updatePosition, this);
 
-    this.mapView.bind('zoomstart', function () {
+    this.listenTo(this.mapView, 'zoomstart', function () {
       this.hide(true);
-    }, this);
+    });
 
-    this.mapView.bind('zoomend', function () {
+    this.listenTo(this.mapView, 'zoomend', function () {
       this.show();
-    }, this);
-
-    this.add_related_model(this.mapView.map);
-    this.add_related_model(this.mapView);
+    });
   },
 
   // migration issue: some infowindows doesn't have this selector
@@ -185,29 +147,34 @@ var Infowindow = View.extend({
     return $el;
   },
 
-  _onKeyUp: function (e) {
-    if (e && e.keyCode === 27) {
+  _onKeyUp: function (event) {
+    if (event && event.keyCode === ESC_KEY) {
       this._closeInfowindow();
     }
   },
 
   _setupClasses: function () {
     var $infowindow = this.$('.js-infowindow');
-
     var hasHeader = this.$('.js-header').length;
     var hasCover = this.$('.js-cover').length;
     var hasContent = this._getContent().length;
     var hasTitle = this.$('.CDB-infowindow-title').length;
+    var numberOfFields = this.model.get('content') && this.model.get('content').fields.length;
 
     if (hasCover) {
-      $infowindow.addClass('has-header-image');
+      $infowindow
+        .addClass('has-header-image')
+        .toggleClass('no-content', numberOfFields < 3);
     }
+
     if (hasHeader) {
       $infowindow.addClass('has-header');
     }
+
     if (hasContent) {
       $infowindow.addClass('has-fields');
     }
+
     if (hasTitle) {
       $infowindow.addClass('has-title');
     }
@@ -296,26 +263,40 @@ var Infowindow = View.extend({
   },
 
   _loadImageHook: function (imageDimensions, coverDimensions, url) {
-    var $hook = this.$('.js-hook');
+    var $hook = this.$('.CDB-hook');
 
     if (!$hook) {
       return;
     }
 
-    var $hookImage = $('<img />').attr('src', url);
+    var $hookImage = $('<img />')
+      .addClass('CDB-hookImage js-hookImage')
+      .attr('src', url);
 
     $hook.append($hookImage);
 
-    $hookImage.attr('data-clipPath', 'M0,0 L0,16 L24,0 L0,0 Z');
-    $hookImage.clipPath(imageDimensions.width, imageDimensions.height, -this.options.hookMargin, imageDimensions.height - this.options.hookHeight);
-
-    $hookImage.load(function () {
-      $hook.parent().addClass('has-image');
-      $hookImage.css({
-        marginTop: -coverDimensions.height,
-        width: coverDimensions.width
-      });
+    $hookImage.css({
+      marginTop: -(imageDimensions.height - this.options.hookHeight),
+      width: coverDimensions.width,
+      display: 'none'
     });
+
+    $hookImage.load(
+      function () {
+        $hook.parent().addClass('has-image');
+        $hookImage.clipPath(this._getHookPoints(imageDimensions.height - this.options.hookHeight));
+        $hookImage.show();
+      }.bind(this)
+    );
+  },
+
+  _getHookPoints: function (imageHeight) {
+    return [
+      [24, imageHeight],
+      [24, imageHeight + 16],
+      [48, imageHeight],
+      [24, imageHeight]
+    ];
   },
 
   _loadCoverFromTemplate: function (url) {
@@ -328,9 +309,13 @@ var Infowindow = View.extend({
 
     this._startCoverLoader();
 
-    var $img = $("<img class='CDB-infowindow-media-item' />").attr('src', url);
+    var $img = $("<img class='CDB-infowindow-media-item' />");
     $cover.append($img);
-    $img.load(this._onLoadImage).error(this._onLoadImageError);
+
+    $img
+      .load(this._onLoadImageSuccess)
+      .error(this._onLoadImageError)
+      .attr('src', url);
   },
 
   _onLoadImageError: function () {
@@ -338,10 +323,11 @@ var Infowindow = View.extend({
     this._showInfowindowImageError();
   },
 
-  _onLoadImage: function () {
+  _onLoadImageSuccess: function () {
     var $cover = this.$('.js-cover');
     var $img = this.$('.CDB-infowindow-media-item');
     var url = $img.attr('src');
+    var numFields = this.model.get('content').fields.length;
 
     var imageDimensions = { width: $img.width(), height: $img.height() };
     var coverDimensions = { width: $cover.width(), height: $cover.height() };
@@ -356,7 +342,9 @@ var Infowindow = View.extend({
 
     $img.fadeIn(150);
 
-    this._loadImageHook(imageDimensions, coverDimensions, url);
+    if (numFields < 3 && imageDimensions.height >= this.$el.height()) {
+      this._loadImageHook(imageDimensions, coverDimensions, url);
+    }
   },
 
   _calcImageStyle: function (imageDimensions, coverDimensions) {
@@ -382,9 +370,12 @@ var Infowindow = View.extend({
 
     var url = this._getCoverURL();
 
-    if (this._isValidURL(url)) {
-      this._clearInfowindowImageError();
-    } else {
+    if (this._isLoadingFields()) {
+      return;
+    }
+
+    if (!this._isValidURL(url)) {
+      this._stopCoverLoader();
       this._showInfowindowImageError();
       return;
     }
@@ -394,6 +385,11 @@ var Infowindow = View.extend({
     } else {
       this._loadCoverFromUrl(url);
     }
+  },
+
+  _isLoadingFields: function () {
+    var content = this.model.get('content');
+    return !content || (content.fields.length === 1 && content.fields[0].type === 'loading');
   },
 
   _renderCoverLoader: function () {
@@ -444,14 +440,6 @@ var Infowindow = View.extend({
     } else {
       this.hide();
     }
-  },
-
-  /**
-   *  Stop event bubbling
-   */
-  _stopBubbling: function (e) {
-    e.preventDefault();
-    e.stopPropagation();
   },
 
   _stopPropagation: function (ev) {
@@ -559,6 +547,46 @@ var Infowindow = View.extend({
     } else {
       this.$el.hide();
     }
+  },
+
+  /**
+   *  Adjust pan to show correctly the infowindow
+   */
+  // TODO: This can be private
+  adjustPan: function () {
+    var offset = this.model.get('offset');
+
+    if (!this.model.get('autoPan') || this.isHidden()) { return; }
+
+    var containerHeight = this.$el.outerHeight(true) + 15; // Adding some more space
+    var containerWidth = this.$el.width();
+    var pos = this.mapView.latLngToContainerPoint(this.model.get('latlng'));
+    var adjustOffset = {x: 0, y: 0};
+    var size = this.mapView.getSize();
+    var wait_callback = 0;
+
+    if (pos.x - offset[0] < 0) {
+      adjustOffset.x = pos.x - offset[0] - 10;
+    }
+
+    if (pos.x - offset[0] + containerWidth > size.x) {
+      adjustOffset.x = pos.x + containerWidth - size.x - offset[0] + 10;
+    }
+
+    if (pos.y - containerHeight < 0) {
+      adjustOffset.y = pos.y - containerHeight - 10;
+    }
+
+    if (pos.y - containerHeight > size.y) {
+      adjustOffset.y = pos.y + containerHeight - size.y;
+    }
+
+    if (adjustOffset.x || adjustOffset.y) {
+      this.mapView.panBy(adjustOffset);
+      wait_callback = 300;
+    }
+
+    return wait_callback;
   },
 
   /**

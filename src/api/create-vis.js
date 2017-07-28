@@ -131,6 +131,10 @@ var applyOptionsToVizJSON = function (vizjson, options) {
     vizjson.removeLogoOverlay();
   }
 
+  if (_.has(options, 'vector')) {
+    vizjson.setVector(options.vector);
+  }
+
   // if bounds are present zoom and center will not taken into account
   var zoom = parseInt(options.zoom, 10);
   if (!isNaN(zoom)) {

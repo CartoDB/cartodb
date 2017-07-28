@@ -8,6 +8,10 @@ module Carto
       @@app_config ||= YAML.load_file(app_config_file).freeze
     end
 
+    def frontend_version
+      @@frontend_version ||= JSON::parse(File.read(Rails.root.join("package.json")))["version"]
+    end
+
     def env_app_config
       app_config[ENV['RAILS_ENV'] || 'development']
     end

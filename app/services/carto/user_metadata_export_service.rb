@@ -1,11 +1,13 @@
 require 'json'
 require 'carto/export/layer_exporter'
+require 'carto/export/data_import_exporter'
 
 # Version History
 # 1.0.0: export user metadata
+# 1.0.1: export search tweets
 module Carto
   module UserMetadataExportServiceConfiguration
-    CURRENT_VERSION = '1.0.0'.freeze
+    CURRENT_VERSION = '1.0.1'.freeze
     EXPORTED_USER_ATTRIBUTES = [
       :email, :crypted_password, :salt, :database_name, :username, :admin, :enabled, :invite_token, :invite_token_date,
       :map_enabled, :quota_in_bytes, :table_quota, :account_type, :private_tables_enabled, :period_end_date,
@@ -34,9 +36,10 @@ module Carto
   module UserMetadataExportServiceImporter
     include UserMetadataExportServiceConfiguration
     include LayerImporter
+    include DataImportImporter
 
     def build_user_from_json_export(exported_json_string)
-      build_user_from_hash_export(JSON.parse(exported_json_string).deep_symbolize_keys)
+      build_user_from_hash_export(parse_json(exported_json_string))
     end
 
     def build_user_from_hash_export(exported_hash)
@@ -45,12 +48,32 @@ module Carto
       build_user_from_hash(exported_hash[:user])
     end
 
+    def build_search_tweets_from_json_export(exported_json_string)
+      build_search_tweets_from_hash_export(parse_json(exported_json_string))
+    end
+
+    def build_search_tweets_from_hash_export(exported_hash)
+      exported_hash[:user].fetch(:search_tweets, []).map { |st| build_search_tweet_from_hash(st) }
+    end
+
     def save_imported_user(user)
       user.save!
       ::User[user.id].after_save
     end
 
+    def save_imported_search_tweet(search_tweet, user)
+      persisted_import = Carto::DataImport.where(id: search_tweet.data_import.id).first
+      search_tweet.data_import = persisted_import if persisted_import
+      search_tweet.table_id = search_tweet.data_import.table_id
+      search_tweet.user = user
+      search_tweet.save!
+    end
+
     private
+
+    def parse_json(exported_json_string)
+      JSON.parse(exported_json_string, symbolize_names: true)
+    end
 
     def build_user_from_hash(exported_user)
       user = User.new(exported_user.slice(*EXPORTED_USER_ATTRIBUTES))
@@ -84,11 +107,23 @@ module Carto
         storage_info: exported_asset[:storage_info]
       )
     end
+
+    def build_search_tweet_from_hash(exported_search_tweet)
+      SearchTweet.new(
+        data_import: build_data_import_from_hash(exported_search_tweet[:data_import]),
+        service_item_id: exported_search_tweet[:service_item_id],
+        retrieved_items: exported_search_tweet[:retrieved_items],
+        state: exported_search_tweet[:state],
+        created_at: exported_search_tweet[:created_at],
+        updated_at: exported_search_tweet[:updated_at]
+      )
+    end
   end
 
   module UserMetadataExportServiceExporter
     include UserMetadataExportServiceConfiguration
     include LayerExporter
+    include DataImportExporter
 
     def export_user_json_string(user_id)
       export_user_json_hash(user_id).to_json
@@ -112,6 +147,8 @@ module Carto
 
       user_hash[:layers] = user.layers.map { |l| export_layer(l) }
 
+      user_hash[:search_tweets] = user.search_tweets.map { |st| export_search_tweet(st) }
+
       # TODO
       # Organization notifications
 
@@ -123,6 +160,17 @@ module Carto
         public_url: asset.public_url,
         kind: asset.kind,
         storage_info: asset.storage_info
+      }
+    end
+
+    def export_search_tweet(search_tweet)
+      {
+        data_import: export_data_import(search_tweet.data_import),
+        service_item_id: search_tweet.service_item_id,
+        retrieved_items: search_tweet.retrieved_items,
+        state: search_tweet.state,
+        created_at: search_tweet.created_at,
+        updated_at: search_tweet.updated_at
       }
     end
   end
@@ -145,6 +193,7 @@ module Carto
       root_dir.join("redis_user_#{user_id}.json").open('w') { |file| file.write(redis_json) }
 
       # Export visualizations (include type in the name to be able to import datasets before maps)
+      export_user_visualizations_to_directory(user, Carto::Visualization::TYPE_REMOTE, path)
       export_user_visualizations_to_directory(user, Carto::Visualization::TYPE_CANONICAL, path)
       export_user_visualizations_to_directory(user, Carto::Visualization::TYPE_DERIVED, path)
     end
@@ -153,16 +202,27 @@ module Carto
       # Import user
       user_file = Dir["#{path}/user_*.json"].first
       user = build_user_from_json_export(File.read(user_file))
+
       save_imported_user(user)
 
       Carto::RedisExportService.new.restore_redis_from_json_export(File.read(Dir["#{path}/redis_user_*.json"].first))
 
       if import_visualizations
+        import_user_visualizations_from_directory(user, Carto::Visualization::TYPE_REMOTE, path)
         import_user_visualizations_from_directory(user, Carto::Visualization::TYPE_CANONICAL, path)
         import_user_visualizations_from_directory(user, Carto::Visualization::TYPE_DERIVED, path)
+
+        import_search_tweets_from_directory(path, user)
       end
 
       user
+    end
+
+    def import_search_tweets_from_directory(path, user)
+      user_file = Dir["#{path}/user_*.json"].first
+      search_tweets = build_search_tweets_from_json_export(File.read(user_file))
+
+      search_tweets.each { |st| save_imported_search_tweet(st, user) }
     end
 
     def import_user_visualizations_from_directory(user, type, path)

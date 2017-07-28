@@ -174,30 +174,30 @@ describe Carto::VisualizationsExportService2 do
               pre_html: '<h1>Here it comes!</h1>',
               post_html: '<h2>Awesome right?</h2>',
               definition: {
-                'categories' => [
+                categories: [
                   {
-                    'title' => 'foo',
-                    'color' => '#fabada'
+                    title: 'foo',
+                    color: '#fabada'
                   },
                   {
-                    'title' => 'bar',
-                    'icon' => 'super.png',
-                    'color' => '#fabada'
+                    title: 'bar',
+                    icon: 'super.png',
+                    color: '#fabada'
                   },
                   {
-                    'title' => 'ber'
+                    title: 'ber'
                   },
                   {
-                    'title' => 'baz'
+                    title: 'baz'
                   },
                   {
-                    'title' => 'bars',
-                    'icon' => 'dupe.png',
-                    'color' => '#fabada'
+                    title: 'bars',
+                    icon: 'dupe.png',
+                    color: '#fabada'
                   },
                   {
-                    'title' => 'fooz',
-                    'color' => '#fabada'
+                    title: 'fooz',
+                    color: '#fabada'
                   }
                 ]
               }
@@ -208,7 +208,7 @@ describe Carto::VisualizationsExportService2 do
               pre_html: '<h1>Here it comes!</h1>',
               post_html: '<h2>Awesome right? But not so much</h2>',
               definition: {
-                'color' => '#abc'
+                color: '#abc'
               }
             }
           ],
@@ -404,7 +404,7 @@ describe Carto::VisualizationsExportService2 do
   def verify_legends_vs_export(legends, legends_export)
     legends.each_with_index do |legend, index|
       legend_presentation = {
-        definition: legend.definition,
+        definition: JSON.parse(JSON.dump(legend.definition), symbolize_names: true), # Recursive symbolize, with arrays
         post_html: legend.post_html,
         pre_html: legend.pre_html,
         title: legend.title,
@@ -854,7 +854,7 @@ describe Carto::VisualizationsExportService2 do
           @remote_visualization.destroy
         end
 
-        it 'fails for remote visualizations and works for derived/canonical visualizations' do
+        it 'works for derived/canonical/remote visualizations' do
           exporter = Carto::VisualizationsExportService2.new
           expect {
             exporter.export_visualization_json_hash(@table_visualization.id, @user)
@@ -864,7 +864,7 @@ describe Carto::VisualizationsExportService2 do
           }.not_to raise_error
           expect {
             exporter.export_visualization_json_hash(@remote_visualization.id, @user)
-          }.to raise_error("Only derived or canonical visualizations can be exported")
+          }.not_to raise_error
         end
       end
 

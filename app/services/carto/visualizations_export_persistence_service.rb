@@ -29,7 +29,7 @@ module Carto
         visualization.permission = Carto::Permission.new(owner: user, owner_username: user.username)
 
         map = visualization.map
-        map.user = user
+        map.user = user if map
 
         visualization.analyses.each do |analysis|
           analysis.user_id = user.id
@@ -42,11 +42,17 @@ module Carto
           sync.log.user_id = user.id
         end
 
-        user_table = visualization.map.user_table
+        user_table = visualization.map.user_table if map
         if user_table
           user_table.user = user
           user_table.service.register_table_only = true
           raise 'Cannot import a dataset without physical table' unless user_table.service.real_table_exists?
+
+          data_import = user_table.data_import
+          if data_import
+            data_import.synchronization_id = sync.id if sync
+            data_import.user_id = user.id
+          end
         end
 
         visualization.mapcaps.clear unless full_restore
@@ -75,10 +81,22 @@ module Carto
           layer.save if changed
         end
 
-        map.data_layers.each(&:register_table_dependencies)
+        if map
+          map.data_layers.each(&:register_table_dependencies)
 
-        new_user_layers = map.base_layers.select(&:custom?).select { |l| !contains_equivalent_base_layer?(user.layers, l) }
-        new_user_layers.map(&:dup).map { |l| user.layers << l }
+          new_user_layers = map.base_layers.select(&:custom?).select { |l| !contains_equivalent_base_layer?(user.layers, l) }
+          new_user_layers.map(&:dup).map { |l| user.layers << l }
+
+          data_import = map.user_table.try(:data_import)
+          if data_import
+            data_import.table_id = map.user_table.id
+            data_import.save!
+            data_import.external_data_imports.each do |edi|
+              edi.synchronization_id = sync.id
+              edi.save!
+            end
+          end
+        end
       end
 
       # Propagate changes (named maps, default permissions and so on)
@@ -124,17 +142,20 @@ module Carto
 
       layers = []
       data_layer_count = 0
-      visualization.map.layers.each do |layer|
-        if layer.data_layer?
-          if data_layer_count < user.max_layers
+
+      if visualization.map
+        visualization.map.layers.each do |layer|
+          if layer.data_layer?
+            if data_layer_count < user.max_layers
+              layers.push(layer)
+              data_layer_count += 1
+            end
+          else
             layers.push(layer)
-            data_layer_count += 1
           end
-        else
-          layers.push(layer)
         end
+        visualization.map.layers = layers
       end
-      visualization.map.layers = layers
     end
   end
 end

@@ -124,13 +124,32 @@ describe Carto::Builder::Public::EmbedsController do
       response.body.should include('\"vector\":false')
     end
 
-    it 'doesn\'t include vector flag if vector_vs_raster feature flag is enabled' do
-      set_feature_flag @visualization.user, 'vector_vs_raster', true
-
+    it 'generates vizjson with vector=true with flag' do
       get builder_visualization_public_embed_url(visualization_id: @visualization.id, vector: true)
 
       response.status.should == 200
+      response.body.should include('\"vector\":true')
+    end
+
+    it 'doesn\'t include vector flag if vector_vs_raster feature flag is enabled and vector param is not present' do
+      set_feature_flag @visualization.user, 'vector_vs_raster', true
+
+      get builder_visualization_public_embed_url(visualization_id: @visualization.id)
+
+      response.status.should == 200
       response.body.should_not include('\"vector\"')
+    end
+
+    it 'includes vector flag if vector_vs_raster feature flag is enabled and vector param is present' do
+      set_feature_flag @visualization.user, 'vector_vs_raster', true
+
+      get builder_visualization_public_embed_url(visualization_id: @visualization.id, vector: true)
+      response.status.should == 200
+      response.body.should include('\"vector\":true')
+
+      get builder_visualization_public_embed_url(visualization_id: @visualization.id, vector: false)
+      response.status.should == 200
+      response.body.should include('\"vector\":false')
     end
 
     it 'does not include auth tokens for public/link visualizations' do

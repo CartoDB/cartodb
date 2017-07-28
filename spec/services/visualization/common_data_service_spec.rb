@@ -50,6 +50,16 @@ describe CartoDB::Visualization::CommonDataService do
     expect(remote_visualizations(@user).first.name).to eq 'ds1'
   end
 
+  it 'should import common data datasets within an ActiveRecord transaction (see #12488)' do
+    # This would trigger an exception because of data integrity
+    expect {
+      ActiveRecord::Base.transaction do
+        service.stubs(:get_datasets).returns([dataset('ds1')])
+        service.load_common_data_for_user(@user, 'some_url')
+      end
+    }.not_to raise_error
+  end
+
   it 'should update common data datasets' do
     service.stubs(:get_datasets).returns([dataset('ds1')])
     service.load_common_data_for_user(@user, 'some_url')

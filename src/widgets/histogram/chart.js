@@ -190,7 +190,7 @@ module.exports = cdb.core.View.extend({
   },
 
   _updateTriangle: function (className, triangle, xPos) {
-    var y3Factor = className === 'right' && !this._isTabletViewport() ? -1 : 1;
+    var y3Factor = className === 'right' && !(this._isTabletViewport() && this._isTimeSeries()) ? -1 : 1;
     var xLimit = className === 'right' ? this.chartWidth() : 0;
     var xDiff = Math.abs(xLimit - xPos);
 
@@ -239,7 +239,8 @@ module.exports = cdb.core.View.extend({
     var parts = d3.transform(handle.attr('transform')).translate;
     var xPos = +parts[0] + (this.options.handleWidth / 2);
 
-    var yPos = className === 'left' || this._isMobileViewport() ? -(TRIANGLE_HEIGHT + TIP_RECT_HEIGHT + TOOLTIP_MARGIN) : this.chartHeight() + (TRIANGLE_HEIGHT * TRIANGLE_RIGHT_FACTOR);
+    var yPos = className === 'right' && !(this._isMobileViewport() && this._isTimeSeries()) ?
+      this.chartHeight() + (TRIANGLE_HEIGHT * TRIANGLE_RIGHT_FACTOR) : -(TRIANGLE_HEIGHT + TIP_RECT_HEIGHT + TOOLTIP_MARGIN);
     yPos = Math.floor(yPos);
 
     this._updateTriangle(className, triangle, xPos);
@@ -442,13 +443,13 @@ module.exports = cdb.core.View.extend({
   _generateChartContent: function () {
     this._generateAxis();
 
-    if (!this._isMobileViewport()) {
+    if (!this._isMobileViewport() && !this._isDateTimeSeries()) {
       this._generateLines();
     }
 
     this._generateBars();
 
-    if (!this._isMobileViewport()) {
+    if (!this._isMobileViewport() && !this._isDateTimeSeries()) {
       this._generateBottomLine();
     }
 
@@ -857,7 +858,7 @@ module.exports = cdb.core.View.extend({
         .attr('class', 'Brush')
         .call(brush);
 
-    var height = this._isTabletViewport() ? this.chartHeight() * 2 : this.chartHeight();
+    var height = this._isTabletViewport() && this._isTimeSeries() ? this.chartHeight() * 2 : this.chartHeight();
     // set brush extent to rect and define objects height
     brushg.selectAll('rect')
         .attr('y', 0)
@@ -1023,8 +1024,12 @@ module.exports = cdb.core.View.extend({
   _generateAxisTip: function (className) {
     var handle = this.chart.select('.CDB-Chart-handle.CDB-Chart-handle-' + className);
 
-    var yPos = className === 'right' ? this.chartHeight() + (TRIANGLE_HEIGHT * TRIANGLE_RIGHT_FACTOR) : -(TRIANGLE_HEIGHT + TIP_RECT_HEIGHT + TOOLTIP_MARGIN);
-    var yTriangle = className === 'right' && !this._isMobileViewport() ? this.chartHeight() + (TRIANGLE_HEIGHT * TRIANGLE_RIGHT_FACTOR) + 2 : -(TRIANGLE_HEIGHT + TOOLTIP_MARGIN) - 2;
+    var yPos = className === 'right' && !(this._isMobileViewport() && this._isTimeSeries()) ?
+      this.chartHeight() + (TRIANGLE_HEIGHT * TRIANGLE_RIGHT_FACTOR) : -(TRIANGLE_HEIGHT + TIP_RECT_HEIGHT + TOOLTIP_MARGIN);
+    yPos = Math.floor(yPos);
+
+    var yTriangle = className === 'right' && !(this._isMobileViewport() && this._isTimeSeries()) ?
+      this.chartHeight() + (TRIANGLE_HEIGHT * TRIANGLE_RIGHT_FACTOR) + 2 : -(TRIANGLE_HEIGHT + TOOLTIP_MARGIN) - 2;
     var yFactor = className === 'right' ? -1 : 1;
     var triangleHeight = TRIANGLE_HEIGHT * yFactor;
 
@@ -1058,7 +1063,7 @@ module.exports = cdb.core.View.extend({
   },
 
   _generateHandle: function (className) {
-    var height = this._isTabletViewport() ? this.chartHeight() * 2 : this.chartHeight();
+    var height = this._isTabletViewport() && this._isTimeSeries() ? this.chartHeight() * 2 : this.chartHeight();
     var opts = { width: this.options.handleWidth, height: height, radius: this.options.handleRadius };
 
     var handle = this.chart.select('.CDB-Chart-handles')
@@ -1078,7 +1083,7 @@ module.exports = cdb.core.View.extend({
         .attr('rx', opts.radius)
         .attr('ry', opts.radius);
 
-      var y = this._isTabletViewport() ? this.chartHeight() : this.chartHeight() / 2;
+      var y = this._isTabletViewport() && this._isTimeSeries() ? this.chartHeight() : this.chartHeight() / 2;
       y -= 3;
       var x1 = (opts.width - DASH_WIDTH) / 2;
 
@@ -1402,6 +1407,11 @@ module.exports = cdb.core.View.extend({
           return 0;
         }
 
+        if (self._isMobileViewport() && self._isTimeSeries()) {
+          return MOBILE_BAR_HEIGHT;
+        }
+
+
         var h = self.chartHeight() - self.yScale(d.freq);
 
         if (h < self.options.minimumBarHeight && h > 0) {
@@ -1412,6 +1422,10 @@ module.exports = cdb.core.View.extend({
       .attr('y', function (d) {
         if (_.isEmpty(d)) {
           return self.chartHeight();
+        }
+
+        if (self._isMobileViewport() && self._isDateTimeSeries()) {
+          return self.chartHeight() / 2 + MOBILE_BAR_HEIGHT;
         }
 
         var h = self.chartHeight() - self.yScale(d.freq);
@@ -1453,7 +1467,7 @@ module.exports = cdb.core.View.extend({
     this._calcBarWidth();
     // Remove spacing if not enough room for the smallest case, or mobile viewport
     var spacing = (((data.length * 2) - 1) > this.chartWidth() ||
-      this._isMobileViewport()) ? 0 : 1;
+      this._isMobileViewport() && this._isDateTimeSeries()) ? 0 : 1;
 
     var bars = this.chart.append('g')
       .attr('transform', 'translate(0, 0)')
@@ -1480,12 +1494,12 @@ module.exports = cdb.core.View.extend({
       .delay(this.options.animationBarDelay)
       .transition()
       .attr('height', function (d) {
-        if (self._isMobileViewport()) {
-          return MOBILE_BAR_HEIGHT;
-        }
-
         if (_.isEmpty(d)) {
           return 0;
+        }
+
+        if (self._isMobileViewport() && self._isTimeSeries()) {
+          return MOBILE_BAR_HEIGHT;
         }
 
         var h = self.chartHeight() - self.yScale(d.freq);
@@ -1496,12 +1510,12 @@ module.exports = cdb.core.View.extend({
         return h;
       })
       .attr('y', function (d) {
-        if (self._isMobileViewport()) {
-          return self.chartHeight() / 2 + MOBILE_BAR_HEIGHT;
-        }
-
         if (_.isEmpty(d)) {
           return self.chartHeight();
+        }
+
+        if (self._isMobileViewport() && self._isTimeSeries()) {
+          return self.chartHeight() / 2 + MOBILE_BAR_HEIGHT;
         }
 
         var h = self.chartHeight() - self.yScale(d.freq);
@@ -1589,6 +1603,10 @@ module.exports = cdb.core.View.extend({
 
   _isDateTimeSeries: function () {
     return this.options.type === 'time-date';
+  },
+
+  _isTimeSeries: function () {
+    return this.options.type === 'time-date' || this.options.type === 'time-number';
   },
 
   _calculateDivisionWithByAggregation: function (aggregation) {

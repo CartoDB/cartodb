@@ -336,4 +336,16 @@ describe('src/vis/vizjson', function () {
       expect(vizjson.bounds).toEqual('new_bounds');
     });
   });
+
+  describe('.setVector', function () {
+    it('should set vector', function () {
+      var vizjson = new VizJSON({
+        vector: true
+      });
+
+      vizjson.setVector(false);
+
+      expect(vizjson.vector).toBeFalsy();
+    });
+  });
 });

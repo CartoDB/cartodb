@@ -13,7 +13,9 @@
     <% } %>
     <% if (showStats) { %>
       <dl class="CDB-Widget-info CDB-Text CDB-Size-small u-secondaryTextColor u-upperCase u-tSpace">
+        <% if (showNulls) { %>
         <dt class="CDB-Widget-infoCount js-nulls">0</dt><dd class="CDB-Widget-infoDescription">NULL ROWS</dd>
+        <% } %>
         <dt class="CDB-Widget-infoCount js-min">0</dt><dd class="CDB-Widget-infoDescription">MIN</dd>
         <dt class="CDB-Widget-infoCount js-avg">0</dt><dd class="CDB-Widget-infoDescription">AVG</dd>
         <dt class="CDB-Widget-infoCount js-max">0</dt><dd class="CDB-Widget-infoDescription">MAX</dd>
@@ -31,5 +33,7 @@
       <button class="CDB-Text CDB-Size-small u-upperCase u-actionTextColor CDB-Widget-filterButton js-clear">clear</button>
     </div>
   </div>
+  <div class="js-mini-chart"></div>
+  <div class="CDB-Chart--histogram js-chart"></div>
 </div>
 <% } %>

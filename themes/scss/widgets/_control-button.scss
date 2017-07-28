@@ -5,8 +5,9 @@
   width: $baseSize * 3;
   min-width: $baseSize * 3; // to avoid the element to be "squashed" due to limited space in container
   height: $baseSize * 3;
+  margin-top: $baseSize * 2;
   border: 1px solid transparent; // border used for :hover, color set in theme
-  border-radius: 50%;
+  border-radius: 4px;
   &:hover {
     cursor: pointer;
   }
@@ -23,26 +24,9 @@
   width: $baseSize;
   height: $baseSize;
 }
-.CDB-Widget-controlButtonIcon--play {
-  width: $baseSize - 2;
-  box-sizing: border-box; // for border to appear within the box (to appear as a triangle)
-  margin-left: 1px; // avoid optical illusion; make it appear horizontal center
-  border-top: 4px dotted transparent; // use dotted type for lines to not be jagged in FF
-  border-bottom: 4px dotted transparent;
-  border-left-width: 6px;
-  border-left-style: solid;
-}
-.CDB-Widget-controlButtonIcon--pause {
-  margin-top: -11px; // to make the :before/:after appear in vertical center
-  &:before,
-  &:after {
-    display: inline-block;
-    width: $baseSize / 4;
-    height: $baseSize;
-    border-radius: $baseSize;
-    content: '';
-  }
-  &:after {
-    margin-left: $baseSize / 4; // creates the space between :before and :after
+
+@media (max-width: 960px) {
+  .CDB-Widget-controlButton {
+    margin-top: 0;
   }
 }

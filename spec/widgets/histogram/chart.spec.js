@@ -921,6 +921,26 @@ describe('widgets/histogram/chart', function () {
       }, this);
     });
   });
+
+  describe('touch interfaces fixes', function () {
+    it('should mark all brush elements with ps-prevent-touchmove', function () {
+      var brush = this.view.$('g.Brush');
+
+      var hasProperClass = function (e) {
+        return e.attributes.class.value.indexOf('ps-prevent-touchmove') !== 1;
+      };
+
+      var checkAllChildren = function (child) {
+        expect(hasProperClass(child)).toBe(true);
+
+        if (child.children && child.children.length > 0) {
+          _.forEach(child.children, checkAllChildren);
+        }
+      };
+
+      _.forEach(brush.children(), checkAllChildren);
+    });
+  });
 });
 
 function genHistogramData (n) {

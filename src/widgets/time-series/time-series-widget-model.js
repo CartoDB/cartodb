@@ -33,7 +33,7 @@ module.exports = WidgetModel.extend({
       return false;
     };
 
-    if (_.isNumber(lo) && _.isNumber(hi)) {
+    if (_.isNumber(lo) && _.isNumber(hi) && lo < data.length && (hi - 1) < data.length) {
       l = data[lo].start;
       m = data[hi - 1].end;
     } else {
@@ -50,5 +50,4 @@ module.exports = WidgetModel.extend({
 
     return state;
   }
-
 });

@@ -16,7 +16,6 @@ var TRIANGLE_HEIGHT = 7;
 var TRIANGLE_RIGHT_FACTOR = 1.3;
 var TOOLTIP_MARGIN = 2;
 var DASH_WIDTH = 4;
-var SVG_CLASS = 'CDB-Chart--histogram';
 
 var BEZIER_MARGIN_X = 0.1;
 var BEZIER_MARGIN_Y = 1;
@@ -70,10 +69,6 @@ module.exports = cdb.core.View.extend({
     // and w/o class="" d3 won't instantiate properly
     this.setElement($('<svg class=""></svg>')[0]);
 
-    if (!this.options.mini) {
-      this.$el.attr('class', SVG_CLASS);
-    }
-
     this._widgetModel = this.options.widgetModel;
     this._dataviewModel = this.options.dataviewModel;
 
@@ -116,10 +111,10 @@ module.exports = cdb.core.View.extend({
   },
 
   chartWidth: function () {
-    var m = this.model.get('margin');
+    var margin = this.model.get('margin');
 
     // Get max because width might be negative initially
-    return Math.max(0, this.model.get('width') - m.left - m.right);
+    return Math.max(0, this.model.get('width') - margin.left - margin.right);
   },
 
   chartHeight: function () {
@@ -131,6 +126,16 @@ module.exports = cdb.core.View.extend({
     return this.model.get('height') - m.top - m.bottom - labelsMargin;
   },
 
+  getSelectionExtent: function () {
+    if (this.brush && this.brush.extent()) {
+      var extent = this.brush.extent();
+
+      return extent[1] - extent[0];
+    }
+
+    return 0;
+  },
+
   _resizeToParentElement: function () {
     if (this.$el.parent()) {
       // Hide this view temporarily to get actual size of the parent container
@@ -138,7 +143,23 @@ module.exports = cdb.core.View.extend({
 
       this.hide();
 
-      var width = this.$el.parent().width() || 0;
+      var parent = this.$el.parent();
+      var grandParent = parent.parent && parent.parent() && parent.parent().length > 0
+        ? parent.parent()
+        : null;
+      var width = parent.width() || 0;
+
+      if (this.model.get('animated')) {
+        // We could just substract 24, width of play/pause but imho this is more future proof
+        this.$el.siblings().each(function () {
+          width -= $(this).width();
+        });
+      }
+
+      // This should match the one on _default.css
+      if (grandParent && grandParent.outerWidth && window.matchMedia('(max-width: 759px)').matches) {
+        width -= grandParent.outerWidth(true) - grandParent.width();
+      }
 
       if (wasHidden) {
         this.hide();
@@ -643,8 +664,11 @@ module.exports = cdb.core.View.extend({
   },
 
   _calculateEvenlySpacedDivisions: function () {
-    var space = Math.round(this.chartWidth() / this.options.divisionWidth);
-    return d3.range(0, this.chartWidth() + this.chartWidth() / space, this.chartWidth() / space);
+    var divisions = Math.round(this.chartWidth() / this.options.divisionWidth);
+    var step = this.chartWidth() / divisions;
+    var stop = this.chartWidth() + step;
+    var range = d3.range(0, stop, step).slice(0, divisions + 1);
+    return range;
   },
 
   _calcBarWidth: function () {
@@ -839,6 +863,12 @@ module.exports = cdb.core.View.extend({
         .on('mouseout', this._onMouseOut)
         .on('mousemove', this._onMouseMove);
 
+    // Prevent scroll while touching selections
+    brushg.selectAll('rect')
+      .classed('ps-prevent-touchmove', true);
+    brushg.selectAll('g')
+      .classed('ps-prevent-touchmove', true);
+
     this.brush = brush;
 
     // Make grabby handles as big as the display handles
@@ -916,7 +946,7 @@ module.exports = cdb.core.View.extend({
   },
 
   _onMouseMove: function () {
-    var x = d3.event.offsetX;
+    var x = d3.event.offsetX - this.model.get('margin').left;
 
     var barIndex = Math.floor(x / this.barWidth);
     var data = this.model.get('data');

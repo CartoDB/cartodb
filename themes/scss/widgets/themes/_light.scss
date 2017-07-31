@@ -61,13 +61,13 @@ $timeSliderBorder: rgba(#FFF, 1);
       background: $linkHover;
     }
   }
-  .CDB-Widget-controlButtonIcon--play {
-    border-left-color: $elementBkg;
-  }
-  .CDB-Widget-controlButtonIcon--pause {
-    &:before,
-    &:after {
-      background-color: $elementBkg;
+
+  .CDB-Widget-controlButton.is-disabled {
+    opacity: 0.24;
+    pointer-events: none;
+    &:hover {
+      border-color: $primary;
+      background: $primary;
     }
   }
 

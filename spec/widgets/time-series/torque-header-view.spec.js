@@ -50,8 +50,6 @@ describe('widgets/time-series/torque-header-view', function () {
     it('should render torque controls and hide clear button if filter is empty', function () {
       this.view.render();
 
-      // Torque controls rendered
-      expect(this.view.$('.CDB-Widget-controlButtonContent').length).toBe(1);
       // Torque time info rendered
       expect(this.view.$('.CDB-Widget-timeSeriesTimeInfo').length).toBe(2);
       // Header clear button not present

@@ -728,7 +728,7 @@
     "cartodb-deep-insights.js": {
       "version": "0.0.2-c12324",
       "from": "cartodb/deep-insights.js#c12324-time-series-aggregations",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#80c3bf94067278c82f8e7677bd45e01ba479eec9",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#805c209a5b9d160e0fdca1304cc6e2d85e722bf0",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",
@@ -745,7 +745,7 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
       "from": "cartodb/cartodb.js#c12324-time-series-aggregations",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#88f78193cc06d80024c174545a60b8ade181800f"
+      "resolved": "git://github.com/cartodb/cartodb.js.git#fe8daaf2b0369b96030d40cbea38a1e832be3022"
     },
     "caseless": {
       "version": "0.11.0",

@@ -412,7 +412,7 @@ describe('dataviews/histogram-dataview-model', function () {
 
       var parsedData = this.model.parse(data);
       expect(helper.fillTimestampBuckets).toHaveBeenCalled();
-      expect(JSON.stringify(parsedData)).toBe('{"data":[{"offset":3600,"bin":0,"start":1496690940,"end":1496690999,"next":1496691000,"freq":17,"timestamp":1496690940,"min":1496690944,"max":1496690999,"avg":1496690971.58824},{"offset":3600,"bin":1,"start":1496691000,"end":1496691059,"next":1496691060,"freq":18,"timestamp":1496691000,"min":1496691003,"max":1496691059,"avg":1496691031.22222}],"filteredAmount":0,"nulls":0,"totalAmount":35}');
+      expect(JSON.stringify(parsedData)).toBe('{"data":[{"offset":3600,"bin":0,"start":1496690940,"end":1496690999,"next":1496691000,"freq":17,"timestamp":1496690940,"min":1496690944,"max":1496690999,"avg":1496690971.58824},{"offset":3600,"bin":1,"start":1496691000,"end":1496691059,"next":1496691060,"freq":18,"timestamp":1496691000,"min":1496691003,"max":1496691059,"avg":1496691031.22222}],"filteredAmount":0,"nulls":0,"totalAmount":35,"hasNulls":true}');
     });
   });
 
@@ -469,18 +469,6 @@ describe('dataviews/histogram-dataview-model', function () {
           });
 
           expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&bins=33');
-        });
-      });
-
-      describe('if bins not present', function () {
-        it('should not include start, end', function () {
-          this.model.set({
-            start: 0,
-            end: 10,
-            column_type: 'number'
-          });
-
-          expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3');
         });
       });
 
@@ -558,6 +546,43 @@ describe('dataviews/histogram-dataview-model', function () {
       expect(this.vis.reload).toHaveBeenCalled();
       expect(this.model.get('aggregation')).toBeUndefined();
       expect(this.model.get('offset')).toBeUndefined();
+    });
+  });
+
+  describe('._calculateTotalAmount', function () {
+    it('should aggregate all bucket frequencies', function () {
+      var buckets = [
+        { freq: 8 },
+        { freq: 7 },
+        { freq: 0 },
+        { freq: 3 }
+      ];
+
+      var result = this.model._calculateTotalAmount(buckets);
+
+      expect(result).toEqual(18);
+    });
+
+    it('should return 0 if no buckets present', function () {
+      var buckets = [];
+
+      var result = this.model._calculateTotalAmount(buckets);
+
+      expect(result).toEqual(0);
+    });
+
+    it('should calculate totals properly even if no bucket is present in the middle', function () {
+      var buckets = [
+        { freq: 8 },
+        null,
+        { freq: 0 },
+        { max: 6 },
+        { freq: 3 }
+      ];
+
+      var result = this.model._calculateTotalAmount(buckets);
+
+      expect(result).toEqual(11);
     });
   });
 

@@ -209,7 +209,8 @@ module.exports = cdb.core.View.extend({
   },
 
   _updateAxisTip: function (className) {
-    var model = this.model.get(className + '_axis_tip');
+    var attr = className + '_axis_tip';
+    var model = this.model.get(attr);
     if (model === undefined) { return; }
 
     var textLabel = this.chart.select('.CDB-Chart-axisTipText.CDB-Chart-axisTip-' + className);
@@ -218,10 +219,15 @@ module.exports = cdb.core.View.extend({
     var handle = this.chart.select('.CDB-Chart-handle.CDB-Chart-handle-' + className);
     var triangle = handle.select('.CDB-Chart-axisTipTriangle');
 
-    triangle.style('opacity', '1');
-
     textLabel.data([model]).text(function (d) {
-      return this.formatter(d, this.model.get('local_timezone'));
+      var text = this.formatter(d, this.model.get('local_timezone'));
+
+      this._dataviewModel.trigger('on_update_axis_tip', {
+        attr: attr,
+        text: text
+      });
+
+      return text;
     }.bind(this));
 
     if (!textLabel.node()) {
@@ -253,6 +259,10 @@ module.exports = cdb.core.View.extend({
       axisTip.attr('transform', 'translate(' + newX + ', ' + yPos + ')');
     } else {
       axisTip.attr('transform', 'translate(-' + Math.max(((rectWidth / 2) - (this.options.handleWidth / 2)), 0) + ', ' + yPos + ')');
+    }
+
+    if (this.model.get('dragging') && this._isMobileViewport() && this._isTimeSeries()) {
+      this._showAxisTip(className);
     }
   },
 
@@ -342,30 +352,36 @@ module.exports = cdb.core.View.extend({
 
   _onChangeDragging: function () {
     this.chart.classed('is-dragging', this.model.get('dragging'));
-    this._updateAxisTipOpacity('right');
-    this._updateAxisTipOpacity('left');
+
+    if (!this.model.get('dragging') && this._isMobileViewport() && this._isTimeSeries()) {
+      this._hideAxisTip('right');
+      this._hideAxisTip('left');
+    }
+  },
+
+  _toggleAxisTip: function (className, show) {
+    var textLabel = this.chart.select('.CDB-Chart-axisTipText.CDB-Chart-axisTip-' + className);
+    var rectLabel = this.chart.select('.CDB-Chart-axisTipRect.CDB-Chart-axisTip-' + className);
+    var handle = this.chart.select('.CDB-Chart-handle.CDB-Chart-handle-' + className);
+    var triangle = handle.select('.CDB-Chart-axisTipTriangle');
+
+    if (textLabel) {
+      textLabel.transition().duration(200).attr('opacity', show);
+    }
+    if (rectLabel) {
+      rectLabel.transition().duration(200).attr('opacity', show);
+    }
+    if (triangle) {
+      triangle.transition().duration(200).style('opacity', show);
+    }
+  },
+
+  _hideAxisTip: function (className) {
+    this._toggleAxisTip(className, 0);
   },
 
   _showAxisTip: function (className) {
-    var textLabel = this.chart.select('.CDB-Chart-axisTipText.CDB-Chart-axisTip-' + className);
-    var rectLabel = this.chart.select('.CDB-Chart-axisTipRect.CDB-Chart-axisTip-' + className);
-    var triangle = this.chart.select('.CDB-Chart-axisTip-' + className + ' .CDB-Chart-axisTipTriangle');
-
-    if (textLabel) {
-      textLabel.transition().duration(200).attr('opacity', 1);
-    }
-    if (rectLabel) {
-      rectLabel.transition().duration(200).attr('opacity', 1);
-    }
-    if (triangle) {
-      triangle.transition().duration(200).attr('opacity', 1);
-    }
-  },
-
-  _updateAxisTipOpacity: function (className) {
-    if (this.model.get('dragging')) {
-      this._showAxisTip(className);
-    }
+    this._toggleAxisTip(className, 1);
   },
 
   _setAxisTipAccordingToBins: function () {
@@ -443,13 +459,13 @@ module.exports = cdb.core.View.extend({
   _generateChartContent: function () {
     this._generateAxis();
 
-    if (!this._isMobileViewport() && !this._isDateTimeSeries()) {
+    if (!(this._isTabletViewport() && this._isTimeSeries())) {
       this._generateLines();
     }
 
     this._generateBars();
 
-    if (!this._isMobileViewport() && !this._isDateTimeSeries()) {
+    if (!(this._isMobileViewport() && this._isTimeSeries())) {
       this._generateBottomLine();
     }
 
@@ -849,25 +865,25 @@ module.exports = cdb.core.View.extend({
   _setupBrush: function () {
     // define brush control element and its events
     var brush = d3.svg.brush()
-        .x(this.xScale)
-        .on('brush', this._onBrushMove)
-        .on('brushend', this._onBrushEnd);
+      .x(this.xScale)
+      .on('brush', this._onBrushMove)
+      .on('brushend', this._onBrushEnd);
 
     // create svg group with class brush and call brush on it
     var brushg = this.chart.append('g')
-        .attr('class', 'Brush')
-        .call(brush);
+      .attr('class', 'Brush')
+      .call(brush);
 
     var height = this._isTabletViewport() && this._isTimeSeries() ? this.chartHeight() * 2 : this.chartHeight();
     // set brush extent to rect and define objects height
     brushg.selectAll('rect')
-        .attr('y', 0)
-        .attr('height', height);
+      .attr('y', 0)
+      .attr('height', height);
 
     // Only bind on the background element
     brushg.selectAll('rect.background')
-        .on('mouseout', this._onMouseOut)
-        .on('mousemove', this._onMouseMove);
+      .on('mouseout', this._onMouseOut)
+      .on('mousemove', this._onMouseMove);
 
     // Prevent scroll while touching selections
     brushg.selectAll('rect')

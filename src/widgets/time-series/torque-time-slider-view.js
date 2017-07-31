@@ -72,10 +72,12 @@ module.exports = cdb.core.View.extend({
 
   _generateTimeSliderTip: function () {
     var yPos = this._calcHeight() / 2 + MOBILE_BAR_HEIGHT + TOOLTIP_MARGIN;
+    yPos = Math.floor(yPos);
 
     this.timeSliderTip = this._chartView.canvas.select('.CDB-WidgetCanvas').append('g')
       .attr('class', 'CDB-Chart-timeSliderTip')
-      .attr('transform', 'translate(' + CHART_MARGIN + ',' + yPos + ')');
+      .data([{ x: CHART_MARGIN, y: yPos }])
+      .attr('transform', this._translateXY);
 
     this.timeSliderTip.append('rect')
       .attr('class', 'CDB-Chart-timeSliderTipRect')
@@ -120,30 +122,37 @@ module.exports = cdb.core.View.extend({
     textLabel.attr('dx', TIP_H_PADDING / 2);
     textLabel.attr('dy', textBBox.height - Math.abs((textBBox.height - TIP_RECT_HEIGHT) / 2));
 
-    var parts = d3.transform(timeslider.attr('transform')).translate;
-    var xPos = parts[0] + this.defaults.width - rectWidth / 2;
+    var timeSliderX = this._xScale(this._torqueLayerModel.get('step'));
+    var xPos = timeSliderX + this.defaults.width - rectWidth / 2;
     var yPos = this._calcHeight() / 2 + MOBILE_BAR_HEIGHT + TOOLTIP_MARGIN;
     yPos = Math.floor(yPos);
 
-    var translate = '';
+    var data = this.timeSliderTip.data();
+    data[0].y = yPos;
 
     if (xPos < CHART_MARGIN) {
-      translate = 'translate(' + CHART_MARGIN + ',' + yPos + ')';
+      newX = CHART_MARGIN;
     } else if ((xPos + rectWidth) >= chartWidth) {
-      translate = 'translate(' + (chartWidth - rectWidth) + ',' + yPos + ')';
+      newX = chartWidth - rectWidth;
     } else {
-      translate = 'translate(' + xPos + ', ' + yPos + ')';
+      newX = xPos;
     }
 
-    this.timeSliderTip
-      .transition()
-      .ease('linear')
-      .attr('transform', translate);
+    if (!isNaN(newX)) {
+      data[0].x = newX;
+
+      this.timeSliderTip
+        .data(data)
+        .transition()
+        .ease('linear')
+        .attr('transform', this._translateXY);
+    }
   },
 
   _initBinds: function () {
     this.listenTo(this._torqueLayerModel, 'change:start change:end', this._updateChartandTimeslider);
     this.listenTo(this._torqueLayerModel, 'change:step', this._onChangeStep);
+    this.listenTo(this._torqueLayerModel, 'change:time', this._onChangeTime);
     this.listenTo(this._torqueLayerModel, 'change:steps', this._updateChartandTimeslider);
 
     this.listenTo(this._chartView.model, 'change:width', this._updateChartandTimeslider);
@@ -211,13 +220,12 @@ module.exports = cdb.core.View.extend({
 
       if (!isNaN(newX)) {
         data[0].x = newX;
+
         this.timeSlider
           .data(data)
           .transition()
           .ease('linear')
           .attr('transform', this._translateXY);
-
-        this._checkTimeSliderTip();
       }
     }
   },
@@ -232,7 +240,7 @@ module.exports = cdb.core.View.extend({
     this._updateTimeSliderTip();
   },
 
-  _checkTimeSliderTip: function () {
+  _onChangeTime: function () {
     if (!this._rangeFilter.isEmpty()) {
       this._removeTimeSliderTip();
     } else {

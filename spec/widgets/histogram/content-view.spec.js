@@ -263,6 +263,13 @@ describe('widgets/histogram/content-view', function () {
       expect(this.view.$('.CDB-Widget-info').length).toBe(1);
     });
 
+    it('should hide nulls if dataview model doesnt have nulls defined', function () {
+      spyOn(this.view._dataviewModel, 'hasNulls').and.returnValue(false);
+      this.widgetModel.set('show_stats', true);
+      this.view.render();
+      expect(this.view.$('.js-nulls').length).toBe(0);
+    });
+
     it('should show source when show_source is true', function () {
       expect(this.view.$('.CDB-Widget-info').length).toBe(0);
       this.widgetModel.set('show_source', true);

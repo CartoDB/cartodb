@@ -656,8 +656,11 @@ module.exports = cdb.core.View.extend({
   },
 
   _calculateEvenlySpacedDivisions: function () {
-    var space = Math.round(this.chartWidth() / this.options.divisionWidth);
-    return d3.range(0, this.chartWidth() + this.chartWidth() / space, this.chartWidth() / space);
+    var divisions = Math.round(this.chartWidth() / this.options.divisionWidth);
+    var step = this.chartWidth() / divisions;
+    var stop = this.chartWidth() + step;
+    var range = d3.range(0, stop, step).slice(0, divisions + 1);
+    return range;
   },
 
   _calcBarWidth: function () {
@@ -1119,6 +1122,7 @@ module.exports = cdb.core.View.extend({
       .attr('text-anchor', adjustTextAnchor)
       .text(function (d) {
         var value;
+        //console.log(`d: ${d}`);
         if (self.xAxisScale) {
           value = self.xAxisScale(d);
           return self.formatter(value);

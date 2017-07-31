@@ -144,6 +144,9 @@ module.exports = cdb.core.View.extend({
       this.hide();
 
       var parent = this.$el.parent();
+      var grandParent = parent.parent() && parent.parent().length > 0
+        ? parent.parent()
+        : null;
       var width = parent.width() || 0;
 
       if (this.model.get('animated')) {
@@ -154,9 +157,8 @@ module.exports = cdb.core.View.extend({
       }
 
       // This should match the one on _default.css
-      if (parent.outerWidth && parent.parent() && parent.parent().length > 0 && window.matchMedia('(max-width: 759px)').matches) {
-        var widgetContent = parent.parent();
-        width -= widgetContent.outerWidth(true) - widgetContent.width();
+      if (grandParent && grandParent.outerWidth && window.matchMedia('(max-width: 759px)').matches) {
+        width -= grandParent.outerWidth(true) - grandParent.width();
       }
 
       if (wasHidden) {

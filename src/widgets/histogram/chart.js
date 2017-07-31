@@ -111,10 +111,10 @@ module.exports = cdb.core.View.extend({
   },
 
   chartWidth: function () {
-    var m = this.model.get('margin');
+    var margin = this.model.get('margin');
 
     // Get max because width might be negative initially
-    return Math.max(0, this.model.get('width') - m.left - m.right);
+    return Math.max(0, this.model.get('width') - margin.left - margin.right);
   },
 
   chartHeight: function () {
@@ -154,9 +154,9 @@ module.exports = cdb.core.View.extend({
       }
 
       // This should match the one on _default.css
-      if (parent.outerWidth && window.matchMedia('(max-width: 759px)').matches) {
-        var margins = parent.outerWidth(true) - parent.width();
-        width -= margins;
+      if (parent.outerWidth && parent.parent() && parent.parent().length > 0 && window.matchMedia('(max-width: 759px)').matches) {
+        var widgetContent = parent.parent();
+        width -= widgetContent.outerWidth(true) - widgetContent.width();
       }
 
       if (wasHidden) {

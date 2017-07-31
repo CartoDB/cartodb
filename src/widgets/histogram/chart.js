@@ -144,7 +144,7 @@ module.exports = cdb.core.View.extend({
       this.hide();
 
       var parent = this.$el.parent();
-      var grandParent = parent.parent() && parent.parent().length > 0
+      var grandParent = parent.parent && parent.parent() && parent.parent().length > 0
         ? parent.parent()
         : null;
       var width = parent.width() || 0;

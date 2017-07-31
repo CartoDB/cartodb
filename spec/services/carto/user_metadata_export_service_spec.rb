@@ -161,7 +161,7 @@ describe Carto::UserMetadataExportService do
 
   def expect_export_matches_user(export, user)
     Carto::UserMetadataExportService::EXPORTED_USER_ATTRIBUTES.each do |att|
-      expect(export[att]).to eq user.attributes[att.to_s]
+      expect(export[att]).to eq(user.attributes[att.to_s]), "attribute #{att.inspect} expected: #{user.attributes[att.to_s].inspect} got: #{export[att].inspect}"
     end
 
     expect(export[:layers].count).to eq user.layers.size
@@ -211,6 +211,8 @@ describe Carto::UserMetadataExportService do
         max_layers: 8,
         database_timeout: 300000,
         user_timeout: 300000,
+        database_render_timeout: 0,
+        user_render_timeout: 0,
         upgraded_at: nil,
         map_view_block_price: nil,
         geocoding_quota: 0,

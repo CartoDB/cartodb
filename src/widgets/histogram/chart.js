@@ -113,10 +113,10 @@ module.exports = cdb.core.View.extend({
   },
 
   chartWidth: function () {
-    var m = this.model.get('margin');
+    var margin = this.model.get('margin');
 
     // Get max because width might be negative initially
-    return Math.max(0, this.model.get('width') - m.left - m.right);
+    return Math.max(0, this.model.get('width') - margin.left - margin.right);
   },
 
   chartHeight: function () {
@@ -146,6 +146,9 @@ module.exports = cdb.core.View.extend({
       this.hide();
 
       var parent = this.$el.parent();
+      var grandParent = parent.parent && parent.parent() && parent.parent().length > 0
+        ? parent.parent()
+        : null;
       var width = parent.width() || 0;
 
       if (this.model.get('animated')) {
@@ -156,9 +159,8 @@ module.exports = cdb.core.View.extend({
       }
 
       // This should match the one on _default.css
-      if (parent.outerWidth && this._isTabletViewport()) {
-        var margins = parent.outerWidth(true) - parent.width();
-        width -= margins;
+      if (grandParent && grandParent.outerWidth && this._isTabletViewport()) {
+        width -= grandParent.outerWidth(true) - grandParent.width();
       }
 
       if (wasHidden) {
@@ -688,8 +690,11 @@ module.exports = cdb.core.View.extend({
   },
 
   _calculateEvenlySpacedDivisions: function () {
-    var space = Math.round(this.chartWidth() / this.options.divisionWidth);
-    return d3.range(0, this.chartWidth() + this.chartWidth() / space, this.chartWidth() / space);
+    var divisions = Math.round(this.chartWidth() / this.options.divisionWidth);
+    var step = this.chartWidth() / divisions;
+    var stop = this.chartWidth() + step;
+    var range = d3.range(0, stop, step).slice(0, divisions + 1);
+    return range;
   },
 
   _calcBarWidth: function () {

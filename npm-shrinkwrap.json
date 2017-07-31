@@ -2716,9 +2716,9 @@
       }
     },
     "static-module": {
-      "version": "1.4.0",
+      "version": "1.5.0",
       "from": "static-module@>=1.1.0 <2.0.0",
-      "resolved": "https://registry.npmjs.org/static-module/-/static-module-1.4.0.tgz",
+      "resolved": "https://registry.npmjs.org/static-module/-/static-module-1.5.0.tgz",
       "dependencies": {
         "concat-stream": {
           "version": "1.6.0",

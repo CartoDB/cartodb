@@ -103,6 +103,7 @@ Development
 * Add geometry validation for polygons and lines in edit feature form (#12397)
 * Fix permission model and added tests (#12393)
 * Country dropdown should be mandatory in postal code georeference (#12420)
+* Removed useless log traces (#12536)
 * Fixed bounds and center of thumbnails after updating a map
 * Fixed a bug in cartodb.js regarding the featureCount (#12490)
 * Add tip about sanitising values in popup's InfoWindow (#11340)

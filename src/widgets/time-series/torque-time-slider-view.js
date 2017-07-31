@@ -59,6 +59,8 @@ module.exports = cdb.core.View.extend({
 
     this.listenTo(this._dataviewModel, 'change:bins', this._updateChartandTimeslider);
     this.listenTo(this._dataviewModel.filter, 'change:min change:max', this._onFilterMinMaxChange);
+
+    this.listenTo(this._dataviewModel, 'change:start change:end', this._updateChartandTimeslider);
   },
 
   clean: function () {

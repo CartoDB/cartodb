@@ -298,11 +298,13 @@ module.exports = DataviewModelBase.extend({
 
   _onDataChanged: function (model) {
     this.set({
+      end: model.get('end'),
+      start: model.get('start')
+    });
+    this.set({
       aggregation: model.get('aggregation'),
       bins: model.get('bins'),
-      end: model.get('end'),
-      error: model.get('error'),
-      start: model.get('start')
+      error: model.get('error')
     }, { silent: true });
 
     var resetFilter = false;

@@ -1,14 +1,22 @@
+var _ = require('underscore');
 var AutoStyler = require('./auto-styler');
 var StyleUtils = require('./style-utils');
-var _ = require('underscore');
+var getValue = require('../../util/get-object-value');
+
+var FILL_SELECTORS = ['marker-fill', 'polygon-fill', 'line-color'];
+var OPACITY_SELECTORS = ['marker-fill-opacity', 'polygon-opacity', 'line-opacity'];
 
 module.exports = AutoStyler.extend({
   getStyle: function () {
     var style = this.layer.get('initialStyle');
     if (!style) return;
 
-    ['marker-fill', 'polygon-fill', 'line-color'].forEach(function (item) {
+    FILL_SELECTORS.forEach(function (item) {
       style = StyleUtils.changeStyle(style, item, this._generateCategoryRamp());
+    }.bind(this));
+
+    OPACITY_SELECTORS.forEach(function (item) {
+      style = StyleUtils.changeStyle(style, item, this.opacity);
     }.bind(this));
 
     return StyleUtils.replaceWrongSpaceChar(style);
@@ -26,7 +34,7 @@ module.exports = AutoStyler.extend({
     var range = this.getRange();
     var definitions = {};
 
-    ['marker-fill', 'polygon-fill', 'line-color'].forEach(function (item) {
+    FILL_SELECTORS.forEach(function (item) {
       var definition = {};
       var geom = item.substring(0, item.indexOf('-'));
       definition = { color:

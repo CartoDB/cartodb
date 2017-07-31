@@ -56,7 +56,7 @@ module.exports = cdb.core.View.extend({
 
     this.listenTo(this._chartView, 'on_brush_end', this._onBrushEnd, this);
     this.listenTo(this._chartView, 'on_reset_filter', this.resetFilter, this);
-    this.listenTo(this._chartView, 'change:width', this._onChangeChartWidth, this);
+    this.listenTo(this._chartView.model, 'change:width', this._onChangeChartWidth, this);
   },
 
   _instantiateChartView: function () {

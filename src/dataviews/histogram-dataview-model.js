@@ -30,29 +30,19 @@ module.exports = DataviewModelBase.extend({
 
       if (this.get('column_type') === 'number' && this.get('bins')) {
         params.push('bins=' + this.get('bins'));
-
-        if (_.isNumber(start)) {
-          params.push('start=' + start);
-        }
-        if (_.isNumber(end)) {
-          params.push('end=' + end);
-        }
       } else if (this.get('column_type') === 'date' && (aggregation || offset)) {
         if (offset) {
           params.push('offset=' + offset);
         }
-
         if (aggregation) {
           params.push('aggregation=' + aggregation);
         }
-
-        if (_.isNumber(start)) {
-          params.push('start=' + start);
-        }
-
-        if (_.isNumber(end)) {
-          params.push('end=' + end);
-        }
+      }
+      if (_.isNumber(start)) {
+        params.push('start=' + start);
+      }
+      if (_.isNumber(end)) {
+        params.push('end=' + end);
       }
     }
     return params;
@@ -219,7 +209,10 @@ module.exports = DataviewModelBase.extend({
 
   _calculateTotalAmount: function (buckets) {
     return _.reduce(buckets, function (memo, bucket) {
-      return bucket && memo + bucket.freq;
+      var add = bucket && bucket.freq
+        ? bucket.freq
+        : 0;
+      return memo + add;
     }, 0);
   },
 

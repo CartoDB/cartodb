@@ -1122,7 +1122,6 @@ module.exports = cdb.core.View.extend({
       .attr('text-anchor', adjustTextAnchor)
       .text(function (d) {
         var value;
-        //console.log(`d: ${d}`);
         if (self.xAxisScale) {
           value = self.xAxisScale(d);
           return self.formatter(value);

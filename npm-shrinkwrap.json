@@ -728,7 +728,7 @@
     "cartodb-deep-insights.js": {
       "version": "0.0.2-c12324",
       "from": "cartodb/deep-insights.js#11649-play-c12324-time-series-aggregations",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#c1af1f87b28e24f381c4f7dfb151a2e00b712145",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#5acd14e1ac204f432bf7cb857ac24fbbe94d46c7",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",
@@ -745,7 +745,7 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
       "from": "cartodb/cartodb.js#11649-play-c12324-time-series-aggregations",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#3c81a1f7674014246746c60e867c22b82a087c48"
+      "resolved": "git://github.com/cartodb/cartodb.js.git#7f4f16404aba43579da1ae70cd962ee91fb8ac4f"
     },
     "caseless": {
       "version": "0.11.0",
@@ -2823,9 +2823,9 @@
       }
     },
     "static-module": {
-      "version": "1.4.0",
+      "version": "1.5.0",
       "from": "static-module@>=1.1.0 <2.0.0",
-      "resolved": "https://registry.npmjs.org/static-module/-/static-module-1.4.0.tgz",
+      "resolved": "https://registry.npmjs.org/static-module/-/static-module-1.5.0.tgz",
       "dependencies": {
         "concat-stream": {
           "version": "1.6.0",

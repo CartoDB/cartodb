@@ -10,25 +10,29 @@ var HistogramAutoStyler = AutoStyler.extend({
     if (!style) return;
 
     AutoStyler.FILL_SELECTORS.forEach(function (item) {
-      style = StyleUtils.changeStyle(style, item, this.getColorLine(item, this.getCustomStyle()));
+      style = StyleUtils.changeStyle(style, item, this._getColorLine(item, this._getColor()));
     }.bind(this));
 
     AutoStyler.OPACITY_SELECTORS.forEach(function (item) {
-      style = StyleUtils.changeStyle(style, item, this.opacity);
+      style = StyleUtils.changeStyle(style, item, this._getOpacity());
     }.bind(this));
 
     return StyleUtils.replaceWrongSpaceChar(style);
   },
 
-  getCustomStyle: function () {
+  _getColor: function () {
     return getValue(this.styles, 'definition.color');
   },
 
-  updateColors: function (style) {
+  _getOpacity: function () {
+    return getValue(this.styles, 'definition.color.opacity');
+  },
+
+  updateStyle: function (style) {
     this.styles = style.auto_style;
   },
 
-  getColorLine: function (sym, custom) {
+  _getColorLine: function (sym, custom) {
     var scales = custom || {};
 
     if (!custom) {

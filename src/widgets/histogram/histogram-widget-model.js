@@ -35,8 +35,7 @@ module.exports = WidgetModel.extend({
 
   _updateAutoStyle: function (m, style) {
     if (this.autoStyler) {
-      this.autoStyler.updateColors(style);
-      this.autoStyler.opacity = getValue(style, 'auto_style.definition.color.opacity');
+      this.autoStyler.updateStyle(style);
     }
     if (this.isAutoStyle()) {
       this.reapplyAutoStyle();

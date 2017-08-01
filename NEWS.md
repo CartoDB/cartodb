@@ -60,6 +60,7 @@ Development
 * Dropbox searches now don't have limit of number of files (#12521)
 * Fix error when a Dropbox folder has an extension matching valid extensions.
 * Fixed UI when editing merge analysis (#10850)
+* Fixed viewer invitations (#12514)
 * Fixed uninitialized constant in Carto::Visualization when a viewer shares a visualization (#12129).
 * Fix template generation without center at state (#12453).
 * Fix regenerate all api keys in an organization (#12218)

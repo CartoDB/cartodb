@@ -8,8 +8,8 @@
 module.exports = function (object, path, defaultValue) {
   var keys = path.split('.');
   var value = keys.reduce(function (a, b) {
-    return (a || {})[b]
-  }, object)
+    return (a || {})[b];
+  }, object);
 
   return value || defaultValue;
 };

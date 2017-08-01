@@ -1,7 +1,6 @@
 var _ = require('underscore');
 var AutoStyler = require('./auto-styler');
 var StyleUtils = require('./style-utils');
-var getValue = require('../../util/get-object-value');
 
 var FILL_SELECTORS = ['marker-fill', 'polygon-fill', 'line-color'];
 var OPACITY_SELECTORS = ['marker-fill-opacity', 'polygon-opacity', 'line-opacity'];

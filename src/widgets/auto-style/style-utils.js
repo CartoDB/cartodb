@@ -1,7 +1,7 @@
 var _ = require('underscore');
 var postcss = require('postcss');
 
-var OUTLINE_ATTRS = ['line-color', 'line-opacity']
+var OUTLINE_ATTRS = ['line-color', 'line-opacity'];
 
 function isPropertyIncluded (cartocss, attr) {
   var cssTree = postcss().process(cartocss);

@@ -15,7 +15,7 @@ describe('viewport-utils', function () {
   });
 
   describe('.isMobileViewport', function () {
-    it('should return true if window is mobile', function () {
+    it('should return true if viewport is mobile', function () {
       spyOn(viewportUtils, '_isViewport');
 
       viewportUtils.isMobileViewport();
@@ -25,7 +25,7 @@ describe('viewport-utils', function () {
   });
 
   describe('.isTabletViewport', function () {
-    it('should return true if window is tablet', function () {
+    it('should return true if viewport is tablet', function () {
       spyOn(viewportUtils, '_isViewport');
 
       viewportUtils.isTabletViewport();

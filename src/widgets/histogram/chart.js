@@ -1626,10 +1626,6 @@ module.exports = cdb.core.View.extend({
     return this.options.type === 'time-date';
   },
 
-  _isTimeSeries: function () {
-    return this.options.type === 'time-date' || this.options.type === 'time-number';
-  },
-
   _calculateDivisionWithByAggregation: function (aggregation) {
     switch (aggregation) {
       case 'year':

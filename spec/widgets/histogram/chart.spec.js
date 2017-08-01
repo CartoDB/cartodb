@@ -3,6 +3,7 @@ var $ = require('jquery');
 var cdb = require('cartodb.js');
 var d3 = require('d3');
 var WidgetHistogramChart = require('../../../src/widgets/histogram/chart');
+var viewportUtils = require('../../../src/viewport-utils');
 
 describe('widgets/histogram/chart', function () {
   var onWindowResizeReal;
@@ -240,7 +241,6 @@ describe('widgets/histogram/chart', function () {
 
     it('should maintain the visibility after calling _resizeToParentElement', function () {
       this.view.show();
-      this.view.$el.parent().width();
       this.view._resizeToParentElement();
       expect(this.view.$el.css('display')).toBe('inline');
       expect(this.view.model.get('display')).toBe(true);
@@ -263,6 +263,20 @@ describe('widgets/histogram/chart', function () {
       this.view.show();
       this.view.model.set({ data: genHistogramData(20) });
       expect(this.view.refresh).toHaveBeenCalled();
+    });
+
+    describe('animated', function () {
+      it('should set the parent width', function () {
+        var animatedWidth = 24;
+        spyOn(this.view.$el, 'siblings').and.returnValue($("<div>"));
+        spyOn($.prototype, 'width').and.returnValue(animatedWidth);
+
+        this.view.model.set('animated', true);
+        this.view.show();
+        this.view._resizeToParentElement();
+
+        expect(this.view.model.get('width')).toBe(this.width - animatedWidth);
+      });
     });
 
     describe('should allow to manage the y scale', function () {
@@ -939,6 +953,38 @@ describe('widgets/histogram/chart', function () {
       };
 
       _.forEach(brush.children(), checkAllChildren);
+    });
+  });
+
+  describe('._isTabletViewport', function () {
+    it('should return true if viewport is tablet', function () {
+      spyOn($.prototype, 'width').and.returnValue(100);
+      spyOn(viewportUtils, 'isTabletViewport');
+
+      this.view._isTabletViewport();
+
+      expect(viewportUtils.isTabletViewport).toHaveBeenCalled();
+    });
+  });
+
+  describe('._isMobileViewport', function () {
+    it('should return true if viewport is mobile', function () {
+      spyOn($.prototype, 'width').and.returnValue(100);
+      spyOn(viewportUtils, 'isMobileViewport');
+
+      this.view._isMobileViewport();
+
+      expect(viewportUtils.isMobileViewport).toHaveBeenCalled();
+    });
+  });
+
+  describe('._isTimeSeries', function () {
+    it('should return true if option type is time', function () {
+      expect(this.view._isTimeSeries()).toBe(false);
+
+      this.view.options.type = 'time-date';
+
+      expect(this.view._isTimeSeries()).toBe(true);
     });
   });
 });

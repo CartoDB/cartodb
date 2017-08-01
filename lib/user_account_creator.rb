@@ -156,6 +156,7 @@ module CartoDB
         end
       end
 
+      @user.created_via = @created_via
       @user.valid? && @user.validate_credentials_not_taken_in_central && @custom_errors.empty?
     end
 
@@ -193,7 +194,10 @@ module CartoDB
     def build_user_creation
       build
 
-      Carto::UserCreation.new_user_signup(@user, @created_via).with_invitation_token(@invitation_token)
+      user_creation = Carto::UserCreation.new_user_signup(@user, @created_via).with_invitation_token(@invitation_token)
+      user_creation.viewer = true if user_creation.pertinent_invitation.try(:viewer?)
+
+      user_creation
     end
 
     def build

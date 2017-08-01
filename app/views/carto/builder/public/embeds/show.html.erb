@@ -27,7 +27,7 @@
 <%= content_for(:js) do %>
   <%= insert_trackjs('builder-embeds') %>
 
-  <% if @visualization.user.has_feature_flag?('vector_vs_raster') %>
+  <% if vector_render?(@visualization, params) %>
     <%= javascript_include_tag 'tangram.min.js' %>
   <% end %>
 

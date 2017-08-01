@@ -1,4 +1,5 @@
 require 'json'
+require_dependency 'carto/export/layer_exporter'
 
 # Version History
 # 1.0.0: export organization metadata
@@ -37,17 +38,21 @@ module Carto
       build_organization_from_hash(exported_hash[:organization])
     end
 
+    private
+
     def save_imported_organization(organization)
       organization.save!
       ::Organization[organization.id].after_save
     end
 
-    private
-
     def build_organization_from_hash(exported_organization)
       organization = Organization.new(exported_organization.slice(*EXPORTED_ORGANIZATION_ATTRIBUTES))
 
       organization.assets = exported_organization[:assets].map { |asset| build_asset_from_hash(asset.symbolize_keys) }
+      organization.groups = exported_organization[:groups].map { |group| build_group_from_hash(group.symbolize_keys) }
+      organization.notifications = exported_organization[:notifications].map do |notification|
+        build_notification_from_hash(notification.symbolize_keys)
+      end
 
       # Must be the last one to avoid attribute assignments to try to run SQL
       organization.id = exported_organization[:id]
@@ -59,6 +64,39 @@ module Carto
         public_url: exported_asset[:public_url],
         kind: exported_asset[:kind],
         storage_info: exported_asset[:storage_info]
+      )
+    end
+
+    def build_group_from_hash(exported_group)
+      g = Group.new_instance_without_validation(
+        name: exported_group[:name],
+        display_name: exported_group[:display_name],
+        database_role: exported_group[:database_role],
+        auth_token: exported_group[:auth_token]
+      )
+      g.users_group = exported_group[:user_ids].map { |uid| UsersGroup.new(user_id: uid) }
+      g.id = exported_group[:id]
+
+      g
+    end
+
+    def build_notification_from_hash(notification)
+      Notification.new(
+        icon: notification[:icon],
+        recipients: notification[:recipients],
+        body: notification[:body],
+        created_at: notification[:created_at],
+        received_notifications: notification[:received_by].map do |received_notification|
+          build_received_notification_from_hash(received_notification.symbolize_keys)
+        end
+      )
+    end
+
+    def build_received_notification_from_hash(received_notification)
+      ReceivedNotification.new(
+        user_id: received_notification[:user_id],
+        received_at: received_notification[:received_at],
+        read_at: received_notification[:read_at]
       )
     end
   end
@@ -84,6 +122,8 @@ module Carto
       organization_hash = EXPORTED_ORGANIZATION_ATTRIBUTES.map { |att| [att, organization.attributes[att.to_s]] }.to_h
 
       organization_hash[:assets] = organization.assets.map { |a| export_asset(a) }
+      organization_hash[:groups] = organization.groups.map { |g| export_group(g) }
+      organization_hash[:notifications] = organization.notifications.map { |n| export_notification(n) }
 
       organization_hash
     end
@@ -93,6 +133,35 @@ module Carto
         public_url: asset.public_url,
         kind: asset.kind,
         storage_info: asset.storage_info
+      }
+    end
+
+    def export_group(group)
+      {
+        id: group.id,
+        name: group.name,
+        display_name: group.display_name,
+        database_role: group.database_role,
+        auth_token: group.auth_token,
+        user_ids: group.users.map(&:id)
+      }
+    end
+
+    def export_notification(notification)
+      {
+        icon: notification.icon,
+        recipients: notification.recipients,
+        body: notification.body,
+        created_at: notification.created_at,
+        received_by: notification.received_notifications.map { |rn| export_received_notification(rn) }
+      }
+    end
+
+    def export_received_notification(received_notification)
+      {
+        user_id: received_notification.user_id,
+        received_at: received_notification.received_at,
+        read_at: received_notification.read_at
       }
     end
   end
@@ -111,6 +180,9 @@ module Carto
       organization_json = export_organization_json_string(organization_id)
       root_dir.join("organization_#{organization_id}.json").open('w') { |file| file.write(organization_json) }
 
+      redis_json = Carto::RedisExportService.new.export_organization_json_string(organization_id)
+      root_dir.join("redis_organization_#{organization_id}.json").open('w') { |file| file.write(redis_json) }
+
       # Export users
       organization.users.each do |user|
         user_path = root_dir.join("user_#{user.id}")
@@ -123,6 +195,16 @@ module Carto
       # Import organization
       organization_file = Dir["#{path}/organization_*.json"].first
       organization = build_organization_from_json_export(File.read(organization_file))
+
+      organization_redis_file = Dir["#{path}/redis_organization_*.json"].first
+      Carto::RedisExportService.new.restore_redis_from_json_export(File.read(organization_redis_file))
+
+      # Groups and notifications must be saved after users
+      groups = organization.groups.dup
+      organization.groups.clear
+      notifications = organization.notifications.dup
+      organization.notifications.clear
+
       save_imported_organization(organization)
 
       user_list = Dir["#{path}/user_*"]
@@ -131,6 +213,10 @@ module Carto
       organization.users = user_list.map do |user_path|
         Carto::UserMetadataExportService.new.import_user_from_directory(user_path, import_visualizations: false)
       end
+
+      organization.groups = groups
+      organization.notifications = notifications
+      organization.save
 
       organization
     end

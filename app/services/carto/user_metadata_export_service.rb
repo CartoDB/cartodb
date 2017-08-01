@@ -23,7 +23,7 @@ module Carto
       :mobile_max_private_users, :obs_general_quota, :obs_general_block_price, :soft_obs_general_limit, :viewer,
       :salesforce_datasource_enabled, :builder_enabled, :geocoder_provider, :isolines_provider, :routing_provider,
       :github_user_id, :engine_enabled, :mapzen_routing_quota, :mapzen_routing_block_price, :soft_mapzen_routing_limit,
-      :no_map_logo, :org_admin, :last_name
+      :no_map_logo, :org_admin, :last_name, :user_render_timeout, :database_render_timeout
     ].freeze
 
     def compatible_version?(version)
@@ -141,6 +141,9 @@ module Carto
       user_json = export_user_json_string(user_id)
       root_dir.join("user_#{user_id}.json").open('w') { |file| file.write(user_json) }
 
+      redis_json = Carto::RedisExportService.new.export_user_json_string(user_id)
+      root_dir.join("redis_user_#{user_id}.json").open('w') { |file| file.write(redis_json) }
+
       # Export visualizations (include type in the name to be able to import datasets before maps)
       export_user_visualizations_to_directory(user, Carto::Visualization::TYPE_CANONICAL, path)
       export_user_visualizations_to_directory(user, Carto::Visualization::TYPE_DERIVED, path)
@@ -152,6 +155,8 @@ module Carto
       user = build_user_from_json_export(File.read(user_file))
       save_imported_user(user)
 
+      Carto::RedisExportService.new.restore_redis_from_json_export(File.read(Dir["#{path}/redis_user_*.json"].first))
+
       if import_visualizations
         import_user_visualizations_from_directory(user, Carto::Visualization::TYPE_CANONICAL, path)
         import_user_visualizations_from_directory(user, Carto::Visualization::TYPE_DERIVED, path)
@@ -161,9 +166,11 @@ module Carto
     end
 
     def import_user_visualizations_from_directory(user, type, path)
-      Dir["#{path}/#{type}_*#{Carto::VisualizationExporter::EXPORT_EXTENSION}"].each do |filename|
-        imported_vis = Carto::VisualizationsExportService2.new.build_visualization_from_json_export(File.read(filename))
-        Carto::VisualizationsExportPersistenceService.new.save_import(user, imported_vis, full_restore: true)
+      with_non_viewer_user(user) do
+        Dir["#{path}/#{type}_*#{Carto::VisualizationExporter::EXPORT_EXTENSION}"].each do |fname|
+          imported_vis = Carto::VisualizationsExportService2.new.build_visualization_from_json_export(File.read(fname))
+          Carto::VisualizationsExportPersistenceService.new.save_import(user, imported_vis, full_restore: true)
+        end
       end
     end
 
@@ -175,6 +182,23 @@ module Carto
         )
         filename = "#{visualization.type}_#{visualization.id}#{Carto::VisualizationExporter::EXPORT_EXTENSION}"
         root_dir.join(filename).open('w') { |file| file.write(visualization_export) }
+      end
+    end
+
+    private
+
+    def with_non_viewer_user(user)
+      was_viewer = user.viewer
+      if user.viewer
+        user.update_attributes(viewer: false)
+        ::User[user.id].reload
+      end
+
+      yield
+    ensure
+      if was_viewer
+        user.update_attributes(viewer: true)
+        ::User[user.id].reload
       end
     end
   end

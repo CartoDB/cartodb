@@ -55,7 +55,6 @@ WORKING_SPECS_1 = \
 	spec/models/visualization/relator_spec.rb \
 	spec/models/visualization/table_blender_spec.rb \
 	spec/models/visualization/tags_spec.rb \
-	spec/models/visualization/watcher_spec.rb \
 	spec/models/data_import_spec.rb \
 	spec/models/geocoding_spec.rb \
 	spec/models/common_data_spec.rb \
@@ -79,6 +78,7 @@ WORKING_SPECS_1 = \
 	spec/helpers/url_validator_spec.rb \
 	spec/models/carto/data_import_spec.rb \
 	spec/models/carto/visualization_spec.rb \
+	spec/models/carto/visualization/watcher_spec.rb \
 	spec/models/carto/map_spec.rb \
 	spec/models/carto/template_spec.rb \
 	spec/models/carto/group_spec.rb \
@@ -142,7 +142,6 @@ WORKING_SPECS_4 = \
 	services/sql-api/spec/sql_api_spec.rb \
 	spec/requests/admin/organizations_controller_spec.rb \
 	spec/requests/admin/visualizations_spec.rb \
-	spec/requests/api/json/visualizations_controller_spec.rb \
 	spec/requests/carto/api/visualizations_controller_spec.rb \
 	spec/requests/carto/api/tables_controller_spec.rb \
 	spec/queries/carto/visualization_query_builder_spec.rb \
@@ -272,6 +271,7 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/services/carto/user_table_index_service_spec.rb \
 	spec/services/carto/user_metadata_export_service_spec.rb \
 	spec/services/carto/organization_metadata_export_service_spec.rb \
+	spec/services/carto/redis_export_service_spec.rb \
 	spec/lib/carto/strong_password_validator_spec.rb \
 	spec/lib/initializers/zz_patch_reconnect_spec.rb \
 	spec/lib/cartodb/redis_vizjson_cache_spec.rb \

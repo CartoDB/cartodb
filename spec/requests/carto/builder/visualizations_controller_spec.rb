@@ -170,6 +170,13 @@ describe Carto::Builder::VisualizationsController do
       response.body.should include('\"vector\":false')
     end
 
+    it 'does not generate vizjson with vector=true with flag (Builder should always be raster right now)' do
+      get builder_visualization_url(id: @visualization.id, vector: true)
+
+      response.status.should == 200
+      response.body.should_not include('\"vector\":true')
+    end
+
     it 'displays analysesData' do
       analysis = FactoryGirl.create(:source_analysis, visualization_id: @visualization.id, user_id: @user1.id)
 

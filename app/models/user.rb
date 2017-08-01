@@ -160,11 +160,8 @@ class User < Sequel::Model
     if new?
       organization.validate_for_signup(errors, self)
 
-      if organization.whitelisted_email_domains.present?
-        email_domain = email.split('@')[1]
-        unless organization.whitelisted_email_domains.include?(email_domain) || invitation_token.present?
-          errors.add(:email, "Email domain '#{email_domain}' not valid for #{organization.name} organization")
-        end
+      unless valid_email_domain?(email)
+        errors.add(:email, "The domain of '#{email}' is not valid for #{organization.name} organization")
       end
     else
       if quota_in_bytes.to_i + organization.assigned_quota - initial_value(:quota_in_bytes) > organization.quota_in_bytes
@@ -480,7 +477,10 @@ class User < Sequel::Model
     end
 
     # Remove metadata from redis last (to avoid cutting off access to SQL API if db deletion fails)
-    $users_metadata.DEL(key) unless error_happened
+    unless error_happened
+      $users_metadata.DEL(key)
+      $users_metadata.DEL(timeout_key)
+    end
 
     feature_flags_user.each(&:delete)
   end
@@ -511,6 +511,10 @@ class User < Sequel::Model
 
   # allow extra vars for auth
   attr_reader :password
+
+  def created_via=(created_via)
+    @created_via = created_via
+  end
 
   def validate_password_change
     return if @changing_passwords.nil?  # Called always, validate whenever proceeds
@@ -755,8 +759,8 @@ class User < Sequel::Model
 
   def gravatar_enabled?
     # Enabled by default, only disabled if specified in the config
-    value = Cartodb.get_config(:avatars, 'gravatar_enabled')
-    value.nil? || value
+    value = Cartodb.config[:avatars] && Cartodb.config[:avatars]['gravatar_enabled']
+    value.to_s != 'false'
   end
 
   def gravatar(protocol = "http://", size = 128, default_image = default_avatar)
@@ -911,33 +915,42 @@ class User < Sequel::Model
     "rails:users:#{username}"
   end
 
+  def timeout_key
+    "limits:timeout:#{username}"
+  end
+
   # save users basic metadata to redis for other services (node sql api, geocoder api, etc)
   # to use
   def save_metadata
     $users_metadata.HMSET key,
-      'id', id,
-      'database_name', database_name,
-      'database_password', database_password,
-      'database_host', database_host,
-      'database_publicuser', database_public_username,
-      'map_key', api_key,
-      'geocoder_type', geocoder_type,
-      'geocoding_quota', geocoding_quota,
-      'soft_geocoding_limit', soft_geocoding_limit,
-      'here_isolines_quota', here_isolines_quota,
-      'soft_here_isolines_limit', soft_here_isolines_limit,
-      'obs_snapshot_quota', obs_snapshot_quota,
-      'soft_obs_snapshot_limit', soft_obs_snapshot_limit,
-      'obs_general_quota', obs_general_quota,
-      'soft_obs_general_limit', soft_obs_general_limit,
-      'mapzen_routing_quota', mapzen_routing_quota,
-      'soft_mapzen_routing_limit', soft_mapzen_routing_limit,
-      'google_maps_client_id', google_maps_key,
-      'google_maps_api_key', google_maps_private_key,
-      'period_end_date', period_end_date,
-      'geocoder_provider', geocoder_provider,
-      'isolines_provider', isolines_provider,
-      'routing_provider', routing_provider
+                          'id',                        id,
+                          'database_name',             database_name,
+                          'database_password',         database_password,
+                          'database_host',             database_host,
+                          'database_publicuser',       database_public_username,
+                          'map_key',                   api_key,
+                          'geocoder_type',             geocoder_type,
+                          'geocoding_quota',           geocoding_quota,
+                          'soft_geocoding_limit',      soft_geocoding_limit,
+                          'here_isolines_quota',       here_isolines_quota,
+                          'soft_here_isolines_limit',  soft_here_isolines_limit,
+                          'obs_snapshot_quota',        obs_snapshot_quota,
+                          'soft_obs_snapshot_limit',   soft_obs_snapshot_limit,
+                          'obs_general_quota',         obs_general_quota,
+                          'soft_obs_general_limit',    soft_obs_general_limit,
+                          'mapzen_routing_quota',      mapzen_routing_quota,
+                          'soft_mapzen_routing_limit', soft_mapzen_routing_limit,
+                          'google_maps_client_id',     google_maps_key,
+                          'google_maps_api_key',       google_maps_private_key,
+                          'period_end_date',           period_end_date,
+                          'geocoder_provider',         geocoder_provider,
+                          'isolines_provider',         isolines_provider,
+                          'routing_provider',          routing_provider
+    $users_metadata.HMSET timeout_key,
+                          'db',                        user_timeout,
+                          'db_public',                 database_timeout,
+                          'render',                    user_render_timeout,
+                          'render_public',             database_render_timeout
   end
 
   def get_auth_tokens
@@ -1612,7 +1625,7 @@ class User < Sequel::Model
   end
 
   def get_user_creation
-    Carto::UserCreation.find_by_user_id(id)
+    @user_creation ||= Carto::UserCreation.find_by_user_id(id)
   end
 
   def quota_dates(options)
@@ -1691,5 +1704,19 @@ class User < Sequel::Model
     if Cartodb.get_config(:aggregation_tables).present?
       db_service.connect_to_aggregation_tables
     end
+  end
+
+  def valid_email_domain?(email)
+    if created_via == Carto::UserCreation::CREATED_VIA_API || # Overrides domain check for owner actions
+       organization.try(:whitelisted_email_domains).try(:blank?) ||
+       invitation_token.present? # Overrides domain check for users (invited by owners)
+      return true
+    end
+
+    organization.whitelisted_email_domains.include?(email.split('@')[1])
+  end
+
+  def created_via
+    @created_via || get_user_creation.try(:created_via)
   end
 end

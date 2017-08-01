@@ -3,123 +3,72 @@ require_relative '../../spec_helper'
 require_relative '../../../services/data-repository/backend/sequel'
 require_relative '../../../app/models/visualization/member'
 require_relative '../../../services/data-repository/repository'
+require_relative '../../factories/organizations_contexts'
 
 include CartoDB
 
 describe Visualization::Member do
-  before do
-    db = SequelRails.connection
-    Visualization.repository  = DataRepository::Backend::Sequel.new(db, :visualizations)
-
-    CartoDB::UserModule::DBService.any_instance.stubs(:move_to_own_schema).returns(nil)
-    CartoDB::TablePrivacyManager.any_instance.stubs(
-        :set_from_table_privacy => nil,
-        :propagate_to_varnish => nil
-    )
-
-    ::User.any_instance.stubs(
-      after_create: nil
-    )
-
-    CartoDB::UserModule::DBService.any_instance.stubs(
-      grant_user_in_database: nil,
-      grant_publicuser_in_database: nil,
-      set_user_privileges_at_db: nil,
-      set_statement_timeouts: nil,
-      set_user_as_organization_member: nil,
-      rebuild_quota_trigger: nil,
-      setup_organization_user_schema: nil,
-      set_database_search_path: nil,
-      cartodb_extension_version_pre_mu?: false,
-      load_cartodb_functions: nil,
-      create_schema: nil,
-      move_tables_to_schema: nil,
-      create_public_db_user: nil,
-      enable_remote_db_user: nil,
-      monitor_user_notification: nil
-    )
-
-    Organization.all.each { |org|
-      org.destroy
-    }
-
-    @org, @owner_user, @other_user = prepare_organization
-  end
+  include_context 'organization with users helper'
 
   before(:each) do
-    Carto::NamedMaps::Api.any_instance.stubs(get: nil, create: true, update: true)
-
-    Table.any_instance.stubs(perform_cartodb_function: nil,
-                             update_cdb_tablemetadata: nil,
-                             update_table_pg_stats: nil,
-                             create_table_in_database!: nil,
-                             get_table_id: 1,
-                             grant_select_to_tiler_user: nil,
-                             cartodbfy: nil,
-                             set_the_geom_column!: nil,
-                             is_raster?: false,
-                             schema: nil)
-  end
-
-  after do
-    @org.destroy
+    bypass_named_maps
   end
 
   describe 'sharing tables and visualizations' do
 
     it 'should give read permission to table aka canonical visualization' do
-      owner_table = create_table(@owner_user)
+      owner_table = create_table(@org_user_owner)
       carto_canonical_vis = owner_table.table_visualization
       canonical_vis = CartoDB::Visualization::Member.new(id: carto_canonical_vis.id).fetch
 
-      canonical_vis.has_permission?(@owner_user, CartoDB::Visualization::Member::PERMISSION_READONLY).should eq true
-      canonical_vis.has_permission?(@other_user, CartoDB::Visualization::Member::PERMISSION_READONLY).should eq false
+      canonical_vis.has_permission?(@org_user_owner, CartoDB::Visualization::Member::PERMISSION_READONLY).should eq true
+      canonical_vis.has_permission?(@org_user_1, CartoDB::Visualization::Member::PERMISSION_READONLY).should eq false
 
-      give_permission(canonical_vis, @other_user, CartoDB::Permission::ACCESS_READONLY)
+      give_permission(canonical_vis, @org_user_1, CartoDB::Permission::ACCESS_READONLY)
 
-      canonical_vis.has_permission?(@other_user, CartoDB::Visualization::Member::PERMISSION_READONLY).should eq true
+      canonical_vis.has_permission?(@org_user_1, CartoDB::Visualization::Member::PERMISSION_READONLY).should eq true
     end
 
     it 'other user should not have permission until given' do
-      owner_table = create_table(@owner_user)
+      owner_table = create_table(@org_user_owner)
       carto_vis = create_vis_from_table(owner_table.table_visualization.user, owner_table)
       vis = CartoDB::Visualization::Member.new(id: carto_vis.id).fetch
-      vis.has_permission?(@owner_user, CartoDB::Visualization::Member::PERMISSION_READONLY).should eq true
-      vis.has_permission?(@other_user, CartoDB::Visualization::Member::PERMISSION_READONLY).should eq false
+      vis.has_permission?(@org_user_owner, CartoDB::Visualization::Member::PERMISSION_READONLY).should eq true
+      vis.has_permission?(@org_user_1, CartoDB::Visualization::Member::PERMISSION_READONLY).should eq false
 
-      give_permission(vis, @other_user, CartoDB::Visualization::Member::PERMISSION_READONLY)
+      give_permission(vis, @org_user_1, CartoDB::Visualization::Member::PERMISSION_READONLY)
 
-      vis.has_permission?(@other_user, CartoDB::Visualization::Member::PERMISSION_READONLY).should eq true
+      vis.has_permission?(@org_user_1, CartoDB::Visualization::Member::PERMISSION_READONLY).should eq true
     end
 
     it 'other user will not get permission in private table when the table owners adds it to the visualization' do
-      owner_table = create_table(@owner_user)
+      owner_table = create_table(@org_user_owner)
       carto_vis = create_vis_from_table(owner_table.table_visualization.user, owner_table)
       vis = CartoDB::Visualization::Member.new(id: carto_vis.id).fetch
-      give_permission(vis, @other_user, CartoDB::Visualization::Member::PERMISSION_READONLY)
-      vis.has_permission?(@other_user, CartoDB::Visualization::Member::PERMISSION_READONLY).should eq true
+      give_permission(vis, @org_user_1, CartoDB::Visualization::Member::PERMISSION_READONLY)
+      vis.has_permission?(@org_user_1, CartoDB::Visualization::Member::PERMISSION_READONLY).should eq true
 
-      other_table = create_table(@owner_user)
+      other_table = create_table(@org_user_owner)
       other_vis = CartoDB::Visualization::Member.new(id: other_table.table_visualization.id).fetch
       add_layer_from_table(vis, other_table)
 
-      vis.has_permission?(@other_user, CartoDB::Visualization::Member::PERMISSION_READONLY).should eq true
-      other_vis.has_permission?(@other_user, CartoDB::Visualization::Member::PERMISSION_READONLY).should eq false
+      vis.has_permission?(@org_user_1, CartoDB::Visualization::Member::PERMISSION_READONLY).should eq true
+      other_vis.has_permission?(@org_user_1, CartoDB::Visualization::Member::PERMISSION_READONLY).should eq false
     end
 
     it 'should not remove access to visualization if table privacy is changed to private' do
-      owner_table = create_table(@owner_user)
+      owner_table = create_table(@org_user_owner)
       carto_canonical_vis = owner_table.table_visualization
       canonical_vis = CartoDB::Visualization::Member.new(id: carto_canonical_vis.id).fetch
       carto_vis = create_vis_from_table(owner_table.table_visualization.user, owner_table)
       vis = CartoDB::Visualization::Member.new(id: carto_vis.id).fetch
-      give_permission(vis, @other_user, CartoDB::Visualization::Member::PERMISSION_READONLY)
+      give_permission(vis, @org_user_1, CartoDB::Visualization::Member::PERMISSION_READONLY)
 
       # removes access to table
       canonical_vis.permission.clear
 
-      canonical_vis.has_permission?(@other_user, CartoDB::Visualization::Member::PERMISSION_READONLY).should eq false
-      vis.has_permission?(@other_user, CartoDB::Visualization::Member::PERMISSION_READONLY).should eq true
+      canonical_vis.has_permission?(@org_user_1, CartoDB::Visualization::Member::PERMISSION_READONLY).should eq false
+      vis.has_permission?(@org_user_1, CartoDB::Visualization::Member::PERMISSION_READONLY).should eq true
     end
 
 
@@ -168,35 +117,6 @@ describe Visualization::Member do
     table.table_visualization.type.should eq Visualization::Member::TYPE_CANONICAL
 
     table
-  end
-
-  def prepare_organization
-    org = create_organization
-    user_a = create_user(:quota_in_bytes => 1.megabyte, :table_quota => 400)
-    user_org = UserOrganization.new(org.id, user_a.id)
-    user_org.promote_user_to_admin
-    org.reload
-
-    user_b = create_user(
-      :quota_in_bytes => 1.megabyte, :table_quota => 400,
-      :organization => org
-    )
-    org.reload
-
-    user_a.database_name.should eq user_b.database_name
-
-    return org, user_a, user_b
-  end
-
-  def create_organization
-    organization = Organization.new
-
-    organization.name = 'wadus-org'
-    organization.quota_in_bytes = 3.megabytes
-    organization.seats = 10
-    organization.save
-
-    organization
   end
 
   def layer_params(table)

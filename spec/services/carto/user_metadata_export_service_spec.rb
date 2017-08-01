@@ -25,10 +25,15 @@ describe Carto::UserMetadataExportService do
 
     Carto::FeatureFlagsUser.create(feature_flag: @feature_flag, user: @user)
 
+    CartoDB::GeocoderUsageMetrics.new(@user.username).incr(:geocoder_here, :success_responses)
+
     @user.reload
   end
 
   def destroy_user
+    gum = CartoDB::GeocoderUsageMetrics.new(@user.username)
+    $users_metadata.DEL(gum.send(:user_key_prefix, :geocoder_here, :success_responses, DateTime.now))
+
     destroy_full_visualization(@map, @table, @table_visualization, @visualization)
     @tiled_layer.destroy
     @asset.destroy
@@ -102,6 +107,35 @@ describe Carto::UserMetadataExportService do
         imported_user = service.import_user_from_directory(path)
 
         compare_excluding_dates(imported_user.attributes, source_user)
+        expect_redis_restored(imported_user)
+        expect(imported_user.visualizations.count).to eq source_visualizations.count
+        imported_user.visualizations.zip(source_visualizations).each do |v1, v2|
+          compare_excluding_dates_and_ids(v1.attributes, v2)
+        end
+      end
+    end
+
+    it 'export + import user and visualizations for a viewer user' do
+      Dir.mktmpdir do |path|
+        create_user_with_basemaps_assets_visualizations
+        @user.update_attributes(viewer: true)
+        ::User[@user.id].reload # Refresh Sequel cache
+        service.export_user_to_directory(@user.id, path)
+        source_user = @user.attributes
+
+        source_visualizations = @user.visualizations.map(&:attributes)
+        @user.update_attributes(viewer: false) # For destruction purposes
+        destroy_user
+
+        # At this point, the user database is still there, but the tables got destroyed. We recreate some dummy ones
+        source_visualizations.select { |v| v['type'] == 'table' }.each do |v|
+          @user.in_database.execute("CREATE TABLE #{v['name']} (cartodb_id int)")
+        end
+
+        imported_user = service.import_user_from_directory(path)
+
+        compare_excluding_dates(imported_user.attributes, source_user)
+        expect_redis_restored(imported_user)
         expect(imported_user.visualizations.count).to eq source_visualizations.count
         imported_user.visualizations.zip(source_visualizations).each do |v1, v2|
           compare_excluding_dates_and_ids(v1.attributes, v2)
@@ -110,24 +144,24 @@ describe Carto::UserMetadataExportService do
     end
   end
 
-  EXCLUDED_DATE_FIELDS = ['created_at', 'updated_at'].freeze
-  EXCLUDED_ID_FIELDS = ['map_id', 'permission_id', 'active_layer_id', 'tags'].freeze
+  EXCLUDED_USER_META_DATE_FIELDS = ['created_at', 'updated_at'].freeze
+  EXCLUDED_USER_META_ID_FIELDS = ['map_id', 'permission_id', 'active_layer_id', 'tags'].freeze
 
   def compare_excluding_dates_and_ids(v1, v2)
-    filtered1 = v1.reject { |k, _| EXCLUDED_ID_FIELDS.include?(k) }
-    filtered2 = v2.reject { |k, _| EXCLUDED_ID_FIELDS.include?(k) }
+    filtered1 = v1.reject { |k, _| EXCLUDED_USER_META_ID_FIELDS.include?(k) }
+    filtered2 = v2.reject { |k, _| EXCLUDED_USER_META_ID_FIELDS.include?(k) }
     compare_excluding_dates(filtered1, filtered2)
   end
 
   def compare_excluding_dates(u1, u2)
-    filtered1 = u1.reject { |k, _| EXCLUDED_DATE_FIELDS.include?(k) }
-    filtered2 = u2.reject { |k, _| EXCLUDED_DATE_FIELDS.include?(k) }
+    filtered1 = u1.reject { |k, _| EXCLUDED_USER_META_DATE_FIELDS.include?(k) }
+    filtered2 = u2.reject { |k, _| EXCLUDED_USER_META_DATE_FIELDS.include?(k) }
     expect(filtered1).to eq filtered2
   end
 
   def expect_export_matches_user(export, user)
     Carto::UserMetadataExportService::EXPORTED_USER_ATTRIBUTES.each do |att|
-      expect(export[att]).to eq user.attributes[att.to_s]
+      expect(export[att]).to eq(user.attributes[att.to_s]), "attribute #{att.inspect} expected: #{user.attributes[att.to_s].inspect} got: #{export[att].inspect}"
     end
 
     expect(export[:layers].count).to eq user.layers.size
@@ -148,6 +182,10 @@ describe Carto::UserMetadataExportService do
     expect(exported_asset[:public_url]).to eq asset.public_url
     expect(exported_asset[:kind]).to eq asset.kind
     expect(exported_asset[:storage_info]).to eq asset.storage_info
+  end
+
+  def expect_redis_restored(user)
+    expect(CartoDB::GeocoderUsageMetrics.new(user.username).get(:geocoder_here, :success_responses)).to eq(1)
   end
 
   let(:full_export) do
@@ -173,6 +211,8 @@ describe Carto::UserMetadataExportService do
         max_layers: 8,
         database_timeout: 300000,
         user_timeout: 300000,
+        database_render_timeout: 0,
+        user_render_timeout: 0,
         upgraded_at: nil,
         map_view_block_price: nil,
         geocoding_quota: 0,

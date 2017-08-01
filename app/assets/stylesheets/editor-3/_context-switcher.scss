@@ -19,10 +19,10 @@
   right: 392px;
 }
 .Editor-contextSwitcher.has-timeSeries {
-  bottom: 167px;
+  bottom: 229px;
 }
 .Editor-contextSwitcher.has-timeSeries.has-timeSeries--animated {
-  bottom: 190px;
+  bottom: 218px;
 }
 .Editor-contextSwitcher--geom {
   right: 102px;
@@ -61,20 +61,15 @@
 .Editor-contextSwitcherMedia {
   fill: $cWhite;
 }
-.Editor .CDB-Widget-content--timeSeries {
-  margin-right: 16px;
-  margin-left: 16px;
-}
+
 @media (max-width: 1600px) {
   .Editor-contextSwitcher.is-moved {
     right: 317px;
     bottom: 32px;
   }
-  .Editor-contextSwitcher.has-timeSeries {
-    bottom: 151px;
-  }
+  .Editor-contextSwitcher.has-timeSeries,
   .Editor-contextSwitcher.has-timeSeries.has-timeSeries--animated {
-    bottom: 174px;
+    bottom: 213px;
   }
   .Editor-contextSwitcher--geom.is-moved {
     right: 390px;
@@ -89,28 +84,18 @@
   .Editor-contextSwitcher--geom.is-moved {
     right: 101px;
   }
-  .Editor-contextSwitcher.has-timeSeries {
-    bottom: 341px;
-  }
-  .Editor-contextSwitcher.has-timeSeries.has-timeSeries--animated {
-    bottom: 364px;
-  }
-}
-@media (max-width: $sViewport-xl) {
   .Editor-contextSwitcher.in-table {
     right: 16px;
     bottom: 16px;
   }
   .Editor-contextSwitcher.is-moved {
-    bottom: 214px;
+    bottom: 243px;
   }
   .Editor-contextSwitcher.has-timeSeries {
-    bottom: 333px;
+    bottom: 204px;
   }
-  .Editor-contextSwitcher.has-timeSeries.has-timeSeries--animated {
-    bottom: 358px;
+  .Editor-contextSwitcher.has-timeSeries.is-moved,
+  .Editor-contextSwitcher.has-timeSeries.is-moved.has-timeSeries--animated {
+    bottom: 426px;
   }
 }
-
-
-

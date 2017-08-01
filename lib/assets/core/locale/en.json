@@ -1648,15 +1648,15 @@
             "add": "Add new measurement"
           },
           "header": {
-            "title": "Enrich from Data Observatory",
-            "description": "Define your input layer"
+            "title": "Select region",
+            "description": "For augmenting your layer"
           },
           "parameters": {
             "title": "Select measurements",
-            "description": "Pick as many as you want"
+            "description": "Pick up to 10 measurements"
           },
           "source": {
-            "label": "Base layer"
+            "label": "Source"
           },
           "region": {
             "label": "Region",
@@ -1668,7 +1668,7 @@
           },
           "normalize": {
             "label": "Normalize",
-            "placeholder": "Metric for Normalization",
+            "placeholder": "Select a metric",
             "disabled-placeholder": "Enable Normalization"
           },
           "timespan": {

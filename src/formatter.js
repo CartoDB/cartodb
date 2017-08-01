@@ -91,13 +91,13 @@ format.formatValue = function (value) {
   return value;
 };
 
-format.timestampFactory = function (aggregation, offset) {
-  return function (timestamp, localTimezone) {
+format.timestampFactory = function (aggregation, offset, localTimezone) {
+  return function (timestamp) {
     if (!_.has(AGGREGATION_FORMATS, aggregation)) {
       return '-';
     }
 
-    var localOffset = localTimezone ? moment.tz(moment.tz.guess()).utcOffset() * 60 : offset;
+    var localOffset = localTimezone ? moment.tz(moment.tz.guess()).utcOffset() * 60 : offset || 0;
 
     var format = AGGREGATION_FORMATS[aggregation];
     var date = moment.unix(timestamp + localOffset).utc();

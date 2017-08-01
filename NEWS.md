@@ -2,6 +2,7 @@ Development
 -----------
 
 ### Features
+* Support for SAML signed logout requests (#12355)
 * Provide CartoCSS attribute within layer info in vizjson v3 (CartoDB/support#858)
 * Support for nested properties in CartoCSS (#12411)
 * New loading button styles (#12132)

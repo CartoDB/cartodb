@@ -1,3 +1,4 @@
+var Backbone = require('backbone');
 var specHelper = require('../../spec-helper');
 var HistogramChartView = require('../../../src/widgets/histogram/chart');
 var TorqueTimeSliderView = require('../../../src/widgets/time-series/torque-time-slider-view');
@@ -46,10 +47,13 @@ describe('widgets/time-series/torque-time-slider-view', function () {
     this.chartView.render();
     this.chartView.model.set('width', 400);
 
+    this.timeSeriesModel = new Backbone.Model();
+
     this.view = new TorqueTimeSliderView({
       dataviewModel: this.dataviewModel,
       torqueLayerModel: this.torqueLayerModel,
-      chartView: this.chartView
+      chartView: this.chartView,
+      timeSeriesModel: this.timeSeriesModel
     });
     this.renderResult = this.view.render();
   });

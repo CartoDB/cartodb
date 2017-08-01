@@ -23,7 +23,6 @@ module.exports = cdb.core.View.extend({
     if (!this.options.chartView) throw new Error('chartView is required');
     if (!this.options.torqueLayerModel) throw new Error('torqeLayerModel is required');
     if (!this.options.timeSeriesModel) throw new Error('timeSeriesModel is required');
-    if (!this.options.rangeFilter) throw new Error('rangeFilter is required');
 
     this.model = new cdb.core.Model();
 
@@ -31,7 +30,6 @@ module.exports = cdb.core.View.extend({
     this._chartView = this.options.chartView;
     this._torqueLayerModel = this.options.torqueLayerModel;
     this._timeSeriesModel = this.options.timeSeriesModel;
-    this._rangeFilter = this.options.rangeFilter;
 
     this._chartMargins = this._chartView.model.get('margin');
 
@@ -243,7 +241,7 @@ module.exports = cdb.core.View.extend({
   },
 
   _onChangeTime: function () {
-    if (!this._rangeFilter.isEmpty()) {
+    if (!this._dataviewModel.filter.isEmpty()) {
       this._removeTimeSliderTip();
     } else {
       if (viewportUtils.isTabletViewport()) {

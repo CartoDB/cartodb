@@ -10,6 +10,9 @@ describe('widgets/time-series/time-series-header-view', function () {
     this.dataviewModel = new Backbone.Model({
       data: [{}]
     });
+    this.dataviewModel.getColumnType = function () {
+      return 'number';
+    };
 
     timeSeriesModel = new Backbone.Model({
       title: 'Title'

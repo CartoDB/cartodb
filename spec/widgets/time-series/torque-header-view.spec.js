@@ -11,6 +11,10 @@ describe('widgets/time-series/torque-header-view', function () {
     this.dataviewModel = new Backbone.Model({
       data: [{}]
     });
+    this.dataviewModel.getColumnType = function () {
+      return 'number';
+    };
+
     this.dataviewModel.layer = new Backbone.Model();
     this.dataviewModel.filter = new Backbone.Model();
     this.dataviewModel.filter.isEmpty = function () {
@@ -51,7 +55,7 @@ describe('widgets/time-series/torque-header-view', function () {
       this.view.render();
 
       // Torque time info rendered
-      expect(this.view.$('.CDB-Widget-timeSeriesTimeInfo').length).toBe(2);
+      expect(this.view.$('.CDB-Widget-timeSeriesTimeInfo').length).toBe(1);
       // Header clear button not present
       expect(this.view.$('.js-clear').length).toBe(0);
     });
@@ -62,10 +66,8 @@ describe('widgets/time-series/torque-header-view', function () {
 
       this.view.render();
 
-      // Torque controls not rendered
-      expect(this.view.$('.CDB-Widget-controlButtonContent').length).toBe(0);
       // Torque time info not rendered
-      expect(this.view.$('.CDB-Widget-timeSeriesTimeInfo').length).toBe(1);
+      expect(this.view.$('.CDB-Widget-timeSeriesTimeInfo').length).toBe(0);
       // Header clear button present
       expect(this.view.$('.js-clear').length).toBe(1);
     });

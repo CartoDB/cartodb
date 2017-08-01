@@ -1,5 +1,6 @@
-var WidgetModel = require('../widget-model');
 var _ = require('underscore');
+var WidgetModel = require('../widget-model');
+var getValue = require('../../util/get-object-value');
 
 /**
  * Model for a histogram widget
@@ -35,6 +36,7 @@ module.exports = WidgetModel.extend({
   _updateAutoStyle: function (m, style) {
     if (this.autoStyler) {
       this.autoStyler.updateColors(style);
+      this.autoStyler.opacity = getValue(style, 'auto_style.definition.color.opacity');
     }
     if (this.isAutoStyle()) {
       this.reapplyAutoStyle();

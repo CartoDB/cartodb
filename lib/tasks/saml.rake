@@ -7,6 +7,12 @@ namespace :cartodb do
     # SAML_EMAIL_ATTRIBUTE: attribute with the user email. Example: 'email'.
     # SAML_ASSERTION_CONSUMER_SERVICE_URL: [OPTIONAL] CARTO URL for SAML, including organization name. Examples: 'http://192.168.20.2/user/orgname/saml/finalize'. Defaults to the URL built from configuration and organization name
     # SAML_SINGLE_LOGOUT_SERVICE_URL: [OPTIONAL] CARTO URL for SAML logout, including organization name. Examples: 'http://192.168.20.2/user/orgname/logout'. Defaults to the URL built from configuration and organization name
+    # SAML_SIGNED_LOGOUT: [OPTIONAL] If set to 'true', activates support for SAML signed logout request
+    # SAML_SLO_DIGEST_METHOD: [OPTIONAL] Digest method to use in signed logout request. By default: 'http://www.w3.org/2001/04/xmlenc#sha256'
+    # SAML_SLO_SIGNATURE_METHOD: [OPTIONAL] Signature method to use in singled logout requests. By default: 'http://www.w3.org/2001/04/xmldsig-more#rsa-sha256'
+    # SAML_SP_PRIVATE_KEY: [OPTIONAL] Private key file used for signed logout requests
+    # SAML_SP_CERTIFICATE: [OPTIONAL] Certificate file used for signed logout requests
+    # SAML_NAME_IDENTIFIER_FORMAT: [OPTIONAL] Name identifier format to use. By default: 'urn:oasis:names:tc:SAML:2.0:nameid-format:transient'
     #
     # Option 1. Manual configuration
     # SAML_IDP_SSO_TARGET_URL: SAML Identity Provider login URL. Example: 'http://192.168.20.2/simplesaml/saml2/idp/SSOService.php'.
@@ -23,6 +29,7 @@ namespace :cartodb do
       configuration = if ENV['SAML_IDP_METADATA_FILE'].present?
                         idp_metadata_parser = OneLogin::RubySaml::IdpMetadataParser.new
                         settings = idp_metadata_parser.parse_remote(ENV['SAML_IDP_METADATA_FILE'])
+
                         {
                           idp_sso_target_url: settings.idp_sso_target_url,
                           idp_slo_target_url: settings.idp_slo_target_url,
@@ -36,15 +43,29 @@ namespace :cartodb do
                           name_identifier_format: ENV['SAML_NAME_IDENTIFIER_FORMAT']
                         }
                         config[:idp_slo_target_url] = ENV['SAML_IDP_SLO_TARGET_URL'] if ENV['SAML_IDP_SLO_TARGET_URL'].present?
+
                         config
                       end
+
+      if ENV['SAML_SIGNED_LOGOUT'].present? && ENV['SAML_SIGNED_LOGOUT'] == 'true'
+        configuration[:security] = {
+          logout_requests_signed: true,
+          logout_responses_signed: true,
+          digest_method: ENV['SAML_SLO_DIGEST_METHOD'] || XMLSecurity::Document::SHA256,
+          signature_method: ENV['SAML_SLO_SIGNATURE_METHOD'] || XMLSecurity::Document::RSA_SHA256,
+          embed_sign: true
+        }
+
+        configuration[:private_key] = File.read(ENV['SAML_SP_PRIVATE_KEY']) if ENV['SAML_SP_PRIVATE_KEY'].present?
+        configuration[:certificate] = File.read(ENV['SAML_SP_CERTIFICATE']) if ENV['SAML_SP_CERTIFICATE'].present?
+      end
 
       base_url = CartoDB.base_url(organization.name)
       configuration[:issuer] = ENV['SAML_ISSUER'] || base_url + '/saml/metadata'
       configuration[:email_attribute] = ENV['SAML_EMAIL_ATTRIBUTE']
       configuration[:assertion_consumer_service_url] = ENV['SAML_ASSERTION_CONSUMER_SERVICE_URL'] || base_url + '/saml/finalize'
       configuration[:single_logout_service_url] = ENV['SAML_SINGLE_LOGOUT_SERVICE_URL'] || base_url + '/logout'
-      configuration[:name_identifier_format] ||= 'urn:oasis:names:tc:SAML:2.0:nameid-format:transient'
+      configuration[:name_identifier_format] =  ENV['SAML_NAME_IDENTIFIER_FORMAT'] || 'urn:oasis:names:tc:SAML:2.0:nameid-format:transient'
 
       raise "Missing parameter: #{configuration}" unless configuration.values.all?(&:present?)
 

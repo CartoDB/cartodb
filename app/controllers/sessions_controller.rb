@@ -299,7 +299,7 @@ class SessionsController < ApplicationController
       redirect_to default_logout_url
     else
       # Initiate SLO (send Logout Request)
-      redirect_to saml_service.sp_logout_request
+      redirect_to saml_service.sp_logout_request(current_user)
     end
   end
 

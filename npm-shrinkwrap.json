@@ -694,14 +694,14 @@
       "resolved": "https://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.33.0.tgz"
     },
     "caniuse-lite": {
-      "version": "1.0.30000708",
+      "version": "1.0.30000709",
       "from": "caniuse-lite@>=1.0.30000704 <2.0.0",
-      "resolved": "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30000708.tgz"
+      "resolved": "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30000709.tgz"
     },
     "carto": {
       "version": "0.15.1-cdb4",
       "from": "cartodb/carto#master",
-      "resolved": "git://github.com/cartodb/carto.git#7d00bfdf23a6e765d3561d30dd3aab4946d81cc4"
+      "resolved": "git://github.com/cartodb/carto.git#cea1e7c6208210f55d7b4c612349d6d88a0d71ca"
     },
     "cartocolor": {
       "version": "4.0.0",
@@ -711,7 +711,7 @@
     "cartodb-deep-insights.js": {
       "version": "0.0.2-c12324",
       "from": "cartodb/deep-insights.js#12470-responsive",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#b132cb5489a6e1633d7a6a5a56fd5bb873bb627f",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#340c5aad3bcb9f5df0350f0a3ae83d2d8f3665c8",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",
@@ -728,7 +728,7 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
       "from": "cartodb/cartodb.js#12470-responsive",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#9789f6d29ee40aa508a772fbdd260fbf9a426d61"
+      "resolved": "git://github.com/cartodb/cartodb.js.git#ed7e29cdf19d464d7dce5c20d43a1c02f044d1a0"
     },
     "caseless": {
       "version": "0.11.0",
@@ -990,6 +990,11 @@
       "version": "5.0.2",
       "from": "diffie-hellman@>=5.0.0 <6.0.0",
       "resolved": "https://registry.npmjs.org/diffie-hellman/-/diffie-hellman-5.0.2.tgz"
+    },
+    "dom-walk": {
+      "version": "0.1.1",
+      "from": "dom-walk@>=0.1.0 <0.2.0",
+      "resolved": "https://registry.npmjs.org/dom-walk/-/dom-walk-0.1.1.tgz"
     },
     "domain-browser": {
       "version": "1.1.7",
@@ -1378,6 +1383,18 @@
       "version": "2.0.0",
       "from": "glob-parent@>=2.0.0 <3.0.0",
       "resolved": "https://registry.npmjs.org/glob-parent/-/glob-parent-2.0.0.tgz"
+    },
+    "global": {
+      "version": "4.3.2",
+      "from": "global@>=4.3.2 <5.0.0",
+      "resolved": "https://registry.npmjs.org/global/-/global-4.3.2.tgz",
+      "dependencies": {
+        "process": {
+          "version": "0.5.2",
+          "from": "process@>=0.5.1 <0.6.0",
+          "resolved": "https://registry.npmjs.org/process/-/process-0.5.2.tgz"
+        }
+      }
     },
     "globals": {
       "version": "9.18.0",
@@ -2031,6 +2048,11 @@
       "from": "mime-types@>=2.1.7 <2.2.0",
       "resolved": "https://registry.npmjs.org/mime-types/-/mime-types-2.1.16.tgz"
     },
+    "min-document": {
+      "version": "2.19.0",
+      "from": "min-document@>=2.19.0 <3.0.0",
+      "resolved": "https://registry.npmjs.org/min-document/-/min-document-2.19.0.tgz"
+    },
     "minimalistic-assert": {
       "version": "1.0.0",
       "from": "minimalistic-assert@>=1.0.0 <2.0.0",
@@ -2097,9 +2119,9 @@
           "resolved": "https://registry.npmjs.org/os-browserify/-/os-browserify-0.2.1.tgz"
         },
         "timers-browserify": {
-          "version": "2.0.2",
+          "version": "2.0.3",
           "from": "timers-browserify@>=2.0.2 <3.0.0",
-          "resolved": "https://registry.npmjs.org/timers-browserify/-/timers-browserify-2.0.2.tgz"
+          "resolved": "https://registry.npmjs.org/timers-browserify/-/timers-browserify-2.0.3.tgz"
         }
       }
     },

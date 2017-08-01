@@ -251,7 +251,8 @@ module Carto
           visible: layer_vizjson[:visible],
           options: {
             layer_name: layer_options[:layer_name],
-            attribution: layer_options[:attribution]
+            attribution: layer_options[:attribution],
+            cartocss: layer_options[:cartocss]
           }
         }
 
@@ -418,7 +419,8 @@ module Carto
         layer_alias = @layer.options.fetch('table_name_alias', nil)
         table_name  = @layer.options.fetch('table_name')
 
-        layer_alias.present? ? layer_alias : table_name
+        # .present? is not valid, as we want to allow whitespaced layer names.
+        layer_alias.nil? || layer_alias.empty? ? table_name : layer_alias
       end
 
       def sql_from(layer)

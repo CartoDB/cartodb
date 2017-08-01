@@ -12,11 +12,11 @@ var HistogramAutoStyler = AutoStyler.extend({
     var style = this.layer.get('initialStyle');
     if (!style) return;
 
-    FILL_SELECTORS.forEach(function (item) {
+    AutoStyler.FILL_SELECTORS.forEach(function (item) {
       style = StyleUtils.changeStyle(style, item, this.getColorLine(item, this.getCustomStyle()));
     }.bind(this));
 
-    OPACITY_SELECTORS.forEach(function (item) {
+    AutoStyler.OPACITY_SELECTORS.forEach(function (item) {
       style = StyleUtils.changeStyle(style, item, this.opacity);
     }.bind(this));
 
@@ -60,7 +60,7 @@ var HistogramAutoStyler = AutoStyler.extend({
     var styles = this.styles;
     var isCustomDefinition = this.styles && this.styles.custom || false;
 
-    FILL_SELECTORS.forEach(function (item) {
+    AutoStyler.FILL_SELECTORS.forEach(function (item) {
       if (StyleUtils.isPropertyIncluded(cartocss, item)) {
         var scales = HistogramAutoStyler.SCALES_MAP[item][shape];
         var geom = item.substring(0, item.indexOf('-'));

@@ -52,8 +52,26 @@ describe('src/widgets/auto-style/style-utils', function () {
       expect(StyleUtils.changeStyle(cartocss, attr, newStyle)).toBe(expected);
     });
 
-    it('should not replace line-opacity if it is included under an layer::outline symbolizer', function () {
-      var cartocss = '#layer { polygon-fill: white; polygon-opacity: 0.1; } #layer::outline { line-width: 0.5; line-opacity: green; }';
+    it('should not replace line-color if it is included under a layer::outline symbolizer', function () {
+      var cartocss = '#layer { polygon-fill: white; line-color: red; polygon-opacity: 0.1; } #layer::outline { line-width: 0.5; line-color: green; }';
+      var attr = 'line-color';
+      var newStyle = 'blue';
+
+      var expected = '#layer { polygon-fill: white; line-color: blue; polygon-opacity: 0.1; } #layer::outline { line-width: 0.5; line-color: green; }';
+
+      expect(StyleUtils.changeStyle(cartocss, attr, newStyle)).toBe(expected);
+    });
+
+    it('should not replace line-opacity if it is included under an outline symbolizer', function () {
+      var cartocss = '#layer { polygon-fill: white; polygon-opacity: 0.1; ::outline { line-width: 0.5; line-opacity: 0.7; }}';
+      var attr = 'line-opacity';
+      var newStyle = 0.2;
+
+      expect(StyleUtils.changeStyle(cartocss, attr, newStyle)).toBe(cartocss);
+    });
+
+    it('should not replace line-color if it is included under a layer::outline symbolizer', function () {
+      var cartocss = '#layer { polygon-fill: white; polygon-opacity: 0.1; } #layer::outline { line-width: 0.5; line-opacity: 0.7; }';
       var attr = 'line-opacity';
       var newStyle = 0.2;
 
@@ -63,9 +81,8 @@ describe('src/widgets/auto-style/style-utils', function () {
     it('should not replace the style if it\'s undefined', function () {
       var cartocss = '#layer { polygon-fill: white; polygon-opacity: 0.1; }';
       var attr = 'polygon-opacity';
-      var newStyle = undefined;
 
-      expect(StyleUtils.changeStyle(cartocss, attr, newStyle)).toBe(cartocss);
+      expect(StyleUtils.changeStyle(cartocss, attr, undefined)).toBe(cartocss);
     });
   });
 

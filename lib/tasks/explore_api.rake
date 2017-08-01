@@ -362,7 +362,6 @@ namespace :cartodb do
 
       # We get strange errors from visualization without user so we need to check
       if user.nil?
-        CartoDB.notify_debug("Explore API: Visualization without user", visualization: visualization.id)
         return {}
       end
 

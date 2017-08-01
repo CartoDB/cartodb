@@ -1509,12 +1509,13 @@
     },
     "layers": {
       "errors": {
-        "non-existent-node": "Layer is pointing to non existent node %{nodeId}"
+        "broken-node": "Broken node",
+        "non-existent-node": "Layer is pointing to a non existent node %{nodeId}"
       },
       "options": {
         "rename": "Rename",
         "delete": "Delete layer…",
-        "delete-and-reload": "Delete layer and reload",
+        "delete-and-reload": "Delete layer and reload map",
         "collapse": "Collapse",
         "expand": "Expand",
         "export": "Export data",

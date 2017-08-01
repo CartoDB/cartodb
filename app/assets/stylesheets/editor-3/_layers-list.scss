@@ -92,8 +92,11 @@
   @include opacity(0.6);
 }
 .Editor-ListLayer-item.is-errored {
-  border-color: rgba($cError, 0.3);
-  background-color: rgba($cError, 0.1);
+  border-color: rgba($cError, 0.7);
+
+  .Editor-HeaderInfo-actionsItem path {
+    fill: $cError;
+  }
 }
 .Editor-ListLayer-item.ui-sortable-helper {
   // scss-lint:disable ImportantRule

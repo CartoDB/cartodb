@@ -46,7 +46,6 @@ WORKING_SPECS_1 = \
 	spec/models/visualization/collection_spec.rb \
 	spec/models/visualization/locator_spec.rb \
 	spec/models/visualization/member_spec.rb \
-	spec/models/visualization/member_overviews_spec.rb \
 	spec/models/visualization/name_checker_spec.rb \
 	spec/models/visualization/name_generator_spec.rb \
 	spec/models/visualization/organization_visualization_spec.rb \
@@ -173,6 +172,7 @@ WORKING_SPECS_5 = \
 	services/table-geocoder/spec/internal-geocoder/query_generator_factory_spec.rb \
 	services/table-geocoder/spec/lib/gme/table_geocoder_spec.rb \
 	spec/models/synchronization/member_spec.rb \
+	spec/models/synchronization/member_overviews_spec.rb \
 	spec/models/synchronization/collection_spec.rb \
 	spec/models/organization_spec.rb \
 	spec/models/user_organization_spec.rb \

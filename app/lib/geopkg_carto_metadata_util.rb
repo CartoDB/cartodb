@@ -1,55 +1,80 @@
-require 'active_record'
-    
-class GpkgMetadata < ActiveRecord::Base
-  # TODO - Add validations of always in json?
-  validates :mime_type, inclusion: { in: %w(text/json) }
-  validates :metadata, presence: true
-end
+require 'sqlite3'
 
-# Modeled as an ActiveRecord Model
-#class GpkgCartoMetadataUtil [X]
- # Generic
- # Nice to have - generate empty gpkg file
- # TODO - Create new issue for geopkg library under cartodb org
- # TODO - Change from active record to core sqlite3 library for use in ruby library outside of rails....
 class GpkgCartoMetadataUtil
- CARTO_URI = 'cartodb.com'
-      
+
   def initialize(geopkg_file:)
     # Connect to the database
-     ActiveRecord::Base.establish_connection(
-       adapter: 'sqlite3',
-       database: geopkg_file
-     )
+    @db = SQLite3::Database.new geopkg_file
 
-     @rec = carto_metadata
+    # Find the appropriate carto metadata record
+    @orig_metadata = @metadata = carto_metadata
   end
 
+  def self.open(geopkg_file:)
+    f = GpkgCartoMetadataUtil.new(geopkg_file: geopkg_file)
+
+    return f unless block_given?
+
+    begin
+      yield f
+    ensure
+      f.close
+    end
+  end
+
+  # Send in metadata as a hash
   def metadata=(metadata)
     raise ArgumentError if metadata == nil
 
-     @rec.metadata = metadata.to_json
+    md = metadata.with_indifferent_access
+
+    # Always make sure a carto property exists
+    if !md.key?(:vendor)
+      md[:vendor] = 'carto'
+    end
+
+    @metadata = md
   end
 
-   def metadata
-     JSON.load(@rec.metadata).with_indifferent_access
-   end
-
-   # Commit the changes to the file
-   def commit
-     @rec.save
-   end
-
-   private
-     def carto_metadata
-       rec = GpkgMetadata.find_by_md_standard_uri(CARTO_URI)
-       if rec == nil
-         rec = GpkgMetadata.new(
-                md_standard_uri: CARTO_URI,
-                md_scope: 'dataset',
-                mime_type: 'text/json',
-                metadata: {}.to_json )
-      end
-      rec
+  # Get metadata as hash
+  def metadata
+    unless @metadata
+      @metadata = { vendor: 'carto' }.with_indifferent_access
     end
+    @metadata
+  end
+
+  # Commit the changes to the file
+  # Ruby - destructor to commit -> call close()
+  def close
+    if @orig_metadata
+      unless @orig_metadata == @metadata
+        @db.execute "update gpkg_metadata set metadata=? where metadata=?",
+                    @metadata.to_json, @orig_metadata.to_json
+      end
+    # If the record doesn't exist add a new one...
+    elsif @metadata
+      @db.execute 'insert into gpkg_metadata ' \
+                  '(md_standard_uri, md_scope, mime_type, metadata) ' \
+                  'values ( "", "dataset", "text/json", ? )', @metadata.to_json
+      @orig_metadata = @metadata
+    end
+  end
+
+  private
+
+  def carto_metadata
+    # Currently there is no key to quickly find the record.
+    # Therefore it is assumed that not too many metadata records
+    #  exist and a table scan is acceptable for a first implementation
+    rec = nil
+    @db.execute('select metadata from gpkg_metadata') do |row|
+      # Validate the row is correct
+      md = JSON.parse(row[0]).with_indifferent_access
+      if md.key?(:vendor) && md[:vendor] == 'carto'
+        rec = md
+      end
+    end
+    rec
+  end
 end

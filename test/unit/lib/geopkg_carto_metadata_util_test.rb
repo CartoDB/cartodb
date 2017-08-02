@@ -1,36 +1,35 @@
-require 'test_helper'
-require 'geopkg_carto_metadata_util'
+require_relative '../../../app/lib/geopkg_carto_metadata_util'
 
 # TODO - Convert to rspec
-class GpkgCartoMetadataUtilTest < ActiveSupport::TestCase
-  test "Invalid geopkg file" do
-    assert_raise(SQLite3::SQLException) do
+describe GpkgCartoMetadataUtil do
+  it "Invalid geopkg file" do
+    expect { 
       GpkgCartoMetadataUtil.new(geopkg_file: 'test/unit/lib/test_gpkg_files/invalidfile')
-    end
+    }.to raise_error(SQLite3::SQLException)
   end
 
-  test "Default State" do
+  it "Default State" do
     f = GpkgCartoMetadataUtil.new(geopkg_file: 'test/unit/lib/test_gpkg_files/blankfile')
     # Default should be blank hash
-    assert_equal({ vendor: 'carto' }.with_indifferent_access, f.metadata)
+    expect(f.metadata).to eq({ vendor: 'carto' }.with_indifferent_access)
   end
 
-  test "Default State With Incorrect vendor" do
+  it "Default State With Incorrect vendor" do
     f = GpkgCartoMetadataUtil.new(geopkg_file: 'test/unit/lib/test_gpkg_files/incorrect_vendor')
     # Default should be blank hash
-    assert_equal({ vendor: 'carto' }.with_indifferent_access, f.metadata)
+    expect(f.metadata).to eq({ vendor: 'carto' }.with_indifferent_access)
   end
 
-  test "Set Invalid metadata" do
+  it "Set Invalid metadata" do
     # Start from blank slate
     f = GpkgCartoMetadataUtil.new(geopkg_file: 'test/unit/lib/test_gpkg_files/blankfile')
     # Set metadata
-    assert_raise(ArgumentError) do
+    expect {
       f.metadata = nil
-    end
+    }.to raise_error(ArgumentError)
   end
 
-  test "Set Metadata No Write" do
+  it "Set Metadata No Write" do
     # Start from blank slate
     f = GpkgCartoMetadataUtil.new(geopkg_file: 'test/unit/lib/test_gpkg_files/blankfile')
     # Set metadata
@@ -48,10 +47,10 @@ class GpkgCartoMetadataUtilTest < ActiveSupport::TestCase
     }
     f.metadata = md
     # Default should be blank hash
-    assert_equal(md.with_indifferent_access, f.metadata)
+    expect(f.metadata).to eq(md.with_indifferent_access)
   end
 
-  test "Set Metadata With Write" do
+  it "Set Metadata With Write" do
     # Start from blank slate
     testfile = Tempfile.new('carto_geopkg_test_set_metadata_with_write')
     File.open('test/unit/lib/test_gpkg_files/blankfile') do |f|
@@ -75,16 +74,16 @@ class GpkgCartoMetadataUtilTest < ActiveSupport::TestCase
       # Set metadata
       gpkgfile.metadata = md
       # Default should be blank hash
-      assert_equal(md.with_indifferent_access, gpkgfile.metadata)
+      expect(gpkgfile.metadata).to eq(md.with_indifferent_access)
     end
 
     # Re-open the file and verify the metadata changed
     GpkgCartoMetadataUtil.open(geopkg_file: testfile.path) do |gpkgfile|
-      assert_equal(md.with_indifferent_access, gpkgfile.metadata)
+      expect(gpkgfile.metadata).to eq(md.with_indifferent_access)
     end
   end
 
-  test "Set Metadata Without vendor property" do
+  it "Set Metadata Without vendor property" do
     # Start from blank slate
     f = GpkgCartoMetadataUtil.new(geopkg_file: 'test/unit/lib/test_gpkg_files/blankfile')
     # Set metadata
@@ -104,10 +103,10 @@ class GpkgCartoMetadataUtilTest < ActiveSupport::TestCase
     expected_md = md
     expected_md[:vendor] = 'carto'
     # Default should be blank hash
-    assert_equal(expected_md.with_indifferent_access, f.metadata)
+    expect(f.metadata).to eq(expected_md.with_indifferent_access)
   end
 
-  test "Set Metadata Without vendor property With Write" do
+  it "Set Metadata Without vendor property With Write" do
     # Start from blank slate
     testfile = Tempfile.new('carto_geopkg_test_set_metadata_without_vendor_with_write')
     File.open('test/unit/lib/test_gpkg_files/blankfile') do |f|
@@ -133,16 +132,16 @@ class GpkgCartoMetadataUtilTest < ActiveSupport::TestCase
       # Set metadata
       gpkgfile.metadata = md
       # Default should be blank hash
-      assert_equal(expected_md.with_indifferent_access, gpkgfile.metadata)
+      expect(gpkgfile.metadata).to eq(expected_md.with_indifferent_access)
     end
 
     # Re-open the file and verify the metadata changed
     GpkgCartoMetadataUtil.open(geopkg_file: testfile.path) do |gpkgfile|
-      assert_equal(expected_md.with_indifferent_access, gpkgfile.metadata)
+      expect(gpkgfile.metadata).to eq(expected_md.with_indifferent_access)
     end
   end
 
-  test "Set Metadata Multiple Times With Write" do
+  it "Set Metadata Multiple Times With Write" do
     # Start from blank slate
     testfile = Tempfile.new('carto_geopkg_test_set_metadata_multiple_times_with_write')
     File.open('test/unit/lib/test_gpkg_files/blankfile') do |f|
@@ -166,21 +165,22 @@ class GpkgCartoMetadataUtilTest < ActiveSupport::TestCase
       # Set metadata
       gpkgfile.metadata = md
       # Default should be blank hash
-      assert_equal(md.with_indifferent_access, gpkgfile.metadata)
+      expect(gpkgfile.metadata).to eq(md.with_indifferent_access)
     end
 
     # Re-open the file, verify the metadata changed, and re-write new values
     GpkgCartoMetadataUtil.open(geopkg_file: testfile.path) do |gpkgfile|
-      assert_equal(md.with_indifferent_access, gpkgfile.metadata)
+      expect(gpkgfile.metadata).to eq(md.with_indifferent_access)
 
       md['data']['source']['configuration']['refresh_interval_in_seconds'] = 789
       gpkgfile.metadata = md
-      assert_equal(md.with_indifferent_access, gpkgfile.metadata)
+      expect(gpkgfile.metadata).to eq(md.with_indifferent_access)
     end
 
     # Re-open the file one last time to verify the changes
     GpkgCartoMetadataUtil.open(geopkg_file: testfile.path) do |gpkgfile|
-      assert_equal(md.with_indifferent_access, gpkgfile.metadata)
+      expect(gpkgfile.metadata).to eq(md.with_indifferent_access)
+      expect(789).to eq(gpkgfile.metadata['data']['source']['configuration']['refresh_interval_in_seconds'])
     end
   end
 end

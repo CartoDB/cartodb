@@ -30,12 +30,10 @@ module.exports = DataviewModelBase.extend({
 
       if (this.get('column_type') === 'number' && this.get('bins')) {
         params.push('bins=' + this.get('bins'));
-      } else if (this.get('column_type') === 'date' && (aggregation || offset)) {
+      } else if (this.get('column_type') === 'date') {
+        params.push('aggregation=' + (this.get('aggregation') || 'auto'));
         if (offset) {
           params.push('offset=' + offset);
-        }
-        if (aggregation) {
-          params.push('aggregation=' + aggregation);
         }
       }
       if (_.isNumber(start)) {
@@ -298,6 +296,7 @@ module.exports = DataviewModelBase.extend({
 
     if (columnType === 'number' && this.get('bins')) {
       options.bins = this.get('bins');
+<<<<<<< HEAD
     } else if (columnType === 'date' && (aggregation || offset)) {
       if (aggregation) {
         options.aggregation = this.get('aggregation');
@@ -306,6 +305,10 @@ module.exports = DataviewModelBase.extend({
       if (offset) {
         options.offset = this.get('offset');
       }
+=======
+    } else if (this.get('column_type') === 'date') {
+      options.aggregation = this.get('aggregation') || 'auto';
+>>>>>>> c12324-time-series-aggregations
     }
 
     return {

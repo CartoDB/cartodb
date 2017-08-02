@@ -21,17 +21,15 @@ module.exports = Model.extend({
     var aggregation = this.get('aggregation');
     var offset = this.get('offset');
 
-    if (this.get('column_type') === 'date' && (aggregation || offset)) {
-      if (aggregation) {
-        params.push('aggregation=' + aggregation);
-      }
-
+    if (this.get('column_type') === 'number' && this.get('bins')) {
+      params.push('bins=' + this.get('bins'));
+    } else if (this.get('column_type') === 'date') {
+      params.push('aggregation=' + (this.get('aggregation') || 'auto'));
       if (offset) {
         params.push('offset=' + offset);
       }
-    } else if (this.get('bins')) {
-      params.push('bins=' + this.get('bins'));
     }
+
     if (this.get('apiKey')) {
       params.push('api_key=' + this.get('apiKey'));
     } else if (this.get('authToken')) {

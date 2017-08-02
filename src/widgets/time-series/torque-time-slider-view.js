@@ -109,7 +109,6 @@ module.exports = cdb.core.View.extend({
       return;
     }
 
-    var timeslider = chart.select('.CDB-TimeSlider');
     var rectLabel = chart.select('.CDB-Chart-timeSliderTipRect');
     var textBBox = textLabel.node().getBBox();
     var width = textBBox.width;
@@ -128,12 +127,12 @@ module.exports = cdb.core.View.extend({
     var data = this.timeSliderTip.data();
     data[0].y = yPos;
 
+    var newX = xPos;
+
     if (xPos < CHART_MARGIN) {
       newX = CHART_MARGIN;
     } else if ((xPos + rectWidth) >= chartWidth) {
       newX = chartWidth - rectWidth;
-    } else {
-      newX = xPos;
     }
 
     if (!isNaN(newX)) {

@@ -1,4 +1,3 @@
-var $ = require('jquery');
 var cdb = require('cartodb.js');
 var HistogramChartView = require('../histogram/chart');
 var viewportUtils = require('../../viewport-utils');
@@ -112,8 +111,8 @@ module.exports = cdb.core.View.extend({
     var isTablet = viewportUtils.isTabletViewport();
     this._chartView.toggleLabels(!isTablet);
 
-    var height = isTablet ?
-      this.defaults.histogramChartMobileHeight : this.defaults.histogramChartHeight;
+    var height = isTablet
+      ? this.defaults.histogramChartMobileHeight : this.defaults.histogramChartHeight;
 
     this._chartView.model.set('height', height);
   },

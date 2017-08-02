@@ -247,8 +247,8 @@ module.exports = cdb.core.View.extend({
     var parts = d3.transform(handle.attr('transform')).translate;
     var xPos = +parts[0] + (this.options.handleWidth / 2);
 
-    var yPos = className === 'right' && !(this._isMobileViewport() && this._isTimeSeries()) ?
-      this.chartHeight() + (TRIANGLE_HEIGHT * TRIANGLE_RIGHT_FACTOR) : -(TRIANGLE_HEIGHT + TIP_RECT_HEIGHT + TOOLTIP_MARGIN);
+    var yPos = className === 'right' && !(this._isMobileViewport() && this._isTimeSeries())
+      ? this.chartHeight() + (TRIANGLE_HEIGHT * TRIANGLE_RIGHT_FACTOR) : -(TRIANGLE_HEIGHT + TIP_RECT_HEIGHT + TOOLTIP_MARGIN);
     yPos = Math.floor(yPos);
 
     this._updateTriangle(className, triangle, xPos);
@@ -1045,12 +1045,12 @@ module.exports = cdb.core.View.extend({
   _generateAxisTip: function (className) {
     var handle = this.chart.select('.CDB-Chart-handle.CDB-Chart-handle-' + className);
 
-    var yPos = className === 'right' && !(this._isMobileViewport() && this._isTimeSeries()) ?
-      this.chartHeight() + (TRIANGLE_HEIGHT * TRIANGLE_RIGHT_FACTOR) : -(TRIANGLE_HEIGHT + TIP_RECT_HEIGHT + TOOLTIP_MARGIN);
+    var yPos = className === 'right' && !(this._isMobileViewport() && this._isTimeSeries())
+      ? this.chartHeight() + (TRIANGLE_HEIGHT * TRIANGLE_RIGHT_FACTOR) : -(TRIANGLE_HEIGHT + TIP_RECT_HEIGHT + TOOLTIP_MARGIN);
     yPos = Math.floor(yPos);
 
-    var yTriangle = className === 'right' && !(this._isMobileViewport() && this._isTimeSeries()) ?
-      this.chartHeight() + (TRIANGLE_HEIGHT * TRIANGLE_RIGHT_FACTOR) + 2 : -(TRIANGLE_HEIGHT + TOOLTIP_MARGIN) - 2;
+    var yTriangle = className === 'right' && !(this._isMobileViewport() && this._isTimeSeries())
+      ? this.chartHeight() + (TRIANGLE_HEIGHT * TRIANGLE_RIGHT_FACTOR) + 2 : -(TRIANGLE_HEIGHT + TOOLTIP_MARGIN) - 2;
     var yFactor = className === 'right' ? -1 : 1;
     var triangleHeight = TRIANGLE_HEIGHT * yFactor;
 
@@ -1431,7 +1431,6 @@ module.exports = cdb.core.View.extend({
         if (self._isMobileViewport() && self._isTimeSeries()) {
           return MOBILE_BAR_HEIGHT;
         }
-
 
         var h = self.chartHeight() - self.yScale(d.freq);
 

@@ -144,6 +144,7 @@ More information at [Dropbox migration guide](https://www.dropbox.com/developers
 * An attacker could execute commands in the server running the queues by importing a file with a carefully crafted filename. Fixed in #11782
 
 ### Features
+* Overviews are synchronized now (#12092)
 * Adding tracking classes for any Backbone.Form editor (#12095)
 * Using Node v6.9.2 and npm v3.10.9 (#11935).
 * Updates Dataservices API client default version to `0.17.0` (#12093)

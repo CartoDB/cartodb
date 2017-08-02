@@ -66,7 +66,7 @@ describe('src/widgets/auto-style/histogram', function () {
         auto_style: {
           opacity: 0.2
         }
-      }
+      };
       this.histogramAutoStyler.updateStyle(styles);
       expect(this.histogramAutoStyler.styles).toEqual({ opacity: 0.2 });
     });

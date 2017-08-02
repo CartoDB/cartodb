@@ -70,7 +70,7 @@ describe('src/widgets/auto-style/style-utils', function () {
       expect(StyleUtils.changeStyle(cartocss, attr, newStyle)).toBe(cartocss);
     });
 
-    it('should not replace line-color if it is included under a layer::outline symbolizer', function () {
+    it('should not replace line-opacity if it is included under a layer::outline symbolizer', function () {
       var cartocss = '#layer { polygon-fill: white; polygon-opacity: 0.1; } #layer::outline { line-width: 0.5; line-opacity: 0.7; }';
       var attr = 'line-opacity';
       var newStyle = 0.2;

@@ -1,24 +1,14 @@
 var _ = require('underscore');
 var AutoStyler = require('./auto-styler');
-var StyleUtils = require('./style-utils');
 
 module.exports = AutoStyler.extend({
-  getStyle: function () {
-    var style = this.layer.get('initialStyle');
-    if (!style) return;
-
-    AutoStyler.FILL_SELECTORS.forEach(function (item) {
-      style = StyleUtils.changeStyle(style, item, this._generateCategoryRamp());
-    }.bind(this));
-
-    AutoStyler.OPACITY_SELECTORS.forEach(function (item) {
-      style = StyleUtils.changeStyle(style, item, this.opacity);
-    }.bind(this));
-
-    return StyleUtils.replaceWrongSpaceChar(style);
+  updateStyle: function (style) {
+    this.styles = style.auto_style;
+    this.colors.updateColors(style.auto_style);
+    this.colors.updateData(_.pluck(this.dataviewModel.get('data'), 'name'));
   },
 
-  getRange: function () {
+  _getRange: function () {
     return _.map(this.dataviewModel.get('data'), function (category) {
       return this.colors.getColorByCategory(category.name);
     }, this);
@@ -27,7 +17,7 @@ module.exports = AutoStyler.extend({
   getDef: function () {
     var model = this.dataviewModel;
     var categories = model.get('data');
-    var range = this.getRange();
+    var range = this._getRange();
     var definitions = {};
 
     AutoStyler.FILL_SELECTORS.forEach(function (item) {
@@ -42,7 +32,7 @@ module.exports = AutoStyler.extend({
     return definitions;
   },
 
-  _generateCategoryRamp: function () {
+  _getFillColor: function () {
     var model = this.dataviewModel;
     var categories = model.get('data');
     var column = model.get('column');

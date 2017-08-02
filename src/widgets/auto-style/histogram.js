@@ -2,37 +2,14 @@ var _ = require('underscore');
 var cartocolor = require('cartocolor');
 var AutoStyler = require('./auto-styler');
 var StyleUtils = require('./style-utils');
-var getValue = require('../../util/get-object-value');
 
 var HistogramAutoStyler = AutoStyler.extend({
-  getStyle: function () {
-    var style = this.layer.get('initialStyle');
-    if (!style) return;
-
-    AutoStyler.FILL_SELECTORS.forEach(function (item) {
-      style = StyleUtils.changeStyle(style, item, this._getColorLine(item, this._getColor()));
-    }.bind(this));
-
-    AutoStyler.OPACITY_SELECTORS.forEach(function (item) {
-      style = StyleUtils.changeStyle(style, item, this._getOpacity());
-    }.bind(this));
-
-    return StyleUtils.replaceWrongSpaceChar(style);
-  },
-
-  _getColor: function () {
-    return getValue(this.styles, 'definition.color');
-  },
-
-  _getOpacity: function () {
-    return getValue(this.styles, 'definition.color.opacity');
-  },
-
   updateStyle: function (style) {
     this.styles = style.auto_style;
   },
 
-  _getColorLine: function (sym, custom) {
+  _getFillColor: function (sym) {
+    var custom = this._getColor();
     var scales = custom || {};
 
     if (!custom) {
@@ -44,7 +21,8 @@ var HistogramAutoStyler = AutoStyler.extend({
     }
 
     var ramp = 'ramp([' + this.dataviewModel.get('column') + '], ';
-    var colors = custom ? "('" + scales.range.join("', '") + "'), "
+    var colors = custom
+      ? "('" + scales.range.join("', '") + "'), "
       : 'cartocolor(' + scales.palette + ', ' + this.dataviewModel.get('bins') + '), ';
     var cuantification = scales.quantification + ')';
 

@@ -1064,18 +1064,20 @@ module.exports = cdb.core.View.extend({
       .attr('class', 'CDB-Chart-axisTipRect CDB-Chart-axisTipTriangle')
       .attr('transform', 'translate(' + ((this.options.handleWidth / 2) - (TRIANGLE_SIDE / 2)) + ', ' + yTriangle + ')')
       .attr('d', trianglePath(0, 0, TRIANGLE_SIDE, 0, (TRIANGLE_SIDE / 2), triangleHeight, yFactor))
-      .style('opacity', '0');
+      .style('opacity', '1');
 
     axisTip.append('rect')
       .attr('class', 'CDB-Chart-axisTipRect CDB-Chart-axisTip-' + className)
       .attr('rx', '2')
       .attr('ry', '2')
+      .attr('opacity', '1')
       .attr('height', TIP_RECT_HEIGHT);
 
     axisTip.append('text')
       .attr('class', 'CDB-Text CDB-Size-small CDB-Chart-axisTipText CDB-Chart-axisTip-' + className)
       .attr('dy', '11')
       .attr('dx', '0')
+      .attr('opacity', '1')
       .text(function (d) { return d; });
   },
 

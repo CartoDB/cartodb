@@ -47,7 +47,7 @@ namespace :cartodb do
                       end
 
       if ENV['SAML_SP_PRIVATE_KEY_FILE'].present? && ENV['SAML_SP_CERTIFICATE_FILE'].present? &&
-        ENV['SAML_NAME_IDENTIFIER_FORMAT'].present && ENV['SAML_IDP_SLO_TARGET_URL'].present?
+        configuration[:name_identifier_format].present && configuration[:idp_slo_target_url].present?
         configuration[:security] = {
           logout_requests_signed: true,
           logout_responses_signed: true,
@@ -64,7 +64,7 @@ namespace :cartodb do
       configuration[:email_attribute] = ENV['SAML_EMAIL_ATTRIBUTE']
       configuration[:assertion_consumer_service_url] = ENV['SAML_ASSERTION_CONSUMER_SERVICE_URL'] || base_url + '/saml/finalize'
       configuration[:single_logout_service_url] = ENV['SAML_SINGLE_LOGOUT_SERVICE_URL'] || base_url + '/logout'
-      configuration[:name_identifier_format] ||= 'urn:oasis:names:tc:SAML:2.0:nameid-format:emailAddress'
+      configuration[:name_identifier_format] ||= 'urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress'
 
       raise "Missing parameter: #{configuration}" unless configuration.values.all?(&:present?)
 

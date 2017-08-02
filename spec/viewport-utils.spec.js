@@ -6,7 +6,6 @@ describe('viewport-utils', function () {
     spyOn($.prototype, 'width').and.returnValue(100);
   });
 
-
   describe('._isViewport', function () {
     it('should return true if window is lower than provided viewport', function () {
       expect(viewportUtils._isViewport(101)).toBe(true);

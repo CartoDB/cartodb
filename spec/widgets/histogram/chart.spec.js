@@ -8,6 +8,7 @@ var viewportUtils = require('../../../src/viewport-utils');
 describe('widgets/histogram/chart', function () {
   var onWindowResizeReal;
   var onWindowResizeSpy;
+  var generateHandlesSpy;
 
   afterEach(function () {
     $('.js-chart').remove();
@@ -99,6 +100,7 @@ describe('widgets/histogram/chart', function () {
     spyOn(this.view.$el, 'parent');
     this.view.$el.parent.and.returnValue(parentSpy);
 
+    generateHandlesSpy = spyOn(this.view, '_generateHandles');
     spyOn(this.view, 'refresh').and.callThrough();
 
     this.view.render();
@@ -205,6 +207,10 @@ describe('widgets/histogram/chart', function () {
     });
 
     it('should draw the handles', function () {
+      generateHandlesSpy.and.callThrough();
+
+      this.view._generateHandles();
+
       expect(this.view.$el.find('.CDB-Chart-handle').size()).toBe(2);
     });
 
@@ -268,7 +274,7 @@ describe('widgets/histogram/chart', function () {
     describe('animated', function () {
       it('should set the parent width', function () {
         var animatedWidth = 24;
-        spyOn(this.view.$el, 'siblings').and.returnValue($("<div>"));
+        spyOn(this.view.$el, 'siblings').and.returnValue($('<div>'));
         spyOn($.prototype, 'width').and.returnValue(animatedWidth);
 
         this.view.model.set('animated', true);
@@ -985,6 +991,144 @@ describe('widgets/histogram/chart', function () {
       this.view.options.type = 'time-date';
 
       expect(this.view._isTimeSeries()).toBe(true);
+    });
+  });
+
+  describe('._generateChartContent', function () {
+    it('should generate axis, lines, bars, bottom line, handles, and setup brush', function () {
+      spyOn(this.view, '_generateAxis');
+      spyOn(this.view, '_generateLines');
+      spyOn(this.view, '_generateBars');
+      spyOn(this.view, '_generateBottomLine');
+      spyOn(this.view, '_setupBrush');
+
+      this.view._generateChartContent();
+
+      expect(this.view._generateAxis).toHaveBeenCalled();
+      expect(this.view._generateLines).toHaveBeenCalled();
+      expect(this.view._generateBars).toHaveBeenCalled();
+      expect(this.view._generateBottomLine).toHaveBeenCalled();
+      expect(this.view._generateHandles).toHaveBeenCalled();
+      expect(this.view._setupBrush).toHaveBeenCalled();
+    });
+
+    describe('time-series', function () {
+      describe('mobile', function () {
+        it('should not generate lines, bottom line', function () {
+          spyOn(this.view, '_generateBottomLine');
+
+          expect(this.view._generateBottomLine).not.toHaveBeenCalled();
+        });
+      });
+
+      describe('tablet', function () {
+        it('should not generate lines', function () {
+          spyOn(this.view, '_generateLines');
+
+          expect(this.view._generateLines).not.toHaveBeenCalled();
+        });
+      });
+    });
+  });
+
+  describe('._generateHandle', function () {
+    beforeEach(function () {
+      generateHandlesSpy.and.callThrough();
+
+      var generateHandleSpy = spyOn(this.view, '_generateHandle');
+
+      this.view._generateHandles();
+
+      generateHandleSpy.and.callThrough();
+    });
+
+    afterEach(function () {
+      $('.CDB-Chart-handles').remove();
+    });
+
+    it('should generate handle', function () {
+      this.view._generateHandle('left');
+
+      expect(this.view.$('.CDB-Chart-handle-left .CDB-Chart-handleRect').attr('height')).toBe('76');
+    });
+
+    describe('time-series', function () {
+      beforeEach(function () {
+        this.view._isTimeSeries = function () {
+          return true;
+        };
+      });
+
+      describe('tablet', function () {
+        beforeEach(function () {
+          this.view._isTabletViewport = function () {
+            return true;
+          };
+        });
+
+        it('should generate handle', function () {
+          this.view._generateHandle('left');
+
+          expect(this.view.$('.CDB-Chart-handle-left .CDB-Chart-handleRect').attr('height')).toBe('152');
+        });
+      });
+    });
+  });
+
+  describe('._generateAxisTip', function () {
+    beforeEach(function () {
+      generateHandlesSpy.and.callThrough();
+
+      this.view._generateHandles();
+    });
+
+    afterEach(function () {
+      $('.CDB-Chart-handles').remove();
+    });
+
+    describe('left', function () {
+      it('should generate left axis tip', function () {
+        this.view._generateAxisTip('left');
+
+        expect(this.view.$('.CDB-Chart-axisTip.CDB-Chart-axisTip-left').length).toBe(1);
+        expect(this.view.$('.CDB-Chart-axisTip.CDB-Chart-axisTip-left').attr('transform')).toBe('translate(0,-26)');
+        expect(this.view.$('.CDB-Chart-handle-left .CDB-Chart-axisTipTriangle').attr('transform')).toBe('translate(-3, -11)');
+      });
+    });
+
+    describe('right', function () {
+      it('should generate right axis tip', function () {
+        this.view._generateAxisTip('right');
+
+        expect(this.view.$('.CDB-Chart-axisTip.CDB-Chart-axisTip-right').length).toBe(1);
+        expect(this.view.$('.CDB-Chart-axisTip.CDB-Chart-axisTip-right').attr('transform')).toBe('translate(0,85)');
+        expect(this.view.$('.CDB-Chart-handle-right .CDB-Chart-axisTipTriangle').attr('transform')).toBe('translate(-3, 87.1)');
+      });
+    });
+
+    describe('time-series', function () {
+      beforeEach(function () {
+        this.view._isTimeSeries = function () {
+          return true;
+        };
+      });
+
+      describe('mobile', function () {
+        beforeEach(function () {
+          this.view._isMobileViewport = function () {
+            return true;
+          };
+        });
+
+        describe('right', function () {
+          it('should generate right axis tip', function () {
+            this.view._generateAxisTip('right');
+
+            expect(this.view.$('.CDB-Chart-axisTip.CDB-Chart-axisTip-right').attr('transform')).toBe('translate(0,-26)');
+            expect(this.view.$('.CDB-Chart-handle-right .CDB-Chart-axisTipTriangle').attr('transform')).toBe('translate(-3, -11)');
+          });
+        });
+      });
     });
   });
 });

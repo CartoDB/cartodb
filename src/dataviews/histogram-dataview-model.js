@@ -31,8 +31,8 @@ module.exports = DataviewModelBase.extend({
       }
       if (this.get('column_type') === 'number' && this.get('bins')) {
         params.push('bins=' + this.get('bins'));
-      } else if (this.get('column_type') === 'date' && this.get('aggregation')) {
-        params.push('aggregation=' + this.get('aggregation'));
+      } else if (this.get('column_type') === 'date') {
+        params.push('aggregation=' + (this.get('aggregation') || 'auto'));
       }
     }
     return params;
@@ -268,8 +268,8 @@ module.exports = DataviewModelBase.extend({
 
     if (this.get('column_type') === 'number' && this.get('bins')) {
       options.bins = this.get('bins');
-    } else if (this.get('column_type') === 'date' && this.get('aggregation')) {
-      options.aggregation = this.get('aggregation');
+    } else if (this.get('column_type') === 'date') {
+      options.aggregation = this.get('aggregation') || 'auto';
     }
 
     return {

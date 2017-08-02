@@ -147,9 +147,21 @@ module.exports = cdb.core.View.extend({
     var start = (this._torqueLayerModel.get('start') - 1000 * this._dataviewModel.get('start')) / range;
     var end = (this._torqueLayerModel.get('end') - 1000 * this._dataviewModel.get('start')) / range;
 
+    // This function might be called in-between state changes, so just to be safe let's keep the range sane
+    var scaleRangeMin = (start * this._width()) + this._chartMargins.left;
+    var scaleRangeMax = (end * this._width()) - this._chartMargins.right;
+
+    scaleRangeMin = scaleRangeMin < 0
+      ? this._chartMargins.left
+      : scaleRangeMin;
+
+    scaleRangeMax = scaleRangeMax > this._width()
+      ? this._width() - this._chartMargins.right
+      : scaleRangeMax;
+
     this._xScale = d3.scale.linear()
       .domain([0, this._torqueLayerModel.get('steps')])
-      .range([(start * this._width()) + this._chartMargins.left, (end * this._width()) - this._chartMargins.right]);
+      .range([scaleRangeMin, scaleRangeMax]);
   },
 
   _width: function () {

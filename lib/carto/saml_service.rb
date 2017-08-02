@@ -116,7 +116,7 @@ module Carto
 
       settings_hash.each do |k, v|
         if k.to_s == 'security'
-          settings.security = v
+          settings.security.merge(v)
         else
           method = "#{k}="
           settings.__send__(method, v) if settings.respond_to?(method)

@@ -1,4 +1,6 @@
 require 'sqlite3'
+require 'active_support/core_ext/hash/indifferent_access'
+require 'json'
 
 class GpkgCartoMetadataUtil
 

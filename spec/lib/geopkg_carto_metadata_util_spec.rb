@@ -1,28 +1,27 @@
-require_relative '../../../app/lib/geopkg_carto_metadata_util'
+require_relative '../../lib/geopkg_carto_metadata_util'
 
-# TODO - Convert to rspec
 describe GpkgCartoMetadataUtil do
   it "Invalid geopkg file" do
     expect { 
-      GpkgCartoMetadataUtil.new(geopkg_file: 'test/unit/lib/test_gpkg_files/invalidfile')
+      GpkgCartoMetadataUtil.new(geopkg_file: 'spec/lib/test_gpkg_files/invalidfile')
     }.to raise_error(SQLite3::SQLException)
   end
 
   it "Default State" do
-    f = GpkgCartoMetadataUtil.new(geopkg_file: 'test/unit/lib/test_gpkg_files/blankfile')
+    f = GpkgCartoMetadataUtil.new(geopkg_file: 'spec/lib/test_gpkg_files/blankfile')
     # Default should be blank hash
     expect(f.metadata).to eq({ vendor: 'carto' }.with_indifferent_access)
   end
 
   it "Default State With Incorrect vendor" do
-    f = GpkgCartoMetadataUtil.new(geopkg_file: 'test/unit/lib/test_gpkg_files/incorrect_vendor')
+    f = GpkgCartoMetadataUtil.new(geopkg_file: 'spec/lib/test_gpkg_files/incorrect_vendor')
     # Default should be blank hash
     expect(f.metadata).to eq({ vendor: 'carto' }.with_indifferent_access)
   end
 
   it "Set Invalid metadata" do
     # Start from blank slate
-    f = GpkgCartoMetadataUtil.new(geopkg_file: 'test/unit/lib/test_gpkg_files/blankfile')
+    f = GpkgCartoMetadataUtil.new(geopkg_file: 'spec/lib/test_gpkg_files/blankfile')
     # Set metadata
     expect {
       f.metadata = nil
@@ -31,7 +30,7 @@ describe GpkgCartoMetadataUtil do
 
   it "Set Metadata No Write" do
     # Start from blank slate
-    f = GpkgCartoMetadataUtil.new(geopkg_file: 'test/unit/lib/test_gpkg_files/blankfile')
+    f = GpkgCartoMetadataUtil.new(geopkg_file: 'spec/lib/test_gpkg_files/blankfile')
     # Set metadata
     md = {
       vendor: "carto",
@@ -53,7 +52,7 @@ describe GpkgCartoMetadataUtil do
   it "Set Metadata With Write" do
     # Start from blank slate
     testfile = Tempfile.new('carto_geopkg_test_set_metadata_with_write')
-    File.open('test/unit/lib/test_gpkg_files/blankfile') do |f|
+    File.open('spec/lib/test_gpkg_files/blankfile') do |f|
       testfile.write f.read
     end
 
@@ -85,7 +84,7 @@ describe GpkgCartoMetadataUtil do
 
   it "Set Metadata Without vendor property" do
     # Start from blank slate
-    f = GpkgCartoMetadataUtil.new(geopkg_file: 'test/unit/lib/test_gpkg_files/blankfile')
+    f = GpkgCartoMetadataUtil.new(geopkg_file: 'spec/lib/test_gpkg_files/blankfile')
     # Set metadata
     md = {
       "data" => {
@@ -109,7 +108,7 @@ describe GpkgCartoMetadataUtil do
   it "Set Metadata Without vendor property With Write" do
     # Start from blank slate
     testfile = Tempfile.new('carto_geopkg_test_set_metadata_without_vendor_with_write')
-    File.open('test/unit/lib/test_gpkg_files/blankfile') do |f|
+    File.open('spec/lib/test_gpkg_files/blankfile') do |f|
       testfile.write f.read
     end
 
@@ -144,7 +143,7 @@ describe GpkgCartoMetadataUtil do
   it "Set Metadata Multiple Times With Write" do
     # Start from blank slate
     testfile = Tempfile.new('carto_geopkg_test_set_metadata_multiple_times_with_write')
-    File.open('test/unit/lib/test_gpkg_files/blankfile') do |f|
+    File.open('spec/lib/test_gpkg_files/blankfile') do |f|
       testfile.write f.read
     end
 

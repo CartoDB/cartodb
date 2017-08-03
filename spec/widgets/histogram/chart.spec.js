@@ -30,7 +30,7 @@ describe('widgets/histogram/chart', function () {
     d3.select('body').append('svg').attr('class', 'js-chart');
 
     this.width = 300;
-    this.height = 100;
+    this.height = 72;
 
     d3.select($('.js-chart')[0])
       .attr('width', this.width)
@@ -99,7 +99,7 @@ describe('widgets/histogram/chart', function () {
       margin: this.margin,
       chartBarColor: '#9DE0AD',
       hasHandles: true,
-      height: 100,
+      height: this.height,
       data: this.data,
       dataviewModel: this.dataviewModel,
       originalData: this.originalModel,
@@ -286,7 +286,7 @@ describe('widgets/histogram/chart', function () {
 
     it('should refresh the data', function () {
       this.view.show();
-      this.view.model.set({ data: genHistogramData(20) });
+      this.view.model.set({ data: updateHistogramData(20) });
       expect(this.view.refresh).toHaveBeenCalled();
     });
 
@@ -1031,17 +1031,39 @@ describe('widgets/histogram/chart', function () {
     });
 
     describe('time-series', function () {
+      beforeEach(function () {
+        this.view._isTimeSeries = function () {
+          return true;
+        };
+      });
+
       describe('mobile', function () {
+        beforeEach(function () {
+          this.view._isMobileViewport = function () {
+            return true;
+          };
+        });
+
         it('should not generate lines, bottom line', function () {
           spyOn(this.view, '_generateBottomLine');
+
+          this.view._generateChartContent();
 
           expect(this.view._generateBottomLine).not.toHaveBeenCalled();
         });
       });
 
       describe('tablet', function () {
+        beforeEach(function () {
+          this.view._isTabletViewport = function () {
+            return true;
+          };
+        });
+
         it('should not generate lines', function () {
           spyOn(this.view, '_generateLines');
+
+          this.view._generateChartContent();
 
           expect(this.view._generateLines).not.toHaveBeenCalled();
         });
@@ -1067,7 +1089,7 @@ describe('widgets/histogram/chart', function () {
     it('should generate handle', function () {
       this.view._generateHandle('left');
 
-      expect(this.view.$('.CDB-Chart-handle-left .CDB-Chart-handleRect').attr('height')).toBe('76');
+      expect(this.view.$('.CDB-Chart-handle-left .CDB-Chart-handleRect').attr('height')).toBe('48');
     });
 
     describe('time-series', function () {
@@ -1082,12 +1104,18 @@ describe('widgets/histogram/chart', function () {
           this.view._isTabletViewport = function () {
             return true;
           };
+
+          this.view.model.set({
+            height: 16,
+            margin: _.extend({}, this.view.model.get('margin'), { top: 0 }),
+            showLabels: false
+          }, { silent: true });
         });
 
         it('should generate handle', function () {
           this.view._generateHandle('left');
 
-          expect(this.view.$('.CDB-Chart-handle-left .CDB-Chart-handleRect').attr('height')).toBe('152');
+          expect(this.view.$('.CDB-Chart-handle-left .CDB-Chart-handleRect').attr('height')).toBe('24');
         });
       });
     });
@@ -1137,8 +1165,8 @@ describe('widgets/histogram/chart', function () {
         expect(triangle.attr('style')).toBe('opacity: 1;');
 
         expect(axisTip.length).toBe(1);
-        expect(axisTip.attr('transform')).toBe('translate(0,85)');
-        expect(triangle.attr('transform')).toBe('translate(-3, 87.1)');
+        expect(axisTip.attr('transform')).toBe('translate(0,57)');
+        expect(triangle.attr('transform')).toBe('translate(-3, 59.1)');
       });
     });
 
@@ -1169,8 +1197,41 @@ describe('widgets/histogram/chart', function () {
   });
 
   describe('._updateTriangle', function () {
-    it('should update triangle', function () {
+    beforeEach(function () {
+      generateHandlesSpy.and.callThrough();
 
+      this.view.options.hasAxisTip = true;
+      this.view._generateHandles();
+    });
+
+    it('should update triangle', function () {
+      var triangle = this.view.$('.CDB-Chart-handle-left .CDB-Chart-axisTipTriangle');
+
+      this.view._updateTriangle('left', triangle, 42);
+
+      expect(triangle.attr('transform')).toBe('translate(-3,-11)rotate(0)skewX(0)scale(1,1)');
+    });
+
+    describe('time-series, tablet', function () {
+      beforeEach(function () {
+        this.view._isTimeSeries = function () {
+          return true;
+        };
+
+        this.view._isTabletViewport = function () {
+          return true;
+        };
+
+        this.view.model.set('right_axis_tip', 42);
+      });
+
+      it('should update right axis tip', function () {
+        var triangle = this.view.$('.CDB-Chart-handle-right .CDB-Chart-axisTipTriangle');
+
+        this.view._updateTriangle('right', triangle, 42);
+
+        expect(triangle.attr('transform')).toBe('translate(-3,59.099998474121094)rotate(0)skewX(0)scale(1,1)');
+      });
     });
   });
 
@@ -1214,7 +1275,7 @@ describe('widgets/histogram/chart', function () {
 
         var axisTip = this.view.$('.CDB-Chart-axisTip.CDB-Chart-axisTip-right');
 
-        expect(axisTip.attr('transform')).toBe('translate(-2, 85)');
+        expect(axisTip.attr('transform')).toBe('translate(-2, 57)');
       });
     });
 
@@ -1391,7 +1452,7 @@ describe('widgets/histogram/chart', function () {
     });
 
     it('should setup brush', function () {
-      expect(this.view.$('.Brush rect').attr('height')).toBe('76');
+      expect(this.view.$('.Brush rect').attr('height')).toBe('48');
     });
 
     describe('time-series', function () {
@@ -1402,20 +1463,114 @@ describe('widgets/histogram/chart', function () {
       });
 
       it('should generate handle', function () {
-        expect(this.view.$('.Brush rect').attr('height')).toBe('76');
+        expect(this.view.$('.Brush rect').attr('height')).toBe('48');
+      });
+    });
+  });
+
+  describe('._generateBars', function () {
+    beforeEach(function () {
+      generateHandlesSpy.and.callThrough();
+
+      this.view._generateHandles();
+    });
+
+    afterEach(function () {
+      $('.CDB-Chart-handles').remove();
+    });
+
+    it('should update chart', function () {
+      this.view._updateChart();
+      flushAllD3Transitions();
+
+      expect(this.view.$('.CDB-Chart-bar').first().attr('height')).toBe('0');
+      expect(this.view.$('.CDB-Chart-bar').last().attr('height')).toBe('48');
+
+      expect(this.view.$('.CDB-Chart-bar').first().attr('y')).toBe('48');
+      expect(this.view.$('.CDB-Chart-bar').last().attr('y')).toBe('0');
+    });
+
+    describe('mobile, time-series', function () {
+      beforeEach(function () {
+        this.view._isMobileViewport = function () {
+          return true;
+        };
+
+        this.view._isTimeSeries = function () {
+          return true;
+        };
+
+        this.view.model.set({
+          height: 16,
+          margin: _.extend({}, this.view.model.get('margin'), { top: 0 }),
+          showLabels: false
+        }, { silent: true });
+      });
+
+      it('should update chart', function () {
+        this.view._updateChart();
+        flushAllD3Transitions();
+
+        expect(this.view.$('.CDB-Chart-bar').first().attr('height')).toBe('3');
+        expect(this.view.$('.CDB-Chart-bar').last().attr('height')).toBe('3');
+
+        expect(this.view.$('.CDB-Chart-bar').first().attr('y')).toBe('9');
+        expect(this.view.$('.CDB-Chart-bar').last().attr('y')).toBe('9');
       });
     });
   });
 
   describe('._updateChart', function () {
-    it('should update chart', function () {
+    beforeEach(function () {
+      generateHandlesSpy.and.callThrough();
 
+      this.view._generateHandles();
+
+      this.view.model.set({
+        data: updateHistogramData(20)
+      });
+      flushAllD3Transitions();
     });
-  });
 
-  describe('._generateBars', function () {
-    it('should generate bars', function () {
+    afterEach(function () {
+      $('.CDB-Chart-handles').remove();
+    });
 
+    it('should update chart', function () {
+      expect(this.view.$('.CDB-Chart-bar').first().attr('height')).toBe('48');
+      expect(this.view.$('.CDB-Chart-bar').last().attr('height')).toBe('0');
+
+      expect(this.view.$('.CDB-Chart-bar').first().attr('y')).toBe('0');
+      expect(this.view.$('.CDB-Chart-bar').last().attr('y')).toBe('48');
+    });
+
+    describe('mobile, time-series', function () {
+      beforeEach(function () {
+        this.view._isMobileViewport = function () {
+          return true;
+        };
+
+        this.view._isTimeSeries = function () {
+          return true;
+        };
+
+        this.view.model.set({
+          height: 16,
+          margin: _.extend({}, this.view.model.get('margin'), { top: 0 }),
+          showLabels: false
+        }, { silent: true });
+      });
+
+      it('should update chart', function () {
+        this.view._updateChart();
+        flushAllD3Transitions();
+
+        expect(this.view.$('.CDB-Chart-bar').first().attr('height')).toBe('3');
+        expect(this.view.$('.CDB-Chart-bar').last().attr('height')).toBe('3');
+
+        expect(this.view.$('.CDB-Chart-bar').first().attr('y')).toBe('9');
+        expect(this.view.$('.CDB-Chart-bar').last().attr('y')).toBe('9');
+      });
     });
   });
 
@@ -1459,7 +1614,26 @@ function genHistogramData (n) {
     var end = i + 1;
     var obj = {
       bin: i,
-      freq: Math.round(Math.random() * 10),
+      freq: i,
+      start: start,
+      end: end,
+      max: end,
+      min: start
+    };
+    arr.push(obj);
+  });
+  return arr;
+}
+
+function updateHistogramData (n) {
+  n = n || 1;
+  var arr = [];
+  _.times(n, function (i) {
+    var start = i;
+    var end = i + 1;
+    var obj = {
+      bin: i,
+      freq: n - end,
       start: start,
       end: end,
       max: end,

@@ -1450,7 +1450,7 @@ module.exports = cdb.core.View.extend({
           return self.chartHeight();
         }
 
-        if (self._isMobileViewport() && self._isDateTimeSeries()) {
+        if (self._isMobileViewport() && self._isTimeSeries()) {
           return self.chartHeight() / 2 + MOBILE_BAR_HEIGHT;
         }
 

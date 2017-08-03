@@ -47,7 +47,7 @@ namespace :cartodb do
                       end
 
       if ENV['SAML_SP_PRIVATE_KEY_FILE'].present? && ENV['SAML_SP_CERTIFICATE_FILE'].present? &&
-        configuration[:name_identifier_format].present && configuration[:idp_slo_target_url].present?
+        configuration[:name_identifier_format].present? && configuration[:idp_slo_target_url].present?
         configuration[:security] = {
           logout_requests_signed: true,
           logout_responses_signed: true,

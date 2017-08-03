@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.9.13-aggregations-d",
+  "version": "4.9.13-aggregations-e",
   "dependencies": {
     "abbrev": {
       "version": "1.1.0",
@@ -745,7 +745,7 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
       "from": "cartodb/cartodb.js#c12324-time-series-aggregations",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#c7d083723090b776c9ce36358186c784dce3071a"
+      "resolved": "git://github.com/cartodb/cartodb.js.git#56158e3d37dd2c99ffd9755030bb287a23af56f0"
     },
     "caseless": {
       "version": "0.11.0",

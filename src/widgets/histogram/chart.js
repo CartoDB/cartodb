@@ -91,17 +91,21 @@ module.exports = cdb.core.View.extend({
 
     this.hide(); // will be toggled on width change
 
-    this.formatter = formatter.formatNumber;
-    if (this._isDateTimeSeries()) {
-      this.formatter = formatter.timestampFactory(this._dataviewModel.get('aggregation'), this._dataviewModel.get('offset'));
-      this.options.divisionWidth = this._calculateDivisionWithByAggregation(this._dataviewModel.get('aggregation'));
-    }
+    this._setupFormatter();
   },
 
   render: function () {
     this._generateChart();
     this._generateChartContent();
     return this;
+  },
+
+  _setupFormatter: function () {
+    this.formatter = formatter.formatNumber;
+    if (this._isDateTimeSeries()) {
+      this.formatter = formatter.timestampFactory(this._dataviewModel.get('aggregation'), this._dataviewModel.get('offset'));
+      this.options.divisionWidth = this._calculateDivisionWithByAggregation(this._dataviewModel.get('aggregation'));
+    }
   },
 
   replaceData: function (data) {

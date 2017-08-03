@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.9.13-aggregations",
+  "version": "4.9.13-aggregations-d",
   "dependencies": {
     "abbrev": {
       "version": "1.1.0",
@@ -711,14 +711,14 @@
       "resolved": "https://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.33.0.tgz"
     },
     "caniuse-lite": {
-      "version": "1.0.30000708",
+      "version": "1.0.30000709",
       "from": "caniuse-lite@>=1.0.30000704 <2.0.0",
-      "resolved": "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30000708.tgz"
+      "resolved": "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30000709.tgz"
     },
     "carto": {
       "version": "0.15.1-cdb4",
       "from": "cartodb/carto#master",
-      "resolved": "git://github.com/cartodb/carto.git#7d00bfdf23a6e765d3561d30dd3aab4946d81cc4"
+      "resolved": "git://github.com/cartodb/carto.git#66cc146a02a86a52e587e1d821a04549dc754adb"
     },
     "cartocolor": {
       "version": "4.0.0",
@@ -728,7 +728,7 @@
     "cartodb-deep-insights.js": {
       "version": "0.0.2-c12324",
       "from": "cartodb/deep-insights.js#c12324-time-series-aggregations",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#f6616aa90bf143798ff856803c265892778805e7",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#942a45c9a5d422ccc9cc1e781c5cd4bdb20140f0",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",
@@ -745,7 +745,7 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
       "from": "cartodb/cartodb.js#c12324-time-series-aggregations",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#fe8daaf2b0369b96030d40cbea38a1e832be3022"
+      "resolved": "git://github.com/cartodb/cartodb.js.git#c7d083723090b776c9ce36358186c784dce3071a"
     },
     "caseless": {
       "version": "0.11.0",
@@ -1025,6 +1025,11 @@
       "from": "diffie-hellman@>=5.0.0 <6.0.0",
       "resolved": "https://registry.npmjs.org/diffie-hellman/-/diffie-hellman-5.0.2.tgz"
     },
+    "dom-walk": {
+      "version": "0.1.1",
+      "from": "dom-walk@>=0.1.0 <0.2.0",
+      "resolved": "https://registry.npmjs.org/dom-walk/-/dom-walk-0.1.1.tgz"
+    },
     "domain-browser": {
       "version": "1.1.7",
       "from": "domain-browser@>=1.1.0 <1.2.0",
@@ -1209,9 +1214,9 @@
       "resolved": "https://registry.npmjs.org/extract-zip/-/extract-zip-1.5.0.tgz"
     },
     "extsprintf": {
-      "version": "1.0.2",
-      "from": "extsprintf@1.0.2",
-      "resolved": "https://registry.npmjs.org/extsprintf/-/extsprintf-1.0.2.tgz"
+      "version": "1.3.0",
+      "from": "extsprintf@1.3.0",
+      "resolved": "https://registry.npmjs.org/extsprintf/-/extsprintf-1.3.0.tgz"
     },
     "falafel": {
       "version": "2.1.0",
@@ -1435,6 +1440,18 @@
       "version": "2.0.0",
       "from": "glob-parent@>=2.0.0 <3.0.0",
       "resolved": "https://registry.npmjs.org/glob-parent/-/glob-parent-2.0.0.tgz"
+    },
+    "global": {
+      "version": "4.3.2",
+      "from": "global@>=4.3.2 <5.0.0",
+      "resolved": "https://registry.npmjs.org/global/-/global-4.3.2.tgz",
+      "dependencies": {
+        "process": {
+          "version": "0.5.2",
+          "from": "process@>=0.5.1 <0.6.0",
+          "resolved": "https://registry.npmjs.org/process/-/process-0.5.2.tgz"
+        }
+      }
     },
     "globals": {
       "version": "9.18.0",
@@ -1930,9 +1947,9 @@
       "resolved": "https://registry.npmjs.org/JSONStream/-/JSONStream-1.3.1.tgz"
     },
     "jsprim": {
-      "version": "1.4.0",
+      "version": "1.4.1",
       "from": "jsprim@>=1.2.2 <2.0.0",
-      "resolved": "https://registry.npmjs.org/jsprim/-/jsprim-1.4.0.tgz",
+      "resolved": "https://registry.npmjs.org/jsprim/-/jsprim-1.4.1.tgz",
       "dependencies": {
         "assert-plus": {
           "version": "1.0.0",
@@ -2100,6 +2117,11 @@
       "from": "mime-types@>=2.1.7 <2.2.0",
       "resolved": "https://registry.npmjs.org/mime-types/-/mime-types-2.1.16.tgz"
     },
+    "min-document": {
+      "version": "2.19.0",
+      "from": "min-document@>=2.19.0 <3.0.0",
+      "resolved": "https://registry.npmjs.org/min-document/-/min-document-2.19.0.tgz"
+    },
     "minimalistic-assert": {
       "version": "1.0.0",
       "from": "minimalistic-assert@>=1.0.0 <2.0.0",
@@ -2167,9 +2189,9 @@
           "resolved": "https://registry.npmjs.org/os-browserify/-/os-browserify-0.2.1.tgz"
         },
         "timers-browserify": {
-          "version": "2.0.2",
+          "version": "2.0.3",
           "from": "timers-browserify@>=2.0.2 <3.0.0",
-          "resolved": "https://registry.npmjs.org/timers-browserify/-/timers-browserify-2.0.2.tgz"
+          "resolved": "https://registry.npmjs.org/timers-browserify/-/timers-browserify-2.0.3.tgz"
         }
       }
     },
@@ -2333,9 +2355,9 @@
       "resolved": "https://registry.npmjs.org/pbf/-/pbf-1.3.7.tgz"
     },
     "pbkdf2": {
-      "version": "3.0.12",
+      "version": "3.0.13",
       "from": "pbkdf2@>=3.0.3 <4.0.0",
-      "resolved": "https://registry.npmjs.org/pbkdf2/-/pbkdf2-3.0.12.tgz"
+      "resolved": "https://registry.npmjs.org/pbkdf2/-/pbkdf2-3.0.13.tgz"
     },
     "pend": {
       "version": "1.2.0",
@@ -3030,7 +3052,7 @@
     },
     "tangram-cartocss": {
       "version": "0.5.6",
-      "from": "cartodb/tangram-carto#master",
+      "from": "cartodb/tangram-carto#eaf28709e83d4980aedd0c5434e5d5693558cf95",
       "resolved": "git://github.com/cartodb/tangram-carto.git#eaf28709e83d4980aedd0c5434e5d5693558cf95"
     },
     "tangram-reference": {
@@ -3041,12 +3063,12 @@
     "tangram.cartodb": {
       "version": "0.4.6",
       "from": "cartodb/tangram.cartodb#master",
-      "resolved": "git://github.com/cartodb/tangram.cartodb.git#87108e03f377a018e11b11881beda7e2fd67d767"
+      "resolved": "git://github.com/cartodb/tangram.cartodb.git#7e983d5c1e62548a68dcea7563c2e12d3bf9d896"
     },
     "tapable": {
-      "version": "0.2.7",
+      "version": "0.2.8",
       "from": "tapable@>=0.2.5 <0.3.0",
-      "resolved": "https://registry.npmjs.org/tapable/-/tapable-0.2.7.tgz"
+      "resolved": "https://registry.npmjs.org/tapable/-/tapable-0.2.8.tgz"
     },
     "tar": {
       "version": "2.2.1",
@@ -3290,9 +3312,16 @@
       "resolved": "https://registry.npmjs.org/vector-tile/-/vector-tile-1.3.0.tgz"
     },
     "verror": {
-      "version": "1.3.6",
-      "from": "verror@1.3.6",
-      "resolved": "https://registry.npmjs.org/verror/-/verror-1.3.6.tgz"
+      "version": "1.10.0",
+      "from": "verror@1.10.0",
+      "resolved": "https://registry.npmjs.org/verror/-/verror-1.10.0.tgz",
+      "dependencies": {
+        "assert-plus": {
+          "version": "1.0.0",
+          "from": "assert-plus@>=1.0.0 <2.0.0",
+          "resolved": "https://registry.npmjs.org/assert-plus/-/assert-plus-1.0.0.tgz"
+        }
+      }
     },
     "vm-browserify": {
       "version": "0.0.4",

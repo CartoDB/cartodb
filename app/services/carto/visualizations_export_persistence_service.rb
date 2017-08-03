@@ -55,7 +55,12 @@ module Carto
           end
         end
 
-        visualization.mapcaps.clear unless full_restore
+        unless full_restore
+          visualization.mapcaps.clear
+          visualization.created_at = DateTime.now
+          visualization.updated_at = DateTime.now
+        end
+
 
         unless visualization.save
           raise "Errors saving imported visualization: #{visualization.errors.full_messages}"

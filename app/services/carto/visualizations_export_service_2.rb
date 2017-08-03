@@ -89,7 +89,9 @@ module Carto
         analyses: exported_visualization[:analyses].map { |a| build_analysis_from_hash(a) },
         permission: build_permission_from_hash(exported_visualization[:permission]),
         mapcaps: [build_mapcap_from_hash(exported_visualization[:mapcap])].compact,
-        external_source: build_external_source_from_hash(exported_visualization[:external_source])
+        external_source: build_external_source_from_hash(exported_visualization[:external_source]),
+        created_at: exported_visualization[:created_at],
+        updated_at: exported_visualization[:updated_at]
       )
 
       # This is optional as it was added in version 2.0.2
@@ -217,7 +219,8 @@ module Carto
 
       Carto::Mapcap.new(
         ids_json: exported_mapcap[:ids_json],
-        export_json: exported_mapcap[:export_json]
+        export_json: exported_mapcap[:export_json],
+        created_at: exported_mapcap[:created_at]
       )
     end
 
@@ -294,7 +297,9 @@ module Carto
         user_table: export_user_table(visualization.map.try(:user_table)),
         uses_vizjson2: visualization.uses_vizjson2?,
         mapcap: with_mapcaps ? export_mapcap(visualization.latest_mapcap) : nil,
-        external_source: export_external_source(visualization.external_source)
+        external_source: export_external_source(visualization.external_source),
+        created_at: visualization.created_at,
+        updated_at: visualization.updated_at
       }
     end
 
@@ -409,7 +414,8 @@ module Carto
 
       {
         ids_json: mapcap.ids_json,
-        export_json: mapcap.export_json
+        export_json: mapcap.export_json,
+        created_at: mapcap.created_at
       }
     end
   end

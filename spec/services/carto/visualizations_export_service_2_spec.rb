@@ -245,7 +245,9 @@ describe Carto::VisualizationsExportService2 do
       user: { username: 'juanignaciosl' },
       permission: { access_control_list: [] },
       synchronization: nil,
-      user_table: nil
+      user_table: nil,
+      created_at: DateTime.now,
+      updated_at: DateTime.now
     }
   end
 
@@ -317,6 +319,7 @@ describe Carto::VisualizationsExportService2 do
 
     deep_symbolize(mapcap.try(:ids_json)).should eq deep_symbolize(mapcap_export[:ids_json])
     deep_symbolize(mapcap.try(:export_json)).should eq deep_symbolize(mapcap_export[:export_json])
+    mapcap.try(:created_at).should eq mapcap_export[:created_at]
   end
 
   def deep_symbolize(h)
@@ -481,8 +484,6 @@ describe Carto::VisualizationsExportService2 do
 
         visualization.id.should eq visualization_export[:id]
         visualization.user_id.should be_nil # Import build step is "user-agnostic"
-        visualization.created_at.should be_nil # Not set until persistence
-        visualization.updated_at.should be_nil # Not set until persistence
 
         visualization.state.id.should be_nil
 
@@ -670,6 +671,17 @@ describe Carto::VisualizationsExportService2 do
             service = Carto::VisualizationsExportService2.new
             visualization = service.build_visualization_from_json_export(export_2_1_0.to_json)
             expect(visualization.mapcapped?).to be_false
+          end
+
+          it 'without dates' do
+            export_2_1_0 = export
+            export_2_1_0[:visualization].delete(:created_at)
+            export_2_1_0[:visualization].delete(:updated_at)
+
+            service = Carto::VisualizationsExportService2.new
+            visualization = service.build_visualization_from_json_export(export_2_1_0.to_json)
+            expect(visualization.created_at).to be_nil
+            expect(visualization.updated_at).to be_nil
           end
         end
 
@@ -1458,10 +1470,12 @@ describe Carto::VisualizationsExportService2 do
           }]
           @visualization.permission.save
           @visualization.create_mapcap!
+          @visualization.reload
         end
 
         it 'false, it should generate a random uuid and blank permission and no mapcap' do
           exported_string = export_service.export_visualization_json_string(@visualization.id, @user)
+          original_attributes = @visualization.attributes.symbolize_keys
           built_viz = export_service.build_visualization_from_json_export(exported_string)
           original_id = built_viz.id
 
@@ -1470,12 +1484,15 @@ describe Carto::VisualizationsExportService2 do
           imported_viz.permission.acl.should be_empty
           imported_viz.shared_entities.count.should be_zero
           imported_viz.mapcapped?.should be_false
+          expect(imported_viz.created_at.to_s).not_to eq original_attributes[:created_at].to_s
+          expect(imported_viz.updated_at.to_s).not_to eq original_attributes[:updated_at].to_s
 
           destroy_visualization(imported_viz.id)
         end
 
         it 'true, it should keep the imported uuid, permission and mapcap' do
           exported_string = export_service.export_visualization_json_string(@visualization.id, @user)
+          original_attributes = @visualization.attributes.symbolize_keys
           built_viz = export_service.build_visualization_from_json_export(exported_string)
           test_id = random_uuid
           built_viz.id = test_id
@@ -1486,6 +1503,8 @@ describe Carto::VisualizationsExportService2 do
           imported_viz.shared_entities.count.should eq 1
           imported_viz.shared_entities.first.recipient_id.should eq @user2.id
           imported_viz.mapcapped?.should be_true
+          expect(imported_viz.created_at.to_s).to eq original_attributes[:created_at].to_s
+          expect(imported_viz.updated_at.to_s).to eq original_attributes[:updated_at].to_s
 
           destroy_visualization(imported_viz.id)
         end

@@ -23,6 +23,7 @@ module.exports = Model.extend({
     } else if (this.get('column_type') === 'date') {
       params.push('aggregation=' + (this.get('aggregation') || 'auto'));
     }
+
     if (this.get('apiKey')) {
       params.push('api_key=' + this.get('apiKey'));
     } else if (this.get('authToken')) {
@@ -41,12 +42,20 @@ module.exports = Model.extend({
   initialize: function () {
     this.sync = BackboneAbortSync.bind(this);
     this.on('change:url', function () {
+      console.log('change:url > fetch()');
       this.fetch();
     }, this);
 
-    this.bind('change:aggregation change:bins', function () {
-      if (this.hasChanged('bins') && this.get('aggregation')) return;
-      this.fetch();
+    this.on('change:aggregation', function () {
+      if (this.get('column_type') === 'date' && this.get('aggregation')) {
+        this.fetch();
+      }
+    }, this);
+
+    this.on('change:bins', function () {
+      if (this.get('column_type') === 'number' && _.isUndefined(this.get('aggregation'))) {
+        this.fetch();
+      }
     }, this);
   },
 

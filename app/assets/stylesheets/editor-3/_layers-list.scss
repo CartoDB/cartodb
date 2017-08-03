@@ -91,6 +91,13 @@
 .Editor-ListLayer-item.is-unavailable {
   @include opacity(0.6);
 }
+.Editor-ListLayer-item.is-errored {
+  border-color: rgba($cError, 0.7);
+
+  .Editor-HeaderInfo-actionsItem path {
+    fill: $cError;
+  }
+}
 .Editor-ListLayer-item.ui-sortable-helper {
   // scss-lint:disable ImportantRule
   left: 24px !important; // compensate for the draggable handle, !important to override inline style="left: 0 ...

@@ -273,6 +273,7 @@
       },
       "search-by-name": "Search by name...",
       "errors": {
+        "max-items": "Max items reached",
         "measurement-required": "Measurement is required",
         "measurement-twice": "Two or more measurements are equal",
         "column-name-mismatch": "Segment names and column names don't match",
@@ -400,6 +401,9 @@
       },
       "slide": {
         "no-values": "No values"
+      },
+      "list": {
+        "max-items": "Max items reached"
       }
     }
   },

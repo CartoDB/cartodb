@@ -3,6 +3,10 @@ var moment = require('moment');
 var d3 = require('d3');
 
 var AGGREGATION_FORMATS = {
+  second: {
+    display: 'HH:mm:ss',
+    unit: 's'
+  },
   minute: {
     display: 'HH:mm L',
     unit: 'm'

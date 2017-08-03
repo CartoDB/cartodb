@@ -401,9 +401,6 @@
       },
       "slide": {
         "no-values": "No values"
-      },
-      "list": {
-        "max-items": "Max items reached"
       }
     }
   },

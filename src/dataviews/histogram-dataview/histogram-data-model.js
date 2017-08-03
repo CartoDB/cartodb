@@ -41,8 +41,11 @@ module.exports = Model.extend({
 
   initialize: function () {
     this.sync = BackboneAbortSync.bind(this);
+    this._initBinds();
+  },
+
+  _initBinds: function () {
     this.on('change:url', function () {
-      console.log('change:url > fetch()');
       this.fetch();
     }, this);
 

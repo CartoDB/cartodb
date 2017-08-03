@@ -962,8 +962,18 @@ describe('widgets/histogram/chart', function () {
   });
 
   describe('touch interfaces fixes', function () {
+    beforeEach(function () {
+      setupBrushSpy.and.callThrough();
+
+      this.view._setupBrush();
+    });
+
+    afterEach(function () {
+      $('.Brush').remove();
+    });
+
     it('should mark all brush elements with ps-prevent-touchmove', function () {
-      var brush = this.view.$('g.Brush');
+      var brush = this.view.$('.Brush');
 
       var hasProperClass = function (e) {
         return e.attributes.class.value.indexOf('ps-prevent-touchmove') !== 1;

@@ -60,6 +60,7 @@ Development
 * Fix error when revoking a Dropbox token that was revoked from Dropbox side (#12359)
 * Dropbox searches now don't have limit of number of files (#12521)
 * Fix error when a Dropbox folder has an extension matching valid extensions.
+* Fixes login redirect loop with other user urls (#12553).
 * Fixed UI when editing merge analysis (#10850)
 * Fixed viewer invitations (#12514)
 * Fixed uninitialized constant in Carto::Visualization when a viewer shares a visualization (#12129).

@@ -4,6 +4,7 @@ var cdb = require('cartodb.js');
 var d3 = require('d3');
 var WidgetHistogramChart = require('../../../src/widgets/histogram/chart');
 var viewportUtils = require('../../../src/viewport-utils');
+var formatter = require('../../../src/formatter');
 var moment = require('moment');
 require('moment-timezone');
 
@@ -183,7 +184,9 @@ describe('widgets/histogram/chart', function () {
     it('should remove and generate shadow bars when original data chagnes', function () {
       spyOn(this.view, '_removeShadowBars');
       spyOn(this.view, '_generateShadowBars');
+
       this.originalModel.trigger('change:data');
+
       expect(this.view._removeShadowBars).toHaveBeenCalled();
       expect(this.view._generateShadowBars).toHaveBeenCalled();
     });
@@ -1413,6 +1416,37 @@ describe('widgets/histogram/chart', function () {
   describe('._generateBars', function () {
     it('should generate bars', function () {
 
+    });
+  });
+
+  describe('._setupFormatter', function () {
+    beforeEach(function () {
+      setupFormatterSpy.and.callThrough();
+
+      spyOn(formatter, 'timestampFactory');
+      spyOn(this.view, '_calculateDivisionWithByAggregation');
+    });
+
+    it('should setup formatter', function () {
+      this.view._setupFormatter();
+
+      expect(formatter.timestampFactory).not.toHaveBeenCalledWith();
+      expect(this.view._calculateDivisionWithByAggregation).not.toHaveBeenCalledWith();
+      expect(this.view.formatter).toBe(formatter.formatNumber);
+    });
+
+    describe('datetime', function () {
+      it('should setup formatter', function () {
+        this.view._isDateTimeSeries = function () {
+          return true;
+        };
+
+        this.view._setupFormatter();
+
+        expect(formatter.timestampFactory).toHaveBeenCalledWith('minute', 0);
+        expect(this.view._calculateDivisionWithByAggregation).toHaveBeenCalled();
+        expect(this.view.formatter).not.toBe(formatter.formatNumber);
+      });
     });
   });
 });

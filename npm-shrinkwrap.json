@@ -727,8 +727,8 @@
     },
     "cartodb-deep-insights.js": {
       "version": "0.0.2",
-      "from": "cartodb/deep-insights.js#c11928-widget-opacity",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#8906329146f123c33c655e6ce3689054bc9a0ef6",
+      "from": "cartodb/deep-insights.js#master",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#42b75f2e82c6735e2797c36da0e0259be48f9836",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",

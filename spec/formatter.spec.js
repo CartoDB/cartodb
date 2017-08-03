@@ -31,5 +31,6 @@ describe('formatter', function () {
     expect(formatter.timestampFactory('week')(timestamp)).toEqual('6th May 2017');
     expect(formatter.timestampFactory('day')(timestamp)).toEqual('6th May 2017');
     expect(formatter.timestampFactory('minute')(timestamp)).toEqual('10:36 05/06/2017');
+    expect(formatter.timestampFactory('second')(timestamp)).toEqual('10:36:16');
   });
 });

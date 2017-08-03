@@ -8,9 +8,9 @@ var formatter = require('../../../src/formatter');
 var moment = require('moment');
 require('moment-timezone');
 
-function flushAllD3Transitions() {
+function flushAllD3Transitions () {
   var now = Date.now;
-  Date.now = function() { return Infinity; };
+  Date.now = function () { return Infinity; };
   d3.timer.flush();
   Date.now = now;
 }
@@ -1258,7 +1258,6 @@ describe('widgets/histogram/chart', function () {
     afterEach(function () {
       $('.CDB-Chart-handles').remove();
     });
-
 
     it('should update axis tip', function () {
       this.view.model.set('left_axis_tip', 42);

@@ -48,8 +48,8 @@ module.exports = cdb.core.View.extend({
 
     this.$el.html(
       template({
-        start: showSelection && this.model.get('left_axis_tip'),
-        end: showSelection && this.model.get('right_axis_tip'),
+        start: this.model.get('left_axis_tip') || this.formatter(this._rangeFilter.get('min')),
+        end: this.model.get('right_axis_tip') || this.formatter(this._rangeFilter.get('max')),
         title: title,
         showClearButton: this.options.showClearButton && showSelection,
         showSelection: showSelection

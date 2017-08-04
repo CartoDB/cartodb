@@ -25,7 +25,6 @@ module.exports = DataviewModelBase.extend({
     if (_.isNumber(this.get('own_filter'))) {
       params.push('own_filter=' + this.get('own_filter'));
     } else {
-      var aggregation = this.get('aggregation');
       var offset = this.get('offset');
 
       if (this.get('column_type') === 'number' && this.get('bins')) {
@@ -287,7 +286,6 @@ module.exports = DataviewModelBase.extend({
 
   toJSON: function (d) {
     var columnType = this.get('column_type');
-    var aggregation = this.get('aggregation');
     var offset = this.get('offset');
 
     var options = {
@@ -296,19 +294,12 @@ module.exports = DataviewModelBase.extend({
 
     if (columnType === 'number' && this.get('bins')) {
       options.bins = this.get('bins');
-<<<<<<< HEAD
-    } else if (columnType === 'date' && (aggregation || offset)) {
-      if (aggregation) {
-        options.aggregation = this.get('aggregation');
-      }
+    } else if (columnType === 'date') {
+      options.aggregation = this.get('aggregation') || 'auto';
 
       if (offset) {
-        options.offset = this.get('offset');
+        options.offset = offset;
       }
-=======
-    } else if (this.get('column_type') === 'date') {
-      options.aggregation = this.get('aggregation') || 'auto';
->>>>>>> c12324-time-series-aggregations
     }
 
     return {

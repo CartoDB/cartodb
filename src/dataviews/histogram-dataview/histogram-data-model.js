@@ -18,7 +18,6 @@ module.exports = Model.extend({
 
   url: function () {
     var params = [];
-    var aggregation = this.get('aggregation');
     var offset = this.get('offset');
 
     if (this.get('column_type') === 'number' && this.get('bins')) {

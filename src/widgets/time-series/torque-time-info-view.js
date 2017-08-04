@@ -36,10 +36,10 @@ module.exports = cdb.core.View.extend({
         time: timeFormatter(scale(this._torqueLayerModel.get('step')))
       });
     } else if (columnType === 'date' && !isNaN(time && time.getTime())) {
-      timeFormatter = formatter.timestampFactory(this._dataviewModel.get('aggregation'), this._dataviewModel.get('offset'));
+      timeFormatter = formatter.timestampFactory(this._dataviewModel.get('aggregation'), this._dataviewModel.get('offset'), this._timeSeriesModel.get('local_timezone'));
 
       html = template({
-        time: timeFormatter(moment(time).unix(), this._timeSeriesModel.get('local_timezone'))
+        time: timeFormatter(moment(time).unix())
       });
     }
 

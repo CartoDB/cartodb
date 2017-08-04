@@ -1,29 +1,15 @@
+var _ = require('underscore');
+var cartocolor = require('cartocolor');
 var AutoStyler = require('./auto-styler');
 var StyleUtils = require('./style-utils');
-var cartocolor = require('cartocolor');
-var _ = require('underscore');
 
 var HistogramAutoStyler = AutoStyler.extend({
-  getStyle: function () {
-    var style = this.layer.get('initialStyle');
-    if (!style) return;
-    ['marker-fill', 'polygon-fill', 'line-color'].forEach(function (item) {
-      style = StyleUtils.changeStyle(style, item, this.getColorLine(item, this.getCustomStyle()));
-    }.bind(this));
-    return StyleUtils.replaceWrongSpaceChar(style);
-  },
-
-  getCustomStyle: function () {
-    return this.styles &&
-      this.styles.definition &&
-      this.styles.definition.color;
-  },
-
-  updateColors: function (style) {
+  updateStyle: function (style) {
     this.styles = style.auto_style;
   },
 
-  getColorLine: function (sym, custom) {
+  _getFillColor: function (sym) {
+    var custom = this._getColor();
     var scales = custom || {};
 
     if (!custom) {
@@ -35,7 +21,8 @@ var HistogramAutoStyler = AutoStyler.extend({
     }
 
     var ramp = 'ramp([' + this.dataviewModel.get('column') + '], ';
-    var colors = custom ? "('" + scales.range.join("', '") + "'), "
+    var colors = custom
+      ? "('" + scales.range.join("', '") + "'), "
       : 'cartocolor(' + scales.palette + ', ' + this.dataviewModel.get('bins') + '), ';
     var cuantification = scales.quantification + ')';
 
@@ -52,7 +39,7 @@ var HistogramAutoStyler = AutoStyler.extend({
     var styles = this.styles;
     var isCustomDefinition = this.styles && this.styles.custom || false;
 
-    ['marker-fill', 'polygon-fill', 'line-color'].forEach(function (item) {
+    AutoStyler.FILL_SELECTORS.forEach(function (item) {
       if (StyleUtils.isPropertyIncluded(cartocss, item)) {
         var scales = HistogramAutoStyler.SCALES_MAP[item][shape];
         var geom = item.substring(0, item.indexOf('-'));

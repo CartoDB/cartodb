@@ -22,8 +22,8 @@ describe('auto-style', function () {
 
   it('should generate category ramps', function () {
     this.dataviewModel.set('allCategoryNames', ['manolo', 'jacinto', 'eustaquio']);
-    expect(this.autoStyler._generateCategoryRamp('marker-fill')).toContain('ramp([col],');
-    expect(this.autoStyler._generateCategoryRamp('polygon-fill')).toContain('ramp([col],');
-    expect(this.autoStyler._generateCategoryRamp('line-color')).toContain('ramp([col],');
+    expect(this.autoStyler._getFillColor('marker-fill')).toContain('ramp([col],');
+    expect(this.autoStyler._getFillColor('polygon-fill')).toContain('ramp([col],');
+    expect(this.autoStyler._getFillColor('line-color')).toContain('ramp([col],');
   });
 });

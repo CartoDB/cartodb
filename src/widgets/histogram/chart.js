@@ -91,22 +91,13 @@ module.exports = cdb.core.View.extend({
 
     this.hide(); // will be toggled on width change
 
-    this._setupFormatter();
+    this._createFormatter();
   },
 
   render: function () {
     this._generateChart();
     this._generateChartContent();
     return this;
-  },
-
-  _setupFormatter: function () {
-    this.formatter = formatter.formatNumber;
-
-    if (this._isDateTimeSeries()) {
-      this.formatter = formatter.timestampFactory(this._dataviewModel.get('aggregation'), this._dataviewModel.get('offset'));
-      this.options.divisionWidth = this._calculateDivisionWithByAggregation(this._dataviewModel.get('aggregation'));
-    }
   },
 
   replaceData: function (data) {
@@ -226,7 +217,7 @@ module.exports = cdb.core.View.extend({
     var triangle = handle.select('.CDB-Chart-axisTipTriangle');
 
     textLabel.data([model]).text(function (d) {
-      var text = this.formatter(d, this.model.get('local_timezone'));
+      var text = this._isDateTimeSeries() ? this.formatter(d, this.model.get('local_timezone')) : this.formatter(d);
 
       this._dataviewModel.trigger('on_update_axis_tip', {
         attr: attr,
@@ -322,6 +313,7 @@ module.exports = cdb.core.View.extend({
   },
 
   _onLocalTimezoneChanged: function () {
+    this._createFormatter();
     this._updateAxisTip('left');
     this._updateAxisTip('right');
     this.refresh();
@@ -417,6 +409,7 @@ module.exports = cdb.core.View.extend({
   },
 
   refresh: function () {
+    this._createFormatter();
     this._setupDimensions();
     this._removeAxis();
     this._generateAxis();
@@ -584,6 +577,9 @@ module.exports = cdb.core.View.extend({
         if (!this._areGradientsAlreadyGenerated()) {
           this._setupFillColor();
         }
+      });
+      this.listenTo(this._dataviewModel, 'change:offset', function () {
+        this.refresh();
       });
     }
 
@@ -1001,7 +997,7 @@ module.exports = cdb.core.View.extend({
       }
 
       if (!this._isDragging() && freq > 0) {
-        var d = this.formatter(freq, this.model.get('local_timezone'));
+        var d = this.formatter(freq);
         hoverProperties = { top: top, left: left, data: d };
       } else {
         hoverProperties = null;
@@ -1167,6 +1163,12 @@ module.exports = cdb.core.View.extend({
     var axis = this.chart.append('g')
       .attr('class', 'CDB-Chart-axis CDB-Text CDB-Size-small');
 
+    function verticalToValue (d) {
+      return self.xAxisScale
+        ? self.xAxisScale(d)
+        : null;
+    }
+
     axis
       .append('g')
       .selectAll('.Label')
@@ -1178,9 +1180,8 @@ module.exports = cdb.core.View.extend({
       .attr('y', function () { return self.chartHeight() + 15; })
       .attr('text-anchor', adjustTextAnchor)
       .text(function (d) {
-        var value;
-        if (self.xAxisScale) {
-          value = self.xAxisScale(d);
+        var value = verticalToValue(d);
+        if (value) {
           return self.formatter(value, self.model.get('local_timezone'));
         }
       });
@@ -1640,6 +1641,15 @@ module.exports = cdb.core.View.extend({
         return 80;
       default:
         return 120;
+    }
+  },
+
+  _createFormatter: function () {
+    this.formatter = formatter.formatNumber;
+
+    if (this._isDateTimeSeries()) {
+      this.formatter = formatter.timestampFactory(this._dataviewModel.get('aggregation'), this._dataviewModel.get('offset'));
+      this.options.divisionWidth = this._calculateDivisionWithByAggregation(this._dataviewModel.get('aggregation'));
     }
   },
 

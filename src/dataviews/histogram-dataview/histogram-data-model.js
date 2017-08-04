@@ -46,13 +46,24 @@ module.exports = Model.extend({
 
   initialize: function () {
     this.sync = BackboneAbortSync.bind(this);
+    this._initBinds();
+  },
+
+  _initBinds: function () {
     this.on('change:url', function () {
       this.fetch();
     }, this);
 
-    this.bind('change:offset change:aggregation change:bins', function () {
-      if (this.hasChanged('bins') && this.get('aggregation')) return;
-      this.fetch();
+    this.on('change:aggregation change:offset', function () {
+      if (this.get('column_type') === 'date' && this.get('aggregation')) {
+        this.fetch();
+      }
+    }, this);
+
+    this.on('change:bins', function () {
+      if (this.get('column_type') === 'number' && _.isUndefined(this.get('aggregation'))) {
+        this.fetch();
+      }
     }, this);
   },
 

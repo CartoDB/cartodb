@@ -576,7 +576,7 @@ describe SessionsController do
       post create_session_url(user_domain: @user.username, email: @user.username, password: @user.password)
       response.status.should == 302
       response.headers['Location'].should include '/your_apps'
-      Marshal.load(Base64.decode64(response.cookies["_cartodb_session"]))['return_to'].should be_nil
+      Marshal.dump(Base64.decode64(response.cookies["_cartodb_session"]))['return_to'].should be_nil
     end
 
     describe 'events' do

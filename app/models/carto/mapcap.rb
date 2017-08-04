@@ -11,8 +11,8 @@ module Carto
 
     belongs_to :visualization, class_name: Carto::Visualization, foreign_key: 'visualization_id'
 
-    serialize :ids_json, ::Carto::CartoJsonSerializer
-    serialize :export_json, ::Carto::CartoJsonSerializer
+    serialize :ids_json, ::Carto::CartoJsonSymbolizerSerializer
+    serialize :export_json, ::Carto::CartoJsonSymbolizerSerializer
 
     after_save :notify_map_change, :update_named_map
     after_destroy :notify_map_change
@@ -40,7 +40,7 @@ module Carto
     private
 
     def lazy_export_json
-      self.export_json ||= export_visualization_json_hash(visualization_id, visualization.user)
+      self.export_json ||= export_visualization_json_hash(visualization_id, visualization.user, with_mapcaps: false)
     end
 
     def lazy_ids_json

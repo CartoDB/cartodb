@@ -31,7 +31,7 @@ module.exports = DataviewModelBase.extend({
         params.push('bins=' + this.get('bins'));
       } else if (this.get('column_type') === 'date') {
         params.push('aggregation=' + (this.get('aggregation') || 'auto'));
-        if (offset) {
+        if (_.isFinite(offset)) {
           params.push('offset=' + offset);
         }
       }
@@ -74,7 +74,6 @@ module.exports = DataviewModelBase.extend({
     this._originalData.once('change:data', this._updateBindings, this);
 
     this.on('change:column', this._onColumnChanged, this);
-    this.on('change:offset', this._onOffsetChanged, this);
     this.on('change', this._onFieldsChanged, this);
 
     this.listenTo(this.layer, 'change:meta', this._onChangeLayerMeta);
@@ -193,14 +192,9 @@ module.exports = DataviewModelBase.extend({
     this._originalData.set('column_type', this.get('column_type'));
 
     this.set({
-      aggregation: undefined,
-      offset: undefined
+      aggregation: undefined
     }, { silent: true });
 
-    this._reloadVisAndForceFetch();
-  },
-
-  _onOffsetChanged: function () {
     this._reloadVisAndForceFetch();
   },
 
@@ -297,7 +291,7 @@ module.exports = DataviewModelBase.extend({
     } else if (columnType === 'date') {
       options.aggregation = this.get('aggregation') || 'auto';
 
-      if (offset) {
+      if (_.isFinite(offset)) {
         options.offset = offset;
       }
     }

@@ -24,7 +24,7 @@ module.exports = Model.extend({
       params.push('bins=' + this.get('bins'));
     } else if (this.get('column_type') === 'date') {
       params.push('aggregation=' + (this.get('aggregation') || 'auto'));
-      if (offset) {
+      if (_.isFinite(offset)) {
         params.push('offset=' + offset);
       }
     }

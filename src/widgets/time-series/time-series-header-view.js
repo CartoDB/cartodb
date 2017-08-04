@@ -78,8 +78,7 @@ module.exports = cdb.core.View.extend({
 
   _initBinds: function () {
     this.listenTo(this.model, 'change:left_axis_tip change:right_axis_tip', this.render);
-    this.listenTo(this._timeSeriesModel, 'change:title', this.render);
-    this.listenTo(this._timeSeriesModel, 'change:local_timezone', this.render);
+    this.listenTo(this._timeSeriesModel, 'change:title change:local_timezone', this.render);
     this.listenTo(this._dataviewModel, 'change:totalAmount', this._animateValue);
     this.listenTo(this._dataviewModel, 'on_update_axis_tip', this._onUpdateAxisTip);
     this.listenTo(this._rangeFilter, 'change', this.render);

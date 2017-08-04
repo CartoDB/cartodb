@@ -162,7 +162,6 @@ module.exports = cdb.core.View.extend({
         });
       }
 
-      // This should match the one on _default.css
       if (grandParent && grandParent.outerWidth && this._isTabletViewport()) {
         width -= grandParent.outerWidth(true) - grandParent.width();
       }

@@ -9,9 +9,30 @@
       }
     }
 
+    function signinCallback(authResult) {
+      if (typeof authResult.access_token !== 'undefined') {
+        if (authResult['status']['signed_in'] && access_token_field.value === '' && google_signup_access_token.value === '') {
+          access_token_field.value = authResult.access_token;
+          // INFO: user exists and button loaded, let's sign in
+          if (access_token_filled.value === "1") {
+            clear_email_and_password(access_token_field.form);
+            access_token_field.form.submit();
+          } else {
+            access_token_filled.value = "1";
+            $('.Sessions-loggedin').removeClass('is-active');
+            $('.Sessions-notloggedin').addClass('is-active');
+          }
+        }
+      } else {
+        access_token_filled.value = "1";
+        $('.Sessions-loggedin').removeClass('is-active');
+        $('.Sessions-notloggedin').addClass('is-active');
+      }
+    }
+
     function signinCallbackClick(authResult) {
-      access_token_field.value = authResult.access_token;
-      if (authResult['status']['signed_in'] && access_token_field.value !== '' && google_signup_access_token.value === '') {
+      if (authResult['status']['signed_in'] && access_token_field.value !== '' && google_signup_access_token.value === '' && access_token_filled.value === '1') {
+        access_token_field.value = authResult.access_token;
         clear_email_and_password(access_token_field.form);
         access_token_field.form.submit();
       }

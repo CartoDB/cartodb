@@ -2,6 +2,7 @@ Development
 -----------
 
 ### Features
+* Provide a way to display broken layers pointing to non existent nodes (#12541)
 * Provide CartoCSS attribute within layer info in vizjson v3 (CartoDB/support#858)
 * Support for nested properties in CartoCSS (#12411)
 * New loading button styles (#12132)
@@ -14,13 +15,14 @@ Development
 * Show ranges in time series widget selection (#12291)
 * Bump Webpack version (#12392)
 * Start using ::outline symbolizer for polygon stroke (#12412)
-* [WIP] Export/import organization/user metadata to allow user migration (#12271, #12304, #12323, #12380)
+* [WIP] Export/import organization/user metadata to allow user migration (#12271, #12304, #12323, #12380, #12510)
 * New force param in EUMAPI organization users destroy operation to force deletion even with unregistered tables (#11654).
 * Removed the usage of the `organizations_admin` feature flag (#12131)
 * Show number of selected items in Time-Series widgets (#12179).
 * Add source to widgets (#12369).
 * Show ranges in time series widget selection (#12291)
 * Bump Webpack version (#12392).
+* New user render timeouts and propagation of timeout values to Redis (#12425)
 * The selection window on a histogram widget can be dragged (#12180)
 * Move playback on animated time series by clicking on it (#12180)
 * Move play/pause button to besides the time series (#12387)
@@ -59,6 +61,7 @@ Development
 * Dropbox searches now don't have limit of number of files (#12521)
 * Fix error when a Dropbox folder has an extension matching valid extensions.
 * Fixed UI when editing merge analysis (#10850)
+* Fixed viewer invitations (#12514)
 * Fixed uninitialized constant in Carto::Visualization when a viewer shares a visualization (#12129).
 * Fix template generation without center at state (#12453).
 * Fix regenerate all api keys in an organization (#12218)
@@ -103,6 +106,7 @@ Development
 * Add geometry validation for polygons and lines in edit feature form (#12397)
 * Fix permission model and added tests (#12393)
 * Country dropdown should be mandatory in postal code georeference (#12420)
+* Removed useless log traces (#12536)
 * Fixed bounds and center of thumbnails after updating a map
 * Fixed a bug in cartodb.js regarding the featureCount (#12490)
 * Add tip about sanitising values in popup's InfoWindow (#11340)
@@ -113,6 +117,8 @@ Development
 * Histogram UI: Do not show "NULL ROWS" value if it is not received (#12477)
 * Force raster mode in datasets preview map (#12513)
 * Add assets version to TrackJS
+* Improve Google Login button (cartodb-central#1808)
+* Implement widget opacity in AutoStyle (#11928)
 
 ### NOTICE
 This release upgrades the CartoDB PostgreSQL extension to `0.19.2`. Run the following to have it available:
@@ -141,6 +147,7 @@ More information at [Dropbox migration guide](https://www.dropbox.com/developers
 * An attacker could execute commands in the server running the queues by importing a file with a carefully crafted filename. Fixed in #11782
 
 ### Features
+* Overviews are synchronized now (#12092)
 * Adding tracking classes for any Backbone.Form editor (#12095)
 * Using Node v6.9.2 and npm v3.10.9 (#11935).
 * Updates Dataservices API client default version to `0.17.0` (#12093)

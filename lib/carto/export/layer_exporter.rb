@@ -5,7 +5,7 @@ module Carto
     def build_layers_from_hash(exported_layers)
       return [] unless exported_layers
 
-      exported_layers.map.with_index.map { |layer, i| build_layer_from_hash(layer.deep_symbolize_keys, order: i) }
+      exported_layers.map.with_index.map { |layer, i| build_layer_from_hash(layer, order: i) }
     end
 
     # user_name is not cleaned to ease username replacement at sql rewriting (see #7380)
@@ -54,7 +54,7 @@ module Carto
       return [] unless exported_widgets
 
       exported_widgets.map.with_index.map do |widget, index|
-        build_widget_from_hash(widget.deep_symbolize_keys, order: index, layer: layer)
+        build_widget_from_hash(widget, order: index, layer: layer)
       end
     end
 

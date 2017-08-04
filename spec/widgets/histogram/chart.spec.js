@@ -1168,7 +1168,7 @@ describe('widgets/histogram/chart', function () {
 
         expect(textLabel.attr('opacity')).toBe('1');
         expect(rectLabel.attr('opacity')).toBe('1');
-        expect(triangle.attr('style')).toBe('opacity: 1;');
+        expect(triangle.attr('style')).toContain('opacity: 1;');
 
         expect(axisTip.length).toBe(1);
         expect(axisTip.attr('transform')).toBe('translate(0,-26)');
@@ -1187,7 +1187,7 @@ describe('widgets/histogram/chart', function () {
 
         expect(textLabel.attr('opacity')).toBe('1');
         expect(rectLabel.attr('opacity')).toBe('1');
-        expect(triangle.attr('style')).toBe('opacity: 1;');
+        expect(triangle.attr('style')).toContain('opacity: 1;');
 
         expect(axisTip.length).toBe(1);
         expect(axisTip.attr('transform')).toBe('translate(0,57)');
@@ -1431,14 +1431,14 @@ describe('widgets/histogram/chart', function () {
 
       expect(textLabel.attr('opacity')).toBe('1');
       expect(rectLabel.attr('opacity')).toBe('1');
-      expect(triangle.attr('style')).toBe('opacity: 1;');
+      expect(triangle.attr('style')).toContain('opacity: 1;');
 
       this.view._toggleAxisTip('left', 0);
       flushAllD3Transitions();
 
       expect(textLabel.attr('opacity')).toBe('0');
       expect(rectLabel.attr('opacity')).toBe('0');
-      expect(triangle.attr('style')).toBe('opacity: 0;');
+      expect(triangle.attr('style')).toContain('opacity: 0;');
     });
   });
 

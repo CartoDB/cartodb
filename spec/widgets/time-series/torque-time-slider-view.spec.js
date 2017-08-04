@@ -209,43 +209,49 @@ describe('widgets/time-series/torque-time-slider-view', function () {
   });
 
   describe('._onChangeTime', function () {
-    it('should remove time-slider tip', function () {
-      spyOn(this.view, '_removeTimeSliderTip');
-      this.view.render();
+    describe('filter', function () {
+      beforeEach(function () {
+        this.view._dataviewModel.filter.isEmpty = function () {
+          return false;
+        };
+      });
 
-      this.view._onChangeTime();
+      it('should remove time-slider tip', function () {
+        spyOn(this.view, '_removeTimeSliderTip');
+        this.view.render();
 
-      expect(this.view._removeTimeSliderTip).toHaveBeenCalled();
+        this.view._onChangeTime();
+
+        expect(this.view._removeTimeSliderTip).toHaveBeenCalled();
+      });
     });
 
-    describe('filter is empty', function () {
-      describe('tablet', function () {
-        beforeEach(function () {
-          this.view._isTabletViewport = function () {
-            return true;
-          };
-        });
+    describe('empty filter, tablet', function () {
+      beforeEach(function () {
+        this.view._isTabletViewport = function () {
+          return true;
+        };
+      });
 
-        it('should generate and update time-slider tip', function () {
-          spyOn(this.view, '_generateTimeSliderTip');
-          spyOn(this.view, '_updateTimeSliderTip');
+      it('should generate and update time-slider tip', function () {
+        spyOn(this.view, '_generateTimeSliderTip');
+        spyOn(this.view, '_updateTimeSliderTip');
+        this.view.render();
+
+        this.view._onChangeTime();
+
+        expect(this.view._generateTimeSliderTip).toHaveBeenCalled();
+        expect(this.view._updateTimeSliderTip).toHaveBeenCalled();
+      });
+
+      describe('timeslider tip exists', function () {
+        it('should not create time-slider tip', function () {
+          spyOn(this.view, '_generateTimeSliderTip').and.callThrough();
           this.view.render();
 
           this.view._onChangeTime();
 
           expect(this.view._generateTimeSliderTip).toHaveBeenCalled();
-          expect(this.view._updateTimeSliderTip).toHaveBeenCalled();
-        });
-
-        describe('timeslider tip exists', function () {
-          it('should not create time-slider tip', function () {
-            spyOn(this.view, '_generateTimeSliderTip').and.callThrough();
-            this.view.render();
-
-            this.view._onChangeTime();
-
-            expect(this.view._generateTimeSliderTip).toHaveBeenCalled();
-          });
         });
       });
     });

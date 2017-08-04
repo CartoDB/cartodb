@@ -252,17 +252,13 @@ module.exports = cdb.core.View.extend({
 
   _onChangeTime: function () {
     if (this._dataviewModel.filter.isEmpty() && this._isTabletViewport()) {
-      if (this._isTabletViewport()) {
-        var timeSliderTip = this._chartView.canvas.select('.CDB-Chart-timeSliderTip');
+      var timeSliderTip = this._chartView.canvas.select('.CDB-Chart-timeSliderTip');
 
-        if (!timeSliderTip.node()) {
-          this._generateTimeSliderTip();
-        }
-
-        this._updateTimeSliderTip();
-      } else {
-        this._removeTimeSliderTip();
+      if (!timeSliderTip.node()) {
+        this._generateTimeSliderTip();
       }
+
+      this._updateTimeSliderTip();
     } else {
       this._removeTimeSliderTip();
     }

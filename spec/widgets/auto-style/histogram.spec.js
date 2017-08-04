@@ -59,4 +59,16 @@ describe('src/widgets/auto-style/histogram', function () {
       expect(this.histogramAutoStyler.getStyle().replace(/\s/g, '').indexOf('{{')).toBeLessThan(0);
     });
   });
+
+  describe('.updateSyle', function () {
+    it('should set auto_style to styles given', function () {
+      var styles = {
+        auto_style: {
+          opacity: 0.2
+        }
+      };
+      this.histogramAutoStyler.updateStyle(styles);
+      expect(this.histogramAutoStyler.styles).toEqual({ opacity: 0.2 });
+    });
+  });
 });

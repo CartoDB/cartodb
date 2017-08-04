@@ -4,6 +4,10 @@ var moment = require('moment');
 require('moment-timezone');
 
 var AGGREGATION_FORMATS = {
+  second: {
+    display: 'HH:mm:ss',
+    unit: 's'
+  },
   minute: {
     display: 'HH:mm L',
     unit: 'm'

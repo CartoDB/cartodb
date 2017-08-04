@@ -33,12 +33,15 @@ describe('formatter', function () {
       expect(formatter.timestampFactory('week', 0)(timestamp)).toEqual('6th May 2017');
       expect(formatter.timestampFactory('day', 0)(timestamp)).toEqual('6th May 2017');
       expect(formatter.timestampFactory('minute', 0)(timestamp)).toEqual('10:36 05/06/2017');
+      expect(formatter.timestampFactory('second', 0)(timestamp)).toEqual('10:36:16');
+
     });
   });
 
   describe('with offset', function () {
     it('should format timestamps correctly', function () {
       expect(formatter.timestampFactory('minute', 3600)(timestamp)).toEqual('11:36 05/06/2017');
+      expect(formatter.timestampFactory('second', 3600)(timestamp)).toEqual('11:36:16');
     });
   });
 });

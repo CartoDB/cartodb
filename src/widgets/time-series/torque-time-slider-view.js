@@ -35,7 +35,7 @@ module.exports = cdb.core.View.extend({
 
     this._initBinds();
     this._updateXScale();
-    this._setupFormatter();
+    this._createFormatter();
   },
 
   render: function () {
@@ -92,6 +92,11 @@ module.exports = cdb.core.View.extend({
       .attr('dx', '0');
   },
 
+  _onLocalTimezoneChanged: function () {
+    this._createFormatter();
+    this._updateTimeSliderTip();
+  },
+
   _updateTimeSliderTip: function () {
     var self = this;
 
@@ -111,11 +116,7 @@ module.exports = cdb.core.View.extend({
     textLabel
       .data([textLabelData])
       .text(function (d) {
-        if (self._isDateTimeSeries()) {
-          return this.formatter(moment(d).unix(), this._timeSeriesModel.get('local_timezone'));
-        } else {
-          return this.formatter(scale(d));
-        }
+        return self._isDateTimeSeries() ? this.formatter(moment(d).unix()) : this.formatter(scale(d));
       }.bind(this));
 
     if (!textLabel.node()) {
@@ -167,11 +168,12 @@ module.exports = cdb.core.View.extend({
 
     this.listenTo(this._chartView.model, 'change:width', this._updateChartandTimeslider);
     this.listenTo(this._chartView.model, 'change:height', this._onChangeChartHeight);
-    this.listenTo(this._chartView.model, 'change:local_timezone', this._updateTimeSliderTip);
 
     this.listenTo(this._dataviewModel, 'change:bins', this._updateChartandTimeslider);
-    this.listenTo(this._dataviewModel, 'change:column_type', this._setupFormatter);
+    this.listenTo(this._dataviewModel, 'change:column_type', this._createFormatter);
     this.listenTo(this._dataviewModel.filter, 'change:min change:max', this._onFilterMinMaxChange);
+
+    this.listenTo(this._timeSeriesModel, 'change:local_timezone', this._onLocalTimezoneChanged);
 
     this.listenTo(this._dataviewModel, 'change:start change:end', this._updateChartandTimeslider);
   },
@@ -283,11 +285,11 @@ module.exports = cdb.core.View.extend({
     return this._chartView.chartHeight() + this.defaults.height;
   },
 
-  _setupFormatter: function () {
+  _createFormatter: function () {
     this.formatter = formatter.formatNumber;
 
     if (this._isDateTimeSeries()) {
-      this.formatter = formatter.timestampFactory(this._dataviewModel.get('aggregation'), this._dataviewModel.get('offset'));
+      this.formatter = formatter.timestampFactory(this._dataviewModel.get('aggregation'), this._dataviewModel.get('offset'), this._timeSeriesModel.get('local_timezone'));
     }
   },
 

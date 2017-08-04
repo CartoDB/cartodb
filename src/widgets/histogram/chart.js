@@ -217,7 +217,7 @@ module.exports = cdb.core.View.extend({
     var triangle = handle.select('.CDB-Chart-axisTipTriangle');
 
     textLabel.data([model]).text(function (d) {
-      var text = this._isDateTimeSeries() ? this.formatter(d, this.model.get('local_timezone')) : this.formatter(d);
+      var text = this.formatter(d);
 
       this._dataviewModel.trigger('on_update_axis_tip', {
         attr: attr,
@@ -1182,7 +1182,7 @@ module.exports = cdb.core.View.extend({
       .text(function (d) {
         var value = verticalToValue(d);
         if (value) {
-          return self.formatter(value, self.model.get('local_timezone'));
+          return self.formatter(value);
         }
       });
 
@@ -1648,7 +1648,7 @@ module.exports = cdb.core.View.extend({
     this.formatter = formatter.formatNumber;
 
     if (this._isDateTimeSeries()) {
-      this.formatter = formatter.timestampFactory(this._dataviewModel.get('aggregation'), this._dataviewModel.get('offset'));
+      this.formatter = formatter.timestampFactory(this._dataviewModel.get('aggregation'), this._dataviewModel.get('offset'), this.model.get('local_timezone'));
       this.options.divisionWidth = this._calculateDivisionWithByAggregation(this._dataviewModel.get('aggregation'));
     }
   },

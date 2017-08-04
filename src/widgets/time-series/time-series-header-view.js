@@ -33,12 +33,7 @@ module.exports = cdb.core.View.extend({
 
     this.model = new cdb.core.Model();
 
-    this.formatter = formatter.formatNumber;
-
-    if (this._dataviewModel.getColumnType() === 'date') {
-      this.formatter = formatter.timestampFactory(this._dataviewModel.get('aggregation'), this._dataviewModel.get('offset'));
-    }
-
+    this._createFormatter();
     this._initBinds();
   },
 
@@ -61,6 +56,19 @@ module.exports = cdb.core.View.extend({
     return this;
   },
 
+  _createFormatter: function () {
+    this.formatter = formatter.formatNumber;
+
+    if (this._dataviewModel.getColumnType() === 'date') {
+      this.formatter = formatter.timestampFactory(this._dataviewModel.get('aggregation'), this._dataviewModel.get('offset'), this._timeSeriesModel.get('local_timezone'));
+    }
+  },
+
+  _onLocalTimezoneChanged: function () {
+    this._createFormatter();
+    this.render();
+  },
+
   _animateValue: function () {
     var animator = new AnimateValues({
       el: this.$el
@@ -78,7 +86,8 @@ module.exports = cdb.core.View.extend({
 
   _initBinds: function () {
     this.listenTo(this.model, 'change:left_axis_tip change:right_axis_tip', this.render);
-    this.listenTo(this._timeSeriesModel, 'change:title change:local_timezone', this.render);
+    this.listenTo(this._timeSeriesModel, 'change:title', this.render);
+    this.listenTo(this._timeSeriesModel, 'change:local_timezone', this._onLocalTimezoneChanged);
     this.listenTo(this._dataviewModel, 'change:totalAmount', this._animateValue);
     this.listenTo(this._dataviewModel, 'on_update_axis_tip', this._onUpdateAxisTip);
     this.listenTo(this._rangeFilter, 'change', this.render);

@@ -53,7 +53,9 @@ describe('widgets/time-series/torque-time-slider-view', function () {
     this.chartView.render();
     this.chartView.model.set('width', 400);
 
-    this.timeSeriesModel = new Backbone.Model();
+    this.timeSeriesModel = new Backbone.Model({
+      local_timezone: false
+    });
 
     this.view = new TorqueTimeSliderView({
       dataviewModel: this.dataviewModel,
@@ -137,8 +139,8 @@ describe('widgets/time-series/torque-time-slider-view', function () {
 
     it('should update timeslider tip', function () {
       this.torqueLayerModel.set({
-        step: 256
-      }, { silent: true });
+        step: 40
+      });
       this.view._updateTimeSliderTip();
 
       expect(this.view._chartView.$('.CDB-Chart-timeSliderTipText').text()).toBe('0');
@@ -149,26 +151,29 @@ describe('widgets/time-series/torque-time-slider-view', function () {
         this.view._isDateTimeSeries = function () {
           return true;
         };
-        this.view._setupFormatter();
+        this.view._createFormatter();
       });
 
       it('should update timeslider tip', function () {
         this.torqueLayerModel.set({
           time: time
-        }, { silent: true });
+        });
         this.view._updateTimeSliderTip();
 
         expect(this.view._chartView.$('.CDB-Chart-timeSliderTipText').text()).toBe('06:56 07/30/2017');
       });
 
       describe('local timezone', function () {
-        it('should update axis tip', function () {
-          this.torqueLayerModel.set({
-            time: time
-          }, { silent: true });
+        beforeEach(function () {
           this.timeSeriesModel.set({
             local_timezone: true
-          }, { silent: true });
+          });
+          this.torqueLayerModel.set({
+            time: time
+          });
+        });
+
+        it('should update timeslider tip', function () {
           this.view._updateTimeSliderTip();
 
           var localTime = moment.tz(time, moment.tz.guess()).format('HH:mm L');
@@ -256,13 +261,13 @@ describe('widgets/time-series/torque-time-slider-view', function () {
     });
   });
 
-  describe('._setupFormatter', function () {
+  describe('._createFormatter', function () {
     beforeEach(function () {
       spyOn(formatter, 'timestampFactory');
     });
 
     it('should setup formatter', function () {
-      this.view._setupFormatter();
+      this.view._createFormatter();
 
       expect(formatter.timestampFactory).not.toHaveBeenCalledWith();
       expect(this.view.formatter).toBe(formatter.formatNumber);
@@ -276,9 +281,9 @@ describe('widgets/time-series/torque-time-slider-view', function () {
       });
 
       it('should setup formatter', function () {
-        this.view._setupFormatter();
+        this.view._createFormatter();
 
-        expect(formatter.timestampFactory).toHaveBeenCalledWith('minute', 0);
+        expect(formatter.timestampFactory).toHaveBeenCalledWith('minute', 0, false);
         expect(this.view.formatter).not.toBe(formatter.formatNumber);
       });
     });
@@ -331,6 +336,18 @@ describe('widgets/time-series/torque-time-slider-view', function () {
       it('should show view', function () {
         expect(this.view.el.style.display).not.toEqual('none');
       });
+    });
+  });
+
+  describe('._onLocalTimezoneChanged', function () {
+    it('should upate formatter and timeslider tip', function () {
+      spyOn(this.view, '_createFormatter');
+      spyOn(this.view, '_updateTimeSliderTip');
+
+      this.view._onLocalTimezoneChanged();
+
+      expect(this.view._createFormatter).toHaveBeenCalled();
+      expect(this.view._updateTimeSliderTip).toHaveBeenCalled();
     });
   });
 

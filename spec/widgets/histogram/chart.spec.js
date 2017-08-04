@@ -20,7 +20,7 @@ describe('widgets/histogram/chart', function () {
   var onWindowResizeSpy;
   var generateHandlesSpy;
   var setupBrushSpy;
-  var setupFormatterSpy;
+  var createFormatterSpy;
 
   afterEach(function () {
     $('.js-chart').remove();
@@ -105,6 +105,7 @@ describe('widgets/histogram/chart', function () {
       originalData: this.originalModel,
       displayShadowBars: true,
       widgetModel: this.widgetModel,
+      local_timezone: false,
       xAxisTickFormat: function (d, i) {
         return d;
       }
@@ -117,7 +118,7 @@ describe('widgets/histogram/chart', function () {
 
     generateHandlesSpy = spyOn(this.view, '_generateHandles');
     setupBrushSpy = spyOn(this.view, '_setupBrush');
-    setupFormatterSpy = spyOn(this.view, '_setupFormatter');
+    createFormatterSpy = spyOn(this.view, '_createFormatter');
     spyOn(this.view, 'refresh').and.callThrough();
 
     this.view.render();
@@ -135,7 +136,9 @@ describe('widgets/histogram/chart', function () {
   describe('normalize', function () {
     it('should normalize', function () {
       spyOn(this.view, 'updateYScale');
+
       this.view.setNormalized(true);
+
       expect(this.view.model.get('normalized')).toEqual(true);
       expect(this.view.updateYScale).toHaveBeenCalled();
       expect(this.view.refresh).toHaveBeenCalled();
@@ -143,7 +146,9 @@ describe('widgets/histogram/chart', function () {
 
     it('should denormalize', function () {
       spyOn(this.view, 'updateYScale');
+
       this.view.setNormalized(false);
+
       expect(this.view.model.get('normalized')).toEqual(false);
       expect(this.view.updateYScale).toHaveBeenCalled();
       expect(this.view.refresh).toHaveBeenCalled();
@@ -153,7 +158,9 @@ describe('widgets/histogram/chart', function () {
   describe('local timezone', function () {
     it('should set local timezone', function () {
       spyOn(this.view, '_updateAxisTip');
+
       this.view.setLocalTimezone(true);
+
       expect(this.view.model.get('local_timezone')).toEqual(true);
       expect(this.view._updateAxisTip).toHaveBeenCalledWith('left');
       expect(this.view._updateAxisTip).toHaveBeenCalledWith('right');
@@ -161,8 +168,11 @@ describe('widgets/histogram/chart', function () {
     });
 
     it('should unset local timezone', function () {
+      this.view.model.set('local_timezone', true);
       spyOn(this.view, '_updateAxisTip');
+
       this.view.setLocalTimezone(false);
+
       expect(this.view.model.get('local_timezone')).toEqual(false);
       expect(this.view._updateAxisTip).toHaveBeenCalledWith('left');
       expect(this.view._updateAxisTip).toHaveBeenCalledWith('right');
@@ -174,10 +184,15 @@ describe('widgets/histogram/chart', function () {
     it('should not show shadow bars', function () {
       this.view.options.displayShadowBars = false;
       this.view.model.set('show_shadow_bars', false);
+
       expect(this.view.$('.CDB-Chart-shadowBars').length).toBe(0);
+
       this.originalModel.trigger('change:data');
+
       expect(this.view.$('.CDB-Chart-shadowBars').length).toBe(0);
+
       this.view.showShadowBars();
+
       expect(this.view.$('.CDB-Chart-shadowBars').length).toBe(0);
     });
 
@@ -1290,12 +1305,12 @@ describe('widgets/histogram/chart', function () {
 
     describe('datetime', function () {
       beforeEach(function () {
-        setupFormatterSpy.and.callThrough();
+        createFormatterSpy.and.callThrough();
 
         this.view._isDateTimeSeries = function () {
           return true;
         };
-        this.view._setupFormatter();
+        this.view._createFormatter();
 
         this.view.model.set('left_axis_tip', time);
       });
@@ -1583,16 +1598,16 @@ describe('widgets/histogram/chart', function () {
     });
   });
 
-  describe('._setupFormatter', function () {
+  describe('._createFormatter', function () {
     beforeEach(function () {
-      setupFormatterSpy.and.callThrough();
+      createFormatterSpy.and.callThrough();
 
       spyOn(formatter, 'timestampFactory');
       spyOn(this.view, '_calculateDivisionWithByAggregation');
     });
 
     it('should setup formatter', function () {
-      this.view._setupFormatter();
+      this.view._createFormatter();
 
       expect(formatter.timestampFactory).not.toHaveBeenCalledWith();
       expect(this.view._calculateDivisionWithByAggregation).not.toHaveBeenCalledWith();
@@ -1605,12 +1620,25 @@ describe('widgets/histogram/chart', function () {
           return true;
         };
 
-        this.view._setupFormatter();
+        this.view._createFormatter();
 
-        expect(formatter.timestampFactory).toHaveBeenCalledWith('minute', 0);
+        expect(formatter.timestampFactory).toHaveBeenCalledWith('minute', 0, false);
         expect(this.view._calculateDivisionWithByAggregation).toHaveBeenCalled();
         expect(this.view.formatter).not.toBe(formatter.formatNumber);
       });
+    });
+  });
+
+  describe('._onLocalTimezoneChanged', function () {
+    it('should update formatter, and axis', function () {
+      spyOn(this.view, '_updateAxisTip');
+
+      this.view._onLocalTimezoneChanged();
+
+      expect(createFormatterSpy).toHaveBeenCalledWith();
+      expect(this.view._updateAxisTip).toHaveBeenCalledWith('left');
+      expect(this.view._updateAxisTip).toHaveBeenCalledWith('right');
+      expect(this.view.refresh).toHaveBeenCalledWith();
     });
   });
 });

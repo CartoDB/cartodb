@@ -607,18 +607,8 @@ describe('dataviews/histogram-dataview-model', function () {
     });
   });
 
-  describe('._onOffsetChanged', function () {
-    it('should call ._reloadVisAndForceFetch', function () {
-      this.vis.reload.calls.reset();
-
-      this.model._onOffsetChanged();
-
-      expect(this.vis.reload).toHaveBeenCalled();
-    });
-  });
-
   describe('._onColumnChanged', function () {
-    it('should unset aggregation and offset, and call _reloadVisAndForceFetch', function () {
+    it('should unset aggregation, and call _reloadVisAndForceFetch', function () {
       this.vis.reload.calls.reset();
 
       this.model.set({
@@ -631,7 +621,6 @@ describe('dataviews/histogram-dataview-model', function () {
 
       expect(this.vis.reload).toHaveBeenCalled();
       expect(this.model.get('aggregation')).toBeUndefined();
-      expect(this.model.get('offset')).toBeUndefined();
     });
   });
 

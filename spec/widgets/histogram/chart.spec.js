@@ -218,7 +218,7 @@ describe('widgets/histogram/chart', function () {
     });
 
     it('should draw the bars', function () {
-      expect(this.view.$el.find('.CDB-Chart-bar').size()).toBe(this.data.length);
+      expect(this.view.$('.CDB-Chart-bar').size()).toBe(this.data.length);
     });
 
     it('should draw the axis', function () {

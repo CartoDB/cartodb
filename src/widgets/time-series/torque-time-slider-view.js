@@ -33,11 +33,9 @@ module.exports = cdb.core.View.extend({
 
     this._chartMargins = this._chartView.model.get('margin');
 
-    this.formatter = formatter.formatNumber;
-
     this._initBinds();
-    this._updateFormatter();
     this._updateXScale();
+    this._setupFormatter();
   },
 
   render: function () {
@@ -58,14 +56,19 @@ module.exports = cdb.core.View.extend({
         .data([{ x: 0, y: 0 }])
         .attr('transform', this._translateXY)
         .call(dragBehavior);
-    }
-    this.setElement(d3el.node());
 
-    if (viewportUtils.isTabletViewport()) {
+      this.setElement(d3el.node());
+    }
+
+    if (this._isTabletViewport()) {
       this._generateTimeSliderTip();
     }
 
     return this;
+  },
+
+  _isTabletViewport: function () {
+    return viewportUtils.isTabletViewport();
   },
 
   _generateTimeSliderTip: function () {
@@ -86,23 +89,33 @@ module.exports = cdb.core.View.extend({
     this.timeSliderTip.append('text')
       .attr('class', 'CDB-Text CDB-Size-small CDB-Chart-timeSliderTipText')
       .attr('dy', '11')
-      .attr('dx', '0')
-      .text(function (d) { return d; });
+      .attr('dx', '0');
   },
 
   _updateTimeSliderTip: function () {
-    var time = this._torqueLayerModel.get('time');
-    if (time === void 0) {
+    var self = this;
+
+    var textLabelData = this._isDateTimeSeries() ? this._torqueLayerModel.get('time') : this._torqueLayerModel.get('step');
+
+    if (textLabelData === void 0) {
       return;
     }
 
     var chart = this._chartView.canvas;
     var textLabel = chart.select('.CDB-Chart-timeSliderTipText');
 
+    var scale = d3.scale.linear()
+      .domain([0, this._dataviewModel.get('data').length])
+      .range([this._dataviewModel.get('start'), this._dataviewModel.get('end')]);
+
     textLabel
-      .data([time])
+      .data([textLabelData])
       .text(function (d) {
-        return this.formatter(moment(d).unix(), this._timeSeriesModel.get('local_timezone'));
+        if (self._isDateTimeSeries()) {
+          return this.formatter(moment(d).unix(), this._timeSeriesModel.get('local_timezone'));
+        } else {
+          return this.formatter(scale(d));
+        }
       }.bind(this));
 
     if (!textLabel.node()) {
@@ -124,8 +137,8 @@ module.exports = cdb.core.View.extend({
     var yPos = this._calcHeight() / 2 + MOBILE_BAR_HEIGHT + TOOLTIP_MARGIN;
     yPos = Math.floor(yPos);
 
-    var data = this.timeSliderTip.data();
-    data[0].y = yPos;
+    var timeSliderTipData = this.timeSliderTip.data();
+    timeSliderTipData[0].y = yPos;
 
     var newX = xPos;
 
@@ -136,10 +149,10 @@ module.exports = cdb.core.View.extend({
     }
 
     if (!isNaN(newX)) {
-      data[0].x = newX;
+      timeSliderTipData[0].x = newX;
 
       this.timeSliderTip
-        .data(data)
+        .data(timeSliderTipData)
         .transition()
         .ease('linear')
         .attr('transform', this._translateXY);
@@ -154,10 +167,10 @@ module.exports = cdb.core.View.extend({
 
     this.listenTo(this._chartView.model, 'change:width', this._updateChartandTimeslider);
     this.listenTo(this._chartView.model, 'change:height', this._onChangeChartHeight);
-    this.listenTo(this._chartView.model, 'change:local_timezone', this._onChangeLocalTimezone);
+    this.listenTo(this._chartView.model, 'change:local_timezone', this._updateTimeSliderTip);
 
     this.listenTo(this._dataviewModel, 'change:bins', this._updateChartandTimeslider);
-    this.listenTo(this._dataviewModel, 'change:column_type', this._updateFormatter);
+    this.listenTo(this._dataviewModel, 'change:column_type', this._setupFormatter);
     this.listenTo(this._dataviewModel.filter, 'change:min change:max', this._onFilterMinMaxChange);
 
     this.listenTo(this._dataviewModel, 'change:start change:end', this._updateChartandTimeslider);
@@ -230,20 +243,14 @@ module.exports = cdb.core.View.extend({
   },
 
   _onChangeChartHeight: function () {
-    var height = viewportUtils.isTabletViewport() ? this._calcHeight() / 2 + MOBILE_BAR_HEIGHT : this._calcHeight();
+    var height = this._isTabletViewport() ? this._calcHeight() / 2 + MOBILE_BAR_HEIGHT : this._calcHeight();
 
     this.timeSlider.attr('height', height);
   },
 
-  _onChangeLocalTimezone: function () {
-    this._updateTimeSliderTip();
-  },
-
   _onChangeTime: function () {
-    if (!this._dataviewModel.filter.isEmpty()) {
-      this._removeTimeSliderTip();
-    } else {
-      if (viewportUtils.isTabletViewport()) {
+    if (this._dataviewModel.filter.isEmpty() && this._isTabletViewport()) {
+      if (this._isTabletViewport()) {
         var timeSliderTip = this._chartView.canvas.select('.CDB-Chart-timeSliderTip');
 
         if (!timeSliderTip.node()) {
@@ -254,6 +261,8 @@ module.exports = cdb.core.View.extend({
       } else {
         this._removeTimeSliderTip();
       }
+    } else {
+      this._removeTimeSliderTip();
     }
   },
 
@@ -274,10 +283,16 @@ module.exports = cdb.core.View.extend({
     return this._chartView.chartHeight() + this.defaults.height;
   },
 
-  _updateFormatter: function () {
-    if (this._dataviewModel.getColumnType() === 'date') {
+  _setupFormatter: function () {
+    this.formatter = formatter.formatNumber;
+
+    if (this._isDateTimeSeries()) {
       this.formatter = formatter.timestampFactory(this._dataviewModel.get('aggregation'), this._dataviewModel.get('offset'));
     }
+  },
+
+  _isDateTimeSeries: function () {
+    return this._dataviewModel.getColumnType() === 'date';
   },
 
   _updateXScale: function () {

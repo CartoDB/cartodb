@@ -102,6 +102,7 @@ module.exports = cdb.core.View.extend({
 
   _setupFormatter: function () {
     this.formatter = formatter.formatNumber;
+
     if (this._isDateTimeSeries()) {
       this.formatter = formatter.timestampFactory(this._dataviewModel.get('aggregation'), this._dataviewModel.get('offset'));
       this.options.divisionWidth = this._calculateDivisionWithByAggregation(this._dataviewModel.get('aggregation'));

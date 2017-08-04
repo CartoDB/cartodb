@@ -499,6 +499,92 @@ describe('dataviews/histogram-dataview-model', function () {
 
         expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&aggregation=month');
       });
+
+      it('should include aggregation auto if column type is date and no aggregation set', function () {
+        this.model.set({
+          aggregation: undefined,
+          column_type: 'date'
+        });
+        expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&aggregation=auto');
+      });
+    });
+  });
+
+  describe('.toJSON', function () {
+    beforeEach(function () {
+      this.model.set('column', 'updated_at', { silent: true });
+      spyOn(this.model, 'getSourceId').and.returnValue('g4');
+    });
+
+    it('should return no bins if column is number and bins undefined', function () {
+      this.model.set({
+        column_type: 'number',
+        bins: undefined
+      }, { silent: true });
+
+      var json = this.model.toJSON();
+
+      expect(json).toEqual({
+        type: 'histogram',
+        source: { id: 'g4' },
+        options: {
+          column: 'updated_at'
+        }
+      });
+    });
+
+    it('should return bins if column is number and bins defined', function () {
+      this.model.set({
+        column_type: 'number',
+        bins: 808
+      }, { silent: true });
+
+      var json = this.model.toJSON();
+
+      expect(json).toEqual({
+        type: 'histogram',
+        source: { id: 'g4' },
+        options: {
+          column: 'updated_at',
+          bins: 808
+        }
+      });
+    });
+
+    it('should return auto if column is date and aggregation undefined', function () {
+      this.model.set({
+        column_type: 'date',
+        aggregation: undefined
+      }, { silent: true });
+
+      var json = this.model.toJSON();
+
+      expect(json).toEqual({
+        type: 'histogram',
+        source: { id: 'g4' },
+        options: {
+          column: 'updated_at',
+          aggregation: 'auto'
+        }
+      });
+    });
+
+    it('should return aggregation if column is date and aggregation defined', function () {
+      this.model.set({
+        column_type: 'date',
+        aggregation: 'minute'
+      }, { silent: true });
+
+      var json = this.model.toJSON();
+
+      expect(json).toEqual({
+        type: 'histogram',
+        source: { id: 'g4' },
+        options: {
+          column: 'updated_at',
+          aggregation: 'minute'
+        }
+      });
     });
   });
 

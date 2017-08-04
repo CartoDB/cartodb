@@ -25,17 +25,14 @@ module.exports = DataviewModelBase.extend({
     if (_.isNumber(this.get('own_filter'))) {
       params.push('own_filter=' + this.get('own_filter'));
     } else {
-      var aggregation = this.get('aggregation');
       var offset = this.get('offset');
 
       if (this.get('column_type') === 'number' && this.get('bins')) {
         params.push('bins=' + this.get('bins'));
-      } else if (this.get('column_type') === 'date' && (aggregation || offset)) {
-        if (offset) {
+      } else if (this.get('column_type') === 'date') {
+        params.push('aggregation=' + (this.get('aggregation') || 'auto'));
+        if (_.isFinite(offset)) {
           params.push('offset=' + offset);
-        }
-        if (aggregation) {
-          params.push('aggregation=' + aggregation);
         }
       }
       if (_.isNumber(start)) {
@@ -77,7 +74,6 @@ module.exports = DataviewModelBase.extend({
     this._originalData.once('change:data', this._updateBindings, this);
 
     this.on('change:column', this._onColumnChanged, this);
-    this.on('change:offset', this._onOffsetChanged, this);
     this.on('change', this._onFieldsChanged, this);
 
     this.listenTo(this.layer, 'change:meta', this._onChangeLayerMeta);
@@ -196,14 +192,9 @@ module.exports = DataviewModelBase.extend({
     this._originalData.set('column_type', this.get('column_type'));
 
     this.set({
-      aggregation: undefined,
-      offset: undefined
+      aggregation: undefined
     }, { silent: true });
 
-    this._reloadVisAndForceFetch();
-  },
-
-  _onOffsetChanged: function () {
     this._reloadVisAndForceFetch();
   },
 
@@ -289,7 +280,6 @@ module.exports = DataviewModelBase.extend({
 
   toJSON: function (d) {
     var columnType = this.get('column_type');
-    var aggregation = this.get('aggregation');
     var offset = this.get('offset');
 
     var options = {
@@ -298,13 +288,11 @@ module.exports = DataviewModelBase.extend({
 
     if (columnType === 'number' && this.get('bins')) {
       options.bins = this.get('bins');
-    } else if (columnType === 'date' && (aggregation || offset)) {
-      if (aggregation) {
-        options.aggregation = this.get('aggregation');
-      }
+    } else if (columnType === 'date') {
+      options.aggregation = this.get('aggregation') || 'auto';
 
-      if (offset) {
-        options.offset = this.get('offset');
+      if (_.isFinite(offset)) {
+        options.offset = offset;
       }
     }
 

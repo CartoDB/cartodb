@@ -18,20 +18,17 @@ module.exports = Model.extend({
 
   url: function () {
     var params = [];
-    var aggregation = this.get('aggregation');
     var offset = this.get('offset');
 
-    if (this.get('column_type') === 'date' && (aggregation || offset)) {
-      if (aggregation) {
-        params.push('aggregation=' + aggregation);
-      }
-
-      if (offset) {
+    if (this.get('column_type') === 'number' && this.get('bins')) {
+      params.push('bins=' + this.get('bins'));
+    } else if (this.get('column_type') === 'date') {
+      params.push('aggregation=' + (this.get('aggregation') || 'auto'));
+      if (_.isFinite(offset)) {
         params.push('offset=' + offset);
       }
-    } else if (this.get('bins')) {
-      params.push('bins=' + this.get('bins'));
     }
+
     if (this.get('apiKey')) {
       params.push('api_key=' + this.get('apiKey'));
     } else if (this.get('authToken')) {
@@ -49,13 +46,24 @@ module.exports = Model.extend({
 
   initialize: function () {
     this.sync = BackboneAbortSync.bind(this);
+    this._initBinds();
+  },
+
+  _initBinds: function () {
     this.on('change:url', function () {
       this.fetch();
     }, this);
 
-    this.bind('change:offset change:aggregation change:bins', function () {
-      if (this.hasChanged('bins') && this.get('aggregation')) return;
-      this.fetch();
+    this.on('change:aggregation change:offset', function () {
+      if (this.get('column_type') === 'date' && this.get('aggregation')) {
+        this.fetch();
+      }
+    }, this);
+
+    this.on('change:bins', function () {
+      if (this.get('column_type') === 'number' && _.isUndefined(this.get('aggregation'))) {
+        this.fetch();
+      }
     }, this);
   },
 

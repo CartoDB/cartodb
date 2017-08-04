@@ -1,12 +1,10 @@
 module TrackjsHelper
-  include Carto::Configuration
-
   def insert_trackjs(app = 'editor')
     if Cartodb.get_config(:trackjs, 'customer')
       customer = Cartodb.get_config(:trackjs, 'customer')
       enabled = Cartodb.get_config(:trackjs, 'enabled')
       app_key = Cartodb.get_config(:trackjs, 'app_keys', app)
-      version = frontend_version
+      version = CartoDB::Application.frontend_version
 
       locals = { customer: customer, enabled: enabled, app_key: app_key, version: version }
       render(partial: 'shared/trackjs', locals: locals)

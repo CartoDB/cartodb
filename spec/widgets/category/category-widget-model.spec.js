@@ -19,7 +19,7 @@ describe('widgets/category/category-widget-model', function () {
       name: 'bar'
     }]);
 
-    spyOn(CategoryWidgetModel.prototype, '_updateColors').and.callThrough();
+    spyOn(CategoryWidgetModel.prototype, '_updateAutoStyle').and.callThrough();
 
     this.widgetModel = new CategoryWidgetModel({}, {
       dataviewModel: this.dataviewModel
@@ -59,7 +59,7 @@ describe('widgets/category/category-widget-model', function () {
       }, { autoStyleEnabled: false });
 
       widgetModel.set('style', 'whatever');
-      expect(CategoryWidgetModel.prototype._updateColors).not.toHaveBeenCalled();
+      expect(CategoryWidgetModel.prototype._updateAutoStyle).not.toHaveBeenCalled();
     });
 
     describe('when category names are updated', function () {

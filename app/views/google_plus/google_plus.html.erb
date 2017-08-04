@@ -90,8 +90,13 @@
 
       .Google-LoaderIcon-spinner {
         animation: GoogleRotate 2s linear infinite;
+        opacity: 0;
         width: 16px;
         height: 16px;
+      }
+
+      .Google-Button.is-loading .Google-LoaderIcon-spinner {
+        opacity: 1;
       }
 
       .Google-LoaderIcon-path {

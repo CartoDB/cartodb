@@ -98,5 +98,8 @@
       "/themes",
       "/vendor"
     ]
+  },
+  "scripts": {
+    "test": "grunt test"
   }
 }

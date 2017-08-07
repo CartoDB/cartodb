@@ -31,6 +31,7 @@ Development
 * Updates Dataservices API client default version to `0.19.0` (#12494)
 
 ### Bug fixes / enhancements
+* Fix ghost node problem (#11397)
 * Break down deep-insights-integrations class (#11581)
 * Fix torque categories layer rendering (#cartodb.js/1698)
 * Don't provide quantification option when layer is animated (#10947)

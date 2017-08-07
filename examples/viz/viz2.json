@@ -1,0 +1,203 @@
+{
+    "id": "2b13c956-e7c1-11e2-806b-5404a6a683d5",
+    "version": "0.1.0",
+    "title": "european_countries_e 0",
+    "likes": 0,
+    "description": null,
+    "scrollwheel": true,
+    "legends": true,
+    "url": null,
+    "map_provider": "leaflet",
+    "center": "[52.5897007687178, 52.734375]",
+    "zoom": 4,
+    "updated_at": "2015-03-13T11:24:37+00:00",
+    "datasource": {
+        "user_name": "documentation",
+        "maps_api_template": "http://{user}.cartodb.com:80",
+        "force_cors": true,
+        "stat_tag": "84ec6844-4b4b-11e5-9c1d-080027880ca6"
+    },
+    "layers": [
+        {
+            "options": {
+                "id": "0a3d9104-99c6-482b-9f8c-7c6134bddcdc",
+                "order": 0,
+                "visible": true,
+                "type": "Tiled",
+                "name": "Positron",
+                "className": "default positron_rainbow",
+                "baseType": "positron_rainbow",
+                "urlTemplate": "http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png",
+                "read_only": true,
+                "minZoom": "0",
+                "maxZoom": "18",
+                "attribution": "&copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors",
+                "subdomains": "abcd",
+                "category": "CartoDB"
+            },
+            "infowindow": null,
+            "tooltip": null,
+            "id": "0a3d9104-99c6-482b-9f8c-7c6134bddcdc",
+            "order": 0,
+            "type": "tiled"
+        },
+        {
+            "id": "923b7812-2d56-41c6-ac15-3ce430db090f",
+            "type": "CartoDB",
+            "infowindow": {
+                "fields": [
+                    {
+                        "name": "name",
+                        "title": true,
+                        "position": 4
+                    }
+                ],
+                "template": "<div> {{ name }} </div>",
+                "alternative_names": {},
+                "width": 226,
+                "maxHeight": 180
+            },
+            "tooltip": {
+                "fields": [
+                    {
+                        "name": "name",
+                        "title": true,
+                        "position": 1
+                    }
+                ],
+                "template_name": "tooltip_light",
+                "template": "<div> TEMPLATE_1 </div>",
+                "alternative_names": {},
+                "maxHeight": 180
+            },
+            "legend": {
+                "type": "choropleth",
+                "show_title": true,
+                "title": "",
+                "template": "",
+                "items": [
+                    {
+                        "name": "Left label",
+                        "visible": true,
+                        "value": "5592.00",
+                        "type": "text"
+                    },
+                    {
+                        "name": "Right label",
+                        "visible": true,
+                        "value": "1638094.00",
+                        "type": "text"
+                    },
+                    {
+                        "name": "Color",
+                        "visible": true,
+                        "value": "#FFFFB2",
+                        "type": "color"
+                    },
+                    {
+                        "name": "Color",
+                        "visible": true,
+                        "value": "#FED976",
+                        "type": "color"
+                    },
+                    {
+                        "name": "Color",
+                        "visible": true,
+                        "value": "#FEB24C",
+                        "type": "color"
+                    },
+                    {
+                        "name": "Color",
+                        "visible": true,
+                        "value": "#FD8D3C",
+                        "type": "color"
+                    },
+                    {
+                        "name": "Color",
+                        "visible": true,
+                        "value": "#FC4E2A",
+                        "type": "color"
+                    },
+                    {
+                        "name": "Color",
+                        "visible": true,
+                        "value": "#E31A1C",
+                        "type": "color"
+                    },
+                    {
+                        "name": "Color",
+                        "visible": true,
+                        "value": "#B10026",
+                        "type": "color"
+                    }
+                ]
+            },
+            "order": 1,
+            "visible": true,
+            "options": {
+                "sql": "select * from european_countries_e",
+                "layer_name": "european_countries_e",
+                "cartocss": "/** choropleth visualization */\n\n#european_countries_e{\n  polygon-fill: #FFFFB2;\n  polygon-opacity: 0.8;\n  line-color: #FFF;\n  line-width: 1;\n  line-opacity: 0.5;\n}\n#european_countries_e [ area <= 1638094] {\n   polygon-fill: #B10026;\n}\n#european_countries_e [ area <= 55010] {\n   polygon-fill: #E31A1C;\n}\n#european_countries_e [ area <= 34895] {\n   polygon-fill: #FC4E2A;\n}\n#european_countries_e [ area <= 12890] {\n   polygon-fill: #FD8D3C;\n}\n#european_countries_e [ area <= 10025] {\n   polygon-fill: #FEB24C;\n}\n#european_countries_e [ area <= 9150] {\n   polygon-fill: #FED976;\n}\n#european_countries_e [ area <= 5592] {\n   polygon-fill: #FFFFB2;\n}",
+                "cartocss_version": "2.1.1",
+                "table_name": "\"\"."
+            }
+        },
+        {
+            "options": {
+                "visible": true,
+                "type": "Tiled",
+                "default": "true",
+                "url": "http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png",
+                "subdomains": "abcd",
+                "minZoom": "0",
+                "maxZoom": "18",
+                "attribution": "&copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors",
+                "urlTemplate": "http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png",
+                "name": "Positron Labels",
+                "id": "bc054932-1ae8-4d4a-96d6-d49ce4247a59",
+                "className": "httpsbasemapscartocdncomlight_only_labelszxypng",
+                "order": 3
+            },
+            "infowindow": null,
+            "tooltip": null,
+            "id": "bc054932-1ae8-4d4a-96d6-d49ce4247a59",
+            "order": 3,
+            "type": "tiled"
+        }
+    ],
+    "overlays": [
+        {
+            "type": "loader",
+            "options": {
+                "display": true,
+                "x": 20,
+                "y": 150
+            }
+        },
+        {
+            "type": "fullscreen",
+            "options": {
+                "x": 20,
+                "y": 140,
+                "display": true
+            }
+        },
+        {
+            "type": "search",
+            "options": {
+                "display": true
+            }
+        },
+        {
+            "type": "zoom",
+            "options": {
+                "x": 20,
+                "y": 20,
+                "display": true
+            }
+        }
+    ],
+    "prev": null,
+    "next": null,
+    "transition_options": {}
+}

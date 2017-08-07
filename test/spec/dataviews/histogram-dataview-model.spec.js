@@ -1,9 +1,9 @@
 var Backbone = require('backbone');
-var _ = require('underscore');
 var Model = require('../../../src/core/model');
 var VisModel = require('../../../src/vis/vis');
 var RangeFilter = require('../../../src/windshaft/filters/range');
 var HistogramDataviewModel = require('../../../src/dataviews/histogram-dataview-model');
+var helper = require('../../../src/dataviews/helpers/histogram-helper');
 
 describe('dataviews/histogram-dataview-model', function () {
   beforeEach(function () {
@@ -21,6 +21,9 @@ describe('dataviews/histogram-dataview-model', function () {
 
     spyOn(HistogramDataviewModel.prototype, 'listenTo').and.callThrough();
     spyOn(HistogramDataviewModel.prototype, 'fetch').and.callThrough();
+    spyOn(HistogramDataviewModel.prototype, '_updateBindings');
+    spyOn(HistogramDataviewModel.prototype, '_resetFilterAndFetch');
+
     this.model = new HistogramDataviewModel({
       source: { id: 'a0' }
     }, {
@@ -34,7 +37,6 @@ describe('dataviews/histogram-dataview-model', function () {
 
   it('defaults', function () {
     expect(this.model.get('type')).toBe('histogram');
-    expect(this.model.get('bins')).toBe(10);
     expect(this.model.get('totalAmount')).toBe(0);
     expect(this.model.get('filteredAmount')).toBe(0);
   });
@@ -45,9 +47,9 @@ describe('dataviews/histogram-dataview-model', function () {
   });
 
   it('should set unfiltered model url when model has changed it', function () {
-    spyOn(this.model._unfilteredData, 'setUrl');
+    spyOn(this.model._originalData, 'setUrl');
     this.model.set('url', 'hey!');
-    expect(this.model._unfilteredData.setUrl).toHaveBeenCalled();
+    expect(this.model._originalData.setUrl).toHaveBeenCalled();
   });
 
   it('should set the api_key attribute on the internal models', function () {
@@ -62,195 +64,143 @@ describe('dataviews/histogram-dataview-model', function () {
       analysisCollection: new Backbone.Collection()
     });
 
-    expect(this.model._unfilteredData.get('apiKey')).toEqual('API_KEY');
+    expect(this.model._originalData.get('apiKey')).toEqual('API_KEY');
   });
 
   describe('should get the correct histogram shape', function () {
     beforeEach(function () {
       this.model.set('bins', 6);
     });
+
     it('when it is flat', function () {
       this.model.set('data', [
-        {bin: 0, freq: 25},
-        {bin: 1, freq: 26},
-        {bin: 2, freq: 25},
-        {bin: 3, freq: 26},
-        {bin: 4, freq: 26},
-        {bin: 5, freq: 25}
+        { bin: 0, freq: 25 },
+        { bin: 1, freq: 26 },
+        { bin: 2, freq: 25 },
+        { bin: 3, freq: 26 },
+        { bin: 4, freq: 26 },
+        { bin: 5, freq: 25 }
       ]);
       expect(this.model.getDistributionType()).toEqual('F');
     });
+
     it('when it is A', function () {
       this.model.set('data', [
-        {bin: 0, freq: 0},
-        {bin: 1, freq: 5},
-        {bin: 2, freq: 25},
-        {bin: 3, freq: 18},
-        {bin: 4, freq: 8},
-        {bin: 5, freq: 2}
+        { bin: 0, freq: 0 },
+        { bin: 1, freq: 5 },
+        { bin: 2, freq: 25 },
+        { bin: 3, freq: 18 },
+        { bin: 4, freq: 8 },
+        { bin: 5, freq: 2 }
       ]);
       expect(this.model.getDistributionType()).toEqual('A');
     });
+
     it('when it is J', function () {
       this.model.set('data', [
-        {bin: 0, freq: 0},
-        {bin: 1, freq: 2},
-        {bin: 2, freq: 5},
-        {bin: 3, freq: 8},
-        {bin: 4, freq: 18},
-        {bin: 5, freq: 25}
+        { bin: 0, freq: 0 },
+        { bin: 1, freq: 2 },
+        { bin: 2, freq: 5 },
+        { bin: 3, freq: 8 },
+        { bin: 4, freq: 18 },
+        { bin: 5, freq: 25 }
       ]);
       expect(this.model.getDistributionType()).toEqual('J');
     });
+
     it('when it is L', function () {
       this.model.set('data', [
-        {bin: 0, freq: 25},
-        {bin: 1, freq: 18},
-        {bin: 4, freq: 8},
-        {bin: 2, freq: 5},
-        {bin: 5, freq: 2},
-        {bin: 3, freq: 0}
+        { bin: 0, freq: 25 },
+        { bin: 1, freq: 18 },
+        { bin: 4, freq: 8 },
+        { bin: 2, freq: 5 },
+        { bin: 5, freq: 2 },
+        { bin: 3, freq: 0 }
       ]);
       expect(this.model.getDistributionType()).toEqual('L');
     });
+
     xit('when it is clustered', function () {
       this.model.set('data', [
-       {bin: 0, freq: 20},
-       {bin: 1, freq: 18},
-       {bin: 2, freq: 5},
-       {bin: 3, freq: 0},
-       {bin: 4, freq: 32},
-       {bin: 5, freq: 16}
+       { bin: 0, freq: 20 },
+       { bin: 1, freq: 18 },
+       { bin: 2, freq: 5 },
+       { bin: 3, freq: 0 },
+       { bin: 4, freq: 32 },
+       { bin: 5, freq: 16 }
       ]);
       expect(this.model.getDistributionType()).toEqual('C');
     });
   });
 
-  describe('on unfiltered data model fetch', function () {
+  describe('when _originalData changes:data', function () {
     beforeEach(function () {
       var histogramData = {
-        'bin_width': 10,
-        'bins_count': 3,
-        'bins_start': 1,
-        'nulls': 0
+        bin_width: 10,
+        bins_count: 3,
+        bins_start: 1,
+        nulls: 0,
+        aggregation: 'quarter'
       };
 
-      spyOn(this.model._unfilteredData, 'sync').and.callFake(function (method, model, options) {
+      spyOn(this.model._originalData, 'sync').and.callFake(function (method, model, options) {
         options.success(histogramData);
       });
     });
 
-    it('should calculate start, end and bins', function () {
+    it('should set start, end, bins and aggregation', function () {
       expect(this.model.get('start')).toBeUndefined();
       expect(this.model.get('end')).toBeUndefined();
-      this.model._unfilteredData.fetch();
+
+      this.model._originalData.fetch();
+
       expect(this.model.get('start')).toEqual(1);
       expect(this.model.get('end')).toEqual(31);
       expect(this.model.get('bins')).toEqual(3);
+      expect(this.model.get('aggregation')).toEqual('quarter');
     });
 
-    it('should run _onChangeBins', function () {
-      spyOn(this.model, '_onChangeBinds');
-      this.model._unfilteredData.fetch();
-      expect(this.model._onChangeBinds).toHaveBeenCalled();
+    it('should call _updateBindings only once', function () {
+      this.model._originalData.fetch();
+      expect(this.model._updateBindings).toHaveBeenCalled();
+
+      this.model._updateBindings.calls.reset();
+
+      this.model._originalData.fetch();
+      expect(this.model._updateBindings).not.toHaveBeenCalled();
     });
   });
 
   describe('when column changes', function () {
-    it('should reload map and force fetch', function () {
+    it('should set column_type to original data, set undefined aggregation and reload map and force fetch', function () {
       this.vis.reload.calls.reset();
-      this.model.set('column', 'random_col');
+
+      this.model.set({
+        aggregation: 'quarter',
+        column: 'random_col',
+        column_type: 'aColumnType'
+      });
+
+      expect(this.model._originalData.get('column_type')).toEqual('aColumnType');
+      expect(this.model.get('aggregation')).toBeUndefined();
       expect(this.vis.reload).toHaveBeenCalledWith({ forceFetch: true, sourceId: 'a0' });
     });
   });
 
-  describe('when bins change', function () {
-    beforeEach(function () {
-      this.vis.reload.calls.reset();
-      spyOn(this.model.filter, 'unsetRange');
-      this.model.set('bins', 123);
-    });
-
-    it('should refresh data on bins change', function () {
-      expect(this.vis.reload).not.toHaveBeenCalled();
-      expect(this.model.fetch).toHaveBeenCalled();
-    });
-
-    it('should disable filter', function () {
-      expect(this.model.get('own_filter')).toBeUndefined();
-    });
-
-    it('should unset range filter', function () {
-      expect(this.model.filter.unsetRange).toHaveBeenCalled();
-    });
-  });
-
-  describe('when start change', function () {
-    beforeEach(function () {
-      this.vis.reload.calls.reset();
-      spyOn(this.model.filter, 'unsetRange');
-
-      this.model.set('start', 0);
-    });
-
-    it('should refresh data on bins change', function () {
-      expect(this.vis.reload).not.toHaveBeenCalled();
-      expect(this.model.fetch).toHaveBeenCalled();
-    });
-
-    it('should disable filter', function () {
-      expect(this.model.get('own_filter')).toBeUndefined();
-    });
-
-    it('should unset range filter', function () {
-      expect(this.model.filter.unsetRange).toHaveBeenCalled();
-    });
-  });
-
-  describe('when end change', function () {
-    beforeEach(function () {
-      this.vis.reload.calls.reset();
-      spyOn(this.model.filter, 'unsetRange');
-      this.model.set('end', 0);
-    });
-
-    it('should refresh data on bins change', function () {
-      expect(this.vis.reload).not.toHaveBeenCalled();
-      expect(this.model.fetch).toHaveBeenCalled();
-    });
-
-    it('should disable filter', function () {
-      expect(this.model.get('own_filter')).toBeUndefined();
-    });
-
-    it('should unset range filter', function () {
-      expect(this.model.filter.unsetRange).toHaveBeenCalled();
-    });
-  });
-
   describe('parse', function () {
-    var createData;
-
-    beforeEach(function () {
-      createData = function (attrs) {
-        return _.extend({
-          bin_width: 14490.25,
-          bins: [
-            { bin: 0, freq: 2, max: 70151, min: 55611 },
-            { bin: 1, freq: 2, max: 79017, min: 78448 },
-            { bin: 3, freq: 1, max: 113572, min: 113572 }
-          ],
-          bins_count: 4,
-          bins_start: 55611,
-          type: 'histogram'
-        }, attrs);
-      };
-    });
-
     it('should parse the bins', function () {
-      var data = createData({
-        nulls: 1
-      });
+      var data = {
+        bin_width: 14490.25,
+        bins: [
+          { bin: 0, freq: 2, max: 70151, min: 55611 },
+          { bin: 1, freq: 2, max: 79017, min: 78448 },
+          { bin: 3, freq: 1, max: 113572, min: 113572 }
+        ],
+        bins_count: 4,
+        bins_start: 55611,
+        nulls: 1,
+        type: 'histogram'
+      };
 
       this.model.parse(data);
 
@@ -262,12 +212,21 @@ describe('dataviews/histogram-dataview-model', function () {
     });
 
     it('should set hasNulls to true if null is set in the response', function () {
-      var data = createData({
+      var data = {
+        bin_width: 14490.25,
+        bins: [
+          { bin: 0, freq: 2, max: 70151, min: 55611 },
+          { bin: 1, freq: 2, max: 79017, min: 78448 },
+          { bin: 3, freq: 1, max: 113572, min: 113572 }
+        ],
+        bins_count: 4,
+        bins_start: 55611,
         source: {
           id: 'a0'
         },
-        nulls: 0
-      });
+        nulls: 0,
+        type: 'histogram'
+      };
 
       var model = new HistogramDataviewModel(data, {
         map: this.map,
@@ -282,11 +241,20 @@ describe('dataviews/histogram-dataview-model', function () {
     });
 
     it('should set hasNulls to false if null is undefined in the response', function () {
-      var data = createData({
+      var data = {
+        bin_width: 14490.25,
+        bins: [
+          { bin: 0, freq: 2, max: 70151, min: 55611 },
+          { bin: 1, freq: 2, max: 79017, min: 78448 },
+          { bin: 3, freq: 1, max: 113572, min: 113572 }
+        ],
+        bins_count: 4,
+        bins_start: 55611,
         source: {
           id: 'a0'
-        }
-      });
+        },
+        type: 'histogram'
+      };
 
       var model = new HistogramDataviewModel(data, {
         map: this.map,
@@ -299,93 +267,132 @@ describe('dataviews/histogram-dataview-model', function () {
 
       expect(model.hasNulls()).toBe(false);
     });
-  });
 
-  it('should calculate total amount and filtered amount in parse when a filter is present', function () {
-    var data = {
-      bin_width: 1,
-      bins: [
-        { bin: 0, freq: 2 },
-        { bin: 1, freq: 3 },
-        { bin: 2, freq: 7 }
-      ],
-      bins_count: 3,
-      bins_start: 1,
-      nulls: 0,
-      type: 'histogram'
-    };
-    this.model.filter = new RangeFilter({ min: 1, max: 3 });
+    it('should calculate total amount and filtered amount in parse when a filter is present', function () {
+      var data = {
+        bin_width: 1,
+        bins: [
+          { bin: 0, freq: 2 },
+          { bin: 1, freq: 3 },
+          { bin: 2, freq: 7 }
+        ],
+        bins_count: 3,
+        bins_start: 1,
+        nulls: 0,
+        type: 'histogram'
+      };
+      this.model.filter = new RangeFilter({ min: 1, max: 3 });
 
-    var parsedData = this.model.parse(data);
+      var parsedData = this.model.parse(data);
 
-    expect(parsedData.totalAmount).toBe(12);
-    expect(parsedData.filteredAmount).toBe(5);
-  });
+      expect(parsedData.totalAmount).toBe(12);
+      expect(parsedData.filteredAmount).toBe(5);
+    });
 
-  it('should calculate only total amount in parse when there is no filter', function () {
-    var data = {
-      bin_width: 1,
-      bins: [
-        { bin: 0, freq: 2 },
-        { bin: 1, freq: 3 },
-        { bin: 2, freq: 7 }
-      ],
-      bins_count: 3,
-      bins_start: 1,
-      nulls: 0,
-      type: 'histogram'
-    };
+    it('should calculate only total amount in parse when there is no filter', function () {
+      var data = {
+        bin_width: 1,
+        bins: [
+          { bin: 0, freq: 2 },
+          { bin: 1, freq: 3 },
+          { bin: 2, freq: 7 }
+        ],
+        bins_count: 3,
+        bins_start: 1,
+        nulls: 0,
+        type: 'histogram'
+      };
 
-    var parsedData = this.model.parse(data);
+      var parsedData = this.model.parse(data);
 
-    expect(parsedData.totalAmount).toBe(12);
-    expect(parsedData.filteredAmount).toBe(0);
-  });
+      expect(parsedData.totalAmount).toBe(12);
+      expect(parsedData.filteredAmount).toBe(0);
+    });
 
-  it('parser do not fails when there are no bins', function () {
-    var data = {
-      bin_width: 0,
-      bins: [],
-      bins_count: 0,
-      bins_start: 0,
-      nulls: 0,
-      type: 'histogram'
-    };
+    it('parser do not fails when there are no bins', function () {
+      var data = {
+        bin_width: 0,
+        bins: [],
+        bins_count: 0,
+        bins_start: 0,
+        nulls: 0,
+        type: 'histogram'
+      };
 
-    this.model.parse(data);
+      this.model.parse(data);
 
-    var parsedData = this.model.getData();
+      var parsedData = this.model.getData();
 
-    expect(data.nulls).toBe(0);
-    expect(parsedData.length).toBe(0);
-  });
+      expect(data.nulls).toBe(0);
+      expect(parsedData.length).toBe(0);
+    });
 
-  it('should parse the bins and fix end bucket issues', function () {
-    var data = {
-      'bin_width': 1041.66645833333,
-      'bins_count': 48,
-      'bins_start': 0.01,
-      'nulls': 0,
-      'avg': 55.5007561961441,
-      'bins': [{
-        'bin': 47,
-        'min': 50000,
-        'max': 50000,
-        'avg': 50000,
-        'freq': 6
-        // NOTE - The end of this bucket is 48 * 1041.66645833333 = 49999.98999999984
-        // but it must be corrected to 50.000.
-      }],
-      'type': 'histogram'
-    };
+    it('should parse the bins and fix end bucket issues', function () {
+      var data = {
+        bin_width: 1041.66645833333,
+        bins_count: 48,
+        bins_start: 0.01,
+        nulls: 0,
+        avg: 55.5007561961441,
+        bins: [{
+          bin: 47,
+          min: 50000,
+          max: 50000,
+          avg: 50000,
+          freq: 6
+          // NOTE - The end of this bucket is 48 * 1041.66645833333 = 49999.98999999984
+          // but it must be corrected to 50.000.
+        }],
+        type: 'histogram'
+      };
 
-    this.model.parse(data);
+      this.model.parse(data);
 
-    var parsedData = this.model.getData();
+      var parsedData = this.model.getData();
 
-    expect(data.nulls).toBe(0);
-    expect(parsedData.length).toBe(48);
-    expect(parsedData[47].end).not.toBeLessThan(parsedData[47].max);
+      expect(data.nulls).toBe(0);
+      expect(parsedData.length).toBe(48);
+      expect(parsedData[47].end).not.toBeLessThan(parsedData[47].max);
+    });
+
+    it('should call .fillNumericBuckets if aggregation is not present', function () {
+      spyOn(helper, 'fillNumericBuckets');
+      this.model._initBinds();
+      this.model.set('column_type', 'number');
+      var data = {
+        bin_width: 0,
+        bins: [],
+        bins_count: 0,
+        bins_start: 0,
+        nulls: 0,
+        type: 'histogram'
+      };
+
+      this.model.parse(data);
+
+      expect(helper.fillNumericBuckets).toHaveBeenCalled();
+    });
+
+    it('should call .fillTimestampBuckets if aggregation is present', function () {
+      spyOn(helper, 'fillTimestampBuckets');
+      this.model._initBinds();
+      this.model.set({
+        aggregation: 'month',
+        column_type: 'date'
+      }, { silent: true });
+      var data = {
+        bin_width: 0,
+        bins: [],
+        bins_count: 0,
+        bins_start: 0,
+        nulls: 0,
+        type: 'histogram'
+      };
+
+      this.model.parse(data);
+
+      expect(helper.fillTimestampBuckets).toHaveBeenCalled();
+    });
   });
 
   describe('when layer changes meta', function () {
@@ -404,20 +411,138 @@ describe('dataviews/histogram-dataview-model', function () {
   });
 
   describe('.url', function () {
-    it('should include bbox and initial bins', function () {
+    beforeEach(function () {
       this.model.set('url', 'http://example.com');
-      expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&bins=10');
     });
-    it('should include start, end and bins when own_filter is enabled', function () {
+
+    it('should include bbox', function () {
+      expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3');
+    });
+
+    it('should include start if present', function () {
+      this.model.set('start', 11);
+      expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&start=11');
+    });
+
+    it('should include end if present', function () {
+      this.model.set('end', 22);
+      expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&end=22');
+    });
+
+    it('should include bins if present and the column type is number', function () {
+      this.model.set({
+        bins: 33,
+        column_type: 'number'
+      });
+      expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&bins=33');
+    });
+
+    it('should only include aggregation if aggregation and bins present and column type is date', function () {
+      this.model.set({
+        aggregation: 'month',
+        bins: 33,
+        column_type: 'date'
+      });
+      expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&aggregation=month');
+    });
+
+    it('should include aggregation auto if column type is date and no aggregation set', function () {
+      this.model.set({
+        aggregation: undefined,
+        column_type: 'date'
+      });
+      expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&aggregation=auto');
+    });
+
+    it('should not include start, end and bins when own_filter is enabled', function () {
       this.model.set({
         'url': 'http://example.com',
         'start': 0,
         'end': 10,
-        'bins': 25
+        'bins': 25,
+        column_type: 'number'
       });
       expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&start=0&end=10&bins=25');
       this.model.enableFilter();
       expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&own_filter=1');
+    });
+  });
+
+  describe('.toJSON', function () {
+    beforeEach(function () {
+      this.model.set('column', 'updated_at', { silent: true });
+      spyOn(this.model, 'getSourceId').and.returnValue('g4');
+    });
+
+    it('should return no bins if column is number and bins undefined', function () {
+      this.model.set({
+        column_type: 'number',
+        bins: undefined
+      }, { silent: true });
+
+      var json = this.model.toJSON();
+
+      expect(json).toEqual({
+        type: 'histogram',
+        source: { id: 'g4' },
+        options: {
+          column: 'updated_at'
+        }
+      });
+    });
+
+    it('should return bins if column is number and bins defined', function () {
+      this.model.set({
+        column_type: 'number',
+        bins: 808
+      }, { silent: true });
+
+      var json = this.model.toJSON();
+
+      expect(json).toEqual({
+        type: 'histogram',
+        source: { id: 'g4' },
+        options: {
+          column: 'updated_at',
+          bins: 808
+        }
+      });
+    });
+
+    it('should return auto if column is date and aggregation undefined', function () {
+      this.model.set({
+        column_type: 'date',
+        aggregation: undefined
+      }, { silent: true });
+
+      var json = this.model.toJSON();
+
+      expect(json).toEqual({
+        type: 'histogram',
+        source: { id: 'g4' },
+        options: {
+          column: 'updated_at',
+          aggregation: 'auto'
+        }
+      });
+    });
+
+    it('should return aggregation if column is date and aggregation defined', function () {
+      this.model.set({
+        column_type: 'date',
+        aggregation: 'minute'
+      }, { silent: true });
+
+      var json = this.model.toJSON();
+
+      expect(json).toEqual({
+        type: 'histogram',
+        source: { id: 'g4' },
+        options: {
+          column: 'updated_at',
+          aggregation: 'minute'
+        }
+      });
     });
   });
 
@@ -437,6 +562,55 @@ describe('dataviews/histogram-dataview-model', function () {
       this.model.disableFilter();
 
       expect(this.model.get('own_filter')).toBeUndefined();
+    });
+  });
+
+  describe('._onDataChanged', function () {
+    it('should call _resetFilterAndFetch if column is data and aggregation changes', function () {
+      var model = new Backbone.Model({
+        aggregation: 'week'
+      });
+      this.model.set('column_type', 'date', { silent: true });
+
+      this.model._onDataChanged(model);
+
+      expect(this.model._resetFilterAndFetch).toHaveBeenCalled();
+    });
+
+    it('should call _resetFilterAndFetch if column is number and bins changes', function () {
+      var model = new Backbone.Model({
+        bins: 5
+      });
+      this.model.set('column_type', 'number', { silent: true });
+
+      this.model._onDataChanged(model);
+
+      expect(this.model._resetFilterAndFetch).toHaveBeenCalled();
+    });
+
+    it('should call only fetch in the rest of cases', function () {
+      var model = new Backbone.Model({
+        start: this.model.get('start') + 1,
+        end: 22
+      });
+
+      this.model._onDataChanged(model);
+
+      expect(this.model.fetch).toHaveBeenCalled();
+    });
+
+    it('should set the data fetched', function () {
+      var model = new Backbone.Model({
+        start: 11,
+        end: 22,
+        bins: 5
+      });
+
+      this.model._onDataChanged(model);
+
+      expect(this.model.get('start')).toEqual(11);
+      expect(this.model.get('end')).toEqual(22);
+      expect(this.model.get('bins')).toEqual(5);
     });
   });
 });

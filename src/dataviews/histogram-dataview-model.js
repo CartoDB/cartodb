@@ -2,6 +2,7 @@ var _ = require('underscore');
 var Backbone = require('backbone');
 var DataviewModelBase = require('./dataview-model-base');
 var HistogramDataModel = require('./histogram-dataview/histogram-data-model');
+var helper = require('./helpers/histogram-helper');
 var d3 = require('d3');
 
 module.exports = DataviewModelBase.extend({
@@ -9,7 +10,6 @@ module.exports = DataviewModelBase.extend({
   defaults: _.extend(
     {
       type: 'histogram',
-      bins: 10,
       totalAmount: 0,
       filteredAmount: 0,
       hasNulls: false
@@ -20,9 +20,6 @@ module.exports = DataviewModelBase.extend({
   _getDataviewSpecificURLParams: function () {
     var params = [];
 
-    if (this.get('column_type')) {
-      params.push('column_type=' + this.get('column_type'));
-    }
     if (_.isNumber(this.get('own_filter'))) {
       params.push('own_filter=' + this.get('own_filter'));
     } else {
@@ -32,40 +29,28 @@ module.exports = DataviewModelBase.extend({
       if (_.isNumber(this.get('end'))) {
         params.push('end=' + this.get('end'));
       }
-      if (_.isNumber(parseInt(this.get('bins'), 10))) {
+      if (this.get('column_type') === 'number' && this.get('bins')) {
         params.push('bins=' + this.get('bins'));
+      } else if (this.get('column_type') === 'date') {
+        params.push('aggregation=' + (this.get('aggregation') || 'auto'));
       }
     }
     return params;
   },
 
   initialize: function (attrs, opts) {
-    DataviewModelBase.prototype.initialize.apply(this, arguments);
-    this._data = new Backbone.Collection(this.get('data'));
-
     // Internal model for calculating all the data in the histogram (without filters)
-    this._unfilteredData = new HistogramDataModel({
+    this._originalData = new HistogramDataModel({
       bins: this.get('bins'),
+      aggregation: this.get('aggregation'),
+      column_type: this.get('column_type'),
       apiKey: this.get('apiKey'),
       authToken: this.get('authToken')
     });
 
-    this._unfilteredData.bind('change:data', function (mdl, data) {
-      this.set({
-        start: mdl.get('start'),
-        end: mdl.get('end'),
-        bins: mdl.get('bins')
-      }, { silent: true });
-      this._onChangeBinds();
-    }, this);
+    DataviewModelBase.prototype.initialize.apply(this, arguments);
+    this._data = new Backbone.Collection(this.get('data'));
 
-    this.on('change:url', function () {
-      this._unfilteredData.setUrl(this.get('url'));
-    }, this);
-
-    this.listenTo(this.layer, 'change:meta', this._onChangeLayerMeta);
-    this.on('change:column', this._reloadVisAndForceFetch, this);
-    this.on('change:bins change:start change:end', this._fetchAndResetFilter, this);
     if (attrs && (attrs.min || attrs.max)) {
       this.filter.setRange(this.get('min'), this.get('max'));
     }
@@ -73,9 +58,29 @@ module.exports = DataviewModelBase.extend({
 
   _initBinds: function () {
     DataviewModelBase.prototype._initBinds.apply(this);
+
+    this._updateURLBinding();
+
+    // When original data gets fetched
+    this._originalData.bind('change:data', this._onDataChanged, this);
+    this._originalData.once('change:data', this._updateBindings, this);
+
+    this.on('change:column', this._onColumnChanged, this);
+    this.on('change', this._onFieldsChanged, this);
+
+    this.listenTo(this.layer, 'change:meta', this._onChangeLayerMeta);
+  },
+
+  _updateURLBinding: function () {
     // We shouldn't listen url change for fetching the data (with filter) because
     // we have to wait until we know all the data available (without any filter).
-    this.stopListening(this, 'change:url', null);
+    this.off('change:url');
+    this.on('change:url', this._onUrlChanged, this);
+  },
+
+  _updateBindings: function () {
+    this._onChangeBinds();
+    this._updateURLBinding();
   },
 
   enableFilter: function () {
@@ -90,12 +95,20 @@ module.exports = DataviewModelBase.extend({
     return this._data.toJSON();
   },
 
+  getUnfilteredData: function () {
+    return this._originalData.get('data');
+  },
+
   getUnfilteredDataModel: function () {
-    return this._unfilteredData;
+    return this._originalData;
   },
 
   getSize: function () {
     return this._data.size();
+  },
+
+  getColumnType: function () {
+    return this.get('column_type');
   },
 
   hasNulls: function () {
@@ -103,59 +116,72 @@ module.exports = DataviewModelBase.extend({
   },
 
   parse: function (data) {
+    var aggregation = data.aggregation;
     var numberOfBins = data.bins_count;
     var width = data.bin_width;
-    var start = data.bins_start;
+    var start = this.get('column_type') === 'date' ? helper.calculateStart(data.bins, data.bins_start, aggregation) : data.bins_start;
 
-    var buckets = new Array(numberOfBins);
+    var parsedData = {
+      data: [],
+      filteredAmount: 0,
+      nulls: 0,
+      totalAmount: 0
+    };
 
-    _.each(data.bins, function (b) {
-      buckets[b.bin] = b;
+    if (this.has('error')) {
+      return parsedData;
+    }
+
+    parsedData.data = new Array(numberOfBins);
+
+    _.each(data.bins, function (bin) {
+      parsedData.data[bin.bin] = bin;
     });
 
-    for (var i = 0; i < numberOfBins; i++) {
-      buckets[i] = _.extend({
-        bin: i,
-        start: start + (i * width),
-        end: start + ((i + 1) * width),
-        freq: 0
-      }, buckets[i]);
+    this.set('aggregation', aggregation, { silent: true });
+
+    if (this.get('column_type') === 'date') {
+      helper.fillTimestampBuckets(parsedData.data, start, aggregation, numberOfBins);
+    } else {
+      helper.fillNumericBuckets(parsedData.data, start, width, numberOfBins);
     }
 
     // FIXME - Update the end of last bin due https://github.com/CartoDB/cartodb.js/issues/926
-    var lastBucket = buckets[numberOfBins - 1];
+    var lastBucket = parsedData.data[numberOfBins - 1];
     if (lastBucket && lastBucket.end < lastBucket.max) {
       lastBucket.end = lastBucket.max;
     }
 
     // if parse option is passed in the constructor, this._data is not created yet at this point
-    this._data && this._data.reset(buckets);
+    this._data && this._data.reset(parsedData.data);
 
     // Calculate totals
-    var totalAmount = this._calculateTotalAmount(buckets);
-    var filteredAmount = this._calculateFilteredAmount(this.filter, this._data);
-
-    var attrs = {
-      data: buckets,
-      totalAmount: totalAmount,
-      filteredAmount: filteredAmount,
-      hasNulls: false
-    };
+    parsedData.totalAmount = this._calculateTotalAmount(parsedData.data);
+    parsedData.filteredAmount = this._calculateFilteredAmount(this.filter, this._data);
+    parsedData.nulls = data.nulls;
 
     if (data.nulls != null) {
-      attrs = _.extend({}, attrs, {
+      parsedData = _.extend({}, parsedData, {
         nulls: data.nulls,
         hasNulls: true
       });
     }
 
-    return attrs;
+    return parsedData;
   },
 
   _onFilterChanged: function (filter) {
     this.set('filteredAmount', this._calculateFilteredAmount(filter, this._data));
 
     DataviewModelBase.prototype._onFilterChanged.apply(this, arguments);
+  },
+
+  _onColumnChanged: function () {
+    this._originalData.set('column_type', this.get('column_type'));
+    this.set('aggregation', undefined, { silent: true });
+
+    this._resetFilter();
+    this._reloadVisAndForceFetch();
   },
 
   _calculateTotalAmount: function (buckets) {
@@ -236,13 +262,20 @@ module.exports = DataviewModelBase.extend({
   },
 
   toJSON: function (d) {
+    var options = {
+      column: this.get('column')
+    };
+
+    if (this.get('column_type') === 'number' && this.get('bins')) {
+      options.bins = this.get('bins');
+    } else if (this.get('column_type') === 'date') {
+      options.aggregation = this.get('aggregation') || 'auto';
+    }
+
     return {
       type: 'histogram',
       source: { id: this.getSourceId() },
-      options: {
-        column: this.get('column'),
-        bins: this.get('bins')
-      }
+      options: options
     };
   },
 
@@ -254,8 +287,58 @@ module.exports = DataviewModelBase.extend({
     DataviewModelBase.prototype._onChangeBinds.call(this);
   },
 
-  _fetchAndResetFilter: function () {
+  _onUrlChanged: function () {
+    this._originalData.set({
+      aggregation: this.get('aggregation'),
+      bins: this.get('bins')
+    }, { silent: true });
+
+    this._originalData.setUrl(this.get('url'));
+  },
+
+  _onDataChanged: function (model) {
+    this.set({
+      end: model.get('end'),
+      start: model.get('start')
+    });
+    this.set({
+      aggregation: model.get('aggregation'),
+      bins: model.get('bins'),
+      error: model.get('error')
+    }, { silent: true });
+
+    var resetFilter = false;
+
+    if (this.get('column_type') === 'date' && _.has(this.changed, 'aggregation')) {
+      resetFilter = true;
+    } else if (this.get('column_type') === 'number' && _.has(this.changed, 'bins')) {
+      resetFilter = true;
+    }
+
+    resetFilter
+      ? this._resetFilterAndFetch()
+      : this.fetch();
+  },
+
+  _onFieldsChanged: function () {
+    if (!helper.hasChangedSomeOf(['bins', 'aggregation'], this.changed)) {
+      return;
+    }
+
+    if (this.get('column_type') === 'number') {
+      this._originalData.set('bins', this.get('bins'));
+    }
+    if (this.get('column_type') === 'date') {
+      this._originalData.set('aggregation', this.get('aggregation'));
+    }
+  },
+
+  _resetFilterAndFetch: function () {
+    this._resetFilter();
     this.fetch();
+  },
+
+  _resetFilter: function () {
     this.disableFilter();
     this.filter.unsetRange();
   }
@@ -268,7 +351,8 @@ module.exports = DataviewModelBase.extend({
       'column_type',
       'bins',
       'min',
-      'max'
+      'max',
+      'aggregation'
     ])
   }
 );

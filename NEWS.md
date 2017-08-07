@@ -2,6 +2,8 @@ Development
 -----------
 
 ### Features
+* Support for SAML signed logout requests (#12355)
+* Provide a way to display broken layers pointing to non existent nodes (#12541)
 * Provide CartoCSS attribute within layer info in vizjson v3 (CartoDB/support#858)
 * Support for nested properties in CartoCSS (#12411)
 * New loading button styles (#12132)
@@ -14,7 +16,7 @@ Development
 * Show ranges in time series widget selection (#12291)
 * Bump Webpack version (#12392)
 * Start using ::outline symbolizer for polygon stroke (#12412)
-* [WIP] Export/import organization/user metadata to allow user migration (#12271, #12304, #12323, #12380)
+* [WIP] Export/import organization/user metadata to allow user migration (#12271, #12304, #12323, #12380, #12510)
 * New force param in EUMAPI organization users destroy operation to force deletion even with unregistered tables (#11654).
 * Removed the usage of the `organizations_admin` feature flag (#12131)
 * Time-series widgets aggregated by time (#12324)
@@ -31,6 +33,7 @@ Development
 * Updates Dataservices API client default version to `0.19.0` (#12494)
 
 ### Bug fixes / enhancements
+* Fix ghost node problem (#11397)
 * Break down deep-insights-integrations class (#11581)
 * Fix torque categories layer rendering (#cartodb.js/1698)
 * Don't provide quantification option when layer is animated (#10947)
@@ -62,6 +65,7 @@ Development
 * Dropbox searches now don't have limit of number of files (#12521)
 * Fix error when a Dropbox folder has an extension matching valid extensions.
 * Fixed UI when editing merge analysis (#10850)
+* Fixed viewer invitations (#12514)
 * Fixed uninitialized constant in Carto::Visualization when a viewer shares a visualization (#12129).
 * Fix template generation without center at state (#12453).
 * Fix regenerate all api keys in an organization (#12218)
@@ -116,6 +120,8 @@ Development
 * Lowered log level from error to info for supported cartocss in vector maps (cartodb.js#1706)
 * Histogram UI: Do not show "NULL ROWS" value if it is not received (#12477)
 * Force raster mode in datasets preview map (#12513)
+* Improve Google Login button (cartodb-central#1808)
+* Implement widget opacity in AutoStyle (#11928)
 
 ### NOTICE
 This release upgrades the CartoDB PostgreSQL extension to `0.19.2`. Run the following to have it available:
@@ -144,6 +150,7 @@ More information at [Dropbox migration guide](https://www.dropbox.com/developers
 * An attacker could execute commands in the server running the queues by importing a file with a carefully crafted filename. Fixed in #11782
 
 ### Features
+* Overviews are synchronized now (#12092)
 * Adding tracking classes for any Backbone.Form editor (#12095)
 * Using Node v6.9.2 and npm v3.10.9 (#11935).
 * Updates Dataservices API client default version to `0.17.0` (#12093)

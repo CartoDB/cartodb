@@ -519,7 +519,7 @@
         "close": "close",
         "description": "There was a problem georeferencing your data",
         "title": "Geocoding Error",
-        "try-again": "Please try again and if the problem persists, <a href='mailto:support@carto.com?subject=Geocoding error with id:%{id}'>contact us</a> with the following code:",
+        "try-again": "Please try again and if the problem persists, <a href='mailto:support@carto.com?subject=Geocoding error with id:%{id}'>contact us</a> with your username and the following code:",
         "view-dataset": "view dataset"
       },
       "geocoding-success-detail": {
@@ -571,7 +571,7 @@
         "close": "close",
         "dont-panic": "Don’t panic, here's some info that might help",
         "remote-server-code": "The remote server returned a <span class='ErrorDetails-itemTextStrong'>%{httpResponseCode}</span> code.",
-        "send-us-the-error-code": "Persisting error? Please <a href='mailto:support@carto.com'>send us</a> the following code",
+        "send-us-the-error-code": "Persisting error? Please <a href='mailto:support@carto.com'>send us</a> your username and the following code",
         "unknown-error": "An unknown error has happened"
       },
       "upgrade-errors": {
@@ -1586,9 +1586,14 @@
       "message": "Unfortunately, map overlays are not available yet, but they will be very soon. Stay tuned!"
     },
     "layers": {
+      "errors": {
+        "broken-node": "Broken node",
+        "non-existent-node": "Layer is pointing to a non existent node %{nodeId}"
+      },
       "options": {
         "rename": "Rename",
         "delete": "Delete layer…",
+        "delete-and-reload": "Delete layer and reload map",
         "collapse": "Collapse",
         "expand": "Expand",
         "export": "Export data",

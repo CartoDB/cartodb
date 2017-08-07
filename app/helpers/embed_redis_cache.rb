@@ -3,8 +3,6 @@
 require 'zlib'
 
 class EmbedRedisCache
-  include Carto::Configuration
-
   # This needs to be changed whenever there're changes in the code that require invalidation of old keys
   VERSION = '4'
 
@@ -56,7 +54,7 @@ class EmbedRedisCache
       "embed",
       protocol,
       VERSION,
-      frontend_version,
+      CartoDB::Application.frontend_version,
       embed_template_hash
     ].join(":")
   end

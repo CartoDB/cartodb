@@ -119,6 +119,7 @@ Development
 * Lowered log level from error to info for supported cartocss in vector maps (cartodb.js#1706)
 * Histogram UI: Do not show "NULL ROWS" value if it is not received (#12477)
 * Force raster mode in datasets preview map (#12513)
+* Adding max items limit for form list editor (#12552)
 * Improve Google Login button (cartodb-central#1808)
 * Implement widget opacity in AutoStyle (#11928)
 

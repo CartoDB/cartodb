@@ -477,7 +477,10 @@ class User < Sequel::Model
     end
 
     # Remove metadata from redis last (to avoid cutting off access to SQL API if db deletion fails)
-    $users_metadata.DEL(key) unless error_happened
+    unless error_happened
+      $users_metadata.DEL(key)
+      $users_metadata.DEL(timeout_key)
+    end
 
     feature_flags_user.each(&:delete)
   end
@@ -912,33 +915,42 @@ class User < Sequel::Model
     "rails:users:#{username}"
   end
 
+  def timeout_key
+    "limits:timeout:#{username}"
+  end
+
   # save users basic metadata to redis for other services (node sql api, geocoder api, etc)
   # to use
   def save_metadata
     $users_metadata.HMSET key,
-      'id', id,
-      'database_name', database_name,
-      'database_password', database_password,
-      'database_host', database_host,
-      'database_publicuser', database_public_username,
-      'map_key', api_key,
-      'geocoder_type', geocoder_type,
-      'geocoding_quota', geocoding_quota,
-      'soft_geocoding_limit', soft_geocoding_limit,
-      'here_isolines_quota', here_isolines_quota,
-      'soft_here_isolines_limit', soft_here_isolines_limit,
-      'obs_snapshot_quota', obs_snapshot_quota,
-      'soft_obs_snapshot_limit', soft_obs_snapshot_limit,
-      'obs_general_quota', obs_general_quota,
-      'soft_obs_general_limit', soft_obs_general_limit,
-      'mapzen_routing_quota', mapzen_routing_quota,
-      'soft_mapzen_routing_limit', soft_mapzen_routing_limit,
-      'google_maps_client_id', google_maps_key,
-      'google_maps_api_key', google_maps_private_key,
-      'period_end_date', period_end_date,
-      'geocoder_provider', geocoder_provider,
-      'isolines_provider', isolines_provider,
-      'routing_provider', routing_provider
+                          'id',                        id,
+                          'database_name',             database_name,
+                          'database_password',         database_password,
+                          'database_host',             database_host,
+                          'database_publicuser',       database_public_username,
+                          'map_key',                   api_key,
+                          'geocoder_type',             geocoder_type,
+                          'geocoding_quota',           geocoding_quota,
+                          'soft_geocoding_limit',      soft_geocoding_limit,
+                          'here_isolines_quota',       here_isolines_quota,
+                          'soft_here_isolines_limit',  soft_here_isolines_limit,
+                          'obs_snapshot_quota',        obs_snapshot_quota,
+                          'soft_obs_snapshot_limit',   soft_obs_snapshot_limit,
+                          'obs_general_quota',         obs_general_quota,
+                          'soft_obs_general_limit',    soft_obs_general_limit,
+                          'mapzen_routing_quota',      mapzen_routing_quota,
+                          'soft_mapzen_routing_limit', soft_mapzen_routing_limit,
+                          'google_maps_client_id',     google_maps_key,
+                          'google_maps_api_key',       google_maps_private_key,
+                          'period_end_date',           period_end_date,
+                          'geocoder_provider',         geocoder_provider,
+                          'isolines_provider',         isolines_provider,
+                          'routing_provider',          routing_provider
+    $users_metadata.HMSET timeout_key,
+                          'db',                        user_timeout,
+                          'db_public',                 database_timeout,
+                          'render',                    user_render_timeout,
+                          'render_public',             database_render_timeout
   end
 
   def get_auth_tokens

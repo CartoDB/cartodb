@@ -93,7 +93,7 @@ module.exports = env => {
         {
           test: /\.js$/,
           loader: 'babel-loader',
-          include: [resolve(__dirname, 'node_modules/tangram.cartodb')],
+          include: [resolve(__dirname, 'node_modules/tangram-cartocss'), resolve(__dirname, 'node_modules/tangram.cartodb')],
           options: {
             presets: ['es2015']
           }

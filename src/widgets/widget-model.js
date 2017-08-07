@@ -181,6 +181,15 @@ module.exports = cdb.core.Model.extend({
     return {};
   },
 
+  _updateAutoStyle: function (_model, style) {
+    if (this.autoStyler) {
+      this.autoStyler.updateStyle(style);
+    }
+    if (this.isAutoStyle()) {
+      this.reapplyAutoStyle();
+    }
+  },
+
   setInitialState: function (state) {
     this.initialState = state || {};
   },

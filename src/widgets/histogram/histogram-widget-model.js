@@ -1,5 +1,5 @@
-var WidgetModel = require('../widget-model');
 var _ = require('underscore');
+var WidgetModel = require('../widget-model');
 
 /**
  * Model for a histogram widget
@@ -30,15 +30,6 @@ module.exports = WidgetModel.extend({
 
   _onCollapsedChange: function (m, isCollapsed) {
     this.dataviewModel.set('enabled', !isCollapsed);
-  },
-
-  _updateAutoStyle: function (m, style) {
-    if (this.autoStyler) {
-      this.autoStyler.updateColors(style);
-    }
-    if (this.isAutoStyle()) {
-      this.reapplyAutoStyle();
-    }
   },
 
   getState: function () {

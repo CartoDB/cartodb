@@ -33,7 +33,7 @@ module.exports = WidgetModel.extend({
     this.on('change:collapsed', this._onCollapsedChange, this);
 
     if (this.isAutoStyleEnabled()) {
-      this.on('change:style', this._updateColors, this);
+      this.on('change:style', this._updateAutoStyle, this);
     }
 
     this.dataviewModel.filter.on('change', function () {
@@ -77,14 +77,6 @@ module.exports = WidgetModel.extend({
     // NOTE: maybe not pre-assing colors to categories?
     this.autoStyler.colors.updateData(this.dataviewModel.get('allCategoryNames'));
     WidgetModel.prototype.autoStyle.call(this);
-  },
-
-  _updateColors: function (m, style) {
-    this.autoStyler.colors.updateColors(style.auto_style);
-    this.autoStyler.colors.updateData(_.pluck(this.dataviewModel.get('data'), 'name'));
-    if (this.isAutoStyle()) {
-      this.reapplyAutoStyle();
-    }
   },
 
   isLocked: function () {

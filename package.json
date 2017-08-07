@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.9.13-aggregations-e",
+  "version": "4.9.17-aggregations-e",
   "description": "CARTO UI frontend",
   "repository": {
     "type": "git",

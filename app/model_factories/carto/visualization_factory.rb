@@ -28,6 +28,8 @@ module Carto
       visualization.save!
       layers.each do |layer|
         layer.maps << visualization.map
+        # This reload is needed for map.layers to contain the layers
+        visualization.map.reload
         layer.save!
       end
       visualization

@@ -241,6 +241,29 @@ describe SignupController do
       invitation.used_emails.should include(invited_email)
     end
 
+    it 'triggers a viewer creation that creates a viewer user' do
+      invited_email = 'viewer_user@whatever.com'
+      invitation = Carto::Invitation.create_new(Carto::User.find(@org_user_owner.id), [invited_email], 'W!', true)
+      invitation.save
+      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+      ::Resque.expects(:enqueue).
+        with(::Resque::UserJobs::Signup::NewUser, instance_of(String), anything, instance_of(FalseClass)).
+        returns(true)
+
+      host! "#{@organization.name}.localhost.lan"
+      post signup_organization_user_url(user_domain: @organization.name,
+                                        user: { username: 'viewer-user',
+                                                email: invited_email,
+                                                password: '2{Patrañas}' },
+                                        invitation_token: invitation.token(invited_email))
+      last_user_creation = Carto::UserCreation.order('created_at desc').limit(1).first
+      last_user_creation.next_creation_step until last_user_creation.finished?
+
+      last_user_creation.state.should eq 'success'
+      last_user_creation.viewer.should be_true
+      last_user_creation.user.viewer.should be_true
+    end
+
     describe 'ldap signup' do
 
       before(:all) do

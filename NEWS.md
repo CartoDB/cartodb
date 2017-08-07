@@ -2,6 +2,7 @@ Development
 -----------
 
 ### Features
+* Support for SAML signed logout requests (#12355)
 * Provide a way to display broken layers pointing to non existent nodes (#12541)
 * Provide CartoCSS attribute within layer info in vizjson v3 (CartoDB/support#858)
 * Support for nested properties in CartoCSS (#12411)
@@ -28,8 +29,10 @@ Development
 * Move play/pause button to besides the time series (#12387)
 * Updates Dataservices API client default version to `0.18.0` (#12466)
 * Updates Dataservices API client default version to `0.19.0` (#12494)
+* Don't display slider if there's only one value (#bigmetadata/202)
 
 ### Bug fixes / enhancements
+* Fix ghost node problem (#11397)
 * Break down deep-insights-integrations class (#11581)
 * Fix torque categories layer rendering (#cartodb.js/1698)
 * Don't provide quantification option when layer is animated (#10947)
@@ -117,6 +120,7 @@ Development
 * Histogram UI: Do not show "NULL ROWS" value if it is not received (#12477)
 * Force raster mode in datasets preview map (#12513)
 * Adding max items limit for form list editor (#12552)
+* Improve Google Login button (cartodb-central#1808)
 * Implement widget opacity in AutoStyle (#11928)
 
 ### NOTICE

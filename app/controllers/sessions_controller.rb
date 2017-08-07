@@ -295,11 +295,18 @@ class SessionsController < ApplicationController
       redirect_to saml_service.idp_logout_request(params[:SAMLRequest], params[:RelayState]) { cdb_logout }
     elsif params[:SAMLResponse]
       # We've been given a response back from the IdP, process it
-      saml_service.process_logout_response(params[:SAMLResponse]) { cdb_logout }
+      begin
+        saml_service.process_logout_response(params[:SAMLResponse])
+      rescue => e
+        CartoDB::Logger.warning(exception: e, message: 'Error proccessing SAML logout')
+      ensure
+        cdb_logout
+      end
+
       redirect_to default_logout_url
     else
       # Initiate SLO (send Logout Request)
-      redirect_to saml_service.sp_logout_request
+      redirect_to saml_service.sp_logout_request(current_user)
     end
   end
 

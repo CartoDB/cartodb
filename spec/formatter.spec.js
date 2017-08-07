@@ -22,4 +22,15 @@ describe('formatter', function () {
     expect(formatter.formatNumber(null)).toBe(null);
     expect(formatter.formatNumber('I am not a number')).toBe('I am not a number');
   });
+
+  it('should format timestamps correctly', function () {
+    var timestamp = 1494066976; // 2017-05-06 10:36:16
+    expect(formatter.timestampFactory('year')(timestamp)).toEqual('2017');
+    expect(formatter.timestampFactory('quarter')(timestamp)).toEqual('Q2 2017');
+    expect(formatter.timestampFactory('month')(timestamp)).toEqual('May 2017');
+    expect(formatter.timestampFactory('week')(timestamp)).toEqual('6th May 2017');
+    expect(formatter.timestampFactory('day')(timestamp)).toEqual('6th May 2017');
+    expect(formatter.timestampFactory('minute')(timestamp)).toEqual('10:36 05/06/2017');
+    expect(formatter.timestampFactory('second')(timestamp)).toEqual('10:36:16');
+  });
 });

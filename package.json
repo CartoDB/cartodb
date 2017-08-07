@@ -1,6 +1,6 @@
 {
   "name": "cartodb-deep-insights.js",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "CARTO Deep Insights JS library",
   "repository": {
     "type": "git",
@@ -19,6 +19,8 @@
     "Nicklas Gummesson <nicklas@cartodb.com>",
     "Pablo Alonso <pablo@cartodb.com>",
     "Antonio Santiago Pérez <asantiago@cartodb.com>",
+    "Ivan Malagon <ivan@carto.com>",
+    "Ruben Moya <ruben@carto.com>",
     "Carlos Matallín <matallo@carto.com>"
   ],
   "license": "BSD-3-Clause",
@@ -29,7 +31,7 @@
     "d3": "3.5.17",
     "d3-interpolate": "1.1.2",
     "jquery": "2.1.4",
-    "moment": "2.10.6",
+    "moment": "^2.18.1",
     "node-polyglot": "^2.2.2",
     "perfect-scrollbar": "git://github.com/CartoDB/perfect-scrollbar.git#master",
     "postcss": "5.0.19",

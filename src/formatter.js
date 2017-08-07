@@ -1,5 +1,41 @@
 var _ = require('underscore');
+var moment = require('moment');
 var d3 = require('d3');
+
+var AGGREGATION_FORMATS = {
+  second: {
+    display: 'HH:mm:ss',
+    unit: 's'
+  },
+  minute: {
+    display: 'HH:mm L',
+    unit: 'm'
+  },
+  hour: {
+    display: 'HH:mm L',
+    unit: 'h'
+  },
+  day: {
+    display: 'Do MMM YYYY',
+    unit: 'd'
+  },
+  week: {
+    display: 'Do MMM YYYY',
+    unit: 'w'
+  },
+  month: {
+    display: 'MMM YYYY',
+    unit: 'M'
+  },
+  quarter: {
+    display: '[Q]Q YYYY',
+    unit: 'Q'
+  },
+  year: {
+    display: 'YYYY',
+    unit: 'y'
+  }
+};
 
 var format = {};
 
@@ -56,6 +92,18 @@ format.formatValue = function (value) {
     return format.formatDate(value);
   }
   return value;
+};
+
+format.timestampFactory = function (aggregation) {
+  return function (timestamp) {
+    if (!_.has(AGGREGATION_FORMATS, aggregation)) {
+      return '-';
+    }
+
+    var format = AGGREGATION_FORMATS[aggregation];
+    var date = moment.unix(timestamp).utc();
+    return date.format(format.display);
+  };
 };
 
 module.exports = format;

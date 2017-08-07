@@ -78,6 +78,7 @@ describe('widgets/histogram/chart', function () {
 
     this.view = new WidgetHistogramChart(({
       el: $('.js-chart'),
+      type: 'histogram',
       margin: this.margin,
       chartBarColor: '#9DE0AD',
       hasHandles: true,

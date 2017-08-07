@@ -20,9 +20,9 @@ module.exports = cdb.core.View.extend({
 
   initialize: function () {
     this._timeSeriesModel = this.options.timeSeriesModel;
+    this._dataviewModel = this.options.dataviewModel;
     this._rangeFilter = this.options.rangeFilter;
-    this._originalData = this.model.getUnfilteredDataModel();
-    this._chartType = 'time';
+    this._originalData = this._dataviewModel.getUnfilteredDataModel();
     this._initBinds();
   },
 
@@ -38,13 +38,14 @@ module.exports = cdb.core.View.extend({
 
   resetFilter: function () {
     this._rangeFilter.unsetRange();
-    this._chartView.removeSelection();
-    this._timeSeriesModel.set({lo_index: null, hi_index: null});
+    this._resetFilterInDI();
   },
 
   _initBinds: function () {
-    this.model.bind('change:data', this._onChangeData, this);
+    this.listenTo(this._dataviewModel, 'change:data', this._onChangeData, this);
+    this.listenTo(this._dataviewModel, 'change:column', this.resetFilter, this);
     this.listenTo(this._timeSeriesModel, 'change:normalized', this._onNormalizedChanged);
+    this.listenTo(this._rangeFilter, 'change', this._onFilterChanged);
   },
 
   _createHistogramView: function () {
@@ -53,14 +54,14 @@ module.exports = cdb.core.View.extend({
     this.$el.append(this._chartView.render().el);
     this._chartView.show();
 
-    this._chartView.bind('on_brush_end', this._onBrushEnd, this);
-    this._chartView.model.bind('change:width', this._onChangeChartWidth, this);
-    this.add_related_model(this._chartView.model);
+    this.listenTo(this._chartView, 'on_brush_end', this._onBrushEnd, this);
+    this.listenTo(this._chartView, 'on_reset_filter', this.resetFilter, this);
+    this.listenTo(this._chartView.model, 'change:width', this._onChangeChartWidth, this);
   },
 
   _instantiateChartView: function () {
     return new HistogramChartView({
-      type: this._chartType,
+      type: this._getChartType(),
       chartBarColor: this._timeSeriesModel.getWidgetColor() || '#F2CC8F',
       animationSpeed: 100,
       margin: {
@@ -76,7 +77,8 @@ module.exports = cdb.core.View.extend({
         return (i * 3);
       },
       height: this.defaults.histogramChartHeight,
-      data: this.model.getData(),
+      dataviewModel: this._dataviewModel,
+      data: this._dataviewModel.getData(),
       originalData: this._originalData,
       displayShadowBars: !this._timeSeriesModel.get('normalized'),
       normalized: !!this._timeSeriesModel.get('normalized'),
@@ -84,16 +86,20 @@ module.exports = cdb.core.View.extend({
     });
   },
 
+  _getChartType: function () {
+    return 'time-' + this._dataviewModel.getColumnType();
+  },
+
   _onChangeData: function () {
     if (this._chartView) {
-      this._chartView.replaceData(this.model.getData());
+      this._chartView.replaceData(this._dataviewModel.getData());
       this._chartView.updateXScale();
       this._chartView.updateYScale();
     }
   },
 
   _onBrushEnd: function (loBarIndex, hiBarIndex) {
-    var data = this.model.getData();
+    var data = this._dataviewModel.getData();
     this._rangeFilter.setRange(
       data[loBarIndex].start,
       data[hiBarIndex - 1].end
@@ -115,6 +121,22 @@ module.exports = cdb.core.View.extend({
   _onNormalizedChanged: function () {
     if (this._chartView) {
       this._chartView.setNormalized(this._timeSeriesModel.get('normalized'));
+    }
+  },
+
+  _resetFilterInDI: function () {
+    this._timeSeriesModel.set({
+      min: undefined,
+      max: undefined,
+      lo_index: undefined,
+      hi_index: undefined
+    }, { silent: true });
+    this._chartView.removeSelection();
+  },
+
+  _onFilterChanged: function () {
+    if (!this._rangeFilter.has('min') && !this._rangeFilter.has('max')) {
+      this._resetFilterInDI();
     }
   },
 

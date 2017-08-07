@@ -1,3 +1,4 @@
+var _ = require('underscore');
 var HistogramView = require('./histogram-view');
 var TorqueTimeSliderView = require('./torque-time-slider-view');
 var TorqueControlsView = require('./torque-controls-view');
@@ -5,7 +6,7 @@ var TorqueControlsView = require('./torque-controls-view');
 /**
  * Torque time-series histogram view.
  * Extends the common histogram chart view with time-control
- * this.model is a histogram model
+ * this.dataviewModel is a histogram model
  */
 module.exports = HistogramView.extend({
   className: function () {
@@ -15,8 +16,10 @@ module.exports = HistogramView.extend({
   initialize: function () {
     if (!this.options.torqueLayerModel) throw new Error('torqeLayerModel is required');
     if (!this.options.rangeFilter) throw new Error('rangeFilter is required');
+    if (!this.options.dataviewModel) throw new Error('dataviewModel is required');
 
     this._torqueLayerModel = this.options.torqueLayerModel;
+    this._dataviewModel = this.options.dataviewModel;
     HistogramView.prototype.initialize.call(this);
   },
 
@@ -44,7 +47,7 @@ module.exports = HistogramView.extend({
     this._chartView.bind('on_brush_click', this._onBrushClick, this);
 
     this._timeSliderView = new TorqueTimeSliderView({
-      dataviewModel: this.model, // a histogram model
+      dataviewModel: this._dataviewModel, // a histogram model
       chartView: this._chartView,
       torqueLayerModel: this._torqueLayerModel
     });
@@ -60,8 +63,8 @@ module.exports = HistogramView.extend({
     }
   },
 
-  _onRenderRangeChanged: function (m, r) {
-    if (r.start === undefined && r.end === undefined) {
+  _onRenderRangeChanged: function (_model, range) {
+    if (range.start === undefined && range.end === undefined) {
       this._chartView.removeSelection();
       this._rangeFilter.unsetRange();
     }
@@ -81,7 +84,6 @@ module.exports = HistogramView.extend({
 
   _onBrushEnd: function () {
     HistogramView.prototype._onBrushEnd.apply(this, arguments);
-
     this._reSelectRange();
   },
 
@@ -93,11 +95,21 @@ module.exports = HistogramView.extend({
     return step;
   },
 
-  _reSelectRange: function (model, data, options) {
+  _reSelectRange: function () {
     if (!this._rangeFilter.isEmpty()) {
       this._torqueLayerModel.pause();
-      var loStep = this._timeToStep(this._rangeFilter.get('min'));
-      var hiStep = this._timeToStep(this._rangeFilter.get('max'));
+      var min = this._rangeFilter.get('min');
+      var max = this._rangeFilter.get('max');
+      var loStep = this._timeToStep(min);
+      var hiStep = this._timeToStep(max);
+
+      // -- HACK: Reset filter if the min/max values are out of the scope
+      var data = this._dataviewModel.get('data');
+      var loBar = _.findWhere(data, { start: min });
+      var hiBar = _.findWhere(data, { end: max });
+      if (!loBar || !hiBar) {
+        return this._torqueLayerModel.resetRenderRange();
+      }
 
       // clamp values since the range can be outside of the current torque thing
       var steps = this._torqueLayerModel.get('steps');

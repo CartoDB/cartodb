@@ -7,7 +7,7 @@ describe('widgets/time-series/time-series-header-view', function () {
   var timeSeriesModel;
 
   beforeEach(function () {
-    var dataviewModel = new Backbone.Model({
+    this.dataviewModel = new Backbone.Model({
       data: [{}]
     });
 
@@ -20,9 +20,9 @@ describe('widgets/time-series/time-series-header-view', function () {
       return isFilterEmpty;
     };
 
-    dataviewModel.layer = new Backbone.Model();
+    this.dataviewModel.layer = new Backbone.Model();
     this.view = new TimeSeriesHeaderView({
-      dataviewModel: dataviewModel,
+      dataviewModel: this.dataviewModel,
       rangeFilter: this.rangeFilter,
       timeSeriesModel: timeSeriesModel,
       selectedAmount: 0

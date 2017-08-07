@@ -34,6 +34,8 @@ describe('widgets/time-series/torque-time-slider-view', function () {
     spyOn(HistogramChartView.prototype, '_setupFillColor').and.returnValue('red');
 
     this.chartView = new HistogramChartView({
+      type: 'time-series',
+      dataviewModel: this.dataviewModel,
       margin: this.histogramChartMargins,
       height: 200,
       data: [{

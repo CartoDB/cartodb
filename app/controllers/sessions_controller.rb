@@ -34,7 +34,7 @@ class SessionsController < ApplicationController
   before_filter :api_authorization_required, only: :show
 
   def new
-    if current_viewer.try(:subdomain) == CartoDB.extract_subdomain(request)
+    if current_viewer
       redirect_to(CartoDB.url(self, 'dashboard', { trailing_slash: true }, current_viewer))
     elsif saml_authentication? && !user
       # Automatically trigger SAML request on login view load -- could easily trigger this elsewhere
@@ -65,7 +65,7 @@ class SessionsController < ApplicationController
     user = authenticate!(*strategies, scope: username)
     CartoDB::Stats::Authentication.instance.increment_login_counter(user.email)
 
-    redirect_to session[:return_to] || (user.public_url + CartoDB.path(self, 'dashboard', trailing_slash: true))
+    redirect_to session.delete('return_to') || (user.public_url + CartoDB.path(self, 'dashboard', trailing_slash: true))
   end
 
   def destroy

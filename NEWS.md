@@ -31,6 +31,7 @@ Development
 * Updates Dataservices API client default version to `0.18.0` (#12466)
 * Time-series: add timezone selector to timeseries histogram (#12464)
 * Updates Dataservices API client default version to `0.19.0` (#12494)
+* Don't display slider if there's only one value (#bigmetadata/202)
 
 ### Bug fixes / enhancements
 * Fix ghost node problem (#11397)
@@ -56,6 +57,7 @@ Development
 * Better handling and reporting of "table with no map associated" error in map privacy changes (#12137).
 * Improve formula widget form (#12242)
 * Fixed alignment problems after CartoAssets update (#12234)
+* Fixed error instantiating the log of a data import if user doesn't exist (#12555)
 * Fixed layer counter (#12236)
 * Fixed problem when icon upload fails (#11980)
 * Boolean fields are visible in the filter by column value analysis (#11546)
@@ -64,6 +66,7 @@ Development
 * Fix error when revoking a Dropbox token that was revoked from Dropbox side (#12359)
 * Dropbox searches now don't have limit of number of files (#12521)
 * Fix error when a Dropbox folder has an extension matching valid extensions.
+* Fixes login redirect loop with other user urls (#12553).
 * Fixed UI when editing merge analysis (#10850)
 * Fixed viewer invitations (#12514)
 * Fixed uninitialized constant in Carto::Visualization when a viewer shares a visualization (#12129).
@@ -113,6 +116,7 @@ Development
 * Removed useless log traces (#12536)
 * Fixed bounds and center of thumbnails after updating a map
 * Fixed a bug in cartodb.js regarding the featureCount (#12490)
+* Fix connectors configuration rake when configuring an organization (#12509)
 * Add tip about sanitising values in popup's InfoWindow (#11340)
 * Fix a problem with responsive in deep-insights.js
 * Fix 403 error in password protected embed maps (#12469)
@@ -120,6 +124,7 @@ Development
 * Lowered log level from error to info for supported cartocss in vector maps (cartodb.js#1706)
 * Histogram UI: Do not show "NULL ROWS" value if it is not received (#12477)
 * Force raster mode in datasets preview map (#12513)
+* Adding max items limit for form list editor (#12552)
 * Improve Google Login button (cartodb-central#1808)
 * Implement widget opacity in AutoStyle (#11928)
 

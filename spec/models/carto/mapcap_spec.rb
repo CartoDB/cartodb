@@ -103,6 +103,9 @@ describe Carto::Mapcap do
 
   describe '#regenerate_visualization' do
     before(:all) do
+      FactoryGirl.create(:analysis, visualization: @visualization, user: @user)
+      FactoryGirl.create(:widget, layer: @visualization.data_layers.first)
+      @visualization.reload
       @mapcap = Carto::Mapcap.create!(visualization_id: @visualization.id)
     end
 
@@ -129,6 +132,26 @@ describe Carto::Mapcap do
     it 'should preserve permission' do
       regenerated_visualization = @mapcap.regenerate_visualization
       regenerated_visualization.permission.id.should eq @visualization.permission.id
+    end
+
+    it 'should preserve analyses' do
+      regenerated_visualization = @mapcap.regenerate_visualization
+      analysis = @visualization.analyses.first
+      regenerated_analysis = regenerated_visualization.analyses.first
+      expect(regenerated_analysis.analysis_definition).to eq analysis.analysis_definition
+    end
+
+    it 'should preserve widgets' do
+      regenerated_visualization = @mapcap.regenerate_visualization
+      widget = @visualization.widgets.first
+      regenerated_widget = regenerated_visualization.widgets.first
+
+      expect(regenerated_widget.order).to eq widget.order
+      expect(regenerated_widget.type).to eq widget.type
+      expect(regenerated_widget.title).to eq widget.title
+      expect(regenerated_widget.options).to eq widget.options
+      expect(regenerated_widget.source_id).to eq widget.source_id
+      expect(regenerated_widget.style).to eq widget.style
     end
 
     describe 'without user DB' do

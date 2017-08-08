@@ -10,11 +10,9 @@
     }
 
     function signinCallback(authResult) {
-      if (typeof authResult.access_token != 'undefined') {
-
+      if (typeof authResult.access_token !== 'undefined') {
         if (authResult['status']['signed_in'] && access_token_field.value === '' && google_signup_access_token.value === '') {
           access_token_field.value = authResult.access_token;
-
           // INFO: user exists and button loaded, let's sign in
           if (access_token_filled.value === "1") {
             clear_email_and_password(access_token_field.form);
@@ -27,14 +25,12 @@
         }
       } else {
         access_token_filled.value = "1";
-
         $('.Sessions-loggedin').removeClass('is-active');
         $('.Sessions-notloggedin').addClass('is-active');
       }
     }
 
     function signinCallbackClick(authResult) {
-      // INFO: user exists and button clicked, let's sign in
       if (authResult['status']['signed_in'] && access_token_field.value !== '' && google_signup_access_token.value === '' && access_token_filled.value === '1') {
         access_token_field.value = authResult.access_token;
         clear_email_and_password(access_token_field.form);
@@ -53,11 +49,11 @@
         google_signup_access_token.form.submit();
       }
 
-      // TODO: just in case callback takes so long
+     // TODO: just in case callback takes so long
       setTimeout(function() {
         $('.Sessions-loggedin').removeClass('is-active');
         $('.Sessions-notloggedin').addClass('is-active');
-      }, 15000);
+      }, 500);
     });
   </script>
 <% end %>

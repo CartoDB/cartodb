@@ -35,7 +35,7 @@
     "node-polyglot": "^2.2.2",
     "perfect-scrollbar": "git://github.com/CartoDB/perfect-scrollbar.git#master",
     "postcss": "5.0.19",
-     "postcss-scss": "1.0.2",
+    "postcss-scss": "1.0.2",
     "postcss-strip-inline-comments": "0.1.5",
     "tinycolor2": "1.4.1",
     "underscore": "1.8.3",

@@ -1149,7 +1149,7 @@ module.exports = cdb.core.View.extend({
       .text(function (d) {
         var value = verticalToValue(d);
         if (_.isFinite(value)) {
-          return self.formatter(value, self.model.get('local_timezone'));
+          return self.formatter(value);
         }
       });
 

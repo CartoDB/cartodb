@@ -11,7 +11,6 @@ namespace :cartodb do
     # SAML_SLO_SIGNATURE_METHOD: [OPTIONAL] Signature method to use in signed logout requests. By default: 'http://www.w3.org/2001/04/xmldsig-more#rsa-sha256'
     # SAML_SP_PRIVATE_KEY_FILE: [OPTIONAL] Private key file used for signed logout requests
     # SAML_SP_CERTIFICATE_FILE: [OPTIONAL] Certificate file used for signed logout requests, in .pem format
-    # SAML_NAME_IDENTIFIER_FORMAT: [OPTIONAL] Format of the name identifier parameter. Example: 'urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified'. Defaults to 'urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress'.
     #
     # Option 1. Manual configuration
     # SAML_IDP_SSO_TARGET_URL: SAML Identity Provider login URL. Example: 'http://192.168.20.2/simplesaml/saml2/idp/SSOService.php'.

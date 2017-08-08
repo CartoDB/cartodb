@@ -11,16 +11,16 @@
       <%- _t('components.modals.add-layer.datasets.no-results.desc') %>
     <% } %>
 
-    <% if (( tag || q ) && totalItems === 0 && totalEntries === 0) { %>
+    <% if (( tag || q ) && totalItems === 0 && totalEntries === 0) { %>
       0 <%- tag || q %> <%- type %> <%- _t('components.modals.add-layer.datasets.no-results.found') %>
     <% } %>
 
-    <% if (page === 1 && !tag && !q && totalItems === 0 && totalEntries === 0) { %>
+    <% if (page === 1 && !tag && !q && totalItems === 0 && totalEntries === 0) { %>
       <%- _t('components.modals.add-layer.datasets.no-results.there-are-no') %> <%- shared === "only" ? 'shared' : '' %> <%- locked ? 'locked' : '' %> <%- library ? 'library' : '' %> <%- type %>
     <% } %>
   </h4>
   <p class="CDB-Text CDB-Size-medium u-altTextColor">
-    <% if (!tag && !q && totalItems === 0 && totalEntries === 0) { %>
+    <% if (!tag && !q && totalItems === 0 && totalEntries === 0) { %>
       <%- _t('components.modals.add-layer.datasets.no-results.no-fun', { type: type }) %>
     <% } %>
   </p>

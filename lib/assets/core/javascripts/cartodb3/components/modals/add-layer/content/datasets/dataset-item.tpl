@@ -50,7 +50,7 @@
             <%- _t('components.modals.add-layer.datasets.item.by') %>
           </span>
           <span class="DatasetsList-avatar">
-            <img class="DatasetsList-avatarImg" src="<%- owner.avatar_url %>" alt="<%- owner.name || owner.username  %>" title="<%- owner.name || owner.username  %>" />
+            <img class="DatasetsList-avatarImg" src="<%- owner.avatar_url %>" alt="<%- owner.name || owner.username  %>" title="<%- owner.name || owner.username  %>" />
           </span>
         <% } %>
       </span>

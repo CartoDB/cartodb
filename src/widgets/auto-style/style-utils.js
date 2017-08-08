@@ -1,21 +1,26 @@
 var _ = require('underscore');
 var postcss = require('postcss');
+var stripInlineComments = require('postcss-strip-inline-comments');
+var SCSSsyntax = require('postcss-scss');
 
 var OUTLINE_ATTRS = ['line-color', 'line-opacity'];
 
 function isPropertyIncluded (cartocss, attr) {
-  var cssTree = postcss().process(cartocss);
+  var cssTree = postcss()
+    .use(stripInlineComments)
+    .process(cartocss, { syntax: SCSSsyntax });
   var root = cssTree.result.root;
   var propertyIncluded = false;
 
-  root.walk(function (node) {
-    var parentNode = node.parent;
-    if (node.type === 'decl' && node.prop === attr) {
+  if (root) {
+    root.walkDecls(attr, function (node) {
+      var parentNode = node.parent;
+
       if (!isSelectorRule(parentNode) || isMapnikGeometrySelectorRule(parentNode)) {
         propertyIncluded = true;
       }
-    }
-  });
+    });
+  }
 
   return propertyIncluded;
 }
@@ -46,27 +51,33 @@ function replaceWrongSpaceChar (cartocss) {
 function changeStyle (cartocss, attr, newStyle) {
   if (_.isUndefined(newStyle)) return cartocss;
 
-  var cssTree = postcss().process(cartocss);
+  var cssTree = postcss()
+    .use(stripInlineComments)
+    .process(cartocss, { syntax: SCSSsyntax });
   var root = cssTree.result.root;
   var attributeAlreadyChanged = false;
 
-  root.walkDecls(attr, function (node) {
-    var parentNode = node.parent;
+  if (root) {
+    root.walkDecls(attr, function (node) {
+      var parentNode = node.parent;
 
-    if (!(isOutlineRule(parentNode) && _.contains(OUTLINE_ATTRS, attr))) {
-      if (isSelectorRule(parentNode) || attributeAlreadyChanged) {
-        // If the attribute is inside a conditional selection, it has to be removed
-        node.remove();
-      } else {
-        // If the attribute is inside a regular root (or symbolizer), it just
-        // changes the value
-        node.value = newStyle;
-        attributeAlreadyChanged = true;
+      if (!(isOutlineRule(parentNode) && _.contains(OUTLINE_ATTRS, attr))) {
+        if (isSelectorRule(parentNode) || attributeAlreadyChanged) {
+          // If the attribute is inside a conditional selection, it has to be removed
+          node.remove();
+        } else {
+          // If the attribute is inside a regular root (or symbolizer), it just
+          // changes the value
+          node.value = newStyle;
+          attributeAlreadyChanged = true;
+        }
       }
-    }
-  });
+    });
 
-  return cssTree.css;
+    return cssTree.css;
+  }
+
+  return cartocss;
 }
 
 module.exports = {

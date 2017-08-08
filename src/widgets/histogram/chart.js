@@ -1148,7 +1148,7 @@ module.exports = cdb.core.View.extend({
       .attr('text-anchor', adjustTextAnchor)
       .text(function (d) {
         var value = verticalToValue(d);
-        if (value) {
+        if (_.isFinite(value)) {
           return self.formatter(value, self.model.get('local_timezone'));
         }
       });

@@ -7,12 +7,12 @@
       <% } else { %> CDB-IconFont-lens <% } %>" />
   </div>
   <h4 class="CDB-Text CDB-Size-large u-mainTextColor u-bSpace u-secondaryTextColor u-tSpace-xl">
-    <% if (page > 1 || totalItems === 0 && totalEntries > 0) { %>
+    <% if (page > 1 || totalItems === 0 && totalEntries > 0) { %>
       <%- _t('components.modals.add-layer.datasets.no-results.desc') %>
     <% } %>
 
     <% if (( tag || q ) && totalItems === 0 && totalEntries === 0) { %>
-      0 <%- tag || q %> <%- type %> <%- _t('components.modals.add-layer.datasets.no-results.found') %>
+      0 <%- tag || q %> <%- type %> <%- _t('components.modals.add-layer.datasets.no-results.found') %>
     <% } %>
 
     <% if (page === 1 && !tag && !q && totalItems === 0 && totalEntries === 0) { %>

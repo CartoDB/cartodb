@@ -33,6 +33,7 @@ Development
 * Don't display slider if there's only one value (#bigmetadata/202)
 
 ### Bug fixes / enhancements
+* Strip inline comments in CartoCSS (#12574)
 * Fix ghost node problem (#11397)
 * Break down deep-insights-integrations class (#11581)
 * Fix torque categories layer rendering (#cartodb.js/1698)

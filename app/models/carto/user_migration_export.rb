@@ -32,7 +32,16 @@ module Carto
       log.append('=== Exporting user/org data ===')
       export_job = CartoDB::DataMover::ExportJob.new(export_job_arguments(work_dir))
 
-      log.append('=== Uploading ===')
+      if export_metadata?
+        log.append('=== Exporting user/org metadata ===')
+
+        if organization.present?
+          service = Carto::OrganizationMetadataExportService.new
+          service.export_organization_to_directory(organization.id, "#{work_dir}/meta")
+        end
+      end
+
+      log.append("=== Uploading #{id}/#{export_job.json_file} ===")
       update_attributes(state: STATE_UPLOADING, json_file: "#{id}/#{export_job.json_file}")
       package_path = compress_package(work_dir)
       uploaded_path = upload_package(package_path)
@@ -40,12 +49,14 @@ module Carto
       state = uploaded_path.present? ? STATE_COMPLETE : STATE_FAILURE
       log.append("=== Finishing. State: #{state}. File: #{uploaded_path} ===")
       update_attributes(state: state, exported_file: uploaded_path)
+
       true
     rescue => e
       log.append_exception('Exporting', exception: e)
       CartoDB::Logger.error(exception: e, message: 'Error exporting user data', job: inspect)
       update_attributes(state: STATE_FAILURE)
       FileUtils.remove_dir(work_dir)
+
       false
     end
 
@@ -58,7 +69,9 @@ module Carto
     def create_work_directory
       log.append('=== Creating work directory ===')
       work_dir = "#{export_dir}/#{id}/"
-      FileUtils.mkdir_p(work_dir)
+      FileUtils.mkdir_p("#{work_dir}/data")
+      FileUtils.mkdir_p("#{work_dir}/meta") if export_metadata?
+
       work_dir
     end
 
@@ -66,6 +79,7 @@ module Carto
       log.append('=== Compressing export ===')
       `cd #{export_dir}/ && zip -r \"user_export_#{id}.zip\" #{id} && cd -`
       FileUtils.remove_dir(work_dir)
+
       "#{export_dir}/user_export_#{id}.zip"
     end
 
@@ -115,8 +129,9 @@ module Carto
                  split_user_schemas: false
                }
              end
+
       args.merge(
-        path: work_dir,
+        path: "#{work_dir}/data",
         job_uuid: id,
         export_job_logger: log.logger,
         logger: log.logger

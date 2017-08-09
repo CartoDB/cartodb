@@ -36,7 +36,17 @@ module Carto
 
       log.append('=== Importing ===')
       update_attributes(state: STATE_IMPORTING)
-      log.append('=== Importing user data ===')
+
+      if import_metadata?
+        log.append('=== Importing user/org metadata ===')
+
+        if organization.present?
+          service = Carto::OrganizationMetadataExportService.new
+          service.import_organization_and_users_from_directory(Dir["#{work_dir}/*"].first + "/meta")
+        end
+      end
+
+      log.append('=== Importing user/org data ===')
       CartoDB::DataMover::ImportJob.new(import_job_arguments(work_dir)).run!
 
       log.append('=== Complete ===')

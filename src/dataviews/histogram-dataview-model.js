@@ -1,9 +1,10 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
+var d3 = require('d3');
 var DataviewModelBase = require('./dataview-model-base');
 var HistogramDataModel = require('./histogram-dataview/histogram-data-model');
 var helper = require('./helpers/histogram-helper');
-var d3 = require('d3');
+var dateUtils = require('../util/date-utils');
 
 module.exports = DataviewModelBase.extend({
 
@@ -12,7 +13,8 @@ module.exports = DataviewModelBase.extend({
       type: 'histogram',
       totalAmount: 0,
       filteredAmount: 0,
-      hasNulls: false
+      hasNulls: false,
+      localTimezone: false
     },
     DataviewModelBase.prototype.defaults
   ),
@@ -25,7 +27,7 @@ module.exports = DataviewModelBase.extend({
     if (_.isNumber(this.get('own_filter'))) {
       params.push('own_filter=' + this.get('own_filter'));
     } else {
-      var offset = this.get('offset');
+      var offset = this._getCurrentOffset();
 
       if (this.get('column_type') === 'number' && this.get('bins')) {
         params.push('bins=' + this.get('bins'));
@@ -46,6 +48,8 @@ module.exports = DataviewModelBase.extend({
   },
 
   initialize: function (attrs, opts) {
+    this._localOffset = dateUtils.getLocalOffset();
+
     // Internal model for calculating all the data in the histogram (without filters)
     this._originalData = new HistogramDataModel({
       bins: this.get('bins'),
@@ -53,7 +57,9 @@ module.exports = DataviewModelBase.extend({
       offset: this.get('offset'),
       column_type: this.get('column_type'),
       apiKey: this.get('apiKey'),
-      authToken: this.get('authToken')
+      authToken: this.get('authToken'),
+      localTimezone: this.get('localTimezone'),
+      localOffset: this._localOffset
     });
 
     DataviewModelBase.prototype.initialize.apply(this, arguments);
@@ -74,9 +80,14 @@ module.exports = DataviewModelBase.extend({
     this._originalData.once('change:data', this._updateBindings, this);
 
     this.on('change:column', this._onColumnChanged, this);
+    this.on('change:localTimezone', this._onLocalTimezoneChanged, this);
     this.on('change', this._onFieldsChanged, this);
 
     this.listenTo(this.layer, 'change:meta', this._onChangeLayerMeta);
+  },
+
+  _onLocalTimezoneChanged: function () {
+    this._originalData.set('localTimezone', this.get('localTimezone'));
   },
 
   _updateURLBinding: function () {
@@ -125,7 +136,6 @@ module.exports = DataviewModelBase.extend({
 
   parse: function (data) {
     var aggregation = data.aggregation;
-    var offset = data.offset;
     var numberOfBins = data.bins_count;
     var width = data.bin_width;
     var start = this.get('column_type') === 'date' ? helper.calculateStart(data.bins, data.bins_start, aggregation) : data.bins_start;
@@ -148,12 +158,11 @@ module.exports = DataviewModelBase.extend({
     });
 
     this.set({
-      aggregation: aggregation,
-      offset: offset
+      aggregation: aggregation
     }, { silent: true });
 
     if (this.get('column_type') === 'date') {
-      helper.fillTimestampBuckets(parsedData.data, start, aggregation, numberOfBins, offset);
+      helper.fillTimestampBuckets(parsedData.data, start, aggregation, numberOfBins, this._getCurrentOffset());
     } else {
       helper.fillNumericBuckets(parsedData.data, start, width, numberOfBins);
     }
@@ -371,6 +380,12 @@ module.exports = DataviewModelBase.extend({
   _resetFilter: function () {
     this.disableFilter();
     this.filter.unsetRange();
+  },
+
+  _getCurrentOffset: function () {
+    return this.get('localTimezone')
+      ? this._localOffset
+      : this.get('offset');
   }
 },
 

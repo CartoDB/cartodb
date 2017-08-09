@@ -13,12 +13,14 @@ var DEFAULT_MAX_BUCKETS = 366;
 module.exports = Model.extend({
   defaults: {
     url: '',
-    data: []
+    data: [],
+    localTimezone: false,
+    localOffset: 0
   },
 
   url: function () {
     var params = [];
-    var offset = this.get('offset');
+    var offset = this._getCurrentOffset();
 
     if (this.get('column_type') === 'number' && this.get('bins')) {
       params.push('bins=' + this.get('bins'));
@@ -65,6 +67,10 @@ module.exports = Model.extend({
         this.fetch();
       }
     }, this);
+
+    this.on('change:localTimezone', function () {
+      this.fetch();
+    }, this);
   },
 
   setUrl: function (url) {
@@ -87,10 +93,8 @@ module.exports = Model.extend({
     var numberOfBins = data.bins_count;
     var width = data.bin_width;
     var start = this.get('column_type') === 'date' ? helper.calculateStart(data.bins, data.bins_start, aggregation) : data.bins_start;
-    var offset = data.offset;
 
     var parsedData = {
-      offset: offset,
       aggregation: aggregation,
       bins: numberOfBins,
       data: new Array(numberOfBins)
@@ -109,7 +113,7 @@ module.exports = Model.extend({
 
     parsedData.error = undefined;
     if (this.get('column_type') === 'date') {
-      helper.fillTimestampBuckets(parsedData.data, start, aggregation, numberOfBins, offset);
+      helper.fillTimestampBuckets(parsedData.data, start, aggregation, numberOfBins, this._getCurrentOffset());
     } else {
       helper.fillNumericBuckets(parsedData.data, start, width, numberOfBins);
     }
@@ -120,5 +124,11 @@ module.exports = Model.extend({
     }
 
     return parsedData;
+  },
+
+  _getCurrentOffset: function () {
+    return this.get('localTimezone')
+      ? this.get('localOffset')
+      : this.get('offset');
   }
 });

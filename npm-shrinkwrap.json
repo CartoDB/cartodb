@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.9.20",
+  "version": "4.9.22-12576-a",
   "dependencies": {
     "abbrev": {
       "version": "1.1.0",
@@ -540,9 +540,9 @@
       "resolved": "https://registry.npmjs.org/block-stream/-/block-stream-0.0.9.tgz"
     },
     "bn.js": {
-      "version": "4.11.7",
+      "version": "4.11.8",
       "from": "bn.js@>=4.1.1 <5.0.0",
-      "resolved": "https://registry.npmjs.org/bn.js/-/bn.js-4.11.7.tgz"
+      "resolved": "https://registry.npmjs.org/bn.js/-/bn.js-4.11.8.tgz"
     },
     "boom": {
       "version": "2.10.1",
@@ -666,9 +666,9 @@
       "resolved": "https://registry.npmjs.org/browserify-zlib/-/browserify-zlib-0.1.4.tgz"
     },
     "browserslist": {
-      "version": "2.3.0",
+      "version": "2.3.1",
       "from": "browserslist@>=2.1.2 <3.0.0",
-      "resolved": "https://registry.npmjs.org/browserslist/-/browserslist-2.3.0.tgz"
+      "resolved": "https://registry.npmjs.org/browserslist/-/browserslist-2.3.1.tgz"
     },
     "buffer": {
       "version": "4.9.1",
@@ -711,9 +711,9 @@
       "resolved": "https://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.33.0.tgz"
     },
     "caniuse-lite": {
-      "version": "1.0.30000712",
-      "from": "caniuse-lite@>=1.0.30000710 <2.0.0",
-      "resolved": "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30000712.tgz"
+      "version": "1.0.30000713",
+      "from": "caniuse-lite@>=1.0.30000712 <2.0.0",
+      "resolved": "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30000713.tgz"
     },
     "carto": {
       "version": "0.15.1-cdb4",
@@ -727,8 +727,8 @@
     },
     "cartodb-deep-insights.js": {
       "version": "0.0.3",
-      "from": "cartodb/deep-insights.js#master",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#36511d7925709d6ae6cbbea2b23dffaae8460e10",
+      "from": "cartodb/deep-insights.js#12576-filter-bug",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#8a9b2a15e4e70a1638e0ba76e9d3a431de10b573",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",
@@ -745,7 +745,7 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
       "from": "cartodb/cartodb.js#v4",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#4080b8238d6f311aacb680be308ae35cf951096f"
+      "resolved": "git://github.com/cartodb/cartodb.js.git#bbb619e9c626bcb0eef38648708c8dc3a77bb871"
     },
     "caseless": {
       "version": "0.11.0",
@@ -3063,7 +3063,7 @@
     "tangram.cartodb": {
       "version": "0.4.6",
       "from": "cartodb/tangram.cartodb#master",
-      "resolved": "git://github.com/cartodb/tangram.cartodb.git#7e983d5c1e62548a68dcea7563c2e12d3bf9d896"
+      "resolved": "git://github.com/cartodb/tangram.cartodb.git#d71b7d33c791761f777f31fcd9b4a00918e8af9f"
     },
     "tapable": {
       "version": "0.2.8",

@@ -1325,18 +1325,21 @@ cartocolor@4.0.0:
 
 cartodb.js@CartoDB/cartodb.js#v4:
   version "4.0.0-alpha.1"
-  resolved "https://codeload.github.com/CartoDB/cartodb.js/tar.gz/4080b8238d6f311aacb680be308ae35cf951096f"
+  resolved "https://codeload.github.com/CartoDB/cartodb.js/tar.gz/bbb619e9c626bcb0eef38648708c8dc3a77bb871"
   dependencies:
     backbone "1.2.3"
     backbone-poller "^1.1.3"
     browserify-shim "3.8.12"
     camshaft-reference "<2.0"
     carto cartodb/carto#master
+    clip-path-polygon "0.1.12"
     d3 "3.5.17"
     jquery "2.1.4"
     leaflet "1.0.3"
+    moment "^2.18.1"
     mustache "1.1.0"
     perfect-scrollbar "git://github.com/CartoDB/perfect-scrollbar.git#master"
+    postcss "5.0.19"
     tangram.cartodb cartodb/tangram.cartodb#master
     torque.js CartoDB/torque#master
     underscore "1.8.3"
@@ -1458,6 +1461,12 @@ cli-cursor@^1.0.1:
 cli-width@^1.0.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/cli-width/-/cli-width-1.1.1.tgz#a4d293ef67ebb7b88d4a4d42c0ccf00c4d1e366d"
+
+clip-path-polygon@0.1.12:
+  version "0.1.12"
+  resolved "https://registry.yarnpkg.com/clip-path-polygon/-/clip-path-polygon-0.1.12.tgz#98afa76441ea6c12567cb10b4a0fa456badeda45"
+  dependencies:
+    jquery "2.1.4"
 
 cliui@^2.1.0:
   version "2.1.0"
@@ -5229,7 +5238,7 @@ postcss-value-parser@3.3.0:
   version "3.3.0"
   resolved "https://registry.yarnpkg.com/postcss-value-parser/-/postcss-value-parser-3.3.0.tgz#87f38f9f18f774a4ab4c8a232f5c5ce8872a9d15"
 
-postcss@5.0.19, postcss@^5.0.18:
+postcss@5.0.19:
   version "5.0.19"
   resolved "https://registry.yarnpkg.com/postcss/-/postcss-5.0.19.tgz#b6342a01dc75b8cab7e968afda96aefc67f888af"
   dependencies:
@@ -5237,7 +5246,7 @@ postcss@5.0.19, postcss@^5.0.18:
     source-map "^0.5.1"
     supports-color "^3.1.2"
 
-postcss@^5.2.5:
+postcss@^5.0.18, postcss@^5.2.5:
   version "5.2.17"
   resolved "https://registry.yarnpkg.com/postcss/-/postcss-5.2.17.tgz#cf4f597b864d65c8a492b2eabe9d706c879c388b"
   dependencies:

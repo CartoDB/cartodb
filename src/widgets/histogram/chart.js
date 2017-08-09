@@ -304,13 +304,6 @@ module.exports = cdb.core.View.extend({
     this.refresh();
   },
 
-  _onLocalTimezoneChanged: function () {
-    this._createFormatter();
-    this._updateAxisTip('left');
-    this._updateAxisTip('right');
-    this.refresh();
-  },
-
   _onChangeHeight: function () {
     var height = this.model.get('height');
 
@@ -541,7 +534,6 @@ module.exports = cdb.core.View.extend({
     this.listenTo(this.model, 'change:show_shadow_bars', this._onChangeShowShadowBars);
     this.listenTo(this.model, 'change:width', this._onChangeWidth);
     this.listenTo(this.model, 'change:normalized', this._onChangeNormalized);
-    this.listenTo(this.model, 'change:local_timezone', this._onLocalTimezoneChanged);
 
     if (this._widgetModel) {
       this.listenTo(this._widgetModel, 'change:autoStyle', this._refreshBarsColor);

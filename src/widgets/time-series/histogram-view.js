@@ -127,9 +127,7 @@ module.exports = cdb.core.View.extend({
   },
 
   _onChangeLocalTimezone: function () {
-    if (this._chartView) {
-      this._chartView.setLocalTimezone(this._timeSeriesModel.get('local_timezone'));
-    }
+    this._dataviewModel.set('localTimezone', this._timeSeriesModel.get('local_timezone'));
   },
 
   _resetFilterInDI: function () {

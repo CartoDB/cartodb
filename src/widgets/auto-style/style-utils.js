@@ -5,10 +5,16 @@ var SCSSsyntax = require('postcss-scss');
 
 var OUTLINE_ATTRS = ['line-color', 'line-opacity'];
 
-function isPropertyIncluded (cartocss, attr) {
+function generateCSSTreeFromCartoCSS (cartocss) {
   var cssTree = postcss()
     .use(stripInlineComments)
     .process(cartocss, { syntax: SCSSsyntax });
+
+  return cssTree;
+}
+
+function isPropertyIncluded (cartocss, attr) {
+  var cssTree = generateCSSTreeFromCartoCSS(cartocss);
   var root = cssTree.result.root;
   var propertyIncluded = false;
 
@@ -51,9 +57,7 @@ function replaceWrongSpaceChar (cartocss) {
 function changeStyle (cartocss, attr, newStyle) {
   if (_.isUndefined(newStyle)) return cartocss;
 
-  var cssTree = postcss()
-    .use(stripInlineComments)
-    .process(cartocss, { syntax: SCSSsyntax });
+  var cssTree = generateCSSTreeFromCartoCSS(cartocss);
   var root = cssTree.result.root;
   var attributeAlreadyChanged = false;
 

@@ -438,6 +438,7 @@ More information at [Dropbox migration guide](https://www.dropbox.com/developers
 * Color picker disappears in CartoCSS editor after clicking (#12097).
 * Bug found in dataset view when user had Google basemaps enabled (#12155)
 * Fixed incorrect analysis node being selected after deleting (#11899)
+* Time-series range filter is kept after refreshing (#12576)
 
 ### NOTICE
 This release upgrades the CartoDB PostgreSQL extension to `0.19.0`. Run the following to have it available:

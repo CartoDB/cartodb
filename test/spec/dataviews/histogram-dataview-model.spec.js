@@ -39,6 +39,8 @@ describe('dataviews/histogram-dataview-model', function () {
     expect(this.model.get('type')).toBe('histogram');
     expect(this.model.get('totalAmount')).toBe(0);
     expect(this.model.get('filteredAmount')).toBe(0);
+    expect(this.model.get('hasNulls')).toBe(false);
+    expect(this.model.get('localTimezone')).toBe(false);
   });
 
   it('should not listen any url change from the beginning', function () {
@@ -412,7 +414,7 @@ describe('dataviews/histogram-dataview-model', function () {
 
       var parsedData = this.model.parse(data);
       expect(helper.fillTimestampBuckets).toHaveBeenCalled();
-      expect(JSON.stringify(parsedData)).toBe('{"data":[{"offset":3600,"bin":0,"start":1496690940,"end":1496690999,"next":1496691000,"freq":17,"timestamp":1496690940,"min":1496690944,"max":1496690999,"avg":1496690971.58824},{"offset":3600,"bin":1,"start":1496691000,"end":1496691059,"next":1496691060,"freq":18,"timestamp":1496691000,"min":1496691003,"max":1496691059,"avg":1496691031.22222}],"filteredAmount":0,"nulls":0,"totalAmount":35,"hasNulls":true}');
+      expect(JSON.stringify(parsedData)).toBe('{"data":[{"bin":0,"start":1496690940,"end":1496690999,"next":1496691000,"freq":17,"timestamp":1496690940,"min":1496690944,"max":1496690999,"avg":1496690971.58824},{"bin":1,"start":1496691000,"end":1496691059,"next":1496691060,"freq":18,"timestamp":1496691000,"min":1496691003,"max":1496691059,"avg":1496691031.22222}],"filteredAmount":0,"nulls":0,"totalAmount":35,"hasNulls":true}');
     });
   });
 
@@ -506,6 +508,33 @@ describe('dataviews/histogram-dataview-model', function () {
           column_type: 'date'
         });
         expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&aggregation=auto');
+      });
+
+      it('should use offset if present', function () {
+        this.model.set({
+          aggregation: 'month',
+          column_type: 'date',
+          offset: 7200,
+          localTimezone: false
+        }, { silent: true });
+
+        var url = this.model.url();
+
+        expect(url).toEqual('http://example.com?bbox=2,1,4,3&aggregation=month&offset=7200');
+      });
+
+      it('should use local offset if localTimezone is true', function () {
+        this.model.set({
+          aggregation: 'month',
+          column_type: 'date',
+          offset: 7200,
+          localTimezone: true
+        }, { silent: true });
+        this.model._localOffset = 43200;
+
+        var url = this.model.url();
+
+        expect(url).toEqual('http://example.com?bbox=2,1,4,3&aggregation=month&offset=43200');
       });
     });
   });
@@ -718,6 +747,40 @@ describe('dataviews/histogram-dataview-model', function () {
       expect(this.model.get('start')).toEqual(11);
       expect(this.model.get('end')).toEqual(22);
       expect(this.model.get('bins')).toEqual(5);
+    });
+  });
+
+  describe('change local timezone', function () {
+    it('should set the same value to originalData', function () {
+      var originalValue = this.model.get('localTimezone');
+      this.model._originalData.set('localTimezone', originalValue, { silent: true });
+
+      this.model.set('localTimezone', !originalValue);
+
+      expect(this.model._originalData.get('localTimezone')).toBe(this.model.get('localTimezone'));
+    });
+  });
+
+  describe('._getCurrentOffset', function () {
+    beforeEach(function () {
+      this.model.set('offset', 7200, { silent: true });
+      this.model._localOffset = 43200;
+    });
+
+    it('should return offset if `localTimezone` is not set', function () {
+      this.model.set('localTimezone', false, { silent: true });
+
+      var offset = this.model._getCurrentOffset();
+
+      expect(offset).toBe(7200);
+    });
+
+    it('should return local offset if `localTimezone` is set', function () {
+      this.model.set('localTimezone', true, { silent: true });
+
+      var offset = this.model._getCurrentOffset();
+
+      expect(offset).toBe(43200);
     });
   });
 });

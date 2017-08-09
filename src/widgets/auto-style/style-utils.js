@@ -6,11 +6,9 @@ var SCSSsyntax = require('postcss-scss');
 var OUTLINE_ATTRS = ['line-color', 'line-opacity'];
 
 function generateCSSTreeFromCartoCSS (cartocss) {
-  var cssTree = postcss()
+  return postcss()
     .use(stripInlineComments)
     .process(cartocss, { syntax: SCSSsyntax });
-
-  return cssTree;
 }
 
 function isPropertyIncluded (cartocss, attr) {

@@ -11,14 +11,16 @@ describe('api/sql', function() {
   var TEST_DATA = { test: 'good' };
   var NO_BOUNDS = { "rows": [{ "maxx": null }]};
   var throwError;
+  var abort = jasmine.createSpy('abort');
 
   beforeEach(function() {
     jasmine.clock().install();
-    
+
     ajaxParams = null;
     ajax = function(params) {
       ajaxParams = params;
       _.defer(function() {
+        params.complete && params.complete();
         if(!throwError && params.success) params.success(TEST_DATA, 200);
         throwError && params.error && params.error({
           responseText: JSON.stringify({
@@ -26,7 +28,12 @@ describe('api/sql', function() {
           })
         });
       });
+
+      return {
+        abort: abort
+      }
     };
+
     spyOn($, 'ajax').and.callFake(ajax);
 
     sql = new SQL({
@@ -61,6 +68,20 @@ describe('api/sql', function() {
     expect(ajaxParams.type).toEqual('get');
     expect(ajaxParams.dataType).toEqual('json');
     expect(ajaxParams.crossDomain).toEqual(true);
+  });
+
+  it('should be abortable', function() {
+    sql = new SQL({
+      user: USER,
+      protocol: 'https',
+      abortable: true
+    });
+
+    sql.execute('select * from table');
+    expect(abort).not.toHaveBeenCalled();
+
+    sql.execute('select * from table limit 10');
+    expect(abort).toHaveBeenCalled();
   });
 
   it("should parse template", function() {
@@ -302,7 +323,7 @@ describe('api/sql', function() {
       // Cleaning
       TEST_DATA = prevTestData;
     });
-    
+
   });
 
 

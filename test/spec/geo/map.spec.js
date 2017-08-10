@@ -31,11 +31,7 @@ describe('core/geo/map', function () {
 
   describe('.initialize', function () {
     it('should parse bounds and set attributes', function () {
-      var map = new Map({
-        bounds: [[0, 1], [2, 3]]
-      }, {
-        layersFactory: fakeLayersFactory
-      });
+      var map = new Map({ bounds: [[0, 1], [2, 3]] }, { layersFactory: fakeLayersFactory });
 
       expect(map.get('view_bounds_sw')).toEqual([0, 1]);
       expect(map.get('view_bounds_ne')).toEqual([2, 3]);
@@ -46,9 +42,10 @@ describe('core/geo/map', function () {
       var map = new Map({
         center: [41.40282319070747, 2.3435211181640625],
         zoom: 10
-      }, {
-        layersFactory: fakeLayersFactory
-      });
+      },
+        {
+          layersFactory: fakeLayersFactory
+        });
 
       expect(map.get('center')).toEqual([41.40282319070747, 2.3435211181640625]);
       expect(map.get('original_center')).toEqual([41.40282319070747, 2.3435211181640625]);
@@ -78,7 +75,7 @@ describe('core/geo/map', function () {
     it('should add a layer to the collection', function () {
       var layer = new Backbone.Model();
       map.addLayer(layer);
-      expect(map.layers.models).toEqual([ layer ]);
+      expect(map.layers.models).toEqual([layer]);
     });
   });
 
@@ -98,11 +95,11 @@ describe('core/geo/map', function () {
       map.addLayer(layer1);
       map.addLayer(layer2);
 
-      expect(map.layers.models).toEqual([ layer1, layer2 ]);
+      expect(map.layers.models).toEqual([layer1, layer2]);
 
       map.removeLayerAt(0);
 
-      expect(map.layers.models).toEqual([ layer2 ]);
+      expect(map.layers.models).toEqual([layer2]);
     });
   });
 
@@ -113,11 +110,11 @@ describe('core/geo/map', function () {
       map.addLayer(layer1);
       map.addLayer(layer2);
 
-      expect(map.layers.models).toEqual([ layer1, layer2 ]);
+      expect(map.layers.models).toEqual([layer1, layer2]);
 
       map.removeLayerByCid(layer1.cid);
 
-      expect(map.layers.models).toEqual([ layer2 ]);
+      expect(map.layers.models).toEqual([layer2]);
     });
   });
 
@@ -152,7 +149,7 @@ describe('core/geo/map', function () {
   it('should not change bounds when map size is 0', function () {
     map.set('zoom', 10);
     var bounds = [[43.100982876188546, 35.419921875], [60.23981116999893, 69.345703125]];
-    map.fitBounds(bounds, {x: 0, y: 0});
+    map.fitBounds(bounds, { x: 0, y: 0 });
     expect(map.get('zoom')).toEqual(10);
   });
 
@@ -194,7 +191,7 @@ describe('core/geo/map', function () {
     var layer3 = new CartoDBLayer({ attribution: 'wadus' }, { vis: this.vis });
     var layer4 = new CartoDBLayer({ attribution: '' }, { vis: this.vis });
 
-    map.layers.reset([ layer1, layer2, layer3, layer4 ]);
+    map.layers.reset([layer1, layer2, layer3, layer4]);
 
     // Attributions have been updated removing duplicated and empty attributions
     expect(map.get('attribution')).toEqual([
@@ -496,6 +493,57 @@ describe('core/geo/map', function () {
       this.map.stopEditingGeometry();
 
       expect(callback).toHaveBeenCalled();
+    });
+  });
+
+  describe('.getEstimatedFeatureCount', function () {
+    it('should return the sum of the estimated feature count for each layer (1+2)', function () {
+      map = new Map(null, { layersFactory: fakeLayersFactory });
+      map.layers.getCartoDBLayers = function () {
+        return [{
+          getEstimatedFeatureCount: function () {
+            return 1;
+          }
+        },
+        {
+          getEstimatedFeatureCount: function () {
+            return 2;
+          }
+        }];
+      };
+      expect(map.getEstimatedFeatureCount()).toEqual(3);
+    });
+    it('should return the sum of the estimated feature count for each layer (3+0)', function () {
+      map = new Map(null, { layersFactory: fakeLayersFactory });
+      map.layers.getCartoDBLayers = function () {
+        return [{
+          getEstimatedFeatureCount: function () {
+            return 3;
+          }
+        },
+        {
+          getEstimatedFeatureCount: function () {
+            return 0;
+          }
+        }];
+      };
+      expect(map.getEstimatedFeatureCount()).toEqual(3);
+    });
+    it('should return undefined when some layer has no estimated feature count', function () {
+      map = new Map(null, { layersFactory: fakeLayersFactory });
+      map.layers.getCartoDBLayers = function () {
+        return [{
+          getEstimatedFeatureCount: function () {
+            return undefined;
+          }
+        },
+        {
+          getEstimatedFeatureCount: function () {
+            return 2;
+          }
+        }];
+      };
+      expect(map.getEstimatedFeatureCount()).toBeUndefined();
     });
   });
 });

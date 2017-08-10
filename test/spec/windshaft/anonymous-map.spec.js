@@ -94,6 +94,9 @@ describe('windshaft/anonymous-map', function () {
   describe('.toJSON', function () {
     it('should generate the payload to instantiate the map', function () {
       expect(this.map.toJSON()).toEqual({
+        'buffersize': {
+          'mvt': 0
+        },
         'layers': [
           {
             'id': 'layer1',
@@ -151,6 +154,9 @@ describe('windshaft/anonymous-map', function () {
       this.cartoDBLayer1.infowindow.fields.add({ name: 'something' });
 
       expect(this.map.toJSON()).toEqual({
+        'buffersize': {
+          'mvt': 0
+        },
         'layers': [
           {
             'id': 'layer1',
@@ -272,7 +278,8 @@ describe('windshaft/anonymous-map', function () {
       var dataview1 = new HistogramDataviewModel({
         id: 'dataviewId1',
         column: 'column1',
-        bins: 5,
+        column_type: 'date',
+        aggregation: 'week',
         source: {
           id: 'a0'
         }
@@ -287,6 +294,7 @@ describe('windshaft/anonymous-map', function () {
       var dataview2 = new HistogramDataviewModel({
         id: 'dataviewId2',
         column: 'column2',
+        column_type: 'number',
         bins: 5,
         source: {
           id: 'a1'
@@ -304,24 +312,24 @@ describe('windshaft/anonymous-map', function () {
       this.dataviewsCollection.reset([ dataview1, dataview2 ]);
 
       expect(this.map.toJSON().dataviews).toEqual({
-        'dataviewId1': {
-          'type': 'histogram',
-          'source': {
-            'id': 'a0'
+        dataviewId1: {
+          type: 'histogram',
+          source: {
+            id: 'a0'
           },
-          'options': {
-            'column': 'column1',
-            'bins': 5
+          options: {
+            column: 'column1',
+            aggregation: 'week'
           }
         },
-        'dataviewId2': {
-          'type': 'histogram',
-          'source': {
-            'id': 'a1'
+        dataviewId2: {
+          type: 'histogram',
+          source: {
+            id: 'a1'
           },
-          'options': {
-            'column': 'column2',
-            'bins': 5
+          options: {
+            column: 'column2',
+            bins: 5
           }
         }
       });

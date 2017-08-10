@@ -39,6 +39,10 @@ var MapLayer = Model.extend({
     return !!this.get('visible');
   },
 
+  isHidden: function () {
+    return !this.isVisible();
+  },
+
   toggle: function () {
     this.set('visible', !this.get('visible'));
   },

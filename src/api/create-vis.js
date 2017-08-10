@@ -3,6 +3,7 @@ var VisView = require('../vis/vis-view');
 var VisModel = require('../vis/vis');
 var Loader = require('../core/loader');
 var VizJSON = require('./vizjson');
+var config = require('../cdb.config');
 
 var DEFAULT_OPTIONS = {
   tiles_loader: true,
@@ -47,6 +48,10 @@ var createVis = function (el, vizjson, options) {
     });
   } else {
     loadVizJSON(el, visModel, vizjson, options);
+  }
+
+  if (options.mapzenApiKey) {
+    config.set('mapzenApiKey', options.mapzenApiKey);
   }
 
   return visModel;
@@ -124,6 +129,10 @@ var applyOptionsToVizJSON = function (vizjson, options) {
 
   if (options.logo === false) {
     vizjson.removeLogoOverlay();
+  }
+
+  if (_.has(options, 'vector')) {
+    vizjson.setVector(options.vector);
   }
 
   // if bounds are present zoom and center will not taken into account

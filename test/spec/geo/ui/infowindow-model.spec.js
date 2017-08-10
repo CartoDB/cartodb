@@ -34,7 +34,7 @@ describe('geo/ui/infowindow-model', function () {
       var infowindowModel = new InfowindowModel({ fields: [{ name: 'NAME', title: true }, { name: 'SOMETHING', title: true }] });
       infowindowModel.updateContent({ NAME: 'CartoDB' }, { showEmptyFields: true });
 
-      expect(infowindowModel.get('content').fields).toEqual([{ name: 'NAME', title: 'NAME', value: 'CartoDB', index: 0 }, { name: 'SOMETHING', title: 'SOMETHING', value: 'null', index: 1 }]);
+      expect(infowindowModel.get('content').fields).toEqual([{ name: 'NAME', title: 'NAME', value: 'CartoDB', index: 0 }, { name: 'SOMETHING', title: 'SOMETHING', value: null, index: 1 }]);
     });
   });
 
@@ -84,7 +84,7 @@ describe('geo/ui/infowindow-model', function () {
       expect(content.fields[1]).toEqual({
         name: 'field2',
         title: null,
-        value: 'null',
+        value: null,
         index: 1
       });
     });

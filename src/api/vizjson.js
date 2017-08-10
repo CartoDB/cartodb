@@ -141,4 +141,8 @@ VizJSON.prototype.setBounds = function (bounds) {
   this.bounds = bounds;
 };
 
+VizJSON.prototype.setVector = function (vector) {
+  this.vector = vector;
+};
+
 module.exports = VizJSON;

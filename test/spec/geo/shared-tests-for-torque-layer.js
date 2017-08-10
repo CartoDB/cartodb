@@ -145,8 +145,25 @@ module.exports = function () {
     });
 
     it('should set the new cartoCSS on the torque layer', function () {
-      this.view.model.set('cartocss', 'some shiny new cartocss');
-      expect(this.nativeTorqueLayer.setCartoCSS).toHaveBeenCalledWith('some shiny new cartocss');
+      this.view.model.set('cartocss', '#layer { marker-fill: whatever; }');
+      expect(this.nativeTorqueLayer.setCartoCSS).toHaveBeenCalledWith('#layer { marker-fill: whatever; }');
+    });
+  });
+
+  describe('when tileURLTemplates and subdomains attrs change on model', function () {
+    beforeEach(function () {
+      this.nativeTorqueLayer = this.view.nativeTorqueLayer;
+      this.nativeTorqueLayer.provider = {
+        subdomains: [ '0', '1', '2' ],
+        options: {},
+        _setReady: function () {}
+      };
+    });
+
+    it('should set the new urlTemplate and subdomains on the torque provider', function () {
+      this.view.model.set('tileURLTemplates', [ 'http://example.com/{z}/{x}/{y}.torque' ]);
+      expect(this.nativeTorqueLayer.provider.templateUrl).toEqual('http://example.com/{z}/{x}/{y}.torque');
+      expect(this.nativeTorqueLayer.provider.subdomains).toEqual([ '0', '1', '2' ]);
     });
   });
 };

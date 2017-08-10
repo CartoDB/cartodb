@@ -30,16 +30,21 @@
     "browserify-shim": "3.8.12",
     "camshaft-reference": "<2.0",
     "carto": "cartodb/carto#master",
+    "clip-path-polygon": "0.1.12",
     "d3": "3.5.17",
-    "tangram.cartodb": "cartodb/tangram.cartodb#master",
     "jquery": "2.1.4",
     "leaflet": "1.0.3",
+    "moment": "^2.18.1",
     "mustache": "1.1.0",
     "perfect-scrollbar": "git://github.com/CartoDB/perfect-scrollbar.git#master",
+    "postcss": "5.0.19",
+    "tangram.cartodb": "cartodb/tangram.cartodb#master",
     "torque.js": "CartoDB/torque#master",
     "underscore": "1.8.3"
   },
   "devDependencies": {
+    "babel-preset-es2015": "~6.24.1",
+    "babelify": "~7.3.0",
     "browserify": "13.0.0",
     "cartoassets": "CartoDB/CartoAssets#master",
     "findup-sync": "0.1.3",
@@ -61,7 +66,7 @@
     "grunt-gitinfo": "~0.1.7",
     "grunt-prompt": "~1.3.0",
     "grunt-replace": "0.6.2",
-    "grunt-sass": "~1.1.0-beta",
+    "grunt-sass": "2.0.0",
     "gulp": "3.8.10",
     "gulp-iconfont": "1.0.0",
     "gulp-iconfont-css": "0.0.9",
@@ -93,7 +98,6 @@
     "cdb.templates": "./src/cdb.templates.js",
     "geojson": "./vendor/GeoJSON.js",
     "html-css-sanitizer": "./vendor/html-css-sanitizer-bundle.js",
-    "clip-path": "./vendor/clip-path.js",
     "lzma": "./vendor/lzma.js",
     "mousewheel": "./vendor/mousewheel.js",
     "mwheelIntent": "./vendor/mwheelIntent.js",
@@ -104,12 +108,6 @@
     "geojson": "GeoJSON",
     "html-css-sanitizer": "html",
     "lzma": "LZMA",
-    "clip-path": {
-      "depends": [
-        "underscore:_",
-        "jquery:jQuery"
-      ]
-    },
     "mousewheel": {
       "depends": [
         "jquery:jQuery"
@@ -159,6 +157,5 @@
   "config": {
     "root": "."
   },
-  "scripts": {
-  }
+  "scripts": {}
 }

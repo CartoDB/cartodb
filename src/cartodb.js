@@ -25,4 +25,6 @@ cdb.createVis = require('./api/create-vis');
 var logger = require('cdb.log');
 logger.log('cartodb.js ' + cdb.VERSION);
 
+cdb.helpers.GeoJSONHelper = require('./geo/geometry-models/geojson-helper');
+
 module.exports = cdb;

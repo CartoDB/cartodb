@@ -5,4 +5,6 @@ var cdb = {};
 cdb.VERSION = require('../package.json').version;
 cdb.DEBUG = false;
 
+cdb.helpers = {};
+
 module.exports = cdb;

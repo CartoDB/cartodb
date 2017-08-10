@@ -128,7 +128,7 @@ var InfowindowModel = Backbone.Model.extend({
         render_fields.push({
           name: field.name,
           title: field.title ? field.name : null,
-          value: (value !== undefined && value !== null) ? value : 'null',
+          value: (value !== undefined && value !== null) ? value : null,
           index: j
         });
       }

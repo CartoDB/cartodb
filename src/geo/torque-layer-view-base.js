@@ -109,6 +109,9 @@ var TorqueLayerViewBase = {
     this.listenTo(this.model, 'change:step', this._stepChanged);
     this.listenTo(this.model, 'change:steps', this._stepsChanged);
     this.listenTo(this.model, 'change:renderRange', this._renderRangeChanged);
+    this.listenTo(this.model, 'change', this._onModelChanged);
+    this.listenTo(this.model, 'change:cartocss', this._cartoCSSChanged);
+    this.listenTo(this.model, 'change:customDuration', this._onUpdateDuration);
   },
 
   _unonModel: function () {
@@ -117,6 +120,17 @@ var TorqueLayerViewBase = {
     this.stopListening(this.model, 'change:step', this._stepChanged);
     this.stopListening(this.model, 'change:steps', this._stepsChanged);
     this.stopListening(this.model, 'change:renderRange', this._renderRangeChanged);
+    this.stopListening(this.model, 'change', this._onModelChanged);
+    this.stopListening(this.model, 'change:cartocss', this._cartoCSSChanged);
+    this.stopListening(this.model, 'change:customDuration', this._onUpdateDuration);
+  },
+
+  _onUpdateDuration: function () {
+    var duration = this.model.get('customDuration');
+    duration = duration || this.model.getAnimationDuration(this.model.get('cartocss'));
+    if (duration) {
+      this.nativeTorqueLayer.animator.duration(duration);
+    }
   },
 
   _isRunningChanged: function (m, isRunning) {
@@ -139,6 +153,11 @@ var TorqueLayerViewBase = {
     this.nativeTorqueLayer.setSteps(steps);
   },
 
+  _cartoCSSChanged: function (m, cartocss) {
+    this.nativeTorqueLayer.setCartoCSS(this.model.get('cartocss'));
+    this._onUpdateDuration();
+  },
+
   _renderRangeChanged: function (m, r) {
     if (_.isObject(r) && _.isNumber(r.start) && _.isNumber(r.end)) {
       this.nativeTorqueLayer.renderRange(r.start, r.end);
@@ -147,9 +166,33 @@ var TorqueLayerViewBase = {
     }
   },
 
+  // TODO: This could be "exploded" into different bindings / methods
+  _onModelChanged: function () {
+    if (!this.model.hasChanged()) return;
+
+    if (this.model.hasChanged('visible')) {
+      this.model.get('visible') ? this.nativeTorqueLayer.show() : this.nativeTorqueLayer.hide();
+    }
+
+    if (this.model.hasChanged('tileURLTemplates')) {
+      // REAL HACK
+      this.nativeTorqueLayer.provider.templateUrl = this.model.getTileURLTemplates()[0];
+      this.nativeTorqueLayer.provider.options.subdomains = this.model.get('subdomains');
+      _.extend(this.nativeTorqueLayer.provider.options, this.model.get('meta'));
+      // this needs to be deferred in order to break the infinite loop
+      // of setReady changing keys and keys updating the model
+      // If we do this in the next iteration 'urls' will not be in changedAttributes
+      // so this will not pass through this code
+      setTimeout(function () {
+        this.nativeTorqueLayer.provider._setReady(true);
+        this.nativeTorqueLayer._reloadTiles();
+      }.bind(this), 0);
+    }
+  },
+
   _getQuery: function (layerModel) {
     var query = layerModel.get('query');
-    var qw = layerModel.get('query_wrapper');
+    var qw = layerModel.get('sql_wrap');
     if (qw) {
       query = _.template(qw)({ sql: query || ('select * from ' + layerModel.get('table_name')) });
     }

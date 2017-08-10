@@ -728,7 +728,7 @@
     "cartodb-deep-insights.js": {
       "version": "0.0.3",
       "from": "cartodb/deep-insights.js#master",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#4b0690f8d1a7cd4cb5d872057231ff2730438a4e",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#c6817e7e9bc988aa632ff5a0cd50d7dc2717378d",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",

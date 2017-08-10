@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.9.27",
+  "version": "4.9.28-14280",
   "dependencies": {
     "abbrev": {
       "version": "1.1.0",
@@ -727,8 +727,8 @@
     },
     "cartodb-deep-insights.js": {
       "version": "0.0.3",
-      "from": "cartodb/deep-insights.js#master",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#c6817e7e9bc988aa632ff5a0cd50d7dc2717378d",
+      "from": "cartodb/deep-insights.js#14280-oob-filter",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#fc4b3e25d30f681b86b5f0b66d9f222c6971bb97",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",
@@ -744,8 +744,8 @@
     },
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
-      "from": "cartodb/cartodb.js#v4",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#9557909777147d3e25f403c4160592d3a6e9eb4a"
+      "from": "cartodb/cartodb.js#14280-oob-filter",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#388311d925712a4d0594ca4e6a455c5ac0fcdffc"
     },
     "caseless": {
       "version": "0.11.0",
@@ -2156,6 +2156,11 @@
       "version": "2.18.1",
       "from": "moment@2.18.1",
       "resolved": "https://registry.npmjs.org/moment/-/moment-2.18.1.tgz"
+    },
+    "moment-timezone": {
+      "version": "0.5.13",
+      "from": "moment-timezone@>=0.5.13 <0.6.0",
+      "resolved": "https://registry.npmjs.org/moment-timezone/-/moment-timezone-0.5.13.tgz"
     },
     "mothership": {
       "version": "0.2.0",

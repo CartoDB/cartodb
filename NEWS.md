@@ -30,6 +30,7 @@ Development
 * Move play/pause button to besides the time series (#12387)
 * Updates Dataservices API client default version to `0.18.0` (#12466)
 * Updates Dataservices API client default version to `0.19.0` (#12494)
+* Adds library to read/write metadata to .carto.gpkg files. (#12546)
 * Don't display slider if there's only one value (#bigmetadata/202)
 
 ### Bug fixes / enhancements

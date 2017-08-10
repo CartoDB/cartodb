@@ -10,7 +10,7 @@ var createFakeTimeSeriesWidgetModel = function (attrs) {
   });
 
   return new Backbone.Model(attrs);
-}
+};
 
 var createFakeDataviewModel = function (attrs) {
   attrs = _.extend({}, {
@@ -35,7 +35,7 @@ var createFakeDataviewModel = function (attrs) {
   };
 
   return dataview;
-}
+};
 
 var createFakeDataviewLayer = function (attrs) {
   attrs = _.extend({}, {
@@ -43,7 +43,7 @@ var createFakeDataviewLayer = function (attrs) {
   }, attrs);
 
   return new Backbone.Model(attrs);
-}
+};
 
 describe('dashboard-below-map-view', function () {
   beforeEach(function () {

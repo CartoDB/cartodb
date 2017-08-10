@@ -115,6 +115,7 @@ Development
 * Removed useless log traces (#12536)
 * Fixed bounds and center of thumbnails after updating a map
 * Fixed a bug in cartodb.js regarding the featureCount (#12490)
+* Add default value to dropdowns (#12451)
 * Fix connectors configuration rake when configuring an organization (#12509)
 * Add tip about sanitising values in popup's InfoWindow (#11340)
 * Fix a problem with responsive in deep-insights.js

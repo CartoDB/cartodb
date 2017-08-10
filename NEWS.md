@@ -31,6 +31,7 @@ Development
 * Updates Dataservices API client default version to `0.18.0` (#12466)
 * Updates Dataservices API client default version to `0.19.0` (#12494)
 * Don't display slider if there's only one value (#bigmetadata/202)
+* Mustache conditionals support improved in popups (#support/763)
 
 ### Bug fixes / enhancements
 * Fix ghost node problem (#11397)

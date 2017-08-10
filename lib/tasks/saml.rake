@@ -8,16 +8,15 @@ namespace :cartodb do
     # SAML_ASSERTION_CONSUMER_SERVICE_URL: [OPTIONAL] CARTO URL for SAML, including organization name. Examples: 'http://192.168.20.2/user/orgname/saml/finalize'. Defaults to the URL built from configuration and organization name
     # SAML_SINGLE_LOGOUT_SERVICE_URL: [OPTIONAL] CARTO URL for SAML logout, including organization name. Examples: 'http://192.168.20.2/user/orgname/logout'. Defaults to the URL built from configuration and organization name
     # SAML_SLO_DIGEST_METHOD: [OPTIONAL] Digest method to use in signed logout request. By default: 'http://www.w3.org/2001/04/xmlenc#sha256'
-    # SAML_SLO_SIGNATURE_METHOD: [OPTIONAL] Signature method to use in singled logout requests. By default: 'http://www.w3.org/2001/04/xmldsig-more#rsa-sha256'
+    # SAML_SLO_SIGNATURE_METHOD: [OPTIONAL] Signature method to use in signed logout requests. By default: 'http://www.w3.org/2001/04/xmldsig-more#rsa-sha256'
     # SAML_SP_PRIVATE_KEY_FILE: [OPTIONAL] Private key file used for signed logout requests
     # SAML_SP_CERTIFICATE_FILE: [OPTIONAL] Certificate file used for signed logout requests, in .pem format
-    # SAML_NAME_IDENTIFIER_FORMAT: [OPTIONAL] Name identifier format to use. By default: 'urn:oasis:names:tc:SAML:2.0:nameid-format:transient'
     #
     # Option 1. Manual configuration
     # SAML_IDP_SSO_TARGET_URL: SAML Identity Provider login URL. Example: 'http://192.168.20.2/simplesaml/saml2/idp/SSOService.php'.
     # SAML_IDP_SLO_TARGET_URL: [OPTIONAL] SAML Identity Provider logout URL. Example: 'http://192.168.20.2/simplesaml/saml2/idp/SingleLogoutService.php'.
     # SAML_IDP_CERT_FINGERPRINT: SAML server certificate fingerprint. Command: `openssl x509 -noout -fingerprint -in "./cert/server.crt`. Example: '8C:47:97:B1:E2:E4:6C:06:B5:56:11:8A:5A:8B:53:5C:01:05:CB:05'.
-    # SAML_NAME_IDENTIFIER_FORMAT: [OPTIONAL] Format of the name identifier parameter. Example: 'urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified'. Defaults to 'urn:oasis:names:tc:SAML:2.0:nameid-format:transient'
+    # SAML_NAME_IDENTIFIER_FORMAT: [OPTIONAL] Format of the name identifier parameter. Example: 'urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified'. Defaults to 'urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress'.
     #
     # Option 2. Metadata parsing
     # SAML_IDP_METADATA_FILE: Url or file that contains metadata about the IdP. Example: 'http://192.168.20.2/saml2/idp/metadata.php'.

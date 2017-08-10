@@ -6,6 +6,7 @@ gem 'rake',                    '0.9.2.2'
 gem 'pg',                      '0.15.0'
 gem 'sequel',                  '3.42.0'
 gem 'sequel_pg',               '1.6.3', require: 'sequel'
+gem 'sqlite3',                 '1.3.13'
 
 gem 'activerecord-postgresql-adapter'
 # NOTE: Forced on purpose due to this bug https://github.com/tlconnor/activerecord-postgres-array/issues/37

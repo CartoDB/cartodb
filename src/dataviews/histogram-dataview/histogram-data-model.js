@@ -5,6 +5,8 @@ var helper = require('../helpers/histogram-helper');
 
 var DEFAULT_MAX_BUCKETS = 366;
 
+var deleteMe = 'This is only to be able to create the PR. Should not pass Code Review.';
+
 /**
  *  This model is used for getting the total amount of data
  *  from the histogram widget (without any filter).

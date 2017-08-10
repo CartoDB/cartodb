@@ -63,8 +63,9 @@ describe('widgets/time-series/histogram-view', function () {
 
   describe('.resetFilter', function () {
     it('should unset range in filter and reset filter internally', function () {
-      spyOn(this.view._rangeFilter, 'unsetRange');
+      spyOn(this.view._rangeFilter, 'unsetRange').and.callThrough();
       spyOn(this.view, '_resetFilterInDI');
+      this.view._rangeFilter.set({ min: 10, max: 50 });
 
       this.view.resetFilter();
 

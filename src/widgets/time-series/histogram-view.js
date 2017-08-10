@@ -38,7 +38,6 @@ module.exports = cdb.core.View.extend({
 
   resetFilter: function () {
     this._rangeFilter.unsetRange();
-    this._resetFilterInDI();
   },
 
   _initBinds: function () {
@@ -130,7 +129,7 @@ module.exports = cdb.core.View.extend({
       max: undefined,
       lo_index: undefined,
       hi_index: undefined
-    }, { silent: true });
+    });
     this._chartView.removeSelection();
   },
 

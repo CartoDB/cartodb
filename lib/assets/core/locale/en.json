@@ -1481,7 +1481,7 @@
           "title": "Ready to Download"
         },
         "error": {
-          "title": "An error occured while exporting your map",
+          "title": "An error occurred while exporting your map",
           "desc": "Please try again. If the problem persists, please contact support"
         }
       },

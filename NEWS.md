@@ -34,6 +34,7 @@ Development
 * Mustache conditionals support improved in popups (#support/763)
 
 ### Bug fixes / enhancements
+* Fixed spelling of "occurred" (Docs)
 * Fix ghost node problem (#11397)
 * Break down deep-insights-integrations class (#11581)
 * Fix torque categories layer rendering (#cartodb.js/1698)

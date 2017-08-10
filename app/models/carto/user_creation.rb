@@ -162,14 +162,14 @@ class Carto::UserCreation < ActiveRecord::Base
     !valid_invitation.nil?
   end
 
+  def pertinent_invitation
+    @pertinent_invitation ||= select_valid_invitation_token(Carto::Invitation.query_with_unused_email(email).all)
+  end
+
   private
 
   def enabled?
     cartodb_user.enable_account_token.nil? && cartodb_user.enabled
-  end
-
-  def pertinent_invitation
-    @pertinent_invitation ||= select_valid_invitation_token(Carto::Invitation.query_with_unused_email(email).all)
   end
 
   def valid_invitation

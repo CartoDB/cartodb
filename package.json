@@ -23,6 +23,7 @@
     "browserify-shim": "3.8.12",
     "camshaft-reference": "0.33.0",
     "carto": "cartodb/carto#master",
+    "carto-node": "file:./../carto-node",
     "cartocolor": "4.0.0",
     "cartodb-deep-insights.js": "cartodb/deep-insights.js#master",
     "cartodb-pecan": "0.2.x",
@@ -89,7 +90,7 @@
     "shim-loader": "0.1.0",
     "source-map-support": "0.4.0",
     "stringify": "5.1.0",
-    "tpl-loader": "CartoDB/tpl-loader#master",
+    "tpl-loader": "^0.2.1",
     "uglify-js": "2.7.x",
     "watchify": "3.7.0",
     "webpack-bundle-analyzer": "^2.4.0",
@@ -125,7 +126,9 @@
     "cdb.Utils": "global:cdb.Utils",
     "cartodb.js-v3": "global:cdb",
     "backbone-cdb-v3": "global:Backbone",
-    "moment-v3": "global:moment"
+    "moment-v3": "global:moment",
+    "_t": "global:_t",
+    "jst": "global:JST"
   },
   "semistandard": {
     "globals": [
@@ -187,6 +190,7 @@
     "build": "NODE_ENV=production webpack -p --config webpack.prod.config.js",
     "build:stats": "webpack --env.stats --progress --config webpack.dev.config.js",
     "start": "grunt watch:css & webpack --progress --watch --config webpack.dev.config.js",
+    "start:dashboard": "webpack --progress --watch --config webpack/webpack.dev.config.js",
     "dev": "webpack --progress --config webpack.dev.config.js"
   }
 }

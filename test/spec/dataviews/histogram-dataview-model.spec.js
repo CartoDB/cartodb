@@ -39,6 +39,8 @@ describe('dataviews/histogram-dataview-model', function () {
     expect(this.model.get('type')).toBe('histogram');
     expect(this.model.get('totalAmount')).toBe(0);
     expect(this.model.get('filteredAmount')).toBe(0);
+    expect(this.model.get('hasNulls')).toBe(false);
+    expect(this.model.get('localTimezone')).toBe(false);
   });
 
   it('should not listen any url change from the beginning', function () {
@@ -374,24 +376,45 @@ describe('dataviews/histogram-dataview-model', function () {
     });
 
     it('should call .fillTimestampBuckets if aggregation is present', function () {
-      spyOn(helper, 'fillTimestampBuckets');
+      spyOn(helper, 'fillTimestampBuckets').and.callThrough();
       this.model._initBinds();
       this.model.set({
-        aggregation: 'month',
+        aggregation: 'minute',
         column_type: 'date'
       }, { silent: true });
+
       var data = {
-        bin_width: 0,
-        bins: [],
-        bins_count: 0,
-        bins_start: 0,
+        aggregation: 'minute',
+        offset: 3600,
+        timestamp_start: 1496690940,
+        bin_width: 59.5833333333333,
+        bins_count: 2,
+        bins_start: 1496690940,
         nulls: 0,
+        bins: [
+          {
+            bin: 0,
+            timestamp: 1496690940,
+            min: 1496690944,
+            max: 1496690999,
+            avg: 1496690971.58824,
+            freq: 17
+          },
+          {
+            bin: 1,
+            timestamp: 1496691000,
+            min: 1496691003,
+            max: 1496691059,
+            avg: 1496691031.22222,
+            freq: 18
+          }
+        ],
         type: 'histogram'
       };
 
-      this.model.parse(data);
-
+      var parsedData = this.model.parse(data);
       expect(helper.fillTimestampBuckets).toHaveBeenCalled();
+      expect(JSON.stringify(parsedData)).toBe('{"data":[{"bin":0,"start":1496690940,"end":1496690999,"next":1496691000,"freq":17,"timestamp":1496690940,"min":1496690944,"max":1496690999,"avg":1496690971.58824},{"bin":1,"start":1496691000,"end":1496691059,"next":1496691060,"freq":18,"timestamp":1496691000,"min":1496691003,"max":1496691059,"avg":1496691031.22222}],"filteredAmount":0,"nulls":0,"totalAmount":35,"hasNulls":true}');
     });
   });
 
@@ -419,52 +442,100 @@ describe('dataviews/histogram-dataview-model', function () {
       expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3');
     });
 
-    it('should include start if present', function () {
-      this.model.set('start', 11);
-      expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&start=11');
-    });
+    describe('column type is number', function () {
+      describe('if bins present', function () {
+        it('should include start if present', function () {
+          this.model.set({
+            bins: 33,
+            start: 11,
+            column_type: 'number'
+          });
 
-    it('should include end if present', function () {
-      this.model.set('end', 22);
-      expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&end=22');
-    });
+          expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&bins=33&start=11');
+        });
 
-    it('should include bins if present and the column type is number', function () {
-      this.model.set({
-        bins: 33,
-        column_type: 'number'
+        it('should include end if present', function () {
+          this.model.set({
+            bins: 33,
+            end: 22,
+            column_type: 'number'
+          });
+
+          expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&bins=33&end=22');
+        });
+
+        it('should include bins', function () {
+          this.model.set({
+            bins: 33,
+            column_type: 'number'
+          });
+
+          expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&bins=33');
+        });
       });
-      expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&bins=33');
+
+      it('should not include start, end and bins when own_filter is enabled', function () {
+        this.model.set({
+          url: 'http://example.com',
+          start: 0,
+          end: 10,
+          bins: 25,
+          column_type: 'number'
+        });
+
+        expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&bins=25&start=0&end=10');
+
+        this.model.enableFilter();
+
+        expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&own_filter=1');
+      });
     });
 
-    it('should only include aggregation if aggregation and bins present and column type is date', function () {
-      this.model.set({
-        aggregation: 'month',
-        bins: 33,
-        column_type: 'date'
-      });
-      expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&aggregation=month');
-    });
+    describe('column type is date', function () {
+      it('should only include aggregation if aggregation and bins present', function () {
+        this.model.set({
+          aggregation: 'month',
+          bins: 33,
+          column_type: 'date'
+        });
 
-    it('should include aggregation auto if column type is date and no aggregation set', function () {
-      this.model.set({
-        aggregation: undefined,
-        column_type: 'date'
+        expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&aggregation=month');
       });
-      expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&aggregation=auto');
-    });
 
-    it('should not include start, end and bins when own_filter is enabled', function () {
-      this.model.set({
-        'url': 'http://example.com',
-        'start': 0,
-        'end': 10,
-        'bins': 25,
-        column_type: 'number'
+      it('should include aggregation auto if column type is date and no aggregation set', function () {
+        this.model.set({
+          aggregation: undefined,
+          column_type: 'date'
+        });
+        expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&aggregation=auto');
       });
-      expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&start=0&end=10&bins=25');
-      this.model.enableFilter();
-      expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&own_filter=1');
+
+      it('should use offset if present', function () {
+        this.model.set({
+          aggregation: 'month',
+          column_type: 'date',
+          offset: 7200,
+          localTimezone: false
+        }, { silent: true });
+
+        var url = this.model.url();
+
+        expect(url).toEqual('http://example.com?bbox=2,1,4,3&aggregation=month&offset=7200');
+      });
+
+      it('should use local offset if localTimezone is true', function () {
+        this.model.set({
+          aggregation: 'month',
+          column_type: 'date',
+          offset: 7200,
+          localTimezone: true
+        }, { silent: true });
+        this.model._localOffset = 43200;
+
+        var url = this.model.url();
+
+        expect(url).toEqual('http://example.com?bbox=2,1,4,3&aggregation=month&offset=43200');
+      });
     });
   });
 
@@ -565,10 +636,75 @@ describe('dataviews/histogram-dataview-model', function () {
     });
   });
 
+  describe('._onColumnChanged', function () {
+    it('should unset aggregation, and call _reloadVisAndForceFetch', function () {
+      this.vis.reload.calls.reset();
+
+      this.model.set({
+        column: 'time',
+        aggregation: 'week',
+        offset: 3600
+      });
+
+      this.model._onColumnChanged();
+
+      expect(this.vis.reload).toHaveBeenCalled();
+      expect(this.model.get('aggregation')).toBeUndefined();
+    });
+  });
+
+  describe('._calculateTotalAmount', function () {
+    it('should aggregate all bucket frequencies', function () {
+      var buckets = [
+        { freq: 8 },
+        { freq: 7 },
+        { freq: 0 },
+        { freq: 3 }
+      ];
+
+      var result = this.model._calculateTotalAmount(buckets);
+
+      expect(result).toEqual(18);
+    });
+
+    it('should return 0 if no buckets present', function () {
+      var buckets = [];
+
+      var result = this.model._calculateTotalAmount(buckets);
+
+      expect(result).toEqual(0);
+    });
+
+    it('should calculate totals properly even if no bucket is present in the middle', function () {
+      var buckets = [
+        { freq: 8 },
+        null,
+        { freq: 0 },
+        { max: 6 },
+        { freq: 3 }
+      ];
+
+      var result = this.model._calculateTotalAmount(buckets);
+
+      expect(result).toEqual(11);
+    });
+  });
+
   describe('._onDataChanged', function () {
-    it('should call _resetFilterAndFetch if column is data and aggregation changes', function () {
+    it('should call _resetFilterAndFetch if column is date and aggregation', function () {
       var model = new Backbone.Model({
         aggregation: 'week'
+      });
+      this.model.set('column_type', 'date', { silent: true });
+
+      this.model._onDataChanged(model);
+
+      expect(this.model._resetFilterAndFetch).toHaveBeenCalled();
+    });
+
+    it('should call _resetFilterAndFetch if column is date and offset changes', function () {
+      var model = new Backbone.Model({
+        offset: 3600
       });
       this.model.set('column_type', 'date', { silent: true });
 
@@ -611,6 +747,40 @@ describe('dataviews/histogram-dataview-model', function () {
       expect(this.model.get('start')).toEqual(11);
       expect(this.model.get('end')).toEqual(22);
       expect(this.model.get('bins')).toEqual(5);
+    });
+  });
+
+  describe('change local timezone', function () {
+    it('should set the same value to originalData', function () {
+      var originalValue = this.model.get('localTimezone');
+      this.model._originalData.set('localTimezone', originalValue, { silent: true });
+
+      this.model.set('localTimezone', !originalValue);
+
+      expect(this.model._originalData.get('localTimezone')).toBe(this.model.get('localTimezone'));
+    });
+  });
+
+  describe('._getCurrentOffset', function () {
+    beforeEach(function () {
+      this.model.set('offset', 7200, { silent: true });
+      this.model._localOffset = 43200;
+    });
+
+    it('should return offset if `localTimezone` is not set', function () {
+      this.model.set('localTimezone', false, { silent: true });
+
+      var offset = this.model._getCurrentOffset();
+
+      expect(offset).toBe(7200);
+    });
+
+    it('should return local offset if `localTimezone` is set', function () {
+      this.model.set('localTimezone', true, { silent: true });
+
+      var offset = this.model._getCurrentOffset();
+
+      expect(offset).toBe(43200);
     });
   });
 });

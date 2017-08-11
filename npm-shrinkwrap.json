@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.9.28-11649-05",
+  "version": "4.9.28",
   "dependencies": {
     "abbrev": {
       "version": "1.1.0",
@@ -491,7 +491,7 @@
     "backbone-forms": {
       "version": "0.14.0",
       "from": "backbone-forms@0.14.0",
-      "resolved": "http://registry.npmjs.org/backbone-forms/-/backbone-forms-0.14.0.tgz"
+      "resolved": "https://registry.npmjs.org/backbone-forms/-/backbone-forms-0.14.0.tgz"
     },
     "backbone-model-file-upload": {
       "version": "1.0.0",
@@ -711,9 +711,9 @@
       "resolved": "https://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.33.0.tgz"
     },
     "caniuse-lite": {
-      "version": "1.0.30000713",
+      "version": "1.0.30000715",
       "from": "caniuse-lite@>=1.0.30000712 <2.0.0",
-      "resolved": "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30000713.tgz"
+      "resolved": "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30000715.tgz"
     },
     "carto": {
       "version": "0.15.1-cdb4",
@@ -727,9 +727,14 @@
     },
     "cartodb-deep-insights.js": {
       "version": "0.0.3",
-      "from": "cartodb/deep-insights.js#11649-play-c12324-time-series-aggregations",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#7ceae588f7dc65c12defa01ec436397c634efec4",
+      "from": "cartodb/deep-insights.js#master",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#3178f08070d471f83bc3f9181662a270c90b695d",
       "dependencies": {
+        "cartodb.js": {
+          "version": "4.0.0-alpha.1",
+          "from": "cartodb/cartodb.js#11649-play-c12324-time-series-aggregations",
+          "resolved": "git://github.com/cartodb/cartodb.js.git#5d6ae0fc2338f503a8c2eb0f10679f9ffefed8f9"
+        },
         "node-polyglot": {
           "version": "2.2.2",
           "from": "node-polyglot@>=2.2.2 <3.0.0",
@@ -744,8 +749,8 @@
     },
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
-      "from": "cartodb/cartodb.js#11649-play-c12324-time-series-aggregations",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#5d6ae0fc2338f503a8c2eb0f10679f9ffefed8f9"
+      "from": "cartodb/cartodb.js#v4",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#9419e7ca6405559c1e241e09e4f9e059cbe0cbbe"
     },
     "caseless": {
       "version": "0.11.0",
@@ -2508,7 +2513,7 @@
     "queue-async": {
       "version": "1.2.1",
       "from": "queue-async@1.2.1",
-      "resolved": "http://registry.npmjs.org/queue-async/-/queue-async-1.2.1.tgz"
+      "resolved": "https://registry.npmjs.org/queue-async/-/queue-async-1.2.1.tgz"
     },
     "quote-stream": {
       "version": "1.0.2",

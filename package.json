@@ -92,7 +92,7 @@
     "shim-loader": "0.1.0",
     "source-map-support": "0.4.0",
     "stringify": "5.1.0",
-    "tpl-loader": "^0.2.1",
+    "tpl-loader": "CartoDB/tpl-loader#master",
     "uglify-js": "2.7.x",
     "watchify": "3.7.0",
     "webpack-bundle-analyzer": "^2.4.0",

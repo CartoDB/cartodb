@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.9.20",
+  "version": "4.9.29",
   "dependencies": {
     "abbrev": {
       "version": "1.1.0",
@@ -491,7 +491,7 @@
     "backbone-forms": {
       "version": "0.14.0",
       "from": "backbone-forms@0.14.0",
-      "resolved": "http://registry.npmjs.org/backbone-forms/-/backbone-forms-0.14.0.tgz"
+      "resolved": "https://registry.npmjs.org/backbone-forms/-/backbone-forms-0.14.0.tgz"
     },
     "backbone-model-file-upload": {
       "version": "1.0.0",
@@ -540,9 +540,9 @@
       "resolved": "https://registry.npmjs.org/block-stream/-/block-stream-0.0.9.tgz"
     },
     "bn.js": {
-      "version": "4.11.7",
+      "version": "4.11.8",
       "from": "bn.js@>=4.1.1 <5.0.0",
-      "resolved": "https://registry.npmjs.org/bn.js/-/bn.js-4.11.7.tgz"
+      "resolved": "https://registry.npmjs.org/bn.js/-/bn.js-4.11.8.tgz"
     },
     "boom": {
       "version": "2.10.1",
@@ -666,9 +666,9 @@
       "resolved": "https://registry.npmjs.org/browserify-zlib/-/browserify-zlib-0.1.4.tgz"
     },
     "browserslist": {
-      "version": "2.3.0",
+      "version": "2.3.1",
       "from": "browserslist@>=2.1.2 <3.0.0",
-      "resolved": "https://registry.npmjs.org/browserslist/-/browserslist-2.3.0.tgz"
+      "resolved": "https://registry.npmjs.org/browserslist/-/browserslist-2.3.1.tgz"
     },
     "buffer": {
       "version": "4.9.1",
@@ -711,9 +711,9 @@
       "resolved": "https://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.33.0.tgz"
     },
     "caniuse-lite": {
-      "version": "1.0.30000712",
-      "from": "caniuse-lite@>=1.0.30000710 <2.0.0",
-      "resolved": "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30000712.tgz"
+      "version": "1.0.30000715",
+      "from": "caniuse-lite@>=1.0.30000712 <2.0.0",
+      "resolved": "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30000715.tgz"
     },
     "carto": {
       "version": "0.15.1-cdb4",
@@ -728,7 +728,7 @@
     "cartodb-deep-insights.js": {
       "version": "0.0.3",
       "from": "cartodb/deep-insights.js#master",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#36511d7925709d6ae6cbbea2b23dffaae8460e10",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#27ee8b104646f6ad4152d63f8c386199b7993744",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",
@@ -745,7 +745,7 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
       "from": "cartodb/cartodb.js#v4",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#4080b8238d6f311aacb680be308ae35cf951096f"
+      "resolved": "git://github.com/cartodb/cartodb.js.git#9419e7ca6405559c1e241e09e4f9e059cbe0cbbe"
     },
     "caseless": {
       "version": "0.11.0",
@@ -1057,9 +1057,9 @@
       "optional": true
     },
     "electron-to-chromium": {
-      "version": "1.3.17",
+      "version": "1.3.18",
       "from": "electron-to-chromium@>=1.3.17 <2.0.0",
-      "resolved": "https://registry.npmjs.org/electron-to-chromium/-/electron-to-chromium-1.3.17.tgz"
+      "resolved": "https://registry.npmjs.org/electron-to-chromium/-/electron-to-chromium-1.3.18.tgz"
     },
     "elliptic": {
       "version": "6.4.0",
@@ -2157,6 +2157,11 @@
       "from": "moment@2.18.1",
       "resolved": "https://registry.npmjs.org/moment/-/moment-2.18.1.tgz"
     },
+    "moment-timezone": {
+      "version": "0.5.13",
+      "from": "moment-timezone@>=0.5.13 <0.6.0",
+      "resolved": "https://registry.npmjs.org/moment-timezone/-/moment-timezone-0.5.13.tgz"
+    },
     "mothership": {
       "version": "0.2.0",
       "from": "mothership@>=0.2.0 <0.3.0",
@@ -2413,6 +2418,28 @@
         }
       }
     },
+    "postcss-scss": {
+      "version": "0.4.0",
+      "from": "postcss-scss@0.4.0",
+      "resolved": "https://registry.npmjs.org/postcss-scss/-/postcss-scss-0.4.0.tgz",
+      "dependencies": {
+        "postcss": {
+          "version": "5.2.17",
+          "from": "postcss@>=5.2.5 <6.0.0",
+          "resolved": "https://registry.npmjs.org/postcss/-/postcss-5.2.17.tgz"
+        },
+        "supports-color": {
+          "version": "3.2.3",
+          "from": "supports-color@>=3.2.3 <4.0.0",
+          "resolved": "https://registry.npmjs.org/supports-color/-/supports-color-3.2.3.tgz"
+        }
+      }
+    },
+    "postcss-strip-inline-comments": {
+      "version": "0.1.5",
+      "from": "postcss-strip-inline-comments@0.1.5",
+      "resolved": "https://registry.npmjs.org/postcss-strip-inline-comments/-/postcss-strip-inline-comments-0.1.5.tgz"
+    },
     "postcss-value-parser": {
       "version": "3.3.0",
       "from": "postcss-value-parser@3.3.0",
@@ -2481,7 +2508,7 @@
     "queue-async": {
       "version": "1.2.1",
       "from": "queue-async@1.2.1",
-      "resolved": "http://registry.npmjs.org/queue-async/-/queue-async-1.2.1.tgz"
+      "resolved": "https://registry.npmjs.org/queue-async/-/queue-async-1.2.1.tgz"
     },
     "quote-stream": {
       "version": "1.0.2",
@@ -3051,19 +3078,19 @@
       }
     },
     "tangram-cartocss": {
-      "version": "0.5.6",
-      "from": "cartodb/tangram-carto#eaf28709e83d4980aedd0c5434e5d5693558cf95",
-      "resolved": "git://github.com/cartodb/tangram-carto.git#eaf28709e83d4980aedd0c5434e5d5693558cf95"
+      "version": "0.5.7",
+      "from": "cartodb/tangram-carto#master",
+      "resolved": "git://github.com/cartodb/tangram-carto.git#4880d8ce94e62839fa1c9cc1d37d36ac5597d1b5"
     },
     "tangram-reference": {
-      "version": "1.0.18",
+      "version": "1.0.19",
       "from": "tangram-reference@>=1.0.18 <2.0.0",
-      "resolved": "https://registry.npmjs.org/tangram-reference/-/tangram-reference-1.0.18.tgz"
+      "resolved": "https://registry.npmjs.org/tangram-reference/-/tangram-reference-1.0.19.tgz"
     },
     "tangram.cartodb": {
       "version": "0.4.6",
       "from": "cartodb/tangram.cartodb#master",
-      "resolved": "git://github.com/cartodb/tangram.cartodb.git#7e983d5c1e62548a68dcea7563c2e12d3bf9d896"
+      "resolved": "git://github.com/cartodb/tangram.cartodb.git#1685d9505c195608c53c0042167361285a13fb85"
     },
     "tapable": {
       "version": "0.2.8",

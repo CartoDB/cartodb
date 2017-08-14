@@ -7,10 +7,10 @@ const version = PACKAGE.version;
 
 const entryPoints = {
   dashboard_static: [
-    './tmp/assets/javascripts/cdb_static.js',
-    './tmp/assets/javascripts/models_static.js',
-    './tmp/assets/javascripts/dashboard_deps_static.js',
-    './tmp/assets/javascripts/dashboard_static.js'
+    // './tmp/assets/javascripts/cdb_static.js',
+    // './tmp/assets/javascripts/models_static.js',
+    // './tmp/assets/javascripts/dashboard_deps_static.js',
+    '../lib/assets/javascripts/cartodb/dashboard/static.js'
   ]
 };
 
@@ -53,7 +53,7 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       filename: path.resolve(__dirname, '../public/static/dashboard/index.html'),
-      template: path.resolve(__dirname, '../lib/assets/javascripts/cartodb/dashboard/views/index.ejs'),
+      template: path.resolve(__dirname, '../lib/assets/javascripts/cartodb/dashboard/views/index.jst.ejs'),
       version: version
     })
   ]

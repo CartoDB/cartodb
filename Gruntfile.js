@@ -303,8 +303,7 @@ module.exports = function (grunt) {
     'copy:js_cartodb',
     'run_browserify',
     'concat:js',
-    'jst',
-    'watch'
+    'jst'
   ]);
 
   grunt.registerTask('js_builder', [
@@ -327,7 +326,8 @@ module.exports = function (grunt) {
     'beforeDefault',
     'js',
     'css',
-    'manifest'
+    'manifest',
+    'watch'
   ]);
 
   registerCmdTask('npm-dev', {cmd: 'npm', args: ['run', 'dev']});

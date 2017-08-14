@@ -17,8 +17,10 @@ module Carto
 
       def me
         carto_viewer = Carto::User.find(current_viewer.id)
-        dashboard_notifications = carto_viewer ? carto_viewer.notifications_for_category(:dashboard) : {}
-        organization_notifications = carto_viewer ? carto_viewer.received_notifications.unread.map { |n| Carto::Api::ReceivedNotificationPresenter.new(n) } : {}
+        dashboard_notifications = carto_viewer.notifications_for_category(:dashboard)
+        organization_notifications = carto_viewer.received_notifications.unread.map do |n|
+          Carto::Api::ReceivedNotificationPresenter.new(n)
+        end
 
         render json: {
           username: current_user.username,

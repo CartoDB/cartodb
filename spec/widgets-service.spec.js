@@ -370,6 +370,10 @@ describe('widgets-service', function () {
         expect(this.widgetModel.get('normalized')).toBeDefined();
       });
 
+      it('should have animated attribute', function () {
+        expect(this.widgetModel.get('animated')).toBeDefined();
+      });
+
       it('should enable dataview by default', function () {
         expect(this.widgetModel.dataviewModel.get('sync_on_bbox_change')).toBe(true);
         expect(this.widgetModel.dataviewModel.get('sync_on_data_change')).toBe(true);

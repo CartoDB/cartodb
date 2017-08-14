@@ -38,10 +38,6 @@ var createFakeDataviewModel = function (attrs) {
 };
 
 var createFakeDataviewLayer = function (attrs) {
-  attrs = _.extend({}, {
-    hasAnimationStyle: false
-  }, attrs);
-
   return new Backbone.Model(attrs);
 };
 
@@ -84,9 +80,13 @@ describe('dashboard-below-map-view', function () {
     });
 
     it('should create time series widget if not has animated styles', function () {
-      this.model = createFakeTimeSeriesWidgetModel();
+      this.model = createFakeTimeSeriesWidgetModel({
+        animated: false
+      });
       this.model.dataviewModel = createFakeDataviewModel();
-      this.model.dataviewModel.layer = createFakeDataviewLayer();
+      this.model.dataviewModel.layer = createFakeDataviewLayer({
+        type: 'torque'
+      });
 
       var def = getDefinitions(this.view, this.model);
       def.createContentView(this.model);
@@ -96,10 +96,12 @@ describe('dashboard-below-map-view', function () {
     });
 
     it('should create torque time series widget if has animated styles', function () {
-      this.model = createFakeTimeSeriesWidgetModel();
+      this.model = createFakeTimeSeriesWidgetModel({
+        animated: true
+      });
       this.model.dataviewModel = createFakeDataviewModel();
       this.model.dataviewModel.layer = createFakeDataviewLayer({
-        hasAnimationStyle: true
+        type: 'torque'
       });
 
       var def = getDefinitions(this.view, this.model);

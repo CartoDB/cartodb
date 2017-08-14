@@ -37,7 +37,6 @@ describe('widgets/time-series/histogram-view', function () {
       this.view._dataviewModel.off();
       this.view._chartView = {
         setNormalized: function () {},
-        setLocalTimezone: function () {},
         removeSelection: function () {}
       };
       spyOn(this.view, '_onChangeData');

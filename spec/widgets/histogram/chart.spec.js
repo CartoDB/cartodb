@@ -155,31 +155,6 @@ describe('widgets/histogram/chart', function () {
     });
   });
 
-  describe('local timezone', function () {
-    it('should set local timezone', function () {
-      spyOn(this.view, '_updateAxisTip');
-
-      this.view.setLocalTimezone(true);
-
-      expect(this.view.model.get('local_timezone')).toEqual(true);
-      expect(this.view._updateAxisTip).toHaveBeenCalledWith('left');
-      expect(this.view._updateAxisTip).toHaveBeenCalledWith('right');
-      expect(this.view.refresh).toHaveBeenCalled();
-    });
-
-    it('should unset local timezone', function () {
-      this.view.model.set('local_timezone', true);
-      spyOn(this.view, '_updateAxisTip');
-
-      this.view.setLocalTimezone(false);
-
-      expect(this.view.model.get('local_timezone')).toEqual(false);
-      expect(this.view._updateAxisTip).toHaveBeenCalledWith('left');
-      expect(this.view._updateAxisTip).toHaveBeenCalledWith('right');
-      expect(this.view.refresh).toHaveBeenCalled();
-    });
-  });
-
   describe('shadow bars', function () {
     it('should not show shadow bars', function () {
       this.view.options.displayShadowBars = false;
@@ -1320,20 +1295,6 @@ describe('widgets/histogram/chart', function () {
 
         expect(this.view.$('.CDB-Chart-axisTipText.CDB-Chart-axisTip-left').text()).toBe('09:03 08/03/2017');
       });
-
-      describe('local timezone', function () {
-        beforeEach(function () {
-          this.view.model.set('local_timezone', true);
-        });
-
-        it('should update axis tip', function () {
-          this.view._updateAxisTip('left');
-
-          var localTime = moment.tz(new Date(time * 1000), moment.tz.guess()).format('HH:mm L');
-
-          expect(this.view.$('.CDB-Chart-axisTipText.CDB-Chart-axisTip-left').text()).toBe(localTime);
-        });
-      });
     });
 
     describe('time-series, mobile', function () {
@@ -1626,19 +1587,6 @@ describe('widgets/histogram/chart', function () {
         expect(this.view._calculateDivisionWithByAggregation).toHaveBeenCalled();
         expect(this.view.formatter).not.toBe(formatter.formatNumber);
       });
-    });
-  });
-
-  describe('._onLocalTimezoneChanged', function () {
-    it('should update formatter, and axis', function () {
-      spyOn(this.view, '_updateAxisTip');
-
-      this.view._onLocalTimezoneChanged();
-
-      expect(createFormatterSpy).toHaveBeenCalledWith();
-      expect(this.view._updateAxisTip).toHaveBeenCalledWith('left');
-      expect(this.view._updateAxisTip).toHaveBeenCalledWith('right');
-      expect(this.view.refresh).toHaveBeenCalledWith();
     });
   });
 });

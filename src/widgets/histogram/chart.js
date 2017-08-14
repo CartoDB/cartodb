@@ -801,11 +801,6 @@ module.exports = cdb.core.View.extend({
     return this;
   },
 
-  setLocalTimezone: function (localTimezone) {
-    this.model.set('local_timezone', !!localTimezone);
-    return this;
-  },
-
   removeSelection: function () {
     this.resetIndexes();
     this.chart.selectAll('.CDB-Chart-bar').classed({'is-selected': false, 'is-filtered': false});

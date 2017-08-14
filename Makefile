@@ -36,7 +36,6 @@ WORKING_SPECS_1 = \
 	spec/requests/carto/api/overlay_presenter_spec.rb \
 	spec/requests/carto/api/presenter_cache_spec.rb \
 	spec/requests/carto/api/templates_controller_spec.rb \
-	spec/requests/carto/api/users_controller_spec.rb \
 	spec/requests/carto/api/user_creations_controller_spec.rb \
 	spec/requests/carto/api/widgets_controller_spec.rb \
 	spec/requests/carto/builder/public/embeds_controller_spec.rb \
@@ -262,6 +261,7 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/requests/carto/api/maps_controller_spec.rb \
 	spec/requests/carto/api/static_notifications_controller_spec.rb \
 	spec/requests/carto/api/visualization_exports_controller_spec.rb \
+	spec/requests/carto/api/users_controller_spec.rb \
 	spec/requests/carto/api/vizjson3_presenter_spec.rb \
 	spec/requests/carto/superadmin/organizations_controller_spec.rb \
 	spec/requests/carto/superadmin/users_controller_spec.rb \

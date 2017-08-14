@@ -1,12 +1,13 @@
 # encoding: utf-8
 
-require 'uuidtools'
-require_relative '../../../spec_helper'
+require_relative '../../../spec_helper_min'
+require 'support/helpers'
 require_relative '../../../../app/controllers/carto/api/users_controller'
 
 describe Carto::Api::UsersController do
   include_context 'organization with users helper'
   include Warden::Test::Helpers
+  include HelperMethods
 
   describe 'me' do
     it 'returns a hash with current user info' do

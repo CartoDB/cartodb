@@ -1,18 +1,11 @@
-cache: false
 language: node_js
 node_js:
-  - "4.1"
-
-install:
-  - npm install
-
+  - "6.9.2"
 before_script:
   - npm install -g grunt-cli
-
-script:
-  - grunt test
-
 notifications:
   email:
     on_success: never
     on_failure: change
+cache:
+  yarn: true

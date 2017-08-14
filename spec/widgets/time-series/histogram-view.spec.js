@@ -63,8 +63,9 @@ describe('widgets/time-series/histogram-view', function () {
 
   describe('.resetFilter', function () {
     it('should unset range in filter and reset filter internally', function () {
-      spyOn(this.view._rangeFilter, 'unsetRange');
+      spyOn(this.view._rangeFilter, 'unsetRange').and.callThrough();
       spyOn(this.view, '_resetFilterInDI');
+      this.view._rangeFilter.set({ min: 10, max: 50 });
 
       this.view.resetFilter();
 
@@ -121,18 +122,13 @@ describe('widgets/time-series/histogram-view', function () {
   });
 
   describe('_onChangeLocalTimezone', function () {
-    it('should call `setLocalTimezone` on its chart view', function () {
+    it('should set `localTimezone` in dataviewmodel with its current value', function () {
+      this.view._dataviewModel.set('localTimezone', false, { silent: true });
       this.view._timeSeriesModel.set('local_timezone', true);
-      var arg = null;
-      this.view._chartView = {
-        setLocalTimezone: function (local_timezone) {
-          arg = local_timezone;
-        }
-      };
 
       this.view._onChangeLocalTimezone();
 
-      expect(arg).toBe(true);
+      expect(this.view._dataviewModel.get('localTimezone')).toBe(true);
     });
   });
 

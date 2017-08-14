@@ -12,7 +12,7 @@ Please, read the [quickstart](doc/quickstart.md) and the [API](doc/api.md)
 
 ## Develop
 
-`npm install` and then `grunt dev` to build dev dist files
+`yarn install` and then `grunt dev` to build dev dist files
 
 After the last step [http://localhost:9002/](http://localhost:9002/) should open in a browser, where you can run tests, see styleguide and examples etc.
 

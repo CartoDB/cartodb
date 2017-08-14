@@ -36,7 +36,6 @@ module.exports = cdb.core.View.extend({
 
   resetFilter: function () {
     this._rangeFilter.unsetRange();
-    this._resetFilterInDI();
   },
 
   _initBinds: function () {
@@ -124,9 +123,7 @@ module.exports = cdb.core.View.extend({
   },
 
   _onChangeLocalTimezone: function () {
-    if (this._chartView) {
-      this._chartView.setLocalTimezone(this._timeSeriesModel.get('local_timezone'));
-    }
+    this._dataviewModel.set('localTimezone', this._timeSeriesModel.get('local_timezone'));
   },
 
   _resetFilterInDI: function () {
@@ -135,7 +132,7 @@ module.exports = cdb.core.View.extend({
       max: undefined,
       lo_index: undefined,
       hi_index: undefined
-    }, { silent: true });
+    });
     this._chartView.removeSelection();
   },
 

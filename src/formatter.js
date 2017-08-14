@@ -96,16 +96,15 @@ format.formatValue = function (value) {
 };
 
 format.timestampFactory = function (aggregation, offset, localTimezone) {
+  var localOffset = localTimezone ? moment.tz(moment.tz.guess()).utcOffset() * 60 : offset || 0;
   return function (timestamp) {
     if (!_.has(AGGREGATION_FORMATS, aggregation)) {
       return '-';
     }
-
-    var localOffset = localTimezone ? moment.tz(moment.tz.guess()).utcOffset() * 60 : offset || 0;
-
     var format = AGGREGATION_FORMATS[aggregation];
     var date = moment.unix(timestamp + localOffset).utc();
-    return date.format(format.display);
+    var formatted = date.format(format.display);
+    return formatted;
   };
 };
 

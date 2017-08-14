@@ -6,7 +6,8 @@ var _ = require('underscore');
  */
 module.exports = WidgetModel.extend({
   defaults: {
-    normalized: true
+    normalized: true,
+    animated: false
   },
 
   defaultState: _.extend(

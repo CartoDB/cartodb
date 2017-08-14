@@ -30,5 +30,11 @@ describe Carto::Api::UsersController do
         expect(response.body[:organization_notifications]).to eq(organization_notifications)
       end
     end
+
+    it 'returns 401 if user is not logged in' do
+      get_json api_v3_users_me_url, @headers do |response|
+        expect(response.status).to eq(401)
+      end
+    end
   end
 end

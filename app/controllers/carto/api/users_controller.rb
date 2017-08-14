@@ -7,7 +7,7 @@ module Carto
       include CartoDB::ConfigUtils
       include FrontendConfigHelper
 
-      ssl_required :get_authenticated_users, :show
+      ssl_required :show, :me, :get_authenticated_users
 
       skip_before_filter :api_authorization_required, only: [:get_authenticated_users]
 
@@ -16,7 +16,7 @@ module Carto
       end
 
       def me
-        carto_viewer = current_viewer && Carto::User.where(id: current_viewer.id).first
+        carto_viewer = Carto::User.find(current_viewer.id)
         dashboard_notifications = carto_viewer ? carto_viewer.notifications_for_category(:dashboard) : {}
         organization_notifications = carto_viewer ? carto_viewer.received_notifications.unread.map { |n| Carto::Api::ReceivedNotificationPresenter.new(n) } : {}
 

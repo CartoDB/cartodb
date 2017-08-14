@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.9.26",
+  "version": "4.9.29",
   "dependencies": {
     "abbrev": {
       "version": "1.1.0",
@@ -711,9 +711,9 @@
       "resolved": "https://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.33.0.tgz"
     },
     "caniuse-lite": {
-      "version": "1.0.30000713",
+      "version": "1.0.30000715",
       "from": "caniuse-lite@>=1.0.30000712 <2.0.0",
-      "resolved": "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30000713.tgz"
+      "resolved": "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30000715.tgz"
     },
     "carto": {
       "version": "0.15.1-cdb4",
@@ -745,7 +745,7 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
       "from": "cartodb/cartodb.js#v4",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#16dfec22a351b7408032b87a0fec237e2b70d746"
+      "resolved": "git://github.com/cartodb/cartodb.js.git#9419e7ca6405559c1e241e09e4f9e059cbe0cbbe"
     },
     "caseless": {
       "version": "0.11.0",
@@ -2156,6 +2156,11 @@
       "version": "2.18.1",
       "from": "moment@2.18.1",
       "resolved": "https://registry.npmjs.org/moment/-/moment-2.18.1.tgz"
+    },
+    "moment-timezone": {
+      "version": "0.5.13",
+      "from": "moment-timezone@>=0.5.13 <0.6.0",
+      "resolved": "https://registry.npmjs.org/moment-timezone/-/moment-timezone-0.5.13.tgz"
     },
     "mothership": {
       "version": "0.2.0",

@@ -1323,9 +1323,9 @@ cartocolor@4.0.0:
   dependencies:
     colorbrewer "1.0.0"
 
-cartodb.js@CartoDB/cartodb.js#12470-responsive:
+cartodb.js@CartoDB/cartodb.js#v4:
   version "4.0.0-alpha.1"
-  resolved "https://codeload.github.com/CartoDB/cartodb.js/tar.gz/756d6513b0cebb6b1168b718503635db75a2088b"
+  resolved "https://codeload.github.com/CartoDB/cartodb.js/tar.gz/9419e7ca6405559c1e241e09e4f9e059cbe0cbbe"
   dependencies:
     backbone "1.2.3"
     backbone-poller "^1.1.3"
@@ -6343,9 +6343,9 @@ syntax-error@^1.1.1:
   dependencies:
     acorn "^4.0.3"
 
-tangram-cartocss@cartodb/tangram-carto#master:
+tangram-cartocss@cartodb/tangram-carto#eaf28709e83d4980aedd0c5434e5d5693558cf95:
   version "0.5.6"
-  resolved "https://codeload.github.com/cartodb/tangram-carto/tar.gz/8eaf639ce966a6f16ad695526d3c241f14aeef49"
+  resolved "https://codeload.github.com/cartodb/tangram-carto/tar.gz/eaf28709e83d4980aedd0c5434e5d5693558cf95"
   dependencies:
     babel-preset-env "^1.4.0"
     babel-runtime "6.23.0"

@@ -268,29 +268,46 @@ describe('widgets/time-series/torque-time-slider-view', function () {
   });
 
   describe('._createFormatter', function () {
+    var view;
+    var dataviewModel;
+
     beforeEach(function () {
       spyOn(formatter, 'timestampFactory');
+
+      dataviewModel = new cdb.core.Model({
+        aggregation: 'minute',
+        offset: 0
+      });
+      dataviewModel.layer = new cdb.core.Model();
+      dataviewModel.getColumnType = function () {
+        return 'number';
+      };
+
+      view = new TorqueTimeSliderView({
+        dataviewModel: dataviewModel,
+        torqueLayerModel: this.torqueLayerModel,
+        chartView: this.chartView,
+        timeSeriesModel: this.timeSeriesModel
+      });
     });
 
     it('should setup formatter', function () {
-      this.view._createFormatter();
+      view._createFormatter();
 
       expect(formatter.timestampFactory).not.toHaveBeenCalledWith();
-      expect(this.view.formatter).toBe(formatter.formatNumber);
+      expect(view.formatter).toBe(formatter.formatNumber);
     });
 
     describe('datetime', function () {
-      beforeEach(function () {
-        this.view._isDateTimeSeries = function () {
+      it('should setup formatter', function () {
+        view._isDateTimeSeries = function () {
           return true;
         };
-      });
 
-      it('should setup formatter', function () {
-        this.view._createFormatter();
+        view._createFormatter();
 
         expect(formatter.timestampFactory).toHaveBeenCalledWith('minute', 0, false);
-        expect(this.view.formatter).not.toBe(formatter.formatNumber);
+        expect(view.formatter).not.toBe(formatter.formatNumber);
       });
     });
   });

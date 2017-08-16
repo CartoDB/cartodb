@@ -2,6 +2,7 @@ Development
 -----------
 
 ### Features
+* Fixed a bug that would break the bubble legend on IE11 (#support/891)
 * Support for SAML signed logout requests (#12355)
 * Provide a way to display broken layers pointing to non existent nodes (#12541)
 * Provide CartoCSS attribute within layer info in vizjson v3 (CartoDB/support#858)
@@ -29,12 +30,14 @@ Development
 * Move playback on animated time series by clicking on it (#12180)
 * Move play/pause button to besides the time series (#12387)
 * Updates Dataservices API client default version to `0.18.0` (#12466)
+* Time-series: add timezone selector to timeseries histogram (#12464)
 * Updates Dataservices API client default version to `0.19.0` (#12494)
 * Don't display slider if there's only one value (#bigmetadata/202)
 * Mustache conditionals support improved in popups (#support/763)
 
 ### Bug fixes / enhancements
 * Change request order in user-actions (#12548)
+* Fix broken join from second column on IE11 (#support/875)
 * Fix ghost node problem (#11397)
 * Break down deep-insights-integrations class (#11581)
 * Fix torque categories layer rendering (#cartodb.js/1698)

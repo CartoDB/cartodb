@@ -12,6 +12,7 @@ module.exports = cdb.core.View.extend({
   className: 'CDB-Dropdown',
 
   events: {
+    'click .js-toggleLocalTimezone': '_toggleLocalTimezone',
     'click .js-toggleNormalized': '_toggleNormalized',
     'click .js-toggleCollapsed': '_toggleCollapsed',
     'click .js-removeWidget': '_removeWidget',
@@ -40,6 +41,7 @@ module.exports = cdb.core.View.extend({
       this.model.attributes, {
         flags: flags
       }, {
+        'local_timezone': false,
         'normalized': false,
         'collapsed': false,
         'show_options': false
@@ -112,6 +114,11 @@ module.exports = cdb.core.View.extend({
   _toggleNormalized: function () {
     var normalized = !this.model.get('normalized');
     this.model.set('normalized', normalized);
+  },
+
+  _toggleLocalTimezone: function () {
+    var localTimezone = !this.model.get('local_timezone');
+    this.model.set('local_timezone', localTimezone);
   },
 
   _open: function () {

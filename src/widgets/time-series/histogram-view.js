@@ -44,6 +44,7 @@ module.exports = cdb.core.View.extend({
     this.listenTo(this._dataviewModel, 'change:data', this._onChangeData, this);
     this.listenTo(this._dataviewModel, 'change:column', this.resetFilter, this);
     this.listenTo(this._timeSeriesModel, 'change:normalized', this._onNormalizedChanged);
+    this.listenTo(this._timeSeriesModel, 'change:local_timezone', this._onChangeLocalTimezone);
     this.listenTo(this._rangeFilter, 'change', this._onFilterChanged);
   },
 
@@ -81,7 +82,8 @@ module.exports = cdb.core.View.extend({
       originalData: this._originalData,
       displayShadowBars: !this._timeSeriesModel.get('normalized'),
       normalized: !!this._timeSeriesModel.get('normalized'),
-      widgetModel: this._timeSeriesModel
+      widgetModel: this._timeSeriesModel,
+      local_timezone: !!this._timeSeriesModel.get('local_timezone')
     });
   },
 
@@ -121,6 +123,10 @@ module.exports = cdb.core.View.extend({
     if (this._chartView) {
       this._chartView.setNormalized(this._timeSeriesModel.get('normalized'));
     }
+  },
+
+  _onChangeLocalTimezone: function () {
+    this._dataviewModel.set('localTimezone', this._timeSeriesModel.get('local_timezone'));
   },
 
   _resetFilterInDI: function () {

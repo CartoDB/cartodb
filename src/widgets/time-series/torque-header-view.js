@@ -29,7 +29,8 @@ module.exports = cdb.core.View.extend({
       this._appendView('.js-torque-controls',
         new TorqueTimeInfoView({
           dataviewModel: this._dataviewModel,
-          torqueLayerModel: this._torqueLayerModel
+          torqueLayerModel: this._torqueLayerModel,
+          timeSeriesModel: this._timeSeriesModel
         })
       );
       showClearButton = false;

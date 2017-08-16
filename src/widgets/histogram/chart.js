@@ -89,9 +89,9 @@ module.exports = cdb.core.View.extend({
 
     this.hide(); // will be toggled on width change
 
-    this.formatter = formatter.formatNumber;
+    this._createFormatter();
+
     if (this._isDateTimeSeries()) {
-      this.formatter = formatter.timestampFactory(this._dataviewModel.get('aggregation'));
       this.options.divisionWidth = this._calculateDivisionWithByAggregation(this._dataviewModel.get('aggregation'));
     }
   },
@@ -388,6 +388,7 @@ module.exports = cdb.core.View.extend({
   },
 
   refresh: function () {
+    this._createFormatter();
     this._setupDimensions();
     this._removeAxis();
     this._generateAxis();
@@ -515,7 +516,8 @@ module.exports = cdb.core.View.extend({
       margin: _.clone(this.options.margin),
       width: 0, // will be set on resize listener
       pos: { x: 0, y: 0 },
-      normalized: this.options.normalized
+      normalized: this.options.normalized,
+      local_timezone: this.options.local_timezone
     });
   },
 
@@ -546,6 +548,9 @@ module.exports = cdb.core.View.extend({
         if (!this._areGradientsAlreadyGenerated()) {
           this._setupFillColor();
         }
+      });
+      this.listenTo(this._dataviewModel, 'change:offset', function () {
+        this.refresh();
       });
     }
 
@@ -772,6 +777,11 @@ module.exports = cdb.core.View.extend({
 
   setNormalized: function (normalized) {
     this.model.set('normalized', !!normalized);
+    return this;
+  },
+
+  setLocalTimezone: function (localTimezone) {
+    this.model.set('local_timezone', !!localTimezone);
     return this;
   },
 
@@ -1112,18 +1122,25 @@ module.exports = cdb.core.View.extend({
     var axis = this.chart.append('g')
       .attr('class', 'CDB-Chart-axis CDB-Text CDB-Size-small');
 
+    function verticalToValue (d) {
+      return self.xAxisScale
+        ? self.xAxisScale(d)
+        : null;
+    }
+
     axis
       .append('g')
       .selectAll('.Label')
       .data(this.verticalRange)
       .enter().append('text')
-      .attr('x', function (d) { return d; })
+      .attr('x', function (d) {
+        return d;
+      })
       .attr('y', function () { return self.chartHeight() + 15; })
       .attr('text-anchor', adjustTextAnchor)
       .text(function (d) {
-        var value;
-        if (self.xAxisScale) {
-          value = self.xAxisScale(d);
+        var value = verticalToValue(d);
+        if (_.isFinite(value)) {
           return self.formatter(value);
         }
       });
@@ -1562,6 +1579,13 @@ module.exports = cdb.core.View.extend({
         return 80;
       default:
         return 120;
+    }
+  },
+
+  _createFormatter: function () {
+    this.formatter = formatter.formatNumber;
+    if (this._isDateTimeSeries()) {
+      this.formatter = formatter.timestampFactory(this._dataviewModel.get('aggregation'), this._dataviewModel.get('offset'), this.model.get('local_timezone'));
     }
   },
 

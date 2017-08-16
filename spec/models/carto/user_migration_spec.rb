@@ -1,7 +1,6 @@
 require_relative '../../spec_helper_min'
 require_relative '../../../app/models/carto/user_migration_import'
 require_relative '../../../app/models/carto/user_migration_export'
-require_relative '../../../app/models/carto/user_migration_export'
 require_relative '../../support/factories/tables'
 require_relative '../../factories/organizations_contexts'
 
@@ -39,7 +38,8 @@ describe 'UserMigration' do
       exported_file: export.exported_file,
       database_host: user_attributes['database_host'],
       org_import: false,
-      json_file: export.json_file
+      json_file: export.json_file,
+      import_type: 'user'
     )
     import.run_import
     puts import.log.entries if import.state != Carto::UserMigrationImport::STATE_COMPLETE
@@ -82,7 +82,8 @@ describe 'UserMigration' do
         exported_file: export.exported_file,
         database_host: owner_attributes['database_host'],
         org_import: true,
-        json_file: export.json_file
+        json_file: export.json_file,
+        import_type: 'organization'
       )
       import.run_import
       puts import.log.entries if import.state != Carto::UserMigrationImport::STATE_COMPLETE

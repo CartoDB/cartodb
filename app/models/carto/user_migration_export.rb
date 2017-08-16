@@ -131,7 +131,7 @@ module Carto
              end
 
       args.merge(
-        path: "#{work_dir}/data",
+        path: "#{work_dir}/data/",
         job_uuid: id,
         export_job_logger: log.logger,
         logger: log.logger

@@ -24,6 +24,7 @@ module Carto
     validates :database_host, presence: true
     validates :exported_file, presence: true
     validates :json_file, presence: true
+    validate :valid_import_type
 
     def run_import
       log.append('=== Downloading ===')
@@ -37,17 +38,12 @@ module Carto
       log.append('=== Importing ===')
       update_attributes(state: STATE_IMPORTING)
 
-      if import_metadata?
-        log.append('=== Importing user/org metadata ===')
-
-        if organization.present?
-          service = Carto::OrganizationMetadataExportService.new
-          service.import_organization_and_users_from_directory(Dir["#{work_dir}/*"].first + "/meta")
-        end
+      case import_type
+        when 'organization' then import_organization(work_dir)
+        when 'user'         then import_user(work_dir)
+        else
+          raise 'Unrecognized import type'
       end
-
-      log.append('=== Importing user/org data ===')
-      CartoDB::DataMover::ImportJob.new(import_job_arguments(work_dir)).run!
 
       log.append('=== Complete ===')
       update_attributes(state: STATE_COMPLETE)
@@ -69,6 +65,62 @@ module Carto
 
     private
 
+    def valid_import_type
+      unless import_type.present?
+        errors.add(:import_type, "Import type must be present")
+        return false
+      end
+
+      case import_type
+        when 'user'
+          if organization_id.present?
+            errors.add(:organization_id, "organization_id can't be present on user imports")
+          end
+        when 'organization'
+          if user_id.present?
+            errors.add(:user_id, "user_id can't be present on organization imports")
+          end
+      end
+    end
+
+    def import_user(work_dir)
+      service = Carto::UserMetadataExportService.new
+
+      if import_metadata?
+        log.append('=== Importing user metadata ===')
+        #Dir["#{path}/user_*"]
+        #Dir["#{work_dir}/*"].first + "/meta"
+        self.user = service.import_user_from_directory(work_dir, import_visualizations: false)
+        self.save!
+      end
+
+      log.append('=== Importing user data ===')
+      CartoDB::DataMover::ImportJob.new(import_job_arguments(work_dir)).run!
+
+      if import_metadata?
+        log.append('=== Importing user visualizations and search tweets ===')
+        service.import_search_tweets_from_directory(work_dir, self.user)
+      end
+    end
+
+    def import_organization(work_dir)
+      service = Carto::OrganizationMetadataExportService.new
+
+      if import_metadata?
+        log.append('=== Importing org metadata ===')
+        self.organization = service.import_organization_and_users_from_directory(Dir["#{work_dir}/*"].first + "/meta")
+        self.save!
+      end
+
+      log.append('=== Importing org data ===')
+      CartoDB::DataMover::ImportJob.new(import_job_arguments(work_dir)).run!
+
+      if import_metadata?
+        log.append('=== Importing org visualizations ===')
+        service.import_organization_visualizations_from_directory(organization, Dir["#{work_dir}/*"].first + "/meta")
+      end
+    end
+
     def unzip_package(work_dir, package)
       log.append("=== Unzipping #{package} ===")
       `cd #{work_dir}; unzip -u #{package}; cd -`
@@ -76,19 +128,24 @@ module Carto
 
     def create_work_directory
       log.append('=== Creating work directory ===')
+
       work_dir = "#{import_dir}/#{id}/"
       FileUtils.mkdir_p(work_dir)
+
       work_dir
     end
 
     def download_package(work_dir)
       destination = "#{work_dir}/export.zip"
+
       log.append("=== Downloading #{exported_file} to #{destination} ===")
+
       if exported_file.starts_with?('http')
         http_client.get_file(exported_file, destination)
       else
         FileUtils.cp(exported_file, destination)
       end
+
       destination
     end
 
@@ -110,9 +167,11 @@ module Carto
     end
 
     def import_job_arguments(work_dir)
+      export_id, export_file = json_file.split('/')
+
       {
         job_uuid: id,
-        file: "#{work_dir}/#{json_file}",
+        file: "#{work_dir}/#{export_id}/data/#{export_file}",
         data: true,
         metadata: !import_only_data?,
         host: database_host,
@@ -127,6 +186,7 @@ module Carto
     def set_defaults
       self.log = Carto::Log.create(type: 'user_migration_import') unless log
       self.state = STATE_PENDING unless state
+
       save
     end
   end

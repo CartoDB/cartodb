@@ -208,14 +208,18 @@ module Carto
       Carto::RedisExportService.new.restore_redis_from_json_export(File.read(Dir["#{path}/redis_user_*.json"].first))
 
       if import_visualizations
-        import_user_visualizations_from_directory(user, Carto::Visualization::TYPE_REMOTE, path)
-        import_user_visualizations_from_directory(user, Carto::Visualization::TYPE_CANONICAL, path)
-        import_user_visualizations_from_directory(user, Carto::Visualization::TYPE_DERIVED, path)
-
-        import_search_tweets_from_directory(path, user)
+        import_user_visualizations_and_search_tweets_from_directory(user, path)
       end
 
       user
+    end
+
+    def import_user_visualizations_and_search_tweets_from_directory(user, path)
+      import_user_visualizations_from_directory(user, Carto::Visualization::TYPE_REMOTE, path)
+      import_user_visualizations_from_directory(user, Carto::Visualization::TYPE_CANONICAL, path)
+      import_user_visualizations_from_directory(user, Carto::Visualization::TYPE_DERIVED, path)
+
+      import_search_tweets_from_directory(path, user)
     end
 
     def import_search_tweets_from_directory(path, user)

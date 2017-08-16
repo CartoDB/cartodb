@@ -8,8 +8,6 @@ var moment = require('moment');
 require('moment-timezone');
 
 describe('widgets/time-series/torque-time-slider-view', function () {
-  var createFormatterSpy;
-
   beforeEach(function () {
     var vis = specHelper.createDefaultVis();
     this.dataviewModel = vis.dataviews.createHistogramModel(vis.map.layers.first(), {
@@ -65,8 +63,6 @@ describe('widgets/time-series/torque-time-slider-view', function () {
       chartView: this.chartView,
       timeSeriesModel: this.timeSeriesModel
     });
-
-    createFormatterSpy = spyOn(this.view, '_createFormatter');
   });
 
   describe('.render', function () {
@@ -152,8 +148,6 @@ describe('widgets/time-series/torque-time-slider-view', function () {
 
     describe('datetime', function () {
       beforeEach(function () {
-        createFormatterSpy.and.callThrough();
-
         this.view._isDateTimeSeries = function () {
           return true;
         };
@@ -275,8 +269,6 @@ describe('widgets/time-series/torque-time-slider-view', function () {
 
   describe('._createFormatter', function () {
     beforeEach(function () {
-      createFormatterSpy.and.callThrough();
-
       spyOn(formatter, 'timestampFactory');
     });
 
@@ -289,8 +281,8 @@ describe('widgets/time-series/torque-time-slider-view', function () {
 
     describe('datetime', function () {
       beforeEach(function () {
-        this.view._dataviewModel.getColumnType = function () {
-          return 'date';
+        this.view._isDateTimeSeries = function () {
+          return true;
         };
       });
 
@@ -355,11 +347,12 @@ describe('widgets/time-series/torque-time-slider-view', function () {
 
   describe('._onLocalTimezoneChanged', function () {
     it('should upate formatter and timeslider tip', function () {
+      spyOn(this.view, '_createFormatter');
       spyOn(this.view, '_updateTimeSliderTip');
 
       this.view._onLocalTimezoneChanged();
 
-      expect(createFormatterSpy).toHaveBeenCalled();
+      expect(this.view._createFormatter).toHaveBeenCalled();
       expect(this.view._updateTimeSliderTip).toHaveBeenCalled();
     });
   });

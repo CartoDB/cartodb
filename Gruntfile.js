@@ -94,7 +94,6 @@ module.exports = function (grunt) {
     process.exit(1);
   }
 
-  var TMP_DIR = './tmp/assets';
   var ROOT_ASSETS_DIR = './public/assets/';
   var ASSETS_DIR = './public/assets/<%= pkg.version %>';
 
@@ -121,7 +120,6 @@ module.exports = function (grunt) {
     aws: aws,
     env: env,
 
-    tmp_dir: TMP_DIR,
     assets_dir: ASSETS_DIR,
     root_assets_dir: ROOT_ASSETS_DIR,
 

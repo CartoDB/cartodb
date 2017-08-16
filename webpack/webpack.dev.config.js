@@ -7,9 +7,6 @@ const version = PACKAGE.version;
 
 const entryPoints = {
   static: [
-    // './tmp/assets/javascripts/cdb_static.js',
-    // './tmp/assets/javascripts/models_static.js',
-    // './tmp/assets/javascripts/dashboard_deps_static.js',
     './lib/assets/javascripts/cartodb/dashboard/static.js'
   ]
 };

@@ -1323,9 +1323,9 @@ cartocolor@4.0.0:
   dependencies:
     colorbrewer "1.0.0"
 
-cartodb.js@CartoDB/cartodb.js#v4:
+cartodb.js@CartoDB/cartodb.js#12470-responsive:
   version "4.0.0-alpha.1"
-  resolved "https://codeload.github.com/CartoDB/cartodb.js/tar.gz/9419e7ca6405559c1e241e09e4f9e059cbe0cbbe"
+  resolved "https://codeload.github.com/CartoDB/cartodb.js/tar.gz/322d630788b1f52e0b70bb165cfb6c2681622aa7"
   dependencies:
     backbone "1.2.3"
     backbone-poller "^1.1.3"

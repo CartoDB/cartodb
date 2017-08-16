@@ -39,10 +39,10 @@ module Carto
       update_attributes(state: STATE_IMPORTING)
 
       case import_type
-        when 'organization' then import_organization(work_dir)
-        when 'user'         then import_user(work_dir)
-        else
-          raise 'Unrecognized import type'
+      when 'organization' then import_organization(work_dir)
+      when 'user'         then import_user(work_dir)
+      else
+        raise 'Unrecognized import type'
       end
 
       log.append('=== Complete ===')
@@ -72,14 +72,14 @@ module Carto
       end
 
       case import_type
-        when 'user'
-          if organization_id.present?
-            errors.add(:organization_id, "organization_id can't be present on user imports")
-          end
-        when 'organization'
-          if user_id.present?
-            errors.add(:user_id, "user_id can't be present on organization imports")
-          end
+      when 'user'
+        if organization_id.present?
+          errors.add(:organization_id, "organization_id can't be present on user imports")
+        end
+      when 'organization'
+        if user_id.present?
+          errors.add(:user_id, "user_id can't be present on organization imports")
+        end
       end
     end
 
@@ -88,10 +88,8 @@ module Carto
 
       if import_metadata?
         log.append('=== Importing user metadata ===')
-        #Dir["#{path}/user_*"]
-        #Dir["#{work_dir}/*"].first + "/meta"
-        self.user = service.import_user_from_directory(work_dir, import_visualizations: false)
-        self.save!
+        user = service.import_user_from_directory(work_dir, import_visualizations: false)
+        save!
       end
 
       log.append('=== Importing user data ===')
@@ -99,7 +97,7 @@ module Carto
 
       if import_metadata?
         log.append('=== Importing user visualizations and search tweets ===')
-        service.import_search_tweets_from_directory(work_dir, self.user)
+        service.import_search_tweets_from_directory(work_dir, user)
       end
     end
 
@@ -108,8 +106,8 @@ module Carto
 
       if import_metadata?
         log.append('=== Importing org metadata ===')
-        self.organization = service.import_organization_and_users_from_directory(Dir["#{work_dir}/*"].first + "/meta")
-        self.save!
+        organization = service.import_organization_and_users_from_directory(Dir["#{work_dir}/*"].first + "/meta")
+        save!
       end
 
       log.append('=== Importing org data ===')

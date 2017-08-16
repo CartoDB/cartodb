@@ -75,6 +75,7 @@ describe('widgets/time-series/content-view', function () {
 
       it('should render chart', function () {
         this.view.render();
+
         expect(this.view.$('.js-header').length).toBe(1);
         expect(this.view.$('.js-content').length).toBe(1);
         expect(this.view._histogramView).toBeDefined();

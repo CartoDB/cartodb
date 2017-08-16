@@ -49,7 +49,6 @@ module.exports = cdb.core.View.extend({
   },
 
   _initBinds: function () {
-    this._torqueLayerModel.bind('change:step', this.render, this);
-    this.add_related_model(this._torqueLayerModel);
+    this.listenTo(this._torqueLayerModel, 'change:step', this.render);
   }
 });

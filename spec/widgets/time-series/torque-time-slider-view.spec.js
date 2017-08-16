@@ -1,11 +1,18 @@
+var _ = require('underscore');
+var Backbone = require('backbone');
 var specHelper = require('../../spec-helper');
 var HistogramChartView = require('../../../src/widgets/histogram/chart');
 var TorqueTimeSliderView = require('../../../src/widgets/time-series/torque-time-slider-view');
+var formatter = require('../../../src/formatter');
+var moment = require('moment');
+require('moment-timezone');
 
 describe('widgets/time-series/torque-time-slider-view', function () {
   beforeEach(function () {
     var vis = specHelper.createDefaultVis();
     this.dataviewModel = vis.dataviews.createHistogramModel(vis.map.layers.first(), {
+      aggregation: 'minute',
+      offset: 0,
       column: 'dates',
       bins: 256
     });
@@ -25,10 +32,10 @@ describe('widgets/time-series/torque-time-slider-view', function () {
     });
 
     this.histogramChartMargins = {
-      top: 0,
-      right: 0,
-      bottom: 0,
-      left: 0
+      top: 4,
+      right: 4,
+      bottom: 4,
+      left: 4
     };
 
     spyOn(HistogramChartView.prototype, '_setupFillColor').and.returnValue('red');
@@ -37,7 +44,7 @@ describe('widgets/time-series/torque-time-slider-view', function () {
       type: 'time-series',
       dataviewModel: this.dataviewModel,
       margin: this.histogramChartMargins,
-      height: 200,
+      height: 72,
       data: [{
         start: 0,
         end: 1
@@ -46,19 +53,270 @@ describe('widgets/time-series/torque-time-slider-view', function () {
     this.chartView.render();
     this.chartView.model.set('width', 400);
 
+    this.timeSeriesModel = new Backbone.Model({
+      local_timezone: false
+    });
+
     this.view = new TorqueTimeSliderView({
       dataviewModel: this.dataviewModel,
       torqueLayerModel: this.torqueLayerModel,
-      chartView: this.chartView
+      chartView: this.chartView,
+      timeSeriesModel: this.timeSeriesModel
     });
-    this.renderResult = this.view.render();
   });
 
-  it('should render ok', function () {
-    expect(this.renderResult).toBe(this.view);
+  describe('.render', function () {
+    it('should render ok', function () {
+      this.view.render();
+
+      expect(this.view._chartView.$('.CDB-TimeSlider').length).toBe(1);
+    });
+
+    describe('tablet', function () {
+      var view;
+
+      beforeEach(function () {
+        view = new TorqueTimeSliderView({
+          dataviewModel: this.dataviewModel,
+          torqueLayerModel: this.torqueLayerModel,
+          chartView: this.chartView,
+          timeSeriesModel: this.timeSeriesModel
+        });
+        spyOn(view, '_generateTimeSliderTip');
+
+        view._isTabletViewport = function () {
+          return true;
+        };
+      });
+
+      it('should render timeslider tip', function () {
+        view.render();
+
+        expect(view._generateTimeSliderTip).toHaveBeenCalled();
+      });
+    });
   });
 
-  describe('when step changes', function () {
+  describe('._generateTimeSliderTip', function () {
+    beforeEach(function () {
+      this.view._chartView.model.set({
+        height: 16,
+        margin: _.extend({}, this.view._chartView.model.get('margin'), { top: 0 }),
+        showLabels: false
+      }, { silent: true });
+
+      this.view._isTabletViewport = function () {
+        return true;
+      };
+
+      this.view.render();
+    });
+
+    it('should generate timeslider tip', function () {
+      var timesliderTip = this.view._chartView.$('.CDB-Chart-timeSliderTip');
+
+      expect(timesliderTip.length).toBe(1);
+      expect(timesliderTip.attr('transform')).toBe('translate(16,15)');
+    });
+  });
+
+  describe('._updateTimeSliderTip', function () {
+    var time = '2017-07-30T06:56:23Z';
+
+    beforeEach(function () {
+      this.view._chartView.model.set({
+        height: 16,
+        margin: _.extend({}, this.view._chartView.model.get('margin'), { top: 0 }),
+        showLabels: false
+      }, { silent: true });
+
+      this.view._isTabletViewport = function () {
+        return true;
+      };
+
+      this.view.render();
+    });
+
+    it('should update timeslider tip', function () {
+      this.torqueLayerModel.set({
+        step: 40
+      });
+      this.view._updateTimeSliderTip();
+
+      expect(this.view._chartView.$('.CDB-Chart-timeSliderTipText').text()).toBe('0');
+    });
+
+    describe('datetime', function () {
+      beforeEach(function () {
+        this.view._isDateTimeSeries = function () {
+          return true;
+        };
+        this.view._createFormatter();
+      });
+
+      it('should update timeslider tip', function () {
+        this.torqueLayerModel.set({
+          time: time
+        });
+        this.view._updateTimeSliderTip();
+
+        expect(this.view._chartView.$('.CDB-Chart-timeSliderTipText').text()).toBe('06:56 07/30/2017');
+      });
+
+      describe('local timezone', function () {
+        beforeEach(function () {
+          this.timeSeriesModel.set({
+            local_timezone: true
+          });
+          this.torqueLayerModel.set({
+            time: time
+          });
+        });
+
+        it('should update timeslider tip', function () {
+          this.view._updateTimeSliderTip();
+
+          var localTime = moment.tz(time, moment.tz.guess()).format('HH:mm L');
+
+          expect(this.view._chartView.$('.CDB-Chart-timeSliderTipText').text()).toBe(localTime);
+        });
+      });
+    });
+  });
+
+  describe('._onChangeChartHeight', function () {
+    describe('tablet', function () {
+      beforeEach(function () {
+        this.view._chartView.model.set({
+          height: 16,
+          margin: _.extend({}, this.view._chartView.model.get('margin'), { top: 0 }),
+          showLabels: false
+        }, { silent: true });
+
+        this.view._isTabletViewport = function () {
+          return true;
+        };
+
+        this.view.render();
+      });
+
+      it('should update time-slider height', function () {
+        this.view._onChangeChartHeight();
+
+        expect(this.view._chartView.$('.CDB-TimeSlider').attr('height')).toBe('13');
+      });
+    });
+  });
+
+  describe('._onChangeTime', function () {
+    describe('filter', function () {
+      beforeEach(function () {
+        this.view._dataviewModel.filter.isEmpty = function () {
+          return false;
+        };
+      });
+
+      it('should remove time-slider tip', function () {
+        spyOn(this.view, '_removeTimeSliderTip');
+        this.view.render();
+
+        this.view._onChangeTime();
+
+        expect(this.view._removeTimeSliderTip).toHaveBeenCalled();
+      });
+    });
+
+    describe('empty filter, tablet', function () {
+      beforeEach(function () {
+        this.view._isTabletViewport = function () {
+          return true;
+        };
+      });
+
+      it('should generate and update time-slider tip', function () {
+        spyOn(this.view, '_generateTimeSliderTip');
+        spyOn(this.view, '_updateTimeSliderTip');
+        this.view.render();
+
+        this.view._onChangeTime();
+
+        expect(this.view._generateTimeSliderTip).toHaveBeenCalled();
+        expect(this.view._updateTimeSliderTip).toHaveBeenCalled();
+      });
+
+      describe('timeslider tip exists', function () {
+        it('should not create time-slider tip', function () {
+          spyOn(this.view, '_generateTimeSliderTip').and.callThrough();
+          this.view.render();
+
+          this.view._onChangeTime();
+
+          expect(this.view._generateTimeSliderTip).toHaveBeenCalled();
+        });
+      });
+    });
+  });
+
+  describe('._removeTimeSliderTip', function () {
+    it('should remove timeslider tip', function () {
+      this.view.render();
+
+      this.view._removeTimeSliderTip();
+
+      expect(this.view._chartView.$('.CDB-Chart-timeSliderTip').length).toBe(0);
+    });
+  });
+
+  describe('._createFormatter', function () {
+    var view;
+    var dataviewModel;
+
+    beforeEach(function () {
+      spyOn(formatter, 'timestampFactory');
+
+      dataviewModel = new cdb.core.Model({
+        aggregation: 'minute',
+        offset: 0
+      });
+      dataviewModel.layer = new cdb.core.Model();
+      dataviewModel.getColumnType = function () {
+        return 'number';
+      };
+
+      view = new TorqueTimeSliderView({
+        dataviewModel: dataviewModel,
+        torqueLayerModel: this.torqueLayerModel,
+        chartView: this.chartView,
+        timeSeriesModel: this.timeSeriesModel
+      });
+    });
+
+    it('should setup formatter', function () {
+      view._createFormatter();
+
+      expect(formatter.timestampFactory).not.toHaveBeenCalledWith();
+      expect(view.formatter).toBe(formatter.formatNumber);
+    });
+
+    describe('datetime', function () {
+      it('should setup formatter', function () {
+        view._isDateTimeSeries = function () {
+          return true;
+        };
+
+        view._createFormatter();
+
+        expect(formatter.timestampFactory).toHaveBeenCalledWith('minute', 0, false);
+        expect(view.formatter).not.toBe(formatter.formatNumber);
+      });
+    });
+  });
+
+  describe('._onChangeStep', function () {
+    beforeEach(function () {
+      this.view.render();
+    });
+
     describe('when is not dragging the slider', function () {
       beforeEach(function () {
         spyOn(this.view.timeSlider, 'data').and.callThrough();
@@ -67,7 +325,7 @@ describe('widgets/time-series/torque-time-slider-view', function () {
 
       it('should move the time-slider', function () {
         expect(this.view.timeSlider.data).toHaveBeenCalled();
-        expect(this.view.timeSlider.data.calls.argsFor(1)[0]).toEqual([{ x: 62.5, y: 0 }]);
+        expect(this.view.timeSlider.data.calls.argsFor(1)[0]).toEqual([{ x: 65.25, y: 0 }]);
       });
     });
 
@@ -104,12 +362,27 @@ describe('widgets/time-series/torque-time-slider-view', function () {
     });
   });
 
+  describe('._onLocalTimezoneChanged', function () {
+    it('should upate formatter and timeslider tip', function () {
+      spyOn(this.view, '_createFormatter');
+      spyOn(this.view, '_updateTimeSliderTip');
+
+      this.view._onLocalTimezoneChanged();
+
+      expect(this.view._createFormatter).toHaveBeenCalled();
+      expect(this.view._updateTimeSliderTip).toHaveBeenCalled();
+    });
+  });
+
   describe('.clean', function () {
     beforeEach(function () {
+      this.view.render();
       this.chartView.$el.appendTo('body');
+
       // Precheck, inverted assertions used below
       expect(document.body.contains(this.view.el)).toBe(true);
       expect(this.chartView.el.contains(this.view.el)).toBe(true);
+
       this.view.clean();
     });
 

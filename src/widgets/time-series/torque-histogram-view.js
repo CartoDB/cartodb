@@ -17,9 +17,11 @@ module.exports = HistogramView.extend({
     if (!this.options.torqueLayerModel) throw new Error('torqeLayerModel is required');
     if (!this.options.rangeFilter) throw new Error('rangeFilter is required');
     if (!this.options.dataviewModel) throw new Error('dataviewModel is required');
+    if (!this.options.timeSeriesModel) throw new Error('timeSeriesModel is required');
 
     this._torqueLayerModel = this.options.torqueLayerModel;
     this._dataviewModel = this.options.dataviewModel;
+    this._timeSeriesModel = this.options.timeSeriesModel;
     HistogramView.prototype.initialize.call(this);
   },
 
@@ -49,7 +51,9 @@ module.exports = HistogramView.extend({
     this._timeSliderView = new TorqueTimeSliderView({
       dataviewModel: this._dataviewModel, // a histogram model
       chartView: this._chartView,
-      torqueLayerModel: this._torqueLayerModel
+      torqueLayerModel: this._torqueLayerModel,
+      timeSeriesModel: this._timeSeriesModel,
+      rangeFilter: this._rangeFilter
     });
     this.addView(this._timeSliderView);
     this._timeSliderView.render();
@@ -98,6 +102,7 @@ module.exports = HistogramView.extend({
   _reSelectRange: function () {
     if (!this._rangeFilter.isEmpty()) {
       this._torqueLayerModel.pause();
+
       var min = this._rangeFilter.get('min');
       var max = this._rangeFilter.get('max');
       var loStep = this._timeToStep(min);

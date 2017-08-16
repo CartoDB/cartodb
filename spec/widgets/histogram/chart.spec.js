@@ -3,10 +3,23 @@ var $ = require('jquery');
 var cdb = require('cartodb.js');
 var d3 = require('d3');
 var WidgetHistogramChart = require('../../../src/widgets/histogram/chart');
+var viewportUtils = require('../../../src/viewport-utils');
+var formatter = require('../../../src/formatter');
+require('moment-timezone');
+
+function flushAllD3Transitions () {
+  var now = Date.now;
+  Date.now = function () { return Infinity; };
+  d3.timer.flush();
+  Date.now = now;
+}
 
 describe('widgets/histogram/chart', function () {
   var onWindowResizeReal;
   var onWindowResizeSpy;
+  var generateHandlesSpy;
+  var setupBrushSpy;
+  var createFormatterSpy;
 
   afterEach(function () {
     $('.js-chart').remove();
@@ -16,7 +29,7 @@ describe('widgets/histogram/chart', function () {
     d3.select('body').append('svg').attr('class', 'js-chart');
 
     this.width = 300;
-    this.height = 100;
+    this.height = 72;
 
     d3.select($('.js-chart')[0])
       .attr('width', this.width)
@@ -73,7 +86,10 @@ describe('widgets/histogram/chart', function () {
     spyOn(WidgetHistogramChart.prototype, '_refreshBarsColor').and.callThrough();
     spyOn(WidgetHistogramChart.prototype, '_setupFillColor').and.callThrough();
 
-    this.dataviewModel = new cdb.core.Model();
+    this.dataviewModel = new cdb.core.Model({
+      aggregation: 'minute',
+      offset: 0
+    });
     this.dataviewModel.layer = new cdb.core.Model();
 
     this.view = new WidgetHistogramChart(({
@@ -82,12 +98,13 @@ describe('widgets/histogram/chart', function () {
       margin: this.margin,
       chartBarColor: '#9DE0AD',
       hasHandles: true,
-      height: 100,
+      height: this.height,
       data: this.data,
       dataviewModel: this.dataviewModel,
       originalData: this.originalModel,
       displayShadowBars: true,
       widgetModel: this.widgetModel,
+      local_timezone: false,
       xAxisTickFormat: function (d, i) {
         return d;
       }
@@ -98,6 +115,9 @@ describe('widgets/histogram/chart', function () {
     spyOn(this.view.$el, 'parent');
     this.view.$el.parent.and.returnValue(parentSpy);
 
+    generateHandlesSpy = spyOn(this.view, '_generateHandles');
+    setupBrushSpy = spyOn(this.view, '_setupBrush');
+    createFormatterSpy = spyOn(this.view, '_createFormatter');
     spyOn(this.view, 'refresh').and.callThrough();
 
     this.view.render();
@@ -115,7 +135,9 @@ describe('widgets/histogram/chart', function () {
   describe('normalize', function () {
     it('should normalize', function () {
       spyOn(this.view, 'updateYScale');
+
       this.view.setNormalized(true);
+
       expect(this.view.model.get('normalized')).toEqual(true);
       expect(this.view.updateYScale).toHaveBeenCalled();
       expect(this.view.refresh).toHaveBeenCalled();
@@ -123,7 +145,9 @@ describe('widgets/histogram/chart', function () {
 
     it('should denormalize', function () {
       spyOn(this.view, 'updateYScale');
+
       this.view.setNormalized(false);
+
       expect(this.view.model.get('normalized')).toEqual(false);
       expect(this.view.updateYScale).toHaveBeenCalled();
       expect(this.view.refresh).toHaveBeenCalled();
@@ -134,17 +158,24 @@ describe('widgets/histogram/chart', function () {
     it('should not show shadow bars', function () {
       this.view.options.displayShadowBars = false;
       this.view.model.set('show_shadow_bars', false);
+
       expect(this.view.$('.CDB-Chart-shadowBars').length).toBe(0);
+
       this.originalModel.trigger('change:data');
+
       expect(this.view.$('.CDB-Chart-shadowBars').length).toBe(0);
+
       this.view.showShadowBars();
+
       expect(this.view.$('.CDB-Chart-shadowBars').length).toBe(0);
     });
 
     it('should remove and generate shadow bars when original data chagnes', function () {
       spyOn(this.view, '_removeShadowBars');
       spyOn(this.view, '_generateShadowBars');
+
       this.originalModel.trigger('change:data');
+
       expect(this.view._removeShadowBars).toHaveBeenCalled();
       expect(this.view._generateShadowBars).toHaveBeenCalled();
     });
@@ -176,7 +207,7 @@ describe('widgets/histogram/chart', function () {
     });
 
     it('should draw the bars', function () {
-      expect(this.view.$el.find('.CDB-Chart-bar').size()).toBe(this.data.length);
+      expect(this.view.$('.CDB-Chart-bar').size()).toBe(this.data.length);
     });
 
     it('should draw the axis', function () {
@@ -184,6 +215,10 @@ describe('widgets/histogram/chart', function () {
     });
 
     it('should draw the handles', function () {
+      generateHandlesSpy.and.callThrough();
+
+      this.view._generateHandles();
+
       expect(this.view.$el.find('.CDB-Chart-handle').size()).toBe(2);
     });
 
@@ -220,7 +255,6 @@ describe('widgets/histogram/chart', function () {
 
     it('should maintain the visibility after calling _resizeToParentElement', function () {
       this.view.show();
-      this.view.$el.parent().width();
       this.view._resizeToParentElement();
       expect(this.view.$el.css('display')).toBe('inline');
       expect(this.view.model.get('display')).toBe(true);
@@ -241,8 +275,22 @@ describe('widgets/histogram/chart', function () {
 
     it('should refresh the data', function () {
       this.view.show();
-      this.view.model.set({ data: genHistogramData(20) });
+      this.view.model.set({ data: updateHistogramData(20) });
       expect(this.view.refresh).toHaveBeenCalled();
+    });
+
+    describe('animated', function () {
+      it('should set the parent width', function () {
+        var animatedWidth = 24;
+        spyOn(this.view.$el, 'siblings').and.returnValue($('<div>'));
+        spyOn($.prototype, 'width').and.returnValue(animatedWidth);
+
+        this.view.model.set('animated', true);
+        this.view.show();
+        this.view._resizeToParentElement();
+
+        expect(this.view.model.get('width')).toBe(this.width - animatedWidth);
+      });
     });
 
     describe('should allow to manage the y scale', function () {
@@ -903,8 +951,18 @@ describe('widgets/histogram/chart', function () {
   });
 
   describe('touch interfaces fixes', function () {
+    beforeEach(function () {
+      setupBrushSpy.and.callThrough();
+
+      this.view._setupBrush();
+    });
+
+    afterEach(function () {
+      $('.Brush').remove();
+    });
+
     it('should mark all brush elements with ps-prevent-touchmove', function () {
-      var brush = this.view.$('g.Brush');
+      var brush = this.view.$('.Brush');
 
       var hasProperClass = function (e) {
         return e.attributes.class.value.indexOf('ps-prevent-touchmove') !== 1;
@@ -921,6 +979,615 @@ describe('widgets/histogram/chart', function () {
       _.forEach(brush.children(), checkAllChildren);
     });
   });
+
+  describe('._isTabletViewport', function () {
+    it('should return true if viewport is tablet', function () {
+      spyOn($.prototype, 'width').and.returnValue(100);
+      spyOn(viewportUtils, 'isTabletViewport');
+
+      this.view._isTabletViewport();
+
+      expect(viewportUtils.isTabletViewport).toHaveBeenCalled();
+    });
+  });
+
+  describe('._isMobileViewport', function () {
+    it('should return true if viewport is mobile', function () {
+      spyOn($.prototype, 'width').and.returnValue(100);
+      spyOn(viewportUtils, 'isMobileViewport');
+
+      this.view._isMobileViewport();
+
+      expect(viewportUtils.isMobileViewport).toHaveBeenCalled();
+    });
+  });
+
+  describe('._isTimeSeries', function () {
+    it('should return true if option type is time', function () {
+      expect(this.view._isTimeSeries()).toBe(false);
+
+      this.view.options.type = 'time-date';
+
+      expect(this.view._isTimeSeries()).toBe(true);
+    });
+  });
+
+  describe('._generateChartContent', function () {
+    it('should generate axis, lines, bars, bottom line, handles, and setup brush', function () {
+      spyOn(this.view, '_generateAxis');
+      spyOn(this.view, '_generateLines');
+      spyOn(this.view, '_generateBars');
+      spyOn(this.view, '_generateBottomLine');
+
+      this.view._generateChartContent();
+
+      expect(this.view._generateAxis).toHaveBeenCalled();
+      expect(this.view._generateLines).toHaveBeenCalled();
+      expect(this.view._generateBars).toHaveBeenCalled();
+      expect(this.view._generateBottomLine).toHaveBeenCalled();
+      expect(this.view._generateHandles).toHaveBeenCalled();
+      expect(this.view._setupBrush).toHaveBeenCalled();
+    });
+
+    describe('time-series', function () {
+      beforeEach(function () {
+        this.view._isTimeSeries = function () {
+          return true;
+        };
+      });
+
+      describe('mobile', function () {
+        beforeEach(function () {
+          this.view._isMobileViewport = function () {
+            return true;
+          };
+        });
+
+        it('should not generate lines, bottom line', function () {
+          spyOn(this.view, '_generateBottomLine');
+
+          this.view._generateChartContent();
+
+          expect(this.view._generateBottomLine).not.toHaveBeenCalled();
+        });
+      });
+
+      describe('tablet', function () {
+        beforeEach(function () {
+          this.view._isTabletViewport = function () {
+            return true;
+          };
+        });
+
+        it('should not generate lines', function () {
+          spyOn(this.view, '_generateLines');
+
+          this.view._generateChartContent();
+
+          expect(this.view._generateLines).not.toHaveBeenCalled();
+        });
+      });
+    });
+  });
+
+  describe('._generateHandle', function () {
+    beforeEach(function () {
+      generateHandlesSpy.and.callThrough();
+
+      var generateHandleSpy = spyOn(this.view, '_generateHandle');
+
+      this.view._generateHandles();
+
+      generateHandleSpy.and.callThrough();
+    });
+
+    afterEach(function () {
+      $('.CDB-Chart-handles').remove();
+    });
+
+    it('should generate handle', function () {
+      this.view._generateHandle('left');
+
+      expect(this.view.$('.CDB-Chart-handle-left .CDB-Chart-handleRect').attr('height')).toBe('48');
+    });
+
+    describe('time-series', function () {
+      beforeEach(function () {
+        this.view._isTimeSeries = function () {
+          return true;
+        };
+      });
+
+      describe('tablet', function () {
+        beforeEach(function () {
+          this.view._isTabletViewport = function () {
+            return true;
+          };
+
+          this.view.model.set({
+            height: 16,
+            margin: _.extend({}, this.view.model.get('margin'), { top: 0 }),
+            showLabels: false
+          }, { silent: true });
+        });
+
+        it('should generate handle', function () {
+          this.view._generateHandle('left');
+
+          expect(this.view.$('.CDB-Chart-handle-left .CDB-Chart-handleRect').attr('height')).toBe('24');
+        });
+      });
+    });
+  });
+
+  describe('._generateAxisTip', function () {
+    beforeEach(function () {
+      generateHandlesSpy.and.callThrough();
+
+      this.view._generateHandles();
+    });
+
+    afterEach(function () {
+      $('.CDB-Chart-handles').remove();
+    });
+
+    describe('left', function () {
+      it('should generate left axis tip', function () {
+        this.view._generateAxisTip('left');
+
+        var textLabel = this.view.$('.CDB-Chart-axisTipText.CDB-Chart-axisTip-left');
+        var rectLabel = this.view.$('.CDB-Chart-axisTipRect.CDB-Chart-axisTip-left');
+        var axisTip = this.view.$('.CDB-Chart-axisTip.CDB-Chart-axisTip-left');
+        var triangle = this.view.$('.CDB-Chart-handle-left .CDB-Chart-axisTipTriangle');
+
+        expect(textLabel.attr('opacity')).toBe('1');
+        expect(rectLabel.attr('opacity')).toBe('1');
+        expect(triangle.attr('style')).toContain('opacity: 1;');
+
+        expect(axisTip.length).toBe(1);
+        expect(axisTip.attr('transform')).toBe('translate(0,-26)');
+        expect(triangle.attr('transform')).toBe('translate(-3, -11)');
+      });
+    });
+
+    describe('right', function () {
+      it('should generate right axis tip', function () {
+        this.view._generateAxisTip('right');
+
+        var textLabel = this.view.$('.CDB-Chart-axisTipText.CDB-Chart-axisTip-right');
+        var rectLabel = this.view.$('.CDB-Chart-axisTipRect.CDB-Chart-axisTip-right');
+        var axisTip = this.view.$('.CDB-Chart-axisTip.CDB-Chart-axisTip-right');
+        var triangle = this.view.$('.CDB-Chart-handle-right .CDB-Chart-axisTipTriangle');
+
+        expect(textLabel.attr('opacity')).toBe('1');
+        expect(rectLabel.attr('opacity')).toBe('1');
+        expect(triangle.attr('style')).toContain('opacity: 1;');
+
+        expect(axisTip.length).toBe(1);
+        expect(axisTip.attr('transform')).toBe('translate(0,57)');
+        expect(triangle.attr('transform')).toBe('translate(-3, 59.1)');
+      });
+    });
+
+    describe('time-series', function () {
+      beforeEach(function () {
+        this.view._isTimeSeries = function () {
+          return true;
+        };
+      });
+
+      describe('mobile', function () {
+        beforeEach(function () {
+          this.view._isMobileViewport = function () {
+            return true;
+          };
+        });
+
+        describe('right', function () {
+          it('should generate right axis tip', function () {
+            this.view._generateAxisTip('right');
+
+            expect(this.view.$('.CDB-Chart-axisTip.CDB-Chart-axisTip-right').attr('transform')).toBe('translate(0,-26)');
+            expect(this.view.$('.CDB-Chart-handle-right .CDB-Chart-axisTipTriangle').attr('transform')).toBe('translate(-3, -11)');
+          });
+        });
+      });
+    });
+  });
+
+  describe('._updateTriangle', function () {
+    beforeEach(function () {
+      generateHandlesSpy.and.callThrough();
+
+      this.view.options.hasAxisTip = true;
+      this.view._generateHandles();
+    });
+
+    it('should update triangle', function () {
+      var triangle = this.view.$('.CDB-Chart-handle-left .CDB-Chart-axisTipTriangle');
+
+      this.view._updateTriangle('left', triangle, 42);
+
+      expect(triangle.attr('transform')).toBe('translate(-3,-11)rotate(0)skewX(0)scale(1,1)');
+    });
+
+    describe('time-series, tablet', function () {
+      beforeEach(function () {
+        this.view._isTimeSeries = function () {
+          return true;
+        };
+
+        this.view._isTabletViewport = function () {
+          return true;
+        };
+
+        this.view.model.set('right_axis_tip', 42);
+      });
+
+      it('should update right axis tip', function () {
+        var triangle = this.view.$('.CDB-Chart-handle-right .CDB-Chart-axisTipTriangle');
+
+        this.view._updateTriangle('right', triangle, 42);
+
+        expect(triangle.attr('transform')).toBe('translate(-3,59.099998474121094)rotate(0)skewX(0)scale(1,1)');
+      });
+    });
+  });
+
+  describe('._updateAxisTip', function () {
+    var time = 1501751014;
+
+    beforeEach(function () {
+      generateHandlesSpy.and.callThrough();
+
+      this.view.options.hasAxisTip = true;
+      this.view._generateHandles();
+    });
+
+    afterEach(function () {
+      $('.CDB-Chart-handles').remove();
+    });
+
+    it('should update axis tip', function () {
+      this.view.model.set('left_axis_tip', 42);
+      this.view._updateAxisTip('left');
+
+      expect(this.view.$('.CDB-Chart-axisTipText.CDB-Chart-axisTip-left').text()).toBe('42');
+    });
+
+    describe('left', function () {
+      it('should update left axis tip', function () {
+        this.view.model.set('left_axis_tip', 42);
+        this.view._updateAxisTip('left');
+
+        var axisTip = this.view.$('.CDB-Chart-axisTip.CDB-Chart-axisTip-left');
+
+        expect(axisTip.attr('transform')).toBe('translate(-2, -26)');
+      });
+    });
+
+    describe('right', function () {
+      it('should update right axis tip', function () {
+        this.view.model.set('right_axis_tip', 42);
+        this.view._updateAxisTip('right');
+
+        var axisTip = this.view.$('.CDB-Chart-axisTip.CDB-Chart-axisTip-right');
+
+        expect(axisTip.attr('transform')).toBe('translate(-2, 57)');
+      });
+    });
+
+    describe('datetime', function () {
+      beforeEach(function () {
+        createFormatterSpy.and.callThrough();
+
+        this.view._isDateTimeSeries = function () {
+          return true;
+        };
+        this.view._createFormatter();
+
+        this.view.model.set('left_axis_tip', time);
+      });
+
+      it('should update axis tip', function () {
+        this.view._updateAxisTip('left');
+
+        expect(this.view.$('.CDB-Chart-axisTipText.CDB-Chart-axisTip-left').text()).toBe('09:03 08/03/2017');
+      });
+    });
+
+    describe('time-series, mobile', function () {
+      beforeEach(function () {
+        this.view._isTimeSeries = function () {
+          return true;
+        };
+
+        this.view._isMobileViewport = function () {
+          return true;
+        };
+
+        this.view.model.set('right_axis_tip', 42);
+      });
+
+      it('should update right axis tip', function () {
+        this.view._updateAxisTip('right');
+
+        var axisTip = this.view.$('.CDB-Chart-axisTip.CDB-Chart-axisTip-right');
+
+        expect(axisTip.attr('transform')).toBe('translate(-2, -26)');
+      });
+
+      describe('is dragging', function () {
+        it('should show axis tip', function () {
+          spyOn(this.view, '_showAxisTip');
+
+          this.view.model.set('dragging', true);
+          this.view._updateAxisTip('right');
+
+          expect(this.view._showAxisTip).toHaveBeenCalledWith('right');
+        });
+      });
+    });
+  });
+
+  describe('._onChangeDragging', function () {
+    it('should update model', function () {
+      this.view.model.set('dragging', true);
+
+      expect(this.view.chart.classed('is-dragging')).toBe(true);
+
+      this.view.model.set('dragging', false);
+
+      expect(this.view.chart.classed('is-dragging')).toBe(false);
+    });
+
+    describe('if is mobile, time-series, and is not dragging', function () {
+      beforeEach(function () {
+        this.view._isMobileViewport = function () {
+          return true;
+        };
+
+        this.view._isTimeSeries = function () {
+          return true;
+        };
+
+        this.view.model.set('dragging', true);
+      });
+
+      it('should hide axis tips', function () {
+        spyOn(this.view, '_hideAxisTip');
+
+        this.view.model.set('dragging', false);
+
+        expect(this.view._hideAxisTip).toHaveBeenCalledWith('right');
+        expect(this.view._hideAxisTip).toHaveBeenCalledWith('left');
+      });
+    });
+  });
+
+  describe('._toggleAxisTip', function () {
+    beforeEach(function () {
+      jasmine.clock().install();
+
+      generateHandlesSpy.and.callThrough();
+
+      this.view.options.hasAxisTip = true;
+      this.view._generateHandles();
+    });
+
+    afterEach(function () {
+      jasmine.clock().uninstall();
+
+      $('.CDB-Chart-handles').remove();
+    });
+
+    it('should toggle axis tip', function () {
+      var textLabel = this.view.$('.CDB-Chart-axisTipText.CDB-Chart-axisTip-left');
+      var rectLabel = this.view.$('.CDB-Chart-axisTipRect.CDB-Chart-axisTip-left');
+      var triangle = this.view.$('.CDB-Chart-handle-left .CDB-Chart-axisTipTriangle');
+
+      this.view._toggleAxisTip('left', 1);
+      flushAllD3Transitions();
+
+      expect(textLabel.attr('opacity')).toBe('1');
+      expect(rectLabel.attr('opacity')).toBe('1');
+      expect(triangle.attr('style')).toContain('opacity: 1;');
+
+      this.view._toggleAxisTip('left', 0);
+      flushAllD3Transitions();
+
+      expect(textLabel.attr('opacity')).toBe('0');
+      expect(rectLabel.attr('opacity')).toBe('0');
+      expect(triangle.attr('style')).toContain('opacity: 0;');
+    });
+  });
+
+  describe('._hideAxisTip', function () {
+    it('should hide axis tip', function () {
+      var tip = 'left';
+      spyOn(this.view, '_toggleAxisTip');
+
+      this.view._hideAxisTip(tip);
+
+      expect(this.view._toggleAxisTip).toHaveBeenCalledWith(tip, 0);
+    });
+  });
+
+  describe('._showAxisTip', function () {
+    it('should show axis tip', function () {
+      var tip = 'left';
+      spyOn(this.view, '_toggleAxisTip');
+
+      this.view._showAxisTip(tip);
+
+      expect(this.view._toggleAxisTip).toHaveBeenCalledWith(tip, 1);
+    });
+  });
+
+  describe('._setupBrush', function () {
+    beforeEach(function () {
+      setupBrushSpy.and.callThrough();
+
+      this.view._setupBrush();
+    });
+
+    afterEach(function () {
+      $('.Brush').remove();
+    });
+
+    it('should setup brush', function () {
+      expect(this.view.$('.Brush rect').attr('height')).toBe('48');
+    });
+
+    describe('time-series', function () {
+      beforeEach(function () {
+        this.view._isTimeSeries = function () {
+          return true;
+        };
+      });
+
+      it('should generate handle', function () {
+        expect(this.view.$('.Brush rect').attr('height')).toBe('48');
+      });
+    });
+  });
+
+  describe('._generateBars', function () {
+    beforeEach(function () {
+      generateHandlesSpy.and.callThrough();
+
+      this.view._generateHandles();
+    });
+
+    afterEach(function () {
+      $('.CDB-Chart-handles').remove();
+    });
+
+    it('should update chart', function () {
+      this.view._updateChart();
+      flushAllD3Transitions();
+
+      expect(this.view.$('.CDB-Chart-bar').first().attr('height')).toBe('0');
+      expect(this.view.$('.CDB-Chart-bar').last().attr('height')).toBe('48');
+
+      expect(this.view.$('.CDB-Chart-bar').first().attr('y')).toBe('48');
+      expect(this.view.$('.CDB-Chart-bar').last().attr('y')).toBe('0');
+    });
+
+    describe('mobile, time-series', function () {
+      beforeEach(function () {
+        this.view._isMobileViewport = function () {
+          return true;
+        };
+
+        this.view._isTimeSeries = function () {
+          return true;
+        };
+
+        this.view.model.set({
+          height: 16,
+          margin: _.extend({}, this.view.model.get('margin'), { top: 0 }),
+          showLabels: false
+        }, { silent: true });
+      });
+
+      it('should update chart', function () {
+        this.view._updateChart();
+        flushAllD3Transitions();
+
+        expect(this.view.$('.CDB-Chart-bar').first().attr('height')).toBe('3');
+        expect(this.view.$('.CDB-Chart-bar').last().attr('height')).toBe('3');
+
+        expect(this.view.$('.CDB-Chart-bar').first().attr('y')).toBe('9');
+        expect(this.view.$('.CDB-Chart-bar').last().attr('y')).toBe('9');
+      });
+    });
+  });
+
+  describe('._updateChart', function () {
+    beforeEach(function () {
+      generateHandlesSpy.and.callThrough();
+
+      this.view._generateHandles();
+
+      this.view.model.set({
+        data: updateHistogramData(20)
+      });
+      flushAllD3Transitions();
+    });
+
+    afterEach(function () {
+      $('.CDB-Chart-handles').remove();
+    });
+
+    it('should update chart', function () {
+      expect(this.view.$('.CDB-Chart-bar').first().attr('height')).toBe('48');
+      expect(this.view.$('.CDB-Chart-bar').last().attr('height')).toBe('0');
+
+      expect(this.view.$('.CDB-Chart-bar').first().attr('y')).toBe('0');
+      expect(this.view.$('.CDB-Chart-bar').last().attr('y')).toBe('48');
+    });
+
+    describe('mobile, time-series', function () {
+      beforeEach(function () {
+        this.view._isMobileViewport = function () {
+          return true;
+        };
+
+        this.view._isTimeSeries = function () {
+          return true;
+        };
+
+        this.view.model.set({
+          height: 16,
+          margin: _.extend({}, this.view.model.get('margin'), { top: 0 }),
+          showLabels: false
+        }, { silent: true });
+      });
+
+      it('should update chart', function () {
+        this.view._updateChart();
+        flushAllD3Transitions();
+
+        expect(this.view.$('.CDB-Chart-bar').first().attr('height')).toBe('3');
+        expect(this.view.$('.CDB-Chart-bar').last().attr('height')).toBe('3');
+
+        expect(this.view.$('.CDB-Chart-bar').first().attr('y')).toBe('9');
+        expect(this.view.$('.CDB-Chart-bar').last().attr('y')).toBe('9');
+      });
+    });
+  });
+
+  describe('._createFormatter', function () {
+    beforeEach(function () {
+      createFormatterSpy.and.callThrough();
+
+      spyOn(formatter, 'timestampFactory');
+      spyOn(this.view, '_calculateDivisionWithByAggregation');
+    });
+
+    it('should setup formatter', function () {
+      this.view._createFormatter();
+
+      expect(formatter.timestampFactory).not.toHaveBeenCalledWith();
+      expect(this.view._calculateDivisionWithByAggregation).not.toHaveBeenCalledWith();
+      expect(this.view.formatter).toBe(formatter.formatNumber);
+    });
+
+    describe('datetime', function () {
+      it('should setup formatter', function () {
+        this.view._isDateTimeSeries = function () {
+          return true;
+        };
+
+        this.view._createFormatter();
+
+        expect(formatter.timestampFactory).toHaveBeenCalledWith('minute', 0, false);
+        expect(this.view._calculateDivisionWithByAggregation).toHaveBeenCalled();
+        expect(this.view.formatter).not.toBe(formatter.formatNumber);
+      });
+    });
+  });
 });
 
 function genHistogramData (n) {
@@ -931,7 +1598,26 @@ function genHistogramData (n) {
     var end = i + 1;
     var obj = {
       bin: i,
-      freq: Math.round(Math.random() * 10),
+      freq: i,
+      start: start,
+      end: end,
+      max: end,
+      min: start
+    };
+    arr.push(obj);
+  });
+  return arr;
+}
+
+function updateHistogramData (n) {
+  n = n || 1;
+  var arr = [];
+  _.times(n, function (i) {
+    var start = i;
+    var end = i + 1;
+    var obj = {
+      bin: i,
+      freq: n - end,
       start: start,
       end: end,
       max: end,

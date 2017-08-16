@@ -107,7 +107,7 @@ module.exports = cdb.core.View.extend({
       target: '.js-actions',
       container: this.$('.js-header'),
       flags: {
-        localTimezone: true,
+        localTimezone: this._dataviewModel.getColumnType() === 'date',
         normalizeHistogram: true,
         canCollapse: false
       }

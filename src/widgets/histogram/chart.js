@@ -6,6 +6,8 @@ var cdb = require('cartodb.js');
 var tinycolor = require('tinycolor2');
 var formatter = require('../../formatter');
 var timestampHelper = require('../../util/timestamp-helper');
+var viewportUtils = require('../../viewport-utils');
+
 var FILTERED_COLOR = '#1181FB';
 var UNFILTERED_COLOR = 'rgba(0, 0, 0, 0.06)';
 var TIP_RECT_HEIGHT = 17;
@@ -15,7 +17,8 @@ var TRIANGLE_HEIGHT = 7;
 // How much lower (based on height) will the triangle be on the right side
 var TRIANGLE_RIGHT_FACTOR = 1.3;
 var TOOLTIP_MARGIN = 2;
-var DASH_WIDTH = 4;
+var DASH_WIDTH = 2;
+var MOBILE_BAR_HEIGHT = 3;
 
 var BEZIER_MARGIN_X = 0.1;
 var BEZIER_MARGIN_Y = 1;
@@ -39,8 +42,7 @@ module.exports = cdb.core.View.extend({
     hasAxisTip: false,
     minimumBarHeight: 2,
     animationSpeed: 750,
-    handleWidth: 10,
-    handleHeight: 23,
+    handleWidth: 8,
     handleRadius: 3,
     divisionWidth: 80,
     animationBarDelay: function (d, i) {
@@ -90,10 +92,6 @@ module.exports = cdb.core.View.extend({
     this.hide(); // will be toggled on width change
 
     this._createFormatter();
-
-    if (this._isDateTimeSeries()) {
-      this.options.divisionWidth = this._calculateDivisionWithByAggregation(this._dataviewModel.get('aggregation'));
-    }
   },
 
   render: function () {
@@ -156,8 +154,7 @@ module.exports = cdb.core.View.extend({
         });
       }
 
-      // This should match the one on _default.css
-      if (grandParent && grandParent.outerWidth && window.matchMedia('(max-width: 759px)').matches) {
+      if (grandParent && grandParent.outerWidth && this._isTabletViewport()) {
         width -= grandParent.outerWidth(true) - grandParent.width();
       }
 
@@ -190,7 +187,7 @@ module.exports = cdb.core.View.extend({
   },
 
   _updateTriangle: function (className, triangle, xPos) {
-    var y3Factor = className === 'right' ? -1 : 1;
+    var y3Factor = className === 'right' && !(this._isTabletViewport() && this._isTimeSeries()) ? -1 : 1;
     var xLimit = className === 'right' ? this.chartWidth() : 0;
     var xDiff = Math.abs(xLimit - xPos);
 
@@ -209,7 +206,8 @@ module.exports = cdb.core.View.extend({
   },
 
   _updateAxisTip: function (className) {
-    var model = this.model.get(className + '_axis_tip');
+    var attr = className + '_axis_tip';
+    var model = this.model.get(attr);
     if (model === undefined) { return; }
 
     var textLabel = this.chart.select('.CDB-Chart-axisTipText.CDB-Chart-axisTip-' + className);
@@ -218,10 +216,15 @@ module.exports = cdb.core.View.extend({
     var handle = this.chart.select('.CDB-Chart-handle.CDB-Chart-handle-' + className);
     var triangle = handle.select('.CDB-Chart-axisTipTriangle');
 
-    triangle.style('opacity', '1');
-
     textLabel.data([model]).text(function (d) {
-      return this.formatter(d);
+      var text = this.formatter(d);
+
+      this._dataviewModel.trigger('on_update_axis_tip', {
+        attr: attr,
+        text: text
+      });
+
+      return text;
     }.bind(this));
 
     if (!textLabel.node()) {
@@ -232,14 +235,15 @@ module.exports = cdb.core.View.extend({
     var width = textBBox.width;
     var rectWidth = width + TIP_H_PADDING;
 
-    rectLabel.attr('width', width + TIP_H_PADDING);
+    rectLabel.attr('width', rectWidth);
     textLabel.attr('dx', TIP_H_PADDING / 2);
     textLabel.attr('dy', textBBox.height - Math.abs((textBBox.height - TIP_RECT_HEIGHT) / 2));
 
     var parts = d3.transform(handle.attr('transform')).translate;
     var xPos = +parts[0] + (this.options.handleWidth / 2);
 
-    var yPos = className === 'left' ? -(TRIANGLE_HEIGHT + TIP_RECT_HEIGHT + TOOLTIP_MARGIN) : this.chartHeight() + (TRIANGLE_HEIGHT * TRIANGLE_RIGHT_FACTOR);
+    var yPos = className === 'right' && !(this._isMobileViewport() && this._isTimeSeries())
+      ? this.chartHeight() + (TRIANGLE_HEIGHT * TRIANGLE_RIGHT_FACTOR) : -(TRIANGLE_HEIGHT + TIP_RECT_HEIGHT + TOOLTIP_MARGIN);
     yPos = Math.floor(yPos);
 
     this._updateTriangle(className, triangle, xPos);
@@ -252,6 +256,10 @@ module.exports = cdb.core.View.extend({
       axisTip.attr('transform', 'translate(' + newX + ', ' + yPos + ')');
     } else {
       axisTip.attr('transform', 'translate(-' + Math.max(((rectWidth / 2) - (this.options.handleWidth / 2)), 0) + ', ' + yPos + ')');
+    }
+
+    if (this.model.get('dragging') && this._isMobileViewport() && this._isTimeSeries()) {
+      this._showAxisTip(className);
     }
   },
 
@@ -335,30 +343,36 @@ module.exports = cdb.core.View.extend({
 
   _onChangeDragging: function () {
     this.chart.classed('is-dragging', this.model.get('dragging'));
-    this._updateAxisTipOpacity('right');
-    this._updateAxisTipOpacity('left');
+
+    if (!this.model.get('dragging') && this._isMobileViewport() && this._isTimeSeries()) {
+      this._hideAxisTip('right');
+      this._hideAxisTip('left');
+    }
+  },
+
+  _toggleAxisTip: function (className, show) {
+    var textLabel = this.chart.select('.CDB-Chart-axisTipText.CDB-Chart-axisTip-' + className);
+    var rectLabel = this.chart.select('.CDB-Chart-axisTipRect.CDB-Chart-axisTip-' + className);
+    var handle = this.chart.select('.CDB-Chart-handle.CDB-Chart-handle-' + className);
+    var triangle = handle.select('.CDB-Chart-axisTipTriangle');
+
+    if (textLabel) {
+      textLabel.transition().duration(200).attr('opacity', show);
+    }
+    if (rectLabel) {
+      rectLabel.transition().duration(200).attr('opacity', show);
+    }
+    if (triangle) {
+      triangle.transition().duration(200).style('opacity', show);
+    }
+  },
+
+  _hideAxisTip: function (className) {
+    this._toggleAxisTip(className, 0);
   },
 
   _showAxisTip: function (className) {
-    var textLabel = this.chart.select('.CDB-Chart-axisTipText.CDB-Chart-axisTip-' + className);
-    var rectLabel = this.chart.select('.CDB-Chart-axisTipRect.CDB-Chart-axisTip-' + className);
-    var triangle = this.chart.select('.CDB-Chart-axisTip-' + className + ' .CDB-Chart-axisTipTriangle');
-
-    if (textLabel) {
-      textLabel.transition().duration(200).attr('opacity', 1);
-    }
-    if (rectLabel) {
-      rectLabel.transition().duration(200).attr('opacity', 1);
-    }
-    if (triangle) {
-      triangle.transition().duration(200).attr('opacity', 1);
-    }
-  },
-
-  _updateAxisTipOpacity: function (className) {
-    if (this.model.get('dragging')) {
-      this._showAxisTip(className);
-    }
+    this._toggleAxisTip(className, 1);
   },
 
   _setAxisTipAccordingToBins: function () {
@@ -436,12 +450,19 @@ module.exports = cdb.core.View.extend({
 
   _generateChartContent: function () {
     this._generateAxis();
-    this._generateLines();
+
+    if (!(this._isTabletViewport() && this._isTimeSeries())) {
+      this._generateLines();
+    }
 
     this._generateBars();
+
+    if (!(this._isMobileViewport() && this._isTimeSeries())) {
+      this._generateBottomLine();
+    }
+
     this._generateHandles();
     this._setupBrush();
-    this._generateBottomLine();
   },
 
   _generateLines: function () {
@@ -780,11 +801,6 @@ module.exports = cdb.core.View.extend({
     return this;
   },
 
-  setLocalTimezone: function (localTimezone) {
-    this.model.set('local_timezone', !!localTimezone);
-    return this;
-  },
-
   removeSelection: function () {
     this.resetIndexes();
     this.chart.selectAll('.CDB-Chart-bar').classed({'is-selected': false, 'is-filtered': false});
@@ -841,24 +857,25 @@ module.exports = cdb.core.View.extend({
   _setupBrush: function () {
     // define brush control element and its events
     var brush = d3.svg.brush()
-        .x(this.xScale)
-        .on('brush', this._onBrushMove)
-        .on('brushend', this._onBrushEnd);
+      .x(this.xScale)
+      .on('brush', this._onBrushMove)
+      .on('brushend', this._onBrushEnd);
 
     // create svg group with class brush and call brush on it
     var brushg = this.chart.append('g')
-        .attr('class', 'Brush')
-        .call(brush);
+      .attr('class', 'Brush')
+      .call(brush);
 
+    var height = this._isTabletViewport() && this._isTimeSeries() ? this.chartHeight() * 2 : this.chartHeight();
     // set brush extent to rect and define objects height
     brushg.selectAll('rect')
-        .attr('y', 0)
-        .attr('height', this.chartHeight());
+      .attr('y', 0)
+      .attr('height', height);
 
     // Only bind on the background element
     brushg.selectAll('rect.background')
-        .on('mouseout', this._onMouseOut)
-        .on('mousemove', this._onMouseMove);
+      .on('mouseout', this._onMouseOut)
+      .on('mousemove', this._onMouseMove);
 
     // Prevent scroll while touching selections
     brushg.selectAll('rect')
@@ -1015,8 +1032,12 @@ module.exports = cdb.core.View.extend({
   _generateAxisTip: function (className) {
     var handle = this.chart.select('.CDB-Chart-handle.CDB-Chart-handle-' + className);
 
-    var yPos = className === 'right' ? this.chartHeight() + (TRIANGLE_HEIGHT * TRIANGLE_RIGHT_FACTOR) : -(TRIANGLE_HEIGHT + TIP_RECT_HEIGHT + TOOLTIP_MARGIN);
-    var yTriangle = className === 'right' ? this.chartHeight() + (TRIANGLE_HEIGHT * TRIANGLE_RIGHT_FACTOR) + 2 : -(TRIANGLE_HEIGHT + TOOLTIP_MARGIN) - 2;
+    var yPos = className === 'right' && !(this._isMobileViewport() && this._isTimeSeries())
+      ? this.chartHeight() + (TRIANGLE_HEIGHT * TRIANGLE_RIGHT_FACTOR) : -(TRIANGLE_HEIGHT + TIP_RECT_HEIGHT + TOOLTIP_MARGIN);
+    yPos = Math.floor(yPos);
+
+    var yTriangle = className === 'right' && !(this._isMobileViewport() && this._isTimeSeries())
+      ? this.chartHeight() + (TRIANGLE_HEIGHT * TRIANGLE_RIGHT_FACTOR) + 2 : -(TRIANGLE_HEIGHT + TOOLTIP_MARGIN) - 2;
     var yFactor = className === 'right' ? -1 : 1;
     var triangleHeight = TRIANGLE_HEIGHT * yFactor;
 
@@ -1030,23 +1051,30 @@ module.exports = cdb.core.View.extend({
       .attr('class', 'CDB-Chart-axisTipRect CDB-Chart-axisTipTriangle')
       .attr('transform', 'translate(' + ((this.options.handleWidth / 2) - (TRIANGLE_SIDE / 2)) + ', ' + yTriangle + ')')
       .attr('d', trianglePath(0, 0, TRIANGLE_SIDE, 0, (TRIANGLE_SIDE / 2), triangleHeight, yFactor))
-      .style('opacity', '0');
+      .style('opacity', '1');
 
     axisTip.append('rect')
       .attr('class', 'CDB-Chart-axisTipRect CDB-Chart-axisTip-' + className)
       .attr('rx', '2')
       .attr('ry', '2')
+      .attr('opacity', '1')
       .attr('height', TIP_RECT_HEIGHT);
 
     axisTip.append('text')
       .attr('class', 'CDB-Text CDB-Size-small CDB-Chart-axisTipText CDB-Chart-axisTip-' + className)
       .attr('dy', '11')
       .attr('dx', '0')
+      .attr('opacity', '1')
       .text(function (d) { return d; });
   },
 
+  _isTabletViewport: function () {
+    return viewportUtils.isTabletViewport();
+  },
+
   _generateHandle: function (className) {
-    var opts = { width: this.options.handleWidth, height: this.options.handleHeight, radius: this.options.handleRadius };
+    var height = this._isTabletViewport() && this._isTimeSeries() ? this.chartHeight() * 2 : this.chartHeight();
+    var opts = { width: this.options.handleWidth, height: height, radius: this.options.handleRadius };
 
     var handle = this.chart.select('.CDB-Chart-handles')
       .append('g')
@@ -1061,11 +1089,11 @@ module.exports = cdb.core.View.extend({
         .append('rect')
         .attr('class', 'CDB-Chart-handleRect')
         .attr('width', opts.width)
-        .attr('height', this.chartHeight())
+        .attr('height', opts.height)
         .attr('rx', opts.radius)
         .attr('ry', opts.radius);
 
-      var y = this.chartHeight() / 2;
+      var y = this._isTabletViewport() && this._isTimeSeries() ? this.chartHeight() : this.chartHeight() / 2;
       y -= 3;
       var x1 = (opts.width - DASH_WIDTH) / 2;
 
@@ -1394,6 +1422,10 @@ module.exports = cdb.core.View.extend({
           return 0;
         }
 
+        if (self._isMobileViewport() && self._isTimeSeries()) {
+          return MOBILE_BAR_HEIGHT;
+        }
+
         var h = self.chartHeight() - self.yScale(d.freq);
 
         if (h < self.options.minimumBarHeight && h > 0) {
@@ -1404,6 +1436,10 @@ module.exports = cdb.core.View.extend({
       .attr('y', function (d) {
         if (_.isEmpty(d)) {
           return self.chartHeight();
+        }
+
+        if (self._isMobileViewport() && self._isTimeSeries()) {
+          return self.chartHeight() / 2 + MOBILE_BAR_HEIGHT;
         }
 
         var h = self.chartHeight() - self.yScale(d.freq);
@@ -1434,13 +1470,18 @@ module.exports = cdb.core.View.extend({
       .attr('fill', this._getFillColor.bind(this));
   },
 
+  _isMobileViewport: function () {
+    return viewportUtils.isMobileViewport();
+  },
+
   _generateBars: function () {
     var self = this;
     var data = this.model.get('data');
 
     this._calcBarWidth();
-    // Remove spacing if not enough room for the smallest case
-    var spacing = ((data.length * 2) - 1) > this.chartWidth() ? 0 : 1;
+    // Remove spacing if not enough room for the smallest case, or mobile viewport
+    var spacing = (((data.length * 2) - 1) > this.chartWidth() ||
+      this._isMobileViewport() && this._isDateTimeSeries()) ? 0 : 1;
 
     var bars = this.chart.append('g')
       .attr('transform', 'translate(0, 0)')
@@ -1471,16 +1512,24 @@ module.exports = cdb.core.View.extend({
           return 0;
         }
 
-        var h = self.chartHeight() - self.yScale(d.freq);
+        if (self._isMobileViewport() && self._isTimeSeries()) {
+          return MOBILE_BAR_HEIGHT;
+        }
 
+        var h = self.chartHeight() - self.yScale(d.freq);
         if (h < self.options.minimumBarHeight && h > 0) {
           h = self.options.minimumBarHeight;
         }
+
         return h;
       })
       .attr('y', function (d) {
         if (_.isEmpty(d)) {
           return self.chartHeight();
+        }
+
+        if (self._isMobileViewport() && self._isTimeSeries()) {
+          return self.chartHeight() / 2 + MOBILE_BAR_HEIGHT;
         }
 
         var h = self.chartHeight() - self.yScale(d.freq);
@@ -1584,8 +1633,10 @@ module.exports = cdb.core.View.extend({
 
   _createFormatter: function () {
     this.formatter = formatter.formatNumber;
+
     if (this._isDateTimeSeries()) {
       this.formatter = formatter.timestampFactory(this._dataviewModel.get('aggregation'), this._dataviewModel.get('offset'), this.model.get('local_timezone'));
+      this.options.divisionWidth = this._calculateDivisionWithByAggregation(this._dataviewModel.get('aggregation'));
     }
   },
 

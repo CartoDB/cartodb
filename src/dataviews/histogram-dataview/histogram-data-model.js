@@ -5,6 +5,7 @@ var helper = require('../helpers/histogram-helper');
 
 var DEFAULT_MAX_BUCKETS = 366;
 
+// Yep
 var deleteMe = 'This is only to be able to create the PR. Should not pass Code Review.';
 
 /**

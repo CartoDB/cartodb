@@ -34,7 +34,7 @@ class SessionsController < ApplicationController
   before_filter :api_authorization_required, only: :show
 
   def new
-    if current_viewer.try(:subdomain) == CartoDB.extract_subdomain(request)
+    if current_viewer
       redirect_to(CartoDB.url(self, 'dashboard', { trailing_slash: true }, current_viewer))
     elsif saml_authentication? && !user
       # Automatically trigger SAML request on login view load -- could easily trigger this elsewhere
@@ -65,7 +65,7 @@ class SessionsController < ApplicationController
     user = authenticate!(*strategies, scope: username)
     CartoDB::Stats::Authentication.instance.increment_login_counter(user.email)
 
-    redirect_to session[:return_to] || (user.public_url + CartoDB.path(self, 'dashboard', trailing_slash: true))
+    redirect_to session.delete('return_to') || (user.public_url + CartoDB.path(self, 'dashboard', trailing_slash: true))
   end
 
   def destroy
@@ -295,11 +295,18 @@ class SessionsController < ApplicationController
       redirect_to saml_service.idp_logout_request(params[:SAMLRequest], params[:RelayState]) { cdb_logout }
     elsif params[:SAMLResponse]
       # We've been given a response back from the IdP, process it
-      saml_service.process_logout_response(params[:SAMLResponse]) { cdb_logout }
+      begin
+        saml_service.process_logout_response(params[:SAMLResponse])
+      rescue => e
+        CartoDB::Logger.warning(exception: e, message: 'Error proccessing SAML logout')
+      ensure
+        cdb_logout
+      end
+
       redirect_to default_logout_url
     else
       # Initiate SLO (send Logout Request)
-      redirect_to saml_service.sp_logout_request
+      redirect_to saml_service.sp_logout_request(current_user)
     end
   end
 

@@ -460,7 +460,7 @@ class DataImport < Sequel::Model
     else
       self.log = CartoDB::Log.new(
         type:     CartoDB::Log::TYPE_DATA_IMPORT,
-        user_id:  current_user.id
+        user_id:  user_id
       )
     end
   end

@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.8.61-12470.4",
+  "version": "4.9.29",
   "dependencies": {
     "abbrev": {
       "version": "1.1.0",
@@ -732,8 +732,8 @@
     },
     "cartodb-deep-insights.js": {
       "version": "0.0.3",
-      "from": "cartodb/deep-insights.js#12470-responsive",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#0120582517e9385a2a91c828159cb04e15555450",
+      "from": "cartodb/deep-insights.js#master",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#27ee8b104646f6ad4152d63f8c386199b7993744",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",
@@ -749,8 +749,8 @@
     },
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
-      "from": "cartodb/cartodb.js#12470-responsive",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#756d6513b0cebb6b1168b718503635db75a2088b"
+      "from": "cartodb/cartodb.js#v4",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#9419e7ca6405559c1e241e09e4f9e059cbe0cbbe"
     },
     "caseless": {
       "version": "0.12.0",
@@ -1029,6 +1029,11 @@
       "version": "5.0.2",
       "from": "diffie-hellman@>=5.0.0 <6.0.0",
       "resolved": "https://registry.npmjs.org/diffie-hellman/-/diffie-hellman-5.0.2.tgz"
+    },
+    "dom-walk": {
+      "version": "0.1.1",
+      "from": "dom-walk@>=0.1.0 <0.2.0",
+      "resolved": "https://registry.npmjs.org/dom-walk/-/dom-walk-0.1.1.tgz"
     },
     "domain-browser": {
       "version": "1.1.7",
@@ -1435,6 +1440,18 @@
       "version": "2.0.0",
       "from": "glob-parent@>=2.0.0 <3.0.0",
       "resolved": "https://registry.npmjs.org/glob-parent/-/glob-parent-2.0.0.tgz"
+    },
+    "global": {
+      "version": "4.3.2",
+      "from": "global@>=4.3.2 <5.0.0",
+      "resolved": "https://registry.npmjs.org/global/-/global-4.3.2.tgz",
+      "dependencies": {
+        "process": {
+          "version": "0.5.2",
+          "from": "process@>=0.5.1 <0.6.0",
+          "resolved": "https://registry.npmjs.org/process/-/process-0.5.2.tgz"
+        }
+      }
     },
     "globals": {
       "version": "9.18.0",
@@ -2109,6 +2126,11 @@
       "version": "2.1.16",
       "from": "mime-types@>=2.1.7 <2.2.0",
       "resolved": "https://registry.npmjs.org/mime-types/-/mime-types-2.1.16.tgz"
+    },
+    "min-document": {
+      "version": "2.19.0",
+      "from": "min-document@>=2.19.0 <3.0.0",
+      "resolved": "https://registry.npmjs.org/min-document/-/min-document-2.19.0.tgz"
     },
     "minimalistic-assert": {
       "version": "1.0.0",
@@ -3063,7 +3085,7 @@
     "tangram-cartocss": {
       "version": "0.5.7",
       "from": "cartodb/tangram-carto#master",
-      "resolved": "git://github.com/cartodb/tangram-carto.git#35ac7973b770efb86ffaf19f74f8069fdd02cfe0"
+      "resolved": "git://github.com/cartodb/tangram-carto.git#4880d8ce94e62839fa1c9cc1d37d36ac5597d1b5"
     },
     "tangram-reference": {
       "version": "1.0.19",

@@ -18,6 +18,7 @@
 .UISlider.ui-slider {
   border-radius: 0;
   background: $cMainLine;
+  cursor: pointer;
 }
 .UISlider.ui-slider::before {
   position: absolute;

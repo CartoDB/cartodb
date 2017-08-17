@@ -2,6 +2,8 @@ Development
 -----------
 
 ### Features
+* Fixed a bug that would break the bubble legend on IE11 (#support/891)
+* Support for SAML signed logout requests (#12355)
 * Provide a way to display broken layers pointing to non existent nodes (#12541)
 * Provide CartoCSS attribute within layer info in vizjson v3 (CartoDB/support#858)
 * Support for nested properties in CartoCSS (#12411)
@@ -18,6 +20,7 @@ Development
 * [WIP] Export/import organization/user metadata to allow user migration (#12271, #12304, #12323, #12380, #12510)
 * New force param in EUMAPI organization users destroy operation to force deletion even with unregistered tables (#11654).
 * Removed the usage of the `organizations_admin` feature flag (#12131)
+* Time-series widgets aggregated by time (#12324)
 * Show number of selected items in Time-Series widgets (#12179).
 * Add source to widgets (#12369).
 * Show ranges in time series widget selection (#12291)
@@ -27,10 +30,17 @@ Development
 * Move playback on animated time series by clicking on it (#12180)
 * Move play/pause button to besides the time series (#12387)
 * Updates Dataservices API client default version to `0.18.0` (#12466)
+* Time-series: add timezone selector to timeseries histogram (#12464)
 * Updates Dataservices API client default version to `0.19.0` (#12494)
+* Don't display slider if there's only one value (#bigmetadata/202)
+* Mustache conditionals support improved in popups (#support/763)
 
 ### Bug fixes / enhancements
 * Enhancements on superadmin imports & exports endpoints (#12254)
+* Change request order in user-actions (#12548)
+* Implement responsive behaviour for time series (#12470)
+* Fix broken join from second column on IE11 (#support/875)
+* Fix ghost node problem (#11397)
 * Break down deep-insights-integrations class (#11581)
 * Fix torque categories layer rendering (#cartodb.js/1698)
 * Don't provide quantification option when layer is animated (#10947)
@@ -53,6 +63,7 @@ Development
 * Better handling and reporting of "table with no map associated" error in map privacy changes (#12137).
 * Improve formula widget form (#12242)
 * Fixed alignment problems after CartoAssets update (#12234)
+* Fixed error instantiating the log of a data import if user doesn't exist (#12555)
 * Fixed layer counter (#12236)
 * Fixed problem when icon upload fails (#11980)
 * Boolean fields are visible in the filter by column value analysis (#11546)
@@ -61,6 +72,7 @@ Development
 * Fix error when revoking a Dropbox token that was revoked from Dropbox side (#12359)
 * Dropbox searches now don't have limit of number of files (#12521)
 * Fix error when a Dropbox folder has an extension matching valid extensions.
+* Fixes login redirect loop with other user urls (#12553).
 * Fixed UI when editing merge analysis (#10850)
 * Fixed viewer invitations (#12514)
 * Fixed uninitialized constant in Carto::Visualization when a viewer shares a visualization (#12129).
@@ -110,6 +122,8 @@ Development
 * Removed useless log traces (#12536)
 * Fixed bounds and center of thumbnails after updating a map
 * Fixed a bug in cartodb.js regarding the featureCount (#12490)
+* Add default value to dropdowns (#12451)
+* Fix connectors configuration rake when configuring an organization (#12509)
 * Add tip about sanitising values in popup's InfoWindow (#11340)
 * Fix a problem with responsive in deep-insights.js
 * Fix 403 error in password protected embed maps (#12469)
@@ -117,6 +131,9 @@ Development
 * Lowered log level from error to info for supported cartocss in vector maps (cartodb.js#1706)
 * Histogram UI: Do not show "NULL ROWS" value if it is not received (#12477)
 * Force raster mode in datasets preview map (#12513)
+* Add assets version to TrackJS
+* Adding max items limit for form list editor (#12552)
+* Improve Google Login button (cartodb-central#1808)
 * Implement widget opacity in AutoStyle (#11928)
 
 ### NOTICE
@@ -429,6 +446,7 @@ More information at [Dropbox migration guide](https://www.dropbox.com/developers
 * Color picker disappears in CartoCSS editor after clicking (#12097).
 * Bug found in dataset view when user had Google basemaps enabled (#12155)
 * Fixed incorrect analysis node being selected after deleting (#11899)
+* Time-series range filter is kept after refreshing (#12576)
 
 ### NOTICE
 This release upgrades the CartoDB PostgreSQL extension to `0.19.0`. Run the following to have it available:

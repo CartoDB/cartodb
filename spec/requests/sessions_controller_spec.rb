@@ -559,6 +559,26 @@ describe SessionsController do
       response.headers['Location'].should include '/your_apps'
     end
 
+    it 'redirects to current viewer dashboard if the `return_to` dashboard url belongs to other user' do
+      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+      post create_session_url(user_domain: @user.username, email: @user.username, password: @user.password)
+      cookies["_cartodb_session"] = response.cookies["_cartodb_session"]
+      get login_url(user_domain: 'wadus_user')
+      response.headers['Location'].should include @user.username
+      response.headers['Location'].should include "/dashboard"
+    end
+
+    it 'redirects to the `return_to` only once url if present' do
+      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+      get api_key_credentials_url(user_domain: @user.username)
+
+      cookies["_cartodb_session"] = response.cookies["_cartodb_session"]
+      post create_session_url(user_domain: @user.username, email: @user.username, password: @user.password)
+      response.status.should == 302
+      response.headers['Location'].should include '/your_apps'
+      Marshal.dump(Base64.decode64(response.cookies["_cartodb_session"]))['return_to'].should be_nil
+    end
+
     describe 'events' do
       # include HttpAuthenticationHelper
       require 'rack/test'

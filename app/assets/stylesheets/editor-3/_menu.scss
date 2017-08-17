@@ -9,7 +9,7 @@
   width: 72px;
   min-height: 450px;
   box-sizing: border-box;
-  padding: 24px 0 $baseSize * 2;
+  padding: 20px 0 $baseSize * 2;
   background: $cBlue;
 }
 
@@ -67,7 +67,7 @@
     @include css3-prefix(transform-origin, 50%);
   }
   .imago:hover .point {
-    @include transform(scale(3));
+    @include transform(scale(2.73));
   }
   .imago:hover .arrow {
     @include opacity(1);

@@ -42,12 +42,12 @@ describe 'UserMigration' do
       metadata_boolean_value ? user.destroy_cascade : user.destroy
 
       import = Carto::UserMigrationImport.create(
-          exported_file: export.exported_file,
-          database_host: user_attributes['database_host'],
-          org_import: false,
-          json_file: export.json_file,
-          import_metadata: metadata_boolean_value,
-          import_type: 'user'
+        exported_file: export.exported_file,
+        database_host: user_attributes['database_host'],
+        org_import: false,
+        json_file: export.json_file,
+        import_metadata: metadata_boolean_value,
+        import_type: 'user'
       )
       import.run_import
 

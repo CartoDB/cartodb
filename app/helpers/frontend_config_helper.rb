@@ -1,5 +1,5 @@
 module FrontendConfigHelper
-  def frontend_config
+  def frontend_config_hash
     config = {
       app_assets_base_url:        app_assets_base_url,
       maps_api_template:          maps_api_template,
@@ -52,6 +52,10 @@ module FrontendConfigHelper
       config[:dataservices_enabled] = Cartodb.get_config(:dataservices, 'enabled')
     end
 
-    config.to_json
+    config
+  end
+
+  def frontend_config
+    frontend_config_hash.to_json
   end
 end

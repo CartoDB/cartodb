@@ -36,6 +36,7 @@ Development
 * Mustache conditionals support improved in popups (#support/763)
 
 ### Bug fixes / enhancements
+* Change request order in user-actions (#12548)
 * Implement responsive behaviour for time series (#12470)
 * Fix broken join from second column on IE11 (#support/875)
 * Fix ghost node problem (#11397)

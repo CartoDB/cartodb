@@ -18,7 +18,6 @@
 .UISlider.ui-slider {
   border-radius: 0;
   background: $cMainLine;
-  cursor: pointer;
 }
 .UISlider.ui-slider::before {
   position: absolute;
@@ -29,6 +28,7 @@
   border: none;
   border-radius: 0;
   content: '';
+  cursor: pointer;
   z-index: 1;
 }
 .UISlider .ui-slider-range-min {
@@ -58,6 +58,10 @@
 }
 
 .UISlider.ui-slider-disabled .ui-slider-handle {
+  cursor: not-allowed;
+}
+
+.UISlider.ui-slider-disabled::before {
   cursor: not-allowed;
 }
 

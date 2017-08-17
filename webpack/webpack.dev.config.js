@@ -18,12 +18,5 @@ module.exports = {
     path: path.resolve(__dirname, '../public/assets'),
     publicPath: '/assets/'
   },
-  devtool: 'cheap-module-source-map',
-  plugins: [
-    new HtmlWebpackPlugin({
-      filename: path.resolve(__dirname, '../public/static/dashboard/index.html'),
-      template: path.resolve(__dirname, '../lib/assets/javascripts/cartodb/dashboard/views/index.jst.ejs'),
-      version: version
-    })
-  ]
+  devtool: 'cheap-module-source-map'
 };

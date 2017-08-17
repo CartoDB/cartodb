@@ -33,11 +33,12 @@ module Carto
       export_job = CartoDB::DataMover::ExportJob.new(export_job_arguments(work_dir))
 
       if export_metadata?
-        log.append('=== Exporting user/org metadata ===')
-
         if organization.present?
-          service = Carto::OrganizationMetadataExportService.new
-          service.export_organization_to_directory(organization.id, "#{work_dir}/meta")
+          export_organization_metadata(work_dir)
+        elsif user.present?
+          export_user_metadata(work_dir)
+        else
+          raise 'Unrecognized export type for exporting metadata'
         end
       end
 
@@ -65,6 +66,20 @@ module Carto
     end
 
     private
+
+    def export_user_metadata(work_dir)
+      log.append('=== Exporting user metadata ===')
+
+      service = Carto::UserMetadataExportService.new
+      service.export_user_to_directory(user.id, "#{work_dir}/meta")
+    end
+
+    def export_organization_metadata(work_dir)
+      log.append('=== Exporting organization metadata ===')
+
+      service = Carto::OrganizationMetadataExportService.new
+      service.export_organization_to_directory(organization.id, "#{work_dir}/meta")
+    end
 
     def create_work_directory
       log.append('=== Creating work directory ===')

@@ -25,7 +25,7 @@ module Carto
         render json: {
           username: current_user.username,
           user_data: current_user.data,
-          config: frontend_config,
+          config: frontend_config_hash,
           upgrade_url: current_user.upgrade_url(request.protocol),
           isFirstTimeViewingDashboard: !current_user.dashboard_viewed?,
           isJustLoggedIn: !!flash['logged'],

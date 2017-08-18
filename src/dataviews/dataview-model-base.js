@@ -245,8 +245,8 @@ module.exports = Model.extend({
     var sourceId = options.sourceId;
     var forceFetch = options.forceFetch;
 
-    if (forceFetch) {
-      return true;
+    if (_.isBoolean(forceFetch)) {
+      return forceFetch;
     }
 
     return this.isEnabled() &&

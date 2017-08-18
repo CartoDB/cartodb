@@ -59,7 +59,10 @@ module.exports = DataviewModelBase.extend({
   _initBinds: function () {
     DataviewModelBase.prototype._initBinds.apply(this);
 
-    this._updateURLBinding();
+    // We shouldn't listen url change for fetching the data (with filter) because
+    // we have to wait until we know all the data available (without any filter).
+    this.off('change:url');
+    this.once('change:url', this._onUrlChanged, this);
 
     // When original data gets fetched
     this._originalData.bind('change:data', this._onDataChanged, this);
@@ -71,16 +74,8 @@ module.exports = DataviewModelBase.extend({
     this.listenTo(this.layer, 'change:meta', this._onChangeLayerMeta);
   },
 
-  _updateURLBinding: function () {
-    // We shouldn't listen url change for fetching the data (with filter) because
-    // we have to wait until we know all the data available (without any filter).
-    this.off('change:url');
-    this.on('change:url', this._onUrlChanged, this);
-  },
-
   _updateBindings: function () {
     this._onChangeBinds();
-    this._updateURLBinding();
   },
 
   enableFilter: function () {
@@ -179,9 +174,10 @@ module.exports = DataviewModelBase.extend({
   _onColumnChanged: function () {
     this._originalData.set('column_type', this.get('column_type'));
     this.set('aggregation', undefined, { silent: true });
+    this.once('change:url', this._onUrlChanged, this);
 
     this._resetFilter();
-    this._reloadVisAndForceFetch();
+    this._reloadVis({ forceFetch: false });
   },
 
   _calculateTotalAmount: function (buckets) {

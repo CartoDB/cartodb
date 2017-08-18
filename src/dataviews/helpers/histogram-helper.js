@@ -14,11 +14,12 @@ var MOMENT_AGGREGATIONS = {
 
 var helper = {};
 
-helper.fillTimestampBuckets = function (buckets, start, aggregation, numberOfBins) {
+helper.fillTimestampBuckets = function (buckets, start, aggregation, numberOfBins, offset) {
   var startDate = moment.unix(start).utc();
 
   for (var i = 0; i < numberOfBins; i++) {
     buckets[i] = _.extend({
+      offset: offset,
       bin: i,
       start: startDate.clone().add(i, MOMENT_AGGREGATIONS[aggregation]).unix(),
       end: startDate.clone().add(i + 1, MOMENT_AGGREGATIONS[aggregation]).unix() - 1,

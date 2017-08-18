@@ -20,6 +20,13 @@ describe('dataviews/histogram-data-model', function () {
     });
   });
 
+  it('defaults', function () {
+    expect(_.isArray(this.model.get('data'))).toBe(true);
+    expect(this.model.get('data').length).toBe(0);
+    expect(this.model.get('localTimezone')).toBe(false);
+    expect(this.model.get('localOffset')).toBe(0);
+  });
+
   describe('._initBinds', function () {
     beforeEach(function () {
       spyOn(this.model, 'fetch');
@@ -74,6 +81,14 @@ describe('dataviews/histogram-data-model', function () {
 
       expect(this.model.fetch).not.toHaveBeenCalled();
     });
+
+    it('should call to fetch when localTimezone changes', function () {
+      var originalValue = this.model.get('localTimezone');
+
+      this.model.set('localTimezone', !originalValue);
+
+      expect(this.model.fetch).toHaveBeenCalled();
+    });
   });
 
   describe('.url', function () {
@@ -125,6 +140,31 @@ describe('dataviews/histogram-data-model', function () {
         aggregation: 'minute',
         api_key: apiKey
       }));
+    });
+  });
+
+  describe('._getCurrentOffset', function () {
+    beforeEach(function () {
+      this.model.set({
+        offset: 7200,
+        localOffset: 43200
+      }, { silent: true });
+    });
+
+    it('should return offset if `localTimezone` is not set', function () {
+      this.model.set('localTimezone', false, { silent: true });
+
+      var offset = this.model._getCurrentOffset();
+
+      expect(offset).toBe(7200);
+    });
+
+    it('should return local offset if `localTimezone` is set', function () {
+      this.model.set('localTimezone', true, { silent: true });
+
+      var offset = this.model._getCurrentOffset();
+
+      expect(offset).toBe(43200);
     });
   });
 });

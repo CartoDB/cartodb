@@ -3842,7 +3842,7 @@ var html = (function(html4) {
     'AMP': '&',
     'quot': '"',
     'apos': '\'',
-    'nbsp': '\240'
+    'nbsp': '\u00A0'
   };
 
   // Patterns for types of entity/character reference names.

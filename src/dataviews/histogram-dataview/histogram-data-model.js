@@ -15,15 +15,22 @@ var deleteMe = 'This is only to be able to create the PR. Should not pass Code R
 module.exports = Model.extend({
   defaults: {
     url: '',
-    data: []
+    data: [],
+    localTimezone: false,
+    localOffset: 0
   },
 
   url: function () {
     var params = [];
+    var offset = this._getCurrentOffset();
+
     if (this.get('column_type') === 'number' && this.get('bins')) {
       params.push('bins=' + this.get('bins'));
     } else if (this.get('column_type') === 'date') {
       params.push('aggregation=' + (this.get('aggregation') || 'auto'));
+      if (_.isFinite(offset)) {
+        params.push('offset=' + offset);
+      }
     }
 
     if (this.get('apiKey')) {
@@ -51,7 +58,7 @@ module.exports = Model.extend({
       this.fetch();
     }, this);
 
-    this.on('change:aggregation', function () {
+    this.on('change:aggregation change:offset', function () {
       if (this.get('column_type') === 'date' && this.get('aggregation')) {
         this.fetch();
       }
@@ -61,6 +68,10 @@ module.exports = Model.extend({
       if (this.get('column_type') === 'number' && _.isUndefined(this.get('aggregation'))) {
         this.fetch();
       }
+    }, this);
+
+    this.on('change:localTimezone', function () {
+      this.fetch();
     }, this);
   },
 
@@ -73,10 +84,6 @@ module.exports = Model.extend({
 
   setBins: function (bins) {
     this.set('bins', bins, { silent: bins === void 0 });
-  },
-
-  setAggregation: function (aggregation) {
-    this.set('aggregation', aggregation, { silent: aggregation === void 0 });
   },
 
   getData: function () {
@@ -107,9 +114,8 @@ module.exports = Model.extend({
     }
 
     parsedData.error = undefined;
-
     if (this.get('column_type') === 'date') {
-      helper.fillTimestampBuckets(parsedData.data, start, aggregation, numberOfBins);
+      helper.fillTimestampBuckets(parsedData.data, start, aggregation, numberOfBins, this._getCurrentOffset());
     } else {
       helper.fillNumericBuckets(parsedData.data, start, width, numberOfBins);
     }
@@ -120,5 +126,11 @@ module.exports = Model.extend({
     }
 
     return parsedData;
+  },
+
+  _getCurrentOffset: function () {
+    return this.get('localTimezone')
+      ? this.get('localOffset')
+      : this.get('offset');
   }
 });

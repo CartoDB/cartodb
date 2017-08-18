@@ -171,10 +171,10 @@ module Carto
         job_uuid: id,
         file: "#{work_dir}/#{export_id}/data/#{export_file}",
         data: true,
-        metadata: !import_only_data?,
+        metadata: false, #!import_only_data?,
         host: database_host,
         rollback: false,
-        into_org_name: import_into.try(:name),
+        into_org_name: nil, #import_into.try(:name),
         mode: :import,
         logger: log.logger,
         import_job_logger: log.logger

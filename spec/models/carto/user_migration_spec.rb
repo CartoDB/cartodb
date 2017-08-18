@@ -33,13 +33,20 @@ describe 'UserMigration' do
       export.run_export
 
       puts export.log.entries if export.state != Carto::UserMigrationExport::STATE_COMPLETE
-      export.state.should eq Carto::UserMigrationExport::STATE_COMPLETE
+      expect(export.state).to eq(Carto::UserMigrationExport::STATE_COMPLETE)
 
       carto_user.client_applications.each(&:destroy)
       table1.table_visualization.layers.each(&:destroy)
       table1.destroy
       expect { table1.records }.to raise_error
-      metadata_boolean_value ? user.destroy_cascade : user.destroy
+
+      if metadata_boolean_value
+        user.destroy
+      else
+        conn = user.in_database(as: :cluster_admin)
+        user.db_service.drop_database_and_user(conn)
+        user.db_service.drop_user(conn)
+      end
 
       import = Carto::UserMigrationImport.create(
         exported_file: export.exported_file,
@@ -52,10 +59,20 @@ describe 'UserMigration' do
       import.run_import
 
       puts import.log.entries if import.state != Carto::UserMigrationImport::STATE_COMPLETE
-      import.state.should eq Carto::UserMigrationImport::STATE_COMPLETE
+      expect(import.state).to eq(Carto::UserMigrationImport::STATE_COMPLETE)
 
       carto_user = Carto::User.find(user_attributes['id'])
-      carto_user.attributes.should eq user_attributes
+
+      if metadata_boolean_value
+        user_attributes_to_test = user_attributes.keys - %w(created_at updated_at period_end_date)
+
+        user_attributes_to_test.each do |attribute|
+          expect(carto_user.attributes[attribute]).to eq(user_attributes[attribute])
+        end
+      else
+        expect(carto_user.attributes).to eq(user_attributes)
+      end
+
       records.each.with_index { |row, index| table1.record(index + 1).should include(row) }
 
       metadata_boolean_value ? user.destroy_cascade : user.destroy

@@ -26,6 +26,21 @@ module.exports = {
       template: path.resolve(__dirname, '../lib/assets/javascripts/cartodb/dashboard/views/index.jst.ejs')
     })
   ],
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        loader: 'babel-loader',
+        include: [
+          path.resolve(__dirname, '../node_modules/tangram.cartodb'),
+          path.resolve(__dirname, '../lib/assets/javascripts/carto-node')
+        ],
+        options: {
+          presets: ['es2015']
+        }
+      }
+    ]
+  },
   node: {
     fs: 'empty',
     net: 'empty',

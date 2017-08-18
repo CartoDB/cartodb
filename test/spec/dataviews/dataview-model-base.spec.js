@@ -217,10 +217,25 @@ describe('dataviews/dataview-model-base', function () {
       this.model.set('enabled', false);
       this.model.set('sync_on_data_change', false);
       spyOn(this.model, 'fetch');
+
       this.model.trigger('change:url', this.model, {}, { forceFetch: true });
+
       expect(this.model.fetch).toHaveBeenCalled();
+
       this.model.fetch.calls.reset();
+
       this.model.trigger('change:url', this.model, {}, { forceFetch: false });
+
+      expect(this.model.fetch).not.toHaveBeenCalled();
+    });
+
+    it('should not fetch if url changes and avoidFetch option is true, no matter rest of variables', function () {
+      this.model.set('enabled', true);
+      this.model.set('sync_on_data_change', true);
+      spyOn(this.model, 'fetch');
+
+      this.model.trigger('change:url', this.model, {}, { avoidFetch: true });
+
       expect(this.model.fetch).not.toHaveBeenCalled();
     });
 

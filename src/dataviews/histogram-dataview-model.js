@@ -197,8 +197,7 @@ module.exports = DataviewModelBase.extend({
     this.set('aggregation', undefined, { silent: true });
     this.once('change:url', this._onUrlChanged, this);
 
-    this._resetFilter();
-    this._reloadVis({ forceFetch: false });
+    this._reloadVis({ avoidFetch: true });
   },
 
   _calculateTotalAmount: function (buckets) {

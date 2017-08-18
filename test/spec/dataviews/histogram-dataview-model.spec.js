@@ -5,6 +5,12 @@ var RangeFilter = require('../../../src/windshaft/filters/range');
 var HistogramDataviewModel = require('../../../src/dataviews/histogram-dataview-model');
 var helper = require('../../../src/dataviews/helpers/histogram-helper');
 
+function randomString (length, chars) {
+  var result = '';
+  for (var i = length; i > 0; --i) result += chars[Math.floor(Math.random() * chars.length)];
+  return result;
+}
+
 describe('dataviews/histogram-dataview-model', function () {
   beforeEach(function () {
     this.map = jasmine.createSpyObj('map', ['getViewBounds', 'bind']);
@@ -41,6 +47,23 @@ describe('dataviews/histogram-dataview-model', function () {
     expect(this.model.get('filteredAmount')).toBe(0);
     expect(this.model.get('hasNulls')).toBe(false);
     expect(this.model.get('localTimezone')).toBe(false);
+  });
+
+  it('after calling _initBinds, we must listen to changes in URL only once', function () {
+    var originalUrl = this.model.get('url');
+    spyOn(this.model, '_onUrlChanged');
+    this.model._initBinds();
+
+    this.model.set('url', randomString(32, 'abcdefghijk'));
+
+    expect(this.model._onUrlChanged).toHaveBeenCalled();
+
+    // Let's call again
+    this.model._onUrlChanged.calls.reset();
+
+    this.model.set('url', originalUrl);
+
+    expect(this.model._onUrlChanged).not.toHaveBeenCalled();
   });
 
   it('should not listen any url change from the beginning', function () {
@@ -174,8 +197,10 @@ describe('dataviews/histogram-dataview-model', function () {
   });
 
   describe('when column changes', function () {
-    it('should set column_type to original data, set undefined aggregation and reload map and force fetch', function () {
+    it('should set column_type to original data, set undefined aggregation, reload map avoiding fetch and call _onUrlChanged', function () {
       this.vis.reload.calls.reset();
+      this.model.off('change:url');
+      spyOn(this.model, '_onUrlChanged');
 
       this.model.set({
         aggregation: 'quarter',
@@ -185,7 +210,11 @@ describe('dataviews/histogram-dataview-model', function () {
 
       expect(this.model._originalData.get('column_type')).toEqual('aColumnType');
       expect(this.model.get('aggregation')).toBeUndefined();
-      expect(this.vis.reload).toHaveBeenCalledWith({ forceFetch: true, sourceId: 'a0' });
+      expect(this.vis.reload).toHaveBeenCalledWith({ avoidFetch: true, sourceId: 'a0' });
+
+      this.model.set('url', this.model.get('url') + 'a');
+
+      expect(this.model._onUrlChanged).toHaveBeenCalled();
     });
   });
 

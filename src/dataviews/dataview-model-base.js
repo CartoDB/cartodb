@@ -140,7 +140,7 @@ module.exports = Model.extend({
       if (this.syncsOnDataChanges()) {
         this._newDataAvailable = true;
       }
-      if (this._shouldFetchOnURLChange(opts && _.pick(opts, ['forceFetch', 'sourceId']))) {
+      if (this._shouldFetchOnURLChange(opts && _.pick(opts, ['forceFetch', 'sourceId', 'avoidFetch']))) {
         this.fetch();
       }
     }, this);
@@ -244,9 +244,14 @@ module.exports = Model.extend({
     options = options || {};
     var sourceId = options.sourceId;
     var forceFetch = options.forceFetch;
+    var avoidFetch = options.avoidFetch;
 
-    if (_.isBoolean(forceFetch)) {
-      return forceFetch;
+    if (forceFetch) {
+      return true;
+    }
+
+    if (_.isBoolean(avoidFetch) && avoidFetch) {
+      return false;
     }
 
     return this.isEnabled() &&

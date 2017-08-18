@@ -325,8 +325,7 @@ module.exports = function (grunt) {
     'beforeDefault',
     'js',
     'css',
-    'manifest',
-    'watch'
+    'manifest'
   ]);
 
   registerCmdTask('npm-dev', {cmd: 'npm', args: ['run', 'dev']});

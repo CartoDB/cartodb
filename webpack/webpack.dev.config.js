@@ -7,7 +7,7 @@ const version = PACKAGE.version;
 
 const entryPoints = {
   static: [
-    './lib/assets/javascripts/cartodb/dashboard/static.js'
+    './lib/assets/javascripts/cartodb/static.js'
   ]
 };
 
@@ -18,5 +18,10 @@ module.exports = {
     path: path.resolve(__dirname, '../public/assets'),
     publicPath: '/assets/'
   },
-  devtool: 'cheap-module-source-map'
+  devtool: 'source-map',
+  node: {
+    fs: 'empty',
+    net: 'empty',
+    tls: 'empty'
+  }
 };

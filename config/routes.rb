@@ -29,10 +29,6 @@ CartoDB::Application.routes.draw do
   get '(/user/:user_domain)(/u/:user_domain)/status'          => 'home#app_status'
   get '(/user/:user_domain)(/u/:user_domain)/diagnosis'       => 'home#app_diagnosis'
 
-  # Dashboard
-  # TODO: replace dashboard
-  get '(/user/:user_domain)(/u/:user_domain)/dashboard_static/' => 'static#index', as: :dashboard
-
   # Explore
   get   '(/user/:user_domain)(/u/:user_domain)/explore'         => 'explore#index',     as: :explore_index
   get   '(/user/:user_domain)(/u/:user_domain)/search'          => 'explore#search',    as: :explore_search
@@ -115,175 +111,175 @@ CartoDB::Application.routes.draw do
     delete '(/user/:user_domain)(/u/:user_domain)/account/:id' => 'users#delete', as: :delete_user
 
     # search
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/search/:q'               => 'visualizations#index', as: :search
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/search/:q/:page'         => 'visualizations#index', as: :search_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/shared/search/:q'        => 'visualizations#index', as: :search_shared
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/shared/search/:q/:page'  => 'visualizations#index', as: :search_shared_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/search/:q'               => 'static#index', as: :search
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/search/:q/:page'         => 'static#index', as: :search_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/shared/search/:q'        => 'static#index', as: :search_shared
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/shared/search/:q/:page'  => 'static#index', as: :search_shared_page
 
     # Tables
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/tables'                            => 'visualizations#index', as: :tables_index
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/tables/:page'                      => 'visualizations#index', as: :tables_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/tables/tag/:tag'                   => 'visualizations#index', as: :tables_tag
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/tables/tag/:tag/:page'             => 'visualizations#index', as: :tables_tag_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/tables/shared'                     => 'visualizations#index', as: :tables_shared
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/tables/shared/:page'               => 'visualizations#index', as: :tables_shared_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/tables/shared/tag/:tag'            => 'visualizations#index', as: :tables_shared_tag
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/tables/shared/tag/:tag/:page'      => 'visualizations#index', as: :tables_shared_tag_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/tables/mine'                       => 'visualizations#index', as: :tables_mine
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/tables/mine/:page'                 => 'visualizations#index', as: :tables_mine_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/tables/mine/tag/:tag'              => 'visualizations#index', as: :tables_mine_tag
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/tables/mine/tag/:tag/:page'        => 'visualizations#index', as: :tables_mine_tag_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/tables/mine/locked'                => 'visualizations#index', as: :tables_mine_locked
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/tables/mine/locked/:page'          => 'visualizations#index', as: :tables_mine_locked_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/tables/mine/locked/tag/:tag'       => 'visualizations#index', as: :tables_mine_locked_tag
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/tables/mine/locked/tag/:tag/:page' => 'visualizations#index', as: :tables_mine_locked_tag_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/tables/locked'                     => 'visualizations#index', as: :tables_locked
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/tables/locked/:page'               => 'visualizations#index', as: :tables_locked_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/tables/locked/tag/:tag'            => 'visualizations#index', as: :tables_locked_tag
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/tables/locked/tag/:tag/:page'      => 'visualizations#index', as: :tables_locked_tag_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/tables'                            => 'static#index', as: :tables_index
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/tables/:page'                      => 'static#index', as: :tables_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/tables/tag/:tag'                   => 'static#index', as: :tables_tag
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/tables/tag/:tag/:page'             => 'static#index', as: :tables_tag_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/tables/shared'                     => 'static#index', as: :tables_shared
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/tables/shared/:page'               => 'static#index', as: :tables_shared_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/tables/shared/tag/:tag'            => 'static#index', as: :tables_shared_tag
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/tables/shared/tag/:tag/:page'      => 'static#index', as: :tables_shared_tag_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/tables/mine'                       => 'static#index', as: :tables_mine
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/tables/mine/:page'                 => 'static#index', as: :tables_mine_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/tables/mine/tag/:tag'              => 'static#index', as: :tables_mine_tag
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/tables/mine/tag/:tag/:page'        => 'static#index', as: :tables_mine_tag_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/tables/mine/locked'                => 'static#index', as: :tables_mine_locked
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/tables/mine/locked/:page'          => 'static#index', as: :tables_mine_locked_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/tables/mine/locked/tag/:tag'       => 'static#index', as: :tables_mine_locked_tag
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/tables/mine/locked/tag/:tag/:page' => 'static#index', as: :tables_mine_locked_tag_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/tables/locked'                     => 'static#index', as: :tables_locked
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/tables/locked/:page'               => 'static#index', as: :tables_locked_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/tables/locked/tag/:tag'            => 'static#index', as: :tables_locked_tag
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/tables/locked/tag/:tag/:page'      => 'static#index', as: :tables_locked_tag_page
 
     # Datasets for new dashboard
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets'                              => 'visualizations#index', as: :datasets_index
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/:page'                        => 'visualizations#index', as: :datasets_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/tag/:tag'                     => 'visualizations#index', as: :datasets_tag
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/tag/:tag/:page'               => 'visualizations#index', as: :datasets_tag_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/shared'                       => 'visualizations#index', as: :datasets_shared
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/shared/:page'                 => 'visualizations#index', as: :datasets_shared_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/shared/tag/:tag'              => 'visualizations#index', as: :datasets_shared_tag
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/shared/tag/:tag/:page'        => 'visualizations#index', as: :datasets_shared_tag_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/shared/locked'                => 'visualizations#index', as: :datasets_shared_locked
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/shared/locked/:page'          => 'visualizations#index', as: :datasets_shared_locked_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/shared/locked/tag/:tag'       => 'visualizations#index', as: :datasets_shared_locked_tag
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/shared/locked/tag/:tag/:page' => 'visualizations#index', as: :datasets_shared_locked_tag_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/liked'                        => 'visualizations#index', as: :datasets_liked
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/liked/:page'                  => 'visualizations#index', as: :datasets_liked_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/liked/tag/:tag'               => 'visualizations#index', as: :datasets_liked_tag
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/liked/tag/:tag/:page'         => 'visualizations#index', as: :datasets_liked_tag_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/liked/locked'                 => 'visualizations#index', as: :datasets_liked_locked
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/liked/locked/:page'           => 'visualizations#index', as: :datasets_liked_locked_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/liked/locked/tag/:tag'        => 'visualizations#index', as: :datasets_liked_locked_tag
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/liked/locked/tag/:tag/:page'  => 'visualizations#index', as: :datasets_liked_locked_tag_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/locked'                       => 'visualizations#index', as: :datasets_locked
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/locked/:page'                 => 'visualizations#index', as: :datasets_locked_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/locked/tag/:tag'              => 'visualizations#index', as: :datasets_locked_tag
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/locked/tag/:tag/:page'        => 'visualizations#index', as: :datasets_locked_tag_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/library'                      => 'visualizations#index', as: :datasets_library
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/library/:page'                => 'visualizations#index', as: :datasets_library_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/library/tag/:tag'             => 'visualizations#index', as: :datasets_library_tag
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/library/tag/:tag/:page'       => 'visualizations#index', as: :datasets_library_tag_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets'                              => 'static#index', as: :datasets_index
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/:page'                        => 'static#index', as: :datasets_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/tag/:tag'                     => 'static#index', as: :datasets_tag
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/tag/:tag/:page'               => 'static#index', as: :datasets_tag_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/shared'                       => 'static#index', as: :datasets_shared
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/shared/:page'                 => 'static#index', as: :datasets_shared_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/shared/tag/:tag'              => 'static#index', as: :datasets_shared_tag
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/shared/tag/:tag/:page'        => 'static#index', as: :datasets_shared_tag_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/shared/locked'                => 'static#index', as: :datasets_shared_locked
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/shared/locked/:page'          => 'static#index', as: :datasets_shared_locked_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/shared/locked/tag/:tag'       => 'static#index', as: :datasets_shared_locked_tag
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/shared/locked/tag/:tag/:page' => 'static#index', as: :datasets_shared_locked_tag_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/liked'                        => 'static#index', as: :datasets_liked
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/liked/:page'                  => 'static#index', as: :datasets_liked_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/liked/tag/:tag'               => 'static#index', as: :datasets_liked_tag
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/liked/tag/:tag/:page'         => 'static#index', as: :datasets_liked_tag_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/liked/locked'                 => 'static#index', as: :datasets_liked_locked
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/liked/locked/:page'           => 'static#index', as: :datasets_liked_locked_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/liked/locked/tag/:tag'        => 'static#index', as: :datasets_liked_locked_tag
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/liked/locked/tag/:tag/:page'  => 'static#index', as: :datasets_liked_locked_tag_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/locked'                       => 'static#index', as: :datasets_locked
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/locked/:page'                 => 'static#index', as: :datasets_locked_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/locked/tag/:tag'              => 'static#index', as: :datasets_locked_tag
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/locked/tag/:tag/:page'        => 'static#index', as: :datasets_locked_tag_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/library'                      => 'static#index', as: :datasets_library
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/library/:page'                => 'static#index', as: :datasets_library_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/library/tag/:tag'             => 'static#index', as: :datasets_library_tag
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/library/tag/:tag/:page'       => 'static#index', as: :datasets_library_tag_page
 
     # Tables search
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/tables/search/:q'                    => 'visualizations#index', as: :tables_search
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/tables/search/:q/:page'              => 'visualizations#index', as: :tables_search_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/tables/shared/search/:q'             => 'visualizations#index', as: :tables_shared_search
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/tables/shared/search/:q/:page'       => 'visualizations#index', as: :tables_shared_search_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/tables/locked/search/:q'             => 'visualizations#index', as: :tables_locked_search
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/tables/locked/search/:q/:page'       => 'visualizations#index', as: :tables_locked_search_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/tables/mine/search/:q'               => 'visualizations#index', as: :tables_mine_search
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/tables/mine/search/:q/:page'         => 'visualizations#index', as: :tables_mine_search_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/tables/mine/locked/search/:q'        => 'visualizations#index', as: :tables_mine_locked_search
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/tables/mine/locked/search/:q/:page'  => 'visualizations#index', as: :tables_mine_locked_search_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/tables/search/:q'                    => 'static#index', as: :tables_search
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/tables/search/:q/:page'              => 'static#index', as: :tables_search_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/tables/shared/search/:q'             => 'static#index', as: :tables_shared_search
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/tables/shared/search/:q/:page'       => 'static#index', as: :tables_shared_search_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/tables/locked/search/:q'             => 'static#index', as: :tables_locked_search
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/tables/locked/search/:q/:page'       => 'static#index', as: :tables_locked_search_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/tables/mine/search/:q'               => 'static#index', as: :tables_mine_search
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/tables/mine/search/:q/:page'         => 'static#index', as: :tables_mine_search_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/tables/mine/locked/search/:q'        => 'static#index', as: :tables_mine_locked_search
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/tables/mine/locked/search/:q/:page'  => 'static#index', as: :tables_mine_locked_search_page
 
     # Datasets search
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/search/:q'                      => 'visualizations#index', as: :datasets_search
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/search/:q/:page'                => 'visualizations#index', as: :datasets_search_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/shared/search/:q'               => 'visualizations#index', as: :datasets_shared_search
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/shared/search/:q/:page'         => 'visualizations#index', as: :datasets_shared_search_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/locked/search/:q'               => 'visualizations#index', as: :datasets_locked_search
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/locked/search/:q/:page'         => 'visualizations#index', as: :datasets_locked_search_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/shared/locked/search/:q'        => 'visualizations#index', as: :datasets_shared_locked_search
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/shared/locked/search/:q/:page'  => 'visualizations#index', as: :datasets_shared_locked_search_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/liked/search/:q'                => 'visualizations#index', as: :datasets_liked_search
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/liked/search/:q/:page'          => 'visualizations#index', as: :datasets_liked_search_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/liked/locked/search/:q'         => 'visualizations#index', as: :datasets_liked_locked_search
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/liked/locked/search/:q/:page'   => 'visualizations#index', as: :datasets_liked_locked_search_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/library/search/:q'              => 'visualizations#index', as: :datasets_library_search
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/library/search/:q/:page'        => 'visualizations#index', as: :datasets_library_search_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/search/:q'                      => 'static#index', as: :datasets_search
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/search/:q/:page'                => 'static#index', as: :datasets_search_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/shared/search/:q'               => 'static#index', as: :datasets_shared_search
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/shared/search/:q/:page'         => 'static#index', as: :datasets_shared_search_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/locked/search/:q'               => 'static#index', as: :datasets_locked_search
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/locked/search/:q/:page'         => 'static#index', as: :datasets_locked_search_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/shared/locked/search/:q'        => 'static#index', as: :datasets_shared_locked_search
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/shared/locked/search/:q/:page'  => 'static#index', as: :datasets_shared_locked_search_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/liked/search/:q'                => 'static#index', as: :datasets_liked_search
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/liked/search/:q/:page'          => 'static#index', as: :datasets_liked_search_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/liked/locked/search/:q'         => 'static#index', as: :datasets_liked_locked_search
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/liked/locked/search/:q/:page'   => 'static#index', as: :datasets_liked_locked_search_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/library/search/:q'              => 'static#index', as: :datasets_library_search
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/library/search/:q/:page'        => 'static#index', as: :datasets_library_search_page
 
     # Visualizations
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/visualizations'                            => 'visualizations#index', as: :visualizations_index
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/visualizations/:page'                      => 'visualizations#index', as: :visualizations_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/visualizations/tag/:tag'                   => 'visualizations#index', as: :visualizations_tag
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/visualizations/tag/:tag/:page'             => 'visualizations#index', as: :visualizations_tag_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/visualizations/shared'                     => 'visualizations#index', as: :visualizations_shared
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/visualizations/shared/:page'               => 'visualizations#index', as: :visualizations_shared_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/visualizations/shared/tag/:tag'            => 'visualizations#index', as: :visualizations_shared_tag
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/visualizations/shared/tag/:tag/:page'      => 'visualizations#index', as: :visualizations_shared_tag_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/visualizations/mine'                       => 'visualizations#index', as: :visualizations_mine
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/visualizations/mine/:page'                 => 'visualizations#index', as: :visualizations_mine_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/visualizations/mine/tag/:tag'              => 'visualizations#index', as: :visualizations_mine_tag
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/visualizations/mine/tag/:tag/:page'        => 'visualizations#index', as: :visualizations_mine_tag_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/visualizations/mine/locked'                => 'visualizations#index', as: :visualizations_mine_locked
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/visualizations/mine/locked/:page'          => 'visualizations#index', as: :visualizations_mine_locked_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/visualizations/mine/locked/tag/:tag'       => 'visualizations#index', as: :visualizations_mine_locked_tag
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/visualizations/mine/locked/tag/:tag/:page' => 'visualizations#index', as: :visualizations_mine_locked_tag_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/visualizations/locked'                     => 'visualizations#index', as: :visualizations_locked
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/visualizations/locked/:page'               => 'visualizations#index', as: :visualizations_locked_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/visualizations/locked/tag/:tag'            => 'visualizations#index', as: :visualizations_locked_tag
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/visualizations/locked/tag/:tag/:page'      => 'visualizations#index', as: :visualizations_locked_tag_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/visualizations'                            => 'static#index', as: :visualizations_index
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/visualizations/:page'                      => 'static#index', as: :visualizations_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/visualizations/tag/:tag'                   => 'static#index', as: :visualizations_tag
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/visualizations/tag/:tag/:page'             => 'static#index', as: :visualizations_tag_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/visualizations/shared'                     => 'static#index', as: :visualizations_shared
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/visualizations/shared/:page'               => 'static#index', as: :visualizations_shared_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/visualizations/shared/tag/:tag'            => 'static#index', as: :visualizations_shared_tag
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/visualizations/shared/tag/:tag/:page'      => 'static#index', as: :visualizations_shared_tag_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/visualizations/mine'                       => 'static#index', as: :visualizations_mine
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/visualizations/mine/:page'                 => 'static#index', as: :visualizations_mine_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/visualizations/mine/tag/:tag'              => 'static#index', as: :visualizations_mine_tag
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/visualizations/mine/tag/:tag/:page'        => 'static#index', as: :visualizations_mine_tag_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/visualizations/mine/locked'                => 'static#index', as: :visualizations_mine_locked
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/visualizations/mine/locked/:page'          => 'static#index', as: :visualizations_mine_locked_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/visualizations/mine/locked/tag/:tag'       => 'static#index', as: :visualizations_mine_locked_tag
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/visualizations/mine/locked/tag/:tag/:page' => 'static#index', as: :visualizations_mine_locked_tag_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/visualizations/locked'                     => 'static#index', as: :visualizations_locked
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/visualizations/locked/:page'               => 'static#index', as: :visualizations_locked_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/visualizations/locked/tag/:tag'            => 'static#index', as: :visualizations_locked_tag
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/visualizations/locked/tag/:tag/:page'      => 'static#index', as: :visualizations_locked_tag_page
 
     # Maps
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps'                              => 'visualizations#index', as: :maps_index
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/:page'                        => 'visualizations#index', as: :maps_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/tag/:tag'                     => 'visualizations#index', as: :maps_tag
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/tag/:tag/:page'               => 'visualizations#index', as: :maps_tag_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/shared'                       => 'visualizations#index', as: :maps_shared
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/shared/:page'                 => 'visualizations#index', as: :maps_shared_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/shared/tag/:tag'              => 'visualizations#index', as: :maps_shared_tag
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/shared/tag/:tag/:page'        => 'visualizations#index', as: :maps_shared_tag_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/shared/locked'                => 'visualizations#index', as: :maps_shared_locked
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/shared/locked/:page'          => 'visualizations#index', as: :maps_shared_locked_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/shared/locked/tag/:tag'       => 'visualizations#index', as: :maps_shared_locked_tag
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/shared/locked/tag/:tag/:page' => 'visualizations#index', as: :maps_shared_locked_tag_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/liked'                        => 'visualizations#index', as: :maps_liked
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/liked/:page'                  => 'visualizations#index', as: :maps_liked_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/liked/tag/:tag'               => 'visualizations#index', as: :maps_liked_tag
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/liked/tag/:tag/:page'         => 'visualizations#index', as: :maps_liked_tag_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/liked/locked'                 => 'visualizations#index', as: :maps_liked_locked
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/liked/locked/:page'           => 'visualizations#index', as: :maps_liked_locked_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/liked/locked/tag/:tag'        => 'visualizations#index', as: :maps_liked_locked_tag
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/liked/locked/tag/:tag/:page'  => 'visualizations#index', as: :maps_liked_locked_tag_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/locked'                       => 'visualizations#index', as: :maps_locked
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/locked/:page'                 => 'visualizations#index', as: :maps_locked_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/locked/tag/:tag'              => 'visualizations#index', as: :maps_locked_tag
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/locked/tag/:tag/:page'        => 'visualizations#index', as: :maps_locked_tag_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps'                              => 'static#index', as: :maps_index
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/:page'                        => 'static#index', as: :maps_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/tag/:tag'                     => 'static#index', as: :maps_tag
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/tag/:tag/:page'               => 'static#index', as: :maps_tag_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/shared'                       => 'static#index', as: :maps_shared
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/shared/:page'                 => 'static#index', as: :maps_shared_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/shared/tag/:tag'              => 'static#index', as: :maps_shared_tag
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/shared/tag/:tag/:page'        => 'static#index', as: :maps_shared_tag_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/shared/locked'                => 'static#index', as: :maps_shared_locked
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/shared/locked/:page'          => 'static#index', as: :maps_shared_locked_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/shared/locked/tag/:tag'       => 'static#index', as: :maps_shared_locked_tag
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/shared/locked/tag/:tag/:page' => 'static#index', as: :maps_shared_locked_tag_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/liked'                        => 'static#index', as: :maps_liked
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/liked/:page'                  => 'static#index', as: :maps_liked_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/liked/tag/:tag'               => 'static#index', as: :maps_liked_tag
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/liked/tag/:tag/:page'         => 'static#index', as: :maps_liked_tag_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/liked/locked'                 => 'static#index', as: :maps_liked_locked
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/liked/locked/:page'           => 'static#index', as: :maps_liked_locked_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/liked/locked/tag/:tag'        => 'static#index', as: :maps_liked_locked_tag
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/liked/locked/tag/:tag/:page'  => 'static#index', as: :maps_liked_locked_tag_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/locked'                       => 'static#index', as: :maps_locked
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/locked/:page'                 => 'static#index', as: :maps_locked_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/locked/tag/:tag'              => 'static#index', as: :maps_locked_tag
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/locked/tag/:tag/:page'        => 'static#index', as: :maps_locked_tag_page
 
     # Dashboards
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/deep-insights'                        => 'visualizations#index', as: :dashboards_index
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/deep-insights/:page'                  => 'visualizations#index', as: :dashboards_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/deep-insights'                        => 'static#index', as: :dashboards_index
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/deep-insights/:page'                  => 'static#index', as: :dashboards_page
 
     # Visualizations search
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/visualizations/search/:q'                    => 'visualizations#index', as: :visualizations_search
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/visualizations/search/:q/:page'              => 'visualizations#index', as: :visualizations_search_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/visualizations/shared/search/:q'             => 'visualizations#index', as: :visualizations_shared_search
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/visualizations/shared/search/:q/:page'       => 'visualizations#index', as: :visualizations_shared_search_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/visualizations/locked/search/:q'             => 'visualizations#index', as: :visualizations_locked_search
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/visualizations/locked/search/:q/:page'       => 'visualizations#index', as: :visualizations_locked_search_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/visualizations/mine/search/:q'               => 'visualizations#index', as: :visualizations_mine_search
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/visualizations/mine/search/:q/:page'         => 'visualizations#index', as: :visualizations_mine_search_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/visualizations/mine/locked/search/:q'        => 'visualizations#index', as: :visualizations_mine_locked_search
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/visualizations/mine/locked/search/:q/:page'  => 'visualizations#index', as: :visualizations_mine_locked_search_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/visualizations/search/:q'                    => 'static#index', as: :visualizations_search
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/visualizations/search/:q/:page'              => 'static#index', as: :visualizations_search_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/visualizations/shared/search/:q'             => 'static#index', as: :visualizations_shared_search
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/visualizations/shared/search/:q/:page'       => 'static#index', as: :visualizations_shared_search_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/visualizations/locked/search/:q'             => 'static#index', as: :visualizations_locked_search
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/visualizations/locked/search/:q/:page'       => 'static#index', as: :visualizations_locked_search_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/visualizations/mine/search/:q'               => 'static#index', as: :visualizations_mine_search
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/visualizations/mine/search/:q/:page'         => 'static#index', as: :visualizations_mine_search_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/visualizations/mine/locked/search/:q'        => 'static#index', as: :visualizations_mine_locked_search
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/visualizations/mine/locked/search/:q/:page'  => 'static#index', as: :visualizations_mine_locked_search_page
 
     # Maps search
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/search/:q'                      => 'visualizations#index', as: :maps_search
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/search/:q/:page'                => 'visualizations#index', as: :maps_search_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/shared/search/:q'               => 'visualizations#index', as: :maps_shared_search
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/shared/search/:q/:page'         => 'visualizations#index', as: :maps_shared_search_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/locked/search/:q'               => 'visualizations#index', as: :maps_locked_search
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/locked/search/:q/:page'         => 'visualizations#index', as: :maps_locked_search_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/shared/locked/search/:q'        => 'visualizations#index', as: :maps_shared_locked_search
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/shared/locked/search/:q/:page'  => 'visualizations#index', as: :maps_shared_locked_search_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/liked/search/:q'                => 'visualizations#index', as: :maps_liked_search
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/liked/search/:q/:page'          => 'visualizations#index', as: :maps_liked_search_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/liked/locked/search/:q'         => 'visualizations#index', as: :maps_liked_locked_search
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/liked/locked/search/:q/:page'   => 'visualizations#index', as: :maps_liked_locked_search_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/search/:q'                      => 'static#index', as: :maps_search
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/search/:q/:page'                => 'static#index', as: :maps_search_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/shared/search/:q'               => 'static#index', as: :maps_shared_search
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/shared/search/:q/:page'         => 'static#index', as: :maps_shared_search_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/locked/search/:q'               => 'static#index', as: :maps_locked_search
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/locked/search/:q/:page'         => 'static#index', as: :maps_locked_search_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/shared/locked/search/:q'        => 'static#index', as: :maps_shared_locked_search
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/shared/locked/search/:q/:page'  => 'static#index', as: :maps_shared_locked_search_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/liked/search/:q'                => 'static#index', as: :maps_liked_search
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/liked/search/:q/:page'          => 'static#index', as: :maps_liked_search_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/liked/locked/search/:q'         => 'static#index', as: :maps_liked_locked_search
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/liked/locked/search/:q/:page'   => 'static#index', as: :maps_liked_locked_search_page
 
     # Tags
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/tag/:tag'  => 'visualizations#index', as: :tags
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/tag/:tag'  => 'static#index', as: :tags
 
     # Private dashboard
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/'                  => 'visualizations#index', as: :dashboard
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard'                   => 'visualizations#index', as: :dashboard_bis
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/'                  => 'static#index', as: :dashboard
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard'                   => 'static#index', as: :dashboard_bis
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/common_data'       => 'pages#common_data',    as: :dashboard_common_data
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/common_data/:tag'  => 'pages#common_data',    as: :dashboard_common_data_tag
 
@@ -312,7 +308,7 @@ CartoDB::Application.routes.draw do
     get '(/user/:user_domain)(/u/:user_domain)/tables/:id/embed_map'     => 'visualizations#embed_map',       as: :public_tables_embed_map, constraints: { id: /[^\/]+/ }, defaults: { dont_rewrite: true }
     # Public visualizations
     get '(/user/:user_domain)(/u/:user_domain)/'                         => 'pages#public',                   as: :public_visualizations_home, defaults: { dont_rewrite: true }
-    get '(/user/:user_domain)(/u/:user_domain)/viz'                      => 'visualizations#index',           as: :public_visualizations, defaults: { dont_rewrite: true }
+    get '(/user/:user_domain)(/u/:user_domain)/viz'                      => 'static#index',           as: :public_visualizations, defaults: { dont_rewrite: true }
     get '(/user/:user_domain)(/u/:user_domain)/viz/track_embed'          => 'visualizations#track_embed',     as: :public_visualizations_track_embed, defaults: { dont_rewrite: true }
     get '(/user/:user_domain)(/u/:user_domain)/viz/embed_forbidden'      => 'visualizations#embed_forbidden', as: :public_visualizations_embed_forbidden, defaults: { dont_rewrite: true }
     get '(/user/:user_domain)(/u/:user_domain)/viz/:id'                  => 'visualizations#show',            as: :public_visualizations_show,       constraints: { id: /[^\/]+/ }, defaults: { dont_rewrite: true }

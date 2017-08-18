@@ -6,6 +6,6 @@ class StaticController < ApplicationController
   ssl_allowed :index
 
   def index
-    render :file => File.join(Rails.root, 'public/static/dashboard/index.html')
+    render :file => 'public/static/dashboard/index.html'
   end
 end

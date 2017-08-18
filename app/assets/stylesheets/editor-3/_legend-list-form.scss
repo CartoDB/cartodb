@@ -32,9 +32,9 @@
 
 .ListItem-deleteButton {
   position: absolute;
-  top: 6px;
-  left: 100%;
-  padding: 0 5px;
+  top: 8px;
+  right: -24px;
+  padding: 8px;
   opacity: 0;
   visibility: hidden;
 
@@ -43,7 +43,6 @@
     visibility: visible;
   }
 }
-
 
 .LegendItem-listFieldsOrder {
   @include opacity(0);

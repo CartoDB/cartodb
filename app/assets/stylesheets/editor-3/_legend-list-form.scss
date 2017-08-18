@@ -20,10 +20,9 @@
 
 .LegendItem-deleteButton {
   position: absolute;
-  top: 4px;
+  top: 0;
   right: -24px;
-  bottom: 0px;
-  padding: 8px;
+  padding: 16px 8px 8px 8px;
   opacity: 0;
 
   .LegendItem:hover & {
@@ -49,8 +48,9 @@
 .LegendItem-listFieldsOrder {
   @include opacity(0);
   position: absolute;
-  top: 16px;
-  left: -19px;
+  top: 0;
+  left: -24px;
+  padding: 16px 4px 8px 4px;
 
   .LegendItem:hover & {
     @include opacity(1);

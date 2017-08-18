@@ -3,6 +3,7 @@ Development
 
 ### Features
 * Improving affordance of Delete icon (#12531)
+* Add pointer cursor to the sliders (#12499)
 * Fixed a bug that would break the bubble legend on IE11 (#support/891)
 * Support for SAML signed logout requests (#12355)
 * Provide a way to display broken layers pointing to non existent nodes (#12541)

@@ -20,8 +20,10 @@
 
 .LegendItem-deteleButton {
   position: absolute;
-  top: 16px;
-  right: -16px;
+  top: 4px;
+  right: -24px;
+  bottom: 0px;
+  padding: 8px;
   opacity: 0;
 
   .LegendItem:hover & {

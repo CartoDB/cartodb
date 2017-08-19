@@ -2317,7 +2317,6 @@
         "labels-attribute": {
           "label": "column",
           "placeholder": "Select a column",
-          "disabled-placeholder": "Enable column",
           "fetching": "Loading node schema...",
           "unavailable": "Error getting node schema",
           "error": "There was an error fetching node schema..."
@@ -2350,7 +2349,6 @@
         "animated-attribute": {
           "label": "column",
           "placeholder": "Select a column",
-          "disabled-placeholder": "Enable column",
           "fetching": "Loading node schema...",
           "unavailable": "Error getting node schema",
           "error": "There was an error fetching node schema..."

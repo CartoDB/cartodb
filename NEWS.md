@@ -3,7 +3,8 @@ Development
 
 ### Features
 * Split frontend for Dashboard view from Rails backend (#12607)
-* Add /api/v3/me endpoint (#12599)* Change select "attribute" placeholders (#12498)
+* Add /api/v3/me endpoint (#12599)
+* Change select "attribute" placeholders (#12498)
 * Add pointer cursor to the sliders (#12499)
 * Fixed a bug that would break the bubble legend on IE11 (#support/891)
 * Support for SAML signed logout requests (#12355)

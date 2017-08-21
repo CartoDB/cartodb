@@ -20,15 +20,25 @@ module.exports = Model.extend({
 
   url: function () {
     var params = [];
+    var columnType = this.get('column_type');
     var offset = this._getCurrentOffset();
+    var start = this.get('start');
+    var end = this.get('end');
 
-    if (this.get('column_type') === 'number' && this.get('bins')) {
+    if (columnType === 'number' && this.get('bins')) {
       params.push('bins=' + this.get('bins'));
-    } else if (this.get('column_type') === 'date') {
+    } else if (columnType === 'date') {
       params.push('aggregation=' + (this.get('aggregation') || 'auto'));
       if (_.isFinite(offset)) {
         params.push('offset=' + offset);
       }
+    }
+
+    var dataRange = this._getStartEnd(columnType, this.get('aggregation'));
+    if (dataRange !== null) {
+      params.push('start=' + dataRange.start);
+      params.push('end=' + dataRange.end);
+      //console.log('fetching totals with start end (', dataRange.start, ' - ', dataRange.end, ')');
     }
 
     if (this.get('apiKey')) {
@@ -47,6 +57,10 @@ module.exports = Model.extend({
   },
 
   initialize: function () {
+    this._startEndCache = {
+      number: null,
+      date: {}
+    };
     this.sync = BackboneAbortSync.bind(this);
     this._initBinds();
   },
@@ -122,6 +136,7 @@ module.exports = Model.extend({
       parsedData.start = parsedData.data[0].start;
       parsedData.end = parsedData.data[parsedData.data.length - 1].end;
     }
+    this._saveStartEnd(this.get('column_type'), parsedData.aggregation, parsedData.start, parsedData.end);
 
     return parsedData;
   },
@@ -130,5 +145,37 @@ module.exports = Model.extend({
     return this.get('localTimezone')
       ? this.get('localOffset')
       : this.get('offset');
+  },
+
+  _getStartEnd: function (columnType, aggregation) {
+    var result = null;
+    if (columnType === 'number' && this._startEndCache[columnType] !== null) {
+      result = this._startEndCache[columnType];
+    } else if (columnType === 'date') {
+      var aggCache = this._startEndCache[columnType][aggregation];
+      if (aggCache) {
+        result = this._startEndCache[columnType][aggregation];
+      }
+    }
+    return result;
+  },
+
+  _saveStartEnd: function (columnType, aggregation, start, end) {
+    if (columnType === 'number' && this._startEndCache[columnType] === null) {
+      this._startEndCache[columnType] = {
+        start: start,
+        end: end
+      };
+      //console.log('saved number ', start, ' - ', end);
+    } else if (columnType === 'date') {
+      var aggCache = this._startEndCache[columnType][aggregation];
+      if (!aggCache) {
+        this._startEndCache[columnType][aggregation] = {
+          start: start,
+          end: end
+        };
+        //console.log('saved date ', aggregation, ' ', start, ' - ', end);
+      }
+    }
   }
 });

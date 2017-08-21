@@ -73,10 +73,7 @@ module.exports = DataviewModelBase.extend({
   _initBinds: function () {
     DataviewModelBase.prototype._initBinds.apply(this);
 
-    // We shouldn't listen url change for fetching the data (with filter) because
-    // we have to wait until we know all the data available (without any filter).
-    this.off('change:url');
-    this.once('change:url', this._onUrlChanged, this);
+    this._updateURLBinding();
 
     // When original data gets fetched
     this._originalData.bind('change:data', this._onDataChanged, this);
@@ -90,11 +87,18 @@ module.exports = DataviewModelBase.extend({
   },
 
   _onLocalTimezoneChanged: function () {
+    this._resetFilter();
     this._originalData.set('localTimezone', this.get('localTimezone'));
+  },
+
+  _updateURLBinding: function () {
+    this.off('change:url');
+    this.on('change:url', this._onUrlChanged, this);
   },
 
   _updateBindings: function () {
     this._onChangeBinds();
+    this._updateURLBinding();
   },
 
   enableFilter: function () {
@@ -195,9 +199,8 @@ module.exports = DataviewModelBase.extend({
   _onColumnChanged: function () {
     this._originalData.set('column_type', this.get('column_type'));
     this.set('aggregation', undefined, { silent: true });
-    this.once('change:url', this._onUrlChanged, this);
 
-    this._reloadVis({ avoidFetch: true });
+    this._reloadVisAndForceFetch();
   },
 
   _calculateTotalAmount: function (buckets) {

@@ -40,6 +40,7 @@ Development
 * Mustache conditionals support improved in popups (#support/763)
 
 ### Bug fixes / enhancements
+* Prevent a markdown with 'mailto' to open a new browser tab (#12628)
 * Fix timeseries animation for pixel styles (#12571)
 * Change request order in user-actions (#12548)
 * Implement responsive behaviour for time series (#12470)

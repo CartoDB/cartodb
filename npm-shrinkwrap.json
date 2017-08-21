@@ -814,8 +814,8 @@
     },
     "cartodb-deep-insights.js": {
       "version": "0.0.3",
-      "from": "cartodb/deep-insights.js#12571-pixel-time-series",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#3537993d39604974a6531412a24c92f631d68d17",
+      "from": "cartodb/deep-insights.js#master",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#eb12f1a31a6c4056b413e1b113b14f99c6734c14",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",

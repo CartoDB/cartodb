@@ -2,6 +2,8 @@ Development
 -----------
 
 ### Features
+* Add pointer cursor to the sliders (#12499)
+* Fixed a bug that would break the bubble legend on IE11 (#support/891)
 * Support for SAML signed logout requests (#12355)
 * Provide a way to display broken layers pointing to non existent nodes (#12541)
 * Provide CartoCSS attribute within layer info in vizjson v3 (CartoDB/support#858)
@@ -36,6 +38,8 @@ Development
 
 ### Bug fixes / enhancements
 * Fix timeseries animation for pixel styles (#12571)
+* Change request order in user-actions (#12548)
+* Implement responsive behaviour for time series (#12470)
 * Fix broken join from second column on IE11 (#support/875)
 * Fix ghost node problem (#11397)
 * Break down deep-insights-integrations class (#11581)

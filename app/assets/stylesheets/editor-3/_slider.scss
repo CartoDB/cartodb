@@ -28,6 +28,7 @@
   border: none;
   border-radius: 0;
   content: '';
+  cursor: pointer;
   z-index: 1;
 }
 .UISlider .ui-slider-range-min {
@@ -57,6 +58,10 @@
 }
 
 .UISlider.ui-slider-disabled .ui-slider-handle {
+  cursor: not-allowed;
+}
+
+.UISlider.ui-slider-disabled::before {
   cursor: not-allowed;
 }
 

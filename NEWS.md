@@ -3,6 +3,7 @@ Development
 
 ### Features
 
+* Improving affordance of Delete icon (#12531)
 * Change select "attribute" placeholders (#12498)
 * Add pointer cursor to the sliders (#12499)
 * Fixed a bug that would break the bubble legend on IE11 (#support/891)

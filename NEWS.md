@@ -3,6 +3,9 @@ Development
 
 ### Features
 * Add /api/v3/me endpoint (#12599)
+
+* Change select "attribute" placeholders (#12498)
+* Add pointer cursor to the sliders (#12499)
 * Fixed a bug that would break the bubble legend on IE11 (#support/891)
 * Support for SAML signed logout requests (#12355)
 * Provide a way to display broken layers pointing to non existent nodes (#12541)
@@ -37,6 +40,7 @@ Development
 * Mustache conditionals support improved in popups (#support/763)
 
 ### Bug fixes / enhancements
+* Change request order in user-actions (#12548)
 * Implement responsive behaviour for time series (#12470)
 * Fix broken join from second column on IE11 (#support/875)
 * Fix ghost node problem (#11397)

@@ -40,6 +40,7 @@ Development
 * Mustache conditionals support improved in popups (#support/763)
 
 ### Bug fixes / enhancements
+* Fix random timeout in specs (#12625)
 * Fix timeseries animation for pixel styles (#12571)
 * Change request order in user-actions (#12548)
 * Implement responsive behaviour for time series (#12470)

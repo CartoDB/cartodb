@@ -14,7 +14,7 @@ module.exports = cdb.core.View.extend({
         match: function (widgetModel) {
           if (widgetModel.get('type') === 'time-series') {
             var d = widgetModel.dataviewModel;
-            return d && d.layer.get('type') === 'torque';
+            return d && d.layer.get('type') === 'torque' && widgetModel.get('animated') === true;
           }
           return false;
         },

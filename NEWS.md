@@ -2,6 +2,8 @@ Development
 -----------
 
 ### Features
+
+* Change select "attribute" placeholders (#12498)
 * Add pointer cursor to the sliders (#12499)
 * Fixed a bug that would break the bubble legend on IE11 (#support/891)
 * Support for SAML signed logout requests (#12355)

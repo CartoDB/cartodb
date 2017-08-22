@@ -169,7 +169,7 @@ WidgetsService.prototype.createTimeSeriesModel = function (attrs, layer, state, 
   attrs.column_type = attrs.column_type || 'date';
   var dataviewModel = this._dataviews.createHistogramModel(layer, attrs);
 
-  var ATTRS_NAMES = ['id', 'style', 'title', 'normalized', 'timezone'];
+  var ATTRS_NAMES = ['id', 'style', 'title', 'normalized', 'animated', 'timezone'];
   var widgetAttrs = _.pick(attrs, ATTRS_NAMES);
   widgetAttrs.type = 'time-series';
   widgetAttrs.attrsNames = ATTRS_NAMES;

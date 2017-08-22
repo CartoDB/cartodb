@@ -6,15 +6,16 @@ module.exports = function (config) {
     basePath: '',
     frameworks: ['jasmine-ajax', 'jasmine'],
     files: [
-      'lib/assets/core/test/spec/cartodb3/specHelper.js',
       'lib/assets/core/test/spec/cartodb3/loadtests.js'
     ],
     preprocessors: {
-      'lib/assets/core/test/spec/cartodb3/specHelper.js': ['webpack'],
       'lib/assets/core/test/spec/cartodb3/loadtests.js': ['webpack']
     },
     webpack: {
-      devtool: 'eval-source-map',
+      entry: () => {
+        return {};
+      }, // For webpack 2.2.0 and beyond, config schema is strictly enforced and will error if it's missing something required.
+      devtool: 'cheap-module-source-map',
       plugins: [
         new webpack.ProvidePlugin({
           $: 'jquery',
@@ -60,7 +61,28 @@ module.exports = function (config) {
       node: {
         fs: 'empty' // This fixes the error Module not found: Error: Can't resolve 'fs'
       },
+      stats: 'none',
+      performance: {
+        hints: false
+      }
+    },
+    webpackMiddleware: {
       stats: {
+        assets: false,
+        children: false,
+        chunks: false,
+        chunkModules: false,
+        chunkOrigins: false,
+        colors: true,
+        entrypoints: false,
+        errors: true,
+        errorDetails: true,
+        hash: false,
+        modules: false,
+        performance: false,
+        timings: false,
+        usedExports: false,
+        version: true,
         warnings: false
       }
     },
@@ -70,16 +92,15 @@ module.exports = function (config) {
       suppressErrorSummary: true,
       suppressFailed: false,
       suppressPassed: false,
-      suppressSkipped: true,
-      showSpecTiming: true,
-      failFast: true
+      suppressSkipped: false,
+      showSpecTiming: false,
+      failFast: false
     },
     port: 9876,
     colors: true,
-    logLevel: config.LOG_INFO,
+    logLevel: config.LOG_ERROR,
     autoWatch: true,
     browsers: ['ChromeHeadless'],
-    singleRun: true,
     concurrency: Infinity,
     captureTimeout: 60000,
     browserNoActivityTimeout: 100000

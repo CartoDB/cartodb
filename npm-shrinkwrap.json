@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.9.36",
+  "version": "4.9.37",
   "dependencies": {
     "abbrev": {
       "version": "1.1.0",
@@ -4900,10 +4900,64 @@
       "resolved": "https://registry.npmjs.org/karma-jasmine-ajax/-/karma-jasmine-ajax-0.1.13.tgz",
       "dev": true
     },
+    "karma-sourcemap-loader": {
+      "version": "0.3.7",
+      "from": "karma-sourcemap-loader@>=0.3.7 <0.4.0",
+      "resolved": "https://registry.npmjs.org/karma-sourcemap-loader/-/karma-sourcemap-loader-0.3.7.tgz",
+      "dev": true,
+      "dependencies": {
+        "graceful-fs": {
+          "version": "4.1.11",
+          "from": "graceful-fs@>=4.1.2 <5.0.0",
+          "resolved": "https://registry.npmjs.org/graceful-fs/-/graceful-fs-4.1.11.tgz",
+          "dev": true
+        }
+      }
+    },
+    "karma-spec-reporter": {
+      "version": "0.0.31",
+      "from": "karma-spec-reporter@0.0.31",
+      "resolved": "https://registry.npmjs.org/karma-spec-reporter/-/karma-spec-reporter-0.0.31.tgz",
+      "dev": true,
+      "dependencies": {
+        "colors": {
+          "version": "1.1.2",
+          "from": "colors@>=1.1.2 <2.0.0",
+          "resolved": "https://registry.npmjs.org/colors/-/colors-1.1.2.tgz",
+          "dev": true
+        }
+      }
+    },
     "karma-webpack": {
       "version": "2.0.4",
       "from": "karma-webpack@latest",
       "resolved": "https://registry.npmjs.org/karma-webpack/-/karma-webpack-2.0.4.tgz",
+      "dev": true,
+      "dependencies": {
+        "async": {
+          "version": "0.9.2",
+          "from": "async@>=0.9.0 <0.10.0",
+          "resolved": "https://registry.npmjs.org/async/-/async-0.9.2.tgz",
+          "dev": true
+        },
+        "lodash": {
+          "version": "3.10.1",
+          "from": "lodash@>=3.8.0 <4.0.0",
+          "resolved": "https://registry.npmjs.org/lodash/-/lodash-3.10.1.tgz",
+          "dev": true
+        },
+        "source-map": {
+          "version": "0.1.43",
+          "from": "source-map@>=0.1.41 <0.2.0",
+          "resolved": "https://registry.npmjs.org/source-map/-/source-map-0.1.43.tgz",
+          "dev": true
+        }
+      }
+    },
+    "karma-webpack-with-fast-source-maps": {
+      "version": "1.10.2",
+      "from": "https://registry.npmjs.org/karma-webpack-with-fast-source-maps/-/karma-webpack-with-fast-source-maps-1.10.2.tgz",
+      "resolved": "https://registry.npmjs.org/karma-webpack-with-fast-source-maps/-/karma-webpack-with-fast-source-maps-1.10.2.tgz",
       "dev": true,
       "dependencies": {
         "async": {

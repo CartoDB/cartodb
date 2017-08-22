@@ -101,8 +101,9 @@ format.timestampFactory = function (aggregation, offset, localTimezone) {
     if (!_.has(AGGREGATION_FORMATS, aggregation)) {
       return '-';
     }
+    //console.log('> format ', timestamp);
     var format = AGGREGATION_FORMATS[aggregation];
-    var date = moment.unix(timestamp + localOffset).utc();
+    var date = moment.unix(timestamp).utc();
     var formatted = date.format(format.display);
     return formatted;
   };

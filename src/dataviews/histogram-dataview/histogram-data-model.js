@@ -22,11 +22,12 @@ module.exports = Model.extend({
     var params = [];
     var columnType = this.get('column_type');
     var offset = this._getCurrentOffset();
+    var aggregation = this.get('aggregation');
 
     if (columnType === 'number' && this.get('bins')) {
       params.push('bins=' + this.get('bins'));
     } else if (columnType === 'date') {
-      params.push('aggregation=' + (this.get('aggregation') || 'auto'));
+      params.push('aggregation=' + (aggregation || 'auto'));
       if (_.isFinite(offset)) {
         params.push('offset=' + offset);
       }
@@ -64,7 +65,6 @@ module.exports = Model.extend({
       date: {},
       saved: false
     };
-    this._lastStartEnd = null;
     this.sync = BackboneAbortSync.bind(this);
     this._initBinds();
   },
@@ -91,6 +91,7 @@ module.exports = Model.extend({
     }, this);
 
     this.on('change:column', function () {
+      this.set('aggregation', 'auto', { silent: true });
       this._resetStartEndCache();
     });
   },
@@ -176,10 +177,6 @@ module.exports = Model.extend({
         };
       }
     }
-
-    result !== null
-      ? this._lastStartEnd = result
-      : result = this._lastStartEnd;
 
     return result;
   },

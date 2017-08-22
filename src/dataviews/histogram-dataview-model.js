@@ -135,7 +135,7 @@ module.exports = DataviewModelBase.extend({
   },
 
   parse: function (data) {
-    var aggregation = data.aggregation;
+    var aggregation = data.aggregation || this._originalData.get('aggregation');
     var numberOfBins = data.bins_count;
     var width = data.bin_width;
     var start = this.get('column_type') === 'date' ? data.timestamp_start : data.bins_start;
@@ -323,7 +323,6 @@ module.exports = DataviewModelBase.extend({
 
   _onUrlChanged: function () {
     this._originalData.set({
-      aggregation: this.get('aggregation'),
       offset: this.get('offset'),
       bins: this.get('bins')
     }, { silent: true });

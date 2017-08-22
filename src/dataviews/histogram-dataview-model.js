@@ -333,13 +333,15 @@ module.exports = DataviewModelBase.extend({
 
   _onDataChanged: function (model) {
     var range = model.getCurrentStartEnd();
-    this.set({
-      start: range.start,
-      end: range.end
-    });
+    if (range !== null) {
+      this.set({
+        start: range.start,
+        end: range.end
+      });
+    }
 
     this.set({
-      aggregation: model.get('aggregation') || 'minute',
+      aggregation: model.get('aggregation') || 'auto',
       offset: model.get('offset') || 0,
       bins: model.get('bins'),
       error: model.get('error')

@@ -64,6 +64,7 @@ module.exports = Model.extend({
       date: {},
       saved: false
     };
+    this._lastStartEnd = null;
     this.sync = BackboneAbortSync.bind(this);
     this._initBinds();
   },
@@ -110,28 +111,28 @@ module.exports = Model.extend({
   },
 
   parse: function (data) {
-    var aggregation = data.aggregation;
+    var aggregation = data.aggregation || this.get('aggregation');
     var numberOfBins = data.bins_count;
     var width = data.bin_width;
     var start = this.get('column_type') === 'date' ? data.timestamp_start : data.bins_start;
 
-    var parsedData = {
-      aggregation: aggregation,
-      data: new Array(numberOfBins)
-    };
+    var parsedData = {};
+    parsedData.data = new Array(numberOfBins);
+
+    if (aggregation) {
+      parsedData.aggregation = aggregation;
+      this.set('aggregation', aggregation, { silent: true });
+    }
 
     _.each(data.bins, function (bin) {
       parsedData.data[bin.bin] = bin;
     });
-
-    this.set('aggregation', aggregation, { silent: true });
 
     if (numberOfBins > DEFAULT_MAX_BUCKETS) {
       parsedData.error = 'Max bins limit reached';
       return parsedData;
     }
 
-    parsedData.error = undefined;
     if (this.get('column_type') === 'date') {
       parsedData.data = helper.fillTimestampBuckets(parsedData.data, start, aggregation, numberOfBins, this._getCurrentOffset(), 'totals');
       numberOfBins = parsedData.data.length;
@@ -162,20 +163,25 @@ module.exports = Model.extend({
   getCurrentStartEnd: function () {
     var columnType = this.get('column_type');
     var aggregation = this.get('aggregation');
+    var result = null;
 
     if (columnType === 'number' && this._startEndCache[columnType] !== null) {
-      return this._startEndCache[columnType];
+      result = this._startEndCache[columnType];
     } else if (columnType === 'date') {
       var aggCache = this._startEndCache[columnType][aggregation];
       if (aggCache) {
-        var result = this._startEndCache[columnType][aggregation];
-        return {
-          start: result.start,
-          end: result.end
+        result = {
+          start: this._startEndCache[columnType][aggregation].start,
+          end: this._startEndCache[columnType][aggregation].end
         };
       }
     }
-    return null;
+
+    result !== null
+      ? this._lastStartEnd = result
+      : result = this._lastStartEnd;
+
+    return result;
   },
 
   _saveStartEnd: function (columnType, aggregation, start, end, limits, offset) {
@@ -190,7 +196,7 @@ module.exports = Model.extend({
       };
       this._startEndCache.saved = true;
     } else if (columnType === 'date') {
-      var ranges = helper.calculateDateRanges(aggregation, limits.start, limits.end);
+      var ranges = helper.calculateDateRanges(limits.start, limits.end);
       this._startEndCache[columnType] = ranges;
       this._startEndCache.saved = true;
     }

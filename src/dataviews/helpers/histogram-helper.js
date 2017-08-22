@@ -114,7 +114,7 @@ helper.calculateLimits = function (bins) {
   };
 };
 
-helper.calculateDateRanges = function (aggregation, min, max) {
+helper.calculateDateRanges = function (min, max) {
   var startDate = moment.unix(min).utc();
   var endDate = moment.unix(max).utc();
   var ranges = {};

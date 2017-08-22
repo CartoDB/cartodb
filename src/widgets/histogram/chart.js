@@ -577,6 +577,7 @@ module.exports = cdb.core.View.extend({
 
     if (this._originalData) {
       this.listenTo(this._originalData, 'change:data', function () {
+        this.updateYScale();
         this._removeShadowBars();
         this._generateShadowBars();
       });

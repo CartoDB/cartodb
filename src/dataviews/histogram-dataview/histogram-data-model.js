@@ -1,5 +1,4 @@
 var _ = require('underscore');
-var moment = require('moment');
 var BackboneAbortSync = require('../../util/backbone-abort-sync');
 var Model = require('../../core/model');
 var helper = require('../helpers/histogram-helper');
@@ -23,8 +22,6 @@ module.exports = Model.extend({
     var params = [];
     var columnType = this.get('column_type');
     var offset = this._getCurrentOffset();
-    var start = this.get('start');
-    var end = this.get('end');
 
     if (columnType === 'number' && this.get('bins')) {
       params.push('bins=' + this.get('bins'));
@@ -36,19 +33,14 @@ module.exports = Model.extend({
     }
 
     // Start - End
-    var msg = 'Pedimos totals con [';
     var limits = this.getCurrentStartEnd();
     if (limits !== null) {
       if (_.isNumber(limits.start)) {
         params.push('start=' + limits.start);
-        msg += '' + limits.start + ' ' + helper.formatUTCTimestamp(limits.start);
       }
       if (_.isNumber(limits.end)) {
         params.push('end=' + limits.end);
-        msg += ' ' + limits.end + ' ' + helper.formatUTCTimestamp(limits.end);
       }
-      msg += ']';
-      //console.log(msg);
     }
 
     if (this.get('apiKey')) {
@@ -96,6 +88,10 @@ module.exports = Model.extend({
     this.on('change:localTimezone', function () {
       this.fetch();
     }, this);
+
+    this.on('change:column', function () {
+      this._resetStartEndCache();
+    });
   },
 
   setUrl: function (url) {
@@ -134,14 +130,11 @@ module.exports = Model.extend({
       parsedData.error = 'Max bins limit reached';
       return parsedData;
     }
-    
-    console.log('parse totals from ', numberOfBins);
 
     parsedData.error = undefined;
     if (this.get('column_type') === 'date') {
       parsedData.data = helper.fillTimestampBuckets(parsedData.data, start, aggregation, numberOfBins, this._getCurrentOffset(), 'totals');
       numberOfBins = parsedData.data.length;
-      console.log(' to ', numberOfBins);
     } else {
       helper.fillNumericBuckets(parsedData.data, start, width, numberOfBins);
     }
@@ -176,7 +169,6 @@ module.exports = Model.extend({
       var aggCache = this._startEndCache[columnType][aggregation];
       if (aggCache) {
         var result = this._startEndCache[columnType][aggregation];
-        //console.log('> start end ', result.start, ' - ', result.end, ' | ', moment.unix(result.start).utc().format('DD-MM-YYYY HH:mm:ss'), ' - ', moment.unix(result.end).utc().format('DD-MM-YYYY HH:mm:ss'));
         return {
           start: result.start,
           end: result.end
@@ -197,11 +189,14 @@ module.exports = Model.extend({
         end: end
       };
       this._startEndCache.saved = true;
-      //console.log('saved number ', start, ' - ', end);
     } else if (columnType === 'date') {
       var ranges = helper.calculateDateRanges(aggregation, limits.start, limits.end);
       this._startEndCache[columnType] = ranges;
       this._startEndCache.saved = true;
     }
+  },
+
+  _resetStartEndCache: function () {
+    this._startEndCache.saved = false;
   }
 });

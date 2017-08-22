@@ -65,21 +65,9 @@ helper.fillTimestampBuckets = function (buckets, start, aggregation, numberOfBin
   }
 
   return from === 'totals'
-    ? trimBuckets(buckets, filledBuckets)
+    ? buckets
     : trimBuckets(buckets, filledBuckets, totalBuckets);
 };
-
-// DELETE THIS IN CODE REVIEW
-function logBuckets (buckets, from) {
-  var ts = [];
-  _.each(buckets, function (bucket) {
-    if (bucket && bucket.UTCStart) {
-      var text = moment.unix(bucket.UTCStart).utc().format('DD-MM-YYYY HH:mm:ss');
-      ts.push(text);
-    }
-  });
-  console.log(from, ' [', ts.join(', '), ']');
-}
 
 helper.fillNumericBuckets = function (buckets, start, width, numberOfBins) {
   for (var i = 0; i < numberOfBins; i++) {
@@ -120,8 +108,6 @@ helper.calculateLimits = function (bins) {
     }
   });
 
-  //console.log('Limits [ ', formatUTCTimestamp(start), ' - ', formatUTCTimestamp(end), ' ]');
-
   return {
     start: start !== Infinity ? start : null,
     end: end !== Infinity ? end : null
@@ -132,19 +118,12 @@ helper.calculateDateRanges = function (aggregation, min, max) {
   var startDate = moment.unix(min).utc();
   var endDate = moment.unix(max).utc();
   var ranges = {};
-  var format = 'DD-MM-YYYY HH:mm:ss';
-
-  console.log('Calculating data ranges from ', formatUTCTimestamp(startDate), ' to ', formatUTCTimestamp(endDate));
 
   _.each(_.keys(MOMENT_AGGREGATIONS), function (agg) {
     var startClone = startDate.clone();
     var endClone = endDate.clone();
     var start = startClone.startOf(agg).unix();
     var end = endClone.startOf(agg).add(1, MOMENT_AGGREGATIONS[agg]).unix() - 1;
-
-    if (agg === 'hour' || agg === 'day') {
-      console.log(agg, ' ', formatUTCTimestamp(start), ' - ', formatUTCTimestamp(end));
-    }
 
     ranges[agg] = {
       start: start,

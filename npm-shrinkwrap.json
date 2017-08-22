@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.9.32",
+  "version": "4.9.34",
   "dependencies": {
     "abbrev": {
       "version": "1.1.0",
@@ -798,14 +798,14 @@
       "resolved": "https://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.33.0.tgz"
     },
     "caniuse-lite": {
-      "version": "1.0.30000715",
+      "version": "1.0.30000716",
       "from": "caniuse-lite@>=1.0.30000715 <2.0.0",
-      "resolved": "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30000715.tgz"
+      "resolved": "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30000716.tgz"
     },
     "carto": {
       "version": "0.15.1-cdb4",
       "from": "cartodb/carto#master",
-      "resolved": "git://github.com/cartodb/carto.git#66cc146a02a86a52e587e1d821a04549dc754adb"
+      "resolved": "git://github.com/cartodb/carto.git#daafa9fbf23e3564bf6b13aa0f0eb36ce2622499"
     },
     "cartocolor": {
       "version": "4.0.0",
@@ -2722,9 +2722,9 @@
       "resolved": "https://registry.npmjs.org/regenerator-runtime/-/regenerator-runtime-0.10.5.tgz"
     },
     "regenerator-transform": {
-      "version": "0.10.0",
+      "version": "0.10.1",
       "from": "regenerator-transform@>=0.10.0 <0.11.0",
-      "resolved": "https://registry.npmjs.org/regenerator-transform/-/regenerator-transform-0.10.0.tgz"
+      "resolved": "https://registry.npmjs.org/regenerator-transform/-/regenerator-transform-0.10.1.tgz"
     },
     "regex-cache": {
       "version": "0.4.3",
@@ -3145,7 +3145,7 @@
     "tangram-cartocss": {
       "version": "0.5.7",
       "from": "cartodb/tangram-carto#master",
-      "resolved": "git://github.com/cartodb/tangram-carto.git#35ac7973b770efb86ffaf19f74f8069fdd02cfe0"
+      "resolved": "git://github.com/cartodb/tangram-carto.git#01908691c58ef410d8bc13c9ff94861a06101d72"
     },
     "tangram-reference": {
       "version": "1.0.19",

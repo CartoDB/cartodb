@@ -3,6 +3,7 @@ Development
 
 ### Features
 
+* Improving affordance of Delete icon (#12531)
 * Change select "attribute" placeholders (#12498)
 * Add pointer cursor to the sliders (#12499)
 * Fixed a bug that would break the bubble legend on IE11 (#support/891)
@@ -40,6 +41,10 @@ Development
 
 ### Bug fixes / enhancements
 * Fix Time series width on mobile viewport (#12609)
+* Fix random timeout in specs (#12625)
+* Prevent a markdown with 'mailto' to open a new browser tab (#12628)
+* Slider initialization waits for it to be attached to the DOM
+* Fix timeseries animation for pixel styles (#12571)
 * Change request order in user-actions (#12548)
 * Implement responsive behaviour for time series (#12470)
 * Fix broken join from second column on IE11 (#support/875)

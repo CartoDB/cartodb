@@ -13,14 +13,14 @@ module.exports = {
     publicPath: '/assets/'
   },
   devtool: 'source-map',
-  plugins: Object.keys(webpack_files).map(function(entryName) {
+  plugins: Object.keys(webpack_files).map(function (entryName) {
     return new HtmlWebpackPlugin({
       inject: false,
       cache: false,
       filename: path.resolve(__dirname, '../public/static/' + entryName + '/index.html'),
       template: path.resolve(__dirname, '../lib/assets/javascripts/cartodb/dashboard/views/index.jst.ejs'),
       config: webpack_files[entryName]
-    })
+    });
   }),
   module: {
     rules: [
@@ -28,7 +28,6 @@ module.exports = {
         test: /\.js$/,
         loader: 'babel-loader',
         include: [
-          path.resolve(__dirname, '../node_modules/tangram.cartodb'),
           path.resolve(__dirname, '../lib/assets/javascripts/carto-node')
         ],
         options: {

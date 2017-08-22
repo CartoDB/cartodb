@@ -23,40 +23,37 @@ module.exports = function (config) {
         })
       ],
       module: {
-        rules: [
-          {
-            test: /\.js$/,
-            loader: 'shim-loader',
-            query: {
-              shim: {
-                'wax.cartodb.js': {
-                  exports: 'wax'
-                },
-                'html-css-sanitizer': {
-                  exports: 'html'
-                }
+        rules: [{
+          test: /\.js$/,
+          loader: 'shim-loader',
+          query: {
+            shim: {
+              'wax.cartodb.js': {
+                exports: 'wax'
+              },
+              'html-css-sanitizer': {
+                exports: 'html'
               }
             }
-          },
-          {
-            test: /\.js$/,
-            loader: 'babel-loader',
-            include: [path.resolve(path.resolve('.'), 'node_modules/tangram.cartodb')],
-            options: {
-              presets: [
-                ['es2015', { 'modules': false }]
-              ]
-            }
-          },
-          {
-            test: /\.tpl$/,
-            use: 'tpl-loader'
-          },
-          {
-            test: /\.mustache$/,
-            use: 'raw-loader'
           }
-        ],
+        }, {
+          test: /\.js$/,
+          loader: 'babel-loader',
+          include: [path.resolve(path.resolve('.'), 'node_modules/tangram.cartodb')],
+          options: {
+            presets: [
+              ['es2015', {
+                'modules': false
+              }]
+            ]
+          }
+        }, {
+          test: /\.tpl$/,
+          use: 'tpl-loader'
+        }, {
+          test: /\.mustache$/,
+          use: 'raw-loader'
+        }],
         exprContextRegExp: /$^/,
         exprContextCritical: false
       },
@@ -67,13 +64,24 @@ module.exports = function (config) {
         warnings: false
       }
     },
-    reporters: ['progress'],
+    reporters: ['spec'],
+    specReporter: {
+      maxLogLines: 5,
+      suppressErrorSummary: true,
+      suppressFailed: false,
+      suppressPassed: false,
+      suppressSkipped: true,
+      showSpecTiming: true,
+      failFast: true
+    },
     port: 9876,
     colors: true,
     logLevel: config.LOG_INFO,
     autoWatch: true,
     browsers: ['ChromeHeadless'],
     singleRun: true,
-    concurrency: Infinity
+    concurrency: Infinity,
+    captureTimeout: 60000,
+    browserNoActivityTimeout: 100000
   });
 };

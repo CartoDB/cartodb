@@ -1582,7 +1582,7 @@ describe('widgets/histogram/chart', function () {
 
         this.view._createFormatter();
 
-        expect(formatter.timestampFactory).toHaveBeenCalledWith('minute', 0, false);
+        expect(formatter.timestampFactory).toHaveBeenCalledWith('minute');
         expect(this.view._calculateDivisionWithByAggregation).toHaveBeenCalled();
         expect(this.view.formatter).not.toBe(formatter.formatNumber);
       });

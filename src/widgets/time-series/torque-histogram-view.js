@@ -10,7 +10,7 @@ var TorqueControlsView = require('./torque-controls-view');
  */
 module.exports = HistogramView.extend({
   className: function () {
-    return HistogramView.prototype.className + ' CDB-Widget-content CDB-Widget-content--timeSeries u-flex';
+    return HistogramView.prototype.className + ' CDB-Widget-content CDB-Widget-content--torqueTimeSeries u-flex';
   },
 
   initialize: function () {

@@ -80,7 +80,8 @@
 }
 
 .CDB-Widget-content--histogram,
-.CDB-Widget-content--timeSeries {
+.CDB-Widget-content--timeSeries,
+.CDB-Widget-content--torqueTimeSeries, {
   touch-action: none;
   -ms-touch-action: none;
 }

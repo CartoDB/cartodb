@@ -50,7 +50,7 @@
     "bluebird": "3.5.0",
     "brfs": "^1.4.3",
     "browserify-resolutions": "1.1.0",
-    "cartoassets": "CartoDB/CartoAssets#master",
+    "cartoassets": "CartoDB/CartoAssets#fix-blue-color",
     "colors": "1.1.2",
     "csswring": "^3.0.5",
     "exports-loader": "0.6.4",

@@ -4894,6 +4894,12 @@
       "resolved": "https://registry.npmjs.org/karma-jasmine/-/karma-jasmine-1.1.0.tgz",
       "dev": true
     },
+    "karma-jasmine-ajax": {
+      "version": "0.1.13",
+      "from": "karma-jasmine-ajax@latest",
+      "resolved": "https://registry.npmjs.org/karma-jasmine-ajax/-/karma-jasmine-ajax-0.1.13.tgz",
+      "dev": true
+    },
     "karma-webpack": {
       "version": "2.0.4",
       "from": "karma-webpack@latest",

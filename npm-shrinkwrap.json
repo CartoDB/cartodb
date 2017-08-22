@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.9.34",
+  "version": "4.9.37-ded04",
   "dependencies": {
     "abbrev": {
       "version": "1.1.0",
@@ -815,7 +815,7 @@
     "cartodb-deep-insights.js": {
       "version": "0.0.3",
       "from": "cartodb/deep-insights.js#12609-fix-chart-width",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#30dc6a8ec2a658d5b40777b3abd9e4502344b636",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#3a22fcd43b8b7b3d2785da45425744d27764aba7",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",

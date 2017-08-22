@@ -40,6 +40,7 @@ Development
 * Mustache conditionals support improved in popups (#support/763)
 
 ### Bug fixes / enhancements
+* Fix Time series width on mobile viewport (#12609)
 * Fix random timeout in specs (#12625)
 * Prevent a markdown with 'mailto' to open a new browser tab (#12628)
 * Slider initialization waits for it to be attached to the DOM

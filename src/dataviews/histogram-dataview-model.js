@@ -1,6 +1,7 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
 var d3 = require('d3');
+var moment = require('moment');
 var DataviewModelBase = require('./dataview-model-base');
 var HistogramDataModel = require('./histogram-dataview/histogram-data-model');
 var helper = require('./helpers/histogram-helper');
@@ -21,8 +22,6 @@ module.exports = DataviewModelBase.extend({
 
   _getDataviewSpecificURLParams: function () {
     var params = [];
-    var start = this.get('start');
-    var end = this.get('end');
 
     if (_.isNumber(this.get('own_filter'))) {
       params.push('own_filter=' + this.get('own_filter'));
@@ -37,12 +36,20 @@ module.exports = DataviewModelBase.extend({
           params.push('offset=' + offset);
         }
       }
-      if (_.isNumber(start)) {
-        params.push('start=' + start);
+
+      // Start - End
+      var msg = 'Pedimos dataview con [';
+      var limits = this._originalData.getCurrentStartEnd();
+      if (_.isNumber(limits.start)) {
+        params.push('start=' + limits.start);
+        msg += '' + limits.start + ' ' + helper.formatUTCTimestamp(limits.start);
       }
-      if (_.isNumber(end)) {
-        params.push('end=' + end);
+      if (_.isNumber(limits.end)) {
+        params.push('end=' + limits.end);
+        msg += ' ' + limits.end + ' ' + helper.formatUTCTimestamp(limits.end);
       }
+      msg += ']';
+      //console.log(msg);
     }
     return params;
   },
@@ -137,7 +144,7 @@ module.exports = DataviewModelBase.extend({
     var aggregation = data.aggregation;
     var numberOfBins = data.bins_count;
     var width = data.bin_width;
-    var start = this.get('column_type') === 'date' ? helper.calculateStart(data.bins, data.bins_start, aggregation) : data.bins_start;
+    var start = this.get('column_type') === 'date' ? data.timestamp_start : data.bins_start;
 
     var parsedData = {
       data: [],
@@ -160,8 +167,12 @@ module.exports = DataviewModelBase.extend({
       aggregation: aggregation
     }, { silent: true });
 
+    console.log('parse dataview from ', numberOfBins);
+
     if (this.get('column_type') === 'date') {
-      helper.fillTimestampBuckets(parsedData.data, start, aggregation, numberOfBins, this._getCurrentOffset());
+      parsedData.data = helper.fillTimestampBuckets(parsedData.data, start, aggregation, numberOfBins, this._getCurrentOffset(), 'filtered', this._originalData.get('data').length);
+      numberOfBins = parsedData.data.length;
+      console.log('to ', numberOfBins);
     } else {
       helper.fillNumericBuckets(parsedData.data, start, width, numberOfBins);
     }
@@ -327,9 +338,10 @@ module.exports = DataviewModelBase.extend({
   },
 
   _onDataChanged: function (model) {
+    var range = model.getCurrentStartEnd();
     this.set({
-      end: model.get('end'),
-      start: model.get('start')
+      start: range.start,
+      end: range.end
     });
 
     this.set({

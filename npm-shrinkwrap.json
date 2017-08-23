@@ -832,7 +832,7 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
       "from": "cartodb/cartodb.js#fix-histograms",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#5cf938ee274637829a169f16dbbb9dc543a0518d"
+      "resolved": "git://github.com/cartodb/cartodb.js.git#aff336c0f5076f368b5ae4dcc24c0ba1e1a4d642"
     },
     "caseless": {
       "version": "0.12.0",

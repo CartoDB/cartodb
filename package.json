@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.9.36-frontend.07",
+  "version": "4.9.36-frontend.08",
   "description": "CARTO UI frontend",
   "repository": {
     "type": "git",
@@ -128,9 +128,7 @@
     "cdb.Utils": "global:cdb.Utils",
     "cartodb.js-v3": "global:cdb",
     "backbone-cdb-v3": "global:Backbone",
-    "moment-v3": "global:moment",
-    "_t": "global:_t",
-    "jst": "global:JST"
+    "moment-v3": "global:moment"
   },
   "semistandard": {
     "globals": [

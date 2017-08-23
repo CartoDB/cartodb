@@ -12,6 +12,7 @@ module FrontendConfigHelper
       trackjs_app_key:            Cartodb.get_config(:trackjs, 'app_keys', 'editor'),
       google_analytics_ua:        Cartodb.get_config(:google_analytics, 'primary'),
       google_analytics_domain:    Cartodb.get_config(:google_analytics, 'domain'),
+      intercom_app_id:            Cartodb.get_config(:intercom, 'app_id'),
       dropbox_api_key:            Cartodb.get_config(:dropbox_api_key),
       gdrive_api_key:             Cartodb.get_config(:gdrive, 'api_key'),
       gdrive_app_id:              Cartodb.get_config(:gdrive, 'app_id'),

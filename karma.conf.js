@@ -6,10 +6,10 @@ module.exports = function (config) {
     basePath: '',
     frameworks: ['jasmine-ajax', 'jasmine'],
     files: [
-      'lib/assets/core/test/spec/cartodb3/loadtests.js'
+      'lib/assets/test/spec/cartodb3/loadtests.js'
     ],
     preprocessors: {
-      'lib/assets/core/test/spec/cartodb3/loadtests.js': ['webpack']
+      'lib/assets/test/spec/cartodb3/loadtests.js': ['webpack']
     },
     webpack: {
       entry: () => {
@@ -82,24 +82,13 @@ module.exports = function (config) {
         performance: false,
         timings: false,
         usedExports: false,
-        version: true,
+        version: false,
         warnings: false
       }
-    },
-    reporters: ['spec'],
-    specReporter: {
-      maxLogLines: 5,
-      suppressErrorSummary: true,
-      suppressFailed: false,
-      suppressPassed: false,
-      suppressSkipped: false,
-      showSpecTiming: false,
-      failFast: false
     },
     port: 9876,
     colors: true,
     logLevel: config.LOG_ERROR,
-    autoWatch: true,
     browsers: ['ChromeHeadless'],
     concurrency: Infinity,
     captureTimeout: 60000,

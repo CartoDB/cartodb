@@ -73,6 +73,7 @@
     "grunt-contrib-uglify": "2.0.x",
     "grunt-contrib-watch": "1.0.0",
     "grunt-exorcise": "2.1.0",
+    "grunt-karma": "^2.0.0",
     "grunt-postcss": "0.5.5",
     "grunt-sass": "2.0.0",
     "grunt-timer": "0.3.3",
@@ -83,8 +84,7 @@
     "karma-chrome-launcher": "^2.2.0",
     "karma-jasmine": "^1.1.0",
     "karma-jasmine-ajax": "^0.1.13",
-    "karma-spec-reporter": "0.0.31",
-    "karma-webpack-with-fast-source-maps": "1.10.2",
+    "karma-webpack": "^2.0.4",
     "load-grunt-tasks": "3.2.0",
     "minimist": "1.2.0",
     "open": "0.0.5",
@@ -187,7 +187,7 @@
     "node": "6.9.2"
   },
   "scripts": {
-    "test": "karma start --browsers ChromeHeadless karma.conf.js",
+    "test": "karma start --watch --browsers ChromeHeadless karma.conf.js",
     "test-ci": "karma start --single-run --browsers ChromeHeadless karma.conf.js",
     "update-internal-deps": "rm -rf node_modules && npm install --production --no-shrinkwrap && npm dedupe && npm prune && npm shrinkwrap && npm install",
     "branch-files": "node lib/build/branchFiles/branchFiles.js",

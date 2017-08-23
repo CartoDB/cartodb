@@ -100,7 +100,7 @@ helper.calculateLimits = function (bins) {
 
   return {
     start: start !== Infinity ? start : null,
-    end: end !== Infinity ? end : null
+    end: end !== -Infinity ? end : null
   };
 };
 

@@ -22,12 +22,12 @@ module.exports = Model.extend({
     var params = [];
     var columnType = this.get('column_type');
     var offset = this._getCurrentOffset();
-    var aggregation = this.get('aggregation');
+    var aggregation = this.get('aggregation') || 'auto';
 
     if (columnType === 'number' && this.get('bins')) {
       params.push('bins=' + this.get('bins'));
     } else if (columnType === 'date') {
-      params.push('aggregation=' + (aggregation || 'auto'));
+      params.push('aggregation=' + aggregation);
       if (_.isFinite(offset)) {
         params.push('offset=' + offset);
       }

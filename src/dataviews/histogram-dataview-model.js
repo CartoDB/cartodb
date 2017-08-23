@@ -38,11 +38,13 @@ module.exports = DataviewModelBase.extend({
 
       // Start - End
       var limits = this._originalData.getCurrentStartEnd();
-      if (limits !== null && _.isNumber(limits.start)) {
-        params.push('start=' + limits.start);
-      }
-      if (limits !== null && _.isNumber(limits.end)) {
-        params.push('end=' + limits.end);
+      if (limits !== null) {
+        if (_.isNumber(limits.start)) {
+          params.push('start=' + limits.start);
+        }
+        if (_.isNumber(limits.end)) {
+          params.push('end=' + limits.end);
+        }
       }
     }
     return params;

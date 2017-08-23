@@ -1,6 +1,7 @@
 var moment = require('moment');
 var _ = require('underscore');
 
+// Preserve the ascendant order!
 var MOMENT_AGGREGATIONS = {
   second: 's',
   minute: 'm',
@@ -11,10 +12,6 @@ var MOMENT_AGGREGATIONS = {
   quarter: 'Q',
   year: 'y'
 };
-
-function isLessThanDays (aggregation) {
-  return aggregation === 'second' || aggregation === 'minute' || aggregation === 'hour';
-}
 
 function formatUTCTimestamp (timestamp) {
   return moment.unix(timestamp).utc().format('DD-MM-YYYY HH:mm:ss');
@@ -38,8 +35,15 @@ function trimBuckets (buckets, filledBuckets, totalBuckets) {
     : buckets;
 }
 
+helper.isShorterThan = function (limit, aggregation) {
+  var keys = _.keys(MOMENT_AGGREGATIONS);
+  var limitIndex = _.indexOf(keys, limit);
+  var aggregationIndex = _.indexOf(keys, aggregation);
+  return limitIndex > -1 && aggregationIndex > -1 && aggregationIndex < limitIndex;
+};
+
 helper.fillTimestampBuckets = function (buckets, start, aggregation, numberOfBins, offset, from, totalBuckets) {
-  var startOffset = isLessThanDays(aggregation) ? (offset || 0) : 0;
+  var startOffset = helper.isShorterThan('day', aggregation) ? (offset || 0) : 0;
   var startDate = moment.unix(start + startOffset).utc();
   var UTCStartDate = moment.unix(start).utc();
   var filledBuckets = []; // To catch empty buckets

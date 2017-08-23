@@ -447,6 +447,8 @@ $maxLegendContainerHeight: 300px;
 }
 .Legend-categoryCircle {
   position: relative;
+  margin-left: 2px;
+  margin-right: 2px;
   width: 8px;
   height: 8px;
   border-radius: 50%;
@@ -464,11 +466,12 @@ $maxLegendContainerHeight: 300px;
 .Legend-categoryIcon {
   display: block;
   position: relative;
-  width: 10px;
-  height: 10px;
+  width: 12px;
+  height: 12px;
 }
 .Legend-categoryTitle {
   max-width: 90%;
+  margin-left: 8px;
 }
 .Legend-placeholder {
   position: relative;

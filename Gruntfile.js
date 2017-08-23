@@ -104,9 +104,9 @@ module.exports = function (grunt) {
   grunt.log.writeln('env: ' + env);
 
   if (grunt.file.exists(env)) {
-    env = grunt.file.readJSON(env)
+    env = grunt.file.readJSON(env);
   } else {
-    throw grunt.util.error(env +' file is missing! See '+ env +'.sample for how it should look like');
+    throw grunt.util.error(env + ' file is missing! See ' + env + '.sample for how it should look like');
   }
 
   var aws = {};
@@ -155,13 +155,29 @@ module.exports = function (grunt) {
 
     availabletasks: require('./lib/build/tasks/availabletasks.js').task(),
 
-    sass: require('./lib/build/tasks/sass.js').task()
+    sass: require('./lib/build/tasks/sass.js').task(),
+
+    karma: {
+      options: {
+        configFile: 'karma.conf.js',
+        browsers: ['ChromeHeadless'],
+        reporters: ['dots']
+      },
+      unit: {
+        background: true,
+        singleRun: false
+      },
+      ci: {
+        singleRun: true
+      }
+    }
   });
 
   /**
    * `grunt availabletasks`
    */
   grunt.loadNpmTasks('grunt-available-tasks');
+  grunt.loadNpmTasks('grunt-karma');
 
   // Load Grunt tasks
   require('load-grunt-tasks')(grunt, {
@@ -170,7 +186,7 @@ module.exports = function (grunt) {
 
   require('./lib/build/tasks/manifest').register(grunt, ASSETS_DIR);
 
-  grunt.registerTask('invalidate', 'invalidate cache', function() {
+  grunt.registerTask('invalidate', 'invalidate cache', function () {
     var done = this.async();
     var url = require('url');
     var https = require('https');
@@ -183,34 +199,34 @@ module.exports = function (grunt) {
     };
     console.log(options);
 
-    https.request(options, function(response) {
-      if(response.statusCode == 200) {
+    https.request(options, function (response) {
+      if (response.statusCode === 200) {
         grunt.log.ok('CDN invalidated (fastly)');
       } else {
-        grunt.log.error('CDN not invalidated (fastly), code: ' + response.statusCode)
+        grunt.log.error('CDN not invalidated (fastly), code: ' + response.statusCode);
       }
       done();
-    }).on('error', function(e) {
+    }).on('error', function (e) {
       grunt.log.error('CDN not invalidated (fastly)');
       done();
     }).end();
   });
 
-  grunt.registerTask('config', 'generates assets config for current configuration', function() {
+  grunt.registerTask('config', 'generates assets config for current configuration', function () {
     // Set assets url for static assets in our app
     var config = grunt.template.process("cdb.config.set('assets_url', '<%= env.http_path_prefix %>/assets/<%= pkg.version %>');");
     config += grunt.template.process("\nconsole.log('cartodbui v<%= pkg.version %>');");
     grunt.file.write("lib/build/app_config.js", config);
   });
 
-  grunt.registerTask('check_release', 'checks release can be done', function() {
+  grunt.registerTask('check_release', 'checks release can be done', function () {
     if (environment === DEVELOPMENT) {
       grunt.log.error("you can't release running development environment");
       return false;
     }
 
     grunt.log.ok("************************************************");
-    grunt.log.ok(" you are going to deploy to " + env );
+    grunt.log.ok(" you are going to deploy to " + env);
     grunt.log.ok("************************************************");
   });
 
@@ -284,12 +300,12 @@ module.exports = function (grunt) {
     grunt.task.run('browserify');
   });
 
-  grunt.registerTask('cdb', 'build Cartodb.js', function() {
+  grunt.registerTask('cdb', 'build Cartodb.js', function () {
     var done = this.async();
 
     require('child_process').exec('make update_cdb', function (error, stdout, stderr) {
       if (error) {
-        grunt.log.fail('cartodb.js not updated (due to '+ stdout + ', ' + stderr + ')');
+        grunt.log.fail('cartodb.js not updated (due to ' + stdout + ', ' + stderr + ')');
       } else {
         grunt.log.ok('cartodb.js updated');
       }
@@ -415,10 +431,11 @@ module.exports = function (grunt) {
     'js_editor',
     'jasmine:cartodbui',
     'js_builder',
-    'affected:all',
-    'bootstrap_webpack_builder_specs',
-    'webpack:builder_specs',
-    'jasmine:affected',
+    'karma:ci',
+    // 'affected:all',
+    // 'bootstrap_webpack_builder_specs',
+    // 'webpack:builder_specs',
+    // 'jasmine:affected',
     'lint'
   ]);
 
@@ -428,12 +445,13 @@ module.exports = function (grunt) {
    */
   grunt.registerTask('affected_specs', 'Build only specs affected by changes in current branch', [
     'js_builder',
-    'affected',
-    'bootstrap_webpack_builder_specs',
-    'webpack:builder_specs',
-    'jasmine:affected:build',
-    'connect:specs',
+    // 'affected',
+    // 'bootstrap_webpack_builder_specs',
+    // 'webpack:builder_specs',
+    'karma:unit',
     'watch:js_affected'
+    // 'jasmine:affected:build',
+    // 'connect:specs',
   ]);
 
   grunt.registerTask('build-jasmine-specrunners', _.chain(jasmineCfg)
@@ -443,7 +461,7 @@ module.exports = function (grunt) {
     })
     .value());
 
-  grunt.registerTask('setConfig', 'Set a config property', function(name, val) {
+  grunt.registerTask('setConfig', 'Set a config property', function (name, val) {
     grunt.config.set(name, val);
   });
 

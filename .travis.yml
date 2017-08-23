@@ -1,20 +1,18 @@
 language: node_js
 node_js:
   - "6.9.2"
-
+dist: trusty
 before_install:
   - git submodule update --init --recursive
-
+addons:
+  chrome: stable
 install:
   - npm install
-
 before_script:
   - npm install -g npm@3.10.9
   - npm install -g grunt-cli
-
 script:
   - grunt test
-
 notifications:
   email:
     on_success: never

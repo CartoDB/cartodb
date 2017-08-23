@@ -19,9 +19,8 @@ module.exports = {
         var errors = getValue(jqXHR, 'responseJSON.errors_with_context', []);
         var error = errors[0] || {};
         var errorType = error.type || 'default';
-        var errorTile = TILE_ERRORS[errorType] || TILE_ERRORS['default'];
 
-        return callback(errorType, errorTile, error.message);
+        return callback(errorType, TILE_ERRORS[errorType], error.message);
       }
     });
   }

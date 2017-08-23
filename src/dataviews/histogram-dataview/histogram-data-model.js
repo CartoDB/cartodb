@@ -131,6 +131,7 @@ module.exports = Model.extend({
 
     if (numberOfBins > DEFAULT_MAX_BUCKETS) {
       parsedData.error = 'Max bins limit reached';
+      parsedData.bins = numberOfBins;
       return parsedData;
     }
 

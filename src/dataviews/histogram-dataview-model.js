@@ -181,6 +181,7 @@ module.exports = DataviewModelBase.extend({
     parsedData.totalAmount = this._calculateTotalAmount(parsedData.data);
     parsedData.filteredAmount = this._calculateFilteredAmount(this.filter, this._data);
     parsedData.nulls = data.nulls;
+    parsedData.bins = numberOfBins;
 
     if (data.nulls != null) {
       parsedData = _.extend({}, parsedData, {

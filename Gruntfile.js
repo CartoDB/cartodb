@@ -56,8 +56,8 @@ module.exports = function (grunt) {
     grunt.log.writeln('Running tasks: ' + runningTasks);
   }
 
-  function preFlight(requiredNodeVersion, requiredNpmVersion, logFn) {
-    function checkVersion(cmd, versionRange, name, logFn) {
+  function preFlight (requiredNodeVersion, requiredNpmVersion, logFn) {
+    function checkVersion (cmd, versionRange, name, logFn) {
       grunt.log.writeln('Required ' + name + ' version: ' + versionRange);
       require("child_process").exec(cmd, function (error, stdout, stderr) {
         var err = null;
@@ -161,14 +161,16 @@ module.exports = function (grunt) {
       options: {
         configFile: 'karma.conf.js',
         browsers: ['ChromeHeadless'],
-        reporters: ['dots']
+        reporters: ['progress']
       },
-      unit: {
+      dev: {
         background: true,
-        singleRun: false
+        singleRun: false,
+        logLevel: 'OFF'
       },
       ci: {
-        singleRun: true
+        singleRun: true,
+        logLevel: 'ERROR'
       }
     }
   });
@@ -225,12 +227,12 @@ module.exports = function (grunt) {
       return false;
     }
 
-    grunt.log.ok("************************************************");
-    grunt.log.ok(" you are going to deploy to " + env);
-    grunt.log.ok("************************************************");
+    grunt.log.ok('************************************************');
+    grunt.log.ok(' you are going to deploy to ' + env);
+    grunt.log.ok('************************************************');
   });
 
-  grunt.event.on('watch', function(action, filepath, subtask) {
+  grunt.event.on('watch', function (action, filepath, subtask) {
     // Configure copy vendor to only run on changed file
     var cfg = grunt.config.get('copy.vendor');
     if (filepath.indexOf(cfg.cwd) !== -1) {
@@ -431,11 +433,10 @@ module.exports = function (grunt) {
     'js_editor',
     'jasmine:cartodbui',
     'js_builder',
+    'affected:all',
+    'bootstrap_webpack_builder_specs',
+    'webpack:builder_specs',
     'karma:ci',
-    // 'affected:all',
-    // 'bootstrap_webpack_builder_specs',
-    // 'webpack:builder_specs',
-    // 'jasmine:affected',
     'lint'
   ]);
 
@@ -445,13 +446,11 @@ module.exports = function (grunt) {
    */
   grunt.registerTask('affected_specs', 'Build only specs affected by changes in current branch', [
     'js_builder',
-    // 'affected',
-    // 'bootstrap_webpack_builder_specs',
-    // 'webpack:builder_specs',
-    'karma:unit',
+    'affected',
+    'bootstrap_webpack_builder_specs',
+    'webpack:builder_specs',
+    'karma:dev:start',
     'watch:js_affected'
-    // 'jasmine:affected:build',
-    // 'connect:specs',
   ]);
 
   grunt.registerTask('build-jasmine-specrunners', _.chain(jasmineCfg)

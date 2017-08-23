@@ -165,16 +165,17 @@ module.exports = Model.extend({
   getCurrentStartEnd: function () {
     var columnType = this.get('column_type');
     var aggregation = this.get('aggregation');
+    var cache = this._startEndCache[columnType];
     var result = null;
 
-    if (columnType === 'number' && this._startEndCache[columnType] !== null) {
-      result = this._startEndCache[columnType];
+    if (columnType === 'number' && cache !== null) {
+      result = cache;
     } else if (columnType === 'date') {
-      var aggCache = this._startEndCache[columnType][aggregation];
+      var aggCache = cache[aggregation];
       if (aggCache) {
         result = {
-          start: this._startEndCache[columnType][aggregation].start,
-          end: this._startEndCache[columnType][aggregation].end
+          start: cache[aggregation].start,
+          end: cache[aggregation].end
         };
       }
     }

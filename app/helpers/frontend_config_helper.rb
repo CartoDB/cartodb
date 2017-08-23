@@ -12,6 +12,7 @@ module FrontendConfigHelper
       trackjs_app_key:            Cartodb.get_config(:trackjs, 'app_keys', 'editor'),
       google_analytics_ua:        Cartodb.get_config(:google_analytics, 'primary'),
       google_analytics_domain:    Cartodb.get_config(:google_analytics, 'domain'),
+      hubspot_enabled:            CartoDB::Hubspot::instance.enabled?,
       intercom_app_id:            Cartodb.get_config(:intercom, 'app_id'),
       dropbox_api_key:            Cartodb.get_config(:dropbox_api_key),
       gdrive_api_key:             Cartodb.get_config(:gdrive, 'api_key'),
@@ -33,6 +34,7 @@ module FrontendConfigHelper
 
     if CartoDB::Hubspot::instance.enabled? && !CartoDB::Hubspot::instance.token.blank?
       config[:hubspot_token] = CartoDB::Hubspot::instance.token
+      config[:hubspot_ids] = CartoDB::Hubspot::instance.event_ids.to_json.html_safe
     end
 
     if Cartodb.config[:datasource_search].present? && Cartodb.config[:datasource_search]['twitter_search'].present? \

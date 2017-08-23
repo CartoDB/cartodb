@@ -229,16 +229,6 @@ describe('dataviews/dataview-model-base', function () {
       expect(this.model.fetch).not.toHaveBeenCalled();
     });
 
-    it('should not fetch if url changes and avoidFetch option is true, no matter rest of variables', function () {
-      this.model.set('enabled', true);
-      this.model.set('sync_on_data_change', true);
-      spyOn(this.model, 'fetch');
-
-      this.model.trigger('change:url', this.model, {}, { avoidFetch: true });
-
-      expect(this.model.fetch).not.toHaveBeenCalled();
-    });
-
     it('should fetch if url changes and sourceId is not defined', function () {
       spyOn(this.model, 'fetch');
 

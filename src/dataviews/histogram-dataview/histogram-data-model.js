@@ -143,7 +143,6 @@ module.exports = Model.extend({
     }
 
     if (parsedData.data.length > 0) {
-      // ESTO HABRÁ QUE QUITARLO Y CUIDADO CON NUMBER
       parsedData.start = parsedData.data[0].start;
       parsedData.end = parsedData.data[parsedData.data.length - 1].end;
 

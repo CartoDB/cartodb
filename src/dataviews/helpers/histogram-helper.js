@@ -12,11 +12,6 @@ var MOMENT_AGGREGATIONS = {
   year: 'y'
 };
 
-function subtractAggregation (timestamp, aggregation, units) {
-  var date = moment.unix(timestamp).utc();
-  return date.subtract(units, MOMENT_AGGREGATIONS[aggregation]).unix();
-}
-
 function isLessThanDays (aggregation) {
   return aggregation === 'second' || aggregation === 'minute' || aggregation === 'hour';
 }
@@ -78,15 +73,6 @@ helper.fillNumericBuckets = function (buckets, start, width, numberOfBins) {
       freq: 0
     }, buckets[i]);
   }
-};
-
-helper.calculateStart = function (buckets, start, aggregation) {
-  if (buckets.length === 0) {
-    return start;
-  }
-
-  var firstBucket = buckets[0];
-  return subtractAggregation(start, aggregation, firstBucket.bin);
 };
 
 helper.hasChangedSomeOf = function (list, changed) {

@@ -30,6 +30,14 @@ var LeafletTiledLayerView = function (layerModel, leafletMap) {
     L.TileLayer.prototype.onAdd.apply(this, arguments);
     self._onAdd();
   };
+
+  this.leafletLayer.on('tileerror', function (layer, coords, error) {
+    TileChecker.check(layer.tile.src, function (error, url, message) {
+      if (error) {
+        layer.tile.src = url;
+      }
+    });
+  });
 };
 
 LeafletTiledLayerView.prototype = _.extend(

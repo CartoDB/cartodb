@@ -15,13 +15,10 @@ module.exports = {
   check: function(url, callback) {
     $.ajax({
       url: url,
-      success: function (data) {
-        return callback(null, url);
-      },
-      error: function (jqXHR) {
+      complete: function (jqXHR) {
         var errors = getValue(jqXHR, 'responseJSON.errors_with_context', []);
         var error = errors[0] || {};
-        var errorType = error.type;
+        var errorType = error.type || 'default';
         var errorTile = TILE_ERRORS[errorType] || TILE_ERRORS['default']
 
         return callback(errorType, errorTile, error.message);

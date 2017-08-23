@@ -1,8 +1,16 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
+var TileChecker = require('../../util/tile-checker');
 
 var LeafletLayerView = function (layerModel, leafletMap) {
   this.leafletLayer = this._createLeafletLayer(layerModel);
+  this.leafletLayer.on('tileerror', function (layer, coords, error) {
+    TileChecker.check(layer.tile.src, function (error, url, message) {
+      if (error) {
+        layer.tile.src = url;
+      }
+    });
+  });
   this.leafletMap = leafletMap;
   this.model = layerModel;
 

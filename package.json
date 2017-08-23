@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.9.32-12479-ded01",
+  "version": "4.9.40",
   "description": "CARTO UI frontend",
   "repository": {
     "type": "git",
@@ -50,7 +50,7 @@
     "bluebird": "3.5.0",
     "brfs": "^1.4.3",
     "browserify-resolutions": "1.1.0",
-    "cartoassets": "CartoDB/CartoAssets#fix-blue-color",
+    "cartoassets": "CartoDB/CartoAssets#master",
     "colors": "1.1.2",
     "csswring": "^3.0.5",
     "exports-loader": "0.6.4",

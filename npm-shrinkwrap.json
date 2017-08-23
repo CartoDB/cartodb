@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.9.38-frontend.1",
+  "version": "4.9.39-frontend.1",
   "dependencies": {
     "abbrev": {
       "version": "1.1.0",
@@ -788,7 +788,7 @@
     "carto": {
       "version": "0.15.1-cdb4",
       "from": "cartodb/carto#master",
-      "resolved": "git://github.com/cartodb/carto.git#daafa9fbf23e3564bf6b13aa0f0eb36ce2622499"
+      "resolved": "git://github.com/cartodb/carto.git#a48ba58cae13328bf878310521a823e9699bab19"
     },
     "cartocolor": {
       "version": "4.0.0",
@@ -815,7 +815,7 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
       "from": "cartodb/cartodb.js#v4",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#9419e7ca6405559c1e241e09e4f9e059cbe0cbbe"
+      "resolved": "git://github.com/cartodb/cartodb.js.git#aa1200c1b011ff7fcb3104baf5d8c1ac54072d17"
     },
     "caseless": {
       "version": "0.12.0",
@@ -3044,7 +3044,7 @@
     "tangram-cartocss": {
       "version": "0.5.7",
       "from": "cartodb/tangram-carto#master",
-      "resolved": "git://github.com/cartodb/tangram-carto.git#01908691c58ef410d8bc13c9ff94861a06101d72"
+      "resolved": "git://github.com/cartodb/tangram-carto.git#9930fef4521d80ee443319521b3dce333ce0049d"
     },
     "tangram-reference": {
       "version": "1.0.19",
@@ -3054,7 +3054,7 @@
     "tangram.cartodb": {
       "version": "0.4.6",
       "from": "cartodb/tangram.cartodb#master",
-      "resolved": "git://github.com/cartodb/tangram.cartodb.git#b6ac5f95ffe1b70aad19a24cee2f01711b8f869d"
+      "resolved": "git://github.com/cartodb/tangram.cartodb.git#b924c77c76f9ecee045e527478a9532602434a6e"
     },
     "tapable": {
       "version": "0.2.8",

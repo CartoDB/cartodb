@@ -1,6 +1,7 @@
 var _ = require('underscore');
 var L = require('leaflet');
 var LeafletLayerView = require('./leaflet-layer-view');
+var TileChecker = require('../../util/tile-checker');
 
 var generateLeafletLayerOptions = function (layerModel) {
   return {

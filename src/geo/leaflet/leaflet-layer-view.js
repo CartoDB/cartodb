@@ -1,6 +1,5 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
-var TileChecker = require('../../util/tile-checker');
 
 var LeafletLayerView = function (layerModel, leafletMap) {
   this.leafletLayer = this._createLeafletLayer(layerModel);

@@ -12,7 +12,7 @@ before_script:
   - npm install -g npm@3.10.9
   - npm install -g grunt-cli
 script:
-  - npm run test-ci
+  - grunt test
 notifications:
   email:
     on_success: never

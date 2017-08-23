@@ -431,10 +431,11 @@ module.exports = function (grunt) {
     'js_editor',
     'jasmine:cartodbui',
     'js_builder',
-    'affected:all',
-    'bootstrap_webpack_builder_specs',
-    'webpack:builder_specs',
-    'jasmine:affected',
+    'karma:ci',
+    // 'affected:all',
+    // 'bootstrap_webpack_builder_specs',
+    // 'webpack:builder_specs',
+    // 'jasmine:affected',
     'lint'
   ]);
 

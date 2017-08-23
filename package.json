@@ -188,7 +188,6 @@
   },
   "scripts": {
     "test": "karma start --watch --browsers ChromeHeadless karma.conf.js",
-    "test-ci": "karma start --single-run --browsers ChromeHeadless karma.conf.js",
     "update-internal-deps": "rm -rf node_modules && npm install --production --no-shrinkwrap && npm dedupe && npm prune && npm shrinkwrap && npm install",
     "branch-files": "node lib/build/branchFiles/branchFiles.js",
     "affected_specs": "node lib/build/branchFiles/branchFiles.js | xargs node lib/build/affectedFiles/affectedFiles.js",

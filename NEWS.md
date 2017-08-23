@@ -38,6 +38,7 @@ Development
 * Updates Dataservices API client default version to `0.19.0` (#12494)
 * Don't display slider if there's only one value (#bigmetadata/202)
 * Mustache conditionals support improved in popups (#support/763)
+* Updates Dataservices API client default version to `0.20.0` (#12633)
 
 ### Bug fixes / enhancements
 * Fix Time series width on mobile viewport (#12609)

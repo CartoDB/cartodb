@@ -30,6 +30,10 @@ module FrontendConfigHelper
       data_library_enabled:       CartoDB::Visualization::CommonDataService.configured?
     }
 
+    if CartoDB::Hubspot::instance.enabled? && !CartoDB::Hubspot::instance.token.blank?
+      config[:hubspot_token] = CartoDB::Hubspot::instance.token
+    end
+
     if Cartodb.config[:datasource_search].present? && Cartodb.config[:datasource_search]['twitter_search'].present? \
       && Cartodb.config[:datasource_search]['twitter_search']['standard'].present?
       config[:datasource_search_twitter] = Cartodb.config[:datasource_search]['twitter_search']['standard']['search_url']

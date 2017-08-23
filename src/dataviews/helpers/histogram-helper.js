@@ -44,7 +44,7 @@ function trimBuckets (buckets, filledBuckets, totalBuckets) {
 }
 
 helper.fillTimestampBuckets = function (buckets, start, aggregation, numberOfBins, offset, from, totalBuckets) {
-  var startOffset = isLessThanDays(aggregation) ? offset : 0;
+  var startOffset = isLessThanDays(aggregation) ? (offset || 0) : 0;
   var startDate = moment.unix(start + startOffset).utc();
   var UTCStartDate = moment.unix(start).utc();
   var filledBuckets = []; // To catch empty buckets

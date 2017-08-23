@@ -38,10 +38,10 @@ module.exports = DataviewModelBase.extend({
 
       // Start - End
       var limits = this._originalData.getCurrentStartEnd();
-      if (_.isNumber(limits.start)) {
+      if (limits !== null && _.isNumber(limits.start)) {
         params.push('start=' + limits.start);
       }
-      if (_.isNumber(limits.end)) {
+      if (limits !== null && _.isNumber(limits.end)) {
         params.push('end=' + limits.end);
       }
     }
@@ -135,7 +135,7 @@ module.exports = DataviewModelBase.extend({
   },
 
   parse: function (data) {
-    var aggregation = data.aggregation || this._originalData.get('aggregation');
+    var aggregation = data.aggregation || (this._originalData && this._originalData.get('aggregation'));
     var numberOfBins = data.bins_count;
     var width = data.bin_width;
     var start = this.get('column_type') === 'date' ? data.timestamp_start : data.bins_start;
@@ -332,7 +332,7 @@ module.exports = DataviewModelBase.extend({
   },
 
   _onDataChanged: function (model) {
-    var range = model.getCurrentStartEnd();
+    var range = model && _.isFunction(model.getCurrentStartEnd) ? model.getCurrentStartEnd() : null;
     if (range !== null) {
       this.set({
         start: range.start,

@@ -49,21 +49,13 @@ describe('dataviews/histogram-dataview-model', function () {
     expect(this.model.get('localTimezone')).toBe(false);
   });
 
-  it('after calling _initBinds, we must listen to changes in URL only once', function () {
-    var originalUrl = this.model.get('url');
+  it('after calling _initBinds, we must listen to changes in URL', function () {
     spyOn(this.model, '_onUrlChanged');
     this.model._initBinds();
 
     this.model.set('url', randomString(32, 'abcdefghijk'));
 
     expect(this.model._onUrlChanged).toHaveBeenCalled();
-
-    // Let's call again
-    this.model._onUrlChanged.calls.reset();
-
-    this.model.set('url', originalUrl);
-
-    expect(this.model._onUrlChanged).not.toHaveBeenCalled();
   });
 
   it('should not listen any url change from the beginning', function () {
@@ -163,11 +155,13 @@ describe('dataviews/histogram-dataview-model', function () {
       var histogramData = {
         bin_width: 10,
         bins_count: 3,
-        bins_start: 1,
         nulls: 0,
         aggregation: 'quarter'
       };
-
+      spyOn(this.model._originalData, 'getCurrentStartEnd').and.returnValue({
+        start: 0,
+        end: 57
+      });
       spyOn(this.model._originalData, 'sync').and.callFake(function (method, model, options) {
         options.success(histogramData);
       });
@@ -179,8 +173,8 @@ describe('dataviews/histogram-dataview-model', function () {
 
       this.model._originalData.fetch();
 
-      expect(this.model.get('start')).toEqual(1);
-      expect(this.model.get('end')).toEqual(31);
+      expect(this.model.get('start')).toEqual(0);
+      expect(this.model.get('end')).toEqual(57);
       expect(this.model.get('bins')).toEqual(3);
       expect(this.model.get('aggregation')).toEqual('quarter');
     });
@@ -197,11 +191,8 @@ describe('dataviews/histogram-dataview-model', function () {
   });
 
   describe('when column changes', function () {
-    it('should set column_type to original data, set undefined aggregation, reload map avoiding fetch and call _onUrlChanged', function () {
+    it('should set column_type to original data, set undefined aggregation, reload map and call _onUrlChanged', function () {
       this.vis.reload.calls.reset();
-      this.model.off('change:url');
-      spyOn(this.model, '_onUrlChanged');
-
       this.model.set({
         aggregation: 'quarter',
         column: 'random_col',
@@ -210,11 +201,7 @@ describe('dataviews/histogram-dataview-model', function () {
 
       expect(this.model._originalData.get('column_type')).toEqual('aColumnType');
       expect(this.model.get('aggregation')).toBeUndefined();
-      expect(this.vis.reload).toHaveBeenCalledWith({ avoidFetch: true, sourceId: 'a0' });
-
-      this.model.set('url', this.model.get('url') + 'a');
-
-      expect(this.model._onUrlChanged).toHaveBeenCalled();
+      expect(this.vis.reload).toHaveBeenCalledWith({ forceFetch: true, sourceId: 'a0' });
     });
   });
 
@@ -295,6 +282,7 @@ describe('dataviews/histogram-dataview-model', function () {
         analysisCollection: new Backbone.Collection(),
         parse: true
       });
+      model._originalData = new Backbone.Model({ aggregation: 'quarter' });
 
       expect(model.hasNulls()).toBe(false);
     });
@@ -443,7 +431,7 @@ describe('dataviews/histogram-dataview-model', function () {
 
       var parsedData = this.model.parse(data);
       expect(helper.fillTimestampBuckets).toHaveBeenCalled();
-      expect(JSON.stringify(parsedData)).toBe('{"data":[{"bin":0,"start":1496690940,"end":1496690999,"next":1496691000,"freq":17,"timestamp":1496690940,"min":1496690944,"max":1496690999,"avg":1496690971.58824},{"bin":1,"start":1496691000,"end":1496691059,"next":1496691060,"freq":18,"timestamp":1496691000,"min":1496691003,"max":1496691059,"avg":1496691031.22222}],"filteredAmount":0,"nulls":0,"totalAmount":35,"hasNulls":true}');
+      expect(JSON.stringify(parsedData)).toBe('{"data":[{"bin":0,"start":1496690940,"end":1496690999,"next":1496691000,"UTCStart":1496690940,"UTCEnd":1496690999,"freq":17,"min":1496690944,"max":1496690999,"avg":1496690971.58824},{"bin":1,"start":1496691000,"end":1496691059,"next":1496691060,"UTCStart":1496691000,"UTCEnd":1496691059,"freq":18,"min":1496691003,"max":1496691059,"avg":1496691031.22222}],"filteredAmount":0,"nulls":0,"totalAmount":35,"bins":2,"hasNulls":true}');
     });
   });
 
@@ -473,27 +461,18 @@ describe('dataviews/histogram-dataview-model', function () {
 
     describe('column type is number', function () {
       describe('if bins present', function () {
-        it('should include start if present', function () {
+        it('should include start and end if present', function () {
+          spyOn(this.model._originalData, 'getCurrentStartEnd').and.returnValue({ start: 11, end: 22 });
           this.model.set({
             bins: 33,
-            start: 11,
             column_type: 'number'
           });
 
-          expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&bins=33&start=11');
-        });
-
-        it('should include end if present', function () {
-          this.model.set({
-            bins: 33,
-            end: 22,
-            column_type: 'number'
-          });
-
-          expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&bins=33&end=22');
+          expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&bins=33&start=11&end=22');
         });
 
         it('should include bins', function () {
+          spyOn(this.model._originalData, 'getCurrentStartEnd').and.returnValue(null);
           this.model.set({
             bins: 33,
             column_type: 'number'
@@ -504,6 +483,7 @@ describe('dataviews/histogram-dataview-model', function () {
       });
 
       it('should not include start, end and bins when own_filter is enabled', function () {
+        spyOn(this.model._originalData, 'getCurrentStartEnd').and.returnValue({ start: 0, end: 10 });
         this.model.set({
           url: 'http://example.com',
           start: 0,
@@ -720,6 +700,13 @@ describe('dataviews/histogram-dataview-model', function () {
   });
 
   describe('._onDataChanged', function () {
+    beforeEach(function () {
+      spyOn(this.model._originalData, 'getCurrentStartEnd').and.returnValue({
+        start: 0,
+        end: 57
+      });
+    });
+
     it('should call _resetFilterAndFetch if column is date and aggregation', function () {
       var model = new Backbone.Model({
         aggregation: 'week'
@@ -766,10 +753,14 @@ describe('dataviews/histogram-dataview-model', function () {
 
     it('should set the data fetched', function () {
       var model = new Backbone.Model({
-        start: 11,
-        end: 22,
         bins: 5
       });
+      model.getCurrentStartEnd = function () {
+        return {
+          start: 11,
+          end: 22
+        };
+      };
 
       this.model._onDataChanged(model);
 

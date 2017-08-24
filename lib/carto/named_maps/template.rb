@@ -255,10 +255,11 @@ module Carto
       end
 
       protected
-      def invalid_state? (state)
+
+      def invalid_state?(state)
         map = state[:map]
         state.blank? || map.blank? || map[:center].blank? || map[:sw].blank? || map[:ne].blank? ||
-            map[:sw][0].blank? || map[:sw][1].blank? || map[:ne].blank? || map[:ne][0].blank? || map[:ne][1].blank?
+          map[:sw][0].blank? || map[:sw][1].blank? || map[:ne].blank? || map[:ne][0].blank? || map[:ne][1].blank?
       end
 
       def view_from_map
@@ -281,8 +282,8 @@ module Carto
         center_and_zoom = {
             zoom: state[:map][:zoom],
             center: {
-                lng: center_data[1],
-                lat: center_data[0]
+              lng: center_data[1],
+              lat: center_data[0]
             }
         }
         bounds_data = {
@@ -294,7 +295,7 @@ module Carto
         filter_and_merge_view(bounds_data, center_and_zoom)
       end
 
-      def filter_and_merge_view (bounds_data, center_and_zoom)
+      def filter_and_merge_view(bounds_data, center_and_zoom)
         # INFO: Don't return 'bounds' if any of the points is 0 to avoid static map trying to go too small zoom level
         if bounds_data[:west] != 0 || bounds_data[:south] != 0 || bounds_data[:east] != 0 || bounds_data[:north] != 0
           center_and_zoom[:bounds] = bounds_data

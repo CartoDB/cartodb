@@ -1,6 +1,6 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
-var webpack_files = require('../lib/build/files//webpack_files');
+var webpack_files = require('../lib/build/files/webpack_files');
 
 const PACKAGE = require('./../package.json');
 const version = PACKAGE.version;
@@ -15,8 +15,8 @@ module.exports = {
   devtool: 'source-map',
   plugins: Object.keys(webpack_files).map(function (entryName) {
     return new HtmlWebpackPlugin({
-      // inject: false,
-      // cache: false,
+      inject: false,
+      cache: false,
       filename: path.resolve(__dirname, '../public/static/' + entryName + '/index.html'),
       template: path.resolve(__dirname, '../lib/assets/javascripts/cartodb/dashboard/views/index.jst.ejs'),
       config: webpack_files[entryName]

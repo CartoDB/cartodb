@@ -14,9 +14,8 @@ describe 'UserMigration' do
     ]
   end
 
-  ['without', 'with'].each do |metadata_value|
-    it "exports and reimports a user #{metadata_value} metadata" do
-      metadata_boolean_value = (metadata_value == 'with')
+  [false, true].each do |migrate_metadata|
+    it "exports and reimports a user #{migrate_metadata ? 'with' : 'without'} metadata" do
       CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
 
       user = FactoryGirl.build(:valid_user).save
@@ -28,7 +27,7 @@ describe 'UserMigration' do
 
       export = Carto::UserMigrationExport.create(
         user: carto_user,
-        export_metadata: metadata_boolean_value
+        export_metadata: migrate_metadata
       )
       export.run_export
 
@@ -40,7 +39,7 @@ describe 'UserMigration' do
       table1.destroy
       expect { table1.records }.to raise_error
 
-      if metadata_boolean_value
+      if migrate_metadata
         user.destroy
       else
         conn = user.in_database(as: :cluster_admin)
@@ -53,7 +52,7 @@ describe 'UserMigration' do
         database_host: user_attributes['database_host'],
         org_import: false,
         json_file: export.json_file,
-        import_metadata: metadata_boolean_value,
+        import_metadata: migrate_metadata,
         import_type: 'user'
       )
       import.run_import
@@ -63,7 +62,7 @@ describe 'UserMigration' do
 
       carto_user = Carto::User.find(user_attributes['id'])
 
-      if metadata_boolean_value
+      if migrate_metadata
         user_attributes_to_test = user_attributes.keys - %w(created_at updated_at period_end_date)
 
         user_attributes_to_test.each do |attribute|
@@ -75,7 +74,7 @@ describe 'UserMigration' do
 
       records.each.with_index { |row, index| table1.record(index + 1).should include(row) }
 
-      metadata_boolean_value ? user.destroy_cascade : user.destroy
+      migrate_metadata ? user.destroy_cascade : user.destroy
     end
 
   end
@@ -83,10 +82,8 @@ describe 'UserMigration' do
   describe 'with organization' do
     include_context 'organization with users helper'
 
-    ['without', 'with'].each do |metadata_value|
-      it "exports and reimports an organization #{metadata_value} metadata" do
-        metadata_boolean_value = (metadata_value == 'with')
-
+    [false, true].each do |migrate_metadata|
+      it "exports and reimports an organization #{migrate_metadata ? 'with' : 'without'} metadata" do
         org_attributes = @carto_organization.attributes
         owner_attributes = @carto_org_user_owner.attributes
 
@@ -95,7 +92,7 @@ describe 'UserMigration' do
 
         export = Carto::UserMigrationExport.create(
             organization: @carto_organization,
-            export_metadata: metadata_boolean_value
+            export_metadata: migrate_metadata
         )
         export.run_export
 
@@ -118,7 +115,7 @@ describe 'UserMigration' do
           database_host: owner_attributes['database_host'],
           org_import: true,
           json_file: export.json_file,
-          import_metadata: metadata_boolean_value,
+          import_metadata: migrate_metadata,
           import_type: 'organization'
         )
         import.run_import

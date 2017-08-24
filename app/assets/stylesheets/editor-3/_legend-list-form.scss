@@ -30,6 +30,10 @@
   }
 }
 
+.LegendItem .is-hidden {
+  visibility: hidden;
+}
+
 .ListItem-deleteButton {
   position: absolute;
   top: -1px;

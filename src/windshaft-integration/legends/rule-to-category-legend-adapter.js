@@ -1,7 +1,7 @@
 var _ = require('underscore');
 var Rule = require('./rule');
 
-var VALID_PROPS = ['line-color', 'marker-fill', 'polygon-fill'];
+var VALID_PROPS = ['line-color', 'marker-fill', 'polygon-fill', 'marker-file'];
 var VALID_MAPPINGS = ['='];
 
 var isEveryBucketValid = function (rule) {
@@ -11,9 +11,16 @@ var isEveryBucketValid = function (rule) {
   });
 };
 
-var generateCategories = function (buckets) {
-  return _.map(buckets, function (bucket) {
-    return { label: bucket.filter.name, value: bucket.value };
+var generateCategories = function (bucketsColor, bucketsIcon) {
+  return _.map(bucketsColor, function (bucketColor) {
+    var bucketIcon = _.find(bucketsIcon, function (bucket) {
+      return bucket.filter.name === bucketColor.filter.name;
+    });
+    return {
+      title: bucketColor.filter.name,
+      icon: bucketIcon ? bucketIcon.value.slice(5, -2) : '',
+      color: bucketColor.value
+    };
   });
 };
 
@@ -25,15 +32,17 @@ module.exports = {
       isEveryBucketValid(rule);
   },
 
-  adapt: function (rule) {
-    rule = new Rule(rule);
+  adapt: function (rules) {
+    var ruleColor = new Rule(rules[0]);
+    var ruleIcon = new Rule(rules[1]);
 
-    var categoryFilteredBuckets = rule.getBucketsWithCategoryFilter();
-    var unfilteredBuckets = rule.getBucketsWithDefaultFilter();
+    var categoryFilteredBucketsColor = ruleColor.getBucketsWithCategoryFilter();
+    var categoryFilteredBucketsIcon = ruleIcon.getBucketsWithCategoryFilter();
+    var unfilteredBuckets = ruleColor.getBucketsWithDefaultFilter();
 
     return {
-      categories: generateCategories(categoryFilteredBuckets),
-      defaultValue: _.isEmpty(unfilteredBuckets) ? undefined : unfilteredBuckets[0].value
+      categories: generateCategories(categoryFilteredBucketsColor, categoryFilteredBucketsIcon),
+      defaultColor: _.isEmpty(unfilteredBuckets) ? undefined : unfilteredBuckets[0].value
     };
   }
 };

@@ -31,8 +31,8 @@ module.exports = {
       isEveryBucketValid(rule);
   },
 
-  adapt: function (rule) {
-    rule = new Rule(rule);
+  adapt: function (rules) {
+    var rule = new Rule(rules[0]);
 
     var rangeBuckets = rule.getBucketsWithRangeFilter();
     var lastBucket = _.last(rangeBuckets);

@@ -35,6 +35,7 @@
     "jquery": "2.1.4",
     "leaflet": "1.0.3",
     "moment": "^2.18.1",
+    "moment-timezone": "^0.5.13",
     "mustache": "1.1.0",
     "perfect-scrollbar": "git://github.com/CartoDB/perfect-scrollbar.git#master",
     "postcss": "5.0.19",

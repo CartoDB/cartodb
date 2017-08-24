@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.9.39",
+  "version": "4.9.40",
   "dependencies": {
     "abbrev": {
       "version": "1.1.0",
@@ -561,7 +561,7 @@
     "backbone-forms": {
       "version": "0.14.0",
       "from": "backbone-forms@0.14.0",
-      "resolved": "https://registry.npmjs.org/backbone-forms/-/backbone-forms-0.14.0.tgz"
+      "resolved": "http://registry.npmjs.org/backbone-forms/-/backbone-forms-0.14.0.tgz"
     },
     "backbone-model-file-upload": {
       "version": "1.0.0",
@@ -2619,7 +2619,7 @@
     "queue-async": {
       "version": "1.2.1",
       "from": "queue-async@1.2.1",
-      "resolved": "https://registry.npmjs.org/queue-async/-/queue-async-1.2.1.tgz"
+      "resolved": "http://registry.npmjs.org/queue-async/-/queue-async-1.2.1.tgz"
     },
     "quote-stream": {
       "version": "1.0.2",
@@ -3155,9 +3155,9 @@
       }
     },
     "tangram-cartocss": {
-      "version": "0.5.7",
-      "from": "cartodb/tangram-carto#master",
-      "resolved": "git://github.com/cartodb/tangram-carto.git#9930fef4521d80ee443319521b3dce333ce0049d"
+      "version": "0.6.0",
+      "from": "tangram-cartocss@>=0.6.0 <0.7.0",
+      "resolved": "https://registry.npmjs.org/tangram-cartocss/-/tangram-cartocss-0.6.0.tgz"
     },
     "tangram-reference": {
       "version": "1.0.19",
@@ -3167,7 +3167,7 @@
     "tangram.cartodb": {
       "version": "0.4.6",
       "from": "cartodb/tangram.cartodb#master",
-      "resolved": "git://github.com/cartodb/tangram.cartodb.git#b924c77c76f9ecee045e527478a9532602434a6e"
+      "resolved": "git://github.com/cartodb/tangram.cartodb.git#d496f57dfc86ce6fa4b35a25ea360e2472b0e39a"
     },
     "tapable": {
       "version": "0.2.8",

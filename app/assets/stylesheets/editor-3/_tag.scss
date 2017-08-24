@@ -62,13 +62,11 @@
   color: $cMainText;
 }
 
-.Tag--disabled {
+.Tag.is-disabled {
   opacity: 0.3;
 }
 
-.Tag--pointer {
-  -webkit-user-select: none;
-  -moz-user-select: none;
+.Tag.is-pointed {
   user-select: none;
   cursor: pointer;
 }

@@ -6,7 +6,8 @@ module.exports = function (config) {
       '.grunt/main.affected-specs.js'
     ],
     reporters: ['dots'],
-    autoWatch: false,
+    autoWatch: true,
+    restartOnFileChange: true,
     port: 9876,
     colors: true,
     logLevel: config.ERROR,

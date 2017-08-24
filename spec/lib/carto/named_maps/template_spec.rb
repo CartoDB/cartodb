@@ -721,7 +721,7 @@ module Carto
             @visualization.state.json[:map][:ne] = nil
             result = Carto::NamedMaps::Template.new(@visualization).to_hash
             result[:view][:zoom].should eq 3
-            expected_center = {lng: 0.0, lat: 30.0}
+            expected_center = { lng: 0.0, lat: 30.0 }
             result[:view][:center].should eq expected_center
           end
         end

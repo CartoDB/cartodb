@@ -18,10 +18,14 @@ var generateCategories = function (bucketsColor, bucketsIcon) {
     });
     return {
       title: bucketColor.filter.name,
-      icon: bucketIcon ? bucketIcon.value.slice(5, -2) : '',
+      icon: bucketIcon ? _extractURL(bucketIcon.value) : '',
       color: bucketColor.value
     };
   });
+};
+
+var _extractURL = function (str) {
+  return str.slice(5, -2);
 };
 
 module.exports = {

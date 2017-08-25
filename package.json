@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.9.41-fix-histograms-3",
+  "version": "4.9.41-fix-histograms-5",
   "description": "CARTO UI frontend",
   "repository": {
     "type": "git",

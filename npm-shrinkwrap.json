@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.9.41-fix-histograms-2",
+  "version": "4.9.41-fix-histograms-5",
   "dependencies": {
     "abbrev": {
       "version": "1.1.0",
@@ -832,7 +832,7 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
       "from": "cartodb/cartodb.js#fix-histograms",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#d899fb9b14b9d26ff2c6197c596ce3eea8d8358e"
+      "resolved": "git://github.com/cartodb/cartodb.js.git#9751506151fa1ce68ab16dc82961ee9379cd5731"
     },
     "caseless": {
       "version": "0.12.0",

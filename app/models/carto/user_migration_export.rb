@@ -25,18 +25,18 @@ module Carto
     validate  :user_or_organization_present
 
     def run_export
-      log.append('=== Exporting ===')
+      log.append("=== Exporting #{organization ? 'user' : 'org'} data ===")
       update_attributes(state: STATE_EXPORTING)
-      work_dir = create_work_directory
 
-      log.append('=== Exporting user/org data ===')
-      export_job = CartoDB::DataMover::ExportJob.new(export_job_arguments(work_dir))
+      work_dir, data_dir, meta_dir = create_export_directories
+
+      export_job = CartoDB::DataMover::ExportJob.new(export_job_arguments(data_dir))
 
       if export_metadata?
-        if organization.present?
-          export_organization_metadata(work_dir)
-        elsif user.present?
-          export_user_metadata(work_dir)
+        if organization
+          Carto::OrganizationMetadataExportService.new.export_organization_to_directory(organization.id, meta_dir)
+        elsif user
+          Carto::UserMetadataExportService.new.export_user_to_directory(user.id, meta_dir)
         else
           raise 'Unrecognized export type for exporting metadata'
         end
@@ -67,27 +67,13 @@ module Carto
 
     private
 
-    def export_user_metadata(work_dir)
-      log.append('=== Exporting user metadata ===')
-
-      service = Carto::UserMetadataExportService.new
-      service.export_user_to_directory(user.id, "#{work_dir}/meta")
-    end
-
-    def export_organization_metadata(work_dir)
-      log.append('=== Exporting organization metadata ===')
-
-      service = Carto::OrganizationMetadataExportService.new
-      service.export_organization_to_directory(organization.id, "#{work_dir}/meta")
-    end
-
-    def create_work_directory
-      log.append('=== Creating work directory ===')
-      work_dir = "#{export_dir}/#{id}/"
-      FileUtils.mkdir_p("#{work_dir}/data")
-      FileUtils.mkdir_p("#{work_dir}/meta") if export_metadata?
-
-      work_dir
+    def create_export_directories
+      work_dir = "#{export_dir}/#{id}"
+      data_dir = "#{work_dir}/data"
+      meta_dir = "#{work_dir}/meta"
+      FileUtils.mkdir_p(data_dir)
+      FileUtils.mkdir_p(meta_dir)
+      return work_dir, data_dir, meta_dir
     end
 
     def compress_package(work_dir)
@@ -131,7 +117,7 @@ module Carto
       Cartodb.get_config(:user_migrator, 'user_exports_folder')
     end
 
-    def export_job_arguments(work_dir)
+    def export_job_arguments(data_dir)
       args = if user.present?
                {
                  id: user.username,
@@ -146,7 +132,7 @@ module Carto
              end
 
       args.merge(
-        path: "#{work_dir}/data/",
+        path: data_dir,
         job_uuid: id,
         export_job_logger: log.logger,
         logger: log.logger

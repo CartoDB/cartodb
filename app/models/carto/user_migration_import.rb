@@ -35,12 +35,13 @@ module Carto
       log.append('=== Deleting zip package ===')
       FileUtils.rm(package_file)
 
+      unpacked_dir = Dir["#{work_dir}/*"].first
       log.append('=== Importing ===')
       update_attributes(state: STATE_IMPORTING)
 
       case import_type
-      when 'organization' then import_organization(work_dir)
-      when 'user'         then import_user(work_dir)
+      when 'organization' then import_organization(unpacked_dir)
+      when 'user'         then import_user(unpacked_dir)
       else
         raise 'Unrecognized import type'
       end
@@ -84,38 +85,40 @@ module Carto
     end
 
     def import_user(work_dir)
+      meta_dir = meta_dir(work_dir)
       service = Carto::UserMetadataExportService.new
 
       if import_metadata?
         log.append('=== Importing user metadata ===')
-        user = service.import_user_from_directory(work_dir, import_visualizations: false)
+        user = service.import_user_from_directory(meta_dir, import_visualizations: false)
         save!
       end
 
       log.append('=== Importing user data ===')
-      CartoDB::DataMover::ImportJob.new(import_job_arguments(work_dir)).run!
+      CartoDB::DataMover::ImportJob.new(import_job_arguments(data_dir(work_dir))).run!
 
       if import_metadata?
         log.append('=== Importing user visualizations and search tweets ===')
-        service.import_search_tweets_from_directory(work_dir, user)
+        service.import_search_tweets_from_directory(meta_dir, user)
       end
     end
 
     def import_organization(work_dir)
+      meta_dir = meta_dir(work_dir)
       service = Carto::OrganizationMetadataExportService.new
 
       if import_metadata?
         log.append('=== Importing org metadata ===')
-        organization = service.import_organization_and_users_from_directory(Dir["#{work_dir}/*"].first + "/meta")
+        organization = service.import_organization_and_users_from_directory(meta_dir)
         save!
       end
 
       log.append('=== Importing org data ===')
-      CartoDB::DataMover::ImportJob.new(import_job_arguments(work_dir)).run!
+      CartoDB::DataMover::ImportJob.new(import_job_arguments(data_dir(work_dir))).run!
 
       if import_metadata?
         log.append('=== Importing org visualizations ===')
-        service.import_organization_visualizations_from_directory(organization, Dir["#{work_dir}/*"].first + "/meta")
+        service.import_organization_visualizations_from_directory(organization, meta_dir)
       end
     end
 
@@ -127,7 +130,7 @@ module Carto
     def create_work_directory
       log.append('=== Creating work directory ===')
 
-      work_dir = "#{import_dir}/#{id}/"
+      work_dir = "#{import_dir}/#{id}"
       FileUtils.mkdir_p(work_dir)
 
       work_dir
@@ -164,12 +167,12 @@ module Carto
       organization if !org_import?
     end
 
-    def import_job_arguments(work_dir)
-      export_id, export_file = json_file.split('/')
+    def import_job_arguments(data_dir)
+      export_file = json_file.split('/').last
 
       {
         job_uuid: id,
-        file: "#{work_dir}/#{export_id}/data/#{export_file}",
+        file: "#{data_dir}/#{export_file}",
         data: true,
         metadata: false, #!import_only_data?,
         host: database_host,
@@ -186,6 +189,14 @@ module Carto
       self.state = STATE_PENDING unless state
 
       save
+    end
+
+    def data_dir(work_dir)
+      "#{work_dir}/data"
+    end
+
+    def meta_dir(work_dir)
+      "#{work_dir}/meta"
     end
   end
 end

@@ -18,7 +18,7 @@ namespace :cartodb do
           organization_name: organization.name,
           schema_mode: true,
           split_user_schemas: true,
-          path: path + '/data/'
+          path: path + '/data'
         )
         Carto::OrganizationMetadataExportService.new.export_organization_to_directory(organization.id, path + '/meta')
 

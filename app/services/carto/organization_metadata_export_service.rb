@@ -185,18 +185,16 @@ module Carto
 
       # Export users
       organization.users.each do |user|
-        user_path = root_dir.join("user_#{user.id}")
-        Dir.mkdir(user_path)
-        Carto::UserMetadataExportService.new.export_user_to_directory(user.id, user_path)
+        Carto::UserMetadataExportService.new.export_user_to_directory(user.id, root_dir.join("user_#{user.id}"))
       end
     end
 
-    def import_organization_and_users_from_directory(path)
+    def import_organization_and_users_from_directory(meta_path)
       # Import organization
-      organization_file = Dir["#{path}/organization_*.json"].first
+      organization_file = Dir["#{meta_path}/organization_*.json"].first
       organization = build_organization_from_json_export(File.read(organization_file))
 
-      organization_redis_file = Dir["#{path}/redis_organization_*.json"].first
+      organization_redis_file = Dir["#{meta_path}/redis_organization_*.json"].first
       Carto::RedisExportService.new.restore_redis_from_json_export(File.read(organization_redis_file))
 
       # Groups and notifications must be saved after users
@@ -207,7 +205,7 @@ module Carto
 
       save_imported_organization(organization)
 
-      user_list = Dir["#{path}/user_*"]
+      user_list = Dir["#{meta_path}/user_*"]
 
       # In order to get permissions right, we first import all users, then all datasets and finally, all maps
       organization.users = user_list.map do |user_path|

@@ -14,7 +14,7 @@ describe 'UserMigration' do
     ]
   end
 
-  [false, true].each do |migrate_metadata|
+  [true, false].each do |migrate_metadata|
     it "exports and reimports a user #{migrate_metadata ? 'with' : 'without'} metadata" do
       CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
 
@@ -42,9 +42,7 @@ describe 'UserMigration' do
       if migrate_metadata
         user.destroy
       else
-        conn = user.in_database(as: :cluster_admin)
-        user.db_service.drop_database_and_user(conn)
-        user.db_service.drop_user(conn)
+        drop_database(user)
       end
 
       import = Carto::UserMigrationImport.create(
@@ -63,9 +61,7 @@ describe 'UserMigration' do
       carto_user = Carto::User.find(user_attributes['id'])
 
       if migrate_metadata
-        user_attributes_to_test = user_attributes.keys - %w(created_at updated_at period_end_date)
-
-        user_attributes_to_test.each do |attribute|
+        attributes_to_test(user_attributes).each do |attribute|
           expect(carto_user.attributes[attribute]).to eq(user_attributes[attribute])
         end
       else
@@ -82,7 +78,7 @@ describe 'UserMigration' do
   describe 'with organization' do
     include_context 'organization with users helper'
 
-    [false, true].each do |migrate_metadata|
+    [true, false].each do |migrate_metadata|
       it "exports and reimports an organization #{migrate_metadata ? 'with' : 'without'} metadata" do
         org_attributes = @carto_organization.attributes
         owner_attributes = @carto_org_user_owner.attributes
@@ -99,16 +95,11 @@ describe 'UserMigration' do
         puts export.log.entries if export.state != Carto::UserMigrationExport::STATE_COMPLETE
         export.state.should eq Carto::UserMigrationExport::STATE_COMPLETE
 
-        table1.table_visualization.layers.each(&:destroy)
-        table1.destroy
-        expect { table1.records }.to raise_error
-        @carto_org_user_2.client_applications.each(&:destroy)
-        @org_user_2.destroy
-        @carto_org_user_1.client_applications.each(&:destroy)
-        @org_user_1.destroy
-        @carto_org_user_owner.client_applications.each(&:destroy)
-        @org_user_owner.destroy
-        # Organization is destroyed by owner destruction
+        if migrate_metadata
+          @organization.destroy_cascade
+        else
+          drop_database(@organization.owner)
+        end
 
         import = Carto::UserMigrationImport.create(
           exported_file: export.exported_file,
@@ -124,11 +115,21 @@ describe 'UserMigration' do
         import.state.should eq Carto::UserMigrationImport::STATE_COMPLETE
 
         new_organization = Carto::Organization.find(org_attributes['id'])
-        new_organization.attributes.should eq org_attributes
+        attributes_to_test(new_organization.attributes).should eq attributes_to_test(org_attributes)
         new_organization.users.count.should eq 3
-        new_organization.owner.attributes.should eq owner_attributes
+        attributes_to_test(new_organization.owner.attributes).should eq attributes_to_test(owner_attributes)
         records.each.with_index { |row, index| table1.record(index + 1).should include(row) }
       end
     end
+  end
+
+  def drop_database(user)
+    conn = user.in_database(as: :cluster_admin)
+    user.db_service.drop_database_and_user(conn)
+    user.db_service.drop_user(conn)
+  end
+
+  def attributes_to_test(user_attributes)
+    user_attributes.keys - %w(created_at updated_at period_end_date)
   end
 end

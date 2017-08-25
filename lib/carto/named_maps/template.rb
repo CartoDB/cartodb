@@ -236,12 +236,7 @@ module Carto
       end
 
       def view
-        state = @visualization.state.json
-        if invalid_state? state # Use map info when there's no state info
-          view_from_map
-        else # Use state information when present
-          view_from_state
-        end
+        valid_state? ? view_from_state : view_from_map
       end
 
       def preview_layers
@@ -254,12 +249,11 @@ module Carto
         preview_layers
       end
 
-      protected
-
-      def invalid_state?(state)
+      def valid_state?
+        state = @visualization.state.json
         map = state[:map]
-        state.blank? || map.blank? || map[:center].blank? || map[:sw].blank? || map[:ne].blank? ||
-          map[:sw][0].blank? || map[:sw][1].blank? || map[:ne].blank? || map[:ne][0].blank? || map[:ne][1].blank?
+        not(state.blank? || map.blank? || map[:center].blank? || map[:sw].blank? || map[:ne].blank? ||
+          map[:sw][0].blank? || map[:sw][1].blank? || map[:ne].blank? || map[:ne][0].blank? || map[:ne][1].blank?)
       end
 
       def view_from_map
@@ -268,8 +262,8 @@ module Carto
         data = {
             zoom: map.zoom,
             center: {
-                lng: center_data[1].to_f,
-                lat: center_data[0].to_f
+              lng: center_data[1].to_f,
+              lat: center_data[0].to_f
             }
         }
         bounds_data = map.view_bounds_data

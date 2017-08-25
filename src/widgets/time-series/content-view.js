@@ -21,7 +21,6 @@ module.exports = cdb.core.View.extend({
   },
 
   render: function () {
-    console.log('content-view::render');
     this.clearSubViews();
     this.$el.empty();
 

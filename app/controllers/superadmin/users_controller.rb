@@ -64,6 +64,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
   end
 
   def destroy
+    @user.set_force_destroy if params[:force] == 'true'
     @user.destroy
     respond_with(:superadmin, @user)
   rescue CartoDB::SharedEntitiesError => e

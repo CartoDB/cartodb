@@ -815,7 +815,7 @@
     "cartodb-deep-insights.js": {
       "version": "0.0.3",
       "from": "cartodb/deep-insights.js#fix-histograms",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#c285c5f30ad1907d28c13b26573c3cd9b96d1044",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#5ae976346e8f5a7abe002710e9b8171a71946a12",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",

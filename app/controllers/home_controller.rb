@@ -18,18 +18,17 @@ class HomeController < ApplicationController
   GEOS_VERSION = '3.5.0'.freeze
   GDAL_VERSION = '2.1'.freeze
 
-  WINDSHAFT_VALID_VERSION = '3.6'.freeze
-  WINDSHAFT_LATEST_VERSION = '3.6.0'.freeze
   RUN_WINDSHAFT_INSTRUCTIONS = 'Run Windshaft: <span class="code">cd /Windshaft-cartodb && node app.js development'\
     '</span>'.freeze
-  SQL_API_VALID_VERSION = '1.45'.freeze
-  SQL_API_LATEST_VERSION = '1.45.1'.freeze
   RUN_SQL_API_INSTRUCTIONS = 'Run SQL API <span class="code">cd /CartoDB-SQL-API; node app.js development</span>'.freeze
   RUN_RESQUE_INSTRUCTIONS =  'Run Resque <span class="code">bundle exec script/resque</span>'.freeze
 
   skip_before_filter :browser_is_html5_compliant?, only: :app_status
   # Don't force org urls
   skip_before_filter :ensure_org_url_if_org_user
+
+  before_filter :load_versions, only: :app_diagnosis
+  attr_reader :windshaft_version, :sql_api_version
 
   def app_status
     return head(503) if Cartodb.config[:disable_file] && File.exists?(File.expand_path(Cartodb.config[:disable_file]))
@@ -57,9 +56,11 @@ class HomeController < ApplicationController
       diagnosis_output('Redis') { redis_diagnosis },
       diagnosis_output('Redis connection') { redis_connection_diagnosis },
       diagnosis_output('Windshaft', RUN_WINDSHAFT_INSTRUCTIONS) {
-        windshaft_diagnosis(WINDSHAFT_VALID_VERSION, WINDSHAFT_LATEST_VERSION) },
+        windshaft_diagnosis(major_minor_version(windshaft_version), windshaft_version)
+      },
       diagnosis_output('SQL API', RUN_SQL_API_INSTRUCTIONS) {
-        sql_api_diagnosis(SQL_API_VALID_VERSION, SQL_API_LATEST_VERSION) },
+        sql_api_diagnosis(major_minor_version(sql_api_version), sql_api_version)
+      },
       diagnosis_output('Resque') { resque_diagnosis(RUN_RESQUE_INSTRUCTIONS) },
       diagnosis_output('GEOS') do
         single_line_command_version_diagnosis('geos-config --version', minor_version: GEOS_VERSION)
@@ -261,4 +262,22 @@ class HomeController < ApplicationController
     { 'error fetching info' => e.message }
   end
 
+  GITHUB_API = "https://api.github.com".freeze
+  REPOS = "#{GITHUB_API}/repos/cartodb".freeze
+  VERSION_REGEXP = /([^.]+)\.([^.]+)\.[^.]/
+
+  def load_versions
+    http_client = Carto::Http::Client.get('diagnosis')
+    @windshaft_version = last_version(JSON.parse(http_client.get("#{REPOS}/Windshaft-cartodb/tags").body))
+    @sql_api_version = last_version(JSON.parse(http_client.get("#{REPOS}/CartoDB-SQL-API/tags").body))
+  end
+
+  def major_minor_version(version)
+    match = VERSION_REGEXP.match(version)
+    "#{match[1]}.#{match[2]}"
+  end
+
+  def last_version(versions)
+    versions.map { |v| v['name'] }.map { |vn| VERSION_REGEXP.match(vn) }.compact.map { |v| v[0] }.first
+  end
 end

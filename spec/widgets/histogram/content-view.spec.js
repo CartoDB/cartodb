@@ -329,6 +329,17 @@ describe('widgets/histogram/content-view', function () {
       expect(this.view.model.get('lo_index')).toBeFalsy();
       expect(this.view.model.get('hi_index')).toBeFalsy();
     });
+
+    it('should reset widget if number of bins is changed', function () {
+      this.view._unbinds();
+      spyOn(this.view, '_resetWidget');
+      this.view._setupBindings();
+      var prevBins = this.view._dataviewModel.get('bins') || 10;
+
+      this.view._dataviewModel.set('bins', prevBins + 1);
+
+      expect(this.view._resetWidget).toHaveBeenCalled();
+    });
   });
 
   afterEach(function () {

@@ -1215,7 +1215,7 @@ module.exports = cdb.core.View.extend({
     }
     var dataBin = data[index];
     if (dataBin) {
-      result = fromStart ? dataBin.start : dataBin.next;
+      result = fromStart ? dataBin.start : _.isFinite(dataBin.next) ? dataBin.next : dataBin.end;
     }
 
     return result;

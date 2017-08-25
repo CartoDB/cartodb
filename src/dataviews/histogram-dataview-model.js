@@ -90,7 +90,6 @@ module.exports = DataviewModelBase.extend({
   },
 
   _onLocalTimezoneChanged: function () {
-    this._resetFilter();
     this._originalData.set('localTimezone', this.get('localTimezone'));
   },
 

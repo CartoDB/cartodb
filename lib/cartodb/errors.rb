@@ -154,4 +154,6 @@ module CartoDB
 
   end
 
+  class SharedEntitiesError < StandardError; end
+
 end

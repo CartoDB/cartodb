@@ -39,11 +39,7 @@ describe 'UserMigration' do
       table1.destroy
       expect { table1.records }.to raise_error
 
-      if migrate_metadata
-        user.destroy
-      else
-        drop_database(user)
-      end
+      migrate_metadata ? user.destroy : drop_database(user)
 
       import = Carto::UserMigrationImport.create(
         exported_file: export.exported_file,
@@ -78,28 +74,20 @@ describe 'UserMigration' do
   describe 'with organization' do
     include_context 'organization with users helper'
 
+    let(:org_attributes) { @carto_organization.attributes }
+    let(:owner_attributes) { @carto_org_user_owner.attributes }
+
     [true, false].each do |migrate_metadata|
       it "exports and reimports an organization #{migrate_metadata ? 'with' : 'without'} metadata" do
-        org_attributes = @carto_organization.attributes
-        owner_attributes = @carto_org_user_owner.attributes
-
         table1 = create_table(user_id: @carto_org_user_1.id)
         records.each { |row| table1.insert_row!(row) }
 
-        export = Carto::UserMigrationExport.create(
-            organization: @carto_organization,
-            export_metadata: migrate_metadata
-        )
+        export = Carto::UserMigrationExport.create(organization: @carto_organization, export_metadata: migrate_metadata)
         export.run_export
 
-        puts export.log.entries if export.state != Carto::UserMigrationExport::STATE_COMPLETE
         export.state.should eq Carto::UserMigrationExport::STATE_COMPLETE
 
-        if migrate_metadata
-          @organization.destroy_cascade
-        else
-          drop_database(@organization.owner)
-        end
+        migrate_metadata ? @organization.destroy_cascade : drop_database(@organization.owner)
 
         import = Carto::UserMigrationImport.create(
           exported_file: export.exported_file,

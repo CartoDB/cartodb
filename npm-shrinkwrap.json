@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.9.41-fix-histograms",
+  "version": "4.9.41-fix-histograms-2",
   "dependencies": {
     "abbrev": {
       "version": "1.1.0",
@@ -815,7 +815,7 @@
     "cartodb-deep-insights.js": {
       "version": "0.0.3",
       "from": "cartodb/deep-insights.js#fix-histograms",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#5ae976346e8f5a7abe002710e9b8171a71946a12",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#c1a563aa3fca53e4627a2893fcea4ebe8b982409",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",

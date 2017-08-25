@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.9.41",
+  "version": "4.9.42",
   "description": "CARTO UI frontend",
   "repository": {
     "type": "git",
@@ -24,9 +24,9 @@
     "camshaft-reference": "0.33.0",
     "carto": "cartodb/carto#master",
     "cartocolor": "4.0.0",
-    "cartodb-deep-insights.js": "cartodb/deep-insights.js#master",
+    "cartodb-deep-insights.js": "cartodb/deep-insights.js#remove-old-code",
     "cartodb-pecan": "0.2.x",
-    "cartodb.js": "CartoDB/cartodb.js#v4",
+    "cartodb.js": "CartoDB/cartodb.js#remove-old-code",
     "clipboard": "1.6.1",
     "codemirror": "5.14.2",
     "jquery": "2.1.4",

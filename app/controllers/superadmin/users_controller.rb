@@ -66,9 +66,11 @@ class Superadmin::UsersController < Superadmin::SuperadminController
   def destroy
     @user.destroy
     respond_with(:superadmin, @user)
+  rescue CartoDB::SharedEntitiesError => e
+    render json: { "error": "Error destroying user: #{e.message}", "errorCode": "userHasSharedEntities" }, status: 422
   rescue => e
     CartoDB::Logger.error(exception: e, message: 'Error destroying user', user: @user)
-    render json: { "error": "Error destroying user: #{e.message}" }, status: 422
+    render json: { "error": "Error destroying user: #{e.message}", "errorCode": "" }, status: 422
   end
 
   def dump

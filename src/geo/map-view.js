@@ -15,6 +15,8 @@ var MapCursorManager = require('../vis/map-cursor-manager');
 var MapEventsManager = require('../vis/map-events-manager');
 var GeometryManagementController = require('../vis/geometry-management-controller');
 
+var TileErrorCollection = require('../util/tile-error-collection');
+
 var MapView = View.extend({
 
   className: 'CDB-Map-wrapper',
@@ -30,8 +32,11 @@ var MapView = View.extend({
     if (!deps.layerGroupModel) throw new Error('layerGroupModel is required');
 
     this._mapModel = this.map = deps.mapModel;
+    this._tileErrorCollection = this.tileErrorCollection = new TileErrorCollection();
     this._visModel = deps.visModel;
     this._cartoDBLayerGroup = deps.layerGroupModel;
+
+    window.tileErrorCollection = this.tileErrorCollection;
 
     this.add_related_model(this.map);
 
@@ -246,7 +251,7 @@ var MapView = View.extend({
   },
 
   _createLayerView: function (layerModel) {
-    return this._getLayerViewFactory().createLayerView(layerModel, this.getNativeMap(), this.map);
+    return this._getLayerViewFactory().createLayerView(layerModel, this.getNativeMap(), this.map, this._tileErrorCollection);
   },
 
   _removeLayers: function () {

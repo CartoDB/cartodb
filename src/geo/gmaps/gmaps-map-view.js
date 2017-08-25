@@ -67,6 +67,7 @@ var GoogleMapsMapView = MapView.extend({
     });
 
     google.maps.event.addListener(this._gmapsMap, 'bounds_changed', function (e) {
+      self.tileErrorCollection.resetErrorTiles();
       self.map.setMapViewSize(self.getSize());
     });
 

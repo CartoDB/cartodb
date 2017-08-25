@@ -27,16 +27,16 @@ if (typeof (google) !== 'undefined' && typeof (google.maps) !== 'undefined') {
 
 GMapsLayerViewFactory.prototype._constructors = constructors;
 
-GMapsLayerViewFactory.prototype.createLayerView = function (layerModel, nativeMap) {
+GMapsLayerViewFactory.prototype.createLayerView = function (layerModel, nativeMap, mapModel, tileErrorCollection) {
   var layerType = layerModel.get('type').toLowerCase();
   var LayerViewClass = this._constructors[layerType];
 
   if (LayerViewClass) {
     try {
-      return new LayerViewClass(layerModel, nativeMap);
-    } catch (e) {
-      log.error("Error creating an instance of layer view for '" + layerType + "' layer -> " + e.message);
-      throw e;
+      return new LayerViewClass(layerModel, nativeMap, mapModel, tileErrorCollection);
+    } catch (error) {
+      log.error("Error creating an instance of layer view for '" + layerType + "' layer -> " + error.message);
+      throw error;
     }
   } else {
     log.error("Error creating an instance of layer view for '" + layerType + "' layer. Type is not supported");

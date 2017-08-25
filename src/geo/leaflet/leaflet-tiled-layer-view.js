@@ -1,7 +1,6 @@
 var _ = require('underscore');
 var L = require('leaflet');
 var LeafletLayerView = require('./leaflet-layer-view');
-var TileChecker = require('../../util/tile-checker');
 
 var generateLeafletLayerOptions = function (layerModel) {
   return {
@@ -15,7 +14,7 @@ var generateLeafletLayerOptions = function (layerModel) {
   };
 };
 
-var LeafletTiledLayerView = function (layerModel, leafletMap) {
+var LeafletTiledLayerView = function (layerModel, leafletMap, mapModel, tileErrorCollection) {
   var self = this;
   LeafletLayerView.apply(this, arguments);
 
@@ -31,14 +30,6 @@ var LeafletTiledLayerView = function (layerModel, leafletMap) {
     L.TileLayer.prototype.onAdd.apply(this, arguments);
     self._onAdd();
   };
-
-  this.leafletLayer.on('tileerror', function (layer, coords, error) {
-    TileChecker.check(layer.tile.src, function (error, url, message) {
-      if (error) {
-        layer.tile.src = url;
-      }
-    });
-  });
 };
 
 LeafletTiledLayerView.prototype = _.extend(

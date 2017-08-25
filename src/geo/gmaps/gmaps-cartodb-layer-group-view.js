@@ -9,7 +9,6 @@ var CartoDBDefaultOptions = require('./cartodb-default-options');
 var Projector = require('./projector');
 var CartoDBLayerGroupViewBase = require('../cartodb-layer-group-view-base');
 var Profiler = require('cdb.core.Profiler');
-var TileChecker = require('../../util/tile-checker');
 
 var OPACITY_FILTER = 'progid:DXImageTransform.Microsoft.gradient(startColorstr=#00FFFFFF,endColorstr=#00FFFFFF)';
 var EMPTY_GIF = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
@@ -23,7 +22,7 @@ function setImageOpacityIE8 (img, opacity) {
   }
 }
 
-var GMapsCartoDBLayerGroupView = function (layerModel, gmapsMap) {
+var GMapsCartoDBLayerGroupView = function (layerModel, gmapsMap, mapModel, tileErrorCollection) {
   var self = this;
   var hovers = [];
 
@@ -85,9 +84,9 @@ var GMapsCartoDBLayerGroupView = function (layerModel, gmapsMap) {
   // lovely wax connector overwrites options so set them again
   // TODO: remove wax.connector here
   _.extend(this.options, opts);
-  GMapsLayerView.call(this, layerModel, gmapsMap);
+  GMapsLayerView.call(this, layerModel, gmapsMap, mapModel, tileErrorCollection);
   this.projector = new Projector(opts.map);
-  CartoDBLayerGroupViewBase.call(this, layerModel, gmapsMap);
+  CartoDBLayerGroupViewBase.call(this, layerModel, gmapsMap, mapModel, tileErrorCollection);
 };
 
 // TODO: Do we need this?
@@ -224,15 +223,16 @@ _.extend(
           self.finishLoading && self.finishLoading();
         }
       };
+
       tile.onload = finished;
+
       tile.onerror = function () {
         Profiler.metric('cartodb-js.tile.png.error').inc();
-        TileChecker.check(this.src, function(error, url, message) {
-          if (error) {
-            this.src = url;
-          }
-          finished();
-        }.bind(this));
+        self.tileErrorCollection.add({
+          url: _.clone(this.src),
+          node: this
+        });
+        finished();
       };
 
       return tile;

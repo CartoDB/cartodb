@@ -5,8 +5,9 @@ require 'active_record'
 module Carto
   class SearchTweet < ActiveRecord::Base
 
-    belongs_to :user, inverse_of: :users
+    belongs_to :user, inverse_of: :search_tweets, class_name: 'Carto::User'
     belongs_to :user_table, class_name: 'Carto::UserTable'
+    belongs_to :data_import, class_name: 'Carto::DataImport'
 
     def self.twitter_imports_count(query, date_from, date_to)
       query

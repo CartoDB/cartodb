@@ -13,8 +13,8 @@ module Carto
       end
     end
 
-    def self.hash(value)
-      value.is_a?(Hash) || value.is_a?(Array) ? value : JSON.parse(value)
+    def self.hash(value, symbolize: false)
+      value.is_a?(Hash) || value.is_a?(Array) ? value : JSON.parse(value, symbolize_names: symbolize)
     end
   end
 
@@ -24,7 +24,7 @@ module Carto
   # key comparison, fail, and it only applies to the first level.
   class CartoJsonSymbolizerSerializer < CartoJsonSerializer
     def self.load(value)
-      value.nil? ? nil : hash(value).deep_symbolize_keys
+      value.nil? ? nil : hash(value, symbolize: true)
     end
   end
 end

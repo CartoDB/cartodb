@@ -64,9 +64,9 @@ describe('dataviews/histogram-dataview-model', function () {
   });
 
   it('should set unfiltered model url when model has changed it', function () {
-    spyOn(this.model._originalData, 'setUrl');
+    spyOn(this.model._totals, 'setUrl');
     this.model.set('url', 'hey!');
-    expect(this.model._originalData.setUrl).toHaveBeenCalled();
+    expect(this.model._totals.setUrl).toHaveBeenCalled();
   });
 
   it('should set the api_key attribute on the internal models', function () {
@@ -81,7 +81,7 @@ describe('dataviews/histogram-dataview-model', function () {
       analysisCollection: new Backbone.Collection()
     });
 
-    expect(this.model._originalData.get('apiKey')).toEqual('API_KEY');
+    expect(this.model._totals.get('apiKey')).toEqual('API_KEY');
   });
 
   describe('should get the correct histogram shape', function () {
@@ -150,7 +150,7 @@ describe('dataviews/histogram-dataview-model', function () {
     });
   });
 
-  describe('when _originalData changes:data', function () {
+  describe('when _totals changes:data', function () {
     beforeEach(function () {
       var histogramData = {
         bin_width: 10,
@@ -158,11 +158,11 @@ describe('dataviews/histogram-dataview-model', function () {
         nulls: 0,
         aggregation: 'quarter'
       };
-      spyOn(this.model._originalData, 'getCurrentStartEnd').and.returnValue({
+      spyOn(this.model._totals, 'getCurrentStartEnd').and.returnValue({
         start: 0,
         end: 57
       });
-      spyOn(this.model._originalData, 'sync').and.callFake(function (method, model, options) {
+      spyOn(this.model._totals, 'sync').and.callFake(function (method, model, options) {
         options.success(histogramData);
       });
     });
@@ -171,7 +171,7 @@ describe('dataviews/histogram-dataview-model', function () {
       expect(this.model.get('start')).toBeUndefined();
       expect(this.model.get('end')).toBeUndefined();
 
-      this.model._originalData.fetch();
+      this.model._totals.fetch();
 
       expect(this.model.get('start')).toEqual(0);
       expect(this.model.get('end')).toEqual(57);
@@ -180,12 +180,12 @@ describe('dataviews/histogram-dataview-model', function () {
     });
 
     it('should call _updateBindings only once', function () {
-      this.model._originalData.fetch();
+      this.model._totals.fetch();
       expect(this.model._updateBindings).toHaveBeenCalled();
 
       this.model._updateBindings.calls.reset();
 
-      this.model._originalData.fetch();
+      this.model._totals.fetch();
       expect(this.model._updateBindings).not.toHaveBeenCalled();
     });
   });
@@ -199,7 +199,7 @@ describe('dataviews/histogram-dataview-model', function () {
         column_type: 'aColumnType'
       });
 
-      expect(this.model._originalData.get('column_type')).toEqual('aColumnType');
+      expect(this.model._totals.get('column_type')).toEqual('aColumnType');
       expect(this.model.get('aggregation')).toBeUndefined();
       expect(this.vis.reload).toHaveBeenCalledWith({ forceFetch: true, sourceId: 'a0' });
     });
@@ -282,7 +282,7 @@ describe('dataviews/histogram-dataview-model', function () {
         analysisCollection: new Backbone.Collection(),
         parse: true
       });
-      model._originalData = new Backbone.Model({ aggregation: 'quarter' });
+      model._totals = new Backbone.Model({ aggregation: 'quarter' });
 
       expect(model.hasNulls()).toBe(false);
     });
@@ -462,7 +462,7 @@ describe('dataviews/histogram-dataview-model', function () {
     describe('column type is number', function () {
       describe('if bins present', function () {
         it('should include start and end if present', function () {
-          spyOn(this.model._originalData, 'getCurrentStartEnd').and.returnValue({ start: 11, end: 22 });
+          spyOn(this.model._totals, 'getCurrentStartEnd').and.returnValue({ start: 11, end: 22 });
           this.model.set({
             bins: 33,
             column_type: 'number'
@@ -472,7 +472,7 @@ describe('dataviews/histogram-dataview-model', function () {
         });
 
         it('should include bins', function () {
-          spyOn(this.model._originalData, 'getCurrentStartEnd').and.returnValue(null);
+          spyOn(this.model._totals, 'getCurrentStartEnd').and.returnValue(null);
           this.model.set({
             bins: 33,
             column_type: 'number'
@@ -483,7 +483,7 @@ describe('dataviews/histogram-dataview-model', function () {
       });
 
       it('should not include start, end and bins when own_filter is enabled', function () {
-        spyOn(this.model._originalData, 'getCurrentStartEnd').and.returnValue({ start: 0, end: 10 });
+        spyOn(this.model._totals, 'getCurrentStartEnd').and.returnValue({ start: 0, end: 10 });
         this.model.set({
           url: 'http://example.com',
           start: 0,
@@ -701,7 +701,7 @@ describe('dataviews/histogram-dataview-model', function () {
 
   describe('._onDataChanged', function () {
     beforeEach(function () {
-      spyOn(this.model._originalData, 'getCurrentStartEnd').and.returnValue({
+      spyOn(this.model._totals, 'getCurrentStartEnd').and.returnValue({
         start: 0,
         end: 57
       });
@@ -773,11 +773,11 @@ describe('dataviews/histogram-dataview-model', function () {
   describe('change local timezone', function () {
     it('should set the same value to originalData', function () {
       var originalValue = this.model.get('localTimezone');
-      this.model._originalData.set('localTimezone', originalValue, { silent: true });
+      this.model._totals.set('localTimezone', originalValue, { silent: true });
 
       this.model.set('localTimezone', !originalValue);
 
-      expect(this.model._originalData.get('localTimezone')).toBe(this.model.get('localTimezone'));
+      expect(this.model._totals.get('localTimezone')).toBe(this.model.get('localTimezone'));
     });
   });
 
@@ -810,11 +810,11 @@ describe('dataviews/histogram-dataview-model', function () {
         bins: 808,
         column_type: 'number'
       }, { silent: true });
-      this.model._originalData.set({ bins: 808 }, { silent: true });
+      this.model._totals.set({ bins: 808 }, { silent: true });
 
       this.model.set({ bins: 303 });
 
-      expect(this.model._originalData.get('bins')).toBe(303);
+      expect(this.model._totals.get('bins')).toBe(303);
     });
 
     it('should not set bins of totals if bins are changed because of a column change', function () {
@@ -823,11 +823,11 @@ describe('dataviews/histogram-dataview-model', function () {
         aggregation: 'week',
         column_type: 'number'
       }, { silent: true });
-      this.model._originalData.set({ bins: 808 }, { silent: true });
+      this.model._totals.set({ bins: 808 }, { silent: true });
 
       this.model.set({ bins: 303, aggregation: undefined });
 
-      expect(this.model._originalData.get('bins')).toBe(808);
+      expect(this.model._totals.get('bins')).toBe(808);
     });
 
     it('should set offset and aggregation of totals if bins are changed in a date column', function () {
@@ -836,15 +836,15 @@ describe('dataviews/histogram-dataview-model', function () {
         aggregation: 'week',
         column_type: 'date'
       }, { silent: true });
-      this.model._originalData.set({
+      this.model._totals.set({
         offset: 7200,
         aggregation: 'week'
       }, { silent: true });
 
       this.model.set({ aggregation: 'month', offset: 3600 });
 
-      expect(this.model._originalData.get('aggregation')).toBe('month');
-      expect(this.model._originalData.get('offset')).toBe(3600);
+      expect(this.model._totals.get('aggregation')).toBe('month');
+      expect(this.model._totals.get('offset')).toBe(3600);
     });
   });
 });

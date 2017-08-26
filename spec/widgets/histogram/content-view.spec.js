@@ -16,7 +16,7 @@ describe('widgets/histogram/content-view', function () {
       }
     });
 
-    this.originalData = this.dataviewModel._originalData;
+    this.originalData = this.dataviewModel.getUnfilteredDataModel();
     this.originalData.set({
       data: [{ bin: 10, max: 0 }, { bin: 3, max: 10 }],
       start: 0,

@@ -803,4 +803,48 @@ describe('dataviews/histogram-dataview-model', function () {
       expect(offset).toBe(43200);
     });
   });
+
+  describe('_.onFieldsChanged', function () {
+    it('should set bins of totals if bins are changed in a number column', function () {
+      this.model.set({
+        bins: 808,
+        column_type: 'number'
+      }, { silent: true });
+      this.model._originalData.set({ bins: 808 }, { silent: true });
+
+      this.model.set({ bins: 303 });
+
+      expect(this.model._originalData.get('bins')).toBe(303);
+    });
+
+    it('should not set bins of totals if bins are changed because of a column change', function () {
+      this.model.set({
+        bins: 808,
+        aggregation: 'week',
+        column_type: 'number'
+      }, { silent: true });
+      this.model._originalData.set({ bins: 808 }, { silent: true });
+
+      this.model.set({ bins: 303, aggregation: undefined });
+
+      expect(this.model._originalData.get('bins')).toBe(808);
+    });
+
+    it('should set offset and aggregation of totals if bins are changed in a date column', function () {
+      this.model.set({
+        offset: 7200,
+        aggregation: 'week',
+        column_type: 'date'
+      }, { silent: true });
+      this.model._originalData.set({
+        offset: 7200,
+        aggregation: 'week'
+      }, { silent: true });
+
+      this.model.set({ aggregation: 'month', offset: 3600 });
+
+      expect(this.model._originalData.get('aggregation')).toBe('month');
+      expect(this.model._originalData.get('offset')).toBe(3600);
+    });
+  });
 });

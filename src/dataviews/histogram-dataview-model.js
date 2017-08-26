@@ -366,7 +366,12 @@ module.exports = DataviewModelBase.extend({
       return;
     }
 
-    if (this.get('column_type') === 'number') {
+    var aggregationChangedToUndefined = _.has(this.changed, 'aggregation') && _.isUndefined(this.changed.aggregation);
+
+    // We should avoid fetching totals when bins has changed and aggregation has
+    // changed to undefined. That means a change in column. If we set the bins
+    // we trigger a fetch while a map instantiation is ongoing. The API returns bad data in that case.
+    if (this.get('column_type') === 'number' && !aggregationChangedToUndefined) {
       this._originalData.set('bins', this.get('bins'));
     }
     if (this.get('column_type') === 'date') {

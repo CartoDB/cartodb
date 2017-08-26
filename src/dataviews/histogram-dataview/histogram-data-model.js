@@ -81,7 +81,7 @@ module.exports = Model.extend({
     }, this);
 
     this.on('change:bins', function () {
-      if (this.get('column_type') === 'number' && _.isUndefined(this.get('aggregation'))) {
+      if (this.get('column_type') === 'number') {
         this.fetch();
       }
     }, this);
@@ -166,6 +166,10 @@ module.exports = Model.extend({
     var aggregation = this.get('aggregation');
     var cache = this._startEndCache[columnType];
     var result = null;
+
+    if (!this._startEndCache.saved) {
+      return null;
+    }
 
     if (columnType === 'number' && cache !== null) {
       result = cache;

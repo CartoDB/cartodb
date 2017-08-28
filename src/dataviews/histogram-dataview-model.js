@@ -21,8 +21,6 @@ module.exports = DataviewModelBase.extend({
 
   _getDataviewSpecificURLParams: function () {
     var params = [];
-    var start = this.get('start');
-    var end = this.get('end');
 
     if (_.isNumber(this.get('own_filter'))) {
       params.push('own_filter=' + this.get('own_filter'));
@@ -37,11 +35,16 @@ module.exports = DataviewModelBase.extend({
           params.push('offset=' + offset);
         }
       }
-      if (_.isNumber(start)) {
-        params.push('start=' + start);
-      }
-      if (_.isNumber(end)) {
-        params.push('end=' + end);
+
+      // Start - End
+      var limits = this._totals.getCurrentStartEnd();
+      if (limits !== null) {
+        if (_.isNumber(limits.start)) {
+          params.push('start=' + limits.start);
+        }
+        if (_.isNumber(limits.end)) {
+          params.push('end=' + limits.end);
+        }
       }
     }
     return params;
@@ -51,7 +54,7 @@ module.exports = DataviewModelBase.extend({
     this._localOffset = dateUtils.getLocalOffset();
 
     // Internal model for calculating all the data in the histogram (without filters)
-    this._originalData = new HistogramDataModel({
+    this._totals = new HistogramDataModel({
       bins: this.get('bins'),
       aggregation: this.get('aggregation'),
       offset: this.get('offset'),
@@ -76,8 +79,8 @@ module.exports = DataviewModelBase.extend({
     this._updateURLBinding();
 
     // When original data gets fetched
-    this._originalData.bind('change:data', this._onDataChanged, this);
-    this._originalData.once('change:data', this._updateBindings, this);
+    this._totals.bind('change:data', this._onDataChanged, this);
+    this._totals.once('change:data', this._updateBindings, this);
 
     this.on('change:column', this._onColumnChanged, this);
     this.on('change:localTimezone', this._onLocalTimezoneChanged, this);
@@ -87,12 +90,10 @@ module.exports = DataviewModelBase.extend({
   },
 
   _onLocalTimezoneChanged: function () {
-    this._originalData.set('localTimezone', this.get('localTimezone'));
+    this._totals.set('localTimezone', this.get('localTimezone'));
   },
 
   _updateURLBinding: function () {
-    // We shouldn't listen url change for fetching the data (with filter) because
-    // we have to wait until we know all the data available (without any filter).
     this.off('change:url');
     this.on('change:url', this._onUrlChanged, this);
   },
@@ -115,11 +116,11 @@ module.exports = DataviewModelBase.extend({
   },
 
   getUnfilteredData: function () {
-    return this._originalData.get('data');
+    return this._totals.get('data');
   },
 
   getUnfilteredDataModel: function () {
-    return this._originalData;
+    return this._totals;
   },
 
   getSize: function () {
@@ -135,10 +136,10 @@ module.exports = DataviewModelBase.extend({
   },
 
   parse: function (data) {
-    var aggregation = data.aggregation;
+    var aggregation = data.aggregation || (this._totals && this._totals.get('aggregation'));
     var numberOfBins = data.bins_count;
     var width = data.bin_width;
-    var start = this.get('column_type') === 'date' ? helper.calculateStart(data.bins, data.bins_start, aggregation) : data.bins_start;
+    var start = this.get('column_type') === 'date' ? data.timestamp_start : data.bins_start;
 
     var parsedData = {
       data: [],
@@ -162,7 +163,8 @@ module.exports = DataviewModelBase.extend({
     }, { silent: true });
 
     if (this.get('column_type') === 'date') {
-      helper.fillTimestampBuckets(parsedData.data, start, aggregation, numberOfBins, this._getCurrentOffset());
+      parsedData.data = helper.fillTimestampBuckets(parsedData.data, start, aggregation, numberOfBins, this._getCurrentOffset(), 'filtered', this._totals.get('data').length);
+      numberOfBins = parsedData.data.length;
     } else {
       helper.fillNumericBuckets(parsedData.data, start, width, numberOfBins);
     }
@@ -180,6 +182,7 @@ module.exports = DataviewModelBase.extend({
     parsedData.totalAmount = this._calculateTotalAmount(parsedData.data);
     parsedData.filteredAmount = this._calculateFilteredAmount(this.filter, this._data);
     parsedData.nulls = data.nulls;
+    parsedData.bins = numberOfBins;
 
     if (data.nulls != null) {
       parsedData = _.extend({}, parsedData, {
@@ -198,11 +201,11 @@ module.exports = DataviewModelBase.extend({
   },
 
   _onColumnChanged: function () {
-    this._originalData.set('column_type', this.get('column_type'));
-
-    this.set({
-      aggregation: undefined
-    }, { silent: true });
+    this._totals.set({
+      column_type: this.get('column_type'),
+      column: this.get('column')
+    });
+    this.set('aggregation', undefined, { silent: true });
 
     this._reloadVisAndForceFetch();
   },
@@ -321,23 +324,25 @@ module.exports = DataviewModelBase.extend({
   },
 
   _onUrlChanged: function () {
-    this._originalData.set({
-      aggregation: this.get('aggregation'),
+    this._totals.set({
       offset: this.get('offset'),
       bins: this.get('bins')
     }, { silent: true });
 
-    this._originalData.setUrl(this.get('url'));
+    this._totals.setUrl(this.get('url'));
   },
 
   _onDataChanged: function (model) {
-    this.set({
-      end: model.get('end'),
-      start: model.get('start')
-    });
+    var range = model && _.isFunction(model.getCurrentStartEnd) ? model.getCurrentStartEnd() : null;
+    if (range !== null) {
+      this.set({
+        start: range.start,
+        end: range.end
+      });
+    }
 
     this.set({
-      aggregation: model.get('aggregation') || 'minute',
+      aggregation: model.get('aggregation') || 'auto',
       offset: model.get('offset') || 0,
       bins: model.get('bins'),
       error: model.get('error')
@@ -361,11 +366,16 @@ module.exports = DataviewModelBase.extend({
       return;
     }
 
-    if (this.get('column_type') === 'number') {
-      this._originalData.set('bins', this.get('bins'));
+    var aggregationChangedToUndefined = _.has(this.changed, 'aggregation') && _.isUndefined(this.changed.aggregation);
+
+    // We should avoid fetching totals when bins has changed and aggregation has
+    // changed to undefined. That means a change in column. If we set the bins
+    // we trigger a fetch while a map instantiation is ongoing. The API returns bad data in that case.
+    if (this.get('column_type') === 'number' && !aggregationChangedToUndefined) {
+      this._totals.set('bins', this.get('bins'));
     }
     if (this.get('column_type') === 'date') {
-      this._originalData.set({
+      this._totals.set({
         offset: this.get('offset'),
         aggregation: this.get('aggregation')
       });

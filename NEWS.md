@@ -5,6 +5,7 @@ Development
 * Split frontend for Dashboard view from Rails backend (#12607)
 * Add /api/v3/me endpoint (#12599)
 
+* Sidebar UI tweaks (#12479)
 * Improving affordance of Delete icon (#12531)
 * Change select "attribute" placeholders (#12498)
 * Add pointer cursor to the sliders (#12499)
@@ -147,6 +148,7 @@ Development
 * Adding max items limit for form list editor (#12552)
 * Improve Google Login button (cartodb-central#1808)
 * Implement widget opacity in AutoStyle (#11928)
+* Fix histograms data range change (#12622)
 
 ### NOTICE
 This release upgrades the CartoDB PostgreSQL extension to `0.19.2`. Run the following to have it available:

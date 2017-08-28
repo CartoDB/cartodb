@@ -3,6 +3,7 @@ Development
 
 ### Features
 * Add /api/v3/me endpoint (#12599)
+* Add assets version column in user model (#12676)
 * Sidebar UI tweaks (#12479)
 * Improving affordance of Delete icon (#12531)
 * Change select "attribute" placeholders (#12498)

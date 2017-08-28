@@ -43,6 +43,7 @@ module.exports = cdb.core.View.extend({
     this.listenTo(this._dataviewModel, 'change:column', this.resetFilter, this);
     this.listenTo(this._timeSeriesModel, 'change:normalized', this._onNormalizedChanged);
     this.listenTo(this._timeSeriesModel, 'change:local_timezone', this._onChangeLocalTimezone);
+    this.listenTo(this._timeSeriesModel, 'forceResize', this._onForceResize);
     this.listenTo(this._rangeFilter, 'change', this._onFilterChanged);
   },
 
@@ -124,6 +125,10 @@ module.exports = cdb.core.View.extend({
 
   _onChangeLocalTimezone: function () {
     this._dataviewModel.set('localTimezone', this._timeSeriesModel.get('local_timezone'));
+  },
+
+  _onForceResize: function () {
+    this._chartView.onWindowResize();
   },
 
   _resetFilterInDI: function () {

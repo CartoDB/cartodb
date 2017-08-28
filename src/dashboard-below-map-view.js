@@ -71,6 +71,11 @@ module.exports = cdb.core.View.extend({
   },
 
   _onWidgetsChange: function () {
+    this._widgets.each(function (widget) {
+      if (widget.get('type') === 'time-series') {
+        widget.trigger('forceResize');
+      }
+    }, this);
     this._toggleVisiblity();
   }
 

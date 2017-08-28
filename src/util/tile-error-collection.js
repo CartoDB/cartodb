@@ -55,7 +55,7 @@ var TileErrorCollection = Backbone.Collection.extend({
 
     $.ajax({
       url: model.get('url'),
-      success: function (data) {
+      success: function () {
         model.get('node').src = model.get('url');
       },
       error: function (jqXHR) {

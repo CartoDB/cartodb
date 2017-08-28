@@ -10,9 +10,9 @@ describe('util/tile-error-collection', function () {
 
     this.error = { type: 'limit', message: 'Some message' };
     this.tiles = [
-      new Backbone.Model({ url: 'some_url/0/0/0/1.png', node: {} }),
-      new Backbone.Model({ url: 'some_url/0/0/0/2.png', node: {} }),
-      new Backbone.Model({ url: 'some_url/0/0/0/3.png', node: {}, error: this.error })
+      new Backbone.Model({ url: 'some_url/0/0/0/1.png', tileDomNode: {} }),
+      new Backbone.Model({ url: 'some_url/0/0/0/2.png', tileDomNode: {} }),
+      new Backbone.Model({ url: 'some_url/0/0/0/3.png', tileDomNode: {}, error: this.error })
     ];
     this.collection = new TileErrorCollection(this.tiles);
 
@@ -39,14 +39,14 @@ describe('util/tile-error-collection', function () {
   describe('on add event', function () {
     var tile = {
       url: 'some_url/0/0/0/4.png',
-      node: {}
+      tileDomNode: {}
     };
 
     it('should set the error tile overlay when a new model is added', function () {
       spyOn(document.body, 'contains').and.returnValue(true);
       this.collection.add(tile);
       var model = _.last(this.collection.models);
-      expect(model.get('node').src.indexOf('data:image/svg+xml;base64,')).not.toBe(-1);
+      expect(model.get('tileDomNode').src.indexOf('data:image/svg+xml;base64,')).not.toBe(-1);
     });
 
     it('should add the model to the qeue if is not there', function () {
@@ -141,7 +141,7 @@ describe('util/tile-error-collection', function () {
           };
           spyOn(this.collection, '_deletedNode').and.returnValue(false);
           spyOn(this.collection, '_getTileErrors').and.callThrough();
-          this.model = this.collection.queue.add({ url: 'http://localhost:9001/test/some_url/0/0/0/5.png', node: {} });
+          this.model = this.collection.queue.add({ url: 'http://localhost:9001/test/some_url/0/0/0/5.png', tileDomNode: {} });
         });
 
         it('should set the model as checked', function () {
@@ -163,10 +163,10 @@ describe('util/tile-error-collection', function () {
             };
           });
 
-          it('should set the model url as the model node src', function () {
-            expect(this.model.get('node').src).toEqual(undefined);
+          it('should set the model url as the model tileDomNode src', function () {
+            expect(this.model.get('tileDomNode').src).toEqual(undefined);
             this.collection._getTileErrors();
-            expect(this.model.get('node').src).toEqual(this.model.get('url'));
+            expect(this.model.get('tileDomNode').src).toEqual(this.model.get('url'));
           });
         });
 

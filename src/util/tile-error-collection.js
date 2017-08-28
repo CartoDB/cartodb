@@ -14,7 +14,7 @@ var TileErrorCollection = Backbone.Collection.extend({
       var isInQueue = this.queue.findWhere({ url: model.get('url') });
       if (!isInQueue) this.queue.add(model);
 
-      model.get('node').src = TILE_ERROR_IMAGE;
+      model.get('tileDomNode').src = TILE_ERROR_IMAGE;
 
       if (!this.running) this._getTileErrors();
     });
@@ -22,7 +22,7 @@ var TileErrorCollection = Backbone.Collection.extend({
 
   resetErrorTiles: function () {
     var models = this.filter(function (model) {
-      this._deletedNode(model.get('node'));
+      this._deletedNode(model.get('tileDomNode'));
     }.bind(this));
 
     this.reset(models);
@@ -48,7 +48,7 @@ var TileErrorCollection = Backbone.Collection.extend({
 
     this.running = true;
 
-    if (this._deletedNode(model.get('node'))) {
+    if (this._deletedNode(model.get('tileDomNode'))) {
       this.queue.remove(model);
       return this._getTileErrors();
     }
@@ -56,7 +56,7 @@ var TileErrorCollection = Backbone.Collection.extend({
     $.ajax({
       url: model.get('url'),
       success: function () {
-        model.get('node').src = model.get('url');
+        model.get('tileDomNode').src = model.get('url');
       },
       error: function (jqXHR) {
         var errors = getValue(jqXHR, 'responseJSON.errors_with_context', []);
@@ -69,8 +69,8 @@ var TileErrorCollection = Backbone.Collection.extend({
     });
   },
 
-  _deletedNode: function (node) {
-    return !document.body.contains(node);
+  _deletedNode: function (tileDomNode) {
+    return !document.body.contains(tileDomNode);
   }
 });
 

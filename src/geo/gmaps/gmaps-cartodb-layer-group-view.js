@@ -230,7 +230,7 @@ _.extend(
         Profiler.metric('cartodb-js.tile.png.error').inc();
         self.tileErrorCollection.add({
           url: _.clone(this.src),
-          node: this
+          tileDomNode: this
         });
         finished();
       };

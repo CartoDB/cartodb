@@ -57,7 +57,7 @@ var LeafletCartoDBLayerGroupView = function (layerModel, leafletMap, mapModel, t
   this.leafletLayer.on('tileerror', function (layer, coords, error) {
     self.tileErrorCollection.add({
       url: _.clone(layer.tile.src),
-      node: layer.tile
+      tileDomNode: layer.tile
     });
   });
 };

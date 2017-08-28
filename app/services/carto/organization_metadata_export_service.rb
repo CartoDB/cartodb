@@ -172,7 +172,7 @@ module Carto
     include OrganizationMetadataExportServiceImporter
     include OrganizationMetadataExportServiceExporter
 
-    def export_organization_to_directory(organization, path)
+    def export_to_directory(organization, path)
       root_dir = Pathname.new(path)
 
       # Export organization
@@ -184,7 +184,7 @@ module Carto
 
       # Export users
       organization.users.each do |user|
-        Carto::UserMetadataExportService.new.export_user_to_directory(user, root_dir.join("user_#{user.id}"))
+        Carto::UserMetadataExportService.new.export_to_directory(user, root_dir.join("user_#{user.id}"))
       end
     end
 

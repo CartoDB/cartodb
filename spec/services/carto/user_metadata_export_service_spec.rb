@@ -123,7 +123,7 @@ describe Carto::UserMetadataExportService do
       Dir.mktmpdir do |path|
         create_user_with_basemaps_assets_visualizations
         @visualization.mark_as_vizjson2
-        service.export_user_to_directory(@user, path)
+        service.export_to_directory(@user, path)
         source_user = @user.attributes
 
         source_visualizations = @user.visualizations.order(:id).map(&:attributes)
@@ -164,7 +164,7 @@ describe Carto::UserMetadataExportService do
         create_user_with_basemaps_assets_visualizations
         @user.update_attributes(viewer: true)
         ::User[@user.id].reload # Refresh Sequel cache
-        service.export_user_to_directory(@user, path)
+        service.export_to_directory(@user, path)
         source_user = @user.attributes
 
         source_visualizations = @user.visualizations.order(:id).map(&:attributes)

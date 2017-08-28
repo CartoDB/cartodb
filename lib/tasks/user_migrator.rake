@@ -20,7 +20,7 @@ namespace :cartodb do
           split_user_schemas: true,
           path: path + '/data'
         )
-        Carto::OrganizationMetadataExportService.new.export_organization_to_directory(organization, path + '/meta')
+        Carto::OrganizationMetadataExportService.new.export_to_directory(organization, path + '/meta')
 
         `cd #{work_dir}/ && zip -0 -r \"#{organization.id}.zip\" #{organization.id} && cd -`
         FileUtils.remove_dir(path)

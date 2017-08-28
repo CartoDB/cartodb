@@ -85,7 +85,7 @@ describe Carto::OrganizationMetadataExportService do
     it 'export + import organization, users and visualizations' do
       Dir.mktmpdir do |path|
         create_organization_with_dependencies
-        service.export_organization_to_directory(@organization, path)
+        service.export_to_directory(@organization, path)
         source_organization = @organization.attributes
         source_users = @organization.users.map(&:attributes)
         source_groups = @organization.groups.map(&:attributes)

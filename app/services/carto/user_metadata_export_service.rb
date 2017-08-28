@@ -181,7 +181,7 @@ module Carto
     include UserMetadataExportServiceImporter
     include UserMetadataExportServiceExporter
 
-    def export_user_to_directory(user, path)
+    def export_to_directory(user, path)
       root_dir = Pathname.new(path)
       root_dir.mkpath
 

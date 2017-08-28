@@ -45,7 +45,8 @@ module Carto
       service = case import_type
                 when 'organization' then Carto::OrganizationMetadataExportService.new
                 when 'user'         then Carto::UserMetadataExportService.new
-                else raise 'Unrecognized import type' end
+                else raise 'Unrecognized import type'
+                end
       import(service, meta_dir, data_dir)
 
       log.append('=== Complete ===')

@@ -1,4 +1,5 @@
 /* global google */
+var Backbone = require('backbone');
 var GmapsCartoDBLayerGroupView = require('../../../../src/geo/gmaps/gmaps-cartodb-layer-group-view');
 var SharedTestsForCartoDBLayerGroupViews = require('../shared-tests-for-cartodb-layer-group-views');
 var FakeWax = require('../fake-wax');
@@ -16,7 +17,11 @@ var createLayerGroupView = function (layerGroupModel, container) {
     tilt: 0
   });
 
-  var layerGroupView = new GmapsCartoDBLayerGroupView(layerGroupModel, gmapsMap);
+  var tileErrorCollection = new Backbone.Collection({
+    add: function () {}
+  });
+
+  var layerGroupView = new GmapsCartoDBLayerGroupView(layerGroupModel, gmapsMap, null, tileErrorCollection);
   gmapsMap.overlayMapTypes.setAt(1, layerGroupView.gmapsLayer);
   return layerGroupView;
 };

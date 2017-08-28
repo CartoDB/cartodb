@@ -1,3 +1,4 @@
+var Backbone = require('backbone');
 var _ = require('underscore');
 var L = require('leaflet');
 
@@ -7,6 +8,10 @@ var FakeWax = require('../fake-wax');
 var OriginalLeafletCartoDBLayerGroupView = require('../../../../src/geo/leaflet/leaflet-cartodb-layer-group-view');
 
 var LeafletCartoDBLayerGroupView = OriginalLeafletCartoDBLayerGroupView;
+
+var tileErrorCollection = new Backbone.Collection({
+  add: function () { }
+});
 
 LeafletCartoDBLayerGroupView.prototype = _.extend(
   {},
@@ -26,7 +31,7 @@ var createLayerGroupView = function (layerGroupModel, container) {
     zoom: 3
   });
 
-  var layerGroupView = new LeafletCartoDBLayerGroupView(layerGroupModel, leafletMap);
+  var layerGroupView = new LeafletCartoDBLayerGroupView(layerGroupModel, leafletMap, null, tileErrorCollection);
   layerGroupView.leafletLayer.addTo(leafletMap);
   return layerGroupView;
 };

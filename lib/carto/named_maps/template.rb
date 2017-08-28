@@ -253,7 +253,7 @@ module Carto
         state = @visualization.state.json
         map = state[:map]
         state.present? && map.present? && map[:center].present? && map[:sw].present? && map[:ne].present? &&
-          map[:sw][0].present? && map[:sw][1].present? && map[:ne].present? && map[:ne][0].present? && map[:ne][1].present?
+          map[:sw][0].present? && map[:sw][1].present? && map[:ne][0].present? && map[:ne][1].present?
       end
 
       def view_from_map

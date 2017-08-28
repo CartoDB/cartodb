@@ -88,7 +88,7 @@ module Carto
       end
 
       log.append('=== Importing data ===')
-      CartoDB::DataMover::ImportJob.new(import_job_arguments(data_dir)).run!
+      CartoDB::DataMover::ImportJob.new(import_job_arguments(meta_dir)).run!
 
       if import_metadata?
         log.append('=== Importing visualizations and search tweets ===')
@@ -141,12 +141,12 @@ module Carto
       organization if !org_import?
     end
 
-    def import_job_arguments(data_dir)
+    def import_job_arguments(meta_dir)
       export_file = json_file.split('/').last
 
       {
         job_uuid: id,
-        file: "#{data_dir}/#{export_file}",
+        file: "#{meta_dir}/#{export_file}",
         data: true,
         metadata: false,
         host: database_host,

@@ -105,14 +105,14 @@ module Carto
     include OrganizationMetadataExportServiceConfiguration
     include LayerExporter
 
-    def export_organization_json_string(organization_id)
-      export_organization_json_hash(organization_id).to_json
+    def export_organization_json_string(organization)
+      export_organization_json_hash(organization).to_json
     end
 
-    def export_organization_json_hash(organization_id)
+    def export_organization_json_hash(organization)
       {
         version: CURRENT_VERSION,
-        organization: export(Organization.find(organization_id))
+        organization: export(organization)
       }
     end
 
@@ -172,20 +172,19 @@ module Carto
     include OrganizationMetadataExportServiceImporter
     include OrganizationMetadataExportServiceExporter
 
-    def export_organization_to_directory(organization_id, path)
-      organization = Carto::Organization.find(organization_id)
+    def export_organization_to_directory(organization, path)
       root_dir = Pathname.new(path)
 
       # Export organization
-      organization_json = export_organization_json_string(organization_id)
-      root_dir.join("organization_#{organization_id}.json").open('w') { |file| file.write(organization_json) }
+      organization_json = export_organization_json_string(organization)
+      root_dir.join("organization_#{organization.id}.json").open('w') { |file| file.write(organization_json) }
 
-      redis_json = Carto::RedisExportService.new.export_organization_json_string(organization_id)
-      root_dir.join("redis_organization_#{organization_id}.json").open('w') { |file| file.write(redis_json) }
+      redis_json = Carto::RedisExportService.new.export_organization_json_string(organization)
+      root_dir.join("redis_organization_#{organization.id}.json").open('w') { |file| file.write(redis_json) }
 
       # Export users
       organization.users.each do |user|
-        Carto::UserMetadataExportService.new.export_user_to_directory(user.id, root_dir.join("user_#{user.id}"))
+        Carto::UserMetadataExportService.new.export_user_to_directory(user, root_dir.join("user_#{user.id}"))
       end
     end
 

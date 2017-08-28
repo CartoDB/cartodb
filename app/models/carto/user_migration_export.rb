@@ -34,9 +34,9 @@ module Carto
 
       if export_metadata?
         if organization
-          Carto::OrganizationMetadataExportService.new.export_organization_to_directory(organization.id, meta_dir)
+          Carto::OrganizationMetadataExportService.new.export_organization_to_directory(organization, meta_dir)
         elsif user
-          Carto::UserMetadataExportService.new.export_user_to_directory(user.id, meta_dir)
+          Carto::UserMetadataExportService.new.export_user_to_directory(user, meta_dir)
         else
           raise 'Unrecognized export type for exporting metadata'
         end

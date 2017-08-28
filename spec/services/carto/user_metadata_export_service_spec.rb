@@ -76,13 +76,13 @@ describe Carto::UserMetadataExportService do
     end
 
     it 'exports' do
-      export = service.export_user_json_hash(@user.id)
+      export = service.export_user_json_hash(@user)
 
       expect_export_matches_user(export[:user], @user)
     end
 
     it 'includes all user model attributes' do
-      export = service.export_user_json_hash(@user.id)
+      export = service.export_user_json_hash(@user)
 
       expect(export[:user].keys).to include(*@user.attributes.symbolize_keys.keys)
     end
@@ -101,7 +101,7 @@ describe Carto::UserMetadataExportService do
   describe '#user export + import' do
     it 'export + import' do
       create_user_with_basemaps_assets_visualizations
-      export = service.export_user_json_hash(@user.id)
+      export = service.export_user_json_hash(@user)
       expect_export_matches_user(export[:user], @user)
       source_user = @user.attributes
       destroy_user
@@ -123,7 +123,7 @@ describe Carto::UserMetadataExportService do
       Dir.mktmpdir do |path|
         create_user_with_basemaps_assets_visualizations
         @visualization.mark_as_vizjson2
-        service.export_user_to_directory(@user.id, path)
+        service.export_user_to_directory(@user, path)
         source_user = @user.attributes
 
         source_visualizations = @user.visualizations.order(:id).map(&:attributes)
@@ -163,7 +163,7 @@ describe Carto::UserMetadataExportService do
         create_user_with_basemaps_assets_visualizations
         @user.update_attributes(viewer: true)
         ::User[@user.id].reload # Refresh Sequel cache
-        service.export_user_to_directory(@user.id, path)
+        service.export_user_to_directory(@user, path)
         source_user = @user.attributes
 
         source_visualizations = @user.visualizations.order(:id).map(&:attributes)

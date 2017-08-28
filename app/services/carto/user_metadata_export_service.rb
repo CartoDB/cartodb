@@ -125,14 +125,14 @@ module Carto
     include LayerExporter
     include DataImportExporter
 
-    def export_user_json_string(user_id)
-      export_user_json_hash(user_id).to_json
+    def export_user_json_string(user)
+      export_user_json_hash(user).to_json
     end
 
-    def export_user_json_hash(user_id)
+    def export_user_json_hash(user)
       {
         version: CURRENT_VERSION,
-        user: export(User.find(user_id))
+        user: export(user)
       }
     end
 
@@ -181,16 +181,15 @@ module Carto
     include UserMetadataExportServiceImporter
     include UserMetadataExportServiceExporter
 
-    def export_user_to_directory(user_id, path)
-      user = Carto::User.find(user_id)
+    def export_user_to_directory(user, path)
       root_dir = Pathname.new(path)
       root_dir.mkpath
 
-      user_json = export_user_json_string(user_id)
-      root_dir.join("user_#{user_id}.json").open('w') { |file| file.write(user_json) }
+      user_json = export_user_json_string(user)
+      root_dir.join("user_#{user.id}.json").open('w') { |file| file.write(user_json) }
 
-      redis_json = Carto::RedisExportService.new.export_user_json_string(user_id)
-      root_dir.join("redis_user_#{user_id}.json").open('w') { |file| file.write(redis_json) }
+      redis_json = Carto::RedisExportService.new.export_user_json_string(user)
+      root_dir.join("redis_user_#{user.id}.json").open('w') { |file| file.write(redis_json) }
 
       export_user_visualizations_to_directory(user, Carto::Visualization::TYPE_REMOTE, path)
       export_user_visualizations_to_directory(user, Carto::Visualization::TYPE_CANONICAL, path)

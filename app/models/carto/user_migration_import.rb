@@ -42,12 +42,11 @@ module Carto
       meta_dir = meta_dir(unpacked_dir)
       data_dir = data_dir(unpacked_dir)
 
-      case import_type
-      when 'organization' then import_organization(meta_dir, data_dir)
-      when 'user'         then import_user(meta_dir, data_dir)
-      else
-        raise 'Unrecognized import type'
-      end
+      service = case import_type
+                when 'organization' then Carto::OrganizationMetadataExportService.new
+                when 'user'         then Carto::UserMetadataExportService.new
+                else raise 'Unrecognized import type' end
+      import(service, meta_dir, data_dir)
 
       log.append('=== Complete ===')
       update_attributes(state: STATE_COMPLETE)
@@ -80,39 +79,19 @@ module Carto
       end
     end
 
-    def import_user(meta_dir, data_dir)
-      service = Carto::UserMetadataExportService.new
-
+    def import(service, meta_dir, data_dir)
       if import_metadata?
-        log.append('=== Importing user metadata ===')
-        user = service.import_user_from_directory(meta_dir)
+        log.append('=== Importing metadata ===')
+        imported = service.import_from_directory(meta_dir)
         save!
       end
 
-      log.append('=== Importing user data ===')
+      log.append('=== Importing data ===')
       CartoDB::DataMover::ImportJob.new(import_job_arguments(data_dir)).run!
 
       if import_metadata?
-        log.append('=== Importing user visualizations and search tweets ===')
-        service.import_search_tweets_from_directory(user, meta_dir)
-      end
-    end
-
-    def import_organization(meta_dir, data_dir)
-      service = Carto::OrganizationMetadataExportService.new
-
-      if import_metadata?
-        log.append('=== Importing org metadata ===')
-        organization = service.import_organization_and_users_from_directory(meta_dir)
-        save!
-      end
-
-      log.append('=== Importing org data ===')
-      CartoDB::DataMover::ImportJob.new(import_job_arguments(data_dir)).run!
-
-      if import_metadata?
-        log.append('=== Importing org visualizations ===')
-        service.import_organization_visualizations_from_directory(organization, meta_dir)
+        log.append('=== Importing visualizations and search tweets ===')
+        service.import_metadata_from_directory(imported, meta_dir)
       end
     end
 

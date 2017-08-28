@@ -37,7 +37,7 @@ namespace :cartodb do
           path = Dir["#{work_dir}/*"].first
 
           service = Carto::OrganizationMetadataExportService.new
-          imported_organization = service.import_organization_and_users_from_directory("#{path}/meta")
+          imported_organization = service.import_from_directory("#{path}/meta")
           CartoDB::DataMover::ImportJob.new(
             file: Dir["#{path}/data/org*json"].first,
             data: true,
@@ -47,7 +47,7 @@ namespace :cartodb do
             mode: :import,
             set_banner: false
           ).run!
-          service.import_organization_visualizations_from_directory(imported_organization, "#{path}/meta")
+          service.import_metadata_from_directory(imported_organization, "#{path}/meta")
 
           imported_organization.users.each { |u| u.update_attribute(:last_common_data_update_date, nil) }
         end

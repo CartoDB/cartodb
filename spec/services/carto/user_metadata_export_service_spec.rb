@@ -139,9 +139,8 @@ describe Carto::UserMetadataExportService do
         $tables_metadata.del(Carto::Visualization::V2_VISUALIZATIONS_REDIS_KEY)
         expect(@visualization.uses_vizjson2?).to be_false
 
-        imported_user = service.import_user_from_directory(path)
-        service.import_visualizations_from_directory(imported_user, path)
-        service.import_search_tweets_from_directory(imported_user, path)
+        imported_user = service.import_from_directory(path)
+        service.import_metadata_from_directory(imported_user, path)
 
         compare_excluding_dates(imported_user.attributes, source_user)
         expect_redis_restored(imported_user)
@@ -178,9 +177,8 @@ describe Carto::UserMetadataExportService do
           @user.in_database.execute("CREATE TABLE #{v['name']} (cartodb_id int)")
         end
 
-        imported_user = service.import_user_from_directory(path)
-        service.import_visualizations_from_directory(imported_user, path)
-        service.import_search_tweets_from_directory(imported_user, path)
+        imported_user = service.import_from_directory(path)
+        service.import_metadata_from_directory(imported_user, path)
 
         compare_excluding_dates(imported_user.attributes, source_user)
         expect_redis_restored(imported_user)

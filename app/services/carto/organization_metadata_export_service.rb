@@ -188,7 +188,7 @@ module Carto
       end
     end
 
-    def import_organization_and_users_from_directory(meta_path)
+    def import_from_directory(meta_path)
       # Import organization
       organization_file = Dir["#{meta_path}/organization_*.json"].first
       organization = build_organization_from_json_export(File.read(organization_file))
@@ -208,7 +208,7 @@ module Carto
 
       # In order to get permissions right, we first import all users, then all datasets and finally, all maps
       organization.users = user_list.map do |user_path|
-        Carto::UserMetadataExportService.new.import_user_from_directory(user_path)
+        Carto::UserMetadataExportService.new.import_from_directory(user_path)
       end
 
       organization.groups = groups
@@ -218,7 +218,7 @@ module Carto
       organization
     end
 
-    def import_organization_visualizations_from_directory(organization, path)
+    def import_metadata_from_directory(organization, path)
       organization.users.each do |user|
         Carto::UserMetadataExportService.new.import_user_visualizations_from_directory(
           user, Carto::Visualization::TYPE_REMOTE, "#{path}/user_#{user.id}"
@@ -229,11 +229,14 @@ module Carto
         )
       end
 
+      # Derived must be the last because of shared canonicals
       organization.users.each do |user|
         Carto::UserMetadataExportService.new.import_user_visualizations_from_directory(
           user, Carto::Visualization::TYPE_DERIVED, "#{path}/user_#{user.id}"
         )
+      end
 
+      organization.users.each do |user|
         Carto::UserMetadataExportService.new.import_search_tweets_from_directory(user, "#{path}/user_#{user.id}")
       end
 

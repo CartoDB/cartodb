@@ -104,8 +104,8 @@ describe Carto::OrganizationMetadataExportService do
         @organization.groups.clear
         @organization.destroy
 
-        imported_organization = service.import_organization_and_users_from_directory(path)
-        service.import_organization_visualizations_from_directory(imported_organization, path)
+        imported_organization = service.import_from_directory(path)
+        service.import_metadata_from_directory(imported_organization, path)
 
         compare_excluding_dates(imported_organization.attributes, source_organization)
 

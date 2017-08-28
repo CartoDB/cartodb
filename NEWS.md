@@ -145,6 +145,7 @@ Development
 * Adding max items limit for form list editor (#12552)
 * Improve Google Login button (cartodb-central#1808)
 * Implement widget opacity in AutoStyle (#11928)
+* Fix histograms data range change (#12622)
 * Fix exception thrown when map created without builder is used with it and visualization state data is missing.
 
 ### NOTICE

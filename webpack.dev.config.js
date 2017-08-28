@@ -33,7 +33,7 @@ module.exports = env => {
         resolve(__dirname, 'lib/assets/node_modules')
       ]
     },
-    devtool: 'eval-source-map',
+    devtool: 'source-map',
     plugins: [
       stats(env) ? new BundleAnalyzerPlugin({
         analyzerMode: 'static'

@@ -32,11 +32,9 @@ var MapView = View.extend({
     if (!deps.layerGroupModel) throw new Error('layerGroupModel is required');
 
     this._mapModel = this.map = deps.mapModel;
-    this._tileErrorCollection = this.tileErrorCollection = new TileErrorCollection();
     this._visModel = deps.visModel;
     this._cartoDBLayerGroup = deps.layerGroupModel;
-
-    window.tileErrorCollection = this.tileErrorCollection;
+    this.tileErrorCollection = new TileErrorCollection();
 
     this.add_related_model(this.map);
 
@@ -152,6 +150,8 @@ var MapView = View.extend({
       });
     }
     this._bindModel();
+
+    this.tileErrorCollection.resetErrorTiles();
   },
 
   /** bind model properties */
@@ -251,7 +251,7 @@ var MapView = View.extend({
   },
 
   _createLayerView: function (layerModel) {
-    return this._getLayerViewFactory().createLayerView(layerModel, this.getNativeMap(), this.map, this._tileErrorCollection);
+    return this._getLayerViewFactory().createLayerView(layerModel, this.getNativeMap(), this.map, this.tileErrorCollection);
   },
 
   _removeLayers: function () {

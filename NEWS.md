@@ -9,6 +9,8 @@ Development
 * Add privacy button behavior for shared datasets (#11342)
 * Use add/replace notification for time-series (#12670)
 * Fix icons in category legends (#11630)
+* Add /api/v3/me endpoint (#12599)
+* Add assets version column in user model (#12676)
 * Sidebar UI tweaks (#12479)
 * Improving affordance of Delete icon (#12531)
 * Change select "attribute" placeholders (#12498)

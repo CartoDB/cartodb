@@ -1,5 +1,4 @@
 /* global google */
-var Backbone = require('backbone');
 var GmapsCartoDBLayerGroupView = require('../../../../src/geo/gmaps/gmaps-cartodb-layer-group-view');
 var SharedTestsForCartoDBLayerGroupViews = require('../shared-tests-for-cartodb-layer-group-views');
 var FakeWax = require('../fake-wax');

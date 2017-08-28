@@ -577,6 +577,7 @@ module.exports = cdb.core.View.extend({
 
     if (this._originalData) {
       this.listenTo(this._originalData, 'change:data', function () {
+        this.updateYScale();
         this._removeShadowBars();
         this._generateShadowBars();
       });
@@ -1214,7 +1215,7 @@ module.exports = cdb.core.View.extend({
     }
     var dataBin = data[index];
     if (dataBin) {
-      result = fromStart ? dataBin.start : dataBin.next;
+      result = fromStart ? dataBin.start : _.isFinite(dataBin.next) ? dataBin.next : dataBin.end;
     }
 
     return result;
@@ -1635,7 +1636,7 @@ module.exports = cdb.core.View.extend({
     this.formatter = formatter.formatNumber;
 
     if (this._isDateTimeSeries()) {
-      this.formatter = formatter.timestampFactory(this._dataviewModel.get('aggregation'), this._dataviewModel.get('offset'), this.model.get('local_timezone'));
+      this.formatter = formatter.timestampFactory(this._dataviewModel.get('aggregation'));
       this.options.divisionWidth = this._calculateDivisionWithByAggregation(this._dataviewModel.get('aggregation'));
     }
   },

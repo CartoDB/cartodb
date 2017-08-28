@@ -118,9 +118,10 @@ module.exports = cdb.core.View.extend({
 
   _updateRange: function () {
     var bars = this._calculateBars();
-    var lo = bars.loBarIndex;
-    var hi = bars.hiBarIndex;
-    if (lo !== 0 || hi !== this._dataviewModel.get('bins')) {
+    var bins = this._dataviewModel.get('bins');
+    var lo = Math.max(bars.loBarIndex, 0);
+    var hi = Math.min(bars.hiBarIndex, bins);
+    if (lo > 0 || hi < bins) {
       this._histogramView.selectRange(lo, hi);
     }
   },

@@ -89,13 +89,13 @@ describe('widgets/time-series/content-view', function () {
 
   describe('.initBinds', function () {
     it('should hook up events properly', function () {
-      this.view._dataviewModel.off();
+      this.view.model.off();
       spyOn(this.view, 'render');
 
       this.view._initBinds();
 
       // DataviewModel events
-      this.view._dataviewModel.trigger('change:data');
+      this.view.model.trigger('change:hasInitialState');
       expect(this.view.render).toHaveBeenCalled();
     });
   });

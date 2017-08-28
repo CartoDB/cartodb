@@ -425,13 +425,7 @@ module.exports = cdb.core.View.extend({
   },
 
   _onChangeBins: function (mdl, bins) {
-    this._originalData.setBins(bins);
-    this.model.set({
-      zoom_enabled: false,
-      filter_enabled: false,
-      lo_index: null,
-      hi_index: null
-    });
+    this._resetWidget();
   },
 
   _onChangeZoomEnabled: function () {

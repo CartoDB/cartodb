@@ -10,9 +10,9 @@ describe('util/tile-error-collection', function () {
 
     this.error = { type: 'limit', message: 'Some message' };
     this.tiles = [
-      new Backbone.Model({ url: 'some_url/0/0/0/1.png', node: new Image() }),
-      new Backbone.Model({ url: 'some_url/0/0/0/2.png', node: new Image() }),
-      new Backbone.Model({ url: 'some_url/0/0/0/3.png', node: new Image(), error: this.error })
+      new Backbone.Model({ url: 'some_url/0/0/0/1.png', node: {} }),
+      new Backbone.Model({ url: 'some_url/0/0/0/2.png', node: {} }),
+      new Backbone.Model({ url: 'some_url/0/0/0/3.png', node: {}, error: this.error })
     ];
     this.collection = new TileErrorCollection(this.tiles);
 
@@ -39,10 +39,11 @@ describe('util/tile-error-collection', function () {
   describe('on add event', function () {
     var tile = {
       url: 'some_url/0/0/0/4.png',
-      node: new Image()
+      node: {}
     };
 
     it('should set the error tile overlay when a new model is added', function () {
+      spyOn(document.body, 'contains').and.returnValue(true);
       this.collection.add(tile);
       var model = _.last(this.collection.models);
       expect(model.get('node').src.indexOf('data:image/svg+xml;base64,')).not.toBe(-1);
@@ -97,7 +98,7 @@ describe('util/tile-error-collection', function () {
         expect(this.collection.running).toBe(false);
 
         this.collection.running = true;
-        this.collection.queue.add({ url: 'somethig.png', tile: new Image(), checked: true });
+        this.collection.queue.add({ url: 'somethig.png', tile: {}, checked: true });
         this.collection._getTileErrors();
 
         expect(this.collection.running).toBe(false);
@@ -115,7 +116,7 @@ describe('util/tile-error-collection', function () {
         });
 
         it('should remove the model from the queue', function () {
-          this.collection.queue.add({ url: 'somethig.png', tile: new Image() });
+          this.collection.queue.add({ url: 'somethig.png', tile: {} });
           this.collection._getTileErrors();
 
           expect(this.collection.queue.length).toEqual(0);
@@ -124,7 +125,7 @@ describe('util/tile-error-collection', function () {
         it('should call ._getTileErrors()', function () {
           spyOn(this.collection, '_getTileErrors').and.callThrough();
 
-          this.collection.queue.add({ url: 'somethig.png', tile: new Image() });
+          this.collection.queue.add({ url: 'somethig.png', tile: {} });
           this.collection._getTileErrors();
 
           expect(this.collection._getTileErrors.calls.count()).toEqual(2);
@@ -140,7 +141,7 @@ describe('util/tile-error-collection', function () {
           };
           spyOn(this.collection, '_deletedNode').and.returnValue(false);
           spyOn(this.collection, '_getTileErrors').and.callThrough();
-          this.model = this.collection.queue.add({ url: 'http://localhost:9001/test/some_url/0/0/0/5.png', node: new Image() });
+          this.model = this.collection.queue.add({ url: 'http://localhost:9001/test/some_url/0/0/0/5.png', node: {} });
         });
 
         it('should set the model as checked', function () {
@@ -163,7 +164,7 @@ describe('util/tile-error-collection', function () {
           });
 
           it('should set the model url as the model node src', function () {
-            expect(this.model.get('node').src).toEqual('');
+            expect(this.model.get('node').src).toEqual(undefined);
             this.collection._getTileErrors();
             expect(this.model.get('node').src).toEqual(this.model.get('url'));
           });

@@ -12,7 +12,7 @@ var LeafletLayerView = function (layerModel, leafletMap, mapModel) {
   var type = layerModel.get('type') || layerModel.get('kind');
   this.type = type && type.toLowerCase();
 
-  this.listenTo(this.leafletLayer, 'tileerror', this._onTileError, this);
+  this.leafletLayer.on('tileerror', this._onTileError.bind(this));
 };
 
 _.extend(LeafletLayerView.prototype, Backbone.Events);

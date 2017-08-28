@@ -2,6 +2,7 @@ Development
 -----------
 
 ### Features
+* Add /api/v3/me endpoint (#12599)
 * Sidebar UI tweaks (#12479)
 * Add carto-node client library (#12677)
 * Improving affordance of Delete icon (#12531)

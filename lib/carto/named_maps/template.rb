@@ -252,8 +252,8 @@ module Carto
       def valid_state?
         state = @visualization.state.json
         map = state[:map]
-        not(state.blank? || map.blank? || map[:center].blank? || map[:sw].blank? || map[:ne].blank? ||
-          map[:sw][0].blank? || map[:sw][1].blank? || map[:ne].blank? || map[:ne][0].blank? || map[:ne][1].blank?)
+        state.present? && map.present? && map[:center].present? && map[:sw].present? && map[:ne].present? &&
+          map[:sw][0].present? && map[:sw][1].present? && map[:ne].present? && map[:ne][0].present? && map[:ne][1].present?
       end
 
       def view_from_map

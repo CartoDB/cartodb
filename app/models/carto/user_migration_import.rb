@@ -67,20 +67,13 @@ module Carto
     private
 
     def valid_import_type
-      unless import_type.present?
-        errors.add(:import_type, "Import type must be present")
-        return false
-      end
-
       case import_type
       when 'user'
-        if organization_id.present?
-          errors.add(:organization_id, "organization_id can't be present on user imports")
-        end
+        errors.add(:organization_id, "organization_id can't be present") if organization_id.present?
       when 'organization'
-        if user_id.present?
-          errors.add(:user_id, "user_id can't be present on organization imports")
-        end
+        errors.add(:user_id, "user_id can't be present") if user_id.present?
+      else
+        errors.add(:import_type, "Import type must be 'user' or 'organization'")
       end
     end
 

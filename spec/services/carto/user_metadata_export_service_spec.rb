@@ -140,6 +140,8 @@ describe Carto::UserMetadataExportService do
         expect(@visualization.uses_vizjson2?).to be_false
 
         imported_user = service.import_user_from_directory(path)
+        service.import_visualizations_from_directory(imported_user, path)
+        service.import_search_tweets_from_directory(imported_user, path)
 
         compare_excluding_dates(imported_user.attributes, source_user)
         expect_redis_restored(imported_user)
@@ -177,6 +179,8 @@ describe Carto::UserMetadataExportService do
         end
 
         imported_user = service.import_user_from_directory(path)
+        service.import_visualizations_from_directory(imported_user, path)
+        service.import_search_tweets_from_directory(imported_user, path)
 
         compare_excluding_dates(imported_user.attributes, source_user)
         expect_redis_restored(imported_user)

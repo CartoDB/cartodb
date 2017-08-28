@@ -85,7 +85,7 @@ module Carto
 
       if import_metadata?
         log.append('=== Importing user metadata ===')
-        user = service.import_user_from_directory(meta_dir, import_visualizations: false)
+        user = service.import_user_from_directory(meta_dir)
         save!
       end
 
@@ -94,7 +94,7 @@ module Carto
 
       if import_metadata?
         log.append('=== Importing user visualizations and search tweets ===')
-        service.import_search_tweets_from_directory(meta_dir, user)
+        service.import_search_tweets_from_directory(user, meta_dir)
       end
     end
 

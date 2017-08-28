@@ -208,7 +208,7 @@ module Carto
 
       # In order to get permissions right, we first import all users, then all datasets and finally, all maps
       organization.users = user_list.map do |user_path|
-        Carto::UserMetadataExportService.new.import_user_from_directory(user_path, import_visualizations: false)
+        Carto::UserMetadataExportService.new.import_user_from_directory(user_path)
       end
 
       organization.groups = groups
@@ -234,7 +234,7 @@ module Carto
           user, Carto::Visualization::TYPE_DERIVED, "#{path}/user_#{user.id}"
         )
 
-        Carto::UserMetadataExportService.new.import_search_tweets_from_directory("#{path}/user_#{user.id}", user)
+        Carto::UserMetadataExportService.new.import_search_tweets_from_directory(user, "#{path}/user_#{user.id}")
       end
 
       organization

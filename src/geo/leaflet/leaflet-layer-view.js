@@ -1,16 +1,18 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
 
-var LeafletLayerView = function (layerModel, leafletMap, mapModel, tileErrorCollection) {
-  this.tileErrorCollection = tileErrorCollection;
+var LeafletLayerView = function (layerModel, leafletMap, mapModel) {
   this.leafletLayer = this._createLeafletLayer(layerModel);
   this.leafletMap = leafletMap;
   this.model = layerModel;
+  this.mapModel = mapModel;
 
   this.setModel(layerModel);
 
   var type = layerModel.get('type') || layerModel.get('kind');
   this.type = type && type.toLowerCase();
+
+  this.listenTo(this.leafletLayer, 'tileerror', this._onTileError, this);
 };
 
 _.extend(LeafletLayerView.prototype, Backbone.Events);
@@ -37,6 +39,10 @@ _.extend(LeafletLayerView.prototype, {
 
   reload: function () {
     this.leafletLayer.redraw();
+  },
+
+  _onTileError: function (layer) {
+    this.mapModel.addErrorTile(layer.tile);
   },
 
   _createLeafletLayer: function () {

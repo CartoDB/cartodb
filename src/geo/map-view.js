@@ -15,8 +15,6 @@ var MapCursorManager = require('../vis/map-cursor-manager');
 var MapEventsManager = require('../vis/map-events-manager');
 var GeometryManagementController = require('../vis/geometry-management-controller');
 
-var TileErrorCollection = require('../util/tile-error-collection');
-
 var MapView = View.extend({
 
   className: 'CDB-Map-wrapper',
@@ -34,7 +32,6 @@ var MapView = View.extend({
     this._mapModel = this.map = opts.mapModel;
     this._visModel = opts.visModel;
     this._cartoDBLayerGroup = opts.layerGroupModel;
-    this.tileErrorCollection = new TileErrorCollection();
 
     this.add_related_model(this.map);
 
@@ -150,8 +147,6 @@ var MapView = View.extend({
       });
     }
     this._bindModel();
-
-    this.tileErrorCollection.resetErrorTiles();
   },
 
   /** bind model properties */
@@ -251,7 +246,7 @@ var MapView = View.extend({
   },
 
   _createLayerView: function (layerModel) {
-    return this._getLayerViewFactory().createLayerView(layerModel, this.getNativeMap(), this.map, this.tileErrorCollection);
+    return this._getLayerViewFactory().createLayerView(layerModel, this.getNativeMap(), this._mapModel);
   },
 
   _removeLayers: function () {

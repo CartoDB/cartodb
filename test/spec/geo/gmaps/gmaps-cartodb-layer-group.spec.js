@@ -17,11 +17,7 @@ var createLayerGroupView = function (layerGroupModel, container) {
     tilt: 0
   });
 
-  var tileErrorCollection = new Backbone.Collection({
-    add: function () {}
-  });
-
-  var layerGroupView = new GmapsCartoDBLayerGroupView(layerGroupModel, gmapsMap, null, tileErrorCollection);
+  var layerGroupView = new GmapsCartoDBLayerGroupView(layerGroupModel, gmapsMap, null);
   gmapsMap.overlayMapTypes.setAt(1, layerGroupView.gmapsLayer);
   return layerGroupView;
 };

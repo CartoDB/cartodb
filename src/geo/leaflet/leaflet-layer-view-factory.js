@@ -12,7 +12,7 @@ var util = require('../../core/util');
 
 var MAX_NUMBER_OF_FEATURES_FOR_WEBGL = 10e4;
 
-var LayerGroupViewConstructor = function (layerGroupModel, nativeMap, mapModel, tileErrorCollection) {
+var LayerGroupViewConstructor = function (layerGroupModel, nativeMap, mapModel) {
   var renderModeResult = getRenderModeResult(mapModel);
   log.info('MAP RENDER MODE', renderModeResult);
 
@@ -20,7 +20,7 @@ var LayerGroupViewConstructor = function (layerGroupModel, nativeMap, mapModel, 
     return new LeafletCartoDBWebglLayerGroupView(layerGroupModel, nativeMap);
   }
 
-  return new LeafletCartoDBLayerGroupView(layerGroupModel, nativeMap, mapModel, tileErrorCollection);
+  return new LeafletCartoDBLayerGroupView(layerGroupModel, nativeMap, mapModel);
 };
 
 function getRenderModeResult (mapModel) {
@@ -77,13 +77,13 @@ LeafletLayerViewFactory.prototype._constructors = {
   'torque': LeafletTorqueLayerView
 };
 
-LeafletLayerViewFactory.prototype.createLayerView = function (layerModel, nativeMap, mapModel, tileErrorCollection) {
+LeafletLayerViewFactory.prototype.createLayerView = function (layerModel, nativeMap, mapModel) {
   var layerType = layerModel.get('type').toLowerCase();
   var LayerViewClass = this._constructors[layerType];
 
   if (LayerViewClass) {
     try {
-      return new LayerViewClass(layerModel, nativeMap, mapModel, tileErrorCollection);
+      return new LayerViewClass(layerModel, nativeMap, mapModel);
     } catch (error) {
       log.error("Error creating an instance of layer view for '" + layerType + "' layer -> " + error.message);
       throw error;

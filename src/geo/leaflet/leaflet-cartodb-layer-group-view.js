@@ -41,10 +41,10 @@ var findContainerPoint = function (map, o) {
     return point;
 };
 
-var LeafletCartoDBLayerGroupView = function (layerModel, leafletMap, mapModel, tileErrorCollection) {
+var LeafletCartoDBLayerGroupView = function (layerModel, leafletMap, mapModel) {
   var self = this;
   LeafletLayerView.apply(this, arguments);
-  CartoDBLayerGroupViewBase.call(this, layerModel, leafletMap);
+  CartoDBLayerGroupViewBase.apply(this, arguments);
 
   this.leafletLayer.on('load', function (e) {
     self.trigger('load');
@@ -52,13 +52,6 @@ var LeafletCartoDBLayerGroupView = function (layerModel, leafletMap, mapModel, t
 
   this.leafletLayer.on('loading', function (e) {
     self.trigger('loading');
-  });
-
-  this.leafletLayer.on('tileerror', function (layer, coords, error) {
-    self.tileErrorCollection.add({
-      url: _.clone(layer.tile.src),
-      tileDomNode: layer.tile
-    });
   });
 };
 

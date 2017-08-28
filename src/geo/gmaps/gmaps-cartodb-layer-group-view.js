@@ -22,7 +22,7 @@ function setImageOpacityIE8 (img, opacity) {
   }
 }
 
-var GMapsCartoDBLayerGroupView = function (layerModel, gmapsMap, mapModel, tileErrorCollection) {
+var GMapsCartoDBLayerGroupView = function (layerModel, gmapsMap, mapModel) {
   var self = this;
   var hovers = [];
 
@@ -84,9 +84,9 @@ var GMapsCartoDBLayerGroupView = function (layerModel, gmapsMap, mapModel, tileE
   // lovely wax connector overwrites options so set them again
   // TODO: remove wax.connector here
   _.extend(this.options, opts);
-  GMapsLayerView.call(this, layerModel, gmapsMap, mapModel, tileErrorCollection);
+  GMapsLayerView.apply(this, arguments);
   this.projector = new Projector(opts.map);
-  CartoDBLayerGroupViewBase.call(this, layerModel, gmapsMap, mapModel, tileErrorCollection);
+  CartoDBLayerGroupViewBase.apply(this, arguments);
 };
 
 // TODO: Do we need this?
@@ -228,10 +228,7 @@ _.extend(
 
       tile.onerror = function () {
         Profiler.metric('cartodb-js.tile.png.error').inc();
-        self.tileErrorCollection.add({
-          url: _.clone(this.src),
-          tileDomNode: this
-        });
+        self._onTileError(this);
         finished();
       };
 

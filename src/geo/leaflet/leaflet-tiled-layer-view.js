@@ -14,7 +14,7 @@ var generateLeafletLayerOptions = function (layerModel) {
   };
 };
 
-var LeafletTiledLayerView = function (layerModel, leafletMap, mapModel, tileErrorCollection) {
+var LeafletTiledLayerView = function (layerModel, leafletMap, mapModel) {
   var self = this;
   LeafletLayerView.apply(this, arguments);
 

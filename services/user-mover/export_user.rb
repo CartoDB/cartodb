@@ -541,14 +541,14 @@ module CartoDB
               )
             end
             @org_users.each do |org_user|
-              export_job = CartoDB::DataMover::ExportJob.new(id: org_user['username'],
-                                                             data: @options[:data] && @options[:split_user_schemas],
-                                                             path: @options[:path],
-                                                             job_uuid: job_uuid,
-                                                             from_org: true,
-                                                             schema_mode: true,
-                                                             logger: @logger,
-                                                             export_job_logger: exportjob_logger)
+              CartoDB::DataMover::ExportJob.new(id: org_user['username'],
+                                                data: @options[:data] && @options[:split_user_schemas],
+                                                path: @options[:path],
+                                                job_uuid: job_uuid,
+                                                from_org: true,
+                                                schema_mode: true,
+                                                logger: @logger,
+                                                export_job_logger: exportjob_logger)
             end
           end
         rescue => e

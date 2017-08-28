@@ -16,6 +16,7 @@ describe('util/tile-error-collection', function () {
     ];
     this.collection = new TileErrorCollection(this.tiles);
 
+    this.originalAjax = $.ajax;
     $.ajax = function (params) {
       interceptAjaxCall && interceptAjaxCall(params);
       return {
@@ -197,6 +198,7 @@ describe('util/tile-error-collection', function () {
   });
 
   afterEach(function () {
+    $.ajax = this.originalAjax;
     this.collection.queue = [];
     this.collection.running = false;
     this.collection.reset(this.tiles);

@@ -25,7 +25,13 @@ var generateCategories = function (bucketsColor, bucketsIcon) {
 };
 
 var _extractURL = function (str) {
-  return str.slice(5, -2);
+  var url = '';
+  var pattern = /(http|https):\/\/\S+\.(?:gif|jpeg|jpg|png|webp|svg)/g;
+  var match = str.match(pattern);
+  if (match) {
+    url = match[0];
+  }
+  return url;
 };
 
 module.exports = {

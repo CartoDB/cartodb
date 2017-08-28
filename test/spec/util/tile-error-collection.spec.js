@@ -12,7 +12,7 @@ describe('util/tile-error-collection', function () {
     this.tiles = [
       new Backbone.Model({ url: 'some_url/0/0/0/1.png', tileDomNode: {} }),
       new Backbone.Model({ url: 'some_url/0/0/0/2.png', tileDomNode: {} }),
-      new Backbone.Model({ url: 'some_url/0/0/0/3.png', tileDomNode: {}, error: this.error })
+      new Backbone.Model({ url: 'some_url/0/0/0/3.png', tileDomNode: {} })
     ];
     this.collection = new TileErrorCollection(this.tiles);
 
@@ -36,7 +36,7 @@ describe('util/tile-error-collection', function () {
     };
   });
 
-  describe('on add event', function () {
+  describe('._onAdd', function () {
     var tile = {
       url: 'some_url/0/0/0/4.png',
       tileDomNode: {}
@@ -61,21 +61,31 @@ describe('util/tile-error-collection', function () {
       expect(this.collection.queue.length).toEqual(1);
     });
 
-    it('should call ._getTileErrors if running is false', function () {
-      spyOn(this.collection, '_getTileErrors');
+    describe('when running is false', function () {
+      it('should set running to true', function () {
+        this.collection.running = false;
+        this.collection.add(tile);
+        expect(this.collection.running).toBe(true);
+      });
 
-      this.collection.running = true;
-      this.collection.add(tile);
-      expect(this.collection._getTileErrors).not.toHaveBeenCalled();
+      it('should call ._getTileErrors ', function () {
+        spyOn(this.collection, '_getTileErrors');
 
-      this.collection.running = false;
-      this.collection.add(tile);
-      expect(this.collection._getTileErrors).toHaveBeenCalled();
+        this.collection.running = true;
+        this.collection.add(tile);
+        expect(this.collection._getTileErrors).not.toHaveBeenCalled();
+
+        this.collection.running = false;
+        this.collection.add(tile);
+        expect(this.collection._getTileErrors).toHaveBeenCalled();
+      });
     });
   });
 
   describe('.getError', function () {
     it('should return an error if any tile have it', function () {
+      this.collection.models[0].set('error', this.error);
+
       expect(this.collection.getError()).toEqual(this.error);
     });
   });
@@ -90,7 +100,7 @@ describe('util/tile-error-collection', function () {
   });
 
   describe('._getTileErrors', function () {
-    describe('when all models have been checked or there are no models', function () {
+    describe('when we alerady have the error or there are no models to check', function () {
       it('should set running to false', function () {
         this.collection.running = true;
         this.collection._getTileErrors();
@@ -102,96 +112,75 @@ describe('util/tile-error-collection', function () {
         this.collection._getTileErrors();
 
         expect(this.collection.running).toBe(false);
+
+        this.collection.running = true;
+        this.collection.models[0].set('error', this.error);
+        this.collection._getTileErrors();
+        expect(this.collection.running).toBe(false);
       });
     });
 
     describe('when there are models to check', function () {
-      xit('should set running to true', function () {
-        // TODO: Test this
+      beforeEach(function () {
+        interceptAjaxCall = function (params) {
+          if (/\.png/.test(params.url)) {
+            params.complete && params.complete();
+          }
+        };
+        spyOn(this.collection, '_deletedNode').and.returnValue(false);
+        spyOn(this.collection, '_getTileErrors').and.callThrough();
+
+        this.collection.running = true;
+        this.model = this.collection.queue.add({ url: 'http://localhost:9001/test/some_url/0/0/0/5.png', tileDomNode: {} });
       });
 
-      describe('when the model is not in the DOM anymore', function () {
-        beforeEach(function () {
-          spyOn(this.collection, '_deletedNode').and.returnValue(true);
-        });
-
-        it('should remove the model from the queue', function () {
-          this.collection.queue.add({ url: 'somethig.png', tile: {} });
-          this.collection._getTileErrors();
-
-          expect(this.collection.queue.length).toEqual(0);
-        });
-
-        it('should call ._getTileErrors()', function () {
-          spyOn(this.collection, '_getTileErrors').and.callThrough();
-
-          this.collection.queue.add({ url: 'somethig.png', tile: {} });
-          this.collection._getTileErrors();
-
-          expect(this.collection._getTileErrors.calls.count()).toEqual(2);
-        });
+      it('should set the model as checked', function () {
+        this.collection._getTileErrors();
+        expect(this.model.get('checked')).toBe(true);
       });
 
-      describe('when the model still in the DOM', function () {
+      it('should call ._getTileErrors()', function () {
+        this.collection._getTileErrors();
+        expect(this.collection._getTileErrors.calls.count()).toEqual(2);
+      });
+
+      describe('when the request success', function () {
         beforeEach(function () {
           interceptAjaxCall = function (params) {
             if (/\.png/.test(params.url)) {
-              params.complete && params.complete();
+              params.success && params.success();
             }
           };
-          spyOn(this.collection, '_deletedNode').and.returnValue(false);
-          spyOn(this.collection, '_getTileErrors').and.callThrough();
-          this.model = this.collection.queue.add({ url: 'http://localhost:9001/test/some_url/0/0/0/5.png', tileDomNode: {} });
         });
 
-        it('should set the model as checked', function () {
+        it('should set the model url as the model tileDomNode src', function () {
+          expect(this.model.get('tileDomNode').src).toEqual(undefined);
           this.collection._getTileErrors();
-          expect(this.model.get('checked')).toBe(true);
+          expect(this.model.get('tileDomNode').src).toEqual(this.model.get('url'));
+        });
+      });
+
+      describe('when the request fails', function () {
+        beforeEach(function () {
+          interceptAjaxCall = function (params) {
+            if (/\.png/.test(params.url)) {
+              params.error && params.error({
+                responseJSON: {
+                  errors_with_context: [{
+                    type: 'limit',
+                    message: 'Some error happened'
+                  }]
+                }
+              });
+            }
+          };
         });
 
-        it('should call ._getTileErrors()', function () {
+        it('should set the error in the model', function () {
           this.collection._getTileErrors();
-          expect(this.collection._getTileErrors.calls.count()).toEqual(2);
-        });
-
-        describe('when the request success', function () {
-          beforeEach(function () {
-            interceptAjaxCall = function (params) {
-              if (/\.png/.test(params.url)) {
-                params.success && params.success();
-              }
-            };
-          });
-
-          it('should set the model url as the model tileDomNode src', function () {
-            expect(this.model.get('tileDomNode').src).toEqual(undefined);
-            this.collection._getTileErrors();
-            expect(this.model.get('tileDomNode').src).toEqual(this.model.get('url'));
-          });
-        });
-
-        describe('when the request fails', function () {
-          beforeEach(function () {
-            interceptAjaxCall = function (params) {
-              if (/\.png/.test(params.url)) {
-                params.error && params.error({
-                  responseJSON: {
-                    errors_with_context: [{
-                      type: 'limit',
-                      message: 'Some error happened'
-                    }]
-                  }
-                });
-              }
-            };
-          });
-
-          it('should set the error in the model', function () {
-            this.collection._getTileErrors();
-            expect(this.model.get('error')).toEqual({
-              type: 'limit',
-              message: 'Some error happened'
-            });
+          expect(this.model.get('error')).toEqual({
+            type: 'limit',
+            message: 'Some error happened'
           });
         });
       });

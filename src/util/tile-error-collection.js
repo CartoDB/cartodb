@@ -10,17 +10,13 @@ var TileErrorCollection = Backbone.Collection.extend({
     this.running = false;
     this.queue = new Backbone.Collection();
 
-    this.on('add', function (model) {
-      var isInQueue = this.queue.findWhere({ url: model.get('url') });
-      if (!isInQueue) this.queue.add(model);
-
-      model.get('tileDomNode').src = TILE_ERROR_IMAGE;
-
-      if (!this.running) this._getTileErrors();
-    });
+    this.on('add', this._onAdd, this);
   },
 
   resetErrorTiles: function () {
+    this.running = false;
+    this.queue.reset();
+
     var models = this.filter(function (model) {
       this._deletedNode(model.get('tileDomNode'));
     }.bind(this));
@@ -36,21 +32,28 @@ var TileErrorCollection = Backbone.Collection.extend({
     return model && model.get('error');
   },
 
+  _onAdd: function (model) {
+    var isInQueue = this.queue.findWhere({ url: model.get('url') });
+    if (!isInQueue) this.queue.add(model);
+
+    model.get('tileDomNode').src = TILE_ERROR_IMAGE;
+
+    if (!this.running) {
+      this.running = true;
+      this._getTileErrors();
+    }
+  },
+
   _getTileErrors: function () {
+    if (!this.running) return;
+
     var model = this.queue.find(function (model) {
       return !model.get('checked');
     });
 
-    if (!model) {
+    if (this.getError() || !model) {
       this.running = false;
       return;
-    }
-
-    this.running = true;
-
-    if (this._deletedNode(model.get('tileDomNode'))) {
-      this.queue.remove(model);
-      return this._getTileErrors();
     }
 
     $.ajax({

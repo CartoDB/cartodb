@@ -68,7 +68,63 @@ describe 'UserMigration' do
 
       migrate_metadata ? user.destroy_cascade : user.destroy
     end
+  end
 
+  it 'exports and imports a user with a data import with two tables' do
+    CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+
+    user = FactoryGirl.build(:valid_user).save
+    carto_user = Carto::User.find(user.id)
+    user_attributes = carto_user.attributes
+
+    filepath = "#{Rails.root}/services/importer/spec/fixtures/visualization_export_with_two_tables.carto"
+    data_import = DataImport.create(
+      user_id: user.id,
+      data_source: filepath,
+      updated_at: Time.now.utc,
+      append: false,
+      create_visualization: true
+    )
+    data_import.values[:data_source] = filepath
+
+    data_import.run_import!
+    data_import.success.should eq true
+
+    source_visualizations = carto_user.visualizations.map(&:name).sort
+
+    export = Carto::UserMigrationExport.create(
+      user: carto_user,
+      export_metadata: true
+    )
+    export.run_export
+
+    puts export.log.entries if export.state != Carto::UserMigrationExport::STATE_COMPLETE
+    expect(export.state).to eq(Carto::UserMigrationExport::STATE_COMPLETE)
+
+    carto_user.client_applications.each(&:destroy)
+    user.destroy
+
+    import = Carto::UserMigrationImport.create(
+      exported_file: export.exported_file,
+      database_host: user_attributes['database_host'],
+      org_import: false,
+      json_file: export.json_file,
+      import_metadata: true,
+      import_type: 'user'
+    )
+    import.run_import
+
+    puts import.log.entries if import.state != Carto::UserMigrationImport::STATE_COMPLETE
+    expect(import.state).to eq(Carto::UserMigrationImport::STATE_COMPLETE)
+
+    carto_user = Carto::User.find(user_attributes['id'])
+
+    attributes_to_test(user_attributes).each do |attribute|
+      expect(carto_user.attributes[attribute]).to eq(user_attributes[attribute])
+    end
+    expect(carto_user.visualizations.map(&:name).sort).to eq(source_visualizations)
+
+    user.destroy_cascade
   end
 
   describe 'with organization' do

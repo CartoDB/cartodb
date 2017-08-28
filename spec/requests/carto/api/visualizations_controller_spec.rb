@@ -1375,7 +1375,7 @@ describe Carto::Api::VisualizationsController do
 
       def get_vizjson3_url(user, visualization, vector: nil)
         args = { user_domain: user.username, id: visualization.id, api_key: user.api_key }
-        args[:vector] = vector if vector
+        args[:vector] = vector unless vector.nil?
         api_v3_visualizations_vizjson_url(args)
       end
 
@@ -1648,12 +1648,36 @@ describe Carto::Api::VisualizationsController do
         end
       end
 
-      it 'doesn\'t include vector flag if vector_vs_raster feature flag is enabled' do
+      it 'doesn\'t include vector flag if vector_vs_raster feature flag is enabled and vector param is not present' do
         set_feature_flag @visualization.user, 'vector_vs_raster', true
-        get_json get_vizjson3_url(@user_1, @visualization, vector: true), @headers do |response|
+        get_json get_vizjson3_url(@user_1, @visualization), @headers do |response|
           response.status.should == 200
           vizjson3 = response.body
           vizjson3.has_key?(:vector).should be_false
+        end
+      end
+
+      it 'includes vector flag if vector_vs_raster feature flag is enabled and vector param is present' do
+        set_feature_flag @visualization.user, 'vector_vs_raster', true
+
+        get_json get_vizjson3_url(@user_1, @visualization, vector: true), @headers do |response|
+          response.status.should == 200
+          vizjson3 = response.body
+          vizjson3[:vector].should eq true
+        end
+
+        get_json get_vizjson3_url(@user_1, @visualization, vector: false), @headers do |response|
+          response.status.should == 200
+          vizjson3 = response.body
+          vizjson3[:vector].should eq false
+        end
+      end
+
+      it 'includes vector flag (true if requested)' do
+        get_json api_v3_visualizations_vizjson_url(user_domain: @user_1.username, id: @visualization.id, api_key: @user_1.api_key, vector: true), @headers do |request|
+          request.status.should == 200
+          vizjson3 = request.body
+          vizjson3[:vector].should == true
         end
       end
 

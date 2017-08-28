@@ -9,7 +9,7 @@
   width: 72px;
   min-height: 450px;
   box-sizing: border-box;
-  padding: 24px 0 $baseSize * 2;
+  padding: 20px 0 $baseSize * 2;
   background: $cBlue;
 }
 
@@ -45,7 +45,7 @@
 }
 .EditorMenu-navigationIcon {
   color: $cWhite;
-  font-size: 18px;
+  font-size: $sFontSize-large;
 }
 
 .EditorMenu-logo {
@@ -54,7 +54,7 @@
   @include justify-content(center);
   width: 32px;
   height: 32px;
-  margin: 0 auto 44px;
+  margin: 0 auto 48px;
 
   .arrow {
     @include opacity(0);
@@ -67,7 +67,7 @@
     @include css3-prefix(transform-origin, 50%);
   }
   .imago:hover .point {
-    @include transform(scale(3));
+    @include transform(scale(2.73));
   }
   .imago:hover .arrow {
     @include opacity(1);
@@ -125,7 +125,8 @@
     height: 24px;
   }
   .EditorMenu-navigationIcon {
-    font-size: 14px;
+    margin: 4px;
+    font-size: $sFontSize-medium;
   }
   .EditorMenu-navigationItem {
     width: $baseSize * 3;

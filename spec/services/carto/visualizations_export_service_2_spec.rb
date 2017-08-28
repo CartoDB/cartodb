@@ -9,12 +9,33 @@ describe Carto::VisualizationsExportService2 do
 
   let(:export) do
     {
-      visualization: base_visualization_export,
-      version: '2.1.0'
+      visualization: mapcapped_visualization_export,
+      version: '2.1.1'
     }
   end
 
-  let(:base_visualization_export) do
+  let(:mapcapped_visualization_export) do
+    mapcap = {
+      ids_json: {
+        visualization_id: "04e0ddac-bea8-4e79-a362-f06b9a7396cf",
+        map_id: "bf727caa-f05a-45df-baa5-c29cb4542ecd",
+        layers: [
+          { layer_id: "c2be46d2-d44e-49fa-a604-8814fcd150f7", widgets: [] },
+          { layer_id: "dd1a006b-5791-4221-b120-4b9e1f2e93e7", widgets: [] },
+          { layer_id: "f4a9823b-8de2-474f-bcc0-8b230f881a75", widgets: ["b5dcb89b-0c4a-466c-b459-cc5c8053f4ec"] },
+          { layer_id: "4ffea696-e127-40bc-90cf-9e34b9a77d89", widgets: [] }
+        ]
+      },
+      export_json: {
+        visualization: base_visualization_export,
+        version: '2.1.1'
+      }
+    }
+
+    base_visualization_export.merge(mapcap: mapcap)
+  end
+
+  def base_visualization_export
     {
       id: '138110e4-7425-4978-843d-d7307bd70d1c',
       name: 'the name',
@@ -32,6 +53,7 @@ describe Carto::VisualizationsExportService2 do
         '0418A9C928550D5614101D5E410F03E7041A83916DE775E51C131118AC72D246AC1A83916DE775E51C1',
       state: { json: { manolo: 'escobar' } },
       display_name: 'the display_name',
+      uses_vizjson2: true,
       map: {
         provider: 'leaflet',
         bounding_box_sw: '[-85.0511, -179]',
@@ -152,30 +174,30 @@ describe Carto::VisualizationsExportService2 do
               pre_html: '<h1>Here it comes!</h1>',
               post_html: '<h2>Awesome right?</h2>',
               definition: {
-                'categories' => [
+                categories: [
                   {
-                    'title' => 'foo',
-                    'color' => '#fabada'
+                    title: 'foo',
+                    color: '#fabada'
                   },
                   {
-                    'title' => 'bar',
-                    'icon' => 'super.png',
-                    'color' => '#fabada'
+                    title: 'bar',
+                    icon: 'super.png',
+                    color: '#fabada'
                   },
                   {
-                    'title' => 'ber'
+                    title: 'ber'
                   },
                   {
-                    'title' => 'baz'
+                    title: 'baz'
                   },
                   {
-                    'title' => 'bars',
-                    'icon' => 'dupe.png',
-                    'color' => '#fabada'
+                    title: 'bars',
+                    icon: 'dupe.png',
+                    color: '#fabada'
                   },
                   {
-                    'title' => 'fooz',
-                    'color' => '#fabada'
+                    title: 'fooz',
+                    color: '#fabada'
                   }
                 ]
               }
@@ -186,7 +208,7 @@ describe Carto::VisualizationsExportService2 do
               pre_html: '<h1>Here it comes!</h1>',
               post_html: '<h2>Awesome right? But not so much</h2>',
               definition: {
-                'color' => '#abc'
+                color: '#abc'
               }
             }
           ],
@@ -223,7 +245,9 @@ describe Carto::VisualizationsExportService2 do
       user: { username: 'juanignaciosl' },
       permission: { access_control_list: [] },
       synchronization: nil,
-      user_table: nil
+      user_table: nil,
+      created_at: DateTime.now,
+      updated_at: DateTime.now
     }
   end
 
@@ -264,6 +288,8 @@ describe Carto::VisualizationsExportService2 do
     verify_overlays_vs_export(visualization.overlays, visualization_export[:overlays])
 
     verify_analyses_vs_export(visualization.analyses, visualization_export[:analyses])
+
+    verify_mapcap_vs_export(visualization.latest_mapcap, visualization_export[:mapcap])
   end
 
   def verify_map_vs_export(map, map_export)
@@ -286,6 +312,18 @@ describe Carto::VisualizationsExportService2 do
     state_export_json ||= {}
 
     state.json.should eq state_export_json
+  end
+
+  def verify_mapcap_vs_export(mapcap, mapcap_export)
+    return true if mapcap.nil? && mapcap_export.nil?
+
+    deep_symbolize(mapcap.try(:ids_json)).should eq deep_symbolize(mapcap_export[:ids_json])
+    deep_symbolize(mapcap.try(:export_json)).should eq deep_symbolize(mapcap_export[:export_json])
+    mapcap.try(:created_at).should eq mapcap_export[:created_at]
+  end
+
+  def deep_symbolize(h)
+    JSON.parse(JSON.dump(h), symbolize_names: true)
   end
 
   def verify_layers_vs_export(layers, layers_export, importing_user: nil)
@@ -369,7 +407,7 @@ describe Carto::VisualizationsExportService2 do
   def verify_legends_vs_export(legends, legends_export)
     legends.each_with_index do |legend, index|
       legend_presentation = {
-        definition: legend.definition,
+        definition: JSON.parse(JSON.dump(legend.definition), symbolize_names: true), # Recursive symbolize, with arrays
         post_html: legend.post_html,
         pre_html: legend.pre_html,
         title: legend.title,
@@ -446,8 +484,6 @@ describe Carto::VisualizationsExportService2 do
 
         visualization.id.should eq visualization_export[:id]
         visualization.user_id.should be_nil # Import build step is "user-agnostic"
-        visualization.created_at.should be_nil # Not set until persistence
-        visualization.updated_at.should be_nil # Not set until persistence
 
         visualization.state.id.should be_nil
 
@@ -477,6 +513,7 @@ describe Carto::VisualizationsExportService2 do
         visualization = Carto::Visualization.find(visualization.id)
 
         visualization_export = export[:visualization]
+        visualization_export.delete(:mapcap) # Not imported here
         verify_visualization_vs_export(visualization, visualization_export, importing_user: @user)
 
         visualization.id.should_not be_nil
@@ -513,6 +550,7 @@ describe Carto::VisualizationsExportService2 do
         visualization = Carto::Visualization.find(visualization.id)
 
         visualization_export = export[:visualization]
+        visualization_export.delete(:mapcap) # Not imported here
         verify_visualization_vs_export(visualization, visualization_export, importing_user: @user)
 
         visualization.id.should_not be_nil
@@ -617,6 +655,36 @@ describe Carto::VisualizationsExportService2 do
       end
 
       describe 'maintains backwards compatibility with' do
+        describe '2.1.0' do
+          it 'without mark_as_vizjson2' do
+            export_2_1_0 = export
+            export_2_1_0[:visualization].delete(:uses_vizjson2)
+
+            service = Carto::VisualizationsExportService2.new
+            expect(service.marked_as_vizjson2_from_json_export?(export_2_1_0.to_json)).to be_false
+          end
+
+          it 'without mapcap' do
+            export_2_1_0 = export
+            export_2_1_0[:visualization].delete(:mapcap)
+
+            service = Carto::VisualizationsExportService2.new
+            visualization = service.build_visualization_from_json_export(export_2_1_0.to_json)
+            expect(visualization.mapcapped?).to be_false
+          end
+
+          it 'without dates' do
+            export_2_1_0 = export
+            export_2_1_0[:visualization].delete(:created_at)
+            export_2_1_0[:visualization].delete(:updated_at)
+
+            service = Carto::VisualizationsExportService2.new
+            visualization = service.build_visualization_from_json_export(export_2_1_0.to_json)
+            expect(visualization.created_at).to be_nil
+            expect(visualization.updated_at).to be_nil
+          end
+        end
+
         it '2.0.9 (without permission, sync nor user_table)' do
           export_2_0_9 = export
           export_2_0_9[:visualization].delete(:synchronization)
@@ -798,7 +866,7 @@ describe Carto::VisualizationsExportService2 do
           @remote_visualization.destroy
         end
 
-        it 'fails for remote visualizations and works for derived/canonical visualizations' do
+        it 'works for derived/canonical/remote visualizations' do
           exporter = Carto::VisualizationsExportService2.new
           expect {
             exporter.export_visualization_json_hash(@table_visualization.id, @user)
@@ -808,7 +876,7 @@ describe Carto::VisualizationsExportService2 do
           }.not_to raise_error
           expect {
             exporter.export_visualization_json_hash(@remote_visualization.id, @user)
-          }.to raise_error("Only derived or canonical visualizations can be exported")
+          }.not_to raise_error
         end
       end
 
@@ -1184,6 +1252,8 @@ describe Carto::VisualizationsExportService2 do
       verify_overlays_match(imported_visualization.overlays, original_visualization.overlays)
 
       verify_analyses_match(imported_visualization.analyses, original_visualization.analyses)
+
+      verify_mapcap_match(imported_visualization.latest_mapcap, original_visualization.latest_mapcap)
     end
 
     def verify_maps_match(imported_map, original_map)
@@ -1301,6 +1371,13 @@ describe Carto::VisualizationsExportService2 do
       imported_overlay.template.should eq original_overlay.template
     end
 
+    def verify_mapcap_match(imported_mapcap, original_mapcap)
+      return true if imported_mapcap.nil? && original_mapcap.nil?
+
+      imported_mapcap.export_json.should eq original_mapcap.export_json
+      imported_mapcap.ids_json.should eq original_mapcap.ids_json
+    end
+
     describe 'maps' do
       before(:all) do
         @user = FactoryGirl.create(:carto_user, private_maps_enabled: true)
@@ -1369,6 +1446,18 @@ describe Carto::VisualizationsExportService2 do
         destroy_visualization(imported_viz.id)
       end
 
+      it 'importing an exported visualization should not keep the vizjson2 flag, but should return it' do
+        @visualization.mark_as_vizjson2
+        exported_string = export_service.export_visualization_json_string(@visualization.id, @user)
+        built_viz = export_service.build_visualization_from_json_export(exported_string)
+        imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user2, built_viz)
+
+        expect(imported_viz.uses_vizjson2?).to be_false
+        expect(export_service.marked_as_vizjson2_from_json_export?(exported_string)).to be_true
+
+        destroy_visualization(imported_viz.id)
+      end
+
       describe 'if full_restore is' do
         before(:each) do
           @visualization.permission.acl = [{
@@ -1380,10 +1469,13 @@ describe Carto::VisualizationsExportService2 do
             access: 'r'
           }]
           @visualization.permission.save
+          @visualization.create_mapcap!
+          @visualization.reload
         end
 
-        it 'false, it should generate a random uuid and blank permission' do
+        it 'false, it should generate a random uuid and blank permission and no mapcap' do
           exported_string = export_service.export_visualization_json_string(@visualization.id, @user)
+          original_attributes = @visualization.attributes.symbolize_keys
           built_viz = export_service.build_visualization_from_json_export(exported_string)
           original_id = built_viz.id
 
@@ -1391,11 +1483,16 @@ describe Carto::VisualizationsExportService2 do
           imported_viz.id.should_not eq original_id
           imported_viz.permission.acl.should be_empty
           imported_viz.shared_entities.count.should be_zero
+          imported_viz.mapcapped?.should be_false
+          expect(imported_viz.created_at.to_s).not_to eq original_attributes[:created_at].to_s
+          expect(imported_viz.updated_at.to_s).not_to eq original_attributes[:updated_at].to_s
+
           destroy_visualization(imported_viz.id)
         end
 
-        it 'true, it should keep the imported uuid and permission' do
+        it 'true, it should keep the imported uuid, permission and mapcap' do
           exported_string = export_service.export_visualization_json_string(@visualization.id, @user)
+          original_attributes = @visualization.attributes.symbolize_keys
           built_viz = export_service.build_visualization_from_json_export(exported_string)
           test_id = random_uuid
           built_viz.id = test_id
@@ -1405,6 +1502,9 @@ describe Carto::VisualizationsExportService2 do
           imported_viz.permission.acl.should_not be_empty
           imported_viz.shared_entities.count.should eq 1
           imported_viz.shared_entities.first.recipient_id.should eq @user2.id
+          imported_viz.mapcapped?.should be_true
+          expect(imported_viz.created_at.to_s).to eq original_attributes[:created_at].to_s
+          expect(imported_viz.updated_at.to_s).to eq original_attributes[:updated_at].to_s
 
           destroy_visualization(imported_viz.id)
         end

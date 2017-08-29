@@ -50,8 +50,8 @@ describe('src/windshaft-integration/legends/rule-to-category-legend-adapter', fu
       var attrs = adapter.adapt(this.rule);
       expect(attrs).toEqual({
         categories: [
-          { label: 'Category 1', value: '#AAAAAA' },
-          { label: 'Category 2', value: '#BBBBBB' }
+          { title: 'Category 1', icon: '', color: '#AAAAAA' },
+          { title: 'Category 2', icon: '', color: '#BBBBBB' }
         ],
         defaultValue: '#CCCCCC'
       });
@@ -78,8 +78,8 @@ describe('src/windshaft-integration/legends/rule-to-category-legend-adapter', fu
       var attrs = adapter.adapt(this.rule);
       expect(attrs).toEqual({
         categories: [
-          { label: 'Category 1', value: '#AAAAAA' },
-          { label: 'Category 2', value: '#BBBBBB' }
+          { title: 'Category 1', icon: '', color: '#AAAAAA' },
+          { title: 'Category 2', icon: '', color: '#BBBBBB' }
         ],
         defaultValue: undefined
       });

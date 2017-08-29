@@ -167,9 +167,9 @@ ModelUpdater.prototype._updateLegendModel = function (legendModel, layerMetadata
     };
     if (cartoCSSRules) {
       var adapter = RuleToLegendModelAdapters.getAdapterForLegend(legendModel);
-      var ruleForLegend = _.find(cartoCSSRules, adapter.canAdapt);
-      if (ruleForLegend) {
-        newLegendAttrs = _.extend(newLegendAttrs, adapter.adapt(ruleForLegend));
+      var rulesForLegend = _.filter(cartoCSSRules, adapter.canAdapt);
+      if (!_.isEmpty(rulesForLegend)) {
+        newLegendAttrs = _.extend(newLegendAttrs, adapter.adapt(rulesForLegend));
       }
     }
     legendModel.set(newLegendAttrs);

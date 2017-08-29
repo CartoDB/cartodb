@@ -2494,8 +2494,9 @@
       }
     },
     "widgets": {
-      "delete": "Widget deleted correctly.",
-      "success": "Widget successfully added",
+      "add": "Widget successfully added",
+      "replace": "Widget successfully replaced",
+      "delete": "Widget deleted correctly",
       "error": {
         "title": "Error adding widget:",
         "body": "%{body} %{error}"

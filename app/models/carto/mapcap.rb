@@ -30,6 +30,8 @@ module Carto
 
       regenerated_visualization.populate_ids(lazy_ids_json)
 
+      regenerated_visualization.readonly!
+
       regenerated_visualization
     end
 

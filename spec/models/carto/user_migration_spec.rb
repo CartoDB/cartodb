@@ -14,7 +14,7 @@ describe 'UserMigration' do
     ]
   end
 
-  [true, false].each do |migrate_metadata|
+  shared_examples_for 'migrating metadata' do |migrate_metadata|
     it "exports and reimports a user #{migrate_metadata ? 'with' : 'without'} metadata" do
       CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
 
@@ -68,6 +68,9 @@ describe 'UserMigration' do
       migrate_metadata ? user.destroy_cascade : user.destroy
     end
   end
+
+  it_should_behave_like 'migrating metadata', true
+  it_should_behave_like 'migrating metadata', false
 
   it 'exports and imports a user with a data import with two tables' do
     CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
@@ -131,7 +134,7 @@ describe 'UserMigration' do
     let(:org_attributes) { @carto_organization.attributes }
     let(:owner_attributes) { @carto_org_user_owner.attributes }
 
-    [true, false].each do |migrate_metadata|
+    shared_examples_for 'migrating metadata' do |migrate_metadata|
       it "exports and reimports an organization #{migrate_metadata ? 'with' : 'without'} metadata" do
         table1 = create_table(user_id: @carto_org_user_1.id)
         records.each { |row| table1.insert_row!(row) }
@@ -162,6 +165,9 @@ describe 'UserMigration' do
         records.each.with_index { |row, index| table1.record(index + 1).should include(row) }
       end
     end
+
+    it_should_behave_like 'migrating metadata', true
+    it_should_behave_like 'migrating metadata', false
   end
 
   def drop_database(user)

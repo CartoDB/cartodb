@@ -32,15 +32,7 @@ module Carto
 
       export_job = CartoDB::DataMover::ExportJob.new(export_job_arguments(data_dir))
 
-      if export_metadata?
-        if organization
-          Carto::OrganizationMetadataExportService.new.export_to_directory(organization, meta_dir)
-        elsif user
-          Carto::UserMetadataExportService.new.export_to_directory(user, meta_dir)
-        else
-          raise 'Unrecognized export type for exporting metadata'
-        end
-      end
+      run_metadata_export(meta_dir) if export_metadata?
 
       log.append("=== Uploading #{id}/#{export_job.json_file} ===")
       update_attributes(state: STATE_UPLOADING, json_file: "#{id}/#{export_job.json_file}")
@@ -74,6 +66,16 @@ module Carto
       FileUtils.mkdir_p(data_dir)
       FileUtils.mkdir_p(meta_dir)
       return work_dir, data_dir, meta_dir
+    end
+
+    def run_metadata_export(meta_dir)
+      if organization
+        Carto::OrganizationMetadataExportService.new.export_to_directory(organization, meta_dir)
+      elsif user
+        Carto::UserMetadataExportService.new.export_to_directory(user, meta_dir)
+      else
+        raise 'Unrecognized export type for exporting metadata'
+      end
     end
 
     def compress_package(work_dir)

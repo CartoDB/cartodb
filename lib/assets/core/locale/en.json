@@ -2419,7 +2419,9 @@
           "title-label": "Data",
           "value": "Value",
           "aggregate-by": "aggregate by",
-          "operation-column": "operation column"
+          "operation-column": "operation column",
+          "search-by-bucket": "Search by bucket",
+          "select-bucket": "Select a bucket"
         },
         "style": {
           "custom-disabled": "If an aggregated style is applied, auto style is disabled",

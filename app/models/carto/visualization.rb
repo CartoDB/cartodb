@@ -519,7 +519,11 @@ class Carto::Visualization < ActiveRecord::Base
   # deal with all the different the cases internally.
   # See https://github.com/CartoDB/cartodb/pull/9678
   def non_mapcapped
-    mapcapped? ? latest_mapcap.visualization : self
+    if persisted?
+      mapcapped? ? latest_mapcap.visualization : self
+    else
+      Carto::Visualization.find(id)
+    end
   end
 
   def mark_as_vizjson2

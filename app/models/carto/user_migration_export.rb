@@ -28,16 +28,15 @@ module Carto
       log.append("=== Exporting #{organization ? 'user' : 'org'} data ===")
       update_attributes(state: STATE_EXPORTING)
 
-      work_dir, data_dir, meta_dir = create_export_directories
+      package = UserMigrationPackage.for_export(id, log)
 
-      export_job = CartoDB::DataMover::ExportJob.new(export_job_arguments(data_dir))
+      export_job = CartoDB::DataMover::ExportJob.new(export_job_arguments(package.data_dir))
 
-      run_metadata_export(meta_dir) if export_metadata?
+      run_metadata_export(package.meta_dir) if export_metadata?
 
       log.append("=== Uploading #{id}/#{export_job.json_file} ===")
       update_attributes(state: STATE_UPLOADING, json_file: "#{id}/#{export_job.json_file}")
-      package_path = compress_package(work_dir)
-      uploaded_path = upload_package(package_path)
+      uploaded_path = package.upload
 
       state = uploaded_path.present? ? STATE_COMPLETE : STATE_FAILURE
       log.append("=== Finishing. State: #{state}. File: #{uploaded_path} ===")
@@ -48,7 +47,7 @@ module Carto
       log.append_exception('Exporting', exception: e)
       CartoDB::Logger.error(exception: e, message: 'Error exporting user data', job: inspect)
       update_attributes(state: STATE_FAILURE)
-      FileUtils.remove_dir(work_dir)
+      package.cleanup
 
       false
     end
@@ -59,15 +58,6 @@ module Carto
 
     private
 
-    def create_export_directories
-      work_dir = "#{export_dir}/#{id}"
-      data_dir = "#{work_dir}/data"
-      meta_dir = "#{work_dir}/meta"
-      FileUtils.mkdir_p(data_dir)
-      FileUtils.mkdir_p(meta_dir)
-      return work_dir, data_dir, meta_dir
-    end
-
     def run_metadata_export(meta_dir)
       if organization
         Carto::OrganizationMetadataExportService.new.export_to_directory(organization, meta_dir)
@@ -76,47 +66,6 @@ module Carto
       else
         raise 'Unrecognized export type for exporting metadata'
       end
-    end
-
-    def compress_package(work_dir)
-      log.append('=== Compressing export ===')
-      `cd #{export_dir}/ && zip -0 -r \"user_export_#{id}.zip\" #{id} && cd -`
-      FileUtils.remove_dir(work_dir)
-
-      "#{export_dir}/user_export_#{id}.zip"
-    end
-
-    def upload_package(filepath)
-      log.append('=== Uploading user data package ===')
-      file = CartoDB::FileUploadFile.new(filepath)
-      s3_config = Cartodb.config[:user_migrator]['s3'] || {}
-      results = file_upload_helper.upload_file_to_storage(
-        file_param: file,
-        s3_config: s3_config,
-        allow_spaces: true,
-        force_s3_upload: true
-      )
-
-      export_path = if results[:file_path].present?
-                      log.append("Ad-hoc export download: #{results[:file_path]}")
-                      results[:file_path]
-                    else
-                      log.append("By file_upload_helper: #{results[:file_uri]}")
-                      results[:file_uri]
-                    end
-
-      log.append('=== Deleting tmp file ===')
-      FileUtils.rm(filepath)
-
-      export_path
-    end
-
-    def file_upload_helper
-      CartoDB::FileUpload.new(Cartodb.get_config(:user_migrator, "uploads_path"))
-    end
-
-    def export_dir
-      Cartodb.get_config(:user_migrator, 'user_exports_folder')
     end
 
     def export_job_arguments(data_dir)

@@ -29,18 +29,14 @@ module Carto
     def run_import
       log.append('=== Downloading ===')
       update_attributes(state: STATE_DOWNLOADING)
-      work_dir = create_work_directory
-      package_file = download_package(work_dir)
-      unzip_package(work_dir, package_file)
-      log.append('=== Deleting zip package ===')
-      FileUtils.rm(package_file)
+      package = UserMigrationPackage.for_import(id, log)
+      package.download(exported_file)
 
-      unpacked_dir = Dir["#{work_dir}/*"].first
       log.append('=== Importing ===')
       update_attributes(state: STATE_IMPORTING)
 
       service = (org_import ? Carto::OrganizationMetadataExportService : Carto::UserMetadataExportService).new
-      import(service, unpacked_dir)
+      import(service, package)
 
       log.append('=== Complete ===')
       update_attributes(state: STATE_COMPLETE)
@@ -50,10 +46,7 @@ module Carto
       update_attributes(state: STATE_FAILURE)
       false
     ensure
-      if work_dir
-        log.append("Deleting tmp directory #{work_dir}")
-        FileUtils.remove_dir(work_dir)
-      end
+      package.cleanup
     end
 
     def enqueue
@@ -70,59 +63,20 @@ module Carto
       end
     end
 
-    def import(service, unpacked_dir)
-      meta_dir = meta_dir(unpacked_dir)
-      data_dir = data_dir(unpacked_dir)
-
+    def import(service, package)
       if import_metadata?
         log.append('=== Importing metadata ===')
-        imported = service.import_from_directory(meta_dir)
+        imported = service.import_from_directory(package.meta_dir)
         save!
       end
 
       log.append('=== Importing data ===')
-      CartoDB::DataMover::ImportJob.new(import_job_arguments(data_dir)).run!
+      CartoDB::DataMover::ImportJob.new(import_job_arguments(package.data_dir)).run!
 
       if import_metadata?
         log.append('=== Importing visualizations and search tweets ===')
-        service.import_metadata_from_directory(imported, meta_dir)
+        service.import_metadata_from_directory(imported, package.meta_dir)
       end
-    end
-
-    def unzip_package(work_dir, package)
-      log.append("=== Unzipping #{package} ===")
-      `cd #{work_dir}; unzip -u #{package}; cd -`
-    end
-
-    def create_work_directory
-      log.append('=== Creating work directory ===')
-
-      work_dir = "#{import_dir}/#{id}"
-      FileUtils.mkdir_p(work_dir)
-
-      work_dir
-    end
-
-    def download_package(work_dir)
-      destination = "#{work_dir}/export.zip"
-
-      log.append("=== Downloading #{exported_file} to #{destination} ===")
-
-      if exported_file.starts_with?('http')
-        http_client.get_file(exported_file, destination)
-      else
-        FileUtils.cp(exported_file, destination)
-      end
-
-      destination
-    end
-
-    def http_client
-      Carto::Http::Client.get('user_imports')
-    end
-
-    def import_dir
-      Cartodb.get_config(:user_migrator, 'user_imports_folder')
     end
 
     def import_only_data?
@@ -156,14 +110,6 @@ module Carto
       self.state = STATE_PENDING unless state
 
       save
-    end
-
-    def data_dir(work_dir)
-      "#{work_dir}/data"
-    end
-
-    def meta_dir(work_dir)
-      "#{work_dir}/meta"
     end
   end
 end

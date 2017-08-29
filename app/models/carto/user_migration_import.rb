@@ -24,7 +24,7 @@ module Carto
     validates :database_host, presence: true
     validates :exported_file, presence: true
     validates :json_file, presence: true
-    validate :valid_import_type
+    validate :valid_org_import
 
     def run_import
       log.append('=== Downloading ===')
@@ -42,11 +42,7 @@ module Carto
       meta_dir = meta_dir(unpacked_dir)
       data_dir = data_dir(unpacked_dir)
 
-      service = case import_type
-                when 'organization' then Carto::OrganizationMetadataExportService.new
-                when 'user'         then Carto::UserMetadataExportService.new
-                else raise 'Unrecognized import type'
-                end
+      service = (org_import ? Carto::OrganizationMetadataExportService : Carto::UserMetadataExportService).new
       import(service, meta_dir, data_dir)
 
       log.append('=== Complete ===')
@@ -69,14 +65,11 @@ module Carto
 
     private
 
-    def valid_import_type
-      case import_type
-      when 'user'
-        errors.add(:organization_id, "organization_id can't be present") if organization_id.present?
-      when 'organization'
+    def valid_org_import
+      if org_import
         errors.add(:user_id, "user_id can't be present") if user_id.present?
       else
-        errors.add(:import_type, "Import type must be 'user' or 'organization'")
+        errors.add(:organization_id, "organization_id can't be present") if organization_id.present?
       end
     end
 

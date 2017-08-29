@@ -37,8 +37,7 @@ describe Carto::Superadmin::UserMigrationImportsController do
         exported_file: 'https://carto.com/something/else',
         database_host: '127.0.0.1',
         org_import: false,
-        json_file: 'id/user_id.json',
-        import_type: 'user'
+        json_file: 'id/user_id.json'
       }
     end
 
@@ -47,8 +46,7 @@ describe Carto::Superadmin::UserMigrationImportsController do
         exported_file: '/path/to/nowhere',
         database_host: '127.0.0.1',
         org_import: true,
-        json_file: 'my_pretty_json',
-        import_type: 'organization'
+        json_file: 'my_pretty_json'
       }
     end
 
@@ -105,8 +103,7 @@ describe Carto::Superadmin::UserMigrationImportsController do
         exported_file: 'some_url',
         database_host: 'some_ip',
         org_import: false,
-        json_file: 'some_path',
-        import_type: 'user'
+        json_file: 'some_path'
       )
     end
 

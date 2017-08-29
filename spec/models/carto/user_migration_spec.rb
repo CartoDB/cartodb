@@ -46,8 +46,7 @@ describe 'UserMigration' do
         database_host: user_attributes['database_host'],
         org_import: false,
         json_file: export.json_file,
-        import_metadata: migrate_metadata,
-        import_type: 'user'
+        import_metadata: migrate_metadata
       )
       import.run_import
 
@@ -109,8 +108,7 @@ describe 'UserMigration' do
       database_host: user_attributes['database_host'],
       org_import: false,
       json_file: export.json_file,
-      import_metadata: true,
-      import_type: 'user'
+      import_metadata: true
     )
     import.run_import
 
@@ -150,8 +148,7 @@ describe 'UserMigration' do
           database_host: owner_attributes['database_host'],
           org_import: true,
           json_file: export.json_file,
-          import_metadata: migrate_metadata,
-          import_type: 'organization'
+          import_metadata: migrate_metadata
         )
         import.run_import
 

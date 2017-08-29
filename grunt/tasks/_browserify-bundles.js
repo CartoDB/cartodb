@@ -22,12 +22,5 @@ module.exports = {
   cartodb: {
     src: 'src/cartodb.js',
     dest: '<%= config.dist %>/cartodb.uncompressed.js'
-  },
-  'cartodb-specs': {
-    src: [
-      'test/fail-tests-if-have-errors-in-src.js',
-      'test/spec/cartodb.spec.js'
-    ],
-    dest: '<%= config.tmp %>/cartodb-specs.js'
   }
 };

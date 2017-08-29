@@ -1,7 +1,4 @@
-var cdb = require('cdb'); // cdb.DEBUG
-
 var Loader = {
-
   queue: [],
   current: undefined,
   _script: null,
@@ -46,15 +43,6 @@ var Loader = {
       }
     }
     return null;
-  },
-
-  loadModule: function(modName) {
-    var file = "cartodb.mod." + modName + (cdb.DEBUG ? ".uncompressed.js" : ".js");
-    var src = this.getPath(file);
-    if (!src) {
-      throw new Error("can't find cartodb.js file (no src path found for '" + file + "')");
-    }
-    Loader.loadScript(src);
   }
 };
 

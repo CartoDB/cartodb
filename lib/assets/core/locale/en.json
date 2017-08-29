@@ -1462,6 +1462,9 @@
       "loading": "Unlocking your dataset %{tableName}...",
       "success": "Dataset %{tableName} unlocked",
       "title": "Your dataset %{tableName} is locked."
+    },
+    "privacy": {
+      "info": "You're not able to change the privacy of this dataset. Contact the owner <b>%{name}</b>"
     }
   },
   "editor": {

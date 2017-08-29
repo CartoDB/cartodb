@@ -39,11 +39,8 @@ module Carto
       log.append('=== Importing ===')
       update_attributes(state: STATE_IMPORTING)
 
-      meta_dir = meta_dir(unpacked_dir)
-      data_dir = data_dir(unpacked_dir)
-
       service = (org_import ? Carto::OrganizationMetadataExportService : Carto::UserMetadataExportService).new
-      import(service, meta_dir, data_dir)
+      import(service, unpacked_dir)
 
       log.append('=== Complete ===')
       update_attributes(state: STATE_COMPLETE)
@@ -73,7 +70,10 @@ module Carto
       end
     end
 
-    def import(service, meta_dir, data_dir)
+    def import(service, unpacked_dir)
+      meta_dir = meta_dir(unpacked_dir)
+      data_dir = data_dir(unpacked_dir)
+
       if import_metadata?
         log.append('=== Importing metadata ===')
         imported = service.import_from_directory(meta_dir)

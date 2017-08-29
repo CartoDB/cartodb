@@ -135,7 +135,8 @@ module Carto
         path: data_dir,
         job_uuid: id,
         export_job_logger: log.logger,
-        logger: log.logger
+        logger: log.logger,
+        metadata: false
       )
     end
 

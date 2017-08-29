@@ -80,5 +80,4 @@ module.exports = cdb.core.View.extend({
     }, this);
     this._toggleVisiblity();
   }
-
 });

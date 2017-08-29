@@ -57,7 +57,7 @@ describe('widgets/histogram/chart', function () {
     }.bind(this);
 
     // override default behavior of debounce, to be able to control callback
-    onWindowResizeSpy = jasmine.createSpy('_onWindowResize');
+    onWindowResizeSpy = jasmine.createSpy('onWindowResize');
     spyOn(_, 'debounce').and.callFake(function (cb) {
       onWindowResizeReal = cb;
       return onWindowResizeSpy;

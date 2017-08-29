@@ -56,14 +56,30 @@ describe('dashboard-below-map-view', function () {
 
   describe('when a time-series widget is added', function () {
     beforeEach(function () {
-      var timeSeriesWidgetModelFake = createFakeTimeSeriesWidgetModel();
-      timeSeriesWidgetModelFake.dataviewModel = createFakeDataviewModel();
-      timeSeriesWidgetModelFake.dataviewModel.layer = createFakeDataviewLayer();
-      this.widgetsCollection.add(timeSeriesWidgetModelFake);
+      this.timeSeriesWidgetModelFake = createFakeTimeSeriesWidgetModel();
+      this.timeSeriesWidgetModelFake.dataviewModel = createFakeDataviewModel();
+      this.timeSeriesWidgetModelFake.dataviewModel.layer = createFakeDataviewLayer();
+      this.widgetsCollection.add(this.timeSeriesWidgetModelFake);
     });
 
     it('should render view', function () {
       expect(this.view.$el.attr('style')).not.toContain('none');
+    });
+
+    describe('_onWidgetsChange', function () {
+      it('should trigger forceResize event', function () {
+        spyOn(this.timeSeriesWidgetModelFake, 'trigger');
+        this.view._onWidgetsChange();
+
+        expect(this.timeSeriesWidgetModelFake.trigger).toHaveBeenCalledWith('forceResize');
+      });
+
+      it('should call _toggleVisiblity function', function () {
+        spyOn(this.view, '_toggleVisiblity');
+        this.view._onWidgetsChange();
+
+        expect(this.view._toggleVisiblity).toHaveBeenCalled();
+      });
     });
   });
 

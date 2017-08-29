@@ -78,7 +78,7 @@ module Carto
 
     def compress_package(work_dir)
       log.append('=== Compressing export ===')
-      `cd #{export_dir}/ && zip -r \"user_export_#{id}.zip\" #{id} && cd -`
+      `cd #{export_dir}/ && zip -0 -r \"user_export_#{id}.zip\" #{id} && cd -`
       FileUtils.remove_dir(work_dir)
 
       "#{export_dir}/user_export_#{id}.zip"

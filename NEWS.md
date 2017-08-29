@@ -2,6 +2,7 @@ Development
 -----------
 
 ### Features
+* Use add/replace notification for time-series (#12670)
 * Fix icons in category legends (#11630)
 * Sidebar UI tweaks (#12479)
 * Improving affordance of Delete icon (#12531)

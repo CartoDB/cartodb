@@ -8,7 +8,7 @@ migration(
     add_column :user_migration_imports, :import_metadata, :boolean, default: false, null: false
   end,
   Proc.new do
-    drop_column :user_migration_imports, :export_metadata
+    drop_column :user_migration_imports, :import_metadata
     drop_column :user_migration_exports, :export_metadata
   end
 )

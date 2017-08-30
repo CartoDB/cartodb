@@ -10,11 +10,12 @@ var CategoryLegendView = LegendViewBase.extend({
 
   _getCategories: function () {
     var categories = this.model.get('categories').slice(0);
-    if (this.model.get('defaultColor')) {
+    var _default = this.model.get('default');
+    if (_default) {
       categories.push({
         title: 'Others',
-        icon: '',
-        color: this.model.get('defaultColor')
+        icon: _default.icon,
+        color: _default.color
       });
     }
     return categories;

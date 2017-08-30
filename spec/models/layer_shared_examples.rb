@@ -284,7 +284,7 @@ shared_examples_for 'Layer model' do
     end
 
     it 'saves styles for layers with source_id' do
-      analysis = FactoryGirl.create(:analysis_with_source, visualization: @layer.visualization, user: @user)
+      analysis = FactoryGirl.create(:analysis_with_source, visualization_id: @map.visualization.id, user_id: @user.id)
       @layer.options['source'] = analysis.analysis_node.source_descendants.first.id
       @layer.save
       lns = LayerNodeStyle.where(layer_id: @layer.id).first
@@ -304,7 +304,7 @@ shared_examples_for 'Layer model' do
 
     it 'saves styles for torque layers' do
       @layer.kind = 'torque'
-      analysis = FactoryGirl.create(:analysis_with_source, visualization: @layer.visualization, user: @user)
+      analysis = FactoryGirl.create(:analysis_with_source, visualization_id: @map.visualization.id, user_id: @user.id)
       @layer.options['source'] = analysis.analysis_node.source_descendants.first.id
       @layer.save
       lns = LayerNodeStyle.where(layer_id: @layer.id).first

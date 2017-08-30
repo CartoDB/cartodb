@@ -47,9 +47,10 @@ module Carto
       log.append_exception('Exporting', exception: e)
       CartoDB::Logger.error(exception: e, message: 'Error exporting user data', job: inspect)
       update_attributes(state: STATE_FAILURE)
-      package.cleanup
 
       false
+    ensure
+      package.cleanup
     end
 
     def enqueue

@@ -42,7 +42,7 @@ module Carto
     end
 
     def cleanup
-      FileUtils.remove_dir(work_dir)
+      FileUtils.remove_dir(work_dir, true)
     end
 
     private

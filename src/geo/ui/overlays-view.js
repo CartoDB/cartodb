@@ -4,7 +4,7 @@ var View = require('../../core/view');
 var OverlaysFactory = require('../../vis/overlays-factory');
 var overlayContainerTemplate = require('./overlays-container.tpl');
 
-var CONTAINED_OVERLAYS = ['fullscreen', 'search', 'attribution', 'zoom', 'logo'];
+var CONTAINED_OVERLAYS = ['attribution', 'fullscreen', 'limits', 'logo', 'search', 'zoom'];
 
 var OverlaysView = View.extend({
 

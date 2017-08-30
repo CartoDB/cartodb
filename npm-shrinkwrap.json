@@ -672,7 +672,7 @@
     "browserslist": {
       "version": "2.4.0",
       "from": "browserslist@>=2.1.2 <3.0.0",
-      "resolved": "http://registry.npmjs.org/browserslist/-/browserslist-2.4.0.tgz"
+      "resolved": "https://registry.npmjs.org/browserslist/-/browserslist-2.4.0.tgz"
     },
     "buffer": {
       "version": "4.9.1",
@@ -724,7 +724,7 @@
     "caniuse-lite": {
       "version": "1.0.30000718",
       "from": "caniuse-lite@>=1.0.30000718 <2.0.0",
-      "resolved": "http://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30000718.tgz"
+      "resolved": "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30000718.tgz"
     },
     "carto": {
       "version": "0.15.1-cdb4",
@@ -1302,7 +1302,7 @@
     "function-bind": {
       "version": "1.1.1",
       "from": "function-bind@>=1.0.2 <2.0.0",
-      "resolved": "http://registry.npmjs.org/function-bind/-/function-bind-1.1.1.tgz"
+      "resolved": "https://registry.npmjs.org/function-bind/-/function-bind-1.1.1.tgz"
     },
     "gauge": {
       "version": "2.7.4",
@@ -2784,7 +2784,7 @@
     "tangram-cartocss": {
       "version": "0.6.0",
       "from": "tangram-cartocss@>=0.6.0 <0.7.0",
-      "resolved": "http://registry.npmjs.org/tangram-cartocss/-/tangram-cartocss-0.6.0.tgz"
+      "resolved": "https://registry.npmjs.org/tangram-cartocss/-/tangram-cartocss-0.6.0.tgz"
     },
     "tangram-reference": {
       "version": "1.0.19",

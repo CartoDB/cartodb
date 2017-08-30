@@ -35,7 +35,7 @@ module Carto
       log.append('=== Importing ===')
       update_attributes(state: STATE_IMPORTING)
 
-      service = (org_import ? Carto::OrganizationMetadataExportService : Carto::UserMetadataExportService).new
+      service = (org_import? ? Carto::OrganizationMetadataExportService : Carto::UserMetadataExportService).new
       import(service, package)
 
       log.append('=== Complete ===')
@@ -56,7 +56,7 @@ module Carto
     private
 
     def valid_org_import
-      if org_import
+      if org_import?
         errors.add(:user_id, "user_id can't be present") if user_id.present?
       else
         errors.add(:organization_id, "organization_id can't be present") if organization_id.present?
@@ -67,6 +67,7 @@ module Carto
       if import_metadata?
         log.append('=== Importing metadata ===')
         imported = service.import_from_directory(package.meta_dir)
+        org_import? ? self.organization = imported : self.user = imported
         save!
       end
 
@@ -84,10 +85,6 @@ module Carto
       org_import? ? organization.present? : user.present?
     end
 
-    def import_into
-      organization if !org_import?
-    end
-
     def import_job_arguments(data_dir)
       export_file = json_file.split('/').last
 
@@ -98,6 +95,9 @@ module Carto
         metadata: false,
         host: database_host,
         rollback: false,
+        # This is used to import a non-org user into an organization. It is untested and unsupported.
+        # Disabling it unconditionally until we need it makes sense.
+        # into_org_name: org_import? || organization.nil? ? nil : organization.name,
         into_org_name: nil,
         mode: :import,
         logger: log.logger,

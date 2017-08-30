@@ -3,6 +3,7 @@ var cdb = require('cartodb.js');
 var AutoStylerFactory = require('./auto-style/factory');
 
 var TIME_SERIES_TYPE = 'time-series';
+var HISTOGRAM_TYPE = 'histogram';
 
 /**
  * Default widget model
@@ -222,7 +223,9 @@ module.exports = cdb.core.Model.extend({
   },
 
   forceResize: function () {
-    if (this.get('type') === TIME_SERIES_TYPE) {
+    var type = this.get('type');
+    if (type === TIME_SERIES_TYPE ||
+        type === HISTOGRAM_TYPE) {
       this.trigger('forceResize');
     }
   }

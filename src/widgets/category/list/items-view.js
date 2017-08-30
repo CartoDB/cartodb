@@ -89,7 +89,6 @@ module.exports = cdb.core.View.extend({
   },
 
   _setFilters: function (mdl) {
-    if (!this.dataviewModel.get('sync_on_bbox_change')) return this;
     var isSelected = mdl.get('selected');
     var filter = this.dataviewModel.filter;
     var clickedName = mdl.get('name');

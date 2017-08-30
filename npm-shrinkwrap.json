@@ -549,7 +549,7 @@
     "backbone-forms": {
       "version": "0.14.0",
       "from": "backbone-forms@0.14.0",
-      "resolved": "https://registry.npmjs.org/backbone-forms/-/backbone-forms-0.14.0.tgz"
+      "resolved": "http://registry.npmjs.org/backbone-forms/-/backbone-forms-0.14.0.tgz"
     },
     "backbone-model-file-upload": {
       "version": "1.0.0",
@@ -781,9 +781,9 @@
       "resolved": "https://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.33.0.tgz"
     },
     "caniuse-lite": {
-      "version": "1.0.30000718",
+      "version": "1.0.30000721",
       "from": "caniuse-lite@>=1.0.30000718 <2.0.0",
-      "resolved": "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30000718.tgz"
+      "resolved": "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30000721.tgz"
     },
     "carto": {
       "version": "0.15.1-cdb4",
@@ -796,9 +796,9 @@
       "resolved": "https://registry.npmjs.org/cartocolor/-/cartocolor-4.0.0.tgz"
     },
     "cartodb-deep-insights.js": {
-      "version": "0.0.3-12655",
+      "version": "0.0.3",
       "from": "cartodb/deep-insights.js#12655-widgets-overflow",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#c7376ff4530bdc4e98460f8362129e90e50b7e36",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#a4176e2e3dd3b0def7adccd440101bb4a895926d",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",
@@ -2532,7 +2532,7 @@
     "queue-async": {
       "version": "1.2.1",
       "from": "queue-async@1.2.1",
-      "resolved": "https://registry.npmjs.org/queue-async/-/queue-async-1.2.1.tgz"
+      "resolved": "http://registry.npmjs.org/queue-async/-/queue-async-1.2.1.tgz"
     },
     "quote-stream": {
       "version": "1.0.2",

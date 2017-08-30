@@ -22,7 +22,7 @@ FactoryGirl.define do
       natural_id nil
     end
 
-    analysis_definition { { id: natural_id, type: 'source', params: { query: 'select 1' }}}
+    analysis_definition { { id: natural_id, type: 'source', params: { query: 'select 1' } } }
   end
 
   factory :source_analysis, class: Carto::Analysis do

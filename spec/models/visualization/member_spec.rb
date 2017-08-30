@@ -283,10 +283,11 @@ describe Visualization::Member do
       end
 
       it 'deletes related analysis' do
+        analysis_params = { type: 'source', params: { query: 'select 1' } }
         analysis_to_be_deleted = @visualization.analyses.create(user: @user,
-                                                                analysis_definition: { id: 'a0', type: 'source', params: { query: 'select 1' }})
+                                                                analysis_definition: analysis_params.merge(id: 'a0'))
         analysis_to_keep = @visualization.analyses.create(user: @user,
-                                                          analysis_definition: { id: 'b0', type: 'source', params: { query: 1 }})
+                                                          analysis_definition: analysis_params.merge(id: 'b0'))
 
         layer_to_be_deleted = @visualization.data_layers.first
         layer_to_be_deleted.options[:source] = analysis_to_be_deleted.natural_id

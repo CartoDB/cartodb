@@ -19,9 +19,9 @@ var FullscreenOverlay = function (data, opts) {
     );
   }
 
-  var overlay = new FullScreen(options);
+  var view = new FullScreen(options);
 
-  return overlay.render();
+  return view.render();
 };
 
 module.exports = FullscreenOverlay;

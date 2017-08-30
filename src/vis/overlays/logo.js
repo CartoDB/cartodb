@@ -1,9 +1,9 @@
 var LogoView = require('../../geo/ui/logo-view');
 
 var LogoOverlay = function (data, opts) {
-  var overlay = new LogoView();
+  var view = new LogoView();
 
-  return overlay.render();
+  return view.render();
 };
 
 module.exports = LogoOverlay;

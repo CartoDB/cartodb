@@ -1,9 +1,9 @@
 var TilesLoader = require('../../geo/ui/tiles-loader');
 
 var LoaderOverlay = function (data) {
-  var overlay = new TilesLoader();
+  var view = new TilesLoader();
 
-  return overlay.render();
+  return view.render();
 };
 
 module.exports = LoaderOverlay;

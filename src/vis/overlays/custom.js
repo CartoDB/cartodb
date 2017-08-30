@@ -1,7 +1,7 @@
 var CustomOverlay = function (data, opts) {
-  var overlay = data;
+  var view = data;
 
-  return overlay.render();
+  return view.render();
 };
 
 module.exports = CustomOverlay;

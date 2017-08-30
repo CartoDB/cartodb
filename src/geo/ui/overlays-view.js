@@ -8,8 +8,7 @@ var C = require('../../constants');
 var CONTAINED_OVERLAYS = ['attribution', 'fullscreen', 'limits', 'logo', 'search', 'zoom'];
 
 var OverlaysView = View.extend({
-
-  initialize: function (deps) {
+  initialize: function (opts) {
     if (!opts.overlaysCollection) throw new Error('overlaysCollection is required');
     if (!opts.visModel) throw new Error('visModel is required');
     if (!opts.visView) throw new Error('visView is required');
@@ -59,27 +58,23 @@ var OverlaysView = View.extend({
       return overlay.order === null ? Number.MAX_VALUE : overlay.order;
     });
 
-    _(overlays).each(function (data) {
+    overlays.forEach(function (data) {
       this._renderOverlay(data);
-    }, this);
+    }.bind(this));
   },
 
   _renderOverlay: function (overlay) {
     var overlayView = this._createOverlayView(overlay);
-    if (overlayView) {
-      overlayView.render();
-      if (this._isGlobalOverlay(overlay)) {
-        this.$el.append(overlayView.el);
-      } else {
-        this._overlayContainer().append(overlayView.el);
-      }
-      this.addView(overlayView);
-      this._overlayViews.push(overlayView);
+    if (!overlayView) return;
 
-      // IE<10 doesn't support the Fullscreen API
-      var type = overlay.type;
-      if (type === 'fullscreen' && util.browser.ie && util.browser.ie.version <= 10) return;
-    }
+    overlayView.render();
+
+    this._isGlobalOverlay(overlay)
+      ? this.$el.append(overlayView.el)
+      : this._overlayContainer().append(overlayView.el);
+
+    this.addView(overlayView);
+    this._overlayViews.push(overlayView);
   },
 
   _createOverlayView: function (overlay) {
@@ -99,13 +94,11 @@ var OverlaysView = View.extend({
 
   _toggleLoaderOverlay: function () {
     var loaderOverlay = this._getLoaderOverlay();
-    if (loaderOverlay) {
-      if (this._visModel.get('loading')) {
-        loaderOverlay.show();
-      } else {
-        loaderOverlay.hide();
-      }
-    }
+    if (!loaderOverlay) return;
+
+    this._visModel.get('loading')
+      ? loaderOverlay.show()
+      : loaderOverlay.hide();
   },
 
   _getLoaderOverlay: function () {
@@ -113,8 +106,8 @@ var OverlaysView = View.extend({
   },
 
   _getOverlayViewByType: function (type) {
-    return _(this._overlayViews).find(function (v) {
-      return v.type === type;
+    return _.find(this._overlayViews, function (overlay) {
+      return overlay.type === type;
     });
   },
 

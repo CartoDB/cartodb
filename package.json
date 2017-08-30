@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.9.43",
+  "version": "4.9.51-12606.1",
   "description": "CARTO UI frontend",
   "repository": {
     "type": "git",
@@ -29,11 +29,9 @@
     "cartodb.js": "CartoDB/cartodb.js#v4",
     "clipboard": "1.6.1",
     "codemirror": "5.14.2",
-    "http-browserify": "matallo/http-browserify#master",
     "jquery": "2.1.4",
     "moment": "2.18.1",
     "moment-timezone": "^0.5.13",
-    "nock": "^9.0.14",
     "node-polyglot": "1.0.0",
     "perfect-scrollbar": "git://github.com/CartoDB/perfect-scrollbar.git#master",
     "queue-async": "1.2.1",

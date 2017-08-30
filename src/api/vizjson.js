@@ -1,7 +1,6 @@
 var _ = require('underscore');
 var log = require('cdb.log');
-
-var GMAPS_BASE_LAYER_TYPES = ['roadmap', 'gray_roadmap', 'dark_roadmap', 'hybrid', 'satellite', 'terrain'];
+var C = require('../constants');
 
 var VizJSON = function (vizjson) {
   _.each(Object.keys(vizjson), function (property) {
@@ -14,26 +13,12 @@ var VizJSON = function (vizjson) {
   this._addAttributionOverlay();
 };
 
-VizJSON.OVERLAY_TYPES = {
-  ZOOM: 'zoom',
-  ATTRIBUTION: 'attribution',
-  LOADER: 'loader',
-  SEARCH: 'search',
-  HEADER: 'header',
-  LOGO: 'logo'
-};
-
-VizJSON.MAP_PROVIDER_TYPES = {
-  GMAPS: 'googlemaps',
-  LEAFLET: 'leaflet'
-};
-
 VizJSON.prototype.isNamedMap = function () {
   return !!this.datasource.template_name;
 };
 
 VizJSON.prototype.hasZoomOverlay = function () {
-  return this.hasOverlay(VizJSON.OVERLAY_TYPES.ZOOM);
+  return this.hasOverlay(C.OVERLAY_TYPES.ZOOM);
 };
 
 VizJSON.prototype.hasOverlay = function (overlayType) {
@@ -47,9 +32,9 @@ VizJSON.prototype.getOverlayByType = function (overlayType) {
 };
 
 VizJSON.prototype.addHeaderOverlay = function (showTitle, showDescription, isShareable) {
-  if (!this.hasOverlay(VizJSON.OVERLAY_TYPES.HEADER)) {
+  if (!this.hasOverlay(C.OVERLAY_TYPES.HEADER)) {
     this.overlays.unshift({
-      type: VizJSON.OVERLAY_TYPES.HEADER,
+      type: C.OVERLAY_TYPES.HEADER,
       order: 1,
       shareable: isShareable,
       url: this.url,
@@ -66,9 +51,9 @@ VizJSON.prototype.addHeaderOverlay = function (showTitle, showDescription, isSha
 };
 
 VizJSON.prototype.addSearchOverlay = function () {
-  if (!this.hasOverlay(VizJSON.OVERLAY_TYPES.SEARCH)) {
+  if (!this.hasOverlay(C.OVERLAY_TYPES.SEARCH)) {
     this.overlays.push({
-      type: VizJSON.OVERLAY_TYPES.SEARCH,
+      type: C.OVERLAY_TYPES.SEARCH,
       order: 3
     });
   }
@@ -84,30 +69,30 @@ VizJSON.prototype.removeOverlay = function (overlayType) {
 };
 
 VizJSON.prototype.removeLoaderOverlay = function () {
-  this.removeOverlay(VizJSON.OVERLAY_TYPES.LOADER);
+  this.removeOverlay(C.OVERLAY_TYPES.LOADER);
 };
 
 VizJSON.prototype.removeZoomOverlay = function () {
-  this.removeOverlay(VizJSON.OVERLAY_TYPES.ZOOM);
+  this.removeOverlay(C.OVERLAY_TYPES.ZOOM);
 };
 
 VizJSON.prototype.removeSearchOverlay = function () {
-  this.removeOverlay(VizJSON.OVERLAY_TYPES.SEARCH);
+  this.removeOverlay(C.OVERLAY_TYPES.SEARCH);
 };
 
 VizJSON.prototype.removeLogoOverlay = function (overlayType) {
-  this.removeOverlay(VizJSON.OVERLAY_TYPES.LOGO);
+  this.removeOverlay(C.OVERLAY_TYPES.LOGO);
 };
 
 VizJSON.prototype._addAttributionOverlay = function () {
   this.overlays.push({
-    type: VizJSON.OVERLAY_TYPES.ATTRIBUTION
+    type: C.OVERLAY_TYPES.ATTRIBUTION
   });
 };
 
 VizJSON.prototype.enforceGMapsBaseLayer = function (gmapsBaseType, gmapsStyle) {
-  var isGmapsBaseTypeValid = _.contains(GMAPS_BASE_LAYER_TYPES, gmapsBaseType);
-  if (this.map_provider === VizJSON.MAP_PROVIDER_TYPES.LEAFLET && isGmapsBaseTypeValid) {
+  var isGmapsBaseTypeValid = _.contains(C.GMAPS_BASE_LAYER_TYPES, gmapsBaseType);
+  if (this.map_provider === C.MAP_PROVIDER_TYPES.LEAFLET && isGmapsBaseTypeValid) {
     if (this.layers) {
       this.layers[0].options.type = 'GMapsBase';
       this.layers[0].options.baseType = gmapsBaseType;
@@ -117,7 +102,7 @@ VizJSON.prototype.enforceGMapsBaseLayer = function (gmapsBaseType, gmapsStyle) {
         this.layers[0].options.style = typeof gmapsStyle === 'string' ? JSON.parse(gmapsStyle) : gmapsStyle;
       }
 
-      this.map_provider = VizJSON.MAP_PROVIDER_TYPES.GMAPS;
+      this.map_provider = C.MAP_PROVIDER_TYPES.GMAPS;
       this.layers[0].options.attribution = ''; // GMaps has its own attribution
     } else {
       log.error('No base map loaded. Using Leaflet.');

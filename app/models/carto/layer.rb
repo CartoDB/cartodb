@@ -357,7 +357,7 @@ module Carto
 
     def source_exists
       source = options['source']
-      return unless source
+      return unless source && visualization
 
       sources = visualization.analyses.map { |a| a.all_analysis_nodes.select(&:source?) }.flatten
       unless sources.map(&:id).include?(source)

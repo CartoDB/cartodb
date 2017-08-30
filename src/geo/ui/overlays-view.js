@@ -28,9 +28,7 @@ var OverlaysView = View.extend({
       visView: this._visView
     });
 
-    this._visModel.on('change:loading', this._toggleLoaderOverlay, this);
-
-    this._overlaysCollection.on('add remove change', this.render, this);
+    this._initBinds();
 
     this.$el.append(overlayContainerTemplate());
   },
@@ -39,6 +37,11 @@ var OverlaysView = View.extend({
     this._clearOverlays();
     this._renderOverlays();
     return this;
+  },
+
+  _initBinds: function () {
+    this.listenTo(this._visModel, 'change:loading', this._toggleLoaderOverlay, this);
+    this.listenTo(this._overlaysCollection, 'add remove change', this.render, this);
   },
 
   _clearOverlays: function () {

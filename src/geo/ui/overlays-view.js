@@ -1,5 +1,4 @@
 var _ = require('underscore');
-var util = require('cdb.core.util');
 var View = require('../../core/view');
 var OverlaysFactory = require('../../vis/overlays-factory');
 var overlayContainerTemplate = require('./overlays-container.tpl');

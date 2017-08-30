@@ -11,8 +11,6 @@ var LeafletLayerView = function (layerModel, leafletMap, mapModel) {
 
   var type = layerModel.get('type') || layerModel.get('kind');
   this.type = type && type.toLowerCase();
-
-  this.leafletLayer.on('tileerror', this._onTileError.bind(this));
 };
 
 _.extend(LeafletLayerView.prototype, Backbone.Events);
@@ -39,10 +37,6 @@ _.extend(LeafletLayerView.prototype, {
 
   reload: function () {
     this.leafletLayer.redraw();
-  },
-
-  _onTileError: function (layer) {
-    this.mapModel.addErrorTile(layer.tile);
   },
 
   _createLeafletLayer: function () {

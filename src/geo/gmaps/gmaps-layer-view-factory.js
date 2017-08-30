@@ -33,7 +33,7 @@ GMapsLayerViewFactory.prototype.createLayerView = function (layerModel, nativeMa
 
   if (LayerViewClass) {
     try {
-      return new LayerViewClass(layerModel, nativeMap, mapModel, mapModel);
+      return new LayerViewClass(layerModel, nativeMap, mapModel);
     } catch (error) {
       log.error("Error creating an instance of layer view for '" + layerType + "' layer -> " + error.message);
       throw error;

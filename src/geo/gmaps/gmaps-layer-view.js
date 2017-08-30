@@ -21,11 +21,7 @@ _.extend(GMapsLayerView.prototype, {
     throw new Error('Subclasses of GMapsLayerView must implement remove');
   },
 
-  _onModelUpdated: function () {},
-
-  _onTileError: function (tileDomNode) {
-    this.mapModel.addErrorTile(tileDomNode);
-  }
+  _onModelUpdated: function () {}
 });
 
 module.exports = GMapsLayerView;

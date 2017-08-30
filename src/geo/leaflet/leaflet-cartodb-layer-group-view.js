@@ -46,12 +46,16 @@ var LeafletCartoDBLayerGroupView = function (layerModel, leafletMap, mapModel) {
   LeafletLayerView.apply(this, arguments);
   CartoDBLayerGroupViewBase.apply(this, arguments);
 
-  this.leafletLayer.on('load', function (e) {
+  this.leafletLayer.on('load', function () {
     self.trigger('load');
   });
 
-  this.leafletLayer.on('loading', function (e) {
+  this.leafletLayer.on('loading', function () {
     self.trigger('loading');
+  });
+
+  this.leafletLayer.on('tileerror', function (layer) {
+    self.mapModel.addErrorTile(layer.tile);
   });
 };
 

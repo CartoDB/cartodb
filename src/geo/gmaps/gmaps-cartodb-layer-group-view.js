@@ -228,7 +228,7 @@ _.extend(
 
       tile.onerror = function () {
         Profiler.metric('cartodb-js.tile.png.error').inc();
-        self._onTileError(this);
+        this.mapModel.addErrorTile(this);
         finished();
       };
 

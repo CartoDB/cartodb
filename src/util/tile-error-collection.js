@@ -18,7 +18,7 @@ var TileErrorCollection = Backbone.Collection.extend({
     this.queue.reset();
 
     var models = this.filter(function (model) {
-      this._deletedNode(model.get('tileDomNode'));
+      return !this._deletedNode(model.get('tileDomNode'));
     }.bind(this));
 
     this.reset(models);

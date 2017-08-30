@@ -1,6 +1,5 @@
 var Backbone = require('backbone');
 var $ = require('jquery');
-var _ = require('underscore');
 var TileErrorCollection = require('../../../src/util/tile-error-collection');
 
 describe('util/tile-error-collection', function () {
@@ -42,23 +41,24 @@ describe('util/tile-error-collection', function () {
       tileDomNode: {}
     };
 
-    it('should set the error tile overlay when a new model is added', function () {
-      spyOn(document.body, 'contains').and.returnValue(true);
-      this.collection.add(tile);
-      var model = _.last(this.collection.models);
-      expect(model.get('tileDomNode').src.indexOf('data:image/svg+xml;base64,')).not.toBe(-1);
-    });
+    describe('when running is true', function () {
+      it('should set the error tile overlay when a new model is added', function () {
+        spyOn(document.body, 'contains').and.returnValue(true);
+        var model = this.collection.add(tile);
+        expect(model.get('tileDomNode').src.indexOf('data:image/svg+xml;base64,')).not.toBe(-1);
+      });
 
-    it('should add the model to the qeue if is not there', function () {
-      // Set running to true to prevent ._getTileErrors from being called
-      // since the image is not in the DOM and will be removed from the queue
-      this.collection.running = true;
+      it('should add the model to the qeue if is not there', function () {
+        // Set running to true to prevent ._getTileErrors from being called
+        // since the image is not in the DOM and will be removed from the queue
+        this.collection.running = true;
 
-      this.collection.add(tile);
-      expect(this.collection.queue.length).toEqual(1);
+        this.collection.add(tile);
+        expect(this.collection.queue.length).toEqual(1);
 
-      this.collection.add(tile);
-      expect(this.collection.queue.length).toEqual(1);
+        this.collection.add(tile);
+        expect(this.collection.queue.length).toEqual(1);
+      });
     });
 
     describe('when running is false', function () {
@@ -100,7 +100,7 @@ describe('util/tile-error-collection', function () {
   });
 
   describe('._getTileErrors', function () {
-    describe('when we alerady have the error or there are no models to check', function () {
+    describe('when we already have the error or there are no models to check', function () {
       it('should set running to false', function () {
         this.collection.running = true;
         this.collection._getTileErrors();
@@ -135,11 +135,13 @@ describe('util/tile-error-collection', function () {
       });
 
       it('should set the model as checked', function () {
+        expect(this.model.get('checked')).toBe(undefined);
         this.collection._getTileErrors();
         expect(this.model.get('checked')).toBe(true);
       });
 
       it('should call ._getTileErrors()', function () {
+        // It should call itself because of recursion, to keep the queue working
         this.collection._getTileErrors();
         expect(this.collection._getTileErrors.calls.count()).toEqual(2);
       });

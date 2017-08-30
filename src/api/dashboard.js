@@ -32,6 +32,13 @@ Dashboard.prototype = {
     this.getMap().reload();
   },
 
+  forceResize: function () {
+    this._dashboard.widgets.getCollection()
+    .each(function (widget) {
+      widget.forceResize();
+    });
+  },
+
   /**
    * @return {Array} of widgets in the dashboard
    */

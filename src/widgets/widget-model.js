@@ -2,6 +2,8 @@ var _ = require('underscore');
 var cdb = require('cartodb.js');
 var AutoStylerFactory = require('./auto-style/factory');
 
+var TIME_SERIES_TYPE = 'time-series';
+
 /**
  * Default widget model
  *
@@ -217,5 +219,11 @@ module.exports = cdb.core.Model.extend({
       }
     }
     return state;
+  },
+
+  forceResize: function () {
+    if (this.get('type') === TIME_SERIES_TYPE) {
+      this.trigger('forceResize');
+    }
   }
 });

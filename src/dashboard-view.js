@@ -51,6 +51,7 @@ module.exports = cdb.core.View.extend({
 
     return this;
   },
+
   getInitialMapState: function () {
     return {
       bounds: this.model.get('initialPosition').bounds

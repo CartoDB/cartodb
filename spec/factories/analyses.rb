@@ -17,6 +17,14 @@ module AnalysisFactoryHelper
 end
 
 FactoryGirl.define do
+  factory :simple_source_analysis, class: Carto::Analysis do
+    ignore do
+      natural_id nil
+    end
+
+    analysis_definition { { id: natural_id, type: 'source', params: { query: 'select 1' }}}
+  end
+
   factory :source_analysis, class: Carto::Analysis do
     ignore do
       source_table 'subway_stops'

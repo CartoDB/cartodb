@@ -105,8 +105,8 @@ var OverlaysView = View.extend({
   },
 
   _getOverlayViewByType: function (type) {
-    return _.find(this._overlayViews, function (overlay) {
-      return overlay.type === type;
+    return _.find(this._overlayViews, function (overlayView) {
+      return overlayView.type === type;
     });
   },
 

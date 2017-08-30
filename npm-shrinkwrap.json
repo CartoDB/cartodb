@@ -798,7 +798,7 @@
     "cartodb-deep-insights.js": {
       "version": "0.0.3",
       "from": "cartodb/deep-insights.js#12655-widgets-overflow",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#a4176e2e3dd3b0def7adccd440101bb4a895926d",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#324963e0b7087d1fd33787fe725a1c183162eb41",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",

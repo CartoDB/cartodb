@@ -3,6 +3,7 @@ var util = require('cdb.core.util');
 var View = require('../../core/view');
 var OverlaysFactory = require('../../vis/overlays-factory');
 var overlayContainerTemplate = require('./overlays-container.tpl');
+var C = require('../../constants');
 
 var CONTAINED_OVERLAYS = ['attribution', 'fullscreen', 'limits', 'logo', 'search', 'zoom'];
 
@@ -115,6 +116,19 @@ var OverlaysView = View.extend({
     return _(this._overlayViews).find(function (v) {
       return v.type === type;
     });
+  },
+
+  _addLimitsOverlay: function () {
+    this._overlaysCollection.add({
+      type: C.OVERLAY_TYPES.LIMITS
+    });
+  },
+
+  _removeLimitsOverlay: function () {
+    var overlay = this._overlaysCollection.findWhere({
+      type: C.OVERLAY_TYPES.LIMITS
+    });
+    this._overlaysCollection.remove(overlay);
   },
 
   clean: function () {

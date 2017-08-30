@@ -25,8 +25,8 @@ module.exports = {
     return rule.matchesAnyProperty(VALID_PROPS) && isEveryBucketValid(rule);
   },
 
-  adapt: function (rule) {
-    rule = new Rule(rule);
+  adapt: function (rules) {
+    var rule = new Rule(rules[0]);
     var buckets = rule.getBucketsWithRangeFilter();
 
     return {

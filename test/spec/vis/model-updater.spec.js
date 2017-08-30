@@ -331,8 +331,8 @@ describe('src/vis/model-updater', function () {
         this.modelUpdater.updateModels(this.windshaftMap, 'sourceId', 'forceFetch');
 
         expect(layer.legends.category.get('categories')).toEqual([
-          { label: 'Category 1', value: '#AAAAAA' },
-          { label: 'Category 2', value: '#BBBBBB' }
+          { title: 'Category 1', icon: '', color: '#AAAAAA' },
+          { title: 'Category 2', icon: '', color: '#BBBBBB' }
         ]);
         expect(layer.legends.choropleth.isSuccess()).toBeTruthy();
       });

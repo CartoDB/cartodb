@@ -62,24 +62,12 @@ describe('dataviews/histogram-data-model', function () {
       expect(this.model.fetch).not.toHaveBeenCalled();
     });
 
-    it('should call to fetch when the bins changes to a defined value with no aggregation in a number column', function () {
+    it('should call to fetch when the bins changes to a defined value in a number column', function () {
       this.model.set('column_type', 'number', { silent: true });
-      this.model.set('aggregation', undefined, { silent: true });
 
       this.model.set('bins', defaultBins + 1);
 
       expect(this.model.fetch).toHaveBeenCalled();
-    });
-
-    it('should not call to fetch when the bins changes to a defined value with aggregation in a number column', function () {
-      // This happens when switching from date column to bins column.
-      // This prevents requesting data before having the map well instantiated
-      this.model.set('column_type', 'number', { silent: true });
-      this.model.set('aggregation', 'week', { silent: true });
-
-      this.model.set('bins', defaultBins + 1);
-
-      expect(this.model.fetch).not.toHaveBeenCalled();
     });
 
     it('should call to fetch when localTimezone changes', function () {

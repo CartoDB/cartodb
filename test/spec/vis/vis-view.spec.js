@@ -1,10 +1,5 @@
 var $ = require('jquery');
-var _ = require('underscore');
 var Backbone = require('backbone');
-// required due to implicit dependency in vis --> map-view
-var cdb = require('cdb');
-_.extend(cdb.geo, require('../../../src/geo/leaflet'));
-_.extend(cdb.geo, require('../../../src/geo/gmaps'));
 
 var VisView = require('../../../src/vis/vis-view');
 var VisModel = require('../../../src/vis/vis');

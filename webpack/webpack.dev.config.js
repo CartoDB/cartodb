@@ -31,7 +31,8 @@ module.exports = {
           path.resolve(__dirname, '../lib/assets/javascripts/cartodb3/carto-node')
         ],
         options: {
-          presets: ['es2015']
+          presets: ['es2015'],
+          plugins: ['transform-object-assign']
         }
       }
     ]

@@ -60,10 +60,10 @@ describe('dashboard-below-map-view', function () {
 
   describe('when a time-series widget is added', function () {
     beforeEach(function () {
-      this.timeSeriesWidgetModelFake = createFakeTimeSeriesWidgetModel();
-      this.timeSeriesWidgetModelFake.dataviewModel = createFakeDataviewModel();
-      this.timeSeriesWidgetModelFake.dataviewModel.layer = createFakeDataviewLayer();
-      this.widgetsCollection.add(this.timeSeriesWidgetModelFake);
+      var timeSeriesWidgetModelFake = createFakeTimeSeriesWidgetModel();
+      timeSeriesWidgetModelFake.dataviewModel = createFakeDataviewModel();
+      timeSeriesWidgetModelFake.dataviewModel.layer = createFakeDataviewLayer();
+      this.widgetsCollection.add(timeSeriesWidgetModelFake);
     });
 
     it('should render view', function () {

@@ -88,6 +88,7 @@ module Carto
     ALLOWED_KINDS = %w{carto tiled background gmapsbase torque wms}.freeze
     validates :kind, inclusion: { in: ALLOWED_KINDS }
     validate :validate_not_viewer
+    validate :source_exists
 
     TEMPLATES_MAP = {
       'table/views/infowindow_light' =>               'infowindow_light',
@@ -352,6 +353,16 @@ module Carto
 
     def validate_not_viewer
       errors.add(:maps, "Viewer users can't edit layers") if maps.any? { |m| m.user && m.user.viewer }
+    end
+
+    def source_exists
+      source = options['source']
+      return unless source
+
+      sources = visualization.analyses.map { |a| a.all_analysis_nodes.select(&:source?) }.flatten
+      unless sources.map(&:id).include?(source)
+        errors.add(:options, "Source analysis #{source} does not exist")
+      end
     end
 
     def update_layer_node_style

@@ -126,4 +126,39 @@ describe Carto::Layer do
       end
     end
   end
+
+  describe 'analyses validation' do
+    before(:all) do
+      bypass_named_maps
+      @user = FactoryGirl.create(:carto_user)
+    end
+
+    after(:all) do
+      @analysis.destroy
+      @user.destroy
+    end
+
+    before(:each) do
+      @map, @table1, @table_visualization, @visualization = create_full_visualization(@user)
+      @table2 = FactoryGirl.create(:carto_user_table, user_id: @user.id, map_id: @map.id)
+      @layer = @map.data_layers.first
+    end
+
+    after(:each) do
+      destroy_full_visualization(@map, @table1, @table_visualization, @visualization)
+    end
+
+    it 'should fail if options.source references a nonexisting analysis' do
+      @layer.options['source'] = 'a0'
+      @layer.save.should be_false
+      @layer.errors[:options][0].should match /Source analysis a0 does not exist/
+    end
+
+    it 'should work if options.source references an existing analysis' do
+      analysis = FactoryGirl.create(:analysis_with_source, visualization: @visualization, user: @user)
+      @layer.options['source'] = analysis.analysis_node.source_descendants.first.id
+      @layer.save.should be_true
+      @layer.errors.should be_empty
+    end
+  end
 end

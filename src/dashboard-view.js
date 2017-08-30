@@ -20,7 +20,8 @@ module.exports = cdb.core.View.extend({
     this.el.classList.add(this.className);
     this.$el.html(template());
 
-    $(window).bind('resize', this._onWindowResize.bind(this));
+    this._onWindowResize = this._onWindowResize.bind(this);
+    $(window).bind('resize', this._onWindowResize);
   },
 
   render: function () {

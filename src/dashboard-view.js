@@ -1,3 +1,4 @@
+var $ = require('jquery');
 var cdb = require('cartodb.js');
 var template = require('./dashboard.tpl');
 var DashboardBelowMapView = require('./dashboard-below-map-view');
@@ -18,6 +19,8 @@ module.exports = cdb.core.View.extend({
     // TODO parent context requires some markup to be present already, but NOT the other views
     this.el.classList.add(this.className);
     this.$el.html(template());
+
+    $(window).bind('resize', this._onWindowResize.bind(this));
   },
 
   render: function () {
@@ -56,5 +59,16 @@ module.exports = cdb.core.View.extend({
     return {
       bounds: this.model.get('initialPosition').bounds
     };
+  },
+
+  _onWindowResize: function () {
+    this._widgets.each(function (widget) {
+      widget.forceResize();
+    });
+  },
+
+  clean: function () {
+    $(window).unbind('resize', this._onWindowResize);
+    cdb.core.View.prototype.clean.call(this);
   }
 });

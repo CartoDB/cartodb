@@ -128,7 +128,7 @@ module.exports = cdb.core.View.extend({
   },
 
   _onForceResize: function () {
-    this._chartView.onWindowResize();
+    this._chartView.forceResize();
   },
 
   _resetFilterInDI: function () {

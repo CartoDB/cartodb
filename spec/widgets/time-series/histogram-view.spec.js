@@ -38,7 +38,7 @@ describe('widgets/time-series/histogram-view', function () {
       this.view._chartView = {
         setNormalized: function () {},
         removeSelection: function () {},
-        onWindowResize: function () {}
+        forceResize: function () {}
       };
       spyOn(this.view, '_onChangeData');
       spyOn(this.view, '_onNormalizedChanged');
@@ -137,15 +137,12 @@ describe('widgets/time-series/histogram-view', function () {
   });
 
   describe('_onForceResize', function () {
-    it('should call _chartView.onWindowResize function', function () {
-      this.view._chartView = {
-        onWindowResize: function () {}
-      };
-      spyOn(this.view._chartView, 'onWindowResize');
+    it('should call _chartView.forceResize function', function () {
+      this.view._chartView = jasmine.createSpyObj('_chartView', ['forceResize']);
       this.view._initBinds();
       this.view._onForceResize();
 
-      expect(this.view._chartView.onWindowResize).toHaveBeenCalled();
+      expect(this.view._chartView.forceResize).toHaveBeenCalled();
     });
   });
 

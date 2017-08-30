@@ -5,7 +5,7 @@ $buttonColor: #636D72;
 $linkColor: #139BFC;
 
 .CDB-Overlay--limits {
-  background: #ffffc2;
+  background: #FFFFC2;
 }
 
 .CDB-Limits {
@@ -23,7 +23,7 @@ $linkColor: #139BFC;
   &.is-active {
     width: 320px;
 
-    & .CDB-Limits-text {
+    .CDB-Limits-text {
       @include flex(1);
       width: auto;
       padding: 0 12px;
@@ -74,10 +74,10 @@ $linkColor: #139BFC;
   color: $buttonColor;
   font-size: 10px;
   line-height: 16px;
-  overflow: hidden;
   opacity: 0;
+  overflow: hidden;
 
-  & a {
+  a {
     color: $linkColor;
   }
 }

@@ -4,6 +4,7 @@ var specHelper = require('../../spec-helper');
 var HistogramChartView = require('../../../src/widgets/histogram/chart');
 var TorqueTimeSliderView = require('../../../src/widgets/time-series/torque-time-slider-view');
 var formatter = require('../../../src/formatter');
+var TorqueLayer = require('cartodb.js/src/geo/map/torque-layer');
 
 describe('widgets/time-series/torque-time-slider-view', function () {
   beforeEach(function () {
@@ -19,7 +20,7 @@ describe('widgets/time-series/torque-time-slider-view', function () {
       start: 0,
       end: 1
     });
-    this.torqueLayerModel = new cdb.geo.TorqueLayer({
+    this.torqueLayerModel = new TorqueLayer({
       isRunning: false,
       step: 0,
       steps: 256,

@@ -144,7 +144,8 @@
       "it",
       "xit",
       "expect",
-      "localStorage"
+      "localStorage",
+      "__ENV__"
     ],
     "ignore": [
       "/.grunt",

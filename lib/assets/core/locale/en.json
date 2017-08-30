@@ -1462,6 +1462,9 @@
       "loading": "Unlocking your dataset %{tableName}...",
       "success": "Dataset %{tableName} unlocked",
       "title": "Your dataset %{tableName} is locked."
+    },
+    "privacy": {
+      "info": "You're not able to change the privacy of this dataset. Contact the owner <b>%{name}</b>"
     }
   },
   "editor": {
@@ -2419,7 +2422,9 @@
           "title-label": "Data",
           "value": "Value",
           "aggregate-by": "aggregate by",
-          "operation-column": "operation column"
+          "operation-column": "operation column",
+          "search-by-bucket": "Search by bucket",
+          "select-bucket": "Select a bucket"
         },
         "style": {
           "custom-disabled": "If an aggregated style is applied, auto style is disabled",
@@ -2491,8 +2496,9 @@
       }
     },
     "widgets": {
-      "delete": "Widget deleted correctly.",
-      "success": "Widget successfully added",
+      "add": "Widget successfully added",
+      "replace": "Widget successfully replaced",
+      "delete": "Widget deleted correctly",
       "error": {
         "title": "Error adding widget:",
         "body": "%{body} %{error}"

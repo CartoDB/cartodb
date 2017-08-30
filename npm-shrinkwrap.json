@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.9.44",
+  "version": "4.9.49-support-890",
   "dependencies": {
     "abbrev": {
       "version": "1.1.0",
@@ -798,9 +798,9 @@
       "resolved": "https://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.33.0.tgz"
     },
     "caniuse-lite": {
-      "version": "1.0.30000718",
+      "version": "1.0.30000721",
       "from": "caniuse-lite@>=1.0.30000718 <2.0.0",
-      "resolved": "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30000718.tgz"
+      "resolved": "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30000721.tgz"
     },
     "carto": {
       "version": "0.15.1-cdb4",
@@ -814,8 +814,8 @@
     },
     "cartodb-deep-insights.js": {
       "version": "0.0.3",
-      "from": "cartodb/deep-insights.js#master",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#6d3729b5b9f7ba455e4a6d28e1b8b8747efbf64d",
+      "from": "cartodb/deep-insights.js#support-890",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#194e3f53aa8910380a086060e7b8ebd6637875cd",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",
@@ -2279,9 +2279,9 @@
       "resolved": "https://registry.npmjs.org/mustache/-/mustache-1.1.0.tgz"
     },
     "nan": {
-      "version": "2.6.2",
+      "version": "2.7.0",
       "from": "nan@>=2.3.0 <3.0.0",
-      "resolved": "https://registry.npmjs.org/nan/-/nan-2.6.2.tgz",
+      "resolved": "https://registry.npmjs.org/nan/-/nan-2.7.0.tgz",
       "optional": true
     },
     "node-libs-browser": {

@@ -9,17 +9,17 @@ var CONTAINED_OVERLAYS = ['attribution', 'fullscreen', 'limits', 'logo', 'search
 var OverlaysView = View.extend({
 
   initialize: function (deps) {
-    if (!deps.overlaysCollection) throw new Error('overlaysCollection is required');
-    if (!deps.visModel) throw new Error('visModel is required');
-    if (!deps.visView) throw new Error('visView is required');
-    if (!deps.mapModel) throw new Error('mapModel is required');
-    if (!deps.mapView) throw new Error('mapView is required');
+    if (!opts.overlaysCollection) throw new Error('overlaysCollection is required');
+    if (!opts.visModel) throw new Error('visModel is required');
+    if (!opts.visView) throw new Error('visView is required');
+    if (!opts.mapModel) throw new Error('mapModel is required');
+    if (!opts.mapView) throw new Error('mapView is required');
 
-    this._overlaysCollection = deps.overlaysCollection;
-    this._visModel = deps.visModel;
-    this._visView = deps.visView;
-    this._mapModel = deps.mapModel;
-    this._mapView = deps.mapView;
+    this._overlaysCollection = opts.overlaysCollection;
+    this._visModel = opts.visModel;
+    this._visView = opts.visView;
+    this._mapModel = opts.mapModel;
+    this._mapView = opts.mapView;
 
     this._overlayViews = [];
     this._overlaysFactory = new OverlaysFactory({

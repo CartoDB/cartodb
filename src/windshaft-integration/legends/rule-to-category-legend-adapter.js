@@ -18,7 +18,7 @@ var generateCategories = function (bucketsColor, bucketsIcon) {
     });
     return {
       title: bucketColor.filter.name,
-      icon: (bucketIcon && bucketIcon.value) ? _extractURL(bucketIcon.value) : undefined,
+      icon: (bucketIcon && bucketIcon.value) ? _extractURL(bucketIcon.value) : '',
       color: bucketColor.value
     };
   });
@@ -54,8 +54,8 @@ module.exports = {
     return {
       categories: generateCategories(categoryBucketsColor, categoryBucketsIcon),
       default: {
-        icon: _.isEmpty(defaultBucketsIcon) ? undefined : _extractURL(defaultBucketsIcon[0].value),
-        color: _.isEmpty(defaultBucketsColor) ? undefined : defaultBucketsColor[0].value
+        icon: _.isEmpty(defaultBucketsIcon) ? '' : _extractURL(defaultBucketsIcon[0].value),
+        color: _.isEmpty(defaultBucketsColor) ? '' : defaultBucketsColor[0].value
       }
     };
   }

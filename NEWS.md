@@ -45,6 +45,7 @@ Development
 * Updates Dataservices API client default version to `0.20.0` (#12633)
 
 ### Bug fixes / enhancements
+* Fixed spelling of "occurred" (Docs)
 * Change position and size of legend icons (#12619)
 * Fix Time series width on mobile viewport (#12609)
 * Fix random timeout in specs (#12625)

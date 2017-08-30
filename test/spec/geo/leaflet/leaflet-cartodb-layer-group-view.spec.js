@@ -26,7 +26,11 @@ var createLayerGroupView = function (layerGroupModel, container) {
     zoom: 3
   });
 
-  var layerGroupView = new LeafletCartoDBLayerGroupView(layerGroupModel, leafletMap, null);
+  var mapModel = {
+    addErrorTile: function () {}
+  };
+
+  var layerGroupView = new LeafletCartoDBLayerGroupView(layerGroupModel, leafletMap, mapModel);
   layerGroupView.leafletLayer.addTo(leafletMap);
   return layerGroupView;
 };

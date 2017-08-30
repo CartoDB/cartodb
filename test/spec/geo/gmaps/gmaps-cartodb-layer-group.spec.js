@@ -16,7 +16,11 @@ var createLayerGroupView = function (layerGroupModel, container) {
     tilt: 0
   });
 
-  var layerGroupView = new GmapsCartoDBLayerGroupView(layerGroupModel, gmapsMap, null);
+  var mapModel = {
+    addErrorTile: function () { }
+  };
+
+  var layerGroupView = new GmapsCartoDBLayerGroupView(layerGroupModel, gmapsMap, mapModel);
   gmapsMap.overlayMapTypes.setAt(1, layerGroupView.gmapsLayer);
   return layerGroupView;
 };

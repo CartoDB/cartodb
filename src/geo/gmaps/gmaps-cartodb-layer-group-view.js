@@ -76,6 +76,7 @@ var GMapsCartoDBLayerGroupView = function (layerModel, gmapsMap, mapModel) {
     self.featureClick && self.featureClick.apply(opts, arguments);
   }, 10);
 
+  this.mapModel = mapModel;
   this.options = _.defaults(opts, CartoDBDefaultOptions);
   this.tiles = 0;
 
@@ -228,7 +229,7 @@ _.extend(
 
       tile.onerror = function () {
         Profiler.metric('cartodb-js.tile.png.error').inc();
-        this.mapModel.addErrorTile(this);
+        self.mapModel.addErrorTile(this);
         finished();
       };
 

@@ -46,6 +46,8 @@ var LeafletCartoDBLayerGroupView = function (layerModel, leafletMap, mapModel) {
   LeafletLayerView.apply(this, arguments);
   CartoDBLayerGroupViewBase.apply(this, arguments);
 
+  this.mapModel = mapModel;
+
   this.leafletLayer.on('load', function () {
     self.trigger('load');
   });

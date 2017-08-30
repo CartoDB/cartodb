@@ -1,11 +1,10 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
 
-var LeafletLayerView = function (layerModel, leafletMap, mapModel) {
+var LeafletLayerView = function (layerModel, leafletMap) {
   this.leafletLayer = this._createLeafletLayer(layerModel);
   this.leafletMap = leafletMap;
   this.model = layerModel;
-  this.mapModel = mapModel;
 
   this.setModel(layerModel);
 

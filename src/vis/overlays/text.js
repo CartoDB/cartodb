@@ -14,13 +14,13 @@ var TextOverlay = function (data, opts) {
     data.templateType || 'mustache'
   );
 
-  var widget = new Text({
+  var overlay = new Text({
     model: new Model(options),
     template: template,
     className: 'cartodb-overlay overlay-text ' + options.device
   });
 
-  return widget.render();
+  return overlay.render();
 };
 
 module.exports = TextOverlay;

@@ -1,3 +1,3 @@
-var ShareOverlay = function (data, opts) { };
+var ShareOverlay = function (data, opts) {};
 
 module.exports = ShareOverlay;

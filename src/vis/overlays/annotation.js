@@ -16,7 +16,7 @@ var AnnotationOverlay = function (data, opts) {
     data.templateType || 'mustache'
   );
 
-  var widget = new Annotation({
+  var overlay = new Annotation({
     className: 'cartodb-overlay overlay-annotation ' + options.device,
     template: template,
     mapView: opts.mapView,
@@ -28,7 +28,7 @@ var AnnotationOverlay = function (data, opts) {
     style: options.style
   });
 
-  return widget.render();
+  return overlay.render();
 };
 
 module.exports = AnnotationOverlay;

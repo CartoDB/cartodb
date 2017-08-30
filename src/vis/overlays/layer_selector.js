@@ -1,3 +1,3 @@
-var LayerSelectorOverlay = function (data, opts) { };
+var LayerSelectorOverlay = function (data, opts) {};
 
 module.exports = LayerSelectorOverlay;

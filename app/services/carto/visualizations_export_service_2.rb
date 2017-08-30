@@ -68,7 +68,7 @@ module Carto
       exported_layers = exported_visualization[:layers]
       exported_overlays = exported_visualization[:overlays]
 
-      visualization = Carto::Visualization.new(
+      visualization = Carto::InMemoryVisualization.new(
         name: exported_visualization[:name],
         description: exported_visualization[:description],
         version: exported_visualization[:version] || 2,

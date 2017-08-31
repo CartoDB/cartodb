@@ -47,6 +47,8 @@ Development
 
 ### Bug fixes / enhancements
 * Improved tests. Introduced headless chrome for our spec runners (#12657)
+* Fix Time Series resize when switching to advanced mode (#12124)
+* Fix adding/removing widgets when having Time Series (#12123, #12402, #12655)
 * Enhancements on superadmin imports & exports endpoints (#12254)
 * Don't offer new DO UI unless user has DO credits (#12648)
 * Change position and size of legend icons (#12619)

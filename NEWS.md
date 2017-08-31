@@ -2,6 +2,7 @@ Development
 -----------
 
 ### Features
+* Improve legend items management (#12650)
 * Avoid multiple time-series by filtering the carousel options (#12395)
 * Add privacy button behavior for shared datasets (#11342)
 * Use add/replace notification for time-series (#12670)
@@ -46,6 +47,7 @@ Development
 
 ### Bug fixes / enhancements
 * Improved tests. Introduced headless chrome for our spec runners (#12657)
+* Enhancements on superadmin imports & exports endpoints (#12254)
 * Don't offer new DO UI unless user has DO credits (#12648)
 * Change position and size of legend icons (#12619)
 * Fix Time series width on mobile viewport (#12609)

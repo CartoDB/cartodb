@@ -1397,12 +1397,6 @@
       "from": "function-bind@>=1.0.2 <2.0.0",
       "resolved": "https://registry.npmjs.org/function-bind/-/function-bind-1.1.1.tgz"
     },
-    "gauge": {
-      "version": "2.7.4",
-      "from": "gauge@2.7.4",
-      "resolved": "https://registry.npmjs.org/gauge/-/gauge-2.7.4.tgz",
-      "optional": true
-    },
     "geojson-vt": {
       "version": "2.4.0",
       "from": "geojson-vt@2.4.0",

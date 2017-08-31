@@ -2,6 +2,7 @@ Development
 -----------
 
 ### Features
+* Improve legend items management (#12650)
 * Avoid multiple time-series by filtering the carousel options (#12395)
 * Add privacy button behavior for shared datasets (#11342)
 * Use add/replace notification for time-series (#12670)

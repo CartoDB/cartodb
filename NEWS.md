@@ -2,6 +2,10 @@ Development
 -----------
 
 ### Features
+* Avoid multiple time-series by filtering the carousel options (#12395)
+* Add privacy button behavior for shared datasets (#11342)
+* Use add/replace notification for time-series (#12670)
+* Fix icons in category legends (#11630)
 * Sidebar UI tweaks (#12479)
 * Improving affordance of Delete icon (#12531)
 * Change select "attribute" placeholders (#12498)
@@ -43,6 +47,7 @@ Development
 ### Bug fixes / enhancements
 * Fix Time Series resize when switching to advanced mode (#12124)
 * Fix adding/removing widgets when having Time Series (#12123, #12402, #12655)
+* Don't offer new DO UI unless user has DO credits (#12648)
 * Change position and size of legend icons (#12619)
 * Fix Time series width on mobile viewport (#12609)
 * Fix random timeout in specs (#12625)
@@ -147,6 +152,9 @@ Development
 * Adding max items limit for form list editor (#12552)
 * Improve Google Login button (cartodb-central#1808)
 * Implement widget opacity in AutoStyle (#11928)
+* Fix histograms data range change (#12622)
+* Fix exception thrown when map created without builder is used with it and visualization state data is missing (#12568)
+* Enable selection of categories in non dynamic widgets [Support #890](https://github.com/CartoDB/support/issues/890)
 
 ### NOTICE
 This release upgrades the CartoDB PostgreSQL extension to `0.19.2`. Run the following to have it available:

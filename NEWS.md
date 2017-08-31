@@ -45,6 +45,8 @@ Development
 * Updates Dataservices API client default version to `0.20.0` (#12633)
 
 ### Bug fixes / enhancements
+* Enhancements on superadmin imports & exports endpoints (#12254)
+* Don't offer new DO UI unless user has DO credits (#12648)
 * Change position and size of legend icons (#12619)
 * Fix Time series width on mobile viewport (#12609)
 * Fix random timeout in specs (#12625)
@@ -151,6 +153,7 @@ Development
 * Implement widget opacity in AutoStyle (#11928)
 * Fix histograms data range change (#12622)
 * Fix exception thrown when map created without builder is used with it and visualization state data is missing (#12568)
+* Enable selection of categories in non dynamic widgets [Support #890](https://github.com/CartoDB/support/issues/890)
 
 ### NOTICE
 This release upgrades the CartoDB PostgreSQL extension to `0.19.2`. Run the following to have it available:

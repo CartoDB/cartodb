@@ -105,14 +105,14 @@ module Carto
     include OrganizationMetadataExportServiceConfiguration
     include LayerExporter
 
-    def export_organization_json_string(organization_id)
-      export_organization_json_hash(organization_id).to_json
+    def export_organization_json_string(organization)
+      export_organization_json_hash(organization).to_json
     end
 
-    def export_organization_json_hash(organization_id)
+    def export_organization_json_hash(organization)
       {
         version: CURRENT_VERSION,
-        organization: export(Organization.find(organization_id))
+        organization: export(organization)
       }
     end
 
@@ -172,31 +172,28 @@ module Carto
     include OrganizationMetadataExportServiceImporter
     include OrganizationMetadataExportServiceExporter
 
-    def export_organization_to_directory(organization_id, path)
-      organization = Carto::Organization.find(organization_id)
+    def export_to_directory(organization, path)
       root_dir = Pathname.new(path)
 
       # Export organization
-      organization_json = export_organization_json_string(organization_id)
-      root_dir.join("organization_#{organization_id}.json").open('w') { |file| file.write(organization_json) }
+      organization_json = export_organization_json_string(organization)
+      root_dir.join("organization_#{organization.id}.json").open('w') { |file| file.write(organization_json) }
 
-      redis_json = Carto::RedisExportService.new.export_organization_json_string(organization_id)
-      root_dir.join("redis_organization_#{organization_id}.json").open('w') { |file| file.write(redis_json) }
+      redis_json = Carto::RedisExportService.new.export_organization_json_string(organization)
+      root_dir.join("redis_organization_#{organization.id}.json").open('w') { |file| file.write(redis_json) }
 
       # Export users
       organization.users.each do |user|
-        user_path = root_dir.join("user_#{user.id}")
-        Dir.mkdir(user_path)
-        Carto::UserMetadataExportService.new.export_user_to_directory(user.id, user_path)
+        Carto::UserMetadataExportService.new.export_to_directory(user, root_dir.join("user_#{user.id}"))
       end
     end
 
-    def import_organization_and_users_from_directory(path)
+    def import_from_directory(meta_path)
       # Import organization
-      organization_file = Dir["#{path}/organization_*.json"].first
+      organization_file = Dir["#{meta_path}/organization_*.json"].first
       organization = build_organization_from_json_export(File.read(organization_file))
 
-      organization_redis_file = Dir["#{path}/redis_organization_*.json"].first
+      organization_redis_file = Dir["#{meta_path}/redis_organization_*.json"].first
       Carto::RedisExportService.new.restore_redis_from_json_export(File.read(organization_redis_file))
 
       # Groups and notifications must be saved after users
@@ -207,11 +204,11 @@ module Carto
 
       save_imported_organization(organization)
 
-      user_list = Dir["#{path}/user_*"]
+      user_list = Dir["#{meta_path}/user_*"]
 
       # In order to get permissions right, we first import all users, then all datasets and finally, all maps
       organization.users = user_list.map do |user_path|
-        Carto::UserMetadataExportService.new.import_user_from_directory(user_path, import_visualizations: false)
+        Carto::UserMetadataExportService.new.import_from_directory(user_path)
       end
 
       organization.groups = groups
@@ -221,7 +218,7 @@ module Carto
       organization
     end
 
-    def import_organization_visualizations_from_directory(organization, path)
+    def import_metadata_from_directory(organization, path)
       organization.users.each do |user|
         Carto::UserMetadataExportService.new.import_user_visualizations_from_directory(
           user, Carto::Visualization::TYPE_REMOTE, "#{path}/user_#{user.id}"
@@ -232,12 +229,15 @@ module Carto
         )
       end
 
+      # Derived must be the last because of shared canonicals
       organization.users.each do |user|
         Carto::UserMetadataExportService.new.import_user_visualizations_from_directory(
           user, Carto::Visualization::TYPE_DERIVED, "#{path}/user_#{user.id}"
         )
+      end
 
-        Carto::UserMetadataExportService.new.import_search_tweets_from_directory("#{path}/user_#{user.id}", user)
+      organization.users.each do |user|
+        Carto::UserMetadataExportService.new.import_search_tweets_from_directory(user, "#{path}/user_#{user.id}")
       end
 
       organization

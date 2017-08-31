@@ -116,8 +116,9 @@ var MAP = {
 };
 
 var getAnalysisByType = function (type) {
-  return MAP[type] || {
-    title: _t('analyses.' + type)
+  var safeType = type === '' ? 'unknown' : type;
+  return MAP[safeType] || {
+    title: _t('analyses.' + safeType)
   };
 };
 

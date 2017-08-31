@@ -15,8 +15,8 @@ function flushAllD3Transitions () {
 }
 
 describe('widgets/histogram/chart', function () {
-  var onWindowResizeReal;
-  var onWindowResizeSpy;
+  var forceResizeReal;
+  var forceResizeSpy;
   var generateHandlesSpy;
   var setupBrushSpy;
   var createFormatterSpy;
@@ -57,10 +57,10 @@ describe('widgets/histogram/chart', function () {
     }.bind(this);
 
     // override default behavior of debounce, to be able to control callback
-    onWindowResizeSpy = jasmine.createSpy('_onWindowResize');
+    forceResizeSpy = jasmine.createSpy('forceResize');
     spyOn(_, 'debounce').and.callFake(function (cb) {
-      onWindowResizeReal = cb;
-      return onWindowResizeSpy;
+      forceResizeReal = cb;
+      return forceResizeSpy;
     });
 
     this.widgetModel = new cdb.core.Model({
@@ -194,7 +194,7 @@ describe('widgets/histogram/chart', function () {
 
   describe('when view is resized', function () {
     beforeEach(function () {
-      onWindowResizeReal.call(this);
+      forceResizeReal.call(this);
       expect(this.view.$el.parent).toHaveBeenCalled();
     });
 

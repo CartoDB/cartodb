@@ -64,8 +64,7 @@ module.exports = cdb.core.View.extend({
     // TODO in theory there's the possiblity that the callback is called before the view is rendered in the DOM,
     //  which would lead to the view not being visible until an explicit window resize.
     //  a wasAddedToDOM event would've been nice to have
-    this._onWindowResize = _.debounce(this._resizeToParentElement.bind(this), 50);
-    $(window).bind('resize', this._onWindowResize);
+    this.forceResize = _.debounce(this._resizeToParentElement.bind(this), 50);
 
     // using tagName: 'svg' doesn't work,
     // and w/o class="" d3 won't instantiate properly
@@ -587,7 +586,7 @@ module.exports = cdb.core.View.extend({
   _setupDimensions: function () {
     this._setupScales();
     this._setupRanges();
-    this._onWindowResize();
+    this.forceResize();
   },
 
   _getData: function () {
@@ -1655,10 +1654,5 @@ module.exports = cdb.core.View.extend({
     this.updateYScale();
     this.expand(4);
     this.removeShadowBars();
-  },
-
-  clean: function () {
-    $(window).unbind('resize', this._onWindowResize);
-    cdb.core.View.prototype.clean.call(this);
   }
 });

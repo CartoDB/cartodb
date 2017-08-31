@@ -52,7 +52,7 @@ module.exports = cdb.core.View.extend({
     this._widgets.bind('reset', this.render, this);
     this._widgets.bind('orderChanged', this.render, this);
     this._widgets.bind('change:collapsed', this._onWidgetUpdate, this);
-    this._widgets.bind('add remove reset', this._onUpdate, this); // have to be called _after_ any other add/remove/reset
+    this._widgets.bind('add remove reset', this._onWidgetsChange, this); // have to be called _after_ any other add/remove/reset
     this.add_related_model(this._widgets);
 
     this._resizeHandler = this._onResize.bind(this);
@@ -66,12 +66,13 @@ module.exports = cdb.core.View.extend({
     this.$el.html(template());
     this.$el.toggleClass('CDB-Widget-canvas--withMenu', this.model.get('renderMenu'));
     this._widgets.each(this._maybeRenderWidgetView, this);
-    this.$el.toggle(!_.isEmpty(this._subviews));
+    this._toggleVisiblity();
 
     this._renderScroll();
     this._renderShadows();
     this._bindScroll();
     this._initResize();
+
     return this;
   },
 
@@ -183,8 +184,12 @@ module.exports = cdb.core.View.extend({
     }
   },
 
-  _onUpdate: function () {
-    this.$el.toggle(_.size(this._subviews) > 0);
+  _toggleVisiblity: function () {
+    this.$el.toggle(!_.isEmpty(this._subviews));
+  },
+
+  _onWidgetsChange: function () {
+    this._toggleVisiblity();
   },
 
   clean: function () {

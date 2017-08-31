@@ -37,11 +37,13 @@ describe('widgets/time-series/histogram-view', function () {
       this.view._dataviewModel.off();
       this.view._chartView = {
         setNormalized: function () {},
-        removeSelection: function () {}
+        removeSelection: function () {},
+        forceResize: function () {}
       };
       spyOn(this.view, '_onChangeData');
       spyOn(this.view, '_onNormalizedChanged');
       spyOn(this.view, '_onChangeLocalTimezone');
+      spyOn(this.view, '_onForceResize');
       spyOn(this.view, '_onFilterChanged');
 
       this.view._initBinds();
@@ -54,6 +56,9 @@ describe('widgets/time-series/histogram-view', function () {
 
       this.view._timeSeriesModel.trigger('change:local_timezone');
       expect(this.view._onChangeLocalTimezone).toHaveBeenCalled();
+
+      this.view._timeSeriesModel.trigger('forceResize');
+      expect(this.view._onForceResize).toHaveBeenCalled();
 
       this.view._rangeFilter.trigger('change');
       expect(this.view._onFilterChanged).toHaveBeenCalled();
@@ -128,6 +133,16 @@ describe('widgets/time-series/histogram-view', function () {
       this.view._onChangeLocalTimezone();
 
       expect(this.view._dataviewModel.get('localTimezone')).toBe(true);
+    });
+  });
+
+  describe('_onForceResize', function () {
+    it('should call _chartView.forceResize function', function () {
+      this.view._chartView = jasmine.createSpyObj('_chartView', ['forceResize']);
+      this.view._initBinds();
+      this.view._onForceResize();
+
+      expect(this.view._chartView.forceResize).toHaveBeenCalled();
     });
   });
 

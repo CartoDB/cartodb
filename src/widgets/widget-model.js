@@ -2,6 +2,9 @@ var _ = require('underscore');
 var cdb = require('cartodb.js');
 var AutoStylerFactory = require('./auto-style/factory');
 
+var TIME_SERIES_TYPE = 'time-series';
+var HISTOGRAM_TYPE = 'histogram';
+
 /**
  * Default widget model
  *
@@ -217,5 +220,13 @@ module.exports = cdb.core.Model.extend({
       }
     }
     return state;
+  },
+
+  forceResize: function () {
+    var type = this.get('type');
+    if (type === TIME_SERIES_TYPE ||
+        type === HISTOGRAM_TYPE) {
+      this.trigger('forceResize');
+    }
   }
 });

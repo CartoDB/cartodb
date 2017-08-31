@@ -479,4 +479,28 @@ describe('widgets/widget-model', function () {
       });
     });
   });
+
+  describe('forceResize', function () {
+    beforeEach(function () {
+      this.model = new WidgetModel(null, {
+        dataviewModel: this.dataviewModel
+      });
+    });
+
+    it('should trigger forceResize event if it is a time-series', function () {
+      spyOn(this.model, 'trigger');
+      this.model.set('type', 'time-series');
+      this.model.forceResize();
+
+      expect(this.model.trigger).toHaveBeenCalledWith('forceResize');
+    });
+
+    it('should not trigger force Resize event if it is not a time-series', function () {
+      spyOn(this.model, 'trigger');
+      this.model.set('type', 'category');
+      this.model.forceResize();
+
+      expect(this.model.trigger).not.toHaveBeenCalledWith('forceResize');
+    });
+  });
 });

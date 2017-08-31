@@ -9,7 +9,11 @@ var createFakeTimeSeriesWidgetModel = function (attrs) {
     type: 'time-series'
   });
 
-  return new Backbone.Model(attrs);
+  var Widget = Backbone.Model.extend({
+    forceResize: function () {}
+  });
+
+  return new Widget(attrs);
 };
 
 var createFakeDataviewModel = function (attrs) {
@@ -64,6 +68,24 @@ describe('dashboard-below-map-view', function () {
 
     it('should render view', function () {
       expect(this.view.$el.attr('style')).not.toContain('none');
+    });
+
+    describe('_onWidgetsChange', function () {
+      it('should call forceResize event on each widget', function () {
+        this.widgetsCollection.each(function (widget) {
+          spyOn(widget, 'forceResize');
+          this.view._onWidgetsChange();
+
+          expect(widget.forceResize).toHaveBeenCalled();
+        }, this);
+      });
+
+      it('should call _toggleVisiblity function', function () {
+        spyOn(this.view, '_toggleVisiblity');
+        this.view._onWidgetsChange();
+
+        expect(this.view._toggleVisiblity).toHaveBeenCalled();
+      });
     });
   });
 

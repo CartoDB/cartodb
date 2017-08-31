@@ -937,7 +937,11 @@ module.exports = cdb.core.View.extend({
           hiBarIndex = hiBarIndex + 1;
         }
       }
-      this.model.set({ lo_index: loBarIndex, hi_index: hiBarIndex });
+
+      this.model.set({ lo_index: loBarIndex, hi_index: hiBarIndex }, { silent: true });
+      // Maybe the indexes don't change, and the handlers end up stuck in the middle of the
+      // bucket because the event doesn't trigger, so let's trigger it manually
+      this.model.trigger('change:lo_index');
     }
 
     // click in non animated histogram

@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.9.51-12606.1",
+  "version": "4.9.51-12673.1",
   "description": "CARTO UI frontend",
   "repository": {
     "type": "git",
@@ -187,7 +187,7 @@
     "build": "NODE_ENV=production webpack --config webpack.prod.config.js && npm run build:dashboard",
     "build:dashboard": "webpack -p --config webpack/webpack.dev.config.js",
     "build:stats": "webpack --env.stats --progress --config webpack.dev.config.js",
-    "start": "grunt watch:css & webpack --progress --watch --config webpack.dev.config.js & npm run start:dashboard",
+    "start": "grunt watch:css & webpack --progress --watch --config webpack.dev.config.js",
     "start:dashboard": "webpack --progress --watch --config webpack/webpack.dev.config.js",
     "dev": "webpack --progress --config webpack.dev.config.js"
   }

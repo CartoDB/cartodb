@@ -35,16 +35,16 @@ $linkColor: #139BFC;
 }
 
 .CDB-Limits-button {
-  align-items: center;
-  color: $buttonColor;
   display: flex;
-  font-size: 12px;
-  height: 100%;
+  align-items: center;
   justify-content: center;
-  line-height: 32px;
-  min-width: 32px;
-  vertical-align: middle;
   width: 32px;
+  min-width: 32px;
+  height: 100%;
+  color: $buttonColor;
+  font-size: 12px;
+  line-height: 32px;
+  vertical-align: middle;
   z-index: 1;
 
   &.is-disabled {

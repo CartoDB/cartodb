@@ -35,32 +35,20 @@ $linkColor: #139BFC;
 }
 
 .CDB-Limits-button {
-  display: relative;
-  width: 32px;
-  min-width: 32px;
-  height: 100%;
+  align-items: center;
   color: $buttonColor;
+  display: flex;
   font-size: 12px;
+  height: 100%;
+  justify-content: center;
   line-height: 32px;
+  min-width: 32px;
   vertical-align: middle;
+  width: 32px;
   z-index: 1;
 
   &.is-disabled {
     opacity: 0.24;
-  }
-
-  .CDB-Shape-magnify {
-    &::before {
-      top: 11px;
-      left: 10px;
-      border-color: $buttonColor;
-    }
-
-    &::after {
-      right: 13px;
-      bottom: 10px;
-      background: $buttonColor;
-    }
   }
 }
 

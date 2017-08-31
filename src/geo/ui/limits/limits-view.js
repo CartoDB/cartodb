@@ -34,7 +34,7 @@ module.exports = View.extend({
   render: function () {
     this.$el.html(
       template({
-        limits: Sanitize.html('Some tiles might not be rendering correctly. <a href="#">Learn More</a>')
+        limits: Sanitize.html('Some tiles might not be rendering correctly. <a target="_blank" href="https://carto.com/docs/faqs/carto-engine-usage-limits">Learn More</a>')
       })
     );
 

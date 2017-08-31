@@ -18,6 +18,10 @@ var C = require('../constants');
 module.exports = cdb.core.View.extend({
   className: 'CDB-Widget-body',
 
+  defaults: {
+    chartHeight: 48 + 20 + 4
+  },
+
   events: {
     'click .js-clear': '_resetWidget',
     'click .js-zoom': '_zoom'
@@ -275,7 +279,7 @@ module.exports = cdb.core.View.extend({
       hasAxisTip: true,
       chartBarColor: this.model.getColor() || '#9DE0AD',
       width: this.canvasWidth,
-      height: C.CHART_HEIGHT,
+      height: this.defaults.chartHeight,
       data: this._dataviewModel.getData(),
       dataviewModel: this._dataviewModel,
       originalData: this._originalData,
@@ -348,7 +352,7 @@ module.exports = cdb.core.View.extend({
     var $tooltip = this.$('.js-tooltip');
 
     if (info && info.data) {
-      var bottom = C.CHART_HEIGHT - info.top;
+      var bottom = this.defaults.chartHeight - info.top;
 
       $tooltip.css({ bottom: bottom, left: info.left });
       $tooltip.text(info.data);

@@ -7,7 +7,6 @@ var TimeSeriesHeaderView = require('./time-series-header-view');
 var DropdownView = require('../dropdown/widget-dropdown-view');
 var layerColors = require('../../util/layer-colors');
 var analyses = require('../../data/analyses');
-var C = require('../constants');
 
 /**
  * Widget content view for a time-series
@@ -75,8 +74,6 @@ module.exports = cdb.core.View.extend({
 
     this.addView(this._histogramView);
     this.$('.js-content').append(this._histogramView.render().el);
-
-    this.listenTo(this._histogramView._chartView, 'hover', this._onValueHover, this);
   },
 
   _createHeaderView: function () {
@@ -175,26 +172,5 @@ module.exports = cdb.core.View.extend({
 
   _hasError: function () {
     return this._dataviewModel.has('error');
-  },
-
-  _clearTooltip: function () {
-    this.$('.js-tooltip').stop().hide();
-  },
-
-  _onValueHover: function (info) {
-    var $tooltip = this.$('.js-tooltip');
-
-    if (info && info.data) {
-      var bottom = C.CHART_HEIGHT - info.top;
-
-      $tooltip.css({ bottom: bottom, left: info.left });
-      $tooltip.text(info.data);
-      $tooltip.css({
-        left: info.left - $tooltip.width() / 2,
-        bottom: bottom + $tooltip.height() + (C.TOOLTIP_TRIANGLE_HEIGHT * 1.5) });
-      $tooltip.fadeIn(70);
-    } else {
-      this._clearTooltip();
-    }
   }
 });

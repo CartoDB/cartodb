@@ -1,20 +1,23 @@
 var cdb = require('cartodb.js');
 var HistogramChartView = require('../histogram/chart');
 var viewportUtils = require('../../viewport-utils');
+var tooltipTemplate = require('./tooltip.tpl');
+var C = require('../constants');
 
 /**
  * Time-series histogram view.
  */
 module.exports = cdb.core.View.extend({
+  className: 'CDB-Chart--histogram',
+
   defaults: {
+    offsetLeft: -2,
     histogramChartHeight: 48 + // inline bars height
       4 + // bottom margin
       16 + // labels
       4, // margins
     histogramChartMobileHeight: 16 // inline bars height (no bottom labels)
   },
-
-  className: 'CDB-Chart--histogram',
 
   initialize: function () {
     this._timeSeriesModel = this.options.timeSeriesModel;
@@ -50,11 +53,13 @@ module.exports = cdb.core.View.extend({
   _createHistogramView: function () {
     this._chartView = this._instantiateChartView();
     this.addView(this._chartView);
+    this.$el.append(tooltipTemplate());
     this.$el.append(this._chartView.render().el);
     this._chartView.show();
 
     this.listenTo(this._chartView, 'on_brush_end', this._onBrushEnd, this);
     this.listenTo(this._chartView, 'on_reset_filter', this.resetFilter, this);
+    this.listenTo(this._chartView, 'hover', this._onValueHover, this);
     this.listenTo(this._chartView.model, 'change:width', this._onChangeChartWidth, this);
   },
 
@@ -129,6 +134,27 @@ module.exports = cdb.core.View.extend({
 
   _onForceResize: function () {
     this._chartView.forceResize();
+  },
+
+  _clearTooltip: function () {
+    this.$('.js-tooltip').stop().hide();
+  },
+
+  _onValueHover: function (info) {
+    var $tooltip = this.$('.js-tooltip');
+
+    if (info && info.data) {
+      var bottom = this.defaults.histogramChartHeight - info.top;
+
+      $tooltip.css({bottom: bottom, left: info.left + this.defaults.offsetLeft});
+      $tooltip.text(info.data);
+      $tooltip.css({
+        left: info.left - $tooltip.width() / 2 + this.defaults.offsetLeft,
+        bottom: bottom + $tooltip.height() + (C.TOOLTIP_TRIANGLE_HEIGHT * 1.5) });
+      $tooltip.fadeIn(70);
+    } else {
+      this._clearTooltip();
+    }
   },
 
   _resetFilterInDI: function () {

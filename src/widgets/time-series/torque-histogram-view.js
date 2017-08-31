@@ -9,6 +9,8 @@ var TorqueControlsView = require('./torque-controls-view');
  * this.dataviewModel is a histogram model
  */
 module.exports = HistogramView.extend({
+  defaults: _.extend({}, HistogramView.prototype.defaults, {offsetLeft: 34}),
+
   className: function () {
     return HistogramView.prototype.className + ' CDB-Widget-content CDB-Widget-content--torqueTimeSeries u-flex';
   },

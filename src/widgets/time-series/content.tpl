@@ -15,6 +15,4 @@
   <% } %>
 </div>
 
-<div class="CDB-Widget-content CDB-Widget-content--timeSeries js-content">
-  <div class="CDB-Widget-tooltip CDB-Widget-tooltip--light CDB-Text CDB-Size-small js-tooltip"></div>
-</div>
+<div class="CDB-Widget-content CDB-Widget-content--timeSeries js-content"></div>

@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.9.40",
+  "version": "4.9.50",
   "dependencies": {
     "abbrev": {
       "version": "1.1.0",
@@ -736,9 +736,9 @@
       "resolved": "https://registry.npmjs.org/browserify-zlib/-/browserify-zlib-0.1.4.tgz"
     },
     "browserslist": {
-      "version": "2.3.3",
+      "version": "2.4.0",
       "from": "browserslist@>=2.1.2 <3.0.0",
-      "resolved": "https://registry.npmjs.org/browserslist/-/browserslist-2.3.3.tgz"
+      "resolved": "https://registry.npmjs.org/browserslist/-/browserslist-2.4.0.tgz"
     },
     "buffer": {
       "version": "4.9.1",
@@ -781,9 +781,9 @@
       "resolved": "https://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.33.0.tgz"
     },
     "caniuse-lite": {
-      "version": "1.0.30000717",
-      "from": "caniuse-lite@>=1.0.30000715 <2.0.0",
-      "resolved": "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30000717.tgz"
+      "version": "1.0.30000721",
+      "from": "caniuse-lite@>=1.0.30000718 <2.0.0",
+      "resolved": "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30000721.tgz"
     },
     "carto": {
       "version": "0.15.1-cdb4",
@@ -798,7 +798,7 @@
     "cartodb-deep-insights.js": {
       "version": "0.0.3",
       "from": "cartodb/deep-insights.js#master",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#c376d383ddba1c22863fea5dad44e1680ea02fc5",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#460c2e29fbe88d103cd21e348e4fbf247276f1e1",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",
@@ -815,7 +815,7 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
       "from": "cartodb/cartodb.js#v4",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#aa1200c1b011ff7fcb3104baf5d8c1ac54072d17"
+      "resolved": "git://github.com/cartodb/cartodb.js.git#09f11fb6e409a1e1b784d8909a88f6749ca8c093"
     },
     "caseless": {
       "version": "0.12.0",
@@ -1393,9 +1393,9 @@
       "resolved": "https://registry.npmjs.org/fs.realpath/-/fs.realpath-1.0.0.tgz"
     },
     "function-bind": {
-      "version": "1.1.0",
+      "version": "1.1.1",
       "from": "function-bind@>=1.0.2 <2.0.0",
-      "resolved": "https://registry.npmjs.org/function-bind/-/function-bind-1.1.0.tgz"
+      "resolved": "https://registry.npmjs.org/function-bind/-/function-bind-1.1.1.tgz"
     },
     "geojson-vt": {
       "version": "2.4.0",
@@ -2208,6 +2208,12 @@
       "version": "1.1.0",
       "from": "mustache@1.1.0",
       "resolved": "https://registry.npmjs.org/mustache/-/mustache-1.1.0.tgz"
+    },
+    "nan": {
+      "version": "2.7.0",
+      "from": "nan@>=2.3.0 <3.0.0",
+      "resolved": "https://registry.npmjs.org/nan/-/nan-2.7.0.tgz",
+      "optional": true
     },
     "node-libs-browser": {
       "version": "2.0.0",

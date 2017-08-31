@@ -107,6 +107,18 @@ describe('widgets/time-series/histogram-view', function () {
 
       expect(this.view._instantiateChartView).toHaveBeenCalled();
     });
+    it('should append a tooltip', function () {
+      var chartMock = new Backbone.View();
+      chartMock.model = new Backbone.Model();
+      chartMock.show = function () {};
+      spyOn(this.view, '_instantiateChartView').and.returnValue(chartMock);
+
+      this.view._createHistogramView();
+
+      var html = this.view.$el.html();
+
+      expect(html.indexOf('CDB-Widget-tooltip') > 0).toBe(true);
+    });
   });
 
   describe('_onNormalizedChanged', function () {

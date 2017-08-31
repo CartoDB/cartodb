@@ -444,7 +444,7 @@ module.exports = function (grunt) {
     })
     .value());
 
-  grunt.registerTask('setConfig', 'Set a config property', function(name, val) {
+  grunt.registerTask('setConfig', 'Set a config property', function (name, val) {
     grunt.config.set(name, val);
   });
 

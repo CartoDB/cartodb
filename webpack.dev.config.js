@@ -122,8 +122,6 @@ module.exports = env => {
       fs: 'empty' // This fixes the error Module not found: Error: Can't resolve 'fs'
     },
 
-    stats: {
-      warnings: false
-    }
+    stats: 'normal'
   };
 };

@@ -114,6 +114,15 @@ describe Carto::Mapcap do
       @ids_json = nil
     end
 
+    it 'tokens should be functional from regenerated visualizations after privacy changes' do
+      @visualization.create_mapcap!
+      @visualization.privacy = "PASSWORD"
+      @visualization.password = "my_ass"
+      @visualization.save!
+      mapcap = @visualization.create_mapcap!
+      mapcap.regenerate_visualization.non_mapcapped.auth_token
+    end
+
     it 'should preserve map' do
       regenerated_visualization = @mapcap.regenerate_visualization
       regenerated_visualization.map.id.should eq @map.id

@@ -45,6 +45,7 @@ Development
 * Updates Dataservices API client default version to `0.20.0` (#12633)
 
 ### Bug fixes / enhancements
+* Enhancements on superadmin imports & exports endpoints (#12254)
 * Don't offer new DO UI unless user has DO credits (#12648)
 * Change position and size of legend icons (#12619)
 * Fix Time series width on mobile viewport (#12609)

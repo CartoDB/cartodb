@@ -7,18 +7,13 @@ var TimeSeriesHeaderView = require('./time-series-header-view');
 var DropdownView = require('../dropdown/widget-dropdown-view');
 var layerColors = require('../../util/layer-colors');
 var analyses = require('../../data/analyses');
-
-var TOOLTIP_TRIANGLE_HEIGHT = 4;
+var C = require('../constants');
 
 /**
  * Widget content view for a time-series
  */
 module.exports = cdb.core.View.extend({
   className: 'CDB-Widget-body CDB-Widget-body--timeSeries',
-
-  defaults: {
-    chartHeight: 48 + 20 + 4
-  },
 
   initialize: function () {
     this._dataviewModel = this.model.dataviewModel;
@@ -190,13 +185,13 @@ module.exports = cdb.core.View.extend({
     var $tooltip = this.$('.js-tooltip');
 
     if (info && info.data) {
-      var bottom = this.defaults.chartHeight - info.top;
+      var bottom = C.CHART_HEIGHT - info.top;
 
       $tooltip.css({ bottom: bottom, left: info.left });
       $tooltip.text(info.data);
       $tooltip.css({
         left: info.left - $tooltip.width() / 2,
-        bottom: bottom + $tooltip.height() + (TOOLTIP_TRIANGLE_HEIGHT * 1.5) });
+        bottom: bottom + $tooltip.height() + (C.TOOLTIP_TRIANGLE_HEIGHT * 1.5) });
       $tooltip.fadeIn(70);
     } else {
       this._clearTooltip();

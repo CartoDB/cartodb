@@ -71,8 +71,8 @@ module Carto
         )
 
         source_id = 'a0'
-        analysis = FactoryGirl.create(:simple_source_analysis,
-                                      natural_id: source_id, visualization: visualization, user: carto_user)
+        FactoryGirl.create(:simple_source_analysis,
+                           natural_id: source_id, visualization: visualization, user: carto_user)
 
         data_layer = visualization.data_layers.first
         data_layer.options['source'] = source_id
@@ -80,7 +80,7 @@ module Carto
 
         widget = FactoryGirl.build(:widget, source_id: source_id, layer: data_layer, options: { valid: 'format' })
 
-        return map, table1, table_visualization, visualization, analysis, widget
+        return map, table1, table_visualization, visualization, visualization.analyses.first, widget
       end
 
       def create_table_visualization(carto_user, table)

@@ -4,6 +4,8 @@ require 'spec_helper_min'
 require 'support/helpers'
 
 describe Carto::Analysis do
+  include Carto::Factories::Visualizations
+
   let(:definition_with_options) do
     {
       id: "a1",
@@ -42,6 +44,32 @@ describe Carto::Analysis do
         }
       }
     }
+  end
+
+  describe 'source validation' do
+    before(:all) do
+      @user = FactoryGirl.create(:carto_user)
+      @map, @table1, @table_visualization, @visualization, @analysis = create_builder_visualization(@user)
+    end
+
+    after(:all) do
+      destroy_full_visualization(@map, @table1, @table_visualization, @visualization)
+      @user.destroy
+    end
+
+
+    it 'edition fails if any layer source does not exist' do
+      data_layer = @visualization.data_layers.first
+      data_layer.options['source'] = @analysis.natural_id
+      data_layer.save!
+
+      @visualization = Carto::Visualization.find(@visualization.id)
+      @analysis = @visualization.analyses[0]
+      @analysis.analysis_definition = point_in_polygon_definition_with_options[:params][:points_source]
+      @analysis.save.should be_false
+      @analysis.errors[:visualization].empty?.should be_false
+      @analysis.visualization.data_layers.first.errors[:options].empty?.should be_false
+    end
   end
 
   describe '#natural_id' do
@@ -183,8 +211,6 @@ describe Carto::Analysis do
   end
 
   describe '#source_analysis_for_layer' do
-    include Carto::Factories::Visualizations
-
     before(:all) do
       @user = FactoryGirl.create(:carto_user)
       @map, @table, @table_visualization, @visualization = create_full_visualization(@user)

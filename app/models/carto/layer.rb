@@ -74,7 +74,7 @@ module Carto
     has_many :layers_user_tables, dependent: :destroy
     has_many :user_tables, through: :layers_user_tables, class_name: Carto::UserTable
 
-    has_many :widgets, class_name: Carto::Widget, order: '"order"'
+    has_many :widgets, class_name: Carto::Widget, order: '"order"', inverse_of: :layer
     has_many :legends,
              class_name: Carto::Legend,
              dependent: :destroy,
@@ -313,6 +313,10 @@ module Carto
       options['query'] = qualify_query(query, options['table_name'], owner_username) if query
     end
 
+    def validate_source_at_visualization(visualization)
+      validate_source(visualization, options['source'], :options)
+    end
+
     private
 
     # The table dependencies will only be updated after the layer. However, when deleting them, they need to be deleted
@@ -358,7 +362,7 @@ module Carto
     end
 
     def source_exists
-      validate_source(visualization, options['source'], :options)
+      validate_source_at_visualization(visualization)
     end
 
     def update_layer_node_style

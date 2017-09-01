@@ -50,7 +50,8 @@ module.exports = cdb.core.View.extend({
 
   _initViews: function () {
     var sizesTooltip = new TooltipView({
-      target: this.$('.js-sizes')
+      context: this.$el,
+      target: '.js-sizes'
     });
     $('body').append(sizesTooltip.render().el);
     this.addView(sizesTooltip);

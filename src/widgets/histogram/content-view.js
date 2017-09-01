@@ -6,6 +6,7 @@ var HistogramChartView = require('./chart');
 var placeholder = require('./placeholder.tpl');
 var template = require('./content.tpl');
 var DropdownView = require('../dropdown/widget-dropdown-view');
+var TooltipView = require('../widget-tooltip-view');
 var AnimateValues = require('../animate-values.js');
 var animationTemplate = require('./animation-template.tpl');
 var layerColors = require('../../util/layer-colors');
@@ -60,6 +61,14 @@ module.exports = cdb.core.View.extend({
     this._renderMiniChart();
     this._renderMainChart();
     this._renderAllValues();
+
+    var tooltip = new TooltipView({
+      context: this.histogramChartView,
+      event: 'hover'
+    });
+
+    $('body').append(tooltip.render().el);
+    this.addView(tooltip);
   },
 
   _initTitleView: function () {
@@ -292,7 +301,6 @@ module.exports = cdb.core.View.extend({
     this.addView(this.histogramChartView);
 
     this.histogramChartView.bind('on_brush_end', this._onBrushEnd, this);
-    this.histogramChartView.bind('hover', this._onValueHover, this);
     this.histogramChartView.render().show();
 
     this._updateStats();
@@ -342,27 +350,6 @@ module.exports = cdb.core.View.extend({
     this.model.off('change:max', this._onChangeMax, this);
     this.model.off('change:min', this._onChangeMin, this);
     this.model.off('change:avg', this._onChangeAvg, this);
-  },
-
-  _clearTooltip: function () {
-    this.$('.js-tooltip').stop().hide();
-  },
-
-  _onValueHover: function (info) {
-    var $tooltip = this.$('.js-tooltip');
-
-    if (info && info.data) {
-      var bottom = this.defaults.chartHeight - info.top;
-
-      $tooltip.css({ bottom: bottom, left: info.left });
-      $tooltip.text(info.data);
-      $tooltip.css({
-        left: info.left - $tooltip.width() / 2,
-        bottom: bottom + $tooltip.height() + (C.TOOLTIP_TRIANGLE_HEIGHT * 1.5) });
-      $tooltip.fadeIn(70);
-    } else {
-      this._clearTooltip();
-    }
   },
 
   _onMiniRangeUpdated: function (loBarIndex, hiBarIndex) {

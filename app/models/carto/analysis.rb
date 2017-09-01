@@ -85,7 +85,7 @@ class Carto::Analysis < ActiveRecord::Base
   end
 
   def all_analysis_nodes
-    [analysis_node] + analysis_node.children
+    [analysis_node] + analysis_node.descendants
   end
 
   private

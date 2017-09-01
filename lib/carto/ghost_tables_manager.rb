@@ -30,9 +30,7 @@ module Carto
       sync_user_tables_with_db unless user_tables_synced_with_db?
     end
 
-    private
-
-    # determine linked tables vs cartodbfied tables consistency; i.e.: needs to run sync
+    # determine linked tables vs cartodbfied tables consistency; i.e.: needs to run
     def user_tables_synced_with_db?
       user_tables = fetch_user_tables
       cartodbfied_tables = fetch_cartodbfied_tables
@@ -41,6 +39,8 @@ module Carto
         (user_tables - cartodbfied_tables).empty? &&
         (cartodbfied_tables - user_tables).empty?
     end
+
+    private
 
     # It's nice to run sync if any unsafe stale (dropped or renamed) tables will be shown to the user but we can't block
     # the workers for more that 180 seconds

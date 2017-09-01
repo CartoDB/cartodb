@@ -25,6 +25,8 @@ module Carto
     validate  :user_or_organization_present
 
     def run_export
+      check_valid_user(user) if user
+
       log.append("=== Exporting #{organization ? 'user' : 'org'} data ===")
       update_attributes(state: STATE_EXPORTING)
 
@@ -50,7 +52,7 @@ module Carto
 
       false
     ensure
-      package.cleanup
+      package.try(:cleanup)
     end
 
     def enqueue
@@ -58,6 +60,12 @@ module Carto
     end
 
     private
+
+    def check_valid_user(user)
+      unless Carto::GhostTablesManager.new(user.id).user_tables_synced_with_db?
+        raise "Cannot export if tables aren't synched with db. Please run ghost tables."
+      end
+    end
 
     def run_metadata_export(meta_dir)
       if organization

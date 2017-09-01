@@ -814,8 +814,8 @@
     },
     "cartodb-deep-insights.js": {
       "version": "0.0.3",
-      "from": "cartodb/deep-insights.js#12661-histogram-handler-stuck",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#829c4a22b0be9e3620e6fb31c41861b8cae3c9b5",
+      "from": "cartodb/deep-insights.js#master",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#c6687fb9fb9a782fa7f8aa11ecd11a9de6e883a5",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",
@@ -832,7 +832,7 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
       "from": "cartodb/cartodb.js#v4",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#09f11fb6e409a1e1b784d8909a88f6749ca8c093"
+      "resolved": "git://github.com/cartodb/cartodb.js.git#ca734e874bc1aaaaef70dc4e827ceb95af11dc4b"
     },
     "caseless": {
       "version": "0.12.0",
@@ -962,9 +962,9 @@
       "resolved": "https://registry.npmjs.org/convert-source-map/-/convert-source-map-1.1.3.tgz"
     },
     "core-js": {
-      "version": "2.5.0",
+      "version": "2.5.1",
       "from": "core-js@>=2.4.0 <3.0.0",
-      "resolved": "https://registry.npmjs.org/core-js/-/core-js-2.5.0.tgz"
+      "resolved": "https://registry.npmjs.org/core-js/-/core-js-2.5.1.tgz"
     },
     "core-util-is": {
       "version": "1.0.2",

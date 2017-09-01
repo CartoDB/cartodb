@@ -155,6 +155,31 @@ describe 'UserMigration' do
     user.destroy
   end
 
+  it 'does not export user with a canonical viz that does not have a user table (see #12588)' do
+    CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+
+    user = FactoryGirl.build(:valid_user).save
+    carto_user = Carto::User.find(user.id)
+
+    @map, @table, @table_visualization, @visualization = create_full_visualization(carto_user)
+
+    @table.delete
+    user.in_database.execute("DROP TABLE #{@table.name}")
+    # The canonical visualization is still registered after the deletion
+    @table_visualization.reload
+    @table_visualization.should be
+
+    export = Carto::UserMigrationExport.create(user: carto_user, export_metadata: true)
+
+    export.run_export
+
+    export.log.entries.should include("Can't export. Vizs without user table: [\"#{@table_visualization.id}\"]")
+    expect(export.state).to eq(Carto::UserMigrationExport::STATE_FAILURE)
+
+    export.destroy
+    user.destroy
+  end
+
   describe 'with organization' do
     include_context 'organization with users helper'
 

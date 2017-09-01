@@ -65,6 +65,9 @@ module Carto
       unless Carto::GhostTablesManager.new(user.id).user_tables_synced_with_db?
         raise "Cannot export if tables aren't synched with db. Please run ghost tables."
       end
+
+      vs = user.visualizations.where(type: Carto::Visualization::TYPE_CANONICAL).select { |v| v.table.nil? }
+      raise "Can't export. Vizs without user table: #{vs.map(&:id)}" unless vs.empty?
     end
 
     def run_metadata_export(meta_dir)

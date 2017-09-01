@@ -1,8 +1,8 @@
 var cdb = require('cartodb.js');
+var $ = require('jquery');
 var HistogramChartView = require('../histogram/chart');
 var viewportUtils = require('../../viewport-utils');
 var TooltipView = require('../widget-tooltip-view');
-var C = require('../constants');
 
 /**
  * Time-series histogram view.

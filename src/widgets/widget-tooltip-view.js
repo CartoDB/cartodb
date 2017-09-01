@@ -1,21 +1,20 @@
 var cdb = require('cartodb.js');
+var $ = require('jquery');
+var C = require('./constants');
 
 /**
  * Standard widget tooltip view
  *
  */
 
-var TOOLTIP_TRIANGLE = 10;
-
 module.exports = cdb.core.View.extend({
   className: 'CDB-Widget-tooltip CDB-Widget-tooltip--light CDB-Text CDB-Size-small',
 
   options: {
-    attribute: 'data-tooltip',
+    attribute: 'data-tooltip'
   },
 
   initialize: function (opts) {
-
     if (!opts.context) {
       throw new Error('context must be defined.');
     }
@@ -30,7 +29,7 @@ module.exports = cdb.core.View.extend({
 
   _initBinds: function () {
     if (this.options.event) {
-      this._$context.on(this.options.event, this.show)
+      this._$context.on(this.options.event, this.show);
     } else {
       this._$context.on('mouseenter', this._target, this.show);
       this._$context.on('mouseleave', this._target, this.hide);
@@ -45,7 +44,7 @@ module.exports = cdb.core.View.extend({
     var height = this.$el.outerHeight();
 
     this.$el.css({
-      top: pos.top - height - TOOLTIP_TRIANGLE,
+      top: pos.top - height - C.TOOLTIP_OFFSET_Y,
       left: pos.left + (targetWidth / 2) - (width / 2)
     });
   },

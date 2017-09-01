@@ -1,3 +1,3 @@
 module.exports = {
-  TOOLTIP_TRIANGLE_HEIGHT: 4
+  TOOLTIP_OFFSET_Y: 10
 };

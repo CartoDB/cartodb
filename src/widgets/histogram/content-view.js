@@ -1,4 +1,5 @@
 var _ = require('underscore');
+var $ = require('jquery');
 var cdb = require('cartodb.js');
 var formatter = require('../../formatter');
 var HistogramTitleView = require('./histogram-title-view');
@@ -11,7 +12,6 @@ var AnimateValues = require('../animate-values.js');
 var animationTemplate = require('./animation-template.tpl');
 var layerColors = require('../../util/layer-colors');
 var analyses = require('../../data/analyses');
-var C = require('../constants');
 
 /**
  * Widget content view for a histogram

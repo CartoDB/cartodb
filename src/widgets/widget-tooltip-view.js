@@ -15,30 +15,31 @@ module.exports = cdb.core.View.extend({
   },
 
   initialize: function (opts) {
+
     if (!opts.context) {
-      throw new Error('context is not defined');
+      throw new Error('context must be defined.');
     }
 
-    if (!opts.target) {
-      throw new Error('target is not defined');
-    }
-
-    this._$context = this.options.context;
-    this._target = this.options.target;
-    this.show = this.show.bind(this);
     this.hide = this.hide.bind(this);
+    this.show = this.show.bind(this);
 
+    this._$context = opts.context;
+    this._target = opts.target;
     this._initBinds();
   },
 
   _initBinds: function () {
-    this._$context.on('mouseover', this._target, this.show);
-    this._$context.on('mouseout', this._target, this.hide);
+    if (this.options.event) {
+      this._$context.on(this.options.event, this.show)
+    } else {
+      this._$context.on('mouseenter', this._target, this.show);
+      this._$context.on('mouseleave', this._target, this.hide);
+    }
   },
 
   _setPosition: function (target) {
     var $target = $(target);
-    var targetWidth = $target.outerWidth();
+    var targetWidth = $target.get(0).getBoundingClientRect().width; // for svg support as well
     var pos = $target.offset();
     var width = this.$el.outerWidth();
     var height = this.$el.outerHeight();
@@ -56,14 +57,19 @@ module.exports = cdb.core.View.extend({
   },
 
   show: function (e) {
+    if (!e || !e.target) {
+      this.$el.fadeOut(70);
+      return;
+    }
+
     this._setValue(e.target);
     this._setPosition(e.target);
     this.render();
-    cdb.core.View.prototype.show.call(this);
+    this.$el.fadeIn(70);
   },
 
   clean: function () {
-    this._$context.off('mouseover mouseout');
+    this._$context.off('mouseenter mouseleave');
     cdb.core.View.prototype.clean.call(this);
   }
 

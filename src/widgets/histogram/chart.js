@@ -1499,6 +1499,9 @@ module.exports = cdb.core.View.extend({
       })
       .attr('y', self.chartHeight())
       .attr('height', 0)
+      .attr('data-tooltip', function (d) {
+        return self.formatter(d.freq);
+      })
       .attr('width', Math.max(1, this.barWidth - spacing));
 
     bars

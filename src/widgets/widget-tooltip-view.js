@@ -1,5 +1,4 @@
 var cdb = require('cartodb.js');
-var _ = require('underscore');
 
 /**
  * Standard widget tooltip view

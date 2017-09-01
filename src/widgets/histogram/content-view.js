@@ -46,7 +46,14 @@ module.exports = cdb.core.View.extend({
 
   _initViews: function () {
     this._initTitleView();
+    this._initDropdownView();
+    this._renderMiniChart();
+    this._renderMainChart();
+    this._renderAllValues();
+    this._initTooltipView();
+  },
 
+  _initDropdownView: function () {
     var dropdown = new DropdownView({
       model: this.model,
       target: '.js-actions',
@@ -57,11 +64,9 @@ module.exports = cdb.core.View.extend({
     });
 
     this.addView(dropdown);
+  },
 
-    this._renderMiniChart();
-    this._renderMainChart();
-    this._renderAllValues();
-
+  _initTooltipView: function () {
     var tooltip = new TooltipView({
       context: this.histogramChartView,
       event: 'hover'
@@ -69,6 +74,10 @@ module.exports = cdb.core.View.extend({
 
     $('body').append(tooltip.render().el);
     this.addView(tooltip);
+  },
+
+  _clearTooltip: function () {
+    this.histogramChartView.trigger('hover', { target: null });
   },
 
   _initTitleView: function () {

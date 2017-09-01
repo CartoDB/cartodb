@@ -46,6 +46,7 @@ Development
 * Updates Dataservices API client default version to `0.20.0` (#12633)
 
 ### Bug fixes / enhancements
+* Fix popup order selection (#12694)
 * Fix histogram range sliders stick on buckets (#12661)
 * Fix Time Series resize when switching to advanced mode (#12124)
 * Fix adding/removing widgets when having Time Series (#12123, #12402, #12655)

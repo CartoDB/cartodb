@@ -160,7 +160,9 @@ $buttonColor: #636D72;
   order: 4;
   width: 32px;
   height: 32px;
+  margin-right: 8px;
   cursor: pointer;
+
   .CDB-Shape-Arrow::after,
   .CDB-Shape-Arrow::before {
     background: #636D72;

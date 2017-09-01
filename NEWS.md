@@ -77,6 +77,7 @@ Development
 * Updated text of widget tooltips (#11467)
 * Fixes gravatar enabled check (support#840)
 * Fixed error where analysis overlay/infobox wasn't shown when hiding a layer (#11767)
+* Validate source analysis at Layer and Widget (#12549)
 * Size of 'Add analysis' button reduced (#11580)
 * Fixed arrow keys exceeding min/max values in number editor (#12212)
 * Better handling and reporting of "table with no map associated" error in map privacy changes (#12137).

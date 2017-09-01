@@ -1,8 +1,12 @@
 # encoding: UTF-8
 
 require_relative './carto_json_serializer'
+require_relative './helpers/source_validation'
 
 class Carto::Widget < ActiveRecord::Base
+  include Carto::SourceValidation
+  validate :source_exists
+
   # INFO: disable ActiveRecord inheritance column
   self.inheritance_column = :_type
 
@@ -63,6 +67,10 @@ class Carto::Widget < ActiveRecord::Base
   end
 
   private
+
+  def source_exists
+    validate_source(layer && layer.visualization, source_id, :source_id)
+  end
 
   def set_style_if_nil
     self.style ||= {}

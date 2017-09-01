@@ -1,5 +1,6 @@
 require 'active_record'
 require_relative './carto_json_serializer'
+require_relative './helpers/source_validation'
 require_dependency 'carto/table_utils'
 require_dependency 'carto/query_rewriter'
 
@@ -58,6 +59,7 @@ module Carto
     include Carto::TableUtils
     include LayerTableDependencies
     include Carto::QueryRewriter
+    include Carto::SourceValidation
 
     serialize :options, CartoJsonSerializer
     serialize :infowindow, CartoJsonSerializer
@@ -356,13 +358,7 @@ module Carto
     end
 
     def source_exists
-      source = options['source']
-      return unless source && visualization
-
-      sources = visualization.analyses.map(&:all_analysis_nodes).flatten
-      unless sources.map(&:id).include?(source)
-        errors.add(:options, "Source analysis #{source} does not exist")
-      end
+      validate_source(visualization, options['source'], :options)
     end
 
     def update_layer_node_style

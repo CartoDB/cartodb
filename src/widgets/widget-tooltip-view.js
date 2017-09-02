@@ -57,7 +57,7 @@ module.exports = cdb.core.View.extend({
 
   show: function (e) {
     if (!e || !e.target) {
-      this.$el.fadeOut(70);
+      this.hide();
       return;
     }
 

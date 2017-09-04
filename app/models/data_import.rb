@@ -346,13 +346,12 @@ class DataImport < Sequel::Model
     log.store
     self.save
     begin
-      CartoDB::PlatformLimits::Importer::UserConcurrentImportsAmount.new({
-                                                                           user: current_user,
-                                                                           redis: {
-                                                                             db: $users_metadata
-                                                                           }
-                                                                         })
-      .decrement!
+      CartoDB::PlatformLimits::Importer::UserConcurrentImportsAmount.new(
+        user: user,
+        redis: {
+          db: $users_metadata
+        }
+      ).decrement!
     rescue => exception
       CartoDB::StdoutLogger.info('Error decreasing concurrent import limit',
                            "#{exception.message} #{exception.backtrace.inspect}")

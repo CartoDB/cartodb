@@ -436,7 +436,7 @@ class DataImport < Sequel::Model
 
   def public_url
     return data_source unless uploaded_file
-    "https://#{current_user.username}.carto.com/#{uploaded_file[0]}"
+    "https://#{user.username}.carto.com/#{uploaded_file[0]}"
   end
 
   def valid_uuid?(text)

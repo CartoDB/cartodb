@@ -275,7 +275,7 @@ class DataImport < Sequel::Model
 
     CartoDB::notify_exception(
       CartoDB::Importer2::GenericImportError.new('Import timed out or got stuck'),
-      user: current_user
+      user: user
     )
     true
   end

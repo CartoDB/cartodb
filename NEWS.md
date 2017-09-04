@@ -47,6 +47,7 @@ Development
 
 ### Bug fixes / enhancements
 * Improved tests. Introduced headless chrome for our spec runners (#12657)
+* Fix popup order selection (#12694)
 * Fix histogram range sliders stick on buckets (#12661)
 * Fix Time Series resize when switching to advanced mode (#12124)
 * Fix adding/removing widgets when having Time Series (#12123, #12402, #12655)

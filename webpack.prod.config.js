@@ -51,7 +51,8 @@ module.exports = env => {
       }),
 
       new webpack.DefinePlugin({
-        __IN_DEV__: JSON.stringify(false)
+        __IN_DEV__: JSON.stringify(false),
+        __ENV__: JSON.stringify('prod')
       }),
 
       // Minify

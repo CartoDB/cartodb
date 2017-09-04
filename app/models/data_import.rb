@@ -190,7 +190,7 @@ class DataImport < Sequel::Model
     rescue TokenExpiredOrInvalidError => ex
       success = false
       begin
-        current_user.oauths.remove(ex.service_name)
+        user.oauths.remove(ex.service_name)
       rescue => ex2
         log.append "Exception removing OAuth: #{ex2.message}"
         log.append ex2.backtrace

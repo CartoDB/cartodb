@@ -60,7 +60,7 @@ describe Asset do
   end
 
   def local_path(asset)
-    local_url = asset.public_url.gsub(/http:\/\/#{CartoDB.account_host}\/uploads/,'')
+    local_url = asset.public_url.gsub(/\/uploads/,'')
     Carto::Conf.new.public_uploaded_assets_path + local_url
   end
 

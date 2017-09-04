@@ -1051,7 +1051,6 @@ class DataImport < Sequel::Model
   end
 
   def track_results(results, import_id)
-    user_id = user.id
     return unless user_id
 
     if visualization_id

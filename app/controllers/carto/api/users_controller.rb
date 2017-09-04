@@ -27,8 +27,8 @@ module Carto
           user_data: carto_viewer.data,
           config: frontend_config_hash,
           upgrade_url: carto_viewer.upgrade_url(request.protocol),
-          isFirstTimeViewingDashboard: !carto_viewer.dashboard_viewed?,
-          isJustLoggedIn: !!flash['logged'],
+          is_first_time_viewing_dashboard: !carto_viewer.dashboard_viewed?,
+          is_just_logged_in: !!flash['logged'],
           default_fallback_basemap: carto_viewer.default_basemap,
           dashboard_notifications: dashboard_notifications,
           organization_notifications: organization_notifications

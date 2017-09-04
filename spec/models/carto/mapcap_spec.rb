@@ -116,7 +116,7 @@ describe Carto::Mapcap do
 
     it 'tokens should be functional from regenerated visualizations after privacy changes' do
       @visualization.create_mapcap!
-      @visualization.privacy = Carto::Visualization.PRIVACY_PROTECTED
+      @visualization.privacy = Carto::Visualization::PRIVACY_PROTECTED
       @visualization.password = "r4nr0mp455"
       @visualization.save!
       mapcap = @visualization.create_mapcap!

@@ -12,10 +12,12 @@ shared_context 'layer hierarchy' do
     @map = FactoryGirl.create(:carto_map_with_layers, user_id: @user1.id)
     @layer = @map.layers.first
     @visualization = FactoryGirl.create(:carto_visualization, map: @map, privacy: Carto::Visualization::PRIVACY_PRIVATE, user_id: @user1.id)
+    carto_user1 = Carto::User.find(@user1.id)
+    @analysis = FactoryGirl.create(:simple_source_analysis, visualization: @visualization, user: carto_user1)
   end
 
   before(:each) do
-    @widget = FactoryGirl.create(:widget, layer: @layer)
+    @widget = FactoryGirl.create(:widget, layer: @layer, source_id: @analysis.natural_id)
   end
 
   after(:each) do

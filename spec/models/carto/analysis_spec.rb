@@ -57,7 +57,6 @@ describe Carto::Analysis do
       @user.destroy
     end
 
-
     it 'edition fails if any layer source does not exist' do
       data_layer = @visualization.data_layers.first
       data_layer.options['source'] = @analysis.natural_id

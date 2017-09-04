@@ -103,8 +103,8 @@ describe Carto::Mapcap do
 
   describe '#regenerate_visualization' do
     before(:all) do
-      FactoryGirl.create(:analysis, visualization: @visualization, user: @user)
-      FactoryGirl.create(:widget, layer: @visualization.data_layers.first)
+      analysis = FactoryGirl.create(:analysis, visualization: @visualization, user: @user)
+      FactoryGirl.create(:widget, layer: @visualization.data_layers.first, source_id: analysis.natural_id)
       @visualization.reload
       @mapcap = Carto::Mapcap.create!(visualization_id: @visualization.id)
     end

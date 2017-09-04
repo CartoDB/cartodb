@@ -19,7 +19,7 @@ end
 FactoryGirl.define do
   factory :simple_source_analysis, class: Carto::Analysis do
     ignore do
-      natural_id nil
+      natural_id 'a0'
     end
 
     analysis_definition { { id: natural_id, type: 'source', params: { query: 'select 1' } } }

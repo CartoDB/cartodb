@@ -15,19 +15,26 @@ module Carto
       before(:all) do
         @user = FactoryGirl.create(:carto_user, private_tables_enabled: true, private_maps_enabled: true)
 
-        @map, _, _, @visualization = create_full_visualization(@user)
+        @map, @table, @table_visualization, @visualization, @analysis = create_builder_visualization(@user)
 
         @map.layers.reject(&:basemap?).each(&:destroy)
         @map.reload
       end
 
+      after(:all) do
+        destroy_full_visualization(@map, @table, @table_visualization, @visualization)
+      end
+
       describe '#to_hash' do
+        before(:all) do
+          @map1, @table1, @table_visualization1, @visualization1 = create_full_visualization(@user)
+        end
+
         after(:all) do
           destroy_full_visualization(@map1, @table1, @table_visualization1, @visualization1)
         end
 
         it 'should get view info from the map when the state center does not exist' do
-          @map1, @table1, @table_visualization1, @visualization1 = create_full_visualization(@user)
           @visualization1.state = FactoryGirl.create(:state, visualization: @visualization1)
           @visualization1.state.json[:map].delete(:center)
           template_hash = Carto::NamedMaps::Template.new(@visualization1).to_hash
@@ -598,25 +605,34 @@ module Carto
       end
 
       describe '#layergroup' do
-        before (:all) { @layergroup_hash = Carto::NamedMaps::Template.new(@visualization).to_hash[:layergroup] }
-        after  (:all) { @layergroup_hash = nil }
+        before(:all) do
+          @map1, @table1, @table_visualization1, @visualization1 = create_full_visualization(@user)
+        end
+
+        after(:all) do
+          destroy_full_visualization(@map1, @table1, @table_visualization1, @visualization1)
+        end
 
         it 'should have version according to Map Config' do
-          @layergroup_hash[:version].should eq Carto::NamedMaps::Template::MAP_CONFIG_VERSION
+          layergroup_hash = Carto::NamedMaps::Template.new(@visualization1).to_hash[:layergroup]
+          layergroup_hash[:version].should eq Carto::NamedMaps::Template::MAP_CONFIG_VERSION
         end
 
         it 'should not have any dataview if no widgets are present' do
-          @layergroup_hash[:dataviews].should be_empty
+          layergroup_hash = Carto::NamedMaps::Template.new(@visualization1).to_hash[:layergroup]
+          layergroup_hash[:dataviews].should be_empty
         end
 
         it 'should not have any analysis if no analyses are present' do
-          @layergroup_hash[:analyses].should be_empty
+          layergroup_hash = Carto::NamedMaps::Template.new(@visualization1).to_hash[:layergroup]
+          layergroup_hash[:analyses].should be_empty
         end
 
         describe 'dataviews' do
           before(:all) do
             @carto_layer = FactoryGirl.create(:carto_layer, kind: 'carto', maps: [@map])
-            @widget = FactoryGirl.create(:widget, layer: @carto_layer)
+            source_id = @visualization.analyses.map(&:natural_id).first
+            @widget = FactoryGirl.create(:widget, layer: @carto_layer, source_id: source_id)
             @visualization.reload
 
             @dataview_hash = Carto::NamedMaps::Template.new(@visualization).to_hash[:layergroup][:dataviews]

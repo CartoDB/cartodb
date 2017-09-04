@@ -29,9 +29,9 @@ describe('formatter', function () {
     expect(formatter.timestampFactory('year', 0)(timestamp)).toEqual('2017');
     expect(formatter.timestampFactory('quarter', 0)(timestamp)).toEqual('Q2 2017');
     expect(formatter.timestampFactory('month', 0)(timestamp)).toEqual('May 2017');
-    expect(formatter.timestampFactory('week', 0)(timestamp)).toEqual('6th May 2017');
-    expect(formatter.timestampFactory('day', 0)(timestamp)).toEqual('6th May 2017');
-    expect(formatter.timestampFactory('minute', 0)(timestamp)).toEqual('10:36 05/06/2017');
-    expect(formatter.timestampFactory('second', 0)(timestamp)).toEqual('10:36:16');
+    expect(formatter.timestampFactory('week', 0)(timestamp)).toEqual('May 6th, 2017');
+    expect(formatter.timestampFactory('day', 0)(timestamp)).toEqual('May 6th, 2017');
+    expect(formatter.timestampFactory('hour', 0)(timestamp)).toEqual('10:00 - May 6th, 2017');
+    expect(formatter.timestampFactory('minute', 0)(timestamp)).toEqual('10:36 - May 6th, 2017');
   });
 });

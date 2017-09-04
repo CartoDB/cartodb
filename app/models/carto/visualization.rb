@@ -519,6 +519,7 @@ class Carto::Visualization < ActiveRecord::Base
   # deal with all the different the cases internally.
   # See https://github.com/CartoDB/cartodb/pull/9678
   def non_mapcapped
+    return self if id.blank?
     persisted? ? self : Carto::Visualization.find(id)
   end
 

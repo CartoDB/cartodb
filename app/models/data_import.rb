@@ -1052,10 +1052,10 @@ class DataImport < Sequel::Model
   end
 
   def track_results(results, import_id)
-    return unless user
+    user_id = user.id
+    return unless user_id
 
     if visualization_id
-      user_id = user.id
       Carto::Tracking::Events::CreatedMap.new(user_id,
                                               user_id: user_id,
                                               visualization_id: visualization_id,
@@ -1075,8 +1075,8 @@ class DataImport < Sequel::Model
       if map
         vis = Carto::Visualization.where(map_id: map.id).first
 
-        Carto::Tracking::Events::CreatedDataset.new(current_user_id,
-                                                    user_id: current_user_id,
+        Carto::Tracking::Events::CreatedDataset.new(user_id,
+                                                    user_id: user_id,
                                                     visualization_id: vis.id,
                                                     origin: origin).report
       end

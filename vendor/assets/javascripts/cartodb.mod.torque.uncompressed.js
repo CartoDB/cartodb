@@ -4887,6 +4887,7 @@ var Filters = require('./torque_filters');
 
           if (filtered) {
             img.crossOrigin = 'Anonymous';
+            img.setAttribute('crossorigin', 'anonymous');
           }
 
           self._setImageSrc(img, qualifiedImageUrl, function(err) {

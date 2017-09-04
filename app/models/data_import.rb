@@ -512,7 +512,7 @@ class DataImport < Sequel::Model
     taken_names = Carto::Db::UserSchema.new(user).table_names
     table_name = Carto::ValidTableNameProposer.new.propose_valid_table_name(name, taken_names: taken_names)
     user.db_service.in_database_direct_connection(statement_timeout: DIRECT_STATEMENT_TIMEOUT) do |user_direct_conn|
-        user_direct_conn.run(%{CREATE TABLE #{table_name} AS #{query}})
+      user_direct_conn.run(%{CREATE TABLE #{table_name} AS #{query}})
     end
     if user.over_disk_quota?
       log.append "Over storage quota. Dropping table #{table_name}"

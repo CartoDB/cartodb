@@ -535,7 +535,6 @@ class DataImport < Sequel::Model
     )
   end
 
-
   def migrate_existing(imported_name=migrate_table, name=nil)
     new_name = imported_name || name
 

@@ -480,7 +480,7 @@ class DataImport < Sequel::Model
     log.append 'from_table()'
 
     number_of_tables = 1
-    quota_checker = CartoDB::QuotaChecker.new(current_user)
+    quota_checker = CartoDB::QuotaChecker.new(user)
     if quota_checker.will_be_over_table_quota?(number_of_tables)
       raise_over_table_quota_error
     end

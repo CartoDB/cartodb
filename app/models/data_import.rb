@@ -995,14 +995,15 @@ class DataImport < Sequel::Model
   # @throws DataSourceError
   def get_datasource(datasource_name, service_item_id)
     begin
-      oauth = current_user.oauths.select(datasource_name)
+      oauth = user.oauths.select(datasource_name)
       # Tables metadata DB also store resque data
       datasource = DatasourcesFactory.get_datasource(
-        datasource_name, current_user, {
-                                          http_timeout: ::DataImport.http_timeout_for(current_user),
-                                          redis_storage: $tables_metadata,
-                                          user_defined_limits: ::JSON.parse(user_defined_limits).symbolize_keys
-                                       })
+        datasource_name,
+        user,
+        http_timeout: ::DataImport.http_timeout_for(user),
+        redis_storage: $tables_metadata,
+        user_defined_limits: ::JSON.parse(user_defined_limits).symbolize_keys
+      )
       datasource.token = oauth.token unless oauth.nil?
     rescue => ex
       log.append "Exception: #{ex.message}"

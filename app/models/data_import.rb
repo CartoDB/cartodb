@@ -575,10 +575,10 @@ class DataImport < Sequel::Model
   def pg_options
     Rails.configuration.database_configuration[Rails.env].symbolize_keys
       .merge(
-        username: current_user.database_username,
-        password: current_user.database_password,
-        database: current_user.database_name,
-        host:     current_user.database_host
+        username: user.database_username,
+        password: user.database_password,
+        database: user.database_name,
+        host:     user.database_host
       ) {|key, o, n| n.nil? || n.empty? ? o : n}
   end
 

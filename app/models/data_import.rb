@@ -969,11 +969,11 @@ class DataImport < Sequel::Model
     log.store
     payload = {
       file_url:       public_url,
-      distinct_id:    current_user.username,
-      username:       current_user.username,
-      account_type:   current_user.account_type,
-      database:       current_user.database_name,
-      email:          current_user.email,
+      distinct_id:    user.username,
+      username:       user.username,
+      account_type:   user.account_type,
+      database:       user.database_name,
+      email:          user.email,
       log:            log.to_s
     }
     payload.merge!(

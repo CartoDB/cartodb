@@ -704,7 +704,7 @@ class DataImport < Sequel::Model
   # * importer: the new importer (nil if download errors detected)
   # * connector: the connector that the importer uses
   def new_importer_with_connector
-    CartoDB::Importer2::ConnectorRunner.check_availability!(current_user)
+    CartoDB::Importer2::ConnectorRunner.check_availability!(user)
 
     database_options = pg_options
 
@@ -712,18 +712,18 @@ class DataImport < Sequel::Model
 
     connector = CartoDB::Importer2::ConnectorRunner.new(
       service_item_id,
-      user: current_user,
+      user: user,
       pg: database_options,
       log: log,
       collision_strategy: collision_strategy
     )
 
-    registrar     = CartoDB::TableRegistrar.new(current_user, ::Table)
-    quota_checker = CartoDB::QuotaChecker.new(current_user)
-    database      = current_user.in_database
-    destination_schema = current_user.database_schema
-    public_user_roles = current_user.db_service.public_user_roles
-    overviews_creator = CartoDB::Importer2::Overviews.new(connector, current_user)
+    registrar     = CartoDB::TableRegistrar.new(user, ::Table)
+    quota_checker = CartoDB::QuotaChecker.new(user)
+    database      = user.in_database
+    destination_schema = user.database_schema
+    public_user_roles = user.db_service.public_user_roles
+    overviews_creator = CartoDB::Importer2::Overviews.new(connector, user)
     importer = CartoDB::Connector::Importer.new(
       connector, registrar, quota_checker, database, id,
       overviews_creator,

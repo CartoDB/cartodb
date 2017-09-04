@@ -551,7 +551,7 @@ class DataImport < Sequel::Model
       table.save
       table.optimize
       table.map.recalculate_bounds!
-      if current_user.remaining_quota < 0
+      if user.remaining_quota < 0
         log.append 'Over storage quota, removing table'
         self.error_code = 8001
         self.state      = STATE_FAILURE

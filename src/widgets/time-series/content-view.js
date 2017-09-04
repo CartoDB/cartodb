@@ -40,7 +40,7 @@ module.exports = cdb.core.View.extend({
         sourceType: analyses.title(sourceType),
         showSource: this.model.get('show_source') && letter !== '',
         sourceColor: sourceColor,
-        layerName: layerName
+        layerName: _.escape(layerName)
       }));
       this._createHistogramView();
       this._createHeaderView();

@@ -243,7 +243,7 @@ module.exports = cdb.core.View.extend({
         itemsCount: !isDataEmpty ? data.length : '-',
         isCollapsed: !!this.model.get('collapsed'),
         sourceColor: sourceColor,
-        layerName: layerName
+        layerName: _.escape(layerName)
       })
     );
 

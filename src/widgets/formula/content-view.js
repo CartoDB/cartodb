@@ -71,7 +71,7 @@ module.exports = cdb.core.View.extend({
         suffix: suffix,
         isCollapsed: isCollapsed,
         sourceColor: sourceColor,
-        layerName: layerName
+        layerName: _.escape(layerName)
       })
     );
 

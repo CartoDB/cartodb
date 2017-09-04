@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.9.54",
+  "version": "4.9.56-12696",
   "dependencies": {
     "abbrev": {
       "version": "1.1.0",
@@ -738,8 +738,8 @@
     },
     "cartodb-deep-insights.js": {
       "version": "0.0.3",
-      "from": "cartodb/deep-insights.js#master",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#c6687fb9fb9a782fa7f8aa11ecd11a9de6e883a5",
+      "from": "cartodb/deep-insights.js#12696-date-format-in-histograms",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#1d7401a9e0cb7bcf216ef414e8c1c6abc3a54212",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",
@@ -1093,9 +1093,9 @@
       "resolved": "http://registry.npmjs.org/error-ex/-/error-ex-1.3.1.tgz"
     },
     "es-abstract": {
-      "version": "1.8.1",
+      "version": "1.8.2",
       "from": "es-abstract@>=1.5.0 <2.0.0",
-      "resolved": "https://registry.npmjs.org/es-abstract/-/es-abstract-1.8.1.tgz"
+      "resolved": "https://registry.npmjs.org/es-abstract/-/es-abstract-1.8.2.tgz"
     },
     "es-to-primitive": {
       "version": "1.1.1",
@@ -1120,7 +1120,7 @@
         "esprima": {
           "version": "1.0.4",
           "from": "esprima@>=1.0.4 <1.1.0",
-          "resolved": "http://registry.npmjs.org/esprima/-/esprima-1.0.4.tgz"
+          "resolved": "https://registry.npmjs.org/esprima/-/esprima-1.0.4.tgz"
         },
         "source-map": {
           "version": "0.1.43",
@@ -2783,18 +2783,18 @@
     },
     "tangram-cartocss": {
       "version": "0.6.0",
-      "from": "tangram-cartocss@>=0.6.0 <0.7.0",
+      "from": "tangram-cartocss@0.6.0",
       "resolved": "https://registry.npmjs.org/tangram-cartocss/-/tangram-cartocss-0.6.0.tgz"
     },
     "tangram-reference": {
-      "version": "1.0.19",
+      "version": "1.0.20",
       "from": "tangram-reference@>=1.0.18 <2.0.0",
-      "resolved": "http://registry.npmjs.org/tangram-reference/-/tangram-reference-1.0.19.tgz"
+      "resolved": "https://registry.npmjs.org/tangram-reference/-/tangram-reference-1.0.20.tgz"
     },
     "tangram.cartodb": {
       "version": "0.4.6",
       "from": "cartodb/tangram.cartodb#master",
-      "resolved": "git://github.com/cartodb/tangram.cartodb.git#d496f57dfc86ce6fa4b35a25ea360e2472b0e39a"
+      "resolved": "git://github.com/cartodb/tangram.cartodb.git#b189621d2278bded7a299025c1583bd872b2d1aa"
     },
     "tapable": {
       "version": "0.2.8",

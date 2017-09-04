@@ -1052,12 +1052,12 @@ class DataImport < Sequel::Model
   end
 
   def track_results(results, import_id)
-    current_user_id = current_user.id
-    return unless current_user_id
+    return unless user
 
     if visualization_id
-      Carto::Tracking::Events::CreatedMap.new(current_user_id,
-                                              user_id: current_user_id,
+      user_id = user.id
+      Carto::Tracking::Events::CreatedMap.new(user_id,
+                                              user_id: user_id,
                                               visualization_id: visualization_id,
                                               origin: 'import').report
     end

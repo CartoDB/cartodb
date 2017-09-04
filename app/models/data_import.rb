@@ -906,7 +906,7 @@ class DataImport < Sequel::Model
                   'import_time'            => import_time,
                   'file_stats'             => ::JSON.parse(self.stats),
                   'resque_ppid'            => self.resque_ppid,
-                  'user_timeout'           => ::DataImport.http_timeout_for(current_user),
+                  'user_timeout'           => ::DataImport.http_timeout_for(user),
                   'error_source'           => get_error_source,
                   'id'                     => self.id,
                   'total_size'             => total_size,

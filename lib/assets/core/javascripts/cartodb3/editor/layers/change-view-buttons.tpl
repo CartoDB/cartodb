@@ -32,8 +32,6 @@
   </li>
 </ul>
 
-<div class="EditOverlay js-editOverlay is-hidden"><p class="EditOverlay-inner CDB-Text CDB-Size-medium u-whiteTextColor js-editOverlay-text"></p></div>
-
 <ul class="u-flex u-alignRight Editor-contextSwitcher Editor-contextSwitcher--geom js-mapTableView js-newGeometryView
 <% if (context === 'table') { %>in-table<% } %>
 <% if (isThereOtherWidgets && context === 'map') { %>is-moved<% } %>

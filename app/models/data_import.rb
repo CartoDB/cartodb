@@ -880,10 +880,6 @@ class DataImport < Sequel::Model
     end
   end
 
-  def current_user
-    @current_user ||= ::User[user_id]
-  end
-
   def notify(results)
     owner = ::User.where(:id => self.user_id).first
     imported_tables = results.select {|r| r.success }.length

@@ -159,7 +159,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
     synchronization = Carto::Synchronization.where(id: params[:synchronization_id]).first
     respond_with({
                    data: synchronization.to_hash,
-                   log: synchronization.nil? ? nil : synchronization.log.to_s
+                   log: synchronization.nil? ? nil : synchronization.log.entries
                  })
   end
 

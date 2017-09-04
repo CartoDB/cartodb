@@ -217,8 +217,7 @@ class DataImport < Sequel::Model
 
     self
   rescue CartoDB::QuotaExceeded => quota_exception
-    current_user_id = current_user.id
-    Carto::Tracking::Events::ExceededQuota.new(current_user_id, user_id: current_user_id).report
+    Carto::Tracking::Events::ExceededQuota.new(user_id, user_id: user_id).report
 
     CartoDB::notify_warning_exception(quota_exception)
     handle_failure(quota_exception)

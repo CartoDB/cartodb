@@ -840,7 +840,7 @@ class DataImport < Sequel::Model
 
     metadata = datasource_provider.get_resource_metadata(service_item_id)
 
-    if hit_platform_limit?(datasource_provider, metadata, current_user)
+    if hit_platform_limit?(datasource_provider, metadata, user)
       raise CartoDB::Importer2::FileTooBigError.new(metadata.inspect)
     end
 
@@ -850,19 +850,19 @@ class DataImport < Sequel::Model
 
       log.append "File will be downloaded from #{resource_url}"
 
-      http_options = { http_timeout: ::DataImport.http_timeout_for(current_user) }
-      CartoDB::Importer2::Downloader.new(current_user.id,
+      http_options = { http_timeout: ::DataImport.http_timeout_for(user) }
+      CartoDB::Importer2::Downloader.new(user.id,
                                          resource_url,
                                          http_options,
                                          importer_config: Cartodb.config[:importer])
     else
       log.append 'Downloading file data from datasource'
 
-      http_timeout = ::DataImport.http_timeout_for(current_user)
+      http_timeout = ::DataImport.http_timeout_for(user)
       options = {
         http_timeout: http_timeout,
         importer_config: Cartodb.config[:importer],
-        user_id: current_user.id
+        user_id: user.id
       }
 
       CartoDB::Importer2::DatasourceDownloader.new(datasource_provider, metadata, options, log)

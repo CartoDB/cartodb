@@ -44,7 +44,7 @@ module.exports = cdb.core.View.extend({
     var height = this.$el.outerHeight();
 
     this.$el.css({
-      top: pos.top - height - C.TOOLTIP_OFFSET_Y,
+      top: pos.top - height - C.WIDGETS.TOOLTIP_OFFSET_Y,
       left: pos.left + (targetWidth / 2) - (width / 2)
     });
   },
@@ -55,14 +55,14 @@ module.exports = cdb.core.View.extend({
     this.$el.html(value);
   },
 
-  show: function (e) {
-    if (!e || !e.target) {
+  show: function (event) {
+    if (!event || !event.target) {
       this.hide();
       return;
     }
 
-    this._setValue(e.target);
-    this._setPosition(e.target);
+    this._setValue(event.target);
+    this._setPosition(event.target);
     this.render();
     this.$el.fadeIn(70);
   },

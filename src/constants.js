@@ -1,3 +1,5 @@
 module.exports = {
-  TOOLTIP_OFFSET_Y: 10
+  WIDGETS: {
+    TOOLTIP_OFFSET_Y: 10
+  }
 };

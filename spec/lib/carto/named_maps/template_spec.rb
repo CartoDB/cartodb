@@ -668,16 +668,12 @@ module Carto
 
         describe '#analyses' do
           before(:all) do
-            @analysis = FactoryGirl.create(:source_analysis, visualization_id: @visualization.id, user_id: @user.id)
-            @visualization.reload
-
+            @visualization.analyses.length.should eq 1
+            @analysis = @visualization.analyses.first
             @analysis_hash = Carto::NamedMaps::Template.new(@visualization).to_hash[:layergroup][:analyses].first
           end
 
           after(:all) do
-            @analysis.destroy
-            @visualization.reload
-
             @analysis_hash = nil
           end
 

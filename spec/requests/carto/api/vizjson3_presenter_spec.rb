@@ -162,7 +162,8 @@ describe Carto::Api::VizJSON3Presenter do
       named_vizjson = v3_presenter.to_vizjson
       analyses_json = named_vizjson[:analyses]
       analyses_json.should_not be_nil
-      source_analysis_definition = analyses_json[0][:params][:source]
+      analysis_json = analyses_json.select { |a| a[:id] == analysis.natural_id }.first
+      source_analysis_definition = analysis_json[:params][:source]
       source_analysis_definition[:type].should eq 'source'
       source_analysis_definition[:params].should be_nil
     end

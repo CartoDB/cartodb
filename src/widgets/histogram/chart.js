@@ -90,6 +90,7 @@ module.exports = cdb.core.View.extend({
 
     this.hide(); // will be toggled on width change
 
+    this._tooltipFormatter = formatter.formatNumber; // Tooltips are always numbers
     this._createFormatter();
   },
 
@@ -1501,7 +1502,7 @@ module.exports = cdb.core.View.extend({
       .attr('y', self.chartHeight())
       .attr('height', 0)
       .attr('data-tooltip', function (d) {
-        return self.formatter(d.freq);
+        return self._tooltipFormatter(d.freq);
       })
       .attr('width', Math.max(1, this.barWidth - spacing));
 

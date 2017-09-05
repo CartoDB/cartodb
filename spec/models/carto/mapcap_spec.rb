@@ -163,6 +163,27 @@ describe Carto::Mapcap do
       expect(regenerated_widget.style).to eq widget.style
     end
 
+    it 'should be readonly' do
+      rv = @mapcap.regenerate_visualization
+
+      rv.readonly?.should eq true
+      rv.user.readonly?.should eq true
+      rv.full_user.readonly?.should eq true
+      rv.permission.readonly?.should eq true
+      rv.likes.each { |like| like.readonly?.should eq true }
+      rv.shared_entities.each { |entity| entity.readonly?.should eq true }
+      rv.unordered_children.each { |child| child.readonly?.should eq true }
+      rv.overlays.each { |overlay| overlay.readonly?.should eq true }
+      rv.active_layer.readonly?.should eq true
+      rv.map.readonly?.should eq true
+      rv.related_templates.each { |template| template.readonly?.should eq true }
+      rv.external_sources.each { |resource| resource.readonly?.should eq true }
+      rv.analyses.each { |analysis| analysis.readonly?.should eq true }
+      rv.mapcaps.each { |mapcap| mapcap.readonly?.should eq true }
+      rv.state.readonly?.should eq true
+      rv.snapshots.each { |snapshot| snapshot.readonly?.should eq true }
+    end
+
     describe 'without user DB' do
       before(:all) do
         @user_nodb = FactoryGirl.create(:carto_user, private_tables_enabled: true)

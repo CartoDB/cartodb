@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.9.56-12696",
+  "version": "4.9.56",
   "dependencies": {
     "abbrev": {
       "version": "1.1.0",
@@ -722,9 +722,9 @@
       "resolved": "https://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.33.0.tgz"
     },
     "caniuse-lite": {
-      "version": "1.0.30000722",
+      "version": "1.0.30000725",
       "from": "caniuse-lite@>=1.0.30000718 <2.0.0",
-      "resolved": "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30000722.tgz"
+      "resolved": "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30000725.tgz"
     },
     "carto": {
       "version": "0.15.1-cdb4",
@@ -738,8 +738,8 @@
     },
     "cartodb-deep-insights.js": {
       "version": "0.0.3",
-      "from": "cartodb/deep-insights.js#12696-date-format-in-histograms",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#1d7401a9e0cb7bcf216ef414e8c1c6abc3a54212",
+      "from": "cartodb/deep-insights.js#master",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#2bb38445a7d2c78036b9643fffe3ab9f993824a4",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",
@@ -756,7 +756,7 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
       "from": "cartodb/cartodb.js#v4",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#ca734e874bc1aaaaef70dc4e827ceb95af11dc4b"
+      "resolved": "git://github.com/cartodb/cartodb.js.git#a6dc0b554b4ea17a45bf6e79083089895ffeeb5d"
     },
     "caseless": {
       "version": "0.12.0",
@@ -1120,7 +1120,7 @@
         "esprima": {
           "version": "1.0.4",
           "from": "esprima@>=1.0.4 <1.1.0",
-          "resolved": "https://registry.npmjs.org/esprima/-/esprima-1.0.4.tgz"
+          "resolved": "http://registry.npmjs.org/esprima/-/esprima-1.0.4.tgz"
         },
         "source-map": {
           "version": "0.1.43",
@@ -2793,7 +2793,7 @@
     },
     "tangram.cartodb": {
       "version": "0.4.6",
-      "from": "cartodb/tangram.cartodb#master",
+      "from": "cartodb/tangram.cartodb#b189621d2278bded7a299025c1583bd872b2d1aa",
       "resolved": "git://github.com/cartodb/tangram.cartodb.git#b189621d2278bded7a299025c1583bd872b2d1aa"
     },
     "tapable": {

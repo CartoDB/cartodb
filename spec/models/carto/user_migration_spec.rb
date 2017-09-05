@@ -220,6 +220,25 @@ describe 'UserMigration' do
 
     it_should_behave_like 'migrating metadata', true
     it_should_behave_like 'migrating metadata', false
+
+    it 'does not export organizations with a user with a dataset that does not have a physical table (see #12588)' do
+      @map, @table, @table_visualization, @visualization = create_full_visualization(@carto_org_user_1)
+
+      @carto_org_user_1.tables.exists?(name: @table.name).should be
+      @org_user_1.in_database.execute("DROP TABLE #{@table.name}")
+      # The table is still registered after the deletion
+      @carto_org_user_1.reload
+      @carto_org_user_1.tables.exists?(name: @table.name).should be
+
+      export = Carto::UserMigrationExport.create(organization: @carto_organization, export_metadata: true)
+
+      export.run_export
+
+      export.log.entries.should include("Cannot export if tables aren't synched with db. Please run ghost tables.")
+      expect(export.state).to eq(Carto::UserMigrationExport::STATE_FAILURE)
+
+      export.destroy
+    end
   end
 
   def drop_database(user)

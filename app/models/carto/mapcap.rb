@@ -61,7 +61,7 @@ module Carto
       entity.reflections.keys.each do |dep_name|
         dependency = entity.public_send(dep_name)
         if dependency.is_a? Array
-          dependency.each{ |e| set_entity_as_readonly(e) }
+          dependency.each { |e| set_entity_as_readonly(e) }
         else
           set_entity_as_readonly(dependency)
         end

@@ -40,25 +40,25 @@ module Carto
   module RedisExportServiceExporter
     include RedisExportServiceConfiguration
 
-    def export_organization_json_string(organization_id)
-      export_organization_json_hash(organization_id).to_json
+    def export_organization_json_string(organization)
+      export_organization_json_hash(organization).to_json
     end
 
-    def export_organization_json_hash(organization_id)
+    def export_organization_json_hash(organization)
       {
         version: CURRENT_VERSION,
-        redis: export_organization(Organization.find(organization_id))
+        redis: export_organization(organization)
       }
     end
 
-    def export_user_json_string(user_id)
-      export_user_json_hash(user_id).to_json
+    def export_user_json_string(user)
+      export_user_json_hash(user).to_json
     end
 
-    def export_user_json_hash(user_id)
+    def export_user_json_hash(user)
       {
         version: CURRENT_VERSION,
-        redis: export_user(User.find(user_id))
+        redis: export_user(user)
       }
     end
 

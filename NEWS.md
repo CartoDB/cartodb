@@ -2,7 +2,7 @@ Development
 -----------
 
 ### Features
-* Enable other hosts apart from account host to include CORS headers (#12685)
+* Enable other hosts apart from account host to include CORS headers via the cors_enabled_hosts param in app_config.yml (#12685)
 * Improve legend items management (#12650)
 * Avoid multiple time-series by filtering the carousel options (#12395)
 * Add privacy button behavior for shared datasets (#11342)

@@ -125,14 +125,14 @@ module Carto
     include LayerExporter
     include DataImportExporter
 
-    def export_user_json_string(user_id)
-      export_user_json_hash(user_id).to_json
+    def export_user_json_string(user)
+      export_user_json_hash(user).to_json
     end
 
-    def export_user_json_hash(user_id)
+    def export_user_json_hash(user)
       {
         version: CURRENT_VERSION,
-        user: export(User.find(user_id))
+        user: export(user)
       }
     end
 
@@ -181,25 +181,22 @@ module Carto
     include UserMetadataExportServiceImporter
     include UserMetadataExportServiceExporter
 
-    def export_user_to_directory(user_id, path)
-      user = Carto::User.find(user_id)
+    def export_to_directory(user, path)
       root_dir = Pathname.new(path)
+      root_dir.mkpath
 
-      # Export user
-      user_json = export_user_json_string(user_id)
-      root_dir.join("user_#{user_id}.json").open('w') { |file| file.write(user_json) }
+      user_json = export_user_json_string(user)
+      root_dir.join("user_#{user.id}.json").open('w') { |file| file.write(user_json) }
 
-      redis_json = Carto::RedisExportService.new.export_user_json_string(user_id)
-      root_dir.join("redis_user_#{user_id}.json").open('w') { |file| file.write(redis_json) }
+      redis_json = Carto::RedisExportService.new.export_user_json_string(user)
+      root_dir.join("redis_user_#{user.id}.json").open('w') { |file| file.write(redis_json) }
 
-      # Export visualizations (include type in the name to be able to import datasets before maps)
       export_user_visualizations_to_directory(user, Carto::Visualization::TYPE_REMOTE, path)
       export_user_visualizations_to_directory(user, Carto::Visualization::TYPE_CANONICAL, path)
       export_user_visualizations_to_directory(user, Carto::Visualization::TYPE_DERIVED, path)
     end
 
-    def import_user_from_directory(path, import_visualizations: true)
-      # Import user
+    def import_from_directory(path)
       user_file = Dir["#{path}/user_*.json"].first
       user = build_user_from_json_export(File.read(user_file))
 
@@ -207,27 +204,12 @@ module Carto
 
       Carto::RedisExportService.new.restore_redis_from_json_export(File.read(Dir["#{path}/redis_user_*.json"].first))
 
-      if import_visualizations
-        import_user_visualizations_from_directory(user, Carto::Visualization::TYPE_REMOTE, path)
-        import_user_visualizations_from_directory(user, Carto::Visualization::TYPE_CANONICAL, path)
-        import_user_visualizations_from_directory(user, Carto::Visualization::TYPE_DERIVED, path)
-
-        import_search_tweets_from_directory(path, user)
-      end
-
       user
     end
 
-    def import_search_tweets_from_directory(path, user)
-      user_file = Dir["#{path}/user_*.json"].first
-      search_tweets = build_search_tweets_from_json_export(File.read(user_file))
-
-      search_tweets.each { |st| save_imported_search_tweet(st, user) }
-    end
-
-    def import_user_visualizations_from_directory(user, type, path)
+    def import_user_visualizations_from_directory(user, type, meta_path)
       with_non_viewer_user(user) do
-        Dir["#{path}/#{type}_*#{Carto::VisualizationExporter::EXPORT_EXTENSION}"].each do |fname|
+        Dir["#{meta_path}/#{type}_*#{Carto::VisualizationExporter::EXPORT_EXTENSION}"].each do |fname|
           imported_vis = Carto::VisualizationsExportService2.new.build_visualization_from_json_export(File.read(fname))
           Carto::VisualizationsExportPersistenceService.new.save_import(user, imported_vis, full_restore: true)
           if Carto::VisualizationsExportService2.new.marked_as_vizjson2_from_json_export?(File.read(fname))
@@ -236,6 +218,22 @@ module Carto
         end
       end
     end
+
+    def import_metadata_from_directory(user, meta_path)
+      import_user_visualizations_from_directory(user, Carto::Visualization::TYPE_REMOTE, meta_path)
+      import_user_visualizations_from_directory(user, Carto::Visualization::TYPE_CANONICAL, meta_path)
+      import_user_visualizations_from_directory(user, Carto::Visualization::TYPE_DERIVED, meta_path)
+
+      import_search_tweets_from_directory(user, meta_path)
+    end
+
+    def import_search_tweets_from_directory(user, meta_path)
+      user_file = Dir["#{meta_path}/user_*.json"].first
+      search_tweets = build_search_tweets_from_json_export(File.read(user_file))
+      search_tweets.each { |st| save_imported_search_tweet(st, user) }
+    end
+
+    private
 
     def export_user_visualizations_to_directory(user, type, path)
       root_dir = Pathname.new(path)
@@ -247,8 +245,6 @@ module Carto
         root_dir.join(filename).open('w') { |file| file.write(visualization_export) }
       end
     end
-
-    private
 
     def with_non_viewer_user(user)
       was_viewer = user.viewer

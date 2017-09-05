@@ -70,7 +70,8 @@ module.exports = env => {
       }),
 
       new webpack.DefinePlugin({
-        __IN_DEV__: JSON.stringify(true)
+        __IN_DEV__: JSON.stringify(true),
+        __ENV__: JSON.stringify('dev')
       })
     ])
     .filter(p => !!p), // undefined is not a valid plugin, so filter undefined values here
@@ -121,8 +122,6 @@ module.exports = env => {
       fs: 'empty' // This fixes the error Module not found: Error: Can't resolve 'fs'
     },
 
-    stats: {
-      warnings: false
-    }
+    stats: 'normal'
   };
 };

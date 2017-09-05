@@ -36,14 +36,14 @@ describe Carto::RedisExportService do
 
   describe '#export' do
     it 'exports an empty dictionary' do
-      export = service.export_user_json_hash(@user.id)
+      export = service.export_user_json_hash(@user)
       expect(export[:redis][:users_metadata]).to eq({})
     end
 
     it 'includes all keys under org:name for organizations' do
       prefix = "org:#{@organization.name}"
       with_redis_keys(prefix) do
-        export = service.export_organization_json_hash(@organization.id)
+        export = service.export_organization_json_hash(@organization)
         check_export(export, prefix)
       end
     end
@@ -51,7 +51,7 @@ describe Carto::RedisExportService do
     it 'includes all keys under user:username for users' do
       prefix = "user:#{@user.username}"
       with_redis_keys(prefix) do
-        export = service.export_user_json_hash(@user.id)
+        export = service.export_user_json_hash(@user)
         check_export(export, prefix)
       end
     end
@@ -60,14 +60,14 @@ describe Carto::RedisExportService do
   describe '#export + import' do
     it 'copies all keys under org:name for organizations' do
       prefix = "org:#{@organization.name}"
-      export = with_redis_keys(prefix) { service.export_organization_json_hash(@organization.id) }
+      export = with_redis_keys(prefix) { service.export_organization_json_hash(@organization) }
       service.restore_redis_from_hash_export(export)
       check_redis(prefix)
     end
 
     it 'copies all keys under user:username for users' do
       prefix = "user:#{@user.username}"
-      export = with_redis_keys(prefix) { service.export_user_json_hash(@user.id) }
+      export = with_redis_keys(prefix) { service.export_user_json_hash(@user) }
       service.restore_redis_from_hash_export(export)
       check_redis(prefix)
     end

@@ -29,6 +29,7 @@
     "cartodb.js": "CartoDB/cartodb.js#v4",
     "clipboard": "1.6.1",
     "codemirror": "5.14.2",
+    "html-webpack-plugin": "^2.30.1",
     "jquery": "2.1.4",
     "moment": "2.18.1",
     "moment-timezone": "^0.5.13",

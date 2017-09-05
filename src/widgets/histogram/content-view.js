@@ -87,6 +87,9 @@ module.exports = cdb.core.View.extend({
     } else {
       this.model.bind('change:hasInitialState', this._setInitialState, this);
     }
+
+    this._dataviewModel.layer.bind('change:layer_name', this.render, this);
+    this.add_related_model(this._dataviewModel.layer);
   },
 
   _setInitialState: function () {

@@ -75,6 +75,7 @@ module.exports = cdb.core.View.extend({
     this.add_related_model(this.dataviewModel.filter);
 
     this.dataviewModel.layer.bind('change:visible change:cartocss', this.render, this);
+    this.dataviewModel.layer.bind('change:layer_name', this.render, this);
     this.add_related_model(this.dataviewModel.layer);
   },
 

@@ -58,6 +58,9 @@ module.exports = cdb.core.View.extend({
 
     this.listenTo(this._dataviewModel, 'change:data', this.render);
     this.listenToOnce(this.model, 'change:hasInitialState', this.render);
+
+    this.listenTo(this._dataviewModel.layer, 'change:layer_name', this.render);
+    this.add_related_model(this._dataviewModel.layer);
   },
 
   _createHistogramView: function () {

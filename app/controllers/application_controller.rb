@@ -141,7 +141,8 @@ class ApplicationController < ActionController::Base
     referer = request.env["HTTP_REFERER"]
     origin = request.headers['origin']
 
-    allowed_hosts = ([Cartodb.config[:account_host]] + Cartodb.config[:cors_enabled_hosts]).compact
+    cors_enabled_hosts = Cartodb.config[:cors_enabled_hosts].presence || [nil]
+    allowed_hosts = ([Cartodb.config[:account_host]] + cors_enabled_hosts).compact
 
     whitelist_referer = []
 

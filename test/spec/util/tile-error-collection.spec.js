@@ -4,6 +4,8 @@ var TileErrorCollection = require('../../../src/util/tile-error-collection');
 
 describe('util/tile-error-collection', function () {
   var interceptAjaxCall;
+  var ajaxCallsCount = 0;
+
   beforeEach(function () {
     interceptAjaxCall = null;
 
@@ -186,6 +188,56 @@ describe('util/tile-error-collection', function () {
           });
         });
       });
+    });
+  });
+
+  describe('when adding a tile to the collection', function  () {
+    it('should make only one request per tile', function () {
+      var ajaxDone;
+      var tile = { url: 'some_url/0/0/0/4.png', tileDomNode: {} };
+      interceptAjaxCall = function (params) {
+        if (/\.png/.test(params.url)) {
+          ajaxDone = true
+        }
+      };
+
+      ajaxDone = false;
+      this.collection.add(tile);
+      expect(ajaxDone).toBe(true);
+
+      ajaxDone = false;
+      this.collection.add(tile);
+      expect(ajaxDone).toBe(false);
+    });
+
+    it('should stop making Ajax calls if we already have the error', function () {
+      var error = {
+        responseJSON: {
+          errors_with_context: [{
+            type: 'limit',
+            message: 'Some error happened'
+          }]
+        }
+      };
+      interceptAjaxCall = function (params) {
+        if (/\.png/.test(params.url)) {
+          ajaxCallsCount += 1;
+
+          ajaxCallsCount === 2
+            ? params.error && params.error(error)
+            : params.complete && params.complete();
+        }
+      };
+
+      this.collection.add({ url: 'some_url/0/0/0/4.png', tileDomNode: {}});
+      this.collection.add({ url: 'some_url/0/0/0/5.png', tileDomNode: {}});
+      this.collection.add({ url: 'some_url/0/0/0/6.png', tileDomNode: {}});
+      this.collection.add({ url: 'some_url/0/0/0/7.png', tileDomNode: {}});
+      expect(ajaxCallsCount).toBe(2);
+    });
+
+    afterEach(function () {
+      ajaxCallsCount = 0;
     });
   });
 

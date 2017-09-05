@@ -349,7 +349,7 @@ module.exports = function (grunt) {
   // path/to/some/ignored/files:0:0: File ignored because of your .eslintignore file. Use --no-ignore to override.
   grunt.registerTask('lint', 'lint source files', function () {
     var done = this.async();
-    require('child_process').exec('(git diff --name-only --relative; git diff origin/master.. --name-only --relative) | grep \'\\.js\\?$\' | xargs node_modules/.bin/semistandard', function (error, stdout, stderr) {
+    require('child_process').exec('(git diff --name-only --relative; git diff origin/master.. --name-only --relative) | grep \'\\.js\\?$\' | xargs node_modules/.bin/semistandard', { maxBuffer: 1024 * 2000 }, function (error, stdout, stderr) {
       if (error) {
         grunt.log.fail(error);
 

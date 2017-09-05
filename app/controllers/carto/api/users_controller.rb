@@ -1,13 +1,38 @@
 module Carto
   module Api
     class UsersController < ::Api::ApplicationController
+      include AppAssetsHelper
+      include MapsApiHelper
+      include SqlApiHelper
+      include CartoDB::ConfigUtils
+      include FrontendConfigHelper
 
-      ssl_required :get_authenticated_users, :show
+      ssl_required :show, :me, :get_authenticated_users
 
       skip_before_filter :api_authorization_required, only: [:get_authenticated_users]
 
       def show
         render json: Carto::Api::UserPresenter.new(uri_user).data
+      end
+
+      def me
+        carto_viewer = Carto::User.find(current_viewer.id)
+        dashboard_notifications = carto_viewer.notifications_for_category(:dashboard)
+        organization_notifications = carto_viewer.received_notifications.unread.map do |n|
+          Carto::Api::ReceivedNotificationPresenter.new(n)
+        end
+
+        render json: {
+          username: carto_viewer.username,
+          user_data: carto_viewer.data,
+          config: frontend_config_hash,
+          upgrade_url: carto_viewer.upgrade_url(request.protocol),
+          is_first_time_viewing_dashboard: !carto_viewer.dashboard_viewed?,
+          is_just_logged_in: !!flash['logged'],
+          default_fallback_basemap: carto_viewer.default_basemap,
+          dashboard_notifications: dashboard_notifications,
+          organization_notifications: organization_notifications
+        }
       end
 
       def get_authenticated_users

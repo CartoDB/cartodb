@@ -2,6 +2,7 @@ Development
 -----------
 
 ### Features
+* Add /api/v3/me endpoint (#12599)
 * Add tooltips to show bucket data in time-series (#11650)
 * Improve legend items management (#12650)
 * Avoid multiple time-series by filtering the carousel options (#12395)

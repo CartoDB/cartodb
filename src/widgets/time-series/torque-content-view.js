@@ -7,7 +7,7 @@ var TorqueHeaderView = require('./torque-header-view');
 var DropdownView = require('../dropdown/widget-dropdown-view');
 var layerColors = require('../../util/layer-colors');
 var analyses = require('../../data/analyses');
-var escapeHTML = require('../../../util/escape-html');
+var escapeHTML = require('../../util/escape-html');
 
 /**
  * Widget content view for a Torque time-series

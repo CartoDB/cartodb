@@ -24,20 +24,19 @@ module Carto
     validates :database_host, presence: true
     validates :exported_file, presence: true
     validates :json_file, presence: true
+    validate :valid_org_import
 
     def run_import
       log.append('=== Downloading ===')
       update_attributes(state: STATE_DOWNLOADING)
-      work_dir = create_work_directory
-      package_file = download_package(work_dir)
-      unzip_package(work_dir, package_file)
-      log.append('=== Deleting zip package ===')
-      FileUtils.rm(package_file)
+      package = UserMigrationPackage.for_import(id, log)
+      package.download(exported_file)
 
       log.append('=== Importing ===')
       update_attributes(state: STATE_IMPORTING)
-      log.append('=== Importing user data ===')
-      CartoDB::DataMover::ImportJob.new(import_job_arguments(work_dir)).run!
+
+      service = (org_import? ? Carto::OrganizationMetadataExportService : Carto::UserMetadataExportService).new
+      import(service, package)
 
       log.append('=== Complete ===')
       update_attributes(state: STATE_COMPLETE)
@@ -47,10 +46,7 @@ module Carto
       update_attributes(state: STATE_FAILURE)
       false
     ensure
-      if work_dir
-        log.append("Deleting tmp directory #{work_dir}")
-        FileUtils.remove_dir(work_dir)
-      end
+      package.cleanup
     end
 
     def enqueue
@@ -59,35 +55,29 @@ module Carto
 
     private
 
-    def unzip_package(work_dir, package)
-      log.append("=== Unzipping #{package} ===")
-      `cd #{work_dir}; unzip -u #{package}; cd -`
-    end
-
-    def create_work_directory
-      log.append('=== Creating work directory ===')
-      work_dir = "#{import_dir}/#{id}/"
-      FileUtils.mkdir_p(work_dir)
-      work_dir
-    end
-
-    def download_package(work_dir)
-      destination = "#{work_dir}/export.zip"
-      log.append("=== Downloading #{exported_file} to #{destination} ===")
-      if exported_file.starts_with?('http')
-        http_client.get_file(exported_file, destination)
+    def valid_org_import
+      if org_import?
+        errors.add(:user_id, "user_id can't be present") if user_id.present?
       else
-        FileUtils.cp(exported_file, destination)
+        errors.add(:organization_id, "organization_id can't be present") if organization_id.present?
       end
-      destination
     end
 
-    def http_client
-      Carto::Http::Client.get('user_imports')
-    end
+    def import(service, package)
+      if import_metadata?
+        log.append('=== Importing metadata ===')
+        imported = service.import_from_directory(package.meta_dir)
+        org_import? ? self.organization = imported : self.user = imported
+        save!
+      end
 
-    def import_dir
-      Cartodb.get_config(:user_migrator, 'user_imports_folder')
+      log.append('=== Importing data ===')
+      CartoDB::DataMover::ImportJob.new(import_job_arguments(package.data_dir)).run!
+
+      if import_metadata?
+        log.append('=== Importing visualizations and search tweets ===')
+        service.import_metadata_from_directory(imported, package.meta_dir)
+      end
     end
 
     def import_only_data?
@@ -95,19 +85,20 @@ module Carto
       org_import? ? organization.present? : user.present?
     end
 
-    def import_into
-      organization if !org_import?
-    end
+    def import_job_arguments(data_dir)
+      export_file = json_file.split('/').last
 
-    def import_job_arguments(work_dir)
       {
         job_uuid: id,
-        file: "#{work_dir}/#{json_file}",
+        file: "#{data_dir}/#{export_file}",
         data: true,
-        metadata: !import_only_data?,
+        metadata: false,
         host: database_host,
         rollback: false,
-        into_org_name: import_into.try(:name),
+        # This is used to import a non-org user into an organization. It is untested and unsupported.
+        # Disabling it unconditionally until we need it makes sense.
+        # into_org_name: org_import? || organization.nil? ? nil : organization.name,
+        into_org_name: nil,
         mode: :import,
         logger: log.logger,
         import_job_logger: log.logger
@@ -117,6 +108,7 @@ module Carto
     def set_defaults
       self.log = Carto::Log.create(type: 'user_migration_import') unless log
       self.state = STATE_PENDING unless state
+
       save
     end
   end

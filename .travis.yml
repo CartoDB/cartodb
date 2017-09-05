@@ -1,10 +1,11 @@
 language: node_js
 node_js:
   - "6.9.2"
-
+dist: trusty
 before_install:
   - git submodule update --init --recursive
-
+addons:
+  chrome: stable
 install:
   - npm install
 

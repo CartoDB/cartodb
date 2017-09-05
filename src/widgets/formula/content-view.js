@@ -8,6 +8,7 @@ var animationTemplate = require('./animation-template.tpl');
 var AnimateValues = require('../animate-values.js');
 var layerColors = require('../../util/layer-colors');
 var analyses = require('../../data/analyses');
+var escapeHTML = require('../../util/escape-html');
 
 /**
  * Default widget content view:
@@ -71,7 +72,7 @@ module.exports = cdb.core.View.extend({
         suffix: suffix,
         isCollapsed: isCollapsed,
         sourceColor: sourceColor,
-        layerName: _.escape(layerName)
+        layerName: escapeHTML(layerName)
       })
     );
 

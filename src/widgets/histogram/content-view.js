@@ -10,6 +10,7 @@ var AnimateValues = require('../animate-values.js');
 var animationTemplate = require('./animation-template.tpl');
 var layerColors = require('../../util/layer-colors');
 var analyses = require('../../data/analyses');
+var escapeHTML = require('../../util/escape-html');
 
 var TOOLTIP_TRIANGLE_HEIGHT = 4;
 
@@ -243,7 +244,7 @@ module.exports = cdb.core.View.extend({
         itemsCount: !isDataEmpty ? data.length : '-',
         isCollapsed: !!this.model.get('collapsed'),
         sourceColor: sourceColor,
-        layerName: _.escape(layerName)
+        layerName: escapeHTML(layerName)
       })
     );
 

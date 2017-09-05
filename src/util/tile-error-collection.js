@@ -1,9 +1,9 @@
 var Backbone = require('backbone');
 var $ = require('jquery');
 var getValue = require('./get-object-value');
-var tileErrorImage = require('../../themes/img/tile-error.svg');
+var tileErrorImage = require('./tile-error.tpl');
 
-var TILE_ERROR_IMAGE = 'data:image/svg+xml;base64,' + window.btoa(tileErrorImage);
+var TILE_ERROR_IMAGE = 'data:image/svg+xml;base64,' + window.btoa(tileErrorImage());
 
 var TileErrorCollection = Backbone.Collection.extend({
   initialize: function () {

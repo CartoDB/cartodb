@@ -1,6 +1,5 @@
 var path = require('path');
 var bundles = require('./_browserify-bundles');
-var svg = require('svg-browserify');
 
 module.exports = {
   task: function(grunt) {
@@ -13,7 +12,6 @@ module.exports = {
         options: {
           watch: '<%= config.doWatchify %>',
           browserifyOptions: {
-            transform: svg,
             debug: true // to generate source-maps
           }
         }

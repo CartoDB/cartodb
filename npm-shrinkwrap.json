@@ -694,9 +694,9 @@
       }
     },
     "browserify-aes": {
-      "version": "1.0.6",
+      "version": "1.0.8",
       "from": "browserify-aes@>=1.0.4 <2.0.0",
-      "resolved": "https://registry.npmjs.org/browserify-aes/-/browserify-aes-1.0.6.tgz"
+      "resolved": "https://registry.npmjs.org/browserify-aes/-/browserify-aes-1.0.8.tgz"
     },
     "browserify-cipher": {
       "version": "1.0.0",
@@ -752,7 +752,7 @@
     },
     "buffer-xor": {
       "version": "1.0.3",
-      "from": "buffer-xor@>=1.0.2 <2.0.0",
+      "from": "buffer-xor@>=1.0.3 <2.0.0",
       "resolved": "https://registry.npmjs.org/buffer-xor/-/buffer-xor-1.0.3.tgz"
     },
     "builtin-modules": {
@@ -798,7 +798,7 @@
     "cartodb-deep-insights.js": {
       "version": "0.0.3",
       "from": "cartodb/deep-insights.js#12322-invalid-names",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#335b3542c570d07ab7e51a2c2cc3c73bedf31542",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#4c76e53151a9b8a297f050ca81d0a3f80853c160",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",
@@ -815,7 +815,7 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
       "from": "cartodb/cartodb.js#v4",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#a6dc0b554b4ea17a45bf6e79083089895ffeeb5d"
+      "resolved": "git://github.com/cartodb/cartodb.js.git#f461a10db8f7e333ea15600af2e12fcae5137c41"
     },
     "caseless": {
       "version": "0.12.0",
@@ -1200,9 +1200,9 @@
       "resolved": "https://registry.npmjs.org/events/-/events-1.1.1.tgz"
     },
     "evp_bytestokey": {
-      "version": "1.0.2",
+      "version": "1.0.3",
       "from": "evp_bytestokey@>=1.0.0 <2.0.0",
-      "resolved": "https://registry.npmjs.org/evp_bytestokey/-/evp_bytestokey-1.0.2.tgz"
+      "resolved": "https://registry.npmjs.org/evp_bytestokey/-/evp_bytestokey-1.0.3.tgz"
     },
     "exit": {
       "version": "0.1.2",

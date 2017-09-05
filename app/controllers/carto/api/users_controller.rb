@@ -23,13 +23,13 @@ module Carto
         end
 
         render json: {
-          username: current_user.username,
-          user_data: current_user.data,
+          username: carto_viewer.username,
+          user_data: carto_viewer.data,
           config: frontend_config_hash,
-          upgrade_url: current_user.upgrade_url(request.protocol),
-          isFirstTimeViewingDashboard: !current_user.dashboard_viewed?,
-          isJustLoggedIn: !!flash['logged'],
-          default_fallback_basemap: current_user.default_basemap,
+          upgrade_url: carto_viewer.upgrade_url(request.protocol),
+          is_first_time_viewing_dashboard: !carto_viewer.dashboard_viewed?,
+          is_just_logged_in: !!flash['logged'],
+          default_fallback_basemap: carto_viewer.default_basemap,
           dashboard_notifications: dashboard_notifications,
           organization_notifications: organization_notifications
         }

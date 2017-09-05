@@ -53,19 +53,19 @@ describe Carto::OrganizationMetadataExportService do
     end
 
     it 'exports' do
-      export = service.export_organization_json_hash(@organization.id)
+      export = service.export_organization_json_hash(@organization)
 
       expect_export_matches_organization(export[:organization], @organization)
     end
 
     it 'includes all user model attributes' do
-      export = service.export_organization_json_hash(@organization.id)
+      export = service.export_organization_json_hash(@organization)
 
       expect(export[:organization].keys).to include(*@organization.attributes.symbolize_keys.keys)
     end
 
     it 'exports notifications and received notifications' do
-      export = service.export_organization_json_hash(@organization.id)
+      export = service.export_organization_json_hash(@organization)
 
       exported_notifications = export[:organization][:notifications]
       exported_notifications.length.should eq 1
@@ -85,7 +85,7 @@ describe Carto::OrganizationMetadataExportService do
     it 'export + import organization, users and visualizations' do
       Dir.mktmpdir do |path|
         create_organization_with_dependencies
-        service.export_organization_to_directory(@organization.id, path)
+        service.export_to_directory(@organization, path)
         source_organization = @organization.attributes
         source_users = @organization.users.map(&:attributes)
         source_groups = @organization.groups.map(&:attributes)
@@ -104,8 +104,8 @@ describe Carto::OrganizationMetadataExportService do
         @organization.groups.clear
         @organization.destroy
 
-        imported_organization = service.import_organization_and_users_from_directory(path)
-        service.import_organization_visualizations_from_directory(imported_organization, path)
+        imported_organization = service.import_from_directory(path)
+        service.import_metadata_from_directory(imported_organization, path)
 
         compare_excluding_dates(imported_organization.attributes, source_organization)
 

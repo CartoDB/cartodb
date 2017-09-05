@@ -18,7 +18,7 @@ var generateCategories = function (bucketsColor, bucketsIcon) {
     });
     return {
       title: bucketColor.filter.name,
-      icon: bucketIcon ? _extractURL(bucketIcon.value) : '',
+      icon: (bucketIcon && bucketIcon.value) ? _extractURL(bucketIcon.value) : '',
       color: bucketColor.value
     };
   });
@@ -46,13 +46,17 @@ module.exports = {
     var ruleColor = new Rule(rules[0]);
     var ruleIcon = new Rule(rules[1]);
 
-    var categoryFilteredBucketsColor = ruleColor.getBucketsWithCategoryFilter();
-    var categoryFilteredBucketsIcon = ruleIcon.getBucketsWithCategoryFilter();
-    var unfilteredBuckets = ruleColor.getBucketsWithDefaultFilter();
+    var categoryBucketsColor = ruleColor.getBucketsWithCategoryFilter();
+    var categoryBucketsIcon = ruleIcon.getBucketsWithCategoryFilter();
+    var defaultBucketsColor = ruleColor.getBucketsWithDefaultFilter();
+    var defaultBucketsIcon = ruleIcon.getBucketsWithDefaultFilter();
 
     return {
-      categories: generateCategories(categoryFilteredBucketsColor, categoryFilteredBucketsIcon),
-      defaultColor: _.isEmpty(unfilteredBuckets) ? undefined : unfilteredBuckets[0].value
+      categories: generateCategories(categoryBucketsColor, categoryBucketsIcon),
+      default: {
+        icon: _.isEmpty(defaultBucketsIcon) ? '' : _extractURL(defaultBucketsIcon[0].value),
+        color: _.isEmpty(defaultBucketsColor) ? '' : defaultBucketsColor[0].value
+      }
     };
   }
 };

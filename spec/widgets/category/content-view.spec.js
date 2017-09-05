@@ -12,6 +12,9 @@ describe('widgets/category/content-view', function () {
         id: 'a0'
       }
     });
+    this.dataviewModel.getLayerName = function () {
+      return '< & ><h1>Hello</h1>';
+    };
     this.model = new CategoryWidgetModel({
       title: 'Categories of something',
       hasInitialState: true
@@ -35,6 +38,7 @@ describe('widgets/category/content-view', function () {
     this.model.set('show_source', true);
     this.view.render();
     expect(this.view.$('.CDB-Widget-info').length).toBe(2);
+    expect(this.view.$('.u-altTextColor').html()).toBe('&lt; &amp; &gt;&lt;h1&gt;Hello&lt;/h1&gt;');
   });
 
   afterEach(function () {

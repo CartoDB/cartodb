@@ -411,6 +411,7 @@ module.exports = function (grunt) {
    * `grunt test`
    */
   grunt.registerTask('test', '(CI env) Re-build JS files and run all tests. For manual testing use `grunt jasmine` directly', [
+    'connect:test',
     'beforeDefault',
     'js_editor',
     'jasmine:cartodbui',
@@ -443,7 +444,7 @@ module.exports = function (grunt) {
     })
     .value());
 
-  grunt.registerTask('setConfig', 'Set a config property', function(name, val) {
+  grunt.registerTask('setConfig', 'Set a config property', function (name, val) {
     grunt.config.set(name, val);
   });
 

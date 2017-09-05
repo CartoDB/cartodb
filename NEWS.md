@@ -3,6 +3,8 @@ Development
 
 ### Features
 * Add /api/v3/me endpoint (#12599)
+* Add tooltips to show bucket data in time-series (#11650)
+* Improve legend items management (#12650)
 * Avoid multiple time-series by filtering the carousel options (#12395)
 * Add privacy button behavior for shared datasets (#11342)
 * Use add/replace notification for time-series (#12670)
@@ -47,6 +49,14 @@ Development
 * Updates Dataservices API client default version to `0.20.0` (#12633)
 
 ### Bug fixes / enhancements
+* Disable editing the "Others" icon in UI (#12683)
+* Improved date format in histograms (#12719)
+* Improved tests. Introduced headless chrome for our spec runners (#12657)
+* Fix popup order selection (#12694)
+* Fix histogram range sliders stick on buckets (#12661)
+* Fix Time Series resize when switching to advanced mode (#12124)
+* Fix adding/removing widgets when having Time Series (#12123, #12402, #12655)
+* Enhancements on superadmin imports & exports endpoints (#12254)
 * Don't offer new DO UI unless user has DO credits (#12648)
 * Change position and size of legend icons (#12619)
 * Fix Time series width on mobile viewport (#12609)

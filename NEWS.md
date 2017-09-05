@@ -2,6 +2,7 @@ Development
 -----------
 
 ### Features
+* Add tooltips to show bucket data in time-series (#11650)
 * Improve legend items management (#12650)
 * Avoid multiple time-series by filtering the carousel options (#12395)
 * Add privacy button behavior for shared datasets (#11342)
@@ -46,6 +47,8 @@ Development
 * Updates Dataservices API client default version to `0.20.0` (#12633)
 
 ### Bug fixes / enhancements
+* Disable editing the "Others" icon in UI (#12683)
+* Improved date format in histograms (#12719)
 * Improved tests. Introduced headless chrome for our spec runners (#12657)
 * Fix popup order selection (#12694)
 * Fix histogram range sliders stick on buckets (#12661)

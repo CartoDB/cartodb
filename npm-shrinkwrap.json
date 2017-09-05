@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.9.56",
+  "version": "4.9.59",
   "dependencies": {
     "abbrev": {
       "version": "1.1.0",
@@ -287,9 +287,9 @@
       "resolved": "https://registry.npmjs.org/browserify/-/browserify-13.0.0.tgz"
     },
     "browserify-aes": {
-      "version": "1.0.6",
+      "version": "1.0.8",
       "from": "browserify-aes@>=1.0.4 <2.0.0",
-      "resolved": "https://registry.npmjs.org/browserify-aes/-/browserify-aes-1.0.6.tgz"
+      "resolved": "https://registry.npmjs.org/browserify-aes/-/browserify-aes-1.0.8.tgz"
     },
     "browserify-cipher": {
       "version": "1.0.0",
@@ -347,7 +347,7 @@
     },
     "buffer-xor": {
       "version": "1.0.3",
-      "from": "buffer-xor@>=1.0.2 <2.0.0",
+      "from": "buffer-xor@>=1.0.3 <2.0.0",
       "resolved": "https://registry.npmjs.org/buffer-xor/-/buffer-xor-1.0.3.tgz"
     },
     "builtin-modules": {
@@ -780,9 +780,9 @@
       "resolved": "https://registry.npmjs.org/events/-/events-1.1.1.tgz"
     },
     "evp_bytestokey": {
-      "version": "1.0.2",
+      "version": "1.0.3",
       "from": "evp_bytestokey@>=1.0.0 <2.0.0",
-      "resolved": "https://registry.npmjs.org/evp_bytestokey/-/evp_bytestokey-1.0.2.tgz"
+      "resolved": "https://registry.npmjs.org/evp_bytestokey/-/evp_bytestokey-1.0.3.tgz"
     },
     "expand-brackets": {
       "version": "0.1.5",

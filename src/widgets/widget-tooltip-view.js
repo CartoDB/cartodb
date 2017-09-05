@@ -1,58 +1,74 @@
 var cdb = require('cartodb.js');
-var _ = require('underscore');
+var $ = require('jquery');
+var C = require('../constants');
 
 /**
  * Standard widget tooltip view
  *
  */
+
 module.exports = cdb.core.View.extend({
   className: 'CDB-Widget-tooltip CDB-Widget-tooltip--light CDB-Text CDB-Size-small',
 
   options: {
-    attribute: 'data-tooltip',
-    offsetX: 10,
-    offsetY: -28
+    attribute: 'data-tooltip'
   },
 
   initialize: function (opts) {
-    if (!opts.target) {
-      throw new Error('target is not defined');
+    if (!opts.context) {
+      throw new Error('context must be defined.');
     }
-    this._$target = this.options.target;
+
+    this.hide = this.hide.bind(this);
+    this.show = this.show.bind(this);
+
+    this._$context = opts.context;
+    this._target = opts.target;
     this._initBinds();
   },
 
-  render: function () {
-    var value = this._$target.attr(this.options.attribute);
-    this.$el.html(value);
-    return this;
-  },
-
   _initBinds: function () {
-    this._$target.hover(
-      _.bind(this.show, this),
-      _.bind(this.hide, this)
-    );
+    if (this.options.event) {
+      this._$context.on(this.options.event, this.show);
+    } else {
+      this._$context.on('mouseenter', this._target, this.show);
+      this._$context.on('mouseleave', this._target, this.hide);
+    }
   },
 
-  _setPosition: function () {
-    var pos = this._$target.offset();
+  _setPosition: function (target) {
+    var $target = $(target);
+    var targetWidth = $target.get(0).getBoundingClientRect().width; // for svg support as well
+    var pos = $target.offset();
     var width = this.$el.outerWidth();
+    var height = this.$el.outerHeight();
 
     this.$el.css({
-      top: pos.top + this.options.offsetY,
-      left: pos.left - (width / 2) + this.options.offsetX
+      top: pos.top - height - C.WIDGETS.TOOLTIP_OFFSET_Y,
+      left: pos.left + (targetWidth / 2) - (width / 2)
     });
   },
 
-  show: function () {
+  _setValue: function (target) {
+    var $target = $(target);
+    var value = $target.attr(this.options.attribute);
+    this.$el.html(value);
+  },
+
+  show: function (event) {
+    if (!event || !event.target) {
+      this.hide();
+      return;
+    }
+
+    this._setValue(event.target);
+    this._setPosition(event.target);
     this.render();
-    this._setPosition();
-    cdb.core.View.prototype.show.call(this);
+    this.$el.fadeIn(70);
   },
 
   clean: function () {
-    this._$target.off('mouseenter mouseleave');
+    this._$context.off('mouseenter mouseleave');
     cdb.core.View.prototype.clean.call(this);
   }
 

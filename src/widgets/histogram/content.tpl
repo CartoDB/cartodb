@@ -25,7 +25,6 @@
 </div>
 <% if (!isCollapsed) { %>
 <div class="CDB-Widget-content CDB-Widget-content--histogram js-content">
-  <div class="CDB-Widget-tooltip CDB-Widget-tooltip--light CDB-Text CDB-Size-small js-tooltip"></div>
   <div class="CDB-Widget-filter CDB-Widget-contentSpaced ">
     <p class="CDB-Text CDB-Size-small is-semibold u-upperCase js-val">…</p>
     <div class="CDB-Widget-filterButtons js-filter is-hidden">

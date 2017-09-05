@@ -90,6 +90,7 @@ module.exports = cdb.core.View.extend({
 
     this.hide(); // will be toggled on width change
 
+    this._tooltipFormatter = formatter.formatNumber; // Tooltips are always numbers
     this._createFormatter();
   },
 
@@ -960,7 +961,8 @@ module.exports = cdb.core.View.extend({
     bars
       .classed('is-highlighted', false)
       .attr('fill', this._getFillColor.bind(this));
-    this.trigger('hover', { value: null });
+
+    this.trigger('hover', { target: null });
   },
 
   _onMouseMove: function () {
@@ -989,7 +991,7 @@ module.exports = cdb.core.View.extend({
 
       if (!this._isDragging() && freq > 0) {
         var d = this.formatter(freq);
-        hoverProperties = { top: top, left: left, data: d };
+        hoverProperties = { target: bar[0][0], top: top, left: left, data: d };
       } else {
         hoverProperties = null;
       }
@@ -1503,6 +1505,9 @@ module.exports = cdb.core.View.extend({
       })
       .attr('y', self.chartHeight())
       .attr('height', 0)
+      .attr('data-tooltip', function (d) {
+        return self._tooltipFormatter(d.freq);
+      })
       .attr('width', Math.max(1, this.barWidth - spacing));
 
     bars

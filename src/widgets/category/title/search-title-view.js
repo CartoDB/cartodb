@@ -87,8 +87,10 @@ module.exports = cdb.core.View.extend({
     this.addView(dropdown);
 
     var colorsTooltip = new TooltipView({
-      target: this.$('.js-colors')
+      context: this.$el,
+      target: '.js-colors'
     });
+
     $('body').append(colorsTooltip.render().el);
     this.addView(colorsTooltip);
   },

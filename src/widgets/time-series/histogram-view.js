@@ -1,11 +1,15 @@
 var cdb = require('cartodb.js');
+var $ = require('jquery');
 var HistogramChartView = require('../histogram/chart');
 var viewportUtils = require('../../viewport-utils');
+var TooltipView = require('../widget-tooltip-view');
 
 /**
  * Time-series histogram view.
  */
 module.exports = cdb.core.View.extend({
+  className: 'CDB-Chart--histogram',
+
   defaults: {
     histogramChartHeight: 48 + // inline bars height
       4 + // bottom margin
@@ -13,8 +17,6 @@ module.exports = cdb.core.View.extend({
       4, // margins
     histogramChartMobileHeight: 16 // inline bars height (no bottom labels)
   },
-
-  className: 'CDB-Chart--histogram',
 
   initialize: function () {
     this._timeSeriesModel = this.options.timeSeriesModel;
@@ -27,6 +29,7 @@ module.exports = cdb.core.View.extend({
   render: function () {
     this.clearSubViews();
     this._createHistogramView();
+    this._createTooltipView();
     return this;
   },
 
@@ -45,6 +48,16 @@ module.exports = cdb.core.View.extend({
     this.listenTo(this._timeSeriesModel, 'change:local_timezone', this._onChangeLocalTimezone);
     this.listenTo(this._timeSeriesModel, 'forceResize', this._onForceResize);
     this.listenTo(this._rangeFilter, 'change', this._onFilterChanged);
+  },
+
+  _createTooltipView: function () {
+    var tooltip = new TooltipView({
+      context: this._chartView,
+      event: 'hover'
+    });
+
+    $('body').append(tooltip.render().el);
+    this.addView(tooltip);
   },
 
   _createHistogramView: function () {

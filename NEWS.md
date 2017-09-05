@@ -47,6 +47,13 @@ Development
 * Updates Dataservices API client default version to `0.20.0` (#12633)
 
 ### Bug fixes / enhancements
+* Disable editing the "Others" icon in UI (#12683)
+* Improved date format in histograms (#12719)
+* Improved tests. Introduced headless chrome for our spec runners (#12657)
+* Fix popup order selection (#12694)
+* Fix histogram range sliders stick on buckets (#12661)
+* Fix Time Series resize when switching to advanced mode (#12124)
+* Fix adding/removing widgets when having Time Series (#12123, #12402, #12655)
 * Enhancements on superadmin imports & exports endpoints (#12254)
 * Don't offer new DO UI unless user has DO credits (#12648)
 * Change position and size of legend icons (#12619)

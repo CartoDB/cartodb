@@ -46,6 +46,7 @@ Development
 * Updates Dataservices API client default version to `0.20.0` (#12633)
 
 ### Bug fixes / enhancements
+* Fix some issues related to feature edition view (#12716)
 * Improved date format in histograms (#12719)
 * Improved tests. Introduced headless chrome for our spec runners (#12657)
 * Fix popup order selection (#12694)

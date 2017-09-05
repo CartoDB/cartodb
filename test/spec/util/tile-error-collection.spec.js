@@ -191,13 +191,13 @@ describe('util/tile-error-collection', function () {
     });
   });
 
-  describe('when adding a tile to the collection', function  () {
+  describe('when adding a tile to the collection', function () {
     it('should make only one request per tile', function () {
       var ajaxDone;
       var tile = { url: 'some_url/0/0/0/4.png', tileDomNode: {} };
       interceptAjaxCall = function (params) {
         if (/\.png/.test(params.url)) {
-          ajaxDone = true
+          ajaxDone = true;
         }
       };
 
@@ -229,10 +229,10 @@ describe('util/tile-error-collection', function () {
         }
       };
 
-      this.collection.add({ url: 'some_url/0/0/0/4.png', tileDomNode: {}});
-      this.collection.add({ url: 'some_url/0/0/0/5.png', tileDomNode: {}});
-      this.collection.add({ url: 'some_url/0/0/0/6.png', tileDomNode: {}});
-      this.collection.add({ url: 'some_url/0/0/0/7.png', tileDomNode: {}});
+      this.collection.add({ url: 'some_url/0/0/0/4.png', tileDomNode: {} });
+      this.collection.add({ url: 'some_url/0/0/0/5.png', tileDomNode: {} });
+      this.collection.add({ url: 'some_url/0/0/0/6.png', tileDomNode: {} });
+      this.collection.add({ url: 'some_url/0/0/0/7.png', tileDomNode: {} });
       expect(ajaxCallsCount).toBe(2);
     });
 

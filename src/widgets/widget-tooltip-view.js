@@ -1,6 +1,6 @@
 var cdb = require('cartodb.js');
 var $ = require('jquery');
-var C = require('./constants');
+var C = require('../constants');
 
 /**
  * Standard widget tooltip view

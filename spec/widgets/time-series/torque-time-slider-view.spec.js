@@ -159,7 +159,7 @@ describe('widgets/time-series/torque-time-slider-view', function () {
         });
         this.view._updateTimeSliderTip();
 
-        expect(this.view._chartView.$('.CDB-Chart-timeSliderTipText').text()).toBe('06:56 07/30/2017');
+        expect(this.view._chartView.$('.CDB-Chart-timeSliderTipText').text()).toBe('06:56 - Jul 30th, 2017');
       });
     });
   });

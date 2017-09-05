@@ -1630,8 +1630,11 @@ module.exports = cdb.core.View.extend({
       case 'quarter':
       case 'month':
         return 80;
-      default:
+      case 'week':
+      case 'day':
         return 120;
+      default:
+        return 140;
     }
   },
 

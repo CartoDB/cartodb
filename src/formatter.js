@@ -9,19 +9,19 @@ var AGGREGATION_FORMATS = {
     unit: 's'
   },
   minute: {
-    display: 'HH:mm L',
+    display: 'HH:mm - MMM Do, YYYY',
     unit: 'm'
   },
   hour: {
-    display: 'HH:mm L',
+    display: 'HH:00 - MMM Do, YYYY',
     unit: 'h'
   },
   day: {
-    display: 'Do MMM YYYY',
+    display: 'MMM Do, YYYY',
     unit: 'd'
   },
   week: {
-    display: 'Do MMM YYYY',
+    display: 'MMM Do, YYYY',
     unit: 'w'
   },
   month: {

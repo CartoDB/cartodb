@@ -1292,7 +1292,7 @@ describe('widgets/histogram/chart', function () {
       it('should update axis tip', function () {
         this.view._updateAxisTip('left');
 
-        expect(this.view.$('.CDB-Chart-axisTipText.CDB-Chart-axisTip-left').text()).toBe('09:03 08/03/2017');
+        expect(this.view.$('.CDB-Chart-axisTipText.CDB-Chart-axisTip-left').text()).toBe('09:03 - Aug 3rd, 2017');
       });
     });
 

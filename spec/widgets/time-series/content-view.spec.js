@@ -103,5 +103,12 @@ describe('widgets/time-series/content-view', function () {
       this.view.model.trigger('change:hasInitialState');
       expect(this.view.render).toHaveBeenCalled();
     });
+
+    it('should render the widget when the layer name changes', function () {
+      spyOn(this.view, 'render');
+      this.view._initBinds();
+      this.dataviewModel.layer.set('layer_name', 'Hello');
+      expect(this.view.render).toHaveBeenCalled();
+    });
   });
 });

@@ -13,23 +13,23 @@ describe('create-vis-new:', function () {
     this.container.remove();
   });
 
-  describe('CreateVis', function () {
-    it('should set the right map center', function () {
+  describe('Default Options', function () {
+    it('should get the map center from the visJson', function () {
       var visJson = scenarios.load(0);
       var visModel = createVis(this.containerId, visJson);
       expect(visModel.map.get('center')).toEqual(visJson.center);
     });
-    it('should initialize the right title', function () {
+    it('should get the title from the visJson', function () {
       var visJson = scenarios.load(0);
       var visModel = createVis(this.containerId, visJson);
       expect(visModel.get('title')).toEqual(visJson.title);
     });
-    it('should initialize the right description', function () {
+    it('should get the description from the visJson', function () {
       var visJson = scenarios.load(0);
       var visModel = createVis(this.containerId, visJson);
       expect(visModel.get('description')).toEqual(visJson.description);
     });
-    it('should initialize the right protocol', function () {
+    it('should initialize the right protocol (https:false)', function () {
       var visJson = scenarios.load(0);
       var visModel = createVis(this.containerId, visJson);
       expect(visModel.get('https')).toEqual(false);
@@ -39,60 +39,143 @@ describe('create-vis-new:', function () {
       var visModel = createVis(this.containerId, visJson);
       expect(visModel.get('interactiveFeatures')).toEqual(false);
     });
-    it('should not have interactive features by default', function () {
+    it('should display the "loader" overlay by default [loaderControl, tiles_loader]', function () {
+      // loaderControl and tiles_loader appear to do the same.
       var visJson = scenarios.load(0);
       var visModel = createVis(this.containerId, visJson);
-      expect(visModel.get('interactiveFeatures')).toEqual(false);
+      expect(visModel.overlaysCollection.findWhere({ type: 'loader' })).toBeDefined();
     });
-    xit('should not have "tiles_loader" by default', function () {
+    it('should display the "logo" by default', function () {
       var visJson = scenarios.load(0);
       var visModel = createVis(this.containerId, visJson);
-      expect(visModel.get('tiles_loader')).toEqual(false);
+      expect(visModel.overlaysCollection.findWhere({ type: 'logo' })).toBeDefined();
     });
-    xit('should not have "loaderControl" by default', function () {
+    it('should not display empty infowindow fields by default', function () {
       var visJson = scenarios.load(0);
       var visModel = createVis(this.containerId, visJson);
-      expect(visModel.get('loaderControl')).toEqual(false);
+      expect(visModel.get('showEmptyInfowindowFields')).toEqual(false);
     });
-    xit('should have "infowindow" by default', function () {
+    it('should have legends', function () {
       var visJson = scenarios.load(0);
       var visModel = createVis(this.containerId, visJson);
-      expect(visModel.get('infowindow')).toEqual(true);
+      expect(visModel.settings.get('showLegends')).toEqual(true);
     });
-    xit('should have "tooltip" by default', function () {
+    it('should show layer selector', function () {
       var visJson = scenarios.load(0);
       var visModel = createVis(this.containerId, visJson);
-      expect(visModel.get('tooltip')).toEqual(true);
+      expect(visModel.settings.get('showLayerSelector')).toEqual(true);
+      expect(visModel.settings.get('layerSelectorEnabled')).toEqual(true);
     });
-    xit('should have "logo" by default', function () {
+    it('should allow scrollwheel by default', function () {
       var visJson = scenarios.load(0);
       var visModel = createVis(this.containerId, visJson);
-      expect(visModel.get('logo')).toEqual(true);
+      expect(visModel.map.get('scrollwheel')).toEqual(true);
     });
-    xit('should have "show_empty_infowindow_fields" by default', function () {
+    it('should have "infowindow" enabled by default', function () {
       var visJson = scenarios.load(0);
       var visModel = createVis(this.containerId, visJson);
-      expect(visModel.get('show_empty_infowindow_fields')).toEqual(true);
+      pending('It seems that this option is no longer being used');
     });
-    xit('should have legends', function () {
+    it('should have "tooltip" by default', function () {
       var visJson = scenarios.load(0);
       var visModel = createVis(this.containerId, visJson);
-      expect(visModel.get('showLegends')).toEqual(true);
+      pending('It seems that this option  is no longer being used');
     });
-    xit('should show layer selector', function () {
+  });
+
+  describe('VisModel.map', function () {
+    it('should have the right title', function () {
       var visJson = scenarios.load(0);
       var visModel = createVis(this.containerId, visJson);
-      expect(visModel.get('showLayerSelector')).toEqual(true);
+      expect(visModel.map.get('title')).toEqual(visJson.title);
     });
-    xit('should allow scrollwheel', function () {
+    it('should have the right description', function () {
       var visJson = scenarios.load(0);
       var visModel = createVis(this.containerId, visJson);
-      expect(visModel.get('scrollwheel')).toEqual(true);
+      expect(visModel.map.get('description')).toEqual(visJson.description);
     });
-    xit('should have dashboard_menu', function () {
+    it('should have the right bounds', function () {
       var visJson = scenarios.load(0);
       var visModel = createVis(this.containerId, visJson);
-      expect(visModel.get('dashboard_menu')).toEqual(true);
+      expect(visModel.map.get('view_bounds_sw')).toEqual(visJson.bounds[0]);
+      expect(visModel.map.get('view_bounds_ne')).toEqual(visJson.bounds[1]);
+    });
+    it('should have the right zoom', function () {
+      var visJson = scenarios.load(0);
+      var visModel = createVis(this.containerId, visJson);
+      expect(visModel.map.get('zoom')).toEqual(visJson.zoom);
+    });
+    it('should have the right scrollwheel', function () {
+      var visJson = scenarios.load(0);
+      var visModel = createVis(this.containerId, visJson);
+      expect(visModel.map.get('scrollwheel')).toEqual(visJson.options.scrollwheel);
+    });
+    it('should have the right drag', function () {
+      var visJson = scenarios.load(0);
+      var visModel = createVis(this.containerId, visJson);
+      expect(visModel.map.get('drag')).toEqual(true);
+    });
+    it('should have the right provider', function () {
+      var visJson = scenarios.load(0);
+      var visModel = createVis(this.containerId, visJson);
+      expect(visModel.map.get('provider')).toEqual('leaflet');
+    });
+    it('should have the right feature interactivity', function () {
+      var visJson = scenarios.load(0);
+      var visModel = createVis(this.containerId, visJson);
+      expect(visModel.map.get('isFeatureInteractivityEnabled')).toEqual(false);
+    });
+    it('should have the right render mode', function () {
+      var visJson = scenarios.load(0);
+      var visModel = createVis(this.containerId, visJson);
+      expect(visModel.map.get('renderMode')).toEqual(visJson.vector ? 'vector' : 'raster');
+    });
+  });
+
+  describe('VisModel._windshaftMap', function () {
+    /**
+      client: windshaftClient,
+      modelUpdater: modelUpdater,
+      windshaftSettings: windshaftSettings,
+      dataviewsCollection: this._dataviewsCollection,
+      layersCollection: this._layersCollection,
+      analysisCollection: this._analysisCollection
+     */
+    it('should not have the api key', function () {
+      var visJson = scenarios.load(0);
+      var visModel = createVis(this.containerId, visJson);
+      expect(visModel._windshaftMap.get('apiKey')).toEqual(undefined);
+    });
+    it('should not have auth token', function () {
+      var visJson = scenarios.load(0);
+      var visModel = createVis(this.containerId, visJson);
+      expect(visModel._windshaftMap.get('authToken')).toEqual(undefined);
+    });
+    it('should have the right statTag', function () {
+      var visJson = scenarios.load(0);
+      var visModel = createVis(this.containerId, visJson);
+      expect(visModel._windshaftMap.get('statTag')).toEqual(visJson.datasource.stat_tag);
+    });
+  });
+
+  xdescribe('VisModel.overlays', function () {
+    it('should set the right map center', function () {
+      var visJson = scenarios.load(0);
+      var visModel = createVis(this.containerId, visJson);
+    });
+  });
+
+  xdescribe('VisModel.dataviews', function () {
+    it('should set the right map center', function () {
+      var visJson = scenarios.load(0);
+      var visModel = createVis(this.containerId, visJson);
+    });
+  });
+
+  xdescribe('VisModel.analysis', function () {
+    it('should set the right map center', function () {
+      var visJson = scenarios.load(0);
+      var visModel = createVis(this.containerId, visJson);
     });
   });
 });

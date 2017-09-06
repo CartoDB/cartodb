@@ -49,6 +49,7 @@ Development
 
 ### Bug fixes / enhancements
 * Allow any text in Maps, Layers and Widgets names (#12322)
+* Change edition mode when user edits widget (#12636)
 * Disable editing the "Others" icon in UI (#12683)
 * Improved date format in histograms (#12719)
 * Improved tests. Introduced headless chrome for our spec runners (#12657)

@@ -6,12 +6,19 @@
 .ListItem {
   @include flex(1);
   position: relative;
-  cursor: move;
 
   [data-fieldsets],
   [data-fields] {
     @include flex(1);
   }
+}
+
+.LegendItem.is-movable {
+  cursor: move;
+}
+
+.LegendItem .is-hidden {
+  visibility: hidden;
 }
 
 .ListItem--fixed {

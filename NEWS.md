@@ -2,6 +2,7 @@ Development
 -----------
 
 ### Features
+* Enable other hosts apart from account host to include CORS headers via the cors_enabled_hosts param in app_config.yml (#12685)
 * Add tooltips to show bucket data in time-series (#11650)
 * Improve legend items management (#12650)
 * Avoid multiple time-series by filtering the carousel options (#12395)
@@ -48,6 +49,9 @@ Development
 
 ### Bug fixes / enhancements
 * Fix some issues related to feature edition view (#12716)
+* Fix analysis onboarding lunch template (#12743)
+* Allow any text in Maps, Layers and Widgets names (#12322)
+* Change edition mode when user edits widget (#12636)
 * Disable editing the "Others" icon in UI (#12683)
 * Improved date format in histograms (#12719)
 * Improved tests. Introduced headless chrome for our spec runners (#12657)
@@ -68,6 +72,7 @@ Development
 * Fix broken join from second column on IE11 (#support/875)
 * Fix ghost node problem (#11397)
 * Break down deep-insights-integrations class (#11581)
+* Fix CORS for local images in legends (#12647)
 * Fix torque categories layer rendering (#cartodb.js/1698)
 * Don't provide quantification option when layer is animated (#10947)
 * Remove tracking of liked map events (#12404)

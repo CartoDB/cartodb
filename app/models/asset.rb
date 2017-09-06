@@ -129,8 +129,7 @@ class Asset < Sequel::Model
     mode = chmod_mode
     FileUtils.chmod(mode, local_filename(filename)) if mode
 
-    p = File.join('/', ASSET_SUBFOLDER, target_asset_path, filename)
-    "#{asset_protocol}//#{CartoDB.account_host}#{p}"
+    File.join('/', ASSET_SUBFOLDER, target_asset_path, filename)
   end
 
   def use_s3?

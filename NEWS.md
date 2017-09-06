@@ -47,6 +47,7 @@ Development
 * Updates Dataservices API client default version to `0.20.0` (#12633)
 
 ### Bug fixes / enhancements
+* Fix analysis onboarding lunch template (#12743)
 * Disable editing the "Others" icon in UI (#12683)
 * Improved date format in histograms (#12719)
 * Improved tests. Introduced headless chrome for our spec runners (#12657)

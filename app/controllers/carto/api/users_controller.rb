@@ -32,7 +32,7 @@ module Carto
           default_fallback_basemap: current_user.default_basemap,
           dashboard_notifications: dashboard_notifications,
           organization_notifications: organization_notifications,
-          user_frontend_version: current_user.user_frontend_version,
+          user_frontend_version: current_user.user_frontend_version_or_frontend_version,
           asset_host: current_user.asset_host
         }
       end

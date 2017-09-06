@@ -53,6 +53,7 @@
     "cartoassets": "CartoDB/CartoAssets#master",
     "colors": "1.1.2",
     "csswring": "^3.0.5",
+    "eslint": "^4.6.1",
     "exports-loader": "0.6.4",
     "fs-extra": "2.0.0",
     "git-rev": "0.2.1",
@@ -127,49 +128,6 @@
     "cartodb.js-v3": "global:cdb",
     "backbone-cdb-v3": "global:Backbone",
     "moment-v3": "global:moment"
-  },
-  "semistandard": {
-    "globals": [
-      "alert",
-      "cartodb",
-      "_t",
-      "grunt",
-      "jasmine",
-      "describe",
-      "xdescribe",
-      "beforeAll",
-      "beforeEach",
-      "afterAll",
-      "afterEach",
-      "spyOn",
-      "it",
-      "xit",
-      "expect",
-      "localStorage",
-      "__ENV__"
-    ],
-    "ignore": [
-      "/app",
-      "/config",
-      "/db",
-      "/doc",
-      "/lib/assets/javascripts",
-      "/lib/assets/node_modules",
-      "/lib/assets/test",
-      "/lib/build",
-      "/lib/carto",
-      "/lib/cartodb",
-      "/lib/importer",
-      "/lib/resque",
-      "/lib/sql",
-      "/lib/tasks",
-      "/lib/varnish",
-      "/public",
-      "/script",
-      "/services",
-      "/spec",
-      "/vendor"
-    ]
   },
   "config": {
     "npmJsDir": "lib/assets"

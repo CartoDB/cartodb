@@ -64,11 +64,14 @@ class Superadmin::UsersController < Superadmin::SuperadminController
   end
 
   def destroy
+    @user.set_force_destroy if params[:force] == 'true'
     @user.destroy
     respond_with(:superadmin, @user)
+  rescue CartoDB::SharedEntitiesError => e
+    render json: { "error": "Error destroying user: #{e.message}", "errorCode": "userHasSharedEntities" }, status: 422
   rescue => e
     CartoDB::Logger.error(exception: e, message: 'Error destroying user', user: @user)
-    render json: { "error": "Error destroying user: #{e.message}" }, status: 422
+    render json: { "error": "Error destroying user: #{e.message}", "errorCode": "" }, status: 422
   end
 
   def dump
@@ -156,7 +159,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
     synchronization = Carto::Synchronization.where(id: params[:synchronization_id]).first
     respond_with({
                    data: synchronization.to_hash,
-                   log: synchronization.nil? ? nil : synchronization.log.to_s
+                   log: synchronization.nil? ? nil : synchronization.log.try(:entries)
                  })
   end
 

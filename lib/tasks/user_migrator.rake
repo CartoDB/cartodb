@@ -18,9 +18,9 @@ namespace :cartodb do
           organization_name: organization.name,
           schema_mode: true,
           split_user_schemas: true,
-          path: path + '/data/'
+          path: path + '/data'
         )
-        Carto::OrganizationMetadataExportService.new.export_organization_to_directory(organization.id, path + '/meta')
+        Carto::OrganizationMetadataExportService.new.export_to_directory(organization, path + '/meta')
 
         `cd #{work_dir}/ && zip -0 -r \"#{organization.id}.zip\" #{organization.id} && cd -`
         FileUtils.remove_dir(path)
@@ -37,7 +37,7 @@ namespace :cartodb do
           path = Dir["#{work_dir}/*"].first
 
           service = Carto::OrganizationMetadataExportService.new
-          imported_organization = service.import_organization_and_users_from_directory("#{path}/meta")
+          imported_organization = service.import_from_directory("#{path}/meta")
           CartoDB::DataMover::ImportJob.new(
             file: Dir["#{path}/data/org*json"].first,
             data: true,
@@ -47,7 +47,7 @@ namespace :cartodb do
             mode: :import,
             set_banner: false
           ).run!
-          service.import_organization_visualizations_from_directory(imported_organization, "#{path}/meta")
+          service.import_metadata_from_directory(imported_organization, "#{path}/meta")
 
           imported_organization.users.each { |u| u.update_attribute(:last_common_data_update_date, nil) }
         end

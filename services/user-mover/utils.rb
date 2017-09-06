@@ -52,8 +52,9 @@ module CartoDB
       end
 
       def remove_user_mover_banner(user_id)
-        u = ::Carto::User.where(id: user_id).first
-        u.update_column(:notification, nil)
+        user = ::Carto::User.where(id: user_id).first
+        # User might not exist because this might be run after an exception, before users are created
+        user.update_column(:notification, nil) if user
       end
 
       def run_command(cmd)

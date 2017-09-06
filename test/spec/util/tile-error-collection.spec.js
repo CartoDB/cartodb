@@ -1,6 +1,7 @@
 var Backbone = require('backbone');
 var $ = require('jquery');
 var TileErrorCollection = require('../../../src/util/tile-error-collection');
+var WindshaftError = require('../../../src/windshaft/error');
 
 describe('util/tile-error-collection', function () {
   var interceptAjaxCall;
@@ -182,10 +183,11 @@ describe('util/tile-error-collection', function () {
 
         it('should set the error in the model', function () {
           this.collection._getTileErrors();
-          expect(this.model.get('error')).toEqual({
-            type: 'limit',
-            message: 'Some error happened'
-          });
+          var error = this.model.get('error');
+
+          expect(error.type).toEqual('limit');
+          expect(error.message).toEqual('Some error happened');
+          expect(error instanceof WindshaftError).toBe(true);
         });
       });
     });

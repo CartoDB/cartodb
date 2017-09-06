@@ -1,5 +1,6 @@
 var Backbone = require('backbone');
 var $ = require('jquery');
+var WindshaftError = require('../windshaft/error');
 var getValue = require('./get-object-value');
 var tileErrorImage = require('./tile-error.tpl');
 
@@ -63,7 +64,7 @@ var TileErrorCollection = Backbone.Collection.extend({
       },
       error: function (jqXHR) {
         var errors = getValue(jqXHR, 'responseJSON.errors_with_context', []);
-        model.set('error', errors[0]);
+        model.set('error', new WindshaftError(errors[0]));
       },
       complete: function () {
         model.set('checked', true);

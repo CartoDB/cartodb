@@ -47,6 +47,10 @@ Development
 
 ### Bug fixes / enhancements
 * Allow any text in Maps, Layers and Widgets names (#12322)
+* Disable editing the "Others" icon in UI (#12683)
+* Improved date format in histograms (#12719)
+* Improved tests. Introduced headless chrome for our spec runners (#12657)
+* Fix popup order selection (#12694)
 * Fix histogram range sliders stick on buckets (#12661)
 * Fix Time Series resize when switching to advanced mode (#12124)
 * Fix adding/removing widgets when having Time Series (#12123, #12402, #12655)

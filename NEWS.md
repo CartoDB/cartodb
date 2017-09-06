@@ -48,6 +48,7 @@ Development
 * Updates Dataservices API client default version to `0.20.0` (#12633)
 
 ### Bug fixes / enhancements
+* Allow any text in Maps, Layers and Widgets names (#12322)
 * Change edition mode when user edits widget (#12636)
 * Disable editing the "Others" icon in UI (#12683)
 * Improved date format in histograms (#12719)
@@ -69,6 +70,7 @@ Development
 * Fix broken join from second column on IE11 (#support/875)
 * Fix ghost node problem (#11397)
 * Break down deep-insights-integrations class (#11581)
+* Fix CORS for local images in legends (#12647)
 * Fix torque categories layer rendering (#cartodb.js/1698)
 * Don't provide quantification option when layer is animated (#10947)
 * Remove tracking of liked map events (#12404)

@@ -1,12 +1,13 @@
 {
-  "rules": {},
+  "extends": "semistandard",
   "env": {
     "es6": true,
     "browser": true,
     "jasmine": true
   },
-  "extends": "semistandard",
   "globals": {
-    "_t": true
-  }
+    "_t": true,
+    "__ENV__": true
+  },
+  "rules": {}
 }

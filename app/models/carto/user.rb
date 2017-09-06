@@ -172,10 +172,6 @@ class Carto::User < ActiveRecord::Base
     !organization_id.nil?
   end
 
-  def user_frontend_version
-    read_attribute(:user_frontend_version) || Cartodb.config[:frontend_version]
-  end
-
   def avatar
     self.avatar_url.nil? ? "//#{self.default_avatar}" : self.avatar_url
   end
@@ -517,6 +513,10 @@ class Carto::User < ActiveRecord::Base
 
   def view_dashboard
     update_column(:dashboard_viewed_at, Time.now)
+  end
+
+  def user_frontend_version_or_frontend_version
+    self.user_frontend_version || CartoDB::Application.frontend_version
   end
 
   private

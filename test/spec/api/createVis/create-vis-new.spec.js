@@ -72,13 +72,9 @@ describe('create-vis-new:', function () {
       expect(visModel.map.get('scrollwheel')).toEqual(true);
     });
     it('should have "infowindow" enabled by default', function () {
-      var visJson = scenarios.load(0);
-      var visModel = createVis(this.containerId, visJson);
       pending('It seems that this option is no longer being used');
     });
     it('should have "tooltip" by default', function () {
-      var visJson = scenarios.load(0);
-      var visModel = createVis(this.containerId, visJson);
       pending('It seems that this option  is no longer being used');
     });
   });
@@ -160,22 +156,17 @@ describe('create-vis-new:', function () {
 
   xdescribe('VisModel.overlays', function () {
     it('should set the right map center', function () {
-      var visJson = scenarios.load(0);
-      var visModel = createVis(this.containerId, visJson);
+
     });
   });
 
   xdescribe('VisModel.dataviews', function () {
     it('should set the right map center', function () {
-      var visJson = scenarios.load(0);
-      var visModel = createVis(this.containerId, visJson);
     });
   });
 
   xdescribe('VisModel.analysis', function () {
     it('should set the right map center', function () {
-      var visJson = scenarios.load(0);
-      var visModel = createVis(this.containerId, visJson);
     });
   });
 });

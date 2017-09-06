@@ -11,5 +11,12 @@
     "grunt": true
   },
   "rules": {
+    "camelcase": "off",
+    "indent": "off",
+    "no-mixed-operators": "off",
+    "no-useless-escape": "off",
+    "no-useless-computed-key": "off",
+    "no-multiple-empty-lines": "off",
+    "no-useless-return": "off"
   }
 }

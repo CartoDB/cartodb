@@ -40,6 +40,13 @@ function logVersionsError (err, requiredNodeVersion, requiredNpmVersion) {
   }
 }
 
+function getTargetDiff () {
+  var target = require('child_process').execSync('(git diff --name-only --relative; git diff origin/master.. --name-only --relative) | grep \'\\.js\\?$\'').toString();
+  target = target.split('\n');
+  target.splice(-1, 1);
+  return target;
+}
+
 /**
  *  CartoDB UI assets generation
  */
@@ -114,6 +121,8 @@ module.exports = function (grunt) {
     aws = grunt.file.readJSON('./lib/build/grunt-aws.json');
   }
 
+  var targetDiff = getTargetDiff();
+
   // Project configuration.
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
@@ -155,7 +164,11 @@ module.exports = function (grunt) {
 
     availabletasks: require('./lib/build/tasks/availabletasks.js').task(),
 
-    sass: require('./lib/build/tasks/sass.js').task()
+    sass: require('./lib/build/tasks/sass.js').task(),
+
+    eslint: {
+      target: targetDiff
+    }
   });
 
   /**
@@ -345,18 +358,9 @@ module.exports = function (grunt) {
     'npm-dev'
   ]);
 
-  grunt.registerTask('lint', 'lint source files', function () {
-    var done = this.async();
-    require('child_process').exec('(git diff --name-only --relative; git diff origin/master.. --name-only --relative) | grep \'\\.js\\?$\' | xargs node_modules/.bin/semistandard', { maxBuffer: 1024 * 1000 }, function (error, stdout, stderr) {
-      if (error && stdout) {
-        grunt.log.fail(stdout);
-      } else {
-        grunt.log.ok('All linted files OK!');
-        grunt.log.writelns('>> Note that files listed in package.json semistandard.ignore are not linted');
-      }
-      done();
-    });
-  });
+  grunt.registerTask('lint', [
+    'eslint'
+  ]);
 
   grunt.registerTask('sourcemaps', 'generate sourcemaps, to be used w/ trackjs.com for bughunting', [
     'setConfig:assets_dir:./tmp/sourcemaps',

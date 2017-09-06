@@ -7,7 +7,9 @@
   },
   "globals": {
     "_t": true,
-    "__ENV__": true
+    "__ENV__": true,
+    "grunt": true
   },
-  "rules": {}
+  "rules": {
+  }
 }

@@ -2,6 +2,7 @@ Development
 -----------
 
 ### Features
+* Enable other hosts apart from account host to include CORS headers via the cors_enabled_hosts param in app_config.yml (#12685)
 * Add tooltips to show bucket data in time-series (#11650)
 * Improve legend items management (#12650)
 * Avoid multiple time-series by filtering the carousel options (#12395)
@@ -47,6 +48,7 @@ Development
 * Updates Dataservices API client default version to `0.20.0` (#12633)
 
 ### Bug fixes / enhancements
+* Change edition mode when user edits widget (#12636)
 * Disable editing the "Others" icon in UI (#12683)
 * Improved date format in histograms (#12719)
 * Improved tests. Introduced headless chrome for our spec runners (#12657)

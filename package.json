@@ -190,6 +190,6 @@
     "build:stats": "webpack --env.stats --progress --config webpack.dev.config.js",
     "start": "grunt watch:css & webpack --progress --watch --config webpack.dev.config.js",
     "dev": "webpack --progress --config webpack.dev.config.js",
-    "fix-shrinkwrap-protocol": "sed -i '' -e 's/\"resolved\": \"http:\\/\\/registry.npmjs.org/\"resolved\": \"https:\\/\\/registry.npmjs.org/g' npm-shrinkwrap.json"
+    "fix-shrinkwrap-protocol": "node ./lib/build/fix-shrinkwrap.js"
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.9.59",
+  "version": "4.9.60",
   "dependencies": {
     "abbrev": {
       "version": "1.1.0",
@@ -405,7 +405,7 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
       "from": "cartodb/cartodb.js#tangram.cartodb-0.5.0",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#c0335d2e518be0189db7b93512681cf7e5aef0ac"
+      "resolved": "git://github.com/cartodb/cartodb.js.git#c5ca309a99d63493b8cb0527263c82c89baefaa2"
     },
     "caseless": {
       "version": "0.12.0",
@@ -2351,9 +2351,9 @@
       "resolved": "git://github.com/cartodb/tangram-1.git#05fbe2b438bb8be7cd411587d8d4e4415fe4227c"
     },
     "tangram-cartocss": {
-      "version": "0.8.1",
-      "from": "tangram-cartocss@0.8.1",
-      "resolved": "https://registry.npmjs.org/tangram-cartocss/-/tangram-cartocss-0.8.1.tgz"
+      "version": "0.8.2",
+      "from": "tangram-cartocss@0.8.2",
+      "resolved": "https://registry.npmjs.org/tangram-cartocss/-/tangram-cartocss-0.8.2.tgz"
     },
     "tangram-reference": {
       "version": "2.0.1",
@@ -2361,9 +2361,9 @@
       "resolved": "https://registry.npmjs.org/tangram-reference/-/tangram-reference-2.0.1.tgz"
     },
     "tangram.cartodb": {
-      "version": "0.5.1",
-      "from": "tangram.cartodb@0.5.1",
-      "resolved": "https://registry.npmjs.org/tangram.cartodb/-/tangram.cartodb-0.5.1.tgz"
+      "version": "0.5.2",
+      "from": "tangram.cartodb@0.5.2",
+      "resolved": "https://registry.npmjs.org/tangram.cartodb/-/tangram.cartodb-0.5.2.tgz"
     },
     "tapable": {
       "version": "0.2.8",

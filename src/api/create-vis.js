@@ -8,8 +8,8 @@ var config = require('../cdb.config');
 var DEFAULT_OPTIONS = {
   tiles_loader: true,
   loaderControl: true,
-  infowindow: true,
-  tooltip: true,
+  infowindow: true, // TODO: it seems that this is no longer used
+  tooltip: true, // TODO: it seems that this is no longer used
   logo: true,
   show_empty_infowindow_fields: false,
   interactiveFeatures: false

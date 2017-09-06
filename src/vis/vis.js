@@ -148,7 +148,7 @@ var VisModel = Backbone.Model.extend({
     });
 
     // Create the Map
-    var allowDragging = util.isMobileDevice() || vizjson.hasZoomOverlay() || vizjson.scrollwheel;
+    var allowDragging = util.isMobileDevice() || vizjson.hasZoomOverlay() || vizjson.options.scrollwheel;
 
     var renderMode = RenderModes.AUTO;
     if (vizjson.vector === true) {
@@ -163,7 +163,7 @@ var VisModel = Backbone.Model.extend({
       bounds: vizjson.bounds,
       center: vizjson.center,
       zoom: vizjson.zoom,
-      scrollwheel: !!this.scrollwheel,
+      scrollwheel: !!vizjson.options.scrollwheel,
       drag: allowDragging,
       provider: vizjson.map_provider,
       isFeatureInteractivityEnabled: this.get('interactiveFeatures'),

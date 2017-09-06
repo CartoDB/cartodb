@@ -106,15 +106,7 @@ describe('cartodb.js bundle', function() {
     });
 
     it('should have a cdb.ui.common object', function() {
-      expect(cdb.ui.common.Dialog).toEqual(jasmine.any(Function));
-      expect(cdb.ui.common.Dropdown).toEqual(jasmine.any(Function));
       expect(cdb.ui.common.FullScreen).toEqual(jasmine.any(Function));
-      expect(cdb.ui.common.Notification).toEqual(jasmine.any(Function));
-      expect(cdb.ui.common.Row).toEqual(jasmine.any(Function));
-      expect(cdb.ui.common.TableData).toEqual(jasmine.any(Function));
-      expect(cdb.ui.common.TableProperties).toEqual(jasmine.any(Function));
-      expect(cdb.ui.common.RowView).toEqual(jasmine.any(Function));
-      expect(cdb.ui.common.Table).toEqual(jasmine.any(Function));
     });
 
     it('should have a cdb.geo object', function() {
@@ -134,20 +126,10 @@ describe('cartodb.js bundle', function() {
     });
 
     it('should have a cdb.geo.ui object', function() {
-      expect(cdb.geo.ui.Text).toEqual(jasmine.any(Function));
-      expect(cdb.geo.ui.Annotation).toEqual(jasmine.any(Function));
-      expect(cdb.geo.ui.Image).toEqual(jasmine.any(Function));
-      expect(cdb.geo.ui.Zoom).toEqual(jasmine.any(Function));
-
       expect(cdb.geo.ui.InfowindowModel).toEqual(jasmine.any(Function));
       expect(cdb.geo.ui.Infowindow).toEqual(jasmine.any(Function));
-
       expect(cdb.geo.ui.Search).toEqual(jasmine.any(Function));
-
-      expect(cdb.geo.ui.LayerView).toEqual(jasmine.any(Function));
-
       expect(cdb.geo.ui.TilesLoader).toEqual(jasmine.any(Function));
-      expect(cdb.geo.ui.InfoBox).toEqual(jasmine.any(Function));
       expect(cdb.geo.ui.Tooltip).toEqual(jasmine.any(Function));
     });
 

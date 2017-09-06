@@ -1,0 +1,82 @@
+// Map Limitss
+// ----------------------------------------------
+
+$buttonColor: #636D72;
+$linkColor: #139BFC;
+
+.CDB-Overlay--limits {
+  background: #FFFFC2;
+}
+
+.CDB-Limits {
+  @include transition(width, 150ms ease-in);
+  position: relative;
+  order: 10;
+  width: 32px;
+  margin-right: 8px;
+  border-radius: 3px;
+  box-sizing: border-box;
+  font-family: 'Open Sans';
+  line-height: 20px;
+  z-index: 10;
+
+  &.is-active {
+    width: 320px;
+
+    .CDB-Limits-text {
+      @include flex(1);
+      width: auto;
+      padding: 0 12px;
+      border-left: 1px solid rgba(0, 0, 0, 0.1);
+      pointer-events: initial;
+      opacity: 1;
+    }
+  }
+}
+
+.CDB-Limits-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  min-width: 32px;
+  height: 100%;
+  color: $buttonColor;
+  font-size: 12px;
+  line-height: 32px;
+  vertical-align: middle;
+  z-index: 1;
+
+  &.is-disabled {
+    opacity: 0.24;
+  }
+}
+
+.CDB-Limits-text {
+  @include transition(opacity, 150ms);
+  width: 0;
+  height: 16px;
+  margin-left: -1px;
+  padding: 0;
+  border-left: 1px solid transparent;
+  color: $buttonColor;
+  font-size: 10px;
+  line-height: 16px;
+  opacity: 0;
+  overflow: hidden;
+
+  a {
+    color: $linkColor;
+  }
+}
+
+@include media-query-mobile() {
+  .CDB-Limits {
+    margin-right: 0;
+
+    &.is-active {
+      @include flex(1);
+      width: 0;
+    }
+  }
+}

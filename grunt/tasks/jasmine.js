@@ -20,15 +20,6 @@ var defaultOptions = {
  * Load order: vendor, helpers, source, specs,
  */
 module.exports = {
-  cartodb: {
-    src: [
-      'dist/cartodb.uncompressed.js'
-    ],
-    options: _.defaults({
-      outfile: 'test/SpecRunner-cartodb.html',
-      specs: '<%= config.tmp %>/cartodb-specs.js'
-    }, defaultOptions)
-  },
   'cartodb-src': {
     src: [], // actual src files are require'd in the *.spec.js files
     options: _.defaults({

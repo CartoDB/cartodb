@@ -13,32 +13,6 @@ describe('geo/map/layers', function () {
     layers = new Layers();
   });
 
-  it('should compare equal layers correctly', function () {
-    var layer1 = new PlainLayer({ name: 'Positron' }, { vis: {} });
-    var layer2 = new PlainLayer({}, { vis: {} });
-    var layer3 = new PlainLayer({}, { vis: {} });
-    var layer4 = new PlainLayer({}, { vis: {} });
-
-    expect(layer3.isEqual(layer4)).toBeTruthy();
-    expect(layer1.isEqual(layer2)).not.toBeTruthy();
-
-    layers.add(layer4);
-    layers.add(layer3);
-
-    expect(layer3.isEqual(layer4)).toBeTruthy();
-  });
-
-  it('should compare TileLayers', function () {
-    var layer1 = new TileLayer({ urlTemplate: 'urlTemplate', name: 'layer1', other: 'something' }, { vis: {} });
-    var layer2 = new TileLayer({ urlTemplate: 'urlTemplate', name: 'layer2', other: 'else' }, { vis: {} });
-
-    expect(layer1.isEqual(layer2)).toBeFalsy();
-
-    layer2.set({ name: 'layer1' }, { silent: true });
-
-    expect(layer1.isEqual(layer2)).toBeTruthy();
-  });
-
   it('should re-assign order when new layers are added to the collection', function () {
     var baseLayer = new TileLayer(null, { vis: {} });
     var layer1 = new CartoDBLayer({}, { vis: this.vis });

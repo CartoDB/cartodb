@@ -39,9 +39,12 @@ Rule.prototype.getBucketsWithDefaultFilter = function () {
 };
 
 Rule.prototype._getBucketsByFilterType = function (filterType) {
-  return _.select(this._rule.buckets, function (bucket) {
-    return bucket.filter.type === filterType;
-  });
+  if (this._rule) {
+    return _.select(this._rule.buckets, function (bucket) {
+      return bucket.filter.type === filterType;
+    });
+  }
+  return [];
 };
 
 Rule.prototype.getFilterAvg = function () {

@@ -6,7 +6,7 @@ var CoordinatesComparator = require('./coordinates-comparator');
 module.exports = function (MapView, PathView) {
   SharedTestsForPathViews.call(this, Polyline, MapView, PathView);
 
-  describe('expandable paths', function () {
+  describe('expandable polylines', function () {
     beforeEach(function () {
       this.mapView = createMapView(MapView);
       this.mapView.render();

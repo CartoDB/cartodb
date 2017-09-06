@@ -1,16 +1,19 @@
-/* global google */
-var cdb = require('cdb');
-
 var MapViewFactory = function () {};
+
+var LeafletMapView = require('./leaflet/leaflet-map-view');
+var GoogleMapsMapView;
+if (typeof (window.google && window.google.maps) !== 'undefined') {
+  GoogleMapsMapView = require('./gmaps/gmaps-map-view');
+}
 
 MapViewFactory.prototype.createMapView = function (provider, visModel, mapModel, layerGroupModel) {
   var MapViewClass;
 
   if (provider === 'leaflet') {
-    MapViewClass = cdb.geo.LeafletMapView;
+    MapViewClass = LeafletMapView;
   } else if (provider === 'googlemaps') {
-    if (typeof (google) !== 'undefined' && typeof (google.maps) !== 'undefined') {
-      MapViewClass = cdb.geo.GoogleMapsMapView;
+    if (GoogleMapsMapView !== undefined) {
+      MapViewClass = GoogleMapsMapView;
     } else {
       throw new Error('Google maps library should be included');
     }

@@ -1,10 +1,5 @@
 var _ = require('underscore');
 
-// required due to implicit dependency in vis --> map-view
-var cdb = require('cdb');
-_.extend(cdb.geo, require('../../../src/geo/leaflet'));
-_.extend(cdb.geo, require('../../../src/geo/gmaps'));
-
 var VisModel = require('../../../src/vis/vis');
 var LayersFactory = require('../../../src/vis/layers-factory');
 

@@ -12,6 +12,7 @@ var AnimateValues = require('../animate-values.js');
 var animationTemplate = require('./animation-template.tpl');
 var layerColors = require('../../util/layer-colors');
 var analyses = require('../../data/analyses');
+var escapeHTML = require('../../util/escape-html');
 
 /**
  * Widget content view for a histogram
@@ -103,6 +104,9 @@ module.exports = cdb.core.View.extend({
     } else {
       this.model.bind('change:hasInitialState', this._setInitialState, this);
     }
+
+    this._dataviewModel.layer.bind('change:layer_name', this.render, this);
+    this.add_related_model(this._dataviewModel.layer);
   },
 
   _setInitialState: function () {
@@ -260,7 +264,7 @@ module.exports = cdb.core.View.extend({
         itemsCount: !isDataEmpty ? data.length : '-',
         isCollapsed: !!this.model.get('collapsed'),
         sourceColor: sourceColor,
-        layerName: layerName
+        layerName: escapeHTML(layerName)
       })
     );
 

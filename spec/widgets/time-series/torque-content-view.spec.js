@@ -24,6 +24,10 @@ describe('widgets/time-series/torque-content-view', function () {
         id: 'a0'
       }
     });
+    this.dataviewModel.getLayerName = function () {
+      return '< & ><h1>Hello</h1>';
+    };
+
     spyOn(this.dataviewModel, 'fetch').and.callThrough();
     this.originalData = this.dataviewModel.getUnfilteredDataModel();
     this.originalData.set({
@@ -81,9 +85,17 @@ describe('widgets/time-series/torque-content-view', function () {
       expect(this.view.$('.js-torque-header').length).toBe(1);
       expect(this.view.$('.js-header .CDB-Dropdown').length).toBe(1);
       expect(this.view.$('.js-header .CDB-Widget-info').length).toBe(1);
+      expect(this.view.$('.u-altTextColor').html()).toBe('&lt; &amp; &gt;&lt;h1&gt;Hello&lt;/h1&gt;');
       expect(this.view.$('svg').length).toBe(2);
       expect(this.view._histogramView.options.displayShadowBars).toBe(true);
       expect(this.view._histogramView.options.normalized).toBe(false);
+    });
+
+    it('should render the widget when the layer name changes', function () {
+      spyOn(this.view, 'render');
+      this.view._initBinds();
+      this.dataviewModel.layer.set('layer_name', 'Hello');
+      expect(this.view.render).toHaveBeenCalled();
     });
   });
 });

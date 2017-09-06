@@ -12,6 +12,10 @@ describe('widgets/time-series/content-view', function () {
         id: 'a0'
       }
     });
+    this.dataviewModel.getLayerName = function () {
+      return '< & ><h1>Hello</h1>';
+    };
+
     this.originalData = this.dataviewModel.getUnfilteredDataModel();
     this.originalData.set({
       data: [{ bin: 10 }, { bin: 3 }],
@@ -82,6 +86,7 @@ describe('widgets/time-series/content-view', function () {
         expect(this.view._headerView).toBeDefined();
         expect(this.view._dropdownView).toBeDefined();
         expect(this.view.$('.js-header .CDB-Widget-info').length).toBe(1);
+        expect(this.view.$('.u-altTextColor').html()).toBe('&lt; &amp; &gt;&lt;h1&gt;Hello&lt;/h1&gt;');
         expect(this.view.render().$el.html()).toContain('<svg');
       });
     });
@@ -96,6 +101,13 @@ describe('widgets/time-series/content-view', function () {
 
       // DataviewModel events
       this.view.model.trigger('change:hasInitialState');
+      expect(this.view.render).toHaveBeenCalled();
+    });
+
+    it('should render the widget when the layer name changes', function () {
+      spyOn(this.view, 'render');
+      this.view._initBinds();
+      this.dataviewModel.layer.set('layer_name', 'Hello');
       expect(this.view.render).toHaveBeenCalled();
     });
   });

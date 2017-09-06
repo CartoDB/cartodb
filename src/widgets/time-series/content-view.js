@@ -7,6 +7,7 @@ var TimeSeriesHeaderView = require('./time-series-header-view');
 var DropdownView = require('../dropdown/widget-dropdown-view');
 var layerColors = require('../../util/layer-colors');
 var analyses = require('../../data/analyses');
+var escapeHTML = require('../../util/escape-html');
 
 /**
  * Widget content view for a time-series
@@ -40,7 +41,7 @@ module.exports = cdb.core.View.extend({
         sourceType: analyses.title(sourceType),
         showSource: this.model.get('show_source') && letter !== '',
         sourceColor: sourceColor,
-        layerName: layerName
+        layerName: escapeHTML(layerName)
       }));
       this._createHistogramView();
       this._createHeaderView();
@@ -57,6 +58,9 @@ module.exports = cdb.core.View.extend({
 
     this.listenTo(this._dataviewModel, 'change:data', this.render);
     this.listenToOnce(this.model, 'change:hasInitialState', this.render);
+
+    this.listenTo(this._dataviewModel.layer, 'change:layer_name', this.render);
+    this.add_related_model(this._dataviewModel.layer);
   },
 
   _createHistogramView: function () {

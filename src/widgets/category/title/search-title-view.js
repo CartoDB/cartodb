@@ -6,6 +6,7 @@ var TooltipView = require('../../widget-tooltip-view');
 var template = require('./search-title-template.tpl');
 var layerColors = require('../../../util/layer-colors');
 var analyses = require('../../../data/analyses');
+var escapeHTML = require('../../../util/escape-html');
 
 /**
  *  Show category title or search any category
@@ -48,7 +49,7 @@ module.exports = cdb.core.View.extend({
         sourceType: analyses.title(sourceType),
         showSource: this.model.get('show_source') && letter !== '',
         sourceColor: sourceColor,
-        layerName: layerName,
+        layerName: escapeHTML(layerName),
         columnName: this.dataviewModel.get('column'),
         q: this.dataviewModel.getSearchQuery(),
         isLocked: this.model.isLocked(),
@@ -74,6 +75,7 @@ module.exports = cdb.core.View.extend({
     this.add_related_model(this.dataviewModel.filter);
 
     this.dataviewModel.layer.bind('change:visible change:cartocss', this.render, this);
+    this.dataviewModel.layer.bind('change:layer_name', this.render, this);
     this.add_related_model(this.dataviewModel.layer);
   },
 

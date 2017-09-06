@@ -3,6 +3,7 @@ node_js:
   - "6.9.2"
 dist: trusty
 before_install:
+  - git fetch origin master
   - git submodule update --init --recursive
 addons:
   chrome: stable

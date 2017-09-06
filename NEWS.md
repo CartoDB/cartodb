@@ -2,6 +2,8 @@ Development
 -----------
 
 ### Features
+* Enable other hosts apart from account host to include CORS headers via the cors_enabled_hosts param in app_config.yml (#12685)
+* Add tooltips to show bucket data in time-series (#11650)
 * Improve legend items management (#12650)
 * Avoid multiple time-series by filtering the carousel options (#12395)
 * Add privacy button behavior for shared datasets (#11342)

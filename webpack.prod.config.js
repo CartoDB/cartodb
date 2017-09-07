@@ -51,7 +51,8 @@ module.exports = env => {
       }),
 
       new webpack.DefinePlugin({
-        __IN_DEV__: JSON.stringify(false)
+        __IN_DEV__: JSON.stringify(false),
+        __ENV__: JSON.stringify('prod')
       }),
 
       // Minify
@@ -65,7 +66,10 @@ module.exports = env => {
         compress: {
           screw_ie8: true
         },
-        comments: false
+        comments: false,
+        output: {
+          ascii_only: true
+        }
       })
     ]),
     module: {
@@ -88,6 +92,14 @@ module.exports = env => {
                 exports: 'html'
               }
             }
+          }
+        },
+        {
+          test: /\.js$/,
+          loader: 'babel-loader',
+          include: [resolve(__dirname, 'node_modules/tangram.cartodb')],
+          options: {
+            presets: ['es2015']
           }
         },
         {

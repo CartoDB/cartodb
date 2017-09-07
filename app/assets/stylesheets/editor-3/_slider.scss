@@ -15,17 +15,6 @@
   width: 90px;
   height: 2px;
 }
-.UISlider.without-line .ui-slider-range-min,
-.UISlider.without-line .ui-slider-range,
-.UISlider.without-line .ui-slider-range-max {
-  display: none;
-}
-.UISlider.is-standalone {
-  width: 160px;
-}
-.UISlider.without-line {
-  height: 0;
-}
 .UISlider.ui-slider {
   border-radius: 0;
   background: $cMainLine;
@@ -39,6 +28,7 @@
   border: none;
   border-radius: 0;
   content: '';
+  cursor: pointer;
   z-index: 1;
 }
 .UISlider .ui-slider-range-min {
@@ -55,44 +45,35 @@
   height: 10px;
   margin-top: -5px;
   margin-left: -5px;
-  border: 1px solid $cBlue;
+  border: 1px solid $cMainLine;
   border-radius: 50%;
   outline: none;
   background: #FFF;
   box-shadow: none;
-  cursor: pointer;
   z-index: 3;
 
-  &.ui-state-active,
-  &:hover {
-    transform: scale(1.5);
-    box-shadow: none;
-  }
   &.ui-state-focus {
     box-shadow: none;
   }
 }
 
-.UISlider-tick {
-  position: absolute;
-  top: 13px;
-  width: 1px;
-  height: 4px;
-  background: #CCC;
+.UISlider.ui-slider-disabled .ui-slider-handle {
+  cursor: not-allowed;
 }
 
-.UISlider-tick.is-highlighted {
-  background: #333;
+.UISlider.ui-slider-disabled::before {
+  cursor: not-allowed;
 }
 
-.UISlider-scale {
-  position: absolute;
-}
+.UISlider:not(.ui-slider-disabled) {
+  .ui-slider-handle {
+    border: 1px solid $cBlue;
+    cursor: pointer;
+  }
 
-.UISlider-label {
-  position: absolute;
-  top: 28px;
-  width: 100%;
-  text-align: center;
+  .ui-slider-handle:hover,
+  .ui-state-active {
+    transform: scale(1.5);
+    box-shadow: none;
+  }
 }
-

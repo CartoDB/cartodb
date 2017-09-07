@@ -106,7 +106,6 @@ class Table
   def update(args)
     # Sequel and ActiveRecord #update don't behave equally, we need this workaround for compatibility reasons
     if @user_table.is_a?(Carto::UserTable)
-      CartoDB::Logger.debug(message: "::Table#update on ActiveRecord model")
       @user_table.update_attributes(args)
     else
       @user_table.update(args)
@@ -407,7 +406,7 @@ class Table
     self.new_table = true
 
     # finally, close off the data import
-    if @user_table.data_import_id
+    if @user_table.data_import_id && !register_table_only.present?
       @data_import = DataImport.find(id: @user_table.data_import_id)
       @data_import.table_id   = id
       @data_import.table_name = name

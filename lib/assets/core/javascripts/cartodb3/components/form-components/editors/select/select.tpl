@@ -14,7 +14,7 @@
     <% if (isEmpty && isNull) { %>
       <%- _t('components.backbone-forms.select.empty') %>
     <% } else { %>
-      <%- placeholder || label || _t('components.backbone-forms.select.placeholder', { keyAttr: keyAttr }) %>
+      <%- label %>
     <% } %>
   <% } %>
 </div>

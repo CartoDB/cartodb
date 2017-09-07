@@ -236,25 +236,7 @@ module Carto
       end
 
       def view
-        map = @visualization.map
-        center_data = map.center_data
-
-        data = {
-          zoom: map.zoom,
-          center: {
-            lng: center_data[1].to_f,
-            lat: center_data[0].to_f
-          }
-        }
-
-        bounds_data = map.view_bounds_data
-
-        # INFO: Don't return 'bounds' if all points are 0 to avoid static map trying to go too small zoom level
-        if bounds_data[:west] != 0 || bounds_data[:south] != 0 || bounds_data[:east] != 0 || bounds_data[:north] != 0
-          data[:bounds] = bounds_data
-        end
-
-        data.merge!(preview_layers: preview_layers)
+        valid_state? ? view_from_state : view_from_map
       end
 
       def preview_layers
@@ -265,6 +247,55 @@ module Carto
         end
 
         preview_layers
+      end
+
+      def valid_state?
+        state = @visualization.state.json
+        map = state[:map]
+        state.present? && map.present? && map[:center].present? && map[:sw].present? && map[:ne].present? &&
+          map[:sw][0].present? && map[:sw][1].present? && map[:ne][0].present? && map[:ne][1].present?
+      end
+
+      def view_from_map
+        map = @visualization.map
+        center_data = map.center_data
+        data = {
+            zoom: map.zoom,
+            center: {
+              lng: center_data[1].to_f,
+              lat: center_data[0].to_f
+            }
+        }
+        bounds_data = map.view_bounds_data
+        filter_and_merge_view(bounds_data, data)
+      end
+
+      def view_from_state
+        state = @visualization.state.json
+        center_data = state[:map][:center]
+        center_and_zoom = {
+            zoom: state[:map][:zoom],
+            center: {
+              lng: center_data[1],
+              lat: center_data[0]
+            }
+        }
+        bounds_data = {
+            west: state[:map][:sw][0],
+            south: state[:map][:sw][1],
+            east: state[:map][:ne][0],
+            north: state[:map][:ne][1]
+        }
+        filter_and_merge_view(bounds_data, center_and_zoom)
+      end
+
+      def filter_and_merge_view(bounds_data, center_and_zoom)
+        # INFO: Don't return 'bounds' if any of the points is 0 to avoid static map trying to go too small zoom level
+        if bounds_data[:west] != 0 || bounds_data[:south] != 0 || bounds_data[:east] != 0 || bounds_data[:north] != 0
+          center_and_zoom[:bounds] = bounds_data
+        end
+
+        center_and_zoom.merge!(preview_layers: preview_layers)
       end
     end
   end

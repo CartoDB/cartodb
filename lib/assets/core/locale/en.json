@@ -193,6 +193,11 @@
       "custom-column": "This column contains the data requested from the Data Observatory",
       "description": "The Data Observatory enrichment is the result of the geometry location and the measure requested."
     },
+    "data-observatory-multiple-measures": {
+      "title": "Enrich from the Data Observatory",
+      "custom-columns": "These columns contain the data requested from the Data Observatory",
+      "description": "The Data Observatory enrichment is the result of the geometry location and the measures requested."
+    },
     "connect-with-lines": {
       "title": "Connect with lines",
       "description": "Create lines from point datasets using a variety of methods",
@@ -228,6 +233,84 @@
       "title": "Find nearest"
     }
   },
+  "timezones": {
+    "international-date-line-west": "International Date Line West",
+    "midway-island-samoa": "Midway Island, Samoa",
+    "hawaii": "Hawaii",
+    "alaska": "Alaska",
+    "pacific-time-us-and-canada-tijuana": "Pacific Time (US and Canada); Tijuana",
+    "mountain-time-us-and-canada": "Mountain Time (US and Canada)",
+    "chihuahua-la-paz-mazatlan": "Chihuahua, La Paz, Mazatlan",
+    "arizona": "Arizona",
+    "central-time-us-and-canada": "Central Time (US and Canada)",
+    "saskatchewan": "Saskatchewan",
+    "guadalajara-mexico-city-monterrey": "Guadalajara, Mexico City, Monterrey",
+    "central-america": "Central America",
+    "eastern-time-us-and-canada": "Eastern Time (US and Canada)",
+    "indiana-east": "Indiana (East)",
+    "bogota-lima-quito": "Bogota, Lima, Quito",
+    "atlantic-time-canada": "Atlantic Time (Canada)",
+    "caracas-la-paz": "Caracas, La Paz",
+    "santiago": "Santiago",
+    "newfoundland-and-labrador": "Newfoundland and Labrador",
+    "brasilia": "Brasilia",
+    "buenos-aires-georgetown": "Buenos Aires, Georgetown",
+    "greenland": "Greenland",
+    "mid-atlantic": "Mid-Atlantic",
+    "azores": "Azores",
+    "cape-verde-islands": "Cape Verde Islands",
+    "gmt-dublin-edinburgh-lisbon-london": "Dublin, Edinburgh, Lisbon, London",
+    "casablanca-monrovia": "Casablanca, Monrovia",
+    "canary-islands": "Canary Islands",
+    "belgrade-bratislava-budapest-ljubljana-prague": "Belgrade, Bratislava, Budapest, Ljubljana, Prague",
+    "sarajevo-skopje-warsaw-zagreb": "Sarajevo, Skopje, Warsaw, Zagreb",
+    "brussels-copenhagen-madrid-paris": "Brussels, Copenhagen, Madrid, Paris",
+    "amsterdam-berlin-bern-rome-stockholm-vienna": "Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna",
+    "west-central-africa": "West Central Africa",
+    "bucharest": "Bucharest",
+    "cairo": "Cairo",
+    "helsinki-kiev-riga-sofia-tallinn-vilnius": "Helsinki, Kiev, Riga, Sofia, Tallinn, Vilnius",
+    "athens-istanbul-minsk": "Athens, Istanbul, Minsk",
+    "jerusalem": "Jerusalem",
+    "harare-pretoria": "Harare, Pretoria",
+    "moscow-st-petersburg-volgograd": "Moscow, St. Petersburg, Volgograd",
+    "kuwait-riyadh": "Kuwait, Riyadh",
+    "nairobi": "Nairobi",
+    "baghdad": "Baghdad",
+    "tehran": "Tehran",
+    "abu-dhabi-muscat": "Abu Dhabi, Muscat",
+    "baku-tbilisi-yerevan": "Baku, Tbilisi, Yerevan",
+    "kabul": "Kabul",
+    "ekaterinburg": "Ekaterinburg",
+    "islamabad-karachi-tashkent": "Islamabad, Karachi, Tashkent",
+    "chennai-kolkata-mumbai-new-delhi": "Chennai, Kolkata, Mumbai, New Delhi",
+    "kathmandu": "Kathmandu",
+    "astana-dhaka": "Astana, Dhaka",
+    "sri-jayawardenepura": "Sri Jayawardenepura",
+    "almaty-novosibirsk": "Almaty, Novosibirsk",
+    "yangon-rangoon": "Yangon Rangoon",
+    "bangkok-hanoi-jakarta": "Bangkok, Hanoi, Jakarta",
+    "krasnoyarsk": "Krasnoyarsk",
+    "beijing-chongqing-hong-kong-sar-urumqi": "Beijing, Chongqing, Hong Kong SAR, Urumqi",
+    "kuala-lumpur-singapore": "Kuala Lumpur, Singapore",
+    "taipei": "Taipei",
+    "perth": "Perth",
+    "irkutsk-ulaanbaatar": "Irkutsk, Ulaanbaatar",
+    "seoul": "Seoul",
+    "osaka-sapporo-tokyo": "Osaka, Sapporo, Tokyo",
+    "yakutsk": "Yakutsk",
+    "darwin": "Darwin",
+    "adelaide": "Adelaide",
+    "canberra-melbourne-sydney": "Canberra, Melbourne, Sydney",
+    "brisbane": "Brisbane",
+    "hobart": "Hobart",
+    "vladivostok": "Vladivostok",
+    "guam-port-moresby": "Guam, Port Moresby",
+    "magadan-solomon-islands-new-caledonia": "Magadan, Solomon Islands, New Caledonia",
+    "fiji-islands-kamchatka-marshall-islands": "Fiji Islands, Kamchatka, Marshall Islands",
+    "auckland-wellington": "Auckland, Wellington",
+    "nuku-alofa": "Nuku'alofa"
+  },
   "analyses": {
     "connect-with-lines": {
       "title": "Connect with lines",
@@ -254,7 +337,27 @@
       "race-and-ethnicity": "Race and Ethnicity",
       "religion": "Religion",
       "transportation": "Transportation",
-      "filters": "Filters"
+      "filters": {
+        "label": "Filters",
+        "applied": {
+          "single": "1 filter applied",
+          "multiple": "%{filters} filters applied"
+        }
+      },
+      "area": "Per sq km",
+      "count": {
+        "suggested": "Suggested measurements",
+        "search": "%{items} results"
+      },
+      "search-by-name": "Search by name...",
+      "errors": {
+        "max-items": "Max items reached",
+        "measurement-required": "Measurement is required",
+        "measurement-twice": "Two or more measurements are equal",
+        "column-name-mismatch": "Segment names and column names don't match",
+        "invalid-selection": "Invalid DO selection",
+        "mandatory-region": "Region is mandatory"
+      }
     },
     "merge": {
       "title": "Join columns from 2nd layer",
@@ -371,7 +474,11 @@
           "recently-title": "Most used",
           "none": "None",
           "show-all": "Show full collections"
-        }
+        },
+        "error": "There was an error"
+      },
+      "slide": {
+        "no-values": "No values"
       }
     }
   },
@@ -413,7 +520,7 @@
         "close": "close",
         "description": "There was a problem georeferencing your data",
         "title": "Geocoding Error",
-        "try-again": "Please try again and if the problem persists, <a href='mailto:support@carto.com?subject=Geocoding error with id:%{id}'>contact us</a> with the following code:",
+        "try-again": "Please try again and if the problem persists, <a href='mailto:support@carto.com?subject=Geocoding error with id:%{id}'>contact us</a> with your username and the following code:",
         "view-dataset": "view dataset"
       },
       "geocoding-success-detail": {
@@ -465,7 +572,7 @@
         "close": "close",
         "dont-panic": "Don’t panic, here's some info that might help",
         "remote-server-code": "The remote server returned a <span class='ErrorDetails-itemTextStrong'>%{httpResponseCode}</span> code.",
-        "send-us-the-error-code": "Persisting error? Please <a href='mailto:support@carto.com'>send us</a> the following code",
+        "send-us-the-error-code": "Persisting error? Please <a href='mailto:support@carto.com'>send us</a> your username and the following code",
         "unknown-error": "An unknown error has happened"
       },
       "upgrade-errors": {
@@ -1084,7 +1191,7 @@
           },
           "no-datasets": {
             "title": "You have not connected any datasets yet",
-            "desc": "You can %{connectDataset} or %{search} in all our data library",
+            "desc": "You can %{connectDataset} or %{search} our data library",
             "connect-datasets": "connect datasets",
             "search": "search"
           },
@@ -1128,11 +1235,13 @@
     "backbone-forms": {
       "select": {
         "placeholder": "Select a %{keyAttr}",
+        "disabled-placeholder": "Enable %{keyAttr}",
         "loading": "loading…",
         "empty": "No values",
         "selected": "%{count} selected",
         "all": "All",
-        "none": "None"
+        "none": "None",
+        "error": "Error fetching %{type}"
       },
       "operators": {
         "count-message": "If you select 'COUNT' all columns are selected"
@@ -1148,8 +1257,17 @@
           },
           "filter": {
             "header": "Filter measurements by",
-            "type": "filters"
-          }
+            "type": "filters",
+            "item-label": "filter",
+            "filters": {
+              "label": "Filters",
+              "applied": {
+                "single": "1 filter applied",
+                "multiple": "%{filters} filters applied"
+              }
+            }
+          },
+          "error": "Error fetching %{type}"
         }
       }
     },
@@ -1344,6 +1462,9 @@
       "loading": "Unlocking your dataset %{tableName}...",
       "success": "Dataset %{tableName} unlocked",
       "title": "Your dataset %{tableName} is locked."
+    },
+    "privacy": {
+      "info": "You're not able to change the privacy of this dataset. Contact the owner <b>%{name}</b>"
     }
   },
   "editor": {
@@ -1470,9 +1591,14 @@
       "message": "Unfortunately, map overlays are not available yet, but they will be very soon. Stay tuned!"
     },
     "layers": {
+      "errors": {
+        "broken-node": "Broken node",
+        "non-existent-node": "Layer is pointing to a non existent node %{nodeId}"
+      },
       "options": {
         "rename": "Rename",
         "delete": "Delete layer…",
+        "delete-and-reload": "Delete layer and reload map",
         "collapse": "Collapse",
         "expand": "Expand",
         "export": "Export data",
@@ -1605,6 +1731,44 @@
         "data-observatory-measurement-measurement": "Measurement",
         "data-observatory-measurement-refine": "Choose a measure",
         "data-observatory-measurement-segments": "Segments",
+        "data-observatory": {
+          "list": {
+            "add": "Add new measurement"
+          },
+          "header": {
+            "title": "Select region",
+            "description": "For augmenting your layer"
+          },
+          "parameters": {
+            "title": "Select measurements",
+            "description": "Pick up to 10 measurements"
+          },
+          "source": {
+            "label": "Source"
+          },
+          "region": {
+            "label": "Region",
+            "error": "Error getting regions.",
+            "placeholder": "Select a region",
+            "search-placeholder": "Search by region"
+          },
+          "measurements": {
+            "label": "Measurement",
+            "placeholder": "Select a measurement"
+          },
+          "normalize": {
+            "label": "Normalize",
+            "placeholder": "Select a metric",
+            "disabled-placeholder": "Enable Normalization"
+          },
+          "timespan": {
+            "label": "Timespan",
+            "placeholder": "Select a timespan"
+          },
+          "boundaries": {
+            "label": "Boundaries"
+          }
+        },
         "define-columns": "Define column to find similarities with",
         "define-reference-and-target": "Define reference and target layers",
         "define-two-layers": "Define two layers",
@@ -1952,6 +2116,7 @@
       },
       "code-mirror": {
         "save": "CMD + S to apply your html.",
+        "sanitize": "Use {{{column}}} to sanitize values.",
         "errors": {
           "empty": "Template can't be empty."
         }
@@ -2154,6 +2319,7 @@
         },
         "labels-attribute": {
           "label": "column",
+          "placeholder": "Select a column",
           "fetching": "Loading node schema...",
           "unavailable": "Error getting node schema",
           "error": "There was an error fetching node schema..."
@@ -2185,6 +2351,7 @@
         },
         "animated-attribute": {
           "label": "column",
+          "placeholder": "Select a column",
           "fetching": "Loading node schema...",
           "unavailable": "Error getting node schema",
           "error": "There was an error fetching node schema..."
@@ -2243,6 +2410,7 @@
           "aggregation_column": "Aggregation Column",
           "bins": "Buckets",
           "column": "Column",
+          "timezone": "Time Zone",
           "description": "Configure your values",
           "end": "End",
           "loading": "loading…",
@@ -2254,7 +2422,9 @@
           "title-label": "Data",
           "value": "Value",
           "aggregate-by": "aggregate by",
-          "operation-column": "operation column"
+          "operation-column": "operation column",
+          "search-by-bucket": "Search by bucket",
+          "select-bucket": "Select a bucket"
         },
         "style": {
           "custom-disabled": "If an aggregated style is applied, auto style is disabled",
@@ -2326,8 +2496,9 @@
       }
     },
     "widgets": {
-      "delete": "Widget deleted correctly.",
-      "success": "Widget successfully added",
+      "add": "Widget successfully added",
+      "replace": "Widget successfully replaced",
+      "delete": "Widget deleted correctly",
       "error": {
         "title": "Error adding widget:",
         "body": "%{body} %{error}"

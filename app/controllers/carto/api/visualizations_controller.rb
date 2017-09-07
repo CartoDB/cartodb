@@ -22,17 +22,33 @@ module Carto
       include Carto::VisualizationMigrator
 
       ssl_required :index, :show, :create, :update, :destroy, :google_maps_static_image
-      ssl_allowed  :vizjson2, :vizjson3, :likes_count, :likes_list, :is_liked, :list_watching, :static_map
+      ssl_allowed  :vizjson2, :vizjson3, :likes_count, :likes_list, :is_liked, :list_watching, :static_map,
+        :notify_watching, :list_watching, :add_like, :remove_like
 
       # TODO: compare with older, there seems to be more optional authentication endpoints
-      skip_before_filter :api_authorization_required, only: [:index, :vizjson2, :vizjson3, :is_liked, :static_map]
-      before_filter :optional_api_authorization, only: [:index, :vizjson2, :vizjson3, :is_liked, :static_map]
+      skip_before_filter :api_authorization_required, only: [:index, :vizjson2, :vizjson3, :is_liked, :add_like,
+                                                             :remove_like, :notify_watching, :list_watching,
+                                                             :static_map]
+
+      # :update and :destroy are correctly handled by permission check on the model
+      before_filter :ensure_user_can_create, only: [:create]
+
+      before_filter :optional_api_authorization, only: [:index, :vizjson2, :vizjson3, :is_liked, :add_like,
+                                                        :remove_like, :notify_watching, :list_watching, :static_map]
 
       before_filter :id_and_schema_from_params
-      before_filter :load_visualization, only: [:likes_count, :likes_list, :is_liked, :show, :stats, :list_watching,
-                                                :static_map, :vizjson2, :vizjson3, :update, :destroy,
-                                                :google_maps_static_image]
+
+      before_filter :load_visualization, only: [:likes_count, :likes_list, :is_liked, :add_like, :remove_like, :show,
+                                                :list_watching, :notify_watching, :static_map, :vizjson2, :vizjson3,
+                                                :update, :destroy, :google_maps_static_image]
+
+      before_filter :ensure_username_matches_visualization_owner, only: [:show, :static_map, :vizjson2, :vizjson3,
+                                                                         :list_watching, :notify_watching, :update,
+                                                                         :likes_count, :likes_list, :is_liked,
+                                                                         :destroy, :google_maps_static_image]
+
       before_filter :ensure_visualization_owned, only: [:destroy, :google_maps_static_image]
+      before_filter :ensure_visualization_is_viewable, only: [:add_like, :remove_like]
 
       rescue_from Carto::LoadError, with: :rescue_from_carto_error
       rescue_from Carto::UUIDParameterFormatError, with: :rescue_from_carto_error
@@ -99,25 +115,59 @@ module Carto
         })
       end
 
+      def add_like
+        current_viewer_id = current_viewer.id
+
+        @visualization.add_like_from(current_viewer_id)
+
+        unless @visualization.is_owner?(current_viewer)
+          protocol = request.protocol.sub('://', '')
+          vis_url =
+            Carto::StaticMapsURLHelper.new.url_for_static_map_with_visualization(@visualization, protocol, 600, 300)
+          @visualization.send_like_email(current_viewer, vis_url)
+        end
+
+        render_jsonp(
+          id: @visualization.id,
+          likes: @visualization.likes.count,
+          liked: @visualization.liked_by?(current_viewer_id)
+        )
+      rescue Carto::Visualization::AlreadyLikedError
+        render(text: "You've already liked this visualization", status: 400)
+      end
+
+      def remove_like
+        current_viewer_id = current_viewer.id
+
+        @visualization.remove_like_from(current_viewer_id)
+
+        render_jsonp(id: @visualization.id, likes: @visualization.likes.count, liked: false)
+      end
+
+      def notify_watching
+        return(head 403) unless @visualization.has_read_permission?(current_viewer)
+
+        watcher = Carto::Visualization::Watcher.new(current_user, @visualization)
+        watcher.notify
+
+        render_jsonp(watcher.list)
+      end
+
+      def list_watching
+        return(head 403) unless @visualization.has_read_permission?(current_viewer)
+
+        render_jsonp(Carto::Visualization::Watcher.new(current_user, @visualization).list)
+      end
+
       def vizjson2
         @visualization.mark_as_vizjson2 unless carto_referer?
         render_vizjson(generate_vizjson2)
       end
 
       def vizjson3
-        options = {}
-        if @visualization.user.has_feature_flag?('vector_vs_raster')
-          options[:vector] = nil
-        end
-
-        render_vizjson(generate_vizjson3(@visualization, options))
+        render_vizjson(generate_vizjson3(@visualization, vizjson3_options(@visualization, params)))
       end
 
-      def list_watching
-        return(head 403) unless @visualization.is_viewable_by_user?(current_user)
-        watcher = CartoDB::Visualization::Watcher.new(current_user, @visualization)
-        render_jsonp(watcher.list)
-      end
 
       def static_map
         # Abusing here of .to_i fallback to 0 if not a proper integer
@@ -237,6 +287,8 @@ module Carto
       end
 
       def destroy
+        return head(403) unless @visualization.has_permission?(current_viewer, Carto::Permission::ACCESS_READWRITE)
+
         current_viewer_id = current_viewer.id
         properties = { user_id: current_viewer_id, visualization_id: @visualization.id }
 
@@ -314,9 +366,13 @@ module Carto
         if @visualization.nil?
           raise Carto::LoadError.new('Visualization does not exist', 404)
         end
+
         if !@visualization.is_viewable_by_user?(current_viewer)
           raise Carto::LoadError.new('Visualization not viewable', 403)
         end
+      end
+
+      def ensure_username_matches_visualization_owner
         unless request_username_matches_visualization_owner
           raise Carto::LoadError.new('Visualization of that user does not exist', 404)
         end
@@ -324,6 +380,14 @@ module Carto
 
       def ensure_visualization_owned
         raise Carto::LoadError.new('Visualization not editable', 403) unless @visualization.is_owner?(current_viewer)
+      end
+
+      def ensure_visualization_is_viewable
+        return(head 403) unless current_viewer && @visualization.is_viewable_by_user?(current_viewer)
+      end
+
+      def ensure_user_can_create
+        return (head 403) unless current_viewer && !current_viewer.viewer
       end
 
       # This avoids crossing usernames and visualizations.

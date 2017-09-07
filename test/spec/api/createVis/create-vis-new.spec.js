@@ -1,6 +1,7 @@
 var $ = require('jquery');
 var createVis = require('../../../../src/api/create-vis');
 var scenarios = require('./scenarios');
+var Loader = require('../../../../src/core/loader');
 
 describe('create-vis-new:', function () {
   beforeEach(function () {
@@ -13,7 +14,42 @@ describe('create-vis-new:', function () {
     this.container.remove();
   });
 
-  describe('Default Options', function () {
+  it('should throw errors when required parameters are missing', function () {
+    expect(function () {
+      createVis();
+    }).toThrowError('a valid DOM element or selector must be provided');
+
+    expect(function () {
+      createVis('something');
+    }).toThrowError('a valid DOM element or selector must be provided');
+
+    expect(function () {
+      createVis(this.containerId);
+    }.bind(this)).toThrowError('a vizjson URL or object must be provided');
+
+    expect(function () {
+      createVis(this.container[0], 'vizjson');
+    }.bind(this)).not.toThrowError();
+
+    expect(function () {
+      createVis(this.containerId, 'vizjson');
+    }.bind(this)).not.toThrowError();
+  });
+
+  it('should use the given vis.json (instead downloading) when the visjson parameter is provided', function () {
+    spyOn(Loader, 'get');
+    var visJson = scenarios.load(0);
+    var visModel = createVis(this.containerId, visJson);
+    expect(Loader.get).not.toHaveBeenCalled();
+  });
+
+  it('should download the vizjson file from a URL when the visjson parameter is provided and is a string', function () {
+    spyOn(Loader, 'get');
+    var visModel = createVis(this.containerId, 'www.example.com/fake_vis.json');
+    expect(Loader.get).toHaveBeenCalledWith('www.example.com/fake_vis.json', jasmine.any(Function));
+  });
+
+  describe('Default (no Options)', function () {
     it('should get the map center from the visJson', function () {
       var visJson = scenarios.load(0);
       var visModel = createVis(this.containerId, visJson);
@@ -76,6 +112,27 @@ describe('create-vis-new:', function () {
     });
     it('should have "tooltip" by default', function () {
       pending('It seems that this option  is no longer being used');
+    });
+  });
+
+  describe('Options', function () {
+    describe('skipMapInstantiation', function () {
+      it('should instantiate map when skipMapInstantiation option is falsy', function (done) {
+        var visJson = scenarios.load(0);
+        var visModel = createVis(this.containerId, visJson);
+        setTimeout(function () {
+          expect(visModel._instantiateMapWasCalled).toEqual(true);
+          done();
+        }, 25);
+      });
+      it('should NOT instantiate map when skipMapInstantiation option is truthy', function (done) {
+        var visJson = scenarios.load(0);
+        var visModel = createVis(this.containerId, visJson, { skipMapInstantiation: true });
+        setTimeout(function () {
+          expect(visModel._instantiateMapWasCalled).toEqual(false);
+          done();
+        }, 25);
+      });
     });
   });
 
@@ -277,7 +334,7 @@ describe('create-vis-new:', function () {
     });
   });
 
-  describe('VisModel.analysis', function () {
+  describe('VisModel._analysisCollection', function () {
     it('should have one analysis', function () {
       var visJson = scenarios.load(0);
       var visModel = createVis(this.containerId, visJson);

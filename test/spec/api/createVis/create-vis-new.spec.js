@@ -235,15 +235,47 @@ describe('create-vis-new:', function () {
     });
   });
 
-  xdescribe('VisModel.overlays', function () {
-    it('should set the right map center', function () {});
+  describe('VisModel.overlays', function () {
+    it('should have a share overlay', function () {
+      var visJson = scenarios.load(0);
+      var visModel = createVis(this.containerId, visJson);
+      // TODO: Review if this overlay is still supported!
+      expect(visModel.overlaysCollection.findWhere({ type: 'share' })).toBeDefined();
+    });
+    it('should have a search overlay', function () {
+      var visJson = scenarios.load(0);
+      var visModel = createVis(this.containerId, visJson);
+      expect(visModel.overlaysCollection.findWhere({ type: 'search' })).toBeDefined();
+    });
+    it('should have a zoom overlay', function () {
+      var visJson = scenarios.load(0);
+      var visModel = createVis(this.containerId, visJson);
+      expect(visModel.overlaysCollection.findWhere({ type: 'zoom' })).toBeDefined();
+    });
+    it('should have a loader overlay', function () {
+      var visJson = scenarios.load(0);
+      var visModel = createVis(this.containerId, visJson);
+      expect(visModel.overlaysCollection.findWhere({ type: 'loader' })).toBeDefined();
+    });
+    it('should have a logo overlay', function () {
+      var visJson = scenarios.load(0);
+      var visModel = createVis(this.containerId, visJson);
+      expect(visModel.overlaysCollection.findWhere({ type: 'logo' })).toBeDefined();
+    });
+    it('should have a attribution overlay', function () {
+      var visJson = scenarios.load(0);
+      var visModel = createVis(this.containerId, visJson);
+      expect(visModel.overlaysCollection.findWhere({ type: 'attribution' })).toBeDefined();
+    });
   });
 
   xdescribe('VisModel.dataviews', function () {
-    it('should set the right map center', function () {});
+    it('should set the right map center', function () {
+
+    });
   });
 
   xdescribe('VisModel.analysis', function () {
-    it('should set the right map center', function () {});
+    it('should set the right map center', function () { });
   });
 });

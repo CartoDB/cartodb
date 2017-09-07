@@ -12,7 +12,6 @@
   },
   "rules": {
     "camelcase": "off",
-    "indent": "off",
     "no-mixed-operators": "off",
     "no-useless-escape": "off",
     "no-useless-computed-key": "off",

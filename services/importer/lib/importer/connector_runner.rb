@@ -70,6 +70,8 @@ module CartoDB
 
       def georeference
         @georeferencer.run
+      rescue => error
+        @job.log "ConnectorRunner Error while georeference #{error}"
       end
 
       def remote_data_updated?

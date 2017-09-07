@@ -2351,9 +2351,9 @@
       "resolved": "git://github.com/cartodb/tangram-1.git#05fbe2b438bb8be7cd411587d8d4e4415fe4227c"
     },
     "tangram-cartocss": {
-      "version": "0.8.4",
+      "version": "0.8.5",
       "from": "tangram-cartocss@>=0.8.4 <0.9.0",
-      "resolved": "https://registry.npmjs.org/tangram-cartocss/-/tangram-cartocss-0.8.4.tgz"
+      "resolved": "https://registry.npmjs.org/tangram-cartocss/-/tangram-cartocss-0.8.5.tgz"
     },
     "tangram-reference": {
       "version": "2.0.1",

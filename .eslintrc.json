@@ -14,7 +14,6 @@
     "camelcase": "off",
     "no-mixed-operators": "off",
     "no-useless-escape": "off",
-    "no-multiple-empty-lines": "off",
     "no-useless-return": "off"
   }
 }

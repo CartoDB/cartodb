@@ -44,7 +44,6 @@ module CartoDB
       end
 
       def run(tracker = nil)
-        byebug
         @tracker = tracker
         @job.log "ConnectorRunner #{@json_params.except('connection').to_json}"
         # TODO: logging with CartoDB::Logger
@@ -143,10 +142,10 @@ module CartoDB
         Job.new(logger: log, pg_options: pg_options)
       end
 
-      DEFAULT_SCHEMA = 'cdb_importer'
+      DEFAULT_SCHEMA = 'cdb_importer'.freeze
 
       def new_georeferencer(job)
-        Georeferencer.new(@job.db, @job.table_name, {}, DEFAULT_SCHEMA, @job)
+        Georeferencer.new(job.db, job.table_name, {}, DEFAULT_SCHEMA, job)
       end
 
       UNKNOWN_ERROR_CODE = 99999

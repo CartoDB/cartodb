@@ -39,13 +39,13 @@ describe('create-vis:', function () {
   it('should use the given vis.json (instead downloading) when the visjson parameter is provided', function () {
     spyOn(Loader, 'get');
     var visJson = scenarios.load(0);
-    var visModel = createVis(this.containerId, visJson);
+    createVis(this.containerId, visJson);
     expect(Loader.get).not.toHaveBeenCalled();
   });
 
   it('should download the vizjson file from a URL when the visjson parameter is provided and is a string', function () {
     spyOn(Loader, 'get');
-    var visModel = createVis(this.containerId, 'www.example.com/fake_vis.json');
+    createVis(this.containerId, 'www.example.com/fake_vis.json');
     expect(Loader.get).toHaveBeenCalledWith('www.example.com/fake_vis.json', jasmine.any(Function));
   });
 

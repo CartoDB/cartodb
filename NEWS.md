@@ -49,6 +49,7 @@ Development
 
 ### Bug fixes / enhancements
 * Update charlock_holmes gem to 0.7.5 to fix C++11 related problems.
+* Fix analysis onboarding lunch template (#12743)
 * Allow any text in Maps, Layers and Widgets names (#12322)
 * Change edition mode when user edits widget (#12636)
 * Disable editing the "Others" icon in UI (#12683)

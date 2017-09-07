@@ -516,7 +516,7 @@ class Carto::User < ActiveRecord::Base
   end
 
   def user_frontend_version_or_frontend_version
-    self.user_frontend_version || CartoDB::Application.frontend_version
+    user_frontend_version || CartoDB::Application.frontend_version
   end
 
   private

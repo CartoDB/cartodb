@@ -269,9 +269,11 @@ describe('create-vis-new:', function () {
     });
   });
 
-  xdescribe('VisModel.dataviews', function () {
-    it('should set the right map center', function () {
-
+  describe('VisModel._dataviewsCollection', function () {
+    it('should not have dataviews', function () {
+      var visJson = scenarios.load(0);
+      var visModel = createVis(this.containerId, visJson);
+      expect(visModel._dataviewsCollection.length).toEqual(0);
     });
   });
 

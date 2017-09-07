@@ -165,6 +165,7 @@ Development
 * Adding max items limit for form list editor (#12552)
 * Improve Google Login button (cartodb-central#1808)
 * Implement widget opacity in AutoStyle (#11928)
+* Fix behaviour of visualizations restored from mapcaps (#12686)
 * Fix histograms data range change (#12622)
 * Fix exception thrown when map created without builder is used with it and visualization state data is missing (#12568)
 * Enable selection of categories in non dynamic widgets [Support #890](https://github.com/CartoDB/support/issues/890)

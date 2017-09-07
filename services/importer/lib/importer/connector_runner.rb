@@ -144,10 +144,8 @@ module CartoDB
         Job.new(logger: log, pg_options: pg_options)
       end
 
-      DEFAULT_SCHEMA = 'cdb_importer'.freeze
-
       def new_georeferencer(job)
-        Georeferencer.new(job.db, job.table_name, {}, DEFAULT_SCHEMA, job)
+        Georeferencer.new(job.db, job.table_name, {}, Georeferencer::DEFAULT_SCHEMA, job)
       end
 
       UNKNOWN_ERROR_CODE = 99999

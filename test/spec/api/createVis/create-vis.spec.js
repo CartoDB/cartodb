@@ -3,7 +3,7 @@ var createVis = require('../../../../src/api/create-vis');
 var scenarios = require('./scenarios');
 var Loader = require('../../../../src/core/loader');
 
-describe('create-vis-new:', function () {
+describe('create-vis:', function () {
   beforeEach(function () {
     this.container = $('<div id="map">').css('height', '200px');
     this.containerId = this.container[0].id;

@@ -277,7 +277,11 @@ describe('create-vis-new:', function () {
     });
   });
 
-  xdescribe('VisModel.analysis', function () {
-    it('should set the right map center', function () { });
+  describe('VisModel.analysis', function () {
+    it('should have one analysis', function () {
+      var visJson = scenarios.load(0);
+      var visModel = createVis(this.containerId, visJson);
+      expect(visModel._analysisCollection.findWhere({ type: 'source' })).toBeDefined();
+    });
   });
 });

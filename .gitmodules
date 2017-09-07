@@ -4,7 +4,6 @@
 [submodule "app/assets/stylesheets/old_common"]
 	path = app/assets/stylesheets/old_common
 	url = git://github.com/CartoDB/cartodb.css.git
-        branch = develop
 [submodule "lib/sql"]
 	path = lib/sql
 	url = git://github.com/CartoDB/cartodb-postgresql.git

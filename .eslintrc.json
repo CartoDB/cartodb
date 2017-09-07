@@ -13,7 +13,6 @@
   "rules": {
     "camelcase": "off",
     "no-mixed-operators": "off",
-    "no-useless-escape": "off",
-    "no-useless-return": "off"
+    "no-useless-escape": "off"
   }
 }

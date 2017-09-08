@@ -114,6 +114,15 @@ describe Carto::Mapcap do
       @ids_json = nil
     end
 
+    it 'tokens should be functional from regenerated visualizations after privacy changes' do
+      @visualization.create_mapcap!
+      @visualization.privacy = Carto::Visualization::PRIVACY_PROTECTED
+      @visualization.password = "r4nr0mp455"
+      @visualization.save!
+      mapcap = @visualization.create_mapcap!
+      mapcap.regenerate_visualization.non_mapcapped.auth_token
+    end
+
     it 'should preserve map' do
       regenerated_visualization = @mapcap.regenerate_visualization
       regenerated_visualization.map.id.should eq @map.id
@@ -152,6 +161,27 @@ describe Carto::Mapcap do
       expect(regenerated_widget.options).to eq widget.options
       expect(regenerated_widget.source_id).to eq widget.source_id
       expect(regenerated_widget.style).to eq widget.style
+    end
+
+    it 'should be readonly' do
+      rv = @mapcap.regenerate_visualization
+
+      rv.readonly?.should eq true
+      rv.user.readonly?.should eq true
+      rv.full_user.readonly?.should eq true
+      rv.permission.readonly?.should eq true
+      rv.likes.each { |like| like.readonly?.should eq true }
+      rv.shared_entities.each { |entity| entity.readonly?.should eq true }
+      rv.unordered_children.each { |child| child.readonly?.should eq true }
+      rv.overlays.each { |overlay| overlay.readonly?.should eq true }
+      rv.active_layer.readonly?.should eq true
+      rv.map.readonly?.should eq true
+      rv.related_templates.each { |template| template.readonly?.should eq true }
+      rv.external_sources.each { |resource| resource.readonly?.should eq true }
+      rv.analyses.each { |analysis| analysis.readonly?.should eq true }
+      rv.mapcaps.each { |mapcap| mapcap.readonly?.should eq true }
+      rv.state.readonly?.should eq true
+      rv.snapshots.each { |snapshot| snapshot.readonly?.should eq true }
     end
 
     describe 'without user DB' do

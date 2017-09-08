@@ -17,21 +17,14 @@ module Carto
 
       def me
         carto_viewer = Carto::User.find(current_viewer.id)
-        dashboard_notifications = carto_viewer.notifications_for_category(:dashboard)
-        organization_notifications = carto_viewer.received_notifications.unread.map do |n|
-          Carto::Api::ReceivedNotificationPresenter.new(n)
-        end
 
         render json: {
-          username: carto_viewer.username,
-          user_data: carto_viewer.data,
+          user_data: current_viewer.data,
+          default_fallback_basemap: current_viewer.default_basemap,
           config: frontend_config_hash,
-          upgrade_url: carto_viewer.upgrade_url(request.protocol),
-          is_first_time_viewing_dashboard: !carto_viewer.dashboard_viewed?,
+          dashboard_notifications: carto_viewer.notifications_for_category(:dashboard),
           is_just_logged_in: !!flash['logged'],
-          default_fallback_basemap: carto_viewer.default_basemap,
-          dashboard_notifications: dashboard_notifications,
-          organization_notifications: organization_notifications
+          is_first_time_viewing_dashboard: !current_viewer.dashboard_viewed?
         }
       end
 

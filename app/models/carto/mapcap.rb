@@ -29,6 +29,7 @@ module Carto
       regenerated_visualization.permission = visualization.permission
 
       regenerated_visualization.populate_ids(lazy_ids_json)
+      set_tree_as_readonly!(regenerated_visualization)
 
       regenerated_visualization
     end
@@ -53,6 +54,24 @@ module Carto
 
     def update_named_map
       Carto::NamedMaps::Api.new(regenerate_visualization).upsert
+    end
+
+    def set_tree_as_readonly!(entity)
+      set_entity_as_readonly(entity)
+      entity.reflections.keys.each do |dep_name|
+        dependency = entity.public_send(dep_name)
+        if dependency.is_a? Array
+          dependency.each { |e| set_entity_as_readonly(e) }
+        else
+          set_entity_as_readonly(dependency)
+        end
+      end
+    end
+
+    def set_entity_as_readonly(entity)
+      return unless entity.public_methods.include?(:readonly!)
+      return if entity.readonly?
+      entity.readonly!
     end
   end
 end

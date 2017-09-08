@@ -2347,8 +2347,8 @@
     },
     "tangram": {
       "version": "0.13.2",
-      "from": "cartodb/tangram-1#alpha-fix",
-      "resolved": "git://github.com/cartodb/tangram-1.git#2bf52e1e5c734cdd03695190090d4c099db71e80"
+      "from": "cartodb/tangram-1#pmaster",
+      "resolved": "git://github.com/cartodb/tangram-1.git#bbce7fa0fd24eb5a2b34cebdb694b313c2d4d6b4"
     },
     "tangram-cartocss": {
       "version": "0.8.5",

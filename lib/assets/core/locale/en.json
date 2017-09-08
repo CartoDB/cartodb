@@ -2275,7 +2275,8 @@
         }
       },
       "components": {
-        "fill": "Fill",
+        "fill": "Size/Color",
+        "color": "Color",
         "stroke": {
           "label": "Stroke",
           "fetching": "Loading node schema...",
@@ -2306,6 +2307,7 @@
             "points": "Points"
           }
         },
+        "aggregation-fill": "Color",
         "aggregation-value": "Operation",
         "aggregation-size": {
           "label": "Size",
@@ -2427,11 +2429,11 @@
         },
         "style": {
           "custom-disabled": "If an aggregated style is applied, auto style is disabled",
-          "custom-colors": "Custom colors",
+          "custom-colors": "Autostyle colors",
           "custom-help": "Custom colors: colors used when Autostyle (drop icon) is applied",
           "define": "Define how your widget interacts with the data",
           "description": "Description",
-          "fill": "Fill",
+          "fill": "Color",
           "no": "No",
           "sync_on_bbox_change": "Dynamic",
           "sync_on_data_change": "Unfiltered",

@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.9.66",
+  "version": "4.9.68",
   "dependencies": {
     "abbrev": {
       "version": "1.1.0",
@@ -387,8 +387,8 @@
     },
     "cartodb-deep-insights.js": {
       "version": "0.0.3",
-      "from": "cartodb/deep-insights.js#tangram.cartodb-0.5.0",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#52c5e5a4a0da22dbeb0d0ee49e4d899832557cf1",
+      "from": "cartodb/deep-insights.js#master",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#8a4e11069af668dc38d16d262c98489279b46f5b",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",
@@ -404,8 +404,8 @@
     },
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
-      "from": "cartodb/cartodb.js#tangram.cartodb-0.5.0",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#79efe89ec2e5398d46de65a1346706e050397bed"
+      "from": "cartodb/cartodb.js#v4",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#29596d080ad04460e7c4159881ef93b53c7951e3"
     },
     "caseless": {
       "version": "0.12.0",
@@ -2362,7 +2362,7 @@
     },
     "tangram.cartodb": {
       "version": "0.5.6",
-      "from": "tangram.cartodb@>=0.5.4 <0.6.0",
+      "from": "tangram.cartodb@>=0.5.6 <0.6.0",
       "resolved": "https://registry.npmjs.org/tangram.cartodb/-/tangram.cartodb-0.5.6.tgz"
     },
     "tapable": {

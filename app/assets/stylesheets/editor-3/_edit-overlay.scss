@@ -6,9 +6,8 @@
 
 .EditOverlay {
   position: absolute;
-  top: 32px;
-  right: 0;
-  left: 0;
+  top: 16px;
+  right: 16px;
   height: auto;
   transition: all 0.2s;
   text-align: center;
@@ -21,6 +20,7 @@
     overflow: hidden;
   }
 }
+
 .EditOverlay-inner {
   display: inline-block;
   padding: 10px;

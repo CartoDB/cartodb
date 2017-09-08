@@ -186,29 +186,40 @@ module.exports = cdb.core.View.extend({
     bFirst.top > bSecond.bottom);
   },
 
-  _updateTriangle: function (className, triangle, xPos) {
-    var y3Factor = className === 'right' && !(this._isTabletViewport() && this._isTimeSeries()) ? -1 : 1;
-    var xLimit = className === 'right' ? this.chartWidth() : 0;
-    var xDiff = Math.abs(xLimit - xPos);
+  _updateTriangle: function (isRight, triangle, start, center, rectWidth) {
+    var ySign = isRight && !(this._isTabletViewport() && this._isTimeSeries()) ? -1 : 1;
 
     var transform = d3.transform(triangle.attr('transform'));
+    var side = Math.min(TRIANGLE_SIDE, rectWidth);
+    var translate = center - (side / 2);
 
-    if (xDiff <= (TRIANGLE_SIDE / 2)) {
-      xDiff = className === 'right' ? TRIANGLE_SIDE - xDiff : xDiff;
-      triangle.attr('d', trianglePath(0, 0, TRIANGLE_SIDE, 0, xDiff, y3Factor * TRIANGLE_HEIGHT, y3Factor));
-      transform.translate[0] = className === 'left' ? 0 : -Math.max(0, Math.abs(this.options.handleWidth - TRIANGLE_SIDE));
-    } else {
-      triangle.attr('d', trianglePath(0, 0, TRIANGLE_SIDE, 0, (TRIANGLE_SIDE / 2), y3Factor * TRIANGLE_HEIGHT, y3Factor));
-      transform.translate[0] = ((this.options.handleWidth / 2) - (TRIANGLE_SIDE / 2));
-    }
+    var offset = isRight
+      ? Math.min((start + rectWidth) - (translate + side), 0)
+      : Math.abs(Math.min(translate - start, 0));
+
+    var p0 = [0, 0];
+    var p1 = [side, 0];
+    var p2 = [side / 2 - offset, TRIANGLE_HEIGHT * ySign];
+
+    triangle.attr('d', trianglePath(p0[0], p0[1], p1[0], p1[1], p2[0], p2[1], ySign));
+    transform.translate[0] = center - (side / 2) + offset;
 
     triangle.attr('transform', transform.toString());
   },
 
   _updateAxisTip: function (className) {
+    var leftTip = 'left_axis_tip';
+    var rightTip = 'right_axis_tip';
     var attr = className + '_axis_tip';
+    var isRight = className === 'right';
     var model = this.model.get(attr);
     if (model === undefined) { return; }
+
+    var leftValue = this.model.get(leftTip);
+    var rightValue = this.model.get(rightTip);
+    leftValue === rightValue && this._isDateTimeSeries()
+      ? this._hideAxisTip('right')
+      : this._showAxisTip('right');
 
     var textLabel = this.chart.select('.CDB-Chart-axisTipText.CDB-Chart-axisTip-' + className);
     var axisTip = this.chart.select('.CDB-Chart-axisTip.CDB-Chart-axisTip-' + className);
@@ -234,6 +245,9 @@ module.exports = cdb.core.View.extend({
     var textBBox = textLabel.node().getBBox();
     var width = textBBox.width;
     var rectWidth = width + TIP_H_PADDING;
+    var handleWidth = this.options.handleWidth;
+    var barWidth = this.barWidth;
+    var chartWidth = this.chartWidth();
 
     rectLabel.attr('width', rectWidth);
     textLabel.attr('dx', TIP_H_PADDING / 2);
@@ -242,21 +256,34 @@ module.exports = cdb.core.View.extend({
     var parts = d3.transform(handle.attr('transform')).translate;
     var xPos = +parts[0] + (this.options.handleWidth / 2);
 
-    var yPos = className === 'right' && !(this._isMobileViewport() && this._isTimeSeries())
-      ? this.chartHeight() + (TRIANGLE_HEIGHT * TRIANGLE_RIGHT_FACTOR) : -(TRIANGLE_HEIGHT + TIP_RECT_HEIGHT + TOOLTIP_MARGIN);
+    var yPos = isRight && !(this._isMobileViewport() && this._isTimeSeries())
+      ? this.chartHeight() + (TRIANGLE_HEIGHT * TRIANGLE_RIGHT_FACTOR) - 1
+      : -(TRIANGLE_HEIGHT + TIP_RECT_HEIGHT + TOOLTIP_MARGIN);
     yPos = Math.floor(yPos);
 
-    this._updateTriangle(className, triangle, xPos);
-
-    if ((xPos - width / 2) < 0) {
-      axisTip.attr('transform', 'translate(' + -xPos + ',' + yPos + ' )');
-    } else if ((xPos + width / 2 + 2) >= this.chartWidth()) {
-      var newX = this.chartWidth() - (xPos + rectWidth);
-      newX += this.options.handleWidth;
-      axisTip.attr('transform', 'translate(' + newX + ', ' + yPos + ')');
-    } else {
-      axisTip.attr('transform', 'translate(-' + Math.max(((rectWidth / 2) - (this.options.handleWidth / 2)), 0) + ', ' + yPos + ')');
+    // Align rect and bar centers
+    var rectCenter = rectWidth / 2;
+    var barCenter = (handleWidth + barWidth) / 2;
+    barCenter -= (isRight ? barWidth : 0); // right tip should center to the previous bin
+    if (!this._isDateTimeSeries()) { // In numeric histograms, axis should point to the handler
+      barCenter = handleWidth / 2;
     }
+    var translate = barCenter - rectCenter;
+
+    // Check if rect if out of bounds and clip translate if that happens
+    var axisXPos = xPos + translate + (isRight ? rectWidth : 0);
+    var translatedCenter = translate + rectCenter;
+    if (axisXPos < 0) { // If axis tip would outside chart, clip to 0
+      translate = 0;
+    } else if (axisXPos > chartWidth) {
+      translate = handleWidth - rectWidth;
+    }
+
+    // Translate axis tip
+    axisTip.attr('transform', 'translate(' + translate + ', ' + yPos + ')');
+
+    // Update triangle position
+    this._updateTriangle(isRight, triangle, translate, translatedCenter, rectWidth);
 
     if (this.model.get('dragging') && this._isMobileViewport() && this._isTimeSeries()) {
       this._showAxisTip(className);

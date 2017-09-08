@@ -1,7 +1,6 @@
 <button class="CDB-Button js-delete">
   <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-actionTextColor u-upperCase"><%- labelDelete %></span>
 </button>
-
 <button class="CDB-Button CDB-Button--loading CDB-Button--primary js-save
 <% if (isDisabled) { %> is-disabled<% } %>
 <% if (!isDone) { %> is-loading<% } %>

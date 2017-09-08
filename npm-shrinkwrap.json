@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.9.62",
+  "version": "4.9.66",
   "dependencies": {
     "abbrev": {
       "version": "1.1.0",
@@ -1753,7 +1753,7 @@
     "perfect-scrollbar": {
       "version": "0.6.16",
       "from": "git://github.com/CartoDB/perfect-scrollbar.git#master",
-      "resolved": "git://github.com/CartoDB/perfect-scrollbar.git#085cd7abdd8426d6fa1e8527dcf6c2734e2318c6"
+      "resolved": "git://github.com/CartoDB/perfect-scrollbar.git#7e39eb3d689f6849f18943cf271fd96fc59dbdc0"
     },
     "performance-now": {
       "version": "0.2.0",
@@ -2348,7 +2348,7 @@
     "tangram": {
       "version": "0.13.2",
       "from": "cartodb/tangram-1#alpha-fix",
-      "resolved": "git://github.com/cartodb/tangram-1.git#e4524109357d72021f48ac58df5d1afcb77b6a0b"
+      "resolved": "git://github.com/cartodb/tangram-1.git#2bf52e1e5c734cdd03695190090d4c099db71e80"
     },
     "tangram-cartocss": {
       "version": "0.8.5",

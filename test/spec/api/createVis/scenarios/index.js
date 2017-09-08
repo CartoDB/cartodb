@@ -5,8 +5,8 @@
 function load (index) {
   // We use a switch because our current build system doesn't support variables in the require.
   switch (index) {
-    case 0:
-      return Object.assign({}, require('./vis_0.js'));
+    case 'basic':
+      return Object.assign({}, require('./basic_vis.json.js'));
   }
 }
 

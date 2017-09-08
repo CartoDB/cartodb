@@ -2,6 +2,7 @@ Development
 -----------
 
 ### Features
+* Enable other hosts apart from account host to include CORS headers via the cors_enabled_hosts param in app_config.yml (#12685)
 * Add tooltips to show bucket data in time-series (#11650)
 * Improve legend items management (#12650)
 * Avoid multiple time-series by filtering the carousel options (#12395)
@@ -18,16 +19,14 @@ Development
 * Provide CartoCSS attribute within layer info in vizjson v3 (CartoDB/support#858)
 * Support for nested properties in CartoCSS (#12411)
 * New loading button styles (#12132)
-* [WIP] Export/import organization/user metadata to allow user migration (#12271, #12304, #12323)
+* [WIP] Export/import organization/user metadata to allow user migration (#12271, #12304, #12323, #12588, #12380, #12510)
 * Start using ::outline symbolizer for polygon stroke (#12412)
-* [WIP] Export/import organization/user metadata to allow user migration (#12271, #12304, #12323, #12380)
 * New force param in EUMAPI organization users destroy operation to force deletion even with unregistered tables (#11654)
 * Removed the usage of the `organizations_admin` feature flag (#12131)
 * Show number of selected items in Time-Series widgets (#12179)
 * Show ranges in time series widget selection (#12291)
 * Bump Webpack version (#12392)
 * Start using ::outline symbolizer for polygon stroke (#12412)
-* [WIP] Export/import organization/user metadata to allow user migration (#12271, #12304, #12323, #12380, #12510)
 * New force param in EUMAPI organization users destroy operation to force deletion even with unregistered tables (#11654).
 * Removed the usage of the `organizations_admin` feature flag (#12131)
 * Time-series widgets aggregated by time (#12324)
@@ -48,6 +47,9 @@ Development
 
 ### Bug fixes / enhancements
 * Rename FILL input label to SIZE/COLOR (#12564)
+* Fix some issues related to feature edition view (#12716)
+* Fix analysis onboarding lunch template (#12743)
+* Allow any text in Maps, Layers and Widgets names (#12322)
 * Change edition mode when user edits widget (#12636)
 * Disable editing the "Others" icon in UI (#12683)
 * Improved date format in histograms (#12719)
@@ -69,6 +71,7 @@ Development
 * Fix broken join from second column on IE11 (#support/875)
 * Fix ghost node problem (#11397)
 * Break down deep-insights-integrations class (#11581)
+* Fix CORS for local images in legends (#12647)
 * Fix torque categories layer rendering (#cartodb.js/1698)
 * Don't provide quantification option when layer is animated (#10947)
 * Remove tracking of liked map events (#12404)
@@ -162,6 +165,7 @@ Development
 * Adding max items limit for form list editor (#12552)
 * Improve Google Login button (cartodb-central#1808)
 * Implement widget opacity in AutoStyle (#11928)
+* Fix behaviour of visualizations restored from mapcaps (#12686)
 * Fix histograms data range change (#12622)
 * Fix exception thrown when map created without builder is used with it and visualization state data is missing (#12568)
 * Enable selection of categories in non dynamic widgets [Support #890](https://github.com/CartoDB/support/issues/890)

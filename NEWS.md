@@ -47,6 +47,7 @@ Development
 * Updates Dataservices API client default version to `0.20.0` (#12633)
 
 ### Bug fixes / enhancements
+* Rename FILL input label to SIZE/COLOR (#12564)
 * Change edition mode when user edits widget (#12636)
 * Disable editing the "Others" icon in UI (#12683)
 * Improved date format in histograms (#12719)

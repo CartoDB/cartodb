@@ -212,6 +212,7 @@ module.exports = cdb.core.View.extend({
     var rightTip = 'right_axis_tip';
     var attr = className + '_axis_tip';
     var isRight = className === 'right';
+    var isWeek = this._dataviewModel.get('aggregation') === 'week';
     var model = this.model.get(attr);
     if (model === undefined) { return; }
 
@@ -265,7 +266,7 @@ module.exports = cdb.core.View.extend({
     var rectCenter = rectWidth / 2;
     var barCenter = (handleWidth + barWidth) / 2;
     barCenter -= (isRight ? barWidth : 0); // right tip should center to the previous bin
-    if (!this._isDateTimeSeries()) { // In numeric histograms, axis should point to the handler
+    if (!this._isDateTimeSeries() || isWeek) { // In numeric and week histograms, axis should point to the handler
       barCenter = handleWidth / 2;
     }
     var translate = barCenter - rectCenter;

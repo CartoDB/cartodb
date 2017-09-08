@@ -46,6 +46,7 @@ Development
 * Updates Dataservices API client default version to `0.20.0` (#12633)
 
 ### Bug fixes / enhancements
+* Rename FILL input label to SIZE/COLOR (#12564)
 * Refactor geometry buttons styles to ease breakpoints logic (#11542)
 * Fix some issues related to feature edition view (#12716)
 * Fix analysis onboarding lunch template (#12743)

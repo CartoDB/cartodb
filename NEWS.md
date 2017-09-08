@@ -46,6 +46,8 @@ Development
 * Updates Dataservices API client default version to `0.20.0` (#12633)
 
 ### Bug fixes / enhancements
+
+* Enhancements on 'Join columns for 2nd layer' analysis texts (#12418)
 * Fix some issues related to feature edition view (#12716)
 * Fix analysis onboarding lunch template (#12743)
 * Allow any text in Maps, Layers and Widgets names (#12322)

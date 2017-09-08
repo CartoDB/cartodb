@@ -2351,19 +2351,19 @@
       "resolved": "git://github.com/cartodb/tangram-1.git#bbce7fa0fd24eb5a2b34cebdb694b313c2d4d6b4"
     },
     "tangram-cartocss": {
-      "version": "0.8.5",
-      "from": "tangram-cartocss@>=0.8.4 <0.9.0",
-      "resolved": "https://registry.npmjs.org/tangram-cartocss/-/tangram-cartocss-0.8.5.tgz"
+      "version": "0.9.0",
+      "from": "tangram-cartocss@>=0.9.0 <0.10.0",
+      "resolved": "https://registry.npmjs.org/tangram-cartocss/-/tangram-cartocss-0.9.0.tgz"
     },
     "tangram-reference": {
-      "version": "2.0.1",
-      "from": "tangram-reference@>=2.0.1 <3.0.0",
-      "resolved": "https://registry.npmjs.org/tangram-reference/-/tangram-reference-2.0.1.tgz"
+      "version": "2.1.0",
+      "from": "tangram-reference@>=2.1.0 <2.2.0",
+      "resolved": "https://registry.npmjs.org/tangram-reference/-/tangram-reference-2.1.0.tgz"
     },
     "tangram.cartodb": {
-      "version": "0.5.5",
+      "version": "0.5.6",
       "from": "tangram.cartodb@>=0.5.4 <0.6.0",
-      "resolved": "https://registry.npmjs.org/tangram.cartodb/-/tangram.cartodb-0.5.5.tgz"
+      "resolved": "https://registry.npmjs.org/tangram.cartodb/-/tangram.cartodb-0.5.6.tgz"
     },
     "tapable": {
       "version": "0.2.8",

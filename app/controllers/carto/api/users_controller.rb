@@ -25,7 +25,7 @@ module Carto
           dashboard_notifications: carto_viewer.notifications_for_category(:dashboard),
           is_just_logged_in: !!flash['logged'],
           is_first_time_viewing_dashboard: !(carto_viewer.dashboard_viewed_at),
-          user_frontend_version: current_user.user_frontend_version,
+          user_frontend_version: current_user.user_frontend_version_or_frontend_version,
           asset_host: current_user.asset_host
         }
       end

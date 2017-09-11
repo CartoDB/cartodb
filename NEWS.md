@@ -3,6 +3,7 @@ Development
 
 ### Features
 * Add /api/v3/me endpoint (#12599)
+* Add assets version column in user model (#12676)
 * Enable georeferencer for database connectors (#12566)
 * Enable other hosts apart from account host to include CORS headers via the cors_enabled_hosts param in app_config.yml (#12685)
 * Add tooltips to show bucket data in time-series (#11650)
@@ -11,6 +12,8 @@ Development
 * Add privacy button behavior for shared datasets (#11342)
 * Use add/replace notification for time-series (#12670)
 * Fix icons in category legends (#11630)
+* Add /api/v3/me endpoint (#12599)
+* Add assets version column in user model (#12676)
 * Sidebar UI tweaks (#12479)
 * Add carto-node client library (#12677)
 * Improving affordance of Delete icon (#12531)

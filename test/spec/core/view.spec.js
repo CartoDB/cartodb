@@ -1,7 +1,6 @@
 var $ = require('jquery');
 var _ = require('underscore');
 var Backbone = require('backbone');
-var templates = require('cdb.templates');
 var View = require('../../../src/core/view');
 
 describe('core/view', function () {
@@ -17,7 +16,9 @@ describe('core/view', function () {
     });
 
     View.viewCount = 0;
-    view = new TestView({ el: $('<div>')});
+    view = new TestView({
+      el: $('<div>')
+    });
   });
 
   it('should call initialize', function () {
@@ -136,7 +137,7 @@ describe('core/view', function () {
     view.retrigger('cachopo', view.child);
     view.bind('cachopo', function () {
       launched = true;
-    }),
+    });
     view.child.trigger('cachopo');
     setTimeout(function () {
       expect(launched).toBeTruthy();

@@ -1,4 +1,3 @@
-/* global torque */
 var cdb = require('../../src/cartodb');
 
 describe('cartodb.js bundle', function () {

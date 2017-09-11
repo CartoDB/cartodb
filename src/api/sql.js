@@ -15,9 +15,9 @@ function SQL (options) {
   if (!options.user) {
     throw new Error('user should be provided');
   }
-  var loc = new String(window.location.protocol);
+  var loc = String(window.location.protocol);
   loc = loc.slice(0, loc.length - 1);
-  if (loc == 'file') {
+  if (loc === 'file') {
     loc = 'https';
   }
 
@@ -45,7 +45,7 @@ function SQL (options) {
 SQL.prototype._host = function () {
   var opts = this.options;
   return opts.sql_api_template.replace('{user}', opts.user) + '/api/' + opts.version + '/sql';
-},
+};
 
 /**
  * var sql = new SQL('cartodb_username');
@@ -60,8 +60,8 @@ SQL.prototype.execute = function (sql, vars, options, callback) {
     throw new TypeError('sql should not be null');
   }
   // setup arguments
-  var args = arguments,
-    fn = args[args.length - 1];
+  var args = arguments;
+  var fn = args[args.length - 1];
   if (_.isFunction(fn)) {
     callback = fn;
   }
@@ -111,11 +111,12 @@ SQL.prototype.execute = function (sql, vars, options, callback) {
   }
 
   params.url = this._host();
+  var i, r, v;
   if (isGetRequest) {
     var q = 'q=' + encodeURIComponent(query);
-    for (var i in reqParams) {
-      var r = reqParams[i];
-      var v = options[r];
+    for (i in reqParams) {
+      r = reqParams[i];
+      v = options[r];
       if (v != null) {
         q += '&' + r + '=' + v;
       }
@@ -124,9 +125,9 @@ SQL.prototype.execute = function (sql, vars, options, callback) {
     params.url += '?' + q;
   } else {
     var objPost = {'q': query};
-    for (var i in reqParams) {
-      var r = reqParams[i];
-      var v = options[r];
+    for (i in reqParams) {
+      r = reqParams[i];
+      v = options[r];
       if (v != null) {
         objPost[r] = v;
       }
@@ -151,7 +152,7 @@ SQL.prototype.execute = function (sql, vars, options, callback) {
   };
   params.success = function (resp, status, xhr) {
     // manage rewest
-    if (status == undefined) {
+    if (status === undefined) {
       status = resp.status;
       xhr = resp;
       resp = JSON.parse(resp.response);
@@ -180,8 +181,8 @@ SQL.prototype.execute = function (sql, vars, options, callback) {
 
 SQL.prototype.getBounds = function (sql, vars, options, callback) {
   var promise = new Promise();
-  var args = arguments,
-    fn = args[args.length - 1];
+  var args = arguments;
+  var fn = args[args.length - 1];
   if (_.isFunction(fn)) {
     callback = fn;
   }
@@ -253,8 +254,8 @@ SQL.prototype.table = function (name) {
 
   _table.fetch = function (vars) {
     vars = vars || {};
-    var args = arguments,
-      fn = args[args.length - 1];
+    var args = arguments;
+    var fn = args[args.length - 1];
     if (_.isFunction(fn)) {
       callback = fn;
       if (args.length === 1) vars = {};
@@ -410,7 +411,7 @@ SQL.prototype.describeString = function (sql, column, callback) {
     try {
       var s = array_agg(row.array_agg);
 
-      var histogram = _(s).map(function (row) {
+      histogram = _(s).map(function (row) {
         var r = row.match(/\((.*),(\d+)/);
         var name = normalizeName(r[1]);
         return [name, +r[2]];
@@ -457,8 +458,6 @@ SQL.prototype.describeDate = function (sql, column, callback) {
     var row = data.rows[0];
     var e = new Date(row.end_time);
     var s = new Date(row.start_time);
-
-    var moments = row.moments;
 
     var steps = Math.min(row.moments, 1024);
 
@@ -549,8 +548,8 @@ SQL.prototype.describeGeom = function (sql, column, callback) {
 };
 
 SQL.prototype.columns = function (sql, options, callback) {
-  var args = arguments,
-    fn = args[args.length - 1];
+  var args = arguments;
+  var fn = args[args.length - 1];
   if (_.isFunction(fn)) {
     callback = fn;
   }
@@ -662,8 +661,8 @@ SQL.prototype.describeFloat = function (sql, column, callback) {
 // describe a column
 SQL.prototype.describe = function (sql, column, options) {
   var self = this;
-  var args = arguments,
-    fn = args[args.length - 1];
+  var args = arguments;
+  var fn = args[args.length - 1];
   if (_.isFunction(fn)) {
     var _callback = fn;
   }

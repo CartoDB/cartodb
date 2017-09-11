@@ -9,7 +9,9 @@ describe('api/sql', function () {
   var ajax;
   var ajaxParams;
   var TEST_DATA = { test: 'good' };
-  var NO_BOUNDS = { 'rows': [{ 'maxx': null }]};
+  var NO_BOUNDS = { 'rows': [
+    { 'maxx': null }
+  ]};
   var throwError;
   var abort = jasmine.createSpy('abort');
 
@@ -175,7 +177,9 @@ describe('api/sql', function () {
     var data;
     var data_callback;
 
-    sql.execute('select * from bla', function (err, data) { data_callback = data; }).done(function (d) {
+    sql.execute('select * from bla', function (err, data) {
+      data_callback = data;
+    }).done(function (d) {
       data = d;
     });
 
@@ -276,7 +280,7 @@ describe('api/sql', function () {
 
     it('should get bounds for query with appostrophes', function () {
       s = new SQL({ user: 'jaja' });
-      s.getBounds('select * from country where name={{ name }}', { name: "'Spain'"});
+      s.getBounds('select * from country where name={{ name }}', {name: "'Spain'"});
       expect(ajaxParams.url.indexOf('%26amp%3B%2339%3B')).toEqual(-1);
     });
 
@@ -454,12 +458,13 @@ describe('api/sql column descriptions', function () {
     it('should return correct properties', function () {
       expect(description.type).toEqual('number');
       expect(['A', 'U', 'F', 'J'].indexOf(description.dist_type) > -1).toBe(true);
+      var i;
       var numTypes = ['avg', 'max', 'min', 'stddevmean', 'weight', 'stddev', 'null_ratio', 'count'];
-      for (var i = 0; i < numTypes.length; i++) {
+      for (i = 0; i < numTypes.length; i++) {
         expect(typeof description[numTypes[i]]).toEqual('number');
       }
       var arrayTypes = ['quantiles', 'equalint', 'jenks', 'headtails', 'cat_hist', 'hist'];
-      for (var i = 0; i < arrayTypes.length; i++) {
+      for (i = 0; i < arrayTypes.length; i++) {
         expect(description[arrayTypes[i]].constructor).toEqual(Array);
       }
     });

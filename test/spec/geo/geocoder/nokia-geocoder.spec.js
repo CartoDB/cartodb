@@ -1,4 +1,3 @@
-var $ = require('jquery');
 var NOKIA = require('../../../../src/geo/geocoder/nokia-geocoder');
 
 describe('geo/geocoder/nokia-geocoder', function () {

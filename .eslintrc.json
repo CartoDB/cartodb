@@ -11,7 +11,6 @@
   },
   "rules": {
     "new-cap": "off",
-    "one-var": "off",
     "no-undef": "off",
     "camelcase": "off",
     "no-mixed-operators": "off",
@@ -20,7 +19,6 @@
     "no-throw-literal": "off",
     "no-cond-assign": "off",
     "handle-callback-err": "off",
-    "node/no-deprecated-api": "off",
-    "standard/no-callback-literal": "off"
+    "node/no-deprecated-api": "off"
   }
 }

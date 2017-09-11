@@ -32,8 +32,8 @@ var NOKIA = {
         var res = data.results.items;
 
         for (var i in res) {
-          var r = res[i],
-            position;
+          var r = res[i];
+          var position;
 
           position = {
             lat: r.position[0],

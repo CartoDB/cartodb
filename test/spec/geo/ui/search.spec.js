@@ -51,7 +51,8 @@ describe('geo/ui/search', function () {
         type: undefined
       };
       MAPZEN.geocode = function (address, callback) {
-        callback([ self.result ]);
+        var result = [ self.result ];
+        callback(result);
       };
 
       this.view.$('.js-textInput').val('Madrid, Spain');

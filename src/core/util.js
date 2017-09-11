@@ -28,10 +28,11 @@ util.encodeBase64Native = function (input) {
 // from http://phpjs.org/functions/base64_encode/
 util.encodeBase64 = function (data) {
   var b64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
-  var o1, o2, o3, h1, h2, h3, h4, bits, i = 0,
-    ac = 0,
-    enc = '',
-    tmp_arr = [];
+  var o1, o2, o3, h1, h2, h3, h4, bits;
+  var i = 0;
+  var ac = 0;
+  var enc = '';
+  var tmp_arr = [];
 
   if (!data) {
     return data;

@@ -1,0 +1,24 @@
+{
+  "extends": "semistandard",
+  "env": {
+    "es6": true,
+    "browser": true,
+    "jasmine": true
+  },
+  "globals": {
+  },
+  "rules": {
+    "key-spacing": "off",
+    "comma-dangle": "off",
+    "spaced-comment": "off",
+    "padded-blocks": "off",
+    "comma-spacing": "off",
+    "semi": "off",
+    "indent": "off",
+    "no-undef": "off",
+    "no-empty-label": "off",
+    "space-before-keywords": "off",
+    "space-after-keywords": "off",
+    "space-return-throw-case": "off"
+  }
+}

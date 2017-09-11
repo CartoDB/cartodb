@@ -45,7 +45,7 @@ var Template = Backbone.Model.extend({
 
   compile: function () {
     var tmplType = this.get('type') || 'underscore';
-    var fn = Template.compilers[tmpl_type];
+    var fn = Template.compilers[tmplType];
     if (fn) {
       return fn(this.get('template'));
     } else {

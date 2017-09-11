@@ -42,7 +42,7 @@ format.formatNumber = function (value, unit) {
   } else if (absV > 10) {
     p = 1;
   } else if (absV > 0.01) {
-    p = Math.min(Math.ceil(Math.abs(Math.log(abs_v) / Math.log(10))) + 2, 2);
+    p = Math.min(Math.ceil(Math.abs(Math.log(absV) / Math.log(10))) + 2, 2);
   }
 
   value = value.toFixed(p);

@@ -48,4 +48,3 @@ _.each(OVERLAYS, function (value, key) {
 });
 
 module.exports = OverlaysFactory;
-

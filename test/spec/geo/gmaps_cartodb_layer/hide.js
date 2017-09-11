@@ -37,7 +37,6 @@
 
 //   });
 
-
 //   it('if hides layers should work', function(done) {
 
 //     setTimeout(function () {

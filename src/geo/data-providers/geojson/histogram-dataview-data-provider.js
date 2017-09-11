@@ -44,8 +44,8 @@ HistogramDataviewDataProvider.prototype.getData = function () {
   var average = bins.reduce(function (p, c) {
     return p + c.avg;
   }, 0) / bins.reduce(function (p, c) {
-    return p + c.freq;
-  }, 0);
+      return p + c.freq;
+    }, 0);
   var histogram = {
     'bin_width': width,
     'bins_count': bins.length,

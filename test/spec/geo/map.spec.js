@@ -43,9 +43,9 @@ describe('core/geo/map', function () {
         center: [41.40282319070747, 2.3435211181640625],
         zoom: 10
       },
-        {
-          layersFactory: fakeLayersFactory
-        });
+      {
+        layersFactory: fakeLayersFactory
+      });
 
       expect(map.get('center')).toEqual([41.40282319070747, 2.3435211181640625]);
       expect(map.get('original_center')).toEqual([41.40282319070747, 2.3435211181640625]);

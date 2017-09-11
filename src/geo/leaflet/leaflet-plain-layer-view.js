@@ -4,7 +4,7 @@ var LeafletLayerView = require('./leaflet-layer-view');
 
 var LeafletPlainLayerView = function (layerModel, leafletMap) {
   LeafletLayerView.apply(this, arguments);
-}
+};
 
 LeafletPlainLayerView.prototype = _.extend(
   {},
@@ -33,7 +33,7 @@ LeafletPlainLayerView.prototype = _.extend(
     },
 
     _redraw: function () {
-      var div = this.leafletMap.getContainer()
+      var div = this.leafletMap.getContainer();
       div.style.backgroundColor = this.model.get('color') || '#FFF';
 
       if (this.model.get('image')) {

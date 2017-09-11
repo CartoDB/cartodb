@@ -14,9 +14,7 @@ describe Carto::Api::UsersController do
       user = @organization.owner
       carto_user = Carto::User.where(id: user.id).first
 
-      login(user)
-
-      get_json api_v3_users_me_url, @headers do |response|
+      get_json api_v3_users_me_url(user_domain: user.username, api_key: user.api_key), @headers do |response|
         expect(response.status).to eq(200)
 
         expect(response.body[:default_fallback_basemap].with_indifferent_access).to eq(user.default_basemap)

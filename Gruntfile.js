@@ -1,6 +1,19 @@
 var _ = require('underscore');
 var jasmineCfg = require('./grunt-tasks/jasmine');
 
+function getTargetDiff () {
+  var target = require('child_process').execSync('(git diff --name-only --relative || true;' +
+                                                 'git diff origin/master.. --name-only --relative || true;)' +
+                                                 '| grep \'\\.js\\?$\' || true').toString();
+  if (target.length === 0) {
+    target = ['.'];
+  } else {
+    target = target.split('\n');
+    target.splice(-1, 1);
+  }
+  return target;
+}
+
 module.exports = function (grunt) {
   require('load-grunt-tasks')(grunt);
   require('time-grunt')(grunt);
@@ -20,6 +33,8 @@ module.exports = function (grunt) {
     pkg: pkg
   };
 
+  var targetDiff = getTargetDiff();
+
   grunt.initConfig({
     config: config,
     pkg: grunt.file.readJSON('package.json'),
@@ -37,29 +52,16 @@ module.exports = function (grunt) {
     watch: require('./grunt-tasks/watch'),
     'gh-pages': require('./grunt-tasks/gh-pages'),
     s3: require('./grunt-tasks/s3').task(grunt, config),
-    fastly: require('./grunt-tasks/fastly').task(grunt, config)
+    fastly: require('./grunt-tasks/fastly').task(grunt, config),
+    eslint: { target: targetDiff }
   });
 
   // required for browserify to use watch files instead
   grunt.registerTask('preWatch', grunt.config.bind(grunt.config, 'config.doWatchify', true));
 
-  grunt.registerTask('lint', 'lint source files', function () {
-    var done = this.async();
-    require('child_process').exec('PATH=$(npm bin):$PATH semistandard', function (error, stdout, stderr) {
-      if (error) {
-        grunt.log.fail(error);
-
-        // Filter out lines that are ignored,
-        // e.g. "src/foobar.js:0:0: File ignored because of your .eslintignore file. Use --no-ignore to override."
-        grunt.log.fail(stdout.replace(/.+--no-ignore.+(\r?\n|\r)/g, ''));
-        grunt.fail.warn('try `node_modules/.bin/semistandard --format src/filename.js` to auto-format code (you might still need to fix some things manually).');
-      } else {
-        grunt.log.ok('All linted files OK!');
-        grunt.log.writeln('Note that files listed in .eslintignore are not linted');
-      }
-      done();
-    });
-  });
+  grunt.registerTask('lint', [
+    'eslint'
+  ]);
 
   grunt.registerTask('verify-dependencies', 'check dependencies are shared with cartodb.js', require('./grunt-tasks/verify-dependencies')(grunt));
 

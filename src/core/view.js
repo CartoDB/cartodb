@@ -21,7 +21,7 @@ var View = Backbone.View.extend({
   },
 
   add_related_model: function (m) {
-    if (!m) throw 'added non valid model';
+    if (!m) throw Error('added non valid model');
     this._models.push(m);
   },
 

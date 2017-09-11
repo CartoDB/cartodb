@@ -15,8 +15,6 @@
     "camelcase": "off",
     "no-mixed-operators": "off",
     "no-useless-escape": "off",
-    "no-unused-expressions": "off",
-    "no-throw-literal": "off",
     "no-cond-assign": "off",
     "handle-callback-err": "off",
     "node/no-deprecated-api": "off"

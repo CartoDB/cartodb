@@ -379,7 +379,7 @@ describe('api/sql column descriptions', function () {
   it('should deduct correct describe method', function () {
     spyOn(sql, 'describeDate');
     sql.describe(this.query, this.colDate, {type: this.colDate.get('type')}, function () {});
-    expect(sql.describeDate).toHaveBeenCalled;
+    expect(sql.describeDate).toHaveBeenCalled();
 
     spyOn(sql, 'describeFloat');
     sql.describe(this.query, this.colFloat, {type: this.colFloat.get('type')}, function () {});

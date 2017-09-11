@@ -291,7 +291,7 @@ var Map = Model.extend({
   setOptions: function (options) {
     if (typeof options !== 'object' || options.length) {
       if (this.options.debug) {
-        throw (options + ' options has to be an object');
+        throw Error(options + ' options has to be an object');
       } else {
         return;
       }

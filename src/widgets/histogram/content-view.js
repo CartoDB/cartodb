@@ -580,7 +580,7 @@ module.exports = cdb.core.View.extend({
   _calcAvg: function (data, start, end) {
     var selectedData = data.slice(start, end);
 
-    var total = this._calcSum(data, start, end, total);
+    var total = this._calcSum(data, start, end);
 
     if (!total) {
       return 0;

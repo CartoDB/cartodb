@@ -8,12 +8,10 @@
   "globals": {
   },
   "rules": {
-    "new-cap": "off",
     "no-undef": "off",
     "no-mixed-operators": "off",
     "no-useless-escape": "off",
     "no-cond-assign": "off",
-    "handle-callback-err": "off",
-    "node/no-deprecated-api": "off"
+    "handle-callback-err": "off"
   }
 }

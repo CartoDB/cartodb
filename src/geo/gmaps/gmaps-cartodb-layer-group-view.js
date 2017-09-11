@@ -90,7 +90,7 @@ var GMapsCartoDBLayerGroupView = function (layerModel, gmapsMap) {
 };
 
 // TODO: Do we need this?
-GMapsCartoDBLayerGroupView.prototype = new wax.g.connector();
+GMapsCartoDBLayerGroupView.prototype = new wax.g.connector(); // eslint-disable-line
 GMapsCartoDBLayerGroupView.prototype.interactionClass = wax.g.interaction;
 _.extend(
   GMapsCartoDBLayerGroupView.prototype,

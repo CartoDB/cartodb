@@ -8,10 +8,6 @@
   "globals": {
   },
   "rules": {
-    "comma-dangle": "off",
-    "spaced-comment": "off",
-    "padded-blocks": "off",
-    "comma-spacing": "off",
     "semi": "off",
     "indent": "off",
     "no-undef": "off",

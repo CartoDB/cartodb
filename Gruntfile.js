@@ -28,7 +28,7 @@ module.exports = function (grunt) {
       major: version[0],
       minor: version[0] + '.' + version[1],
       // set bugfix version to empty until we do the real release (aka 1.0)
-      bugfixing: '', //pkg.version
+      bugfixing: '' // pkg.version
     },
     pkg: pkg
   };
@@ -104,9 +104,8 @@ module.exports = function (grunt) {
   ])));
   grunt.registerTask('publish', ['build', 'gh-pages']);
   grunt.registerTask('release', function (target) {
-
     if (!grunt.file.exists('secrets.json')) {
-      grunt.fail.fatal('secrets.json file does not exist, copy secrets.example.json and rename it' , 1);
+      grunt.fail.fatal('secrets.json file does not exist, copy secrets.example.json and rename it', 1);
     }
 
     // Read secrets
@@ -118,10 +117,9 @@ module.exports = function (grunt) {
         !grunt.config('secrets').S3_SECRET ||
         !grunt.config('secrets').S3_BUCKET
       ) {
-      grunt.fail.fatal('S3 keys not specified in secrets.json' , 1);
+      grunt.fail.fatal('S3 keys not specified in secrets.json', 1);
     }
 
     grunt.task.run(['s3', 'fastly'])
-
   });
 };

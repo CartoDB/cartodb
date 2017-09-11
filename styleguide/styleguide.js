@@ -1,5 +1,4 @@
 $(document).ready(function () {
-
   var clipboard = new Clipboard('.copy-box', {
     target: function (trigger) {
       return $(trigger).find('code')[0]
@@ -68,13 +67,12 @@ $(document).ready(function () {
         $styledSelect.text($(this).text()).removeClass('active');
         $this.val($(this).attr('rel'));
         $list.hide();
-        //console.log($this.val());
+        // console.log($this.val());
     });
 
     $(document).click(function () {
         $styledSelect.removeClass('active');
         $list.hide();
     });
-
   });
 });

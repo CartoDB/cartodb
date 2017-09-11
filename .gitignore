@@ -74,3 +74,4 @@ doc/manual/build
 .vscode/
 /private_gears
 /dist
+yarn.lock

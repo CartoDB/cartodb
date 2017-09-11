@@ -19,12 +19,12 @@ module Carto
         carto_viewer = Carto::User.find(current_viewer.id)
 
         render json: {
-          user_data: current_viewer.data,
-          default_fallback_basemap: current_viewer.default_basemap,
+          user_data: Carto::Api::UserPresenter.new(carto_viewer).data,
+          default_fallback_basemap: carto_viewer.default_basemap,
           config: frontend_config_hash,
           dashboard_notifications: carto_viewer.notifications_for_category(:dashboard),
           is_just_logged_in: !!flash['logged'],
-          is_first_time_viewing_dashboard: !current_viewer.dashboard_viewed?,
+          is_first_time_viewing_dashboard: !(carto_viewer.dashboard_viewed_at),
           user_frontend_version: carto_viewer.user_frontend_version_or_frontend_version,
           asset_host: carto_viewer.asset_host
         }

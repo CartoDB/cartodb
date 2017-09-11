@@ -2,8 +2,8 @@ var _ = require('underscore');
 var jasmineCfg = require('./grunt/tasks/jasmine');
 
 function getTargetDiff () {
-  var target = require('child_process').execSync('(git diff --name-only --relative || true;' +
-                                                 'git diff origin/master.. --name-only --relative || true;)' +
+  // Detect changed files. If no changes return '.' (all files)
+  var target = require('child_process').execSync('git diff --name-only --relative || true;' +
                                                  '| grep \'\\.js\\?$\' || true').toString();
   if (target.length === 0) {
     target = ['.'];
@@ -43,8 +43,6 @@ module.exports = function (grunt) {
     pkg: pkg
   };
 
-  var targetDiff = getTargetDiff();
-
   grunt.initConfig({
     secrets: {},
     config: config,
@@ -73,7 +71,7 @@ module.exports = function (grunt) {
     imagemin: require('./grunt/tasks/imagemin').task(),
     jshint: require('./grunt/tasks/jshint').task(),
     jasmine: jasmineCfg,
-    eslint: { target: targetDiff }
+    eslint: { target: getTargetDiff() }
   });
 
   grunt.registerTask('release', [

@@ -21,7 +21,8 @@
     "Antonio Santiago Pérez <asantiago@cartodb.com>",
     "Ivan Malagon <ivan@carto.com>",
     "Ruben Moya <ruben@carto.com>",
-    "Carlos Matallín <matallo@carto.com>"
+    "Carlos Matallín <matallo@carto.com>",
+    "Jesús Arroyo Torrens <jarroyo@cartodb.com>"
   ],
   "license": "BSD-3-Clause",
   "dependencies": {

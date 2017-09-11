@@ -433,6 +433,10 @@ class Carto::User < ActiveRecord::Base
     id == user.id || user.belongs_to_organization?(organization) && (user.organization_owner? || !organization_admin?)
   end
 
+  def should_display_old_password?
+    needs_password_confirmation?
+  end
+
   # Some operations, such as user deletion, won't ask for password confirmation if password is not set (because of Google sign in, for example)
   def needs_password_confirmation?
     (!oauth_signin? || !last_password_change_date.nil?) &&
@@ -512,6 +516,18 @@ class Carto::User < ActiveRecord::Base
 
   def view_dashboard
     update_column(:dashboard_viewed_at, Time.now)
+  end
+
+  # Special url that goes to Central if active (for old dashboard only)
+  def account_url(request_protocol)
+    if CartoDB.account_host
+      request_protocol + CartoDB.account_host + CartoDB.account_path + '/' + username
+    end
+  end
+
+  # Special url that goes to Central if active
+  def plan_url(request_protocol)
+    account_url(request_protocol) + '/plan'
   end
 
   private

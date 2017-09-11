@@ -22,7 +22,7 @@ module.exports = {
   letter: function (sourceId) {
     if (!sourceId || !_.isString(sourceId)) return '';
     var match = sourceId.match(/^([a-z]+)/);
-    return _.isArray(match) && match[0] || '';
+    return (_.isArray(match) && match[0]) || '';
   },
 
   /**

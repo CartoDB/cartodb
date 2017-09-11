@@ -158,7 +158,7 @@ module.exports = cdb.core.View.extend({
       hi = startMax ? startMax.bin + 1 : data.length;
     }
 
-    if (lo && lo !== 0 || hi && hi !== data.length) {
+    if ((lo && lo !== 0) || (hi && hi !== data.length)) {
       this.filter.setRange(
         data[lo].start,
         data[hi - 1].end
@@ -510,14 +510,14 @@ module.exports = cdb.core.View.extend({
         loBarIndex = 0;
       } else if (_.isNumber(min) && !_.isNumber(loBarIndex)) {
         startMin = _.findWhere(data, {start: min});
-        loBarIndex = startMin && startMin.bin || 0;
+        loBarIndex = (startMin && startMin.bin) || 0;
       }
 
       if (!_.isNumber(max) && !_.isNumber(hiBarIndex)) {
         hiBarIndex = data.length;
       } else if (_.isNumber(max) && !_.isNumber(hiBarIndex)) {
         startMax = _.findWhere(data, {end: max});
-        hiBarIndex = startMax && startMax.bin + 1 || data.length;
+        hiBarIndex = (startMax && startMax.bin + 1) || data.length;
       }
     } else {
       loBarIndex = 0;
@@ -534,7 +534,7 @@ module.exports = cdb.core.View.extend({
     if (!this._initStateApplied) return;
     var data;
 
-    if (!this._isZoomed() || this._isZoomed() && this._numberOfFilters === 2) {
+    if (!this._isZoomed() || (this._isZoomed() && this._numberOfFilters === 2)) {
       data = this.histogramChartView.model.get('data');
     } else {
       data = this.miniHistogramChartView.model.get('data');

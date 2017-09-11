@@ -1486,8 +1486,7 @@ module.exports = cdb.core.View.extend({
 
     this._calcBarWidth();
     // Remove spacing if not enough room for the smallest case, or mobile viewport
-    var spacing = (((data.length * 2) - 1) > this.chartWidth() ||
-      this._isMobileViewport() && this._isDateTimeSeries()) ? 0 : 1;
+    var spacing = ((((data.length * 2) - 1) > this.chartWidth() || this._isMobileViewport()) && this._isDateTimeSeries()) ? 0 : 1;
 
     var bars = this.chart.append('g')
       .attr('transform', 'translate(0, 0)')

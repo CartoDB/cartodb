@@ -9,6 +9,5 @@
     "cdb": true
   },
   "rules": {
-    "no-mixed-operators": "off"
   }
 }

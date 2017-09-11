@@ -44,7 +44,7 @@ module.exports = cdb.core.View.extend({
       return 0;
     };
 
-    var nulls = !_.isUndefined(this._dataviewModel.get('nulls')) && formatter.formatNumber(this._dataviewModel.get('nulls')) || '-';
+    var nulls = (!_.isUndefined(this._dataviewModel.get('nulls')) && formatter.formatNumber(this._dataviewModel.get('nulls'))) || '-';
     var isCollapsed = this.model.get('collapsed');
 
     var prefix = this.model.get('prefix');

@@ -3,7 +3,7 @@ var jasmineCfg = require('./grunt/tasks/jasmine');
 
 function getTargetDiff () {
   // Detect changed files. If no changes return '.' (all files)
-  var target = require('child_process').execSync('git diff --name-only --relative || true;' +
+  var target = require('child_process').execSync('(git diff --name-only --relative || true;)' +
                                                  '| grep \'\\.js\\?$\' || true').toString();
   if (target.length === 0) {
     target = ['.'];

@@ -49,6 +49,7 @@
     "browserify": "13.0.0",
     "browserify-resolutions": "1.1.0",
     "cartoassets": "CartoDB/CartoAssets#master",
+    "eslint": "^4.6.1",
     "grunt": "0.4.5",
     "grunt-aws": "^0.4.0",
     "grunt-browserify": "5.0.0",
@@ -80,6 +81,8 @@
   },
   "main": "src/index.js",
   "scripts": {
-    "test": "grunt test"
+    "test": "grunt test",
+    "lint": "./node_modules/.bin/eslint .",
+    "lint:fix": "./node_modules/.bin/eslint . --fix"
   }
 }

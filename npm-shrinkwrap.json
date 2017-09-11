@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.9.68",
+  "version": "4.9.69",
   "dependencies": {
     "abbrev": {
       "version": "1.1.0",
@@ -405,7 +405,7 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
       "from": "cartodb/cartodb.js#v4",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#29596d080ad04460e7c4159881ef93b53c7951e3"
+      "resolved": "git://github.com/cartodb/cartodb.js.git#658ec7f4d9d8f6a36524585b02884114e68be29c"
     },
     "caseless": {
       "version": "0.12.0",
@@ -1272,9 +1272,9 @@
       "resolved": "https://registry.npmjs.org/jquery/-/jquery-2.1.4.tgz"
     },
     "js-base64": {
-      "version": "2.1.9",
+      "version": "2.2.1",
       "from": "js-base64@>=2.1.9 <3.0.0",
-      "resolved": "https://registry.npmjs.org/js-base64/-/js-base64-2.1.9.tgz"
+      "resolved": "https://registry.npmjs.org/js-base64/-/js-base64-2.2.1.tgz"
     },
     "js-tokens": {
       "version": "3.0.2",
@@ -1746,9 +1746,9 @@
       "resolved": "https://registry.npmjs.org/pbf/-/pbf-1.3.7.tgz"
     },
     "pbkdf2": {
-      "version": "3.0.13",
+      "version": "3.0.14",
       "from": "pbkdf2@>=3.0.3 <4.0.0",
-      "resolved": "https://registry.npmjs.org/pbkdf2/-/pbkdf2-3.0.13.tgz"
+      "resolved": "https://registry.npmjs.org/pbkdf2/-/pbkdf2-3.0.14.tgz"
     },
     "perfect-scrollbar": {
       "version": "0.6.16",
@@ -2351,9 +2351,9 @@
       "resolved": "git://github.com/cartodb/tangram-1.git#bbce7fa0fd24eb5a2b34cebdb694b313c2d4d6b4"
     },
     "tangram-cartocss": {
-      "version": "0.9.0",
+      "version": "0.9.1",
       "from": "tangram-cartocss@>=0.9.0 <0.10.0",
-      "resolved": "https://registry.npmjs.org/tangram-cartocss/-/tangram-cartocss-0.9.0.tgz"
+      "resolved": "https://registry.npmjs.org/tangram-cartocss/-/tangram-cartocss-0.9.1.tgz"
     },
     "tangram-reference": {
       "version": "2.1.0",

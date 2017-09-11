@@ -1,6 +1,6 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
-var webpack_files = require('../lib/build/files/webpack_files');
+const webpack_files = require('../lib/build/files/webpack_files');
 
 const PACKAGE = require('./../package.json');
 const version = PACKAGE.version;
@@ -17,7 +17,7 @@ module.exports = {
     return new HtmlWebpackPlugin({
       inject: false,
       cache: false,
-      filename: path.resolve(__dirname, '../public/static/' + entryName + '/index.html'),
+      filename: path.resolve(__dirname, `../public/static/${entryName}/index.html`),
       template: path.resolve(__dirname, '../lib/assets/javascripts/cartodb/static/index.jst.ejs'),
       config: webpack_files[entryName]
     });

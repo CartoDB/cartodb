@@ -223,12 +223,7 @@ var VisModel = Backbone.Model.extend({
 
     this._windshaftMap.bind('instanceCreated', this._onMapInstanceCreated, this);
 
-    // TODO: This can be removed once https://github.com/CartoDB/cartodb/pull/9118
-    // will be merged and released. Leaving this here for backwards compatibility
-    // and to make sure everything still works fine during the release and next
-    // few moments (e.g: some viz.json files might be cached, etc.).
-    var layersData = this._flattenLayers(vizjson.layers);
-    var layerModels = _.map(layersData, function (layerData, layerIndex) {
+    var layerModels = _.map(vizjson.layers, function (layerData, layerIndex) {
       _.extend(layerData, { order: layerIndex });
       return layersFactory.createLayer(layerData.type, layerData);
     });
@@ -412,28 +407,6 @@ var VisModel = Backbone.Model.extend({
 
   invalidateSize: function () {
     this.trigger('invalidateSize');
-  },
-
-  _flattenLayers: function (vizjsonLayers) {
-    return _.chain(vizjsonLayers)
-      .map(function (vizjsonLayer) {
-        if (vizjsonLayer.type === 'layergroup') {
-          return vizjsonLayer.options.layer_definition.layers;
-        }
-
-        if (vizjsonLayer.type === 'namedmap') {
-          // Layers inside of a "namedmap" layer don't have a type, so we need to
-          // add manually add it here, so that the factory knows what model should be created.
-          return _.map(vizjsonLayer.options.named_map.layers, function (layer) {
-            layer.type = 'CartoDB';
-            return layer;
-          });
-        }
-
-        return vizjsonLayer;
-      })
-      .flatten()
-      .value();
   },
 
   addCustomOverlay: function (overlayView) {

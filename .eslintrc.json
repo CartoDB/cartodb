@@ -10,7 +10,6 @@
   "rules": {
     "no-mixed-operators": "off",
     "no-useless-escape": "off",
-    "no-cond-assign": "off",
-    "handle-callback-err": "off"
+    "no-cond-assign": "off"
   }
 }

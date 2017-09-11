@@ -177,7 +177,7 @@ describe('api/sql', function () {
     var data;
     var dataCallback;
 
-    sql.execute('select * from bla', function (err, data) {
+    sql.execute('select * from bla', function (e, data) {
       dataCallback = data;
     }).done(function (d) {
       data = d;
@@ -404,7 +404,7 @@ describe('api/sql column descriptions', function () {
         var data = JSON.parse('{"rows":[{"uniq":462,"cnt":487,"null_count":1,"null_ratio":0.002053388090349076,"skew":0.043121149897330596,"array_agg":""}],"time":0.01,"fields":{"uniq":{"type":"number"},"cnt":{"type":"number"},"null_count":{"type":"number"},"null_ratio":{"type":"number"},"skew":{"type":"number"},"array_agg":{"type":"unknown(2287)"}},"total_rows":1}');
         callback(null, data);
       };
-      var callback = function (err, stuff) {
+      var callback = function (e, stuff) {
         description = stuff;
         done();
       };
@@ -429,7 +429,7 @@ describe('api/sql column descriptions', function () {
         var data = {'rows': [{'geometry_type': 'ST_Point'}], 'time': 0.035, 'fields': {'geometry_type': {'type': 'string'}}, 'total_rows': 1};
         callback(null, data);
       };
-      var callback = function (err, stuff) {
+      var callback = function (e, stuff) {
         description = stuff;
         done();
       };
@@ -448,7 +448,7 @@ describe('api/sql column descriptions', function () {
         var data = JSON.parse('{"rows":[{"hist":"{\\"(1,empty,69368)\\",\\"(25,empty,11063)\\"}","min":0,"max":4,"avg":0.3745819397993311,"cnt":89401,"uniq":5,"null_ratio":0,"stddev":0.000009057366328792043,"stddevmean":2.1617223091836313,"dist_type":"U","quantiles":[0,1,2,2,3,4,4],"equalint":[0,0,0,0,0,0,0],"jenks":[0,1,2,3,4],"headtails":[0,1,2,3,4],"cat_hist":"{\\"(1,empty,69368)\\",\\"(25,empty,11063)\\"}"}],"time":1.442,"fields":{"hist":{"type":"unknown(2287)"},"min":{"type":"number"},"max":{"type":"number"},"avg":{"type":"number"},"cnt":{"type":"number"},"uniq":{"type":"number"},"null_ratio":{"type":"number"},"stddev":{"type":"number"},"stddevmean":{"type":"number"},"dist_type":{"type":"string"},"quantiles":{"type":"number[]"},"equalint":{"type":"number[]"},"jenks":{"type":"number[]"},"headtails":{"type":"number[]"},"cat_hist":{"type":"unknown(2287)"}},"total_rows":1}');
         callback(null, data);
       };
-      var callback = function (err, stuff) {
+      var callback = function (e, stuff) {
         description = stuff;
         done();
       };
@@ -482,7 +482,7 @@ describe('api/sql column descriptions', function () {
         };
         callback(null, data);
       };
-      var callback = function (err, stuff) {
+      var callback = function (e, stuff) {
         description = stuff;
         done();
       };

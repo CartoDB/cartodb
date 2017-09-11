@@ -41,11 +41,9 @@ function logVersionsError (err, requiredNodeVersion, requiredNpmVersion) {
 }
 
 function getTargetDiff () {
-  var target = require('child_process').execSync('
-    (git diff --name-only --relative || true;' +
-    'git diff origin/master.. --name-only --relative || true;)' +
-    '| grep \'\\.js\\?$\' || true'
-  ).toString();
+  var target = require('child_process').execSync('(git diff --name-only --relative || true;' +
+                                                 'git diff origin/master.. --name-only --relative || true;)' +
+                                                 '| grep \'\\.js\\?$\' || true').toString();
   if (target.length === 0) {
     target = ['.'];
   } else {

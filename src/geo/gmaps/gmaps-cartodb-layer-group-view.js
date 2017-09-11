@@ -283,7 +283,8 @@ _.extend(
         do {
           curleft += obj.offsetLeft;
           curtop += obj.offsetTop;
-        } while (obj = obj.offsetParent);
+          obj = obj.offsetParent;
+        } while (obj);
         point = this._newPoint(
           x - curleft, y - curtop);
       } else {

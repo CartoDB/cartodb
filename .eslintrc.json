@@ -9,7 +9,6 @@
   },
   "rules": {
     "no-mixed-operators": "off",
-    "no-useless-escape": "off",
-    "no-cond-assign": "off"
+    "no-useless-escape": "off"
   }
 }

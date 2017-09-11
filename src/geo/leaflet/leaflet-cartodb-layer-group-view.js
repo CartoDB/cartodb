@@ -27,7 +27,8 @@ var findContainerPoint = function (map, o) {
     do {
       curleft += obj.offsetLeft;
       curtop += obj.offsetTop;
-    } while (obj = obj.offsetParent);
+      obj = obj.offsetParent;
+    } while (obj);
     point = new L.Point(
       x - curleft, y - curtop);
   } else {

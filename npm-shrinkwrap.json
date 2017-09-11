@@ -388,7 +388,7 @@
     "cartodb-deep-insights.js": {
       "version": "0.0.3",
       "from": "cartodb/deep-insights.js#12658-axis-changes",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#53540b690c5708b446d9a2cc8349b5d711bc2619",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#e70cfd9272d4993aaf05c4a18cc6fa0095df55d6",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",
@@ -404,8 +404,8 @@
     },
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
-      "from": "cartodb/cartodb.js#v4",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#29596d080ad04460e7c4159881ef93b53c7951e3"
+      "from": "cartodb/cartodb.js#12658-axis-changes",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#3cec2908ec30aeacecee6152917094d20a60724e"
     },
     "caseless": {
       "version": "0.12.0",
@@ -1272,9 +1272,9 @@
       "resolved": "https://registry.npmjs.org/jquery/-/jquery-2.1.4.tgz"
     },
     "js-base64": {
-      "version": "2.1.9",
+      "version": "2.2.0",
       "from": "js-base64@>=2.1.9 <3.0.0",
-      "resolved": "https://registry.npmjs.org/js-base64/-/js-base64-2.1.9.tgz"
+      "resolved": "https://registry.npmjs.org/js-base64/-/js-base64-2.2.0.tgz"
     },
     "js-tokens": {
       "version": "3.0.2",
@@ -1746,9 +1746,9 @@
       "resolved": "https://registry.npmjs.org/pbf/-/pbf-1.3.7.tgz"
     },
     "pbkdf2": {
-      "version": "3.0.13",
+      "version": "3.0.14",
       "from": "pbkdf2@>=3.0.3 <4.0.0",
-      "resolved": "https://registry.npmjs.org/pbkdf2/-/pbkdf2-3.0.13.tgz"
+      "resolved": "https://registry.npmjs.org/pbkdf2/-/pbkdf2-3.0.14.tgz"
     },
     "perfect-scrollbar": {
       "version": "0.6.16",

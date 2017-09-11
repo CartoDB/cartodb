@@ -6,18 +6,16 @@
     "jasmine": true
   },
   "globals": {
+    "$": true,
+    "cdb": true,
+    "Clipboard": true
   },
   "rules": {
-    "semi": "off",
-    "indent": "off",
-    "no-undef": "off",
-    "no-empty-label": "off",
     "space-before-keywords": "off",
     "space-after-keywords": "off",
     "space-return-throw-case": "off",
     "no-mixed-operators": "off",
     "no-use-before-define": "off",
-    "camelcase": "off",
     "no-multiple-empty-lines": "off"
   }
 }

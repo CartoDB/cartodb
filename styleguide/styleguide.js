@@ -1,7 +1,7 @@
 $(document).ready(function () {
   var clipboard = new Clipboard('.copy-box', {
     target: function (trigger) {
-      return $(trigger).find('code')[0]
+      return $(trigger).find('code')[0];
     }
   });
 
@@ -42,37 +42,37 @@ $(document).ready(function () {
     $styledSelect.text($this.children('option').eq(0).text());
 
     var $list = $('<ul />', {
-        'class': 'select-options'
+      'class': 'select-options'
     }).insertAfter($styledSelect);
 
     for (var i = 0; i < numberOfOptions; i++) {
-        $('<li />', {
-            text: $this.children('option').eq(i).text(),
-            rel: $this.children('option').eq(i).val()
-        }).appendTo($list);
+      $('<li />', {
+        text: $this.children('option').eq(i).text(),
+        rel: $this.children('option').eq(i).val()
+      }).appendTo($list);
     }
 
     var $listItems = $list.children('li');
 
     $styledSelect.click(function (e) {
-        e.stopPropagation();
-        $('div.select-styled.active').each(function () {
-            $(this).removeClass('active').next('ul.select-options').hide();
-        });
-        $(this).toggleClass('active').next('ul.select-options').toggle();
+      e.stopPropagation();
+      $('div.select-styled.active').each(function () {
+        $(this).removeClass('active').next('ul.select-options').hide();
+      });
+      $(this).toggleClass('active').next('ul.select-options').toggle();
     });
 
     $listItems.click(function (e) {
-        e.stopPropagation();
-        $styledSelect.text($(this).text()).removeClass('active');
-        $this.val($(this).attr('rel'));
-        $list.hide();
-        // console.log($this.val());
+      e.stopPropagation();
+      $styledSelect.text($(this).text()).removeClass('active');
+      $this.val($(this).attr('rel'));
+      $list.hide();
+      // console.log($this.val());
     });
 
     $(document).click(function () {
-        $styledSelect.removeClass('active');
-        $list.hide();
+      $styledSelect.removeClass('active');
+      $list.hide();
     });
   });
 });

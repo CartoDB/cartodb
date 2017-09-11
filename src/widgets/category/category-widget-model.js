@@ -12,7 +12,7 @@ module.exports = WidgetModel.extend({
     search: false,
     locked: false
   },
-    WidgetModel.prototype.defaults
+  WidgetModel.prototype.defaults
   ),
 
   defaultState: _.extend({
@@ -20,7 +20,7 @@ module.exports = WidgetModel.extend({
     locked: false,
     autoStyle: false
   },
-    WidgetModel.prototype.defaultState
+  WidgetModel.prototype.defaultState
   ),
 
   initialize: function () {

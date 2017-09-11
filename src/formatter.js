@@ -47,21 +47,21 @@ format.formatNumber = function (value, unit) {
 
   var format = d3.format('.2s');
   var p = 0;
-  var abs_v = Math.abs(value);
+  var absV = Math.abs(value);
 
   if (value > 1000) {
     value = format(value) + (unit ? ' ' + unit : '');
     return value;
   }
 
-  if (abs_v > 100) {
+  if (absV > 100) {
     p = 0;
-  } else if (abs_v > 10) {
+  } else if (absV > 10) {
     p = 1;
-  } else if (abs_v > 1) {
+  } else if (absV > 1) {
     p = 2;
-  } else if (abs_v > 0) {
-    p = Math.max(Math.ceil(Math.abs(Math.log(abs_v) / Math.log(10))) + 2, 3);
+  } else if (absV > 0) {
+    p = Math.max(Math.ceil(Math.abs(Math.log(absV) / Math.log(10))) + 2, 3);
   }
 
   value = value.toFixed(p);

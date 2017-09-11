@@ -112,14 +112,14 @@ module.exports = function (grunt) {
     grunt.config.set('secrets', grunt.file.readJSON('secrets.json'));
 
     if (
-        !grunt.config('secrets') ||
+      !grunt.config('secrets') ||
         !grunt.config('secrets').S3_KEY ||
         !grunt.config('secrets').S3_SECRET ||
         !grunt.config('secrets').S3_BUCKET
-      ) {
+    ) {
       grunt.fail.fatal('S3 keys not specified in secrets.json', 1);
     }
 
-    grunt.task.run(['s3', 'fastly'])
+    grunt.task.run(['s3', 'fastly']);
   });
 };

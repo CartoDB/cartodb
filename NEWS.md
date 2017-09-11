@@ -96,6 +96,7 @@ Development
 * Fixed arrow keys exceeding min/max values in number editor (#12212)
 * Better handling and reporting of "table with no map associated" error in map privacy changes (#12137).
 * Improve formula widget form (#12242)
+* Do not show unpublished visualizations in /explore (#12772)
 * Fixed alignment problems after CartoAssets update (#12234)
 * Fixed error instantiating the log of a data import if user doesn't exist (#12555)
 * Fixed layer counter (#12236)

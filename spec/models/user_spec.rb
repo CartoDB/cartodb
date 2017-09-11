@@ -2506,12 +2506,12 @@ describe User do
     end
   end
 
-  describe '#user_frontend_version_or_frontend_version' do
+  describe '#relevant_frontend_version' do
     describe "when user doesn't have user_frontend_version set" do
       it 'should return application frontend version' do
         CartoDB::Application.stubs(:frontend_version).returns('app_frontend_version')
 
-        @user.user_frontend_version_or_frontend_version.should eq 'app_frontend_version'
+        @user.relevant_frontend_version.should eq 'app_frontend_version'
       end
     end
 
@@ -2519,7 +2519,7 @@ describe User do
       it 'should return user frontend version' do
         @user.frontend_version = 'user_frontend_version'
 
-        @user.user_frontend_version_or_frontend_version.should eq 'user_frontend_version'
+        @user.relevant_frontend_version.should eq 'user_frontend_version'
       end
     end
   end

@@ -25,10 +25,10 @@ module.exports = function (grunt) {
     dist: 'dist',
     tmp: '.tmp',
     version: {
-      major:      version[0],
-      minor:      version[0] + '.' + version[1],
+      major: version[0],
+      minor: version[0] + '.' + version[1],
       // set bugfix version to empty until we do the real release (aka 1.0)
-      bugfixing:  '', //pkg.version
+      bugfixing: '', //pkg.version
     },
     pkg: pkg
   };

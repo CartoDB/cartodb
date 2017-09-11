@@ -82,7 +82,7 @@
   "main": "src/index.js",
   "scripts": {
     "test": "grunt test",
-    "lint": "./node_modules/.bin/eslint .",
-    "lint:fix": "./node_modules/.bin/eslint . --fix"
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   }
 }

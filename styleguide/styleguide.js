@@ -1,3 +1,5 @@
+/* global $, Clipboard */
+
 $(document).ready(function () {
   var clipboard = new Clipboard('.copy-box', {
     target: function (trigger) {

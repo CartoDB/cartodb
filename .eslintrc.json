@@ -6,9 +6,7 @@
     "jasmine": true
   },
   "globals": {
-    "$": true,
-    "cdb": true,
-    "Clipboard": true
+    "cdb": true
   },
   "rules": {
     "no-mixed-operators": "off"

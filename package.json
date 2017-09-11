@@ -132,58 +132,6 @@
     "backbone-cdb-v3": "global:Backbone",
     "moment-v3": "global:moment"
   },
-<<<<<<< HEAD
-  "semistandard": {
-    "globals": [
-      "alert",
-      "cartodb",
-      "_t",
-      "jasmine",
-      "describe",
-      "xdescribe",
-      "beforeAll",
-      "beforeEach",
-      "afterAll",
-      "afterEach",
-      "spyOn",
-      "it",
-      "xit",
-      "expect",
-      "localStorage",
-      "__ENV__"
-    ],
-    "ignore": [
-      "/.grunt",
-      "/*.js",
-      "/app",
-      "/config",
-      "/db",
-      "/doc",
-      "/engines",
-      "/lib/assets/javascripts/cdb",
-      "/lib/assets/javascripts/utils",
-      "/lib/assets/test/lib",
-      "/lib/build",
-      "/lib/carto",
-      "/lib/cartodb",
-      "/lib/importer",
-      "/lib/resque",
-      "/lib/sql",
-      "/lib/tasks",
-      "/lib/varnish",
-      "/log",
-      "/public",
-      "/script",
-      "/services",
-      "/spec",
-      "/tmp",
-      "/vendor"
-    ]
-=======
-  "config": {
-    "npmJsDir": "lib/assets"
->>>>>>> 12672-asset-version-migration
-  },
   "engine": {
     "node": "6.9.2"
   },

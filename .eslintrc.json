@@ -6,8 +6,6 @@
     "jasmine": true
   },
   "globals": {
-    "google": true,
-    "cartodb": true
   },
   "rules": {
     "new-cap": "off",

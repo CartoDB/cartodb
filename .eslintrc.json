@@ -11,11 +11,6 @@
     "Clipboard": true
   },
   "rules": {
-    "space-before-keywords": "off",
-    "space-after-keywords": "off",
-    "space-return-throw-case": "off",
-    "no-mixed-operators": "off",
-    "no-use-before-define": "off",
-    "no-multiple-empty-lines": "off"
+    "no-mixed-operators": "off"
   }
 }

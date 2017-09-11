@@ -62,17 +62,17 @@ describe Carto::User do
       @carto_user = FactoryGirl.build(:carto_user)
     end
 
-    describe 'when user doesn\'t have user_frontend_version set' do
+    describe "when user doesn't have user_frontend_version set" do
       it 'should return application frontend version' do
-        CartoDB::Application.stubs(:frontend_version).returns('frontend_version')
+        CartoDB::Application.stubs(:frontend_version).returns('app_frontend_version')
 
-        @carto_user.user_frontend_version_or_frontend_version.should eq 'frontend_version'
+        @carto_user.user_frontend_version_or_frontend_version.should eq 'app_frontend_version'
       end
     end
 
     describe 'when user has user_frontend_version set' do
       it 'should return user frontend version' do
-        @carto_user.user_frontend_version = 'user_frontend_version'
+        @carto_user.frontend_version = 'user_frontend_version'
 
         @carto_user.user_frontend_version_or_frontend_version.should eq 'user_frontend_version'
       end

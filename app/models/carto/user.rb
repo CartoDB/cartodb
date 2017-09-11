@@ -33,7 +33,7 @@ class Carto::User < ActiveRecord::Base
                    "users.disqus_shortname, users.account_type, users.twitter_username, users.google_maps_key, " \
                    "users.viewer, users.quota_in_bytes, users.database_host, users.crypted_password, " \
                    "users.builder_enabled, users.private_tables_enabled, users.private_maps_enabled, " \
-                   "users.org_admin, users.last_name, users.google_maps_private_key, users.user_frontend_version, " \
+                   "users.org_admin, users.last_name, users.google_maps_private_key, users.frontend_version, " \
                    "users.asset_host".freeze
 
   has_many :tables, class_name: Carto::UserTable, inverse_of: :user
@@ -516,7 +516,7 @@ class Carto::User < ActiveRecord::Base
   end
 
   def user_frontend_version_or_frontend_version
-    user_frontend_version || CartoDB::Application.frontend_version
+    frontend_version || CartoDB::Application.frontend_version
   end
 
   private

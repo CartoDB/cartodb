@@ -256,11 +256,10 @@ SQL.prototype.table = function (name) {
     vars = vars || {};
     var args = arguments;
     var fn = args[args.length - 1];
-    if (_.isFunction(fn)) {
-      callback = fn;
-      if (args.length === 1) vars = {};
+    if (_.isFunction(fn) && args.length === 1) {
+      vars = {};
     }
-    _sql.execute(_table.sql(), vars, callback);
+    _sql.execute(_table.sql(), vars, fn);
   };
 
   _table.sql = function () {

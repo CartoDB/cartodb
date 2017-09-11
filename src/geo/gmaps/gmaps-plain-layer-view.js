@@ -1,3 +1,4 @@
+/* global google */
 var _ = require('underscore');
 var GMapsLayerView = require('./gmaps-layer-view');
 

@@ -116,7 +116,7 @@ describe('api/sql', function () {
   });
 
   it('should execute a long query with params', function () {
-    s = new SQL({
+    var s = new SQL({
       user: 'rambo',
       format: 'geojson',
       protocol: 'http',
@@ -202,7 +202,7 @@ describe('api/sql', function () {
   });
 
   it('should include url params', function () {
-    s = new SQL({
+    var s = new SQL({
       user: 'rambo',
       format: 'geojson',
       protocol: 'http',
@@ -222,7 +222,7 @@ describe('api/sql', function () {
   });
 
   it('should include extra url params', function () {
-    s = new SQL({
+    var s = new SQL({
       user: 'rambo',
       format: 'geojson',
       protocol: 'http',
@@ -251,7 +251,7 @@ describe('api/sql', function () {
   it('should use jsonp if browser does not support cors', function () {
     var corsPrev = $.support.cors;
     $.support.cors = false;
-    s = new SQL({ user: 'jaja' });
+    var s = new SQL({ user: 'jaja' });
     expect(s.options.jsonp).toEqual(true);
     s.execute('select * from rambo', null, {
       dp: 2,
@@ -273,13 +273,13 @@ describe('api/sql', function () {
               '       ST_XMax(ST_Extent(the_geom)) as maxx,' +
               '       ST_YMax(ST_Extent(the_geom)) as maxy' +
               ' from (select * from rambo where id=2) as subq';
-      s = new SQL({ user: 'jaja' });
+      var s = new SQL({ user: 'jaja' });
       s.getBounds('select * from rambo where id={{id}}', {id: 2});
       expect(ajaxParams.url.indexOf(encodeURIComponent(sql))).not.toEqual(-1);
     });
 
     it('should get bounds for query with appostrophes', function () {
-      s = new SQL({ user: 'jaja' });
+      var s = new SQL({ user: 'jaja' });
       s.getBounds('select * from country where name={{ name }}', {name: "'Spain'"});
       expect(ajaxParams.url.indexOf('%26amp%3B%2339%3B')).toEqual(-1);
     });
@@ -290,7 +290,7 @@ describe('api/sql', function () {
       TEST_DATA = NO_BOUNDS;
       throwError = false;
 
-      s = new SQL({ user: 'jaja' });
+      var s = new SQL({ user: 'jaja' });
       s.getBounds('SELECT * FROM somewhere')
         .error(function (err) {
           actualErrors = err;
@@ -315,7 +315,7 @@ describe('api/sql', function () {
         actualErrors = err;
       }
 
-      s = new SQL({ user: 'jaja' });
+      var s = new SQL({ user: 'jaja' });
       s.getBounds('SELECT * FROM somewhere', null, null, cb);
 
       jasmine.clock().tick(10);
@@ -334,7 +334,6 @@ describe('api/sql.table', function () {
   var sql;
 
   beforeEach(function () {
-    ajaxParams = null;
     sql = new SQL({
       user: USER,
       protocol: 'https'

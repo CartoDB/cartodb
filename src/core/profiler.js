@@ -73,6 +73,7 @@ Profiler.new_value = function (name, value, type, defer) {
 };
 
 Profiler.print_stats = function () {
+  var k;
   for (k in Profiler.metrics) {
     var t = Profiler.metrics[k];
     console.log(' === ' + k + ' === ');

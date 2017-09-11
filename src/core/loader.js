@@ -32,7 +32,8 @@ var Loader = {
   getPath: function (file) {
     var scripts = document.getElementsByTagName('script');
     var cartodbJsRe = /\/?cartodb[\-\._]?([\w\-\._]*)\.js\??/;
-    for (i = 0, len = scripts.length; i < len; i++) {
+    var i;
+    for (i = 0; i < scripts.length; i++) {
       var src = scripts[i].src;
       var matches = src.match(cartodbJsRe);
 

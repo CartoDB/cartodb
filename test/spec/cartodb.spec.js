@@ -1,3 +1,4 @@
+/* global cartodb */
 var cdb = require('../../src/cartodb');
 
 describe('cartodb.js bundle', function () {
@@ -16,10 +17,9 @@ describe('cartodb.js bundle', function () {
 
   describe('shared for cdb object in all bundles', function () {
     it('should set cartodb object in global namespace', function () {
-      expect(window.cdb).toEqual(jasmine.any(Object));
-      expect(window.cdb).toBe(cdb);
-      expect(cdb).toBe(window.cartodb);
-      expect(window.cartodb).toBe(cartodb);
+      expect(window.cdb).toBeDefined();
+      expect(window.cartodb).toBeDefined();
+      expect(window.cartodb).toBe(window.cdb);
     });
 
     it('should have common object placeholders', function () {

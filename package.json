@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.9.67-12673.1",
+  "version": "4.9.69-12673.1",
   "description": "CARTO UI frontend",
   "repository": {
     "type": "git",
@@ -74,6 +74,7 @@
     "grunt-contrib-jst": "CartoDB/grunt-contrib-jst#merge-master",
     "grunt-contrib-uglify": "2.0.x",
     "grunt-contrib-watch": "1.0.0",
+    "grunt-eslint": "^20.1.0",
     "grunt-exorcise": "2.1.1",
     "grunt-postcss": "0.7.2",
     "grunt-sass": "2.0.0",
@@ -88,7 +89,7 @@
     "prettysize": "0.0.3",
     "raw-loader": "0.5.1",
     "recursive-readdir": "2.1.1",
-    "semistandard": "7.0.4",
+    "semistandard": "^11.0.0",
     "semver": "4.3.6",
     "shim-loader": "0.1.0",
     "source-map-support": "0.4.0",
@@ -131,6 +132,7 @@
     "backbone-cdb-v3": "global:Backbone",
     "moment-v3": "global:moment"
   },
+<<<<<<< HEAD
   "semistandard": {
     "globals": [
       "alert",
@@ -177,6 +179,10 @@
       "/tmp",
       "/vendor"
     ]
+=======
+  "config": {
+    "npmJsDir": "lib/assets"
+>>>>>>> 12672-asset-version-migration
   },
   "engine": {
     "node": "6.9.2"

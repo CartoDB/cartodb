@@ -75,7 +75,7 @@ var LegendViewBase = Backbone.View.extend({
   },
 
   _getPlaceholderHTML: function () {
-    return this._placeholderTemplate && this._placeholderTemplate() || '';
+    return (this._placeholderTemplate && this._placeholderTemplate()) || '';
   },
 
   _getErrorHeaderHTML: function () {

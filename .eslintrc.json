@@ -8,7 +8,6 @@
   "globals": {
   },
   "rules": {
-    "no-mixed-operators": "off",
     "no-useless-escape": "off"
   }
 }

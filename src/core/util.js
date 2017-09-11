@@ -92,7 +92,7 @@ util._makeCRCTable = function () {
 
 util._inferBrowser = function (ua) {
   var browser = {};
-  ua = ua || typeof window !== 'undefined' && window.navigator.userAgent || '';
+  ua = ((ua || typeof window !== 'undefined') && window.navigator.userAgent) || '';
   function detectIE () {
     var msie = ua.indexOf('MSIE ');
     var trident = ua.indexOf('Trident/');

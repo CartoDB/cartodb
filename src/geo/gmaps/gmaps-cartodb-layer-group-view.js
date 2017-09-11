@@ -313,9 +313,9 @@ _.extend(
     _manageOnEvents: function (map, o) {
       var point = this._findPos(map, o);
       var latlng = this.projector.pixelToLatLng(point);
-      var event_type = o.e.type.toLowerCase();
+      var eventType = o.e.type.toLowerCase();
 
-      switch (event_type) {
+      switch (eventType) {
         case 'mousemove':
           if (this.options.featureOver) {
             return this.options.featureOver(o.e, latlng, point, o.data, o.layer);

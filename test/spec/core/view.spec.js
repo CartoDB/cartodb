@@ -53,22 +53,22 @@ describe('core/view', function () {
 
   it('should unlink the view model', function () {
     var called = false;
-    var new_view = new TestView({ el: $('<div>'), model: new Backbone.Model() });
+    var newView = new TestView({ el: $('<div>'), model: new Backbone.Model() });
 
-    spyOn(new_view, 'test_method');
-    new_view.model.bind('change', new_view.test_method, new_view);
-    new_view.model.bind('change', function () { called = true; });
+    spyOn(newView, 'test_method');
+    newView.model.bind('change', newView.test_method, newView);
+    newView.model.bind('change', function () { called = true; });
 
-    new_view.model.trigger('change');
+    newView.model.trigger('change');
     expect(called).toEqual(true);
-    expect(new_view.test_method).toHaveBeenCalled();
-    expect(new_view.test_method.calls.count()).toEqual(1);
+    expect(newView.test_method).toHaveBeenCalled();
+    expect(newView.test_method.calls.count()).toEqual(1);
     called = false;
-    new_view.clean();
+    newView.clean();
     // trigger again
-    new_view.model.trigger('change');
+    newView.model.trigger('change');
     expect(called).toEqual(true);
-    expect(new_view.test_method.calls.count()).toEqual(1);
+    expect(newView.test_method.calls.count()).toEqual(1);
   });
 
   it('should unlink linked models', function () {

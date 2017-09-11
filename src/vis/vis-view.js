@@ -39,8 +39,8 @@ var Vis = View.extend({
     // We will wait until it is resized and then apply
     // the center provided in the parameters and the
     // correct size.
-    var map_h = this.$el.outerHeight();
-    if (map_h === 0) {
+    var mapH = this.$el.outerHeight();
+    if (mapH === 0) {
       $(window).bind('resize', this._onResize);
     }
   },

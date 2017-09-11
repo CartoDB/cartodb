@@ -44,12 +44,12 @@ var Template = Backbone.Model.extend({
   },
 
   compile: function () {
-    var tmpl_type = this.get('type') || 'underscore';
+    var tmplType = this.get('type') || 'underscore';
     var fn = Template.compilers[tmpl_type];
     if (fn) {
       return fn(this.get('template'));
     } else {
-      log.error("can't get rendered for " + tmpl_type);
+      log.error("can't get rendered for " + tmplType);
     }
     return null;
   },

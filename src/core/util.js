@@ -32,7 +32,7 @@ util.encodeBase64 = function (data) {
   var i = 0;
   var ac = 0;
   var enc = '';
-  var tmp_arr = [];
+  var tmpArr = [];
 
   if (!data) {
     return data;
@@ -51,10 +51,10 @@ util.encodeBase64 = function (data) {
     h4 = bits & 0x3f;
 
     // use hexets to index into b64, and append result to encoded string
-    tmp_arr[ac++] = b64.charAt(h1) + b64.charAt(h2) + b64.charAt(h3) + b64.charAt(h4);
+    tmpArr[ac++] = b64.charAt(h1) + b64.charAt(h2) + b64.charAt(h3) + b64.charAt(h4);
   } while (i < data.length);
 
-  enc = tmp_arr.join('');
+  enc = tmpArr.join('');
 
   var r = data.length % 3;
   return (r ? enc.slice(0, r - 3) : enc) + '==='.slice(r || 3);

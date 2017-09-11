@@ -340,7 +340,7 @@ SQL.prototype.table = function (name) {
   return f;
 }
 */
-function array_agg (s) {
+function arrayAgg (s) {
   return JSON.parse(s.replace(/^{/, '[').replace(/}$/, ']'));
 }
 
@@ -409,7 +409,7 @@ SQL.prototype.describeString = function (sql, column, callback) {
     var histogram = [];
 
     try {
-      var s = array_agg(row.array_agg);
+      var s = arrayAgg(row.array_agg);
 
       histogram = _(s).map(function (row) {
         var r = row.match(/\((.*),(\d+)/);
@@ -623,8 +623,8 @@ SQL.prototype.describeFloat = function (sql, column, callback) {
     }
 
     var row = data.rows[0];
-    var s = array_agg(row.hist);
-    var h = array_agg(row.cat_hist);
+    var s = arrayAgg(row.hist);
+    var h = arrayAgg(row.cat_hist);
     callback(null, {
       type: 'number',
       cat_hist:

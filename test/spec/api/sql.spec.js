@@ -97,19 +97,19 @@ describe('api/sql', function () {
 
   it('should execute a long query', function () {
     // Generating a giant query
-    var long_sql = [];
+    var longSQL = [];
     var i = 2000;
-    while (--i) long_sql.push('10000');
-    var long_query = 'SELECT * ' + long_sql;
+    while (--i) longSQL.push('10000');
+    var longQuery = 'SELECT * ' + longSQL;
 
     // required to have jquery as transport, is checked in the execute method
-    sql.execute(long_query);
+    sql.execute(longQuery);
 
     expect(ajaxParams.url).toEqual(
       'https://' + USER + '.carto.com/api/v2/sql'
     );
 
-    expect(ajaxParams.data.q).toEqual(long_query);
+    expect(ajaxParams.data.q).toEqual(longQuery);
     expect(ajaxParams.type).toEqual('post');
     expect(ajaxParams.dataType).toEqual('json');
     expect(ajaxParams.crossDomain).toEqual(true);
@@ -126,12 +126,12 @@ describe('api/sql', function () {
     });
 
     // Generating a giant query
-    var long_sql = [];
+    var longSQL = [];
     var i = 2000;
-    while (--i) long_sql.push('10000');
-    var long_query = 'SELECT * ' + long_sql;
+    while (--i) longSQL.push('10000');
+    var longQuery = 'SELECT * ' + longSQL;
 
-    s.execute(long_query, null, {
+    s.execute(longQuery, null, {
       dp: 0
     });
 
@@ -143,7 +143,7 @@ describe('api/sql', function () {
     expect(ajaxParams.url.indexOf('&dp=2')).toEqual(-1);
     expect(ajaxParams.url.indexOf('&rambo')).toEqual(-1);
     // Check that we have the params in the body
-    expect(ajaxParams.data.q).toEqual(long_query);
+    expect(ajaxParams.data.q).toEqual(longQuery);
     expect(ajaxParams.data.format).toEqual('geojson');
     expect(ajaxParams.data.api_key).toEqual('testkey');
     expect(ajaxParams.data.dp).toEqual(0);
@@ -155,13 +155,13 @@ describe('api/sql', function () {
       table: 't'
     });
 
-    var earth_circumference = 40075017;
-    var tile_size = 256;
+    var earthCircumference = 40075017;
+    var tileSize = 256;
     var srid = 3857;
-    var full_resolution = earth_circumference / tile_size;
-    var shift = earth_circumference / 2.0;
+    var fullResolution = earthCircumference / tileSize;
+    var shift = earthCircumference / 2.0;
 
-    var pw = full_resolution;
+    var pw = fullResolution;
     var ph = pw;
     var bbox = 'ST_MakeEnvelope(' + (-shift) + ',' + (-shift) + ',' +
                                   shift + ',' + shift + ',' + srid + ')';
@@ -175,10 +175,10 @@ describe('api/sql', function () {
 
   it('should call promise', function () {
     var data;
-    var data_callback;
+    var dataCallback;
 
     sql.execute('select * from bla', function (err, data) {
-      data_callback = data;
+      dataCallback = data;
     }).done(function (d) {
       data = d;
     });
@@ -186,7 +186,7 @@ describe('api/sql', function () {
     jasmine.clock().tick(100);
 
     expect(data).toEqual(TEST_DATA);
-    expect(data_callback).toEqual(TEST_DATA);
+    expect(dataCallback).toEqual(TEST_DATA);
   });
 
   it('should call promise on error', function () {

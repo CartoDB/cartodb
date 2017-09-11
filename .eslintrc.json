@@ -12,7 +12,6 @@
   "rules": {
     "new-cap": "off",
     "no-undef": "off",
-    "camelcase": "off",
     "no-mixed-operators": "off",
     "no-useless-escape": "off",
     "no-cond-assign": "off",

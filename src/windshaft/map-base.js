@@ -48,18 +48,13 @@ var WindshaftMap = Backbone.Model.extend({
 
   // TODO: Move this somewhere else and keep this class as a wrapper for windshaft responses
   createInstance: function (options) {
-    var filters;
     options = options || {};
-
     try {
       var payload = this.toJSON();
       var params = this._getParams();
 
-      if (options.includeFilters === true) {
-        filters = this._dataviewsCollection.getFilters();
-        if (!_.isEmpty(filters)) {
-          params.filters = filters;
-        }
+      if (options.includeFilters && !_.isEmpty(this._dataviewsCollection.getFilters())) {
+        params.filters = this._dataviewsCollection.getFilters();
       }
 
       var request = new Request(payload, params, options);

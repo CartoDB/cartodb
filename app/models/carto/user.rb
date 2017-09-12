@@ -529,6 +529,7 @@ class Carto::User < ActiveRecord::Base
   # Special url that goes to Central if active
   def plan_url(request_protocol)
     account_url(request_protocol) + '/plan'
+  end
 
   def user_frontend_version_or_frontend_version
     frontend_version || CartoDB::Application.frontend_version

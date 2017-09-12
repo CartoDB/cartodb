@@ -8,8 +8,8 @@ var Backbone = require('backbone');
  */
 var Model = Backbone.Model.extend({
 
-  initialize: function(options) {
-    _.bindAll(this, 'fetch',  'save', 'retrigger');
+  initialize: function (options) {
+    _.bindAll(this, 'fetch', 'save', 'retrigger');
     return Backbone.Model.prototype.initialize.call(this, options);
   },
   /**
@@ -18,24 +18,24 @@ var Model = Backbone.Model.extend({
   * @method fetch
   * @param args {Object}
   */
-  fetch: function(args) {
+  fetch: function (args) {
     var self = this;
     // var date = new Date();
     this.trigger('loadModelStarted');
-    $.when(Backbone.Model.prototype.fetch.call(this, args)).done(function(ev){
+    $.when(Backbone.Model.prototype.fetch.call(this, args)).done(function (ev) {
       self.trigger('loadModelCompleted', ev);
       // var dateComplete = new Date()
       // console.log('completed in '+(dateComplete - date));
-    }).fail(function(ev) {
+    }).fail(function (ev) {
       self.trigger('loadModelFailed', ev);
-    })
+    });
   },
   /**
   * Changes the attribute used as Id
   * @method setIdAttribute
   * @param attr {String}
   */
-  setIdAttribute: function(attr) {
+  setIdAttribute: function (attr) {
     this.idAttribute = attr;
   },
   /**
@@ -46,14 +46,14 @@ var Model = Backbone.Model.extend({
   * @param obj {Object} [optional] name of the retriggered event;
   * @todo [xabel]: This method is repeated here and in the base view definition. There's should be a way to make it unique
   */
-  retrigger: function(ev, obj, retrigEvent) {
-    if(!retrigEvent) {
+  retrigger: function (ev, obj, retrigEvent) {
+    if (!retrigEvent) {
       retrigEvent = ev;
     }
     var self = this;
-    obj.bind && obj.bind(ev, function() {
+    obj.bind && obj.bind(ev, function () {
       self.trigger(retrigEvent);
-    }, self)
+    }, self);
   },
 
   /**
@@ -65,15 +65,15 @@ var Model = Backbone.Model.extend({
    * @param  {object} opt2
    * @return {$.Deferred}
    */
-  save: function(opt1, opt2) {
+  save: function (opt1, opt2) {
     var self = this;
-    if(!opt2 || !opt2.silent) this.trigger('saving');
+    if (!opt2 || !opt2.silent) this.trigger('saving');
     var promise = Backbone.Model.prototype.save.apply(this, arguments);
-    $.when(promise).done(function() {
-      if(!opt2 || !opt2.silent) self.trigger('saved');
-    }).fail(function() {
-      if(!opt2 || !opt2.silent) self.trigger('errorSaving')
-    })
+    $.when(promise).done(function () {
+      if (!opt2 || !opt2.silent) self.trigger('saved');
+    }).fail(function () {
+      if (!opt2 || !opt2.silent) self.trigger('errorSaving');
+    });
     return promise;
   }
 });

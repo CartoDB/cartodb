@@ -1,5 +1,4 @@
-var Queue = function() {
-
+var Queue = function () {
   // callback storage
   this._methods = [];
 
@@ -8,28 +7,22 @@ var Queue = function() {
 
   // all queues start off unflushed
   this._flushed = false;
-
 };
 
 Queue.prototype = {
 
   // adds callbacks to the queue
-  add: function(fn) {
-
+  add: function (fn) {
     // if the queue had been flushed, return immediately
     if (this._flushed) {
-
       // otherwise push it on the queue
       fn(this._response);
-
     } else {
       this._methods.push(fn);
     }
-
   },
 
-  flush: function(resp) {
-
+  flush: function (resp) {
     // flush only ever happens once
     if (this._flushed) {
       return;
@@ -45,7 +38,6 @@ Queue.prototype = {
     while (this._methods[0]) {
       this._methods.shift()(resp);
     }
-
   }
 
 };

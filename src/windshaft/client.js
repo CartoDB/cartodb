@@ -153,8 +153,8 @@ WindshaftClient.prototype._convertParamsToQueryString = function (params) {
   var queryString = [];
   _.each(params, function (value, name) {
     if (value instanceof Array) {
-      _.each(value, function (one_value) {
-        queryString.push(name + '[]=' + one_value);
+      _.each(value, function (oneValue) {
+        queryString.push(name + '[]=' + oneValue);
       });
     } else if (value instanceof Object) {
       queryString.push(name + '=' + encodeURIComponent(JSON.stringify(value)));

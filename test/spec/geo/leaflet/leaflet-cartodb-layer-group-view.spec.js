@@ -38,4 +38,3 @@ var fireNativeEvent = function (layerGroupView, eventName) {
 describe('src/geo/leaflet/leaflet-cartodb-layer-group-view.js', function () {
   SharedTestsForCartoDBLayerGroupViews.call(this, createLayerGroupView, expectTileURLTemplateToMatch, fireNativeEvent);
 });
-

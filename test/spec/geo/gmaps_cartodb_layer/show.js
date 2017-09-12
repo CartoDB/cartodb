@@ -35,7 +35,6 @@
 
 //   });
 
-
 //   it('If layer is visible, show shouldn\'t do anything', function(done) {
 //     setTimeout(function () {
 //       expect(cdb_layer.show).toThrow();

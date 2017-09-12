@@ -48,7 +48,6 @@
 //     });
 //   });
 
-
 //   xit('Opacity shouldn\'t change if it is not visible', function() {
 
 //     waits(500);

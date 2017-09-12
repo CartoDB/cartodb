@@ -1,6 +1,19 @@
 var _ = require('underscore');
 var jasmineCfg = require('./grunt/tasks/jasmine');
 
+function getTargetDiff () {
+  // Detect changed files. If no changes return '.' (all files)
+  var target = require('child_process').execSync('(git diff --name-only --relative || true;)' +
+                                                 '| grep \'\\.js\\?$\' || true').toString();
+  if (target.length === 0) {
+    target = ['.'];
+  } else {
+    target = target.split('\n');
+    target.splice(-1, 1);
+  }
+  return target;
+}
+
 /**
  *  Grunfile runner file for CartoDB.js
  *  framework
@@ -57,7 +70,8 @@ module.exports = function (grunt) {
     cssmin: require('./grunt/tasks/cssmin').task(),
     imagemin: require('./grunt/tasks/imagemin').task(),
     jshint: require('./grunt/tasks/jshint').task(),
-    jasmine: jasmineCfg
+    jasmine: jasmineCfg,
+    eslint: { target: getTargetDiff() }
   });
 
   grunt.registerTask('release', [
@@ -67,18 +81,18 @@ module.exports = function (grunt) {
 
   grunt.registerTask('publish', function (target) {
     if (!grunt.file.exists('secrets.json')) {
-      grunt.fail.fatal('secrets.json file does not exist, copy secrets.example.json and rename it' , 1);
+      grunt.fail.fatal('secrets.json file does not exist, copy secrets.example.json and rename it', 1);
     }
 
     // Read secrets
     grunt.config.set('secrets', grunt.file.readJSON('secrets.json'));
 
     if (
-        !grunt.config('secrets') ||
+      !grunt.config('secrets') ||
         !grunt.config('secrets').S3_KEY ||
         !grunt.config('secrets').S3_SECRET ||
         !grunt.config('secrets').S3_BUCKET
-      ) {
+    ) {
       grunt.fail.fatal('S3 keys not specified in secrets.json', 1);
     }
 
@@ -88,10 +102,10 @@ module.exports = function (grunt) {
     ]);
   });
 
-  grunt.registerTask('set_current_version', function() {
+  grunt.registerTask('set_current_version', function () {
     var version = pkg.version;
     var minor = version.split('.');
-    minor.pop()
+    minor.pop();
     minor = minor.join('.');
     var options = {
       version: version,
@@ -113,7 +127,7 @@ module.exports = function (grunt) {
 
   grunt.registerTask('invalidate', function () {
     if (!grunt.file.exists('secrets.json')) {
-      grunt.fail.fatal('secrets.json file does not exist, copy secrets.example.json and rename it' , 1);
+      grunt.fail.fatal('secrets.json file does not exist, copy secrets.example.json and rename it', 1);
     }
 
     // Read secrets
@@ -122,7 +136,7 @@ module.exports = function (grunt) {
     if (!grunt.config('secrets') ||
         !grunt.config('secrets').FASTLY_API_KEY ||
         !grunt.config('secrets').FASTLY_CARTODB_SERVICE
-      ) {
+    ) {
       grunt.fail.fatal('Fastly keys not specified in secrets.json', 1);
     }
 
@@ -178,23 +192,9 @@ module.exports = function (grunt) {
     'watch'
   ];
 
-  grunt.registerTask('lint', 'lint source files', function () {
-    var done = this.async();
-    require('child_process').exec('PATH=$(npm bin):$PATH semistandard', function (error, stdout, stderr) {
-      if (error) {
-        grunt.log.fail(error);
-
-        // Filter out lines that are ignored,
-        // e.g. "src/foobar.js:0:0: File ignored because of your .eslintignore file. Use --no-ignore to override."
-        grunt.log.fail(stdout.replace(/.+--no-ignore.+(\r?\n|\r)/g, ''));
-        grunt.fail.warn('try `node_modules/.bin/semistandard --format src/filename.js` to auto-format code (you might still need to fix some things manually).');
-      } else {
-        grunt.log.ok('All linted files OK!');
-        grunt.log.writeln('Note that files listed in .eslintignore are not linted');
-      }
-      done();
-    });
-  });
+  grunt.registerTask('lint', [
+    'eslint'
+  ]);
 
   grunt.registerTask('default', [ 'build' ]);
   grunt.registerTask('build', _.uniq(buildJS.concat(css)));

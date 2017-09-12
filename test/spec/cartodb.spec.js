@@ -1,29 +1,28 @@
-/* global torque */
+/* global cartodb */
 var cdb = require('../../src/cartodb');
 
-describe('cartodb.js bundle', function() {
-  it('should set cartodb object in global namespace', function() {
+describe('cartodb.js bundle', function () {
+  it('should set cartodb object in global namespace', function () {
     expect(cdb).toEqual(jasmine.any(Object));
   });
 
-  it('should have leaflet set', function() {
+  it('should have leaflet set', function () {
     expect(cdb.L).toEqual(jasmine.any(Object));
   });
 
-  it('should have jQuery in addition to the defaults', function() {
+  it('should have jQuery in addition to the defaults', function () {
     expect(cartodb.$).toBeDefined();
     expect(window.$).toBeUndefined(); // …but not in global scope though
   });
 
-  describe('shared for cdb object in all bundles', function() {
-    it('should set cartodb object in global namespace', function() {
-      expect(window.cdb).toEqual(jasmine.any(Object));
-      expect(window.cdb).toBe(cdb);
-      expect(cdb).toBe(window.cartodb);
-      expect(window.cartodb).toBe(cartodb);
+  describe('shared for cdb object in all bundles', function () {
+    it('should set cartodb object in global namespace', function () {
+      expect(window.cdb).toBeDefined();
+      expect(window.cartodb).toBeDefined();
+      expect(window.cartodb).toBe(window.cdb);
     });
 
-    it('should have common object placeholders', function() {
+    it('should have common object placeholders', function () {
       expect(cdb.core).toEqual(jasmine.any(Object));
       expect(cdb.vis).toEqual(jasmine.any(Object));
 
@@ -35,7 +34,7 @@ describe('cartodb.js bundle', function() {
       expect(cdb.ui.common).toEqual(jasmine.any(Object));
     });
 
-    it('should have expected objects on cdb object', function() {
+    it('should have expected objects on cdb object', function () {
       expect(cdb.core).toEqual(jasmine.any(Object));
       expect(cdb.vis).toEqual(jasmine.any(Object));
 
@@ -55,15 +54,15 @@ describe('cartodb.js bundle', function() {
     });
   });
 
-  describe('shared for cdb object in all bundles except for core', function() {
-    it('should have the commonly used vendor libs defined', function() {
+  describe('shared for cdb object in all bundles except for core', function () {
+    it('should have the commonly used vendor libs defined', function () {
       expect(cdb.$).toEqual(jasmine.any(Function));
       expect(cdb.Mustache).toEqual(jasmine.any(Object));
       expect(cdb.Backbone).toEqual(jasmine.any(Object));
       expect(cdb._).toEqual(jasmine.any(Function));
     });
 
-    it('should have some common objects', function() {
+    it('should have some common objects', function () {
       expect(cdb.config).toEqual(jasmine.any(Object));
       expect(cdb.log).toEqual(jasmine.any(Object));
       expect(cdb.errors).toEqual(jasmine.any(Object));
@@ -72,20 +71,20 @@ describe('cartodb.js bundle', function() {
       expect(cdb.createVis).toEqual(jasmine.any(Function));
     });
 
-    it('config should contain links variables', function() {
-      expect(cdb.config.get('cartodb_attributions')).toEqual("© <a href=\"https://carto.com/attributions\" target=\"_blank\">CARTO</a>");
-      expect(cdb.config.get('cartodb_logo_link')).toEqual("http://www.carto.com");
+    it('config should contain links variables', function () {
+      expect(cdb.config.get('cartodb_attributions')).toEqual('© <a href="https://carto.com/attributions" target="_blank">CARTO</a>');
+      expect(cdb.config.get('cartodb_logo_link')).toEqual('http://www.carto.com');
     });
 
-    it('should generate error when error is called', function() {
+    it('should generate error when error is called', function () {
       expect(cdb.config).toBeDefined();
-      cdb.config.ERROR_TRACK_ENABLED = true
+      cdb.config.ERROR_TRACK_ENABLED = true;
       cdb.errors.reset([]);
       cdb.log.error('this is an error');
       expect(cdb.errors.size()).toEqual(1);
     });
 
-    it('should create a cdb.core with expected model', function() {
+    it('should create a cdb.core with expected model', function () {
       expect(cdb.core.Template).toBeDefined();
       expect(cdb.core.TemplateList).toBeDefined();
       expect(cdb.core.Model).toBeDefined();
@@ -93,23 +92,23 @@ describe('cartodb.js bundle', function() {
       expect(cdb.core.Loader).toEqual(jasmine.any(Object));
     });
 
-    it("should create a cdb.decorators", function() {
+    it('should create a cdb.decorators', function () {
       expect(cdb.decorators).toBeDefined();
     });
 
-    it("should create a log", function() {
+    it('should create a log', function () {
       expect(cdb.log).toBeDefined();
     });
 
-    it('should add templates stuff', function() {
+    it('should add templates stuff', function () {
       expect(cdb.templates instanceof cdb.core.TemplateList).toBe(true);
     });
 
-    it('should have a cdb.ui.common object', function() {
+    it('should have a cdb.ui.common object', function () {
       expect(cdb.ui.common.FullScreen).toEqual(jasmine.any(Function));
     });
 
-    it('should have a cdb.geo object', function() {
+    it('should have a cdb.geo object', function () {
       expect(cdb.geo).toEqual(jasmine.any(Object));
       expect(cdb.geo.geocoder).toEqual(jasmine.any(Object));
       expect(cdb.geo.geocoder.YAHOO).toEqual(jasmine.any(Object));
@@ -125,7 +124,7 @@ describe('cartodb.js bundle', function() {
       expect(cdb.geo.MapView).toEqual(jasmine.any(Function));
     });
 
-    it('should have a cdb.geo.ui object', function() {
+    it('should have a cdb.geo.ui object', function () {
       expect(cdb.geo.ui.InfowindowModel).toEqual(jasmine.any(Function));
       expect(cdb.geo.ui.Infowindow).toEqual(jasmine.any(Function));
       expect(cdb.geo.ui.Search).toEqual(jasmine.any(Function));
@@ -133,11 +132,11 @@ describe('cartodb.js bundle', function() {
       expect(cdb.geo.ui.Tooltip).toEqual(jasmine.any(Function));
     });
 
-    it('should have a cdb.common object', function() {
+    it('should have a cdb.common object', function () {
       expect(cdb.geo.common).toEqual(jasmine.any(Object));
     });
 
-    it('should have a core.vis', function() {
+    it('should have a core.vis', function () {
       expect(cdb.vis).toEqual(jasmine.any(Object));
       expect(cdb.vis.Loader).toBe(cdb.core.Loader);
 

@@ -227,8 +227,8 @@ var Infowindow = View.extend({
     }
 
     // Get the alternative name
-    var alternative_name = this.model.getAlternativeName(attr.name);
-    attr.title = (attr.title && alternative_name) ? alternative_name : attr.title;
+    var alternativeName = this.model.getAlternativeName(attr.name);
+    attr.title = (attr.title && alternativeName) ? alternativeName : attr.title;
 
     // Save new sanitized value
     attr.value = JSON.parse(JSON.stringify(attr.value), this._sanitizeValue);
@@ -563,7 +563,7 @@ var Infowindow = View.extend({
     var pos = this.mapView.latLngToContainerPoint(this.model.get('latlng'));
     var adjustOffset = {x: 0, y: 0};
     var size = this.mapView.getSize();
-    var wait_callback = 0;
+    var waitCallback = 0;
 
     if (pos.x - offset[0] < 0) {
       adjustOffset.x = pos.x - offset[0] - 10;
@@ -583,10 +583,10 @@ var Infowindow = View.extend({
 
     if (adjustOffset.x || adjustOffset.y) {
       this.mapView.panBy(adjustOffset);
-      wait_callback = 300;
+      waitCallback = 300;
     }
 
-    return wait_callback;
+    return waitCallback;
   },
 
   /**

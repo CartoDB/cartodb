@@ -1,19 +1,19 @@
 var cdb = require('cdb');
 
 module.exports = {
-  error: function() {
+  error: function () {
     console.error.apply(console, arguments);
   },
 
-  log: function() {
+  log: function () {
     console.log.apply(console, arguments);
   },
 
-  info: function() {
+  info: function () {
     console.log.apply(console, arguments);
   },
 
-  debug: function() {
+  debug: function () {
     if (cdb.DEBUG) console.log.apply(console, arguments);
   }
-}
+};

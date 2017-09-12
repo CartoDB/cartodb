@@ -3,7 +3,9 @@ var L = require('leaflet');
 var LeafletLayerView = require('./leaflet-layer-view');
 var CartoDBLayerGroupViewBase = require('../cartodb-layer-group-view-base');
 var wax = require('wax.cartodb.js');
+var tileErrorImage = require('../../util/tile-error.tpl');
 
+var TILE_ERROR_IMAGE = 'data:image/svg+xml;base64,' + window.btoa(tileErrorImage());
 var EMPTY_GIF = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 
 var findContainerPoint = function (map, o) {
@@ -57,7 +59,8 @@ var LeafletCartoDBLayerGroupView = function (layerModel, leafletMap, mapModel) {
   });
 
   this.leafletLayer.on('tileerror', function (layer) {
-    self.mapModel.addErrorTile(layer.tile);
+    layer.tile.src = TILE_ERROR_IMAGE;
+    self.mapModel.set('tileError', true);
   });
 };
 

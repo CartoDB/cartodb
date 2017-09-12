@@ -1,15 +1,15 @@
-/* global Image */
-/* global google */
+/* global Image, google */
 var _ = require('underscore');
 var GMapsLayerView = require('./gmaps-layer-view');
-require('leaflet');
-// NOTE: Leaflet needs to be required before wax because wax relies on global L internally
+require('leaflet'); // NOTE: Leaflet needs to be required before wax because wax relies on global L internally
 var wax = require('wax.cartodb.js');
 var CartoDBDefaultOptions = require('./cartodb-default-options');
 var Projector = require('./projector');
 var CartoDBLayerGroupViewBase = require('../cartodb-layer-group-view-base');
 var Profiler = require('cdb.core.Profiler');
+var tileErrorImage = require('../../util/tile-error.tpl');
 
+var TILE_ERROR_IMAGE = 'data:image/svg+xml;base64,' + window.btoa(tileErrorImage());
 var OPACITY_FILTER = 'progid:DXImageTransform.Microsoft.gradient(startColorstr=#00FFFFFF,endColorstr=#00FFFFFF)';
 var EMPTY_GIF = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 
@@ -229,7 +229,8 @@ _.extend(
 
       tile.onerror = function () {
         Profiler.metric('cartodb-js.tile.png.error').inc();
-        self.mapModel.addErrorTile(this);
+        tile.src = TILE_ERROR_IMAGE;
+        self.mapModel.set('tileError', true);
         finished();
       };
 

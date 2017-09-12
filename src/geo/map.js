@@ -8,7 +8,6 @@ var util = require('../core/util');
 var Layers = require('./map/layers');
 var sanitize = require('../core/sanitize');
 var GeometryFactory = require('./geometry-models/geometry-factory');
-var TileErrorCollection = require('../util/tile-error-collection');
 
 var Map = Model.extend({
   defaults: {
@@ -30,7 +29,6 @@ var Map = Model.extend({
 
     if (!options.layersFactory) throw new Error('layersFactory is required');
     this._layersFactory = options.layersFactory;
-    this._tileErrorCollection = new TileErrorCollection();
 
     attrs = attrs || {};
 
@@ -64,21 +62,7 @@ var Map = Model.extend({
     this.layers.bind('change:attribution', this._updateAttributions, this);
     this.layers.bind('reset', this._onLayersResetted, this);
 
-    // We trigger this event manually when .setBounds is called
-    this.on('change:view_bounds_ne', this._onBoundsChanged, this);
-
     this._updateAttributions();
-  },
-
-  addErrorTile: function (tileDomNode) {
-    this._tileErrorCollection.add({
-      url: _.clone(tileDomNode.src),
-      tileDomNode: tileDomNode
-    });
-  },
-
-  _onBoundsChanged: function() {
-    this._tileErrorCollection.resetErrorTiles();
   },
 
   _onLayersResetted: function () {

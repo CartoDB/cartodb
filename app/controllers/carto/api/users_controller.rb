@@ -26,6 +26,8 @@ module Carto
           dashboard_notifications: carto_viewer.notifications_for_category(:dashboard),
           is_just_logged_in: !!flash['logged'],
           is_first_time_viewing_dashboard: !(carto_viewer.dashboard_viewed_at),
+          user_frontend_version: carto_viewer.user_frontend_version_or_frontend_version,
+          asset_host: carto_viewer.asset_host,
           can_change_email: carto_viewer.can_change_email?,
           auth_username_password_enabled: carto_viewer.organization && carto_viewer.organization.auth_username_password_enabled,
           should_display_old_password: carto_viewer.should_display_old_password?,

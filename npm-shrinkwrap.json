@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.9.69",
+  "version": "4.9.73",
   "dependencies": {
     "abbrev": {
       "version": "1.1.0",
@@ -388,7 +388,7 @@
     "cartodb-deep-insights.js": {
       "version": "0.0.3",
       "from": "cartodb/deep-insights.js#master",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#8a4e11069af668dc38d16d262c98489279b46f5b",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#c8de0e104747fcd7a013493d6180d9350c52e273",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",
@@ -403,9 +403,9 @@
       "resolved": "https://registry.npmjs.org/cartodb-pecan/-/cartodb-pecan-0.2.0.tgz"
     },
     "cartodb.js": {
-      "version": "4.0.0-alpha.1",
+      "version": "4.0.0-alpha.1.1.0",
       "from": "cartodb/cartodb.js#v4",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#658ec7f4d9d8f6a36524585b02884114e68be29c"
+      "resolved": "git://github.com/cartodb/cartodb.js.git#c62b4fcbfbf9360217b858f93213d937d50e6e72"
     },
     "caseless": {
       "version": "0.12.0",
@@ -1272,9 +1272,9 @@
       "resolved": "https://registry.npmjs.org/jquery/-/jquery-2.1.4.tgz"
     },
     "js-base64": {
-      "version": "2.2.1",
+      "version": "2.3.1",
       "from": "js-base64@>=2.1.9 <3.0.0",
-      "resolved": "https://registry.npmjs.org/js-base64/-/js-base64-2.2.1.tgz"
+      "resolved": "https://registry.npmjs.org/js-base64/-/js-base64-2.3.1.tgz"
     },
     "js-tokens": {
       "version": "3.0.2",

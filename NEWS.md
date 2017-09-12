@@ -173,6 +173,7 @@ Development
 * Fix histograms data range change (#12622)
 * Fix exception thrown when map created without builder is used with it and visualization state data is missing (#12568)
 * Enable selection of categories in non dynamic widgets [Support #890](https://github.com/CartoDB/support/issues/890)
+* Fix "apply" button sizes in advanced mode (#12652)
 
 ### NOTICE
 This release upgrades the CartoDB PostgreSQL extension to `0.19.2`. Run the following to have it available:

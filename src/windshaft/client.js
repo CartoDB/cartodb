@@ -3,6 +3,10 @@ var _ = require('underscore');
 var LZMA = require('lzma');
 var util = require('../core/util');
 var WindshaftConfig = require('./config');
+var RequestTracker = require('./request-tracker');
+var WindshaftError = require('./error');
+var log = require('../cdb.log');
+var Request = require('./request');
 
 var validatePresenceOfOptions = function (options, requiredOptions) {
   var missingOptions = _.filter(requiredOptions, function (option) {
@@ -15,6 +19,8 @@ var validatePresenceOfOptions = function (options, requiredOptions) {
 
 var MAX_URL_LENGTH = 2033;
 var COMPRESSION_LEVEL = 3;
+/* The max number of times the same map can be instantiated */
+var MAP_INSTANTIATION_LIMIT = 3;
 
 /**
  * Windshaft client. It provides a method to create instances of maps in Windshaft.
@@ -25,8 +31,8 @@ var WindshaftClient = function (settings) {
 
   if (settings.templateName) {
     this.endpoints = {
-      get: [ WindshaftConfig.MAPS_API_BASE_URL, 'named', settings.templateName, 'jsonp' ].join('/'),
-      post: [ WindshaftConfig.MAPS_API_BASE_URL, 'named', settings.templateName ].join('/')
+      get: [WindshaftConfig.MAPS_API_BASE_URL, 'named', settings.templateName, 'jsonp'].join('/'),
+      post: [WindshaftConfig.MAPS_API_BASE_URL, 'named', settings.templateName].join('/')
     };
   } else {
     this.endpoints = {
@@ -36,6 +42,7 @@ var WindshaftClient = function (settings) {
   }
 
   this.url = settings.urlTemplate.replace('{user}', settings.userName);
+  this._requestTracker = new RequestTracker(MAP_INSTANTIATION_LIMIT);
 };
 
 WindshaftClient.prototype.instantiateMap = function (options) {
@@ -63,7 +70,7 @@ WindshaftClient.prototype.instantiateMap = function (options) {
       var errors = {};
       try {
         errors = JSON.parse(xhr.responseText);
-      } catch (e) {}
+      } catch (e) { }
       errorCallback(errors);
     }
   };
@@ -167,6 +174,61 @@ WindshaftClient.prototype._convertParamsToQueryString = function (params) {
 
 WindshaftClient.prototype._jsonpCallbackName = function (payload) {
   return '_cdbc_' + util.uniqueCallbackName(payload);
+};
+
+WindshaftClient.prototype._canPerformRequest = function (request) {
+  return this._requestTracker.canRequestBePerformed(request);
+};
+
+WindshaftClient.prototype._trackRequest = function (request, response) {
+  this._requestTracker.track(request, response);
+};
+
+WindshaftClient.prototype.performRequest = function (payload, params, options) {
+  var request = new Request(payload, params, options);
+  if (this._canPerformRequest(request)) {
+    this._performRequest(request);
+  } else {
+    log.error('Maximum number of subsequent equal requests to the Maps API reached (' + MAP_INSTANTIATION_LIMIT + '):', payload, params);
+    options.error && options.error();
+  }
+};
+
+/**
+ * 
+ */
+WindshaftClient.prototype._performRequest = function (request) {
+  var payload = request.payload;
+  var params = request.params;
+  var options = request.options;
+  this.instantiateMap({
+    mapDefinition: payload,
+    params: params,
+    success: function (response) {
+      this._trackRequest(request, response);
+      options.success && options.success(response);
+    }.bind(this),
+    error: function (response) {
+      this._trackRequest(request, response);
+      var windshaftErrors = this._getErrorsFromResponse(response);
+      options.error && options.error(windshaftErrors);
+    }.bind(this)
+  });
+};
+
+WindshaftClient.prototype._getErrorsFromResponse = function (response) {
+  if (response.errors_with_context) {
+    return _.map(response.errors_with_context, function (error) {
+      return new WindshaftError(error);
+    });
+  }
+  if (response.errors) {
+    return [
+      new WindshaftError({ message: response.errors[0] })
+    ];
+  }
+
+  return [];
 };
 
 module.exports = WindshaftClient;

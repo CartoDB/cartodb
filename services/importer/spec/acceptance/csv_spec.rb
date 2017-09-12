@@ -36,7 +36,6 @@ describe 'csv regression tests' do
                                log: CartoDB::Importer2::Doubles::Log.new(@user),
                                user: @user
                              })
-    runner.loader_options = ogr2ogr2_options
     runner.run
 
     result = runner.results.first
@@ -385,15 +384,7 @@ describe 'csv regression tests' do
     }].first
   end
 
-  # Using the version 2.x of ogr2ogr to check features like auto-guessing for example
-  def ogr2ogr2_options
-    {
-      ogr2ogr_binary:         'which ogr2ogr2',
-      ogr2ogr_csv_guessing:   'yes'
-    }
-  end
-
-  def runner_with_fixture(file, job=nil, add_ogr2ogr2_options=false)
+  def runner_with_fixture(file, job=nil)
     filepath = path_to(file)
     downloader = Downloader.new(@user.id, filepath)
     runner = Runner.new({
@@ -403,9 +394,6 @@ describe 'csv regression tests' do
                  user: @user,
                  job: job
                })
-    if add_ogr2ogr2_options
-      runner.loader_options = ogr2ogr2_options
-    end
     runner
   end
 

@@ -11,7 +11,7 @@ module CartoDB
       GPX_LAYERS = ['waypoints', 'routes', 'tracks', 'route_points', 'track_points']
       ITEM_COUNT_REGEX = 'Feature Count:\s'
       OGRINFO_BINARY = 'ogrinfo'
-      DEFAULT_OGR2OGR_BINARY = 'ogr2ogr2'
+      DEFAULT_OGR2OGR_BINARY = 'ogr2ogr'
 
       def self.support?(source_file)
         source_file.extension == '.gpx'

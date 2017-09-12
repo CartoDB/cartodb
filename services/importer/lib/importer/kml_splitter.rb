@@ -9,7 +9,7 @@ module CartoDB
     class KmlSplitter
       MAX_LAYERS = 50
       OGRINFO_BINARY = 'ogrinfo'
-      DEFAULT_OGR2OGR_BINARY = 'ogr2ogr2'
+      DEFAULT_OGR2OGR_BINARY = 'ogr2ogr'
 
       def self.support?(source_file)
         source_file.extension == '.kml'

@@ -95,8 +95,8 @@ module.exports = cdb.core.Model.extend({
     var widgetColor = widgetStyle && widgetStyle.definition &&
       widgetStyle.definition.color &&
       widgetStyle.definition.color.fixed;
-    var widgetColorChanged = widgetStyle && widgetStyle.widget_color_changed ||
-      widgetStyle && !widgetStyle.widget_color_changed && widgetColor !== '#9DE0AD';
+    var widgetColorChanged = (widgetStyle && widgetStyle.widget_color_changed) ||
+      (widgetStyle && !widgetStyle.widget_color_changed && widgetColor !== '#9DE0AD');
 
     return widgetColorChanged && widgetColor;
   },

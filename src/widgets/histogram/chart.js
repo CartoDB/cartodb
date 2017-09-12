@@ -275,17 +275,17 @@ module.exports = cdb.core.View.extend({
   },
 
   _onChangeRange: function () {
-    var lo_index = this.model.get('lo_index');
-    var hi_index = this.model.get('hi_index');
-    if ((lo_index === 0 && hi_index === 0) || (lo_index === null && hi_index === null)) {
+    var loIndex = this.model.get('lo_index');
+    var hiIndex = this.model.get('hi_index');
+    if ((loIndex === 0 && hiIndex === 0) || (loIndex === null && hiIndex === null)) {
       return;
     }
 
-    this.selectRange(lo_index, hi_index);
+    this.selectRange(loIndex, hiIndex);
     this._adjustBrushHandles();
     this._setAxisTipAccordingToBins();
     this._selectBars();
-    this.trigger('on_brush_end', lo_index, hi_index);
+    this.trigger('on_brush_end', loIndex, hiIndex);
   },
 
   _onChangeWidth: function () {
@@ -1486,8 +1486,7 @@ module.exports = cdb.core.View.extend({
 
     this._calcBarWidth();
     // Remove spacing if not enough room for the smallest case, or mobile viewport
-    var spacing = (((data.length * 2) - 1) > this.chartWidth() ||
-      this._isMobileViewport() && this._isDateTimeSeries()) ? 0 : 1;
+    var spacing = ((((data.length * 2) - 1) > this.chartWidth() || this._isMobileViewport()) && this._isDateTimeSeries()) ? 0 : 1;
 
     var bars = this.chart.append('g')
       .attr('transform', 'translate(0, 0)')

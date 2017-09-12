@@ -384,7 +384,7 @@ describe 'csv regression tests' do
     }].first
   end
 
-  def runner_with_fixture(file, job=nil)
+  def runner_with_fixture(file, job = nil)
     filepath = path_to(file)
     downloader = Downloader.new(@user.id, filepath)
     runner = Runner.new({

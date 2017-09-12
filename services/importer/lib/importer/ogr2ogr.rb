@@ -14,7 +14,7 @@ module CartoDB
       NEW_LAYER_TYPE_OPTION = ['-nlt', 'PROMOTE_TO_MULTI'].freeze
       APPEND_MODE_OPTION    = '-append'.freeze
 
-      DEFAULT_BINARY = 'which ogr2ogr'
+      DEFAULT_BINARY = 'which ogr2ogr'.freeze
 
       LATITUDE_POSSIBLE_NAMES   = %w{ latitude lat latitudedecimal
         latitud lati decimallatitude decimallat point_latitude }

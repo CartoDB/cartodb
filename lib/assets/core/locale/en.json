@@ -1474,7 +1474,7 @@
     "unpublished": "Map not published yet",
     "map_pluralize": "%{smart_count} map |||| %{smart_count} maps",
     "button_add": "Add",
-    "button_share": "SHARE",
+    "button_publish": "Publish",
     "unpublished-changes": "Unpublished changes",
     "error-query": {
       "body": "Errors found in your SQL query. %{action} before continuing.",

@@ -2,6 +2,8 @@ Development
 -----------
 
 ### Features
+* Vector rendering improvements #12722.
+* Enable georeferencer for database connectors (#12566)
 * Enable other hosts apart from account host to include CORS headers via the cors_enabled_hosts param in app_config.yml (#12685)
 * Add tooltips to show bucket data in time-series (#11650)
 * Improve legend items management (#12650)
@@ -14,6 +16,7 @@ Development
 * Change select "attribute" placeholders (#12498)
 * Add pointer cursor to the sliders (#12499)
 * Fixed a bug that would break the bubble legend on IE11 (#support/891)
+* Add /api/v3/me endpoint (#12599)
 * Support for SAML signed logout requests (#12355)
 * Provide a way to display broken layers pointing to non existent nodes (#12541)
 * Provide CartoCSS attribute within layer info in vizjson v3 (CartoDB/support#858)
@@ -46,6 +49,8 @@ Development
 * Updates Dataservices API client default version to `0.20.0` (#12633)
 
 ### Bug fixes / enhancements
+* Enhancements on 'Join columns for 2nd layer' analysis texts (#12418)
+* Rename FILL input label to SIZE/COLOR (#12564)
 * Refactor geometry buttons styles to ease breakpoints logic (#11542)
 * Fix some issues related to feature edition view (#12716)
 * Fix analysis onboarding lunch template (#12743)
@@ -170,6 +175,8 @@ Development
 * Fix exception thrown when map created without builder is used with it and visualization state data is missing (#12568)
 * Enable selection of categories in non dynamic widgets [Support #890](https://github.com/CartoDB/support/issues/890)
 * Square marker icon not updating with style. [Support #974](https://github.com/CartoDB/support/issues/974)
+* Hide privacy button if user account type is FREE or PERSONAL (#12423)
+* Fix "apply" button sizes in advanced mode (#12652)
 
 ### NOTICE
 This release upgrades the CartoDB PostgreSQL extension to `0.19.2`. Run the following to have it available:

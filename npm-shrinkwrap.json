@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.9.67-s974b",
+  "version": "4.9.72-s974",
   "dependencies": {
     "abbrev": {
       "version": "1.1.0",
@@ -2346,9 +2346,9 @@
       "resolved": "https://registry.npmjs.org/syntax-error/-/syntax-error-1.3.0.tgz"
     },
     "tangram": {
-      "version": "0.12.1",
-      "from": "cartodb/tangram-1#master",
-      "resolved": "git://github.com/cartodb/tangram-1.git#05fbe2b438bb8be7cd411587d8d4e4415fe4227c"
+      "version": "0.13.2",
+      "from": "cartodb/tangram-1#pmaster",
+      "resolved": "git://github.com/cartodb/tangram-1.git#bbce7fa0fd24eb5a2b34cebdb694b313c2d4d6b4"
     },
     "tangram-cartocss": {
       "version": "0.9.1",

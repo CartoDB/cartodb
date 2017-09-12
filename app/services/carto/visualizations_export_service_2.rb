@@ -88,13 +88,11 @@ module Carto
         overlays: build_overlays_from_hash(exported_overlays),
         analyses: exported_visualization[:analyses].map { |a| build_analysis_from_hash(a) },
         permission: build_permission_from_hash(exported_visualization[:permission]),
+        mapcaps: [build_mapcap_from_hash(exported_visualization[:mapcap])].compact,
         external_source: build_external_source_from_hash(exported_visualization[:external_source]),
         created_at: exported_visualization[:created_at],
         updated_at: exported_visualization[:updated_at]
       )
-
-      restored_mapcaps = [build_mapcap_from_hash(exported_visualization[:mapcap])].compact
-      visualization.mapcaps = restored_mapcaps if restored_mapcaps.any?
 
       # This is optional as it was added in version 2.0.2
       exported_user = exported_visualization[:user]

@@ -2,6 +2,10 @@ Development
 -----------
 
 ### Features
+* Vector rendering improvements #12722.
+* Enable georeferencer for database connectors (#12566)
+* Enable other hosts apart from account host to include CORS headers via the cors_enabled_hosts param in app_config.yml (#12685)
+* Add tooltips to show bucket data in time-series (#11650)
 * Improve legend items management (#12650)
 * Avoid multiple time-series by filtering the carousel options (#12395)
 * Add privacy button behavior for shared datasets (#11342)
@@ -12,21 +16,20 @@ Development
 * Change select "attribute" placeholders (#12498)
 * Add pointer cursor to the sliders (#12499)
 * Fixed a bug that would break the bubble legend on IE11 (#support/891)
+* Add /api/v3/me endpoint (#12599)
 * Support for SAML signed logout requests (#12355)
 * Provide a way to display broken layers pointing to non existent nodes (#12541)
 * Provide CartoCSS attribute within layer info in vizjson v3 (CartoDB/support#858)
 * Support for nested properties in CartoCSS (#12411)
 * New loading button styles (#12132)
-* [WIP] Export/import organization/user metadata to allow user migration (#12271, #12304, #12323)
+* [WIP] Export/import organization/user metadata to allow user migration (#12271, #12304, #12323, #12588, #12380, #12510)
 * Start using ::outline symbolizer for polygon stroke (#12412)
-* [WIP] Export/import organization/user metadata to allow user migration (#12271, #12304, #12323, #12380)
 * New force param in EUMAPI organization users destroy operation to force deletion even with unregistered tables (#11654)
 * Removed the usage of the `organizations_admin` feature flag (#12131)
 * Show number of selected items in Time-Series widgets (#12179)
 * Show ranges in time series widget selection (#12291)
 * Bump Webpack version (#12392)
 * Start using ::outline symbolizer for polygon stroke (#12412)
-* [WIP] Export/import organization/user metadata to allow user migration (#12271, #12304, #12323, #12380, #12510)
 * New force param in EUMAPI organization users destroy operation to force deletion even with unregistered tables (#11654).
 * Removed the usage of the `organizations_admin` feature flag (#12131)
 * Time-series widgets aggregated by time (#12324)
@@ -46,6 +49,15 @@ Development
 * Updates Dataservices API client default version to `0.20.0` (#12633)
 
 ### Bug fixes / enhancements
+* Enhancements on 'Join columns for 2nd layer' analysis texts (#12418)
+* Rename FILL input label to SIZE/COLOR (#12564)
+* Refactor geometry buttons styles to ease breakpoints logic (#11542)
+* Fix some issues related to feature edition view (#12716)
+* Fix analysis onboarding lunch template (#12743)
+* Allow any text in Maps, Layers and Widgets names (#12322)
+* Change edition mode when user edits widget (#12636)
+* Disable editing the "Others" icon in UI (#12683)
+* Improved date format in histograms (#12719)
 * Improved tests. Introduced headless chrome for our spec runners (#12657)
 * Fix popup order selection (#12694)
 * Fix histogram range sliders stick on buckets (#12661)
@@ -64,6 +76,7 @@ Development
 * Fix broken join from second column on IE11 (#support/875)
 * Fix ghost node problem (#11397)
 * Break down deep-insights-integrations class (#11581)
+* Fix CORS for local images in legends (#12647)
 * Fix torque categories layer rendering (#cartodb.js/1698)
 * Don't provide quantification option when layer is animated (#10947)
 * Remove tracking of liked map events (#12404)
@@ -157,10 +170,13 @@ Development
 * Adding max items limit for form list editor (#12552)
 * Improve Google Login button (cartodb-central#1808)
 * Implement widget opacity in AutoStyle (#11928)
+* Fix behaviour of visualizations restored from mapcaps (#12686)
 * Fix histograms data range change (#12622)
 * Fix exception thrown when map created without builder is used with it and visualization state data is missing (#12568)
 * Enable selection of categories in non dynamic widgets [Support #890](https://github.com/CartoDB/support/issues/890)
 * Hide privacy button if user account type is FREE or PERSONAL (#12423)
+* Fix "apply" button sizes in advanced mode (#12652)
+
 ### NOTICE
 This release upgrades the CartoDB PostgreSQL extension to `0.19.2`. Run the following to have it available:
 ```shell

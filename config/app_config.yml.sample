@@ -5,7 +5,7 @@ defaults: &defaults
   #  https:            "https.cdn.host"
   http_client_logs: true
   ogr2ogr:
-    binary:           'which ogr2ogr2.1'
+    binary:           'which ogr2ogr'
     csv_guessing:     true
   debug_assets: true
   mandatory_keys:     [layer_opts, sql_api, varnish_management, redis, session_domain]
@@ -16,6 +16,11 @@ defaults: &defaults
   https_port:          # nil|integer. HTTPS port to use when building urls. Leave empty to use default (443)
   secret_token:       '71c2b25921b84a1cb21c71503ab8fb23'
   account_host:       'localhost.lan:3000'
+  # Here you can define other hosts different to account_host that also will be CORS enabled
+  # cors_enabled_hosts:
+  #   - example.com
+  #   - foo.bar
+  #   - carto.dev
   account_path:       '/account'
   vizjson_cache_domains: ['.localhost.lan']
   data_library:

@@ -400,15 +400,15 @@ module.exports = DataviewModelBase.extend({
 },
 
   // Class props
-  {
-    ATTRS_NAMES: DataviewModelBase.ATTRS_NAMES.concat([
-      'column',
-      'column_type',
-      'bins',
-      'min',
-      'max',
-      'aggregation',
-      'offset'
-    ])
-  }
+{
+  ATTRS_NAMES: DataviewModelBase.ATTRS_NAMES.concat([
+    'column',
+    'column_type',
+    'bins',
+    'min',
+    'max',
+    'aggregation',
+    'offset'
+  ])
+}
 );

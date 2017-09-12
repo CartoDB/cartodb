@@ -51,7 +51,8 @@ describe('src/vis/infowindow-manager.js', function () {
     });
 
     spyOn(this.cartoDBLayerGroup, 'fetchAttributes').and.callFake(function (layerIndex, featureId, callback) {
-      callback({ name: 'juan' });
+      var data = { name: 'juan' };
+      callback(data);
     });
 
     this.vis = new VisModel();
@@ -434,7 +435,8 @@ describe('src/vis/infowindow-manager.js', function () {
     this.map.layers.reset([ layer ]);
 
     this.cartoDBLayerGroup.fetchAttributes.and.callFake(function (layerIndex, featureId, callback) {
-      callback({ name: 'juan' });
+      var data = { name: 'juan' };
+      callback(data);
     });
 
     simulateFeatureClickEvent(this.layerView, {
@@ -457,7 +459,8 @@ describe('src/vis/infowindow-manager.js', function () {
     });
 
     this.cartoDBLayerGroup.fetchAttributes.and.callFake(function (layerIndex, featureId, callback) {
-      callback({ name: 'luis' });
+      var data = { name: 'luis' };
+      callback(data);
     });
 
     this.vis.trigger('reloaded');

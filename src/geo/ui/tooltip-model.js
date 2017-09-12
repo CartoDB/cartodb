@@ -15,10 +15,10 @@ var TooltipModel = Model.extend({
 
   updateContent: function (attributes) {
     var data = attributes;
-    var non_valid_keys = ['fields', 'content'];
+    var nonValidKeys = ['fields', 'content'];
 
     if (this.get('blacklisted_columns')) {
-      non_valid_keys = non_valid_keys.concat(this.get('blacklisted_columns'));
+      nonValidKeys = nonValidKeys.concat(this.get('blacklisted_columns'));
     }
 
     var c = InfowindowModel.contentForFields(data, this.get('fields'), {
@@ -27,7 +27,7 @@ var TooltipModel = Model.extend({
 
     // Remove fields and content from data
     // and make them visible for custom templates
-    data.content = _.omit(data, non_valid_keys);
+    data.content = _.omit(data, nonValidKeys);
 
     // loop through content values
     data.fields = c.fields;

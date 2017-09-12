@@ -91,7 +91,7 @@ var GMapsCartoDBLayerGroupView = function (layerModel, gmapsMap, mapModel) {
 };
 
 // TODO: Do we need this?
-GMapsCartoDBLayerGroupView.prototype = new wax.g.connector();
+GMapsCartoDBLayerGroupView.prototype = new wax.g.connector(); // eslint-disable-line
 GMapsCartoDBLayerGroupView.prototype.interactionClass = wax.g.interaction;
 _.extend(
   GMapsCartoDBLayerGroupView.prototype,
@@ -283,18 +283,20 @@ _.extend(
 
       // If the map is fixed at the top of the window, we can't use offsetParent
       // cause there might be some scrolling that we need to take into account.
+      var point;
       if (obj.offsetParent && obj.offsetTop > 0) {
         do {
           curleft += obj.offsetLeft;
           curtop += obj.offsetTop;
-        } while (obj = obj.offsetParent);
-        var point = this._newPoint(
+          obj = obj.offsetParent;
+        } while (obj);
+        point = this._newPoint(
           x - curleft, y - curtop);
       } else {
         var rect = obj.getBoundingClientRect();
         var scrollX = (window.scrollX || window.pageXOffset);
         var scrollY = (window.scrollY || window.pageYOffset);
-        var point = this._newPoint(
+        point = this._newPoint(
           (o.e.clientX ? o.e.clientX : x) - rect.left - obj.clientLeft - scrollX,
           (o.e.clientY ? o.e.clientY : y) - rect.top - obj.clientTop - scrollY);
       }
@@ -317,9 +319,9 @@ _.extend(
     _manageOnEvents: function (map, o) {
       var point = this._findPos(map, o);
       var latlng = this.projector.pixelToLatLng(point);
-      var event_type = o.e.type.toLowerCase();
+      var eventType = o.e.type.toLowerCase();
 
-      switch (event_type) {
+      switch (eventType) {
         case 'mousemove':
           if (this.options.featureOver) {
             return this.options.featureOver(o.e, latlng, point, o.data, o.layer);

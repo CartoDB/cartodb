@@ -13,7 +13,6 @@ var log = require('cdb.log');
    console.log(tmpl.render({name: 'rambo'})));
    // prints "hi, my name is rambo"
 
-
    you could pass the compiled tempalte directly:
 
    var tmpl = new Template({
@@ -22,35 +21,35 @@ var log = require('cdb.log');
  */
 var Template = Backbone.Model.extend({
 
-  initialize: function() {
+  initialize: function () {
     this.bind('change', this._invalidate);
     this._invalidate();
   },
 
-  url: function() {
+  url: function () {
     return this.get('template_url');
   },
 
-  parse: function(data) {
+  parse: function (data) {
     return {
       'template': data
     };
   },
 
-  _invalidate: function() {
+  _invalidate: function () {
     this.compiled = null;
-    if(this.get('template_url')) {
+    if (this.get('template_url')) {
       this.fetch();
     }
   },
 
-  compile: function() {
-    var tmpl_type = this.get('type') || 'underscore';
-    var fn = Template.compilers[tmpl_type];
-    if(fn) {
+  compile: function () {
+    var tmplType = this.get('type') || 'underscore';
+    var fn = Template.compilers[tmplType];
+    if (fn) {
       return fn(this.get('template'));
     } else {
-      log.error("can't get rendered for " + tmpl_type);
+      log.error("can't get rendered for " + tmplType);
     }
     return null;
   },
@@ -58,30 +57,30 @@ var Template = Backbone.Model.extend({
   /**
    * renders the template with specified vars
    */
-  render: function(vars) {
+  render: function (vars) {
     var c = this.compiled = this.compiled || this.get('compiled') || this.compile();
     var rendered = c(vars);
     return rendered;
   },
 
-  asFunction: function() {
+  asFunction: function () {
     return _.bind(this.render, this);
   }
 
 }, {
   compilers: {
     'underscore': _.template,
-    'mustache': typeof(Mustache) === 'undefined' ?
-      null :
+    'mustache': typeof (Mustache) === 'undefined'
+      ? null
       // Replacement for Mustache.compile, which was removed in version 0.8.0
-      function compile(template) {
+      : function compile (template) {
         Mustache.parse(template);
         return function (view, partials) {
           return Mustache.render(template, view, partials);
         };
       }
   },
-  compile: function(tmpl, type) {
+  compile: function (tmpl, type) {
     var t = new Template({
       template: tmpl,
       type: type || 'underscore'

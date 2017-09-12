@@ -284,12 +284,12 @@ module.exports = DataviewModelBase.extend({
 },
 
   // Class props
-  {
-    ATTRS_NAMES: DataviewModelBase.ATTRS_NAMES.concat([
-      'column',
-      'aggregation',
-      'aggregation_column',
-      'acceptedCategories'
-    ])
-  }
+{
+  ATTRS_NAMES: DataviewModelBase.ATTRS_NAMES.concat([
+    'column',
+    'aggregation',
+    'aggregation_column',
+    'acceptedCategories'
+  ])
+}
 );

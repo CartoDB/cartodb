@@ -9,7 +9,7 @@ var templates = require('cdb.templates');
  */
 var View = Backbone.View.extend({
   classLabel: 'cdb.core.View',
-  constructor: function(options) {
+  constructor: function (options) {
     this.options = _.defaults(options, this.options);
     this._models = [];
     this._subviews = {};
@@ -20,22 +20,22 @@ var View = Backbone.View.extend({
     Profiler.new_value('total_views', View.viewCount);
   },
 
-  add_related_model: function(m) {
-    if(!m) throw "added non valid model"
+  add_related_model: function (m) {
+    if (!m) throw Error('added non valid model');
     this._models.push(m);
   },
 
-  addView: function(v) {
+  addView: function (v) {
     this._subviews[v.cid] = v;
     v._parent = this;
   },
 
-  removeView: function(v) {
+  removeView: function (v) {
     delete this._subviews[v.cid];
   },
 
-  clearSubViews: function() {
-    _(this._subviews).each(function(v) {
+  clearSubViews: function () {
+    _(this._subviews).each(function (v) {
       v.clean();
     });
     this._subviews = {};
@@ -46,12 +46,12 @@ var View = Backbone.View.extend({
    * and clean and events associated. Call it when
    * the view is not going to be used anymore
    */
-  clean: function() {
+  clean: function () {
     var self = this;
     this.trigger('clean');
     this.clearSubViews();
     // remove from parent
-    if(this._parent) {
+    if (this._parent) {
       this._parent.removeView(this);
       this._parent = null;
     }
@@ -61,7 +61,7 @@ var View = Backbone.View.extend({
     // remove this model binding
     if (this.model && this.model.unbind) this.model.unbind(null, null, this);
     // remove model binding
-    _(this._models).each(function(m) {
+    _(this._models).each(function (m) {
       m.unbind(null, null, self);
     });
     this._models = [];
@@ -74,19 +74,19 @@ var View = Backbone.View.extend({
    * utility methods
    */
 
-  getTemplate: function(tmpl) {
-    if(this.options.template) {
-      return  _.template(this.options.template);
+  getTemplate: function (tmpl) {
+    if (this.options.template) {
+      return _.template(this.options.template);
     }
     return templates.getTemplate(tmpl);
   },
 
-  show: function() {
-      this.$el.show();
+  show: function () {
+    this.$el.show();
   },
 
-  hide: function() {
-      this.$el.hide();
+  hide: function () {
+    this.$el.hide();
   },
 
   /**
@@ -96,14 +96,14 @@ var View = Backbone.View.extend({
   * @param obj {Object} object where the event happens
   * @param obj {Object} [optional] name of the retriggered event;
   */
-  retrigger: function(ev, obj, retrigEvent) {
-    if(!retrigEvent) {
+  retrigger: function (ev, obj, retrigEvent) {
+    if (!retrigEvent) {
       retrigEvent = ev;
     }
     var self = this;
-    obj.bind && obj.bind(ev, function() {
+    obj.bind && obj.bind(ev, function () {
       self.trigger(retrigEvent);
-    }, self)
+    }, self);
     // add it as related model//object
     this.add_related_model(obj);
   },
@@ -112,20 +112,20 @@ var View = Backbone.View.extend({
   * @method killEvent
   * @param event {Event}
   */
-  killEvent: function(ev) {
-    if(ev && ev.preventDefault) {
+  killEvent: function (ev) {
+    if (ev && ev.preventDefault) {
       ev.preventDefault();
-    };
-    if(ev && ev.stopPropagation) {
+    }
+    if (ev && ev.stopPropagation) {
       ev.stopPropagation();
-    };
+    }
   },
 
   /**
   * Remove all the tipsy tooltips from the document
   * @method cleanTooltips
   */
-  cleanTooltips: function() {
+  cleanTooltips: function () {
     this.$('.tipsy').remove();
   }
 
@@ -142,8 +142,8 @@ var View = Backbone.View.extend({
    *  })
    * });
    */
-  extendEvents: function(newEvents) {
-    return function() {
+  extendEvents: function (newEvents) {
+    return function () {
       return _.extend(newEvents, this.constructor.__super__.events);
     };
   },
@@ -151,19 +151,19 @@ var View = Backbone.View.extend({
   /**
    * search for views in a view and check if they are added as subviews
    */
-  runChecker: function() {
-    _.each(View.views, function(view) {
-      _.each(view, function(prop, k) {
-        if( k !== '_parent' &&
+  runChecker: function () {
+    _.each(View.views, function (view) {
+      _.each(view, function (prop, k) {
+        if (k !== '_parent' &&
             view.hasOwnProperty(k) &&
             prop instanceof View &&
             view._subviews[prop.cid] === undefined) {
-          console.log("=========");
-          console.log("untracked view: ");
+          console.log('=========');
+          console.log('untracked view: ');
           console.log(prop.el);
           console.log('parent');
           console.log(view.el);
-          console.log(" ");
+          console.log(' ');
         }
       });
     });

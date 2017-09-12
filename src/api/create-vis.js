@@ -8,8 +8,8 @@ var config = require('../cdb.config');
 var DEFAULT_OPTIONS = {
   tiles_loader: true,
   loaderControl: true,
-  infowindow: true,
-  tooltip: true,
+  infowindow: true, // TODO: it seems that this is no longer used
+  tooltip: true, // TODO: it seems that this is no longer used
   logo: true,
   show_empty_infowindow_fields: false,
   interactiveFeatures: false
@@ -35,6 +35,12 @@ var createVis = function (el, vizjson, options) {
     showEmptyInfowindowFields: options.show_empty_infowindow_fields === true,
     https: isProtocolHTTPs || options.https === true,
     interactiveFeatures: options.interactiveFeatures
+  });
+
+  new VisView({ // eslint-disable-line
+    el: el,
+    model: visModel,
+    settingsModel: visModel.settings
   });
 
   if (typeof vizjson === 'string') {
@@ -90,12 +96,6 @@ var loadVizJSON = function (el, visModel, vizjsonData, options) {
     showLegends: showLegends,
     showLayerSelector: showLayerSelector,
     layerSelectorEnabled: layerSelectorEnabled
-  });
-
-  new VisView({ // eslint-disable-line
-    el: el,
-    model: visModel,
-    settingsModel: visModel.settings
   });
 
   visModel.load(vizjson);

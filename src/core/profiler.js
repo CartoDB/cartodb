@@ -73,8 +73,7 @@ Profiler.new_value = function (name, value, type, defer) {
 };
 
 Profiler.print_stats = function () {
-  var k;
-  for (k in Profiler.metrics) {
+  for (var k in Profiler.metrics) {
     var t = Profiler.metrics[k];
     console.log(' === ' + k + ' === ');
     console.log(' max: ' + t.max);

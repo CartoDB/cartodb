@@ -4,6 +4,7 @@ Development
 ### Features
 * Add /api/v3/me endpoint (#12599)
 * Add assets version column in user model (#12676)
+* Vector rendering improvements #12722.
 * Enable georeferencer for database connectors (#12566)
 * Enable other hosts apart from account host to include CORS headers via the cors_enabled_hosts param in app_config.yml (#12685)
 * Add tooltips to show bucket data in time-series (#11650)

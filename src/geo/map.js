@@ -62,7 +62,14 @@ var Map = Model.extend({
     this.layers.bind('change:attribution', this._updateAttributions, this);
     this.layers.bind('reset', this._onLayersResetted, this);
 
+    // We trigger this event manually when .setBounds is called
+    this.on('change:view_bounds_ne', this._onBoundsChanged, this);
+
     this._updateAttributions();
+  },
+
+  _onBoundsChanged: function () {
+    this.set('tileError', false);
   },
 
   _onLayersResetted: function () {

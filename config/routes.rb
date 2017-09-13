@@ -561,7 +561,9 @@ CartoDB::Application.routes.draw do
   scope module: 'carto/api', path: '(/user/:user_domain)(/u/:user_domain)/api/', defaults: { format: :json } do
     scope 'v3/' do
       # Front/back split
-      get 'me' => 'users#me', as: :api_v3_users_me
+      get 'me'                     => 'users#me',             as: :api_v3_users_me
+      put 'users/:user_id/account' => 'users#update_account', as: :api_v3_users_update_account
+      put 'users/:user_id/profile' => 'users#update_profile', as: :api_v3_users_update_profile
 
       scope 'maps/:map_id/layers/:map_layer_id', constraints: { map_id: /[^\/]+/, map_layer_id: /[^\/]+/ } do
         resources :widgets, only: [:show, :create, :update, :destroy], constraints: { id: /[^\/]+/ }

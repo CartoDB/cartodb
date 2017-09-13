@@ -291,6 +291,30 @@ module.exports = cdb.core.View.extend({
     }
   },
 
+  _checkAxisTipsBounds: function () {
+    var chartNode = this.chart && this.chart.node();
+    var self = this;
+
+    function checkOutOfBounds (axisTip) {
+      var rectLabel = self.chart.select('.CDB-Chart-axisTipRect.CDB-Chart-axisTip-' + axisTip);
+      var rectNode = rectLabel && rectLabel.node();
+      chartClientRect = chartNode && chartNode.getBoundingClientRect();
+      var rectClientRect = rectNode && rectNode.getBoundingClientRect();
+      if (chartClientRect && rectClientRect) {
+        var adjust = axisTip === 'left'
+          ? rectClientRect.left - chartClientRect.left <= 0 
+          : chartClientRect.right - rectClientRect.right <= 0;
+
+        if (adjust) {
+          self._updateAxisTip(axisTip);
+        }
+      }
+    }
+
+    checkOutOfBounds('left');
+    checkOutOfBounds('right');
+  },
+
   _onChangeData: function () {
     if (this.model.previous('data').length !== this.model.get('data').length) {
       this.reset();
@@ -929,6 +953,7 @@ module.exports = cdb.core.View.extend({
       this._setupFillColor();
       this._refreshBarsColor();
       this._adjustBrushHandles();
+      this._checkAxisTipsBounds();
     }
   },
 

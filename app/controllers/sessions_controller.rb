@@ -167,7 +167,6 @@ class SessionsController < ApplicationController
   protected
 
   def initialize_google_plus_config
-
     if !@organization.nil?
       # TODO: remove duplication (app/controllers/admin/organizations_controller.rb)
       signup_action = "#{CartoDB.protocol}://#{@organization.name}.#{CartoDB.account_host}#{CartoDB.path(self, 'signup_organization_user')}"

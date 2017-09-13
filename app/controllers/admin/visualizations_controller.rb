@@ -406,6 +406,7 @@ class Admin::VisualizationsController < Admin::AdminController
   end
 
   def embed_map
+    # TODO: uncomment
     if current_user.present? && current_user.has_feature_flag?('static_embed')
       return render(file: "public/static/embed_map/index.html", layout: false)
     end

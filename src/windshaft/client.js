@@ -45,7 +45,7 @@ var WindshaftClient = function (settings) {
   this._requestTracker = new RequestTracker(MAP_INSTANTIATION_LIMIT);
 };
 
-WindshaftClient.prototype.instantiateMap = function (options) {
+WindshaftClient.prototype._instantiateMap = function (options) {
   if (!options.mapDefinition) {
     throw new Error('mapDefinition option is required');
   }
@@ -198,7 +198,7 @@ WindshaftClient.prototype._performRequest = function (request) {
   var payload = request.payload;
   var params = request.params;
   var options = request.options;
-  this.instantiateMap({
+  this._instantiateMap({
     mapDefinition: payload,
     params: params,
     success: function (response) {

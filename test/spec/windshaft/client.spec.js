@@ -22,7 +22,7 @@ describe('windshaft/client', function () {
     });
 
     it('should trigger a GET request to instantiate a map', function () {
-      this.client.instantiateMap({
+      this.client._instantiateMap({
         mapDefinition: { some: 'json that must be encoded' }
       });
 
@@ -42,7 +42,7 @@ describe('windshaft/client', function () {
         templateName: 'tpl123456789'
       });
 
-      this.client.instantiateMap({
+      this.client._instantiateMap({
         mapDefinition: { some: 'json that must be encoded' }
       });
 
@@ -52,7 +52,7 @@ describe('windshaft/client', function () {
     });
 
     it('should include the given params and handle JSON objects correctly', function () {
-      this.client.instantiateMap({
+      this.client._instantiateMap({
         mapDefinition: { some: 'json that must be encoded' },
         params: {
           stat_tag: 'stat_tag',
@@ -76,7 +76,7 @@ describe('windshaft/client', function () {
     it('should invoke the success callback', function () {
       var successCallback = jasmine.createSpy('successCallback');
 
-      this.client.instantiateMap({
+      this.client._instantiateMap({
         mapDefinition: 'mapDefinition',
         filters: {},
         success: successCallback
@@ -93,7 +93,7 @@ describe('windshaft/client', function () {
     it('should invoke the error callback if Windshaft returns some errors', function () {
       var errorCallback = jasmine.createSpy('errorCallback');
 
-      this.client.instantiateMap({
+      this.client._instantiateMap({
         mapDefinition: 'mapDefinition',
         filters: {},
         error: errorCallback
@@ -115,7 +115,7 @@ describe('windshaft/client', function () {
     it('should invoke the error callback if ajax request goes wrong', function () {
       var errorCallback = jasmine.createSpy('errorCallback');
 
-      this.client.instantiateMap({
+      this.client._instantiateMap({
         mapDefinition: 'mapDefinition',
         filters: {},
         error: errorCallback
@@ -129,7 +129,7 @@ describe('windshaft/client', function () {
     it('should ignore the error callback if request was aborted', function () {
       var errorCallback = jasmine.createSpy('errorCallback');
 
-      this.client.instantiateMap({
+      this.client._instantiateMap({
         mapDefinition: 'mapDefinition',
         filters: {},
         error: errorCallback
@@ -149,7 +149,7 @@ describe('windshaft/client', function () {
       });
 
       it('should use GET to URL with encoded config', function (done) {
-        this.client.instantiateMap({
+        this.client._instantiateMap({
           mapDefinition: { something: new Array(1933).join('x') },
           params: {
             a: 'a sentence'
@@ -172,7 +172,7 @@ describe('windshaft/client', function () {
       });
 
       it('should use GET to URL with compressed config', function (done) {
-        this.client.instantiateMap({
+        this.client._instantiateMap({
           mapDefinition: { something: new Array(1943).join('x') },
           params: {
             a: 'a sentence'
@@ -200,7 +200,7 @@ describe('windshaft/client', function () {
           callback(new Array(2500).join('x'));
         });
 
-        this.client.instantiateMap({
+        this.client._instantiateMap({
           mapDefinition: { something: new Array(2000).join('x') },
           params: {
             a: 'a sentence'
@@ -231,7 +231,7 @@ describe('windshaft/client', function () {
       it('should cancel previous requests when using GET requests', function () {
         var errorCallback = jasmine.createSpy('errorCallback');
 
-        this.client.instantiateMap({
+        this.client._instantiateMap({
           mapDefinition: { some: 'json that must be encoded' },
           error: errorCallback
         });
@@ -239,7 +239,7 @@ describe('windshaft/client', function () {
         expect($.ajax.calls.argsFor(0)[0].method).toEqual('GET');
         expect(this.fakeXHR.abort).not.toHaveBeenCalled();
 
-        this.client.instantiateMap({
+        this.client._instantiateMap({
           mapDefinition: { some: 'json that must be encoded' }
         });
 
@@ -254,7 +254,7 @@ describe('windshaft/client', function () {
           callback(new Array(2500).join('x'));
         });
 
-        this.client.instantiateMap({
+        this.client._instantiateMap({
           mapDefinition: { something: new Array(3000).join('x') }
         });
 
@@ -262,7 +262,7 @@ describe('windshaft/client', function () {
           expect($.ajax.calls.argsFor(0)[0].method).toEqual('POST');
           expect(this.fakeXHR.abort).not.toHaveBeenCalled();
 
-          this.client.instantiateMap({
+          this.client._instantiateMap({
             mapDefinition: { something: new Array(3000).join('x') }
           });
 

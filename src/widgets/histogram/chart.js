@@ -1501,7 +1501,7 @@ module.exports = cdb.core.View.extend({
       .attr('class', 'CDB-Chart-bar')
       .attr('fill', this._getFillColor.bind(self))
       .attr('transform', function (d, i) {
-        return 'translate(' + (i * self.barWidth) + ', 0 )';
+        return 'translate(' + (i * self.barWidth) + ', 0)';
       })
       .attr('y', self.chartHeight())
       .attr('height', 0)

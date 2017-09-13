@@ -164,6 +164,15 @@ var TorqueLayer = LayerModelBase.extend({
 
   getTileURLTemplates: function () {
     return this.get('tileURLTemplates');
+  },
+
+  getSourceId: function () {
+    var source = this.getSource();
+    return source && source.id;
+  },
+
+  getSource: function () {
+    return this.get('source');
   }
 });
 

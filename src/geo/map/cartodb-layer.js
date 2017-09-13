@@ -120,6 +120,15 @@ var CartoDBLayer = LayerModelBase.extend({
     var meta = this.get('meta');
     var stats = meta && meta.stats;
     return stats && stats.estimatedFeatureCount;
+  },
+
+  getSourceId: function () {
+    var source = this.getSource();
+    return source && source.id;
+  },
+
+  getSource: function () {
+    return this.get('source');
   }
 });
 

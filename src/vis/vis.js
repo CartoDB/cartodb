@@ -223,13 +223,6 @@ var VisModel = Backbone.Model.extend({
 
     this._windshaftMap.bind('instanceCreated', this._onMapInstanceCreated, this);
 
-    var layerModels = _.map(vizjson.layers, function (layerData, layerIndex) {
-      _.extend(layerData, { order: layerIndex });
-      return layersFactory.createLayer(layerData.type, layerData);
-    });
-
-    this.map.layers.reset(layerModels);
-
     // "Load" existing analyses from the viz.json. This will generate
     // the analyses graphs and index analysis nodes in the
     // collection of analysis
@@ -238,6 +231,20 @@ var VisModel = Backbone.Model.extend({
         this.analysis.analyse(analysis);
       }, this);
     }
+
+    var layerModels = _.map(vizjson.layers, function (layerData, layerIndex) {
+      _.extend(layerData, { order: layerIndex });
+
+      if (layerData.options.source) {
+        var source = this._analysisCollection.find({ id: layerData.options.source });
+        layerData.options.source = source;
+      }
+
+      return layersFactory.createLayer(layerData.type, layerData);
+    }, this);
+
+    this.map.layers.reset(layerModels);
+
     // Global variable for easier console debugging / testing
     window.vis = this;
 
@@ -274,7 +281,7 @@ var VisModel = Backbone.Model.extend({
 
   _isAnalysisSourceOfLayerOrDataview: function (analysisModel) {
     var isAnalysisLinkedToLayer = this._layersCollection.any(function (layerModel) {
-      return layerModel.get('source') === analysisModel.get('id');
+      return layerModel.getSourceId() === analysisModel.get('id');
     });
     var isAnalysisLinkedToDataview = this._dataviewsCollection.isAnalysisLinkedToDataview(analysisModel);
     return isAnalysisLinkedToLayer || isAnalysisLinkedToDataview;

@@ -8,6 +8,7 @@ var util = require('../core/util');
 var Layers = require('./map/layers');
 var sanitize = require('../core/sanitize');
 var GeometryFactory = require('./geometry-models/geometry-factory');
+var AnalysisModel = require('../analysis/analysis-model.js');
 
 var Map = Model.extend({
   defaults: {
@@ -96,11 +97,17 @@ var Map = Model.extend({
 
   createCartoDBLayer: function (attrs, options) {
     this._checkProperties(attrs, ['sql|source', 'cartocss']);
+    if (attrs.source && !(attrs.source instanceof AnalysisModel)) {
+      throw new Error('CartoDB layers must have a valid source');
+    }
     return this._addNewLayerModel('cartodb', attrs, options);
   },
 
   createTorqueLayer: function (attrs, options) {
     this._checkProperties(attrs, ['sql|source', 'cartocss']);
+    if (attrs.source && !(attrs.source instanceof AnalysisModel)) {
+      throw new Error('CartoDB layers must have a valid source');
+    }
     return this._addNewLayerModel('torque', attrs, options);
   },
 

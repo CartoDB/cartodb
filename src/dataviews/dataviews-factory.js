@@ -18,13 +18,11 @@ module.exports = Model.extend({
     if (!opts.vis) throw new Error('vis is required');
     if (!opts.analysisCollection) throw new Error('analysisCollection is required');
     if (!opts.dataviewsCollection) throw new Error('dataviewsCollection is required');
-    if (!opts.analysisCollection) throw new Error('analysisCollection is required');
 
     this._map = opts.map;
     this._vis = opts.vis;
     this._analysisCollection = opts.analysisCollection;
     this._dataviewsCollection = opts.dataviewsCollection;
-    this._analysisCollection = opts.analysisCollection;
   },
 
   createCategoryModel: function (layerModel, attrs) {

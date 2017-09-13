@@ -4,6 +4,7 @@ var VisModel = require('../../../src/vis/vis.js');
 var MapModel = require('../../../src/geo/map.js');
 var DataviewModelBase = require('../../../src/dataviews/dataview-model-base');
 var AnalysisFactory = require('../../../src/analysis/analysis-factory.js');
+var CartoDBLayer = require('../../../src/geo/map/cartodb-layer.js');
 
 var fakeCamshaftReference = {
   getSourceNamesForAnalysisType: function (analysisType) {
@@ -51,8 +52,8 @@ describe('dataviews/dataview-model-base', function () {
       id: 'a0',
       type: 'source'
     });
-    this.layer = new Backbone.Model();
-    this.layer.getDataProvider = jasmine.createSpy('getDataProvider');
+    this.layer = new CartoDBLayer(null, { vis: this.vis });
+    spyOn(this.layer, 'getDataProvider');
 
     this.model = new DataviewModelBase({
       source: {id: 'a0'}
@@ -415,10 +416,10 @@ describe('dataviews/dataview-model-base', function () {
 
   describe('bindings to the filter', function () {
     beforeEach(function () {
-      this.layer = new Backbone.Model({
+      this.layer = new CartoDBLayer({
         id: 'layerId'
-      });
-      this.layer.getDataProvider = jasmine.createSpy('getDataProvider').and.returnValue(undefined);
+      }, { vis: this.vis });
+      spyOn(this.layer, 'getDataProvider').and.returnValue(undefined);
     });
 
     it('should reload the map by default when the filter changes', function () {
@@ -496,10 +497,10 @@ describe('dataviews/dataview-model-base', function () {
       this.geoJSONDataProvider = jasmine.createSpyObj('dataProvider', ['getDataFor', 'canProvideDataFor', 'applyFilter', 'canApplyFilterTo']);
       _.extend(this.geoJSONDataProvider, Backbone.Events);
 
-      this.layer = new Backbone.Model({
+      this.layer = new CartoDBLayer({
         id: 'layerId'
-      });
-      this.layer.getDataProvider = jasmine.createSpy('getDataProvider').and.returnValue(this.geoJSONDataProvider);
+      }, { vis: this.vis });
+      spyOn(this.layer, 'getDataProvider').and.returnValue(this.geoJSONDataProvider);
     });
 
     it('should get data from a data provider if data provider can provide data for the dataview', function () {
@@ -638,11 +639,10 @@ describe('dataviews/dataview-model-base', function () {
 
   describe('getSourceId', function () {
     it('should return the id of the source', function () {
-      var layer = new Backbone.Model({
+      var layer = new CartoDBLayer({
         id: 'layerId',
-        source: 'a1'
-      });
-      layer.getDataProvider = jasmine.createSpy('getDataProvider').and.returnValue(undefined);
+        source: new Backbone.Model({ id: 'a1' })
+      }, { vis: this.vis });
 
       var dataview = new DataviewModelBase({
         source: {
@@ -659,11 +659,10 @@ describe('dataviews/dataview-model-base', function () {
     });
 
     it("should return the id of the layer's source", function () {
-      var layer = new Backbone.Model({
+      var layer = new CartoDBLayer({
         id: 'layerId',
-        source: 'a1'
-      });
-      layer.getDataProvider = jasmine.createSpy('getDataProvider').and.returnValue(undefined);
+        source: new Backbone.Model({ id: 'a1' })
+      }, { vis: this.vis });
 
       var dataview = new DataviewModelBase({
         source: {

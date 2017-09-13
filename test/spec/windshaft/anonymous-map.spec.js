@@ -375,15 +375,28 @@ describe('windshaft/anonymous-map', function () {
       });
 
       it('should include an analysis for layers that have a source', function () {
-        var analysis = { id: 'c1' };
-        this.analysisCollection.add(analysis);
+        var analysis = this.analysisFactory.analyse({
+          id: 'c1',
+          type: 'source',
+          params: {
+            query: 'select * from subway_stops'
+          }
+        });
 
         this.cartoDBLayer1.update({
-          source: 'c1',
+          source: analysis,
           cartocss: '#trade_area { ... }'
         }, { silent: true });
 
-        expect(this.map.toJSON().analyses).toEqual([ analysis ]);
+        expect(this.map.toJSON().analyses).toEqual([
+          {
+            id: 'c1',
+            type: 'source',
+            params: {
+              query: 'select * from subway_stops'
+            }
+          }
+        ]);
       });
 
       it('should include a source analysis for dataviews whose source is a layer that has sql', function () {
@@ -407,12 +420,17 @@ describe('windshaft/anonymous-map', function () {
       });
 
       it('should include a source analysis for dataviews whose source is a layer that has a source', function () {
-        var analysis = { id: 'c1' };
-        this.analysisCollection.add(analysis);
+        var analysis = this.analysisFactory.analyse({
+          id: 'c1',
+          type: 'source',
+          params: {
+            query: 'select * from subway_stops'
+          }
+        });
 
         // CartoDB layer points to an analysis and has no sql
         this.cartoDBLayer1.update({
-          source: 'c1',
+          source: analysis,
           sql: undefined,
           cartocss: '#trade_area { ... }'
         }, { silent: true });
@@ -426,7 +444,13 @@ describe('windshaft/anonymous-map', function () {
         this.dataviewsCollection.add(dataview);
 
         expect(this.map.toJSON().analyses).toEqual([
-          analysis
+          {
+            id: 'c1',
+            type: 'source',
+            params: {
+              query: 'select * from subway_stops'
+            }
+          }
         ]);
       });
 
@@ -484,12 +508,12 @@ describe('windshaft/anonymous-map', function () {
         });
 
         this.cartoDBLayer1.update({
-          source: analysis1.get('id'),
+          source: analysis1,
           cartocss: '#union { ... }'
         }, { silent: true });
 
         this.cartoDBLayer2.update({
-          source: analysis2.get('id'),
+          source: analysis2,
           cartocss: '#union { ... }'
         }, { silent: true });
 

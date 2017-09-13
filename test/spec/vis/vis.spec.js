@@ -874,6 +874,9 @@ describe('vis/vis', function () {
         this.vis.load(new VizJSON(this.vizjson));
         this.vis.instantiateMap();
 
+        // First request to instantiate map was performed
+        expect($.ajax.calls.argsFor(0)[0].url).toMatch(/api\/v1\/map\?config/);
+
         // Response from Maps API is received
         $.ajax.calls.argsFor(0)[0].success({
           'layergroupid': '9d7bf465e45113123bf9949c2a4f0395:0',
@@ -924,22 +927,26 @@ describe('vis/vis', function () {
           },
           'last_updated': '1970-01-01T00:00:00.000Z'
         });
-        expect($.ajax.calls.argsFor(0)[0].url).toMatch(/api\/v1\/map\?config/);
+
+        // Another 2 requests are done to check the status of analysis
         expect($.ajax.calls.argsFor(1)[0].url).toEqual('http://cdb.localhost.lan:8181/api/v1/map/9d7bf465e45113123bf9949c2a4f0395:0/analysis/node/e65b1ae05854aea96266808ec0686b91f3ee0a81');
         expect($.ajax.calls.argsFor(2)[0].url).toEqual('http://cdb.localhost.lan:8181/api/v1/map/9d7bf465e45113123bf9949c2a4f0395:0/analysis/node/b75b1ae05854aea96266808ec0686b91f3ee0a81');
 
+        // So far, 3 requests were made
         expect($.ajax.calls.count()).toEqual(3);
 
-        // Analysis endpoint for a1 responds
+        // Analysis endpoint for a1 responds and node is ready
         $.ajax.calls.argsFor(1)[0].success({status: 'ready'});
 
         // Map is not reloaded because a1 is not the source of a layer
+        // so no new requests were done
         expect($.ajax.calls.count()).toEqual(3);
 
-        // Analysis endpoint for a2 responds
+        // Analysis endpoint for a2 responds and node is ready
         $.ajax.calls.argsFor(2)[0].success({status: 'ready'});
 
-        // Map has been reloaded because a2 is the source of a layer
+        // a2 is the source of a layer so map needs to be insntantiated again
+        // and a new request was done
         expect($.ajax.calls.count()).toEqual(4);
         expect($.ajax.calls.argsFor(3)[0].url).toMatch(/api\/v1\/map\?config/);
       });

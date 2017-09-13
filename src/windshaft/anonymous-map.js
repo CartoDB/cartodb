@@ -76,7 +76,7 @@ var sharedOptionsForMapnikAndTorqueLayers = function (layerModel) {
     cartocss_version: layerModel.get('cartocss_version') || DEFAULT_CARTOCSS_VERSION
   };
 
-  var layerSourceId = layerModel.get('source');
+  var layerSourceId = layerModel.getSourceId();
   if (layerSourceId) {
     options.source = { id: layerSourceId };
   } else if (layerModel.get('sql')) { // Layer has some SQL that needs to be converted into a "source" analysis
@@ -132,7 +132,7 @@ var AnonymousMap = MapBase.extend({
     var analyses = [];
     var sourceIdsFromLayers = _.chain(this._getCartoDBAndTorqueLayers())
       .map(function (layerModel) {
-        return layerModel.get('source');
+        return layerModel.getSourceId();
       })
       .compact()
       .value();

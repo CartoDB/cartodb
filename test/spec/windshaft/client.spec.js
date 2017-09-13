@@ -5,7 +5,7 @@ var WindshaftClient = require('../../../src/windshaft/client');
 var LZMA = require('lzma');
 
 describe('windshaft/client', function () {
-  describe('#instantiateMap', function () {
+  describe('_instantiateMap', function () {
     beforeEach(function () {
       spyOn($, 'ajax').and.callFake(function (params) {
         this.ajaxParams = params;
@@ -272,15 +272,31 @@ describe('windshaft/client', function () {
         }.bind(this));
       });
     });
+  });
 
-    it('should not make the same request more than 3 times when nothing has changed and response is the same', function () {});
+  describe('instantiateMap', function () {
+    var client;
+    beforeEach(function () {
+      client = new WindshaftClient({
+        urlTemplate: 'https://{user}.example.com:443',
+        userName: 'rambo'
+      });
+    });
 
-    it('should make the request if request was done 3 times and response was different the last time', function () { });
+    it('should make a request when the request service allows it', function () {
+      spyOn(client, '_instantiateMap').and.callFake(function () {});
+      spyOn(client._requestTracker, 'canRequestBePerformed').and.returnValue(true);
+      expect(client._instantiateMap).not.toHaveBeenCalled();
+      client.instantiateMap('payloadMock', 'paramsMock', 'optionsMock');
+      expect(client._instantiateMap).toHaveBeenCalled();
+    });
 
-    describe('when max number of subsecuent identical requests (with identical responses) have been performed', function () {
-      it('should make a request if payload has changed', function () { });
-      it('should make a request if options are different', function () { });
-      it('should make a request if filters have changed', function () { });
+    it('should not make a request when the request service does not allow it', function () {
+      spyOn(client, '_instantiateMap');
+      spyOn(client._requestTracker, 'canRequestBePerformed').and.returnValue(false);
+      expect(client._instantiateMap).not.toHaveBeenCalled();
+      client.instantiateMap('payloadMock', 'paramsMock', 'optionsMock');
+      expect(client._instantiateMap).not.toHaveBeenCalled();
     });
   });
 });

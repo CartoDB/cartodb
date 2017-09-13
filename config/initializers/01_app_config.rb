@@ -78,11 +78,11 @@ module Cartodb
   # Note that since inner keys are strings (not symbols), you must
   # follow the same conventtion and use:
   #
-  #     Cartodb.with_config(ogr2ogr: { 'binary' => 'ogr2ogr2' })
+  #     Cartodb.with_config(ogr2ogr: { 'binary' => 'ogr2ogr' })
   #
   # and not:
   #
-  #     Cartodb.with_config(ogr2ogr: { 'binary': 'ogr2ogr2' })
+  #     Cartodb.with_config(ogr2ogr: { 'binary': 'ogr2ogr' })
   #
   def self.with_config(options)
     original_config = config

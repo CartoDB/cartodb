@@ -2,7 +2,11 @@ namespace :cartodb do
   namespace :test do
     task :prepare do
       if (ENV['RAILS_ENV'] == "test")
-        Rake::Task['db:drop'].invoke &&
+        begin
+          Rake::Task['db:drop'].invoke
+        rescue Sequel::DatabaseConnectionError
+          puts "Not dropping DB (did not exist)"
+        end
         Rake::Task['db:create'].invoke &&
         Rake::Task['db:migrate'].invoke &&
         Rake::Task['cartodb:db:create_publicuser'].invoke

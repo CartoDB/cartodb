@@ -375,7 +375,7 @@ module.exports = DataviewModelBase.extend({
       this._totals.set('bins', this.get('bins'));
     }
     if (this.get('column_type') === 'date') {
-      if (_.has(this.changed, 'aggregation')) {
+      if (this.hasChanged('aggregation')) {
         this._resetFilter();
       }
       this._totals.set({

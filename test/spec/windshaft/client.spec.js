@@ -272,10 +272,9 @@ describe('windshaft/client', function () {
         }.bind(this));
       });
     });
-  });
 
-  xdescribe('.performRequest', function () {
-    it('should not make the same request more than 3 times when nothing has changed and response is the same', function () { });
+    it('should not make the same request more than 3 times when nothing has changed and response is the same', function () {});
+
     it('should make the request if request was done 3 times and response was different the last time', function () { });
 
     describe('when max number of subsecuent identical requests (with identical responses) have been performed', function () {

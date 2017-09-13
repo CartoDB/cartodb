@@ -170,6 +170,7 @@ Development
 * Histogram UI: Do not show "NULL ROWS" value if it is not received (#12477)
 * Force raster mode in datasets preview map (#12513)
 * Add assets version to TrackJS
+* `rake cartodb:test:prepare` now works when the test database has not been created yet (#12776)
 * Adding max items limit for form list editor (#12552)
 * Improve Google Login button (cartodb-central#1808)
 * Implement widget opacity in AutoStyle (#11928)

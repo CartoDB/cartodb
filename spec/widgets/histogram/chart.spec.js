@@ -1206,9 +1206,9 @@ describe('widgets/histogram/chart', function () {
     it('should update triangle', function () {
       var triangle = this.view.$('.CDB-Chart-handle-left .CDB-Chart-axisTipTriangle');
 
-      this.view._updateTriangle('left', triangle, 42);
+      this.view._updateTriangle(false, triangle, 42, 60, 100);
 
-      expect(triangle.attr('transform')).toBe('translate(-3,-11)rotate(0)skewX(0)scale(1,1)');
+      expect(triangle.attr('transform')).toBe('translate(53,-11)rotate(0)skewX(0)scale(1,1)');
     });
 
     describe('time-series, tablet', function () {
@@ -1227,9 +1227,9 @@ describe('widgets/histogram/chart', function () {
       it('should update right axis tip', function () {
         var triangle = this.view.$('.CDB-Chart-handle-right .CDB-Chart-axisTipTriangle');
 
-        this.view._updateTriangle('right', triangle, 42);
+        this.view._updateTriangle(true, triangle, 42, 60, 100);
 
-        expect(triangle.attr('transform')).toBe('translate(-3,59.099998474121094)rotate(0)skewX(0)scale(1,1)');
+        expect(triangle.attr('transform')).toBe('translate(53,59.099998474121094)rotate(0)skewX(0)scale(1,1)');
       });
     });
   });
@@ -1262,7 +1262,7 @@ describe('widgets/histogram/chart', function () {
 
         var axisTip = this.view.$('.CDB-Chart-axisTip.CDB-Chart-axisTip-left');
 
-        expect(axisTip.attr('transform')).toBe('translate(-2, -26)');
+        expect(axisTip.attr('transform')).toBe('translate(2, -26)');
       });
     });
 
@@ -1273,7 +1273,7 @@ describe('widgets/histogram/chart', function () {
 
         var axisTip = this.view.$('.CDB-Chart-axisTip.CDB-Chart-axisTip-right');
 
-        expect(axisTip.attr('transform')).toBe('translate(-2, 57)');
+        expect(axisTip.attr('transform')).toBe('translate(2, 56)');
       });
     });
 
@@ -1314,7 +1314,7 @@ describe('widgets/histogram/chart', function () {
 
         var axisTip = this.view.$('.CDB-Chart-axisTip.CDB-Chart-axisTip-right');
 
-        expect(axisTip.attr('transform')).toBe('translate(-2, -26)');
+        expect(axisTip.attr('transform')).toBe('translate(2, -26)');
       });
 
       describe('is dragging', function () {

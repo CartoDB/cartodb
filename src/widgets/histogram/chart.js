@@ -298,11 +298,11 @@ module.exports = cdb.core.View.extend({
     function checkOutOfBounds (axisTip) {
       var rectLabel = self.chart.select('.CDB-Chart-axisTipRect.CDB-Chart-axisTip-' + axisTip);
       var rectNode = rectLabel && rectLabel.node();
-      chartClientRect = chartNode && chartNode.getBoundingClientRect();
+      var chartClientRect = chartNode && chartNode.getBoundingClientRect();
       var rectClientRect = rectNode && rectNode.getBoundingClientRect();
       if (chartClientRect && rectClientRect) {
         var adjust = axisTip === 'left'
-          ? rectClientRect.left - chartClientRect.left <= 0 
+          ? rectClientRect.left - chartClientRect.left <= 0
           : chartClientRect.right - rectClientRect.right <= 0;
 
         if (adjust) {

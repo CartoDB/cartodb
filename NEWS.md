@@ -50,6 +50,7 @@ Development
 * Updates Dataservices API client default version to `0.20.0` (#12633)
 
 ### Bug fixes / enhancements
+* Rename SIZE/COLOR input label to COLOR in polygons style (#12768)
 * Enhancements on 'Join columns for 2nd layer' analysis texts (#12418)
 * Rename FILL input label to SIZE/COLOR (#12564)
 * Refactor geometry buttons styles to ease breakpoints logic (#11542)

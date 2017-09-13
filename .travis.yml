@@ -4,6 +4,7 @@ node_js:
 dist: trusty
 before_install:
   - git submodule update --init --recursive
+  - git fetch origin master:refs/remotes/origin/master --depth=1
 addons:
   chrome: stable
 install:

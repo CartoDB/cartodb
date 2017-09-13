@@ -266,7 +266,7 @@ module CartoDB
           downloader: downloader,
           log: log,
           user: user,
-          unpacker: CartoDB::Importer2::Unp.new(Cartodb.config[:importer]),
+          unpacker: CartoDB::Importer2::Unp.new(Cartodb.config[:importer], Cartodb.config[:ogr2ogr]),
           post_import_handler: post_import_handler,
           importer_config: Cartodb.config[:importer]
         )

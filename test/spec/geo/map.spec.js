@@ -546,4 +546,76 @@ describe('core/geo/map', function () {
       expect(map.getEstimatedFeatureCount()).toBeUndefined();
     });
   });
+
+  describe('error management', function () {
+    describe('.addError', function () {
+      it('should throw an error if the error does not have a type', function () {
+        expect(this.map.addError).toThrow();
+      });
+
+      it('should trigger an error with the specified type', function () {
+        var called = '';
+
+        this.map.on('error:limit', function () {
+          called = 'limit';
+        });
+        this.map.on('error:tile', function () {
+          called = 'tile';
+        });
+
+        this.map.addError({ type: 'limit' });
+        expect(called).toEqual('limit');
+
+        this.map.addError({ type: 'tile' });
+        expect(called).toEqual('tile');
+      });
+
+      it('should add the error to the errors collection', function () {
+        expect(this.map.errors.length).toEqual(0);
+
+        this.map.addError({ type: 'tile' });
+
+        expect(this.map.errors.length).toEqual(1);
+        expect(this.map.errors.last().get('type')).toEqual('tile');
+      });
+
+      it('should not add the same error type twice', function () {
+        expect(this.map.errors.length).toEqual(0);
+
+        this.map.addError({ type: 'tile' });
+        this.map.addError({ type: 'tile' });
+
+        expect(this.map.errors.length).toEqual(1);
+      });
+    });
+
+    describe('.getError', function () {
+      it('should return the error with the specified type', function () {
+        this.map.errors.reset([
+          { type: 'limit' },
+          { type: 'analysis' },
+          { type: 'tile' }
+        ]);
+
+        expect(this.map.getError('tile')).toEqual(this.map.errors.last());
+      });
+    });
+
+    describe('.getError', function () {
+      it('should remove the error with the specified type', function () {
+        this.map.errors.reset([
+          { type: 'limit' },
+          { type: 'analysis' },
+          { type: 'tile' }
+        ]);
+
+        expect(this.map.errors.length).toEqual(3);
+
+        this.map.removeError('tile');
+
+        expect(this.map.errors.length).toEqual(2);
+        expect(this.map.errors.findWhere({ type: 'tile' })).toBe(undefined);
+      });
+    });
+  });
 });

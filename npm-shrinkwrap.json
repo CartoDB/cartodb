@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.9.74--s974",
+  "version": "4.9.74",
   "dependencies": {
     "abbrev": {
       "version": "1.1.0",
@@ -387,8 +387,8 @@
     },
     "cartodb-deep-insights.js": {
       "version": "0.0.3",
-      "from": "cartodb/deep-insights.js#s974-square_icon_not_changing_color",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#3ad13e30a6e9c01cdb39f80ca5b9fbe580b7cd0f",
+      "from": "cartodb/deep-insights.js#master",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#c8de0e104747fcd7a013493d6180d9350c52e273",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",
@@ -404,8 +404,8 @@
     },
     "cartodb.js": {
       "version": "4.0.0-alpha.1.1.0",
-      "from": "cartodb/cartodb.js#s974-square_icon_not_changing_color",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#6c090bd1b3a796650236bb882697c86e7347471a"
+      "from": "cartodb/cartodb.js#v4",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#da8f6c77432abc3d8ad578ce9eeb28fdc1655f96"
     },
     "caseless": {
       "version": "0.12.0",

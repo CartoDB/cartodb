@@ -3,6 +3,7 @@ var _ = require('underscore');
 var GMapsLayerView = require('./gmaps-layer-view');
 require('leaflet'); // NOTE: Leaflet needs to be required before wax because wax relies on global L internally
 var wax = require('wax.cartodb.js');
+var C = require('../../constants');
 var CartoDBDefaultOptions = require('./cartodb-default-options');
 var Projector = require('./projector');
 var CartoDBLayerGroupViewBase = require('../cartodb-layer-group-view-base');
@@ -230,7 +231,7 @@ _.extend(
       tile.onerror = function () {
         Profiler.metric('cartodb-js.tile.png.error').inc();
         tile.src = TILE_ERROR_IMAGE;
-        self.mapModel.set('tileError', true);
+        self.mapModel.addError({ type: C.WINDSHAFT_ERRORS.TILE });
         finished();
       };
 

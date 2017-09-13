@@ -1,5 +1,6 @@
 var _ = require('underscore');
 var L = require('leaflet');
+var C = require('../../constants');
 var LeafletLayerView = require('./leaflet-layer-view');
 var CartoDBLayerGroupViewBase = require('../cartodb-layer-group-view-base');
 var wax = require('wax.cartodb.js');
@@ -62,7 +63,7 @@ var LeafletCartoDBLayerGroupView = function (layerModel, leafletMap, mapModel) {
 
   this.leafletLayer.on('tileerror', function (layer) {
     layer.tile.src = TILE_ERROR_IMAGE;
-    self.mapModel.set('tileError', true);
+    self.mapModel.addError({ type: C.WINDSHAFT_ERRORS.TILE });
   });
 };
 

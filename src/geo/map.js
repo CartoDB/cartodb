@@ -3,6 +3,7 @@ var L = require('leaflet');
 var Backbone = require('backbone');
 var config = require('cdb.config');
 var log = require('cdb.log');
+var C = require('../constants');
 var Model = require('../core/model');
 var util = require('../core/util');
 var Layers = require('./map/layers');
@@ -34,6 +35,7 @@ var Map = Model.extend({
 
     this.layers = options.layersCollection || new Layers();
     this.geometries = new Backbone.Collection();
+    this.errors = new Backbone.Collection();
 
     var center = attrs.center || this.defaults.center;
     if (typeof center === 'string') {
@@ -62,14 +64,7 @@ var Map = Model.extend({
     this.layers.bind('change:attribution', this._updateAttributions, this);
     this.layers.bind('reset', this._onLayersResetted, this);
 
-    // We trigger this event manually when .setBounds is called
-    this.on('change:view_bounds_ne', this._onBoundsChanged, this);
-
     this._updateAttributions();
-  },
-
-  _onBoundsChanged: function () {
-    this.set('tileError', false);
   },
 
   _onLayersResetted: function () {
@@ -93,6 +88,24 @@ var Map = Model.extend({
   },
 
   // PUBLIC API METHODS
+
+  addError: function (error) {
+    if (!error.type) {
+      throw new Error('Error must have a type property.')
+    }
+
+    var inCollection = this.getError(error.type)
+    return inCollection ? inCollection : this.errors.add(error);
+  },
+
+  getError: function (type) {
+    return this.errors.findWhere({ type: type });
+  },
+
+  removeError: function (type) {
+    var error = this.getError(type);
+    return this.collection.remove(error);
+  },
 
   moveCartoDBLayer: function (from, to) {
     var layerMoved = this.layers.moveCartoDBLayer(from, to);

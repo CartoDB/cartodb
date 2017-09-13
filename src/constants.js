@@ -19,6 +19,7 @@ module.exports = {
   WINDSHAFT_ERRORS: {
     ANALYSIS: 'analysis',
     LAYER: 'layer',
-    LIMIT: 'limit'
+    LIMIT: 'limit',
+    TILE: 'tile' // Generic error for tiles
   }
 };

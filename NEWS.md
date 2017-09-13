@@ -178,6 +178,7 @@ Development
 * Enable selection of categories in non dynamic widgets [Support #890](https://github.com/CartoDB/support/issues/890)
 * Hide privacy button if user account type is FREE or PERSONAL (#12423)
 * Fix "apply" button sizes in advanced mode (#12652)
+* Axis labels changes in Time-Series (#12658)
 
 ### NOTICE
 This release upgrades the CartoDB PostgreSQL extension to `0.19.2`. Run the following to have it available:

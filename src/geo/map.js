@@ -3,7 +3,6 @@ var L = require('leaflet');
 var Backbone = require('backbone');
 var config = require('cdb.config');
 var log = require('cdb.log');
-var C = require('../constants');
 var Model = require('../core/model');
 var util = require('../core/util');
 var Layers = require('./map/layers');
@@ -91,11 +90,11 @@ var Map = Model.extend({
 
   addError: function (error) {
     if (!error.type) {
-      throw new Error('Error must have a type property.')
+      throw new Error('Error must have a type property.');
     }
 
-    var inCollection = this.getError(error.type)
-    return inCollection ? inCollection : this.errors.add(error);
+    var inCollection = this.getError(error.type);
+    return inCollection || this.errors.add(error);
   },
 
   getError: function (type) {

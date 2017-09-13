@@ -51,6 +51,7 @@ Development
 * Updates Dataservices API client default version to `0.20.0` (#12633)
 
 ### Bug fixes / enhancements
+* Rename 'SHARE' button to 'PUBLISH' and 'Not published yet' to 'Unpublished map' (#12730)
 * Move Analysis cancel/delete button to the controls zone (#11414)
 * Rename SIZE/COLOR input label to COLOR in polygons style (#12768)
 * Enhancements on 'Join columns for 2nd layer' analysis texts (#12418)

@@ -388,7 +388,7 @@
     "cartodb-deep-insights.js": {
       "version": "0.0.3",
       "from": "cartodb/deep-insights.js#12658-axis-changes",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#e70cfd9272d4993aaf05c4a18cc6fa0095df55d6",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#6a22db7626c62bdbd41e1efb051d903c92f82eaa",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",
@@ -403,9 +403,9 @@
       "resolved": "https://registry.npmjs.org/cartodb-pecan/-/cartodb-pecan-0.2.0.tgz"
     },
     "cartodb.js": {
-      "version": "4.0.0-alpha.1",
+      "version": "4.0.0-alpha.1.1.0",
       "from": "cartodb/cartodb.js#12658-axis-changes",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#3cec2908ec30aeacecee6152917094d20a60724e"
+      "resolved": "git://github.com/cartodb/cartodb.js.git#a86bfeb524475b8020c502443b92e382ae9d6f42"
     },
     "caseless": {
       "version": "0.12.0",
@@ -1272,9 +1272,9 @@
       "resolved": "https://registry.npmjs.org/jquery/-/jquery-2.1.4.tgz"
     },
     "js-base64": {
-      "version": "2.2.0",
+      "version": "2.3.2",
       "from": "js-base64@>=2.1.9 <3.0.0",
-      "resolved": "https://registry.npmjs.org/js-base64/-/js-base64-2.2.0.tgz"
+      "resolved": "https://registry.npmjs.org/js-base64/-/js-base64-2.3.2.tgz"
     },
     "js-tokens": {
       "version": "3.0.2",
@@ -2351,9 +2351,9 @@
       "resolved": "git://github.com/cartodb/tangram-1.git#05fbe2b438bb8be7cd411587d8d4e4415fe4227c"
     },
     "tangram-cartocss": {
-      "version": "0.9.0",
+      "version": "0.9.1",
       "from": "tangram-cartocss@>=0.9.0 <0.10.0",
-      "resolved": "https://registry.npmjs.org/tangram-cartocss/-/tangram-cartocss-0.9.0.tgz"
+      "resolved": "https://registry.npmjs.org/tangram-cartocss/-/tangram-cartocss-0.9.1.tgz"
     },
     "tangram-reference": {
       "version": "2.1.0",

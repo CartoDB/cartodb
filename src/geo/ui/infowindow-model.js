@@ -119,13 +119,13 @@ var InfowindowModel = Backbone.Model.extend({
 }, {
   contentForFields: function (attributes, fields, options) {
     options = options || {};
-    var render_fields = [];
+    var renderFields = [];
 
     for (var j = 0; j < fields.length; ++j) {
       var field = fields[j];
       var value = attributes[field.name];
       if (options.showEmptyFields || (value !== undefined && value !== null)) {
-        render_fields.push({
+        renderFields.push({
           name: field.name,
           title: field.title ? field.name : null,
           value: (value !== undefined && value !== null) ? value : null,
@@ -135,8 +135,8 @@ var InfowindowModel = Backbone.Model.extend({
     }
 
     // manage when there is no data to render
-    if (render_fields.length === 0) {
-      render_fields.push({
+    if (renderFields.length === 0) {
+      renderFields.push({
         title: null,
         value: 'No data available',
         index: 0,
@@ -145,7 +145,7 @@ var InfowindowModel = Backbone.Model.extend({
     }
 
     return {
-      fields: render_fields,
+      fields: renderFields,
       data: attributes
     };
   }

@@ -8,8 +8,8 @@ var config = require('../cdb.config');
 var DEFAULT_OPTIONS = {
   tiles_loader: true,
   loaderControl: true,
-  infowindow: true,
-  tooltip: true,
+  infowindow: true, // TODO: it seems that this is no longer used
+  tooltip: true, // TODO: it seems that this is no longer used
   logo: true,
   show_empty_infowindow_fields: false,
   interactiveFeatures: false
@@ -35,6 +35,12 @@ var createVis = function (el, vizjson, options) {
     showEmptyInfowindowFields: options.show_empty_infowindow_fields === true,
     https: isProtocolHTTPs || options.https === true,
     interactiveFeatures: options.interactiveFeatures
+  });
+
+  new VisView({ // eslint-disable-line
+    el: el,
+    model: visModel,
+    settingsModel: visModel.settings
   });
 
   if (typeof vizjson === 'string') {
@@ -92,12 +98,6 @@ var loadVizJSON = function (el, visModel, vizjsonData, options) {
     layerSelectorEnabled: layerSelectorEnabled
   });
 
-  new VisView({ // eslint-disable-line
-    el: el,
-    model: visModel,
-    settingsModel: visModel.settings
-  });
-
   visModel.load(vizjson);
 
   if (!options.skipMapInstantiation) {
@@ -142,10 +142,10 @@ var applyOptionsToVizJSON = function (vizjson, options) {
   }
 
   // Center coordinates?
-  var center_lat = parseFloat(options.center_lat);
-  var center_lon = parseFloat(options.center_lon);
-  if (!isNaN(center_lat) && !isNaN(center_lon)) {
-    vizjson.setCenter([center_lat, center_lon]);
+  var centerLat = parseFloat(options.center_lat);
+  var centerLon = parseFloat(options.center_lon);
+  if (!isNaN(centerLat) && !isNaN(centerLon)) {
+    vizjson.setCenter([centerLat, centerLon]);
   }
 
   // Center object
@@ -154,15 +154,15 @@ var applyOptionsToVizJSON = function (vizjson, options) {
   }
 
   // Bounds?
-  var sw_lat = parseFloat(options.sw_lat);
-  var sw_lon = parseFloat(options.sw_lon);
-  var ne_lat = parseFloat(options.ne_lat);
-  var ne_lon = parseFloat(options.ne_lon);
+  var swLat = parseFloat(options.sw_lat);
+  var swLon = parseFloat(options.sw_lon);
+  var neLat = parseFloat(options.ne_lat);
+  var neLon = parseFloat(options.ne_lon);
 
-  if (!isNaN(sw_lat) && !isNaN(sw_lon) && !isNaN(ne_lat) && !isNaN(ne_lon)) {
+  if (!isNaN(swLat) && !isNaN(swLon) && !isNaN(neLat) && !isNaN(neLon)) {
     vizjson.setBounds([
-      [ sw_lat, sw_lon ],
-      [ ne_lat, ne_lon ]
+      [ swLat, swLon ],
+      [ neLat, neLon ]
     ]);
   }
 

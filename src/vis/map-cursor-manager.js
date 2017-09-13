@@ -71,8 +71,7 @@ MapCursorManager.prototype._unmarkLayerAsFeatureOvered = function (layerModel) {
 };
 
 MapCursorManager.prototype._isLayerClickable = function (layerModel) {
-  return this._mapModel.isFeatureInteractivityEnabled() ||
-    this._mapModel.arePopupsEnabled() && layerModel.isInfowindowEnabled();
+  return this._mapModel.isFeatureInteractivityEnabled() || (this._mapModel.arePopupsEnabled() && layerModel.isInfowindowEnabled());
 };
 
 MapCursorManager.prototype._isLayerBeingFeatureOvered = function (layerModel) {

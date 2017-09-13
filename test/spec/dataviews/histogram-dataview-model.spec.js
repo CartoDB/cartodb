@@ -139,12 +139,12 @@ describe('dataviews/histogram-dataview-model', function () {
 
     xit('when it is clustered', function () {
       this.model.set('data', [
-       { bin: 0, freq: 20 },
-       { bin: 1, freq: 18 },
-       { bin: 2, freq: 5 },
-       { bin: 3, freq: 0 },
-       { bin: 4, freq: 32 },
-       { bin: 5, freq: 16 }
+        { bin: 0, freq: 20 },
+        { bin: 1, freq: 18 },
+        { bin: 2, freq: 5 },
+        { bin: 3, freq: 0 },
+        { bin: 4, freq: 32 },
+        { bin: 5, freq: 16 }
       ]);
       expect(this.model.getDistributionType()).toEqual('C');
     });

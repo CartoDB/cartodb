@@ -46,9 +46,9 @@ module.exports = DataviewModelBase.extend({
 },
 
   // Class props
-  {
-    ATTRS_NAMES: DataviewModelBase.ATTRS_NAMES.concat([
-      'columns'
-    ])
-  }
+{
+  ATTRS_NAMES: DataviewModelBase.ATTRS_NAMES.concat([
+    'columns'
+  ])
+}
 );

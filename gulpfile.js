@@ -2,8 +2,7 @@ var gulp = require('gulp');
 var iconfont = require('gulp-iconfont');
 var iconfontCss = require('gulp-iconfont-css');
 
-
-gulp.task('default', function(){
+gulp.task('default', function () {
   gulp.src(['./themes/svg/*.svg'])
 
     .pipe(iconfontCss({

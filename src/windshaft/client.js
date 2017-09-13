@@ -194,9 +194,6 @@ WindshaftClient.prototype.performRequest = function (payload, params, options) {
   }
 };
 
-/**
- * 
- */
 WindshaftClient.prototype._performRequest = function (request) {
   var payload = request.payload;
   var params = request.params;

@@ -378,10 +378,9 @@ defaults: &defaults
   datasources:
     arcgis_enabled: false
     salesforce_enabled: false
-  basemaps:
+  basemaps: # First one becomes default one
     CARTO:
       positron_rainbow_labels:
-        default: true
         url: 'http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png'
         subdomains: 'abcd'
         minZoom: '0'

@@ -89,11 +89,15 @@ var Map = Model.extend({
   // PUBLIC API METHODS
 
   addError: function (error) {
-    if (!error.type) {
+    var type = error.type;
+
+    if (!type) {
       throw new Error('Error must have a type property.');
     }
 
-    var inCollection = this.getError(error.type);
+    this.trigger('error:' + type, error);
+
+    var inCollection = this.getError(type);
     return inCollection || this.errors.add(error);
   },
 
@@ -103,7 +107,7 @@ var Map = Model.extend({
 
   removeError: function (type) {
     var error = this.getError(type);
-    return this.collection.remove(error);
+    return this.errors.remove(error);
   },
 
   moveCartoDBLayer: function (from, to) {

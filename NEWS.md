@@ -15,6 +15,7 @@ Development
 * Fix icons in category legends (#11630)
 * Sidebar UI tweaks (#12479)
 * Add carto-node client library (#12677)
+* Migrate rails views to js templates (#12763)
 * Improving affordance of Delete icon (#12531)
 * Change select "attribute" placeholders (#12498)
 * Add pointer cursor to the sliders (#12499)
@@ -51,6 +52,7 @@ Development
 * Updates Dataservices API client default version to `0.20.0` (#12633)
 
 ### Bug fixes / enhancements
+* Rename SIZE/COLOR input label to COLOR in polygons style (#12768)
 * Enhancements on 'Join columns for 2nd layer' analysis texts (#12418)
 * Rename FILL input label to SIZE/COLOR (#12564)
 * Refactor geometry buttons styles to ease breakpoints logic (#11542)

@@ -1178,8 +1178,6 @@ class User < Sequel::Model
     !Carto::Ldap::Manager.new.configuration_present?
   end
 
-
-
   # This method is innaccurate and understates point based tables (the /2 is to account for the_geom_webmercator)
   # TODO: Without a full table scan, ignoring the_geom_webmercator, we cannot accuratly asses table size
   # Needs to go on a background job.

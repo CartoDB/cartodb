@@ -44,6 +44,14 @@ describe Carto::Api::UsersController do
       @user.destroy
     end
 
+    let(:url_options) do
+      {
+        user_domain: @user.username,
+        user_id: @user.id,
+        api_key: @user.api_key
+      }
+    end
+
     it 'updates account data for the given user' do
       payload = {
         user: {
@@ -54,7 +62,7 @@ describe Carto::Api::UsersController do
         }
       }
 
-      put_json api_v3_users_update_account_url(user_domain: @user.username, user_id: @user.id, api_key: @user.api_key), payload, @headers do |response|
+      put_json api_v3_users_update_account_url(url_options), payload, @headers do |response|
         expect(response.status).to eq(200)
 
         @user.refresh
@@ -65,7 +73,7 @@ describe Carto::Api::UsersController do
     it 'gives an error if email is invalid' do
       payload = { user: { email: 'foo@' } }
 
-      put_json api_v3_users_update_account_url(user_domain: @user.username, user_id: @user.id, api_key: @user.api_key), payload, @headers do |response|
+      put_json api_v3_users_update_account_url(url_options), payload, @headers do |response|
         expect(response.status).to eq(400)
         expect(response.body[:message]).to eq("Error updating your account details")
         expect(response.body[:errors]).to have_key(:email)
@@ -75,7 +83,7 @@ describe Carto::Api::UsersController do
     it 'gives an error if old password is invalid' do
       payload = { user: { old_password: 'idontknow', new_password: 'barbaz', confirm_password: 'barbaz' } }
 
-      put_json api_v3_users_update_account_url(user_domain: @user.username, user_id: @user.id, api_key: @user.api_key), payload, @headers do |response|
+      put_json api_v3_users_update_account_url(url_options), payload, @headers do |response|
         expect(response.status).to eq(400)
         expect(response.body[:message]).to eq("Error updating your account details")
         expect(response.body[:errors]).to have_key(:old_password)
@@ -85,7 +93,7 @@ describe Carto::Api::UsersController do
     it 'gives an error if new password and confirmation are not the same' do
       payload = { user: { old_password: 'foobarbaz', new_password: 'foofoo', confirm_password: 'barbar' } }
 
-      put_json api_v3_users_update_account_url(user_domain: @user.username, user_id: @user.id, api_key: @user.api_key), payload, @headers do |response|
+      put_json api_v3_users_update_account_url(url_options), payload, @headers do |response|
         expect(response.status).to eq(400)
         expect(response.body[:message]).to eq("Error updating your account details")
         expect(response.body[:errors]).to have_key(:new_password)
@@ -93,7 +101,7 @@ describe Carto::Api::UsersController do
     end
 
     it 'returns 401 if user is not logged in' do
-      put_json api_v3_users_update_account_url(user_domain: @user.username, user_id: @user.id), @headers do |response|
+      put_json api_v3_users_update_account_url(url_options.except(:api_key)), @headers do |response|
         expect(response.status).to eq(401)
       end
     end
@@ -106,6 +114,14 @@ describe Carto::Api::UsersController do
 
     after(:each) do
       @user.destroy
+    end
+
+    let(:url_options) do
+      {
+        user_domain: @user.username,
+        user_id: @user.id,
+        api_key: @user.api_key
+      }
     end
 
     it 'updates profile data for the given user' do
@@ -121,7 +137,7 @@ describe Carto::Api::UsersController do
         }
       }
 
-      put_json api_v3_users_update_profile_url(user_domain: @user.username, user_id: @user.id, api_key: @user.api_key), payload, @headers do |response|
+      put_json api_v3_users_update_profile_url(url_options), payload, @headers do |response|
         expect(response.status).to eq(200)
 
         @user.refresh
@@ -136,7 +152,9 @@ describe Carto::Api::UsersController do
     end
 
     it 'returns 401 if user is not logged in' do
-      put_json api_v3_users_update_profile_url(user_domain: @user.username, user_id: @user.id), @headers do |response|
+      payload = { user: { name: 'Foo' } }
+
+      put_json api_v3_users_update_profile_url(url_options.except(:api_key)), payload, @headers do |response|
         expect(response.status).to eq(401)
       end
     end

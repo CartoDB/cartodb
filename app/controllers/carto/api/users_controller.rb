@@ -58,7 +58,7 @@ module Carto
       rescue CartoDB::CentralCommunicationFailure => e
         CartoDB::Logger.error(exception: e, user: @user, params: params)
         render_jsonp({ errors: "There was a problem while updating your data. Please, try again and contact us if the problem persists" }, 400)
-      rescue Sequel::ValidationFailed => e
+      rescue Sequel::ValidationFailed
         render_jsonp({ message: "Error updating your account details", errors: @user.errors }, 400)
       end
 
@@ -87,7 +87,7 @@ module Carto
       rescue CartoDB::CentralCommunicationFailure => e
         CartoDB::Logger.error(exception: e, user: @user, params: params)
         render_jsonp({ errors: "There was a problem while updating your data. Please, try again and contact us if the problem persists" }, 400)
-      rescue Sequel::ValidationFailed => e
+      rescue Sequel::ValidationFailed
         render_jsonp({ message: "Error updating your profile details", errors: @user.errors }, 400)
       end
 
@@ -168,24 +168,24 @@ module Carto
 
       def load_user_to_be_updated
         @user = nil
+        load_organization if params[:id_or_name].present?
 
         if params[:user_id] == current_viewer.id
           @user = current_viewer
         else
-          if params[:id_or_name].present?
-            load_organization
-
+          if @organization.present?
             unless @organization.admin?(current_viewer)
-              render_jsonp({message: "Only admins can update other users in the organization"}, 401) and return
+              render_jsonp({ message: "Only admins can update other users in the organization" }, 401) and return
             end
 
             @user = @organization.users.where(id: params[:user_id]).first
           else
+            render_jsonp({ message: "You are not authorized to load this user" }, 401) and return
           end
         end
 
         if @user.nil?
-          render_jsonp({message: "Only admins can update other users in the organization"}, 401) and return
+          render_jsonp({ message: "Only admins can update other users in the organization" }, 401) and return
         end
       end
     end

@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.9.72-s974",
+  "version": "4.9.74--s974",
   "dependencies": {
     "abbrev": {
       "version": "1.1.0",
@@ -1272,9 +1272,9 @@
       "resolved": "https://registry.npmjs.org/jquery/-/jquery-2.1.4.tgz"
     },
     "js-base64": {
-      "version": "2.3.1",
+      "version": "2.3.2",
       "from": "js-base64@>=2.1.9 <3.0.0",
-      "resolved": "https://registry.npmjs.org/js-base64/-/js-base64-2.3.1.tgz"
+      "resolved": "https://registry.npmjs.org/js-base64/-/js-base64-2.3.2.tgz"
     },
     "js-tokens": {
       "version": "3.0.2",

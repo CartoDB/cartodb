@@ -848,6 +848,11 @@
             "contact": "Contact us",
             "mail": "sales@carto.com"
           },
+          "upgrade_dialog": {
+            "title": "To get advantage of all the privacy options you should upgrade your plan",
+            "trial": "%{days} days Free trial",
+            "upgrade": "upgrade"
+          },
           "loading": "Saving your data..."
         },
         "share": {
@@ -1471,10 +1476,10 @@
     "map": "map",
     "map_name": "%{name} map",
     "published": "Published %{when}",
-    "unpublished": "Map not published yet",
+    "unpublished": "Unpublished map",
     "map_pluralize": "%{smart_count} map |||| %{smart_count} maps",
     "button_add": "Add",
-    "button_share": "SHARE",
+    "button_publish": "Publish",
     "unpublished-changes": "Unpublished changes",
     "error-query": {
       "body": "Errors found in your SQL query. %{action} before continuing.",
@@ -1642,9 +1647,7 @@
         "add-analysis": "Add analysis",
         "analyses-count": "%{smart_count} Analysis |||| %{smart_count} Analyses",
         "widgets-count": "%{smart_count} Widget |||| %{smart_count} Widgets",
-        "add-layer": "Add layer",
-        "delete": "Delete",
-        "cancel-delete-analysis": "Cancel"
+        "add-layer": "Add layer"
       },
       "basemap": {
         "remove-baselayer": "Remove baselayer",
@@ -1709,6 +1712,7 @@
         "by-bike": "bike",
         "by-car": "car",
         "by-walk": "walk",
+        "cancel-btn": "Cancel",
         "car": "Car",
         "categorize-by": "Categorize by",
         "categorize-by-help": "If selected a centroid will be found for each category",
@@ -1721,7 +1725,6 @@
         "confirm-analysis": "Confirm",
         "convex-hull": "Convex Hull",
         "country": "Country",
-        "create-btn": "Apply",
         "data-observatory-measurement-area": "Country",
         "data-observatory-measurement-column": "New col. name",
         "data-observatory-measurement-column-help": "Adds a new column to your layer to store result",
@@ -1769,6 +1772,8 @@
         },
         "define-columns": "Define column to find similarities with",
         "define-reference-and-target": "Define reference and target layers",
+        "define-two-layers": "Define two layers",
+        "delete-btn": "Delete",
         "denominator": "Denominator",
         "denominator-help": "A column to normalize the target column",
         "deprecated-sql-function": {

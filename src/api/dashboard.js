@@ -34,9 +34,9 @@ Dashboard.prototype = {
 
   forceResize: function () {
     this._dashboard.widgets.getCollection()
-    .each(function (widget) {
-      widget.forceResize();
-    });
+      .each(function (widget) {
+        widget.forceResize();
+      });
   },
 
   /**

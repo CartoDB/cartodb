@@ -69,7 +69,7 @@ var createDashboard = function (selector, vizJSON, opts, callback) {
   }));
 
   vis.once('load', function (vis) {
-    var widgetsState = dashboardState && dashboardState.widgets || {};
+    var widgetsState = (dashboardState && dashboardState.widgets) || {};
 
     // Create widgets
     var widgetsService = new WidgetsService(widgets, vis.dataviews);

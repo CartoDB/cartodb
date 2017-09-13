@@ -64,14 +64,14 @@ describe('widgets/list/content-view', function () {
   });
 });
 
-function genData (n, cartodb_id) {
+function genData (n, cartodbId) {
   n = n || 1;
   var arr = [];
   _.times(n, function (i) {
     var obj = {
       title: 'test' + i
     };
-    if (cartodb_id) {
+    if (cartodbId) {
       obj.cartodb_id = i;
     }
     arr.push(obj);

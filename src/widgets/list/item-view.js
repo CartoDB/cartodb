@@ -54,7 +54,7 @@ module.exports = cdb.core.View.extend({
     var i = 0;
 
     _.each(data, function (value, key) {
-      var title = columnTitles && columnTitles[i] || key;
+      var title = (columnTitles && columnTitles[i]) || key;
       arr.push([ title, format.formatValue(value) ]);
       ++i;
     });

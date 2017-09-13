@@ -37,7 +37,7 @@ var HistogramAutoStyler = AutoStyler.extend({
     var bins = this.dataviewModel.get('bins');
     var attr = this.dataviewModel.get('column');
     var styles = this.styles;
-    var isCustomDefinition = this.styles && this.styles.custom || false;
+    var isCustomDefinition = (this.styles && this.styles.custom) || false;
 
     AutoStyler.FILL_SELECTORS.forEach(function (item) {
       if (StyleUtils.isPropertyIncluded(cartocss, item)) {

@@ -153,6 +153,47 @@ describe Carto::Api::UsersController do
         end
       end
 
+      it 'does not update fields not present in the user hash' do
+        payload = {
+          user: {
+            name: 'Foo',
+            last_name: 'Bar',
+            website: 'https://carto.rocks'
+          }
+        }
+        old_description = @user.description
+        old_location = @user.location
+        old_twitter_username = @user.twitter_username
+
+        put_json api_v3_users_update_me_url(url_options), payload, @headers do |response|
+          expect(response.status).to eq(200)
+
+          @user.refresh
+          expect(@user.name).to eq('Foo')
+          expect(@user.last_name).to eq('Bar')
+          expect(@user.website).to eq('https://carto.rocks')
+          expect(@user.description).to eq(old_description)
+          expect(@user.location).to eq(old_location)
+          expect(@user.twitter_username).to eq(old_twitter_username)
+        end
+      end
+
+      it 'sets field to nil if key is present in the hash with a nil value' do
+        fields_to_check = [
+          :name, :last_name, :website, :description, :location, :twitter_username,
+          :disqus_shortname, :available_for_hire
+        ]
+
+        fields_to_check.each do |field|
+          payload = { user: { field => nil } }
+          put_json api_v3_users_update_me_url(url_options), payload, @headers do |response|
+            expect(response.status).to eq(200)
+            @user.refresh
+            expect(@user.values[field]).to be_nil
+          end
+        end
+      end
+
       it 'returns 401 if user is not logged in' do
         payload = { user: { name: 'Foo' } }
 

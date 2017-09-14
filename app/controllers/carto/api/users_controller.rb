@@ -33,37 +33,27 @@ module Carto
         user = current_viewer
         attributes = params[:user]
 
-        password_change = (attributes[:new_password].present? || attributes[:confirm_password].present?) &&
-          user.can_change_password?
-
-        if password_change
-          user.change_password(
-            attributes[:old_password].presence,
-            attributes[:new_password].presence,
-            attributes[:confirm_password].presence
-          )
-        end
+        update_password_if_needed(user, attributes)
 
         if user.can_change_email? && attributes[:email].present?
           user.set_fields(attributes, [:email])
         end
 
-        update_session_security_token(user) if password_change
-
         if attributes[:avatar_url].present? && valid_avatar_file?(attributes[:avatar_url])
           user.avatar_url = attributes.fetch(:avatar_url, nil)
         end
 
-        # This fields are optional
-        user.name = attributes.fetch(:name, nil)
-        user.last_name = attributes.fetch(:last_name, nil)
-        user.website = attributes.fetch(:website, nil)
-        user.description = attributes.fetch(:description, nil)
-        user.location = attributes.fetch(:location, nil)
-        user.twitter_username = attributes.fetch(:twitter_username, nil)
-        user.disqus_shortname = attributes.fetch(:disqus_shortname, nil)
+        fields_to_be_updated = []
+        fields_to_check = [
+          :name, :last_name, :website, :description, :location, :twitter_username,
+          :disqus_shortname, :available_for_hire
+        ]
 
-        user.set_fields(attributes, [:available_for_hire]) if attributes[:available_for_hire].present?
+        fields_to_check.each do |field|
+          fields_to_be_updated << field if attributes.has_key?(field)
+        end
+
+        user.set_fields(attributes, fields_to_be_updated) if fields_to_be_updated.present?
 
         raise Sequel::ValidationFailed.new('Validation failed') unless user.valid?
         user.update_in_central
@@ -72,7 +62,7 @@ module Carto
         render_jsonp(Carto::Api::UserPresenter.new(user).to_poro)
       rescue CartoDB::CentralCommunicationFailure => e
         CartoDB::Logger.error(exception: e, user: user, params: params)
-        render_jsonp({ errors: "There was a problem while updating your data. Please, try again and contact us if the problem persists" }, 400)
+        render_jsonp({ errors: "There was a problem while updating your data. Please, try again." }, 400)
       rescue Sequel::ValidationFailed
         render_jsonp({ message: "Error updating your account details", errors: user.errors }, 400)
       end
@@ -150,6 +140,21 @@ module Carto
       # 1st user that has valid session, if coincides with URI then same as uri_user
       def session_user
         @session_user ||= (current_viewer.nil? ? nil : Carto::User.where(id: current_viewer.id).first)
+      end
+
+      def update_password_if_needed(user, attributes)
+        password_change = (attributes[:new_password].present? || attributes[:confirm_password].present?) &&
+          user.can_change_password?
+
+        if password_change
+          user.change_password(
+            attributes[:old_password].presence,
+            attributes[:new_password],
+            attributes[:confirm_password]
+          )
+
+          update_session_security_token(user)
+        end
       end
     end
   end

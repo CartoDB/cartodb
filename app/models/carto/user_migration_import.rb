@@ -84,7 +84,7 @@ module Carto
     def update_database_host
       users.each do |user|
         user.database_host = database_host
-        user.save
+        user.save!
       end
     end
 

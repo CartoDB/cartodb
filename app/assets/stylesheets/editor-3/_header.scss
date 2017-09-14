@@ -21,6 +21,10 @@
   &.is-block {
     display: block;
   }
+
+  &.is-hidden {
+    display: none;
+  }
 }
 
 .Editor-HeaderInfo--noMargin {

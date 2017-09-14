@@ -28,8 +28,7 @@
       <% } %>
     </div>
   </div>
-  <% if (column) { %>
-  <div class="Editor-HeaderInfo">
+  <div class="Editor-HeaderInfo <% if (!column) { %>is-hidden<% } %>">
     <div class="Editor-HeaderNumeration CDB-Text is-semibold u-rSpace--m">3</div>
     <div class="Editor-HeaderInfo-inner CDB-Text" data-fields="<%- parametersDataFields %>">
       <div class="Editor-HeaderInfo-title u-bSpace--m">
@@ -38,5 +37,4 @@
       <p class="CDB-Text u-upperCase CDB-FontSize-small u-altTextColor u-bSpace--xl"><%- _t('editor.layers.analysis-form.parameters-description') %></p>
     </div>
   </div>
-  <% } %>
 </form>

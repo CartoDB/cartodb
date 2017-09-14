@@ -231,7 +231,7 @@ namespace :cartodb do
         # We use to_i to remove the miliseconds that could give to erroneous updates
         # http://railsware.com/blog/2014/04/01/time-comparison-in-ruby/
         if v.updated_at.to_i != explore_visualization[:visualization_updated_at].to_i
-          if v.privacy != CartoDB::Visualization::Member::PRIVACY_PUBLIC
+          if v.privacy != CartoDB::Visualization::Member::PRIVACY_PUBLIC || !v.published?
             privated_visualization_ids << v.id
           else
             updated = update_visualization(explore_visualization[:visualization_id], v)

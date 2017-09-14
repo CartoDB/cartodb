@@ -531,7 +531,7 @@ class Carto::User < ActiveRecord::Base
     account_url(request_protocol) + '/plan'
   end
 
-  def user_frontend_version_or_frontend_version
+  def relevant_frontend_version
     frontend_version || CartoDB::Application.frontend_version
   end
 

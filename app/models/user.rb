@@ -1306,6 +1306,8 @@ class User < Sequel::Model
 
   # Get a count of visualizations with some optional filters
   def visualization_count(filters = {})
+    return 0 unless id
+
     vqb = Carto::VisualizationQueryBuilder.new
     vqb.with_type(filters[:type]) if filters[:type]
     vqb.with_privacy(filters[:privacy]) if filters[:privacy]

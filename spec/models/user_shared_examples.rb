@@ -914,4 +914,26 @@ shared_examples_for "user models" do
       expect(@user.name_or_username).to eq 'Petete Trapito'
     end
   end
+
+  describe '#relevant_frontend_version' do
+    before(:all) do
+      @user = create_user
+    end
+
+    describe "when user doesn't have user_frontend_version set" do
+      it 'should return application frontend version' do
+        CartoDB::Application.stubs(:frontend_version).returns('app_frontend_version')
+
+        @user.relevant_frontend_version.should eq 'app_frontend_version'
+      end
+    end
+
+    describe 'when user has user_frontend_version set' do
+      it 'should return user frontend version' do
+        @user.frontend_version = 'user_frontend_version'
+
+        @user.relevant_frontend_version.should eq 'user_frontend_version'
+      end
+    end
+  end
 end

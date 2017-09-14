@@ -14,6 +14,7 @@ Development
 * Fix icons in category legends (#11630)
 * Sidebar UI tweaks (#12479)
 * Add carto-node client library (#12677)
+* Migrate rails views to js templates (#12763)
 * Improving affordance of Delete icon (#12531)
 * Change select "attribute" placeholders (#12498)
 * Add pointer cursor to the sliders (#12499)
@@ -50,6 +51,8 @@ Development
 * Updates Dataservices API client default version to `0.20.0` (#12633)
 
 ### Bug fixes / enhancements
+* Rename 'SHARE' button to 'PUBLISH' and 'Not published yet' to 'Unpublished map' (#12730)
+* Move Analysis cancel/delete button to the controls zone (#11414)
 * Rename SIZE/COLOR input label to COLOR in polygons style (#12768)
 * Enhancements on 'Join columns for 2nd layer' analysis texts (#12418)
 * Rename FILL input label to SIZE/COLOR (#12564)
@@ -169,6 +172,7 @@ Development
 * Histogram UI: Do not show "NULL ROWS" value if it is not received (#12477)
 * Force raster mode in datasets preview map (#12513)
 * Add assets version to TrackJS
+* `rake cartodb:test:prepare` now works when the test database has not been created yet (#12776)
 * Adding max items limit for form list editor (#12552)
 * Improve Google Login button (cartodb-central#1808)
 * Implement widget opacity in AutoStyle (#11928)

@@ -1598,6 +1598,10 @@ class User < Sequel::Model
     destroy
   end
 
+  def relevant_frontend_version
+    frontend_version || CartoDB::Application.frontend_version
+  end
+
   private
 
   def common_data_outdated?

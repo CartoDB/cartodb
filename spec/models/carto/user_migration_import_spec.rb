@@ -73,9 +73,10 @@ describe Carto::UserMigrationImport do
 
     def should_import_metadata_for_user(user)
       @user_migration_package_mock.stubs(:meta_dir).returns :irrelevant_meta_dir
-      Carto::UserMetadataExportService.any_instance.stubs(:import_from_directory).with(:irrelevant_meta_dir).returns user
+      Carto::UserMetadataExportService.any_instance.stubs(:import_from_directory).with(:irrelevant_meta_dir)
+                                      .returns user
       Carto::UserMetadataExportService.any_instance.stubs(:import_metadata_from_directory)
-        .with(user, :irrelevant_meta_dir)
+                                      .with(user, :irrelevant_meta_dir)
     end
 
     def should_import_metadata_for_organization(organization)

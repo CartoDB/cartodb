@@ -148,7 +148,7 @@ module Carto
 
         if password_change
           user.change_password(
-            attributes[:old_password].presence,
+            attributes[:old_password],
             attributes[:new_password],
             attributes[:confirm_password]
           )

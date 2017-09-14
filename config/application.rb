@@ -90,7 +90,6 @@ module CartoDB
       keys_deps.js
       keys.js
       models.js
-      embed_models.js
       organization_templates.js
       organization_deps.js
       organization.js

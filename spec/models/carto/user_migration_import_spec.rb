@@ -48,7 +48,7 @@ describe Carto::UserMigrationImport do
       @user_mock = Carto::User.new
       @user_migration_package_mock.stubs(:data_dir).returns :irrelevant_data_dir
       @export_job_mock = Object.new
-      @export_job_mock.expects(:run!).once #should be only once
+      @export_job_mock.expects(:run!).once
       CartoDB::DataMover::ImportJob.stubs(:new).returns @export_job_mock
       @user_migration_package_mock.stubs(:cleanup)
       @import.expects(:save!).once.returns @import
@@ -57,7 +57,6 @@ describe Carto::UserMigrationImport do
     end
 
     def expected_job_arguments
-      export_file = "irrelevant_json_file"
       {
         job_uuid: nil,
         file: "irrelevant_data_dir/irrelevant_json_file",
@@ -75,13 +74,16 @@ describe Carto::UserMigrationImport do
     def should_import_metadata_for_user(user)
       @user_migration_package_mock.stubs(:meta_dir).returns :irrelevant_meta_dir
       Carto::UserMetadataExportService.any_instance.stubs(:import_from_directory).with(:irrelevant_meta_dir).returns user
-      Carto::UserMetadataExportService.any_instance.stubs(:import_metadata_from_directory).with(user, :irrelevant_meta_dir)
+      Carto::UserMetadataExportService.any_instance.stubs(:import_metadata_from_directory)
+        .with(user, :irrelevant_meta_dir)
     end
 
     def should_import_metadata_for_organization(organization)
       @user_migration_package_mock.stubs(:meta_dir).returns :irrelevant_meta_dir
-      Carto::OrganizationMetadataExportService.any_instance.stubs(:import_from_directory).with(:irrelevant_meta_dir).returns organization
-      Carto::OrganizationMetadataExportService.any_instance.stubs(:import_metadata_from_directory).with(organization, :irrelevant_meta_dir)
+      Carto::OrganizationMetadataExportService.any_instance.stubs(:import_from_directory).with(:irrelevant_meta_dir)
+        .returns organization
+      Carto::OrganizationMetadataExportService.any_instance.stubs(:import_metadata_from_directory)
+        .with(organization, :irrelevant_meta_dir)
     end
 
     def create_and_add_users_to_organizaton

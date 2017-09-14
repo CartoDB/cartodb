@@ -8,13 +8,14 @@ module Carto
       include CartoDB::ConfigUtils
       include FrontendConfigHelper
       include AvatarHelper
+      include AccountTypeHelper
 
       UPDATE_ME_FIELDS = [
         :name, :last_name, :website, :description, :location, :twitter_username,
         :disqus_shortname, :available_for_hire
       ].freeze
 
-      ssl_required :show, :me, :update_me, :get_authenticated_users
+      ssl_required :show, :me, :update_me, :me_account_info, :get_authenticated_users
 
       skip_before_filter :api_authorization_required, only: [:get_authenticated_users]
 
@@ -67,6 +68,24 @@ module Carto
         render_jsonp({ errors: "There was a problem while updating your data. Please, try again." }, 422)
       rescue Sequel::ValidationFailed
         render_jsonp({ message: "Error updating your account details", errors: user.errors }, 400)
+      end
+
+      def me_account_info
+        user = current_viewer
+
+        can_be_deleted, cant_be_deleted_reason = user.can_be_deleted?
+
+        render json: {
+          can_change_email: user.can_change_email?,
+          auth_username_password_enabled: user.organization && user.organization.auth_username_password_enabled,
+          should_display_old_password: user.should_display_old_password?,
+          can_change_password: user.can_change_password?,
+          plan_name: plan_name(user.account_type),
+          plan_url: user.plan_url(request.protocol),
+          can_be_deleted: can_be_deleted,
+          cant_be_deleted_reason: cant_be_deleted_reason,
+          services: user.get_oauth_services
+        }
       end
 
       def get_authenticated_users

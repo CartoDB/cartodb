@@ -208,4 +208,34 @@ describe Carto::Api::UsersController do
       end
     end
   end
+
+  describe 'me_account_info' do
+    before(:each) do
+      @user = FactoryGirl.create(:user)
+    end
+
+    after(:each) do
+      @user.destroy
+    end
+
+    let(:url_options) do
+      {
+        user_domain: @user.username,
+        user_id: @user.id,
+        api_key: @user.api_key
+      }
+    end
+
+    it 'returns a hash with user profile info' do
+      get_json api_v3_users_me_account_info_url(url_options), @headers do |response|
+        expect(response.status).to eq(200)
+      end
+    end
+
+    it 'returns 401 if user is not logged in' do
+      get_json api_v3_users_me_account_info_url(url_options.except(:api_key)), @headers do |response|
+        expect(response.status).to eq(401)
+      end
+    end
+  end
 end

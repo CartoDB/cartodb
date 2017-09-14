@@ -1178,6 +1178,70 @@ class User < Sequel::Model
     !Carto::Ldap::Manager.new.configuration_present?
   end
 
+  def can_be_deleted?
+    if organization_owner?
+      [false, "You can't delete your account because you are admin of an organization"]
+    elsif Carto::UserCreation.http_authentication.where(user_id: id).first.present?
+      [false, "You can't delete your account because you are using HTTP Header Authentication"]
+    else
+      [true, nil]
+    end
+  end
+
+  def get_oauth_services
+    datasources = CartoDB::Datasources::DatasourcesFactory.get_all_oauth_datasources
+    array = []
+
+    service_titles = {
+      'gdrive' => 'Google Drive',
+      'dropbox' => 'Dropbox',
+      'box' => 'Box',
+      'mailchimp' => 'MailChimp',
+      'instagram' => 'Instagram'
+    }
+
+    service_revoke_urls = {
+      'mailchimp' => 'http://admin.mailchimp.com/account/oauth2/',
+      'instagram' => 'http://instagram.com/accounts/manage_access/'
+    }
+
+    datasources.each do |serv|
+      obj ||= Hash.new
+
+      title = service_titles.fetch(serv, serv)
+      revoke_url = service_revoke_urls.fetch(serv, nil)
+      enabled = case serv
+      when 'gdrive'
+        Cartodb.config[:oauth][serv]['client_id'].present?
+      when 'box'
+        Cartodb.config[:oauth][serv]['client_id'].present?
+      when 'gdrive'
+        Cartodb.config[:oauth][serv]['client_id'].present?
+      when 'dropbox'
+        Cartodb.config[:oauth]['dropbox']['app_key'].present?
+      when 'mailchimp'
+        Cartodb.config[:oauth]['mailchimp']['app_key'].present? && current_user.has_feature_flag?('mailchimp_import')
+      when 'instagram'
+        Cartodb.config[:oauth]['instagram']['app_key'].present? && current_user.has_feature_flag?('instagram_import')
+      else
+        true
+      end
+
+      if enabled
+        oauth = oauths.select(serv)
+
+        obj['name'] = serv
+        obj['title'] = title
+        obj['revoke_url'] = revoke_url
+        obj['connected'] = !oauth.nil? ? true : false
+
+        array.push(obj)
+      end
+    end
+
+    array
+  end
+
   # This method is innaccurate and understates point based tables (the /2 is to account for the_geom_webmercator)
   # TODO: Without a full table scan, ignoring the_geom_webmercator, we cannot accuratly asses table size
   # Needs to go on a background job.

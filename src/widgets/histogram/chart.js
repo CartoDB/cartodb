@@ -212,15 +212,13 @@ module.exports = cdb.core.View.extend({
     var rightTip = 'right_axis_tip';
     var attr = className + '_axis_tip';
     var isRight = className === 'right';
+    var isLeft = !isRight;
     var isWeek = this._dataviewModel.get('aggregation') === 'week';
     var model = this.model.get(attr);
     if (model === undefined) { return; }
 
     var leftValue = this.model.get(leftTip);
     var rightValue = this.model.get(rightTip);
-    leftValue >= rightValue && this._isDateTimeSeries()
-      ? this._hideAxisTip('right')
-      : this._showAxisTip('right');
 
     var textLabel = this.chart.select('.CDB-Chart-axisTipText.CDB-Chart-axisTip-' + className);
     var axisTip = this.chart.select('.CDB-Chart-axisTip.CDB-Chart-axisTip-' + className);
@@ -272,13 +270,27 @@ module.exports = cdb.core.View.extend({
     var translate = barCenter - rectCenter;
 
     // Check if rect if out of bounds and clip translate if that happens
-    var axisXPos = xPos + translate + (isRight ? rectWidth : 0);
+    var leftPos = xPos + translate;
+    var rightPos = leftPos + rectWidth;
     var translatedCenter = translate + rectCenter;
-    if (axisXPos < 0) { // If axis tip would outside chart, clip to 0
-      translate = 0;
-    } else if (axisXPos > chartWidth) {
-      translate = handleWidth - rectWidth;
+    var rightExceed = rightPos - (chartWidth + handleWidth);
+
+    // Do we exceed left?
+    if (leftPos < 0) {
+      translate -= leftPos;
     }
+
+    // Do we exceed right?
+    if (rightExceed > 0) {
+      translate -= rightExceed;
+    }
+
+    // Show / hide labels depending on their values
+    var showTip = isLeft
+      ? leftValue <= rightValue
+      : (leftValue <= rightValue && !(leftValue === rightValue && this._isDateTimeSeries()));
+
+    this._showAxisTip(className, showTip);
 
     // Translate axis tip
     axisTip.attr('transform', 'translate(' + translate + ', ' + yPos + ')');
@@ -287,32 +299,8 @@ module.exports = cdb.core.View.extend({
     this._updateTriangle(isRight, triangle, translate, translatedCenter, rectWidth);
 
     if (this.model.get('dragging') && this._isMobileViewport() && this._isTimeSeries()) {
-      this._showAxisTip(className);
+      this._showAxisTip(className, true);
     }
-  },
-
-  _checkAxisTipsBounds: function () {
-    var chartNode = this.chart && this.chart.node();
-    var self = this;
-
-    function checkOutOfBounds (axisTip) {
-      var rectLabel = self.chart.select('.CDB-Chart-axisTipRect.CDB-Chart-axisTip-' + axisTip);
-      var rectNode = rectLabel && rectLabel.node();
-      var chartClientRect = chartNode && chartNode.getBoundingClientRect();
-      var rectClientRect = rectNode && rectNode.getBoundingClientRect();
-      if (chartClientRect && rectClientRect) {
-        var adjust = axisTip === 'left'
-          ? rectClientRect.left - chartClientRect.left <= 0
-          : chartClientRect.right - rectClientRect.right <= 0;
-
-        if (adjust) {
-          self._updateAxisTip(axisTip);
-        }
-      }
-    }
-
-    checkOutOfBounds('left');
-    checkOutOfBounds('right');
   },
 
   _onChangeData: function () {
@@ -397,8 +385,8 @@ module.exports = cdb.core.View.extend({
     this.chart.classed('is-dragging', this.model.get('dragging'));
 
     if (!this.model.get('dragging') && this._isMobileViewport() && this._isTimeSeries()) {
-      this._hideAxisTip('right');
-      this._hideAxisTip('left');
+      this._showAxisTip('right', false);
+      this._showAxisTip('left', false);
     }
   },
 
@@ -407,24 +395,21 @@ module.exports = cdb.core.View.extend({
     var rectLabel = this.chart.select('.CDB-Chart-axisTipRect.CDB-Chart-axisTip-' + className);
     var handle = this.chart.select('.CDB-Chart-handle.CDB-Chart-handle-' + className);
     var triangle = handle.select('.CDB-Chart-axisTipTriangle');
+    var duration = 60;
 
     if (textLabel) {
-      textLabel.transition().duration(200).attr('opacity', show);
+      textLabel.transition().duration(duration).attr('opacity', show);
     }
     if (rectLabel) {
-      rectLabel.transition().duration(200).attr('opacity', show);
+      rectLabel.transition().duration(duration).attr('opacity', show);
     }
     if (triangle) {
-      triangle.transition().duration(200).style('opacity', show);
+      triangle.transition().duration(duration).style('opacity', show);
     }
   },
 
-  _hideAxisTip: function (className) {
-    this._toggleAxisTip(className, 0);
-  },
-
-  _showAxisTip: function (className) {
-    this._toggleAxisTip(className, 1);
+  _showAxisTip: function (className, show) {
+    this._toggleAxisTip(className, show ? 1 : 0);
   },
 
   _setAxisTipAccordingToBins: function () {
@@ -953,7 +938,8 @@ module.exports = cdb.core.View.extend({
       this._setupFillColor();
       this._refreshBarsColor();
       this._adjustBrushHandles();
-      this._checkAxisTipsBounds();
+      this._updateAxisTip('left');
+      this._updateAxisTip('right');
     }
   },
 

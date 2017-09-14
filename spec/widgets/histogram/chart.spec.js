@@ -1262,7 +1262,7 @@ describe('widgets/histogram/chart', function () {
 
         var axisTip = this.view.$('.CDB-Chart-axisTip.CDB-Chart-axisTip-left');
 
-        expect(axisTip.attr('transform')).toBe('translate(2, -26)');
+        expect(axisTip.attr('transform')).toBe('translate(-2, -26)');
       });
     });
 
@@ -1273,7 +1273,7 @@ describe('widgets/histogram/chart', function () {
 
         var axisTip = this.view.$('.CDB-Chart-axisTip.CDB-Chart-axisTip-right');
 
-        expect(axisTip.attr('transform')).toBe('translate(2, 56)');
+        expect(axisTip.attr('transform')).toBe('translate(-2, 56)');
       });
     });
 
@@ -1314,18 +1314,7 @@ describe('widgets/histogram/chart', function () {
 
         var axisTip = this.view.$('.CDB-Chart-axisTip.CDB-Chart-axisTip-right');
 
-        expect(axisTip.attr('transform')).toBe('translate(2, -26)');
-      });
-
-      describe('is dragging', function () {
-        it('should show axis tip', function () {
-          spyOn(this.view, '_showAxisTip');
-
-          this.view.model.set('dragging', true);
-          this.view._updateAxisTip('right');
-
-          expect(this.view._showAxisTip).toHaveBeenCalledWith('right');
-        });
+        expect(axisTip.attr('transform')).toBe('translate(-2, -26)');
       });
     });
   });
@@ -1355,12 +1344,12 @@ describe('widgets/histogram/chart', function () {
       });
 
       it('should hide axis tips', function () {
-        spyOn(this.view, '_hideAxisTip');
+        spyOn(this.view, '_showAxisTip');
 
         this.view.model.set('dragging', false);
 
-        expect(this.view._hideAxisTip).toHaveBeenCalledWith('right');
-        expect(this.view._hideAxisTip).toHaveBeenCalledWith('left');
+        expect(this.view._showAxisTip).toHaveBeenCalledWith('right', false);
+        expect(this.view._showAxisTip).toHaveBeenCalledWith('left', false);
       });
     });
   });
@@ -1402,25 +1391,23 @@ describe('widgets/histogram/chart', function () {
     });
   });
 
-  describe('._hideAxisTip', function () {
-    it('should hide axis tip', function () {
-      var tip = 'left';
-      spyOn(this.view, '_toggleAxisTip');
-
-      this.view._hideAxisTip(tip);
-
-      expect(this.view._toggleAxisTip).toHaveBeenCalledWith(tip, 0);
-    });
-  });
-
   describe('._showAxisTip', function () {
     it('should show axis tip', function () {
       var tip = 'left';
       spyOn(this.view, '_toggleAxisTip');
 
-      this.view._showAxisTip(tip);
+      this.view._showAxisTip(tip, true);
 
       expect(this.view._toggleAxisTip).toHaveBeenCalledWith(tip, 1);
+    });
+
+    it('should hide axis tip', function () {
+      var tip = 'left';
+      spyOn(this.view, '_toggleAxisTip');
+
+      this.view._showAxisTip(tip, false);
+
+      expect(this.view._toggleAxisTip).toHaveBeenCalledWith(tip, 0);
     });
   });
 

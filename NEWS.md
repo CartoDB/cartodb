@@ -53,6 +53,7 @@ Development
 
 ### Bug fixes / enhancements
 * Rename 'Select a text' placeholder to 'Select a value' in Filter analysis (#11861)
+* Cancel feature edition when widget edition is selected (#12781)
 * Rename 'SHARE' button to 'PUBLISH' and 'Not published yet' to 'Unpublished map' (#12730)
 * Move Analysis cancel/delete button to the controls zone (#11414)
 * Rename SIZE/COLOR input label to COLOR in polygons style (#12768)

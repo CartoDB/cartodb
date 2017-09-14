@@ -3,6 +3,7 @@ var Backbone = require('backbone');
 var WindshaftConfig = require('./config');
 var log = require('../cdb.log');
 var WindshaftError = require('./error');
+var Request = require('./request');
 
 var WindshaftMap = Backbone.Model.extend({
   initialize: function (attrs, options) {
@@ -60,12 +61,13 @@ var WindshaftMap = Backbone.Model.extend({
         oldSuccess && oldSuccess(this);
       }.bind(this);
 
-      options.error = function (windshaftErrors) {
+      options.error = function (response) {
+        var windshaftErrors = this._getErrorsFromResponse(response);
         this._modelUpdater.setErrors(windshaftErrors);
         oldError && oldError();
       }.bind(this);
-
-      this.client.instantiateMap(payload, params, options);
+      var request = new Request(payload, params, options);
+      this.client.instantiateMap(request);
     } catch (e) {
       var error = new WindshaftError({
         message: e.message
@@ -209,6 +211,20 @@ var WindshaftMap = Backbone.Model.extend({
 
   _getAnalyses: function () {
     return (this.get('metadata') && this.get('metadata').analyses) || [];
+  },
+
+  _getErrorsFromResponse: function (response) {
+    if (response.errors_with_context) {
+      return _.map(response.errors_with_context, function (error) {
+        return new WindshaftError(error);
+      });
+    }
+    if (response.errors) {
+      return [
+        new WindshaftError({ message: response.errors[0] })
+      ];
+    }
+    return [];
   }
 });
 

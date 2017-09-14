@@ -138,8 +138,8 @@ describe('windshaft/map-base', function () {
 
     describe('when request succeeds', function () {
       beforeEach(function () {
-        spyOn(this.client, '_instantiateMap').and.callFake(function (options) {
-          options.success(this.windshaftResponse);
+        spyOn(this.client, 'instantiateMap').and.callFake(function (request) {
+          request.options.success(this.windshaftResponse);
         }.bind(this));
       });
 
@@ -151,8 +151,8 @@ describe('windshaft/map-base', function () {
           sourceId: 'sourceId'
         });
 
-        var args = this.client._instantiateMap.calls.mostRecent().args[0];
-        expect(args.mapDefinition).toEqual({ foo: 'bar' });
+        var args = this.client.instantiateMap.calls.mostRecent().args[0];
+        expect(args.payload).toEqual({ foo: 'bar' });
         expect(args.params).toEqual({
           stat_tag: 'stat_tag'
         });
@@ -183,7 +183,7 @@ describe('windshaft/map-base', function () {
           sourceId: 'sourceId',
           includeFilters: true
         });
-        var args = this.client._instantiateMap.calls.mostRecent().args[0];
+        var args = this.client.instantiateMap.calls.mostRecent().args[0];
 
         // Filters are empty because no filter is active yet
         expect(args.params).toEqual({
@@ -197,7 +197,7 @@ describe('windshaft/map-base', function () {
           sourceId: 'sourceId',
           includeFilters: true
         });
-        args = this.client._instantiateMap.calls.mostRecent().args[0];
+        args = this.client.instantiateMap.calls.mostRecent().args[0];
 
         expect(args.params).toEqual({
           stat_tag: 'stat_tag',
@@ -232,7 +232,7 @@ describe('windshaft/map-base', function () {
           sourceId: 'sourceId'
         });
 
-        var args = this.client._instantiateMap.calls.mostRecent().args[0];
+        var args = this.client.instantiateMap.calls.mostRecent().args[0];
         expect(args.params).toEqual({
           stat_tag: 'stat_tag',
           api_key: 'API_KEY'
@@ -259,7 +259,7 @@ describe('windshaft/map-base', function () {
           sourceId: 'sourceId'
         });
 
-        var args = this.client._instantiateMap.calls.mostRecent().args[0];
+        var args = this.client.instantiateMap.calls.mostRecent().args[0];
         expect(args.params).toEqual({
           stat_tag: 'stat_tag',
           auth_token: 'AUTH_TOKEN'
@@ -288,8 +288,8 @@ describe('windshaft/map-base', function () {
 
     describe('when request fails', function () {
       beforeEach(function () {
-        spyOn(this.client, '_instantiateMap').and.callFake(function (options) {
-          options.error({
+        spyOn(this.client, 'instantiateMap').and.callFake(function (request) {
+          request.options.error({
             errors: ['something went wrong']
           });
         });
@@ -305,7 +305,7 @@ describe('windshaft/map-base', function () {
         expect(this.errorCallback).toHaveBeenCalledWith();
       });
 
-      it('should should update models and use first error message', function () {
+      it('should update models and use first error message', function () {
         expect(this.modelUpdater.setErrors).toHaveBeenCalled();
         var errors = this.modelUpdater.setErrors.calls.argsFor(0)[0];
 
@@ -315,8 +315,8 @@ describe('windshaft/map-base', function () {
 
       it('should use errors with context when present', function () {
         this.modelUpdater.setErrors.calls.reset();
-        this.client._instantiateMap.and.callFake(function (options) {
-          options.error({
+        this.client.instantiateMap.and.callFake(function (request) {
+          request.options.error({
             errors_with_context: [{
               type: 'layer',
               subtype: 'layer-subtype',

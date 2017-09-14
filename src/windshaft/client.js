@@ -4,7 +4,6 @@ var LZMA = require('lzma');
 var util = require('../core/util');
 var WindshaftConfig = require('./config');
 var RequestTracker = require('./request-tracker');
-var WindshaftError = require('./error');
 var log = require('../cdb.log');
 
 var validatePresenceOfOptions = function (options, requiredOptions) {

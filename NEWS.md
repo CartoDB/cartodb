@@ -185,6 +185,7 @@ Development
 * Square marker icon not updating with style. [Support #974](https://github.com/CartoDB/support/issues/974)
 * Hide privacy button if user account type is FREE or PERSONAL (#12423)
 * Fix "apply" button sizes in advanced mode (#12652)
+* Removed unused settings in organizations (#4992)
 
 ### NOTICE
 This release upgrades the CartoDB PostgreSQL extension to `0.19.2`. Run the following to have it available:

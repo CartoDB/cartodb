@@ -144,7 +144,7 @@ module Carto
 
       def update_password_if_needed(user, attributes)
         password_change = (attributes[:new_password].present? || attributes[:confirm_password].present?) &&
-          user.can_change_password?
+                          user.can_change_password?
 
         if password_change
           user.change_password(

@@ -290,7 +290,7 @@ module.exports = cdb.core.View.extend({
 
   _onChangeWidth: function () {
     var width = this.model.get('width');
-    this.$el.width(width);
+    this.canvas.attr('width', width);
     this.chart.attr('width', width);
     if (this.options.showOnWidthChange && width > 0) {
       this.show();
@@ -1413,8 +1413,8 @@ module.exports = cdb.core.View.extend({
       .append('rect')
       .attr('class', 'CDB-Chart-bar')
       .attr('fill', this._getFillColor.bind(this))
-      .attr('transform', function (d, i) {
-        return 'translate(' + (i * self.barWidth) + ', 0 )';
+      .attr('x', function (d, i) {
+        return i * self.barWidth;
       })
       .attr('y', self.chartHeight())
       .attr('height', 0)
@@ -1500,8 +1500,8 @@ module.exports = cdb.core.View.extend({
       .append('rect')
       .attr('class', 'CDB-Chart-bar')
       .attr('fill', this._getFillColor.bind(self))
-      .attr('transform', function (d, i) {
-        return 'translate(' + (i * self.barWidth) + ', 0)';
+      .attr('x', function (d, i) {
+        return i * self.barWidth;
       })
       .attr('y', self.chartHeight())
       .attr('height', 0)
@@ -1581,8 +1581,8 @@ module.exports = cdb.core.View.extend({
       .enter()
       .append('rect')
       .attr('class', 'CDB-Chart-shadowBar')
-      .attr('transform', function (d, i) {
-        return 'translate(' + (i * barWidth) + ', 0 )';
+      .attr('x', function (d, i) {
+        return i * barWidth;
       })
       .attr('y', function (d) {
         if (_.isEmpty(d)) {

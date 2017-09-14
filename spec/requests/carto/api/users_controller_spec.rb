@@ -108,7 +108,6 @@ describe Carto::Api::UsersController do
       end
     end
 
-
     context 'profile updates' do
       before(:each) do
         @user = FactoryGirl.create(:user)

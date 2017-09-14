@@ -98,7 +98,7 @@ var Map = Model.extend({
   createCartoDBLayer: function (attrs, options) {
     this._checkProperties(attrs, ['sql|source', 'cartocss']);
     if (attrs.source && !(attrs.source instanceof AnalysisModel)) {
-      throw new Error('CartoDB layers must have a valid source');
+      throw new Error('Given source is not a valid analysis object');
     }
     return this._addNewLayerModel('cartodb', attrs, options);
   },
@@ -106,7 +106,7 @@ var Map = Model.extend({
   createTorqueLayer: function (attrs, options) {
     this._checkProperties(attrs, ['sql|source', 'cartocss']);
     if (attrs.source && !(attrs.source instanceof AnalysisModel)) {
-      throw new Error('CartoDB layers must have a valid source');
+      throw new Error('Given source is not a valid analysis object');
     }
     return this._addNewLayerModel('torque', attrs, options);
   },

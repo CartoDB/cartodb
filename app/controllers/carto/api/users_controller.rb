@@ -8,6 +8,11 @@ module Carto
       include CartoDB::ConfigUtils
       include FrontendConfigHelper
 
+      UPDATE_ME_FIELDS = [
+        :name, :last_name, :website, :description, :location, :twitter_username,
+        :disqus_shortname, :available_for_hire
+      ].freeze
+
       ssl_required :show, :me, :update_me, :get_authenticated_users
 
       skip_before_filter :api_authorization_required, only: [:get_authenticated_users]
@@ -40,18 +45,10 @@ module Carto
         end
 
         if attributes[:avatar_url].present? && valid_avatar_file?(attributes[:avatar_url])
-          user.avatar_url = attributes.fetch(:avatar_url, nil)
+          user.set_fields(attributes, [:avatar_url])
         end
 
-        fields_to_be_updated = []
-        fields_to_check = [
-          :name, :last_name, :website, :description, :location, :twitter_username,
-          :disqus_shortname, :available_for_hire
-        ]
-
-        fields_to_check.each do |field|
-          fields_to_be_updated << field if attributes.has_key?(field)
-        end
+        fields_to_be_updated = UPDATE_ME_FIELDS.select { |field| attributes.has_key?(field) }
 
         user.set_fields(attributes, fields_to_be_updated) if fields_to_be_updated.present?
 

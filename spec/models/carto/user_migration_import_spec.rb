@@ -82,9 +82,9 @@ describe Carto::UserMigrationImport do
     def should_import_metadata_for_organization(organization)
       @user_migration_package_mock.stubs(:meta_dir).returns :irrelevant_meta_dir
       Carto::OrganizationMetadataExportService.any_instance.stubs(:import_from_directory).with(:irrelevant_meta_dir)
-        .returns organization
+                                              .returns organization
       Carto::OrganizationMetadataExportService.any_instance.stubs(:import_metadata_from_directory)
-        .with(organization, :irrelevant_meta_dir)
+                                              .with(organization, :irrelevant_meta_dir)
     end
 
     def create_and_add_users_to_organizaton

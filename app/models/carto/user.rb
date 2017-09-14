@@ -339,7 +339,9 @@ class Carto::User < ActiveRecord::Base
   end
 
   #TODO: Remove unused param `use_total`
-  def remaining_quota(use_total = false, db_size = service.db_size_in_bytes)
+  def remaining_quota(_use_total = false, db_size = service.db_size_in_bytes)
+    return nil unless db_size
+
     self.quota_in_bytes - db_size
   end
 

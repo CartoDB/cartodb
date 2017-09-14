@@ -1220,8 +1220,10 @@ class User < Sequel::Model
     self.over_disk_quota? || self.over_table_quota?
   end
 
-  def remaining_quota(use_total = false, db_size_in_bytes = self.db_size_in_bytes)
-    self.quota_in_bytes - db_size_in_bytes
+  def remaining_quota(_use_total = false, db_size_in_bytes = self.db_size_in_bytes)
+    return nil unless db_size_in_bytes
+
+    quota_in_bytes - db_size_in_bytes
   end
 
   def disk_quota_overspend

@@ -8,7 +8,6 @@ var util = require('../core/util');
 var Layers = require('./map/layers');
 var sanitize = require('../core/sanitize');
 var GeometryFactory = require('./geometry-models/geometry-factory');
-var AnalysisModel = require('../analysis/analysis-model.js');
 
 var Map = Model.extend({
   defaults: {
@@ -96,51 +95,27 @@ var Map = Model.extend({
   },
 
   createCartoDBLayer: function (attrs, options) {
-    this._checkProperties(attrs, ['sql|source', 'cartocss']);
-    if (attrs.source && !(attrs.source instanceof AnalysisModel)) {
-      throw new Error('Given source is not a valid analysis object');
-    }
     return this._addNewLayerModel('cartodb', attrs, options);
   },
 
   createTorqueLayer: function (attrs, options) {
-    this._checkProperties(attrs, ['sql|source', 'cartocss']);
-    if (attrs.source && !(attrs.source instanceof AnalysisModel)) {
-      throw new Error('Given source is not a valid analysis object');
-    }
     return this._addNewLayerModel('torque', attrs, options);
   },
 
   createTileLayer: function (attrs, options) {
-    this._checkProperties(attrs, ['urlTemplate']);
     return this._addNewLayerModel('tiled', attrs, options);
   },
 
   createWMSLayer: function (attrs, options) {
-    this._checkProperties(attrs, ['urlTemplate']);
     return this._addNewLayerModel('wms', attrs, options);
   },
 
   createGMapsBaseLayer: function (attrs, options) {
-    this._checkProperties(attrs, ['baseType']);
     return this._addNewLayerModel('gmapsbase', attrs, options);
   },
 
   createPlainLayer: function (attrs, options) {
-    this._checkProperties(attrs, ['image|color']);
     return this._addNewLayerModel('plain', attrs, options);
-  },
-
-  _checkProperties: function (obj, requiredProperties) {
-    var missingProperties = _.select(requiredProperties, function (property) {
-      var properties = property.split('|');
-      return _.all(properties, function (property) {
-        return obj[property] === undefined;
-      });
-    });
-    if (missingProperties.length) {
-      throw new Error('The following attributes are missing: ' + missingProperties.join(','));
-    }
   },
 
   _addNewLayerModel: function (type, attrs, options) {

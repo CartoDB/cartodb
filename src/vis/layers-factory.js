@@ -39,31 +39,66 @@ function transformToHTTPS (tilesTemplate) {
   return tilesTemplate;
 }
 
+function checkProperties (obj, requiredProperties) {
+  var missingProperties = _.select(requiredProperties, function (property) {
+    var properties = property.split('|');
+    return _.all(properties, function (property) {
+      return obj[property] === undefined;
+    });
+  });
+  if (missingProperties.length) {
+    throw new Error('The following attributes are missing: ' + missingProperties.join(','));
+  }
+}
+
+function findOrCreateSourceForLayer (analysis, attrs) {
+  if (attrs.sql) {
+    return analysis.createSourceAnalysisForLayer(attrs.id, attrs.sql);
+  }
+
+  if (attrs.source && typeof attrs.source === 'string') {
+    var source = analysis.findNodeById(attrs.source);
+    if (source) {
+      return source;
+    }
+  }
+
+  throw new Error('Unable to find source "' + attrs.source + '" when creating layer model "' + attrs.id + '"');
+}
+
 var LAYER_CONSTRUCTORS = {
-  tiled: function (data, options) {
+  tiled: function (attrs, options) {
+    checkProperties(attrs, ['urlTemplate']);
+
     var visModel = options.vis;
 
     if (visModel.get('https') === true) {
-      data.urlTemplate = transformToHTTPS(data.urlTemplate);
+      attrs.urlTemplate = transformToHTTPS(attrs.urlTemplate);
     } else if (visModel.get('https') === false) { // Checking for an explicit false value. If it's undefined the url is left as is.
-      data.urlTemplate = transformToHTTP(data.urlTemplate);
+      attrs.urlTemplate = transformToHTTP(attrs.urlTemplate);
     }
 
-    return new TileLayer(data, {
+    return new TileLayer(attrs, {
       vis: options.vis
     });
   },
 
-  wms: function (data, options) {
-    return new WMSLayer(data);
+  wms: function (attrs, options) {
+    checkProperties(attrs, ['urlTemplate']);
+
+    return new WMSLayer(attrs);
   },
 
-  gmapsbase: function (data, options) {
-    return new GMapsBaseLayer(data);
+  gmapsbase: function (attrs, options) {
+    checkProperties(attrs, ['baseType']);
+
+    return new GMapsBaseLayer(attrs);
   },
 
-  plain: function (data, options) {
-    return new PlainLayer(data, {
+  plain: function (attrs, options) {
+    checkProperties(attrs, ['image|color']);
+
+    return new PlainLayer(attrs, {
       vis: options.vis
     });
   },
@@ -74,14 +109,29 @@ var LAYER_CONSTRUCTORS = {
     });
   },
 
-  cartodb: function (data, options) {
-    return new CartoDBLayer(data, {
+  cartodb: function (attrs, options) {
+    checkProperties(attrs, ['sql|source', 'cartocss']);
+
+    var analysis = options.analysis;
+
+    // Make sure "source" attribute points to an analysis
+    attrs.source = findOrCreateSourceForLayer(analysis, attrs);
+    delete attrs.sql;
+
+    return new CartoDBLayer(attrs, {
       vis: options.vis
     });
   },
 
   torque: function (attrs, options) {
+    checkProperties(attrs, ['sql|source', 'cartocss']);
+
+    var analysis = options.analysis;
     var windshaftSettings = options.windshaftSettings;
+
+    // Make sure "source" attribute points to an analysis
+    attrs.source = findOrCreateSourceForLayer(analysis, attrs);
+    delete attrs.sql;
 
     attrs = _.extend(attrs, {
       user_name: windshaftSettings.userName,
@@ -108,9 +158,11 @@ var LAYER_CONSTRUCTORS = {
 var LayersFactory = function (deps) {
   if (!deps.visModel) throw new Error('visModel is required');
   if (!deps.windshaftSettings) throw new Error('windshaftSettings is required');
+  if (!deps.analysis) throw new Error('analysis is required');
 
   this._visModel = deps.visModel;
   this._windshaftSettings = deps.windshaftSettings;
+  this._analysis = deps.analysis;
 };
 
 LayersFactory.prototype.createLayer = function (type, attrs) {
@@ -124,7 +176,8 @@ LayersFactory.prototype.createLayer = function (type, attrs) {
 
   return LayerConstructor(layerAttributes, {
     windshaftSettings: this._windshaftSettings,
-    vis: this._visModel
+    vis: this._visModel,
+    analysis: this._analysis
   });
 };
 

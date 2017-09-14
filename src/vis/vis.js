@@ -142,9 +142,18 @@ var VisModel = Backbone.Model.extend({
 
     var windshaftClient = new WindshaftClient(windshaftSettings);
 
+    // Create the public Analysis Factory
+    this.analysis = new AnalysisFactory({
+      apiKey: this.get('apiKey'),
+      authToken: this.get('authToken'),
+      analysisCollection: this._analysisCollection,
+      vis: this
+    });
+
     var layersFactory = new LayersFactory({
       visModel: this,
-      windshaftSettings: windshaftSettings
+      windshaftSettings: windshaftSettings,
+      analysis: this.analysis
     });
 
     var allowScrollInOptions = (vizjson.options && vizjson.options.scrollwheel) || vizjson.scrollwheel;
@@ -213,14 +222,6 @@ var VisModel = Backbone.Model.extend({
       analysisCollection: this._analysisCollection
     });
 
-    // Create the public Analysis Factory
-    this.analysis = new AnalysisFactory({
-      apiKey: this.get('apiKey'),
-      authToken: this.get('authToken'),
-      analysisCollection: this._analysisCollection,
-      vis: this
-    });
-
     this._windshaftMap.bind('instanceCreated', this._onMapInstanceCreated, this);
 
     // "Load" existing analyses from the viz.json. This will generate
@@ -234,12 +235,6 @@ var VisModel = Backbone.Model.extend({
 
     var layerModels = _.map(vizjson.layers, function (layerData, layerIndex) {
       _.extend(layerData, { order: layerIndex });
-
-      if (layerData.options.source) {
-        var source = this._analysisCollection.find({ id: layerData.options.source });
-        layerData.options.source = source;
-      }
-
       return layersFactory.createLayer(layerData.type, layerData);
     }, this);
 

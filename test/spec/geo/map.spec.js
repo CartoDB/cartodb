@@ -8,7 +8,6 @@ var TileLayer = require('../../../src/geo/map/tile-layer');
 var WMSLayer = require('../../../src/geo/map/wms-layer');
 var GMapsBaseLayer = require('../../../src/geo/map/gmaps-base-layer');
 var LayersFactory = require('../../../src/vis/layers-factory');
-var AnalysisModel = require('../../../src/analysis/analysis-model');
 
 var Point = require('../../../src/geo/geometry-models/point');
 var Polyline = require('../../../src/geo/geometry-models/polyline');
@@ -16,13 +15,12 @@ var Polygon = require('../../../src/geo/geometry-models/polygon');
 
 var fakeLayersFactory = new LayersFactory({
   visModel: new Backbone.Model(),
-  windshaftSettings: {}
+  windshaftSettings: {},
+  analysis: {
+    createSourceAnalysisForLayer: jasmine.createSpy('findOrCreateSourceForLayer'),
+    findNodeById: jasmine.createSpy('findNodeById').and.returnValue({})
+  }
 });
-
-var fakeCamshaftReference = {
-  getSourceNamesForAnalysisType: function (analysisType) {},
-  getParamNamesForAnalysisType: function (analysisType) {}
-};
 
 var Map = require('../../../src/geo/map');
 
@@ -286,10 +284,7 @@ describe('core/geo/map', function () {
         expectedLayerModelClass: CartoDBLayer,
         expectedLayerModelType: 'CartoDB',
         testAttributes: {
-          source: new AnalysisModel({ id: 'a0' }, {
-            vis: new VisModel(),
-            camshaftReference: fakeCamshaftReference
-          }),
+          source: 'a0',
           cartocss: 'else'
         },
         expectedErrorMessage: 'The following attributes are missing: sql|source,cartocss'
@@ -309,10 +304,7 @@ describe('core/geo/map', function () {
         expectedLayerModelClass: TorqueLayer,
         expectedLayerModelType: 'torque',
         testAttributes: {
-          source: new AnalysisModel({ id: 'a0' }, {
-            vis: new VisModel(),
-            camshaftReference: fakeCamshaftReference
-          }),
+          source: 'a0',
           cartocss: 'else'
         },
         expectedErrorMessage: 'The following attributes are missing: sql|source,cartocss'

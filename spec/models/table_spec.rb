@@ -1905,7 +1905,7 @@ describe Table do
       it 'tests the_geom conversions and expected results' do
         def check_query_geometry(query, schema)
           tablename = unique_name('table')
-          table = new_table(:name => nil, :user_id => @user.id)
+          table = new_table(name: nil, user_id: @user.id)
           table.migrate_existing_table = tablename
           @user.db_service.run_pg_query("CREATE TABLE #{tablename} AS #{query}")
           table.save

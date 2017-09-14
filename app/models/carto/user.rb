@@ -515,7 +515,7 @@ class Carto::User < ActiveRecord::Base
     update_column(:dashboard_viewed_at, Time.now)
   end
 
-  def user_frontend_version_or_frontend_version
+  def relevant_frontend_version
     frontend_version || CartoDB::Application.frontend_version
   end
 

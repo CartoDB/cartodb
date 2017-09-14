@@ -218,7 +218,7 @@ module.exports = cdb.core.View.extend({
 
     var leftValue = this.model.get(leftTip);
     var rightValue = this.model.get(rightTip);
-    leftValue === rightValue && this._isDateTimeSeries()
+    leftValue >= rightValue && this._isDateTimeSeries()
       ? this._hideAxisTip('right')
       : this._showAxisTip('right');
 

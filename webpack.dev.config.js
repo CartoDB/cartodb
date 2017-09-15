@@ -33,7 +33,7 @@ module.exports = env => {
         resolve(__dirname, 'lib/assets/node_modules')
       ]
     },
-    devtool: 'cheap-module-eval-source-map',
+    devtool: 'source-map',
     plugins: [
       stats(env) ? new BundleAnalyzerPlugin({
         analyzerMode: 'static'
@@ -47,33 +47,34 @@ module.exports = env => {
           minChunks: isVendor
         }))
     )
-    .concat([
+      .concat([
       // Extract common chuncks from the 3 vendor files
-      new webpack.optimize.CommonsChunkPlugin({
-        name: 'common',
-        chunks: Object.keys(entryPoints).map(n => `${n}_vendor`),
-        minChunks: (module, count) => {
-          return count >= Object.keys(entryPoints).length && isVendor(module);
-        }
-      }),
+        new webpack.optimize.CommonsChunkPlugin({
+          name: 'common',
+          chunks: Object.keys(entryPoints).map(n => `${n}_vendor`),
+          minChunks: (module, count) => {
+            return count >= Object.keys(entryPoints).length && isVendor(module);
+          }
+        }),
 
-      // Extract common chuncks from the 3 entry points
-      new webpack.optimize.CommonsChunkPlugin({
-        children: true,
-        minChunks: Object.keys(entryPoints).length
-      }),
+        // Extract common chuncks from the 3 entry points
+        new webpack.optimize.CommonsChunkPlugin({
+          children: true,
+          minChunks: Object.keys(entryPoints).length
+        }),
 
-      new webpack.ProvidePlugin({
-        $: 'jquery',
-        jQuery: 'jquery',
-        ['window.jQuery']: 'jquery'
-      }),
+        new webpack.ProvidePlugin({
+          $: 'jquery',
+          jQuery: 'jquery',
+          'window.jQuery': 'jquery'
+        }),
 
-      new webpack.DefinePlugin({
-        __IN_DEV__: JSON.stringify(true)
-      })
-    ])
-    .filter(p => !!p), // undefined is not a valid plugin, so filter undefined values here
+        new webpack.DefinePlugin({
+          __IN_DEV__: JSON.stringify(true),
+          __ENV__: JSON.stringify('dev')
+        })
+      ])
+      .filter(p => !!p), // undefined is not a valid plugin, so filter undefined values here
     module: {
       rules: [
         {
@@ -121,8 +122,6 @@ module.exports = env => {
       fs: 'empty' // This fixes the error Module not found: Error: Can't resolve 'fs'
     },
 
-    stats: {
-      warnings: false
-    }
+    stats: 'normal'
   };
 };

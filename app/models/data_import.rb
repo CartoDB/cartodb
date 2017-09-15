@@ -460,7 +460,7 @@ class DataImport < Sequel::Model
     else
       self.log = CartoDB::Log.new(
         type:     CartoDB::Log::TYPE_DATA_IMPORT,
-        user_id:  current_user.id
+        user_id:  user_id
       )
     end
   end
@@ -675,12 +675,14 @@ class DataImport < Sequel::Model
       database_options = pg_options
       self.host = database_options[:host]
 
+      unp = CartoDB::Importer2::Unp.new(Cartodb.config[:importer], Cartodb.config[:ogr2ogr])
+
       runner = CartoDB::Importer2::Runner.new({
                                                 pg: database_options,
                                                 downloader: downloader,
                                                 log: log,
                                                 user: current_user,
-                                                unpacker: CartoDB::Importer2::Unp.new(Cartodb.config[:importer]),
+                                                unpacker: unp,
                                                 post_import_handler: post_import_handler,
                                                 importer_config: Cartodb.config[:importer],
                                                 collision_strategy: collision_strategy

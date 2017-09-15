@@ -233,6 +233,84 @@
       "title": "Find nearest"
     }
   },
+  "timezones": {
+    "international-date-line-west": "International Date Line West",
+    "midway-island-samoa": "Midway Island, Samoa",
+    "hawaii": "Hawaii",
+    "alaska": "Alaska",
+    "pacific-time-us-and-canada-tijuana": "Pacific Time (US and Canada); Tijuana",
+    "mountain-time-us-and-canada": "Mountain Time (US and Canada)",
+    "chihuahua-la-paz-mazatlan": "Chihuahua, La Paz, Mazatlan",
+    "arizona": "Arizona",
+    "central-time-us-and-canada": "Central Time (US and Canada)",
+    "saskatchewan": "Saskatchewan",
+    "guadalajara-mexico-city-monterrey": "Guadalajara, Mexico City, Monterrey",
+    "central-america": "Central America",
+    "eastern-time-us-and-canada": "Eastern Time (US and Canada)",
+    "indiana-east": "Indiana (East)",
+    "bogota-lima-quito": "Bogota, Lima, Quito",
+    "atlantic-time-canada": "Atlantic Time (Canada)",
+    "caracas-la-paz": "Caracas, La Paz",
+    "santiago": "Santiago",
+    "newfoundland-and-labrador": "Newfoundland and Labrador",
+    "brasilia": "Brasilia",
+    "buenos-aires-georgetown": "Buenos Aires, Georgetown",
+    "greenland": "Greenland",
+    "mid-atlantic": "Mid-Atlantic",
+    "azores": "Azores",
+    "cape-verde-islands": "Cape Verde Islands",
+    "gmt-dublin-edinburgh-lisbon-london": "Dublin, Edinburgh, Lisbon, London",
+    "casablanca-monrovia": "Casablanca, Monrovia",
+    "canary-islands": "Canary Islands",
+    "belgrade-bratislava-budapest-ljubljana-prague": "Belgrade, Bratislava, Budapest, Ljubljana, Prague",
+    "sarajevo-skopje-warsaw-zagreb": "Sarajevo, Skopje, Warsaw, Zagreb",
+    "brussels-copenhagen-madrid-paris": "Brussels, Copenhagen, Madrid, Paris",
+    "amsterdam-berlin-bern-rome-stockholm-vienna": "Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna",
+    "west-central-africa": "West Central Africa",
+    "bucharest": "Bucharest",
+    "cairo": "Cairo",
+    "helsinki-kiev-riga-sofia-tallinn-vilnius": "Helsinki, Kiev, Riga, Sofia, Tallinn, Vilnius",
+    "athens-istanbul-minsk": "Athens, Istanbul, Minsk",
+    "jerusalem": "Jerusalem",
+    "harare-pretoria": "Harare, Pretoria",
+    "moscow-st-petersburg-volgograd": "Moscow, St. Petersburg, Volgograd",
+    "kuwait-riyadh": "Kuwait, Riyadh",
+    "nairobi": "Nairobi",
+    "baghdad": "Baghdad",
+    "tehran": "Tehran",
+    "abu-dhabi-muscat": "Abu Dhabi, Muscat",
+    "baku-tbilisi-yerevan": "Baku, Tbilisi, Yerevan",
+    "kabul": "Kabul",
+    "ekaterinburg": "Ekaterinburg",
+    "islamabad-karachi-tashkent": "Islamabad, Karachi, Tashkent",
+    "chennai-kolkata-mumbai-new-delhi": "Chennai, Kolkata, Mumbai, New Delhi",
+    "kathmandu": "Kathmandu",
+    "astana-dhaka": "Astana, Dhaka",
+    "sri-jayawardenepura": "Sri Jayawardenepura",
+    "almaty-novosibirsk": "Almaty, Novosibirsk",
+    "yangon-rangoon": "Yangon Rangoon",
+    "bangkok-hanoi-jakarta": "Bangkok, Hanoi, Jakarta",
+    "krasnoyarsk": "Krasnoyarsk",
+    "beijing-chongqing-hong-kong-sar-urumqi": "Beijing, Chongqing, Hong Kong SAR, Urumqi",
+    "kuala-lumpur-singapore": "Kuala Lumpur, Singapore",
+    "taipei": "Taipei",
+    "perth": "Perth",
+    "irkutsk-ulaanbaatar": "Irkutsk, Ulaanbaatar",
+    "seoul": "Seoul",
+    "osaka-sapporo-tokyo": "Osaka, Sapporo, Tokyo",
+    "yakutsk": "Yakutsk",
+    "darwin": "Darwin",
+    "adelaide": "Adelaide",
+    "canberra-melbourne-sydney": "Canberra, Melbourne, Sydney",
+    "brisbane": "Brisbane",
+    "hobart": "Hobart",
+    "vladivostok": "Vladivostok",
+    "guam-port-moresby": "Guam, Port Moresby",
+    "magadan-solomon-islands-new-caledonia": "Magadan, Solomon Islands, New Caledonia",
+    "fiji-islands-kamchatka-marshall-islands": "Fiji Islands, Kamchatka, Marshall Islands",
+    "auckland-wellington": "Auckland, Wellington",
+    "nuku-alofa": "Nuku'alofa"
+  },
   "analyses": {
     "connect-with-lines": {
       "title": "Connect with lines",
@@ -273,6 +351,7 @@
       },
       "search-by-name": "Search by name...",
       "errors": {
+        "max-items": "Max items reached",
         "measurement-required": "Measurement is required",
         "measurement-twice": "Two or more measurements are equal",
         "column-name-mismatch": "Segment names and column names don't match",
@@ -1179,6 +1258,7 @@
           "filter": {
             "header": "Filter measurements by",
             "type": "filters",
+            "item-label": "filter",
             "filters": {
               "label": "Filters",
               "applied": {
@@ -1382,16 +1462,19 @@
       "loading": "Unlocking your dataset %{tableName}...",
       "success": "Dataset %{tableName} unlocked",
       "title": "Your dataset %{tableName} is locked."
+    },
+    "privacy": {
+      "info": "You're not able to change the privacy of this dataset. Contact the owner <b>%{name}</b>"
     }
   },
   "editor": {
     "map": "map",
     "map_name": "%{name} map",
     "published": "Published %{when}",
-    "unpublished": "Map not published yet",
+    "unpublished": "Unpublished map",
     "map_pluralize": "%{smart_count} map |||| %{smart_count} maps",
     "button_add": "Add",
-    "button_share": "SHARE",
+    "button_publish": "Publish",
     "unpublished-changes": "Unpublished changes",
     "error-query": {
       "body": "Errors found in your SQL query. %{action} before continuing.",
@@ -1559,9 +1642,7 @@
         "add-analysis": "Add analysis",
         "analyses-count": "%{smart_count} Analysis |||| %{smart_count} Analyses",
         "widgets-count": "%{smart_count} Widget |||| %{smart_count} Widgets",
-        "add-layer": "Add layer",
-        "delete": "Delete",
-        "cancel-delete-analysis": "Cancel"
+        "add-layer": "Add layer"
       },
       "basemap": {
         "remove-baselayer": "Remove baselayer",
@@ -1607,10 +1688,6 @@
         "hover": "Hover"
       },
       "analysis-form": {
-        "merge-type": {
-          "left": "Returns all rows from #1, with the matching rows in #2 or NULL when there is no match.",
-          "inner": "Returns the result of #1 intersecting #2 (i.e. the inner part of a Venn diagram intersection)"
-        },
         "admin-region": "Admin. Region",
         "aggregate": "Aggregate",
         "aggregate-by": "Aggregate by",
@@ -1618,6 +1695,8 @@
         "aggregate-column": "Aggregate column",
         "all-to-all": "All to all",
         "allow-holes": "Allow holes",
+        "append": "Append",
+        "append-help": "Keep your source data and append matching rows from your target. (Left Join).",
         "apply-btn": "Apply",
         "asc": "ASC",
         "bicycle": "Bicycle",
@@ -1628,19 +1707,19 @@
         "by-bike": "bike",
         "by-car": "car",
         "by-walk": "walk",
+        "cancel-btn": "Cancel",
         "car": "Car",
         "categorize-by": "Categorize by",
         "categorize-by-help": "If selected a centroid will be found for each category",
         "category-column": "Category column",
+        "choose-similar-columns": "Choose similar columns to relate them",
         "city": "City",
         "clusters-num": "# of clusters",
         "column": "Column",
-        "columns": "Columns",
         "concave-hull": "Concave Hull",
         "confirm-analysis": "Confirm",
         "convex-hull": "Convex Hull",
         "country": "Country",
-        "create-btn": "Apply",
         "data-observatory-measurement-area": "Country",
         "data-observatory-measurement-column": "New col. name",
         "data-observatory-measurement-column-help": "Adds a new column to your layer to store result",
@@ -1653,19 +1732,21 @@
             "add": "Add new measurement"
           },
           "header": {
-            "title": "Enrich from Data Observatory",
-            "description": "Define your input layer"
+            "title": "Select region",
+            "description": "For augmenting your layer"
           },
           "parameters": {
             "title": "Select measurements",
-            "description": "Pick as many as you want"
+            "description": "Pick up to 10 measurements"
           },
           "source": {
-            "label": "Base layer"
+            "label": "Source"
           },
           "region": {
             "label": "Region",
-            "error": "Error getting regions."
+            "error": "Error getting regions.",
+            "placeholder": "Select a region",
+            "search-placeholder": "Search by region"
           },
           "measurements": {
             "label": "Measurement",
@@ -1673,7 +1754,7 @@
           },
           "normalize": {
             "label": "Normalize",
-            "placeholder": "Metric for Normalization",
+            "placeholder": "Select a metric",
             "disabled-placeholder": "Enable Normalization"
           },
           "timespan": {
@@ -1687,6 +1768,7 @@
         "define-columns": "Define column to find similarities with",
         "define-reference-and-target": "Define reference and target layers",
         "define-two-layers": "Define two layers",
+        "delete-btn": "Delete",
         "denominator": "Denominator",
         "denominator-help": "A column to normalize the target column",
         "deprecated-sql-function": {
@@ -1710,7 +1792,6 @@
         "filter": "Filter",
         "filter-aggregate": "Aggregate your results",
         "filter-column": "Filter column",
-        "foreign-keys": "Foreign Keys",
         "geometry-from": "Geometry from",
         "georeference": {
           "postal-code-help": "Select a column with postal codes",
@@ -1752,19 +1833,18 @@
         },
         "group-by": "Group by",
         "hide": "Hide",
-        "inner": "Inner",
         "input": "Input",
         "input-layer": "Define your input layer",
-        "input-num": "Input #%{num}",
         "intact": "Intact",
         "intact-help": "Keep all polygon tracts as individual polygons",
+        "intersect": "Intersect",
+        "intersect-help": "Only keep the rows matching your target data (Inner Join).",
         "join-type": "Join Type",
-        "keep-columns": "Select the columns you want to keep",
+        "keep-data": "Select the data you want to keep",
         "key-columns": "Key columns",
         "key-columns-desc": "Choose similar columns to relate them",
         "kilometers": "km",
         "latitude": "Latitude",
-        "left": "Left",
         "line-sequential": "Sequential",
         "line-source-to-target": "To Source",
         "line-to-column": "To Column",
@@ -1797,7 +1877,6 @@
         "neighbors": "Neighbors",
         "neighbors-help": "Define the local neighborhood as this many nearest-neighbors",
         "no": "No",
-        "no-coincidence": "When no coincidence no row will be added",
         "should-match": "Column types should match",
         "numerator": "Target column",
         "numerator-help": "Measure spatial autocorrelation of this column",
@@ -1805,6 +1884,7 @@
         "order": "Order",
         "order-by": "Order by",
         "order-results": "Order your results",
+        "output-data": "Output data",
         "parameters": "Parameters",
         "parameters-description": "Tune your analysis",
         "permutations": "Permutations",
@@ -1860,6 +1940,8 @@
         "search-by-column-name": "Search by column name",
         "second-geom-required": "This analysis requires a second geometry column",
         "select-column": "Select a column",
+        "select-data-source": "Select a data source",
+        "select-second-source": "Select a second data source to join",
         "select-type": "Select data type",
         "setup-analysis": "Setup analysis",
         "show": "Show",
@@ -1868,6 +1950,7 @@
         "source": "Source",
         "source-col": "Source col.",
         "source-column": "Source column",
+        "source-data": "Source data",
         "spatial-markov-trend-desc": "select a column for each time period",
         "spatial-markov-trend-time-columns": "Input columns",
         "spatial-markov-trend-time-columns-help": "Each column should contain values for a time period",
@@ -1879,6 +1962,7 @@
         "base-layer": "Base layer",
         "target-col": "Target col.",
         "target-column": "Target column",
+        "target-data": "Target data",
         "target-percent": "Target percent",
         "target-percent-help": "Convex hull lookalike",
         "time": "Time",
@@ -2191,7 +2275,8 @@
         }
       },
       "components": {
-        "fill": "Fill",
+        "fill": "Size/Color",
+        "color": "Color",
         "stroke": {
           "label": "Stroke",
           "fetching": "Loading node schema...",
@@ -2222,6 +2307,7 @@
             "points": "Points"
           }
         },
+        "aggregation-fill": "Color",
         "aggregation-value": "Operation",
         "aggregation-size": {
           "label": "Size",
@@ -2234,6 +2320,7 @@
         },
         "labels-attribute": {
           "label": "column",
+          "placeholder": "Select a column",
           "fetching": "Loading node schema...",
           "unavailable": "Error getting node schema",
           "error": "There was an error fetching node schema..."
@@ -2265,6 +2352,7 @@
         },
         "animated-attribute": {
           "label": "column",
+          "placeholder": "Select a column",
           "fetching": "Loading node schema...",
           "unavailable": "Error getting node schema",
           "error": "There was an error fetching node schema..."
@@ -2323,6 +2411,7 @@
           "aggregation_column": "Aggregation Column",
           "bins": "Buckets",
           "column": "Column",
+          "timezone": "Time Zone",
           "description": "Configure your values",
           "end": "End",
           "loading": "loading…",
@@ -2334,15 +2423,17 @@
           "title-label": "Data",
           "value": "Value",
           "aggregate-by": "aggregate by",
-          "operation-column": "operation column"
+          "operation-column": "operation column",
+          "search-by-bucket": "Search by bucket",
+          "select-bucket": "Select a bucket"
         },
         "style": {
           "custom-disabled": "If an aggregated style is applied, auto style is disabled",
-          "custom-colors": "Custom colors",
+          "custom-colors": "Autostyle colors",
           "custom-help": "Custom colors: colors used when Autostyle (drop icon) is applied",
           "define": "Define how your widget interacts with the data",
           "description": "Description",
-          "fill": "Fill",
+          "fill": "Color",
           "no": "No",
           "sync_on_bbox_change": "Dynamic",
           "sync_on_data_change": "Unfiltered",
@@ -2406,8 +2497,9 @@
       }
     },
     "widgets": {
-      "delete": "Widget deleted correctly.",
-      "success": "Widget successfully added",
+      "add": "Widget successfully added",
+      "replace": "Widget successfully replaced",
+      "delete": "Widget deleted correctly",
       "error": {
         "title": "Error adding widget:",
         "body": "%{body} %{error}"

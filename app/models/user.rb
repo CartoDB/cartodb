@@ -365,10 +365,6 @@ class User < Sequel::Model
     end
   end
 
-  def can_delete
-    !has_shared_entities?
-  end
-
   def shared_entities
     CartoDB::Permission.where(owner_id: id).all.select { |p| p.acl.present? }
   end
@@ -411,8 +407,8 @@ class User < Sequel::Model
         end
       end
 
-      unless can_delete || @force_destroy
-        raise CartoDB::BaseCartoDBError.new('Cannot delete user, has shared entities')
+      if has_shared_entities? && !@force_destroy
+        raise CartoDB::SharedEntitiesError.new('Cannot delete user, has shared entities')
       end
 
       has_organization = true
@@ -1601,6 +1597,10 @@ class User < Sequel::Model
   def destroy_cascade
     set_force_destroy
     destroy
+  end
+
+  def relevant_frontend_version
+    frontend_version || CartoDB::Application.frontend_version
   end
 
   private

@@ -716,6 +716,14 @@ module Carto
             expected_bounds = { west: 37.4, south: 41.6, east: -58.9, north: -143.9 }
             @template_hash[:view][:bounds].should eq expected_bounds
           end
+
+          it 'should not fail when invalid state' do
+            @visualization.state.json[:map][:ne] = nil
+            result = Carto::NamedMaps::Template.new(@visualization).to_hash
+            result[:view][:zoom].should eq 3
+            expected_center = { lng: 0.0, lat: 30.0 }
+            result[:view][:center].should eq expected_center
+          end
         end
 
         describe '#preview_layers' do

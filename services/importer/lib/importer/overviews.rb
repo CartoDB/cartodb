@@ -60,7 +60,6 @@ module CartoDB
       end
 
       def delete_overviews!(table_name)
-        CartoDB::Logger.info message: "Deleting overviews", user: @user, table_name: table_name
         @user.transaction_with_timeout statement_timeout: @statement_timeout do |db|
           log("Will delete overviews for #{table_name}")
           Carto::OverviewsService.new(db).delete_overviews(table_name)

@@ -23,7 +23,7 @@ CartoDB::Application.routes.draw do
   get   '(/user/:user_domain)(/u/:user_domain)/account_token_authentication_error' => 'sessions#account_token_authentication_error',     as: :account_token_authentication_error
 
   get   '(/user/:user_domain)/login' => 'sessions#new',     as: :login
-  get   '(/user/:user_domain)(/u/:user_domain)/logout'          => 'sessions#destroy', as: :logout
+  match '(/user/:user_domain)(/u/:user_domain)/logout'          => 'sessions#destroy', as: :logout, via: [:get, :post]
   match '(/user/:user_domain)(/u/:user_domain)/sessions/create' => 'sessions#create',  as: :create_session, via: [:get, :post]
 
   get '(/user/:user_domain)(/u/:user_domain)/status'          => 'home#app_status'
@@ -560,6 +560,9 @@ CartoDB::Application.routes.draw do
 
   scope module: 'carto/api', path: '(/user/:user_domain)(/u/:user_domain)/api/', defaults: { format: :json } do
     scope 'v3/' do
+      # Front/back split
+      get 'me' => 'users#me', as: :api_v3_users_me
+
       scope 'maps/:map_id/layers/:map_layer_id', constraints: { map_id: /[^\/]+/, map_layer_id: /[^\/]+/ } do
         resources :widgets, only: [:show, :create, :update, :destroy], constraints: { id: /[^\/]+/ }
       end

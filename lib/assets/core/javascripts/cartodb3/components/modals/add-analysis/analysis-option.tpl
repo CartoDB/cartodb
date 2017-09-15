@@ -18,7 +18,7 @@
         <%- desc %>
       </p>
       <% if (link) { %>
-      <a class="CDB-Text CDB-Size-small u-tSpace-xl u-actionTextColor u-upperCase js-more" href="<%- link %>">
+      <a class="CDB-Text CDB-Size-small u-tSpace-xl u-actionTextColor u-upperCase js-more" href="<%- link %>" target="_blank">
         <%- _t('components.modals.add-analysis.more-info') %>
       </a>
       <% } %>

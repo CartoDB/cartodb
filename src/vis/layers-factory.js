@@ -6,6 +6,7 @@ var GMapsBaseLayer = require('../geo/map/gmaps-base-layer');
 var PlainLayer = require('../geo/map/plain-layer');
 var CartoDBLayer = require('../geo/map/cartodb-layer');
 var TorqueLayer = require('../geo/map/torque-layer');
+var AnalysisModel = require('../analysis/analysis-model');
 
 /*
  *  if we are using http and the tiles of base map need to be fetched from
@@ -51,19 +52,12 @@ function checkProperties (obj, requiredProperties) {
   }
 }
 
-function findOrCreateSourceForLayer (analysis, attrs) {
-  if (attrs.sql) {
-    return analysis.createSourceAnalysisForLayer(attrs.id, attrs.sql);
+function checkValidSource (attrs) {
+  if (attrs.source && (attrs.source instanceof AnalysisModel)) {
+    return;
   }
 
-  if (attrs.source && typeof attrs.source === 'string') {
-    var source = analysis.findNodeById(attrs.source);
-    if (source) {
-      return source;
-    }
-  }
-
-  throw new Error('Unable to find source "' + attrs.source + '" when creating layer model "' + attrs.id + '"');
+  throw new Error('Layer "' + attrs.id + '" must have a valid analysis node as "source"');
 }
 
 var LAYER_CONSTRUCTORS = {
@@ -110,13 +104,8 @@ var LAYER_CONSTRUCTORS = {
   },
 
   cartodb: function (attrs, options) {
-    checkProperties(attrs, ['sql|source', 'cartocss']);
-
-    var analysis = options.analysis;
-
-    // Make sure "source" attribute points to an analysis
-    attrs.source = findOrCreateSourceForLayer(analysis, attrs);
-    delete attrs.sql;
+    checkProperties(attrs, ['source', 'cartocss']);
+    checkValidSource(attrs);
 
     return new CartoDBLayer(attrs, {
       vis: options.vis
@@ -124,14 +113,10 @@ var LAYER_CONSTRUCTORS = {
   },
 
   torque: function (attrs, options) {
-    checkProperties(attrs, ['sql|source', 'cartocss']);
+    checkProperties(attrs, ['source', 'cartocss']);
+    checkValidSource(attrs);
 
-    var analysis = options.analysis;
     var windshaftSettings = options.windshaftSettings;
-
-    // Make sure "source" attribute points to an analysis
-    attrs.source = findOrCreateSourceForLayer(analysis, attrs);
-    delete attrs.sql;
 
     attrs = _.extend(attrs, {
       user_name: windshaftSettings.userName,
@@ -158,11 +143,9 @@ var LAYER_CONSTRUCTORS = {
 var LayersFactory = function (deps) {
   if (!deps.visModel) throw new Error('visModel is required');
   if (!deps.windshaftSettings) throw new Error('windshaftSettings is required');
-  if (!deps.analysis) throw new Error('analysis is required');
 
   this._visModel = deps.visModel;
   this._windshaftSettings = deps.windshaftSettings;
-  this._analysis = deps.analysis;
 };
 
 LayersFactory.prototype.createLayer = function (type, attrs) {
@@ -176,8 +159,7 @@ LayersFactory.prototype.createLayer = function (type, attrs) {
 
   return LayerConstructor(layerAttributes, {
     windshaftSettings: this._windshaftSettings,
-    vis: this._visModel,
-    analysis: this._analysis
+    vis: this._visModel
   });
 };
 

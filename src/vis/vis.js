@@ -152,8 +152,7 @@ var VisModel = Backbone.Model.extend({
 
     var layersFactory = new LayersFactory({
       visModel: this,
-      windshaftSettings: windshaftSettings,
-      analysis: this.analysis
+      windshaftSettings: windshaftSettings
     });
 
     var allowScrollInOptions = (vizjson.options && vizjson.options.scrollwheel) || vizjson.scrollwheel;
@@ -235,6 +234,17 @@ var VisModel = Backbone.Model.extend({
 
     var layerModels = _.map(vizjson.layers, function (layerData, layerIndex) {
       _.extend(layerData, { order: layerIndex });
+
+      if (layerData.options.source) {
+        layerData.options.source = this.analysis.findNodeById(layerData.options.source);
+      } else {
+        // TODO: We'll be able to remove this once
+        // https://github.com/CartoDB/cartodb.js/issues/1754 is closed.
+        if (layerData.options.sql) {
+          layerData.options.source = this.analysis.createSourceAnalysisForLayer(layerData.id, layerData.options.sql);
+          delete layerData.options.sql;
+        }
+      }
       return layersFactory.createLayer(layerData.type, layerData);
     }, this);
 

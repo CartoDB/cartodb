@@ -1,7 +1,17 @@
 var _ = require('underscore');
 
 var VisModel = require('../../../src/vis/vis');
+var AnalysisModel = require('../../../src/analysis/analysis-model');
 var LayersFactory = require('../../../src/vis/layers-factory');
+
+var createFakeAnalysis = function (attrs) {
+  return new AnalysisModel(attrs, {
+    vis: {},
+    camshaftReference: {
+      getParamNamesForAnalysisType: function () {}
+    }
+  });
+};
 
 describe('vis/layers-factory', function () {
   var analysis;
@@ -19,27 +29,23 @@ describe('vis/layers-factory', function () {
       authToken: 'AUTH_TOKEN'
     };
 
-    analysis = {
-      createSourceAnalysisForLayer: jasmine.createSpy('findOrCreateSourceForLayer'),
-      findNodeById: jasmine.createSpy('findNodeById')
-    };
-
     layersFactory = new LayersFactory({
       visModel: this.vis,
-      windshaftSettings: this.windshaftSettings,
-      analysis: analysis
+      windshaftSettings: this.windshaftSettings
     });
+
+    analysis = createFakeAnalysis();
   });
 
   describe('attribute validation', function () {
     var testCases = [
       {
         layerType: 'CartoDB',
-        expectedErrorMessage: 'The following attributes are missing: sql|source,cartocss'
+        expectedErrorMessage: 'The following attributes are missing: source,cartocss'
       },
       {
         layerType: 'torque',
-        expectedErrorMessage: 'The following attributes are missing: sql|source,cartocss'
+        expectedErrorMessage: 'The following attributes are missing: source,cartocss'
       },
       {
         layerType: 'Tiled',
@@ -155,7 +161,7 @@ describe('vis/layers-factory', function () {
   describe('torque', function () {
     it('should create the layer model', function () {
       var layerModel = layersFactory.createLayer('torque', {
-        sql: 'SELECT * FROM wadus',
+        source: analysis,
         cartocss: '#layer {}'
       });
 
@@ -165,7 +171,7 @@ describe('vis/layers-factory', function () {
 
     it('should setup attrs for windshaft provider', function () {
       var layerModel = layersFactory.createLayer('torque', {
-        sql: 'SELECT * FROM foo',
+        source: analysis,
         cartocss: '#layer {}'
       });
       expect(layerModel.get('user_name')).toEqual('JUAN');
@@ -182,7 +188,7 @@ describe('vis/layers-factory', function () {
       delete this.windshaftSettings.templateName;
 
       var layerModel = layersFactory.createLayer('torque', {
-        sql: 'SELECT * FROM foo',
+        source: analysis,
         cartocss: '#layer {}'
       });
       expect(layerModel.get('named_map')).toBeUndefined();
@@ -191,46 +197,23 @@ describe('vis/layers-factory', function () {
 
   ['cartodb', 'torque'].forEach(function (layerType) {
     describe(layerType + ' (shared)', function () {
-      it('should set a new analysis source from sql attr', function () {
-        var fakeAnalysis = {};
-        analysis.createSourceAnalysisForLayer.and.returnValue(fakeAnalysis);
-
+      it('should set accept an AnalysisMode as a source', function () {
         var layerModel = layersFactory.createLayer(layerType, {
-          sql: 'SELECT foo FROM bar',
+          source: analysis,
           cartocss: '#layer {}'
         });
 
-        expect(layerModel.getSource()).toEqual(fakeAnalysis);
+        expect(layerModel.getSource()).toEqual(analysis);
       });
 
-      it('should set an existing analysis as the source', function () {
-        var fakeAnalysis = {
-          id: '1234567890'
-        };
-        analysis.findNodeById.and.callFake(function (id) {
-          if (id === fakeAnalysis.id) {
-            return fakeAnalysis;
-          }
-        });
-
-        var layerModel = layersFactory.createLayer(layerType, {
-          source: fakeAnalysis.id,
-          cartocss: '#layer {}'
-        });
-
-        expect(layerModel.getSource()).toEqual(fakeAnalysis);
-      });
-
-      it('should raise an error if source cannot be found', function () {
-        analysis.findNodeById.and.returnValue(null);
-
+      it('should throw an error if source is invalid', function () {
         expect(function () {
           layersFactory.createLayer(layerType, {
             id: 'LAYER_ID',
-            source: 'SOURCE_ID',
+            source: 'NOT A VALID ANALYSIS',
             cartocss: '#layer {}'
           });
-        }).toThrowError('Unable to find source "SOURCE_ID" when creating layer model "LAYER_ID"');
+        }).toThrowError('Layer "LAYER_ID" must have a valid analysis node as "source"');
       });
     });
   });

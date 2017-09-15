@@ -848,11 +848,6 @@
             "contact": "Contact us",
             "mail": "sales@carto.com"
           },
-          "upgrade_dialog": {
-            "title": "To get advantage of all the privacy options you should upgrade your plan",
-            "trial": "%{days} days Free trial",
-            "upgrade": "upgrade"
-          },
           "loading": "Saving your data..."
         },
         "share": {

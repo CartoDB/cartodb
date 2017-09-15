@@ -229,6 +229,13 @@ describe Carto::Api::UsersController do
     it 'returns a hash with user profile info' do
       get_json api_v3_users_me_account_info_url(url_options), @headers do |response|
         expect(response.status).to eq(200)
+
+        expect(response.body[:can_change_email]).to eq(@user.can_change_email?)
+        expect(response.body[:auth_username_password_enabled]).to eq(nil)
+        expect(response.body[:should_display_old_password]).to eq(@user.should_display_old_password?)
+        expect(response.body[:can_change_password]).to eq(true)
+        expect(response.body[:plan_name]).to eq('Free')
+        expect(response.body[:services]).to eq(@user.get_oauth_services)
       end
     end
 

@@ -52,6 +52,7 @@ Development
 * Updates Dataservices API client default version to `0.20.0` (#12633)
 
 ### Bug fixes / enhancements
+* Add drag icon to each item in the widget list (#12692)
 * Cancel feature edition when widget edition is selected (#12781)
 * Rename 'SHARE' button to 'PUBLISH' and 'Not published yet' to 'Unpublished map' (#12730)
 * Move Analysis cancel/delete button to the controls zone (#11414)
@@ -186,6 +187,7 @@ Development
 * Square marker icon not updating with style. [Support #974](https://github.com/CartoDB/support/issues/974)
 * Hide privacy button if user account type is FREE or PERSONAL (#12423)
 * Fix "apply" button sizes in advanced mode (#12652)
+* Axis labels changes in Time-Series (#12658)
 * Removed unused settings in organizations (#4992)
 
 ### NOTICE

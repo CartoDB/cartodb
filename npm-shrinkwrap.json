@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.9.80-12778",
+  "version": "4.9.82-12778",
   "dependencies": {
     "abbrev": {
       "version": "1.1.0",
@@ -215,9 +215,9 @@
       "optional": true
     },
     "big.js": {
-      "version": "3.1.3",
+      "version": "3.2.0",
       "from": "big.js@>=3.1.3 <4.0.0",
-      "resolved": "https://registry.npmjs.org/big.js/-/big.js-3.1.3.tgz"
+      "resolved": "https://registry.npmjs.org/big.js/-/big.js-3.2.0.tgz"
     },
     "binary-extensions": {
       "version": "1.10.0",
@@ -388,7 +388,7 @@
     "cartodb-deep-insights.js": {
       "version": "0.0.3",
       "from": "cartodb/deep-insights.js#master",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#c8de0e104747fcd7a013493d6180d9350c52e273",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#8957a6375d5364e8a2bfd4a660a9685319c6d46f",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",
@@ -404,8 +404,8 @@
     },
     "cartodb.js": {
       "version": "4.0.0-alpha.1.1.0",
-      "from": "cartodb/cartodb.js#12778-leap-year",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#e0af98cc2162af608a0307d04791c290dee94790"
+      "from": "cartodb/cartodb.js#v4",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#6b68b49b3da6da67e0b788c0cc74d169fc223942"
     },
     "caseless": {
       "version": "0.12.0",

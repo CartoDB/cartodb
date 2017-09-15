@@ -2425,7 +2425,8 @@
           "aggregate-by": "aggregate by",
           "operation-column": "operation column",
           "search-by-bucket": "Search by bucket",
-          "select-bucket": "Select a bucket"
+          "select-bucket": "Select a bucket",
+          "no-aggregations": "No suitable aggregations"
         },
         "style": {
           "custom-disabled": "If an aggregated style is applied, auto style is disabled",

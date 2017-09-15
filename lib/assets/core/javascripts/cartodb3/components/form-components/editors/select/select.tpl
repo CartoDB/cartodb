@@ -12,7 +12,7 @@
     </div>
   <% } else { %>
     <% if (isEmpty && isNull) { %>
-      <%- _t('components.backbone-forms.select.empty') %>
+      <%- emptyPlaceholder %>
     <% } else { %>
       <%- label %>
     <% } %>

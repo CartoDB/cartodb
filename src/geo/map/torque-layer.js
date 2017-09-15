@@ -173,7 +173,12 @@ var TorqueLayer = LayerModelBase.extend({
 
   getSource: function () {
     return this.get('source');
+  },
+
+  setSource: function (source, options) {
+    this.set('source', source);
   }
+
 });
 
 module.exports = TorqueLayer;

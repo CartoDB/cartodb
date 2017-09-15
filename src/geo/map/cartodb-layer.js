@@ -129,6 +129,10 @@ var CartoDBLayer = LayerModelBase.extend({
 
   getSource: function () {
     return this.get('source');
+  },
+
+  setSource: function (source, options) {
+    this.set('source', source, options);
   }
 });
 

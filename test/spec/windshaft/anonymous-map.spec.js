@@ -401,15 +401,8 @@ describe('windshaft/anonymous-map', function () {
           }
         });
 
-        this.cartoDBLayer1.update({
-          source: analysis1,
-          cartocss: '#union { ... }'
-        }, { silent: true });
-
-        this.cartoDBLayer2.update({
-          source: analysis2,
-          cartocss: '#union { ... }'
-        }, { silent: true });
+        this.cartoDBLayer1.setSource(analysis1, { silent: true });
+        this.cartoDBLayer2.setSource(analysis2, { silent: true });
 
         expect(_.map(this.map.toJSON().analyses, 'id')).toContain('c1');
         expect(_.map(this.map.toJSON().analyses, 'id')).not.toContain('b2');
@@ -459,10 +452,7 @@ describe('windshaft/anonymous-map', function () {
         });
 
         // Layer has d0 as it's source
-        this.cartoDBLayer1.update({
-          source: analysis,
-          cartocss: '#trade_area { ... }'
-        }, { silent: true });
+        this.cartoDBLayer1.setSource(analysis, { silent: true });
 
         // This datativew also has a0 as it's source
         var dataview1 = createFakeDataview({

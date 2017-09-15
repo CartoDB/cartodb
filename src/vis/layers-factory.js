@@ -154,10 +154,8 @@ LayersFactory.prototype.createLayer = function (type, attrs) {
     log.error("error creating layer of type '" + type + "'");
     return null;
   }
-  // Flatten "options"
-  var layerAttributes = _.extend({}, _.omit(attrs, 'options'), attrs.options);
 
-  return LayerConstructor(layerAttributes, {
+  return LayerConstructor(attrs, {
     windshaftSettings: this._windshaftSettings,
     vis: this._visModel
   });

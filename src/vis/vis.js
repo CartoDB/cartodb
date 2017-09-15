@@ -233,16 +233,22 @@ var VisModel = Backbone.Model.extend({
     }
 
     var layerModels = _.map(vizjson.layers, function (layerData, layerIndex) {
-      _.extend(layerData, { order: layerIndex });
+      // Flatten "options" and set the "order" attribute
+      layerData = _.extend({},
+        _.omit(layerData, 'options'),
+        layerData.options, {
+          order: layerIndex
+        }
+      );
 
-      if (layerData.options.source) {
-        layerData.options.source = this.analysis.findNodeById(layerData.options.source);
+      if (layerData.source) {
+        layerData.source = this.analysis.findNodeById(layerData.source);
       } else {
-        // TODO: We'll be able to remove this once
+        // TODO: We'll be able to remove this (accepting sql option) once
         // https://github.com/CartoDB/cartodb.js/issues/1754 is closed.
-        if (layerData.options.sql) {
-          layerData.options.source = this.analysis.createSourceAnalysisForLayer(layerData.id, layerData.options.sql);
-          delete layerData.options.sql;
+        if (layerData.sql) {
+          layerData.source = this.analysis.createSourceAnalysisForLayer(layerData.id, layerData.sql);
+          delete layerData.sql;
         }
       }
       return layersFactory.createLayer(layerData.type, layerData);

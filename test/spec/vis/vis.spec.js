@@ -3,6 +3,7 @@ var _ = require('underscore');
 var Vis = require('../../../src/vis/vis');
 var VizJSON = require('../../../src/api/vizjson');
 var DataviewModelBase = require('../../../src/dataviews/dataview-model-base');
+var AnalysisModel = require('../../../src/analysis/analysis-model');
 
 var fakeVizJSON = function () {
   return {
@@ -398,6 +399,29 @@ describe('vis/vis', function () {
 
     it('should load the layers', function () {
       expect(this.vis.map.layers.size()).toEqual(3);
+    });
+
+    it('should assign the analysis source', function () {
+      var cartoDBLayerSource = this.vis.map.layers.at(1).getSource();
+
+      expect(cartoDBLayerSource instanceof AnalysisModel).toBe(true);
+      expect(cartoDBLayerSource.id).toEqual('a0');
+    });
+
+    it('should create a "source" analysis if sql option is present', function () {
+      var vizjson = fakeVizJSON();
+
+      // CartoDB layer as sql option instead of source
+      vizjson.layers[1].options.id = 'LAYER_ID';
+      vizjson.layers[1].options.sql = 'SELECT foo FROM bar';
+      delete vizjson.layers[1].options.source;
+
+      this.vis.load(new VizJSON(vizjson, {}));
+
+      var cartoDBLayerSource = this.vis.map.layers.at(1).getSource();
+
+      expect(cartoDBLayerSource instanceof AnalysisModel).toBe(true);
+      expect(cartoDBLayerSource).toEqual(this.vis.analysis.findNodeById('LAYER_ID'));
     });
 
     it('should use the given provider', function () {

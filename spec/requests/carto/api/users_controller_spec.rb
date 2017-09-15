@@ -71,6 +71,12 @@ describe Carto::Api::UsersController do
         end
       end
 
+      it 'gives an error if payload is empty' do
+        put_json api_v3_users_update_me_url(url_options), {}, @headers do |response|
+          expect(response.status).to eq(403)
+        end
+      end
+
       it 'gives an error if email is invalid' do
         payload = { user: { email: 'foo@' } }
 
@@ -134,21 +140,22 @@ describe Carto::Api::UsersController do
             description: 'Foo Bar Baz',
             location: 'Anywhere',
             twitter_username: 'carto',
-            disqus_shortname: 'carto'
+            disqus_shortname: 'carto',
+            avatar_url: 'http://carto.rocks/avatar.jpg'
           }
         }
 
         put_json api_v3_users_update_me_url(url_options), payload, @headers do |response|
           expect(response.status).to eq(200)
 
-          @user.refresh
-          expect(@user.name).to eq('Foo')
-          expect(@user.last_name).to eq('Bar')
-          expect(@user.website).to eq('https://carto.rocks')
-          expect(@user.description).to eq('Foo Bar Baz')
-          expect(@user.location).to eq('Anywhere')
-          expect(@user.twitter_username).to eq('carto')
-          expect(@user.disqus_shortname).to eq('carto')
+          expect(response.body[:name]).to eq('Foo')
+          expect(response.body[:last_name]).to eq('Bar')
+          expect(response.body[:website]).to eq('https://carto.rocks')
+          expect(response.body[:description]).to eq('Foo Bar Baz')
+          expect(response.body[:location]).to eq('Anywhere')
+          expect(response.body[:twitter_username]).to eq('carto')
+          expect(response.body[:disqus_shortname]).to eq('carto')
+          expect(response.body[:avatar_url]).to eq('http://carto.rocks/avatar.jpg')
         end
       end
 
@@ -167,13 +174,12 @@ describe Carto::Api::UsersController do
         put_json api_v3_users_update_me_url(url_options), payload, @headers do |response|
           expect(response.status).to eq(200)
 
-          @user.refresh
-          expect(@user.name).to eq('Foo')
-          expect(@user.last_name).to eq('Bar')
-          expect(@user.website).to eq('https://carto.rocks')
-          expect(@user.description).to eq(old_description)
-          expect(@user.location).to eq(old_location)
-          expect(@user.twitter_username).to eq(old_twitter_username)
+          expect(response.body[:name]).to eq('Foo')
+          expect(response.body[:last_name]).to eq('Bar')
+          expect(response.body[:website]).to eq('https://carto.rocks')
+          expect(response.body[:description]).to eq(old_description)
+          expect(response.body[:location]).to eq(old_location)
+          expect(response.body[:twitter_username]).to eq(old_twitter_username)
         end
       end
 

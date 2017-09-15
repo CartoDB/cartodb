@@ -40,6 +40,23 @@ module Carto
         poro
       end
 
+      def to_me_poro
+        return {} if @user.nil?
+
+        {
+          id:                 @user.id,
+          name:               @user.name,
+          last_name:          @user.last_name,
+          website:            @user.website,
+          description:        @user.description,
+          location:           @user.location,
+          twitter_username:   @user.twitter_username,
+          disqus_shortname:   @user.disqus_shortname,
+          available_for_hire: @user.available_for_hire,
+          avatar_url:         @user.avatar_url
+        }
+      end
+
       def to_eumapi_poro
         presentation = to_poro
 

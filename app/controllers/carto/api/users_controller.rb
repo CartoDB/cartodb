@@ -7,6 +7,7 @@ module Carto
       include SqlApiHelper
       include CartoDB::ConfigUtils
       include FrontendConfigHelper
+      include AvatarHelper
 
       UPDATE_ME_FIELDS = [
         :name, :last_name, :website, :description, :location, :twitter_username,
@@ -36,7 +37,9 @@ module Carto
 
       def update_me
         user = current_viewer
+
         attributes = params[:user]
+        return(head 403) unless attributes.present?
 
         update_password_if_needed(user, attributes)
 
@@ -56,10 +59,10 @@ module Carto
         user.update_in_central
         user.save(raise_on_failure: true)
 
-        render_jsonp(Carto::Api::UserPresenter.new(user).to_poro)
+        render_jsonp(Carto::Api::UserPresenter.new(user).to_me_poro)
       rescue CartoDB::CentralCommunicationFailure => e
         CartoDB::Logger.error(exception: e, user: user, params: params)
-        render_jsonp({ errors: "There was a problem while updating your data. Please, try again." }, 400)
+        render_jsonp({ errors: "There was a problem while updating your data. Please, try again." }, 422)
       rescue Sequel::ValidationFailed
         render_jsonp({ message: "Error updating your account details", errors: user.errors }, 400)
       end

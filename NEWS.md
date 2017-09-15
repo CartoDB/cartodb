@@ -53,6 +53,7 @@ Development
 
 ### Bug fixes / enhancements
 * Rename 'Select a text' placeholder to 'Select a value' in Filter analysis (#11861)
+* Add drag icon to each item in the widget list (#12692)
 * Cancel feature edition when widget edition is selected (#12781)
 * Rename 'SHARE' button to 'PUBLISH' and 'Not published yet' to 'Unpublished map' (#12730)
 * Move Analysis cancel/delete button to the controls zone (#11414)

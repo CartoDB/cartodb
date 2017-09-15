@@ -27,6 +27,10 @@
   @include transition(border 200ms ease-in);
   border: 1px solid $cHoverLine;
 
+  .BlockList-dragIcon {
+    opacity: 1;
+  }
+
   .BlockList-titleText {
     text-decoration: underline;
   }
@@ -68,6 +72,13 @@
   width: 0;
   padding-right: $baseSize * 2;
   cursor: pointer;
+}
+.BlockList-dragIcon {
+  @include transition(opacity 200ms ease-in);
+  position: relative;
+  top: 12px;
+  left: -36px;
+  opacity: 0;
 }
 .BlockList-media {
   @include display-flex();

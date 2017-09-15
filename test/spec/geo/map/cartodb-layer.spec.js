@@ -218,4 +218,21 @@ describe('geo/map/cartodb-layer', function () {
       expect(layer.getEstimatedFeatureCount()).toEqual(27);
     });
   });
+
+  describe('.update', function () {
+    var layer;
+
+    beforeEach(function () {
+      layer = new CartoDBLayer({}, { vis: this.vis });
+    });
+
+    it('should raise an error when "source" attribute is specified', function () {
+      expect(function () {
+        layer.update({
+          id: 3,
+          source: 'foo'
+        });
+      }).toThrowError('"source" must be set via setSource');
+    });
+  });
 });

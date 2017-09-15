@@ -133,6 +133,13 @@ var CartoDBLayer = LayerModelBase.extend({
 
   setSource: function (source, options) {
     this.set('source', source, options);
+  },
+
+  update: function (attrs) {
+    if (attrs.source) {
+      throw new Error('"source" must be set via setSource');
+    }
+    LayerModelBase.prototype.update.apply(this, arguments);
   }
 });
 

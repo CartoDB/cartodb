@@ -177,6 +177,13 @@ var TorqueLayer = LayerModelBase.extend({
 
   setSource: function (source, options) {
     this.set('source', source);
+  },
+
+  update: function (attrs) {
+    if (attrs.source) {
+      throw new Error('"source" must be set via setSource');
+    }
+    LayerModelBase.prototype.update.apply(this, arguments);
   }
 
 });

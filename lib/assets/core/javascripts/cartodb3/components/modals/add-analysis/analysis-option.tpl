@@ -17,7 +17,11 @@
       <p class="CDB-Text CDB-Size-small u-altTextColor">
         <%- desc %>
       </p>
-      <button class="CDB-Text CDB-Size-small u-tSpace-xl u-actionTextColor u-upperCase js-more"><%- _t('components.modals.add-analysis.more-info') %></button>
+      <% if (link) { %>
+      <a class="CDB-Text CDB-Size-small u-tSpace-xl u-actionTextColor u-upperCase js-more" href="<%- link %>">
+        <%- _t('components.modals.add-analysis.more-info') %>
+      </a>
+      <% } %>
     </div>
   </div>
 </div>

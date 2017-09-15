@@ -1,12 +1,12 @@
-const PublicClient = require('./public.js');
+const PublicClient = require('./public.js.babel');
 
 class AuthenticatedClient extends PublicClient {
   getConfig (callback) {
-    return this.get(['me'], callback);
+    return this.get(['/api/v3/me'], callback);
   }
 
   getVisualization (viz, callback) {
-    // TODO
+    return this.get(['/api/v2/viz', viz, 'viz.json'], callback);
   }
 }
 

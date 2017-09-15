@@ -187,6 +187,7 @@ Development
 * Square marker icon not updating with style. [Support #974](https://github.com/CartoDB/support/issues/974)
 * Hide privacy button if user account type is FREE or PERSONAL (#12423)
 * Fix "apply" button sizes in advanced mode (#12652)
+* Axis labels changes in Time-Series (#12658)
 * Removed unused settings in organizations (#4992)
 
 ### NOTICE

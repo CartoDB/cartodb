@@ -76,12 +76,7 @@ var sharedOptionsForMapnikAndTorqueLayers = function (layerModel) {
     cartocss_version: layerModel.get('cartocss_version') || DEFAULT_CARTOCSS_VERSION
   };
 
-  var layerSourceId = layerModel.getSourceId();
-  if (layerSourceId) {
-    options.source = { id: layerSourceId };
-  } else if (layerModel.get('sql')) { // Layer has some SQL that needs to be converted into a "source" analysis
-    options.sql = layerModel.get('sql');
-  }
+  options.source = { id: layerModel.getSourceId() };
 
   if (layerModel.get('sql_wrap')) {
     options.sql_wrap = layerModel.get('sql_wrap');
@@ -151,18 +146,8 @@ var AnonymousMap = MapBase.extend({
         if (!this._isAnalysisPartOfOtherAnalyses(sourceAnalysis)) {
           analyses.push(sourceAnalysis.toJSON());
         }
-      } else { // sourceId might be the ID of a layer
-        var layerModel = this._getLayerById(sourceId);
-        if (layerModel) {
-          if (layerModel.get('sql')) {
-            analyses.push(this._getSourceAnalysisForLayer(this._getLayerById(sourceId)));
-          } else {
-            // layerModel has a source, so the analysis will be included
-            // in the payload when we get to that sourceId in this loop
-          }
-        } else {
-          throw new Error("sourceId '" + sourceId + "' doesn't exist");
-        }
+      } else {
+        throw new Error("sourceId '" + sourceId + "' doesn't exist");
       }
     }, this);
 
@@ -173,16 +158,6 @@ var AnonymousMap = MapBase.extend({
     return _.find(this._getCartoDBAndTorqueLayers(), function (layerModel) {
       return layerModel.id === layerId;
     });
-  },
-
-  _getSourceAnalysisForLayer: function (layerModel) {
-    return {
-      id: layerModel.id,
-      type: 'source',
-      params: {
-        query: layerModel.get('sql')
-      }
-    };
   },
 
   _isAnalysisPartOfOtherAnalyses: function (analysisModel) {

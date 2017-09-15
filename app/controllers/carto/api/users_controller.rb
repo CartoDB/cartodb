@@ -59,7 +59,7 @@ module Carto
         user.update_in_central
         user.save(raise_on_failure: true)
 
-        render_jsonp(Carto::Api::UserPresenter.new(user).to_me_poro)
+        render_jsonp(Carto::Api::UserPresenter.new(user).to_poro)
       rescue CartoDB::CentralCommunicationFailure => e
         CartoDB::Logger.error(exception: e, user: user, params: params)
         render_jsonp({ errors: "There was a problem while updating your data. Please, try again." }, 422)

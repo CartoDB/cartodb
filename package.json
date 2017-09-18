@@ -138,6 +138,8 @@
   },
   "scripts": {
     "test": "echo \"Run 'grunt test' to run specs through command line.\"",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "update-internal-deps": "rm -rf node_modules && npm install --production --no-shrinkwrap && npm dedupe && npm prune && npm shrinkwrap && npm run fix-shrinkwrap-protocol && npm install",
     "branch-files": "node lib/build/branchFiles/branchFiles.js",
     "affected_specs": "node lib/build/branchFiles/branchFiles.js | xargs node lib/build/affectedFiles/affectedFiles.js",

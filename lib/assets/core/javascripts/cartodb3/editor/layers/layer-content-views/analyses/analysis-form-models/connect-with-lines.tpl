@@ -5,8 +5,7 @@
       <div class="Editor-HeaderInfo-title u-bSpace--m">
         <h2 class="CDB-Text CDB-HeaderInfo-titleText CDB-Size-large"><%- _t('analyses.connect-with-lines.title') %></h2>
       </div>
-      <%= linkContent %>
-      <p class="CDB-Text u-upperCase CDB-FontSize-small u-altTextColor u-bSpace--xl"><%- _t('editor.layers.analysis-form.define-reference-and-target') %></p>
+      <p class="CDB-Text u-upperCase CDB-FontSize-small u-altTextColor u-bSpace--xl"><%= linkContent %><%- _t('editor.layers.analysis-form.define-reference-and-target') %></p>
     </div>
   </div>
 

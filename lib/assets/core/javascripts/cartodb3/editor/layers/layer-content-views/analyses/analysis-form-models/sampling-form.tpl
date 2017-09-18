@@ -5,8 +5,7 @@
       <div class="Editor-HeaderInfo-title u-bSpace--m">
         <h2 class="CDB-Text CDB-HeaderInfo-titleText CDB-Size-large"><%- _t('analyses.sampling.title') %></h2>
       </div>
-      <%= linkContent %>
-      <p class="CDB-Text u-upperCase CDB-FontSize-small u-altTextColor u-bSpace--m"><%- _t('editor.layers.analysis-form.sampling-desc') %></p>
+      <p class="CDB-Text u-upperCase CDB-FontSize-small u-altTextColor u-bSpace--m"><%= linkContent %><%- _t('editor.layers.analysis-form.sampling-desc') %></p>
     </div>
   </div>
 </form>

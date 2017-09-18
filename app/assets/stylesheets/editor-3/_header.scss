@@ -76,6 +76,10 @@
 .Editor-HeaderInfo-actionsItem:first-child {
   margin-left: 0;
 }
+.Editor-HeaderInfo-link {
+  font-weight: bold;
+  margin-right: 4px;
+}
 
 .Editor-HeaderPad {
   width: $baseSize * 3;

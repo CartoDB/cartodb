@@ -5,8 +5,7 @@
       <div class="Editor-HeaderInfo-title u-bSpace--m">
         <h2 class="CDB-Text CDB-HeaderInfo-titleText CDB-Size-large"><%- _t('analyses.moran-cluster.title') %></h2>
       </div>
-      <%= linkContent %>
-      <p class="CDB-Text u-upperCase CDB-FontSize-small u-altTextColor u-bSpace--m"><%- _t('editor.layers.analysis-form.input-layer') %></p>
+      <p class="CDB-Text u-upperCase CDB-FontSize-small u-altTextColor u-bSpace--m"><%= linkContent %><%- _t('editor.layers.analysis-form.input-layer') %></p>
     </div>
   </div>
   <div class="Editor-HeaderInfo">

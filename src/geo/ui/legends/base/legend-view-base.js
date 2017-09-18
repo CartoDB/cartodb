@@ -1,7 +1,5 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
-var errorTitleTemplate = require('./error-title.tpl');
-var noDataAvailableTitleTemplate = require('./no-data-available-title.tpl');
 var sanitize = require('../../../../core/sanitize');
 var legendTitleTemplate = require('./legend-title.tpl');
 var ImageLoaderView = require('./img-loader-view');
@@ -21,11 +19,9 @@ var LegendViewBase = Backbone.View.extend({
 
     this._loadImages();
 
-    if (this.model.isVisible()) {
-      this.$el.show();
-    } else {
-      this.$el.hide();
-    }
+    this.model.isVisible()
+      ? this.$el.show()
+      : this.$el.hide();
 
     this._toggleLoadingClass();
 
@@ -35,18 +31,19 @@ var LegendViewBase = Backbone.View.extend({
   _generateHTML: function () {
     var html = [];
     if (this.model.isSuccess()) {
-      if (this.model.isAvailable()) {
-        html.push(this._getLegendHTML());
-      } else {
-        html.push(this._getNoDataAvailableHTML());
-        html.push(this._getPlaceholderHTML());
-      }
-    } else if (this.model.isError()) {
-      html.push(this._getErrorHeaderHTML());
-      html.push(this._getPlaceholderHTML());
-    } else if (this.model.isLoading()) {
+      this.model.isAvailable()
+        ? html.push(this._getLegendHTML())
+        : html.push(legendTitleTemplate({ title: 'No data available', error: true }));
+    }
+
+    if (this.model.isError()) {
+      html.push(legendTitleTemplate({ title: 'Legend unavailable', error: true }));
+    }
+
+    if (this.model.isError() || this.model.isLoading() || (this.model.isSuccess() && !this.model.isAvailable())) {
       html.push(this._getPlaceholderHTML());
     }
+
     return html.join('\n');
   },
 
@@ -76,14 +73,6 @@ var LegendViewBase = Backbone.View.extend({
 
   _getPlaceholderHTML: function () {
     return (this._placeholderTemplate && this._placeholderTemplate()) || '';
-  },
-
-  _getErrorHeaderHTML: function () {
-    return errorTitleTemplate();
-  },
-
-  _getNoDataAvailableHTML: function () {
-    return noDataAvailableTitleTemplate();
   },
 
   _getCompiledTemplate: function () {

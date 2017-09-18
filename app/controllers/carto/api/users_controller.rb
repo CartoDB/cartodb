@@ -32,7 +32,7 @@ module Carto
         if current_viewer
           carto_viewer = Carto::User.find(current_viewer.id)
 
-          response.merge!({
+          response.merge!(
             user_data: Carto::Api::UserPresenter.new(carto_viewer).data,
             default_fallback_basemap: carto_viewer.default_basemap,
             config: frontend_config_hash,
@@ -41,7 +41,7 @@ module Carto
             is_first_time_viewing_dashboard: !(carto_viewer.dashboard_viewed_at),
             user_frontend_version: carto_viewer.relevant_frontend_version,
             asset_host: carto_viewer.asset_host
-          })
+          )
         end
 
         render json: response

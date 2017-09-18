@@ -34,6 +34,9 @@ describe Carto::UserMigrationImport do
     private
 
     def should_update_database_host_for_users(users)
+      sequel_user_mock = Object.new
+      ::User.stubs(:[]).returns(sequel_user_mock)
+      sequel_user_mock.expects(:reload).times(users.length)
       users.each do |user|
         user.expects(:database_host=).with(:database_host).once
         user.expects(:save!).once

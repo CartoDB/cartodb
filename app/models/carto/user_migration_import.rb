@@ -69,7 +69,6 @@ module Carto
         imported = service.import_from_directory(package.meta_dir)
         org_import? ? self.organization = imported : self.user = imported
         update_database_host
-        imported.reload
         save!
       end
 
@@ -84,7 +83,7 @@ module Carto
 
     def update_database_host
       users.each do |user|
-        Rollbar.report_message("Updating database conection for user #{user.username} to #{database_host}")
+        Rollbar.info("Updating database conection for user #{user.username} to #{database_host}")
         user.database_host = database_host
         user.save!
         ::User[user.id].reload # This is because Sequel models are being cached along request. This forces reload.

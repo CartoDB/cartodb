@@ -349,6 +349,7 @@ More information at [Dropbox migration guide](https://www.dropbox.com/developers
 * Show infowindow when user reaches max layer limit (#12167)
 * Format quota infowindow numbers (#11743)
 * Improved analysis error tooltip (#12250)
+* Enable user migrations across clouds (#12795)
 
 ### Bug fixes
 * Update Data Observatory Analysis UI (#9991)

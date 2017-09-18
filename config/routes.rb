@@ -562,6 +562,7 @@ CartoDB::Application.routes.draw do
     scope 'v3/' do
       # Front/back split
       get 'me' => 'users#me', as: :api_v3_users_me
+      put 'me' => 'users#update_me', as: :api_v3_users_update_me
 
       scope 'maps/:map_id/layers/:map_layer_id', constraints: { map_id: /[^\/]+/, map_layer_id: /[^\/]+/ } do
         resources :widgets, only: [:show, :create, :update, :destroy], constraints: { id: /[^\/]+/ }

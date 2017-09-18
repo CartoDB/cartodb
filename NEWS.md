@@ -2,6 +2,7 @@ Development
 -----------
 
 ### Features
+* Add endpoints for updating user account & profile details (#12726)
 * Add /api/v3/me endpoint (#12599)
 * Add assets version column in user model (#12676)
 * Dashboard static view (#12680)
@@ -53,6 +54,11 @@ Development
 * Updates Dataservices API client default version to `0.20.0` (#12633)
 
 ### Bug fixes / enhancements
+* Fix timeseries glitches (#12217)
+* Rename 'Select a text' placeholder to 'Select a value' in Filter analysis (#11861)
+* Highlight new column name (#12662)
+* Add drag icon to each item in the widget list (#12692)
+* Cancel feature edition when widget edition is selected (#12781)
 * Rename 'SHARE' button to 'PUBLISH' and 'Not published yet' to 'Unpublished map' (#12730)
 * Move Analysis cancel/delete button to the controls zone (#11414)
 * Rename SIZE/COLOR input label to COLOR in polygons style (#12768)
@@ -183,7 +189,12 @@ Development
 * Fix histograms data range change (#12622)
 * Fix exception thrown when map created without builder is used with it and visualization state data is missing (#12568)
 * Enable selection of categories in non dynamic widgets [Support #890](https://github.com/CartoDB/support/issues/890)
+* Square marker icon not updating with style. [Support #974](https://github.com/CartoDB/support/issues/974)
+* Hide privacy button if user account type is FREE or PERSONAL (#12423)
 * Fix "apply" button sizes in advanced mode (#12652)
+* Axis labels changes in Time-Series (#12658)
+* Removed unused settings in organizations (#4992)
+* Increment maximum buckets in Time-Series for leap years (#12778)
 
 ### NOTICE
 This release upgrades the CartoDB PostgreSQL extension to `0.19.2`. Run the following to have it available:

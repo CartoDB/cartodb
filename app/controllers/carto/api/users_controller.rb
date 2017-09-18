@@ -73,7 +73,8 @@ module Carto
       def me_account_info
         user = current_viewer
 
-        can_be_deleted, cant_be_deleted_reason = user.can_be_deleted?
+        cant_be_deleted_reason = user.can_be_deleted_reason
+        can_be_deleted = cant_be_deleted_reason.nil?
 
         render json: {
           can_change_email: user.can_change_email?,

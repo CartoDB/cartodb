@@ -1178,13 +1178,13 @@ class User < Sequel::Model
     !Carto::Ldap::Manager.new.configuration_present?
   end
 
-  def can_be_deleted?
+  def can_be_deleted_reason
     if organization_owner?
-      [false, "You can't delete your account because you are admin of an organization"]
+      "You can't delete your account because you are admin of an organization"
     elsif Carto::UserCreation.http_authentication.where(user_id: id).first.present?
-      [false, "You can't delete your account because you are using HTTP Header Authentication"]
+      "You can't delete your account because you are using HTTP Header Authentication"
     else
-      [true, nil]
+      nil
     end
   end
 

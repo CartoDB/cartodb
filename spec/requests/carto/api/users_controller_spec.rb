@@ -32,6 +32,7 @@ describe Carto::Api::UsersController do
       get_json api_v3_users_me_url, @headers do |response|
         expect(response.status).to eq(200)
         expect(response.body).to have_key(:config)
+        expect(response.body[:user_frontend_version]).to eq(CartoDB::Application.frontend_version)
       end
     end
   end

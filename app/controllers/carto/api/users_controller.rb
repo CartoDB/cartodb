@@ -24,7 +24,10 @@ module Carto
       end
 
       def me
-        response = { config: frontend_config_hash }
+        response = {
+          config: frontend_config_hash,
+          user_frontend_version: CartoDB::Application.frontend_version
+        }
 
         if current_viewer
           carto_viewer = Carto::User.find(current_viewer.id)

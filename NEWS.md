@@ -2,6 +2,7 @@ Development
 -----------
 
 ### Features
+* Add contextual help to Analysis UI (#11907)
 * Add /api/v3/me endpoint (#12599)
 * Add assets version column in user model (#12676)
 * Vector rendering improvements #12722.

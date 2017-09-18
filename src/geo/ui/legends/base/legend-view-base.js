@@ -29,22 +29,19 @@ var LegendViewBase = Backbone.View.extend({
   },
 
   _generateHTML: function () {
-    var html = [];
-    if (this.model.isSuccess()) {
-      this.model.isAvailable()
-        ? html.push(this._getLegendHTML())
-        : html.push(this._generateTitle({ title: 'No data available', error: true }));
+    if (this.model.isSuccess() && this.model.isAvailable()) {
+      return this._getLegendHTML();
     }
 
-    if (this.model.isError()) {
-      html.push(this._generateTitle({ title: 'Legend unavailable', error: true }));
-    }
+    var error = this.model.isError() ? 'Legend unavailable' : 'No data available';
 
-    if (this.model.isError() || this.model.isLoading() || (this.model.isSuccess() && !this.model.isAvailable())) {
-      html.push(this._getPlaceholderHTML());
-    }
+    var placeholder = this._getPlaceholderHTML();
+    var title = this._generateTitle({
+      title: error,
+      error: true
+    });
 
-    return html.join('\n');
+    return [title, placeholder].join('\n');
   },
 
   _getLegendHTML: function () {

@@ -1944,6 +1944,7 @@
         "select-data-source": "Select a data source",
         "select-second-source": "Select a second data source to join",
         "select-type": "Select data type",
+        "select-value": "Select a value",
         "setup-analysis": "Setup analysis",
         "show": "Show",
         "significance": "Significance",

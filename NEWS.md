@@ -53,6 +53,8 @@ Development
 * Updates Dataservices API client default version to `0.20.0` (#12633)
 
 ### Bug fixes / enhancements
+* Rename 'Select a text' placeholder to 'Select a value' in Filter analysis (#11861)
+* Highlight new column name (#12662)
 * Add drag icon to each item in the widget list (#12692)
 * Cancel feature edition when widget edition is selected (#12781)
 * Rename 'SHARE' button to 'PUBLISH' and 'Not published yet' to 'Unpublished map' (#12730)
@@ -190,6 +192,7 @@ Development
 * Fix "apply" button sizes in advanced mode (#12652)
 * Axis labels changes in Time-Series (#12658)
 * Removed unused settings in organizations (#4992)
+* Increment maximum buckets in Time-Series for leap years (#12778)
 
 ### NOTICE
 This release upgrades the CartoDB PostgreSQL extension to `0.19.2`. Run the following to have it available:

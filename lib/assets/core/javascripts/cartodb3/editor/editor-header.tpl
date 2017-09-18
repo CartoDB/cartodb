@@ -5,7 +5,10 @@
       </div>
     </div>
     <div class="u-bSpace--xl u-flex u-alignCenter">
-      <% if (showPrivacy && !isSimple) { %>
+      <button class="u-rSpace--m u-actionTextColor js-privacy">
+          <i class="Tag Tag-fill Tag-fill--<%- cssClass %> CDB-Text CDB-Size-small u-upperCase"><%- privacy %></i>
+      </button>
+      <% if (!isSimple) { %>
         <div class="js-share-users"></div>
       <% } %>
       <p class="Editor-HeaderInfo-publishDate u-ellipsis CDB-Text CDB-Size-medium u-altTextColor"><%- published %></p>

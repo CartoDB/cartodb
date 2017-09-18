@@ -33,7 +33,8 @@ class Carto::User < ActiveRecord::Base
                    "users.disqus_shortname, users.account_type, users.twitter_username, users.google_maps_key, " \
                    "users.viewer, users.quota_in_bytes, users.database_host, users.crypted_password, " \
                    "users.builder_enabled, users.private_tables_enabled, users.private_maps_enabled, " \
-                   "users.org_admin, users.last_name, users.google_maps_private_key".freeze
+                   "users.org_admin, users.last_name, users.google_maps_private_key, users.website, " \
+                   "users.description, users.available_for_hire, users.frontend_version, users.asset_host".freeze
 
   has_many :tables, class_name: Carto::UserTable, inverse_of: :user
   has_many :visualizations, inverse_of: :user
@@ -339,7 +340,9 @@ class Carto::User < ActiveRecord::Base
   end
 
   #TODO: Remove unused param `use_total`
-  def remaining_quota(use_total = false, db_size = service.db_size_in_bytes)
+  def remaining_quota(_use_total = false, db_size = service.db_size_in_bytes)
+    return nil unless db_size
+
     self.quota_in_bytes - db_size
   end
 
@@ -512,6 +515,10 @@ class Carto::User < ActiveRecord::Base
 
   def view_dashboard
     update_column(:dashboard_viewed_at, Time.now)
+  end
+
+  def relevant_frontend_version
+    frontend_version || CartoDB::Application.frontend_version
   end
 
   private

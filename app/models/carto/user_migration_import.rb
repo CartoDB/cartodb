@@ -84,7 +84,7 @@ module Carto
 
     def update_database_host
       users.each do |user|
-        Rollbar.report_message("Updating database conection for user #{user.usename} to #{database_host}")
+        Rollbar.report_message("Updating database conection for user #{user.username} to #{database_host}")
         user.database_host = database_host
         user.save!
       end

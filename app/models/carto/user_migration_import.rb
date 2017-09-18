@@ -69,6 +69,7 @@ module Carto
         imported = service.import_from_directory(package.meta_dir)
         org_import? ? self.organization = imported : self.user = imported
         update_database_host
+        imported.reload
         save!
       end
 
@@ -83,6 +84,7 @@ module Carto
 
     def update_database_host
       users.each do |user|
+        Rollbar.report_message("Updating database conection for user #{user.usename} to #{database_host}")
         user.database_host = database_host
         user.save!
       end

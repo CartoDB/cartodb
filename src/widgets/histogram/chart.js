@@ -1066,8 +1066,9 @@ module.exports = cdb.core.View.extend({
 
   _moveHandle: function (position, selector) {
     var handle = this.chart.select('.CDB-Chart-handle-' + selector);
-    var x = this.xScale(position) - this.options.handleWidth / 2;
-    var display = (position >= 0 && position <= 100) ? 'inline' : 'none';
+    var fixedPosition = position.toFixed(5);
+    var x = this.xScale(fixedPosition) - this.options.handleWidth / 2;
+    var display = (fixedPosition >= 0 && fixedPosition <= 100) ? 'inline' : 'none';
 
     handle
       .style('display', display)

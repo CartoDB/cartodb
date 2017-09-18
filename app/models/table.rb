@@ -137,7 +137,7 @@ class Table
   end
 
   def geometry_types_key
-    @geometry_types_key ||= "#{redis_key}:geometry_types"
+    "#{redis_key}:geometry_types"
   end
 
   def geometry_types
@@ -529,7 +529,7 @@ class Table
   end
 
   def redis_key
-    key ||= "rails:table:#{id}"
+    "rails:table:#{id}"
   end
 
   # TODO: change name and refactor for ActiveRecord

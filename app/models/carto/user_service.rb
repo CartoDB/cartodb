@@ -15,6 +15,8 @@ module Carto
 
     # Only returns owned tables (not shared ones)
     def table_count
+      return 0 unless @user.id
+
       Carto::VisualizationQueryBuilder.new
                                       .with_user_id(@user.id)
                                       .with_type(Carto::Visualization::TYPE_CANONICAL)
@@ -23,6 +25,8 @@ module Carto
     end
 
     def owned_visualization_count
+      return 0 unless @user.id
+
       Carto::VisualizationQueryBuilder.new
                                       .with_user_id(@user.id)
                                       .with_type(Carto::Visualization::TYPE_DERIVED)
@@ -31,6 +35,8 @@ module Carto
     end
 
     def visualization_count
+      return 0 unless @user.id
+
       Carto::VisualizationQueryBuilder.new
                                       .with_owned_by_or_shared_with_user_id(@user.id)
                                       .build
@@ -38,12 +44,16 @@ module Carto
     end
 
     def public_visualization_count
+      return 0 unless @user.id
+
       Carto::VisualizationQueryBuilder.user_public_visualizations(@user)
                                       .build
                                       .count
     end
 
     def all_visualization_count
+      return 0 unless @user.id
+
       Carto::VisualizationQueryBuilder.user_all_visualizations(@user)
         .build
         .count

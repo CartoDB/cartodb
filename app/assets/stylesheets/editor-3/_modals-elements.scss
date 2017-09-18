@@ -78,6 +78,17 @@
 .Analysis-animation.is-rounded {
   border-radius: $halfBaseSize;
 }
+
+.Analysis-info {
+  padding: 16px;
+}
+
+.Analysis-link {
+  display: inline-flex;
+  font-weight: bold;
+  padding: 4px 0 4px;
+}
+
 .ModalBlockList-item.is-disabled .Analysis-animation {
   background-color: transparent;
   pointer-events: none;
@@ -87,9 +98,8 @@
 .ModalBlockList-item.is-disabled .u-actionTextColor {
   display: none;
 }
-
-.Analysis-info {
-  padding: 16px;
+.ModalBlockList-item-body {
+  display: block;
 }
 
 .SubmenuModal {
@@ -105,11 +115,4 @@
 }
 .SubmenuModal-item:last-child::after {
   display: none;
-}
-
-.Analysis-moreInfo {
-  width: 624px;
-}
-.Analysis-moreInfoTitle {
-  margin: 32px 0 20px;
 }

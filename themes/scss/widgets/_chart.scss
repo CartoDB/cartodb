@@ -40,7 +40,7 @@
 
 .CDB-Chart-bar {
   transition: fill 200ms ease;
-  shape-rendering: crispEdges;
+  shape-rendering: geometricPrecision;
 }
 
 .CDB-Chart-bar.is-highlighted {

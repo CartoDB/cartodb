@@ -77,6 +77,10 @@
 
 .CDB-Chart--histogram {
   margin-top: $baseSize * 3;
+
+  @media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+    transform: rotateZ(-0.001deg);
+  }
 }
 
 .CDB-Widget-content--histogram,

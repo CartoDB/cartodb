@@ -10,8 +10,8 @@ var LegendViewBase = Backbone.View.extend({
 
   className: 'CDB-Legend-item',
 
-  initialize: function (deps) {
-    this._placeholderTemplate = deps.placeholderTemplate;
+  initialize: function (opts) {
+    this._placeholderTemplate = opts.placeholderTemplate;
 
     this.model.on('change', this.render, this);
   },

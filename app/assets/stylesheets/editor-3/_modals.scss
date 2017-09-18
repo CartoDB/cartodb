@@ -80,7 +80,7 @@
   width: 304px;
   min-width: 304px;
   margin: 0 4px 8px;
-  border: 1px solid $cWhite;
+  border: 1px solid $cMainLine;
   border-radius: 4px;
   background: $cWhite;
   box-sizing: border-box;
@@ -94,7 +94,7 @@
 
 
 .ModalBlockList-itemInput {
-  margin-right: $baseSize;
+  margin-right: $baseSize * 2;
 }
 
 .ModalBlockList-item:hover {

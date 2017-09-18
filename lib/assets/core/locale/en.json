@@ -1861,6 +1861,7 @@
         "miles": "mi",
         "min": "Min",
         "mode": "Mode",
+        "more-info": "More info",
         "find-nearest": {
           "categorized": "Per group",
           "categorized-help": "Calculate results per each category of the chosen column",

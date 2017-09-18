@@ -385,6 +385,10 @@ Metrics/LineLength:
   - http
   - https
 
+Metrics/BlockLength:
+  Enabled: true
+  Exclude:
+    - spec/**/*
 
 
 #

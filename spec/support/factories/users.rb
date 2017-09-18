@@ -144,7 +144,15 @@ module CartoDB
                            avatar_url: nil)
       user_mock = mock
       user_mock.stubs(:id).returns(user_id)
+      user_mock.stubs(:name).returns(user_name)
+      user_mock.stubs(:last_name).returns(user_name)
       user_mock.stubs(:username).returns(user_name)
+      user_mock.stubs(:website).returns('http://carto.rocks')
+      user_mock.stubs(:description).returns('description')
+      user_mock.stubs(:location).returns('location')
+      user_mock.stubs(:twitter_username).returns('twitter_username')
+      user_mock.stubs(:disqus_shortname).returns('disqus_shortname')
+      user_mock.stubs(:available_for_hire).returns(false)
       user_mock.stubs(:api_key).returns(user_apikey)
       user_mock.stubs(:invalidate_varnish_cache).returns(nil)
       user_mock.stubs(:has_feature_flag?).returns(false)
@@ -154,6 +162,7 @@ module CartoDB
       user_mock.stubs(:public_url).returns(public_url)
       user_mock.stubs(:avatar_url).returns(avatar_url)
       user_mock.stubs(:new_visualizations_version).returns(2)
+
       user_mock
     end
 

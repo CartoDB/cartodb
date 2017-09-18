@@ -1903,6 +1903,16 @@ describe Table do
 
     describe '#the_geom_conversions' do
       it 'tests the_geom conversions and expected results' do
+        def check_query_geometry(query, schema)
+          tablename = unique_name('table')
+          table = new_table(name: nil, user_id: @user.id)
+          table.migrate_existing_table = tablename
+          @user.db_service.run_pg_query("CREATE TABLE #{tablename} AS #{query}")
+          table.save
+          table.the_geom_type_value = nil # Reset geometry cache
+          check_schema(table, schema)
+        end
+
         # Empty table/default schema (no conversion)
         table = new_table(:name => 'one', :user_id => @user.id)
         table.save
@@ -1913,73 +1923,37 @@ describe Table do
         ])
 
         # latlong projection
-        table = new_table(:name => nil, :user_id => @user.id)
-        table.migrate_existing_table = 'two'
-        @user.db_service.run_pg_query('
-          CREATE TABLE two AS SELECT CDB_LatLng(0,0) AS the_geom
-        ')
-        table.save
-        check_schema(table, [
+        check_query_geometry('SELECT CDB_LatLng(0,0) AS the_geom', [
             [:cartodb_id, 'bigint'],
             [:the_geom, 'geometry', 'geometry', 'point']
         ])
 
         # single multipoint, without srid
-        table = new_table(:name => nil, :user_id => @user.id)
-        table.migrate_existing_table = 'three'
-        @user.db_service.run_pg_query('
-          CREATE TABLE three AS SELECT ST_Collect(ST_MakePoint(0,0),ST_MakePoint(1,1)) AS the_geom;
-        ')
-        table.save
-        check_schema(table, [
+        check_query_geometry('SELECT ST_Collect(ST_MakePoint(0,0),ST_MakePoint(1,1)) AS the_geom;', [
             [:cartodb_id, 'bigint'],
             [:the_geom, 'geometry', 'geometry', 'point'],
         ])
 
         # same as above (single multipoint), but with a SRID=4326 (latlong)
-        table = new_table(:name => nil, :user_id => @user.id)
-        table.migrate_existing_table = 'four'
-        @user.db_service.run_pg_query('
-          CREATE TABLE four AS SELECT ST_SetSRID(ST_Collect(ST_MakePoint(0,0),ST_MakePoint(1,1)),4326) AS the_geom
-        ')
-        table.save
-        check_schema(table, [
+        check_query_geometry('SELECT ST_SetSRID(ST_Collect(ST_MakePoint(0,0),ST_MakePoint(1,1)),4326) AS the_geom', [
             [:cartodb_id, 'bigint'],
             [:the_geom, 'geometry', 'geometry', 'point']
         ])
 
         # single polygon
-        table = new_table(:name => nil, :user_id => @user.id)
-        table.migrate_existing_table = 'five'
-        @user.db_service.run_pg_query('
-          CREATE TABLE five AS SELECT ST_SetSRID(ST_Buffer(ST_MakePoint(0,0),10), 4326) AS the_geom
-        ')
-        table.save
-        check_schema(table, [
+        check_query_geometry('SELECT ST_SetSRID(ST_Buffer(ST_MakePoint(0,0),10), 4326) AS the_geom', [
             [:cartodb_id, 'bigint'],
             [:the_geom, 'geometry', 'geometry', 'multipolygon']
         ])
 
         # single line
-        table = new_table(:name => nil, :user_id => @user.id)
-        table.migrate_existing_table = 'six'
-        @user.db_service.run_pg_query('
-          CREATE TABLE six AS SELECT ST_SetSRID(ST_Boundary(ST_Buffer(ST_MakePoint(0,0),10,1)), 4326) AS the_geom
-        ')
-        table.save
-        check_schema(table, [
+        check_query_geometry('SELECT ST_SetSRID(ST_Boundary(ST_Buffer(ST_MakePoint(0,0),10,1)), 4326) AS the_geom', [
             [:cartodb_id, 'bigint'],
             [:the_geom, 'geometry', 'geometry', 'multilinestring']
         ])
 
         # field named "the_geom" being _not_ of type geometry
-        table = new_table(:name => nil, :user_id => @user.id)
-        table.migrate_existing_table = 'seven'
-        @user.db_service.run_pg_query(%Q{
-          CREATE TABLE seven AS SELECT 'wadus' AS the_geom;
-        })
-        table.save
-        check_schema(table, [
+        check_query_geometry("SELECT 'wadus' AS the_geom;", [
             [:cartodb_id, 'bigint'],
             [:the_geom, 'geometry', 'geometry', 'geometry'],
             [:the_geom_str, 'unknown']

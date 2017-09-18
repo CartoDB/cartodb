@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.9.82-12778",
+  "version": "4.9.82-12778b",
   "dependencies": {
     "abbrev": {
       "version": "1.1.0",
@@ -387,8 +387,8 @@
     },
     "cartodb-deep-insights.js": {
       "version": "0.0.3",
-      "from": "cartodb/deep-insights.js#12778-leap-year",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#89087778e43c4e65d0f1c397bdee1e6a3ecaea19",
+      "from": "cartodb/deep-insights.js#master",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#9f6552ad4f46e0fdf8fafb9b99219d099940e274",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",
@@ -404,8 +404,8 @@
     },
     "cartodb.js": {
       "version": "4.0.0-alpha.1.1.0",
-      "from": "cartodb/cartodb.js#12778-leap-year",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#e0af98cc2162af608a0307d04791c290dee94790"
+      "from": "cartodb/cartodb.js#v4",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#4437552f81fffacc9e85eb4968371f30d236c76f"
     },
     "caseless": {
       "version": "0.12.0",

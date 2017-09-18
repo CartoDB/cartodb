@@ -6,7 +6,7 @@ class AuthenticatedClient extends PublicClient {
   }
 
   getVisualization (viz, callback) {
-    return this.get(['/api/v2/viz', viz, 'viz.json'], callback);
+    return this.get(['/api/v1/viz', viz], callback);
   }
 }
 

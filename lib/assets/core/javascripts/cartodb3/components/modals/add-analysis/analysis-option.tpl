@@ -14,7 +14,7 @@
       </h2>
     </div>
     <div class="ModalBlockList-item-body">
-      <p class="CDB-Text CDB-Size-small u-altTextColor">
+      <p class="CDB-Text CDB-Size-small u-secondaryTextColor">
         <%- desc %>
       </p>
       <% if (link) { %>

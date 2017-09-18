@@ -33,11 +33,11 @@ var LegendViewBase = Backbone.View.extend({
     if (this.model.isSuccess()) {
       this.model.isAvailable()
         ? html.push(this._getLegendHTML())
-        : html.push(legendTitleTemplate({ title: 'No data available', error: true }));
+        : html.push(this._generateTitle({ title: 'No data available', error: true }));
     }
 
     if (this.model.isError()) {
-      html.push(legendTitleTemplate({ title: 'Legend unavailable', error: true }));
+      html.push(this._generateTitle({ title: 'Legend unavailable', error: true }));
     }
 
     if (this.model.isError() || this.model.isLoading() || (this.model.isSuccess() && !this.model.isAvailable())) {
@@ -52,7 +52,7 @@ var LegendViewBase = Backbone.View.extend({
 
     // Legend title
     if (this.model.get('title')) {
-      html.push(legendTitleTemplate({ title: this.model.get('title') }));
+      html.push(this._generateTitle({ title: this.model.get('title') }));
     }
 
     // Pre HTML Snippet
@@ -69,6 +69,10 @@ var LegendViewBase = Backbone.View.extend({
     }
 
     return html.join('\n');
+  },
+
+  _generateTitle: function (data) {
+    return legendTitleTemplate({ title: data.title, error: !!data.error });
   },
 
   _getPlaceholderHTML: function () {

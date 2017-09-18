@@ -30,7 +30,7 @@ module CartoDB
 
         maps.each { |map| copier.copy_data_layers(map, destination_map, user) }
 
-        destination_map.user = user
+        destination_map.user_id = user.id
         destination_map.save
         destination_map
       end

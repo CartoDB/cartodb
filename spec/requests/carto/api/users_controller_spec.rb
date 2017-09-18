@@ -28,9 +28,10 @@ describe Carto::Api::UsersController do
       end
     end
 
-    it 'returns 401 if user is not logged in' do
+    it 'returns a hash with only config if there is no authenticated user' do
       get_json api_v3_users_me_url, @headers do |response|
-        expect(response.status).to eq(401)
+        expect(response.status).to eq(200)
+        expect(response.body).to have_key(:config)
       end
     end
   end

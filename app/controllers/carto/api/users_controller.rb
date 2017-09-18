@@ -16,25 +16,32 @@ module Carto
 
       ssl_required :show, :me, :update_me, :get_authenticated_users
 
-      skip_before_filter :api_authorization_required, only: [:get_authenticated_users]
+      before_filter :optional_api_authorization, only: [:me]
+      skip_before_filter :api_authorization_required, only: [:me, :get_authenticated_users]
 
       def show
         render json: Carto::Api::UserPresenter.new(uri_user).data
       end
 
       def me
-        carto_viewer = Carto::User.find(current_viewer.id)
+        response = { config: frontend_config_hash }
 
-        render json: {
-          user_data: Carto::Api::UserPresenter.new(carto_viewer).data,
-          default_fallback_basemap: carto_viewer.default_basemap,
-          config: frontend_config_hash,
-          dashboard_notifications: carto_viewer.notifications_for_category(:dashboard),
-          is_just_logged_in: !!flash['logged'],
-          is_first_time_viewing_dashboard: !(carto_viewer.dashboard_viewed_at),
-          user_frontend_version: carto_viewer.relevant_frontend_version,
-          asset_host: carto_viewer.asset_host
-        }
+        if current_viewer
+          carto_viewer = Carto::User.find(current_viewer.id)
+
+          response.merge!({
+            user_data: Carto::Api::UserPresenter.new(carto_viewer).data,
+            default_fallback_basemap: carto_viewer.default_basemap,
+            config: frontend_config_hash,
+            dashboard_notifications: carto_viewer.notifications_for_category(:dashboard),
+            is_just_logged_in: !!flash['logged'],
+            is_first_time_viewing_dashboard: !(carto_viewer.dashboard_viewed_at),
+            user_frontend_version: carto_viewer.relevant_frontend_version,
+            asset_host: carto_viewer.asset_host
+          })
+        end
+
+        render json: response
       end
 
       def update_me

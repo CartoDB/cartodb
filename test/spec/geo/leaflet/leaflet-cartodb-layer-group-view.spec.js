@@ -1,4 +1,3 @@
-var Backbone = require('backbone');
 var _ = require('underscore');
 var L = require('leaflet');
 
@@ -27,9 +26,7 @@ var createLayerGroupView = function (layerGroupModel, container) {
     zoom: 3
   });
 
-  var mapModel = new Backbone.Model();
-
-  var layerGroupView = new LeafletCartoDBLayerGroupView(layerGroupModel, leafletMap, mapModel);
+  var layerGroupView = new LeafletCartoDBLayerGroupView(layerGroupModel, leafletMap);
   layerGroupView.leafletLayer.addTo(leafletMap);
   return layerGroupView;
 };

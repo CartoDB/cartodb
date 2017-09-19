@@ -175,6 +175,11 @@ var VisModel = Backbone.Model.extend({
     });
 
     this.listenTo(this.map, 'cartodbLayerMoved', this.reload);
+    this.listenTo(this.layerGroupModel, 'all', function (type, error) {
+      if (type.lastIndexOf('error:', 0) === 0) {
+        this.map.trigger(type, error);
+      }
+    });
 
     var modelUpdater = new ModelUpdater({
       visModel: this,

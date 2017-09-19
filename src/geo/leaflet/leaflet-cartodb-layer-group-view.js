@@ -46,12 +46,10 @@ var findContainerPoint = function (map, o) {
   return point;
 };
 
-var LeafletCartoDBLayerGroupView = function (layerModel, leafletMap, mapModel) {
+var LeafletCartoDBLayerGroupView = function (layerModel, leafletMap) {
   var self = this;
   LeafletLayerView.apply(this, arguments);
   CartoDBLayerGroupViewBase.apply(this, arguments);
-
-  this.mapModel = mapModel;
 
   this.leafletLayer.on('load', function () {
     self.trigger('load');
@@ -63,7 +61,7 @@ var LeafletCartoDBLayerGroupView = function (layerModel, leafletMap, mapModel) {
 
   this.leafletLayer.on('tileerror', function (layer) {
     layer.tile.src = TILE_ERROR_IMAGE;
-    self.mapModel.addError({ type: C.WINDSHAFT_ERRORS.TILE });
+    self.model.addError({ type: C.WINDSHAFT_ERRORS.TILE });
   });
 };
 

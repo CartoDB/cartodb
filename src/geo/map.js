@@ -34,7 +34,6 @@ var Map = Model.extend({
 
     this.layers = options.layersCollection || new Layers();
     this.geometries = new Backbone.Collection();
-    this.errors = new Backbone.Collection();
 
     var center = attrs.center || this.defaults.center;
     if (typeof center === 'string') {
@@ -87,29 +86,6 @@ var Map = Model.extend({
   },
 
   // PUBLIC API METHODS
-
-  addError: function (error) {
-    var type = error.type;
-
-    if (!type) {
-      throw new Error('Error must have a type property.');
-    }
-
-    this.trigger('error:' + type, error);
-
-    var inCollection = this.getError(type);
-    return inCollection || this.errors.add(error);
-  },
-
-  getError: function (type) {
-    return this.errors.findWhere({ type: type });
-  },
-
-  removeError: function (type) {
-    var error = this.getError(type);
-    return this.errors.remove(error);
-  },
-
   moveCartoDBLayer: function (from, to) {
     var layerMoved = this.layers.moveCartoDBLayer(from, to);
     if (layerMoved) {

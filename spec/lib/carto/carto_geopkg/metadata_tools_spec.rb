@@ -46,5 +46,29 @@ describe Carto::CartoGeoPKG::MetadataTools do
         @visualization.synchronization = nil
       end
     end
+
+    describe('#schema_for_table_schema') do
+      let(:table_schema) do
+        [
+          [:cartodb_id, 'number'],
+          [:the_geom, 'geometry', 'geometry', 'polygon'],
+          [:column_a, 'text'],
+          [:column_b, 'float']
+        ]
+      end
+
+      let(:expected_schema) do
+        {
+          cartodb_id: { type: 'number' },
+          the_geom: { type: 'polygon' },
+          column_a: { type: 'text' },
+          column_b: { type: 'float' }
+        }
+      end
+
+      it 'should return a valid schema hash' do
+        @generator.schema_for_table_schema(table_schema).should eq expected_schema
+      end
+    end
   end
 end

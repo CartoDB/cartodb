@@ -15,8 +15,7 @@ var LEGEND_VIEW_CONSTRUCTORS = {
 var PLACEHOLDER_TEMPLATES = {
   bubble: require('./bubble/placeholder-template.tpl'),
   category: require('./categories/placeholder-template.tpl'),
-  choropleth: require('./choropleth/placeholder-template.tpl'),
-  custom: require('./custom/placeholder-template.tpl')
+  choropleth: require('./choropleth/placeholder-template.tpl')
 };
 
 module.exports = {

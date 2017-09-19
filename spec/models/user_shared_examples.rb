@@ -785,9 +785,9 @@ shared_examples_for "user models" do
   end
 
   describe '#default_basemap' do
-    it 'defaults to Google for Google Maps users, Positron for others' do
+    it 'defaults to Google for Google Maps users, first declared basemap for others' do
       user = create_user
-      user.default_basemap['name'].should eq 'Positron'
+      user.default_basemap['name'].should eq Cartodb.default_basemap['name']
       user.google_maps_key = 'client=whatever'
       user.google_maps_private_key = 'wadus'
       user.save

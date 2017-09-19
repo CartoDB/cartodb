@@ -83,7 +83,7 @@ describe TableBlender do
 
         map = blender.blend
         map.user_layers.first.options['name'].should_not eq fake_name
-        map.user_layers.first.options['name'].should eq Cartodb.config[:basemaps].values.first.values.first['name']
+        map.user_layers.first.options['name'].should eq Cartodb.default_basemap['name']
       end
     end
   end

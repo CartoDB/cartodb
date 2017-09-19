@@ -65,6 +65,10 @@ module Cartodb
     end
   end
 
+  def self.default_basemap
+    Cartodb.config[:basemaps].values.first.values.first
+  end
+
   # Execute a block with overriden configuration parameters
   # (useful for tests)
   #

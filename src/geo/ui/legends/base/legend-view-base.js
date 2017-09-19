@@ -33,15 +33,13 @@ var LegendViewBase = Backbone.View.extend({
       return this._getLegendHTML();
     }
 
-    var error = this.model.isError() ? 'Legend unavailable' : 'No data available';
-
     var placeholder = this._getPlaceholderHTML();
-    var title = this._generateTitle({
-      title: error,
-      error: true
-    });
 
-    return [title, placeholder].join('\n');
+    var error = this.model.isError()
+      ? this._generateTitle({ title: 'Something went wrong', error: 'error' })
+      : this._generateTitle({ title: 'No data available', error: 'alert' });
+
+    return [error, placeholder].join('\n');
   },
 
   _getLegendHTML: function () {
@@ -69,7 +67,7 @@ var LegendViewBase = Backbone.View.extend({
   },
 
   _generateTitle: function (data) {
-    return legendTitleTemplate({ title: data.title, error: !!data.error });
+    return legendTitleTemplate({ title: data.title, error: data.error });
   },
 
   _getPlaceholderHTML: function () {

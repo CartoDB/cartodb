@@ -105,13 +105,14 @@ describe('geo/map/torque-layer', function () {
       layer = new TorqueLayer({}, { vis: this.vis });
     });
 
-    it('should raise an error when "source" attribute is specified', function () {
-      expect(function () {
-        layer.update({
-          id: 3,
-          source: 'foo'
-        });
-      }).toThrowError('"source" must be set via setSource');
+    xit('should allow a string as parameter', function () {
+      var source = 'foo';
+      layer.update({ id: 3, source: source });
+    });
+
+    xit('should allow a analysis as parameter', function () {
+      var source = 'foo';
+      layer.update({ id: 3, source: source });
     });
   });
 });

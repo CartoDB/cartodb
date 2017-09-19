@@ -221,18 +221,12 @@ describe('geo/map/cartodb-layer', function () {
 
   describe('.update', function () {
     var layer;
-
-    beforeEach(function () {
+    it('should get the analysis by id when source is a string', function () {
+      this.vis.analysis = { findNodeById: jasmine.createSpy('findNodeById').and.returnValue({ id: 'a0' }) };
       layer = new CartoDBLayer({}, { vis: this.vis });
-    });
-
-    it('should raise an error when "source" attribute is specified', function () {
-      expect(function () {
-        layer.update({
-          id: 3,
-          source: 'foo'
-        });
-      }).toThrowError('"source" must be set via setSource');
+      expect(this.vis.analysis.findNodeById).not.toHaveBeenCalled();
+      layer.update({ id: 3, source: 'a0' });
+      expect(this.vis.analysis.findNodeById).toHaveBeenCalledWith('a0');
     });
   });
 });

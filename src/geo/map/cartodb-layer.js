@@ -4,6 +4,7 @@ var LayerModelBase = require('./layer-model-base');
 var InfowindowTemplate = require('./infowindow-template');
 var TooltipTemplate = require('./tooltip-template');
 var Legends = require('./legends/legends');
+var AnalysisModel = require('../../analysis/analysis-model');
 
 var ATTRIBUTES_THAT_TRIGGER_VIS_RELOAD = ['sql', 'source', 'sql_wrap', 'cartocss'];
 
@@ -137,10 +138,29 @@ var CartoDBLayer = LayerModelBase.extend({
 
   update: function (attrs) {
     if (attrs.source) {
-      throw new Error('"source" must be set via setSource');
+      console.warn('Deprectaed: Use ".setSource" to update a layar\'s source instead the update method');
+      attrs.source = CartoDBLayer.getLayerSourceFromAttrs(attrs, this._vis.analysis);
     }
     LayerModelBase.prototype.update.apply(this, arguments);
   }
 });
+
+/**
+  * Return the source analysis node from given attrs object.
+  */
+CartoDBLayer.getLayerSourceFromAttrs = function (attrs, analysis) {
+  if (typeof attrs.source === 'string') {
+    console.warn('Deprecated: Layers must have an analysis node as source instead of a string ID.');
+    var source = analysis.findNodeById(attrs.source);
+    if (source) {
+      return source;
+    }
+    throw new Error('No analysis found with id: ' + attrs.source);
+  }
+  if (attrs.source instanceof AnalysisModel) {
+    return attrs.source;
+  }
+  throw new Error('Invalid layer source. Source must be an ID or a Analysis node but got: ' + attrs.source);
+};
 
 module.exports = CartoDBLayer;

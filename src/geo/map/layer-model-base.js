@@ -55,6 +55,12 @@ var MapLayer = Model.extend({
 
   setError: function (error) {
     this.set('error', error);
+  },
+
+  /**
+   * @Abstract method only needed in Carto and Torque Layers
+   */
+  getSourceId: function () {
   }
 });
 

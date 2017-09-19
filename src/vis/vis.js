@@ -292,6 +292,7 @@ var VisModel = Backbone.Model.extend({
 
   _isAnalysisSourceOfLayerOrDataview: function (analysisModel) {
     var isAnalysisLinkedToLayer = this._layersCollection.any(function (layerModel) {
+      // Instead of making getSourceId abstract we can check if exists here.
       return layerModel.getSourceId() === analysisModel.get('id');
     });
     var isAnalysisLinkedToDataview = this._dataviewsCollection.isAnalysisLinkedToDataview(analysisModel);

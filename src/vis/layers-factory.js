@@ -52,14 +52,6 @@ function checkProperties (obj, requiredProperties) {
   }
 }
 
-function checkValidSource (attrs) {
-  if (attrs.source && (attrs.source instanceof AnalysisModel)) {
-    return;
-  }
-
-  throw new Error('Layer "' + attrs.id + '" must have a valid analysis node as "source"');
-}
-
 var LAYER_CONSTRUCTORS = {
   tiled: function (attrs, options) {
     checkProperties(attrs, ['urlTemplate']);
@@ -105,7 +97,7 @@ var LAYER_CONSTRUCTORS = {
 
   cartodb: function (attrs, options) {
     checkProperties(attrs, ['source', 'cartocss']);
-    checkValidSource(attrs);
+    attrs.source = CartoDBLayer.getLayerSourceFromAttrs(attrs, options.vis.analysis);
 
     return new CartoDBLayer(attrs, {
       vis: options.vis
@@ -114,7 +106,7 @@ var LAYER_CONSTRUCTORS = {
 
   torque: function (attrs, options) {
     checkProperties(attrs, ['source', 'cartocss']);
-    checkValidSource(attrs);
+    attrs.source = CartoDBLayer.getLayerSourceFromAttrs(attrs, options.vis.analysis);
 
     var windshaftSettings = options.windshaftSettings;
 

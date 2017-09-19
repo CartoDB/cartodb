@@ -25,7 +25,7 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.js$/,
+        test: /\.js.babel$/,
         loader: 'babel-loader',
         include: [
           path.resolve(__dirname, '../lib/assets/javascripts/carto-node')

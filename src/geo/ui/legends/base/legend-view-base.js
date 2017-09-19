@@ -35,11 +35,15 @@ var LegendViewBase = Backbone.View.extend({
 
     var placeholder = this._getPlaceholderHTML();
 
-    var error = this.model.isError()
+    if (this.model.isLoading()) {
+      return placeholder;
+    }
+
+    var message = this.model.isError()
       ? this._generateTitle({ title: 'Something went wrong', error: 'error' })
       : this._generateTitle({ title: 'No data available', error: 'alert' });
 
-    return [error, placeholder].join('\n');
+    return [message, placeholder].join('\n');
   },
 
   _getLegendHTML: function () {

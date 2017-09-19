@@ -348,8 +348,7 @@ describe Carto::Api::VisualizationsController do
         'total_entries' => 1,
         'total_user_entries' => 1,
         'total_likes' => 0,
-        'total_shared' => 0,
-
+        'total_shared' => 0
       }
     end
 

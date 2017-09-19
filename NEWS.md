@@ -2,6 +2,7 @@ Development
 -----------
 
 ### Features
+* Add endpoints for updating user account & profile details (#12726)
 * Add /api/v3/me endpoint (#12599)
 * Add assets version column in user model (#12676)
 * Vector rendering improvements #12722.
@@ -53,6 +54,7 @@ Development
 
 ### Bug fixes / enhancements
 * Fix extraneous labels layer.
+* Fix timeseries glitches (#12217)
 * Rename 'Select a text' placeholder to 'Select a value' in Filter analysis (#11861)
 * Highlight new column name (#12662)
 * Add drag icon to each item in the widget list (#12692)

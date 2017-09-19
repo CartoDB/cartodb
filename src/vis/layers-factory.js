@@ -6,7 +6,6 @@ var GMapsBaseLayer = require('../geo/map/gmaps-base-layer');
 var PlainLayer = require('../geo/map/plain-layer');
 var CartoDBLayer = require('../geo/map/cartodb-layer');
 var TorqueLayer = require('../geo/map/torque-layer');
-var AnalysisModel = require('../analysis/analysis-model');
 
 /*
  *  if we are using http and the tiles of base map need to be fetched from

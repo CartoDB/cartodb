@@ -30,11 +30,6 @@
   border-bottom-right-radius: $baseSize / 2;
   background: $cSecondaryBackground;
 }
-.Privacy-upgrade {
-  .CDB-Button:hover {
-    text-decoration: none;
-  }
-}
 
 .Privacy-passwordField {
   padding: $baseSize $baseSize + 4;

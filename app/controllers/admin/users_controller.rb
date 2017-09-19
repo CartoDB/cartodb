@@ -136,7 +136,7 @@ class Admin::UsersController < Admin::AdminController
   end
 
   def load_account_deletion_info
-    @cant_be_deleted_reason = @user.can_be_deleted_reason
+    @cant_be_deleted_reason = @user.cant_be_deleted_reason
     @can_be_deleted = @cant_be_deleted_reason.nil?
   end
 

@@ -1178,7 +1178,7 @@ class User < Sequel::Model
     !Carto::Ldap::Manager.new.configuration_present?
   end
 
-  def can_be_deleted_reason
+  def cant_be_deleted_reason
     if organization_owner?
       "You can't delete your account because you are admin of an organization"
     elsif Carto::UserCreation.http_authentication.where(user_id: id).first.present?

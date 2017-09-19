@@ -35,7 +35,7 @@ class Admin::VisualizationsController < Admin::AdminController
                                                       :show_protected_embed_map, :embed_map]
   before_filter :link_ghost_tables, only: [:index]
   before_filter :user_metadata_propagation, only: [:index]
-  before_filter :get_viewed_user, only: [:public_map, :public_table]
+  before_filter :get_viewed_user, only: [:public_map, :embed_map, :public_table]
   before_filter :load_common_data, only: [:index]
 
   before_filter :resolve_visualization_and_table,
@@ -407,7 +407,7 @@ class Admin::VisualizationsController < Admin::AdminController
 
   def embed_map
     # TODO: uncomment
-    if current_user.present? && current_user.has_feature_flag?('static_embed')
+    if @viewed_user.has_feature_flag?('static_embed')
       return render(file: "public/static/embed_map/index.html", layout: false)
     end
 

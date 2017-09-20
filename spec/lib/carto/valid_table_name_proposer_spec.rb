@@ -28,6 +28,17 @@ module Carto
         valid_name.should eq 'm_nolo_es_co_bar_'
       end
 
+      it 'handles long titles properly' do
+        long_title = 'abcdefghij' * 7
+        expect(
+          @valid_table_name_proposer.propose_valid_table_name(long_title, taken_names: [])
+        ).to eq('abcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghija')
+        taken_name = ('abcdefghij' * 6) + 'a'
+        expect(
+          @valid_table_name_proposer.propose_valid_table_name(long_title, taken_names: [taken_name])
+        ).to eq('abcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghi_1')
+      end
+
       it 'should remove disallowed starting characters' do
         valid_name = @valid_table_name_proposer.propose_valid_table_name("____Mªnolo !Es'co`bar##!", taken_names: [])
         valid_name.should eq 'table_m_nolo_es_co_bar_'

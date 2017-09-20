@@ -55,6 +55,8 @@ Development
 
 ### Bug fixes / enhancements
 * Lazy select to fix missing values due to 40 per page items limitation in requests
+* Fix infowindow break word (CartoDB/support#965)
+* Update cartodb.js version 
 * Fix extraneous labels layer.
 * Fix timeseries glitches (#12217)
 * Rename 'Select a text' placeholder to 'Select a value' in Filter analysis (#11861)

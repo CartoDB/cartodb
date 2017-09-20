@@ -1249,6 +1249,12 @@
       "column-type-error": "Column type must be a %{columnType}",
       "interval-error": "Value must be between %{minValue} and %{maxValue}",
       "copy-button": "COPY",
+      "lazy-select": {
+        "search": "Search...",
+        "error": "Error fetching %{type}",
+        "type": "items",
+        "empty": "No results for %{type} column."
+      },
       "data-observatory": {
         "dropdown": {
           "measurement": {

@@ -37,6 +37,19 @@ class User < Sequel::Model
   include Carto::EmailCleaner
   extend Carto::UserAuthenticator
 
+  OAUTH_SERVICE_TITLES = {
+    'gdrive' => 'Google Drive',
+    'dropbox' => 'Dropbox',
+    'box' => 'Box',
+    'mailchimp' => 'MailChimp',
+    'instagram' => 'Instagram'
+  }.freeze
+
+  OAUTH_SERVICE_REVOKE_URLS = {
+    'mailchimp' => 'http://admin.mailchimp.com/account/oauth2/',
+    'instagram' => 'http://instagram.com/accounts/manage_access/'
+  }.freeze
+
   self.strict_param_setting = false
 
   # @param name             String
@@ -1183,8 +1196,6 @@ class User < Sequel::Model
       "You can't delete your account because you are admin of an organization"
     elsif Carto::UserCreation.http_authentication.where(user_id: id).first.present?
       "You can't delete your account because you are using HTTP Header Authentication"
-    else
-      nil
     end
   end
 
@@ -1192,24 +1203,11 @@ class User < Sequel::Model
     datasources = CartoDB::Datasources::DatasourcesFactory.get_all_oauth_datasources
     array = []
 
-    service_titles = {
-      'gdrive' => 'Google Drive',
-      'dropbox' => 'Dropbox',
-      'box' => 'Box',
-      'mailchimp' => 'MailChimp',
-      'instagram' => 'Instagram'
-    }
-
-    service_revoke_urls = {
-      'mailchimp' => 'http://admin.mailchimp.com/account/oauth2/',
-      'instagram' => 'http://instagram.com/accounts/manage_access/'
-    }
-
     datasources.each do |serv|
       obj ||= Hash.new
 
-      title = service_titles.fetch(serv, serv)
-      revoke_url = service_revoke_urls.fetch(serv, nil)
+      title = OAUTH_SERVICE_TITLES.fetch(serv, serv)
+      revoke_url = OAUTH_SERVICE_REVOKE_URLS.fetch(serv, nil)
       enabled = case serv
       when 'gdrive'
         Cartodb.config[:oauth][serv]['client_id'].present?

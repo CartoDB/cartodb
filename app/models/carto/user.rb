@@ -526,8 +526,6 @@ class Carto::User < ActiveRecord::Base
       "You can't delete your account because you are admin of an organization"
     elsif Carto::UserCreation.http_authentication.where(user_id: id).first.present?
       "You can't delete your account because you are using HTTP Header Authentication"
-    else
-      nil
     end
   end
 
@@ -535,24 +533,11 @@ class Carto::User < ActiveRecord::Base
     datasources = CartoDB::Datasources::DatasourcesFactory.get_all_oauth_datasources
     array = []
 
-    service_titles = {
-      'gdrive' => 'Google Drive',
-      'dropbox' => 'Dropbox',
-      'box' => 'Box',
-      'mailchimp' => 'MailChimp',
-      'instagram' => 'Instagram'
-    }
-
-    service_revoke_urls = {
-      'mailchimp' => 'http://admin.mailchimp.com/account/oauth2/',
-      'instagram' => 'http://instagram.com/accounts/manage_access/'
-    }
-
     datasources.each do |serv|
       obj ||= Hash.new
 
-      title = service_titles.fetch(serv, serv)
-      revoke_url = service_revoke_urls.fetch(serv, nil)
+      title = ::User::OAUTH_SERVICE_TITLES.fetch(serv, serv)
+      revoke_url = ::User::OAUTH_SERVICE_REVOKE_URLS.fetch(serv, nil)
       enabled = case serv
         when 'gdrive'
           Cartodb.config[:oauth][serv]['client_id'].present?
@@ -587,27 +572,6 @@ class Carto::User < ActiveRecord::Base
 
   def should_display_old_password?
     needs_password_confirmation?
-  end
-
-  # Some operations, such as user deletion, won't ask for password confirmation if password is not set
-  # (because of Google/Github sign in, for example)
-  def needs_password_confirmation?
-    (!oauth_signin? || last_password_change_date.present?) &&
-      !created_with_http_authentication? &&
-      !organization.try(:auth_saml_enabled?)
-  end
-
-  def oauth_signin?
-    google_sign_in || github_user_id.present?
-  end
-
-  def can_change_email?
-    return (!self.google_sign_in || self.last_password_change_date.present?) &&
-      !Carto::Ldap::Manager.new.configuration_present?
-  end
-
-  def can_change_password?
-    !Carto::Ldap::Manager.new.configuration_present?
   end
 
   def account_url(request_protocol)

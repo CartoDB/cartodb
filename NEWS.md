@@ -54,6 +54,7 @@ Development
 * Remove data-observatory-multiple-measures feature flag (#304)
 
 ### Bug fixes / enhancements
+* Update cartodb.js version 
 * Fix extraneous labels layer.
 * Fix timeseries glitches (#12217)
 * Rename 'Select a text' placeholder to 'Select a value' in Filter analysis (#11861)

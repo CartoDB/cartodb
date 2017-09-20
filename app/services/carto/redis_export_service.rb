@@ -18,10 +18,20 @@ module Carto
       restore_redis_from_hash_export(JSON.parse(exported_json_string).deep_symbolize_keys)
     end
 
+    def remove_redis_from_json_export(exported_json_string)
+      remove_redis_from_hash_export(JSON.parse(exported_json_string).deep_symbolize_keys)
+    end
+
     def restore_redis_from_hash_export(exported_hash)
       raise 'Wrong export version' unless compatible_version?(exported_hash[:version])
 
       restore_redis(exported_hash[:redis])
+    end
+
+    def remove_redis_from_json_export(exported_hash)
+      raise 'Wrong export version' unless compatible_version?(exported_hash[:version])
+
+      remove_redis(exported_hash[:redis])
     end
 
     private
@@ -30,9 +40,19 @@ module Carto
       restore_keys($users_metadata, redis_export[:users_metadata])
     end
 
+    def remove_redis(redis_export)
+      remove_keys($users_metadata, redis_export[:users_metadata])
+    end
+
     def restore_keys(redis_db, redis_keys)
       redis_keys.each do |key, value|
         redis_db.restore(key, value[:ttl], Base64.decode64(value[:value]))
+      end
+    end
+
+    def remove_keys(redis_db, redis_keys)
+      redis_keys.each do |key|
+        redis_db.del(key)
       end
     end
   end

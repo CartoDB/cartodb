@@ -217,6 +217,24 @@ module Carto
       organization
     end
 
+    def rollback_import_from_directory(meta_path)
+      organization_redis_file = get_redis_filename(meta_path)
+      Carto::RedisExportService.new.remove_redis_from_json_export(File.read(organization_redis_file))
+      organization = load_organization_from_directory(meta_path)
+
+      user_list = get_user_list(meta_path)
+      user_list.map do |user_path|
+        Carto::UserMetadataExportService.new.rollback_import_from_directory(user_path)
+      end
+
+      organization = Cartodb::Organization.find(organization.id)
+      return unless organization
+      organization.groups.delete
+      organization.notifications.delete
+      organization.users.delete
+      organization.delete
+    end
+
     def get_user_list(meta_path)
       Dir["#{meta_path}/user_*"]
     end
@@ -253,6 +271,18 @@ module Carto
       end
 
       organization
+    end
+
+    def rollback_import_metadata_from_directory(organization, path)
+      organization.users.each do |user|
+        Carto::UserMetadataExportService.new.import_user_visualizations_from_directory(
+          user, Carto::Visualization::TYPE_REMOTE, "#{path}/user_#{user.id}"
+        )
+
+        Carto::UserMetadataExportService.new.import_user_visualizations_from_directory(
+          user, Carto::Visualization::TYPE_CANONICAL, "#{path}/user_#{user.id}"
+        )
+      end
     end
   end
 end

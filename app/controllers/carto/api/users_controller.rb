@@ -17,33 +17,34 @@ module Carto
 
       ssl_required :show, :me, :update_me, :get_authenticated_users
 
-      skip_before_filter :api_authorization_required, only: [:get_authenticated_users]
+      before_filter :optional_api_authorization, only: [:me]
+      skip_before_filter :api_authorization_required, only: [:me, :get_authenticated_users]
 
       def show
         render json: Carto::Api::UserPresenter.new(uri_user).data
       end
 
       def me
-        carto_viewer = Carto::User.find(current_viewer.id)
+        carto_viewer = current_viewer.present? ? Carto::User.find(current_viewer.id) : nil
 
         render json: {
-          user_data: Carto::Api::UserPresenter.new(carto_viewer).data,
-          default_fallback_basemap: carto_viewer.default_basemap,
+          user_data: carto_viewer.present? ? Carto::Api::UserPresenter.new(carto_viewer).data : nil,
+          default_fallback_basemap: carto_viewer.try(:default_basemap),
           config: frontend_config_hash,
-          dashboard_notifications: carto_viewer.notifications_for_category(:dashboard),
-          is_just_logged_in: !!flash['logged'],
-          is_first_time_viewing_dashboard: !(carto_viewer.dashboard_viewed_at),
-          user_frontend_version: carto_viewer.relevant_frontend_version,
-          asset_host: carto_viewer.asset_host,
-          can_change_email: carto_viewer.can_change_email?,
-          auth_username_password_enabled: carto_viewer.organization && carto_viewer.organization.auth_username_password_enabled,
-          should_display_old_password: carto_viewer.should_display_old_password?,
-          can_change_password: carto_viewer.can_change_password?,
-          plan_name: plan_name(carto_viewer.account_type),
-          plan_url: carto_viewer.plan_url(request.protocol),
-          can_be_deleted: @can_be_deleted,
-          cant_be_deleted_reason: @cant_be_deleted_reason,
-          services: @services
+          dashboard_notifications: carto_viewer.try(:notifications_for_category, :dashboard),
+          is_just_logged_in: carto_viewer.present? ? !!flash['logged'] : nil,
+          is_first_time_viewing_dashboard: !carto_viewer.try(:dashboard_viewed_at),
+          user_frontend_version: carto_viewer.try(:relevant_frontend_version) || CartoDB::Application.frontend_version,
+          asset_host: carto_viewer.try(:asset_host),
+          can_change_email: carto_viewer.present? ? carto_viewer.can_change_email? : nil,
+          auth_username_password_enabled: carto_viewer.try(:organization) && carto_viewer.try(:organization, :auth_username_password_enabled),
+          should_display_old_password: carto_viewer.present? ? carto_viewer.should_display_old_password? : nil,
+          can_change_password: carto_viewer.present? ? carto_viewer.can_change_password? : nil,
+          plan_name: carto_viewer.present? ? plan_name(carto_viewer.account_type) : nil,
+          plan_url: carto_viewer.present? ? carto_viewer.plan_url(request.protocol) : nil,
+          can_be_deleted: carto_viewer.present? ? @can_be_deleted : nil,
+          cant_be_deleted_reason: carto_viewer.present? ? @cant_be_deleted_reason : nil,
+          services: carto_viewer.present? ? @services : []
         }
       end
 

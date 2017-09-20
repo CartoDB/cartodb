@@ -61,6 +61,14 @@ module CartoDB
         end
       end
 
+      def rollback!
+        if @pack_config['organization']
+          rollback_org
+        else
+          rollback_user
+        end
+      end
+
       def organization_import?
         @pack_config['organization'] != nil
       end

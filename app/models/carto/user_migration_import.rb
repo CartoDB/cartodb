@@ -65,18 +65,31 @@ module Carto
 
     def import(service, package)
       if import_metadata?
-        log.append('=== Importing metadata ===')
-        begin
-          imported = service.import_from_directory(package.meta_dir)
-        rescue => e
-          log.append('=== Error importing metadata. Rollback! ===')
-          service.rollback_import_from_directory(package.meta_dir)
-          raise e
-        end
-        org_import? ? self.organization = imported : self.user = imported
-        save!
+        imported = import_metadata(package, service)
       end
 
+      import_job = import_data(package, service)
+
+      if import_metadata?
+        import_visualizations(import_job, imported, package, service)
+      end
+    end
+
+    def import_visualizations(import_job, imported, package, service)
+      log.append('=== Importing visualizations and search tweets ===')
+      begin
+        ActiveRecord::Base.transaction do
+          service.import_metadata_from_directory(imported, package.meta_dir)
+        end
+      rescue => e
+        log.append('=== Error importing visualizations and search tweets. Rollback! ===')
+        import_job.rollback!
+        service.rollback_import_from_directory(imported, package.meta_dir)
+        raise e
+      end
+    end
+
+    def import_data(package, service)
       log.append('=== Importing data ===')
       import_job = CartoDB::DataMover::ImportJob.new(import_job_arguments(package.data_dir))
       begin
@@ -87,20 +100,21 @@ module Carto
         service.rollback_import_from_directory(package.meta_dir) if import_metadata?
         raise e
       end
+      import_job
+    end
 
-      if import_metadata?
-        log.append('=== Importing visualizations and search tweets ===')
-        begin
-          ActiveRecord::Base.transaction do
-            service.import_metadata_from_directory(imported, package.meta_dir)
-          end
-        rescue => e
-          log.append('=== Error importing visualizations and search tweets. Rollback! ===')
-          import_job.rollback!
-          service.rollback_import_from_directory(imported, package.meta_dir)
-          raise e
-        end
+    def import_metadata(package, service)
+      log.append('=== Importing metadata ===')
+      begin
+        imported = service.import_from_directory(package.meta_dir)
+      rescue => e
+        log.append('=== Error importing metadata. Rollback! ===')
+        service.rollback_import_from_directory(package.meta_dir)
+        raise e
       end
+      org_import? ? self.organization = imported : self.user = imported
+      save!
+      imported
     end
 
     def import_only_data?

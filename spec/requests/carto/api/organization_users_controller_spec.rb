@@ -482,7 +482,7 @@ describe Carto::Api::OrganizationUsersController do
       replace_soft_limits(@organization.owner, [false, false, false])
       login(@organization.owner)
 
-      user_to_update = @organization.users[0]
+      user_to_update = @organization.non_owner_users[0]
       params = { soft_geocoding_limit: true }
       put api_v2_organization_users_update_url(id_or_name: @organization.name, u_username: user_to_update.username),
           params
@@ -495,7 +495,7 @@ describe Carto::Api::OrganizationUsersController do
       replace_soft_limits(@organization.owner, [true, true, true])
       login(@organization.owner)
 
-      user_to_update = @organization.users[0]
+      user_to_update = @organization.non_owner_users[0]
       params = { soft_geocoding_limit: true }
       put api_v2_organization_users_update_url(id_or_name: @organization.name, u_username: user_to_update.username),
           params
@@ -519,7 +519,7 @@ describe Carto::Api::OrganizationUsersController do
 
       login(@organization.owner)
 
-      user_to_update = @organization.users[0]
+      user_to_update = @organization.non_owner_users[0]
       new_email = "#{user_to_update.email}.es"
       params = { email: new_email,
                  password: 'pataton',
@@ -555,7 +555,7 @@ describe Carto::Api::OrganizationUsersController do
       replace_soft_limits(@organization.owner, [true, true, true, true, true])
 
       login(@organization.owner)
-      user_to_update = @organization.users[0]
+      user_to_update = @organization.non_owner_users[0]
       params = user_params_soft_limits(nil, true)
 
       put api_v2_organization_users_update_url(id_or_name: @organization.name, u_username: user_to_update.username),
@@ -571,7 +571,7 @@ describe Carto::Api::OrganizationUsersController do
       replace_soft_limits(@organization.owner, [true, true, true, true, true])
 
       login(@organization.owner)
-      user_to_update = @organization.users[0]
+      user_to_update = @organization.non_owner_users[0]
       params = user_params_soft_limits(nil, false)
 
       put api_v2_organization_users_update_url(id_or_name: @organization.name, u_username: user_to_update.username),
@@ -587,7 +587,7 @@ describe Carto::Api::OrganizationUsersController do
       replace_soft_limits(@organization.owner, [false, false, false, false, false])
 
       login(@organization.owner)
-      user_to_update = @organization.users[0]
+      user_to_update = @organization.non_owner_users[0]
       replace_soft_limits(user_to_update, [false, false, false])
       params = user_params_soft_limits(nil, true)
 

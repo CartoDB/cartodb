@@ -4,7 +4,7 @@ Development
 ### Features
 * Add /api/v3/me account info endpoint (#12771).
 * Add endpoints for updating user account & profile details (#12726)
-* Add /api/v3/me endpoint (#12599)
+* Add /api/v3/me endpoint (#12599, #12790)
 * Add assets version column in user model (#12676)
 * Vector rendering improvements #12722.
 * Enable georeferencer for database connectors (#12566)
@@ -52,8 +52,14 @@ Development
 * Don't display slider if there's only one value (#bigmetadata/202)
 * Mustache conditionals support improved in popups (#support/763)
 * Updates Dataservices API client default version to `0.20.0` (#12633)
+* Remove data-observatory-multiple-measures feature flag (#304)
 
 ### Bug fixes / enhancements
+* Update cartodb.js version 
+* Fix extraneous labels layer.
+* Fix timeseries glitches (#12217)
+* Rename 'Select a text' placeholder to 'Select a value' in Filter analysis (#11861)
+* Highlight new column name (#12662)
 * Add drag icon to each item in the widget list (#12692)
 * Cancel feature edition when widget edition is selected (#12781)
 * Rename 'SHARE' button to 'PUBLISH' and 'Not published yet' to 'Unpublished map' (#12730)
@@ -191,6 +197,7 @@ Development
 * Fix "apply" button sizes in advanced mode (#12652)
 * Axis labels changes in Time-Series (#12658)
 * Removed unused settings in organizations (#4992)
+* Increment maximum buckets in Time-Series for leap years (#12778)
 
 ### NOTICE
 This release upgrades the CartoDB PostgreSQL extension to `0.19.2`. Run the following to have it available:

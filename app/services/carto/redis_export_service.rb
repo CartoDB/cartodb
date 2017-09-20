@@ -28,7 +28,7 @@ module Carto
       restore_redis(exported_hash[:redis])
     end
 
-    def remove_redis_from_json_export(exported_hash)
+    def remove_redis_from_hash_export(exported_hash)
       raise 'Wrong export version' unless compatible_version?(exported_hash[:version])
 
       remove_redis(exported_hash[:redis])

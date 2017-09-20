@@ -85,7 +85,7 @@
 
 .Analysis-link {
   display: inline-flex;
-  font-weight: bold;
+  font-weight: $sFontWeight-semibold;
 }
 
 .ModalBlockList-item.is-disabled .Analysis-animation {

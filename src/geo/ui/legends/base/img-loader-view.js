@@ -35,7 +35,14 @@ module.exports = Backbone.View.extend({
         self.$el.empty().append($svg);
 
         $svg.css('fill', self._color);
+        $svg.find('g').css('fill', 'inherit');
         $svg.find('path').css('fill', 'inherit');
+        $svg.find('rect').each(function (_, rect) {
+          var $rect = $(rect);
+          if ($rect.css('fill') !== 'none') {
+            $rect.css('fill', 'inherit');
+          }
+        });
       });
     } else {
       var $img = $('<img crossorigin="anonymous"/>');

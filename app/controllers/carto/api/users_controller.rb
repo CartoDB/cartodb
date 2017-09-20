@@ -42,8 +42,7 @@ module Carto
           can_change_password: carto_viewer.present? ? carto_viewer.can_change_password? : nil,
           plan_name: carto_viewer.present? ? plan_name(carto_viewer.account_type) : nil,
           plan_url: carto_viewer.present? ? carto_viewer.plan_url(request.protocol) : nil,
-          can_be_deleted: carto_viewer.present? ? @can_be_deleted : nil,
-          cant_be_deleted_reason: carto_viewer.present? ? @cant_be_deleted_reason : nil,
+          cant_be_deleted_reason: carto_viewer.present? ? can_be_deleted?(carto_viewer) : nil,
           services: carto_viewer.present? ? @services : []
         }
       end
@@ -102,6 +101,16 @@ module Carto
       end
 
       private
+
+      def can_be_deleted?(user)
+        if user.organization_owner?
+          return "You can't delete your account because you are admin of an organization"
+        elsif Carto::UserCreation.http_authentication.where(user_id: user.id).first.present?
+          return "You can't delete your account because you are using HTTP Header Authentication"
+        else
+          return nil
+        end
+      end
 
       def render_auth_users_data(user, referrer, subdomain, referrer_organization_username=nil)
         organization_name = nil

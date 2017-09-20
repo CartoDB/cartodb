@@ -4,5 +4,9 @@
   <% if (isNull) { %> is-empty <% } %>"
   tabindex="0"
   title="<%- title %>">
-    <%- label %>
+    <% if (isEmpty && isNull) { %>
+      <%- _t('components.backbone-forms.select.empty') %>
+    <% } else { %>
+      <%- label %>
+    <% } %>
 </div>

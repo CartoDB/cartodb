@@ -58,9 +58,11 @@ var MapLayer = Model.extend({
   },
 
   /**
-   * @Abstract method only needed in Carto and Torque Layers
+   * @Abstract
+   * Only torque and cartodb layers have a source.
    */
   getSourceId: function () {
+    throw new Error('.getSourceId called on a non torque/cartodb layer.');
   }
 });
 

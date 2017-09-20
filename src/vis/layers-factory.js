@@ -105,7 +105,7 @@ var LAYER_CONSTRUCTORS = {
 
   torque: function (attrs, options) {
     checkProperties(attrs, ['source', 'cartocss']);
-    attrs.source = CartoDBLayer.getLayerSourceFromAttrs(attrs, options.vis.analysis);
+    attrs.source = TorqueLayer.getLayerSourceFromAttrs(attrs, options.vis.analysis);
 
     var windshaftSettings = options.windshaftSettings;
 

@@ -2,9 +2,8 @@ Development
 -----------
 
 ### Features
-* Add /api/v3/me account info endpoint (#12771).
 * Add endpoints for updating user account & profile details (#12726)
-* Add /api/v3/me endpoint (#12599, #12790)
+* Add /api/v3/me endpoint (#12599, #12790, #12771)
 * Add assets version column in user model (#12676)
 * Vector rendering improvements #12722.
 * Enable georeferencer for database connectors (#12566)

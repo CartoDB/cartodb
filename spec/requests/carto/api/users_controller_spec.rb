@@ -25,6 +25,12 @@ describe Carto::Api::UsersController do
 
         dashboard_notifications = carto_user.notifications_for_category(:dashboard)
         expect(response.body[:dashboard_notifications]).to eq(dashboard_notifications)
+        expect(response.body[:can_change_email]).to eq(user.can_change_email?)
+        expect(response.body[:auth_username_password_enabled]).to eq(true)
+        expect(response.body[:should_display_old_password]).to eq(user.should_display_old_password?)
+        expect(response.body[:can_change_password]).to eq(true)
+        expect(response.body[:plan_name]).to eq('Free')
+        expect(response.body[:services]).to eq(user.get_oauth_services)
       end
     end
 
@@ -207,43 +213,6 @@ describe Carto::Api::UsersController do
         put_json api_v3_users_update_me_url(url_options.except(:api_key)), payload, @headers do |response|
           expect(response.status).to eq(401)
         end
-      end
-    end
-  end
-
-  describe 'me_account_info' do
-    before(:each) do
-      @user = FactoryGirl.create(:user)
-    end
-
-    after(:each) do
-      @user.destroy
-    end
-
-    let(:url_options) do
-      {
-        user_domain: @user.username,
-        user_id: @user.id,
-        api_key: @user.api_key
-      }
-    end
-
-    it 'returns a hash with user profile info' do
-      get_json api_v3_users_me_account_info_url(url_options), @headers do |response|
-        expect(response.status).to eq(200)
-
-        expect(response.body[:can_change_email]).to eq(@user.can_change_email?)
-        expect(response.body[:auth_username_password_enabled]).to eq(nil)
-        expect(response.body[:should_display_old_password]).to eq(@user.should_display_old_password?)
-        expect(response.body[:can_change_password]).to eq(true)
-        expect(response.body[:plan_name]).to eq('Free')
-        expect(response.body[:services]).to eq(@user.get_oauth_services)
-      end
-    end
-
-    it 'returns 401 if user is not logged in' do
-      get_json api_v3_users_me_account_info_url(url_options.except(:api_key)), @headers do |response|
-        expect(response.status).to eq(401)
       end
     end
   end

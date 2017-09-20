@@ -1220,9 +1220,9 @@ class User < Sequel::Model
       when 'dropbox'
         Cartodb.config[:oauth]['dropbox']['app_key'].present?
       when 'mailchimp'
-        Cartodb.config[:oauth]['mailchimp']['app_key'].present? && current_user.has_feature_flag?('mailchimp_import')
+        Cartodb.config[:oauth]['mailchimp']['app_key'].present? && has_feature_flag?('mailchimp_import')
       when 'instagram'
-        Cartodb.config[:oauth]['instagram']['app_key'].present? && current_user.has_feature_flag?('instagram_import')
+        Cartodb.config[:oauth]['instagram']['app_key'].present? && has_feature_flag?('instagram_import')
       else
         true
       end

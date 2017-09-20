@@ -27,6 +27,9 @@ module Carto
       def me
         carto_viewer = current_viewer.present? ? Carto::User.find(current_viewer.id) : nil
 
+        cant_be_deleted_reason = carto_viewer.try(:cant_be_deleted_reason)
+        can_be_deleted = carto_viewer.present? ? cant_be_deleted_reason.nil? : nil
+
         render json: {
           user_data: carto_viewer.present? ? Carto::Api::UserPresenter.new(carto_viewer).data : nil,
           default_fallback_basemap: carto_viewer.try(:default_basemap),
@@ -34,6 +37,15 @@ module Carto
           dashboard_notifications: carto_viewer.try(:notifications_for_category, :dashboard),
           is_just_logged_in: carto_viewer.present? ? !!flash['logged'] : nil,
           is_first_time_viewing_dashboard: !carto_viewer.try(:dashboard_viewed_at),
+          can_change_email: carto_viewer.try(:can_change_email?),
+          auth_username_password_enabled: carto_viewer.try(:organization).try(:auth_username_password_enabled),
+          should_display_old_password: carto_viewer.try(:should_display_old_password?),
+          can_change_password: carto_viewer.try(:can_change_password?),
+          plan_name: carto_viewer.present? ? plan_name(carto_viewer.account_type) : nil,
+          plan_url: carto_viewer.try(:plan_url, request.protocol),
+          can_be_deleted: can_be_deleted,
+          cant_be_deleted_reason: cant_be_deleted_reason,
+          services: carto_viewer.try(:get_oauth_services),
           user_frontend_version: carto_viewer.try(:relevant_frontend_version) || CartoDB::Application.frontend_version,
           asset_host: carto_viewer.try(:asset_host)
         }
@@ -69,25 +81,6 @@ module Carto
         render_jsonp({ errors: "There was a problem while updating your data. Please, try again." }, 422)
       rescue Sequel::ValidationFailed
         render_jsonp({ message: "Error updating your account details", errors: user.errors }, 400)
-      end
-
-      def me_account_info
-        user = current_viewer
-
-        cant_be_deleted_reason = user.cant_be_deleted_reason
-        can_be_deleted = cant_be_deleted_reason.nil?
-
-        render json: {
-          can_change_email: user.can_change_email?,
-          auth_username_password_enabled: user.organization && user.organization.auth_username_password_enabled,
-          should_display_old_password: user.should_display_old_password?,
-          can_change_password: user.can_change_password?,
-          plan_name: plan_name(user.account_type),
-          plan_url: user.plan_url(request.protocol),
-          can_be_deleted: can_be_deleted,
-          cant_be_deleted_reason: cant_be_deleted_reason,
-          services: user.get_oauth_services
-        }
       end
 
       def get_authenticated_users

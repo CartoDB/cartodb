@@ -1,21 +1,32 @@
+sudo: false
 cache: false
 language: node_js
 node_js:
-- 6.9.2
+  - 6.9.2
 install:
-- npm install
+  - npm install
 before_script:
-- cp secrets.example.json secrets.json
-- npm install -g grunt-cli
-- chmod +x ./scripts/deploy-to-gh-pages.sh
+  - cp secrets.example.json secrets.json
+  - npm install -g grunt-cli
+  - chmod +x ./scripts/deploy-to-gh-pages.sh
 script:
-- grunt test
+  - grunt test
 after_success:
-- ./scripts/deploy-to-gh-pages.sh
+  - npm run docs
+  - ./scripts/deploy-to-gh-pages.sh
 notifications:
   email:
     on_success: never
     on_failure: change
 env:
   global:
-    secure: qPMF8IgZRx3jG8HQEust5LFpVZuKjPrVVKHwRuilVjREQi14KYpEnuTm0is3YobOsMcG+V9lvulETylekccs/y4LmS+LOCc52tqS4cCq3YbzRt1OmsHNwE71k+Hpqr26QV15yy5bKwX3RZLNESDuC7AgjmS/vn86t5nAB4Rbc3I=
+    secure: D8bXGaTynX3VVPQtwZC03KX95EeBDxzlqhDnq6XskNcWbKwC9PBCzb/c3PF4184ra+XRf5uZZfaQjlZTlGWGfD0xCZwI6TuX0Qj2XfQT/nWhrHrFYm7oL4JeunYSIj2tv0wkIcSJL1/fsc49o+Geqf+v96HGYG1s/Sq6ig60/wQ=
+
+#deploy:
+#  provider: pages
+#  skip_cleanup: true
+#  local_dir: out
+#  on:
+#    branch: jsdoc-ghpages
+#  github-token:
+#    secure: ...

@@ -204,6 +204,14 @@ module Carto
       user
     end
 
+    def rollback_import_from_directory(path)
+      user = user_from_file(path)
+
+      user && user.delete
+
+      Carto::RedisExportService.new.remove_redis_from_json_export(redis_user_file(path))
+    end
+
     def import_user_visualizations_from_directory(user, type, meta_path)
       with_non_viewer_user(user) do
         Dir["#{meta_path}/#{type}_*#{Carto::VisualizationExporter::EXPORT_EXTENSION}"].each do |fname|

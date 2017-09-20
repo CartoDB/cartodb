@@ -84,7 +84,7 @@ module Carto
       rescue => e
         log.append('=== Error importing data. Rollback!')
         import_job.rollback!
-        service.rollback_import_from_directory(package.meta_dir)
+        service.rollback_import_from_directory(package.meta_dir) if import_metadata?
         raise e
       end
 
@@ -96,8 +96,8 @@ module Carto
           end
         rescue => e
           log.append('=== Error importing visualizations and search tweets. Rollback! ===')
-          service.rollback_import_metadata_from_directory(imported, package.meta_dir)
           import_job.rollback!
+          service.rollback_import_from_directory(imported, package.meta_dir)
           raise e
         end
       end

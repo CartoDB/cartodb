@@ -378,9 +378,10 @@ defaults: &defaults
   datasources:
     arcgis_enabled: false
     salesforce_enabled: false
-  basemaps: # First one becomes default one
+  basemaps: # Adding `default: true` at a basemap marks its group as the default one. Its first basemap becomes the default one.
     CARTO:
       voyager_labels:
+        default: true
         url: 'http://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager_nolabels/{z}/{x}/{y}.png'
         subdomains: 'abcd'
         minZoom: '0'

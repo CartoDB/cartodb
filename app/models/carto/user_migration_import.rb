@@ -66,17 +66,40 @@ module Carto
     def import(service, package)
       if import_metadata?
         log.append('=== Importing metadata ===')
-        imported = service.import_from_directory(package.meta_dir)
+        begin
+          imported = service.import_from_directory(package.meta_dir)
+        rescue => e
+          log.append('=== Error importing metadata. Rollback! ===')
+          service.rollback_import_from_directory(package.meta_dir)
+          raise e
+        end
         org_import? ? self.organization = imported : self.user = imported
         save!
       end
 
       log.append('=== Importing data ===')
-      CartoDB::DataMover::ImportJob.new(import_job_arguments(package.data_dir)).run!
+      import_job = CartoDB::DataMover::ImportJob.new(import_job_arguments(package.data_dir))
+      begin
+        import_job.run!
+      rescue => e
+        log.append('=== Error importing data. Rollback!')
+        import_job.rollback!
+        service.rollback_import_from_directory(package.meta_dir)
+        raise e
+      end
 
       if import_metadata?
         log.append('=== Importing visualizations and search tweets ===')
-        service.import_metadata_from_directory(imported, package.meta_dir)
+        begin
+          ActiveRecord::Base.transaction do
+            service.import_metadata_from_directory(imported, package.meta_dir)
+          end
+        rescue => e
+          log.append('=== Error importing visualizations and search tweets. Rollback! ===')
+          service.rollback_import_metadata_from_directory(imported, package.meta_dir)
+          import_job.rollback!
+          raise e
+        end
       end
     end
 

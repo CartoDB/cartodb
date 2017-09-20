@@ -65,8 +65,13 @@ module Cartodb
     end
   end
 
-  def self.default_basemap
-    Cartodb.config[:basemaps].values.first.values.first
+  def self.default_basemap(basemaps = Cartodb.config[:basemaps])
+    default_group = default_basemap_group(basemaps)
+    (default_group || basemaps.first)[1].first[1]
+  end
+
+  def self.default_basemap_group(basemaps = Cartodb.config[:basemaps])
+    basemaps.find { |_, group_basemaps| group_basemaps.find { |_, attr| attr['default'] } }
   end
 
   # Execute a block with overriden configuration parameters

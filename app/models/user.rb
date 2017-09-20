@@ -1508,7 +1508,7 @@ class User < Sequel::Model
     default = if google_maps_enabled? && basemaps['GMaps'].present?
                 ['GMaps', basemaps['GMaps']]
               else
-                basemaps.find { |_, group_basemaps| group_basemaps.find { |_, attr| attr['default'] } }
+                Cartodb.default_basemap_group(basemaps)
               end
     default ||= basemaps.first
     # return only the attributes

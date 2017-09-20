@@ -20,7 +20,7 @@
     }
   },
   "opts": {
-    "destination": "./out/",
+    "destination": "./out/v4",
     "recurse": true
   }
 }

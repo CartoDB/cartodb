@@ -138,6 +138,6 @@
   "scripts": {
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "docs": "rm -rf doc; jsdoc --configure jsdoc.json"
+    "docs": "rm -rf out; jsdoc --configure jsdoc.json"
   }
 }

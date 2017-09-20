@@ -100,19 +100,16 @@ describe('geo/map/torque-layer', function () {
 
   describe('.update', function () {
     var layer;
+    var analysisNodeMock = { id: 'a0' };
 
     beforeEach(function () {
+      this.vis.analysis = { findNodeById: jasmine.createSpy('findNodeById').and.returnValue(analysisNodeMock) };
       layer = new TorqueLayer({}, { vis: this.vis });
     });
 
-    xit('should allow a string as parameter', function () {
-      var source = 'foo';
-      layer.update({ id: 3, source: source });
-    });
-
-    xit('should allow a analysis as parameter', function () {
-      var source = 'foo';
-      layer.update({ id: 3, source: source });
+    it('should allow a string as parameter (deprecated: keep this only for prevent breaking changes in the api)', function () {
+      layer.update({ id: 3, source: 'a0' });
+      expect(layer.getSource()).toBe(analysisNodeMock);
     });
   });
 });

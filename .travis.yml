@@ -1,19 +1,21 @@
+sudo: false
 cache: false
 language: node_js
 node_js:
-  - "6.9.2"
-
+  - 6.9.2
 install:
   - npm install
-
 before_script:
   - cp secrets.example.json secrets.json
   - npm install -g grunt-cli
-
 script:
   - grunt test
-
+after_success:
+  - bash scripts/deploy-to-gh-pages.sh
 notifications:
   email:
     on_success: never
     on_failure: change
+env:
+  global:
+    secure: D8bXGaTynX3VVPQtwZC03KX95EeBDxzlqhDnq6XskNcWbKwC9PBCzb/c3PF4184ra+XRf5uZZfaQjlZTlGWGfD0xCZwI6TuX0Qj2XfQT/nWhrHrFYm7oL4JeunYSIj2tv0wkIcSJL1/fsc49o+Geqf+v96HGYG1s/Sq6ig60/wQ=

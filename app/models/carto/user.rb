@@ -529,6 +529,12 @@ class Carto::User < ActiveRecord::Base
     end
   end
 
+  # Gets the list of OAuth accounts the user has (currently only used for synchronization)
+  # @return CartoDB::OAuths
+  def oauths
+    @oauths ||= CartoDB::OAuths.new(self)
+  end
+
   def get_oauth_services
     datasources = CartoDB::Datasources::DatasourcesFactory.get_all_oauth_datasources
     array = []

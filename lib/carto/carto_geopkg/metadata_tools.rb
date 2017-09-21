@@ -3,7 +3,7 @@
 module Carto
   module CartoGeoPKG
     module MetadataTools
-      class JSONGenerator
+      class HashGenerator
         def source_for_visualization(visualization)
           synchronization = visualization.synchronization
           return unless synchronization
@@ -25,7 +25,7 @@ module Carto
       end
 
       def visualization_to_json(visualization, version: '0.0.1')
-        json_gen = JSONGenerator.new
+        hash_gen = HashGenerator.new
 
         {
           information: {
@@ -40,9 +40,9 @@ module Carto
             }
           },
           data: {
-            source: json_gen.source_for_visualization(visualization)
+            source: hash_gen.source_for_visualization(visualization)
           },
-          schema: json_gen.schema_for_table_schema(
+          schema: hash_gen.schema_for_table_schema(
             visualization.user_table.service.schema(cartodb_types: false)
           ),
           publishing: {

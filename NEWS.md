@@ -3,7 +3,7 @@ Development
 
 ### Features
 * Add endpoints for updating user account & profile details (#12726)
-* Add /api/v3/me endpoint (#12599, #12790)
+* Add /api/v3/me endpoint (#12599, #12790, #12771)
 * Add assets version column in user model (#12676)
 * Vector rendering improvements #12722.
 * Enable georeferencer for database connectors (#12566)
@@ -42,6 +42,7 @@ Development
 * Show ranges in time series widget selection (#12291)
 * Bump Webpack version (#12392).
 * New user render timeouts and propagation of timeout values to Redis (#12425)
+* Default basemap is used for all Builder maps regardless of dataset basemap (#12700)
 * The selection window on a histogram widget can be dragged (#12180)
 * Move playback on animated time series by clicking on it (#12180)
 * Move play/pause button to besides the time series (#12387)
@@ -55,6 +56,7 @@ Development
 
 ### Bug fixes / enhancements
 * Fix some styles for datasets view for IE11.
+* Fix image export when logo is disabled.
 * Fix infowindow break word (CartoDB/support#965)
 * Update cartodb.js version
 * Fix extraneous labels layer.

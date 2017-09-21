@@ -521,6 +521,76 @@ class Carto::User < ActiveRecord::Base
     frontend_version || CartoDB::Application.frontend_version
   end
 
+  def cant_be_deleted_reason
+    if organization_owner?
+      "You can't delete your account because you are admin of an organization"
+    elsif Carto::UserCreation.http_authentication.where(user_id: id).first.present?
+      "You can't delete your account because you are using HTTP Header Authentication"
+    end
+  end
+
+  # Gets the list of OAuth accounts the user has (currently only used for synchronization)
+  # @return CartoDB::OAuths
+  def oauths
+    @oauths ||= CartoDB::OAuths.new(self)
+  end
+
+  def get_oauth_services
+    datasources = CartoDB::Datasources::DatasourcesFactory.get_all_oauth_datasources
+    array = []
+
+    datasources.each do |serv|
+      obj ||= Hash.new
+
+      title = ::User::OAUTH_SERVICE_TITLES.fetch(serv, serv)
+      revoke_url = ::User::OAUTH_SERVICE_REVOKE_URLS.fetch(serv, nil)
+      enabled = case serv
+        when 'gdrive'
+          Cartodb.config[:oauth][serv]['client_id'].present?
+        when 'box'
+          Cartodb.config[:oauth][serv]['client_id'].present?
+        when 'gdrive'
+          Cartodb.config[:oauth][serv]['client_id'].present?
+        when 'dropbox'
+          Cartodb.config[:oauth]['dropbox']['app_key'].present?
+        when 'mailchimp'
+          Cartodb.config[:oauth]['mailchimp']['app_key'].present? && has_feature_flag?('mailchimp_import')
+        when 'instagram'
+          Cartodb.config[:oauth]['instagram']['app_key'].present? && has_feature_flag?('instagram_import')
+        else
+          true
+      end
+
+      if enabled
+        oauth = oauths.select(serv)
+
+        obj['name'] = serv
+        obj['title'] = title
+        obj['revoke_url'] = revoke_url
+        obj['connected'] = !oauth.nil? ? true : false
+
+        array.push(obj)
+      end
+    end
+
+    array
+  end
+
+  def should_display_old_password?
+    needs_password_confirmation?
+  end
+
+  def account_url(request_protocol)
+    if CartoDB.account_host
+      request_protocol + CartoDB.account_host + CartoDB.account_path + '/' + username
+    end
+  end
+
+  # Special url that goes to Central if active
+  def plan_url(request_protocol)
+    account_url(request_protocol) + '/plan'
+  end
+
   private
 
   def set_database_host

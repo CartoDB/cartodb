@@ -6,7 +6,6 @@ var GMapsBaseLayer = require('../geo/map/gmaps-base-layer');
 var PlainLayer = require('../geo/map/plain-layer');
 var CartoDBLayer = require('../geo/map/cartodb-layer');
 var TorqueLayer = require('../geo/map/torque-layer');
-var AnalysisModel = require('../analysis/analysis-model');
 
 /*
  *  if we are using http and the tiles of base map need to be fetched from
@@ -50,14 +49,6 @@ function checkProperties (obj, requiredProperties) {
   if (missingProperties.length) {
     throw new Error('The following attributes are missing: ' + missingProperties.join(','));
   }
-}
-
-function checkValidSource (attrs) {
-  if (attrs.source && (attrs.source instanceof AnalysisModel)) {
-    return;
-  }
-
-  throw new Error('Layer "' + attrs.id + '" must have a valid analysis node as "source"');
 }
 
 var LAYER_CONSTRUCTORS = {
@@ -105,7 +96,7 @@ var LAYER_CONSTRUCTORS = {
 
   cartodb: function (attrs, options) {
     checkProperties(attrs, ['source', 'cartocss']);
-    checkValidSource(attrs);
+    attrs.source = CartoDBLayer.getLayerSourceFromAttrs(attrs, options.vis.analysis);
 
     return new CartoDBLayer(attrs, {
       vis: options.vis
@@ -114,7 +105,7 @@ var LAYER_CONSTRUCTORS = {
 
   torque: function (attrs, options) {
     checkProperties(attrs, ['source', 'cartocss']);
-    checkValidSource(attrs);
+    attrs.source = TorqueLayer.getLayerSourceFromAttrs(attrs, options.vis.analysis);
 
     var windshaftSettings = options.windshaftSettings;
 

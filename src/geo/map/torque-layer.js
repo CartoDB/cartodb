@@ -3,6 +3,8 @@ var LayerModelBase = require('./layer-model-base');
 var carto = require('carto');
 var Legends = require('./legends/legends');
 var postcss = require('postcss');
+var AnalysisModel = require('../../analysis/analysis-model');
+
 var ATTRIBUTES_THAT_TRIGGER_VIS_RELOAD = ['sql', 'sql_wrap', 'source', 'cartocss'];
 var TORQUE_LAYER_CARTOCSS_PROPS = [
   '-torque-frame-count',
@@ -171,13 +173,45 @@ var TorqueLayer = LayerModelBase.extend({
     this.set('source', source);
   },
 
+  /**
+   * Check if an analysis node is the layer's source.
+   * Only torque and cartodb layers have a source otherwise return false.
+   */
+  hasSource: function (analysisModel) {
+    if (!(analysisModel instanceof AnalysisModel)) {
+      throw new TypeError('TorqueLayer.hasSource must be called with an "AnalysisModel" but got: ' + analysisModel);
+    }
+    return this.getSourceId() === analysisModel.get('id');
+  },
+
   update: function (attrs) {
     if (attrs.source) {
-      throw new Error('"source" must be set via setSource');
+      console.warn('Deprecated: Use ".setSource" to update a layer\'s source instead the update method');
+      attrs.source = TorqueLayer.getLayerSourceFromAttrs(attrs, this._vis.analysis);
     }
     LayerModelBase.prototype.update.apply(this, arguments);
   }
 
+},
+// Static methods and properties
+{
+  /**
+   * Return the source analysis node from given attrs object.
+   */
+  getLayerSourceFromAttrs: function (attrs, analysis) {
+    if (typeof attrs.source === 'string') {
+      console.warn('Deprecated: Layers must have an analysis node as source instead of a string ID.');
+      var source = analysis.findNodeById(attrs.source);
+      if (source) {
+        return source;
+      }
+      throw new Error('No analysis found with id: ' + attrs.source);
+    }
+    if (attrs.source instanceof AnalysisModel) {
+      return attrs.source;
+    }
+    throw new Error('Invalid layer source. Source must be an ID or an Analysis node but got: ' + attrs.source);
+  }
 });
 
 module.exports = TorqueLayer;

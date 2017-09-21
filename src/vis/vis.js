@@ -290,12 +290,22 @@ var VisModel = Backbone.Model.extend({
     }
   },
 
+  /**
+   * Check if an Analysis node is the source of a layer or a dataview.
+   */
   _isAnalysisSourceOfLayerOrDataview: function (analysisModel) {
-    var isAnalysisLinkedToLayer = this._layersCollection.any(function (layerModel) {
-      return layerModel.getSourceId() === analysisModel.get('id');
-    });
+    var isAnalysisLinkedToLayer = this._isAnalysisLinkedToLayer(analysisModel);
     var isAnalysisLinkedToDataview = this._dataviewsCollection.isAnalysisLinkedToDataview(analysisModel);
     return isAnalysisLinkedToLayer || isAnalysisLinkedToDataview;
+  },
+
+  /**
+   * Check if an analysis is the source of any layer.
+   */
+  _isAnalysisLinkedToLayer: function (analysisModel) {
+    return this._layersCollection.any(function (layerModel) {
+      return layerModel.hasSource(analysisModel);
+    });
   },
 
   trackLoadingObject: function (object) {

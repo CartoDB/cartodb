@@ -64,7 +64,7 @@
 .Editor-HeaderInfo-details {
   @include display-flex();
   @include align-items(center);
-  @include flex(0 1 100%);
+  @include flex(999);
 }
 .Editor-HeaderInfo-actions {
   @include display-flex();

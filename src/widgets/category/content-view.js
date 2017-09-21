@@ -18,6 +18,7 @@ module.exports = cdb.core.View.extend({
 
   initialize: function () {
     this._dataviewModel = this.model.dataviewModel;
+    this._layerModel = this.model.layerModel;
     this._initBinds();
   },
 
@@ -50,7 +51,8 @@ module.exports = cdb.core.View.extend({
   _initViews: function () {
     var searchTitle = new SearchTitleView({
       widgetModel: this.model,
-      dataviewModel: this._dataviewModel
+      dataviewModel: this._dataviewModel,
+      layerModel: this._layerModel
     });
     this.$('.js-header').append(searchTitle.render().el);
     this.addView(searchTitle);

@@ -25,14 +25,27 @@ module.exports = cdb.core.Model.extend({
 
   initialize: function (attrs, models, opts) {
     opts = opts || {};
+    if (!models.dataviewModel) {
+      throw new Error('dataviewModel is required.');
+    }
+    if (!models.layerModel) {
+      throw new Error('layerModel is required.');
+    }
     this.dataviewModel = models.dataviewModel;
+    this.layerModel = models.layerModel;
 
     // Autostyle could be disabled initially if the styles have an aggregation
     // If no option, autoStyleEnabled by default
     this._autoStyleEnabledWhenCreated = opts.autoStyleEnabled === undefined ? true : opts.autoStyleEnabled;
 
     this.activeAutoStyler();
+    this._initBinds();
+    this._onLayerVisibilityChanged(this.layerModel, this.layerModel.get('visible'));
+  },
+
+  _initBinds: function () {
     this.bind('change:style', this.activeAutoStyler, this);
+    this.listenTo(this.layerModel, 'change:visible', this._onLayerVisibilityChanged);
   },
 
   activeAutoStyler: function () {
@@ -135,7 +148,7 @@ module.exports = cdb.core.Model.extend({
     if (!this.isAutoStyleEnabled()) return;
     if (!this.dataForAutoStyle()) return;
 
-    var layer = this.dataviewModel.layer;
+    var layer = this.layerModel;
     var initialStyle = layer.get('cartocss');
     if (!initialStyle && layer.get('meta')) {
       initialStyle = layer.get('meta').cartocss;
@@ -153,20 +166,20 @@ module.exports = cdb.core.Model.extend({
 
   reapplyAutoStyle: function () {
     var style = this.autoStyler.getStyle();
-    this.dataviewModel.layer.set('cartocss', style);
+    this.layerModel.set('cartocss', style);
     this.set('autoStyle', true);
   },
 
   cancelAutoStyle: function (noRestore) {
     if (!noRestore) {
-      this.dataviewModel.layer.restoreCartoCSS();
+      this.layerModel.restoreCartoCSS();
     }
     this.set('autoStyle', false);
   },
 
   getAutoStyle: function () {
     var style = this.get('style');
-    var layerModel = this.dataviewModel.layer;
+    var layerModel = this.layerModel;
     var cartocss = layerModel.get('cartocss') || (layerModel.get('meta') && layerModel.get('meta').cartocss);
 
     if (this.isAutoStyleEnabled() && this.autoStyler) {
@@ -228,5 +241,9 @@ module.exports = cdb.core.Model.extend({
         type === HISTOGRAM_TYPE) {
       this.trigger('forceResize');
     }
+  },
+
+  _onLayerVisibilityChanged: function (model, visible) {
+    this.dataviewModel.set({ enabled: visible });
   }
 });

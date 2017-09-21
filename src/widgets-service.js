@@ -18,12 +18,33 @@ var makeWidgetStyleOptions = function (attrs) {
   }, {});
 };
 
+var _checkProperties = function (obj, propertiesArray) {
+  _.each(propertiesArray, function (prop) {
+    if (obj[prop] === undefined) {
+      throw new Error(prop + ' is required');
+    }
+  });
+};
+
+var extendAttrs = function (attrs, state, hasInitialState) {
+  return _.extend(attrs, state, { hasInitialState: hasInitialState }); // Will overwrite preset attributes with the ones passed on the state
+};
+
+var fillAnalysisModel = function (attrs, analyses) {
+  if (attrs.source && typeof attrs.source.id === 'string') {
+    attrs.source = analyses.findNodeById(attrs.source.id);
+  } else if (!(attrs.source instanceof Object)) {
+    throw new Error('Source must be defined.');
+  }
+};
+
 /**
  * Public API to interact with dashboard widgets.
  */
-var WidgetsService = function (widgetsCollection, dataviews) {
+var WidgetsService = function (widgetsCollection, dataviews, analysis) {
   this._widgetsCollection = widgetsCollection;
   this._dataviews = dataviews;
+  this._analysis = analysis;
 };
 
 WidgetsService.prototype.getCollection = function () {
@@ -51,17 +72,20 @@ WidgetsService.prototype.getList = function () {
  */
 WidgetsService.prototype.createCategoryModel = function (attrs, layer, state) {
   _checkProperties(attrs, ['title']);
-  attrs = _.extend(attrs, state, {hasInitialState: this._widgetsCollection.hasInitialState()}); // Will overwrite preset attributes with the ones passed on the state
-  var dataviewModel = this._dataviews.createCategoryModel(layer, attrs);
+  var extendedAttrs = extendAttrs(attrs, state, this._widgetsCollection.hasInitialState());
+  fillAnalysisModel(extendedAttrs, this._analysis);
+ 
+  var dataviewModel = this._dataviews.createCategoryModel(extendedAttrs);
 
   var ATTRS_NAMES = ['id', 'title', 'order', 'collapsed', 'prefix', 'suffix', 'show_stats', 'show_source', 'style', 'hasInitialState'];
-  var widgetAttrs = _.pick(attrs, ATTRS_NAMES);
-  var options = makeWidgetStyleOptions(attrs);
+  var widgetAttrs = _.pick(extendedAttrs, ATTRS_NAMES);
+  var options = makeWidgetStyleOptions(extendedAttrs);
 
   widgetAttrs.attrsNames = ATTRS_NAMES;
 
   var widgetModel = new CategoryWidgetModel(widgetAttrs, {
-    dataviewModel: dataviewModel
+    dataviewModel: dataviewModel,
+    layerModel: layer
   }, options);
   widgetModel.setInitialState(state);
   this._widgetsCollection.add(widgetModel);
@@ -79,8 +103,8 @@ WidgetsService.prototype.createCategoryModel = function (attrs, layer, state) {
  */
 WidgetsService.prototype.createHistogramModel = function (attrs, layer, state, opts) {
   _checkProperties(attrs, ['title']);
-  var dataAttrs = _.extend(attrs, state, { hasInitialState: this._widgetsCollection.hasInitialState() }); // Will overwrite preset attributes with the ones passed on the state
-  var dataviewModel = this._dataviews.createHistogramModel(layer, dataAttrs);
+  var extendedAttrs = extendAttrs(attrs, state, this._widgetsCollection.hasInitialState());
+  var dataviewModel = this._dataviews.createHistogramModel(layer, extendedAttrs);
 
   // Default bins attribute was removed from dataViewModel because of time-series aggregation.
   // Just in case it's needed for histogram models we added it here.
@@ -89,8 +113,8 @@ WidgetsService.prototype.createHistogramModel = function (attrs, layer, state, o
   }
 
   var attrsNames = ['id', 'title', 'order', 'collapsed', 'bins', 'show_stats', 'show_source', 'normalized', 'style', 'hasInitialState'];
-  var widgetAttrs = _.pick(attrs, attrsNames);
-  var options = makeWidgetStyleOptions(attrs);
+  var widgetAttrs = _.pick(extendedAttrs, attrsNames);
+  var options = makeWidgetStyleOptions(extendedAttrs);
 
   widgetAttrs.type = 'histogram';
   widgetAttrs.attrsNames = attrsNames;
@@ -114,11 +138,11 @@ WidgetsService.prototype.createHistogramModel = function (attrs, layer, state, o
  */
 WidgetsService.prototype.createFormulaModel = function (attrs, layer, state) {
   _checkProperties(attrs, ['title']);
-  attrs = _.extend(attrs, state, {hasInitialState: this._widgetsCollection.hasInitialState()}); // Will overwrite preset attributes with the ones passed on the state
-  var dataviewModel = this._dataviews.createFormulaModel(layer, attrs);
+  var extendedAttrs = extendAttrs(attrs, state, this._widgetsCollection.hasInitialState());
+  var dataviewModel = this._dataviews.createFormulaModel(layer, extendedAttrs);
 
   var ATTRS_NAMES = ['id', 'title', 'order', 'collapsed', 'prefix', 'suffix', 'show_stats', 'show_source', 'description', 'hasInitialState'];
-  var widgetAttrs = _.pick(attrs, ATTRS_NAMES);
+  var widgetAttrs = _.pick(extendedAttrs, ATTRS_NAMES);
   widgetAttrs.type = 'formula';
   widgetAttrs.attrsNames = ATTRS_NAMES;
 
@@ -186,13 +210,5 @@ WidgetsService.prototype.createTimeSeriesModel = function (attrs, layer, state, 
 WidgetsService.prototype.setWidgetsState = function (state) {
   this._widgetsCollection.setStates(state);
 };
-
-function _checkProperties (obj, propertiesArray) {
-  _.each(propertiesArray, function (prop) {
-    if (obj[prop] === undefined) {
-      throw new Error(prop + ' is required');
-    }
-  });
-}
 
 module.exports = WidgetsService;

@@ -44,14 +44,13 @@ module.exports = Model.extend({
     );
   },
 
-  createFormulaModel: function (layerModel, attrs) {
+  createFormulaModel: function (attrs) {
     _checkProperties(attrs, ['column', 'operation']);
-    attrs = this._generateAttrsForDataview(layerModel, attrs, FormulaDataviewModel.ATTRS_NAMES);
+    attrs = this._generateAttrsForDataview(attrs, FormulaDataviewModel.ATTRS_NAMES);
     return this._newModel(
       new FormulaDataviewModel(attrs, {
         map: this._map,
         vis: this._vis,
-        layer: layerModel,
         analysisCollection: this._analysisCollection
       })
     );

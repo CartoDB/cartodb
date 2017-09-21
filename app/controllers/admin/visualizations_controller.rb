@@ -35,7 +35,7 @@ class Admin::VisualizationsController < Admin::AdminController
                                                       :show_protected_embed_map, :embed_map]
   before_filter :link_ghost_tables, only: [:index]
   before_filter :user_metadata_propagation, only: [:index]
-  before_filter :get_viewed_user, only: [:public_map, :public_table]
+  before_filter :get_viewed_user, only: [:public_map, :embed_map, :public_table]
   before_filter :load_common_data, only: [:index]
 
   before_filter :resolve_visualization_and_table,
@@ -406,8 +406,13 @@ class Admin::VisualizationsController < Admin::AdminController
   end
 
   def embed_map
+    # TODO: uncomment
+    if @viewed_user.has_feature_flag?('static_embed')
+      return render(file: "public/static/embed_map/index.html", layout: false)
+    end
+
     if request.format == 'text/javascript'
-      error_message = "/* Javascript embeds  are deprecated, please use the html iframe instead */"
+      error_message = "/* Javascript embeds are deprecated, please use the html iframe instead */"
       return render inline: error_message, status: 400
     end
 

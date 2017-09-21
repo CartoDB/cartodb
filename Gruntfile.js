@@ -233,49 +233,6 @@ module.exports = function (grunt) {
     grunt.log.ok('************************************************');
   });
 
-  grunt.event.on('watch', function (action, filepath, subtask) {
-    // Configure copy vendor to only run on changed file
-    var cfg = grunt.config.get('copy.vendor');
-    if (filepath.indexOf(cfg.cwd) !== -1) {
-      grunt.config('copy.vendor.src', filepath.replace(cfg.cwd, ''));
-    } else {
-      grunt.config('copy.vendor.src', []);
-    }
-
-    var builderFiles = [
-      'js_cartodb3',
-      'js_test_cartodb3'
-    ];
-    var otherFiles = [
-      'app',
-      'js_cartodb'
-    ];
-
-    var COPY_PATHS = [];
-    if (subtask === 'js_affected') {
-      COPY_PATHS = COPY_PATHS.concat(builderFiles);
-    } else {
-      COPY_PATHS = COPY_PATHS.concat(otherFiles).concat(builderFiles);
-    }
-
-    // Configure copy paths to only run on changed files
-    for (var j = 0, m = COPY_PATHS.length; j < m; ++j) {
-      var files = 'copy.' + COPY_PATHS[j] + '.files';
-      var filesCfg = grunt.config.get(files);
-
-      for (var i = 0, l = filesCfg.length; i < l; ++i) {
-        var file = files + '.' + i;
-        var fileCfg = grunt.config.get(file);
-
-        if (filepath.indexOf(fileCfg.cwd) !== -1) {
-          grunt.config(file + '.src', filepath.replace(fileCfg.cwd, ''));
-        } else {
-          grunt.config(file + '.src', []);
-        }
-      }
-    }
-  });
-
   // TODO: migrate mixins to postcss
   grunt.registerTask('css', [
     'copy:vendor',

@@ -27,7 +27,7 @@ module FrontendConfigHelper
       datasource_search_twitter:  nil,
       max_asset_file_size:        Cartodb.config[:assets]["max_file_size"],
       watcher_ttl:                Cartodb.config[:watcher].try("fetch", 'ttl', 60),
-      upgrade_url:                cartodb_com_hosted? ? false : "#{user.try(:upgrade_url, request.protocol)}",
+      upgrade_url:                cartodb_com_hosted? ? false : user.try(:upgrade_url, request.protocol).to_s,
       licenses:                   Carto::License.all,
       data_library_enabled:       CartoDB::Visualization::CommonDataService.configured?
     }

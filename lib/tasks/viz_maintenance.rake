@@ -45,8 +45,8 @@ namespace :cartodb do
           current += 1
 
           # Sad, but using the Collection causes OOM, so instantiate one by one even if takes a while
-          vis = CartoDB::Visualization::Member.new(id: viz_id).fetch
-          vis.send(:save_named_map)
+          vis = Carto::Visualization.find(viz_id)
+          Carto::NamedMaps::Api.new(vis).upsert
           if current % 50 == 0
             print '.'
           end

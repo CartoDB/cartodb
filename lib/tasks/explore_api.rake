@@ -128,7 +128,7 @@ namespace :cartodb do
     def update_map_dataset_count
       offset = 0
       total_number_of_updates = 0
-      types_filter = [CartoDB::Visualization::Member::TYPE_DERIVED]
+      types_filter = [Carto::Visualization::TYPE_DERIVED]
       while (explore_visualizations = get_explore_visualizations(offset, types_filter)).length > 0
         explore_visualization_ids = explore_visualizations.map { |ev| ev[:visualization_id] }
 
@@ -231,7 +231,7 @@ namespace :cartodb do
         # We use to_i to remove the miliseconds that could give to erroneous updates
         # http://railsware.com/blog/2014/04/01/time-comparison-in-ruby/
         if v.updated_at.to_i != explore_visualization[:visualization_updated_at].to_i
-          if v.privacy != CartoDB::Visualization::Member::PRIVACY_PUBLIC || !v.published?
+          if v.privacy != Carto::Visualization::PRIVACY_PUBLIC || !v.published?
             privated_visualization_ids << v.id
           else
             updated = update_visualization(explore_visualization[:visualization_id], v)
@@ -308,9 +308,9 @@ namespace :cartodb do
         per_page: BATCH_SIZE,
         order: :created_at,
         order_asc_desc: :asc,
-        privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC
+        privacy: Carto::Visualization::PRIVACY_PUBLIC
       }
-      filter['types'] = [CartoDB::Visualization::Member::TYPE_CANONICAL, CartoDB::Visualization::Member::TYPE_DERIVED]
+      filter['types'] = [Carto::Visualization::TYPE_CANONICAL, Carto::Visualization::TYPE_DERIVED]
       filter[:min_created_at] = { date: min_created_at, included: true } if min_created_at
       filter[:min_updated_at] = { date: min_updated_at, included: true } if min_updated_at
       filter
@@ -322,9 +322,9 @@ namespace :cartodb do
         per_page: BATCH_SIZE,
         order: :user_id,
         order_asc_desc: :asc,
-        privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC
+        privacy: Carto::Visualization::PRIVACY_PUBLIC
       }
-      filter['types'] = [CartoDB::Visualization::Member::TYPE_CANONICAL, CartoDB::Visualization::Member::TYPE_DERIVED]
+      filter['types'] = [Carto::Visualization::TYPE_CANONICAL, Carto::Visualization::TYPE_DERIVED]
       filter
     end
 
@@ -418,10 +418,10 @@ namespace :cartodb do
     end
 
     def update_tables(visualization)
-      if visualization.type == CartoDB::Visualization::Member::TYPE_DERIVED
+      if visualization.type == Carto::Visualization::TYPE_DERIVED
         %[, visualization_table_names = '#{explore_api.get_visualization_tables(visualization)}',
             visualization_map_datasets = #{explore_api.get_map_layers(visualization).length}]
-      elsif visualization.type == CartoDB::Visualization::Member::TYPE_CANONICAL
+      elsif visualization.type == Carto::Visualization::TYPE_CANONICAL
         %[, visualization_table_names = '#{explore_api.get_visualization_tables(visualization)}']
       end
     end
@@ -432,7 +432,7 @@ namespace :cartodb do
       center_geometry = geometry_data[:center_geometry].nil? ? 'NULL' : geometry_data[:center_geometry]
       view_zoom = geometry_data[:zoom].nil? ? 'NULL' : geometry_data[:zoom]
       bbox_value = !visualization.bbox.nil? ? "ST_AsText('#{visualization.bbox}')" : 'NULL'
-      if visualization.type == CartoDB::Visualization::Member::TYPE_DERIVED
+      if visualization.type == Carto::Visualization::TYPE_DERIVED
         %[, visualization_bbox = #{bbox_value},
              visualization_view_box = #{view_box_polygon},
              visualization_view_box_center = #{center_geometry},
@@ -447,7 +447,7 @@ namespace :cartodb do
     # INFO Disable temporary becuase is really inefficient
     def update_table_data(visualization_type, table_data)
       return if table_data.blank?
-      if visualization_type == CartoDB::Visualization::Member::TYPE_CANONICAL
+      if visualization_type == Carto::Visualization::TYPE_CANONICAL
         %[ , visualization_table_rows = #{table_data[:rows]},
              visualization_table_size = #{table_data[:size]},
              visualization_geometry_types = '{#{table_data[:geometry_types].join(',')}}' ]

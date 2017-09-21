@@ -620,7 +620,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def propagate_privacy_and_name_to
-    raise "Empty table sent to Visualization::Member propagate_privacy_and_name_to()" unless table
+    raise "Empty table sent to propagate_privacy_and_name_to()" unless table
     propagate_privacy if privacy_changed? && canonical?
     propagate_name if name_changed?
   end

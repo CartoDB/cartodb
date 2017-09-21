@@ -67,7 +67,7 @@ module Carto
     end
 
     def invalidate_cache
-      CartoDB::Visualization::Member.new(id: visualization_id).fetch.invalidate_cache
+      Carto::Visualization.find(visualization_id).perform_invalidations
     rescue KeyError
       # This happens during creation, as the overlays are created before the visualization
     end

@@ -98,7 +98,7 @@ class ExploreAPI
   def get_tables_by_user(visualizations)
     tables_by_user = {}
     visualizations.each do |vis|
-      if vis.type == CartoDB::Visualization::Member::TYPE_CANONICAL
+      if vis.type == Carto::Visualization::TYPE_CANONICAL
         tables_by_user[vis.user_id] = [] unless tables_by_user.has_key?(vis.user_id)
         tables_by_user[vis.user_id] << vis.name
         tables_by_user[vis.user_id].uniq

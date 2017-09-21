@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.9.87-12673.2",
+  "version": "4.9.89-12740.1",
   "dependencies": {
     "accessory": {
       "version": "1.0.1",
@@ -354,9 +354,9 @@
       "resolved": "https://registry.npmjs.org/cartodb-pecan/-/cartodb-pecan-0.2.0.tgz"
     },
     "cartodb.js": {
-      "version": "4.0.0-alpha.1.1.1",
+      "version": "4.0.0-alpha.1.1.2",
       "from": "cartodb/cartodb.js#v4",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#eebb45164a7b2d81f87943945f33029d94c77297"
+      "resolved": "git://github.com/cartodb/cartodb.js.git#8a1d0772a613ccf25344f62275a5b6936416af87"
     },
     "center-align": {
       "version": "0.1.3",

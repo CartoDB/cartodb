@@ -5,7 +5,7 @@ defaults: &defaults
   #  https:            "https.cdn.host"
   http_client_logs: true
   ogr2ogr:
-    binary:           'which ogr2ogr2.1'
+    binary:           'which ogr2ogr'
     csv_guessing:     true
   debug_assets: true
   mandatory_keys:     [layer_opts, sql_api, varnish_management, redis, session_domain]
@@ -378,10 +378,36 @@ defaults: &defaults
   datasources:
     arcgis_enabled: false
     salesforce_enabled: false
-  basemaps:
+  basemaps: # Adding `default: true` at a basemap marks its group as the default one. Its first basemap becomes the default one.
     CARTO:
-      positron_rainbow_labels:
+      voyager_labels:
         default: true
+        url: 'http://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager_nolabels/{z}/{x}/{y}.png'
+        subdomains: 'abcd'
+        minZoom: '0'
+        maxZoom: '18'
+        name: 'Voyager'
+        className: 'voyager_labels'
+        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions">CARTO</a>'
+        labels:
+          url: 'http://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager_only_labels/{z}/{x}/{y}.png'
+      voyager:
+        url: 'http://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager_labels_under/{z}/{x}/{y}.png'
+        subdomains: 'abcd'
+        minZoom: '0'
+        maxZoom: '18'
+        name: 'Voyager (labels below)'
+        className: 'voyager'
+        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions">CARTO</a>'
+      voyager_lite:
+        url: 'http://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager_nolabels/{z}/{x}/{y}.png'
+        subdomains: 'abcd'
+        minZoom: '0'
+        maxZoom: '18'
+        name: 'Voyager (lite)'
+        className: 'voyager_lite'
+        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions">CARTO</a>'
+      positron_rainbow_labels:
         url: 'http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png'
         subdomains: 'abcd'
         minZoom: '0'

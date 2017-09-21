@@ -18,17 +18,25 @@ module Carto
         return to_public_poro unless current_viewer && @user.viewable_by?(current_viewer)
 
         poro = {
-          id:               @user.id,
-          username:         @user.username,
-          email:            @user.email,
-          avatar_url:       @user.avatar_url,
-          base_url:         @user.public_url,
-          quota_in_bytes:   @user.quota_in_bytes,
-          table_count:      @user.table_count,
-          viewer:           @user.viewer?,
-          org_admin:        @user.organization_admin?,
+          id:                         @user.id,
+          name:                       @user.name,
+          last_name:                  @user.last_name,
+          username:                   @user.username,
+          email:                      @user.email,
+          avatar_url:                 @user.avatar_url,
+          website:                    @user.website,
+          description:                @user.description,
+          location:                   @user.location,
+          twitter_username:           @user.twitter_username,
+          disqus_shortname:           @user.disqus_shortname,
+          available_for_hire:         @user.available_for_hire,
+          base_url:                   @user.public_url,
+          quota_in_bytes:             @user.quota_in_bytes,
+          table_count:                @user.table_count,
+          viewer:                     @user.viewer?,
+          org_admin:                  @user.organization_admin?,
           public_visualization_count: @user.public_visualization_count,
-          all_visualization_count: @user.all_visualization_count
+          all_visualization_count:    @user.all_visualization_count
         }
 
         if fetch_groups

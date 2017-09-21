@@ -9,6 +9,7 @@
       <% } %>
       <li class="CDB-Text CDB-Size-medium u-altTextColor js-update">
       </li>
+    </ul>
   </div>
 </div>
 

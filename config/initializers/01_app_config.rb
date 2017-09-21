@@ -65,6 +65,17 @@ module Cartodb
     end
   end
 
+  def self.default_basemap(basemaps = Cartodb.config[:basemaps])
+    default_group = default_basemap_group(basemaps)
+    (default_group || basemaps.first)[1].first[1]
+  end
+
+  # Basemap group based on basemap `default` attribute. If it's not set, first basemap group is returned
+  def self.default_basemap_group(basemaps = Cartodb.config[:basemaps])
+    default_basemap_group = basemaps.find { |_, group_basemaps| group_basemaps.find { |_, attr| attr['default'] } }
+    default_basemap_group || basemaps.first
+  end
+
   # Execute a block with overriden configuration parameters
   # (useful for tests)
   #
@@ -78,11 +89,11 @@ module Cartodb
   # Note that since inner keys are strings (not symbols), you must
   # follow the same conventtion and use:
   #
-  #     Cartodb.with_config(ogr2ogr: { 'binary' => 'ogr2ogr2' })
+  #     Cartodb.with_config(ogr2ogr: { 'binary' => 'ogr2ogr' })
   #
   # and not:
   #
-  #     Cartodb.with_config(ogr2ogr: { 'binary': 'ogr2ogr2' })
+  #     Cartodb.with_config(ogr2ogr: { 'binary': 'ogr2ogr' })
   #
   def self.with_config(options)
     original_config = config

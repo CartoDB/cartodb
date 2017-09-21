@@ -33,6 +33,7 @@ module Carto
             version: version,
             name: visualization.display_name || visualization.name,
             description: visualization.description,
+            attributions: visualization.attributions,
             created_at: Time.now.to_i,
             classification: {
               tags: visualization.tags || []

@@ -17,33 +17,35 @@ module Carto
 
       ssl_required :show, :me, :update_me, :get_authenticated_users
 
-      skip_before_filter :api_authorization_required, only: [:get_authenticated_users]
+      before_filter :optional_api_authorization, only: [:me]
+      skip_before_filter :api_authorization_required, only: [:me, :get_authenticated_users]
+
+      PASSWORD_DOES_NOT_MATCH_MESSAGE = 'Password does not match'.freeze
 
       def show
         render json: Carto::Api::UserPresenter.new(uri_user).data
       end
 
       def me
-        carto_viewer = Carto::User.find(current_viewer.id)
+        carto_viewer = current_viewer.present? ? Carto::User.find(current_viewer.id) : nil
 
         render json: {
-          user_data: Carto::Api::UserPresenter.new(carto_viewer).data,
-          default_fallback_basemap: carto_viewer.default_basemap,
+          user_data: carto_viewer.present? ? Carto::Api::UserPresenter.new(carto_viewer).data : nil,
+          default_fallback_basemap: carto_viewer.try(:default_basemap),
           config: frontend_config_hash,
-          dashboard_notifications: carto_viewer.notifications_for_category(:dashboard),
-          is_just_logged_in: !!flash['logged'],
-          is_first_time_viewing_dashboard: !(carto_viewer.dashboard_viewed_at),
-          user_frontend_version: carto_viewer.relevant_frontend_version,
-          asset_host: carto_viewer.asset_host,
-          can_change_email: carto_viewer.can_change_email?,
-          auth_username_password_enabled: carto_viewer.organization && carto_viewer.organization.auth_username_password_enabled,
-          should_display_old_password: carto_viewer.should_display_old_password?,
-          can_change_password: carto_viewer.can_change_password?,
-          plan_name: plan_name(carto_viewer.account_type),
-          plan_url: carto_viewer.plan_url(request.protocol),
-          can_be_deleted: @can_be_deleted,
-          cant_be_deleted_reason: @cant_be_deleted_reason,
-          services: @services
+          dashboard_notifications: carto_viewer.try(:notifications_for_category, :dashboard),
+          is_just_logged_in: carto_viewer.present? ? !!flash['logged'] : nil,
+          is_first_time_viewing_dashboard: !carto_viewer.try(:dashboard_viewed_at),
+          user_frontend_version: carto_viewer.try(:relevant_frontend_version) || CartoDB::Application.frontend_version,
+          asset_host: carto_viewer.try(:asset_host),
+          can_change_email: carto_viewer.present? ? carto_viewer.can_change_email? : nil,
+          auth_username_password_enabled: carto_viewer.try(:organization) && carto_viewer.try(:organization, :auth_username_password_enabled),
+          should_display_old_password: carto_viewer.present? ? carto_viewer.should_display_old_password? : nil,
+          can_change_password: carto_viewer.present? ? carto_viewer.can_change_password? : nil,
+          plan_name: carto_viewer.present? ? plan_name(carto_viewer.account_type) : nil,
+          plan_url: carto_viewer.present? ? carto_viewer.plan_url(request.protocol) : nil,
+          cant_be_deleted_reason: carto_viewer.present? ? can_be_deleted?(carto_viewer) : nil,
+          services: carto_viewer.present? ? @services : []
         }
       end
 
@@ -79,6 +81,26 @@ module Carto
         render_jsonp({ message: "Error updating your account details", errors: user.errors }, 400)
       end
 
+      def delete_me
+        user = current_viewer
+
+        deletion_password_confirmation = params[:deletion_password_confirmation]
+        if user.needs_password_confirmation? && !user.validate_old_password(deletion_password_confirmation)
+          raise PASSWORD_DOES_NOT_MATCH_MESSAGE
+        end
+
+        user.destroy
+        user.delete_in_central
+
+        render_jsonp({ logout_url: logout_url }, 200)
+      rescue CartoDB::CentralCommunicationFailure => e
+        CartoDB::Logger.error(exception: e, message: 'Central error deleting user at CartoDB', user: @user)
+        render_jsonp({ errors: "Error deleting user: #{e.user_message}" }, 422)
+      rescue => e
+        CartoDB.notify_exception(e, { user: user.inspect }) unless e.message == PASSWORD_DOES_NOT_MATCH_MESSAGE
+        render_jsonp({ message: "Error deleting user: #{e.message}", errors: user.errors }, 400)
+      end
+
       def get_authenticated_users
         referer = request.env["HTTP_ORIGIN"].blank? ? request.env["HTTP_REFERER"] : %[#{request.env['HTTP_X_FORWARDED_PROTO']}://#{request.env["HTTP_HOST"]}]
         referer_match = /https?:\/\/([\w\-\.]+)(:[\d]+)?(\/((u|user)\/([\w\-\.]+)))?/.match(referer)
@@ -101,6 +123,16 @@ module Carto
       end
 
       private
+
+      def can_be_deleted?(user)
+        if user.organization_owner?
+          return "You can't delete your account because you are admin of an organization"
+        elsif Carto::UserCreation.http_authentication.where(user_id: user.id).first.present?
+          return "You can't delete your account because you are using HTTP Header Authentication"
+        else
+          return nil
+        end
+      end
 
       def render_auth_users_data(user, referrer, subdomain, referrer_organization_username=nil)
         organization_name = nil

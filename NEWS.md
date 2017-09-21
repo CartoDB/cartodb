@@ -3,7 +3,7 @@ Development
 
 ### Features
 * Add endpoints for updating user account & profile details (#12726)
-* Add /api/v3/me endpoint (#12599)
+* Add /api/v3/me endpoint (#12599, #12790)
 * Add assets version column in user model (#12676)
 * Dashboard static view (#12680)
 * Vector rendering improvements #12722.
@@ -43,6 +43,7 @@ Development
 * Show ranges in time series widget selection (#12291)
 * Bump Webpack version (#12392).
 * New user render timeouts and propagation of timeout values to Redis (#12425)
+* Default basemap is used for all Builder maps regardless of dataset basemap (#12700)
 * The selection window on a histogram widget can be dragged (#12180)
 * Move playback on animated time series by clicking on it (#12180)
 * Move play/pause button to besides the time series (#12387)
@@ -52,8 +53,12 @@ Development
 * Don't display slider if there's only one value (#bigmetadata/202)
 * Mustache conditionals support improved in popups (#support/763)
 * Updates Dataservices API client default version to `0.20.0` (#12633)
+* Remove data-observatory-multiple-measures feature flag (#304)
 
 ### Bug fixes / enhancements
+* Fix infowindow break word (CartoDB/support#965)
+* Update cartodb.js version 
+* Fix extraneous labels layer.
 * Fix timeseries glitches (#12217)
 * Rename 'Select a text' placeholder to 'Select a value' in Filter analysis (#11861)
 * Highlight new column name (#12662)
@@ -350,6 +355,7 @@ More information at [Dropbox migration guide](https://www.dropbox.com/developers
 * Show infowindow when user reaches max layer limit (#12167)
 * Format quota infowindow numbers (#11743)
 * Improved analysis error tooltip (#12250)
+* Enable user migrations across clouds (#12795)
 
 ### Bug fixes
 * Update Data Observatory Analysis UI (#9991)

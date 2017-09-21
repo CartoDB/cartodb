@@ -604,7 +604,7 @@ class Carto::Visualization < ActiveRecord::Base
     end
   end
 
-  def is_synced?
+  def synced?
     synchronization.present?
   end
 

@@ -401,7 +401,7 @@ namespace :cartodb do
 
     def update_metadata_query(visualization, table_data, likes, mapviews)
       %[ UPDATE #{VISUALIZATIONS_TABLE} set
-            visualization_synced = #{!visualization.is_synced?}
+            visualization_synced = #{!visualization.synced?}
             #{update_mapviews(mapviews)}
             #{update_likes(likes)}
             #{update_tables(visualization)}

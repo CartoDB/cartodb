@@ -48,15 +48,6 @@ describe('geo/map/cartodb-layer', function () {
       expect(this.vis.reload.calls.count()).toEqual(1);
     });
 
-    it('should NOT reload the map if cartocss has changed and layer has a dataProvider', function () {
-      var layer = new CartoDBLayer({}, { vis: this.vis });
-      layer.setDataProvider('wadus');
-
-      layer.set('cartocss', 'new_value');
-
-      expect(this.vis.reload).not.toHaveBeenCalled();
-    });
-
     describe('popups changes', function () {
       var layer;
       beforeEach(function () {

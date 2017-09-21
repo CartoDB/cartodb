@@ -11,6 +11,9 @@
     "data-observatory-measure": {
       "short-title": "Data observatory"
     },
+    "data-observatory-multiple-measures": {
+      "short-title": "Data observatory"
+    },
     "merge": {
       "short-title": "Join columns"
     },

@@ -32,6 +32,9 @@ var MAP = {
   'data-observatory-measure': {
     title: _t('analyses.data-observatory-measure.short-title')
   },
+  'data-observatory-multiple-measures': {
+    title: _t('analyses.data-observatory-multiple-measures.short-title')
+  },
   'filter-by-node-column': {
     title: _t('analyses.filter-by-node-column.short-title')
   },

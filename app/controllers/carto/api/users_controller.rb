@@ -20,7 +20,7 @@ module Carto
       before_filter :optional_api_authorization, only: [:me]
       skip_before_filter :api_authorization_required, only: [:me, :get_authenticated_users]
 
-      PASSWORD_DOES_NOT_MATCH_MESSAGE = 'Password does not match'
+      PASSWORD_DOES_NOT_MATCH_MESSAGE = 'Password does not match'.freeze
 
       def show
         render json: Carto::Api::UserPresenter.new(uri_user).data

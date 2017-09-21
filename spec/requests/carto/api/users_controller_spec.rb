@@ -25,6 +25,12 @@ describe Carto::Api::UsersController do
 
         dashboard_notifications = carto_user.notifications_for_category(:dashboard)
         expect(response.body[:dashboard_notifications]).to eq(dashboard_notifications)
+        expect(response.body[:can_change_email]).to eq(user.can_change_email?)
+        expect(response.body[:auth_username_password_enabled]).to eq(true)
+        expect(response.body[:should_display_old_password]).to eq(user.should_display_old_password?)
+        expect(response.body[:can_change_password]).to eq(true)
+        expect(response.body[:plan_name]).to eq('Free')
+        expect(response.body[:services]).to eq(user.get_oauth_services)
       end
     end
 

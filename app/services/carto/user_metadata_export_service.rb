@@ -197,7 +197,8 @@ module Carto
     end
 
     def import_from_directory(path)
-      save_imported_user(user_from_file(path))
+      user = user_from_file(path)
+      save_imported_user(user)
 
       Carto::RedisExportService.new.restore_redis_from_json_export(redis_user_file(path))
 

@@ -54,8 +54,9 @@ Development
 * Remove data-observatory-multiple-measures feature flag (#304)
 
 ### Bug fixes / enhancements
+* Fix some styles for datasets view for IE11.
 * Fix infowindow break word (CartoDB/support#965)
-* Update cartodb.js version 
+* Update cartodb.js version
 * Fix extraneous labels layer.
 * Fix timeseries glitches (#12217)
 * Rename 'Select a text' placeholder to 'Select a value' in Filter analysis (#11861)

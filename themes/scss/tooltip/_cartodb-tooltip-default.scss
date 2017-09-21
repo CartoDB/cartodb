@@ -9,6 +9,8 @@
   max-width: 180px;
   border-radius: 4px;
   overflow: hidden;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
   &.CDB-Tooltip-wrapper--topLeft {
     border-top-left-radius: 0;
   }

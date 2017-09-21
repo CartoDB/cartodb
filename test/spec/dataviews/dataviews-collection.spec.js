@@ -11,7 +11,6 @@ describe('dataviews/dataview-collection', function () {
     map.getViewBounds.and.returnValue([[0, 0], [0, 0]]);
     var vis = jasmine.createSpyObj('vis', ['reload']);
     var layer = new Backbone.Model();
-    layer.getDataProvider = function () {};
     var dataviewModel = new DataviewModel({source: {id: 'a0'}}, {
       map: map,
       vis: vis,

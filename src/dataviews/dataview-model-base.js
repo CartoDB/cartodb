@@ -190,7 +190,6 @@ module.exports = Model.extend({
   /**
    * @protected
    */
-
   _onFilterChanged: function (filter) {
     this._reloadVis();
   },
@@ -259,6 +258,7 @@ module.exports = Model.extend({
   fetch: function (opts) {
     opts = opts || {};
     this.set('status', FETCHING_STATUS);
+
     this._triggerLoading();
 
     if (opts.success) {

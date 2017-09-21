@@ -13,7 +13,6 @@ describe('dataviews/category-dataview-model', function () {
     this.map.getViewBounds.and.returnValue([[1, 2], [3, 4]]);
 
     this.layer = new Backbone.Model();
-    this.layer.getDataProvider = jasmine.createSpy('layer.getDataProvider');
 
     this.model = new CategoryDataviewModel({
       source: {id: 'a0'}
@@ -53,7 +52,7 @@ describe('dataviews/category-dataview-model', function () {
     }, {
       map: this.map,
       vis: this.vis,
-      layer: jasmine.createSpyObj('layer', ['get', 'getDataProvider']),
+      layer: jasmine.createSpyObj('layer', ['get']),
       filter: new WindshaftFiltersCategory(),
       analysisCollection: new Backbone.Collection()
     });

@@ -1,0 +1,19 @@
+{
+  "source": {
+    "include": [
+      "src"
+    ]
+  },
+  "plugins": [
+    "plugins/api"
+  ],
+  "templates": {
+    "default": {
+      "outputSourceFiles": false
+    }
+  },
+  "opts": {
+    "recurse": true,
+    "destination": "./out/v4"
+  }
+}

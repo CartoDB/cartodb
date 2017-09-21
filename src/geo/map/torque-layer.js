@@ -145,14 +145,6 @@ var TorqueLayer = LayerModelBase.extend({
 
   fetchAttributes: function (layer, featureID, callback) {},
 
-  setDataProvider: function (dataProvider) {
-    this._dataProvider = dataProvider;
-  },
-
-  getDataProvider: function () {
-    return this._dataProvider;
-  },
-
   // given a timestamp returns a step (float)
   timeToStep: function (timestamp) {
     var steps = this.get('steps');

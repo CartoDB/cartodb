@@ -9,7 +9,6 @@ describe('dataviews/list-dataview-model', function () {
     this.vis.reload = jasmine.createSpy('reload');
 
     this.layer = new Backbone.Model();
-    this.layer.getDataProvider = jasmine.createSpy('getDataProvider');
 
     this.model = new ListDataviewModel({
       source: {id: 'a0'}

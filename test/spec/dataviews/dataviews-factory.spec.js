@@ -20,7 +20,6 @@ describe('dataviews/dataviews-factory', function () {
       dataviewsCollection: this.dataviewsCollection
     });
     this.layer = new Backbone.Model();
-    this.layer.getDataProvider = jasmine.createSpy('getDataProvider');
   });
 
   it('should create the factory as expected', function () {

@@ -16,9 +16,9 @@ describe Carto::CartoGeoPKG::MetadataTools do
     @user.destroy
   end
 
-  describe('@JSONGenerator') do
+  describe('@HashGenerator') do
     before(:all) do
-      @generator = Carto::CartoGeoPKG::MetadataTools::JSONGenerator.new
+      @generator = Carto::CartoGeoPKG::MetadataTools::HashGenerator.new
     end
 
     after(:all) do

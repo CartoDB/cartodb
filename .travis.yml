@@ -8,12 +8,10 @@ install:
 before_script:
   - cp secrets.example.json secrets.json
   - npm install -g grunt-cli
-  - chmod +x ./scripts/deploy-to-gh-pages.sh
 script:
   - grunt test
 after_success:
-  - npm run docs
-  - ./scripts/deploy-to-gh-pages.sh
+  - bash scripts/deploy-to-gh-pages.sh
 notifications:
   email:
     on_success: never

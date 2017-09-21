@@ -138,7 +138,7 @@ var CartoDBLayer = LayerModelBase.extend({
 
   update: function (attrs) {
     if (attrs.source) {
-      console.warn('Deprecated: Use ".setSource" to update a layer\'s source instead the update method');
+      console.warn('Deprecated: Use ".setSource" to update a layer\'s source instead of the update method');
       attrs.source = CartoDBLayer.getLayerSourceFromAttrs(attrs, this._vis.analysis);
     }
     LayerModelBase.prototype.update.apply(this, arguments);

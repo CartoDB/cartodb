@@ -181,7 +181,7 @@ var TorqueLayer = LayerModelBase.extend({
     if (!(analysisModel instanceof AnalysisModel)) {
       throw new TypeError('TorqueLayer.hasSource must be called with an "AnalysisModel" but got: ' + analysisModel);
     }
-    return this.getSourceId() === analysisModel.get('id');
+    return this.getSource().equals(analysisModel);
   },
 
   update: function (attrs) {

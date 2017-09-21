@@ -39,7 +39,7 @@ namespace :cartodb do
       puts "Fetched ##{count} items"
       puts "> #{Time.now}"
 
-      vqb.find_each do |vis|
+      vqb.each do |vis|
         begin
           current += 1
 

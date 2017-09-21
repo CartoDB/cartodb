@@ -755,7 +755,7 @@ namespace :cartodb do
 
         count = items.count
         puts "\n>Running :create_default_vis_permissions for page #{page} (#{count} vis)" if count > 0
-        items.find_each do |vis|
+        items.each do |vis|
           if vis.permission_id.nil?
             begin
               raise 'No owner' if vis.user.nil?

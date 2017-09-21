@@ -67,7 +67,8 @@ module Carto
     end
 
     def invalidate_cache
-      Carto::Visualization.find(visualization_id).perform_invalidations
+      # Using `send` to avoid making it public. A future refactor should make this call unnecessary
+      Carto::Visualization.find(visualization_id).send(:perform_invalidations)
     rescue KeyError
       # This happens during creation, as the overlays are created before the visualization
     end

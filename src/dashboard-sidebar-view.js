@@ -5,7 +5,6 @@ var cdb = require('cartodb.js');
 var CategoryContentView = require('./widgets/category/content-view');
 var FormulaContentView = require('./widgets/formula/content-view');
 var HistogramContentView = require('./widgets/histogram/content-view');
-var ListContentView = require('./widgets/list/content-view');
 var WidgetViewFactory = require('./widgets/widget-view-factory');
 var template = require('./dashboard-sidebar.tpl');
 var matchMedia = window.matchMedia;
@@ -19,13 +18,6 @@ module.exports = cdb.core.View.extend({
         type: 'formula',
         createContentView: function (widgetModel) {
           return new FormulaContentView({
-            model: widgetModel
-          });
-        }
-      }, {
-        type: 'list',
-        createContentView: function (widgetModel) {
-          return new ListContentView({
             model: widgetModel
           });
         }

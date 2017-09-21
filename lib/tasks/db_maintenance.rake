@@ -747,23 +747,20 @@ namespace :cartodb do
       page_size = args[:page_size].blank? ? 999999 : args[:page_size].to_i
       page = args[:page].blank? ? 1 : args[:page].to_i
 
-      require_relative '../../app/models/visualization/collection'
-
       progress_each =  (page_size > 10) ? (page_size / 10).ceil : 1
       collection = CartoDB::Visualization::Collection.new
 
       begin
-        items = collection.fetch(page: page, per_page: page_size)
+        items = Carto::VisualizationQueryBuilder.new.build_paged(page, page_size)
 
         count = items.count
         puts "\n>Running :create_default_vis_permissions for page #{page} (#{count} vis)" if count > 0
-        items.each_with_index { |vis, i|
-          puts ">Processed: #{i}/#{count} - page #{page}" if i % progress_each == 0
+        items.find_each { |vis|
           if vis.permission_id.nil?
             begin
               raise 'No owner' if vis.user.nil?
               # Just saving will trigger the permission creation
-              vis.send(:do_store, false)
+              vis.save!
               puts "OK #{vis.id}"
             rescue => e
               owner_id = vis.user.nil? ? 'nil' : vis.user.id

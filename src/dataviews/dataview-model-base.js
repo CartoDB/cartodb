@@ -2,12 +2,19 @@ var _ = require('underscore');
 var Model = require('../core/model');
 var BackboneAbortSync = require('../util/backbone-abort-sync');
 var WindshaftFiltersBoundingBoxFilter = require('../windshaft/filters/bounding-box');
+var AnalysisModel = require('../analysis/analysis-model');
+var checkAndBuildOpts = require('../util/required-opts');
 var BOUNDING_BOX_FILTER_WAIT = 500;
 
 var UNFETCHED_STATUS = 'unfeteched';
 var FETCHING_STATUS = 'fetching';
 var FETCHED_STATUS = 'fetched';
 var FETCH_ERROR_STATUS = 'error';
+
+var REQUIRED_OPTS = [
+  'map',
+  'vis'
+];
 
 /**
  * Default dataview model
@@ -71,20 +78,14 @@ module.exports = Model.extend({
   initialize: function (attrs, opts) {
     attrs = attrs || {};
     opts = opts || {};
+    checkAndBuildOpts(opts, REQUIRED_OPTS, this);
 
-    if (!opts.map) throw new Error('map is required');
-    if (!opts.vis) throw new Error('vis is required');
-    if (!opts.analysisCollection) throw new Error('analysisCollection is required');
     if (!attrs.source) throw new Error('source is a required attr');
+    if (!(attrs.source instanceof AnalysisModel)) throw new Error('source must be an instance of AnalysisModel');
 
     if (!attrs.id) {
       this.set('id', this.defaults.type + '-' + this.cid);
     }
-
-    this.layer = opts.layer;
-    this._map = opts.map;
-    this._vis = opts.vis;
-    this._analysisCollection = opts.analysisCollection;
 
     this.sync = BackboneAbortSync.bind(this);
 
@@ -98,31 +99,19 @@ module.exports = Model.extend({
     this._setupAnalysisStatusEvents();
   },
 
-  _getLayerDataProvider: function () {
-    return this.layer.getDataProvider();
-  },
-
   _initBinds: function () {
-    this.listenTo(this.layer, 'change:visible', this._onLayerVisibilityChanged);
-    this.listenTo(this.layer, 'change:source', this._setupAnalysisStatusEvents);
     this.on('change:source', this._setupAnalysisStatusEvents, this);
 
-    var layerDataProvider = this._getLayerDataProvider();
-    if (layerDataProvider) {
-      this.listenToOnce(layerDataProvider, 'dataChanged', this._onChangeBinds, this);
-      this.listenTo(layerDataProvider, 'dataChanged', this.fetch);
-    } else {
-      this.listenToOnce(this, 'change:url', function () {
-        if (this.syncsOnBoundingBoxChanges() && !this._getMapViewBounds()) {
-          // wait until map gets bounds from view
-          this._map.on('change:view_bounds_ne', function () {
-            this._initialFetch();
-          }, this);
-        } else {
+    this.listenToOnce(this, 'change:url', function () {
+      if (this.syncsOnBoundingBoxChanges() && !this._getMapViewBounds()) {
+        // wait until map gets bounds from view
+        this._map.on('change:view_bounds_ne', function () {
           this._initialFetch();
-        }
-      });
-    }
+        }, this);
+      } else {
+        this._initialFetch();
+      }
+    });
 
     if (this.filter) {
       this.listenTo(this.filter, 'change', this._onFilterChanged);
@@ -171,15 +160,14 @@ module.exports = Model.extend({
 
   _setupAnalysisStatusEvents: function () {
     this._removeExistingAnalysisBindings();
-    this._analysis = this.getSource();
-    if (this._analysis) {
-      this._analysis.on('change:status', this._onAnalysisStatusChange, this);
+    if (this.getSource()) {
+      this.getSource().on('change:status', this._onAnalysisStatusChange, this);
     }
   },
 
   _removeExistingAnalysisBindings: function () {
-    if (!this._analysis) return;
-    this._analysis.off('change:status', this._onAnalysisStatusChange, this);
+    if (!this.get('source')) return;
+    this.get('source').off('change:status', this._onAnalysisStatusChange, this);
   },
 
   _onAnalysisStatusChange: function (analysis, status) {
@@ -204,12 +192,7 @@ module.exports = Model.extend({
    */
 
   _onFilterChanged: function (filter) {
-    var layerDataProvider = this._getLayerDataProvider();
-    if (layerDataProvider && layerDataProvider.canApplyFilterTo(this)) {
-      layerDataProvider.applyFilter(this, filter);
-    } else {
-      this._reloadVis();
-    }
+    this._reloadVis();
   },
 
   _reloadVis: function (opts) {
@@ -229,17 +212,6 @@ module.exports = Model.extend({
     });
   },
 
-  /**
-   * Enable/disable the dataview depending on the layer visibility.
-   * @private
-   * @param  {LayerModel} model the layer model which visible property has changed.
-   * @param  {Boolean} value New value for visible.
-   * @returns {void}
-   */
-  _onLayerVisibilityChanged: function (model, value) {
-    this.set({enabled: value});
-  },
-
   _shouldFetchOnURLChange: function (options) {
     options = options || {};
     var sourceId = options.sourceId;
@@ -251,7 +223,7 @@ module.exports = Model.extend({
 
     return this.isEnabled() &&
       this.syncsOnDataChanges() &&
-        this._sourceAffectsMyOwnSource(sourceId);
+      this._sourceAffectsMyOwnSource(sourceId);
   },
 
   _sourceAffectsMyOwnSource: function (sourceId) {
@@ -287,30 +259,25 @@ module.exports = Model.extend({
   fetch: function (opts) {
     opts = opts || {};
     this.set('status', FETCHING_STATUS);
-    var layerDataProvider = this._getLayerDataProvider();
-    if (layerDataProvider && layerDataProvider.canProvideDataFor(this)) {
-      this.set(this.parse(layerDataProvider.getDataFor(this)));
-    } else {
-      this._triggerLoading();
+    this._triggerLoading();
 
-      if (opts.success) {
-        var successCallback = opts && opts.success;
-      }
-
-      return Model.prototype.fetch.call(this, _.extend(opts, {
-        success: function () {
-          this.set('status', FETCHED_STATUS);
-          successCallback && successCallback(arguments);
-          this.trigger('loaded', this);
-        }.bind(this),
-        error: function (mdl, err) {
-          this.set('status', FETCH_ERROR_STATUS);
-          if (!err || (err && err.statusText !== 'abort')) {
-            this._triggerError(err);
-          }
-        }.bind(this)
-      }));
+    if (opts.success) {
+      var successCallback = opts && opts.success;
     }
+
+    return Model.prototype.fetch.call(this, _.extend(opts, {
+      success: function () {
+        this.set('status', FETCHED_STATUS);
+        successCallback && successCallback(arguments);
+        this.trigger('loaded', this);
+      }.bind(this),
+      error: function (mdl, err) {
+        this.set('status', FETCH_ERROR_STATUS);
+        if (!err || (err && err.statusText !== 'abort')) {
+          this._triggerError(err);
+        }
+      }.bind(this)
+    }));
   },
 
   toJSON: function () {
@@ -318,38 +285,16 @@ module.exports = Model.extend({
   },
 
   getSourceType: function () {
-    var sourceAnalysis = this.getSource();
-    return sourceAnalysis && sourceAnalysis.get('type');
-  },
-
-  getLayerName: function () {
-    return this.layer && this.layer.get('layer_name');
+    return this.getSource().get('type');
   },
 
   getSource: function () {
-    var sourceId = this.getSourceId();
-    return sourceId && this._analysisCollection.get(sourceId);
+    return this.get('source');
   },
 
   getSourceId: function () {
-    // Dataview is pointing to a layer that has a source, so its
-    // source is actually the the layers's source
-    if (this.hasLayerAsSource() && this.layer.has('source')) {
-      return this.layer.get('source');
-    }
-
-    // Dataview is pointing to a layer with `sql` or an analysis
-    // node directly, so just return the id that has been set by
-    // dataviews-factory.js
-    return this._ownSourceId();
-  },
-
-  _ownSourceId: function () {
-    return this.has('source') && this.get('source').id;
-  },
-
-  hasLayerAsSource: function () {
-    return this._ownSourceId() === this.layer.id;
+    var source = this.getSource();
+    return source && source.id;
   },
 
   isFiltered: function () {
@@ -388,13 +333,13 @@ module.exports = Model.extend({
 },
 
   // Class props
-{
-  ATTRS_NAMES: [
-    'id',
-    'sync_on_data_change',
-    'sync_on_bbox_change',
-    'enabled',
-    'source'
-  ]
-}
+  {
+    ATTRS_NAMES: [
+      'id',
+      'sync_on_data_change',
+      'sync_on_bbox_change',
+      'enabled',
+      'source'
+    ]
+  }
 );

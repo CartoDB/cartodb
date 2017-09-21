@@ -27,21 +27,18 @@ module.exports = Model.extend({
     this._analysisCollection = opts.analysisCollection;
   },
 
-  createCategoryModel: function (layerModel, attrs) {
+  createCategoryModel: function (attrs) {
     _checkProperties(attrs, ['column']);
-    attrs = this._generateAttrsForDataview(layerModel, attrs, CategoryDataviewModel.ATTRS_NAMES);
+    attrs = this._generateAttrsForDataview(attrs, CategoryDataviewModel.ATTRS_NAMES);
     attrs.aggregation = attrs.aggregation || 'count';
     attrs.aggregation_column = attrs.aggregation_column || attrs.column;
 
-    var categoryFilter = new CategoryFilter({
-      layer: layerModel
-    });
+    var categoryFilter = new CategoryFilter();
 
     return this._newModel(
       new CategoryDataviewModel(attrs, {
         map: this._map,
         vis: this._vis,
-        layer: layerModel,
         filter: categoryFilter,
         analysisCollection: this._analysisCollection
       })
@@ -93,9 +90,9 @@ module.exports = Model.extend({
     );
   },
 
-  _generateAttrsForDataview: function (layerModel, attrs, whitelistedAttrs) {
+  _generateAttrsForDataview: function (attrs, whitelistedAttrs) {
     attrs = _.pick(attrs, whitelistedAttrs);
-    attrs.source = attrs.source || { id: layerModel.id };
+    attrs.source = attrs.source;
     if (this.get('apiKey')) {
       attrs.apiKey = this.get('apiKey');
     }

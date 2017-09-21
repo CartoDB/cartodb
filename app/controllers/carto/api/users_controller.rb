@@ -15,7 +15,9 @@ module Carto
         :disqus_shortname, :available_for_hire
       ].freeze
 
-      ssl_required :show, :me, :update_me, :me_account_info, :get_authenticated_users
+      PASSWORD_DOES_NOT_MATCH_MESSAGE = 'Password does not match'.freeze
+
+      ssl_required :show, :me, :update_me, :delete_me, :get_authenticated_users
 
       before_filter :optional_api_authorization, only: [:me]
       skip_before_filter :api_authorization_required, only: [:me, :get_authenticated_users]
@@ -81,6 +83,27 @@ module Carto
         render_jsonp({ errors: "There was a problem while updating your data. Please, try again." }, 422)
       rescue Sequel::ValidationFailed
         render_jsonp({ message: "Error updating your account details", errors: user.errors }, 400)
+      end
+
+      def delete_me
+        user = current_viewer
+
+        deletion_password_confirmation = params[:deletion_password_confirmation]
+
+        if user.needs_password_confirmation? && !user.validate_old_password(deletion_password_confirmation)
+          raise PASSWORD_DOES_NOT_MATCH_MESSAGE
+        end
+
+        user.destroy
+        user.delete_in_central
+
+        render_jsonp({ logout_url: logout_url }, 200)
+      rescue CartoDB::CentralCommunicationFailure => e
+        CartoDB::Logger.error(exception: e, message: 'Central error deleting user at CartoDB', user: @user)
+        render_jsonp({ errors: "Error deleting user: #{e.user_message}" }, 422)
+      rescue => e
+        CartoDB.notify_exception(e, { user: user.inspect }) unless e.message == PASSWORD_DOES_NOT_MATCH_MESSAGE
+        render_jsonp({ message: "Error deleting user: #{e.message}", errors: user.errors }, 400)
       end
 
       def get_authenticated_users

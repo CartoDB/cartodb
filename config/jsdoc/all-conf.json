@@ -11,6 +11,6 @@
   },
   "opts": {
     "recurse": true,
-    "destination": "./out/internal"
+    "destination": "./out/v4-internal"
   }
 }

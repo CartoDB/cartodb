@@ -65,10 +65,10 @@ module Carto
 
     def import(service, package)
       if import_metadata?
-        imported = import_metadata(package, service)
+        imported = do_import_metadata(package, service)
       end
 
-      import_job = import_data(package, service)
+      import_job = do_import_data(package, service)
 
       if import_metadata?
         import_visualizations(import_job, imported, package, service)
@@ -89,7 +89,7 @@ module Carto
       end
     end
 
-    def import_data(package, service)
+    def do_import_data(package, service)
       log.append('=== Importing data ===')
       import_job = CartoDB::DataMover::ImportJob.new(import_job_arguments(package.data_dir))
       begin
@@ -103,7 +103,7 @@ module Carto
       import_job
     end
 
-    def import_metadata(package, service)
+    def do_import_metadata(package, service)
       log.append('=== Importing metadata ===')
       begin
         imported = service.import_from_directory(package.meta_dir)

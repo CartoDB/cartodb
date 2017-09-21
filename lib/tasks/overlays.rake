@@ -8,7 +8,7 @@ namespace :cartodb do
     task :remove_duplicate_overlays => :environment do |t, args|
       count = 0
       unique_types = Carto::Overlay::UNIQUE_TYPES
-      CartoDB::Visualization::Collection.new.fetch({ per_page: 999999 }).each { |vis|
+      Carto::Visualization.find_each { |vis|
         if vis.user
           begin
             overlays_counts = {}

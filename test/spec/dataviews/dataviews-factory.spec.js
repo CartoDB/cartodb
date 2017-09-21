@@ -27,14 +27,12 @@ describe('dataviews/dataviews-factory', function () {
     expect(this.factory.createCategoryModel).toEqual(jasmine.any(Function));
     expect(this.factory.createFormulaModel).toEqual(jasmine.any(Function));
     expect(this.factory.createHistogramModel).toEqual(jasmine.any(Function));
-    expect(this.factory.createListModel).toEqual(jasmine.any(Function));
   });
 
   var FACTORY_METHODS_AND_REQUIRED_ATTRIBUTES = [
     ['createCategoryModel', ['column']],
     ['createFormulaModel', ['column', 'operation']],
-    ['createHistogramModel', ['column']],
-    ['createListModel', ['columns']]
+    ['createHistogramModel', ['column']]
   ];
 
   _.each(FACTORY_METHODS_AND_REQUIRED_ATTRIBUTES, function (element) {

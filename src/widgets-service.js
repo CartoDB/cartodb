@@ -133,32 +133,6 @@ WidgetsService.prototype.createFormulaModel = function (attrs, layer, state) {
 
 /**
  * @param {Object} attrs
- * @param {String} attrs.title Title rendered on the widget view
- * @param {Array} attrs.columns Names of columns
- * @param {Number} attrs.bins Count of bins
- * @param {Object} layer Instance of a layer model (cartodb.js)
- * @return {WidgetModel}
- */
-WidgetsService.prototype.createListModel = function (attrs, layer) {
-  _checkProperties(attrs, ['title', 'columns_title']);
-
-  var dataviewModel = this._dataviews.createListModel(layer, attrs);
-
-  var ATTRS_NAMES = ['id', 'title', 'order', 'columns_title', 'show_stats', 'show_source'];
-  var widgetAttrs = _.pick(attrs, ATTRS_NAMES);
-  widgetAttrs.type = 'list';
-  widgetAttrs.attrsNames = ATTRS_NAMES;
-
-  var widgetModel = new WidgetModel(widgetAttrs, {
-    dataviewModel: dataviewModel
-  });
-  this._widgetsCollection.add(widgetModel);
-
-  return widgetModel;
-};
-
-/**
- * @param {Object} attrs
  * @param {String} attrs.column Name of column that contains
  * @param {Object} layer Instance of a layer model (cartodb.js)
  * @param {Number} bins

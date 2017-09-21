@@ -20,7 +20,7 @@ module.exports = Backbone.Collection.extend({
       if (autoStyle) {
         this.each(function (mdl) {
           // Only set if model actually has the attr (i.e. it's a category model)
-          if (mdl.dataviewModel && mdl !== m && mdl.dataviewModel.layer.get('layer_name') === m.dataviewModel.layer.get('layer_name') && mdl.get('autoStyle')) {
+          if (mdl.layerModel && mdl !== m && mdl.layerModel.get('layer_name') === m.layerModel.get('layer_name') && mdl.get('autoStyle')) {
             mdl.set('autoStyle', false);
           }
         });

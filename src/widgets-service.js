@@ -75,7 +75,7 @@ WidgetsService.prototype.createCategoryModel = function (attrs, layer, state) {
   _checkProperties(attrs, ['title']);
   var extendedAttrs = extendAttrs(attrs, state, this._widgetsCollection.hasInitialState());
   fillAnalysisModel(extendedAttrs, this._analysis);
- 
+
   var dataviewModel = this._dataviews.createCategoryModel(extendedAttrs);
 
   var ATTRS_NAMES = ['id', 'title', 'order', 'collapsed', 'prefix', 'suffix', 'show_stats', 'show_source', 'style', 'hasInitialState'];
@@ -140,7 +140,8 @@ WidgetsService.prototype.createHistogramModel = function (attrs, layer, state, o
 WidgetsService.prototype.createFormulaModel = function (attrs, layer, state) {
   _checkProperties(attrs, ['title']);
   var extendedAttrs = extendAttrs(attrs, state, this._widgetsCollection.hasInitialState());
-  var dataviewModel = this._dataviews.createFormulaModel(layer, extendedAttrs);
+  fillAnalysisModel(extendedAttrs, this._analysis);
+  var dataviewModel = this._dataviews.createFormulaModel(extendedAttrs);
 
   var ATTRS_NAMES = ['id', 'title', 'order', 'collapsed', 'prefix', 'suffix', 'show_stats', 'show_source', 'description', 'hasInitialState'];
   var widgetAttrs = _.pick(extendedAttrs, ATTRS_NAMES);
@@ -148,7 +149,8 @@ WidgetsService.prototype.createFormulaModel = function (attrs, layer, state) {
   widgetAttrs.attrsNames = ATTRS_NAMES;
 
   var widgetModel = new WidgetModel(widgetAttrs, {
-    dataviewModel: dataviewModel
+    dataviewModel: dataviewModel,
+    layerModel: layer
   });
   widgetModel.setInitialState(state);
   this._widgetsCollection.add(widgetModel);

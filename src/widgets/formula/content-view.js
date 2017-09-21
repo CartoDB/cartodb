@@ -18,6 +18,7 @@ module.exports = cdb.core.View.extend({
 
   initialize: function () {
     this._dataviewModel = this.model.dataviewModel;
+    this._layerModel = this.model.layerModel;
 
     if (this.model.get('hasInitialState') === true) {
       this._initBinds();
@@ -54,7 +55,7 @@ module.exports = cdb.core.View.extend({
     var letter = layerColors.letter(sourceId);
     var sourceColor = layerColors.getColorForLetter(letter);
     var sourceType = this._dataviewModel.getSourceType() || '';
-    var layerName = this._dataviewModel.getLayerName() || '';
+    var layerName = this._layerModel.get('layer_name') || '';
 
     this.$el.html(
       template({
@@ -107,8 +108,8 @@ module.exports = cdb.core.View.extend({
     this._dataviewModel.bind('change:data', this.render, this);
     this.add_related_model(this._dataviewModel);
 
-    this._dataviewModel.layer.bind('change:layer_name', this.render, this);
-    this.add_related_model(this._dataviewModel.layer);
+    this._layerModel.bind('change:layer_name', this.render, this);
+    this.add_related_model(this._layerModel);
   },
 
   _initViews: function () {
@@ -120,5 +121,4 @@ module.exports = cdb.core.View.extend({
 
     this.addView(dropdown);
   }
-
 });

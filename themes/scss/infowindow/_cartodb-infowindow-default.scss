@@ -4,6 +4,11 @@
 .CDB-infowindow-wrapper {
   position: absolute;
   z-index: 1; // makes infowindows visible with Google Maps
+  word-wrap: break-word;
+  word-break: break-all;
+  -ms-hyphens: auto;
+  -webkit-hyphens: auto;
+  hyphens: auto;
 }
 .CDB-infowindow {
   position: relative;
@@ -18,7 +23,6 @@
 .CDB-infowindow-container {
   border-radius: 4px;
   overflow: hidden;
-  word-wrap: break-word;
 }
 .CDB-infowindow.is-loading .CDB-infowindow-inner {
   min-height: 104px;

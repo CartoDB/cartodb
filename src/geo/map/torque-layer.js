@@ -181,6 +181,17 @@ var TorqueLayer = LayerModelBase.extend({
     this.set('source', source);
   },
 
+  /**
+   * Check if an analysis node is the layer's source.
+   * Only torque and cartodb layers have a source otherwise return false.
+   */
+  hasSource: function (analysisModel) {
+    if (!(analysisModel instanceof AnalysisModel)) {
+      throw new TypeError('TorqueLayer.hasSource must be called with an "AnalysisModel" but got: ' + analysisModel);
+    }
+    return this.getSourceId() === analysisModel.get('id');
+  },
+
   update: function (attrs) {
     if (attrs.source) {
       console.warn('Deprecated: Use ".setSource" to update a layer\'s source instead the update method');

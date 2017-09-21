@@ -16,7 +16,6 @@ var LayersFactory = require('./layers-factory');
 var SettingsModel = require('./settings');
 var whenAllDataviewsFetched = require('./dataviews-tracker');
 var RenderModes = require('../geo/render-modes');
-var LayerTypes = require('../geo/map/layer-types.js');
 
 var STATE_INIT = 'init'; // vis hasn't been sent to Windshaft
 var STATE_OK = 'ok'; // vis has been sent to Windshaft and everything is ok
@@ -305,11 +304,7 @@ var VisModel = Backbone.Model.extend({
    */
   _isAnalysisLinkedToLayer: function (analysisModel) {
     return this._layersCollection.any(function (layerModel) {
-      // Only cartodb (mapnik) and torque layers have source.
-      if (LayerTypes.isCartoDBLayer(layerModel) || LayerTypes.isTorqueLayer(layerModel)) {
-        return layerModel.getSourceId() === analysisModel.get('id');
-      }
-      return false;
+      return layerModel.hasSource(analysisModel);
     });
   },
 

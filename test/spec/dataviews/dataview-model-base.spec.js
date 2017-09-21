@@ -541,26 +541,6 @@ describe('dataviews/dataview-model-base', function () {
 
       expect(dataview.getSourceId()).toEqual('THE_SOURCE_ID');
     });
-
-    it("should return the id of the layer's source", function () {
-      var layer = new CartoDBLayer({
-        id: 'layerId',
-        source: new Backbone.Model({ id: 'a1' })
-      }, { vis: this.vis });
-
-      var dataview = new DataviewModelBase({
-        source: {
-          id: layer.id
-        }
-      }, { // eslint-disable-line
-        layer: layer,
-        map: this.map,
-        vis: this.vis,
-        analysisCollection: this.analysisCollection
-      });
-
-      expect(dataview.getSourceId()).toEqual('a1');
-    });
   });
 
   describe('when analysis changes status', function () {

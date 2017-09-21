@@ -33,9 +33,10 @@ mv $SOURCE_DIR $TARGET_DIR || exit 1
 mv $TARGET_DIR/index.html index.html || exit 1
 
 echo "Pushing new content to $ORIGIN_URL"
-git config user.name "CartoBot" || exit 1
-git config user.email "frontend@carto.com" || exit 1
+git config user.name "Cartofante" || exit 1
+git config user.email "systems@cartodb.com" || exit 1
 
+git add index.html || exit 1
 git add $TARGET_DIR || exit 1
 git commit --allow-empty -m "Update docs for $CURRENT_COMMIT" || exit 1
 git push --force --quiet "$ORIGIN_URL_WITH_CREDENTIALS" gh-pages > /dev/null 2>&1

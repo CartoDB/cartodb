@@ -84,7 +84,7 @@ module Carto
       rescue => e
         log.append('=== Error importing visualizations and search tweets. Rollback! ===')
         import_job.rollback!
-        service.rollback_import_from_directory(imported, package.meta_dir)
+        service.rollback_import_from_directory(package.meta_dir)
         raise e
       end
     end

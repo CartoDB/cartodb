@@ -52,13 +52,14 @@
   @include align-items(center);
 }
 .Editor-HeaderInfo-titleText {
-  @include flex(1);
+  @include flex(1 0 auto);
   display: block;
   width: 0;
   margin-right: 20px;
 
   &.is-larger {
     width: auto;
+    min-width: 40px;
   }
 }
 .Editor-HeaderInfo-details {

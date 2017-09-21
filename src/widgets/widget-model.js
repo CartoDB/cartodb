@@ -50,7 +50,7 @@ module.exports = cdb.core.Model.extend({
 
   activeAutoStyler: function () {
     if (this.isAutoStyleEnabled() && !this.autoStyler) {
-      this.autoStyler = AutoStylerFactory.get(this.dataviewModel, this.get('style'));
+      this.autoStyler = AutoStylerFactory.get(this.dataviewModel, this.layerModel, this.get('style'));
     }
   },
 

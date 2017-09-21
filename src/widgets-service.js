@@ -67,6 +67,7 @@ WidgetsService.prototype.getList = function () {
  *   can be any of ['sum', 'count']. Default is 'count'
  * @param {String} attrs.aggregation_column column to be used for the aggregation operation
  *  it only applies for sum operations.
+ * @param {Object} attrs.source Object with the id of the source analysis node that the widget points to
  * @param {Object} layer Instance of a layer model (cartodb.js)
  * @return {CategoryWidgetModel}
  */

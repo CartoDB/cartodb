@@ -132,7 +132,7 @@ namespace :cartodb do
       while (explore_visualizations = get_explore_visualizations(offset, types_filter)).length > 0
         explore_visualization_ids = explore_visualizations.map { |ev| ev[:visualization_id] }
 
-        visualizations = CartoDB::Visualization::Collection.new.fetch(ids: explore_visualization_ids)
+        visualizations = Carto::Visualization.where(id: explore_visualization_ids)
         visualizations.each do |vis|
           dataset_count = explore_api.get_map_layers(vis).length
           update_query = %[ UPDATE #{VISUALIZATIONS_TABLE} SET visualization_map_datasets = #{dataset_count} WHERE visualization_id = '#{vis.id}']
@@ -189,7 +189,7 @@ namespace :cartodb do
         end
         explore_visualization_ids = explore_visualizations.map { |ev| ev[:visualization_id] }
 
-        visualizations = CartoDB::Visualization::Collection.new.fetch({ ids: explore_visualization_ids})
+        visualizations = Carto::Visualization.where(id: explore_visualization_ids)
 
         update_result = update_visualizations(visualizations, explore_visualizations_by_visualization_id, explore_visualization_ids)
         total_metadata_updated += update_result[:metadata_updated_count]

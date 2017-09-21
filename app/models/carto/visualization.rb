@@ -604,6 +604,10 @@ class Carto::Visualization < ActiveRecord::Base
     end
   end
 
+  def is_synced?
+    synchronization.present?
+  end
+
   private
 
   def generate_salt

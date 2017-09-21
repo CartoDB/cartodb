@@ -114,6 +114,17 @@ module.exports = env => {
             resolve(__dirname, 'node_modules/cartodb.js'),
             resolve(__dirname, 'node_modules/cartodb-deep-insights.js')
           ]
+        },
+        {
+          test: /\.js$/,
+          loader: 'babel-loader',
+          include: [
+            resolve(__dirname, 'node_modules/tangram-cartocss'),
+            resolve(__dirname, 'node_modules/tangram.cartodb')
+          ],
+          options: {
+            presets: ['es2015']
+          }
         }
       ]
     },

@@ -46,9 +46,6 @@ var CartoDBLayer = LayerModelBase.extend({
   _onAttributeChanged: function () {
     var reloadVis = _.any(ATTRIBUTES_THAT_TRIGGER_VIS_RELOAD, function (attr) {
       if (this.hasChanged(attr)) {
-        if (attr === 'cartocss' && this._dataProvider) {
-          return false;
-        }
         return true;
       }
     }, this);
@@ -80,15 +77,6 @@ var CartoDBLayer = LayerModelBase.extend({
     return this.tooltip.hasFields();
   },
 
-  getGeometryType: function () {
-    if (this._dataProvider) {
-      var index = this._dataProvider._layerIndex;
-      var sublayer = this._dataProvider._vectorLayerView.renderers[index];
-      return sublayer.inferGeometryType();
-    }
-    return null;
-  },
-
   getInteractiveColumnNames: function () {
     return _.chain(['cartodb_id'])
       .union(this.infowindow.getFieldNames())
@@ -107,14 +95,6 @@ var CartoDBLayer = LayerModelBase.extend({
 
   getName: function () {
     return this.get('layer_name');
-  },
-
-  setDataProvider: function (dataProvider) {
-    this._dataProvider = dataProvider;
-  },
-
-  getDataProvider: function () {
-    return this._dataProvider;
   },
 
   getEstimatedFeatureCount: function () {

@@ -1509,14 +1509,8 @@ class User < Sequel::Model
   # return the default basemap based on the default setting. If default attribute is not set, first basemaps is returned
   # it only takes into account basemaps enabled for that user
   def default_basemap
-    default = if google_maps_enabled? && basemaps['GMaps'].present?
-                ['GMaps', basemaps['GMaps']]
-              else
-                basemaps.find { |_, group_basemaps| group_basemaps.find { |_, attr| attr['default'] } }
-              end
-    default ||= basemaps.first
-    # return only the attributes
-    default[1].first[1]
+    default = google_maps_enabled? && basemaps['GMaps'].present? ? basemaps.slice('GMaps') : basemaps
+    Cartodb.default_basemap(default)
   end
 
   def copy_account_features(to)

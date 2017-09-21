@@ -247,6 +247,7 @@ module Carto
 
     def create_visualization(attributes)
       visualization = Carto::Visualization.new(attributes)
+      visualization.id = attributes[:id]
       visualization.save!
       visualization
     end

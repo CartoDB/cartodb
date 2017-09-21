@@ -9,7 +9,7 @@ namespace :cartodb do
       username = args[:username]
       raise "You should pass a username param" unless username
       user = ::User[username: username]
-      collection = CartoDB::Visualization::Collection.new.fetch(user_id: user.id)
+      collection = Carto::Visualization.where(user_id: user.id)
 
       collection.each do |viz|
         if inconsistent?(viz)
@@ -39,13 +39,10 @@ namespace :cartodb do
       puts "Fetched ##{count} items"
       puts "> #{Time.now}"
 
-      vis_ids = vqb.pluck(:id)
-      vis_ids.each do |viz_id|
+      vqb.find_each do |vis|
         begin
           current += 1
 
-          # Sad, but using the Collection causes OOM, so instantiate one by one even if takes a while
-          vis = Carto::Visualization.find(viz_id)
           Carto::NamedMaps::Api.new(vis).upsert
           if current % 50 == 0
             print '.'

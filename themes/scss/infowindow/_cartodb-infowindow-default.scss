@@ -5,10 +5,7 @@
   position: absolute;
   z-index: 1; // makes infowindows visible with Google Maps
   word-wrap: break-word;
-  word-break: break-all;
-  -ms-hyphens: auto;
-  -webkit-hyphens: auto;
-  hyphens: auto;
+  overflow-wrap: break-word;
 }
 .CDB-infowindow {
   position: relative;

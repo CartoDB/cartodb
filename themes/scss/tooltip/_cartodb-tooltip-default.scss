@@ -10,10 +10,7 @@
   border-radius: 4px;
   overflow: hidden;
   word-wrap: break-word;
-  word-break: break-all;
-  -ms-hyphens: auto;
-  -webkit-hyphens: auto;
-  hyphens: auto;
+  overflow-wrap: break-word;
   &.CDB-Tooltip-wrapper--topLeft {
     border-top-left-radius: 0;
   }

@@ -75,6 +75,7 @@ describe Carto::CartoGeoPKG::MetadataTools do
   describe('#visualization_to_json') do
     let(:tags) { ['amazing', 'new', 'table'] }
     let(:description) { 'Every thing about this table is cool.' }
+    let(:attributions) { 'CARTO, Bloomberg' }
     let(:schema) do
       {
         cartodb_id: { type: "integer" },
@@ -87,6 +88,7 @@ describe Carto::CartoGeoPKG::MetadataTools do
     it 'should return a valid hash' do
       @table_visualization.description = description
       @table_visualization.tags = tags
+      @table_visualization.attributions = attributions
 
       json = visualization_to_json(@table_visualization)
 
@@ -102,6 +104,7 @@ describe Carto::CartoGeoPKG::MetadataTools do
       json_information[:version].should eq '0.0.1'
       json_information[:name].should_not be_nil
       json_information[:description].should eq description
+      json_information[:atrributions].should eq attributions
       json_information[:created_at].should_not be_nil
 
       json_classification = json_information[:classification]

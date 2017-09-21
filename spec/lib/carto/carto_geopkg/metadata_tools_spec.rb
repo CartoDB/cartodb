@@ -104,7 +104,7 @@ describe Carto::CartoGeoPKG::MetadataTools do
       json_information[:version].should eq '0.0.1'
       json_information[:name].should_not be_nil
       json_information[:description].should eq description
-      json_information[:atrributions].should eq attributions
+      json_information[:attributions].should eq attributions
       json_information[:created_at].should_not be_nil
 
       json_classification = json_information[:classification]

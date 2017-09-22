@@ -138,7 +138,7 @@
   "scripts": {
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "docs": "rm -rf out/v4; jsdoc --configure config/jsdoc/api-conf.json",
-    "docs:all": "rm -rf out/v4-internal; jsdoc --configure config/jsdoc/all-conf.json"
+    "docs": "rm -rf docs/v4; jsdoc --configure config/jsdoc/api-conf.json",
+    "docs:all": "rm -rf docs/v4-internal; jsdoc --configure config/jsdoc/all-conf.json"
   }
 }

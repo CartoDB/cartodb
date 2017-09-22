@@ -86,13 +86,11 @@
   }
 }
 .Editor-panel .ps-scrollbar-x-rail {
-  height: 4px !important; // Resets standard scroll track height
   margin-bottom: 2px;
   z-index: 3;
 }
 .Editor-panel .ps-scrollbar-x-rail .ps-scrollbar-x {
-  bottom: 0 !important; // Resets standard scroll bar position
-  height: 4px !important; // Resets standard scroll bar color
+  height: 4px !important; // Resets standard scroll bar height
   pointer-events: all;
 }
 .Editor .CDB-Zoom-info {

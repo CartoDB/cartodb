@@ -1,6 +1,14 @@
+var _ = require('underscore');
 var cdb = require('cartodb.js');
 var WidgetLoaderView = require('./widget-loader-view');
 var WidgetErrorView = require('./widget-error-view');
+var errorEnhancer = require('../util/error-enhancer');
+
+var PLACEHOLDER_TEMPLATES = {
+  category: require('./category/list/items-placeholder-template.tpl'),
+  formula: require('./formula/placeholder.tpl'),
+  histogram: require('./histogram/placeholder.tpl')
+};
 
 /**
  * Default widget view
@@ -15,22 +23,46 @@ module.exports = cdb.core.View.extend({
 
   initialize: function () {
     this.listenTo(this.model, 'destroy', this.clean);
+    this.listenTo(this.model.dataviewModel, 'all', this._onDataviewModelEvent);
   },
 
-  render: function () {
-    var dataviewModel = this.model.dataviewModel;
-    if (dataviewModel) {
-      this._appendView(new WidgetLoaderView({
-        model: dataviewModel
-      }));
+  render: function (error) {
+    this.clearSubViews();
+    var model = this.model;
+    var dataviewModel = model.dataviewModel;
+    var placeholder = PLACEHOLDER_TEMPLATES[dataviewModel.get('type')];
 
+    this._appendView(new WidgetLoaderView({
+      model: dataviewModel
+    }));
+
+    if (error) {
       this._appendView(new WidgetErrorView({
-        model: dataviewModel
+        title: this.model.get('title'),
+        error: error,
+        model: model,
+        placeholder: placeholder
       }));
+    } else {
+      this._appendView(this.options.contentView);
     }
 
-    this._appendView(this.options.contentView);
     return this;
+  },
+
+  _onDataviewModelEvent: function (type, error) {
+    var enhancedError = errorEnhancer(error);
+    if (type.lastIndexOf('error', 0) === 0) {
+      return this.render(enhancedError);
+    }
+
+    if (type === 'sync' || type === 'change:data') {
+      var data = this.model.dataviewModel.get('data');
+      if (!data || _.isEmpty(data)) {
+        return this.render(errorEnhancer({ type: 'no_data_available' }));
+      }
+      return this.render();
+    }
   },
 
   _appendView: function (view) {

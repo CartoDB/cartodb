@@ -1,5 +1,6 @@
 var cdb = require('cartodb.js');
-var template = require('./widget-error-template.tpl');
+var errorButtonTemplate = require('./widget-error-button-template.tpl');
+var errorTextTemplate = require('./widget-error-text-template.tpl');
 
 /**
  * Default widget error view:
@@ -7,43 +8,36 @@ var template = require('./widget-error-template.tpl');
  * It will listen or not to dataviewModel changes when first load is done.
  */
 module.exports = cdb.core.View.extend({
-  className: 'CDB-Widget-error is-hidden',
+  className: 'CDB-Widget-body',
 
   events: {
     'click .js-refresh': '_onRefreshClick'
   },
 
-  initialize: function () {
-    this._initBinds();
+  initialize: function (opts) {
+    this._title = opts.title;
+    this._error = opts.error;
+    this._model = opts.model;
+    this._placeholder = opts.placeholder;
   },
 
   render: function () {
-    this.$el.html(template());
+    var body = this._error.type
+      ? errorTextTemplate({
+        placeholder: this._placeholder(),
+        error: this._error.error,
+        title: this._title,
+        message: this._error.message,
+        refresh: this._error.refresh
+      })
+      : errorButtonTemplate({ placeholder: this._placeholder() });
+
+    this.$el.addClass('CDB-Widget--' + this._error.level);
+    this.$el.html(body);
     return this;
   },
 
-  _initBinds: function () {
-    this.model.bind('error', function (mdl, err) {
-      if (!err || (err && err.statusText !== 'abort')) {
-        this.show();
-      }
-    }, this);
-    this.model.bind('loading loaded', this._onLoadStatusChanged, this);
-  },
-
   _onRefreshClick: function () {
-    this.model.refresh();
-  },
-
-  _onLoadStatusChanged: function () {
-    this.model.has('error') ? this.show() : this.hide();
-  },
-
-  show: function () {
-    this.$el.removeClass('is-hidden');
-  },
-
-  hide: function () {
-    this.$el.addClass('is-hidden');
+    this._model.dataviewModel.refresh();
   }
 });

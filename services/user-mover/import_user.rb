@@ -278,7 +278,7 @@ module CartoDB
       end
 
       def drop_role(role)
-        superuser_pg_conn.query("DROP ROLE \"#{role}\"")
+        superuser_pg_conn.query("DROP ROLE IF EXISTS \"#{role}\"")
       end
 
       def get_org_info(orgname)
@@ -332,7 +332,7 @@ module CartoDB
       end
 
       def drop_database(db_name)
-        superuser_pg_conn.query("DROP DATABASE \"#{db_name}\"")
+        superuser_pg_conn.query("DROP DATABASE IF EXISTS \"#{db_name}\"")
       end
 
       def clean_oids(user_id, user_schema)

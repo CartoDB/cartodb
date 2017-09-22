@@ -459,7 +459,7 @@ module.exports = function (grunt) {
    * `grunt affected_editor_specs` compile all Editor specs and launch a webpage in the browser.
    */
   grunt.registerTask('affected_editor_specs', 'Build Editor specs', [
-    'jasmine:cartodbui_affected:build',
+    'jasmine:cartodbui:build',
     'connect:server',
     'watch:js_affected_editor'
   ]);

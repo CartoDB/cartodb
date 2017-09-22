@@ -3,7 +3,7 @@ Development
 
 ### Features
 * Add endpoints for updating user account & profile details (#12726)
-* Add /api/v3/me endpoint (#12599, #12790)
+* Add /api/v3/me endpoint (#12599, #12790, #12771)
 * Add assets version column in user model (#12676)
 * Dashboard static view (#12680)
 * Vector rendering improvements #12722.
@@ -56,8 +56,10 @@ Development
 * Remove data-observatory-multiple-measures feature flag (#304)
 
 ### Bug fixes / enhancements
+* Fix some styles for datasets view for IE11.
+* Fix image export when logo is disabled.
 * Fix infowindow break word (CartoDB/support#965)
-* Update cartodb.js version 
+* Update cartodb.js version
 * Fix extraneous labels layer.
 * Fix timeseries glitches (#12217)
 * Rename 'Select a text' placeholder to 'Select a value' in Filter analysis (#11861)

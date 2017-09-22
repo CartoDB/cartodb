@@ -196,7 +196,6 @@ var Infowindow = View.extend({
 
   /**
    *  Compile template of the infowindow
-   *  @api
    */
   _compileTemplate: function () {
     var template = this.model.get('template');

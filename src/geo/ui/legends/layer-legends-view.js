@@ -110,7 +110,8 @@ var LayerLegendsView = View.extend({
       this.model.legends.choropleth,
       this.model.legends.custom_choropleth,
       this.model.legends.category,
-      this.model.legends.bubble
+      this.model.legends.bubble,
+      this.model.legends.torque
     ];
   },
 

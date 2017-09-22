@@ -15,8 +15,9 @@ module.exports = cdb.core.View.extend({
         // same type as below, but also check if the associated layer is a a torque layer
         match: function (widgetModel) {
           if (widgetModel.get('type') === TIME_SERIES_TYPE) {
-            var d = widgetModel.dataviewModel;
-            return d && d.layer.get('type') === 'torque' && widgetModel.get('animated') === true;
+            var dataviewModel = widgetModel.dataviewModel;
+            var layerModel = widgetModel.layerModel;
+            return dataviewModel && layerModel.get('type') === 'torque' && widgetModel.get('animated') === true;
           }
           return false;
         },

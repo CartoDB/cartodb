@@ -196,7 +196,8 @@ WidgetsService.prototype.createListModel = function (attrs, layer) {
 WidgetsService.prototype.createTimeSeriesModel = function (attrs, layer, state, opts) {
   // TODO will other kind really work for a time-series?
   attrs.column_type = attrs.column_type || 'date';
-  var dataviewModel = this._dataviews.createHistogramModel(layer, attrs);
+  fillAnalysisModel(attrs, this._analysis);
+  var dataviewModel = this._dataviews.createHistogramModel(attrs);
 
   var ATTRS_NAMES = ['id', 'style', 'title', 'normalized', 'animated', 'timezone'];
   var widgetAttrs = _.pick(attrs, ATTRS_NAMES);
@@ -204,7 +205,8 @@ WidgetsService.prototype.createTimeSeriesModel = function (attrs, layer, state, 
   widgetAttrs.attrsNames = ATTRS_NAMES;
 
   var widgetModel = new TimeSeriesWidgetModel(widgetAttrs, {
-    dataviewModel: dataviewModel
+    dataviewModel: dataviewModel,
+    layerModel: layer
   }, opts);
   widgetModel.setInitialState(state);
   this._widgetsCollection.add(widgetModel);

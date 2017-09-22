@@ -21,6 +21,7 @@ module.exports = cdb.core.View.extend({
 
   initialize: function (opts) {
     if (!opts.dataviewModel) throw new Error('dataviewModel is required');
+    if (!opts.layerModel) throw new Error('layerModel is required');
     if (!opts.rangeFilter) throw new Error('rangeFilter is required');
     if (!opts.timeSeriesModel) throw new Error('timeSeriesModel is required');
     if (opts.selectedAmount === void 0) throw new Error('selectedAmount is required');
@@ -29,7 +30,7 @@ module.exports = cdb.core.View.extend({
     this._dataviewModel = opts.dataviewModel;
     this._rangeFilter = opts.rangeFilter;
     this._selectedAmount = opts.selectedAmount;
-    this._layer = this._dataviewModel.layer;
+    this._layerModel = opts.layerModel;
 
     this.model = new cdb.core.Model();
 

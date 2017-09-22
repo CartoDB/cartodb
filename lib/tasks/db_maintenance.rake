@@ -748,7 +748,6 @@ namespace :cartodb do
       page = args[:page].blank? ? 1 : args[:page].to_i
 
       progress_each =  (page_size > 10) ? (page_size / 10).ceil : 1
-      collection = CartoDB::Visualization::Collection.new
 
       begin
         items = Carto::VisualizationQueryBuilder.new.build_paged(page, page_size)

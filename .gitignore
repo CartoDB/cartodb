@@ -7,8 +7,8 @@
 *.swp
 bower_components
 cartodb.js-bower/
-out
 dist
+docs
 Gemfile.lock
 node_modules
 npm-debug.log

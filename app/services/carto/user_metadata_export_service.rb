@@ -209,7 +209,7 @@ module Carto
     def rollback_import_from_directory(path)
       user = user_from_file(path)
 
-      user && user.delete
+      user && Carto::User.find(user.id).delete
 
       Carto::RedisExportService.new.remove_redis_from_json_export(redis_user_file(path))
     end

@@ -2,7 +2,8 @@ Development
 -----------
 
 ### Features
-* Add /api/v3/me endpoint (#12599)
+* Add endpoints for updating user account & profile details (#12726)
+* Add /api/v3/me endpoint (#12599, #12790, #12771)
 * Add assets version column in user model (#12676)
 * Vector rendering improvements #12722.
 * Enable georeferencer for database connectors (#12566)
@@ -41,6 +42,7 @@ Development
 * Show ranges in time series widget selection (#12291)
 * Bump Webpack version (#12392).
 * New user render timeouts and propagation of timeout values to Redis (#12425)
+* Default basemap is used for all Builder maps regardless of dataset basemap (#12700)
 * The selection window on a histogram widget can be dragged (#12180)
 * Move playback on animated time series by clicking on it (#12180)
 * Move play/pause button to besides the time series (#12387)
@@ -50,9 +52,20 @@ Development
 * Don't display slider if there's only one value (#bigmetadata/202)
 * Mustache conditionals support improved in popups (#support/763)
 * Updates Dataservices API client default version to `0.20.0` (#12633)
+* Remove data-observatory-multiple-measures feature flag (#304)
 
 ### Bug fixes / enhancements
 * Fix min/max parameters in filter analysis (#11658)
+* Fix some styles for datasets view for IE11.
+* Fix image export when logo is disabled.
+* Fix infowindow break word (CartoDB/support#965)
+* Update cartodb.js version
+* Fix extraneous labels layer.
+* Fix timeseries glitches (#12217)
+* Rename 'Select a text' placeholder to 'Select a value' in Filter analysis (#11861)
+* Highlight new column name (#12662)
+* Add drag icon to each item in the widget list (#12692)
+* Cancel feature edition when widget edition is selected (#12781)
 * Rename 'SHARE' button to 'PUBLISH' and 'Not published yet' to 'Unpublished map' (#12730)
 * Move Analysis cancel/delete button to the controls zone (#11414)
 * Rename SIZE/COLOR input label to COLOR in polygons style (#12768)
@@ -186,7 +199,9 @@ Development
 * Square marker icon not updating with style. [Support #974](https://github.com/CartoDB/support/issues/974)
 * Hide privacy button if user account type is FREE or PERSONAL (#12423)
 * Fix "apply" button sizes in advanced mode (#12652)
+* Axis labels changes in Time-Series (#12658)
 * Removed unused settings in organizations (#4992)
+* Increment maximum buckets in Time-Series for leap years (#12778)
 
 ### NOTICE
 This release upgrades the CartoDB PostgreSQL extension to `0.19.2`. Run the following to have it available:
@@ -342,6 +357,7 @@ More information at [Dropbox migration guide](https://www.dropbox.com/developers
 * Show infowindow when user reaches max layer limit (#12167)
 * Format quota infowindow numbers (#11743)
 * Improved analysis error tooltip (#12250)
+* Enable user migrations across clouds (#12795)
 
 ### Bug fixes
 * Update Data Observatory Analysis UI (#9991)

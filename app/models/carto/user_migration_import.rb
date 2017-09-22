@@ -82,10 +82,9 @@ module Carto
           service.import_metadata_from_directory(imported, package.meta_dir)
         end
       rescue => e
+        ActiveRecord::Base.connection.close
         log.append('=== Error importing visualizations and search tweets. Rollback! ===')
-        log.append(e)
-        log.append(e.backtrace.join("\n"))
-        import_job.rollback!
+        rollback_import_data(import_job)
         service.rollback_import_from_directory(package.meta_dir)
         raise e
       end
@@ -98,11 +97,19 @@ module Carto
         import_job.run!
       rescue => e
         log.append('=== Error importing data. Rollback!')
-        import_job.rollback!
+        rollback_import_data(import_job)
         service.rollback_import_from_directory(package.meta_dir) if import_metadata?
         raise e
       end
       import_job
+    end
+
+    def rollback_import_data(import_job)
+      import_job.add_options(rollback: true,
+                             mode: :rollback,
+                             drop_database: true,
+                             drop_roles: true)
+      import_job.rollback!
     end
 
     def do_import_metadata(package, service)
@@ -126,7 +133,7 @@ module Carto
         user.database_host = database_host
         user.save!
         ::User[user.id].reload # This is because Sequel models are being cached along request. This forces reload.
-                               # It's being used in visualizations_export_persistence_service.rb#save_import
+        # It's being used in visualizations_export_persistence_service.rb#save_import
       end
     end
 

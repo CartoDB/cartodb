@@ -87,23 +87,11 @@
 }
 
 .CDB-infowindow-list .ps-scrollbar-y-rail {
-  width: 1px !important; // Resets standard scroll track color
-  margin-right: 5px;
-  background: #EEE;
-  opacity: 0.2 !important; // Resets standard scroll track color
   z-index: 3;
 }
 
 .CDB-infowindow-list .ps-scrollbar-y-rail > .ps-scrollbar-y {
-  width: 5px !important; // Resets standard scroll track color
-  margin: 0 -4px;
-  padding: 0;
-  transition: background-color 150ms ease-in-out !important;
   cursor: move;
-}
-
-.CDB-infowindow-list .ps-scrollbar-y-rail > .ps-scrollbar-y:hover {
-  background: #888 !important;
 }
 
 .CDB-infowindow.has-header .CDB-infowindow-mediaTitle {

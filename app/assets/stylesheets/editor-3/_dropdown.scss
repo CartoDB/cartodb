@@ -112,6 +112,15 @@
 .Editor-boxModalContent {
   padding: $baseSize * 2;
 }
+.Editor-boxModalContent .ps-scrollbar-x-rail {
+  height: 4px !important; // Resets standard scroll track height
+  z-index: 101;
+}
+.Editor-boxModalContent .ps-scrollbar-x-rail .ps-scrollbar-x {
+  bottom: 0 !important; // Resets standard scroll bar position
+  height: 4px !important; // Resets standard scroll bar color
+  pointer-events: all;
+}
 
 .Editor-boxModal .Editor-formInner {
   margin-top: 0;

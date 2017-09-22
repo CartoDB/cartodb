@@ -87,9 +87,7 @@
 }
 .Editor-panel .ps-scrollbar-x-rail {
   height: 4px !important; // Resets standard scroll track height
-  border-top: 12px solid $cWhite;
-  border-bottom: 2px solid $cWhite;
-  background: #EEE;
+  margin-bottom: 2px;
   z-index: 3;
 }
 .Editor-panel .ps-scrollbar-x-rail .ps-scrollbar-x {

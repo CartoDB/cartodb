@@ -65,28 +65,10 @@
   width: 488px;
 }
 
-.Editor-panel .ps-scrollbar-y-rail,
-.CDB-Widget-canvas .ps-container>.ps-scrollbar-y-rail {
-  right: 0 !important;
-  width: 4px !important; // Resets standard scroll track color
-  background: #EEE;
+.Editor-panel .ps-scrollbar-y-rail {
   z-index: 3;
 }
-.Editor-panel .ps-scrollbar-y,
-.CDB-Widget-canvas .ps-container>.ps-scrollbar-y-rail>.ps-scrollbar-y {
-  right: 0 !important;
-  width: 4px !important; // Resets standard scroll bar color
-  background: #AAA;
-  &:hover {
-    cursor: all-scroll;
-    cursor: -webkit-grab;
-  }
-  &:active {
-    cursor: -webkit-grabbing;
-  }
-}
 .Editor-panel .ps-scrollbar-x-rail {
-  margin-bottom: 2px;
   z-index: 3;
 }
 .Editor-panel .ps-scrollbar-x-rail .ps-scrollbar-x {

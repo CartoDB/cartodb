@@ -19,8 +19,6 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
     @stats_aggregator.timing('synchronizations.create') do
 
       begin
-        external_source = nil
-
         member_attributes = setup_member_attributes
         member = Synchronization::Member.new(member_attributes)
         member = @stats_aggregator.timing('member.save') do

@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.9.87",
+  "version": "4.9.89",
   "dependencies": {
     "abbrev": {
       "version": "1.1.0",
@@ -387,8 +387,8 @@
     },
     "cartodb-deep-insights.js": {
       "version": "0.0.3",
-      "from": "cartodb/deep-insights.js#master",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#00763ed7fd25dd33b45a67629ddbddef0c617a41",
+      "from": "cartodb/deep-insights.js#979-torque-legends",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#75d9c649966198fd9464aaeec3b69f16ff24e7a6",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",
@@ -404,8 +404,8 @@
     },
     "cartodb.js": {
       "version": "4.0.0-alpha.1.1.1",
-      "from": "cartodb/cartodb.js#v4",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#b5f673e040bd5130d96c4dc7523eef4d07c84fbc"
+      "from": "cartodb/cartodb.js#979-torque-legends",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#ea87e605567b5f93bfcf14a7a9c5004e0f9c527a"
     },
     "caseless": {
       "version": "0.12.0",

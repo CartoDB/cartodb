@@ -86,21 +86,16 @@
   }
 }
 .Editor-panel .ps-scrollbar-x-rail {
-  height: 2px !important; // Resets standard scroll track color
+  height: 4px !important; // Resets standard scroll track height
   border-top: 12px solid $cWhite;
   border-bottom: 2px solid $cWhite;
   background: #EEE;
   z-index: 3;
 }
 .Editor-panel .ps-scrollbar-x-rail .ps-scrollbar-x {
-  bottom: -1px !important; // Resets standard scroll bar position
+  bottom: 0 !important; // Resets standard scroll bar position
   height: 4px !important; // Resets standard scroll bar color
   pointer-events: all;
-  opacity: 0.6;
-}
-.Editor .ps-container > .ps-scrollbar-x-rail,
-.Editor .ps-container > .ps-scrollbar-y-rail {
-  opacity: 0.6;
 }
 .Editor .CDB-Zoom-info {
   display: block;

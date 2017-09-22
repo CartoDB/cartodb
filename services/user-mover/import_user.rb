@@ -53,6 +53,10 @@ module CartoDB
                        }
       end
 
+      def add_options(options)
+        @options.merge!(options)
+      end
+
       def run!
         if @pack_config['organization']
           process_org

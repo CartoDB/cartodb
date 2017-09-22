@@ -205,16 +205,6 @@ describe('vis/layers-factory', function () {
 
         expect(layerModel.getSource()).toEqual(analysis);
       });
-
-      it('should throw an error if source is invalid', function () {
-        expect(function () {
-          layersFactory.createLayer(layerType, {
-            id: 'LAYER_ID',
-            source: 'NOT A VALID ANALYSIS',
-            cartocss: '#layer {}'
-          });
-        }).toThrowError('Layer "LAYER_ID" must have a valid analysis node as "source"');
-      });
     });
   });
 });

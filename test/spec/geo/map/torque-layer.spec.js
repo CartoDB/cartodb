@@ -100,18 +100,16 @@ describe('geo/map/torque-layer', function () {
 
   describe('.update', function () {
     var layer;
+    var analysisNodeMock = { id: 'a0' };
 
     beforeEach(function () {
+      this.vis.analysis = { findNodeById: jasmine.createSpy('findNodeById').and.returnValue(analysisNodeMock) };
       layer = new TorqueLayer({}, { vis: this.vis });
     });
 
-    it('should raise an error when "source" attribute is specified', function () {
-      expect(function () {
-        layer.update({
-          id: 3,
-          source: 'foo'
-        });
-      }).toThrowError('"source" must be set via setSource');
+    it('should allow a string as parameter (deprecated: keep this only for prevent breaking changes in the api)', function () {
+      layer.update({ id: 3, source: 'a0' });
+      expect(layer.getSource()).toBe(analysisNodeMock);
     });
   });
 });

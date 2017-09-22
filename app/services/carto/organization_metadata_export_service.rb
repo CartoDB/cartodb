@@ -272,17 +272,5 @@ module Carto
 
       organization
     end
-
-    def rollback_import_metadata_from_directory(organization, path)
-      organization.users.each do |user|
-        Carto::UserMetadataExportService.new.import_user_visualizations_from_directory(
-          user, Carto::Visualization::TYPE_REMOTE, "#{path}/user_#{user.id}"
-        )
-
-        Carto::UserMetadataExportService.new.import_user_visualizations_from_directory(
-          user, Carto::Visualization::TYPE_CANONICAL, "#{path}/user_#{user.id}"
-        )
-      end
-    end
   end
 end

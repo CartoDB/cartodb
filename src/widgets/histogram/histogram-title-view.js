@@ -17,11 +17,13 @@ module.exports = cdb.core.View.extend({
   },
 
   initialize: function (opts) {
-    if (!opts.widgetModel) throw new Error('widgetModel is needed');
-    if (!opts.dataviewModel) throw new Error('dataviewModel is needed');
+    if (!opts.widgetModel) throw new Error('widgetModel is required');
+    if (!opts.dataviewModel) throw new Error('dataviewModel is required');
+    if (!opts.layerModel) throw new Error('layerModel is required');
 
     this.widgetModel = opts.widgetModel;
     this.dataviewModel = opts.dataviewModel;
+    this._layerModel = opts.layerModel;
     this._initBinds();
   },
 
@@ -44,8 +46,8 @@ module.exports = cdb.core.View.extend({
     this.widgetModel.bind('change:title change:collapsed change:autoStyle change:style', this.render, this);
     this.add_related_model(this.widgetModel);
 
-    this.dataviewModel.layer.bind('change:visible change:cartocss', this.render, this);
-    this.add_related_model(this.dataviewModel.layer);
+    this._layerModel.bind('change:visible change:cartocss', this.render, this);
+    this.add_related_model(this._layerModel);
   },
 
   _initViews: function () {
@@ -58,12 +60,12 @@ module.exports = cdb.core.View.extend({
   },
 
   _isAutoStyleButtonVisible: function () {
-    var layerModelMeta = this.dataviewModel.layer.get('meta');
-    var cartocss = this.dataviewModel.layer.get('cartocss') || (layerModelMeta && layerModelMeta.cartocss);
+    var layerModelMeta = this._layerModel.get('meta');
+    var cartocss = this._layerModel.get('cartocss') || (layerModelMeta && layerModelMeta.cartocss);
     var hasColorsAutoStyle = cartocss && this.widgetModel.hasColorsAutoStyle();
 
     return this.widgetModel.isAutoStyleEnabled() &&
-      this.dataviewModel.layer.get('visible') &&
+      this._layerModel.get('visible') &&
       hasColorsAutoStyle;
   },
 

@@ -56,6 +56,7 @@ module.exports = cdb.core.View.extend({
 
     if (!_.isNumber(this.options.height)) throw new Error('height is required');
     if (!this.options.dataviewModel) throw new Error('dataviewModel is required');
+    if (!this.options.layerModel) throw new Error('layerModel is required');
     if (!this.options.type) throw new Error('type is required');
 
     _.bindAll(this, '_selectBars', '_adjustBrushHandles', '_onBrushMove', '_onBrushEnd', '_onMouseMove', '_onMouseOut');
@@ -72,6 +73,7 @@ module.exports = cdb.core.View.extend({
 
     this._widgetModel = this.options.widgetModel;
     this._dataviewModel = this.options.dataviewModel;
+    this._layerModel = this.options.layerModel;
 
     this.canvas = d3.select(this.el)
       .style('overflow', 'visible')
@@ -602,15 +604,16 @@ module.exports = cdb.core.View.extend({
     }
 
     if (this._dataviewModel) {
-      this.listenTo(this._dataviewModel.layer, 'change:cartocss', function () {
-        if (!this._areGradientsAlreadyGenerated()) {
-          this._setupFillColor();
-        }
-      });
       this.listenTo(this._dataviewModel, 'change:offset', function () {
         this.refresh();
       });
     }
+
+    this.listenTo(this._layerModel, 'change:cartocss', function () {
+      if (!this._areGradientsAlreadyGenerated()) {
+        this._setupFillColor();
+      }
+    });
 
     if (this._originalData) {
       this.listenTo(this._originalData, 'change:data', function () {

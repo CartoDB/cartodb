@@ -178,9 +178,6 @@ var TorqueLayer = LayerModelBase.extend({
    * Only torque and cartodb layers have a source otherwise return false.
    */
   hasSource: function (analysisModel) {
-    if (!(analysisModel instanceof AnalysisModel)) {
-      throw new TypeError('TorqueLayer.hasSource must be called with an "AnalysisModel" but got: ' + analysisModel);
-    }
     return this.getSource().equals(analysisModel);
   },
 

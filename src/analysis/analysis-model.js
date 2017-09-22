@@ -147,13 +147,13 @@ var AnalysisModel = Model.extend({
    */
   equals: function (analysisModel) {
     if (!(analysisModel instanceof AnalysisModel)) {
-      throw new TypeError('AnalysisModel.equals requires an "AnalysisModel" but received: ' + analysisModel);
+      return false;
     }
     // Since all analysis are created using the analysisFactory different ids ensure different nodes.
     return this.get('id') === analysisModel.get('id');
   }
 }, {
-  STATUS: STATUS
-});
+    STATUS: STATUS
+  });
 
 module.exports = AnalysisModel;

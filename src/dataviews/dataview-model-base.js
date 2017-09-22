@@ -6,7 +6,7 @@ var AnalysisModel = require('../analysis/analysis-model');
 var checkAndBuildOpts = require('../util/required-opts');
 var BOUNDING_BOX_FILTER_WAIT = 500;
 
-var UNFETCHED_STATUS = 'unfeteched';
+var UNFETCHED_STATUS = 'unfetched';
 var FETCHING_STATUS = 'fetching';
 var FETCHED_STATUS = 'fetched';
 var FETCH_ERROR_STATUS = 'error';

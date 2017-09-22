@@ -56,19 +56,16 @@ module.exports = Model.extend({
     );
   },
 
-  createHistogramModel: function (layerModel, attrs) {
+  createHistogramModel: function (attrs) {
     _checkProperties(attrs, ['column']);
-    attrs = this._generateAttrsForDataview(layerModel, attrs, HistogramDataviewModel.ATTRS_NAMES);
+    attrs = this._generateAttrsForDataview(attrs, HistogramDataviewModel.ATTRS_NAMES);
 
-    var rangeFilter = new RangeFilter({
-      layer: layerModel
-    });
+    var rangeFilter = new RangeFilter();
 
     return this._newModel(
       new HistogramDataviewModel(attrs, {
         map: this._map,
         vis: this._vis,
-        layer: layerModel,
         filter: rangeFilter,
         analysisCollection: this._analysisCollection
       })

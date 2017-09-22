@@ -319,6 +319,7 @@ module.exports = function (grunt) {
   grunt.registerTask('js_editor', [
     'cdb',
     'copy:js_cartodb',
+    'setConfig:env.browserify_watch:true',
     'run_browserify',
     'concat:js',
     'jst'
@@ -440,13 +441,6 @@ module.exports = function (grunt) {
     'watch:js_affected'
   ]);
 
-  grunt.registerTask('build-jasmine-specrunners', _.chain(jasmineCfg)
-    .keys()
-    .map(function (name) {
-      return ['jasmine', name, 'build'].join(':');
-    })
-    .value());
-
   grunt.registerTask('setConfig', 'Set a config property', function (name, val) {
     grunt.config.set(name, val);
   });
@@ -457,7 +451,17 @@ module.exports = function (grunt) {
   grunt.registerTask('editor_specs', [
     'js_editor',
     'jasmine:cartodbui:build',
-    'connect:server'
+    'connect:server',
+    'watch:js_affected_editor'
+  ]);
+
+  /**
+   * `grunt affected_editor_specs` compile all Editor specs and launch a webpage in the browser.
+   */
+  grunt.registerTask('affected_editor_specs', 'Build Editor specs', [
+    'jasmine:cartodbui_affected:build',
+    'connect:server',
+    'watch:js_affected_editor'
   ]);
 
   /**

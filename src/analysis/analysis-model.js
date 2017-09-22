@@ -153,7 +153,7 @@ var AnalysisModel = Model.extend({
     return this.get('id') === analysisModel.get('id');
   }
 }, {
-    STATUS: STATUS
-  });
+  STATUS: STATUS
+});
 
 module.exports = AnalysisModel;

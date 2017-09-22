@@ -74,25 +74,89 @@ describe 'UserMigration' do
   it_should_behave_like 'migrating metadata', true
   it_should_behave_like 'migrating metadata', false
 
+  describe 'failing imports should rollback' do
+    before :each do
+      @user = create_user_with_visualizations
+      @carto_user = Carto::User.find(@user.id)
+      @user_attributes = @carto_user.attributes
+
+      @export = Carto::UserMigrationExport.create(
+        user: @carto_user,
+        export_metadata: true
+      )
+      @export.run_export
+      destroy_user
+    end
+
+    after :each do
+      @carto_user.destroy
+    end
+
+    it 'import failing in import_metadata should rollback' do
+      Carto::RedisExportService.any_instance.stubs(:restore_redis_from_hash_export).raises('Some exception')
+
+      import.run_import.should eq false
+
+      Carto::RedisExportService.any_instance.unstub(:restore_redis_from_hash_export)
+
+      import.run_import.should eq true
+    end
+
+    it 'import failing in JobImport#run!' do
+      CartoDB::DataMover::ImportJob.any_instance.stubs(:grant_user_role).raises('Some exception')
+
+      import.run_import.should eq false
+
+      CartoDB::DataMover::ImportJob.any_instance.unstub(:grant_user_role)
+
+      import.run_import.should eq true
+    end
+
+    it 'import failing creating user database and roles' do
+      CartoDB::DataMover::ImportJob.any_instance.stubs(:import_pgdump).raises('Some exception')
+
+      import.run_import.should eq false
+
+      CartoDB::DataMover::ImportJob.any_instance.unstub(:import_pgdump)
+
+      import.run_import.should eq true
+    end
+
+    it 'import failing importing visualizations' do
+      Carto::UserMetadataExportService.any_instance.stubs(:import_search_tweets_from_directory).raises('Some exception')
+
+      import.run_import.should eq false
+
+      Carto::UserMetadataExportService.any_instance.unstub(:import_search_tweets_from_directory)
+
+      import.run_import.should eq true
+    end
+
+    private
+
+    def import
+      Carto::UserMigrationImport.create(
+        exported_file: @export.exported_file,
+        database_host: @user_attributes['database_host'],
+        org_import: false,
+        json_file: @export.json_file,
+        import_metadata: true
+      )
+    end
+
+    def destroy_user
+      @carto_user.client_applications.each(&:destroy)
+      @user.destroy
+    end
+  end
+
   it 'exports and imports a user with a data import with two tables' do
     CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
 
-    user = FactoryGirl.build(:valid_user).save
+    user = create_user_with_visualizations
+
     carto_user = Carto::User.find(user.id)
     user_attributes = carto_user.attributes
-
-    filepath = "#{Rails.root}/services/importer/spec/fixtures/visualization_export_with_two_tables.carto"
-    data_import = DataImport.create(
-      user_id: user.id,
-      data_source: filepath,
-      updated_at: Time.now.utc,
-      append: false,
-      create_visualization: true
-    )
-    data_import.values[:data_source] = filepath
-
-    data_import.run_import!
-    data_import.success.should eq true
 
     source_visualizations = carto_user.visualizations.map(&:name).sort
 
@@ -257,5 +321,25 @@ describe 'UserMigration' do
 
   def attributes_to_test(user_attributes)
     user_attributes.keys - %w(created_at updated_at period_end_date)
+  end
+
+  private
+
+  def create_user_with_visualizations
+    user = FactoryGirl.build(:valid_user).save
+
+    filepath = "#{Rails.root}/services/importer/spec/fixtures/visualization_export_with_two_tables.carto"
+    data_import = DataImport.create(
+      user_id: user.id,
+      data_source: filepath,
+      updated_at: Time.now.utc,
+      append: false,
+      create_visualization: true
+    )
+    data_import.values[:data_source] = filepath
+
+    data_import.run_import!
+    data_import.success.should eq true
+    return user
   end
 end

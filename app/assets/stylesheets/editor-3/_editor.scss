@@ -49,7 +49,7 @@
 }
 .Editor-content {
   @include display-flex();
-  @include flex(1);
+  @include flex(1 1 auto);
   @include flex-direction(column);
   position: relative;
   min-height: 0;

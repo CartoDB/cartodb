@@ -10,10 +10,6 @@ describe Api::Json::SynchronizationsController do
   it_behaves_like 'synchronization controllers' do
   end
 
-  let(:file_url) do
-    "https://raw.githubusercontent.com/CartoDB/cartodb/72cd3298130f8f2b46b3b66d2f53431e4396f4ac/spec/support/data/guess_country.csv"
-  end
-
   before(:each) do
     login(@user1)
     @user1.sync_tables_enabled = true
@@ -23,7 +19,7 @@ describe Api::Json::SynchronizationsController do
   describe '#create' do
     let(:params) do
       {
-        url: file_url,
+        url: "fake_url",
         interval: 3600,
         content_guessing: true,
         type_guessing: true,
@@ -31,12 +27,35 @@ describe Api::Json::SynchronizationsController do
       }
     end
 
-    it 'returns 401 if user can\'t sync tables' do
-      @user1.sync_tables_enabled = false
-      @user1.save
+    describe 'for users without sync tables' do
+      before(:each) do
+        @user1.sync_tables_enabled = false
+        @user1.save
+      end
 
-      post_json api_v1_synchronizations_create_url(params) do |r|
-        r.status.should eq 401
+      it 'returns 401' do
+        post_json api_v1_synchronizations_create_url(params) do |r|
+          r.status.should eq 401
+        end
+      end
+
+      it 'creates a synchronization and enqueues a import job for external sources' do
+        begin
+          Resque::ImporterJobs.expects(:perform).once
+          carto_visualization = FactoryGirl.create(:carto_visualization, user_id: @user1.id)
+          external_source = FactoryGirl.create(:external_source, visualization: carto_visualization)
+          remote_id = external_source.visualization_id
+
+          expect {
+            post_json api_v1_synchronizations_create_url(params.merge(remote_visualization_id: remote_id)) do |r|
+              r.status.should eq 200
+            end
+          }.to change { Carto::Synchronization.count }.by 1
+        ensure
+          external_source.external_data_imports.each(&:destroy)
+          external_source.destroy
+          carto_visualization.destroy
+        end
       end
     end
 

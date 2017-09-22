@@ -16,6 +16,8 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
 
   # Upon creation, no rate limit checks
   def create
+    return head(401) unless current_user.sync_tables_enabled
+
     @stats_aggregator.timing('synchronizations.create') do
 
       begin

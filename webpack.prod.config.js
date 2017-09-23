@@ -102,7 +102,7 @@ module.exports = env => {
             resolve(__dirname, 'node_modules/tangram.cartodb')
           ],
           options: {
-            presets: ['es2015']
+            presets: ['env']
           }
         },
         {

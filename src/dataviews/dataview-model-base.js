@@ -166,8 +166,8 @@ module.exports = Model.extend({
   },
 
   _removeExistingAnalysisBindings: function () {
-    if (!this.get('source')) return;
-    this.get('source').off('change:status', this._onAnalysisStatusChange, this);
+    if (!this.getSource()) return;
+    this.getSource().off('change:status', this._onAnalysisStatusChange, this);
   },
 
   _onAnalysisStatusChange: function (analysis, status) {

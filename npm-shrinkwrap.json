@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.9.92",
+  "version": "4.9.94-1715",
   "dependencies": {
     "abbrev": {
       "version": "1.1.0",
@@ -387,8 +387,8 @@
     },
     "cartodb-deep-insights.js": {
       "version": "0.0.3",
-      "from": "cartodb/deep-insights.js#master",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#4c0c2d68588a5e97b15e07cb5f42a6274449c6c3",
+      "from": "cartodb/deep-insights.js#1715-improve-legend-error",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#9abbfecbcefcab2a2520b22f54b47822d9951aa4",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",
@@ -403,9 +403,9 @@
       "resolved": "https://registry.npmjs.org/cartodb-pecan/-/cartodb-pecan-0.2.0.tgz"
     },
     "cartodb.js": {
-      "version": "4.0.0-alpha.1.1.2",
-      "from": "cartodb/cartodb.js#v4",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#cb8d381c9bba2e071e0c060bf757e5ee9aeef32e"
+      "version": "4.0.0-alpha.1.1.0",
+      "from": "cartodb/cartodb.js#1715-improve-legend-error",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#87e58e6e705db41efe37b3b3fe6555c3818aae89"
     },
     "caseless": {
       "version": "0.12.0",

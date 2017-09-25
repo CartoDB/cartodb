@@ -52,26 +52,30 @@ module.exports = cdb.core.View.extend({
 
   _onDataviewModelEvent: function (type, error) {
     var enhancedError = errorEnhancer(error);
+
     if (type.lastIndexOf('error', 0) === 0) {
       return this.render(enhancedError);
     }
 
     if (type === 'sync' || type === 'change:data') {
-      var dataviewModel = this.model.dataviewModel;
-      var valueToCheck = dataviewModel.get('type') === 'histogram'
-        ? 'totalAmount'
-        : 'data';
-      var data = dataviewModel.get(valueToCheck);
-
-      if (!data || (_.isArray(data) && _.isEmpty(data))) {
-        return this.render(errorEnhancer({ type: 'no_data_available' }));
-      }
-      return this.render();
+      return this._noDataAvailable()
+        ? this.render(errorEnhancer({ type: 'no_data_available' }))
+        : this.render();
     }
   },
 
   _appendView: function (view) {
     this.$el.append(view.render().el);
     this.addView(view);
+  },
+
+  _noDataAvailable: function () {
+    var dataviewModel = this.model.dataviewModel;
+    var valueToCheck = dataviewModel.get('type') === 'histogram'
+      ? 'totalAmount'
+      : 'data';
+    var data = dataviewModel.get(valueToCheck);
+
+    return !data || (_.isArray(data) && _.isEmpty(data));
   }
 });

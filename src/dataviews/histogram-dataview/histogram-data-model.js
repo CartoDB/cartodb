@@ -3,7 +3,7 @@ var BackboneAbortSync = require('../../util/backbone-abort-sync');
 var Model = require('../../core/model');
 var helper = require('../helpers/histogram-helper');
 
-var DEFAULT_MAX_BUCKETS = 366;
+var DEFAULT_MAX_BUCKETS = 367;
 
 /**
  *  This model is used for getting the total amount of data

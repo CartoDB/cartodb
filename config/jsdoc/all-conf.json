@@ -1,0 +1,16 @@
+{
+  "source": {
+    "include": [
+      "src"
+    ]
+  },
+  "templates": {
+    "default": {
+      "outputSourceFiles": false
+    }
+  },
+  "opts": {
+    "recurse": true,
+    "destination": "./docs/v4-internal"
+  }
+}

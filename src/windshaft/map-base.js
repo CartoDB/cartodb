@@ -2,12 +2,8 @@ var _ = require('underscore');
 var Backbone = require('backbone');
 var WindshaftConfig = require('./config');
 var log = require('../cdb.log');
-var Request = require('./request');
-var RequestTracker = require('./request-tracker');
 var WindshaftError = require('./error');
-
-/* The max number of times the same map can be instantiated */
-var MAP_INSTANTIATION_LIMIT = 3;
+var Request = require('./request');
 
 var WindshaftMap = Backbone.Model.extend({
   initialize: function (attrs, options) {
@@ -38,8 +34,6 @@ var WindshaftMap = Backbone.Model.extend({
     this._analysisCollection = options.analysisCollection;
     this._modelUpdater = options.modelUpdater;
     this._windshaftSettings = options.windshaftSettings;
-
-    this._requestTracker = new RequestTracker(MAP_INSTANTIATION_LIMIT);
   },
 
   toJSON: function () {
@@ -48,82 +42,41 @@ var WindshaftMap = Backbone.Model.extend({
 
   // TODO: Move this somewhere else and keep this class as a wrapper for windshaft responses
   createInstance: function (options) {
-    var filters;
     options = options || {};
-
     try {
       var payload = this.toJSON();
       var params = this._getParams();
 
-      if (options.includeFilters === true) {
-        filters = this._dataviewsCollection.getFilters();
-        if (!_.isEmpty(filters)) {
-          params.filters = filters;
-        }
+      if (options.includeFilters && !_.isEmpty(this._dataviewsCollection.getFilters())) {
+        params.filters = this._dataviewsCollection.getFilters();
       }
 
+      var oldSuccess = options.success;
+      var oldError = options.error;
+
+      options.success = function (response) {
+        this.set(response);
+        this._modelUpdater.updateModels(this, options.sourceId, options.forceFetch);
+        this.trigger('instanceCreated');
+        oldSuccess && oldSuccess(this);
+      }.bind(this);
+
+      options.error = function (response) {
+        var windshaftErrors = this._getErrorsFromResponse(response);
+        this._modelUpdater.setErrors(windshaftErrors);
+        oldError && oldError();
+      }.bind(this);
       var request = new Request(payload, params, options);
-      if (this._canPerformRequest(request)) {
-        this._performRequest(request);
-      } else {
-        log.error('Maximum number of subsequent equal requests to the Maps API reached (' + MAP_INSTANTIATION_LIMIT + '):', payload, params);
-        options.error && options.error();
-      }
+      this.client.instantiateMap(request);
     } catch (e) {
       var error = new WindshaftError({
         message: e.message
       });
-      this._modelUpdater.setErrors([ error ]);
+      this._modelUpdater.setErrors([error]);
 
       log.error(e.message);
       options.error && options.error();
     }
-  },
-
-  _canPerformRequest: function (request) {
-    return this._requestTracker.canRequestBePerformed(request);
-  },
-
-  _trackRequest: function (request, response) {
-    this._requestTracker.track(request, response);
-  },
-
-  _performRequest: function (request) {
-    var payload = request.payload;
-    var params = request.params;
-    var options = request.options;
-    this.client.instantiateMap({
-      mapDefinition: payload,
-      params: params,
-      success: function (response) {
-        this._trackRequest(request, response);
-        this.set(response);
-        this._modelUpdater.updateModels(this, options.sourceId, options.forceFetch);
-        this.trigger('instanceCreated');
-        options.success && options.success(this);
-      }.bind(this),
-      error: function (response) {
-        this._trackRequest(request, response);
-        var windshaftErrors = this._getErrorsFromResponse(response);
-        this._modelUpdater.setErrors(windshaftErrors);
-        options.error && options.error();
-      }.bind(this)
-    });
-  },
-
-  _getErrorsFromResponse: function (response) {
-    if (response.errors_with_context) {
-      return _.map(response.errors_with_context, function (error) {
-        return new WindshaftError(error);
-      });
-    }
-    if (response.errors) {
-      return [
-        new WindshaftError({ message: response.errors[0] })
-      ];
-    }
-
-    return [];
   },
 
   _getParams: function () {
@@ -258,6 +211,20 @@ var WindshaftMap = Backbone.Model.extend({
 
   _getAnalyses: function () {
     return (this.get('metadata') && this.get('metadata').analyses) || [];
+  },
+
+  _getErrorsFromResponse: function (response) {
+    if (response.errors_with_context) {
+      return _.map(response.errors_with_context, function (error) {
+        return new WindshaftError(error);
+      });
+    }
+    if (response.errors) {
+      return [
+        new WindshaftError({ message: response.errors[0] })
+      ];
+    }
+    return [];
   }
 });
 

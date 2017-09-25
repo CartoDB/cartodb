@@ -1007,7 +1007,6 @@ describe('vis/vis', function () {
       Vis.prototype.reload.calls.mostRecent().args[0].success();
 
       layer = this.vis.map.layers.at(0);
-      layer.getDataProvider = jasmine.createSpy('getDataProvider');
 
       dataview = new DataviewModelBase({
         source: {id: 'a0'}

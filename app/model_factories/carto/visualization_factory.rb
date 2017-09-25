@@ -8,7 +8,7 @@ module Carto
         description = metadata[:information][:description]
         attributions = metadata[:information][:attributions]
         source = metadata[:information][:source]
-        tags = metadata[:information][:tags]
+        tags = metadata[:information][:classification][:tags]
         privacy = metadata[:publishing][:privacy]
       else
         esv = user_table.external_source_visualization

@@ -94,6 +94,15 @@ module.exports = Model.extend({
       this.set('aggregation', 'auto', { silent: true });
       this._resetStartEndCache();
     });
+
+    this.on('error', function (model, response, options) {
+      if (response.status === 429) {
+        var error = response.responseJSON.errors_with_context[0];
+        setTimeout(function () {
+          this.trigger('error:' + error.type, error, model);
+        }.bind(this), 0);
+      }
+    });
   },
 
   setUrl: function (url) {
@@ -153,6 +162,10 @@ module.exports = Model.extend({
     parsedData.bins = numberOfBins;
 
     return parsedData;
+  },
+
+  refresh: function () {
+    this.fetch();
   },
 
   _getCurrentOffset: function () {

@@ -16,6 +16,7 @@ var LayersFactory = require('./layers-factory');
 var SettingsModel = require('./settings');
 var whenAllDataviewsFetched = require('./dataviews-tracker');
 var RenderModes = require('../geo/render-modes');
+var MapBase = require('../windshaft/map-base');
 
 var STATE_INIT = 'init'; // vis hasn't been sent to Windshaft
 var STATE_OK = 'ok'; // vis has been sent to Windshaft and everything is ok
@@ -134,11 +135,12 @@ var VisModel = Backbone.Model.extend({
       authToken: this.get('authToken')
     };
 
-    var WindshaftMapClass = WindshaftAnonymousMap;
-    if (vizjson.isNamedMap()) {
-      windshaftSettings.templateName = vizjson.datasource.template_name;
-      WindshaftMapClass = WindshaftNamedMap;
-    }
+    // var WindshaftMapClass = WindshaftAnonymousMap;
+    // if (vizjson.isNamedMap()) {
+    //   windshaftSettings.templateName = vizjson.datasource.template_name;
+    //   WindshaftMapClass = WindshaftNamedMap;
+    // }
+    var WindshaftMapClass = MapBase;
 
     var windshaftClient = new WindshaftClient(windshaftSettings);
 

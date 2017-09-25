@@ -5,7 +5,6 @@ var RangeFilter = require('../windshaft/filters/range');
 var CategoryDataviewModel = require('./category-dataview-model');
 var FormulaDataviewModel = require('./formula-dataview-model');
 var HistogramDataviewModel = require('./histogram-dataview-model');
-var ListDataviewModel = require('./list-dataview-model');
 
 /**
  * Factory to create dataviews.
@@ -75,19 +74,6 @@ module.exports = Model.extend({
         vis: this._vis,
         layer: layerModel,
         filter: rangeFilter,
-        analysisCollection: this._analysisCollection
-      })
-    );
-  },
-
-  createListModel: function (layerModel, attrs) {
-    _checkProperties(attrs, ['columns']);
-    attrs = this._generateAttrsForDataview(layerModel, attrs, ListDataviewModel.ATTRS_NAMES);
-    return this._newModel(
-      new ListDataviewModel(attrs, {
-        map: this._map,
-        vis: this._vis,
-        layer: layerModel,
         analysisCollection: this._analysisCollection
       })
     );

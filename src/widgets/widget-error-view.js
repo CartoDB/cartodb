@@ -38,6 +38,6 @@ module.exports = cdb.core.View.extend({
   },
 
   _onRefreshClick: function () {
-    this._model.dataviewModel.refresh();
+    this._model.refresh();
   }
 });

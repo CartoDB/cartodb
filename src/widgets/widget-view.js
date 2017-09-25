@@ -24,12 +24,16 @@ module.exports = cdb.core.View.extend({
   initialize: function () {
     this.listenTo(this.model, 'destroy', this.clean);
     this.listenTo(this.model.dataviewModel, 'all', this._onDataviewModelEvent);
+
+    if (this.model.dataviewModel._totals) {
+      this.listenTo(this.model.dataviewModel._totals, 'all', this._onDataModelEvent);
+    }
   },
 
-  render: function (error) {
+  render: function (model, error) {
     this.clearSubViews();
-    var model = this.model;
-    var dataviewModel = model.dataviewModel;
+    var widgetModel = this.model;
+    var dataviewModel = widgetModel.dataviewModel;
     var placeholder = PLACEHOLDER_TEMPLATES[dataviewModel.get('type')];
 
     this._appendView(new WidgetLoaderView({
@@ -50,17 +54,25 @@ module.exports = cdb.core.View.extend({
     return this;
   },
 
-  _onDataviewModelEvent: function (type, error) {
+  _onDataviewModelEvent: function (type, error, model) {
     var enhancedError = errorEnhancer(error);
 
     if (type.lastIndexOf('error', 0) === 0) {
-      return this.render(enhancedError);
+      return this.render(model, enhancedError);
     }
 
     if (type === 'sync' || type === 'change:data') {
       return this._noDataAvailable()
-        ? this.render(errorEnhancer({ type: 'no_data_available' }))
-        : this.render();
+        ? this.render(model, errorEnhancer({ type: 'no_data_available' }))
+        : this.render(model);
+    }
+  },
+
+  _onDataModelEvent: function (type, error, model) {
+    var enhancedError = errorEnhancer(error);
+
+    if (type.lastIndexOf('error', 0) === 0) {
+      return this.render(model, enhancedError);
     }
   },
 
@@ -70,12 +82,13 @@ module.exports = cdb.core.View.extend({
   },
 
   _noDataAvailable: function () {
-    var dataviewModel = this.model.dataviewModel;
-    var valueToCheck = dataviewModel.get('type') === 'histogram'
-      ? 'totalAmount'
-      : 'data';
-    var data = dataviewModel.get(valueToCheck);
+    var valueToCheck = this._isHistogram() ? 'totalAmount' : 'data';
+    var data = this.model.dataviewModel.get(valueToCheck);
 
     return !data || (_.isArray(data) && _.isEmpty(data));
+  },
+
+  _isHistogram: function () {
+    return this.model.dataviewModel.get('type') === 'histogram';
   }
 });

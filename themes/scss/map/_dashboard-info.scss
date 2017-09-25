@@ -220,9 +220,9 @@
   @include flex-direction(column);
   position: absolute;
   top: 0;
-  left: 0;
-  bottom: 0;
   right: -20px;
+  bottom: 0;
+  left: 0;
 }
 .CDB-Dashboard-scrollWrapper {
   @include display-flex();

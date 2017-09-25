@@ -6,15 +6,9 @@ var TileLayer = require('../../../../../src/geo/map/tile-layer');
 var TorqueLayer = require('../../../../../src/geo/map/torque-layer');
 var VisModel = require('../../../../../src/vis/vis');
 
-var _createFakeAnalysis = function (attrs) {
-  var fakeAnalysis = new Backbone.Model(attrs);
-  fakeAnalysis.findAnalysisById = jasmine.createSpy('findAnalysisById').and.returnValue(undefined);
-  return fakeAnalysis;
-};
-
-fdescribe('layers-serializer', function () {
+describe('layers-serializer', function () {
   describe('.serialize', function () {
-    it('should serialize a layer collection', function () {
+    it('should serialize a layer collection with one layer of each kind', function () {
       var visMock = new VisModel();
       var sourceMock = _createFakeAnalysis({ id: 'a1' });
 
@@ -94,3 +88,9 @@ fdescribe('layers-serializer', function () {
     });
   });
 });
+
+function _createFakeAnalysis (attrs) {
+  var fakeAnalysis = new Backbone.Model(attrs);
+  fakeAnalysis.findAnalysisById = jasmine.createSpy('findAnalysisById').and.returnValue(undefined);
+  return fakeAnalysis;
+}

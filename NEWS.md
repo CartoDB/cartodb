@@ -53,6 +53,7 @@ Development
 * Mustache conditionals support improved in popups (#support/763)
 * Updates Dataservices API client default version to `0.20.0` (#12633)
 * Remove data-observatory-multiple-measures feature flag (#304)
+* Improve legends error (cartodb.js#1758)
 
 ### Bug fixes / enhancements
 * Lazy select to fix missing values due to 40 per page items limitation in requests

@@ -785,9 +785,9 @@ shared_examples_for "user models" do
   end
 
   describe '#default_basemap' do
-    it 'defaults to Google for Google Maps users, Positron for others' do
+    it 'defaults to Google for Google Maps users, first declared basemap for others' do
       user = create_user
-      user.default_basemap['name'].should eq 'Positron'
+      user.default_basemap['name'].should eq Cartodb.default_basemap['name']
       user.google_maps_key = 'client=whatever'
       user.google_maps_private_key = 'wadus'
       user.save
@@ -912,6 +912,28 @@ shared_examples_for "user models" do
       @user.name = 'Petete'
       @user.last_name = 'Trapito'
       expect(@user.name_or_username).to eq 'Petete Trapito'
+    end
+  end
+
+  describe '#relevant_frontend_version' do
+    before(:all) do
+      @user = create_user
+    end
+
+    describe "when user doesn't have user_frontend_version set" do
+      it 'should return application frontend version' do
+        CartoDB::Application.stubs(:frontend_version).returns('app_frontend_version')
+
+        @user.relevant_frontend_version.should eq 'app_frontend_version'
+      end
+    end
+
+    describe 'when user has user_frontend_version set' do
+      it 'should return user frontend version' do
+        @user.frontend_version = 'user_frontend_version'
+
+        @user.relevant_frontend_version.should eq 'user_frontend_version'
+      end
     end
   end
 end

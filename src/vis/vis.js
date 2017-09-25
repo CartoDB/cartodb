@@ -209,8 +209,7 @@ var VisModel = Backbone.Model.extend({
     }, {
       map: this.map,
       vis: this,
-      dataviewsCollection: this._dataviewsCollection,
-      analysisCollection: this._analysisCollection
+      dataviewsCollection: this._dataviewsCollection
     });
 
     // Create the public Analysis Factory

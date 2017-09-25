@@ -1957,9 +1957,6 @@ describe User do
 
   describe 'User creation and DB critical calls' do
     it 'Properly setups a new user (not belonging to an organization)' do
-      # INFO: avoiding enable_remote_db_user
-      Cartodb.config[:signups] = nil
-
       CartoDB::UserModule::DBService.any_instance.stubs(
         cartodb_extension_version_pre_mu?: nil,
         monitor_user_notification: nil,
@@ -2167,9 +2164,6 @@ describe User do
     end
 
     it 'Properly setups a new organization user' do
-      # INFO: avoiding enable_remote_db_user
-      Cartodb.config[:signups] = nil
-
       CartoDB::UserModule::DBService.any_instance.stubs(
         cartodb_extension_version_pre_mu?: nil,
         monitor_user_notification: nil,

@@ -206,107 +206,100 @@ describe Table do
       end
 
       it "should create default associated map and layers" do
-        old_basemap_config = Cartodb.config[:basemaps]
-
-        # Basemap with no labels
-        Cartodb.config[:basemaps] = {
-          CartoDB: {
-            "waduson" => {
-              "default" => true,
-              "url" => "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png",
-              "subdomains" => "abcd",
-              "minZoom" => "0",
-              "maxZoom" => "18",
-              "name" => "Waduson",
-              "className" => "waduson",
-              "attribution" => "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"https://carto.com/attributions\">CARTO</a>"
+        Cartodb.with_config(
+          basemaps: {
+            CartoDB: {
+              "waduson" => {
+                "default" => true,
+                "url" => "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png",
+                "subdomains" => "abcd",
+                "minZoom" => "0",
+                "maxZoom" => "18",
+                "name" => "Waduson",
+                "className" => "waduson",
+                "attribution" => "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"https://carto.com/attributions\">CARTO</a>"
+              }
             }
           }
-        }
+        ) do
 
-        visualizations = CartoDB::Visualization::Collection.new.fetch.to_a.length
-        table = create_table(name: "epaminondas_pantulis", user_id: @user.id)
-        CartoDB::Visualization::Collection.new.fetch.to_a.length.should == visualizations + 1
+          visualizations = CartoDB::Visualization::Collection.new.fetch.to_a.length
+          table = create_table(name: "epaminondas_pantulis", user_id: @user.id)
+          CartoDB::Visualization::Collection.new.fetch.to_a.length.should == visualizations + 1
 
-        map = table.map
-        map.should be
-        map.zoom.should eq Carto::Map::DEFAULT_OPTIONS[:zoom]
-        map.bounding_box_sw.should eq Carto::Map::DEFAULT_OPTIONS[:bounding_box_sw]
-        map.bounding_box_ne.should eq Carto::Map::DEFAULT_OPTIONS[:bounding_box_ne]
-        map.center.should eq Carto::Map::DEFAULT_OPTIONS[:center]
-        map.provider.should eq 'leaflet'
-        map.layers.count.should == 2
-        map.layers.map(&:kind).should == ['tiled', 'carto']
-        map.data_layers.first.infowindow["fields"].should == []
-        map.data_layers.first.options["table_name"].should == "epaminondas_pantulis"
+          map = table.map
+          map.should be
+          map.zoom.should eq Carto::Map::DEFAULT_OPTIONS[:zoom]
+          map.bounding_box_sw.should eq Carto::Map::DEFAULT_OPTIONS[:bounding_box_sw]
+          map.bounding_box_ne.should eq Carto::Map::DEFAULT_OPTIONS[:bounding_box_ne]
+          map.center.should eq Carto::Map::DEFAULT_OPTIONS[:center]
+          map.provider.should eq 'leaflet'
+          map.layers.count.should == 2
+          map.layers.map(&:kind).should == ['tiled', 'carto']
+          map.data_layers.first.infowindow["fields"].should == []
+          map.data_layers.first.options["table_name"].should == "epaminondas_pantulis"
 
-        map.layers[0].options["urlTemplate"].should == "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png"
-        map.layers[0].options["url"].should == "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png"
-        map.layers[0].options["subdomains"].should == "abcd"
-        map.layers[0].options["minZoom"].should == "0"
-        map.layers[0].options["maxZoom"].should == "18"
-        map.layers[0].options["name"].should == "Waduson"
-        map.layers[0].options["className"].should == "waduson"
-        map.layers[0].options["attribution"].should == "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"https://carto.com/attributions\">CARTO</a>"
-        map.layers[0].order.should == 0
-
-        Cartodb.config[:basemaps] = old_basemap_config
+          map.layers[0].options["urlTemplate"].should == "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png"
+          map.layers[0].options["url"].should == "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png"
+          map.layers[0].options["subdomains"].should == "abcd"
+          map.layers[0].options["minZoom"].should == "0"
+          map.layers[0].options["maxZoom"].should == "18"
+          map.layers[0].options["name"].should == "Waduson"
+          map.layers[0].options["className"].should == "waduson"
+          map.layers[0].options["attribution"].should == "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"https://carto.com/attributions\">CARTO</a>"
+          map.layers[0].order.should == 0
+        end
 
         map.visualization.overlays.count.should eq 5
       end
 
       it "should add a layer with labels if the baselayer has that option enabled" do
-        old_basemap_config = Cartodb.config[:basemaps]
-
-        # Basemap with labels on top
-        Cartodb.config[:basemaps] = {
-          CartoDB: {
-            "waduson" => {
-              "default" => true,
-              "url" => "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png",
-              "subdomains" => "abcd",
-              "minZoom" => "0",
-              "maxZoom" => "18",
-              "name" => "Waduson",
-              "className" => "waduson",
-              "attribution" => "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"https://carto.com/attributions\">CARTO</a>",
-              "labels" => {
-                "url" => "http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png"
+        Cartodb.with_config(
+          basemaps: {
+            CartoDB: {
+              "waduson" => {
+                "default" => true,
+                "url" => "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png",
+                "subdomains" => "abcd",
+                "minZoom" => "0",
+                "maxZoom" => "18",
+                "name" => "Waduson",
+                "className" => "waduson",
+                "attribution" => "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"https://carto.com/attributions\">CARTO</a>"
               }
             }
           }
-        }
+        ) do
 
-        visualizations = CartoDB::Visualization::Collection.new.fetch.to_a.length
-        table = create_table(name: "epaminondas_pantulis", user_id: @user.id)
-        CartoDB::Visualization::Collection.new.fetch.to_a.length.should == visualizations + 1
+          visualizations = CartoDB::Visualization::Collection.new.fetch.to_a.length
+          table = create_table(name: "epaminondas_pantulis", user_id: @user.id)
+          CartoDB::Visualization::Collection.new.fetch.to_a.length.should == visualizations + 1
 
-        table.map.layers.count.should == 3
-        table.map.layers.map(&:kind).should == ['tiled', 'carto', 'tiled']
+          table.map.layers.count.should == 3
+          table.map.layers.map(&:kind).should == ['tiled', 'carto', 'tiled']
 
-        table.map.layers[0].options["urlTemplate"].should == "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png"
-        table.map.layers[0].options["url"].should == "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png"
-        table.map.layers[0].options["subdomains"].should == "abcd"
-        table.map.layers[0].options["minZoom"].should == "0"
-        table.map.layers[0].options["maxZoom"].should == "18"
-        table.map.layers[0].options["name"].should == "Waduson"
-        table.map.layers[0].options["className"].should == "waduson"
-        table.map.layers[0].options["attribution"].should == "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"https://carto.com/attributions\">CARTO</a>"
-        table.map.layers[0].order.should == 0
+          table.map.layers[0].options["urlTemplate"].should == "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png"
+          table.map.layers[0].options["url"].should == "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png"
+          table.map.layers[0].options["subdomains"].should == "abcd"
+          table.map.layers[0].options["minZoom"].should == "0"
+          table.map.layers[0].options["maxZoom"].should == "18"
+          table.map.layers[0].options["name"].should == "Waduson"
+          table.map.layers[0].options["className"].should == "waduson"
+          table.map.layers[0].options["attribution"].should == "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"https://carto.com/attributions\">CARTO</a>"
+          table.map.layers[0].order.should == 0
 
-        table.map.layers[2].options["urlTemplate"].should == "http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png"
-        table.map.layers[2].options["url"].should == "http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png"
-        table.map.layers[2].options["subdomains"].should == "abcd"
-        table.map.layers[2].options["minZoom"].should == "0"
-        table.map.layers[2].options["maxZoom"].should == "18"
-        table.map.layers[2].options["name"].should == "Waduson Labels"
-        table.map.layers[2].options["className"].should be_nil
-        table.map.layers[2].options["attribution"].should == "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"https://carto.com/attributions\">CARTO</a>"
-        table.map.layers[2].options["type"].should == "Tiled"
-        table.map.layers[2].options["labels"].should be_nil
-        table.map.layers[2].order.should == 2
-
-        Cartodb.config[:basemaps] = old_basemap_config
+          table.map.layers[2].options["urlTemplate"].should == "http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png"
+          table.map.layers[2].options["url"].should == "http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png"
+          table.map.layers[2].options["subdomains"].should == "abcd"
+          table.map.layers[2].options["minZoom"].should == "0"
+          table.map.layers[2].options["maxZoom"].should == "18"
+          table.map.layers[2].options["name"].should == "Waduson Labels"
+          table.map.layers[2].options["className"].should be_nil
+          table.map.layers[2].options["attribution"].should == "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"https://carto.com/attributions\">CARTO</a>"
+          table.map.layers[2].options["type"].should == "Tiled"
+          table.map.layers[2].options["labels"].should be_nil
+          table.map.layers[2].order.should == 2
+        end
       end
 
       it "should return a sequel interface" do

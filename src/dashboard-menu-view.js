@@ -1,5 +1,4 @@
 var cdb = require('cartodb.js');
-var Backbone = require('Backbone');
 var _ = require('underscore');
 var $ = require('jquery');
 var template = require('./dashboard-menu-view.tpl');
@@ -16,7 +15,7 @@ var DashboardMenuView = cdb.core.View.extend({
   },
 
   initialize: function () {
-    this.viewModel = new Backbone.Model({
+    this.viewModel = new cdb.core.Model({
       open: false,
       small: $(window).width() < BREAKPOINT
     });

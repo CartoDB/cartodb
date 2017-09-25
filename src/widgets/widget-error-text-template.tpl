@@ -10,5 +10,7 @@
   <button class="CDB-Button CDB-Button--secondary CDB-Button--medium u-tSpace-xl js-refresh">
     <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium">REFRESH</span>
   </button>
+<% }  else { %>
+  <%= placeholder %>
 <% } %>
 

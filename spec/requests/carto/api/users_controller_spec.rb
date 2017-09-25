@@ -25,12 +25,20 @@ describe Carto::Api::UsersController do
 
         dashboard_notifications = carto_user.notifications_for_category(:dashboard)
         expect(response.body[:dashboard_notifications]).to eq(dashboard_notifications)
+        expect(response.body[:can_change_email]).to eq(user.can_change_email?)
+        expect(response.body[:auth_username_password_enabled]).to eq(true)
+        expect(response.body[:should_display_old_password]).to eq(user.should_display_old_password?)
+        expect(response.body[:can_change_password]).to eq(true)
+        expect(response.body[:plan_name]).to eq('Free')
+        expect(response.body[:services]).to eq(user.get_oauth_services)
       end
     end
 
-    it 'returns 401 if user is not logged in' do
+    it 'returns a hash with only config if there is no authenticated user' do
       get_json api_v3_users_me_url, @headers do |response|
-        expect(response.status).to eq(401)
+        expect(response.status).to eq(200)
+        expect(response.body).to have_key(:config)
+        expect(response.body[:user_frontend_version]).to eq(CartoDB::Application.frontend_version)
       end
     end
   end

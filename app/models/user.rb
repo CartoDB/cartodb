@@ -37,6 +37,19 @@ class User < Sequel::Model
   include Carto::EmailCleaner
   extend Carto::UserAuthenticator
 
+  OAUTH_SERVICE_TITLES = {
+    'gdrive' => 'Google Drive',
+    'dropbox' => 'Dropbox',
+    'box' => 'Box',
+    'mailchimp' => 'MailChimp',
+    'instagram' => 'Instagram'
+  }.freeze
+
+  OAUTH_SERVICE_REVOKE_URLS = {
+    'mailchimp' => 'http://admin.mailchimp.com/account/oauth2/',
+    'instagram' => 'http://instagram.com/accounts/manage_access/'
+  }.freeze
+
   self.strict_param_setting = false
 
   # @param name             String
@@ -1178,6 +1191,55 @@ class User < Sequel::Model
     !Carto::Ldap::Manager.new.configuration_present?
   end
 
+  def cant_be_deleted_reason
+    if organization_owner?
+      "You can't delete your account because you are admin of an organization"
+    elsif Carto::UserCreation.http_authentication.where(user_id: id).first.present?
+      "You can't delete your account because you are using HTTP Header Authentication"
+    end
+  end
+
+  def get_oauth_services
+    datasources = CartoDB::Datasources::DatasourcesFactory.get_all_oauth_datasources
+    array = []
+
+    datasources.each do |serv|
+      obj ||= Hash.new
+
+      title = OAUTH_SERVICE_TITLES.fetch(serv, serv)
+      revoke_url = OAUTH_SERVICE_REVOKE_URLS.fetch(serv, nil)
+      enabled = case serv
+      when 'gdrive'
+        Cartodb.config[:oauth][serv]['client_id'].present?
+      when 'box'
+        Cartodb.config[:oauth][serv]['client_id'].present?
+      when 'gdrive'
+        Cartodb.config[:oauth][serv]['client_id'].present?
+      when 'dropbox'
+        Cartodb.config[:oauth]['dropbox']['app_key'].present?
+      when 'mailchimp'
+        Cartodb.config[:oauth]['mailchimp']['app_key'].present? && has_feature_flag?('mailchimp_import')
+      when 'instagram'
+        Cartodb.config[:oauth]['instagram']['app_key'].present? && has_feature_flag?('instagram_import')
+      else
+        true
+      end
+
+      if enabled
+        oauth = oauths.select(serv)
+
+        obj['name'] = serv
+        obj['title'] = title
+        obj['revoke_url'] = revoke_url
+        obj['connected'] = !oauth.nil? ? true : false
+
+        array.push(obj)
+      end
+    end
+
+    array
+  end
+
   # This method is innaccurate and understates point based tables (the /2 is to account for the_geom_webmercator)
   # TODO: Without a full table scan, ignoring the_geom_webmercator, we cannot accuratly asses table size
   # Needs to go on a background job.
@@ -1509,14 +1571,8 @@ class User < Sequel::Model
   # return the default basemap based on the default setting. If default attribute is not set, first basemaps is returned
   # it only takes into account basemaps enabled for that user
   def default_basemap
-    default = if google_maps_enabled? && basemaps['GMaps'].present?
-                ['GMaps', basemaps['GMaps']]
-              else
-                basemaps.find { |_, group_basemaps| group_basemaps.find { |_, attr| attr['default'] } }
-              end
-    default ||= basemaps.first
-    # return only the attributes
-    default[1].first[1]
+    default = google_maps_enabled? && basemaps['GMaps'].present? ? basemaps.slice('GMaps') : basemaps
+    Cartodb.default_basemap(default)
   end
 
   def copy_account_features(to)

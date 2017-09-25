@@ -56,6 +56,8 @@ Development
 * Remove data-observatory-multiple-measures feature flag (#304)
 
 ### Bug fixes / enhancements
+* Lazy select to fix missing values due to 40 per page items limitation in requests
+* Fix min/max parameters in filter analysis (#11658)
 * Fix some styles for datasets view for IE11.
 * Fix image export when logo is disabled.
 * Fix infowindow break word (CartoDB/support#965)

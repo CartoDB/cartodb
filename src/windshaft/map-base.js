@@ -5,7 +5,7 @@ var log = require('../cdb.log');
 var WindshaftError = require('./error');
 var Request = require('./request');
 var AnonymousMapSerializer = require('./map-serializer/anonymous-map-serializer/anonymous-map-serializer');
-var NamedMapSerializer = require('./map-serializer/named-map-serializer');
+var NamedMapSerializer = require('./map-serializer/named-map-serializer/named-map-serializer');
 
 var WindshaftMap = Backbone.Model.extend({
   initialize: function (attrs, options) {
@@ -38,10 +38,6 @@ var WindshaftMap = Backbone.Model.extend({
     this._windshaftSettings = options.windshaftSettings;
   },
 
-  toJSON: function () {
-    return this.serializer.serialize(this.layers, this.dataviews, this._analysisService.getCollection());
-  },
-
   /**
    * 
    */
@@ -63,7 +59,8 @@ var WindshaftMap = Backbone.Model.extend({
   createInstance: function (options) {
     options = options || {};
     try {
-      var payload = this._getSerializer.serialize(this._layersCollection, this._dataviewsCollection, this._analysisCollection);
+      // Serialization (former .toJSON)
+      var payload = this._getSerializer.serialize(this._layersCollection, this._dataviewsCollection);
       var params = this._getParams();
 
       if (options.includeFilters && !_.isEmpty(this._dataviewsCollection.getFilters())) {

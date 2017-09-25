@@ -8,7 +8,9 @@ function serialize (layersCollection, dataviewsCollection) {
   var layerAnalyses = _getAnalysesFromLayers(layersCollection);
   var dataviewsAnalyses = _getAnalysesFromDataviews(dataviewsCollection);
   // TODO: Remove dups
-  return layerAnalyses.concat(dataviewsAnalyses);
+  return layerAnalyses.concat(dataviewsAnalyses).map(function (analysis) {
+    return analysis.toJSON();
+  });
 }
 
 /**
@@ -24,6 +26,7 @@ function _getAnalysesFromLayers (layersCollection) {
  * Return the analyses contained in a dataviews collection
  */
 function _getAnalysesFromDataviews (dataviewsCollection) {
+  // TODO: To be implemented
   return [];
 }
 

@@ -12,7 +12,6 @@ function serialize (layersCollection, dataviewsCollection) {
     buffersize: { mvt: 0 },
     layers: LayerSerializer.serialize(layersCollection),
     dataviews: DataviewSerializer.serialize(dataviewsCollection),
-    // analyses: analysisCollection
     analyses: AnalisysSerializer.serialize(layersCollection, dataviewsCollection)
   };
 }

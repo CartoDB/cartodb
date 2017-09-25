@@ -1639,20 +1639,20 @@ describe Carto::Api::VisualizationsController do
         end
       end
 
-      it 'includes vector flag (default false)' do
+      it 'includes vector flag (default true)' do
         get_json get_vizjson3_url(@user_1, @visualization), @headers do |response|
           response.status.should == 200
           vizjson3 = response.body
-          vizjson3[:vector].should == false
+          vizjson3[:vector].should be_nil
         end
       end
 
-      it 'doesn\'t include vector flag if vector_vs_raster feature flag is enabled and vector param is not present' do
+      it 'include vector flag if vector_vs_raster feature flag is enabled and vector param is not present' do
         set_feature_flag @visualization.user, 'vector_vs_raster', true
         get_json get_vizjson3_url(@user_1, @visualization), @headers do |response|
           response.status.should == 200
           vizjson3 = response.body
-          vizjson3.has_key?(:vector).should be_false
+          vizjson3.has_key?(:vector).should be_true
         end
       end
 

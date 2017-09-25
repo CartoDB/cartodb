@@ -203,6 +203,7 @@ Development
 * Axis labels changes in Time-Series (#12658)
 * Removed unused settings in organizations (#4992)
 * Increment maximum buckets in Time-Series for leap years (#12778)
+* Improve tile error overlay (cartodb.js#1721)
 
 ### NOTICE
 This release upgrades the CartoDB PostgreSQL extension to `0.19.2`. Run the following to have it available:

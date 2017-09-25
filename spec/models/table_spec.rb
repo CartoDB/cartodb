@@ -248,9 +248,9 @@ describe Table do
           map.layers[0].options["className"].should == "waduson"
           map.layers[0].options["attribution"].should == "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"https://carto.com/attributions\">CARTO</a>"
           map.layers[0].order.should == 0
-        end
 
-        map.visualization.overlays.count.should eq 5
+          map.visualization.overlays.count.should eq 5
+        end
       end
 
       it "should add a layer with labels if the baselayer has that option enabled" do
@@ -265,7 +265,10 @@ describe Table do
                 "maxZoom" => "18",
                 "name" => "Waduson",
                 "className" => "waduson",
-                "attribution" => "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"https://carto.com/attributions\">CARTO</a>"
+                "attribution" => "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"https://carto.com/attributions\">CARTO</a>",
+                "labels" => {
+                  "url" => "http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png"
+                }
               }
             }
           }

@@ -118,7 +118,9 @@ describe CartoDB::DataMover::ExportJob do
   it "should move a whole organization" do
     port = find_available_port
     run_test_server(port)
-    Cartodb.with_config(org_metadata_api: { 'host' => '127.0.0.1', 'port' => port }) do
+
+    test_config = Cartodb.get_config(:org_metadata_api).merge('host' => '127.0.0.1', 'port' => port)
+    Cartodb.with_config(org_metadata_api: test_config) do
       org = create_user_mover_test_organization
       user = create_user(
         quota_in_bytes: 100.megabyte, table_quota: 400, organization: org

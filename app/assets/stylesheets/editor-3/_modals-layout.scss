@@ -26,17 +26,18 @@
   margin-left: 0;
 }
 .Modal-container--analysis .ScrollView {
-  padding-bottom: 250px;
+  top: -13px;
+  padding-bottom: 237px;
 }
 
-.Modal-container .ScrollView-shadow--top {
-  top: -14px;
-}
 .Modal-footer,
 .Modal-header {
   @include display-flex();
   @include justify-content(center);
   @include flex(0 0 auto);
+}
+.Modal-footer {
+  border-top: 1px solid $cSecondaryLine;
 }
 .Modal-footer.is-disabled {
   display: none;
@@ -66,16 +67,10 @@
   padding: $baseSize * 3 0;
 }
 .Modal-inner--with-navigation {
-  padding: 24px 0 0;
+  padding: 32px 0 0;
 }
-.Modal-inner--with-navigation .ScrollView-shadow--top {
-  top: -6px;
-}
-.Modal-inner .ps-scrollbar-y-rail {
-  width: 4px;
-}
-.Modal-inner .ps-scrollbar-y-rail>.ps-scrollbar-y {
-  width: 4px;
+.Modal-inner .ScrollView-content {
+  margin-top: 5px;
 }
 
 .Modal-inner {
@@ -92,9 +87,6 @@
 }
 .Modal-inner--full {
   @include flex(0 944px);
-}
-.Modal-footerContainer {
-  border-top: 1px solid $cSecondaryLine;
 }
 .Modal-outer {
   @include display-flex();

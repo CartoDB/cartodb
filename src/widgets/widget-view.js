@@ -57,8 +57,13 @@ module.exports = cdb.core.View.extend({
     }
 
     if (type === 'sync' || type === 'change:data') {
-      var data = this.model.dataviewModel.get('data');
-      if (!data || _.isEmpty(data)) {
+      var dataviewModel = this.model.dataviewModel;
+      var valueToCheck = dataviewModel.get('type') === 'histogram'
+        ? 'totalAmount'
+        : 'data';
+      var data = dataviewModel.get(valueToCheck);
+
+      if (!data || (_.isArray(data) && _.isEmpty(data))) {
         return this.render(errorEnhancer({ type: 'no_data_available' }));
       }
       return this.render();

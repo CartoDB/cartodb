@@ -16,8 +16,4 @@ describe('widgets/widget-view', function () {
     });
     this.view.render();
   });
-
-  it('should have 3 subviews, content, loader and error panes', function () {
-    expect(_.size(this.view._subviews)).toBe(3);
-  });
 });

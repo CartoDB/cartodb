@@ -6,12 +6,14 @@ var LayerSerializer = require('./layers-serializer');
 /**
  * Transform a map visualization into a json payload compatible with the windshaft API.
  */
-function serialize (layersCollection, dataviewsCollection, analysisCollection) {
+function serialize (layersCollection, dataviewsCollection) {
+  // TODO: pass analysisCollection as a parameter given by the analysisService
   return {
     buffersize: { mvt: 0 },
     layers: LayerSerializer.serialize(layersCollection),
     dataviews: DataviewSerializer.serialize(dataviewsCollection),
-    analyses: AnalisysSerializer.serialize(layersCollection, dataviewsCollection, analysisCollection)
+    // analyses: analysisCollection
+    analyses: AnalisysSerializer.serialize(layersCollection, dataviewsCollection)
   };
 }
 

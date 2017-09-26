@@ -30,6 +30,10 @@ FactoryGirl.define do
     factory :carto_private_visualization do
       privacy Carto::Visualization::PRIVACY_PRIVATE
     end
+
+    factory :carto_table_visualization do
+      type Carto::Visualization::TYPE_CANONICAL
+    end
   end
 
 end

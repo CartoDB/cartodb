@@ -138,7 +138,7 @@ Development
 * Fix regenerate all api keys in an organization (#12218)
 * Refactor:
   * ::User <-> CartoDB::Visualization::Member dependency: #12116, #12221
-  * Removed CartoDB::Visualization::Member from controllers: #12185, #12267
+  * Removed CartoDB::Visualization::Member outside old models: #12185, #12267, #12844.
   * Removed Visualization::Member usage from CommonDataService (#12459, #12488). Includes performance improvements on user signup.
 * Refactor Layer model (#10934) and UserTable (#11589, #11700, #11737).
   * Removed CartoDB::Visualization::Member and CartoDB::Visualization::Collection from controllers: #12185, #12267, #12485.

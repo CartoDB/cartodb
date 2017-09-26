@@ -189,7 +189,7 @@ class Table
       vis = CartoDB::Visualization::Collection.new.fetch(
           user_id: viewer_user.id,
           map_id: table_temp.map_id,
-          type: CartoDB::Visualization::Member::TYPE_CANONICAL
+          type: Carto::Visualization::TYPE_CANONICAL
       ).first
       table = vis.table unless vis.nil?
     end

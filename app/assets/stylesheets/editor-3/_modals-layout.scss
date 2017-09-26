@@ -24,10 +24,13 @@
   @include align-items(center);
   margin-right: 0;
   margin-left: 0;
+  margin-top: -32px;
 }
 .Modal-container--analysis .ScrollView {
-  top: -13px;
-  padding-bottom: 237px;
+  padding-bottom: 250px;
+}
+.Modal-container--analysis .ScrollView-shadow--bottom {
+  bottom: 250px;
 }
 
 .Modal-footer,

@@ -26,15 +26,18 @@ function serialize (layersCollection, dataviewsCollection) {
  */
 function _getAnalysesFromLayers (layersCollection) {
   var layers = _getCartoDBAndTorqueLayers(layersCollection);
-  return layers.map(function (layer) { return layer.getSource(); });
+  return layers.map(function (layer) {
+    return layer.getSource();
+  });
 }
 
 /**
  * Return the analyses contained in a dataviews collection
  */
 function _getAnalysesFromDataviews (dataviewsCollection) {
-  // TODO: To be implemented
-  return [];
+  return dataviewsCollection.map(function (dataview) {
+    return dataview.getSource();
+  });
 }
 
 /**

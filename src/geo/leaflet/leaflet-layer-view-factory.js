@@ -62,19 +62,14 @@ var canLayerBeRenderedClientSide = function (layerModel) {
   var cartoCSS = layerModel.get('meta').cartocss;
   var result = TC.getSupportedCartoCSSResult(cartoCSS);
   if (!result.supported) {
-    _logErrors(result, cartoCSS);
+    if (result.reason.indexOf('Unsupported CartoCSS') === 0) {
+      log.info('[Vector] Unable to render due "' + result.reason + '". Full CartoCSS:\n' + cartoCSS);
+    } else {
+      log.error(new Error('[Vector] Unable to render due "' + result.reason + '". Full CartoCSS:\n' + cartoCSS));
+    }
   }
   return result.supported;
 };
-
-/**
- * Log an info message when the layer cannot be rendered because cartoCSS is not supported
- * or an error when is not rendered for another reasons.
- */
-function _logErrors (result, cartoCSS) {
-  var logFn = (result.reason.indexOf('Unsupported CartoCSS') === 0) ? log.info : log.error;
-  logFn('[Vector] Unable to render due "' + result.reason + '". Full CartoCSS:\n' + cartoCSS);
-}
 
 var LeafletLayerViewFactory = function () {};
 

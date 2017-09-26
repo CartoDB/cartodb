@@ -135,7 +135,7 @@ describe 'UserMigration' do
 
   describe 'failing organization organizations should rollback' do
     include_context 'organization with users helper'
-    before :each do
+    before :all do
       owner = @carto_organization.owner
       filepath = "#{Rails.root}/services/importer/spec/fixtures/visualization_export_with_two_tables.carto"
       data_import = DataImport.create(

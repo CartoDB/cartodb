@@ -14,6 +14,7 @@ describe('layers-serializer', function () {
     var plainLayer;
     var torqueLayer;
     var tileLayer;
+
     // Create all test objects once
     beforeAll(function () {
       visMock = new VisModel();
@@ -50,6 +51,7 @@ describe('layers-serializer', function () {
         tms: false
       }, { vis: {} });
     });
+
     it('should serialize a cartodb layer', function () {
       var layersCollection = new Backbone.Collection([cartoDBLayer]);
       var actual = LayersSerializer.serialize(layersCollection);
@@ -65,6 +67,7 @@ describe('layers-serializer', function () {
       }];
       expect(actual).toEqual(expected);
     });
+
     it('should serialize a plain layer', function () {
       var layersCollection = new Backbone.Collection([plainLayer]);
       var actual = LayersSerializer.serialize(layersCollection);
@@ -78,6 +81,7 @@ describe('layers-serializer', function () {
       }];
       expect(actual).toEqual(expected);
     });
+
     it('should serialize a torque layer', function () {
       var layersCollection = new Backbone.Collection([torqueLayer]);
       var actual = LayersSerializer.serialize(layersCollection);
@@ -92,6 +96,7 @@ describe('layers-serializer', function () {
       }];
       expect(actual).toEqual(expected);
     });
+
     it('should serialize a tile layer', function () {
       var layersCollection = new Backbone.Collection([tileLayer]);
       var actual = LayersSerializer.serialize(layersCollection);

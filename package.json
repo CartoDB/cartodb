@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.9.84-11907",
+  "version": "4.9.97-11907",
   "description": "CARTO UI frontend",
   "repository": {
     "type": "git",
@@ -36,7 +36,7 @@
     "perfect-scrollbar": "git://github.com/CartoDB/perfect-scrollbar.git#master",
     "queue-async": "1.2.1",
     "rangeslider.js": "2.3.0",
-    "tangram": "cartodb/tangram-1#pmaster",
+    "tangram": "cartodb/tangram#master",
     "torque.js": "CartoDB/torque#master",
     "underscore": "1.8.3",
     "webpack": "2.3.2"
@@ -73,7 +73,7 @@
     "grunt-contrib-jst": "CartoDB/grunt-contrib-jst#merge-master",
     "grunt-contrib-uglify": "2.0.x",
     "grunt-contrib-watch": "1.0.0",
-    "grunt-eslint": "^20.1.0",
+    "grunt-eslint": "20.1.0",
     "grunt-exorcise": "2.1.1",
     "grunt-postcss": "0.7.2",
     "grunt-sass": "2.0.0",
@@ -87,7 +87,7 @@
     "prettysize": "0.0.3",
     "raw-loader": "0.5.1",
     "recursive-readdir": "2.1.1",
-    "semistandard": "^11.0.0",
+    "semistandard": "11.0.0",
     "semver": "4.3.6",
     "shim-loader": "0.1.0",
     "source-map-support": "0.4.0",
@@ -138,6 +138,8 @@
   },
   "scripts": {
     "test": "echo \"Run 'grunt test' to run specs through command line.\"",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "update-internal-deps": "rm -rf node_modules && npm install --production --no-shrinkwrap && npm dedupe && npm prune && npm shrinkwrap && npm run fix-shrinkwrap-protocol && npm install",
     "branch-files": "node lib/build/branchFiles/branchFiles.js",
     "affected_specs": "node lib/build/branchFiles/branchFiles.js | xargs node lib/build/affectedFiles/affectedFiles.js",

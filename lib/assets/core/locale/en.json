@@ -1249,6 +1249,12 @@
       "column-type-error": "Column type must be a %{columnType}",
       "interval-error": "Value must be between %{minValue} and %{maxValue}",
       "copy-button": "COPY",
+      "lazy-select": {
+        "search": "Search...",
+        "error": "Error fetching %{type}",
+        "type": "items",
+        "empty": "No results for %{type} column."
+      },
       "data-observatory": {
         "dropdown": {
           "measurement": {
@@ -2431,7 +2437,7 @@
         },
         "style": {
           "custom-disabled": "If an aggregated style is applied, auto style is disabled",
-          "custom-colors": "Autostyle colors",
+          "custom-colors": "Custom colors",
           "custom-help": "Custom colors: colors used when Autostyle (drop icon) is applied",
           "define": "Define how your widget interacts with the data",
           "description": "Description",

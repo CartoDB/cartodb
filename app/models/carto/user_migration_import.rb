@@ -68,6 +68,7 @@ module Carto
         log.append('=== Importing metadata ===')
         imported = service.import_from_directory(package.meta_dir)
         org_import? ? self.organization = imported : self.user = imported
+        update_database_host
         save!
       end
 
@@ -78,6 +79,20 @@ module Carto
         log.append('=== Importing visualizations and search tweets ===')
         service.import_metadata_from_directory(imported, package.meta_dir)
       end
+    end
+
+    def update_database_host
+      users.each do |user|
+        Rollbar.info("Updating database conection for user #{user.username} to #{database_host}")
+        user.database_host = database_host
+        user.save!
+        ::User[user.id].reload # This is because Sequel models are being cached along request. This forces reload.
+                               # It's being used in visualizations_export_persistence_service.rb#save_import
+      end
+    end
+
+    def users
+      org_import? ? organization.users : [user]
     end
 
     def import_only_data?

@@ -159,7 +159,7 @@ describe 'UserMigration' do
     end
 
     after :each do
-      @organization.users.each(&:destroy_cascade)
+      @organization.reload
       @organization.destroy_cascade
     end
 

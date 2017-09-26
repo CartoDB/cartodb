@@ -130,7 +130,8 @@ var VisModel = Backbone.Model.extend({
       userName: vizjson.datasource.user_name,
       statTag: vizjson.datasource.stat_tag,
       apiKey: this.get('apiKey'),
-      authToken: this.get('authToken')
+      authToken: this.get('authToken'),
+      templateName: vizjson.datasource.template_name
     };
 
     var windshaftClient = new WindshaftClient(windshaftSettings);

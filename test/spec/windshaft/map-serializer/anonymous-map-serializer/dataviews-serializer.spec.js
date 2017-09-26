@@ -1,8 +1,8 @@
 var Backbone = require('backbone');
-var DataviewsSerializer = require('../../../../../src/windshaft/map-serializer/anonymous-map-serializer/dataviews-serializer');
 var CategoryDataviewModel = require('../../../../../src/dataviews/category-dataview-model');
 var HistogramDataviewModel = require('../../../../../src/dataviews/histogram-dataview-model');
 var FormulaDataviewModel = require('../../../../../src/dataviews/formula-dataview-model');
+var DataviewsSerializer = require('../../../../../src/windshaft/map-serializer/anonymous-map-serializer/dataviews-serializer');
 
 describe('dataviews-serializer', function () {
   describe('.serialize', function () {

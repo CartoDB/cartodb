@@ -1,26 +1,26 @@
 var Backbone = require('backbone');
 var CartoDBLayer = require('../../../../../src/geo/map/cartodb-layer');
-var LayersSerializer = require('../../../../../src/windshaft/map-serializer/anonymous-map-serializer/layers-serializer');
 var PlainLayer = require('../../../../../src/geo/map/plain-layer');
 var TileLayer = require('../../../../../src/geo/map/tile-layer');
 var TorqueLayer = require('../../../../../src/geo/map/torque-layer');
 var VisModel = require('../../../../../src/vis/vis');
+var LayersSerializer = require('../../../../../src/windshaft/map-serializer/anonymous-map-serializer/layers-serializer');
 
 describe('layers-serializer', function () {
   describe('.serialize', function () {
     var visMock;
     var sourceMock;
-    var cartoDBLayer;
-    var plainLayer;
-    var torqueLayer;
-    var tileLayer;
+    var layersCollection;
 
     // Create all test objects once
     beforeAll(function () {
+      layersCollection = new Backbone.Collection();
       visMock = new VisModel();
       sourceMock = _createFakeAnalysis({ id: 'a1' });
+    });
 
-      cartoDBLayer = new CartoDBLayer({
+    it('should serialize a cartodb layer', function () {
+      var cartoDBLayer = new CartoDBLayer({
         id: 'l1',
         source: sourceMock,
         cartocss: 'cartoCSS1',
@@ -29,31 +29,8 @@ describe('layers-serializer', function () {
         vis: visMock,
         analysisCollection: new Backbone.Collection()
       });
+      layersCollection.reset([cartoDBLayer]);
 
-      plainLayer = new PlainLayer({
-        id: 'l2',
-        color: 'COLOR',
-        image: 'http://carto.com/image.png'
-      }, { vis: {} });
-
-      torqueLayer = new TorqueLayer({
-        id: 'l3',
-        source: sourceMock,
-        cartocss: 'cartocss'
-      }, {
-        vis: visMock
-      });
-
-      tileLayer = new TileLayer({
-        id: 'l4',
-        urlTemplate: 'URL_TEMPLATE',
-        subdomains: 'abc',
-        tms: false
-      }, { vis: {} });
-    });
-
-    it('should serialize a cartodb layer', function () {
-      var layersCollection = new Backbone.Collection([cartoDBLayer]);
       var actual = LayersSerializer.serialize(layersCollection);
       var expected = [{
         'id': 'l1',
@@ -69,7 +46,13 @@ describe('layers-serializer', function () {
     });
 
     it('should serialize a plain layer', function () {
-      var layersCollection = new Backbone.Collection([plainLayer]);
+      var plainLayer = new PlainLayer({
+        id: 'l2',
+        color: 'COLOR',
+        image: 'http://carto.com/image.png'
+      }, { vis: {} });
+      layersCollection.reset([plainLayer]);
+
       var actual = LayersSerializer.serialize(layersCollection);
       var expected = [{
         'id': 'l2',
@@ -83,7 +66,15 @@ describe('layers-serializer', function () {
     });
 
     it('should serialize a torque layer', function () {
-      var layersCollection = new Backbone.Collection([torqueLayer]);
+      var torqueLayer = new TorqueLayer({
+        id: 'l3',
+        source: sourceMock,
+        cartocss: 'cartocss'
+      }, {
+        vis: visMock
+      });
+      layersCollection.reset([torqueLayer]);
+
       var actual = LayersSerializer.serialize(layersCollection);
       var expected = [{
         'id': 'l3',
@@ -98,7 +89,14 @@ describe('layers-serializer', function () {
     });
 
     it('should serialize a tile layer', function () {
-      var layersCollection = new Backbone.Collection([tileLayer]);
+      var tileLayer = new TileLayer({
+        id: 'l4',
+        urlTemplate: 'URL_TEMPLATE',
+        subdomains: 'abc',
+        tms: false
+      }, { vis: {} });
+      layersCollection.reset([tileLayer]);
+
       var actual = LayersSerializer.serialize(layersCollection);
       var expected = [{
         'id': 'l4',

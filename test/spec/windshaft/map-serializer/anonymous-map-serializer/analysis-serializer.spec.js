@@ -1,9 +1,9 @@
-var AnalysisSerializer = require('../../../../../src/windshaft/map-serializer/anonymous-map-serializer/analysis-serializer');
-var AnalysisFactory = require('../../../../../src/analysis/analysis-factory.js');
 var Backbone = require('backbone');
+var AnalysisFactory = require('../../../../../src/analysis/analysis-factory.js');
 var CartoDBLayer = require('../../../../../src/geo/map/cartodb-layer');
 var VisModel = require('../../../../../src/vis/vis');
 var DataviewModel = require('../../../../../src/dataviews/dataview-model-base');
+var AnalysisSerializer = require('../../../../../src/windshaft/map-serializer/anonymous-map-serializer/analysis-serializer');
 
 describe('analysis-serializer', function () {
   var visModel;
@@ -181,7 +181,7 @@ describe('analysis-serializer', function () {
         expect(actual).toEqual(expected);
       });
 
-      it("should NOT include an analysis if it's part of the analysis of another layer", function () {
+      it("should NOT include an analysis if it's part of the analysis of another dataview", function () {
         var analysis1 = analysisFactory.analyse({
           id: 'b1',
           type: 'union',

@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.9.85-12867.1",
+  "version": "4.9.89-12740.1",
   "description": "CARTO UI frontend",
   "repository": {
     "type": "git",
@@ -141,11 +141,19 @@
     "update-internal-deps": "rm -rf node_modules && npm install --production --no-shrinkwrap && npm dedupe && npm prune && npm shrinkwrap && npm run fix-shrinkwrap-protocol && npm install",
     "branch-files": "node lib/build/branchFiles/branchFiles.js",
     "affected_specs": "node lib/build/branchFiles/branchFiles.js | xargs node lib/build/affectedFiles/affectedFiles.js",
+<<<<<<< HEAD
     "build": "NODE_ENV=production webpack --config webpack.prod.config.js",
     "build:dashboard": "webpack -p --config webpack/webpack.dev.config.js",
     "build:stats": "webpack --env.stats --progress --config webpack.dev.config.js",
     "start": "grunt watch:css & webpack --progress --watch --config webpack.dev.config.js",
     "start:dashboard": "webpack --progress --watch --config webpack/webpack.dev.config.js",
+=======
+    "build": "NODE_ENV=production webpack --config webpack.prod.config.js && npm run build:static",
+    "build:static": "webpack -p --config webpack/webpack.dev.config.js",
+    "build:stats": "webpack --env.stats --progress --config webpack.dev.config.js",
+    "start": "grunt watch:css & webpack --progress --watch --config webpack.dev.config.js & npm run start:static",
+    "start:static": "webpack --progress --watch --config webpack/webpack.dev.config.js",
+>>>>>>> 12740-static-account
     "dev": "webpack --progress --config webpack.dev.config.js",
     "fix-shrinkwrap-protocol": "node ./lib/build/fix-shrinkwrap.js"
   }

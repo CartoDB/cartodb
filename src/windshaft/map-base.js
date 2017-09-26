@@ -98,8 +98,6 @@ var WindshaftMap = Backbone.Model.extend({
     return !this._windshaftSettings.templateName;
   },
 
-  // TODO: Move this somewhere else and keep this class as a wrapper for windshaft responses
-
   _getParams: function () {
     var params = {
       stat_tag: this.get('statTag')

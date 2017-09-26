@@ -1,3 +1,4 @@
+var _ = require('underscore');
 var LayerTypes = require('../../../geo/map/layer-types.js');
 
 /**
@@ -5,21 +6,27 @@ var LayerTypes = require('../../../geo/map/layer-types.js');
  * layersCollection and the dataviewsCollection.
  */
 function serialize (layersCollection, dataviewsCollection) {
+  var analyses = [];
   var layerAnalyses = _getAnalysesFromLayers(layersCollection);
   var dataviewsAnalyses = _getAnalysesFromDataviews(dataviewsCollection);
-  // TODO: Remove dups
-  return layerAnalyses.concat(dataviewsAnalyses).map(function (analysis) {
-    return analysis.toJSON();
+
+  var ids = {};
+  var analysesList = layerAnalyses.concat(dataviewsAnalyses);
+  _.forEach(analysesList, function (analysis) {
+    if (!ids[analysis.get('id')] && !_isAnalysisPartOfOtherAnalyses(analysis, analysesList)) {
+      ids[analysis.get('id')] = true; // keep a set of already added analysis.
+      analyses.push(analysis.toJSON());
+    }
   });
+  return analyses;
 }
 
 /**
  * Return the analyses contained in a layers collection.
  */
 function _getAnalysesFromLayers (layersCollection) {
-  return _getCartoDBAndTorqueLayers(layersCollection).map(function (layer) {
-    return layer.getSource();
-  });
+  var layers = _getCartoDBAndTorqueLayers(layersCollection);
+  return layers.map(function (layer) { return layer.getSource(); });
 }
 
 /**
@@ -36,6 +43,18 @@ function _getAnalysesFromDataviews (dataviewsCollection) {
 function _getCartoDBAndTorqueLayers (layersCollection) {
   return layersCollection.filter(function (layer) {
     return LayerTypes.isCartoDBLayer(layer) || LayerTypes.isTorqueLayer(layer);
+  });
+}
+
+/**
+ * 
+ */
+function _isAnalysisPartOfOtherAnalyses (analysis, analysisCollection) {
+  return _.any(analysisCollection, function (otherAnalysisModel) {
+    if (!analysis.equals(otherAnalysisModel)) {
+      return otherAnalysisModel.findAnalysisById(analysis.get('id'));
+    }
+    return false;
   });
 }
 

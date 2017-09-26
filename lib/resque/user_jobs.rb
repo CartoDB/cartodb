@@ -75,7 +75,7 @@ module Resque
         @queue = :users
 
         def self.perform(visualization_id, user_id)
-          v = CartoDB::Visualization::Member.new(id: visualization_id).fetch
+          v = Carto::Visualization.find(visualization_id)
           u = ::User.where(id: user_id).first
           UserMailer.share_visualization(v, u).deliver
         end
@@ -86,7 +86,7 @@ module Resque
         @queue = :users
 
         def self.perform(table_id, user_id)
-          t = CartoDB::Visualization::Member.new(id: table_id).fetch
+          t = Carto::Visualization.find(table_id)
           u = ::User.where(id: user_id).first
           UserMailer.share_table(t, u).deliver
         end
@@ -97,7 +97,6 @@ module Resque
         @queue = :users
 
         def self.perform(visualization_name, visualization_owner_name, user_id)
-          #v = CartoDB::Visualization::Member.new(id: visualization_id).fetch
           u = ::User.where(id: user_id).first
           UserMailer.unshare_visualization(visualization_name, visualization_owner_name, u).deliver
         end

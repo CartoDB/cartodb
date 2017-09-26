@@ -244,7 +244,6 @@ module.exports = function (grunt) {
 
     var builderFiles = [
       'js_cartodb3',
-      'js_node_cartodb3',
       'js_test_cartodb3'
     ];
     var otherFiles = [
@@ -329,7 +328,6 @@ module.exports = function (grunt) {
   grunt.registerTask('js_builder', [
     'copy:locale',
     'copy:js_cartodb3',
-    'copy:js_node_cartodb3',
     'copy:js_test_cartodb3'
   ]);
 

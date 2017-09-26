@@ -64,27 +64,21 @@ module Carto
     end
 
     def import(service, package)
-      if import_metadata?
-        imported = do_import_metadata(package, service)
-      end
-
-      import_job = do_import_data(package, service)
-
-      if import_metadata?
-        import_visualizations(import_job, imported, package, service)
-      end
+      @import_job = CartoDB::DataMover::ImportJob.new(import_job_arguments(package.data_dir))
+      imported = do_import_metadata(package, service) if import_metadata?
+      do_import_data(package, service)
+      import_visualizations(imported, package, service) if import_metadata?
     end
 
-    def import_visualizations(import_job, imported, package, service)
+    def import_visualizations(imported, package, service)
       log.append('=== Importing visualizations and search tweets ===')
       begin
         ActiveRecord::Base.transaction do
           service.import_metadata_from_directory(imported, package.meta_dir)
         end
       rescue => e
-        ActiveRecord::Base.connection.close
         log.append('=== Error importing visualizations and search tweets. Rollback! ===')
-        rollback_import_data(import_job)
+        rollback_import_data
         service.rollback_import_from_directory(package.meta_dir)
         raise e
       end
@@ -92,24 +86,24 @@ module Carto
 
     def do_import_data(package, service)
       log.append('=== Importing data ===')
-      import_job = CartoDB::DataMover::ImportJob.new(import_job_arguments(package.data_dir))
       begin
-        import_job.run!
+        @import_job.run!
       rescue => e
-        log.append('=== Error importing data. Rollback!')
-        rollback_import_data(import_job)
+        log.append('=== Error importing data. Rollback! ===')
+        rollback_import_data
         service.rollback_import_from_directory(package.meta_dir) if import_metadata?
         raise e
+      ensure
+        @import_job.terminate_connections
       end
-      import_job
     end
 
-    def rollback_import_data(import_job)
-      import_job.add_options(rollback: true,
+    def rollback_import_data
+      @import_job.add_options(rollback: true,
                              mode: :rollback,
                              drop_database: true,
                              drop_roles: true)
-      import_job.rollback!
+      @import_job.rollback!
     end
 
     def do_import_metadata(package, service)

@@ -4,7 +4,7 @@ var Backbone = require('backbone');
 var CartoDBLayer = require('../../../../../src/geo/map/cartodb-layer');
 var VisModel = require('../../../../../src/vis/vis');
 
-fdescribe('analysis-serializer', function () {
+describe('analysis-serializer', function () {
   var analysisFactory;
   beforeEach(function () {
     analysisFactory = new AnalysisFactory({
@@ -42,7 +42,7 @@ fdescribe('analysis-serializer', function () {
       expect(actual).toEqual(expected);
     });
 
-    fit("should NOT include an analysis if it's part of the analysis of another layer", function () {
+    it("should NOT include an analysis if it's part of the analysis of another layer", function () {
       var analysis1 = analysisFactory.analyse({
         id: 'b1',
         type: 'union',
@@ -148,6 +148,64 @@ fdescribe('analysis-serializer', function () {
         }
       }];
       expect(actual.length).toEqual(1);
+      expect(actual).toEqual(expected);
+    });
+
+    it('should only include an analysis once', function () {
+      var analysisDefinition0 = {
+        id: 'a0',
+        type: 'source',
+        params: {
+          query: 'select * from subway_stops'
+        }
+      };
+
+      var analysisDefinition1 = {
+        id: 'a1',
+        type: 'source',
+        params: {
+          query: 'select * from subway_stops limit 10'
+        }
+      };
+
+      var analysis0 = analysisFactory.analyse(analysisDefinition0);
+      var analysis1 = analysisFactory.analyse(analysisDefinition1);
+
+      var cartoDBLayer1 = new CartoDBLayer({
+        id: 'l1',
+        source: analysis0,
+        cartocss: 'cartocssMock',
+        cartocss_version: '2.0'
+      }, {
+        vis: new VisModel(),
+        analysisCollection: new Backbone.Collection()
+      });
+
+      var cartoDBLayer2 = new CartoDBLayer({
+        id: 'l2',
+        source: analysis1,
+        cartocss: 'cartocssMock',
+        cartocss_version: '2.0'
+      }, {
+        vis: new VisModel(),
+        analysisCollection: new Backbone.Collection()
+      });
+
+      var cartoDBLayer3 = new CartoDBLayer({
+        id: 'l3',
+        source: analysis0, // CartoDBLayer1 and CartoDBLayer3 have the same analysis
+        cartocss: 'cartocssMock',
+        cartocss_version: '2.0'
+      }, {
+        vis: new VisModel(),
+        analysisCollection: new Backbone.Collection()
+      });
+
+      var layersCollection = new Backbone.Collection([cartoDBLayer1, cartoDBLayer2, cartoDBLayer3]);
+      var dataViewsCollection = new Backbone.Collection([]);
+      var actual = AnalysisSerializer.serialize(layersCollection, dataViewsCollection);
+      var expected = [analysisDefinition0, analysisDefinition1];
+      expect(actual.length).toEqual(2);
       expect(actual).toEqual(expected);
     });
   });

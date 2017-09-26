@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.9.94",
+  "version": "4.9.96",
   "dependencies": {
     "abbrev": {
       "version": "1.1.0",
@@ -387,8 +387,8 @@
     },
     "cartodb-deep-insights.js": {
       "version": "0.0.3",
-      "from": "cartodb/deep-insights.js#master",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#4c0c2d68588a5e97b15e07cb5f42a6274449c6c3",
+      "from": "cartodb/deep-insights.js#11430-popup-empty-field",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#0971cf6a7b51dd9379e7619afc1df89158bd08fa",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",
@@ -404,8 +404,8 @@
     },
     "cartodb.js": {
       "version": "4.0.0-alpha.1.1.2",
-      "from": "cartodb/cartodb.js#v4",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#46d205d3a0323f2424294f784cf76449801af744"
+      "from": "cartodb/cartodb.js#11430-popup-empty-field",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#8f31a5bf3a18d591a68ae8181529e5544d7321cb"
     },
     "caseless": {
       "version": "0.12.0",
@@ -2070,9 +2070,9 @@
       "resolved": "https://registry.npmjs.org/setimmediate/-/setimmediate-1.0.5.tgz"
     },
     "sha.js": {
-      "version": "2.4.8",
+      "version": "2.4.9",
       "from": "sha.js@>=2.4.0 <3.0.0",
-      "resolved": "https://registry.npmjs.org/sha.js/-/sha.js-2.4.8.tgz"
+      "resolved": "https://registry.npmjs.org/sha.js/-/sha.js-2.4.9.tgz"
     },
     "shallow-copy": {
       "version": "0.0.1",
@@ -2351,9 +2351,9 @@
       "resolved": "git://github.com/cartodb/tangram.git#5df75d855a559d64673d518c5969ca6569a8e04b"
     },
     "tangram-cartocss": {
-      "version": "0.9.2",
+      "version": "0.9.3",
       "from": "tangram-cartocss@>=0.9.0 <0.10.0",
-      "resolved": "https://registry.npmjs.org/tangram-cartocss/-/tangram-cartocss-0.9.2.tgz"
+      "resolved": "https://registry.npmjs.org/tangram-cartocss/-/tangram-cartocss-0.9.3.tgz"
     },
     "tangram-reference": {
       "version": "2.1.0",

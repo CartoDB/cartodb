@@ -62,7 +62,11 @@ var canLayerBeRenderedClientSide = function (layerModel) {
   var cartoCSS = layerModel.get('meta').cartocss;
   var result = TC.getSupportedCartoCSSResult(cartoCSS);
   if (!result.supported) {
-    log.error(new Error('[Vector] Unable to render due "' + result.reason + '". Full CartoCSS:\n' + cartoCSS));
+    if (result.reason.indexOf('Unsupported CartoCSS') === 0) {
+      log.info('[Vector] Unable to render due "' + result.reason + '". Full CartoCSS:\n' + cartoCSS);
+    } else {
+      log.error(new Error('[Vector] Unable to render due "' + result.reason + '". Full CartoCSS:\n' + cartoCSS));
+    }
   }
   return result.supported;
 };

@@ -47,7 +47,7 @@ module Carto
       update_attributes(state: STATE_FAILURE)
       false
     ensure
-      package.cleanup
+      package.present? && package.cleanup
     end
 
     def enqueue
@@ -57,7 +57,7 @@ module Carto
     private
 
     def assert_organization_does_not_exist
-      if organization.present? && Carto::Organization.where(id: organization.id)
+      if organization.present? && Carto::Organization.where(id: organization.id).any?
         raise OrganizationAlreadyExists.new
       end
     end

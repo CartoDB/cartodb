@@ -8,11 +8,18 @@ var VisModel = require('../../../../../src/vis/vis');
 
 describe('layers-serializer', function () {
   describe('.serialize', function () {
-    it('should serialize a layer collection with one layer of each kind', function () {
-      var visMock = new VisModel();
-      var sourceMock = _createFakeAnalysis({ id: 'a1' });
+    var visMock;
+    var sourceMock;
+    var cartoDBLayer;
+    var plainLayer;
+    var torqueLayer;
+    var tileLayer;
+    // Create all test objects once
+    beforeAll(function () {
+      visMock = new VisModel();
+      sourceMock = _createFakeAnalysis({ id: 'a1' });
 
-      var cartoDBLayer = new CartoDBLayer({
+      cartoDBLayer = new CartoDBLayer({
         id: 'l1',
         source: sourceMock,
         cartocss: 'cartoCSS1',
@@ -22,13 +29,13 @@ describe('layers-serializer', function () {
         analysisCollection: new Backbone.Collection()
       });
 
-      var plainLayer = new PlainLayer({
+      plainLayer = new PlainLayer({
         id: 'l2',
         color: 'COLOR',
         image: 'http://carto.com/image.png'
       }, { vis: {} });
 
-      var torqueLayer = new TorqueLayer({
+      torqueLayer = new TorqueLayer({
         id: 'l3',
         source: sourceMock,
         cartocss: 'cartocss'
@@ -36,54 +43,67 @@ describe('layers-serializer', function () {
         vis: visMock
       });
 
-      var tileLayer = new TileLayer({
+      tileLayer = new TileLayer({
         id: 'l4',
         urlTemplate: 'URL_TEMPLATE',
         subdomains: 'abc',
         tms: false
       }, { vis: {} });
-
-      var layersCollection = new Backbone.Collection([cartoDBLayer, plainLayer, torqueLayer, tileLayer]);
-
+    });
+    it('should serialize a cartodb layer', function () {
+      var layersCollection = new Backbone.Collection([cartoDBLayer]);
       var actual = LayersSerializer.serialize(layersCollection);
-      var expected = [
-        {
-          'id': 'l1',
-          'type': 'mapnik',
-          'options': {
-            'cartocss': 'cartoCSS1',
-            'cartocss_version': '2.0',
-            'interactivity': [ 'cartodb_id' ],
-            'source': { id: 'a1' }
-          }
-        },
-        {
-          'id': 'l2',
-          'type': 'plain',
-          'options': {
-            'color': 'COLOR',
-            'imageUrl': 'http://carto.com/image.png'
-          }
-        },
-        {
-          'id': 'l3',
-          'type': 'torque',
-          'options': {
-            'source': { id: 'a1' },
-            'cartocss': 'cartocss',
-            'cartocss_version': '2.1.0'
-          }
-        },
-        {
-          'id': 'l4',
-          'type': 'http',
-          'options': {
-            'urlTemplate': 'URL_TEMPLATE',
-            'subdomains': 'abc',
-            'tms': false
-          }
+      var expected = [{
+        'id': 'l1',
+        'type': 'mapnik',
+        'options': {
+          'cartocss': 'cartoCSS1',
+          'cartocss_version': '2.0',
+          'interactivity': [ 'cartodb_id' ],
+          'source': { id: 'a1' }
         }
-      ];
+      }];
+      expect(actual).toEqual(expected);
+    });
+    it('should serialize a plain layer', function () {
+      var layersCollection = new Backbone.Collection([plainLayer]);
+      var actual = LayersSerializer.serialize(layersCollection);
+      var expected = [{
+        'id': 'l2',
+        'type': 'plain',
+        'options': {
+          'color': 'COLOR',
+          'imageUrl': 'http://carto.com/image.png'
+        }
+      }];
+      expect(actual).toEqual(expected);
+    });
+    it('should serialize a torque layer', function () {
+      var layersCollection = new Backbone.Collection([torqueLayer]);
+      var actual = LayersSerializer.serialize(layersCollection);
+      var expected = [{
+        'id': 'l3',
+        'type': 'torque',
+        'options': {
+          'source': { id: 'a1' },
+          'cartocss': 'cartocss',
+          'cartocss_version': '2.1.0'
+        }
+      }];
+      expect(actual).toEqual(expected);
+    });
+    it('should serialize a tile layer', function () {
+      var layersCollection = new Backbone.Collection([tileLayer]);
+      var actual = LayersSerializer.serialize(layersCollection);
+      var expected = [{
+        'id': 'l4',
+        'type': 'http',
+        'options': {
+          'urlTemplate': 'URL_TEMPLATE',
+          'subdomains': 'abc',
+          'tms': false
+        }
+      }];
       expect(actual).toEqual(expected);
     });
   });

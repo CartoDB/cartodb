@@ -202,6 +202,11 @@ describe 'UserMigration' do
 
       org_import.run_import.should eq true
     end
+
+    it 'should fail if importing an already existing organization' do
+      org_import.run_import.should eq true
+      org_import.run_import.should eq false
+    end
   end
 
   it 'exports and imports a user with a data import with two tables' do

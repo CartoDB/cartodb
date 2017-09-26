@@ -17,12 +17,12 @@ function serialize (layersCollection, dataviewsCollection) {
     buffersize: {
       mvt: 0
     },
-    styles: calculateLayerStyles(layers)
+    styles: _getStylesFromLayers(layers)
   };
 }
 
 
-function calculateLayerStyles (layers) {
+function _getStylesFromLayers (layers) {
   return _.reduce(layers, function (styles, layer, index) {
     if (layer.get('cartocss')) {
       styles[index] = layer.get('cartocss');

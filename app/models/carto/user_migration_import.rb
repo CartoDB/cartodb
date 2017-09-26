@@ -27,6 +27,7 @@ module Carto
     validate :valid_org_import
 
     def run_import
+      assert_organization_does_not_exist
       log.append('=== Downloading ===')
       update_attributes(state: STATE_DOWNLOADING)
       package = UserMigrationPackage.for_import(id, log)
@@ -54,6 +55,12 @@ module Carto
     end
 
     private
+
+    def assert_organization_does_not_exist
+      if organization.present? && Carto::Organization.where(id: organization.id)
+        raise OrganizationAlreadyExists.new
+      end
+    end
 
     def valid_org_import
       if org_import?
@@ -110,6 +117,9 @@ module Carto
       log.append('=== Importing metadata ===')
       begin
         imported = service.import_from_directory(package.meta_dir)
+      rescue OrganizationAlreadyExists => e
+        log.append('Organization already exists. Skipping!')
+        raise e
       rescue => e
         log.append('=== Error importing metadata. Rollback! ===')
         service.rollback_import_from_directory(package.meta_dir)

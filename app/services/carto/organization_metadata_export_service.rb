@@ -166,6 +166,7 @@ module Carto
     end
   end
 
+  class OrganizationAlreadyExists < RuntimeError; end
   # Both String and Hash versions are provided because `deep_symbolize_keys` won't symbolize through arrays
   # and having separated methods make handling and testing much easier.
   class OrganizationMetadataExportService
@@ -191,6 +192,7 @@ module Carto
     def import_from_directory(meta_path)
       # Import organization
       organization = load_organization_from_directory(meta_path)
+      raise OrganizationAlreadyExists.new if ::Carto::Organization.where(id: organization.id).exists?
 
       organization_redis_file = get_redis_filename(meta_path)
       Carto::RedisExportService.new.restore_redis_from_json_export(File.read(organization_redis_file))

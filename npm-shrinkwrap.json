@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.9.94",
+  "version": "4.9.94-1755",
   "dependencies": {
     "accessory": {
       "version": "1.0.1",
@@ -324,7 +324,7 @@
     "cartodb-deep-insights.js": {
       "version": "0.0.3",
       "from": "cartodb/deep-insights.js#layer-sources",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#cb215883894388a372ab6cb91d563e7a83778c9e",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#c956e2bcbbe16ec805dc06edef55efa646591614",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",
@@ -1725,9 +1725,9 @@
       "resolved": "https://registry.npmjs.org/setimmediate/-/setimmediate-1.0.5.tgz"
     },
     "sha.js": {
-      "version": "2.4.8",
+      "version": "2.4.9",
       "from": "sha.js@>=2.4.0 <3.0.0",
-      "resolved": "https://registry.npmjs.org/sha.js/-/sha.js-2.4.8.tgz"
+      "resolved": "https://registry.npmjs.org/sha.js/-/sha.js-2.4.9.tgz"
     },
     "shallow-copy": {
       "version": "0.0.1",

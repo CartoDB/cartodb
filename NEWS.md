@@ -204,6 +204,10 @@ Development
 * Removed unused settings in organizations (#4992)
 * Increment maximum buckets in Time-Series for leap years (#12778)
 
+### Internals
+
+* Fix layer's sources in tests (analysis source required) (#12866)
+
 ### NOTICE
 This release upgrades the CartoDB PostgreSQL extension to `0.19.2`. Run the following to have it available:
 ```shell

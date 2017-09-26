@@ -9,7 +9,7 @@ module FrontendConfigHelper
       account_host:               CartoDB.account_host,
       trackjs_customer:           Cartodb.get_config(:trackjs, 'customer'),
       trackjs_enabled:            Cartodb.get_config(:trackjs, 'enabled'),
-      trackjs_app_key:            Cartodb.get_config(:trackjs, 'app_keys', 'editor'),
+      trackjs_app_keys:           Cartodb.get_config(:trackjs, 'app_keys'),
       google_analytics_ua:        Cartodb.get_config(:google_analytics, 'primary'),
       google_analytics_domain:    Cartodb.get_config(:google_analytics, 'domain'),
       hubspot_enabled:            CartoDB::Hubspot::instance.enabled?,

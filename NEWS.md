@@ -55,6 +55,7 @@ Development
 * Remove data-observatory-multiple-measures feature flag (#304)
 
 ### Bug fixes / enhancements
+* Popups improvements (#11430, #10993)
 * Lazy select to fix missing values due to 40 per page items limitation in requests
 * Fix min/max parameters in filter analysis (#11658)
 * Fix some styles for datasets view for IE11.

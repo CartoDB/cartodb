@@ -131,22 +131,76 @@ describe 'UserMigration' do
 
       import.run_import.should eq true
     end
+  end
 
-    private
-
-    def import
-      Carto::UserMigrationImport.create(
-        exported_file: @export.exported_file,
-        database_host: @user_attributes['database_host'],
-        org_import: false,
-        json_file: @export.json_file,
-        import_metadata: true
+  describe 'failing organization organizations should rollback' do
+    include_context 'organization with users helper'
+    before :each do
+      owner = @carto_organization.owner
+      filepath = "#{Rails.root}/services/importer/spec/fixtures/visualization_export_with_two_tables.carto"
+      data_import = DataImport.create(
+        user_id: owner.id,
+        data_source: filepath,
+        updated_at: Time.now.utc,
+        append: false,
+        create_visualization: true
       )
+      data_import.values[:data_source] = filepath
+
+      data_import.run_import!
+      data_import.success.should eq true
+
+      @export = Carto::UserMigrationExport.create(
+        organization: @carto_organization,
+        export_metadata: true
+      )
+      @export.run_export
+      @organization.destroy_cascade
     end
 
-    def destroy_user
-      @carto_user.client_applications.each(&:destroy)
-      @user.destroy
+    after :each do
+      @organization.users.each(&:destroy_cascade)
+      @organization.destroy_cascade
+    end
+
+    it 'import failing in import_metadata should rollback' do
+      Carto::RedisExportService.any_instance.stubs(:restore_redis_from_hash_export).raises('Some exception')
+
+      org_import.run_import.should eq false
+
+      Carto::RedisExportService.any_instance.unstub(:restore_redis_from_hash_export)
+
+      org_import.run_import.should eq true
+    end
+
+    it 'import failing in JobImport#run!' do
+      CartoDB::DataMover::ImportJob.any_instance.stubs(:grant_user_role).raises('Some exception')
+
+      org_import.run_import.should eq false
+
+      CartoDB::DataMover::ImportJob.any_instance.unstub(:grant_user_role)
+
+      org_import.run_import.should eq true
+    end
+
+    it 'import failing creating user database and roles' do
+      CartoDB::DataMover::ImportJob.any_instance.stubs(:import_pgdump).raises('Some exception')
+
+      org_import.run_import.should eq false
+
+      CartoDB::DataMover::ImportJob.any_instance.unstub(:import_pgdump)
+
+      org_import.run_import.should eq true
+    end
+
+    it 'import failing importing visualizations' do
+      Carto::UserMetadataExportService.any_instance.stubs(:import_search_tweets_from_directory).raises('Some exception')
+
+      org_import.run_import.should eq false
+
+      Carto::UserMetadataExportService.any_instance.unstub(:import_search_tweets_from_directory)
+
+      org_import.run_import.should eq true
     end
   end
 
@@ -341,5 +395,30 @@ describe 'UserMigration' do
     data_import.run_import!
     data_import.success.should eq true
     return user
+  end
+
+  def org_import
+    Carto::UserMigrationImport.create(
+      exported_file: @export.exported_file,
+      database_host: @carto_organization.owner.attributes['database_host'],
+      org_import: true,
+      json_file: @export.json_file,
+      import_metadata: true
+    )
+  end
+
+  def import
+    Carto::UserMigrationImport.create(
+      exported_file: @export.exported_file,
+      database_host: @user_attributes['database_host'],
+      org_import: false,
+      json_file: @export.json_file,
+      import_metadata: true
+    )
+  end
+
+  def destroy_user
+    @carto_user.client_applications.each(&:destroy)
+    @user.destroy
   end
 end

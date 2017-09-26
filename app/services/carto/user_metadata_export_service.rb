@@ -212,6 +212,8 @@ module Carto
       user && Carto::User.find(user.id).delete
 
       Carto::RedisExportService.new.remove_redis_from_json_export(redis_user_file(path))
+    rescue ActiveRecord::RecordNotFound => e
+      #User was not created so not found and no redis removal needed
     end
 
     def import_user_visualizations_from_directory(user, type, meta_path)

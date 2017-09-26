@@ -388,7 +388,7 @@
     "cartodb-deep-insights.js": {
       "version": "0.0.3",
       "from": "cartodb/deep-insights.js#master",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#4c0c2d68588a5e97b15e07cb5f42a6274449c6c3",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#c9ccdfbf2f48d4c4e40ab4f473e696563d88d5a2",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",
@@ -2070,9 +2070,9 @@
       "resolved": "https://registry.npmjs.org/setimmediate/-/setimmediate-1.0.5.tgz"
     },
     "sha.js": {
-      "version": "2.4.8",
+      "version": "2.4.9",
       "from": "sha.js@>=2.4.0 <3.0.0",
-      "resolved": "https://registry.npmjs.org/sha.js/-/sha.js-2.4.8.tgz"
+      "resolved": "https://registry.npmjs.org/sha.js/-/sha.js-2.4.9.tgz"
     },
     "shallow-copy": {
       "version": "0.0.1",

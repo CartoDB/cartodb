@@ -66,6 +66,7 @@ module CartoDB
       end
 
       def rollback!
+        close_all_database_connections
         if @pack_config['organization']
           rollback_org
         else
@@ -301,9 +302,23 @@ module CartoDB
         superuser_pg_conn.query("ALTER DATABASE #{superuser_pg_conn.quote_ident(db)} SET statement_timeout = #{timeout}")
       end
 
+      def close_all_database_connections(database_name = @target_dbname)
+
+        superuser_pg_conn.query("SELECT pg_terminate_backend(pg_stat_activity.pid)
+                                  FROM pg_stat_activity
+                                WHERE pg_stat_activity.datname = '#{database_name}'
+                                AND pid <> pg_backend_pid();")
+        terminate_connections
+      end
+
       def terminate_connections
+        @user_conn && @user_conn.close
         @user_conn = nil
+
+        @superuser_user_conn && @superuser_user_conn.close
         @superuser_user_conn = nil
+
+        @superuser_conn && @superuser_conn.close
         @superuser_conn = nil
       end
 
@@ -332,6 +347,7 @@ module CartoDB
       end
 
       def drop_database(db_name)
+        close_all_database_connections(db_name)
         superuser_pg_conn.query("DROP DATABASE IF EXISTS \"#{db_name}\"")
       end
 

@@ -74,7 +74,7 @@ describe 'UserMigration' do
   it_should_behave_like 'migrating metadata', true
   it_should_behave_like 'migrating metadata', false
 
-  describe 'failing imports should rollback' do
+  describe 'failing user imports should rollback' do
     before :each do
       @user = create_user_with_visualizations
       @carto_user = Carto::User.find(@user.id)

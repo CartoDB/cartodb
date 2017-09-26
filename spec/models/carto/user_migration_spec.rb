@@ -203,9 +203,16 @@ describe 'UserMigration' do
       org_import.run_import.should eq true
     end
 
-    it 'should fail if importing an already existing organization' do
+    it 'should fail if importing an already existing organization with metadata' do
       org_import.run_import.should eq true
       org_import.run_import.should eq false
+    end
+
+    it 'should fail if importing an already existing organization' do
+      imp = org_import
+      imp.stubs(:assert_organization_does_not_exist).raises(Carto::OrganizationAlreadyExists.new)
+      imp.run_import.should eq false
+      org_import.run_import.should eq true
     end
   end
 

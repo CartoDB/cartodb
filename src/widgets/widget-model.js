@@ -25,12 +25,9 @@ module.exports = cdb.core.Model.extend({
 
   initialize: function (attrs, models, opts) {
     opts = opts || {};
-    if (!models.dataviewModel) {
-      throw new Error('dataviewModel is required.');
-    }
-    if (!models.layerModel) {
-      throw new Error('layerModel is required.');
-    }
+    if (!models.dataviewModel) throw new Error('dataviewModel is required.');
+    if (!models.layerModel) throw new Error('layerModel is required.');
+
     this.dataviewModel = models.dataviewModel;
     this.layerModel = models.layerModel;
 

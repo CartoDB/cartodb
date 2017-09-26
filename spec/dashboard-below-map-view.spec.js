@@ -62,7 +62,7 @@ describe('dashboard-below-map-view', function () {
     beforeEach(function () {
       var timeSeriesWidgetModelFake = createFakeTimeSeriesWidgetModel();
       timeSeriesWidgetModelFake.dataviewModel = createFakeDataviewModel();
-      timeSeriesWidgetModelFake.dataviewModel.layer = createFakeDataviewLayer();
+      timeSeriesWidgetModelFake.layerModel = createFakeDataviewLayer();
       this.widgetsCollection.add(timeSeriesWidgetModelFake);
     });
 
@@ -106,7 +106,7 @@ describe('dashboard-below-map-view', function () {
         animated: false
       });
       this.model.dataviewModel = createFakeDataviewModel();
-      this.model.dataviewModel.layer = createFakeDataviewLayer({
+      this.model.layerModel = createFakeDataviewLayer({
         type: 'torque'
       });
 
@@ -122,7 +122,7 @@ describe('dashboard-below-map-view', function () {
         animated: true
       });
       this.model.dataviewModel = createFakeDataviewModel();
-      this.model.dataviewModel.layer = createFakeDataviewLayer({
+      this.model.layerModel = createFakeDataviewLayer({
         type: 'torque'
       });
 

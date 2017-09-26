@@ -6,20 +6,19 @@ var CategoryContentView = require('../../../src/widgets/category/content-view');
 describe('widgets/category/content-view', function () {
   beforeEach(function () {
     var vis = specHelper.createDefaultVis();
-    this.dataviewModel = vis.dataviews.createCategoryModel(vis.map.layers.first(), {
+    var source = vis.analysis.findNodeById('a0');
+    this.dataviewModel = vis.dataviews.createCategoryModel({
       column: 'col',
-      source: {
-        id: 'a0'
-      }
+      source: source
     });
-    this.dataviewModel.getLayerName = function () {
-      return '< & ><h1>Hello</h1>';
-    };
+    this.layerModel = vis.map.layers.first();
+    this.layerModel.set('layer_name', '< & ><h1>Hello</h1>');
     this.model = new CategoryWidgetModel({
       title: 'Categories of something',
       hasInitialState: true
     }, {
-      dataviewModel: this.dataviewModel
+      dataviewModel: this.dataviewModel,
+      layerModel: this.layerModel
     });
 
     this.view = new CategoryContentView({
@@ -44,7 +43,7 @@ describe('widgets/category/content-view', function () {
   it('should render the widget when the layer name changes', function () {
     spyOn(this.view, 'render');
     this.view._initBinds();
-    this.dataviewModel.layer.set('layer_name', 'Hello');
+    this.layerModel.set('layer_name', 'Hello');
     expect(this.view.render).toHaveBeenCalled();
   });
 

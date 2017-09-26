@@ -9,11 +9,14 @@ var TorqueLayer = require('cartodb.js/src/geo/map/torque-layer');
 describe('widgets/time-series/torque-time-slider-view', function () {
   beforeEach(function () {
     var vis = specHelper.createDefaultVis();
-    this.dataviewModel = vis.dataviews.createHistogramModel(vis.map.layers.first(), {
+    this.layerModel = vis.map.layers.first();
+    var source = vis.analysis.findNodeById('a0');
+    this.dataviewModel = vis.dataviews.createHistogramModel({
       aggregation: 'minute',
       offset: 0,
       column: 'dates',
-      bins: 256
+      bins: 256,
+      source: source
     });
     // Assume start/end are set for the test env
     this.dataviewModel.set({
@@ -42,6 +45,7 @@ describe('widgets/time-series/torque-time-slider-view', function () {
     this.chartView = new HistogramChartView({
       type: 'time-series',
       dataviewModel: this.dataviewModel,
+      layerModel: this.layerModel,
       margin: this.histogramChartMargins,
       height: 72,
       data: [{

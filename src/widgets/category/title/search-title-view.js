@@ -25,6 +25,10 @@ module.exports = cdb.core.View.extend({
   },
 
   initialize: function () {
+    if (!this.options.widgetModel) throw new Error('widgetModel is required');
+    if (!this.options.dataviewModel) throw new Error('dataviewModel is required');
+    if (!this.options.layerModel) throw new Error('layerModel is required');
+
     this.model = this.options.widgetModel;
     this.dataviewModel = this.options.dataviewModel;
     this.layerModel = this.options.layerModel;

@@ -4,7 +4,8 @@ var TimeSeriesWidgetModel = require('../../../src/widgets/time-series/time-serie
 describe('widgets/time-series/time-series-widget-model', function () {
   beforeEach(function () {
     this.model = new TimeSeriesWidgetModel(null, {
-      dataviewModel: new Backbone.Model()
+      dataviewModel: new Backbone.Model(),
+      layerModel: new Backbone.Model()
     });
   });
 

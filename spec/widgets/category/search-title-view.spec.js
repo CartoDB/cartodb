@@ -3,19 +3,19 @@ var CategoryWidgetModel = require('../../../src/widgets/category/category-widget
 var SearchTitleView = require('../../../src/widgets/category/title/search-title-view');
 
 describe('widgets/category/search-title-view', function () {
-  var layer;
-
   beforeEach(function () {
     var vis = specHelper.createDefaultVis();
-    layer = vis.map.layers.first();
-    layer.restoreCartoCSS = jasmine.createSpy('restore');
-    layer.getGeometryType = function () {
+    this.layer = vis.map.layers.first();
+    this.layer.restoreCartoCSS = jasmine.createSpy('restore');
+    this.layer.getGeometryType = function () {
       return 'point';
     };
-    this.dataviewModel = vis.dataviews.createCategoryModel(layer, {
-      column: 'col'
+    var source = vis.analysis.findNodeById('a0');
+    this.dataviewModel = vis.dataviews.createCategoryModel({
+      column: 'col',
+      source: source
     });
-    this.dataviewModel.layer.set('initialStyle', '#layer {  marker-line-width: 0.5;  marker-line-color: #fcfafa;  marker-line-opacity: 1;  marker-width: 6.076923076923077;  marker-fill: #e49115;  marker-fill-opacity: 0.9;  marker-allow-overlap: true;}');
+    this.layer.set('initialStyle', '#layer {  marker-line-width: 0.5;  marker-line-color: #fcfafa;  marker-line-opacity: 1;  marker-width: 6.076923076923077;  marker-fill: #e49115;  marker-fill-opacity: 0.9;  marker-allow-overlap: true;}');
     this.dataviewModel.set('data', [{
       name: 'foo'
     }, {
@@ -26,12 +26,14 @@ describe('widgets/category/search-title-view', function () {
   describe('with autoStyleEnabled as true', function () {
     beforeEach(function () {
       this.widgetModel = new CategoryWidgetModel({}, {
-        dataviewModel: this.dataviewModel
+        dataviewModel: this.dataviewModel,
+        layerModel: this.layer
       }, {autoStyleEnabled: true});
 
       this.view = new SearchTitleView({
         widgetModel: this.widgetModel,
-        dataviewModel: this.dataviewModel
+        dataviewModel: this.dataviewModel,
+        layerModel: this.layer
       });
     });
 
@@ -116,7 +118,7 @@ describe('widgets/category/search-title-view', function () {
 
     describe('autostyle', function () {
       beforeEach(function () {
-        this.dataviewModel.layer.set('cartocss', '#whatever {}');
+        this.layer.set('cartocss', '#whatever {}');
       });
 
       describe('checking allowed', function () {
@@ -143,7 +145,7 @@ describe('widgets/category/search-title-view', function () {
         });
 
         it('should not render the autostyle button if layer is hidden', function () {
-          layer.set({visible: false});
+          this.layer.set({visible: false});
           expect(this.view.$('.js-autoStyle').length).toBe(0);
         });
       });
@@ -167,14 +169,16 @@ describe('widgets/category/search-title-view', function () {
   describe('with autoStyleEnabled set to false', function () {
     beforeEach(function () {
       var widgetModel = new CategoryWidgetModel({}, {
-        dataviewModel: this.dataviewModel
+        dataviewModel: this.dataviewModel,
+        layerModel: this.layer
       }, {autoStyleEnabled: false});
 
       spyOn(widgetModel, 'hasColorsAutoStyle').and.returnValue(true);
 
       this.view = new SearchTitleView({
         widgetModel: widgetModel,
-        dataviewModel: this.dataviewModel
+        dataviewModel: this.dataviewModel,
+        layerModel: this.layer
       });
 
       this.view.render();

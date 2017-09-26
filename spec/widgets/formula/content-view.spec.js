@@ -7,21 +7,20 @@ describe('widgets/formula/content-view', function () {
   beforeEach(function () {
     AnimateValues.prototype.animateValue = function () {};
     var vis = specHelper.createDefaultVis();
-    this.dataviewModel = vis.dataviews.createFormulaModel(vis.map.layers.first(), {
+    this.layerModel = vis.map.layers.first();
+    this.layerModel.set('layer_name', '< & ><h1>Hello</h1>');
+    var source = vis.analysis.findNodeById('a0');
+    this.dataviewModel = vis.dataviews.createFormulaModel({
       column: 'col',
-      source: {
-        id: 'a0'
-      },
+      source: source,
       operation: 'avg'
     });
-    this.dataviewModel.getLayerName = function () {
-      return '< & ><h1>Hello</h1>';
-    };
     this.model = new WidgetModel({
       title: 'Max population',
       hasInitialState: true
     }, {
-      dataviewModel: this.dataviewModel
+      dataviewModel: this.dataviewModel,
+      layerModel: this.layerModel
     });
     this.view = new FormulaWidgetContent({
       model: this.model
@@ -74,7 +73,7 @@ describe('widgets/formula/content-view', function () {
   it('should render the widget when the layer name changes', function () {
     spyOn(this.view, 'render');
     this.view._initBinds();
-    this.dataviewModel.layer.set('layer_name', 'Hello');
+    this.layerModel.set('layer_name', 'Hello');
     expect(this.view.render).toHaveBeenCalled();
   });
 });

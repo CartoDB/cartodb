@@ -8,7 +8,22 @@ module.exports = {
         maps_api_template: 'asd',
         user_name: 'pepe'
       },
-      layers: [{type: 'cartodb', source: {id: 'a0'}}, {type: 'torque'}]
+      layers: [{
+        type: 'cartodb',
+        source: {
+          id: 'a0'
+        }
+      }, {
+        type: 'torque'
+      }],
+      analyses: [{
+        id: 'a0',
+        type: 'source',
+        options: {
+          table_name: 'akhenaton.bad_boys_de_marseille',
+          simple_geom: 'point'
+        }
+      }]
     });
   }
 };

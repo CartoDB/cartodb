@@ -10,7 +10,7 @@ var MyDataviewModel = DataviewModelBase.extend({
   }
 });
 
-fdescribe('anonymous-map-serializer', function () {
+describe('anonymous-map-serializer', function () {
   describe('.serialize', function () {
     var visModel;
     var mapModel;
@@ -92,11 +92,7 @@ fdescribe('anonymous-map-serializer', function () {
 var fakeCamshaftReference = {
   getSourceNamesForAnalysisType: function (analysisType) {
     var map = {
-      'source': [],
-      'trade-area': ['source'],
-      'estimated-population': ['source'],
-      'point-in-polygon': ['points_source', 'polygons_source'],
-      'union': ['source']
+      'source': []
     };
     if (!map[analysisType]) {
       throw new Error('analysis type ' + analysisType + ' not supported');
@@ -106,11 +102,7 @@ var fakeCamshaftReference = {
 
   getParamNamesForAnalysisType: function (analysisType) {
     var map = {
-      'source': ['query'],
-      'trade-area': ['kind', 'time'],
-      'estimated-population': ['columnName'],
-      'point-in-polygon': [],
-      'union': ['join_on']
+      'source': ['query']
     };
     if (!map[analysisType]) {
       throw new Error('analysis type ' + analysisType + ' not supported');

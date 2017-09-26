@@ -38,29 +38,10 @@ var WindshaftMap = Backbone.Model.extend({
     this._windshaftSettings = options.windshaftSettings;
   },
 
-  /**
-   * 
-   */
-  _getSerializer: function () {
-    if (this._serializer) {
-      return this._serializer;
-    }
-
-    this._serializer = this._isAnonymousMap() ? AnonymousMapSerializer : NamedMapSerializer;
-
-    return this._serializer;
-  },
-
-  _isAnonymousMap: function () {
-    return !!this._windshaftSettings.templateName;
-  },
-
-  // TODO: Move this somewhere else and keep this class as a wrapper for windshaft responses
   createInstance: function (options) {
     options = options || {};
     try {
-      // Serialization (former .toJSON)
-      var payload = this._getSerializer.serialize(this._layersCollection, this._dataviewsCollection);
+      var payload = this.toJSON();
       var params = this._getParams();
 
       if (options.includeFilters && !_.isEmpty(this._dataviewsCollection.getFilters())) {
@@ -94,6 +75,30 @@ var WindshaftMap = Backbone.Model.extend({
       options.error && options.error();
     }
   },
+
+  toJSON: function () {
+    return this._getSerializer().serialize(this._layersCollection, this._dataviewsCollection);
+  },
+
+  _getSerializer: function () {
+    if (this._serializer) {
+      return this._serializer;
+    }
+
+    if (this._isAnonymousMap()) {
+      this._serializer = AnonymousMapSerializer;
+    } else {
+      this._serializer = NamedMapSerializer
+    }
+
+    return this._serializer;
+  },
+
+  _isAnonymousMap: function () {
+    return !this._windshaftSettings.templateName;
+  },
+
+  // TODO: Move this somewhere else and keep this class as a wrapper for windshaft responses
 
   _getParams: function () {
     var params = {

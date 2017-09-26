@@ -5,8 +5,6 @@ var Map = require('../geo/map');
 var DataviewsFactory = require('../dataviews/dataviews-factory');
 var DataviewsCollection = require('../dataviews/dataviews-collection');
 var WindshaftClient = require('../windshaft/client');
-var WindshaftNamedMap = require('../windshaft/named-map');
-var WindshaftAnonymousMap = require('../windshaft/anonymous-map');
 var AnalysisFactory = require('../analysis/analysis-factory');
 var CartoDBLayerGroup = require('../geo/cartodb-layer-group');
 var ModelUpdater = require('../windshaft-integration/model-updater');
@@ -16,7 +14,7 @@ var LayersFactory = require('./layers-factory');
 var SettingsModel = require('./settings');
 var whenAllDataviewsFetched = require('./dataviews-tracker');
 var RenderModes = require('../geo/render-modes');
-var MapBase = require('../windshaft/map-base');
+var WindshaftMap = require('../windshaft/map-base');
 
 var STATE_INIT = 'init'; // vis hasn't been sent to Windshaft
 var STATE_OK = 'ok'; // vis has been sent to Windshaft and everything is ok
@@ -135,13 +133,6 @@ var VisModel = Backbone.Model.extend({
       authToken: this.get('authToken')
     };
 
-    // var WindshaftMapClass = WindshaftAnonymousMap;
-    // if (vizjson.isNamedMap()) {
-    //   windshaftSettings.templateName = vizjson.datasource.template_name;
-    //   WindshaftMapClass = WindshaftNamedMap;
-    // }
-    var WindshaftMapClass = MapBase;
-
     var windshaftClient = new WindshaftClient(windshaftSettings);
 
     // Create the public Analysis Factory
@@ -196,7 +187,7 @@ var VisModel = Backbone.Model.extend({
     });
 
     // Create the WindshaftMap
-    this._windshaftMap = new WindshaftMapClass({
+    this._windshaftMap = new WindshaftMap({
       apiKey: this.get('apiKey'),
       authToken: this.get('authToken'),
       statTag: datasource.stat_tag

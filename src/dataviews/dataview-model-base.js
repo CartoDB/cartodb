@@ -81,7 +81,7 @@ module.exports = Model.extend({
     checkAndBuildOpts(opts, REQUIRED_OPTS, this);
 
     if (!attrs.source) throw new Error('source is a required attr');
-    if (!(attrs.source instanceof AnalysisModel)) throw new Error('source must be an instance of AnalysisModel');
+    this._checkSourceAttribute(attrs.source);
 
     if (!attrs.id) {
       this.set('id', this.defaults.type + '-' + this.cid);
@@ -97,6 +97,20 @@ module.exports = Model.extend({
 
     this._initBinds();
     this._setupAnalysisStatusEvents();
+  },
+
+  set: function (attributes, options) {
+    var sourceValue = null;
+    if (typeof attributes === 'string' && attributes === 'source') {
+      sourceValue = options;
+    } else if (_.has(attributes, 'source')) {
+      sourceValue = attributes.source;
+    }
+    if (sourceValue) {
+      this._checkSourceAttribute(sourceValue);
+    }
+
+    Model.prototype.set.apply(this, arguments);
   },
 
   _initBinds: function () {
@@ -329,17 +343,22 @@ module.exports = Model.extend({
 
   syncsOnBoundingBoxChanges: function () {
     return this.get('sync_on_bbox_change');
+  },
+
+  _checkSourceAttribute: function (source) {
+    if (!(source instanceof AnalysisModel)) {
+      throw new Error('source must be an instance of AnalysisModel');
+    }
   }
 },
 
-  // Class props
-  {
-    ATTRS_NAMES: [
-      'id',
-      'sync_on_data_change',
-      'sync_on_bbox_change',
-      'enabled',
-      'source'
-    ]
-  }
-);
+// Class props
+{
+  ATTRS_NAMES: [
+    'id',
+    'sync_on_data_change',
+    'sync_on_bbox_change',
+    'enabled',
+    'source'
+  ]
+});

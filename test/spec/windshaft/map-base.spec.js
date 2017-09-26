@@ -11,6 +11,7 @@ var DataviewsCollection = require('../../../src/dataviews/dataviews-collection')
 var WindshaftMapBase = require('../../../src/windshaft/map-base');
 var WindshaftClient = require('../../../src/windshaft/client');
 var CategoryFilter = require('../../../src/windshaft/filters/category');
+var fakeFactory = require('../../helpers/fakeFactory');
 
 var WindshaftMap = WindshaftMapBase.extend({
   toJSON: function () {
@@ -53,6 +54,7 @@ describe('windshaft/map-base', function () {
     this.layersCollection = new Backbone.Collection();
     this.analysisCollection = new Backbone.Collection();
     this.modelUpdater = jasmine.createSpyObj('modelUpdater', ['updateModels', 'setErrors']);
+    this.a0 = fakeFactory.createAnalysisModel({ id: 'a0 ' });
 
     this.windshaftSettings = {
       urlTemplate: 'http://{user}.example.com',
@@ -98,14 +100,12 @@ describe('windshaft/map-base', function () {
       this.dataview = new HistogramDataviewModel({
         id: 'dataviewId',
         type: 'list',
-        source: { id: 'a0' }
+        source: this.a0
       }, {
         map: this.map,
         vis: this.vis,
         windshaftMap: this.windshaftMap,
-        layer: this.cartoDBLayer1,
-        filter: this.filter,
-        analysisCollection: this.analysisCollection
+        filter: this.filter
       });
 
       this.dataviewsCollection.add(this.dataview);

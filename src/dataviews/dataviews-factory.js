@@ -23,7 +23,7 @@ module.exports = Model.extend({
   },
 
   createCategoryModel: function (attrs) {
-    _checkProperties(attrs, ['column']);
+    _checkProperties(attrs, ['source', 'column']);
     attrs = this._generateAttrsForDataview(attrs, CategoryDataviewModel.ATTRS_NAMES);
     attrs.aggregation = attrs.aggregation || 'count';
     attrs.aggregation_column = attrs.aggregation_column || attrs.column;
@@ -40,7 +40,7 @@ module.exports = Model.extend({
   },
 
   createFormulaModel: function (attrs) {
-    _checkProperties(attrs, ['column', 'operation']);
+    _checkProperties(attrs, ['source', 'column', 'operation']);
     attrs = this._generateAttrsForDataview(attrs, FormulaDataviewModel.ATTRS_NAMES);
     return this._newModel(
       new FormulaDataviewModel(attrs, {
@@ -51,7 +51,7 @@ module.exports = Model.extend({
   },
 
   createHistogramModel: function (attrs) {
-    _checkProperties(attrs, ['column']);
+    _checkProperties(attrs, ['source', 'column']);
     attrs = this._generateAttrsForDataview(attrs, HistogramDataviewModel.ATTRS_NAMES);
 
     var rangeFilter = new RangeFilter();

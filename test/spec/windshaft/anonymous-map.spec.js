@@ -9,29 +9,24 @@ var WindshaftClient = require('../../../src/windshaft/client');
 var AnonymousMap = require('../../../src/windshaft/anonymous-map');
 var HistogramDataviewModel = require('../../../src/dataviews/histogram-dataview-model');
 var AnalysisFactory = require('../../../src/analysis/analysis-factory.js');
+var fakeFactory = require('../../helpers/fakeFactory');
 
 var createFakeAnalysis = function (attrs) {
-  var fakeAnalysis = new Backbone.Model(attrs);
-  fakeAnalysis.findAnalysisById = jasmine.createSpy('findAnalysisById').and.returnValue(undefined);
-  return fakeAnalysis;
+  return fakeFactory.createAnalysisModel(attrs);
 };
 
-var createFakeDataview = function (attrs, visModel, windshaftMap, layer, analysisCollection) {
+var createFakeDataview = function (attrs, visModel, windshaftMap, source) {
   if (!attrs.id) { throw new Error('id is required'); }
   attrs = _.defaults(attrs, {
     column: 'column1',
     bins: 5,
-    source: {
-      id: 'a0'
-    }
+    source: source
   });
 
   return new HistogramDataviewModel(attrs, {
     map: jasmine.createSpyObj('map', ['getViewBounds', 'bind']),
     vis: visModel,
-    windshaftMap: windshaftMap,
-    layer: layer,
-    analysisCollection: new Backbone.Collection()
+    windshaftMap: windshaftMap
   });
 };
 
@@ -67,6 +62,12 @@ describe('windshaft/anonymous-map', function () {
       analysisCollection: this.analysisCollection
     });
 
+    this.a0 = createFakeAnalysis({
+      id: 'a0',
+      query: 'SELECT * FROM wutang_clan'
+    });
+    this.a1 = createFakeAnalysis({ id: 'a1' });
+
     this.client = new WindshaftClient({
       endpoints: {
         get: 'v1',
@@ -75,6 +76,7 @@ describe('windshaft/anonymous-map', function () {
       urlTemplate: 'http://{user}.example.com',
       userName: 'rambo'
     });
+    this.analysisCollection.reset([this.a0, this.a1]);
 
     this.modelUpdater = jasmine.createSpyObj('modelUpdater', ['updateModels']);
 
@@ -270,25 +272,18 @@ describe('windshaft/anonymous-map', function () {
     });
 
     it('should include dataviews', function () {
-      this.analysisCollection.reset([
-        createFakeAnalysis({ id: 'a0' }),
-        createFakeAnalysis({ id: 'a1' })
-      ]);
+      this.analysisCollection.reset([this.a0, this.a1]);
 
       var dataview1 = new HistogramDataviewModel({
         id: 'dataviewId1',
         column: 'column1',
         column_type: 'date',
         aggregation: 'week',
-        source: {
-          id: 'a0'
-        }
+        source: this.a0
       }, {
         map: jasmine.createSpyObj('map', ['getViewBounds', 'bind']),
         vis: this.vis,
-        windshaftMap: this.map,
-        layer: this.cartoDBLayer1,
-        analysisCollection: new Backbone.Collection()
+        windshaftMap: this.map
       });
 
       var dataview2 = new HistogramDataviewModel({
@@ -296,15 +291,11 @@ describe('windshaft/anonymous-map', function () {
         column: 'column2',
         column_type: 'number',
         bins: 5,
-        source: {
-          id: 'a1'
-        }
+        source: this.a1
       }, {
         map: jasmine.createSpyObj('map', ['getViewBounds', 'bind']),
         vis: this.vis,
-        windshaftMap: this.map,
-        layer: this.cartoDBLayer2,
-        analysisCollection: new Backbone.Collection()
+        windshaftMap: this.map
       });
 
       this.cartoDBLayer2.set('visible', false, { silent: true });
@@ -386,47 +377,23 @@ describe('windshaft/anonymous-map', function () {
         expect(this.map.toJSON().analyses).toEqual([ analysis ]);
       });
 
-      it('should include a source analysis for dataviews whose source is a layer that has sql', function () {
+      it('should include a source analysis for dataviews that have a source', function () {
         // Create a dataview whose source is the layer
         var dataview = createFakeDataview({
           id: 'dataviewId1',
-          source: { id: this.cartoDBLayer1.id }
-        }, this.vis, this.map, this.cartoDBLayer1, this.analysisCollection);
+          source: this.a0
+        }, this.vis, this.map);
 
         this.dataviewsCollection.add(dataview);
 
         expect(this.map.toJSON().analyses).toEqual([
           {
-            id: this.cartoDBLayer1.id,
+            id: 'a0',
             type: 'source',
             params: {
-              query: this.cartoDBLayer1.get('sql')
+              query: 'SELECT * FROM wutang_clan'
             }
           }
-        ]);
-      });
-
-      it('should include a source analysis for dataviews whose source is a layer that has a source', function () {
-        var analysis = { id: 'c1' };
-        this.analysisCollection.add(analysis);
-
-        // CartoDB layer points to an analysis and has no sql
-        this.cartoDBLayer1.update({
-          source: 'c1',
-          sql: undefined,
-          cartocss: '#trade_area { ... }'
-        }, { silent: true });
-
-        // Create a dataview whose source is the layer
-        var dataview = createFakeDataview({
-          id: 'dataviewId1',
-          source: { id: this.cartoDBLayer1.id }
-        }, this.vis, this.map, this.cartoDBLayer1, this.analysisCollection);
-
-        this.dataviewsCollection.add(dataview);
-
-        expect(this.map.toJSON().analyses).toEqual([
-          analysis
         ]);
       });
 
@@ -527,9 +494,6 @@ describe('windshaft/anonymous-map', function () {
       });
 
       it('should only include an analysis once', function () {
-        var analysis = { id: 'a0' };
-        this.analysisCollection.add(analysis);
-
         // Layer has a0 as it's source
         this.cartoDBLayer1.update({
           source: 'a0',
@@ -539,23 +503,21 @@ describe('windshaft/anonymous-map', function () {
         // This datativew also has a0 as it's source
         var dataview1 = createFakeDataview({
           id: 'dataviewId1',
-          source: {
-            id: 'a0'
-          }
+          source: this.a0
         }, this.vis, this.map, this.cartoDBLayer1, this.analysisCollection);
 
         // This dataview also has a0 as it's source
         var dataview2 = createFakeDataview({
           id: 'dataviewId1',
-          source: {
-            id: 'a0'
-          }
+          source: this.a0
         }, this.vis, this.map, this.cartoDBLayer1, this.analysisCollection);
 
         this.dataviewsCollection.reset([ dataview1, dataview2 ]);
 
         // The analysis is only included once
-        expect(this.map.toJSON().analyses).toEqual([ analysis ]);
+        var analyses = this.map.toJSON().analyses;
+        expect(analyses.length).toBe(1);
+        expect(analyses[0].id).toEqual('a0');
       });
     });
   });

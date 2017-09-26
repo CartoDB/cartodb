@@ -1,9 +1,9 @@
 var Backbone = require('backbone');
-var Model = require('../../../src/core/model');
 var VisModel = require('../../../src/vis/vis');
 var RangeFilter = require('../../../src/windshaft/filters/range');
 var HistogramDataviewModel = require('../../../src/dataviews/histogram-dataview-model');
 var helper = require('../../../src/dataviews/helpers/histogram-helper');
+var fakeFactory = require('../../helpers/fakeFactory');
 
 function randomString (length, chars) {
   var result = '';
@@ -20,23 +20,19 @@ describe('dataviews/histogram-dataview-model', function () {
 
     this.filter = new RangeFilter();
 
-    this.layer = new Model();
-
-    this.analysisCollection = new Backbone.Collection();
-
     spyOn(HistogramDataviewModel.prototype, 'listenTo').and.callThrough();
     spyOn(HistogramDataviewModel.prototype, 'fetch').and.callThrough();
     spyOn(HistogramDataviewModel.prototype, '_updateBindings');
     spyOn(HistogramDataviewModel.prototype, '_resetFilterAndFetch');
 
+    this.source = fakeFactory.createAnalysisModel({ id: 'a0' });
+
     this.model = new HistogramDataviewModel({
-      source: { id: 'a0' }
+      source: this.source
     }, {
       map: this.map,
       vis: this.vis,
-      layer: this.layer,
-      filter: this.filter,
-      analysisCollection: new Backbone.Collection()
+      filter: this.filter
     });
   });
 
@@ -71,13 +67,11 @@ describe('dataviews/histogram-dataview-model', function () {
   it('should set the api_key attribute on the internal models', function () {
     this.model = new HistogramDataviewModel({
       apiKey: 'API_KEY',
-      source: { id: 'a0' }
+      source: this.source
     }, {
       map: this.map,
       vis: this.vis,
-      layer: jasmine.createSpyObj('layer', ['get']),
-      filter: this.filter,
-      analysisCollection: new Backbone.Collection()
+      filter: this.filter
     });
 
     expect(this.model._totals.get('apiKey')).toEqual('API_KEY');
@@ -238,19 +232,15 @@ describe('dataviews/histogram-dataview-model', function () {
         ],
         bins_count: 4,
         bins_start: 55611,
-        source: {
-          id: 'a0'
-        },
         nulls: 0,
-        type: 'histogram'
+        type: 'histogram',
+        source: this.source
       };
 
       var model = new HistogramDataviewModel(data, {
         map: this.map,
         vis: this.vis,
-        layer: this.layer,
         filter: this.filter,
-        analysisCollection: new Backbone.Collection(),
         parse: true
       });
 
@@ -267,18 +257,14 @@ describe('dataviews/histogram-dataview-model', function () {
         ],
         bins_count: 4,
         bins_start: 55611,
-        source: {
-          id: 'a0'
-        },
-        type: 'histogram'
+        type: 'histogram',
+        source: this.source
       };
 
       var model = new HistogramDataviewModel(data, {
         map: this.map,
         vis: this.vis,
-        layer: this.layer,
         filter: this.filter,
-        analysisCollection: new Backbone.Collection(),
         parse: true
       });
       model._totals = new Backbone.Model({ aggregation: 'quarter' });
@@ -434,14 +420,10 @@ describe('dataviews/histogram-dataview-model', function () {
     });
   });
 
-  describe('when layer changes meta', function () {
+  describe('when column_type changes', function () {
     beforeEach(function () {
       expect(this.model.filter.get('column_type')).not.toEqual('date');
-      this.model.layer.set({
-        meta: {
-          column_type: 'date'
-        }
-      });
+      this.model.set('column_type', 'date');
     });
 
     it('should change the filter column_type', function () {

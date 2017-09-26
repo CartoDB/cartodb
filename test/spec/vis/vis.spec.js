@@ -995,8 +995,8 @@ describe('vis/vis', function () {
   });
 
   describe('when a vizjson has been loaded', function () {
-    var layer;
     var dataview;
+    var source;
 
     beforeEach(function () {
       spyOn(_, 'debounce').and.callFake(function (func) { return function () { func.apply(this, arguments); }; });
@@ -1006,15 +1006,13 @@ describe('vis/vis', function () {
       this.vis.instantiateMap();
       Vis.prototype.reload.calls.mostRecent().args[0].success();
 
-      layer = this.vis.map.layers.at(0);
+      source = this.vis.analysis.findNodeById('a0');
 
       dataview = new DataviewModelBase({
-        source: {id: 'a0'}
+        source: source
       }, {
-        layer: layer,
         map: this.vis.map,
-        vis: this.vis,
-        analysisCollection: this.vis._analysisCollection
+        vis: this.vis
       });
     });
 

@@ -77,6 +77,9 @@
 .Editor-HeaderInfo-actionsItem:first-child {
   margin-left: 0;
 }
+.Editor-HeaderInfo-subtitle {
+  @include display-flex();
+}
 .Editor-HeaderInfo-link {
   font-weight: $sFontWeight-semibold;
 }

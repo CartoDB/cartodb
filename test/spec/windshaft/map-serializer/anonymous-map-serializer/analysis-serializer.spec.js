@@ -287,7 +287,6 @@ describe('analysis-serializer', function () {
         expect(actual.length).toEqual(1);
         expect(actual).toEqual(expected);
       });
-
     });
 
     it('should only include an analysis once when more than one layer or dataview point to the same analysis', function () {

@@ -21,17 +21,15 @@ function serialize (layersCollection, dataviewsCollection) {
   };
 }
 
-
 function _getStylesFromLayers (layers) {
   return _.reduce(layers, function (styles, layer, index) {
     if (layer.get('cartocss')) {
       styles[index] = layer.get('cartocss');
     }
     return styles;
-  }, {})
-};
+  }, {});
+}
 
 module.exports = {
   serialize: serialize
 };
-

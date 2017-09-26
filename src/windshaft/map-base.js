@@ -88,7 +88,7 @@ var WindshaftMap = Backbone.Model.extend({
     if (this._isAnonymousMap()) {
       this._serializer = AnonymousMapSerializer;
     } else {
-      this._serializer = NamedMapSerializer
+      this._serializer = NamedMapSerializer;
     }
 
     return this._serializer;

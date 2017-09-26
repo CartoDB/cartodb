@@ -23,9 +23,9 @@ describe('named-map-serializer', function () {
     it('should send styles of CartoDB and Torque layers using the right indexes', function () {
       this.layersCollection.reset([
         new TileLayer({}, { vis: this.vis }),
-        new CartoDBLayer({ cartocss: 'cartoCSS1'}, { vis: this.vis }),
-        new TorqueLayer({ cartocss: 'cartoCSS2'}, { vis: this.vis })
-      ])
+        new CartoDBLayer({ cartocss: 'cartoCSS1' }, { vis: this.vis }),
+        new TorqueLayer({ cartocss: 'cartoCSS2' }, { vis: this.vis })
+      ]);
 
       var payload = NamedMapSerializer.serialize(this.layersCollection, this.analysisCollection);
 
@@ -41,9 +41,9 @@ describe('named-map-serializer', function () {
     it('should ignore GMapsBase layers when calculating indexes', function () {
       this.layersCollection.reset([
         new GMapsBaseLayer({}, { vis: this.vis }),
-        new CartoDBLayer({ cartocss: 'cartoCSS1'}, { vis: this.vis }),
-        new TorqueLayer({ cartocss: 'cartoCSS2'}, { vis: this.vis })
-      ])
+        new CartoDBLayer({ cartocss: 'cartoCSS1' }, { vis: this.vis }),
+        new TorqueLayer({ cartocss: 'cartoCSS2' }, { vis: this.vis })
+      ]);
 
       var payload = NamedMapSerializer.serialize(this.layersCollection, this.analysisCollection);
 

@@ -106,6 +106,7 @@ module Carto
         end
       end
 
+      visualization.save!
       visualization
     end
 

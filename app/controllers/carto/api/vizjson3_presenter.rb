@@ -93,7 +93,7 @@ module Carto
           map_provider:   map.provider,
           overlays:       overlays_vizjson(@visualization),
           title:          @visualization.qualified_name(user),
-          updated_at:     map.viz_updated_at,
+          updated_at:     @visualization.updated_at,
           user:           user_info_vizjson(user),
           version:        VIZJSON_VERSION,
           widgets:        widgets_vizjson,

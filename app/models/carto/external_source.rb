@@ -7,7 +7,7 @@ class Carto::ExternalSource < ActiveRecord::Base
   REFRESH_INTERVAL = 30*24*60*60
 
   has_many :external_data_imports
-  belongs_to :visualization
+  belongs_to :visualization, inverse_of: :external_source
   validates :visualization, :import_url, :rows_counted, :size, presence: true
 
   before_create :fix_geometry_types_for_insert

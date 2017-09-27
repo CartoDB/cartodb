@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.9.90",
+  "version": "4.9.99",
   "description": "CARTO UI frontend",
   "repository": {
     "type": "git",
@@ -29,6 +29,7 @@
     "cartodb.js": "CartoDB/cartodb.js#v4",
     "clipboard": "1.6.1",
     "codemirror": "5.14.2",
+    "html-webpack-plugin": "^2.30.1",
     "jquery": "2.1.4",
     "moment": "2.18.1",
     "moment-timezone": "^0.5.13",
@@ -36,7 +37,7 @@
     "perfect-scrollbar": "git://github.com/CartoDB/perfect-scrollbar.git#master",
     "queue-async": "1.2.1",
     "rangeslider.js": "2.3.0",
-    "tangram": "cartodb/tangram-1#pmaster",
+    "tangram": "cartodb/tangram#master",
     "torque.js": "CartoDB/torque#master",
     "underscore": "1.8.3",
     "webpack": "2.3.2"
@@ -130,9 +131,6 @@
     "backbone-cdb-v3": "global:Backbone",
     "moment-v3": "global:moment"
   },
-  "config": {
-    "npmJsDir": "lib/assets"
-  },
   "engine": {
     "node": "6.9.2"
   },
@@ -144,8 +142,10 @@
     "branch-files": "node lib/build/branchFiles/branchFiles.js",
     "affected_specs": "node lib/build/branchFiles/branchFiles.js | xargs node lib/build/affectedFiles/affectedFiles.js",
     "build": "NODE_ENV=production webpack --config webpack.prod.config.js",
+    "build:dashboard": "webpack -p --config webpack/webpack.dev.config.js",
     "build:stats": "webpack --env.stats --progress --config webpack.dev.config.js",
     "start": "grunt watch:css & webpack --progress --watch --config webpack.dev.config.js",
+    "start:dashboard": "webpack --progress --watch --config webpack/webpack.dev.config.js",
     "dev": "webpack --progress --config webpack.dev.config.js",
     "fix-shrinkwrap-protocol": "node ./lib/build/fix-shrinkwrap.js"
   }

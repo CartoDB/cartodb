@@ -1896,7 +1896,7 @@ describe Carto::Api::VisualizationsController do
           end
         end
 
-        describe '#creates map from datasets' do
+        describe 'map creation from datasets' do
           include_context 'organization with users helper'
           include TableSharing
 
@@ -1973,74 +1973,95 @@ describe Carto::Api::VisualizationsController do
             end
           end
 
-          it 'copies the styles for editor users' do
-            table1 = create_table(user_id: @org_user_1.id)
-            payload = {
-              tables: [table1.name]
-            }
-            Carto::User.any_instance.stubs(:builder_enabled?).returns(false)
-            post_json(api_v1_visualizations_create_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key),
-                      payload) do |response|
-              response.status.should eq 200
-              vid = response.body[:id]
-              v = CartoDB::Visualization::Member.new(id: vid).fetch
-              original_layer = table1.map.data_layers.first
-              layer = v.map.data_layers.first
-              layer.options['tile_style'].should eq original_layer.options['tile_style']
+          describe 'builder and editor behaviour' do
+            before(:all) do
+              @old_builder_enabled = @org_user_1.builder_enabled
             end
-          end
 
-          it 'resets the styles for builder users' do
-            table1 = create_table(user_id: @org_user_1.id)
-            Table.any_instance.stubs(:geometry_types).returns(['ST_Point'])
-            payload = {
-              tables: [table1.name]
-            }
-            Carto::User.any_instance.stubs(:builder_enabled?).returns(true)
-            post_json(api_v1_visualizations_create_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key),
-                      payload) do |response|
-              response.status.should eq 200
-              vid = response.body[:id]
-              v = CartoDB::Visualization::Member.new(id: vid).fetch
-
-              original_layer = table1.map.data_layers.first
-              layer = v.map.data_layers.first
-              layer.options['tile_style'].should_not eq original_layer.options['tile_style']
+            after(:all) do
+              @org_user_1.builder_enabled = @old_builder_enabled
+              @org_user_1.save
             end
-          end
 
-          it 'doesn\'t add style properites for editor users' do
-            table1 = create_table(user_id: @org_user_1.id)
-            payload = {
-              tables: [table1.name]
-            }
-            Carto::User.any_instance.stubs(:builder_enabled?).returns(false)
-            post_json(api_v1_visualizations_create_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key),
-                      payload) do |response|
-              response.status.should eq 200
-              vid = response.body[:id]
-              v = CartoDB::Visualization::Member.new(id: vid).fetch
+            describe 'for editor users' do
+              before(:all) do
+                @org_user_1.builder_enabled = false
+                @org_user_1.save
+              end
 
-              layer = v.map.data_layers.first
-              layer.options['style_properties'].should be_nil
+              it 'copies the styles' do
+                table1 = create_table(user_id: @org_user_1.id)
+                payload = {
+                  tables: [table1.name]
+                }
+                post_json(api_v1_visualizations_create_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key),
+                          payload) do |response|
+                  response.status.should eq 200
+                  vid = response.body[:id]
+                  v = CartoDB::Visualization::Member.new(id: vid).fetch
+                  original_layer = table1.map.data_layers.first
+                  layer = v.map.data_layers.first
+                  layer.options['tile_style'].should eq original_layer.options['tile_style']
+                end
+              end
+
+              it 'doesn\'t add style properties' do
+                table1 = create_table(user_id: @org_user_1.id)
+                payload = {
+                  tables: [table1.name]
+                }
+                post_json(api_v1_visualizations_create_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key),
+                          payload) do |response|
+                  response.status.should eq 200
+                  vid = response.body[:id]
+                  v = CartoDB::Visualization::Member.new(id: vid).fetch
+
+                  layer = v.map.data_layers.first
+                  layer.options['style_properties'].should be_nil
+                end
+              end
             end
-          end
 
-          it 'adds style properites for builder users' do
-            table1 = create_table(user_id: @org_user_1.id)
-            Table.any_instance.stubs(:geometry_types).returns(['ST_Point'])
-            payload = {
-              tables: [table1.name]
-            }
-            Carto::User.any_instance.stubs(:builder_enabled?).returns(true)
-            post_json(api_v1_visualizations_create_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key),
-                      payload) do |response|
-              response.status.should eq 200
-              vid = response.body[:id]
-              v = CartoDB::Visualization::Member.new(id: vid).fetch
+            describe 'for builder users' do
+              before(:all) do
+                @org_user_1.builder_enabled = true
+                @org_user_1.save
+              end
 
-              layer = v.map.data_layers.first
-              layer.options['style_properties'].should_not be_nil
+              it 'resets the styles' do
+                table1 = create_table(user_id: @org_user_1.id)
+                Table.any_instance.stubs(:geometry_types).returns(['ST_Point'])
+                payload = {
+                  tables: [table1.name]
+                }
+                post_json(api_v1_visualizations_create_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key),
+                          payload) do |response|
+                  response.status.should eq 200
+                  vid = response.body[:id]
+                  v = CartoDB::Visualization::Member.new(id: vid).fetch
+
+                  original_layer = table1.map.data_layers.first
+                  layer = v.map.data_layers.first
+                  layer.options['tile_style'].should_not eq original_layer.options['tile_style']
+                end
+              end
+
+              it 'adds style properties' do
+                table1 = create_table(user_id: @org_user_1.id)
+                Table.any_instance.stubs(:geometry_types).returns(['ST_Point'])
+                payload = {
+                  tables: [table1.name]
+                }
+                post_json(api_v1_visualizations_create_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key),
+                          payload) do |response|
+                  response.status.should eq 200
+                  vid = response.body[:id]
+                  v = CartoDB::Visualization::Member.new(id: vid).fetch
+
+                  layer = v.map.data_layers.first
+                  layer.options['style_properties'].should_not be_nil
+                end
+              end
             end
           end
 

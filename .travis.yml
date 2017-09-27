@@ -1,8 +1,14 @@
 language: node_js
 node_js:
-  - "6.9.2"
+  - 6.9.2
 before_script:
   - npm install -g grunt-cli
+before_install:
+  - git fetch origin master:refs/remotes/origin/master --depth=1
+install:
+  - npm install
+script:
+  - npm test
 notifications:
   email:
     on_success: never

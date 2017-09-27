@@ -8,7 +8,32 @@ module.exports = {
         maps_api_template: 'asd',
         user_name: 'pepe'
       },
-      layers: [{type: 'cartodb', source: {id: 'a0'}}, {type: 'torque'}]
+      layers: [
+        {
+          id: 'layer1',
+          type: 'cartodb',
+          options: {
+            source: 'a0',
+            cartocss: '#layer { polygon-fill: #CDCDCD; }'
+          }
+        }, {
+          id: 'layer2',
+          type: 'torque',
+          options: {
+            source: 'a0',
+            cartocss: '#layer { polygon-fill: #CDCDCD; }'
+          }
+        }
+      ],
+      analyses: [
+        {
+          id: 'a0',
+          type: 'source',
+          params: {
+            query: 'SELECT * FROM foo;'
+          }
+        }
+      ]
     });
   }
 };

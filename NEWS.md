@@ -2,6 +2,7 @@ Development
 -----------
 
 ### Features
+* Unify scrollbars style (#12184)
 * Add endpoints for updating user account & profile details (#12726)
 * Add /api/v3/me endpoint (#12599, #12790, #12771)
 * Add assets version column in user model (#12676)

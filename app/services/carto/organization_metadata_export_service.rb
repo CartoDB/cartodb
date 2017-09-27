@@ -244,7 +244,7 @@ module Carto
     def get_redis_filename(meta_path)
       Dir["#{meta_path}/redis_organization_*.json"].first
     end
-    
+
     def load_organization_from_directory(meta_path)
       organization_file = Dir["#{meta_path}/organization_*.json"].first
       organization = build_organization_from_json_export(File.read(organization_file))

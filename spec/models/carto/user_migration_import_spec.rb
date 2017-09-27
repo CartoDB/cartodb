@@ -18,7 +18,7 @@ describe Carto::UserMigrationImport do
       should_import_metadata_for_user(@user_mock)
       @import.org_import = false
       should_update_database_host_for_users([@user_mock])
-  
+
       @import.run_import
     end
 

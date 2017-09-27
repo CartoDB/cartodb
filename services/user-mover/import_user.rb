@@ -303,7 +303,6 @@ module CartoDB
       end
 
       def close_all_database_connections(database_name = @target_dbname)
-
         superuser_pg_conn.query("SELECT pg_terminate_backend(pg_stat_activity.pid)
                                   FROM pg_stat_activity
                                 WHERE pg_stat_activity.datname = '#{database_name}'

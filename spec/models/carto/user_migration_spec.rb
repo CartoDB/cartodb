@@ -406,7 +406,7 @@ describe 'UserMigration' do
 
     data_import.run_import!
     data_import.success.should eq true
-    return user
+    user
   end
 
   def org_import

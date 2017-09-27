@@ -107,9 +107,9 @@ module Carto
 
     def rollback_import_data
       @import_job.add_options(rollback: true,
-                             mode: :rollback,
-                             drop_database: true,
-                             drop_roles: true)
+                              mode: :rollback,
+                              drop_database: true,
+                              drop_roles: true)
       @import_job.rollback!
     end
 

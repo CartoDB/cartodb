@@ -56,6 +56,7 @@ Development
 * Remove data-observatory-multiple-measures feature flag (#304)
 
 ### Bug fixes / enhancements
+* Docs, fixed spelling of "occurred" and fixed grammar in en.json
 * Reload vis if needed when feature is save (#11125)
 * Popups improvements (#11430, #10993)
 * Added scroll to metadata in the embed view (#12501)

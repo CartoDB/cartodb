@@ -6,6 +6,7 @@ Development
 * Add endpoints for updating user account & profile details (#12726)
 * Add /api/v3/me endpoint (#12599, #12790, #12771)
 * Add assets version column in user model (#12676)
+* Dashboard static view (#12680)
 * Vector rendering improvements #12722.
 * Enable georeferencer for database connectors (#12566)
 * Enable other hosts apart from account host to include CORS headers via the cors_enabled_hosts param in app_config.yml (#12685)
@@ -56,6 +57,8 @@ Development
 * Remove data-observatory-multiple-measures feature flag (#304)
 
 ### Bug fixes / enhancements
+* Reload vis if needed when feature is save (#11125)
+* Popups improvements (#11430, #10993)
 * Added scroll to metadata in the embed view (#12501)
 * Lazy select to fix missing values due to 40 per page items limitation in requests
 * Fix min/max parameters in filter analysis (#11658)
@@ -205,6 +208,11 @@ Development
 * Axis labels changes in Time-Series (#12658)
 * Removed unused settings in organizations (#4992)
 * Increment maximum buckets in Time-Series for leap years (#12778)
+* Prevent invalid geometries in BoundingBoxUtils.to_polygon, to_point (#12873)
+
+### Internals
+
+* Fix layer's sources in tests (analysis source required) (#12866)
 
 ### NOTICE
 This release upgrades the CartoDB PostgreSQL extension to `0.19.2`. Run the following to have it available:

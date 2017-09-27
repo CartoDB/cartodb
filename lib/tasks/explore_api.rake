@@ -147,7 +147,13 @@ namespace :cartodb do
 
     def update_visualization_metadata(visualization, tables_data, likes, mapviews)
       table_data = tables_data[visualization.user_id].nil? ? {} : tables_data[visualization.user_id][visualization.name]
-      db_conn.run update_metadata_query(visualization, table_data, likes, mapviews)
+      query = update_metadata_query(visualization, table_data, likes, mapviews)
+      begin
+        db_conn.run query
+      rescue => err
+        STDERR.puts "ERROR updating metadata with query:\n#{query}"
+        raise
+      end
     end
 
     def update
@@ -227,25 +233,30 @@ namespace :cartodb do
       metadata_updated_count = 0
       privated_visualization_ids = []
       visualizations.each do |v|
-        explore_visualization = explore_visualizations_by_visualization_id[v.id]
-        # We use to_i to remove the miliseconds that could give to erroneous updates
-        # http://railsware.com/blog/2014/04/01/time-comparison-in-ruby/
-        if v.updated_at.to_i != explore_visualization[:visualization_updated_at].to_i
-          if v.privacy != Carto::Visualization::PRIVACY_PUBLIC || !v.published?
-            privated_visualization_ids << v.id
+        begin
+          explore_visualization = explore_visualizations_by_visualization_id[v.id]
+          # We use to_i to remove the miliseconds that could give to erroneous updates
+          # http://railsware.com/blog/2014/04/01/time-comparison-in-ruby/
+          if v.updated_at.to_i != explore_visualization[:visualization_updated_at].to_i
+            if v.privacy != Carto::Visualization::PRIVACY_PUBLIC || !v.published?
+              privated_visualization_ids << v.id
+            else
+              updated = update_visualization(explore_visualization[:visualization_id], v)
+              full_updated_count += updated
+            end
           else
-            updated = update_visualization(explore_visualization[:visualization_id], v)
-            full_updated_count += updated
+            # INFO: retrieving mapviews makes this much slower
+            # We are only updating the visualizations that have received a liked since the DAYS_TO_CHECK_LIKES
+            # in the last days
+            if (@liked_visualizations.has_key?(v.id) || @mapviews_visualizations.has_key?(v.id))
+              table_data = explore_api.get_visualizations_table_data([v])
+              update_visualization_metadata(v, table_data, @liked_visualizations[v.id], @mapviews_visualizations[v.id])
+              metadata_updated_count += 1
+            end
           end
-        else
-          # INFO: retrieving mapviews makes this much slower
-          # We are only updating the visualizations that have received a liked since the DAYS_TO_CHECK_LIKES
-          # in the last days
-          if (@liked_visualizations.has_key?(v.id) || @mapviews_visualizations.has_key?(v.id))
-            table_data = explore_api.get_visualizations_table_data([v])
-            update_visualization_metadata(v, table_data, @liked_visualizations[v.id], @mapviews_visualizations[v.id])
-            metadata_updated_count += 1
-          end
+        rescue => err
+          STDERR.puts "ERROR updating visualization #{v.id}"
+          raise
         end
       end
       {

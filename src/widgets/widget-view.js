@@ -32,6 +32,8 @@ module.exports = cdb.core.View.extend({
 
   render: function (model, error) {
     this.clearSubViews();
+    this.$el.empty();
+
     var widgetModel = this.model;
     var dataviewModel = widgetModel.dataviewModel;
     var placeholder = PLACEHOLDER_TEMPLATES[dataviewModel.get('type')];

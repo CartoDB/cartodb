@@ -22,6 +22,8 @@ module.exports = cdb.core.View.extend({
   },
 
   render: function () {
+    this._reset();
+
     var body = this._error.type
       ? errorTextTemplate({
         placeholder: this._placeholder(),
@@ -39,5 +41,11 @@ module.exports = cdb.core.View.extend({
 
   _onRefreshClick: function () {
     this._model.refresh();
+  },
+
+  _reset: function () {
+    this.$el.removeClass('CDB-Widget--error');
+    this.$el.removeClass('CDB-Widget--warning');
+    this.$el.html('');
   }
 });

@@ -28,6 +28,7 @@ module Carto
 
     def run_import
       assert_organization_does_not_exist
+      assert_user_does_not_exist
       log.append('=== Downloading ===')
       update_attributes(state: STATE_DOWNLOADING)
       package = UserMigrationPackage.for_import(id, log)
@@ -47,7 +48,7 @@ module Carto
       update_attributes(state: STATE_FAILURE)
       false
     ensure
-      package.present? && package.cleanup
+      package.try(:cleanup)
     end
 
     def enqueue
@@ -57,9 +58,11 @@ module Carto
     private
 
     def assert_organization_does_not_exist
-      if organization.present? && Carto::Organization.where(id: organization.id).any?
-        raise OrganizationAlreadyExists.new
-      end
+      raise OrganizationAlreadyExists.new if organization.present? && Carto::Organization.exists?(organization.id)
+    end
+
+    def assert_user_does_not_exist
+      raise UserAlreadyExists.new if user.present && Carto::User.exists?(user.id)
     end
 
     def valid_org_import
@@ -71,10 +74,42 @@ module Carto
     end
 
     def import(service, package)
-      @import_job = CartoDB::DataMover::ImportJob.new(import_job_arguments(package.data_dir))
       imported = do_import_metadata(package, service) if import_metadata?
       do_import_data(package, service)
       import_visualizations(imported, package, service) if import_metadata?
+    end
+
+    def do_import_metadata(package, service)
+      log.append('=== Importing metadata ===')
+      begin
+        imported = service.import_from_directory(package.meta_dir)
+      rescue OrganizationAlreadyExists, OrganizationAlreadyExists => e
+        log.append('Organization already exists. Skipping!')
+        raise e
+      rescue => e
+        log.append('=== Error importing metadata. Rollback! ===')
+        service.rollback_import_from_directory(package.meta_dir)
+        raise e
+      end
+      org_import? ? self.organization = imported : self.user = imported
+      update_database_host
+      save!
+      imported
+    end
+
+    def do_import_data(package, service)
+      log.append('=== Importing data ===')
+      import_job = CartoDB::DataMover::ImportJob.new(import_job_arguments(package.data_dir))
+      begin
+        import_job.run!
+      rescue => e
+        log.append('=== Error importing data. Rollback! ===')
+        rollback_import_data
+        service.rollback_import_from_directory(package.meta_dir) if import_metadata?
+        raise e
+      ensure
+        import_job.terminate_connections
+      end
     end
 
     def import_visualizations(imported, package, service)
@@ -91,44 +126,16 @@ module Carto
       end
     end
 
-    def do_import_data(package, service)
-      log.append('=== Importing data ===')
-      begin
-        @import_job.run!
-      rescue => e
-        log.append('=== Error importing data. Rollback! ===')
-        rollback_import_data
-        service.rollback_import_from_directory(package.meta_dir) if import_metadata?
-        raise e
-      ensure
-        @import_job.terminate_connections
-      end
-    end
-
     def rollback_import_data
-      @import_job.add_options(rollback: true,
-                              mode: :rollback,
-                              drop_database: true,
-                              drop_roles: true)
-      @import_job.rollback!
-    end
+      import_job = CartoDB::DataMover::ImportJob.new(
+        import_job_arguments(package.data_dir).merge!(rollback: true,
+                                                              mode: :rollback,
+                                                              drop_database: true,
+                                                              drop_roles: true)
+      )
 
-    def do_import_metadata(package, service)
-      log.append('=== Importing metadata ===')
-      begin
-        imported = service.import_from_directory(package.meta_dir)
-      rescue OrganizationAlreadyExists => e
-        log.append('Organization already exists. Skipping!')
-        raise e
-      rescue => e
-        log.append('=== Error importing metadata. Rollback! ===')
-        service.rollback_import_from_directory(package.meta_dir)
-        raise e
-      end
-      org_import? ? self.organization = imported : self.user = imported
-      update_database_host
-      save!
-      imported
+      import_job.rollback!
+      import_job.terminate_connections;
     end
 
     def update_database_host

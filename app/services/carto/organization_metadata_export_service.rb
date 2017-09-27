@@ -192,7 +192,7 @@ module Carto
     def import_from_directory(meta_path)
       # Import organization
       organization = load_organization_from_directory(meta_path)
-      raise OrganizationAlreadyExists.new if ::Carto::Organization.where(id: organization.id).exists?
+      raise OrganizationAlreadyExists.new if ::Carto::Organization.exists?(id: organization.id)
 
       organization_redis_file = get_redis_filename(meta_path)
       Carto::RedisExportService.new.restore_redis_from_json_export(File.read(organization_redis_file))

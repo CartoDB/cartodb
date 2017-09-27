@@ -176,6 +176,8 @@ module Carto
     end
   end
 
+  class UserAlreadyExists < RuntimeError; end
+
   # Both String and Hash versions are provided because `deep_symbolize_keys` won't symbolize through arrays
   # and having separated methods make handling and testing much easier.
   class UserMetadataExportService

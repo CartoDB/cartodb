@@ -18,7 +18,7 @@ describe Carto::UserMigrationImport do
       should_import_metadata_for_user(@user_mock)
       @import.org_import = false
       should_update_database_host_for_users([@user_mock])
-
+  
       @import.run_import
     end
 
@@ -44,6 +44,12 @@ describe Carto::UserMigrationImport do
     end
 
     def setup_mocks
+      @organization_mock = Carto::Organization.new
+      @organization_mock.stubs(:id).returns(:irrelevant_organization_id)
+      @import.stubs(:organization).returns(@organization_mock)
+      query_mock = Object.new
+      query_mock.stubs(:any?).returns(false)
+      Carto::Organization.stubs(:where).with(id: :irrelevant_organization_id).returns(query_mock)
       @user_migration_package_mock = Object.new
       Carto::UserMigrationPackage.stubs(:for_import).returns @user_migration_package_mock
       @user_migration_package_mock.stubs(:download).with(:irrelevant_file)
@@ -52,11 +58,11 @@ describe Carto::UserMigrationImport do
       @user_mock = Carto::User.new
       @export_job_mock = Object.new
       @export_job_mock.expects(:run!).once
+      @export_job_mock.expects(:terminate_connections).once
       CartoDB::DataMover::ImportJob.stubs(:new).returns @export_job_mock
       @user_migration_package_mock.stubs(:cleanup)
       @import.expects(:save!).once.returns @import
 
-      @organization_mock = Carto::Organization.new
     end
 
     def expected_job_arguments

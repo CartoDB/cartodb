@@ -1,3 +1,5 @@
+require_relative '../../helpers/avatar_helper'
+
 module Carto
   module Api
     class UsersController < ::Api::ApplicationController
@@ -8,13 +10,14 @@ module Carto
       include CartoDB::ConfigUtils
       include FrontendConfigHelper
       include AvatarHelper
+      include AccountTypeHelper
 
       UPDATE_ME_FIELDS = [
         :name, :last_name, :website, :description, :location, :twitter_username,
         :disqus_shortname, :available_for_hire
       ].freeze
 
-      ssl_required :show, :me, :update_me, :get_authenticated_users
+      ssl_required :show, :me, :update_me, :me_account_info, :get_authenticated_users
 
       before_filter :optional_api_authorization, only: [:me]
       skip_before_filter :api_authorization_required, only: [:me, :get_authenticated_users]
@@ -26,13 +29,25 @@ module Carto
       def me
         carto_viewer = current_viewer.present? ? Carto::User.find(current_viewer.id) : nil
 
+        cant_be_deleted_reason = carto_viewer.try(:cant_be_deleted_reason)
+        can_be_deleted = carto_viewer.present? ? cant_be_deleted_reason.nil? : nil
+
         render json: {
           user_data: carto_viewer.present? ? Carto::Api::UserPresenter.new(carto_viewer).data : nil,
           default_fallback_basemap: carto_viewer.try(:default_basemap),
-          config: frontend_config_hash,
+          config: frontend_config_hash(current_viewer),
           dashboard_notifications: carto_viewer.try(:notifications_for_category, :dashboard),
           is_just_logged_in: carto_viewer.present? ? !!flash['logged'] : nil,
           is_first_time_viewing_dashboard: !carto_viewer.try(:dashboard_viewed_at),
+          can_change_email: carto_viewer.try(:can_change_email?),
+          auth_username_password_enabled: carto_viewer.try(:organization).try(:auth_username_password_enabled),
+          should_display_old_password: carto_viewer.try(:should_display_old_password?),
+          can_change_password: carto_viewer.try(:can_change_password?),
+          plan_name: carto_viewer.present? ? plan_name(carto_viewer.account_type) : nil,
+          plan_url: carto_viewer.try(:plan_url, request.protocol),
+          can_be_deleted: can_be_deleted,
+          cant_be_deleted_reason: cant_be_deleted_reason,
+          services: carto_viewer.try(:get_oauth_services),
           user_frontend_version: carto_viewer.try(:relevant_frontend_version) || CartoDB::Application.frontend_version,
           asset_host: carto_viewer.try(:asset_host)
         }

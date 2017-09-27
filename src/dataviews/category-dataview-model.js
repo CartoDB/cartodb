@@ -80,21 +80,21 @@ module.exports = DataviewModelBase.extend({
   },
 
   _bindSearchModelEvents: function () {
-    this._searchModel.bind('loading', function () {
+    this.listenTo(this._searchModel, 'loading', function () {
       this.trigger('loading', this);
     }, this);
 
-    this._searchModel.bind('loaded', function () {
+    this.listenTo(this._searchModel, 'loaded', function () {
       this.trigger('loaded', this);
     }, this);
 
-    this._searchModel.bind('error', function (model, response) {
+    this.listenTo(this._searchModel, 'error', function (model, response) {
       if (!response || (response && response.statusText !== 'abort')) {
         this.trigger('error', model, response);
       }
     }, this);
 
-    this._searchModel.bind('change:data', this._onSearchDataChange, this);
+    this.listenTo(this._searchModel, 'change:data', this._onSearchDataChange, this);
   },
 
   _onSearchDataChange: function () {

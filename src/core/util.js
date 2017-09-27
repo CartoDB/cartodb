@@ -1,3 +1,5 @@
+var _ = require('underscore');
+
 var util = {};
 
 util.isCORSSupported = function () {
@@ -145,6 +147,20 @@ util.isWebGLSupported = function () {
  */
 util.endsWith = function (str, suffix) {
   return str.indexOf(suffix, str.length - suffix.length) !== -1;
+};
+
+util.checkRequiredOpts = function (actualOpts, requiredOpts, from) {
+  _.each(requiredOpts, function (item) {
+    if (_.isUndefined(actualOpts[item])) {
+      throw new Error(item + ' is required' + (from ? ' to initialize ' + from : ''));
+    }
+  });
+};
+
+util.setAsPrivateProperties = function (opts, context) {
+  _.each(_.keys(opts), function (item) {
+    context['_' + item] = opts[item];
+  });
 };
 
 module.exports = util;

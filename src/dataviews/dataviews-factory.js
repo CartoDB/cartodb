@@ -1,10 +1,17 @@
 var _ = require('underscore');
 var Model = require('../core/model');
+var util = require('../core/util');
 var CategoryFilter = require('../windshaft/filters/category');
 var RangeFilter = require('../windshaft/filters/range');
 var CategoryDataviewModel = require('./category-dataview-model');
 var FormulaDataviewModel = require('./formula-dataview-model');
 var HistogramDataviewModel = require('./histogram-dataview-model');
+
+var REQUIRED_OPTS = [
+  'map',
+  'vis',
+  'dataviewsCollection'
+];
 
 /**
  * Factory to create dataviews.
@@ -13,13 +20,8 @@ var HistogramDataviewModel = require('./histogram-dataview-model');
 module.exports = Model.extend({
 
   initialize: function (attrs, opts) {
-    if (!opts.map) throw new Error('map is required');
-    if (!opts.vis) throw new Error('vis is required');
-    if (!opts.dataviewsCollection) throw new Error('dataviewsCollection is required');
-
-    this._map = opts.map;
-    this._vis = opts.vis;
-    this._dataviewsCollection = opts.dataviewsCollection;
+    util.checkRequiredOpts(opts, REQUIRED_OPTS, 'DataviewsFactory');
+    util.setAsPrivateProperties(opts, this);
   },
 
   createCategoryModel: function (attrs) {
@@ -67,7 +69,6 @@ module.exports = Model.extend({
 
   _generateAttrsForDataview: function (attrs, whitelistedAttrs) {
     attrs = _.pick(attrs, whitelistedAttrs);
-    attrs.source = attrs.source;
     if (this.get('apiKey')) {
       attrs.apiKey = this.get('apiKey');
     }

@@ -3,8 +3,6 @@ var AnalysisModel = require('../../src/analysis/analysis-model');
 var camshaftReference = require('../../src/analysis/camshaft-reference');
 
 var createAnalysisModel = function (attrs) {
-  if (typeof attrs === 'string') throw new Error('BOOM!');
-
   if (!_.has(attrs, 'type')) {
     attrs.type = 'source';
   }

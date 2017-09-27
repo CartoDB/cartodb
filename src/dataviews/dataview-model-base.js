@@ -3,7 +3,7 @@ var Model = require('../core/model');
 var BackboneAbortSync = require('../util/backbone-abort-sync');
 var WindshaftFiltersBoundingBoxFilter = require('../windshaft/filters/bounding-box');
 var AnalysisModel = require('../analysis/analysis-model');
-var checkAndBuildOpts = require('../util/required-opts');
+var util = require('../core/util');
 var BOUNDING_BOX_FILTER_WAIT = 500;
 
 var UNFETCHED_STATUS = 'unfetched';
@@ -78,7 +78,8 @@ module.exports = Model.extend({
   initialize: function (attrs, opts) {
     attrs = attrs || {};
     opts = opts || {};
-    checkAndBuildOpts(opts, REQUIRED_OPTS, this);
+    util.checkRequiredOpts(opts, REQUIRED_OPTS, 'DataviewModelBase');
+    util.setAsPrivateProperties(opts, this);
 
     if (!attrs.source) throw new Error('source is a required attr');
     this._checkSourceAttribute(attrs.source);

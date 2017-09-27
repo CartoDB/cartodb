@@ -1,6 +1,6 @@
 var _ = require('underscore');
 var Model = require('../core/model');
-var checkAndBuildOpts = require('../util/required-opts');
+var util = require('../core/util');
 
 var REQUIRED_OPTS = [
   'camshaftReference',
@@ -19,7 +19,8 @@ module.exports = Model.extend({
 
   initialize: function (attrs, opts) {
     opts = opts || {};
-    checkAndBuildOpts(opts, REQUIRED_OPTS, this);
+    util.checkRequiredOpts(opts, REQUIRED_OPTS, 'AnalysisModel');
+    util.setAsPrivateProperties(opts, this);
     this._initBinds();
   },
 

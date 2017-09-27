@@ -32,11 +32,25 @@ var createFakeDataview = function (attrs, visModel, windshaftMap, source) {
 
 describe('windshaft/anonymous-map', function () {
   beforeEach(function () {
-    this.analysisCollection = new Backbone.Collection();
     this.vis = new VisModel();
+
+    var source1 = createFakeAnalysis({ id: 'a1' });
+    var source2 = createFakeAnalysis({ id: 'a2' });
+    var source3 = createFakeAnalysis({ id: 'a3' });
+
+    this.a0 = createFakeAnalysis({
+      id: 'a0',
+      query: 'SELECT * FROM wutang_clan'
+    });
+    this.a1 = createFakeAnalysis({ id: 'a1' });
+
+    this.analysisCollection = new Backbone.Collection([
+      source1, source2, source3, this.a0, this.a1
+    ]);
+
     this.cartoDBLayer1 = new CartoDBLayer({
       id: 'layer1',
-      sql: 'sql1',
+      source: source1,
       cartocss: 'cartoCSS1',
       cartocss_version: '2.0'
     }, {
@@ -45,7 +59,7 @@ describe('windshaft/anonymous-map', function () {
     });
     this.cartoDBLayer2 = new CartoDBLayer({
       id: 'layer2',
-      sql: 'sql2',
+      source: source2,
       cartocss: 'cartoCSS2',
       cartocss_version: '2.0'
     }, {
@@ -54,19 +68,13 @@ describe('windshaft/anonymous-map', function () {
     });
     this.cartoDBLayer3 = new CartoDBLayer({
       id: 'layer3',
-      sql: 'sql3',
+      source: source3,
       cartocss: 'cartoCSS3',
       cartocss_version: '2.0'
     }, {
       vis: this.vis,
       analysisCollection: this.analysisCollection
     });
-
-    this.a0 = createFakeAnalysis({
-      id: 'a0',
-      query: 'SELECT * FROM wutang_clan'
-    });
-    this.a1 = createFakeAnalysis({ id: 'a1' });
 
     this.client = new WindshaftClient({
       endpoints: {
@@ -76,7 +84,6 @@ describe('windshaft/anonymous-map', function () {
       urlTemplate: 'http://{user}.example.com',
       userName: 'rambo'
     });
-    this.analysisCollection.reset([this.a0, this.a1]);
 
     this.modelUpdater = jasmine.createSpyObj('modelUpdater', ['updateModels']);
 
@@ -94,12 +101,15 @@ describe('windshaft/anonymous-map', function () {
   });
 
   describe('.toJSON', function () {
-    it('should generate the payload to instantiate the map', function () {
-      expect(this.map.toJSON()).toEqual({
-        'buffersize': {
-          'mvt': 0
-        },
-        'layers': [
+    it('should include buffersize', function () {
+      expect(this.map.toJSON().buffersize).toEqual({
+        'mvt': 0
+      });
+    });
+
+    describe('mapnik layers', function () {
+      it('should generate the payload to instantiate the map', function () {
+        expect(this.map.toJSON().layers).toEqual([
           {
             'id': 'layer1',
             'type': 'mapnik',
@@ -107,7 +117,7 @@ describe('windshaft/anonymous-map', function () {
               'cartocss': 'cartoCSS1',
               'cartocss_version': '2.0',
               'interactivity': [ 'cartodb_id' ],
-              'sql': 'sql1'
+              'source': { id: 'a1' }
             }
           },
           {
@@ -117,7 +127,7 @@ describe('windshaft/anonymous-map', function () {
               'cartocss': 'cartoCSS2',
               'cartocss_version': '2.0',
               'interactivity': [ 'cartodb_id' ],
-              'sql': 'sql2'
+              'source': { id: 'a2' }
             }
           },
           {
@@ -127,79 +137,35 @@ describe('windshaft/anonymous-map', function () {
               'cartocss': 'cartoCSS3',
               'cartocss_version': '2.0',
               'interactivity': [ 'cartodb_id' ],
-              'sql': 'sql3'
+              'source': { id: 'a3' }
             }
           }
-        ],
-        'dataviews': {},
-        'analyses': []
+        ]);
       });
-    });
 
-    it('should include the sql_wrap option', function () {
-      this.cartoDBLayer1.set('sql_wrap', 'sql_wrap_1', { silent: true });
+      it('should include the sql_wrap option', function () {
+        this.cartoDBLayer1.set('sql_wrap', 'sql_wrap_1', { silent: true });
 
-      expect(this.map.toJSON().layers[0]).toEqual({
-        'id': 'layer1',
-        'type': 'mapnik',
-        'options': {
-          'cartocss': 'cartoCSS1',
-          'cartocss_version': '2.0',
-          'interactivity': [ 'cartodb_id' ],
-          'sql': 'sql1',
-          'sql_wrap': 'sql_wrap_1'
-        }
+        expect(this.map.toJSON().layers[0].options.sql_wrap).toEqual('sql_wrap_1');
       });
-    });
 
-    it('should include the interactiviy and attributes options for layers that have infowindow with fields', function () {
-      this.cartoDBLayer1.infowindow.fields.add({ name: 'something' });
+      it('should include the interactiviy and attributes options for layers that have infowindow with fields', function () {
+        this.cartoDBLayer1.infowindow.fields.add({ name: 'something' });
 
-      expect(this.map.toJSON()).toEqual({
-        'buffersize': {
-          'mvt': 0
-        },
-        'layers': [
-          {
-            'id': 'layer1',
-            'type': 'mapnik',
-            'options': {
-              'cartocss': 'cartoCSS1',
-              'cartocss_version': '2.0',
-              'interactivity': [
-                'cartodb_id',
-                'something'
-              ],
-              'attributes': {
-                id: 'cartodb_id',
-                columns: [ 'something' ]
-              },
-              'sql': 'sql1'
-            }
-          },
-          {
-            'id': 'layer2',
-            'type': 'mapnik',
-            'options': {
-              'cartocss': 'cartoCSS2',
-              'cartocss_version': '2.0',
-              'interactivity': [ 'cartodb_id' ],
-              'sql': 'sql2'
-            }
-          },
-          {
-            'id': 'layer3',
-            'type': 'mapnik',
-            'options': {
-              'cartocss': 'cartoCSS3',
-              'cartocss_version': '2.0',
-              'interactivity': [ 'cartodb_id' ],
-              'sql': 'sql3'
-            }
-          }
-        ],
-        'dataviews': {},
-        'analyses': []
+        expect(this.map.toJSON().layers[0].options.interactivity).toEqual([
+          'cartodb_id',
+          'something'
+        ]);
+        expect(this.map.toJSON().layers[0].options.attributes).toEqual({
+          id: 'cartodb_id',
+          columns: [ 'something' ]
+        });
+
+        expect(this.map.toJSON().layers[1].options.interactivity).toEqual([ 'cartodb_id' ]);
+        expect(this.map.toJSON().layers[1].options.attributes).toBeUndefined();
+
+        expect(this.map.toJSON().layers[2].options.interactivity).toEqual([ 'cartodb_id' ]);
+        expect(this.map.toJSON().layers[2].options.attributes).toBeUndefined();
       });
     });
 
@@ -249,20 +215,24 @@ describe('windshaft/anonymous-map', function () {
 
     describe('torque layers', function () {
       it('should be included', function () {
+        var sourceAnalysis = createFakeAnalysis({ id: 'a0' });
+
         this.layersCollection.reset(new TorqueLayer({
           id: 'torqueId',
-          sql: 'sql',
+          source: sourceAnalysis,
           cartocss: 'cartocss'
         }, {
           vis: this.vis
         }));
+
+        this.analysisCollection.reset([ sourceAnalysis ]);
 
         expect(this.map.toJSON().layers).toEqual([
           {
             'id': 'torqueId',
             'type': 'torque',
             'options': {
-              'sql': 'sql',
+              'source': { id: 'a0' },
               'cartocss': 'cartocss',
               'cartocss_version': '2.1.0'
             }
@@ -272,7 +242,7 @@ describe('windshaft/anonymous-map', function () {
     });
 
     it('should include dataviews', function () {
-      this.analysisCollection.reset([this.a0, this.a1]);
+      // this.analysisCollection.reset([this.a0, this.a1]);
 
       var dataview1 = new HistogramDataviewModel({
         id: 'dataviewId1',
@@ -366,15 +336,23 @@ describe('windshaft/anonymous-map', function () {
       });
 
       it('should include an analysis for layers that have a source', function () {
-        var analysis = { id: 'c1' };
-        this.analysisCollection.add(analysis);
-
         this.cartoDBLayer1.update({
-          source: 'c1',
+          source: this.a0,
           cartocss: '#trade_area { ... }'
         }, { silent: true });
 
-        expect(this.map.toJSON().analyses).toEqual([ analysis ]);
+        this.layersCollection.reset([this.cartoDBLayer1]);
+        this.dataviewsCollection.reset([]);
+
+        expect(this.map.toJSON().analyses).toEqual([
+          {
+            id: 'a0',
+            type: 'source',
+            params: {
+              query: 'SELECT * FROM wutang_clan'
+            }
+          }
+        ]);
       });
 
       it('should include a source analysis for dataviews that have a source', function () {
@@ -384,7 +362,8 @@ describe('windshaft/anonymous-map', function () {
           source: this.a0
         }, this.vis, this.map);
 
-        this.dataviewsCollection.add(dataview);
+        this.layersCollection.reset([]);
+        this.dataviewsCollection.reset([dataview]);
 
         expect(this.map.toJSON().analyses).toEqual([
           {
@@ -404,12 +383,12 @@ describe('windshaft/anonymous-map', function () {
           params: {
             join_on: 'cartodb_id',
             source: {
-              id: 'a2',
+              id: 'b2',
               type: 'estimated-population',
               params: {
                 columnName: 'estimated_people',
                 source: {
-                  id: 'a1',
+                  id: 'b1',
                   type: 'trade-area',
                   params: {
                     kind: 'walk',
@@ -428,12 +407,12 @@ describe('windshaft/anonymous-map', function () {
           }
         });
         var analysis2 = this.analysisFactory.analyse({
-          id: 'a2',
+          id: 'b2',
           type: 'estimated-population',
           params: {
             columnName: 'estimated_people',
             source: {
-              id: 'a1',
+              id: 'b1',
               type: 'trade-area',
               params: {
                 kind: 'walk',
@@ -450,39 +429,34 @@ describe('windshaft/anonymous-map', function () {
           }
         });
 
-        this.cartoDBLayer1.update({
-          source: analysis1.get('id'),
-          cartocss: '#union { ... }'
-        }, { silent: true });
+        this.cartoDBLayer1.setSource(analysis1, { silent: true });
+        this.cartoDBLayer2.setSource(analysis2, { silent: true });
 
-        this.cartoDBLayer2.update({
-          source: analysis2.get('id'),
-          cartocss: '#union { ... }'
-        }, { silent: true });
-
-        expect(this.map.toJSON().analyses).toEqual([
-          {
-            'id': 'c1',
-            'type': 'union',
-            'params': {
-              'join_on': 'cartodb_id',
-              'source': {
-                'id': 'a2',
-                'type': 'estimated-population',
-                'params': {
-                  'columnName': 'estimated_people',
-                  'source': {
-                    'id': 'a1',
-                    'type': 'trade-area',
-                    'params': {
-                      'kind': 'walk',
-                      'time': 300,
-                      'source': {
-                        'id': 'b0',
-                        'type': 'source',
-                        'params': {
-                          'query': 'select * from subway_stops'
-                        }
+        expect(_.map(this.map.toJSON().analyses, 'id')).toContain('c1');
+        expect(_.map(this.map.toJSON().analyses, 'id')).not.toContain('b2');
+        expect(_.find(this.map.toJSON().analyses, function (analysis) {
+          return analysis.id === 'c1';
+        })).toEqual({
+          'id': 'c1',
+          'type': 'union',
+          'params': {
+            'join_on': 'cartodb_id',
+            'source': {
+              'id': 'b2',
+              'type': 'estimated-population',
+              'params': {
+                'columnName': 'estimated_people',
+                'source': {
+                  'id': 'b1',
+                  'type': 'trade-area',
+                  'params': {
+                    'kind': 'walk',
+                    'time': 300,
+                    'source': {
+                      'id': 'b0',
+                      'type': 'source',
+                      'params': {
+                        'query': 'select * from subway_stops'
                       }
                     }
                   }
@@ -490,34 +464,47 @@ describe('windshaft/anonymous-map', function () {
               }
             }
           }
-        ]);
+        });
       });
 
       it('should only include an analysis once', function () {
-        // Layer has a0 as it's source
-        this.cartoDBLayer1.update({
-          source: 'a0',
-          cartocss: '#trade_area { ... }'
-        }, { silent: true });
+        this.analysisCollection.reset([]);
+        var analysis = this.analysisFactory.analyse({
+          id: 'd0',
+          type: 'source',
+          params: {
+            query: 'select * from subway_stops'
+          }
+        });
+
+        // Layer has d0 as it's source
+        this.cartoDBLayer1.setSource(analysis, { silent: true });
+        this.layersCollection.reset(this.cartoDBLayer1);
 
         // This datativew also has a0 as it's source
         var dataview1 = createFakeDataview({
           id: 'dataviewId1',
-          source: this.a0
+          source: analysis
         }, this.vis, this.map, this.cartoDBLayer1, this.analysisCollection);
 
         // This dataview also has a0 as it's source
         var dataview2 = createFakeDataview({
           id: 'dataviewId1',
-          source: this.a0
+          source: analysis
         }, this.vis, this.map, this.cartoDBLayer1, this.analysisCollection);
 
         this.dataviewsCollection.reset([ dataview1, dataview2 ]);
 
         // The analysis is only included once
-        var analyses = this.map.toJSON().analyses;
-        expect(analyses.length).toBe(1);
-        expect(analyses[0].id).toEqual('a0');
+        expect(this.map.toJSON().analyses).toEqual([
+          {
+            id: 'd0',
+            type: 'source',
+            params: {
+              query: 'select * from subway_stops'
+            }
+          }
+        ]);
       });
     });
   });

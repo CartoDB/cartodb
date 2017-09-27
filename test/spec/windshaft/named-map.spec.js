@@ -10,7 +10,7 @@ describe('windshaft/named-map', function () {
     this.vis = new VisModel();
     this.cartoDBLayer1 = new CartoDBLayer({
       id: 'layer1',
-      sql: 'sql1',
+      source: { id: 'a1' },
       cartocss: 'cartoCSS1',
       cartocss_version: '2.0'
     }, {
@@ -19,7 +19,7 @@ describe('windshaft/named-map', function () {
     });
     this.cartoDBLayer2 = new CartoDBLayer({
       id: 'layer2',
-      sql: 'sql2',
+      source: { id: 'a2' },
       cartocss: 'cartoCSS2',
       cartocss_version: '2.0'
     }, {
@@ -28,7 +28,7 @@ describe('windshaft/named-map', function () {
     });
     this.cartoDBLayer3 = new CartoDBLayer({
       id: 'layer3',
-      sql: 'sql2',
+      source: { id: 'a3' },
       cartocss: 'cartoCSS3',
       cartocss_version: '2.0'
     }, {

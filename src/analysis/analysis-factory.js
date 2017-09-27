@@ -50,6 +50,16 @@ AnalysisFactory.prototype.analyse = function (analysisDefinition) {
   return analysis;
 };
 
+AnalysisFactory.prototype.createSourceAnalysisForLayer = function (layerId, layerQuery) {
+  return this.analyse({
+    id: layerId,
+    type: 'source',
+    params: {
+      query: layerQuery
+    }
+  });
+};
+
 AnalysisFactory.prototype._getAnalysisAttributesFromAnalysisDefinition = function (analysisDefinition) {
   var analysisType = analysisDefinition.type;
   var sourceNamesForAnalysisType = this._camshaftReference.getSourceNamesForAnalysisType(analysisType);

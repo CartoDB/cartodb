@@ -177,7 +177,6 @@ First time starting to work you need to run `grunt dev`, to build all necessary 
 
 ```bash
 grunt dev
-
 ```
 
 That enables CSS and JS watchers for rebuilding bundles automatically upon changes.
@@ -191,6 +190,16 @@ That enables CSS and JS watchers for rebuilding bundles automatically upon chang
 ```
 
 _Don't forget to restart Rails after you have modified `config/app_config.yml`._
+
+## Building static pages
+
+There are some views that can be served from a static file in `public/static/` directory and must be built beforehand. For that purpose run the following command:
+
+```bash
+grunt js_builder && npm run build:dashboard
+```
+
+Don't forget to check-in the resulting static files.
 
 # Backend
 

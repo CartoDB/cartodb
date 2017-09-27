@@ -56,6 +56,7 @@ Development
 * Remove data-observatory-multiple-measures feature flag (#304)
 
 ### Bug fixes / enhancements
+* Popups improvements (#11430, #10993)
 * Added scroll to metadata in the embed view (#12501)
 * Lazy select to fix missing values due to 40 per page items limitation in requests
 * Fix min/max parameters in filter analysis (#11658)
@@ -205,6 +206,10 @@ Development
 * Axis labels changes in Time-Series (#12658)
 * Removed unused settings in organizations (#4992)
 * Increment maximum buckets in Time-Series for leap years (#12778)
+
+### Internals
+
+* Fix layer's sources in tests (analysis source required) (#12866)
 
 ### NOTICE
 This release upgrades the CartoDB PostgreSQL extension to `0.19.2`. Run the following to have it available:

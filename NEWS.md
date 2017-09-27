@@ -56,6 +56,7 @@ Development
 * Remove data-observatory-multiple-measures feature flag (#304)
 
 ### Bug fixes / enhancements
+* Reload vis if needed when feature is save (#11125)
 * Popups improvements (#11430, #10993)
 * Added scroll to metadata in the embed view (#12501)
 * Lazy select to fix missing values due to 40 per page items limitation in requests
@@ -206,6 +207,7 @@ Development
 * Axis labels changes in Time-Series (#12658)
 * Removed unused settings in organizations (#4992)
 * Increment maximum buckets in Time-Series for leap years (#12778)
+* Prevent invalid geometries in BoundingBoxUtils.to_polygon, to_point (#12873)
 
 ### Internals
 

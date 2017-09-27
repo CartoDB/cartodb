@@ -118,7 +118,7 @@ module VisualizationsControllerHelper
     if params[:vector].present?
       # This forces vector. Useful for testing purposes
       options[:vector] = params[:vector] == 'true'
-    elsif visualization.user.has_feature_flag?('vector_vs_raster')
+    elsif !visualization.user.has_feature_flag?('vector_vs_raster')
       # This enables autodetection at cartodb.js
       options[:vector] = nil
     end

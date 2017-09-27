@@ -38,6 +38,7 @@
   position: absolute;
   top: 120px;
   right: 64px;
+  bottom: 64px;
   left: 72px;
   opacity: 0;
 }
@@ -214,6 +215,25 @@
 .CDB-Dashboard-menuHeaderMobileText {
   @include opacity(0);
 }
+.CDB-Dashboard-metadata {
+  @include display-flex();
+  @include flex-direction(column);
+  position: absolute;
+  top: 0;
+  right: -20px;
+  bottom: 0;
+  left: 0;
+}
+.CDB-Dashboard-scrollWrapper {
+  @include display-flex();
+  @include flex-direction(column);
+  @include flex(1);
+  position: relative;
+  min-height: 0;
+}
+.CDB-Dashboard-scrollContent {
+  padding-right: 20px;
+}
 @include keyframes(fadeInDown) {
   from {
     @include css3-prefix(transform, translate3d(-5%, 0, 0));
@@ -335,7 +355,6 @@
     fill: rgb(22, 41, 69);
   }
   .CDB-Dashboard-menuLogo svg {
-    width: auto;
     height: 16px;
     margin-bottom: -2px;
   }

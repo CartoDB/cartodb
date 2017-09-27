@@ -74,7 +74,6 @@ var createDashboard = function (selector, vizJSON, opts, callback) {
     // Create widgets
     var widgetsService = new WidgetsService(widgets, vis.dataviews, vis.analysis);
     var widgetModelsMap = {
-      list: widgetsService.createListModel.bind(widgetsService),
       formula: widgetsService.createFormulaModel.bind(widgetsService),
       histogram: widgetsService.createHistogramModel.bind(widgetsService),
       'time-series': widgetsService.createTimeSeriesModel.bind(widgetsService),

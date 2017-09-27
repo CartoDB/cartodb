@@ -8,22 +8,32 @@ module.exports = {
         maps_api_template: 'asd',
         user_name: 'pepe'
       },
-      layers: [{
-        type: 'cartodb',
-        source: {
-          id: 'a0'
+      layers: [
+        {
+          id: 'layer1',
+          type: 'cartodb',
+          options: {
+            source: 'a0',
+            cartocss: '#layer { polygon-fill: #CDCDCD; }'
+          }
+        }, {
+          id: 'layer2',
+          type: 'torque',
+          options: {
+            source: 'a0',
+            cartocss: '#layer { polygon-fill: #CDCDCD; }'
+          }
         }
-      }, {
-        type: 'torque'
-      }],
-      analyses: [{
-        id: 'a0',
-        type: 'source',
-        options: {
-          table_name: 'akhenaton.bad_boys_de_marseille',
-          simple_geom: 'point'
+      ],
+      analyses: [
+        {
+          id: 'a0',
+          type: 'source',
+          params: {
+            query: 'SELECT * FROM akhenaton.bad_boys_de_marseille;'
+          }
         }
-      }]
+      ]
     });
   }
 };

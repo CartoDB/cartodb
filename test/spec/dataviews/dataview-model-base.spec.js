@@ -4,6 +4,7 @@ var VisModel = require('../../../src/vis/vis.js');
 var MapModel = require('../../../src/geo/map.js');
 var DataviewModelBase = require('../../../src/dataviews/dataview-model-base');
 var AnalysisFactory = require('../../../src/analysis/analysis-factory.js');
+var CartoDBLayer = require('../../../src/geo/map/cartodb-layer.js');
 
 var fakeCamshaftReference = {
   getSourceNamesForAnalysisType: function (analysisType) {
@@ -51,7 +52,7 @@ describe('dataviews/dataview-model-base', function () {
       id: 'a0',
       type: 'source'
     });
-    this.layer = new Backbone.Model();
+    this.layer = new CartoDBLayer(null, { vis: this.vis });
 
     this.model = new DataviewModelBase({
       source: {id: 'a0'}
@@ -414,9 +415,9 @@ describe('dataviews/dataview-model-base', function () {
 
   describe('bindings to the filter', function () {
     beforeEach(function () {
-      this.layer = new Backbone.Model({
+      this.layer = new CartoDBLayer({
         id: 'layerId'
-      });
+      }, { vis: this.vis });
     });
 
     it('should reload the map by default when the filter changes', function () {
@@ -522,10 +523,10 @@ describe('dataviews/dataview-model-base', function () {
 
   describe('getSourceId', function () {
     it('should return the id of the source', function () {
-      var layer = new Backbone.Model({
+      var layer = new CartoDBLayer({
         id: 'layerId',
-        source: 'a1'
-      });
+        source: new Backbone.Model({ id: 'a1' })
+      }, { vis: this.vis });
 
       var dataview = new DataviewModelBase({
         source: {
@@ -539,26 +540,6 @@ describe('dataviews/dataview-model-base', function () {
       });
 
       expect(dataview.getSourceId()).toEqual('THE_SOURCE_ID');
-    });
-
-    it("should return the id of the layer's source", function () {
-      var layer = new Backbone.Model({
-        id: 'layerId',
-        source: 'a1'
-      });
-
-      var dataview = new DataviewModelBase({
-        source: {
-          id: layer.id
-        }
-      }, { // eslint-disable-line
-        layer: layer,
-        map: this.map,
-        vis: this.vis,
-        analysisCollection: this.analysisCollection
-      });
-
-      expect(dataview.getSourceId()).toEqual('a1');
     });
   });
 

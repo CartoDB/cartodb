@@ -312,24 +312,7 @@ module.exports = Model.extend({
   },
 
   getSourceId: function () {
-    // Dataview is pointing to a layer that has a source, so its
-    // source is actually the the layers's source
-    if (this.hasLayerAsSource() && this.layer.has('source')) {
-      return this.layer.get('source');
-    }
-
-    // Dataview is pointing to a layer with `sql` or an analysis
-    // node directly, so just return the id that has been set by
-    // dataviews-factory.js
-    return this._ownSourceId();
-  },
-
-  _ownSourceId: function () {
     return this.has('source') && this.get('source').id;
-  },
-
-  hasLayerAsSource: function () {
-    return this._ownSourceId() === this.layer.id;
   },
 
   isFiltered: function () {

@@ -235,7 +235,7 @@ describe Carto::Api::UsersController do
 
       delete_json api_v3_users_delete_me_url(url_options), payload, @headers do |response|
         expect(response.status).to eq(200)
-        expect(Carto::User.where(id: @user.id).first).to be_nil
+        expect(Carto::User.exists?(@user.id)).to be_false
       end
     end
 

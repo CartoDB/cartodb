@@ -1,4 +1,3 @@
-var _ = require('underscore');
 var cdb = require('cartodb.js');
 var WidgetView = require('../../src/widgets/widget-view');
 var WidgetModel = require('../../src/widgets/widget-model');

@@ -99,20 +99,6 @@ module.exports = Model.extend({
     this._setupAnalysisStatusEvents();
   },
 
-  set: function (attributes, options) {
-    var sourceValue = null;
-    if (typeof attributes === 'string' && attributes === 'source') {
-      sourceValue = options;
-    } else if (_.has(attributes, 'source')) {
-      sourceValue = attributes.source;
-    }
-    if (sourceValue) {
-      this._checkSourceAttribute(sourceValue);
-    }
-
-    Model.prototype.set.apply(this, arguments);
-  },
-
   _initBinds: function () {
     this.on('change:source', this._setupAnalysisStatusEvents, this);
 
@@ -258,6 +244,11 @@ module.exports = Model.extend({
 
   update: function (attrs) {
     attrs = _.pick(attrs, this.constructor.ATTRS_NAMES);
+
+    if (attrs.source) {
+      this._checkSourceAttribute(attrs.source);
+    }
+
     this.set(attrs);
   },
 
@@ -302,13 +293,17 @@ module.exports = Model.extend({
     return this.getSource().get('type');
   },
 
+  getSourceId: function () {
+    var source = this.getSource();
+    return source && source.id;
+  },
+
   getSource: function () {
     return this.get('source');
   },
 
-  getSourceId: function () {
-    var source = this.getSource();
-    return source && source.id;
+  setSource: function (source, options) {
+    this.set('source', source, options);
   },
 
   isFiltered: function () {

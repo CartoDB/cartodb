@@ -3,7 +3,7 @@ var htmlCssSanitizer = require('html-css-sanitizer');
 /**
  * Sanitize inputHtml of unsafe HTML tags & attributes
  * @param {String} inputHtml
- * @param {Function,false,null,undefined} optionalSanitizer By default undefined, for which the default sanitizer will be used.
+ * @param {Function} optionalSanitizer By default undefined, for which the default sanitizer will be used.
  *   Pass a function (that takes inputHtml) to sanitize yourself, or false/null to skip sanitize call.
  */
 htmlCssSanitizer.html = function (inputHtml, optionalSanitizer) {

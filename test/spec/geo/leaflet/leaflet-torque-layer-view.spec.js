@@ -30,8 +30,7 @@ describe('geo/leaflet/leaflet-torque-layer-view', function () {
     spyOn(L.TorqueLayer.prototype, 'initialize').and.callThrough();
 
     this.model = new TorqueLayer({
-      type: 'torque',
-      sql: 'select * from table',
+      source: { id: 'a0' },
       cartocss: 'Map {}',
       dynamic_cdn: 'dynamic-cdn-value'
     }, { vis: this.vis });
@@ -43,11 +42,14 @@ describe('geo/leaflet/leaflet-torque-layer-view', function () {
 
   it('should reuse layer view', function () {
     this.view.check = 'testing';
-    var newLayer = new TorqueLayer(this.view.model.attributes, {
+    var newLayer = new TorqueLayer({
+      source: { id: 'a1' },
+      cartocss: 'Map {}',
+      dynamic_cdn: 'dynamic-cdn-value'
+    }, {
       vis: this.vis
     });
-    newLayer.set({ sql: 'select * from table', cartocss: 'Map {}' });
-    this.map.layers.reset([newLayer]);
+    this.map.layers.reset([ newLayer ]);
 
     expect(this.mapView._layerViews[newLayer.cid].model).toEqual(newLayer);
     expect(this.mapView._layerViews[newLayer.cid].check).toEqual('testing');

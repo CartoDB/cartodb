@@ -133,7 +133,7 @@ module CartoDB
       def external_source_data_for(visualization)
         return {} unless visualization.type == Member::TYPE_REMOTE
 
-        external_source = Visualization::ExternalSource.where(visualization_id: visualization.id).first
+        external_source = Carto::ExternalSource.where(visualization_id: visualization.id).first
         return {} unless external_source.present?
 
         {

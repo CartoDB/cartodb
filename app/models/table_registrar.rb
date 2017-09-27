@@ -34,7 +34,7 @@ module CartoDB
     def set_metadata_from_data_import_id(table, data_import_id)
       external_data_import = ExternalDataImport.where(data_import_id: data_import_id).first
       if external_data_import
-        external_source = CartoDB::Visualization::ExternalSource.where(id: external_data_import.external_source_id).first
+        external_source = Carto::ExternalSource.where(id: external_data_import.external_source_id).first
         if external_source
           visualization = external_source.visualization
           if visualization

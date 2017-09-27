@@ -110,7 +110,6 @@ module CartoDB
       new_public_table.js
 
       mobile_apps_templates.js
-      mobile_apps_deps.js
       mobile_apps.js
 
       explore_deps.js

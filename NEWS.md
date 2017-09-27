@@ -56,6 +56,7 @@ Development
 * Remove data-observatory-multiple-measures feature flag (#304)
 
 ### Bug fixes / enhancements
+* Reload vis if needed when feature is save (#11125)
 * Popups improvements (#11430, #10993)
 * Added scroll to metadata in the embed view (#12501)
 * Lazy select to fix missing values due to 40 per page items limitation in requests

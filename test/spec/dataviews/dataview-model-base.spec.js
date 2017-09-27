@@ -582,6 +582,29 @@ describe('dataviews/dataview-model-base', function () {
       sharedTestsForAnalysisEvents();
     });
   });
+
+  describe('when there is a custom error', function () {
+    it('should trigger the error namespaced with the type', function (done) {
+      var errorMsg = {
+        type: 'limit',
+        message: 'You are over platform\'s limits. Please contact us to know more details',
+        subtype: 'datasource'
+      };
+      var error = {
+        status: 429,
+        responseJSON: {
+          errors: ['You are over platform\'s limits. Please contact us to know more details'],
+          errors_with_context: [errorMsg]
+        }
+      };
+
+      this.model.on('error:limit', function (error) {
+        expect(error).toEqual(errorMsg);
+        done();
+      });
+      this.model.trigger('error', this.model, error);
+    });
+  });
 });
 
 function sharedTestsForAnalysisEvents () {

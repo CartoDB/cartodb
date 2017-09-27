@@ -8,6 +8,8 @@ FactoryGirl.define do
     type_guessing true
     quoted_fields_guessing true
     content_guessing true
+    run_at Time.now
+    ran_at Time.now
 
     after(:build) do |sync|
       sync.log = FactoryGirl.build(:carto_log, type: 'sync')

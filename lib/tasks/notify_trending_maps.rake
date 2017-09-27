@@ -15,7 +15,7 @@ namespace :cartodb do
         views = data[:mapviews]
 
         puts "Notifying trending map #{visualization_id} with a total of #{views} mapviews"
-        visualization = CartoDB::Visualization::Member.new(id: visualization_id)
+        visualization = Carto::Visualization.find(visualization_id)
         preview_image = Carto::StaticMapsURLHelper.new.url_for_static_map_without_request(data[:user],
                                                                                           'http',
                                                                                           visualization,

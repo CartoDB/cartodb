@@ -207,6 +207,7 @@ Development
 * Axis labels changes in Time-Series (#12658)
 * Removed unused settings in organizations (#4992)
 * Increment maximum buckets in Time-Series for leap years (#12778)
+* Improve tile error overlay (cartodb.js#1721)
 * Prevent invalid geometries in BoundingBoxUtils.to_polygon, to_point (#12873)
 
 ### Internals

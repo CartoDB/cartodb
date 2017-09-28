@@ -2,7 +2,7 @@ var _ = require('underscore');
 var Analysis = require('./analysis-model');
 var camshaftReference = require('./camshaft-reference');
 
-var AnalysisFactory = function (opts) {
+var AnalysisService = function (opts) {
   opts = opts || {};
   if (!opts.analysisCollection) {
     throw new Error('analysisCollection option is required');
@@ -26,7 +26,7 @@ var AnalysisFactory = function (opts) {
  * 
  * TODO: document what's the analysis definition
  */
-AnalysisFactory.prototype.analyse = function (analysisDefinition) {
+AnalysisService.prototype.analyse = function (analysisDefinition) {
   analysisDefinition = _.clone(analysisDefinition);
   var analysis = this._analysisCollection.get(analysisDefinition.id);
   var analysisAttrs = this._getAnalysisAttributesFromAnalysisDefinition(analysisDefinition);
@@ -50,7 +50,7 @@ AnalysisFactory.prototype.analyse = function (analysisDefinition) {
   return analysis;
 };
 
-AnalysisFactory.prototype.createSourceAnalysisForLayer = function (layerId, layerQuery) {
+AnalysisService.prototype.createSourceAnalysisForLayer = function (layerId, layerQuery) {
   return this.analyse({
     id: layerId,
     type: 'source',
@@ -60,7 +60,7 @@ AnalysisFactory.prototype.createSourceAnalysisForLayer = function (layerId, laye
   });
 };
 
-AnalysisFactory.prototype._getAnalysisAttributesFromAnalysisDefinition = function (analysisDefinition) {
+AnalysisService.prototype._getAnalysisAttributesFromAnalysisDefinition = function (analysisDefinition) {
   var analysisType = analysisDefinition.type;
   var sourceNamesForAnalysisType = this._camshaftReference.getSourceNamesForAnalysisType(analysisType);
   var sourceNodes = {};
@@ -74,21 +74,21 @@ AnalysisFactory.prototype._getAnalysisAttributesFromAnalysisDefinition = functio
   return _.omit(_.extend(analysisDefinition, analysisDefinition.params, sourceNodes), 'params');
 };
 
-AnalysisFactory.prototype._onAnalysisRemoved = function (analysis) {
+AnalysisService.prototype._onAnalysisRemoved = function (analysis) {
   this._removeAnalsyisFromIndex(analysis);
   analysis.unbind('destroy', this._onAnalysisRemoved);
 };
 
-AnalysisFactory.prototype.findNodeById = function (id) {
+AnalysisService.prototype.findNodeById = function (id) {
   return this._analysisCollection.get(id);
 };
 
-AnalysisFactory.prototype._addAnalysisToCollection = function (analysis) {
+AnalysisService.prototype._addAnalysisToCollection = function (analysis) {
   return this._analysisCollection.add(analysis);
 };
 
-AnalysisFactory.prototype._removeAnalsyisFromIndex = function (analysis) {
+AnalysisService.prototype._removeAnalsyisFromIndex = function (analysis) {
   return this._analysisCollection.remove(analysis);
 };
 
-module.exports = AnalysisFactory;
+module.exports = AnalysisService;

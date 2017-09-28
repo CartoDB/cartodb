@@ -1,6 +1,6 @@
 var Backbone = require('backbone');
 var AnalysisModel = require('../../../src/analysis/analysis-model.js');
-var AnalysisFactory = require('../../../src/analysis/analysis-factory.js');
+var AnalysisService = require('../../../src/analysis/analysis-service.js');
 
 describe('src/analysis/analysis-model.js', function () {
   beforeEach(function () {
@@ -140,12 +140,12 @@ describe('src/analysis/analysis-model.js', function () {
         }
       };
 
-      var analysisFactory = new AnalysisFactory({
+      var analysisService = new AnalysisService({
         vis: this.vis,
         analysisCollection: new Backbone.Collection(),
         camshaftReference: fakeCamshaftReference
       });
-      var analysisModel = analysisFactory.analyse({
+      var analysisModel = analysisService.analyse({
         id: 'a1',
         type: 'analysis-type-1',
         params: {
@@ -216,12 +216,12 @@ describe('src/analysis/analysis-model.js', function () {
         }
       };
 
-      var analysisFactory = new AnalysisFactory({
+      var analysisService = new AnalysisService({
         vis: this.vis,
         analysisCollection: new Backbone.Collection(),
         camshaftReference: fakeCamshaftReference
       });
-      var analysisModel = analysisFactory.analyse({
+      var analysisModel = analysisService.analyse({
         id: 'a1',
         type: 'analysis-type-1',
         params: {

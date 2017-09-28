@@ -3,7 +3,7 @@ var Backbone = require('backbone');
 var VisModel = require('../../../src/vis/vis.js');
 var MapModel = require('../../../src/geo/map.js');
 var DataviewModelBase = require('../../../src/dataviews/dataview-model-base');
-var AnalysisFactory = require('../../../src/analysis/analysis-factory.js');
+var AnalysisService = require('../../../src/analysis/analysis-service.js');
 
 var fakeCamshaftReference = {
   getSourceNamesForAnalysisType: function (analysisType) {
@@ -48,12 +48,12 @@ describe('dataviews/dataview-model-base', function () {
 
     this.analysisCollection = new Backbone.Collection();
 
-    this.analysisFactory = new AnalysisFactory({
+    this.analysisService = new AnalysisService({
       analysisCollection: this.analysisCollection,
       camshaftReference: fakeCamshaftReference,
       vis: this.vis
     });
-    this.source = this.analysisFactory.analyse({
+    this.source = this.analysisService.analyse({
       id: 'a0',
       type: 'source'
     });
@@ -236,7 +236,7 @@ describe('dataviews/dataview-model-base', function () {
     describe('when change:url has a sourceId option', function () {
       beforeEach(function () {
         this.analysisCollection.reset([]);
-        this.analysisFactory.analyse({
+        this.analysisService.analyse({
           id: 'a2',
           type: 'estimated-population',
           params: {
@@ -259,7 +259,7 @@ describe('dataviews/dataview-model-base', function () {
           }
         });
 
-        this.model.set('source', this.analysisFactory.findNodeById('a1'), { silent: true });
+        this.model.set('source', this.analysisService.findNodeById('a1'), { silent: true });
 
         spyOn(this.model, 'fetch');
       });
@@ -478,7 +478,7 @@ describe('dataviews/dataview-model-base', function () {
   describe('getSourceType', function () {
     it('should return the type of the source', function () {
       var dataview = new DataviewModelBase({
-        source: this.analysisFactory.findNodeById('a0')
+        source: this.analysisService.findNodeById('a0')
       }, {
         map: this.map,
         vis: this.vis

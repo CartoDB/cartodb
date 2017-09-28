@@ -1,5 +1,6 @@
 var Backbone = require('backbone');
 var FormulaDataviewModel = require('../../../src/dataviews/formula-dataview-model.js');
+var fakeFactory = require('../../helpers/fakeFactory');
 
 describe('dataviews/formula-dataview-model', function () {
   beforeEach(function () {
@@ -10,8 +11,10 @@ describe('dataviews/formula-dataview-model', function () {
 
     this.layer = new Backbone.Model();
 
+    this.source = fakeFactory.createAnalysisModel({ id: 'a0' });
+
     this.model = new FormulaDataviewModel({
-      source: {id: 'a0'},
+      source: this.source,
       operation: 'min'
     }, {
       map: this.map,

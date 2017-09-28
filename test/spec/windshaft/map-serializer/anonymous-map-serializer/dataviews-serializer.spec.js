@@ -2,6 +2,7 @@ var Backbone = require('backbone');
 var CategoryDataviewModel = require('../../../../../src/dataviews/category-dataview-model');
 var HistogramDataviewModel = require('../../../../../src/dataviews/histogram-dataview-model');
 var FormulaDataviewModel = require('../../../../../src/dataviews/formula-dataview-model');
+var fakeFactory = require('../../../../helpers/fakeFactory');
 var DataviewsSerializer = require('../../../../../src/windshaft/map-serializer/anonymous-map-serializer/dataviews-serializer');
 
 describe('dataviews-serializer', function () {
@@ -9,11 +10,13 @@ describe('dataviews-serializer', function () {
     var vis;
     var map;
     var layer;
+    var analysis;
 
     beforeEach(function () {
       vis = new Backbone.Model();
       map = new Backbone.Model();
       layer = new Backbone.Model();
+      analysis = fakeFactory.createAnalysisModel({ id: 'a0' });
     });
 
     it('serialises histogram dataviews', function () {
@@ -22,9 +25,7 @@ describe('dataviews-serializer', function () {
         column: 'column1',
         column_type: 'date',
         aggregation: 'week',
-        source: {
-          id: 'a0'
-        }
+        source: analysis
       }, {
         map: map,
         vis: vis,
@@ -56,9 +57,7 @@ describe('dataviews-serializer', function () {
         column: 'column2',
         aggregation: 'aggregation2',
         aggregation_column: 'aggregation_column2',
-        source: {
-          id: 'a1'
-        }
+        source: analysis
       }, {
         map: map,
         vis: vis,
@@ -74,7 +73,7 @@ describe('dataviews-serializer', function () {
         dataview2: {
           type: 'aggregation',
           source: {
-            id: 'a1'
+            id: 'a0'
           },
           options: {
             column: 'column2',
@@ -90,9 +89,7 @@ describe('dataviews-serializer', function () {
         id: 'dataview3',
         column: 'column3',
         operation: 'sum',
-        source: {
-          id: 'a2'
-        }
+        source: analysis
       }, {
         map: map,
         vis: vis,
@@ -108,7 +105,7 @@ describe('dataviews-serializer', function () {
         dataview3: {
           type: 'formula',
           source: {
-            id: 'a2'
+            id: 'a0'
           },
           options: {
             column: 'column3',

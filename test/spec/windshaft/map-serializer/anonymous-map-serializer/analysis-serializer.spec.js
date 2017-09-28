@@ -167,7 +167,7 @@ describe('analysis-serializer', function () {
     describe('dataview sources', function () {
       it('should serialize a single analysis', function () {
         var dataview = new DataviewModel({
-          source: { id: analysisModel.id }
+          source: analysisModel
         }, {
           map: mapModel,
           vis: visModel,
@@ -235,7 +235,7 @@ describe('analysis-serializer', function () {
         });
 
         var dataview1 = new DataviewModel({
-          source: { id: analysis1.id }
+          source: analysis1
         }, {
           map: mapModel,
           vis: visModel,
@@ -243,7 +243,7 @@ describe('analysis-serializer', function () {
         });
 
         var dataview2 = new DataviewModel({
-          source: { id: analysis2.id }
+          source: analysis2
         }, {
           map: mapModel,
           vis: visModel,
@@ -309,7 +309,7 @@ describe('analysis-serializer', function () {
       });
 
       var dataview = new DataviewModel({
-        source: { id: analysisModel.id }
+        source: analysisModel
       }, {
         map: mapModel,
         vis: visModel,
@@ -330,6 +330,8 @@ describe('analysis-serializer', function () {
   });
 });
 
+// We use a "fake" reference instead of the one in src/analysis/camshaft-reference
+// to ensure that tests won't break if the real thing changes
 var fakeCamshaftReference = {
   getSourceNamesForAnalysisType: function (analysisType) {
     var map = {

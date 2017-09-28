@@ -211,8 +211,7 @@ var VisModel = Backbone.Model.extend({
     }, {
       map: this.map,
       vis: this,
-      dataviewsCollection: this._dataviewsCollection,
-      analysisCollection: this._analysisCollection
+      dataviewsCollection: this._dataviewsCollection
     });
 
     this._windshaftMap.bind('instanceCreated', this._onMapInstanceCreated, this);

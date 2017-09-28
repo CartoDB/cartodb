@@ -54,7 +54,7 @@ describe('anonymous-map-serializer', function () {
       // Dataviews
       var dataview = new MyDataviewModel({
         id: 'DATAVIEW_ID',
-        source: { id: analysisModel.id }
+        source: analysisModel
       }, {
         map: mapModel,
         vis: visModel,

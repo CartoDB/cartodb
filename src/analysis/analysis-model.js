@@ -20,7 +20,10 @@ var AnalysisModel = Model.extend({
   initialize: function (attrs, opts) {
     opts = opts || {};
     util.checkRequiredOpts(opts, REQUIRED_OPTS, 'AnalysisModel');
-    util.setAsPrivateProperties(opts, this);
+
+    this._camshaftReference = opts.camshaftReference;
+    this._vis = opts.vis;
+
     this._initBinds();
   },
 

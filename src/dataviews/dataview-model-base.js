@@ -79,7 +79,9 @@ module.exports = Model.extend({
     attrs = attrs || {};
     opts = opts || {};
     util.checkRequiredOpts(opts, REQUIRED_OPTS, 'DataviewModelBase');
-    util.setAsPrivateProperties(opts, this);
+
+    this._map = opts.map;
+    this._vis = opts.vis;
 
     if (!attrs.source) throw new Error('source is a required attr');
     this._checkSourceAttribute(attrs.source);

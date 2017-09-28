@@ -157,10 +157,4 @@ util.checkRequiredOpts = function (actualOpts, requiredOpts, from) {
   });
 };
 
-util.setAsPrivateProperties = function (opts, context) {
-  _.each(_.keys(opts), function (item) {
-    context['_' + item] = opts[item];
-  });
-};
-
 module.exports = util;

@@ -21,7 +21,10 @@ module.exports = Model.extend({
 
   initialize: function (attrs, opts) {
     util.checkRequiredOpts(opts, REQUIRED_OPTS, 'DataviewsFactory');
-    util.setAsPrivateProperties(opts, this);
+
+    this._map = opts.map;
+    this._vis = opts.vis;
+    this._dataviewsCollection = opts.dataviewsCollection;
   },
 
   createCategoryModel: function (attrs) {

@@ -465,6 +465,18 @@ class User < Sequel::Model
     invalidate_varnish_cache
 
     # Delete the DB or the schema
+    drop_tables(error_happened, has_organization) unless skip_table_drop
+
+    # Remove metadata from redis last (to avoid cutting off access to SQL API if db deletion fails)
+    unless error_happened
+      $users_metadata.DEL(key)
+      $users_metadata.DEL(timeout_key)
+    end
+
+    feature_flags_user.each(&:delete)
+  end
+
+  def drop_tables(error_happened, has_organization)
     if has_organization
       unless error_happened
         db_service.drop_organization_user(
@@ -484,14 +496,6 @@ class User < Sequel::Model
       }.join
       db_service.monitor_user_notification
     end
-
-    # Remove metadata from redis last (to avoid cutting off access to SQL API if db deletion fails)
-    unless error_happened
-      $users_metadata.DEL(key)
-      $users_metadata.DEL(timeout_key)
-    end
-
-    feature_flags_user.each(&:delete)
   end
 
   def delete_external_data_imports

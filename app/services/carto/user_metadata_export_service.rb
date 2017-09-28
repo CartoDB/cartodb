@@ -210,8 +210,11 @@ module Carto
 
     def rollback_import_from_directory(path)
       user = user_from_file(path)
+      return unless user
 
-      user && Carto::User.find(user.id).delete
+      user = ::User[user.id]
+      Carto::User.find(user.id).destroy
+      user.before_destroy(skip_table_drop: true)
 
       Carto::RedisExportService.new.remove_redis_from_json_export(redis_user_file(path))
     rescue ActiveRecord::RecordNotFound

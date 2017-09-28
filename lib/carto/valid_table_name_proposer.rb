@@ -26,7 +26,7 @@ module Carto
       proposal = prefix
 
       (1..MAX_RENAME_RETRIES).each do |appendix|
-        return proposal unless names.include?(proposal)
+        return proposal unless names.include?(proposal) || names.any? {|name| name[0..60] == proposal[0..60]}
 
         proposal = Carto::DB::Sanitize.append_with_truncate_and_sanitize(prefix, "#{separator}#{appendix}")
       end

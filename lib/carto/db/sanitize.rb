@@ -6,7 +6,7 @@ module Carto
       PREFIX_REPLACEMENT = 'table_'.freeze
       SUFFIX_REPLACEMENT = '_t'.freeze
       CHARACTER_REPLACEMENT = '_'.freeze
-      MAX_IDENTIFIER_LENGTH = 61
+      MAX_IDENTIFIER_LENGTH = 63
       DISALLOWED_STARTING_CHARACTERS_REGEX = /^[^a-z]+/
       DISALLOWED_CHARACTERS_REGEX = /[^a-z|_|0-9]/
       REPEATED_UNDERSCORES_REGEX = /_{2,}/

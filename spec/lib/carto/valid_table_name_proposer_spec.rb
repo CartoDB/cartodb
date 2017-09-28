@@ -29,14 +29,17 @@ module Carto
       end
 
       it 'handles long titles properly' do
-        long_title = 'abcdefghij' * 7
+        long_name_1 = 'carto_long_filename_that_almost_matches_another_one_63chars_aaa'
+        long_name_2 = 'carto_long_filename_that_almost_matches_another_one_63chars_aab'
+        expected_name = 'carto_long_filename_that_almost_matches_another_one_63chars_10'
+
         expect(
-          @valid_table_name_proposer.propose_valid_table_name(long_title, taken_names: [])
-        ).to eq('abcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghija')
-        taken_name = ('abcdefghij' * 6) + 'a'
+          @valid_table_name_proposer.propose_valid_table_name(long_name_1, taken_names: [])
+        ).to eq(long_name_1)
+
         expect(
-          @valid_table_name_proposer.propose_valid_table_name(long_title, taken_names: [taken_name])
-        ).to eq('abcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghi_1')
+          @valid_table_name_proposer.propose_valid_table_name(long_name_2, taken_names: [long_name_1])
+        ).to eq(expected_name)
       end
 
       it 'should remove disallowed starting characters' do

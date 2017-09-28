@@ -194,7 +194,7 @@ module Carto
       organization = load_organization_from_directory(meta_path)
       raise OrganizationAlreadyExists.new if ::Carto::Organization.exists?(id: organization.id)
 
-      organization_redis_file = get_redis_filename(meta_path)
+      organization_redis_file = redis_filename(meta_path)
       Carto::RedisExportService.new.restore_redis_from_json_export(File.read(organization_redis_file))
 
       # Groups and notifications must be saved after users
@@ -220,7 +220,7 @@ module Carto
     end
 
     def rollback_import_from_directory(meta_path)
-      organization_redis_file = get_redis_filename(meta_path)
+      organization_redis_file = redis_filename(meta_path)
       Carto::RedisExportService.new.remove_redis_from_json_export(File.read(organization_redis_file))
       organization = load_organization_from_directory(meta_path)
 
@@ -241,7 +241,7 @@ module Carto
       Dir["#{meta_path}/user_*"]
     end
 
-    def get_redis_filename(meta_path)
+    def redis_filename(meta_path)
       Dir["#{meta_path}/redis_organization_*.json"].first
     end
 

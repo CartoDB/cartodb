@@ -1,3 +1,5 @@
+require_relative '../../helpers/avatar_helper'
+
 module Carto
   module Api
     class UsersController < ::Api::ApplicationController
@@ -35,7 +37,7 @@ module Carto
         render json: {
           user_data: carto_viewer.present? ? Carto::Api::UserPresenter.new(carto_viewer).data : nil,
           default_fallback_basemap: carto_viewer.try(:default_basemap),
-          config: frontend_config_hash,
+          config: frontend_config_hash(current_viewer),
           dashboard_notifications: carto_viewer.try(:notifications_for_category, :dashboard),
           is_just_logged_in: carto_viewer.present? ? !!flash['logged'] : nil,
           is_first_time_viewing_dashboard: !carto_viewer.try(:dashboard_viewed_at),

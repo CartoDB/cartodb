@@ -150,7 +150,7 @@
 }
 
 .Editor-ListLayer-titleText {
-  @include flex(1);
+  @include flex(1 0 auto);
   width: 0;
   padding-right: $baseSize * 2;
 }

@@ -41,7 +41,7 @@ module Carto
     end
 
     def name_can_have_typname_collision(name, proposal)
-      name == proposal || name[0..NON_COLLISIONABLE_STRING_LENGHT] == proposal[0..NON_COLLISIONABLE_STRING_LENGHT]
+      name == proposal || name[0..NON_COLLISIONABLE_STRING_LENGTH] == proposal[0..NON_COLLISIONABLE_STRING_LENGTH]
     end
   end
 end

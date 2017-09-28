@@ -44,7 +44,7 @@ class PublicClient {
         data = null;
       }
 
-      callback(null, textStatus, data);
+      callback(null, jqXHR, data);
     };
   }
 
@@ -52,7 +52,7 @@ class PublicClient {
     return (jqXHR, textStatus, errorThrown) => {
       const err = errorThrown || new Error('Failed to fetch');
 
-      callback(err, textStatus, null);
+      callback(err, jqXHR, null);
     };
   }
 
@@ -79,10 +79,9 @@ class PublicClient {
     this.addHeaders(opts);
 
     const baseUrl = this.getAssetsBaseUrl();
-    // TODO static_public_map const url = this.makeAbsoluteURI(this.makeRelativeURI(uriParts));
-    const url = this.makeRelativeURI(uriParts);
+    // const url = this.makeAbsoluteURI(this.makeRelativeURI(uriParts));
 
-    $.ajax(`${baseUrl}${url}`, opts)
+    $.ajax(`${baseUrl}${this.makeRelativeURI(uriParts)}`, opts)
       .done(this.successCallback(callback))
       .fail(this.errorCallback(callback));
   }

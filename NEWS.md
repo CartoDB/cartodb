@@ -2,6 +2,7 @@ Development
 -----------
 
 ### Features
+* Add contextual help to Analysis UI (#11907)
 * Add endpoints for updating user account & profile details (#12726)
 * Add /api/v3/me endpoint (#12599, #12790, #12771)
 * Add assets version column in user model (#12676)
@@ -56,6 +57,7 @@ Development
 * Remove data-observatory-multiple-measures feature flag (#304)
 
 ### Bug fixes / enhancements
+* Hide the_geom_webmercator column from dataset view (#11045)
 * Reload vis if needed when feature is save (#11125)
 * Popups improvements (#11430, #10993)
 * Added scroll to metadata in the embed view (#12501)

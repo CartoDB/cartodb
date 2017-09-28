@@ -1,19 +1,20 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
 const webpackFiles = require('../lib/build/files/webpack_files');
+const Package = require('./../package.json');
 
-const PACKAGE = require('./../package.json');
-const version = PACKAGE.version;
+const VERSION = Package.version;
+const MODULES_EXTENSION_REGEX = /\.js.babel$/;
 
 module.exports = {
   entry: './lib/assets/javascripts/cartodb/static.js',
   output: {
-    filename: `${version}/javascripts/[name].js`,
+    filename: `${VERSION}/javascripts/[name].js`,
     path: path.resolve(__dirname, '../public/assets'),
     publicPath: '/assets/'
   },
   devtool: 'source-map',
-  plugins: Object.keys(webpackFiles).map(function (entryName) {
+  plugins: Object.keys(webpackFiles).map((entryName) => {
     return new HtmlWebpackPlugin({
       inject: false,
       cache: false,
@@ -25,7 +26,7 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.js.babel$/,
+        test: MODULES_EXTENSION_REGEX,
         loader: 'babel-loader',
         include: [
           path.resolve(__dirname, '../lib/assets/javascripts/carto-node')

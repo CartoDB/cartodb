@@ -79,8 +79,10 @@ module CartoDB
       data_library.js
       public_map_deps.js
       public_map.js
+      public_map_templates.js
+      public_map_templates_static.js
+      public_templates.js
       editor.js
-
       account_templates.js
       account_deps.js
       account.js

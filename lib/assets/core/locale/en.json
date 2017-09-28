@@ -1486,6 +1486,18 @@
       "body": "Errors found in your SQL query. %{action} before continuing.",
       "label": "Fix them"
     },
+    "messages": {
+      "layer-hidden": {
+        "title": "Layer hidden",
+        "body": "This layer is hidden. Changes won't be shown until you make it visible.",
+        "show": "Show"
+      },
+      "limit": {
+        "title": "Some tiles might not be working correcly",
+        "body": "Looks like you are over your limits when trying to render some of your tiles. Try to:",
+        "cta": "Upgrade account"
+      }
+    },
     "settings": {
       "menu-tab-pane-labels": {
         "preview": "Preview",
@@ -2132,11 +2144,6 @@
           "title": "CUSTOM HTML APPLIED",
           "body": "You just applied custom html with HTML editor. You can continue and clean all html.",
           "accept": "CONTINUE"
-        },
-        "layer-hidden": {
-          "title": "LAYER HIDDEN",
-          "body": "This layer is hidden, changes will not be shown until you make it visible.",
-          "show": "SHOW"
         }
       }
     },
@@ -2176,11 +2183,6 @@
           "title": "CUSTOM LEGEND APPLIED",
           "body": "You just applied custom html with HTML editor. You can continue and clean all html.",
           "accept": "Delete custom html"
-        },
-        "layer-hidden": {
-          "title": "LAYER HIDDEN",
-          "body": "This layer is hidden. Changes won't be shown until you make it visible.",
-          "show": "SHOW"
         },
         "legends-disabled": {
           "title": "LEGENDS DISABLED",
@@ -2268,11 +2270,6 @@
           "body": "You just applied styles with CartoCSS. You can continue or clear all styles.",
           "continue": "CONTINUE",
           "clear": "CLEAR"
-        },
-        "layer-hidden": {
-          "title": "LAYER HIDDEN",
-          "body": "This layer is hidden, changes won't be shown until you make it visible.",
-          "show": "SHOW"
         },
         "torque-exists": {
           "title": "TORQUE LAYER",

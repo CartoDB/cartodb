@@ -45,11 +45,8 @@ describe Carto::UserMigrationImport do
 
     def setup_mocks
       @organization_mock = Carto::Organization.new
-      @organization_mock.stubs(:id).returns(:irrelevant_organization_id)
-      @import.stubs(:organization).returns(@organization_mock)
-      query_mock = Object.new
-      query_mock.stubs(:any?).returns(false)
-      Carto::Organization.stubs(:where).with(id: :irrelevant_organization_id).returns(query_mock)
+      @import.stubs(:assert_organization_does_not_exist)
+      @import.stubs(:assert_user_does_not_exist)
       @user_migration_package_mock = Object.new
       Carto::UserMigrationPackage.stubs(:for_import).returns @user_migration_package_mock
       @user_migration_package_mock.stubs(:download).with(:irrelevant_file)

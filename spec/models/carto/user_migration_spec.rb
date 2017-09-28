@@ -50,6 +50,8 @@ describe 'UserMigration' do
         json_file: export.json_file,
         import_metadata: migrate_metadata
       )
+      import.stubs(:assert_organization_does_not_exist)
+      import.stubs(:assert_user_does_not_exist)
       import.run_import
 
       puts import.log.entries if import.state != Carto::UserMigrationImport::STATE_COMPLETE
@@ -245,6 +247,8 @@ describe 'UserMigration' do
       json_file: export.json_file,
       import_metadata: true
     )
+    import.stubs(:assert_organization_does_not_exist)
+    import.stubs(:assert_user_does_not_exist)
     import.run_import
 
     puts import.log.entries if import.state != Carto::UserMigrationImport::STATE_COMPLETE
@@ -341,6 +345,8 @@ describe 'UserMigration' do
           json_file: export.json_file,
           import_metadata: migrate_metadata
         )
+        import.stubs(:assert_organization_does_not_exist)
+        import.stubs(:assert_user_does_not_exist)
         import.run_import
 
         puts import.log.entries if import.state != Carto::UserMigrationImport::STATE_COMPLETE
@@ -410,23 +416,30 @@ describe 'UserMigration' do
   end
 
   def org_import
-    Carto::UserMigrationImport.create(
+    imp = Carto::UserMigrationImport.create(
       exported_file: @export.exported_file,
       database_host: @carto_organization.owner.attributes['database_host'],
       org_import: true,
       json_file: @export.json_file,
       import_metadata: true
     )
+
+    imp.stubs(:assert_organization_does_not_exist)
+    imp.stubs(:assert_user_does_not_exist)
+    imp
   end
 
   def import
-    Carto::UserMigrationImport.create(
+    imp = Carto::UserMigrationImport.create(
       exported_file: @export.exported_file,
       database_host: @user_attributes['database_host'],
       org_import: false,
       json_file: @export.json_file,
       import_metadata: true
     )
+    imp.stubs(:assert_organization_does_not_exist)
+    imp.stubs(:assert_user_does_not_exist)
+    imp
   end
 
   def destroy_user

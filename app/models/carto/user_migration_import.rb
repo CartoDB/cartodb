@@ -104,7 +104,7 @@ module Carto
         import_job.run!
       rescue => e
         log.append('=== Error importing data. Rollback! ===')
-        rollback_import_data
+        rollback_import_data(package)
         service.rollback_import_from_directory(package.meta_dir) if import_metadata?
         raise e
       ensure
@@ -120,13 +120,13 @@ module Carto
         end
       rescue => e
         log.append('=== Error importing visualizations and search tweets. Rollback! ===')
-        rollback_import_data
+        rollback_import_data(package)
         service.rollback_import_from_directory(package.meta_dir)
         raise e
       end
     end
 
-    def rollback_import_data
+    def rollback_import_data(package)
       import_job = CartoDB::DataMover::ImportJob.new(
         import_job_arguments(package.data_dir).merge!(rollback: true,
                                                               mode: :rollback,
@@ -134,7 +134,7 @@ module Carto
                                                               drop_roles: true)
       )
 
-      import_job.rollback!
+      import_job.run!
       import_job.terminate_connections;
     end
 

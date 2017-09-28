@@ -201,6 +201,7 @@ module Carto
 
     def import_from_directory(path)
       user = user_from_file(path)
+      raise UserAlreadyExists.new if ::Carto::User.exists?(id: user.id)
       save_imported_user(user)
 
       Carto::RedisExportService.new.restore_redis_from_json_export(redis_user_file(path))

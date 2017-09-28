@@ -952,7 +952,7 @@
         "add-btn": "Add analysis",
         "disabled-option-desc": "Your layer's geometries are %{simpleGeometryType} and this analysis needs %{requiredInputGeometries}",
         "unknown-geometry-type": "unknown",
-        "info-analysis": "Info about analysis",
+        "more-info": "More info",
         "option-types": {
           "connect-with-lines": {
             "title": "Connect with lines",
@@ -1867,6 +1867,7 @@
         "miles": "mi",
         "min": "Min",
         "mode": "Mode",
+        "more-info": "More info",
         "find-nearest": {
           "categorized": "Per group",
           "categorized-help": "Calculate results per each category of the chosen column",

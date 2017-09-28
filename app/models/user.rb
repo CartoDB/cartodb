@@ -399,7 +399,7 @@ class User < Sequel::Model
     @force_destroy = true
   end
 
-  def before_destroy(skip_table_drop: true)
+  def before_destroy(skip_table_drop: false)
     ensure_nonviewer
 
     @org_id_for_org_wipe = nil

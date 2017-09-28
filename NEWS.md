@@ -2,6 +2,7 @@ Development
 -----------
 
 ### Features
+* Profile static view (#12704)
 * Add contextual help to Analysis UI (#11907)
 * Add endpoints for updating user account & profile details (#12726)
 * Add /api/v3/me endpoint (#12599, #12790, #12771)

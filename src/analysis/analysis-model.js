@@ -144,6 +144,21 @@ var AnalysisModel = Model.extend({
   },
 
   /**
+   * Return an Array with the complete node list for this analysis.
+   */
+  getNodes: function () {
+    // Add current node to the list
+    var nodes = [this];
+    // Recursively iterate through the inputs ( source nodes have no inputs )
+    if (this.get('type') !== 'source') {
+      _.forEach(this._getSourceNames(), function (sourceName) {
+        nodes = nodes.concat(this.get(sourceName).getNodes());
+      }, this);
+    }
+    return nodes;
+  },
+
+  /**
    * Compare two analysisModels.
    */
   equals: function (analysisModel) {

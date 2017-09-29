@@ -3,25 +3,29 @@ var AnalysisModel = require('../../../src/analysis/analysis-model.js');
 var AnalysisService = require('../../../src/analysis/analysis-service.js');
 
 describe('src/analysis/analysis-model.js', function () {
+  var fakeCamshaftReference = {
+    getSourceNamesForAnalysisType: function (analysisType) {
+      var map = {
+        'analysis-type-1': ['source1', 'source2'],
+        'trade-area': ['source'],
+        'estimated-population': ['source'],
+        'sql-function': ['source', 'target']
+      };
+      return map[analysisType];
+    },
+    getParamNamesForAnalysisType: function (analysisType) {
+      var map = {
+        'analysis-type-1': ['attribute1', 'attribute2'],
+        'trade-area': ['kind', 'time'],
+        'estimated-population': ['columnName']
+      };
+
+      return map[analysisType];
+    }
+  };
   beforeEach(function () {
     this.vis = new Backbone.Model();
     this.vis.reload = jasmine.createSpy('reload');
-    var fakeCamshaftReference = {
-      getSourceNamesForAnalysisType: function (analysisType) {
-        var map = {
-          'analysis-type-1': ['source1', 'source2']
-        };
-        return map[analysisType];
-      },
-      getParamNamesForAnalysisType: function (analysisType) {
-        var map = {
-          'analysis-type-1': ['attribute1', 'attribute2']
-        };
-
-        return map[analysisType];
-      }
-    };
-
     this.analysisModel = new AnalysisModel({
       type: 'analysis-type-1',
       attribute1: 'value1',
@@ -343,6 +347,45 @@ describe('src/analysis/analysis-model.js', function () {
       this.analysisModel.setError('wadus');
 
       expect(this.analysisModel.get('status')).toEqual(AnalysisModel.STATUS.FAILED);
+    });
+  });
+
+  describe('.getNodes', function () {
+    var analysisService;
+    beforeEach(function () {
+      analysisService = new AnalysisService({
+        vis: this.vis,
+        analysisCollection: new Backbone.Collection(),
+        camshaftReference: fakeCamshaftReference
+      });
+    });
+    it('Should return a list of nodes from an analysis', function () {
+      var analysis = analysisService.analyse(
+        {
+          id: 'a2',
+          type: 'estimated-population',
+          params: {
+            columnName: 'estimated_people',
+            source: {
+              id: 'a1',
+              type: 'trade-area',
+              params: {
+                kind: 'walk',
+                time: 300,
+                source: {
+                  id: 'a0',
+                  type: 'source',
+                  params: {
+                    query: 'SELECT * FROM subway_stops'
+                  }
+                }
+              }
+            }
+          }
+        }
+      );
+      var actual = analysis.getNodes();
+      expect(actual.length).toEqual(3);
     });
   });
 });

@@ -3,6 +3,7 @@ Development
 
 ### Features
 * Profile static view (#12704)
+* Add endpoint for current user account deletion (#12841)
 * Add contextual help to Analysis UI (#11907)
 * Add endpoints for updating user account & profile details (#12726)
 * Add /api/v3/me endpoint (#12599, #12790, #12771)
@@ -58,6 +59,7 @@ Development
 * Remove data-observatory-multiple-measures feature flag (#304)
 
 ### Bug fixes / enhancements
+* Don't allow csv export for polygon or line (#9855)
 * Fix a problem with Unifont Medium font (#support/1002, #support/989)
 * Hide the_geom_webmercator column from dataset view (#11045)
 * Reload vis if needed when feature is save (#11125)

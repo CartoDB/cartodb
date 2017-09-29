@@ -418,9 +418,9 @@
       "resolved": "https://registry.npmjs.org/cartodb-pecan/-/cartodb-pecan-0.2.0.tgz"
     },
     "cartodb.js": {
-      "version": "4.0.0-alpha.1.1.1",
+      "version": "4.0.0-alpha.1.1.2",
       "from": "cartodb/cartodb.js#979-torque-legends",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#ea87e605567b5f93bfcf14a7a9c5004e0f9c527a"
+      "resolved": "git://github.com/cartodb/cartodb.js.git#7db3be8b4de648ae02024d36e2e02e174fb4a5da"
     },
     "caseless": {
       "version": "0.12.0",

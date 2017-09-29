@@ -57,6 +57,7 @@ Development
 * Remove data-observatory-multiple-measures feature flag (#304)
 
 ### Bug fixes / enhancements
+* Don't allow csv export for polygon or line (#9855)
 * Hide the_geom_webmercator column from dataset view (#11045)
 * Reload vis if needed when feature is save (#11125)
 * Popups improvements (#11430, #10993)

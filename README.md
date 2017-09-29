@@ -1,10 +1,11 @@
-CartoDB.js (v3.15)
+CARTO.js [v4](http://cartodb.github.io/cartodb.js/)
 ===========
 
-This library allows to embed visualizations created with CartoDB in your map or website in a simple way.
+This library allows to embed visualizations created with CARTO in your map or website in a simple way.
 
+# TODO:
 
-## Quick start
+## ~Quick start
 
   1. Add cartodb.js and css to your site:
 
@@ -43,10 +44,10 @@ You can install **cartodb.js** with [bower](http://bower.io/) by running
 bower install cartodb.js
 ```
 
-## Documentation
+## ~Documentation
 You can find the documentation online [here](http://docs.carto.com/cartodb-platform/cartodb-js.html) and the [source](https://github.com/CartoDB/cartodb.js/blob/develop/doc/API.md) inside this repository.
 
-## Examples
+## ~Examples
 
 - [Load a layer with google maps](http://cartodb.github.com/cartodb.js/examples/gmaps_force_basemap.html)
 - [Load a layer with Leaflet](http://cartodb.github.com/cartodb.js/examples/leaflet.html)
@@ -56,7 +57,7 @@ You can find the documentation online [here](http://docs.carto.com/cartodb-platf
 - [The Hobbit filming location paths](http://cartodb.github.com/cartodb.js/examples/TheHobbitLocations/) a full example with some widgets
 
 
-## How to build
+## ~How to build
 Build CartoDB.js library:
 
 - Install [node.js](http://nodejs.org/download/), from 0.10 version
@@ -68,6 +69,6 @@ Build CartoDB.js library:
 - Start the server: `grunt build`
 - Happy mapping!
 
-## Submitting Contributions
+## ~Submitting Contributions
 
 You will need to sign a Contributor License Agreement (CLA) before making a submission. [Learn more here.](https://carto.com/contributing)

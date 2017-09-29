@@ -3,9 +3,7 @@ var _ = require('underscore');
 module.exports = function (LayerModel) {
   var METHODS = [
     'isVisible',
-    'getName',
-    'setDataProvider',
-    'getDataProvider'
+    'getName'
   ];
 
   _.each(METHODS, function (method) {

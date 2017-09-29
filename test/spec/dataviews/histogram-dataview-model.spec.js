@@ -21,7 +21,6 @@ describe('dataviews/histogram-dataview-model', function () {
     this.filter = new RangeFilter();
 
     this.layer = new Model();
-    this.layer.getDataProvider = jasmine.createSpy('layer.getDataProvider');
 
     this.analysisCollection = new Backbone.Collection();
 
@@ -76,7 +75,7 @@ describe('dataviews/histogram-dataview-model', function () {
     }, {
       map: this.map,
       vis: this.vis,
-      layer: jasmine.createSpyObj('layer', ['get', 'getDataProvider']),
+      layer: jasmine.createSpyObj('layer', ['get']),
       filter: this.filter,
       analysisCollection: new Backbone.Collection()
     });

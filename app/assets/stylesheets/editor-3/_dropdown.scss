@@ -113,11 +113,9 @@
   padding: $baseSize * 2;
 }
 .Editor-boxModalContent .ps-scrollbar-x-rail {
-  height: 8px !important; // Resets standard scroll bar height
   z-index: 101;
 }
 .Editor-boxModalContent .ps-scrollbar-x-rail .ps-scrollbar-x {
-  height: 4px !important; // Resets standard scroll bar height
   pointer-events: all;
 }
 

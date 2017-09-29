@@ -104,6 +104,9 @@ AnalysisService.getAnalysisList = function (layersCollection, dataviewsCollectio
 function _getAnalysesFromLayers (layersCollection) {
   var layers = _getCartoDBAndTorqueLayers(layersCollection);
   return layers.map(function (layer) {
+    if (!layer.getSource()) {
+      throw new TypeError('CartoDB and Torque layers must have a source');
+    }
     return layer.getSource();
   });
 }

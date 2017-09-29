@@ -2,6 +2,8 @@ var _ = require('underscore');
 var log = require('../cdb.log');
 var util = require('../core/util.js');
 var RuleToLegendModelAdapters = require('./legends/rule-to-legend-model-adapters');
+var AnalysisService = require('../analysis/analysis-service');
+var Backbone = require('backbone');
 
 function getSubdomain (subdomains, resource) {
   var index = util.crc32(resource) % subdomains.length;
@@ -18,14 +20,12 @@ var ModelUpdater = function (deps) {
   if (!deps.layerGroupModel) throw new Error('layerGroupModel is required');
   if (!deps.layersCollection) throw new Error('layersCollection is required');
   if (!deps.dataviewsCollection) throw new Error('dataviewsCollection is required');
-  if (!deps.analysisCollection) throw new Error('analysisCollection is required');
 
   this._visModel = deps.visModel;
   this._mapModel = deps.mapModel;
   this._layerGroupModel = deps.layerGroupModel;
   this._layersCollection = deps.layersCollection;
   this._dataviewsCollection = deps.dataviewsCollection;
-  this._analysisCollection = deps.analysisCollection;
 };
 
 ModelUpdater.prototype.updateModels = function (windshaftMap, sourceId, forceFetch) {
@@ -194,7 +194,8 @@ ModelUpdater.prototype._updateDataviewModels = function (windshaftMap, sourceId,
 };
 
 ModelUpdater.prototype._updateAnalysisModels = function (windshaftMap) {
-  this._analysisCollection.each(function (analysisNode) {
+  var analysisList = this._getUniqueAnalyses();
+  _.each(analysisList, function (analysisNode) {
     var analysisMetadata = windshaftMap.getAnalysisNodeMetadata(analysisNode.get('id'));
     var attrs;
     if (analysisMetadata) {
@@ -240,7 +241,8 @@ ModelUpdater.prototype._setError = function (error) {
     var layerModel = this._layersCollection.get(error.layerId);
     layerModel && layerModel.setError(error);
   } else if (error.isAnalysisError()) {
-    var analysisModel = this._analysisCollection.get(error.analysisId);
+    var analysisCollection = new Backbone.Collection(this._getUniqueAnalyses());
+    var analysisModel = analysisCollection.get(error.analysisId);
     analysisModel && analysisModel.setError(error);
   } else {
     this._visModel.setError(error);
@@ -266,4 +268,21 @@ ModelUpdater.prototype._getLayerLegends = function (layerModel) {
     layerModel.legends.choropleth
   ];
 };
+
+/**
+ * Return the analysis list without duplicates
+ * 
+ * (a dataview and a layer could share some analysis)
+ */
+ModelUpdater.prototype._getUniqueAnalyses = function () {
+  var uniqueAnalyses = {};
+  var analyses = AnalysisService.getAnalysisList(this._layersCollection, this._dataviewsCollection);
+
+  _.each(analyses, function (analisis) {
+    uniqueAnalyses[analisis.get('id')] = analisis;
+  }, this);
+
+  return _.map(uniqueAnalyses, function (analisis) { return analisis; }, this);
+};
+
 module.exports = ModelUpdater;

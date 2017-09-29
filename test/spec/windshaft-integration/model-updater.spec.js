@@ -9,6 +9,8 @@ var ModelUpdater = require('../../../src/windshaft-integration/model-updater');
 var WindshaftError = require('../../../src/windshaft/error');
 var CartoDBLayerGroup = require('../../../src/geo/cartodb-layer-group');
 var WindshaftMap = require('../../../src/windshaft/map-base.js');
+var Dataview = require('../../../src/dataviews/dataview-model-base');
+var AnalysisModel = require('../../../src/analysis/analysis-model');
 
 var MyWindshaftMap = WindshaftMap.extend({
 });
@@ -50,7 +52,6 @@ describe('src/vis/model-updater', function () {
     this.layerGroupModel = new CartoDBLayerGroup({}, {
       layersCollection: this.layersCollection
     });
-    this.analysisCollection = new Backbone.Collection();
     this.dataviewsCollection = new Backbone.Collection();
 
     this.modelUpdater = new ModelUpdater({
@@ -58,8 +59,7 @@ describe('src/vis/model-updater', function () {
       visModel: this.visModel,
       layerGroupModel: this.layerGroupModel,
       layersCollection: this.layersCollection,
-      dataviewsCollection: this.dataviewsCollection,
-      analysisCollection: this.analysisCollection
+      dataviewsCollection: this.dataviewsCollection
     });
 
     // _getProtocol uses window.location.protocol internally, and that returns "file:"
@@ -79,10 +79,14 @@ describe('src/vis/model-updater', function () {
 
     describe('layerGroupModel', function () {
       beforeEach(function () {
-        var layer1 = new CartoDBLayer({}, { vis: this.visModel });
-        var layer2 = new CartoDBLayer({}, { vis: this.visModel });
+        var layer1 = new CartoDBLayer({
+          source: new Backbone.Model()
+        }, { vis: this.visModel });
+        var layer2 = new CartoDBLayer({
+          source: new Backbone.Model()
+        }, { vis: this.visModel });
 
-        this.layersCollection.reset([ layer1, layer2 ]);
+        this.layersCollection.reset([layer1, layer2]);
 
         this.windshaftMap.getLayerIndexesByType.and.callFake(function (layerType) {
           if (layerType === 'mapnik') {
@@ -172,11 +176,11 @@ describe('src/vis/model-updater', function () {
     describe('layer models', function () {
       it('should mark CartoDB and torque layer models as ok', function () {
         var layer0 = new Backbone.Model({ type: 'Tiled' });
-        var layer1 = new CartoDBLayer({}, { vis: this.visModel });
+        var layer1 = new CartoDBLayer({ source: new Backbone.Model() }, { vis: this.visModel });
         spyOn(layer1, 'setOk');
-        var layer2 = new TorqueLayer({}, { vis: this.visModel });
+        var layer2 = new TorqueLayer({ source: new Backbone.Model() }, { vis: this.visModel });
         spyOn(layer2, 'setOk');
-        this.layersCollection.reset([ layer0, layer1, layer2 ]);
+        this.layersCollection.reset([layer0, layer1, layer2]);
 
         this.modelUpdater.updateModels(this.windshaftMap);
 
@@ -186,9 +190,9 @@ describe('src/vis/model-updater', function () {
 
       it('should set tileURLTemplates attribute of torque layer models', function () {
         var layer0 = new Backbone.Model({ type: 'Tiled' });
-        var layer1 = new CartoDBLayer({}, { vis: this.visModel });
-        var layer2 = new TorqueLayer({}, { vis: this.visModel });
-        this.layersCollection.reset([ layer0, layer1, layer2 ]);
+        var layer1 = new CartoDBLayer({ source: new Backbone.Model() }, { vis: this.visModel });
+        var layer2 = new TorqueLayer({ source: new Backbone.Model() }, { vis: this.visModel });
+        this.layersCollection.reset([layer0, layer1, layer2]);
 
         this.modelUpdater.updateModels(this.windshaftMap);
 
@@ -200,8 +204,8 @@ describe('src/vis/model-updater', function () {
 
     describe('legend models', function () {
       it('should "mark" all legend models as success', function () {
-        var layer = new CartoDBLayer({}, { vis: this.visModel });
-        this.layersCollection.reset([ layer ]);
+        var layer = new CartoDBLayer({ source: new Backbone.Model() }, { vis: this.visModel });
+        this.layersCollection.reset([layer]);
 
         this.modelUpdater.updateModels(this.windshaftMap, 'sourceId', 'forceFetch');
 
@@ -262,9 +266,9 @@ describe('src/vis/model-updater', function () {
           ]
         });
 
-        var layer = new CartoDBLayer({}, { vis: this.visModel });
+        var layer = new CartoDBLayer({ source: new Backbone.Model() }, { vis: this.visModel });
 
-        this.layersCollection.reset([ layer ]);
+        this.layersCollection.reset([layer]);
 
         this.modelUpdater.updateModels(this.windshaftMap, 'sourceId', 'forceFetch');
 
@@ -324,9 +328,9 @@ describe('src/vis/model-updater', function () {
           ]
         });
 
-        var layer = new CartoDBLayer({}, { vis: this.visModel });
+        var layer = new CartoDBLayer({ source: new Backbone.Model() }, { vis: this.visModel });
 
-        this.layersCollection.reset([ layer ]);
+        this.layersCollection.reset([layer]);
 
         this.modelUpdater.updateModels(this.windshaftMap, 'sourceId', 'forceFetch');
 
@@ -405,9 +409,9 @@ describe('src/vis/model-updater', function () {
           ]
         });
 
-        var layer = new CartoDBLayer({}, { vis: this.visModel });
+        var layer = new CartoDBLayer({ source: new Backbone.Model() }, { vis: this.visModel });
 
-        this.layersCollection.reset([ layer ]);
+        this.layersCollection.reset([layer]);
 
         this.modelUpdater.updateModels(this.windshaftMap, 'sourceId', 'forceFetch');
 
@@ -443,9 +447,9 @@ describe('src/vis/model-updater', function () {
           ]
         });
 
-        var layer = new CartoDBLayer({}, { vis: this.visModel });
+        var layer = new CartoDBLayer({ source: new Backbone.Model() }, { vis: this.visModel });
 
-        this.layersCollection.reset([ layer ]);
+        this.layersCollection.reset([layer]);
 
         this.modelUpdater.updateModels(this.windshaftMap, 'sourceId', 'forceFetch');
 
@@ -454,10 +458,25 @@ describe('src/vis/model-updater', function () {
     });
 
     describe('dataview models', function () {
+      var fakeVis = new Backbone.Model();
       it('should update dataview models', function () {
-        var dataview1 = new Backbone.Model({ id: 'a1' });
-        var dataview2 = new Backbone.Model({ id: 'a2' });
-        this.dataviewsCollection.reset([ dataview1, dataview2 ]);
+        var dataview1 = new Dataview({
+          id: 'a1',
+          source: new AnalysisModel({}, { vis: fakeVis, camshaftReference: camshaftReferenceMock })
+        },
+        {
+          map: this.mapModel,
+          vis: fakeVis
+        });
+        var dataview2 = new Dataview({
+          id: 'a2',
+          source: new AnalysisModel({}, { vis: fakeVis, camshaftReference: camshaftReferenceMock })
+        },
+        {
+          map: this.mapModel,
+          vis: fakeVis
+        });
+        this.dataviewsCollection.reset([dataview1, dataview2]);
 
         this.windshaftMap.getDataviewMetadata = function (dataviewId) {
           if (dataviewId === 'a1') {
@@ -496,35 +515,20 @@ describe('src/vis/model-updater', function () {
 
     describe('analysis models', function () {
       it('should update analysis models and set analysis state to "ok"', function () {
-        var getParamNames = function () { return []; };
-        var analysis1 = new Backbone.Model({ id: 'a1' });
-        analysis1.setOk = jasmine.createSpy('setOk');
-        var analysis2 = new Backbone.Model({ id: 'a2' });
-        analysis2.setOk = jasmine.createSpy('setOk');
-        this.analysisCollection.reset([ analysis1, analysis2 ]);
-        analysis1.getParamNames = analysis2.getParamNames = getParamNames;
+        var fakeVis = new Backbone.Model();
+        var analysis1 = new AnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' }, { vis: fakeVis, camshaftReference: camshaftReferenceMock });
+        var analysis2 = new AnalysisModel({ id: 'a2', type: 'source', query: 'SELECT * FROM table' }, { vis: fakeVis, camshaftReference: camshaftReferenceMock });
+        var layer = new CartoDBLayer({ source: analysis1 }, { vis: fakeVis });
+        var dataview = new Dataview({ id: 'a1', source: analysis2 }, { map: this.mapModel, vis: fakeVis });
 
-        this.windshaftMap.getAnalysisNodeMetadata = function (analysisId) {
-          if (analysisId === 'a1') {
-            return {
-              status: 'status_a1',
-              query: 'query_a1',
-              url: {
-                http: 'url_a1'
-              }
-            };
-          }
-          if (analysisId === 'a2') {
-            return {
-              status: 'status_a2',
-              query: 'query_a2',
-              url: {
-                http: 'url_a2'
-              }
-            };
-          }
-        };
+        spyOn(analysis1, 'setOk');
+        spyOn(analysis2, 'setOk');
+        spyOn(this.windshaftMap, 'getAnalysisNodeMetadata').and.callFake(function (analysisId) {
+          return { status: 'status_' + analysisId, query: 'query_' + analysisId, url: { http: 'url_' + analysisId } };
+        });
 
+        this.layersCollection.reset([layer]);
+        this.dataviewsCollection.reset([dataview]);
         this.modelUpdater.updateModels(this.windshaftMap);
 
         expect(analysis1.get('status')).toEqual('status_a1');
@@ -538,48 +542,38 @@ describe('src/vis/model-updater', function () {
       });
 
       it('should update analysis models and set status to "failed"', function () {
-        var getParamNames = function () { return []; };
-        var analysis1 = new Backbone.Model({ id: 'a1' });
-        this.analysisCollection.reset([ analysis1 ]);
-        analysis1.getParamNames = getParamNames;
+        var fakeVis = new Backbone.Model();
+        var analysis1 = new AnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' }, { vis: fakeVis, camshaftReference: camshaftReferenceMock });
+        var analysis2 = new AnalysisModel({ id: 'a2', type: 'source', query: 'SELECT * FROM table' }, { vis: fakeVis, camshaftReference: camshaftReferenceMock });
+        var layer = new CartoDBLayer({ source: analysis1 }, { vis: fakeVis });
+        var dataview = new Dataview({ id: 'a1', source: analysis2 }, { map: this.mapModel, vis: fakeVis });
 
-        this.windshaftMap.getAnalysisNodeMetadata = function (analysisId) {
-          if (analysisId === 'a1') {
-            return {
-              error_message: 'wadus',
-              status: 'failed',
-              query: 'query_a1',
-              url: {
-                http: 'url_a1'
-              }
-            };
-          }
-        };
+        spyOn(this.windshaftMap, 'getAnalysisNodeMetadata').and.callFake(function (analysisId) {
+          return { error_message: 'fake_error_message', status: 'failed', query: 'query_' + analysisId, url: { http: 'url_' + analysisId } };
+        });
 
+        this.layersCollection.reset([layer]);
+        this.dataviewsCollection.reset([dataview]);
         this.modelUpdater.updateModels(this.windshaftMap);
 
         expect(analysis1.get('status')).toEqual('failed');
-        expect(analysis1.get('error')).toEqual({message: 'wadus'});
+        expect(analysis1.get('error')).toEqual({ message: 'fake_error_message' });
+        expect(analysis2.get('status')).toEqual('failed');
+        expect(analysis2.get('error')).toEqual({ message: 'fake_error_message' });
       });
 
       it('should not update attributes that are original params (eg: query)', function () {
-        var analysis1 = new Backbone.Model({ id: 'a1', query: 'original_query' });
-        analysis1.getParamNames = function () { return ['query']; };
-        analysis1.setOk = jasmine.createSpy('setOk');
-        this.analysisCollection.reset([ analysis1 ]);
+        var fakeVis = new Backbone.Model();
+        var analysis1 = new AnalysisModel({ id: 'a1', type: 'source', query: 'original_query' }, { vis: fakeVis, camshaftReference: camshaftReferenceMock });
+        var layer = new CartoDBLayer({ source: analysis1 }, { vis: fakeVis });
 
-        this.windshaftMap.getAnalysisNodeMetadata = function (analysisId) {
-          if (analysisId === 'a1') {
-            return {
-              status: 'new_status',
-              query: 'new_query',
-              url: {
-                http: 'new_url'
-              }
-            };
-          }
-        };
+        spyOn(analysis1, 'getParamNames').and.returnValue(['query']);
+        spyOn(this.windshaftMap, 'getAnalysisNodeMetadata').and.callFake(function (analysisId) {
+          return { status: 'new_status', query: 'query_' + analysisId, url: { http: 'new_url' } };
+        });
 
+        this.layersCollection.reset([layer]);
+        this.dataviewsCollection.reset([]);
         this.modelUpdater.updateModels(this.windshaftMap);
 
         expect(analysis1.get('status')).toEqual('new_status');
@@ -607,22 +601,24 @@ describe('src/vis/model-updater', function () {
     });
 
     it('should set analysis status to "error"', function () {
-      var analysis = new Backbone.Model({
-        id: 'ANALYSIS_NODE_ID'
-      });
-      analysis.setError = jasmine.createSpy('setError');
+      var fakeVis = new Backbone.Model();
+      var analysis = new AnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' }, { vis: fakeVis, camshaftReference: camshaftReferenceMock });
+      var layer = new CartoDBLayer({ source: analysis }, { vis: fakeVis });
 
-      this.analysisCollection.reset([ analysis ]);
+      spyOn(analysis, 'setError');
+
+      this.layersCollection.reset([layer]);
+      this.dataviewsCollection.reset([]);
 
       this.modelUpdater.setErrors([
         new WindshaftError({
           type: 'analysis',
-          message: 'Missing required param "radius"',
+          message: 'fake_error_mesagge"',
           analysis: {
-            id: 'ANALYSIS_ID',
-            node_id: 'ANALYSIS_NODE_ID',
+            id: 'fake_analysis_id',
+            node_id: 'a1',
             context: {
-              something: 'else'
+              something: 'fake_error_context'
             }
           }
         })
@@ -630,13 +626,10 @@ describe('src/vis/model-updater', function () {
 
       expect(analysis.setError).toHaveBeenCalled();
       var error = analysis.setError.calls.argsFor(0)[0];
-
       expect(error.type).toBeUndefined();
-      expect(error.analysisId).toEqual('ANALYSIS_NODE_ID');
-      expect(error.message).toEqual('Missing required param "radius"');
-      expect(error.context).toEqual({
-        something: 'else'
-      });
+      expect(error.analysisId).toEqual('a1');
+      expect(error.message).toEqual('fake_error_mesagge"');
+      expect(error.context).toEqual({ something: 'fake_error_context' });
     });
 
     it('should "mark" layer as erroroneus', function () {
@@ -645,7 +638,7 @@ describe('src/vis/model-updater', function () {
       });
       layer.setError = jasmine.createSpy('setError');
 
-      this.layersCollection.reset([ layer ]);
+      this.layersCollection.reset([layer]);
 
       this.modelUpdater.setErrors([
         new WindshaftError({
@@ -706,7 +699,7 @@ describe('src/vis/model-updater', function () {
       expect(layer2.legends.category.isError()).toBeFalsy();
       expect(layer2.legends.choropleth.isError()).toBeFalsy();
 
-      this.layersCollection.reset([ layer1, layer2 ]);
+      this.layersCollection.reset([layer1, layer2]);
 
       this.modelUpdater.setErrors();
 
@@ -720,3 +713,24 @@ describe('src/vis/model-updater', function () {
     });
   });
 });
+
+var camshaftReferenceMock = {
+  getSourceNamesForAnalysisType: function (analysisType) {
+    var map = {
+      'analysis-type-1': ['source1', 'source2'],
+      'trade-area': ['source'],
+      'estimated-population': ['source'],
+      'sql-function': ['source', 'target']
+    };
+    return map[analysisType];
+  },
+  getParamNamesForAnalysisType: function (analysisType) {
+    var map = {
+      'analysis-type-1': ['attribute1', 'attribute2'],
+      'trade-area': ['kind', 'time'],
+      'estimated-population': ['columnName']
+    };
+
+    return map[analysisType];
+  }
+};

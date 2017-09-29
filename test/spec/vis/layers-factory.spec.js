@@ -41,11 +41,17 @@ describe('vis/layers-factory', function () {
     var testCases = [
       {
         layerType: 'CartoDB',
-        expectedErrorMessage: 'The following attributes are missing: source,cartocss'
+        // TODO: Once https://github.com/CartoDB/cartodb/issues/12885 is merged
+        // source should be required again so we need to add the attribute to this test
+        // expectedErrorMessage: 'The following attributes are missing: source,cartocss'
+        expectedErrorMessage: 'The following attributes are missing: cartocss'
       },
       {
         layerType: 'torque',
-        expectedErrorMessage: 'The following attributes are missing: source,cartocss'
+        // TODO: Once https://github.com/CartoDB/cartodb/issues/12885 is merged
+        // source should be required again so we need to add the attribute to this test
+        // expectedErrorMessage: 'The following attributes are missing: source,cartocss'
+        expectedErrorMessage: 'The following attributes are missing: cartocss'
       },
       {
         layerType: 'Tiled',

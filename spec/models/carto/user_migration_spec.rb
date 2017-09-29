@@ -50,8 +50,6 @@ describe 'UserMigration' do
         json_file: export.json_file,
         import_metadata: migrate_metadata
       )
-      import.stubs(:assert_organization_does_not_exist)
-      import.stubs(:assert_user_does_not_exist)
       import.run_import
 
       puts import.log.entries if import.state != Carto::UserMigrationImport::STATE_COMPLETE
@@ -97,7 +95,9 @@ describe 'UserMigration' do
     it 'import failing in import_metadata should rollback' do
       Carto::RedisExportService.any_instance.stubs(:restore_redis_from_hash_export).raises('Some exception')
 
-      import.run_import.should eq false
+      imp = import
+      imp.run_import.should eq false
+      imp.state.should eq 'failure'
 
       Carto::RedisExportService.any_instance.unstub(:restore_redis_from_hash_export)
 
@@ -107,7 +107,9 @@ describe 'UserMigration' do
     it 'import failing in JobImport#run!' do
       CartoDB::DataMover::ImportJob.any_instance.stubs(:grant_user_role).raises('Some exception')
 
-      import.run_import.should eq false
+      imp = import
+      imp.run_import.should eq false
+      imp.state.should eq 'failure'
 
       CartoDB::DataMover::ImportJob.any_instance.unstub(:grant_user_role)
 
@@ -117,7 +119,9 @@ describe 'UserMigration' do
     it 'import failing creating user database and roles' do
       CartoDB::DataMover::ImportJob.any_instance.stubs(:import_pgdump).raises('Some exception')
 
-      import.run_import.should eq false
+      imp = import
+      imp.run_import.should eq false
+      imp.state.should eq 'failure'
 
       CartoDB::DataMover::ImportJob.any_instance.unstub(:import_pgdump)
 
@@ -127,11 +131,18 @@ describe 'UserMigration' do
     it 'import failing importing visualizations' do
       Carto::UserMetadataExportService.any_instance.stubs(:import_search_tweets_from_directory).raises('Some exception')
 
-      import.run_import.should eq false
+      imp = import
+      imp.run_import.should eq false
+      imp.state.should eq 'failure'
 
       Carto::UserMetadataExportService.any_instance.unstub(:import_search_tweets_from_directory)
 
       import.run_import.should eq true
+    end
+
+    it 'fails importing an already existing user' do
+      import.run_import.should eq true
+      import.run_import.should eq false
     end
   end
 
@@ -168,7 +179,9 @@ describe 'UserMigration' do
     it 'import failing in import_metadata should rollback' do
       Carto::RedisExportService.any_instance.stubs(:restore_redis_from_hash_export).raises('Some exception')
 
-      org_import.run_import.should eq false
+      imp = org_import
+      imp.run_import.should eq false
+      imp.state.should eq 'failure'
 
       Carto::RedisExportService.any_instance.unstub(:restore_redis_from_hash_export)
 
@@ -178,7 +191,9 @@ describe 'UserMigration' do
     it 'import failing in JobImport#run!' do
       CartoDB::DataMover::ImportJob.any_instance.stubs(:grant_user_role).raises('Some exception')
 
-      org_import.run_import.should eq false
+      imp = org_import
+      imp.run_import.should eq false
+      imp.state.should eq 'failure'
 
       CartoDB::DataMover::ImportJob.any_instance.unstub(:grant_user_role)
 
@@ -188,7 +203,9 @@ describe 'UserMigration' do
     it 'import failing creating user database and roles' do
       CartoDB::DataMover::ImportJob.any_instance.stubs(:import_pgdump).raises('Some exception')
 
-      org_import.run_import.should eq false
+      imp = org_import
+      imp.run_import.should eq false
+      imp.state.should eq 'failure'
 
       CartoDB::DataMover::ImportJob.any_instance.unstub(:import_pgdump)
 
@@ -198,7 +215,9 @@ describe 'UserMigration' do
     it 'import failing importing visualizations' do
       Carto::UserMetadataExportService.any_instance.stubs(:import_search_tweets_from_directory).raises('Some exception')
 
-      org_import.run_import.should eq false
+      imp = org_import
+      imp.run_import.should eq false
+      imp.state.should eq 'failure'
 
       Carto::UserMetadataExportService.any_instance.unstub(:import_search_tweets_from_directory)
 
@@ -207,14 +226,9 @@ describe 'UserMigration' do
 
     it 'should fail if importing an already existing organization with metadata' do
       org_import.run_import.should eq true
-      org_import.run_import.should eq false
-    end
-
-    it 'should fail if importing an already existing organization' do
       imp = org_import
-      imp.stubs(:assert_organization_does_not_exist).raises(Carto::OrganizationAlreadyExists.new)
       imp.run_import.should eq false
-      org_import.run_import.should eq true
+      imp.state.should eq 'failure'
     end
   end
 

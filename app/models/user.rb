@@ -464,8 +464,7 @@ class User < Sequel::Model
     # Invalidate user cache
     invalidate_varnish_cache
 
-    # Delete the DB or the schema
-    drop_tables(error_happened, has_organization) unless skip_table_drop
+    drop_database(has_organization) unless skip_table_drop || error_happened
 
     # Remove metadata from redis last (to avoid cutting off access to SQL API if db deletion fails)
     unless error_happened
@@ -476,19 +475,17 @@ class User < Sequel::Model
     feature_flags_user.each(&:delete)
   end
 
-  def drop_tables(error_happened, has_organization)
+  def drop_database(has_organization)
     if has_organization
-      unless error_happened
-        db_service.drop_organization_user(
-          organization_id,
-          is_owner: !@org_id_for_org_wipe.nil?,
-          force_destroy: @force_destroy
-        )
-      end
+      db_service.drop_organization_user(
+        organization_id,
+        is_owner: !@org_id_for_org_wipe.nil?,
+        force_destroy: @force_destroy
+      )
     elsif ::User.where(database_name: database_name).count > 1
       raise CartoDB::BaseCartoDBError.new(
         'The user is not supposed to be in a organization but another user has the same database_name. Not dropping it')
-    elsif !error_happened
+    else
       Thread.new {
         conn = in_database(as: :cluster_admin)
         db_service.drop_database_and_user(conn)

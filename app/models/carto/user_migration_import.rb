@@ -27,8 +27,6 @@ module Carto
     validate :valid_org_import
 
     def run_import
-      assert_organization_does_not_exist
-      assert_user_does_not_exist
       log.append('=== Downloading ===')
       update_attributes(state: STATE_DOWNLOADING)
       package = UserMigrationPackage.for_import(id, log)
@@ -56,14 +54,6 @@ module Carto
     end
 
     private
-
-    def assert_organization_does_not_exist
-      raise OrganizationAlreadyExists.new if organization.present? && Carto::Organization.exists?(organization.id)
-    end
-
-    def assert_user_does_not_exist
-      raise UserAlreadyExists.new if user.present && Carto::User.exists?(user.id)
-    end
 
     def valid_org_import
       if org_import?
@@ -128,10 +118,10 @@ module Carto
 
     def rollback_import_data(package)
       import_job = CartoDB::DataMover::ImportJob.new(
-        import_job_arguments(package.data_dir).merge!(rollback: true,
-                                                              mode: :rollback,
-                                                              drop_database: true,
-                                                              drop_roles: true)
+        import_job_arguments(package.data_dir).merge(rollback: true,
+                                                             mode: :rollback,
+                                                             drop_database: true,
+                                                             drop_roles: true)
       )
 
       import_job.run!

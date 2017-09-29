@@ -341,7 +341,7 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.1.1.2",
       "from": "cartodb/cartodb.js#12184-unify-scrollbars",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#e118cff8e91d5d0fc7638677f310fa357c0c2ccc"
+      "resolved": "git://github.com/cartodb/cartodb.js.git#fc3cf1fa762df716830eeba1b4c354b7ab392319"
     },
     "center-align": {
       "version": "0.1.3",
@@ -1222,9 +1222,9 @@
       "resolved": "https://registry.npmjs.org/micromatch/-/micromatch-2.3.11.tgz"
     },
     "miller-rabin": {
-      "version": "4.0.0",
+      "version": "4.0.1",
       "from": "miller-rabin@>=4.0.0 <5.0.0",
-      "resolved": "https://registry.npmjs.org/miller-rabin/-/miller-rabin-4.0.0.tgz"
+      "resolved": "https://registry.npmjs.org/miller-rabin/-/miller-rabin-4.0.1.tgz"
     },
     "minimalistic-assert": {
       "version": "1.0.0",

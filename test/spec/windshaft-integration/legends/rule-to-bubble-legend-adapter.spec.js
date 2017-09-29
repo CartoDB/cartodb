@@ -71,7 +71,7 @@ describe('src/windshaft-integration/legends/rule-to-bubble-legend-adapter', func
 
   describe('.adapt', function () {
     it('should return attrs', function () {
-      var attrs = adapter.adapt(this.rule);
+      var attrs = adapter.adapt([this.rule]);
       expect(attrs).toEqual({
         values: [
           10,

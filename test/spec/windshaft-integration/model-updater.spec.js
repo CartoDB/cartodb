@@ -1,4 +1,6 @@
 var _ = require('underscore');
+var VisModel = require('../../../src/vis/vis');
+var MapModel = require('../../../src/geo/map');
 var CartoDBLayer = require('../../../src/geo/map/cartodb-layer');
 var TorqueLayer = require('../../../src/geo/map/torque-layer');
 var LayersCollection = require('../../../src/geo/map/layers');
@@ -36,10 +38,14 @@ describe('src/vis/model-updater', function () {
     spyOn(this.windshaftMap, 'getLayerIndexesByType').and.returnValue([0]);
     spyOn(this.windshaftMap, 'getSupportedSubdomains').and.returnValue(['']);
 
-    this.visModel = new Backbone.Model();
-    this.visModel.setOk = jasmine.createSpy('setOk');
-    this.visModel.setError = jasmine.createSpy('setError');
+    this.visModel = new VisModel();
+    spyOn(this.visModel, 'setOk');
+    spyOn(this.visModel, 'setError');
     this.layersCollection = new LayersCollection();
+    this.mapModel = new MapModel(null, {
+      layersFactory: {},
+      layersCollection: this.LayersCollection
+    });
 
     this.layerGroupModel = new CartoDBLayerGroup({}, {
       layersCollection: this.layersCollection
@@ -48,6 +54,7 @@ describe('src/vis/model-updater', function () {
     this.dataviewsCollection = new Backbone.Collection();
 
     this.modelUpdater = new ModelUpdater({
+      mapModel: this.mapModel,
       visModel: this.visModel,
       layerGroupModel: this.layerGroupModel,
       layersCollection: this.layersCollection,

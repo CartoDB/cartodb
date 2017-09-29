@@ -1,6 +1,7 @@
 var _ = require('underscore');
 var Analysis = require('./analysis-model');
 var camshaftReference = require('./camshaft-reference');
+var LayerTypes = require('../geo/map/layer-types.js');
 
 var AnalysisService = function (opts) {
   opts = opts || {};
@@ -90,5 +91,33 @@ AnalysisService.prototype._addAnalysisToCollection = function (analysis) {
 AnalysisService.prototype._removeAnalsyisFromIndex = function (analysis) {
   return this._analysisCollection.remove(analysis);
 };
+
+/**
+ * Return a list with all the analyses contained in the given collections.
+ */
+AnalysisService.getAnalysisList = function (layersCollection, dataviewsCollection) {
+  var layerAnalyses = _getAnalysesFromLayers(layersCollection);
+  var dataviewsAnalyses = _getAnalysesFromDataviews(dataviewsCollection);
+  return layerAnalyses.concat(dataviewsAnalyses);
+};
+
+function _getAnalysesFromLayers (layersCollection) {
+  var layers = _getCartoDBAndTorqueLayers(layersCollection);
+  return layers.map(function (layer) {
+    return layer.getSource();
+  });
+}
+
+function _getAnalysesFromDataviews (dataviewsCollection) {
+  return dataviewsCollection.map(function (dataview) {
+    return dataview.getSource();
+  });
+}
+
+function _getCartoDBAndTorqueLayers (layersCollection) {
+  return layersCollection.filter(function (layer) {
+    return LayerTypes.isCartoDBLayer(layer) || LayerTypes.isTorqueLayer(layer);
+  });
+}
 
 module.exports = AnalysisService;

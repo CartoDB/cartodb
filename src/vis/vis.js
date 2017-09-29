@@ -183,8 +183,7 @@ var VisModel = Backbone.Model.extend({
       mapModel: this.map,
       layerGroupModel: this.layerGroupModel,
       dataviewsCollection: this._dataviewsCollection,
-      layersCollection: this._layersCollection,
-      analysisCollection: this._analysisCollection
+      layersCollection: this._layersCollection
     });
 
     // Create the WindshaftMap

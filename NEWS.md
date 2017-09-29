@@ -2,6 +2,7 @@ Development
 -----------
 
 ### Features
+* Add contextual help to Analysis UI (#11907)
 * Add endpoints for updating user account & profile details (#12726)
 * Add /api/v3/me endpoint (#12599, #12790, #12771)
 * Add assets version column in user model (#12676)
@@ -57,6 +58,9 @@ Development
 
 ### Bug fixes / enhancements
 * Improve legends for torque (CartoDB/support#979)
+* Don't allow csv export for polygon or line (#9855)
+* Fix a problem with Unifont Medium font (#support/1002, #support/989)
+* Hide the_geom_webmercator column from dataset view (#11045)
 * Reload vis if needed when feature is save (#11125)
 * Popups improvements (#11430, #10993)
 * Added scroll to metadata in the embed view (#12501)
@@ -142,7 +146,7 @@ Development
 * Fix regenerate all api keys in an organization (#12218)
 * Refactor:
   * ::User <-> CartoDB::Visualization::Member dependency: #12116, #12221
-  * Removed CartoDB::Visualization::Member outside old models: #12185, #12267, #12844.
+  * Removed CartoDB::Visualization::Member outside old models: #12185, #12267, #12844, #12864.
   * Removed Visualization::Member usage from CommonDataService (#12459, #12488). Includes performance improvements on user signup.
 * Refactor Layer model (#10934) and UserTable (#11589, #11700, #11737).
   * Removed CartoDB::Visualization::Member and CartoDB::Visualization::Collection from controllers: #12185, #12267, #12485.

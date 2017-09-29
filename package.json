@@ -26,7 +26,7 @@
     "cartocolor": "4.0.0",
     "cartodb-deep-insights.js": "cartodb/deep-insights.js#1761-dataview-source",
     "cartodb-pecan": "0.2.x",
-    "cartodb.js": "CartoDB/cartodb.js#1761-dataview-source",
+    "cartodb.js": "CartoDB/cartodb.js#sources-as-references",
     "clipboard": "1.6.1",
     "codemirror": "5.14.2",
     "html-webpack-plugin": "^2.30.1",

@@ -25,6 +25,12 @@ describe Carto::Api::UsersController do
 
         dashboard_notifications = carto_user.notifications_for_category(:dashboard)
         expect(response.body[:dashboard_notifications]).to eq(dashboard_notifications)
+        expect(response.body[:can_change_email]).to eq(user.can_change_email?)
+        expect(response.body[:auth_username_password_enabled]).to eq(true)
+        expect(response.body[:should_display_old_password]).to eq(user.should_display_old_password?)
+        expect(response.body[:can_change_password]).to eq(true)
+        expect(response.body[:plan_name]).to eq('Free')
+        expect(response.body[:services]).to eq(user.get_oauth_services)
       end
     end
 
@@ -205,6 +211,50 @@ describe Carto::Api::UsersController do
         payload = { user: { name: 'Foo' } }
 
         put_json api_v3_users_update_me_url(url_options.except(:api_key)), payload, @headers do |response|
+          expect(response.status).to eq(401)
+        end
+      end
+    end
+  end
+
+  describe 'delete_me' do
+    before(:each) do
+      @user = FactoryGirl.create(:user, password: 'foobarbaz', password_confirmation: 'foobarbaz')
+    end
+
+    let(:url_options) do
+      {
+        user_domain: @user.username,
+        user_id: @user.id,
+        api_key: @user.api_key
+      }
+    end
+
+    it 'deletes the authenticated user' do
+      payload = { deletion_password_confirmation: 'foobarbaz' }
+
+      delete_json api_v3_users_delete_me_url(url_options), payload, @headers do |response|
+        expect(response.status).to eq(200)
+        expect(Carto::User.exists?(@user.id)).to be_false
+      end
+    end
+
+    context 'failures in deletion' do
+      after(:each) do
+        @user.destroy
+      end
+
+      it 'gives an error if deletion password confirmation is invalid' do
+        payload = { deletion_password_confirmation: 'idontknow' }
+
+        delete_json api_v3_users_delete_me_url(url_options), payload, @headers do |response|
+          expect(response.status).to eq(400)
+          expect(response.body[:message]).to eq("Error deleting user: Password does not match")
+        end
+      end
+
+      it 'returns 401 if user is not logged in' do
+        delete_json api_v3_users_delete_me_url(url_options.except(:api_key)), @headers do |response|
           expect(response.status).to eq(401)
         end
       end

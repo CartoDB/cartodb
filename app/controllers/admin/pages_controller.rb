@@ -332,16 +332,14 @@ class Admin::PagesController < Admin::AdminController
   end
 
   def set_layout_vars_for_organization(org, content_type)
-    set_layout_vars({
-        most_viewed_vis_map: org.public_vis_by_type(Visualization::Member::TYPE_DERIVED, 1, 1, nil, 'mapviews').first,
-        content_type:        content_type,
-        default_fallback_basemap: org.owner ? org.owner.default_basemap : nil,
-        base_url: ''
-      })
-    set_shared_layout_vars(org, {
-        name:       org.display_name.blank? ? org.name : org.display_name,
-        avatar_url: org.avatar_url,
-      })
+    most_viewed_vis_map = org.public_vis_by_type(Carto::Visualization::TYPE_DERIVED, 1, 1, nil, 'mapviews').first
+    set_layout_vars(most_viewed_vis_map: most_viewed_vis_map,
+                    content_type: content_type,
+                    default_fallback_basemap: org.owner ? org.owner.default_basemap : nil,
+                    base_url: '')
+    set_shared_layout_vars(org,
+                           name: org.display_name.blank? ? org.name : org.display_name,
+                           avatar_url: org.avatar_url)
   end
 
   def set_layout_vars(required)
@@ -382,11 +380,11 @@ class Admin::PagesController < Admin::AdminController
   end
 
   def user_datasets_public_builder(user)
-    public_builder(user_id: user.id, vis_type: Visualization::Member::TYPE_CANONICAL)
+    public_builder(user_id: user.id, vis_type: Carto::Visualization::TYPE_CANONICAL)
   end
 
   def user_maps_public_builder(user)
-    public_builder(user_id: user.id, vis_type: Visualization::Member::TYPE_DERIVED)
+    public_builder(user_id: user.id, vis_type: Carto::Visualization::TYPE_DERIVED)
   end
 
   def org_datasets_public_builder(org)

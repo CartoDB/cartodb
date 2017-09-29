@@ -214,6 +214,8 @@ module Carto
       return unless user
 
       user = ::User[user.id]
+      return unless user
+
       Carto::User.find(user.id).destroy
       user.before_destroy(skip_table_drop: true)
 

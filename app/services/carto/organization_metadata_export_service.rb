@@ -228,9 +228,9 @@ module Carto
       user_list.map do |user_path|
         Carto::UserMetadataExportService.new.rollback_import_from_directory(user_path)
       end
+      return unless Carto::Organization.exists?(organization.id)
 
       organization = Carto::Organization.find(organization.id)
-      return unless organization
       organization.groups.delete
       organization.notifications.delete
       organization.users.delete

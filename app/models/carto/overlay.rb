@@ -67,9 +67,9 @@ module Carto
     end
 
     def invalidate_cache
-      CartoDB::Visualization::Member.new(id: visualization_id).fetch.invalidate_cache
-    rescue KeyError
-      # This happens during creation, as the overlays are created before the visualization
+      # Using `send` to avoid making it public. A future refactor should make this call unnecessary
+      # Visualization might not exist during creation, as the overlays are created before the visualization
+      visualization.try(:send, :perform_invalidations)
     end
   end
 end

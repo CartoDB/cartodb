@@ -47,7 +47,7 @@ describe('src/windshaft-integration/legends/rule-to-category-legend-adapter', fu
 
   describe('.adapt', function () {
     it('should return attrs', function () {
-      var attrs = adapter.adapt(this.rule);
+      var attrs = adapter.adapt([this.rule]);
       expect(attrs).toEqual({
         categories: [
           { title: 'Category 1', icon: '', color: '#AAAAAA' },
@@ -78,7 +78,7 @@ describe('src/windshaft-integration/legends/rule-to-category-legend-adapter', fu
         }
       ];
 
-      var attrs = adapter.adapt(this.rule);
+      var attrs = adapter.adapt([this.rule]);
       expect(attrs).toEqual({
         categories: [
           { title: 'Category 1', icon: '', color: '#AAAAAA' },

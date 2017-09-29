@@ -119,13 +119,13 @@ module Carto
     def rollback_import_data(package)
       import_job = CartoDB::DataMover::ImportJob.new(
         import_job_arguments(package.data_dir).merge(rollback: true,
-                                                             mode: :rollback,
-                                                             drop_database: true,
-                                                             drop_roles: true)
+                                                     mode: :rollback,
+                                                     drop_database: true,
+                                                     drop_roles: true)
       )
 
       import_job.run!
-      import_job.terminate_connections;
+      import_job.terminate_connections
     end
 
     def update_database_host
@@ -133,8 +133,9 @@ module Carto
         Rollbar.info("Updating database conection for user #{user.username} to #{database_host}")
         user.database_host = database_host
         user.save!
-        ::User[user.id].reload # This is because Sequel models are being cached along request. This forces reload.
+        # This is because Sequel models are being cached along request. This forces reload.
         # It's being used in visualizations_export_persistence_service.rb#save_import
+        ::User[user.id].reload
       end
     end
 

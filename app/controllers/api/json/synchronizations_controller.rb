@@ -16,11 +16,11 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
 
   # Upon creation, no rate limit checks
   def create
+    return head(401) unless current_user.sync_tables_enabled || @external_source
+
     @stats_aggregator.timing('synchronizations.create') do
 
       begin
-        external_source = nil
-
         member_attributes = setup_member_attributes
         member = Synchronization::Member.new(member_attributes)
         member = @stats_aggregator.timing('member.save') do
@@ -226,7 +226,7 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
   end
 
   def get_external_source(remote_visualization_id)
-    external_source = CartoDB::Visualization::ExternalSource.where(visualization_id: remote_visualization_id).first
+    external_source = Carto::ExternalSource.where(visualization_id: remote_visualization_id).first
     unless remote_visualization_id.present? && external_source.importable_by?(current_user)
       raise CartoDB::Datasources::AuthError.new('Illegal external load')
     end

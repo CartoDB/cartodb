@@ -271,21 +271,16 @@ ModelUpdater.prototype._getLayerLegends = function (layerModel) {
 
 /**
  * Return the analysis list without duplicates
- * 
+ *
  * (a dataview and a layer could share some analysis)
  */
 ModelUpdater.prototype._getUniqueAnalyses = function () {
   var uniqueAnalyses = {};
   var analyses = AnalysisService.getAnalysisList(this._layersCollection, this._dataviewsCollection);
   _.each(analyses, function (analisis) {
-    if (!analisis.getNodes) {
-      // TODO: In some tests mocked object are injected
-      console.warn('An invalid analisis object used as source');
-    } else {
-      _.each(analisis.getNodes(), function (analysisNode) {
-        uniqueAnalyses[analysisNode.get('id')] = analysisNode;
-      }, this);
-    }
+    _.each(analisis.getNodes(), function (analysisNode) {
+      uniqueAnalyses[analysisNode.get('id')] = analysisNode;
+    }, this);
   }, this);
 
   return _.map(uniqueAnalyses, function (analisis) { return analisis; }, this);

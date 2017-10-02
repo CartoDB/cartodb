@@ -1,0 +1,24 @@
+{
+  "name": "camshaft-reference",
+  "version": "0.33.2",
+  "description": "Analyses reference for Camshaft Analysis library",
+  "main": "./index.js",
+  "keywords": [
+    "cartodb",
+    "analysis",
+    "framework",
+    "workflow",
+    "api",
+    "sql",
+    "postgresql",
+    "postgis",
+    "analyses",
+    "reference"
+  ],
+  "author": "Raul Ochoa <rochoa@cartodb.com>",
+  "license": "BSD-3-Clause",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:CartoDB/camshaft.git"
+  }
+}

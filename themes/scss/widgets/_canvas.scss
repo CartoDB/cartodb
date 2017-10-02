@@ -44,22 +44,10 @@
   display: block;
 }
 .CDB-Widget-canvas .ps-scrollbar-y-rail {
-  width: 2px !important; // Resetting standard scroll track color
-  background: #EEE;
   z-index: 3;
-}
-.CDB-Widget-canvas .ps-scrollbar-y {
-  width: 2px !important; // Resetting standard scroll bar color
-  background: #AAA;
 }
 .CDB-Widget-canvas .ps-scrollbar-x-rail {
-  height: 2px !important; // Resetting standard scroll track color
-  background: #EEE;
   z-index: 3;
-}
-.CDB-Widget-canvas .ps-scrollbar-x {
-  height: 3px !important; // Resetting standard scroll bar color
-  background: #AAA;
 }
 
 @media (max-width: 1300px) {

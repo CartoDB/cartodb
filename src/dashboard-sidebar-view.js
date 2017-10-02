@@ -122,7 +122,8 @@ module.exports = cdb.core.View.extend({
       wheelPropagation: false,
       swipePropagation: true,
       stopPropagationOnClick: false,
-      minScrollbarLength: 20
+      minScrollbarLength: 20,
+      useBothWheelAxes: true
     });
   },
 

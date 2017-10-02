@@ -112,6 +112,12 @@
 .Editor-boxModalContent {
   padding: $baseSize * 2;
 }
+.Editor-boxModalContent .ps-scrollbar-x-rail {
+  z-index: 101;
+}
+.Editor-boxModalContent .ps-scrollbar-x-rail .ps-scrollbar-x {
+  pointer-events: all;
+}
 
 .Editor-boxModal .Editor-formInner {
   margin-top: 0;

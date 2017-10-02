@@ -1493,9 +1493,13 @@
         "show": "Show"
       },
       "limit": {
-        "title": "Some tiles might not be working correcly",
-        "body": "Looks like you are over your limits when trying to render some of your tiles. Try to:",
-        "cta": "Upgrade account"
+        "title": "Some tiles might not be working correctly",
+        "body": "Looks like you are over your limits when trying to render some of your tiles.",
+        "try_to": " Try to:",
+        "cta": {
+          "label": "Upgrade account",
+          "url": "https://carto.com/pricing/"
+        }
       }
     },
     "settings": {

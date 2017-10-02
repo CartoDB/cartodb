@@ -61,7 +61,7 @@ Development
 ### Bug fixes / enhancements
 * CSV export allowed without geometries (#12888)
 * Fix handling of imports with long file names and existing tables with almost the same name (#12732)
-* Update cartodb.js version 
+* Update cartodb.js version
 * Don't allow csv export for polygon or line (#9855)
 * Fix a problem with Unifont Medium font (#support/1002, #support/989)
 * Hide the_geom_webmercator column from dataset view (#11045)
@@ -218,6 +218,7 @@ Development
 * Removed unused settings in organizations (#4992)
 * Increment maximum buckets in Time-Series for leap years (#12778)
 * Prevent invalid geometries in BoundingBoxUtils.to_polygon, to_point (#12873)
+* Improve tile error overlay (cartodb.js#1721)
 
 ### Internals
 

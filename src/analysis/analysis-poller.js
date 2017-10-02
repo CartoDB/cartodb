@@ -1,7 +1,10 @@
 var _ = require('underscore');
 var BackbonePoller = require('backbone-poller');
 
-var AnalysisPoller = function () {};
+var AnalysisPoller = function () {
+  this._pollers = [];
+  
+};
 
 AnalysisPoller.CONFIG = {
   START_DELAY: 1000,
@@ -10,7 +13,6 @@ AnalysisPoller.CONFIG = {
 };
 
 AnalysisPoller.prototype.poll = function (analysisModel) {
-  this._pollers = [];
   var poller = this._findOrCreatePoller(analysisModel);
   if (analysisModel.hasChanged('url') && poller.active()) {
     poller.stop();

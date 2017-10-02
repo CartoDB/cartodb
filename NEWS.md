@@ -59,6 +59,7 @@ Development
 * Remove data-observatory-multiple-measures feature flag (#304)
 
 ### Bug fixes / enhancements
+* Improve legends for torque (CartoDB/support#979)
 * CSV export allowed without geometries (#12888)
 * Fix handling of imports with long file names and existing tables with almost the same name (#12732)
 * Update cartodb.js version 

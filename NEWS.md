@@ -3,6 +3,7 @@ Development
 
 ### Features
 * Profile static view (#12704)
+* Unify scrollbars style (#12184)
 * Add endpoint for current user account deletion (#12841)
 * Add contextual help to Analysis UI (#11907)
 * Add endpoints for updating user account & profile details (#12726)
@@ -59,6 +60,9 @@ Development
 * Remove data-observatory-multiple-measures feature flag (#304)
 
 ### Bug fixes / enhancements
+* CSV export allowed without geometries (#12888)
+* Fix handling of imports with long file names and existing tables with almost the same name (#12732)
+* Update cartodb.js version 
 * Don't allow csv export for polygon or line (#9855)
 * Fix a problem with Unifont Medium font (#support/1002, #support/989)
 * Hide the_geom_webmercator column from dataset view (#11045)
@@ -195,6 +199,7 @@ Development
 * Fix a problem with responsive in deep-insights.js
 * Fix 403 error in password protected embed maps (#12469)
 * Fixed JS error for InfoWindows/Pop-ups (cartodb.js#1703)
+* Freeze configuration hashes (#12586)
 * Lowered log level from error to info for supported cartocss in vector maps (cartodb.js#1706)
 * Histogram UI: Do not show "NULL ROWS" value if it is not received (#12477)
 * Force raster mode in datasets preview map (#12513)

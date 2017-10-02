@@ -481,19 +481,17 @@ describe('src/vis/model-updater', function () {
         var dataview1 = new Dataview({
           id: 'a1',
           source: new AnalysisModel({}, { vis: fakeVis, camshaftReference: camshaftReferenceMock })
-        },
-          {
-            map: this.mapModel,
-            vis: fakeVis
-          });
+        }, {
+          map: this.mapModel,
+          vis: fakeVis
+        });
         var dataview2 = new Dataview({
           id: 'a2',
           source: new AnalysisModel({}, { vis: fakeVis, camshaftReference: camshaftReferenceMock })
-        },
-          {
-            map: this.mapModel,
-            vis: fakeVis
-          });
+        }, {
+          map: this.mapModel,
+          vis: fakeVis
+        });
         this.dataviewsCollection.reset([dataview1, dataview2]);
 
         this.windshaftMap.getDataviewMetadata = function (dataviewId) {

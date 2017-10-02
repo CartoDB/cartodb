@@ -49,6 +49,7 @@
     "browserify": "13.0.0",
     "browserify-resolutions": "1.1.0",
     "cartoassets": "CartoDB/CartoAssets#master",
+    "eslint": "~4.8.0",
     "eslint-config-semistandard": "~11.0.0",
     "eslint-config-standard": "~10.2.1",
     "eslint-plugin-import": "~2.7.0",

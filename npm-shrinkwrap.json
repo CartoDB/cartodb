@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.10.12",
+  "version": "4.10.12-309.1",
   "dependencies": {
     "accessory": {
       "version": "1.0.1",
@@ -2189,9 +2189,9 @@
       "resolved": "git://github.com/tangrams/topojson-client.git#1068f4f2e03ddf8236499bbc896cec98d7a342b7"
     },
     "toposort": {
-      "version": "1.0.4",
+      "version": "1.0.6",
       "from": "toposort@>=1.0.0 <2.0.0",
-      "resolved": "https://registry.npmjs.org/toposort/-/toposort-1.0.4.tgz"
+      "resolved": "https://registry.npmjs.org/toposort/-/toposort-1.0.6.tgz"
     },
     "torque.js": {
       "version": "2.16.3",

@@ -53,10 +53,17 @@ CartoDBLayerGroupViewBase.prototype = {
         .on('off', function (o) {
           if (self._interactionDisabled) return;
           o = o || {};
+          if (o.errors != null) {
+            self._manageInteractivityErrors(o);
+          }
           o.layer = layerIndexInLayerGroup;
           self._manageOffEvents(self.nativeMap, o);
         });
     }
+  },
+
+  _manageInteractivityErrors: function (payload) {
+    this.trigger('featureError', payload);
   },
 
   _generateTileJSON: function (layerIndexInLayerGroup) {

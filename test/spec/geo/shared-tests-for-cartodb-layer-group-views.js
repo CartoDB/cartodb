@@ -244,6 +244,21 @@ module.exports = function (createLayerGroupView, expectTileURLTemplateToMatch, f
         });
       });
 
+      it('should trigger a "featureError" event', function () {
+        var callback = jasmine.createSpy('callback');
+        this.layerGroupView.on('featureError', callback);
+
+        fakeWax.fire('off', {
+          errors: [{
+            message: "You are over platform's limits. Please contact us to know more details",
+            subtype: 'render',
+            type: 'limit'
+          }]
+        });
+
+        expect(callback).toHaveBeenCalled();
+      });
+
       it('should NOT trigger a "featureOut" event if the layer has been removed', function () {
         var callback = jasmine.createSpy('callback');
         this.layerGroupView.on('featureOut', callback);

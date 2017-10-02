@@ -14,6 +14,7 @@ MapModelEventsManager.prototype.start = function (cartoDBLayerGroupView) {
   this._cartoDBLayerGroupView.on('featureOver', this._onFeatureOver, this);
   this._cartoDBLayerGroupView.on('featureClick', this._onFeatureClick, this);
   this._cartoDBLayerGroupView.on('featureOut', this._onFeatureOut, this);
+  this._cartoDBLayerGroupView.on('featureError', this._onFeatureError, this);
 };
 
 MapModelEventsManager.prototype.stop = function () {
@@ -21,6 +22,7 @@ MapModelEventsManager.prototype.stop = function () {
     this._cartoDBLayerGroupView.off('featureOver', this._onFeatureOver, this);
     this._cartoDBLayerGroupView.off('featureClick', this._onFeatureClick, this);
     this._cartoDBLayerGroupView.off('featureOut', this._onFeatureOut, this);
+    this._cartoDBLayerGroupView.off('featureError', this._onFeatureError, this);
     delete this._cartoDBLayerGroupView;
   }
 };
@@ -40,6 +42,12 @@ MapModelEventsManager.prototype._onFeatureClick = function (event) {
 MapModelEventsManager.prototype._onFeatureOver = function (event) {
   if (this._mapModel.isFeatureInteractivityEnabled()) {
     this._mapModel.trigger('featureOver', event);
+  }
+};
+
+MapModelEventsManager.prototype._onFeatureError = function (event) {
+  if (this._mapModel.isFeatureInteractivityEnabled()) {
+    this._mapModel.trigger('featureError', event);
   }
 };
 

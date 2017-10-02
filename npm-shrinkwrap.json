@@ -403,7 +403,7 @@
     "cartodb-deep-insights.js": {
       "version": "0.0.3",
       "from": "cartodb/deep-insights.js#1717-display-error-tile",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#addd00829dc959e38a561bc7a2559de344536dc9",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#0f9064fe952a20371f6f5bd4c16a8bf3068a610c",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",
@@ -420,7 +420,7 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.1.1.2",
       "from": "cartodb/cartodb.js#1717-display-error-tile",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#b4d35c070cabaf829d870519e95b9f0aeb33edf7"
+      "resolved": "git://github.com/cartodb/cartodb.js.git#885c21943dfb2027d9bc722d1805b97ed6019580"
     },
     "caseless": {
       "version": "0.12.0",

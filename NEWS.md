@@ -59,6 +59,7 @@ Development
 * Remove data-observatory-multiple-measures feature flag (#304)
 
 ### Bug fixes / enhancements
+* CSV export allowed without geometries (#12888)
 * Fix handling of imports with long file names and existing tables with almost the same name (#12732)
 * Update cartodb.js version 
 * Don't allow csv export for polygon or line (#9855)

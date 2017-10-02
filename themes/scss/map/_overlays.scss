@@ -245,25 +245,13 @@ $maxLegendContainerHeight: 300px;
 }
 .CDB-Legends-canvasShadow.is-visible {
   display: block;
-  z-index: 10;
+  z-index: 2;
 }
 .CDB-Legends-canvas .ps-scrollbar-y-rail {
-  width: 2px !important; // Resetting standard scroll track color
-  background: #EEE;
   z-index: 3;
-}
-.CDB-Legends-canvas .ps-scrollbar-y {
-  width: 2px !important; // Resetting standard scroll bar color
-  background: #AAA;
 }
 .CDB-Legends-canvas .ps-scrollbar-x-rail {
-  height: 2px !important; // Resetting standard scroll track color
-  background: #EEE;
   z-index: 3;
-}
-.CDB-Legends-canvas .ps-scrollbar-x {
-  height: 3px !important; // Resetting standard scroll bar color
-  background: #AAA;
 }
 
 .CDB-LayerLegends {

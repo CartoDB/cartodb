@@ -2,7 +2,11 @@ var _ = require('underscore');
 var Backbone = require('backbone');
 
 var getFieldNames = function (fields) {
-  return _.map(fields, 'name');
+  return _.map(fields, function (field) {
+    var o = {};
+    o[field.name] = field.title;
+    return o;
+  });
 };
 
 var PopupFields = Backbone.Collection.extend({

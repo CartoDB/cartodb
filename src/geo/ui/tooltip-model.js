@@ -35,10 +35,9 @@ var TooltipModel = Model.extend({
     // alternamte names
     var names = this.get('alternative_names');
     if (names) {
-      for (var i = 0; i < data.fields.length; ++i) {
-        var f = data.fields[i];
-        f.title = names[f.title] || f.title;
-      }
+      data.fields.forEach(function (field) {
+        field.title = names[field.title] || field.title;
+      });
     }
 
     this.set('content', data);

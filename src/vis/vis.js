@@ -142,6 +142,14 @@ var VisModel = Backbone.Model.extend({
 
     var windshaftClient = new WindshaftClient(windshaftSettings);
 
+    // Create the public Analysis Factory
+    this.analysis = new AnalysisFactory({
+      apiKey: this.get('apiKey'),
+      authToken: this.get('authToken'),
+      analysisCollection: this._analysisCollection,
+      vis: this
+    });
+
     var layersFactory = new LayersFactory({
       visModel: this,
       windshaftSettings: windshaftSettings
@@ -218,22 +226,7 @@ var VisModel = Backbone.Model.extend({
       analysisCollection: this._analysisCollection
     });
 
-    // Create the public Analysis Factory
-    this.analysis = new AnalysisFactory({
-      apiKey: this.get('apiKey'),
-      authToken: this.get('authToken'),
-      analysisCollection: this._analysisCollection,
-      vis: this
-    });
-
     this._windshaftMap.bind('instanceCreated', this._onMapInstanceCreated, this);
-
-    var layerModels = _.map(vizjson.layers, function (layerData, layerIndex) {
-      _.extend(layerData, { order: layerIndex });
-      return layersFactory.createLayer(layerData.type, layerData);
-    });
-
-    this.map.layers.reset(layerModels);
 
     // "Load" existing analyses from the viz.json. This will generate
     // the analyses graphs and index analysis nodes in the
@@ -243,6 +236,31 @@ var VisModel = Backbone.Model.extend({
         this.analysis.analyse(analysis);
       }, this);
     }
+
+    var layerModels = _.map(vizjson.layers, function (layerData, layerIndex) {
+      // Flatten "options" and set the "order" attribute
+      layerData = _.extend({},
+        _.omit(layerData, 'options'),
+        layerData.options, {
+          order: layerIndex
+        }
+      );
+
+      if (layerData.source) {
+        layerData.source = this.analysis.findNodeById(layerData.source);
+      } else {
+        // TODO: We'll be able to remove this (accepting sql option) once
+        // https://github.com/CartoDB/cartodb.js/issues/1754 is closed.
+        if (layerData.sql) {
+          layerData.source = this.analysis.createSourceAnalysisForLayer(layerData.id, layerData.sql);
+          delete layerData.sql;
+        }
+      }
+      return layersFactory.createLayer(layerData.type, layerData);
+    }, this);
+
+    this.map.layers.reset(layerModels);
+
     // Global variable for easier console debugging / testing
     window.vis = this;
 
@@ -277,12 +295,22 @@ var VisModel = Backbone.Model.extend({
     }
   },
 
+  /**
+   * Check if an Analysis node is the source of a layer or a dataview.
+   */
   _isAnalysisSourceOfLayerOrDataview: function (analysisModel) {
-    var isAnalysisLinkedToLayer = this._layersCollection.any(function (layerModel) {
-      return layerModel.get('source') === analysisModel.get('id');
-    });
+    var isAnalysisLinkedToLayer = this._isAnalysisLinkedToLayer(analysisModel);
     var isAnalysisLinkedToDataview = this._dataviewsCollection.isAnalysisLinkedToDataview(analysisModel);
     return isAnalysisLinkedToLayer || isAnalysisLinkedToDataview;
+  },
+
+  /**
+   * Check if an analysis is the source of any layer.
+   */
+  _isAnalysisLinkedToLayer: function (analysisModel) {
+    return this._layersCollection.any(function (layerModel) {
+      return layerModel.hasSource(analysisModel);
+    });
   },
 
   trackLoadingObject: function (object) {

@@ -9,7 +9,7 @@ before_script:
   - cp secrets.example.json secrets.json
   - npm install -g grunt-cli
 script:
-  - grunt test
+  - npm test
 after_success:
   - bash scripts/deploy-to-gh-pages.sh
 notifications:

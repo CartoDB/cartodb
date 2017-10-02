@@ -39,31 +39,51 @@ function transformToHTTPS (tilesTemplate) {
   return tilesTemplate;
 }
 
+function checkProperties (obj, requiredProperties) {
+  var missingProperties = _.select(requiredProperties, function (property) {
+    var properties = property.split('|');
+    return _.all(properties, function (property) {
+      return obj[property] === undefined;
+    });
+  });
+  if (missingProperties.length) {
+    throw new Error('The following attributes are missing: ' + missingProperties.join(','));
+  }
+}
+
 var LAYER_CONSTRUCTORS = {
-  tiled: function (data, options) {
+  tiled: function (attrs, options) {
+    checkProperties(attrs, ['urlTemplate']);
+
     var visModel = options.vis;
 
     if (visModel.get('https') === true) {
-      data.urlTemplate = transformToHTTPS(data.urlTemplate);
+      attrs.urlTemplate = transformToHTTPS(attrs.urlTemplate);
     } else if (visModel.get('https') === false) { // Checking for an explicit false value. If it's undefined the url is left as is.
-      data.urlTemplate = transformToHTTP(data.urlTemplate);
+      attrs.urlTemplate = transformToHTTP(attrs.urlTemplate);
     }
 
-    return new TileLayer(data, {
+    return new TileLayer(attrs, {
       vis: options.vis
     });
   },
 
-  wms: function (data, options) {
-    return new WMSLayer(data);
+  wms: function (attrs, options) {
+    checkProperties(attrs, ['urlTemplate']);
+
+    return new WMSLayer(attrs);
   },
 
-  gmapsbase: function (data, options) {
-    return new GMapsBaseLayer(data);
+  gmapsbase: function (attrs, options) {
+    checkProperties(attrs, ['baseType']);
+
+    return new GMapsBaseLayer(attrs);
   },
 
-  plain: function (data, options) {
-    return new PlainLayer(data, {
+  plain: function (attrs, options) {
+    checkProperties(attrs, ['image|color']);
+
+    return new PlainLayer(attrs, {
       vis: options.vis
     });
   },
@@ -74,13 +94,33 @@ var LAYER_CONSTRUCTORS = {
     });
   },
 
-  cartodb: function (data, options) {
-    return new CartoDBLayer(data, {
+  cartodb: function (attrs, options) {
+    // TODO: Once https://github.com/CartoDB/cartodb/issues/12885 is merged,
+    // we should make 'source' attribute required again and make sure it's
+    // always populated:
+    // checkProperties(attrs, ['source', 'cartocss']);
+    // attrs.source = CartoDBLayer.getLayerSourceFromAttrs(attrs, options.vis.analysis);
+    checkProperties(attrs, ['cartocss']);
+    if (attrs.source) {
+      attrs.source = CartoDBLayer.getLayerSourceFromAttrs(attrs, options.vis.analysis);
+    }
+
+    return new CartoDBLayer(attrs, {
       vis: options.vis
     });
   },
 
   torque: function (attrs, options) {
+    // TODO: Once https://github.com/CartoDB/cartodb/issues/12885 is merged,
+    // we should make 'source' attribute required again and make sure it's
+    // populated:
+    // checkProperties(attrs, ['source', 'cartocss']);
+    // attrs.source = CartoDBLayer.getLayerSourceFromAttrs(attrs, options.vis.analysis);
+    checkProperties(attrs, ['cartocss']);
+    if (attrs.source) {
+      attrs.source = CartoDBLayer.getLayerSourceFromAttrs(attrs, options.vis.analysis);
+    }
+
     var windshaftSettings = options.windshaftSettings;
 
     attrs = _.extend(attrs, {
@@ -119,10 +159,8 @@ LayersFactory.prototype.createLayer = function (type, attrs) {
     log.error("error creating layer of type '" + type + "'");
     return null;
   }
-  // Flatten "options"
-  var layerAttributes = _.extend({}, _.omit(attrs, 'options'), attrs.options);
 
-  return LayerConstructor(layerAttributes, {
+  return LayerConstructor(attrs, {
     windshaftSettings: this._windshaftSettings,
     vis: this._visModel
   });

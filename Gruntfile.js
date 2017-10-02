@@ -69,7 +69,6 @@ module.exports = function (grunt) {
     uglify: require('./grunt/tasks/uglify').task(),
     cssmin: require('./grunt/tasks/cssmin').task(),
     imagemin: require('./grunt/tasks/imagemin').task(),
-    jshint: require('./grunt/tasks/jshint').task(),
     jasmine: jasmineCfg,
     eslint: { target: getTargetDiff() }
   });

@@ -16,12 +16,12 @@ module.exports = Backbone.Collection.extend({
     this.bind('change:order', _.debounce(this._onChangeOrder.bind(this), 10), this);
     // If a category model applies the category colors, rest should remove/disable
     // the category colors applied before.
-    this.bind('change:autoStyle', function (m, autoStyle) {
+    this.bind('change:autoStyle', function (model, autoStyle) {
       if (autoStyle) {
-        this.each(function (mdl) {
+        this.each(function (_model) {
           // Only set if model actually has the attr (i.e. it's a category model)
-          if (mdl.layerModel && mdl !== m && mdl.layerModel.get('layer_name') === m.layerModel.get('layer_name') && mdl.get('autoStyle')) {
-            mdl.set('autoStyle', false);
+          if (_model.layerModel && _model !== model && _model.layerModel.get('layer_name') === model.layerModel.get('layer_name') && _model.get('autoStyle')) {
+            _model.set('autoStyle', false);
           }
         });
       }

@@ -126,6 +126,8 @@ module Carto
 
       import_job.run!
       import_job.terminate_connections
+    rescue => e
+      log.append('There was an error while rolling back import data:' + e.to_s)
     end
 
     def update_database_host

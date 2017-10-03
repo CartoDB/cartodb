@@ -88,12 +88,17 @@ var createDashboard = function (selector, vizJSON, opts, callback) {
       if (_.isFunction(newWidgetModel)) {
         // Find the Layer that the Widget should be created for.
         var layer;
+        var source;
         if (widget.layer_id) {
           layer = vis.map.layers.get(widget.layer_id);
         } else if (Number.isInteger(widget.layerIndex)) {
           // TODO Since namedmap doesn't have ids we need to map in another way, here using index
           //   should we solve this in another way?
           layer = vis.map.layers.at(widget.layerIndex);
+        }
+        if (widget.source && widget.source.id) {
+          source = vis.analysis.findNodeById(widget.source.id);
+          attrs.source = source;
         }
 
         newWidgetModel(attrs, layer, state);

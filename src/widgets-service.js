@@ -30,11 +30,9 @@ var extendAttrs = function (attrs, state, hasInitialState) {
   return _.extend(attrs, state, { hasInitialState: hasInitialState }); // Will overwrite preset attributes with the ones passed on the state
 };
 
-var fillAnalysisModel = function (attrs, analyses) {
-  if (attrs.source && typeof attrs.source.id === 'string') {
-    attrs.source = analyses.findNodeById(attrs.source.id);
-  } else if (!(attrs.source instanceof Object)) {
-    throw new Error('Source must be defined.');
+var checkAnalysisModel = function (attrs, analyses) {
+  if (!(attrs.source instanceof Object) || !attrs.source.cid) {
+    throw new Error('Source must be defined and be an instance of AnalysisModel.');
   }
 };
 
@@ -74,7 +72,7 @@ WidgetsService.prototype.getList = function () {
 WidgetsService.prototype.createCategoryModel = function (attrs, layer, state) {
   _checkProperties(attrs, ['title']);
   var extendedAttrs = extendAttrs(attrs, state, this._widgetsCollection.hasInitialState());
-  fillAnalysisModel(extendedAttrs, this._analysis);
+  checkAnalysisModel(extendedAttrs, this._analysis);
 
   var dataviewModel = this._dataviews.createCategoryModel(extendedAttrs);
 
@@ -105,7 +103,7 @@ WidgetsService.prototype.createCategoryModel = function (attrs, layer, state) {
 WidgetsService.prototype.createHistogramModel = function (attrs, layer, state, opts) {
   _checkProperties(attrs, ['title']);
   var extendedAttrs = extendAttrs(attrs, state, this._widgetsCollection.hasInitialState());
-  fillAnalysisModel(extendedAttrs, this._analysis);
+  checkAnalysisModel(extendedAttrs, this._analysis);
   var dataviewModel = this._dataviews.createHistogramModel(extendedAttrs);
 
   // Default bins attribute was removed from dataViewModel because of time-series aggregation.
@@ -142,7 +140,7 @@ WidgetsService.prototype.createHistogramModel = function (attrs, layer, state, o
 WidgetsService.prototype.createFormulaModel = function (attrs, layer, state) {
   _checkProperties(attrs, ['title']);
   var extendedAttrs = extendAttrs(attrs, state, this._widgetsCollection.hasInitialState());
-  fillAnalysisModel(extendedAttrs, this._analysis);
+  checkAnalysisModel(extendedAttrs, this._analysis);
   var dataviewModel = this._dataviews.createFormulaModel(extendedAttrs);
 
   var ATTRS_NAMES = ['id', 'title', 'order', 'collapsed', 'prefix', 'suffix', 'show_stats', 'show_source', 'description', 'hasInitialState'];
@@ -170,7 +168,7 @@ WidgetsService.prototype.createFormulaModel = function (attrs, layer, state) {
 WidgetsService.prototype.createTimeSeriesModel = function (attrs, layer, state, opts) {
   // TODO will other kind really work for a time-series?
   attrs.column_type = attrs.column_type || 'date';
-  fillAnalysisModel(attrs, this._analysis);
+  checkAnalysisModel(attrs, this._analysis);
   var dataviewModel = this._dataviews.createHistogramModel(attrs);
 
   var ATTRS_NAMES = ['id', 'style', 'title', 'normalized', 'animated', 'timezone'];

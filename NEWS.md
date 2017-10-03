@@ -2,6 +2,9 @@ Development
 -----------
 
 ### Features
+* Change default style for polygon, point and line geometries (design#983)
+* Unify scrollbars style (#12184)
+* Add endpoint for current user account deletion (#12841)
 * Add contextual help to Analysis UI (#11907)
 * Add endpoints for updating user account & profile details (#12726)
 * Add /api/v3/me endpoint (#12599, #12790, #12771)
@@ -57,6 +60,12 @@ Development
 * Remove data-observatory-multiple-measures feature flag (#304)
 
 ### Bug fixes / enhancements
+* Improve legends for torque (CartoDB/support#979)
+* CSV export allowed without geometries (#12888)
+* Fix handling of imports with long file names and existing tables with almost the same name (#12732)
+* Update cartodb.js version 
+* Don't allow csv export for polygon or line (#9855)
+* Fix a problem with Unifont Medium font (#support/1002, #support/989)
 * Hide the_geom_webmercator column from dataset view (#11045)
 * Reload vis if needed when feature is save (#11125)
 * Popups improvements (#11430, #10993)
@@ -143,7 +152,7 @@ Development
 * Fix regenerate all api keys in an organization (#12218)
 * Refactor:
   * ::User <-> CartoDB::Visualization::Member dependency: #12116, #12221
-  * Removed CartoDB::Visualization::Member outside old models: #12185, #12267, #12844.
+  * Removed CartoDB::Visualization::Member outside old models: #12185, #12267, #12844, #12864.
   * Removed Visualization::Member usage from CommonDataService (#12459, #12488). Includes performance improvements on user signup.
 * Refactor Layer model (#10934) and UserTable (#11589, #11700, #11737).
   * Removed CartoDB::Visualization::Member and CartoDB::Visualization::Collection from controllers: #12185, #12267, #12485.
@@ -191,6 +200,7 @@ Development
 * Fix a problem with responsive in deep-insights.js
 * Fix 403 error in password protected embed maps (#12469)
 * Fixed JS error for InfoWindows/Pop-ups (cartodb.js#1703)
+* Freeze configuration hashes (#12586)
 * Lowered log level from error to info for supported cartocss in vector maps (cartodb.js#1706)
 * Histogram UI: Do not show "NULL ROWS" value if it is not received (#12477)
 * Force raster mode in datasets preview map (#12513)

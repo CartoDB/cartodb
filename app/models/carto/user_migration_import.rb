@@ -73,7 +73,7 @@ module Carto
       log.append('=== Importing metadata ===')
       begin
         imported = service.import_from_directory(package.meta_dir)
-      rescue OrganizationAlreadyExists, OrganizationAlreadyExists => e
+      rescue UserAlreadyExists, OrganizationAlreadyExists => e
         log.append('Organization already exists. Skipping!')
         raise e
       rescue => e

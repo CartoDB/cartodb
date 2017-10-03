@@ -8,7 +8,7 @@ module Carto
       describe '#default' do
         let(:production_default_line_cartocss) do
           "#layer {\n"\
-          "  line-color: #3EBCAE;\n"\
+          "  line-color: #4CC8A3;\n"\
           "  line-width: 1.5;\n"\
           "  line-opacity: 1;\n"\
           "}"

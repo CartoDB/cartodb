@@ -144,6 +144,21 @@ describe 'UserMigration' do
       import.run_import.should eq true
       import.run_import.should eq false
     end
+
+    it 'should continue with rollback if data import rollback fails' do
+      CartoDB::DataMover::ImportJob.any_instance.stubs(:grant_user_role).raises('Some exception')
+      CartoDB::DataMover::ImportJob.any_instance.stubs(:rollback_user).raises('Some exception')
+      import.run_import.should eq false
+      CartoDB::DataMover::ImportJob.any_instance.unstub(:grant_user_role)
+      CartoDB::DataMover::ImportJob.any_instance.unstub(:rollback_user)
+      import.run_import.should eq true
+    end
+
+    it 'should not remove user if already exists while importing' do
+      import.run_import.should eq true
+      import.run_import.should eq false
+      Carto::User.exists?(@user.id).should eq true
+    end
   end
 
   describe 'failing organization organizations should rollback' do

@@ -31,7 +31,7 @@ describe('src/analysis/analysis-poller', function () {
           options.success();
         });
 
-        this.analysisPoller.poll(this.analysisModel1);
+        this.analysisPoller.poll([ this.analysisModel1 ]);
 
         expect(this.analysisModel1.fetch).toHaveBeenCalled();
         expect(this.analysisModel1.fetch.calls.count()).toEqual(1);
@@ -59,7 +59,7 @@ describe('src/analysis/analysis-poller', function () {
           'status': 'pending'
         });
 
-        this.analysisPoller.poll(this.analysisModel1);
+        this.analysisPoller.poll([ this.analysisModel1 ]);
 
         expect(this.analysisModel1.fetch).toHaveBeenCalled();
         expect(this.analysisModel1.fetch.calls.count()).toEqual(1);
@@ -82,7 +82,7 @@ describe('src/analysis/analysis-poller', function () {
         options.success();
       });
 
-      this.analysisPoller.poll(this.analysisModel1);
+      this.analysisPoller.poll([ this.analysisModel1 ]);
 
       expect(this.analysisModel1.fetch).toHaveBeenCalled();
       expect(this.analysisModel1.fetch.calls.count()).toEqual(1);

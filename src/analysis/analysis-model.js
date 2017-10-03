@@ -25,6 +25,8 @@ var AnalysisModel = Model.extend({
     this._vis = opts.vis;
 
     this._initBinds();
+
+    this._referencedBy = {};
   },
 
   url: function () {
@@ -67,6 +69,12 @@ var AnalysisModel = Model.extend({
 
     _.each(this.getParamNames(), function (paramName) {
       this.bind('change:' + paramName, this._reloadVis, this);
+    }, this);
+
+    this.bind('change:status', function () {
+      if (this.isDone() && this.isSourceOfAnyModel()) {
+        this._reloadVis();
+      }
     }, this);
   },
 
@@ -167,6 +175,18 @@ var AnalysisModel = Model.extend({
     }
     // Since all analysis are created using the analysisFactory different ids ensure different nodes.
     return this.get('id') === analysisModel.get('id');
+  },
+
+  markAsSourceOf: function (model) {
+    this._referencedBy[model.cid] = true;
+  },
+
+  isSourceOfAnyModel: function () {
+    return Object.keys(this._referencedBy).length > 0;
+  },
+
+  unmarkAsSourceOf: function (model) {
+    delete this._referencedBy[model.cid];
   }
 }, {
   STATUS: STATUS

@@ -3,7 +3,6 @@ var BackbonePoller = require('backbone-poller');
 
 var AnalysisPoller = function () {
   this._pollers = [];
-  
 };
 
 AnalysisPoller.CONFIG = {
@@ -12,14 +11,21 @@ AnalysisPoller.CONFIG = {
   DELAY_MULTIPLIER: 1.5
 };
 
-AnalysisPoller.prototype.poll = function (analysisModel) {
-  var poller = this._findOrCreatePoller(analysisModel);
-  if (analysisModel.hasChanged('url') && poller.active()) {
-    poller.stop();
+AnalysisPoller.prototype.poll = function (analysisModels) {
+  if (_.isArray(analysisModels)) {
+
+  } else {
+    analysisModels = [ analysisModels ];
   }
-  if (!analysisModel.isDone()) {
-    poller.start();
-  }
+  _.each(analysisModels, function (analysisModel) {
+    var poller = this._findOrCreatePoller(analysisModel);
+    if (analysisModel.hasChanged('url') && poller.active()) {
+      poller.stop();
+    }
+    if (!analysisModel.isDone()) {
+      poller.start();
+    }
+  }, this);
 };
 
 AnalysisPoller.prototype._findOrCreatePoller = function (analysisModel) {

@@ -275,10 +275,9 @@ var VisModel = Backbone.Model.extend({
   },
 
   _onAnalysisStatusChanged: function (analysisModel) {
-    if (analysisModel.isDone()) {
-      if (this._isAnalysisSourceOfLayerOrDataview(analysisModel)) {
-        this.reload();
-      }
+    if (analysisModel.isDone() &&
+      this._isAnalysisSourceOfLayerOrDataview(analysisModel)) {
+      this.reload();
     }
   },
 

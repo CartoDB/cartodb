@@ -699,6 +699,7 @@ class DataImport < Sequel::Model
                                                        overviews_creator,
                                                        destination_schema, public_user_roles)
     end
+    importer.overwrite_table = collision_strategy == COLLISION_STRATEGY_OVERWRITE
 
     [importer, runner, datasource_provider, manual_fields]
   end

@@ -40,17 +40,21 @@ module CartoDB
         @rejected_layers = []
       end
 
+      def overwrite_table=(overwrite_table)
+        @overwrite_table = overwrite_table
+      end
+
       def run(tracker)
         runner.run(&tracker)
 
         if quota_checker.will_be_over_table_quota?(results.length)
-          runner.log.append('Results would set overquota')
+          log('Results would set overquota')
           @aborted = true
           results.each { |result|
             drop(result.table_name)
           }
         else
-          runner.log.append('Proceeding to register')
+          log('Proceeding to register')
           results.select(&:success?).each { |result|
             register(result)
           }
@@ -70,17 +74,18 @@ module CartoDB
         # Sanitizing table name if it corresponds with a PostgreSQL reseved word
         result.name = Carto::DB::Sanitize.sanitize_identifier(result.name)
 
-        runner.log.append("Before renaming from #{result.table_name} to #{result.name}")
+        log("Before renaming from #{result.table_name} to #{result.name}")
+
         name = rename(result, result.table_name, result.name)
         result.name = name
 
         runner.log.append("Before moving schema '#{name}' from #{ORIGIN_SCHEMA} to #{@destination_schema}")
         move_to_schema(result, name, ORIGIN_SCHEMA, @destination_schema)
 
-        runner.log.append("Before persisting metadata '#{name}' data_import_id: #{data_import_id}")
+        log("Before persisting metadata '#{name}' data_import_id: #{data_import_id}")
         persist_metadata(result, name, data_import_id)
 
-        runner.log.append("Table '#{name}' registered")
+        log("Table '#{name}' registered")
       rescue => exception
         if exception.message =~ /canceling statement due to statement timeout/i
           drop("#{ORIGIN_SCHEMA}.#{result.table_name}")
@@ -103,7 +108,7 @@ module CartoDB
         # function, and thus executed in a transaction, we shouldn't
         # need any clean up here. (Either all overviews were created
         # or nothing changed)
-        runner.log.append("Overviews creation failed: #{exception.message}")
+        log("Overviews creation failed: #{exception.message}")
         CartoDB::Logger.error(
           message:    "Overviews creation failed",
           exception:  exception,
@@ -159,7 +164,7 @@ module CartoDB
         Carto::OverviewsService.new(database).delete_overviews table_name
         database.execute(%(DROP TABLE #{table_name}))
       rescue => exception
-        runner.log.append("Couldn't drop table #{table_name}: #{exception}. Backtrace: #{exception.backtrace} ")
+        log("Couldn't drop table #{table_name}: #{exception}. Backtrace: #{exception.backtrace} ")
         self
       end
 
@@ -220,7 +225,7 @@ module CartoDB
           RENAME TO "the_geom_#{UUIDTools::UUID.timestamp_create.to_s.gsub('-', '_')}"
         })
       rescue => exception
-        runner.log.append("Silently failed rename_the_geom_index_if_exists from #{current_name} to #{new_name} with exception #{exception}. Backtrace: #{exception.backtrace.to_s}. ")
+        log("Silently failed rename_the_geom_index_if_exists from #{current_name} to #{new_name} with exception #{exception}. Backtrace: #{exception.backtrace.to_s}. ")
       end
 
       def persist_metadata(result, name, data_import_id)
@@ -250,8 +255,24 @@ module CartoDB
 
       private
 
+      def user
+        table_registrar.user
+      end
+
+      def overwrite_table?
+        @overwrite_table
+      end
+
+      def log(message)
+        runner.log.append(message)
+      end
+
       def exists_user_table_for_user_id(table_name, user_id)
         !Carto::UserTable.where(name: table_name, user_id: user_id).first.nil?
+      end
+
+      def taken_names
+        Carto::Db::UserSchema.new(table_registrar.user).table_names
       end
 
       attr_reader :runner, :table_registrar, :quota_checker, :database, :data_import_id

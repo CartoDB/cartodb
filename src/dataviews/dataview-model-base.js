@@ -9,6 +9,12 @@ var FETCHING_STATUS = 'fetching';
 var FETCHED_STATUS = 'fetched';
 var FETCH_ERROR_STATUS = 'error';
 
+var track = function (error) {
+  if (window.trackJs) {
+    window.trackJs.track(error);
+  }
+};
+
 /**
  * Default dataview model
  */
@@ -103,6 +109,10 @@ module.exports = Model.extend({
     this.listenTo(this.layer, 'change:source', this._setupAnalysisStatusEvents);
     this.on('change:source', this._setupAnalysisStatusEvents, this);
 
+    // Temporary code to log changes to dataview's sources
+    // TODO: to be removed when enough data is checked / 1761 gets merged
+    this.on('change:source', this._onSourceChanged, this);
+
     this.listenToOnce(this, 'change:url', function () {
       if (this.syncsOnBoundingBoxChanges() && !this._getMapViewBounds()) {
         // wait until map gets bounds from view
@@ -157,6 +167,13 @@ module.exports = Model.extend({
     this.fetch({
       success: this._onChangeBinds.bind(this)
     });
+  },
+
+  _onSourceChanged: function (model) {
+    var changedKeys = model && model.changed
+      ? _.keys(model.changed)
+      : '';
+    track(new Error('[SOURCE] _onSourceChanged [' + changedKeys + ']'));
   },
 
   _setupAnalysisStatusEvents: function () {
@@ -256,6 +273,10 @@ module.exports = Model.extend({
   },
 
   update: function (attrs) {
+    if (_.has(attrs, 'source')) {
+      var message = '[SOURCE] Source present in UPDATE attrs. ' + JSON.stringify(attrs.source);
+      track(new Error(message));
+    }
     attrs = _.pick(attrs, this.constructor.ATTRS_NAMES);
     this.set(attrs);
   },

@@ -25,7 +25,7 @@ module ModelFactories
     end
 
     def self.get_default_data_layer(table_name, user, geometry_type)
-      data_layer = ::Layer.new(Cartodb.config[:layer_opts]['data'])
+      data_layer = ::Layer.new(Cartodb.config[:layer_opts]['data'].deep_dup)
       data_layer.options['table_name'] = table_name
       data_layer.options['user_name'] = user.username
       data_layer.options['tile_style'] = tile_style(user, geometry_type)

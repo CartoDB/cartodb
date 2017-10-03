@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.10.10",
+  "version": "4.10.12",
   "dependencies": {
     "abbrev": {
       "version": "1.1.0",
@@ -403,7 +403,7 @@
     "cartodb-deep-insights.js": {
       "version": "0.0.3",
       "from": "cartodb/deep-insights.js#master",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#606af00fdae1a67ad282ba8297f5569f2ce811da",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#9bf63f15963073716a1e954253c915520478481d",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",
@@ -420,7 +420,7 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.1.1.2",
       "from": "cartodb/cartodb.js#v4",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#847ed21f41aaff661e6eea6dae9e79f23a9909a8"
+      "resolved": "git://github.com/cartodb/cartodb.js.git#c1ee36c9023e60f3b455c2619c38edaec7bd1c46"
     },
     "caseless": {
       "version": "0.12.0",
@@ -796,9 +796,9 @@
       "resolved": "https://registry.npmjs.org/error-ex/-/error-ex-1.3.1.tgz"
     },
     "es-abstract": {
-      "version": "1.8.2",
+      "version": "1.9.0",
       "from": "es-abstract@>=1.5.0 <2.0.0",
-      "resolved": "https://registry.npmjs.org/es-abstract/-/es-abstract-1.8.2.tgz"
+      "resolved": "https://registry.npmjs.org/es-abstract/-/es-abstract-1.9.0.tgz"
     },
     "es-to-primitive": {
       "version": "1.1.1",
@@ -2575,9 +2575,9 @@
       "resolved": "git://github.com/tangrams/topojson-client.git#1068f4f2e03ddf8236499bbc896cec98d7a342b7"
     },
     "toposort": {
-      "version": "1.0.4",
+      "version": "1.0.6",
       "from": "toposort@>=1.0.0 <2.0.0",
-      "resolved": "https://registry.npmjs.org/toposort/-/toposort-1.0.4.tgz"
+      "resolved": "https://registry.npmjs.org/toposort/-/toposort-1.0.6.tgz"
     },
     "torque.js": {
       "version": "2.16.3",
@@ -2635,9 +2635,9 @@
       "resolved": "https://registry.npmjs.org/typedarray/-/typedarray-0.0.6.tgz"
     },
     "uglify-js": {
-      "version": "3.1.2",
+      "version": "3.1.3",
       "from": "uglify-js@>=3.1.0 <3.2.0",
-      "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-3.1.2.tgz"
+      "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-3.1.3.tgz"
     },
     "uglify-to-browserify": {
       "version": "1.0.2",

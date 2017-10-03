@@ -7,6 +7,7 @@ describe('widgets-service', function () {
     this.vis = specHelper.createDefaultVis();
     this.widgetsCollection = new WidgetsCollection();
     this.widgetsService = new WidgetsService(this.widgetsCollection, this.vis.dataviews, this.vis.analysis);
+    this.a0 = this.vis.analysis.findNodeById('a0');
   });
 
   it('should return the WidgetsService instance', function () {
@@ -34,9 +35,7 @@ describe('widgets-service', function () {
           aggregation: 'avg',
           prefix: '$',
           suffix: ' people',
-          source: {
-            id: 'a0'
-          }
+          source: this.a0
         };
         this.widgetModel = this.widgetsService.createCategoryModel(attrs, this.vis.map.layers.first());
       });
@@ -86,9 +85,7 @@ describe('widgets-service', function () {
           suffix: ' people',
           sync_on_bbox_change: false,
           sync_on_data_change: false,
-          source: {
-            id: 'a0'
-          }
+          source: this.a0
         };
         var layer = this.vis.map.layers.first();
         layer.set('visible', false);
@@ -106,9 +103,7 @@ describe('widgets-service', function () {
       this.widgetModel = this.widgetsService.createCategoryModel({
         title: 'some_title',
         column: 'my_column',
-        source: {
-          id: 'a0'
-        }
+        source: this.a0
       }, this.vis.map.layers.first());
       expect(this.widgetModel.dataviewModel.get('aggregation')).toEqual('count');
     });
@@ -139,9 +134,7 @@ describe('widgets-service', function () {
           id: 'abc-123',
           title: 'my histogram',
           column: 'a_column',
-          source: {
-            id: 'a0'
-          },
+          source: this.a0,
           bins: 20
         };
         this.widgetModel = this.widgetsService.createHistogramModel(attrs, this.vis.map.layers.first());
@@ -178,9 +171,7 @@ describe('widgets-service', function () {
       this.widgetModel = this.widgetsService.createHistogramModel({
         title: 'some_title',
         column: 'my_column',
-        source: {
-          id: 'a0'
-        }
+        source: this.a0
       }, this.vis.map.layers.first());
       expect(this.widgetModel.dataviewModel.get('bins')).toEqual(10);
     });
@@ -211,9 +202,7 @@ describe('widgets-service', function () {
           id: 'abc-123',
           title: 'my formula',
           column: 'a_column',
-          source: {
-            id: 'a0'
-          },
+          source: this.a0,
           operation: 'sum',
           prefix: '$',
           suffix: '¢'
@@ -296,9 +285,7 @@ describe('widgets-service', function () {
           bins: 50,
           start: 0,
           end: 10,
-          source: {
-            id: 'a0'
-          }
+          source: this.a0
         };
         this.widgetModel = this.widgetsService.createTimeSeriesModel(attrs, this.vis.map.layers.first());
       });

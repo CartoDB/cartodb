@@ -403,7 +403,7 @@
     "cartodb-deep-insights.js": {
       "version": "0.0.3",
       "from": "cartodb/deep-insights.js#1761-dataview-source",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#0ed23fd74b30407154053a14fe72541513424d57",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#4bdf182572c4330b6b3feda22a6be7a88a5faa71",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",

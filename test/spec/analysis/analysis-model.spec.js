@@ -1,3 +1,4 @@
+var _ = require('underscore');
 var Backbone = require('backbone');
 var AnalysisModel = require('../../../src/analysis/analysis-model.js');
 var AnalysisService = require('../../../src/analysis/analysis-service.js');
@@ -114,6 +115,47 @@ describe('src/analysis/analysis-model.js', function () {
         this.vis.reload.calls.reset();
         this.analysisModel.set('type', 'something else');
         expect(this.vis.reload).toHaveBeenCalled();
+      });
+    });
+
+    describe('on status change', function () {
+      describe('when analysis is not referenced by any object', function () {
+        _.each(AnalysisModel.STATUS, function (status, key) {
+          it("should NOT reload the vis if analysis is now '" + status + "'", function () {
+            expect(this.vis.reload).not.toHaveBeenCalled();
+            this.analysisModel.set('status', status);
+            expect(this.vis.reload).not.toHaveBeenCalled();
+          });
+        }, this);
+      });
+
+      describe('when analysis is referenced by an object', function () {
+        beforeEach(function () {
+          this.analysisModel.markAsSourceOf(new Backbone.Model());
+        });
+
+        _.each([
+          AnalysisModel.STATUS.PENDING,
+          AnalysisModel.STATUS.WAITING,
+          AnalysisModel.STATUS.RUNNING
+        ], function (status) {
+          it("should NOT reload the vis if analysis is now '" + status + "'", function () {
+            expect(this.vis.reload).not.toHaveBeenCalled();
+            this.analysisModel.set('status', status);
+            expect(this.vis.reload).not.toHaveBeenCalled();
+          });
+        }, this);
+
+        _.each([
+          AnalysisModel.STATUS.FAILED,
+          AnalysisModel.STATUS.READY
+        ], function (status) {
+          it("should reload the vis if analysis is now '" + status + "'", function () {
+            expect(this.vis.reload).not.toHaveBeenCalled();
+            this.analysisModel.set('status', status);
+            expect(this.vis.reload).toHaveBeenCalled();
+          });
+        }, this);
       });
     });
   });
@@ -386,6 +428,35 @@ describe('src/analysis/analysis-model.js', function () {
       );
       var actual = analysis.getNodes();
       expect(actual.length).toEqual(3);
+    });
+  });
+
+  describe('references tracking', function () {
+    it('should allow keeping track of models that reference this object', function () {
+      var model1 = new Backbone.Model();
+      var model2 = new Backbone.Model();
+
+      expect(this.analysisModel.isSourceOfAnyModel()).toBe(false);
+
+      this.analysisModel.markAsSourceOf(model1);
+
+      expect(this.analysisModel.isSourceOfAnyModel()).toBe(true);
+
+      this.analysisModel.markAsSourceOf(model1);
+
+      expect(this.analysisModel.isSourceOfAnyModel()).toBe(true);
+
+      this.analysisModel.markAsSourceOf(model2);
+
+      expect(this.analysisModel.isSourceOfAnyModel()).toBe(true);
+
+      this.analysisModel.unmarkAsSourceOf(model1);
+
+      expect(this.analysisModel.isSourceOfAnyModel()).toBe(true);
+
+      this.analysisModel.unmarkAsSourceOf(model2);
+
+      expect(this.analysisModel.isSourceOfAnyModel()).toBe(false);
     });
   });
 });

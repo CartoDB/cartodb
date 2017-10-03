@@ -25,6 +25,11 @@ var CartoDBLayer = LayerModelBase.extend({
       this.set('initialStyle', attrs.cartocss);
     }
 
+    // TODO: Validate source?
+    if (attrs.source) {
+      this._updateSourceReferences(attrs.source);
+    }
+
     // PUBLIC PROPERTIES
     this.infowindow = new InfowindowTemplate(attrs.infowindow);
     this.tooltip = new TooltipTemplate(attrs.tooltip);
@@ -112,8 +117,17 @@ var CartoDBLayer = LayerModelBase.extend({
     return this.get('source');
   },
 
-  setSource: function (source, options) {
-    this.set('source', source, options);
+  setSource: function (newSource, options) {
+    this._updateSourceReferences(newSource);
+    this.set('source', newSource, options);
+  },
+
+  _updateSourceReferences: function (newSource) {
+    var currentSource = this.getSource();
+    if (currentSource) {
+      currentSource.unmarkAsSourceOf(this);
+    }
+    newSource.markAsSourceOf(this);
   },
 
   /**
@@ -128,6 +142,8 @@ var CartoDBLayer = LayerModelBase.extend({
     if (attrs.source) {
       console.warn('Deprecated: Use ".setSource" to update a layer\'s source instead of the update method');
       attrs.source = CartoDBLayer.getLayerSourceFromAttrs(attrs, this._vis.analysis);
+
+      this._updateSourceReferences(attrs.source);
     }
     LayerModelBase.prototype.update.apply(this, arguments);
   }

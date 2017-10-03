@@ -76,14 +76,13 @@ describe Carto::Widget do
       end
 
       it 'rejects source id if cames as a hash' do
-        @widget.source_id = {foo: 'bar'}
+        @widget.source_id = { foo: 'bar' }
 
         expect(@widget.valid?).to be_false
         expect(@widget.errors[:source_id]).to eq('Source id must be a string')
       end
     end
   end
-
 
   describe '#from_visualization_id' do
     before(:all) do

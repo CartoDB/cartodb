@@ -11,7 +11,7 @@ module Carto
           "  marker-width: 7;\n"\
           "  marker-fill: #EE4D5A;\n"\
           "  marker-fill-opacity: 0.9;\n"\
-          "  marker-line-color: #F7AAB0;\n"\
+          "  marker-line-color: #FFFFFF;\n"\
           "  marker-line-width: 1;\n"\
           "  marker-line-opacity: 1;\n"\
           "  marker-placement: point;\n"\
@@ -27,7 +27,7 @@ module Carto
           "  polygon-fill: #826DBA;\n"\
           "  polygon-opacity: 0.9;\n"\
           "  ::outline {\n"\
-          "    line-color: #8C85C2;\n"\
+          "    line-color: #FFFFFF;\n"\
           "    line-width: 1;\n"\
           "    line-opacity: 0.5;\n"\
           "  }\n"\

@@ -107,7 +107,7 @@ module.exports = Model.extend({
   _initBinds: function () {
     this.listenTo(this.layer, 'change:visible', this._onLayerVisibilityChanged);
     this.listenTo(this.layer, 'change:source', this._setupAnalysisStatusEvents);
-    // this.on('change:source', this._setupAnalysisStatusEvents, this);
+    this.on('change:source', this._setupAnalysisStatusEvents, this);
 
     // Temporary code to log changes to dataview's sources
     // TODO: to be removed when enough data is checked / 1761 gets merged
@@ -170,16 +170,11 @@ module.exports = Model.extend({
     });
   },
 
-  _onLayerSourceChanged: function () {
-    this._setupAnalysisStatusEvents();
-  },
-
   _onSourceChanged: function (model) {
     var changedKeys = model && model.changed
       ? _.keys(model.changed)
       : '';
     track(new Error('[SOURCE] _onSourceChanged [' + changedKeys + ']'));
-    this._setupAnalysisStatusEvents();
   },
 
   _setupAnalysisStatusEvents: function () {

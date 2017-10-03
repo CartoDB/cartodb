@@ -72,7 +72,7 @@ var createDashboard = function (selector, vizJSON, opts, callback) {
     var widgetsState = (dashboardState && dashboardState.widgets) || {};
 
     // Create widgets
-    var widgetsService = new WidgetsService(widgets, vis.dataviews, vis.analysis);
+    var widgetsService = new WidgetsService(widgets, vis.dataviews);
     var widgetModelsMap = {
       formula: widgetsService.createFormulaModel.bind(widgetsService),
       histogram: widgetsService.createHistogramModel.bind(widgetsService),

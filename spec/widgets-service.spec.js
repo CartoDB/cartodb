@@ -6,7 +6,7 @@ describe('widgets-service', function () {
   beforeEach(function () {
     this.vis = specHelper.createDefaultVis();
     this.widgetsCollection = new WidgetsCollection();
-    this.widgetsService = new WidgetsService(this.widgetsCollection, this.vis.dataviews, this.vis.analysis);
+    this.widgetsService = new WidgetsService(this.widgetsCollection, this.vis.dataviews);
     this.a0 = this.vis.analysis.findNodeById('a0');
   });
 

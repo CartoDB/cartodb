@@ -9,6 +9,12 @@ var FETCHING_STATUS = 'fetching';
 var FETCHED_STATUS = 'fetched';
 var FETCH_ERROR_STATUS = 'error';
 
+var track = function (error) {
+  if (window.trackJs) {
+    window.trackJs.track(error);
+  }
+};
+
 /**
  * Default dataview model
  */
@@ -100,8 +106,8 @@ module.exports = Model.extend({
 
   _initBinds: function () {
     this.listenTo(this.layer, 'change:visible', this._onLayerVisibilityChanged);
-    this.listenTo(this.layer, 'change:source', this._setupAnalysisStatusEvents);
-    this.on('change:source', this._setupAnalysisStatusEvents, this);
+    this.listenTo(this.layer, 'change:source', this._onLayerSourceChanged);
+    this.on('change:source', this._onSourceChanged, this);
 
     this.listenToOnce(this, 'change:url', function () {
       if (this.syncsOnBoundingBoxChanges() && !this._getMapViewBounds()) {
@@ -157,6 +163,18 @@ module.exports = Model.extend({
     this.fetch({
       success: this._onChangeBinds.bind(this)
     });
+  },
+
+  _onLayerSourceChanged: function () {
+    this._setupAnalysisStatusEvents();
+  },
+
+  _onSourceChanged: function (model) {
+    var changedKeys = model && model.changed
+      ? _.keys(model.changed)
+      : '';
+    track(new Error('[SOURCE] _onSourceChanged [' + changedKeys + ']'));
+    this._setupAnalysisStatusEvents();
   },
 
   _setupAnalysisStatusEvents: function () {
@@ -256,6 +274,10 @@ module.exports = Model.extend({
   },
 
   update: function (attrs) {
+    if (_.has(attrs, 'source')) {
+      var message = '[SOURCE] Source present in UPDATE attrs. ' + JSON.stringify(attrs.source);
+      track(new Error(message));
+    }
     attrs = _.pick(attrs, this.constructor.ATTRS_NAMES);
     this.set(attrs);
   },

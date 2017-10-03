@@ -111,7 +111,6 @@ module.exports = Model.extend({
 
     // Temporary code to log changes to dataview's sources
     // TODO: to be removed when enough data is checked / 1761 gets merged
-    //       uncomment the line above too
     this.on('change:source', this._onSourceChanged, this);
 
     this.listenToOnce(this, 'change:url', function () {

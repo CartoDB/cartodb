@@ -60,7 +60,7 @@ class PublicClient {
     const { host, protocol } = window.location;
 
     const regExp = window.location.href.match(/(\/(u|user)\/[a-z0-9\-]+)\//);
-    const path = regExp && regExp[1] || '';
+    const path = (regExp && regExp[1]) || '';
 
     return window.StaticConfig.baseUrl || `${protocol}//${host}${path}`;
   }
@@ -72,8 +72,8 @@ class PublicClient {
     }
 
     Object.assign(opts, {
-      'contentType': 'application/json; charset=utf-8',
-      'method': method.toUpperCase()
+      contentType: 'application/json; charset=utf-8',
+      method: method.toUpperCase()
     });
 
     this.addHeaders(opts);

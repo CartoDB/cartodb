@@ -187,8 +187,11 @@ describe 'UserMigration' do
     end
 
     after :each do
-      @organization.reload
-      @organization.destroy_cascade
+      begin
+        @organization.reload
+        @organization.destroy_cascade
+      rescue
+      end
     end
 
     it 'import failing in import_metadata should rollback' do

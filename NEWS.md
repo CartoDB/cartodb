@@ -2,6 +2,7 @@ Development
 -----------
 
 ### Features
+* Change default style for polygon, point and line geometries (design#983)
 * Add endpoint for current user account deletion (#12841)
 * Add contextual help to Analysis UI (#11907)
 * Add endpoints for updating user account & profile details (#12726)

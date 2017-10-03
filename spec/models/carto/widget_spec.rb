@@ -72,14 +72,14 @@ describe Carto::Widget do
 
       it 'accepts source id if cames as string' do
         expect(@widget.valid?).to be_true
-        expect(@widget.errors[:source_id]).to be_nil
+        expect(@widget.errors[:source_id]).to eq([])
       end
 
       it 'rejects source id if cames as a hash' do
         @widget.source_id = { foo: 'bar' }
 
         expect(@widget.valid?).to be_false
-        expect(@widget.errors[:source_id]).to eq('Source id must be a string')
+        expect(@widget.errors[:source_id]).to include('Source id must be a string')
       end
     end
   end

@@ -10,7 +10,6 @@ describe('analysis-serializer', function () {
   var mapModel;
   var layersCollection;
   var dataviewsCollection;
-  var analysisCollection;
   var analysisFactory;
   var analysisDefinition;
   var analysisModel;
@@ -20,9 +19,8 @@ describe('analysis-serializer', function () {
     visModel = new Backbone.Model();
     layersCollection = new Backbone.Collection();
     dataviewsCollection = new Backbone.Collection();
-    analysisCollection = new Backbone.Collection();
     analysisFactory = new AnalysisFactory({
-      analysisCollection: analysisCollection,
+      analysisCollection: new Backbone.Collection(),
       camshaftReference: fakeCamshaftReference,
       vis: visModel
     });
@@ -170,8 +168,7 @@ describe('analysis-serializer', function () {
           source: analysisModel
         }, {
           map: mapModel,
-          vis: visModel,
-          analysisCollection: analysisCollection
+          vis: visModel
         });
 
         dataviewsCollection.reset([ dataview ]);
@@ -238,16 +235,14 @@ describe('analysis-serializer', function () {
           source: analysis1
         }, {
           map: mapModel,
-          vis: visModel,
-          analysisCollection: analysisCollection
+          vis: visModel
         });
 
         var dataview2 = new DataviewModel({
           source: analysis2
         }, {
           map: mapModel,
-          vis: visModel,
-          analysisCollection: analysisCollection
+          vis: visModel
         });
 
         dataviewsCollection.reset([
@@ -312,8 +307,7 @@ describe('analysis-serializer', function () {
         source: analysisModel
       }, {
         map: mapModel,
-        vis: visModel,
-        analysisCollection: analysisCollection
+        vis: visModel
       });
 
       layersCollection.reset([

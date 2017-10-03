@@ -16,7 +16,6 @@ describe('anonymous-map-serializer', function () {
     var mapModel;
     var layersCollection;
     var dataviewsCollection;
-    var analysisCollection;
     var analysisFactory;
     var analysisModel;
     var payload;
@@ -26,9 +25,8 @@ describe('anonymous-map-serializer', function () {
       visModel = new Backbone.Model();
 
       // Analyses
-      analysisCollection = new Backbone.Collection();
       analysisFactory = new AnalysisFactory({
-        analysisCollection: analysisCollection,
+        analysisCollection: new Backbone.Collection(),
         camshaftReference: fakeCamshaftReference,
         vis: visModel
       });
@@ -57,8 +55,7 @@ describe('anonymous-map-serializer', function () {
         source: analysisModel
       }, {
         map: mapModel,
-        vis: visModel,
-        analysisCollection: analysisCollection
+        vis: visModel
       });
       dataviewsCollection = new Backbone.Collection([ dataview ]);
 

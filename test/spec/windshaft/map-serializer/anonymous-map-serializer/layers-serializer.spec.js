@@ -26,8 +26,7 @@ describe('layers-serializer', function () {
         cartocss: 'cartoCSS1',
         cartocss_version: '2.0'
       }, {
-        vis: visMock,
-        analysisCollection: new Backbone.Collection()
+        vis: visMock
       });
       layersCollection.reset([cartoDBLayer]);
 

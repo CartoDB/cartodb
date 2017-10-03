@@ -29,8 +29,7 @@ describe('dataviews-serializer', function () {
       }, {
         map: map,
         vis: vis,
-        layer: layer,
-        analysisCollection: new Backbone.Collection()
+        layer: layer
       });
 
       var dataviewsCollection = new Backbone.Collection([
@@ -61,8 +60,7 @@ describe('dataviews-serializer', function () {
       }, {
         map: map,
         vis: vis,
-        layer: layer,
-        analysisCollection: new Backbone.Collection()
+        layer: layer
       });
 
       var dataviewsCollection = new Backbone.Collection([
@@ -93,8 +91,7 @@ describe('dataviews-serializer', function () {
       }, {
         map: map,
         vis: vis,
-        layer: layer,
-        analysisCollection: new Backbone.Collection()
+        layer: layer
       });
 
       var dataviewsCollection = new Backbone.Collection([

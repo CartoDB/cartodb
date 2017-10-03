@@ -52,7 +52,6 @@ describe('windshaft/map-base', function () {
     });
 
     this.layersCollection = new Backbone.Collection();
-    this.analysisCollection = new Backbone.Collection();
     this.modelUpdater = jasmine.createSpyObj('modelUpdater', ['updateModels', 'setErrors']);
     this.a0 = fakeFactory.createAnalysisModel({ id: 'a0 ' });
 
@@ -75,7 +74,6 @@ describe('windshaft/map-base', function () {
       modelUpdater: this.modelUpdater,
       dataviewsCollection: this.dataviewsCollection,
       layersCollection: this.layersCollection,
-      analysisCollection: this.analysisCollection,
       windshaftSettings: this.windshaftSettings
     });
   });
@@ -224,7 +222,6 @@ describe('windshaft/map-base', function () {
           modelUpdater: this.modelUpdater,
           dataviewsCollection: this.dataviewsCollection,
           layersCollection: this.layersCollection,
-          analysisCollection: this.analysisCollection,
           windshaftSettings: this.windshaftSettings
         });
 
@@ -251,7 +248,6 @@ describe('windshaft/map-base', function () {
           modelUpdater: this.modelUpdater,
           dataviewsCollection: this.dataviewsCollection,
           layersCollection: this.layersCollection,
-          analysisCollection: this.analysisCollection,
           windshaftSettings: this.windshaftSettings
         });
 
@@ -449,7 +445,6 @@ describe('windshaft/map-base', function () {
         modelUpdater: this.modelUpdater,
         dataviewsCollection: this.dataviewsCollection,
         layersCollection: this.layersCollection,
-        analysisCollection: this.analysisCollection,
         windshaftSettings: this.windshaftSettings
       });
 
@@ -483,7 +478,6 @@ describe('windshaft/map-base', function () {
         modelUpdater: this.modelUpdater,
         dataviewsCollection: this.dataviewsCollection,
         layersCollection: this.layersCollection,
-        analysisCollection: this.analysisCollection,
         windshaftSettings: this.windshaftSettings
       });
 
@@ -525,7 +519,6 @@ describe('windshaft/map-base', function () {
         modelUpdater: this.modelUpdater,
         dataviewsCollection: this.dataviewsCollection,
         layersCollection: this.layersCollection,
-        analysisCollection: this.analysisCollection,
         windshaftSettings: this.windshaftSettings
       });
 
@@ -614,7 +607,6 @@ describe('windshaft/map-base', function () {
         modelUpdater: this.modelUpdater,
         dataviewsCollection: this.dataviewsCollection,
         layersCollection: this.layersCollection,
-        analysisCollection: this.analysisCollection,
         windshaftSettings: this.windshaftSettings
       });
 

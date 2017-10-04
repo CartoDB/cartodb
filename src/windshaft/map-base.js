@@ -4,6 +4,8 @@ var WindshaftConfig = require('./config');
 var log = require('../cdb.log');
 var WindshaftError = require('./error');
 var Request = require('./request');
+var AnonymousMapSerializer = require('./map-serializer/anonymous-map-serializer/anonymous-map-serializer');
+var NamedMapSerializer = require('./map-serializer/named-map-serializer/named-map-serializer');
 
 var WindshaftMap = Backbone.Model.extend({
   initialize: function (attrs, options) {
@@ -36,11 +38,6 @@ var WindshaftMap = Backbone.Model.extend({
     this._windshaftSettings = options.windshaftSettings;
   },
 
-  toJSON: function () {
-    throw new Error('Subclasses of windshaft/map-base must implement .toJSON');
-  },
-
-  // TODO: Move this somewhere else and keep this class as a wrapper for windshaft responses
   createInstance: function (options) {
     options = options || {};
     try {
@@ -77,6 +74,28 @@ var WindshaftMap = Backbone.Model.extend({
       log.error(e.message);
       options.error && options.error();
     }
+  },
+
+  toJSON: function () {
+    return this._getSerializer().serialize(this._layersCollection, this._dataviewsCollection);
+  },
+
+  _getSerializer: function () {
+    if (this._serializer) {
+      return this._serializer;
+    }
+
+    if (this._isAnonymousMap()) {
+      this._serializer = AnonymousMapSerializer;
+    } else {
+      this._serializer = NamedMapSerializer;
+    }
+
+    return this._serializer;
+  },
+
+  _isAnonymousMap: function () {
+    return !this._windshaftSettings.templateName;
   },
 
   _getParams: function () {

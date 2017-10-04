@@ -1,5 +1,11 @@
 var _ = require('underscore');
 var Model = require('../core/model');
+var util = require('../core/util');
+
+var REQUIRED_OPTS = [
+  'camshaftReference',
+  'vis'
+];
 
 var STATUS = {
   PENDING: 'pending',
@@ -13,16 +19,11 @@ var AnalysisModel = Model.extend({
 
   initialize: function (attrs, opts) {
     opts = opts || {};
-    if (!opts.camshaftReference) {
-      throw new Error('chamshaftReference is required');
-    }
-
-    if (!opts.vis) {
-      throw new Error('vis is required');
-    }
+    util.checkRequiredOpts(opts, REQUIRED_OPTS, 'AnalysisModel');
 
     this._camshaftReference = opts.camshaftReference;
     this._vis = opts.vis;
+
     this._initBinds();
   },
 

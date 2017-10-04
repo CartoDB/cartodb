@@ -5,8 +5,6 @@ var Map = require('../geo/map');
 var DataviewsFactory = require('../dataviews/dataviews-factory');
 var DataviewsCollection = require('../dataviews/dataviews-collection');
 var WindshaftClient = require('../windshaft/client');
-var WindshaftNamedMap = require('../windshaft/named-map');
-var WindshaftAnonymousMap = require('../windshaft/anonymous-map');
 var AnalysisFactory = require('../analysis/analysis-factory');
 var CartoDBLayerGroup = require('../geo/cartodb-layer-group');
 var ModelUpdater = require('../windshaft-integration/model-updater');
@@ -16,6 +14,7 @@ var LayersFactory = require('./layers-factory');
 var SettingsModel = require('./settings');
 var whenAllDataviewsFetched = require('./dataviews-tracker');
 var RenderModes = require('../geo/render-modes');
+var WindshaftMap = require('../windshaft/map-base');
 
 var STATE_INIT = 'init'; // vis hasn't been sent to Windshaft
 var STATE_OK = 'ok'; // vis has been sent to Windshaft and everything is ok
@@ -131,14 +130,9 @@ var VisModel = Backbone.Model.extend({
       userName: vizjson.datasource.user_name,
       statTag: vizjson.datasource.stat_tag,
       apiKey: this.get('apiKey'),
-      authToken: this.get('authToken')
+      authToken: this.get('authToken'),
+      templateName: vizjson.datasource.template_name
     };
-
-    var WindshaftMapClass = WindshaftAnonymousMap;
-    if (vizjson.isNamedMap()) {
-      windshaftSettings.templateName = vizjson.datasource.template_name;
-      WindshaftMapClass = WindshaftNamedMap;
-    }
 
     var windshaftClient = new WindshaftClient(windshaftSettings);
 
@@ -194,7 +188,7 @@ var VisModel = Backbone.Model.extend({
     });
 
     // Create the WindshaftMap
-    this._windshaftMap = new WindshaftMapClass({
+    this._windshaftMap = new WindshaftMap({
       apiKey: this.get('apiKey'),
       authToken: this.get('authToken'),
       statTag: datasource.stat_tag
@@ -217,8 +211,7 @@ var VisModel = Backbone.Model.extend({
     }, {
       map: this.map,
       vis: this,
-      dataviewsCollection: this._dataviewsCollection,
-      analysisCollection: this._analysisCollection
+      dataviewsCollection: this._dataviewsCollection
     });
 
     this._windshaftMap.bind('instanceCreated', this._onMapInstanceCreated, this);

@@ -6,9 +6,10 @@ var WidgetModel = require('../../src/widgets/widget-model');
 describe('widgets/widget-view', function () {
   beforeEach(function () {
     this.dataviewModel = new cdb.core.Model();
-    this.dataviewModel.layer = new cdb.core.Model();
+    this.layerModel = new cdb.core.Model();
     var widgetModel = new WidgetModel({}, {
-      dataviewModel: this.dataviewModel
+      dataviewModel: this.dataviewModel,
+      layerModel: this.layerModel
     });
     this.view = new WidgetView({
       model: widgetModel,

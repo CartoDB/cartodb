@@ -6,11 +6,17 @@ var OptionsView = require('../../../src/widgets/category/options/options-view');
 describe('widgets/category/options-view', function () {
   beforeEach(function () {
     var vis = specHelper.createDefaultVis();
-    this.dataviewModel = vis.dataviews.createCategoryModel(vis.map.layers.first(), {
-      column: 'col'
+
+    this.layerModel = vis.map.layers.first();
+
+    var source = vis.analysis.findNodeById('a0');
+    this.dataviewModel = vis.dataviews.createCategoryModel({
+      column: 'col',
+      source: source
     });
     this.widgetModel = new CategoryWidgetModel({}, {
-      dataviewModel: this.dataviewModel
+      dataviewModel: this.dataviewModel,
+      layerModel: this.layerModel
     });
     this.view = new OptionsView({
       widgetModel: this.widgetModel,

@@ -18,15 +18,13 @@ describe('widgets/time-series/torque-content-view', function () {
 
   beforeEach(function () {
     var vis = specHelper.createDefaultVis();
-    this.dataviewModel = vis.dataviews.createHistogramModel(vis.map.layers.first(), {
+    this.layerModel = vis.map.layers.first();
+    this.layerModel.set('layer_name', '< & ><h1>Hello</h1>');
+    var source = vis.analysis.findNodeById('a0');
+    this.dataviewModel = vis.dataviews.createHistogramModel({
       column: 'col',
-      source: {
-        id: 'a0'
-      }
+      source: source
     });
-    this.dataviewModel.getLayerName = function () {
-      return '< & ><h1>Hello</h1>';
-    };
 
     spyOn(this.dataviewModel, 'fetch').and.callThrough();
     this.originalData = this.dataviewModel.getUnfilteredDataModel();
@@ -46,7 +44,8 @@ describe('widgets/time-series/torque-content-view', function () {
       normalized: false,
       show_source: true
     }, {
-      dataviewModel: this.dataviewModel
+      dataviewModel: this.dataviewModel,
+      layerModel: this.layerModel
     });
 
     spyOn(HistogramChartView.prototype, '_setupFillColor').and.returnValue('red');
@@ -94,7 +93,7 @@ describe('widgets/time-series/torque-content-view', function () {
     it('should render the widget when the layer name changes', function () {
       spyOn(this.view, 'render');
       this.view._initBinds();
-      this.dataviewModel.layer.set('layer_name', 'Hello');
+      this.layerModel.set('layer_name', 'Hello');
       expect(this.view.render).toHaveBeenCalled();
     });
   });

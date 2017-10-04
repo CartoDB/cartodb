@@ -4,12 +4,12 @@ var CategoryColors = require('./category-colors');
 var getValue = require('../../util/get-object-value');
 
 var AutoStyler = cdb.core.Model.extend({
-  initialize: function (dataviewModel, options) {
+  initialize: function (dataviewModel, layerModel, options) {
     this.options = options || {};
     this.styles = options && options.auto_style;
     this.dataviewModel = dataviewModel;
     this.colors = new CategoryColors(this.styles);
-    this.layer = this.dataviewModel.layer;
+    this.layer = layerModel;
   },
 
   getStyle: function () {

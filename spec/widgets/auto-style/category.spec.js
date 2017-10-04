@@ -19,7 +19,7 @@ describe('src/widgets/auto-style/category', function () {
     });
 
     this.layer = this.dataview.layer = layer;
-    this.categoryAutoStyler = new CategoryAutoStyler(this.dataview);
+    this.categoryAutoStyler = new CategoryAutoStyler(this.dataview, layer);
 
     // Trick to set colors properly in this test
     this.updateColorsByData = function () {

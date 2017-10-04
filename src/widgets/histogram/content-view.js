@@ -31,6 +31,7 @@ module.exports = cdb.core.View.extend({
 
   initialize: function () {
     this._dataviewModel = this.model.dataviewModel;
+    this._layerModel = this.model.layerModel;
     this._originalData = this._dataviewModel.getUnfilteredDataModel();
     this.filter = this._dataviewModel.filter;
     this.lockedByUser = false;
@@ -84,7 +85,8 @@ module.exports = cdb.core.View.extend({
   _initTitleView: function () {
     var titleView = new HistogramTitleView({
       widgetModel: this.model,
-      dataviewModel: this._dataviewModel
+      dataviewModel: this._dataviewModel,
+      layerModel: this._layerModel
     });
 
     this.$('.js-title').append(titleView.render().el);
@@ -105,8 +107,8 @@ module.exports = cdb.core.View.extend({
       this.model.bind('change:hasInitialState', this._setInitialState, this);
     }
 
-    this._dataviewModel.layer.bind('change:layer_name', this.render, this);
-    this.add_related_model(this._dataviewModel.layer);
+    this._layerModel.bind('change:layer_name', this.render, this);
+    this.add_related_model(this._layerModel);
   },
 
   _setInitialState: function () {
@@ -251,7 +253,7 @@ module.exports = cdb.core.View.extend({
     var letter = layerColors.letter(sourceId);
     var sourceColor = layerColors.getColorForLetter(letter);
     var sourceType = this._dataviewModel.getSourceType() || '';
-    var layerName = this._dataviewModel.getLayerName() || '';
+    var layerName = this._layerModel.get('layer_name') || '';
 
     this.$el.html(
       template({
@@ -304,6 +306,7 @@ module.exports = cdb.core.View.extend({
       height: this.defaults.chartHeight,
       data: this._dataviewModel.getData(),
       dataviewModel: this._dataviewModel,
+      layerModel: this._layerModel,
       originalData: this._originalData,
       displayShadowBars: !this.model.get('normalized'),
       normalized: this.model.get('normalized'),
@@ -328,6 +331,7 @@ module.exports = cdb.core.View.extend({
       height: 40,
       showOnWidthChange: false,
       dataviewModel: this._dataviewModel,
+      layerModel: this._layerModel,
       data: this._dataviewModel.getData(),
       normalized: this.model.get('normalized'),
       chartBarColor: this.model.getColor() || '#9DE0AD',

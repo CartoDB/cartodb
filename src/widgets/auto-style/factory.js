@@ -4,10 +4,10 @@ var Stylers = {
 };
 
 module.exports = {
-  get: function (dataviewModel, style) {
+  get: function (dataviewModel, layerModel, style) {
     var AutoStyler = Stylers[dataviewModel.get('type')];
     if (AutoStyler) {
-      return new AutoStyler(dataviewModel, style);
+      return new AutoStyler(dataviewModel, layerModel, style);
     } else {
       throw new Error('dataview type not supported');
     }

@@ -16,7 +16,11 @@ module.exports = cdb.core.View.extend({
   className: 'CDB-Widget-body CDB-Widget-body--timeSeries',
 
   initialize: function () {
+    if (!this.model.dataviewModel) throw new Error('dataviewModel is required');
+    if (!this.model.layerModel) throw new Error('layerModel is required');
+
     this._dataviewModel = this.model.dataviewModel;
+    this._layerModel = this.model.layerModel;
     this._selectedAmount = 0;
     this._initBinds();
   },
@@ -29,7 +33,7 @@ module.exports = cdb.core.View.extend({
     var letter = layerColors.letter(sourceId);
     var sourceColor = layerColors.getColorForLetter(letter);
     var sourceType = this._dataviewModel.getSourceType() || '';
-    var layerName = this._dataviewModel.getLayerName() || '';
+    var layerName = this._layerModel.get('layer_name') || '';
 
     if (this._isDataEmpty() || this._hasError()) {
       this.$el.append(placeholderTemplate({
@@ -59,8 +63,8 @@ module.exports = cdb.core.View.extend({
     this.listenTo(this._dataviewModel, 'change:data', this.render);
     this.listenToOnce(this.model, 'change:hasInitialState', this.render);
 
-    this.listenTo(this._dataviewModel.layer, 'change:layer_name', this.render);
-    this.add_related_model(this._dataviewModel.layer);
+    this.listenTo(this._layerModel, 'change:layer_name', this.render);
+    this.add_related_model(this._layerModel);
   },
 
   _createHistogramView: function () {
@@ -71,6 +75,7 @@ module.exports = cdb.core.View.extend({
     this._histogramView = new HistogramView({
       timeSeriesModel: this.model,
       dataviewModel: this._dataviewModel,
+      layerModel: this._layerModel,
       rangeFilter: this._dataviewModel.filter,
       displayShadowBars: !this.model.get('normalized'),
       normalized: !!this.model.get('normalized')
@@ -87,6 +92,7 @@ module.exports = cdb.core.View.extend({
 
     this._headerView = new TimeSeriesHeaderView({
       dataviewModel: this._dataviewModel,
+      layerModel: this._layerModel,
       rangeFilter: this._dataviewModel.filter,
       timeSeriesModel: this.model,
       showClearButton: true,

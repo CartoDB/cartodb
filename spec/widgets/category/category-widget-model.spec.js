@@ -4,13 +4,15 @@ var specHelper = require('../../spec-helper');
 describe('widgets/category/category-widget-model', function () {
   beforeEach(function () {
     var vis = specHelper.createDefaultVis();
-    var layer = vis.map.layers.first();
-    layer.restoreCartoCSS = jasmine.createSpy('restore');
-    layer.getGeometryType = function () {
+    this.layerModel = vis.map.layers.first();
+    this.layerModel.restoreCartoCSS = jasmine.createSpy('restore');
+    this.layerModel.getGeometryType = function () {
       return 'polygon';
     };
-    this.dataviewModel = vis.dataviews.createCategoryModel(layer, {
-      column: 'col'
+    var source = vis.analysis.findNodeById('a0');
+    this.dataviewModel = vis.dataviews.createCategoryModel({
+      column: 'col',
+      source: source
     });
 
     this.dataviewModel.set('data', [{
@@ -22,7 +24,8 @@ describe('widgets/category/category-widget-model', function () {
     spyOn(CategoryWidgetModel.prototype, '_updateAutoStyle').and.callThrough();
 
     this.widgetModel = new CategoryWidgetModel({}, {
-      dataviewModel: this.dataviewModel
+      dataviewModel: this.dataviewModel,
+      layerModel: this.layerModel
     }, {autoStyleEnabled: true});
   });
 
@@ -48,14 +51,15 @@ describe('widgets/category/category-widget-model', function () {
 
   describe('colors', function () {
     beforeEach(function () {
-      this.dataviewModel.layer.set('initialStyle', '#layer {  marker-line-width: 0.5;  marker-line-color: #fcfafa;  marker-line-opacity: 1;  marker-width: 6.076923076923077;  marker-fill: #e49115;  marker-fill-opacity: 0.9;  marker-allow-overlap: true;}');
+      this.layerModel.set('initialStyle', '#layer {  marker-line-width: 0.5;  marker-line-color: #fcfafa;  marker-line-opacity: 1;  marker-width: 6.076923076923077;  marker-fill: #e49115;  marker-fill-opacity: 0.9;  marker-allow-overlap: true;}');
       spyOn(this.widgetModel.autoStyler.colors, 'updateData').and.callThrough();
       spyOn(this.widgetModel, 'autoStyle').and.callThrough();
     });
 
     it('should not update colors if auto style is not enabled', function () {
       var widgetModel = new CategoryWidgetModel({}, {
-        dataviewModel: this.dataviewModel
+        dataviewModel: this.dataviewModel,
+        layerModel: this.layerModel
       }, { autoStyleEnabled: false });
 
       widgetModel.set('style', 'whatever');

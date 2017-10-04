@@ -4,11 +4,15 @@ var HistogramWidgetModel = require('../../../src/widgets/histogram/histogram-wid
 describe('widgets/histogram/histogram-widget-model', function () {
   beforeEach(function () {
     var vis = specHelper.createDefaultVis();
-    this.dataviewModel = vis.dataviews.createHistogramModel(vis.map.layers.first(), {
-      column: 'col'
+    var source = vis.analysis.findNodeById('a0');
+    this.layerModel = vis.map.layers.first();
+    this.dataviewModel = vis.dataviews.createHistogramModel({
+      column: 'col',
+      source: source
     });
     this.widgetModel = new HistogramWidgetModel({}, {
-      dataviewModel: this.dataviewModel
+      dataviewModel: this.dataviewModel,
+      layerModel: this.layerModel
     }, {autoStyleEnabled: true});
   });
 

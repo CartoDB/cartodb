@@ -21,8 +21,7 @@ describe('src/widgets/auto-style/auto-styler', function () {
 
     this.dataview.getDistributionType = jasmine.createSpy('disttype').and.returnValue('F');
     this.dataview.getUnfilteredDataModel = jasmine.createSpy('disttype').and.returnValue(this.dataview);
-    this.layer = this.dataview.layer = layer;
-    this.AutoStyler = new AutoStyler(this.dataview, {
+    this.AutoStyler = new AutoStyler(this.dataview, layer, {
       auto_style: this.styles
     });
   });

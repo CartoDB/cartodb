@@ -9,12 +9,16 @@ describe('widgets/time-series/torque-histogram-view', function () {
   beforeEach(function () {
     var vis = specHelper.createDefaultVis();
 
+    this.layerModel = vis.map.layers.first();
+
     this.timeSeriesModel = new Backbone.Model();
     this.timeSeriesModel.getWidgetColor = function () {};
 
-    this.dataviewModel = vis.dataviews.createHistogramModel(vis.map.layers.first(), {
+    var source = vis.analysis.findNodeById('a0');
+    this.dataviewModel = vis.dataviews.createHistogramModel({
       column: 'dates',
-      bins: 256
+      bins: 256,
+      source: source
     });
     this.dataviewModel.set({
       start: 0,
@@ -35,6 +39,7 @@ describe('widgets/time-series/torque-histogram-view', function () {
 
     this.view = new TorqueHistogramView({
       dataviewModel: this.dataviewModel,
+      layerModel: this.layerModel,
       timeSeriesModel: this.timeSeriesModel,
       model: this.dataviewModel,
       rangeFilter: this.dataviewModel.filter,

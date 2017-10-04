@@ -7,6 +7,7 @@ describe('widgets-service', function () {
     this.vis = specHelper.createDefaultVis();
     this.widgetsCollection = new WidgetsCollection();
     this.widgetsService = new WidgetsService(this.widgetsCollection, this.vis.dataviews);
+    this.a0 = this.vis.analysis.findNodeById('a0');
   });
 
   it('should return the WidgetsService instance', function () {
@@ -33,7 +34,8 @@ describe('widgets-service', function () {
           column: 'my_column',
           aggregation: 'avg',
           prefix: '$',
-          suffix: ' people'
+          suffix: ' people',
+          source: this.a0
         };
         this.widgetModel = this.widgetsService.createCategoryModel(attrs, this.vis.map.layers.first());
       });
@@ -73,7 +75,7 @@ describe('widgets-service', function () {
       });
     });
 
-    describe('when given custom sync options', function () {
+    describe('when given custom sync options and layer visibility', function () {
       beforeEach(function () {
         var attrs = {
           id: 'abc-123',
@@ -83,9 +85,11 @@ describe('widgets-service', function () {
           suffix: ' people',
           sync_on_bbox_change: false,
           sync_on_data_change: false,
-          enabled: false
+          source: this.a0
         };
-        this.widgetModel = this.widgetsService.createCategoryModel(attrs, this.vis.map.layers.first());
+        var layer = this.vis.map.layers.first();
+        layer.set('visible', false);
+        this.widgetModel = this.widgetsService.createCategoryModel(attrs, layer);
       });
 
       it('should take them into account', function () {
@@ -98,7 +102,8 @@ describe('widgets-service', function () {
     it('when no aggregation specified should use the default operation', function () {
       this.widgetModel = this.widgetsService.createCategoryModel({
         title: 'some_title',
-        column: 'my_column'
+        column: 'my_column',
+        source: this.a0
       }, this.vis.map.layers.first());
       expect(this.widgetModel.dataviewModel.get('aggregation')).toEqual('count');
     });
@@ -129,6 +134,7 @@ describe('widgets-service', function () {
           id: 'abc-123',
           title: 'my histogram',
           column: 'a_column',
+          source: this.a0,
           bins: 20
         };
         this.widgetModel = this.widgetsService.createHistogramModel(attrs, this.vis.map.layers.first());
@@ -164,7 +170,8 @@ describe('widgets-service', function () {
     it('when no bins specified should use the default value', function () {
       this.widgetModel = this.widgetsService.createHistogramModel({
         title: 'some_title',
-        column: 'my_column'
+        column: 'my_column',
+        source: this.a0
       }, this.vis.map.layers.first());
       expect(this.widgetModel.dataviewModel.get('bins')).toEqual(10);
     });
@@ -195,6 +202,7 @@ describe('widgets-service', function () {
           id: 'abc-123',
           title: 'my formula',
           column: 'a_column',
+          source: this.a0,
           operation: 'sum',
           prefix: '$',
           suffix: '¢'
@@ -276,7 +284,8 @@ describe('widgets-service', function () {
           column: 'dates',
           bins: 50,
           start: 0,
-          end: 10
+          end: 10,
+          source: this.a0
         };
         this.widgetModel = this.widgetsService.createTimeSeriesModel(attrs, this.vis.map.layers.first());
       });

@@ -18,6 +18,24 @@ var makeWidgetStyleOptions = function (attrs) {
   }, {});
 };
 
+var _checkProperties = function (obj, propertiesArray) {
+  _.each(propertiesArray, function (prop) {
+    if (obj[prop] === undefined) {
+      throw new Error(prop + ' is required');
+    }
+  });
+};
+
+var extendAttrs = function (attrs, state, hasInitialState) {
+  return _.extend(attrs, state, { hasInitialState: hasInitialState }); // Will overwrite preset attributes with the ones passed on the state
+};
+
+var checkAnalysisModel = function (attrs) {
+  if (!(attrs.source instanceof Object) || !attrs.source.cid) {
+    throw new Error('Source must be defined and be an instance of AnalysisModel.');
+  }
+};
+
 /**
  * Public API to interact with dashboard widgets.
  */
@@ -46,22 +64,26 @@ WidgetsService.prototype.getList = function () {
  *   can be any of ['sum', 'count']. Default is 'count'
  * @param {String} attrs.aggregation_column column to be used for the aggregation operation
  *  it only applies for sum operations.
+ * @param {Object} attrs.source Object with the id of the source analysis node that the widget points to
  * @param {Object} layer Instance of a layer model (cartodb.js)
  * @return {CategoryWidgetModel}
  */
 WidgetsService.prototype.createCategoryModel = function (attrs, layer, state) {
   _checkProperties(attrs, ['title']);
-  attrs = _.extend(attrs, state, {hasInitialState: this._widgetsCollection.hasInitialState()}); // Will overwrite preset attributes with the ones passed on the state
-  var dataviewModel = this._dataviews.createCategoryModel(layer, attrs);
+  var extendedAttrs = extendAttrs(attrs, state, this._widgetsCollection.hasInitialState());
+  checkAnalysisModel(extendedAttrs);
+
+  var dataviewModel = this._dataviews.createCategoryModel(extendedAttrs);
 
   var ATTRS_NAMES = ['id', 'title', 'order', 'collapsed', 'prefix', 'suffix', 'show_stats', 'show_source', 'style', 'hasInitialState'];
-  var widgetAttrs = _.pick(attrs, ATTRS_NAMES);
-  var options = makeWidgetStyleOptions(attrs);
+  var widgetAttrs = _.pick(extendedAttrs, ATTRS_NAMES);
+  var options = makeWidgetStyleOptions(extendedAttrs);
 
   widgetAttrs.attrsNames = ATTRS_NAMES;
 
   var widgetModel = new CategoryWidgetModel(widgetAttrs, {
-    dataviewModel: dataviewModel
+    dataviewModel: dataviewModel,
+    layerModel: layer
   }, options);
   widgetModel.setInitialState(state);
   this._widgetsCollection.add(widgetModel);
@@ -79,8 +101,9 @@ WidgetsService.prototype.createCategoryModel = function (attrs, layer, state) {
  */
 WidgetsService.prototype.createHistogramModel = function (attrs, layer, state, opts) {
   _checkProperties(attrs, ['title']);
-  var dataAttrs = _.extend(attrs, state, { hasInitialState: this._widgetsCollection.hasInitialState() }); // Will overwrite preset attributes with the ones passed on the state
-  var dataviewModel = this._dataviews.createHistogramModel(layer, dataAttrs);
+  var extendedAttrs = extendAttrs(attrs, state, this._widgetsCollection.hasInitialState());
+  checkAnalysisModel(extendedAttrs);
+  var dataviewModel = this._dataviews.createHistogramModel(extendedAttrs);
 
   // Default bins attribute was removed from dataViewModel because of time-series aggregation.
   // Just in case it's needed for histogram models we added it here.
@@ -89,14 +112,15 @@ WidgetsService.prototype.createHistogramModel = function (attrs, layer, state, o
   }
 
   var attrsNames = ['id', 'title', 'order', 'collapsed', 'bins', 'show_stats', 'show_source', 'normalized', 'style', 'hasInitialState'];
-  var widgetAttrs = _.pick(attrs, attrsNames);
-  var options = makeWidgetStyleOptions(attrs);
+  var widgetAttrs = _.pick(extendedAttrs, attrsNames);
+  var options = makeWidgetStyleOptions(extendedAttrs);
 
   widgetAttrs.type = 'histogram';
   widgetAttrs.attrsNames = attrsNames;
 
   var widgetModel = new HistogramWidgetModel(widgetAttrs, {
-    dataviewModel: dataviewModel
+    dataviewModel: dataviewModel,
+    layerModel: layer
   }, options);
   widgetModel.setInitialState(state);
   this._widgetsCollection.add(widgetModel);
@@ -114,16 +138,18 @@ WidgetsService.prototype.createHistogramModel = function (attrs, layer, state, o
  */
 WidgetsService.prototype.createFormulaModel = function (attrs, layer, state) {
   _checkProperties(attrs, ['title']);
-  attrs = _.extend(attrs, state, {hasInitialState: this._widgetsCollection.hasInitialState()}); // Will overwrite preset attributes with the ones passed on the state
-  var dataviewModel = this._dataviews.createFormulaModel(layer, attrs);
+  var extendedAttrs = extendAttrs(attrs, state, this._widgetsCollection.hasInitialState());
+  checkAnalysisModel(extendedAttrs);
+  var dataviewModel = this._dataviews.createFormulaModel(extendedAttrs);
 
   var ATTRS_NAMES = ['id', 'title', 'order', 'collapsed', 'prefix', 'suffix', 'show_stats', 'show_source', 'description', 'hasInitialState'];
-  var widgetAttrs = _.pick(attrs, ATTRS_NAMES);
+  var widgetAttrs = _.pick(extendedAttrs, ATTRS_NAMES);
   widgetAttrs.type = 'formula';
   widgetAttrs.attrsNames = ATTRS_NAMES;
 
   var widgetModel = new WidgetModel(widgetAttrs, {
-    dataviewModel: dataviewModel
+    dataviewModel: dataviewModel,
+    layerModel: layer
   });
   widgetModel.setInitialState(state);
   this._widgetsCollection.add(widgetModel);
@@ -141,7 +167,8 @@ WidgetsService.prototype.createFormulaModel = function (attrs, layer, state) {
 WidgetsService.prototype.createTimeSeriesModel = function (attrs, layer, state, opts) {
   // TODO will other kind really work for a time-series?
   attrs.column_type = attrs.column_type || 'date';
-  var dataviewModel = this._dataviews.createHistogramModel(layer, attrs);
+  checkAnalysisModel(attrs);
+  var dataviewModel = this._dataviews.createHistogramModel(attrs);
 
   var ATTRS_NAMES = ['id', 'style', 'title', 'normalized', 'animated', 'timezone'];
   var widgetAttrs = _.pick(attrs, ATTRS_NAMES);
@@ -149,7 +176,8 @@ WidgetsService.prototype.createTimeSeriesModel = function (attrs, layer, state, 
   widgetAttrs.attrsNames = ATTRS_NAMES;
 
   var widgetModel = new TimeSeriesWidgetModel(widgetAttrs, {
-    dataviewModel: dataviewModel
+    dataviewModel: dataviewModel,
+    layerModel: layer
   }, opts);
   widgetModel.setInitialState(state);
   this._widgetsCollection.add(widgetModel);
@@ -160,13 +188,5 @@ WidgetsService.prototype.createTimeSeriesModel = function (attrs, layer, state, 
 WidgetsService.prototype.setWidgetsState = function (state) {
   this._widgetsCollection.setStates(state);
 };
-
-function _checkProperties (obj, propertiesArray) {
-  _.each(propertiesArray, function (prop) {
-    if (obj[prop] === undefined) {
-      throw new Error(prop + ' is required');
-    }
-  });
-}
 
 module.exports = WidgetsService;

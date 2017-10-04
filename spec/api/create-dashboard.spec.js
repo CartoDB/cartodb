@@ -13,6 +13,8 @@ var newVisMock = function () {
   };
   visMock.dataviews = jasmine.createSpyObj('dataviews', ['createFormulaModel']);
   visMock.dataviews.createFormulaModel.and.returnValue(new Backbone.Model());
+  visMock.analysis = jasmine.createSpyObj('analysis', ['findNodeById']);
+  visMock.analysis.findNodeById.and.returnValue(new Backbone.Model());
   visMock.done = function (callback) { callback(); };
   visMock.error = function (callback) { callback(); };
   visMock.instantiateMap = jasmine.createSpy('instantiateMap');
@@ -44,6 +46,9 @@ describe('create-dashboard', function () {
           options: {
             column: 'coverage_pct',
             operation: 'avg'
+          },
+          source: {
+            id: 'a0'
           }
         }],
         datasource: {

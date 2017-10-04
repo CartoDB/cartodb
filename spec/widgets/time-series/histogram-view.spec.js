@@ -9,10 +9,13 @@ describe('widgets/time-series/histogram-view', function () {
     this.timeSeriesModel.getWidgetColor = function () {};
 
     var vis = specHelper.createDefaultVis();
-    this.dataviewModel = vis.dataviews.createHistogramModel(vis.map.layers.first(), {
+    this.layerModel = vis.map.layers.first();
+    var source = vis.analysis.findNodeById('a0');
+    this.dataviewModel = vis.dataviews.createHistogramModel({
       id: 'widget_3',
       column: 'col',
-      column_type: 'date'
+      column_type: 'date',
+      source: source
     });
 
     spyOn(HistogramChartView.prototype, 'initialize');
@@ -25,6 +28,7 @@ describe('widgets/time-series/histogram-view', function () {
     this.view = new HistogramView({
       timeSeriesModel: this.timeSeriesModel,
       dataviewModel: this.dataviewModel,
+      layerModel: this.layerModel,
       rangeFilter: this.dataviewModel.filter,
       displayShadowBars: false,
       normalized: true,

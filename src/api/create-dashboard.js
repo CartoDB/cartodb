@@ -79,26 +79,31 @@ var createDashboard = function (selector, vizJSON, opts, callback) {
       'time-series': widgetsService.createTimeSeriesModel.bind(widgetsService),
       category: widgetsService.createCategoryModel.bind(widgetsService)
     };
-    vizJSON.widgets.forEach(function (d) {
+    vizJSON.widgets.forEach(function (widget) {
       // Flatten the data structure given in vizJSON, the widgetsService will use whatever it needs and ignore the rest
-      var attrs = _.extend({}, d, d.options);
-      var newWidgetModel = widgetModelsMap[d.type];
-      var state = widgetsState[d.id];
+      var attrs = _.extend({}, widget, widget.options);
+      var newWidgetModel = widgetModelsMap[widget.type];
+      var state = widgetsState[widget.id];
 
       if (_.isFunction(newWidgetModel)) {
         // Find the Layer that the Widget should be created for.
         var layer;
-        if (d.layer_id) {
-          layer = vis.map.layers.get(d.layer_id);
-        } else if (Number.isInteger(d.layerIndex)) {
+        var source;
+        if (widget.layer_id) {
+          layer = vis.map.layers.get(widget.layer_id);
+        } else if (Number.isInteger(widget.layerIndex)) {
           // TODO Since namedmap doesn't have ids we need to map in another way, here using index
           //   should we solve this in another way?
-          layer = vis.map.layers.at(d.layerIndex);
+          layer = vis.map.layers.at(widget.layerIndex);
+        }
+        if (widget.source && widget.source.id) {
+          source = vis.analysis.findNodeById(widget.source.id);
+          attrs.source = source;
         }
 
         newWidgetModel(attrs, layer, state);
       } else {
-        cdb.log.error('No widget found for type ' + d.type);
+        cdb.log.error('No widget found for type ' + widget.type);
       }
     });
 

@@ -361,6 +361,7 @@ module CartoDB
           if !retried && e.message =~ /cannot be dropped because some objects depend on it/
             retried = true
             e.message =~ /object[s]? in database (.*)$/
+            e.message =~ /privileges for database (.*)$/ unless $1
             if database_with_conflicts == $1
               raise e
             else

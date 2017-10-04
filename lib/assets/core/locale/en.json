@@ -181,7 +181,7 @@
       "quads": "Classification of the geometry from the analysis",
       "significance": "The statistical significance of the geometry's classification of one of four quadrant types.",
       "moran": "The local statistic calculated from the Moran's I analysis for each geometry/value in the dataset.",
-      "rowid": "The original row id of the geometry (cartodb_id)."
+      "vals": "Value used in analysis. If a denominator is entered, this is the 'standardized' rate (centered on mean, normalized by standard deviation)."
     },
     "kmeans": {
       "title": "Calculating point clusters",
@@ -952,7 +952,7 @@
         "add-btn": "Add analysis",
         "disabled-option-desc": "Your layer's geometries are %{simpleGeometryType} and this analysis needs %{requiredInputGeometries}",
         "unknown-geometry-type": "unknown",
-        "info-analysis": "Info about analysis",
+        "more-info": "More info",
         "option-types": {
           "connect-with-lines": {
             "title": "Connect with lines",
@@ -1867,6 +1867,7 @@
         "miles": "mi",
         "min": "Min",
         "mode": "Mode",
+        "more-info": "More info",
         "find-nearest": {
           "categorized": "Per group",
           "categorized-help": "Calculate results per each category of the chosen column",
@@ -2209,6 +2210,7 @@
         "by-size": "By Size",
         "by-color": "By Color",
         "untitled": "Untitled",
+        "others": "Others",
         "prefix": "Prefix",
         "suffix": "Suffix",
         "left-label": "Left Label",

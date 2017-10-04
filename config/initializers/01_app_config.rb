@@ -1,4 +1,5 @@
 require_dependency 'carto/configuration'
+require_dependency 'carto/deep_freeze'
 
 module Cartodb
   def self.get_config(*config_chain)
@@ -21,6 +22,7 @@ module Cartodb
       raise "Missing or inaccessible config/app_config.yml: #{e.message}"
     end
     @config ||= config_file_hash[Rails.env].try(:to_options!)
+    Carto.deep_freeze(@config)
 
     if @config.blank?
       raise "Can't find App configuration for #{Rails.env} environment on config/app_config.yml"

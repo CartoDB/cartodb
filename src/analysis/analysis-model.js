@@ -72,10 +72,14 @@ var AnalysisModel = Model.extend({
     }, this);
 
     this.bind('change:status', function () {
-      if (this.isDone() && this.isSourceOfAnyModel()) {
+      if (this._hadStatus() && this.isReady() && this.isSourceOfAnyModel()) {
         this._reloadVis();
       }
     }, this);
+  },
+
+  _hadStatus: function () {
+    return this.previous('status');
   },
 
   _reloadVis: function (opts) {
@@ -116,6 +120,10 @@ var AnalysisModel = Model.extend({
 
   isDone: function () {
     return this._anyStatus(STATUS.READY, STATUS.FAILED);
+  },
+
+  isReady: function () {
+    return this._anyStatus(STATUS.READY);
   },
 
   isFailed: function () {

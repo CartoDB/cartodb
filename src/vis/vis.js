@@ -262,23 +262,14 @@ var VisModel = Backbone.Model.extend({
   _restartAnalysisPolling: function () {
     this._analysisPoller.reset();
     _.each(this._getAnalysisNodeModels(), function (analysisModel) {
-      analysisModel.unbind('change:status', this._onAnalysisStatusChanged, this);
       if (analysisModel.url() && !analysisModel.isDone()) {
         this._analysisPoller.poll(analysisModel);
-        analysisModel.bind('change:status', this._onAnalysisStatusChanged, this);
       }
     }, this);
   },
 
   _getAnalysisNodeModels: function () {
     return this._analysisCollection.models;
-  },
-
-  _onAnalysisStatusChanged: function (analysisModel) {
-    if (analysisModel.isDone() &&
-      this._isAnalysisSourceOfLayerOrDataview(analysisModel)) {
-      this.reload();
-    }
   },
 
   /**

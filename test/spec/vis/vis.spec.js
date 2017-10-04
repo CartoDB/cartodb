@@ -609,290 +609,335 @@ describe('vis/vis', function () {
       // Analysis graph has been created correctly
       expect(a1.get('source')).toEqual(a0);
     });
+  });
 
-    describe('polling', function () {
-      beforeEach(function () {
-        spyOn(_, 'debounce').and.callFake(function (func) { return function () { func.apply(this, arguments); }; });
+  describe('polling', function () {
+    beforeEach(function () {
+      spyOn(_, 'debounce').and.callFake(function (func) { return function () { func.apply(this, arguments); }; });
 
-        this.vizjson = {
-          'id': '70af2a72-0709-11e6-a834-080027880ca6',
-          'version': '3.0.0',
-          'title': 'Untitled Map 1',
-          'likes': 0,
-          'description': null,
-          'scrollwheel': false,
-          'legends': true,
-          'map_provider': 'leaflet',
-          'bounds': [
-            [
-              41.358088,
-              2.089675
-            ],
-            [
-              41.448257,
-              2.215129
-            ]
+      this.vizjson = {
+        'id': '70af2a72-0709-11e6-a834-080027880ca6',
+        'version': '3.0.0',
+        'title': 'Untitled Map 1',
+        'likes': 0,
+        'description': null,
+        'scrollwheel': false,
+        'legends': true,
+        'map_provider': 'leaflet',
+        'bounds': [
+          [
+            41.358088,
+            2.089675
           ],
-          'center': '[41.4031725,2.1524020000000004]',
-          'zoom': 11,
-          'updated_at': '2016-04-20T17:05:02+00:00',
+          [
+            41.448257,
+            2.215129
+          ]
+        ],
+        'center': '[41.4031725,2.1524020000000004]',
+        'zoom': 11,
+        'updated_at': '2016-04-20T17:05:02+00:00',
+        'layers': [
+          {
+            'id': 'e0d06945-74cd-4421-8229-561c3cabc854',
+            'type': 'CartoDB',
+            'infowindow': {
+              'fields': [],
+              'template_name': 'table/views/infowindow_light',
+              'template': '<div class=\'CDB-infowindow CDB-infowindow--light js-infowindow\'>\n  <div class=\'CDB-infowindow-container\'>\n    <div class=\'CDB-infowindow-bg\'>\n      <div class=\'CDB-infowindow-inner\'>\n        <ul class=\'CDB-infowindow-list js-content\'>\n          {{#loading}}\n            <div class=\'CDB-Loader js-loader is-visible\'></div>\n          {{/loading}}\n          {{#content.fields}}\n          <li class=\'CDB-infowindow-listItem\'>\n            {{#title}}<h5 class=\'CDB-infowindow-subtitle\'>{{title}}</h5>{{/title}}\n            {{#value}}<h4 class=\'CDB-infowindow-title\'>{{{ value }}}</h4>{{/value}}\n            {{^value}}<h4 class=\'CDB-infowindow-title\'>null</h4>{{/value}}\n          </li>\n          {{/content.fields}}\n        </ul>\n      </div>\n    </div>\n    <div class=\'CDB-hook\'>\n      <div class=\'CDB-hook-inner\'></div>\n    </div>\n  </div>\n</div>\n',
+              'alternative_names': {},
+              'width': 226,
+              'maxHeight': 180
+            },
+            'tooltip': {
+              'fields': [],
+              'template_name': 'tooltip_light',
+              'template': '<div class=\'CDB-Tooltip CDB-Tooltip--isLight\'>\n  <ul class=\'CDB-Tooltip-list\'>\n    {{#fields}}\n      <li class=\'CDB-Tooltip-listItem\'>\n        {{#title}}\n          <h3 class=\'CDB-Tooltip-listTitle\'>{{{ title }}}</h3>\n        {{/title}}\n        <h4 class=\'CDB-Tooltip-listText\'>{{{ value }}}</h4>\n      </li>\n    {{/fields}}\n  </ul>\n</div>\n',
+              'alternative_names': {},
+              'maxHeight': 180
+            },
+            'legends': [
+              { type: 'bubble', title: 'My Bubble Legend' }
+            ],
+            'order': 1,
+            'visible': true,
+            'options': {
+              'layer_name': 'arboles',
+              'cartocss': 'cartocss',
+              'cartocss_version': '2.1.1',
+              'interactivity': 'cartodb_id',
+              'source': 'a1'
+            }
+          }
+        ],
+        'overlays': [],
+        'widgets': [],
+        'datasource': {
+          'user_name': 'cdb',
+          'maps_api_template': 'http://{user}.localhost.lan:8181',
+          'stat_tag': '70af2a72-0709-11e6-a834-080027880ca6'
+        },
+        'user': {
+          'fullname': 'cdb',
+          'avatar_url': '//example.com/avatars/avatar_stars_blue.png'
+        },
+        'analyses': [
+          {
+            'id': 'a1',
+            'type': 'trade-area',
+            'params': {
+              'source': {
+                'id': 'a0',
+                'type': 'source',
+                'params': {
+                  'query': 'SELECT * FROM arboles'
+                }
+              },
+              'kind': 'drive',
+              'time': 10
+            }
+          }
+        ],
+        'vector': false
+      };
+      spyOn($, 'ajax');
+    });
+
+    it('should start polling', function () {
+      this.vis.load(new VizJSON(this.vizjson));
+      this.vis.instantiateMap();
+
+      // Response from Maps API is received
+      $.ajax.calls.argsFor(0)[0].success({
+        'layergroupid': '9d7bf465e45113123bf9949c2a4f0395:0',
+        'metadata': {
           'layers': [
             {
-              'id': 'e0d06945-74cd-4421-8229-561c3cabc854',
-              'type': 'CartoDB',
-              'infowindow': {
-                'fields': [],
-                'template_name': 'table/views/infowindow_light',
-                'template': '<div class=\'CDB-infowindow CDB-infowindow--light js-infowindow\'>\n  <div class=\'CDB-infowindow-container\'>\n    <div class=\'CDB-infowindow-bg\'>\n      <div class=\'CDB-infowindow-inner\'>\n        <ul class=\'CDB-infowindow-list js-content\'>\n          {{#loading}}\n            <div class=\'CDB-Loader js-loader is-visible\'></div>\n          {{/loading}}\n          {{#content.fields}}\n          <li class=\'CDB-infowindow-listItem\'>\n            {{#title}}<h5 class=\'CDB-infowindow-subtitle\'>{{title}}</h5>{{/title}}\n            {{#value}}<h4 class=\'CDB-infowindow-title\'>{{{ value }}}</h4>{{/value}}\n            {{^value}}<h4 class=\'CDB-infowindow-title\'>null</h4>{{/value}}\n          </li>\n          {{/content.fields}}\n        </ul>\n      </div>\n    </div>\n    <div class=\'CDB-hook\'>\n      <div class=\'CDB-hook-inner\'></div>\n    </div>\n  </div>\n</div>\n',
-                'alternative_names': {},
-                'width': 226,
-                'maxHeight': 180
-              },
-              'tooltip': {
-                'fields': [],
-                'template_name': 'tooltip_light',
-                'template': '<div class=\'CDB-Tooltip CDB-Tooltip--isLight\'>\n  <ul class=\'CDB-Tooltip-list\'>\n    {{#fields}}\n      <li class=\'CDB-Tooltip-listItem\'>\n        {{#title}}\n          <h3 class=\'CDB-Tooltip-listTitle\'>{{{ title }}}</h3>\n        {{/title}}\n        <h4 class=\'CDB-Tooltip-listText\'>{{{ value }}}</h4>\n      </li>\n    {{/fields}}\n  </ul>\n</div>\n',
-                'alternative_names': {},
-                'maxHeight': 180
-              },
-              'legends': [
-                { type: 'bubble', title: 'My Bubble Legend' }
-              ],
-              'order': 1,
-              'visible': true,
-              'options': {
-                'layer_name': 'arboles',
-                'cartocss': 'cartocss',
-                'cartocss_version': '2.1.1',
-                'interactivity': 'cartodb_id',
-                'source': 'a2'
+              'type': 'mapnik',
+              'meta': {
+                'stats': [],
+                'cartocss': 'cartocss'
               }
             }
           ],
-          'overlays': [],
-          'widgets': [],
-          'datasource': {
-            'user_name': 'cdb',
-            'maps_api_template': 'http://{user}.localhost.lan:8181',
-            'stat_tag': '70af2a72-0709-11e6-a834-080027880ca6'
-          },
-          'user': {
-            'fullname': 'cdb',
-            'avatar_url': '//example.com/avatars/avatar_stars_blue.png'
-          },
+          'dataviews': {},
           'analyses': [
             {
-              'id': 'a2',
-              'type': 'trade-area',
-              'params': {
-                'source': {
-                  'id': 'a1',
-                  'type': 'trade-area',
-                  'params': {
-                    'source': {
-                      'id': 'a0',
-                      'type': 'source',
-                      'params': {
-                        'query': 'SELECT * FROM arboles'
-                      }
-                    },
-                    'kind': 'drive',
-                    'time': 10
+              'nodes': {
+                'a0': {
+                  'status': 'ready',
+                  'query': 'SELECT * FROM arboles',
+                  'url': {
+                    'http': 'http://cdb.localhost.lan:8181/api/v1/map/9d7bf465e45113123bf9949c2a4f0395:0/analysis/node/5af683d5d8a6f67e11916a31cd76632884d4064f'
                   }
                 },
-                'kind': 'drive',
-                'time': 10
+                'a1': {
+                  'status': 'pending',
+                  'query': 'select * from analysis_trade_area_e65b1ae05854aea96266808ec0686b91f3ee0a81',
+                  'url': {
+                    'http': 'http://cdb.localhost.lan:8181/api/v1/map/9d7bf465e45113123bf9949c2a4f0395:0/analysis/node/e65b1ae05854aea96266808ec0686b91f3ee0a81'
+                  }
+                }
+              }
+            }
+          ]
+        },
+        'last_updated': '1970-01-01T00:00:00.000Z'
+      });
+
+      // Polling has started
+      expect($.ajax.calls.argsFor(1)[0].url).toEqual('http://cdb.localhost.lan:8181/api/v1/map/9d7bf465e45113123bf9949c2a4f0395:0/analysis/node/e65b1ae05854aea96266808ec0686b91f3ee0a81');
+    });
+  });
+
+  describe('loading state when vis is reloaded', function () {
+    beforeEach(function () {
+      spyOn(_, 'debounce').and.callFake(function (func) { return function () { func.apply(this, arguments); }; });
+
+      this.vizjson = {
+        'id': '70af2a72-0709-11e6-a834-080027880ca6',
+        'version': '3.0.0',
+        'title': 'Untitled Map 1',
+        'likes': 0,
+        'description': null,
+        'scrollwheel': false,
+        'legends': true,
+        'map_provider': 'leaflet',
+        'bounds': [
+          [
+            41.358088,
+            2.089675
+          ],
+          [
+            41.448257,
+            2.215129
+          ]
+        ],
+        'center': '[41.4031725,2.1524020000000004]',
+        'zoom': 11,
+        'updated_at': '2016-04-20T17:05:02+00:00',
+        'layers': [
+          {
+            'id': 'e0d06945-74cd-4421-8229-561c3cabc854',
+            'type': 'CartoDB',
+            'infowindow': {
+              'fields': [],
+              'template_name': 'table/views/infowindow_light',
+              'template': '<div class=\'CDB-infowindow CDB-infowindow--light js-infowindow\'>\n  <div class=\'CDB-infowindow-container\'>\n    <div class=\'CDB-infowindow-bg\'>\n      <div class=\'CDB-infowindow-inner\'>\n        <ul class=\'CDB-infowindow-list js-content\'>\n          {{#loading}}\n            <div class=\'CDB-Loader js-loader is-visible\'></div>\n          {{/loading}}\n          {{#content.fields}}\n          <li class=\'CDB-infowindow-listItem\'>\n            {{#title}}<h5 class=\'CDB-infowindow-subtitle\'>{{title}}</h5>{{/title}}\n            {{#value}}<h4 class=\'CDB-infowindow-title\'>{{{ value }}}</h4>{{/value}}\n            {{^value}}<h4 class=\'CDB-infowindow-title\'>null</h4>{{/value}}\n          </li>\n          {{/content.fields}}\n        </ul>\n      </div>\n    </div>\n    <div class=\'CDB-hook\'>\n      <div class=\'CDB-hook-inner\'></div>\n    </div>\n  </div>\n</div>\n',
+              'alternative_names': {},
+              'width': 226,
+              'maxHeight': 180
+            },
+            'tooltip': {
+              'fields': [],
+              'template_name': 'tooltip_light',
+              'template': '<div class=\'CDB-Tooltip CDB-Tooltip--isLight\'>\n  <ul class=\'CDB-Tooltip-list\'>\n    {{#fields}}\n      <li class=\'CDB-Tooltip-listItem\'>\n        {{#title}}\n          <h3 class=\'CDB-Tooltip-listTitle\'>{{{ title }}}</h3>\n        {{/title}}\n        <h4 class=\'CDB-Tooltip-listText\'>{{{ value }}}</h4>\n      </li>\n    {{/fields}}\n  </ul>\n</div>\n',
+              'alternative_names': {},
+              'maxHeight': 180
+            },
+            'legends': [
+              { type: 'bubble', title: 'My Bubble Legend' }
+            ],
+            'order': 1,
+            'visible': true,
+            'options': {
+              'layer_name': 'arboles',
+              'cartocss': 'cartocss',
+              'cartocss_version': '2.1.1',
+              'interactivity': 'cartodb_id',
+              'source': 'a1'
+            }
+          }
+        ],
+        'overlays': [],
+        'widgets': [],
+        'datasource': {
+          'user_name': 'cdb',
+          'maps_api_template': 'http://{user}.localhost.lan:8181',
+          'stat_tag': '70af2a72-0709-11e6-a834-080027880ca6'
+        },
+        'user': {
+          'fullname': 'cdb',
+          'avatar_url': '//example.com/avatars/avatar_stars_blue.png'
+        },
+        'analyses': [
+          {
+            'id': 'a1',
+            'type': 'trade-area',
+            'params': {
+              'source': {
+                'id': 'a0',
+                'type': 'source',
+                'params': {
+                  'query': 'SELECT * FROM arboles'
+                }
+              },
+              'kind': 'drive',
+              'time': 10
+            }
+          }
+        ],
+        'vector': false
+      };
+      spyOn($, 'ajax');
+
+      this.vis.load(new VizJSON(this.vizjson));
+      this.vis.instantiateMap();
+    });
+
+    it('should mark vis as loading if an analysis is not done', function () {
+      expect(this.vis.isLoading()).toBe(false);
+
+      // Response from Maps API is received -> ALL ANALYSES READY
+      $.ajax.calls.argsFor(0)[0].success({
+        'layergroupid': '9d7bf465e45113123bf9949c2a4f0395:0',
+        'metadata': {
+          'layers': [
+            {
+              'type': 'mapnik',
+              'meta': {
+                'stats': [],
+                'cartocss': 'cartocss'
               }
             }
           ],
-          'vector': false
-        };
-        spyOn($, 'ajax');
-      });
-
-      it('should start polling for analyses that are not ready', function () {
-        spyOn(this.vis, 'trackLoadingObject');
-
-        this.vis.load(new VizJSON(this.vizjson));
-        this.vis.instantiateMap();
-
-        // Response from Maps API is received
-        $.ajax.calls.argsFor(0)[0].success({
-          'layergroupid': '9d7bf465e45113123bf9949c2a4f0395:0',
-          'metadata': {
-            'layers': [
-              {
-                'type': 'mapnik',
-                'meta': {
-                  'stats': [],
-                  'cartocss': 'cartocss'
-                }
-              }
-            ],
-            'dataviews': {
-              'cd065428-ed63-4d29-9a09-a9f8384fc8c9': {
-                'url': {
-                  'http': 'http://cdb.localhost.lan:8181/api/v1/map/9d7bf465e45113123bf9949c2a4f0395:0/dataview/cd065428-ed63-4d29-9a09-a9f8384fc8c9'
-                }
-              }
-            },
-            'analyses': [
-              {
-                'nodes': {
-                  'a0': {
-                    'status': 'ready',
-                    'query': 'SELECT * FROM arboles',
-                    'url': {
-                      'http': 'http://cdb.localhost.lan:8181/api/v1/map/9d7bf465e45113123bf9949c2a4f0395:0/analysis/node/5af683d5d8a6f67e11916a31cd76632884d4064f'
-                    }
-                  },
-                  'a1': {
-                    'status': 'pending',
-                    'query': 'select * from analysis_trade_area_e65b1ae05854aea96266808ec0686b91f3ee0a81',
-                    'url': {
-                      'http': 'http://cdb.localhost.lan:8181/api/v1/map/9d7bf465e45113123bf9949c2a4f0395:0/analysis/node/e65b1ae05854aea96266808ec0686b91f3ee0a81'
-                    }
-                  },
-                  'a2': {
-                    'status': 'pending',
-                    'query': 'select * from analysis_trade_area_b35b1ae05854aea96266808ec0686b91f3ee0a81',
-                    'url': {
-                      'http': 'http://cdb.localhost.lan:8181/api/v1/map/9d7bf465e45113123bf9949c2a4f0395:0/analysis/node/b75b1ae05854aea96266808ec0686b91f3ee0a81'
-                    }
+          'dataviews': {},
+          'analyses': [
+            {
+              'nodes': {
+                'a0': {
+                  'status': 'ready',
+                  'query': 'SELECT * FROM arboles',
+                  'url': {
+                    'http': 'http://cdb.localhost.lan:8181/api/v1/map/9d7bf465e45113123bf9949c2a4f0395:0/analysis/node/5af683d5d8a6f67e11916a31cd76632884d4064f'
+                  }
+                },
+                'a1': {
+                  'status': 'ready',
+                  'query': 'select * from analysis_trade_area_e65b1ae05854aea96266808ec0686b91f3ee0a81',
+                  'url': {
+                    'http': 'http://cdb.localhost.lan:8181/api/v1/map/9d7bf465e45113123bf9949c2a4f0395:0/analysis/node/e65b1ae05854aea96266808ec0686b91f3ee0a81'
                   }
                 }
               }
-            ]
-          },
-          'last_updated': '1970-01-01T00:00:00.000Z'
-        });
-        expect(this.vis.trackLoadingObject).toHaveBeenCalled();
-
-        // Polling has started
-        expect($.ajax.calls.argsFor(1)[0].url).toEqual('http://cdb.localhost.lan:8181/api/v1/map/9d7bf465e45113123bf9949c2a4f0395:0/analysis/node/e65b1ae05854aea96266808ec0686b91f3ee0a81');
-        expect($.ajax.calls.argsFor(2)[0].url).toEqual('http://cdb.localhost.lan:8181/api/v1/map/9d7bf465e45113123bf9949c2a4f0395:0/analysis/node/b75b1ae05854aea96266808ec0686b91f3ee0a81');
+            }
+          ]
+        },
+        'last_updated': '1970-01-01T00:00:00.000Z'
       });
 
-      it('should NOT start polling for analysis that are "ready" and are the source of a layer', function () {
-        this.vis.load(new VizJSON(this.vizjson));
-        this.vis.instantiateMap();
+      expect(this.vis.isLoading()).toBe(false);
+    });
 
-        // Response from Maps API is received
-        $.ajax.calls.argsFor(0)[0].success({
-          'layergroupid': '9d7bf465e45113123bf9949c2a4f0395:0',
-          'metadata': {
-            'layers': [
-              {
-                'type': 'mapnik',
-                'meta': {
-                  'stats': [],
-                  'cartocss': 'cartocss'
-                }
+    it('should NOT mark vis as loading if all analyses are done', function () {
+      expect(this.vis.isLoading()).toBe(false);
+
+      // Response from Maps API is received -> ONE ANALYSIS PENDING
+      $.ajax.calls.argsFor(0)[0].success({
+        'layergroupid': '9d7bf465e45113123bf9949c2a4f0395:0',
+        'metadata': {
+          'layers': [
+            {
+              'type': 'mapnik',
+              'meta': {
+                'stats': [],
+                'cartocss': 'cartocss'
               }
-            ],
-            'dataviews': {
-              'cd065428-ed63-4d29-9a09-a9f8384fc8c9': {
-                'url': {
-                  'http': 'http://cdb.localhost.lan:8181/api/v1/map/9d7bf465e45113123bf9949c2a4f0395:0/dataview/cd065428-ed63-4d29-9a09-a9f8384fc8c9'
-                }
-              }
-            },
-            'analyses': [
-              {
-                'nodes': {
-                  'a0': {
-                    'status': 'ready',
-                    'query': 'SELECT * FROM arboles',
-                    'url': {
-                      'http': 'http://cdb.localhost.lan:8181/api/v1/map/9d7bf465e45113123bf9949c2a4f0395:0/analysis/node/5af683d5d8a6f67e11916a31cd76632884d4064f'
-                    }
-                  },
-                  'a1': {
-                    'status': 'ready',
-                    'query': 'select * from analysis_trade_area_e65b1ae05854aea96266808ec0686b91f3ee0a81',
-                    'url': {
-                      'http': 'http://cdb.localhost.lan:8181/api/v1/map/9d7bf465e45113123bf9949c2a4f0395:0/analysis/node/e65b1ae05854aea96266808ec0686b91f3ee0a81'
-                    }
-                  },
-                  'a2': {
-                    'status': 'ready',
-                    'query': 'select * from analysis_trade_area_b35b1ae05854aea96266808ec0686b91f3ee0a81',
-                    'url': {
-                      'http': 'http://cdb.localhost.lan:8181/api/v1/map/9d7bf465e45113123bf9949c2a4f0395:0/analysis/node/b75b1ae05854aea96266808ec0686b91f3ee0a81'
-                    }
+            }
+          ],
+          'dataviews': {},
+          'analyses': [
+            {
+              'nodes': {
+                'a0': {
+                  'status': 'ready',
+                  'query': 'SELECT * FROM arboles',
+                  'url': {
+                    'http': 'http://cdb.localhost.lan:8181/api/v1/map/9d7bf465e45113123bf9949c2a4f0395:0/analysis/node/5af683d5d8a6f67e11916a31cd76632884d4064f'
+                  }
+                },
+                'a1': {
+                  'status': 'pending',
+                  'query': 'select * from analysis_trade_area_e65b1ae05854aea96266808ec0686b91f3ee0a81',
+                  'url': {
+                    'http': 'http://cdb.localhost.lan:8181/api/v1/map/9d7bf465e45113123bf9949c2a4f0395:0/analysis/node/e65b1ae05854aea96266808ec0686b91f3ee0a81'
+                  }
+                },
+                'a2': {
+                  'status': 'pending',
+                  'query': 'select * from analysis_trade_area_b35b1ae05854aea96266808ec0686b91f3ee0a81',
+                  'url': {
+                    'http': 'http://cdb.localhost.lan:8181/api/v1/map/9d7bf465e45113123bf9949c2a4f0395:0/analysis/node/b75b1ae05854aea96266808ec0686b91f3ee0a81'
                   }
                 }
               }
-            ]
-          },
-          'last_updated': '1970-01-01T00:00:00.000Z'
-        });
-
-        // Polling has NOT started, there was only one ajax call to instantiate the map
-        expect($.ajax.calls.count()).toEqual(1);
+            }
+          ]
+        },
+        'last_updated': '1970-01-01T00:00:00.000Z'
       });
 
-      it("should NOT start polling for analyses that don't have a URL yet", function () {
-        this.vis.load(new VizJSON(this.vizjson));
-        this.vis.instantiateMap();
-
-        // Analysis node is created using analyse but node is not associated to any layer or dataview
-        this.vis.analysis.analyse({
-          id: 'something',
-          type: 'source',
-          params: {
-            query: 'SELECT * FROM people'
-          }
-        });
-
-        // Response from Maps API is received
-        $.ajax.calls.argsFor(0)[0].success({
-          'layergroupid': '9d7bf465e45113123bf9949c2a4f0395:0',
-          'metadata': {
-            'layers': [
-              {
-                'type': 'mapnik',
-                'meta': {
-                  'stats': [],
-                  'cartocss': 'cartocss'
-                }
-              }
-            ],
-            'dataviews': { },
-            'analyses': [
-              {
-                'nodes': {
-                  'a0': {
-                    'status': 'ready',
-                    'query': 'SELECT * FROM arboles',
-                    'url': {
-                      'http': 'http://cdb.localhost.lan:8181/api/v1/map/9d7bf465e45113123bf9949c2a4f0395:0/analysis/node/5af683d5d8a6f67e11916a31cd76632884d4064f'
-                    }
-                  },
-                  'a1': {
-                    'status': 'ready',
-                    'query': 'select * from analysis_trade_area_e65b1ae05854aea96266808ec0686b91f3ee0a81',
-                    'url': {
-                      'http': 'http://cdb.localhost.lan:8181/api/v1/map/9d7bf465e45113123bf9949c2a4f0395:0/analysis/node/e65b1ae05854aea96266808ec0686b91f3ee0a81'
-                    }
-                  },
-                  'a2': {
-                    'status': 'ready',
-                    'query': 'select * from analysis_trade_area_b35b1ae05854aea96266808ec0686b91f3ee0a81',
-                    'url': {
-                      'http': 'http://cdb.localhost.lan:8181/api/v1/map/9d7bf465e45113123bf9949c2a4f0395:0/analysis/node/b75b1ae05854aea96266808ec0686b91f3ee0a81'
-                    }
-                  }
-                }
-              }
-            ]
-          },
-          'last_updated': '1970-01-01T00:00:00.000Z'
-        });
-
-        // Polling has NOT started, there was only one ajax call to instantiate the map
-        expect($.ajax.calls.count()).toEqual(1);
-      });
+      expect(this.vis.isLoading()).toBe(true);
     });
   });
 

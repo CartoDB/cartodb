@@ -260,12 +260,7 @@ var VisModel = Backbone.Model.extend({
   },
 
   _restartAnalysisPolling: function () {
-    this._analysisPoller.reset();
-    _.each(this._getAnalysisNodeModels(), function (analysisModel) {
-      if (analysisModel.url() && !analysisModel.isDone()) {
-        this._analysisPoller.poll(analysisModel);
-      }
-    }, this);
+    this._analysisPoller.resetAnalysisNodes(this._getAnalysisNodeModels());
   },
 
   _getAnalysisNodeModels: function () {
@@ -436,6 +431,10 @@ var VisModel = Backbone.Model.extend({
     overlayView.type = 'custom';
     this.overlaysCollection.add(overlayView);
     return overlayView;
+  },
+
+  isLoading: function () {
+    return this.get('loading');
   }
 });
 

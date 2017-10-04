@@ -1,52 +1,39 @@
-var _ = require('underscore');
 var Backbone = require('backbone');
 var AnalysisModel = require('../../../src/analysis/analysis-model.js');
 var AnalysisService = require('../../../src/analysis/analysis-service.js');
 
-var fakeCamshaftReference = {
-  getSourceNamesForAnalysisType: function (analysisType) {
-    var map = {
-      'analysis-type-1': ['source1', 'source2'],
-      'trade-area': ['source'],
-      'estimated-population': ['source'],
-      'sql-function': ['source', 'target']
-    };
-    return map[analysisType];
-  },
-  getParamNamesForAnalysisType: function (analysisType) {
-    var map = {
-      'analysis-type-1': ['attribute1', 'attribute2'],
-      'trade-area': ['kind', 'time'],
-      'estimated-population': ['columnName']
-    };
-
-    return map[analysisType];
-  }
-};
-
-var createFakeVis = function () {
-  var vis = new Backbone.Model();
-  vis.reload = jasmine.createSpy('reload');
-  return vis;
-};
-
-var createFakeAnalysis = function (attrs, visModel) {
-  return new AnalysisModel(attrs, {
-    vis: visModel,
-    camshaftReference: fakeCamshaftReference
-  });
-};
-
 describe('src/analysis/analysis-model.js', function () {
-  var vis;
+  var fakeCamshaftReference = {
+    getSourceNamesForAnalysisType: function (analysisType) {
+      var map = {
+        'analysis-type-1': ['source1', 'source2'],
+        'trade-area': ['source'],
+        'estimated-population': ['source'],
+        'sql-function': ['source', 'target']
+      };
+      return map[analysisType];
+    },
+    getParamNamesForAnalysisType: function (analysisType) {
+      var map = {
+        'analysis-type-1': ['attribute1', 'attribute2'],
+        'trade-area': ['kind', 'time'],
+        'estimated-population': ['columnName']
+      };
 
+      return map[analysisType];
+    }
+  };
   beforeEach(function () {
-    vis = createFakeVis();
-    this.analysisModel = createFakeAnalysis({
+    this.vis = new Backbone.Model();
+    this.vis.reload = jasmine.createSpy('reload');
+    this.analysisModel = new AnalysisModel({
       type: 'analysis-type-1',
       attribute1: 'value1',
       attribute2: 'value2'
-    }, vis);
+    }, {
+      vis: this.vis,
+      camshaftReference: fakeCamshaftReference
+    });
   });
 
   describe('.url', function () {
@@ -77,21 +64,21 @@ describe('src/analysis/analysis-model.js', function () {
           attribute1: 'newValue1'
         });
 
-        expect(vis.reload).toHaveBeenCalled();
-        vis.reload.calls.reset();
+        expect(this.vis.reload).toHaveBeenCalled();
+        this.vis.reload.calls.reset();
 
         this.analysisModel.set({
           attribute2: 'newValue2'
         });
 
-        expect(vis.reload).toHaveBeenCalled();
-        vis.reload.calls.reset();
+        expect(this.vis.reload).toHaveBeenCalled();
+        this.vis.reload.calls.reset();
 
         this.analysisModel.set({
           attribute900: 'something'
         });
 
-        expect(vis.reload).not.toHaveBeenCalled();
+        expect(this.vis.reload).not.toHaveBeenCalled();
       });
 
       it('should be marked as failed if request to reload the map fails', function () {
@@ -101,7 +88,7 @@ describe('src/analysis/analysis-model.js', function () {
         });
 
         // Request to the Maps API fails and error callback is invoked...
-        vis.reload.calls.argsFor(0)[0].error('something bad just happened');
+        this.vis.reload.calls.argsFor(0)[0].error('something bad just happened');
 
         expect(this.analysisModel.get('status')).toEqual(AnalysisModel.STATUS.FAILED);
       });
@@ -118,101 +105,15 @@ describe('src/analysis/analysis-model.js', function () {
 
       it('should reload the map', function () {
         this.analysisModel.set('type', 'something');
-        expect(vis.reload).toHaveBeenCalled();
+        expect(this.vis.reload).toHaveBeenCalled();
       });
 
       it('should keep listening type change again', function () {
         this.analysisModel.set('type', 'something');
-        expect(vis.reload).toHaveBeenCalled();
-        vis.reload.calls.reset();
+        expect(this.vis.reload).toHaveBeenCalled();
+        this.vis.reload.calls.reset();
         this.analysisModel.set('type', 'something else');
-        expect(vis.reload).toHaveBeenCalled();
-      });
-    });
-
-    describe('on status change', function () {
-      var createAnalysisModelNoStatusNoReferences = function (visModel) {
-        var analysisModel = createFakeAnalysis({ id: 'a0' }, visModel);
-        return analysisModel;
-      };
-
-      var createAnalysisModelNoStatusWithReferences = function (visModel) {
-        var analysisModel = createFakeAnalysis({ id: 'a0' }, visModel);
-        analysisModel.markAsSourceOf(new Backbone.Model());
-        return analysisModel;
-      };
-
-      var createAnalysisModelWithStatusNoReferences = function (visModel) {
-        var analysisModel = createFakeAnalysis({ id: 'a0', status: 'foo' }, visModel);
-        return analysisModel;
-      };
-
-      var createAnalysisModelWithStatusWithReferences = function (visModel) {
-        var analysisModel = createFakeAnalysis({ id: 'a0', status: 'foo' }, visModel);
-        analysisModel.markAsSourceOf(new Backbone.Model());
-        return analysisModel;
-      };
-
-      var testCases = [
-        {
-          testName: 'analysis with no previous status and no references',
-          createAnalysisFn: createAnalysisModelNoStatusNoReferences,
-          expectedVisReloadWhenStatusIn: [] // no relaod is expected
-        },
-        {
-          testName: 'analysis with no previous status and some references',
-          createAnalysisFn: createAnalysisModelNoStatusWithReferences,
-          expectedVisReloadWhenStatusIn: [] // no reload is expected
-        },
-        {
-          testName: 'analysis with previous status and no references',
-          createAnalysisFn: createAnalysisModelWithStatusNoReferences,
-          expectedVisReloadWhenStatusIn: [] // no reload is expected
-        },
-        {
-          testName: 'analysis with previous status and references',
-          createAnalysisFn: createAnalysisModelWithStatusWithReferences,
-          expectedVisReloadWhenStatusIn: [ AnalysisModel.STATUS.READY ]
-        }
-      ];
-
-      _.forEach(testCases, function (testCase) {
-        var testName = testCase.testName;
-        var createAnalysisFn = testCase.createAnalysisFn;
-        var expectedVisReloadWhenStatusIn = testCase.expectedVisReloadWhenStatusIn;
-        var notExpectedVisReloadWhenStatusIn = [];
-
-        describe(testName, function () {
-          var analysisModel;
-          var visModel;
-
-          beforeEach(function () {
-            visModel = createFakeVis();
-            analysisModel = createAnalysisFn(visModel);
-          });
-
-          _.forEach(AnalysisModel.STATUS, function (status) {
-            if (expectedVisReloadWhenStatusIn.indexOf(status) < 0) {
-              notExpectedVisReloadWhenStatusIn.push(status);
-            }
-          });
-
-          _.each(expectedVisReloadWhenStatusIn, function (status) {
-            it("should reload the vis if analysis is now '" + status + "'", function () {
-              expect(visModel.reload).not.toHaveBeenCalled();
-              analysisModel.set('status', status);
-              expect(visModel.reload).toHaveBeenCalled();
-            });
-          }, this);
-
-          _.each(notExpectedVisReloadWhenStatusIn, function (status) {
-            it("should NOT reload the vis if analysis is now '" + status + "'", function () {
-              expect(visModel.reload).not.toHaveBeenCalled();
-              analysisModel.set('status', status);
-              expect(visModel.reload).not.toHaveBeenCalled();
-            });
-          }, this);
-        });
+        expect(this.vis.reload).toHaveBeenCalled();
       });
     });
   });
@@ -244,7 +145,7 @@ describe('src/analysis/analysis-model.js', function () {
       };
 
       var analysisService = new AnalysisService({
-        vis: vis,
+        vis: this.vis,
         analysisCollection: new Backbone.Collection(),
         camshaftReference: fakeCamshaftReference
       });
@@ -320,7 +221,7 @@ describe('src/analysis/analysis-model.js', function () {
       };
 
       var analysisService = new AnalysisService({
-        vis: vis,
+        vis: this.vis,
         analysisCollection: new Backbone.Collection(),
         camshaftReference: fakeCamshaftReference
       });
@@ -453,7 +354,7 @@ describe('src/analysis/analysis-model.js', function () {
     var analysisService;
     beforeEach(function () {
       analysisService = new AnalysisService({
-        vis: vis,
+        vis: this.vis,
         analysisCollection: new Backbone.Collection(),
         camshaftReference: fakeCamshaftReference
       });
@@ -485,35 +386,6 @@ describe('src/analysis/analysis-model.js', function () {
       );
       var actual = analysis.getNodes();
       expect(actual.length).toEqual(3);
-    });
-  });
-
-  describe('references tracking', function () {
-    it('should allow keeping track of models that reference this object', function () {
-      var model1 = new Backbone.Model();
-      var model2 = new Backbone.Model();
-
-      expect(this.analysisModel.isSourceOfAnyModel()).toBe(false);
-
-      this.analysisModel.markAsSourceOf(model1);
-
-      expect(this.analysisModel.isSourceOfAnyModel()).toBe(true);
-
-      this.analysisModel.markAsSourceOf(model1);
-
-      expect(this.analysisModel.isSourceOfAnyModel()).toBe(true);
-
-      this.analysisModel.markAsSourceOf(model2);
-
-      expect(this.analysisModel.isSourceOfAnyModel()).toBe(true);
-
-      this.analysisModel.unmarkAsSourceOf(model1);
-
-      expect(this.analysisModel.isSourceOfAnyModel()).toBe(true);
-
-      this.analysisModel.unmarkAsSourceOf(model2);
-
-      expect(this.analysisModel.isSourceOfAnyModel()).toBe(false);
     });
   });
 });

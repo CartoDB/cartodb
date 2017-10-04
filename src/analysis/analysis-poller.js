@@ -1,9 +1,7 @@
 var _ = require('underscore');
 var BackbonePoller = require('backbone-poller');
 
-var AnalysisPoller = function () {
-  this._pollers = [];
-};
+var AnalysisPoller = function () {};
 
 AnalysisPoller.CONFIG = {
   START_DELAY: 1000,
@@ -11,22 +9,14 @@ AnalysisPoller.CONFIG = {
   DELAY_MULTIPLIER: 1.5
 };
 
-AnalysisPoller.prototype.resetAnalysisNodes = function (analysisModels) {
-  this.reset();
-  _.each(analysisModels, function (analysisModel) {
-    this._poll(analysisModel);
-  }, this);
-};
-
-AnalysisPoller.prototype._poll = function (analysisModel) {
-  if (analysisModel.url()) {
-    var poller = this._findOrCreatePoller(analysisModel);
-    if (analysisModel.hasChanged('url') && poller.active()) {
-      poller.stop();
-    }
-    if (!analysisModel.isDone()) {
-      poller.start();
-    }
+AnalysisPoller.prototype.poll = function (analysisModel) {
+  this._pollers = [];
+  var poller = this._findOrCreatePoller(analysisModel);
+  if (analysisModel.hasChanged('url') && poller.active()) {
+    poller.stop();
+  }
+  if (!analysisModel.isDone()) {
+    poller.start();
   }
 };
 

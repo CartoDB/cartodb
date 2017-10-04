@@ -92,15 +92,6 @@ var Layers = Backbone.Collection.extend({
     });
 
     return movingLayer;
-  },
-
-  /**
-   * Check if an analysis is the source of any layer.
-   */
-  isAnalysisLinkedToAnyLayer: function (analysisModel) {
-    return this.any(function (layerModel) {
-      return layerModel.hasSource(analysisModel);
-    });
   }
 });
 

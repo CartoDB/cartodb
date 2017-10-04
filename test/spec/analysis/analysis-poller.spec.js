@@ -9,10 +9,7 @@ describe('src/analysis/analysis-poller', function () {
 
     this.vis = new Backbone.Model();
     this.reference = jasmine.createSpyObj('reference', ['getParamNamesForAnalysisType']);
-    this.analysisModel1 = new AnalysisModel({
-      id: 'a1',
-      url: 'http://carto.com/foo/bar'
-    }, { vis: this.vis, camshaftReference: this.reference });
+    this.analysisModel1 = new AnalysisModel({ id: 'a1' }, { vis: this.vis, camshaftReference: this.reference });
     this.analysisPoller = new AnalysisPoller();
   });
 
@@ -20,7 +17,10 @@ describe('src/analysis/analysis-poller', function () {
     jasmine.clock().uninstall();
   });
 
-  describe('.resetAnalysisNodes', function () {
+  describe('.poll', function () {
+    beforeEach(function () {
+    });
+
     _.each([AnalysisModel.STATUS.PENDING, AnalysisModel.STATUS.WAITING, AnalysisModel.STATUS.RUNNING], function (status) {
       it('should start polling if status of an analysis is "' + status + '"', function () {
         this.analysisModel1.set({
@@ -31,7 +31,7 @@ describe('src/analysis/analysis-poller', function () {
           options.success();
         });
 
-        this.analysisPoller.resetAnalysisNodes([ this.analysisModel1 ]);
+        this.analysisPoller.poll(this.analysisModel1);
 
         expect(this.analysisModel1.fetch).toHaveBeenCalled();
         expect(this.analysisModel1.fetch.calls.count()).toEqual(1);
@@ -59,7 +59,7 @@ describe('src/analysis/analysis-poller', function () {
           'status': 'pending'
         });
 
-        this.analysisPoller.resetAnalysisNodes([ this.analysisModel1 ]);
+        this.analysisPoller.poll(this.analysisModel1);
 
         expect(this.analysisModel1.fetch).toHaveBeenCalled();
         expect(this.analysisModel1.fetch.calls.count()).toEqual(1);
@@ -82,7 +82,7 @@ describe('src/analysis/analysis-poller', function () {
         options.success();
       });
 
-      this.analysisPoller.resetAnalysisNodes([ this.analysisModel1 ]);
+      this.analysisPoller.poll(this.analysisModel1);
 
       expect(this.analysisModel1.fetch).toHaveBeenCalled();
       expect(this.analysisModel1.fetch.calls.count()).toEqual(1);

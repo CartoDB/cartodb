@@ -104,9 +104,6 @@ AnalysisService.getAnalysisList = function (layersCollection, dataviewsCollectio
 function _getAnalysesFromLayers (layersCollection) {
   var layers = _getCartoDBAndTorqueLayers(layersCollection);
   return layers.map(function (layer) {
-    if (!layer.getSource()) {
-      throw new TypeError('CartoDB and Torque layers must have a source');
-    }
     return layer.getSource();
   });
 }
@@ -119,6 +116,7 @@ function _getAnalysesFromDataviews (dataviewsCollection) {
 
 function _getCartoDBAndTorqueLayers (layersCollection) {
   return layersCollection.filter(function (layer) {
+    // Carto and torque layers are supposed to have a source
     return LayerTypes.isCartoDBLayer(layer) || LayerTypes.isTorqueLayer(layer);
   });
 }

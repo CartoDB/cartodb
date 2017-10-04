@@ -194,7 +194,7 @@ ModelUpdater.prototype._updateDataviewModels = function (windshaftMap, sourceId,
 };
 
 ModelUpdater.prototype._updateAnalysisModels = function (windshaftMap) {
-  var analysisList = this._getUniqueAnalyses();
+  var analysisList = this._getUniqueAnalysesNodes();
   _.each(analysisList, function (analysisNode) {
     var analysisMetadata = windshaftMap.getAnalysisNodeMetadata(analysisNode.get('id'));
     var attrs;
@@ -241,7 +241,7 @@ ModelUpdater.prototype._setError = function (error) {
     var layerModel = this._layersCollection.get(error.layerId);
     layerModel && layerModel.setError(error);
   } else if (error.isAnalysisError()) {
-    var analysisCollection = new Backbone.Collection(this._getUniqueAnalyses());
+    var analysisCollection = new Backbone.Collection(this._getUniqueAnalysesNodes());
     var analysisModel = analysisCollection.get(error.analysisId);
     analysisModel && analysisModel.setError(error);
   } else {
@@ -270,11 +270,16 @@ ModelUpdater.prototype._getLayerLegends = function (layerModel) {
 };
 
 /**
- * Return the analysis list without duplicates
- *
- * (a dataview and a layer could share some analysis)
+ * Return all the analysis nodes without duplicates.
+ * The analyses are obtained from the layers and dataviews collections.
+ * 
+ * @example
+ * We have the following analyses:  (a0->a1->a2), (b0->a2)
+ * This method will give us: (a0->a1->a1), (a1->a2), (a2), (b0->a2)
+ * 
+ * Note that although a2 is included in a1 is also returned.
  */
-ModelUpdater.prototype._getUniqueAnalyses = function () {
+ModelUpdater.prototype._getUniqueAnalysesNodes = function () {
   var uniqueAnalyses = {};
   var analyses = AnalysisService.getAnalysisList(this._layersCollection, this._dataviewsCollection);
   _.each(analyses, function (analisis) {

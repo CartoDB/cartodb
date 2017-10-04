@@ -5,7 +5,7 @@
       <div class="CDB-Loader js-loader is-visible"></div>
     <% } %>
     <div class="CDB-infowindow-bg">
-      <div class="CDB-infowindow-inner">
+      <div class="CDB-infowindow-inner js-inner">
         <ul class="CDB-infowindow-list js-content">
           <% if (content.fields) { %>
             <% _.each(content.fields, function (field) { %>

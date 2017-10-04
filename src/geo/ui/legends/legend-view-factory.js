@@ -9,7 +9,8 @@ var LEGEND_VIEW_CONSTRUCTORS = {
   category: CategoryLegendView,
   choropleth: ChoroplethLegendView,
   custom_choropleth: CustomChoroplethLegendView,
-  custom: CustomLegendView
+  custom: CustomLegendView,
+  torque: CustomLegendView
 };
 
 var PLACEHOLDER_TEMPLATES = {

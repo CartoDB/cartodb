@@ -222,8 +222,8 @@ Development
 * Prevent invalid geometries in BoundingBoxUtils.to_polygon, to_point (#12873)
 
 ### Internals
-
 * Fix layer's sources in tests (analysis source required) (#12866)
+* Adapt widget integration and specs to dataviews refactor (#12850)
 
 ### NOTICE
 This release upgrades the CartoDB PostgreSQL extension to `0.19.2`. Run the following to have it available:

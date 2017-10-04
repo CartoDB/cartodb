@@ -79,9 +79,9 @@ class PublicClient {
     this.addHeaders(opts);
 
     const baseUrl = this.getAssetsBaseUrl();
-    // const url = this.makeAbsoluteURI(this.makeRelativeURI(uriParts));
+    const url = this.makeRelativeURI(uriParts);
 
-    $.ajax(`${baseUrl}${this.makeRelativeURI(uriParts)}`, opts)
+    $.ajax(`${baseUrl}${url}`, opts)
       .done(this.successCallback(callback))
       .fail(this.errorCallback(callback));
   }

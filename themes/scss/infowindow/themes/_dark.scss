@@ -46,6 +46,24 @@ $sBg-dark: #2E3C43;
   .CDB-loading-bg {
     opacity: 0.3;
   }
+  .CDB-infowindow-canvasShadow--top {
+    @include background-gradient($sBg-dark, rgba(255, 255, 255, 0));
+  }
+  .CDB-infowindow-canvasShadow--bottom {
+    @include background-gradient(rgba(255, 255, 255, 0), $sBg-dark);
+  }
+  .CDB-infowindow-list .ps-scrollbar-x-rail {
+    background: linear-gradient(180deg, transparent 50%, #4F5B61 50%) !important;
+    .ps-scrollbar-x {
+      background: #747D82 !important;
+    }
+  }
+  .CDB-infowindow-list .ps-scrollbar-y-rail {
+    background: linear-gradient(90deg, transparent 50%, #4F5B61 50%) !important;
+    .ps-scrollbar-y {
+      background: #747D82 !important;
+    }
+  }
 }
 .CDB-infowindow-headerBg--dark {
   .CDB-infowindow-subtitle {

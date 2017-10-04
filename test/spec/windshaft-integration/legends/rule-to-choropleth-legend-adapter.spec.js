@@ -51,7 +51,7 @@ describe('src/windshaft-integration/legends/rule-to-choropleth-legend-adapter', 
 
   describe('.adapt', function () {
     it('should return attrs', function () {
-      var attrs = adapter.adapt(this.rule);
+      var attrs = adapter.adapt([this.rule]);
       expect(attrs).toEqual({
         colors: [
           { label: '0', value: '#AAAAAA' },

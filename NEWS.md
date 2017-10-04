@@ -95,6 +95,7 @@ Development
 * Remove unsupported CartoCSS rules for vector rendering (#12410)
 * Force parameter `vector` for vector rendering (#12478).
 * Fixed typo in content_no_datasets.jst.ejs and en.json (Docs)
+* Fixed typo in grunt usage docs (#12907)
 * Fixing problem parsing formula widget creation (#support/843)
 * Don't try to lowercase null values in custom-list-collection object (support/#744)
 * Fixes named map creation for datasets imports on users with Google Maps (CartoDB/cartodb/pull/12519).

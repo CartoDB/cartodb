@@ -223,8 +223,8 @@ Development
 * Prevent invalid geometries in BoundingBoxUtils.to_polygon, to_point (#12873)
 
 ### Internals
-
 * Fix layer's sources in tests (analysis source required) (#12866)
+* Adapt widget integration and specs to dataviews refactor (#12850)
 
 ### NOTICE
 This release upgrades the CartoDB PostgreSQL extension to `0.19.2`. Run the following to have it available:
@@ -380,6 +380,7 @@ More information at [Dropbox migration guide](https://www.dropbox.com/developers
 * Show infowindow when user reaches max layer limit (#12167)
 * Format quota infowindow numbers (#11743)
 * Improved analysis error tooltip (#12250)
+* Rollback failed user/organization imports
 * Enable user migrations across clouds (#12795)
 
 ### Bug fixes

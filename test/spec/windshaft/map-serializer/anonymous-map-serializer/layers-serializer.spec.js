@@ -5,7 +5,6 @@ var TileLayer = require('../../../../../src/geo/map/tile-layer');
 var TorqueLayer = require('../../../../../src/geo/map/torque-layer');
 var VisModel = require('../../../../../src/vis/vis');
 var LayersSerializer = require('../../../../../src/windshaft/map-serializer/anonymous-map-serializer/layers-serializer');
-var fakeFactory = require('../../../../helpers/fakeFactory');
 
 describe('layers-serializer', function () {
   describe('.serialize', function () {
@@ -17,7 +16,7 @@ describe('layers-serializer', function () {
     beforeAll(function () {
       layersCollection = new Backbone.Collection();
       visMock = new VisModel();
-      sourceMock = fakeFactory.createAnalysisModel({ id: 'a1' });
+      sourceMock = _createFakeAnalysis({ id: 'a1' });
     });
 
     it('should serialize a cartodb layer', function () {
@@ -111,3 +110,9 @@ describe('layers-serializer', function () {
     });
   });
 });
+
+function _createFakeAnalysis (attrs) {
+  var fakeAnalysis = new Backbone.Model(attrs);
+  fakeAnalysis.findAnalysisById = jasmine.createSpy('findAnalysisById').and.returnValue(undefined);
+  return fakeAnalysis;
+}

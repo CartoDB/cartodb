@@ -213,6 +213,8 @@ var VisModel = Backbone.Model.extend({
       dataviewsCollection: this._dataviewsCollection
     });
 
+    this._windshaftMap.bind('instanceCreated', this._onMapInstanceCreated, this);
+
     // "Load" existing analyses from the viz.json. This will generate
     // the analyses graphs and index analysis nodes in the
     // collection of analysis
@@ -259,20 +261,34 @@ var VisModel = Backbone.Model.extend({
     this.settings.set(settings);
   },
 
-  _restartAnalysisPolling: function () {
-    this._analysisPoller.resetAnalysisNodes(this._getAnalysisNodeModels());
+  _onMapInstanceCreated: function () {
+    this._analysisPoller.reset();
+    this._analysisCollection.each(function (analysisModel) {
+      analysisModel.unbind('change:status', this._onAnalysisStatusChanged, this);
+      if (analysisModel.url() && !analysisModel.isDone()) {
+        this._analysisPoller.poll(analysisModel);
+        this.trackLoadingObject(analysisModel);
+        analysisModel.bind('change:status', this._onAnalysisStatusChanged, this);
+      }
+    }, this);
   },
 
-  _getAnalysisNodeModels: function () {
-    return this._analysisCollection.models;
+  _onAnalysisStatusChanged: function (analysisModel) {
+    if (analysisModel.isDone()) {
+      this.untrackLoadingObject(analysisModel);
+      if (this._isAnalysisSourceOfLayerOrDataview(analysisModel)) {
+        this.reload();
+      }
+    }
   },
 
   /**
    * Check if an Analysis node is the source of a layer or a dataview.
    */
   _isAnalysisSourceOfLayerOrDataview: function (analysisModel) {
-    return this._layersCollection.isAnalysisLinkedToAnyLayer(analysisModel) ||
-      this._dataviewsCollection.isAnalysisLinkedToAnyDataview(analysisModel);
+    var isAnalysisLinkedToLayer = this._isAnalysisLinkedToLayer(analysisModel);
+    var isAnalysisLinkedToDataview = this._dataviewsCollection.isAnalysisLinkedToDataview(analysisModel);
+    return isAnalysisLinkedToLayer || isAnalysisLinkedToDataview;
   },
 
   /**
@@ -314,8 +330,8 @@ var VisModel = Backbone.Model.extend({
 
     this.reload({
       success: function () {
-        this._onMapInstantiatedForTheFirstTime();
         options.success && options.success();
+        this._onMapInstantiatedForTheFirstTime();
       }.bind(this),
       error: function () {
         options.error && options.error();
@@ -349,14 +365,6 @@ var VisModel = Backbone.Model.extend({
       includeFilters: true,
       success: function () {
         this.trigger('reloaded');
-        this._restartAnalysisPolling();
-
-        var analysisNodes = this._getAnalysisNodeModels();
-        if (this._isAnyAnalysisNodeLoading(analysisNodes)) {
-          this.trackLoadingObject(this);
-        } else {
-          this.untrackLoadingObject(this);
-        }
         successCallback && successCallback();
       }.bind(this),
       error: function () {
@@ -368,12 +376,6 @@ var VisModel = Backbone.Model.extend({
       this.trigger('reload');
       this._windshaftMap.createInstance(options); // this reload method is call from other places
     }
-  },
-
-  _isAnyAnalysisNodeLoading: function (analysisNodes) {
-    return _.any(analysisNodes, function (analysisModel) {
-      return analysisModel.isLoading();
-    });
   },
 
   _initBindsAfterFirstMapInstantiation: function () {
@@ -431,10 +433,6 @@ var VisModel = Backbone.Model.extend({
     overlayView.type = 'custom';
     this.overlaysCollection.add(overlayView);
     return overlayView;
-  },
-
-  isLoading: function () {
-    return this.get('loading');
   }
 });
 

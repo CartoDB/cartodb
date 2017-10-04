@@ -5,7 +5,7 @@ var Map = require('../geo/map');
 var DataviewsFactory = require('../dataviews/dataviews-factory');
 var DataviewsCollection = require('../dataviews/dataviews-collection');
 var WindshaftClient = require('../windshaft/client');
-var AnalysisFactory = require('../analysis/analysis-factory');
+var AnalysisService = require('../analysis/analysis-service');
 var CartoDBLayerGroup = require('../geo/cartodb-layer-group');
 var ModelUpdater = require('../windshaft-integration/model-updater');
 var LayersCollection = require('../geo/map/layers');
@@ -137,7 +137,7 @@ var VisModel = Backbone.Model.extend({
     var windshaftClient = new WindshaftClient(windshaftSettings);
 
     // Create the public Analysis Factory
-    this.analysis = new AnalysisFactory({
+    this.analysis = new AnalysisService({
       apiKey: this.get('apiKey'),
       authToken: this.get('authToken'),
       analysisCollection: this._analysisCollection,
@@ -183,8 +183,7 @@ var VisModel = Backbone.Model.extend({
       mapModel: this.map,
       layerGroupModel: this.layerGroupModel,
       dataviewsCollection: this._dataviewsCollection,
-      layersCollection: this._layersCollection,
-      analysisCollection: this._analysisCollection
+      layersCollection: this._layersCollection
     });
 
     // Create the WindshaftMap

@@ -3,7 +3,7 @@ var _ = require('underscore');
 var VisModel = require('../../../src/vis/vis.js');
 var CategoryDataviewModel = require('../../../src/dataviews/category-dataview-model.js');
 var WindshaftFiltersCategory = require('../../../src/windshaft/filters/category');
-var AnalysisFactory = require('../../../src/analysis/analysis-factory');
+var AnalysisService = require('../../../src/analysis/analysis-service');
 
 describe('dataviews/category-dataview-model', function () {
   beforeEach(function () {
@@ -20,11 +20,11 @@ describe('dataviews/category-dataview-model', function () {
       }
     };
 
-    var analysisFactory = new AnalysisFactory({
+    var analysisService = new AnalysisService({
       analysisCollection: this.vis._analysisCollection,
       vis: this.vis
     });
-    this.source = analysisFactory.analyse(analysisDefinition);
+    this.source = analysisService.analyse(analysisDefinition);
 
     this.layer = new Backbone.Model();
 

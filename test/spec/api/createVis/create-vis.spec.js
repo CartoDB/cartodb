@@ -313,12 +313,6 @@ describe('create-vis:', function () {
         var visModel = createVis(this.containerId, visJson);
         expect(visModel._windshaftMap._modelUpdater._layersCollection).toEqual(visModel._layersCollection);
       });
-
-      it('should have the analysisCollection linked', function () {
-        var visJson = scenarios.load('basic');
-        var visModel = createVis(this.containerId, visJson);
-        expect(visModel._windshaftMap._modelUpdater._analysisCollection).toEqual(visModel._analysisCollection);
-      });
     });
   });
 

@@ -1,5 +1,5 @@
 var Backbone = require('backbone');
-var AnalysisFactory = require('../../../../../src/analysis/analysis-factory.js');
+var AnalysisService = require('../../../../../src/analysis/analysis-service.js');
 var CartoDBLayer = require('../../../../../src/geo/map/cartodb-layer');
 var DataviewModelBase = require('../../../../../src/dataviews/dataview-model-base');
 var AnonymousMapSerializer = require('../../../../../src/windshaft/map-serializer/anonymous-map-serializer/anonymous-map-serializer');
@@ -17,7 +17,7 @@ describe('anonymous-map-serializer', function () {
     var layersCollection;
     var dataviewsCollection;
     var analysisCollection;
-    var analysisFactory;
+    var analysisService;
     var analysisModel;
     var payload;
 
@@ -27,12 +27,12 @@ describe('anonymous-map-serializer', function () {
 
       // Analyses
       analysisCollection = new Backbone.Collection();
-      analysisFactory = new AnalysisFactory({
+      analysisService = new AnalysisService({
         analysisCollection: analysisCollection,
         camshaftReference: fakeCamshaftReference,
         vis: visModel
       });
-      analysisModel = analysisFactory.analyse({
+      analysisModel = analysisService.analyse({
         id: 'ANALYSIS_ID',
         type: 'source',
         params: {

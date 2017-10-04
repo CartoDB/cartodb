@@ -213,18 +213,6 @@ describe('create-vis:', function () {
       expect(visModel._windshaftMap.get('statTag')).toEqual(visJson.datasource.stat_tag);
     });
 
-    it('should have the _analysisCollection linked', function () {
-      var visJson = scenarios.load('basic');
-      var visModel = createVis(this.containerId, visJson);
-      expect(visModel._windshaftMap._analysisCollection).toEqual(visModel._analysisCollection);
-    });
-
-    it('should have the analysisCollection linked', function () {
-      var visJson = scenarios.load('basic');
-      var visModel = createVis(this.containerId, visJson);
-      expect(visModel._windshaftMap._analysisCollection).toEqual(visModel._analysisCollection);
-    });
-
     it('should have the dataviewsCollection linked', function () {
       var visJson = scenarios.load('basic');
       var visModel = createVis(this.containerId, visJson);
@@ -324,12 +312,6 @@ describe('create-vis:', function () {
         var visJson = scenarios.load('basic');
         var visModel = createVis(this.containerId, visJson);
         expect(visModel._windshaftMap._modelUpdater._layersCollection).toEqual(visModel._layersCollection);
-      });
-
-      it('should have the analysisCollection linked', function () {
-        var visJson = scenarios.load('basic');
-        var visModel = createVis(this.containerId, visJson);
-        expect(visModel._windshaftMap._modelUpdater._analysisCollection).toEqual(visModel._analysisCollection);
       });
     });
   });

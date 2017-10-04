@@ -1,7 +1,7 @@
 var Backbone = require('backbone');
-var AnalysisFactory = require('../../../src/analysis/analysis-factory');
+var AnalysisService = require('../../../src/analysis/analysis-service');
 
-describe('src/analysis/analysis-factory.js', function () {
+describe('src/analysis/analysis-service.js', function () {
   beforeEach(function () {
     this.fakeCamshaftReference = {
       getSourceNamesForAnalysisType: function (analysisType) {
@@ -22,7 +22,7 @@ describe('src/analysis/analysis-factory.js', function () {
     };
     this.vis = new Backbone.Model();
     this.analysisCollection = new Backbone.Collection();
-    this.analysisFactory = new AnalysisFactory({
+    this.analysisService = new AnalysisService({
       camshaftReference: this.fakeCamshaftReference,
       analysisCollection: this.analysisCollection,
       vis: this.vis
@@ -31,7 +31,7 @@ describe('src/analysis/analysis-factory.js', function () {
 
   describe('.analyse', function () {
     it('should generate and return a new analysis', function () {
-      var subwayStops = this.analysisFactory.analyse({
+      var subwayStops = this.analysisService.analyse({
         id: 'a0',
         type: 'source',
         query: 'SELECT * FROM subway_stops'
@@ -45,7 +45,7 @@ describe('src/analysis/analysis-factory.js', function () {
     });
 
     it('should set attrs on the analysis models', function () {
-      this.analysisFactory = new AnalysisFactory({
+      this.analysisService = new AnalysisService({
         apiKey: 'THE_API_KEY',
         authToken: 'THE_AUTH_TOKEN',
         camshaftReference: this.fakeCamshaftReference,
@@ -53,7 +53,7 @@ describe('src/analysis/analysis-factory.js', function () {
         vis: this.vis
       });
 
-      var analysisModel = this.analysisFactory.analyse({
+      var analysisModel = this.analysisService.analyse({
         id: 'a0',
         type: 'source',
         query: 'SELECT * FROM subway_stops'
@@ -64,7 +64,7 @@ describe('src/analysis/analysis-factory.js', function () {
     });
 
     it('should add new analysis to the collection of analysis', function () {
-      var subwayStops = this.analysisFactory.analyse({
+      var subwayStops = this.analysisService.analyse({
         id: 'a0',
         type: 'source',
         query: 'SELECT * FROM subway_stops'
@@ -74,7 +74,7 @@ describe('src/analysis/analysis-factory.js', function () {
     });
 
     it('should not create a new analysis if an analysis with the same id was created already', function () {
-      var subwayStops1 = this.analysisFactory.analyse({
+      var subwayStops1 = this.analysisService.analyse({
         id: 'a0',
         type: 'source',
         params: {
@@ -82,7 +82,7 @@ describe('src/analysis/analysis-factory.js', function () {
         }
       });
 
-      var subwayStops2 = this.analysisFactory.analyse({
+      var subwayStops2 = this.analysisService.analyse({
         id: 'a0',
         type: 'source',
         params: {
@@ -94,7 +94,7 @@ describe('src/analysis/analysis-factory.js', function () {
     });
 
     it('should recursively build the anlysis graph', function () {
-      var estimatedPopulation = this.analysisFactory.analyse(
+      var estimatedPopulation = this.analysisService.analyse(
         {
           id: 'a2',
           type: 'estimated-population',
@@ -125,7 +125,7 @@ describe('src/analysis/analysis-factory.js', function () {
     });
 
     it('analysis should be re-created after it has been removed', function () {
-      var subwayStops1 = this.analysisFactory.analyse({
+      var subwayStops1 = this.analysisService.analyse({
         id: 'a0',
         type: 'source',
         params: {
@@ -135,7 +135,7 @@ describe('src/analysis/analysis-factory.js', function () {
 
       subwayStops1.remove();
 
-      var subwayStops2 = this.analysisFactory.analyse({
+      var subwayStops2 = this.analysisService.analyse({
         id: 'a0',
         type: 'source',
         params: {
@@ -147,7 +147,7 @@ describe('src/analysis/analysis-factory.js', function () {
     });
 
     it('should remove the analysis from the collection when analysis is removed', function () {
-      var subwayStops1 = this.analysisFactory.analyse({
+      var subwayStops1 = this.analysisService.analyse({
         id: 'a0',
         type: 'source',
         params: {
@@ -165,7 +165,7 @@ describe('src/analysis/analysis-factory.js', function () {
 
   describe('.findNodeById', function () {
     it('should traverse the analysis and return an existing node', function () {
-      this.analysisFactory.analyse(
+      this.analysisService.analyse(
         {
           id: 'a2',
           type: 'estimated-population',
@@ -190,15 +190,15 @@ describe('src/analysis/analysis-factory.js', function () {
         }
       );
 
-      expect(this.analysisFactory.findNodeById('a2').get('id')).toEqual('a2');
-      expect(this.analysisFactory.findNodeById('a1').get('id')).toEqual('a1');
-      expect(this.analysisFactory.findNodeById('a0').get('id')).toEqual('a0');
+      expect(this.analysisService.findNodeById('a2').get('id')).toEqual('a2');
+      expect(this.analysisService.findNodeById('a1').get('id')).toEqual('a1');
+      expect(this.analysisService.findNodeById('a0').get('id')).toEqual('a0');
     });
 
     it('should return undefined if node is not found', function () {
-      expect(this.analysisFactory.findNodeById('something')).toBeUndefined();
+      expect(this.analysisService.findNodeById('something')).toBeUndefined();
 
-      this.analysisFactory.analyse(
+      this.analysisService.analyse(
         {
           id: 'a2',
           type: 'estimated-population',
@@ -223,7 +223,7 @@ describe('src/analysis/analysis-factory.js', function () {
         }
       );
 
-      expect(this.analysisFactory.findNodeById('something')).toBeUndefined();
+      expect(this.analysisService.findNodeById('something')).toBeUndefined();
     });
   });
 
@@ -235,12 +235,12 @@ describe('src/analysis/analysis-factory.js', function () {
           source: 'a0'
         }
       };
-      spyOn(this.analysisFactory, 'analyse').and.returnValue('node');
+      spyOn(this.analysisService, 'analyse').and.returnValue('node');
 
-      var result = this.analysisFactory._getAnalysisAttributesFromAnalysisDefinition(analysisDefinition);
+      var result = this.analysisService._getAnalysisAttributesFromAnalysisDefinition(analysisDefinition);
 
-      expect(this.analysisFactory.analyse.calls.count()).toEqual(1);
-      expect(this.analysisFactory.analyse).toHaveBeenCalledWith('a0');
+      expect(this.analysisService.analyse.calls.count()).toEqual(1);
+      expect(this.analysisService.analyse).toHaveBeenCalledWith('a0');
       expect(result).toEqual({
         type: 'trade-area',
         source: 'node'
@@ -254,12 +254,12 @@ describe('src/analysis/analysis-factory.js', function () {
           source: 'a0'
         }
       };
-      spyOn(this.analysisFactory, 'analyse').and.returnValue('node');
+      spyOn(this.analysisService, 'analyse').and.returnValue('node');
 
-      var result = this.analysisFactory._getAnalysisAttributesFromAnalysisDefinition(analysisDefinition);
+      var result = this.analysisService._getAnalysisAttributesFromAnalysisDefinition(analysisDefinition);
 
-      expect(this.analysisFactory.analyse.calls.count()).toEqual(1);
-      expect(this.analysisFactory.analyse).toHaveBeenCalledWith('a0');
+      expect(this.analysisService.analyse.calls.count()).toEqual(1);
+      expect(this.analysisService.analyse).toHaveBeenCalledWith('a0');
       expect(result).toEqual({
         type: 'sql-function',
         source: 'node'

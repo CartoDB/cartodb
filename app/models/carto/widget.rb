@@ -16,6 +16,8 @@ class Carto::Widget < ActiveRecord::Base
 
   before_validation :set_style_if_nil
   validates :layer, :order, :type, :options, :source_id, presence: true
+  validates :source_id, presence: true
+
   validate :validate_user_not_viewer
   validate :valid_source_id
 
@@ -85,14 +87,12 @@ class Carto::Widget < ActiveRecord::Base
   def validate_user_not_viewer
     if user && user.viewer
       errors.add(:layer, "Viewer users can't edit widgets")
-      false
     end
   end
 
   def valid_source_id
-    if source_id.present? && !source_id.is_a?(String)
+    unless source_id.is_a?(String)
       errors.add(:source_id, "Source id must be a string")
-      false
     end
   end
 

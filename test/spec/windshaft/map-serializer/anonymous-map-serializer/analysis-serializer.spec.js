@@ -12,6 +12,7 @@ describe('analysis-serializer', function () {
   var dataviewsCollection;
   var analysisService;
   var analysisDefinition;
+  var analysisCollection;
   var analysisModel;
 
   beforeEach(function () {

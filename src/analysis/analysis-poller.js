@@ -11,13 +11,15 @@ AnalysisPoller.CONFIG = {
   DELAY_MULTIPLIER: 1.5
 };
 
-AnalysisPoller.prototype.poll = function (analysisModels) {
-  if (_.isArray(analysisModels)) {
-
-  } else {
-    analysisModels = [ analysisModels ];
-  }
+AnalysisPoller.prototype.resetAnalysisNodes = function (analysisModels) {
+  this.reset();
   _.each(analysisModels, function (analysisModel) {
+    this._poll(analysisModel);
+  }, this);
+};
+
+AnalysisPoller.prototype._poll = function (analysisModel) {
+  if (analysisModel.url()) {
     var poller = this._findOrCreatePoller(analysisModel);
     if (analysisModel.hasChanged('url') && poller.active()) {
       poller.stop();
@@ -25,7 +27,7 @@ AnalysisPoller.prototype.poll = function (analysisModels) {
     if (!analysisModel.isDone()) {
       poller.start();
     }
-  }, this);
+  }
 };
 
 AnalysisPoller.prototype._findOrCreatePoller = function (analysisModel) {

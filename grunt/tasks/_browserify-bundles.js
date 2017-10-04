@@ -10,6 +10,7 @@ module.exports = {
       'test/spec/ui/**/*',
       'test/spec/vis/**/*',
       'test/spec/windshaft/**/*',
+      'test/spec/windshaft-integration/**/*',
       'test/spec/analysis/**/*',
 
       // not actually used anywhere in cartodb.js, only for editor?

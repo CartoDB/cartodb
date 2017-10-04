@@ -95,7 +95,12 @@ var LAYER_CONSTRUCTORS = {
   },
 
   cartodb: function (attrs, options) {
-    checkProperties(attrs, ['cartocss', 'source']);
+    // TODO: Once https://github.com/CartoDB/cartodb/issues/12885 is merged,
+    // we should make 'source' attribute required again and make sure it's
+    // always populated:
+    // checkProperties(attrs, ['source', 'cartocss']);
+    // attrs.source = CartoDBLayer.getLayerSourceFromAttrs(attrs, options.vis.analysis);
+    checkProperties(attrs, ['cartocss']);
     if (attrs.source) {
       attrs.source = CartoDBLayer.getLayerSourceFromAttrs(attrs, options.vis.analysis);
     }
@@ -106,9 +111,14 @@ var LAYER_CONSTRUCTORS = {
   },
 
   torque: function (attrs, options) {
-    checkProperties(attrs, ['cartocss', 'source']);
+    // TODO: Once https://github.com/CartoDB/cartodb/issues/12885 is merged,
+    // we should make 'source' attribute required again and make sure it's
+    // populated:
+    // checkProperties(attrs, ['source', 'cartocss']);
+    // attrs.source = CartoDBLayer.getLayerSourceFromAttrs(attrs, options.vis.analysis);
+    checkProperties(attrs, ['cartocss']);
     if (attrs.source) {
-      attrs.source = TorqueLayer.getLayerSourceFromAttrs(attrs, options.vis.analysis);
+      attrs.source = CartoDBLayer.getLayerSourceFromAttrs(attrs, options.vis.analysis);
     }
 
     var windshaftSettings = options.windshaftSettings;

@@ -34,8 +34,7 @@ describe('dataviews/category-dataview-model', function () {
       map: this.map,
       vis: this.vis,
       layer: this.layer,
-      filter: new WindshaftFiltersCategory(),
-      analysisCollection: new Backbone.Collection()
+      filter: new WindshaftFiltersCategory()
     });
   });
 
@@ -67,8 +66,7 @@ describe('dataviews/category-dataview-model', function () {
       map: this.map,
       vis: this.vis,
       layer: jasmine.createSpyObj('layer', ['get']),
-      filter: new WindshaftFiltersCategory(),
-      analysisCollection: new Backbone.Collection()
+      filter: new WindshaftFiltersCategory()
     });
 
     expect(this.model._searchModel.get('apiKey')).toEqual('API_KEY');

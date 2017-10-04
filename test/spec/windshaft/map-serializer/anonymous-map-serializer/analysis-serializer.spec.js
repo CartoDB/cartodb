@@ -10,9 +10,9 @@ describe('analysis-serializer', function () {
   var mapModel;
   var layersCollection;
   var dataviewsCollection;
-  var analysisCollection;
   var analysisService;
   var analysisDefinition;
+  var analysisCollection;
   var analysisModel;
 
   beforeEach(function () {
@@ -170,8 +170,7 @@ describe('analysis-serializer', function () {
           source: analysisModel
         }, {
           map: mapModel,
-          vis: visModel,
-          analysisCollection: analysisCollection
+          vis: visModel
         });
 
         dataviewsCollection.reset([ dataview ]);
@@ -238,16 +237,14 @@ describe('analysis-serializer', function () {
           source: analysis1
         }, {
           map: mapModel,
-          vis: visModel,
-          analysisCollection: analysisCollection
+          vis: visModel
         });
 
         var dataview2 = new DataviewModel({
           source: analysis2
         }, {
           map: mapModel,
-          vis: visModel,
-          analysisCollection: analysisCollection
+          vis: visModel
         });
 
         dataviewsCollection.reset([
@@ -312,8 +309,7 @@ describe('analysis-serializer', function () {
         source: analysisModel
       }, {
         map: mapModel,
-        vis: visModel,
-        analysisCollection: analysisCollection
+        vis: visModel
       });
 
       layersCollection.reset([

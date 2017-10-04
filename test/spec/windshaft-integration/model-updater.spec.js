@@ -26,7 +26,6 @@ describe('src/vis/model-updater', function () {
       client: {},
       layersCollection: {},
       dataviewsCollection: {},
-      analysisCollection: {},
       modelUpdater: {},
       windshaftSettings: {
         urlTemplate: 'http://{user}.cartodb.com:80',

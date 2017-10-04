@@ -10,11 +10,11 @@ describe('named-map-serializer', function () {
     beforeEach(function () {
       this.vis = new Backbone.Model();
       this.layersCollection = new Backbone.Collection([]);
-      this.analysisCollection = new Backbone.Collection([]);
+      this.dataviewsCollection = new Backbone.Collection([]);
     });
 
     it('should include the buffersize', function () {
-      var payload = NamedMapSerializer.serialize(this.layersCollection, this.analysisCollection);
+      var payload = NamedMapSerializer.serialize(this.layersCollection, this.dataviewsCollection);
       expect(payload.buffersize).toEqual({
         mvt: 0
       });
@@ -27,7 +27,7 @@ describe('named-map-serializer', function () {
         new TorqueLayer({ cartocss: 'cartoCSS2' }, { vis: this.vis })
       ]);
 
-      var payload = NamedMapSerializer.serialize(this.layersCollection, this.analysisCollection);
+      var payload = NamedMapSerializer.serialize(this.layersCollection, this.dataviewsCollection);
 
       // TileLayer doesn't have cartoCSS but Maps API is aware
       // of them so they're taken into account when calculating
@@ -45,9 +45,9 @@ describe('named-map-serializer', function () {
         new TorqueLayer({ cartocss: 'cartoCSS2' }, { vis: this.vis })
       ]);
 
-      var payload = NamedMapSerializer.serialize(this.layersCollection, this.analysisCollection);
+      var payload = NamedMapSerializer.serialize(this.layersCollection, this.dataviewsCollection);
 
-      // GMapsBaseLayer doesn't have cartoCSS and Maps API is 
+      // GMapsBaseLayer doesn't have cartoCSS and Maps API is
       // NOT aware of them so they're NOT taken into account
       // when calculating indexes for CartoDB and Torque layers
       expect(payload.styles).toEqual({

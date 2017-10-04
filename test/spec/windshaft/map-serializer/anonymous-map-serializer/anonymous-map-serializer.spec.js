@@ -57,8 +57,7 @@ describe('anonymous-map-serializer', function () {
         source: analysisModel
       }, {
         map: mapModel,
-        vis: visModel,
-        analysisCollection: analysisCollection
+        vis: visModel
       });
       dataviewsCollection = new Backbone.Collection([ dataview ]);
 

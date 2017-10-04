@@ -2,6 +2,7 @@ Development
 -----------
 
 ### Features
+* Change default style for polygon, point and line geometries (design#983)
 * Unify scrollbars style (#12184)
 * Add endpoint for current user account deletion (#12841)
 * Add contextual help to Analysis UI (#11907)
@@ -59,6 +60,7 @@ Development
 * Remove data-observatory-multiple-measures feature flag (#304)
 
 ### Bug fixes / enhancements
+* Improve legends for torque (CartoDB/support#979)
 * CSV export allowed without geometries (#12888)
 * Fix handling of imports with long file names and existing tables with almost the same name (#12732)
 * Update cartodb.js version 
@@ -378,6 +380,7 @@ More information at [Dropbox migration guide](https://www.dropbox.com/developers
 * Show infowindow when user reaches max layer limit (#12167)
 * Format quota infowindow numbers (#11743)
 * Improved analysis error tooltip (#12250)
+* Rollback failed user/organization imports
 * Enable user migrations across clouds (#12795)
 
 ### Bug fixes

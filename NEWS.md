@@ -59,10 +59,11 @@ Development
 * Remove data-observatory-multiple-measures feature flag (#304)
 
 ### Bug fixes / enhancements
+* Improve SQL limit platforms notification (#12597)
 * Improve legends for torque (CartoDB/support#979)
 * CSV export allowed without geometries (#12888)
 * Fix handling of imports with long file names and existing tables with almost the same name (#12732)
-* Update cartodb.js version 
+* Update cartodb.js version
 * Don't allow csv export for polygon or line (#9855)
 * Fix a problem with Unifont Medium font (#support/1002, #support/989)
 * Hide the_geom_webmercator column from dataset view (#11045)

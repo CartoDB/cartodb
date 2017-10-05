@@ -268,14 +268,6 @@ var VisModel = Backbone.Model.extend({
   },
 
   /**
-   * Check if an Analysis node is the source of a layer or a dataview.
-   */
-  _isAnalysisSourceOfLayerOrDataview: function (analysisModel) {
-    return this._layersCollection.isAnalysisLinkedToAnyLayer(analysisModel) ||
-      this._dataviewsCollection.isAnalysisLinkedToAnyDataview(analysisModel);
-  },
-
-  /**
    * Check if an analysis is the source of any layer.
    */
   _isAnalysisLinkedToLayer: function (analysisModel) {

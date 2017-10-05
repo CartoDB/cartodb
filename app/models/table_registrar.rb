@@ -7,14 +7,16 @@ module CartoDB
       @table_klass  = table_klass
     end
 
-    def register(table_name, data_import_id)
-      self.table                    = table_klass.new
-      table.user_id                 = user.id
+    def register(table_name, data_import_id, skip_table_creation = false)
+      self.table                    = table_klass.new(user_table: skip_table_creation ? Carto::UserTable.where(user_id: @user.id, name: table_name).first : nil)
+      table.user_id                 = user.id unless skip_table_creation
       # INFO: we're not creating but registering an existent table, so we want fixed, known name
       table.instance_eval { self[:name] = table_name }
       table.migrate_existing_table  = table_name
       table.data_import_id  = data_import_id
       set_metadata_from_data_import_id(table, data_import_id)
+      table.update_cdb_tablemetadata if skip_table_creation
+      table.cartodbfy if skip_table_creation
       table.save
       table.optimize
       table.map.recalculate_bounds!

@@ -124,19 +124,26 @@ var AnalysisModel = Model.extend({
   },
 
   isDone: function () {
-    return _.contains([ STATUS.READY, STATUS.FAILED ], this._getStatus());
+    return this._hasStatus([ STATUS.READY, STATUS.FAILED ]);
   },
 
   isLoading: function () {
-    return _.contains([ STATUS.PENDING, STATUS.WAITING, STATUS.RUNNING ], this._getStatus());
+    return this._hasStatus([ STATUS.PENDING, STATUS.WAITING, STATUS.RUNNING ]);
   },
 
   isReady: function () {
-    return this._getStatus() === STATUS.READY;
+    return this._hasStatus(STATUS.READY);
   },
 
   isFailed: function () {
-    return this._getStatus() === STATUS.FAILED;
+    return this._hasStatus(STATUS.FAILED);
+  },
+
+  _hasStatus: function (statuses) {
+    if (!_.isArray(statuses)) {
+      statuses = [ statuses ];
+    }
+    return _.contains(statuses, this._getStatus());
   },
 
   _getStatus: function () {

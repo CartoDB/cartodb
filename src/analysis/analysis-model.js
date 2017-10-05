@@ -124,24 +124,23 @@ var AnalysisModel = Model.extend({
   },
 
   isDone: function () {
-    return this._anyStatus(STATUS.READY, STATUS.FAILED);
-  },
-
-  isReady: function () {
-    return this._anyStatus(STATUS.READY);
-  },
-
-  isFailed: function () {
-    return this._anyStatus(STATUS.FAILED);
+    return _.contains([ STATUS.READY, STATUS.FAILED ], this._getStatus());
   },
 
   isLoading: function () {
-    return this._anyStatus(STATUS.PENDING, STATUS.WAITING, STATUS.RUNNING);
+    return _.contains([ STATUS.PENDING, STATUS.WAITING, STATUS.RUNNING ], this._getStatus());
   },
 
-  _anyStatus: function () {
-    var list = Array.prototype.slice.call(arguments, 0);
-    return list.indexOf(this.get('status')) !== -1;
+  isReady: function () {
+    return this._getStatus() === STATUS.READY;
+  },
+
+  isFailed: function () {
+    return this._getStatus() === STATUS.FAILED;
+  },
+
+  _getStatus: function () {
+    return this.get('status');
   },
 
   toJSON: function () {

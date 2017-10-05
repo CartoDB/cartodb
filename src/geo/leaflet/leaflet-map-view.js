@@ -194,6 +194,10 @@ var LeafletMapView = MapView.extend({
     }, this);
   },
 
+  listenOnce: function (name, callback) {
+    callback();
+  },
+
   // return the current bounds of the map view
   getBounds: function () {
     var b = this._leafletMap.getBounds();

@@ -82,6 +82,12 @@ var GoogleMapsMapView = MapView.extend({
     MapView.prototype.clean.call(this);
   },
 
+  listenOnce: function (name, callback) {
+    google.maps.event.addListenerOnce(this._gmapsMap, name, function (event) {
+      callback(event);
+    });
+  },
+
   _getLayerViewFactory: function () {
     this._layerViewFactory = this._layerViewFactory || new GMapsLayerViewFactory();
 

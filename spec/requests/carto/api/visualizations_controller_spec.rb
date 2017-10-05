@@ -1609,9 +1609,11 @@ describe Carto::Api::VisualizationsController do
 
       it 'returns visualization widgets' do
         layer = @visualization.layers.first
-        widget = FactoryGirl.create(:widget, layer: layer)
+        carto_user1 = Carto::User.find(@user_1.id)
+        analysis = FactoryGirl.create(:simple_source_analysis, visualization: @visualization, user: carto_user1)
+        widget = FactoryGirl.create(:widget, layer: layer, source_id: analysis.natural_id)
 
-        widget2 = FactoryGirl.create(:widget_with_layer, type: 'fake')
+        widget2 = FactoryGirl.create(:widget_with_layer, type: 'fake', source_id: analysis.natural_id)
 
         get_json get_vizjson3_url(@user_1, @visualization), @headers do |response|
           response.status.should == 200

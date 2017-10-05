@@ -1,5 +1,6 @@
 require 'active_record'
 require_relative './carto_json_serializer'
+require_relative './helpers/source_validation'
 require_dependency 'carto/table_utils'
 require_dependency 'carto/query_rewriter'
 
@@ -58,6 +59,7 @@ module Carto
     include Carto::TableUtils
     include LayerTableDependencies
     include Carto::QueryRewriter
+    include Carto::SourceValidation
 
     serialize :options, CartoJsonSerializer
     serialize :infowindow, CartoJsonSerializer
@@ -72,7 +74,7 @@ module Carto
     has_many :layers_user_tables, dependent: :destroy
     has_many :user_tables, through: :layers_user_tables, class_name: Carto::UserTable
 
-    has_many :widgets, class_name: Carto::Widget, order: '"order"'
+    has_many :widgets, class_name: Carto::Widget, order: '"order"', inverse_of: :layer
     has_many :legends,
              class_name: Carto::Legend,
              dependent: :destroy,
@@ -88,6 +90,7 @@ module Carto
     ALLOWED_KINDS = %w{carto tiled background gmapsbase torque wms}.freeze
     validates :kind, inclusion: { in: ALLOWED_KINDS }
     validate :validate_not_viewer
+    validate :source_exists
 
     TEMPLATES_MAP = {
       'table/views/infowindow_light' =>               'infowindow_light',
@@ -310,6 +313,10 @@ module Carto
       options['query'] = qualify_query(query, options['table_name'], owner_username) if query
     end
 
+    def validate_source_at_visualization(visualization)
+      validate_source(visualization, options['source'], :options)
+    end
+
     private
 
     # The table dependencies will only be updated after the layer. However, when deleting them, they need to be deleted
@@ -352,6 +359,10 @@ module Carto
 
     def validate_not_viewer
       errors.add(:maps, "Viewer users can't edit layers") if maps.any? { |m| m.user && m.user.viewer }
+    end
+
+    def source_exists
+      validate_source_at_visualization(visualization)
     end
 
     def update_layer_node_style

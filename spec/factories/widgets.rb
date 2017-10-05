@@ -1,6 +1,7 @@
 require_relative '../../app/models/carto/widget'
 
 FactoryGirl.define do
+  # As source_id is validated, it must be provided
   factory :widget, class: Carto::Widget do
     ignore do
       column_name 'pop_max'
@@ -8,7 +9,6 @@ FactoryGirl.define do
     order 1
     type 'formula'
     title 'The Title'
-    source_id 'a0'
     options do
       {
         type: "formula",

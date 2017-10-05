@@ -78,7 +78,7 @@ class Carto::Visualization < ActiveRecord::Base
   has_one :synchronization, class_name: Carto::Synchronization, dependent: :destroy
   has_many :external_sources, class_name: Carto::ExternalSource
 
-  has_many :analyses, class_name: Carto::Analysis
+  has_many :analyses, class_name: Carto::Analysis, inverse_of: :visualization
   has_many :mapcaps, class_name: Carto::Mapcap, dependent: :destroy, order: 'created_at DESC'
 
   has_one :state, class_name: Carto::State, autosave: true

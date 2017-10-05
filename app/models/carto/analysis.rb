@@ -2,19 +2,22 @@
 
 require 'json'
 require_relative './carto_json_serializer'
+require_relative './helpers/source_validation'
 
 require_dependency 'carto/table_utils'
 
 class Carto::Analysis < ActiveRecord::Base
+  include Carto::SourceValidation
   extend Carto::TableUtils
 
   serialize :analysis_definition, ::Carto::CartoJsonSymbolizerSerializer
   validates :analysis_definition, carto_json_symbolizer: true
   validate :validate_user_not_viewer
+  validate :layer_sources_valid
 
   before_destroy :validate_user_not_viewer
 
-  belongs_to :visualization, class_name: Carto::Visualization
+  belongs_to :visualization, class_name: Carto::Visualization, inverse_of: :analyses
   belongs_to :user, class_name: Carto::User
 
   after_save :update_map_dataset_dependencies, :notify_map_change
@@ -84,7 +87,20 @@ class Carto::Analysis < ActiveRecord::Base
     Carto::AnalysisNode.new(analysis_definition)
   end
 
+  def all_analysis_nodes
+    analysis_node.descendants
+  end
+
   private
+
+  def layer_sources_valid
+    visualization.layers.each do |l|
+      l.validate_source_at_visualization(visualization)
+      unless l.errors.empty?
+        errors.add(:visualization, "Layer #{l.id} would become invalid. Check layer source: #{l.options['source']}")
+      end
+    end
+  end
 
   # Analysis definition contains attributes not needed by Analysis API (see #7128).
   # This methods extract the needed ones.

@@ -24,6 +24,7 @@ describe Carto::Api::VizJSON3Presenter do
       bypass_named_maps
       @map, @table, @table_visualization, @visualization = create_full_visualization(Carto::User.find(@user1.id))
       @table.update_attribute(:privacy, Carto::UserTable::PRIVACY_PUBLIC)
+      FactoryGirl.create(:simple_source_analysis, natural_id: 'a0', visualization: @visualization, user: @user1)
     end
 
     after(:all) do
@@ -161,7 +162,8 @@ describe Carto::Api::VizJSON3Presenter do
       named_vizjson = v3_presenter.to_vizjson
       analyses_json = named_vizjson[:analyses]
       analyses_json.should_not be_nil
-      source_analysis_definition = analyses_json[0][:params][:source]
+      analysis_json = analyses_json.select { |a| a[:id] == analysis.natural_id }.first
+      source_analysis_definition = analysis_json[:params][:source]
       source_analysis_definition[:type].should eq 'source'
       source_analysis_definition[:params].should be_nil
     end
@@ -177,7 +179,7 @@ describe Carto::Api::VizJSON3Presenter do
     end
 
     it 'includes source at layers options' do
-      source = 'a1'
+      source = @visualization.analyses.map(&:all_analysis_nodes).flatten.select(&:source?).first.id
       layer = @visualization.data_layers.first
       layer.options['source'] = source
       layer.save
@@ -226,7 +228,7 @@ describe Carto::Api::VizJSON3Presenter do
       v3_vizjson[:layers][1][:options][:sql].should eq query
       v3_vizjson[:layers][1][:options][:source].should be_nil
 
-      source = 'a1'
+      source = @visualization.analyses.first.all_analysis_nodes.select(&:source?).first.id
       layer.options['source'] = source
       layer.save
       @visualization.reload

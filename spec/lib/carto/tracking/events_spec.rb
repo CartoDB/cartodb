@@ -12,7 +12,7 @@ module Carto
         before(:all) do
           @user = FactoryGirl.create(:carto_user, private_maps_enabled: true)
           @intruder = FactoryGirl.create(:carto_user)
-          @map, @table, @table_visualization, @visualization = create_full_visualization(@user)
+          @map, @table, @table_visualization, @visualization = create_builder_visualization(@user)
           @visualization.privacy = 'private'
           @visualization.save!
           @visualization.reload
@@ -1109,7 +1109,8 @@ module Carto
 
         describe CreatedWidget do
           before(:all) do
-            @widget = FactoryGirl.create(:widget, layer: @visualization.data_layers.first)
+            source_id = @visualization.analyses.map(&:natural_id).first
+            @widget = FactoryGirl.create(:widget, layer: @visualization.data_layers.first, source_id: source_id)
           end
 
           after(:all) do

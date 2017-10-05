@@ -283,20 +283,24 @@ describe Visualization::Member do
       end
 
       it 'deletes related analysis' do
+        analysis_params = { type: 'source', params: { query: 'select 1' } }
+        analysis_to_be_deleted = @visualization.analyses.create(user: @user,
+                                                                analysis_definition: analysis_params.merge(id: 'a0'))
+        analysis_to_keep = @visualization.analyses.create(user: @user,
+                                                          analysis_definition: analysis_params.merge(id: 'b0'))
+
         layer_to_be_deleted = @visualization.data_layers.first
-        layer_to_be_deleted.options[:source] = 'a0'
+        layer_to_be_deleted.options[:source] = analysis_to_be_deleted.natural_id
         layer_to_be_deleted.save
         layer_to_be_deleted.user_tables << @table
 
         layer = FactoryGirl.build(:carto_layer, kind: 'carto', maps: [@map])
-        layer.options[:source] = 'b0'
+        layer.options[:source] = analysis_to_keep.natural_id
         layer.save
         layer.user_tables << @other_table
 
         # We are doing dependencies manually because the physical table does not exist
         Carto::Map.any_instance.stubs(:update_dataset_dependencies)
-        analysis_to_be_deleted = @visualization.analyses.create(user: @user, analysis_definition: { id: 'a0' })
-        analysis_to_keep = @visualization.analyses.create(user: @user, analysis_definition: { id: 'b0' })
 
         table_visualization = CartoDB::Visualization::Member.new(id: @table_visualization.id).fetch
         table_visualization.delete

@@ -51,6 +51,38 @@ module Carto
         return map, table, table_visualization, visualization
       end
 
+      # A "full visualization" but from Builder, including a source analysis and a widget
+      def create_builder_visualization(
+        carto_user,
+        canonical_map: FactoryGirl.create(:carto_map_with_layers, user_id: carto_user.id),
+        map: FactoryGirl.create(:carto_map_with_layers, user_id: carto_user.id),
+        table: full_visualization_table(carto_user, canonical_map),
+        data_layer: nil,
+        visualization_attributes: {}
+      )
+
+        map, table1, table_visualization, visualization = create_full_visualization(
+          carto_user,
+          canonical_map: canonical_map,
+          map: map,
+          table: table,
+          data_layer: data_layer,
+          visualization_attributes: visualization_attributes
+        )
+
+        source_id = 'a0'
+        FactoryGirl.create(:simple_source_analysis,
+                           natural_id: source_id, visualization: visualization, user: carto_user)
+
+        data_layer = visualization.data_layers.first
+        data_layer.options['source'] = source_id
+        data_layer.save!
+
+        widget = FactoryGirl.build(:widget, source_id: source_id, layer: data_layer, options: { valid: 'format' })
+
+        return map, table1, table_visualization, visualization, visualization.analyses.first, widget
+      end
+
       def create_table_visualization(carto_user, table)
         FactoryGirl.create(
           :carto_visualization, user: carto_user, type: 'table', name: table.name, map_id: table.map_id)

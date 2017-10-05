@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.10.11-1717",
+  "version": "4.10.16",
   "dependencies": {
     "abbrev": {
       "version": "1.1.0",
@@ -402,8 +402,8 @@
     },
     "cartodb-deep-insights.js": {
       "version": "0.0.3",
-      "from": "cartodb/deep-insights.js#1717-display-error-tile",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#0f9064fe952a20371f6f5bd4c16a8bf3068a610c",
+      "from": "cartodb/deep-insights.js#master",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#9bf63f15963073716a1e954253c915520478481d",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",
@@ -419,8 +419,8 @@
     },
     "cartodb.js": {
       "version": "4.0.0-alpha.1.1.2",
-      "from": "cartodb/cartodb.js#1717-display-error-tile",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#885c21943dfb2027d9bc722d1805b97ed6019580"
+      "from": "cartodb/cartodb.js#v4",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#02692c64569ed4cc1c5735a2f96d8e46351b57c7"
     },
     "caseless": {
       "version": "0.12.0",
@@ -2575,9 +2575,9 @@
       "resolved": "git://github.com/tangrams/topojson-client.git#1068f4f2e03ddf8236499bbc896cec98d7a342b7"
     },
     "toposort": {
-      "version": "1.0.4",
+      "version": "1.0.6",
       "from": "toposort@>=1.0.0 <2.0.0",
-      "resolved": "https://registry.npmjs.org/toposort/-/toposort-1.0.4.tgz"
+      "resolved": "https://registry.npmjs.org/toposort/-/toposort-1.0.6.tgz"
     },
     "torque.js": {
       "version": "2.16.3",

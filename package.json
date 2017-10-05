@@ -89,7 +89,6 @@
     "test": "grunt test",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "preversion": "npm test",
     "postversion": "git push origin master --follow-tags"
   }
 }

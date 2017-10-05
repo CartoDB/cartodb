@@ -65,7 +65,7 @@ Development
 * Improve legends for torque (CartoDB/support#979)
 * CSV export allowed without geometries (#12888)
 * Fix handling of imports with long file names and existing tables with almost the same name (#12732)
-* Update cartodb.js version 
+* Update cartodb.js version
 * Don't allow csv export for polygon or line (#9855)
 * Fix a problem with Unifont Medium font (#support/1002, #support/989)
 * Hide the_geom_webmercator column from dataset view (#11045)
@@ -122,6 +122,7 @@ Development
 * Remove unsupported CartoCSS rules for vector rendering (#12410)
 * Force parameter `vector` for vector rendering (#12478).
 * Fixed typo in content_no_datasets.jst.ejs and en.json (Docs)
+* Fixed typo in grunt usage docs (#12907)
 * Fixing problem parsing formula widget creation (#support/843)
 * Don't try to lowercase null values in custom-list-collection object (support/#744)
 * Fixes named map creation for datasets imports on users with Google Maps (CartoDB/cartodb/pull/12519).
@@ -222,6 +223,7 @@ Development
 * Removed unused settings in organizations (#4992)
 * Increment maximum buckets in Time-Series for leap years (#12778)
 * Prevent invalid geometries in BoundingBoxUtils.to_polygon, to_point (#12873)
+* Improve tile error overlay (cartodb.js#1721)
 
 ### Internals
 * Fix layer's sources in tests (analysis source required) (#12866)

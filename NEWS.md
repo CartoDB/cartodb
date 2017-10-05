@@ -58,6 +58,7 @@ Development
 * Mustache conditionals support improved in popups (#support/763)
 * Updates Dataservices API client default version to `0.20.0` (#12633)
 * Remove data-observatory-multiple-measures feature flag (#304)
+* Improve legends error (cartodb.js#1758)
 
 ### Bug fixes / enhancements
 * Improve legends for torque (CartoDB/support#979)
@@ -223,8 +224,8 @@ Development
 * Improve tile error overlay (cartodb.js#1721)
 
 ### Internals
-
 * Fix layer's sources in tests (analysis source required) (#12866)
+* Adapt widget integration and specs to dataviews refactor (#12850)
 
 ### NOTICE
 This release upgrades the CartoDB PostgreSQL extension to `0.19.2`. Run the following to have it available:

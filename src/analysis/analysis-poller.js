@@ -19,23 +19,14 @@ AnalysisPoller.prototype.resetAnalysisNodes = function (analysisModels) {
 };
 
 AnalysisPoller.prototype._poll = function (analysisModel) {
-  if (analysisModel.url()) {
-    var poller = this._findOrCreatePoller(analysisModel);
-    if (analysisModel.hasChanged('url') && poller.active()) {
-      poller.stop();
-    }
-    if (!analysisModel.isDone()) {
-      poller.start();
-    }
+  if (this._canBePolled(analysisModel)) {
+    var poller = this._createPoller(analysisModel);
+    poller.start();
   }
 };
 
-AnalysisPoller.prototype._findOrCreatePoller = function (analysisModel) {
-  var poller = this._findPoller(analysisModel);
-  if (!poller) {
-    poller = this._createPoller(analysisModel);
-  }
-  return poller;
+AnalysisPoller.prototype._canBePolled = function (analysisModel) {
+  return analysisModel.url() && !analysisModel.isDone();
 };
 
 AnalysisPoller.prototype._findPoller = function (analysisModel) {

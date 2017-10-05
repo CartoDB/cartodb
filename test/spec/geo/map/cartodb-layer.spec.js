@@ -2,7 +2,6 @@ var _ = require('underscore');
 var Backbone = require('backbone');
 var CartoDBLayer = require('../../../../src/geo/map/cartodb-layer');
 var sharedTestsForInteractiveLayers = require('./shared-for-interactive-layers');
-var fakeFactory = require('../../../helpers/fakeFactory');
 
 describe('geo/map/cartodb-layer', function () {
   beforeEach(function () {
@@ -208,21 +207,6 @@ describe('geo/map/cartodb-layer', function () {
         }
       });
       expect(layer.getEstimatedFeatureCount()).toEqual(27);
-    });
-  });
-
-  describe('.update', function () {
-    var layer;
-    var analysisNodeMock = fakeFactory.createAnalysisModel({ id: 'a0' });
-
-    beforeEach(function () {
-      this.vis.analysis = { findNodeById: jasmine.createSpy('findNodeById').and.returnValue(analysisNodeMock) };
-      layer = new CartoDBLayer({}, { vis: this.vis });
-    });
-
-    it('should allow a string as parameter (deprecated: keep this only for prevent breaking changes in the api)', function () {
-      layer.update({ id: 3, source: 'a0' });
-      expect(layer.getSource()).toBe(analysisNodeMock);
     });
   });
 });

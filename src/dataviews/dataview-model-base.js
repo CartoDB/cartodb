@@ -90,7 +90,8 @@ module.exports = Model.extend({
     this._vis = opts.vis;
 
     if (!attrs.source) throw new Error('source is a required attr');
-    this._checkSourceAttribute(attrs.source);
+    this._checkSourceAttribute(this.getSource());
+    this.getSource().markAsSourceOf(this);
 
     if (!attrs.id) {
       this.set('id', this.defaults.type + '-' + this.cid);
@@ -340,6 +341,7 @@ module.exports = Model.extend({
 
   remove: function () {
     this._removeExistingAnalysisBindings();
+    this.getSource().unmarkAsSourceOf(this);
     this.trigger('destroy', this);
     this.stopListening();
   },

@@ -26,6 +26,8 @@ var AnalysisModel = Model.extend({
 
     this._initBinds();
 
+    // A hash that tracks which models (layers / dataviews) have
+    // this analysis model as their "source"
     this._referencedBy = {};
   },
 
@@ -72,6 +74,9 @@ var AnalysisModel = Model.extend({
     }, this);
 
     this.bind('change:status', function () {
+      // If the status changed from any other status to "ready"
+      // and this analysis is the "source" of any layer or dataview,
+      // vis has to be reloaded.
       if (this._hadStatus() && this.isReady() && this.isSourceOfAnyModel()) {
         this._reloadVis();
       }
@@ -191,6 +196,10 @@ var AnalysisModel = Model.extend({
 
   isSourceOfAnyModel: function () {
     return Object.keys(this._referencedBy).length > 0;
+  },
+
+  isSourceOf: function (model) {
+    return !!this._referencedBy[model.cid];
   },
 
   unmarkAsSourceOf: function (model) {

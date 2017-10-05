@@ -25,9 +25,9 @@ var CartoDBLayer = LayerModelBase.extend({
       this.set('initialStyle', attrs.cartocss);
     }
 
-    // TODO: Validate source?
+    // TODO: Throw error if source is not present
     if (attrs.source) {
-      this._updateSourceReferences(attrs.source);
+      this.setSource(attrs.source);
     }
 
     // PUBLIC PROPERTIES
@@ -118,16 +118,11 @@ var CartoDBLayer = LayerModelBase.extend({
   },
 
   setSource: function (newSource, options) {
-    this._updateSourceReferences(newSource);
-    this.set('source', newSource, options);
-  },
-
-  _updateSourceReferences: function (newSource) {
-    var currentSource = this.getSource();
-    if (currentSource) {
-      currentSource.unmarkAsSourceOf(this);
+    if (this.getSource()) {
+      this.getSource().unmarkAsSourceOf(this);
     }
     newSource.markAsSourceOf(this);
+    this.set('source', newSource, options);
   },
 
   /**
@@ -139,13 +134,21 @@ var CartoDBLayer = LayerModelBase.extend({
   },
 
   update: function (attrs) {
+    var onlySourceChanged = attrs.source && _.keys(attrs).length === 1;
+
     if (attrs.source) {
       console.warn('Deprecated: Use ".setSource" to update a layer\'s source instead of the update method');
-      attrs.source = CartoDBLayer.getLayerSourceFromAttrs(attrs, this._vis.analysis);
-
-      this._updateSourceReferences(attrs.source);
+      var source = CartoDBLayer.getLayerSourceFromAttrs(attrs, this._vis.analysis);
+      this.setSource(source, { silent: !onlySourceChanged });
+      delete attrs.source;
     }
-    LayerModelBase.prototype.update.apply(this, arguments);
+
+    LayerModelBase.prototype.update.call(this, attrs, { silent: onlySourceChanged });
+  },
+
+  remove: function () {
+    this.getSource().unmarkAsSourceOf(this);
+    LayerModelBase.prototype.remove.apply(this, arguments);
   }
 },
 // Static methods and properties

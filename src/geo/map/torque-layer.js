@@ -54,12 +54,18 @@ var TorqueLayer = LayerModelBase.extend({
     if (!options.vis) throw new Error('vis is required');
 
     this._vis = options.vis;
-    this.bind('change', this._onAttributeChanged, this);
+
+    // TODO: Throw error if source is not present
+    if (attrs.source) {
+      this.setSource(attrs.source);
+    }
 
     this.legends = new Legends(attrs.legends, {
       visModel: this._vis
     });
     this.unset('legends');
+
+    this.bind('change', this._onAttributeChanged, this);
 
     LayerModelBase.prototype.initialize.apply(this, arguments);
   },
@@ -169,8 +175,12 @@ var TorqueLayer = LayerModelBase.extend({
     return this.get('source');
   },
 
-  setSource: function (source, options) {
-    this.set('source', source);
+  setSource: function (newSource, options) {
+    if (this.getSource()) {
+      this.getSource().unmarkAsSourceOf(this);
+    }
+    newSource.markAsSourceOf(this);
+    this.set('source', newSource, options);
   },
 
   /**
@@ -182,13 +192,21 @@ var TorqueLayer = LayerModelBase.extend({
   },
 
   update: function (attrs) {
+    var onlySourceChanged = attrs.source && _.keys(attrs).length === 1;
+
     if (attrs.source) {
       console.warn('Deprecated: Use ".setSource" to update a layer\'s source instead the update method');
-      attrs.source = TorqueLayer.getLayerSourceFromAttrs(attrs, this._vis.analysis);
+      var source = TorqueLayer.getLayerSourceFromAttrs(attrs, this._vis.analysis);
+      this.setSource(source, { silent: !onlySourceChanged });
+      delete attrs.source;
     }
     LayerModelBase.prototype.update.apply(this, arguments);
-  }
+  },
 
+  remove: function () {
+    this.getSource().unmarkAsSourceOf(this);
+    LayerModelBase.prototype.remove.apply(this, arguments);
+  }
 },
 // Static methods and properties
 {

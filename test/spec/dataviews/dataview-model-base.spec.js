@@ -4,6 +4,7 @@ var VisModel = require('../../../src/vis/vis.js');
 var MapModel = require('../../../src/geo/map.js');
 var DataviewModelBase = require('../../../src/dataviews/dataview-model-base');
 var AnalysisService = require('../../../src/analysis/analysis-service.js');
+var fakeFactory = require('../../helpers/fakeFactory');
 
 var fakeCamshaftReference = {
   getSourceNamesForAnalysisType: function (analysisType) {
@@ -519,6 +520,38 @@ describe('dataviews/dataview-model-base', function () {
       });
 
       sharedTestsForAnalysisEvents();
+    });
+  });
+
+  describe('source references', function () {
+    var source;
+    var dataview;
+
+    beforeEach(function () {
+      source = fakeFactory.createAnalysisModel({ id: 'a0' });
+
+      dataview = new DataviewModelBase({
+        source: source
+      }, {
+        map: this.map,
+        vis: this.vis
+      });
+    });
+
+    describe('when dataview is initialized', function () {
+      it('should mark source as referenced', function () {
+        expect(source.isSourceOf(dataview)).toBe(true);
+      });
+    });
+
+    describe('when dataview is removed', function () {
+      it('should unmark source as referenced', function () {
+        expect(source.isSourceOf(dataview)).toBe(true);
+
+        dataview.remove();
+
+        expect(source.isSourceOf(dataview)).toBe(false);
+      });
     });
   });
 });

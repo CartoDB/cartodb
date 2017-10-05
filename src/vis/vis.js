@@ -264,7 +264,7 @@ var VisModel = Backbone.Model.extend({
   },
 
   _getAnalysisNodeModels: function () {
-    return this._getUniqueAnalysesNodes();
+    return AnalysisService.getUniqueAnalysesNodes(this._layersCollection, this._dataviewsCollection);
   },
 
   /**
@@ -435,10 +435,6 @@ var VisModel = Backbone.Model.extend({
 
   isLoading: function () {
     return this.get('loading');
-  },
-
-  _getUniqueAnalysesNodes: function () {
-    return AnalysisService.getUniqueAnalysesNodes(this._layersCollection, this._dataviewsCollection);
   }
 });
 

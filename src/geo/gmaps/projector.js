@@ -1,22 +1,24 @@
 /* global google */
+// helper to get pixel position from latlon
 
 function Projector (map) {
-  this._map = map;
+  this.setMap(map);
 }
-
+Projector.prototype = new google.maps.OverlayView();
+Projector.prototype.draw = function () {};
 Projector.prototype.latLngToPixel = function (latlng) {
-  var projection = this._map.getProjection();
+  var projection = this.getProjection();
   if (projection) {
-    return projection.fromLatLngToPoint(latlng);
+    return projection.fromLatLngToContainerPixel(latlng);
   }
   console.warn('Projector has no projection');
   return new google.maps.Point(0, 0);
 };
 
 Projector.prototype.pixelToLatLng = function (point) {
-  var projection = this._map.getProjection();
+  var projection = this.getProjection();
   if (projection) {
-    return projection.fromPointToLatLng(point);
+    return projection.fromContainerPixelToLatLng(point);
   }
   console.warn('Projector has no projection');
   return new google.maps.LatLng(0, 0);

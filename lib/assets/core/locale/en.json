@@ -2533,6 +2533,14 @@
       "alter-loading": "Modifying table…",
       "alter-success": "Modification applied",
       "applying": "Applying query…",
+      "429": {
+        "body": "You are over platform's limits. Please %{link} to know more details",
+        "link": "contact us",
+        "href": "mailto:support@carto.com"
+      },
+      "unknown": {
+        "body": "There was an error in the SQL query"
+      },
       "error": {
         "body": "%{body} %{error}",
         "title": "Error in SQL query:"

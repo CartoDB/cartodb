@@ -87,6 +87,7 @@ class Carto::Widget < ActiveRecord::Base
   def validate_user_not_viewer
     if user && user.viewer
       errors.add(:layer, "Viewer users can't edit widgets")
+      false
     end
   end
 

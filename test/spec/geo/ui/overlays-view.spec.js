@@ -101,4 +101,12 @@ describe('src/geo/ui/overlays-view.js', function () {
 
     expect(loaderOverlay.hasClass('is-visible')).toBeFalsy();
   });
+
+  it('should add the limit overlay when error:tile', function () {
+    expect(this.overlaysView.$('.CDB - OverlayContainer > .CDB-Limits').length).toEqual(0);
+
+    this.mapModel.trigger('error:tile');
+
+    expect(this.overlaysView.$('.CDB-OverlayContainer > .CDB-Limits').length).toEqual(1);
+  });
 });

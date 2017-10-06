@@ -94,11 +94,35 @@ AnalysisService.prototype._removeAnalsyisFromIndex = function (analysis) {
 
 /**
  * Return a list with all the analyses contained in the given collections.
+ * 
+ * @example
+ * We have the following analyses:  (a0->a1->a2), (b0->a2)
+ * This method will give us: (a0->a1->a2), (b0->a2)
  */
 AnalysisService.getAnalysisList = function (layersCollection, dataviewsCollection) {
   var layerAnalyses = _getAnalysesFromLayers(layersCollection);
   var dataviewsAnalyses = _getAnalysesFromDataviews(dataviewsCollection);
   return layerAnalyses.concat(dataviewsAnalyses);
+};
+
+/**
+ * Return all the analysis nodes without duplicates.
+ * The analyses are obtained from the layers and dataviews collections.
+ * 
+ * @example
+ * We have the following analyses:  (a0->a1->a2), (b0->a2)
+ * This method will give us: (a0->a1->a1), (a1->a2), (a2), (b0->a2)
+ */
+AnalysisService.getUniqueAnalysesNodes = function (layersCollection, dataviewsCollection) {
+  var uniqueAnalyses = {};
+  var analyses = AnalysisService.getAnalysisList(layersCollection, dataviewsCollection);
+  _.each(analyses, function (analisis) {
+    _.each(analisis.getNodes(), function (analysisNode) {
+      uniqueAnalyses[analysisNode.get('id')] = analysisNode;
+    }, this);
+  }, this);
+
+  return _.map(uniqueAnalyses, function (analisis) { return analisis; }, this);
 };
 
 function _getAnalysesFromLayers (layersCollection) {

@@ -38,7 +38,7 @@ namespace :cartodb do
           puts JSON.pretty_generate(import_params)
           File.write(config_filename, JSON.pretty_generate(import_params))
           puts "Written to #{config_filename}"
-          puts "Don't forget to upate the database host"
+          puts "Don't forget to update the database host"
         else
           puts ume.log.entries
         end

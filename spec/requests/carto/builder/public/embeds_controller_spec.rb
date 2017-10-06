@@ -117,11 +117,11 @@ describe Carto::Builder::Public::EmbedsController do
       response.status.should == 302
     end
 
-    it 'defaults to generate vizjson with vector=false' do
+    it 'defaults to generate vizjson with vector=true' do
       get builder_visualization_public_embed_url(visualization_id: @visualization.id)
 
       response.status.should == 200
-      response.body.should include('\"vector\":false')
+      response.body.should_not include('\"vector\":true')
     end
 
     it 'generates vizjson with vector=true with flag' do
@@ -132,7 +132,7 @@ describe Carto::Builder::Public::EmbedsController do
     end
 
     it 'doesn\'t include vector flag if vector_vs_raster feature flag is enabled and vector param is not present' do
-      set_feature_flag @visualization.user, 'vector_vs_raster', true
+      set_feature_flag @visualization.user, 'vector_vs_raster', false
 
       get builder_visualization_public_embed_url(visualization_id: @visualization.id)
 

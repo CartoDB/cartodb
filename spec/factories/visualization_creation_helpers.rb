@@ -3,6 +3,7 @@
 require_relative '../support/factories/tables'
 require 'helpers/unique_names_helper'
 
+include Warden::Test::Helpers
 include UniqueNamesHelper
 include CartoDB
 
@@ -10,7 +11,6 @@ def app
   CartoDB::Application.new
 end
 
-# requires include Warden::Test::Helpers
 def login(user)
   login_as(user, scope: user.username)
   host! "#{user.username}.localhost.lan"
@@ -58,7 +58,7 @@ shared_context 'visualization creation helpers' do
     options = JSON.parse(CARTO_OPTIONS)
     options["table_name"] = table_name
     options["user_name"] = user_name
-    FactoryGirl.build(:layer, kind: kind, options: options, order: order, infowindow: infowindow)
+    FactoryGirl.build(:carto_layer, kind: kind, options: options, order: order, infowindow: infowindow)
   end
 
   before(:each) do

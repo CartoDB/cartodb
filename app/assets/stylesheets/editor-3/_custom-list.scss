@@ -108,20 +108,3 @@
 .CDB-ListDecoration-rampItemBar {
   width: 20px;
 }
-// Custom scroll styles
-.CustomList-list.ps-container > .ps-scrollbar-x-rail,
-.CustomList-list.ps-container > .ps-scrollbar-y-rail {
-  @include opacity(0.8);
-  display: block;
-  background: none;
-}
-.CustomList-list.ps-container > .ps-scrollbar-y,
-.CustomList-list.ps-container > .ps-scrollbar-y-rail {
-  width: 4px;
-}
-.CustomList-list.ps-container > .ps-scrollbar-y-rail {
-  margin-right: 2px;
-}
-.CustomList-list.ps-container > .ps-scrollbar-x-rail {
-  margin-bottom: 2px;
-}

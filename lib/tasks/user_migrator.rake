@@ -25,7 +25,7 @@ namespace :cartodb do
         puts "Export finished with status #{ume.state}"
         if ume.state == Carto::UserMigrationExport::STATE_COMPLETE
           import_params = {
-            org_import: true,
+            org_import: ume.organization.present?,
             import_metadata: true,
             exported_file: ume.exported_file,
             json_file: ume.json_file,

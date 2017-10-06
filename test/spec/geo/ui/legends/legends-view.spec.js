@@ -4,14 +4,23 @@ var TileLayer = require('../../../../../src/geo/map/tile-layer');
 var CartoDBLayer = require('../../../../../src/geo/map/cartodb-layer');
 var TorqueLayer = require('../../../../../src/geo/map/torque-layer');
 var LayersCollection = require('../../../../../src/geo/map/layers');
+var fakeFactory = require('../../../../helpers/fakeFactory');
 
 describe('geo/ui/legends/legends-view', function () {
   beforeEach(function () {
     var vis = new Backbone.Model();
     vis.reload = jasmine.createSpy('reload');
     this.tileLayer = new TileLayer(null, { vis: {} });
-    this.cartoDBLayer1 = new CartoDBLayer({ layer_name: 'CartoDB Layer #1', legends: [] }, { vis: vis });
-    this.cartoDBLayer2 = new CartoDBLayer({ layer_name: 'CartoDB Layer #2', legends: [] }, { vis: vis });
+    this.cartoDBLayer1 = new CartoDBLayer({
+      source: fakeFactory.createAnalysisModel({ id: 'a1' }),
+      layer_name: 'CartoDB Layer #1',
+      legends: []
+    }, { vis: vis });
+    this.cartoDBLayer2 = new CartoDBLayer({
+      source: fakeFactory.createAnalysisModel({ id: 'a2' }),
+      layer_name: 'CartoDB Layer #2',
+      legends: []
+    }, { vis: vis });
     this.torqueLayer = new TorqueLayer({ layer_name: 'Torque Layer #3', legends: [] }, { vis: vis });
 
     this.layersCollection = new LayersCollection([]);

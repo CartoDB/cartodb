@@ -1,4 +1,5 @@
 var _ = require('underscore');
+var VisModel = require('../../src/vis/vis');
 var AnalysisModel = require('../../src/analysis/analysis-model');
 
 // We use a "fake" reference instead of the one in src/analysis/camshaft-reference
@@ -48,6 +49,11 @@ var createAnalysisModel = function (attrs) {
   return model;
 };
 
+var createVisModel = function () {
+  return new VisModel();
+};
+
 module.exports = {
-  createAnalysisModel: createAnalysisModel
+  createAnalysisModel: createAnalysisModel,
+  createVisModel: createVisModel
 };

@@ -233,16 +233,18 @@ describe('dataviews/histogram-dataview-model', function () {
         bins_count: 4,
         bins_start: 55611,
         nulls: 0,
-        type: 'histogram',
-        source: this.source
+        type: 'histogram'
       };
 
-      var model = new HistogramDataviewModel(data, {
+      var model = new HistogramDataviewModel({
+        source: this.source
+      }, {
         map: this.map,
         vis: this.vis,
-        filter: this.filter,
-        parse: true
+        filter: this.filter
       });
+
+      model.set(model.parse(data));
 
       expect(model.hasNulls()).toBe(true);
     });
@@ -257,16 +259,19 @@ describe('dataviews/histogram-dataview-model', function () {
         ],
         bins_count: 4,
         bins_start: 55611,
-        type: 'histogram',
-        source: this.source
+        type: 'histogram'
       };
 
-      var model = new HistogramDataviewModel(data, {
+      var model = new HistogramDataviewModel({
+        source: this.source
+      }, {
         map: this.map,
         vis: this.vis,
-        filter: this.filter,
-        parse: true
+        filter: this.filter
       });
+
+      model.set(model.parse(data));
+
       model._totals = new Backbone.Model({ aggregation: 'quarter' });
 
       expect(model.hasNulls()).toBe(false);

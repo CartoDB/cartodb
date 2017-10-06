@@ -1,29 +1,32 @@
 var Backbone = require('backbone');
 var AnalysisService = require('../../../src/analysis/analysis-service');
+var CartoDBLayer = require('../../../src/geo/map/cartodb-layer');
+var Dataview = require('../../../src/dataviews/dataview-model-base');
 
 describe('src/analysis/analysis-service.js', function () {
+  var fakeVis = new Backbone.Model();
+  var fakeCamshaftReference = {
+    getSourceNamesForAnalysisType: function (analysisType) {
+      var map = {
+        'trade-area': ['source'],
+        'estimated-population': ['source'],
+        'sql-function': ['source', 'target']
+      };
+      return map[analysisType];
+    },
+    getParamNamesForAnalysisType: function (analysisType) {
+      var map = {
+        'trade-area': ['kind', 'time'],
+        'estimated-population': ['columnName']
+      };
+      return map[analysisType];
+    }
+  };
   beforeEach(function () {
-    this.fakeCamshaftReference = {
-      getSourceNamesForAnalysisType: function (analysisType) {
-        var map = {
-          'trade-area': ['source'],
-          'estimated-population': ['source'],
-          'sql-function': ['source', 'target']
-        };
-        return map[analysisType];
-      },
-      getParamNamesForAnalysisType: function (analysisType) {
-        var map = {
-          'trade-area': ['kind', 'time'],
-          'estimated-population': ['columnName']
-        };
-        return map[analysisType];
-      }
-    };
     this.vis = new Backbone.Model();
     this.analysisCollection = new Backbone.Collection();
     this.analysisService = new AnalysisService({
-      camshaftReference: this.fakeCamshaftReference,
+      camshaftReference: fakeCamshaftReference,
       analysisCollection: this.analysisCollection,
       vis: this.vis
     });
@@ -48,7 +51,7 @@ describe('src/analysis/analysis-service.js', function () {
       this.analysisService = new AnalysisService({
         apiKey: 'THE_API_KEY',
         authToken: 'THE_AUTH_TOKEN',
-        camshaftReference: this.fakeCamshaftReference,
+        camshaftReference: fakeCamshaftReference,
         analysisCollection: this.analysisCollection,
         vis: this.vis
       });
@@ -264,6 +267,125 @@ describe('src/analysis/analysis-service.js', function () {
         type: 'sql-function',
         source: 'node'
       });
+    });
+  });
+
+  describe('.getUniqueAnalysesNodes', function () {
+    it('should return the analysis nodes: (single analysis node in a single layer)', function () {
+      var analysis = this.analysisService.analyse({
+        id: 'a0',
+        type: 'source',
+        query: 'SELECT * FROM subway_stops'
+      });
+      var layer = new CartoDBLayer({ source: analysis }, { vis: fakeVis });
+      var layersCollection = new Backbone.Collection([layer]);
+      var dataviewsCollection = new Backbone.Collection();
+
+      var expected = analysis;
+      var actual = AnalysisService.getUniqueAnalysesNodes(layersCollection, dataviewsCollection);
+
+      expect(actual[0]).toEqual(expected);
+    });
+
+    it('should return the analysis nodes: (2 analysis nodes, 1 dataview, 1 layer)', function () {
+      var analysis0 = this.analysisService.analyse({
+        id: 'a0',
+        type: 'source',
+        query: 'SELECT * FROM subway_stops'
+      });
+
+      var analysis1 = this.analysisService.analyse({
+        id: 'a1',
+        type: 'source',
+        query: 'SELECT * FROM bus_stops'
+      });
+
+      var layer = new CartoDBLayer({ source: analysis0 }, { vis: fakeVis });
+      var dataview = new Dataview({ id: 'dataview1', source: analysis1 }, { map: {}, vis: fakeVis });
+
+      var layersCollection = new Backbone.Collection([layer]);
+      var dataviewsCollection = new Backbone.Collection([dataview]);
+
+      var expected = [analysis0, analysis1];
+      var actual = AnalysisService.getUniqueAnalysesNodes(layersCollection, dataviewsCollection);
+
+      expect(actual.length).toEqual(expected.length);
+      expect(actual).toEqual(expected);
+    });
+
+    it('should return the analysis nodes: (2 analysis nodes, 1 dataview, 1 layer)', function () {
+      var analysis0 = this.analysisService.analyse({
+        id: 'a0',
+        type: 'source',
+        query: 'SELECT * FROM subway_stops'
+      });
+
+      var analysis1 = this.analysisService.analyse({
+        id: 'a1',
+        type: 'source',
+        query: 'SELECT * FROM bus_stops'
+      });
+
+      var layer = new CartoDBLayer({ source: analysis0 }, { vis: fakeVis });
+      var dataview = new Dataview({ id: 'dataview1', source: analysis1 }, { map: {}, vis: fakeVis });
+
+      var layersCollection = new Backbone.Collection([layer]);
+      var dataviewsCollection = new Backbone.Collection([dataview]);
+
+      var expected = [analysis0, analysis1];
+      var actual = AnalysisService.getUniqueAnalysesNodes(layersCollection, dataviewsCollection);
+
+      expect(actual.length).toEqual(expected.length);
+      expect(actual).toEqual(expected);
+    });
+
+    it('Should return the analysis nodes: (3 analysis nodes, 1 dataview, 2 layers)', function () {
+      this.analysisService.analyse(
+        {
+          id: 'a2',
+          type: 'estimated-population',
+          params: {
+            columnName: 'estimated_people',
+            source: {
+              id: 'a1',
+              type: 'trade-area',
+              params: {
+                kind: 'walk',
+                time: 300,
+                source: {
+                  id: 'a0',
+                  type: 'source',
+                  params: {
+                    query: 'SELECT * FROM subway_stops'
+                  }
+                }
+              }
+            }
+          }
+        }
+      );
+
+      var analysis0 = this.analysisService.findNodeById('a0');
+      var analysis1 = this.analysisService.findNodeById('a1');
+      var analysis2 = this.analysisService.findNodeById('a2');
+
+      var layer0 = new CartoDBLayer({ source: analysis0 }, { vis: fakeVis });
+      var layer1 = new CartoDBLayer({ source: analysis2 }, { vis: fakeVis });
+      var dataview = new Dataview({ id: 'dataview1', source: analysis1 }, { map: {}, vis: fakeVis });
+
+      var layersCollection = new Backbone.Collection([layer0, layer1]);
+      var dataviewsCollection = new Backbone.Collection([dataview]);
+
+      var expected = [analysis0, analysis2, analysis1];
+      var actual = AnalysisService.getUniqueAnalysesNodes(layersCollection, dataviewsCollection);
+
+      // This specs make easy to know what went wrong when the test fails.
+      expect(actual.length).toEqual(expected.length);
+      expect(actual[0].id).toEqual(expected[0].id);
+      expect(actual[1].id).toEqual(expected[1].id);
+      expect(actual[2].id).toEqual(expected[2].id);
+
+      expect(actual).toEqual(expected);
     });
   });
 });

@@ -32,6 +32,9 @@ module FrontendConfigHelper
       data_library_enabled:       CartoDB::Visualization::CommonDataService.configured?
     }
 
+    config[:fullstory_enabled] = user.account_type.downcase == 'free' && Cartodb.get_config(:fullstory, 'org').present?
+    config[:fullstory_org] = Cartodb.get_config(:fullstory, 'org')
+
     if CartoDB::Hubspot::instance.enabled? && !CartoDB::Hubspot::instance.token.blank?
       config[:hubspot_token] = CartoDB::Hubspot::instance.token
       config[:hubspot_ids] = CartoDB::Hubspot::instance.event_ids.to_json.html_safe

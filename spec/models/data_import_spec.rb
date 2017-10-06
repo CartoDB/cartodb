@@ -61,6 +61,48 @@ describe DataImport do
     data_import.error_code.should == 2011
   end
 
+  it 'should overwrite dataset if collision_strategy is set accordingly' do
+    carto_user = Carto::User.find(@user.id)
+    carto_user.visualizations.count.should eq 1
+
+    data_import = create_import(false)
+    data_import.run_import!
+    carto_user.reload
+    carto_user.visualizations.count.should eq 2
+    data_import.state.should eq 'complete'
+    data_import.table_name.should eq 'walmart_latlon'
+
+    data_import = create_import(false)
+    data_import.run_import!
+    carto_user.reload
+    carto_user.visualizations.count.should eq 3
+    data_import.state.should eq 'complete'
+    data_import.table_name.should eq 'walmart_latlon_1'
+
+    data_import = create_import(true)
+    data_import.run_import!
+    carto_user.reload
+    carto_user.visualizations.count.should eq 3
+    data_import.state.should eq 'complete'
+    data_import.table_name.should eq 'walmart_latlon'
+  end
+
+  def create_import(overwrite)
+    DataImport.create(
+      user_id: @user.id,
+      data_source: Rails.root.join("spec/support/data/walmart_latlon.csv").to_s,
+      data_type: "file",
+      table_name: 'walmart_latlon',
+      state: "pending",
+      success: false,
+      updated_at: Time.now,
+      created_at: Time.now,
+      original_url: Rails.root.join("spec/support/data/walmart_latlon.csv").to_s,
+      cartodbfy_time: 0.0,
+      collision_strategy: overwrite ? 'overwrite' : nil
+    )
+  end
+
   it 'raises a meaningful error if over storage quota' do
     previous_quota_in_bytes = @user.quota_in_bytes
     @user.quota_in_bytes = 0

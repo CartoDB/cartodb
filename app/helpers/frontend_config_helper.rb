@@ -14,6 +14,8 @@ module FrontendConfigHelper
       google_analytics_domain:    Cartodb.get_config(:google_analytics, 'domain'),
       hubspot_enabled:            CartoDB::Hubspot::instance.enabled?,
       intercom_app_id:            Cartodb.get_config(:intercom, 'app_id'),
+      fullstory_enabled:          user.account_type.downcase == 'free' && Cartodb.get_config(:fullstory, 'org').present?,
+      fullstory_org:              Cartodb.get_config(:fullstory, 'org'),
       dropbox_api_key:            Cartodb.get_config(:dropbox_api_key),
       gdrive_api_key:             Cartodb.get_config(:gdrive, 'api_key'),
       gdrive_app_id:              Cartodb.get_config(:gdrive, 'app_id'),
@@ -31,9 +33,6 @@ module FrontendConfigHelper
       licenses:                   Carto::License.all,
       data_library_enabled:       CartoDB::Visualization::CommonDataService.configured?
     }
-
-    config[:fullstory_enabled] = user.account_type.downcase == 'free' && Cartodb.get_config(:fullstory, 'org').present?
-    config[:fullstory_org] = Cartodb.get_config(:fullstory, 'org')
 
     if CartoDB::Hubspot::instance.enabled? && !CartoDB::Hubspot::instance.token.blank?
       config[:hubspot_token] = CartoDB::Hubspot::instance.token

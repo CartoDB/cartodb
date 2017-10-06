@@ -2,6 +2,7 @@ Development
 -----------
 
 ### Features
+* Add FullStory (if available) in user dashboard
 * Change default style for polygon, point and line geometries (design#983)
 * Unify scrollbars style (#12184)
 * Add endpoint for current user account deletion (#12841)
@@ -63,7 +64,7 @@ Development
 * Improve legends for torque (CartoDB/support#979)
 * CSV export allowed without geometries (#12888)
 * Fix handling of imports with long file names and existing tables with almost the same name (#12732)
-* Update cartodb.js version 
+* Update cartodb.js version
 * Don't allow csv export for polygon or line (#9855)
 * Fix a problem with Unifont Medium font (#support/1002, #support/989)
 * Hide the_geom_webmercator column from dataset view (#11045)

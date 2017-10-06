@@ -1,0 +1,37 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "anyOf": [
+    { "required": ["categories"] },
+    { "required": ["html"] }
+  ],
+  "properties": {
+    "categories": {
+      "type": "array",
+      "required": [
+        "title"
+      ],
+      "additionalProperties": false,
+      "items": {
+        "type": "object",
+        "required": [
+          "title"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "color": {
+            "type": "string",
+            "pattern": "^#(?:[0-9a-fA-F]{3}){1,2}$"
+          },
+          "icon": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "html": { "type": "string" }
+  }
+}

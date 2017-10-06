@@ -176,6 +176,8 @@ module Carto
     end
   end
 
+  class UserAlreadyExists < RuntimeError; end
+
   # Both String and Hash versions are provided because `deep_symbolize_keys` won't symbolize through arrays
   # and having separated methods make handling and testing much easier.
   class UserMetadataExportService
@@ -198,14 +200,28 @@ module Carto
     end
 
     def import_from_directory(path)
-      user_file = Dir["#{path}/user_*.json"].first
-      user = build_user_from_json_export(File.read(user_file))
-
+      user = user_from_file(path)
+      raise UserAlreadyExists.new if ::Carto::User.exists?(id: user.id)
       save_imported_user(user)
 
-      Carto::RedisExportService.new.restore_redis_from_json_export(File.read(Dir["#{path}/redis_user_*.json"].first))
+      Carto::RedisExportService.new.restore_redis_from_json_export(redis_user_file(path))
 
       user
+    end
+
+    def rollback_import_from_directory(path)
+      user = user_from_file(path)
+      return unless user
+
+      user = ::User[user.id]
+      return unless user
+
+      Carto::User.find(user.id).destroy
+      user.before_destroy(skip_table_drop: true)
+
+      Carto::RedisExportService.new.remove_redis_from_json_export(redis_user_file(path))
+    rescue ActiveRecord::RecordNotFound
+      # User was not created so not found and no redis removal needed
     end
 
     def import_user_visualizations_from_directory(user, type, meta_path)
@@ -229,12 +245,24 @@ module Carto
     end
 
     def import_search_tweets_from_directory(user, meta_path)
-      user_file = Dir["#{meta_path}/user_*.json"].first
+      user_file = user_file_dir(meta_path)
       search_tweets = build_search_tweets_from_json_export(File.read(user_file))
       search_tweets.each { |st| save_imported_search_tweet(st, user) }
     end
 
     private
+
+    def user_from_file(path)
+      build_user_from_json_export(File.read(user_file_dir(path)))
+    end
+
+    def user_file_dir(path)
+      Dir["#{path}/user_*.json"].first
+    end
+
+    def redis_user_file(path)
+      File.read(Dir["#{path}/redis_user_*.json"].first)
+    end
 
     def export_user_visualizations_to_directory(user, type, path)
       root_dir = Pathname.new(path)

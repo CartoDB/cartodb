@@ -2,6 +2,7 @@ Development
 -----------
 
 ### Features
+* Change default style for polygon, point and line geometries (design#983)
 * Unify scrollbars style (#12184)
 * Add endpoint for current user account deletion (#12841)
 * Add contextual help to Analysis UI (#11907)
@@ -57,11 +58,13 @@ Development
 * Mustache conditionals support improved in popups (#support/763)
 * Updates Dataservices API client default version to `0.20.0` (#12633)
 * Remove data-observatory-multiple-measures feature flag (#304)
+* Improve legends error (cartodb.js#1758)
 
 ### Bug fixes / enhancements
+* Improve legends for torque (CartoDB/support#979)
 * CSV export allowed without geometries (#12888)
 * Fix handling of imports with long file names and existing tables with almost the same name (#12732)
-* Update cartodb.js version 
+* Update cartodb.js version
 * Don't allow csv export for polygon or line (#9855)
 * Fix a problem with Unifont Medium font (#support/1002, #support/989)
 * Hide the_geom_webmercator column from dataset view (#11045)
@@ -118,6 +121,7 @@ Development
 * Remove unsupported CartoCSS rules for vector rendering (#12410)
 * Force parameter `vector` for vector rendering (#12478).
 * Fixed typo in content_no_datasets.jst.ejs and en.json (Docs)
+* Fixed typo in grunt usage docs (#12907)
 * Fixing problem parsing formula widget creation (#support/843)
 * Don't try to lowercase null values in custom-list-collection object (support/#744)
 * Fixes named map creation for datasets imports on users with Google Maps (CartoDB/cartodb/pull/12519).
@@ -218,10 +222,11 @@ Development
 * Removed unused settings in organizations (#4992)
 * Increment maximum buckets in Time-Series for leap years (#12778)
 * Prevent invalid geometries in BoundingBoxUtils.to_polygon, to_point (#12873)
+* Improve tile error overlay (cartodb.js#1721)
 
 ### Internals
-
 * Fix layer's sources in tests (analysis source required) (#12866)
+* Adapt widget integration and specs to dataviews refactor (#12850)
 
 ### NOTICE
 This release upgrades the CartoDB PostgreSQL extension to `0.19.2`. Run the following to have it available:
@@ -378,6 +383,7 @@ More information at [Dropbox migration guide](https://www.dropbox.com/developers
 * Format quota infowindow numbers (#11743)
 * Improved analysis error tooltip (#12250)
 * Enable overwrite collision_strategy in import API (#11990)
+* Rollback failed user/organization imports
 * Enable user migrations across clouds (#12795)
 
 ### Bug fixes

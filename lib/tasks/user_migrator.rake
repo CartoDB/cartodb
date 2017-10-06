@@ -7,11 +7,11 @@ namespace :cartodb do
     namespace :export do
       def run_user_migrator_export_job(ume)
         if ume.organization
-          puts "Exporting organization #{organization.name}"
+          puts "Exporting organization #{ume.organization.name}"
         else
-          puts "Exporting user #{user.username}"
+          puts "Exporting user #{ume.user.username}"
         end
-        if export_metadata
+        if ume.export_metadata
           puts "Including metadata (moving between clouds)"
         else
           puts "Without metadata (moving inside a single cloud)"
@@ -71,7 +71,7 @@ namespace :cartodb do
 
     desc 'Import a user migrator dump'
     task :import, [:config_file] => :environment do |_task, args|
-      config = JSON.parse(File.read(args[:config_file]))
+      config = JSON.parse(File.read(args[:config_file])).symbolize_keys
       raise 'Set a database host' if config[:database_host].blank? || config[:database_host].include?('<')
 
       umi = Carto::UserMigrationImport.new(config)

@@ -31,6 +31,8 @@ namespace :cartodb do
             json_file: ume.json_file,
             database_host: '<destination db host>'
           }
+          import_params[:user_id] = ume.user_id if !ume.export_metadata && ume.user_id
+          import_params[:organization_id] = ume.organization_id if !ume.export_metadata && ume.organization_id
           config_filename = "/tmp/import_for_#{ume.id}.json"
           puts "Pass the following parameters to the import task"
           puts JSON.pretty_generate(import_params)

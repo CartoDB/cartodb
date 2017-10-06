@@ -144,6 +144,10 @@ var VisModel = Backbone.Model.extend({
       vis: this
     });
 
+    this.analysis.findNodeById = function (nodeId) {
+      AnalysisService.findNodeById(nodeId, this._layersCollection, this._dataviewsCollection);
+    };
+
     var layersFactory = new LayersFactory({
       visModel: this,
       windshaftSettings: windshaftSettings

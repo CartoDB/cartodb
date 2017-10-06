@@ -24,7 +24,7 @@ var AnalysisService = function (opts) {
  * may have one or more "source" params pointing to another node. If a node had been created
  * already, this method updates the attributes of the existing node. New nodes are added to
  * the collection of analyses that has been injected.
- * 
+ *
  * TODO: document what's the analysis definition
  */
 AnalysisService.prototype.analyse = function (analysisDefinition) {
@@ -80,10 +80,6 @@ AnalysisService.prototype._onAnalysisRemoved = function (analysis) {
   analysis.unbind('destroy', this._onAnalysisRemoved);
 };
 
-AnalysisService.prototype.findNodeById = function (id) {
-  return this._analysisCollection.get(id);
-};
-
 AnalysisService.prototype._addAnalysisToCollection = function (analysis) {
   return this._analysisCollection.add(analysis);
 };
@@ -93,8 +89,18 @@ AnalysisService.prototype._removeAnalsyisFromIndex = function (analysis) {
 };
 
 /**
+ * Return the analysis node with the provided id
+ */
+AnalysisService.findNodeById = function (id, layersCollection, dataviewsCollection) {
+  var analyses = AnalysisService.getUniqueAnalysesNodes(layersCollection, dataviewsCollection);
+  return _.find(analyses, function (analysisNode) {
+    return analysisNode.get('id') === id;
+  });
+};
+
+/**
  * Return a list with all the analyses contained in the given collections.
- * 
+ *
  * @example
  * We have the following analyses:  (a0->a1->a2), (b0->a2)
  * This method will give us: (a0->a1->a2), (b0->a2)
@@ -108,7 +114,7 @@ AnalysisService.getAnalysisList = function (layersCollection, dataviewsCollectio
 /**
  * Return all the analysis nodes without duplicates.
  * The analyses are obtained from the layers and dataviews collections.
- * 
+ *
  * @example
  * We have the following analyses:  (a0->a1->a2), (b0->a2)
  * This method will give us: (a0->a1->a1), (a1->a2), (a2), (b0->a2)

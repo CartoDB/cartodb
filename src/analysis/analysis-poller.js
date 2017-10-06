@@ -1,9 +1,9 @@
 var _ = require('underscore');
 var BackbonePoller = require('backbone-poller');
 
-var AnalysisPoller = function () {
+function AnalysisPoller () {
   this._pollers = [];
-};
+}
 
 AnalysisPoller.CONFIG = {
   START_DELAY: 1000,

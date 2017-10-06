@@ -223,6 +223,7 @@ Development
 * Increment maximum buckets in Time-Series for leap years (#12778)
 * Prevent invalid geometries in BoundingBoxUtils.to_polygon, to_point (#12873)
 * Improve tile error overlay (cartodb.js#1721)
+* Fix TrackJS missing token in static pages (#12914)
 
 ### Internals
 * Fix layer's sources in tests (analysis source required) (#12866)

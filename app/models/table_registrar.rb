@@ -8,9 +8,9 @@ module CartoDB
     end
 
     def register(table_name, data_import_id, skip_table_creation = false)
-      self.table = table_klass.new(user_table: skip_table_creation ?
-                                                 Carto::UserTable.where(user_id: @user.id, name: table_name).first
-                                                 : nil)
+      self.table = table_klass.new(
+        user_table: skip_table_creation ? Carto::UserTable.where(user_id: @user.id, name: table_name).first : nil
+      )
       table.user_id = user.id unless skip_table_creation
       # INFO: we're not creating but registering an existent table, so we want fixed, known name
       table.instance_eval { self[:name] = table_name }

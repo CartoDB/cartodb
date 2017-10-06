@@ -77,7 +77,6 @@ module CartoDB
         log("Before renaming from #{result.table_name} to #{result.name}")
 
         name = Carto::ValidTableNameProposer.new.propose_valid_table_name(result.name, taken_names: [])
-        affected_maps = []
 
         overwrite = overwrite_table? && taken_names.include?(name)
         name = rename(result, result.table_name, result.name)
@@ -92,14 +91,14 @@ module CartoDB
             result.name = name
             log("Before moving schema '#{name}' from #{ORIGIN_SCHEMA} to #{@destination_schema}")
             move_to_schema(result, name, ORIGIN_SCHEMA, @destination_schema)
-          rescue =>e
-            log("Error replacing data in import: #{e.to_s}: #{e.backtrace.to_s}")
+          rescue => e
+            log("Error replacing data in import: #{e}: #{e.backtrace}")
             raise e
           end
         end
 
         log("Before persisting metadata '#{name}' data_import_id: #{data_import_id}")
-        persist_metadata(result, name, data_import_id, overwrite)
+        persist_metadata(name, data_import_id, overwrite)
 
         log("Table '#{name}' registered")
       rescue => exception
@@ -202,7 +201,10 @@ module CartoDB
       end
 
       def rename(result, current_name, new_name)
-        new_name = Carto::ValidTableNameProposer.new.propose_valid_table_name(new_name, taken_names: overwrite_table? ? [] : taken_names)
+        new_name = Carto::ValidTableNameProposer.new.propose_valid_table_name(
+          new_name,
+          taken_names: overwrite_table? ? [] : taken_names
+        )
 
         database.execute(%{
           ALTER TABLE "#{ORIGIN_SCHEMA}"."#{current_name}" RENAME TO "#{new_name}"
@@ -240,10 +242,10 @@ module CartoDB
           RENAME TO "the_geom_#{UUIDTools::UUID.timestamp_create.to_s.gsub('-', '_')}"
         })
       rescue => exception
-        log("Silently failed rename_the_geom_index_if_exists from #{current_name} to #{new_name} with exception #{exception}. Backtrace: #{exception.backtrace.to_s}. ")
+        log("Silently failed rename_the_geom_index_if_exists from #{current_name} to #{new_name} with exception #{exception}. Backtrace: #{exception.backtrace}. ")
       end
 
-      def persist_metadata(result, name, data_import_id, overwrite_table)
+      def persist_metadata(name, data_import_id, overwrite_table)
         table_registrar.register(name, data_import_id, overwrite_table)
         @table = table_registrar.table
         @imported_table_visualization_ids << @table.table_visualization.id unless overwrite_table

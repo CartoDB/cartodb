@@ -4,6 +4,7 @@ require 'active_record'
 require 'fileutils'
 require_relative '../../../services/user-mover/import_user'
 require_dependency 'resque/user_migration_jobs'
+require_dependency 'carto/user_metadata_export_service'
 
 module Carto
   class UserMigrationImport < ::ActiveRecord::Base

@@ -64,7 +64,7 @@ module.exports = cdb.core.View.extend({
   _onDataChanged: function (model) {
     if (this._noDataAvailable()) {
       this.hasError = true;
-      return this.render(model, errorEnhancer({ type: 'no_data_available' }))
+      return this.render(model, errorEnhancer({ type: 'no_data_available' }));
     }
 
     if (this.hasError) {

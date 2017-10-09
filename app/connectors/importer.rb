@@ -12,6 +12,8 @@ module CartoDB
       DESTINATION_SCHEMA  = 'public'
       MAX_RENAME_RETRIES  = 20
 
+      COLUMNS_NOT_TO_VALIDATE = [:cartodb_id, :the_geom_webmercator].freeze
+
       attr_reader :imported_table_visualization_ids, :rejected_layers
       attr_accessor :table
 
@@ -79,7 +81,8 @@ module CartoDB
         name = Carto::ValidTableNameProposer.new.propose_valid_table_name(result.name, taken_names: [])
 
         overwrite = overwrite_table? && taken_names.include?(name)
-        name = rename(result, result.table_name, result.name)
+
+        assert_schema_is_valid(name) if overwrite
 
         database.transaction do
           begin
@@ -91,6 +94,7 @@ module CartoDB
             result.name = name
             log("Before moving schema '#{name}' from #{ORIGIN_SCHEMA} to #{@destination_schema}")
             move_to_schema(result, name, ORIGIN_SCHEMA, @destination_schema)
+            name = rename(result, result.table_name, result.name)
           rescue => e
             log("Error replacing data in import: #{e}: #{e.backtrace}")
             raise e
@@ -271,6 +275,28 @@ module CartoDB
       end
 
       private
+
+      def assert_schema_is_valid(name)
+        orig_schema = user.in_database.schema(results.first.tables.first, reload:true, schema: ORIGIN_SCHEMA)
+        dest_schema = user.in_database.schema(name, reload:true, schema: user.database_schema)
+        valid = true
+
+        dest_schema.each do |dest_row|
+          next if COLUMNS_NOT_TO_VALIDATE.include?(dest_row[0])
+          break if !valid
+          row_valid = false
+          orig_schema.each do |orig_row|
+            if orig_row[0] == :the_geom && orig_row[0] == dest_row[0] && dest_row[1][:db_type].include?(orig_row[1][:db_type]) ||
+               orig_row[0] == dest_row[0] && orig_row[1][:db_type] == dest_row[1][:db_type]
+              row_valid = true
+              break
+            end
+          end
+          valid = row_valid
+        end
+
+        raise 'Incompatible schmeas' unless valid
+      end
 
       def user
         table_registrar.user

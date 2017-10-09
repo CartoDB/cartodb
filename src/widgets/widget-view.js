@@ -3,6 +3,7 @@ var cdb = require('cartodb.js');
 var WidgetLoaderView = require('./widget-loader-view');
 var WidgetErrorView = require('./widget-error-view');
 var errorEnhancer = require('../util/error-enhancer');
+var getValue = require('../util/get-object-value');
 
 var PLACEHOLDER_TEMPLATES = {
   category: require('./category/list/items-placeholder-template.tpl'),
@@ -23,10 +24,11 @@ module.exports = cdb.core.View.extend({
 
   initialize: function () {
     this.listenTo(this.model, 'destroy', this.clean);
-    this.listenTo(this.model.dataviewModel, 'all', this._onDataviewModelEvent);
+    this.listenTo(this.model.dataviewModel, 'error', this._onError);
+    this.listenTo(this.model.dataviewModel, 'sync change:data', this._onDataChanged);
 
     if (this.model.dataviewModel._totals) {
-      this.listenTo(this.model.dataviewModel._totals, 'all', this._onDataModelEvent);
+      this.listenTo(this.model.dataviewModel._totals, 'error', this._onError);
     }
   },
 
@@ -56,26 +58,17 @@ module.exports = cdb.core.View.extend({
     return this;
   },
 
-  _onDataviewModelEvent: function (type, error, model) {
-    var enhancedError = errorEnhancer(error);
-
-    if (type.lastIndexOf('error', 0) === 0) {
-      return this.render(model, enhancedError);
-    }
-
-    if (type === 'sync' || type === 'change:data') {
-      return this._noDataAvailable()
-        ? this.render(model, errorEnhancer({ type: 'no_data_available' }))
-        : this.render(model);
-    }
+  _onDataChanged: function (model) {
+    return this._noDataAvailable()
+      ? this.render(model, errorEnhancer({ type: 'no_data_available' }))
+      : this.render(model);
   },
 
-  _onDataModelEvent: function (type, error, model) {
+  _onError: function (model, response) {
+    var error = this._extractError(response);
     var enhancedError = errorEnhancer(error);
 
-    if (type.lastIndexOf('error', 0) === 0) {
-      return this.render(model, enhancedError);
-    }
+    return this.render(model, enhancedError);
   },
 
   _appendView: function (view) {
@@ -92,5 +85,10 @@ module.exports = cdb.core.View.extend({
 
   _isHistogram: function () {
     return this.model.dataviewModel.get('type') === 'histogram';
+  },
+
+  _extractError: function (response) {
+    var errors = getValue(response, 'responseJSON.errors_with_context', []);
+    return errors[0] || {};
   }
 });

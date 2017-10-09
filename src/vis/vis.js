@@ -404,9 +404,9 @@ var VisModel = Backbone.Model.extend({
   },
 
   /**
-   *     // "Load" existing analyses from the viz.json. This will generate
-       // the analyses graphs and index analysis nodes in the
-       // collection of analysis
+   * "Load" existing analyses from the viz.json. This will generate
+   * the analyses graphs and index analysis nodes in the
+   * collection of analysis
    */
   _createAnalysisNodes: function (analysesDefinition) {
     var analysisNodes = {};

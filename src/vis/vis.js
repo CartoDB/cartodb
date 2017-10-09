@@ -423,6 +423,8 @@ var VisModel = Backbone.Model.extend({
       _.each(analysisRoots, function (analysisRoot) {
         _.each(analysisRoot.getNodes(), function (analysisNode) {
           analysisNodes[analysisNode.get('id')] = analysisNode;
+          // TODO: remove
+          this._analysisCollection.add(analysisNode);
         }, this);
       }, this);
     }

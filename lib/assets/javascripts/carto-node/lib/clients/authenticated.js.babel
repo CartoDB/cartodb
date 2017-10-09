@@ -1,0 +1,15 @@
+const PublicClient = require('./public.js.babel');
+
+class AuthenticatedClient extends PublicClient {
+  getConfig (callback) {
+    const CONFIG_PATH = 'api/v3/me';
+    return this.get([CONFIG_PATH], callback);
+  }
+
+  getVisualization (viz, callback) {
+    const VIZ_API_PATH = 'api/v1/viz';
+    return this.get([VIZ_API_PATH, viz], callback);
+  }
+}
+
+module.exports = exports = AuthenticatedClient;

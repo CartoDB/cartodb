@@ -44,7 +44,7 @@ class PublicClient {
         data = null;
       }
 
-      callback(null, textStatus, data);
+      callback(null, jqXHR, data);
     };
   }
 
@@ -52,7 +52,7 @@ class PublicClient {
     return (jqXHR, textStatus, errorThrown) => {
       const err = errorThrown || new Error('Failed to fetch');
 
-      callback(err, textStatus, null);
+      callback(err, jqXHR, null);
     };
   }
 
@@ -60,7 +60,7 @@ class PublicClient {
     const { host, protocol } = window.location;
 
     const regExp = window.location.href.match(/(\/(u|user)\/[a-z0-9\-]+)\//);
-    const path = regExp && regExp[1] || '';
+    const path = (regExp && regExp[1]) || '';
 
     return window.StaticConfig.baseUrl || `${protocol}//${host}${path}`;
   }
@@ -72,14 +72,14 @@ class PublicClient {
     }
 
     Object.assign(opts, {
-      'contentType': 'application/json; charset=utf-8',
-      'method': method.toUpperCase()
+      contentType: 'application/json; charset=utf-8',
+      method: method.toUpperCase()
     });
 
     this.addHeaders(opts);
 
     const baseUrl = this.getAssetsBaseUrl();
-    const url = this.makeAbsoluteURI(this.makeRelativeURI(uriParts));
+    const url = this.makeRelativeURI(uriParts);
 
     $.ajax(`${baseUrl}${url}`, opts)
       .done(this.successCallback(callback))

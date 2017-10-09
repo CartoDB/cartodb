@@ -59,7 +59,10 @@ module Carto
         user = current_viewer
 
         attributes = params[:user]
-        return(head 200) unless attributes.present?
+
+        unless attributes.present?
+          render_jsonp(Carto::Api::UserPresenter.new(user, current_viewer: current_viewer).to_poro) and return
+        end
 
         update_password_if_needed(user, attributes)
 

@@ -24,7 +24,7 @@ describe('dataviews/category-dataview-model', function () {
       analysisCollection: this.vis._analysisCollection,
       vis: this.vis
     });
-    this.source = analysisService.analyse(analysisDefinition);
+    this.source = analysisService.createAnalysis(analysisDefinition);
 
     this.layer = new Backbone.Model();
 

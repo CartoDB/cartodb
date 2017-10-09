@@ -32,7 +32,7 @@ describe('anonymous-map-serializer', function () {
         camshaftReference: fakeCamshaftReference,
         vis: visModel
       });
-      analysisModel = analysisService.analyse({
+      analysisModel = analysisService.createAnalysis({
         id: 'ANALYSIS_ID',
         type: 'source',
         params: {

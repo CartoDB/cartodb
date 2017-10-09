@@ -34,7 +34,7 @@ describe('src/analysis/analysis-service.js', function () {
 
   describe('.analyse', function () {
     it('should generate and return a new analysis', function () {
-      var subwayStops = this.analysisService.analyse({
+      var subwayStops = this.analysisService.createAnalysis({
         id: 'a0',
         type: 'source',
         query: 'SELECT * FROM subway_stops'
@@ -56,7 +56,7 @@ describe('src/analysis/analysis-service.js', function () {
         vis: this.vis
       });
 
-      var analysisModel = this.analysisService.analyse({
+      var analysisModel = this.analysisService.createAnalysis({
         id: 'a0',
         type: 'source',
         query: 'SELECT * FROM subway_stops'
@@ -97,7 +97,7 @@ describe('src/analysis/analysis-service.js', function () {
     });
 
     it('should recursively build the anlysis graph', function () {
-      var estimatedPopulation = this.analysisService.analyse(
+      var estimatedPopulation = this.analysisService.createAnalysis(
         {
           id: 'a2',
           type: 'estimated-population',
@@ -128,7 +128,7 @@ describe('src/analysis/analysis-service.js', function () {
     });
 
     it('analysis should be re-created after it has been removed', function () {
-      var subwayStops1 = this.analysisService.analyse({
+      var subwayStops1 = this.analysisService.createAnalysis({
         id: 'a0',
         type: 'source',
         params: {
@@ -138,7 +138,7 @@ describe('src/analysis/analysis-service.js', function () {
 
       subwayStops1.remove();
 
-      var subwayStops2 = this.analysisService.analyse({
+      var subwayStops2 = this.analysisService.createAnalysis({
         id: 'a0',
         type: 'source',
         params: {
@@ -286,13 +286,13 @@ describe('src/analysis/analysis-service.js', function () {
     });
 
     it('should return the analysis nodes: (2 analysis nodes, 1 dataview, 1 layer)', function () {
-      var analysis0 = this.analysisService.analyse({
+      var analysis0 = this.analysisService.createAnalysis({
         id: 'a0',
         type: 'source',
         query: 'SELECT * FROM subway_stops'
       });
 
-      var analysis1 = this.analysisService.analyse({
+      var analysis1 = this.analysisService.createAnalysis({
         id: 'a1',
         type: 'source',
         query: 'SELECT * FROM bus_stops'
@@ -312,13 +312,13 @@ describe('src/analysis/analysis-service.js', function () {
     });
 
     it('should return the analysis nodes: (2 analysis nodes, 1 dataview, 1 layer)', function () {
-      var analysis0 = this.analysisService.analyse({
+      var analysis0 = this.analysisService.createAnalysis({
         id: 'a0',
         type: 'source',
         query: 'SELECT * FROM subway_stops'
       });
 
-      var analysis1 = this.analysisService.analyse({
+      var analysis1 = this.analysisService.createAnalysis({
         id: 'a1',
         type: 'source',
         query: 'SELECT * FROM bus_stops'

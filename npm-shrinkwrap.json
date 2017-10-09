@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.10.2-2.574.3",
+  "version": "4.10.2-2.574.4",
   "dependencies": {
     "abbrev": {
       "version": "1.1.0",
@@ -403,7 +403,7 @@
     "cartodb-deep-insights.js": {
       "version": "0.3.0",
       "from": "cartodb/deep-insights.js#574-widget-limits-error",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#c1de4cb1e6f442cfebd5e78f9450cda4b8552279",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#1ff3a24cd5a07695943b12a501eba3db9070d40d",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",

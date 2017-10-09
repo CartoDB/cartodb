@@ -7,7 +7,7 @@ module Carto
     class VisualizationPresenter
 
       def initialize(visualization, current_viewer, context,
-                     related: true,
+                     related: true, related_canonical_visualizations: false,
                      show_stats: true, show_likes: true, show_liked: true, show_table: true,
                      show_permission: true, show_synchronization: true, show_uses_builder_features: true,
                      show_table_size_and_row_count: true)
@@ -16,6 +16,7 @@ module Carto
         @context = context
 
         @related = related
+        @related_canonical_visualizations = related_canonical_visualizations
         @show_stats = show_stats
         @show_likes = show_likes
         @show_liked = show_liked
@@ -70,6 +71,7 @@ module Carto
         }
 
         poro[:related_tables] = related_tables if related
+        poro[:related_canonical_visualizations] = related_canonical_visualizations if @related_canonical_visualizations
         poro[:likes] = @visualization.likes_count if show_likes
         poro[:liked] = @current_viewer ? @visualization.liked_by?(@current_viewer.id) : false if show_liked
         poro[:table] = user_table_presentation if show_table
@@ -166,6 +168,10 @@ module Carto
         related.map do |table|
           Carto::Api::UserTablePresenter.new(table, @current_viewer).to_poro
         end
+      end
+
+      def related_canonical_visualizations
+        @visualization.related_canonical_visualizations.map { |v| self.class.new(v, @current_viewer, @context).to_poro }
       end
 
       def children_poro(visualization)

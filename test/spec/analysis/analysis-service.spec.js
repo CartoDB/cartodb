@@ -168,7 +168,7 @@ describe('src/analysis/analysis-service.js', function () {
 
   describe('.findNodeById', function () {
     it('should traverse the analysis and return an existing node', function () {
-      this.analysisService.analyse(
+      var analysisA = this.analysisService.createAnalysis(
         {
           id: 'a2',
           type: 'estimated-population',
@@ -192,41 +192,39 @@ describe('src/analysis/analysis-service.js', function () {
           }
         }
       );
+      var analysisANodes = new Backbone.Collection(analysisA.getNodes());
 
-      expect(this.analysisService.findNodeById('a2').get('id')).toEqual('a2');
-      expect(this.analysisService.findNodeById('a1').get('id')).toEqual('a1');
-      expect(this.analysisService.findNodeById('a0').get('id')).toEqual('a0');
+      var analysisB = this.analysisService.createAnalysis(
+        {
+          id: 'b0',
+          type: 'source',
+          params: {
+            query: 'SELECT * FROM bus_stops'
+          }
+        }
+      );
+
+      var layer = new CartoDBLayer({ source: analysisA }, { vis: fakeVis });
+      var layersCollection = new Backbone.Collection([layer]);
+      var dataview = new Dataview({ source: analysisB }, { map: {}, vis: fakeVis });
+      var dataviewsCollection = new Backbone.Collection([dataview]);
+
+      // This specs make easy to know what went wrong when the test fails
+      expect(AnalysisService.findNodeById('a2', layersCollection, dataviewsCollection).get('id')).toBe('a2');
+      expect(AnalysisService.findNodeById('a1', layersCollection, dataviewsCollection).get('id')).toBe('a1');
+      expect(AnalysisService.findNodeById('a0', layersCollection, dataviewsCollection).get('id')).toBe('a0');
+      expect(AnalysisService.findNodeById('b0', layersCollection, dataviewsCollection).get('id')).toBe('b0');
+
+      expect(AnalysisService.findNodeById('a2', layersCollection, dataviewsCollection)).toBe(analysisANodes.get('a2'));
+      expect(AnalysisService.findNodeById('a1', layersCollection, dataviewsCollection)).toBe(analysisANodes.get('a1'));
+      expect(AnalysisService.findNodeById('a0', layersCollection, dataviewsCollection)).toBe(analysisANodes.get('a0'));
+      expect(AnalysisService.findNodeById('b0', layersCollection, dataviewsCollection)).toBe(analysisB);
+
+      expect(AnalysisService.findNodeById('c0', layersCollection, dataviewsCollection)).toBeUndefined();
     });
 
     it('should return undefined if node is not found', function () {
-      expect(this.analysisService.findNodeById('something')).toBeUndefined();
-
-      this.analysisService.analyse(
-        {
-          id: 'a2',
-          type: 'estimated-population',
-          params: {
-            columnName: 'estimated_people',
-            source: {
-              id: 'a1',
-              type: 'trade-area',
-              params: {
-                kind: 'walk',
-                time: 300,
-                source: {
-                  id: 'a0',
-                  type: 'source',
-                  params: {
-                    query: 'SELECT * FROM subway_stops'
-                  }
-                }
-              }
-            }
-          }
-        }
-      );
-
-      expect(this.analysisService.findNodeById('something')).toBeUndefined();
+      pending('Included in previous tests. TODO: create new test for this');
     });
   });
 
@@ -272,7 +270,7 @@ describe('src/analysis/analysis-service.js', function () {
 
   describe('.getUniqueAnalysesNodes', function () {
     it('should return the analysis nodes: (single analysis node in a single layer)', function () {
-      var analysis = this.analysisService.analyse({
+      var analysis = this.analysisService.createAnalysis({
         id: 'a0',
         type: 'source',
         query: 'SELECT * FROM subway_stops'
@@ -340,7 +338,7 @@ describe('src/analysis/analysis-service.js', function () {
     });
 
     it('Should return the analysis nodes: (3 analysis nodes, 1 dataview, 2 layers)', function () {
-      this.analysisService.analyse(
+      var analysis = this.analysisService.createAnalysis(
         {
           id: 'a2',
           type: 'estimated-population',
@@ -364,10 +362,11 @@ describe('src/analysis/analysis-service.js', function () {
           }
         }
       );
+      var analysisNodes = new Backbone.Collection(analysis.getNodes());
 
-      var analysis0 = this.analysisService.findNodeById('a0');
-      var analysis1 = this.analysisService.findNodeById('a1');
-      var analysis2 = this.analysisService.findNodeById('a2');
+      var analysis0 = analysisNodes.get('a0');
+      var analysis1 = analysisNodes.get('a1');
+      var analysis2 = analysisNodes.get('a2');
 
       var layer0 = new CartoDBLayer({ source: analysis0 }, { vis: fakeVis });
       var layer1 = new CartoDBLayer({ source: analysis2 }, { vis: fakeVis });

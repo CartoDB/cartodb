@@ -173,6 +173,7 @@ var AnalysisModel = Model.extend({
   /**
    * Return an Array with the complete node list for this analysis.
    */
+  // TODO: use backbone collection
   getNodes: function () {
     // Add current node to the list
     var nodes = [this];

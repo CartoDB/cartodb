@@ -1,4 +1,5 @@
 var cdb = require('cartodb.js');
+var _ = require('underscore');
 var errorButtonTemplate = require('./widget-error-button-template.tpl');
 var errorTextTemplate = require('./widget-error-text-template.tpl');
 
@@ -24,15 +25,19 @@ module.exports = cdb.core.View.extend({
   render: function () {
     this._reset();
 
+    var placeholder = _.isFunction(this._placeholder)
+      ? this._placeholder()
+      : '';
+
     var body = this._error.type
       ? errorTextTemplate({
-        placeholder: this._placeholder(),
+        placeholder: placeholder,
         error: this._error.error,
         title: this._title,
         message: this._error.message,
         refresh: this._error.refresh
       })
-      : errorButtonTemplate({ placeholder: this._placeholder() });
+      : errorButtonTemplate({ placeholder: placeholder });
 
     this.$el.addClass('CDB-Widget--' + this._error.level);
     this.$el.html(body);

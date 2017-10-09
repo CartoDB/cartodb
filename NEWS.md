@@ -2,6 +2,7 @@ Development
 -----------
 
 ### Features
+* Add FullStory (if available) in user dashboard
 * Change default style for polygon, point and line geometries (design#983)
 * Unify scrollbars style (#12184)
 * Add endpoint for current user account deletion (#12841)

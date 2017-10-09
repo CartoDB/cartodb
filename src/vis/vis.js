@@ -122,7 +122,6 @@ var VisModel = Backbone.Model.extend({
 
   load: function (vizjson) {
     // Create the WindhaftClient
-
     var datasource = vizjson.datasource;
 
     var windshaftSettings = {
@@ -138,12 +137,20 @@ var VisModel = Backbone.Model.extend({
 
     // Create the public Analysis Factory
     // TODO: use only AnalysisService static methods without instance
-    this.analysis = new AnalysisService({
+    this.analysisService = new AnalysisService({
       apiKey: this.get('apiKey'),
       authToken: this.get('authToken'),
       analysisCollection: this._analysisCollection,
       vis: this
     });
+
+    // Public namespace exposing public methods.
+    this.analysis = {
+      createAnalysis: this.analysisService.createAnalysis,
+      findNodeById: function (id) {
+        return AnalysisService.findNodeById(id, this._layersCollection, this._dataviewsCollection);
+      }.bind(this)
+    };
 
     var allowScrollInOptions = (vizjson.options && vizjson.options.scrollwheel) || vizjson.scrollwheel;
     // Create the Map
@@ -413,7 +420,7 @@ var VisModel = Backbone.Model.extend({
     var analysisRoots = [];
     if (analysesDefinition) {
       _.each(analysesDefinition, function (analysisDefinition) {
-        analysisRoots.push(this.analysis.createAnalysis(analysisDefinition));
+        analysisRoots.push(this.analysisService.createAnalysis(analysisDefinition));
       }, this);
 
       _.each(analysisRoots, function (analysisRoot) {
@@ -447,18 +454,13 @@ var VisModel = Backbone.Model.extend({
         // TODO: We'll be able to remove this (accepting sql option) once
         // https://github.com/CartoDB/cartodb.js/issues/1754 is closed.
         if (layerData.sql) {
-          layerData.source = this.analysis.createSourceAnalysisForLayer(layerData.id, layerData.sql);
+          layerData.source = this.analysisService.createSourceAnalysisForLayer(layerData.id, layerData.sql);
           delete layerData.sql;
         }
       }
       return this.layersFactory.createLayer(layerData.type, layerData);
     }, this);
     return layers;
-  },
-
-  // TODO: temporary method: future use analysis.findNodeById
-  findAnalysisNodeById: function (nodeId) {
-    return AnalysisService.findNodeById(nodeId, this._layersCollection, this._dataviewsCollection);
   }
 });
 

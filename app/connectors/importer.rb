@@ -80,6 +80,7 @@ module CartoDB
 
         overwrite = overwrite_table? && taken_names.include?(name)
         assert_schema_is_valid(name) if overwrite
+        name = rename(result, result.table_name, result.name)
 
         database.transaction do
           begin
@@ -88,15 +89,15 @@ module CartoDB
               drop("#{@destination_schema}.#{name}")
               log("Removing metadata for table #{name}")
             end
-            result.name = name
             log("Before moving schema '#{name}' from #{ORIGIN_SCHEMA} to #{@destination_schema}")
             move_to_schema(result, name, ORIGIN_SCHEMA, @destination_schema)
-            name = rename(result, result.table_name, result.name)
           rescue => e
             log("Error replacing data in import: #{e}: #{e.backtrace}")
             raise e
           end
         end
+
+        result.name = name
 
         log("Before persisting metadata '#{name}' data_import_id: #{data_import_id}")
         persist_metadata(name, data_import_id, overwrite)
@@ -289,7 +290,7 @@ module CartoDB
           row_valid = false
           orig_schema.each do |orig_row|
             if orig_row[0] == :the_geom && orig_row[0] == dest_row[0] && dest_row[1][:db_type].include?(orig_row[1][:db_type]) ||
-               orig_row[0] == dest_row[0] && orig_row[1][:db_type] == dest_row[1][:db_type]
+               orig_row[0] == dest_row[0] && orig_row[1][:db_type].convert_to_cartodb_type == dest_row[1][:db_type].convert_to_cartodb_type
               row_valid = true
               break
             end
@@ -297,7 +298,7 @@ module CartoDB
           valid = row_valid
         end
 
-        raise 'Incompatible schmeas' unless valid
+        raise 'Incompatible schemas' unless valid
       end
 
       def user

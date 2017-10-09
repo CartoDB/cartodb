@@ -247,8 +247,13 @@ module CartoDB
       end
 
       def persist_metadata(name, data_import_id, overwrite_table)
-        table_registrar.register(name, data_import_id, overwrite_table)
+        user_table = overwrite_table? ? Carto::UserTable.where(user_id: user.id, name: name).first : nil
+        table_registrar.register(name, data_import_id, user_table)
         @table = table_registrar.table
+        if overwrite_table
+          @table.update_cdb_tablemetadata
+          @table.cartodbfy
+        end
         @imported_table_visualization_ids << @table.table_visualization.id unless overwrite_table
         table.update_bounding_box
         self

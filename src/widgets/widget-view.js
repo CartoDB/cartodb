@@ -23,6 +23,7 @@ module.exports = cdb.core.View.extend({
   },
 
   initialize: function () {
+    this.hasError = false;
     var dataviewModel = this.model.dataviewModel;
 
     this.listenTo(this.model, 'destroy', this.clean);
@@ -61,12 +62,23 @@ module.exports = cdb.core.View.extend({
   },
 
   _onDataChanged: function (model) {
-    return this._noDataAvailable()
-      ? this.render(model, errorEnhancer({ type: 'no_data_available' }))
-      : this.render(model);
+    if (this._noDataAvailable()) {
+      this.hasError = true;
+      return this.render(model, errorEnhancer({ type: 'no_data_available' }))
+    }
+
+    if (this.hasError) {
+      this.hasError = false;
+      this.render(model);
+    }
   },
 
   _onError: function (model, response) {
+    if (response.statusText === 'abort') {
+      return;
+    }
+
+    this.hasError = true;
     var error = this._extractError(response);
     var enhancedError = errorEnhancer(error);
 

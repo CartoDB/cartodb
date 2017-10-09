@@ -546,30 +546,13 @@ describe('vis/vis', function () {
     });
 
     it('should initialize existing analyses', function () {
-      pending('TODO: this vizjson is outdated. Layergroup is not a layer type');
       this.vizjson = {
         layers: [
           {
-            type: 'tiled',
+            type: 'CartoDB',
             options: {
-              urlTemplate: ''
-            }
-          },
-          {
-            type: 'layergroup',
-            options: {
-              user_name: 'pablo',
-              maps_api_template: 'https://{user}.cartodb-staging.com:443',
-              layer_definition: {
-                stat_tag: 'ece6faac-7271-11e5-a85f-04013fc66a01',
-                layers: [{
-                  type: 'CartoDB',
-                  options: {
-                    source: 'a0'
-                  }
-
-                }]
-              }
+              source: 'a1',
+              cartocss: 'cartocss'
             }
           }
         ],

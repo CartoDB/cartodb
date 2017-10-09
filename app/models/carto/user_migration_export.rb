@@ -5,6 +5,7 @@ require 'fileutils'
 require_relative '../../../services/user-mover/export_user'
 require_dependency 'file_upload'
 require_dependency 'resque/user_migration_jobs'
+require_dependency 'carto/ghost_tables_manager'
 
 module Carto
   class UserMigrationExport < ::ActiveRecord::Base

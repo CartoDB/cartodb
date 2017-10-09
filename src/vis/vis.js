@@ -137,6 +137,7 @@ var VisModel = Backbone.Model.extend({
     var windshaftClient = new WindshaftClient(windshaftSettings);
 
     // Create the public Analysis Factory
+    // TODO: use only AnalysisService static methods without instance
     this.analysis = new AnalysisService({
       apiKey: this.get('apiKey'),
       authToken: this.get('authToken'),
@@ -148,11 +149,6 @@ var VisModel = Backbone.Model.extend({
       AnalysisService.findNodeById(nodeId, this._layersCollection, this._dataviewsCollection);
     };
 
-    var layersFactory = new LayersFactory({
-      visModel: this,
-      windshaftSettings: windshaftSettings
-    });
-
     var allowScrollInOptions = (vizjson.options && vizjson.options.scrollwheel) || vizjson.scrollwheel;
     // Create the Map
     var allowDragging = util.isMobileDevice() || vizjson.hasZoomOverlay() || allowScrollInOptions;
@@ -163,6 +159,11 @@ var VisModel = Backbone.Model.extend({
     } else if (vizjson.vector === false) {
       renderMode = RenderModes.RASTER;
     }
+
+    this.layersFactory = new LayersFactory({
+      visModel: this,
+      windshaftSettings: windshaftSettings
+    });
 
     this.map = new Map({
       title: vizjson.title,
@@ -177,7 +178,7 @@ var VisModel = Backbone.Model.extend({
       renderMode: renderMode
     }, {
       layersCollection: this._layersCollection,
-      layersFactory: layersFactory
+      layersFactory: this.layersFactory
     });
 
     this.listenTo(this.map, 'cartodbLayerMoved', this.reload);
@@ -208,6 +209,7 @@ var VisModel = Backbone.Model.extend({
     this.overlaysCollection.reset(vizjson.overlays);
 
     // Create the public Dataview Factory
+    // TODO: create dataviews more explicitly
     this.dataviews = new DataviewsFactory({
       apiKey: this.get('apiKey'),
       authToken: this.get('authToken')
@@ -217,37 +219,9 @@ var VisModel = Backbone.Model.extend({
       dataviewsCollection: this._dataviewsCollection
     });
 
-    // "Load" existing analyses from the viz.json. This will generate
-    // the analyses graphs and index analysis nodes in the
-    // collection of analysis
-    if (vizjson.analyses) {
-      _.each(vizjson.analyses, function (analysis) {
-        this.analysis.analyse(analysis);
-      }, this);
-    }
-
-    var layerModels = _.map(vizjson.layers, function (layerData, layerIndex) {
-      // Flatten "options" and set the "order" attribute
-      layerData = _.extend({},
-        _.omit(layerData, 'options'),
-        layerData.options, {
-          order: layerIndex
-        }
-      );
-
-      if (layerData.source) {
-        layerData.source = this.analysis.findNodeById(layerData.source);
-      } else {
-        // TODO: We'll be able to remove this (accepting sql option) once
-        // https://github.com/CartoDB/cartodb.js/issues/1754 is closed.
-        if (layerData.sql) {
-          layerData.source = this.analysis.createSourceAnalysisForLayer(layerData.id, layerData.sql);
-          delete layerData.sql;
-        }
-      }
-      return layersFactory.createLayer(layerData.type, layerData);
-    }, this);
-
+    // Create layers
+    var analysisNodes = this._createAnalysisNodes(vizjson.analyses);
+    var layerModels = this._createLayers(vizjson.layers, analysisNodes);
     this.map.layers.reset(layerModels);
 
     // Global variable for easier console debugging / testing
@@ -431,6 +405,57 @@ var VisModel = Backbone.Model.extend({
 
   isLoading: function () {
     return this.get('loading');
+  },
+
+  /**
+   *     // "Load" existing analyses from the viz.json. This will generate
+       // the analyses graphs and index analysis nodes in the
+       // collection of analysis
+   */
+  _createAnalysisNodes: function (analysesDefinition) {
+    var analysisNodes = {};
+    var analysisRoots = [];
+    if (analysesDefinition) {
+      _.each(analysesDefinition, function (analysisDefinition) {
+        analysisRoots.push(this.analysis.createAnalysis(analysisDefinition));
+      }, this);
+
+      _.each(analysisRoots, function (analysisRoot) {
+        _.each(analysisRoot.getNodes(), function (analysisNode) {
+          analysisNodes[analysisNode.get('id')] = analysisNode;
+        }, this);
+      }, this);
+    }
+    return analysisNodes;
+  },
+
+  _createLayers: function (layersDefinition, analysisNodes) {
+    var layers = _.map(layersDefinition, function (layerData, layerIndex) {
+      // Flatten "options" and set the "order" attribute
+      layerData = _.extend({},
+        _.omit(layerData, 'options'),
+        layerData.options, {
+          order: layerIndex
+        }
+      );
+
+      if (layerData.source) {
+        var source = analysisNodes[layerData.source];
+        if (!source) {
+          throw new Error('Can not find analysis id: ' + layerData.source);
+        }
+        layerData.source = source;
+      } else {
+        // TODO: We'll be able to remove this (accepting sql option) once
+        // https://github.com/CartoDB/cartodb.js/issues/1754 is closed.
+        if (layerData.sql) {
+          layerData.source = this.analysis.createSourceAnalysisForLayer(layerData.id, layerData.sql);
+          delete layerData.sql;
+        }
+      }
+      return this.layersFactory.createLayer(layerData.type, layerData);
+    }, this);
+    return layers;
   }
 });
 

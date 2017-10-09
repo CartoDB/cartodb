@@ -51,8 +51,26 @@ AnalysisService.prototype.analyse = function (analysisDefinition) {
   return analysis;
 };
 
+AnalysisService.prototype.createAnalysis = function (analysisDefinition) {
+  analysisDefinition = _.clone(analysisDefinition);
+  var analysisAttrs = this._createAnalysisAttributesFromAnalysisDefinition(analysisDefinition);
+
+  if (this._apiKey) {
+    analysisAttrs.apiKey = this._apiKey;
+  }
+  if (this._authToken) {
+    analysisAttrs.authToken = this._authToken;
+  }
+  var analysis = new Analysis(analysisAttrs, {
+    camshaftReference: this._camshaftReference,
+    vis: this._vis
+  });
+
+  return analysis;
+};
+
 AnalysisService.prototype.createSourceAnalysisForLayer = function (layerId, layerQuery) {
-  return this.analyse({
+  return this.createAnalysis({
     id: layerId,
     type: 'source',
     params: {
@@ -69,6 +87,20 @@ AnalysisService.prototype._getAnalysisAttributesFromAnalysisDefinition = functio
     var sourceParams = analysisDefinition.params[sourceName];
     if (sourceParams) {
       sourceNodes[sourceName] = this.analyse(sourceParams);
+    }
+  }, this);
+
+  return _.omit(_.extend(analysisDefinition, analysisDefinition.params, sourceNodes), 'params');
+};
+
+AnalysisService.prototype._createAnalysisAttributesFromAnalysisDefinition = function (analysisDefinition) {
+  var analysisType = analysisDefinition.type;
+  var sourceNamesForAnalysisType = this._camshaftReference.getSourceNamesForAnalysisType(analysisType);
+  var sourceNodes = {};
+  _.each(sourceNamesForAnalysisType, function (sourceName) {
+    var sourceParams = analysisDefinition.params[sourceName];
+    if (sourceParams) {
+      sourceNodes[sourceName] = this.createAnalysis(sourceParams);
     }
   }, this);
 
@@ -122,8 +154,8 @@ AnalysisService.getAnalysisList = function (layersCollection, dataviewsCollectio
 AnalysisService.getUniqueAnalysesNodes = function (layersCollection, dataviewsCollection) {
   var uniqueAnalyses = {};
   var analyses = AnalysisService.getAnalysisList(layersCollection, dataviewsCollection);
-  _.each(analyses, function (analisis) {
-    _.each(analisis.getNodes(), function (analysisNode) {
+  _.each(analyses, function (analysis) {
+    _.each(analysis.getNodes(), function (analysisNode) {
       uniqueAnalyses[analysisNode.get('id')] = analysisNode;
     }, this);
   }, this);

@@ -66,36 +66,6 @@ describe('src/analysis/analysis-service.js', function () {
       expect(analysisModel.get('authToken')).toEqual('THE_AUTH_TOKEN');
     });
 
-    it('should add new analysis to the collection of analysis', function () {
-      var subwayStops = this.analysisService.analyse({
-        id: 'a0',
-        type: 'source',
-        query: 'SELECT * FROM subway_stops'
-      });
-
-      expect(this.analysisCollection.at(0)).toEqual(subwayStops);
-    });
-
-    it('should not create a new analysis if an analysis with the same id was created already', function () {
-      var subwayStops1 = this.analysisService.analyse({
-        id: 'a0',
-        type: 'source',
-        params: {
-          query: 'SELECT * FROM subway_stops'
-        }
-      });
-
-      var subwayStops2 = this.analysisService.analyse({
-        id: 'a0',
-        type: 'source',
-        params: {
-          query: 'SELECT * FROM subway_stops '
-        }
-      });
-
-      expect(subwayStops1.cid).toEqual(subwayStops2.cid);
-    });
-
     it('should recursively build the anlysis graph', function () {
       var estimatedPopulation = this.analysisService.createAnalysis(
         {
@@ -147,22 +117,6 @@ describe('src/analysis/analysis-service.js', function () {
       });
 
       expect(subwayStops1.cid).not.toEqual(subwayStops2.cid);
-    });
-
-    it('should remove the analysis from the collection when analysis is removed', function () {
-      var subwayStops1 = this.analysisService.analyse({
-        id: 'a0',
-        type: 'source',
-        params: {
-          query: 'SELECT * FROM subway_stops'
-        }
-      });
-
-      expect(this.analysisCollection.size()).toEqual(1);
-
-      subwayStops1.remove();
-
-      expect(this.analysisCollection.size()).toEqual(0);
     });
   });
 

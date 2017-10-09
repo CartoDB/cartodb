@@ -4,7 +4,6 @@ var Vis = require('../../../src/vis/vis');
 var VizJSON = require('../../../src/api/vizjson');
 var DataviewModelBase = require('../../../src/dataviews/dataview-model-base');
 var AnalysisModel = require('../../../src/analysis/analysis-model');
-var AnalysisService = require('../../../src/analysis/analysis-service');
 
 var fakeVizJSON = function () {
   return {
@@ -419,7 +418,7 @@ describe('vis/vis', function () {
 
       this.vis.load(new VizJSON(vizjson, {}));
 
-      var analysisNode = AnalysisService.findNodeById('LAYER_ID', this.vis._layersCollection, this.vis._dataviewsCollection);
+      var analysisNode = this.vis.analysis.findNodeById('LAYER_ID');
 
       expect(analysisNode).toBeDefined();
       expect(analysisNode.get('id')).toEqual('LAYER_ID');
@@ -588,8 +587,8 @@ describe('vis/vis', function () {
       // Analyses have been indexed
       expect(this.vis._analysisCollection.size()).toEqual(2);
 
-      var a1 = AnalysisService.findNodeById('a1', this.vis._layersCollection, this.vis._dataviewsCollection);
-      var a0 = AnalysisService.findNodeById('a0', this.vis._layersCollection, this.vis._dataviewsCollection);
+      var a1 = this.vis.analysis.findNodeById('a1');
+      var a0 = this.vis.analysis.findNodeById('a0');
 
       // Analysis graph has been created correctly
       expect(a1.get('source')).toEqual(a0);
@@ -986,7 +985,7 @@ describe('vis/vis', function () {
       this.vis.instantiateMap();
       Vis.prototype.reload.calls.mostRecent().args[0].success();
 
-      source = AnalysisService.findNodeById('a0', this.vis._layersCollection, this.vis._dataviewsCollection);
+      source = this.vis.analysis.findNodeById('a0');
 
       dataview = new DataviewModelBase({
         source: source

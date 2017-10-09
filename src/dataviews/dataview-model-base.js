@@ -117,15 +117,6 @@ module.exports = Model.extend({
     if (this.filter) {
       this.listenTo(this.filter, 'change', this._onFilterChanged);
     }
-
-    this.bind('error', function (model, response, options) {
-      if (response.status === 429) {
-        var error = response.responseJSON.errors_with_context[0];
-        setTimeout(function () {
-          this.trigger('error:' + error.type, error, model);
-        }.bind(this), 0);
-      }
-    });
   },
 
   _onChangeBinds: function () {

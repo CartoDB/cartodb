@@ -108,7 +108,7 @@ describe('dataviews/category-dataview-model', function () {
           var spyObj = jasmine.createSpy(eventName);
           this.model.bind(eventName, spyObj);
 
-          this.model._searchModel.trigger(eventName, {}, {});
+          this.model._searchModel.trigger(eventName);
 
           expect(spyObj).toHaveBeenCalled();
         });

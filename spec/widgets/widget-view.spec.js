@@ -11,14 +11,11 @@ describe('widgets/widget-view', function () {
   };
 
   beforeEach(function () {
-    this.dataviewModel = new cdb.core.Model({
-      type: 'category'
-    });
-    this.dataviewModel.layer = new cdb.core.Model();
-    this.dataviewModel._totals = new cdb.core.Model();
-
+    this.dataviewModel = new cdb.core.Model();
+    this.layerModel = new cdb.core.Model();
     var widgetModel = new WidgetModel({}, {
-      dataviewModel: this.dataviewModel
+      dataviewModel: this.dataviewModel,
+      layerModel: this.layerModel
     });
 
     spyOn(WidgetView.prototype, 'clean');

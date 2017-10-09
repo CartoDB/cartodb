@@ -25,8 +25,13 @@ module.exports = cdb.core.View.extend({
   },
 
   initialize: function () {
+    if (!this.options.widgetModel) throw new Error('widgetModel is required');
+    if (!this.options.dataviewModel) throw new Error('dataviewModel is required');
+    if (!this.options.layerModel) throw new Error('layerModel is required');
+
     this.model = this.options.widgetModel;
     this.dataviewModel = this.options.dataviewModel;
+    this.layerModel = this.options.layerModel;
     this._initBinds();
   },
 
@@ -37,7 +42,7 @@ module.exports = cdb.core.View.extend({
     var letter = layerColors.letter(sourceId);
     var sourceColor = layerColors.getColorForLetter(letter);
     var sourceType = this.dataviewModel.getSourceType() || '';
-    var layerName = this.dataviewModel.getLayerName() || '';
+    var layerName = this.layerModel.get('layer_name') || '';
 
     this.$el.html(
       template({
@@ -74,9 +79,9 @@ module.exports = cdb.core.View.extend({
     this.dataviewModel.filter.bind('change', this.render, this);
     this.add_related_model(this.dataviewModel.filter);
 
-    this.dataviewModel.layer.bind('change:visible change:cartocss', this.render, this);
-    this.dataviewModel.layer.bind('change:layer_name', this.render, this);
-    this.add_related_model(this.dataviewModel.layer);
+    this.layerModel.bind('change:visible change:cartocss', this.render, this);
+    this.layerModel.bind('change:layer_name', this.render, this);
+    this.add_related_model(this.layerModel);
   },
 
   _initViews: function () {
@@ -99,7 +104,7 @@ module.exports = cdb.core.View.extend({
 
   _isAutoStyleButtonVisible: function () {
     return this.model.isAutoStyleEnabled() &&
-      this.dataviewModel.layer.get('visible') &&
+      this.layerModel.get('visible') &&
       this.model.hasColorsAutoStyle();
   },
 

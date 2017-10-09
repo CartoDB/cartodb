@@ -30,7 +30,7 @@ module.exports = {
           id: 'a0',
           type: 'source',
           params: {
-            query: 'SELECT * FROM foo;'
+            query: 'SELECT * FROM akhenaton.bad_boys_de_marseille;'
           }
         }
       ]

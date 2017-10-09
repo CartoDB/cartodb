@@ -5,11 +5,15 @@ var StatsView = require('../../../src/widgets/category/stats/stats-view');
 describe('widgets/category/stats-view', function () {
   beforeEach(function () {
     var vis = specHelper.createDefaultVis();
-    this.dataviewModel = vis.dataviews.createCategoryModel(vis.map.layers.first(), {
-      column: 'col'
+    this.layerModel = vis.map.layers.first();
+    var source = vis.analysis.findNodeById('a0');
+    this.dataviewModel = vis.dataviews.createCategoryModel({
+      column: 'col',
+      source: source
     });
     this.widgetModel = new CategoryWidgetModel({}, {
-      dataviewModel: this.dataviewModel
+      dataviewModel: this.dataviewModel,
+      layerModel: this.layerModel
     });
     this.view = new StatsView({
       widgetModel: this.widgetModel,

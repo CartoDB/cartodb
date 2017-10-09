@@ -19,8 +19,12 @@ module.exports = cdb.core.View.extend({
   },
 
   initialize: function () {
+    if (!this.options.dataviewModel) throw new Error('dataviewModel is required');
+    if (!this.options.layerModel) throw new Error('layerModel is required');
+
     this._timeSeriesModel = this.options.timeSeriesModel;
     this._dataviewModel = this.options.dataviewModel;
+    this._layerModel = this.options.layerModel;
     this._rangeFilter = this.options.rangeFilter;
     this._originalData = this._dataviewModel.getUnfilteredDataModel();
     this._initBinds();
@@ -90,6 +94,7 @@ module.exports = cdb.core.View.extend({
       },
       height: this.defaults.histogramChartHeight,
       dataviewModel: this._dataviewModel,
+      layerModel: this._layerModel,
       data: this._dataviewModel.getData(),
       originalData: this._originalData,
       displayShadowBars: !this._timeSeriesModel.get('normalized'),

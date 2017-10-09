@@ -7,11 +7,14 @@ describe('auto-style', function () {
     var layer = vis.map.layers.first();
     layer.restoreCartoCSS = jasmine.createSpy('restore');
     layer.set('initialStyle', '#layer {  marker-line-width: 0.5;  marker-line-color: #fcfafa;  marker-line-opacity: 1;  marker-width: 6.076923076923077;  marker-fill: #e49115;  marker-fill-opacity: 0.9;  marker-allow-overlap: true;}');
-    this.dataviewModel = vis.dataviews.createCategoryModel(layer, {
-      column: 'col'
+    var source = vis.analysis.findNodeById('a0');
+    this.dataviewModel = vis.dataviews.createCategoryModel({
+      column: 'col',
+      source: source
     });
     this.widgetModel = new CategoryWidgetModel({}, {
-      dataviewModel: this.dataviewModel
+      dataviewModel: this.dataviewModel,
+      layerModel: layer
     }, {autoStyleEnabled: true});
     this.autoStyler = this.widgetModel.autoStyler;
   });

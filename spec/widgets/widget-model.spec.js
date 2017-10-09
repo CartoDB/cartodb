@@ -6,22 +6,27 @@ var _ = require('underscore');
 describe('widgets/widget-model', function () {
   describe('when autostyle options is enabled', function () {
     var dataviewModel;
+    var layerModel;
 
     beforeEach(function () {
       var vis = specHelper.createDefaultVis();
+      var source = vis.analysis.findNodeById('a0');
+
       // Use a category dataview as example
-      dataviewModel = vis.dataviews.createCategoryModel(vis.map.layers.first(), {
-        column: 'col'
+      dataviewModel = vis.dataviews.createCategoryModel({
+        column: 'col',
+        source: source
       });
       dataviewModel.remove = spyOn(dataviewModel, 'remove');
-      dataviewModel.layer = new Backbone.Model({
+      layerModel = new Backbone.Model({
         id: 'first-layer',
         type: 'torque',
         visible: true
       });
 
       this.model = new WidgetModel(null, {
-        dataviewModel: dataviewModel
+        dataviewModel: dataviewModel,
+        layerModel: layerModel
       }, {autoStyleEnabled: true});
     });
 
@@ -184,6 +189,7 @@ describe('widgets/widget-model', function () {
       it('should be false if type is not category or histogram', function () {
         var model = new WidgetModel(null, {
           dataviewModel: dataviewModel,
+          layerModel: layerModel,
           type: 'time-series'
         }, {autoStyleEnabled: true});
 
@@ -214,7 +220,7 @@ describe('widgets/widget-model', function () {
             return definition;
           }
         };
-        this.model.dataviewModel.layer.set('cartocss', cartocss);
+        layerModel.set('cartocss', cartocss);
         var expectedData = {
           definition: definition,
           cartocss: cartocss
@@ -242,7 +248,7 @@ describe('widgets/widget-model', function () {
             return definition;
           }
         };
-        this.model.dataviewModel.layer.set('cartocss', cartocss);
+        layerModel.set('cartocss', cartocss);
         var expectedData = {
           definition: definition,
           cartocss: cartocss,
@@ -343,8 +349,8 @@ describe('widgets/widget-model', function () {
           getStyle: jasmine.createSpy('getStyle')
         };
 
-        this.model.dataviewModel.layer.set('initialStyle', 'foo');
-        this.model.dataviewModel.layer.set('cartocss', 'wadus');
+        layerModel.set('initialStyle', 'foo');
+        layerModel.set('cartocss', 'wadus');
       });
 
       it('should generate autostyle styles when dataview has data', function () {
@@ -356,7 +362,7 @@ describe('widgets/widget-model', function () {
         this.model.autoStyle();
 
         expect(this.model.autoStyler.getStyle).toHaveBeenCalled();
-        expect(this.model.dataviewModel.layer.get('initialStyle')).toBe('wadus');
+        expect(layerModel.get('initialStyle')).toBe('wadus');
       });
 
       it('should not generate autostyle styles when dataview has data', function () {
@@ -364,7 +370,7 @@ describe('widgets/widget-model', function () {
         this.model.autoStyle();
 
         expect(this.model.autoStyler.getStyle).not.toHaveBeenCalled();
-        expect(this.model.dataviewModel.layer.get('initialStyle')).toBe('foo');
+        expect(layerModel.get('initialStyle')).toBe('foo');
       });
     });
   });
@@ -372,9 +378,12 @@ describe('widgets/widget-model', function () {
   describe('when autostyle option is disabled', function () {
     beforeEach(function () {
       var vis = specHelper.createDefaultVis();
+      this.layerModel = vis.map.layers.first();
+      var source = vis.analysis.findNodeById('a0');
       // Use a category dataview as example
-      this.dataviewModel = vis.dataviews.createCategoryModel(vis.map.layers.first(), {
-        column: 'col'
+      this.dataviewModel = vis.dataviews.createCategoryModel({
+        column: 'col',
+        source: source
       });
       this.dataviewModel.remove = spyOn(this.dataviewModel, 'remove');
     });
@@ -382,7 +391,8 @@ describe('widgets/widget-model', function () {
     describe('isAutoStyleEnabled', function () {
       it('should be true if without autostyle option', function () {
         var model = new WidgetModel(null, {
-          dataviewModel: this.dataviewModel
+          dataviewModel: this.dataviewModel,
+          layerModel: this.layerModel
         });
 
         model.set('type', 'category');
@@ -392,7 +402,8 @@ describe('widgets/widget-model', function () {
 
       it('should be false if passed autostyle option as false', function () {
         var model = new WidgetModel(null, {
-          dataviewModel: this.dataviewModel
+          dataviewModel: this.dataviewModel,
+          layerModel: this.layerModel
         }, {autoStyleEnabled: false});
 
         model.set('type', 'category');
@@ -402,7 +413,8 @@ describe('widgets/widget-model', function () {
 
       it('should be true if passed autostyle option as true', function () {
         var model = new WidgetModel(null, {
-          dataviewModel: this.dataviewModel
+          dataviewModel: this.dataviewModel,
+          layerModel: this.layerModel
         }, {autoStyleEnabled: true});
 
         model.set('type', 'category');
@@ -415,13 +427,17 @@ describe('widgets/widget-model', function () {
   describe('.getWidgetColor', function () {
     beforeEach(function () {
       var vis = specHelper.createDefaultVis();
+      this.layerModel = vis.map.layers.first();
+      var source = vis.analysis.findNodeById('a0');
       // Use a category dataview as example
-      this.dataviewModel = vis.dataviews.createCategoryModel(vis.map.layers.first(), {
-        column: 'col'
+      this.dataviewModel = vis.dataviews.createCategoryModel({
+        column: 'col',
+        source: source
       });
 
       this.model = new WidgetModel(null, {
-        dataviewModel: this.dataviewModel
+        dataviewModel: this.dataviewModel,
+        layerModel: this.layerModel
       }, {autoStyleEnabled: false});
     });
 
@@ -483,7 +499,8 @@ describe('widgets/widget-model', function () {
   describe('forceResize', function () {
     beforeEach(function () {
       this.model = new WidgetModel(null, {
-        dataviewModel: this.dataviewModel
+        dataviewModel: new Backbone.Model(),
+        layerModel: new Backbone.Model()
       });
     });
 

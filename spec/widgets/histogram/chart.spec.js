@@ -90,7 +90,7 @@ describe('widgets/histogram/chart', function () {
       aggregation: 'minute',
       offset: 0
     });
-    this.dataviewModel.layer = new cdb.core.Model();
+    this.layerModel = new cdb.core.Model();
 
     this.view = new WidgetHistogramChart(({
       el: $('.js-chart'),
@@ -101,6 +101,7 @@ describe('widgets/histogram/chart', function () {
       height: this.height,
       data: this.data,
       dataviewModel: this.dataviewModel,
+      layerModel: this.layerModel,
       originalData: this.originalModel,
       displayShadowBars: true,
       widgetModel: this.widgetModel,
@@ -855,14 +856,14 @@ describe('widgets/histogram/chart', function () {
     it('should generate bar gradients if they were not defined before', function () {
       this.view._setupFillColor.calls.reset();
       spyOn(this.view, '_areGradientsAlreadyGenerated').and.returnValue(false);
-      this.dataviewModel.layer.set('cartocss', '#dummy {}');
+      this.layerModel.set('cartocss', '#dummy {}');
       expect(this.view._setupFillColor.calls.count()).toBe(1);
     });
 
     it('should not generate bar gradients if they were defined before', function () {
       this.view._setupFillColor.calls.reset();
       spyOn(this.view, '_areGradientsAlreadyGenerated').and.returnValue(true);
-      this.dataviewModel.layer.set('cartocss', '#dummy {}');
+      this.layerModel.set('cartocss', '#dummy {}');
       expect(this.view._setupFillColor.calls.count()).toBe(0);
     });
   });

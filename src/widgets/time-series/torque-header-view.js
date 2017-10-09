@@ -43,6 +43,7 @@ module.exports = cdb.core.View.extend({
   _createTimeSeriesHeaderView: function (showClearButton) {
     var headerView = new TimeSeriesHeaderView({
       dataviewModel: this._dataviewModel,
+      layerModel: this._torqueLayerModel,
       rangeFilter: this._dataviewModel.filter,
       showClearButton: showClearButton,
       timeSeriesModel: this._timeSeriesModel,

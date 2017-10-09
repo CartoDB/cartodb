@@ -3,20 +3,20 @@ var HistogramWidgetModel = require('../../../src/widgets/histogram/histogram-wid
 var HistogramTitleView = require('../../../src/widgets/histogram/histogram-title-view');
 
 describe('widgets/histogram/title-view', function () {
-  var layer;
-
   beforeEach(function () {
     var vis = specHelper.createDefaultVis();
-    layer = vis.map.layers.first();
-    layer.restoreCartoCSS = jasmine.createSpy('restore');
-    layer.getGeometryType = function () {
+    this.layer = vis.map.layers.first();
+    this.layer.restoreCartoCSS = jasmine.createSpy('restore');
+    this.layer.getGeometryType = function () {
       return 'polygon';
     };
-    this.dataviewModel = vis.dataviews.createHistogramModel(layer, {
+    var source = vis.analysis.findNodeById('a0');
+    this.dataviewModel = vis.dataviews.createHistogramModel({
       id: 'abc-123',
       title: 'my histogram',
       column: 'a_column',
-      bins: 20
+      bins: 20,
+      source: source
     });
 
     this.dataviewModel.set('data', [{
@@ -26,7 +26,7 @@ describe('widgets/histogram/title-view', function () {
     }]);
 
     var cartocss = '#layer {  marker-line-width: 0.5;  marker-line-color: #fcfafa;  marker-line-opacity: 1;  marker-width: 6.076923076923077;  marker-fill: ramp([something], ("#7F3C8D", "#11A579", "#3969AC", "#F2B701", "#E73F74"), ("soccer", "basketball", "baseball", "handball", "hockey"));  marker-fill-opacity: 0.9;  marker-allow-overlap: true;}';
-    this.dataviewModel.layer.set({
+    this.layer.set({
       cartocss: cartocss,
       initialStyle: cartocss
     });
@@ -35,12 +35,14 @@ describe('widgets/histogram/title-view', function () {
     this.widgetModel = new HistogramWidgetModel({
       type: 'histogram'
     }, {
-      dataviewModel: this.dataviewModel
+      dataviewModel: this.dataviewModel,
+      layerModel: this.layer
     }, {autoStyleEnabled: true});
 
     this.view = new HistogramTitleView({
       widgetModel: this.widgetModel,
-      dataviewModel: this.dataviewModel
+      dataviewModel: this.dataviewModel,
+      layerModel: this.layer
     });
   });
 
@@ -78,7 +80,7 @@ describe('widgets/histogram/title-view', function () {
 
     describe('autostyle', function () {
       beforeEach(function () {
-        this.dataviewModel.layer.set('cartocss', '#whatever {}');
+        this.layer.set('cartocss', '#whatever {}');
       });
 
       describe('checking allowed', function () {
@@ -108,7 +110,7 @@ describe('widgets/histogram/title-view', function () {
         });
 
         it('should not render the autostyle button if layer is hidden', function () {
-          layer.set({visible: false});
+          this.layer.set({visible: false});
           expect(this.view.$('.js-autoStyle').length).toBe(0);
         });
       });
@@ -134,7 +136,8 @@ describe('widgets/histogram/title-view', function () {
       var widgetModel = new HistogramWidgetModel({
         type: 'histogram'
       }, {
-        dataviewModel: this.dataviewModel
+        dataviewModel: this.dataviewModel,
+        layerModel: this.layer
       }, {autoStyleEnabled: false});
 
       spyOn(widgetModel, 'getAutoStyle').and.returnValue({
@@ -150,7 +153,8 @@ describe('widgets/histogram/title-view', function () {
 
       this.view = new HistogramTitleView({
         widgetModel: widgetModel,
-        dataviewModel: this.dataviewModel
+        dataviewModel: this.dataviewModel,
+        layerModel: this.layer
       });
 
       this.view.render();

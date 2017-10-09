@@ -2,12 +2,25 @@ var _ = require('underscore');
 var Model = require('../core/model');
 var BackboneAbortSync = require('../util/backbone-abort-sync');
 var WindshaftFiltersBoundingBoxFilter = require('../windshaft/filters/bounding-box');
+var AnalysisModel = require('../analysis/analysis-model');
+var util = require('../core/util');
 var BOUNDING_BOX_FILTER_WAIT = 500;
 
-var UNFETCHED_STATUS = 'unfeteched';
+var UNFETCHED_STATUS = 'unfetched';
 var FETCHING_STATUS = 'fetching';
 var FETCHED_STATUS = 'fetched';
 var FETCH_ERROR_STATUS = 'error';
+
+var REQUIRED_OPTS = [
+  'map',
+  'vis'
+];
+
+var track = function (error) {
+  if (window.trackJs) {
+    window.trackJs.track(error);
+  }
+};
 
 /**
  * Default dataview model
@@ -71,20 +84,17 @@ module.exports = Model.extend({
   initialize: function (attrs, opts) {
     attrs = attrs || {};
     opts = opts || {};
+    util.checkRequiredOpts(opts, REQUIRED_OPTS, 'DataviewModelBase');
 
-    if (!opts.map) throw new Error('map is required');
-    if (!opts.vis) throw new Error('vis is required');
-    if (!opts.analysisCollection) throw new Error('analysisCollection is required');
+    this._map = opts.map;
+    this._vis = opts.vis;
+
     if (!attrs.source) throw new Error('source is a required attr');
+    this._checkSourceAttribute(attrs.source);
 
     if (!attrs.id) {
       this.set('id', this.defaults.type + '-' + this.cid);
     }
-
-    this.layer = opts.layer;
-    this._map = opts.map;
-    this._vis = opts.vis;
-    this._analysisCollection = opts.analysisCollection;
 
     this.sync = BackboneAbortSync.bind(this);
 
@@ -99,9 +109,11 @@ module.exports = Model.extend({
   },
 
   _initBinds: function () {
-    this.listenTo(this.layer, 'change:visible', this._onLayerVisibilityChanged);
-    this.listenTo(this.layer, 'change:source', this._setupAnalysisStatusEvents);
     this.on('change:source', this._setupAnalysisStatusEvents, this);
+
+    // Temporary code to log changes to dataview's sources
+    // TODO: to be removed when enough data is checked / 1761 gets merged
+    this.on('change:source', this._onSourceChanged, this);
 
     this.listenToOnce(this, 'change:url', function () {
       if (this.syncsOnBoundingBoxChanges() && !this._getMapViewBounds()) {
@@ -159,17 +171,23 @@ module.exports = Model.extend({
     });
   },
 
+  _onSourceChanged: function (model) {
+    var changedKeys = model && model.changed
+      ? _.keys(model.changed)
+      : '';
+    track(new Error('[SOURCE] _onSourceChanged [' + changedKeys + ']'));
+  },
+
   _setupAnalysisStatusEvents: function () {
     this._removeExistingAnalysisBindings();
-    this._analysis = this.getSource();
-    if (this._analysis) {
-      this._analysis.on('change:status', this._onAnalysisStatusChange, this);
+    if (this.getSource()) {
+      this.getSource().on('change:status', this._onAnalysisStatusChange, this);
     }
   },
 
   _removeExistingAnalysisBindings: function () {
-    if (!this._analysis) return;
-    this._analysis.off('change:status', this._onAnalysisStatusChange, this);
+    if (!this.getSource()) return;
+    this.getSource().off('change:status', this._onAnalysisStatusChange, this);
   },
 
   _onAnalysisStatusChange: function (analysis, status) {
@@ -213,17 +231,6 @@ module.exports = Model.extend({
     });
   },
 
-  /**
-   * Enable/disable the dataview depending on the layer visibility.
-   * @private
-   * @param  {LayerModel} model the layer model which visible property has changed.
-   * @param  {Boolean} value New value for visible.
-   * @returns {void}
-   */
-  _onLayerVisibilityChanged: function (model, value) {
-    this.set({enabled: value});
-  },
-
   _shouldFetchOnURLChange: function (options) {
     options = options || {};
     var sourceId = options.sourceId;
@@ -235,7 +242,7 @@ module.exports = Model.extend({
 
     return this.isEnabled() &&
       this.syncsOnDataChanges() &&
-        this._sourceAffectsMyOwnSource(sourceId);
+      this._sourceAffectsMyOwnSource(sourceId);
   },
 
   _sourceAffectsMyOwnSource: function (sourceId) {
@@ -256,7 +263,16 @@ module.exports = Model.extend({
   },
 
   update: function (attrs) {
+    if (_.has(attrs, 'source')) {
+      var message = '[SOURCE] Source present in UPDATE attrs. ' + JSON.stringify(attrs.source);
+      track(new Error(message));
+    }
     attrs = _.pick(attrs, this.constructor.ATTRS_NAMES);
+
+    if (attrs.source) {
+      this._checkSourceAttribute(attrs.source);
+    }
+
     this.set(attrs);
   },
 
@@ -298,21 +314,20 @@ module.exports = Model.extend({
   },
 
   getSourceType: function () {
-    var sourceAnalysis = this.getSource();
-    return sourceAnalysis && sourceAnalysis.get('type');
-  },
-
-  getLayerName: function () {
-    return this.layer && this.layer.get('layer_name');
-  },
-
-  getSource: function () {
-    var sourceId = this.getSourceId();
-    return sourceId && this._analysisCollection.get(sourceId);
+    return this.getSource().get('type');
   },
 
   getSourceId: function () {
-    return this.has('source') && this.get('source').id;
+    var source = this.getSource();
+    return source && source.id;
+  },
+
+  getSource: function () {
+    return this.get('source');
+  },
+
+  setSource: function (source, options) {
+    this.set('source', source, options);
   },
 
   isFiltered: function () {
@@ -347,10 +362,16 @@ module.exports = Model.extend({
 
   syncsOnBoundingBoxChanges: function () {
     return this.get('sync_on_bbox_change');
+  },
+
+  _checkSourceAttribute: function (source) {
+    if (!(source instanceof AnalysisModel)) {
+      throw new Error('source must be an instance of AnalysisModel');
+    }
   }
 },
 
-  // Class props
+// Class props
 {
   ATTRS_NAMES: [
     'id',
@@ -359,5 +380,4 @@ module.exports = Model.extend({
     'enabled',
     'source'
   ]
-}
-);
+});

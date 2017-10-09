@@ -266,6 +266,12 @@ describe('create-vis:', function () {
         var visModel = createVis(this.containerId, visJson);
         expect(visModel._windshaftMap._windshaftSettings.authToken).toBeUndefined();
       });
+
+      it('should have the templateName', function () {
+        var visJson = scenarios.load('basic');
+        var visModel = createVis(this.containerId, visJson);
+        expect(visModel._windshaftMap._windshaftSettings.templateName).toEqual(visJson.datasource.template_name);
+      });
     });
     describe('.client', function () {
       it('should have the right url', function () {

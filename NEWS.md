@@ -63,6 +63,7 @@ Development
 
 ### Bug fixes / enhancements
 * Improve SQL limit platforms notification (#12597)
+* Fix infinite loop for failed sql api requests.
 * Notification for error tiles (#cartodb.js/1717)
 * Make sure widget's source id is a string, reject it otherwise (#12878)
 * Improve legends for torque (CartoDB/support#979)

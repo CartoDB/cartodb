@@ -122,7 +122,6 @@ var VisModel = Backbone.Model.extend({
 
   load: function (vizjson) {
     // Create the WindhaftClient
-    var self = this;
     var datasource = vizjson.datasource;
 
     var windshaftSettings = {
@@ -149,8 +148,8 @@ var VisModel = Backbone.Model.extend({
     this.analysis = {
       createAnalysis: this.analysisService.createAnalysis,
       findNodeById: function (id) {
-        return AnalysisService.findNodeById(id, self._layersCollection, self._dataviewsCollection);
-      }
+        return AnalysisService.findNodeById(id, this._layersCollection, this._dataviewsCollection);
+      }.bind(this)
     };
 
     var allowScrollInOptions = (vizjson.options && vizjson.options.scrollwheel) || vizjson.scrollwheel;

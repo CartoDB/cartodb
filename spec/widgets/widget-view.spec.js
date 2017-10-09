@@ -12,6 +12,7 @@ describe('widgets/widget-view', function () {
 
   beforeEach(function () {
     this.dataviewModel = new cdb.core.Model();
+    this.dataviewModel._totals = new cdb.core.Model();
     this.layerModel = new cdb.core.Model();
     var widgetModel = new WidgetModel({}, {
       dataviewModel: this.dataviewModel,
@@ -19,8 +20,7 @@ describe('widgets/widget-view', function () {
     });
 
     spyOn(WidgetView.prototype, 'clean');
-    spyOn(WidgetView.prototype, '_onDataModelEvent');
-    spyOn(WidgetView.prototype, '_onDataviewModelEvent');
+    spyOn(WidgetView.prototype, '_onError');
 
     this.view = new WidgetView({
       model: widgetModel,
@@ -63,16 +63,16 @@ describe('widgets/widget-view', function () {
       expect(WidgetView.prototype.clean).toHaveBeenCalled();
     });
 
-    it('calls ._onDataViewModelEvent on model.dataviewModel:all', function () {
+    it('calls ._onError on model.dataviewModel:error', function () {
       this.view.model.dataviewModel.trigger('error');
 
-      expect(WidgetView.prototype._onDataviewModelEvent).toHaveBeenCalled();
+      expect(WidgetView.prototype._onError).toHaveBeenCalled();
     });
 
-    it('calls ._onDataViewModelEvent on model.dataviewModel:all', function () {
+    it('calls ._onError on model.dataModel:error', function () {
       this.view.model.dataviewModel._totals.trigger('error');
 
-      expect(WidgetView.prototype._onDataModelEvent).toHaveBeenCalled();
+      expect(WidgetView.prototype._onError).toHaveBeenCalled();
     });
   });
 });

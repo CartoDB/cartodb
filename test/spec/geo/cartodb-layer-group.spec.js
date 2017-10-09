@@ -381,4 +381,27 @@ describe('geo/cartodb-layer-group', function () {
       expect(this.cartoDBLayerGroup.getStaticImageURLTemplate()).toEqual('http://0.carto.com/image?layer=0,1,2,3,4');
     });
   });
+
+  describe('.addError', function () {
+    it('should throw an error if the error does not have a type', function () {
+      expect(this.cartoDBLayerGroup.addError).toThrow();
+    });
+
+    it('should trigger an error with the specified type', function () {
+      var called = '';
+
+      this.cartoDBLayerGroup.on('error:limit', function () {
+        called = 'limit';
+      });
+      this.cartoDBLayerGroup.on('error:tile', function () {
+        called = 'tile';
+      });
+
+      this.cartoDBLayerGroup.addError({ type: 'limit' });
+      expect(called).toEqual('limit');
+
+      this.cartoDBLayerGroup.addError({ type: 'tile' });
+      expect(called).toEqual('tile');
+    });
+  });
 });

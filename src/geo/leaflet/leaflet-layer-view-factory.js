@@ -62,7 +62,11 @@ var canLayerBeRenderedClientSide = function (layerModel) {
   var cartoCSS = layerModel.get('meta').cartocss;
   var result = TC.getSupportedCartoCSSResult(cartoCSS);
   if (!result.supported) {
-    log.info('[Vector] Unable to render due "' + result.reason + '". Full CartoCSS:\n' + cartoCSS);
+    if (result.reason.indexOf('Unsupported CartoCSS') === 0) {
+      log.info('[Vector] Unable to render due "' + result.reason + '". Full CartoCSS:\n' + cartoCSS);
+    } else {
+      log.error(new Error('[Vector] Unable to render due "' + result.reason + '". Full CartoCSS:\n' + cartoCSS));
+    }
   }
   return result.supported;
 };
@@ -84,9 +88,9 @@ LeafletLayerViewFactory.prototype.createLayerView = function (layerModel, native
   if (LayerViewClass) {
     try {
       return new LayerViewClass(layerModel, nativeMap, mapModel);
-    } catch (e) {
-      log.error("Error creating an instance of layer view for '" + layerType + "' layer -> " + e.message);
-      throw e;
+    } catch (error) {
+      log.error("Error creating an instance of layer view for '" + layerType + "' layer -> " + error.message);
+      throw error;
     }
   } else {
     log.error("Error creating an instance of layer view for '" + layerType + "' layer. Type is not supported");

@@ -19,6 +19,16 @@ var CartoDBLayerGroup = Backbone.Model.extend({
     this._layersCollection = options.layersCollection;
   },
 
+  addError: function (error) {
+    var type = error.type;
+
+    if (!type) {
+      throw new Error('Error must have a type property.');
+    }
+
+    this.trigger('error:' + type, error);
+  },
+
   forEachGroupedLayer: function (iteratee, context) {
     _.each(this._getGroupedLayers(), iteratee.bind(context || this));
   },

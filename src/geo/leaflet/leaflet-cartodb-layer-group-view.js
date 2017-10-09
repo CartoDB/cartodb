@@ -1,9 +1,12 @@
 var _ = require('underscore');
 var L = require('leaflet');
+var C = require('../../constants');
 var LeafletLayerView = require('./leaflet-layer-view');
 var CartoDBLayerGroupViewBase = require('../cartodb-layer-group-view-base');
 var wax = require('wax.cartodb.js');
+var tileErrorImage = require('../../util/tile-error.tpl');
 
+var TILE_ERROR_IMAGE = 'data:image/svg+xml;base64,' + window.btoa(tileErrorImage());
 var EMPTY_GIF = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 
 var findContainerPoint = function (map, o) {
@@ -46,14 +49,19 @@ var findContainerPoint = function (map, o) {
 var LeafletCartoDBLayerGroupView = function (layerModel, leafletMap) {
   var self = this;
   LeafletLayerView.apply(this, arguments);
-  CartoDBLayerGroupViewBase.call(this, layerModel, leafletMap);
+  CartoDBLayerGroupViewBase.apply(this, arguments);
 
-  this.leafletLayer.on('load', function (e) {
+  this.leafletLayer.on('load', function () {
     self.trigger('load');
   });
 
-  this.leafletLayer.on('loading', function (e) {
+  this.leafletLayer.on('loading', function () {
     self.trigger('loading');
+  });
+
+  this.leafletLayer.on('tileerror', function (layer) {
+    layer.tile.src = TILE_ERROR_IMAGE;
+    self.model.addError({ type: C.WINDSHAFT_ERRORS.TILE });
   });
 };
 

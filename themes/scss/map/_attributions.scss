@@ -59,9 +59,6 @@ $size: 20px;
 }
 
 @include media-query-mobile() {
-  .CDB-Attribution {
-    margin-right: 0;
-  }
   .CDB-Attribution.is-active {
     @include flex(1);
     width: 0;

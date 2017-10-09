@@ -3,6 +3,7 @@ var _ = require('underscore');
 var Vis = require('../../../src/vis/vis');
 var VizJSON = require('../../../src/api/vizjson');
 var DataviewModelBase = require('../../../src/dataviews/dataview-model-base');
+var AnalysisModel = require('../../../src/analysis/analysis-model');
 
 var fakeVizJSON = function () {
   return {
@@ -398,6 +399,29 @@ describe('vis/vis', function () {
 
     it('should load the layers', function () {
       expect(this.vis.map.layers.size()).toEqual(3);
+    });
+
+    it('should assign the analysis source', function () {
+      var cartoDBLayerSource = this.vis.map.layers.at(1).getSource();
+
+      expect(cartoDBLayerSource instanceof AnalysisModel).toBe(true);
+      expect(cartoDBLayerSource.id).toEqual('a0');
+    });
+
+    it('should create a "source" analysis if sql option is present', function () {
+      var vizjson = fakeVizJSON();
+
+      // CartoDB layer as sql option instead of source
+      vizjson.layers[1].options.id = 'LAYER_ID';
+      vizjson.layers[1].options.sql = 'SELECT foo FROM bar';
+      delete vizjson.layers[1].options.source;
+
+      this.vis.load(new VizJSON(vizjson, {}));
+
+      var cartoDBLayerSource = this.vis.map.layers.at(1).getSource();
+
+      expect(cartoDBLayerSource instanceof AnalysisModel).toBe(true);
+      expect(cartoDBLayerSource).toEqual(this.vis.analysis.findNodeById('LAYER_ID'));
     });
 
     it('should use the given provider', function () {
@@ -874,6 +898,9 @@ describe('vis/vis', function () {
         this.vis.load(new VizJSON(this.vizjson));
         this.vis.instantiateMap();
 
+        // First request to instantiate map was performed
+        expect($.ajax.calls.argsFor(0)[0].url).toMatch(/api\/v1\/map\?config/);
+
         // Response from Maps API is received
         $.ajax.calls.argsFor(0)[0].success({
           'layergroupid': '9d7bf465e45113123bf9949c2a4f0395:0',
@@ -924,22 +951,26 @@ describe('vis/vis', function () {
           },
           'last_updated': '1970-01-01T00:00:00.000Z'
         });
-        expect($.ajax.calls.argsFor(0)[0].url).toMatch(/api\/v1\/map\?config/);
+
+        // Another 2 requests are done to check the status of analysis
         expect($.ajax.calls.argsFor(1)[0].url).toEqual('http://cdb.localhost.lan:8181/api/v1/map/9d7bf465e45113123bf9949c2a4f0395:0/analysis/node/e65b1ae05854aea96266808ec0686b91f3ee0a81');
         expect($.ajax.calls.argsFor(2)[0].url).toEqual('http://cdb.localhost.lan:8181/api/v1/map/9d7bf465e45113123bf9949c2a4f0395:0/analysis/node/b75b1ae05854aea96266808ec0686b91f3ee0a81');
 
+        // So far, 3 requests were made
         expect($.ajax.calls.count()).toEqual(3);
 
-        // Analysis endpoint for a1 responds
+        // Analysis endpoint for a1 responds and node is ready
         $.ajax.calls.argsFor(1)[0].success({status: 'ready'});
 
         // Map is not reloaded because a1 is not the source of a layer
+        // so no new requests were done
         expect($.ajax.calls.count()).toEqual(3);
 
-        // Analysis endpoint for a2 responds
+        // Analysis endpoint for a2 responds and node is ready
         $.ajax.calls.argsFor(2)[0].success({status: 'ready'});
 
-        // Map has been reloaded because a2 is the source of a layer
+        // a2 is the source of a layer so map needs to be insntantiated again
+        // and a new request was done
         expect($.ajax.calls.count()).toEqual(4);
         expect($.ajax.calls.argsFor(3)[0].url).toMatch(/api\/v1\/map\?config/);
       });
@@ -995,8 +1026,8 @@ describe('vis/vis', function () {
   });
 
   describe('when a vizjson has been loaded', function () {
-    var layer;
     var dataview;
+    var source;
 
     beforeEach(function () {
       spyOn(_, 'debounce').and.callFake(function (func) { return function () { func.apply(this, arguments); }; });
@@ -1006,15 +1037,13 @@ describe('vis/vis', function () {
       this.vis.instantiateMap();
       Vis.prototype.reload.calls.mostRecent().args[0].success();
 
-      layer = this.vis.map.layers.at(0);
+      source = this.vis.analysis.findNodeById('a0');
 
       dataview = new DataviewModelBase({
-        source: {id: 'a0'}
+        source: source
       }, {
-        layer: layer,
         map: this.vis.map,
-        vis: this.vis,
-        analysisCollection: this.vis._analysisCollection
+        vis: this.vis
       });
     });
 
@@ -1103,6 +1132,19 @@ describe('vis/vis', function () {
           format: 'jpg'
         })).toEqual(expectedURL);
       });
+    });
+  });
+
+  describe('layerGroupModel errors', function () {
+    it('should do things', function () {
+      this.vis.load(new VizJSON(fakeVizJSON()), {});
+      var called = false;
+      this.vis.map.on('error:limit', function () {
+        called = true;
+      });
+      this.vis.layerGroupModel.addError({ type: 'limit', message: 'Something about limits' });
+
+      expect(called).toBe(true);
     });
   });
 });

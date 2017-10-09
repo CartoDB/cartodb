@@ -23,6 +23,8 @@ var AnalysisFactory = function (opts) {
  * may have one or more "source" params pointing to another node. If a node had been created
  * already, this method updates the attributes of the existing node. New nodes are added to
  * the collection of analyses that has been injected.
+ * 
+ * TODO: document what's the analysis definition
  */
 AnalysisFactory.prototype.analyse = function (analysisDefinition) {
   analysisDefinition = _.clone(analysisDefinition);
@@ -46,6 +48,16 @@ AnalysisFactory.prototype.analyse = function (analysisDefinition) {
     analysis.bind('destroy', this._onAnalysisRemoved, this);
   }
   return analysis;
+};
+
+AnalysisFactory.prototype.createSourceAnalysisForLayer = function (layerId, layerQuery) {
+  return this.analyse({
+    id: layerId,
+    type: 'source',
+    params: {
+      query: layerQuery
+    }
+  });
 };
 
 AnalysisFactory.prototype._getAnalysisAttributesFromAnalysisDefinition = function (analysisDefinition) {

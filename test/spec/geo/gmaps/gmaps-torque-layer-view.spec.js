@@ -25,7 +25,7 @@ describe('geo/gmaps/gmaps-torque-layer-view', function () {
 
     this.model = new TorqueLayer({
       type: 'torque',
-      sql: 'select * from table',
+      source: {},
       cartocss: '#test {}',
       'torque-steps': 100
     }, { vis: this.vis });

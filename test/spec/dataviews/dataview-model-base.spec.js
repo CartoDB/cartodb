@@ -47,28 +47,25 @@ describe('dataviews/dataview-model-base', function () {
     this.vis._onMapInstantiatedForTheFirstTime();
 
     this.analysisCollection = new Backbone.Collection();
-    this.a0 = this.analysisCollection.add({
-      id: 'a0',
-      type: 'source'
-    });
-    this.layer = new Backbone.Model();
-
-    this.model = new DataviewModelBase({
-      source: {id: 'a0'}
-    }, {
-      layer: this.layer,
-      map: this.map,
-      vis: this.vis,
-      analysisCollection: this.analysisCollection
-    });
-    this.model.toJSON = jasmine.createSpy('toJSON').and.returnValue({});
-    this.vis._dataviewsCollection.add(this.model);
 
     this.analysisFactory = new AnalysisFactory({
       analysisCollection: this.analysisCollection,
       camshaftReference: fakeCamshaftReference,
       vis: this.vis
     });
+    this.source = this.analysisFactory.analyse({
+      id: 'a0',
+      type: 'source'
+    });
+
+    this.model = new DataviewModelBase({
+      source: this.source
+    }, {
+      map: this.map,
+      vis: this.vis
+    });
+    this.model.toJSON = jasmine.createSpy('toJSON').and.returnValue({});
+    this.vis._dataviewsCollection.add(this.model);
 
     // Disable debounce
     spyOn(_, 'debounce').and.callFake(function (func) { return function () { func.apply(this, arguments); }; });
@@ -262,9 +259,7 @@ describe('dataviews/dataview-model-base', function () {
           }
         });
 
-        this.model.set('source', {
-          id: 'a1'
-        }, { silent: true });
+        this.model.set('source', this.analysisFactory.findNodeById('a1'), { silent: true });
 
         spyOn(this.model, 'fetch');
       });
@@ -413,22 +408,14 @@ describe('dataviews/dataview-model-base', function () {
   });
 
   describe('bindings to the filter', function () {
-    beforeEach(function () {
-      this.layer = new Backbone.Model({
-        id: 'layerId'
-      });
-    });
-
     it('should reload the map by default when the filter changes', function () {
       var filter = new Backbone.Model();
       new DataviewModelBase({ // eslint-disable-line
-        source: { id: 'a0' }
+        source: this.source
       }, {
-        layer: this.layer,
         map: this.map,
         vis: this.vis,
-        filter: filter,
-        analysisCollection: this.analysisCollection
+        filter: filter
       });
 
       // Filter changes
@@ -444,8 +431,7 @@ describe('dataviews/dataview-model-base', function () {
       this.model.once('destroy', this.removeSpy);
       spyOn(this.model, 'stopListening');
       spyOn(this.model, '_reloadVis');
-      spyOn(this.model.layer, 'off').and.callThrough();
-      spyOn(this.a0, 'off').and.callThrough();
+      spyOn(this.source, 'off').and.callThrough();
 
       this.model.filter = jasmine.createSpyObj('filter', ['remove', 'isEmpty']);
       this.model.filter.isEmpty.and.returnValue(false);
@@ -459,7 +445,7 @@ describe('dataviews/dataview-model-base', function () {
 
     it('should stop listening to events', function () {
       expect(this.model.stopListening).toHaveBeenCalled();
-      expect(this.a0.off).toHaveBeenCalledWith('change:status', jasmine.any(Function), this.model);
+      expect(this.source.off).toHaveBeenCalledWith('change:status', jasmine.any(Function), this.model);
     });
   });
 
@@ -492,80 +478,33 @@ describe('dataviews/dataview-model-base', function () {
   describe('getSourceType', function () {
     it('should return the type of the source', function () {
       var dataview = new DataviewModelBase({
-        source: { id: 'a0' }
+        source: this.analysisFactory.findNodeById('a0')
       }, {
-        layer: this.layer,
         map: this.map,
-        vis: this.vis,
-        analysisCollection: this.analysisCollection
+        vis: this.vis
       });
 
       expect(dataview.getSourceType()).toEqual('source');
     });
   });
 
-  describe('getLayerName', function () {
-    it('should return the name of the source', function () {
-      var dataview = new DataviewModelBase({
-        source: { id: 'a0' }
-      }, {
-        layer: this.layer,
-        map: this.map,
-        vis: this.vis,
-        analysisCollection: this.analysisCollection
-      });
-      this.layer.set('layer_name', 'the name');
-
-      expect(dataview.getLayerName()).toEqual('the name');
-    });
-  });
-
   describe('getSourceId', function () {
     it('should return the id of the source', function () {
-      var layer = new Backbone.Model({
-        id: 'layerId',
-        source: 'a1'
-      });
-
       var dataview = new DataviewModelBase({
-        source: {
-          id: 'THE_SOURCE_ID'
-        }
+        source: this.source
       }, { // eslint-disable-line
-        layer: layer,
         map: this.map,
-        vis: this.vis,
-        analysisCollection: this.analysisCollection
+        vis: this.vis
       });
 
-      expect(dataview.getSourceId()).toEqual('THE_SOURCE_ID');
-    });
-
-    it("should return the id of the layer's source", function () {
-      var layer = new Backbone.Model({
-        id: 'layerId',
-        source: 'a1'
-      });
-
-      var dataview = new DataviewModelBase({
-        source: {
-          id: layer.id
-        }
-      }, { // eslint-disable-line
-        layer: layer,
-        map: this.map,
-        vis: this.vis,
-        analysisCollection: this.analysisCollection
-      });
-
-      expect(dataview.getSourceId()).toEqual('a1');
+      expect(dataview.getSourceId()).toEqual('a0');
     });
   });
 
   describe('when analysis changes status', function () {
     beforeEach(function () {
-      this.a0.isLoading = jasmine.createSpy('a0.isLoading');
-      this.a0.isFailed = jasmine.createSpy('a0.isFailed');
+      this.source.isLoading = jasmine.createSpy('a0.isLoading');
+      this.source.isFailed = jasmine.createSpy('a0.isFailed');
       this.model.on({
         loading: this.loadingSpy = jasmine.createSpy('loading'),
         error: this.errorSpy = jasmine.createSpy('failed')
@@ -576,7 +515,7 @@ describe('dataviews/dataview-model-base', function () {
 
     describe('when changed source', function () {
       beforeEach(function () {
-        this.model.set('source', {id: 'a0'});
+        this.model.set('source', this.source);
       });
 
       sharedTestsForAnalysisEvents();
@@ -589,18 +528,18 @@ function sharedTestsForAnalysisEvents () {
     it('should trigger loading event', function () {
       this.loadingSpy.calls.reset();
       this.errorSpy.calls.reset();
-      this.a0.isLoading.and.returnValue(true);
+      this.source.isLoading.and.returnValue(true);
 
-      this.a0.set('status', 'whatever');
+      this.source.set('status', 'whatever');
       expect(this.loadingSpy).toHaveBeenCalled();
       expect(this.errorSpy).not.toHaveBeenCalled();
 
       this.loadingSpy.calls.reset();
       this.errorSpy.calls.reset();
-      this.a0.isLoading.and.returnValue(false);
-      this.a0.isFailed.and.returnValue(true);
+      this.source.isLoading.and.returnValue(false);
+      this.source.isFailed.and.returnValue(true);
 
-      this.a0.set({
+      this.source.set({
         status: 'failed',
         error: this.err = {}
       });

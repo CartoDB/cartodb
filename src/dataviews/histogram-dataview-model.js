@@ -85,8 +85,7 @@ module.exports = DataviewModelBase.extend({
     this.on('change:column', this._onColumnChanged, this);
     this.on('change:localTimezone', this._onLocalTimezoneChanged, this);
     this.on('change', this._onFieldsChanged, this);
-
-    this.listenTo(this.layer, 'change:meta', this._onChangeLayerMeta);
+    this.on('change:column_type', this._onColumnTypeChanged, this);
   },
 
   _onLocalTimezoneChanged: function () {
@@ -315,8 +314,8 @@ module.exports = DataviewModelBase.extend({
     };
   },
 
-  _onChangeLayerMeta: function () {
-    this.filter.set('column_type', this.layer.get('meta').column_type);
+  _onColumnTypeChanged: function () {
+    this.filter.set('column_type', this.get('column_type'));
   },
 
   _onChangeBinds: function () {

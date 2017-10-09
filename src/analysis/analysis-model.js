@@ -1,5 +1,11 @@
 var _ = require('underscore');
 var Model = require('../core/model');
+var util = require('../core/util');
+
+var REQUIRED_OPTS = [
+  'camshaftReference',
+  'vis'
+];
 
 var STATUS = {
   PENDING: 'pending',
@@ -9,20 +15,15 @@ var STATUS = {
   READY: 'ready'
 };
 
-module.exports = Model.extend({
+var AnalysisModel = Model.extend({
 
   initialize: function (attrs, opts) {
     opts = opts || {};
-    if (!opts.camshaftReference) {
-      throw new Error('chamshaftReference is required');
-    }
-
-    if (!opts.vis) {
-      throw new Error('vis is required');
-    }
+    util.checkRequiredOpts(opts, REQUIRED_OPTS, 'AnalysisModel');
 
     this._camshaftReference = opts.camshaftReference;
     this._vis = opts.vis;
+
     this._initBinds();
   },
 
@@ -140,7 +141,20 @@ module.exports = Model.extend({
 
   getParamNames: function () {
     return this._camshaftReference.getParamNamesForAnalysisType(this.get('type'));
+  },
+
+  /**
+   * Compare two analysisModels.
+   */
+  equals: function (analysisModel) {
+    if (!(analysisModel instanceof AnalysisModel)) {
+      return false;
+    }
+    // Since all analysis are created using the analysisFactory different ids ensure different nodes.
+    return this.get('id') === analysisModel.get('id');
   }
 }, {
   STATUS: STATUS
 });
+
+module.exports = AnalysisModel;

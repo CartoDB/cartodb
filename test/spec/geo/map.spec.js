@@ -8,6 +8,7 @@ var TileLayer = require('../../../src/geo/map/tile-layer');
 var WMSLayer = require('../../../src/geo/map/wms-layer');
 var GMapsBaseLayer = require('../../../src/geo/map/gmaps-base-layer');
 var LayersFactory = require('../../../src/vis/layers-factory');
+var AnalysisModel = require('../../../src/analysis/analysis-model');
 
 var Point = require('../../../src/geo/geometry-models/point');
 var Polyline = require('../../../src/geo/geometry-models/polyline');
@@ -17,6 +18,15 @@ var fakeLayersFactory = new LayersFactory({
   visModel: new Backbone.Model(),
   windshaftSettings: {}
 });
+
+var createFakeAnalysis = function (attrs) {
+  return new AnalysisModel(attrs, {
+    vis: {},
+    camshaftReference: {
+      getParamNamesForAnalysisType: function () {}
+    }
+  });
+};
 
 var Map = require('../../../src/geo/map');
 
@@ -270,40 +280,18 @@ describe('core/geo/map', function () {
         expectedLayerModelClass: CartoDBLayer,
         expectedLayerModelType: 'CartoDB',
         testAttributes: {
-          sql: 'something',
+          source: createFakeAnalysis(),
           cartocss: 'else'
-        },
-        expectedErrorMessage: 'The following attributes are missing: sql|source,cartocss'
-      },
-      { // CartoDB layer that points to a source (instead of having sql)
-        createMethod: 'createCartoDBLayer',
-        expectedLayerModelClass: CartoDBLayer,
-        expectedLayerModelType: 'CartoDB',
-        testAttributes: {
-          source: 'a0',
-          cartocss: 'else'
-        },
-        expectedErrorMessage: 'The following attributes are missing: sql|source,cartocss'
+        }
       },
       {
         createMethod: 'createTorqueLayer',
         expectedLayerModelClass: TorqueLayer,
         expectedLayerModelType: 'torque',
         testAttributes: {
-          sql: 'something',
+          source: createFakeAnalysis(),
           cartocss: 'else'
-        },
-        expectedErrorMessage: 'The following attributes are missing: sql|source,cartocss'
-      },
-      { // Torque layer that points to a source (instead of having sql)
-        createMethod: 'createTorqueLayer',
-        expectedLayerModelClass: TorqueLayer,
-        expectedLayerModelType: 'torque',
-        testAttributes: {
-          source: 'a0',
-          cartocss: 'else'
-        },
-        expectedErrorMessage: 'The following attributes are missing: sql|source,cartocss'
+        }
       },
       {
         createMethod: 'createTileLayer',
@@ -311,8 +299,7 @@ describe('core/geo/map', function () {
         expectedLayerModelType: 'Tiled',
         testAttributes: {
           urlTemplate: 'http://example.com'
-        },
-        expectedErrorMessage: 'The following attributes are missing: urlTemplate'
+        }
       },
       {
         createMethod: 'createWMSLayer',
@@ -320,8 +307,7 @@ describe('core/geo/map', function () {
         expectedLayerModelType: 'WMS',
         testAttributes: {
           urlTemplate: 'http://example.com'
-        },
-        expectedErrorMessage: 'The following attributes are missing: urlTemplate'
+        }
       },
       {
         createMethod: 'createGMapsBaseLayer',
@@ -329,8 +315,7 @@ describe('core/geo/map', function () {
         expectedLayerModelType: 'GMapsBase',
         testAttributes: {
           baseType: 'http://example.com'
-        },
-        expectedErrorMessage: 'The following attributes are missing: baseType'
+        }
       },
       {
         createMethod: 'createPlainLayer',
@@ -338,36 +323,15 @@ describe('core/geo/map', function () {
         expectedLayerModelType: 'Plain',
         testAttributes: {
           color: '#FABADA'
-        },
-        expectedErrorMessage: 'The following attributes are missing: image|color'
-      },
-      {
-        createMethod: 'createPlainLayer',
-        expectedLayerModelClass: PlainLayer,
-        expectedLayerModelType: 'Plain',
-        testAttributes: {
-          image: 'http://example.com/image.png'
-        },
-        expectedErrorMessage: 'The following attributes are missing: image|color'
+        }
       }
     ];
 
     _.each(testCases, function (testCase) {
       describe('.' + testCase.createMethod, function () {
-        it('should throw an error if no properties are given', function () {
-          expect(function () {
-            this.map[testCase.createMethod]({});
-          }.bind(this)).toThrowError(testCase.expectedErrorMessage);
-        });
-
         it('should return a layer of the corresponding type', function () {
           var layer = this.map[testCase.createMethod](testCase.testAttributes);
           expect(layer instanceof testCase.expectedLayerModelClass).toBeTruthy();
-        });
-
-        it('should be visible', function () {
-          var layer = this.map[testCase.createMethod](testCase.testAttributes);
-          expect(layer.get('visible')).toBeTruthy();
         });
 
         it('should set the right type', function () {

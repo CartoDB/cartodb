@@ -3,6 +3,7 @@ var _ = require('underscore');
 var VisModel = require('../../../src/vis/vis.js');
 var CategoryDataviewModel = require('../../../src/dataviews/category-dataview-model.js');
 var WindshaftFiltersCategory = require('../../../src/windshaft/filters/category');
+var AnalysisFactory = require('../../../src/analysis/analysis-factory');
 
 describe('dataviews/category-dataview-model', function () {
   beforeEach(function () {
@@ -11,11 +12,24 @@ describe('dataviews/category-dataview-model', function () {
     this.vis = new VisModel();
     spyOn(this.vis, 'reload');
     this.map.getViewBounds.and.returnValue([[1, 2], [3, 4]]);
+    var analysisDefinition = {
+      id: 'a0',
+      type: 'source',
+      params: {
+        query: 'SELECT * FROM blairbnb_listings'
+      }
+    };
+
+    var analysisFactory = new AnalysisFactory({
+      analysisCollection: this.vis._analysisCollection,
+      vis: this.vis
+    });
+    this.source = analysisFactory.analyse(analysisDefinition);
 
     this.layer = new Backbone.Model();
 
     this.model = new CategoryDataviewModel({
-      source: {id: 'a0'}
+      source: this.source
     }, {
       map: this.map,
       vis: this.vis,
@@ -47,7 +61,7 @@ describe('dataviews/category-dataview-model', function () {
 
   it('should set the api_key attribute on the internal models', function () {
     this.model = new CategoryDataviewModel({
-      source: {id: 'a0'},
+      source: this.source,
       apiKey: 'API_KEY'
     }, {
       map: this.map,

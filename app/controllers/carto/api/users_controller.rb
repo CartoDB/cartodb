@@ -59,7 +59,7 @@ module Carto
         user = current_viewer
 
         attributes = params[:user]
-        return(head 403) unless attributes.present?
+        return(head 200) unless attributes.present?
 
         update_password_if_needed(user, attributes)
 

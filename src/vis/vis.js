@@ -145,10 +145,6 @@ var VisModel = Backbone.Model.extend({
       vis: this
     });
 
-    this.analysis.findNodeById = function (nodeId) {
-      AnalysisService.findNodeById(nodeId, this._layersCollection, this._dataviewsCollection);
-    };
-
     var allowScrollInOptions = (vizjson.options && vizjson.options.scrollwheel) || vizjson.scrollwheel;
     // Create the Map
     var allowDragging = util.isMobileDevice() || vizjson.hasZoomOverlay() || allowScrollInOptions;
@@ -458,6 +454,11 @@ var VisModel = Backbone.Model.extend({
       return this.layersFactory.createLayer(layerData.type, layerData);
     }, this);
     return layers;
+  },
+
+  // TODO: temporary method: future use analysis.findNodeById
+  findAnalysisNodeById: function (nodeId) {
+    return AnalysisService.findNodeById(nodeId, this._layersCollection, this._dataviewsCollection);
   }
 });
 

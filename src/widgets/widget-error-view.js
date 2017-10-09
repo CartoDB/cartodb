@@ -49,8 +49,7 @@ module.exports = cdb.core.View.extend({
   },
 
   _reset: function () {
-    this.$el.removeClass('CDB-Widget--error');
-    this.$el.removeClass('CDB-Widget--warning');
+    this.$el.removeClass('CDB-Widget--error CDB-Widget--warning');
     this.$el.html('');
   }
 });

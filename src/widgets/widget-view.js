@@ -23,12 +23,14 @@ module.exports = cdb.core.View.extend({
   },
 
   initialize: function () {
-    this.listenTo(this.model, 'destroy', this.clean);
-    this.listenTo(this.model.dataviewModel, 'error', this._onError);
-    this.listenTo(this.model.dataviewModel, 'sync change:data', this._onDataChanged);
+    var dataviewModel = this.model.dataviewModel;
 
-    if (this.model.dataviewModel._totals) {
-      this.listenTo(this.model.dataviewModel._totals, 'error', this._onError);
+    this.listenTo(this.model, 'destroy', this.clean);
+    this.listenTo(dataviewModel, 'error', this._onError);
+    this.listenTo(dataviewModel, 'sync change:data', this._onDataChanged);
+
+    if (dataviewModel && dataviewModel._totals) {
+      this.listenTo(dataviewModel._totals, 'error', this._onError);
     }
   },
 

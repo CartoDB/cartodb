@@ -44,6 +44,9 @@ describe Carto::UserMigrationImport do
     end
 
     def setup_mocks
+      @organization_mock = Carto::Organization.new
+      @import.stubs(:assert_organization_does_not_exist)
+      @import.stubs(:assert_user_does_not_exist)
       @user_migration_package_mock = Object.new
       Carto::UserMigrationPackage.stubs(:for_import).returns @user_migration_package_mock
       @user_migration_package_mock.stubs(:download).with(:irrelevant_file)
@@ -52,11 +55,11 @@ describe Carto::UserMigrationImport do
       @user_mock = Carto::User.new
       @export_job_mock = Object.new
       @export_job_mock.expects(:run!).once
+      @export_job_mock.expects(:terminate_connections).once
       CartoDB::DataMover::ImportJob.stubs(:new).returns @export_job_mock
       @user_migration_package_mock.stubs(:cleanup)
       @import.expects(:save!).once.returns @import
 
-      @organization_mock = Carto::Organization.new
     end
 
     def expected_job_arguments

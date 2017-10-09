@@ -80,9 +80,10 @@ module CartoDB
 
         overwrite = overwrite_table? && taken_names.include?(name)
         assert_schema_is_valid(name) if overwrite
-        name = rename(result, result.table_name, result.name)
+
 
         database.transaction do
+          name = rename(result, result.table_name, result.name)
           begin
             if overwrite
               log("Dropping destination table: #{name}")

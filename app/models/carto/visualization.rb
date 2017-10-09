@@ -236,6 +236,10 @@ class Carto::Visualization < ActiveRecord::Base
     is_publically_accesible? || has_read_permission?(user)
   end
 
+  def can_view_private_info?(user)
+    has_read_permission?(user)
+  end
+
   def is_accesible_by_user?(user)
     is_viewable_by_user?(user) || password_protected?
   end
@@ -557,7 +561,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def is_owner?(user)
-    user.id == user_id
+    user && user.id == user_id
   end
 
   def unlink_from(user_table)

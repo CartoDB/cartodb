@@ -1338,6 +1338,9 @@ describe Carto::Api::VisualizationsController do
 
     describe 'GET /api/v1/viz/:id' do
       before(:each) do
+        @carto_user1.private_maps_enabled = true
+        @carto_user1.save
+
         bypass_named_maps
         delete_user_data(@user_1)
         @map, @table, @table_visualization, @visualization = create_full_builder_vis(@carto_user1,
@@ -1379,6 +1382,47 @@ describe Carto::Api::VisualizationsController do
           related_canonical.should_not be_nil
           related_canonical.count.should eq 1
           related_canonical[0]['id'].should eq @table_visualization.id
+        end
+      end
+
+      describe 'to anonymous users' do
+        it 'returns a 403 on private visualizations' do
+          @visualization.privacy = Carto::Visualization::PRIVACY_PRIVATE
+          @visualization.save!
+
+          get_json api_v1_visualizations_show_url(id: @visualization.id) do |response|
+            response.status.should eq 403
+          end
+        end
+
+        describe 'publically accessible visualizations' do
+          before(:each) do
+            @visualization.privacy = Carto::Visualization::PRIVACY_LINK
+            @visualization.save!
+          end
+
+          it 'returns 403 for unpublished visualizations' do
+            @visualization.published?.should eq false
+
+            get_json api_v1_visualizations_show_url(id: @visualization.id) do |response|
+              response.status.should eq 403
+            end
+          end
+
+          describe 'published visualizations' do
+            before(:each) do
+              @visualization.create_mapcap!
+              @visualization.published?.should eq true
+            end
+
+            it 'only returns public information' do
+              get_json api_v1_visualizations_show_url(id: @visualization.id) do |response|
+                response.status.should eq 200
+                response.body[:description].should_not be_nil
+                response.body[:auth_tokens].should be_nil
+              end
+            end
+          end
         end
       end
     end
@@ -2609,9 +2653,9 @@ describe Carto::Api::VisualizationsController do
         end
       end
 
-      it 'returns 401 if visualization is private' do
+      it 'returns 403 if visualization is private' do
         get_json url(@vis_owner.username, @vis.id, @other_user.api_key), {}, @headers do |response|
-          response.status.should == 401
+          response.status.should == 403
         end
       end
 
@@ -2658,6 +2702,7 @@ describe Carto::Api::VisualizationsController do
         @shared_vis = FactoryGirl.build(:derived_visualization,
                                         user_id: @vis_owner.id,
                                         name: unique_name('viz'),
+                                        description: 'wadus desc',
                                         privacy: CartoDB::Visualization::Member::PRIVACY_PRIVATE).store
         @shared_user = @org_user_2
         @not_shared_user = @org_user_owner
@@ -2692,6 +2737,14 @@ describe Carto::Api::VisualizationsController do
         end
       end
 
+      it 'returns 200 and private info with valid shared user user_domain' do
+        get_json url(@shared_user.username, @shared_vis.id, @shared_user.api_key), {}, @headers do |response|
+          response.status.should == 200
+          response.body[:description].should_not be_nil
+          response.body[:auth_tokens].should_not be_nil
+        end
+      end
+
       it 'returns 404 if visualization does not exist' do
         get_json url(@vis_owner.username, random_uuid, @vis_owner.api_key), {}, @headers do |response|
           response.status.should == 404
@@ -2706,9 +2759,9 @@ describe Carto::Api::VisualizationsController do
         end
       end
 
-      it 'returns 401 if visualization is not shared with the apikey user' do
+      it 'returns 403 if visualization is not shared with the apikey user' do
         get_json url(@shared_user.username, @shared_vis.id, @not_shared_user.api_key), {}, @headers do |response|
-          response.status.should == 401
+          response.status.should == 403
         end
       end
 

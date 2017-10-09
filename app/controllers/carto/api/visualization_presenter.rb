@@ -35,7 +35,8 @@ module Carto
       end
 
       def to_poro
-        return to_public_poro unless @visualization.is_viewable_by_user?(@current_viewer)
+        return to_public_poro unless @visualization.can_view_private_info?(@current_viewer)
+
         poro = {
           id: @visualization.id,
           name: @visualization.name,

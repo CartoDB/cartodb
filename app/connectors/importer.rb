@@ -24,9 +24,10 @@ module CartoDB
       # @param data_import_id String UUID
       # @param destination_schema String|nil
       # @param public_user_roles Array|nil
-      def initialize(runner, table_registrar, quota_checker, database, data_import_id,
-                     overviews_creator,
-                     destination_schema = DESTINATION_SCHEMA, public_user_roles=[CartoDB::PUBLIC_DB_USER])
+      def initialize(runner: nil, table_registrar: nil, quota_checker: nil, database: nil, data_import_id: nil,
+                     overviews_creator: nil,
+                     destination_schema: DESTINATION_SCHEMA, public_user_roles: [CartoDB::PUBLIC_DB_USER],
+                     collision_strategy: Carto::DataImportConstants::COLLISION_STRATEGY_SKIP)
         @aborted                = false
         @runner                 = runner
         @table_registrar        = table_registrar
@@ -40,10 +41,7 @@ module CartoDB
 
         @imported_table_visualization_ids = []
         @rejected_layers = []
-      end
-
-      def overwrite_table=(overwrite_table)
-        @overwrite_table = overwrite_table
+        @collision_strategy = collision_strategy
       end
 
       def run(tracker)
@@ -81,7 +79,6 @@ module CartoDB
         name = Carto::ValidTableNameProposer.new.propose_valid_table_name(result.name, taken_names: [])
 
         overwrite = overwrite_table? && taken_names.include?(name)
-
         assert_schema_is_valid(name) if overwrite
 
         database.transaction do
@@ -303,7 +300,7 @@ module CartoDB
       end
 
       def overwrite_table?
-        @overwrite_table
+        @collision_strategy == Carto::DataImportConstants::COLLISION_STRATEGY_OVERWRITE
       end
 
       def log(message)

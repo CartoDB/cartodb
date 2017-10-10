@@ -135,7 +135,7 @@ var VisModel = Backbone.Model.extend({
     var windshaftClient = new WindshaftClient(windshaftSettings);
 
     // Create the public Analysis Service
-    this.analysisService = new AnalysisService({
+    this._analysisService = new AnalysisService({
       vis: this,
       apiKey: this.get('apiKey'),
       authToken: this.get('authToken'),
@@ -143,8 +143,13 @@ var VisModel = Backbone.Model.extend({
       dataviewsCollection: this._dataviewsCollection
     });
 
-    // Public namespace exposing public methods.
-    this.analysis = this.analysisService;
+    // Public wrapper exposing public methods.
+    this.analysis = {
+      analyse: this._analysisService.analyse.bind(this._analysisService),
+      findNodeById: this._analysisService.findNodeById.bind(this._analysisService),
+      createAnalysis: this._analysisService.createAnalysis.bind(this._analysisService),
+      updateAnalysis: this._analysisService.updateAnalysis.bind(this._analysisService)
+    };
 
     var allowScrollInOptions = (vizjson.options && vizjson.options.scrollwheel) || vizjson.scrollwheel;
     // Create the Map
@@ -413,7 +418,7 @@ var VisModel = Backbone.Model.extend({
     var analysisRoots = [];
     if (analysesDefinition) {
       _.each(analysesDefinition, function (analysisDefinition) {
-        analysisRoots.push(this.analysisService.createAnalysis(analysisDefinition));
+        analysisRoots.push(this._analysisService.createAnalysis(analysisDefinition));
       }, this);
 
       _.each(analysisRoots, function (analysisRoot) {
@@ -445,7 +450,7 @@ var VisModel = Backbone.Model.extend({
         // TODO: We'll be able to remove this (accepting sql option) once
         // https://github.com/CartoDB/cartodb.js/issues/1754 is closed.
         if (layerData.sql) {
-          layerData.source = this.analysisService.createSourceAnalysisForLayer(layerData.id, layerData.sql);
+          layerData.source = this._analysisService.createAnalysisForLayer(layerData.id, layerData.sql);
           delete layerData.sql;
         }
       }

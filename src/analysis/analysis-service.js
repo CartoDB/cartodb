@@ -19,89 +19,20 @@ var AnalysisService = function (opts) {
   this._apiKey = opts.apiKey;
   this._authToken = opts.authToken;
   this._camshaftReference = opts.camshaftReference || camshaftReference; // For testing purposes
-  this._layersCollection = opts.layersCollection;
-  this._dataviewsCollection = opts.dataviewsCollection;
+  this._layersCollection = opts.layersCollection || [];
+  this._dataviewsCollection = opts.dataviewsCollection || [];
 };
 
 /**
- * Create an analysis node
- *
- * Recursively generates a graph of analyses and returns the "origin" node. Each node
- * may have one or more "source" params pointing to another node. If a node had been created
- * already, this method updates the attributes of the existing node. New nodes are added to
- * the collection of analyses that has been injected.
- */
-AnalysisService.prototype.createAnalysis = function (analysisDefinition) {
-  analysisDefinition = _.clone(analysisDefinition);
-  var analysisAttrs = this._createAnalysisAttributesFromAnalysisDefinition(analysisDefinition);
-
-  if (this._apiKey) {
-    analysisAttrs.apiKey = this._apiKey;
-  }
-  if (this._authToken) {
-    analysisAttrs.authToken = this._authToken;
-  }
-
-  // TODO: check id to avoid duplicated analysis nodes
-
-  var analysis = new Analysis(analysisAttrs, {
-    camshaftReference: this._camshaftReference,
-    vis: this._vis
-  });
-
-  return analysis;
-};
-
-AnalysisService.prototype._createAnalysisAttributesFromAnalysisDefinition = function (analysisDefinition) {
-  var analysisType = analysisDefinition.type;
-  var sourceNamesForAnalysisType = this._camshaftReference.getSourceNamesForAnalysisType(analysisType);
-  var sourceNodes = {};
-  _.each(sourceNamesForAnalysisType, function (sourceName) {
-    var sourceParams = analysisDefinition.params[sourceName];
-    if (sourceParams) {
-      sourceNodes[sourceName] = this.createAnalysis(sourceParams);
-    }
-  }.bind(this));
-
-  return _.omit(_.extend(analysisDefinition, analysisDefinition.params, sourceNodes), 'params');
-};
-
-/**
- * Create a source analysis
- */
-AnalysisService.prototype.createSourceAnalysisForLayer = function (layerId, layerQuery) {
-  return this.createAnalysis({
-    id: layerId,
-    type: 'source',
-    params: {
-      query: layerQuery
-    }
-  });
-};
-
-/**
- * Update an analysis node
- */
-AnalysisService.prototype.updateAnalysis = function (analysisDefinition) {
-  analysisDefinition = _.clone(analysisDefinition);
-  var analysis = this.findNodeById(analysisDefinition.id);
-
-  if (analysis) {
-    var analysisAttrs = this._createAnalysisAttributesFromAnalysisDefinition(analysisDefinition);
-    analysis.set(analysisAttrs);
-  }
-
-  return analysis;
-};
-
-/**
- * [description]
- */
+  * Recursively generates a graph of analyses and returns the "origin" node. Each node
+  * may have one or more "source" params pointing to another node. If a node had been created
+  * already, this method updates the attributes of the existing node. New nodes are added to
+  * the collection of analyses that has been injected.
+  */
 AnalysisService.prototype.analyse = function (analysisDefinition) {
   analysisDefinition = _.clone(analysisDefinition);
-  var analysisAttrs = this._getAnalysisAttributesFromAnalysisDefinition(analysisDefinition);
-
   var analysis = this.findNodeById(analysisDefinition.id);
+  var analysisAttrs = this._getAnalysisAttributesFromAnalysisDefinition(analysisDefinition, this.analyse.bind(this));
 
   if (analysis) {
     analysis.set(analysisAttrs);
@@ -124,18 +55,58 @@ AnalysisService.prototype.analyse = function (analysisDefinition) {
   return analysis;
 };
 
-AnalysisService.prototype._getAnalysisAttributesFromAnalysisDefinition = function (analysisDefinition) {
-  var analysisType = analysisDefinition.type;
-  var sourceNamesForAnalysisType = this._camshaftReference.getSourceNamesForAnalysisType(analysisType);
-  var sourceNodes = {};
-  _.each(sourceNamesForAnalysisType, function (sourceName) {
-    var sourceParams = analysisDefinition.params[sourceName];
-    if (sourceParams) {
-      sourceNodes[sourceName] = this.analyse(sourceParams);
-    }
-  }.bind(this));
+/**
+ * Create an analysis node from a JSON definition
+ */
+AnalysisService.prototype.createAnalysis = function (analysisDefinition) {
+  analysisDefinition = _.clone(analysisDefinition);
+  var analysisAttrs = this._getAnalysisAttributesFromAnalysisDefinition(analysisDefinition, this.createAnalysis.bind(this));
 
-  return _.omit(_.extend(analysisDefinition, analysisDefinition.params, sourceNodes), 'params');
+  if (this._apiKey) {
+    analysisAttrs.apiKey = this._apiKey;
+  }
+  if (this._authToken) {
+    analysisAttrs.authToken = this._authToken;
+  }
+
+  // TODO: check id to avoid duplicated analysis nodes
+
+  var analysis = new Analysis(analysisAttrs, {
+    camshaftReference: this._camshaftReference,
+    vis: this._vis
+  });
+
+  return analysis;
+};
+
+/**
+ * Create a source analysis
+ */
+AnalysisService.prototype.createAnalysisForLayer = function (layerId, layerQuery) {
+  return this.createAnalysis({
+    id: layerId,
+    type: 'source',
+    params: {
+      query: layerQuery
+    }
+  });
+};
+
+/**
+ * Update an analysis node from a JSON definition
+ */
+AnalysisService.prototype.updateAnalysis = function (analysisDefinition) {
+  analysisDefinition = _.clone(analysisDefinition);
+  var analysis = this.findNodeById(analysisDefinition.id);
+
+  if (!analysis) {
+    throw new Error('The analysis ' + analysisDefinition.id + ' does not exist');
+  }
+
+  var analysisAttrs = this._getAnalysisAttributesFromAnalysisDefinition(analysisDefinition, this.updateAnalysis.bind(this));
+  analysis.set(analysisAttrs);
+
+  return analysis;
 };
 
 /**
@@ -148,6 +119,20 @@ AnalysisService.prototype.findNodeById = function (id) {
   });
 };
 
+AnalysisService.prototype._getAnalysisAttributesFromAnalysisDefinition = function (analysisDefinition, func) {
+  var analysisNodes = {};
+  var analysisType = analysisDefinition.type;
+  var sourceNamesForAnalysisType = this._camshaftReference.getSourceNamesForAnalysisType(analysisType);
+  _.each(sourceNamesForAnalysisType, function (sourceName) {
+    var sourceParams = analysisDefinition.params[sourceName];
+    if (sourceParams) {
+      analysisNodes[sourceName] = func(sourceParams);
+    }
+  });
+
+  return _.omit(_.extend(analysisDefinition, analysisDefinition.params, analysisNodes), 'params');
+};
+
 /**
  * Return all the analysis nodes without duplicates.
  * The analyses are obtained from the layers and dataviews collections.
@@ -157,15 +142,15 @@ AnalysisService.prototype.findNodeById = function (id) {
  * This method will give us: (a0->a1->a2), (a1->a2), (a2), (b0->a2)
  */
 AnalysisService.getUniqueAnalysisNodes = function (layersCollection, dataviewsCollection) {
-  var uniqueAnalyses = {};
+  var uniqueAnalysisNodes = {};
   var analysisList = AnalysisService.getAnalysisList(layersCollection, dataviewsCollection);
   _.each(analysisList, function (analysis) {
     analysis.getNodesCollection().each(function (analysisNode) {
-      uniqueAnalyses[analysisNode.get('id')] = analysisNode;
+      uniqueAnalysisNodes[analysisNode.get('id')] = analysisNode;
     });
   });
 
-  return _.map(uniqueAnalyses, function (analisis) { return analisis; }, this);
+  return _.map(uniqueAnalysisNodes, function (analisis) { return analisis; }, this);
 };
 
 /**

@@ -196,7 +196,7 @@ describe('src/analysis/analysis-service.js', function () {
       };
       spyOn(this.analysisService, 'analyse').and.returnValue('node');
 
-      var result = this.analysisService._getAnalysisAttributesFromAnalysisDefinition(analysisDefinition);
+      var result = this.analysisService._getAnalysisAttributesFromAnalysisDefinition(analysisDefinition, this.analysisService.analyse.bind(this));
 
       expect(this.analysisService.analyse.calls.count()).toEqual(1);
       expect(this.analysisService.analyse).toHaveBeenCalledWith('a0');
@@ -215,7 +215,7 @@ describe('src/analysis/analysis-service.js', function () {
       };
       spyOn(this.analysisService, 'analyse').and.returnValue('node');
 
-      var result = this.analysisService._getAnalysisAttributesFromAnalysisDefinition(analysisDefinition);
+      var result = this.analysisService._getAnalysisAttributesFromAnalysisDefinition(analysisDefinition, this.analysisService.analyse.bind(this));
 
       expect(this.analysisService.analyse.calls.count()).toEqual(1);
       expect(this.analysisService.analyse).toHaveBeenCalledWith('a0');

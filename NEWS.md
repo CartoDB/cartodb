@@ -51,6 +51,7 @@ Development
 * New user render timeouts and propagation of timeout values to Redis (#12425)
 * Default basemap is used for all Builder maps regardless of dataset basemap (#12700)
 * The selection window on a histogram widget can be dragged (#12180)
+* Visualization endpoint now returns related canonical visualizations under demand (#12910)
 * Move playback on animated time series by clicking on it (#12180)
 * Move play/pause button to besides the time series (#12387)
 * Updates Dataservices API client default version to `0.18.0` (#12466)
@@ -228,6 +229,7 @@ Development
 * Increment maximum buckets in Time-Series for leap years (#12778)
 * Prevent invalid geometries in BoundingBoxUtils.to_polygon, to_point (#12873)
 * Improve tile error overlay (cartodb.js#1721)
+* Fix TrackJS missing token in static pages (#12914)
 
 ### Internals
 * Fix layer's sources in tests (analysis source required) (#12866)

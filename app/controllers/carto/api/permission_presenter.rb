@@ -32,12 +32,17 @@ module Carto
             type:     'vis'
           },
           acl:        @permission.acl.map do |entry|
-            {
-              type:   entry[:type],
-              entity: entity_decoration(entry),
-              access: entry[:access]
-            }
-          end,
+            entity = entity_decoration(entry)
+            if entity.blank?
+              nil
+            else
+              {
+                type:   entry[:type],
+                entity: entity,
+                access: entry[:access]
+              }
+            end
+          end.reject(&:nil?),
           created_at: @permission.created_at,
           updated_at: @permission.updated_at
         }

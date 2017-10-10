@@ -142,8 +142,8 @@ AnalysisService.prototype._getAnalysisAttributesFromAnalysisDefinition = functio
  * Return the analysis node with the provided id
  */
 AnalysisService.prototype.findNodeById = function (id) {
-  var analyses = AnalysisService.getUniqueAnalysesNodes(this._layersCollection, this._dataviewsCollection);
-  return _.find(analyses, function (analysisNode) {
+  var analysisNodes = AnalysisService.getUniqueAnalysisNodes(this._layersCollection, this._dataviewsCollection);
+  return _.find(analysisNodes, function (analysisNode) {
     return analysisNode.get('id') === id;
   });
 };
@@ -156,11 +156,11 @@ AnalysisService.prototype.findNodeById = function (id) {
  * We have the following analyses:  (a0->a1->a2), (b0->a2)
  * This method will give us: (a0->a1->a2), (a1->a2), (a2), (b0->a2)
  */
-AnalysisService.getUniqueAnalysesNodes = function (layersCollection, dataviewsCollection) {
+AnalysisService.getUniqueAnalysisNodes = function (layersCollection, dataviewsCollection) {
   var uniqueAnalyses = {};
-  var analyses = AnalysisService.getAnalysisList(layersCollection, dataviewsCollection);
-  _.each(analyses, function (analysis) {
-    _.each(analysis.getNodes(), function (analysisNode) {
+  var analysisList = AnalysisService.getAnalysisList(layersCollection, dataviewsCollection);
+  _.each(analysisList, function (analysis) {
+    analysis.getNodesCollection().each(function (analysisNode) {
       uniqueAnalyses[analysisNode.get('id')] = analysisNode;
     });
   });

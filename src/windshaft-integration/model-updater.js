@@ -194,8 +194,8 @@ ModelUpdater.prototype._updateDataviewModels = function (windshaftMap, sourceId,
 };
 
 ModelUpdater.prototype._updateAnalysisModels = function (windshaftMap) {
-  var analysisNodes = this._getUniqueAnalysesNodes();
-  _.each(analysisNodes, function (analysisNode) {
+  var analysisNodesCollection = this._getUniqueAnalysisNodesCollection();
+  analysisNodesCollection.each(function (analysisNode) {
     var analysisMetadata = windshaftMap.getAnalysisNodeMetadata(analysisNode.get('id'));
     var attrs;
     if (analysisMetadata) {
@@ -241,8 +241,8 @@ ModelUpdater.prototype._setError = function (error) {
     var layerModel = this._layersCollection.get(error.layerId);
     layerModel && layerModel.setError(error);
   } else if (error.isAnalysisError()) {
-    var analysisList = new Backbone.Collection(this._getUniqueAnalysesNodes());
-    var analysisModel = analysisList.get(error.analysisId);
+    var analysisNodesCollection = this._getUniqueAnalysisNodesCollection();
+    var analysisModel = analysisNodesCollection.get(error.analysisId);
     analysisModel && analysisModel.setError(error);
   } else {
     this._visModel.setError(error);
@@ -269,8 +269,9 @@ ModelUpdater.prototype._getLayerLegends = function (layerModel) {
   ];
 };
 
-ModelUpdater.prototype._getUniqueAnalysesNodes = function () {
-  return AnalysisService.getUniqueAnalysesNodes(this._layersCollection, this._dataviewsCollection);
+ModelUpdater.prototype._getUniqueAnalysisNodesCollection = function () {
+  var analysisNodes = AnalysisService.getUniqueAnalysisNodes(this._layersCollection, this._dataviewsCollection);
+  return new Backbone.Collection(analysisNodes);
 };
 
 module.exports = ModelUpdater;

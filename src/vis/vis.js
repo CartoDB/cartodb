@@ -238,7 +238,7 @@ var VisModel = Backbone.Model.extend({
   },
 
   _getAnalysisNodeModels: function () {
-    return AnalysisService.getUniqueAnalysesNodes(this._layersCollection, this._dataviewsCollection);
+    return AnalysisService.getUniqueAnalysisNodes(this._layersCollection, this._dataviewsCollection);
   },
 
   /**

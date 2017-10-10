@@ -226,7 +226,7 @@ describe('src/analysis/analysis-service.js', function () {
     });
   });
 
-  describe('.getUniqueAnalysesNodes', function () {
+  describe('.getUniqueAnalysisNodes', function () {
     it('should return the analysis nodes: (single analysis node in a single layer)', function () {
       var analysis = this.analysisService.createAnalysis({
         id: 'a0',
@@ -238,7 +238,7 @@ describe('src/analysis/analysis-service.js', function () {
       var dataviewsCollection = new Backbone.Collection();
 
       var expected = analysis;
-      var actual = AnalysisService.getUniqueAnalysesNodes(layersCollection, dataviewsCollection);
+      var actual = AnalysisService.getUniqueAnalysisNodes(layersCollection, dataviewsCollection);
 
       expect(actual[0]).toEqual(expected);
     });
@@ -263,7 +263,7 @@ describe('src/analysis/analysis-service.js', function () {
       var dataviewsCollection = new Backbone.Collection([dataview]);
 
       var expected = [analysis0, analysis1];
-      var actual = AnalysisService.getUniqueAnalysesNodes(layersCollection, dataviewsCollection);
+      var actual = AnalysisService.getUniqueAnalysisNodes(layersCollection, dataviewsCollection);
 
       expect(actual.length).toEqual(expected.length);
       expect(actual).toEqual(expected);
@@ -289,7 +289,7 @@ describe('src/analysis/analysis-service.js', function () {
       var dataviewsCollection = new Backbone.Collection([dataview]);
 
       var expected = [analysis0, analysis1];
-      var actual = AnalysisService.getUniqueAnalysesNodes(layersCollection, dataviewsCollection);
+      var actual = AnalysisService.getUniqueAnalysisNodes(layersCollection, dataviewsCollection);
 
       expect(actual.length).toEqual(expected.length);
       expect(actual).toEqual(expected);
@@ -334,7 +334,7 @@ describe('src/analysis/analysis-service.js', function () {
       var dataviewsCollection = new Backbone.Collection([dataview]);
 
       var expected = [analysis0, analysis2, analysis1];
-      var actual = AnalysisService.getUniqueAnalysesNodes(layersCollection, dataviewsCollection);
+      var actual = AnalysisService.getUniqueAnalysisNodes(layersCollection, dataviewsCollection);
 
       // This specs make easy to know what went wrong when the test fails.
       expect(actual.length).toEqual(expected.length);

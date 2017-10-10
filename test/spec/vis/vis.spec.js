@@ -586,7 +586,7 @@ describe('vis/vis', function () {
       this.vis.load(new VizJSON(this.vizjson));
 
       // Analyses have been indexed
-      var analysisNodes = AnalysisService.getUniqueAnalysesNodes(this.vis._layersCollection, this.vis._dataviewsCollection);
+      var analysisNodes = AnalysisService.getUniqueAnalysisNodes(this.vis._layersCollection, this.vis._dataviewsCollection);
       expect(analysisNodes.length).toEqual(2);
 
       var a1 = this.vis.analysis.findNodeById('a1');

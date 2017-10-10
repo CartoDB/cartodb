@@ -553,7 +553,7 @@ feature "Superadmin's users API" do
 
     it 'paginates results' do
       data_imports = FactoryGirl.create_list(:data_import, 2, user_id: @user.id)
-      data_import_ids = data_imports.map {|di| di.id }
+      data_import_ids = data_imports.map(&:id)
 
       pagination_params = { page: 1, per_page: 1 }
 

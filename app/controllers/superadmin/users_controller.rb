@@ -136,7 +136,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
     end
 
     if page > 0 && per_page > 0
-      respond_with({data_imports: data_imports_info, pagination_info: pagination_info})
+      respond_with(data_imports: data_imports_info, pagination_info: pagination_info)
     else
       respond_with data_imports_info
     end

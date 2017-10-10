@@ -43,7 +43,7 @@ module Carto
 
       file = CartoDB::FileUploadFile.new(filepath)
 
-      s3_config = Cartodb.config[:exporter]['s3'] || {}
+      s3_config = Cartodb.config[:exporter]['s3'].deep_dup || {}
 
       plain_name = header_encode(file.original_filename.force_encoding('iso-8859-1'))
       utf_name = header_encode(file.original_filename)

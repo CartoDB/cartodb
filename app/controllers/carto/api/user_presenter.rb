@@ -1,11 +1,9 @@
 require_relative 'group_presenter'
-require_relative '../../helpers/avatar_helper'
 
 module Carto
   module Api
     class UserPresenter
       include AccountTypeHelper
-      include AvatarHelper
 
       BUILDER_ACTIVATION_DATE = Date.new(2016, 11, 11).freeze
 
@@ -199,8 +197,7 @@ module Carto
           twitter_username: @user.twitter_username,
           disqus_shortname: @user.disqus_shortname,
           available_for_hire: @user.available_for_hire,
-          location: @user.location,
-          avatar_valid_extensions: AVATAR_VALID_EXTENSIONS
+          location: @user.location
         }
 
         if @user.organization.present?

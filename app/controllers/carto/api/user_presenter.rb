@@ -4,6 +4,7 @@ module Carto
   module Api
     class UserPresenter
       include AccountTypeHelper
+
       BUILDER_ACTIVATION_DATE = Date.new(2016, 11, 11).freeze
 
       def initialize(user, fetch_groups: false, current_viewer: nil, fetch_db_size: true)
@@ -190,7 +191,13 @@ module Carto
           avatar_url: @user.avatar,
           feature_flags: @user.feature_flag_names,
           base_url: @user.public_url,
-          needs_password_confirmation: @user.needs_password_confirmation?
+          needs_password_confirmation: @user.needs_password_confirmation?,
+          description: @user.description,
+          website: @user.website,
+          twitter_username: @user.twitter_username,
+          disqus_shortname: @user.disqus_shortname,
+          available_for_hire: @user.available_for_hire,
+          location: @user.location
         }
 
         if @user.organization.present?

@@ -59,25 +59,26 @@ module Carto
         user = current_viewer
 
         attributes = params[:user]
-        return(head 403) unless attributes.present?
 
-        update_password_if_needed(user, attributes)
+        if attributes.present?
+          update_password_if_needed(user, attributes)
 
-        if user.can_change_email? && attributes[:email].present?
-          user.set_fields(attributes, [:email])
+          if user.can_change_email? && attributes[:email].present?
+            user.set_fields(attributes, [:email])
+          end
+
+          if attributes[:avatar_url].present? && valid_avatar_file?(attributes[:avatar_url])
+            user.set_fields(attributes, [:avatar_url])
+          end
+
+          fields_to_be_updated = UPDATE_ME_FIELDS.select { |field| attributes.has_key?(field) }
+
+          user.set_fields(attributes, fields_to_be_updated) if fields_to_be_updated.present?
+
+          raise Sequel::ValidationFailed.new('Validation failed') unless user.valid?
+          user.update_in_central
+          user.save(raise_on_failure: true)
         end
-
-        if attributes[:avatar_url].present? && valid_avatar_file?(attributes[:avatar_url])
-          user.set_fields(attributes, [:avatar_url])
-        end
-
-        fields_to_be_updated = UPDATE_ME_FIELDS.select { |field| attributes.has_key?(field) }
-
-        user.set_fields(attributes, fields_to_be_updated) if fields_to_be_updated.present?
-
-        raise Sequel::ValidationFailed.new('Validation failed') unless user.valid?
-        user.update_in_central
-        user.save(raise_on_failure: true)
 
         render_jsonp(Carto::Api::UserPresenter.new(user, current_viewer: current_viewer).to_poro)
       rescue CartoDB::CentralCommunicationFailure => e

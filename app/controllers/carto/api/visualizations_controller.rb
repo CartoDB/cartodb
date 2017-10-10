@@ -54,7 +54,9 @@ module Carto
       rescue_from Carto::UUIDParameterFormatError, with: :rescue_from_carto_error
 
       def show
-        render_jsonp(to_json(@visualization))
+        fetch_related_canonical_visualizations = params[:fetch_related_canonical_visualizations] == 'true'
+        render_jsonp(to_json(@visualization,
+                             fetch_related_canonical_visualizations: fetch_related_canonical_visualizations))
       rescue => e
         CartoDB::Logger.error(exception: e)
         head(404)
@@ -422,13 +424,15 @@ module Carto
         end
       end
 
-      def to_json(visualization)
-        ::JSON.dump(to_hash(visualization))
+      def to_json(visualization, fetch_related_canonical_visualizations: false)
+        ::JSON.dump(to_hash(visualization,
+                            fetch_related_canonical_visualizations: fetch_related_canonical_visualizations))
       end
 
-      def to_hash(visualization)
+      def to_hash(visualization, fetch_related_canonical_visualizations: false)
         # TODO: previous controller uses public_fields_only option which I don't know if is still used
-        VisualizationPresenter.new(visualization, current_viewer, self).to_poro
+        VisualizationPresenter.new(visualization, current_viewer, self,
+                                   related_canonical_visualizations: fetch_related_canonical_visualizations).to_poro
       end
 
       def carto_referer?

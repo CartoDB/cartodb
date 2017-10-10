@@ -79,9 +79,9 @@ describe Carto::Api::UsersController do
         end
       end
 
-      it 'gives an error if payload is empty' do
+      it 'gives a status code 200 if payload is empty' do
         put_json api_v3_users_update_me_url(url_options), {}, @headers do |response|
-          expect(response.status).to eq(403)
+          expect(response.status).to eq(200)
         end
       end
 
@@ -211,6 +211,50 @@ describe Carto::Api::UsersController do
         payload = { user: { name: 'Foo' } }
 
         put_json api_v3_users_update_me_url(url_options.except(:api_key)), payload, @headers do |response|
+          expect(response.status).to eq(401)
+        end
+      end
+    end
+  end
+
+  describe 'delete_me' do
+    before(:each) do
+      @user = FactoryGirl.create(:user, password: 'foobarbaz', password_confirmation: 'foobarbaz')
+    end
+
+    let(:url_options) do
+      {
+        user_domain: @user.username,
+        user_id: @user.id,
+        api_key: @user.api_key
+      }
+    end
+
+    it 'deletes the authenticated user' do
+      payload = { deletion_password_confirmation: 'foobarbaz' }
+
+      delete_json api_v3_users_delete_me_url(url_options), payload, @headers do |response|
+        expect(response.status).to eq(200)
+        expect(Carto::User.exists?(@user.id)).to be_false
+      end
+    end
+
+    context 'failures in deletion' do
+      after(:each) do
+        @user.destroy
+      end
+
+      it 'gives an error if deletion password confirmation is invalid' do
+        payload = { deletion_password_confirmation: 'idontknow' }
+
+        delete_json api_v3_users_delete_me_url(url_options), payload, @headers do |response|
+          expect(response.status).to eq(400)
+          expect(response.body[:message]).to eq("Error deleting user: Password does not match")
+        end
+      end
+
+      it 'returns 401 if user is not logged in' do
+        delete_json api_v3_users_delete_me_url(url_options.except(:api_key)), @headers do |response|
           expect(response.status).to eq(401)
         end
       end

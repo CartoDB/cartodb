@@ -117,7 +117,13 @@ module CartoDB
         base_url: public_url,
         needs_password_confirmation: needs_password_confirmation?,
         viewer: viewer,
-        org_admin: organization_admin?
+        org_admin: organization_admin?,
+        description: description,
+        website: website,
+        twitter_username: twitter_username,
+        disqus_shortname: disqus_shortname,
+        available_for_hire: available_for_hire,
+        location: location
       }
 
       if organization.present?

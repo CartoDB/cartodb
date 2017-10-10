@@ -426,8 +426,6 @@ describe Carto::Api::VisualizationsController do
   end
 
   describe 'main behaviour' do
-    # INFO: this tests come from spec/requests/api/visualizations_spec.rb
-
     before(:all) do
       CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
 
@@ -1339,19 +1337,23 @@ describe Carto::Api::VisualizationsController do
     end
 
     describe 'GET /api/v1/viz/:id' do
-
       before(:each) do
         bypass_named_maps
         delete_user_data(@user_1)
+        @map, @table, @table_visualization, @visualization = create_full_builder_vis(@carto_user1,
+                                                                                     visualization_attributes:
+                                                                                       {
+                                                                                         tags: ['foo'],
+                                                                                         description: 'dull desc'
+                                                                                       })
+      end
+
+      after(:each) do
+        destroy_full_visualization(@map, @table, @table_visualization, @visualization)
       end
 
       it 'returns a visualization' do
-        payload = factory(@user_1)
-        post api_v1_visualizations_create_url(api_key: @api_key),
-        payload.to_json, @headers
-        id = JSON.parse(last_response.body).fetch('id')
-
-        get api_v1_visualizations_show_url(id: id, api_key: @api_key), {}, @headers
+        get api_v1_visualizations_show_url(id: @visualization.id, api_key: @api_key), {}, @headers
 
         last_response.status.should == 200
         response = JSON.parse(last_response.body)
@@ -1361,6 +1363,23 @@ describe Carto::Api::VisualizationsController do
         response.fetch('tags')            .should_not be_empty
         response.fetch('description')     .should_not be_nil
         response.fetch('related_tables')  .should_not be_nil
+      end
+
+      it 'returns related_canonical_visualizations if requested' do
+        get_json api_v1_visualizations_show_url(id: @visualization.id, api_key: @carto_user1.api_key) do |response|
+          response.status.should eq 200
+          response.body[:related_canonical_visualizations].should be_nil
+        end
+
+        get_json api_v1_visualizations_show_url(id: @visualization.id,
+                                                api_key: @carto_user1.api_key,
+                                                fetch_related_canonical_visualizations: true) do |response|
+          response.status.should eq 200
+          related_canonical = response.body[:related_canonical_visualizations]
+          related_canonical.should_not be_nil
+          related_canonical.count.should eq 1
+          related_canonical[0]['id'].should eq @table_visualization.id
+        end
       end
     end
 
@@ -1639,20 +1658,20 @@ describe Carto::Api::VisualizationsController do
         end
       end
 
-      it 'includes vector flag (default false)' do
+      it 'includes vector flag (default true)' do
         get_json get_vizjson3_url(@user_1, @visualization), @headers do |response|
           response.status.should == 200
           vizjson3 = response.body
-          vizjson3[:vector].should == false
+          vizjson3[:vector].should be_nil
         end
       end
 
-      it 'doesn\'t include vector flag if vector_vs_raster feature flag is enabled and vector param is not present' do
+      it 'includes vector flag if vector_vs_raster feature flag is enabled and vector param is not present' do
         set_feature_flag @visualization.user, 'vector_vs_raster', true
         get_json get_vizjson3_url(@user_1, @visualization), @headers do |response|
           response.status.should == 200
           vizjson3 = response.body
-          vizjson3.has_key?(:vector).should be_false
+          vizjson3.has_key?(:vector).should be_true
         end
       end
 

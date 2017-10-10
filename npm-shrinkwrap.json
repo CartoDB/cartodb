@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.10.17-12593",
+  "version": "4.10.22-12593",
   "dependencies": {
     "abbrev": {
       "version": "1.1.0",
@@ -230,9 +230,9 @@
       "resolved": "https://registry.npmjs.org/block-stream/-/block-stream-0.0.9.tgz"
     },
     "bluebird": {
-      "version": "3.5.0",
+      "version": "3.5.1",
       "from": "bluebird@>=3.4.7 <4.0.0",
-      "resolved": "https://registry.npmjs.org/bluebird/-/bluebird-3.5.0.tgz"
+      "resolved": "https://registry.npmjs.org/bluebird/-/bluebird-3.5.1.tgz"
     },
     "bn.js": {
       "version": "4.11.8",
@@ -401,9 +401,9 @@
       "resolved": "https://registry.npmjs.org/cartocolor/-/cartocolor-4.0.0.tgz"
     },
     "cartodb-deep-insights.js": {
-      "version": "0.0.3",
-      "from": "cartodb/deep-insights.js#1717-display-error-tile",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#0f9064fe952a20371f6f5bd4c16a8bf3068a610c",
+      "version": "0.3.0",
+      "from": "cartodb/deep-insights.js#v0.3.0",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#087342a6e1c23e0956b428ef57a9a11df66ff48b",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",
@@ -418,9 +418,9 @@
       "resolved": "https://registry.npmjs.org/cartodb-pecan/-/cartodb-pecan-0.2.0.tgz"
     },
     "cartodb.js": {
-      "version": "4.0.0-alpha.1.1.2",
-      "from": "cartodb/cartodb.js#1717-display-error-tile",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#885c21943dfb2027d9bc722d1805b97ed6019580"
+      "version": "4.0.0-alpha.7",
+      "from": "cartodb/cartodb.js#v4.0.0-alpha.7",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#5aaa2e5c9ade032aece8100e2a0d97ba43e89987"
     },
     "caseless": {
       "version": "0.12.0",
@@ -1923,9 +1923,9 @@
       "resolved": "https://registry.npmjs.org/postcss-scss/-/postcss-scss-0.4.0.tgz",
       "dependencies": {
         "postcss": {
-          "version": "5.2.17",
+          "version": "5.2.18",
           "from": "postcss@>=5.2.5 <6.0.0",
-          "resolved": "https://registry.npmjs.org/postcss/-/postcss-5.2.17.tgz"
+          "resolved": "https://registry.npmjs.org/postcss/-/postcss-5.2.18.tgz"
         }
       }
     },
@@ -2504,9 +2504,9 @@
       "resolved": "git://github.com/cartodb/tangram.git#5df75d855a559d64673d518c5969ca6569a8e04b"
     },
     "tangram-cartocss": {
-      "version": "0.9.4",
+      "version": "0.9.5",
       "from": "tangram-cartocss@>=0.9.0 <0.10.0",
-      "resolved": "https://registry.npmjs.org/tangram-cartocss/-/tangram-cartocss-0.9.4.tgz"
+      "resolved": "https://registry.npmjs.org/tangram-cartocss/-/tangram-cartocss-0.9.5.tgz"
     },
     "tangram-reference": {
       "version": "2.1.0",

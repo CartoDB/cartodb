@@ -84,11 +84,13 @@ module CartoDB
         overwrite = overwrite_table? && taken_names.include?(name)
         assert_schema_is_valid(name) if overwrite
 
+        index_statements = generate_index_statements(@destination_schema, name) if overwrite;
 
         database.transaction do
           name = rename(result, result.table_name, result.name)
           begin
             if overwrite
+              copy_privileges(@destination_schema, name, ORIGIN_SCHEMA, name)
               log("Dropping destination table: #{name}")
               drop("#{@destination_schema}.#{name}")
               log("Removing metadata for table #{name}")
@@ -99,6 +101,14 @@ module CartoDB
             log("Error replacing data in import: #{e}: #{e.backtrace}")
             raise e
           end
+        end
+
+        if overwrite
+          cartodbfy(name)
+          run_index_statements(index_statements)
+          recreate_overviews(name)
+          fix_oid(name)
+          update_cdb_tablemetadata(name)
         end
 
         result.name = name
@@ -255,10 +265,6 @@ module CartoDB
         user_table = overwrite_table? ? Carto::UserTable.where(user_id: user.id, name: name).first : nil
         table_registrar.register(name, data_import_id, user_table)
         @table = table_registrar.table
-        if overwrite_table
-          @table.update_cdb_tablemetadata
-          @table.cartodbfy
-        end
         @imported_table_visualization_ids << @table.table_visualization.id unless overwrite_table
         table.update_bounding_box
         self

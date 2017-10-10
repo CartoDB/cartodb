@@ -617,10 +617,10 @@ describe('src/vis/model-updater', function () {
 
     it('should set analysis status to "error"', function () {
       var fakeVis = new Backbone.Model();
-      var analysis = new AnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' }, { vis: fakeVis, camshaftReference: camshaftReferenceMock });
-      var layer = new CartoDBLayer({ source: analysis }, { vis: fakeVis });
+      var analysisModel = new AnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' }, { vis: fakeVis, camshaftReference: camshaftReferenceMock });
+      var layer = new CartoDBLayer({ source: analysisModel }, { vis: fakeVis });
 
-      spyOn(analysis, 'setError');
+      spyOn(analysisModel, 'setError');
 
       this.layersCollection.reset([layer]);
       this.dataviewsCollection.reset([]);
@@ -639,8 +639,8 @@ describe('src/vis/model-updater', function () {
         })
       ]);
 
-      expect(analysis.setError).toHaveBeenCalled();
-      var error = analysis.setError.calls.argsFor(0)[0];
+      expect(analysisModel.setError).toHaveBeenCalled();
+      var error = analysisModel.setError.calls.argsFor(0)[0];
       expect(error.type).toBeUndefined();
       expect(error.analysisId).toEqual('a1');
       expect(error.message).toEqual('fake_error_mesagge"');

@@ -57,7 +57,7 @@ describe('dataviews/dataview-model-base', function () {
       id: 'a0',
       type: 'source'
     });
-    this.analysisNodes = new Backbone.Collection(this.source);
+    this.analysisNodes = this.source.getNodesCollection();
 
     this.model = new DataviewModelBase({
       source: this.source
@@ -236,7 +236,7 @@ describe('dataviews/dataview-model-base', function () {
 
     describe('when change:url has a sourceId option', function () {
       beforeEach(function () {
-        var analysis = this.analysisService.createAnalysis({
+        var analysisA = this.analysisService.createAnalysis({
           id: 'a2',
           type: 'estimated-population',
           params: {
@@ -258,7 +258,7 @@ describe('dataviews/dataview-model-base', function () {
             }
           }
         });
-        var analysisNodes = new Backbone.Collection(analysis.getNodes());
+        var analysisNodes = analysisA.getNodesCollection();
 
         this.model.set('source', analysisNodes.get('a1'), { silent: true });
 

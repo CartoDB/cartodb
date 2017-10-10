@@ -149,7 +149,7 @@ describe('src/analysis/analysis-service.js', function () {
           }
         }
       );
-      var analysisANodes = new Backbone.Collection(analysisA.getNodes());
+      var analysisANodes = analysisA.getNodesCollection();
 
       var analysisB = this.analysisService.createAnalysis(
         {
@@ -296,7 +296,7 @@ describe('src/analysis/analysis-service.js', function () {
     });
 
     it('Should return the analysis nodes: (3 analysis nodes, 1 dataview, 2 layers)', function () {
-      var analysis = this.analysisService.createAnalysis(
+      var analysisA = this.analysisService.createAnalysis(
         {
           id: 'a2',
           type: 'estimated-population',
@@ -320,7 +320,7 @@ describe('src/analysis/analysis-service.js', function () {
           }
         }
       );
-      var analysisNodes = new Backbone.Collection(analysis.getNodes());
+      var analysisNodes = analysisA.getNodesCollection();
 
       var analysis0 = analysisNodes.get('a0');
       var analysis1 = analysisNodes.get('a1');

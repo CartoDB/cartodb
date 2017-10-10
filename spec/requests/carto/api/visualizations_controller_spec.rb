@@ -1385,6 +1385,21 @@ describe Carto::Api::VisualizationsController do
         end
       end
 
+      it 'returns private information about the user if requested' do
+        get_json api_v1_visualizations_show_url(id: @visualization.id, api_key: @carto_user1.api_key) do |response|
+          response.status.should eq 200
+          response.body[:user].should be_nil
+        end
+
+        get_json api_v1_visualizations_show_url(id: @visualization.id, api_key: @carto_user1.api_key), fetch_user: true do |response|
+          response.status.should eq 200
+          user = response.body[:user]
+          user.should_not be_nil
+          user[:avatar_url].should_not be_nil
+          user[:quota_in_bytes].should_not be_nil
+        end
+      end
+
       describe 'to anonymous users' do
         it 'returns a 403 on private visualizations' do
           @visualization.privacy = Carto::Visualization::PRIVACY_PRIVATE
@@ -1420,6 +1435,21 @@ describe Carto::Api::VisualizationsController do
                 response.status.should eq 200
                 response.body[:description].should_not be_nil
                 response.body[:auth_tokens].should be_nil
+              end
+            end
+
+            it 'returns public information about the user if requested' do
+              get_json api_v1_visualizations_show_url(id: @visualization.id) do |response|
+                response.status.should eq 200
+                response.body[:user].should be_nil
+              end
+
+              get_json api_v1_visualizations_show_url(id: @visualization.id), fetch_user: true do |response|
+                response.status.should eq 200
+                user = response.body[:user]
+                user.should_not be_nil
+                user[:avatar_url].should_not be_nil
+                user[:quota_in_bytes].should be_nil
               end
             end
           end

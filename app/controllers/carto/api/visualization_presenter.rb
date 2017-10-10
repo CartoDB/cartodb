@@ -7,7 +7,7 @@ module Carto
     class VisualizationPresenter
 
       def initialize(visualization, current_viewer, context,
-                     related: true, related_canonical_visualizations: false,
+                     related: true, related_canonical_visualizations: false, show_user: false,
                      show_stats: true, show_likes: true, show_liked: true, show_table: true,
                      show_permission: true, show_synchronization: true, show_uses_builder_features: true,
                      show_table_size_and_row_count: true)
@@ -17,6 +17,7 @@ module Carto
 
         @related = related
         @load_related_canonical_visualizations = related_canonical_visualizations
+        @show_user = show_user
         @show_stats = show_stats
         @show_likes = show_likes
         @show_liked = show_liked
@@ -35,8 +36,14 @@ module Carto
       end
 
       def to_poro
-        return to_public_poro unless @visualization.can_view_private_info?(@current_viewer)
+        poro = @visualization.can_view_private_info?(@current_viewer) ? to_private_poro : to_public_poro
 
+        poro[:user] = user if show_user
+
+        poro
+      end
+
+      def to_private_poro
         poro = {
           id: @visualization.id,
           name: @visualization.name,
@@ -127,7 +134,7 @@ module Carto
 
       private
 
-      attr_reader :related, :load_related_canonical_visualizations,
+      attr_reader :related, :load_related_canonical_visualizations, :show_user,
                   :show_stats, :show_likes, :show_liked, :show_table,
                   :show_permission, :show_synchronization, :show_uses_builder_features,
                   :show_table_size_and_row_count
@@ -195,6 +202,10 @@ module Carto
         end
       end
 
+      def user
+        Carto::Api::UserPresenter.new(@visualization.user,
+                                      current_viewer: @current_viewer, fetch_db_size: false).to_poro
+      end
     end
   end
 end

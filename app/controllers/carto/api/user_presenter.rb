@@ -66,6 +66,7 @@ module Carto
           username:         @user.username,
           avatar_url:       @user.avatar_url,
           base_url:         @user.public_url,
+          disqus_shortname: @user.disqus_shortname,
           viewer:           @user.viewer?
         }
 

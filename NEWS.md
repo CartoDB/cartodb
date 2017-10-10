@@ -390,6 +390,7 @@ More information at [Dropbox migration guide](https://www.dropbox.com/developers
 * Format quota infowindow numbers (#11743)
 * Improved analysis error tooltip (#12250)
 * Rollback failed user/organization imports
+* Add hubspot_form_ids to frontend config
 * Enable user migrations across clouds (#12795)
 
 ### Bug fixes

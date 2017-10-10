@@ -26,6 +26,8 @@ class Admin::UsersController < Admin::AdminController
   PASSWORD_DOES_NOT_MATCH_MESSAGE = 'Password does not match'
 
   def profile
+    return render(file: "public/static/profile/index.html", layout: false) if current_user.has_feature_flag?('static_profile')
+
     @avatar_valid_extensions = AVATAR_VALID_EXTENSIONS
 
     respond_to do |format|

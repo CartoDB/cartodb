@@ -2,6 +2,8 @@ Development
 -----------
 
 ### Features
+* Profile static view (#12704)
+* Add FullStory (if available) in user dashboard
 * Change default style for polygon, point and line geometries (design#983)
 * Unify scrollbars style (#12184)
 * Add endpoint for current user account deletion (#12841)
@@ -63,6 +65,7 @@ Development
 * Improve legends error (cartodb.js#1758)
 
 ### Bug fixes / enhancements
+* Notification for error tiles (#cartodb.js/1717)
 * Make sure widget's source id is a string, reject it otherwise (#12878)
 * Improve legends for torque (CartoDB/support#979)
 * CSV export allowed without geometries (#12888)
@@ -88,6 +91,7 @@ Development
 * Cancel feature edition when widget edition is selected (#12781)
 * Rename 'SHARE' button to 'PUBLISH' and 'Not published yet' to 'Unpublished map' (#12730)
 * Move Analysis cancel/delete button to the controls zone (#11414)
+* Improved user migrator rakes (#12920)
 * Rename SIZE/COLOR input label to COLOR in polygons style (#12768)
 * Enhancements on 'Join columns for 2nd layer' analysis texts (#12418)
 * Rename FILL input label to SIZE/COLOR (#12564)

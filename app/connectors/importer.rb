@@ -84,7 +84,7 @@ module CartoDB
         overwrite = overwrite_table? && taken_names.include?(name)
         assert_schema_is_valid(name) if overwrite
 
-        index_statements = generate_index_statements(@destination_schema, name) if overwrite;
+        index_statements = generate_index_statements(@destination_schema, name) if overwrite
 
         database.transaction do
           name = rename(result, result.table_name, result.name)

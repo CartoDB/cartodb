@@ -561,9 +561,15 @@ feature "Superadmin's users API" do
 
       get_json("/superadmin/users/#{@user.id}/data_imports", pagination_params, superadmin_headers) do |response|
         expect(response.status).to eq(200)
-        expect(response.body.size).to eq(1)
 
-        data_import_ids.delete_if { |id| id == response.body[0]["id"] }
+        expect(response.body[:data_imports].size).to eq(1)
+
+        expect(response.body[:pagination_info][:page_size]).to eq(1)
+        expect(response.body[:pagination_info][:page_count]).to eq(2)
+        expect(response.body[:pagination_info][:current_page]).to eq(1)
+        expect(response.body[:pagination_info][:pagination_record_count]).to eq(2)
+
+        data_import_ids.delete_if { |id| id == response.body[:data_imports][0]["id"] }
         expect(data_import_ids.size).to eq(1)
       end
 
@@ -571,9 +577,14 @@ feature "Superadmin's users API" do
 
       get_json("/superadmin/users/#{@user.id}/data_imports", pagination_params, superadmin_headers) do |response|
         expect(response.status).to eq(200)
-        expect(response.body.size).to eq(1)
+        expect(response.body[:data_imports].size).to eq(1)
 
-        data_import_ids.delete_if { |id| id == response.body[0]["id"] }
+        expect(response.body[:pagination_info][:page_size]).to eq(1)
+        expect(response.body[:pagination_info][:page_count]).to eq(2)
+        expect(response.body[:pagination_info][:current_page]).to eq(2)
+        expect(response.body[:pagination_info][:pagination_record_count]).to eq(2)
+
+        data_import_ids.delete_if { |id| id == response.body[:data_imports][0]["id"] }
         expect(data_import_ids.size).to eq(0)
       end
     end

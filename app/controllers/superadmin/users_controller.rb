@@ -114,9 +114,18 @@ class Superadmin::UsersController < Superadmin::SuperadminController
     page = params[:page].to_i
     per_page = params[:per_page].to_i
 
-    dataset = dataset.paginate(page, per_page) if page > 0 && per_page > 0
+    if page > 0 && per_page > 0
+      dataset = dataset.paginate(page, per_page)
 
-    respond_with(dataset.map { |entry|
+      pagination_info = {
+        page_size: dataset.page_size,
+        page_count: dataset.page_count,
+        current_page: dataset.current_page,
+        pagination_record_count: dataset.pagination_record_count
+      }
+    end
+
+    data_imports_info = dataset.map do |entry|
       {
         id: entry.id,
         data_type: entry.data_type,
@@ -124,7 +133,13 @@ class Superadmin::UsersController < Superadmin::SuperadminController
         status: entry.success.nil? ? false : entry.success,
         state: entry.state
       }
-    })
+    end
+
+    if page > 0 && per_page > 0
+      respond_with({data_imports: data_imports_info, pagination_info: pagination_info})
+    else
+      respond_with data_imports_info
+    end
   end
 
   def data_import

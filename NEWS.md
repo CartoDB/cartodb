@@ -81,6 +81,7 @@ Development
 * Fix some styles for datasets view for IE11.
 * Fix image export when logo is disabled.
 * Fix infowindow break word (CartoDB/support#965)
+* Fix for permissions ACL referencing deleted user (CartoDB/support#1036)
 * Update cartodb.js version
 * Fix extraneous labels layer.
 * Fix timeseries glitches (#12217)

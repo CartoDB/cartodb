@@ -323,7 +323,7 @@
         .done(function(vis, layers) {
           var tableName = 'arboles'
 
-          var analysis = vis.analysis.analyse({
+          var analysis = vis.analysis.createAnalysis({
             id: 'a1',
             type: 'trade-area',
             params: {
@@ -369,13 +369,13 @@
 
           setTimeout(function () {
             cartodblayer.set({
-              source: 'a1',  
+              source: 'a1',
               cartocss: cartocss
             });
 
 
             setTimeout(function () {
-              vis.analysis.analyse({
+              vis.analysis.createAnalysis({
                 id: 'a1',
                 type: 'trade-area',
                 params: {

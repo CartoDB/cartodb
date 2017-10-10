@@ -1,4 +1,5 @@
 var _ = require('underscore');
+var Backbone = require('backbone');
 var Model = require('../core/model');
 var util = require('../core/util');
 
@@ -183,6 +184,13 @@ var AnalysisModel = Model.extend({
       }, this);
     }
     return nodes;
+  },
+
+  /**
+   * Return a Collection with the complete node list for this analysis.
+   */
+  getNodesCollection: function () {
+    return new Backbone.Collection(this.getNodes());
   },
 
   /**

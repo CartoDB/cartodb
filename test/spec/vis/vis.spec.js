@@ -4,6 +4,7 @@ var Vis = require('../../../src/vis/vis');
 var VizJSON = require('../../../src/api/vizjson');
 var DataviewModelBase = require('../../../src/dataviews/dataview-model-base');
 var AnalysisModel = require('../../../src/analysis/analysis-model');
+var AnalysisService = require('../../../src/analysis/analysis-service');
 
 var fakeVizJSON = function () {
   return {
@@ -418,10 +419,10 @@ describe('vis/vis', function () {
 
       this.vis.load(new VizJSON(vizjson, {}));
 
-      var cartoDBLayerSource = this.vis.map.layers.at(1).getSource();
+      var analysisNode = this.vis.analysis.findNodeById('LAYER_ID');
 
-      expect(cartoDBLayerSource instanceof AnalysisModel).toBe(true);
-      expect(cartoDBLayerSource).toEqual(this.vis.analysis.findNodeById('LAYER_ID'));
+      expect(analysisNode).toBeDefined();
+      expect(analysisNode.get('id')).toEqual('LAYER_ID');
     });
 
     it('should use the given provider', function () {
@@ -548,26 +549,10 @@ describe('vis/vis', function () {
       this.vizjson = {
         layers: [
           {
-            type: 'tiled',
+            type: 'CartoDB',
             options: {
-              urlTemplate: ''
-            }
-          },
-          {
-            type: 'layergroup',
-            options: {
-              user_name: 'pablo',
-              maps_api_template: 'https://{user}.cartodb-staging.com:443',
-              layer_definition: {
-                stat_tag: 'ece6faac-7271-11e5-a85f-04013fc66a01',
-                layers: [{
-                  type: 'CartoDB',
-                  options: {
-                    source: 'a0'
-                  }
-
-                }]
-              }
+              source: 'a1',
+              cartocss: 'cartocss'
             }
           }
         ],
@@ -601,7 +586,8 @@ describe('vis/vis', function () {
       this.vis.load(new VizJSON(this.vizjson));
 
       // Analyses have been indexed
-      expect(this.vis._analysisCollection.size()).toEqual(2);
+      var analysisNodes = AnalysisService.getUniqueAnalysisNodes(this.vis._layersCollection, this.vis._dataviewsCollection);
+      expect(analysisNodes.length).toEqual(2);
 
       var a1 = this.vis.analysis.findNodeById('a1');
       var a0 = this.vis.analysis.findNodeById('a0');

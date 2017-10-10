@@ -47,17 +47,17 @@ describe('dataviews/dataview-model-base', function () {
     spyOn(this.vis, 'reload');
     this.vis._onMapInstantiatedForTheFirstTime();
 
-    this.analysisCollection = new Backbone.Collection();
-
     this.analysisService = new AnalysisService({
-      analysisCollection: this.analysisCollection,
+      vis: this.vis,
       camshaftReference: fakeCamshaftReference,
-      vis: this.vis
+      layersCollection: new Backbone.Collection(),
+      dataviewsCollection: new Backbone.Collection()
     });
-    this.source = this.analysisService.analyse({
+    this.source = this.analysisService.createAnalysis({
       id: 'a0',
       type: 'source'
     });
+    this.analysisNodes = this.source.getNodesCollection();
 
     this.model = new DataviewModelBase({
       source: this.source
@@ -236,8 +236,7 @@ describe('dataviews/dataview-model-base', function () {
 
     describe('when change:url has a sourceId option', function () {
       beforeEach(function () {
-        this.analysisCollection.reset([]);
-        this.analysisService.analyse({
+        var analysisA = this.analysisService.createAnalysis({
           id: 'a2',
           type: 'estimated-population',
           params: {
@@ -259,8 +258,9 @@ describe('dataviews/dataview-model-base', function () {
             }
           }
         });
+        var analysisNodes = analysisA.getNodesCollection();
 
-        this.model.set('source', this.analysisService.findNodeById('a1'), { silent: true });
+        this.model.set('source', analysisNodes.get('a1'), { silent: true });
 
         spyOn(this.model, 'fetch');
       });
@@ -479,7 +479,7 @@ describe('dataviews/dataview-model-base', function () {
   describe('getSourceType', function () {
     it('should return the type of the source', function () {
       var dataview = new DataviewModelBase({
-        source: this.analysisService.findNodeById('a0')
+        source: this.analysisNodes.get('a0')
       }, {
         map: this.map,
         vis: this.vis

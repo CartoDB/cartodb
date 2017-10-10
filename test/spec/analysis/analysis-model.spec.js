@@ -245,10 +245,11 @@ describe('src/analysis/analysis-model.js', function () {
 
       var analysisService = new AnalysisService({
         vis: vis,
-        analysisCollection: new Backbone.Collection(),
-        camshaftReference: fakeCamshaftReference
+        camshaftReference: fakeCamshaftReference,
+        layersCollection: new Backbone.Collection(),
+        dataviewsCollection: new Backbone.Collection()
       });
-      var analysisModel = analysisService.analyse({
+      var analysisModel = analysisService.createAnalysis({
         id: 'a1',
         type: 'analysis-type-1',
         params: {
@@ -321,10 +322,11 @@ describe('src/analysis/analysis-model.js', function () {
 
       var analysisService = new AnalysisService({
         vis: vis,
-        analysisCollection: new Backbone.Collection(),
-        camshaftReference: fakeCamshaftReference
+        camshaftReference: fakeCamshaftReference,
+        layersCollection: new Backbone.Collection(),
+        dataviewsCollection: new Backbone.Collection()
       });
-      var analysisModel = analysisService.analyse({
+      var analysisModel = analysisService.createAnalysis({
         id: 'a1',
         type: 'analysis-type-1',
         params: {
@@ -454,12 +456,13 @@ describe('src/analysis/analysis-model.js', function () {
     beforeEach(function () {
       analysisService = new AnalysisService({
         vis: vis,
-        analysisCollection: new Backbone.Collection(),
-        camshaftReference: fakeCamshaftReference
+        camshaftReference: fakeCamshaftReference,
+        layersCollection: new Backbone.Collection(),
+        dataviewsCollection: new Backbone.Collection()
       });
     });
     it('Should return a list of nodes from an analysis', function () {
-      var analysis = analysisService.analyse(
+      var analysis = analysisService.createAnalysis(
         {
           id: 'a2',
           type: 'estimated-population',

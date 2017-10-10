@@ -21,10 +21,11 @@ describe('dataviews/category-dataview-model', function () {
     };
 
     var analysisService = new AnalysisService({
-      analysisCollection: this.vis._analysisCollection,
-      vis: this.vis
+      vis: this.vis,
+      layersCollection: this.vis._layersCollection,
+      dataviewsCollection: this.vis._dataviewsCollection
     });
-    this.source = analysisService.analyse(analysisDefinition);
+    this.source = analysisService.createAnalysis(analysisDefinition);
 
     this.layer = new Backbone.Model();
 

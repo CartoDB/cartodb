@@ -1,5 +1,6 @@
 # encoding: utf-8
 require 'uuidtools'
+require 'carto/importer/table_setup'
 
 require_relative '../models/visualization/support_tables'
 require_dependency 'carto/db/user_schema'
@@ -8,6 +9,8 @@ require_dependency 'visualization/derived_creator'
 module CartoDB
   module Connector
     class Importer
+      include Carto::Importer::TableSetup
+
       ORIGIN_SCHEMA       = 'cdb_importer'
       DESTINATION_SCHEMA  = 'public'
       MAX_RENAME_RETRIES  = 20

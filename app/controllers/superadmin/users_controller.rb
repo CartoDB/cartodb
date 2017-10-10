@@ -109,7 +109,14 @@ class Superadmin::UsersController < Superadmin::SuperadminController
   end
 
   def data_imports
-    respond_with(@user.data_imports_dataset.map { |entry|
+    dataset = @user.data_imports_dataset
+
+    page = params[:page].to_i
+    per_page = params[:per_page].to_i
+
+    dataset = dataset.paginate(page, per_page) if page > 0 && per_page > 0
+
+    respond_with(dataset.map { |entry|
       {
         id: entry.id,
         data_type: entry.data_type,

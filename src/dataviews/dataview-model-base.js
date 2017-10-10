@@ -99,7 +99,6 @@ module.exports = Model.extend({
     }
 
     this._initBinds();
-    this._setupAnalysisStatusEvents();
   },
 
   _initBinds: function () {
@@ -117,6 +116,8 @@ module.exports = Model.extend({
     if (this.filter) {
       this.listenTo(this.filter, 'change', this._onFilterChanged);
     }
+
+    this.getSource().on('change:status', this._onAnalysisStatusChange, this);
   },
 
   _onChangeBinds: function () {
@@ -157,14 +158,6 @@ module.exports = Model.extend({
     this.fetch({
       success: this._onChangeBinds.bind(this)
     });
-  },
-
-  _setupAnalysisStatusEvents: function () {
-    this.getSource().on('change:status', this._onAnalysisStatusChange, this);
-  },
-
-  _removeExistingAnalysisBindings: function () {
-    this.getSource().off('change:status', this._onAnalysisStatusChange, this);
   },
 
   _onAnalysisStatusChange: function (analysis, status) {
@@ -240,7 +233,7 @@ module.exports = Model.extend({
   },
 
   update: function (attrs) {
-    if (attrs.source) {
+    if (_.has(attrs, 'source')) {
       throw new Error('source of dataviews cannot be updated');
     }
     attrs = _.pick(attrs, this.constructor.ATTRS_NAMES);
@@ -314,6 +307,10 @@ module.exports = Model.extend({
     this._removeExistingAnalysisBindings();
     this.trigger('destroy', this);
     this.stopListening();
+  },
+
+  _removeExistingAnalysisBindings: function () {
+    this.getSource().off('change:status', this._onAnalysisStatusChange, this);
   },
 
   isFetched: function () {

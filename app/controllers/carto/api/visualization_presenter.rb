@@ -39,6 +39,7 @@ module Carto
         poro = @visualization.can_view_private_info?(@current_viewer) ? to_private_poro : to_public_poro
 
         poro[:user] = user if show_user
+        poro[:related_canonical_visualizations] = related_canonicals if load_related_canonical_visualizations
 
         poro
       end
@@ -79,7 +80,6 @@ module Carto
         }
 
         poro[:related_tables] = related_tables if related
-        poro[:related_canonical_visualizations] = related_canonicals if load_related_canonical_visualizations
         poro[:likes] = @visualization.likes_count if show_likes
         poro[:liked] = @current_viewer ? @visualization.liked_by?(@current_viewer.id) : false if show_liked
         poro[:table] = user_table_presentation if show_table

@@ -1452,6 +1452,22 @@ describe Carto::Api::VisualizationsController do
                 user[:quota_in_bytes].should be_nil
               end
             end
+
+            it 'returns related_canonical_visualizations if requested' do
+              get_json api_v1_visualizations_show_url(id: @visualization.id) do |response|
+                response.status.should eq 200
+                response.body[:related_canonical_visualizations].should be_nil
+              end
+
+              get_json api_v1_visualizations_show_url(id: @visualization.id,
+                                                      fetch_related_canonical_visualizations: true) do |response|
+                response.status.should eq 200
+                related_canonical = response.body[:related_canonical_visualizations]
+                related_canonical.should_not be_nil
+                related_canonical.count.should eq 1
+                related_canonical[0]['id'].should eq @table_visualization.id
+              end
+            end
           end
         end
       end

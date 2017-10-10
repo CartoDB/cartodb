@@ -82,7 +82,7 @@ module CartoDB
         name = Carto::ValidTableNameProposer.new.propose_valid_table_name(result.name, taken_names: [])
 
         overwrite = overwrite_table? && taken_names.include?(name)
-        assert_schema_is_valid(name) if overwrite
+        assert_schemas_are_compatible(name) if overwrite
 
         index_statements = generate_index_statements(@destination_schema, name) if overwrite
 
@@ -291,7 +291,7 @@ module CartoDB
 
       private
 
-      def assert_schema_is_valid(name)
+      def assert_schemas_are_compatible(name)
         orig_schema = user.in_database.schema(results.first.tables.first, reload: true, schema: ORIGIN_SCHEMA)
         dest_schema = user.in_database.schema(name, reload: true, schema: user.database_schema)
         valid = true

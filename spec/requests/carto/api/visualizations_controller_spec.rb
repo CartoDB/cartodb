@@ -1400,6 +1400,33 @@ describe Carto::Api::VisualizationsController do
         end
       end
 
+      # This is a contrast to the anonymous use case. A public endpoint shouldn't hit the user DB to avoid
+      # workers locks if user DB is under heavy load. Nevertheless, the private one can (and needs).
+      describe 'user db connectivity issues' do
+        before(:each) do
+          @actual_database_name = @visualization.user.database_name
+          @visualization.user.update_attribute(:database_name, 'wadus')
+        end
+
+        after(:each) do
+          @visualization.user.update_attribute(:database_name, @actual_database_name)
+        end
+
+        it 'needs connection to the user db if the viewer is the owner' do
+          CartoDB::Logger.expects(:error).once.with do |e|
+            e[:exception].message.should eq "FATAL:  database \"#{@visualization.user.database_name}\" does not exist\n"
+          end
+
+          get_json api_v1_visualizations_show_url(id: @visualization.id),
+                   api_key: @visualization.user.api_key,
+                   fetch_related_canonical_visualizations: true,
+                   fetch_user: true do |response|
+            # We currently log 404 on errors. Maybe something that we should change in the future...
+            response.status.should == 404
+          end
+        end
+      end
+
       describe 'to anonymous users' do
         it 'returns a 403 on private visualizations' do
           @visualization.privacy = Carto::Visualization::PRIVACY_PRIVATE
@@ -1466,6 +1493,27 @@ describe Carto::Api::VisualizationsController do
                 related_canonical.should_not be_nil
                 related_canonical.count.should eq 1
                 related_canonical[0]['id'].should eq @table_visualization.id
+              end
+            end
+
+            describe 'user db connectivity issues' do
+              before(:each) do
+                @actual_database_name = @visualization.user.database_name
+                @visualization.user.update_attribute(:database_name, 'wadus')
+              end
+
+              after(:each) do
+                @visualization.user.update_attribute(:database_name, @actual_database_name)
+              end
+
+              it 'does not need connection to the user db if viewer is anonymous' do
+                CartoDB::Logger.expects(:warning).never
+                CartoDB::Logger.expects(:error).never
+                get_json api_v1_visualizations_show_url(id: @visualization.id),
+                         fetch_related_canonical_visualizations: true,
+                         fetch_user: true do |response|
+                  response.status.should == 200
+                end
               end
             end
           end

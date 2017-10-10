@@ -2,6 +2,7 @@ Development
 -----------
 
 ### Features
+* Profile static view (#12704)
 * Add FullStory (if available) in user dashboard
 * Change default style for polygon, point and line geometries (design#983)
 * Unify scrollbars style (#12184)

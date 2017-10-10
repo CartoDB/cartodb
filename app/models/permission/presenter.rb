@@ -20,7 +20,7 @@ module CartoDB
           id:       @permission.entity_id,
           type:     @permission.entity_type
         },
-        acl:        @permission.acl.map do |entry|
+        acl:        @permission.acl.map { |entry|
           entity = entity_decoration(entry)
           if entity.blank?
             nil
@@ -31,7 +31,7 @@ module CartoDB
               access: entry[:access]
             }
           end
-        end.reject(&:nil?),
+        }.reject(&:nil?),
         created_at: @permission.created_at,
         updated_at: @permission.updated_at
       }

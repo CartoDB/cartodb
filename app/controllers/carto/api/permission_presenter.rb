@@ -31,7 +31,7 @@ module Carto
             id:       @permission.visualization.id,
             type:     'vis'
           },
-          acl:        @permission.acl.map do |entry|
+          acl:        @permission.acl.map { |entry|
             entity = entity_decoration(entry)
             if entity.blank?
               nil
@@ -42,7 +42,7 @@ module Carto
                 access: entry[:access]
               }
             end
-          end.reject(&:nil?),
+          }.reject(&:nil?),
           created_at: @permission.created_at,
           updated_at: @permission.updated_at
         }

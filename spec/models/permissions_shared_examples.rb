@@ -144,7 +144,7 @@ shared_examples_for 'permission models' do
 
     it 'deals with deleted users gracefully' do
       user_to_be_deleted = create_user
-       map, table, table_visualization, visualization = create_full_visualization(
+      map, table, table_visualization, visualization = create_full_visualization(
         @carto_user,
         visualization_attributes: { type: Carto::Visualization::TYPE_CANONICAL }
       )
@@ -178,7 +178,7 @@ shared_examples_for 'permission models' do
       filtered_acl = acl_from_db.map do |entry|
         {
           type: entry[:type],
-          entity: entry[:entity].select { |k, v| Carto::Permission::ALLOWED_ENTITY_KEYS.include?(k) },
+          entity: entry[:entity].select { |k, _v| Carto::Permission::ALLOWED_ENTITY_KEYS.include?(k) },
           access: entry[:access]
         }
       end

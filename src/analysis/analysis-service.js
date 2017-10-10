@@ -119,6 +119,10 @@ AnalysisService.prototype.findNodeById = function (id) {
   });
 };
 
+/**
+ * This function applies recursively the function passed in parameter `func` to the sourceNodes in the analysisDefinition
+ * The `func` parameter can be one of these functions: analyse, createAnalysis, updateAnalysis
+ */
 AnalysisService.prototype._getAnalysisAttributesFromAnalysisDefinition = function (analysisDefinition, func) {
   var analysisNodes = {};
   var analysisType = analysisDefinition.type;

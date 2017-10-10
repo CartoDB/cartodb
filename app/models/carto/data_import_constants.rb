@@ -9,5 +9,6 @@ module Carto
       unless VALID_COLLISION_STRATEGIES.include?(collision_strategy)
         errors.add(:collision_strategy, "Invalid collision strategy")
       end
+    end
   end
 end

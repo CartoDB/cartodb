@@ -689,13 +689,13 @@ class DataImport < Sequel::Model
                                               })
       runner.loader_options = ogr2ogr_options.merge content_guessing_options
       runner.set_importer_stats_host_info(Socket.gethostname)
-      registrar     = CartoDB::TableRegistrar.new(current_user, ::Table)
+      registrar = CartoDB::TableRegistrar.new(current_user, ::Table)
       quota_checker = CartoDB::QuotaChecker.new(current_user)
-      database      = current_user.in_database
+      database = current_user.in_database
       destination_schema = current_user.database_schema
       public_user_roles = current_user.db_service.public_user_roles
       overviews_creator = CartoDB::Importer2::Overviews.new(runner, current_user)
-      importer  = CartoDB::Connector::Importer.new(
+      importer = CartoDB::Connector::Importer.new(
         runner: runner,
         table_registrar: registrar,
         quota_checker: quota_checker,

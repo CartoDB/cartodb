@@ -258,7 +258,9 @@ module CartoDB
           RENAME TO "the_geom_#{UUIDTools::UUID.timestamp_create.to_s.gsub('-', '_')}"
         })
       rescue => exception
-        log("Silently failed rename_the_geom_index_if_exists from #{current_name} to #{new_name} with exception #{exception}. Backtrace: #{exception.backtrace}. ")
+        log("Silently failed rename_the_geom_index_if_exists from " +
+            "#{current_name} to #{new_name} with exception #{exception}. " +
+            "Backtrace: #{exception.backtrace}. ")
       end
 
       def persist_metadata(name, data_import_id, overwrite_table)
@@ -290,8 +292,8 @@ module CartoDB
       private
 
       def assert_schema_is_valid(name)
-        orig_schema = user.in_database.schema(results.first.tables.first, reload:true, schema: ORIGIN_SCHEMA)
-        dest_schema = user.in_database.schema(name, reload:true, schema: user.database_schema)
+        orig_schema = user.in_database.schema(results.first.tables.first, reload: true, schema: ORIGIN_SCHEMA)
+        dest_schema = user.in_database.schema(name, reload: true, schema: user.database_schema)
         valid = true
 
         dest_schema.each do |dest_row|

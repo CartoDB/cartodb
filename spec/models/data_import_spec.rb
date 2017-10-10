@@ -78,7 +78,6 @@ describe DataImport do
     carto_user.visualizations.count.should eq 3
     data_import.state.should eq 'complete'
     data_import.table_name.should eq 'walmart_latlon_1'
-    byebug
     data_import.user.in_database["select count(*) from #{data_import.table_name}"].all[0][:count].should eq 3176
 
     data_import = create_import(true, true)

@@ -1,19 +1,17 @@
 module Carto
   module Importer
-
-    #This module can be used as a mixing as long as the class including it implements the following methods:
-    # * user
-    # * runner
+    # This module can be used as a mixin as long as the class including it implements the following methods:
+    #  * user
+    #  * runner
     module TableSetup
-
       STATEMENT_TIMEOUT = 1.hour * 1000
 
       # Store all indexes to re-create them after "syncing" the table by reimporting and swapping it
-      # INFO: As upon import geom index names are not enforced, they might "not collide" and generate one on the new import
-      # plus the one already existing, so we skip those
+      # INFO: As upon import geom index names are not enforced, they might "not collide" and generate one on the new
+      # import plus the one already existing, so we skip those
       def generate_index_statements(origin_schema, origin_table_name)
         # INFO: This code discerns gist indexes like lib/sql/CDB_CartodbfyTable.sql -> _CDB_create_the_geom_columns
-        user.in_database(as: :superuser)[%Q(
+        user.in_database(as: :superuser)[%(
             SELECT indexdef AS indexdef
             FROM pg_indexes
             WHERE schemaname = '#{origin_schema}'
@@ -44,7 +42,7 @@ module Carto
       end
 
       def run_index_statements(statements)
-        statements.each { |statement|
+        statements.each do |statement|
           begin
             database.run(statement)
           rescue => exception
@@ -54,7 +52,7 @@ module Carto
                                     statement: statement)
             end
           end
-        }
+        end
       end
 
       def cartodbfy(table_name)
@@ -62,7 +60,7 @@ module Carto
         qualified_table_name = "\"#{schema_name}\".#{table_name}"
 
         user.transaction_with_timeout(statement_timeout: STATEMENT_TIMEOUT) do |user_conn|
-          user_conn.run(%Q{
+          user_conn.run(%{
             SELECT cartodb.CDB_CartodbfyTable('#{schema_name}'::TEXT,'#{qualified_table_name}'::REGCLASS);
           })
         end
@@ -77,7 +75,7 @@ module Carto
       end
 
       def copy_privileges(origin_schema, origin_table_name, destination_schema, destination_table_name)
-        user.in_database(as: :superuser).execute(%Q(
+        user.in_database(as: :superuser).execute(%(
           UPDATE pg_class
           SET relacl=(
             SELECT r.relacl FROM pg_class r, pg_namespace n

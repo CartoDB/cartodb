@@ -130,6 +130,10 @@ module Carto
           })
         end
       end
+
+      def update_cdb_tablemetadata(name)
+        user.tables.where(name: name).first.update_cdb_tablemetadata
+      end
     end
   end
 end

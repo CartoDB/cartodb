@@ -123,7 +123,7 @@ module Carto
 
       def update_table_pg_stats(qualified_table_name)
         user.transaction_with_timeout(statement_timeout: STATEMENT_TIMEOUT) do |user_conn|
-          user_conn.run(%Q{
+          user_conn.run(%{
             ANALYZE #{qualified_table_name};
           })
         end

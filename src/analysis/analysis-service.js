@@ -19,12 +19,12 @@ var AnalysisService = function (opts) {
   this._apiKey = opts.apiKey;
   this._authToken = opts.authToken;
   this._camshaftReference = opts.camshaftReference || camshaftReference; // For testing purposes
-  this._layersCollection = opts.layersCollection || [];
-  this._dataviewsCollection = opts.dataviewsCollection || [];
+  this._layersCollection = opts.layersCollection;
+  this._dataviewsCollection = opts.dataviewsCollection;
 };
 
 /**
-  * Recursively generates a graph of analyses and returns the "origin" node. Each node
+  * Recursively generates a graph of analyses and returns the "root" node. Each node
   * may have one or more "source" params pointing to another node. If a node had been created
   * already, this method updates the attributes of the existing node. New nodes are added to
   * the collection of analyses that has been injected.

@@ -16,7 +16,6 @@ describe('anonymous-map-serializer', function () {
     var mapModel;
     var layersCollection;
     var dataviewsCollection;
-    var analysisCollection;
     var analysisService;
     var analysisModel;
     var payload;
@@ -24,13 +23,15 @@ describe('anonymous-map-serializer', function () {
     beforeEach(function () {
       mapModel = new Backbone.Model();
       visModel = new Backbone.Model();
+      layersCollection = new Backbone.Collection();
+      dataviewsCollection = new Backbone.Collection();
 
       // Analyses
-      analysisCollection = new Backbone.Collection();
       analysisService = new AnalysisService({
-        analysisCollection: analysisCollection,
+        vis: visModel,
         camshaftReference: fakeCamshaftReference,
-        vis: visModel
+        layersCollection: layersCollection,
+        dataviewsCollection: dataviewsCollection
       });
       analysisModel = analysisService.createAnalysis({
         id: 'ANALYSIS_ID',
@@ -49,7 +50,7 @@ describe('anonymous-map-serializer', function () {
       }, {
         vis: visModel
       });
-      layersCollection = new Backbone.Collection([ cartoDBLayer ]);
+      layersCollection.add(cartoDBLayer);
 
       // Dataviews
       var dataview = new MyDataviewModel({
@@ -59,7 +60,7 @@ describe('anonymous-map-serializer', function () {
         map: mapModel,
         vis: visModel
       });
-      dataviewsCollection = new Backbone.Collection([ dataview ]);
+      dataviewsCollection.add(dataview);
 
       // Serialized payload
       payload = AnonymousMapSerializer.serialize(layersCollection, dataviewsCollection);

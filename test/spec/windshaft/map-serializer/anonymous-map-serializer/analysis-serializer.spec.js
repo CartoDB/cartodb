@@ -12,7 +12,6 @@ describe('analysis-serializer', function () {
   var dataviewsCollection;
   var analysisService;
   var analysisDefinition;
-  var analysisCollection;
   var analysisModel;
 
   beforeEach(function () {
@@ -20,11 +19,11 @@ describe('analysis-serializer', function () {
     visModel = new Backbone.Model();
     layersCollection = new Backbone.Collection();
     dataviewsCollection = new Backbone.Collection();
-    analysisCollection = new Backbone.Collection();
     analysisService = new AnalysisService({
-      analysisCollection: analysisCollection,
+      vis: visModel,
       camshaftReference: fakeCamshaftReference,
-      vis: visModel
+      layersCollection: layersCollection,
+      dataviewsCollection: dataviewsCollection
     });
     analysisDefinition = {
       id: 'd0',

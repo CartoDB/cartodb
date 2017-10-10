@@ -4,6 +4,7 @@ var Vis = require('../../../src/vis/vis');
 var VizJSON = require('../../../src/api/vizjson');
 var DataviewModelBase = require('../../../src/dataviews/dataview-model-base');
 var AnalysisModel = require('../../../src/analysis/analysis-model');
+var AnalysisService = require('../../../src/analysis/analysis-service');
 
 var fakeVizJSON = function () {
   return {
@@ -585,7 +586,8 @@ describe('vis/vis', function () {
       this.vis.load(new VizJSON(this.vizjson));
 
       // Analyses have been indexed
-      expect(this.vis._analysisCollection.size()).toEqual(2);
+      var analysisNodes = AnalysisService.getUniqueAnalysesNodes(this.vis._layersCollection, this.vis._dataviewsCollection);
+      expect(analysisNodes.length).toEqual(2);
 
       var a1 = this.vis.analysis.findNodeById('a1');
       var a0 = this.vis.analysis.findNodeById('a0');

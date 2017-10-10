@@ -31,7 +31,6 @@ var VisModel = Backbone.Model.extend({
     this._loadingObjects = [];
     this._analysisPoller = new AnalysisPoller();
     this._layersCollection = new LayersCollection();
-    this._analysisCollection = new Backbone.Collection();
     this._dataviewsCollection = new DataviewsCollection();
 
     this.overlaysCollection = new Backbone.Collection();
@@ -135,22 +134,17 @@ var VisModel = Backbone.Model.extend({
 
     var windshaftClient = new WindshaftClient(windshaftSettings);
 
-    // Create the public Analysis Factory
-    // TODO: use only AnalysisService static methods without instance
+    // Create the public Analysis Service
     this.analysisService = new AnalysisService({
+      vis: this,
       apiKey: this.get('apiKey'),
       authToken: this.get('authToken'),
-      analysisCollection: this._analysisCollection,
-      vis: this
+      layersCollection: this._layersCollection,
+      dataviewsCollection: this._dataviewsCollection
     });
 
     // Public namespace exposing public methods.
-    this.analysis = {
-      createAnalysis: this.analysisService.createAnalysis,
-      findNodeById: function (id) {
-        return AnalysisService.findNodeById(id, this._layersCollection, this._dataviewsCollection);
-      }.bind(this)
-    };
+    this.analysis = this.analysisService;
 
     var allowScrollInOptions = (vizjson.options && vizjson.options.scrollwheel) || vizjson.scrollwheel;
     // Create the Map
@@ -204,8 +198,7 @@ var VisModel = Backbone.Model.extend({
       modelUpdater: modelUpdater,
       windshaftSettings: windshaftSettings,
       dataviewsCollection: this._dataviewsCollection,
-      layersCollection: this._layersCollection,
-      analysisCollection: this._analysisCollection
+      layersCollection: this._layersCollection
     });
 
     // Reset the collection of overlays
@@ -426,8 +419,6 @@ var VisModel = Backbone.Model.extend({
       _.each(analysisRoots, function (analysisRoot) {
         _.each(analysisRoot.getNodes(), function (analysisNode) {
           analysisNodes[analysisNode.get('id')] = analysisNode;
-          // TODO: remove
-          this._analysisCollection.add(analysisNode);
         }, this);
       }, this);
     }

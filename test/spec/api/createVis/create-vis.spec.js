@@ -362,12 +362,4 @@ describe('create-vis:', function () {
       expect(visModel._dataviewsCollection.length).toEqual(0);
     });
   });
-
-  describe('VisModel._analysisCollection', function () {
-    it('should have one analysis', function () {
-      var visJson = scenarios.load('basic');
-      var visModel = createVis(this.containerId, visJson);
-      expect(visModel._analysisCollection.findWhere({ type: 'source' })).toBeDefined();
-    });
-  });
 });

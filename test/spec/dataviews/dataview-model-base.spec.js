@@ -47,12 +47,11 @@ describe('dataviews/dataview-model-base', function () {
     spyOn(this.vis, 'reload');
     this.vis._onMapInstantiatedForTheFirstTime();
 
-    this.analysisCollection = new Backbone.Collection();
-
     this.analysisService = new AnalysisService({
-      analysisCollection: this.analysisCollection,
+      vis: this.vis,
       camshaftReference: fakeCamshaftReference,
-      vis: this.vis
+      layersCollection: new Backbone.Collection(),
+      dataviewsCollection: new Backbone.Collection()
     });
     this.source = this.analysisService.createAnalysis({
       id: 'a0',
@@ -237,7 +236,6 @@ describe('dataviews/dataview-model-base', function () {
 
     describe('when change:url has a sourceId option', function () {
       beforeEach(function () {
-        this.analysisCollection.reset([]);
         var analysis = this.analysisService.createAnalysis({
           id: 'a2',
           type: 'estimated-population',

@@ -24,11 +24,13 @@ describe('src/analysis/analysis-service.js', function () {
   };
   beforeEach(function () {
     this.vis = new Backbone.Model();
-    this.analysisCollection = new Backbone.Collection();
+    this.layersCollection = new Backbone.Collection();
+    this.dataviewsCollection = new Backbone.Collection();
     this.analysisService = new AnalysisService({
+      vis: this.vis,
       camshaftReference: fakeCamshaftReference,
-      analysisCollection: this.analysisCollection,
-      vis: this.vis
+      layersCollection: this.layersCollection,
+      dataviewsCollection: this.dataviewsCollection
     });
   });
 
@@ -48,15 +50,16 @@ describe('src/analysis/analysis-service.js', function () {
     });
 
     it('should set attrs on the analysis models', function () {
-      this.analysisService = new AnalysisService({
+      var analysisService = new AnalysisService({
+        vis: new Backbone.Model(),
         apiKey: 'THE_API_KEY',
         authToken: 'THE_AUTH_TOKEN',
         camshaftReference: fakeCamshaftReference,
-        analysisCollection: this.analysisCollection,
-        vis: this.vis
+        layersCollection: new Backbone.Collection(),
+        dataviewsCollection: new Backbone.Collection()
       });
 
-      var analysisModel = this.analysisService.createAnalysis({
+      var analysisModel = analysisService.createAnalysis({
         id: 'a0',
         type: 'source',
         query: 'SELECT * FROM subway_stops'
@@ -159,22 +162,23 @@ describe('src/analysis/analysis-service.js', function () {
       );
 
       var layer = new CartoDBLayer({ source: analysisA }, { vis: fakeVis });
-      var layersCollection = new Backbone.Collection([layer]);
       var dataview = new Dataview({ source: analysisB }, { map: {}, vis: fakeVis });
-      var dataviewsCollection = new Backbone.Collection([dataview]);
+
+      this.layersCollection.add(layer);
+      this.dataviewsCollection.add(dataview);
 
       // This specs make easy to know what went wrong when the test fails
-      expect(AnalysisService.findNodeById('a2', layersCollection, dataviewsCollection).get('id')).toBe('a2');
-      expect(AnalysisService.findNodeById('a1', layersCollection, dataviewsCollection).get('id')).toBe('a1');
-      expect(AnalysisService.findNodeById('a0', layersCollection, dataviewsCollection).get('id')).toBe('a0');
-      expect(AnalysisService.findNodeById('b0', layersCollection, dataviewsCollection).get('id')).toBe('b0');
+      expect(this.analysisService.findNodeById('a2').get('id')).toBe('a2');
+      expect(this.analysisService.findNodeById('a1').get('id')).toBe('a1');
+      expect(this.analysisService.findNodeById('a0').get('id')).toBe('a0');
+      expect(this.analysisService.findNodeById('b0').get('id')).toBe('b0');
 
-      expect(AnalysisService.findNodeById('a2', layersCollection, dataviewsCollection)).toBe(analysisANodes.get('a2'));
-      expect(AnalysisService.findNodeById('a1', layersCollection, dataviewsCollection)).toBe(analysisANodes.get('a1'));
-      expect(AnalysisService.findNodeById('a0', layersCollection, dataviewsCollection)).toBe(analysisANodes.get('a0'));
-      expect(AnalysisService.findNodeById('b0', layersCollection, dataviewsCollection)).toBe(analysisB);
+      expect(this.analysisService.findNodeById('a2')).toBe(analysisANodes.get('a2'));
+      expect(this.analysisService.findNodeById('a1')).toBe(analysisANodes.get('a1'));
+      expect(this.analysisService.findNodeById('a0')).toBe(analysisANodes.get('a0'));
+      expect(this.analysisService.findNodeById('b0')).toBe(analysisB);
 
-      expect(AnalysisService.findNodeById('c0', layersCollection, dataviewsCollection)).toBeUndefined();
+      expect(this.analysisService.findNodeById('c0')).toBeUndefined();
     });
 
     it('should return undefined if node is not found', function () {

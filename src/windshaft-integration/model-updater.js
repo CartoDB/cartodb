@@ -194,8 +194,8 @@ ModelUpdater.prototype._updateDataviewModels = function (windshaftMap, sourceId,
 };
 
 ModelUpdater.prototype._updateAnalysisModels = function (windshaftMap) {
-  var analysisList = this._getUniqueAnalysesNodes();
-  _.each(analysisList, function (analysisNode) {
+  var analysisNodes = this._getUniqueAnalysesNodes();
+  _.each(analysisNodes, function (analysisNode) {
     var analysisMetadata = windshaftMap.getAnalysisNodeMetadata(analysisNode.get('id'));
     var attrs;
     if (analysisMetadata) {
@@ -241,8 +241,8 @@ ModelUpdater.prototype._setError = function (error) {
     var layerModel = this._layersCollection.get(error.layerId);
     layerModel && layerModel.setError(error);
   } else if (error.isAnalysisError()) {
-    var analysisCollection = new Backbone.Collection(this._getUniqueAnalysesNodes());
-    var analysisModel = analysisCollection.get(error.analysisId);
+    var analysisList = new Backbone.Collection(this._getUniqueAnalysesNodes());
+    var analysisModel = analysisList.get(error.analysisId);
     analysisModel && analysisModel.setError(error);
   } else {
     this._visModel.setError(error);

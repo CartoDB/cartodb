@@ -3,7 +3,8 @@ module Carto
     class MapStatistics
       FILE_MODE = :file
       STDOUT_MODE = :stdout
-      VALID_MODES = [FILE_MODE, STDOUT_MODE].freeze
+      MEMORY_MODE = :memory
+      VALID_MODES = [FILE_MODE, STDOUT_MODE, MEMORY_MODE].freeze
 
       def initialize(mode: :file, path: nil, types: ['derived'])
         assert_valid_mode(mode)
@@ -14,10 +15,12 @@ module Carto
 
       def run!
         @out = @mode == :file ? File.new(@path, 'w+') : STDOUT
-        result = []
-        Carto::Visualization.where(type: @types).find_each { |vis| result << statistics_for_visualization(vis) }
-        @out.write(result[0].keys.join(', ') + "\n")
-        result.each { |row| @out.write(row.values.join(', ') + "\n") }
+        @headers_sent = false
+        @result = []
+
+        Carto::Visualization.where(type: @types).find_each { |vis| process_row(statistics_for_visualization(vis)) }
+
+        @result
       ensure
         @out.close if @mode == :file
       end
@@ -27,6 +30,18 @@ module Carto
       end
 
       private
+
+      def process_row(row)
+        if !@headers_sent && !memory_mode?
+          @headers_sent = true
+          @out.write(row.keys.join(', ') + "\n")
+        end
+        memory_mode? ? @result << row : @out.write(row.values.join(', ') + "\n")
+      end
+
+      def memory_mode?
+        @mode == MEMORY_MODE
+      end
 
       def statistics_for_visualization(visualization)
         {

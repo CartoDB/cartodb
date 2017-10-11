@@ -6,7 +6,7 @@ namespace :cartodb do
     task :map_info_csv => :environment do
       ms = Carto::Export::MapStatistics.new
       ms.run!
-      puts ("Here's your file: #{ms.filepath}\nThanks for coming :)")
+      puts "Here's your file: #{ms.filepath}\nThanks for coming :)"
     end
   end
 end

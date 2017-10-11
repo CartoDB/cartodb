@@ -143,7 +143,7 @@ module.exports = function (Path, MapView, PathView) {
   });
 
   describe('expandable paths', function () {
-    beforeEach(function () {
+    beforeEach(function (done) {
       this.mapView = createMapView(MapView);
       this.mapView.render();
 
@@ -161,12 +161,17 @@ module.exports = function (Path, MapView, PathView) {
         mapView: this.mapView
       });
 
-      this.geometryView.render();
+      // Listen for the map to be loaded
+      this.mapView.listenOnce('idle', function () {
+        this.geometryView.render();
 
-      // Marker that we'll interact with in the tests
-      this.middlePointMarker = this.mapView.findMarkerByLatLng({ lat: 5, lng: 0 });
-      var markers = this.mapView.getMarkers();
-      this.numberOfMarkersBefore = markers.length;
+        // Marker that we'll interact with in the tests
+        this.middlePointMarker = this.mapView.findMarkerByLatLng({ lat: 5, lng: 0 });
+        var markers = this.mapView.getMarkers();
+        this.numberOfMarkersBefore = markers.length;
+
+        done();
+      }.bind(this));
     });
 
     describe('when the model is removed', function () {

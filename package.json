@@ -1,6 +1,6 @@
 {
   "name": "cartodb.js",
-  "version": "4.0.0-alpha.1.1.2",
+  "version": "4.0.0-alpha.7",
   "description": "CARTO javascript library",
   "repository": {
     "type": "git",
@@ -140,10 +140,11 @@
     "root": "."
   },
   "scripts": {
+    "test": "grunt test",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "docs": "rm -rf docs/v4; jsdoc --configure config/jsdoc/api-conf.json",
     "docs:all": "rm -rf docs/v4-internal; jsdoc --configure config/jsdoc/all-conf.json",
-    "test": "grunt test"
+    "postversion": "git push origin v4 --follow-tags"
   }
 }

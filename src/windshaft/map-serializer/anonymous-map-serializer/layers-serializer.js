@@ -12,7 +12,10 @@ var TORQUE_LAYER_TYPE = 'torque';
  * Generate a json payload from a layer collection of a map
  */
 function serialize (layersCollection) {
-  return layersCollection.map(_calculateLayerJSON);
+  return layersCollection.chain()
+    .map(_calculateLayerJSON)
+    .compact()
+    .value();
 }
 
 function _calculateLayerJSON (layerModel) {
@@ -27,8 +30,6 @@ function _calculateLayerJSON (layerModel) {
   } else if (LayerTypes.isTorqueLayer(layerModel)) {
     return optionsForTorqueLayer(layerModel);
   }
-
-  throw new Error('Layer of type "' + layerModel.get('type') + '" are not supported');
 }
 
 function optionsForHTTPLayer (layerModel) {

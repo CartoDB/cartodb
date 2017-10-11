@@ -290,12 +290,6 @@ describe('create-vis:', function () {
         expect(visModel._windshaftMap._modelUpdater._visModel).toEqual(visModel);
       });
 
-      it('should have the mapModel linked', function () {
-        var visJson = scenarios.load('basic');
-        var visModel = createVis(this.containerId, visJson);
-        expect(visModel._windshaftMap._modelUpdater._mapModel).toEqual(visModel.map);
-      });
-
       it('should have the layerGroupModel linked', function () {
         var visJson = scenarios.load('basic');
         var visModel = createVis(this.containerId, visJson);

@@ -3,6 +3,7 @@ var CartoDBLayer = require('../../../../../src/geo/map/cartodb-layer');
 var PlainLayer = require('../../../../../src/geo/map/plain-layer');
 var TileLayer = require('../../../../../src/geo/map/tile-layer');
 var TorqueLayer = require('../../../../../src/geo/map/torque-layer');
+var GMapsBaseLayer = require('../../../../../src/geo/map/gmaps-base-layer');
 var VisModel = require('../../../../../src/vis/vis');
 var LayersSerializer = require('../../../../../src/windshaft/map-serializer/anonymous-map-serializer/layers-serializer');
 var fakeFactory = require('../../../../helpers/fakeFactory');
@@ -107,6 +108,18 @@ describe('layers-serializer', function () {
           'tms': false
         }
       }];
+      expect(actual).toEqual(expected);
+    });
+
+    it('should not serialize GMapsBase layers', function () {
+      var gmapsBaseLayer = new GMapsBaseLayer({
+        id: 'l4',
+        baseType: 'roadmap'
+      }, { vis: {} });
+      layersCollection.reset([gmapsBaseLayer]);
+
+      var actual = LayersSerializer.serialize(layersCollection);
+      var expected = [];
       expect(actual).toEqual(expected);
     });
   });

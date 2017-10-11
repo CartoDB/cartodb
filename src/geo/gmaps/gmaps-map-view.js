@@ -1,12 +1,10 @@
 /* global google */
-var _ = require('underscore');
 var MapView = require('../map-view');
 var Projector = require('./projector');
 var GMapsLayerViewFactory = require('./gmaps-layer-view-factory');
 
 var GoogleMapsMapView = MapView.extend({
   initialize: function () {
-    _.bindAll(this, '_ready');
     this._isReady = false;
 
     MapView.prototype.initialize.apply(this, arguments);
@@ -70,9 +68,11 @@ var GoogleMapsMapView = MapView.extend({
       self.map.setMapViewSize(self.getSize());
     });
 
-    this.projector = new Projector(this._gmapsMap);
+    google.maps.event.addListenerOnce(this._gmapsMap, 'idle', function (e) {
+      this._isReady = true;
+    });
 
-    this.projector.draw = this._ready;
+    this.projector = new Projector(this._gmapsMap);
   },
 
   clean: function () {
@@ -82,16 +82,14 @@ var GoogleMapsMapView = MapView.extend({
     MapView.prototype.clean.call(this);
   },
 
+  listenOnce: function (name, callback) {
+    google.maps.event.addListenerOnce(this._gmapsMap, name, callback);
+  },
+
   _getLayerViewFactory: function () {
     this._layerViewFactory = this._layerViewFactory || new GMapsLayerViewFactory();
 
     return this._layerViewFactory;
-  },
-
-  _ready: function () {
-    this.projector.draw = function () {};
-    this.trigger('ready');
-    this._isReady = true;
   },
 
   _setKeyboard: function (model, z) {

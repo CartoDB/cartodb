@@ -1084,4 +1084,17 @@ describe('vis/vis', function () {
       });
     });
   });
+
+  describe('layerGroupModel errors', function () {
+    it('should do things', function () {
+      this.vis.load(new VizJSON(fakeVizJSON()), {});
+      var called = false;
+      this.vis.map.on('error:limit', function () {
+        called = true;
+      });
+      this.vis.layerGroupModel.addError({ type: 'limit', message: 'Something about limits' });
+
+      expect(called).toBe(true);
+    });
+  });
 });

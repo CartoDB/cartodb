@@ -8,6 +8,7 @@ module Carto
 
       layer_selector_migration(vis)
       mapcap_creation(vis)
+      google_basemap_migration(vis)
     end
 
     def version_needs_migration?(version, new_version)
@@ -31,6 +32,15 @@ module Carto
       end
 
       vis.overlays.select { |o| o.type == 'layer_selector' }.each(&:destroy)
+    end
+
+    def google_basemap_migration(vis)
+      # Editor gmaps were saved with base_type attribute in options, but, in builder, baseType is expected
+      vis.layers.select{ |l| l.gmapsbase? && l.options.has_key?(:base_type) }.each do |l|
+        l.options[:baseType] = l.options[:base_type]
+        l.options.delete(:base_type)
+        l.save!
+      end
     end
   end
 end

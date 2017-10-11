@@ -30,7 +30,7 @@ module CartoDB
       def initialize(runner: nil, table_registrar: nil, quota_checker: nil, database: nil, data_import_id: nil,
                      overviews_creator: nil,
                      destination_schema: DESTINATION_SCHEMA, public_user_roles: [CartoDB::PUBLIC_DB_USER],
-                     collision_strategy: Carto::DataImportConstants::COLLISION_STRATEGY_SKIP)
+                     collision_strategy: nil)
         @aborted                = false
         @runner                 = runner
         @table_registrar        = table_registrar

@@ -551,6 +551,30 @@ feature "Superadmin's users API" do
       @user.destroy
     end
 
+    it 'filters results if param status is present' do
+      successful_data_import = FactoryGirl.create(:data_import, user_id: @user.id, success: true)
+      failed_data_import = FactoryGirl.create(:data_import, user_id: @user.id, success: false)
+
+      get_json("/superadmin/users/#{@user.id}/data_imports", {status: 'success'}, superadmin_headers) do |response|
+        expect(response.status).to eq(200)
+
+        expect(response.body.size).to eq(1)
+        expect(response.body[0]["id"]).to eq(successful_data_import.id)
+      end
+
+      get_json("/superadmin/users/#{@user.id}/data_imports", {status: 'failed'}, superadmin_headers) do |response|
+        expect(response.status).to eq(200)
+
+        expect(response.body.size).to eq(1)
+        expect(response.body[0]["id"]).to eq(failed_data_import.id)
+      end
+
+      get_json("/superadmin/users/#{@user.id}/data_imports", {}, superadmin_headers) do |response|
+        expect(response.status).to eq(200)
+        expect(response.body.size).to eq(2)
+      end
+    end
+
     it 'paginates results' do
       data_imports = FactoryGirl.create_list(:data_import, 2, user_id: @user.id)
       data_import_ids = data_imports.map(&:id)

@@ -109,7 +109,11 @@ class Superadmin::UsersController < Superadmin::SuperadminController
   end
 
   def data_imports
-    dataset = @user.data_imports_dataset
+    dataset = @user.data_imports_dataset.order(:updated_at.desc)
+
+    if params[:status]
+      dataset = dataset.where("success = #{params[:status] == 'success' ? 'true' : 'false'}")
+    end
 
     page = params[:page].to_i
     per_page = params[:per_page].to_i

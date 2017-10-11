@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.10.2-2.574.4",
+  "version": "4.10.2-2.574.5",
   "dependencies": {
     "abbrev": {
       "version": "1.1.0",
@@ -393,7 +393,7 @@
     "carto": {
       "version": "0.15.1-cdb4",
       "from": "cartodb/carto#master",
-      "resolved": "git://github.com/cartodb/carto.git#cbe66020f98647429d2bb04b7cf73dcf194f2abf"
+      "resolved": "git://github.com/cartodb/carto.git#bf4c67034af5a5e311ea2320cbbb2280eeeabe42"
     },
     "cartocolor": {
       "version": "4.0.0",
@@ -403,7 +403,7 @@
     "cartodb-deep-insights.js": {
       "version": "0.3.0",
       "from": "cartodb/deep-insights.js#574-widget-limits-error",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#1ff3a24cd5a07695943b12a501eba3db9070d40d",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#25e4ace0eb032a4c541917485b500f47e13a8cad",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",
@@ -420,7 +420,7 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.7",
       "from": "cartodb/cartodb.js#574-widget-limits-error",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#d138520513b6a5f4d2273fd30c5d45c6e7495ded"
+      "resolved": "git://github.com/cartodb/cartodb.js.git#b7a3e28a0fbadeaf8e7b1dd84af6821760ef66f4"
     },
     "caseless": {
       "version": "0.12.0",

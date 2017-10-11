@@ -531,7 +531,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def open_in_editor?
-    !builder? && (uses_vizjson2? || layers.any?(&:gmapsbase?))
+    !builder? && uses_vizjson2?
   end
 
   def can_be_automatically_migrated_to_v3?

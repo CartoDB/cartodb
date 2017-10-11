@@ -300,10 +300,10 @@ module.exports = Model.extend({
         successCallback && successCallback(arguments);
         this.trigger('loaded', this);
       }.bind(this),
-      error: function (mdl, err) {
-        this.set('status', FETCH_ERROR_STATUS);
-        if (!err || (err && err.statusText !== 'abort')) {
-          this._triggerError(err);
+      error: function (_model, response) {
+        if (!response || (response && response.statusText !== 'abort')) {
+          this.set('status', FETCH_ERROR_STATUS);
+          this._triggerError(response);
         }
       }.bind(this)
     }));
@@ -354,6 +354,10 @@ module.exports = Model.extend({
 
   isEnabled: function () {
     return this.get('enabled');
+  },
+
+  setUnavailable: function () {
+    return this.set('status', FETCH_ERROR_STATUS);
   },
 
   syncsOnDataChanges: function () {

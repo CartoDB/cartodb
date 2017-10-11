@@ -19,8 +19,8 @@ var AnalysisService = function (opts) {
   this._apiKey = opts.apiKey;
   this._authToken = opts.authToken;
   this._camshaftReference = opts.camshaftReference || camshaftReference; // For testing purposes
-  this._layersCollection = opts.layersCollection;
-  this._dataviewsCollection = opts.dataviewsCollection;
+
+  this._analysisNodes = {};
 };
 
 /**
@@ -44,12 +44,13 @@ AnalysisService.prototype.analyse = function (analysisDefinition) {
       analysisAttrs.authToken = this._authToken;
     }
 
-    // TODO: check id to avoid duplicated analysis nodes
-
     analysis = new Analysis(analysisAttrs, {
       camshaftReference: this._camshaftReference,
       vis: this._vis
     });
+
+    this._analysisNodes[analysisDefinition.id] = analysis;
+    analysis.bind('destroy', this._onAnalysisRemoved, this);
   }
 
   return analysis;
@@ -60,21 +61,25 @@ AnalysisService.prototype.analyse = function (analysisDefinition) {
  */
 AnalysisService.prototype.createAnalysis = function (analysisDefinition) {
   analysisDefinition = _.clone(analysisDefinition);
+  var analysis = this.findNodeById(analysisDefinition.id);
   var analysisAttrs = this._getAnalysisAttributesFromAnalysisDefinition(analysisDefinition, this.createAnalysis.bind(this));
 
-  if (this._apiKey) {
-    analysisAttrs.apiKey = this._apiKey;
-  }
-  if (this._authToken) {
-    analysisAttrs.authToken = this._authToken;
-  }
+  if (!analysis) {
+    if (this._apiKey) {
+      analysisAttrs.apiKey = this._apiKey;
+    }
+    if (this._authToken) {
+      analysisAttrs.authToken = this._authToken;
+    }
 
-  // TODO: check id to avoid duplicated analysis nodes
+    analysis = new Analysis(analysisAttrs, {
+      camshaftReference: this._camshaftReference,
+      vis: this._vis
+    });
 
-  var analysis = new Analysis(analysisAttrs, {
-    camshaftReference: this._camshaftReference,
-    vis: this._vis
-  });
+    this._analysisNodes[analysisDefinition.id] = analysis;
+    analysis.bind('destroy', this._onAnalysisRemoved, this);
+  }
 
   return analysis;
 };
@@ -98,13 +103,11 @@ AnalysisService.prototype.createAnalysisForLayer = function (layerId, layerQuery
 AnalysisService.prototype.updateAnalysis = function (analysisDefinition) {
   analysisDefinition = _.clone(analysisDefinition);
   var analysis = this.findNodeById(analysisDefinition.id);
-
-  if (!analysis) {
-    throw new Error('The analysis ' + analysisDefinition.id + ' does not exist');
-  }
-
   var analysisAttrs = this._getAnalysisAttributesFromAnalysisDefinition(analysisDefinition, this.updateAnalysis.bind(this));
-  analysis.set(analysisAttrs);
+
+  if (analysis) {
+    analysis.set(analysisAttrs);
+  }
 
   return analysis;
 };
@@ -113,10 +116,21 @@ AnalysisService.prototype.updateAnalysis = function (analysisDefinition) {
  * Return the analysis node with the provided id
  */
 AnalysisService.prototype.findNodeById = function (id) {
-  var analysisNodes = AnalysisService.getUniqueAnalysisNodes(this._layersCollection, this._dataviewsCollection);
-  return _.find(analysisNodes, function (analysisNode) {
-    return analysisNode.get('id') === id;
-  });
+  var analysis = this._analysisNodes[id];
+
+  if (!analysis) {
+    console.warn('The analysis ' + id + ' does not exist');
+  }
+
+  return analysis;
+};
+
+/**
+ * Remove the analysis from the dictionary
+ */
+AnalysisService.prototype._onAnalysisRemoved = function (analysis) {
+  delete this._analysisNodes[analysis.id];
+  analysis.unbind('destroy', this._onAnalysisRemoved);
 };
 
 /**

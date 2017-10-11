@@ -138,9 +138,7 @@ var VisModel = Backbone.Model.extend({
     this._analysisService = new AnalysisService({
       vis: this,
       apiKey: this.get('apiKey'),
-      authToken: this.get('authToken'),
-      layersCollection: this._layersCollection,
-      dataviewsCollection: this._dataviewsCollection
+      authToken: this.get('authToken')
     });
 
     // Public wrapper exposing public methods.

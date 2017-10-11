@@ -24,13 +24,9 @@ describe('src/analysis/analysis-service.js', function () {
   };
   beforeEach(function () {
     this.vis = new Backbone.Model();
-    this.layersCollection = new Backbone.Collection();
-    this.dataviewsCollection = new Backbone.Collection();
     this.analysisService = new AnalysisService({
       vis: this.vis,
-      camshaftReference: fakeCamshaftReference,
-      layersCollection: this.layersCollection,
-      dataviewsCollection: this.dataviewsCollection
+      camshaftReference: fakeCamshaftReference
     });
   });
 
@@ -54,9 +50,7 @@ describe('src/analysis/analysis-service.js', function () {
         vis: new Backbone.Model(),
         apiKey: 'THE_API_KEY',
         authToken: 'THE_AUTH_TOKEN',
-        camshaftReference: fakeCamshaftReference,
-        layersCollection: new Backbone.Collection(),
-        dataviewsCollection: new Backbone.Collection()
+        camshaftReference: fakeCamshaftReference
       });
 
       var analysisModel = analysisService.createAnalysis({
@@ -160,12 +154,6 @@ describe('src/analysis/analysis-service.js', function () {
           }
         }
       );
-
-      var layer = new CartoDBLayer({ source: analysisA }, { vis: fakeVis });
-      var dataview = new Dataview({ source: analysisB }, { map: {}, vis: fakeVis });
-
-      this.layersCollection.add(layer);
-      this.dataviewsCollection.add(dataview);
 
       // This specs make easy to know what went wrong when the test fails
       expect(this.analysisService.findNodeById('a2').get('id')).toBe('a2');

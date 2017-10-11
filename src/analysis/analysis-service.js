@@ -8,12 +8,6 @@ var AnalysisService = function (opts) {
   if (!opts.vis) {
     throw new Error('vis option is required');
   }
-  if (!opts.layersCollection) {
-    throw new Error('layersCollection option is required');
-  }
-  if (!opts.dataviewsCollection) {
-    throw new Error('dataviewsCollection option is required');
-  }
 
   this._vis = opts.vis;
   this._apiKey = opts.apiKey;
@@ -79,6 +73,8 @@ AnalysisService.prototype.createAnalysis = function (analysisDefinition) {
 
     this._analysisNodes[analysisDefinition.id] = analysis;
     analysis.bind('destroy', this._onAnalysisRemoved, this);
+  } else {
+    console.warn('The analysis ' + analysisDefinition.id + ' already exists');
   }
 
   return analysis;

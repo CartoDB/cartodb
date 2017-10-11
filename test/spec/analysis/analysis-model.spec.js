@@ -245,9 +245,7 @@ describe('src/analysis/analysis-model.js', function () {
 
       var analysisService = new AnalysisService({
         vis: vis,
-        camshaftReference: fakeCamshaftReference,
-        layersCollection: new Backbone.Collection(),
-        dataviewsCollection: new Backbone.Collection()
+        camshaftReference: fakeCamshaftReference
       });
       var analysisModel = analysisService.createAnalysis({
         id: 'a1',
@@ -322,9 +320,7 @@ describe('src/analysis/analysis-model.js', function () {
 
       var analysisService = new AnalysisService({
         vis: vis,
-        camshaftReference: fakeCamshaftReference,
-        layersCollection: new Backbone.Collection(),
-        dataviewsCollection: new Backbone.Collection()
+        camshaftReference: fakeCamshaftReference
       });
       var analysisModel = analysisService.createAnalysis({
         id: 'a1',
@@ -456,9 +452,7 @@ describe('src/analysis/analysis-model.js', function () {
     beforeEach(function () {
       analysisService = new AnalysisService({
         vis: vis,
-        camshaftReference: fakeCamshaftReference,
-        layersCollection: new Backbone.Collection(),
-        dataviewsCollection: new Backbone.Collection()
+        camshaftReference: fakeCamshaftReference
       });
     });
     it('Should return a list of nodes from an analysis', function () {

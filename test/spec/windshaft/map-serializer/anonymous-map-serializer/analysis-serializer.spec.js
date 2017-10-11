@@ -21,9 +21,7 @@ describe('analysis-serializer', function () {
     dataviewsCollection = new Backbone.Collection();
     analysisService = new AnalysisService({
       vis: visModel,
-      camshaftReference: fakeCamshaftReference,
-      layersCollection: layersCollection,
-      dataviewsCollection: dataviewsCollection
+      camshaftReference: fakeCamshaftReference
     });
     analysisDefinition = {
       id: 'd0',

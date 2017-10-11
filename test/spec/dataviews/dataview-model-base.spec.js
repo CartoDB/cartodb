@@ -49,9 +49,7 @@ describe('dataviews/dataview-model-base', function () {
 
     this.analysisService = new AnalysisService({
       vis: this.vis,
-      camshaftReference: fakeCamshaftReference,
-      layersCollection: new Backbone.Collection(),
-      dataviewsCollection: new Backbone.Collection()
+      camshaftReference: fakeCamshaftReference
     });
     this.source = this.analysisService.createAnalysis({
       id: 'a0',

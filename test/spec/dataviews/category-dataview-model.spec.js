@@ -21,9 +21,7 @@ describe('dataviews/category-dataview-model', function () {
     };
 
     var analysisService = new AnalysisService({
-      vis: this.vis,
-      layersCollection: this.vis._layersCollection,
-      dataviewsCollection: this.vis._dataviewsCollection
+      vis: this.vis
     });
     this.source = analysisService.createAnalysis(analysisDefinition);
 

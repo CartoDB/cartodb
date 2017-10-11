@@ -29,9 +29,7 @@ describe('anonymous-map-serializer', function () {
       // Analyses
       analysisService = new AnalysisService({
         vis: visModel,
-        camshaftReference: fakeCamshaftReference,
-        layersCollection: layersCollection,
-        dataviewsCollection: dataviewsCollection
+        camshaftReference: fakeCamshaftReference
       });
       analysisModel = analysisService.createAnalysis({
         id: 'ANALYSIS_ID',

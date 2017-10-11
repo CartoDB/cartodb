@@ -414,20 +414,9 @@ var VisModel = Backbone.Model.extend({
    * collection of analysis
    */
   _createAnalysisNodes: function (analysesDefinition) {
-    var analysisNodes = {};
-    var analysisRoots = [];
-    if (analysesDefinition) {
-      _.each(analysesDefinition, function (analysisDefinition) {
-        analysisRoots.push(this._analysisService.createAnalysis(analysisDefinition));
-      }, this);
-
-      _.each(analysisRoots, function (analysisRoot) {
-        _.each(analysisRoot.getNodes(), function (analysisNode) {
-          analysisNodes[analysisNode.get('id')] = analysisNode;
-        }, this);
-      }, this);
-    }
-    return analysisNodes;
+    _.each(analysesDefinition, function (analysisDefinition) {
+      this._analysisService.createAnalysis(analysisDefinition);
+    }, this);
   },
 
   _createLayers: function (layersDefinition, analysisNodes) {
@@ -441,11 +430,7 @@ var VisModel = Backbone.Model.extend({
       );
 
       if (layerData.source) {
-        var source = analysisNodes[layerData.source];
-        if (!source) {
-          throw new Error('Can not find analysis id: ' + layerData.source);
-        }
-        layerData.source = source;
+        layerData.source = this._analysisService.findNodeById(layerData.source);
       } else {
         // TODO: We'll be able to remove this (accepting sql option) once
         // https://github.com/CartoDB/cartodb.js/issues/1754 is closed.

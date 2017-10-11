@@ -107,6 +107,8 @@ AnalysisService.prototype.updateAnalysis = function (analysisDefinition) {
 
   if (analysis) {
     analysis.set(analysisAttrs);
+  } else {
+    console.warn('The analysis ' + analysisDefinition.id + ' does not exist');
   }
 
   return analysis;
@@ -117,11 +119,6 @@ AnalysisService.prototype.updateAnalysis = function (analysisDefinition) {
  */
 AnalysisService.prototype.findNodeById = function (id) {
   var analysis = this._analysisNodes[id];
-
-  if (!analysis) {
-    console.warn('The analysis ' + id + ' does not exist');
-  }
-
   return analysis;
 };
 

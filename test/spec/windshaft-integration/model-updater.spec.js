@@ -10,6 +10,7 @@ var CartoDBLayerGroup = require('../../../src/geo/cartodb-layer-group');
 var WindshaftMap = require('../../../src/windshaft/map-base.js');
 var Dataview = require('../../../src/dataviews/dataview-model-base');
 var AnalysisModel = require('../../../src/analysis/analysis-model');
+var MapModel = require('../../../src/geo/map');
 
 var MyWindshaftMap = WindshaftMap.extend({
 });
@@ -42,6 +43,10 @@ describe('src/vis/model-updater', function () {
     spyOn(this.visModel, 'setOk');
     spyOn(this.visModel, 'setError');
     this.layersCollection = new LayersCollection();
+    this.mapModel = new MapModel(null, {
+      layersFactory: {},
+      layersCollection: this.layersCollection
+    });
 
     this.layerGroupModel = new CartoDBLayerGroup({}, {
       layersCollection: this.layersCollection

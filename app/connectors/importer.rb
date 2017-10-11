@@ -73,10 +73,6 @@ module CartoDB
 
       def register(result)
         @support_tables_helper.reset
-
-        # Sanitizing table name if it corresponds with a PostgreSQL reseved word
-        result.name = Carto::DB::Sanitize.sanitize_identifier(result.name)
-
         log("Before renaming from #{result.table_name} to #{result.name}")
 
         name = Carto::ValidTableNameProposer.new.propose_valid_table_name(result.name, taken_names: [])

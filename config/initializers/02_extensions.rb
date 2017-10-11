@@ -10,6 +10,7 @@ module SequelRails
 end
 
 # Patches for Ruby 2.4
+# TODO: remove .dup when we no longer support buggy ruby version 2.2.4p230
 if Gem::Version.new(RUBY_VERSION.dup) >= Gem::Version.new("2.4")
   # ActiveSupport dates, e.g: 3.days (fixed in Rails 5, and no sooner)
   class ActiveSupport::Duration

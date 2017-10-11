@@ -7,6 +7,7 @@
     "username": "username",
     "account_type": "[DEDICATED]",
     "account_type_display_name": "[DEDICATED]",
+    "disqus_shortname": "userdisqus",
     "table_quota": null,
     "table_count": 2,
     "viewer": false,

@@ -9,7 +9,7 @@ var errorTextTemplate = require('./widget-error-text-template.tpl');
  * It will listen or not to dataviewModel changes when first load is done.
  */
 module.exports = cdb.core.View.extend({
-  className: 'CDB-Widget-body',
+  className: 'CDB-Widget-body is-hidden',
 
   events: {
     'click .js-refresh': '_onRefreshClick'
@@ -17,39 +17,50 @@ module.exports = cdb.core.View.extend({
 
   initialize: function (opts) {
     this._title = opts.title;
-    this._error = opts.error;
-    this._model = opts.model;
-    this._placeholder = opts.placeholder;
+    this._errorModel = opts.errorModel;
+
+    this.listenTo(this._errorModel, 'change', this._onErrorModelChanged);
   },
 
   render: function () {
-    this._reset();
+    var error = this._errorModel.get('error');
 
-    var placeholder = _.isFunction(this._placeholder)
-      ? this._placeholder()
-      : '';
+    if (error) {
+      var placeholder = this._errorModel.get('placeholder');
+      this.$el.addClass('CDB-Widget--' + error.level);
 
-    var body = this._error.type
-      ? errorTextTemplate({
-        placeholder: placeholder,
-        error: this._error.error,
-        title: this._title,
-        message: this._error.message,
-        refresh: this._error.refresh
-      })
-      : errorButtonTemplate({ placeholder: placeholder });
+      var body = error.type
+        ? errorTextTemplate({
+          placeholder: _.isFunction(placeholder) ? placeholder() : '',
+          error: error.error,
+          title: this._title,
+          message: error.message,
+          refresh: error.refresh
+        })
+        : errorButtonTemplate({ placeholder: placeholder });
 
-    this.$el.addClass('CDB-Widget--' + this._error.level);
-    this.$el.html(body);
+      this.$el.html(body);
+    }
+
     return this;
   },
 
+  _onErrorModelChanged: function () {
+    this._reset();
+
+    _.isEmpty(this._errorModel.get('error'))
+      ? this.$el.addClass('is-hidden')
+      : this.$el.removeClass('is-hidden');
+
+    this.render();
+  },
+
   _onRefreshClick: function () {
-    this._model.refresh();
+    this._errorModel.get('model').refresh();
   },
 
   _reset: function () {
-    this.$el.removeClass('CDB-Widget--error CDB-Widget--warning');
+    this.$el.removeClass('CDB-Widget--alert CDB-Widget--error');
     this.$el.html('');
   }
 });

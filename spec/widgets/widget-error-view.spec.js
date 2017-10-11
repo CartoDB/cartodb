@@ -1,30 +1,42 @@
-var cdb = require('cartodb.js');
+var Backbone = require('backbone');
+var _ = require('underscore');
 var WidgetErrorView = require('../../src/widgets/widget-error-view');
 
 describe('widgets/widget-error-view', function () {
+  var errorBase = {
+    type: 'limit',
+    level: 'error',
+    title: 'Generic Error',
+    message: 'Something went wrong',
+    refresh: true
+  };
+
   beforeEach(function () {
     jasmine.clock().install();
 
-    this.dataviewModel = new cdb.core.Model({
+    this.dataviewModel = new Backbone.Model({
       type: 'category'
     });
 
-    this.error = {
-      type: 'limit',
-      level: 'error',
-      title: 'error',
-      message: 'Something went wrong',
-      refresh: true
-    };
+    this.errorModel = new Backbone.Model({
+      model: this.dataviewModel,
+      error: {
+        type: 'limit',
+        level: 'error',
+        title: 'error',
+        message: 'Something went wrong',
+        refresh: true
+      },
+      placeholder: function () {
+        return '<p>Placeholder</p>';
+      }
+    });
 
     this.dataviewModel.refresh = jasmine.createSpy('refresh');
 
     this.view = new WidgetErrorView({
-      model: this.dataviewModel,
-      error: this.error,
-      placeholder: function () {
-        return '<p>Placeholder</p>';
-      }
+      title: 'this is a widget',
+      errorModel: this.errorModel
     });
 
     this.renderResult = this.view.render();
@@ -32,10 +44,11 @@ describe('widgets/widget-error-view', function () {
 
   it('should add a class with the error level', function () {
     expect(this.view.$el.hasClass('CDB-Widget--error')).toBe(true);
-    this.error.level = 'warning';
-    this.view.render();
+
+    this.errorModel.set('error', _.extend(errorBase, { level: 'alert' }));
+
     expect(this.view.$el.hasClass('CDB-Widget--error')).toBe(false);
-    expect(this.view.$el.hasClass('CDB-Widget--warning')).toBe(true);
+    expect(this.view.$el.hasClass('CDB-Widget--alert')).toBe(true);
   });
 
   describe('when error is available', function () {
@@ -47,8 +60,7 @@ describe('widgets/widget-error-view', function () {
     describe('refresh button', function () {
       it('should render only if the error allows it', function () {
         expect(this.view.$('.js-refresh').length).toEqual(1);
-        this.error.refresh = false;
-        this.view.render();
+        this.errorModel.set('error', _.extend(errorBase, { refresh: false }));
         expect(this.view.$('.js-refresh').length).toEqual(0);
       });
 
@@ -62,7 +74,7 @@ describe('widgets/widget-error-view', function () {
     describe('placeholder', function () {
       it('should render only if the error does not have a refresh button', function () {
         expect(this.view.$el.html()).not.toContain('Placeholder');
-        this.error.refresh = false;
+        this.errorModel.set('error', _.extend(errorBase, { refresh: false }));
         this.view.render();
         expect(this.view.$el.html()).toContain('Placeholder');
       });
@@ -71,7 +83,7 @@ describe('widgets/widget-error-view', function () {
 
   describe('when error is not available', function () {
     beforeEach(function () {
-      this.error.type = null;
+      this.errorModel.set('error', _.extend(errorBase, { type: null }));
       this.view.render();
     });
 
@@ -82,7 +94,7 @@ describe('widgets/widget-error-view', function () {
     describe('refresh button', function () {
       it('should always render', function () {
         expect(this.view.$('.js-refresh').length).toEqual(1);
-        this.error.refresh = false;
+        this.errorModel.set('error', _.extend(errorBase, { refresh: false }));
         this.view.render();
         expect(this.view.$('.js-refresh').length).toEqual(1);
       });
@@ -97,7 +109,7 @@ describe('widgets/widget-error-view', function () {
     describe('placeholder', function () {
       it('should always render', function () {
         expect(this.view.$el.html()).toContain('Placeholder');
-        this.error.refresh = false;
+        this.errorModel.set('error', _.extend(errorBase, { refresh: false }));
         this.view.render();
         expect(this.view.$el.html()).toContain('Placeholder');
       });

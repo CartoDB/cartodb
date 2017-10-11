@@ -1,3 +1,4 @@
+var Backbone = require('backbone');
 var _ = require('underscore');
 var cdb = require('cartodb.js');
 var WidgetLoaderView = require('./widget-loader-view');
@@ -23,7 +24,7 @@ module.exports = cdb.core.View.extend({
   },
 
   initialize: function () {
-    this.hasError = false;
+    this.errorModel = new Backbone.Model({});
     var dataviewModel = this.model.dataviewModel;
 
     this.listenTo(this.model, 'destroy', this.clean);
@@ -35,41 +36,38 @@ module.exports = cdb.core.View.extend({
     }
   },
 
-  render: function (model, error) {
+  render: function () {
     this.clearSubViews();
     this.$el.empty();
 
-    var widgetModel = this.model;
-    var dataviewModel = widgetModel.dataviewModel;
-    var placeholder = PLACEHOLDER_TEMPLATES[dataviewModel.get('type')];
-
     this._appendView(new WidgetLoaderView({
-      model: dataviewModel
+      model: this.model.dataviewModel
     }));
 
-    if (error) {
-      this._appendView(new WidgetErrorView({
-        title: this.model.get('title'),
-        error: error,
-        model: model,
-        placeholder: placeholder
-      }));
-    } else {
-      this._appendView(this.options.contentView);
-    }
+    this._appendView(new WidgetErrorView({
+      title: this.model.get('title'),
+      errorModel: this.errorModel
+    }));
+
+    this._appendView(this.options.contentView);
 
     return this;
   },
 
   _onDataChanged: function (model) {
     if (this._noDataAvailable()) {
-      this.hasError = true;
-      return this.render(model, errorEnhancer({ type: 'no_data_available' }));
+      this.options.contentView.$el.addClass('is-hidden');
+      return this.errorModel.set({
+        model: model,
+        error: errorEnhancer({ type: 'no_data_available' }),
+        placeholder: this._getPlaceholder()
+      });
     }
 
-    if (this.hasError) {
-      this.hasError = false;
-      this.render(model);
+    if (!_.isEmpty(this.errorModel.get('error'))) {
+      this.errorModel.clear();
+      this.options.contentView.render();
+      this.options.contentView.$el.removeClass('is-hidden');
     }
   },
 
@@ -78,11 +76,15 @@ module.exports = cdb.core.View.extend({
       return;
     }
 
-    this.hasError = true;
     var error = this._extractError(response);
     var enhancedError = errorEnhancer(error);
 
-    return this.render(model, enhancedError);
+    this.options.contentView.$el.addClass('is-hidden');
+    this.errorModel.set({
+      model: model,
+      error: enhancedError,
+      placeholder: this._getPlaceholder()
+    });
   },
 
   _appendView: function (view) {
@@ -104,5 +106,10 @@ module.exports = cdb.core.View.extend({
   _extractError: function (response) {
     var errors = getValue(response, 'responseJSON.errors_with_context', []);
     return errors[0] || {};
+  },
+
+  _getPlaceholder: function () {
+    var widgetType = this.model.dataviewModel.get('type');
+    return PLACEHOLDER_TEMPLATES[widgetType];
   }
 });

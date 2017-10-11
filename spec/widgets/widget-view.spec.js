@@ -37,8 +37,7 @@ describe('widgets/widget-view', function () {
   describe('.render', function () {
     describe('when there is an error', function () {
       it('should render the error view', function () {
-        this.view.render(this.dataviewModel, error);
-        expect(this.view.$el.html()).not.toContain('This is a widget');
+        this.view.errorModel.set('error', error);
         expect(this.view.$el.html()).toContain('Something related to limits');
       });
     });
@@ -46,7 +45,7 @@ describe('widgets/widget-view', function () {
     describe('when there is no error', function () {
       it('should render the content view', function () {
         this.view.render();
-        expect(this.view.$el.html()).not.toContain('Something related to limits');
+        this.view.$('.CDB-Widget-error').hasClass('is-hidden');
         expect(this.view.$el.html()).toContain('This is a widget');
       });
     });

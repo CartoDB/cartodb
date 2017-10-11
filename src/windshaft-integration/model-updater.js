@@ -14,14 +14,12 @@ function getSubdomain (subdomains, resource) {
  */
 var ModelUpdater = function (deps) {
   if (!deps.visModel) throw new Error('visModel is required');
-  if (!deps.mapModel) throw new Error('mapModel is required');
   if (!deps.layerGroupModel) throw new Error('layerGroupModel is required');
   if (!deps.layersCollection) throw new Error('layersCollection is required');
   if (!deps.dataviewsCollection) throw new Error('dataviewsCollection is required');
   if (!deps.analysisCollection) throw new Error('analysisCollection is required');
 
   this._visModel = deps.visModel;
-  this._mapModel = deps.mapModel;
   this._layerGroupModel = deps.layerGroupModel;
   this._layersCollection = deps.layersCollection;
   this._dataviewsCollection = deps.dataviewsCollection;

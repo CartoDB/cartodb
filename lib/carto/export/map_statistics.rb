@@ -18,10 +18,12 @@ module Carto
         Carto::Visualization.where(type: @types).find_each { |vis| result << statistics_for_visualization(vis) }
         @out.write(result[0].keys.join(', ') + "\n")
         result.each { |row| @out.write(row.values.join(', ') + "\n") }
-        self
       ensure
         @out.close if @mode == :file
-        puts("You can see your results here: #{@out.path}") if @mode == :file
+      end
+
+      def filepath
+        @mode == FILE_MODE ? @out.path : nil
       end
 
       private

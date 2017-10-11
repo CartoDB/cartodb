@@ -555,14 +555,14 @@ feature "Superadmin's users API" do
       successful_data_import = FactoryGirl.create(:data_import, user_id: @user.id, success: true)
       failed_data_import = FactoryGirl.create(:data_import, user_id: @user.id, success: false)
 
-      get_json("/superadmin/users/#{@user.id}/data_imports", {status: 'success'}, superadmin_headers) do |response|
+      get_json("/superadmin/users/#{@user.id}/data_imports", { status: 'success' }, superadmin_headers) do |response|
         expect(response.status).to eq(200)
 
         expect(response.body.size).to eq(1)
         expect(response.body[0]["id"]).to eq(successful_data_import.id)
       end
 
-      get_json("/superadmin/users/#{@user.id}/data_imports", {status: 'failed'}, superadmin_headers) do |response|
+      get_json("/superadmin/users/#{@user.id}/data_imports", { status: 'failed' }, superadmin_headers) do |response|
         expect(response.status).to eq(200)
 
         expect(response.body.size).to eq(1)

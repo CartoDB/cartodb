@@ -166,6 +166,7 @@ module Carto
     end
   end
 
+  class OrganizationAlreadyExists < RuntimeError; end
   # Both String and Hash versions are provided because `deep_symbolize_keys` won't symbolize through arrays
   # and having separated methods make handling and testing much easier.
   class OrganizationMetadataExportService
@@ -190,10 +191,10 @@ module Carto
 
     def import_from_directory(meta_path)
       # Import organization
-      organization_file = Dir["#{meta_path}/organization_*.json"].first
-      organization = build_organization_from_json_export(File.read(organization_file))
+      organization = load_organization_from_directory(meta_path)
+      raise OrganizationAlreadyExists.new if ::Carto::Organization.exists?(id: organization.id)
 
-      organization_redis_file = Dir["#{meta_path}/redis_organization_*.json"].first
+      organization_redis_file = redis_filename(meta_path)
       Carto::RedisExportService.new.restore_redis_from_json_export(File.read(organization_redis_file))
 
       # Groups and notifications must be saved after users
@@ -204,7 +205,7 @@ module Carto
 
       save_imported_organization(organization)
 
-      user_list = Dir["#{meta_path}/user_*"]
+      user_list = get_user_list(meta_path)
 
       # In order to get permissions right, we first import all users, then all datasets and finally, all maps
       organization.users = user_list.map do |user_path|
@@ -216,6 +217,37 @@ module Carto
       organization.save
 
       organization
+    end
+
+    def rollback_import_from_directory(meta_path)
+      organization_redis_file = redis_filename(meta_path)
+      Carto::RedisExportService.new.remove_redis_from_json_export(File.read(organization_redis_file))
+      organization = load_organization_from_directory(meta_path)
+
+      user_list = get_user_list(meta_path)
+      user_list.map do |user_path|
+        Carto::UserMetadataExportService.new.rollback_import_from_directory(user_path)
+      end
+      return unless Carto::Organization.exists?(organization.id)
+
+      organization = Carto::Organization.find(organization.id)
+      organization.groups.delete
+      organization.notifications.delete
+      organization.users.delete
+      organization.delete
+    end
+
+    def get_user_list(meta_path)
+      Dir["#{meta_path}/user_*"]
+    end
+
+    def redis_filename(meta_path)
+      Dir["#{meta_path}/redis_organization_*.json"].first
+    end
+
+    def load_organization_from_directory(meta_path)
+      organization_file = Dir["#{meta_path}/organization_*.json"].first
+      build_organization_from_json_export(File.read(organization_file))
     end
 
     def import_metadata_from_directory(organization, path)

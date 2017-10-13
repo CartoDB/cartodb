@@ -2,8 +2,16 @@ Development
 -----------
 
 ### Features
-* Add /api/v3/me endpoint (#12599)
+* Profile static view (#12704)
+* Add FullStory (if available) in user dashboard
+* Change default style for polygon, point and line geometries (design#983)
+* Unify scrollbars style (#12184)
+* Add endpoint for current user account deletion (#12841)
+* Add contextual help to Analysis UI (#11907)
+* Add endpoints for updating user account & profile details (#12726)
+* Add /api/v3/me endpoint (#12599, #12790, #12771)
 * Add assets version column in user model (#12676)
+* Dashboard static view (#12680)
 * Vector rendering improvements #12722.
 * Enable georeferencer for database connectors (#12566)
 * Enable other hosts apart from account host to include CORS headers via the cors_enabled_hosts param in app_config.yml (#12685)
@@ -41,7 +49,9 @@ Development
 * Show ranges in time series widget selection (#12291)
 * Bump Webpack version (#12392).
 * New user render timeouts and propagation of timeout values to Redis (#12425)
+* Default basemap is used for all Builder maps regardless of dataset basemap (#12700)
 * The selection window on a histogram widget can be dragged (#12180)
+* Visualization endpoint now returns related canonical visualizations under demand (#12910)
 * Move playback on animated time series by clicking on it (#12180)
 * Move play/pause button to besides the time series (#12387)
 * Updates Dataservices API client default version to `0.18.0` (#12466)
@@ -50,12 +60,39 @@ Development
 * Don't display slider if there's only one value (#bigmetadata/202)
 * Mustache conditionals support improved in popups (#support/763)
 * Updates Dataservices API client default version to `0.20.0` (#12633)
+* Remove data-observatory-multiple-measures feature flag (#304)
+* Improve legends error (cartodb.js#1758)
 
 ### Bug fixes / enhancements
+* Protects against frozen string manipulation in buggy ruby version `2.2.4p230`
+* Notification for error tiles (#cartodb.js/1717)
+* Make sure widget's source id is a string, reject it otherwise (#12878)
+* Improve legends for torque (CartoDB/support#979)
+* CSV export allowed without geometries (#12888)
+* Fix handling of imports with long file names and existing tables with almost the same name (#12732)
+* Update cartodb.js version
+* Don't allow csv export for polygon or line (#9855)
+* Fix a problem with Unifont Medium font (#support/1002, #support/989)
+* Hide the_geom_webmercator column from dataset view (#11045)
+* Reload vis if needed when feature is save (#11125)
+* Popups improvements (#11430, #10993)
+* Added scroll to metadata in the embed view (#12501)
+* Lazy select to fix missing values due to 40 per page items limitation in requests
+* Fix min/max parameters in filter analysis (#11658)
+* Fix some styles for datasets view for IE11.
+* Fix image export when logo is disabled.
+* Fix infowindow break word (CartoDB/support#965)
+* Fix for permissions ACL referencing deleted user (CartoDB/support#1036)
+* Update cartodb.js version
+* Fix extraneous labels layer.
+* Fix timeseries glitches (#12217)
+* Rename 'Select a text' placeholder to 'Select a value' in Filter analysis (#11861)
+* Highlight new column name (#12662)
 * Add drag icon to each item in the widget list (#12692)
 * Cancel feature edition when widget edition is selected (#12781)
 * Rename 'SHARE' button to 'PUBLISH' and 'Not published yet' to 'Unpublished map' (#12730)
 * Move Analysis cancel/delete button to the controls zone (#11414)
+* Improved user migrator rakes (#12920)
 * Rename SIZE/COLOR input label to COLOR in polygons style (#12768)
 * Enhancements on 'Join columns for 2nd layer' analysis texts (#12418)
 * Rename FILL input label to SIZE/COLOR (#12564)
@@ -92,6 +129,7 @@ Development
 * Remove unsupported CartoCSS rules for vector rendering (#12410)
 * Force parameter `vector` for vector rendering (#12478).
 * Fixed typo in content_no_datasets.jst.ejs and en.json (Docs)
+* Fixed typo in grunt usage docs (#12907)
 * Fixing problem parsing formula widget creation (#support/843)
 * Don't try to lowercase null values in custom-list-collection object (support/#744)
 * Fixes named map creation for datasets imports on users with Google Maps (CartoDB/cartodb/pull/12519).
@@ -124,7 +162,7 @@ Development
 * Fix regenerate all api keys in an organization (#12218)
 * Refactor:
   * ::User <-> CartoDB::Visualization::Member dependency: #12116, #12221
-  * Removed CartoDB::Visualization::Member from controllers: #12185, #12267
+  * Removed CartoDB::Visualization::Member outside old models: #12185, #12267, #12844, #12864.
   * Removed Visualization::Member usage from CommonDataService (#12459, #12488). Includes performance improvements on user signup.
 * Refactor Layer model (#10934) and UserTable (#11589, #11700, #11737).
   * Removed CartoDB::Visualization::Member and CartoDB::Visualization::Collection from controllers: #12185, #12267, #12485.
@@ -172,6 +210,7 @@ Development
 * Fix a problem with responsive in deep-insights.js
 * Fix 403 error in password protected embed maps (#12469)
 * Fixed JS error for InfoWindows/Pop-ups (cartodb.js#1703)
+* Freeze configuration hashes (#12586)
 * Lowered log level from error to info for supported cartocss in vector maps (cartodb.js#1706)
 * Histogram UI: Do not show "NULL ROWS" value if it is not received (#12477)
 * Force raster mode in datasets preview map (#12513)
@@ -189,6 +228,14 @@ Development
 * Fix "apply" button sizes in advanced mode (#12652)
 * Axis labels changes in Time-Series (#12658)
 * Removed unused settings in organizations (#4992)
+* Increment maximum buckets in Time-Series for leap years (#12778)
+* Prevent invalid geometries in BoundingBoxUtils.to_polygon, to_point (#12873)
+* Improve tile error overlay (cartodb.js#1721)
+* Fix TrackJS missing token in static pages (#12914)
+
+### Internals
+* Fix layer's sources in tests (analysis source required) (#12866)
+* Adapt widget integration and specs to dataviews refactor (#12850)
 
 ### NOTICE
 This release upgrades the CartoDB PostgreSQL extension to `0.19.2`. Run the following to have it available:
@@ -344,6 +391,8 @@ More information at [Dropbox migration guide](https://www.dropbox.com/developers
 * Show infowindow when user reaches max layer limit (#12167)
 * Format quota infowindow numbers (#11743)
 * Improved analysis error tooltip (#12250)
+* Rollback failed user/organization imports
+* Enable user migrations across clouds (#12795)
 
 ### Bug fixes
 * Update Data Observatory Analysis UI (#9991)

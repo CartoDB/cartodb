@@ -1,5 +1,9 @@
+require_dependency 'helpers/avatar_helper'
+
 module FrontendConfigHelper
-  def frontend_config_hash
+  include AvatarHelper
+
+  def frontend_config_hash(user = current_user)
     config = {
       app_assets_base_url:        app_assets_base_url,
       maps_api_template:          maps_api_template,
@@ -14,6 +18,8 @@ module FrontendConfigHelper
       google_analytics_domain:    Cartodb.get_config(:google_analytics, 'domain'),
       hubspot_enabled:            CartoDB::Hubspot::instance.enabled?,
       intercom_app_id:            Cartodb.get_config(:intercom, 'app_id'),
+      fullstory_enabled:          Cartodb.get_config(:fullstory, 'org').present? && user && user.account_type.casecmp('FREE').zero?,
+      fullstory_org:              Cartodb.get_config(:fullstory, 'org'),
       dropbox_api_key:            Cartodb.get_config(:dropbox_api_key),
       gdrive_api_key:             Cartodb.get_config(:gdrive, 'api_key'),
       gdrive_app_id:              Cartodb.get_config(:gdrive, 'app_id'),
@@ -27,9 +33,10 @@ module FrontendConfigHelper
       datasource_search_twitter:  nil,
       max_asset_file_size:        Cartodb.config[:assets]["max_file_size"],
       watcher_ttl:                Cartodb.config[:watcher].try("fetch", 'ttl', 60),
-      upgrade_url:                cartodb_com_hosted? ? false : "#{current_user.upgrade_url(request.protocol)}",
+      upgrade_url:                cartodb_com_hosted? ? false : user.try(:upgrade_url, request.protocol).to_s,
       licenses:                   Carto::License.all,
-      data_library_enabled:       CartoDB::Visualization::CommonDataService.configured?
+      data_library_enabled:       CartoDB::Visualization::CommonDataService.configured?,
+      avatar_valid_extensions:    AVATAR_VALID_EXTENSIONS
     }
 
     if CartoDB::Hubspot::instance.enabled? && !CartoDB::Hubspot::instance.token.blank?

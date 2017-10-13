@@ -1,4 +1,5 @@
 require_dependency 'carto/configuration'
+require_dependency 'carto/deep_freeze'
 
 module Cartodb
   def self.get_config(*config_chain)
@@ -21,6 +22,7 @@ module Cartodb
       raise "Missing or inaccessible config/app_config.yml: #{e.message}"
     end
     @config ||= config_file_hash[Rails.env].try(:to_options!)
+    Carto.deep_freeze(@config)
 
     if @config.blank?
       raise "Can't find App configuration for #{Rails.env} environment on config/app_config.yml"
@@ -63,6 +65,17 @@ module Cartodb
     else
       @asset_path = nil
     end
+  end
+
+  def self.default_basemap(basemaps = Cartodb.config[:basemaps])
+    default_group = default_basemap_group(basemaps)
+    (default_group || basemaps.first)[1].first[1]
+  end
+
+  # Basemap group based on basemap `default` attribute. If it's not set, first basemap group is returned
+  def self.default_basemap_group(basemaps = Cartodb.config[:basemaps])
+    default_basemap_group = basemaps.find { |_, group_basemaps| group_basemaps.find { |_, attr| attr['default'] } }
+    default_basemap_group || basemaps.first
   end
 
   # Execute a block with overriden configuration parameters

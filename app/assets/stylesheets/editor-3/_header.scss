@@ -52,19 +52,20 @@
   @include align-items(center);
 }
 .Editor-HeaderInfo-titleText {
-  @include flex(1);
+  @include flex(1 0 auto);
   display: block;
   width: 0;
   margin-right: 20px;
 
   &.is-larger {
     width: auto;
+    min-width: 40px;
   }
 }
 .Editor-HeaderInfo-details {
   @include display-flex();
   @include align-items(center);
-  @include flex(0 1 100%);
+  @include flex(999);
 }
 .Editor-HeaderInfo-actions {
   @include display-flex();
@@ -75,6 +76,12 @@
 }
 .Editor-HeaderInfo-actionsItem:first-child {
   margin-left: 0;
+}
+.Editor-HeaderInfo-subtitle {
+  @include display-flex();
+}
+.Editor-HeaderInfo-link {
+  font-weight: $sFontWeight-semibold;
 }
 
 .Editor-HeaderPad {

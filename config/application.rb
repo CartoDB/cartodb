@@ -85,6 +85,8 @@ module CartoDB
       account_templates.js
       account_deps.js
       account.js
+      profile.js
+      profile_templates.js
       keys_templates.js
       keys_deps.js
       keys.js
@@ -110,7 +112,6 @@ module CartoDB
       new_public_table.js
 
       mobile_apps_templates.js
-      mobile_apps_deps.js
       mobile_apps.js
 
       explore_deps.js

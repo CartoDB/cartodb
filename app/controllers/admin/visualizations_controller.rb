@@ -60,7 +60,9 @@ class Admin::VisualizationsController < Admin::AdminController
   skip_before_filter :verify_authenticity_token, only: [:show_protected_public_map, :show_protected_embed_map]
 
   def index
-    @first_time    = !current_user.dashboard_viewed?
+    return render(file: "public/static/dashboard/index.html", layout: false) if current_user.has_feature_flag?('static_dashboard')
+
+    @first_time = !current_user.dashboard_viewed?
     @just_logged_in = !!flash['logged']
     @google_maps_query_string = current_user.google_maps_query_string
 

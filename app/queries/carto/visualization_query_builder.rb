@@ -78,7 +78,7 @@ class Carto::VisualizationQueryBuilder
   end
 
   def without_raster
-    @excluded_kinds << CartoDB::Visualization::Member::KIND_RASTER
+    @excluded_kinds << Carto::Visualization::KIND_RASTER
     self
   end
 

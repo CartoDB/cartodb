@@ -424,7 +424,7 @@ Editor
 
   .. code-block:: bash
 
-    bundle exec grunt --environment development
+    bundle exec grunt --environment=development
 
 
 * Create configuration files

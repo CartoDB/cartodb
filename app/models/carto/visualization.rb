@@ -64,7 +64,7 @@ class Carto::Visualization < ActiveRecord::Base
   has_many :likes, foreign_key: :subject
   has_many :shared_entities, foreign_key: :entity_id, inverse_of: :visualization, dependent: :destroy
 
-  has_one :external_source, class_name: Carto::ExternalSource, dependent: :destroy
+  has_one :external_source, class_name: Carto::ExternalSource, dependent: :destroy, inverse_of: :visualization
   has_many :unordered_children, class_name: Carto::Visualization, foreign_key: :parent_id
 
   has_many :overlays, -> { order(:order) }, dependent: :destroy
@@ -604,6 +604,10 @@ class Carto::Visualization < ActiveRecord::Base
     end
   end
 
+  def synced?
+    synchronization.present?
+  end
+
   private
 
   def generate_salt
@@ -617,10 +621,17 @@ class Carto::Visualization < ActiveRecord::Base
 
   def perform_invalidations
     invalidation_service.invalidate
+  rescue => e
+    # This is called at an after_commit. If there's any error, we won't notice
+    # but the after_commit chain stops.
+    # This was discovered during #12844, because "Updates changes even if named maps communication fails" test
+    # begun failing because Overlay#invalidate_cache invokes this method directly.
+    # We chose to log and continue to keep coherence on calls to this outside the callback.
+    CartoDB::Logger.error(message: "Error on visualization invalidation", exception: e, visualization_id: id)
   end
 
   def propagate_privacy_and_name_to
-    raise "Empty table sent to Visualization::Member propagate_privacy_and_name_to()" unless table
+    raise "Empty table sent to propagate_privacy_and_name_to()" unless table
     propagate_privacy if privacy_changed? && canonical?
     propagate_name if name_changed?
   end

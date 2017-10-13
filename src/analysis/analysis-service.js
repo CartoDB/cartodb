@@ -26,7 +26,7 @@ var AnalysisService = function (opts) {
 AnalysisService.prototype.analyse = function (analysisDefinition) {
   analysisDefinition = _.clone(analysisDefinition);
   var analysis = this.findNodeById(analysisDefinition.id);
-  var analysisAttrs = this._getAnalysisAttributesFromAnalysisDefinition(analysisDefinition, this.analyse.bind(this));
+  var analysisAttrs = this._getAnalysisAttributesFromAnalysisDefinition(analysisDefinition);
 
   if (analysis) {
     analysis.set(analysisAttrs);
@@ -37,7 +37,6 @@ AnalysisService.prototype.analyse = function (analysisDefinition) {
     if (this._authToken) {
       analysisAttrs.authToken = this._authToken;
     }
-
     analysis = new Analysis(analysisAttrs, {
       camshaftReference: this._camshaftReference,
       vis: this._vis
@@ -51,63 +50,33 @@ AnalysisService.prototype.analyse = function (analysisDefinition) {
 };
 
 /**
- * Create an analysis node from a JSON definition
+ * This function applies recursively the function analyse to the sourceNodes in the analysisDefinition
  */
-AnalysisService.prototype.createAnalysis = function (analysisDefinition) {
-  analysisDefinition = _.clone(analysisDefinition);
-  var analysis = this.findNodeById(analysisDefinition.id);
-  var analysisAttrs = this._getAnalysisAttributesFromAnalysisDefinition(analysisDefinition, this.createAnalysis.bind(this));
-
-  if (!analysis) {
-    if (this._apiKey) {
-      analysisAttrs.apiKey = this._apiKey;
+AnalysisService.prototype._getAnalysisAttributesFromAnalysisDefinition = function (analysisDefinition) {
+  var analysisNodes = {};
+  var analysisType = analysisDefinition.type;
+  var sourceNamesForAnalysisType = this._camshaftReference.getSourceNamesForAnalysisType(analysisType);
+  _.each(sourceNamesForAnalysisType, function (sourceName) {
+    var sourceParams = analysisDefinition.params[sourceName];
+    if (sourceParams) {
+      analysisNodes[sourceName] = this.analyse(sourceParams);
     }
-    if (this._authToken) {
-      analysisAttrs.authToken = this._authToken;
-    }
+  }, this);
 
-    analysis = new Analysis(analysisAttrs, {
-      camshaftReference: this._camshaftReference,
-      vis: this._vis
-    });
-
-    this._analysisNodes[analysisDefinition.id] = analysis;
-    analysis.bind('destroy', this._onAnalysisRemoved, this);
-  } else {
-    console.warn('The analysis ' + analysisDefinition.id + ' already exists');
-  }
-
-  return analysis;
+  return _.omit(_.extend(analysisDefinition, analysisDefinition.params, analysisNodes), 'params');
 };
 
 /**
  * Create a source analysis
  */
 AnalysisService.prototype.createAnalysisForLayer = function (layerId, layerQuery) {
-  return this.createAnalysis({
+  return this.analyse({
     id: layerId,
     type: 'source',
     params: {
       query: layerQuery
     }
   });
-};
-
-/**
- * Update an analysis node from a JSON definition
- */
-AnalysisService.prototype.updateAnalysis = function (analysisDefinition) {
-  analysisDefinition = _.clone(analysisDefinition);
-  var analysis = this.findNodeById(analysisDefinition.id);
-  var analysisAttrs = this._getAnalysisAttributesFromAnalysisDefinition(analysisDefinition, this.updateAnalysis.bind(this));
-
-  if (analysis) {
-    analysis.set(analysisAttrs);
-  } else {
-    console.warn('The analysis ' + analysisDefinition.id + ' does not exist');
-  }
-
-  return analysis;
 };
 
 /**
@@ -124,24 +93,6 @@ AnalysisService.prototype.findNodeById = function (id) {
 AnalysisService.prototype._onAnalysisRemoved = function (analysis) {
   delete this._analysisNodes[analysis.id];
   analysis.unbind('destroy', this._onAnalysisRemoved);
-};
-
-/**
- * This function applies recursively the function passed in parameter `func` to the sourceNodes in the analysisDefinition
- * The `func` parameter can be one of these functions: analyse, createAnalysis, updateAnalysis
- */
-AnalysisService.prototype._getAnalysisAttributesFromAnalysisDefinition = function (analysisDefinition, func) {
-  var analysisNodes = {};
-  var analysisType = analysisDefinition.type;
-  var sourceNamesForAnalysisType = this._camshaftReference.getSourceNamesForAnalysisType(analysisType);
-  _.each(sourceNamesForAnalysisType, function (sourceName) {
-    var sourceParams = analysisDefinition.params[sourceName];
-    if (sourceParams) {
-      analysisNodes[sourceName] = func(sourceParams);
-    }
-  });
-
-  return _.omit(_.extend(analysisDefinition, analysisDefinition.params, analysisNodes), 'params');
 };
 
 /**

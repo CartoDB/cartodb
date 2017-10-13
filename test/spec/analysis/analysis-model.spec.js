@@ -247,7 +247,7 @@ describe('src/analysis/analysis-model.js', function () {
         vis: vis,
         camshaftReference: fakeCamshaftReference
       });
-      var analysisModel = analysisService.createAnalysis({
+      var analysisModel = analysisService.analyse({
         id: 'a1',
         type: 'analysis-type-1',
         params: {
@@ -322,7 +322,7 @@ describe('src/analysis/analysis-model.js', function () {
         vis: vis,
         camshaftReference: fakeCamshaftReference
       });
-      var analysisModel = analysisService.createAnalysis({
+      var analysisModel = analysisService.analyse({
         id: 'a1',
         type: 'analysis-type-1',
         params: {
@@ -456,7 +456,7 @@ describe('src/analysis/analysis-model.js', function () {
       });
     });
     it('Should return a list of nodes from an analysis', function () {
-      var analysis = analysisService.createAnalysis(
+      var analysis = analysisService.analyse(
         {
           id: 'a2',
           type: 'estimated-population',

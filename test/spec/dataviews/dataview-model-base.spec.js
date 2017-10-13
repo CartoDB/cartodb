@@ -51,7 +51,7 @@ describe('dataviews/dataview-model-base', function () {
       vis: this.vis,
       camshaftReference: fakeCamshaftReference
     });
-    this.source = this.analysisService.createAnalysis({
+    this.source = this.analysisService.analyse({
       id: 'a0',
       type: 'source'
     });
@@ -234,7 +234,7 @@ describe('dataviews/dataview-model-base', function () {
 
     describe('when change:url has a sourceId option', function () {
       beforeEach(function () {
-        var analysisA = this.analysisService.createAnalysis({
+        var analysisA = this.analysisService.analyse({
           id: 'a2',
           type: 'estimated-population',
           params: {

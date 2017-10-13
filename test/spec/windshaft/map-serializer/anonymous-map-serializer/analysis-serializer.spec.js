@@ -30,7 +30,7 @@ describe('analysis-serializer', function () {
         query: 'select * from subway_stops'
       }
     };
-    analysisModel = analysisService.createAnalysis(analysisDefinition);
+    analysisModel = analysisService.analyse(analysisDefinition);
   });
 
   describe('.serialize', function () {
@@ -52,7 +52,7 @@ describe('analysis-serializer', function () {
       });
 
       it("should NOT include an analysis if it's part of the analysis of another layer", function () {
-        var analysis1 = analysisService.createAnalysis({
+        var analysis1 = analysisService.analyse({
           id: 'b1',
           type: 'union',
           params: {
@@ -81,7 +81,7 @@ describe('analysis-serializer', function () {
             }
           }
         });
-        var analysis2 = analysisService.createAnalysis({
+        var analysis2 = analysisService.analyse({
           id: 'a2',
           type: 'estimated-population',
           params: {
@@ -178,7 +178,7 @@ describe('analysis-serializer', function () {
       });
 
       it("should NOT include an analysis if it's part of the analysis of another dataview", function () {
-        var analysis1 = analysisService.createAnalysis({
+        var analysis1 = analysisService.analyse({
           id: 'b1',
           type: 'union',
           params: {
@@ -207,7 +207,7 @@ describe('analysis-serializer', function () {
             }
           }
         });
-        var analysis2 = analysisService.createAnalysis({
+        var analysis2 = analysisService.analyse({
           id: 'a2',
           type: 'estimated-population',
           params: {

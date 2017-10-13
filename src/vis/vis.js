@@ -144,9 +144,7 @@ var VisModel = Backbone.Model.extend({
     // Public wrapper exposing public methods.
     this.analysis = {
       analyse: this._analysisService.analyse.bind(this._analysisService),
-      findNodeById: this._analysisService.findNodeById.bind(this._analysisService),
-      createAnalysis: this._analysisService.createAnalysis.bind(this._analysisService),
-      updateAnalysis: this._analysisService.updateAnalysis.bind(this._analysisService)
+      findNodeById: this._analysisService.findNodeById.bind(this._analysisService)
     };
 
     var allowScrollInOptions = (vizjson.options && vizjson.options.scrollwheel) || vizjson.scrollwheel;
@@ -417,7 +415,7 @@ var VisModel = Backbone.Model.extend({
    */
   _createAnalysisNodes: function (analysesDefinition) {
     _.each(analysesDefinition, function (analysisDefinition) {
-      this._analysisService.createAnalysis(analysisDefinition);
+      this._analysisService.analyse(analysisDefinition);
     }, this);
   },
 

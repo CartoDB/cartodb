@@ -18,6 +18,10 @@ var WindshaftError = function (error) {
   }
 };
 
+WindshaftError.prototype.isGlobalError = function (errorType) {
+  return !this.isLayerError(errorType) && !this.isAnalysisError(errorType);
+};
+
 WindshaftError.prototype.isLayerError = function (errorType) {
   errorType = errorType || this._error.type;
   return errorType === WINDSHAFT_ERRORS.LAYER;

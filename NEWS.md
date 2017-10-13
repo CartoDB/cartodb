@@ -64,6 +64,7 @@ Development
 * Improve legends error (cartodb.js#1758)
 
 ### Bug fixes / enhancements
+* Protects against frozen string manipulation in buggy ruby version `2.2.4p230`
 * Notification for error tiles (#cartodb.js/1717)
 * Make sure widget's source id is a string, reject it otherwise (#12878)
 * Improve legends for torque (CartoDB/support#979)
@@ -81,6 +82,7 @@ Development
 * Fix some styles for datasets view for IE11.
 * Fix image export when logo is disabled.
 * Fix infowindow break word (CartoDB/support#965)
+* Fix for permissions ACL referencing deleted user (CartoDB/support#1036)
 * Update cartodb.js version
 * Fix extraneous labels layer.
 * Fix timeseries glitches (#12217)
@@ -229,6 +231,7 @@ Development
 * Increment maximum buckets in Time-Series for leap years (#12778)
 * Prevent invalid geometries in BoundingBoxUtils.to_polygon, to_point (#12873)
 * Improve tile error overlay (cartodb.js#1721)
+* Fix TrackJS missing token in static pages (#12914)
 
 ### Internals
 * Remove analysisCollection and refactor analyses-integration (#12947)

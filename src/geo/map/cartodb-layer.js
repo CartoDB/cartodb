@@ -136,7 +136,7 @@ var CartoDBLayer = LayerModelBase.extend({
     if (attrs.source) {
       throw new Error('Use ".setSource" to update a layer\'s source instead of the update method');
     }
-    LayerModelBase.prototype.update.call(this, attrs, { silent: onlySourceChanged });
+    LayerModelBase.prototype.update.call(this, attrs);
   },
 
   remove: function () {

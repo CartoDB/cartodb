@@ -18,10 +18,10 @@ var AnalysisService = function (opts) {
 };
 
 /**
-  * Recursively generates a graph of analyses and returns the "root" node. Each node
-  * may have one or more "source" params pointing to another node. If a node had been created
-  * already, this method updates the attributes of the existing node. New nodes are added to
-  * the collection of analyses that has been injected.
+  * Recursively generates a graph of analyses and returns the "root" node. 
+  * For each node definition in the analysisDefinition:
+  *  - If a node had been already created this method updates the attributes of the existing node.
+  *  - Otherwise create a new node and index it by id into the `_analysisNodes` object.
   */
 AnalysisService.prototype.analyse = function (analysisDefinition) {
   analysisDefinition = _.clone(analysisDefinition);
@@ -50,7 +50,11 @@ AnalysisService.prototype.analyse = function (analysisDefinition) {
 };
 
 /**
- * This function applies recursively the function analyse to the sourceNodes in the analysisDefinition
+ * This function is used to iterate over the analysis graph.
+ * It uses the camshaft reference to extract those parameters which are analysis nodes. And call analyse on them.
+ * 
+ * This function wont be needed if we split the analysis definition in `params` and `inputs`. Where all analysis 
+ * are garanted to be in the inputs object.
  */
 AnalysisService.prototype._getAnalysisAttributesFromAnalysisDefinition = function (analysisDefinition) {
   var analysisNodes = {};
@@ -68,6 +72,8 @@ AnalysisService.prototype._getAnalysisAttributesFromAnalysisDefinition = functio
 
 /**
  * Create a source analysis
+ * This function is used because some legacy viz.json files contains layers without `source` and have a `query` field instead.
+ * This query is translated into a analysis of type `source`.
  */
 AnalysisService.prototype.createAnalysisForLayer = function (layerId, layerQuery) {
   return this.analyse({
@@ -79,17 +85,11 @@ AnalysisService.prototype.createAnalysisForLayer = function (layerId, layerQuery
   });
 };
 
-/**
- * Return the analysis node with the provided id
- */
 AnalysisService.prototype.findNodeById = function (id) {
   var analysis = this._analysisNodes[id];
   return analysis;
 };
 
-/**
- * Remove the analysis from the dictionary
- */
 AnalysisService.prototype._onAnalysisRemoved = function (analysis) {
   delete this._analysisNodes[analysis.id];
   analysis.unbind('destroy', this._onAnalysisRemoved);

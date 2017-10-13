@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.10.25.574",
+  "version": "4.10.25-574",
   "dependencies": {
     "accessory": {
       "version": "1.0.1",
@@ -227,9 +227,9 @@
       "resolved": "https://registry.npmjs.org/browserify/-/browserify-13.0.0.tgz"
     },
     "browserify-aes": {
-      "version": "1.0.8",
+      "version": "1.1.0",
       "from": "browserify-aes@>=1.0.4 <2.0.0",
-      "resolved": "https://registry.npmjs.org/browserify-aes/-/browserify-aes-1.0.8.tgz"
+      "resolved": "https://registry.npmjs.org/browserify-aes/-/browserify-aes-1.1.0.tgz"
     },
     "browserify-cipher": {
       "version": "1.0.0",
@@ -333,7 +333,7 @@
     "cartodb-deep-insights.js": {
       "version": "0.3.0",
       "from": "cartodb/deep-insights.js#574-widget-limits-error",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#25e4ace0eb032a4c541917485b500f47e13a8cad",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#fcd9f292518bb59d7355202ee19393d8245fe48c",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",
@@ -350,7 +350,7 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.7",
       "from": "cartodb/cartodb.js#574-widget-limits-error",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#b7a3e28a0fbadeaf8e7b1dd84af6821760ef66f4"
+      "resolved": "git://github.com/cartodb/cartodb.js.git#8f791cd45cccd24ac8524c074227cc76f9dd6a96"
     },
     "center-align": {
       "version": "0.1.3",

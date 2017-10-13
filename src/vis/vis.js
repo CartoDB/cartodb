@@ -185,7 +185,6 @@ var VisModel = Backbone.Model.extend({
 
     var modelUpdater = new ModelUpdater({
       visModel: this,
-      mapModel: this.map,
       layerGroupModel: this.layerGroupModel,
       dataviewsCollection: this._dataviewsCollection,
       layersCollection: this._layersCollection,

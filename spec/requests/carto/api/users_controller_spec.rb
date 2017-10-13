@@ -79,9 +79,9 @@ describe Carto::Api::UsersController do
         end
       end
 
-      it 'gives an error if payload is empty' do
+      it 'gives a status code 200 if payload is empty' do
         put_json api_v3_users_update_me_url(url_options), {}, @headers do |response|
-          expect(response.status).to eq(403)
+          expect(response.status).to eq(200)
         end
       end
 

@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.10.22.574.5",
+  "version": "4.10.25.574",
   "description": "CARTO UI frontend",
   "repository": {
     "type": "git",
@@ -145,14 +145,14 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "postversion": "git push origin master --follow-tags",
-    "update-internal-deps": "rm -rf node_modules && npm install --production --no-shrinkwrap && npm dedupe && npm prune && npm shrinkwrap && npm run fix-shrinkwrap-protocol && npm install",
+    "update-internal-deps": "rm -rf node_modules && npm install --production --no-optional --no-shrinkwrap && npm dedupe && npm prune && npm shrinkwrap && npm run fix-shrinkwrap-protocol && npm install",
     "branch-files": "node lib/build/branchFiles/branchFiles.js",
     "affected_specs": "node lib/build/branchFiles/branchFiles.js | xargs node lib/build/affectedFiles/affectedFiles.js",
     "build": "NODE_ENV=production webpack --config webpack.prod.config.js",
-    "build:dashboard": "webpack -p --config webpack/webpack.dev.config.js",
+    "build:static": "webpack -p --config webpack/webpack.dev.config.js",
     "build:stats": "webpack --env.stats --progress --config webpack.dev.config.js",
     "start": "grunt watch:css & webpack --progress --watch --config webpack.dev.config.js",
-    "start:dashboard": "webpack --progress --watch --config webpack/webpack.dev.config.js",
+    "start:static": "webpack --progress --watch --config webpack/webpack.dev.config.js",
     "dev": "webpack --progress --config webpack.dev.config.js",
     "fix-shrinkwrap-protocol": "node ./lib/build/fix-shrinkwrap.js"
   }

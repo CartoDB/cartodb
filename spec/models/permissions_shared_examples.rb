@@ -142,6 +142,51 @@ shared_examples_for 'permission models' do
       visualization2.destroy
     end
 
+    it 'deals with deleted users gracefully' do
+      user_to_be_deleted = create_user
+      map, table, table_visualization, visualization = create_full_visualization(
+        @carto_user,
+        visualization_attributes: { type: Carto::Visualization::TYPE_CANONICAL }
+      )
+      entity_id = table_visualization.id
+      permission = permission_from_visualization_id(entity_id)
+      acl_with_data = [
+        {
+          type: Permission::TYPE_USER,
+          entity: {
+            id: @user.id,
+            username: @user.username,
+            avatar_url: @user.avatar_url
+          },
+          access: Permission::ACCESS_READONLY
+        },
+        {
+          type: Permission::TYPE_USER,
+          entity: {
+            id: user_to_be_deleted.id,
+            username: user_to_be_deleted.username,
+            avatar_url: user_to_be_deleted.avatar_url
+          },
+          access: Permission::ACCESS_READWRITE
+        }
+      ]
+      permission.acl = acl_with_data
+      permission.save
+      # here there's a possible race condition, when updating permissions
+      user_to_be_deleted.delete
+      acl_from_db = PermissionPresenter.new(permission).to_poro[:acl]
+      filtered_acl = acl_from_db.map do |entry|
+        {
+          type: entry[:type],
+          entity: entry[:entity].select { |k, _v| Carto::Permission::ALLOWED_ENTITY_KEYS.include?(k) },
+          access: entry[:access]
+        }
+      end
+      permission.acl = filtered_acl
+      permission.save
+      destroy_full_visualization(map, table, table_visualization, visualization)
+    end
+
     it 'fails granting write permission for viewer users' do
       visualization = FactoryGirl.create(:carto_visualization, type: 'table', user: Carto::User.find(@user.id))
       permission = permission_from_visualization_id(visualization.id)

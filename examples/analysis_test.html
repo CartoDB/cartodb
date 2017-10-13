@@ -323,7 +323,7 @@
         .done(function(vis, layers) {
           var tableName = 'arboles'
 
-          var analysis = vis.analysis.createAnalysis({
+          var analysis = vis.analysis.analyse({
             id: 'a1',
             type: 'trade-area',
             params: {
@@ -375,7 +375,7 @@
 
 
             setTimeout(function () {
-              vis.analysis.createAnalysis({
+              vis.analysis.analyse({
                 id: 'a1',
                 type: 'trade-area',
                 params: {

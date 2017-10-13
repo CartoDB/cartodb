@@ -55,7 +55,6 @@ var TorqueLayer = LayerModelBase.extend({
 
     this._vis = options.vis;
 
-    // TODO: Throw error if source is not present
     if (attrs.source) {
       this.setSource(attrs.source);
     }

@@ -25,7 +25,6 @@ var CartoDBLayer = LayerModelBase.extend({
       this.set('initialStyle', attrs.cartocss);
     }
 
-    // TODO: Throw error if source is not present
     if (attrs.source) {
       this.setSource(attrs.source);
     }

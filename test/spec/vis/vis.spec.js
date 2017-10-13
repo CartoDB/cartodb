@@ -988,9 +988,6 @@ describe('vis/vis', function () {
       this.vis.load(new VizJSON(fakeVizJSON()));
       this.vis.instantiateMap();
 
-      // First request to instantiate map was performed
-      expect($.ajax.calls.argsFor(0)[0].url).toMatch(/api\/v1\/map\?config/);
-
       // Response from Maps API is received
       $.ajax.calls.argsFor(0)[0].success({
         'layergroupid': '9d7bf465e45113123bf9949c2a4f0395:0',

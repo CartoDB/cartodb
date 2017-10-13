@@ -26,12 +26,13 @@ module.exports = cdb.core.View.extend({
     var error = this._errorModel.get('error');
 
     if (error) {
-      var placeholder = this._errorModel.get('placeholder');
+      var placeholderTemplate = this._errorModel.get('placeholder');
+      var placeholder = _.isFunction(placeholderTemplate) ? placeholderTemplate() : '';
       this.$el.addClass('CDB-Widget--' + error.level);
 
       var body = error.type
         ? errorTextTemplate({
-          placeholder: _.isFunction(placeholder) ? placeholder() : '',
+          placeholder: placeholder,
           error: error.error,
           title: this._title,
           message: error.message,

@@ -57,7 +57,12 @@ var WindshaftMap = Backbone.Model.extend({
       options.error = function (response) {
         var windshaftErrors = this._getErrorsFromResponse(response);
         this._modelUpdater.setErrors(windshaftErrors);
-        oldError && oldError();
+
+        var error = _.find(windshaftErrors, function (error) {
+          return error.isGlobalError();
+        });
+
+        oldError && oldError(error);
       }.bind(this);
       var request = new Request(payload, params, options);
       this.client.instantiateMap(request);

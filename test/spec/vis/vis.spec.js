@@ -927,6 +927,73 @@ describe('vis/vis', function () {
     });
   });
 
+  describe('error handling', function () {
+    beforeEach(function () {
+      spyOn(this.vis, 'setOk');
+      spyOn(this.vis, 'setError');
+      spyOn($, 'ajax');
+    });
+
+    it('should invoke setOk when request succeeds', function () {
+      this.vis.load(new VizJSON(fakeVizJSON()));
+      this.vis.instantiateMap();
+
+      // Response from Maps API is received
+      $.ajax.calls.argsFor(0)[0].success({
+        'layergroupid': '9d7bf465e45113123bf9949c2a4f0395:0',
+        'metadata': {
+          'layers': [
+            {
+              'type': 'mapnik',
+              'meta': {
+                'stats': [],
+                'cartocss': 'cartocss'
+              }
+            }
+          ],
+          'dataviews': {},
+          'analyses': [
+            {
+              'nodes': {
+                'a0': {
+                  'status': 'ready',
+                  'query': 'SELECT * FROM arboles',
+                  'url': {
+                    'http': 'http://cdb.localhost.lan:8181/api/v1/map/9d7bf465e45113123bf9949c2a4f0395:0/analysis/node/5af683d5d8a6f67e11916a31cd76632884d4064f'
+                  }
+                }
+              }
+            }
+          ]
+        },
+        'last_updated': '1970-01-01T00:00:00.000Z'
+      });
+
+      expect(this.vis.setOk).toHaveBeenCalled();
+      expect(this.vis.setError).not.toHaveBeenCalled();
+    });
+
+    it('should invoke setError when request fails', function () {
+      this.vis.load(new VizJSON(fakeVizJSON()));
+
+      this.vis.instantiateMap();
+
+      // Response from Maps API is received
+      $.ajax.calls.argsFor(0)[0].success({
+        errors: ['the error message'],
+        errors_with_context: [
+          {
+            type: 'unknown',
+            message: 'the error message'
+          }
+        ]
+      });
+
+      expect(this.vis.setOk).not.toHaveBeenCalled();
+      expect(this.vis.setError).toHaveBeenCalled();
+    });
+  });
+
   describe('.setOk', function () {
     it('should unset the error attribute', function () {
       this.vis.set('error', 'error');

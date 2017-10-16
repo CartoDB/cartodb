@@ -15,27 +15,20 @@ function getSubdomain (subdomains, resource) {
  * CartoDB.js models that are linked to a "resource" in the Maps API.
  */
 var ModelUpdater = function (deps) {
-  if (!deps.visModel) throw new Error('visModel is required');
   if (!deps.layerGroupModel) throw new Error('layerGroupModel is required');
   if (!deps.layersCollection) throw new Error('layersCollection is required');
   if (!deps.dataviewsCollection) throw new Error('dataviewsCollection is required');
 
-  this._visModel = deps.visModel;
   this._layerGroupModel = deps.layerGroupModel;
   this._layersCollection = deps.layersCollection;
   this._dataviewsCollection = deps.dataviewsCollection;
 };
 
 ModelUpdater.prototype.updateModels = function (windshaftMap, sourceId, forceFetch) {
-  this._updateVisModel(windshaftMap);
   this._updateLayerModels(windshaftMap);
   this._updateLayerGroupModel(windshaftMap);
   this._updateDataviewModels(windshaftMap, sourceId, forceFetch);
   this._updateAnalysisModels(windshaftMap);
-};
-
-ModelUpdater.prototype._updateVisModel = function (windshaftMap) {
-  this._visModel.setOk();
 };
 
 ModelUpdater.prototype._updateLayerGroupModel = function (windshaftMap) {
@@ -242,8 +235,6 @@ ModelUpdater.prototype._setError = function (error) {
     var analysisNodesCollection = this._getUniqueAnalysisNodesCollection();
     var analysisModel = analysisNodesCollection.get(error.analysisId);
     analysisModel && analysisModel.setError(error);
-  } else {
-    this._visModel.setError(error);
   }
 };
 

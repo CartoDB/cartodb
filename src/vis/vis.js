@@ -187,7 +187,6 @@ var VisModel = Backbone.Model.extend({
     });
 
     var modelUpdater = new ModelUpdater({
-      visModel: this,
       layerGroupModel: this.layerGroupModel,
       dataviewsCollection: this._dataviewsCollection,
       layersCollection: this._layersCollection
@@ -328,11 +327,14 @@ var VisModel = Backbone.Model.extend({
         } else {
           this.untrackLoadingObject(this);
         }
+
+        this.setOk();
         successCallback && successCallback();
       }.bind(this),
-      error: function () {
+      error: function (error) {
+        this.setError(error);
         errorCallback && errorCallback();
-      }
+      }.bind(this)
     }, _.pick(options, 'sourceId', 'forceFetch', 'includeFilters'));
 
     if (this._instantiateMapWasCalled) {

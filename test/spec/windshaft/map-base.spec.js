@@ -298,7 +298,7 @@ describe('windshaft/map-base', function () {
       });
 
       it('should invoke a given error callback', function () {
-        expect(this.errorCallback).toHaveBeenCalledWith();
+        expect(this.errorCallback).toHaveBeenCalled();
       });
 
       it('should update models and use first error message', function () {

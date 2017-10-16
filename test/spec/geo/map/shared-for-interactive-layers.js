@@ -44,26 +44,6 @@ module.exports = function (LayerModel) {
     expect(layer.legends.custom.get('title')).toEqual('My Custom Legend');
   });
 
-  describe('.update', function () {
-    it('should allow a string as parameter (deprecated: keep this only for prevent breaking changes in the api)', function () {
-      var newSource = fakeFactory.createAnalysisModel({ id: 'a1' });
-      vis.analysis = {
-        findNodeById: function (nodeId) {
-          if (nodeId === source.id) {
-            return source;
-          }
-          if (nodeId === newSource.id) {
-            return newSource;
-          }
-        }
-      };
-
-      layer.update({ source: 'a1' });
-
-      expect(layer.getSource()).toBe(newSource);
-    });
-  });
-
   describe('source references', function () {
     describe('when layer is initialized', function () {
       it('should mark source as referenced', function () {
@@ -79,7 +59,7 @@ module.exports = function (LayerModel) {
         expect(oldSource.isSourceOf(layer)).toBe(true);
         expect(newSource.isSourceOf(layer)).toBe(false);
 
-        layer.update({ source: newSource });
+        layer.setSource(newSource);
 
         expect(oldSource.isSourceOf(layer)).toBe(false);
         expect(newSource.isSourceOf(layer)).toBe(true);

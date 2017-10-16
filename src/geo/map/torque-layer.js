@@ -191,13 +191,8 @@ var TorqueLayer = LayerModelBase.extend({
   },
 
   update: function (attrs) {
-    var onlySourceChanged = attrs.source && _.keys(attrs).length === 1;
-
     if (attrs.source) {
-      console.warn('Deprecated: Use ".setSource" to update a layer\'s source instead the update method');
-      var source = TorqueLayer.getLayerSourceFromAttrs(attrs, this._vis.analysis);
-      this.setSource(source, { silent: !onlySourceChanged });
-      delete attrs.source;
+      throw new Error('Use ".setSource" to update a layer\'s source instead of the update method');
     }
     LayerModelBase.prototype.update.apply(this, arguments);
   },

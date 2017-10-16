@@ -1,4 +1,8 @@
+require_dependency 'helpers/avatar_helper'
+
 module FrontendConfigHelper
+  include AvatarHelper
+
   def frontend_config_hash(user = current_user)
     config = {
       app_assets_base_url:        app_assets_base_url,
@@ -31,7 +35,8 @@ module FrontendConfigHelper
       watcher_ttl:                Cartodb.config[:watcher].try("fetch", 'ttl', 60),
       upgrade_url:                cartodb_com_hosted? ? false : user.try(:upgrade_url, request.protocol).to_s,
       licenses:                   Carto::License.all,
-      data_library_enabled:       CartoDB::Visualization::CommonDataService.configured?
+      data_library_enabled:       CartoDB::Visualization::CommonDataService.configured?,
+      avatar_valid_extensions:    AVATAR_VALID_EXTENSIONS
     }
 
     if CartoDB::Hubspot::instance.enabled? && !CartoDB::Hubspot::instance.token.blank?

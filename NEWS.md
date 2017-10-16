@@ -2,6 +2,7 @@ Development
 -----------
 
 ### Features
+* Profile static view (#12704)
 * Add FullStory (if available) in user dashboard
 * Change default style for polygon, point and line geometries (design#983)
 * Unify scrollbars style (#12184)
@@ -50,6 +51,7 @@ Development
 * New user render timeouts and propagation of timeout values to Redis (#12425)
 * Default basemap is used for all Builder maps regardless of dataset basemap (#12700)
 * The selection window on a histogram widget can be dragged (#12180)
+* Visualization endpoint now returns related canonical visualizations under demand (#12910)
 * Move playback on animated time series by clicking on it (#12180)
 * Move play/pause button to besides the time series (#12387)
 * Updates Dataservices API client default version to `0.18.0` (#12466)
@@ -62,6 +64,8 @@ Development
 * Improve legends error (cartodb.js#1758)
 
 ### Bug fixes / enhancements
+* Remove cumulative option when torque category (#12924)
+* Protects against frozen string manipulation in buggy ruby version `2.2.4p230`
 * Notification for error tiles (#cartodb.js/1717)
 * Make sure widget's source id is a string, reject it otherwise (#12878)
 * Improve legends for torque (CartoDB/support#979)
@@ -79,6 +83,7 @@ Development
 * Fix some styles for datasets view for IE11.
 * Fix image export when logo is disabled.
 * Fix infowindow break word (CartoDB/support#965)
+* Fix for permissions ACL referencing deleted user (CartoDB/support#1036)
 * Update cartodb.js version
 * Fix extraneous labels layer.
 * Fix timeseries glitches (#12217)
@@ -228,8 +233,12 @@ Development
 * Prevent invalid geometries in BoundingBoxUtils.to_polygon, to_point (#12873)
 * Show limit infobox in layers/widgets view (#12593)
 * Improve tile error overlay (cartodb.js#1721)
+* Fix TrackJS missing token in static pages (#12914)
+* Fix missing upgrade link in static dashboard (#12929)
+* Fix histogram zoom (#12945)
 
 ### Internals
+* Remove analysisCollection and refactor analyses-integration (#12947)
 * Fix layer's sources in tests (analysis source required) (#12866)
 * Adapt widget integration and specs to dataviews refactor (#12850)
 

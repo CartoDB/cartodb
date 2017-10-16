@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.10.12-309.1",
+  "version": "4.10.31-309",
   "dependencies": {
     "accessory": {
       "version": "1.0.1",
@@ -38,12 +38,6 @@
       "version": "0.1.4",
       "from": "align-text@>=0.1.3 <0.2.0",
       "resolved": "https://registry.npmjs.org/align-text/-/align-text-0.1.4.tgz"
-    },
-    "amdefine": {
-      "version": "1.0.1",
-      "from": "amdefine@>=0.0.4",
-      "resolved": "https://registry.npmjs.org/amdefine/-/amdefine-1.0.1.tgz",
-      "optional": true
     },
     "ansi-regex": {
       "version": "2.1.1",
@@ -171,9 +165,9 @@
       "resolved": "https://registry.npmjs.org/binary-extensions/-/binary-extensions-1.10.0.tgz"
     },
     "bluebird": {
-      "version": "3.5.0",
+      "version": "3.5.1",
       "from": "bluebird@>=3.4.7 <4.0.0",
-      "resolved": "https://registry.npmjs.org/bluebird/-/bluebird-3.5.0.tgz"
+      "resolved": "https://registry.npmjs.org/bluebird/-/bluebird-3.5.1.tgz"
     },
     "bn.js": {
       "version": "4.11.8",
@@ -233,9 +227,9 @@
       "resolved": "https://registry.npmjs.org/browserify/-/browserify-13.0.0.tgz"
     },
     "browserify-aes": {
-      "version": "1.0.8",
+      "version": "1.1.0",
       "from": "browserify-aes@>=1.0.4 <2.0.0",
-      "resolved": "https://registry.npmjs.org/browserify-aes/-/browserify-aes-1.0.8.tgz"
+      "resolved": "https://registry.npmjs.org/browserify-aes/-/browserify-aes-1.1.0.tgz"
     },
     "browserify-cipher": {
       "version": "1.0.0",
@@ -329,7 +323,7 @@
     "carto": {
       "version": "0.15.1-cdb4",
       "from": "cartodb/carto#master",
-      "resolved": "git://github.com/cartodb/carto.git#cbe66020f98647429d2bb04b7cf73dcf194f2abf"
+      "resolved": "git://github.com/cartodb/carto.git#bf4c67034af5a5e311ea2320cbbb2280eeeabe42"
     },
     "cartocolor": {
       "version": "4.0.0",
@@ -337,9 +331,9 @@
       "resolved": "https://registry.npmjs.org/cartocolor/-/cartocolor-4.0.0.tgz"
     },
     "cartodb-deep-insights.js": {
-      "version": "0.0.3",
-      "from": "cartodb/deep-insights.js#979-torque-legends",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#75d9c649966198fd9464aaeec3b69f16ff24e7a6",
+      "version": "0.3.3",
+      "from": "cartodb/deep-insights.js#v0.3.3",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#9a92457d23fe5e6ac36512e204f08a59adbc0c89",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",
@@ -354,9 +348,9 @@
       "resolved": "https://registry.npmjs.org/cartodb-pecan/-/cartodb-pecan-0.2.0.tgz"
     },
     "cartodb.js": {
-      "version": "4.0.0-alpha.1.1.2",
-      "from": "cartodb/cartodb.js#979-torque-legends",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#7db3be8b4de648ae02024d36e2e02e174fb4a5da"
+      "version": "4.0.0-alpha.10",
+      "from": "cartodb/cartodb.js#v4.0.0-alpha.10",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#4878143b8de7c253846b9e989c30955175692c68"
     },
     "center-align": {
       "version": "0.1.3",
@@ -709,12 +703,6 @@
           "version": "1.0.4",
           "from": "esprima@>=1.0.4 <1.1.0",
           "resolved": "https://registry.npmjs.org/esprima/-/esprima-1.0.4.tgz"
-        },
-        "source-map": {
-          "version": "0.1.43",
-          "from": "source-map@>=0.1.30 <0.2.0",
-          "resolved": "https://registry.npmjs.org/source-map/-/source-map-0.1.43.tgz",
-          "optional": true
         }
       }
     },
@@ -1609,9 +1597,9 @@
       "resolved": "https://registry.npmjs.org/postcss-scss/-/postcss-scss-0.4.0.tgz",
       "dependencies": {
         "postcss": {
-          "version": "5.2.17",
+          "version": "5.2.18",
           "from": "postcss@>=5.2.5 <6.0.0",
-          "resolved": "https://registry.npmjs.org/postcss/-/postcss-5.2.17.tgz"
+          "resolved": "https://registry.npmjs.org/postcss/-/postcss-5.2.18.tgz"
         }
       }
     },
@@ -2035,12 +2023,6 @@
             }
           }
         },
-        "source-map": {
-          "version": "0.1.43",
-          "from": "source-map@>=0.1.33 <0.2.0",
-          "resolved": "https://registry.npmjs.org/source-map/-/source-map-0.1.43.tgz",
-          "optional": true
-        },
         "string_decoder": {
           "version": "1.0.3",
           "from": "string_decoder@>=1.0.3 <1.1.0",
@@ -2129,9 +2111,9 @@
       "resolved": "git://github.com/cartodb/tangram.git#5df75d855a559d64673d518c5969ca6569a8e04b"
     },
     "tangram-cartocss": {
-      "version": "0.9.4",
+      "version": "0.9.5",
       "from": "tangram-cartocss@>=0.9.0 <0.10.0",
-      "resolved": "https://registry.npmjs.org/tangram-cartocss/-/tangram-cartocss-0.9.4.tgz"
+      "resolved": "https://registry.npmjs.org/tangram-cartocss/-/tangram-cartocss-0.9.5.tgz"
     },
     "tangram-reference": {
       "version": "2.1.0",
@@ -2231,15 +2213,16 @@
       "resolved": "https://registry.npmjs.org/typedarray/-/typedarray-0.0.6.tgz"
     },
     "uglify-js": {
-      "version": "3.1.3",
+      "version": "3.1.4",
       "from": "uglify-js@>=3.1.0 <3.2.0",
-      "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-3.1.3.tgz"
-    },
-    "uglify-to-browserify": {
-      "version": "1.0.2",
-      "from": "uglify-to-browserify@>=1.0.0 <1.1.0",
-      "resolved": "https://registry.npmjs.org/uglify-to-browserify/-/uglify-to-browserify-1.0.2.tgz",
-      "optional": true
+      "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-3.1.4.tgz",
+      "dependencies": {
+        "source-map": {
+          "version": "0.6.1",
+          "from": "source-map@>=0.6.1 <0.7.0",
+          "resolved": "https://registry.npmjs.org/source-map/-/source-map-0.6.1.tgz"
+        }
+      }
     },
     "umd": {
       "version": "3.0.1",

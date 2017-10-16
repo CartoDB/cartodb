@@ -8,10 +8,10 @@ module Carto
       describe '#default' do
         let(:production_default_polygon_cartocss) do
           "#layer {\n"\
-          "  polygon-fill: #374C70;\n"\
+          "  polygon-fill: #826DBA;\n"\
           "  polygon-opacity: 0.9;\n"\
           "  ::outline {\n"\
-          "    line-color: #FFF;\n"\
+          "    line-color: #FFFFFF;\n"\
           "    line-width: 1;\n"\
           "    line-opacity: 0.5;\n"\
           "  }\n"\

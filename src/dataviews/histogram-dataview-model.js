@@ -24,6 +24,9 @@ module.exports = DataviewModelBase.extend({
 
     if (_.isNumber(this.get('own_filter'))) {
       params.push('own_filter=' + this.get('own_filter'));
+      if (this.get('column_type') === 'number' && this.get('bins')) {
+        params.push('bins=' + this.get('bins'));
+      }
     } else {
       var offset = this._getCurrentOffset();
 

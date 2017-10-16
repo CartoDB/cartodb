@@ -483,7 +483,7 @@ describe('dataviews/histogram-dataview-model', function () {
 
         this.model.enableFilter();
 
-        expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&own_filter=1');
+        expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&own_filter=1&bins=25');
       });
     });
 

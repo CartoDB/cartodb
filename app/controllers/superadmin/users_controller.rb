@@ -1,9 +1,11 @@
 require_relative '../../../lib/carto/http/client'
 require_dependency 'carto/uuidhelper'
 require_dependency 'carto/overquota_users_service'
+require_dependency 'carto/api/paged_searcher'
 
 class Superadmin::UsersController < Superadmin::SuperadminController
   include Carto::UUIDHelper
+  include Carto::Api::PagedSearcher
 
   respond_to :json
 
@@ -109,25 +111,10 @@ class Superadmin::UsersController < Superadmin::SuperadminController
   end
 
   def data_imports
-    dataset = @user.data_imports_dataset.order(:updated_at.desc)
+    page, per_page, order = page_per_page_order_params
+    dataset = @user.data_imports_dataset.order(order.desc).paginate(page, per_page)
 
-    if params[:status]
-      dataset = dataset.where("success = #{params[:status] == 'success' ? 'true' : 'false'}")
-    end
-
-    page = params[:page].to_i
-    per_page = params[:per_page].to_i
-
-    if page > 0 && per_page > 0
-      dataset = dataset.paginate(page, per_page)
-
-      pagination_info = {
-        page_size: dataset.page_size,
-        page_count: dataset.page_count,
-        current_page: dataset.current_page,
-        pagination_record_count: dataset.pagination_record_count
-      }
-    end
+    dataset = dataset.where(state: params[:status]) if params[:status].present?
 
     data_imports_info = dataset.map do |entry|
       {
@@ -139,11 +126,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
       }
     end
 
-    if page > 0 && per_page > 0
-      respond_with(data_imports: data_imports_info, pagination_info: pagination_info)
-    else
-      respond_with data_imports_info
-    end
+    respond_with(pagination_info(dataset).merge(data_imports: data_imports_info))
   end
 
   def data_import

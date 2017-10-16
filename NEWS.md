@@ -64,6 +64,7 @@ Development
 * Improve legends error (cartodb.js#1758)
 
 ### Bug fixes / enhancements
+* Show map options when selecting a map in search view
 * Remove cumulative option when torque category (#12924)
 * Protects against frozen string manipulation in buggy ruby version `2.2.4p230`
 * Notification for error tiles (#cartodb.js/1717)

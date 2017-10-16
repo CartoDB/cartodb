@@ -26198,18 +26198,18 @@ Metric.prototype = {
 
   //
   // finish a time measurement and register it
-  // ``start`` should be called first, if not this
+  // ``start`` should be called first, if not this 
   // function does not take effect
   //
   end: function(defer) {
-    if (!!this.t0) {
+    if (this.t0 !== null) {
       Profiler.new_value(this.name, this._elapsed(), 't', defer);
       this.t0 = null;
     }
   },
 
   //
-  // increments the value
+  // increments the value 
   // qty: how many, default = 1
   //
   inc: function(qty) {
@@ -26218,7 +26218,7 @@ Metric.prototype = {
   },
 
   //
-  // decrements the value
+  // decrements the value 
   // qty: how many, default = 1
   //
   dec: function(qty) {

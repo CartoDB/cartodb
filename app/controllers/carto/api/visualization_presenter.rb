@@ -39,7 +39,11 @@ module Carto
         poro = @visualization.can_view_private_info?(@current_viewer) ? to_private_poro : to_public_poro
 
         poro[:user] = user if show_user
-        poro[:related_canonical_visualizations] = related_canonicals if load_related_canonical_visualizations
+        if load_related_canonical_visualizations
+          poro[:related_canonical_visualizations] = related_canonicals
+          # The count doesn't take into account privacy concerns
+          poro[:related_canonical_visualizations_count] = @visualization.related_canonical_visualizations.count
+        end
 
         poro
       end
@@ -179,7 +183,10 @@ module Carto
       end
 
       def related_canonicals
-        @visualization.related_canonical_visualizations.map { |v| self.class.new(v, @current_viewer, @context).to_poro }
+        @visualization
+          .related_canonical_visualizations
+          .select { |v| v.is_viewable_by_user?(@current_viewer) }
+          .map { |v| self.class.new(v, @current_viewer, @context).to_poro }
       end
 
       def children_poro(visualization)

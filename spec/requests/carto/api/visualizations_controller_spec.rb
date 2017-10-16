@@ -1385,6 +1385,28 @@ describe Carto::Api::VisualizationsController do
         end
       end
 
+      it 'returns private related_canonical_visualizations for users that can see it' do
+        related_canonical_visualizations = @visualization.related_canonical_visualizations
+        related_canonical_visualizations.should_not be_empty
+        old_privacies = related_canonical_visualizations.map(&:privacy)
+        related_canonical_visualizations.each do |v|
+          v.update_attribute(:privacy, Carto::Visualization::PRIVACY_PRIVATE)
+        end
+
+        get_json api_v1_visualizations_show_url(id: @visualization.id,
+                                                api_key: @carto_user1.api_key,
+                                                fetch_related_canonical_visualizations: true) do |response|
+          response.status.should eq 200
+          related_canonical = response.body[:related_canonical_visualizations]
+          related_canonical.count.should eq related_canonical_visualizations.count
+          response.body[:related_canonical_visualizations_count].should eq related_canonical_visualizations.count
+        end
+
+        related_canonical_visualizations.zip(old_privacies).each do |v, p|
+          v.update_attribute(:privacy, p)
+        end
+      end
+
       it 'returns private information about the user if requested' do
         get_json api_v1_visualizations_show_url(id: @visualization.id, api_key: @carto_user1.api_key) do |response|
           response.status.should eq 200
@@ -1493,6 +1515,27 @@ describe Carto::Api::VisualizationsController do
                 related_canonical.should_not be_nil
                 related_canonical.count.should eq 1
                 related_canonical[0]['id'].should eq @table_visualization.id
+              end
+            end
+
+            it 'doesn\'t return private related_canonical_visualizations' do
+              related_canonical_visualizations = @visualization.related_canonical_visualizations
+              related_canonical_visualizations.should_not be_empty
+              old_privacies = related_canonical_visualizations.map(&:privacy)
+              related_canonical_visualizations.each do |v|
+                v.update_attribute(:privacy, Carto::Visualization::PRIVACY_PRIVATE)
+              end
+
+              get_json api_v1_visualizations_show_url(id: @visualization.id,
+                                                      fetch_related_canonical_visualizations: true) do |response|
+                response.status.should eq 200
+                related_canonical = response.body[:related_canonical_visualizations]
+                related_canonical.count.should eq 0
+                response.body[:related_canonical_visualizations_count].should eq related_canonical_visualizations.count
+              end
+
+              related_canonical_visualizations.zip(old_privacies).each do |v, p|
+                v.update_attribute(:privacy, p)
               end
             end
 

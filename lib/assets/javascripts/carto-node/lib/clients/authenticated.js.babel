@@ -10,6 +10,11 @@ class AuthenticatedClient extends PublicClient {
     const VIZ_API_PATH = 'api/v1/viz';
     return this.get([VIZ_API_PATH, viz], callback);
   }
+
+  getDerivedVisualizations (mapsNumber, callback) {
+    const VIZ_API_PATH = `api/v1/viz`;
+    return this.get([VIZ_API_PATH, `?per_page=${mapsNumber}&type=derived`], callback);
+  }
 }
 
 module.exports = exports = AuthenticatedClient;

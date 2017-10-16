@@ -66,6 +66,9 @@ class PublicClient {
   }
 
   request (method, uriParts, opts = {}, callback) {
+    const baseUrl = this.getAssetsBaseUrl();
+    const url = this.makeRelativeURI(uriParts);
+
     if (!callback && typeof opts === 'function') {
       callback = opts;
       opts = {};
@@ -77,9 +80,6 @@ class PublicClient {
     });
 
     this.addHeaders(opts);
-
-    const baseUrl = this.getAssetsBaseUrl();
-    const url = this.makeRelativeURI(uriParts);
 
     $.ajax(`${baseUrl}${url}`, opts)
       .done(this.successCallback(callback))

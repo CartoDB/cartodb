@@ -236,10 +236,6 @@ class Carto::Visualization < ActiveRecord::Base
     is_publically_accesible? || has_read_permission?(user)
   end
 
-  def can_view_private_info?(user)
-    has_read_permission?(user)
-  end
-
   def is_accesible_by_user?(user)
     is_viewable_by_user?(user) || password_protected?
   end
@@ -389,6 +385,7 @@ class Carto::Visualization < ActiveRecord::Base
   def has_read_permission?(user)
     user && (owner?(user) || (permission && permission.user_has_read_permission?(user)))
   end
+  alias :can_view_private_info? :has_read_permission?
 
   def estimated_row_count
     table_service.nil? ? nil : table_service.estimated_row_count

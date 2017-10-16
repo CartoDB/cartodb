@@ -20,8 +20,6 @@ describe('src/vis/dataviews-tracker', function () {
     this.source = fakeFactory.createAnalysisModel({ id: 'a1' });
 
     this.onDataviewsfetched = jasmine.createSpy('onDataviewsfetched');
-    spyOn(DataviewModel.prototype, '_initBinds');
-    spyOn(DataviewModel.prototype, '_setupAnalysisStatusEvents');
 
     this.dataviewsCollection = new DataviewsCollection([]);
 

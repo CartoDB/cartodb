@@ -1,6 +1,6 @@
 {
   "name": "cartodb-deep-insights.js",
-  "version": "0.2.1",
+  "version": "0.3.1",
   "description": "CARTO Deep Insights JS library",
   "repository": {
     "type": "git",
@@ -88,6 +88,7 @@
   "scripts": {
     "test": "grunt test",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "postversion": "git push origin master --follow-tags"
   }
 }

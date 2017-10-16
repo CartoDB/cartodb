@@ -51,7 +51,7 @@ describe Carto::VisualizationMigrator do
     it 'fixes GMaps options' do
       basemap = @visualization.layers.first
       basemap.kind = 'gmapsbase'
-      basemap.options = {"type"=>"GMapsBase", "base_type"=>"roadmap"}
+      basemap.options = { "type" => "GMapsBase", "base_type" => "roadmap" }
       basemap.save!
 
       migrator.migrate_visualization_to_v3(@visualization)

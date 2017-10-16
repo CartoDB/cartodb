@@ -608,6 +608,7 @@ module.exports = cdb.core.View.extend({
       this._onZoomIn();
     } else {
       this._resetWidget();
+      this._dataviewModel.fetch();
     }
   },
 

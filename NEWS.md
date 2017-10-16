@@ -234,6 +234,7 @@ Development
 * Improve tile error overlay (cartodb.js#1721)
 * Fix TrackJS missing token in static pages (#12914)
 * Fix missing upgrade link in static dashboard (#12929)
+* Fix histogram zoom (#12945)
 
 ### Internals
 * Remove analysisCollection and refactor analyses-integration (#12947)

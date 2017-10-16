@@ -9,7 +9,7 @@ module Carto
       def initialize(types: ['derived'])
         @types = types
         @headers_written = false
-        @filepath = "/tmp/map_statistics_#{SecureRandom.urlsafe_base64}.csv"
+        @filepath = "/tmp/map_statistics_#{Time.now.strftime('%Y%m%d%H%M%S')}.csv"
       end
 
       def run!

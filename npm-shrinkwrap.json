@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.10.28",
+  "version": "4.10.28-12945",
   "dependencies": {
     "accessory": {
       "version": "1.0.1",
@@ -331,9 +331,9 @@
       "resolved": "https://registry.npmjs.org/cartocolor/-/cartocolor-4.0.0.tgz"
     },
     "cartodb-deep-insights.js": {
-      "version": "0.3.1",
-      "from": "cartodb/deep-insights.js#v0.3.1",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#5cb37a7bd5bd539e7e22c9a0f99eea0ff78de749",
+      "version": "0.2.1",
+      "from": "cartodb/deep-insights.js#12945-histogram-zoom-not-working",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#a7a91278fd9d689f18e2b550c3949d43413fa600",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",
@@ -348,9 +348,9 @@
       "resolved": "https://registry.npmjs.org/cartodb-pecan/-/cartodb-pecan-0.2.0.tgz"
     },
     "cartodb.js": {
-      "version": "4.0.0-alpha.8",
-      "from": "cartodb/cartodb.js#v4.0.0-alpha.8",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#96d3e6173e3a42f4abb391afa415456af6054fa1"
+      "version": "4.0.0-alpha.7",
+      "from": "cartodb/cartodb.js#12945-histogram-zoom-not-working",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#f14117144af0c78326dce87349bcb906f065c29b"
     },
     "center-align": {
       "version": "0.1.3",

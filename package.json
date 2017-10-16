@@ -1,6 +1,6 @@
 {
   "name": "cartodb-deep-insights.js",
-  "version": "0.3.0",
+  "version": "0.3.2",
   "description": "CARTO Deep Insights JS library",
   "repository": {
     "type": "git",

@@ -78,9 +78,11 @@ module CartoDB
         name = Carto::ValidTableNameProposer.new.propose_valid_table_name(result.name, taken_names: [])
 
         overwrite = overwrite_table? && taken_names.include?(name)
-        assert_schemas_are_compatible(name) if overwrite
 
-        index_statements = generate_index_statements(@destination_schema, name) if overwrite
+        if overwrite
+          assert_schemas_are_compatible(name)
+          index_statements = generate_index_statements(@destination_schema, name)
+        end
 
         database.transaction do
           name = rename(result, result.table_name, result.name)

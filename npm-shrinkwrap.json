@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.10.25",
+  "version": "4.10.25-1796",
   "dependencies": {
     "accessory": {
       "version": "1.0.1",
@@ -350,7 +350,7 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.7",
       "from": "cartodb/cartodb.js#remove-analysis-collection",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#085367efbd243a766a84303c034ea47968deb7f0"
+      "resolved": "git://github.com/cartodb/cartodb.js.git#059d889eaee45be09938367c4efba007a5627bfd"
     },
     "center-align": {
       "version": "0.1.3",
@@ -2213,9 +2213,16 @@
       "resolved": "https://registry.npmjs.org/typedarray/-/typedarray-0.0.6.tgz"
     },
     "uglify-js": {
-      "version": "3.1.3",
+      "version": "3.1.4",
       "from": "uglify-js@>=3.1.0 <3.2.0",
-      "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-3.1.3.tgz"
+      "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-3.1.4.tgz",
+      "dependencies": {
+        "source-map": {
+          "version": "0.6.1",
+          "from": "source-map@>=0.6.1 <0.7.0",
+          "resolved": "https://registry.npmjs.org/source-map/-/source-map-0.6.1.tgz"
+        }
+      }
     },
     "umd": {
       "version": "3.0.1",

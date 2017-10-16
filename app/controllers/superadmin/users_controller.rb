@@ -138,13 +138,19 @@ class Superadmin::UsersController < Superadmin::SuperadminController
   end
 
   def geocodings
-    respond_with(@user.geocodings.map do |entry|
+    page, per_page, order = page_per_page_order_params
+    dataset = @user.geocodings.order(order.desc).paginate(page, per_page)
+
+    dataset = dataset.where(state: params[:status]) if params[:status].present?
+
+    geocodings_info = dataset.map do |entry|
       {
         id: entry.id,
         date: entry.updated_at,
         status: entry.state
       }
-    end)
+    end
+    respond_with(pagination_info(dataset).merge(geocodings: geocodings_info))
   end
 
   def geocoding
@@ -153,7 +159,12 @@ class Superadmin::UsersController < Superadmin::SuperadminController
   end
 
   def synchronizations
-    respond_with(@user.synchronizations.map { |entry|
+    page, per_page, order = page_per_page_order_params
+    dataset = @user.geocodings.order(order.desc).paginate(page, per_page)
+
+    dataset = dataset.where(state: params[:status]) if params[:status].present?
+
+    synchronizations_info = dataset.map do |entry|
       {
         id: entry.id,
         data_type: entry.service_name,
@@ -161,7 +172,8 @@ class Superadmin::UsersController < Superadmin::SuperadminController
         status: entry.success?,
         state: entry.state
       }
-    })
+    end
+    respond_with(pagination_info(dataset).merge(synchronizations: synchronizations_info))
   end
 
   def synchronization

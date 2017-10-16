@@ -1,4 +1,5 @@
 var _ = require('underscore');
+var Backbone = require('backbone');
 var Analysis = require('./analysis-model');
 var camshaftReference = require('./camshaft-reference');
 var LayerTypes = require('../geo/map/layer-types.js');
@@ -14,11 +15,11 @@ var AnalysisService = function (opts) {
   this._authToken = opts.authToken;
   this._camshaftReference = opts.camshaftReference || camshaftReference; // For testing purposes
 
-  this._analysisNodes = {};
+  this._analysisNodes = new Backbone.Collection();
 };
 
 /**
-  * Recursively generates a graph of analyses and returns the "root" node. 
+  * Recursively generates a graph of analyses and returns the "root" node.
   * For each node definition in the analysisDefinition:
   *  - If a node had been already created this method updates the attributes of the existing node.
   *  - Otherwise create a new node and index it by id into the `_analysisNodes` object.
@@ -42,7 +43,7 @@ AnalysisService.prototype.analyse = function (analysisDefinition) {
       vis: this._vis
     });
 
-    this._analysisNodes[analysisDefinition.id] = analysis;
+    this._analysisNodes.add(analysis);
     analysis.bind('destroy', this._onAnalysisRemoved, this);
   }
 
@@ -52,8 +53,8 @@ AnalysisService.prototype.analyse = function (analysisDefinition) {
 /**
  * This function is used to iterate over the analysis graph.
  * It uses the camshaft reference to extract those parameters which are analysis nodes. And call analyse on them.
- * 
- * This function wont be needed if we split the analysis definition in `params` and `inputs`. Where all analysis 
+ *
+ * This function wont be needed if we split the analysis definition in `params` and `inputs`. Where all analysis
  * are garanted to be in the inputs object.
  */
 AnalysisService.prototype._getAnalysisAttributesFromAnalysisDefinition = function (analysisDefinition) {
@@ -86,12 +87,11 @@ AnalysisService.prototype.createAnalysisForLayer = function (layerId, layerQuery
 };
 
 AnalysisService.prototype.findNodeById = function (id) {
-  var analysis = this._analysisNodes[id];
-  return analysis;
+  return this._analysisNodes.get(id);
 };
 
 AnalysisService.prototype._onAnalysisRemoved = function (analysis) {
-  delete this._analysisNodes[analysis.id];
+  this._analysisNodes.remove(analysis);
   analysis.unbind('destroy', this._onAnalysisRemoved);
 };
 

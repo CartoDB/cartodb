@@ -246,7 +246,6 @@ describe('dataviews/histogram-dataview-model', function () {
 
       model.set(model.parse(data));
 
-      // expect(model.getSource()).toEqual(this.source);
       expect(model.hasNulls()).toBe(true);
     });
 

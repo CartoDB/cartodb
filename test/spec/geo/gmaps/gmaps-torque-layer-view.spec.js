@@ -5,6 +5,7 @@ var VisModel = require('../../../../src/vis/vis');
 var GoogleMapsMapView = require('../../../../src/geo/gmaps/gmaps-map-view');
 var GMapsLayerViewFactory = require('../../../../src/geo/gmaps/gmaps-layer-view-factory');
 var TorqueLayer = require('../../../../src/geo/map/torque-layer');
+var fakeFactory = require('../../../helpers/fakeFactory');
 var SharedTestsForTorqueLayer = require('../shared-tests-for-torque-layer');
 var torque = require('torque.js');
 
@@ -25,7 +26,7 @@ describe('geo/gmaps/gmaps-torque-layer-view', function () {
 
     this.model = new TorqueLayer({
       type: 'torque',
-      source: {},
+      source: fakeFactory.createAnalysisModel({ id: 'a0' }),
       cartocss: '#test {}',
       'torque-steps': 100
     }, { vis: this.vis });

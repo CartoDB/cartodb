@@ -19,7 +19,6 @@ describe('dataviews/formula-dataview-model', function () {
     }, {
       map: this.map,
       vis: this.vis,
-      analysisCollection: new Backbone.Collection(),
       layer: this.layer
     });
   });

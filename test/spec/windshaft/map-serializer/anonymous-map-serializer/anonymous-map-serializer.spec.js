@@ -1,5 +1,5 @@
 var Backbone = require('backbone');
-var AnalysisFactory = require('../../../../../src/analysis/analysis-factory.js');
+var AnalysisService = require('../../../../../src/analysis/analysis-service.js');
 var CartoDBLayer = require('../../../../../src/geo/map/cartodb-layer');
 var DataviewModelBase = require('../../../../../src/dataviews/dataview-model-base');
 var AnonymousMapSerializer = require('../../../../../src/windshaft/map-serializer/anonymous-map-serializer/anonymous-map-serializer');
@@ -16,23 +16,22 @@ describe('anonymous-map-serializer', function () {
     var mapModel;
     var layersCollection;
     var dataviewsCollection;
-    var analysisCollection;
-    var analysisFactory;
+    var analysisService;
     var analysisModel;
     var payload;
 
     beforeEach(function () {
       mapModel = new Backbone.Model();
       visModel = new Backbone.Model();
+      layersCollection = new Backbone.Collection();
+      dataviewsCollection = new Backbone.Collection();
 
       // Analyses
-      analysisCollection = new Backbone.Collection();
-      analysisFactory = new AnalysisFactory({
-        analysisCollection: analysisCollection,
-        camshaftReference: fakeCamshaftReference,
-        vis: visModel
+      analysisService = new AnalysisService({
+        vis: visModel,
+        camshaftReference: fakeCamshaftReference
       });
-      analysisModel = analysisFactory.analyse({
+      analysisModel = analysisService.analyse({
         id: 'ANALYSIS_ID',
         type: 'source',
         params: {
@@ -49,7 +48,7 @@ describe('anonymous-map-serializer', function () {
       }, {
         vis: visModel
       });
-      layersCollection = new Backbone.Collection([ cartoDBLayer ]);
+      layersCollection.add(cartoDBLayer);
 
       // Dataviews
       var dataview = new MyDataviewModel({
@@ -57,10 +56,9 @@ describe('anonymous-map-serializer', function () {
         source: analysisModel
       }, {
         map: mapModel,
-        vis: visModel,
-        analysisCollection: analysisCollection
+        vis: visModel
       });
-      dataviewsCollection = new Backbone.Collection([ dataview ]);
+      dataviewsCollection.add(dataview);
 
       // Serialized payload
       payload = AnonymousMapSerializer.serialize(layersCollection, dataviewsCollection);

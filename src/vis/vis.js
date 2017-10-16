@@ -5,7 +5,7 @@ var Map = require('../geo/map');
 var DataviewsFactory = require('../dataviews/dataviews-factory');
 var DataviewsCollection = require('../dataviews/dataviews-collection');
 var WindshaftClient = require('../windshaft/client');
-var AnalysisFactory = require('../analysis/analysis-factory');
+var AnalysisService = require('../analysis/analysis-service');
 var CartoDBLayerGroup = require('../geo/cartodb-layer-group');
 var ModelUpdater = require('../windshaft-integration/model-updater');
 var LayersCollection = require('../geo/map/layers');
@@ -31,7 +31,6 @@ var VisModel = Backbone.Model.extend({
     this._loadingObjects = [];
     this._analysisPoller = new AnalysisPoller();
     this._layersCollection = new LayersCollection();
-    this._analysisCollection = new Backbone.Collection();
     this._dataviewsCollection = new DataviewsCollection();
 
     this.overlaysCollection = new Backbone.Collection();
@@ -122,7 +121,6 @@ var VisModel = Backbone.Model.extend({
 
   load: function (vizjson) {
     // Create the WindhaftClient
-
     var datasource = vizjson.datasource;
 
     var windshaftSettings = {
@@ -136,18 +134,18 @@ var VisModel = Backbone.Model.extend({
 
     var windshaftClient = new WindshaftClient(windshaftSettings);
 
-    // Create the public Analysis Factory
-    this.analysis = new AnalysisFactory({
+    // Create the public Analysis Service
+    this._analysisService = new AnalysisService({
+      vis: this,
       apiKey: this.get('apiKey'),
-      authToken: this.get('authToken'),
-      analysisCollection: this._analysisCollection,
-      vis: this
+      authToken: this.get('authToken')
     });
 
-    var layersFactory = new LayersFactory({
-      visModel: this,
-      windshaftSettings: windshaftSettings
-    });
+    // Public wrapper exposing public methods.
+    this.analysis = {
+      analyse: this._analysisService.analyse.bind(this._analysisService),
+      findNodeById: this._analysisService.findNodeById.bind(this._analysisService)
+    };
 
     var allowScrollInOptions = (vizjson.options && vizjson.options.scrollwheel) || vizjson.scrollwheel;
     // Create the Map
@@ -159,6 +157,11 @@ var VisModel = Backbone.Model.extend({
     } else if (vizjson.vector === false) {
       renderMode = RenderModes.RASTER;
     }
+
+    this.layersFactory = new LayersFactory({
+      visModel: this,
+      windshaftSettings: windshaftSettings
+    });
 
     this.map = new Map({
       title: vizjson.title,
@@ -173,7 +176,7 @@ var VisModel = Backbone.Model.extend({
       renderMode: renderMode
     }, {
       layersCollection: this._layersCollection,
-      layersFactory: layersFactory
+      layersFactory: this.layersFactory
     });
 
     this.listenTo(this.map, 'cartodbLayerMoved', this.reload);
@@ -186,8 +189,7 @@ var VisModel = Backbone.Model.extend({
     var modelUpdater = new ModelUpdater({
       layerGroupModel: this.layerGroupModel,
       dataviewsCollection: this._dataviewsCollection,
-      layersCollection: this._layersCollection,
-      analysisCollection: this._analysisCollection
+      layersCollection: this._layersCollection
     });
 
     // Create the WindshaftMap
@@ -200,14 +202,14 @@ var VisModel = Backbone.Model.extend({
       modelUpdater: modelUpdater,
       windshaftSettings: windshaftSettings,
       dataviewsCollection: this._dataviewsCollection,
-      layersCollection: this._layersCollection,
-      analysisCollection: this._analysisCollection
+      layersCollection: this._layersCollection
     });
 
     // Reset the collection of overlays
     this.overlaysCollection.reset(vizjson.overlays);
 
     // Create the public Dataview Factory
+    // TODO: create dataviews more explicitly
     this.dataviews = new DataviewsFactory({
       apiKey: this.get('apiKey'),
       authToken: this.get('authToken')
@@ -217,39 +219,9 @@ var VisModel = Backbone.Model.extend({
       dataviewsCollection: this._dataviewsCollection
     });
 
-    this._windshaftMap.bind('instanceCreated', this._onMapInstanceCreated, this);
-
-    // "Load" existing analyses from the viz.json. This will generate
-    // the analyses graphs and index analysis nodes in the
-    // collection of analysis
-    if (vizjson.analyses) {
-      _.each(vizjson.analyses, function (analysis) {
-        this.analysis.analyse(analysis);
-      }, this);
-    }
-
-    var layerModels = _.map(vizjson.layers, function (layerData, layerIndex) {
-      // Flatten "options" and set the "order" attribute
-      layerData = _.extend({},
-        _.omit(layerData, 'options'),
-        layerData.options, {
-          order: layerIndex
-        }
-      );
-
-      if (layerData.source) {
-        layerData.source = this.analysis.findNodeById(layerData.source);
-      } else {
-        // TODO: We'll be able to remove this (accepting sql option) once
-        // https://github.com/CartoDB/cartodb.js/issues/1754 is closed.
-        if (layerData.sql) {
-          layerData.source = this.analysis.createSourceAnalysisForLayer(layerData.id, layerData.sql);
-          delete layerData.sql;
-        }
-      }
-      return layersFactory.createLayer(layerData.type, layerData);
-    }, this);
-
+    // Create layers
+    var analysisNodes = this._createAnalysisNodes(vizjson.analyses);
+    var layerModels = this._createLayers(vizjson.layers, analysisNodes);
     this.map.layers.reset(layerModels);
 
     // Global variable for easier console debugging / testing
@@ -265,34 +237,12 @@ var VisModel = Backbone.Model.extend({
     this.settings.set(settings);
   },
 
-  _onMapInstanceCreated: function () {
-    this._analysisPoller.reset();
-    this._analysisCollection.each(function (analysisModel) {
-      analysisModel.unbind('change:status', this._onAnalysisStatusChanged, this);
-      if (analysisModel.url() && !analysisModel.isDone()) {
-        this._analysisPoller.poll(analysisModel);
-        this.trackLoadingObject(analysisModel);
-        analysisModel.bind('change:status', this._onAnalysisStatusChanged, this);
-      }
-    }, this);
+  _restartAnalysisPolling: function () {
+    this._analysisPoller.resetAnalysisNodes(this._getAnalysisNodeModels());
   },
 
-  _onAnalysisStatusChanged: function (analysisModel) {
-    if (analysisModel.isDone()) {
-      this.untrackLoadingObject(analysisModel);
-      if (this._isAnalysisSourceOfLayerOrDataview(analysisModel)) {
-        this.reload();
-      }
-    }
-  },
-
-  /**
-   * Check if an Analysis node is the source of a layer or a dataview.
-   */
-  _isAnalysisSourceOfLayerOrDataview: function (analysisModel) {
-    var isAnalysisLinkedToLayer = this._isAnalysisLinkedToLayer(analysisModel);
-    var isAnalysisLinkedToDataview = this._dataviewsCollection.isAnalysisLinkedToDataview(analysisModel);
-    return isAnalysisLinkedToLayer || isAnalysisLinkedToDataview;
+  _getAnalysisNodeModels: function () {
+    return AnalysisService.getUniqueAnalysisNodes(this._layersCollection, this._dataviewsCollection);
   },
 
   /**
@@ -334,8 +284,8 @@ var VisModel = Backbone.Model.extend({
 
     this.reload({
       success: function () {
-        options.success && options.success();
         this._onMapInstantiatedForTheFirstTime();
+        options.success && options.success();
       }.bind(this),
       error: function () {
         options.error && options.error();
@@ -369,6 +319,15 @@ var VisModel = Backbone.Model.extend({
       includeFilters: true,
       success: function () {
         this.trigger('reloaded');
+        this._restartAnalysisPolling();
+
+        var analysisNodes = this._getAnalysisNodeModels();
+        if (this._isAnyAnalysisNodeLoading(analysisNodes)) {
+          this.trackLoadingObject(this);
+        } else {
+          this.untrackLoadingObject(this);
+        }
+
         this.setOk();
         successCallback && successCallback();
       }.bind(this),
@@ -382,6 +341,12 @@ var VisModel = Backbone.Model.extend({
       this.trigger('reload');
       this._windshaftMap.createInstance(options); // this reload method is call from other places
     }
+  },
+
+  _isAnyAnalysisNodeLoading: function (analysisNodes) {
+    return _.any(analysisNodes, function (analysisModel) {
+      return analysisModel.isLoading();
+    });
   },
 
   _initBindsAfterFirstMapInstantiation: function () {
@@ -439,6 +404,46 @@ var VisModel = Backbone.Model.extend({
     overlayView.type = 'custom';
     this.overlaysCollection.add(overlayView);
     return overlayView;
+  },
+
+  isLoading: function () {
+    return this.get('loading');
+  },
+
+  /**
+   * "Load" existing analyses from the viz.json. This will generate
+   * the analyses graphs and index analysis nodes in the
+   * collection of analysis
+   */
+  _createAnalysisNodes: function (analysesDefinition) {
+    _.each(analysesDefinition, function (analysisDefinition) {
+      this._analysisService.analyse(analysisDefinition);
+    }, this);
+  },
+
+  _createLayers: function (layersDefinition, analysisNodes) {
+    var layers = _.map(layersDefinition, function (layerData, layerIndex) {
+      // Flatten "options" and set the "order" attribute
+      layerData = _.extend({},
+        _.omit(layerData, 'options'),
+        layerData.options, {
+          order: layerIndex
+        }
+      );
+
+      if (layerData.source) {
+        layerData.source = this._analysisService.findNodeById(layerData.source);
+      } else {
+        // TODO: We'll be able to remove this (accepting sql option) once
+        // https://github.com/CartoDB/cartodb.js/issues/1754 is closed.
+        if (layerData.sql) {
+          layerData.source = this._analysisService.createAnalysisForLayer(layerData.id, layerData.sql);
+          delete layerData.sql;
+        }
+      }
+      return this.layersFactory.createLayer(layerData.type, layerData);
+    }, this);
+    return layers;
   }
 });
 

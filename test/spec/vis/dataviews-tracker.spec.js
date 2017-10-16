@@ -7,8 +7,7 @@ var fakeFactory = require('../../helpers/fakeFactory');
 describe('src/vis/dataviews-tracker', function () {
   var options = {
     map: {},
-    vis: {},
-    analysisCollection: []
+    vis: {}
   };
 
   beforeEach(function () {

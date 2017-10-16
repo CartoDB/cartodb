@@ -209,19 +209,4 @@ describe('geo/map/cartodb-layer', function () {
       expect(layer.getEstimatedFeatureCount()).toEqual(27);
     });
   });
-
-  describe('.update', function () {
-    var layer;
-    var analysisNodeMock = { id: 'a0' };
-
-    beforeEach(function () {
-      this.vis.analysis = { findNodeById: jasmine.createSpy('findNodeById').and.returnValue(analysisNodeMock) };
-      layer = new CartoDBLayer({}, { vis: this.vis });
-    });
-
-    it('should allow a string as parameter (deprecated: keep this only for prevent breaking changes in the api)', function () {
-      layer.update({ id: 3, source: 'a0' });
-      expect(layer.getSource()).toBe(analysisNodeMock);
-    });
-  });
 });

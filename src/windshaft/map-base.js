@@ -19,9 +19,6 @@ var WindshaftMap = Backbone.Model.extend({
     if (!options.dataviewsCollection) {
       throw new Error('dataviewsCollection option is required');
     }
-    if (!options.analysisCollection) {
-      throw new Error('analysisCollection option is required');
-    }
     if (!options.modelUpdater) {
       throw new Error('modelUpdater option is required');
     }
@@ -33,7 +30,6 @@ var WindshaftMap = Backbone.Model.extend({
 
     this._layersCollection = options.layersCollection;
     this._dataviewsCollection = options.dataviewsCollection;
-    this._analysisCollection = options.analysisCollection;
     this._modelUpdater = options.modelUpdater;
     this._windshaftSettings = options.windshaftSettings;
   },

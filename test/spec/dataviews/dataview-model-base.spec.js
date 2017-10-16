@@ -3,7 +3,8 @@ var Backbone = require('backbone');
 var VisModel = require('../../../src/vis/vis.js');
 var MapModel = require('../../../src/geo/map.js');
 var DataviewModelBase = require('../../../src/dataviews/dataview-model-base');
-var AnalysisFactory = require('../../../src/analysis/analysis-factory.js');
+var AnalysisService = require('../../../src/analysis/analysis-service.js');
+var fakeFactory = require('../../helpers/fakeFactory');
 
 var fakeCamshaftReference = {
   getSourceNamesForAnalysisType: function (analysisType) {
@@ -46,17 +47,15 @@ describe('dataviews/dataview-model-base', function () {
     spyOn(this.vis, 'reload');
     this.vis._onMapInstantiatedForTheFirstTime();
 
-    this.analysisCollection = new Backbone.Collection();
-
-    this.analysisFactory = new AnalysisFactory({
-      analysisCollection: this.analysisCollection,
-      camshaftReference: fakeCamshaftReference,
-      vis: this.vis
+    this.analysisService = new AnalysisService({
+      vis: this.vis,
+      camshaftReference: fakeCamshaftReference
     });
-    this.source = this.analysisFactory.analyse({
+    this.source = this.analysisService.analyse({
       id: 'a0',
       type: 'source'
     });
+    this.analysisNodes = this.source.getNodesCollection();
 
     this.model = new DataviewModelBase({
       source: this.source
@@ -235,8 +234,7 @@ describe('dataviews/dataview-model-base', function () {
 
     describe('when change:url has a sourceId option', function () {
       beforeEach(function () {
-        this.analysisCollection.reset([]);
-        this.analysisFactory.analyse({
+        var analysisA = this.analysisService.analyse({
           id: 'a2',
           type: 'estimated-population',
           params: {
@@ -258,8 +256,9 @@ describe('dataviews/dataview-model-base', function () {
             }
           }
         });
+        var analysisNodes = analysisA.getNodesCollection();
 
-        this.model.set('source', this.analysisFactory.findNodeById('a1'), { silent: true });
+        this.model.set('source', analysisNodes.get('a1'), { silent: true });
 
         spyOn(this.model, 'fetch');
       });
@@ -478,7 +477,7 @@ describe('dataviews/dataview-model-base', function () {
   describe('getSourceType', function () {
     it('should return the type of the source', function () {
       var dataview = new DataviewModelBase({
-        source: this.analysisFactory.findNodeById('a0')
+        source: this.analysisNodes.get('a0')
       }, {
         map: this.map,
         vis: this.vis
@@ -519,6 +518,38 @@ describe('dataviews/dataview-model-base', function () {
       });
 
       sharedTestsForAnalysisEvents();
+    });
+  });
+
+  describe('source references', function () {
+    var source;
+    var dataview;
+
+    beforeEach(function () {
+      source = fakeFactory.createAnalysisModel({ id: 'a0' });
+
+      dataview = new DataviewModelBase({
+        source: source
+      }, {
+        map: this.map,
+        vis: this.vis
+      });
+    });
+
+    describe('when dataview is initialized', function () {
+      it('should mark source as referenced', function () {
+        expect(source.isSourceOf(dataview)).toBe(true);
+      });
+    });
+
+    describe('when dataview is removed', function () {
+      it('should unmark source as referenced', function () {
+        expect(source.isSourceOf(dataview)).toBe(true);
+
+        dataview.remove();
+
+        expect(source.isSourceOf(dataview)).toBe(false);
+      });
     });
   });
 });

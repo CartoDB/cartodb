@@ -2,6 +2,8 @@ var _ = require('underscore');
 var log = require('../cdb.log');
 var util = require('../core/util.js');
 var RuleToLegendModelAdapters = require('./legends/rule-to-legend-model-adapters');
+var AnalysisService = require('../analysis/analysis-service');
+var Backbone = require('backbone');
 
 function getSubdomain (subdomains, resource) {
   var index = util.crc32(resource) % subdomains.length;
@@ -16,12 +18,10 @@ var ModelUpdater = function (deps) {
   if (!deps.layerGroupModel) throw new Error('layerGroupModel is required');
   if (!deps.layersCollection) throw new Error('layersCollection is required');
   if (!deps.dataviewsCollection) throw new Error('dataviewsCollection is required');
-  if (!deps.analysisCollection) throw new Error('analysisCollection is required');
 
   this._layerGroupModel = deps.layerGroupModel;
   this._layersCollection = deps.layersCollection;
   this._dataviewsCollection = deps.dataviewsCollection;
-  this._analysisCollection = deps.analysisCollection;
 };
 
 ModelUpdater.prototype.updateModels = function (windshaftMap, sourceId, forceFetch) {
@@ -185,7 +185,8 @@ ModelUpdater.prototype._updateDataviewModels = function (windshaftMap, sourceId,
 };
 
 ModelUpdater.prototype._updateAnalysisModels = function (windshaftMap) {
-  this._analysisCollection.each(function (analysisNode) {
+  var analysisNodesCollection = this._getUniqueAnalysisNodesCollection();
+  analysisNodesCollection.each(function (analysisNode) {
     var analysisMetadata = windshaftMap.getAnalysisNodeMetadata(analysisNode.get('id'));
     var attrs;
     if (analysisMetadata) {
@@ -231,7 +232,8 @@ ModelUpdater.prototype._setError = function (error) {
     var layerModel = this._layersCollection.get(error.layerId);
     layerModel && layerModel.setError(error);
   } else if (error.isAnalysisError()) {
-    var analysisModel = this._analysisCollection.get(error.analysisId);
+    var analysisNodesCollection = this._getUniqueAnalysisNodesCollection();
+    var analysisModel = analysisNodesCollection.get(error.analysisId);
     analysisModel && analysisModel.setError(error);
   }
 };
@@ -255,4 +257,10 @@ ModelUpdater.prototype._getLayerLegends = function (layerModel) {
     layerModel.legends.choropleth
   ];
 };
+
+ModelUpdater.prototype._getUniqueAnalysisNodesCollection = function () {
+  var analysisNodes = AnalysisService.getUniqueAnalysisNodes(this._layersCollection, this._dataviewsCollection);
+  return new Backbone.Collection(analysisNodes);
+};
+
 module.exports = ModelUpdater;

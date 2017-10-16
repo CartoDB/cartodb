@@ -118,7 +118,7 @@ var LAYER_CONSTRUCTORS = {
     // attrs.source = CartoDBLayer.getLayerSourceFromAttrs(attrs, options.vis.analysis);
     checkProperties(attrs, ['cartocss']);
     if (attrs.source) {
-      attrs.source = CartoDBLayer.getLayerSourceFromAttrs(attrs, options.vis.analysis);
+      attrs.source = TorqueLayer.getLayerSourceFromAttrs(attrs, options.vis.analysis);
     }
 
     var windshaftSettings = options.windshaftSettings;

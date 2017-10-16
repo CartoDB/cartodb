@@ -65,6 +65,7 @@ Development
 
 ### Bug fixes / enhancements
 * Remove cumulative option when torque category (#12924)
+* Protects against frozen string manipulation in buggy ruby version `2.2.4p230`
 * Notification for error tiles (#cartodb.js/1717)
 * Make sure widget's source id is a string, reject it otherwise (#12878)
 * Improve legends for torque (CartoDB/support#979)
@@ -82,6 +83,7 @@ Development
 * Fix some styles for datasets view for IE11.
 * Fix image export when logo is disabled.
 * Fix infowindow break word (CartoDB/support#965)
+* Fix for permissions ACL referencing deleted user (CartoDB/support#1036)
 * Update cartodb.js version
 * Fix extraneous labels layer.
 * Fix timeseries glitches (#12217)

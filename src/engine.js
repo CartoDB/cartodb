@@ -27,6 +27,7 @@ var WindshaftClient = require('./windshaft/client');
  * @param {string} params.username - Name of the user registered in the windshaft server.
  * @param {string} params.serverUrl - Url of the windshaft server.
  * @param {boolean} params.templateName - While we dont remove named maps we must explicitly say when the map is named. Defaults to false.
+ * @param {boolean} params.statTag - Token used to get map view statistics.
  * @class
  */
 function Engine (params) {
@@ -37,7 +38,7 @@ function Engine (params) {
   this._serverUrl = params.serverUrl;
   this._templateName = params.templateName;
   this._isNamedMap = params.templateName !== undefined;
-  this._stat_tag;
+  this._stat_tag = params.statTag;
 
   // Create the client
   var windshaftSettings = {

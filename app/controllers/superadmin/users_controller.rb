@@ -115,6 +115,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
     dataset = @user.data_imports_dataset.order(order.desc).paginate(page, per_page)
 
     dataset = dataset.where(state: params[:status]) if params[:status].present?
+    total_entries = dataset.pagination_record_count
 
     data_imports_info = dataset.map do |entry|
       {
@@ -126,7 +127,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
       }
     end
 
-    respond_with(pagination_info(dataset).merge(data_imports: data_imports_info))
+    respond_with({ total_entries: total_entries }.merge(data_imports: data_imports_info))
   end
 
   def data_import
@@ -139,18 +140,19 @@ class Superadmin::UsersController < Superadmin::SuperadminController
 
   def geocodings
     page, per_page, order = page_per_page_order_params
-    dataset = @user.geocodings.order(order.desc).paginate(page, per_page)
+    dataset = @user.geocodings.order("#{order} desc")
 
     dataset = dataset.where(state: params[:status]) if params[:status].present?
+    total_entries = dataset.count
 
-    geocodings_info = dataset.map do |entry|
+    geocodings_info = dataset.limit(per_page).offset((page - 1) * per_page).map do |entry|
       {
         id: entry.id,
         date: entry.updated_at,
         status: entry.state
       }
     end
-    respond_with(pagination_info(dataset).merge(geocodings: geocodings_info))
+    respond_with({ total_entries: total_entries }.merge(geocodings: geocodings_info))
   end
 
   def geocoding
@@ -160,11 +162,12 @@ class Superadmin::UsersController < Superadmin::SuperadminController
 
   def synchronizations
     page, per_page, order = page_per_page_order_params
-    dataset = @user.geocodings.order(order.desc).paginate(page, per_page)
+    dataset = @user.synchronizations.order("#{order} desc")
 
     dataset = dataset.where(state: params[:status]) if params[:status].present?
+    total_entries = dataset.count
 
-    synchronizations_info = dataset.map do |entry|
+    synchronizations_info = dataset.limit(per_page).offset((page - 1) * per_page).map do |entry|
       {
         id: entry.id,
         data_type: entry.service_name,
@@ -173,7 +176,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
         state: entry.state
       }
     end
-    respond_with(pagination_info(dataset).merge(synchronizations: synchronizations_info))
+    respond_with({ total_entries: total_entries }.merge(synchronizations: synchronizations_info))
   end
 
   def synchronization

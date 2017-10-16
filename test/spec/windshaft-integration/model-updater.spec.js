@@ -49,7 +49,6 @@ describe('src/vis/model-updater', function () {
     this.dataviewsCollection = new Backbone.Collection();
 
     this.modelUpdater = new ModelUpdater({
-      visModel: this.visModel,
       layerGroupModel: this.layerGroupModel,
       layersCollection: this.layersCollection,
       dataviewsCollection: this.dataviewsCollection,
@@ -64,11 +63,6 @@ describe('src/vis/model-updater', function () {
   describe('.updateModels', function () {
     beforeEach(function () {
       this.windshaftMap.getBaseURL.and.returnValue('http://{s}.documentation.carto.com/api/v1/map/90e64f1b9145961af7ba36d71b887dd2:0');
-    });
-
-    it('should set vis state to ok', function () {
-      this.modelUpdater.updateModels(this.windshaftMap);
-      expect(this.visModel.setOk).toHaveBeenCalled();
     });
 
     describe('layerGroupModel', function () {
@@ -584,22 +578,6 @@ describe('src/vis/model-updater', function () {
   });
 
   describe('.setErrors', function () {
-    it('should set vis state to error', function () {
-      this.modelUpdater.setErrors([
-        new WindshaftError({
-          type: 'unknown',
-          message: 'something went wrong!'
-        })
-      ]);
-
-      expect(this.visModel.setError).toHaveBeenCalled();
-      var error = this.visModel.setError.calls.argsFor(0)[0];
-
-      expect(error.type).toBeUndefined();
-      expect(error.message).toEqual('something went wrong!');
-      expect(error.context).toBeUndefined();
-    });
-
     it('should set analysis status to "error"', function () {
       var analysis = new Backbone.Model({
         id: 'ANALYSIS_NODE_ID'

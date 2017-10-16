@@ -91,10 +91,12 @@ describe('windshaft/client', function () {
 
       var errors = {
         errors: ['the error message'],
-        errors_with_context: {
-          type: 'unknown',
-          message: 'the error message'
-        }
+        errors_with_context: [
+          {
+            type: 'unknown',
+            message: 'the error message'
+          }
+        ]
       };
 
       this.ajaxParams.success(errors);

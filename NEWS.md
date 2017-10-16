@@ -64,6 +64,7 @@ Development
 * Improve legends error (cartodb.js#1758)
 
 ### Bug fixes / enhancements
+* Remove cumulative option when torque category (#12924)
 * Protects against frozen string manipulation in buggy ruby version `2.2.4p230`
 * Notification for error tiles (#cartodb.js/1717)
 * Make sure widget's source id is a string, reject it otherwise (#12878)
@@ -232,6 +233,7 @@ Development
 * Prevent invalid geometries in BoundingBoxUtils.to_polygon, to_point (#12873)
 * Improve tile error overlay (cartodb.js#1721)
 * Fix TrackJS missing token in static pages (#12914)
+* Fix missing upgrade link in static dashboard (#12929)
 
 ### Internals
 * Remove analysisCollection and refactor analyses-integration (#12947)

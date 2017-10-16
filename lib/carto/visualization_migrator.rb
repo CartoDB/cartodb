@@ -36,6 +36,7 @@ module Carto
 
     def google_basemap_migration(vis)
       # Editor gmaps were saved with base_type attribute in options, but, in builder, baseType is expected
+      vis = Carto::Visualization.find(vis.id)
       vis.layers.select{ |l| l.gmapsbase? && l.options.has_key?(:base_type) }.each do |l|
         l.options[:baseType] = l.options[:base_type]
         l.options.delete(:base_type)

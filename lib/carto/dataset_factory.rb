@@ -21,6 +21,7 @@ module Carto
         name: name,
         description: description,
         attributions: attributions,
+        source: source,
         privacy: privacy,
         tags: tags
       )
@@ -42,6 +43,10 @@ module Carto
 
     def attributions
       @attributions ||= (info && info[:attributions])
+    end
+
+    def source
+      @source ||= (info && info[:source])
     end
 
     def classification

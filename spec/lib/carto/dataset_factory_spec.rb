@@ -10,6 +10,7 @@ describe Carto::DatasetFactory do
         name: 'name',
         description: 'description',
         attributions: 'attributions',
+        source: 'carto,osm',
         classification: {
           tags: ['manolo', 'escobar', 'rey']
         }
@@ -43,6 +44,7 @@ describe Carto::DatasetFactory do
     dataset_visualization.name.should eq metadata[:info][:name]
     dataset_visualization.description.should eq metadata[:info][:description]
     dataset_visualization.attributions.should eq metadata[:info][:attributions]
+    dataset_visualization.source.should eq metadata[:info][:source]
     dataset_visualization.tags.should eq metadata[:info][:classification][:tags]
     dataset_visualization.privacy.should eq metadata[:publishing][:privacy]
   end
@@ -57,6 +59,7 @@ describe Carto::DatasetFactory do
     persisted_visualization.name.should eq metadata[:info][:name]
     persisted_visualization.description.should eq metadata[:info][:description]
     persisted_visualization.attributions.should eq metadata[:info][:attributions]
+    dataset_visualization.source.should eq metadata[:info][:source]
     persisted_visualization.tags.should eq metadata[:info][:classification][:tags]
     persisted_visualization.privacy.should eq metadata[:publishing][:privacy]
   end

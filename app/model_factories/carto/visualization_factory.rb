@@ -49,7 +49,7 @@ module Carto
       user = user_table.user
 
       base_layer = Carto::LayerFactory.build_default_base_layer(user)
-      data_layer = Carto::LayerFactory.build_data_layer(user_table)
+      data_layer = Carto::LayerFactory.build_data_layer(user, user_table.name)
       layers = [base_layer, data_layer]
       layers << Carto::LayerFactory.build_default_labels_layer(base_layer) if base_layer.supports_labels_layer?
 

@@ -64,6 +64,8 @@ Development
 * Improve legends error (cartodb.js#1758)
 
 ### Bug fixes / enhancements
+* Improve SQL limit platforms notification (#12597)
+* Fix infinite loop for failed sql api requests.
 * Show map options when selecting a map in search view
 * Remove cumulative option when torque category (#12924)
 * Protects against frozen string manipulation in buggy ruby version `2.2.4p230`
@@ -398,6 +400,7 @@ More information at [Dropbox migration guide](https://www.dropbox.com/developers
 * Format quota infowindow numbers (#11743)
 * Improved analysis error tooltip (#12250)
 * Rollback failed user/organization imports
+* Add hubspot_form_ids to frontend config
 * Enable user migrations across clouds (#12795)
 
 ### Bug fixes

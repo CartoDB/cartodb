@@ -58,14 +58,14 @@ function Engine (params) {
   this._layersCollection = new LayersCollection();
   this._dataviewsCollection = new DataviewsCollection();
 
-  this.layerGroupModel = new CartoDBLayerGroup(
+  this._layerGroupModel = new CartoDBLayerGroup(
     { apiKey: this._apiKey, authToken: this._authToken },
     { layersCollection: this._layersCollection }
   );
 
   this._modelUpdater = new ModelUpdater({
     dataviewsCollection: this._dataviewsCollection,
-    layerGroupModel: this.layerGroupModel,
+    layerGroupModel: this._layerGroupModel,
     layersCollection: this._layersCollection
   });
 }

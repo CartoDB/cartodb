@@ -145,8 +145,22 @@ describe('Engine', function () {
       engine.reload();
     });
 
-    it('Should update the cartolayerGroup metadata according to the server response', function (done) {
-      pending('Test not implemented');
+    fit('Should update the cartolayerGroup metadata according to the server response', function (done) {
+      // Successfull server response
+      spyOn($, 'ajax').and.callFake(function (params) { params.success(FAKE_RESPONSE); });
+
+      engine.addLayer(layer);
+      engine.on(Engine.Events.RELOAD_SUCCESS, function () {
+        var urls = engine._layerGroupModel.attributes.urls;
+        // Ensure the modelUpdater has updated the cartoLayerGroup urls
+        expect(urls.attributes[0]).toEqual('http://example.com/api/v1/map/2edba0a73a790c4afb83222183782123:1508164637676/0/attributes');
+        expect(urls.grids[0]).toEqual(['http://example.com/api/v1/map/2edba0a73a790c4afb83222183782123:1508164637676/0/{z}/{x}/{y}.grid.json']);
+        expect(urls.image).toEqual('http://example.com/api/v1/map/static/center/2edba0a73a790c4afb83222183782123:1508164637676/{z}/{lat}/{lng}/{width}/{height}.{format}');
+        expect(urls.tiles).toEqual('http://example.com/api/v1/map/2edba0a73a790c4afb83222183782123:1508164637676/{layerIndexes}/{z}/{x}/{y}.{format}');
+        done();
+      });
+
+      engine.reload();
     });
 
     it('Should update the analyses metadata according to the server response', function (done) {

@@ -111,12 +111,29 @@ Engine.prototype.off = function off (event, callback) {
  * Once the response has arrived trigger a 'reload-succes' or 'reload-error' event.
  */
 Engine.prototype.reload = function reload () {
-  var params; // TODO: 
+  var params = this._getParams();
   var payload = this._getSerializer().serialize(this._layersCollection, this._dataviewsCollection);
   var options = { success: this._onSuccess.bind(this), error: this._onError.bind(this) };
   var request = new Request(payload, params, options);
   this._windshaftClient.instantiateMap(request);
   // TODO: update options, use promises or explicit callbacks function (error, params).
+};
+
+/**
+ * Helper to get windhsaft request parameters.
+ */
+Engine.prototype._getParams = function _getParams () {
+  var params = {
+    stat_tag: this._stat_tag
+  };
+  if (this._apiKey) {
+    params.api_key = this._apiKey;
+    return params;
+  }
+  if (this.auth_token) {
+    params.auth_token = this._authToken;
+    return params;
+  }
 };
 
 /**

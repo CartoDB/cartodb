@@ -9,42 +9,55 @@ module Carto
   # 'Dataset' outside of the product scope, which may very well disappear or
   # change in the future
   class DatasetFactory
-    def initialize(user:)
+    def initialize(user:, metadata:)
       @user = user
+      @metadata = metadata
     end
 
-    def with_name(name)
-      visualization.name = name
-
-      self
+    def dataset_visualization
+      @visualization ||= Carto::Visualization.new(
+        type: 'table',
+        user: @user,
+        name: name,
+        description: description,
+        attributions: attributions,
+        privacy: privacy,
+        tags: tags
+      )
     end
 
-    def with_description(description)
-      visualization.description = description
+    private
 
-      self
+    def info
+      @info ||= @metadata[:info]
     end
 
-    def with_attributions(attributions)
-      visualization.attributions = attributions
-
-      self
+    def name
+      @name ||= (info && info[:name])
     end
 
-    def with_tags(tags)
-      visualization.tags = tags
-
-      self
+    def description
+      @description ||= (info && info[:description])
     end
 
-    def with_privacy(privacy)
-      visualization.privacy = privacy
-
-      self
+    def attributions
+      @attributions ||= (info && info[:attributions])
     end
 
-    def visualization
-      @visualization ||= Carto::Visualization.new(type: 'table', user: @user)
+    def classification
+      info && info[:classification]
+    end
+
+    def tags
+      classification && classification[:tags]
+    end
+
+    def publishing
+      @publishing ||= @metadata[:publishing]
+    end
+
+    def privacy
+      @privacy ||= publishing && publishing[:privacy]
     end
   end
 end

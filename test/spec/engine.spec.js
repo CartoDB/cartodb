@@ -116,6 +116,18 @@ describe('Engine', function () {
       expect(spy).toHaveBeenCalled();
     });
 
+    it('Should use the sourceID parameter', function () {
+      // Error server response
+      spyOn($, 'ajax').and.callFake(function (params) { params.success(FAKE_RESPONSE); });
+      // Spy on modelupdater to ensure thats called with fakesourceId
+      var spy = spyOn(engine._modelUpdater, 'updateModels');
+      // Attach the error event to a spy.
+      engine.on(Engine.Events.RELOAD_SUCCESS, spy);
+
+      engine.reload('fakeSourceId');
+      expect(spy).toHaveBeenCalledWith(jasmine.anything(), 'fakeSourceId', undefined);
+    });
+
     // The following tests overlaps the model-updater tests.
 
     it('Should update the layer metadata according to the server response', function (done) {

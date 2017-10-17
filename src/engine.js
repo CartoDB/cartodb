@@ -63,13 +63,10 @@ function Engine (params) {
     { layersCollection: this._layersCollection }
   );
 
-  // TODO: this is not working.
   this._modelUpdater = new ModelUpdater({
     dataviewsCollection: this._dataviewsCollection,
     layerGroupModel: this.layerGroupModel,
-    layersCollection: this._layersCollection,
-    mapModel: {},
-    visModel: { setOk: function () { }, setErrors: function () { } }
+    layersCollection: this._layersCollection
   });
 }
 
@@ -107,31 +104,17 @@ Engine.prototype.off = function off (event, callback) {
  * and update the internal models with the server response.
  * 
  * Once the response has arrived trigger a 'reload-succes' or 'reload-error' event.
+ * 
+ * @param {string} sourceId - The sourceId triggering the reload event. This is usefull to prevent uneeded requests and save data.
+ * @param {string} forceFetch - ????
  */
-Engine.prototype.reload = function reload () {
-  var params = this._getParams();
+Engine.prototype.reload = function reload (sourceId, forceFetch) {
+  var params = this._getParams(sourceId, forceFetch);
   var payload = this._getSerializer().serialize(this._layersCollection, this._dataviewsCollection);
-  var options = { success: this._onSuccess.bind(this), error: this._onError.bind(this) };
+  // TODO: update options, use promises or explicit callbacks function (error, params).
+  var options = this._buildOptions(sourceId, forceFetch);
   var request = new Request(payload, params, options);
   this._windshaftClient.instantiateMap(request);
-  // TODO: update options, use promises or explicit callbacks function (error, params).
-};
-
-/**
- * Helper to get windhsaft request parameters.
- */
-Engine.prototype._getParams = function _getParams () {
-  var params = {
-    stat_tag: this._stat_tag
-  };
-  if (this._apiKey) {
-    params.api_key = this._apiKey;
-    return params;
-  }
-  if (this.auth_token) {
-    params.auth_token = this._authToken;
-    return params;
-  }
 };
 
 /**
@@ -151,9 +134,9 @@ Engine.prototype.addLayer = function addLayer (layer) {
  * Callback executed when the windhsaft client returns a successful response.
  * Update internal models and trigger a reload_sucess event.
  */
-Engine.prototype._onSuccess = function onSuccess (serverResponse) {
+Engine.prototype._onReloadSuccess = function _onReloadSuccess (serverResponse, sourceId, forceFetch) {
   var responseWrapper = new Response(this._windshaftSettings, serverResponse);
-  this._modelUpdater.updateModels(responseWrapper);
+  this._modelUpdater.updateModels(responseWrapper, sourceId, forceFetch);
   this._eventEmmitter.trigger(Engine.Events.RELOAD_SUCCESS);
 };
 
@@ -162,10 +145,39 @@ Engine.prototype._onSuccess = function onSuccess (serverResponse) {
  * Callback executed when the windhsaft client returns a failed response.
  * Update internal models setting errores and trigger a reload_error event.
  */
-Engine.prototype._onError = function onError (serverResponse) {
+Engine.prototype._onReloadError = function _onReloadError (serverResponse) {
   var errors = serverResponse;
   this._modelUpdater.setErrors(errors);
   this._eventEmmitter.trigger(Engine.Events.RELOAD_ERROR);
+};
+
+/**
+ * 
+ */
+Engine.prototype._buildOptions = function _buildOptions (sourceId, forceFetch) {
+  return {
+    success: function (serverResponse) {
+      this._onReloadSuccess(serverResponse, sourceId, forceFetch);
+    }.bind(this),
+    error: this._onReloadError.bind(this)
+  };
+};
+
+/**
+ * Helper to get windhsaft request parameters.
+ */
+Engine.prototype._getParams = function _getParams () {
+  var params = {
+    stat_tag: this._stat_tag
+  };
+  if (this._apiKey) {
+    params.api_key = this._apiKey;
+    return params;
+  }
+  if (this.auth_token) {
+    params.auth_token = this._authToken;
+    return params;
+  }
 };
 
 /**

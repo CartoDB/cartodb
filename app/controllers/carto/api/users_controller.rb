@@ -1,3 +1,5 @@
+require_dependency 'google_plus_api'
+require_dependency 'google_plus_config'
 require_relative '../../helpers/avatar_helper'
 
 module Carto
@@ -11,7 +13,6 @@ module Carto
       include FrontendConfigHelper
       include AccountTypeHelper
       include AvatarHelper
-      include AccountTypeHelper
 
       UPDATE_ME_FIELDS = [
         :name, :last_name, :website, :description, :location, :twitter_username,
@@ -22,6 +23,7 @@ module Carto
 
       ssl_required :show, :me, :update_me, :delete_me, :get_authenticated_users
 
+      before_filter :initialize_google_plus_config, only: [:me]
       before_filter :optional_api_authorization, only: [:me]
       skip_before_filter :api_authorization_required, only: [:me, :get_authenticated_users]
 
@@ -55,14 +57,7 @@ module Carto
           services: carto_viewer.try(:get_oauth_services),
           user_frontend_version: carto_viewer.try(:relevant_frontend_version) || CartoDB::Application.frontend_version,
           asset_host: carto_viewer.try(:asset_host),
-          can_change_email: carto_viewer.present? ? carto_viewer.can_change_email? : nil,
-          auth_username_password_enabled: carto_viewer.try(:organization) && carto_viewer.try(:organization, :auth_username_password_enabled),
-          should_display_old_password: carto_viewer.present? ? carto_viewer.should_display_old_password? : nil,
-          can_change_password: carto_viewer.present? ? carto_viewer.can_change_password? : nil,
-          plan_name: carto_viewer.present? ? plan_name(carto_viewer.account_type) : nil,
-          plan_url: carto_viewer.present? ? carto_viewer.plan_url(request.protocol) : nil,
-          cant_be_deleted_reason: carto_viewer.present? ? can_be_deleted?(carto_viewer) : nil,
-          services: carto_viewer.present? ? @services : []
+          iframe_src: carto_viewer.present? ? iframe_src : nil
         }
       end
 
@@ -142,6 +137,15 @@ module Carto
       end
 
       private
+
+      def iframe_src
+        @google_plus_config.present? ? @google_plus_config.iframe_src : nil
+      end
+
+      def initialize_google_plus_config
+        signup_action = Cartodb::Central.sync_data_with_cartodb_central? ? Cartodb::Central.new.google_signup_url : '/google/signup'
+        @google_plus_config = ::GooglePlusConfig.instance(CartoDB, Cartodb.config, signup_action)
+      end
 
       def can_be_deleted?(user)
         if user.organization_owner?

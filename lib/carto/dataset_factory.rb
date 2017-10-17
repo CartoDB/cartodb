@@ -9,6 +9,10 @@ module Carto
   # 'Dataset' outside of the product scope, which may very well disappear or
   # change in the future
   class DatasetFactory
+    def initialize(user:)
+      @user = user
+    end
+
     def with_name(name)
       visualization.name = name
 
@@ -40,7 +44,7 @@ module Carto
     end
 
     def visualization
-      @visualization ||= Carto::Visualization.new(type: 'table')
+      @visualization ||= Carto::Visualization.new(type: 'table', user: @user)
     end
   end
 end

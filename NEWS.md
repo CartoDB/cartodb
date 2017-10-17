@@ -72,6 +72,7 @@ Development
 * Show map options when selecting a map in search view
 * Remove cumulative option when torque category (#12924)
 * Protects against frozen string manipulation in buggy ruby version `2.2.4p230`
+* Auto-select best geometry for DO (#12623)
 * Notification for error tiles (#cartodb.js/1717)
 * Make sure widget's source id is a string, reject it otherwise (#12878)
 * Improve legends for torque (CartoDB/support#979)

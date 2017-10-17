@@ -2,21 +2,17 @@
   <head>
     <script src="https://apis.google.com/js/client:platform.js" async defer></script>
     <script>
-      document.domain = '<%= @config.domain %>';
+      document.domain = '<%= @config.domain %>'
 
-      function signinCallback (authResult) {
-        if (inIframe()) {
-          window.addEventListener('message', function (event) {
-            if (~event.origin.indexOf(document.domain)) {
-              parent.signinCallback(authResult);
+      function signinCallback(authResult) {
+        if(inIframe() && parentInSameDomain()) {
+          parent.signinCallback(authResult);
 
-              var button = document.getElementById('signinButton');
-              button.classList.remove('is-loading');
-              button.onclick = function () {
-                parent.signinCallbackClick && parent.signinCallbackClick(authResult);
-              };
-            }
-          });
+          var button = document.getElementById("signinButton");
+          button.classList.remove('is-loading');
+          button.onclick = function() {
+            parent.signinCallbackClick && parent.signinCallbackClick(authResult);
+          };
         }
       }
 
@@ -26,6 +22,10 @@
         } catch (e) {
           return true;
         }
+      }
+
+      function parentInSameDomain() {
+        return parent.document.domain.match(document.domain + "$").length > 0;
       }
     </script>
     <style type="text/css">

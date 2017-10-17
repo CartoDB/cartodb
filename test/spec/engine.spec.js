@@ -2,9 +2,10 @@ var $ = require('jquery');
 var Backbone = require('backbone');
 var Engine = require('../../src/engine');
 var FakeFactory = require('../helpers/fakeFactory');
+var FAKE_RESPONSE = require('./windshaft/response.mock');
 var CartoDBLayer = require('../../src/geo/map/cartodb-layer');
 
-fdescribe('Engine', function () {
+describe('Engine', function () {
   var fakeVis = new Backbone.Model();
   describe('Constructor', function () {
     it('Should throw a descriptive error when called with no parameters', function () {
@@ -91,9 +92,9 @@ fdescribe('Engine', function () {
 
     it('Should trigger a RELOAD_SUCCESS event when the server returns a successful response ', function () {
       // Successfull server response
-      spyOn($, 'ajax').and.callFake(function (params) { params.success({}); });
+      spyOn($, 'ajax').and.callFake(function (params) { params.success(FAKE_RESPONSE); });
       // Fake model updater.
-      spyOn(engine._modelUpdater, 'updateModels').and.callFake(function () {});
+      spyOn(engine._modelUpdater, 'updateModels').and.callFake(function () { });
       // Attach the success event to a spy.
       var spy = jasmine.createSpy('successCallback');
 
@@ -106,13 +107,42 @@ fdescribe('Engine', function () {
       // Error server response
       spyOn($, 'ajax').and.callFake(function (params) { params.error({}); });
       // Fake model updater.
-      spyOn(engine._modelUpdater, 'setErrors').and.callFake(function () {});
+      spyOn(engine._modelUpdater, 'setErrors').and.callFake(function () { });
       // Attach the error event to a spy.
       var spy = jasmine.createSpy('errorCallback');
 
       engine.on(Engine.Events.RELOAD_ERROR, spy);
       engine.reload();
       expect(spy).toHaveBeenCalled();
+    });
+
+    // The following tests overlaps the model-updater tests.
+
+    it('Should update the layer metadata according to the server response', function (done) {
+      // Successfull server response
+      spyOn($, 'ajax').and.callFake(function (params) { params.success(FAKE_RESPONSE); });
+
+      engine.addLayer(layer);
+      engine.on(Engine.Events.RELOAD_SUCCESS, function () {
+        var expectedLayerMetadata = { cartocss: '#layer {\nmarker-color: red;\n}', stats: { estimatedFeatureCount: 10031 }, cartocss_meta: { rules: [] } };
+        var actualLayerMetadata = engine._layersCollection.at(0).attributes.meta;
+        expect(actualLayerMetadata).toEqual(expectedLayerMetadata);
+        done();
+      });
+
+      engine.reload();
+    });
+
+    it('Should update the cartolayerGroup metadata according to the server response', function (done) {
+      pending('Test not implemented');
+    });
+
+    it('Should update the analyses metadata according to the server response', function (done) {
+      pending('Test not implemented');
+    });
+
+    it('Should update the dataview metadata according to the server response', function (done) {
+      pending('Test not implemented');
     });
   });
 });

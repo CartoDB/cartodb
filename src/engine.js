@@ -40,9 +40,7 @@ function Engine (params) {
   this._templateName = params.templateName;
   this._isNamedMap = params.templateName !== undefined;
   this._stat_tag = params.statTag;
-
-  // Create the client
-  var windshaftSettings = {
+  this._windshaftSettings = {
     urlTemplate: this._serverUrl,
     userName: this._username,
     statTag: this._stat_tag,
@@ -51,7 +49,7 @@ function Engine (params) {
     templateName: this._templateName
   };
 
-  this._windshaftClient = new WindshaftClient(windshaftSettings);
+  this._windshaftClient = new WindshaftClient(this._windshaftSettings);
 
   // This object will be responsible of triggering the engine events.
   this._eventEmmitter = _.extend({}, Backbone.Events);
@@ -154,7 +152,7 @@ Engine.prototype.addLayer = function addLayer (layer) {
  * Update internal models and trigger a reload_sucess event.
  */
 Engine.prototype._onSuccess = function onSuccess (serverResponse) {
-  var responseWrapper = new Response(serverResponse);
+  var responseWrapper = new Response(this._windshaftSettings, serverResponse);
   this._modelUpdater.updateModels(responseWrapper);
   this._eventEmmitter.trigger(Engine.Events.RELOAD_SUCCESS);
 };

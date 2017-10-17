@@ -1,6 +1,6 @@
 var Response = require('../../../src/windshaft/response');
 
-fdescribe('windshaft-response', function () {
+describe('windshaft-response', function () {
   it('', function () {
 
   });

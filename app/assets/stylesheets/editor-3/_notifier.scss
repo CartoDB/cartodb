@@ -10,6 +10,7 @@
   word-wrap: break-word;
   overflow-wrap: break-word;
   overflow: hidden;
+  flex: 0 0 auto;
 
   &.is-dark {
     border-color: #3A484E;

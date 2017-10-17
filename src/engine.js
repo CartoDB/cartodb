@@ -8,6 +8,7 @@ var LayersCollection = require('./geo/map/layers');
 var ModelUpdater = require('./windshaft-integration/model-updater');
 var NamedMapSerializer = require('./windshaft/map-serializer/named-map-serializer/named-map-serializer');
 var Request = require('./windshaft/request');
+var Response = require('./windshaft/response');
 var WindshaftClient = require('./windshaft/client');
 
 /**
@@ -58,6 +59,7 @@ function Engine (params) {
   this._analysisPoller = new AnalysisPoller();
   this._layersCollection = new LayersCollection();
   this._dataviewsCollection = new DataviewsCollection();
+
   this.layerGroupModel = new CartoDBLayerGroup(
     { apiKey: this._apiKey, authToken: this._authToken },
     { layersCollection: this._layersCollection }
@@ -135,7 +137,8 @@ Engine.prototype.addLayer = function addLayer (layer) {
  * Update internal models and trigger a reload_sucess event.
  */
 Engine.prototype._onSuccess = function onSuccess (serverResponse) {
-  this._modelUpdater.updateModels(serverResponse, this.layersCollection, this.dataviewsCollection, this.cartoDBLayerGroup);
+  var responseWrapper = new Response(serverResponse);
+  this._modelUpdater.updateModels(responseWrapper);
   this._eventEmmitter.trigger(Engine.Events.RELOAD_SUCCESS);
 };
 

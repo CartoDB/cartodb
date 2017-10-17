@@ -14,7 +14,7 @@ module Carto
 
       def run!
         csv = CSV.open(filepath, 'wb', headers: true)
-        Carto::Visualization.where(type: @types).find_each { |vis| process_row(statistics_for_visualization(vis), csv) }
+        Carto::Visualization.where(type: @types).find_each { |vis| process_row(statistics_for_visualization(vis), csv) if vis.user.present? }
         csv.close
       end
 

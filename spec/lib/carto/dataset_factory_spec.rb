@@ -30,6 +30,8 @@ describe Carto::DatasetFactory do
   end
 
   before(:each) do
+    bypass_named_maps
+
     @factory = Carto::DatasetFactory.new(
       user: @user,
       metadata: metadata,
@@ -67,5 +69,26 @@ describe Carto::DatasetFactory do
     dataset_visualization.source.should eq metadata[:info][:source]
     persisted_visualization.tags.should eq metadata[:info][:classification][:tags]
     persisted_visualization.privacy.should eq metadata[:publishing][:privacy]
+  end
+
+  it('generates proper model reflections') do
+    dataset_visualization = @factory.dataset_visualization
+
+    dataset_visualization.layers.should_not be_empty
+    dataset_visualization.map.layers.should_not be_empty
+  end
+
+  it('preserves proper model reflections after save') do
+    dataset_visualization = @factory.dataset_visualization
+
+    expect { dataset_visualization.save! }.to_not raise_error
+
+    persisted_visualization = Carto::Visualization.find(dataset_visualization.id)
+
+    persisted_visualization.layers.should_not be_empty
+    persisted_visualization.map.layers.should_not be_empty
+
+    persisted_visualization.layers.count.should eq 3
+    persisted_visualization.map.layers.count.should eq 3
   end
 end

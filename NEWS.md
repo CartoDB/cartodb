@@ -64,6 +64,8 @@ Development
 * Improve legends error (cartodb.js#1758)
 
 ### Bug fixes / enhancements
+* Improve SQL limit platforms notification (#12597)
+* Fix infinite loop for failed sql api requests.
 * Show map options when selecting a map in search view
 * Remove cumulative option when torque category (#12924)
 * Protects against frozen string manipulation in buggy ruby version `2.2.4p230`

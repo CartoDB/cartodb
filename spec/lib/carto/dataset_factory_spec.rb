@@ -30,7 +30,12 @@ describe Carto::DatasetFactory do
   end
 
   before(:each) do
-    @factory = Carto::DatasetFactory.new(user: @user, metadata: metadata)
+    @factory = Carto::DatasetFactory.new(
+      user: @user,
+      metadata: metadata,
+      kind: Carto::Visualization::KIND_RASTER,
+      geometry_type: 'geometry'
+    )
   end
 
   after(:each) do

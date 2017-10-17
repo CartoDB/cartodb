@@ -17,9 +17,15 @@ function Response (windshaftSettings, serverResponse) {
 }
 
 /**
- * Get the layers filtered by the given type.
+ * Return the indexes of the layers for a certain type.
  * 
- * @param {string} Type - The type of the layers: cartodb, torque, plain, tiled.
+ * @example
+ * // layers = [ carto, carto, tiled, plain, tiled, torque];
+ * getLayerIndexesByType('mapnik') // [0, 1]
+ * getLayerIndexesByType('tiled') // [2, 4]
+ * getLayerIndexesByType('torque') // [5]
+ * 
+ * @param {string} Type - The type of the layers: mapnik, torque, plain, tiled.
  */
 Response.prototype.getLayerIndexesByType = function getLayerIndexesByType (layerType) {
   return _.reduce(this._getLayers(), function (layerIndexes, layer, index) {
@@ -30,6 +36,9 @@ Response.prototype.getLayerIndexesByType = function getLayerIndexesByType (layer
   }, []);
 };
 
+/**
+ * Build the base url to build windshaft map requests.
+ */
 Response.prototype.getBaseURL = function getBaseURL () {
   return [
     this._getHost(),
@@ -38,6 +47,9 @@ Response.prototype.getBaseURL = function getBaseURL () {
   ].join('/');
 };
 
+/**
+ * Build the base url for static maps.
+ */
 Response.prototype.getStaticBaseURL = function getStaticBaseURL () {
   return [
     this._getHost(),

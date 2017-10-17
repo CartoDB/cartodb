@@ -64,6 +64,11 @@ Development
 * Improve legends error (cartodb.js#1758)
 
 ### Bug fixes / enhancements
+* Improve SQL limit platforms notification (#12597)
+* Fix infinite loop for failed sql api requests.
+* Show map options when selecting a map in search view
+* Remove cumulative option when torque category (#12924)
+* Protects against frozen string manipulation in buggy ruby version `2.2.4p230`
 * Notification for error tiles (#cartodb.js/1717)
 * Make sure widget's source id is a string, reject it otherwise (#12878)
 * Improve legends for torque (CartoDB/support#979)
@@ -229,10 +234,14 @@ Development
 * Removed unused settings in organizations (#4992)
 * Increment maximum buckets in Time-Series for leap years (#12778)
 * Prevent invalid geometries in BoundingBoxUtils.to_polygon, to_point (#12873)
+* Show limit infobox in layers/widgets view (#12593)
 * Improve tile error overlay (cartodb.js#1721)
 * Fix TrackJS missing token in static pages (#12914)
+* Fix missing upgrade link in static dashboard (#12929)
+* Fix histogram zoom (#12945)
 
 ### Internals
+* Remove analysisCollection and refactor analyses-integration (#12947)
 * Fix layer's sources in tests (analysis source required) (#12866)
 * Adapt widget integration and specs to dataviews refactor (#12850)
 

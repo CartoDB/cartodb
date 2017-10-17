@@ -128,6 +128,18 @@ describe('Engine', function () {
       expect(spy).toHaveBeenCalledWith(jasmine.anything(), 'fakeSourceId', undefined);
     });
 
+    it('Should use the forceFetch parameter', function () {
+      // Error server response
+      spyOn($, 'ajax').and.callFake(function (params) { params.success(FAKE_RESPONSE); });
+      // Spy on modelupdater to ensure thats called with fakesourceId
+      var spy = spyOn(engine._modelUpdater, 'updateModels');
+      // Attach the error event to a spy.
+      engine.on(Engine.Events.RELOAD_SUCCESS, spy);
+
+      engine.reload('fakeSourceId', true);
+      expect(spy).toHaveBeenCalledWith(jasmine.anything(), 'fakeSourceId', true);
+    });
+
     // The following tests overlaps the model-updater tests.
 
     it('Should update the layer metadata according to the server response', function (done) {
@@ -145,7 +157,7 @@ describe('Engine', function () {
       engine.reload();
     });
 
-    fit('Should update the cartolayerGroup metadata according to the server response', function (done) {
+    it('Should update the cartolayerGroup metadata according to the server response', function (done) {
       // Successfull server response
       spyOn($, 'ajax').and.callFake(function (params) { params.success(FAKE_RESPONSE); });
 

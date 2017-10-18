@@ -2,6 +2,7 @@ Development
 -----------
 
 ### Features
+* Improve error on widgets (CartoDB/deep-insights.js#574) 
 * Profile static view (#12704)
 * Add FullStory (if available) in user dashboard
 * Change default style for polygon, point and line geometries (design#983)

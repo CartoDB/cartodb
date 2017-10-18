@@ -316,9 +316,9 @@
       "resolved": "https://registry.npmjs.org/camelcase/-/camelcase-1.2.1.tgz"
     },
     "camshaft-reference": {
-      "version": "0.33.0",
-      "from": "camshaft-reference@0.33.0",
-      "resolved": "https://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.33.0.tgz"
+      "version": "0.33.4",
+      "from": "camshaft-reference@0.33.4",
+      "resolved": "https://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.33.4.tgz"
     },
     "carto": {
       "version": "0.15.1-cdb4",

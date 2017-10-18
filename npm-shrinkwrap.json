@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.10.31-309",
+  "version": "4.10.31-309.2",
   "dependencies": {
     "accessory": {
       "version": "1.0.1",
@@ -316,9 +316,9 @@
       "resolved": "https://registry.npmjs.org/camelcase/-/camelcase-1.2.1.tgz"
     },
     "camshaft-reference": {
-      "version": "0.33.3",
-      "from": "camshaft-reference@0.33.3",
-      "resolved": "https://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.33.3.tgz"
+      "version": "0.33.4",
+      "from": "camshaft-reference@0.33.4",
+      "resolved": "https://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.33.4.tgz"
     },
     "carto": {
       "version": "0.15.1-cdb4",
@@ -941,9 +941,9 @@
       "resolved": "https://registry.npmjs.org/hosted-git-info/-/hosted-git-info-2.5.0.tgz"
     },
     "html-minifier": {
-      "version": "3.5.5",
+      "version": "3.5.6",
       "from": "html-minifier@>=3.2.3 <4.0.0",
-      "resolved": "https://registry.npmjs.org/html-minifier/-/html-minifier-3.5.5.tgz"
+      "resolved": "https://registry.npmjs.org/html-minifier/-/html-minifier-3.5.6.tgz"
     },
     "html-webpack-plugin": {
       "version": "2.30.1",

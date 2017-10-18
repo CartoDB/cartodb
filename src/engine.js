@@ -112,21 +112,22 @@ Engine.prototype.reload = function reload (sourceId, forceFetch) {
 };
 
 /**
- * @api
- * @public
  * 
  * Add a layer to the engine layersCollection
  * 
  * @param {layer} layer - A new layer to be added to the engine.
+ * 
+ * @api
+ * @public
  */
 Engine.prototype.addLayer = function addLayer (layer) {
   this._layersCollection.add(layer);
 };
 
 /**
- * @private
  * Callback executed when the windhsaft client returns a successful response.
  * Update internal models and trigger a reload_sucess event.
+ * @private
  */
 Engine.prototype._onReloadSuccess = function _onReloadSuccess (serverResponse, sourceId, forceFetch) {
   var responseWrapper = new Response(this._windshaftSettings, serverResponse);
@@ -135,9 +136,9 @@ Engine.prototype._onReloadSuccess = function _onReloadSuccess (serverResponse, s
 };
 
 /**
- * @private
  * Callback executed when the windhsaft client returns a failed response.
  * Update internal models setting errores and trigger a reload_error event.
+ * @private
  */
 Engine.prototype._onReloadError = function _onReloadError (serverResponse) {
   var errors = serverResponse;
@@ -175,8 +176,8 @@ Engine.prototype._getParams = function _getParams () {
 };
 
 /**
- * @private
  * Get the instance of the serializer service depending on is an anonymous or a named map.
+ * @private
  */
 Engine.prototype._getSerializer = function _getSerializer () {
   return this._isNamedMap ? NamedMapSerializer : AnonymousMapSerializer;

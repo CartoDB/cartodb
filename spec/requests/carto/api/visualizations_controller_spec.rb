@@ -1547,6 +1547,26 @@ describe Carto::Api::VisualizationsController do
               end
             end
 
+            it 'returns auth_tokens for password protected visualizations if correct password is provided' do
+              password = 'wadus'
+              @visualization.privacy = Carto::Visualization::PRIVACY_PROTECTED
+              @visualization.password = password
+              @visualization.save!
+
+              get_json api_v1_visualizations_show_url(id: @visualization.id) do |response|
+                response.status.should eq 403
+              end
+
+              get_json api_v1_visualizations_show_url(id: @visualization.id, password: password * 2) do |response|
+                response.status.should eq 403
+              end
+
+              get_json api_v1_visualizations_show_url(id: @visualization.id, password: password) do |response|
+                response.status.should eq 200
+                response.body[:auth_tokens].should_not be_nil
+              end
+            end
+
             it 'returns public information about the user if requested' do
               get_json api_v1_visualizations_show_url(id: @visualization.id) do |response|
                 response.status.should eq 200

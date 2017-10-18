@@ -10,7 +10,7 @@ module Carto
                      related: true, related_canonical_visualizations: false, show_user: false,
                      show_stats: true, show_likes: true, show_liked: true, show_table: true,
                      show_permission: true, show_synchronization: true, show_uses_builder_features: true,
-                     show_table_size_and_row_count: true)
+                     show_table_size_and_row_count: true, password: nil)
         @visualization = visualization
         @current_viewer = current_viewer
         @context = context
@@ -26,6 +26,7 @@ module Carto
         @show_synchronization = show_synchronization
         @show_uses_builder_features = show_uses_builder_features
         @show_table_size_and_row_count = show_table_size_and_row_count
+        @password = password
 
         @presenter_cache = Carto::Api::PresenterCache.new
       end
@@ -36,7 +37,9 @@ module Carto
       end
 
       def to_poro
-        poro = @visualization.can_view_private_info?(@current_viewer) ? to_private_poro : to_public_poro
+        return_private_poro = @visualization.can_view_private_info?(@current_viewer)
+
+        poro = return_private_poro ? to_private_poro : to_public_poro
 
         poro[:user] = user if show_user
 
@@ -49,6 +52,9 @@ module Carto
         poro[:liked] = @current_viewer ? @visualization.liked_by?(@current_viewer.id) : false if show_liked
         poro[:permission] = permission if show_permission
         poro[:stats] = show_stats ? @visualization.stats : {}
+        if return_private_poro || @visualization.is_accessible_with_password?(@current_viewer, @password)
+          poro[:auth_tokens] = auth_tokens
+        end
 
         poro
       end
@@ -74,7 +80,6 @@ module Carto
           kind: @visualization.kind,
           external_source: Carto::Api::ExternalSourcePresenter.new(@visualization.external_source).to_poro,
           url: url,
-          auth_tokens: auth_tokens,
           version: @visualization.version || 2,
           # TODO: The following are Odyssey fields and could be removed
           # They are kept here for now for compatibility with the old presenter and JS code
@@ -163,7 +168,7 @@ module Carto
       end
 
       def auth_tokens
-        if @visualization.password_protected? && @visualization.user.id == @current_viewer.id
+        if @visualization.password_protected?
           @visualization.get_auth_tokens
         elsif @visualization.is_privacy_private?
           @current_viewer.get_auth_tokens

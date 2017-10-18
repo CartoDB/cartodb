@@ -240,6 +240,10 @@ class Carto::Visualization < ActiveRecord::Base
     is_viewable_by_user?(user) || password_protected?
   end
 
+  def is_accessible_with_password?(user, password)
+    is_viewable_by_user?(user) || (password_protected? && password_valid?(password))
+  end
+
   def is_publically_accesible?
     (public? || public_with_link?) && published?
   end

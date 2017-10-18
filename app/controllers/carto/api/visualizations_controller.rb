@@ -61,7 +61,8 @@ module Carto
           show_liked: params[:show_liked] == 'true',
           show_likes: params[:show_likes] == 'true',
           show_permission: params[:show_permission] == 'true',
-          show_stats: params[:show_stats] == 'true'
+          show_stats: params[:show_stats] == 'true',
+          password: params[:password]
         )
 
         render_jsonp(::JSON.dump(presenter.to_poro))
@@ -377,7 +378,7 @@ module Carto
           raise Carto::LoadError.new('Visualization does not exist', 404)
         end
 
-        if !@visualization.is_viewable_by_user?(current_viewer)
+        if !@visualization.is_accessible_with_password?(current_viewer, params[:password])
           raise Carto::LoadError.new('Visualization not viewable', 403)
         end
       end

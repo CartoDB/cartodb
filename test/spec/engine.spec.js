@@ -56,7 +56,7 @@ describe('Engine', function () {
     });
   });
 
-  fdescribe('.reload', function () {
+  describe('.reload', function () {
     var layer;
     var engine;
     var fakeVis = new Backbone.Model();

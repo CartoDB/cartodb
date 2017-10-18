@@ -1461,7 +1461,11 @@ describe Carto::Api::VisualizationsController do
           get_json api_v1_visualizations_show_url(id: @visualization.id),
                    api_key: @visualization.user.api_key,
                    fetch_related_canonical_visualizations: true,
-                   fetch_user: true do |response|
+                   fetch_user: true,
+                   show_liked: true,
+                   show_likes: true,
+                   show_permission: true,
+                   show_stats: true do |response|
             # We currently log 404 on errors. Maybe something that we should change in the future...
             response.status.should == 404
           end
@@ -1634,7 +1638,11 @@ describe Carto::Api::VisualizationsController do
                 CartoDB::Logger.expects(:error).never
                 get_json api_v1_visualizations_show_url(id: @visualization.id),
                          fetch_related_canonical_visualizations: true,
-                         fetch_user: true do |response|
+                         fetch_user: true,
+                         show_liked: true,
+                         show_likes: true,
+                         show_permission: true,
+                         show_stats: true do |response|
                   response.status.should == 200
                 end
               end

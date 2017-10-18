@@ -37,7 +37,7 @@
     "perfect-scrollbar": "git://github.com/CartoDB/perfect-scrollbar.git#master",
     "queue-async": "1.2.1",
     "rangeslider.js": "2.3.0",
-    "tangram": "cartodb/tangram#master",
+    "tangram": "cartodb/tangram#platform-limits",
     "torque.js": "CartoDB/torque#master",
     "underscore": "1.8.3",
     "webpack": "2.3.2"

@@ -24,6 +24,7 @@ describe Carto::Api::GroupsController do
         "base_url" => @org_user_1.public_url,
         "disqus_shortname" => @org_user_1.disqus_shortname,
         "viewer" => @org_user_1.viewer,
+        "org_admin" => false,
         "org_user" => true,
         "remove_logo" => @org_user_1.remove_logo?
       }

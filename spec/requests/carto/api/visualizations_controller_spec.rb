@@ -1375,7 +1375,8 @@ describe Carto::Api::VisualizationsController do
         url = api_v1_visualizations_show_url(
           id: @visualization.id,
           api_key: @api_key,
-          show_likes: true)
+          show_likes: true
+        )
 
         get url, {}, @headers
 
@@ -1425,12 +1426,13 @@ describe Carto::Api::VisualizationsController do
       end
 
       it 'returns private information about the user if requested' do
-        get_json api_v1_visualizations_show_url(id: @visualization.id, api_key: @carto_user1.api_key) do |response|
+        url = api_v1_visualizations_show_url(id: @visualization.id, api_key: @carto_user1.api_key)
+        get_json url do |response|
           response.status.should eq 200
           response.body[:user].should be_nil
         end
 
-        get_json api_v1_visualizations_show_url(id: @visualization.id, api_key: @carto_user1.api_key), fetch_user: true do |response|
+        get_json url, fetch_user: true do |response|
           response.status.should eq 200
           user = response.body[:user]
           user.should_not be_nil
@@ -1521,7 +1523,8 @@ describe Carto::Api::VisualizationsController do
                 show_liked: true,
                 show_likes: true,
                 show_permission: true,
-                show_stats: true)
+                show_stats: true
+              )
 
               get_json url do |response|
                 response.status.should eq 200

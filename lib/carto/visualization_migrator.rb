@@ -7,8 +7,8 @@ module Carto
       # Non-private visualizations need to have a Mapcap to be "published" in the Builder (available at the embed)
 
       layer_selector_migration(vis)
-      mapcap_creation(vis)
       google_basemap_migration(vis)
+      mapcap_creation(vis)
     end
 
     def version_needs_migration?(version, new_version)

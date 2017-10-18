@@ -2,7 +2,7 @@ Development
 -----------
 
 ### Features
-* Improve error on widgets (CartoDB/deep-insights.js#574) 
+* Improve error on widgets (CartoDB/deep-insights.js#574)
 * Add pagination support in data imports listing in superadmin (#12938).
 * Profile static view (#12704)
 * Add FullStory (if available) in user dashboard
@@ -241,6 +241,7 @@ Development
 * Fix TrackJS missing token in static pages (#12914)
 * Fix missing upgrade link in static dashboard (#12929)
 * Fix histogram zoom (#12945)
+* Activate retina in CARTO basemaps if the viewport allows retina (#12845)
 
 ### Internals
 * Remove analysisCollection and refactor analyses-integration (#12947)

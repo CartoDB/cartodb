@@ -70,8 +70,10 @@ LeafletCartoDBWebglLayerGroupView.prototype = _.extend(
     // include error stus code, only error text, so we need to make some parsing
     // in order to segment limits errors (Too many requests)
     _addErrorsEvents: function () {
-      this.tangram.scene.subscribe('warning', function (e) {
-        console.log(e);
+      this.tangram.scene.subscribe({
+        warning: function (e) {
+          console.log(e);
+        }
       });
     },
 

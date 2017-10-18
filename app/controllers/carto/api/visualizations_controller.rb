@@ -54,11 +54,17 @@ module Carto
       rescue_from Carto::UUIDParameterFormatError, with: :rescue_from_carto_error
 
       def show
-        fetch_related_canonical_visualizations = params[:fetch_related_canonical_visualizations] == 'true'
-        fetch_user = params[:fetch_user] == 'true'
-        render_jsonp(to_json(@visualization,
-                             fetch_related_canonical_visualizations: fetch_related_canonical_visualizations,
-                             fetch_user: fetch_user))
+        presenter = VisualizationPresenter.new(
+          @visualization, current_viewer, self,
+          related_canonical_visualizations: params[:fetch_related_canonical_visualizations] == 'true',
+          show_user: params[:fetch_user] == 'true',
+          show_liked: params[:show_liked] == 'true',
+          show_likes: params[:show_likes] == 'true',
+          show_permission: params[:show_permission] == 'true',
+          show_stats: params[:show_stats] == 'true'
+        )
+
+        render_jsonp(::JSON.dump(presenter.to_poro))
       rescue => e
         CartoDB::Logger.error(exception: e)
         head(404)
@@ -424,17 +430,6 @@ module Carto
           response.headers['Surrogate-Key'] = "#{CartoDB::SURROGATE_NAMESPACE_VIZJSON} #{visualization.surrogate_key}"
           response.headers['Cache-Control']   = 'no-cache,max-age=86400,must-revalidate, public'
         end
-      end
-
-      def to_json(visualization, fetch_related_canonical_visualizations: false, fetch_user: false)
-        # TODO: previous controller uses public_fields_only option which I don't know if is still used
-        ::JSON.dump(
-          VisualizationPresenter.new(visualization,
-                                     current_viewer,
-                                     self,
-                                     related_canonical_visualizations: fetch_related_canonical_visualizations,
-                                     show_user: fetch_user).to_poro
-        )
       end
 
       def carto_referer?

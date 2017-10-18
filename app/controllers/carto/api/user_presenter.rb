@@ -72,6 +72,7 @@ module Carto
           base_url:         @user.public_url,
           disqus_shortname: @user.disqus_shortname,
           viewer:           @user.viewer?,
+          org_admin:        @user.organization_admin?,
           org_user:         @user.organization_id.present?,
           remove_logo:      @user.remove_logo?
         }

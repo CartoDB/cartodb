@@ -39,11 +39,16 @@ module Carto
         poro = @visualization.can_view_private_info?(@current_viewer) ? to_private_poro : to_public_poro
 
         poro[:user] = user if show_user
+
         if load_related_canonical_visualizations
           poro[:related_canonical_visualizations] = related_canonicals
           # The count doesn't take into account privacy concerns
           poro[:related_canonical_visualizations_count] = @visualization.related_canonical_visualizations.count
         end
+
+        poro[:liked] = @current_viewer ? @visualization.liked_by?(@current_viewer.id) : false if show_liked
+        poro[:permission] = permission if show_permission
+        poro[:stats] = show_stats ? @visualization.stats : {}
 
         poro
       end
@@ -59,7 +64,6 @@ module Carto
           tags: @visualization.tags,
           description: @visualization.description,
           privacy: @visualization.privacy.upcase,
-          stats: show_stats ? @visualization.stats : {},
           created_at: @visualization.created_at,
           updated_at: @visualization.updated_at,
           locked: @visualization.locked,
@@ -85,9 +89,7 @@ module Carto
 
         poro[:related_tables] = related_tables if related
         poro[:likes] = @visualization.likes_count if show_likes
-        poro[:liked] = @current_viewer ? @visualization.liked_by?(@current_viewer.id) : false if show_liked
         poro[:table] = user_table_presentation if show_table
-        poro[:permission] = permission if show_permission
         poro[:synchronization] = synchronization if show_synchronization
         poro[:uses_builder_features] = @visualization.uses_builder_features? if show_uses_builder_features
 

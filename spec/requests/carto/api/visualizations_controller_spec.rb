@@ -1366,6 +1366,23 @@ describe Carto::Api::VisualizationsController do
         response.fetch('tags')            .should_not be_empty
         response.fetch('description')     .should_not be_nil
         response.fetch('related_tables')  .should_not be_nil
+
+        # Optional information
+        response['likes'].should eq nil
+      end
+
+      it 'returns a visualization with optional information if requested' do
+        url = api_v1_visualizations_show_url(
+          id: @visualization.id,
+          api_key: @api_key,
+          show_likes: true)
+
+        get url, {}, @headers
+
+        last_response.status.should == 200
+        response = JSON.parse(last_response.body)
+
+        response['likes'].should eq 0
       end
 
       it 'returns related_canonical_visualizations if requested' do
@@ -1482,8 +1499,48 @@ describe Carto::Api::VisualizationsController do
             it 'only returns public information' do
               get_json api_v1_visualizations_show_url(id: @visualization.id) do |response|
                 response.status.should eq 200
+                response.body[:name].should_not be_nil
+                response.body[:updated_at].should_not be_nil
+                response.body[:tags].should_not be_nil
+                response.body[:title].should_not be_nil
                 response.body[:description].should_not be_nil
                 response.body[:auth_tokens].should be_nil
+
+                # Optional information requiring parameters
+                response.body[:liked].should eq nil
+                response.body[:likes].should eq 0
+                response.body[:stats].should be_empty
+
+                response.body[:permission].should eq nil
+              end
+            end
+
+            it 'only returns public information, including optional if requested' do
+              url = api_v1_visualizations_show_url(
+                id: @visualization.id,
+                show_liked: true,
+                show_likes: true,
+                show_permission: true,
+                show_stats: true)
+
+              get_json url do |response|
+                response.status.should eq 200
+                response.body[:liked].should eq false
+                response.body[:likes].should eq 0
+                response.body[:stats].should_not be_empty
+
+                permission = response.body[:permission]
+                permission.should_not eq nil
+                permission[:owner].should_not eq nil
+                owner = permission[:owner]
+                user = @visualization.permission.owner
+                owner[:name].should eq user.name
+                owner[:last_name].should eq user.last_name
+                owner[:username].should eq user.username
+                owner[:avatar_url].should eq user.avatar_url
+                owner[:base_url].should eq user.public_url
+                owner[:org_admin].should eq user.org_admin
+                owner[:org_user].should eq user.organization_id.present?
               end
             end
 

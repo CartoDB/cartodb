@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.10.34-574",
+  "version": "4.10.36",
   "dependencies": {
     "accessory": {
       "version": "1.0.1",
@@ -941,9 +941,9 @@
       "resolved": "https://registry.npmjs.org/hosted-git-info/-/hosted-git-info-2.5.0.tgz"
     },
     "html-minifier": {
-      "version": "3.5.5",
+      "version": "3.5.6",
       "from": "html-minifier@>=3.2.3 <4.0.0",
-      "resolved": "https://registry.npmjs.org/html-minifier/-/html-minifier-3.5.5.tgz"
+      "resolved": "https://registry.npmjs.org/html-minifier/-/html-minifier-3.5.6.tgz"
     },
     "html-webpack-plugin": {
       "version": "2.30.1",

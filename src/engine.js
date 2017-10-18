@@ -33,20 +33,14 @@ var WindshaftClient = require('./windshaft/client');
  */
 function Engine (params) {
   if (!params) throw new Error('new Engine() called with no paramters');
-  this._apiKey = params.apiKey;
-  this._authToken = params.authToken;
-  this._username = params.username;
-  this._serverUrl = params.serverUrl;
-  this._templateName = params.templateName;
   this._isNamedMap = params.templateName !== undefined;
-  this._stat_tag = params.statTag;
   this._windshaftSettings = {
-    urlTemplate: this._serverUrl,
-    userName: this._username,
-    statTag: this._stat_tag,
-    apiKey: this._apiKey,
-    authToken: this._authToken,
-    templateName: this._templateName
+    urlTemplate: params.serverUrl,
+    userName: params.username,
+    statTag: params.statTag,
+    apiKey: params.apiKey,
+    authToken: params.authToken,
+    templateName: params.templateName
   };
 
   this._windshaftClient = new WindshaftClient(this._windshaftSettings);
@@ -59,7 +53,7 @@ function Engine (params) {
   this._dataviewsCollection = new DataviewsCollection();
 
   this._layerGroupModel = new CartoDBLayerGroup(
-    { apiKey: this._apiKey, authToken: this._authToken },
+    { apiKey: params.apiKey, authToken: params.authToken },
     { layersCollection: this._layersCollection }
   );
 
@@ -168,14 +162,14 @@ Engine.prototype._buildOptions = function _buildOptions (sourceId, forceFetch) {
  */
 Engine.prototype._getParams = function _getParams () {
   var params = {
-    stat_tag: this._stat_tag
+    stat_tag: this._windshaftSettings.statTag
   };
-  if (this._apiKey) {
-    params.api_key = this._apiKey;
+  if (this._windshaftSettings.apiKey) {
+    params.api_key = this._windshaftSettings.apiKey;
     return params;
   }
-  if (this.auth_token) {
-    params.auth_token = this._authToken;
+  if (this._windshaftSettings.authToken) {
+    params.auth_token = this._windshaftSettings.authToken;
     return params;
   }
 };

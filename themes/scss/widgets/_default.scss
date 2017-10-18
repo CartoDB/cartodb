@@ -16,8 +16,10 @@
   width: $desktopLayout;
   margin-bottom: 2px;
   // Due to line-heights, better to substract some pixels in the top
-  padding: ($sMargin-section - 4) 0;
   box-sizing: border-box;
+}
+.CDB-Widget-body {
+  padding: ($sMargin-section - 4) 0;
 }
 .CDB-Widget .CDB-Loader {
   height: 1px;
@@ -68,6 +70,10 @@
 .CDB-Widget-body.is-collapsed .CDB-Widget-content,
 .CDB-Widget-body.is-collapsed .CDB-Widget-info,
 .CDB-Widget-body.is-collapsed .CDB-Widget-nav {
+  display: none;
+}
+
+.CDB-Widget-body.is-hidden {
   display: none;
 }
 

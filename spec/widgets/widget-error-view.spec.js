@@ -1,55 +1,118 @@
-var cdb = require('cartodb.js');
+var Backbone = require('backbone');
+var _ = require('underscore');
 var WidgetErrorView = require('../../src/widgets/widget-error-view');
 
 describe('widgets/widget-error-view', function () {
+  var errorBase = {
+    type: 'limit',
+    level: 'error',
+    title: 'Generic Error',
+    message: 'Something went wrong',
+    refresh: true
+  };
+
   beforeEach(function () {
     jasmine.clock().install();
 
-    this.dataviewModel = new cdb.core.Model();
-    this.dataviewModel.refresh = jasmine.createSpy('refresh');
-    this.view = new WidgetErrorView({
-      model: this.dataviewModel
+    this.dataviewModel = new Backbone.Model({
+      type: 'category'
     });
+
+    this.errorModel = new Backbone.Model({
+      model: this.dataviewModel,
+      error: {
+        type: 'limit',
+        level: 'error',
+        title: 'error',
+        message: 'Something went wrong',
+        refresh: true
+      },
+      placeholder: function () {
+        return '<p>Placeholder</p>';
+      }
+    });
+
+    this.dataviewModel.refresh = jasmine.createSpy('refresh');
+
+    this.view = new WidgetErrorView({
+      title: 'this is a widget',
+      errorModel: this.errorModel
+    });
+
     this.renderResult = this.view.render();
   });
 
-  it('should have render error', function () {
-    expect(this.renderResult).toBe(this.view);
-    expect(this.view.$el.hasClass('CDB-Widget-error')).toBeTruthy();
-    expect(this.view.$el.html()).toContain('button');
+  it('should add a class with the error level', function () {
+    expect(this.view.$el.hasClass('CDB-Widget--error')).toBe(true);
+
+    this.errorModel.set('error', _.extend(errorBase, { level: 'alert' }));
+
+    expect(this.view.$el.hasClass('CDB-Widget--error')).toBe(false);
+    expect(this.view.$el.hasClass('CDB-Widget--alert')).toBe(true);
   });
 
-  describe('when click refresh', function () {
+  describe('when error is available', function () {
+    it('should render the error', function () {
+      expect(this.renderResult).toBe(this.view);
+      expect(this.view.$el.html()).toContain('Something went wrong');
+    });
+
+    describe('refresh button', function () {
+      it('should render only if the error allows it', function () {
+        expect(this.view.$('.js-refresh').length).toEqual(1);
+        this.errorModel.set('error', _.extend(errorBase, { refresh: false }));
+        expect(this.view.$('.js-refresh').length).toEqual(0);
+      });
+
+      it('should call refresh on dataviewModel', function () {
+        jasmine.clock().tick(800);
+        this.view.$('.js-refresh').click();
+        expect(this.dataviewModel.refresh).toHaveBeenCalled();
+      });
+    });
+
+    describe('placeholder', function () {
+      it('should render only if the error does not have a refresh button', function () {
+        expect(this.view.$el.html()).not.toContain('Placeholder');
+        this.errorModel.set('error', _.extend(errorBase, { refresh: false }));
+        this.view.render();
+        expect(this.view.$el.html()).toContain('Placeholder');
+      });
+    });
+  });
+
+  describe('when error is not available', function () {
     beforeEach(function () {
-      this.view.show();
-      jasmine.clock().tick(800);
-      this.view.$('.js-refresh').click();
+      this.errorModel.set('error', _.extend(errorBase, { type: null }));
+      this.view.render();
     });
 
-    it('should call refresh on dataviewModel', function () {
-      expect(this.dataviewModel.refresh).toHaveBeenCalled();
-    });
-  });
-
-  describe('when error is triggered', function () {
-    it('should show view', function () {
-      this.dataviewModel.trigger('error');
-      expect(this.view.$el.hasClass('is-hidden')).toBe(false);
+    it('should not render any text', function () {
+      expect(this.view.$('.CDB-Widget-title').length).toEqual(0);
     });
 
-    it('should not show view if errors come from a cancelled request', function () {
-      this.dataviewModel.trigger('error', this.datavieModel, { statusText: 'abort' });
-      expect(this.view.$el.hasClass('is-hidden')).toBe(true);
-    });
-  });
+    describe('refresh button', function () {
+      it('should always render', function () {
+        expect(this.view.$('.js-refresh').length).toEqual(1);
+        this.errorModel.set('error', _.extend(errorBase, { refresh: false }));
+        this.view.render();
+        expect(this.view.$('.js-refresh').length).toEqual(1);
+      });
 
-  describe('when loading is triggered', function () {
-    beforeEach(function () {
-      this.dataviewModel.trigger('loading');
+      it('should call refresh on dataviewModel', function () {
+        jasmine.clock().tick(800);
+        this.view.$('.js-refresh').click();
+        expect(this.dataviewModel.refresh).toHaveBeenCalled();
+      });
     });
 
-    it('should hide view', function () {
-      expect(this.view.$el.hasClass('is-hidden')).toBe(true);
+    describe('placeholder', function () {
+      it('should always render', function () {
+        expect(this.view.$el.html()).toContain('Placeholder');
+        this.errorModel.set('error', _.extend(errorBase, { refresh: false }));
+        this.view.render();
+        expect(this.view.$el.html()).toContain('Placeholder');
+      });
     });
   });
 

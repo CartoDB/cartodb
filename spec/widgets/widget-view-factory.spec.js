@@ -55,6 +55,7 @@ describe('widgets/widget-view-factory', function () {
       this.widget = new cdb.core.Model({}, {
         layer: this.layer
       });
+      this.widget.dataviewModel = {};
 
       this.matchSpy = jasmine.createSpy('match');
       this.createContentViewSpy = jasmine.createSpy('createContentView');

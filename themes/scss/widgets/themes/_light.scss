@@ -142,21 +142,10 @@ $timeSliderBorder: rgba(#FFF, 1);
     background-color: $loadingBkg;
   }
 
-  .CDB-Widget-error {
-    border-color: $negative;
-    background: rgba($canvasBkg, 0.8);
+  .CDB-Widget--error {
+    border-top: 2px solid $negative;
   }
-  .CDB-Widget-errorButton {
-    background: $secondary;
 
-    .CDB-Widget-textSmall,
-    .CDB-Widget-textSmaller {
-      color: #FFF;
-    }
-    &:hover {
-      background: $primary;
-    }
-  }
 
   .CDB-Shape-dot {
     background: $elementBorder;

@@ -287,6 +287,54 @@ describe('windshaft-response', function () {
     });
   });
 
+  describe('.getAnalysesMedatada', function () {
+    it('should return undefined when there are no analyses', function () {
+      var windshaftSettings = {};
+      var serverResponse = {
+        'metadata': {
+          'layers': [],
+          'dataviews': {},
+          'analyses': []
+        }
+      };
+
+      var response = new Response(windshaftSettings, serverResponse);
+
+      var analysisMetadata = response.getAnalysisNodeMetadata('fakeId');
+      expect(analysisMetadata).toBeUndefined();
+    });
+
+    it('should return the analysis metadata when exists', function () {
+      var windshaftSettings = {};
+      var serverResponse = {
+        'metadata': {
+          'layers': [],
+          'dataviews': {},
+          'analyses': [
+            {
+              'nodes': {
+                'a0': {
+                  'status': 'ready',
+                  'url': {
+                    'http': 'http://3.ashbu.cartocdn.com/iago-carto/api/v1/map/2edba0a73a790c4afb83222183782123:1508164637676/analysis/node/dc2b9be10f88baa5b0156f2530f9b978b47a2a23',
+                    'https': 'https://cartocdn-ashbu_d.global.ssl.fastly.net/iago-carto/api/v1/map/2edba0a73a790c4afb83222183782123:1508164637676/analysis/node/dc2b9be10f88baa5b0156f2530f9b978b47a2a23'
+                  },
+                  'query': 'SELECT * FROM table'
+                }
+              }
+            }
+          ]
+        }
+      };
+      var response = new Response(windshaftSettings, serverResponse);
+      var analysisMetadata = response.getAnalysisNodeMetadata('a0');
+
+      expect(analysisMetadata).toBeDefined();
+      expect(analysisMetadata.status).toEqual('ready');
+      expect(analysisMetadata.query).toEqual('SELECT * FROM table');
+    });
+  });
+
   describe('.getSupportedSubdomains', function () {
     var response;
     beforeEach(function () {

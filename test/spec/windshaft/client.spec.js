@@ -125,20 +125,40 @@ describe('windshaft/client', function () {
       expect(errorCallback).not.toHaveBeenCalled();
     });
 
-    it('should make a request only if the request service allows it', function () {
-      spyOn(this.client._requestTracker, 'canRequestBePerformed').and.returnValue(true);
-      var request = new Request('mapDefinition', {}, {});
-      expect($.ajax).not.toHaveBeenCalled();
-      this.client.instantiateMap(request);
-      expect($.ajax).toHaveBeenCalled();
-    });
+    describe('request tracking', function () {
+      var successCallback;
+      var errorCallback;
+      var request;
 
-    it('should not make a request when the request service does not allow it', function () {
-      spyOn(this.client._requestTracker, 'canRequestBePerformed').and.returnValue(false);
-      var request = new Request('mapDefinition', {}, {});
-      expect($.ajax).not.toHaveBeenCalled();
-      this.client.instantiateMap(request);
-      expect($.ajax).not.toHaveBeenCalled();
+      beforeEach(function () {
+        successCallback = jasmine.createSpy('successCallback');
+        errorCallback = jasmine.createSpy('errorCallback');
+
+        request = new Request('mapDefinition', {}, {
+          success: successCallback,
+          error: errorCallback
+        });
+      });
+
+      it('should make a request only if the request service allows it', function () {
+        expect($.ajax).not.toHaveBeenCalled();
+
+        spyOn(this.client._requestTracker, 'canRequestBePerformed').and.returnValue(true);
+
+        this.client.instantiateMap(request);
+
+        expect($.ajax).toHaveBeenCalled();
+      });
+
+      it('should not make a request when the request service does not allow it', function () {
+        expect($.ajax).not.toHaveBeenCalled();
+
+        spyOn(this.client._requestTracker, 'canRequestBePerformed').and.returnValue(false);
+
+        this.client.instantiateMap(request);
+        expect($.ajax).not.toHaveBeenCalled();
+        expect(errorCallback).toHaveBeenCalledWith({});
+      });
     });
 
     describe('HTTP method:', function () {

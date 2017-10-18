@@ -2,6 +2,7 @@ Development
 -----------
 
 ### Features
+* Add pagination support in data imports listing in superadmin (#12938).
 * Profile static view (#12704)
 * Add FullStory (if available) in user dashboard
 * Change default style for polygon, point and line geometries (design#983)

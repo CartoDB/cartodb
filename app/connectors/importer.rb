@@ -12,7 +12,9 @@ module CartoDB
       ORIGIN_SCHEMA       = 'cdb_importer'
       DESTINATION_SCHEMA  = 'public'
       MAX_RENAME_RETRIES  = 20
-
+      
+      # The following columns are not validated because we are comparing schemas of a cartodbfied table and one that
+      # is about to be imported.
       COLUMNS_NOT_TO_VALIDATE = [:cartodb_id, :the_geom_webmercator].freeze
 
       attr_reader :imported_table_visualization_ids, :rejected_layers

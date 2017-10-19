@@ -142,4 +142,15 @@ describe('geo/gmaps/gmaps-map-view', function () {
       expect(mapView.projector.latLngToPixel).toHaveBeenCalled();
     });
   });
+
+  describe('listeners', function () {
+    beforeEach(function (done) {
+      // Listen for the map to be loaded
+      mapView.listenOnce('idle', done);
+    });
+
+    it('sets isReady to true if idle event is triggered', function () {
+      expect(mapView._isReady).toBe(true);
+    });
+  });
 });

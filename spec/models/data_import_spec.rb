@@ -61,7 +61,7 @@ describe DataImport do
     data_import.error_code.should == 2011
   end
 
-  it 'should overwrite dataset if collision_strategy is set accordingly' do
+  it 'should overwrite dataset if collision_strategy is set to overwrite' do
     carto_user = Carto::User.find(@user.id)
     carto_user.visualizations.count.should eq 1
 

@@ -1,8 +1,5 @@
 module Carto
   module Importer
-    # This module can be used as a mixin as long as the class including it implements the following methods:
-    #  * user
-    #  * runner
     class TableSetup
       STATEMENT_TIMEOUT = 1.hour * 1000
 

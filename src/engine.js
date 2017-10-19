@@ -31,6 +31,7 @@ var WindshaftClient = require('./windshaft/client');
  * @param {boolean} params.templateName - While we dont remove named maps we must explicitly say when the map is named. Defaults to false.
  * @param {boolean} params.statTag - Token used to get map view statistics.
  * @class
+ * @api
  */
 function Engine (params) {
   if (!params) throw new Error('new Engine() called with no paramters');
@@ -83,6 +84,8 @@ function Engine (params) {
  * 
  * // Call the reload method and wait.
  * engine.reload();
+ *
+ * @api
  */
 Engine.prototype.on = function on (event, callback) {
   this._eventEmmitter.on(event, callback);
@@ -92,12 +95,14 @@ Engine.prototype.on = function on (event, callback) {
  * Remove a previously-bound callback function from an event.
  * 
  * @param {string} event - The name of the event that triggers the callback execution.
- * @param {function} callback - A function to be executed when the event is fired.
+ * @param {function} callback - A function callback to be removed when the event is fired.
  * 
  * @example
  * 
  * // Remove the the `displayMap` listener function so it wont be executed anymore when the engine fires the `load` event.
  * engine.off(Engine.Events.RELOAD_SUCCESS, onReload);
+ * 
+ * @api
  */
 Engine.prototype.off = function off (event, callback) {
   this._eventEmmitter.off(event, callback);
@@ -115,6 +120,8 @@ Engine.prototype.off = function off (event, callback) {
  * 
  * @fires Engine#Engine:RELOAD_SUCCESS
  * @fires Engine#Engine:RELOAD_ERROR
+ * 
+ * @api
  */
 Engine.prototype.reload = function reload (sourceId, forceFetch) {
   var params = this._getParams(sourceId, forceFetch);
@@ -131,8 +138,8 @@ Engine.prototype.reload = function reload (sourceId, forceFetch) {
  * 
  * @param {layer} layer - A new layer to be added to the engine.
  * 
- * @api
  * @public
+ * @api
  */
 Engine.prototype.addLayer = function addLayer (layer) {
   this._layersCollection.add(layer);
@@ -144,8 +151,8 @@ Engine.prototype.addLayer = function addLayer (layer) {
  * 
  * @param {Dataview} dataview - A new dataview to be added to the engine.
  * 
- * @api
  * @public
+ * @api
  */
 Engine.prototype.addDataview = function addDataview (dataview) {
   this._dataviewsCollection.add(dataview);
@@ -216,11 +223,16 @@ Engine.prototype._getSerializer = function _getSerializer () {
  *
  * @readonly
  * @enum {string}
+ * @api
  */
 Engine.Events = {
-  // Reload success event, fired every time the reload function succeed.
+  /**
+   * Reload success event, fired every time the reload function succeed.
+   */
   RELOAD_SUCCESS: 'reload-success',
-  // Reload success event, fired every time the reload function fails.
+  /**
+   * Reload success event, fired every time the reload function fails.
+   */
   RELOAD_ERROR: 'reload-error'
 };
 
@@ -231,6 +243,7 @@ module.exports = Engine;
   *
   * @event Engine#Engine:RELOAD_SUCCESS
   * @type {string}
+  * @api
   */
 
 /**
@@ -238,4 +251,5 @@ module.exports = Engine;
   *
   * @event Engine#Engine:RELOAD_ERROR
   * @type {string}
+  * @api
   */

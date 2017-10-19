@@ -92,6 +92,7 @@ module CartoDB
           name = rename(result, result.table_name, result.name)
           begin
             if overwrite
+              @table_setup.cartodbfy(name)
               @table_setup.copy_privileges(@destination_schema, name, ORIGIN_SCHEMA, name)
               log("Dropping destination table: #{name}")
               drop("#{@destination_schema}.#{name}")
@@ -106,7 +107,6 @@ module CartoDB
         end
 
         if overwrite
-          @table_setup.cartodbfy(name)
           @table_setup.run_index_statements(index_statements, @database)
           @table_setup.recreate_overviews(name)
           @table_setup.fix_oid(name)

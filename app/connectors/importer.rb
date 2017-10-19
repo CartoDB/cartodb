@@ -76,10 +76,10 @@ module CartoDB
 
         name = Carto::ValidTableNameProposer.new.propose_valid_table_name(result.name, taken_names: [])
 
-        overwrite = overwrite_table? && taken_names.include?(name)
+        overwrite = overwrite_strategy? && taken_names.include?(name)
 
         if overwrite
-          assert_schemas_are_compatible(name)
+          raise 'Incompatible schemas' unless compatible_schemas_for_overwrite?(name)
           index_statements = generate_index_statements(@destination_schema, name)
         end
 
@@ -216,7 +216,7 @@ module CartoDB
       def rename(result, current_name, new_name)
         new_name = Carto::ValidTableNameProposer.new.propose_valid_table_name(
           new_name,
-          taken_names: overwrite_table? ? [] : taken_names
+          taken_names: overwrite_strategy? ? [] : taken_names
         )
 
         database.execute(%{
@@ -261,7 +261,7 @@ module CartoDB
       end
 
       def persist_metadata(name, data_import_id, overwrite_table)
-        user_table = overwrite_table? ? Carto::UserTable.where(user_id: user.id, name: name).first : nil
+        user_table = overwrite_strategy? ? Carto::UserTable.where(user_id: user.id, name: name).first : nil
         table_registrar.register(name, data_import_id, user_table)
         @table = table_registrar.table
         @imported_table_visualization_ids << @table.table_visualization.id unless overwrite_table
@@ -288,7 +288,7 @@ module CartoDB
 
       private
 
-      def assert_schemas_are_compatible(name)
+      def compatible_schemas_for_overwrite?(name)
         orig_schema = user.in_database.schema(results.first.tables.first, reload: true, schema: ORIGIN_SCHEMA)
         dest_schema = user.in_database.schema(name, reload: true, schema: user.database_schema)
         valid = true
@@ -298,23 +298,23 @@ module CartoDB
           break if !valid
           row_valid = false
           orig_schema.each do |orig_row|
-            if orig_row[0] == :the_geom && orig_row[0] == dest_row[0] && dest_row[1][:db_type].include?(orig_row[1][:db_type]) ||
-               orig_row[0] == dest_row[0] && orig_row[1][:db_type].convert_to_cartodb_type == dest_row[1][:db_type].convert_to_cartodb_type
-              row_valid = true
-              break
-            end
+            break if (row_valid = rows_assignable?(dest_row, orig_row))
           end
           valid = row_valid
         end
+        valid
+      end
 
-        raise 'Incompatible schemas' unless valid
+      def rows_assignable?(dest_row, orig_row)
+        (orig_row[0] == :the_geom && orig_row[0] == dest_row[0] && dest_row[1][:db_type].include?(orig_row[1][:db_type])) ||
+          (orig_row[0] == dest_row[0] && orig_row[1][:db_type].convert_to_cartodb_type == dest_row[1][:db_type].convert_to_cartodb_type)
       end
 
       def user
         table_registrar.user
       end
 
-      def overwrite_table?
+      def overwrite_strategy?
         @collision_strategy == Carto::DataImportConstants::COLLISION_STRATEGY_OVERWRITE
       end
 

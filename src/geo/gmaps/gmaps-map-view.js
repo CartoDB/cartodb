@@ -69,7 +69,7 @@ var GoogleMapsMapView = MapView.extend({
     });
 
     google.maps.event.addListenerOnce(this._gmapsMap, 'idle', function (e) {
-      this._isReady = true;
+      self._isReady = true;
     });
 
     this.projector = new Projector(this._gmapsMap);

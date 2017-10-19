@@ -64,6 +64,7 @@ Development
 * Updates Dataservices API client default version to `0.20.0` (#12633)
 * Remove data-observatory-multiple-measures feature flag (#304)
 * Improve legends error (cartodb.js#1758)
+* Updates Dataservices API client default version to `0.21.0` (#12942)
 
 ### Bug fixes / enhancements
 * Fix bounding box not updating with gmaps basemaps

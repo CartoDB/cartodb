@@ -2,7 +2,7 @@ Development
 -----------
 
 ### Features
-* Improve error on widgets (CartoDB/deep-insights.js#574) 
+* Improve error on widgets (CartoDB/deep-insights.js#574)
 * Add pagination support in data imports listing in superadmin (#12938).
 * Profile static view (#12704)
 * Add FullStory (if available) in user dashboard
@@ -64,8 +64,10 @@ Development
 * Updates Dataservices API client default version to `0.20.0` (#12633)
 * Remove data-observatory-multiple-measures feature flag (#304)
 * Improve legends error (cartodb.js#1758)
+* Updates Dataservices API client default version to `0.21.0` (#12942)
 
 ### Bug fixes / enhancements
+* Fix bounding box not updating with gmaps basemaps
 * Add "less or equal than" and "greater or equal than" to filter by value analysis
 * Improve SQL limit platforms notification (#12597)
 * Fix infinite loop for failed sql api requests.

@@ -79,7 +79,8 @@ module CartoDB
         @support_tables_helper.reset
         log("Before renaming from #{result.table_name} to #{result.name}")
 
-        name = Carto::ValidTableNameProposer.new.propose_valid_table_name(result.name, taken_names: [])
+        names_taken = overwrite_strategy? ? [] : taken_names
+        name = Carto::ValidTableNameProposer.new.propose_valid_table_name(result.name, taken_names: names_taken)
 
         overwrite = overwrite_strategy? && taken_names.include?(name)
 
@@ -89,7 +90,7 @@ module CartoDB
         end
 
         database.transaction do
-          name = rename(result, result.table_name, result.name)
+          rename(result, result.table_name, name)
           begin
             if overwrite
               @table_setup.copy_privileges(@destination_schema, name, ORIGIN_SCHEMA, name)
@@ -218,12 +219,9 @@ module CartoDB
         raise e
       end
 
+      # Renames table from current_name to new_name.
+      # It doesn't check if `new_name` is valid. To get a valid name use `Carto::ValidTableNameProposer`
       def rename(result, current_name, new_name)
-        new_name = Carto::ValidTableNameProposer.new.propose_valid_table_name(
-          new_name,
-          taken_names: overwrite_strategy? ? [] : taken_names
-        )
-
         database.execute(%{
           ALTER TABLE "#{ORIGIN_SCHEMA}"."#{current_name}" RENAME TO "#{new_name}"
         })

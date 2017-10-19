@@ -6,11 +6,10 @@ module Carto
     class TableSetup
       STATEMENT_TIMEOUT = 1.hour * 1000
 
-      def initialize(user:, database:, overviews_creator:, runner:, statement_timeout: STATEMENT_TIMEOUT)
+      def initialize(user:, overviews_creator:, log:, statement_timeout: STATEMENT_TIMEOUT)
         @user = user
-        @database = database
         @overviews_creator = overviews_creator
-        @runner = runner
+        @log = log
         @statement_timeout = statement_timeout
       end
 
@@ -49,10 +48,10 @@ module Carto
           )].map { |record| record.fetch(:indexdef) }
       end
 
-      def run_index_statements(statements)
+      def run_index_statements(statements, database)
         statements.each do |statement|
           begin
-            @database.run(statement)
+            database.run(statement)
           rescue => exception
             if exception.message !~ /relation .* already exists/
               CartoDB::Logger.error(exception: exception,
@@ -113,7 +112,7 @@ module Carto
         # function, and thus executed in a transaction, we shouldn't
         # need any clean up here. (Either all overviews were created
         # or nothing changed)
-        @runner.log.append("Overviews recreation failed: #{exception.message}")
+        @log.append("Overviews recreation failed: #{exception.message}")
         CartoDB::Logger.error(
           message:    "Overviews recreation failed:  #{exception}",
           exception:  exception,

@@ -44,9 +44,8 @@ module CartoDB
         @collision_strategy = collision_strategy
         @table_setup = ::Carto::Importer::TableSetup.new(
           user: user,
-          database: database,
           overviews_creator: overviews_creator,
-          runner: runner
+          log: runner.log
         )
       end
 
@@ -106,7 +105,7 @@ module CartoDB
 
         if overwrite
           @table_setup.cartodbfy(name)
-          @table_setup.run_index_statements(index_statements)
+          @table_setup.run_index_statements(index_statements, @database)
           @table_setup.recreate_overviews(name)
           @table_setup.fix_oid(name)
           @table_setup.update_cdb_tablemetadata(name)

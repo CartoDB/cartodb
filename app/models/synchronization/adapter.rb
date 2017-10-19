@@ -21,9 +21,8 @@ module CartoDB
         @failed       = false
         @table_setup = ::Carto::Importer::TableSetup.new(
           user: user,
-          database: database,
           overviews_creator: overviews_creator,
-          runner: runner
+          log: runner.log
         )
       end
 
@@ -45,7 +44,7 @@ module CartoDB
           @table_setup.copy_privileges(user.database_schema, table_name, user.database_schema, result.table_name)
           overwrite(table_name, result)
           setup_table(table_name, geo_type)
-          @table_setup.run_index_statements(index_statements)
+          @table_setup.run_index_statements(index_statements, @database)
           @table_setup.recreate_overviews(table_name)
         end
         self

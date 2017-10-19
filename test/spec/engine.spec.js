@@ -4,6 +4,7 @@ var Engine = require('../../src/engine');
 var FakeFactory = require('../helpers/fakeFactory');
 var FAKE_RESPONSE = require('./windshaft/response.mock');
 var CartoDBLayer = require('../../src/geo/map/cartodb-layer');
+var Dataview = require('../../src/dataviews/dataview-model-base');
 
 describe('Engine', function () {
   var fakeVis = new Backbone.Model();
@@ -53,6 +54,19 @@ describe('Engine', function () {
       engine.addLayer(layer);
       expect(engine._layersCollection.length).toEqual(1);
       expect(engine._layersCollection.at(0)).toEqual(layer);
+    });
+  });
+
+  describe('.addDataview', function () {
+    it('should add a new dataview', function () {
+      var engine = new Engine({ serverUrl: 'http://example.com', username: 'fake-username' });
+      var source = FakeFactory.createAnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' });
+      var dataview = new Dataview({ id: 'dataview1', source: source }, { map: {}, vis: fakeVis });
+
+      expect(engine._dataviewsCollection.length).toEqual(0);
+      engine.addDataview(dataview);
+      expect(engine._dataviewsCollection.length).toEqual(1);
+      expect(engine._dataviewsCollection.at(0)).toEqual(dataview);
     });
   });
 

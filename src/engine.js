@@ -139,6 +139,19 @@ Engine.prototype.addLayer = function addLayer (layer) {
 };
 
 /**
+ * 
+ * Add a dataview to the engine dataviewsCollection
+ * 
+ * @param {Dataview} dataview - A new dataview to be added to the engine.
+ * 
+ * @api
+ * @public
+ */
+Engine.prototype.addDataview = function addDataview (dataview) {
+  this._dataviewsCollection.add(dataview);
+};
+
+/**
  * Callback executed when the windhsaft client returns a successful response.
  * Update internal models and trigger a reload_sucess event.
  * @private

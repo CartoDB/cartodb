@@ -9,8 +9,6 @@ require_dependency 'visualization/derived_creator'
 module CartoDB
   module Connector
     class Importer
-      include Carto::Importer::TableSetup
-
       ORIGIN_SCHEMA       = 'cdb_importer'
       DESTINATION_SCHEMA  = 'public'
       MAX_RENAME_RETRIES  = 20
@@ -44,6 +42,12 @@ module CartoDB
         @imported_table_visualization_ids = []
         @rejected_layers = []
         @collision_strategy = collision_strategy
+        @table_setup = ::Carto::Importer::TableSetup.new(
+          user: user,
+          database: database,
+          overviews_creator: overviews_creator,
+          runner: runner
+        )
       end
 
       def run(tracker)
@@ -80,14 +84,14 @@ module CartoDB
 
         if overwrite
           raise 'Incompatible schemas' unless compatible_schemas_for_overwrite?(name)
-          index_statements = generate_index_statements(@destination_schema, name)
+          index_statements = @table_setup.generate_index_statements(@destination_schema, name)
         end
 
         database.transaction do
           name = rename(result, result.table_name, result.name)
           begin
             if overwrite
-              copy_privileges(@destination_schema, name, ORIGIN_SCHEMA, name)
+              @table_setup.copy_privileges(@destination_schema, name, ORIGIN_SCHEMA, name)
               log("Dropping destination table: #{name}")
               drop("#{@destination_schema}.#{name}")
               log("Removing metadata for table #{name}")
@@ -101,11 +105,11 @@ module CartoDB
         end
 
         if overwrite
-          cartodbfy(name)
-          run_index_statements(index_statements)
-          recreate_overviews(name)
-          fix_oid(name)
-          update_cdb_tablemetadata(name)
+          @table_setup.cartodbfy(name)
+          @table_setup.run_index_statements(index_statements)
+          @table_setup.recreate_overviews(name)
+          @table_setup.fix_oid(name)
+          @table_setup.update_cdb_tablemetadata(name)
         end
 
         result.name = name

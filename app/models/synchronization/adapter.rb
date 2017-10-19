@@ -5,7 +5,7 @@ require 'carto/importer/table_setup'
 module CartoDB
   module Synchronization
     class Adapter
-      include Carto::Importer::TableSetup
+      STATEMENT_TIMEOUT = 1.hour * 1000
 
       DESTINATION_SCHEMA = 'public'
       THE_GEOM = 'the_geom'.freeze
@@ -19,6 +19,12 @@ module CartoDB
         @user         = user
         @overviews_creator = overviews_creator
         @failed       = false
+        @table_setup = ::Carto::Importer::TableSetup.new(
+          user: user,
+          database: database,
+          overviews_creator: overviews_creator,
+          runner: runner
+        )
       end
 
       def run(&tracker)
@@ -31,16 +37,16 @@ module CartoDB
             data_for_exception << "1st result:#{runner.results.first.inspect}"
             raise data_for_exception
           end
-          index_statements = generate_index_statements(user.database_schema, table_name)
+          index_statements = @table_setup.generate_index_statements(user.database_schema, table_name)
           move_to_schema(result)
           geo_type = fix_the_geom_type!(user.database_schema, result.table_name)
           import_cleanup(user.database_schema, result.table_name)
-          cartodbfy(result.table_name)
-          copy_privileges(user.database_schema, table_name, user.database_schema, result.table_name)
+          @table_setup.cartodbfy(result.table_name)
+          @table_setup.copy_privileges(user.database_schema, table_name, user.database_schema, result.table_name)
           overwrite(table_name, result)
           setup_table(table_name, geo_type)
-          run_index_statements(index_statements)
-          recreate_overviews(table_name)
+          @table_setup.run_index_statements(index_statements)
+          @table_setup.recreate_overviews(table_name)
         end
         self
       rescue => exception
@@ -71,8 +77,8 @@ module CartoDB
           drop(temporary_name) if exists?(temporary_name)
           rename(result.table_name, table_name)
         end
-        fix_oid(table_name)
-        update_cdb_tablemetadata(table_name)
+        @table_setup.fix_oid(table_name)
+        @table_setup.update_cdb_tablemetadata(table_name)
       rescue => exception
         puts "Sync overwrite ERROR: #{exception.message}: #{exception.backtrace.join}"
 
@@ -107,7 +113,7 @@ module CartoDB
                               user: user,
                               table: table_name)
       ensure
-        fix_oid(table_name)
+        @table_setup.fix_oid(table_name)
       end
 
       # From Table#get_the_geom_type!, adapted to unregistered tables

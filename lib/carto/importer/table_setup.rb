@@ -3,15 +3,23 @@ module Carto
     # This module can be used as a mixin as long as the class including it implements the following methods:
     #  * user
     #  * runner
-    module TableSetup
+    class TableSetup
       STATEMENT_TIMEOUT = 1.hour * 1000
+
+      def initialize(user:, database:, overviews_creator:, runner:, statement_timeout: STATEMENT_TIMEOUT)
+        @user = user
+        @database = database
+        @overviews_creator = overviews_creator
+        @runner = runner
+        @statement_timeout = statement_timeout
+      end
 
       # Store all indexes to re-create them after "syncing" the table by reimporting and swapping it
       # INFO: As upon import geom index names are not enforced, they might "not collide" and generate one on the new
       # import plus the one already existing, so we skip those
       def generate_index_statements(origin_schema, origin_table_name)
         # INFO: This code discerns gist indexes like lib/sql/CDB_CartodbfyTable.sql -> _CDB_create_the_geom_columns
-        user.in_database(as: :superuser)[%(
+        @user.in_database(as: :superuser)[%(
             SELECT indexdef AS indexdef
             FROM pg_indexes
             WHERE schemaname = '#{origin_schema}'
@@ -44,7 +52,7 @@ module Carto
       def run_index_statements(statements)
         statements.each do |statement|
           begin
-            database.run(statement)
+            @database.run(statement)
           rescue => exception
             if exception.message !~ /relation .* already exists/
               CartoDB::Logger.error(exception: exception,
@@ -56,10 +64,10 @@ module Carto
       end
 
       def cartodbfy(table_name)
-        schema_name = user.database_schema
+        schema_name = @user.database_schema
         qualified_table_name = "\"#{schema_name}\".#{table_name}"
 
-        user.transaction_with_timeout(statement_timeout: STATEMENT_TIMEOUT) do |user_conn|
+        @user.transaction_with_timeout(statement_timeout: @statement_timeout) do |user_conn|
           user_conn.run(%{
             SELECT cartodb.CDB_CartodbfyTable('#{schema_name}'::TEXT,'#{qualified_table_name}'::REGCLASS);
           })
@@ -69,13 +77,13 @@ module Carto
       rescue => exception
         CartoDB::Logger.error(message: 'Error in sync cartodbfy',
                               exception: exception,
-                              user: user,
+                              user: @user,
                               table: table_name)
         raise exception
       end
 
       def copy_privileges(origin_schema, origin_table_name, destination_schema, destination_table_name)
-        user.in_database(as: :superuser).execute(%(
+        @user.in_database(as: :superuser).execute(%(
           UPDATE pg_class
           SET relacl=(
             SELECT r.relacl FROM pg_class r, pg_namespace n
@@ -105,24 +113,24 @@ module Carto
         # function, and thus executed in a transaction, we shouldn't
         # need any clean up here. (Either all overviews were created
         # or nothing changed)
-        runner.log.append("Overviews recreation failed: #{exception.message}")
+        @runner.log.append("Overviews recreation failed: #{exception.message}")
         CartoDB::Logger.error(
           message:    "Overviews recreation failed:  #{exception}",
           exception:  exception,
-          user:       @user,
+          user:       @@user,
           table_name: table_name
         )
       end
 
       def fix_oid(table_name)
-        user_table = Carto::UserTable.find(user.tables.where(name: table_name).first.id)
+        user_table = Carto::UserTable.find(@user.tables.where(name: table_name).first.id)
 
         user_table.sync_table_id
         user_table.save
       end
 
       def update_table_pg_stats(qualified_table_name)
-        user.transaction_with_timeout(statement_timeout: STATEMENT_TIMEOUT) do |user_conn|
+        @user.transaction_with_timeout(statement_timeout: @statement_timeout) do |user_conn|
           user_conn.run(%{
             ANALYZE #{qualified_table_name};
           })
@@ -130,7 +138,7 @@ module Carto
       end
 
       def update_cdb_tablemetadata(name)
-        user.tables.where(name: name).first.update_cdb_tablemetadata
+        @user.tables.where(name: name).first.update_cdb_tablemetadata
       end
     end
   end

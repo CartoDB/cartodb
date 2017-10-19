@@ -2,7 +2,7 @@ Development
 -----------
 
 ### Features
-* Improve error on widgets (CartoDB/deep-insights.js#574) 
+* Improve error on widgets (CartoDB/deep-insights.js#574)
 * Add pagination support in data imports listing in superadmin (#12938).
 * Profile static view (#12704)
 * Add FullStory (if available) in user dashboard
@@ -66,6 +66,7 @@ Development
 * Improve legends error (cartodb.js#1758)
 
 ### Bug fixes / enhancements
+* Fix bounding box not updating with gmaps basemaps
 * Add "less or equal than" and "greater or equal than" to filter by value analysis
 * Improve SQL limit platforms notification (#12597)
 * Fix infinite loop for failed sql api requests.

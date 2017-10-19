@@ -3,17 +3,25 @@ const PublicClient = require('./public.js.babel');
 class AuthenticatedClient extends PublicClient {
   getConfig (callback) {
     const CONFIG_PATH = 'api/v3/me';
+
     return this.get([CONFIG_PATH], callback);
   }
 
-  getVisualization (viz, callback) {
+  getVisualization (vizUrl, params, callback) {
     const VIZ_API_PATH = 'api/v1/viz';
-    return this.get([VIZ_API_PATH, viz], callback);
+    const uriParams = this.paramsToURI(params);
+
+    return this.get([VIZ_API_PATH, vizUrl, uriParams], callback);
   }
 
   getDerivedVisualizations (mapsNumber, callback) {
     const VIZ_API_PATH = `api/v1/viz`;
-    return this.get([VIZ_API_PATH, `?per_page=${mapsNumber}&type=derived`], callback);
+    const uriParams = this.paramsToURI({
+      per_page: mapsNumber,
+      type: 'derived'
+    });
+
+    return this.get([VIZ_API_PATH, uriParams], callback);
   }
 }
 

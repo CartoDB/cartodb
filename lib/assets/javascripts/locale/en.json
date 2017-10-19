@@ -1,0 +1,11 @@
+{
+  "public_map": {
+    "info": {
+      "more": "more",
+      "more_from": "More from",
+      "more_info": "More info",
+      "update": "Update",
+      "views_pluralize": "1 view |||| %{smart_count} views"
+    }
+  }
+}

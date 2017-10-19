@@ -203,6 +203,22 @@ var PublicClient = function () {
       return _extends({}, obj.headers, additional);
     }
   }, {
+    key: 'paramsToURI',
+    value: function paramsToURI(params) {
+      var DEFAULT_PARAMS = '';
+
+      return this.checkParams(params) ? '?' + Object.keys(params).map(function (key) {
+        return encodeURIComponent(key) + '=' + encodeURIComponent(params[key]);
+      }).join('&') : DEFAULT_PARAMS;
+    }
+  }, {
+    key: 'checkParams',
+    value: function checkParams(params) {
+      var OBJECT_TYPE = '[object Object]';
+
+      return params && Object.prototype.toString.call(params) === OBJECT_TYPE && Object.keys(params).length;
+    }
+  }, {
     key: 'makeRelativeURI',
     value: function makeRelativeURI(parts) {
       return '/' + parts.join('/');
@@ -418,19 +434,27 @@ var AuthenticatedClient = function (_PublicClient) {
     key: 'getConfig',
     value: function getConfig(callback) {
       var CONFIG_PATH = 'api/v3/me';
+
       return this.get([CONFIG_PATH], callback);
     }
   }, {
     key: 'getVisualization',
-    value: function getVisualization(viz, callback) {
+    value: function getVisualization(vizUrl, params, callback) {
       var VIZ_API_PATH = 'api/v1/viz';
-      return this.get([VIZ_API_PATH, viz], callback);
+      var uriParams = this.paramsToURI(params);
+
+      return this.get([VIZ_API_PATH, vizUrl, uriParams], callback);
     }
   }, {
     key: 'getDerivedVisualizations',
     value: function getDerivedVisualizations(mapsNumber, callback) {
       var VIZ_API_PATH = 'api/v1/viz';
-      return this.get([VIZ_API_PATH, '?per_page=' + mapsNumber + '&type=derived'], callback);
+      var uriParams = this.paramsToURI({
+        per_page: mapsNumber,
+        type: 'derived'
+      });
+
+      return this.get([VIZ_API_PATH, uriParams], callback);
     }
   }]);
 

@@ -35,7 +35,7 @@ class Admin::VisualizationsController < Admin::AdminController
                                                       :show_protected_embed_map, :embed_map]
   before_filter :link_ghost_tables, only: [:index]
   before_filter :user_metadata_propagation, only: [:index]
-  before_filter :get_viewed_user, only: [:public_map, :public_table]
+  before_filter :get_viewed_user, only: [:public_map, :public_table, :show_protected_public_map]
   before_filter :load_common_data, only: [:index]
 
   before_filter :resolve_visualization_and_table,
@@ -217,8 +217,6 @@ class Admin::VisualizationsController < Admin::AdminController
   end
 
   def public_map
-    return render(file: "public/static/public_map/index.html", layout: false) if @viewed_user.has_feature_flag?('static_public_map')
-
     if current_user.nil? && !request.params[:redirected].present?
       redirect_url = get_corrected_url_if_proceeds(for_table=false)
       unless redirect_url.nil?
@@ -240,6 +238,8 @@ class Admin::VisualizationsController < Admin::AdminController
       redirect_to visualization_presenter.privacy_aware_map_url({ redirected: true },
                                                                 'public_visualizations_public_map') and return
     end
+
+    return render(file: "public/static/public_map/index.html", layout: false) if @viewed_user.has_feature_flag?('static_public_map')
 
     if @visualization.can_be_cached?
       response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
@@ -359,6 +359,8 @@ class Admin::VisualizationsController < Admin::AdminController
     response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
     response.headers['Surrogate-Key'] = "#{CartoDB::SURROGATE_NAMESPACE_PUBLIC_PAGES} #{@visualization.surrogate_key}"
     response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
+
+    return render(file: "public/static/public_map/index.html", layout: false) if @viewed_user.has_feature_flag?('static_public_map')
 
     @protected_map_tokens = @visualization.get_auth_tokens
 

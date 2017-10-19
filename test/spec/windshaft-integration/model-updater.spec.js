@@ -16,6 +16,7 @@ var MyWindshaftMap = WindshaftMap.extend({
 });
 
 describe('src/vis/model-updater', function () {
+  var mapModel;
   beforeEach(function () {
     this.fakeVis = jasmine.createSpyObj('vis', ['reload']);
 
@@ -52,6 +53,8 @@ describe('src/vis/model-updater', function () {
       layersCollection: this.layersCollection
     });
     this.dataviewsCollection = new Backbone.Collection();
+
+    mapModel = new MapModel(null, { layersFactory: {}, layersCollection: this.LayersCollection });
 
     this.modelUpdater = new ModelUpdater({
       layerGroupModel: this.layerGroupModel,
@@ -474,14 +477,14 @@ describe('src/vis/model-updater', function () {
           id: 'a1',
           source: new AnalysisModel({}, { vis: fakeVis, camshaftReference: camshaftReferenceMock })
         }, {
-          map: this.mapModel,
+          map: mapModel,
           vis: fakeVis
         });
         var dataview2 = new Dataview({
           id: 'a2',
           source: new AnalysisModel({}, { vis: fakeVis, camshaftReference: camshaftReferenceMock })
         }, {
-          map: this.mapModel,
+          map: mapModel,
           vis: fakeVis
         });
         this.dataviewsCollection.reset([dataview1, dataview2]);
@@ -527,7 +530,7 @@ describe('src/vis/model-updater', function () {
         var analysis1 = new AnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' }, { vis: fakeVis, camshaftReference: camshaftReferenceMock });
         var analysis2 = new AnalysisModel({ id: 'a2', type: 'source', query: 'SELECT * FROM table' }, { vis: fakeVis, camshaftReference: camshaftReferenceMock });
         var layer = new CartoDBLayer({ source: analysis1 }, { vis: fakeVis });
-        var dataview = new Dataview({ id: 'a1', source: analysis2 }, { map: this.mapModel, vis: fakeVis });
+        var dataview = new Dataview({ id: 'a1', source: analysis2 }, { map: mapModel, vis: fakeVis });
 
         spyOn(analysis1, 'setOk');
         spyOn(analysis2, 'setOk');
@@ -554,7 +557,7 @@ describe('src/vis/model-updater', function () {
         var analysis1 = new AnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' }, { vis: fakeVis, camshaftReference: camshaftReferenceMock });
         var analysis2 = new AnalysisModel({ id: 'a2', type: 'source', query: 'SELECT * FROM table' }, { vis: fakeVis, camshaftReference: camshaftReferenceMock });
         var layer = new CartoDBLayer({ source: analysis1 }, { vis: fakeVis });
-        var dataview = new Dataview({ id: 'a1', source: analysis2 }, { map: this.mapModel, vis: fakeVis });
+        var dataview = new Dataview({ id: 'a1', source: analysis2 }, { map: mapModel, vis: fakeVis });
 
         spyOn(this.windshaftMap, 'getAnalysisNodeMetadata').and.callFake(function (analysisId) {
           return { error_message: 'fake_error_message', status: 'failed', query: 'query_' + analysisId, url: { http: 'url_' + analysisId } };

@@ -27,8 +27,7 @@ module CartoDB
       # @param data_import_id String UUID
       # @param destination_schema String|nil
       # @param public_user_roles Array|nil
-      def initialize(runner: nil, table_registrar: nil, quota_checker: nil, database: nil, data_import_id: nil,
-                     overviews_creator: nil,
+      def initialize(runner:, table_registrar:, quota_checker:, database:, data_import_id:, overviews_creator: nil,
                      destination_schema: DESTINATION_SCHEMA, public_user_roles: [CartoDB::PUBLIC_DB_USER],
                      collision_strategy: nil)
         @aborted                = false

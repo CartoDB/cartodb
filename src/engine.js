@@ -10,6 +10,7 @@ var NamedMapSerializer = require('./windshaft/map-serializer/named-map-serialize
 var Request = require('./windshaft/request');
 var Response = require('./windshaft/response');
 var WindshaftClient = require('./windshaft/client');
+var AnalysisService = require('./analysis/analysis-service');
 
 /**
  *
@@ -36,6 +37,7 @@ var WindshaftClient = require('./windshaft/client');
 function Engine (params) {
   if (!params) throw new Error('new Engine() called with no paramters');
   this._isNamedMap = params.templateName !== undefined;
+
   this._windshaftSettings = {
     urlTemplate: params.serverUrl,
     userName: params.username,
@@ -54,14 +56,14 @@ function Engine (params) {
   this._layersCollection = new LayersCollection();
   this._dataviewsCollection = new DataviewsCollection();
 
-  this._layerGroupModel = new CartoDBLayerGroup(
+  this._cartoLayerGroup = new CartoDBLayerGroup(
     { apiKey: params.apiKey, authToken: params.authToken },
     { layersCollection: this._layersCollection }
   );
 
   this._modelUpdater = new ModelUpdater({
     dataviewsCollection: this._dataviewsCollection,
-    layerGroupModel: this._layerGroupModel,
+    layerGroupModel: this._cartoLayerGroup,
     layersCollection: this._layersCollection
   });
 }
@@ -116,15 +118,16 @@ Engine.prototype.off = function off (event, callback) {
  * Once the response has arrived trigger a 'reload-succes' or 'reload-error' event.
  * 
  * @param {string} sourceId - The sourceId triggering the reload event. This is usefull to prevent uneeded requests and save data.
- * @param {string} forceFetch - ????
+ * @param {boolean} forceFetch - ????
+ * @param {boolean} includeFilters - Boolean flag to control if the filters need to be added in the payload.
  * 
  * @fires Engine#Engine:RELOAD_SUCCESS
  * @fires Engine#Engine:RELOAD_ERROR
  * 
  * @api
  */
-Engine.prototype.reload = function reload (sourceId, forceFetch) {
-  var params = this._getParams(sourceId, forceFetch);
+Engine.prototype.reload = function reload (sourceId, forceFetch, includeFilters) {
+  var params = this._getParams(includeFilters);
   var payload = this._getSerializer().serialize(this._layersCollection, this._dataviewsCollection);
   // TODO: update options, use promises or explicit callbacks function (error, params).
   var options = this._buildOptions(sourceId, forceFetch);
@@ -147,6 +150,19 @@ Engine.prototype.addLayer = function addLayer (layer) {
 
 /**
  * 
+ * Remove a layer from the engine layersCollection
+ * 
+ * @param {layer} layer - A new layer to be removed from the engine.
+ * 
+ * @public
+ * @api
+ */
+Engine.prototype.removeLayer = function removeLayer (layer) {
+  this._layersCollection.remove(layer);
+};
+
+/**
+ * 
  * Add a dataview to the engine dataviewsCollection
  * 
  * @param {Dataview} dataview - A new dataview to be added to the engine.
@@ -159,6 +175,19 @@ Engine.prototype.addDataview = function addDataview (dataview) {
 };
 
 /**
+ * 
+ * Remove a dataview from the engine dataviewsCollection
+ * 
+ * @param {Dataview} dataview - The Dataview to be removed to the engine.
+ * 
+ * @public
+ * @api
+ */
+Engine.prototype.removeDataview = function removeDataview (dataview) {
+  this._dataviewsCollection.remove(dataview);
+};
+
+/**
  * Callback executed when the windhsaft client returns a successful response.
  * Update internal models and trigger a reload_sucess event.
  * @private
@@ -166,6 +195,7 @@ Engine.prototype.addDataview = function addDataview (dataview) {
 Engine.prototype._onReloadSuccess = function _onReloadSuccess (serverResponse, sourceId, forceFetch) {
   var responseWrapper = new Response(this._windshaftSettings, serverResponse);
   this._modelUpdater.updateModels(responseWrapper, sourceId, forceFetch);
+  this._restartAnalysisPolling();
   this._eventEmmitter.trigger(Engine.Events.RELOAD_SUCCESS);
 };
 
@@ -177,7 +207,7 @@ Engine.prototype._onReloadSuccess = function _onReloadSuccess (serverResponse, s
 Engine.prototype._onReloadError = function _onReloadError (serverResponse) {
   var errors = serverResponse;
   this._modelUpdater.setErrors(errors);
-  this._eventEmmitter.trigger(Engine.Events.RELOAD_ERROR);
+  this._eventEmmitter.trigger(Engine.Events.RELOAD_ERROR, errors);
 };
 
 /**
@@ -194,12 +224,16 @@ Engine.prototype._buildOptions = function _buildOptions (sourceId, forceFetch) {
 
 /**
  * Helper to get windhsaft request parameters.
+ * @param {boolean} includeFilters - Boolean flag to control if the filters need to be added in the payload.
  * @private
  */
-Engine.prototype._getParams = function _getParams () {
+Engine.prototype._getParams = function _getParams (includeFilters) {
   var params = {
     stat_tag: this._windshaftSettings.statTag
   };
+  if (includeFilters && !_.isEmpty(this._dataviewsCollection.getFilters())) {
+    params.filters = this._dataviewsCollection.getFilters();
+  }
   if (this._windshaftSettings.apiKey) {
     params.api_key = this._windshaftSettings.apiKey;
     return params;
@@ -208,6 +242,11 @@ Engine.prototype._getParams = function _getParams () {
     params.auth_token = this._windshaftSettings.authToken;
     return params;
   }
+};
+
+Engine.prototype._restartAnalysisPolling = function _restartAnalysisPolling () {
+  var analyses = AnalysisService.getUniqueAnalysisNodes(this._layersCollection, this._dataviewsCollection);
+  this._analysisPoller.resetAnalysisNodes(analyses);
 };
 
 /**

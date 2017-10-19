@@ -36,6 +36,8 @@ var fakeCamshaftReference = {
   }
 };
 
+// FIXME: This tests are using the api from the "createVis" point of view. But
+// they should use the "Engine" instead.
 describe('dataviews/dataview-model-base', function () {
   beforeEach(function () {
     this.map = new MapModel(null, {
@@ -44,6 +46,15 @@ describe('dataviews/dataview-model-base', function () {
     this.map.setBounds([102, 200], [300, 400]);
 
     this.vis = new VisModel();
+    this.vis._createEngine({
+      urlTemplate: 'fakeUrlTemplate',
+      userName: 'fakeUsername',
+      statTag: 'fakeStatTag',
+      apiKey: 'fakeApiKey',
+      authToken: 'fakeAuthToken',
+      templateName: 'fakeTemplateName'
+    });
+
     spyOn(this.vis, 'reload');
     this.vis._onMapInstantiatedForTheFirstTime();
 

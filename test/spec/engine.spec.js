@@ -182,7 +182,7 @@ describe('Engine', function () {
 
       engine.addLayer(layer);
       engine.on(Engine.Events.RELOAD_SUCCESS, function () {
-        var urls = engine._layerGroupModel.attributes.urls;
+        var urls = engine._cartoLayerGroup.attributes.urls;
         // Ensure the modelUpdater has updated the cartoLayerGroup urls
         expect(urls.attributes[0]).toEqual('http://example.com/api/v1/map/2edba0a73a790c4afb83222183782123:1508164637676/0/attributes');
         expect(urls.grids[0]).toEqual(['http://example.com/api/v1/map/2edba0a73a790c4afb83222183782123:1508164637676/0/{z}/{x}/{y}.grid.json']);

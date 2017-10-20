@@ -212,7 +212,7 @@ module CartoDB
       if @google_user_data
         @google_user_data.set_values(@user)
       elsif @oauth_api
-        @user.set(@oauth.user_params)
+        @user.set(@oauth_api.user_params)
         @user.email = @user_params[PARAM_EMAIL] if @user_params[PARAM_EMAIL].present?
       else
         @user.email = @user_params[PARAM_EMAIL]

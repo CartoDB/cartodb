@@ -8,18 +8,24 @@ module Carto
 
       attr_reader :client
 
-      def self.instance(state, controller, organization_name: nil, invitation_token: nil)
-        Github::Config.new(state, controller, organization_name, invitation_token) if Cartodb.get_config(:oauth, 'github', 'client_id').present?
+      def self.instance(csrf, controller, organization_name: nil, invitation_token: nil)
+        Github::Config.new(csrf, controller, organization_name, invitation_token) if Cartodb.get_config(:oauth, 'github', 'client_id').present?
       end
 
-      def initialize(state, controller, organization_name, invitation_token)
+      def initialize(csrf, controller, organization_name, invitation_token)
+        state = JSON.dump({
+          csrf: csrf,
+          organization_name: organization_name,
+          invitation_token: invitation_token
+        })
+
         @client = Carto::OAuth2Client.new(
           auth_url: GITHUB_AUTH_URL,
           token_url: GITHUB_TOKEN_URL,
           client_id: Cartodb.get_config(:oauth, 'github', 'client_id'),
           client_secret: Cartodb.get_config(:oauth, 'github', 'client_secret'),
           state: state,
-          redirect_uri: redirect_uri(controller, organization_name, invitation_token),
+          redirect_uri: base_callback_uri(controller),
           scopes: ['user:email']
         )
       end
@@ -29,16 +35,6 @@ module Carto
       end
 
       private
-
-      def redirect_uri(controller, organization_name, invitation_token)
-        params = {}
-        params[:invitation_token] = invitation_token if invitation_token
-        params[:organization] = organization_name if organization_name
-        redirect_uri = base_callback_uri(controller)
-        redirect_uri += "?#{URI.encode_www_form(params)}" unless params.empty?
-
-        redirect_uri
-      end
 
       def base_callback_uri(controller)
         if Cartodb::Central.sync_data_with_cartodb_central?

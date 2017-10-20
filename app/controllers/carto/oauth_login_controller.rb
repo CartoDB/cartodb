@@ -10,10 +10,10 @@ module Carto
   class OauthLoginController < ApplicationController
     include AccountCreator
 
-    ssl_required  :github
+    ssl_required  :github, :google
+    before_filter :load_parameters
     before_filter :initialize_github_config, only: [:github]
     before_filter :initialize_google_config, only: [:google]
-    before_filter :validate_state
 
     layout 'frontend'
 
@@ -49,22 +49,26 @@ module Carto
 
     private
 
+    def load_parameters
+      state = JSON.parse(params[:state]).symbolize_keys
+      @organization_name = state[:organization_name]
+      @invitation_token = state[:invitation_token]
+
+      return render_403 unless params[:code] && state[:csrf] == form_authenticity_token
+    end
+
     def initialize_github_config
       @github_config = Github::Config.instance(form_authenticity_token, self,
-                                               organization_name: params[:organization],
-                                               invitation_token: params[:invitation_token])
+                                               organization_name: @organization_name,
+                                               invitation_token: @invitation_token)
       @config = @github_config
     end
 
     def initialize_google_config
       @google_config = Google::Config.instance(form_authenticity_token, self,
-                                               organization_name: params[:organization],
-                                               invitation_token: params[:invitation_token])
+                                               organization_name: @organization_name,
+                                               invitation_token: @invitation_token)
       @config = @google_config
-    end
-
-    def validate_state
-      return render_not_authorized(return_to: false) unless params[:code] && params[:state] == @config.client.state
     end
 
     def github_login(github_api)
@@ -92,20 +96,20 @@ module Carto
 
     def auth_enabled(organization)
       if params[:action] == 'github'
-        organization.auth_github_enabled?
+        organization.auth_github_enabled
       else
-        organization.auth_google_enabled?
+        organization.auth_google_enabled
       end
     end
 
     def signup(api)
-      org_name = params[:organization]
+      org_name = @organization_name
       @organization = ::Organization.where(name: org_name).first if org_name.present?
       return redirect_to CartoDB.url(self, 'login') unless @organization.present? && auth_enabled(@organization)
 
       account_creator = CartoDB::UserAccountCreator.new(Carto::UserCreation::CREATED_VIA_ORG_SIGNUP).
                         with_organization(@organization).
-                        with_invitation_token(params[:invitation_token]).
+                        with_invitation_token(@invitation_token).
                         with_oauth_api(api)
 
       if account_creator.valid?

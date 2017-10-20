@@ -115,7 +115,7 @@ var VisModel = Backbone.Model.extend({
       templateName: vizjson.datasource.template_name
     };
 
-    this._createEngine(windshaftSettings);
+    this._engine = this._createEngine(windshaftSettings);
 
     // Bind layerGroupModel object to engine
     this.layerGroupModel = this._engine._cartoLayerGroup;
@@ -199,7 +199,7 @@ var VisModel = Backbone.Model.extend({
   },
 
   _createEngine: function (windshaftSettings) {
-    this._engine = new Engine({
+    var engine = new Engine({
       apiKey: windshaftSettings.apiKey,
       authToken: windshaftSettings.authToken,
       username: windshaftSettings.userName,
@@ -209,8 +209,10 @@ var VisModel = Backbone.Model.extend({
     });
 
     // TODO: Use engine.layerscollection in every reference
-    this._layersCollection = this._engine._layersCollection;
-    this._dataviewsCollection = this._engine._dataviewsCollection;
+    this._layersCollection = engine._layersCollection;
+    this._dataviewsCollection = engine._dataviewsCollection;
+
+    return engine;
   },
 
   // we provide a method to set some new settings

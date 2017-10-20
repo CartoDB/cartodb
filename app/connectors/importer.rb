@@ -108,6 +108,8 @@ module CartoDB
         end
 
         if overwrite
+          # This is done here instead of doing it inside the transaction because some of the changes would not yet be visible
+          # for creating indexes and fixing oid so, since order is importante here, it has all ben taken out of it.
           @table_setup.run_index_statements(index_statements, @database)
           @table_setup.recreate_overviews(name)
           @table_setup.fix_oid(name)

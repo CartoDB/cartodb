@@ -3,9 +3,7 @@ var Backbone = require('backbone');
 var util = require('../core/util');
 var Map = require('../geo/map');
 var DataviewsFactory = require('../dataviews/dataviews-factory');
-var DataviewsCollection = require('../dataviews/dataviews-collection');
 var AnalysisService = require('../analysis/analysis-service');
-var LayersCollection = require('../geo/map/layers');
 var LayersFactory = require('./layers-factory');
 var SettingsModel = require('./settings');
 var whenAllDataviewsFetched = require('./dataviews-tracker');
@@ -190,9 +188,6 @@ var VisModel = Backbone.Model.extend({
     // Create layers
     var analysisNodes = this._createAnalysisNodes(vizjson.analyses);
     var layerModels = this._createLayers(vizjson.layers, analysisNodes);
-    // _.each(layerModels, function (layer) {
-    //   this._layersCollection.add(layer);
-    // });
     this.map.layers.reset(layerModels);
 
     // Global variable for easier console debugging / testing

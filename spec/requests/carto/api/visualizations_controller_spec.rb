@@ -2706,25 +2706,53 @@ describe Carto::Api::VisualizationsController do
 
   end
 
-  describe 'index shared_only' do
+  describe 'index' do
     include_context 'organization with users helper'
     include_context 'visualization creation helpers'
 
-    it 'should not display nor count the shared visualizations you own' do
-      table = create_table(privacy: UserTable::PRIVACY_PUBLIC, name: unique_name('table'), user_id: @org_user_1.id)
-      u1_t_1_id = table.table_visualization.id
-      u1_t_1_perm_id = table.table_visualization.permission.id
+    describe 'shared_only' do
+      it 'should not display nor count the shared visualizations you own' do
+        table = create_table(privacy: UserTable::PRIVACY_PUBLIC, name: unique_name('table'), user_id: @org_user_1.id)
+        u1_t_1_id = table.table_visualization.id
+        u1_t_1_perm_id = table.table_visualization.permission.id
 
-      share_table_with_organization(table, @org_user_1, @organization)
+        share_table_with_organization(table, @org_user_1, @organization)
 
-      get api_v1_visualizations_index_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key,
-          type: CartoDB::Visualization::Member::TYPE_CANONICAL, order: 'updated_at',
-          shared: CartoDB::Visualization::Collection::FILTER_SHARED_ONLY), @headers
-      body = JSON.parse(last_response.body)
-      body['total_entries'].should eq 0
-      body['visualizations'].count.should eq 0
+        get api_v1_visualizations_index_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key,
+                                            type: CartoDB::Visualization::Member::TYPE_CANONICAL, order: 'updated_at',
+                                            shared: CartoDB::Visualization::Collection::FILTER_SHARED_ONLY), @headers
+        body = JSON.parse(last_response.body)
+        body['total_entries'].should eq 0
+        body['visualizations'].count.should eq 0
+      end
     end
 
+    it 'returns auth tokens for password protected viz for the owner but not for users that have them shared' do
+      @map, @table, @table_visualization, @visualization = create_full_visualization(@carto_org_user_1)
+      @visualization.privacy = Carto::Visualization::PRIVACY_PROTECTED
+      @visualization.password = 'wontbeused'
+      @visualization.save!
+
+      share_visualization(@visualization, @org_user_2)
+
+      get_json api_v1_visualizations_index_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key,
+                                               type: Carto::Visualization::TYPE_DERIVED,
+                                               shared: CartoDB::Visualization::Collection::FILTER_SHARED_YES), @headers do |response|
+        response.status.should eq 200
+        response.body[:visualizations][0]['id'].should_not be_empty
+        response.body[:visualizations][0]['auth_tokens'].should_not be_empty
+      end
+
+      get_json api_v1_visualizations_index_url(user_domain: @org_user_2.username, api_key: @org_user_2.api_key,
+                                               type: Carto::Visualization::TYPE_DERIVED,
+                                               shared: CartoDB::Visualization::Collection::FILTER_SHARED_YES), @headers do |response|
+        response.status.should eq 200
+        response.body[:visualizations][0]['id'].should_not be_empty
+        response.body[:visualizations][0]['auth_tokens'].should be_empty
+      end
+
+      destroy_full_visualization(@map, @table, @table_visualization, @visualization)
+    end
   end
 
   describe 'visualization url generation' do

@@ -45,7 +45,7 @@ class SignupController < ApplicationController
     github_access_token = params[:github_access_token]
     if github_access_token
       raise "Organization doesn't allow GitHub authentication" unless @organization.auth_github_enabled
-      account_creator.with_github_oauth_api(Carto::Github::Api.new(@github_config, github_access_token))
+      account_creator.with_oauth_api(Carto::Github::Api.new(@github_config, github_access_token))
     end
 
     if params[:user]

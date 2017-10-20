@@ -124,9 +124,9 @@ module CartoDB
       self
     end
 
-    def with_github_oauth_api(github_api)
+    def with_oauth_api(oauth_api)
       @built = false
-      @github_api = github_api
+      @oauth_api = oauth_api
       self
     end
 
@@ -165,7 +165,7 @@ module CartoDB
     end
 
     def generate_dummy_password?
-      @github_api || @google_user_data || VIAS_WITHOUT_PASSWORD.include?(@created_via)
+      @oauth_api || @google_user_data || VIAS_WITHOUT_PASSWORD.include?(@created_via)
     end
 
     VIAS_WITHOUT_PASSWORD = [
@@ -211,10 +211,9 @@ module CartoDB
 
       if @google_user_data
         @google_user_data.set_values(@user)
-      elsif @github_api
-        @user.github_user_id = @github_api.id
-        @user.username = @github_api.username
-        @user.email = @user_params[PARAM_EMAIL] || @github_api.email
+      elsif @oauth_api
+        @user.set(@oauth.user_params)
+        @user.email = @user_params[PARAM_EMAIL] if @user_params[PARAM_EMAIL].present?
       else
         @user.email = @user_params[PARAM_EMAIL]
         @user.password = @user_params[PARAM_PASSWORD] if @user_params[PARAM_PASSWORD]

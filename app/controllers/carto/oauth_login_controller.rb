@@ -23,7 +23,7 @@ module Carto
       return render_403 unless code && state == @github_config.client.state
       api = Github::Api.with_code(@github_config, code)
 
-      user = login(api)
+      user = github_login(api)
       if user
         redirect_to user.public_url << CartoDB.path(self, 'dashboard', trailing_slash: true)
       else
@@ -48,7 +48,7 @@ module Carto
                                                invitation_token: params[:invitation_token])
     end
 
-    def login(github_api)
+    def github_login(github_api)
       github_id = github_api.id
       user = User.where(github_user_id: github_id).first
       unless user
@@ -63,15 +63,23 @@ module Carto
       user
     end
 
+    def auth_enabled(organization)
+      if params[:action] == 'github'
+        organization.auth_github_enabled?
+      else
+        organization.auth_google_enabled?
+      end
+    end
+
     def signup(api)
       org_name = params[:organization]
       @organization = ::Organization.where(name: org_name).first if org_name.present?
-      return redirect_to CartoDB.url(self, 'login') unless @organization.present? && @organization.auth_github_enabled
+      return redirect_to CartoDB.url(self, 'login') unless @organization.present? && auth_enabled(@organization)
 
       account_creator = CartoDB::UserAccountCreator.new(Carto::UserCreation::CREATED_VIA_ORG_SIGNUP).
                         with_organization(@organization).
                         with_invitation_token(params[:invitation_token]).
-                        with_github_oauth_api(api)
+                        with_oauth_api(api)
 
       if account_creator.valid?
         trigger_account_creation(account_creator)

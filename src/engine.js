@@ -119,7 +119,7 @@ Engine.prototype.off = function off (event, callback) {
  * Once the response has arrived trigger a 'reload-succes' or 'reload-error' event.
  * 
  * @param {string} sourceId - The sourceId triggering the reload event. This is usefull to prevent uneeded requests and save data.
- * @param {boolean} forceFetch - ????
+ * @param {boolean} forceFetch - Forces dataviews to fetch data from server after a reload
  * @param {boolean} includeFilters - Boolean flag to control if the filters need to be added in the payload.
  * 
  * @fires Engine#Engine:RELOAD_SUCCESS

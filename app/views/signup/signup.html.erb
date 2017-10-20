@@ -9,12 +9,12 @@
 <div class="CDB-Text <%= @organization.present? ? 'Sessions' : 'Sessions-navy' %>" style="<%= @organization.present? ? background : '' %>">
   <div class="Sessions-content">
 
-    <div class="Sessions-loggedin <%= "is-active" if @google_plus_config.present? %>">
+    <div class="Sessions-loggedin is-active">
       <div class="Spinner"></div>
     </div>
 
     <div class="Sessions-inner">
-      <div class="Sessions-notloggedin <%= "is-active" unless @google_plus_config.present? %>">
+      <div class="Sessions-notloggedin is-active">
         <div class="Sessions-left">
           <div class="Sessions-leftInner">
             <div class="Sessions-logoContainer">
@@ -115,8 +115,8 @@
 
             <% if !duplicated_username_prompt? && (@organization.auth_google_enabled || @organization.auth_github_enabled) %>
               <div class="Sessions-field Sessions-oauthContainer">
-                <% if @organization.auth_google_enabled && @google_plus_config.present? %>
-                  <%= render partial: 'google_plus/google_plus_button',  locals: { config: @google_plus_config } %>
+                <% if @organization.auth_google_enabled && @google_config.present? %>
+                  <%= render partial: 'google_plus/google_plus_button',  locals: { config: @google_config } %>
                 <% end %>
 
                 <% if @organization.auth_github_enabled && @github_config.present? %>
@@ -136,7 +136,7 @@
 
   <footer class="Sessions-footer">
     <div class="u-inner">
-      <div class="Sessions-notloggedin <%= "is-active" unless @google_plus_config.present? %>">
+      <div class="Sessions-notloggedin is-active">
         <p class="Sessions-text Sessions-text--footer u-altTextColor u-txt-center">
           Already have an account?
           <% if params[:after].present? %>

@@ -13,15 +13,13 @@ module Carto
     ssl_required  :github
     before_filter :initialize_github_config, only: [:github]
     before_filter :initialize_google_config, only: [:google]
+    before_filter :validate_state
 
     layout 'frontend'
 
     # Callback from Github Oauth
     def github
-      code = params[:code]
-      state = params[:state]
-      return render_403 unless code && state == @github_config.client.state
-      api = Github::Api.with_code(@github_config, code)
+      api = Github::Api.with_code(@github_config, params[:code])
 
       user = github_login(api)
       if user
@@ -34,18 +32,39 @@ module Carto
       redirect_to CartoDB.url(self, 'login')
     end
 
+    # Callback from Google Oauth
+    def google
+      api = Google::Api.with_code(@google_config, params[:code])
+
+      user = google_login(api)
+      if user
+        redirect_to user.public_url << CartoDB.path(self, 'dashboard', trailing_slash: true)
+      else
+        signup(api)
+      end
+    rescue => e
+      CartoDB::Logger.warning(exception: e, message: 'Error logging in via Google Oauth')
+      redirect_to CartoDB.url(self, 'login')
+    end
+
     private
 
     def initialize_github_config
       @github_config = Github::Config.instance(form_authenticity_token, self,
                                                organization_name: params[:organization],
                                                invitation_token: params[:invitation_token])
+      @config = @github_config
     end
 
     def initialize_google_config
       @google_config = Google::Config.instance(form_authenticity_token, self,
                                                organization_name: params[:organization],
                                                invitation_token: params[:invitation_token])
+      @config = @google_config
+    end
+
+    def validate_state
+      return render_not_authorized(return_to: false) unless params[:code] && params[:state] == @config.client.state
     end
 
     def github_login(github_api)
@@ -59,6 +78,14 @@ module Carto
       end
       params[:github_api] = github_api
       authenticate!(:github_oauth, scope: user.username)
+      CartoDB::Stats::Authentication.instance.increment_login_counter(user.email)
+      user
+    end
+
+    def google_login(google_api)
+      user = User.where(email: google_api.email).first
+      params[:google_api] = google_api
+      authenticate!(:google_oauth, scope: user.username)
       CartoDB::Stats::Authentication.instance.increment_login_counter(user.email)
       user
     end

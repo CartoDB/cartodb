@@ -142,6 +142,31 @@ Warden::Strategies.add(:github_oauth) do
   end
 end
 
+Warden::Strategies.add(:google_oauth) do
+  include LoginEventTrigger
+  include Carto::EmailCleaner
+
+  def valid_google_oauth_strategy_for_user(user)
+    user.organization.nil? || user.organization.auth_google_enabled
+  end
+
+  def authenticate!
+    if params[:google_api]
+      google_api = params[:google_api]
+      user = User.where(email: google_api.email).first
+      if user && valid_google_oauth_strategy_for_user(user)
+        trigger_login_event(user)
+
+        success!(user)
+      else
+        fail!
+      end
+    else
+      fail!
+    end
+  end
+end
+
 Warden::Strategies.add(:ldap) do
   include LoginEventTrigger
 

@@ -9,7 +9,7 @@
 <div class="CDB-Text <%= @organization.present? ? 'Sessions' : 'Sessions-navy' %>" style="<%= @organization.present? ? background : '' %>">
   <div class="Sessions-content">
     <div class="Sessions-inner">
-      <div class="Sessions-notloggedin <%= "is-active" unless @google_plus_config.present? && (@organization.nil? || @organization.auth_google_enabled) %>">
+      <div class="Sessions-notloggedin is-active"ss>
         <div class="u-inner">
           <div class="Sessions-left">
             <div class="Sessions-logoContainer">
@@ -82,8 +82,8 @@
                 <% end %>
               <% end %>
               <div class="Sessions-field Sessions-oauthContainer">
-                <% if @google_plus_config.present? && (@organization.nil? || @organization.auth_google_enabled) %>
-                  <%= render partial: 'google_plus/google_plus_button',  locals: { config: @google_plus_config } %>
+                <% if @google_config.present? && (@organization.nil? || @organization.auth_google_enabled) %>
+                  <%= render partial: 'google_plus/google_plus_button',  locals: { config: @google_config } %>
                 <% end %>
 
                 <% if @github_config.present? %>
@@ -114,7 +114,7 @@
   <% unless cartodb_com_hosted? %>
     <footer class="Sessions-footer">
       <div class="u-inner">
-        <div class="Sessions-notloggedin <%= "is-active" unless @google_plus_config.present? %>">
+        <div class="Sessions-notloggedin is-active">
           <p class="Sessions-text Sessions-text--footer u-txt-center u-altTextColor">Don't have an account yet? <%= link_to 'Sign up here', "https://carto.com/signup" %></p>
         </div>
       </div>

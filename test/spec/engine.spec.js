@@ -1,5 +1,6 @@
 var $ = require('jquery');
 var Backbone = require('backbone');
+var _ = require('underscore');
 var Engine = require('../../src/engine');
 var FakeFactory = require('../helpers/fakeFactory');
 var FAKE_RESPONSE = require('./windshaft/response.mock');
@@ -119,15 +120,25 @@ describe('Engine', function () {
 
     it('should trigger a RELOAD_ERROR event when the server returns an error response ', function () {
       // Error server response
-      spyOn($, 'ajax').and.callFake(function (params) { params.error({}); });
-      // Fake model updater.
-      spyOn(engine._modelUpdater, 'setErrors').and.callFake(function () { });
+      var errorMessage = 'Postgis Plugin: ERROR:  transform: couldnt project point (242 611 0): latitude or longitude exceeded limits.';
+      var errorPayload = {
+        responseText: '{ "errors": ["' + errorMessage + '"]}'
+      };
+      spyOn($, 'ajax').and.callFake(function (params) {
+        params.error(errorPayload);
+      });
+      spyOn(engine._modelUpdater, 'setErrors').and.callThrough();
       // Attach the error event to a spy.
       var spy = jasmine.createSpy('errorCallback');
-
       engine.on(Engine.Events.RELOAD_ERROR, spy);
+
       engine.reload();
+
       expect(spy).toHaveBeenCalled();
+      var setErrorsArgs = engine._modelUpdater.setErrors.calls.mostRecent().args[0];
+      expect(setErrorsArgs).toBeDefined();
+      expect(_.isArray(setErrorsArgs)).toBe(true);
+      expect(setErrorsArgs[0].message).toEqual(errorMessage);
     });
 
     it('should use the sourceID parameter', function (done) {

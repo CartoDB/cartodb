@@ -298,9 +298,9 @@ var VisModel = Backbone.Model.extend({
       options.success && options.success();
     }.bind(this);
 
-    var onError = function (error) {
+    var onError = function (errors) {
       this._engine.off(Engine.Events.RELOAD_ERROR, onError);
-      this.setError(error);
+      this.setError(errors);
       options.error && options.error();
     }.bind(this);
 

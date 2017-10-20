@@ -9,15 +9,17 @@ module Carto
       attr_reader :client
 
       def self.instance(csrf, controller, organization_name: nil, invitation_token: nil)
-        Google::Config.new(csrf, controller, organization_name, invitation_token) if Cartodb.get_config(:oauth, 'google_plus', 'client_id').present?
+        if Cartodb.get_config(:oauth, 'google_plus', 'client_id').present?
+          Google::Config.new(csrf, controller, organization_name, invitation_token)
+        end
       end
 
       def initialize(csrf, controller, organization_name, invitation_token)
-        state = JSON.dump({
+        state = JSON.dump(
           csrf: csrf,
           organization_name: organization_name,
           invitation_token: invitation_token
-        })
+        )
 
         @client = Carto::OAuth2Client.new(
           auth_url: GOOGLE_AUTH_URL,

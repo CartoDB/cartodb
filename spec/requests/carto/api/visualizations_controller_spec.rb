@@ -1510,7 +1510,7 @@ describe Carto::Api::VisualizationsController do
                 response.body[:tags].should_not be_nil
                 response.body[:title].should_not be_nil
                 response.body[:description].should_not be_nil
-                response.body[:auth_tokens].should be_nil
+                response.body[:auth_tokens].should eq []
 
                 # Optional information requiring parameters
                 response.body[:liked].should eq nil

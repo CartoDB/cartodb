@@ -299,7 +299,7 @@ module CartoDB
           next if COLUMNS_NOT_TO_VALIDATE.include?(dest_row[0])
           return false unless orig_schema.any? { |orig_row| rows_assignable?(dest_row, orig_row) }
         end
-        return true
+        true
       end
 
       def rows_assignable?(dest_row, orig_row)

@@ -2,14 +2,17 @@
 
 require_dependency 'oauth/github/api'
 require_dependency 'oauth/github/config'
+require_dependency 'oauth/google/api'
+require_dependency 'oauth/google/config'
 require_dependency 'account_creator'
 
 module Carto
-  class GithubController < ApplicationController
+  class OauthLoginController < ApplicationController
     include AccountCreator
 
     ssl_required  :github
-    before_filter :initialize_github_config
+    before_filter :initialize_github_config, only: [:github]
+    before_filter :initialize_google_config, only: [:google]
 
     layout 'frontend'
 
@@ -17,7 +20,7 @@ module Carto
     def github
       code = params[:code]
       state = params[:state]
-      return render_403 unless code && state == @github_config.state
+      return render_403 unless code && state == @github_config.client.state
       api = Github::Api.with_code(@github_config, code)
 
       user = login(api)
@@ -34,7 +37,11 @@ module Carto
     private
 
     def initialize_github_config
-      @github_config = Github::Config.instance(form_authenticity_token)
+      @github_config = Github::Config.instance(form_authenticity_token, self)
+    end
+
+    def initialize_google_config
+      @google_config = Google::Config.instance(form_authenticity_token)
     end
 
     def login(github_api)

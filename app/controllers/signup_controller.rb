@@ -142,7 +142,7 @@ class SignupController < ApplicationController
   def initialize_github_config
     unless @organization && !@organization.auth_github_enabled
       @github_access_token = params[:github_access_token]
-      @github_config = Carto::Github::Config.instance(form_authenticity_token,
+      @github_config = Carto::Github::Config.instance(form_authenticity_token, self,
                                                       invitation_token: params[:invitation_token],
                                                       organization_name: @organization.try(:name))
       @button_color = @organization && @organization.color ? organization_color(@organization) : nil

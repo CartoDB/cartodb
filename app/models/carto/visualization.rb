@@ -241,7 +241,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def is_accessible_with_password?(user, password)
-    is_viewable_by_user?(user) || (password_protected? && password_valid?(password))
+    is_viewable_by_user?(user) || password_valid?(password)
   end
 
   def is_publically_accesible?
@@ -335,7 +335,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def password_valid?(password)
-    has_password? && (password_digest(password, password_salt) == encrypted_password)
+    password_protected? && has_password? && (password_digest(password, password_salt) == encrypted_password)
   end
 
   def organization?

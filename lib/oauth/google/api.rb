@@ -48,8 +48,7 @@ module Carto
       def user_data
         @user_data ||= get_user_data
       rescue => e
-        CartodbCentral::Logger.error(message: 'Error obtaining GitHub user data',
-                                     exception: e, access_token: access_token)
+        CartoDB::Logger.error(message: 'Error obtaining GitHub user data', exception: e, access_token: access_token)
         nil
       end
 
@@ -64,10 +63,10 @@ module Carto
         raise 'Invalid response code' unless response.code == 200
         JSON.parse(response.body)
       rescue => e
-        CartodbCentral::Logger.error(message: 'Error in request to Google', exception: e,
-                                     method: method, url: url, body: body, headers: headers,
-                                     response_code: response.code, response_headers: response.headers,
-                                     response_body: response.body, return_code: response.return_code)
+        CartoDB::Logger.error(message: 'Error in request to Google', exception: e,
+                              method: method, url: url, body: body, headers: headers,
+                              response_code: response.code, response_headers: response.headers,
+                              response_body: response.body, return_code: response.return_code)
         nil
       end
     end

@@ -71,6 +71,7 @@ describe DataImport do
     carto_user.visualizations.count.should eq 2
     data_import.state.should eq 'complete'
     data_import.table_name.should eq 'walmart_latlon'
+    data_import.user.in_database["select count(*) from #{data_import.table_name}"].all[0][:count].should eq 3176
 
     data_import = create_import(overwrite: false,truncated: false)
     data_import.run_import!

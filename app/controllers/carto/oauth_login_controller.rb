@@ -37,11 +37,15 @@ module Carto
     private
 
     def initialize_github_config
-      @github_config = Github::Config.instance(form_authenticity_token, self)
+      @github_config = Github::Config.instance(form_authenticity_token, self,
+                                               organization_name: params[:organization],
+                                               invitation_token: params[:invitation_token])
     end
 
     def initialize_google_config
-      @google_config = Google::Config.instance(form_authenticity_token)
+      @google_config = Google::Config.instance(form_authenticity_token, self,
+                                               organization_name: params[:organization],
+                                               invitation_token: params[:invitation_token])
     end
 
     def login(github_api)

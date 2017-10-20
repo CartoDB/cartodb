@@ -294,18 +294,12 @@ module CartoDB
       def compatible_schemas_for_overwrite?(name)
         orig_schema = user.in_database.schema(results.first.tables.first, reload: true, schema: ORIGIN_SCHEMA)
         dest_schema = user.in_database.schema(name, reload: true, schema: user.database_schema)
-        valid = true
 
         dest_schema.each do |dest_row|
           next if COLUMNS_NOT_TO_VALIDATE.include?(dest_row[0])
-          break if !valid
-          row_valid = false
-          orig_schema.each do |orig_row|
-            break if (row_valid = rows_assignable?(dest_row, orig_row))
-          end
-          valid = row_valid
+          return false unless orig_schema.any? { |orig_row| rows_assignable?(dest_row, orig_row) }
         end
-        valid
+        return true
       end
 
       def rows_assignable?(dest_row, orig_row)

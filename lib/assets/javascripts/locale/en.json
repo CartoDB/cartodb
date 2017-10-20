@@ -4,7 +4,7 @@
       "more": "more",
       "more_from": "More from",
       "more_info": "More info",
-      "update": "Update",
+      "updated": "Updated",
       "views_pluralize": "1 view |||| %{smart_count} views"
     }
   }

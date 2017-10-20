@@ -73,7 +73,7 @@ describe DataImport do
     data_import.table_name.should eq 'walmart_latlon'
     data_import.user.in_database["select count(*) from #{data_import.table_name}"].all[0][:count].should eq 3176
 
-    data_import = create_import(overwrite: false,truncated: false)
+    data_import = create_import(overwrite: false, truncated: false)
     data_import.run_import!
     carto_user.reload
     carto_user.visualizations.count.should eq 3
@@ -81,7 +81,7 @@ describe DataImport do
     data_import.table_name.should eq 'walmart_latlon_1'
     data_import.user.in_database["select count(*) from #{data_import.table_name}"].all[0][:count].should eq 3176
 
-    data_import = create_import(overwrite:true, truncated: true)
+    data_import = create_import(overwrite: true, truncated: true)
     data_import.run_import!
     carto_user.reload
     carto_user.visualizations.count.should eq 3
@@ -94,7 +94,7 @@ describe DataImport do
     carto_user = Carto::User.find(@user.id)
     carto_user.visualizations.count.should eq 1
 
-    data_import = create_import(overwrite:false, truncated: true)
+    data_import = create_import(overwrite: false, truncated: true)
     data_import.run_import!
     carto_user.reload
     carto_user.visualizations.count.should eq 2
@@ -102,7 +102,7 @@ describe DataImport do
     data_import.table_name.should eq 'walmart_latlon'
     data_import.user.in_database["select count(*) from #{data_import.table_name}"].all[0][:count].should eq 2
 
-    data_import = create_import(overwrite:true, truncated: true, incomplete_schema: true)
+    data_import = create_import(overwrite: true, truncated: true, incomplete_schema: true)
     expect { data_import.run_import! }.to raise_error(RuntimeError, 'Incompatible schemas')
     data_import.log.entries.should match(/Exception: Incompatible schemas/)
   end
@@ -111,7 +111,7 @@ describe DataImport do
     carto_user = Carto::User.find(@user.id)
     carto_user.visualizations.count.should eq 1
 
-    data_import = create_import(overwrite:false, truncated: true, incomplete_schema: true)
+    data_import = create_import(overwrite: false, truncated: true, incomplete_schema: true)
     data_import.run_import!
     carto_user.reload
     carto_user.visualizations.count.should eq 2
@@ -119,7 +119,7 @@ describe DataImport do
     data_import.table_name.should eq 'walmart_latlon'
     data_import.user.in_database["select count(*) from #{data_import.table_name}"].all[0][:count].should eq 2
 
-    data_import = create_import(overwrite:true, truncated: true, incomplete_schema: false)
+    data_import = create_import(overwrite: true, truncated: true, incomplete_schema: false)
     data_import.run_import!
     carto_user.reload
     carto_user.visualizations.count.should eq 2
@@ -131,7 +131,7 @@ describe DataImport do
   def create_import(overwrite:, truncated:, incomplete_schema: false)
     DataImport.create(
       user_id: @user.id,
-      data_source: Rails.root.join("spec/support/data/#{truncated ? 'truncated/' : ''}#{ incomplete_schema ? 'incomplete_schema/' : ''}walmart_latlon.csv").to_s,
+      data_source: Rails.root.join("spec/support/data/#{truncated ? 'truncated/' : ''}#{incomplete_schema ? 'incomplete_schema/' : ''}walmart_latlon.csv").to_s,
       data_type: "file",
       table_name: 'walmart_latlon',
       state: "pending",

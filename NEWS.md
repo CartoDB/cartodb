@@ -2,6 +2,7 @@ Development
 -----------
 
 ### Features
+* Clean assets script
 * Improve error on widgets (CartoDB/deep-insights.js#574)
 * Add pagination support in data imports listing in superadmin (#12938).
 * Profile static view (#12704)
@@ -257,6 +258,13 @@ This release upgrades the CartoDB PostgreSQL extension to `0.19.2`. Run the foll
 cd $(git rev-parse --show-toplevel)/lib/sql
 sudo make install
 ```
+
+To launch the clean assets script run the following in the terminal:
+```shell
+./script/clean_assets
+```
+
+It will remove old assets from `public/assets/` (older than version in `package.json`)
 
 #### Dropbox API v2 migration
 

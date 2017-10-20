@@ -113,7 +113,7 @@ module Carto
         CartoDB::Logger.error(
           message:    "Overviews recreation failed:  #{exception}",
           exception:  exception,
-          user:       @@user,
+          user:       @user,
           table_name: table_name
         )
       end

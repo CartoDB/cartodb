@@ -40,7 +40,7 @@ describe('core/geo/map-view', function () {
     this.mapView = new MyMapView({
       el: this.container,
       mapModel: this.map,
-      visModel: new Backbone.Model(),
+      engine: new Backbone.Model(),
       layerGroupModel: new LayerGroupModel(null, {
         layersCollection: this.map.layers
       })
@@ -61,7 +61,7 @@ describe('core/geo/map-view', function () {
       this.mapView = new MyMapView({
         el: this.container,
         mapModel: this.map,
-        visModel: new Backbone.Model(),
+        engine: new Backbone.Model(),
         layerGroupModel: new LayerGroupModel(null, {
           windshaftMap: this.windshaftMap,
           layersCollection: this.map.layers

@@ -1,7 +1,7 @@
 var TileLayer = require('../../../../src/geo/map/tile-layer');
 var Engine = require('../../../../src/engine');
 
-fdescribe('TileLayer', function () {
+describe('TileLayer', function () {
   var engineMock;
   var layer;
   beforeEach(function () {

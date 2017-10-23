@@ -22,6 +22,7 @@ FactoryGirl.define do
     id { random_uuid }
     type 'derived'
     name 'factory visualization'
+    title 'visualization title'
     privacy 'public'
 
     association :user, factory: :carto_user

@@ -1,6 +1,6 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
-var VisModel = require('../../../src/vis/vis');
+var Engine = require('../../../src/engine');
 var PlainLayer = require('../../../src/geo/map/plain-layer');
 var CartoDBLayer = require('../../../src/geo/map/cartodb-layer');
 var TorqueLayer = require('../../../src/geo/map/torque-layer');
@@ -18,7 +18,7 @@ var fakeLayersFactory = new LayersFactory({ engine: new Backbone.Model(), windsh
 
 var createFakeAnalysis = function (attrs) {
   return new AnalysisModel(attrs, {
-    vis: {},
+    engine: {},
     camshaftReference: {
       getParamNamesForAnalysisType: function () {}
     }
@@ -31,7 +31,7 @@ describe('core/geo/map', function () {
   var map;
 
   beforeEach(function () {
-    this.vis = new VisModel();
+    this.engine = new Engine({ serverUrl: 'http://example.com', username: 'fake-username' });
 
     this.map = map = new Map(null, { layersFactory: fakeLayersFactory });
   });
@@ -164,13 +164,13 @@ describe('core/geo/map', function () {
     expect(map.get('maxZoom')).toEqual(map.defaults.maxZoom);
     expect(map.get('minZoom')).toEqual(map.defaults.minZoom);
 
-    var layer = new PlainLayer({ minZoom: 5, maxZoom: 25 }, { vis: {} });
+    var layer = new PlainLayer({ minZoom: 5, maxZoom: 25 }, { engine: {} });
     map.layers.reset(layer);
 
     expect(map.get('maxZoom')).toEqual(25);
     expect(map.get('minZoom')).toEqual(5);
 
-    layer = new PlainLayer({ minZoom: '7', maxZoom: '31' }, { vis: {} });
+    layer = new PlainLayer({ minZoom: '7', maxZoom: '31' }, { engine: {} });
     map.layers.reset(layer);
 
     expect(map.get('maxZoom')).toEqual(31);
@@ -178,7 +178,7 @@ describe('core/geo/map', function () {
   });
 
   it("shouldn't set a NaN zoom", function () {
-    var layer = new PlainLayer({ minZoom: NaN, maxZoom: NaN }, { vis: {} });
+    var layer = new PlainLayer({ minZoom: NaN, maxZoom: NaN }, { engine: {} });
     map.layers.reset(layer);
 
     expect(map.get('maxZoom')).toEqual(map.defaults.maxZoom);
@@ -193,10 +193,10 @@ describe('core/geo/map', function () {
       '© <a href="https://carto.com/attributions" target="_blank">CARTO</a>'
     ]);
 
-    var layer1 = new CartoDBLayer({ attribution: 'attribution1' }, { vis: this.vis });
-    var layer2 = new CartoDBLayer({ attribution: 'attribution1' }, { vis: this.vis });
-    var layer3 = new CartoDBLayer({ attribution: 'wadus' }, { vis: this.vis });
-    var layer4 = new CartoDBLayer({ attribution: '' }, { vis: this.vis });
+    var layer1 = new CartoDBLayer({ attribution: 'attribution1' }, { engine: this.engine });
+    var layer2 = new CartoDBLayer({ attribution: 'attribution1' }, { engine: this.engine });
+    var layer3 = new CartoDBLayer({ attribution: 'wadus' }, { engine: this.engine });
+    var layer4 = new CartoDBLayer({ attribution: '' }, { engine: this.engine });
 
     map.layers.reset([layer1, layer2, layer3, layer4]);
 
@@ -207,7 +207,7 @@ describe('core/geo/map', function () {
       '© <a href="https://carto.com/attributions" target="_blank">CARTO</a>'
     ]);
 
-    var layer = new CartoDBLayer({ attribution: 'attribution2' }, { vis: this.vis });
+    var layer = new CartoDBLayer({ attribution: 'attribution2' }, { engine: this.engine });
 
     map.layers.add(layer);
 
@@ -238,7 +238,7 @@ describe('core/geo/map', function () {
     ]);
 
     // Addind a layer with the default attribution
-    layer = new CartoDBLayer({}, { vis: this.vis });
+    layer = new CartoDBLayer({}, { engine: this.engine });
 
     map.layers.add(layer, { at: 0 });
 
@@ -252,8 +252,8 @@ describe('core/geo/map', function () {
 
   describe('Layer action methods', function () {
     beforeEach(function () {
-      this.map.layers.add(new CartoDBLayer({}, { vis: this.vis }));
-      this.map.layers.add(new PlainLayer(null, { vis: {} }));
+      this.map.layers.add(new CartoDBLayer({}, { engine: this.engine }));
+      this.map.layers.add(new PlainLayer(null, { engine: {} }));
     });
 
     describe('.moveCartoDBLayer', function () {
@@ -366,7 +366,7 @@ describe('core/geo/map', function () {
 
   describe('.getLayerById', function () {
     beforeEach(function () {
-      var layer1 = new CartoDBLayer({ id: 'xyz-123', attribution: 'attribution1' }, { vis: this.vis });
+      var layer1 = new CartoDBLayer({ id: 'xyz-123', attribution: 'attribution1' }, { engine: this.engine });
 
       map.layers.reset(layer1);
     });

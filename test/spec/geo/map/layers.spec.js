@@ -1,4 +1,4 @@
-var VisModel = require('../../../../src/vis/vis');
+var Engine = require('../../../../src/engine');
 var Layers = require('../../../../src/geo/map/layers');
 var PlainLayer = require('../../../../src/geo/map/plain-layer');
 var TileLayer = require('../../../../src/geo/map/tile-layer');
@@ -9,15 +9,15 @@ describe('geo/map/layers', function () {
   var layers;
 
   beforeEach(function () {
-    this.vis = new VisModel();
+    this.engine = new Engine({ serverUrl: 'http://example.com', username: 'fake-username' });
     layers = new Layers();
   });
 
   it('should re-assign order when new layers are added to the collection', function () {
-    var baseLayer = new TileLayer(null, { vis: {} });
-    var layer1 = new CartoDBLayer({}, { vis: this.vis });
-    var layer2 = new CartoDBLayer({}, { vis: this.vis });
-    var layer3 = new CartoDBLayer({}, { vis: this.vis });
+    var baseLayer = new TileLayer(null, { engine: {} });
+    var layer1 = new CartoDBLayer({}, { engine: this.engine });
+    var layer2 = new CartoDBLayer({}, { engine: this.engine });
+    var layer3 = new CartoDBLayer({}, { engine: this.engine });
 
     // Sets the order to 0
     layers.add(baseLayer);
@@ -42,7 +42,7 @@ describe('geo/map/layers', function () {
     expect(layer3.get('order')).toEqual(1);
     expect(layers.pluck('order')).toEqual([ 0, 1, 2, 3 ]);
 
-    var torqueLayer = new TorqueLayer({}, { vis: this.vis });
+    var torqueLayer = new TorqueLayer({}, { engine: this.engine });
 
     // Torque layer should be at the top
     layers.add(torqueLayer);
@@ -54,7 +54,7 @@ describe('geo/map/layers', function () {
     expect(torqueLayer.get('order')).toEqual(4);
     expect(layers.pluck('order')).toEqual([ 0, 1, 2, 3, 4 ]);
 
-    var tiledLayer = new TileLayer(null, { vis: {} });
+    var tiledLayer = new TileLayer(null, { engine: {} });
 
     // Tiled layer should be at the top
     layers.add(tiledLayer);
@@ -67,7 +67,7 @@ describe('geo/map/layers', function () {
     expect(tiledLayer.get('order')).toEqual(5);
     expect(layers.pluck('order')).toEqual([ 0, 1, 2, 3, 4, 5 ]);
 
-    var layer4 = new CartoDBLayer({}, { vis: this.vis });
+    var layer4 = new CartoDBLayer({}, { engine: this.engine });
     layers.add(layer4);
 
     expect(baseLayer.get('order')).toEqual(0);
@@ -81,11 +81,11 @@ describe('geo/map/layers', function () {
   });
 
   it('should re-assign order when new layers are removed from the collection', function () {
-    var baseLayer = new TileLayer(null, { vis: {} });
-    var layer1 = new CartoDBLayer({}, { vis: this.vis });
-    var layer2 = new CartoDBLayer({}, { vis: this.vis });
-    var torqueLayer = new TorqueLayer({}, { vis: this.vis });
-    var labelsLayer = new TileLayer(null, { vis: {} });
+    var baseLayer = new TileLayer(null, { engine: {} });
+    var layer1 = new CartoDBLayer({}, { engine: this.engine });
+    var layer2 = new CartoDBLayer({}, { engine: this.engine });
+    var torqueLayer = new TorqueLayer({}, { engine: this.engine });
+    var labelsLayer = new TileLayer(null, { engine: {} });
 
     // Sets the order to 0
     layers.add(baseLayer);
@@ -125,8 +125,8 @@ describe('geo/map/layers', function () {
 
   describe('.moveCartoDBLayer', function () {
     beforeEach(function () {
-      layers.add(new PlainLayer({ name: 'Positron' }, { vis: {} }));
-      layers.add(new CartoDBLayer({ title: 'CARTO' }, { vis: this.vis }));
+      layers.add(new PlainLayer({ name: 'Positron' }, { engine: {} }));
+      layers.add(new CartoDBLayer({ title: 'CARTO' }, { engine: this.engine }));
     });
 
     it('should move a layer from one position to other', function () {
@@ -134,7 +134,7 @@ describe('geo/map/layers', function () {
       expect(layers.indexOf(movedLayer)).toBe(0);
       expect(movedLayer.get('title')).toBe('CARTO');
 
-      layers.add(new CartoDBLayer({ title: 'CARTO 2' }, { vis: this.vis }));
+      layers.add(new CartoDBLayer({ title: 'CARTO 2' }, { engine: this.engine }));
       movedLayer = layers.moveCartoDBLayer(2, 1);
       expect(layers.indexOf(movedLayer)).toBe(1);
       expect(movedLayer.get('title')).toBe('CARTO 2');

@@ -6,11 +6,11 @@ var LayerTypes = require('../geo/map/layer-types.js');
 
 var AnalysisService = function (opts) {
   opts = opts || {};
-  if (!opts.vis) {
+  if (!opts.engine) {
     throw new Error('vis option is required');
   }
 
-  this._vis = opts.vis;
+  this._engine = opts.engine;
   this._apiKey = opts.apiKey;
   this._authToken = opts.authToken;
   this._camshaftReference = opts.camshaftReference || camshaftReference; // For testing purposes
@@ -40,7 +40,7 @@ AnalysisService.prototype.analyse = function (analysisDefinition) {
     }
     analysis = new Analysis(analysisAttrs, {
       camshaftReference: this._camshaftReference,
-      vis: this._vis
+      engine: this._engine
     });
 
     this._analysisNodes.add(analysis);

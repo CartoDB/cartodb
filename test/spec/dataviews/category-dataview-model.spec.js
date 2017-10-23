@@ -5,7 +5,7 @@ var CategoryDataviewModel = require('../../../src/dataviews/category-dataview-mo
 var WindshaftFiltersCategory = require('../../../src/windshaft/filters/category');
 var AnalysisService = require('../../../src/analysis/analysis-service');
 
-describe('dataviews/category-dataview-model', function () {
+fdescribe('dataviews/category-dataview-model', function () {
   beforeEach(function () {
     this.map = new Backbone.Model();
     this.map.getViewBounds = jasmine.createSpy();
@@ -20,9 +20,7 @@ describe('dataviews/category-dataview-model', function () {
       }
     };
 
-    var analysisService = new AnalysisService({
-      engine: this.engine
-    });
+    var analysisService = new AnalysisService({ engine: this.engine });
     this.source = analysisService.analyse(analysisDefinition);
 
     this.layer = new Backbone.Model();

@@ -1,4 +1,3 @@
-var Backbone = require('backbone');
 var Legends = require('../../../../../src/geo/map/legends/legends');
 var fakeFactory = require('../../../../helpers/fakeFactory');
 

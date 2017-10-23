@@ -1492,6 +1492,10 @@
         "body": "This layer is hidden. Changes won't be shown until you make it visible.",
         "show": "Show"
       },
+      "generic-error": {
+        "title": "Some tiles were not displayed",
+        "body": "If the problem persists check our docs or contact us."
+      },
       "limit": {
         "title": "Some tiles might not be working correctly",
         "body": "Looks like you are over your limits when trying to render some of your tiles.",

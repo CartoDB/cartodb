@@ -11,13 +11,9 @@ describe('dataviews/dataview-collection', function () {
   it('should remove item when removed', function () {
     var map = jasmine.createSpyObj('map', ['getViewBounds', 'off']);
     map.getViewBounds.and.returnValue([[0, 0], [0, 0]]);
-    var vis = jasmine.createSpyObj('vis', ['reload']);
-    var dataviewModel = new DataviewModel({
-      source: this.source
-    }, {
-      map: map,
-      vis: vis
-    });
+    var engineMock = jasmine.createSpyObj('engine', ['reload']);
+    var dataviewModel = new DataviewModel({ source: this.source }, { map: map, engine: engineMock });
+
     this.collection.add(dataviewModel);
     expect(this.collection.length).toEqual(1);
     this.collection.first().remove();

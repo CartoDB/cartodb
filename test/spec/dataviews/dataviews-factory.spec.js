@@ -52,7 +52,7 @@ describe('dataviews/dataviews-factory', function () {
         apiKey: 'THE_API_KEY'
       }, {
         map: {},
-        vis: {},
+        engine: {},
         dataviewsCollection: this.dataviewsCollection
       });
 

@@ -12,11 +12,12 @@ function randomString (length, chars) {
 }
 
 describe('dataviews/histogram-dataview-model', function () {
+  var engineMock;
   beforeEach(function () {
     this.map = jasmine.createSpyObj('map', ['getViewBounds', 'bind']);
     this.map.getViewBounds.and.returnValue([[1, 2], [3, 4]]);
-    this.vis = new VisModel();
-    spyOn(this.vis, 'reload');
+    engineMock = fakeFactory.createEngine();
+    spyOn(engineMock, 'reload');
 
     this.filter = new RangeFilter();
 
@@ -31,7 +32,7 @@ describe('dataviews/histogram-dataview-model', function () {
       source: this.source
     }, {
       map: this.map,
-      vis: this.vis,
+      engine: engineMock,
       filter: this.filter
     });
   });
@@ -70,7 +71,7 @@ describe('dataviews/histogram-dataview-model', function () {
       source: this.source
     }, {
       map: this.map,
-      vis: this.vis,
+      engine: engineMock,
       filter: this.filter
     });
 
@@ -185,7 +186,7 @@ describe('dataviews/histogram-dataview-model', function () {
 
   describe('when column changes', function () {
     it('should set column_type to original data, set undefined aggregation, reload map and call _onUrlChanged', function () {
-      this.vis.reload.calls.reset();
+      engineMock.reload.calls.reset();
       this.model.set({
         aggregation: 'quarter',
         column: 'random_col',
@@ -194,7 +195,7 @@ describe('dataviews/histogram-dataview-model', function () {
 
       expect(this.model._totals.get('column_type')).toEqual('aColumnType');
       expect(this.model.get('aggregation')).toBeUndefined();
-      expect(this.vis.reload).toHaveBeenCalledWith({ forceFetch: true, sourceId: 'a0' });
+      expect(engineMock.reload).toHaveBeenCalledWith({ forceFetch: true, sourceId: 'a0' });
     });
   });
 
@@ -240,7 +241,7 @@ describe('dataviews/histogram-dataview-model', function () {
         source: this.source
       }, {
         map: this.map,
-        vis: this.vis,
+        engine: engineMock,
         filter: this.filter
       });
 
@@ -266,7 +267,7 @@ describe('dataviews/histogram-dataview-model', function () {
         source: this.source
       }, {
         map: this.map,
-        vis: this.vis,
+        engine: engineMock,
         filter: this.filter
       });
 
@@ -633,7 +634,7 @@ describe('dataviews/histogram-dataview-model', function () {
 
   describe('._onColumnChanged', function () {
     it('should unset aggregation, and call _reloadVisAndForceFetch', function () {
-      this.vis.reload.calls.reset();
+      engineMock.reload.calls.reset();
 
       this.model.set({
         column: 'time',
@@ -643,7 +644,7 @@ describe('dataviews/histogram-dataview-model', function () {
 
       this.model._onColumnChanged();
 
-      expect(this.vis.reload).toHaveBeenCalled();
+      expect(engineMock.reload).toHaveBeenCalled();
       expect(this.model.get('aggregation')).toBeUndefined();
     });
   });

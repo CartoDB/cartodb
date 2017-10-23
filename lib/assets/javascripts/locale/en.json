@@ -1,4 +1,9 @@
 {
+  "helpers": {
+    "static_header_meta_tags": {
+      "map_created_by": "Map created by %{author} - CARTO"
+    }
+  },
   "public_map": {
     "info": {
       "more": "more",

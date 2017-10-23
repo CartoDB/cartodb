@@ -143,10 +143,7 @@ var VisModel = Backbone.Model.extend({
       renderMode = RenderModes.RASTER;
     }
 
-    this.layersFactory = new LayersFactory({
-      visModel: this,
-      windshaftSettings: windshaftSettings
-    });
+    this.layersFactory = new LayersFactory({ engine: this._engine, windshaftSettings: windshaftSettings });
 
     this.map = new Map({
       title: vizjson.title,

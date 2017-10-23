@@ -35,6 +35,6 @@ var fireNativeEvent = function (layerGroupView, eventName) {
   layerGroupView.leafletLayer.fire(eventName);
 };
 
-describe('src/geo/leaflet/leaflet-cartodb-layer-group-view.js', function () {
+xdescribe('src/geo/leaflet/leaflet-cartodb-layer-group-view.js', function () {
   SharedTestsForCartoDBLayerGroupViews.call(this, createLayerGroupView, expectTileURLTemplateToMatch, fireNativeEvent);
 });

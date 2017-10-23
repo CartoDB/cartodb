@@ -14,10 +14,7 @@ var Point = require('../../../src/geo/geometry-models/point');
 var Polyline = require('../../../src/geo/geometry-models/polyline');
 var Polygon = require('../../../src/geo/geometry-models/polygon');
 
-var fakeLayersFactory = new LayersFactory({
-  visModel: new Backbone.Model(),
-  windshaftSettings: {}
-});
+var fakeLayersFactory = new LayersFactory({ engine: new Backbone.Model(), windshaftSettings: {} });
 
 var createFakeAnalysis = function (attrs) {
   return new AnalysisModel(attrs, {

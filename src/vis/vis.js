@@ -122,7 +122,7 @@ var VisModel = Backbone.Model.extend({
 
     // Create the public Analysis Service
     this._analysisService = new AnalysisService({
-      vis: this,
+      engine: this._engine,
       apiKey: windshaftSettings.apiKey,
       authToken: windshaftSettings.authToken
     });

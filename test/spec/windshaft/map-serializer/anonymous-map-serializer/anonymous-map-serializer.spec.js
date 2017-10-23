@@ -12,7 +12,7 @@ var MyDataviewModel = DataviewModelBase.extend({
 
 describe('anonymous-map-serializer', function () {
   describe('.serialize', function () {
-    var visModel;
+    var engineMock;
     var mapModel;
     var layersCollection;
     var dataviewsCollection;
@@ -22,13 +22,13 @@ describe('anonymous-map-serializer', function () {
 
     beforeEach(function () {
       mapModel = new Backbone.Model();
-      visModel = new Backbone.Model();
+      engineMock = new Backbone.Model();
       layersCollection = new Backbone.Collection();
       dataviewsCollection = new Backbone.Collection();
 
       // Analyses
       analysisService = new AnalysisService({
-        vis: visModel,
+        engine: engineMock,
         camshaftReference: fakeCamshaftReference
       });
       analysisModel = analysisService.analyse({
@@ -46,7 +46,7 @@ describe('anonymous-map-serializer', function () {
         cartocss: 'cartocssMock',
         cartocss_version: '2.0'
       }, {
-        vis: visModel
+        engine: engineMock
       });
       layersCollection.add(cartoDBLayer);
 
@@ -56,7 +56,7 @@ describe('anonymous-map-serializer', function () {
         source: analysisModel
       }, {
         map: mapModel,
-        vis: visModel
+        engine: engineMock
       });
       dataviewsCollection.add(dataview);
 

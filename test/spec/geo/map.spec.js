@@ -29,10 +29,9 @@ var Map = require('../../../src/geo/map');
 
 describe('core/geo/map', function () {
   var map;
-
+  var engineMock;
   beforeEach(function () {
-    this.engine = new Engine({ serverUrl: 'http://example.com', username: 'fake-username' });
-
+    engineMock = new Engine({ serverUrl: 'http://example.com', username: 'fake-username' });
     this.map = map = new Map(null, { layersFactory: fakeLayersFactory });
   });
 
@@ -193,10 +192,10 @@ describe('core/geo/map', function () {
       '© <a href="https://carto.com/attributions" target="_blank">CARTO</a>'
     ]);
 
-    var layer1 = new CartoDBLayer({ attribution: 'attribution1' }, { engine: this.engine });
-    var layer2 = new CartoDBLayer({ attribution: 'attribution1' }, { engine: this.engine });
-    var layer3 = new CartoDBLayer({ attribution: 'wadus' }, { engine: this.engine });
-    var layer4 = new CartoDBLayer({ attribution: '' }, { engine: this.engine });
+    var layer1 = new CartoDBLayer({ attribution: 'attribution1' }, { engine: engineMock });
+    var layer2 = new CartoDBLayer({ attribution: 'attribution1' }, { engine: engineMock });
+    var layer3 = new CartoDBLayer({ attribution: 'wadus' }, { engine: engineMock });
+    var layer4 = new CartoDBLayer({ attribution: '' }, { engine: engineMock });
 
     map.layers.reset([layer1, layer2, layer3, layer4]);
 
@@ -207,7 +206,7 @@ describe('core/geo/map', function () {
       '© <a href="https://carto.com/attributions" target="_blank">CARTO</a>'
     ]);
 
-    var layer = new CartoDBLayer({ attribution: 'attribution2' }, { engine: this.engine });
+    var layer = new CartoDBLayer({ attribution: 'attribution2' }, { engine: engineMock });
 
     map.layers.add(layer);
 
@@ -238,7 +237,7 @@ describe('core/geo/map', function () {
     ]);
 
     // Addind a layer with the default attribution
-    layer = new CartoDBLayer({}, { engine: this.engine });
+    layer = new CartoDBLayer({}, { engine: engineMock });
 
     map.layers.add(layer, { at: 0 });
 
@@ -252,7 +251,7 @@ describe('core/geo/map', function () {
 
   describe('Layer action methods', function () {
     beforeEach(function () {
-      this.map.layers.add(new CartoDBLayer({}, { engine: this.engine }));
+      this.map.layers.add(new CartoDBLayer({}, { engine: engineMock }));
       this.map.layers.add(new PlainLayer(null, { engine: {} }));
     });
 
@@ -366,7 +365,7 @@ describe('core/geo/map', function () {
 
   describe('.getLayerById', function () {
     beforeEach(function () {
-      var layer1 = new CartoDBLayer({ id: 'xyz-123', attribution: 'attribution1' }, { engine: this.engine });
+      var layer1 = new CartoDBLayer({ id: 'xyz-123', attribution: 'attribution1' }, { engine: engineMock });
 
       map.layers.reset(layer1);
     });

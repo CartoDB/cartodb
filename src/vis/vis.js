@@ -3,18 +3,12 @@ var Backbone = require('backbone');
 var util = require('../core/util');
 var Map = require('../geo/map');
 var DataviewsFactory = require('../dataviews/dataviews-factory');
-var DataviewsCollection = require('../dataviews/dataviews-collection');
-var WindshaftClient = require('../windshaft/client');
 var AnalysisService = require('../analysis/analysis-service');
-var CartoDBLayerGroup = require('../geo/cartodb-layer-group');
-var ModelUpdater = require('../windshaft-integration/model-updater');
-var LayersCollection = require('../geo/map/layers');
-var AnalysisPoller = require('../analysis/analysis-poller');
 var LayersFactory = require('./layers-factory');
 var SettingsModel = require('./settings');
 var whenAllDataviewsFetched = require('./dataviews-tracker');
 var RenderModes = require('../geo/render-modes');
-var WindshaftMap = require('../windshaft/map-base');
+var Engine = require('../engine');
 
 var STATE_INIT = 'init'; // vis hasn't been sent to Windshaft
 var STATE_OK = 'ok'; // vis has been sent to Windshaft and everything is ok
@@ -29,20 +23,12 @@ var VisModel = Backbone.Model.extend({
 
   initialize: function () {
     this._loadingObjects = [];
-    this._analysisPoller = new AnalysisPoller();
-    this._layersCollection = new LayersCollection();
-    this._dataviewsCollection = new DataviewsCollection();
+
+    // this._layersCollection = new LayersCollection();
+    // this._dataviewsCollection = new DataviewsCollection();
 
     this.overlaysCollection = new Backbone.Collection();
     this.settings = new SettingsModel();
-
-    this.layerGroupModel = new CartoDBLayerGroup({
-      apiKey: this.get('apiKey'),
-      authToken: this.get('authToken')
-    }, {
-      layersCollection: this._layersCollection
-    });
-
     this._instantiateMapWasCalled = false;
   },
 
@@ -120,9 +106,6 @@ var VisModel = Backbone.Model.extend({
   },
 
   load: function (vizjson) {
-    // Create the WindhaftClient
-    var datasource = vizjson.datasource;
-
     var windshaftSettings = {
       urlTemplate: vizjson.datasource.maps_api_template,
       userName: vizjson.datasource.user_name,
@@ -132,13 +115,16 @@ var VisModel = Backbone.Model.extend({
       templateName: vizjson.datasource.template_name
     };
 
-    var windshaftClient = new WindshaftClient(windshaftSettings);
+    this._engine = this._createEngine(windshaftSettings);
+
+    // Bind layerGroupModel object to engine
+    this.layerGroupModel = this._engine._cartoLayerGroup;
 
     // Create the public Analysis Service
     this._analysisService = new AnalysisService({
       vis: this,
-      apiKey: this.get('apiKey'),
-      authToken: this.get('authToken')
+      apiKey: windshaftSettings.apiKey,
+      authToken: windshaftSettings.authToken
     });
 
     // Public wrapper exposing public methods.
@@ -148,7 +134,6 @@ var VisModel = Backbone.Model.extend({
     };
 
     var allowScrollInOptions = (vizjson.options && vizjson.options.scrollwheel) || vizjson.scrollwheel;
-    // Create the Map
     var allowDragging = util.isMobileDevice() || vizjson.hasZoomOverlay() || allowScrollInOptions;
 
     var renderMode = RenderModes.AUTO;
@@ -186,25 +171,6 @@ var VisModel = Backbone.Model.extend({
       }
     });
 
-    var modelUpdater = new ModelUpdater({
-      layerGroupModel: this.layerGroupModel,
-      dataviewsCollection: this._dataviewsCollection,
-      layersCollection: this._layersCollection
-    });
-
-    // Create the WindshaftMap
-    this._windshaftMap = new WindshaftMap({
-      apiKey: this.get('apiKey'),
-      authToken: this.get('authToken'),
-      statTag: datasource.stat_tag
-    }, {
-      client: windshaftClient,
-      modelUpdater: modelUpdater,
-      windshaftSettings: windshaftSettings,
-      dataviewsCollection: this._dataviewsCollection,
-      layersCollection: this._layersCollection
-    });
-
     // Reset the collection of overlays
     this.overlaysCollection.reset(vizjson.overlays);
 
@@ -232,17 +198,26 @@ var VisModel = Backbone.Model.extend({
     }.bind(this));
   },
 
+  _createEngine: function (windshaftSettings) {
+    var engine = new Engine({
+      apiKey: windshaftSettings.apiKey,
+      authToken: windshaftSettings.authToken,
+      username: windshaftSettings.userName,
+      serverUrl: windshaftSettings.urlTemplate,
+      templateName: windshaftSettings.templateName,
+      statTag: windshaftSettings.statTag
+    });
+
+    // TODO: Use engine.layerscollection in every reference
+    this._layersCollection = engine._layersCollection;
+    this._dataviewsCollection = engine._dataviewsCollection;
+
+    return engine;
+  },
+
   // we provide a method to set some new settings
   setSettings: function (settings) {
     this.settings.set(settings);
-  },
-
-  _restartAnalysisPolling: function () {
-    this._analysisPoller.resetAnalysisNodes(this._getAnalysisNodeModels());
-  },
-
-  _getAnalysisNodeModels: function () {
-    return AnalysisService.getUniqueAnalysisNodes(this._layersCollection, this._dataviewsCollection);
   },
 
   /**
@@ -312,34 +287,30 @@ var VisModel = Backbone.Model.extend({
 
   reload: function (options) {
     options = options || {};
-    var successCallback = options.success;
-    var errorCallback = options.error;
+    var sourceId = options.sourceId;
+    var forceFetch = options.forceFetch;
+    var includeFilters = _.isUndefined(options.includeFilters) ? true : !!options.includeFilters;
 
-    options = _.extend({
-      includeFilters: true,
-      success: function () {
-        this.trigger('reloaded');
-        this._restartAnalysisPolling();
+    var onSuccess = function () {
+      this._engine.off(Engine.Events.RELOAD_SUCCESS, onSuccess);
+      this.trigger('reloaded');
+      var analysisNodes = AnalysisService.getUniqueAnalysisNodes(this._layersCollection, this._dataviewsCollection);
+      this._isAnyAnalysisNodeLoading(analysisNodes) ? this.trackLoadingObject(this) : this.untrackLoadingObject(this);
+      this.setOk();
+      options.success && options.success();
+    }.bind(this);
 
-        var analysisNodes = this._getAnalysisNodeModels();
-        if (this._isAnyAnalysisNodeLoading(analysisNodes)) {
-          this.trackLoadingObject(this);
-        } else {
-          this.untrackLoadingObject(this);
-        }
-
-        this.setOk();
-        successCallback && successCallback();
-      }.bind(this),
-      error: function (error) {
-        this.setError(error);
-        errorCallback && errorCallback();
-      }.bind(this)
-    }, _.pick(options, 'sourceId', 'forceFetch', 'includeFilters'));
+    var onError = function (errors) {
+      this._engine.off(Engine.Events.RELOAD_ERROR, onError);
+      this.setError(errors);
+      options.error && options.error();
+    }.bind(this);
 
     if (this._instantiateMapWasCalled) {
       this.trigger('reload');
-      this._windshaftMap.createInstance(options); // this reload method is call from other places
+      this._engine.on(Engine.Events.RELOAD_SUCCESS, onSuccess);
+      this._engine.on(Engine.Events.RELOAD_ERROR, onError);
+      this._engine.reload(sourceId, forceFetch, includeFilters);
     }
   },
 

@@ -1,6 +1,7 @@
 var _ = require('underscore');
 var VisModel = require('../../src/vis/vis');
 var AnalysisModel = require('../../src/analysis/analysis-model');
+var Engine = require('../../src/engine');
 
 // We use a "fake" reference instead of the one in src/analysis/camshaft-reference
 // to ensure that tests won't break if the real thing changes
@@ -53,7 +54,12 @@ var createVisModel = function () {
   return new VisModel();
 };
 
+function createEngine () {
+  return new Engine({ serverUrl: 'http://example.com', username: 'fake-username' });
+}
+
 module.exports = {
   createAnalysisModel: createAnalysisModel,
-  createVisModel: createVisModel
+  createVisModel: createVisModel,
+  createEngine: createEngine
 };

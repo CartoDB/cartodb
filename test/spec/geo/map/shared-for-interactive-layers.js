@@ -4,14 +4,12 @@ var fakeFactory = require('../../../helpers/fakeFactory');
 module.exports = function (LayerModel) {
   var layer;
   var source;
-  var vis;
+  var engineMock;
 
   beforeEach(function () {
     source = fakeFactory.createAnalysisModel({ id: 'a0' });
-    vis = fakeFactory.createVisModel();
-    layer = new LayerModel({
-      source: source
-    }, { vis: vis });
+    engineMock = fakeFactory.createEngine();
+    layer = new LayerModel({source: source}, { engine: engineMock });
   });
 
   var METHODS = [
@@ -33,9 +31,7 @@ module.exports = function (LayerModel) {
       { type: 'custom', title: 'My Custom Legend' }
     ];
 
-    var layer = new LayerModel({
-      legends: legends
-    }, { vis: vis });
+    layer = new LayerModel({ legends: legends }, { engine: engineMock });
 
     expect(layer.get('legends')).toBeUndefined();
     expect(layer.legends.bubble.get('title')).toEqual('My Bubble Legend');

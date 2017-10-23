@@ -2,7 +2,7 @@ var _ = require('underscore');
 var PlainLayer = require('../../../../src/geo/map/plain-layer');
 var Engine = require('../../../../src/engine');
 
-fdescribe('PlainLayer', function () {
+describe('PlainLayer', function () {
   var engineMock;
   beforeEach(function () {
     engineMock = new Engine({ serverUrl: 'http://example.com', username: 'fake-username' });

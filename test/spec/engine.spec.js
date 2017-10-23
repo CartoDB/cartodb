@@ -1,5 +1,4 @@
 var $ = require('jquery');
-var Backbone = require('backbone');
 var _ = require('underscore');
 var Engine = require('../../src/engine');
 var FakeFactory = require('../helpers/fakeFactory');
@@ -8,7 +7,6 @@ var CartoDBLayer = require('../../src/geo/map/cartodb-layer');
 var Dataview = require('../../src/dataviews/dataview-model-base');
 
 describe('Engine', function () {
-  var fakeVis = new Backbone.Model();
   describe('Constructor', function () {
     it('should throw a descriptive error when called with no parameters', function () {
       expect(function () {
@@ -50,7 +48,7 @@ describe('Engine', function () {
       var engine = new Engine({ serverUrl: 'http://example.com', username: 'fake-username' });
       var style = '#layer { marker-color: red; }';
       var source = FakeFactory.createAnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' });
-      var layer = new CartoDBLayer({ source: source, style: style }, { vis: fakeVis });
+      var layer = new CartoDBLayer({ source: source, style: style }, { engine: engine });
       expect(engine._layersCollection.length).toEqual(0);
       engine.addLayer(layer);
       expect(engine._layersCollection.length).toEqual(1);
@@ -62,7 +60,7 @@ describe('Engine', function () {
     it('should add a new dataview', function () {
       var engine = new Engine({ serverUrl: 'http://example.com', username: 'fake-username' });
       var source = FakeFactory.createAnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' });
-      var dataview = new Dataview({ id: 'dataview1', source: source }, { map: {}, vis: fakeVis });
+      var dataview = new Dataview({ id: 'dataview1', source: source }, { map: {}, engine: engine });
 
       expect(engine._dataviewsCollection.length).toEqual(0);
       engine.addDataview(dataview);
@@ -74,13 +72,12 @@ describe('Engine', function () {
   describe('.reload', function () {
     var layer;
     var engine;
-    var fakeVis = new Backbone.Model();
 
     beforeEach(function () {
       engine = new Engine({ serverUrl: 'http://example.com', username: 'fake-username' });
       var style = '#layer { marker-color: red; }';
       var source = FakeFactory.createAnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' });
-      layer = new CartoDBLayer({ source: source, style: style }, { vis: fakeVis });
+      layer = new CartoDBLayer({ source: source, style: style }, { engine: engine });
     });
 
     it('should perform a request with the state encoded in a payload (no layers, no dataviews) ', function (done) {

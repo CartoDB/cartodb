@@ -1,12 +1,12 @@
 var Backbone = require('backbone');
 var AnalysisService = require('../../../../../src/analysis/analysis-service.js');
 var CartoDBLayer = require('../../../../../src/geo/map/cartodb-layer');
-var VisModel = require('../../../../../src/vis/vis');
+var Engine = require('../../../../../src/engine');
 var DataviewModel = require('../../../../../src/dataviews/dataview-model-base');
 var AnalysisSerializer = require('../../../../../src/windshaft/map-serializer/anonymous-map-serializer/analysis-serializer');
 
 describe('analysis-serializer', function () {
-  var visModel;
+  var fakeEngine;
   var mapModel;
   var layersCollection;
   var dataviewsCollection;
@@ -16,11 +16,11 @@ describe('analysis-serializer', function () {
 
   beforeEach(function () {
     mapModel = new Backbone.Model();
-    visModel = new Backbone.Model();
+    fakeEngine = new Engine({ serverUrl: 'http://example.com', username: 'fake-username' });
     layersCollection = new Backbone.Collection();
     dataviewsCollection = new Backbone.Collection();
     analysisService = new AnalysisService({
-      vis: visModel,
+      engine: fakeEngine,
       camshaftReference: fakeCamshaftReference
     });
     analysisDefinition = {
@@ -42,7 +42,7 @@ describe('analysis-serializer', function () {
           cartocss: 'cartocssMock',
           cartocss_version: '2.0'
         }, {
-          vis: new VisModel()
+          engine: fakeEngine
         });
         layersCollection.reset([ cartoDBLayer ]);
 
@@ -110,7 +110,7 @@ describe('analysis-serializer', function () {
           cartocss: 'cartocssMock',
           cartocss_version: '2.0'
         }, {
-          vis: new VisModel()
+          engine: fakeEngine
         });
 
         var cartoDBLayer2 = new CartoDBLayer({
@@ -119,7 +119,7 @@ describe('analysis-serializer', function () {
           cartocss: 'cartocssMock',
           cartocss_version: '2.0'
         }, {
-          vis: new VisModel()
+          engine: fakeEngine
         });
 
         layersCollection.reset([
@@ -167,7 +167,7 @@ describe('analysis-serializer', function () {
           source: analysisModel
         }, {
           map: mapModel,
-          vis: visModel
+          engine: fakeEngine
         });
 
         dataviewsCollection.reset([ dataview ]);
@@ -234,14 +234,14 @@ describe('analysis-serializer', function () {
           source: analysis1
         }, {
           map: mapModel,
-          vis: visModel
+          engine: fakeEngine
         });
 
         var dataview2 = new DataviewModel({
           source: analysis2
         }, {
           map: mapModel,
-          vis: visModel
+          engine: fakeEngine
         });
 
         dataviewsCollection.reset([
@@ -290,7 +290,7 @@ describe('analysis-serializer', function () {
         cartocss: 'cartocssMock',
         cartocss_version: '2.0'
       }, {
-        vis: new VisModel()
+        engine: fakeEngine
       });
 
       var cartoDBLayer2 = new CartoDBLayer({
@@ -299,14 +299,14 @@ describe('analysis-serializer', function () {
         cartocss: 'cartocssMock',
         cartocss_version: '2.0'
       }, {
-        vis: new VisModel()
+        engine: fakeEngine
       });
 
       var dataview = new DataviewModel({
         source: analysisModel
       }, {
         map: mapModel,
-        vis: visModel
+        engine: fakeEngine
       });
 
       layersCollection.reset([

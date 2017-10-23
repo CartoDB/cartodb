@@ -7,44 +7,39 @@ module Carto
 
     def initialize(geopkg_file:)
       # Connect to the database
-      @db = SQLite3::Database.new geopkg_file
+      @db = SQLite3::Database.new(geopkg_file)
 
       # Find the appropriate carto metadata record
       @orig_metadata = @metadata = carto_metadata
     end
 
     def self.open(geopkg_file:)
-      f = GpkgCartoMetadataUtil.new(geopkg_file: geopkg_file)
+      file = GpkgCartoMetadataUtil.new(geopkg_file: geopkg_file)
 
-      return f unless block_given?
+      return file unless block_given?
 
       begin
-        yield f
+        yield file
       ensure
-        f.close
+        file.close
       end
     end
 
     # Send in metadata as a hash
     def metadata=(metadata)
-      raise ArgumentError if metadata == nil
+      raise ArgumentError unless metadata
 
       md = metadata.with_indifferent_access
 
       # Always make sure a carto property exists
-      if !md.key?(:vendor)
-        md[:vendor] = 'carto'
-      end
+      md[:vendor] = 'carto' unless md.key?(:vendor)
 
       @metadata = md
     end
 
     # Get metadata as hash
     def metadata
-      unless @metadata
-        @metadata = { vendor: 'carto' }.with_indifferent_access
-      end
-      @metadata
+      @metadata ||= { vendor: 'carto' }.with_indifferent_access
     end
 
     # Commit the changes to the file

@@ -57,6 +57,7 @@ Development
 * Updates Dataservices API client default version to `0.18.0` (#12466)
 * Time-series: add timezone selector to timeseries histogram (#12464)
 * Updates Dataservices API client default version to `0.19.0` (#12494)
+* Adds library to read/write metadata to .carto.gpkg files. (#12546)
 * Don't display slider if there's only one value (#bigmetadata/202)
 * Mustache conditionals support improved in popups (#support/763)
 * Updates Dataservices API client default version to `0.20.0` (#12633)

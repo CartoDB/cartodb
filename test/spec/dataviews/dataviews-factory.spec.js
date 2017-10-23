@@ -19,7 +19,7 @@ describe('dataviews/dataviews-factory', function () {
     this.dataviewsCollection = new Backbone.Collection();
     this.factory = new DataviewsFactory(null, {
       map: {},
-      vis: {},
+      engine: {},
       dataviewsCollection: this.dataviewsCollection
     });
   });

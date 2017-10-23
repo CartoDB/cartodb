@@ -7,7 +7,7 @@ var LayerTypes = require('../geo/map/layer-types.js');
 var AnalysisService = function (opts) {
   opts = opts || {};
   if (!opts.engine) {
-    throw new Error('vis option is required');
+    throw new Error('engine is required');
   }
 
   this._engine = opts.engine;

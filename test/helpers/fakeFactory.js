@@ -42,7 +42,7 @@ var createAnalysisModel = function (attrs) {
 
   var model = new AnalysisModel(attrs, {
     camshaftReference: fakeCamshaftReference,
-    vis: {
+    engine: {
       reload: function () {}
     }
   });

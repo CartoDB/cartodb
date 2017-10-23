@@ -5,7 +5,7 @@ var CategoryDataviewModel = require('../../../src/dataviews/category-dataview-mo
 var WindshaftFiltersCategory = require('../../../src/windshaft/filters/category');
 var AnalysisService = require('../../../src/analysis/analysis-service');
 
-fdescribe('dataviews/category-dataview-model', function () {
+describe('dataviews/category-dataview-model', function () {
   beforeEach(function () {
     this.map = new Backbone.Model();
     this.map.getViewBounds = jasmine.createSpy();

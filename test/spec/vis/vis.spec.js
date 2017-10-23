@@ -1085,7 +1085,7 @@ describe('vis/vis', function () {
         source: source
       }, {
         map: this.vis.map,
-        vis: this.vis
+        engine: this.vis._engine
       });
       dataviewMock.toJSON = jasmine.createSpy('toJSON').and.returnValue('fakeDataviewSerialization');
     });

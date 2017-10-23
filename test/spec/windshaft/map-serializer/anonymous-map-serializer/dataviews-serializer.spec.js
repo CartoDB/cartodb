@@ -7,13 +7,13 @@ var DataviewsSerializer = require('../../../../../src/windshaft/map-serializer/a
 
 describe('dataviews-serializer', function () {
   describe('.serialize', function () {
-    var vis;
+    var engineMock;
     var map;
     var layer;
     var analysis;
 
     beforeEach(function () {
-      vis = new Backbone.Model();
+      engineMock = new Backbone.Model();
       map = new Backbone.Model();
       layer = new Backbone.Model();
       analysis = fakeFactory.createAnalysisModel({ id: 'a0' });
@@ -28,7 +28,7 @@ describe('dataviews-serializer', function () {
         source: analysis
       }, {
         map: map,
-        vis: vis,
+        engine: engineMock,
         layer: layer
       });
 
@@ -59,7 +59,7 @@ describe('dataviews-serializer', function () {
         source: analysis
       }, {
         map: map,
-        vis: vis,
+        engine: engineMock,
         layer: layer
       });
 
@@ -90,7 +90,7 @@ describe('dataviews-serializer', function () {
         source: analysis
       }, {
         map: map,
-        vis: vis,
+        engine: engineMock,
         layer: layer
       });
 

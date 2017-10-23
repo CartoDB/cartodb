@@ -19,7 +19,7 @@ describe('geo/gmaps/gmaps-torque-layer-view', function () {
     var mapView = new GoogleMapsMapView({
       el: container,
       mapModel: map,
-      visModel: new Backbone.Model(),
+      engine: new Backbone.Model(),
       layerViewFactory: new GMapsLayerViewFactory(),
       layerGroupModel: new Backbone.Model()
     });

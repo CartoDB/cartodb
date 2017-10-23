@@ -3,7 +3,7 @@ var Backbone = require('backbone');
 var log = require('cdb.log');
 var Model = require('../../../src/core/model');
 var Map = require('../../../src/geo/map');
-var VisModel = require('../../../src/vis/vis');
+var Engine = require('../../../src/engine');
 var TorqueLayer = require('../../../src/geo/map/torque-layer');
 var CartoDBLayer = require('../../../src/geo/map/cartodb-layer');
 var HistogramDataviewModel = require('../../../src/dataviews/histogram-dataview-model');
@@ -46,9 +46,9 @@ describe('windshaft/map-base', function () {
       }
     };
 
-    this.vis = new VisModel();
+    this.engine = new Engine({ serverUrl: 'http://example.com', username: 'fake-username' });
     this.dataviewsCollection = new DataviewsCollection(null, {
-      vis: this.vis
+      engine: this.engine
     });
 
     this.layersCollection = new Backbone.Collection();
@@ -63,9 +63,9 @@ describe('windshaft/map-base', function () {
     this.client = new WindshaftClient(this.windshaftSettings);
 
     this.cartoDBLayerGroup = new Model();
-    this.cartoDBLayer1 = new CartoDBLayer({ id: '12345-67890' }, { vis: this.vis });
-    this.cartoDBLayer2 = new CartoDBLayer({ id: '09876-54321' }, { vis: this.vis });
-    this.torqueLayer = new TorqueLayer({}, { vis: this.vis });
+    this.cartoDBLayer1 = new CartoDBLayer({ id: '12345-67890' }, { engine: this.engine });
+    this.cartoDBLayer2 = new CartoDBLayer({ id: '09876-54321' }, { engine: this.engine });
+    this.torqueLayer = new TorqueLayer({}, { engine: this.engine });
 
     this.windshaftMap = new WindshaftMap({
       statTag: 'stat_tag'
@@ -101,7 +101,7 @@ describe('windshaft/map-base', function () {
         source: this.a0
       }, {
         map: this.map,
-        vis: this.vis,
+        engine: this.engine,
         windshaftMap: this.windshaftMap,
         filter: this.filter
       });

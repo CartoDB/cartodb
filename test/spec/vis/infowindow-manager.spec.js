@@ -547,7 +547,7 @@ describe('src/vis/infowindow-manager.js', function () {
   });
 
   describe('.fetchAttributes', function () {
-    fit('should work as expected?', function () {
+    it('should work as expected?', function () {
       jasmine.clock().install();
       var currentCall = 0;
       spyOn(this.infowindowModel, 'updateContent');

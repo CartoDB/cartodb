@@ -227,9 +227,9 @@
       "resolved": "https://registry.npmjs.org/browserify/-/browserify-13.0.0.tgz"
     },
     "browserify-aes": {
-      "version": "1.1.0",
+      "version": "1.1.1",
       "from": "browserify-aes@>=1.0.4 <2.0.0",
-      "resolved": "https://registry.npmjs.org/browserify-aes/-/browserify-aes-1.1.0.tgz"
+      "resolved": "https://registry.npmjs.org/browserify-aes/-/browserify-aes-1.1.1.tgz"
     },
     "browserify-cipher": {
       "version": "1.0.0",
@@ -323,7 +323,7 @@
     "carto": {
       "version": "0.15.1-cdb4",
       "from": "cartodb/carto#master",
-      "resolved": "git://github.com/cartodb/carto.git#bf4c67034af5a5e311ea2320cbbb2280eeeabe42"
+      "resolved": "git://github.com/cartodb/carto.git#4dfe5361b302dda8163cd41ccbf7a9dc6898019a"
     },
     "cartocolor": {
       "version": "4.0.0",
@@ -2111,9 +2111,9 @@
       "resolved": "git://github.com/cartodb/tangram.git#5df75d855a559d64673d518c5969ca6569a8e04b"
     },
     "tangram-cartocss": {
-      "version": "0.9.6",
+      "version": "0.9.9",
       "from": "tangram-cartocss@>=0.9.0 <0.10.0",
-      "resolved": "https://registry.npmjs.org/tangram-cartocss/-/tangram-cartocss-0.9.6.tgz"
+      "resolved": "https://registry.npmjs.org/tangram-cartocss/-/tangram-cartocss-0.9.9.tgz"
     },
     "tangram-reference": {
       "version": "2.1.0",
@@ -2213,9 +2213,9 @@
       "resolved": "https://registry.npmjs.org/typedarray/-/typedarray-0.0.6.tgz"
     },
     "uglify-js": {
-      "version": "3.1.4",
+      "version": "3.1.5",
       "from": "uglify-js@>=3.1.0 <3.2.0",
-      "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-3.1.4.tgz",
+      "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-3.1.5.tgz",
       "dependencies": {
         "source-map": {
           "version": "0.6.1",

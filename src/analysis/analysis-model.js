@@ -180,7 +180,10 @@ var AnalysisModel = Model.extend({
     // Recursively iterate through the inputs ( source nodes have no inputs )
     if (this.get('type') !== 'source') {
       _.forEach(this._getSourceNames(), function (sourceName) {
-        nodes = nodes.concat(this.get(sourceName).getNodes());
+        var source = this.get(sourceName);
+        if (source) {
+          nodes = nodes.concat(source.getNodes());
+        }
       }, this);
     }
     return nodes;

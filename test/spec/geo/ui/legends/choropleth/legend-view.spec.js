@@ -1,10 +1,11 @@
-var Backbone = require('backbone');
 var LegendViewChoropleth = require('../../../../../../src/geo/ui/legends/choropleth/legend-view.js');
 var ChoroplethLegendModel = require('../../../../../../src/geo/map/legends/choropleth-legend-model.js');
+var fakeFactory = require('../../../../../helpers/fakeFactory');
 
 describe('geo/ui/legends/choropleth/legend-view.js', function () {
+  var engineMock;
   beforeEach(function () {
-    this.visModel = new Backbone.Model();
+    engineMock = fakeFactory.createEngine();
 
     this.model = new ChoroplethLegendModel({
       title: 'Foo',
@@ -36,7 +37,7 @@ describe('geo/ui/legends/choropleth/legend-view.js', function () {
       max: 127,
       visible: true
     }, {
-      visModel: this.visModel
+      engine: engineMock
     });
 
     spyOn(this.model, 'isAvailable').and.returnValue(true);

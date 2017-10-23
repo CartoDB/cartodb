@@ -6,7 +6,6 @@ describe('geo/ui/legends/bubbles/legend-view.js', function () {
   var engineMock;
   beforeEach(function () {
     engineMock = fakeFactory.createEngine();
-
     this.model = new BubbleLegendModel({
       title: 'Bubble',
       type: 'bubble',

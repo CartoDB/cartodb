@@ -36,7 +36,7 @@ var CartoDBLayer = LayerModelBase.extend({
     this.unset('tooltip');
 
     // TODO: Check if engine fits here
-    this.legends = new Legends(attrs.legends, { visModel: this._engine });
+    this.legends = new Legends(attrs.legends, { engine: this._engine });
     this.unset('legends');
 
     this.bind('change', this._onAttributeChanged, this);

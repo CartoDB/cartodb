@@ -6,7 +6,7 @@ if (typeof (window.google && window.google.maps) !== 'undefined') {
   GoogleMapsMapView = require('./gmaps/gmaps-map-view');
 }
 
-MapViewFactory.prototype.createMapView = function (provider, visModel, mapModel, layerGroupModel) {
+MapViewFactory.prototype.createMapView = function (provider, engine, mapModel, layerGroupModel) {
   var MapViewClass;
 
   if (provider === 'leaflet') {
@@ -23,7 +23,7 @@ MapViewFactory.prototype.createMapView = function (provider, visModel, mapModel,
 
   return new MapViewClass({
     mapModel: mapModel,
-    visModel: visModel,
+    engine: engine,
     layerGroupModel: layerGroupModel
   });
 };

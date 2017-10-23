@@ -9,13 +9,13 @@ var CONTAINED_OVERLAYS = ['attribution', 'fullscreen', 'limits', 'logo', 'search
 var OverlaysView = View.extend({
   initialize: function (opts) {
     if (!opts.overlaysCollection) throw new Error('overlaysCollection is required');
-    if (!opts.visModel) throw new Error('visModel is required');
+    if (!opts.engine) throw new Error('engine is required');
     if (!opts.visView) throw new Error('visView is required');
     if (!opts.mapModel) throw new Error('mapModel is required');
     if (!opts.mapView) throw new Error('mapView is required');
 
     this._overlaysCollection = opts.overlaysCollection;
-    this._visModel = opts.visModel;
+    this._engine = opts.engine;
     this._visView = opts.visView;
     this._mapModel = opts.mapModel;
     this._mapView = opts.mapView;
@@ -39,7 +39,7 @@ var OverlaysView = View.extend({
   },
 
   _initBinds: function () {
-    this.listenTo(this._visModel, 'change:loading', this._toggleLoaderOverlay, this);
+    this.listenTo(this._engine, 'change:loading', this._toggleLoaderOverlay, this);
     this.listenTo(this._overlaysCollection, 'add remove change', this.render, this);
     this.listenTo(this._mapModel, 'error:tile', this._addLimitsOverlay, this);
   },

@@ -2,7 +2,7 @@
 var $ = require('jquery');
 var Backbone = require('backbone');
 var Map = require('../../../../src/geo/map');
-var VisModel = require('../../../../src/vis/vis');
+var Engine = require('../../../../src/engine');
 var LeafletMapView = require('../../../../src/geo/leaflet/leaflet-map-view');
 var LeafletLayerViewFactory = require('../../../../src/geo/leaflet/leaflet-layer-view-factory');
 var TorqueLayer = require('../../../../src/geo/map/torque-layer');
@@ -15,14 +15,14 @@ describe('geo/leaflet/leaflet-torque-layer-view', function () {
       'height': '200px',
       'width': '200px'
     });
-    this.vis = new VisModel();
+    this.engine = new Engine({ serverUrl: 'http://example.com', username: 'fake-username' });
     this.map = new Map(null, {
       layersFactory: {}
     });
     this.mapView = new LeafletMapView({
       el: container,
       mapModel: this.map,
-      visModel: new Backbone.Model(),
+      engine: new Backbone.Model(),
       layerViewFactory: new LeafletLayerViewFactory(),
       layerGroupModel: new Backbone.Model()
     });
@@ -34,7 +34,7 @@ describe('geo/leaflet/leaflet-torque-layer-view', function () {
       source: fakeFactory.createAnalysisModel({ id: 'a0' }),
       cartocss: 'Map {}',
       dynamic_cdn: 'dynamic-cdn-value'
-    }, { vis: this.vis });
+    }, { engine: this.engine });
     this.map.addLayer(this.model);
     this.view = this.mapView._layerViews[this.model.cid];
   });
@@ -48,7 +48,7 @@ describe('geo/leaflet/leaflet-torque-layer-view', function () {
       cartocss: 'Map {}',
       dynamic_cdn: 'dynamic-cdn-value'
     }, {
-      vis: this.vis
+      engine: this.engine
     });
     this.map.layers.reset([ newLayer ]);
 

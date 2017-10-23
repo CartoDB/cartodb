@@ -3,7 +3,7 @@ var CartoDBLayer = require('../../../../src/geo/map/cartodb-layer');
 var sharedTestsForInteractiveLayers = require('./shared-for-interactive-layers');
 var Engine = require('../../../../src/engine');
 
-fdescribe('geo/map/cartodb-layer', function () {
+describe('geo/map/cartodb-layer', function () {
   var engineMock;
   beforeEach(function () {
     engineMock = new Engine({ serverUrl: 'http://example.com', username: 'fake-username' });

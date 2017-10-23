@@ -1,17 +1,19 @@
-<script type="text/javascript">
-  var _gaq = _gaq || [];
-  _gaq.push(['_setAccount', '<%= ua %>']);
-  _gaq.push(['_setDomainName', '<%= domain %>']);
-  _gaq.push(['_setAllowLinker', true]);
-  <% if defined? custom_vars -%>
-  <% custom_vars.each do |var| %>
-    _gaq.push(['_setCustomVar', 1, '<%= var[:title] %>', '<%= var[:value] %>', <%= var[:num] %> ]);
-  <% end %>
-  <% end -%>
-  <% if !public_view -%>
-  _gaq.push(['_setCustomVar', 1, 'Member Type', '<%= stringified_member_type %>', 1]);
-  <% end -%>
-  _gaq.push(['_trackPageview']);
+<script>
+  window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+  ga('create', '<%= ua %>', {
+    cookieDomain: '<%= domain %>'
+  });
 
-  (function() { var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true; ga.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'stats.g.doubleclick.net/dc.js'; var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s); })();
+  <% if defined? custom_vars -%>
+    <% custom_vars.each do |var| %>
+      ga('set', '<%= var[:property] %>', '<%= var[:value] %>');
+    <% end %>
+  <% end -%>
+
+  <% if !public_view -%>
+    ga('set', 'Member Type', '<%= stringified_member_type %>');
+  <% end -%>
+
+  ga('send', 'pageview');
 </script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>

@@ -316,9 +316,9 @@
       "resolved": "https://registry.npmjs.org/camelcase/-/camelcase-1.2.1.tgz"
     },
     "camshaft-reference": {
-      "version": "0.33.0",
-      "from": "camshaft-reference@0.33.0",
-      "resolved": "https://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.33.0.tgz"
+      "version": "0.33.4",
+      "from": "camshaft-reference@0.33.4",
+      "resolved": "https://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.33.4.tgz"
     },
     "carto": {
       "version": "0.15.1-cdb4",
@@ -331,9 +331,9 @@
       "resolved": "https://registry.npmjs.org/cartocolor/-/cartocolor-4.0.0.tgz"
     },
     "cartodb-deep-insights.js": {
-      "version": "0.3.3",
-      "from": "cartodb/deep-insights.js#v0.3.3",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#9a92457d23fe5e6ac36512e204f08a59adbc0c89",
+      "version": "0.4.1",
+      "from": "cartodb/deep-insights.js#v0.4.1",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#a4be9a40be760d0efc32ac198024be45572d4337",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",
@@ -348,9 +348,9 @@
       "resolved": "https://registry.npmjs.org/cartodb-pecan/-/cartodb-pecan-0.2.0.tgz"
     },
     "cartodb.js": {
-      "version": "4.0.0-alpha.10",
-      "from": "cartodb/cartodb.js#v4.0.0-alpha.10",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#4878143b8de7c253846b9e989c30955175692c68"
+      "version": "4.0.0-alpha.13",
+      "from": "cartodb/cartodb.js#v4.0.0-alpha.13",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#1cb982941fda7f25331225cda6776d1926432283"
     },
     "center-align": {
       "version": "0.1.3",
@@ -941,9 +941,9 @@
       "resolved": "https://registry.npmjs.org/hosted-git-info/-/hosted-git-info-2.5.0.tgz"
     },
     "html-minifier": {
-      "version": "3.5.5",
+      "version": "3.5.6",
       "from": "html-minifier@>=3.2.3 <4.0.0",
-      "resolved": "https://registry.npmjs.org/html-minifier/-/html-minifier-3.5.5.tgz"
+      "resolved": "https://registry.npmjs.org/html-minifier/-/html-minifier-3.5.6.tgz"
     },
     "html-webpack-plugin": {
       "version": "2.30.1",
@@ -2111,9 +2111,9 @@
       "resolved": "git://github.com/cartodb/tangram.git#5df75d855a559d64673d518c5969ca6569a8e04b"
     },
     "tangram-cartocss": {
-      "version": "0.9.5",
+      "version": "0.9.6",
       "from": "tangram-cartocss@>=0.9.0 <0.10.0",
-      "resolved": "https://registry.npmjs.org/tangram-cartocss/-/tangram-cartocss-0.9.5.tgz"
+      "resolved": "https://registry.npmjs.org/tangram-cartocss/-/tangram-cartocss-0.9.6.tgz"
     },
     "tangram-reference": {
       "version": "2.1.0",

@@ -26,14 +26,14 @@ describe('src/geo/ui/overlays-view.js', function () {
         }
       }
     ]);
-    this.visModel = new Backbone.Model();
+    this.engine = new Backbone.Model();
     this.visView = new Backbone.View();
     this.mapModel = new Backbone.Model();
     this.mapView = new Backbone.View();
 
     this.overlaysView = new OverlaysView({
       overlaysCollection: this.overlaysCollection,
-      visModel: this.visModel,
+      engine: this.engine,
       visView: this.visView,
       mapModel: this.mapModel,
       mapView: this.mapView
@@ -93,11 +93,11 @@ describe('src/geo/ui/overlays-view.js', function () {
 
     expect(loaderOverlay.hasClass('is-visible')).toBeFalsy();
 
-    this.visModel.set('loading', true);
+    this.engine.set('loading', true);
 
     expect(loaderOverlay.hasClass('is-visible')).toBeTruthy();
 
-    this.visModel.set('loading', false);
+    this.engine.set('loading', false);
 
     expect(loaderOverlay.hasClass('is-visible')).toBeFalsy();
   });

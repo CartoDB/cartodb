@@ -1,9 +1,11 @@
 var Backbone = require('backbone');
 var Legends = require('../../../../../src/geo/map/legends/legends');
+var fakeFactory = require('../../../../helpers/fakeFactory');
 
 describe('geo/map/legends/legends', function () {
+  var engineMock;
   beforeEach(function () {
-    this.visModel = new Backbone.Model();
+    engineMock = fakeFactory.createEngine();
     this.legends = new Legends([
       {
         type: 'bubble',
@@ -47,7 +49,7 @@ describe('geo/map/legends/legends', function () {
         }
       }
     ], {
-      visModel: this.visModel
+      engine: engineMock
     });
   });
 
@@ -93,7 +95,7 @@ describe('geo/map/legends/legends', function () {
         }
       }
     ], {
-      visModel: this.visModel
+      engine: engineMock
     });
 
     expect(this.legends.bubble.isVisible()).toBeTruthy();
@@ -111,7 +113,7 @@ describe('geo/map/legends/legends', function () {
         }
       }
     ], {
-      visModel: this.visModel
+      engine: engineMock
     });
 
     expect(this.legends.bubble.isVisible()).toBeFalsy();

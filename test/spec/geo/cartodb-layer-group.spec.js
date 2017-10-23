@@ -1,6 +1,6 @@
 var $ = require('jquery');
 var Backbone = require('backbone');
-var VisModel = require('../../../src/vis/vis');
+var Engine = require('../../../src/engine');
 var Layers = require('../../../src/geo/map/layers');
 var CartoDBLayer = require('../../../src/geo/map/cartodb-layer');
 var TileLayer = require('../../../src/geo/map/tile-layer');
@@ -11,8 +11,8 @@ var CartoDBLayerGroup = require('../../../src/geo/cartodb-layer-group');
 describe('geo/cartodb-layer-group', function () {
   beforeEach(function () {
     this.layersCollection = new Layers();
-    this.vis = new VisModel();
-    spyOn(this.vis, 'reload');
+    this.engine = new Engine({ serverUrl: 'http://example.com', username: 'fake-username' });
+    spyOn(this.engine, 'reload');
 
     this.cartoDBLayerGroup = new CartoDBLayerGroup({}, {
       layersCollection: this.layersCollection
@@ -86,8 +86,8 @@ describe('geo/cartodb-layer-group', function () {
       });
 
       var otherLayer = new Backbone.Model();
-      this.cartoDBLayer1 = new CartoDBLayer({}, { vis: this.vis });
-      this.cartoDBLayer2 = new CartoDBLayer({}, { vis: this.vis });
+      this.cartoDBLayer1 = new CartoDBLayer({}, { engine: this.engine });
+      this.cartoDBLayer2 = new CartoDBLayer({}, { engine: this.engine });
       this.layersCollection.reset([
         otherLayer,
         this.cartoDBLayer1,
@@ -195,8 +195,8 @@ describe('geo/cartodb-layer-group', function () {
       });
 
       var otherLayer = new Backbone.Model();
-      this.cartoDBLayer1 = new CartoDBLayer({}, { vis: this.vis });
-      this.cartoDBLayer2 = new CartoDBLayer({}, { vis: this.vis });
+      this.cartoDBLayer1 = new CartoDBLayer({}, { engine: this.engine });
+      this.cartoDBLayer2 = new CartoDBLayer({}, { engine: this.engine });
       this.layersCollection.reset([
         otherLayer,
         this.cartoDBLayer1,
@@ -225,8 +225,8 @@ describe('geo/cartodb-layer-group', function () {
 
   describe('.hasTileURLTemplates', function () {
     beforeEach(function () {
-      this.cartoDBLayer1 = new CartoDBLayer({}, { vis: this.vis });
-      this.cartoDBLayer2 = new CartoDBLayer({}, { vis: this.vis });
+      this.cartoDBLayer1 = new CartoDBLayer({}, { engine: this.engine });
+      this.cartoDBLayer2 = new CartoDBLayer({}, { engine: this.engine });
       this.layersCollection.reset([
         this.cartoDBLayer1,
         this.cartoDBLayer2
@@ -312,11 +312,11 @@ describe('geo/cartodb-layer-group', function () {
 
   describe('.getStaticImageURLTemplate', function () {
     beforeEach(function () {
-      this.baseLayer = new TileLayer({}, { vis: this.vis });
-      this.cartoDBLayer1 = new CartoDBLayer({}, { vis: this.vis });
-      this.cartoDBLayer2 = new CartoDBLayer({}, { vis: this.vis });
-      this.torqueLayer = new TorqueLayer({}, { vis: this.vis });
-      this.labelsLayer = new TileLayer({}, { vis: this.vis });
+      this.baseLayer = new TileLayer({}, { engine: this.engine });
+      this.cartoDBLayer1 = new CartoDBLayer({}, { engine: this.engine });
+      this.cartoDBLayer2 = new CartoDBLayer({}, { engine: this.engine });
+      this.torqueLayer = new TorqueLayer({}, { engine: this.engine });
+      this.labelsLayer = new TileLayer({}, { engine: this.engine });
 
       this.layersCollection.reset([
         this.baseLayer,
@@ -344,8 +344,8 @@ describe('geo/cartodb-layer-group', function () {
 
     it('should ignore Google Maps base layers (Maps API is not aware of them)', function () {
       this.baseLayer = new GMapsBaseLayer(null);
-      this.cartoDBLayer1 = new CartoDBLayer({}, { vis: this.vis });
-      this.cartoDBLayer2 = new CartoDBLayer({}, { vis: this.vis });
+      this.cartoDBLayer1 = new CartoDBLayer({}, { engine: this.engine });
+      this.cartoDBLayer2 = new CartoDBLayer({}, { engine: this.engine });
 
       this.layersCollection.reset([
         this.baseLayer,

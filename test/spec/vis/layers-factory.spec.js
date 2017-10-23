@@ -1,12 +1,12 @@
 var _ = require('underscore');
 
-var VisModel = require('../../../src/vis/vis');
+var Engine = require('../../../src/engine');
 var AnalysisModel = require('../../../src/analysis/analysis-model');
 var LayersFactory = require('../../../src/vis/layers-factory');
 
 var createFakeAnalysis = function (attrs) {
   return new AnalysisModel(attrs, {
-    vis: {},
+    engine: {},
     camshaftReference: {
       getParamNamesForAnalysisType: function () {}
     }
@@ -14,11 +14,14 @@ var createFakeAnalysis = function (attrs) {
 };
 
 describe('vis/layers-factory', function () {
+  pending('engine has no https attribute');
+
   var analysis;
   var layersFactory;
+  var engineMock;
 
   beforeEach(function () {
-    this.vis = new VisModel();
+    engineMock = new Engine({ serverUrl: 'http://example.com', username: 'fake-username' });
 
     this.windshaftSettings = {
       urlTemplate: 'http://{user}.carto.com',
@@ -30,7 +33,7 @@ describe('vis/layers-factory', function () {
     };
 
     layersFactory = new LayersFactory({
-      visModel: this.vis,
+      engine: engineMock,
       windshaftSettings: this.windshaftSettings
     });
 
@@ -120,7 +123,7 @@ describe('vis/layers-factory', function () {
 
       describe('when https option is set to true', function () {
         beforeEach(function () {
-          this.vis.set('https', true);
+          engineMock.set('https', true);
         });
 
         it("should not convert '" + httpsUrlTemplate + "'", function () {
@@ -142,7 +145,7 @@ describe('vis/layers-factory', function () {
 
       describe('when https option is set to false', function () {
         beforeEach(function () {
-          this.vis.set('https', false);
+          engineMock.set('https', false);
         });
 
         it("should not convert '" + httpUrlTemplate + "'", function () {

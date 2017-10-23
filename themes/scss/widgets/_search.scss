@@ -13,7 +13,7 @@
   margin-right: $baseSize / 2;
 }
 .CDB-Widget-searchTextInput {
-  @include flex-grow(2);
+  @include flex(2 1 auto);
   width: 100%;
 }
 .CDB-Widget-searchApply {

@@ -78,7 +78,7 @@ var Vis = View.extend({
 
   _renderOverlaysView: function () {
     this._overlaysView = new OverlaysView({
-      engine: this.model,
+      engine: this.model._engine,
       visView: this,
       mapModel: this.model.map,
       mapView: this.mapView,

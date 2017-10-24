@@ -4,6 +4,7 @@ var Backbone = require('backbone');
 var VisView = require('../../../src/vis/vis-view');
 var VisModel = require('../../../src/vis/vis');
 var VizJSON = require('../../../src/api/vizjson');
+var Engine = require('../../../src/engine');
 
 // extend VisView in our tests
 VisView = VisView.extend({
@@ -134,17 +135,15 @@ describe('vis/vis-view', function () {
   });
 
   it('should display/hide the loader while loading', function () {
-    this.visModel.overlaysCollection.add({
-      type: 'loader'
-    });
+    this.visModel.overlaysCollection.add({ type: 'loader' });
 
     expect(this.visView.$el.find('.CDB-Loader:not(.is-visible)').length).toEqual(1);
 
-    this.visModel.set('loading', true);
+    this.visModel._engine._eventEmmitter.trigger(Engine.Events.RELOAD_STARTED);
 
     expect(this.visView.$el.find('.CDB-Loader.is-visible').length).toEqual(1);
 
-    this.visModel.set('loading', false);
+    this.visModel._engine._eventEmmitter.trigger(Engine.Events.RELOAD_SUCCESS);
 
     expect(this.visView.$el.find('.CDB-Loader:not(.is-visible)').length).toEqual(1);
   });

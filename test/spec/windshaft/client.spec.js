@@ -7,18 +7,16 @@ var Request = require('../../../src/windshaft/request');
 var LZMA = require('lzma');
 
 describe('windshaft/client', function () {
-  describe('instantiateMap', function () {
+  fdescribe('instantiateMap', function () {
     beforeEach(function () {
       spyOn($, 'ajax').and.callFake(function (params) {
         this.ajaxParams = params;
       }.bind(this));
 
-      spyOn(util, 'uniqueCallbackName').and.callFake(function () {
-        return 'callbackName';
-      });
+      spyOn(util, 'uniqueCallbackName').and.callFake(function () { return 'callbackName'; });
 
       this.client = new WindshaftClient({
-        urlTemplate: 'https://{user}.example.com:443',
+        urlTemplate: 'https://{user}.carto.com:443',
         userName: 'rambo'
       });
     });
@@ -29,7 +27,7 @@ describe('windshaft/client', function () {
 
       var url = this.ajaxParams.url.split('?')[0];
 
-      expect(url).toEqual('https://rambo.example.com:443/api/v1/map');
+      expect(url).toEqual('https://rambo.carto.com:443/api/v1/map');
       expect(this.ajaxParams.method).toEqual('GET');
       expect(this.ajaxParams.dataType).toEqual('jsonp');
       expect(this.ajaxParams.jsonpCallback).toMatch('_cdbc_callbackName');
@@ -39,7 +37,7 @@ describe('windshaft/client', function () {
     it('should use the endpoint for named maps', function () {
       var request = new Request({ some: 'json that must be encoded' }, {}, {});
       this.client = new WindshaftClient({
-        urlTemplate: 'https://{user}.example.com:443',
+        urlTemplate: 'https://{user}.carto.com:443',
         userName: 'rambo',
         templateName: 'tpl123456789'
       });
@@ -47,7 +45,7 @@ describe('windshaft/client', function () {
 
       var url = this.ajaxParams.url.split('?')[0];
 
-      expect(url).toEqual('https://rambo.example.com:443/api/v1/map/named/tpl123456789/jsonp');
+      expect(url).toEqual('https://rambo.carto.com:443/api/v1/map/named/tpl123456789/jsonp');
     });
 
     it('should include the given params and handle JSON objects correctly', function () {
@@ -60,7 +58,7 @@ describe('windshaft/client', function () {
       var url = this.ajaxParams.url.split('?')[0];
       var params = this.ajaxParams.url.split('?')[1].split('&');
 
-      expect(url).toEqual('https://rambo.example.com:443/api/v1/map');
+      expect(url).toEqual('https://rambo.carto.com:443/api/v1/map');
       expect(params[0]).toEqual('config=%7B%22some%22%3A%22json%20that%20must%20be%20encoded%22%7D');
       expect(params[1]).toEqual('stat_tag=stat_tag');
       expect(params[2]).toEqual('filters=%7B%22some%22%3A%22filters%20that%20will%20be%20applied%22%7D');
@@ -72,7 +70,7 @@ describe('windshaft/client', function () {
 
     it('should invoke the success callback', function () {
       var successCallback = jasmine.createSpy('successCallback');
-      var request = new Request('mapDefinition', {}, {success: successCallback});
+      var request = new Request('mapDefinition', {}, { success: successCallback });
       this.client.instantiateMap(request);
 
       this.ajaxParams.success({ layergroupid: '123456789' });
@@ -85,7 +83,7 @@ describe('windshaft/client', function () {
 
     it('should invoke the error callback if Windshaft returns some errors under a success response code', function () {
       var errorCallback = jasmine.createSpy('errorCallback');
-      var request = new Request('mapDefinition', {}, {error: errorCallback});
+      var request = new Request('mapDefinition', {}, { error: errorCallback });
 
       this.client.instantiateMap(request);
 
@@ -106,7 +104,7 @@ describe('windshaft/client', function () {
 
     it('should invoke the error callback if ajax request goes wrong', function () {
       var errorCallback = jasmine.createSpy('errorCallback');
-      var request = new Request('mapDefinition', {}, {error: errorCallback});
+      var request = new Request('mapDefinition', {}, { error: errorCallback });
       this.client.instantiateMap(request);
 
       this.ajaxParams.error({ responseText: JSON.stringify({ something: 'else' }) });
@@ -116,7 +114,7 @@ describe('windshaft/client', function () {
 
     it('should ignore the error callback if request was aborted', function () {
       var errorCallback = jasmine.createSpy('errorCallback');
-      var request = new Request('mapDefinition', {}, {error: errorCallback});
+      var request = new Request('mapDefinition', {}, { error: errorCallback });
 
       this.client.instantiateMap(request);
 
@@ -142,16 +140,9 @@ describe('windshaft/client', function () {
     });
 
     describe('HTTP method:', function () {
-      beforeEach(function () {
-        this.client = new WindshaftClient({
-          urlTemplate: 'https://{user}.carto.com:443',
-          userName: 'rambo'
-        });
-      });
-
       it('should use GET to URL with encoded config when the payload is small enough', function (done) {
         var smallPayload = new Array(1933).join('x');
-        var request = new Request(smallPayload, {a: 'a sentence'}, {});
+        var request = new Request(smallPayload, { a: 'a sentence' }, {});
         this.client.instantiateMap(request);
 
         _.defer(function () {
@@ -171,7 +162,7 @@ describe('windshaft/client', function () {
 
       it('should use GET with compressed payload when payload is too big', function (done) {
         var mediumPayload = new Array(2033).join('x');
-        var request = new Request(mediumPayload, {a: 'a sentence'}, {});
+        var request = new Request(mediumPayload, { a: 'a sentence' }, {});
         this.client.instantiateMap(request);
 
         _.defer(function () {
@@ -196,7 +187,7 @@ describe('windshaft/client', function () {
           callback(new Array(2500).join('x'));
         });
         var bigPayload = new Array(2033).join('x');
-        var request = new Request(bigPayload, {a: 'a sentence'}, {});
+        var request = new Request(bigPayload, { a: 'a sentence' }, {});
         this.client.instantiateMap(request);
 
         _.defer(function () {
@@ -222,7 +213,7 @@ describe('windshaft/client', function () {
 
       it('should cancel previous requests when using GET requests', function () {
         var errorCallback = jasmine.createSpy('errorCallback');
-        var request = new Request({ some: 'json that must be encoded' }, {}, {error: errorCallback});
+        var request = new Request({ some: 'json that must be encoded' }, {}, { error: errorCallback });
         this.client.instantiateMap(request);
 
         expect($.ajax.calls.argsFor(0)[0].method).toEqual('GET');
@@ -240,7 +231,7 @@ describe('windshaft/client', function () {
         spyOn(LZMA, 'compress').and.callFake(function (data, level, callback) {
           callback(new Array(2500).join('x'));
         });
-        var request = new Request({something: new Array(3000).join('x')}, {}, {});
+        var request = new Request({ something: new Array(3000).join('x') }, {}, {});
         this.client.instantiateMap(request);
 
         _.defer(function () {

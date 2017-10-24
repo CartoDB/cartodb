@@ -73,8 +73,9 @@ module Carto
 
     def login(api)
       user = api.user
+      return false unless user
 
-      params[:oauth_api] = google_api
+      params[:oauth_api] = api
       authenticate!(:oauth, scope: user.username)
 
       CartoDB::Stats::Authentication.instance.increment_login_counter(user.email)

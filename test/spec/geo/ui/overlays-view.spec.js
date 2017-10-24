@@ -2,6 +2,11 @@ var Backbone = require('backbone');
 var OverlaysView = require('../../../../src/geo/ui/overlays-view.js');
 
 describe('src/geo/ui/overlays-view.js', function () {
+  var engineMock;
+  var visViewMock;
+  var mapModelMock;
+  var mapViewMock;
+
   beforeEach(function () {
     this.overlaysCollection = new Backbone.Collection([
       {
@@ -26,14 +31,14 @@ describe('src/geo/ui/overlays-view.js', function () {
         }
       }
     ]);
-    this.engine = new Backbone.Model();
+    engineMock = new Backbone.Model();
     this.visView = new Backbone.View();
     this.mapModel = new Backbone.Model();
     this.mapView = new Backbone.View();
 
     this.overlaysView = new OverlaysView({
       overlaysCollection: this.overlaysCollection,
-      engine: this.engine,
+      engine: engineMock,
       visView: this.visView,
       mapModel: this.mapModel,
       mapView: this.mapView
@@ -93,11 +98,11 @@ describe('src/geo/ui/overlays-view.js', function () {
 
     expect(loaderOverlay.hasClass('is-visible')).toBeFalsy();
 
-    this.engine.set('loading', true);
+    engineMock.set('loading', true);
 
     expect(loaderOverlay.hasClass('is-visible')).toBeTruthy();
 
-    this.engine.set('loading', false);
+    engineMock.set('loading', false);
 
     expect(loaderOverlay.hasClass('is-visible')).toBeFalsy();
   });

@@ -4,7 +4,7 @@ var CartoDBLayer = require('../../../src/geo/map/cartodb-layer');
 var Dataview = require('../../../src/dataviews/dataview-model-base');
 
 describe('src/analysis/analysis-service.js', function () {
-  var fakeEngine = new Backbone.Model();
+  var engineMock = new Backbone.Model();
   var fakeCamshaftReference = {
     getSourceNamesForAnalysisType: function (analysisType) {
       var map = {
@@ -24,7 +24,7 @@ describe('src/analysis/analysis-service.js', function () {
   };
   beforeEach(function () {
     this.analysisService = new AnalysisService({
-      engine: fakeEngine,
+      engine: engineMock,
       camshaftReference: fakeCamshaftReference
     });
   });
@@ -220,7 +220,7 @@ describe('src/analysis/analysis-service.js', function () {
         type: 'source',
         query: 'SELECT * FROM subway_stops'
       });
-      var layer = new CartoDBLayer({ source: analysis }, { engine: fakeEngine });
+      var layer = new CartoDBLayer({ source: analysis }, { engine: engineMock });
       var layersCollection = new Backbone.Collection([layer]);
       var dataviewsCollection = new Backbone.Collection();
 
@@ -243,8 +243,8 @@ describe('src/analysis/analysis-service.js', function () {
         query: 'SELECT * FROM bus_stops'
       });
 
-      var layer = new CartoDBLayer({ source: analysis0 }, { engine: fakeEngine });
-      var dataview = new Dataview({ id: 'dataview1', source: analysis1 }, { map: {}, engine: fakeEngine });
+      var layer = new CartoDBLayer({ source: analysis0 }, { engine: engineMock });
+      var dataview = new Dataview({ id: 'dataview1', source: analysis1 }, { map: {}, engine: engineMock });
 
       var layersCollection = new Backbone.Collection([layer]);
       var dataviewsCollection = new Backbone.Collection([dataview]);
@@ -269,8 +269,8 @@ describe('src/analysis/analysis-service.js', function () {
         query: 'SELECT * FROM bus_stops'
       });
 
-      var layer = new CartoDBLayer({ source: analysis0 }, { engine: fakeEngine });
-      var dataview = new Dataview({ id: 'dataview1', source: analysis1 }, { map: {}, engine: fakeEngine });
+      var layer = new CartoDBLayer({ source: analysis0 }, { engine: engineMock });
+      var dataview = new Dataview({ id: 'dataview1', source: analysis1 }, { map: {}, engine: engineMock });
 
       var layersCollection = new Backbone.Collection([layer]);
       var dataviewsCollection = new Backbone.Collection([dataview]);
@@ -313,9 +313,9 @@ describe('src/analysis/analysis-service.js', function () {
       var analysis1 = analysisNodes.get('a1');
       var analysis2 = analysisNodes.get('a2');
 
-      var layer0 = new CartoDBLayer({ source: analysis0 }, { engine: fakeEngine });
-      var layer1 = new CartoDBLayer({ source: analysis2 }, { engine: fakeEngine });
-      var dataview = new Dataview({ id: 'dataview1', source: analysis1 }, { map: {}, engine: fakeEngine });
+      var layer0 = new CartoDBLayer({ source: analysis0 }, { engine: engineMock });
+      var layer1 = new CartoDBLayer({ source: analysis2 }, { engine: engineMock });
+      var dataview = new Dataview({ id: 'dataview1', source: analysis1 }, { map: {}, engine: engineMock });
 
       var layersCollection = new Backbone.Collection([layer0, layer1]);
       var dataviewsCollection = new Backbone.Collection([dataview]);

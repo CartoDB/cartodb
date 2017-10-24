@@ -14,8 +14,6 @@ var createFakeAnalysis = function (attrs) {
 };
 
 describe('vis/layers-factory', function () {
-  pending('engine has no https attribute');
-
   var analysis;
   var layersFactory;
   var engineMock;
@@ -103,27 +101,9 @@ describe('vis/layers-factory', function () {
       'https://cartocdn_{s}.global.ssl.fastly.net/': 'http://{s}.api.cartocdn.com/',
       'https://cartodb-basemaps-{s}.global.ssl.fastly.net/': 'http://{s}.basemaps.cartocdn.com/'
     }, function (httpUrlTemplate, httpsUrlTemplate) {
-      describe('when https option is undefined', function () {
-        it("should not convert '" + httpUrlTemplate + "'", function () {
-          var layerModel = layersFactory.createLayer('tiled', {
-            urlTemplate: httpUrlTemplate
-          });
-
-          expect(layerModel.get('urlTemplate')).toEqual(httpUrlTemplate);
-        });
-
-        it("should not convert '" + httpsUrlTemplate + "'", function () {
-          var layerModel = layersFactory.createLayer('tiled', {
-            urlTemplate: httpsUrlTemplate
-          });
-
-          expect(layerModel.get('urlTemplate')).toEqual(httpsUrlTemplate);
-        });
-      });
-
       describe('when https option is set to true', function () {
         beforeEach(function () {
-          engineMock.set('https', true);
+          spyOn(LayersFactory, 'isHttps').and.returnValue(true);
         });
 
         it("should not convert '" + httpsUrlTemplate + "'", function () {
@@ -145,7 +125,7 @@ describe('vis/layers-factory', function () {
 
       describe('when https option is set to false', function () {
         beforeEach(function () {
-          engineMock.set('https', false);
+          spyOn(LayersFactory, 'isHttps').and.returnValue(false);
         });
 
         it("should not convert '" + httpUrlTemplate + "'", function () {

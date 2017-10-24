@@ -5,6 +5,7 @@ var VizJSON = require('../../../src/api/vizjson');
 var DataviewModelBase = require('../../../src/dataviews/dataview-model-base');
 var AnalysisModel = require('../../../src/analysis/analysis-model');
 var AnalysisService = require('../../../src/analysis/analysis-service');
+var LayersFactory = require('../../../src/vis/layers-factory');
 
 var fakeVizJSON = function () {
   return {
@@ -533,7 +534,7 @@ describe('vis/vis', function () {
         }
       }];
 
-      this.vis.set('https', false);
+      spyOn(LayersFactory, 'isHttps').and.returnValue(false);
       this.vis.load(new VizJSON(vizjson));
 
       expect(this.vis.map.layers.at(0).get('urlTemplate')).toEqual(
@@ -551,7 +552,7 @@ describe('vis/vis', function () {
         }
       }];
 
-      this.vis.set('https', true);
+      spyOn(LayersFactory, 'isHttps').and.returnValue(true);
       this.vis.load(new VizJSON(vizjson));
 
       expect(this.vis.map.layers.at(0).get('urlTemplate')).toEqual(
@@ -1084,9 +1085,9 @@ describe('vis/vis', function () {
       dataviewMock = new DataviewModelBase({
         source: source
       }, {
-        map: this.vis.map,
-        engine: this.vis._engine
-      });
+          map: this.vis.map,
+          engine: this.vis._engine
+        });
       dataviewMock.toJSON = jasmine.createSpy('toJSON').and.returnValue('fakeDataviewSerialization');
     });
 

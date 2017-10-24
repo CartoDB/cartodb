@@ -117,14 +117,6 @@ describe('create-vis:', function () {
       var visModel = createVis(this.containerId, visJson);
       expect(visModel.map.get('scrollwheel')).toEqual(true);
     });
-
-    it('should have "infowindow" enabled by default', function () {
-      pending('It seems that this option is no longer being used');
-    });
-
-    it('should have "tooltip" by default', function () {
-      pending('It seems that this option  is no longer being used');
-    });
   });
 
   describe('Options', function () {

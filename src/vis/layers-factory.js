@@ -51,14 +51,10 @@ function checkProperties (obj, requiredProperties) {
   }
 }
 
-function _isHttps () {
-  return (window && window.location.protocol && window.location.protocol === 'https:') || false;
-}
-
 var LAYER_CONSTRUCTORS = {
   tiled: function (attrs, options) {
     checkProperties(attrs, ['urlTemplate']);
-    attrs.urlTemplate = _isHttps() ? transformToHTTPS(attrs.urlTemplate) : transformToHTTP(attrs.urlTemplate);
+    attrs.urlTemplate = LayersFactory.isHttps() ? transformToHTTPS(attrs.urlTemplate) : transformToHTTP(attrs.urlTemplate);
     return new TileLayer(attrs, { engine: options.engine });
   },
 
@@ -133,13 +129,13 @@ var LAYER_CONSTRUCTORS = {
   }
 };
 
-var LayersFactory = function (deps) {
+function LayersFactory (deps) {
   if (!deps.engine) throw new Error('engine is required');
   if (!deps.windshaftSettings) throw new Error('windshaftSettings is required');
 
   this._engine = deps.engine;
   this._windshaftSettings = deps.windshaftSettings;
-};
+}
 
 LayersFactory.prototype.createLayer = function (type, attrs) {
   var LayerConstructor = LAYER_CONSTRUCTORS[type.toLowerCase()];
@@ -152,6 +148,10 @@ LayersFactory.prototype.createLayer = function (type, attrs) {
     windshaftSettings: this._windshaftSettings,
     engine: this._engine
   });
+};
+
+LayersFactory.isHttps = function () {
+  return (window && window.location.protocol && window.location.protocol === 'https:') || false;
 };
 
 module.exports = LayersFactory;

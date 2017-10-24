@@ -29,11 +29,6 @@
             <div class="Sessions-form">
               <%= form_tag CartoDB.path(self, 'create_session'), class: "js-Loading-form" do %>
 
-                <% if @organization.nil? || @organization.auth_google_enabled %>
-                  <input type="hidden" value="" id="google_access_token" name="google_access_token" />
-                  <input type="hidden" value="0" id="google_access_filled" name="google_access_filled" />
-                <% end %>
-
                 <% if @organization.nil? || @organization.auth_username_password_enabled %>
 
                   <div class="Sessions-field">

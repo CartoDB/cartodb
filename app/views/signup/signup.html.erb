@@ -1,17 +1,13 @@
 <% content_for :title do %><%= @organization.name %> sign up<% end %>
 
 <% content_for :js do %>
-  <%= javascript_include_tag 'cdb.js', 'signup.js' %>
+  <%= javascript_include_tag 'cdb.js' %>
 <% end %>
 
 <%= render :partial => 'shared/flash_message', locals: { error_message: @organization.auth_username_password_enabled ? nil : model_errors(@user) } %>
 
 <div class="CDB-Text <%= @organization.present? ? 'Sessions' : 'Sessions-navy' %>" style="<%= @organization.present? ? background : '' %>">
   <div class="Sessions-content">
-
-    <div class="Sessions-loggedin is-active">
-      <div class="Spinner"></div>
-    </div>
 
     <div class="Sessions-inner">
       <div class="Sessions-notloggedin is-active">
@@ -46,10 +42,6 @@
 
 
             <%= form_for @user, url: CartoDB.url(self, 'signup_organization_user'),  html: { class: "js-Loading-form" } do |f| %>
-              <% if @organization.auth_google_enabled %>
-                <input type="hidden" value="<%= params[:google_access_token] %>" id="google_access_token" name="google_access_token" />
-                <input type="hidden" value="<%= params[:google_access_token].present? ? 1 : 0 %>" id="google_access_filled" name="google_access_filled" />
-              <% end %>
 
               <input type="hidden" value="<%= params[:invitation_token] %>" id="invitation_token" name="invitation_token" />
 

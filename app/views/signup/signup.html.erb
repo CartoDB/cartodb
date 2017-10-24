@@ -104,7 +104,7 @@
               </div>
             <% end %>
 
-            <% if !duplicated_username_prompt? && (@organization.auth_google_enabled || @organization.auth_github_enabled) %>
+            <% unless @oauth_fields.present? %>
               <div class="Sessions-field Sessions-oauthContainer">
                 <% @oauth_configs.each do |config| %>
                   <%= render partial: config.button_template, locals: { config: config } %>

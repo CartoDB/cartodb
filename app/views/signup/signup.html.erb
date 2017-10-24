@@ -55,7 +55,7 @@
                   </div>
 
                   <div class="Sessions-field">
-                    <%= f.email_field :email, class: "CDB-Size-medium Sessions-input", placeholder: 'email', readonly: params[:invitation_token].present? || duplicated_username_prompt? %>
+                    <%= f.email_field :email, class: "CDB-Size-medium Sessions-input", placeholder: 'email', readonly: params[:invitation_token].present? || duplicated_username_prompt? || @user.google_sign_in %>
                     <% if !@user.errors[:email].blank? %>
                       <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @user.errors[:email] %>">!</div>
                     <% end %>

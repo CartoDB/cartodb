@@ -1,31 +1,46 @@
-var MapViewFactory = function () {};
-
 var LeafletMapView = require('./leaflet/leaflet-map-view');
 var GoogleMapsMapView;
-if (typeof (window.google && window.google.maps) !== 'undefined') {
+// CHeck if google maps is defined
+if (window.google && window.google.maps) {
   GoogleMapsMapView = require('./gmaps/gmaps-map-view');
 }
 
-MapViewFactory.prototype.createMapView = function (provider, engine, mapModel, layerGroupModel) {
-  var MapViewClass;
+/**
+ * Create a map view.
+ */
+function MapViewFactory () {
 
-  if (provider === 'leaflet') {
-    MapViewClass = LeafletMapView;
-  } else if (provider === 'googlemaps') {
-    if (GoogleMapsMapView !== undefined) {
-      MapViewClass = GoogleMapsMapView;
-    } else {
-      throw new Error('Google maps library should be included');
-    }
-  } else {
-    throw new Error(provider + ' provider is not supported');
+}
+
+MapViewFactory.createMapView = function (provider, visModel) {
+  switch (provider) {
+    case 'leaflet':
+      return _createLeafletMap(visModel);
+    case 'googlemaps':
+      return _createGoogleMap(visModel);
+
+    default:
+      throw new Error(provider + ' provider is not supported');
   }
-
-  return new MapViewClass({
-    mapModel: mapModel,
-    engine: engine,
-    layerGroupModel: layerGroupModel
-  });
 };
+
+function _createLeafletMap (visModel, mapModel) {
+  return new LeafletMapView({
+    mapModel: visModel.map,
+    engine: visModel.getEngine(),
+    layerGroupModel: visModel.getEngine().getLayerGroup()
+  });
+}
+
+function _createGoogleMap (visModel, mapModel) {
+  if (!GoogleMapsMapView) {
+    throw new Error('Google maps library should be included');
+  }
+  return new GoogleMapsMapView({
+    mapModel: visModel.map,
+    engine: visModel.getEngine(),
+    layerGroupModel: visModel.getEngine().getLayerGroup()
+  });
+}
 
 module.exports = MapViewFactory;

@@ -72,7 +72,8 @@ var MapView = View.extend({
       tooltipModel: tooltipModel,
       infowindowModel: infowindowModel
     }, {
-      showEmptyFields: this._engine.get('showEmptyInfowindowFields')
+      // TODO: showEmptyInfowindowFields should come from the visModel. 
+      showEmptyFields: this._engine.get && this._engine.get('showEmptyInfowindowFields')
     });
     this._tooltipManager = new TooltipManager({
       mapModel: this._mapModel,

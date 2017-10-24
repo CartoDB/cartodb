@@ -212,6 +212,13 @@ var VisModel = Backbone.Model.extend({
     return engine;
   },
 
+  /**
+   * Return the engine for this visModel
+   */
+  getEngine: function () {
+    return this._engine;
+  },
+
   // we provide a method to set some new settings
   setSettings: function (settings) {
     this.settings.set(settings);

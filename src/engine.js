@@ -70,6 +70,13 @@ function Engine (params) {
 }
 
 /**
+ * Return the cartoLayergroup attached to the engine
+ */
+Engine.prototype.getLayerGroup = function () {
+  return this._cartoLayerGroup;
+};
+
+/**
  * Bind a callback function to an event. The callback will be invoked whenever the event is fired.
  * 
  * @param {string} event - The name of the event that triggers the callback execution.

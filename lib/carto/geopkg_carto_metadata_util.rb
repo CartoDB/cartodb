@@ -65,15 +65,13 @@ module Carto
       # Currently there is no key to quickly find the record.
       # Therefore it is assumed that not too many metadata records
       #  exist and a table scan is acceptable for a first implementation
-      rec = nil
       @db.execute('select metadata from gpkg_metadata') do |row|
-        # Validate the row is correct
-        md = JSON.parse(row[0]).with_indifferent_access
-        if md.key?(:vendor) && md[:vendor] == 'carto'
-          rec = md
-        end
+        next unless row
+        metadata = (JSON.parse(row[0]) || {}).with_indifferent_access
+        return metadata if metadata[:vendor] && metadata[:vendor] == 'carto'
       end
-      rec
+      return nil
+    rescue JSON::ParserError
     end
   end
 end

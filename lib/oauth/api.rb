@@ -1,6 +1,6 @@
 module Oauth
   class Api
-    Logger = Cartodb::Logger
+    Logger = CartoDB::Logger
 
     attr_reader :config, :access_token
 

@@ -12,6 +12,7 @@ require_relative '../../../platform-limits/platform_limits'
 require_relative '../../../../lib/cartodb/stats/importer'
 require_relative '../../../../lib/carto/visualization_exporter'
 require_relative '../helpers/quota_check_helpers'
+require_relative '../../../../lib/geopkg_carto_metadata_util'
 
 module CartoDB
   module Importer2
@@ -30,6 +31,15 @@ module CartoDB
 
       # Hard-limit on number of spawned tables (zip files, KMLs and so on)
       MAX_TABLES_PER_IMPORT = 10
+
+      attr_reader :results,
+                  :log,
+                  :loader,
+                  :stats,
+                  :downloader,
+                  :warnings,
+                  :visualizations,
+                  :metadata
 
       # @param options Hash
       # {
@@ -147,8 +157,6 @@ module CartoDB
         @tracker || lambda { |state| state }
       end
 
-      attr_reader :results, :log, :loader, :stats, :downloader, :warnings, :visualizations
-
       private
 
       attr_reader :pg_options, :unpacker, :available_quota, :job
@@ -180,6 +188,18 @@ module CartoDB
             end
           end
         end
+
+        # TODO: Improve on this. source_file.extension will only return the last extension (in this
+        # case .gpkg). We need to check if the extension is .carto.gpkg, so we apply File.extname on
+        # the source_file's basename (i.e. hello.carto.gpkg -> basename: hello.carto)
+        if File.extname(source_file.name) == '.carto'
+          @importer_stats.timing('extract .carto.geopkg metadata') do
+            @metadata = GpkgCartoMetadataUtil
+                        .new(geopkg_file: source_file.fullpath)
+                        .metadata
+          end
+        end
+
         if !downloader.nil? && downloader.provides_stream? && loader.respond_to?(:streamed_run_init)
           streamed_loader_run(@job, loader, downloader)
         else

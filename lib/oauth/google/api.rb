@@ -77,10 +77,12 @@ module Oauth
           message: 'Error in request to Google', exception: e,
           method: method, url: url, body: body, headers: headers
         }
-        trace_info.merge(
-          response_code: response.code, response_headers: response.headers,
-          response_body: response.body, return_code: response.return_code
-        ) if response
+        if response
+          trace_info.merge!(
+            response_code: response.code, response_headers: response.headers,
+            response_body: response.body, return_code: response.return_code
+          )
+        end
         Logger.error(trace_info)
         nil
       end

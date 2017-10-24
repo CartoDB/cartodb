@@ -51,14 +51,6 @@ module Carto
       return render_403 unless params[:code] && state[:csrf] == form_authenticity_token
     end
 
-    def load_parameters
-      state = JSON.parse(params[:state]).symbolize_keys
-      @after_creation_callback = state[:after]
-      @plan_recurly_code = state[:plan]
-      @organization_name = state[:organization_name]
-      @csrf = state[:csrf]
-    end
-
     def initialize_github_config
       @config = Oauth::Github::Config.instance(form_authenticity_token, github_url,
                                                organization_name: @organization_name,

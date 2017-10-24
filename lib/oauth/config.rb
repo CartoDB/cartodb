@@ -5,7 +5,7 @@ module Oauth
     attr_reader :client
 
     def self.api_class
-      self.parent.const_get(:Api)
+      parent.const_get(:Api)
     end
 
     def self.instance(csrf, base_callback_url, invitation_token: nil, organization_name: nil)

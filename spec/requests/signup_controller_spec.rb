@@ -169,6 +169,29 @@ describe SignupController do
       last_user_creation.created_via.should == Carto::UserCreation::CREATED_VIA_ORG_SIGNUP
     end
 
+    it 'trigger creation if mail is whitelisted with wildcard' do
+      @organization.whitelisted_email_domains = ['*.carto.com']
+      @organization.save
+      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+      ::Resque.expects(:enqueue).with(::Resque::UserJobs::Signup::NewUser,
+                                      instance_of(String), anything, instance_of(FalseClass)).returns(true)
+      username = 'testusername'
+      email = "testemail@a.carto.com"
+      password = '2{Patrañas}'
+      host! "#{@organization.name}.localhost.lan"
+      post signup_organization_user_url(user_domain: @organization.name, user: { username: username, email: email, password: password })
+      response.status.should == 200
+      last_user_creation = Carto::UserCreation.order('created_at desc').limit(1).first
+      last_user_creation.username.should == username
+      last_user_creation.email.should == email
+      last_user_creation.crypted_password.should_not be_empty
+      last_user_creation.salt.should_not be_empty
+      last_user_creation.organization_id.should == @organization.id
+      last_user_creation.quota_in_bytes.should == @organization.default_quota_in_bytes
+      last_user_creation.requires_validation_email?.should == true
+      last_user_creation.created_via.should == Carto::UserCreation::CREATED_VIA_ORG_SIGNUP
+    end
+
     it 'Returns 422 for not whitelisted domains' do
       ::Resque.expects(:enqueue).never
 

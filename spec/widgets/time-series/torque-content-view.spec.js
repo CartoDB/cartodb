@@ -38,7 +38,7 @@ describe('widgets/time-series/torque-content-view', function () {
       this.options = options;
     }.bind(this);
     this.torqueLayerModel = new TorqueLayer({}, {
-      vis: vis
+      engine: vis._engine
     });
     var widgetModel = new WidgetModel({
       normalized: false,

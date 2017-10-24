@@ -11,6 +11,10 @@
       "more_info": "More info",
       "updated": "Updated",
       "views_pluralize": "1 view |||| %{smart_count} views"
+    },
+    "datasets": {
+      "title": "Datasets in use",
+      "dataset_pluralize": "1 dataset |||| %{smart_count} datasets"
     }
   }
 }

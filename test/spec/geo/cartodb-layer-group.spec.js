@@ -8,7 +8,7 @@ var TorqueLayer = require('../../../src/geo/map/torque-layer');
 var GMapsBaseLayer = require('../../../src/geo/map/gmaps-base-layer');
 var CartoDBLayerGroup = require('../../../src/geo/cartodb-layer-group');
 
-xdescribe('geo/cartodb-layer-group', function () {
+describe('geo/cartodb-layer-group', function () {
   var engineMock;
 
   beforeEach(function () {

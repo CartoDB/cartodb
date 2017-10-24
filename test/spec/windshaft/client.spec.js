@@ -7,7 +7,7 @@ var Request = require('../../../src/windshaft/request');
 var LZMA = require('lzma');
 
 describe('windshaft/client', function () {
-  fdescribe('instantiateMap', function () {
+  describe('instantiateMap', function () {
     beforeEach(function () {
       spyOn($, 'ajax').and.callFake(function (params) {
         this.ajaxParams = params;

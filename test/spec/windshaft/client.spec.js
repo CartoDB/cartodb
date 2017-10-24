@@ -17,7 +17,7 @@ describe('windshaft/client', function () {
 
       this.client = new WindshaftClient({
         urlTemplate: 'https://{user}.carto.com:443',
-        userName: 'rambo'
+        userName: 'cartojs-test'
       });
     });
 
@@ -27,7 +27,7 @@ describe('windshaft/client', function () {
 
       var url = this.ajaxParams.url.split('?')[0];
 
-      expect(url).toEqual('https://rambo.carto.com:443/api/v1/map');
+      expect(url).toEqual('https://cartojs-test.carto.com:443/api/v1/map');
       expect(this.ajaxParams.method).toEqual('GET');
       expect(this.ajaxParams.dataType).toEqual('jsonp');
       expect(this.ajaxParams.jsonpCallback).toMatch('_cdbc_callbackName');
@@ -38,14 +38,14 @@ describe('windshaft/client', function () {
       var request = new Request({ some: 'json that must be encoded' }, {}, {});
       this.client = new WindshaftClient({
         urlTemplate: 'https://{user}.carto.com:443',
-        userName: 'rambo',
+        userName: 'cartojs-test',
         templateName: 'tpl123456789'
       });
       this.client.instantiateMap(request);
 
       var url = this.ajaxParams.url.split('?')[0];
 
-      expect(url).toEqual('https://rambo.carto.com:443/api/v1/map/named/tpl123456789/jsonp');
+      expect(url).toEqual('https://cartojs-test.carto.com:443/api/v1/map/named/tpl123456789/jsonp');
     });
 
     it('should include the given params and handle JSON objects correctly', function () {
@@ -58,7 +58,7 @@ describe('windshaft/client', function () {
       var url = this.ajaxParams.url.split('?')[0];
       var params = this.ajaxParams.url.split('?')[1].split('&');
 
-      expect(url).toEqual('https://rambo.carto.com:443/api/v1/map');
+      expect(url).toEqual('https://cartojs-test.carto.com:443/api/v1/map');
       expect(params[0]).toEqual('config=%7B%22some%22%3A%22json%20that%20must%20be%20encoded%22%7D');
       expect(params[1]).toEqual('stat_tag=stat_tag');
       expect(params[2]).toEqual('filters=%7B%22some%22%3A%22filters%20that%20will%20be%20applied%22%7D');
@@ -150,7 +150,7 @@ describe('windshaft/client', function () {
           var params = this.ajaxParams.url.split('?')[1].split('&');
 
           expect(this.ajaxParams.url.length).toBeLessThan(2033);
-          expect(url).toEqual('https://rambo.carto.com:443/api/v1/map');
+          expect(url).toEqual('https://cartojs-test.carto.com:443/api/v1/map');
           expect(this.ajaxParams.method).toEqual('GET');
           expect(params[0]).toMatch('^config=');
           expect(params[0]).not.toMatch('^lzma=');
@@ -170,7 +170,7 @@ describe('windshaft/client', function () {
           var params = this.ajaxParams.url.split('?')[1].split('&');
 
           expect(this.ajaxParams.url.length).toBeLessThan(2033);
-          expect(url).toEqual('https://rambo.carto.com:443/api/v1/map');
+          expect(url).toEqual('https://cartojs-test.carto.com:443/api/v1/map');
           expect(this.ajaxParams.method).toEqual('GET');
 
           expect(params[0]).toMatch('^lzma=');
@@ -194,7 +194,7 @@ describe('windshaft/client', function () {
           var url = this.ajaxParams.url.split('?')[0];
           var params = this.ajaxParams.url.split('?')[1].split('&');
 
-          expect(url).toEqual('https://rambo.carto.com:443/api/v1/map');
+          expect(url).toEqual('https://cartojs-test.carto.com:443/api/v1/map');
           expect(this.ajaxParams.crossOrigin).toEqual(true);
           expect(this.ajaxParams.method).toEqual('POST');
           expect(this.ajaxParams.dataType).toEqual('json');

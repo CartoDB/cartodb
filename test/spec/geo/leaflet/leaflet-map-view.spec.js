@@ -153,7 +153,7 @@ describe('geo/leaflet/leaflet-map-view', function () {
   });
 
   it("should not add a layer view when it can't be created", function () {
-    var layer = new TileLayer({type: 'rambo'}, { engine: {} });
+    var layer = new TileLayer({type: 'cartojs-test'}, { engine: {} });
     map.addLayer(layer);
     expect(_.size(mapView._layerViews)).toEqual(0);
   });

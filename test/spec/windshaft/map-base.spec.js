@@ -58,7 +58,7 @@ describe('windshaft/map-base', function () {
 
     this.windshaftSettings = {
       urlTemplate: 'http://{user}.example.com',
-      userName: 'rambo'
+      userName: 'cartojs-test'
     };
 
     this.client = new WindshaftClient(this.windshaftSettings);
@@ -373,7 +373,7 @@ describe('windshaft/map-base', function () {
       this.windshaftMap.set({
         layergroupid: '0123456789'
       });
-      expect(this.windshaftMap.getBaseURL()).toEqual('http://rambo.example.com/api/v1/map/0123456789');
+      expect(this.windshaftMap.getBaseURL()).toEqual('http://cartojs-test.example.com/api/v1/map/0123456789');
     });
 
     it('should return the CDN URL for http when CDN info is present', function () {
@@ -385,7 +385,7 @@ describe('windshaft/map-base', function () {
         }
       });
 
-      expect(this.windshaftMap.getBaseURL()).toEqual('http://cdn.http.example.com/rambo/api/v1/map/0123456789');
+      expect(this.windshaftMap.getBaseURL()).toEqual('http://cdn.http.example.com/cartojs-test/api/v1/map/0123456789');
     });
 
     it('should return the CDN URL for https when CDN info is present', function () {
@@ -399,7 +399,7 @@ describe('windshaft/map-base', function () {
         }
       });
 
-      expect(this.windshaftMap.getBaseURL()).toEqual('https://cdn.https.example.com/rambo/api/v1/map/0123456789');
+      expect(this.windshaftMap.getBaseURL()).toEqual('https://cdn.https.example.com/cartojs-test/api/v1/map/0123456789');
     });
 
     it('should use the CDN template', function () {
@@ -421,7 +421,7 @@ describe('windshaft/map-base', function () {
         }
       });
 
-      expect(this.windshaftMap.getBaseURL()).toEqual('http://{s}.cdn2.http.example.com/rambo/api/v1/map/0123456789');
+      expect(this.windshaftMap.getBaseURL()).toEqual('http://{s}.cdn2.http.example.com/cartojs-test/api/v1/map/0123456789');
     });
   });
 

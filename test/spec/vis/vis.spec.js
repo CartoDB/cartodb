@@ -176,7 +176,7 @@ var fakeVizJSON = function () {
     },
     'widgets': [],
     'datasource': {
-      'user_name': 'pabloalonso',
+      'user_name': 'cartojs-test',
       'maps_api_template': 'https://{user}.carto.com:443',
       'stat_tag': '03a89434-379e-11e6-b2e3-0e674067d321'
     },

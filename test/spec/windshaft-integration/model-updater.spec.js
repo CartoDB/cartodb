@@ -32,7 +32,7 @@ describe('src//model-updater', function () {
       modelUpdater: {},
       windshaftSettings: {
         urlTemplate: 'http://{user}.cartodb.com:80',
-        userName: 'rambo'
+        userName: 'cartojs-test'
       }
     });
 

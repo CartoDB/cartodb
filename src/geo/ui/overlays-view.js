@@ -3,6 +3,7 @@ var View = require('../../core/view');
 var OverlaysFactory = require('../../vis/overlays-factory');
 var overlayContainerTemplate = require('./overlays-container.tpl');
 var C = require('../../constants');
+var Engine = require('../../engine');
 
 var CONTAINED_OVERLAYS = ['attribution', 'fullscreen', 'limits', 'logo', 'search', 'zoom'];
 
@@ -39,7 +40,10 @@ var OverlaysView = View.extend({
   },
 
   _initBinds: function () {
-    this.listenTo(this._engine, 'change:loading', this._toggleLoaderOverlay, this);
+    this._engine.on(Engine.Events.RELOAD_STARTED, this._showLoaderOverlay.bind(this));
+    this._engine.on(Engine.Events.RELOAD_ERROR, this._hideLoaderOverlay.bind(this));
+    this._engine.on(Engine.Events.RELOAD_SUCCESS, this._hideLoaderOverlay.bind(this));
+
     this.listenTo(this._overlaysCollection, 'add remove change', this.render, this);
     this.listenTo(this._mapModel, 'error:tile', this._addLimitsOverlay, this);
   },
@@ -92,13 +96,16 @@ var OverlaysView = View.extend({
     return this.$('.CDB-OverlayContainer');
   },
 
-  _toggleLoaderOverlay: function () {
+  _showLoaderOverlay: function () {
     var loaderOverlay = this._getLoaderOverlay();
     if (!loaderOverlay) return;
+    loaderOverlay.show();
+  },
 
-    this._visModel.get('loading')
-      ? loaderOverlay.show()
-      : loaderOverlay.hide();
+  _hideLoaderOverlay: function () {
+    var loaderOverlay = this._getLoaderOverlay();
+    if (!loaderOverlay) return;
+    loaderOverlay.hide();
   },
 
   _getLoaderOverlay: function () {

@@ -1,7 +1,11 @@
 var Backbone = require('backbone');
 var OverlaysView = require('../../../../src/geo/ui/overlays-view.js');
+var Engine = require('../../../../src/engine');
+var fakeFactory = require('../../../helpers/fakeFactory');
 
-describe('src/geo/ui/overlays-view.js', function () {
+fdescribe('src/geo/ui/overlays-view.js', function () {
+  var engineMock = fakeFactory.createEngine();
+  var mapModelMock = new Backbone.Model();
   beforeEach(function () {
     this.overlaysCollection = new Backbone.Collection([
       {
@@ -26,17 +30,12 @@ describe('src/geo/ui/overlays-view.js', function () {
         }
       }
     ]);
-    this.engine = new Backbone.Model();
-    this.visView = new Backbone.View();
-    this.mapModel = new Backbone.Model();
-    this.mapView = new Backbone.View();
-
     this.overlaysView = new OverlaysView({
       overlaysCollection: this.overlaysCollection,
-      engine: this.engine,
-      visView: this.visView,
-      mapModel: this.mapModel,
-      mapView: this.mapView
+      engine: engineMock,
+      visView: new Backbone.View(),
+      mapModel: mapModelMock,
+      mapView: new Backbone.View()
     });
 
     this.overlaysView.render();
@@ -92,12 +91,11 @@ describe('src/geo/ui/overlays-view.js', function () {
     var loaderOverlay = this.overlaysView.$('> .CDB-Loader');
 
     expect(loaderOverlay.hasClass('is-visible')).toBeFalsy();
-
-    this.engine.set('loading', true);
+    engineMock._eventEmmitter.trigger(Engine.Events.RELOAD_STARTED);
 
     expect(loaderOverlay.hasClass('is-visible')).toBeTruthy();
 
-    this.engine.set('loading', false);
+    engineMock._eventEmmitter.trigger(Engine.Events.RELOAD_SUCCESS);
 
     expect(loaderOverlay.hasClass('is-visible')).toBeFalsy();
   });
@@ -105,7 +103,7 @@ describe('src/geo/ui/overlays-view.js', function () {
   it('should add the limit overlay when error:tile', function () {
     expect(this.overlaysView.$('.CDB - OverlayContainer > .CDB-Limits').length).toEqual(0);
 
-    this.mapModel.trigger('error:tile');
+    mapModelMock.trigger('error:tile');
 
     expect(this.overlaysView.$('.CDB-OverlayContainer > .CDB-Limits').length).toEqual(1);
   });

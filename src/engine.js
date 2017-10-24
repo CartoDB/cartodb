@@ -81,6 +81,7 @@ Engine.prototype.getLayerGroup = function () {
  * 
  * @param {string} event - The name of the event that triggers the callback execution.
  * @param {function} callback - A function to be executed when the event is fired.
+ * @param {function} [context] - The context value for this when the callback is invoked.
  * 
  * @example
  * 
@@ -97,8 +98,12 @@ Engine.prototype.getLayerGroup = function () {
  *
  * @api
  */
-Engine.prototype.on = function on (event, callback) {
-  this._eventEmmitter.on(event, callback);
+Engine.prototype.on = function on (event, callback, context) {
+  if (context) {
+    this._eventEmmitter.on(event, callback, context);
+  } else {
+    this._eventEmmitter.on(event, callback);
+  }
 };
 
 /**
@@ -106,6 +111,7 @@ Engine.prototype.on = function on (event, callback) {
  * 
  * @param {string} event - The name of the event that triggers the callback execution.
  * @param {function} callback - A function callback to be removed when the event is fired.
+ * @param {function} [context] - The context value for this when the callback is invoked.
  * 
  * @example
  * 
@@ -114,8 +120,12 @@ Engine.prototype.on = function on (event, callback) {
  * 
  * @api
  */
-Engine.prototype.off = function off (event, callback) {
-  this._eventEmmitter.off(event, callback);
+Engine.prototype.off = function off (event, callback, context) {
+  if (context) {
+    this._eventEmmitter.off(event, callback, context);
+  } else {
+    this._eventEmmitter.off(event, callback, context);
+  }
 };
 
 /**

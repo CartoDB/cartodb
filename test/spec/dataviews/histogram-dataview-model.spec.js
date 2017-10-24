@@ -1,5 +1,4 @@
 var Backbone = require('backbone');
-var VisModel = require('../../../src/vis/vis');
 var RangeFilter = require('../../../src/windshaft/filters/range');
 var HistogramDataviewModel = require('../../../src/dataviews/histogram-dataview-model');
 var helper = require('../../../src/dataviews/helpers/histogram-helper');

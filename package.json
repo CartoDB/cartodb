@@ -75,6 +75,7 @@
     "grunt-sass": "2.0.0",
     "jstify": "0.13.0",
     "load-grunt-tasks": "3.3.0",
+    "simple-headless-chrome": "^4.3.10",
     "source-map-support": "0.4.0",
     "time-grunt": "1.2.2",
     "watchify": "3.6.1"

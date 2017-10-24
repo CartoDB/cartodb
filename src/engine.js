@@ -99,11 +99,7 @@ Engine.prototype.getLayerGroup = function () {
  * @api
  */
 Engine.prototype.on = function on (event, callback, context) {
-  if (context) {
-    this._eventEmmitter.on(event, callback, context);
-  } else {
-    this._eventEmmitter.on(event, callback);
-  }
+  this._eventEmmitter.on(event, callback, context);
 };
 
 /**
@@ -121,11 +117,7 @@ Engine.prototype.on = function on (event, callback, context) {
  * @api
  */
 Engine.prototype.off = function off (event, callback, context) {
-  if (context) {
-    this._eventEmmitter.off(event, callback, context);
-  } else {
-    this._eventEmmitter.off(event, callback, context);
-  }
+  this._eventEmmitter.off(event, callback, context);
 };
 
 /**

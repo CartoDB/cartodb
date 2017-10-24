@@ -29,6 +29,7 @@ var MapView = View.extend({
     if (!opts.engine) throw new Error('engine is required');
     if (!opts.layerGroupModel) throw new Error('layerGroupModel is required');
 
+    this._showEmptyInfowindowFields = opts.showEmptyInfowindowFields;
     this._mapModel = this.map = opts.mapModel;
     this._engine = opts.engine;
     this._cartoDBLayerGroup = opts.layerGroupModel;
@@ -72,8 +73,8 @@ var MapView = View.extend({
       tooltipModel: tooltipModel,
       infowindowModel: infowindowModel
     }, {
-      // TODO: showEmptyInfowindowFields should come from the visModel. 
-      showEmptyFields: this._engine.get && this._engine.get('showEmptyInfowindowFields')
+
+      showEmptyFields: this._showEmptyInfowindowFields
     });
     this._tooltipManager = new TooltipManager({
       mapModel: this._mapModel,

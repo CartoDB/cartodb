@@ -24,23 +24,24 @@ MapViewFactory.createMapView = function (provider, visModel) {
   }
 };
 
-function _createLeafletMap (visModel, mapModel) {
-  return new LeafletMapView({
-    mapModel: visModel.map,
-    engine: visModel.getEngine(),
-    layerGroupModel: visModel.getEngine().getLayerGroup()
-  });
+function _createLeafletMap (visModel) {
+  return new LeafletMapView(_generateOptions(visModel));
 }
 
-function _createGoogleMap (visModel, mapModel) {
+function _createGoogleMap (visModel) {
   if (!GoogleMapsMapView) {
     throw new Error('Google maps library should be included');
   }
-  return new GoogleMapsMapView({
+  return new GoogleMapsMapView(_generateOptions(visModel));
+}
+
+function _generateOptions (visModel) {
+  return {
+    showEmptyInfowindowFields: visModel.get('showEmptyInfowindowFields'),
     mapModel: visModel.map,
     engine: visModel.getEngine(),
     layerGroupModel: visModel.getEngine().getLayerGroup()
-  });
+  };
 }
 
 module.exports = MapViewFactory;

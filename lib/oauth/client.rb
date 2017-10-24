@@ -1,5 +1,5 @@
-module Carto
-  class OAuth2Client
+module Oauth
+  class Client
     attr_reader :state
 
     def initialize(auth_url:, token_url:, client_id:, client_secret:, state:, redirect_uri:, scopes:)
@@ -32,7 +32,7 @@ module Carto
       if response && response['access_token']
         response['access_token']
       else
-        CartoDB::Logger.error(message: 'Error obtaining Oauth access token', response: response)
+        CartodbCentral::Logger.error(message: 'Error obtaining Oauth access token', response: response)
         nil
       end
     end
@@ -50,10 +50,10 @@ module Carto
       ).run
       JSON.parse(response.body)
     rescue => e
-      CartoDB::Logger.error(message: 'Error in Oauth request', exception: e,
-                            method: method, url: url, body: body, headers: headers,
-                            response_code: response.code, response_headers: response.headers,
-                            response_body: response.body, return_code: response.return_code)
+      CartodbCentral::Logger.error(message: 'Error in Oauth request', exception: e,
+                                  method: method, url: url, body: body, headers: headers,
+                                  response_code: response.code, response_headers: response.headers,
+                                  response_body: response.body, return_code: response.return_code)
       nil
     end
   end

@@ -1,21 +1,56 @@
 require 'typhoeus'
 require_dependency 'oauth/github/config'
 
-module Carto
+module Oauth
   module Github
-    class Api
+    class Api < Oauth::Api
       attr_reader :access_token
 
-      def self.with_code(config, code)
-        token = config.client.exchange_code_for_token(code)
-        raise 'Could not initialize Github API' unless token
-        Github::Api.new(config, token)
+      def student?
+        response = authenticated_request('GET', 'https://education.github.com/api/user')
+        if response
+          response['student']
+        else
+          Logger.error(message: 'Error checking GitHub student', access_token: access_token)
+          false
+        end
+      rescue => e
+        Logger.error(message: 'Error checking GitHub student', exception: e, access_token: access_token)
       end
 
-      def initialize(config, token)
-        @config = config
-        @access_token = token
+      def user_params
+        {
+          username: username,
+          email: email,
+          github_user_id: id,
+          name: name
+        }
       end
+
+      def user
+        user = User.where(github_user_id: id).first
+        unless user
+          user = User.where(email: email, github_user_id: nil).first
+          return false unless user
+          user.github_user_id = id
+          user.save
+        end
+        user
+      end
+
+      def hidden_fields
+        {
+          oauth_provider: 'github',
+          oauth_access_token: access_token,
+          'user[github_user_id]': id
+        }
+      end
+
+      def valid?(user)
+        id == user.github_user_id
+      end
+
+      private
 
       def id
         user_data['id']
@@ -33,33 +68,11 @@ module Carto
         user_emails.find { |email| email['primary'] }['email']
       end
 
-      def student?
-        response = authenticated_request('GET', 'https://education.github.com/api/user')
-        if response
-          response['student']
-        else
-          CartoDB::Logger.error(message: 'Error checking GitHub student', access_token: access_token)
-          false
-        end
-      rescue => e
-        CartoDB::Logger.error(message: 'Error checking GitHub student', exception: e, access_token: access_token)
-      end
-
-      def user_params
-        {
-          username: username,
-          email: email,
-          github_user_id: id,
-          name: name
-        }
-      end
-
-      private
-
       def user_data
         @user_data ||= authenticated_request('GET', 'https://api.github.com/user')
       rescue => e
-        CartoDB::Logger.error(message: 'Error obtaining GitHub user data', exception: e, access_token: access_token)
+        Logger.error(message: 'Error obtaining GitHub user data',
+                     exception: e, access_token: access_token)
         nil
       end
 
@@ -70,7 +83,7 @@ module Carto
       def get_emails
         authenticated_request('GET', 'https://api.github.com/user/emails').select { |email| email['verified'] }
       rescue => e
-        CartoDB::Logger.error(message: 'Error obtaining GitHub user emails', exception: e, access_token: access_token)
+        CartodbCentral::Logger.error(message: 'Error obtaining GitHub user emails', exception: e, access_token: access_token)
         nil
       end
 
@@ -91,13 +104,17 @@ module Carto
         ).run
         JSON.parse(response.body)
       rescue => e
-        CartoDB::Logger.error(message: 'Error in request to GitHub', exception: e,
-                              method: method, url: url, body: body, headers: headers,
-                              response_code: response.code, response_headers: response.headers,
-                              response_body: response.body, return_code: response.return_code)
+        trace_info = {
+          message: 'Error in request to GitHub', exception: e,
+          method: method, url: url, body: body, headers: headers
+        }
+        trace_info.merge(
+          response_code: response.code, response_headers: response.headers,
+          response_body: response.body, return_code: response.return_code
+        ) if response
+        Logger.error(trace_info)
         nil
       end
-      private_class_method :request
     end
   end
 end

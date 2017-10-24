@@ -1,21 +1,42 @@
 require 'typhoeus'
 require_dependency 'oauth/github/config'
 
-module Carto
+module Oauth
   module Google
-    class Api
+    class Api < Oauth::Api
       attr_reader :access_token
 
-      def self.with_code(config, code)
-        token = config.client.exchange_code_for_token(code)
-        raise 'Could not initialize Google API' unless token
-        Google::Api.new(config, token)
+      def student?
+        false
       end
 
-      def initialize(config, token)
-        @config = config
-        @access_token = token
+      def user_params
+        {
+          username: email.split('@')[0],
+          email: email,
+          name: first_name,
+          last_name: last_name,
+          google_sign_in: true
+        }
       end
+
+      def user
+        User.where(email: email).first
+      end
+
+      def hidden_fields
+        {
+          oauth_provider: 'google',
+          oauth_access_token: access_token,
+          'user[google_sign_in]': true
+        }
+      end
+
+      def valid?(user)
+        email == user.email
+      end
+
+      private
 
       def id
         user_data['id']
@@ -33,22 +54,11 @@ module Carto
         user_data['emails'].select { |mail| mail['type'] == 'account' }.first['value']
       end
 
-      def user_params
-        {
-          username: email.split('@')[0],
-          email: email,
-          name: first_name,
-          last_name: last_name,
-          google_sign_in: true
-        }
-      end
-
-      private
-
       def user_data
         @user_data ||= get_user_data
       rescue => e
-        CartoDB::Logger.error(message: 'Error obtaining GitHub user data', exception: e, access_token: access_token)
+        Logger.error(message: 'Error obtaining Google user data',
+                     exception: e, access_token: access_token)
         nil
       end
 
@@ -61,12 +71,17 @@ module Carto
         ).run
 
         raise 'Invalid response code' unless response.code == 200
-        JSON.parse(response.body)
+          JSON.parse(response.body)
       rescue => e
-        CartoDB::Logger.error(message: 'Error in request to Google', exception: e,
-                              method: method, url: url, body: body, headers: headers,
-                              response_code: response.code, response_headers: response.headers,
-                              response_body: response.body, return_code: response.return_code)
+        trace_info = {
+          message: 'Error in request to Google', exception: e,
+          method: method, url: url, body: body, headers: headers
+        }
+        trace_info.merge(
+          response_code: response.code, response_headers: response.headers,
+          response_body: response.body, return_code: response.return_code
+        ) if response
+        Logger.error(trace_info)
         nil
       end
     end

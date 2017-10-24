@@ -168,12 +168,12 @@ class SessionsController < ApplicationController
 
   def initialize_oauth_config
     @button_color = @organization && @organization.color ? organization_color(@organization) : nil
-    @oauth_config = [google_plus_config, github_config].compact
+    @oauth_configs = [google_plus_config, github_config].compact
   end
 
   def google_plus_config
     unless @organization && !@organization.auth_google_enabled
-      Oauth::Google::Config.instance(form_authenticity_token, self,
+      Oauth::Google::Config.instance(form_authenticity_token, google_oauth_url,
                                      invitation_token: params[:invitation_token],
                                      organization_name: @organization.try(:name))
     end
@@ -181,7 +181,7 @@ class SessionsController < ApplicationController
 
   def github_config
     unless @organization && !@organization.auth_github_enabled
-      Oauth::Github::Config.instance(form_authenticity_token, self,
+      Oauth::Github::Config.instance(form_authenticity_token, github_url,
                                      invitation_token: params[:invitation_token],
                                      organization_name: @organization.try(:name))
     end

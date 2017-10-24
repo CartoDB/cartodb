@@ -81,15 +81,13 @@
 
                 <% end %>
               <% end %>
-              <div class="Sessions-field Sessions-oauthContainer">
-                <% if @google_config.present? && (@organization.nil? || @organization.auth_google_enabled) %>
-                  <%= render partial: 'google_plus/google_plus_button',  locals: { config: @google_config } %>
-                <% end %>
-
-                <% if @github_config.present? %>
-                  <%= render partial: 'github/github_button',  locals: { config: @github_config } %>
-                <% end %>
-              </div>
+              <% if @oauth_configs.any? %>
+                <div class="Sessions-field Sessions-oauthContainer">
+                  <% @oauth_configs.each do |config| %>
+                    <%= render partial: config.button_template, locals: { config: config } %>
+                  <% end %>
+                </div>
+              <% end %>
 
               <% if @user_login_url %>
                 <p class="CDB-Text CDB-Size-medium u-altTextColor u-tSpace--m u-justifyCenter Sessions-description">

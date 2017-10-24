@@ -60,15 +60,15 @@ module Carto
     end
 
     def initialize_github_config
-      @config = Github::Config.instance(form_authenticity_token, self,
-                                        organization_name: @organization_name,
-                                        invitation_token: @invitation_token)
+      @config = Oauth::Github::Config.instance(form_authenticity_token, github_url,
+                                               organization_name: @organization_name,
+                                               invitation_token: @invitation_token)
     end
 
     def initialize_google_config
-      @config = Google::Config.instance(form_authenticity_token, self,
-                                        organization_name: @organization_name,
-                                        invitation_token: @invitation_token)
+      @config = Oauth::Google::Config.instance(form_authenticity_token, google_oauth_url,
+                                               organization_name: @organization_name,
+                                               invitation_token: @invitation_token)
     end
 
     def login(api)

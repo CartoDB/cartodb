@@ -1,9 +1,11 @@
 require_relative '../../../lib/carto/http/client'
 require_dependency 'carto/uuidhelper'
 require_dependency 'carto/overquota_users_service'
+require_dependency 'carto/api/paged_searcher'
 
 class Superadmin::UsersController < Superadmin::SuperadminController
   include Carto::UUIDHelper
+  include Carto::Api::PagedSearcher
 
   respond_to :json
 
@@ -64,11 +66,14 @@ class Superadmin::UsersController < Superadmin::SuperadminController
   end
 
   def destroy
+    @user.set_force_destroy if params[:force] == 'true'
     @user.destroy
     respond_with(:superadmin, @user)
+  rescue CartoDB::SharedEntitiesError => e
+    render json: { "error": "Error destroying user: #{e.message}", "errorCode": "userHasSharedEntities" }, status: 422
   rescue => e
     CartoDB::Logger.error(exception: e, message: 'Error destroying user', user: @user)
-    render json: { "error": "Error destroying user: #{e.message}" }, status: 422
+    render json: { "error": "Error destroying user: #{e.message}", "errorCode": "" }, status: 422
   end
 
   def dump
@@ -106,7 +111,13 @@ class Superadmin::UsersController < Superadmin::SuperadminController
   end
 
   def data_imports
-    respond_with(@user.data_imports_dataset.map { |entry|
+    page, per_page, order = page_per_page_order_params
+    dataset = @user.data_imports_dataset.order(order.desc).paginate(page, per_page)
+
+    dataset = dataset.where(state: params[:status]) if params[:status].present?
+    total_entries = dataset.pagination_record_count
+
+    data_imports_info = dataset.map do |entry|
       {
         id: entry.id,
         data_type: entry.data_type,
@@ -114,7 +125,9 @@ class Superadmin::UsersController < Superadmin::SuperadminController
         status: entry.success.nil? ? false : entry.success,
         state: entry.state
       }
-    })
+    end
+
+    respond_with({ total_entries: total_entries }.merge(data_imports: data_imports_info))
   end
 
   def data_import
@@ -126,13 +139,20 @@ class Superadmin::UsersController < Superadmin::SuperadminController
   end
 
   def geocodings
-    respond_with(@user.geocodings.map do |entry|
+    page, per_page, order = page_per_page_order_params
+    dataset = @user.geocodings.order("#{order} desc")
+
+    dataset = dataset.where(state: params[:status]) if params[:status].present?
+    total_entries = dataset.count
+
+    geocodings_info = dataset.limit(per_page).offset((page - 1) * per_page).map do |entry|
       {
         id: entry.id,
         date: entry.updated_at,
         status: entry.state
       }
-    end)
+    end
+    respond_with({ total_entries: total_entries }.merge(geocodings: geocodings_info))
   end
 
   def geocoding
@@ -141,7 +161,13 @@ class Superadmin::UsersController < Superadmin::SuperadminController
   end
 
   def synchronizations
-    respond_with(@user.synchronizations.map { |entry|
+    page, per_page, order = page_per_page_order_params
+    dataset = @user.synchronizations.order("#{order} desc")
+
+    dataset = dataset.where(state: params[:status]) if params[:status].present?
+    total_entries = dataset.count
+
+    synchronizations_info = dataset.limit(per_page).offset((page - 1) * per_page).map do |entry|
       {
         id: entry.id,
         data_type: entry.service_name,
@@ -149,14 +175,15 @@ class Superadmin::UsersController < Superadmin::SuperadminController
         status: entry.success?,
         state: entry.state
       }
-    })
+    end
+    respond_with({ total_entries: total_entries }.merge(synchronizations: synchronizations_info))
   end
 
   def synchronization
     synchronization = Carto::Synchronization.where(id: params[:synchronization_id]).first
     respond_with({
                    data: synchronization.to_hash,
-                   log: synchronization.nil? ? nil : synchronization.log.to_s
+                   log: synchronization.nil? ? nil : synchronization.log.try(:entries)
                  })
   end
 

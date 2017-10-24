@@ -20,6 +20,7 @@
     border-style: solid;
     border-color: transparent #EEE transparent transparent;
     content: '';
+    cursor: pointer;
   }
 }
 
@@ -37,6 +38,10 @@
 .rangeslider--disabled {
   filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=40);
   opacity: 0.4;
+
+  &::before {
+    cursor: not-allowed;
+  }
 }
 
 .rangesliderFill {

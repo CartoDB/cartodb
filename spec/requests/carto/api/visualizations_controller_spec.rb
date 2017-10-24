@@ -348,8 +348,7 @@ describe Carto::Api::VisualizationsController do
         'total_entries' => 1,
         'total_user_entries' => 1,
         'total_likes' => 0,
-        'total_shared' => 0,
-
+        'total_shared' => 0
       }
     end
 
@@ -427,8 +426,6 @@ describe Carto::Api::VisualizationsController do
   end
 
   describe 'main behaviour' do
-    # INFO: this tests come from spec/requests/api/visualizations_spec.rb
-
     before(:all) do
       CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
 
@@ -1340,19 +1337,26 @@ describe Carto::Api::VisualizationsController do
     end
 
     describe 'GET /api/v1/viz/:id' do
-
       before(:each) do
+        @carto_user1.private_maps_enabled = true
+        @carto_user1.save
+
         bypass_named_maps
         delete_user_data(@user_1)
+        @map, @table, @table_visualization, @visualization = create_full_builder_vis(@carto_user1,
+                                                                                     visualization_attributes:
+                                                                                       {
+                                                                                         tags: ['foo'],
+                                                                                         description: 'dull desc'
+                                                                                       })
+      end
+
+      after(:each) do
+        destroy_full_visualization(@map, @table, @table_visualization, @visualization)
       end
 
       it 'returns a visualization' do
-        payload = factory(@user_1)
-        post api_v1_visualizations_create_url(api_key: @api_key),
-        payload.to_json, @headers
-        id = JSON.parse(last_response.body).fetch('id')
-
-        get api_v1_visualizations_show_url(id: id, api_key: @api_key), {}, @headers
+        get api_v1_visualizations_show_url(id: @visualization.id, api_key: @api_key), {}, @headers
 
         last_response.status.should == 200
         response = JSON.parse(last_response.body)
@@ -1362,6 +1366,289 @@ describe Carto::Api::VisualizationsController do
         response.fetch('tags')            .should_not be_empty
         response.fetch('description')     .should_not be_nil
         response.fetch('related_tables')  .should_not be_nil
+
+        # Optional information
+        response['likes'].should eq nil
+      end
+
+      it 'returns a visualization with optional information if requested' do
+        url = api_v1_visualizations_show_url(
+          id: @visualization.id,
+          api_key: @api_key,
+          show_likes: true
+        )
+
+        get url, {}, @headers
+
+        last_response.status.should == 200
+        response = JSON.parse(last_response.body)
+
+        response['likes'].should eq 0
+      end
+
+      it 'returns related_canonical_visualizations if requested' do
+        get_json api_v1_visualizations_show_url(id: @visualization.id, api_key: @carto_user1.api_key) do |response|
+          response.status.should eq 200
+          response.body[:related_canonical_visualizations].should be_nil
+        end
+
+        get_json api_v1_visualizations_show_url(id: @visualization.id,
+                                                api_key: @carto_user1.api_key,
+                                                fetch_related_canonical_visualizations: true) do |response|
+          response.status.should eq 200
+          related_canonical = response.body[:related_canonical_visualizations]
+          related_canonical.should_not be_nil
+          related_canonical.count.should eq 1
+          related_canonical[0]['id'].should eq @table_visualization.id
+        end
+      end
+
+      it 'returns private related_canonical_visualizations for users that can see it' do
+        related_canonical_visualizations = @visualization.related_canonical_visualizations
+        related_canonical_visualizations.should_not be_empty
+        old_privacies = related_canonical_visualizations.map(&:privacy)
+        related_canonical_visualizations.each do |v|
+          v.update_attribute(:privacy, Carto::Visualization::PRIVACY_PRIVATE)
+        end
+
+        get_json api_v1_visualizations_show_url(id: @visualization.id,
+                                                api_key: @carto_user1.api_key,
+                                                fetch_related_canonical_visualizations: true) do |response|
+          response.status.should eq 200
+          related_canonical = response.body[:related_canonical_visualizations]
+          related_canonical.count.should eq related_canonical_visualizations.count
+          response.body[:related_canonical_visualizations_count].should eq related_canonical_visualizations.count
+        end
+
+        related_canonical_visualizations.zip(old_privacies).each do |v, p|
+          v.update_attribute(:privacy, p)
+        end
+      end
+
+      it 'returns private information about the user if requested' do
+        url = api_v1_visualizations_show_url(id: @visualization.id, api_key: @carto_user1.api_key)
+        get_json url do |response|
+          response.status.should eq 200
+          response.body[:user].should be_nil
+        end
+
+        get_json url, fetch_user: true do |response|
+          response.status.should eq 200
+          user = response.body[:user]
+          user.should_not be_nil
+          user[:avatar_url].should_not be_nil
+          user[:quota_in_bytes].should_not be_nil
+        end
+      end
+
+      # This is a contrast to the anonymous use case. A public endpoint shouldn't hit the user DB to avoid
+      # workers locks if user DB is under heavy load. Nevertheless, the private one can (and needs).
+      describe 'user db connectivity issues' do
+        before(:each) do
+          @actual_database_name = @visualization.user.database_name
+          @visualization.user.update_attribute(:database_name, 'wadus')
+        end
+
+        after(:each) do
+          @visualization.user.update_attribute(:database_name, @actual_database_name)
+        end
+
+        it 'needs connection to the user db if the viewer is the owner' do
+          CartoDB::Logger.expects(:error).once.with do |e|
+            e[:exception].message.should eq "FATAL:  database \"#{@visualization.user.database_name}\" does not exist\n"
+          end
+
+          get_json api_v1_visualizations_show_url(id: @visualization.id),
+                   api_key: @visualization.user.api_key,
+                   fetch_related_canonical_visualizations: true,
+                   fetch_user: true,
+                   show_liked: true,
+                   show_likes: true,
+                   show_permission: true,
+                   show_stats: true do |response|
+            # We currently log 404 on errors. Maybe something that we should change in the future...
+            response.status.should == 404
+          end
+        end
+      end
+
+      describe 'to anonymous users' do
+        it 'returns a 403 on private visualizations' do
+          @visualization.privacy = Carto::Visualization::PRIVACY_PRIVATE
+          @visualization.save!
+
+          get_json api_v1_visualizations_show_url(id: @visualization.id) do |response|
+            response.status.should eq 403
+          end
+        end
+
+        describe 'publically accessible visualizations' do
+          before(:each) do
+            @visualization.privacy = Carto::Visualization::PRIVACY_LINK
+            @visualization.save!
+          end
+
+          it 'returns 403 for unpublished visualizations' do
+            @visualization.published?.should eq false
+
+            get_json api_v1_visualizations_show_url(id: @visualization.id) do |response|
+              response.status.should eq 403
+            end
+          end
+
+          describe 'published visualizations' do
+            before(:each) do
+              @visualization.create_mapcap!
+              @visualization.published?.should eq true
+            end
+
+            it 'only returns public information' do
+              get_json api_v1_visualizations_show_url(id: @visualization.id) do |response|
+                response.status.should eq 200
+                response.body[:name].should_not be_nil
+                response.body[:updated_at].should_not be_nil
+                response.body[:tags].should_not be_nil
+                response.body[:title].should_not be_nil
+                response.body[:description].should_not be_nil
+                response.body[:auth_tokens].should eq []
+
+                # Optional information requiring parameters
+                response.body[:liked].should eq nil
+                response.body[:likes].should eq 0
+                response.body[:stats].should be_empty
+
+                response.body[:permission].should eq nil
+              end
+            end
+
+            it 'only returns public information, including optional if requested' do
+              url = api_v1_visualizations_show_url(
+                id: @visualization.id,
+                show_liked: true,
+                show_likes: true,
+                show_permission: true,
+                show_stats: true
+              )
+
+              get_json url do |response|
+                response.status.should eq 200
+                response.body[:liked].should eq false
+                response.body[:likes].should eq 0
+                response.body[:stats].should_not be_empty
+
+                permission = response.body[:permission]
+                permission.should_not eq nil
+                permission[:owner].should_not eq nil
+                owner = permission[:owner]
+                user = @visualization.permission.owner
+                owner[:name].should eq user.name
+                owner[:last_name].should eq user.last_name
+                owner[:username].should eq user.username
+                owner[:avatar_url].should eq user.avatar_url
+                owner[:base_url].should eq user.public_url
+                owner[:org_admin].should eq user.org_admin
+                owner[:org_user].should eq user.organization_id.present?
+              end
+            end
+
+            it 'returns auth_tokens for password protected visualizations if correct password is provided' do
+              password = 'wadus'
+              @visualization.privacy = Carto::Visualization::PRIVACY_PROTECTED
+              @visualization.password = password
+              @visualization.save!
+
+              get_json api_v1_visualizations_show_url(id: @visualization.id) do |response|
+                response.status.should eq 403
+              end
+
+              get_json api_v1_visualizations_show_url(id: @visualization.id, password: password * 2) do |response|
+                response.status.should eq 403
+              end
+
+              get_json api_v1_visualizations_show_url(id: @visualization.id, password: password) do |response|
+                response.status.should eq 200
+                response.body[:auth_tokens].should_not be_nil
+              end
+            end
+
+            it 'returns public information about the user if requested' do
+              get_json api_v1_visualizations_show_url(id: @visualization.id) do |response|
+                response.status.should eq 200
+                response.body[:user].should be_nil
+              end
+
+              get_json api_v1_visualizations_show_url(id: @visualization.id), fetch_user: true do |response|
+                response.status.should eq 200
+                user = response.body[:user]
+                user.should_not be_nil
+                user[:avatar_url].should_not be_nil
+                user[:quota_in_bytes].should be_nil
+              end
+            end
+
+            it 'returns related_canonical_visualizations if requested' do
+              get_json api_v1_visualizations_show_url(id: @visualization.id) do |response|
+                response.status.should eq 200
+                response.body[:related_canonical_visualizations].should be_nil
+              end
+
+              get_json api_v1_visualizations_show_url(id: @visualization.id,
+                                                      fetch_related_canonical_visualizations: true) do |response|
+                response.status.should eq 200
+                related_canonical = response.body[:related_canonical_visualizations]
+                related_canonical.should_not be_nil
+                related_canonical.count.should eq 1
+                related_canonical[0]['id'].should eq @table_visualization.id
+              end
+            end
+
+            it 'doesn\'t return private related_canonical_visualizations' do
+              related_canonical_visualizations = @visualization.related_canonical_visualizations
+              related_canonical_visualizations.should_not be_empty
+              old_privacies = related_canonical_visualizations.map(&:privacy)
+              related_canonical_visualizations.each do |v|
+                v.update_attribute(:privacy, Carto::Visualization::PRIVACY_PRIVATE)
+              end
+
+              get_json api_v1_visualizations_show_url(id: @visualization.id,
+                                                      fetch_related_canonical_visualizations: true) do |response|
+                response.status.should eq 200
+                related_canonical = response.body[:related_canonical_visualizations]
+                related_canonical.count.should eq 0
+                response.body[:related_canonical_visualizations_count].should eq related_canonical_visualizations.count
+              end
+
+              related_canonical_visualizations.zip(old_privacies).each do |v, p|
+                v.update_attribute(:privacy, p)
+              end
+            end
+
+            describe 'user db connectivity issues' do
+              before(:each) do
+                @actual_database_name = @visualization.user.database_name
+                @visualization.user.update_attribute(:database_name, 'wadus')
+              end
+
+              after(:each) do
+                @visualization.user.update_attribute(:database_name, @actual_database_name)
+              end
+
+              it 'does not need connection to the user db if viewer is anonymous' do
+                CartoDB::Logger.expects(:warning).never
+                CartoDB::Logger.expects(:error).never
+                get_json api_v1_visualizations_show_url(id: @visualization.id),
+                         fetch_related_canonical_visualizations: true,
+                         fetch_user: true,
+                         show_liked: true,
+                         show_likes: true,
+                         show_permission: true,
+                         show_stats: true do |response|
+                  response.status.should == 200
+                end
+              end
+            end
+          end
+        end
       end
     end
 
@@ -1640,20 +1927,20 @@ describe Carto::Api::VisualizationsController do
         end
       end
 
-      it 'includes vector flag (default false)' do
+      it 'includes vector flag (default true)' do
         get_json get_vizjson3_url(@user_1, @visualization), @headers do |response|
           response.status.should == 200
           vizjson3 = response.body
-          vizjson3[:vector].should == false
+          vizjson3[:vector].should be_nil
         end
       end
 
-      it 'doesn\'t include vector flag if vector_vs_raster feature flag is enabled and vector param is not present' do
+      it 'includes vector flag if vector_vs_raster feature flag is enabled and vector param is not present' do
         set_feature_flag @visualization.user, 'vector_vs_raster', true
         get_json get_vizjson3_url(@user_1, @visualization), @headers do |response|
           response.status.should == 200
           vizjson3 = response.body
-          vizjson3.has_key?(:vector).should be_false
+          vizjson3.has_key?(:vector).should be_true
         end
       end
 
@@ -1897,7 +2184,7 @@ describe Carto::Api::VisualizationsController do
           end
         end
 
-        describe '#creates map from datasets' do
+        describe 'map creation from datasets' do
           include_context 'organization with users helper'
           include TableSharing
 
@@ -1974,74 +2261,95 @@ describe Carto::Api::VisualizationsController do
             end
           end
 
-          it 'copies the styles for editor users' do
-            table1 = create_table(user_id: @org_user_1.id)
-            payload = {
-              tables: [table1.name]
-            }
-            Carto::User.any_instance.stubs(:builder_enabled?).returns(false)
-            post_json(api_v1_visualizations_create_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key),
-                      payload) do |response|
-              response.status.should eq 200
-              vid = response.body[:id]
-              v = CartoDB::Visualization::Member.new(id: vid).fetch
-              original_layer = table1.map.data_layers.first
-              layer = v.map.data_layers.first
-              layer.options['tile_style'].should eq original_layer.options['tile_style']
+          describe 'builder and editor behaviour' do
+            before(:all) do
+              @old_builder_enabled = @org_user_1.builder_enabled
             end
-          end
 
-          it 'resets the styles for builder users' do
-            table1 = create_table(user_id: @org_user_1.id)
-            Table.any_instance.stubs(:geometry_types).returns(['ST_Point'])
-            payload = {
-              tables: [table1.name]
-            }
-            Carto::User.any_instance.stubs(:builder_enabled?).returns(true)
-            post_json(api_v1_visualizations_create_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key),
-                      payload) do |response|
-              response.status.should eq 200
-              vid = response.body[:id]
-              v = CartoDB::Visualization::Member.new(id: vid).fetch
-
-              original_layer = table1.map.data_layers.first
-              layer = v.map.data_layers.first
-              layer.options['tile_style'].should_not eq original_layer.options['tile_style']
+            after(:all) do
+              @org_user_1.builder_enabled = @old_builder_enabled
+              @org_user_1.save
             end
-          end
 
-          it 'doesn\'t add style properites for editor users' do
-            table1 = create_table(user_id: @org_user_1.id)
-            payload = {
-              tables: [table1.name]
-            }
-            Carto::User.any_instance.stubs(:builder_enabled?).returns(false)
-            post_json(api_v1_visualizations_create_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key),
-                      payload) do |response|
-              response.status.should eq 200
-              vid = response.body[:id]
-              v = CartoDB::Visualization::Member.new(id: vid).fetch
+            describe 'for editor users' do
+              before(:all) do
+                @org_user_1.builder_enabled = false
+                @org_user_1.save
+              end
 
-              layer = v.map.data_layers.first
-              layer.options['style_properties'].should be_nil
+              it 'copies the styles' do
+                table1 = create_table(user_id: @org_user_1.id)
+                payload = {
+                  tables: [table1.name]
+                }
+                post_json(api_v1_visualizations_create_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key),
+                          payload) do |response|
+                  response.status.should eq 200
+                  vid = response.body[:id]
+                  v = CartoDB::Visualization::Member.new(id: vid).fetch
+                  original_layer = table1.map.data_layers.first
+                  layer = v.map.data_layers.first
+                  layer.options['tile_style'].should eq original_layer.options['tile_style']
+                end
+              end
+
+              it 'doesn\'t add style properties' do
+                table1 = create_table(user_id: @org_user_1.id)
+                payload = {
+                  tables: [table1.name]
+                }
+                post_json(api_v1_visualizations_create_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key),
+                          payload) do |response|
+                  response.status.should eq 200
+                  vid = response.body[:id]
+                  v = CartoDB::Visualization::Member.new(id: vid).fetch
+
+                  layer = v.map.data_layers.first
+                  layer.options['style_properties'].should be_nil
+                end
+              end
             end
-          end
 
-          it 'adds style properites for builder users' do
-            table1 = create_table(user_id: @org_user_1.id)
-            Table.any_instance.stubs(:geometry_types).returns(['ST_Point'])
-            payload = {
-              tables: [table1.name]
-            }
-            Carto::User.any_instance.stubs(:builder_enabled?).returns(true)
-            post_json(api_v1_visualizations_create_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key),
-                      payload) do |response|
-              response.status.should eq 200
-              vid = response.body[:id]
-              v = CartoDB::Visualization::Member.new(id: vid).fetch
+            describe 'for builder users' do
+              before(:all) do
+                @org_user_1.builder_enabled = true
+                @org_user_1.save
+              end
 
-              layer = v.map.data_layers.first
-              layer.options['style_properties'].should_not be_nil
+              it 'resets the styles' do
+                table1 = create_table(user_id: @org_user_1.id)
+                Table.any_instance.stubs(:geometry_types).returns(['ST_Point'])
+                payload = {
+                  tables: [table1.name]
+                }
+                post_json(api_v1_visualizations_create_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key),
+                          payload) do |response|
+                  response.status.should eq 200
+                  vid = response.body[:id]
+                  v = CartoDB::Visualization::Member.new(id: vid).fetch
+
+                  original_layer = table1.map.data_layers.first
+                  layer = v.map.data_layers.first
+                  layer.options['tile_style'].should_not eq original_layer.options['tile_style']
+                end
+              end
+
+              it 'adds style properties' do
+                table1 = create_table(user_id: @org_user_1.id)
+                Table.any_instance.stubs(:geometry_types).returns(['ST_Point'])
+                payload = {
+                  tables: [table1.name]
+                }
+                post_json(api_v1_visualizations_create_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key),
+                          payload) do |response|
+                  response.status.should eq 200
+                  vid = response.body[:id]
+                  v = CartoDB::Visualization::Member.new(id: vid).fetch
+
+                  layer = v.map.data_layers.first
+                  layer.options['style_properties'].should_not be_nil
+                end
+              end
             end
           end
 
@@ -2398,25 +2706,53 @@ describe Carto::Api::VisualizationsController do
 
   end
 
-  describe 'index shared_only' do
+  describe 'index' do
     include_context 'organization with users helper'
     include_context 'visualization creation helpers'
 
-    it 'should not display nor count the shared visualizations you own' do
-      table = create_table(privacy: UserTable::PRIVACY_PUBLIC, name: unique_name('table'), user_id: @org_user_1.id)
-      u1_t_1_id = table.table_visualization.id
-      u1_t_1_perm_id = table.table_visualization.permission.id
+    describe 'shared_only' do
+      it 'should not display nor count the shared visualizations you own' do
+        table = create_table(privacy: UserTable::PRIVACY_PUBLIC, name: unique_name('table'), user_id: @org_user_1.id)
+        u1_t_1_id = table.table_visualization.id
+        u1_t_1_perm_id = table.table_visualization.permission.id
 
-      share_table_with_organization(table, @org_user_1, @organization)
+        share_table_with_organization(table, @org_user_1, @organization)
 
-      get api_v1_visualizations_index_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key,
-          type: CartoDB::Visualization::Member::TYPE_CANONICAL, order: 'updated_at',
-          shared: CartoDB::Visualization::Collection::FILTER_SHARED_ONLY), @headers
-      body = JSON.parse(last_response.body)
-      body['total_entries'].should eq 0
-      body['visualizations'].count.should eq 0
+        get api_v1_visualizations_index_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key,
+                                            type: CartoDB::Visualization::Member::TYPE_CANONICAL, order: 'updated_at',
+                                            shared: CartoDB::Visualization::Collection::FILTER_SHARED_ONLY), @headers
+        body = JSON.parse(last_response.body)
+        body['total_entries'].should eq 0
+        body['visualizations'].count.should eq 0
+      end
     end
 
+    it 'returns auth tokens for password protected viz for the owner but not for users that have them shared' do
+      @map, @table, @table_visualization, @visualization = create_full_visualization(@carto_org_user_1)
+      @visualization.privacy = Carto::Visualization::PRIVACY_PROTECTED
+      @visualization.password = 'wontbeused'
+      @visualization.save!
+
+      share_visualization(@visualization, @org_user_2)
+
+      get_json api_v1_visualizations_index_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key,
+                                               type: Carto::Visualization::TYPE_DERIVED,
+                                               shared: CartoDB::Visualization::Collection::FILTER_SHARED_YES), @headers do |response|
+        response.status.should eq 200
+        response.body[:visualizations][0]['id'].should_not be_empty
+        response.body[:visualizations][0]['auth_tokens'].should_not be_empty
+      end
+
+      get_json api_v1_visualizations_index_url(user_domain: @org_user_2.username, api_key: @org_user_2.api_key,
+                                               type: Carto::Visualization::TYPE_DERIVED,
+                                               shared: CartoDB::Visualization::Collection::FILTER_SHARED_YES), @headers do |response|
+        response.status.should eq 200
+        response.body[:visualizations][0]['id'].should_not be_empty
+        response.body[:visualizations][0]['auth_tokens'].should be_empty
+      end
+
+      destroy_full_visualization(@map, @table, @table_visualization, @visualization)
+    end
   end
 
   describe 'visualization url generation' do
@@ -2570,9 +2906,9 @@ describe Carto::Api::VisualizationsController do
         end
       end
 
-      it 'returns 401 if visualization is private' do
+      it 'returns 403 if visualization is private' do
         get_json url(@vis_owner.username, @vis.id, @other_user.api_key), {}, @headers do |response|
-          response.status.should == 401
+          response.status.should == 403
         end
       end
 
@@ -2619,6 +2955,7 @@ describe Carto::Api::VisualizationsController do
         @shared_vis = FactoryGirl.build(:derived_visualization,
                                         user_id: @vis_owner.id,
                                         name: unique_name('viz'),
+                                        description: 'wadus desc',
                                         privacy: CartoDB::Visualization::Member::PRIVACY_PRIVATE).store
         @shared_user = @org_user_2
         @not_shared_user = @org_user_owner
@@ -2653,6 +2990,14 @@ describe Carto::Api::VisualizationsController do
         end
       end
 
+      it 'returns 200 and private info with valid shared user user_domain' do
+        get_json url(@shared_user.username, @shared_vis.id, @shared_user.api_key), {}, @headers do |response|
+          response.status.should == 200
+          response.body[:description].should_not be_nil
+          response.body[:auth_tokens].should_not be_nil
+        end
+      end
+
       it 'returns 404 if visualization does not exist' do
         get_json url(@vis_owner.username, random_uuid, @vis_owner.api_key), {}, @headers do |response|
           response.status.should == 404
@@ -2667,9 +3012,9 @@ describe Carto::Api::VisualizationsController do
         end
       end
 
-      it 'returns 401 if visualization is not shared with the apikey user' do
+      it 'returns 403 if visualization is not shared with the apikey user' do
         get_json url(@shared_user.username, @shared_vis.id, @not_shared_user.api_key), {}, @headers do |response|
-          response.status.should == 401
+          response.status.should == 403
         end
       end
 

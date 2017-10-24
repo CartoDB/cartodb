@@ -4,6 +4,7 @@ module Carto
   module Api
     class UserPresenter
       include AccountTypeHelper
+
       BUILDER_ACTIVATION_DATE = Date.new(2016, 11, 11).freeze
 
       def initialize(user, fetch_groups: false, current_viewer: nil, fetch_db_size: true)
@@ -18,17 +19,27 @@ module Carto
         return to_public_poro unless current_viewer && @user.viewable_by?(current_viewer)
 
         poro = {
-          id:               @user.id,
-          username:         @user.username,
-          email:            @user.email,
-          avatar_url:       @user.avatar_url,
-          base_url:         @user.public_url,
-          quota_in_bytes:   @user.quota_in_bytes,
-          table_count:      @user.table_count,
-          viewer:           @user.viewer?,
-          org_admin:        @user.organization_admin?,
+          id:                         @user.id,
+          name:                       @user.name,
+          last_name:                  @user.last_name,
+          username:                   @user.username,
+          email:                      @user.email,
+          avatar_url:                 @user.avatar_url,
+          website:                    @user.website,
+          description:                @user.description,
+          location:                   @user.location,
+          twitter_username:           @user.twitter_username,
+          disqus_shortname:           @user.disqus_shortname,
+          available_for_hire:         @user.available_for_hire,
+          base_url:                   @user.public_url,
+          quota_in_bytes:             @user.quota_in_bytes,
+          table_count:                @user.table_count,
+          viewer:                     @user.viewer?,
+          org_admin:                  @user.organization_admin?,
           public_visualization_count: @user.public_visualization_count,
-          all_visualization_count: @user.all_visualization_count
+          all_visualization_count:    @user.all_visualization_count,
+          org_user:                   @user.organization_id.present?,
+          remove_logo:                @user.remove_logo?
         }
 
         if fetch_groups
@@ -55,9 +66,15 @@ module Carto
         poro = {
           id:               @user.id,
           username:         @user.username,
+          name:             @user.name,
+          last_name:        @user.last_name,
           avatar_url:       @user.avatar_url,
           base_url:         @user.public_url,
-          viewer:           @user.viewer?
+          disqus_shortname: @user.disqus_shortname,
+          viewer:           @user.viewer?,
+          org_admin:        @user.organization_admin?,
+          org_user:         @user.organization_id.present?,
+          remove_logo:      @user.remove_logo?
         }
 
         if fetch_groups
@@ -182,7 +199,13 @@ module Carto
           avatar_url: @user.avatar,
           feature_flags: @user.feature_flag_names,
           base_url: @user.public_url,
-          needs_password_confirmation: @user.needs_password_confirmation?
+          needs_password_confirmation: @user.needs_password_confirmation?,
+          description: @user.description,
+          website: @user.website,
+          twitter_username: @user.twitter_username,
+          disqus_shortname: @user.disqus_shortname,
+          available_for_hire: @user.available_for_hire,
+          location: @user.location
         }
 
         if @user.organization.present?

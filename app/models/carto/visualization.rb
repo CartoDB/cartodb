@@ -64,7 +64,7 @@ class Carto::Visualization < ActiveRecord::Base
   has_many :likes, foreign_key: :subject
   has_many :shared_entities, foreign_key: :entity_id, inverse_of: :visualization, dependent: :destroy
 
-  has_one :external_source, class_name: Carto::ExternalSource, dependent: :destroy
+  has_one :external_source, class_name: Carto::ExternalSource, dependent: :destroy, inverse_of: :visualization
   has_many :unordered_children, class_name: Carto::Visualization, foreign_key: :parent_id
 
   has_many :overlays, order: '"order"', dependent: :destroy
@@ -240,6 +240,10 @@ class Carto::Visualization < ActiveRecord::Base
     is_viewable_by_user?(user) || password_protected?
   end
 
+  def is_accessible_with_password?(user, password)
+    is_viewable_by_user?(user) || password_valid?(password)
+  end
+
   def is_publically_accesible?
     (public? || public_with_link?) && published?
   end
@@ -331,7 +335,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def password_valid?(password)
-    has_password? && (password_digest(password, password_salt) == encrypted_password)
+    password_protected? && has_password? && (password_digest(password, password_salt) == encrypted_password)
   end
 
   def organization?
@@ -385,6 +389,7 @@ class Carto::Visualization < ActiveRecord::Base
   def has_read_permission?(user)
     user && (owner?(user) || (permission && permission.user_has_read_permission?(user)))
   end
+  alias :can_view_private_info? :has_read_permission?
 
   def estimated_row_count
     table_service.nil? ? nil : table_service.estimated_row_count
@@ -519,7 +524,7 @@ class Carto::Visualization < ActiveRecord::Base
   # deal with all the different the cases internally.
   # See https://github.com/CartoDB/cartodb/pull/9678
   def non_mapcapped
-    mapcapped? ? latest_mapcap.visualization : self
+    persisted? ? self : Carto::Visualization.find(id)
   end
 
   def mark_as_vizjson2
@@ -531,7 +536,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def open_in_editor?
-    !builder? && (uses_vizjson2? || layers.any?(&:gmapsbase?))
+    !builder? && uses_vizjson2?
   end
 
   def can_be_automatically_migrated_to_v3?
@@ -557,7 +562,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def is_owner?(user)
-    user.id == user_id
+    user && user.id == user_id
   end
 
   def unlink_from(user_table)
@@ -604,6 +609,10 @@ class Carto::Visualization < ActiveRecord::Base
     end
   end
 
+  def synced?
+    synchronization.present?
+  end
+
   private
 
   def generate_salt
@@ -617,10 +626,17 @@ class Carto::Visualization < ActiveRecord::Base
 
   def perform_invalidations
     invalidation_service.invalidate
+  rescue => e
+    # This is called at an after_commit. If there's any error, we won't notice
+    # but the after_commit chain stops.
+    # This was discovered during #12844, because "Updates changes even if named maps communication fails" test
+    # begun failing because Overlay#invalidate_cache invokes this method directly.
+    # We chose to log and continue to keep coherence on calls to this outside the callback.
+    CartoDB::Logger.error(message: "Error on visualization invalidation", exception: e, visualization_id: id)
   end
 
   def propagate_privacy_and_name_to
-    raise "Empty table sent to Visualization::Member propagate_privacy_and_name_to()" unless table
+    raise "Empty table sent to propagate_privacy_and_name_to()" unless table
     propagate_privacy if privacy_changed? && canonical?
     propagate_name if name_changed?
   end

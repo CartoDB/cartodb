@@ -142,12 +142,9 @@ module CartoDB
       end
 
       def get_imported_tables
-        tables = []
-        @imported_table_visualization_ids.each do |table_id|
-          vis = CartoDB::Visualization::Member.new(id: table_id).fetch
-          tables << vis.table
+        @imported_table_visualization_ids.map do |table_id|
+          Carto::Visualization.find(table_id).table
         end
-        tables
       end
 
       def success?

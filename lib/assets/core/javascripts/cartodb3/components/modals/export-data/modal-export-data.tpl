@@ -27,27 +27,7 @@
           <input type="hidden" class="js-skipfields" name="skipfields" disabled="disabled" value="" />
           <input type="hidden" class="js-dp" name="dp" value="4" disabled="disabled" />
 
-          <ul class="Modal-listForm u-flex u-alignCenter CDB-Text CDB-Size-medium">
-            <% _.each(formats, function (format) { %>
-            <li class="Modal-listFormItem
-              <% if (isGeoreferenced === false && format.geomRequired === true) { %>
-                is-disabled
-              <% } %>"
-            >
-              <input class="CDB-Radio js-format" type="radio" name="format" data-format="<%- format.format %>"
-                <% if (isGeoreferenced === false && format.geomRequired === true) { %>
-                  disabled
-                <% } %>
-
-                <% if (format.format === 'csv') { %>
-                  checked
-                <% } %>
-              >
-              <span class="u-iBlock CDB-Radio-face"></span>
-              <label class="u-iBlock u-lSpace u-upperCase"><%- format.label || format.format %></label>
-            </li>
-            <% }); %>
-          </ul>
+          <ul class="Modal-listForm u-flex u-alignCenter CDB-Text CDB-Size-medium js-formats"></ul>
         </form>
 
       </div>

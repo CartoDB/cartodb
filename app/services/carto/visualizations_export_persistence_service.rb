@@ -50,6 +50,8 @@ module Carto
 
           data_import = user_table.data_import
           if data_import
+            existing_data_import = Carto::DataImport.where(id: data_import.id).first
+            user_table.data_import = existing_data_import if existing_data_import
             data_import.synchronization_id = sync.id if sync
             data_import.user_id = user.id
           end
@@ -104,10 +106,7 @@ module Carto
         end
       end
 
-      # Propagate changes (named maps, default permissions and so on)
-      visualization_member = CartoDB::Visualization::Member.new(id: visualization.id).fetch
-      visualization_member.store
-
+      visualization.save!
       visualization
     end
 

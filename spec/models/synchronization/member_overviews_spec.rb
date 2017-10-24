@@ -23,7 +23,10 @@ describe Synchronization::Member do
 
     before(:each) do
       bypass_named_maps
-      Cartodb.config[:metrics] = {}
+    end
+
+    around(:each) do |example|
+      Cartodb.with_config(metrics: {}, &example)
     end
 
     after(:all) do

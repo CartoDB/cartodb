@@ -54,7 +54,7 @@ module CartoDB
           @database_host,
           CartoDB::DataMover::Config[:user_dbport],
           @database_name
-        )} -f #{@path}#{@database_schema}.schema.sql -n #{@database_schema} --verbose --no-tablespaces --quote-all-identifiers -Z 0")
+        )} -f #{@path}/#{@database_schema}.schema.sql -n #{@database_schema} --verbose --no-tablespaces --quote-all-identifiers -Z 0")
       end
 
       private
@@ -206,7 +206,7 @@ module CartoDB
             .map(&:klass).select { |s| models.include?(s) }]
         end
         models_ordered = TsortableHash[model_dependencies].tsort
-        File.open(@options[:path] + "#{prefix}_metadata.sql", "w") do |f|
+        File.open(@options[:path] + "/#{prefix}_metadata.sql", "w") do |f|
           models_ordered.each do |model|
             data[model].each do |rows|
               keys = rows.keys.select { |k| TABLE_NULL_EXCEPTIONS.include?(k.to_s) || !rows[k].nil? }
@@ -214,7 +214,7 @@ module CartoDB
             end
           end
         end
-        File.open(@options[:path] + "#{prefix}_metadata_undo.sql", "w") do |f|
+        File.open(@options[:path] + "/#{prefix}_metadata_undo.sql", "w") do |f|
           models_ordered.reverse_each do |model|
             data[model].each do |rows|
               keys = rows.keys.select { |k| !rows[k].nil? }
@@ -297,8 +297,8 @@ module CartoDB
       end
 
       def dump_redis_keys
-        File.open(@options[:path] + "user_#{@user_id}_metadata.redis", "wb") do |dump|
-          File.open(@options[:path] + "user_#{@user_id}_metadata_undo.redis", "wb") do |undo|
+        File.open(@options[:path] + "/user_#{@user_id}_metadata.redis", "wb") do |dump|
+          File.open(@options[:path] + "/user_#{@user_id}_metadata_undo.redis", "wb") do |undo|
             REDIS_KEYS.each do |k, v|
               dump.write gen_redis_proto("SELECT", v[:db])
               undo.write gen_redis_proto("SELECT", v[:db])
@@ -493,14 +493,14 @@ module CartoDB
                 @user_data['database_host'] || '127.0.0.1',
                 @user_data['database_name'],
                 @options[:path],
-                "#{@options[:path]}user_#{@user_id}.dump",
+                "#{@options[:path]}/user_#{@user_id}.dump",
                 @options[:schema_mode] ? @user_data['database_schema'] : nil,
                 @logger
               )
             end
 
             @json_file = "user_#{@user_id}.json"
-            File.open("#{@options[:path]}#{json_file}", "w") do |f|
+            File.open("#{@options[:path]}/#{json_file}", "w") do |f|
               f.write(user_info.to_json)
             end
             set_user_mover_banner(@user_id) if options[:set_banner]
@@ -523,7 +523,7 @@ module CartoDB
             dump_org_metadata if @options[:metadata]
             data = { organization: @org_metadata, users: @org_users.to_a, groups: @org_groups, split_user_schemas: @options[:split_user_schemas] }
             @json_file = "org_#{@org_metadata['id']}.json"
-            File.open("#{@options[:path]}#{json_file}", "w") do |f|
+            File.open("#{@options[:path]}/#{json_file}", "w") do |f|
               f.write(data.to_json)
             end
 
@@ -535,20 +535,20 @@ module CartoDB
                 @database_host,
                 @database_name,
                 @options[:path],
-                "#{@options[:path]}org_#{@org_id}.dump",
+                "#{@options[:path]}/org_#{@org_id}.dump",
                 nil,
                 @logger
               )
             end
             @org_users.each do |org_user|
-              export_job = CartoDB::DataMover::ExportJob.new(id: org_user['username'],
-                                                             data: @options[:data] && @options[:split_user_schemas],
-                                                             path: @options[:path],
-                                                             job_uuid: job_uuid,
-                                                             from_org: true,
-                                                             schema_mode: true,
-                                                             logger: @logger,
-                                                             export_job_logger: exportjob_logger)
+              CartoDB::DataMover::ExportJob.new(id: org_user['username'],
+                                                data: @options[:data] && @options[:split_user_schemas],
+                                                path: @options[:path],
+                                                job_uuid: job_uuid,
+                                                from_org: true,
+                                                schema_mode: true,
+                                                logger: @logger,
+                                                export_job_logger: exportjob_logger)
             end
           end
         rescue => e

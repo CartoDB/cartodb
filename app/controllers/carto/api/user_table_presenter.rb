@@ -38,11 +38,14 @@ module Carto
           id: @user_table.id,
           name: @user_table.name_for_user(@current_viewer),
           permission: permission_presentation,
-          synchronization: Carto::Api::SynchronizationPresenter.new(@user_table.synchronization).to_poro,
           geometry_types: @user_table.geometry_types,
           privacy: privacy_text(@user_table.privacy).upcase,
           updated_at: @user_table.updated_at
         }
+
+        if @user_table.is_owner?(@current_viewer)
+          poro[:synchronization] = Carto::Api::SynchronizationPresenter.new(@user_table.synchronization).to_poro
+        end
 
         if show_size_and_row_count
           row_count_and_size = @user_table.row_count_and_size

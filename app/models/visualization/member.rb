@@ -48,6 +48,8 @@ module CartoDB
       AUTH_DIGEST = '1211b3e77138f6e1724721f1ab740c9c70e66ba6fec5e989bb6640c4541ed15d06dbd5fdcbd3052b'
       TOKEN_DIGEST = '6da98b2da1b38c5ada2547ad2c3268caa1eb58dc20c9144ead844a2eda1917067a06dcb54833ba2'
 
+      VERSION_BUILDER = 3
+
       DEFAULT_OPTIONS_VALUE = '{}'
 
       # Upon adding new attributes modify also:
@@ -364,7 +366,7 @@ module CartoDB
       end
 
       def is_owner?(user)
-        user.id == user_id
+        user && user.id == user_id
       end
 
       # @param user ::User
@@ -482,6 +484,14 @@ module CartoDB
 
       def supports_private_maps?
         !user.nil? && user.private_maps_enabled?
+      end
+
+      def published?
+        !is_privacy_private? && (!builder? || !derived? || mapcapped?)
+      end
+
+      def builder?
+        version == VERSION_BUILDER
       end
 
       # @param other_vis CartoDB::Visualization::Member|nil

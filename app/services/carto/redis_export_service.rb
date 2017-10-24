@@ -18,10 +18,20 @@ module Carto
       restore_redis_from_hash_export(JSON.parse(exported_json_string).deep_symbolize_keys)
     end
 
+    def remove_redis_from_json_export(exported_json_string)
+      remove_redis_from_hash_export(JSON.parse(exported_json_string).deep_symbolize_keys)
+    end
+
     def restore_redis_from_hash_export(exported_hash)
       raise 'Wrong export version' unless compatible_version?(exported_hash[:version])
 
       restore_redis(exported_hash[:redis])
+    end
+
+    def remove_redis_from_hash_export(exported_hash)
+      raise 'Wrong export version' unless compatible_version?(exported_hash[:version])
+
+      remove_redis(exported_hash[:redis])
     end
 
     private
@@ -30,9 +40,19 @@ module Carto
       restore_keys($users_metadata, redis_export[:users_metadata])
     end
 
+    def remove_redis(redis_export)
+      remove_keys($users_metadata, redis_export[:users_metadata])
+    end
+
     def restore_keys(redis_db, redis_keys)
       redis_keys.each do |key, value|
         redis_db.restore(key, value[:ttl], Base64.decode64(value[:value]))
+      end
+    end
+
+    def remove_keys(redis_db, redis_keys)
+      redis_keys.each do |key|
+        redis_db.del(key)
       end
     end
   end
@@ -40,25 +60,25 @@ module Carto
   module RedisExportServiceExporter
     include RedisExportServiceConfiguration
 
-    def export_organization_json_string(organization_id)
-      export_organization_json_hash(organization_id).to_json
+    def export_organization_json_string(organization)
+      export_organization_json_hash(organization).to_json
     end
 
-    def export_organization_json_hash(organization_id)
+    def export_organization_json_hash(organization)
       {
         version: CURRENT_VERSION,
-        redis: export_organization(Organization.find(organization_id))
+        redis: export_organization(organization)
       }
     end
 
-    def export_user_json_string(user_id)
-      export_user_json_hash(user_id).to_json
+    def export_user_json_string(user)
+      export_user_json_hash(user).to_json
     end
 
-    def export_user_json_hash(user_id)
+    def export_user_json_hash(user)
       {
         version: CURRENT_VERSION,
-        redis: export_user(User.find(user_id))
+        redis: export_user(user)
       }
     end
 

@@ -8,17 +8,17 @@ module Oauth
       self.parent.const_get(:Api)
     end
 
-    def self.instance(csrf, base_callback_url, plan: nil, after: nil)
+    def self.instance(csrf, base_callback_url, invitation_token: nil, organization_name: nil)
       if config['client_id'].present?
-        new(csrf, base_callback_url, plan, after)
+        new(csrf, base_callback_url, invitation_token, organization_name)
       end
     end
 
-    def initialize(csrf, base_callback_url, plan, after)
+    def initialize(csrf, base_callback_url, invitation_token, organization_name)
       state = JSON.dump(
         csrf: csrf,
-        plan: plan,
-        after: after
+        invitation_token: invitation_token,
+        organization_name: organization_name
       )
 
       @client = Oauth::Client.new(

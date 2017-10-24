@@ -4,7 +4,7 @@ module Oauth
   module Google
     class Config < Oauth::Config
       def self.config
-        CartodbCentral.get_config(:oauth, 'google_plus') || {}
+        Cartodb.get_config(:oauth, 'google_plus') || {}
       end
 
       def auth_url

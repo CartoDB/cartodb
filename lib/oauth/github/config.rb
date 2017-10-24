@@ -4,7 +4,7 @@ module Oauth
   module Github
     class Config < Oauth::Config
       def self.config
-        CartodbCentral.get_config(:oauth, 'github') || {}
+        Cartodb.get_config(:oauth, 'github') || {}
       end
 
       def auth_url

@@ -30,8 +30,7 @@ class SessionsController < ApplicationController
                      only: [:account_token_authentication_error, :ldap_user_not_at_cartodb, :saml_user_not_in_carto]
 
   before_filter :load_organization
-  before_filter :initialize_google_plus_config,
-                :initialize_github_config
+  before_filter :initialize_oauth_config
   before_filter :api_authorization_required, only: :show
 
   def new
@@ -167,21 +166,24 @@ class SessionsController < ApplicationController
 
   protected
 
-  def initialize_google_plus_config
+  def initialize_oauth_config
+    @button_color = @organization && @organization.color ? organization_color(@organization) : nil
+    @oauth_config = [google_plus_config, github_config].compact
+  end
+
+  def google_plus_config
     unless @organization && !@organization.auth_google_enabled
-      @google_config = Carto::Google::Config.instance(form_authenticity_token, self,
-                                                      invitation_token: params[:invitation_token],
-                                                      organization_name: @organization.try(:name))
-      @button_color = @organization && @organization.color ? organization_color(@organization) : nil
+      Oauth::Google::Config.instance(form_authenticity_token, self,
+                                     invitation_token: params[:invitation_token],
+                                     organization_name: @organization.try(:name))
     end
   end
 
-  def initialize_github_config
+  def github_config
     unless @organization && !@organization.auth_github_enabled
-      @github_config = Carto::Github::Config.instance(form_authenticity_token, self,
-                                                      invitation_token: params[:invitation_token],
-                                                      organization_name: @organization.try(:name))
-      @button_color = @organization && @organization.color ? organization_color(@organization) : nil
+      Oauth::Github::Config.instance(form_authenticity_token, self,
+                                     invitation_token: params[:invitation_token],
+                                     organization_name: @organization.try(:name))
     end
   end
 

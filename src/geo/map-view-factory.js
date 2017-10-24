@@ -1,6 +1,6 @@
 var LeafletMapView = require('./leaflet/leaflet-map-view');
 var GoogleMapsMapView;
-// CHeck if google maps is defined
+// Check if google maps is defined
 if (window.google && window.google.maps) {
   GoogleMapsMapView = require('./gmaps/gmaps-map-view');
 }

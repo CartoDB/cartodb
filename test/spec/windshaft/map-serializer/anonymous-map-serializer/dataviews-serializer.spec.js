@@ -2,7 +2,7 @@ var Backbone = require('backbone');
 var CategoryDataviewModel = require('../../../../../src/dataviews/category-dataview-model');
 var HistogramDataviewModel = require('../../../../../src/dataviews/histogram-dataview-model');
 var FormulaDataviewModel = require('../../../../../src/dataviews/formula-dataview-model');
-var mockFactory = require('../../../../helpers/mockFactory');
+var MockFactory = require('../../../../helpers/mockFactory');
 var DataviewsSerializer = require('../../../../../src/windshaft/map-serializer/anonymous-map-serializer/dataviews-serializer');
 
 describe('dataviews-serializer', function () {
@@ -16,7 +16,7 @@ describe('dataviews-serializer', function () {
       engineMock = new Backbone.Model();
       map = new Backbone.Model();
       layer = new Backbone.Model();
-      analysis = mockFactory.createAnalysisModel({ id: 'a0' });
+      analysis = MockFactory.createAnalysisModel({ id: 'a0' });
     });
 
     it('serialises histogram dataviews', function () {

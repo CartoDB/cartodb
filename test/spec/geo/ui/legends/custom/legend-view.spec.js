@@ -1,11 +1,11 @@
 var LegendViewCustom = require('../../../../../../src/geo/ui/legends/custom/legend-view.js');
 var CustomLegendModel = require('../../../../../../src/geo/map/legends/custom-legend-model.js');
-var mockFactory = require('../../../../../helpers/mockFactory');
+var MockFactory = require('../../../../../helpers/mockFactory');
 
 describe('geo/ui/legends/custom/legend-view.js', function () {
   var engineMock;
   beforeEach(function () {
-    engineMock = mockFactory.createEngine();
+    engineMock = MockFactory.createEngine();
 
     this.model = new CustomLegendModel({
       title: 'Foo',

@@ -1,9 +1,9 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
 var DataviewsFactory = require('../../../src/dataviews/dataviews-factory');
-var mockFactory = require('../../helpers/mockFactory');
+var MockFactory = require('../../helpers/mockFactory');
 
-var source = mockFactory.createAnalysisModel({ id: 'a0' });
+var source = MockFactory.createAnalysisModel({ id: 'a0' });
 
 var generateFakeAttributes = function (attrNames) {
   return _.reduce(attrNames, function (object, attributeName) {

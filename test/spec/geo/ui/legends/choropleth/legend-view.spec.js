@@ -1,11 +1,11 @@
 var LegendViewChoropleth = require('../../../../../../src/geo/ui/legends/choropleth/legend-view.js');
 var ChoroplethLegendModel = require('../../../../../../src/geo/map/legends/choropleth-legend-model.js');
-var mockFactory = require('../../../../../helpers/mockFactory');
+var MockFactory = require('../../../../../helpers/mockFactory');
 
 describe('geo/ui/legends/choropleth/legend-view.js', function () {
   var engineMock;
   beforeEach(function () {
-    engineMock = mockFactory.createEngine();
+    engineMock = MockFactory.createEngine();
 
     this.model = new ChoroplethLegendModel({
       title: 'Foo',

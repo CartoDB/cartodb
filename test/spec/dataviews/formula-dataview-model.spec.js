@@ -1,6 +1,6 @@
 var Backbone = require('backbone');
 var FormulaDataviewModel = require('../../../src/dataviews/formula-dataview-model.js');
-var mockFactory = require('../../helpers/mockFactory');
+var MockFactory = require('../../helpers/mockFactory');
 
 describe('dataviews/formula-dataview-model', function () {
   var engineMock;
@@ -12,7 +12,7 @@ describe('dataviews/formula-dataview-model', function () {
 
     this.layer = new Backbone.Model();
 
-    this.source = mockFactory.createAnalysisModel({ id: 'a0' });
+    this.source = MockFactory.createAnalysisModel({ id: 'a0' });
 
     this.model = new FormulaDataviewModel({
       source: this.source,

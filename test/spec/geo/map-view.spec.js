@@ -1,6 +1,6 @@
 var $ = require('jquery');
 var Backbone = require('backbone');
-var mockFactory = require('../../helpers/mockFactory');
+var MockFactory = require('../../helpers/mockFactory');
 var Map = require('../../../src/geo/map');
 var MapView = require('../../../src/geo/map-view');
 var TileLayer = require('../../../src/geo/map/tile-layer');
@@ -30,7 +30,7 @@ describe('core/geo/map-view', function () {
   var engineMock;
   beforeEach(function () {
     this.container = $('<div>').css('height', '200px');
-    engineMock = mockFactory.createEngine();
+    engineMock = MockFactory.createEngine();
     spyOn(engineMock, 'reload');
 
     this.map = new Map(null, {

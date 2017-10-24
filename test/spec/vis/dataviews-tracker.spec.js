@@ -1,7 +1,7 @@
 var DataviewsCollection = require('../../../src/dataviews/dataviews-collection');
 var DataviewModel = require('../../../src/dataviews/dataview-model-base');
 var whenAllDataviewsFetched = require('../../../src/vis/dataviews-tracker');
-var mockFactory = require('../../helpers/mockFactory');
+var MockFactory = require('../../helpers/mockFactory');
 
 describe('src/vis/dataviews-tracker', function () {
   var options = {
@@ -12,7 +12,7 @@ describe('src/vis/dataviews-tracker', function () {
   beforeEach(function () {
     this.dataviewsFetched = jasmine.createSpy('dataviewsFetched');
 
-    this.source = mockFactory.createAnalysisModel({ id: 'a1' });
+    this.source = MockFactory.createAnalysisModel({ id: 'a1' });
 
     this.onDataviewsfetched = jasmine.createSpy('onDataviewsfetched');
 

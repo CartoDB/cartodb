@@ -4,7 +4,7 @@ var VisModel = require('../../../src/vis/vis');
 var MapModel = require('../../../src/geo/map');
 var DataviewModelBase = require('../../../src/dataviews/dataview-model-base');
 var AnalysisService = require('../../../src/analysis/analysis-service');
-var mockFactory = require('../../helpers/mockFactory');
+var MockFactory = require('../../helpers/mockFactory');
 
 var fakeCamshaftReference = {
   getSourceNamesForAnalysisType: function (analysisType) {
@@ -36,8 +36,6 @@ var fakeCamshaftReference = {
   }
 };
 
-// FIXME: This tests are using the api from the "createVis" point of view. But
-// they should use the "Engine" instead.
 describe('dataviews/dataview-model-base', function () {
   var engineMock;
 
@@ -539,7 +537,7 @@ describe('dataviews/dataview-model-base', function () {
     var dataview;
 
     beforeEach(function () {
-      source = mockFactory.createAnalysisModel({ id: 'a0' });
+      source = MockFactory.createAnalysisModel({ id: 'a0' });
 
       dataview = new DataviewModelBase({
         source: source

@@ -1,5 +1,5 @@
 var _ = require('underscore');
-var mockFactory = require('../../../helpers/mockFactory');
+var MockFactory = require('../../../helpers/mockFactory');
 
 module.exports = function (LayerModel) {
   var layer;
@@ -7,8 +7,8 @@ module.exports = function (LayerModel) {
   var engineMock;
 
   beforeEach(function () {
-    source = mockFactory.createAnalysisModel({ id: 'a0' });
-    engineMock = mockFactory.createEngine();
+    source = MockFactory.createAnalysisModel({ id: 'a0' });
+    engineMock = MockFactory.createEngine();
     layer = new LayerModel({source: source}, { engine: engineMock });
   });
 
@@ -50,7 +50,7 @@ module.exports = function (LayerModel) {
     describe('when layer is updated', function () {
       it('should unmark source and mark new source as referenced', function () {
         var oldSource = source;
-        var newSource = mockFactory.createAnalysisModel({ id: 'a1' });
+        var newSource = MockFactory.createAnalysisModel({ id: 'a1' });
 
         expect(oldSource.isSourceOf(layer)).toBe(true);
         expect(newSource.isSourceOf(layer)).toBe(false);

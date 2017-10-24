@@ -9,10 +9,12 @@ var GMapsBaseLayer = require('../../../src/geo/map/gmaps-base-layer');
 var CartoDBLayerGroup = require('../../../src/geo/cartodb-layer-group');
 
 xdescribe('geo/cartodb-layer-group', function () {
+  var engineMock;
+
   beforeEach(function () {
     this.layersCollection = new Layers();
-    this.engine = new Engine({ serverUrl: 'http://example.com', username: 'fake-username' });
-    spyOn(this.engine, 'reload');
+    engineMock = new Engine({ serverUrl: 'http://example.com', username: 'fake-username' });
+    spyOn(engineMock, 'reload');
 
     this.cartoDBLayerGroup = new CartoDBLayerGroup({}, {
       layersCollection: this.layersCollection
@@ -86,8 +88,8 @@ xdescribe('geo/cartodb-layer-group', function () {
       });
 
       var otherLayer = new Backbone.Model();
-      this.cartoDBLayer1 = new CartoDBLayer({}, { engine: this.engine });
-      this.cartoDBLayer2 = new CartoDBLayer({}, { engine: this.engine });
+      this.cartoDBLayer1 = new CartoDBLayer({}, { engine: engineMock });
+      this.cartoDBLayer2 = new CartoDBLayer({}, { engine: engineMock });
       this.layersCollection.reset([
         otherLayer,
         this.cartoDBLayer1,
@@ -195,8 +197,8 @@ xdescribe('geo/cartodb-layer-group', function () {
       });
 
       var otherLayer = new Backbone.Model();
-      this.cartoDBLayer1 = new CartoDBLayer({}, { engine: this.engine });
-      this.cartoDBLayer2 = new CartoDBLayer({}, { engine: this.engine });
+      this.cartoDBLayer1 = new CartoDBLayer({}, { engine: engineMock });
+      this.cartoDBLayer2 = new CartoDBLayer({}, { engine: engineMock });
       this.layersCollection.reset([
         otherLayer,
         this.cartoDBLayer1,
@@ -225,8 +227,8 @@ xdescribe('geo/cartodb-layer-group', function () {
 
   describe('.hasTileURLTemplates', function () {
     beforeEach(function () {
-      this.cartoDBLayer1 = new CartoDBLayer({}, { engine: this.engine });
-      this.cartoDBLayer2 = new CartoDBLayer({}, { engine: this.engine });
+      this.cartoDBLayer1 = new CartoDBLayer({}, { engine: engineMock });
+      this.cartoDBLayer2 = new CartoDBLayer({}, { engine: engineMock });
       this.layersCollection.reset([
         this.cartoDBLayer1,
         this.cartoDBLayer2
@@ -312,11 +314,11 @@ xdescribe('geo/cartodb-layer-group', function () {
 
   describe('.getStaticImageURLTemplate', function () {
     beforeEach(function () {
-      this.baseLayer = new TileLayer({}, { engine: this.engine });
-      this.cartoDBLayer1 = new CartoDBLayer({}, { engine: this.engine });
-      this.cartoDBLayer2 = new CartoDBLayer({}, { engine: this.engine });
-      this.torqueLayer = new TorqueLayer({}, { engine: this.engine });
-      this.labelsLayer = new TileLayer({}, { engine: this.engine });
+      this.baseLayer = new TileLayer({}, { engine: engineMock });
+      this.cartoDBLayer1 = new CartoDBLayer({}, { engine: engineMock });
+      this.cartoDBLayer2 = new CartoDBLayer({}, { engine: engineMock });
+      this.torqueLayer = new TorqueLayer({}, { engine: engineMock });
+      this.labelsLayer = new TileLayer({}, { engine: engineMock });
 
       this.layersCollection.reset([
         this.baseLayer,
@@ -344,8 +346,8 @@ xdescribe('geo/cartodb-layer-group', function () {
 
     it('should ignore Google Maps base layers (Maps API is not aware of them)', function () {
       this.baseLayer = new GMapsBaseLayer(null);
-      this.cartoDBLayer1 = new CartoDBLayer({}, { engine: this.engine });
-      this.cartoDBLayer2 = new CartoDBLayer({}, { engine: this.engine });
+      this.cartoDBLayer1 = new CartoDBLayer({}, { engine: engineMock });
+      this.cartoDBLayer2 = new CartoDBLayer({}, { engine: engineMock });
 
       this.layersCollection.reset([
         this.baseLayer,

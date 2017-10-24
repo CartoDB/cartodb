@@ -7,17 +7,18 @@ var CartoDBLayer = require('../../../../src/geo/map/cartodb-layer');
 
 describe('geo/map/layers', function () {
   var layers;
+  var engineMock;
 
   beforeEach(function () {
-    this.engine = new Engine({ serverUrl: 'http://example.com', username: 'fake-username' });
+    engineMock = new Engine({ serverUrl: 'http://example.com', username: 'fake-username' });
     layers = new Layers();
   });
 
   it('should re-assign order when new layers are added to the collection', function () {
     var baseLayer = new TileLayer(null, { engine: {} });
-    var layer1 = new CartoDBLayer({}, { engine: this.engine });
-    var layer2 = new CartoDBLayer({}, { engine: this.engine });
-    var layer3 = new CartoDBLayer({}, { engine: this.engine });
+    var layer1 = new CartoDBLayer({}, { engine: engineMock });
+    var layer2 = new CartoDBLayer({}, { engine: engineMock });
+    var layer3 = new CartoDBLayer({}, { engine: engineMock });
 
     // Sets the order to 0
     layers.add(baseLayer);
@@ -42,7 +43,7 @@ describe('geo/map/layers', function () {
     expect(layer3.get('order')).toEqual(1);
     expect(layers.pluck('order')).toEqual([ 0, 1, 2, 3 ]);
 
-    var torqueLayer = new TorqueLayer({}, { engine: this.engine });
+    var torqueLayer = new TorqueLayer({}, { engine: engineMock });
 
     // Torque layer should be at the top
     layers.add(torqueLayer);
@@ -67,7 +68,7 @@ describe('geo/map/layers', function () {
     expect(tiledLayer.get('order')).toEqual(5);
     expect(layers.pluck('order')).toEqual([ 0, 1, 2, 3, 4, 5 ]);
 
-    var layer4 = new CartoDBLayer({}, { engine: this.engine });
+    var layer4 = new CartoDBLayer({}, { engine: engineMock });
     layers.add(layer4);
 
     expect(baseLayer.get('order')).toEqual(0);
@@ -82,9 +83,9 @@ describe('geo/map/layers', function () {
 
   it('should re-assign order when new layers are removed from the collection', function () {
     var baseLayer = new TileLayer(null, { engine: {} });
-    var layer1 = new CartoDBLayer({}, { engine: this.engine });
-    var layer2 = new CartoDBLayer({}, { engine: this.engine });
-    var torqueLayer = new TorqueLayer({}, { engine: this.engine });
+    var layer1 = new CartoDBLayer({}, { engine: engineMock });
+    var layer2 = new CartoDBLayer({}, { engine: engineMock });
+    var torqueLayer = new TorqueLayer({}, { engine: engineMock });
     var labelsLayer = new TileLayer(null, { engine: {} });
 
     // Sets the order to 0
@@ -126,7 +127,7 @@ describe('geo/map/layers', function () {
   describe('.moveCartoDBLayer', function () {
     beforeEach(function () {
       layers.add(new PlainLayer({ name: 'Positron' }, { engine: {} }));
-      layers.add(new CartoDBLayer({ title: 'CARTO' }, { engine: this.engine }));
+      layers.add(new CartoDBLayer({ title: 'CARTO' }, { engine: engineMock }));
     });
 
     it('should move a layer from one position to other', function () {
@@ -134,7 +135,7 @@ describe('geo/map/layers', function () {
       expect(layers.indexOf(movedLayer)).toBe(0);
       expect(movedLayer.get('title')).toBe('CARTO');
 
-      layers.add(new CartoDBLayer({ title: 'CARTO 2' }, { engine: this.engine }));
+      layers.add(new CartoDBLayer({ title: 'CARTO 2' }, { engine: engineMock }));
       movedLayer = layers.moveCartoDBLayer(2, 1);
       expect(layers.indexOf(movedLayer)).toBe(1);
       expect(movedLayer.get('title')).toBe('CARTO 2');

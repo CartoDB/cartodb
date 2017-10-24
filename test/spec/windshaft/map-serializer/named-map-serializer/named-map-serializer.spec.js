@@ -6,10 +6,10 @@ var GMapsBaseLayer = require('../../../../../src/geo/map/gmaps-base-layer');
 var NamedMapSerializer = require('../../../../../src/windshaft/map-serializer/named-map-serializer/named-map-serializer');
 
 describe('named-map-serializer', function () {
-  var fakeEngine;
+  var engineMock;
   describe('.serialize', function () {
     beforeEach(function () {
-      fakeEngine = new Backbone.Model();
+      engineMock = new Backbone.Model();
       this.layersCollection = new Backbone.Collection([]);
       this.dataviewsCollection = new Backbone.Collection([]);
     });
@@ -23,9 +23,9 @@ describe('named-map-serializer', function () {
 
     it('should send styles of CartoDB and Torque layers using the right indexes', function () {
       this.layersCollection.reset([
-        new TileLayer({}, { engine: fakeEngine }),
-        new CartoDBLayer({ cartocss: 'cartoCSS1' }, { engine: fakeEngine }),
-        new TorqueLayer({ cartocss: 'cartoCSS2' }, { engine: fakeEngine })
+        new TileLayer({}, { engine: engineMock }),
+        new CartoDBLayer({ cartocss: 'cartoCSS1' }, { engine: engineMock }),
+        new TorqueLayer({ cartocss: 'cartoCSS2' }, { engine: engineMock })
       ]);
 
       var payload = NamedMapSerializer.serialize(this.layersCollection, this.dataviewsCollection);
@@ -41,9 +41,9 @@ describe('named-map-serializer', function () {
 
     it('should ignore GMapsBase layers when calculating indexes', function () {
       this.layersCollection.reset([
-        new GMapsBaseLayer({}, { engine: fakeEngine }),
-        new CartoDBLayer({ cartocss: 'cartoCSS1' }, { engine: fakeEngine }),
-        new TorqueLayer({ cartocss: 'cartoCSS2' }, { engine: fakeEngine })
+        new GMapsBaseLayer({}, { engine: engineMock }),
+        new CartoDBLayer({ cartocss: 'cartoCSS1' }, { engine: engineMock }),
+        new TorqueLayer({ cartocss: 'cartoCSS2' }, { engine: engineMock })
       ]);
 
       var payload = NamedMapSerializer.serialize(this.layersCollection, this.dataviewsCollection);

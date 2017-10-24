@@ -17,9 +17,9 @@ var MyWindshaftMap = WindshaftMap.extend({
 
 describe('src//model-updater', function () {
   var mapModel;
-  var fakeEngine;
+  var engineMock;
   beforeEach(function () {
-    fakeEngine = new Engine({ serverUrl: 'http://example.com', username: 'fake-username' });
+    engineMock = new Engine({ serverUrl: 'http://example.com', username: 'fake-username' });
 
     this.windshaftMap = new MyWindshaftMap({
       urlTemplate: 'http://{user}.carto.com:80',
@@ -72,9 +72,9 @@ describe('src//model-updater', function () {
 
     describe('layerGroupModel', function () {
       beforeEach(function () {
-        var analysis = new AnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' }, { engine: fakeEngine, camshaftReference: camshaftReferenceMock });
-        var layer1 = new CartoDBLayer({ source: analysis }, { engine: fakeEngine });
-        var layer2 = new CartoDBLayer({ source: analysis }, { engine: fakeEngine });
+        var analysis = new AnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' }, { engine: engineMock, camshaftReference: camshaftReferenceMock });
+        var layer1 = new CartoDBLayer({ source: analysis }, { engine: engineMock });
+        var layer2 = new CartoDBLayer({ source: analysis }, { engine: engineMock });
 
         this.layersCollection.reset([layer1, layer2]);
 
@@ -165,11 +165,11 @@ describe('src//model-updater', function () {
 
     describe('layer models', function () {
       it('should mark CartoDB and torque layer models as ok', function () {
-        var analysis = new AnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' }, { engine: fakeEngine, camshaftReference: camshaftReferenceMock });
+        var analysis = new AnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' }, { engine: engineMock, camshaftReference: camshaftReferenceMock });
 
         var layer0 = new Backbone.Model({ type: 'Tiled' });
-        var layer1 = new CartoDBLayer({ source: analysis }, { engine: fakeEngine });
-        var layer2 = new TorqueLayer({ source: analysis }, { engine: fakeEngine });
+        var layer1 = new CartoDBLayer({ source: analysis }, { engine: engineMock });
+        var layer2 = new TorqueLayer({ source: analysis }, { engine: engineMock });
 
         spyOn(layer1, 'setOk');
         spyOn(layer2, 'setOk');
@@ -182,11 +182,11 @@ describe('src//model-updater', function () {
       });
 
       it('should set tileURLTemplates attribute of torque layer models', function () {
-        var analysis = new AnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' }, { engine: fakeEngine, camshaftReference: camshaftReferenceMock });
+        var analysis = new AnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' }, { engine: engineMock, camshaftReference: camshaftReferenceMock });
 
         var layer0 = new Backbone.Model({ type: 'Tiled' });
-        var layer1 = new CartoDBLayer({ source: analysis }, { engine: fakeEngine });
-        var layer2 = new TorqueLayer({ source: analysis }, { engine: fakeEngine });
+        var layer1 = new CartoDBLayer({ source: analysis }, { engine: engineMock });
+        var layer2 = new TorqueLayer({ source: analysis }, { engine: engineMock });
         this.layersCollection.reset([layer0, layer1, layer2]);
 
         this.modelUpdater.updateModels(this.windshaftMap);
@@ -199,8 +199,8 @@ describe('src//model-updater', function () {
 
     describe('legend models', function () {
       it('should "mark" all legend models as success', function () {
-        var analysis = new AnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' }, { engine: fakeEngine, camshaftReference: camshaftReferenceMock });
-        var layer = new CartoDBLayer({ source: analysis }, { engine: fakeEngine });
+        var analysis = new AnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' }, { engine: engineMock, camshaftReference: camshaftReferenceMock });
+        var layer = new CartoDBLayer({ source: analysis }, { engine: engineMock });
 
         this.layersCollection.reset([layer]);
         this.modelUpdater.updateModels(this.windshaftMap, 'sourceId', 'forceFetch');
@@ -211,7 +211,7 @@ describe('src//model-updater', function () {
       });
 
       it('should update model for choropleth legends', function () {
-        var analysis = new AnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' }, { engine: fakeEngine, camshaftReference: camshaftReferenceMock });
+        var analysis = new AnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' }, { engine: engineMock, camshaftReference: camshaftReferenceMock });
 
         this.windshaftMap.set('metadata', {
           layers: [
@@ -264,7 +264,7 @@ describe('src//model-updater', function () {
           ]
         });
 
-        var layer = new CartoDBLayer({ source: analysis }, { engine: fakeEngine });
+        var layer = new CartoDBLayer({ source: analysis }, { engine: engineMock });
 
         this.layersCollection.reset([layer]);
 
@@ -279,7 +279,7 @@ describe('src//model-updater', function () {
       });
 
       it('should update model for category legends', function () {
-        var analysis = new AnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' }, { engine: fakeEngine, camshaftReference: camshaftReferenceMock });
+        var analysis = new AnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' }, { engine: engineMock, camshaftReference: camshaftReferenceMock });
 
         this.windshaftMap.set('metadata', {
           layers: [
@@ -328,7 +328,7 @@ describe('src//model-updater', function () {
           ]
         });
 
-        var layer = new CartoDBLayer({ source: analysis }, { engine: fakeEngine });
+        var layer = new CartoDBLayer({ source: analysis }, { engine: engineMock });
 
         this.layersCollection.reset([layer]);
 
@@ -342,7 +342,7 @@ describe('src//model-updater', function () {
       });
 
       it('should update model for bubble legends', function () {
-        var analysis = new AnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' }, { engine: fakeEngine, camshaftReference: camshaftReferenceMock });
+        var analysis = new AnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' }, { engine: engineMock, camshaftReference: camshaftReferenceMock });
         this.windshaftMap.set('metadata', {
           layers: [
             {
@@ -410,7 +410,7 @@ describe('src//model-updater', function () {
           ]
         });
 
-        var layer = new CartoDBLayer({ source: analysis }, { engine: fakeEngine });
+        var layer = new CartoDBLayer({ source: analysis }, { engine: engineMock });
 
         this.layersCollection.reset([layer]);
 
@@ -427,7 +427,7 @@ describe('src//model-updater', function () {
       });
 
       it('should set legend state to "error" if adapter fails to generate attrs from rule', function () {
-        var analysis = new AnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' }, { engine: fakeEngine, camshaftReference: camshaftReferenceMock });
+        var analysis = new AnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' }, { engine: engineMock, camshaftReference: camshaftReferenceMock });
 
         this.windshaftMap.set('metadata', {
           layers: [
@@ -450,7 +450,7 @@ describe('src//model-updater', function () {
           ]
         });
 
-        var layer = new CartoDBLayer({ source: analysis }, { engine: fakeEngine });
+        var layer = new CartoDBLayer({ source: analysis }, { engine: engineMock });
 
         this.layersCollection.reset([layer]);
 
@@ -464,17 +464,17 @@ describe('src//model-updater', function () {
       it('should update dataview models', function () {
         var dataview1 = new Dataview({
           id: 'a1',
-          source: new AnalysisModel({}, { engine: fakeEngine, camshaftReference: camshaftReferenceMock })
+          source: new AnalysisModel({}, { engine: engineMock, camshaftReference: camshaftReferenceMock })
         }, {
           map: mapModel,
-          engine: fakeEngine
+          engine: engineMock
         });
         var dataview2 = new Dataview({
           id: 'a2',
-          source: new AnalysisModel({}, { engine: fakeEngine, camshaftReference: camshaftReferenceMock })
+          source: new AnalysisModel({}, { engine: engineMock, camshaftReference: camshaftReferenceMock })
         }, {
           map: mapModel,
-          engine: fakeEngine
+          engine: engineMock
         });
         this.dataviewsCollection.reset([dataview1, dataview2]);
 
@@ -515,10 +515,10 @@ describe('src//model-updater', function () {
 
     describe('analysis models', function () {
       it('should update analysis models and set analysis state to "ok"', function () {
-        var analysis1 = new AnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' }, { engine: fakeEngine, camshaftReference: camshaftReferenceMock });
-        var analysis2 = new AnalysisModel({ id: 'a2', type: 'source', query: 'SELECT * FROM table' }, { engine: fakeEngine, camshaftReference: camshaftReferenceMock });
-        var layer = new CartoDBLayer({ source: analysis1 }, { engine: fakeEngine });
-        var dataview = new Dataview({ id: 'a1', source: analysis2 }, { map: mapModel, engine: fakeEngine });
+        var analysis1 = new AnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' }, { engine: engineMock, camshaftReference: camshaftReferenceMock });
+        var analysis2 = new AnalysisModel({ id: 'a2', type: 'source', query: 'SELECT * FROM table' }, { engine: engineMock, camshaftReference: camshaftReferenceMock });
+        var layer = new CartoDBLayer({ source: analysis1 }, { engine: engineMock });
+        var dataview = new Dataview({ id: 'a1', source: analysis2 }, { map: mapModel, engine: engineMock });
 
         spyOn(analysis1, 'setOk');
         spyOn(analysis2, 'setOk');
@@ -541,10 +541,10 @@ describe('src//model-updater', function () {
       });
 
       it('should update analysis models and set status to "failed"', function () {
-        var analysis1 = new AnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' }, { engine: fakeEngine, camshaftReference: camshaftReferenceMock });
-        var analysis2 = new AnalysisModel({ id: 'a2', type: 'source', query: 'SELECT * FROM table' }, { engine: fakeEngine, camshaftReference: camshaftReferenceMock });
-        var layer = new CartoDBLayer({ source: analysis1 }, { engine: fakeEngine });
-        var dataview = new Dataview({ id: 'a1', source: analysis2 }, { map: mapModel, engine: fakeEngine });
+        var analysis1 = new AnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' }, { engine: engineMock, camshaftReference: camshaftReferenceMock });
+        var analysis2 = new AnalysisModel({ id: 'a2', type: 'source', query: 'SELECT * FROM table' }, { engine: engineMock, camshaftReference: camshaftReferenceMock });
+        var layer = new CartoDBLayer({ source: analysis1 }, { engine: engineMock });
+        var dataview = new Dataview({ id: 'a1', source: analysis2 }, { map: mapModel, engine: engineMock });
 
         spyOn(this.windshaftMap, 'getAnalysisNodeMetadata').and.callFake(function (analysisId) {
           return { error_message: 'fake_error_message', status: 'failed', query: 'query_' + analysisId, url: { http: 'url_' + analysisId } };
@@ -561,8 +561,8 @@ describe('src//model-updater', function () {
       });
 
       it('should not update attributes that are original params (eg: query)', function () {
-        var analysis1 = new AnalysisModel({ id: 'a1', type: 'source', query: 'original_query' }, { engine: fakeEngine, camshaftReference: camshaftReferenceMock });
-        var layer = new CartoDBLayer({ source: analysis1 }, { engine: fakeEngine });
+        var analysis1 = new AnalysisModel({ id: 'a1', type: 'source', query: 'original_query' }, { engine: engineMock, camshaftReference: camshaftReferenceMock });
+        var layer = new CartoDBLayer({ source: analysis1 }, { engine: engineMock });
 
         spyOn(analysis1, 'getParamNames').and.returnValue(['query']);
         spyOn(this.windshaftMap, 'getAnalysisNodeMetadata').and.callFake(function (analysisId) {
@@ -582,8 +582,8 @@ describe('src//model-updater', function () {
 
   describe('.setErrors', function () {
     it('should set analysis status to "error"', function () {
-      var analysisModel = new AnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' }, { engine: fakeEngine, camshaftReference: camshaftReferenceMock });
-      var layer = new CartoDBLayer({ source: analysisModel }, { engine: fakeEngine });
+      var analysisModel = new AnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' }, { engine: engineMock, camshaftReference: camshaftReferenceMock });
+      var layer = new CartoDBLayer({ source: analysisModel }, { engine: engineMock });
 
       spyOn(analysisModel, 'setError');
 
@@ -668,8 +668,8 @@ describe('src//model-updater', function () {
     });
 
     it('should "mark" legend models as erroroneus', function () {
-      var layer1 = new CartoDBLayer({}, { engine: fakeEngine });
-      var layer2 = new CartoDBLayer({}, { engine: fakeEngine });
+      var layer1 = new CartoDBLayer({}, { engine: engineMock });
+      var layer2 = new CartoDBLayer({}, { engine: engineMock });
 
       expect(layer1.legends.bubble.isError()).toBeFalsy();
       expect(layer1.legends.category.isError()).toBeFalsy();

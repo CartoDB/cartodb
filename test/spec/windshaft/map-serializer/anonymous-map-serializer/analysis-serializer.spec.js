@@ -6,7 +6,7 @@ var DataviewModel = require('../../../../../src/dataviews/dataview-model-base');
 var AnalysisSerializer = require('../../../../../src/windshaft/map-serializer/anonymous-map-serializer/analysis-serializer');
 
 describe('analysis-serializer', function () {
-  var fakeEngine;
+  var engineMock;
   var mapModel;
   var layersCollection;
   var dataviewsCollection;
@@ -16,11 +16,11 @@ describe('analysis-serializer', function () {
 
   beforeEach(function () {
     mapModel = new Backbone.Model();
-    fakeEngine = new Engine({ serverUrl: 'http://example.com', username: 'fake-username' });
+    engineMock = new Engine({ serverUrl: 'http://example.com', username: 'fake-username' });
     layersCollection = new Backbone.Collection();
     dataviewsCollection = new Backbone.Collection();
     analysisService = new AnalysisService({
-      engine: fakeEngine,
+      engine: engineMock,
       camshaftReference: fakeCamshaftReference
     });
     analysisDefinition = {
@@ -42,7 +42,7 @@ describe('analysis-serializer', function () {
           cartocss: 'cartocssMock',
           cartocss_version: '2.0'
         }, {
-          engine: fakeEngine
+          engine: engineMock
         });
         layersCollection.reset([ cartoDBLayer ]);
 
@@ -110,7 +110,7 @@ describe('analysis-serializer', function () {
           cartocss: 'cartocssMock',
           cartocss_version: '2.0'
         }, {
-          engine: fakeEngine
+          engine: engineMock
         });
 
         var cartoDBLayer2 = new CartoDBLayer({
@@ -119,7 +119,7 @@ describe('analysis-serializer', function () {
           cartocss: 'cartocssMock',
           cartocss_version: '2.0'
         }, {
-          engine: fakeEngine
+          engine: engineMock
         });
 
         layersCollection.reset([
@@ -167,7 +167,7 @@ describe('analysis-serializer', function () {
           source: analysisModel
         }, {
           map: mapModel,
-          engine: fakeEngine
+          engine: engineMock
         });
 
         dataviewsCollection.reset([ dataview ]);
@@ -234,14 +234,14 @@ describe('analysis-serializer', function () {
           source: analysis1
         }, {
           map: mapModel,
-          engine: fakeEngine
+          engine: engineMock
         });
 
         var dataview2 = new DataviewModel({
           source: analysis2
         }, {
           map: mapModel,
-          engine: fakeEngine
+          engine: engineMock
         });
 
         dataviewsCollection.reset([
@@ -290,7 +290,7 @@ describe('analysis-serializer', function () {
         cartocss: 'cartocssMock',
         cartocss_version: '2.0'
       }, {
-        engine: fakeEngine
+        engine: engineMock
       });
 
       var cartoDBLayer2 = new CartoDBLayer({
@@ -299,14 +299,14 @@ describe('analysis-serializer', function () {
         cartocss: 'cartocssMock',
         cartocss_version: '2.0'
       }, {
-        engine: fakeEngine
+        engine: engineMock
       });
 
       var dataview = new DataviewModel({
         source: analysisModel
       }, {
         map: mapModel,
-        engine: fakeEngine
+        engine: engineMock
       });
 
       layersCollection.reset([

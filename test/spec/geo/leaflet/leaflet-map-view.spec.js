@@ -21,6 +21,7 @@ describe('geo/leaflet/leaflet-map-view', function () {
   var spy;
   var container;
   var layer;
+  var engineMock;
 
   beforeEach(function () {
     container = $('<div>').css({
@@ -59,7 +60,7 @@ describe('geo/leaflet/leaflet-map-view', function () {
     map.bind('change:center', spy.centerChanged);
     map.bind('change', spy.changed);
 
-    this.engine = new Engine({ serverUrl: 'http://example.com', username: 'fake-username' });
+    engineMock = new Engine({ serverUrl: 'http://example.com', username: 'fake-username' });
   });
 
   it('should change bounds when center is set', function () {
@@ -127,8 +128,8 @@ describe('geo/leaflet/leaflet-map-view', function () {
   });
 
   it('should remove all layers when map view is cleaned', function () {
-    var cartoDBLayer1 = new CartoDBLayer({ meta: { cartocss: '#layer {}' } }, { engine: this.engine });
-    var cartoDBLayer2 = new CartoDBLayer({ meta: { cartocss: '#layer {}' } }, { engine: this.engine });
+    var cartoDBLayer1 = new CartoDBLayer({ meta: { cartocss: '#layer {}' } }, { engine: engineMock });
+    var cartoDBLayer2 = new CartoDBLayer({ meta: { cartocss: '#layer {}' } }, { engine: engineMock });
     var tileLayer = new TileLayer({ urlTemplate: 'test' }, { engine: {} });
 
     map.addLayer(cartoDBLayer1);

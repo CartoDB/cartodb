@@ -3,7 +3,7 @@ var OverlaysView = require('../../../../src/geo/ui/overlays-view.js');
 var Engine = require('../../../../src/engine');
 var fakeFactory = require('../../../helpers/fakeFactory');
 
-fdescribe('src/geo/ui/overlays-view.js', function () {
+describe('src/geo/ui/overlays-view.js', function () {
   var engineMock = fakeFactory.createEngine();
   var mapModelMock = new Backbone.Model();
   beforeEach(function () {
@@ -59,9 +59,7 @@ fdescribe('src/geo/ui/overlays-view.js', function () {
   });
 
   it('should re-render overlays when a new overlay is added', function () {
-    this.overlaysCollection.add({
-      type: 'fullscreen'
-    });
+    this.overlaysCollection.add({ type: 'fullscreen' });
 
     expect(this.overlaysView.$('.CDB-OverlayContainer > .CDB-Zoom').length).toEqual(1);
     expect(this.overlaysView.$('.CDB-OverlayContainer > .CDB-Search').length).toEqual(1);
@@ -78,9 +76,7 @@ fdescribe('src/geo/ui/overlays-view.js', function () {
   });
 
   it('should handle unknown overlay types properly', function () {
-    this.overlaysCollection.add({
-      type: 'unknown'
-    });
+    this.overlaysCollection.add({ type: 'unknown' });
 
     expect(this.overlaysView.$('.CDB-OverlayContainer > .CDB-Zoom').length).toEqual(1);
     expect(this.overlaysView.$('.CDB-OverlayContainer > .CDB-Search').length).toEqual(1);
@@ -89,14 +85,12 @@ fdescribe('src/geo/ui/overlays-view.js', function () {
 
   it('should toggle the loader overlay', function () {
     var loaderOverlay = this.overlaysView.$('> .CDB-Loader');
-
     expect(loaderOverlay.hasClass('is-visible')).toBeFalsy();
-    engineMock._eventEmmitter.trigger(Engine.Events.RELOAD_STARTED);
 
+    engineMock._eventEmmitter.trigger(Engine.Events.RELOAD_STARTED);
     expect(loaderOverlay.hasClass('is-visible')).toBeTruthy();
 
     engineMock._eventEmmitter.trigger(Engine.Events.RELOAD_SUCCESS);
-
     expect(loaderOverlay.hasClass('is-visible')).toBeFalsy();
   });
 

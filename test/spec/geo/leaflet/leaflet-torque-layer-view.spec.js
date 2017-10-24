@@ -10,12 +10,14 @@ var fakeFactory = require('../../../helpers/fakeFactory');
 var SharedTestsForTorqueLayer = require('../shared-tests-for-torque-layer');
 
 describe('geo/leaflet/leaflet-torque-layer-view', function () {
+  var engineMock;
+
   beforeEach(function () {
     var container = $('<div>').css({
       'height': '200px',
       'width': '200px'
     });
-    this.engine = new Engine({ serverUrl: 'http://example.com', username: 'fake-username' });
+    engineMock = new Engine({ serverUrl: 'http://example.com', username: 'fake-username' });
     this.map = new Map(null, {
       layersFactory: {}
     });
@@ -34,7 +36,7 @@ describe('geo/leaflet/leaflet-torque-layer-view', function () {
       source: fakeFactory.createAnalysisModel({ id: 'a0' }),
       cartocss: 'Map {}',
       dynamic_cdn: 'dynamic-cdn-value'
-    }, { engine: this.engine });
+    }, { engine: engineMock });
     this.map.addLayer(this.model);
     this.view = this.mapView._layerViews[this.model.cid];
   });
@@ -48,7 +50,7 @@ describe('geo/leaflet/leaflet-torque-layer-view', function () {
       cartocss: 'Map {}',
       dynamic_cdn: 'dynamic-cdn-value'
     }, {
-      engine: this.engine
+      engine: engineMock
     });
     this.map.layers.reset([ newLayer ]);
 

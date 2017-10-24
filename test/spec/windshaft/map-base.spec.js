@@ -20,6 +20,8 @@ var WindshaftMap = WindshaftMapBase.extend({
 });
 
 describe('windshaft/map-base', function () {
+  var engineMock;
+
   beforeEach(function () {
     jasmine.clock().install();
 
@@ -46,9 +48,9 @@ describe('windshaft/map-base', function () {
       }
     };
 
-    this.engine = new Engine({ serverUrl: 'http://example.com', username: 'fake-username' });
+    engineMock = new Engine({ serverUrl: 'http://example.com', username: 'fake-username' });
     this.dataviewsCollection = new DataviewsCollection(null, {
-      engine: this.engine
+      engine: engineMock
     });
 
     this.layersCollection = new Backbone.Collection();
@@ -63,9 +65,9 @@ describe('windshaft/map-base', function () {
     this.client = new WindshaftClient(this.windshaftSettings);
 
     this.cartoDBLayerGroup = new Model();
-    this.cartoDBLayer1 = new CartoDBLayer({ id: '12345-67890' }, { engine: this.engine });
-    this.cartoDBLayer2 = new CartoDBLayer({ id: '09876-54321' }, { engine: this.engine });
-    this.torqueLayer = new TorqueLayer({}, { engine: this.engine });
+    this.cartoDBLayer1 = new CartoDBLayer({ id: '12345-67890' }, { engine: engineMock });
+    this.cartoDBLayer2 = new CartoDBLayer({ id: '09876-54321' }, { engine: engineMock });
+    this.torqueLayer = new TorqueLayer({}, { engine: engineMock });
 
     this.windshaftMap = new WindshaftMap({
       statTag: 'stat_tag'
@@ -101,7 +103,7 @@ describe('windshaft/map-base', function () {
         source: this.a0
       }, {
         map: this.map,
-        engine: this.engine,
+        engine: engineMock,
         windshaftMap: this.windshaftMap,
         filter: this.filter
       });

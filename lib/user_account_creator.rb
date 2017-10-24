@@ -156,6 +156,8 @@ module CartoDB
         end
       end
 
+      @custom_errors[:oauth] = 'Invalid oauth' if @oauth_api && !@oauth_api.valid?(@user)
+
       @user.created_via = @created_via
       @user.valid? && @user.validate_credentials_not_taken_in_central && @custom_errors.empty?
     end
@@ -209,9 +211,7 @@ module CartoDB
         @user.password_confirmation = dummy_password
       end
 
-      if @google_user_data
-        @google_user_data.set_values(@user)
-      elsif @oauth_api
+      if @oauth_api
         @user.set(@oauth_api.user_params)
         @user.email = @user_params[PARAM_EMAIL] if @user_params[PARAM_EMAIL].present?
       else

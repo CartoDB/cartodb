@@ -105,7 +105,7 @@ module Carto
           @signup_source = 'Organization'
           return render('shared/signup_issue')
         else
-          @github_access_token = api.access_token
+          @oauth_fields = api.hidden_fields
           flash.now[:error] = 'User not valid' if @user.errors.empty?
           return render('signup/signup', status: @user.errors.empty? ? 200 : 422)
         end

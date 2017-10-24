@@ -70,11 +70,10 @@
                   </div>
                 <% end %>
 
-                <% if google_sign_in? %>
-                  <%= f.hidden_field :google_sign_in %>
-                <% elsif github_sign_in? %>
-                  <%= f.hidden_field :github_user_id %>
-                  <input type="hidden" name="github_access_token" value="<%= @github_access_token %>" />
+                <% if @oauth_fields.present? %>
+                  <% @oauth_fields.each do |name, value| %>
+                    <input type="hidden" name="<%= name %>" value="<%= value %>" />
+                  <% end %>
                 <% elsif @organization.auth_username_password_enabled %>
                   <div class="Sessions-field">
                     <%= f.password_field :password, class: "CDB-Size-medium Sessions-input bottomBorderRadius", placeholder: 'Password' %>
@@ -115,12 +114,8 @@
 
             <% if !duplicated_username_prompt? && (@organization.auth_google_enabled || @organization.auth_github_enabled) %>
               <div class="Sessions-field Sessions-oauthContainer">
-                <% if @organization.auth_google_enabled && @google_config.present? %>
-                  <%= render partial: 'google_plus/google_plus_button',  locals: { config: @google_config } %>
-                <% end %>
-
-                <% if @organization.auth_github_enabled && @github_config.present? %>
-                  <%= render partial: 'github/github_button',  locals: { config: @github_config } %>
+                <% @oauth_configs.each do |config| %>
+                  <%= render partial: config.button_template, locals: { config: config } %>
                 <% end %>
               </div>
             <% end %>

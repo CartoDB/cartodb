@@ -1,4 +1,4 @@
-require_dependency 'oauth/client'
+require_dependency 'oauth/config'
 
 module Oauth
   module Google

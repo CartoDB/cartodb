@@ -1,5 +1,6 @@
 require 'typhoeus'
 require_dependency 'oauth/github/config'
+require_dependency 'oauth/api'
 
 module Oauth
   module Github

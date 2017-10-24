@@ -27,14 +27,6 @@ module Oauth
       raise 'Subclass must override hidden_fields'
     end
 
-    def valid?(_user)
-      raise 'Subclass must override valid?'
-    end
-
-    def valid?(_user)
-      raise 'Subclass must override valid?'
-    end
-
     def student?
       raise 'Subclass must override student?'
     end

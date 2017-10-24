@@ -39,6 +39,14 @@ module Oauth
       client.authorize_url
     end
 
+    def valid_method_for?(user)
+      user.organization.nil? || auth_enabled?(user.organization)
+    end
+
+    def auth_enabled?(organization)
+      raise 'Subclass must override auth_enabled?'
+    end
+
     def self.config
       raise 'Subclass must override config'
     end
@@ -60,6 +68,10 @@ module Oauth
 
     def scopes
       raise 'Subclass must override scopes'
+    end
+
+    def valid?(_user)
+      raise 'Subclass must override valid?'
     end
 
     # View-related configuration

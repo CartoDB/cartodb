@@ -85,7 +85,9 @@ module Carto
     def signup(api)
       org_name = @organization_name
       @organization = ::Organization.where(name: org_name).first if org_name.present?
-      return redirect_to CartoDB.url(self, 'login') unless @organization.present? && auth_enabled(@organization)
+      unless @organization.present? && api.config.auth_enabled?(@organization)
+        return redirect_to CartoDB.url(self, 'login')
+      end
 
       account_creator = CartoDB::UserAccountCreator.new(Carto::UserCreation::CREATED_VIA_ORG_SIGNUP).
                         with_organization(@organization).

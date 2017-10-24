@@ -23,8 +23,8 @@ module Oauth
         'github/github_button'
       end
 
-      def valid_method_for?(user)
-        user.organization.nil? || user.organization.auth_google_enabled
+      def auth_enabled?(organization)
+        organization.auth_github_enabled
       end
     end
   end

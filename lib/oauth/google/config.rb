@@ -24,7 +24,11 @@ module Oauth
       end
 
       def valid_method_for?(user)
-        user.organization.nil? || user.organization.auth_google_enabled
+        user.organization.nil? || auth_enabled?(user.organization)
+      end
+
+      def auth_enabled?(organization)
+        organization.auth_google_enabled
       end
     end
   end

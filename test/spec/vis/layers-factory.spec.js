@@ -1,8 +1,8 @@
 var _ = require('underscore');
 
-var Engine = require('../../../src/engine');
 var AnalysisModel = require('../../../src/analysis/analysis-model');
 var LayersFactory = require('../../../src/vis/layers-factory');
+var MockFactory = require('../../helpers/mockFactory');
 
 var createFakeAnalysis = function (attrs) {
   return new AnalysisModel(attrs, {
@@ -19,7 +19,7 @@ describe('vis/layers-factory', function () {
   var engineMock;
 
   beforeEach(function () {
-    engineMock = new Engine({ serverUrl: 'http://example.com', username: 'fake-username' });
+    engineMock = MockFactory.createEngine();
 
     this.windshaftSettings = {
       urlTemplate: 'http://{user}.carto.com',

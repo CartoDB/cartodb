@@ -1,5 +1,4 @@
 var _ = require('underscore');
-var Engine = require('../../../src/engine');
 var CartoDBLayer = require('../../../src/geo/map/cartodb-layer');
 var TorqueLayer = require('../../../src/geo/map/torque-layer');
 var LayersCollection = require('../../../src/geo/map/layers');
@@ -11,6 +10,7 @@ var WindshaftMap = require('../../../src/windshaft/map-base.js');
 var Dataview = require('../../../src/dataviews/dataview-model-base');
 var AnalysisModel = require('../../../src/analysis/analysis-model');
 var MapModel = require('../../../src/geo/map');
+var MockFactory = require('../../helpers/mockFactory');
 
 var MyWindshaftMap = WindshaftMap.extend({
 });
@@ -18,8 +18,9 @@ var MyWindshaftMap = WindshaftMap.extend({
 describe('src//model-updater', function () {
   var mapModel;
   var engineMock;
+
   beforeEach(function () {
-    engineMock = new Engine({ serverUrl: 'http://example.com', username: 'fake-username' });
+    engineMock = MockFactory.createEngine();
 
     this.windshaftMap = new MyWindshaftMap({
       urlTemplate: 'http://{user}.carto.com:80',

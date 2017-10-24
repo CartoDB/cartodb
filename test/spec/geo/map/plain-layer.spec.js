@@ -1,11 +1,11 @@
 var _ = require('underscore');
 var PlainLayer = require('../../../../src/geo/map/plain-layer');
-var Engine = require('../../../../src/engine');
+var MockFactory = require('../../../helpers/mockFactory');
 
 describe('PlainLayer', function () {
   var engineMock;
   beforeEach(function () {
-    engineMock = new Engine({ serverUrl: 'http://example.com', username: 'fake-username' });
+    engineMock = MockFactory.createEngine();
     spyOn(engineMock, 'reload');
   });
 

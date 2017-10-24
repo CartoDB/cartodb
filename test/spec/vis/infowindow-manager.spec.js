@@ -3,11 +3,10 @@ var Map = require('../../../src/geo/map');
 var Engine = require('../../../src/engine');
 var CartoDBLayer = require('../../../src/geo/map/cartodb-layer');
 var CartoDBLayerGroup = require('../../../src/geo/cartodb-layer-group');
-
 var TooltipModel = require('../../../src/geo/ui/tooltip-model');
 var InfowindowModel = require('../../../src/geo/ui/infowindow-model');
-
 var InfowindowManager = require('../../../src/vis/infowindow-manager');
+var MockFactory = require('../../helpers/mockFactory');
 
 var createCartoDBLayer = function (engine, infowindowAttrs) {
   infowindowAttrs = infowindowAttrs || {
@@ -57,7 +56,7 @@ describe('src/vis/infowindow-manager.js', function () {
       callback(data);
     });
 
-    engineMock = new Engine({ serverUrl: 'http://example.com', username: 'fake-username' });
+    engineMock = MockFactory.createEngine();
     spyOn(engineMock, 'reload');
 
     this.infowindowManager = new InfowindowManager({ // eslint-disable-line

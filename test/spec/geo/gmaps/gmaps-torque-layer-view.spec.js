@@ -1,18 +1,17 @@
 var $ = require('jquery');
 var Backbone = require('backbone');
 var Map = require('../../../../src/geo/map');
-var Engine = require('../../../../src/engine');
 var GoogleMapsMapView = require('../../../../src/geo/gmaps/gmaps-map-view');
 var GMapsLayerViewFactory = require('../../../../src/geo/gmaps/gmaps-layer-view-factory');
 var TorqueLayer = require('../../../../src/geo/map/torque-layer');
-var fakeFactory = require('../../../helpers/fakeFactory');
+var MockFactory = require('../../../helpers/mockFactory');
 var SharedTestsForTorqueLayer = require('../shared-tests-for-torque-layer');
 var torque = require('torque.js');
 
 describe('geo/gmaps/gmaps-torque-layer-view', function () {
   beforeEach(function () {
     var container = $('<div>').css('height', '200px');
-    var engineMock = new Engine({ serverUrl: 'http://example.com', username: 'fake-username' });
+    var engineMock = MockFactory.createEngine();
     var map = new Map(null, {
       layersFactory: {}
     });
@@ -26,7 +25,7 @@ describe('geo/gmaps/gmaps-torque-layer-view', function () {
 
     this.model = new TorqueLayer({
       type: 'torque',
-      source: fakeFactory.createAnalysisModel({ id: 'a0' }),
+      source: MockFactory.createAnalysisModel({ id: 'a0' }),
       cartocss: '#test {}',
       'torque-steps': 100
     }, { engine: engineMock });

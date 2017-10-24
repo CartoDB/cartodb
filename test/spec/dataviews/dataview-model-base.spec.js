@@ -4,7 +4,7 @@ var VisModel = require('../../../src/vis/vis');
 var MapModel = require('../../../src/geo/map');
 var DataviewModelBase = require('../../../src/dataviews/dataview-model-base');
 var AnalysisService = require('../../../src/analysis/analysis-service');
-var fakeFactory = require('../../helpers/fakeFactory');
+var mockFactory = require('../../helpers/mockFactory');
 
 var fakeCamshaftReference = {
   getSourceNamesForAnalysisType: function (analysisType) {
@@ -539,7 +539,7 @@ describe('dataviews/dataview-model-base', function () {
     var dataview;
 
     beforeEach(function () {
-      source = fakeFactory.createAnalysisModel({ id: 'a0' });
+      source = mockFactory.createAnalysisModel({ id: 'a0' });
 
       dataview = new DataviewModelBase({
         source: source

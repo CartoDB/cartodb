@@ -4,9 +4,8 @@ var PlainLayer = require('../../../../../src/geo/map/plain-layer');
 var TileLayer = require('../../../../../src/geo/map/tile-layer');
 var TorqueLayer = require('../../../../../src/geo/map/torque-layer');
 var GMapsBaseLayer = require('../../../../../src/geo/map/gmaps-base-layer');
-var Engine = require('../../../../../src/engine');
 var LayersSerializer = require('../../../../../src/windshaft/map-serializer/anonymous-map-serializer/layers-serializer');
-var fakeFactory = require('../../../../helpers/fakeFactory');
+var MockFactory = require('../../../../helpers/mockFactory');
 
 describe('layers-serializer', function () {
   describe('.serialize', function () {
@@ -17,8 +16,8 @@ describe('layers-serializer', function () {
     // Create all test objects once
     beforeAll(function () {
       layersCollection = new Backbone.Collection();
-      engineMock = new Engine({ serverUrl: 'http://example.com', username: 'fake-username' });
-      sourceMock = fakeFactory.createAnalysisModel({ id: 'a1' });
+      engineMock = MockFactory.createEngine();
+      sourceMock = MockFactory.createAnalysisModel({ id: 'a1' });
     });
 
     it('should serialize a cartodb layer', function () {

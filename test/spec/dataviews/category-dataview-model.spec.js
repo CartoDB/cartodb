@@ -1,9 +1,9 @@
 var Backbone = require('backbone');
 var _ = require('underscore');
-var Engine = require('../../../src/engine');
 var CategoryDataviewModel = require('../../../src/dataviews/category-dataview-model');
 var WindshaftFiltersCategory = require('../../../src/windshaft/filters/category');
 var AnalysisService = require('../../../src/analysis/analysis-service');
+var mockFactory = require('../../helpers/mockFactory');
 
 describe('dataviews/category-dataview-model', function () {
   var engineMock;
@@ -11,7 +11,7 @@ describe('dataviews/category-dataview-model', function () {
   beforeEach(function () {
     this.map = new Backbone.Model();
     this.map.getViewBounds = jasmine.createSpy();
-    engineMock = new Engine({ serverUrl: 'http://example.com', username: 'fake-username' });
+    engineMock = mockFactory.createEngine();
     spyOn(engineMock, 'reload');
     this.map.getViewBounds.and.returnValue([[1, 2], [3, 4]]);
     var analysisDefinition = {

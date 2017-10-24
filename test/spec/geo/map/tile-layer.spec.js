@@ -1,11 +1,12 @@
 var TileLayer = require('../../../../src/geo/map/tile-layer');
-var Engine = require('../../../../src/engine');
+var MockFactory = require('../../../helpers/mockFactory');
 
 describe('TileLayer', function () {
   var engineMock;
   var layer;
+
   beforeEach(function () {
-    engineMock = new Engine({ serverUrl: 'http://example.com', username: 'fake-username' });
+    engineMock = MockFactory.createEngine();
     spyOn(engineMock, 'reload');
     layer = new TileLayer(null, { engine: engineMock });
   });

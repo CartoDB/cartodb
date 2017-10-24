@@ -5,7 +5,6 @@ var L = require('leaflet');
 global.L = L;
 
 var Map = require('../../../../src/geo/map');
-var Engine = require('../../../../src/engine');
 var TileLayer = require('../../../../src/geo/map/tile-layer');
 var CartoDBLayer = require('../../../../src/geo/map/cartodb-layer');
 var PlainLayer = require('../../../../src/geo/map/plain-layer');
@@ -14,6 +13,7 @@ var CartoDBLayerGroup = require('../../../../src/geo/cartodb-layer-group');
 var LeafletMapView = require('../../../../src/geo/leaflet/leaflet-map-view');
 var LeafletTiledLayerView = require('../../../../src/geo/leaflet/leaflet-tiled-layer-view');
 var LeafletPlainLayerView = require('../../../../src/geo/leaflet/leaflet-plain-layer-view');
+var MockFactory = require('../../../helpers/mockFactory');
 
 describe('geo/leaflet/leaflet-map-view', function () {
   var mapView;
@@ -60,7 +60,7 @@ describe('geo/leaflet/leaflet-map-view', function () {
     map.bind('change:center', spy.centerChanged);
     map.bind('change', spy.changed);
 
-    engineMock = new Engine({ serverUrl: 'http://example.com', username: 'fake-username' });
+    engineMock = MockFactory.createEngine();
   });
 
   it('should change bounds when center is set', function () {

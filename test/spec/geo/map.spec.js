@@ -1,6 +1,5 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
-var Engine = require('../../../src/engine');
 var PlainLayer = require('../../../src/geo/map/plain-layer');
 var CartoDBLayer = require('../../../src/geo/map/cartodb-layer');
 var TorqueLayer = require('../../../src/geo/map/torque-layer');
@@ -9,6 +8,7 @@ var WMSLayer = require('../../../src/geo/map/wms-layer');
 var GMapsBaseLayer = require('../../../src/geo/map/gmaps-base-layer');
 var LayersFactory = require('../../../src/vis/layers-factory');
 var AnalysisModel = require('../../../src/analysis/analysis-model');
+var MockFactory = require('../../helpers/mockFactory');
 
 var Point = require('../../../src/geo/geometry-models/point');
 var Polyline = require('../../../src/geo/geometry-models/polyline');
@@ -30,8 +30,9 @@ var Map = require('../../../src/geo/map');
 describe('core/geo/map', function () {
   var map;
   var engineMock;
+
   beforeEach(function () {
-    engineMock = new Engine({ serverUrl: 'http://example.com', username: 'fake-username' });
+    engineMock = MockFactory.createEngine();
     this.map = map = new Map(null, { layersFactory: fakeLayersFactory });
   });
 

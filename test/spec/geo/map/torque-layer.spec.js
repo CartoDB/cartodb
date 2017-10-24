@@ -1,12 +1,12 @@
 var _ = require('underscore');
 var TorqueLayer = require('../../../../src/geo/map/torque-layer');
 var sharedTestsForInteractiveLayers = require('./shared-for-interactive-layers');
-var Engine = require('../../../../src/engine');
+var MockFactory = require('../../../helpers/mockFactory');
 
 describe('geo/map/torque-layer', function () {
   var engineMock;
   beforeEach(function () {
-    engineMock = new Engine({ serverUrl: 'http://example.com', username: 'fake-username' });
+    engineMock = MockFactory.createEngine();
     spyOn(engineMock, 'reload');
   });
 

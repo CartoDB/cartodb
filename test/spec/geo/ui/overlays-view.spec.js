@@ -1,10 +1,10 @@
 var Backbone = require('backbone');
 var OverlaysView = require('../../../../src/geo/ui/overlays-view.js');
 var Engine = require('../../../../src/engine');
-var fakeFactory = require('../../../helpers/fakeFactory');
+var mockFactory = require('../../../helpers/mockFactory');
 
 describe('src/geo/ui/overlays-view.js', function () {
-  var engineMock = fakeFactory.createEngine();
+  var engineMock = mockFactory.createEngine();
   var mapModelMock = new Backbone.Model();
   beforeEach(function () {
     this.overlaysCollection = new Backbone.Collection([

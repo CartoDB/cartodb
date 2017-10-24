@@ -1,11 +1,11 @@
 var Backbone = require('backbone');
 var Map = require('../../../src/geo/map');
-var Engine = require('../../../src/engine');
 var CartoDBLayer = require('../../../src/geo/map/cartodb-layer');
 var CartoDBLayerGroup = require('../../../src/geo/cartodb-layer-group');
 var TooltipModel = require('../../../src/geo/ui/tooltip-model');
 var InfowindowModel = require('../../../src/geo/ui/infowindow-model');
 var TooltipManager = require('../../../src/vis/tooltip-manager');
+var MockFactory = require('../../helpers/mockFactory');
 
 var simulateFeatureOverEvent = function (layerView, data) {
   layerView.trigger('featureOver', {
@@ -35,7 +35,7 @@ describe('src/vis/tooltip-manager.js', function () {
       })
     });
 
-    engineMock = new Engine({ serverUrl: 'http://example.com', username: 'fake-username' });
+    engineMock = MockFactory.createEngine();
     spyOn(engineMock, 'reload');
 
     this.tooltipModel = new TooltipModel();

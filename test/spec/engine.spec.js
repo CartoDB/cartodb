@@ -1,12 +1,18 @@
 var $ = require('jquery');
 var _ = require('underscore');
 var Engine = require('../../src/engine');
-var FakeFactory = require('../helpers/fakeFactory');
+var MockFactory = require('../helpers/mockFactory');
 var FAKE_RESPONSE = require('./windshaft/response.mock');
 var CartoDBLayer = require('../../src/geo/map/cartodb-layer');
 var Dataview = require('../../src/dataviews/dataview-model-base');
 
 describe('Engine', function () {
+  var engineMock;
+
+  beforeEach(function () {
+    engineMock = MockFactory.createEngine();
+  });
+
   describe('Constructor', function () {
     it('should throw a descriptive error when called with no parameters', function () {
       expect(function () {
@@ -16,28 +22,27 @@ describe('Engine', function () {
   });
 
   describe('events', function () {
-    var engine;
     var spy;
+
     beforeEach(function () {
-      engine = new Engine({ serverUrl: 'http://example.com', username: 'fake-username' });
       spy = jasmine.createSpy('spy');
     });
     describe('on', function () {
       it('should register a callback thats called for "fake-event"', function () {
-        engine.on('fake-event', spy);
+        engineMock.on('fake-event', spy);
         expect(spy).not.toHaveBeenCalled(); // Ensure the spy not has been called previosuly
-        engine._eventEmmitter.trigger('fake-event');
+        engineMock._eventEmmitter.trigger('fake-event');
         expect(spy).toHaveBeenCalled();
       });
     });
     describe('off', function () {
       it('should unregister a callback', function () {
-        engine.on('fake-event', spy);
+        engineMock.on('fake-event', spy);
         expect(spy).not.toHaveBeenCalled(); // Ensure the spy not has been called previosuly
-        engine._eventEmmitter.trigger('fake-event');
+        engineMock._eventEmmitter.trigger('fake-event');
         expect(spy).toHaveBeenCalled();
-        engine.off('fake-event', spy);
-        engine._eventEmmitter.trigger('fake-event');
+        engineMock.off('fake-event', spy);
+        engineMock._eventEmmitter.trigger('fake-event');
         expect(spy.calls.count()).toBe(1);
       });
     });
@@ -45,39 +50,34 @@ describe('Engine', function () {
 
   describe('.addLayer', function () {
     it('should add a new layer', function () {
-      var engine = new Engine({ serverUrl: 'http://example.com', username: 'fake-username' });
       var style = '#layer { marker-color: red; }';
-      var source = FakeFactory.createAnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' });
-      var layer = new CartoDBLayer({ source: source, style: style }, { engine: engine });
-      expect(engine._layersCollection.length).toEqual(0);
-      engine.addLayer(layer);
-      expect(engine._layersCollection.length).toEqual(1);
-      expect(engine._layersCollection.at(0)).toEqual(layer);
+      var source = MockFactory.createAnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' });
+      var layer = new CartoDBLayer({ source: source, style: style }, { engine: engineMock });
+      expect(engineMock._layersCollection.length).toEqual(0);
+      engineMock.addLayer(layer);
+      expect(engineMock._layersCollection.length).toEqual(1);
+      expect(engineMock._layersCollection.at(0)).toEqual(layer);
     });
   });
 
   describe('.addDataview', function () {
     it('should add a new dataview', function () {
-      var engine = new Engine({ serverUrl: 'http://example.com', username: 'fake-username' });
-      var source = FakeFactory.createAnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' });
-      var dataview = new Dataview({ id: 'dataview1', source: source }, { map: {}, engine: engine });
-
-      expect(engine._dataviewsCollection.length).toEqual(0);
-      engine.addDataview(dataview);
-      expect(engine._dataviewsCollection.length).toEqual(1);
-      expect(engine._dataviewsCollection.at(0)).toEqual(dataview);
+      var source = MockFactory.createAnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' });
+      var dataview = new Dataview({ id: 'dataview1', source: source }, { map: {}, engine: engineMock });
+      expect(engineMock._dataviewsCollection.length).toEqual(0);
+      engineMock.addDataview(dataview);
+      expect(engineMock._dataviewsCollection.length).toEqual(1);
+      expect(engineMock._dataviewsCollection.at(0)).toEqual(dataview);
     });
   });
 
   describe('.reload', function () {
     var layer;
-    var engine;
 
     beforeEach(function () {
-      engine = new Engine({ serverUrl: 'http://example.com', username: 'fake-username' });
       var style = '#layer { marker-color: red; }';
-      var source = FakeFactory.createAnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' });
-      layer = new CartoDBLayer({ source: source, style: style }, { engine: engine });
+      var source = MockFactory.createAnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' });
+      layer = new CartoDBLayer({ source: source, style: style }, { engine: engineMock });
     });
 
     it('should perform a request with the state encoded in a payload (no layers, no dataviews) ', function (done) {
@@ -87,7 +87,7 @@ describe('Engine', function () {
         expect(actual).toEqual(expected);
         done();
       });
-      engine.reload();
+      engineMock.reload();
     });
 
     it('should perform a request with the state encoded in a payload (single layer) ', function (done) {
@@ -98,20 +98,20 @@ describe('Engine', function () {
         done();
       });
 
-      engine.addLayer(layer);
-      engine.reload();
+      engineMock.addLayer(layer);
+      engineMock.reload();
     });
 
     it('should trigger a RELOAD_SUCCESS event when the server returns a successful response ', function () {
       // Successfull server response
       spyOn($, 'ajax').and.callFake(function (params) { params.success(FAKE_RESPONSE); });
       // Fake model updater.
-      spyOn(engine._modelUpdater, 'updateModels').and.callFake(function () { });
+      spyOn(engineMock._modelUpdater, 'updateModels').and.callFake(function () { });
       // Attach the success event to a spy.
       var spy = jasmine.createSpy('successCallback');
 
-      engine.on(Engine.Events.RELOAD_SUCCESS, spy);
-      engine.reload();
+      engineMock.on(Engine.Events.RELOAD_SUCCESS, spy);
+      engineMock.reload();
       expect(spy).toHaveBeenCalled();
     });
 
@@ -124,15 +124,15 @@ describe('Engine', function () {
       spyOn($, 'ajax').and.callFake(function (params) {
         params.error(errorPayload);
       });
-      spyOn(engine._modelUpdater, 'setErrors').and.callThrough();
+      spyOn(engineMock._modelUpdater, 'setErrors').and.callThrough();
       // Attach the error event to a spy.
       var spy = jasmine.createSpy('errorCallback');
-      engine.on(Engine.Events.RELOAD_ERROR, spy);
+      engineMock.on(Engine.Events.RELOAD_ERROR, spy);
 
-      engine.reload();
+      engineMock.reload();
 
       expect(spy).toHaveBeenCalled();
-      var setErrorsArgs = engine._modelUpdater.setErrors.calls.mostRecent().args[0];
+      var setErrorsArgs = engineMock._modelUpdater.setErrors.calls.mostRecent().args[0];
       expect(setErrorsArgs).toBeDefined();
       expect(_.isArray(setErrorsArgs)).toBe(true);
       expect(setErrorsArgs[0].message).toEqual(errorMessage);
@@ -142,29 +142,29 @@ describe('Engine', function () {
       // Error server response
       spyOn($, 'ajax').and.callFake(function (params) { params.success(FAKE_RESPONSE); });
       // Spy on modelupdater to ensure thats called with fakesourceId
-      var updateModelsSpy = spyOn(engine._modelUpdater, 'updateModels');
+      var updateModelsSpy = spyOn(engineMock._modelUpdater, 'updateModels');
 
       // When the reload is finished, check the spy.
-      engine.on(Engine.Events.RELOAD_SUCCESS, function () {
+      engineMock.on(Engine.Events.RELOAD_SUCCESS, function () {
         expect(updateModelsSpy).toHaveBeenCalledWith(jasmine.anything(), 'fakeSourceId', undefined);
         done();
       });
-      engine.reload('fakeSourceId');
+      engineMock.reload('fakeSourceId');
     });
 
     it('should use the forceFetch parameter', function (done) {
       // Error server response
       spyOn($, 'ajax').and.callFake(function (params) { params.success(FAKE_RESPONSE); });
       // Spy on modelupdater to ensure thats called with fakesourceId
-      var updateModelsSpy = spyOn(engine._modelUpdater, 'updateModels');
+      var updateModelsSpy = spyOn(engineMock._modelUpdater, 'updateModels');
 
       // When the reload is finished, check the spy.
-      engine.on(Engine.Events.RELOAD_SUCCESS, function () {
+      engineMock.on(Engine.Events.RELOAD_SUCCESS, function () {
         expect(updateModelsSpy).toHaveBeenCalledWith(jasmine.anything(), 'fakeSourceId', true);
         done();
       });
 
-      engine.reload('fakeSourceId', true);
+      engineMock.reload('fakeSourceId', true);
     });
 
     // The following tests overlaps the model-updater tests.
@@ -173,24 +173,24 @@ describe('Engine', function () {
       // Successfull server response
       spyOn($, 'ajax').and.callFake(function (params) { params.success(FAKE_RESPONSE); });
 
-      engine.addLayer(layer);
-      engine.on(Engine.Events.RELOAD_SUCCESS, function () {
+      engineMock.addLayer(layer);
+      engineMock.on(Engine.Events.RELOAD_SUCCESS, function () {
         var expectedLayerMetadata = { cartocss: '#layer {\nmarker-color: red;\n}', stats: { estimatedFeatureCount: 10031 }, cartocss_meta: { rules: [] } };
-        var actualLayerMetadata = engine._layersCollection.at(0).attributes.meta;
+        var actualLayerMetadata = engineMock._layersCollection.at(0).attributes.meta;
         expect(actualLayerMetadata).toEqual(expectedLayerMetadata);
         done();
       });
 
-      engine.reload();
+      engineMock.reload();
     });
 
     it('should update the cartolayerGroup metadata according to the server response', function (done) {
       // Successfull server response
       spyOn($, 'ajax').and.callFake(function (params) { params.success(FAKE_RESPONSE); });
 
-      engine.addLayer(layer);
-      engine.on(Engine.Events.RELOAD_SUCCESS, function () {
-        var urls = engine._cartoLayerGroup.attributes.urls;
+      engineMock.addLayer(layer);
+      engineMock.on(Engine.Events.RELOAD_SUCCESS, function () {
+        var urls = engineMock._cartoLayerGroup.attributes.urls;
         // Ensure the modelUpdater has updated the cartoLayerGroup urls
         expect(urls.attributes[0]).toEqual('http://example.com/api/v1/map/2edba0a73a790c4afb83222183782123:1508164637676/0/attributes');
         expect(urls.grids[0]).toEqual(['http://example.com/api/v1/map/2edba0a73a790c4afb83222183782123:1508164637676/0/{z}/{x}/{y}.grid.json']);
@@ -199,7 +199,7 @@ describe('Engine', function () {
         done();
       });
 
-      engine.reload();
+      engineMock.reload();
     });
 
     it('should update the analyses metadata according to the server response', function (done) {

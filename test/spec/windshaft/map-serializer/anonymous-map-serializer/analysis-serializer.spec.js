@@ -1,9 +1,9 @@
 var Backbone = require('backbone');
 var AnalysisService = require('../../../../../src/analysis/analysis-service.js');
 var CartoDBLayer = require('../../../../../src/geo/map/cartodb-layer');
-var Engine = require('../../../../../src/engine');
 var DataviewModel = require('../../../../../src/dataviews/dataview-model-base');
 var AnalysisSerializer = require('../../../../../src/windshaft/map-serializer/anonymous-map-serializer/analysis-serializer');
+var MockFactory = require('../../../../helpers/mockFactory');
 
 describe('analysis-serializer', function () {
   var engineMock;
@@ -16,7 +16,7 @@ describe('analysis-serializer', function () {
 
   beforeEach(function () {
     mapModel = new Backbone.Model();
-    engineMock = new Engine({ serverUrl: 'http://example.com', username: 'fake-username' });
+    engineMock = MockFactory.createEngine();
     layersCollection = new Backbone.Collection();
     dataviewsCollection = new Backbone.Collection();
     analysisService = new AnalysisService({

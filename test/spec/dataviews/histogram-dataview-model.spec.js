@@ -2,7 +2,7 @@ var Backbone = require('backbone');
 var RangeFilter = require('../../../src/windshaft/filters/range');
 var HistogramDataviewModel = require('../../../src/dataviews/histogram-dataview-model');
 var helper = require('../../../src/dataviews/helpers/histogram-helper');
-var fakeFactory = require('../../helpers/fakeFactory');
+var mockFactory = require('../../helpers/mockFactory');
 
 function randomString (length, chars) {
   var result = '';
@@ -15,7 +15,7 @@ describe('dataviews/histogram-dataview-model', function () {
   beforeEach(function () {
     this.map = jasmine.createSpyObj('map', ['getViewBounds', 'bind']);
     this.map.getViewBounds.and.returnValue([[1, 2], [3, 4]]);
-    engineMock = fakeFactory.createEngine();
+    engineMock = mockFactory.createEngine();
     spyOn(engineMock, 'reload');
 
     this.filter = new RangeFilter();
@@ -25,7 +25,7 @@ describe('dataviews/histogram-dataview-model', function () {
     spyOn(HistogramDataviewModel.prototype, '_updateBindings');
     spyOn(HistogramDataviewModel.prototype, '_resetFilterAndFetch');
 
-    this.source = fakeFactory.createAnalysisModel({ id: 'a0' });
+    this.source = mockFactory.createAnalysisModel({ id: 'a0' });
 
     this.model = new HistogramDataviewModel({
       source: this.source

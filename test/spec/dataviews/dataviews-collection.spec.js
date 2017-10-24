@@ -1,11 +1,11 @@
 var Backbone = require('backbone');
 var DataviewModel = require('../../../src/dataviews/dataview-model-base');
-var fakeFactory = require('../../helpers/fakeFactory');
+var mockFactory = require('../../helpers/mockFactory');
 
 describe('dataviews/dataview-collection', function () {
   beforeEach(function () {
     this.collection = new Backbone.Collection();
-    this.source = fakeFactory.createAnalysisModel({ id: 'a0' });
+    this.source = mockFactory.createAnalysisModel({ id: 'a0' });
   });
 
   it('should remove item when removed', function () {

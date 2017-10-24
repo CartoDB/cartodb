@@ -1,16 +1,16 @@
-var Engine = require('../../../../src/engine');
 var Layers = require('../../../../src/geo/map/layers');
 var PlainLayer = require('../../../../src/geo/map/plain-layer');
 var TileLayer = require('../../../../src/geo/map/tile-layer');
 var TorqueLayer = require('../../../../src/geo/map/torque-layer');
 var CartoDBLayer = require('../../../../src/geo/map/cartodb-layer');
+var MockFactory = require('../../../helpers/mockFactory');
 
 describe('geo/map/layers', function () {
   var layers;
   var engineMock;
 
   beforeEach(function () {
-    engineMock = new Engine({ serverUrl: 'http://example.com', username: 'fake-username' });
+    engineMock = MockFactory.createEngine();
     layers = new Layers();
   });
 

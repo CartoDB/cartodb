@@ -50,9 +50,9 @@ var createAnalysisModel = function (attrs) {
   return model;
 };
 
-var createVisModel = function () {
+function createVisModel () {
   return new VisModel();
-};
+}
 
 function createEngine () {
   return new Engine({ serverUrl: 'http://example.com', username: 'fake-username' });

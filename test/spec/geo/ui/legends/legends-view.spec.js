@@ -4,7 +4,7 @@ var TileLayer = require('../../../../../src/geo/map/tile-layer');
 var CartoDBLayer = require('../../../../../src/geo/map/cartodb-layer');
 var TorqueLayer = require('../../../../../src/geo/map/torque-layer');
 var LayersCollection = require('../../../../../src/geo/map/layers');
-var fakeFactory = require('../../../../helpers/fakeFactory');
+var mockFactory = require('../../../../helpers/mockFactory');
 
 describe('geo/ui/legends/legends-view', function () {
   beforeEach(function () {
@@ -12,12 +12,12 @@ describe('geo/ui/legends/legends-view', function () {
     engineMock.reload = jasmine.createSpy('reload');
     this.tileLayer = new TileLayer(null, { engine: {} });
     this.cartoDBLayer1 = new CartoDBLayer({
-      source: fakeFactory.createAnalysisModel({ id: 'a1' }),
+      source: mockFactory.createAnalysisModel({ id: 'a1' }),
       layer_name: 'CartoDB Layer #1',
       legends: []
     }, { engine: engineMock });
     this.cartoDBLayer2 = new CartoDBLayer({
-      source: fakeFactory.createAnalysisModel({ id: 'a2' }),
+      source: mockFactory.createAnalysisModel({ id: 'a2' }),
       layer_name: 'CartoDB Layer #2',
       legends: []
     }, { engine: engineMock });

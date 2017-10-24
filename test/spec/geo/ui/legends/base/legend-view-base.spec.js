@@ -1,6 +1,6 @@
 var LegendViewBase = require('../../../../../../src/geo/ui/legends/base/legend-view-base.js');
 var LegendModelBase = require('../../../../../../src/geo/map/legends/legend-model-base.js');
-var fakeFactory = require('../../../../../helpers/fakeFactory');
+var mockFactory = require('../../../../../helpers/mockFactory');
 
 var MyLegendModel = LegendModelBase.extend({
   TYPE: 'something',
@@ -19,7 +19,7 @@ var MyLegendView = LegendViewBase.extend({
 describe('geo/ui/legends/legend-view-base.js', function () {
   var engineMock;
   beforeEach(function () {
-    engineMock = fakeFactory.createEngine();
+    engineMock = mockFactory.createEngine();
     this.model = new MyLegendModel({
       title: 'My Beautiful Legend',
       preHTMLSnippet: '<p>before</p>',

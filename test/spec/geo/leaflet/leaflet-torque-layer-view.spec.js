@@ -2,11 +2,10 @@
 var $ = require('jquery');
 var Backbone = require('backbone');
 var Map = require('../../../../src/geo/map');
-var Engine = require('../../../../src/engine');
 var LeafletMapView = require('../../../../src/geo/leaflet/leaflet-map-view');
 var LeafletLayerViewFactory = require('../../../../src/geo/leaflet/leaflet-layer-view-factory');
 var TorqueLayer = require('../../../../src/geo/map/torque-layer');
-var fakeFactory = require('../../../helpers/fakeFactory');
+var MockFactory = require('../../../helpers/mockFactory');
 var SharedTestsForTorqueLayer = require('../shared-tests-for-torque-layer');
 
 describe('geo/leaflet/leaflet-torque-layer-view', function () {
@@ -17,7 +16,7 @@ describe('geo/leaflet/leaflet-torque-layer-view', function () {
       'height': '200px',
       'width': '200px'
     });
-    engineMock = new Engine({ serverUrl: 'http://example.com', username: 'fake-username' });
+    engineMock = MockFactory.createEngine();
     this.map = new Map(null, {
       layersFactory: {}
     });
@@ -33,7 +32,7 @@ describe('geo/leaflet/leaflet-torque-layer-view', function () {
     spyOn(L.TorqueLayer.prototype, 'initialize').and.callThrough();
 
     this.model = new TorqueLayer({
-      source: fakeFactory.createAnalysisModel({ id: 'a0' }),
+      source: MockFactory.createAnalysisModel({ id: 'a0' }),
       cartocss: 'Map {}',
       dynamic_cdn: 'dynamic-cdn-value'
     }, { engine: engineMock });
@@ -46,7 +45,7 @@ describe('geo/leaflet/leaflet-torque-layer-view', function () {
   it('should reuse layer view', function () {
     this.view.check = 'testing';
     var newLayer = new TorqueLayer({
-      source: fakeFactory.createAnalysisModel({ id: 'a0' }),
+      source: MockFactory.createAnalysisModel({ id: 'a0' }),
       cartocss: 'Map {}',
       dynamic_cdn: 'dynamic-cdn-value'
     }, {

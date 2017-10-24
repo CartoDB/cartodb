@@ -1,19 +1,19 @@
 var $ = require('jquery');
 var Backbone = require('backbone');
-var Engine = require('../../../src/engine');
 var Layers = require('../../../src/geo/map/layers');
 var CartoDBLayer = require('../../../src/geo/map/cartodb-layer');
 var TileLayer = require('../../../src/geo/map/tile-layer');
 var TorqueLayer = require('../../../src/geo/map/torque-layer');
 var GMapsBaseLayer = require('../../../src/geo/map/gmaps-base-layer');
 var CartoDBLayerGroup = require('../../../src/geo/cartodb-layer-group');
+var MockFactory = require('../../helpers/mockFactory');
 
 describe('geo/cartodb-layer-group', function () {
   var engineMock;
 
   beforeEach(function () {
     this.layersCollection = new Layers();
-    engineMock = new Engine({ serverUrl: 'http://example.com', username: 'fake-username' });
+    engineMock = MockFactory.createEngine();
     spyOn(engineMock, 'reload');
 
     this.cartoDBLayerGroup = new CartoDBLayerGroup({}, {

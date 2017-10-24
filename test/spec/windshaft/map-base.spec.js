@@ -3,7 +3,6 @@ var Backbone = require('backbone');
 var log = require('cdb.log');
 var Model = require('../../../src/core/model');
 var Map = require('../../../src/geo/map');
-var Engine = require('../../../src/engine');
 var TorqueLayer = require('../../../src/geo/map/torque-layer');
 var CartoDBLayer = require('../../../src/geo/map/cartodb-layer');
 var HistogramDataviewModel = require('../../../src/dataviews/histogram-dataview-model');
@@ -11,7 +10,7 @@ var DataviewsCollection = require('../../../src/dataviews/dataviews-collection')
 var WindshaftMapBase = require('../../../src/windshaft/map-base');
 var WindshaftClient = require('../../../src/windshaft/client');
 var CategoryFilter = require('../../../src/windshaft/filters/category');
-var fakeFactory = require('../../helpers/fakeFactory');
+var MockFactory = require('../../helpers/mockFactory');
 
 var WindshaftMap = WindshaftMapBase.extend({
   toJSON: function () {
@@ -48,14 +47,14 @@ describe('windshaft/map-base', function () {
       }
     };
 
-    engineMock = new Engine({ serverUrl: 'http://example.com', username: 'fake-username' });
+    engineMock = MockFactory.createEngine();
     this.dataviewsCollection = new DataviewsCollection(null, {
       engine: engineMock
     });
 
     this.layersCollection = new Backbone.Collection();
     this.modelUpdater = jasmine.createSpyObj('modelUpdater', ['updateModels', 'setErrors']);
-    this.a0 = fakeFactory.createAnalysisModel({ id: 'a0 ' });
+    this.a0 = MockFactory.createAnalysisModel({ id: 'a0 ' });
 
     this.windshaftSettings = {
       urlTemplate: 'http://{user}.example.com',

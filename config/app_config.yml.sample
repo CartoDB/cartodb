@@ -326,6 +326,7 @@ defaults: &defaults
       callback_url:         'https://carto.com'
     # google_plus:
       # client_id: ''
+      # client_secret: ''
       # cookie_policy: 'single_host_origin'
       # cookie_policy: 'https://cartodb-staging.com'
     github:

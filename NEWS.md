@@ -1,6 +1,16 @@
 Development
 -----------
 
+### NOTICE
+This release upgrades the CartoDB PostgreSQL extension to `0.19.2`. Run the following to have it available:
+```shell
+cd $(git rev-parse --show-toplevel)/lib/sql
+sudo make install
+```
+
+This release changes the way Google ouath login works. If you are using it, you need to add the client_secret
+to the oauth.google_plus section of the configuration file.
+
 ### Features
 * Improve error on widgets (CartoDB/deep-insights.js#574)
 * Add pagination support in data imports listing in superadmin (#12938).
@@ -68,6 +78,7 @@ Development
 
 ### Bug fixes / enhancements
 * Fix bounding box not updating with gmaps basemaps
+* Google oauth now works without JS (#12977)
 * Add "less or equal than" and "greater or equal than" to filter by value analysis
 * Improve SQL limit platforms notification (#12597)
 * Fix infinite loop for failed sql api requests.
@@ -250,13 +261,6 @@ Development
 * Remove analysisCollection and refactor analyses-integration (#12947)
 * Fix layer's sources in tests (analysis source required) (#12866)
 * Adapt widget integration and specs to dataviews refactor (#12850)
-
-### NOTICE
-This release upgrades the CartoDB PostgreSQL extension to `0.19.2`. Run the following to have it available:
-```shell
-cd $(git rev-parse --show-toplevel)/lib/sql
-sudo make install
-```
 
 #### Dropbox API v2 migration
 

@@ -5,7 +5,6 @@ var L = require('leaflet');
 global.L = L;
 
 var Map = require('../../../../src/geo/map');
-var VisModel = require('../../../../src/vis/vis');
 var TileLayer = require('../../../../src/geo/map/tile-layer');
 var CartoDBLayer = require('../../../../src/geo/map/cartodb-layer');
 var PlainLayer = require('../../../../src/geo/map/plain-layer');
@@ -14,6 +13,7 @@ var CartoDBLayerGroup = require('../../../../src/geo/cartodb-layer-group');
 var LeafletMapView = require('../../../../src/geo/leaflet/leaflet-map-view');
 var LeafletTiledLayerView = require('../../../../src/geo/leaflet/leaflet-tiled-layer-view');
 var LeafletPlainLayerView = require('../../../../src/geo/leaflet/leaflet-plain-layer-view');
+var MockFactory = require('../../../helpers/mockFactory');
 
 describe('geo/leaflet/leaflet-map-view', function () {
   var mapView;
@@ -21,6 +21,7 @@ describe('geo/leaflet/leaflet-map-view', function () {
   var spy;
   var container;
   var layer;
+  var engineMock;
 
   beforeEach(function () {
     container = $('<div>').css({
@@ -44,14 +45,14 @@ describe('geo/leaflet/leaflet-map-view', function () {
     mapView = new LeafletMapView({
       el: container,
       mapModel: map,
-      visModel: new Backbone.Model(),
+      engine: new Backbone.Model(),
       layerGroupModel: this.layerGroupModel
     });
 
     mapView.render();
 
     var layerURL = 'http://{s}.tiles.mapbox.com/v3/cartodb.map-1nh578vv/{z}/{x}/{y}.png';
-    layer = new TileLayer({ urlTemplate: layerURL }, { vis: {} });
+    layer = new TileLayer({ urlTemplate: layerURL }, { engine: {} });
 
     spy = jasmine.createSpyObj('spy', ['zoomChanged', 'centerChanged', 'keyboardChanged', 'changed']);
     map.bind('change:zoom', spy.zoomChanged);
@@ -59,7 +60,7 @@ describe('geo/leaflet/leaflet-map-view', function () {
     map.bind('change:center', spy.centerChanged);
     map.bind('change', spy.changed);
 
-    this.vis = new VisModel();
+    engineMock = MockFactory.createEngine();
   });
 
   it('should change bounds when center is set', function () {
@@ -109,17 +110,17 @@ describe('geo/leaflet/leaflet-map-view', function () {
   });
 
   it('should create a PlainLayer when the layer is cartodb', function () {
-    layer = new PlainLayer(null, { vis: {} });
+    layer = new PlainLayer(null, { engine: {} });
     var lyr = map.addLayer(layer);
     var layerView = mapView.getLayerViewByLayerCid(lyr);
     expect(layerView.setQuery).not.toEqual(LeafletPlainLayerView);
   });
 
   it('should insert layers in specified order', function () {
-    var tileLayer = new TileLayer({ urlTemplate: 'http://tilelayer1.com' }, { vis: {} });
+    var tileLayer = new TileLayer({ urlTemplate: 'http://tilelayer1.com' }, { engine: {} });
     map.addLayer(tileLayer);
 
-    var tileLayer2 = new TileLayer({ urlTemplate: 'http://tilelayer2.com' }, { vis: {} });
+    var tileLayer2 = new TileLayer({ urlTemplate: 'http://tilelayer2.com' }, { engine: {} });
     map.addLayer(tileLayer2, { at: 0 });
 
     expect(mapView.getLayerViewByLayerCid(tileLayer.cid).leafletLayer.options.zIndex).toEqual(1);
@@ -127,9 +128,9 @@ describe('geo/leaflet/leaflet-map-view', function () {
   });
 
   it('should remove all layers when map view is cleaned', function () {
-    var cartoDBLayer1 = new CartoDBLayer({ meta: { cartocss: '#layer {}' } }, { vis: this.vis });
-    var cartoDBLayer2 = new CartoDBLayer({ meta: { cartocss: '#layer {}' } }, { vis: this.vis });
-    var tileLayer = new TileLayer({ urlTemplate: 'test' }, { vis: {} });
+    var cartoDBLayer1 = new CartoDBLayer({ meta: { cartocss: '#layer {}' } }, { engine: engineMock });
+    var cartoDBLayer2 = new CartoDBLayer({ meta: { cartocss: '#layer {}' } }, { engine: engineMock });
+    var tileLayer = new TileLayer({ urlTemplate: 'test' }, { engine: {} });
 
     map.addLayer(cartoDBLayer1);
     map.addLayer(cartoDBLayer2);
@@ -152,7 +153,7 @@ describe('geo/leaflet/leaflet-map-view', function () {
   });
 
   it("should not add a layer view when it can't be created", function () {
-    var layer = new TileLayer({type: 'rambo'}, { vis: {} });
+    var layer = new TileLayer({type: 'cartojs-test'}, { engine: {} });
     map.addLayer(layer);
     expect(_.size(mapView._layerViews)).toEqual(0);
   });
@@ -177,7 +178,7 @@ describe('geo/leaflet/leaflet-map-view', function () {
     var mapView = new LeafletMapView({
       el: container,
       mapModel: map,
-      visModel: new Backbone.Model(),
+      engine: new Backbone.Model(),
       layerGroupModel: new Backbone.Model()
     });
     mapView.render();
@@ -199,7 +200,7 @@ describe('geo/leaflet/leaflet-map-view', function () {
     var mapView = new LeafletMapView({
       el: container,
       mapModel: map,
-      visModel: new Backbone.Model(),
+      engine: new Backbone.Model(),
       layerGroupModel: new Backbone.Model()
     });
     mapView.render();

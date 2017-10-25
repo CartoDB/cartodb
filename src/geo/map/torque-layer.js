@@ -51,17 +51,16 @@ var TorqueLayer = LayerModelBase.extend({
 
   initialize: function (attrs, options) {
     options = options || {};
-    if (!options.vis) throw new Error('vis is required');
+    if (!options.engine) throw new Error('engine is required');
 
-    this._vis = options.vis;
+    this._engine = options.engine;
 
     if (attrs.source) {
       this.setSource(attrs.source);
     }
 
-    this.legends = new Legends(attrs.legends, {
-      visModel: this._vis
-    });
+    // TODO: Check if engine fits here
+    this.legends = new Legends(attrs.legends, { engine: this._engine });
     this.unset('legends');
 
     this.bind('change', this._onAttributeChanged, this);
@@ -80,7 +79,7 @@ var TorqueLayer = LayerModelBase.extend({
     }, this);
 
     if (reloadVis) {
-      this._reloadVis();
+      this._reload();
     }
   },
 
@@ -109,10 +108,8 @@ var TorqueLayer = LayerModelBase.extend({
     return properties;
   },
 
-  _reloadVis: function () {
-    this._vis.reload({
-      sourceId: this.get('id')
-    });
+  _reload: function () {
+    this._engine.reload({ sourceId: this.get('id') });
   },
 
   play: function () {
@@ -150,7 +147,7 @@ var TorqueLayer = LayerModelBase.extend({
     return this.get('layer_name');
   },
 
-  fetchAttributes: function (layer, featureID, callback) {},
+  fetchAttributes: function (layer, featureID, callback) { },
 
   // given a timestamp returns a step (float)
   timeToStep: function (timestamp) {
@@ -202,11 +199,11 @@ var TorqueLayer = LayerModelBase.extend({
     LayerModelBase.prototype.remove.apply(this, arguments);
   }
 },
-// Static methods and properties
+  // Static methods and properties
 {
   /**
-   * Return the source analysis node from given attrs object.
-   */
+     * Return the source analysis node from given attrs object.
+     */
   getLayerSourceFromAttrs: function (attrs, analysis) {
     if (typeof attrs.source === 'string') {
       console.warn('Deprecated: Layers must have an analysis node as source instead of a string ID.');

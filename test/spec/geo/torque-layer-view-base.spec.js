@@ -1,15 +1,16 @@
 var Backbone = require('backbone');
 var TorqueLayer = require('../../../src/geo/map/torque-layer');
-var VisModel = require('../../../src/vis/vis');
 var TorqueLayerViewBase = require('../../../src/geo/torque-layer-view-base');
 var _ = require('underscore');
+var MockFactory = require('../../helpers/mockFactory');
 
 describe('geo/torque-layer-base-view', function () {
+  var engineMock;
   beforeEach(function () {
     spyOn(TorqueLayerViewBase, '_cartoCSSChanged').and.callThrough();
     spyOn(TorqueLayerViewBase, '_onUpdateDuration').and.callThrough();
 
-    this.vis = new VisModel();
+    engineMock = MockFactory.createEngine();
     this.model = new TorqueLayer({
       type: 'torque',
       query: 'select * from table',
@@ -17,7 +18,7 @@ describe('geo/torque-layer-base-view', function () {
       query_wrapper: 'select * from (<%= sql %>) as _cdbfromquerywrapper',
       cartocss: 'Map {}',
       dynamic_cdn: 'dynamic-cdn-value'
-    }, { vis: this.vis });
+    }, { engine: engineMock });
   });
 
   describe('_getQuery', function () {

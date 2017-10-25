@@ -24,29 +24,29 @@ var fakeCamshaftReference = {
   }
 };
 
-var createFakeVis = function () {
-  var vis = new Backbone.Model();
-  vis.reload = jasmine.createSpy('reload');
-  return vis;
+var createFakeEngine = function () {
+  var engine = new Backbone.Model();
+  engine.reload = jasmine.createSpy('reload');
+  return engine;
 };
 
-var createFakeAnalysis = function (attrs, visModel) {
+var createFakeAnalysis = function (attrs, engine) {
   return new AnalysisModel(attrs, {
-    vis: visModel,
+    engine: engine,
     camshaftReference: fakeCamshaftReference
   });
 };
 
 describe('src/analysis/analysis-model.js', function () {
-  var vis;
+  var engineMock;
 
   beforeEach(function () {
-    vis = createFakeVis();
+    engineMock = createFakeEngine();
     this.analysisModel = createFakeAnalysis({
       type: 'analysis-type-1',
       attribute1: 'value1',
       attribute2: 'value2'
-    }, vis);
+    }, engineMock);
   });
 
   describe('.url', function () {
@@ -77,21 +77,21 @@ describe('src/analysis/analysis-model.js', function () {
           attribute1: 'newValue1'
         });
 
-        expect(vis.reload).toHaveBeenCalled();
-        vis.reload.calls.reset();
+        expect(engineMock.reload).toHaveBeenCalled();
+        engineMock.reload.calls.reset();
 
         this.analysisModel.set({
           attribute2: 'newValue2'
         });
 
-        expect(vis.reload).toHaveBeenCalled();
-        vis.reload.calls.reset();
+        expect(engineMock.reload).toHaveBeenCalled();
+        engineMock.reload.calls.reset();
 
         this.analysisModel.set({
           attribute900: 'something'
         });
 
-        expect(vis.reload).not.toHaveBeenCalled();
+        expect(engineMock.reload).not.toHaveBeenCalled();
       });
 
       it('should be marked as failed if request to reload the map fails', function () {
@@ -101,7 +101,7 @@ describe('src/analysis/analysis-model.js', function () {
         });
 
         // Request to the Maps API fails and error callback is invoked...
-        vis.reload.calls.argsFor(0)[0].error('something bad just happened');
+        engineMock.reload.calls.argsFor(0)[0].error('something bad just happened');
 
         expect(this.analysisModel.get('status')).toEqual(AnalysisModel.STATUS.FAILED);
       });
@@ -118,37 +118,37 @@ describe('src/analysis/analysis-model.js', function () {
 
       it('should reload the map', function () {
         this.analysisModel.set('type', 'something');
-        expect(vis.reload).toHaveBeenCalled();
+        expect(engineMock.reload).toHaveBeenCalled();
       });
 
       it('should keep listening type change again', function () {
         this.analysisModel.set('type', 'something');
-        expect(vis.reload).toHaveBeenCalled();
-        vis.reload.calls.reset();
+        expect(engineMock.reload).toHaveBeenCalled();
+        engineMock.reload.calls.reset();
         this.analysisModel.set('type', 'something else');
-        expect(vis.reload).toHaveBeenCalled();
+        expect(engineMock.reload).toHaveBeenCalled();
       });
     });
 
     describe('on status change', function () {
-      var createAnalysisModelNoStatusNoReferences = function (visModel) {
-        var analysisModel = createFakeAnalysis({ id: 'a0' }, visModel);
+      var createAnalysisModelNoStatusNoReferences = function (engine) {
+        var analysisModel = createFakeAnalysis({ id: 'a0' }, engine);
         return analysisModel;
       };
 
-      var createAnalysisModelNoStatusWithReferences = function (visModel) {
-        var analysisModel = createFakeAnalysis({ id: 'a0' }, visModel);
+      var createAnalysisModelNoStatusWithReferences = function (engine) {
+        var analysisModel = createFakeAnalysis({ id: 'a0' }, engine);
         analysisModel.markAsSourceOf(new Backbone.Model());
         return analysisModel;
       };
 
-      var createAnalysisModelWithStatusNoReferences = function (visModel) {
-        var analysisModel = createFakeAnalysis({ id: 'a0', status: 'foo' }, visModel);
+      var createAnalysisModelWithStatusNoReferences = function (engine) {
+        var analysisModel = createFakeAnalysis({ id: 'a0', status: 'foo' }, engine);
         return analysisModel;
       };
 
-      var createAnalysisModelWithStatusWithReferences = function (visModel) {
-        var analysisModel = createFakeAnalysis({ id: 'a0', status: 'foo' }, visModel);
+      var createAnalysisModelWithStatusWithReferences = function (engine) {
+        var analysisModel = createFakeAnalysis({ id: 'a0', status: 'foo' }, engine);
         analysisModel.markAsSourceOf(new Backbone.Model());
         return analysisModel;
       };
@@ -184,11 +184,11 @@ describe('src/analysis/analysis-model.js', function () {
 
         describe(testName, function () {
           var analysisModel;
-          var visModel;
+          var engineMock;
 
           beforeEach(function () {
-            visModel = createFakeVis();
-            analysisModel = createAnalysisFn(visModel);
+            engineMock = createFakeEngine();
+            analysisModel = createAnalysisFn(engineMock);
           });
 
           _.forEach(AnalysisModel.STATUS, function (status) {
@@ -198,18 +198,18 @@ describe('src/analysis/analysis-model.js', function () {
           });
 
           _.each(expectedVisReloadWhenStatusIn, function (status) {
-            it("should reload the vis if analysis is now '" + status + "'", function () {
-              expect(visModel.reload).not.toHaveBeenCalled();
+            it("should reload the engine if analysis is now '" + status + "'", function () {
+              expect(engineMock.reload).not.toHaveBeenCalled();
               analysisModel.set('status', status);
-              expect(visModel.reload).toHaveBeenCalled();
+              expect(engineMock.reload).toHaveBeenCalled();
             });
           }, this);
 
           _.each(notExpectedVisReloadWhenStatusIn, function (status) {
-            it("should NOT reload the vis if analysis is now '" + status + "'", function () {
-              expect(visModel.reload).not.toHaveBeenCalled();
+            it("should NOT reload the engine if analysis is now '" + status + "'", function () {
+              expect(engineMock.reload).not.toHaveBeenCalled();
               analysisModel.set('status', status);
-              expect(visModel.reload).not.toHaveBeenCalled();
+              expect(engineMock.reload).not.toHaveBeenCalled();
             });
           }, this);
         });
@@ -244,7 +244,7 @@ describe('src/analysis/analysis-model.js', function () {
       };
 
       var analysisService = new AnalysisService({
-        vis: vis,
+        engine: engineMock,
         camshaftReference: fakeCamshaftReference
       });
       var analysisModel = analysisService.analyse({
@@ -319,7 +319,7 @@ describe('src/analysis/analysis-model.js', function () {
       };
 
       var analysisService = new AnalysisService({
-        vis: vis,
+        engine: engineMock,
         camshaftReference: fakeCamshaftReference
       });
       var analysisModel = analysisService.analyse({
@@ -451,7 +451,7 @@ describe('src/analysis/analysis-model.js', function () {
     var analysisService;
     beforeEach(function () {
       analysisService = new AnalysisService({
-        vis: vis,
+        engine: engineMock,
         camshaftReference: fakeCamshaftReference
       });
     });

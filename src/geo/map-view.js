@@ -26,11 +26,12 @@ var MapView = View.extend({
     window.mapView = this;
 
     if (!opts.mapModel) throw new Error('mapModel is required');
-    if (!opts.visModel) throw new Error('visModel is required');
+    if (!opts.engine) throw new Error('engine is required');
     if (!opts.layerGroupModel) throw new Error('layerGroupModel is required');
 
+    this._showEmptyInfowindowFields = opts.showEmptyInfowindowFields;
     this._mapModel = this.map = opts.mapModel;
-    this._visModel = opts.visModel;
+    this._engine = opts.engine;
     this._cartoDBLayerGroup = opts.layerGroupModel;
 
     this.add_related_model(this.map);
@@ -67,12 +68,13 @@ var MapView = View.extend({
 
     // Initialise managers
     this._infowindowManager = new InfowindowManager({
-      visModel: this._visModel,
+      engine: this._engine,
       mapModel: this._mapModel,
       tooltipModel: tooltipModel,
       infowindowModel: infowindowModel
     }, {
-      showEmptyFields: this._visModel.get('showEmptyInfowindowFields')
+
+      showEmptyFields: this._showEmptyInfowindowFields
     });
     this._tooltipManager = new TooltipManager({
       mapModel: this._mapModel,

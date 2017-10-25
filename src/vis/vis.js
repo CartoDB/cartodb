@@ -122,7 +122,7 @@ var VisModel = Backbone.Model.extend({
 
     // Create the public Analysis Service
     this._analysisService = new AnalysisService({
-      vis: this,
+      engine: this._engine,
       apiKey: windshaftSettings.apiKey,
       authToken: windshaftSettings.authToken
     });
@@ -143,10 +143,7 @@ var VisModel = Backbone.Model.extend({
       renderMode = RenderModes.RASTER;
     }
 
-    this.layersFactory = new LayersFactory({
-      visModel: this,
-      windshaftSettings: windshaftSettings
-    });
+    this.layersFactory = new LayersFactory({ engine: this._engine, windshaftSettings: windshaftSettings });
 
     this.map = new Map({
       title: vizjson.title,
@@ -181,7 +178,7 @@ var VisModel = Backbone.Model.extend({
       authToken: this.get('authToken')
     }, {
       map: this.map,
-      vis: this,
+      engine: this._engine,
       dataviewsCollection: this._dataviewsCollection
     });
 
@@ -213,6 +210,13 @@ var VisModel = Backbone.Model.extend({
     this._dataviewsCollection = engine._dataviewsCollection;
 
     return engine;
+  },
+
+  /**
+   * Return the engine for this visModel
+   */
+  getEngine: function () {
+    return this._engine;
   },
 
   // we provide a method to set some new settings

@@ -1,5 +1,6 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
+var Engine = require('../../../engine');
 
 var NON_RESETEABLE_DEFAULT_ATTRS = ['state', 'visible'];
 
@@ -15,13 +16,11 @@ var LegendModelBase = Backbone.Model.extend({
   },
 
   initialize: function (attrs, deps) {
-    if (!deps.visModel) throw new Error('visModel is required');
+    if (!deps.engine) throw new Error('engine is required');
 
-    deps.visModel.on('reload', this._onVisReloading, this);
-  },
-
-  _onVisReloading: function () {
-    this.set('state', this.constructor.STATE_LOADING);
+    deps.engine.on(Engine.Events.RELOAD_STARTED, function () {
+      this.set('state', this.constructor.STATE_LOADING);
+    }.bind(this));
   },
 
   isLoading: function () {

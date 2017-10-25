@@ -70,10 +70,18 @@ function Engine (params) {
 }
 
 /**
+ * Return the cartoLayergroup attached to the engine
+ */
+Engine.prototype.getLayerGroup = function () {
+  return this._cartoLayerGroup;
+};
+
+/**
  * Bind a callback function to an event. The callback will be invoked whenever the event is fired.
  * 
  * @param {string} event - The name of the event that triggers the callback execution.
  * @param {function} callback - A function to be executed when the event is fired.
+ * @param {function} [context] - The context value for this when the callback is invoked.
  * 
  * @example
  * 
@@ -90,8 +98,8 @@ function Engine (params) {
  *
  * @api
  */
-Engine.prototype.on = function on (event, callback) {
-  this._eventEmmitter.on(event, callback);
+Engine.prototype.on = function on (event, callback, context) {
+  this._eventEmmitter.on(event, callback, context);
 };
 
 /**
@@ -99,6 +107,7 @@ Engine.prototype.on = function on (event, callback) {
  * 
  * @param {string} event - The name of the event that triggers the callback execution.
  * @param {function} callback - A function callback to be removed when the event is fired.
+ * @param {function} [context] - The context value for this when the callback is invoked.
  * 
  * @example
  * 
@@ -107,8 +116,8 @@ Engine.prototype.on = function on (event, callback) {
  * 
  * @api
  */
-Engine.prototype.off = function off (event, callback) {
-  this._eventEmmitter.off(event, callback);
+Engine.prototype.off = function off (event, callback, context) {
+  this._eventEmmitter.off(event, callback, context);
 };
 
 /**
@@ -133,6 +142,7 @@ Engine.prototype.reload = function reload (sourceId, forceFetch, includeFilters)
   // TODO: update options, use promises or explicit callbacks function (error, params).
   var options = this._buildOptions(sourceId, forceFetch);
   var request = new Request(payload, params, options);
+  this._eventEmmitter.trigger(Engine.Events.RELOAD_STARTED);
   this._windshaftClient.instantiateMap(request);
 };
 
@@ -267,6 +277,10 @@ Engine.prototype._getSerializer = function _getSerializer () {
  */
 Engine.Events = {
   /**
+   * Reload started event, fired every time the reload process starts.
+   */
+  RELOAD_STARTED: 'reload-started',
+  /**
    * Reload success event, fired every time the reload function succeed.
    */
   RELOAD_SUCCESS: 'reload-success',
@@ -277,6 +291,14 @@ Engine.Events = {
 };
 
 module.exports = Engine;
+
+/**
+ * Reload started event, fired every time the reload process starts.
+ *
+ * @event Engine#Engine:RELOAD_STARTED
+ * @type {string}
+ * @api
+ */
 
 /**
   * Reload success event, fired every time the reload function succeed.

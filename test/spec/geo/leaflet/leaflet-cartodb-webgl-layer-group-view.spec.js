@@ -1,9 +1,9 @@
 var L = require('leaflet');
-var VisModel = require('../../../../src/vis/vis');
 var LayersCollection = require('../../../../src/geo/map/layers');
 var CartoDBLayer = require('../../../../src/geo/map/cartodb-layer');
 var CartoDBLayerGroup = require('../../../../src/geo/cartodb-layer-group');
 var LeafletCartoDBWebGLLayerGroupView = require('../../../../src/geo/leaflet/leaflet-cartodb-webgl-layer-group-view');
+var MockFactory = require('../../../helpers/mockFactory');
 
 describe('src/geo/leaflet/leaflet-cartodb-webgl-layer-group-view.js', function () {
   beforeEach(function () {
@@ -19,10 +19,10 @@ describe('src/geo/leaflet/leaflet-cartodb-webgl-layer-group-view.js', function (
 
     this.layerGroupModel.set('urls', { tiles: 'http://0.ashbu.cartocdn.com/documentation/api/v1/map/90e64f1b9145961af7ba36d71b887dd2:0/{layerIndexes}/{z}/{x}/{y}.{format}', subdomains: ['a', 'b', 'c'] });
 
-    this.vis = new VisModel();
+    var engineMock = MockFactory.createEngine();
 
-    this.layer1 = new CartoDBLayer({ id: 'layer1', meta: {cartocss: '#layer {polygon-fill: black;}'} }, { vis: this.vis });
-    this.layer2 = new CartoDBLayer({ id: 'layer2', meta: {cartocss: '#layer {polygon-fill: black;}'} }, { vis: this.vis });
+    this.layer1 = new CartoDBLayer({ id: 'layer1', meta: {cartocss: '#layer {polygon-fill: black;}'} }, { engine: engineMock });
+    this.layer2 = new CartoDBLayer({ id: 'layer2', meta: {cartocss: '#layer {polygon-fill: black;}'} }, { engine: engineMock });
 
     this.layersCollection.reset([ this.layer1, this.layer2 ]);
 

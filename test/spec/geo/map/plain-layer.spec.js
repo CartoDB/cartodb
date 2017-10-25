@@ -1,13 +1,16 @@
 var _ = require('underscore');
 var PlainLayer = require('../../../../src/geo/map/plain-layer');
+var MockFactory = require('../../../helpers/mockFactory');
 
 describe('PlainLayer', function () {
+  var engineMock;
   beforeEach(function () {
-    this.vis = jasmine.createSpyObj('vis', [ 'reload' ]);
+    engineMock = MockFactory.createEngine();
+    spyOn(engineMock, 'reload');
   });
 
   it('should be type plain', function () {
-    var layer = new PlainLayer(null, { vis: this.vis });
+    var layer = new PlainLayer(null, { engine: engineMock });
     expect(layer.get('type')).toEqual('Plain');
   });
 
@@ -16,11 +19,11 @@ describe('PlainLayer', function () {
 
     _.each(ATTRIBUTES, function (attribute) {
       it("should reload the vis when '" + attribute + "' attribute changes", function () {
-        var layer = new PlainLayer({}, { vis: this.vis });
+        var layer = new PlainLayer(null, { engine: engineMock });
 
         layer.set(attribute, 'new_value');
 
-        expect(this.vis.reload).toHaveBeenCalled();
+        expect(engineMock.reload).toHaveBeenCalled();
       });
     });
   });

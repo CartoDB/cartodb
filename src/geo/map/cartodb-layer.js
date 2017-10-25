@@ -18,9 +18,9 @@ var CartoDBLayer = LayerModelBase.extend({
   initialize: function (attrs, options) {
     attrs = attrs || {};
     options = options || {};
-    if (!options.vis) throw new Error('vis is required');
+    if (!options.engine) throw new Error('engine is required');
 
-    this._vis = options.vis;
+    this._engine = options.engine;
     if (attrs && attrs.cartocss) {
       this.set('initialStyle', attrs.cartocss);
     }
@@ -35,9 +35,8 @@ var CartoDBLayer = LayerModelBase.extend({
     this.unset('infowindow');
     this.unset('tooltip');
 
-    this.legends = new Legends(attrs.legends, {
-      visModel: this._vis
-    });
+    // TODO: Check if engine fits here
+    this.legends = new Legends(attrs.legends, { engine: this._engine });
     this.unset('legends');
 
     this.bind('change', this._onAttributeChanged, this);
@@ -60,7 +59,7 @@ var CartoDBLayer = LayerModelBase.extend({
   },
 
   _reloadVis: function () {
-    this._vis.reload({
+    this._engine.reload({
       sourceId: this.get('id')
     });
   },

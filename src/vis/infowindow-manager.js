@@ -1,3 +1,5 @@
+var Engine = require('../../src/engine');
+
 /**
  * Manages the infowindows for a map. It listens to events triggered by a
  * CartoDBLayerGroupView and updates models accordingly
@@ -5,12 +7,12 @@
 var InfowindowManager = function (deps, options) {
   deps = deps || {};
   options = options || {};
-  if (!deps.visModel) throw new Error('visModel is required');
+  if (!deps.engine) throw new Error('engine is required');
   if (!deps.mapModel) throw new Error('mapModel is required');
   if (!deps.infowindowModel) throw new Error('infowindowModel is required');
   if (!deps.tooltipModel) throw new Error('tooltipModel is required');
 
-  this._vis = deps.visModel;
+  this._engine = deps.engine;
   this._mapModel = deps.mapModel;
   this._infowindowModel = deps.infowindowModel;
   this._tooltipModel = deps.tooltipModel;
@@ -90,7 +92,7 @@ InfowindowManager.prototype._bindLayerModel = function () {
   this._cartoDBLayerModel.on('change:visible', this._hideInfowindow, this);
   this._cartoDBLayerModel.infowindow.on('change', this._updateInfowindowModel, this);
   this._cartoDBLayerModel.infowindow.fields.on('reset', this._onInfowindowTemplateFieldsReset, this);
-  this._vis.on('reloaded', this._onVisReloaded, this);
+  this._engine.on(Engine.Events.RELOAD_SUCCESS, this._onReloaded.bind, this); // TODO: Add tests to check _onReloaded is being called.
 };
 
 InfowindowManager.prototype._unbindLayerModel = function () {
@@ -99,7 +101,7 @@ InfowindowManager.prototype._unbindLayerModel = function () {
     this._cartoDBLayerModel.off('change:visible', this._hideInfowindow, this);
     this._cartoDBLayerModel.infowindow.off('change', this._updateInfowindowModel, this);
     this._cartoDBLayerModel.infowindow.fields.off('reset', this._onInfowindowTemplateFieldsReset, this);
-    this._vis.off('reloaded', this._onVisReloaded, this);
+    this._engine.off(Engine.Events.RELOAD_SUCCESS, this._onReloaded, this);
   }
 };
 
@@ -115,7 +117,7 @@ InfowindowManager.prototype._onInfowindowTemplateFieldsReset = function () {
   }
 };
 
-InfowindowManager.prototype._onVisReloaded = function () {
+InfowindowManager.prototype._onReloaded = function () {
   if (this._cartoDBLayerModel && this._cartoDBLayerModel.infowindow.hasFields()) {
     this._fetchAttributes();
   }

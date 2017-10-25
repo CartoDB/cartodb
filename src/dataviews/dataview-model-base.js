@@ -13,7 +13,7 @@ var FETCH_ERROR_STATUS = 'error';
 
 var REQUIRED_OPTS = [
   'map',
-  'vis'
+  'engine'
 ];
 
 /**
@@ -81,7 +81,7 @@ module.exports = Model.extend({
     util.checkRequiredOpts(opts, REQUIRED_OPTS, 'DataviewModelBase');
 
     this._map = opts.map;
-    this._vis = opts.vis;
+    this._engine = opts.engine;
 
     if (!attrs.source) throw new Error('source is a required attr');
     this._checkSourceAttribute(this.getSource());
@@ -187,7 +187,7 @@ module.exports = Model.extend({
 
   _reloadVis: function (opts) {
     opts = opts || {};
-    this._vis.reload(
+    this._engine.reload(
       _.extend(
         opts, {
           sourceId: this.getSourceId()

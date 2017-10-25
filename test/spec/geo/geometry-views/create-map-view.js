@@ -63,7 +63,7 @@ module.exports = function (MapViewBase) {
   });
   return new MapView({
     mapModel: map,
-    visModel: new Backbone.Model(),
+    engine: new Backbone.Model(),
     layerGroupModel: {}
   });
 };

@@ -5,7 +5,7 @@ var util = require('../core/util');
 
 var REQUIRED_OPTS = [
   'camshaftReference',
-  'vis'
+  'engine'
 ];
 
 var STATUS = {
@@ -23,7 +23,7 @@ var AnalysisModel = Model.extend({
     util.checkRequiredOpts(opts, REQUIRED_OPTS, 'AnalysisModel');
 
     this._camshaftReference = opts.camshaftReference;
-    this._vis = opts.vis;
+    this._engine = opts.engine;
 
     this._initBinds();
 
@@ -67,11 +67,11 @@ var AnalysisModel = Model.extend({
     this.bind('change:type', function () {
       this.unbind(null, null, this);
       this._initBinds();
-      this._reloadVis();
+      this._reload();
     }, this);
 
     _.each(this.getParamNames(), function (paramName) {
-      this.bind('change:' + paramName, this._reloadVis, this);
+      this.bind('change:' + paramName, this._reload, this);
     }, this);
 
     this.bind('change:status', function () {
@@ -79,7 +79,7 @@ var AnalysisModel = Model.extend({
       // and this analysis is the "source" of any layer or dataview,
       // vis has to be reloaded.
       if (this._hadStatus() && this.isReady() && this.isSourceOfAnyModel()) {
-        this._reloadVis();
+        this._reload();
       }
     }, this);
   },
@@ -88,10 +88,10 @@ var AnalysisModel = Model.extend({
     return this.previous('status');
   },
 
-  _reloadVis: function (opts) {
+  _reload: function (opts) {
     opts = opts || {};
     opts.error = this._onMapReloadError.bind(this);
-    this._vis.reload(opts);
+    this._engine.reload(opts);
   },
 
   _onMapReloadError: function () {

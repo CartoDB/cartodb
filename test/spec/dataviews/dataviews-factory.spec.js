@@ -1,9 +1,9 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
 var DataviewsFactory = require('../../../src/dataviews/dataviews-factory');
-var fakeFactory = require('../../helpers/fakeFactory');
+var MockFactory = require('../../helpers/mockFactory');
 
-var source = fakeFactory.createAnalysisModel({ id: 'a0' });
+var source = MockFactory.createAnalysisModel({ id: 'a0' });
 
 var generateFakeAttributes = function (attrNames) {
   return _.reduce(attrNames, function (object, attributeName) {
@@ -19,7 +19,7 @@ describe('dataviews/dataviews-factory', function () {
     this.dataviewsCollection = new Backbone.Collection();
     this.factory = new DataviewsFactory(null, {
       map: {},
-      vis: {},
+      engine: {},
       dataviewsCollection: this.dataviewsCollection
     });
   });
@@ -52,7 +52,7 @@ describe('dataviews/dataviews-factory', function () {
         apiKey: 'THE_API_KEY'
       }, {
         map: {},
-        vis: {},
+        engine: {},
         dataviewsCollection: this.dataviewsCollection
       });
 

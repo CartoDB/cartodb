@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.10.47-1837",
+  "version": "4.10.47-1837.2",
   "dependencies": {
     "accessory": {
       "version": "1.0.1",
@@ -333,7 +333,7 @@
     "cartodb-deep-insights.js": {
       "version": "0.4.3",
       "from": "cartodb/deep-insights.js#1837-integration-extract-engine",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#2200008b15a1d76d64e2432ab38b1c95b415ea9e",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#aafc1dc4ce65155ac37fd8cce5fbf5b9af610fc4",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",
@@ -350,7 +350,7 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.16",
       "from": "cartodb/cartodb.js#extract-engine",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#ec6f2a385cda5bca5ead1163fed3cf6d7238eb32"
+      "resolved": "git://github.com/cartodb/cartodb.js.git#cece5fb881ee6caac2270020d4725e4a524b80a9"
     },
     "center-align": {
       "version": "0.1.3",
@@ -794,9 +794,9 @@
       "resolved": "https://registry.npmjs.org/falafel/-/falafel-2.1.0.tgz",
       "dependencies": {
         "acorn": {
-          "version": "5.1.2",
+          "version": "5.2.1",
           "from": "acorn@>=5.0.0 <6.0.0",
-          "resolved": "https://registry.npmjs.org/acorn/-/acorn-5.1.2.tgz"
+          "resolved": "https://registry.npmjs.org/acorn/-/acorn-5.2.1.tgz"
         },
         "object-keys": {
           "version": "1.0.11",
@@ -1048,9 +1048,9 @@
       "resolved": "https://registry.npmjs.org/is-binary-path/-/is-binary-path-1.0.1.tgz"
     },
     "is-buffer": {
-      "version": "1.1.5",
+      "version": "1.1.6",
       "from": "is-buffer@>=1.1.0 <2.0.0",
-      "resolved": "https://registry.npmjs.org/is-buffer/-/is-buffer-1.1.5.tgz"
+      "resolved": "https://registry.npmjs.org/is-buffer/-/is-buffer-1.1.6.tgz"
     },
     "is-builtin-module": {
       "version": "1.0.0",
@@ -2233,9 +2233,9 @@
       "resolved": "https://registry.npmjs.org/typedarray/-/typedarray-0.0.6.tgz"
     },
     "uglify-js": {
-      "version": "3.1.5",
+      "version": "3.1.6",
       "from": "uglify-js@>=3.1.0 <3.2.0",
-      "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-3.1.5.tgz",
+      "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-3.1.6.tgz",
       "dependencies": {
         "source-map": {
           "version": "0.6.1",

@@ -137,6 +137,8 @@ Engine.prototype.off = function off (event, callback, context) {
  * @api
  */
 Engine.prototype.reload = function reload (sourceId, forceFetch, includeFilters) {
+  // IncludeFilters must be true by default
+  includeFilters = (_.isUndefined(includeFilters) || includeFilters === null) ? true : !!includeFilters;
   var params = this._buildParams(includeFilters);
   var payload = this._getSerializer().serialize(this._layersCollection, this._dataviewsCollection);
   // TODO: update options, use promises or explicit callbacks function (error, params).

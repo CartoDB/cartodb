@@ -85,12 +85,8 @@ var LAYER_CONSTRUCTORS = {
     // we should make 'source' attribute required again and make sure it's
     // always populated:
     // checkProperties(attrs, ['source', 'cartocss']);
-    // attrs.source = CartoDBLayer.getLayerSourceFromAttrs(attrs, options.vis.analysis);
+    // CartoDBLayer._checkSourceAttribute(attrs.source);
     checkProperties(attrs, ['cartocss']);
-    if (attrs.source) {
-      // TODO (iago): A source string is not allowed anymore.
-      console.warn('Deprecated: source should be set via .setSource(), ', attrs.source);
-    }
 
     return new CartoDBLayer(attrs, { engine: options.engine });
   },
@@ -100,12 +96,8 @@ var LAYER_CONSTRUCTORS = {
     // we should make 'source' attribute required again and make sure it's
     // populated:
     // checkProperties(attrs, ['source', 'cartocss']);
-    // attrs.source = CartoDBLayer.getLayerSourceFromAttrs(attrs, options.vis.analysis);
+    // CartoDBLayer._checkSourceAttribute(attrs.source);
     checkProperties(attrs, ['cartocss']);
-    if (attrs.source) {
-      // TODO (iago): A source string is not allowed anymore.
-      console.warn('Deprecated: source should be set via .setSource(), ', attrs.source);
-    }
 
     var windshaftSettings = options.windshaftSettings;
 

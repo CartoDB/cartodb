@@ -135,7 +135,7 @@ var CartoDBLayer = LayerModelBase.extend({
     if (attrs.source) {
       throw new Error('Use ".setSource" to update a layer\'s source instead of the update method');
     }
-    LayerModelBase.prototype.update.call(this, attrs);
+    LayerModelBase.prototype.update.apply(this, arguments);
   },
 
   remove: function () {
@@ -143,24 +143,12 @@ var CartoDBLayer = LayerModelBase.extend({
     LayerModelBase.prototype.remove.apply(this, arguments);
   }
 },
-// Static methods and properties
+  // Static methods and properties
 {
-  /**
-   * Return the source analysis node from given attrs object.
-   */
-  getLayerSourceFromAttrs: function (attrs, analysis) {
-    if (typeof attrs.source === 'string') {
-      console.warn('Deprecated: Layers must have an analysis node as source instead of a string ID.');
-      var source = analysis.findNodeById(attrs.source);
-      if (source) {
-        return source;
-      }
-      throw new Error('No analysis found with id: ' + attrs.source);
+  _checkSourceAttribute: function (source) {
+    if (!(source instanceof AnalysisModel)) {
+      throw new Error('Source must be an instance of AnalysisModel');
     }
-    if (attrs.source instanceof AnalysisModel) {
-      return attrs.source;
-    }
-    throw new Error('Invalid layer source. Source must be an ID or an Analysis node but got: ' + attrs.source);
   }
 });
 

@@ -235,13 +235,9 @@ module.exports = Model.extend({
 
   update: function (attrs) {
     if (_.has(attrs, 'source')) {
-      throw new Error('source of dataviews cannot be updated');
+      throw new Error('Source of dataviews cannot be updated');
     }
     attrs = _.pick(attrs, this.constructor.ATTRS_NAMES);
-
-    if (attrs.source) {
-      this._checkSourceAttribute(attrs.source);
-    }
 
     this.set(attrs);
   },
@@ -341,7 +337,7 @@ module.exports = Model.extend({
 
   _checkSourceAttribute: function (source) {
     if (!(source instanceof AnalysisModel)) {
-      throw new Error('source must be an instance of AnalysisModel');
+      throw new Error('Source must be an instance of AnalysisModel');
     }
   }
 },

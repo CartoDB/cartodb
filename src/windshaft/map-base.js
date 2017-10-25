@@ -56,6 +56,7 @@ var WindshaftMap = Backbone.Model.extend({
       }.bind(this);
 
       options.error = function (response) {
+        response = response || {};
         var windshaftErrors = parseWindshaftErrors(response);
         this._modelUpdater.setErrors(windshaftErrors);
 

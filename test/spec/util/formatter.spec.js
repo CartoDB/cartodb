@@ -44,4 +44,13 @@ describe('src/util/formatter', function () {
     expect(formatter.formatNumber(null)).toBe(null);
     expect(formatter.formatNumber('I am not a number')).toBe('I am not a number');
   });
+
+  it('should format dates', function () {
+    expect(formatter.formatDate(new Date(2017, 0))).toBe('2017-01-01');
+    expect(formatter.formatDate(new Date(2017, 0, 4))).toBe('2017-01-04');
+    expect(formatter.formatDate(new Date(2017, 1, 4, 17))).toBe('2017-02-04');
+    expect(formatter.formatDate(new Date(2017, 2, 4, 17, 24))).toBe('2017-03-04');
+    expect(formatter.formatDate(new Date(2017, 3, 4, 17, 24, 58))).toBe('2017-04-04');
+    expect(formatter.formatDate(new Date(2017, 4, 4, 17, 24, 58, 789))).toBe('2017-05-04');
+  });
 });

@@ -1,6 +1,6 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
-var d3 = require('d3');
+var d3 = require('d3-array');
 var DataviewModelBase = require('./dataview-model-base');
 var HistogramDataModel = require('./histogram-dataview/histogram-data-model');
 var helper = require('./helpers/histogram-helper');
@@ -83,6 +83,7 @@ module.exports = DataviewModelBase.extend({
 
     // When original data gets fetched
     this._totals.bind('change:data', this._onDataChanged, this);
+    this._totals.bind('error', this.setUnavailable, this);
     this._totals.once('change:data', this._updateBindings, this);
 
     this.on('change:column', this._onColumnChanged, this);

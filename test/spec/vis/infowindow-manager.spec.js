@@ -546,4 +546,34 @@ describe('src/vis/infowindow-manager.js', function () {
 
     expect(this.infowindowModel.get('visibility')).toBe(false);
   });
+
+  describe('.fetchAttributes', function () {
+    it('should work as expected?', function () {
+      jasmine.clock().install();
+      var currentCall = 0;
+      spyOn(this.infowindowModel, 'updateContent');
+      this.infowindowManager._cartoDBLayerGroupView = this.layerView;
+      this.currentFeatureId = 10;
+
+      spyOn(this.cartoDBLayerGroup, 'getIndexOfLayerInLayerGroup').and.callFake(function () {
+        return currentCall++;
+      });
+
+      this.cartoDBLayerGroup.fetchAttributes.and.callFake(function (layerIndex, featureId, callback) {
+        var data = { name: 'test' };
+
+        currentCall === 1
+          ? setTimeout(function () { callback(data); }, 100)
+          : callback(data);
+      });
+
+      this.infowindowManager._fetchAttributes(10);
+      this.infowindowManager._fetchAttributes(4);
+
+      jasmine.clock().tick(101);
+      expect(this.infowindowModel.updateContent.calls.count()).toEqual(1);
+
+      jasmine.clock().uninstall();
+    });
+  });
 });

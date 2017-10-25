@@ -20,6 +20,7 @@ var InfowindowManager = function (deps, options) {
 
   this._cartoDBLayerGroupView = null;
   this._cartoDBLayerModel = null;
+  this.currentFeatureUniqueId = null;
 
   this._mapModel.on('change:popupsEnabled', this._onPopupsEnabledChanged, this);
 };
@@ -72,11 +73,18 @@ InfowindowManager.prototype._hideInfowindow = function () {
 };
 
 InfowindowManager.prototype._fetchAttributes = function (featureId) {
+  var layerIndex = this._cartoDBLayerGroupView.model.getIndexOfLayerInLayerGroup(this._cartoDBLayerModel);
+  var currentFeatureUniqueId = this._generateFeatureUniqueId(layerIndex, featureId);
+
   this._currentFeatureId = featureId || this._currentFeatureId;
   this._infowindowModel.setLoading();
-  var layerIndex = this._cartoDBLayerGroupView.model.getIndexOfLayerInLayerGroup(this._cartoDBLayerModel);
+  this.currentFeatureUniqueId = currentFeatureUniqueId;
 
   this._cartoDBLayerGroupView.model.fetchAttributes(layerIndex, this._currentFeatureId, function (attributes) {
+    if (currentFeatureUniqueId !== this.currentFeatureUniqueId) {
+      return;
+    }
+
     if (attributes) {
       this._infowindowModel.updateContent(attributes, {
         showEmptyFields: this._showEmptyFields
@@ -127,6 +135,10 @@ InfowindowManager.prototype._onPopupsEnabledChanged = function () {
   if (this._mapModel.arePopupsDisabled()) {
     this._hideInfowindow();
   }
+};
+
+InfowindowManager.prototype._generateFeatureUniqueId = function (layerId, featureId) {
+  return [layerId, featureId].join('_');
 };
 
 module.exports = InfowindowManager;

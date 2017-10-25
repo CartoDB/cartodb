@@ -413,6 +413,17 @@ class DataImport < Sequel::Model
     [STATE_COMPLETE, STATE_FAILURE, STATE_STUCK].include?(state)
   end
 
+  def import_metadata
+    JSON.parse(super) if super
+  rescue JSON::ParserError
+  end
+
+  def import_metadata=(value)
+    raise "Expected type Hash, got #{value.class}" unless value.is_a?(Hash)
+
+    super(value.to_json)
+  end
+
   private
 
   def dispatch

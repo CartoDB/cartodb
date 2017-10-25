@@ -137,10 +137,10 @@ Engine.prototype.off = function off (event, callback, context) {
  * @api
  */
 Engine.prototype.reload = function reload (sourceId, forceFetch, includeFilters) {
-  var params = this._getParams(includeFilters);
+  var params = this._buildParams(includeFilters);
   var payload = this._getSerializer().serialize(this._layersCollection, this._dataviewsCollection);
   // TODO: update options, use promises or explicit callbacks function (error, params).
-  var options = this._buildOptions(sourceId, forceFetch);
+  var options = this._buildOptions(sourceId, forceFetch, includeFilters);
   var request = new Request(payload, params, options);
   this._eventEmmitter.trigger(Engine.Events.RELOAD_STARTED);
   this._windshaftClient.instantiateMap(request);
@@ -224,8 +224,9 @@ Engine.prototype._onReloadError = function _onReloadError (serverResponse) {
 /**
  * @private
  */
-Engine.prototype._buildOptions = function _buildOptions (sourceId, forceFetch) {
+Engine.prototype._buildOptions = function _buildOptions (sourceId, forceFetch, includeFilters) {
   return {
+    includeFilters: includeFilters,
     success: function (serverResponse) {
       this._onReloadSuccess(serverResponse, sourceId, forceFetch);
     }.bind(this),
@@ -238,7 +239,7 @@ Engine.prototype._buildOptions = function _buildOptions (sourceId, forceFetch) {
  * @param {boolean} includeFilters - Boolean flag to control if the filters need to be added in the payload.
  * @private
  */
-Engine.prototype._getParams = function _getParams (includeFilters) {
+Engine.prototype._buildParams = function _buildParams (includeFilters) {
   var params = {
     stat_tag: this._windshaftSettings.statTag
   };
@@ -253,6 +254,7 @@ Engine.prototype._getParams = function _getParams (includeFilters) {
     params.auth_token = this._windshaftSettings.authToken;
     return params;
   }
+  console.error('Engine initialized with no apiKeys neither authToken');
 };
 
 Engine.prototype._restartAnalysisPolling = function _restartAnalysisPolling () {

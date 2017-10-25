@@ -55,7 +55,7 @@ function createVisModel () {
 }
 
 function createEngine () {
-  return new Engine({ serverUrl: 'http://example.com', username: 'fake-username' });
+  return new Engine({ serverUrl: 'http://example.com', username: 'fake-username', apiKey: 'fake-api-key', statTag: 'fake-stat-tag' });
 }
 
 module.exports = {

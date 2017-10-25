@@ -5,6 +5,7 @@ var MockFactory = require('../helpers/mockFactory');
 var FAKE_RESPONSE = require('./windshaft/response.mock');
 var CartoDBLayer = require('../../src/geo/map/cartodb-layer');
 var Dataview = require('../../src/dataviews/dataview-model-base');
+var Backbone = require('backbone');
 
 describe('Engine', function () {
   var engineMock;
@@ -83,7 +84,7 @@ describe('Engine', function () {
     it('should perform a request with the state encoded in a payload (no layers, no dataviews) ', function (done) {
       spyOn($, 'ajax').and.callFake(function (params) {
         var actual = params.url;
-        var expected = 'http://example.com/api/v1/map?config=%7B%22buffersize%22%3A%7B%22mvt%22%3A0%7D%2C%22layers%22%3A%5B%5D%2C%22dataviews%22%3A%7B%7D%2C%22analyses%22%3A%5B%5D%7D';
+        var expected = 'http://example.com/api/v1/map?config=%7B%22buffersize%22%3A%7B%22mvt%22%3A0%7D%2C%22layers%22%3A%5B%5D%2C%22dataviews%22%3A%7B%7D%2C%22analyses%22%3A%5B%5D%7D&stat_tag=fake-stat-tag&api_key=fake-api-key';
         expect(actual).toEqual(expected);
         done();
       });
@@ -93,7 +94,7 @@ describe('Engine', function () {
     it('should perform a request with the state encoded in a payload (single layer) ', function (done) {
       spyOn($, 'ajax').and.callFake(function (params) {
         var actual = params.url;
-        var expected = 'http://example.com/api/v1/map?config=%7B%22buffersize%22%3A%7B%22mvt%22%3A0%7D%2C%22layers%22%3A%5B%7B%22type%22%3A%22mapnik%22%2C%22options%22%3A%7B%22cartocss_version%22%3A%222.1.0%22%2C%22source%22%3A%7B%22id%22%3A%22a1%22%7D%2C%22interactivity%22%3A%5B%22cartodb_id%22%5D%7D%7D%5D%2C%22dataviews%22%3A%7B%7D%2C%22analyses%22%3A%5B%7B%22id%22%3A%22a1%22%2C%22type%22%3A%22source%22%2C%22params%22%3A%7B%22query%22%3A%22SELECT%20*%20FROM%20table%22%7D%7D%5D%7D';
+        var expected = 'http://example.com/api/v1/map?config=%7B%22buffersize%22%3A%7B%22mvt%22%3A0%7D%2C%22layers%22%3A%5B%7B%22type%22%3A%22mapnik%22%2C%22options%22%3A%7B%22cartocss_version%22%3A%222.1.0%22%2C%22source%22%3A%7B%22id%22%3A%22a1%22%7D%2C%22interactivity%22%3A%5B%22cartodb_id%22%5D%7D%7D%5D%2C%22dataviews%22%3A%7B%7D%2C%22analyses%22%3A%5B%7B%22id%22%3A%22a1%22%2C%22type%22%3A%22source%22%2C%22params%22%3A%7B%22query%22%3A%22SELECT%20*%20FROM%20table%22%7D%7D%5D%7D&stat_tag=fake-stat-tag&api_key=fake-api-key';
         expect(actual).toEqual(expected);
         done();
       });
@@ -208,6 +209,32 @@ describe('Engine', function () {
 
     it('should update the dataview metadata according to the server response', function (done) {
       pending('Test not implemented');
+    });
+
+    it('should include the filters when the includeFilters option is true', function () {
+      var source = MockFactory.createAnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' });
+      var dataview = new Dataview({ id: 'dataview1', source: source }, { filter: new Backbone.Model(), map: {}, engine: engineMock });
+      dataview.toJSON = jasmine.createSpy('toJSON').and.returnValue('fakeJson');
+      engineMock.addDataview(dataview);
+      spyOn(engineMock._windshaftClient, 'instantiateMap');
+
+      engineMock.reload('fakeSourceId', false, true);
+
+      expect(engineMock._windshaftClient.instantiateMap.calls.mostRecent().args[0].options.includeFilters).toEqual(true);
+      expect(engineMock._windshaftClient.instantiateMap.calls.mostRecent().args[0].params.filters.dataviews.dataviewId).toEqual('dataview1');
+    });
+
+    it('should NOT include the filters when the includeFilters option is false', function () {
+      var source = MockFactory.createAnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' });
+      var dataview = new Dataview({ id: 'dataview1', source: source }, { filter: new Backbone.Model(), map: {}, engine: engineMock });
+      dataview.toJSON = jasmine.createSpy('toJSON').and.returnValue('fakeJson');
+      engineMock.addDataview(dataview);
+      spyOn(engineMock._windshaftClient, 'instantiateMap');
+
+      engineMock.reload('fakeSourceId', false, false);
+
+      expect(engineMock._windshaftClient.instantiateMap.calls.mostRecent().args[0].options.includeFilters).toEqual(false);
+      expect(engineMock._windshaftClient.instantiateMap.calls.mostRecent().args[0].params.filters).toBeUndefined();
     });
   });
 });

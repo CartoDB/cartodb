@@ -19,12 +19,12 @@ var parseWindshaftErrors = require('./windshaft/error-parser');
  * An engine is the core of a carto app.
  *
  * With the help of external services the engine will:
- * 
+ *
  *  - Keep the state of the layers and dataviews.
  *  - Serialize the state and send requests to the server.
  *  - Parse the server response and update the internal models.
  *  - Notify errors or successful operations.
- * 
+ *
  * @param {Object} params - The parameters to initialize the engine.
  * @param {string} params.apiKey - Api key used to be autenticate in the windshaft server.
  * @param {string} params.authToken - Token used to be autenticate in the windshaft server.
@@ -78,21 +78,21 @@ Engine.prototype.getLayerGroup = function () {
 
 /**
  * Bind a callback function to an event. The callback will be invoked whenever the event is fired.
- * 
+ *
  * @param {string} event - The name of the event that triggers the callback execution.
  * @param {function} callback - A function to be executed when the event is fired.
  * @param {function} [context] - The context value for this when the callback is invoked.
- * 
+ *
  * @example
- * 
+ *
  * // Define a callback to be executed once the map is reloaded.
  * function onReload(event) {
  *  console.log(event); // "reload-success"
  * }
- * 
+ *
  * // Attach the callback to the RELOAD_SUCCESS event.
  * engine.on(Engine.Events.RELOAD_SUCCESS, onReload);
- * 
+ *
  * // Call the reload method and wait.
  * engine.reload();
  *
@@ -104,16 +104,16 @@ Engine.prototype.on = function on (event, callback, context) {
 
 /**
  * Remove a previously-bound callback function from an event.
- * 
+ *
  * @param {string} event - The name of the event that triggers the callback execution.
  * @param {function} callback - A function callback to be removed when the event is fired.
  * @param {function} [context] - The context value for this when the callback is invoked.
- * 
+ *
  * @example
- * 
+ *
  * // Remove the the `displayMap` listener function so it wont be executed anymore when the engine fires the `load` event.
  * engine.off(Engine.Events.RELOAD_SUCCESS, onReload);
- * 
+ *
  * @api
  */
 Engine.prototype.off = function off (event, callback, context) {
@@ -124,16 +124,16 @@ Engine.prototype.off = function off (event, callback, context) {
  * This is the most important function of the engine.
  * Generate a payload from the current state, send it to the windshaft server
  * and update the internal models with the server response.
- * 
+ *
  * Once the response has arrived trigger a 'reload-succes' or 'reload-error' event.
- * 
+ *
  * @param {string} sourceId - The sourceId triggering the reload event. This is usefull to prevent uneeded requests and save data.
  * @param {boolean} forceFetch - Forces dataviews to fetch data from server after a reload
  * @param {boolean} includeFilters - Boolean flag to control if the filters need to be added in the payload.
- * 
+ *
  * @fires Engine#Engine:RELOAD_SUCCESS
  * @fires Engine#Engine:RELOAD_ERROR
- * 
+ *
  * @api
  */
 Engine.prototype.reload = function reload (sourceId, forceFetch, includeFilters) {
@@ -149,11 +149,11 @@ Engine.prototype.reload = function reload (sourceId, forceFetch, includeFilters)
 };
 
 /**
- * 
+ *
  * Add a layer to the engine layersCollection
- * 
+ *
  * @param {layer} layer - A new layer to be added to the engine.
- * 
+ *
  * @public
  * @api
  */
@@ -162,11 +162,11 @@ Engine.prototype.addLayer = function addLayer (layer) {
 };
 
 /**
- * 
+ *
  * Remove a layer from the engine layersCollection
- * 
+ *
  * @param {layer} layer - A new layer to be removed from the engine.
- * 
+ *
  * @public
  * @api
  */
@@ -175,11 +175,11 @@ Engine.prototype.removeLayer = function removeLayer (layer) {
 };
 
 /**
- * 
+ *
  * Add a dataview to the engine dataviewsCollection
- * 
+ *
  * @param {Dataview} dataview - A new dataview to be added to the engine.
- * 
+ *
  * @public
  * @api
  */
@@ -188,11 +188,11 @@ Engine.prototype.addDataview = function addDataview (dataview) {
 };
 
 /**
- * 
+ *
  * Remove a dataview from the engine dataviewsCollection
- * 
+ *
  * @param {Dataview} dataview - The Dataview to be removed to the engine.
- * 
+ *
  * @public
  * @api
  */

@@ -69,7 +69,7 @@ var TorqueLayer = LayerModelBase.extend({
   },
 
   _onAttributeChanged: function () {
-    var reloadVis = _.any(ATTRIBUTES_THAT_TRIGGER_VIS_RELOAD, function (attr) {
+    var reload = _.any(ATTRIBUTES_THAT_TRIGGER_VIS_RELOAD, function (attr) {
       if (this.hasChanged(attr)) {
         if (attr === 'cartocss') {
           return this.previous('cartocss') && this._torqueCartoCSSPropsChanged();
@@ -78,7 +78,7 @@ var TorqueLayer = LayerModelBase.extend({
       }
     }, this);
 
-    if (reloadVis) {
+    if (reload) {
       this._reload();
     }
   },
@@ -109,7 +109,9 @@ var TorqueLayer = LayerModelBase.extend({
   },
 
   _reload: function () {
-    this._engine.reload({ sourceId: this.get('id') });
+    this._engine.reload({
+      sourceId: this.get('id')
+    });
   },
 
   play: function () {

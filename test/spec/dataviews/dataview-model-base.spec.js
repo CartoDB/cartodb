@@ -440,7 +440,6 @@ describe('dataviews/dataview-model-base', function () {
       this.removeSpy = jasmine.createSpy('remove');
       this.model.once('destroy', this.removeSpy);
       spyOn(this.model, 'stopListening');
-      spyOn(this.model, '_reloadVis');
       spyOn(this.source, 'off').and.callThrough();
 
       this.model.filter = jasmine.createSpyObj('filter', ['remove', 'isEmpty']);

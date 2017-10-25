@@ -632,7 +632,7 @@ describe('dataviews/histogram-dataview-model', function () {
   });
 
   describe('._onColumnChanged', function () {
-    it('should unset aggregation, and call _reloadVisAndForceFetch', function () {
+    it('should unset aggregation, and call _reloadAndForceFetch', function () {
       engineMock.reload.calls.reset();
 
       this.model.set({

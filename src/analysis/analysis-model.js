@@ -88,10 +88,10 @@ var AnalysisModel = Model.extend({
     return this.previous('status');
   },
 
-  _reload: function (opts) {
-    opts = opts || {};
-    opts.error = this._onMapReloadError.bind(this);
-    this._engine.reload(opts);
+  _reload: function () {
+    this._engine.reload({
+      error: this._onMapReloadError.bind(this)
+    });
   },
 
   _onMapReloadError: function () {

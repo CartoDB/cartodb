@@ -40,25 +40,25 @@ var CartoDBLayer = LayerModelBase.extend({
     this.unset('legends');
 
     this.bind('change', this._onAttributeChanged, this);
-    this.infowindow.fields.bind('reset add remove', this._reloadVis, this);
-    this.tooltip.fields.bind('reset add remove', this._reloadVis, this);
+    this.infowindow.fields.bind('reset add remove', this._reload, this);
+    this.tooltip.fields.bind('reset add remove', this._reload, this);
 
     LayerModelBase.prototype.initialize.apply(this, arguments);
   },
 
   _onAttributeChanged: function () {
-    var reloadVis = _.any(ATTRIBUTES_THAT_TRIGGER_VIS_RELOAD, function (attr) {
+    var reload = _.any(ATTRIBUTES_THAT_TRIGGER_VIS_RELOAD, function (attr) {
       if (this.hasChanged(attr)) {
         return true;
       }
     }, this);
 
-    if (reloadVis) {
-      this._reloadVis();
+    if (reload) {
+      this._reload();
     }
   },
 
-  _reloadVis: function () {
+  _reload: function () {
     this._engine.reload({
       sourceId: this.get('id')
     });

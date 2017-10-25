@@ -210,7 +210,7 @@ module.exports = DataviewModelBase.extend({
     });
     this.set('aggregation', undefined, { silent: true });
 
-    this._reloadVisAndForceFetch();
+    this._reloadAndForceFetch();
   },
 
   _calculateTotalAmount: function (buckets) {

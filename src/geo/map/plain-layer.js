@@ -33,7 +33,9 @@ var PlainLayer = LayerModelBase.extend({
   },
 
   _reload: function () {
-    this._engine.reload({ sourceId: this.get('id') });
+    this._engine.reload({
+      sourceId: this.get('id')
+    });
   }
 });
 

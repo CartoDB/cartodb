@@ -182,24 +182,21 @@ module.exports = Model.extend({
    * @protected
    */
   _onFilterChanged: function (filter) {
-    this._reloadVis();
+    this._reload({
+      sourceId: this.getSourceId()
+    });
   },
 
-  _reloadVis: function (opts) {
-    opts = opts || {};
-    this._engine.reload(
-      _.extend(
-        opts, {
-          sourceId: this.getSourceId()
-        }
-      )
-    );
-  },
-
-  _reloadVisAndForceFetch: function () {
-    this._reloadVis({
+  _reloadAndForceFetch: function () {
+    this._reload({
+      sourceId: this.getSourceId(),
       forceFetch: true
     });
+  },
+
+  _reload: function (opts) {
+    opts = opts || {};
+    this._engine.reload(opts);
   },
 
   _shouldFetchOnURLChange: function (options) {

@@ -12,6 +12,8 @@ var Response = require('./windshaft/response');
 var WindshaftClient = require('./windshaft/client');
 var AnalysisService = require('./analysis/analysis-service');
 var parseWindshaftErrors = require('./windshaft/error-parser');
+var log = require('./cdb.log');
+var WindshaftError = require('./windshaft/error');
 
 /**
  *
@@ -127,25 +129,69 @@ Engine.prototype.off = function off (event, callback, context) {
  *
  * Once the response has arrived trigger a 'reload-succes' or 'reload-error' event.
  *
- * @param {string} sourceId - The sourceId triggering the reload event. This is usefull to prevent uneeded requests and save data.
- * @param {boolean} forceFetch - Forces dataviews to fetch data from server after a reload
- * @param {boolean} includeFilters - Boolean flag to control if the filters need to be added in the payload.
+ * @param {string} options.sourceId - The sourceId triggering the reload event. This is usefull to prevent uneeded requests and save data.
+ * @param {boolean} options.forceFetch - Forces dataviews to fetch data from server after a reload
+ * @param {boolean} options.includeFilters - Boolean flag to control if the filters need to be added in the payload.
  *
  * @fires Engine#Engine:RELOAD_SUCCESS
  * @fires Engine#Engine:RELOAD_ERROR
  *
  * @api
  */
-Engine.prototype.reload = function reload (sourceId, forceFetch, includeFilters) {
-  // IncludeFilters must be true by default
-  includeFilters = (_.isUndefined(includeFilters) || includeFilters === null) ? true : !!includeFilters;
-  var params = this._buildParams(includeFilters);
-  var payload = this._getSerializer().serialize(this._layersCollection, this._dataviewsCollection);
-  // TODO: update options, use promises or explicit callbacks function (error, params).
-  var options = this._buildOptions(sourceId, forceFetch, includeFilters);
-  var request = new Request(payload, params, options);
-  this._eventEmmitter.trigger(Engine.Events.RELOAD_STARTED);
-  this._windshaftClient.instantiateMap(request);
+Engine.prototype.reload = function reload (options) {
+  options = options || {};
+
+  var oldSuccess = options.success;
+  var oldError = options.error;
+
+  options = _.extend({
+    includeFilters: true
+  }, _.pick(options, 'sourceId', 'forceFetch', 'includeFilters'));
+
+  try {
+    var payload = this._getSerializer().serialize(this._layersCollection, this._dataviewsCollection);
+    var params = this._buildParams(options.includeFilters);
+
+    if (options.includeFilters && !_.isEmpty(this._dataviewsCollection.getFilters())) {
+      params.filters = this._dataviewsCollection.getFilters();
+    }
+
+    options.success = function (response) {
+      var responseWrapper = new Response(this._windshaftSettings, response);
+      this._modelUpdater.updateModels(responseWrapper, options.sourceId, options.forceFetch);
+      this._restartAnalysisPolling();
+      this._eventEmmitter.trigger(Engine.Events.RELOAD_SUCCESS);
+      oldSuccess && oldSuccess(this);
+    }.bind(this);
+
+    options.error = function (response) {
+      response = response || {};
+      var windshaftErrors = parseWindshaftErrors(response);
+      this._modelUpdater.setErrors(windshaftErrors);
+      this._eventEmmitter.trigger(Engine.Events.RELOAD_ERROR, windshaftErrors);
+      var error = _.find(windshaftErrors, function (error) {
+        return error.isGlobalError();
+      });
+      oldError && oldError(error);
+    }.bind(this);
+
+    var request = new Request(payload, params, options);
+    this._eventEmmitter.trigger(Engine.Events.RELOAD_STARTED);
+    this._windshaftClient.instantiateMap(request);
+  } catch (e) {
+    var error = new WindshaftError({
+      message: e.message
+    });
+    this._modelUpdater.setErrors([error]);
+
+    log.error(e.message);
+    options.error && options.error();
+  }
+
+  // var params = this._buildParams(options.includeFilters);
+  // var payload = this._getSerializer().serialize(this._layersCollection, this._dataviewsCollection);
+  // // TODO: update options, use promises or explicit callbacks function (error, params).
+  // options = this._buildOptions(options);
 };
 
 /**
@@ -205,11 +251,12 @@ Engine.prototype.removeDataview = function removeDataview (dataview) {
  * Update internal models and trigger a reload_sucess event.
  * @private
  */
-Engine.prototype._onReloadSuccess = function _onReloadSuccess (serverResponse, sourceId, forceFetch) {
+Engine.prototype._onReloadSuccess = function _onReloadSuccess (serverResponse, options) {
   var responseWrapper = new Response(this._windshaftSettings, serverResponse);
-  this._modelUpdater.updateModels(responseWrapper, sourceId, forceFetch);
+  this._modelUpdater.updateModels(responseWrapper, options.sourceId, options.forceFetch);
   this._restartAnalysisPolling();
   this._eventEmmitter.trigger(Engine.Events.RELOAD_SUCCESS);
+  options.success && options.success();
 };
 
 /**
@@ -217,23 +264,25 @@ Engine.prototype._onReloadSuccess = function _onReloadSuccess (serverResponse, s
  * Update internal models setting errores and trigger a reload_error event.
  * @private
  */
-Engine.prototype._onReloadError = function _onReloadError (serverResponse) {
+Engine.prototype._onReloadError = function _onReloadError (serverResponse, options) {
   var errors = parseWindshaftErrors(serverResponse);
   this._modelUpdater.setErrors(errors);
   this._eventEmmitter.trigger(Engine.Events.RELOAD_ERROR, errors);
+  options.error && options.error();
 };
 
 /**
  * @private
  */
-Engine.prototype._buildOptions = function _buildOptions (sourceId, forceFetch, includeFilters) {
-  return {
-    includeFilters: includeFilters,
+Engine.prototype._buildOptions = function _buildOptions (options) {
+  return _.extend({}, options, {
     success: function (serverResponse) {
-      this._onReloadSuccess(serverResponse, sourceId, forceFetch);
+      this._onReloadSuccess(serverResponse, options);
     }.bind(this),
-    error: this._onReloadError.bind(this)
-  };
+    error: function (serverResponse) {
+      this._onReloadError(serverResponse, options);
+    }.bind(this)
+  });
 };
 
 /**

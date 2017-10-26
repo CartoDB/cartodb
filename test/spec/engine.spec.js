@@ -150,7 +150,9 @@ describe('Engine', function () {
         expect(updateModelsSpy).toHaveBeenCalledWith(jasmine.anything(), 'fakeSourceId', undefined);
         done();
       });
-      engineMock.reload('fakeSourceId');
+      engineMock.reload({
+        sourceId: 'fakeSourceId'
+      });
     });
 
     it('should use the forceFetch parameter', function (done) {
@@ -165,7 +167,10 @@ describe('Engine', function () {
         done();
       });
 
-      engineMock.reload('fakeSourceId', true);
+      engineMock.reload({
+        sourceId: 'fakeSourceId',
+        forceFetch: true
+      });
     });
 
     // The following tests overlaps the model-updater tests.
@@ -218,7 +223,11 @@ describe('Engine', function () {
       engineMock.addDataview(dataview);
       spyOn(engineMock._windshaftClient, 'instantiateMap');
 
-      engineMock.reload('fakeSourceId', false, true);
+      engineMock.reload({
+        sourceId: 'fakeSourceId',
+        forceFetch: false,
+        includeFilters: true
+      });
 
       expect(engineMock._windshaftClient.instantiateMap.calls.mostRecent().args[0].options.includeFilters).toEqual(true);
       expect(engineMock._windshaftClient.instantiateMap.calls.mostRecent().args[0].params.filters.dataviews.dataviewId).toEqual('dataview1');
@@ -231,7 +240,11 @@ describe('Engine', function () {
       engineMock.addDataview(dataview);
       spyOn(engineMock._windshaftClient, 'instantiateMap');
 
-      engineMock.reload('fakeSourceId', false, false);
+      engineMock.reload({
+        sourceId: 'fakeSourceId',
+        forceFetch: false,
+        includeFilters: false
+      });
 
       expect(engineMock._windshaftClient.instantiateMap.calls.mostRecent().args[0].options.includeFilters).toEqual(false);
       expect(engineMock._windshaftClient.instantiateMap.calls.mostRecent().args[0].params.filters).toBeUndefined();

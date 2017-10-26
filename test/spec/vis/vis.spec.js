@@ -324,7 +324,12 @@ describe('vis/vis', function () {
           forceFetch: 'forceFetchMock'
         });
 
-        expect(this.vis._engine.reload).toHaveBeenCalledWith('sourceIdMock', 'forceFetchMock', true);
+        expect(this.vis._engine.reload).toHaveBeenCalledWith({
+          a: 1,
+          b: 2,
+          sourceId: 'sourceIdMock',
+          forceFetch: 'forceFetchMock'
+        });
       });
 
       it('should execute the success callback if the reload succeeds', function () {

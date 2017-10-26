@@ -130,15 +130,21 @@ AnalysisService.getAnalysisList = function (layersCollection, dataviewsCollectio
 
 function _getAnalysesFromLayers (layersCollection) {
   var layers = _getCartoDBAndTorqueLayers(layersCollection);
-  return layers.map(function (layer) {
-    return layer.getSource();
-  });
+  return _.chain(layers)
+    .map(function (layer) {
+      return layer.getSource();
+    })
+    .compact()
+    .value();
 }
 
 function _getAnalysesFromDataviews (dataviewsCollection) {
-  return dataviewsCollection.map(function (dataview) {
-    return dataview.getSource();
-  });
+  return dataviewsCollection.chain()
+    .map(function (dataview) {
+      return dataview.getSource();
+    })
+    .compact()
+    .value();
 }
 
 function _getCartoDBAndTorqueLayers (layersCollection) {

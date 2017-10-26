@@ -29,6 +29,8 @@ CartoDB::Application.routes.draw do
   get '(/user/:user_domain)(/u/:user_domain)/status'          => 'home#app_status'
   get '(/user/:user_domain)(/u/:user_domain)/diagnosis'       => 'home#app_diagnosis'
 
+  get '(/user/:user_domain)/upgrade_trial' => 'signup#upgrade_trial', as: :upgrade_trial
+
   # Explore
   get   '(/user/:user_domain)(/u/:user_domain)/explore'         => 'explore#index',     as: :explore_index
   get   '(/user/:user_domain)(/u/:user_domain)/search'          => 'explore#search',    as: :explore_search

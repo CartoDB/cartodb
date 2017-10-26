@@ -141,17 +141,17 @@ class SignupController < ApplicationController
 
   def google_plus_config
     unless @organization && !@organization.auth_google_enabled
-      @google_config = Oauth::Google::Config.instance(form_authenticity_token, google_oauth_url,
-                                                      invitation_token: params[:invitation_token],
-                                                      organization_name: @organization.try(:name))
+      @google_config = Carto::Oauth::Google::Config.instance(form_authenticity_token, google_oauth_url,
+                                                             invitation_token: params[:invitation_token],
+                                                             organization_name: @organization.try(:name))
     end
   end
 
   def github_config
     unless @organization && !@organization.auth_github_enabled
-      @github_config = Oauth::Github::Config.instance(form_authenticity_token, github_url,
-                                                      invitation_token: params[:invitation_token],
-                                                      organization_name: @organization.try(:name))
+      @github_config = Carto::Oauth::Github::Config.instance(form_authenticity_token, github_url,
+                                                             invitation_token: params[:invitation_token],
+                                                             organization_name: @organization.try(:name))
     end
   end
 

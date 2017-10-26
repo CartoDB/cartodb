@@ -1,8 +1,8 @@
 # encoding: UTF-8
 require_dependency 'google_plus_config'
 require_dependency 'google_plus_api'
-require_dependency 'oauth/github/config'
-require_dependency 'oauth/google/config'
+require_dependency 'carto/oauth/github/config'
+require_dependency 'carto/oauth/google/config'
 require_dependency 'carto/saml_service'
 require_dependency 'carto/username_proposer'
 require_dependency 'carto/email_cleaner'
@@ -173,17 +173,17 @@ class SessionsController < ApplicationController
 
   def google_plus_config
     unless @organization && !@organization.auth_google_enabled
-      Oauth::Google::Config.instance(form_authenticity_token, google_oauth_url,
-                                     invitation_token: params[:invitation_token],
-                                     organization_name: @organization.try(:name))
+      Carto::Oauth::Google::Config.instance(form_authenticity_token, google_oauth_url,
+                                            invitation_token: params[:invitation_token],
+                                            organization_name: @organization.try(:name))
     end
   end
 
   def github_config
     unless @organization && !@organization.auth_github_enabled
-      Oauth::Github::Config.instance(form_authenticity_token, github_url,
-                                     invitation_token: params[:invitation_token],
-                                     organization_name: @organization.try(:name))
+      Carto::Oauth::Github::Config.instance(form_authenticity_token, github_url,
+                                            invitation_token: params[:invitation_token],
+                                            organization_name: @organization.try(:name))
     end
   end
 

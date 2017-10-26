@@ -1,9 +1,9 @@
 # encoding: UTF-8
 
-require_dependency 'oauth/github/api'
-require_dependency 'oauth/github/config'
-require_dependency 'oauth/google/api'
-require_dependency 'oauth/google/config'
+require_dependency 'carto/oauth/github/api'
+require_dependency 'carto/oauth/github/config'
+require_dependency 'carto/oauth/google/api'
+require_dependency 'carto/oauth/google/config'
 require_dependency 'account_creator'
 
 module Carto
@@ -52,15 +52,15 @@ module Carto
     end
 
     def initialize_github_config
-      @config = Oauth::Github::Config.instance(form_authenticity_token, github_url,
-                                               organization_name: @organization_name,
-                                               invitation_token: @invitation_token)
+      @config = Carto::Oauth::Github::Config.instance(form_authenticity_token, github_url,
+                                                      organization_name: @organization_name,
+                                                      invitation_token: @invitation_token)
     end
 
     def initialize_google_config
-      @config = Oauth::Google::Config.instance(form_authenticity_token, google_oauth_url,
-                                               organization_name: @organization_name,
-                                               invitation_token: @invitation_token)
+      @config = Carto::Oauth::Google::Config.instance(form_authenticity_token, google_oauth_url,
+                                                      organization_name: @organization_name,
+                                                      invitation_token: @invitation_token)
     end
 
     def login(api)

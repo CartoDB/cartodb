@@ -16,7 +16,7 @@ module Carto
             Logger.error(message: 'Error checking GitHub student', access_token: access_token)
             false
           end
-        rescue => e
+        rescue StandardError => e
           Logger.error(message: 'Error checking GitHub student', exception: e, access_token: access_token)
         end
 
@@ -72,7 +72,7 @@ module Carto
 
         def user_data
           @user_data ||= authenticated_request('GET', 'https://api.github.com/user')
-        rescue => e
+        rescue StandardError => e
           Logger.error(message: 'Error obtaining GitHub user data',
                       exception: e, access_token: access_token)
           nil
@@ -84,7 +84,7 @@ module Carto
 
         def get_emails
           authenticated_request('GET', 'https://api.github.com/user/emails').select { |email| email['verified'] }
-        rescue => e
+        rescue StandardError => e
           CartodbCentral::Logger.error(message: 'Error obtaining GitHub user emails', exception: e, access_token: access_token)
           nil
         end
@@ -105,7 +105,7 @@ module Carto
             body: body
           ).run
           JSON.parse(response.body)
-        rescue => e
+        rescue StandardError => e
           trace_info = {
             message: 'Error in request to GitHub', exception: e,
             method: method, url: url, body: body, headers: headers

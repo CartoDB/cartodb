@@ -38,7 +38,7 @@ module Carto
       else
         signup(api)
       end
-    rescue => e
+    rescue StandardError => e
       CartoDB::Logger.warning(exception: e, message: 'Error logging in via Oauth')
       redirect_to CartoDB.url(self, 'login')
     end

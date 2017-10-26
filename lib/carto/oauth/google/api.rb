@@ -58,9 +58,9 @@ module Carto
 
         def user_data
           @user_data ||= get_user_data
-        rescue => e
+        rescue StandardError => e
           Logger.error(message: 'Error obtaining Google user data',
-                      exception: e, access_token: access_token)
+                       exception: e, access_token: access_token)
           nil
         end
 
@@ -74,7 +74,7 @@ module Carto
 
           raise 'Invalid response code' unless response.code == 200
           JSON.parse(response.body)
-        rescue => e
+        rescue StandardError => e
           trace_info = {
             message: 'Error in request to Google', exception: e,
             method: method, url: url, body: body, headers: headers

@@ -50,7 +50,7 @@ module Carto
           body: body
         ).run
         JSON.parse(response.body)
-      rescue => e
+      rescue StandardError => e
         CartoDB::Logger.error(message: 'Error in Oauth request', exception: e,
                               method: method, url: url, body: body, headers: headers,
                               response_code: response.code, response_headers: response.headers,

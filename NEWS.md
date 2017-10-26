@@ -12,6 +12,7 @@ This release changes the way Google ouath login works. If you are using it, you 
 to the oauth.google_plus section of the configuration file.
 
 ### Features
+* Clean assets script
 * Improve error on widgets (CartoDB/deep-insights.js#574)
 * Add pagination support in data imports listing in superadmin (#12938).
 * Profile static view (#12704)
@@ -40,6 +41,7 @@ to the oauth.google_plus section of the configuration file.
 * Change select "attribute" placeholders (#12498)
 * Add pointer cursor to the sliders (#12499)
 * Fixed a bug that would break the bubble legend on IE11 (#support/891)
+* Open visualization endpoint to anonymous users, returning related_canonical_visualizations with visible ones, and related_canonical_visualizations_count with the full count (#12908)
 * Support for SAML signed logout requests (#12355)
 * Provide a way to display broken layers pointing to non existent nodes (#12541)
 * Provide CartoCSS attribute within layer info in vizjson v3 (CartoDB/support#858)
@@ -75,8 +77,10 @@ to the oauth.google_plus section of the configuration file.
 * Remove data-observatory-multiple-measures feature flag (#304)
 * Improve legends error (cartodb.js#1758)
 * Updates Dataservices API client default version to `0.21.0` (#12942)
+* Now is possible to use wildcard character (*) in the whitelist emails for organization signups (#12991)
 
 ### Bug fixes / enhancements
+* Fallback to `username` when `name` is empty in share map view
 * Fix bounding box not updating with gmaps basemaps
 * Google oauth now works without JS (#12977)
 * Add "less or equal than" and "greater or equal than" to filter by value analysis
@@ -261,6 +265,20 @@ to the oauth.google_plus section of the configuration file.
 * Remove analysisCollection and refactor analyses-integration (#12947)
 * Fix layer's sources in tests (analysis source required) (#12866)
 * Adapt widget integration and specs to dataviews refactor (#12850)
+
+### NOTICE
+This release upgrades the CartoDB PostgreSQL extension to `0.19.2`. Run the following to have it available:
+```shell
+cd $(git rev-parse --show-toplevel)/lib/sql
+sudo make install
+```
+
+To launch the clean assets script run the following in the terminal:
+```shell
+./script/clean_assets
+```
+
+It will remove old assets from `public/assets/` (older than version in `package.json`)
 
 #### Dropbox API v2 migration
 
@@ -569,6 +587,7 @@ More information at [Dropbox migration guide](https://www.dropbox.com/developers
 * Color picker disappears in CartoCSS editor after clicking (#12097).
 * Bug found in dataset view when user had Google basemaps enabled (#12155)
 * Fixed incorrect analysis node being selected after deleting (#11899)
+* Maps using GMaps as their basemap are now opening in editor (#12712)
 * Time-series range filter is kept after refreshing (#12576)
 
 ### NOTICE

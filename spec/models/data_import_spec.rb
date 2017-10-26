@@ -72,6 +72,7 @@ describe DataImport do
     data_import.state.should eq 'complete'
     data_import.table_name.should eq 'walmart_latlon'
     data_import.user.in_database["select count(*) from #{data_import.table_name}"].all[0][:count].should eq 3176
+    user_tables_should_be_registered
 
     data_import = create_import(overwrite: false, truncated: false)
     data_import.run_import!
@@ -80,6 +81,7 @@ describe DataImport do
     data_import.state.should eq 'complete'
     data_import.table_name.should eq 'walmart_latlon_1'
     data_import.user.in_database["select count(*) from #{data_import.table_name}"].all[0][:count].should eq 3176
+    user_tables_should_be_registered
 
     data_import = create_import(overwrite: true, truncated: true)
     data_import.run_import!
@@ -88,6 +90,7 @@ describe DataImport do
     data_import.state.should eq 'complete'
     data_import.table_name.should eq 'walmart_latlon'
     data_import.user.in_database["select count(*) from #{data_import.table_name}"].all[0][:count].should eq 2
+    user_tables_should_be_registered
   end
 
   it 'should raise an exception if overwriting with missing data' do
@@ -101,6 +104,7 @@ describe DataImport do
     data_import.state.should eq 'complete'
     data_import.table_name.should eq 'walmart_latlon'
     data_import.user.in_database["select count(*) from #{data_import.table_name}"].all[0][:count].should eq 2
+    user_tables_should_be_registered
 
     data_import = create_import(overwrite: true, truncated: true, incomplete_schema: true)
     expect { data_import.run_import! }.to raise_error(RuntimeError, 'Incompatible schemas')
@@ -118,6 +122,7 @@ describe DataImport do
     data_import.state.should eq 'complete'
     data_import.table_name.should eq 'walmart_latlon'
     data_import.user.in_database["select count(*) from #{data_import.table_name}"].all[0][:count].should eq 2
+    user_tables_should_be_registered
 
     data_import = create_import(overwrite: true, truncated: true, incomplete_schema: false)
     data_import.run_import!
@@ -126,6 +131,11 @@ describe DataImport do
     data_import.state.should eq 'complete'
     data_import.table_name.should eq 'walmart_latlon'
     data_import.user.in_database["select count(*) from #{data_import.table_name}"].all[0][:count].should eq 2
+    user_tables_should_be_registered
+  end
+
+  def user_tables_should_be_registered
+    Carto::GhostTablesManager.new(@user.id).user_tables_synced_with_db?.should eq true
   end
 
   def create_import(overwrite:, truncated:, incomplete_schema: false)

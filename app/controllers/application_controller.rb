@@ -196,7 +196,13 @@ class ApplicationController < ActionController::Base
 
   def login_required
     is_auth = authenticated?(CartoDB.extract_subdomain(request))
-    is_auth ? validate_session(current_user) : not_authorized
+    if is_auth && current_user.active?
+      validate_session(current_user)
+    elsif is_auth && current_user.locked?
+      locked_user
+    else
+      not_authorized
+    end
   end
 
   def api_authorization_required
@@ -218,6 +224,17 @@ class ApplicationController < ActionController::Base
       format.html do
         session[:return_to] = request.url
         redirect_to CartoDB.path(self, 'login') and return
+      end
+      format.json do
+        head :unauthorized
+      end
+    end
+  end
+
+  def locked_user
+    respond_to do |format|
+      format.html do
+        redirect_to CartoDB.path(self, 'upgrade_trial') and return
       end
       format.json do
         head :unauthorized

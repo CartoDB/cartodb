@@ -93,7 +93,6 @@ module CartoDB
           rename(result, result.table_name, name)
           begin
             if overwrite
-              @table_setup.cartodbfy(name)
               @table_setup.copy_privileges(@destination_schema, name, ORIGIN_SCHEMA, name)
               log("Dropping destination table: #{name}")
               drop("#{@destination_schema}.#{name}")
@@ -110,10 +109,10 @@ module CartoDB
         if overwrite
           # This is done here instead of doing it inside the transaction because some of the changes would not yet be visible
           # for creating indexes and fixing oid so, since order is importante here, it has all ben taken out of it.
+          @table_setup.cartodbfy(name) # This is done here because in the imports it's moved first to the dest schema
           @table_setup.run_index_statements(index_statements, @database)
           @table_setup.recreate_overviews(name)
           @table_setup.fix_oid(name)
-          @table_setup.cartodbfy(name)
           @table_setup.update_cdb_tablemetadata(name)
         end
 

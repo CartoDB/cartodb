@@ -72,7 +72,7 @@ module Oauth
         ).run
 
         raise 'Invalid response code' unless response.code == 200
-          JSON.parse(response.body)
+        JSON.parse(response.body)
       rescue => e
         trace_info = {
           message: 'Error in request to Google', exception: e,

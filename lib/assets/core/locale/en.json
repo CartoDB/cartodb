@@ -2240,7 +2240,7 @@
     "style": {
       "types": {
         "none": "-",
-        "simple": "none",
+        "simple": "points",
         "hexabins": "hexbins",
         "squares": "squares",
         "regions": "Adm. Regions",

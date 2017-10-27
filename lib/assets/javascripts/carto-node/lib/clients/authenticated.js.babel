@@ -18,7 +18,8 @@ class AuthenticatedClient extends PublicClient {
     const VIZ_API_PATH = `api/v1/viz`;
     const uriParams = this.paramsToURI({
       per_page: mapsNumber,
-      type: 'derived'
+      type: 'derived',
+      privacy: 'public'
     });
 
     return this.get([VIZ_API_PATH, uriParams], callback);

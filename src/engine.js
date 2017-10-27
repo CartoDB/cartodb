@@ -149,12 +149,8 @@ Engine.prototype.reload = function reload (options) {
   }, _.pick(options, 'sourceId', 'forceFetch', 'includeFilters'));
 
   try {
-    var payload = this._getSerializer().serialize(this._layersCollection, this._dataviewsCollection);
     var params = this._buildParams(options.includeFilters);
-
-    if (options.includeFilters && !_.isEmpty(this._dataviewsCollection.getFilters())) {
-      params.filters = this._dataviewsCollection.getFilters();
-    }
+    var payload = this._getSerializer().serialize(this._layersCollection, this._dataviewsCollection);
 
     options.success = function (response) {
       var responseWrapper = new Response(this._windshaftSettings, response);
@@ -176,6 +172,7 @@ Engine.prototype.reload = function reload (options) {
     }.bind(this);
 
     var request = new Request(payload, params, options);
+
     this._eventEmmitter.trigger(Engine.Events.RELOAD_STARTED);
     this._windshaftClient.instantiateMap(request);
   } catch (e) {
@@ -188,8 +185,6 @@ Engine.prototype.reload = function reload (options) {
     options.error && options.error({});
   }
 
-  // var params = this._buildParams(options.includeFilters);
-  // var payload = this._getSerializer().serialize(this._layersCollection, this._dataviewsCollection);
   // // TODO: update options, use promises or explicit callbacks function (error, params).
   // options = this._buildOptions(options);
 };

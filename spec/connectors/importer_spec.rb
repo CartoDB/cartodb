@@ -68,7 +68,7 @@ describe CartoDB::Connector::Importer do
       data_import_id: id,
       destination_schema: destination_schema
     )
-    new_table_name = importer.rename(result_mock, importer_table_name, desired_table_name)
+    new_table_name = importer.rename(result_mock, importer_table_name, desired_table_name, destination_schema)
     new_table_name.should_not == nil
   end
 

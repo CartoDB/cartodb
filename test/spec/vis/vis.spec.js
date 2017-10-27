@@ -334,7 +334,7 @@ describe('vis/vis', function () {
 
       it('should execute the success callback if the reload succeeds', function () {
         var successSpy = jasmine.createSpy('sucessCallback');
-        // Mock the server request. // TODO: Mock $.ajax
+        // Mock the server request.
         spyOn(this.vis._engine._windshaftClient, 'instantiateMap').and.callFake(function (request) {
           request.options.success({ metadata: {} });
         });
@@ -348,6 +348,24 @@ describe('vis/vis', function () {
         });
 
         expect(successSpy).toHaveBeenCalled();
+      });
+
+      it('should execute the error callback if the reload error', function () {
+        var errorSpy = jasmine.createSpy('errorCallback');
+        // Mock the server request.
+        spyOn(this.vis._engine._windshaftClient, 'instantiateMap').and.callFake(function (request) {
+          request.options.error();
+        });
+
+        this.vis.reload({
+          a: 1,
+          b: 2,
+          sourceId: 'sourceIdMock',
+          forceFetch: 'forceFetchMock',
+          error: errorSpy
+        });
+
+        expect(errorSpy).toHaveBeenCalled();
       });
 
       it('should trigger a `reload` event', function () {

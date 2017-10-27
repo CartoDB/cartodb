@@ -185,7 +185,7 @@ Engine.prototype.reload = function reload (options) {
     this._modelUpdater.setErrors([error]);
 
     log.error(e.message);
-    options.error && options.error();
+    options.error && options.error({});
   }
 
   // var params = this._buildParams(options.includeFilters);

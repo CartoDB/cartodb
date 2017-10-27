@@ -135,7 +135,7 @@ describe DataImport do
   end
 
   def user_tables_should_be_registered
-    raise 'tables not properly registered' unless Carto::GhostTablesManager.new(@user.id).user_tables_synced_with_db?
+    Carto::GhostTablesManager.new(@user.id).user_tables_synced_with_db?.should eq(true), "Tables not properly registered"
   end
 
   def create_import(overwrite:, truncated:, incomplete_schema: false)

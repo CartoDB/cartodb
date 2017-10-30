@@ -90,11 +90,10 @@ module Carto
         end
 
         def authenticated_request(method, url, body: nil)
-          self.class.request(method, url, body: body, headers: { 'Authorization' => "token #{@access_token}" })
-        end
-
-        def self.request(method, url, body: nil, headers: {})
-          headers['Accept'] = 'application/json'
+          headers = {
+            'Accept' => 'application/json',
+            'Authorization' => "token #{@access_token}"
+          }
 
           response = Typhoeus::Request.new(
             url,
@@ -119,7 +118,6 @@ module Carto
           Logger.error(trace_info)
           nil
         end
-        private_class_method :request
       end
     end
   end

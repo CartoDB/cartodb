@@ -117,6 +117,9 @@ var VisModel = Backbone.Model.extend({
 
     this._engine = this._createEngine(windshaftSettings);
 
+    this._engine.on(Engine.Events.RELOAD_SUCCESS, this._onEngineReloadSuccess.bind(this));
+    this._engine.on(Engine.Events.RELOAD_ERROR, this._onEngineReloadError.bind(this));
+
     // Bind layerGroupModel object to engine
     this.layerGroupModel = this._engine._cartoLayerGroup;
 
@@ -266,8 +269,8 @@ var VisModel = Backbone.Model.extend({
         this._onMapInstantiatedForTheFirstTime();
         options.success && options.success();
       }.bind(this),
-      error: function () {
-        options.error && options.error();
+      error: function (error) {
+        options.error && options.error(error);
       },
       includeFilters: false
     });
@@ -289,32 +292,21 @@ var VisModel = Backbone.Model.extend({
     this.trigger('dataviewsFetched');
   },
 
+  _onEngineReloadSuccess: function () {
+    this.trigger('reloaded');
+    var analysisNodes = AnalysisService.getUniqueAnalysisNodes(this._layersCollection, this._dataviewsCollection);
+    this._isAnyAnalysisNodeLoading(analysisNodes) ? this.trackLoadingObject(this) : this.untrackLoadingObject(this);
+    this.setOk();
+  },
+
+  _onEngineReloadError: function (error) {
+    this.setError(error);
+  },
+
   reload: function (options) {
-    options = options || {};
-    var sourceId = options.sourceId;
-    var forceFetch = options.forceFetch;
-    var includeFilters = _.isUndefined(options.includeFilters) ? true : !!options.includeFilters;
-
-    var onSuccess = function () {
-      this._engine.off(Engine.Events.RELOAD_SUCCESS, onSuccess);
-      this.trigger('reloaded');
-      var analysisNodes = AnalysisService.getUniqueAnalysisNodes(this._layersCollection, this._dataviewsCollection);
-      this._isAnyAnalysisNodeLoading(analysisNodes) ? this.trackLoadingObject(this) : this.untrackLoadingObject(this);
-      this.setOk();
-      options.success && options.success();
-    }.bind(this);
-
-    var onError = function (errors) {
-      this._engine.off(Engine.Events.RELOAD_ERROR, onError);
-      this.setError(errors);
-      options.error && options.error();
-    }.bind(this);
-
     if (this._instantiateMapWasCalled) {
       this.trigger('reload');
-      this._engine.on(Engine.Events.RELOAD_SUCCESS, onSuccess);
-      this._engine.on(Engine.Events.RELOAD_ERROR, onError);
-      this._engine.reload(sourceId, forceFetch, includeFilters);
+      this._engine.reload(options);
     }
   },
 

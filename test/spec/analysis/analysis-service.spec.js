@@ -341,8 +341,8 @@ describe('src/analysis/analysis-service.js', function () {
           query: 'SELECT * FROM subway_stops'
         }
       });
-      var layer = new CartoDBLayer({ source: analysis }, { vis: fakeVis });
-      var dataview = new Dataview({ id: 'dataview1', source: analysis }, { map: {}, vis: fakeVis });
+      var layer = new CartoDBLayer({ source: analysis }, { engine: engineMock });
+      var dataview = new Dataview({ id: 'dataview1', source: analysis }, { map: {}, engine: engineMock });
       layer.set('source', undefined, { silent: true });
       dataview.set('source', undefined, { silent: true });
       var layersCollection = new Backbone.Collection([layer]);

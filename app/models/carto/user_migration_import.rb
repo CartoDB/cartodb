@@ -4,6 +4,7 @@ require 'active_record'
 require 'fileutils'
 require_relative '../../../services/user-mover/import_user'
 require_dependency 'resque/user_migration_jobs'
+require_dependency 'carto/user_metadata_export_service'
 
 module Carto
   class UserMigrationImport < ::ActiveRecord::Base
@@ -46,7 +47,7 @@ module Carto
       update_attributes(state: STATE_FAILURE)
       false
     ensure
-      package.cleanup
+      package.try(:cleanup)
     end
 
     def enqueue
@@ -64,20 +65,85 @@ module Carto
     end
 
     def import(service, package)
-      if import_metadata?
-        log.append('=== Importing metadata ===')
+      imported = do_import_metadata(package, service) if import_metadata?
+      do_import_data(package, service)
+      import_visualizations(imported, package, service) if import_metadata?
+    end
+
+    def do_import_metadata(package, service)
+      log.append('=== Importing metadata ===')
+      begin
         imported = service.import_from_directory(package.meta_dir)
-        org_import? ? self.organization = imported : self.user = imported
-        save!
+      rescue UserAlreadyExists, OrganizationAlreadyExists => e
+        log.append('Organization already exists. Skipping!')
+        raise e
+      rescue => e
+        log.append('=== Error importing metadata. Rollback! ===')
+        service.rollback_import_from_directory(package.meta_dir)
+        raise e
       end
+      org_import? ? self.organization = imported : self.user = imported
+      update_database_host
+      save!
+      imported
+    end
 
+    def do_import_data(package, service)
       log.append('=== Importing data ===')
-      CartoDB::DataMover::ImportJob.new(import_job_arguments(package.data_dir)).run!
-
-      if import_metadata?
-        log.append('=== Importing visualizations and search tweets ===')
-        service.import_metadata_from_directory(imported, package.meta_dir)
+      import_job = CartoDB::DataMover::ImportJob.new(import_job_arguments(package.data_dir))
+      begin
+        import_job.run!
+      rescue => e
+        log.append('=== Error importing data. Rollback! ===')
+        rollback_import_data(package)
+        service.rollback_import_from_directory(package.meta_dir) if import_metadata?
+        raise e
+      ensure
+        import_job.terminate_connections
       end
+    end
+
+    def import_visualizations(imported, package, service)
+      log.append('=== Importing visualizations and search tweets ===')
+      begin
+        ActiveRecord::Base.transaction do
+          service.import_metadata_from_directory(imported, package.meta_dir)
+        end
+      rescue => e
+        log.append('=== Error importing visualizations and search tweets. Rollback! ===')
+        rollback_import_data(package)
+        service.rollback_import_from_directory(package.meta_dir)
+        raise e
+      end
+    end
+
+    def rollback_import_data(package)
+      import_job = CartoDB::DataMover::ImportJob.new(
+        import_job_arguments(package.data_dir).merge(rollback: true,
+                                                     mode: :rollback,
+                                                     drop_database: true,
+                                                     drop_roles: true)
+      )
+
+      import_job.run!
+      import_job.terminate_connections
+    rescue => e
+      log.append('There was an error while rolling back import data:' + e.to_s)
+    end
+
+    def update_database_host
+      users.each do |user|
+        Rollbar.info("Updating database conection for user #{user.username} to #{database_host}")
+        user.database_host = database_host
+        user.save!
+        # This is because Sequel models are being cached along request. This forces reload.
+        # It's being used in visualizations_export_persistence_service.rb#save_import
+        ::User[user.id].reload
+      end
+    end
+
+    def users
+      org_import? ? organization.users : [user]
     end
 
     def import_only_data?

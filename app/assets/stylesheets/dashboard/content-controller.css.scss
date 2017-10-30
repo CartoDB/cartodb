@@ -13,8 +13,13 @@
   -moz-font-smoothing: antialiased;
   -webkit-font-smoothing: antialiased;
 }
-
-.ContentController.on-boarding { 
-  padding-top: 0;
+.ContentController.on-boarding {
   min-height: initial;
+  padding-top: 0;
+}
+.OnpremiseVersion,
+.Hosted {
+  .is-hidden {
+    display: none;
+  }
 }

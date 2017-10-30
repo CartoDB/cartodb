@@ -47,5 +47,18 @@ describe Carto::VisualizationMigrator do
       @visualization.overlays.any? { |o| o.type == 'layer_selector' }.should be_false
       @visualization.map.options['layer_selector'].should be_true
     end
+
+    it 'fixes GMaps options' do
+      basemap = @visualization.layers.first
+      basemap.kind = 'gmapsbase'
+      basemap.options = { "type" => "GMapsBase", "base_type" => "roadmap" }
+      basemap.save!
+
+      migrator.migrate_visualization_to_v3(@visualization)
+
+      @visualization.reload
+      @visualization.layers.first.options.should have_key(:baseType)
+      @visualization.layers.first.options.should_not have_key(:base_type)
+    end
   end
 end

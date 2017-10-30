@@ -107,7 +107,17 @@ grunt editor_specs
 
 After the building process finish, a webpage will show up with a link to the Jasmine page with all the specs. The URL of this page is `http://localhost:8089/_SpecRunner.html`
 
-Editor specs process won't watch for changes, so every time you modify any file you'll have to run again the Editor specs command.
+Then, the process will watch changes in the codebase and will regenerate the specs as needed. Just refresh the Jasmine page to pass again the tests.
+
+**Run specs and regular codebase simultaneously**
+
+If you want to run simultaneously the application and the specs generation follow these steps:
+
+1. Open a terminal with Node v6.9.2 (use nvm) and run `grunt dev`. This will build the application assets and will watch for changes.
+
+2. Open a second terminal and run `grunt affected_editor_specs`.
+
+3. That's it. When you change any Builder Javascript file `grunt dev` will build the application bundle and `grunt affected_editor_specs` will build the specs.
 
 #### Builder specs
 
@@ -167,7 +177,6 @@ First time starting to work you need to run `grunt dev`, to build all necessary 
 
 ```bash
 grunt dev
-
 ```
 
 That enables CSS and JS watchers for rebuilding bundles automatically upon changes.
@@ -181,6 +190,16 @@ That enables CSS and JS watchers for rebuilding bundles automatically upon chang
 ```
 
 _Don't forget to restart Rails after you have modified `config/app_config.yml`._
+
+## Building static pages
+
+There are some views that can be served from a static file in `public/static/` directory and must be built beforehand. For that purpose run the following command:
+
+```bash
+grunt js_builder && npm run build:static
+```
+
+Don't forget to check-in the resulting static files.
 
 # Backend
 

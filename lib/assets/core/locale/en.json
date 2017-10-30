@@ -181,7 +181,7 @@
       "quads": "Classification of the geometry from the analysis",
       "significance": "The statistical significance of the geometry's classification of one of four quadrant types.",
       "moran": "The local statistic calculated from the Moran's I analysis for each geometry/value in the dataset.",
-      "rowid": "The original row id of the geometry (cartodb_id)."
+      "vals": "Value used in analysis. If a denominator is entered, this is the 'standardized' rate (centered on mean, normalized by standard deviation)."
     },
     "kmeans": {
       "title": "Calculating point clusters",
@@ -952,7 +952,7 @@
         "add-btn": "Add analysis",
         "disabled-option-desc": "Your layer's geometries are %{simpleGeometryType} and this analysis needs %{requiredInputGeometries}",
         "unknown-geometry-type": "unknown",
-        "info-analysis": "Info about analysis",
+        "more-info": "More info",
         "option-types": {
           "connect-with-lines": {
             "title": "Connect with lines",
@@ -1249,6 +1249,12 @@
       "column-type-error": "Column type must be a %{columnType}",
       "interval-error": "Value must be between %{minValue} and %{maxValue}",
       "copy-button": "COPY",
+      "lazy-select": {
+        "search": "Search...",
+        "error": "Error fetching %{type}",
+        "type": "items",
+        "empty": "No results for %{type} column."
+      },
       "data-observatory": {
         "dropdown": {
           "measurement": {
@@ -1471,14 +1477,34 @@
     "map": "map",
     "map_name": "%{name} map",
     "published": "Published %{when}",
-    "unpublished": "Map not published yet",
+    "unpublished": "Unpublished map",
     "map_pluralize": "%{smart_count} map |||| %{smart_count} maps",
     "button_add": "Add",
-    "button_share": "SHARE",
+    "button_publish": "Publish",
     "unpublished-changes": "Unpublished changes",
     "error-query": {
       "body": "Errors found in your SQL query. %{action} before continuing.",
       "label": "Fix them"
+    },
+    "messages": {
+      "layer-hidden": {
+        "title": "Layer hidden",
+        "body": "This layer is hidden. Changes won't be shown until you make it visible.",
+        "show": "Show"
+      },
+      "generic-error": {
+        "title": "Some tiles were not displayed",
+        "body": "If the problem persists check our docs or contact us."
+      },
+      "limit": {
+        "title": "Some tiles might not be working correctly",
+        "body": "Looks like you are over your limits when trying to render some of your tiles.",
+        "try_to": " Try to:",
+        "cta": {
+          "label": "Upgrade account",
+          "url": "https://carto.com/pricing/"
+        }
+      }
     },
     "settings": {
       "menu-tab-pane-labels": {
@@ -1642,9 +1668,7 @@
         "add-analysis": "Add analysis",
         "analyses-count": "%{smart_count} Analysis |||| %{smart_count} Analyses",
         "widgets-count": "%{smart_count} Widget |||| %{smart_count} Widgets",
-        "add-layer": "Add layer",
-        "delete": "Delete",
-        "cancel-delete-analysis": "Cancel"
+        "add-layer": "Add layer"
       },
       "basemap": {
         "remove-baselayer": "Remove baselayer",
@@ -1690,10 +1714,6 @@
         "hover": "Hover"
       },
       "analysis-form": {
-        "merge-type": {
-          "left": "Returns all rows from #1, with the matching rows in #2 or NULL when there is no match.",
-          "inner": "Returns the result of #1 intersecting #2 (i.e. the inner part of a Venn diagram intersection)"
-        },
         "admin-region": "Admin. Region",
         "aggregate": "Aggregate",
         "aggregate-by": "Aggregate by",
@@ -1701,6 +1721,8 @@
         "aggregate-column": "Aggregate column",
         "all-to-all": "All to all",
         "allow-holes": "Allow holes",
+        "append": "Append",
+        "append-help": "Keep your source data and append matching rows from your target. (Left Join).",
         "apply-btn": "Apply",
         "asc": "ASC",
         "bicycle": "Bicycle",
@@ -1711,19 +1733,19 @@
         "by-bike": "bike",
         "by-car": "car",
         "by-walk": "walk",
+        "cancel-btn": "Cancel",
         "car": "Car",
         "categorize-by": "Categorize by",
         "categorize-by-help": "If selected a centroid will be found for each category",
         "category-column": "Category column",
+        "choose-similar-columns": "Choose similar columns to relate them",
         "city": "City",
         "clusters-num": "# of clusters",
         "column": "Column",
-        "columns": "Columns",
         "concave-hull": "Concave Hull",
         "confirm-analysis": "Confirm",
         "convex-hull": "Convex Hull",
         "country": "Country",
-        "create-btn": "Apply",
         "data-observatory-measurement-area": "Country",
         "data-observatory-measurement-column": "New col. name",
         "data-observatory-measurement-column-help": "Adds a new column to your layer to store result",
@@ -1772,6 +1794,7 @@
         "define-columns": "Define column to find similarities with",
         "define-reference-and-target": "Define reference and target layers",
         "define-two-layers": "Define two layers",
+        "delete-btn": "Delete",
         "denominator": "Denominator",
         "denominator-help": "A column to normalize the target column",
         "deprecated-sql-function": {
@@ -1795,7 +1818,6 @@
         "filter": "Filter",
         "filter-aggregate": "Aggregate your results",
         "filter-column": "Filter column",
-        "foreign-keys": "Foreign Keys",
         "geometry-from": "Geometry from",
         "georeference": {
           "postal-code-help": "Select a column with postal codes",
@@ -1837,19 +1859,18 @@
         },
         "group-by": "Group by",
         "hide": "Hide",
-        "inner": "Inner",
         "input": "Input",
         "input-layer": "Define your input layer",
-        "input-num": "Input #%{num}",
         "intact": "Intact",
         "intact-help": "Keep all polygon tracts as individual polygons",
+        "intersect": "Intersect",
+        "intersect-help": "Only keep the rows matching your target data (Inner Join).",
         "join-type": "Join Type",
-        "keep-columns": "Select the columns you want to keep",
+        "keep-data": "Select the data you want to keep",
         "key-columns": "Key columns",
         "key-columns-desc": "Choose similar columns to relate them",
         "kilometers": "km",
         "latitude": "Latitude",
-        "left": "Left",
         "line-sequential": "Sequential",
         "line-source-to-target": "To Source",
         "line-to-column": "To Column",
@@ -1859,13 +1880,16 @@
         "linked-layer": "Filter by layer",
         "loading": "loading…",
         "longitude": "Longitude",
+        "max-or-equal": "Max or equal",
         "max": "Max",
         "measure-by": "Measure by",
         "meters": "m",
         "method": "Method",
         "miles": "mi",
+        "min-or-equal": "Min or equal",
         "min": "Min",
         "mode": "Mode",
+        "more-info": "More info",
         "find-nearest": {
           "categorized": "Per group",
           "categorized-help": "Calculate results per each category of the chosen column",
@@ -1882,7 +1906,6 @@
         "neighbors": "Neighbors",
         "neighbors-help": "Define the local neighborhood as this many nearest-neighbors",
         "no": "No",
-        "no-coincidence": "When no coincidence no row will be added",
         "should-match": "Column types should match",
         "numerator": "Target column",
         "numerator-help": "Measure spatial autocorrelation of this column",
@@ -1890,6 +1913,7 @@
         "order": "Order",
         "order-by": "Order by",
         "order-results": "Order your results",
+        "output-data": "Output data",
         "parameters": "Parameters",
         "parameters-description": "Tune your analysis",
         "permutations": "Permutations",
@@ -1945,7 +1969,10 @@
         "search-by-column-name": "Search by column name",
         "second-geom-required": "This analysis requires a second geometry column",
         "select-column": "Select a column",
+        "select-data-source": "Select a data source",
+        "select-second-source": "Select a second data source to join",
         "select-type": "Select data type",
+        "select-value": "Select a value",
         "setup-analysis": "Setup analysis",
         "show": "Show",
         "significance": "Significance",
@@ -1953,6 +1980,7 @@
         "source": "Source",
         "source-col": "Source col.",
         "source-column": "Source column",
+        "source-data": "Source data",
         "spatial-markov-trend-desc": "select a column for each time period",
         "spatial-markov-trend-time-columns": "Input columns",
         "spatial-markov-trend-time-columns-help": "Each column should contain values for a time period",
@@ -1964,6 +1992,7 @@
         "base-layer": "Base layer",
         "target-col": "Target col.",
         "target-column": "Target column",
+        "target-data": "Target data",
         "target-percent": "Target percent",
         "target-percent-help": "Convex hull lookalike",
         "time": "Time",
@@ -1989,8 +2018,10 @@
         "weighted-by": "Weighted by",
         "weighted-by-help": "Weights contribution by a value for each point",
         "workflow": "Your workflow",
-        "write-max-value": "Write max value",
+        "write-min-or-equal-value": "Write min or equal value",
+        "write-max-or-equal-value": "Write max or equal value",
         "write-min-value": "Write min value",
+        "write-max-value": "Write max value",
         "yes": "Yes"
       },
       "infowindow": {
@@ -2034,7 +2065,9 @@
         "between": "Between",
         "is-equal-to": "Is equal to",
         "is-greater-than": "Is greater than",
-        "is-less-than": "Is less than"
+        "is-greater-or-equal-than": "Is greater or equal than",
+        "is-less-than": "Is less than",
+        "is-less-or-equal-than": "Is less or equal than"
       },
       "notifier": {
         "center-map": {
@@ -2126,11 +2159,6 @@
           "title": "CUSTOM HTML APPLIED",
           "body": "You just applied custom html with HTML editor. You can continue and clean all html.",
           "accept": "CONTINUE"
-        },
-        "layer-hidden": {
-          "title": "LAYER HIDDEN",
-          "body": "This layer is hidden, changes will not be shown until you make it visible.",
-          "show": "SHOW"
         }
       }
     },
@@ -2171,11 +2199,6 @@
           "body": "You just applied custom html with HTML editor. You can continue and clean all html.",
           "accept": "Delete custom html"
         },
-        "layer-hidden": {
-          "title": "LAYER HIDDEN",
-          "body": "This layer is hidden. Changes won't be shown until you make it visible.",
-          "show": "SHOW"
-        },
         "legends-disabled": {
           "title": "LEGENDS DISABLED",
           "body": "The legends setting is disabled. Changes made will not be shown until you enable legends.",
@@ -2203,6 +2226,7 @@
         "by-size": "By Size",
         "by-color": "By Color",
         "untitled": "Untitled",
+        "others": "Others",
         "prefix": "Prefix",
         "suffix": "Suffix",
         "left-label": "Left Label",
@@ -2216,7 +2240,7 @@
     "style": {
       "types": {
         "none": "-",
-        "simple": "none",
+        "simple": "points",
         "hexabins": "hexbins",
         "squares": "squares",
         "regions": "Adm. Regions",
@@ -2263,11 +2287,6 @@
           "continue": "CONTINUE",
           "clear": "CLEAR"
         },
-        "layer-hidden": {
-          "title": "LAYER HIDDEN",
-          "body": "This layer is hidden, changes won't be shown until you make it visible.",
-          "show": "SHOW"
-        },
         "torque-exists": {
           "title": "TORQUE LAYER",
           "body": "There is already a torque layer in the layers collection. If you continue, this layer will use the default style.",
@@ -2276,7 +2295,8 @@
         }
       },
       "components": {
-        "fill": "Fill",
+        "fill": "Size/Color",
+        "color": "Color",
         "stroke": {
           "label": "Stroke",
           "fetching": "Loading node schema...",
@@ -2307,6 +2327,7 @@
             "points": "Points"
           }
         },
+        "aggregation-fill": "Color",
         "aggregation-value": "Operation",
         "aggregation-size": {
           "label": "Size",
@@ -2432,7 +2453,7 @@
           "custom-help": "Custom colors: colors used when Autostyle (drop icon) is applied",
           "define": "Define how your widget interacts with the data",
           "description": "Description",
-          "fill": "Fill",
+          "fill": "Color",
           "no": "No",
           "sync_on_bbox_change": "Dynamic",
           "sync_on_data_change": "Unfiltered",
@@ -2523,6 +2544,14 @@
       "alter-loading": "Modifying table…",
       "alter-success": "Modification applied",
       "applying": "Applying query…",
+      "429": {
+        "body": "You are over platform's limits. Please %{link} to know more details",
+        "link": "contact us",
+        "href": "mailto:support@carto.com"
+      },
+      "unknown": {
+        "body": "There was an error in the SQL query"
+      },
       "error": {
         "body": "%{body} %{error}",
         "title": "Error in SQL query:"

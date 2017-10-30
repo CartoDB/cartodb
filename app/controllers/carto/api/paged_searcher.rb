@@ -8,7 +8,6 @@ module Carto
         order = (params[:order] || default_order).to_sym
         return page, per_page, order
       end
-
     end
   end
 end

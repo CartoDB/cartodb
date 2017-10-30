@@ -16,14 +16,8 @@ describe Visualization::Member do
   before(:each) do
     bypass_named_maps
 
-    user_id = UUIDTools::UUID.timestamp_create.to_s
     user_name = 'whatever'
-    @user_mock = create_mocked_user(
-      user_id: user_id,
-      user_name: user_name,
-      public_url: "http://#{user_name}.carto.com",
-      groups: []
-    )
+    @user_mock = FactoryGirl.build(:user, username: user_name)
     CartoDB::Visualization::Relator.any_instance.stubs(:user).returns(@user_mock)
 
     support_tables_mock = Doubles::Visualization::SupportTables.new

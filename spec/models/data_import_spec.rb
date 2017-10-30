@@ -227,34 +227,33 @@ describe DataImport do
   end
 
   it 'should know that the import is from common data' do
-     Cartodb.config[:common_data] = {}
-    Cartodb.config[:common_data]['username'] = 'mycommondata'
-    Cartodb.config[:common_data]['host'] = 'cartodb.wadus.com'
-    data_import = DataImport.create(
-      user_id: @user.id,
-      data_source: "http://mycommondata.cartodb.wadus.com/foo.csv"
-    )
-    data_import.from_common_data?.should eq true
+    Cartodb.with_config(common_data: { 'username' => 'mycommondata', 'host' => 'cartodb.wadus.com' }) do
+      data_import = DataImport.create(
+        user_id: @user.id,
+        data_source: "http://mycommondata.cartodb.wadus.com/foo.csv"
+      )
+      data_import.from_common_data?.should eq true
+    end
   end
 
   it 'should not consider a import as common data if common_data config does not exist' do
-    Cartodb.config.delete(:common_data)
-    data_import = DataImport.create(
-      user_id: @user.id,
-      data_source: "http://mycommondata.cartodb.wadus.com/foo.csv"
-    )
-    data_import.from_common_data?.should eq false
+    Cartodb.with_config(common_data: nil) do
+      data_import = DataImport.create(
+        user_id: @user.id,
+        data_source: "http://mycommondata.cartodb.wadus.com/foo.csv"
+      )
+      data_import.from_common_data?.should eq false
+    end
   end
 
   it 'should not consider a import as common data if common_data config does not match with url' do
-    Cartodb.config[:common_data] = {}
-    Cartodb.config[:common_data]['username'] = 'mycommondata'
-    Cartodb.config[:common_data]['host'] = 'cartodb.wadus.com'
-    data_import = DataImport.create(
-      user_id: @user.id,
-      data_source: "http://mydatasource.cartodb.wadus.com/foo.csv"
-    )
-    data_import.from_common_data?.should eq false
+    Cartodb.with_config(common_data: { 'username' => 'mycommondata', 'host' => 'cartodb.wadus.com' }) do
+      data_import = DataImport.create(
+        user_id: @user.id,
+        data_source: "http://mydatasource.cartodb.wadus.com/foo.csv"
+      )
+      data_import.from_common_data?.should eq false
+    end
   end
 
   describe 'log' do

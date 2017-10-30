@@ -254,6 +254,7 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/models/carto/user_db_service_spec.rb \
 	spec/models/carto/user_migration_spec.rb \
 	spec/models/table_registrar_spec.rb \
+	spec/models/carto/user_migration_import_spec.rb \
 	spec/requests/admin/organization_users_controller_spec.rb \
 	spec/requests/carto/admin/mobile_apps_controller_spec.rb \
 	spec/requests/carto/builder/datasets_controller_spec.rb \
@@ -261,6 +262,7 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/requests/carto/api/maps_controller_spec.rb \
 	spec/requests/carto/api/static_notifications_controller_spec.rb \
 	spec/requests/carto/api/visualization_exports_controller_spec.rb \
+	spec/requests/carto/api/users_controller_spec.rb \
 	spec/requests/carto/api/vizjson3_presenter_spec.rb \
 	spec/requests/carto/superadmin/organizations_controller_spec.rb \
 	spec/requests/carto/superadmin/users_controller_spec.rb \

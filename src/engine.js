@@ -100,7 +100,7 @@ Engine.prototype.getLayerGroup = function () {
  *
  * @api
  */
-Engine.prototype.on = function on (event, callback, context) {
+Engine.prototype.on = function (event, callback, context) {
   this._eventEmmitter.on(event, callback, context);
 };
 
@@ -118,7 +118,7 @@ Engine.prototype.on = function on (event, callback, context) {
  *
  * @api
  */
-Engine.prototype.off = function off (event, callback, context) {
+Engine.prototype.off = function (event, callback, context) {
   this._eventEmmitter.off(event, callback, context);
 };
 
@@ -139,7 +139,7 @@ Engine.prototype.off = function off (event, callback, context) {
  *
  * @api
  */
-Engine.prototype.reload = function reload (options) {
+Engine.prototype.reload = function (options) {
   options = this._buildOptions(options);
   try {
     var params = this._buildParams(options.includeFilters);
@@ -162,7 +162,7 @@ Engine.prototype.reload = function reload (options) {
  * @public
  * @api
  */
-Engine.prototype.addLayer = function addLayer (layer) {
+Engine.prototype.addLayer = function (layer) {
   this._layersCollection.add(layer);
 };
 
@@ -175,7 +175,7 @@ Engine.prototype.addLayer = function addLayer (layer) {
  * @public
  * @api
  */
-Engine.prototype.removeLayer = function removeLayer (layer) {
+Engine.prototype.removeLayer = function (layer) {
   this._layersCollection.remove(layer);
 };
 
@@ -188,7 +188,7 @@ Engine.prototype.removeLayer = function removeLayer (layer) {
  * @public
  * @api
  */
-Engine.prototype.addDataview = function addDataview (dataview) {
+Engine.prototype.addDataview = function (dataview) {
   this._dataviewsCollection.add(dataview);
 };
 
@@ -201,7 +201,7 @@ Engine.prototype.addDataview = function addDataview (dataview) {
  * @public
  * @api
  */
-Engine.prototype.removeDataview = function removeDataview (dataview) {
+Engine.prototype.removeDataview = function (dataview) {
   this._dataviewsCollection.remove(dataview);
 };
 
@@ -210,7 +210,7 @@ Engine.prototype.removeDataview = function removeDataview (dataview) {
  * Update internal models and trigger a reload_sucess event.
  * @private
  */
-Engine.prototype._onReloadSuccess = function _onReloadSuccess (serverResponse, options) {
+Engine.prototype._onReloadSuccess = function (serverResponse, options) {
   var responseWrapper = new Response(this._windshaftSettings, serverResponse);
   this._modelUpdater.updateModels(responseWrapper, options.sourceId, options.forceFetch);
   this._restartAnalysisPolling();
@@ -223,7 +223,7 @@ Engine.prototype._onReloadSuccess = function _onReloadSuccess (serverResponse, o
  * Update internal models setting errores and trigger a reload_error event.
  * @private
  */
-Engine.prototype._onReloadError = function _onReloadError (serverResponse, options) {
+Engine.prototype._onReloadError = function (serverResponse, options) {
   var windshaftErrors = parseWindshaftErrors(serverResponse);
   var error = _.find(windshaftErrors, function (error) { return error.isGlobalError(); });
   this._modelUpdater.setErrors(windshaftErrors);
@@ -235,7 +235,7 @@ Engine.prototype._onReloadError = function _onReloadError (serverResponse, optio
  * Helper to get windhsaft request options.
  * @private
  */
-Engine.prototype._buildOptions = function _buildOptions (options) {
+Engine.prototype._buildOptions = function (options) {
   options = options || {};
   return _.extend({
     includeFilters: true,
@@ -253,7 +253,7 @@ Engine.prototype._buildOptions = function _buildOptions (options) {
  * @param {boolean} includeFilters - Boolean flag to control if the filters need to be added in the payload.
  * @private
  */
-Engine.prototype._buildParams = function _buildParams (includeFilters) {
+Engine.prototype._buildParams = function (includeFilters) {
   var params = {
     stat_tag: this._windshaftSettings.statTag
   };
@@ -275,7 +275,7 @@ Engine.prototype._buildParams = function _buildParams (includeFilters) {
  * Reset the analysis nodes in the poller
  * @private
  */
-Engine.prototype._restartAnalysisPolling = function _restartAnalysisPolling () {
+Engine.prototype._restartAnalysisPolling = function () {
   var analysisNodes = AnalysisService.getUniqueAnalysisNodes(this._layersCollection, this._dataviewsCollection);
   this._analysisPoller.resetAnalysisNodes(analysisNodes);
 };
@@ -284,7 +284,7 @@ Engine.prototype._restartAnalysisPolling = function _restartAnalysisPolling () {
  * Get the instance of the serializer service depending on is an anonymous or a named map.
  * @private
  */
-Engine.prototype._getSerializer = function _getSerializer () {
+Engine.prototype._getSerializer = function () {
   return this._isNamedMap ? NamedMapSerializer : AnonymousMapSerializer;
 };
 
@@ -292,7 +292,7 @@ Engine.prototype._getSerializer = function _getSerializer () {
  * Manage and propagate the client error
  * @private
  */
-Engine.prototype._manageClientError = function _manageClientError (error, options) {
+Engine.prototype._manageClientError = function (error, options) {
   var windshaftError = new WindshaftError({
     message: error.message
   });

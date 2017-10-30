@@ -133,60 +133,24 @@ Engine.prototype.off = function off (event, callback, context) {
  * @param {boolean} options.forceFetch - Forces dataviews to fetch data from server after a reload
  * @param {boolean} options.includeFilters - Boolean flag to control if the filters need to be added in the payload.
  *
+ * @fires Engine#Engine:RELOAD_STARTED
  * @fires Engine#Engine:RELOAD_SUCCESS
  * @fires Engine#Engine:RELOAD_ERROR
  *
  * @api
  */
 Engine.prototype.reload = function reload (options) {
-  options = options || {};
-
-  var oldSuccess = options.success;
-  var oldError = options.error;
-
-  options = _.extend({
-    includeFilters: true
-  }, _.pick(options, 'sourceId', 'forceFetch', 'includeFilters'));
-
+  options = this._buildOptions(options);
   try {
     var params = this._buildParams(options.includeFilters);
     var payload = this._getSerializer().serialize(this._layersCollection, this._dataviewsCollection);
-
-    options.success = function (response) {
-      var responseWrapper = new Response(this._windshaftSettings, response);
-      this._modelUpdater.updateModels(responseWrapper, options.sourceId, options.forceFetch);
-      this._restartAnalysisPolling();
-      this._eventEmmitter.trigger(Engine.Events.RELOAD_SUCCESS);
-      oldSuccess && oldSuccess(this);
-    }.bind(this);
-
-    options.error = function (response) {
-      response = response || {};
-      var windshaftErrors = parseWindshaftErrors(response);
-      this._modelUpdater.setErrors(windshaftErrors);
-      this._eventEmmitter.trigger(Engine.Events.RELOAD_ERROR, windshaftErrors);
-      var error = _.find(windshaftErrors, function (error) {
-        return error.isGlobalError();
-      });
-      oldError && oldError(error);
-    }.bind(this);
-
     var request = new Request(payload, params, options);
 
     this._eventEmmitter.trigger(Engine.Events.RELOAD_STARTED);
     this._windshaftClient.instantiateMap(request);
-  } catch (e) {
-    var error = new WindshaftError({
-      message: e.message
-    });
-    this._modelUpdater.setErrors([error]);
-
-    log.error(e.message);
-    options.error && options.error({});
+  } catch (error) {
+    this._manageClientError(error, options);
   }
-
-  // // TODO: update options, use promises or explicit callbacks function (error, params).
-  // options = this._buildOptions(options);
 };
 
 /**
@@ -260,24 +224,28 @@ Engine.prototype._onReloadSuccess = function _onReloadSuccess (serverResponse, o
  * @private
  */
 Engine.prototype._onReloadError = function _onReloadError (serverResponse, options) {
-  var errors = parseWindshaftErrors(serverResponse);
-  this._modelUpdater.setErrors(errors);
-  this._eventEmmitter.trigger(Engine.Events.RELOAD_ERROR, errors);
-  options.error && options.error();
+  var windshaftErrors = parseWindshaftErrors(serverResponse);
+  var error = _.find(windshaftErrors, function (error) { return error.isGlobalError(); });
+  this._modelUpdater.setErrors(windshaftErrors);
+  this._eventEmmitter.trigger(Engine.Events.RELOAD_ERROR, windshaftErrors);
+  options.error && options.error(error);
 };
 
 /**
+ * Helper to get windhsaft request options.
  * @private
  */
 Engine.prototype._buildOptions = function _buildOptions (options) {
-  return _.extend({}, options, {
+  options = options || {};
+  return _.extend({
+    includeFilters: true,
     success: function (serverResponse) {
       this._onReloadSuccess(serverResponse, options);
     }.bind(this),
     error: function (serverResponse) {
       this._onReloadError(serverResponse, options);
     }.bind(this)
-  });
+  }, _.pick(options, 'sourceId', 'forceFetch', 'includeFilters'));
 };
 
 /**
@@ -303,9 +271,13 @@ Engine.prototype._buildParams = function _buildParams (includeFilters) {
   console.error('Engine initialized with no apiKeys neither authToken');
 };
 
+/**
+ * Reset the analysis nodes in the poller
+ * @private
+ */
 Engine.prototype._restartAnalysisPolling = function _restartAnalysisPolling () {
-  var analyses = AnalysisService.getUniqueAnalysisNodes(this._layersCollection, this._dataviewsCollection);
-  this._analysisPoller.resetAnalysisNodes(analyses);
+  var analysisNodes = AnalysisService.getUniqueAnalysisNodes(this._layersCollection, this._dataviewsCollection);
+  this._analysisPoller.resetAnalysisNodes(analysisNodes);
 };
 
 /**
@@ -314,6 +286,20 @@ Engine.prototype._restartAnalysisPolling = function _restartAnalysisPolling () {
  */
 Engine.prototype._getSerializer = function _getSerializer () {
   return this._isNamedMap ? NamedMapSerializer : AnonymousMapSerializer;
+};
+
+/**
+ * Manage and propagate the client error
+ * @private
+ */
+Engine.prototype._manageClientError = function _manageClientError (error, options) {
+  var windshaftError = new WindshaftError({
+    message: error.message
+  });
+  this._modelUpdater.setErrors([windshaftError]);
+
+  log.error(error.message);
+  options.error && options.error();
 };
 
 /**

@@ -100,7 +100,7 @@ InfowindowManager.prototype._bindLayerModel = function () {
   this._cartoDBLayerModel.on('change:visible', this._hideInfowindow, this);
   this._cartoDBLayerModel.infowindow.on('change', this._updateInfowindowModel, this);
   this._cartoDBLayerModel.infowindow.fields.on('reset', this._onInfowindowTemplateFieldsReset, this);
-  this._engine.on(Engine.Events.RELOAD_SUCCESS, this._onReloaded.bind, this); // TODO: Add tests to check _onReloaded is being called.
+  this._engine.on(Engine.Events.RELOAD_SUCCESS, this._onReloaded, this); // TODO: Add tests to check _onReloaded is being called.
 };
 
 InfowindowManager.prototype._unbindLayerModel = function () {

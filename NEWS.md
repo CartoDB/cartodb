@@ -3,6 +3,7 @@ Development
 
 ### Features
 * Map: rearrange layer options in layers list (#13006)
+* Style: Rename "none" aggregation to "points" (#13005)
 * Clean assets script
 * Improve error on widgets (CartoDB/deep-insights.js#574)
 * Add pagination support in data imports listing in superadmin (#12938).

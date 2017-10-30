@@ -281,7 +281,7 @@ module CartoDB
       end
 
       def overwrite_register(result, name)
-        raise 'Incompatible schemas' unless compatible_schemas_for_overwrite?(name)
+        raise ::CartoDB::Importer2::IncompatibleSchemas.new unless compatible_schemas_for_overwrite?(name)
         index_statements = @table_setup.generate_index_statements(@destination_schema, name)
 
         move_to_schema(result, result.table_name, ORIGIN_SCHEMA, @destination_schema)

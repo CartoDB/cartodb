@@ -1,4 +1,5 @@
 var Backbone = require('backbone');
+var _ = require('underscore');
 var AnalysisService = require('../../../src/analysis/analysis-service');
 var CartoDBLayer = require('../../../src/geo/map/cartodb-layer');
 var Dataview = require('../../../src/dataviews/dataview-model-base');
@@ -62,7 +63,7 @@ describe('src/analysis/analysis-service.js', function () {
       expect(analysisModel.get('authToken')).toEqual('THE_AUTH_TOKEN');
     });
 
-    it('should recursively build the anlysis graph', function () {
+    it('should recursively build the analysis graph', function () {
       var estimatedPopulation = this.analysisService.analyse(
         {
           id: 'a2',
@@ -330,6 +331,27 @@ describe('src/analysis/analysis-service.js', function () {
       expect(actual[2].id).toEqual(expected[2].id);
 
       expect(actual).toEqual(expected);
+    });
+
+    it('should compact layers and dataviews if they do not have sources. It happens in named maps.', function () {
+      var analysis = this.analysisService.analyse({
+        id: 'a0',
+        type: 'source',
+        params: {
+          query: 'SELECT * FROM subway_stops'
+        }
+      });
+      var layer = new CartoDBLayer({ source: analysis }, { vis: fakeVis });
+      var dataview = new Dataview({ id: 'dataview1', source: analysis }, { map: {}, vis: fakeVis });
+      layer.set('source', undefined, { silent: true });
+      dataview.set('source', undefined, { silent: true });
+      var layersCollection = new Backbone.Collection([layer]);
+      var dataviewsCollection = new Backbone.Collection([dataview]);
+
+      var nodes = AnalysisService.getUniqueAnalysisNodes(layersCollection, dataviewsCollection);
+
+      expect(_.isArray(nodes)).toBe(true);
+      expect(nodes.length).toBe(0);
     });
   });
 });

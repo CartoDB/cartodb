@@ -107,8 +107,8 @@ describe DataImport do
     user_tables_should_be_registered
 
     data_import = create_import(overwrite: true, truncated: true, incomplete_schema: true)
-    expect { data_import.run_import! }.to raise_error(RuntimeError, 'Incompatible schemas')
-    data_import.log.entries.should match(/Exception: Incompatible schemas/)
+    expect { data_import.run_import! }.to raise_error(::CartoDB::Importer2::IncompatibleSchemas)
+    data_import.log.entries.should match(/Exception: Incompatible Schemas/)
   end
 
   it 'should not raise exceptions if overwriting with more data' do

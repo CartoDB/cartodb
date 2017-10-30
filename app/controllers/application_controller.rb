@@ -1,6 +1,7 @@
 # coding: UTF-8
 require_relative '../../lib/cartodb/profiler.rb'
 require_dependency 'carto/http_header_authentication'
+require_dependency 'carto/user_state_manager'
 
 class ApplicationController < ActionController::Base
   include ::SslRequirement
@@ -20,6 +21,7 @@ class ApplicationController < ActionController::Base
   before_filter :browser_is_html5_compliant?
   before_filter :set_asset_debugging
   before_filter :cors_preflight_check
+  before_filter :check_user_state
   after_filter  :allow_cross_domain_access
   after_filter  :remove_flash_cookie
   after_filter  :add_revision_header
@@ -161,6 +163,22 @@ class ApplicationController < ActionController::Base
     right_referer && right_origin
   end
 
+  def check_user_state
+    return if current_user.active?
+    state_manager = Carto::UserStateManager.new(current_user)
+    http_code, redirect_path = state_manager.manage_request(request)
+    return unless http_code
+    if http_code == 302 && redirect_path
+      redirect_to CartoDB.path(self, redirect_path) and return
+    elsif http_code == 404
+      render_404
+    elsif http_code == 403
+      render_403
+    elsif http_code == 500
+      render_500
+    end
+  end
+
   def render_403
     respond_to do |format|
       format.html { render(file: 'public/403.html', status: 403, layout: false) }
@@ -196,13 +214,7 @@ class ApplicationController < ActionController::Base
 
   def login_required
     is_auth = authenticated?(CartoDB.extract_subdomain(request))
-    if is_auth && current_user.active?
-      validate_session(current_user)
-    elsif is_auth && current_user.locked?
-      locked_user
-    else
-      not_authorized
-    end
+    is_auth ? validate_session(current_user) : not_authorized
   end
 
   def api_authorization_required
@@ -224,17 +236,6 @@ class ApplicationController < ActionController::Base
       format.html do
         session[:return_to] = request.url
         redirect_to CartoDB.path(self, 'login') and return
-      end
-      format.json do
-        head :unauthorized
-      end
-    end
-  end
-
-  def locked_user
-    respond_to do |format|
-      format.html do
-        redirect_to CartoDB.path(self, 'upgrade_trial') and return
       end
       format.json do
         head :unauthorized

@@ -24,4 +24,8 @@ Layer.prototype.show = function () {
   this._internalLayer.show();
 };
 
+Layer.prototype.setSource = function (node) {
+  this._internalLayer.set('source', node);
+};
+
 module.exports = Layer;

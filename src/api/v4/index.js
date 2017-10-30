@@ -40,6 +40,7 @@ var carto = {
       CartoLayer: function (source, style, opts) {
         return new Layer(source, style, scope._engine, opts);
       },
+
       add: function (layer) {
         if (Array.isArray(layer)) {
           layer.forEach(layer_ => scope._engine.addLayer(layer_._getInternalLayer()));
@@ -48,6 +49,7 @@ var carto = {
         }
         scope._reload();
       },
+
       remove: function (layer) {
         scope._engine.removeLayer(layer._getInternalLayer());
         scope._reload();

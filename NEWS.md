@@ -24,7 +24,8 @@ Development
 * Improve legend items management (#12650)
 * Avoid multiple time-series by filtering the carousel options (#12395)
 * Add privacy button behavior for shared datasets (#11342)
-* Use add/replace notification for time-series (#12670)
+* Use add/replace notificat
+ion for time-series (#12670)
 * Fix icons in category legends (#11630)
 * Sidebar UI tweaks (#12479)
 * Add carto-node client library (#12677)
@@ -72,6 +73,7 @@ Development
 * Now is possible to use wildcard character (*) in the whitelist emails for organization signups (#12991)
 
 ### Bug fixes / enhancements
+* Update charlock_holmes gem to 0.7.5 to fix C++11 related problems.
 * Don't show basemap's labels layer in layer list (#13000)
 * Fallback to `username` when `name` is empty in share map view
 * Fix bounding box not updating with gmaps basemaps

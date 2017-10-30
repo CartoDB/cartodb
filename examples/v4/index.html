@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Basic Carto.js example</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
+    <!--Include carto styles  -->
+    <link rel="stylesheet" href="../../dist/themes/css/cartodb.css" />
+    <!-- Include cartodb.js Library -->
+    <script src="../../dist/cartodb.uncompressed.js"></script>
+    <style>
+        #map {
+            width: 100vw;
+            height: 100vh;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="map"></div>
+
+    <script>
+        var map = L.map('map').setView([42.431234, -8.643616], 5);
+        L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager_nolabels/{z}/{x}/{y}.png').addTo(map);
+
+        carto.init({
+            apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
+            username: 'cartojs-test',
+            serverUrl: 'https://{user}.carto.com:443',
+        })
+
+
+        var world = new carto.node.Dataset('a0', 'ne_10m_populated_places_simple');
+        var spainCities = new carto.node.SQL('a1', 'SELECT * FROM ne_10m_populated_places_simple WHERE adm0name = \'Spain\'');
+
+        var worldStyle = new carto.style.CartoCSS(`
+            #layer {
+                marker-width: 10;
+                marker-fill: gray;
+            }`);
+
+        var spainStyle = new carto.style.CartoCSS(`
+            #layer {
+                marker-width: 20;
+                marker-fill: rgba(255,0,0,1);
+            }`);
+
+        var spainStyle2 = new carto.style.CartoCSS(`
+            #layer {
+                marker-width: 20;
+                marker-fill: #FABADA;
+            }`);
+
+        var worldLayer = new carto.layers.CartoLayer(world, worldStyle, { id: 'l0' });
+        var spainCitiesLayer = new carto.layers.CartoLayer(spainCities, spainStyle, { id: 'l1' });
+
+        carto.layers.add([spainCitiesLayer, worldLayer]);
+        // carto.layers.add(worldLayer);
+
+        carto.layers.addTo(map);
+
+        carto.on('error', function (error) {
+            // TODO: Wrap errors in a user-friendly object.
+            console.error(error);
+        });
+
+        setTimeout(() => spainCitiesLayer.hide(), 3000 );
+        setTimeout(() => spainCitiesLayer.show(), 5000 );
+        setTimeout(() => carto.layers.remove(worldLayer), 7000 );
+        setTimeout(() => carto.layers.removeFrom(map), 9000 );
+
+        // var countries = new carto.node.SQLQuery('select * from countries');
+        // var countriesStyle = new carto.style.CartoCSS('...');
+        // var countriesLayer = new carto.layers.CartoLayer(countries, countriesStyle);
+
+        // var map = {}; // L.Map
+
+        // // only one carto.layerGroup per carto
+        // carto.layers.getAll(); // all
+        // carto.layers.getById('cities'); // get by id
+        // carto.layers.at(0); // get by index
+        // carto.layers.add([citiesLayer, countriesLayer]);
+        // carto.layers.remove(citiesLayer);
+
+        // carto.layers.addTo(map);
+
+        // carto.layers // L.Layer || Google Maps Overlay
+
+        // var numberOfCities = new carto.dataviews.Formula(cities, {
+        //     operation: carto.dataview.COUNT,
+        //     map: map, // Leaflet || Google Maps map
+        //     synced: true | false
+        // });
+
+        // var cityNames = new carto.dataviews.Category(cities, {
+        //     column: 'name',
+        //     operation: 'count'
+        // });
+
+        // var cityNames = new carto.dataviews.Histogram(cities, {
+        //     column: 'name',
+        //     operation: 'count'
+        // });
+
+        // // reacts to bounding bounds, zoom, etc.
+        // // var wadus = new carto.dataviews.SelectColumns(cities, {
+        // //     columns: ['name', 'description']
+        // // });
+
+        // // when there's new data
+        // numberOfCities.on('dataChanged', function (data) {
+        //     numberOfCities.getData(); // no request to server
+        // });
+
+        // cityNames.on('dataChanged', function (data) {
+        //     cityNames.getData();
+        // });
+
+        // carto.dataviews.add([numberOfCities, cityNames]);
+        // carto.dataviews.remove(numberOfCities);
+
+    </script>
+</body>
+
+</html>

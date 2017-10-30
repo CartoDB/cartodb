@@ -46,14 +46,35 @@ var carto = {
         } else {
           scope._engine.addLayer(layer._getInternalLayer());
         }
+        scope._reload();
       },
+      remove: function (layer) {
+        scope._engine.removeLayer(layer._getInternalLayer());
+        scope._reload();
+      },
+
       addTo: function (map) {
         function onReload () {
-          var layerGroup = new LeafletCartoLayerGroupView(scope._engine._cartoLayerGroup, map);
-          layerGroup.leafletLayer.addTo(map);
+          scope._internalLayerGroup = new LeafletCartoLayerGroupView(scope._engine._cartoLayerGroup, map);
+          scope._internalLayerGroup.leafletLayer.addTo(map);
           scope._engine.off(Engine.Events.RELOAD_SUCCESS, onReload);
         }
-        scope._engine.on(Engine.Events.RELOAD_SUCCESS, onReload);
+
+        if (!scope._addedToMap) {
+          scope._addedToMap = true;
+          scope._engine.on(Engine.Events.RELOAD_SUCCESS, onReload);
+          scope._reload();
+        }
+      },
+
+      removeFrom: function (map) {
+        scope._internalLayerGroup.leafletLayer.removeFrom(map);
+        scope._addedToMap = false;
+      }
+    };
+
+    this._reload = function () {
+      if (scope._addedToMap) {
         scope._engine.reload();
       }
     };

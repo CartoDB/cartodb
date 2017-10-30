@@ -20,4 +20,8 @@ Layer.prototype.hide = function () {
   this._internalLayer.hide();
 };
 
+Layer.prototype.show = function () {
+  this._internalLayer.show();
+};
+
 module.exports = Layer;

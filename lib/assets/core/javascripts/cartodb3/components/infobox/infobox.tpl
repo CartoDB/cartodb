@@ -1,4 +1,4 @@
-<div class="Infobox <%- type %>">
+<div class="Infobox <%- type %> <%- className %>">
   <div class="u-flex u-justifySpace u-bSpace--m">
     <h2 class="Infobox-title CDB-Text is-semibold CDB-Size-small u-upperCase u-bSpace--m u-rSpace--m"><%- title %></h2>
 

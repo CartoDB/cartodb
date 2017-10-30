@@ -71,8 +71,11 @@ LeafletCartoDBWebglLayerGroupView.prototype = _.extend(
     // in order to segment limits errors (Too many requests)
     _addErrorsEvents: function () {
       this.tangram.scene.subscribe({
-        warning: function (e) {
-          console.log(e);
+        tileError: function (e) {
+          switch (e.statusCode) {
+            case 429:
+              console.log('Limit error');
+          }
         }
       });
     },

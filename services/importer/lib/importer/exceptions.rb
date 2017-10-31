@@ -75,6 +75,11 @@ module CartoDB
     class InvalidShpError                       < StandardError; end
     class KmlNetworkLinkError                   < StandardError; end
     class KmlWithoutStyleIdError                < GenericImportError; end
+    class IncompatibleSchemas                   < BaseImportError
+      def initialize
+        super('Incompatible Schemas', 2012)
+      end
+    end
     class InvalidNameError                      < BaseImportError
       def initialize(message)
         super(message, 1014)
@@ -144,6 +149,7 @@ module CartoDB
       RowsEncodingColumnError               => 2007,
       MalformedXLSException                 => 2008,
       KmlWithoutStyleIdError                => 2009,
+      IncompatibleSchemas                   => 2012,
       InvalidGeoJSONError                   => 3007,
       UnknownSridError                      => 3008,
       ShpNormalizationError                 => 3009,

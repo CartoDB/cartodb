@@ -29,43 +29,9 @@ describe('src//model-updater', function () {
     serverResponse = new ResponseWrapper(windshaftSettings, {
       'layergroupid': '9d7bf465e45113123bf9949c2a4f0395:0',
       'metadata': {
-        'layers': [
-          {
-            'type': 'mapnik',
-            'meta': {
-              'stats': [],
-              'cartocss': 'cartocss'
-            }
-          }
-        ],
+        'layers': [],
         'dataviews': {},
-        'analyses': [
-          {
-            'nodes': {
-              'a0': {
-                'status': 'ready',
-                'query': 'SELECT * FROM arboles',
-                'url': {
-                  'http': 'http://cdb.localhost.lan:8181/api/v1/map/9d7bf465e45113123bf9949c2a4f0395:0/analysis/node/5af683d5d8a6f67e11916a31cd76632884d4064f'
-                }
-              },
-              'a1': {
-                'status': 'pending',
-                'query': 'select * from analysis_trade_area_e65b1ae05854aea96266808ec0686b91f3ee0a81',
-                'url': {
-                  'http': 'http://cdb.localhost.lan:8181/api/v1/map/9d7bf465e45113123bf9949c2a4f0395:0/analysis/node/e65b1ae05854aea96266808ec0686b91f3ee0a81'
-                }
-              },
-              'a2': {
-                'status': 'pending',
-                'query': 'select * from analysis_trade_area_b35b1ae05854aea96266808ec0686b91f3ee0a81',
-                'url': {
-                  'http': 'http://cdb.localhost.lan:8181/api/v1/map/9d7bf465e45113123bf9949c2a4f0395:0/analysis/node/b75b1ae05854aea96266808ec0686b91f3ee0a81'
-                }
-              }
-            }
-          }
-        ]
+        'analyses': []
       }
     });
 

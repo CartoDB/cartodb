@@ -4,14 +4,15 @@
       "src"
     ]
   },
-  "plugins": [
-    "plugins/api"
-  ],
   "templates": {
     "default": {
       "outputSourceFiles": false
     }
   },
+  "plugins": [
+    "plugins/api",
+    "plugins/markdown"
+  ],
   "opts": {
     "recurse": true,
     "destination": "./docs/v4"

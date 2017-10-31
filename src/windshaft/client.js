@@ -44,6 +44,7 @@ var WindshaftClient = function (settings) {
 };
 
 WindshaftClient.prototype.instantiateMap = function (request) {
+  // TODO: update options, use promises or explicit callbacks function (error, params).
   if (this._requestTracker.canRequestBePerformed(request)) {
     this._performRequest(request, {
       success: function (response) {

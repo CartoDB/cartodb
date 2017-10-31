@@ -16,7 +16,7 @@ describe('geo/ui/search', function () {
     this.mapView = new LeafletMapView({
       el: this.$el,
       mapModel: this.map,
-      visModel: new Backbone.Model(),
+      engine: new Backbone.Model(),
       layerViewFactory: jasmine.createSpyObj('layerViewFactory', ['createLayerView']),
       layerGroupModel: new Backbone.Model()
     });

@@ -7,12 +7,12 @@ describe('src/analysis/analysis-poller', function () {
   beforeEach(function () {
     jasmine.clock().install();
 
-    this.vis = new Backbone.Model();
+    var engineMock = new Backbone.Model();
     this.reference = jasmine.createSpyObj('reference', ['getParamNamesForAnalysisType']);
     this.analysisModel1 = new AnalysisModel({
       id: 'a1',
       url: 'http://carto.com/foo/bar'
-    }, { vis: this.vis, camshaftReference: this.reference });
+    }, { engine: engineMock, camshaftReference: this.reference });
     this.analysisPoller = new AnalysisPoller();
   });
 

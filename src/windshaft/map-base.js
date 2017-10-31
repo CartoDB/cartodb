@@ -6,6 +6,7 @@ var WindshaftError = require('./error');
 var Request = require('./request');
 var AnonymousMapSerializer = require('./map-serializer/anonymous-map-serializer/anonymous-map-serializer');
 var NamedMapSerializer = require('./map-serializer/named-map-serializer/named-map-serializer');
+var parseWindshaftErrors = require('./error-parser');
 
 var WindshaftMap = Backbone.Model.extend({
   initialize: function (attrs, options) {
@@ -56,7 +57,7 @@ var WindshaftMap = Backbone.Model.extend({
 
       options.error = function (response) {
         response = response || {};
-        var windshaftErrors = this._getErrorsFromResponse(response);
+        var windshaftErrors = parseWindshaftErrors(response);
         this._modelUpdater.setErrors(windshaftErrors);
 
         var error = _.find(windshaftErrors, function (error) {
@@ -232,20 +233,6 @@ var WindshaftMap = Backbone.Model.extend({
 
   _getAnalyses: function () {
     return (this.get('metadata') && this.get('metadata').analyses) || [];
-  },
-
-  _getErrorsFromResponse: function (response) {
-    if (response.errors_with_context) {
-      return _.map(response.errors_with_context, function (error) {
-        return new WindshaftError(error);
-      });
-    }
-    if (response.errors) {
-      return [
-        new WindshaftError({ message: response.errors[0] })
-      ];
-    }
-    return [];
   }
 });
 

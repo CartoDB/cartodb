@@ -15,7 +15,7 @@ describe('core/template-list', function () {
 
   it('should get template by name', function () {
     expect(tmpl.getTemplate('t1')).toBeTruthy();
-    expect(tmpl.getTemplate('t2')({name: 'rambo'})).toEqual('byee!! rambo');
+    expect(tmpl.getTemplate('t2')({name: 'cartojs-test'})).toEqual('byee!! cartojs-test');
     expect(tmpl.getTemplate('nononon')).toBeFalsy();
   });
 });

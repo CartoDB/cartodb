@@ -20,8 +20,8 @@ module.exports = function (createLayerGroupView, expectTileURLTemplateToMatch, f
       this.container = $('<div id="map">').css('height', '200px');
       $('body').append(this.container);
 
-      this.cartoDBLayer1 = new CartoDBLayer({}, { vis: { on: function () {} } });
-      this.cartoDBLayer2 = new CartoDBLayer({}, { vis: { on: function () {} } });
+      this.cartoDBLayer1 = new CartoDBLayer({}, { engine: { on: function () {} } });
+      this.cartoDBLayer2 = new CartoDBLayer({}, { engine: { on: function () {} } });
       this.layersCollection = new LayersCollection([
         this.cartoDBLayer1, this.cartoDBLayer2
       ]);

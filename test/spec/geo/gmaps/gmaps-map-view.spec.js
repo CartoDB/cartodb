@@ -23,7 +23,7 @@ describe('geo/gmaps/gmaps-map-view', function () {
     mapView = new GoogleMapsMapView({
       el: container,
       mapModel: map,
-      visModel: new Backbone.Model(),
+      engine: new Backbone.Model(),
       layerGroupModel: new Backbone.Model()
     });
 
@@ -53,7 +53,7 @@ describe('geo/gmaps/gmaps-map-view', function () {
     var mapView = new GoogleMapsMapView({
       el: container,
       mapModel: map,
-      visModel: new Backbone.Model(),
+      engine: new Backbone.Model(),
       layerGroupModel: new Backbone.Model()
     });
     mapView.render();
@@ -93,7 +93,7 @@ describe('geo/gmaps/gmaps-map-view', function () {
     var mapView = new GoogleMapsMapView({
       el: container,
       mapModel: map,
-      visModel: new Backbone.Model(),
+      engine: new Backbone.Model(),
       layerGroupModel: new Backbone.Model()
     });
     mapView.render();

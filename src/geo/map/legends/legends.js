@@ -47,10 +47,10 @@ var SHARED_ATTRS = [
 ];
 
 var Legends = function (legendsData, deps) {
-  if (!deps.visModel) throw new Error('visModel is required');
+  if (!deps.engine) throw new Error('engine is required');
 
   this._legendsData = legendsData || [];
-  this._visModel = deps.visModel;
+  this._engine = deps.engine;
 
   _.each(LEGENDS_METADATA, function (legendMetadata, legendType) {
     this[legendType] = this._createLegendModel(legendType, legendMetadata);
@@ -88,7 +88,7 @@ Legends.prototype._createLegendModel = function (legendType, legendMetadata) {
   });
 
   var legendModel = new ModelClass(modelAttrs, {
-    visModel: this._visModel
+    engine: this._engine
   });
 
   if (data) {

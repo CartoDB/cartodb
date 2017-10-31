@@ -4,21 +4,20 @@ var PlainLayer = require('../../../../../src/geo/map/plain-layer');
 var TileLayer = require('../../../../../src/geo/map/tile-layer');
 var TorqueLayer = require('../../../../../src/geo/map/torque-layer');
 var GMapsBaseLayer = require('../../../../../src/geo/map/gmaps-base-layer');
-var VisModel = require('../../../../../src/vis/vis');
 var LayersSerializer = require('../../../../../src/windshaft/map-serializer/anonymous-map-serializer/layers-serializer');
-var fakeFactory = require('../../../../helpers/fakeFactory');
+var MockFactory = require('../../../../helpers/mockFactory');
 
 describe('layers-serializer', function () {
   describe('.serialize', function () {
-    var visMock;
+    var engineMock;
     var sourceMock;
     var layersCollection;
 
     // Create all test objects once
     beforeAll(function () {
       layersCollection = new Backbone.Collection();
-      visMock = new VisModel();
-      sourceMock = fakeFactory.createAnalysisModel({ id: 'a1' });
+      engineMock = MockFactory.createEngine();
+      sourceMock = MockFactory.createAnalysisModel({ id: 'a1' });
     });
 
     it('should serialize a cartodb layer', function () {
@@ -28,7 +27,7 @@ describe('layers-serializer', function () {
         cartocss: 'cartoCSS1',
         cartocss_version: '2.0'
       }, {
-        vis: visMock
+        engine: engineMock
       });
       layersCollection.reset([cartoDBLayer]);
 
@@ -51,7 +50,7 @@ describe('layers-serializer', function () {
         id: 'l2',
         color: 'COLOR',
         image: 'http://carto.com/image.png'
-      }, { vis: {} });
+      }, { engine: engineMock });
       layersCollection.reset([plainLayer]);
 
       var actual = LayersSerializer.serialize(layersCollection);
@@ -72,7 +71,7 @@ describe('layers-serializer', function () {
         source: sourceMock,
         cartocss: 'cartocss'
       }, {
-        vis: visMock
+        engine: engineMock
       });
       layersCollection.reset([torqueLayer]);
 
@@ -95,7 +94,7 @@ describe('layers-serializer', function () {
         urlTemplate: 'URL_TEMPLATE',
         subdomains: 'abc',
         tms: false
-      }, { vis: {} });
+      }, { engine: engineMock });
       layersCollection.reset([tileLayer]);
 
       var actual = LayersSerializer.serialize(layersCollection);
@@ -115,7 +114,7 @@ describe('layers-serializer', function () {
       var gmapsBaseLayer = new GMapsBaseLayer({
         id: 'l4',
         baseType: 'roadmap'
-      }, { vis: {} });
+      }, { engine: engineMock });
       layersCollection.reset([gmapsBaseLayer]);
 
       var actual = LayersSerializer.serialize(layersCollection);

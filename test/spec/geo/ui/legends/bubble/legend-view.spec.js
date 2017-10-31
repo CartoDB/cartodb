@@ -1,11 +1,11 @@
-var Backbone = require('backbone');
 var LegendViewBubble = require('../../../../../../src/geo/ui/legends/bubble/legend-view.js');
 var BubbleLegendModel = require('../../../../../../src/geo/map/legends/bubble-legend-model.js');
+var MockFactory = require('../../../../../helpers/mockFactory');
 
 describe('geo/ui/legends/bubbles/legend-view.js', function () {
+  var engineMock;
   beforeEach(function () {
-    this.visModel = new Backbone.Model();
-
+    engineMock = MockFactory.createEngine();
     this.model = new BubbleLegendModel({
       title: 'Bubble',
       type: 'bubble',
@@ -19,7 +19,7 @@ describe('geo/ui/legends/bubbles/legend-view.js', function () {
       values: [5, 10, 20, 40],
       visible: true
     }, {
-      visModel: this.visModel
+      engine: engineMock
     });
 
     spyOn(this.model, 'isAvailable').and.returnValue(true);

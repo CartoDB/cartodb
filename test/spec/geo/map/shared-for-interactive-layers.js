@@ -1,17 +1,15 @@
 var _ = require('underscore');
-var fakeFactory = require('../../../helpers/fakeFactory');
+var MockFactory = require('../../../helpers/mockFactory');
 
 module.exports = function (LayerModel) {
   var layer;
   var source;
-  var vis;
+  var engineMock;
 
   beforeEach(function () {
-    source = fakeFactory.createAnalysisModel({ id: 'a0' });
-    vis = fakeFactory.createVisModel();
-    layer = new LayerModel({
-      source: source
-    }, { vis: vis });
+    source = MockFactory.createAnalysisModel({ id: 'a0' });
+    engineMock = MockFactory.createEngine();
+    layer = new LayerModel({source: source}, { engine: engineMock });
   });
 
   var METHODS = [
@@ -33,9 +31,7 @@ module.exports = function (LayerModel) {
       { type: 'custom', title: 'My Custom Legend' }
     ];
 
-    var layer = new LayerModel({
-      legends: legends
-    }, { vis: vis });
+    layer = new LayerModel({ legends: legends }, { engine: engineMock });
 
     expect(layer.get('legends')).toBeUndefined();
     expect(layer.legends.bubble.get('title')).toEqual('My Bubble Legend');
@@ -54,7 +50,7 @@ module.exports = function (LayerModel) {
     describe('when layer is updated', function () {
       it('should unmark source and mark new source as referenced', function () {
         var oldSource = source;
-        var newSource = fakeFactory.createAnalysisModel({ id: 'a1' });
+        var newSource = MockFactory.createAnalysisModel({ id: 'a1' });
 
         expect(oldSource.isSourceOf(layer)).toBe(true);
         expect(newSource.isSourceOf(layer)).toBe(false);

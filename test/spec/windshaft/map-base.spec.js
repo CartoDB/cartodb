@@ -3,7 +3,6 @@ var Backbone = require('backbone');
 var log = require('cdb.log');
 var Model = require('../../../src/core/model');
 var Map = require('../../../src/geo/map');
-var VisModel = require('../../../src/vis/vis');
 var TorqueLayer = require('../../../src/geo/map/torque-layer');
 var CartoDBLayer = require('../../../src/geo/map/cartodb-layer');
 var HistogramDataviewModel = require('../../../src/dataviews/histogram-dataview-model');
@@ -11,7 +10,7 @@ var DataviewsCollection = require('../../../src/dataviews/dataviews-collection')
 var WindshaftMapBase = require('../../../src/windshaft/map-base');
 var WindshaftClient = require('../../../src/windshaft/client');
 var CategoryFilter = require('../../../src/windshaft/filters/category');
-var fakeFactory = require('../../helpers/fakeFactory');
+var MockFactory = require('../../helpers/mockFactory');
 
 var WindshaftMap = WindshaftMapBase.extend({
   toJSON: function () {
@@ -20,6 +19,8 @@ var WindshaftMap = WindshaftMapBase.extend({
 });
 
 describe('windshaft/map-base', function () {
+  var engineMock;
+
   beforeEach(function () {
     jasmine.clock().install();
 
@@ -46,26 +47,26 @@ describe('windshaft/map-base', function () {
       }
     };
 
-    this.vis = new VisModel();
+    engineMock = MockFactory.createEngine();
     this.dataviewsCollection = new DataviewsCollection(null, {
-      vis: this.vis
+      engine: engineMock
     });
 
     this.layersCollection = new Backbone.Collection();
     this.modelUpdater = jasmine.createSpyObj('modelUpdater', ['updateModels', 'setErrors']);
-    this.a0 = fakeFactory.createAnalysisModel({ id: 'a0 ' });
+    this.a0 = MockFactory.createAnalysisModel({ id: 'a0 ' });
 
     this.windshaftSettings = {
       urlTemplate: 'http://{user}.example.com',
-      userName: 'rambo'
+      userName: 'cartojs-test'
     };
 
     this.client = new WindshaftClient(this.windshaftSettings);
 
     this.cartoDBLayerGroup = new Model();
-    this.cartoDBLayer1 = new CartoDBLayer({ id: '12345-67890' }, { vis: this.vis });
-    this.cartoDBLayer2 = new CartoDBLayer({ id: '09876-54321' }, { vis: this.vis });
-    this.torqueLayer = new TorqueLayer({}, { vis: this.vis });
+    this.cartoDBLayer1 = new CartoDBLayer({ id: '12345-67890' }, { engine: engineMock });
+    this.cartoDBLayer2 = new CartoDBLayer({ id: '09876-54321' }, { engine: engineMock });
+    this.torqueLayer = new TorqueLayer({}, { engine: engineMock });
 
     this.windshaftMap = new WindshaftMap({
       statTag: 'stat_tag'
@@ -101,7 +102,7 @@ describe('windshaft/map-base', function () {
         source: this.a0
       }, {
         map: this.map,
-        vis: this.vis,
+        engine: engineMock,
         windshaftMap: this.windshaftMap,
         filter: this.filter
       });
@@ -372,7 +373,7 @@ describe('windshaft/map-base', function () {
       this.windshaftMap.set({
         layergroupid: '0123456789'
       });
-      expect(this.windshaftMap.getBaseURL()).toEqual('http://rambo.example.com/api/v1/map/0123456789');
+      expect(this.windshaftMap.getBaseURL()).toEqual('http://cartojs-test.example.com/api/v1/map/0123456789');
     });
 
     it('should return the CDN URL for http when CDN info is present', function () {
@@ -384,7 +385,7 @@ describe('windshaft/map-base', function () {
         }
       });
 
-      expect(this.windshaftMap.getBaseURL()).toEqual('http://cdn.http.example.com/rambo/api/v1/map/0123456789');
+      expect(this.windshaftMap.getBaseURL()).toEqual('http://cdn.http.example.com/cartojs-test/api/v1/map/0123456789');
     });
 
     it('should return the CDN URL for https when CDN info is present', function () {
@@ -398,7 +399,7 @@ describe('windshaft/map-base', function () {
         }
       });
 
-      expect(this.windshaftMap.getBaseURL()).toEqual('https://cdn.https.example.com/rambo/api/v1/map/0123456789');
+      expect(this.windshaftMap.getBaseURL()).toEqual('https://cdn.https.example.com/cartojs-test/api/v1/map/0123456789');
     });
 
     it('should use the CDN template', function () {
@@ -420,7 +421,7 @@ describe('windshaft/map-base', function () {
         }
       });
 
-      expect(this.windshaftMap.getBaseURL()).toEqual('http://{s}.cdn2.http.example.com/rambo/api/v1/map/0123456789');
+      expect(this.windshaftMap.getBaseURL()).toEqual('http://{s}.cdn2.http.example.com/cartojs-test/api/v1/map/0123456789');
     });
   });
 

@@ -1,5 +1,4 @@
 var _ = require('underscore');
-var VisModel = require('../../../src/vis/vis');
 var CartoDBLayer = require('../../../src/geo/map/cartodb-layer');
 var TorqueLayer = require('../../../src/geo/map/torque-layer');
 var LayersCollection = require('../../../src/geo/map/layers');
@@ -11,13 +10,17 @@ var WindshaftMap = require('../../../src/windshaft/map-base.js');
 var Dataview = require('../../../src/dataviews/dataview-model-base');
 var AnalysisModel = require('../../../src/analysis/analysis-model');
 var MapModel = require('../../../src/geo/map');
+var MockFactory = require('../../helpers/mockFactory');
 
 var MyWindshaftMap = WindshaftMap.extend({
 });
 
-describe('src/vis/model-updater', function () {
+describe('src//model-updater', function () {
+  var mapModel;
+  var engineMock;
+
   beforeEach(function () {
-    this.fakeVis = jasmine.createSpyObj('vis', ['reload']);
+    engineMock = MockFactory.createEngine();
 
     this.windshaftMap = new MyWindshaftMap({
       urlTemplate: 'http://{user}.carto.com:80',
@@ -29,7 +32,7 @@ describe('src/vis/model-updater', function () {
       modelUpdater: {},
       windshaftSettings: {
         urlTemplate: 'http://{user}.cartodb.com:80',
-        userName: 'rambo'
+        userName: 'cartojs-test'
       }
     });
 
@@ -39,9 +42,6 @@ describe('src/vis/model-updater', function () {
     spyOn(this.windshaftMap, 'getLayerIndexesByType').and.returnValue([0]);
     spyOn(this.windshaftMap, 'getSupportedSubdomains').and.returnValue(['']);
 
-    this.visModel = new VisModel();
-    spyOn(this.visModel, 'setOk');
-    spyOn(this.visModel, 'setError');
     this.layersCollection = new LayersCollection();
     this.mapModel = new MapModel(null, {
       layersFactory: {},
@@ -52,6 +52,8 @@ describe('src/vis/model-updater', function () {
       layersCollection: this.layersCollection
     });
     this.dataviewsCollection = new Backbone.Collection();
+
+    mapModel = new MapModel(null, { layersFactory: {}, layersCollection: this.LayersCollection });
 
     this.modelUpdater = new ModelUpdater({
       layerGroupModel: this.layerGroupModel,
@@ -71,10 +73,9 @@ describe('src/vis/model-updater', function () {
 
     describe('layerGroupModel', function () {
       beforeEach(function () {
-        var fakeVis = new Backbone.Model();
-        var analysis = new AnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' }, { vis: fakeVis, camshaftReference: camshaftReferenceMock });
-        var layer1 = new CartoDBLayer({ source: analysis }, { vis: this.visModel });
-        var layer2 = new CartoDBLayer({ source: analysis }, { vis: this.visModel });
+        var analysis = new AnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' }, { engine: engineMock, camshaftReference: camshaftReferenceMock });
+        var layer1 = new CartoDBLayer({ source: analysis }, { engine: engineMock });
+        var layer2 = new CartoDBLayer({ source: analysis }, { engine: engineMock });
 
         this.layersCollection.reset([layer1, layer2]);
 
@@ -165,12 +166,11 @@ describe('src/vis/model-updater', function () {
 
     describe('layer models', function () {
       it('should mark CartoDB and torque layer models as ok', function () {
-        var fakeVis = new Backbone.Model();
-        var analysis = new AnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' }, { vis: fakeVis, camshaftReference: camshaftReferenceMock });
+        var analysis = new AnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' }, { engine: engineMock, camshaftReference: camshaftReferenceMock });
 
         var layer0 = new Backbone.Model({ type: 'Tiled' });
-        var layer1 = new CartoDBLayer({ source: analysis }, { vis: this.visModel });
-        var layer2 = new TorqueLayer({ source: analysis }, { vis: this.visModel });
+        var layer1 = new CartoDBLayer({ source: analysis }, { engine: engineMock });
+        var layer2 = new TorqueLayer({ source: analysis }, { engine: engineMock });
 
         spyOn(layer1, 'setOk');
         spyOn(layer2, 'setOk');
@@ -183,12 +183,11 @@ describe('src/vis/model-updater', function () {
       });
 
       it('should set tileURLTemplates attribute of torque layer models', function () {
-        var fakeVis = new Backbone.Model();
-        var analysis = new AnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' }, { vis: fakeVis, camshaftReference: camshaftReferenceMock });
+        var analysis = new AnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' }, { engine: engineMock, camshaftReference: camshaftReferenceMock });
 
         var layer0 = new Backbone.Model({ type: 'Tiled' });
-        var layer1 = new CartoDBLayer({ source: analysis }, { vis: this.visModel });
-        var layer2 = new TorqueLayer({ source: analysis }, { vis: this.visModel });
+        var layer1 = new CartoDBLayer({ source: analysis }, { engine: engineMock });
+        var layer2 = new TorqueLayer({ source: analysis }, { engine: engineMock });
         this.layersCollection.reset([layer0, layer1, layer2]);
 
         this.modelUpdater.updateModels(this.windshaftMap);
@@ -201,9 +200,8 @@ describe('src/vis/model-updater', function () {
 
     describe('legend models', function () {
       it('should "mark" all legend models as success', function () {
-        var fakeVis = new Backbone.Model();
-        var analysis = new AnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' }, { vis: fakeVis, camshaftReference: camshaftReferenceMock });
-        var layer = new CartoDBLayer({ source: analysis }, { vis: this.visModel });
+        var analysis = new AnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' }, { engine: engineMock, camshaftReference: camshaftReferenceMock });
+        var layer = new CartoDBLayer({ source: analysis }, { engine: engineMock });
 
         this.layersCollection.reset([layer]);
         this.modelUpdater.updateModels(this.windshaftMap, 'sourceId', 'forceFetch');
@@ -214,8 +212,7 @@ describe('src/vis/model-updater', function () {
       });
 
       it('should update model for choropleth legends', function () {
-        var fakeVis = new Backbone.Model();
-        var analysis = new AnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' }, { vis: fakeVis, camshaftReference: camshaftReferenceMock });
+        var analysis = new AnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' }, { engine: engineMock, camshaftReference: camshaftReferenceMock });
 
         this.windshaftMap.set('metadata', {
           layers: [
@@ -268,7 +265,7 @@ describe('src/vis/model-updater', function () {
           ]
         });
 
-        var layer = new CartoDBLayer({ source: analysis }, { vis: this.visModel });
+        var layer = new CartoDBLayer({ source: analysis }, { engine: engineMock });
 
         this.layersCollection.reset([layer]);
 
@@ -283,8 +280,7 @@ describe('src/vis/model-updater', function () {
       });
 
       it('should update model for category legends', function () {
-        var fakeVis = new Backbone.Model();
-        var analysis = new AnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' }, { vis: fakeVis, camshaftReference: camshaftReferenceMock });
+        var analysis = new AnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' }, { engine: engineMock, camshaftReference: camshaftReferenceMock });
 
         this.windshaftMap.set('metadata', {
           layers: [
@@ -333,7 +329,7 @@ describe('src/vis/model-updater', function () {
           ]
         });
 
-        var layer = new CartoDBLayer({ source: analysis }, { vis: this.visModel });
+        var layer = new CartoDBLayer({ source: analysis }, { engine: engineMock });
 
         this.layersCollection.reset([layer]);
 
@@ -347,8 +343,7 @@ describe('src/vis/model-updater', function () {
       });
 
       it('should update model for bubble legends', function () {
-        var fakeVis = new Backbone.Model();
-        var analysis = new AnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' }, { vis: fakeVis, camshaftReference: camshaftReferenceMock });
+        var analysis = new AnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' }, { engine: engineMock, camshaftReference: camshaftReferenceMock });
         this.windshaftMap.set('metadata', {
           layers: [
             {
@@ -416,7 +411,7 @@ describe('src/vis/model-updater', function () {
           ]
         });
 
-        var layer = new CartoDBLayer({ source: analysis }, { vis: this.visModel });
+        var layer = new CartoDBLayer({ source: analysis }, { engine: engineMock });
 
         this.layersCollection.reset([layer]);
 
@@ -433,8 +428,7 @@ describe('src/vis/model-updater', function () {
       });
 
       it('should set legend state to "error" if adapter fails to generate attrs from rule', function () {
-        var fakeVis = new Backbone.Model();
-        var analysis = new AnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' }, { vis: fakeVis, camshaftReference: camshaftReferenceMock });
+        var analysis = new AnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' }, { engine: engineMock, camshaftReference: camshaftReferenceMock });
 
         this.windshaftMap.set('metadata', {
           layers: [
@@ -457,7 +451,7 @@ describe('src/vis/model-updater', function () {
           ]
         });
 
-        var layer = new CartoDBLayer({ source: analysis }, { vis: this.visModel });
+        var layer = new CartoDBLayer({ source: analysis }, { engine: engineMock });
 
         this.layersCollection.reset([layer]);
 
@@ -468,21 +462,20 @@ describe('src/vis/model-updater', function () {
     });
 
     describe('dataview models', function () {
-      var fakeVis = new Backbone.Model();
       it('should update dataview models', function () {
         var dataview1 = new Dataview({
           id: 'a1',
-          source: new AnalysisModel({}, { vis: fakeVis, camshaftReference: camshaftReferenceMock })
+          source: new AnalysisModel({}, { engine: engineMock, camshaftReference: camshaftReferenceMock })
         }, {
-          map: this.mapModel,
-          vis: fakeVis
+          map: mapModel,
+          engine: engineMock
         });
         var dataview2 = new Dataview({
           id: 'a2',
-          source: new AnalysisModel({}, { vis: fakeVis, camshaftReference: camshaftReferenceMock })
+          source: new AnalysisModel({}, { engine: engineMock, camshaftReference: camshaftReferenceMock })
         }, {
-          map: this.mapModel,
-          vis: fakeVis
+          map: mapModel,
+          engine: engineMock
         });
         this.dataviewsCollection.reset([dataview1, dataview2]);
 
@@ -523,11 +516,10 @@ describe('src/vis/model-updater', function () {
 
     describe('analysis models', function () {
       it('should update analysis models and set analysis state to "ok"', function () {
-        var fakeVis = new Backbone.Model();
-        var analysis1 = new AnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' }, { vis: fakeVis, camshaftReference: camshaftReferenceMock });
-        var analysis2 = new AnalysisModel({ id: 'a2', type: 'source', query: 'SELECT * FROM table' }, { vis: fakeVis, camshaftReference: camshaftReferenceMock });
-        var layer = new CartoDBLayer({ source: analysis1 }, { vis: fakeVis });
-        var dataview = new Dataview({ id: 'a1', source: analysis2 }, { map: this.mapModel, vis: fakeVis });
+        var analysis1 = new AnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' }, { engine: engineMock, camshaftReference: camshaftReferenceMock });
+        var analysis2 = new AnalysisModel({ id: 'a2', type: 'source', query: 'SELECT * FROM table' }, { engine: engineMock, camshaftReference: camshaftReferenceMock });
+        var layer = new CartoDBLayer({ source: analysis1 }, { engine: engineMock });
+        var dataview = new Dataview({ id: 'a1', source: analysis2 }, { map: mapModel, engine: engineMock });
 
         spyOn(analysis1, 'setOk');
         spyOn(analysis2, 'setOk');
@@ -550,11 +542,10 @@ describe('src/vis/model-updater', function () {
       });
 
       it('should update analysis models and set status to "failed"', function () {
-        var fakeVis = new Backbone.Model();
-        var analysis1 = new AnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' }, { vis: fakeVis, camshaftReference: camshaftReferenceMock });
-        var analysis2 = new AnalysisModel({ id: 'a2', type: 'source', query: 'SELECT * FROM table' }, { vis: fakeVis, camshaftReference: camshaftReferenceMock });
-        var layer = new CartoDBLayer({ source: analysis1 }, { vis: fakeVis });
-        var dataview = new Dataview({ id: 'a1', source: analysis2 }, { map: this.mapModel, vis: fakeVis });
+        var analysis1 = new AnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' }, { engine: engineMock, camshaftReference: camshaftReferenceMock });
+        var analysis2 = new AnalysisModel({ id: 'a2', type: 'source', query: 'SELECT * FROM table' }, { engine: engineMock, camshaftReference: camshaftReferenceMock });
+        var layer = new CartoDBLayer({ source: analysis1 }, { engine: engineMock });
+        var dataview = new Dataview({ id: 'a1', source: analysis2 }, { map: mapModel, engine: engineMock });
 
         spyOn(this.windshaftMap, 'getAnalysisNodeMetadata').and.callFake(function (analysisId) {
           return { error_message: 'fake_error_message', status: 'failed', query: 'query_' + analysisId, url: { http: 'url_' + analysisId } };
@@ -571,9 +562,8 @@ describe('src/vis/model-updater', function () {
       });
 
       it('should not update attributes that are original params (eg: query)', function () {
-        var fakeVis = new Backbone.Model();
-        var analysis1 = new AnalysisModel({ id: 'a1', type: 'source', query: 'original_query' }, { vis: fakeVis, camshaftReference: camshaftReferenceMock });
-        var layer = new CartoDBLayer({ source: analysis1 }, { vis: fakeVis });
+        var analysis1 = new AnalysisModel({ id: 'a1', type: 'source', query: 'original_query' }, { engine: engineMock, camshaftReference: camshaftReferenceMock });
+        var layer = new CartoDBLayer({ source: analysis1 }, { engine: engineMock });
 
         spyOn(analysis1, 'getParamNames').and.returnValue(['query']);
         spyOn(this.windshaftMap, 'getAnalysisNodeMetadata').and.callFake(function (analysisId) {
@@ -593,9 +583,8 @@ describe('src/vis/model-updater', function () {
 
   describe('.setErrors', function () {
     it('should set analysis status to "error"', function () {
-      var fakeVis = new Backbone.Model();
-      var analysisModel = new AnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' }, { vis: fakeVis, camshaftReference: camshaftReferenceMock });
-      var layer = new CartoDBLayer({ source: analysisModel }, { vis: fakeVis });
+      var analysisModel = new AnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' }, { engine: engineMock, camshaftReference: camshaftReferenceMock });
+      var layer = new CartoDBLayer({ source: analysisModel }, { engine: engineMock });
 
       spyOn(analysisModel, 'setError');
 
@@ -680,8 +669,8 @@ describe('src/vis/model-updater', function () {
     });
 
     it('should "mark" legend models as erroroneus', function () {
-      var layer1 = new CartoDBLayer({}, { vis: this.visModel });
-      var layer2 = new CartoDBLayer({}, { vis: this.visModel });
+      var layer1 = new CartoDBLayer({}, { engine: engineMock });
+      var layer2 = new CartoDBLayer({}, { engine: engineMock });
 
       expect(layer1.legends.bubble.isError()).toBeFalsy();
       expect(layer1.legends.category.isError()).toBeFalsy();

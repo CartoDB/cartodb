@@ -1,12 +1,12 @@
 var _ = require('underscore');
 
-var VisModel = require('../../../src/vis/vis');
 var AnalysisModel = require('../../../src/analysis/analysis-model');
 var LayersFactory = require('../../../src/vis/layers-factory');
+var MockFactory = require('../../helpers/mockFactory');
 
 var createFakeAnalysis = function (attrs) {
   return new AnalysisModel(attrs, {
-    vis: {},
+    engine: {},
     camshaftReference: {
       getParamNamesForAnalysisType: function () {}
     }
@@ -16,9 +16,10 @@ var createFakeAnalysis = function (attrs) {
 describe('vis/layers-factory', function () {
   var analysis;
   var layersFactory;
+  var engineMock;
 
   beforeEach(function () {
-    this.vis = new VisModel();
+    engineMock = MockFactory.createEngine();
 
     this.windshaftSettings = {
       urlTemplate: 'http://{user}.carto.com',
@@ -30,7 +31,7 @@ describe('vis/layers-factory', function () {
     };
 
     layersFactory = new LayersFactory({
-      visModel: this.vis,
+      engine: engineMock,
       windshaftSettings: this.windshaftSettings
     });
 
@@ -100,27 +101,9 @@ describe('vis/layers-factory', function () {
       'https://cartocdn_{s}.global.ssl.fastly.net/': 'http://{s}.api.cartocdn.com/',
       'https://cartodb-basemaps-{s}.global.ssl.fastly.net/': 'http://{s}.basemaps.cartocdn.com/'
     }, function (httpUrlTemplate, httpsUrlTemplate) {
-      describe('when https option is undefined', function () {
-        it("should not convert '" + httpUrlTemplate + "'", function () {
-          var layerModel = layersFactory.createLayer('tiled', {
-            urlTemplate: httpUrlTemplate
-          });
-
-          expect(layerModel.get('urlTemplate')).toEqual(httpUrlTemplate);
-        });
-
-        it("should not convert '" + httpsUrlTemplate + "'", function () {
-          var layerModel = layersFactory.createLayer('tiled', {
-            urlTemplate: httpsUrlTemplate
-          });
-
-          expect(layerModel.get('urlTemplate')).toEqual(httpsUrlTemplate);
-        });
-      });
-
       describe('when https option is set to true', function () {
         beforeEach(function () {
-          this.vis.set('https', true);
+          spyOn(LayersFactory, 'isHttps').and.returnValue(true);
         });
 
         it("should not convert '" + httpsUrlTemplate + "'", function () {
@@ -142,7 +125,7 @@ describe('vis/layers-factory', function () {
 
       describe('when https option is set to false', function () {
         beforeEach(function () {
-          this.vis.set('https', false);
+          spyOn(LayersFactory, 'isHttps').and.returnValue(false);
         });
 
         it("should not convert '" + httpUrlTemplate + "'", function () {

@@ -54,18 +54,8 @@ function checkProperties (obj, requiredProperties) {
 var LAYER_CONSTRUCTORS = {
   tiled: function (attrs, options) {
     checkProperties(attrs, ['urlTemplate']);
-
-    var visModel = options.vis;
-
-    if (visModel.get('https') === true) {
-      attrs.urlTemplate = transformToHTTPS(attrs.urlTemplate);
-    } else if (visModel.get('https') === false) { // Checking for an explicit false value. If it's undefined the url is left as is.
-      attrs.urlTemplate = transformToHTTP(attrs.urlTemplate);
-    }
-
-    return new TileLayer(attrs, {
-      vis: options.vis
-    });
+    attrs.urlTemplate = LayersFactory.isHttps() ? transformToHTTPS(attrs.urlTemplate) : transformToHTTP(attrs.urlTemplate);
+    return new TileLayer(attrs, { engine: options.engine });
   },
 
   wms: function (attrs, options) {
@@ -83,15 +73,11 @@ var LAYER_CONSTRUCTORS = {
   plain: function (attrs, options) {
     checkProperties(attrs, ['image|color']);
 
-    return new PlainLayer(attrs, {
-      vis: options.vis
-    });
+    return new PlainLayer(attrs, { engine: options.engine });
   },
 
   background: function (data, options) {
-    return new PlainLayer(data, {
-      vis: options.vis
-    });
+    return new PlainLayer(data, { engine: options.engine });
   },
 
   cartodb: function (attrs, options) {
@@ -99,15 +85,10 @@ var LAYER_CONSTRUCTORS = {
     // we should make 'source' attribute required again and make sure it's
     // always populated:
     // checkProperties(attrs, ['source', 'cartocss']);
-    // attrs.source = CartoDBLayer.getLayerSourceFromAttrs(attrs, options.vis.analysis);
+    // CartoDBLayer._checkSourceAttribute(attrs.source);
     checkProperties(attrs, ['cartocss']);
-    if (attrs.source) {
-      attrs.source = CartoDBLayer.getLayerSourceFromAttrs(attrs, options.vis.analysis);
-    }
 
-    return new CartoDBLayer(attrs, {
-      vis: options.vis
-    });
+    return new CartoDBLayer(attrs, { engine: options.engine });
   },
 
   torque: function (attrs, options) {
@@ -115,11 +96,8 @@ var LAYER_CONSTRUCTORS = {
     // we should make 'source' attribute required again and make sure it's
     // populated:
     // checkProperties(attrs, ['source', 'cartocss']);
-    // attrs.source = CartoDBLayer.getLayerSourceFromAttrs(attrs, options.vis.analysis);
+    // CartoDBLayer._checkSourceAttribute(attrs.source);
     checkProperties(attrs, ['cartocss']);
-    if (attrs.source) {
-      attrs.source = TorqueLayer.getLayerSourceFromAttrs(attrs, options.vis.analysis);
-    }
 
     var windshaftSettings = options.windshaftSettings;
 
@@ -139,19 +117,17 @@ var LAYER_CONSTRUCTORS = {
       });
     }
 
-    return new TorqueLayer(attrs, {
-      vis: options.vis
-    });
+    return new TorqueLayer(attrs, { engine: options.engine });
   }
 };
 
-var LayersFactory = function (deps) {
-  if (!deps.visModel) throw new Error('visModel is required');
+function LayersFactory (deps) {
+  if (!deps.engine) throw new Error('engine is required');
   if (!deps.windshaftSettings) throw new Error('windshaftSettings is required');
 
-  this._visModel = deps.visModel;
+  this._engine = deps.engine;
   this._windshaftSettings = deps.windshaftSettings;
-};
+}
 
 LayersFactory.prototype.createLayer = function (type, attrs) {
   var LayerConstructor = LAYER_CONSTRUCTORS[type.toLowerCase()];
@@ -162,8 +138,12 @@ LayersFactory.prototype.createLayer = function (type, attrs) {
 
   return LayerConstructor(attrs, {
     windshaftSettings: this._windshaftSettings,
-    vis: this._visModel
+    engine: this._engine
   });
+};
+
+LayersFactory.isHttps = function () {
+  return (window && window.location.protocol && window.location.protocol === 'https:') || false;
 };
 
 module.exports = LayersFactory;

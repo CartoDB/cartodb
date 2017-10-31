@@ -1,6 +1,6 @@
-var Backbone = require('backbone');
 var LegendViewBase = require('../../../../../../src/geo/ui/legends/base/legend-view-base.js');
 var LegendModelBase = require('../../../../../../src/geo/map/legends/legend-model-base.js');
+var MockFactory = require('../../../../../helpers/mockFactory');
 
 var MyLegendModel = LegendModelBase.extend({
   TYPE: 'something',
@@ -17,15 +17,16 @@ var MyLegendView = LegendViewBase.extend({
 });
 
 describe('geo/ui/legends/legend-view-base.js', function () {
+  var engineMock;
   beforeEach(function () {
-    this.visModel = new Backbone.Model();
+    engineMock = MockFactory.createEngine();
     this.model = new MyLegendModel({
       title: 'My Beautiful Legend',
       preHTMLSnippet: '<p>before</p>',
       postHTMLSnippet: '<p>after</p>',
       visible: true
     }, {
-      visModel: this.visModel
+      engine: engineMock
     });
 
     this.myLegend = new MyLegendView({

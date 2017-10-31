@@ -1,6 +1,5 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
-var VisModel = require('../../../src/vis/vis');
 var PlainLayer = require('../../../src/geo/map/plain-layer');
 var CartoDBLayer = require('../../../src/geo/map/cartodb-layer');
 var TorqueLayer = require('../../../src/geo/map/torque-layer');
@@ -9,19 +8,17 @@ var WMSLayer = require('../../../src/geo/map/wms-layer');
 var GMapsBaseLayer = require('../../../src/geo/map/gmaps-base-layer');
 var LayersFactory = require('../../../src/vis/layers-factory');
 var AnalysisModel = require('../../../src/analysis/analysis-model');
+var MockFactory = require('../../helpers/mockFactory');
 
 var Point = require('../../../src/geo/geometry-models/point');
 var Polyline = require('../../../src/geo/geometry-models/polyline');
 var Polygon = require('../../../src/geo/geometry-models/polygon');
 
-var fakeLayersFactory = new LayersFactory({
-  visModel: new Backbone.Model(),
-  windshaftSettings: {}
-});
+var fakeLayersFactory = new LayersFactory({ engine: new Backbone.Model(), windshaftSettings: {} });
 
 var createFakeAnalysis = function (attrs) {
   return new AnalysisModel(attrs, {
-    vis: {},
+    engine: {},
     camshaftReference: {
       getParamNamesForAnalysisType: function () {}
     }
@@ -32,10 +29,10 @@ var Map = require('../../../src/geo/map');
 
 describe('core/geo/map', function () {
   var map;
+  var engineMock;
 
   beforeEach(function () {
-    this.vis = new VisModel();
-
+    engineMock = MockFactory.createEngine();
     this.map = map = new Map(null, { layersFactory: fakeLayersFactory });
   });
 
@@ -167,13 +164,13 @@ describe('core/geo/map', function () {
     expect(map.get('maxZoom')).toEqual(map.defaults.maxZoom);
     expect(map.get('minZoom')).toEqual(map.defaults.minZoom);
 
-    var layer = new PlainLayer({ minZoom: 5, maxZoom: 25 }, { vis: {} });
+    var layer = new PlainLayer({ minZoom: 5, maxZoom: 25 }, { engine: {} });
     map.layers.reset(layer);
 
     expect(map.get('maxZoom')).toEqual(25);
     expect(map.get('minZoom')).toEqual(5);
 
-    layer = new PlainLayer({ minZoom: '7', maxZoom: '31' }, { vis: {} });
+    layer = new PlainLayer({ minZoom: '7', maxZoom: '31' }, { engine: {} });
     map.layers.reset(layer);
 
     expect(map.get('maxZoom')).toEqual(31);
@@ -181,7 +178,7 @@ describe('core/geo/map', function () {
   });
 
   it("shouldn't set a NaN zoom", function () {
-    var layer = new PlainLayer({ minZoom: NaN, maxZoom: NaN }, { vis: {} });
+    var layer = new PlainLayer({ minZoom: NaN, maxZoom: NaN }, { engine: {} });
     map.layers.reset(layer);
 
     expect(map.get('maxZoom')).toEqual(map.defaults.maxZoom);
@@ -196,10 +193,10 @@ describe('core/geo/map', function () {
       '© <a href="https://carto.com/attributions" target="_blank">CARTO</a>'
     ]);
 
-    var layer1 = new CartoDBLayer({ attribution: 'attribution1' }, { vis: this.vis });
-    var layer2 = new CartoDBLayer({ attribution: 'attribution1' }, { vis: this.vis });
-    var layer3 = new CartoDBLayer({ attribution: 'wadus' }, { vis: this.vis });
-    var layer4 = new CartoDBLayer({ attribution: '' }, { vis: this.vis });
+    var layer1 = new CartoDBLayer({ attribution: 'attribution1' }, { engine: engineMock });
+    var layer2 = new CartoDBLayer({ attribution: 'attribution1' }, { engine: engineMock });
+    var layer3 = new CartoDBLayer({ attribution: 'wadus' }, { engine: engineMock });
+    var layer4 = new CartoDBLayer({ attribution: '' }, { engine: engineMock });
 
     map.layers.reset([layer1, layer2, layer3, layer4]);
 
@@ -210,7 +207,7 @@ describe('core/geo/map', function () {
       '© <a href="https://carto.com/attributions" target="_blank">CARTO</a>'
     ]);
 
-    var layer = new CartoDBLayer({ attribution: 'attribution2' }, { vis: this.vis });
+    var layer = new CartoDBLayer({ attribution: 'attribution2' }, { engine: engineMock });
 
     map.layers.add(layer);
 
@@ -241,7 +238,7 @@ describe('core/geo/map', function () {
     ]);
 
     // Addind a layer with the default attribution
-    layer = new CartoDBLayer({}, { vis: this.vis });
+    layer = new CartoDBLayer({}, { engine: engineMock });
 
     map.layers.add(layer, { at: 0 });
 
@@ -255,8 +252,8 @@ describe('core/geo/map', function () {
 
   describe('Layer action methods', function () {
     beforeEach(function () {
-      this.map.layers.add(new CartoDBLayer({}, { vis: this.vis }));
-      this.map.layers.add(new PlainLayer(null, { vis: {} }));
+      this.map.layers.add(new CartoDBLayer({}, { engine: engineMock }));
+      this.map.layers.add(new PlainLayer(null, { engine: {} }));
     });
 
     describe('.moveCartoDBLayer', function () {
@@ -369,7 +366,7 @@ describe('core/geo/map', function () {
 
   describe('.getLayerById', function () {
     beforeEach(function () {
-      var layer1 = new CartoDBLayer({ id: 'xyz-123', attribution: 'attribution1' }, { vis: this.vis });
+      var layer1 = new CartoDBLayer({ id: 'xyz-123', attribution: 'attribution1' }, { engine: engineMock });
 
       map.layers.reset(layer1);
     });

@@ -1,10 +1,10 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
-var VisModel = require('../../../src/vis/vis.js');
-var MapModel = require('../../../src/geo/map.js');
+var VisModel = require('../../../src/vis/vis');
+var MapModel = require('../../../src/geo/map');
 var DataviewModelBase = require('../../../src/dataviews/dataview-model-base');
-var AnalysisService = require('../../../src/analysis/analysis-service.js');
-var fakeFactory = require('../../helpers/fakeFactory');
+var AnalysisService = require('../../../src/analysis/analysis-service');
+var MockFactory = require('../../helpers/mockFactory');
 
 var fakeCamshaftReference = {
   getSourceNamesForAnalysisType: function (analysisType) {
@@ -37,6 +37,8 @@ var fakeCamshaftReference = {
 };
 
 describe('dataviews/dataview-model-base', function () {
+  var engineMock;
+
   beforeEach(function () {
     this.map = new MapModel(null, {
       layersFactory: {}
@@ -44,11 +46,20 @@ describe('dataviews/dataview-model-base', function () {
     this.map.setBounds([102, 200], [300, 400]);
 
     this.vis = new VisModel();
-    spyOn(this.vis, 'reload');
+    engineMock = this.vis._createEngine({
+      urlTemplate: 'fakeUrlTemplate',
+      userName: 'fakeUsername',
+      statTag: 'fakeStatTag',
+      apiKey: 'fakeApiKey',
+      authToken: 'fakeAuthToken',
+      templateName: 'fakeTemplateName'
+    });
+
+    spyOn(engineMock, 'reload');
     this.vis._onMapInstantiatedForTheFirstTime();
 
     this.analysisService = new AnalysisService({
-      vis: this.vis,
+      engine: engineMock,
       camshaftReference: fakeCamshaftReference
     });
     this.source = this.analysisService.analyse({
@@ -61,10 +72,10 @@ describe('dataviews/dataview-model-base', function () {
       source: this.source
     }, {
       map: this.map,
-      vis: this.vis
+      engine: engineMock
     });
     this.model.toJSON = jasmine.createSpy('toJSON').and.returnValue({});
-    this.vis._dataviewsCollection.add(this.model);
+    engineMock._dataviewsCollection.add(this.model);
 
     // Disable debounce
     spyOn(_, 'debounce').and.callFake(function (func) { return function () { func.apply(this, arguments); }; });
@@ -413,14 +424,14 @@ describe('dataviews/dataview-model-base', function () {
         source: this.source
       }, {
         map: this.map,
-        vis: this.vis,
+        engine: engineMock,
         filter: filter
       });
 
       // Filter changes
       filter.trigger('change', filter);
 
-      expect(this.vis.reload).toHaveBeenCalledWith({ sourceId: 'a0' });
+      expect(engineMock.reload).toHaveBeenCalledWith({ sourceId: 'a0' });
     });
   });
 
@@ -429,7 +440,6 @@ describe('dataviews/dataview-model-base', function () {
       this.removeSpy = jasmine.createSpy('remove');
       this.model.once('destroy', this.removeSpy);
       spyOn(this.model, 'stopListening');
-      spyOn(this.model, '_reloadVis');
       spyOn(this.source, 'off').and.callThrough();
 
       this.model.filter = jasmine.createSpyObj('filter', ['remove', 'isEmpty']);
@@ -480,7 +490,7 @@ describe('dataviews/dataview-model-base', function () {
         source: this.analysisNodes.get('a0')
       }, {
         map: this.map,
-        vis: this.vis
+        engine: engineMock
       });
 
       expect(dataview.getSourceType()).toEqual('source');
@@ -493,7 +503,7 @@ describe('dataviews/dataview-model-base', function () {
         source: this.source
       }, { // eslint-disable-line
         map: this.map,
-        vis: this.vis
+        engine: engineMock
       });
 
       expect(dataview.getSourceId()).toEqual('a0');
@@ -526,13 +536,13 @@ describe('dataviews/dataview-model-base', function () {
     var dataview;
 
     beforeEach(function () {
-      source = fakeFactory.createAnalysisModel({ id: 'a0' });
+      source = MockFactory.createAnalysisModel({ id: 'a0' });
 
       dataview = new DataviewModelBase({
         source: source
       }, {
         map: this.map,
-        vis: this.vis
+        engine: engineMock
       });
     });
 

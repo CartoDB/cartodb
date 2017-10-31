@@ -1,29 +1,24 @@
-var Backbone = require('backbone');
 var LegendModelBase = require('../../../../../src/geo/map/legends/legend-model-base');
-
-var MyLegendModel = LegendModelBase.extend({
-  TYPE: 'type'
-});
+var MockFactory = require('../../../../helpers/mockFactory');
+var Engine = require('../../../../../src/engine');
+var MyLegendModel = LegendModelBase.extend({ TYPE: 'type' });
 
 describe('src/geo/map/legends/legend-model-base', function () {
+  var engineMock;
+  var legendModel;
   beforeEach(function () {
-    this.visModel = new Backbone.Model();
-
-    this.legendModel = new MyLegendModel({}, {
-      visModel: this.visModel
-    });
+    engineMock = MockFactory.createEngine();
+    legendModel = new MyLegendModel({}, { engine: engineMock });
   });
 
   it('should have a "loading" state', function () {
-    expect(this.legendModel.isLoading()).toBeTruthy();
+    expect(legendModel.isLoading()).toBeTruthy();
   });
 
   it('should change state to "loading" when vis is reloading', function () {
-    this.legendModel.set('state', 'something');
-    expect(this.legendModel.isLoading()).toBeFalsy();
-
-    this.visModel.trigger('reload');
-
-    expect(this.legendModel.isLoading()).toBeTruthy();
+    legendModel.set('state', 'something');
+    expect(legendModel.isLoading()).toBeFalsy();
+    engineMock._eventEmmitter.trigger(Engine.Events.RELOAD_STARTED);
+    expect(legendModel.isLoading()).toBeTruthy();
   });
 });

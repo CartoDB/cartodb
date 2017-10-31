@@ -1,6 +1,6 @@
 var $ = require('jquery');
 var Backbone = require('backbone');
-var VisModel = require('../../../src/vis/vis');
+var MockFactory = require('../../helpers/mockFactory');
 var Map = require('../../../src/geo/map');
 var MapView = require('../../../src/geo/map-view');
 var TileLayer = require('../../../src/geo/map/tile-layer');
@@ -27,10 +27,11 @@ var MyMapView = MapView.extend({
 });
 
 describe('core/geo/map-view', function () {
+  var engineMock;
   beforeEach(function () {
     this.container = $('<div>').css('height', '200px');
-    this.vis = new VisModel();
-    spyOn(this.vis, 'reload');
+    engineMock = MockFactory.createEngine();
+    spyOn(engineMock, 'reload');
 
     this.map = new Map(null, {
       layersFactory: {}
@@ -40,7 +41,7 @@ describe('core/geo/map-view', function () {
     this.mapView = new MyMapView({
       el: this.container,
       mapModel: this.map,
-      visModel: new Backbone.Model(),
+      engine: new Backbone.Model(),
       layerGroupModel: new LayerGroupModel(null, {
         layersCollection: this.map.layers
       })
@@ -52,16 +53,16 @@ describe('core/geo/map-view', function () {
 
   describe('.render', function () {
     it('should add layer views to the map', function () {
-      var tileLayer = new TileLayer(null, { vis: {} });
-      var cartoDBLayer1 = new CartoDBLayer({}, { vis: this.vis });
-      var cartoDBLayer2 = new CartoDBLayer({}, { vis: this.vis });
+      var tileLayer = new TileLayer(null, { engine: {} });
+      var cartoDBLayer1 = new CartoDBLayer({}, { engine: engineMock });
+      var cartoDBLayer2 = new CartoDBLayer({}, { engine: engineMock });
 
       this.map.layers.reset([tileLayer, cartoDBLayer1, cartoDBLayer2]);
 
       this.mapView = new MyMapView({
         el: this.container,
         mapModel: this.map,
-        visModel: new Backbone.Model(),
+        engine: new Backbone.Model(),
         layerGroupModel: new LayerGroupModel(null, {
           windshaftMap: this.windshaftMap,
           layersCollection: this.map.layers
@@ -97,9 +98,9 @@ describe('core/geo/map-view', function () {
   describe('bindings to map.layers', function () {
     describe('when layers of map.layers are resetted', function () {
       it('should group CartoDB layers into a single layerView and add one layerView for each non-CartoDB layer', function () {
-        var tileLayer = new TileLayer(null, { vis: {} });
-        var cartoDBLayer1 = new CartoDBLayer({}, { vis: this.vis });
-        var cartoDBLayer2 = new CartoDBLayer({}, { vis: this.vis });
+        var tileLayer = new TileLayer(null, { engine: {} });
+        var cartoDBLayer1 = new CartoDBLayer({}, { engine: engineMock });
+        var cartoDBLayer2 = new CartoDBLayer({}, { engine: engineMock });
 
         this.map.layers.reset([tileLayer, cartoDBLayer1, cartoDBLayer2]);
         expect(this.mapView._addLayerToMap.calls.count()).toEqual(2);
@@ -119,9 +120,9 @@ describe('core/geo/map-view', function () {
         var callback = jasmine.createSpy('callback');
         this.mapView.on('newLayerView', callback);
 
-        var tileLayer = new TileLayer(null, { vis: {} });
-        var cartoDBLayer1 = new CartoDBLayer({}, { vis: this.vis });
-        var cartoDBLayer2 = new CartoDBLayer({}, { vis: this.vis });
+        var tileLayer = new TileLayer(null, { engine: {} });
+        var cartoDBLayer1 = new CartoDBLayer({}, { engine: engineMock });
+        var cartoDBLayer2 = new CartoDBLayer({}, { engine: engineMock });
 
         this.map.layers.reset([tileLayer, cartoDBLayer1, cartoDBLayer2]);
 
@@ -133,7 +134,7 @@ describe('core/geo/map-view', function () {
 
     describe('when new layerModels are added to map.layers', function () {
       it('should add a new layer view to the map', function () {
-        var layer1 = new CartoDBLayer({}, { vis: this.vis });
+        var layer1 = new CartoDBLayer({}, { engine: engineMock });
 
         this.map.addLayer(layer1);
 
@@ -144,9 +145,9 @@ describe('core/geo/map-view', function () {
       });
 
       it('should group CartoDB layers into a single layerView', function () {
-        var tileLayer = new TileLayer(null, { vis: {} });
-        var cartoDBLayer1 = new CartoDBLayer({}, { vis: this.vis });
-        var cartoDBLayer2 = new CartoDBLayer({}, { vis: this.vis });
+        var tileLayer = new TileLayer(null, { engine: {} });
+        var cartoDBLayer1 = new CartoDBLayer({}, { engine: engineMock });
+        var cartoDBLayer2 = new CartoDBLayer({}, { engine: engineMock });
 
         this.map.addLayer(tileLayer);
         expect(this.mapView._addLayerToMap).toHaveBeenCalled();
@@ -176,9 +177,9 @@ describe('core/geo/map-view', function () {
         var callback = jasmine.createSpy('callback');
         this.mapView.on('newLayerView', callback);
 
-        var tileLayer = new TileLayer(null, { vis: {} });
-        var cartoDBLayer1 = new CartoDBLayer({}, { vis: this.vis });
-        var cartoDBLayer2 = new CartoDBLayer({}, { vis: this.vis });
+        var tileLayer = new TileLayer(null, { engine: {} });
+        var cartoDBLayer1 = new CartoDBLayer({}, { engine: engineMock });
+        var cartoDBLayer2 = new CartoDBLayer({}, { engine: engineMock });
 
         this.map.addLayer(tileLayer);
         this.map.addLayer(cartoDBLayer1);
@@ -192,7 +193,7 @@ describe('core/geo/map-view', function () {
 
     describe('when layerModels are removed from map.layers', function () {
       it('should should remove the corresponding layerView for layers that are rendered individually (not grouped)', function () {
-        var tileLayer = new TileLayer(null, { vis: {} });
+        var tileLayer = new TileLayer(null, { engine: {} });
 
         this.map.layers.reset([tileLayer]);
 
@@ -207,8 +208,8 @@ describe('core/geo/map-view', function () {
       });
 
       it('should should only remove a group layerView when all grouped layerModels have been removed', function () {
-        var cartoDBLayer1 = new CartoDBLayer({}, { vis: this.vis });
-        var cartoDBLayer2 = new CartoDBLayer({}, { vis: this.vis });
+        var cartoDBLayer1 = new CartoDBLayer({}, { engine: engineMock });
+        var cartoDBLayer2 = new CartoDBLayer({}, { engine: engineMock });
 
         this.map.layers.reset([cartoDBLayer1, cartoDBLayer2]);
 
@@ -234,7 +235,7 @@ describe('core/geo/map-view', function () {
       });
 
       it('should be able to add a layer after removing it', function () {
-        var cartoDBLayer = new CartoDBLayer({}, { vis: this.vis });
+        var cartoDBLayer = new CartoDBLayer({}, { engine: engineMock });
 
         this.map.layers.reset([cartoDBLayer]);
 

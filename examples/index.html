@@ -51,7 +51,8 @@
         }
     </style>
     <script>
-        function load(url) {
+        function loadVizJson(name) {
+            let url = 'viz/' + name;
             fetch(url)
                 .then(data => data.json())
                 .then(vizjson => {
@@ -62,11 +63,15 @@
         }
     </script>
 </head>
-
 <body>
     <nav>
-        <input type="text" name="url" value="viz/viz1.json">
-        <button onclick="load(document.querySelector('input').value)" type="button">LOAD VIZ</button>
+        <input list="examples" type="text" name="url" onchange="loadVizJson(document.querySelector('input').value)">
+        <datalist id="examples">
+            <option value="viz1.json">
+            <option value="001.json">
+            <option value="002.json">
+        </datalist>
+        <button onclick="loadVizJson(document.querySelector('input').value)" type="button">LOAD VIZ</button>
     </nav>
     <div id="map"></div>
 </body>

@@ -40,9 +40,9 @@ var OverlaysView = View.extend({
   },
 
   _initBinds: function () {
-    this._engine.on(Engine.Events.RELOAD_STARTED, this._showLoaderOverlay.bind(this));
-    this._engine.on(Engine.Events.RELOAD_ERROR, this._hideLoaderOverlay.bind(this));
-    this._engine.on(Engine.Events.RELOAD_SUCCESS, this._hideLoaderOverlay.bind(this));
+    this._engine.on(Engine.Events.RELOAD_STARTED, this._showLoaderOverlay, this);
+    this._engine.on(Engine.Events.RELOAD_ERROR, this._hideLoaderOverlay, this);
+    this._engine.on(Engine.Events.RELOAD_SUCCESS, this._hideLoaderOverlay, this);
 
     this.listenTo(this._overlaysCollection, 'add remove change', this.render, this);
     this.listenTo(this._mapModel, 'error:tile', this._addLimitsOverlay, this);

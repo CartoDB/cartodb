@@ -1014,7 +1014,7 @@ describe('vis/vis', function () {
       expect(this.vis.setError).not.toHaveBeenCalled();
     });
 
-    it('should invoke setError when request fails', function () {
+    fit('should invoke setError when request fails', function () {
       spyOn($, 'ajax').and.callFake(function (params) {
         var error = {
           errors: ['the error message'],
@@ -1035,11 +1035,10 @@ describe('vis/vis', function () {
       this.vis.instantiateMap();
 
       expect(this.vis.setOk).not.toHaveBeenCalled();
+      expect(this.vis.setError).toHaveBeenCalled();
       var errorArgs = this.vis.setError.calls.mostRecent().args[0];
       expect(errorArgs).toBeDefined();
-      expect(_.isArray(errorArgs)).toBe(true);
-      expect(errorArgs[0].message).toEqual('the error message');
-      expect(this.vis.setError).toHaveBeenCalled();
+      expect(errorArgs.message).toEqual('the error message');
     });
   });
 

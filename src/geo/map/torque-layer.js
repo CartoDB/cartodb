@@ -59,7 +59,6 @@ var TorqueLayer = LayerModelBase.extend({
       this.setSource(attrs.source);
     }
 
-    // TODO: Check if engine fits here
     this.legends = new Legends(attrs.legends, { engine: this._engine });
     this.unset('legends');
 

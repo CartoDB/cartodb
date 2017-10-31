@@ -117,8 +117,8 @@ var VisModel = Backbone.Model.extend({
 
     this._engine = this._createEngine(windshaftSettings);
 
-    this._engine.on(Engine.Events.RELOAD_SUCCESS, this._onEngineReloadSuccess.bind(this));
-    this._engine.on(Engine.Events.RELOAD_ERROR, this._onEngineReloadError.bind(this));
+    this._engine.on(Engine.Events.RELOAD_SUCCESS, this._onEngineReloadSuccess, this);
+    this._engine.on(Engine.Events.RELOAD_ERROR, this._onEngineReloadError, this);
 
     // Bind layerGroupModel object to engine
     this.layerGroupModel = this._engine._cartoLayerGroup;
@@ -269,8 +269,8 @@ var VisModel = Backbone.Model.extend({
         this._onMapInstantiatedForTheFirstTime();
         options.success && options.success();
       }.bind(this),
-      error: function (error) {
-        options.error && options.error(error);
+      error: function () {
+        options.error && options.error();
       },
       includeFilters: false
     });

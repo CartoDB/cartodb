@@ -140,17 +140,30 @@ Engine.prototype.off = function (event, callback, context) {
  * @api
  */
 Engine.prototype.reload = function (options) {
-  options = this._buildOptions(options);
-  try {
-    var params = this._buildParams(options.includeFilters);
-    var payload = this._getSerializer().serialize(this._layersCollection, this._dataviewsCollection);
-    var request = new Request(payload, params, options);
+  return new Promise(function (resolve, reject) {
+    options = this._buildOptions(options);
+    var oldSuccess = options.success;
+    var oldError = options.error;
+    options.success = function (serverResponse) {
+      oldSuccess(serverResponse);
+      resolve();
+    };
+    options.error = function (serverResponse) {
+      oldError(serverResponse);
+      reject(serverResponse);
+    };
+    try {
+      var params = this._buildParams(options.includeFilters);
+      var payload = this._getSerializer().serialize(this._layersCollection, this._dataviewsCollection);
+      var request = new Request(payload, params, options);
 
-    this._eventEmmitter.trigger(Engine.Events.RELOAD_STARTED);
-    this._windshaftClient.instantiateMap(request);
-  } catch (error) {
-    this._manageClientError(error, options);
-  }
+      this._eventEmmitter.trigger(Engine.Events.RELOAD_STARTED);
+      this._windshaftClient.instantiateMap(request);
+    } catch (error) {
+      this._manageClientError(error, options);
+      reject(error);
+    }
+  }.bind(this));
 };
 
 /**
@@ -227,8 +240,8 @@ Engine.prototype._onReloadError = function (serverResponse, options) {
   var windshaftErrors = parseWindshaftErrors(serverResponse);
   var error = _.find(windshaftErrors, function (error) { return error.isGlobalError(); });
   this._modelUpdater.setErrors(windshaftErrors);
-  this._eventEmmitter.trigger(Engine.Events.RELOAD_ERROR, windshaftErrors);
-  options.error && options.error(error);
+  this._eventEmmitter.trigger(Engine.Events.RELOAD_ERROR, error);
+  options.error && options.error();
 };
 
 /**

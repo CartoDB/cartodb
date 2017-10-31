@@ -8,9 +8,7 @@ var CartoDBDefaultOptions = require('./cartodb-default-options');
 var Projector = require('./projector');
 var CartoDBLayerGroupViewBase = require('../cartodb-layer-group-view-base');
 var Profiler = require('cdb.core.Profiler');
-var tileErrorImage = require('../../util/tile-error.tpl');
 
-var TILE_ERROR_IMAGE = 'data:image/svg+xml;base64,' + window.btoa(tileErrorImage());
 var OPACITY_FILTER = 'progid:DXImageTransform.Microsoft.gradient(startColorstr=#00FFFFFF,endColorstr=#00FFFFFF)';
 var EMPTY_GIF = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 
@@ -229,7 +227,6 @@ _.extend(
 
       tile.onerror = function () {
         Profiler.metric('cartodb-js.tile.png.error').inc();
-        tile.src = TILE_ERROR_IMAGE;
         self.model.addError({ type: C.WINDSHAFT_ERRORS.TILE });
         finished();
       };

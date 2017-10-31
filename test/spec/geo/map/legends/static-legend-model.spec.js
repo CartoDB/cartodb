@@ -3,7 +3,7 @@ var MockFactory = require('../../../../helpers/mockFactory');
 var Engine = require('../../../../../src/engine');
 var MyLegendModel = StaticLegendModelBase.extend({ TYPE: 'type' });
 
-fdescribe('src/geo/map/legends/static-legend-model-base', function () {
+describe('src/geo/map/legends/static-legend-model-base', function () {
   var engineMock;
   var legendModel;
   beforeEach(function () {

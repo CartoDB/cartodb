@@ -256,6 +256,7 @@ ion for time-series (#12670)
 * Fix histogram zoom (#12945)
 
 ### Internals
+* Use engine instead of visModel internally (#12992)
 * Remove analysisCollection and refactor analyses-integration (#12947)
 * Fix layer's sources in tests (analysis source required) (#12866)
 * Adapt widget integration and specs to dataviews refactor (#12850)

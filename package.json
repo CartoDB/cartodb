@@ -1,6 +1,6 @@
 {
   "name": "cartodb-deep-insights.js",
-  "version": "0.4.3",
+  "version": "0.4.5",
   "description": "CARTO Deep Insights JS library",
   "repository": {
     "type": "git",
@@ -65,7 +65,7 @@
     "grunt-contrib-copy": "0.8.2",
     "grunt-contrib-cssmin": "0.14.0",
     "grunt-contrib-imagemin": "1.0.0",
-    "grunt-contrib-jasmine": "1.1.0",
+    "grunt-contrib-jasmine": "CartoDB/grunt-contrib-jasmine#headless-chrome",
     "grunt-contrib-uglify": "0.11.0",
     "grunt-contrib-watch": "0.6.1",
     "grunt-eslint": "~20.1.0",
@@ -75,7 +75,6 @@
     "grunt-sass": "2.0.0",
     "jstify": "0.13.0",
     "load-grunt-tasks": "3.3.0",
-    "simple-headless-chrome": "^4.3.10",
     "source-map-support": "0.4.0",
     "time-grunt": "1.2.2",
     "watchify": "3.6.1"

@@ -1,6 +1,7 @@
 # coding: UTF-8
 require_relative '../../lib/cartodb/profiler.rb'
 require_dependency 'carto/http_header_authentication'
+require_dependency 'carto/user_state_manager'
 
 class ApplicationController < ActionController::Base
   include ::SslRequirement
@@ -161,6 +162,20 @@ class ApplicationController < ActionController::Base
     right_referer && right_origin
   end
 
+  def process_non_active_user(user, request)
+    http_code, redirect_path = Carto::UserStateManager.manage_request(user, request)
+    return unless http_code
+    if http_code == 302 && redirect_path
+      redirect_to CartoDB.path(self, redirect_path) and return
+    elsif http_code == 404
+      render_404
+    elsif http_code == 403
+      render_403
+    elsif http_code == 500
+      render_500
+    end
+  end
+
   def render_403
     respond_to do |format|
       format.html { render(file: 'public/403.html', status: 403, layout: false) }
@@ -196,12 +211,22 @@ class ApplicationController < ActionController::Base
 
   def login_required
     is_auth = authenticated?(CartoDB.extract_subdomain(request))
-    is_auth ? validate_session(current_user) : not_authorized
+    if is_auth && current_user.active?
+      validate_session(current_user)
+    elsif is_auth && !current_user.active?
+      process_non_active_user(current_user, request)
+    else
+      not_authorized
+    end
   end
 
   def api_authorization_required
     authenticate!(:api_key, :api_authentication, :scope => CartoDB.extract_subdomain(request))
-    validate_session(current_user)
+    if current_user.active?
+      validate_session(current_user)
+    else
+      process_non_active_user(current_user, request)
+    end
   end
 
   # This only allows to authenticate if sending an API request to username.api_key subdomain,

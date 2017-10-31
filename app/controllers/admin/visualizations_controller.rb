@@ -14,6 +14,7 @@ require_dependency 'carto/user_db_size_cache'
 require_dependency 'carto/ghost_tables_manager'
 require_dependency 'carto/helpers/frame_options_helper'
 require_dependency 'carto/visualization'
+require_dependency 'carto/user_state_manager'
 
 class Admin::VisualizationsController < Admin::AdminController
   include CartoDB, VisualizationsControllerHelper
@@ -106,6 +107,7 @@ class Admin::VisualizationsController < Admin::AdminController
   end
 
   def public_table
+    process_request_based_on_user_state(@visualization.user, request)
     return(render_pretty_404) if @visualization.private?
 
     if @visualization.derived?
@@ -224,6 +226,7 @@ class Admin::VisualizationsController < Admin::AdminController
       end
     end
 
+    process_request_based_on_user_state(@visualization.user, request)
     return(embed_forbidden) unless @visualization.is_accesible_by_user?(current_user)
     return(public_map_protected) if @visualization.password_protected?
     if current_user && @visualization.is_privacy_private? &&
@@ -347,6 +350,7 @@ class Admin::VisualizationsController < Admin::AdminController
   def show_protected_public_map
     submitted_password = params.fetch(:password, nil)
     return(render_pretty_404) unless @visualization.password_protected? and @visualization.has_password?
+    process_request_based_on_user_state(@visualization.user, request)
 
     unless @visualization.password_valid?(submitted_password)
       flash[:placeholder] = '*' * (submitted_password ? submitted_password.size : DEFAULT_PLACEHOLDER_CHARS)
@@ -386,6 +390,7 @@ class Admin::VisualizationsController < Admin::AdminController
   def show_protected_embed_map
     submitted_password = params.fetch(:password, nil)
     return(render_pretty_404) unless @visualization.password_protected? and @visualization.has_password?
+    process_request_based_on_user_state(@visualization.user, request)
 
     unless @visualization.password_valid?(submitted_password)
       flash[:placeholder] = '*' * (submitted_password ? submitted_password.size : DEFAULT_PLACEHOLDER_CHARS)
@@ -411,6 +416,7 @@ class Admin::VisualizationsController < Admin::AdminController
       return render inline: error_message, status: 400
     end
 
+    process_request_based_on_user_state(@visualization.user, request)
     if @cached_embed
       response.headers.merge! @cached_embed[:headers].stringify_keys
       respond_to do |format|
@@ -719,5 +725,10 @@ class Admin::VisualizationsController < Admin::AdminController
     if @visualization && @visualization.version == 3
       redirect_to CartoDB.url(self, 'builder_visualization_public_embed', visualization_id: @visualization.id)
     end
+  end
+
+  def process_request_based_on_user_state(user, request)
+    http_code, url = Carto::UserStateManager.manage_request(user, request)
+    render_pretty_404 if http_code == 404
   end
 end

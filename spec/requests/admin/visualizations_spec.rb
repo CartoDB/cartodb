@@ -632,6 +632,15 @@ describe Admin::VisualizationsController do
       login_as(@user, scope: @user.username)
       get dashboard_path, {}, @headers
     end
+
+    it 'trial user should go to upgrade page when trial period ends' do
+      @user.state = Carto::User::STATE_LOCKED
+      @user.save
+      login_as(@user, scope: @user.username)
+      get dashboard_path, {}, @headers
+      follow_redirects
+      last_request.path.should == '/upgrade_trial'
+    end
   end
 
   describe 'find visualizations by name' do

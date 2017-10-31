@@ -75,6 +75,7 @@ FactoryGirl.define do
     quota_in_bytes 5000000
     id { UUIDTools::UUID.timestamp_create.to_s }
     builder_enabled nil # Most tests still assume editor
+    account_type 'personal30'
 
     before(:create) do
       CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)

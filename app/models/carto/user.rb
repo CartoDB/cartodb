@@ -27,6 +27,9 @@ class Carto::User < ActiveRecord::Base
   OBS_GENERAL_BLOCK_SIZE = 1000
   MAPZEN_ROUTING_BLOCK_SIZE = 1000
 
+  STATE_ACTIVE = 'active'.freeze
+  STATE_LOCKED = 'locked'.freeze
+
   # INFO: select filter is done for security and performance reasons. Add new columns if needed.
   DEFAULT_SELECT = "users.email, users.username, users.admin, users.organization_id, users.id, users.avatar_url," \
                    "users.api_key, users.database_schema, users.database_name, users.name, users.location," \
@@ -34,7 +37,8 @@ class Carto::User < ActiveRecord::Base
                    "users.viewer, users.quota_in_bytes, users.database_host, users.crypted_password, " \
                    "users.builder_enabled, users.private_tables_enabled, users.private_maps_enabled, " \
                    "users.org_admin, users.last_name, users.google_maps_private_key, users.website, " \
-                   "users.description, users.available_for_hire, users.frontend_version, users.asset_host".freeze
+                   "users.description, users.available_for_hire, users.frontend_version, users.asset_host, " \
+                   "users.state".freeze
 
   has_many :tables, class_name: Carto::UserTable, inverse_of: :user
   has_many :visualizations, inverse_of: :user
@@ -589,6 +593,14 @@ class Carto::User < ActiveRecord::Base
   # Special url that goes to Central if active
   def plan_url(request_protocol)
     account_url(request_protocol) + '/plan'
+  end
+
+  def active?
+    state == STATE_ACTIVE
+  end
+
+  def locked?
+    state == STATE_LOCKED
   end
 
   private

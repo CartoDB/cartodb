@@ -5,6 +5,7 @@ require 'carto/api/layer_presenter'
 
 require_dependency 'carto/tracking/events'
 require_dependency 'carto/visualization_migrator'
+require_dependency 'carto/user_state_manager'
 
 module Carto
   module Builder
@@ -29,6 +30,7 @@ module Carto
       layout 'application_builder'
 
       def show
+        process_request_based_on_user_state(@visualization.owner, request)
         @visualization_data = Carto::Api::VisualizationPresenter.new(@visualization, current_viewer, self).to_poro
         @layers_data = @visualization.layers.map do |l|
           Carto::Api::LayerPresenter.new(l, with_style_properties: true).to_poro(migrate_builder_infowindows: true)
@@ -103,6 +105,11 @@ module Carto
           @visualization.save
           migrate_visualization_to_v3(@visualization)
         end
+      end
+
+      def process_request_based_on_user_state(user, request)
+        http_code, url = Carto::UserStateManager.manage_request(user, request)
+        render_404 if http_code == 404
       end
     end
   end

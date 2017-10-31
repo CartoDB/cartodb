@@ -21,6 +21,8 @@ module CartoDB
             end
           end
 
+          debugger
+          Carto::UserStateManager.manage_request(@viewed_user, @request)
           return @renderer.render_404 if viewed_user.nil?
 
           # Redirect to org url if has only user

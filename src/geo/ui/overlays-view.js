@@ -41,7 +41,7 @@ var OverlaysView = View.extend({
   _initBinds: function () {
     this.listenTo(this._visModel, 'change:loading', this._toggleLoaderOverlay, this);
     this.listenTo(this._overlaysCollection, 'add remove change', this.render, this);
-    this.listenTo(this._mapModel, 'error:tile', this._addLimitsOverlay, this);
+    this.listenTo(this._mapModel, 'error:limit', this._addLimitsOverlay, this);
   },
 
   _clearOverlays: function () {

@@ -1,27 +1,27 @@
-require_relative '../../lib/geopkg_carto_metadata_util'
+require_relative '../../../lib/carto/geopkg_carto_metadata_util'
 
-describe GpkgCartoMetadataUtil do
+describe Carto::GpkgCartoMetadataUtil do
   it "Invalid geopkg file" do
     expect {
-      GpkgCartoMetadataUtil.new(geopkg_file: 'spec/lib/test_gpkg_files/invalidfile')
+      Carto::GpkgCartoMetadataUtil.new(geopkg_file: 'spec/lib/test_gpkg_files/invalidfile')
     }.to raise_error(SQLite3::SQLException)
   end
 
   it "Default State" do
-    f = GpkgCartoMetadataUtil.new(geopkg_file: 'spec/lib/test_gpkg_files/blankfile')
+    f = Carto::GpkgCartoMetadataUtil.new(geopkg_file: 'spec/lib/test_gpkg_files/blankfile')
     # Default should be blank hash
     expect(f.metadata).to eq({ vendor: 'carto' }.with_indifferent_access)
   end
 
   it "Default State With Incorrect vendor" do
-    f = GpkgCartoMetadataUtil.new(geopkg_file: 'spec/lib/test_gpkg_files/incorrect_vendor')
+    f = Carto::GpkgCartoMetadataUtil.new(geopkg_file: 'spec/lib/test_gpkg_files/incorrect_vendor')
     # Default should be blank hash
     expect(f.metadata).to eq({ vendor: 'carto' }.with_indifferent_access)
   end
 
   it "Set Invalid metadata" do
     # Start from blank slate
-    f = GpkgCartoMetadataUtil.new(geopkg_file: 'spec/lib/test_gpkg_files/blankfile')
+    f = Carto::GpkgCartoMetadataUtil.new(geopkg_file: 'spec/lib/test_gpkg_files/blankfile')
     # Set metadata
     expect {
       f.metadata = nil
@@ -30,7 +30,7 @@ describe GpkgCartoMetadataUtil do
 
   it "Set Metadata No Write" do
     # Start from blank slate
-    f = GpkgCartoMetadataUtil.new(geopkg_file: 'spec/lib/test_gpkg_files/blankfile')
+    f = Carto::GpkgCartoMetadataUtil.new(geopkg_file: 'spec/lib/test_gpkg_files/blankfile')
     # Set metadata
     md = {
       vendor: "carto",
@@ -69,7 +69,7 @@ describe GpkgCartoMetadataUtil do
       }
     }
 
-    GpkgCartoMetadataUtil.open(geopkg_file: testfile.path) do |gpkgfile|
+    Carto::GpkgCartoMetadataUtil.open(geopkg_file: testfile.path) do |gpkgfile|
       # Set metadata
       gpkgfile.metadata = md
       # Default should be blank hash
@@ -77,14 +77,14 @@ describe GpkgCartoMetadataUtil do
     end
 
     # Re-open the file and verify the metadata changed
-    GpkgCartoMetadataUtil.open(geopkg_file: testfile.path) do |gpkgfile|
+    Carto::GpkgCartoMetadataUtil.open(geopkg_file: testfile.path) do |gpkgfile|
       expect(gpkgfile.metadata).to eq(md.with_indifferent_access)
     end
   end
 
   it "Set Metadata Without vendor property" do
     # Start from blank slate
-    f = GpkgCartoMetadataUtil.new(geopkg_file: 'spec/lib/test_gpkg_files/blankfile')
+    f = Carto::GpkgCartoMetadataUtil.new(geopkg_file: 'spec/lib/test_gpkg_files/blankfile')
     # Set metadata
     md = {
       "data" => {
@@ -127,7 +127,7 @@ describe GpkgCartoMetadataUtil do
     expected_md = md
     expected_md[:vendor] = 'carto'
 
-    GpkgCartoMetadataUtil.open(geopkg_file: testfile.path) do |gpkgfile|
+    Carto::GpkgCartoMetadataUtil.open(geopkg_file: testfile.path) do |gpkgfile|
       # Set metadata
       gpkgfile.metadata = md
       # Default should be blank hash
@@ -135,7 +135,7 @@ describe GpkgCartoMetadataUtil do
     end
 
     # Re-open the file and verify the metadata changed
-    GpkgCartoMetadataUtil.open(geopkg_file: testfile.path) do |gpkgfile|
+    Carto::GpkgCartoMetadataUtil.open(geopkg_file: testfile.path) do |gpkgfile|
       expect(gpkgfile.metadata).to eq(expected_md.with_indifferent_access)
     end
   end
@@ -160,7 +160,7 @@ describe GpkgCartoMetadataUtil do
       }
     }
 
-    GpkgCartoMetadataUtil.open(geopkg_file: testfile.path) do |gpkgfile|
+    Carto::GpkgCartoMetadataUtil.open(geopkg_file: testfile.path) do |gpkgfile|
       # Set metadata
       gpkgfile.metadata = md
       # Default should be blank hash
@@ -168,7 +168,7 @@ describe GpkgCartoMetadataUtil do
     end
 
     # Re-open the file, verify the metadata changed, and re-write new values
-    GpkgCartoMetadataUtil.open(geopkg_file: testfile.path) do |gpkgfile|
+    Carto::GpkgCartoMetadataUtil.open(geopkg_file: testfile.path) do |gpkgfile|
       expect(gpkgfile.metadata).to eq(md.with_indifferent_access)
 
       md['data']['source']['configuration']['refresh_interval_in_seconds'] = 789
@@ -177,7 +177,7 @@ describe GpkgCartoMetadataUtil do
     end
 
     # Re-open the file one last time to verify the changes
-    GpkgCartoMetadataUtil.open(geopkg_file: testfile.path) do |gpkgfile|
+    Carto::GpkgCartoMetadataUtil.open(geopkg_file: testfile.path) do |gpkgfile|
       expect(gpkgfile.metadata).to eq(md.with_indifferent_access)
       expect(789).to eq(gpkgfile.metadata['data']['source']['configuration']['refresh_interval_in_seconds'])
     end

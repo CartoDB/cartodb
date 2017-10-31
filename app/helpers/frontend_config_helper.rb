@@ -42,6 +42,7 @@ module FrontendConfigHelper
     if CartoDB::Hubspot::instance.enabled? && !CartoDB::Hubspot::instance.token.blank?
       config[:hubspot_token] = CartoDB::Hubspot::instance.token
       config[:hubspot_ids] = CartoDB::Hubspot::instance.event_ids.to_json.html_safe
+      config[:hubspot_form_ids] = CartoDB::Hubspot::instance.form_ids
     end
 
     if Cartodb.config[:datasource_search].present? && Cartodb.config[:datasource_search]['twitter_search'].present? \

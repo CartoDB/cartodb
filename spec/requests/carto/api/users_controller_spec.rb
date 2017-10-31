@@ -14,6 +14,19 @@ describe Carto::Api::UsersController do
   end
 
   describe 'me' do
+    it 'contains hubspot_form_ids in config' do
+      CartoDB::Hubspot.any_instance.stubs(:enabled?).returns(true)
+      CartoDB::Hubspot.any_instance.stubs(:token).returns('something')
+
+      get_json api_v3_users_me_url, @headers do |response|
+        expect(response.status).to eq(200)
+        expect(response.body).to have_key(:config)
+        expect(response.body[:config]).to have_key(:hubspot_form_ids)
+      end
+      CartoDB::Hubspot.any_instance.unstub(:enabled?)
+      CartoDB::Hubspot.any_instance.unstub(:token)
+    end
+
     it 'returns a hash with current user info' do
       user = @organization.owner
       carto_user = Carto::User.where(id: user.id).first

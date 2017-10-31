@@ -2,7 +2,6 @@ module Carto
   class UserStateManager
     REQUEST_CODE_BY_STATE = {
       locked: {
-        %r{^\/builder|viz|me|page|tag|maps|dataset} => { code: 404 },
         %r{^\/api} => { code: 403 },
         %r{^\/dashboard|account|profile|your_apps} => {
           code: 302,

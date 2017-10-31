@@ -71,6 +71,7 @@ Development
 * Now is possible to use wildcard character (*) in the whitelist emails for organization signups (#12991)
 
 ### Bug fixes / enhancements
+* Fallback to `username` when `name` is empty in share map view
 * Fix bounding box not updating with gmaps basemaps
 * Add "less or equal than" and "greater or equal than" to filter by value analysis
 * Improve SQL limit platforms notification (#12597)

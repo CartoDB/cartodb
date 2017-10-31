@@ -7,5 +7,23 @@
       "tip": "Contact with the owner in case you want access to it.",
       "error": "Invalid password"
     }
+  },
+  "helpers": {
+    "static_header_meta_tags": {
+      "map_created_by": "Map created by %{author} - CARTO"
+    }
+  },
+  "public_map": {
+    "info": {
+      "more": "more",
+      "more_from": "More from",
+      "more_info": "More info",
+      "updated": "Updated",
+      "views_pluralize": "1 view |||| %{smart_count} views"
+    },
+    "datasets": {
+      "title": "Datasets in use",
+      "dataset_pluralize": "1 dataset |||| %{smart_count} datasets"
+    }
   }
 }

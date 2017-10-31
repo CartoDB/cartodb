@@ -35,8 +35,7 @@ class Admin::VisualizationsController < Admin::AdminController
                                                       :show_protected_embed_map, :embed_map]
   before_filter :link_ghost_tables, only: [:index]
   before_filter :user_metadata_propagation, only: [:index]
-  before_filter :get_viewed_user, only: [:public_map, :public_table, :public_map_protected]
-
+  before_filter :get_viewed_user, only: [:public_map, :public_table, :show_protected_public_map, :show_organization_public_map, :public_map_protected]
   before_filter :load_common_data, only: [:index]
 
   before_filter :resolve_visualization_and_table,
@@ -231,6 +230,9 @@ class Admin::VisualizationsController < Admin::AdminController
        @visualization.has_read_permission?(current_user)
       return(show_organization_public_map)
     end
+
+    return render(file: "public/static/public_map/index.html", layout: false) if @viewed_user.has_feature_flag?('static_public_map')
+    
     # Legacy redirect, now all public pages also with org. name
     if eligible_for_redirect?(@visualization.user)
       # INFO: here we only want the presenter to rewrite the url of @visualization.user namespacing it like 'schema.id',
@@ -239,6 +241,7 @@ class Admin::VisualizationsController < Admin::AdminController
       redirect_to visualization_presenter.privacy_aware_map_url({ redirected: true },
                                                                 'public_visualizations_public_map') and return
     end
+
 
     if @visualization.can_be_cached?
       response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
@@ -309,6 +312,8 @@ class Admin::VisualizationsController < Admin::AdminController
   def show_organization_public_map
     return(embed_forbidden) unless org_user_has_map_permissions?(current_user, @visualization)
 
+    return render(file: "public/static/public_map/index.html", layout: false) if @viewed_user.has_feature_flag?('static_public_map')
+
     response.headers['Cache-Control'] = "no-cache,private"
 
     @protected_map_tokens = current_user.get_auth_tokens
@@ -359,6 +364,8 @@ class Admin::VisualizationsController < Admin::AdminController
     response.headers['Surrogate-Key'] = "#{CartoDB::SURROGATE_NAMESPACE_PUBLIC_PAGES} #{@visualization.surrogate_key}"
     response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
 
+    return render(file: "public/static/public_map/index.html", layout: false) if @viewed_user.has_feature_flag?('static_public_map')
+
     @protected_map_tokens = @visualization.get_auth_tokens
 
     @name = @visualization.user.name_or_username
@@ -393,6 +400,8 @@ class Admin::VisualizationsController < Admin::AdminController
       flash[:error] = "Invalid password"
       return(embed_protected)
     end
+
+    return render(file: "public/static/public_map/index.html", layout: false) if @viewed_user.has_feature_flag?('static_public_map')
 
     response.headers['Cache-Control']   = "no-cache, private"
 

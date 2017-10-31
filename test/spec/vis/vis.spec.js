@@ -1014,7 +1014,7 @@ describe('vis/vis', function () {
       expect(this.vis.setError).not.toHaveBeenCalled();
     });
 
-    fit('should invoke setError when request fails', function () {
+    it('should invoke setError when request fails', function () {
       spyOn($, 'ajax').and.callFake(function (params) {
         var error = {
           errors: ['the error message'],

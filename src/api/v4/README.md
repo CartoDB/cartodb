@@ -35,7 +35,7 @@ const carto = require('cartojs');
 ### Loading carto.js from a CDN
 
 ```javascript
-    window.carto; // All the api is availiable here
+window.carto; // All the api is availiable here
 ```
 
 

@@ -6,8 +6,6 @@ module Carto
   module Oauth
     module Google
       class Api < Carto::Oauth::Api
-        attr_reader :access_token
-
         def student?
           false
         end
@@ -66,7 +64,7 @@ module Carto
 
         def get_user_data
           response = Typhoeus::Request.new(
-            "https://www.googleapis.com/plus/v1/people/me?access_token=#{@access_token}",
+            "https://www.googleapis.com/plus/v1/people/me?access_token=#{access_token}",
             method: 'GET',
             ssl_verifypeer: true,
             timeout: 600
@@ -76,8 +74,7 @@ module Carto
           JSON.parse(response.body)
         rescue StandardError => e
           trace_info = {
-            message: 'Error in request to Google', exception: e,
-            method: method, url: url, body: body, headers: headers
+            message: 'Error in request to Google', exception: e
           }
           if response
             trace_info.merge!(

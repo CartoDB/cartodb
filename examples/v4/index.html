@@ -25,105 +25,61 @@
 
     <script>
         (async () => {
-
-
+            var i = 0; // Number of reload cycles.
             var map = L.map('map').setView([42.431234, -8.643616], 5);
             L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager_nolabels/{z}/{x}/{y}.png').addTo(map);
 
-            carto.init({
+            // Create the Client
+            var client = new carto.Client({
                 apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
-                username: 'cartojs-test',
                 serverUrl: 'https://{user}.carto.com:443',
-            })
-
-
-            var world = new carto.node.Dataset('a0', 'ne_10m_populated_places_simple');
-            var spainCities = new carto.node.SQL('a1', 'SELECT * FROM ne_10m_populated_places_simple WHERE adm0name = \'Spain\'');
-
-            var worldStyle = new carto.style.CartoCSS(`
-            #layer {
-                marker-width: 10;
-                marker-fill: gray;
-            }`);
-
-            var spainStyle = new carto.style.CartoCSS(`
-            #layer {
-                marker-width: 20;
-                marker-fill: rgba(255,0,0,1);
-            }`);
-
-            var spainStyle2 = new carto.style.CartoCSS(`
-            #layer {
-                marker-width: 20;
-                marker-fill: #FABADA;
-            }`);
-
-            var worldLayer = new carto.layers.CartoLayer(world, worldStyle, { id: 'l0' });
-            var spainCitiesLayer = new carto.layers.CartoLayer(spainCities, spainStyle, { id: 'l1' });
-
-            carto.layers.add([spainCitiesLayer, worldLayer]);
-            // Listen to any errors
-
-            carto.on('error', function (error) {
-                // TODO: Wrap errors in a user-friendly object.
-                console.error(error);
+                username: 'cartojs-test'
             });
 
-            await carto.layers.addTo(map);
-            spainCitiesLayer.hide();
-            spainCitiesLayer.show();
-            await carto.layers.remove(worldLayer);
-            await spainCitiesLayer.setStyle(`#layer { marker-fill: #FF00FF; }`)
+            client.on(carto.Events.SUCCESS, function () {
+                console.log('Client reloaded', i++)
+            });
 
-            // var countries = new carto.node.SQLQuery('select * from countries');
-            // var countriesStyle = new carto.style.CartoCSS('...');
-            // var countriesLayer = new carto.layers.CartoLayer(countries, countriesStyle);
+            client.on(carto.Events.ERROR, function () {
+                console.error('Client Error!', i++)
+            });
 
-            // var map = {}; // L.Map
+            // Create a source
+            var source0 = new carto.source.Dataset('a0', 'ne_10m_populated_places_simple');
 
-            // // only one carto.layerGroup per carto
-            // carto.layers.getAll(); // all
-            // carto.layers.getById('cities'); // get by id
-            // carto.layers.at(0); // get by index
-            // carto.layers.add([citiesLayer, countriesLayer]);
-            // carto.layers.remove(citiesLayer);
+            // Create a source
+            var source1 = new carto.source.SQL('a1', 'SELECT * FROM ne_10m_populated_places_simple WHERE adm0name = \'Spain\'');
 
-            // carto.layers.addTo(map);
+            // Create a style
+            var style = new carto.style.CartoCSS(`
+                #layer {
+                    marker-width: 10;
+                    marker-fill: red;
+                }`);
 
-            // carto.layers // L.Layer || Google Maps Overlay
+            // Create a style
+            var style1 = new carto.style.CartoCSS(`
+                #layer {
+                    marker-width: 10;
+                    marker-fill: yellow;
+                }`);
 
-            // var numberOfCities = new carto.dataviews.Formula(cities, {
-            //     operation: carto.dataview.COUNT,
-            //     map: map, // Leaflet || Google Maps map
-            //     synced: true | false
-            // });
+            // Create a layer
+            var layer = new carto.layer.Layer('layer0', source0, style);
+            var layer1 = new carto.layer.Layer('layer1', source1, style1);
 
-            // var cityNames = new carto.dataviews.Category(cities, {
-            //     column: 'name',
-            //     operation: 'count'
-            // });
 
-            // var cityNames = new carto.dataviews.Histogram(cities, {
-            //     column: 'name',
-            //     operation: 'count'
-            // });
+            client.addLayer(layer1);
+            client.addLayer(layer);
 
-            // // reacts to bounding bounds, zoom, etc.
-            // // var wadus = new carto.dataviews.SelectColumns(cities, {
-            // //     columns: ['name', 'description']
-            // // });
+            // Add the layers
+            // await client.addLayers([layer1, layer]); // engine.reload() internal
 
-            // // when there's new data
-            // numberOfCities.on('dataChanged', function (data) {
-            //     numberOfCities.getData(); // no request to server
-            // });
 
-            // cityNames.on('dataChanged', function (data) {
-            //     cityNames.getData();
-            // });
+            // Add the layer to the map
+            client.getLeafletLayerView().addTo(map);
 
-            // carto.dataviews.add([numberOfCities, cityNames]);
-            // carto.dataviews.remove(numberOfCities);
+            client.removeLayer(layer);
         })();
 
     </script>

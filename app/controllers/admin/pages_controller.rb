@@ -5,6 +5,7 @@ require 'active_support/inflector'
 require_relative '../../models/table'
 require_relative '../../models/visualization/member'
 require_relative '../../models/visualization/collection'
+require_dependency 'carto/user_state_manager'
 
 class Admin::PagesController < Admin::AdminController
   include Carto::HtmlSafe
@@ -55,6 +56,7 @@ class Admin::PagesController < Admin::AdminController
       visualizations = (org.public_visualizations.to_a || [])
       visualizations += (org.public_datasets.to_a || [])
     else
+      process_request_based_on_user_state(@viewed_user, request)
       # Redirect to org url if has only user
       if eligible_for_redirect?(@viewed_user)
         redirect_to CartoDB.base_url(@viewed_user.organization.name) << CartoDB.path(self, 'public_sitemap') and return
@@ -117,7 +119,7 @@ class Admin::PagesController < Admin::AdminController
       end
       render_404
     else
-
+      process_request_based_on_user_state(@viewed_user, request)
       set_layout_vars_for_user(@viewed_user, 'feed')
 
       dataset_builder = user_datasets_public_builder(@viewed_user)
@@ -489,6 +491,11 @@ class Admin::PagesController < Admin::AdminController
     else
       !url.blank? && url[/^https?:\/\//].nil? ? "http://#{url}" : url
     end
+  end
+
+  def process_request_based_on_user_state(user, request)
+    http_code, url = Carto::UserStateManager.manage_request(user, request.path)
+    return(render_404) if http_code == 404
   end
 
 end

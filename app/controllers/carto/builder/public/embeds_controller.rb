@@ -26,6 +26,7 @@ module Carto
         layout false
 
         def show
+          process_request_based_on_user_state(@visualization.owner, request)
           @layers_data = visualization_for_presentation.layers.map do |l|
             Carto::Api::LayerPresenter.new(l).to_embed_poro
           end
@@ -34,6 +35,7 @@ module Carto
         end
 
         def show_protected
+          process_request_based_on_user_state(@visualization.owner, request)
           if @visualization.password_valid?(params[:password])
             show
           else
@@ -107,6 +109,11 @@ module Carto
           if @visualization.version != 3
             redirect_to CartoDB.url(self, 'public_visualizations_embed_map', id: @visualization.id)
           end
+        end
+
+        def process_request_based_on_user_state(user, request)
+          http_code, url = Carto::UserStateManager.manage_request(user, request)
+          render_404 if http_code == 404
         end
       end
     end

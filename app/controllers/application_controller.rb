@@ -21,7 +21,6 @@ class ApplicationController < ActionController::Base
   before_filter :browser_is_html5_compliant?
   before_filter :set_asset_debugging
   before_filter :cors_preflight_check
-  before_filter :check_user_state
   after_filter  :allow_cross_domain_access
   after_filter  :remove_flash_cookie
   after_filter  :add_revision_header
@@ -163,10 +162,8 @@ class ApplicationController < ActionController::Base
     right_referer && right_origin
   end
 
-  def check_user_state
-    return if current_user.active?
-    state_manager = Carto::UserStateManager.new(current_user)
-    http_code, redirect_path = state_manager.manage_request(request)
+  def process_non_active_user(user, request)
+    http_code, redirect_path = Carto::UserStateManager.manage_request(user, request)
     return unless http_code
     if http_code == 302 && redirect_path
       redirect_to CartoDB.path(self, redirect_path) and return
@@ -214,12 +211,22 @@ class ApplicationController < ActionController::Base
 
   def login_required
     is_auth = authenticated?(CartoDB.extract_subdomain(request))
-    is_auth ? validate_session(current_user) : not_authorized
+    if is_auth && current_user.active?
+      validate_session(current_user)
+    elsif is_auth && !current_user.active?
+      process_non_active_user(current_user, request)
+    else
+      not_authorized
+    end
   end
 
   def api_authorization_required
     authenticate!(:api_key, :api_authentication, :scope => CartoDB.extract_subdomain(request))
-    validate_session(current_user)
+    if current_user.active?
+      validate_session(current_user)
+    else
+      process_non_active_user(current_user, request)
+    end
   end
 
   # This only allows to authenticate if sending an API request to username.api_key subdomain,

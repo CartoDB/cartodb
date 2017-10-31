@@ -1,5 +1,6 @@
 require_dependency 'carto/uuidhelper'
 require_dependency 'carto/api/vizjson3_presenter'
+require_dependency 'carto/user_state_manager'
 
 module VisualizationsControllerHelper
   # This class represents a "visualization locator", as string in one of the following formats:

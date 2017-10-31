@@ -24,6 +24,7 @@ module Carto
       layout 'application_builder'
 
       def show
+        process_request_based_on_user_state(@canonical_visualization.user, request)
         @canonical_visualization_data = Carto::Api::VisualizationPresenter.new(
           @canonical_visualization, current_viewer, self).to_poro
         @user_table_data = Carto::Api::UserTablePresenter.new(
@@ -78,6 +79,11 @@ module Carto
         Carto::Tracking::Events::VisitedPrivatePage.new(current_viewer_id,
                                                         user_id: current_viewer_id,
                                                         page: 'dataset').report
+      end
+
+      def process_request_based_on_user_state(user, request)
+        http_code, url = Carto::UserStateManager.manage_request(user, request)
+        render_404 if http_code == 404
       end
     end
   end

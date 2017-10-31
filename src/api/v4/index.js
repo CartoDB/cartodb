@@ -47,12 +47,12 @@ var carto = {
         } else {
           scope._engine.addLayer(layer._getInternalLayer());
         }
-        scope._reload();
+        return scope._reload();
       },
 
       remove: function (layer) {
         scope._engine.removeLayer(layer._getInternalLayer());
-        scope._reload();
+        return scope._reload();
       },
 
       addTo: function (map) {
@@ -65,7 +65,7 @@ var carto = {
         if (!scope._addedToMap) {
           scope._addedToMap = true;
           scope._engine.on(Engine.Events.RELOAD_SUCCESS, onReload);
-          scope._reload();
+          return scope._reload();
         }
       },
 
@@ -77,7 +77,7 @@ var carto = {
 
     this._reload = function () {
       if (scope._addedToMap) {
-        scope._engine.reload();
+        return scope._engine.reload();
       }
     };
   }

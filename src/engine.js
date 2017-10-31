@@ -140,17 +140,29 @@ Engine.prototype.off = function (event, callback, context) {
  * @api
  */
 Engine.prototype.reload = function (options) {
-  options = this._buildOptions(options);
-  try {
-    var params = this._buildParams(options.includeFilters);
-    var payload = this._getSerializer().serialize(this._layersCollection, this._dataviewsCollection);
-    var request = new Request(payload, params, options);
+  return new Promise(function (resolve, reject) {
+    options = this._buildOptions(options);
+    var oldSuccess = options.success;
+    var oldError = options.error;
+    options.success = function (serverResponse) {
+      oldSuccess(serverResponse);
+      resolve();
+    };
+    options.error = function (serverResponse) {
+      oldError(serverResponse);
+      reject(serverResponse);
+    };
+    try {
+      var params = this._buildParams(options.includeFilters);
+      var payload = this._getSerializer().serialize(this._layersCollection, this._dataviewsCollection);
+      var request = new Request(payload, params, options);
 
-    this._eventEmmitter.trigger(Engine.Events.RELOAD_STARTED);
-    this._windshaftClient.instantiateMap(request);
-  } catch (error) {
-    this._manageClientError(error, options);
-  }
+      this._eventEmmitter.trigger(Engine.Events.RELOAD_STARTED);
+      this._windshaftClient.instantiateMap(request);
+    } catch (error) {
+      this._manageClientError(error, options);
+    }
+  }.bind(this));
 };
 
 /**

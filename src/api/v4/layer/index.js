@@ -8,8 +8,14 @@ function Layer (source, style, engine, opts) {
   }, { engine: engine });
 }
 
-Layer.prototype.setStyle = function (style) {
-  this._internalLayer.set('cartocss', style.toCartoCSS());
+Layer.prototype.setStyle = function (style, silent) {
+  if (typeof style !== 'string') {
+    style = style.toCartoCSS();
+  }
+  this._internalLayer.set('cartocss', style, { silent: true });
+  if (!silent) {
+    return this._internalLayer._engine.reload();
+  }
 };
 
 Layer.prototype._getInternalLayer = function () {

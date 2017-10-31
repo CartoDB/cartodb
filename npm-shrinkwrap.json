@@ -331,9 +331,9 @@
       "resolved": "https://registry.npmjs.org/cartocolor/-/cartocolor-4.0.0.tgz"
     },
     "cartodb-deep-insights.js": {
-      "version": "0.4.5",
-      "from": "cartodb/deep-insights.js#v0.4.5",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#46a8741d87b06610ac8bce10f6bc41aa345a82eb",
+      "version": "0.4.6",
+      "from": "cartodb/deep-insights.js#v0.4.6",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#6eeca8870954c9f492c61c143ee64c70d4bcceff",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",
@@ -348,9 +348,9 @@
       "resolved": "https://registry.npmjs.org/cartodb-pecan/-/cartodb-pecan-0.2.0.tgz"
     },
     "cartodb.js": {
-      "version": "4.0.0-alpha.18",
-      "from": "cartodb/cartodb.js#v4.0.0-alpha.18",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#5fdad87d8c3f97a3b97daf320c9f5b2ca45bf203"
+      "version": "4.0.0-alpha.19",
+      "from": "cartodb/cartodb.js#v4.0.0-alpha.19",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#ff9e9589a6cec952b28568e2686cc9f8f2ad41ab"
     },
     "center-align": {
       "version": "0.1.3",
@@ -1388,9 +1388,9 @@
       "resolved": "https://registry.npmjs.org/moment/-/moment-2.18.1.tgz"
     },
     "moment-timezone": {
-      "version": "0.5.13",
+      "version": "0.5.14",
       "from": "moment-timezone@>=0.5.13 <0.6.0",
-      "resolved": "https://registry.npmjs.org/moment-timezone/-/moment-timezone-0.5.13.tgz"
+      "resolved": "https://registry.npmjs.org/moment-timezone/-/moment-timezone-0.5.14.tgz"
     },
     "mothership": {
       "version": "0.2.0",

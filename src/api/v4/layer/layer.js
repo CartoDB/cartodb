@@ -13,15 +13,17 @@ function Layer (source, style, opts) {
   this._visible = true;
 }
 
-Layer.prototype.setStyle = function (style, silent) {
+Layer.prototype.setStyle = function (style, opts) {
+  opts = opts || {};
   this._style = style;
   if (!this._internalModel) {
     return;
   }
   this._internalModel.set('cartocss', style.toCartoCSS(), { silent: true });
-  if (!silent) {
-    return this._internalModel._engine.reload();
+  if (opts.reload === false) {
+    return Promise.resolve();
   }
+  return this._internalModel._engine.reload();
 };
 
 Layer.prototype.hide = function () {

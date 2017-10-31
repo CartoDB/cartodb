@@ -25,6 +25,7 @@
 
     <script>
         (async () => {
+            var i = 0; // Number of reload cycles.
             var map = L.map('map').setView([42.431234, -8.643616], 5);
             L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager_nolabels/{z}/{x}/{y}.png').addTo(map);
 
@@ -35,33 +36,50 @@
                 username: 'cartojs-test'
             });
 
+            client.on(carto.Events.SUCCESS, function () {
+                console.log('Client reloaded', i++)
+            });
+
+            client.on(carto.Events.ERROR, function () {
+                console.error('Client Error!', i++)
+            });
+
             // Create a source
-            var source = new carto.source.Dataset('a0', 'ne_10m_populated_places_simple');
+            var source0 = new carto.source.Dataset('a0', 'ne_10m_populated_places_simple');
+
+            // Create a source
+            var source1 = new carto.source.SQL('a1', 'SELECT * FROM ne_10m_populated_places_simple WHERE adm0name = \'Spain\'');
 
             // Create a style
             var style = new carto.style.CartoCSS(`
                 #layer {
                     marker-width: 10;
-                    marker-fill: gray;
+                    marker-fill: red;
+                }`);
+
+            // Create a style
+            var style1 = new carto.style.CartoCSS(`
+                #layer {
+                    marker-width: 10;
+                    marker-fill: yellow;
                 }`);
 
             // Create a layer
-            var layer = new carto.layer.Layer('layer0', source, style);
-
-            // // Client event
-            // client.on(carto.Events.ERROR, function (error) {
-            //     console.error(error);
-            // });
-
-            // // Add the layers
-            client.addLayer(layer); // engine.reload() internal
+            var layer = new carto.layer.Layer('layer0', source0, style);
+            var layer1 = new carto.layer.Layer('layer1', source1, style1);
 
 
-            // client.addLayers([layer1, layer2]) // engine.reload() internal
-            //     .then()
+            client.addLayer(layer1);
+            client.addLayer(layer);
 
+            // Add the layers
+            // await client.addLayers([layer1, layer]); // engine.reload() internal
+
+
+            // Add the layer to the map
             client.getLeafletLayerView().addTo(map);
 
+            client.removeLayer(layer);
         })();
 
     </script>

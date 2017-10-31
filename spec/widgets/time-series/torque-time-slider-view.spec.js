@@ -30,7 +30,7 @@ describe('widgets/time-series/torque-time-slider-view', function () {
       start: 0,
       end: 1000
     }, {
-      vis: vis
+      engine: vis.getEngine()
     });
 
     this.histogramChartMargins = {

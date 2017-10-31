@@ -32,7 +32,7 @@ describe('widgets/time-series/torque-histogram-view', function () {
       start: 0,
       end: 1000
     }, {
-      vis: vis
+      engine: vis.getEngine()
     });
 
     spyOn(HistogramChartView.prototype, '_setupFillColor').and.returnValue('red');

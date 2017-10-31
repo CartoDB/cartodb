@@ -2,7 +2,6 @@ var specHelper = require('../../spec-helper');
 var TorqueTimesSeriesContentView = require('../../../src/widgets/time-series/torque-content-view');
 var WidgetModel = require('../../../src/widgets/widget-model');
 var HistogramChartView = require('../../../src/widgets/histogram/chart');
-var TorqueLayer = require('cartodb.js/src/geo/map/torque-layer');
 
 describe('widgets/time-series/torque-content-view', function () {
   function provideData () {
@@ -37,9 +36,6 @@ describe('widgets/time-series/torque-content-view', function () {
     this.dataviewModel.sync = function (method, model, options) {
       this.options = options;
     }.bind(this);
-    this.torqueLayerModel = new TorqueLayer({}, {
-      vis: vis
-    });
     var widgetModel = new WidgetModel({
       normalized: false,
       show_source: true

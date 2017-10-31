@@ -13,10 +13,10 @@
           <div class="FormAccount-rowData">
             <div class="FormAccount-tags js-domains">
               <ul class="CDB-Text CDB-Size-medium FormAccount-tagsList js-domainsList">
-                <span class= "CDB-Text CDB-Size-small u-altTextColor FormAccount-tagsList--placeholder js-placeholder">Only valid domains will be added (ex. carto.com)</span>
+                <span class= "CDB-Text CDB-Size-small u-altTextColor FormAccount-tagsList--placeholder js-placeholder">Only valid domains, wildcard (*) accepted (ex. *.carto.com)</span>
               </ul>
             </div>
-            <%= f.hidden_field :whitelisted_email_domains, :value => "#{ @organization[:whitelisted_email_domains].join(',') if !@organization[:whitelisted_email_domains].blank? }", :class => "js-whitelist CDB-InputText CDB-Text", :placeholder => "Only valid domains will be added (ex. carto.com)" %>
+            <%= f.hidden_field :whitelisted_email_domains, :value => "#{ @organization[:whitelisted_email_domains].join(',') if !@organization[:whitelisted_email_domains].blank? }", :class => "js-whitelist CDB-InputText CDB-Text", :placeholder => "Only valid domains, wildcard (*) accepted (ex. *.carto.com)" %>
             <div class="u-flex u-lSpace--xl">
               <% if @organization.errors[:whitelisted_email_domains].present? %>
                 <p class="CDB-Text FormAccount-rowInfoText FormAccount-rowInfoText--error u-tSpace"><%= @organization.errors[:whitelisted_email_domains].first%></p>

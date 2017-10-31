@@ -328,6 +328,11 @@ class UserTable < Sequel::Model
     affected_visualizations.select { |v| v.partially_dependent_on?(self) }
   end
 
+  def is_owner?(user)
+    return false unless user
+    user_id == user.id
+  end
+
   private
 
   def default_privacy_value

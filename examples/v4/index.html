@@ -80,6 +80,16 @@
             client.getLeafletLayerView().addTo(map);
 
             client.removeLayer(layer);
+
+            // Dataviews
+            var formulaDataview = new carto.dataview.Formula(source0, {
+              column: 'price',
+              params: {
+                operation: carto.dataview.AGGREGATIONS.COUNT
+              }
+            });
+
+            client.addDataview(formulaDataview);
         })();
 
     </script>

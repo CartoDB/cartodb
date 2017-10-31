@@ -23,6 +23,7 @@ var LeafletCartoLayerGroupView = require('../../geo/leaflet/leaflet-cartodb-laye
  */
 function Client (settings) {
   this._layers = [];
+  this._dataviews = [];
   this._engine = new Engine({
     apiKey: settings.apiKey,
     authToken: settings.authToken, // Deprecated
@@ -127,6 +128,68 @@ Client.prototype.getLayers = function () {
 };
 
 /**
+ * Add a dataview to the client.
+ * 
+ * @param {carto.dataview.Base} - The dataview to be added
+ * @param {boolean} opts.reload - Default: true. A boolean flag controlling if the client should be reloaded
+ * 
+ * @returns {Promise} - A promise that will be fulfilled when the reload cycle is completed.
+ * @api
+ */
+Client.prototype.addDataview = function (dataview, opts) {
+  return this.addDataviews([dataview], opts);
+};
+
+/**
+ * Add a dataview array to the client.
+ * 
+ * @param {carto.dataview.Base[]} - The dataview array to be added
+ * @param {object} opts
+ * @param {boolean} opts.reload - Default: true. A boolean flag controlling if the client should be reloaded
+ * 
+ * @returns {Promise} A promise that will be fulfilled when the reload cycle is completed.
+ * @api
+ */
+Client.prototype.addDataviews = function (dataviews, opts) {
+  opts = opts || {};
+  dataviews.forEach(this._addDataview, this);
+  if (opts.reload === false) {
+    return Promise.resolve();
+  }
+  return this._engine.reload();
+};
+
+/**
+ * Remove a dataview from the client
+ * 
+ * @param {carto.dataview.Base} - The dataview array to be removed
+ * @param {object} opts
+ * @param {boolean} opts.reload - Default: true. A boolean flag controlling if the client should be reloaded
+ * 
+ * @returns {Promise} A promise that will be fulfilled when the reload cycle is completed.
+ * @api
+ */
+Client.prototype.removeDataview = function (dataview, opts) {
+  opts = opts || {};
+  this._dataviews.splice(this._dataviews.indexOf(dataview));
+  this._engine.removeDataview(dataview.$getInternalModel());
+  if (opts.reload === false) {
+    return Promise.resolve();
+  }
+  return this._engine.reload();
+};
+
+/**
+ * Get all the dataviews from the client
+ * 
+ * @returns {carto.dataview.Base[]} An array with all the dataviews from the client.
+ * @api
+ */
+Client.prototype.getDataviews = function () {
+  return this._dataviews;
+};
+
+/**
  * ...
  */
 Client.prototype.getLeafletLayerView = function () {
@@ -146,6 +209,16 @@ Client.prototype._addLayer = function (layer, engine) {
   this._layers.push(layer);
   layer.$setEngine(this._engine);
   this._engine.addLayer(layer.$getInternalModel());
+};
+
+/**
+ * Helper used to link a dataview and an engine
+ * @private
+ */
+Client.prototype._addDataview = function (dataview, engine) {
+  this._dataviews.push(dataview);
+  dataview.$setEngine(this._engine);
+  this._engine.addDataview(dataview.$getInternalModel());
 };
 
 module.exports = Client;

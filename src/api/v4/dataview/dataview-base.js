@@ -1,5 +1,10 @@
 var _ = require('underscore');
 
+/**
+ * 
+ * Represent a dataview base object.
+ * 
+ */
 function DataviewBase () {
 
 }
@@ -11,6 +16,14 @@ DataviewBase.prototype._checkColumnInOptions = function (options) {
   if (!_.isString(options.column)) {
     throw new TypeError('Column property must be a string when creating a dataview.');
   }
+};
+
+DataviewBase.prototype.$setEngine = function (engine) {
+  throw new Error('$setEngine must be implemented by the particular dataview.');
+};
+
+DataviewBase.prototype.$getInternalModel = function () {
+  return this._internalModel;
 };
 
 module.exports = DataviewBase;

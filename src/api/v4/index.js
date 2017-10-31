@@ -17,11 +17,13 @@ var source = require('./source');
 var style = require('./style');
 var layer = require('./layer');
 var Events = require('./events');
+var dataview = require('./dataview');
 
 module.exports = {
   Client: Client,
   Events: Events,
   source: source,
   style: style,
-  layer: layer
+  layer: layer,
+  dataview: dataview
 };

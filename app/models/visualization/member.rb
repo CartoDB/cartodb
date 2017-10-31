@@ -366,7 +366,7 @@ module CartoDB
       end
 
       def is_owner?(user)
-        user.id == user_id
+        user && user.id == user_id
       end
 
       # @param user ::User

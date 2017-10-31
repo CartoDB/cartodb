@@ -161,6 +161,7 @@ Engine.prototype.reload = function (options) {
       this._windshaftClient.instantiateMap(request);
     } catch (error) {
       this._manageClientError(error, options);
+      reject(error);
     }
   }.bind(this));
 };

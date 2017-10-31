@@ -66,7 +66,7 @@ Client.prototype.on = function (event, callback) {
 /**
  * Add a layer to the client.
  * 
- * @param {carto.layers.Layer} - The layer to be added
+ * @param {carto.layer.Layer} - The layer to be added
  * @param {object} opts
  * @param {boolean} opts.reload - Default: true. A boolean flag controlling if the client should be reloaded
  * 
@@ -80,7 +80,7 @@ Client.prototype.addLayer = function (layer, opts) {
 /**
  * Add a layer array to the client.
  * 
- * @param {carto.layers.Layer[]} - The layer array to be added
+ * @param {carto.layer.Layer[]} - The layer array to be added
  * @param {object} opts
  * @param {boolean} opts.reload - Default: true. A boolean flag controlling if the client should be reloaded
  * 
@@ -119,7 +119,7 @@ Client.prototype.removeLayer = function (layer, opts) {
 /**
  * Get all the layers from the client
  * 
- * @returns {carto.layers.Layer[]} An array with all the Layers from the client.
+ * @returns {carto.layer.Layer[]} An array with all the Layers from the client.
  * @api
  */
 Client.prototype.getLayers = function () {

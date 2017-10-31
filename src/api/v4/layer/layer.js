@@ -4,25 +4,32 @@ var CartoDBLayer = require('../../../geo/map/cartodb-layer');
  * 
  * Represent a layer Object.
  * 
+ * @param {string} [id] - A unique ID for this layer
  * @param {object} source - The source where the layer will fetch the data.
  * @param {carto.style.CartoCSS} style - A CartoCSS object with the layer styling.
- * @param {object} opts 
- * @param {string} opts.id - An unique indentifier for the layer.
+ *
+ * @example
+ *
+ * new carto.layer.Layer('cities', citiesSource, citiesStyle);
+ *
+ * @example
+ *
+ * new carto.layer.Layer(citiesSource, citiesStyle);
  * 
  * @constructor
  * @api
- * @memberof carto.layers
+ * @memberof carto.layer
  */
-function Layer (source, style, opts) {
-  if (typeof arguments[0] === 'string') {
-    this._id = arguments[0];
-    this._source = arguments[1];
-    this._style = arguments[2];
-  } else {
-    this._source = arguments[0];
-    this._style = arguments[1];
-    this._id = 'fakeId';
+function Layer (id, source, style) {
+  if (typeof style === 'undefined') {
+    source = id;
+    style = source;
+    id = 'fakeId'; // TODO: Generate a unique ID
   }
+
+  this._id = id;
+  this._source = source;
+  this._style = style;
   this._visible = true;
 }
 

@@ -1,10 +1,6 @@
 /* wax - 7.0.1 - v6.0.4-193-g0530212 */
 
-
 !function (name, context, definition) {
-  //if (typeof module !== 'undefined') module.exports = definition(name, context);
-  //else if (typeof define === 'function' && typeof define.amd  === 'object') define(definition);
-  //else context[name] = definition(name, context);
   context[name] = definition(name, context);
 }('bean', this, function (name, context) {
   var win = window
@@ -503,7 +499,7 @@
     }
     win[attachEvent]('onunload', cleanup)
   }
-
+  window.bean = bean;
   return bean
 })
 // Copyright Google Inc.
@@ -3372,3 +3368,5 @@ wax.g.connector.prototype.getTileUrl = function(coord, z) {
                 .replace(/\{x\}/g, x)
                 .replace(/\{y\}/g, y);
 };
+
+module.exports = wax;

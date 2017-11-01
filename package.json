@@ -90,7 +90,8 @@
     "semver": "~5.4.0",
     "source-map-support": "CartoDB/node-source-map-support#0.4.6-cdb1",
     "time-grunt": "~0.3.1",
-    "watchify": "3.4.0"
+    "watchify": "3.4.0",
+    "webpack": "^3.8.1"
   },
   "browserify": {
     "transform": [
@@ -151,6 +152,7 @@
     "docs:internal": "rm -rf docs/internal; jsdoc --configure config/jsdoc/internal-conf.json",
     "postversion": "git push origin v4 --follow-tags",
     "dist": "grunt build",
+    "build": "webpack",
     "watch": "npm-watch"
   },
   "watch": {

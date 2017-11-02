@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.10.34",
+  "version": "4.10.56",
   "dependencies": {
     "accessory": {
       "version": "1.0.1",
@@ -316,9 +316,9 @@
       "resolved": "https://registry.npmjs.org/camelcase/-/camelcase-1.2.1.tgz"
     },
     "camshaft-reference": {
-      "version": "0.33.0",
-      "from": "camshaft-reference@0.33.0",
-      "resolved": "https://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.33.0.tgz"
+      "version": "0.33.4",
+      "from": "camshaft-reference@0.33.4",
+      "resolved": "https://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.33.4.tgz"
     },
     "carto": {
       "version": "0.15.1-cdb4",
@@ -518,15 +518,35 @@
       "from": "d3@3.5.17",
       "resolved": "https://registry.npmjs.org/d3/-/d3-3.5.17.tgz"
     },
+    "d3-array": {
+      "version": "1.2.1",
+      "from": "d3-array@1.2.1",
+      "resolved": "https://registry.npmjs.org/d3-array/-/d3-array-1.2.1.tgz"
+    },
     "d3-color": {
       "version": "1.0.3",
       "from": "d3-color@>=1.0.0 <2.0.0",
       "resolved": "https://registry.npmjs.org/d3-color/-/d3-color-1.0.3.tgz"
     },
+    "d3-format": {
+      "version": "1.2.0",
+      "from": "d3-format@1.2.0",
+      "resolved": "https://registry.npmjs.org/d3-format/-/d3-format-1.2.0.tgz"
+    },
     "d3-interpolate": {
       "version": "1.1.2",
       "from": "d3-interpolate@1.1.2",
       "resolved": "https://registry.npmjs.org/d3-interpolate/-/d3-interpolate-1.1.2.tgz"
+    },
+    "d3-time": {
+      "version": "1.0.7",
+      "from": "d3-time@>=1.0.0 <2.0.0",
+      "resolved": "https://registry.npmjs.org/d3-time/-/d3-time-1.0.7.tgz"
+    },
+    "d3-time-format": {
+      "version": "2.1.0",
+      "from": "d3-time-format@2.1.0",
+      "resolved": "https://registry.npmjs.org/d3-time-format/-/d3-time-format-2.1.0.tgz"
     },
     "date-now": {
       "version": "0.1.4",

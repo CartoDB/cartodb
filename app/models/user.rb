@@ -22,6 +22,7 @@ require_dependency 'carto/helpers/batch_queries_statement_timeout'
 require_dependency 'carto/user_authenticator'
 require_dependency 'carto/helpers/billing_cycle'
 require_dependency 'carto/email_cleaner'
+require_dependency 'carto/email_domain_validator'
 require_dependency 'carto/visualization'
 
 class User < Sequel::Model
@@ -1774,7 +1775,7 @@ class User < Sequel::Model
       return true
     end
 
-    organization.whitelisted_email_domains.include?(email.split('@')[1])
+    Carto::EmailDomainValidator.validate_domain(email, organization.whitelisted_email_domains)
   end
 
   def created_via

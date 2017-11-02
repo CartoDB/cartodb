@@ -26,7 +26,9 @@ module CartoDB
         base_url: user.public_url,
         viewer: user.viewer,
         org_admin: user.organization_admin?,
-        groups: user.groups ? user.groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro } : []
+        groups: user.groups ? user.groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro } : [],
+        org_user: user.organization_id.present?,
+        remove_logo: user.remove_logo?
       }
     end
 

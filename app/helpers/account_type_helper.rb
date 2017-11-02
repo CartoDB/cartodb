@@ -17,12 +17,14 @@ module AccountTypeHelper
 
   PUBLIC_PLAN_NAME = {
     'FREE' => 'Free',
+    'PERSONAL30' => 'Personal Trial',
     'BASIC' => 'Personal',
     'BASIC LUMP-SUM' => 'Personal Lump-Sum'
   }.freeze
 
   PLAN_NAME_BY_ACCOUNT_TYPE = {
     'FREE' => 'Free',
+    'PERSONAL30' => 'Personal Trial',
     'BASIC' => 'Personal',
     'BASIC LUMP-SUM' => 'Personal',
     'BASIC ACADEMIC' => 'Personal Non-Profit',

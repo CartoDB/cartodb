@@ -1,0 +1,5 @@
+#!/bin/sh
+
+echo "--- Cleaning assets"
+PACKAGE_VERSION=$(grep -m1 version package.json | awk -F: '{ print $2 }' | sed 's/[", ]//g')
+find public/assets/* -type d ! -name $PACKAGE_VERSION -depth 0 | xargs rm -rf

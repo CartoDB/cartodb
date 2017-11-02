@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.10.34.tangram",
+  "version": "4.10.56.tangram",
   "description": "CARTO UI frontend",
   "repository": {
     "type": "git",
@@ -21,7 +21,7 @@
     "bootstrap-colorpicker": "2.5.0",
     "browserify": "13.0.0",
     "browserify-shim": "3.8.12",
-    "camshaft-reference": "0.33.0",
+    "camshaft-reference": "0.33.4",
     "carto": "cartodb/carto#master",
     "cartocolor": "4.0.0",
     "cartodb-deep-insights.js": "cartodb/deep-insights.js#tangram-platform-limits",

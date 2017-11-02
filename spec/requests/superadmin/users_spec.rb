@@ -542,5 +542,78 @@ feature "Superadmin's users API" do
     end
   end
 
-  private
+  describe '#data_imports' do
+    before(:each) do
+      @user = create_user
+    end
+
+    after(:each) do
+      @user.destroy
+    end
+
+    it 'filters results if param status is present' do
+      successful_data_import = FactoryGirl.create(:data_import, user_id: @user.id, success: true, state: 'complete')
+      failed_data_import = FactoryGirl.create(:data_import, user_id: @user.id, success: false, state: 'failure')
+
+      get_json("/superadmin/users/#{@user.id}/data_imports", { status: 'complete' }, superadmin_headers) do |response|
+        expect(response.status).to eq(200)
+
+        expect(response.body[:data_imports].size).to eq(1)
+        expect(response.body[:data_imports].first['id']).to eq(successful_data_import.id)
+      end
+
+      get_json("/superadmin/users/#{@user.id}/data_imports", { status: 'failure' }, superadmin_headers) do |response|
+        expect(response.status).to eq(200)
+
+        expect(response.body[:data_imports].size).to eq(1)
+        expect(response.body[:data_imports].first['id']).to eq(failed_data_import.id)
+      end
+
+      get_json("/superadmin/users/#{@user.id}/data_imports", {}, superadmin_headers) do |response|
+        expect(response.status).to eq(200)
+        expect(response.body[:data_imports].size).to eq(2)
+      end
+    end
+
+    it 'paginates results' do
+      data_imports = FactoryGirl.create_list(:data_import, 2, user_id: @user.id)
+      data_import_ids = data_imports.map(&:id)
+
+      pagination_params = { page: 1, per_page: 1 }
+
+      expect(data_import_ids.size).to eq(2)
+
+      get_json("/superadmin/users/#{@user.id}/data_imports", pagination_params, superadmin_headers) do |response|
+        expect(response.status).to eq(200)
+
+        expect(response.body[:data_imports].size).to eq(1)
+
+        expect(response.body[:total_entries]).to eq(2)
+
+        data_import_ids.delete_if { |id| id == response.body[:data_imports][0]["id"] }
+        expect(data_import_ids.size).to eq(1)
+      end
+
+      pagination_params = { page: 2, per_page: 1 }
+
+      get_json("/superadmin/users/#{@user.id}/data_imports", pagination_params, superadmin_headers) do |response|
+        expect(response.status).to eq(200)
+        expect(response.body[:data_imports].size).to eq(1)
+
+        expect(response.body[:total_entries]).to eq(2)
+
+        data_import_ids.delete_if { |id| id == response.body[:data_imports][0]["id"] }
+        expect(data_import_ids.size).to eq(0)
+      end
+    end
+
+    it 'returns all the data imports if no pagination params are present' do
+      FactoryGirl.create_list(:data_import, 3, user_id: @user.id)
+
+      get_json("/superadmin/users/#{@user.id}/data_imports", {}, superadmin_headers) do |response|
+        expect(response.status).to eq(200)
+        expect(response.body[:data_imports].size).to eq(3)
+      end
+    end
+  end
 end

@@ -53,9 +53,11 @@
 
             // Create a source
             var source0 = new carto.source.Dataset('a0', 'ne_10m_populated_places_simple');
+            window.source0 = source0;
 
             // Create a source
             var source1 = new carto.source.SQL('a1', 'SELECT * FROM ne_10m_populated_places_simple WHERE adm0name = \'Spain\'');
+            window.source1 = source1;
 
             // Create a style
             var style = new carto.style.CartoCSS(`
@@ -76,6 +78,7 @@
             var layer1 = new carto.layer.Layer('layer1', source1, style1);
 
 
+
             client.addLayer(layer1);
             client.addLayer(layer);
 
@@ -89,20 +92,20 @@
             client.removeLayer(layer);
 
             // Dataviews
-            var formulaDataview = new carto.dataview.Formula(source0, {
-              column: 'price',
+            var formulaDataview = new carto.dataview.Formula(source1, {
+              column: 'pop_max',
               params: {
-                operation: carto.dataview.AGGREGATIONS.COUNT
+                operation: carto.dataview.AGGREGATIONS.AVG
               }
+            });
+            window.formula = formulaDataview;
+
+            formulaDataview.on('dataChanged', function (newData) {
+              console.log('Formula > ', newData);
+              document.getElementById('widget').innerHTML = newData;
             });
 
             client.addDataview(formulaDataview);
-            
-            setTimeout(function () {
-              var data = formulaDataview.getData();
-              document.getElementById('widget').innerHTML = data;
-              console.log('DATA', data);
-            }, 1000);
         })();
 
     </script>

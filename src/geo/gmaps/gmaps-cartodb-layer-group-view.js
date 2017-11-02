@@ -2,8 +2,8 @@
 var _ = require('underscore');
 var GMapsLayerView = require('./gmaps-layer-view');
 require('leaflet'); // NOTE: Leaflet needs to be required before wax because wax relies on global L internally
-// TODO: Implement gmaps interactivity
-var wax = require('../../../vendor/interaction');
+var wax = require('../../../vendor/wax');
+var gridjson = require('../../../vendor/gridjson');
 var C = require('../../constants');
 var CartoDBDefaultOptions = require('./cartodb-default-options');
 var Projector = require('./projector');
@@ -92,7 +92,7 @@ var GMapsCartoDBLayerGroupView = function (layerModel, options) {
 
 // TODO: Do we need this?
 GMapsCartoDBLayerGroupView.prototype = new wax.g.connector(); // eslint-disable-line
-GMapsCartoDBLayerGroupView.prototype.interactionClass = wax.g.interaction;
+GMapsCartoDBLayerGroupView.prototype.interactionClass = gridjson.Interactive;
 _.extend(
   GMapsCartoDBLayerGroupView.prototype,
   CartoDBLayerGroupViewBase.prototype,

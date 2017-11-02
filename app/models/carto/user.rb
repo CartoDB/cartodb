@@ -27,8 +27,8 @@ class Carto::User < ActiveRecord::Base
   OBS_GENERAL_BLOCK_SIZE = 1000
   MAPZEN_ROUTING_BLOCK_SIZE = 1000
 
-  STATE_ACTIVE = 'active'
-  STATE_LOCKED = 'locked'
+  STATE_ACTIVE = 'active'.freeze
+  STATE_LOCKED = 'locked'.freeze
 
   # INFO: select filter is done for security and performance reasons. Add new columns if needed.
   DEFAULT_SELECT = "users.email, users.username, users.admin, users.organization_id, users.id, users.avatar_url," \
@@ -595,11 +595,11 @@ class Carto::User < ActiveRecord::Base
   end
 
   def active?
-    return self.state == STATE_ACTIVE
+    state == STATE_ACTIVE
   end
 
   def locked?
-    return self.state == STATE_LOCKED
+    state == STATE_LOCKED
   end
 
   private

@@ -83,6 +83,7 @@ ion for time-series (#12670)
 * Now is possible to use wildcard character (*) in the whitelist emails for organization signups (#12991)
 
 ### Bug fixes / enhancements
+* Fix legends request order with slow internet connection (#12733)
 * Documentation, fixed spelling and grammar in en.json
 * Update charlock_holmes gem to 0.7.5 to fix C++11 related problems.
 * Don't show basemap's labels layer in layer list (#13000)

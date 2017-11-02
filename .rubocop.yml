@@ -250,7 +250,7 @@ Style/MethodDefParentheses:
   Enabled: true
   EnforcedStyle: require_parentheses
 
-Style/MethodName:
+Naming/MethodName:
   Enabled: true
   EnforcedStyle: snake_case
 
@@ -262,7 +262,7 @@ Style/PercentQLiterals:
   Enabled: true
   EnforcedStyle: lower_case_q
 
-Style/PredicateName:
+Naming/PredicateName:
   Enabled: true
 
 Style/RedundantReturn:
@@ -290,7 +290,7 @@ Style/TrailingCommaInLiteral:
   Enabled: true
   EnforcedStyleForMultiline: no_comma
 
-Style/VariableName:
+Naming/VariableName:
   Enabled: true
   EnforcedStyle: snake_case
 
@@ -304,13 +304,13 @@ Style/BlockDelimiters:
   Enabled: true
   EnforcedStyle: braces_for_chaining
 
-Style/ClassAndModuleCamelCase:
+Naming/ClassAndModuleCamelCase:
   Enabled: true
 
 Style/ClassMethods:
   Enabled: true
 
-Style/ConstantName:
+Naming/ConstantName:
   Enabled: true
 
 Style/DefWithParentheses:
@@ -520,7 +520,7 @@ Style/CommentAnnotation:
   Enabled: false
 Style/Encoding:
   Enabled: false
-Style/FileName:
+Naming/FileName:
   Enabled: false
 Style/FormatString:
   Enabled: false
@@ -562,7 +562,7 @@ Style/MethodCalledOnDoEndBlock:
   Enabled: false
 Style/SymbolArray:
   Enabled: false
-Style/AccessorMethodName:
+Naming/AccessorMethodName:
   Enabled: false
 Style/Alias:
   Enabled: false
@@ -570,7 +570,7 @@ Style/ArrayJoin:
   Enabled: false
 Style/AsciiComments:
   Enabled: false
-Style/AsciiIdentifiers:
+Naming/AsciiIdentifiers:
   Enabled: false
 Style/Attr:
   Enabled: false
@@ -614,7 +614,7 @@ Style/Not:
   Enabled: false
 Style/OneLineConditional:
   Enabled: false
-Style/OpMethod:
+Naming/BinaryOperatorParameterName:
   Enabled: false
 Style/PerlBackrefs:
   Enabled: false
@@ -655,8 +655,6 @@ Lint/DeprecatedClassMethods:
 Lint/ElseLayout:
   Enabled: false
 Lint/HandleExceptions:
-  Enabled: false
-Lint/InvalidCharacterLiteral:
   Enabled: false
 Lint/LiteralInCondition:
   Enabled: false

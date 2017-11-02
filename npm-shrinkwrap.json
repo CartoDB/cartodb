@@ -331,9 +331,9 @@
       "resolved": "https://registry.npmjs.org/cartocolor/-/cartocolor-4.0.0.tgz"
     },
     "cartodb-deep-insights.js": {
-      "version": "0.4.4",
-      "from": "cartodb/deep-insights.js#v0.4.4",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#1c9f744db34769fc9705f99e35ca243948ae8f82",
+      "version": "0.4.7",
+      "from": "cartodb/deep-insights.js#v0.4.7",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#fbc82cb6efa1cf5851f7a2db7ee120eab1f900ad",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",
@@ -348,9 +348,9 @@
       "resolved": "https://registry.npmjs.org/cartodb-pecan/-/cartodb-pecan-0.2.0.tgz"
     },
     "cartodb.js": {
-      "version": "4.0.0-alpha.17",
-      "from": "cartodb/cartodb.js#v4.0.0-alpha.17",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#142efeb379c73e7de7a4f69978557fbf47a26016"
+      "version": "4.0.0-alpha.20",
+      "from": "cartodb/cartodb.js#v4.0.0-alpha.20",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#80f257de449883ccd725f815b3aa657d534bfe8b"
     },
     "center-align": {
       "version": "0.1.3",
@@ -794,9 +794,9 @@
       "resolved": "https://registry.npmjs.org/falafel/-/falafel-2.1.0.tgz",
       "dependencies": {
         "acorn": {
-          "version": "5.1.2",
+          "version": "5.2.1",
           "from": "acorn@>=5.0.0 <6.0.0",
-          "resolved": "https://registry.npmjs.org/acorn/-/acorn-5.1.2.tgz"
+          "resolved": "https://registry.npmjs.org/acorn/-/acorn-5.2.1.tgz"
         },
         "object-keys": {
           "version": "1.0.11",
@@ -1388,9 +1388,9 @@
       "resolved": "https://registry.npmjs.org/moment/-/moment-2.18.1.tgz"
     },
     "moment-timezone": {
-      "version": "0.5.13",
+      "version": "0.5.14",
       "from": "moment-timezone@>=0.5.13 <0.6.0",
-      "resolved": "https://registry.npmjs.org/moment-timezone/-/moment-timezone-0.5.13.tgz"
+      "resolved": "https://registry.npmjs.org/moment-timezone/-/moment-timezone-0.5.14.tgz"
     },
     "mothership": {
       "version": "0.2.0",
@@ -2233,9 +2233,9 @@
       "resolved": "https://registry.npmjs.org/typedarray/-/typedarray-0.0.6.tgz"
     },
     "uglify-js": {
-      "version": "3.1.5",
+      "version": "3.1.6",
       "from": "uglify-js@>=3.1.0 <3.2.0",
-      "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-3.1.5.tgz",
+      "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-3.1.6.tgz",
       "dependencies": {
         "source-map": {
           "version": "0.6.1",

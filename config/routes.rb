@@ -70,7 +70,8 @@ CartoDB::Application.routes.draw do
       }
     end
 
-    get '/github' => 'github#github', as: :github
+    get '/github' => 'oauth_login#github', as: :github
+    get '/google/oauth' => 'oauth_login#google', as: :google_oauth
     get '/saml/metadata' => 'saml#metadata'
   end
 

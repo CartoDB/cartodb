@@ -28,20 +28,22 @@ describe Carto::Group do
 
   end
 
-  before(:all) do
-    @org = FactoryGirl.create(:organization)
-    @group = FactoryGirl.create(:random_group, organization_id: @org.id)
-  end
+  describe 'organization behaviour' do
+    before(:all) do
+      @org = FactoryGirl.create(:organization)
+      @group = FactoryGirl.create(:random_group, organization_id: @org.id)
+    end
 
-  after(:all) do
-    @group.destroy
-    @org.destroy
-  end
+    after(:all) do
+      @group.destroy
+      @org.destroy
+    end
 
-  it 'generates auth_tokens and save them for future accesses' do
-    token = @group.get_auth_token
-    token.should be
-    @group.reload
-    @group.get_auth_token.should eq token
+    it 'generates auth_tokens and save them for future accesses' do
+      token = @group.get_auth_token
+      token.should be
+      @group.reload
+      @group.get_auth_token.should eq token
+    end
   end
 end

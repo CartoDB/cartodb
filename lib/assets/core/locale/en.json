@@ -1498,7 +1498,7 @@
       },
       "interactivity": {
         "title": "Interactivity error",
-        "body": "Looks like you are over your limits and the interactivity of your map could be affected.",
+        "body": "Looks like you are over your account limits and the interactivity of your map could be affected.",
         "try_to": " Try to:",
         "cta": {
           "label": "Upgrade account",
@@ -1507,7 +1507,7 @@
       },
       "limit": {
         "title": "Some tiles might not be working correctly",
-        "body": "Looks like you are over your limits when trying to render some of your tiles.",
+        "body": "Looks like you are over your account limits when trying to render some of your tiles.",
         "try_to": " Try to:",
         "cta": {
           "label": "Upgrade account",

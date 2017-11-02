@@ -34,4 +34,8 @@ Formula.prototype.$setEngine = function (engine) {
   });
 };
 
+Formula.prototype.$getInternalModel = function () {
+  return this._internalModel;
+};
+
 module.exports = Formula;

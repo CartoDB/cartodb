@@ -1,6 +1,7 @@
 var Events = require('./events');
 var Engine = require('../../engine');
-var LeafletCartoLayerGroupView = require('../../geo/leaflet/leaflet-cartodb-layer-group-view');
+var Layers = require('./layers');
+var LeafletLayerGroup = require('./leaflet/layer-group');
 
 /**
  * This is the main object in a Carto.js application. 
@@ -22,7 +23,7 @@ var LeafletCartoLayerGroupView = require('../../geo/leaflet/leaflet-cartodb-laye
  * @fires carto.Events.ERROR
  */
 function Client (settings) {
-  this._layers = [];
+  this._layers = new Layers();
   this._engine = new Engine({
     apiKey: settings.apiKey,
     authToken: settings.authToken, // Deprecated
@@ -108,7 +109,7 @@ Client.prototype.addLayers = function (layers, opts) {
  */
 Client.prototype.removeLayer = function (layer, opts) {
   opts = opts || {};
-  this._layers.splice(this._layers.indexOf(layer));
+  this._layers.remove(layer);
   this._engine.removeLayer(layer.$getInternalModel());
   if (opts.reload === false) {
     return Promise.resolve();
@@ -123,19 +124,15 @@ Client.prototype.removeLayer = function (layer, opts) {
  * @api
  */
 Client.prototype.getLayers = function () {
-  return this._layers;
+  return this._layers.toArray();
 };
 
 /**
  * ...
  */
 Client.prototype.getLeafletLayerView = function () {
-  return {
-    addTo: function (map) {
-      var leafletCartoLayerGroupView = new LeafletCartoLayerGroupView(this._engine._cartoLayerGroup, map);
-      leafletCartoLayerGroupView.leafletLayer.addTo(map);
-    }.bind(this)
-  };
+  this._leafletLayer = this._leafletLayer || new LeafletLayerGroup(this._layers, this._engine);
+  return this._leafletLayer;
 };
 
 /**
@@ -143,7 +140,7 @@ Client.prototype.getLeafletLayerView = function () {
  * @private
  */
 Client.prototype._addLayer = function (layer, engine) {
-  this._layers.push(layer);
+  this._layers.add(layer);
   layer.$setEngine(this._engine);
   this._engine.addLayer(layer.$getInternalModel());
 };

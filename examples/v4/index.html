@@ -27,7 +27,8 @@
         (async () => {
             var i = 0; // Number of reload cycles.
             var map = L.map('map').setView([42.431234, -8.643616], 5);
-            L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager_nolabels/{z}/{x}/{y}.png').addTo(map);
+
+            // L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager_nolabels/{z}/{x}/{y}.png').addTo(map);
 
             // Create the Client
             var client = new carto.Client({
@@ -45,9 +46,6 @@
             });
 
             // Create a source
-            var source0 = new carto.source.Dataset('a0', 'ne_10m_populated_places_simple');
-
-            // Create a source
             var source1 = new carto.source.SQL('a1', 'SELECT * FROM ne_10m_populated_places_simple WHERE adm0name = \'Spain\'');
 
             // Create a style
@@ -57,29 +55,37 @@
                     marker-fill: red;
                 }`);
 
-            // Create a style
-            var style1 = new carto.style.CartoCSS(`
-                #layer {
-                    marker-width: 10;
-                    marker-fill: yellow;
-                }`);
-
             // Create a layer
-            var layer = new carto.layer.Layer('layer0', source0, style);
-            var layer1 = new carto.layer.Layer('layer1', source1, style1);
+            var layer = new carto.layer.Layer('layer0', source1, style, {
+              featureClickColumns: ['adm0name'],
+              featureOverColumns: ['adm0name']
+            });
 
-
-            client.addLayer(layer1);
             client.addLayer(layer);
+
+
+            layer.on('feature:click', function (featureEvent) {
+              console.log('feature:click', featureEvent.getLatLng(), featureEvent.getData());
+            });
+
+            layer.on('feature:over', function (featureEvent) {
+              console.log('feature:over', featureEvent.getLatLng(), featureEvent.getData());
+            });
+
+            layer.on('feature:out', function (featureEvent) {
+              console.log('feature:out', featureEvent.getLatLng(), featureEvent.getData());
+            });
+
+            await layer.setFeatureOverColumns(['adm0name', 'name']);
 
             // Add the layers
             // await client.addLayers([layer1, layer]); // engine.reload() internal
 
-
             // Add the layer to the map
             client.getLeafletLayerView().addTo(map);
 
-            client.removeLayer(layer);
+
+            layer.setFeatureOverColumns(['name']);
         })();
 
     </script>

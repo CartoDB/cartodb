@@ -17,7 +17,7 @@ var TooltipTemplate = Backbone.Model.extend({
     this.unset('fields');
   },
 
-  update: function (attrs) {
+  update: function (attrs, options) {
     attrs = _.clone(attrs);
 
     if (!this.fields.equals(attrs.fields)) {
@@ -29,7 +29,7 @@ var TooltipTemplate = Backbone.Model.extend({
       attrs.alternative_names = JSON.parse(JSON.stringify(attrs.alternative_names));
     }
 
-    this.set(attrs);
+    this.set(attrs, options);
   },
 
   getFieldNames: function () {

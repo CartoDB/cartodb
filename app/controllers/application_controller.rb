@@ -168,8 +168,8 @@ class ApplicationController < ActionController::Base
     if current_user.nil? || current_user.username != viewed_user
       user = Carto::User.where(username: viewed_user).first
       render_404 if !user.nil? && user.locked?
-    else
-      locked_user if current_user.locked?
+    elsif current_user.locked?
+      locked_user
     end
   end
 

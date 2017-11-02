@@ -57,6 +57,7 @@ module Carto
           services: carto_viewer.try(:get_oauth_services),
           user_frontend_version: carto_viewer.try(:relevant_frontend_version) || CartoDB::Application.frontend_version,
           asset_host: carto_viewer.try(:asset_host),
+          google_sign_in: carto_viewer.try(:google_sign_in),
           iframe_src: carto_viewer.present? ? iframe_src : nil
         }
       end

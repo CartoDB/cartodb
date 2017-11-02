@@ -689,15 +689,23 @@ class DataImport < Sequel::Model
                                               })
       runner.loader_options = ogr2ogr_options.merge content_guessing_options
       runner.set_importer_stats_host_info(Socket.gethostname)
-      registrar     = CartoDB::TableRegistrar.new(current_user, ::Table)
+      registrar = CartoDB::TableRegistrar.new(current_user, ::Table)
       quota_checker = CartoDB::QuotaChecker.new(current_user)
-      database      = current_user.in_database
+      database = current_user.in_database
       destination_schema = current_user.database_schema
       public_user_roles = current_user.db_service.public_user_roles
       overviews_creator = CartoDB::Importer2::Overviews.new(runner, current_user)
-      importer      = CartoDB::Connector::Importer.new(runner, registrar, quota_checker, database, id,
-                                                       overviews_creator,
-                                                       destination_schema, public_user_roles)
+      importer = CartoDB::Connector::Importer.new(
+        runner: runner,
+        table_registrar: registrar,
+        quota_checker: quota_checker,
+        database: database,
+        data_import_id: id,
+        overviews_creator: overviews_creator,
+        destination_schema: destination_schema,
+        public_user_roles: public_user_roles,
+        collision_strategy: collision_strategy
+      )
     end
 
     [importer, runner, datasource_provider, manual_fields]
@@ -729,9 +737,14 @@ class DataImport < Sequel::Model
     public_user_roles = current_user.db_service.public_user_roles
     overviews_creator = CartoDB::Importer2::Overviews.new(connector, current_user)
     importer = CartoDB::Connector::Importer.new(
-      connector, registrar, quota_checker, database, id,
-      overviews_creator,
-      destination_schema, public_user_roles
+      runner: connector,
+      table_registrar: registrar,
+      quota_checker: quota_checker,
+      database: database,
+      data_import_id: id,
+      overviews_creator: overviews_creator,
+      destination_schema: destination_schema,
+      public_user_roles: public_user_roles
     )
     [importer, connector, nil, nil]
   end

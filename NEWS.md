@@ -74,6 +74,7 @@ ion for time-series (#12670)
 
 ### Bug fixes / enhancements
 * Fix legends request order with slow internet connection (#12733)
+* Documentation, fixed spelling and grammar in en.json
 * Update charlock_holmes gem to 0.7.5 to fix C++11 related problems.
 * Don't show basemap's labels layer in layer list (#13000)
 * Fallback to `username` when `name` is empty in share map view
@@ -257,6 +258,7 @@ ion for time-series (#12670)
 * Fix histogram zoom (#12945)
 
 ### Internals
+* Use engine instead of visModel internally (#12992)
 * Remove analysisCollection and refactor analyses-integration (#12947)
 * Fix layer's sources in tests (analysis source required) (#12866)
 * Adapt widget integration and specs to dataviews refactor (#12850)
@@ -422,6 +424,7 @@ More information at [Dropbox migration guide](https://www.dropbox.com/developers
 * Show infowindow when user reaches max layer limit (#12167)
 * Format quota infowindow numbers (#11743)
 * Improved analysis error tooltip (#12250)
+* Enable overwrite collision_strategy in import API (#11990)
 * Rollback failed user/organization imports
 * Export map layers statistics
 * Add hubspot_form_ids to frontend config

@@ -2,7 +2,8 @@
 var _ = require('underscore');
 var GMapsLayerView = require('./gmaps-layer-view');
 require('leaflet'); // NOTE: Leaflet needs to be required before wax because wax relies on global L internally
-var wax = require('../../../vendor/wax.cartodb');
+// TODO: Implement gmaps interactivity
+var wax = require('../../../vendor/interaction');
 var C = require('../../constants');
 var CartoDBDefaultOptions = require('./cartodb-default-options');
 var Projector = require('./projector');

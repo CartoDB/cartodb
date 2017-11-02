@@ -1,6 +1,16 @@
 Development
 -----------
 
+### NOTICE
+This release upgrades the CartoDB PostgreSQL extension to `0.19.2`. Run the following to have it available:
+```shell
+cd $(git rev-parse --show-toplevel)/lib/sql
+sudo make install
+```
+
+This release changes the way Google ouath login works. If you are using it, you need to add the client_secret
+to the oauth.google_plus section of the configuration file.
+
 ### Features
 * Map: rearrange layer options in layers list (#13006)
 * Style: Rename "none" aggregation to "points" (#13005)
@@ -78,6 +88,7 @@ ion for time-series (#12670)
 * Don't show basemap's labels layer in layer list (#13000)
 * Fallback to `username` when `name` is empty in share map view
 * Fix bounding box not updating with gmaps basemaps
+* Google oauth now works without JS (#12977)
 * Add "less or equal than" and "greater or equal than" to filter by value analysis
 * Improve SQL limit platforms notification (#12597)
 * Fix infinite loop for failed sql api requests.

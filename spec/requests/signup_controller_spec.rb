@@ -121,32 +121,6 @@ describe SignupController do
       ::Resque.expects(:enqueue).never
     end
 
-    it 'returns 400 error if you attempt Google signup and it is not valid' do
-      ::GooglePlusConfig.stubs(:instance).returns({})
-      GooglePlusAPI.any_instance.expects(:get_user_data).never
-      @organization.auth_google_enabled = false
-      @organization.save
-      host! "#{@organization.name}.localhost.lan"
-      post signup_organization_user_url(user_domain: @organization.name, google_access_token: 'whatever')
-      response.status.should == 400
-
-      post signup_organization_user_url(user_domain: @organization.name, google_signup_access_token: 'whatever')
-      response.status.should == 400
-    end
-
-    it 'autogenerates a valid password for Google login with strong passwords' do
-      @organization.strong_passwords_enabled.should be_true
-
-      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
-      ::GooglePlusConfig.stubs(:instance).returns({})
-      email = "#{unique_name('email')}@#{@organization.whitelisted_email_domains[0]}"
-      user_data = { 'emails' => [{ 'type' => 'account', 'value' => email }] }
-      GooglePlusAPI.any_instance.stubs(:get_user_data).returns(GooglePlusAPIUserData.new(user_data))
-      host! "#{@organization.name}.localhost.lan"
-      post signup_organization_user_url(user_domain: @organization.name, google_access_token: 'whatever')
-      response.status.should == 200
-    end
-
     it 'triggers a NewUser job with form parameters and default quota and requiring validation email' do
       Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
       ::Resque.expects(:enqueue).with(::Resque::UserJobs::Signup::NewUser,

@@ -1,16 +1,18 @@
 var Backbone = require('backbone');
 var _ = require('underscore');
-var VisModel = require('../../../src/vis/vis.js');
-var CategoryDataviewModel = require('../../../src/dataviews/category-dataview-model.js');
+var CategoryDataviewModel = require('../../../src/dataviews/category-dataview-model');
 var WindshaftFiltersCategory = require('../../../src/windshaft/filters/category');
 var AnalysisService = require('../../../src/analysis/analysis-service');
+var MockFactory = require('../../helpers/mockFactory');
 
 describe('dataviews/category-dataview-model', function () {
+  var engineMock;
+
   beforeEach(function () {
     this.map = new Backbone.Model();
     this.map.getViewBounds = jasmine.createSpy();
-    this.vis = new VisModel();
-    spyOn(this.vis, 'reload');
+    engineMock = MockFactory.createEngine();
+    spyOn(engineMock, 'reload');
     this.map.getViewBounds.and.returnValue([[1, 2], [3, 4]]);
     var analysisDefinition = {
       id: 'a0',
@@ -20,9 +22,7 @@ describe('dataviews/category-dataview-model', function () {
       }
     };
 
-    var analysisService = new AnalysisService({
-      vis: this.vis
-    });
+    var analysisService = new AnalysisService({ engine: engineMock });
     this.source = analysisService.analyse(analysisDefinition);
 
     this.layer = new Backbone.Model();
@@ -31,24 +31,24 @@ describe('dataviews/category-dataview-model', function () {
       source: this.source
     }, {
       map: this.map,
-      vis: this.vis,
+      engine: engineMock,
       layer: this.layer,
       filter: new WindshaftFiltersCategory()
     });
   });
 
   it('should reload map and force fetch on changing attrs', function () {
-    this.vis.reload.calls.reset();
+    engineMock.reload.calls.reset();
     this.model.set('column', 'random_col');
-    expect(this.vis.reload).toHaveBeenCalledWith({ forceFetch: true, sourceId: 'a0' });
+    expect(engineMock.reload).toHaveBeenCalledWith({ forceFetch: true, sourceId: 'a0' });
 
-    this.vis.reload.calls.reset();
+    engineMock.reload.calls.reset();
     this.model.set('aggregation', 'count');
-    expect(this.vis.reload).toHaveBeenCalledWith({ forceFetch: true, sourceId: 'a0' });
+    expect(engineMock.reload).toHaveBeenCalledWith({ forceFetch: true, sourceId: 'a0' });
 
-    this.vis.reload.calls.reset();
+    engineMock.reload.calls.reset();
     this.model.set('aggregation_column', 'other');
-    expect(this.vis.reload).toHaveBeenCalledWith({ forceFetch: true, sourceId: 'a0' });
+    expect(engineMock.reload).toHaveBeenCalledWith({ forceFetch: true, sourceId: 'a0' });
   });
 
   it('should define several internal models/collections', function () {
@@ -63,7 +63,7 @@ describe('dataviews/category-dataview-model', function () {
       apiKey: 'API_KEY'
     }, {
       map: this.map,
-      vis: this.vis,
+      engine: engineMock,
       layer: jasmine.createSpyObj('layer', ['get']),
       filter: new WindshaftFiltersCategory()
     });

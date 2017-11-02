@@ -1,6 +1,6 @@
 {
   "name": "cartodb.js",
-  "version": "4.0.0-alpha.12",
+  "version": "4.0.0-alpha.20",
   "description": "CARTO javascript library",
   "repository": {
     "type": "git",
@@ -31,7 +31,9 @@
     "camshaft-reference": "<2.0",
     "carto": "cartodb/carto#master",
     "clip-path-polygon": "0.1.12",
-    "d3": "3.5.17",
+    "d3-array": "1.2.1",
+    "d3-format": "1.2.0",
+    "d3-time-format": "2.1.0",
     "jquery": "2.1.4",
     "leaflet": "1.0.3",
     "moment": "^2.18.1",

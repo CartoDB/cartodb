@@ -1,10 +1,11 @@
-var Backbone = require('backbone');
 var LegendViewCustom = require('../../../../../../src/geo/ui/legends/custom/legend-view.js');
 var CustomLegendModel = require('../../../../../../src/geo/map/legends/custom-legend-model.js');
+var MockFactory = require('../../../../../helpers/mockFactory');
 
 describe('geo/ui/legends/custom/legend-view.js', function () {
+  var engineMock;
   beforeEach(function () {
-    this.visModel = new Backbone.Model();
+    engineMock = MockFactory.createEngine();
 
     this.model = new CustomLegendModel({
       title: 'Foo',
@@ -27,7 +28,7 @@ describe('geo/ui/legends/custom/legend-view.js', function () {
       ],
       visible: true
     }, {
-      visModel: this.visModel
+      engine: engineMock
     });
 
     spyOn(this.model, 'isAvailable').and.returnValue(true);

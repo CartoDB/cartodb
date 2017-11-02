@@ -9,7 +9,7 @@ var HistogramDataviewModel = require('./histogram-dataview-model');
 
 var REQUIRED_OPTS = [
   'map',
-  'vis',
+  'engine',
   'dataviewsCollection'
 ];
 
@@ -23,7 +23,7 @@ module.exports = Model.extend({
     util.checkRequiredOpts(opts, REQUIRED_OPTS, 'DataviewsFactory');
 
     this._map = opts.map;
-    this._vis = opts.vis;
+    this._engine = opts.engine;
     this._dataviewsCollection = opts.dataviewsCollection;
   },
 
@@ -38,7 +38,7 @@ module.exports = Model.extend({
     return this._newModel(
       new CategoryDataviewModel(attrs, {
         map: this._map,
-        vis: this._vis,
+        engine: this._engine,
         filter: categoryFilter
       })
     );
@@ -50,7 +50,7 @@ module.exports = Model.extend({
     return this._newModel(
       new FormulaDataviewModel(attrs, {
         map: this._map,
-        vis: this._vis
+        engine: this._engine
       })
     );
   },
@@ -64,7 +64,7 @@ module.exports = Model.extend({
     return this._newModel(
       new HistogramDataviewModel(attrs, {
         map: this._map,
-        vis: this._vis,
+        engine: this._engine,
         filter: rangeFilter
       })
     );

@@ -1,23 +1,25 @@
 var _ = require('underscore');
-var Backbone = require('backbone');
 var CartoDBLayer = require('../../../../src/geo/map/cartodb-layer');
 var sharedTestsForInteractiveLayers = require('./shared-for-interactive-layers');
+var MockFactory = require('../../../helpers/mockFactory');
 
 describe('geo/map/cartodb-layer', function () {
+  var engineMock;
+
   beforeEach(function () {
-    this.vis = new Backbone.Model();
-    this.vis.reload = jasmine.createSpy('reload');
+    engineMock = MockFactory.createEngine();
+    spyOn(engineMock, 'reload');
   });
 
   sharedTestsForInteractiveLayers(CartoDBLayer);
 
   it('should be type CartoDB', function () {
-    var layer = new CartoDBLayer({}, { vis: this.vis });
+    var layer = new CartoDBLayer({}, { engine: engineMock });
     expect(layer.get('type')).toEqual('CartoDB');
   });
 
   it('should expose infowindow and tooltip properties', function () {
-    var layer = new CartoDBLayer({}, { vis: this.vis });
+    var layer = new CartoDBLayer({}, { engine: engineMock });
     expect(layer.infowindow).toBeDefined();
     expect(layer.tooltip).toBeDefined();
   });
@@ -27,16 +29,16 @@ describe('geo/map/cartodb-layer', function () {
 
     _.each(ATTRIBUTES, function (attribute) {
       it("should reload the vis when '" + attribute + "' attribute changes", function () {
-        var layer = new CartoDBLayer({}, { vis: this.vis });
+        var layer = new CartoDBLayer({}, { engine: engineMock });
 
         layer.set(attribute, 'new_value');
 
-        expect(this.vis.reload).toHaveBeenCalled();
+        expect(engineMock.reload).toHaveBeenCalled();
       });
     });
 
     it('should reload the map just once when multiple attributes change', function () {
-      var layer = new CartoDBLayer({}, { vis: this.vis });
+      var layer = new CartoDBLayer({}, { engine: engineMock });
 
       var newAttributes = {};
       _.each(ATTRIBUTES, function (attr, index) {
@@ -44,14 +46,14 @@ describe('geo/map/cartodb-layer', function () {
       });
       layer.set(newAttributes);
 
-      expect(this.vis.reload).toHaveBeenCalled();
-      expect(this.vis.reload.calls.count()).toEqual(1);
+      expect(engineMock.reload).toHaveBeenCalled();
+      expect(engineMock.reload.calls.count()).toEqual(1);
     });
 
     describe('popups changes', function () {
       var layer;
       beforeEach(function () {
-        layer = new CartoDBLayer({}, { vis: this.vis });
+        layer = new CartoDBLayer({}, { engine: engineMock });
       });
 
       describe('infowindow bind', function () {
@@ -64,7 +66,7 @@ describe('geo/map/cartodb-layer', function () {
             }
           ]);
 
-          expect(this.vis.reload).toHaveBeenCalled();
+          expect(engineMock.reload).toHaveBeenCalled();
         });
 
         it('should reload the map when infowindow fields are added', function () {
@@ -74,7 +76,7 @@ describe('geo/map/cartodb-layer', function () {
             'position': 1
           });
 
-          expect(this.vis.reload).toHaveBeenCalled();
+          expect(engineMock.reload).toHaveBeenCalled();
         });
 
         it('should reload the map when infowindow fields are removed', function () {
@@ -84,7 +86,7 @@ describe('geo/map/cartodb-layer', function () {
             'position': 1
           });
 
-          this.vis.reload.calls.reset();
+          engineMock.reload.calls.reset();
 
           layer.infowindow.fields.add({
             'name': 'name',
@@ -94,7 +96,7 @@ describe('geo/map/cartodb-layer', function () {
 
           layer.infowindow.fields.remove(layer.infowindow.fields.at(0));
 
-          expect(this.vis.reload).toHaveBeenCalled();
+          expect(engineMock.reload).toHaveBeenCalled();
         });
       });
 
@@ -108,7 +110,7 @@ describe('geo/map/cartodb-layer', function () {
             }
           ]);
 
-          expect(this.vis.reload).toHaveBeenCalled();
+          expect(engineMock.reload).toHaveBeenCalled();
         });
 
         it('should reload the map when tooltip fields are added', function () {
@@ -118,7 +120,7 @@ describe('geo/map/cartodb-layer', function () {
             'position': 1
           });
 
-          expect(this.vis.reload).toHaveBeenCalled();
+          expect(engineMock.reload).toHaveBeenCalled();
         });
 
         it('should reload the map when tooltip fields are removed', function () {
@@ -128,7 +130,7 @@ describe('geo/map/cartodb-layer', function () {
             'position': 1
           });
 
-          this.vis.reload.calls.reset();
+          engineMock.reload.calls.reset();
 
           layer.tooltip.fields.add({
             'name': 'name',
@@ -138,7 +140,7 @@ describe('geo/map/cartodb-layer', function () {
 
           layer.tooltip.fields.remove(layer.tooltip.fields.at(0));
 
-          expect(this.vis.reload).toHaveBeenCalled();
+          expect(engineMock.reload).toHaveBeenCalled();
         });
       });
     });
@@ -159,7 +161,7 @@ describe('geo/map/cartodb-layer', function () {
             { name: 'c' }
           ]
         }
-      }, { vis: this.vis });
+      }, { engine: engineMock });
 
       expect(this.layer.getInteractiveColumnNames()).toEqual(['cartodb_id', 'a', 'b', 'c']);
     });
@@ -172,7 +174,7 @@ describe('geo/map/cartodb-layer', function () {
         tooltip: {
           fields: []
         }
-      }, { vis: this.vis });
+      }, { engine: engineMock });
 
       expect(this.layer.getInteractiveColumnNames()).toEqual(['cartodb_id']);
     });
@@ -182,7 +184,7 @@ describe('geo/map/cartodb-layer', function () {
     var layer;
 
     beforeEach(function () {
-      layer = new CartoDBLayer({}, { vis: this.vis });
+      layer = new CartoDBLayer({}, { engine: engineMock });
     });
     it('should return undefined when there is no meta information', function () {
       layer.set('meta', {

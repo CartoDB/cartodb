@@ -13,7 +13,7 @@ var FETCH_ERROR_STATUS = 'error';
 
 var REQUIRED_OPTS = [
   'map',
-  'vis'
+  'engine'
 ];
 
 /**
@@ -81,7 +81,7 @@ module.exports = Model.extend({
     util.checkRequiredOpts(opts, REQUIRED_OPTS, 'DataviewModelBase');
 
     this._map = opts.map;
-    this._vis = opts.vis;
+    this._engine = opts.engine;
 
     if (!attrs.source) throw new Error('source is a required attr');
     this._checkSourceAttribute(this.getSource());
@@ -182,24 +182,21 @@ module.exports = Model.extend({
    * @protected
    */
   _onFilterChanged: function (filter) {
-    this._reloadVis();
+    this._reload({
+      sourceId: this.getSourceId()
+    });
   },
 
-  _reloadVis: function (opts) {
-    opts = opts || {};
-    this._vis.reload(
-      _.extend(
-        opts, {
-          sourceId: this.getSourceId()
-        }
-      )
-    );
-  },
-
-  _reloadVisAndForceFetch: function () {
-    this._reloadVis({
+  _reloadAndForceFetch: function () {
+    this._reload({
+      sourceId: this.getSourceId(),
       forceFetch: true
     });
+  },
+
+  _reload: function (opts) {
+    opts = opts || {};
+    this._engine.reload(opts);
   },
 
   _shouldFetchOnURLChange: function (options) {
@@ -235,13 +232,9 @@ module.exports = Model.extend({
 
   update: function (attrs) {
     if (_.has(attrs, 'source')) {
-      throw new Error('source of dataviews cannot be updated');
+      throw new Error('Source of dataviews cannot be updated');
     }
     attrs = _.pick(attrs, this.constructor.ATTRS_NAMES);
-
-    if (attrs.source) {
-      this._checkSourceAttribute(attrs.source);
-    }
 
     this.set(attrs);
   },
@@ -341,7 +334,7 @@ module.exports = Model.extend({
 
   _checkSourceAttribute: function (source) {
     if (!(source instanceof AnalysisModel)) {
-      throw new Error('source must be an instance of AnalysisModel');
+      throw new Error('Source must be an instance of AnalysisModel');
     }
   }
 },

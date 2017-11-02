@@ -1,22 +1,18 @@
-var VisModel = require('../../../src/vis/vis');
 var DataviewsCollection = require('../../../src/dataviews/dataviews-collection');
 var DataviewModel = require('../../../src/dataviews/dataview-model-base');
 var whenAllDataviewsFetched = require('../../../src/vis/dataviews-tracker');
-var fakeFactory = require('../../helpers/fakeFactory');
+var MockFactory = require('../../helpers/mockFactory');
 
 describe('src/vis/dataviews-tracker', function () {
   var options = {
     map: {},
-    vis: {}
+    engine: {}
   };
 
   beforeEach(function () {
     this.dataviewsFetched = jasmine.createSpy('dataviewsFetched');
 
-    this.vis = new VisModel();
-    spyOn(this.vis, 'reload');
-
-    this.source = fakeFactory.createAnalysisModel({ id: 'a1' });
+    this.source = MockFactory.createAnalysisModel({ id: 'a1' });
 
     this.onDataviewsfetched = jasmine.createSpy('onDataviewsfetched');
 

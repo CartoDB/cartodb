@@ -6,11 +6,11 @@ var LayerTypes = require('../geo/map/layer-types.js');
 
 var AnalysisService = function (opts) {
   opts = opts || {};
-  if (!opts.vis) {
-    throw new Error('vis option is required');
+  if (!opts.engine) {
+    throw new Error('engine is required');
   }
 
-  this._vis = opts.vis;
+  this._engine = opts.engine;
   this._apiKey = opts.apiKey;
   this._authToken = opts.authToken;
   this._camshaftReference = opts.camshaftReference || camshaftReference; // For testing purposes
@@ -40,7 +40,7 @@ AnalysisService.prototype.analyse = function (analysisDefinition) {
     }
     analysis = new Analysis(analysisAttrs, {
       camshaftReference: this._camshaftReference,
-      vis: this._vis
+      engine: this._engine
     });
 
     this._analysisNodes.add(analysis);
@@ -130,15 +130,21 @@ AnalysisService.getAnalysisList = function (layersCollection, dataviewsCollectio
 
 function _getAnalysesFromLayers (layersCollection) {
   var layers = _getCartoDBAndTorqueLayers(layersCollection);
-  return layers.map(function (layer) {
-    return layer.getSource();
-  });
+  return _.chain(layers)
+    .map(function (layer) {
+      return layer.getSource();
+    })
+    .compact()
+    .value();
 }
 
 function _getAnalysesFromDataviews (dataviewsCollection) {
-  return dataviewsCollection.map(function (dataview) {
-    return dataview.getSource();
-  });
+  return dataviewsCollection.chain()
+    .map(function (dataview) {
+      return dataview.getSource();
+    })
+    .compact()
+    .value();
 }
 
 function _getCartoDBAndTorqueLayers (layersCollection) {

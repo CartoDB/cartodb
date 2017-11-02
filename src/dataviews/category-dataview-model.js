@@ -49,7 +49,7 @@ module.exports = DataviewModelBase.extend({
       aggregationModel: this
     });
 
-    this.on('change:column change:aggregation change:aggregation_column', this._reloadVisAndForceFetch, this);
+    this.on('change:column change:aggregation change:aggregation_column', this._reloadAndForceFetch, this);
 
     this.bind('change:url', function () {
       this._searchModel.set({

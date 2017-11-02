@@ -117,14 +117,6 @@ describe('create-vis:', function () {
       var visModel = createVis(this.containerId, visJson);
       expect(visModel.map.get('scrollwheel')).toEqual(true);
     });
-
-    it('should have "infowindow" enabled by default', function () {
-      pending('It seems that this option is no longer being used');
-    });
-
-    it('should have "tooltip" by default', function () {
-      pending('It seems that this option  is no longer being used');
-    });
   });
 
   describe('Options', function () {
@@ -203,104 +195,6 @@ describe('create-vis:', function () {
       var visJson = scenarios.load('basic');
       var visModel = createVis(this.containerId, visJson);
       expect(visModel.map.get('renderMode')).toEqual(visJson.vector ? 'vector' : 'raster');
-    });
-  });
-
-  describe('VisModel._windshaftMap', function () {
-    it('should have the right statTag', function () {
-      var visJson = scenarios.load('basic');
-      var visModel = createVis(this.containerId, visJson);
-      expect(visModel._windshaftMap.get('statTag')).toEqual(visJson.datasource.stat_tag);
-    });
-
-    it('should have the dataviewsCollection linked', function () {
-      var visJson = scenarios.load('basic');
-      var visModel = createVis(this.containerId, visJson);
-      expect(visModel._windshaftMap._dataviewsCollection).toEqual(visModel._dataviewsCollection);
-    });
-
-    it('should have the layersCollection linked', function () {
-      var visJson = scenarios.load('basic');
-      var visModel = createVis(this.containerId, visJson);
-      expect(visModel._windshaftMap._layersCollection).toEqual(visModel._layersCollection);
-    });
-    describe('.windshaftSettings', function () {
-      it('should have the right urlTemplate', function () {
-        var visJson = scenarios.load('basic');
-        var visModel = createVis(this.containerId, visJson);
-        expect(visModel._windshaftMap._windshaftSettings.urlTemplate).toEqual(visJson.datasource.maps_api_template);
-      });
-
-      it('should have the right userName', function () {
-        var visJson = scenarios.load('basic');
-        var visModel = createVis(this.containerId, visJson);
-        expect(visModel._windshaftMap._windshaftSettings.userName).toEqual(visJson.datasource.user_name);
-      });
-
-      it('should have the right statTag', function () {
-        var visJson = scenarios.load('basic');
-        var visModel = createVis(this.containerId, visJson);
-        expect(visModel._windshaftMap._windshaftSettings.statTag).toEqual(visJson.datasource.stat_tag);
-      });
-
-      it('should not have apikey', function () {
-        var visJson = scenarios.load('basic');
-        var visModel = createVis(this.containerId, visJson);
-        expect(visModel._windshaftMap._windshaftSettings.apikey).toBeUndefined();
-      });
-
-      it('should not have authToken', function () {
-        var visJson = scenarios.load('basic');
-        var visModel = createVis(this.containerId, visJson);
-        expect(visModel._windshaftMap._windshaftSettings.authToken).toBeUndefined();
-      });
-
-      it('should have the templateName', function () {
-        var visJson = scenarios.load('basic');
-        var visModel = createVis(this.containerId, visJson);
-        expect(visModel._windshaftMap._windshaftSettings.templateName).toEqual(visJson.datasource.template_name);
-      });
-    });
-    describe('.client', function () {
-      it('should have the right url', function () {
-        var visJson = scenarios.load('basic');
-        var visModel = createVis(this.containerId, visJson);
-        var expectedClientUrl = visJson.datasource.maps_api_template.replace(/{user}/, visJson.datasource.user_name);
-        expect(visModel._windshaftMap.client.url).toEqual(expectedClientUrl);
-      });
-
-      it('should have the right get endpoint', function () {
-        var visJson = scenarios.load('basic');
-        var visModel = createVis(this.containerId, visJson);
-        var expectedGetEndPoint = 'api/v1/map/named/' + visJson.datasource.template_name + '/jsonp';
-        expect(visModel._windshaftMap.client.endpoints.get).toEqual(expectedGetEndPoint);
-      });
-
-      it('should have the right post endpoint', function () {
-        var visJson = scenarios.load('basic');
-        var visModel = createVis(this.containerId, visJson);
-        var expectedGetEndPoint = 'api/v1/map/named/' + visJson.datasource.template_name;
-        expect(visModel._windshaftMap.client.endpoints.post).toEqual(expectedGetEndPoint);
-      });
-    });
-    describe('.modelUpdater', function () {
-      it('should have the layerGroupModel linked', function () {
-        var visJson = scenarios.load('basic');
-        var visModel = createVis(this.containerId, visJson);
-        expect(visModel._windshaftMap._modelUpdater._layerGroupModel).toEqual(visModel.layerGroupModel);
-      });
-
-      it('should have the dataviewsCollection linked', function () {
-        var visJson = scenarios.load('basic');
-        var visModel = createVis(this.containerId, visJson);
-        expect(visModel._windshaftMap._modelUpdater._dataviewsCollection).toEqual(visModel._dataviewsCollection);
-      });
-
-      it('should have the layersCollection linked', function () {
-        var visJson = scenarios.load('basic');
-        var visModel = createVis(this.containerId, visJson);
-        expect(visModel._windshaftMap._modelUpdater._layersCollection).toEqual(visModel._layersCollection);
-      });
     });
   });
 

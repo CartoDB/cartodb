@@ -3,7 +3,7 @@ var MapCursorManager = require('../../../src/vis/map-cursor-manager');
 var CartoDBLayer = require('../../../src/geo/map/cartodb-layer');
 
 var createLayerModel = function () {
-  var layerModel = new CartoDBLayer(null, { vis: { reload: function () {}, on: function () {} } });
+  var layerModel = new CartoDBLayer(null, { engine: { reload: function () {}, on: function () {} } });
   layerModel.isInfowindowEnabled = jasmine.createSpy('isInfowindowEnabled');
   return layerModel;
 };

@@ -2,21 +2,21 @@ var Backbone = require('backbone');
 var CategoryDataviewModel = require('../../../../../src/dataviews/category-dataview-model');
 var HistogramDataviewModel = require('../../../../../src/dataviews/histogram-dataview-model');
 var FormulaDataviewModel = require('../../../../../src/dataviews/formula-dataview-model');
-var fakeFactory = require('../../../../helpers/fakeFactory');
+var MockFactory = require('../../../../helpers/mockFactory');
 var DataviewsSerializer = require('../../../../../src/windshaft/map-serializer/anonymous-map-serializer/dataviews-serializer');
 
 describe('dataviews-serializer', function () {
   describe('.serialize', function () {
-    var vis;
+    var engineMock;
     var map;
     var layer;
     var analysis;
 
     beforeEach(function () {
-      vis = new Backbone.Model();
+      engineMock = new Backbone.Model();
       map = new Backbone.Model();
       layer = new Backbone.Model();
-      analysis = fakeFactory.createAnalysisModel({ id: 'a0' });
+      analysis = MockFactory.createAnalysisModel({ id: 'a0' });
     });
 
     it('serialises histogram dataviews', function () {
@@ -28,7 +28,7 @@ describe('dataviews-serializer', function () {
         source: analysis
       }, {
         map: map,
-        vis: vis,
+        engine: engineMock,
         layer: layer
       });
 
@@ -59,7 +59,7 @@ describe('dataviews-serializer', function () {
         source: analysis
       }, {
         map: map,
-        vis: vis,
+        engine: engineMock,
         layer: layer
       });
 
@@ -90,7 +90,7 @@ describe('dataviews-serializer', function () {
         source: analysis
       }, {
         map: map,
-        vis: vis,
+        engine: engineMock,
         layer: layer
       });
 

@@ -4,7 +4,7 @@ var Backbone = require('backbone');
 var SQL = require('../../../src/api/sql');
 
 describe('api/sql', function () {
-  var USER = 'rambo';
+  var USER = 'cartojs-test';
   var sql;
   var ajax;
   var ajaxParams;
@@ -49,7 +49,7 @@ describe('api/sql', function () {
   });
 
   it('should compile the url if not completeDomain passed', function () {
-    expect(sql._host()).toEqual('https://rambo.carto.com/api/v2/sql');
+    expect(sql._host()).toEqual('https://cartojs-test.carto.com/api/v2/sql');
   });
 
   it('should compile the url if completeDomain passed', function () {
@@ -88,10 +88,10 @@ describe('api/sql', function () {
 
   it('should parse template', function () {
     sql.execute('select * from {{table}}', {
-      table: 'rambo'
+      table: 'cartojs-test'
     });
     expect(ajaxParams.url).toEqual(
-      'https://' + USER + '.carto.com/api/v2/sql?q=' + encodeURIComponent('select * from rambo')
+      'https://' + USER + '.carto.com/api/v2/sql?q=' + encodeURIComponent('select * from cartojs-test')
     );
   });
 
@@ -117,12 +117,12 @@ describe('api/sql', function () {
 
   it('should execute a long query with params', function () {
     var s = new SQL({
-      user: 'rambo',
+      user: 'cartojs-test',
       format: 'geojson',
       protocol: 'http',
       host: 'charlies.com',
       api_key: 'testkey',
-      rambo: 'test'
+      'cartojs-test': 'test'
     });
 
     // Generating a giant query
@@ -136,18 +136,18 @@ describe('api/sql', function () {
     });
 
     expect(ajaxParams.url.indexOf('http://')).not.toEqual(-1);
-    expect(ajaxParams.url.indexOf('rambo.charlies.com')).not.toEqual(-1);
+    expect(ajaxParams.url.indexOf('cartojs-test.charlies.com')).not.toEqual(-1);
     // Check that we don't have params in the URI
     expect(ajaxParams.url.indexOf('&format=geojson')).toEqual(-1);
     expect(ajaxParams.url.indexOf('&api_key=testkey')).toEqual(-1);
     expect(ajaxParams.url.indexOf('&dp=2')).toEqual(-1);
-    expect(ajaxParams.url.indexOf('&rambo')).toEqual(-1);
+    expect(ajaxParams.url.indexOf('&cartojs-test')).toEqual(-1);
     // Check that we have the params in the body
     expect(ajaxParams.data.q).toEqual(longQuery);
     expect(ajaxParams.data.format).toEqual('geojson');
     expect(ajaxParams.data.api_key).toEqual('testkey');
     expect(ajaxParams.data.dp).toEqual(0);
-    expect(ajaxParams.rambo).toEqual('test');
+    expect(ajaxParams['cartojs-test']).toEqual('test');
   });
 
   it('should substitute mapnik tokens', function () {
@@ -203,49 +203,49 @@ describe('api/sql', function () {
 
   it('should include url params', function () {
     var s = new SQL({
-      user: 'rambo',
+      user: 'cartojs-test',
       format: 'geojson',
       protocol: 'http',
       host: 'charlies.com',
       api_key: 'testkey',
-      rambo: 'test'
+      'cartojs-test': 'test'
     });
-    s.execute('select * from rambo', null, {
+    s.execute('select * from cartojs-test', null, {
       dp: 2
     });
     expect(ajaxParams.url.indexOf('http://')).not.toEqual(-1);
-    expect(ajaxParams.url.indexOf('rambo.charlies.com')).not.toEqual(-1);
+    expect(ajaxParams.url.indexOf('cartojs-test.charlies.com')).not.toEqual(-1);
     expect(ajaxParams.url.indexOf('&format=geojson')).not.toEqual(-1);
     expect(ajaxParams.url.indexOf('&api_key=testkey')).not.toEqual(-1);
     expect(ajaxParams.url.indexOf('&dp=2')).not.toEqual(-1);
-    expect(ajaxParams.url.indexOf('&rambo')).toEqual(-1);
+    expect(ajaxParams.url.indexOf('&cartojs-test')).toEqual(-1);
   });
 
   it('should include extra url params', function () {
     var s = new SQL({
-      user: 'rambo',
+      user: 'cartojs-test',
       format: 'geojson',
       protocol: 'http',
       host: 'charlies.com',
       api_key: 'testkey',
-      rambo: 'test',
-      extra_params: ['rambo']
+      'cartojs-test': 'test',
+      extra_params: ['cartojs-test']
     });
-    s.execute('select * from rambo', null, {
+    s.execute('select * from cartojs-test', null, {
       dp: 2
     });
     expect(ajaxParams.url.indexOf('http://')).not.toEqual(-1);
-    expect(ajaxParams.url.indexOf('rambo.charlies.com')).not.toEqual(-1);
+    expect(ajaxParams.url.indexOf('cartojs-test.charlies.com')).not.toEqual(-1);
     expect(ajaxParams.url.indexOf('&format=geojson')).not.toEqual(-1);
     expect(ajaxParams.url.indexOf('&api_key=testkey')).not.toEqual(-1);
     expect(ajaxParams.url.indexOf('&dp=2')).not.toEqual(-1);
-    expect(ajaxParams.url.indexOf('&rambo=test')).not.toEqual(-1);
+    expect(ajaxParams.url.indexOf('&cartojs-test=test')).not.toEqual(-1);
 
-    s.execute('select * from rambo', null, {
+    s.execute('select * from cartojs-test', null, {
       dp: 2,
-      rambo: 'test2'
+      'cartojs-test': 'test2'
     });
-    expect(ajaxParams.url.indexOf('&rambo=test2')).not.toEqual(-1);
+    expect(ajaxParams.url.indexOf('&cartojs-test=test2')).not.toEqual(-1);
   });
 
   it('should use jsonp if browser does not support cors', function () {
@@ -253,7 +253,7 @@ describe('api/sql', function () {
     $.support.cors = false;
     var s = new SQL({ user: 'jaja' });
     expect(s.options.jsonp).toEqual(true);
-    s.execute('select * from rambo', null, {
+    s.execute('select * from cartojs-test', null, {
       dp: 2,
       jsonpCallback: 'test_callback',
       cache: false
@@ -272,9 +272,9 @@ describe('api/sql', function () {
               '       ST_YMin(ST_Extent(the_geom)) as miny,' +
               '       ST_XMax(ST_Extent(the_geom)) as maxx,' +
               '       ST_YMax(ST_Extent(the_geom)) as maxy' +
-              ' from (select * from rambo where id=2) as subq';
+              ' from (select * from cartojs-test where id=2) as subq';
       var s = new SQL({ user: 'jaja' });
-      s.getBounds('select * from rambo where id={{id}}', {id: 2});
+      s.getBounds('select * from cartojs-test where id={{id}}', {id: 2});
       expect(ajaxParams.url.indexOf(encodeURIComponent(sql))).not.toEqual(-1);
     });
 
@@ -330,7 +330,7 @@ describe('api/sql', function () {
 });
 
 describe('api/sql.table', function () {
-  var USER = 'rambo';
+  var USER = 'cartojs-test';
   var sql;
 
   beforeEach(function () {

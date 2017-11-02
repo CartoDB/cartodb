@@ -19,21 +19,21 @@ var PlainLayer = LayerModelBase.extend({
   initialize: function (attrs, options) {
     attrs = attrs || {};
     options = options || {};
-    if (!options.vis) throw new Error('vis is required');
+    if (!options.engine) throw new Error('engine is required');
 
-    this._vis = options.vis;
+    this._engine = options.engine;
 
     this.bind('change', this._onAttributeChanged, this);
   },
 
   _onAttributeChanged: function () {
     if (_.any(ATTRIBUTES_THAT_TRIGGER_VIS_RELOAD, this.hasChanged, this)) {
-      this._reloadVis();
+      this._reload();
     }
   },
 
-  _reloadVis: function () {
-    this._vis.reload({
+  _reload: function () {
+    this._engine.reload({
       sourceId: this.get('id')
     });
   }

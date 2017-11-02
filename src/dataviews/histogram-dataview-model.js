@@ -1,6 +1,6 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
-var d3 = require('d3');
+var d3 = require('d3-array');
 var DataviewModelBase = require('./dataview-model-base');
 var HistogramDataModel = require('./histogram-dataview/histogram-data-model');
 var helper = require('./helpers/histogram-helper');
@@ -210,7 +210,7 @@ module.exports = DataviewModelBase.extend({
     });
     this.set('aggregation', undefined, { silent: true });
 
-    this._reloadVisAndForceFetch();
+    this._reloadAndForceFetch();
   },
 
   _calculateTotalAmount: function (buckets) {

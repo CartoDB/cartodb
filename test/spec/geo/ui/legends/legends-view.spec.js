@@ -4,27 +4,27 @@ var TileLayer = require('../../../../../src/geo/map/tile-layer');
 var CartoDBLayer = require('../../../../../src/geo/map/cartodb-layer');
 var TorqueLayer = require('../../../../../src/geo/map/torque-layer');
 var LayersCollection = require('../../../../../src/geo/map/layers');
-var fakeFactory = require('../../../../helpers/fakeFactory');
+var MockFactory = require('../../../../helpers/mockFactory');
 
 describe('geo/ui/legends/legends-view', function () {
   beforeEach(function () {
-    var vis = new Backbone.Model();
-    vis.reload = jasmine.createSpy('reload');
-    this.tileLayer = new TileLayer(null, { vis: {} });
+    var engineMock = new Backbone.Model();
+    engineMock.reload = jasmine.createSpy('reload');
+    this.tileLayer = new TileLayer(null, { engine: {} });
     this.cartoDBLayer1 = new CartoDBLayer({
-      source: fakeFactory.createAnalysisModel({ id: 'a1' }),
+      source: MockFactory.createAnalysisModel({ id: 'a1' }),
       layer_name: 'CartoDB Layer #1',
       legends: []
-    }, { vis: vis });
+    }, { engine: engineMock });
     this.cartoDBLayer2 = new CartoDBLayer({
-      source: fakeFactory.createAnalysisModel({ id: 'a2' }),
+      source: MockFactory.createAnalysisModel({ id: 'a2' }),
       layer_name: 'CartoDB Layer #2',
       legends: []
-    }, { vis: vis });
-    this.torqueLayer = new TorqueLayer({ layer_name: 'Torque Layer #3', legends: [] }, { vis: vis });
+    }, { engine: engineMock });
+    this.torqueLayer = new TorqueLayer({ layer_name: 'Torque Layer #3', legends: [] }, { engine: engineMock });
 
     this.layersCollection = new LayersCollection([]);
-    this.layersCollection.reset([ this.tileLayer, this.cartoDBLayer1, this.cartoDBLayer2, this.torqueLayer ]);
+    this.layersCollection.reset([this.tileLayer, this.cartoDBLayer1, this.cartoDBLayer2, this.torqueLayer]);
 
     this.settingsModel = new Backbone.Model({
       showLegends: true,

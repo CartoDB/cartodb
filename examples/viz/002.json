@@ -1,0 +1,262 @@
+{
+  "bounds": [
+    [
+      -73.8273,
+      -179
+    ],
+    [
+      83.261,
+      179
+    ]
+  ],
+  "center": "[41, -3]",
+  "datasource": {
+    "user_name": "cartojs-test",
+    "maps_api_template": "https://{user}.carto.com:443",
+    "stat_tag": "b8c116e4-37af-4eee-83d6-79d4c33201e4"
+  },
+  "description": "<p>Map to test the different generated legends.</p>\n\n<p>Points to test:</p>\n\n<ul>\n<li>Category legend</li>\n<li>Choropleth legend</li>\n<li>Bubble legend</li>\n</ul>\n\n<p>(Choropleth and bubble share the same layer)</p>\n",
+  "options": {
+    "dashboard_menu": true,
+    "layer_selector": false,
+    "legends": true,
+    "scrollwheel": true
+  },
+  "id": "b8c116e4-37af-4eee-83d6-79d4c33201e4",
+  "layers": [
+    {
+      "id": "0176d48c-09b1-4bf2-9493-546b93e4df88",
+      "type": "tiled",
+      "options": {
+        "default": "true",
+        "url": "https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager_nolabels/{z}/{x}/{y}.png",
+        "subdomains": "abcd",
+        "minZoom": "0",
+        "maxZoom": "18",
+        "name": "Voyager",
+        "className": "voyager_labels",
+        "attribution": "&copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors",
+        "labels": {
+          "url": "https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager_only_labels/{z}/{x}/{y}.png"
+        },
+        "urlTemplate": "https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager_nolabels/{z}/{x}/{y}.png",
+        "type": "Tiled"
+      }
+    },
+    {
+      "id": "7c115d5b-6c1e-4390-890f-52d9c12f6cb2",
+      "legends": [
+        {
+          "conf": {
+            "columns": []
+          },
+          "created_at": "2017-10-24T11:52:52+00:00",
+          "definition": {},
+          "id": "61c56598-c76e-4b11-952e-7412452e6e29",
+          "layer_id": "7c115d5b-6c1e-4390-890f-52d9c12f6cb2",
+          "post_html": "",
+          "pre_html": "",
+          "title": "pop_max",
+          "type": "choropleth",
+          "updated_at": "2017-10-24T12:02:06+00:00"
+        },
+        {
+          "conf": {
+            "columns": []
+          },
+          "created_at": "2017-10-24T12:01:27+00:00",
+          "definition": {
+            "color": "#fef6b5",
+            "top_label": "",
+            "bottom_label": ""
+          },
+          "id": "6210c946-9ee5-4d8a-ba99-25a8d7c5bc65",
+          "layer_id": "7c115d5b-6c1e-4390-890f-52d9c12f6cb2",
+          "post_html": "",
+          "pre_html": "",
+          "title": "pop_max",
+          "type": "bubble",
+          "updated_at": "2017-10-24T12:02:06+00:00"
+        }
+      ],
+      "type": "CartoDB",
+      "infowindow": {
+        "template_name": "none",
+        "maxHeight": 180,
+        "template": "",
+        "alternative_names": {},
+        "fields": null,
+        "width": 226,
+        "headerColor": {
+          "color": {
+            "fixed": "#35AAE5",
+            "opacity": 1
+          }
+        }
+      },
+      "tooltip": {
+        "template_name": "none",
+        "template": ""
+      },
+      "visible": true,
+      "options": {
+        "layer_name": "Layer1",
+        "cartocss": "#layer {\n  marker-width: ramp([pop_max], range(2, 11), quantiles(5));\n  marker-fill: ramp([pop_max], (#fef6b5, #ffd08e, #ffa679, #f67b77, #e15383), quantiles);\n  marker-fill-opacity: 1;\n  marker-allow-overlap: true;\n  marker-line-width: 1;\n  marker-line-color: #FFFFFF;\n  marker-line-opacity: 1;\n}",
+        "cartocss_version": "2.1.1",
+        "attribution": "",
+        "source": "c0"
+      }
+    },
+    {
+      "id": "97bf19b9-fee0-49fd-ad44-8f4026da6888",
+      "legends": [
+        {
+          "conf": {
+            "columns": [
+              "title"
+            ]
+          },
+          "created_at": "2017-10-24T11:52:00+00:00",
+          "definition": {},
+          "id": "07cc33c9-63c3-4bc6-9c9a-6b3c46ebbda1",
+          "layer_id": "97bf19b9-fee0-49fd-ad44-8f4026da6888",
+          "post_html": "",
+          "pre_html": "",
+          "title": "Category Legend",
+          "type": "category",
+          "updated_at": "2017-10-24T11:59:25+00:00"
+        }
+      ],
+      "type": "CartoDB",
+      "infowindow": {
+        "template_name": "none",
+        "maxHeight": 180,
+        "template": "",
+        "alternative_names": {},
+        "fields": null,
+        "width": 226,
+        "headerColor": {
+          "color": {
+            "fixed": "#35AAE5",
+            "opacity": 1
+          }
+        }
+      },
+      "tooltip": {
+        "template_name": "none",
+        "template": ""
+      },
+      "visible": true,
+      "options": {
+        "layer_name": "layer0",
+        "cartocss": "#layer {\n  marker-width: 7;\n  marker-fill: ramp([featurecla], (#5F4690, #1D6996, #38A6A5, #0F8554, #73AF48, #EDAD08, #E17C05, #CC503E), (\"Populated place\", \"Admin-1 capital\", \"Admin-0 capital\", \"Admin-1 region capital\", \"Scientific station\", \"Admin-0 region capital\", \"Admin-0 capital alt\", \"Historic place\"), \"=\");\n  marker-fill-opacity: 1;\n  marker-allow-overlap: true;\n  marker-line-width: 0;\n  marker-line-color: #FFFFFF;\n  marker-line-opacity: 1;\n}",
+        "cartocss_version": "2.1.1",
+        "attribution": "",
+        "source": "b0"
+      }
+    },
+    {
+      "id": "2669e10c-d1bf-4ed5-8f8e-6518a1afb234",
+      "type": "tiled",
+      "options": {
+        "default": "true",
+        "url": "https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager_only_labels/{z}/{x}/{y}.png",
+        "subdomains": "abcd",
+        "minZoom": "0",
+        "maxZoom": "18",
+        "attribution": "&copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors",
+        "urlTemplate": "https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager_only_labels/{z}/{x}/{y}.png",
+        "type": "Tiled",
+        "name": "Voyager Labels"
+      }
+    }
+  ],
+  "likes": 0,
+  "map_provider": "leaflet",
+  "overlays": [
+    {
+      "type": "share",
+      "order": 2,
+      "options": {
+        "display": true,
+        "x": 20,
+        "y": 20
+      },
+      "template": ""
+    },
+    {
+      "type": "search",
+      "order": 3,
+      "options": {
+        "display": true,
+        "x": 60,
+        "y": 20
+      },
+      "template": ""
+    },
+    {
+      "type": "zoom",
+      "order": 6,
+      "options": {
+        "display": true,
+        "x": 20,
+        "y": 20
+      },
+      "template": "<a href=\"#zoom_in\" class=\"zoom_in\">+</a> <a href=\"#zoom_out\" class=\"zoom_out\">-</a>"
+    },
+    {
+      "type": "loader",
+      "order": 8,
+      "options": {
+        "display": true,
+        "x": 20,
+        "y": 150
+      },
+      "template": "<div class=\"loader\" original-title=\"\"></div>"
+    },
+    {
+      "type": "logo",
+      "order": 9,
+      "options": {
+        "display": true,
+        "x": 10,
+        "y": 40
+      },
+      "template": ""
+    }
+  ],
+  "title": "002-Test",
+  "updated_at": "2017-10-24T12:05:16+00:00",
+  "user": {
+    "fullname": "cartojs-test",
+    "avatar_url": "//cartodb-libs.global.ssl.fastly.net/cartodbui/assets/unversioned/images/avatars/avatar_planet_orange.png",
+    "profile_url": "https://cartojs-test.carto.com"
+  },
+  "version": "3.0.0",
+  "widgets": [],
+  "zoom": 7,
+  "analyses": [
+    {
+      "id": "c0",
+      "type": "source",
+      "params": {
+        "query": "SELECT * FROM ne_10m_populated_places_simple"
+      },
+      "options": {
+        "table_name": "ne_10m_populated_places_simple",
+        "simple_geom": "point"
+      }
+    },
+    {
+      "id": "b0",
+      "type": "source",
+      "params": {
+        "query": "SELECT * FROM ne_10m_populated_places_simple"
+      },
+      "options": {
+        "table_name": "ne_10m_populated_places_simple",
+        "simple_geom": "point"
+      }
+    }
+  ]
+}

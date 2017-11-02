@@ -5,6 +5,7 @@ var VizJSON = require('../../../src/api/vizjson');
 var DataviewModelBase = require('../../../src/dataviews/dataview-model-base');
 var AnalysisModel = require('../../../src/analysis/analysis-model');
 var AnalysisService = require('../../../src/analysis/analysis-service');
+var LayersFactory = require('../../../src/vis/layers-factory');
 
 var fakeVizJSON = function () {
   return {
@@ -175,7 +176,7 @@ var fakeVizJSON = function () {
     },
     'widgets': [],
     'datasource': {
-      'user_name': 'pabloalonso',
+      'user_name': 'cartojs-test',
       'maps_api_template': 'https://{user}.carto.com:443',
       'stat_tag': '03a89434-379e-11e6-b2e3-0e674067d321'
     },
@@ -297,40 +298,74 @@ describe('vis/vis', function () {
   describe('.reload', function () {
     beforeEach(function () {
       this.vis.load(new VizJSON(fakeVizJSON()), {});
-
-      spyOn(this.vis._windshaftMap, 'createInstance');
     });
 
     describe("when vis hasn't been instantiated yet", function () {
       it('should NOT instantiate map', function () {
+        spyOn(this.vis._engine, 'reload');
+
         this.vis.reload({});
 
-        expect(this.vis._windshaftMap.createInstance).not.toHaveBeenCalled();
+        expect(this.vis._engine.reload).not.toHaveBeenCalled();
       });
     });
 
     describe('when vis has been instantiated once', function () {
       beforeEach(function () {
-        this.vis.instantiateMap();
-        this.vis._windshaftMap.createInstance.calls.reset();
+        this.vis._instantiateMapWasCalled = true;
       });
 
       it('should instantiate map and forward options', function () {
+        spyOn(this.vis._engine, 'reload');
         this.vis.reload({
           a: 1,
           b: 2,
-          sourceId: 'sourceId',
-          forceFetch: 'forceFetch',
-          success: 'success'
+          sourceId: 'sourceIdMock',
+          forceFetch: 'forceFetchMock'
         });
 
-        expect(this.vis._windshaftMap.createInstance).toHaveBeenCalledWith({
-          sourceId: 'sourceId',
-          forceFetch: 'forceFetch',
-          success: jasmine.any(Function),
-          error: jasmine.any(Function),
-          includeFilters: true
+        expect(this.vis._engine.reload).toHaveBeenCalledWith({
+          a: 1,
+          b: 2,
+          sourceId: 'sourceIdMock',
+          forceFetch: 'forceFetchMock'
         });
+      });
+
+      it('should execute the success callback if the reload succeeds', function () {
+        var successSpy = jasmine.createSpy('sucessCallback');
+        // Mock the server request.
+        spyOn(this.vis._engine._windshaftClient, 'instantiateMap').and.callFake(function (request) {
+          request.options.success({ metadata: {} });
+        });
+
+        this.vis.reload({
+          a: 1,
+          b: 2,
+          sourceId: 'sourceIdMock',
+          forceFetch: 'forceFetchMock',
+          success: successSpy
+        });
+
+        expect(successSpy).toHaveBeenCalled();
+      });
+
+      it('should execute the error callback if the reload error', function () {
+        var errorSpy = jasmine.createSpy('errorCallback');
+        // Mock the server request.
+        spyOn(this.vis._engine._windshaftClient, 'instantiateMap').and.callFake(function (request) {
+          request.options.error();
+        });
+
+        this.vis.reload({
+          a: 1,
+          b: 2,
+          sourceId: 'sourceIdMock',
+          forceFetch: 'forceFetchMock',
+          error: errorSpy
+        });
+
+        expect(errorSpy).toHaveBeenCalled();
       });
 
       it('should trigger a `reload` event', function () {
@@ -343,13 +378,16 @@ describe('vis/vis', function () {
       });
 
       it('should trigger a `reloaded` event when reload succeeds', function () {
-        var reloadedCallback = jasmine.createSpy('reloadedCallback');
-        this.vis.on('reloaded', reloadedCallback);
+        var onReloadedSpy = jasmine.createSpy('onReloadedSpy');
+        this.vis.on('reloaded', onReloadedSpy);
+        // Mock the server request. // TODO: Mock $.ajax
+        spyOn(this.vis._engine._windshaftClient, 'instantiateMap').and.callFake(function (request) {
+          request.options.success({ metadata: {} });
+        });
 
-        this.vis.reload();
-        this.vis._windshaftMap.createInstance.calls.mostRecent().args[0].success();
+        this.vis.reload({});
 
-        expect(reloadedCallback).toHaveBeenCalled();
+        expect(onReloadedSpy).toHaveBeenCalled();
       });
     });
   });
@@ -519,7 +557,7 @@ describe('vis/vis', function () {
         }
       }];
 
-      this.vis.set('https', false);
+      spyOn(LayersFactory, 'isHttps').and.returnValue(false);
       this.vis.load(new VizJSON(vizjson));
 
       expect(this.vis.map.layers.at(0).get('urlTemplate')).toEqual(
@@ -537,7 +575,7 @@ describe('vis/vis', function () {
         }
       }];
 
-      this.vis.set('https', true);
+      spyOn(LayersFactory, 'isHttps').and.returnValue(true);
       this.vis.load(new VizJSON(vizjson));
 
       expect(this.vis.map.layers.at(0).get('urlTemplate')).toEqual(
@@ -600,7 +638,6 @@ describe('vis/vis', function () {
   describe('polling', function () {
     beforeEach(function () {
       spyOn(_, 'debounce').and.callFake(function (func) { return function () { func.apply(this, arguments); }; });
-
       this.vizjson = {
         'id': '70af2a72-0709-11e6-a834-080027880ca6',
         'version': '3.0.0',
@@ -686,50 +723,53 @@ describe('vis/vis', function () {
         ],
         'vector': false
       };
-      spyOn($, 'ajax');
     });
 
     it('should start polling', function () {
-      this.vis.load(new VizJSON(this.vizjson));
-      this.vis.instantiateMap();
-
-      // Response from Maps API is received
-      $.ajax.calls.argsFor(0)[0].success({
-        'layergroupid': '9d7bf465e45113123bf9949c2a4f0395:0',
-        'metadata': {
-          'layers': [
-            {
-              'type': 'mapnik',
-              'meta': {
-                'stats': [],
-                'cartocss': 'cartocss'
+      // Mock server response
+      spyOn($, 'ajax').and.callFake(function (params) {
+        var fakeResponse = {
+          'layergroupid': '9d7bf465e45113123bf9949c2a4f0395:0',
+          'metadata': {
+            'layers': [
+              {
+                'type': 'mapnik',
+                'meta': {
+                  'stats': [],
+                  'cartocss': 'cartocss'
+                }
               }
-            }
-          ],
-          'dataviews': {},
-          'analyses': [
-            {
-              'nodes': {
-                'a0': {
-                  'status': 'ready',
-                  'query': 'SELECT * FROM arboles',
-                  'url': {
-                    'http': 'http://cdb.localhost.lan:8181/api/v1/map/9d7bf465e45113123bf9949c2a4f0395:0/analysis/node/5af683d5d8a6f67e11916a31cd76632884d4064f'
-                  }
-                },
-                'a1': {
-                  'status': 'pending',
-                  'query': 'select * from analysis_trade_area_e65b1ae05854aea96266808ec0686b91f3ee0a81',
-                  'url': {
-                    'http': 'http://cdb.localhost.lan:8181/api/v1/map/9d7bf465e45113123bf9949c2a4f0395:0/analysis/node/e65b1ae05854aea96266808ec0686b91f3ee0a81'
+            ],
+            'dataviews': {},
+            'analyses': [
+              {
+                'nodes': {
+                  'a0': {
+                    'status': 'ready',
+                    'query': 'SELECT * FROM arboles',
+                    'url': {
+                      'http': 'http://cdb.localhost.lan:8181/api/v1/map/9d7bf465e45113123bf9949c2a4f0395:0/analysis/node/5af683d5d8a6f67e11916a31cd76632884d4064f'
+                    }
+                  },
+                  'a1': {
+                    'status': 'pending',
+                    'query': 'select * from analysis_trade_area_e65b1ae05854aea96266808ec0686b91f3ee0a81',
+                    'url': {
+                      'http': 'http://cdb.localhost.lan:8181/api/v1/map/9d7bf465e45113123bf9949c2a4f0395:0/analysis/node/e65b1ae05854aea96266808ec0686b91f3ee0a81'
+                    }
                   }
                 }
               }
-            }
-          ]
-        },
-        'last_updated': '1970-01-01T00:00:00.000Z'
+            ]
+          },
+          'last_updated': '1970-01-01T00:00:00.000Z'
+        };
+        params.success(fakeResponse);
       });
+
+      this.vis.load(new VizJSON(this.vizjson));
+
+      this.vis.instantiateMap();
 
       // Polling has started
       expect($.ajax.calls.argsFor(1)[0].url).toEqual('http://cdb.localhost.lan:8181/api/v1/map/9d7bf465e45113123bf9949c2a4f0395:0/analysis/node/e65b1ae05854aea96266808ec0686b91f3ee0a81');
@@ -931,66 +971,74 @@ describe('vis/vis', function () {
     beforeEach(function () {
       spyOn(this.vis, 'setOk');
       spyOn(this.vis, 'setError');
-      spyOn($, 'ajax');
     });
 
     it('should invoke setOk when request succeeds', function () {
-      this.vis.load(new VizJSON(fakeVizJSON()));
-      this.vis.instantiateMap();
-
-      // Response from Maps API is received
-      $.ajax.calls.argsFor(0)[0].success({
-        'layergroupid': '9d7bf465e45113123bf9949c2a4f0395:0',
-        'metadata': {
-          'layers': [
-            {
-              'type': 'mapnik',
-              'meta': {
-                'stats': [],
-                'cartocss': 'cartocss'
+      spyOn($, 'ajax').and.callFake(function (params) {
+        var fakeResponse = {
+          'layergroupid': '9d7bf465e45113123bf9949c2a4f0395:0',
+          'metadata': {
+            'layers': [
+              {
+                'type': 'mapnik',
+                'meta': {
+                  'stats': [],
+                  'cartocss': 'cartocss'
+                }
               }
-            }
-          ],
-          'dataviews': {},
-          'analyses': [
-            {
-              'nodes': {
-                'a0': {
-                  'status': 'ready',
-                  'query': 'SELECT * FROM arboles',
-                  'url': {
-                    'http': 'http://cdb.localhost.lan:8181/api/v1/map/9d7bf465e45113123bf9949c2a4f0395:0/analysis/node/5af683d5d8a6f67e11916a31cd76632884d4064f'
+            ],
+            'dataviews': {},
+            'analyses': [
+              {
+                'nodes': {
+                  'a0': {
+                    'status': 'ready',
+                    'query': 'SELECT * FROM arboles',
+                    'url': {
+                      'http': 'http://cdb.localhost.lan:8181/api/v1/map/9d7bf465e45113123bf9949c2a4f0395:0/analysis/node/5af683d5d8a6f67e11916a31cd76632884d4064f'
+                    }
                   }
                 }
               }
-            }
-          ]
-        },
-        'last_updated': '1970-01-01T00:00:00.000Z'
+            ]
+          },
+          'last_updated': '1970-01-01T00:00:00.000Z'
+        };
+        params.success(fakeResponse);
       });
+
+      this.vis.load(new VizJSON(fakeVizJSON()));
+      this.vis.instantiateMap();
 
       expect(this.vis.setOk).toHaveBeenCalled();
       expect(this.vis.setError).not.toHaveBeenCalled();
     });
 
     it('should invoke setError when request fails', function () {
-      this.vis.load(new VizJSON(fakeVizJSON()));
-
-      this.vis.instantiateMap();
-
-      // Response from Maps API is received
-      $.ajax.calls.argsFor(0)[0].success({
-        errors: ['the error message'],
-        errors_with_context: [
-          {
-            type: 'unknown',
-            message: 'the error message'
-          }
-        ]
+      spyOn($, 'ajax').and.callFake(function (params) {
+        var error = {
+          errors: ['the error message'],
+          errors_with_context: [
+            {
+              type: 'unknown',
+              message: 'the error message'
+            }
+          ]
+        };
+        var fakeResponse = {
+          responseText: JSON.stringify(error)
+        };
+        params.error(fakeResponse);
       });
+
+      this.vis.load(new VizJSON(fakeVizJSON()));
+      this.vis.instantiateMap();
 
       expect(this.vis.setOk).not.toHaveBeenCalled();
       expect(this.vis.setError).toHaveBeenCalled();
+      var errorArgs = this.vis.setError.calls.mostRecent().args[0];
+      expect(errorArgs).toBeDefined();
+      expect(errorArgs.message).toEqual('the error message');
     });
   });
 
@@ -1043,7 +1091,7 @@ describe('vis/vis', function () {
   });
 
   describe('when a vizjson has been loaded', function () {
-    var dataview;
+    var dataviewMock;
     var source;
 
     beforeEach(function () {
@@ -1056,42 +1104,43 @@ describe('vis/vis', function () {
 
       source = this.vis.analysis.findNodeById('a0');
 
-      dataview = new DataviewModelBase({
+      dataviewMock = new DataviewModelBase({
         source: source
       }, {
         map: this.vis.map,
-        vis: this.vis
+        engine: this.vis._engine
       });
+      dataviewMock.toJSON = jasmine.createSpy('toJSON').and.returnValue('fakeDataviewSerialization');
     });
 
     describe('when a dataview is added', function () {
       it('should reload the map', function () {
         Vis.prototype.reload.calls.reset();
-        this.vis._dataviewsCollection.add(dataview);
+        this.vis._dataviewsCollection.add(dataviewMock);
         expect(Vis.prototype.reload).toHaveBeenCalled();
       });
     });
 
     describe('when a dataview is removed', function () {
       it('should reload the map if there is a filter and it is not empty', function () {
-        dataview.isFiltered = function () {
+        dataviewMock.isFiltered = function () {
           return true;
         };
 
-        this.vis._dataviewsCollection.add(dataview);
+        this.vis._dataviewsCollection.add(dataviewMock);
         Vis.prototype.reload.calls.reset();
-        dataview.remove();
+        dataviewMock.remove();
         expect(Vis.prototype.reload).toHaveBeenCalledTimes(1);
       });
 
       it('should not reload the map if there is not a filter', function () {
-        dataview.isFiltered = function () {
+        dataviewMock.isFiltered = function () {
           return false;
         };
 
-        this.vis._dataviewsCollection.add(dataview);
+        this.vis._dataviewsCollection.add(dataviewMock);
         Vis.prototype.reload.calls.reset();
-        dataview.remove();
+        dataviewMock.remove();
         expect(Vis.prototype.reload).not.toHaveBeenCalled();
       });
     });

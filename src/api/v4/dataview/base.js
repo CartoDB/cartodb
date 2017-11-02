@@ -1,13 +1,20 @@
 var _ = require('underscore');
 
 /**
- * 
+ *
  * Represent a dataview base object.
- * 
+ *
  */
 function DataviewBase () {
 
 }
+
+DataviewBase.prototype.getData = function () {
+  var model = this.$getInternalModel();
+  if (model) {
+    return model.getData();
+  }
+};
 
 DataviewBase.prototype._checkColumnInOptions = function (options) {
   if (!options || _.isUndefined(options.column) || _.isEmpty(options.column)) {

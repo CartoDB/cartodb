@@ -17,12 +17,19 @@
             width: 100vw;
             height: 100vh;
         }
+        #widget {
+            position: absolute;
+            top: 0;
+            right: 0;
+            padding: 20px;
+            z-index: 1000;
+        }
     </style>
 </head>
 
 <body>
+    <div id="widget"></div>
     <div id="map"></div>
-
     <script>
         (async () => {
             var i = 0; // Number of reload cycles.
@@ -90,6 +97,12 @@
             });
 
             client.addDataview(formulaDataview);
+            
+            setTimeout(function () {
+              var data = formulaDataview.getData();
+              document.getElementById('widget').innerHTML = data;
+              console.log('DATA', data);
+            }, 1000);
         })();
 
     </script>

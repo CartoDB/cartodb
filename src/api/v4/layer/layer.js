@@ -3,12 +3,12 @@ var CartoDBLayer = require('../../../geo/map/cartodb-layer');
 /**
  * 
  * Represent a layer Object.
- * 
+ *
  * @param {object} source - The source where the layer will fetch the data.
  * @param {carto.style.CartoCSS} style - A CartoCSS object with the layer styling.
- * @param {object} opts 
+ * @param {object} opts
  * @param {string} opts.id - An unique indentifier for the layer.
- * 
+ *
  * @constructor
  * @api
  * @memberof carto.layers

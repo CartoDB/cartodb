@@ -77,8 +77,6 @@
             var layer = new carto.layer.Layer('layer0', source0, style);
             var layer1 = new carto.layer.Layer('layer1', source1, style1);
 
-
-
             client.addLayer(layer1);
             client.addLayer(layer);
 
@@ -92,20 +90,31 @@
             client.removeLayer(layer);
 
             // Dataviews
-            var formulaDataview = new carto.dataview.Formula(source1, {
-              column: 'pop_max',
-              params: {
-                operation: carto.operation.AVG
-              }
+            var formulaDataview = new carto.dataview.Formula(source1, 'pop_max', {
+              operation: carto.operation.AVG
             });
-            window.formula = formulaDataview;
+            window.formula1 = formulaDataview;
 
             formulaDataview.on('dataChanged', function (newData) {
-              console.log('Formula > ', newData);
-              document.getElementById('widget').innerHTML = newData;
+              document.getElementById('widget').innerHTML = newData.operation.toUpperCase() + ' ' + newData.result;
+              console.log('DATA', newData);
+            });
+            
+            formulaDataview.on('columnChanged', function (newColumn) {
+              console.log('COLUMN', newColumn);
+            });
+            
+            formulaDataview.on('statusChanged', function (newStatus, error) {
+              console.log('STATUS', newStatus, error);
+            });
+            
+            formulaDataview.on('operationChanged', function (newOperation) {
+              console.log('OPERATION', newOperation);
             });
 
             client.addDataview(formulaDataview);
+
+            formulaDataview.setOperation(carto.operation.MAX);
         })();
 
     </script>

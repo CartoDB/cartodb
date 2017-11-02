@@ -22,13 +22,8 @@ function isValidOperation (operation) {
   return _.contains(OPERATION, operation);
 }
 
-function validOperations () {
-  return _.toArray(OPERATION).join(', ');
-}
-
 module.exports = {
   OPERATION: OPERATION,
   STATUS: STATUS,
-  isValidOperation: isValidOperation,
-  validOperations: validOperations
+  isValidOperation: isValidOperation
 };

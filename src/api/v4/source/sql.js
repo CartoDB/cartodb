@@ -6,6 +6,18 @@ function SQL (id, query) {
   this._query = query;
 }
 
+SQL.prototype.setQuery = function (query) {
+  this._query = query;
+  if (this._internalModel) {
+    this._internalModel.set('query', query);
+  }
+  return this;
+};
+
+SQL.prototype.getQuery = function () {
+  return this._query;
+};
+
 SQL.prototype.$setEngine = function (engine) {
   if (!this._internalModel) {
     this._internalModel = new AnalysisModel({

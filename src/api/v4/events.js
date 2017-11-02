@@ -1,7 +1,7 @@
 /**
  *  @api
  *  @namespace carto.Events
- *  
+ *
  *  @description
  *  Namespace to access the `carto.js` events.
  */
@@ -18,5 +18,5 @@ module.exports = {
    * @api
    * @event carto.Events.ERROR
    */
-  ERROR: 'error,'
+  ERROR: 'error'
 };

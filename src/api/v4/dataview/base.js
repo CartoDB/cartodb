@@ -11,22 +11,22 @@ function DataviewBase () {}
 
 _.extend(DataviewBase.prototype, Backbone.Events);
 
-DataviewBase.prototype._initialize = function (options) {
-  this._checkColumn(options.column);
-  var params = this._defaultParams(options.params);
-  this._checkParams(params);
+DataviewBase.prototype._initialize = function (source, column, options) {
+  options = this._defaultOptions(options);
 
-  this._column = options.column;
-  this._params = options.params;
+  this._checkSource(source);
+  this._checkColumn(column);
+  this._checkOptions(options);
+
+  this._source = source;
+  this._column = column;
+  this._options = options;
   this._status = STATUS.NOT_LOADED;
   this._enabled = true;
 };
 
 DataviewBase.prototype.getData = function () {
-  if (this._internalModel) {
-    return this._internalModel.getData();
-  }
-  return null;
+  throw new Error('getData must be implemented by the particular dataview.');
 };
 
 DataviewBase.prototype.getStatus = function () {
@@ -75,8 +75,13 @@ DataviewBase.prototype.setParams = function (params) {
 
 // Protected methods
 
-DataviewBase.prototype._defaultParams = function (params) {
-  throw new Error('_defaultParams must be implemented by the particular dataview.');
+DataviewBase.prototype._defaultOptions = function (params) {
+  throw new Error('_defaultOptions must be implemented by the particular dataview.');
+};
+
+DataviewBase.prototype._checkSource = function (column) {
+  // TODO
+  return true;
 };
 
 DataviewBase.prototype._checkColumn = function (column) {
@@ -88,8 +93,8 @@ DataviewBase.prototype._checkColumn = function (column) {
   }
 };
 
-DataviewBase.prototype._checkParams = function (options) {
-  throw new Error('_checkParams must be implemented by the particular dataview.');
+DataviewBase.prototype._checkOptions = function (options) {
+  throw new Error('_checkOptions must be implemented by the particular dataview.');
 };
 
 DataviewBase.prototype._createInternalModel = function (engine) {
@@ -107,11 +112,39 @@ DataviewBase.prototype._setEnabled = function (enabled) {
 DataviewBase.prototype._listenToInternalModelEvents = function () {
   if (this._internalModel) {
     this.listenTo(this._internalModel, 'change:data', this._onDataChanged);
+    this.listenTo(this._internalModel, 'change:column', this._onColumnChanged);
+    this.listenTo(this._internalModel, 'loading', this._onStatusLoading);
+    this.listenTo(this._internalModel, 'loaded', this._onStatusLoaded);
+    this.listenTo(this._internalModel, 'error', this._onStatusError);
+    this._listenToInstanceModelEvents();
   }
+};
+
+DataviewBase.prototype._listenToInstanceModelEvents = function () {
+  throw new Error('_listenToInstanceModelEvents must be implemented by the particular dataview.');
 };
 
 DataviewBase.prototype._onDataChanged = function () {
   this.trigger('dataChanged', this.getData());
+};
+
+DataviewBase.prototype._onColumnChanged = function () {
+  this.trigger('columnChanged', this._column);
+};
+
+DataviewBase.prototype._onStatusLoading = function () {
+  this._status = STATUS.LOADING;
+  this.trigger('statusChanged', this._status);
+};
+
+DataviewBase.prototype._onStatusLoaded = function () {
+  this._status = STATUS.LOADED;
+  this.trigger('statusChanged', this._status);
+};
+
+DataviewBase.prototype._onStatusError = function (model, error) {
+  this._status = STATUS.ERROR;
+  this.trigger('statusChanged', this._status, error && error.statusText ? error.statusText : error);
 };
 
 // Internal public methods

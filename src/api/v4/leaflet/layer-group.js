@@ -4,6 +4,7 @@ var LeafletCartoLayerGroupView = require('../../../geo/leaflet/leaflet-cartodb-l
 function LayerGroup (layers, engine) {
   this._layers = layers;
   this._engine = engine;
+  this._leafletMap = undefined;
   this._internalLayerGroupView = undefined;
 }
 
@@ -12,8 +13,17 @@ LayerGroup.prototype.addTo = function (map) {
     this._createInternalLayerGroupView(map);
 
   if (!map.hasLayer(this._internalLayerGroupView.leafletLayer)) {
+    this._leafletMap = map;
     this._internalLayerGroupView.leafletLayer.addTo(map);
   }
+};
+
+LayerGroup.prototype.removeFrom = function (map) {
+  if (this._internalLayerGroupView) {
+    this._internalLayerGroupView.remove();
+    this._internalLayerGroupView = undefined;
+  }
+  this._leafletMap = undefined;
 };
 
 LayerGroup.prototype._createInternalLayerGroupView = function (map) {
@@ -31,10 +41,12 @@ LayerGroup.prototype._onFeatureClick = function (internalEvent) {
 };
 
 LayerGroup.prototype._onFeatureOver = function (internalEvent) {
+  this._leafletMap.getContainer().style.cursor = 'pointer';
   this._triggerLayerFeatureEvent('feature:over', internalEvent);
 };
 
 LayerGroup.prototype._onFeatureOut = function (internalEvent) {
+  this._leafletMap.getContainer().style.cursor = 'auto';
   this._triggerLayerFeatureEvent('feature:out', internalEvent);
 };
 
@@ -45,4 +57,5 @@ LayerGroup.prototype._triggerLayerFeatureEvent = function (eventName, internalEv
     layer.trigger(eventName, event);
   }
 };
+
 module.exports = LayerGroup;

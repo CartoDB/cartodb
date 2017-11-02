@@ -43,7 +43,8 @@ CartoDBLayerGroupViewBase.prototype = {
         previousLayerInteraction.remove();
       }
 
-      this.interaction[layerIndexInLayerGroup] = this.interactionClass()
+      // eslint-disable-next-line
+      this.interaction[layerIndexInLayerGroup] = new this.interactionClass()
         .map(this.nativeMap)
         .tilejson(tilejson)
         .on('on', function (o) {

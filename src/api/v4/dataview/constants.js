@@ -19,6 +19,14 @@ AGGREGATIONS.validValues = function () {
   return _.toArray(AGGREGATIONS).join(', ');
 };
 
+var STATUS = {
+  NOT_LOADED: 'notLoaded',
+  LOADING: 'loading',
+  LOADED: 'loaded',
+  ERROR: 'error'
+};
+
 module.exports = {
-  AGGREGATIONS: AGGREGATIONS
+  AGGREGATIONS: AGGREGATIONS,
+  STATUS: STATUS
 };

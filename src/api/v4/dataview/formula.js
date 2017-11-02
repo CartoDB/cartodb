@@ -6,6 +6,7 @@ var FormulaDataviewModel = require('../../../dataviews/formula-dataview-model');
  * Formula dataview
  */
 function DataviewFormula (source, options) {
+  this._init();
   this._checkColumnInOptions(options);
   this._params = options.params;
   this._params.operation = options.params.operation || AGGREGATIONS.COUNT;
@@ -28,14 +29,11 @@ DataviewFormula.prototype.$setEngine = function (engine) {
     source: this._source.$getInternalModel(),
     column: this._params.column,
     operation: this._params.operation,
-    sync_on_bbox_change: false
+    sync_on_bbox_change: false,
+    enabled: this._enabled
   }, {
     engine: engine
   });
-};
-
-DataviewFormula.prototype.$getInternalModel = function () {
-  return this._internalModel;
 };
 
 module.exports = DataviewFormula;

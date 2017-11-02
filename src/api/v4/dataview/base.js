@@ -1,19 +1,16 @@
 var _ = require('underscore');
+var STATUS = require('./constants').STATUS;
 
 /**
  *
  * Represent a dataview base object.
  *
  */
-function DataviewBase () {
+function DataviewBase () {}
 
-}
-
-DataviewBase.prototype.getData = function () {
-  var model = this.$getInternalModel();
-  if (model) {
-    return model.getData();
-  }
+DataviewBase.prototype._init = function () {
+  this._status = STATUS.NOT_LOADED;
+  this._enabled = true;
 };
 
 DataviewBase.prototype._checkColumnInOptions = function (options) {
@@ -24,6 +21,58 @@ DataviewBase.prototype._checkColumnInOptions = function (options) {
     throw new TypeError('Column property must be a string when creating a dataview.');
   }
 };
+
+DataviewBase.prototype.getData = function () {
+  var model = this.$getInternalModel();
+  if (model) {
+    return model.getData();
+  }
+};
+
+DataviewBase.prototype.getStatus = function () {
+  return this._status;
+};
+
+DataviewBase.prototype.isLoading = function () {
+  return this._status === STATUS.LOADING;
+};
+
+DataviewBase.prototype.isLoaded = function () {
+  return this._status === STATUS.LOADED;
+};
+
+DataviewBase.prototype.hasError = function () {
+  return this._status === STATUS.ERROR;
+};
+
+DataviewBase.prototype.enable = function () {
+  return this._setEnabled(true);
+};
+
+DataviewBase.prototype.disable = function () {
+  return this._setEnabled(false);
+};
+
+DataviewBase.prototype.isEnabled = function () {
+  return this._enabled;
+};
+
+DataviewBase.prototype._setEnabled = function (enabled) {
+  this._enabled = enabled;
+  if (this._internalModel) {
+    this._internalModel.set('enabled', enabled);
+  }
+  return this;
+};
+
+// isEnabled
+// setColumn
+// setParams
+// remove
+// syncOnDataChanges
+// isSyncedOnDataChanges
+// syncOnBoundingChanges
+// isSyncedOnBoundingChanges
 
 DataviewBase.prototype.$setEngine = function (engine) {
   throw new Error('$setEngine must be implemented by the particular dataview.');

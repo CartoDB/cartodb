@@ -12,6 +12,8 @@ This release changes the way Google ouath login works. If you are using it, you 
 to the oauth.google_plus section of the configuration file.
 
 ### Features
+* Map: rearrange layer options in layers list (#13006)
+* Style: Rename "none" aggregation to "points" (#13005)
 * Clean assets script
 * Improve error on widgets (CartoDB/deep-insights.js#574)
 * Add pagination support in data imports listing in superadmin (#12938).
@@ -32,7 +34,8 @@ to the oauth.google_plus section of the configuration file.
 * Improve legend items management (#12650)
 * Avoid multiple time-series by filtering the carousel options (#12395)
 * Add privacy button behavior for shared datasets (#11342)
-* Use add/replace notification for time-series (#12670)
+* Use add/replace notificat
+ion for time-series (#12670)
 * Fix icons in category legends (#11630)
 * Sidebar UI tweaks (#12479)
 * Add carto-node client library (#12677)
@@ -80,6 +83,9 @@ to the oauth.google_plus section of the configuration file.
 * Now is possible to use wildcard character (*) in the whitelist emails for organization signups (#12991)
 
 ### Bug fixes / enhancements
+* Documentation, fixed spelling and grammar in en.json
+* Update charlock_holmes gem to 0.7.5 to fix C++11 related problems.
+* Don't show basemap's labels layer in layer list (#13000)
 * Fallback to `username` when `name` is empty in share map view
 * Fix bounding box not updating with gmaps basemaps
 * Google oauth now works without JS (#12977)
@@ -262,6 +268,7 @@ to the oauth.google_plus section of the configuration file.
 * Fix histogram zoom (#12945)
 
 ### Internals
+* Use engine instead of visModel internally (#12992)
 * Remove analysisCollection and refactor analyses-integration (#12947)
 * Fix layer's sources in tests (analysis source required) (#12866)
 * Adapt widget integration and specs to dataviews refactor (#12850)
@@ -427,6 +434,7 @@ More information at [Dropbox migration guide](https://www.dropbox.com/developers
 * Show infowindow when user reaches max layer limit (#12167)
 * Format quota infowindow numbers (#11743)
 * Improved analysis error tooltip (#12250)
+* Enable overwrite collision_strategy in import API (#11990)
 * Rollback failed user/organization imports
 * Export map layers statistics
 * Add hubspot_form_ids to frontend config

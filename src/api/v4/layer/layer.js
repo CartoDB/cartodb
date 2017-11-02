@@ -62,12 +62,14 @@ Layer.prototype.setSource = function (source) {
 
 Layer.prototype.$setEngine = function (engine) {
   this._source.$setEngine(engine);
-  this._internalModel = new CartoDBLayer({
-    id: this._id,
-    source: this._source.$getInternalModel(),
-    cartocss: this._style.toCartoCSS(),
-    visible: this._visible
-  }, { engine: engine });
+  if (!this._internalModel) {
+    this._internalModel = new CartoDBLayer({
+      id: this._id,
+      source: this._source.$getInternalModel(),
+      cartocss: this._style.toCartoCSS(),
+      visible: this._visible
+    }, { engine: engine });
+  }
 };
 
 Layer.prototype.$getInternalModel = function () {

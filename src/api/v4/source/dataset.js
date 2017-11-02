@@ -7,14 +7,16 @@ function Dataset (id, dataset) {
 }
 
 Dataset.prototype.$setEngine = function (engine) {
-  this._internalModel = new AnalysisModel({
-    id: this._id,
-    type: 'source',
-    query: 'SELECT * from ' + this._dataset
-  }, {
-    camshaftReference: CamshaftReference,
-    engine: engine
-  });
+  if (!this._internalModel) {
+    this._internalModel = new AnalysisModel({
+      id: this._id,
+      type: 'source',
+      query: 'SELECT * from ' + this._dataset
+    }, {
+      camshaftReference: CamshaftReference,
+      engine: engine
+    });
+  }
 };
 
 Dataset.prototype.$getInternalModel = function () {

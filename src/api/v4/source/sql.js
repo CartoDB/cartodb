@@ -7,14 +7,16 @@ function SQL (id, query) {
 }
 
 SQL.prototype.$setEngine = function (engine) {
-  this._internalModel = new AnalysisModel({
-    id: this._id,
-    type: 'source',
-    query: this._query
-  }, {
-    camshaftReference: CamshaftReference,
-    engine: engine
-  });
+  if (!this._internalModel) {
+    this._internalModel = new AnalysisModel({
+      id: this._id,
+      type: 'source',
+      query: this._query
+    }, {
+      camshaftReference: CamshaftReference,
+      engine: engine
+    });
+  }
 };
 
 SQL.prototype.$getInternalModel = function () {

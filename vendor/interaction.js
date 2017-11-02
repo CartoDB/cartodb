@@ -202,5 +202,8 @@ class Interactive {
 module.exports = {
   leaf: {
     interaction: () => new Interactive(),
+  },
+  g: {
+    connector: Interactive,
   }
 }

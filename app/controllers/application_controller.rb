@@ -20,6 +20,7 @@ class ApplicationController < ActionController::Base
   before_filter :browser_is_html5_compliant?
   before_filter :set_asset_debugging
   before_filter :cors_preflight_check
+  before_filter :check_user_state
   after_filter  :allow_cross_domain_access
   after_filter  :remove_flash_cookie
   after_filter  :add_revision_header
@@ -161,6 +162,17 @@ class ApplicationController < ActionController::Base
     right_referer && right_origin
   end
 
+  def check_user_state
+    return unless (request.path =~ %r{^\/(upgrade_trial|login|logout|unauthenticated)}).nil?
+    viewed_user = CartoDB.extract_subdomain(request)
+    if current_user.nil? || current_user.username != viewed_user
+      user = Carto::User.where(username: viewed_user).first
+      render_404 if !user.nil? && user.locked?
+    else
+      locked_user if current_user.locked?
+    end
+  end
+
   def render_403
     respond_to do |format|
       format.html { render(file: 'public/403.html', status: 403, layout: false) }
@@ -196,13 +208,7 @@ class ApplicationController < ActionController::Base
 
   def login_required
     is_auth = authenticated?(CartoDB.extract_subdomain(request))
-    if is_auth && current_user.active?
-      validate_session(current_user)
-    elsif is_auth && current_user.locked?
-      locked_user
-    else
-      not_authorized
-    end
+    is_auth ? validate_session(current_user) : not_authorized
   end
 
   def api_authorization_required
@@ -219,11 +225,10 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  def not_authorized
+  def locked_user
     respond_to do |format|
       format.html do
-        session[:return_to] = request.url
-        redirect_to CartoDB.path(self, 'login') and return
+        redirect_to CartoDB.path(self, 'upgrade_trial') and return
       end
       format.json do
         head :unauthorized
@@ -231,10 +236,11 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  def locked_user
+  def not_authorized
     respond_to do |format|
       format.html do
-        redirect_to CartoDB.path(self, 'upgrade_trial') and return
+        session[:return_to] = request.url
+        redirect_to CartoDB.path(self, 'login') and return
       end
       format.json do
         head :unauthorized

@@ -1,0 +1,195 @@
+{
+  "vector": false,
+  "bounds": [
+    [
+      -73.8273,
+      -179
+    ],
+    [
+      83.261,
+      179
+    ]
+  ],
+  "center": "[41, -3]",
+  "datasource": {
+    "user_name": "cartojs-test",
+    "maps_api_template": "https://{user}.carto.com:443",
+    "stat_tag": "3c248678-55ce-46e5-968a-cd9659b77e85"
+  },
+  "description": null,
+  "options": {
+    "dashboard_menu": true,
+    "layer_selector": false,
+    "legends": true,
+    "scrollwheel": true
+  },
+  "id": "3c248678-55ce-46e5-968a-cd9659b77e85",
+  "layers": [
+    {
+      "id": "028c3d17-ed35-4bd4-a4af-d2836d552bbd",
+      "type": "tiled",
+      "options": {
+        "default": "true",
+        "url": "https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager_nolabels/{z}/{x}/{y}.png",
+        "subdomains": "abcd",
+        "minZoom": "0",
+        "maxZoom": "18",
+        "name": "Voyager",
+        "className": "voyager_labels",
+        "attribution": "&copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors",
+        "labels": {
+          "url": "https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager_only_labels/{z}/{x}/{y}.png"
+        },
+        "urlTemplate": "https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager_nolabels/{z}/{x}/{y}.png"
+      }
+    },
+    {
+      "id": "3f556e0f-7a87-48d1-b589-86be4353f70b",
+      "legends": [],
+      "type": "CartoDB",
+      "infowindow": {
+        "template_name": "infowindow_dark",
+        "fields": [
+          {
+            "name": "nameascii",
+            "title": true,
+            "position": 24
+          }
+        ],
+        "maxHeight": 180,
+        "template": "<div class=\"CDB-infowindow CDB-infowindow--dark js-infowindow\" style=\"background:#2E3C43\">\n  <div class=\"CDB-infowindow-close js-close\"></div>\n  <div class=\"CDB-infowindow-container\">\n    <div class=\"CDB-infowindow-bg\">\n      <div class=\"CDB-infowindow-inner js-inner\">\n        {{#loading}}\n          <div class=\"CDB-Loader js-loader is-visible\"></div>\n        {{/loading}}\n        <ul class=\"CDB-infowindow-list js-content\">\n          {{#content.fields}}\n          <li class=\"CDB-infowindow-listItem\">\n            {{#title}}<h5 class=\"CDB-infowindow-subtitle\">{{title}}</h5>{{/title}}\n            {{#value}}<h4 class=\"CDB-infowindow-title\">{{{ value }}}</h4>{{/value}}\n            {{^value}}<h4 class=\"CDB-infowindow-title\">null</h4>{{/value}}\n          </li>\n          {{/content.fields}}\n        </ul>\n      </div>\n    </div>\n    <div class=\"CDB-hook\">\n      <div class=\"CDB-hook-inner\"></div>\n    </div>\n  </div>\n</div>\n",
+        "alternative_names": {
+          "nameascii": "Name"
+        },
+        "width": 226,
+        "headerColor": {
+          "color": {
+            "fixed": "#35AAE5",
+            "opacity": 1
+          }
+        },
+        "template_type": "mustache"
+      },
+      "tooltip": {
+        "fields": [
+          {
+            "name": "pop_max",
+            "title": true,
+            "position": 6
+          },
+          {
+            "name": "nameascii",
+            "title": true,
+            "position": 24
+          }
+        ],
+        "template_name": "tooltip_light",
+        "template": "<div class=\"CDB-Tooltip CDB-Tooltip--isLight\">\n  <ul class=\"CDB-Tooltip-list\">\n    {{#fields}}\n      <li class=\"CDB-Tooltip-listItem\">\n        {{#title}}\n          <h3 class=\"CDB-Tooltip-listTitle\">{{{ title }}}</h3>\n        {{/title}}\n        <h4 class=\"CDB-Tooltip-listText\">{{{ value }}}</h4>\n      </li>\n    {{/fields}}\n  </ul>\n</div>\n",
+        "template_type": "mustache",
+        "alternative_names": {
+          "nameascii": "Name"
+        }
+      },
+      "visible": true,
+      "options": {
+        "layer_name": "ne_10m_populated_places_simple",
+        "cartocss": "#layer {\n  marker-width: 18;\n  marker-fill: #EE4D5A;\n  marker-fill-opacity: 0.9;\n  marker-allow-overlap: true;\n  marker-line-width: 1;\n  marker-line-color: #FFFFFF;\n  marker-line-opacity: 1;\n}",
+        "cartocss_version": "2.1.1",
+        "attribution": "",
+        "source": "a0"
+      }
+    },
+    {
+      "id": "4b952875-544f-409c-b5a2-c3a134af891a",
+      "type": "tiled",
+      "options": {
+        "default": "true",
+        "url": "https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager_only_labels/{z}/{x}/{y}.png",
+        "subdomains": "abcd",
+        "minZoom": "0",
+        "maxZoom": "18",
+        "attribution": "&copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors",
+        "urlTemplate": "https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager_only_labels/{z}/{x}/{y}.png",
+        "type": "Tiled",
+        "name": "Voyager Labels"
+      }
+    }
+  ],
+  "likes": 0,
+  "map_provider": "leaflet",
+  "overlays": [
+    {
+      "type": "share",
+      "order": 2,
+      "options": {
+        "display": true,
+        "x": 20,
+        "y": 20
+      },
+      "template": ""
+    },
+    {
+      "type": "search",
+      "order": 3,
+      "options": {
+        "display": true,
+        "x": 60,
+        "y": 20
+      },
+      "template": ""
+    },
+    {
+      "type": "zoom",
+      "order": 6,
+      "options": {
+        "display": true,
+        "x": 20,
+        "y": 20
+      },
+      "template": "<a href=\"#zoom_in\" class=\"zoom_in\">+</a> <a href=\"#zoom_out\" class=\"zoom_out\">-</a>"
+    },
+    {
+      "type": "loader",
+      "order": 8,
+      "options": {
+        "display": true,
+        "x": 20,
+        "y": 150
+      },
+      "template": "<div class=\"loader\" original-title=\"\"></div>"
+    },
+    {
+      "type": "logo",
+      "order": 9,
+      "options": {
+        "display": true,
+        "x": 10,
+        "y": 40
+      },
+      "template": ""
+    }
+  ],
+  "title": "003-Test",
+  "updated_at": "2017-11-01T13:28:59+00:00",
+  "user": {
+    "fullname": "cartojs-test",
+    "avatar_url": "//cartodb-libs.global.ssl.fastly.net/cartodbui/assets/unversioned/images/avatars/avatar_planet_orange.png",
+    "profile_url": "https://cartojs-test.carto.com"
+  },
+  "version": "3.0.0",
+  "widgets": [],
+  "zoom": 7,
+  "analyses": [
+    {
+      "id": "a0",
+      "type": "source",
+      "params": {
+        "query": "SELECT * FROM ne_10m_populated_places_simple"
+      },
+      "options": {
+        "table_name": "ne_10m_populated_places_simple",
+        "simple_geom": "point"
+      }
+    }
+  ]
+}

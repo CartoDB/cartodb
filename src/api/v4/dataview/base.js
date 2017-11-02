@@ -1,6 +1,6 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
-var STATUS = require('./constants').STATUS;
+var STATUS = require('../constants').STATUS;
 
 /**
  *

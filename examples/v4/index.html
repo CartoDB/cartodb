@@ -95,7 +95,7 @@
             var formulaDataview = new carto.dataview.Formula(source1, {
               column: 'pop_max',
               params: {
-                operation: carto.dataview.AGGREGATIONS.AVG
+                operation: carto.operation.AVG
               }
             });
             window.formula = formulaDataview;

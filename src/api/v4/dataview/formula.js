@@ -1,6 +1,6 @@
 var _ = require('underscore');
 var DataviewBase = require('./base');
-var AGGREGATIONS = require('./constants').AGGREGATIONS;
+var constants = require('../constants');
 var FormulaDataviewModel = require('../../../dataviews/formula-dataview-model');
 
 /**
@@ -25,12 +25,12 @@ DataviewFormula.prototype.setParams = function (params) {
 
 DataviewFormula.prototype._defaultParams = function (params) {
   params = params || {};
-  params.operation = params.operation || AGGREGATIONS.COUNT;
+  params.operation = params.operation || constants.OPERATION.COUNT;
 };
 
 DataviewFormula.prototype._checkParams = function (params) {
-  if (!_.isUndefined(params) && !_.isUndefined(params.operation) && !AGGREGATIONS.isValidAggregation(params.operation)) {
-    throw new TypeError('Operation param for formula dataview is not valid. Supported values: ' + AGGREGATIONS.validValues());
+  if (!_.isUndefined(params) && !_.isUndefined(params.operation) && !constants.isValidOperation(params.operation)) {
+    throw new TypeError('Operation param for formula dataview is not valid. Supported values: ' + constants.validOperations());
   }
 };
 

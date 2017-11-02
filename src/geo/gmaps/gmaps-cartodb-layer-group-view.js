@@ -267,39 +267,7 @@ _.extend(
     },
 
     _findPos: function (map, o) {
-      var curleft = 0;
-      var curtop = 0;
-      var obj = map.getDiv();
-
-      var x, y;
-      if (o.e.changedTouches && o.e.changedTouches.length > 0) {
-        x = o.e.changedTouches[0].clientX + window.scrollX;
-        y = o.e.changedTouches[0].clientY + window.scrollY;
-      } else {
-        x = o.e.clientX;
-        y = o.e.clientY;
-      }
-
-      // If the map is fixed at the top of the window, we can't use offsetParent
-      // cause there might be some scrolling that we need to take into account.
-      var point;
-      if (obj.offsetParent && obj.offsetTop > 0) {
-        do {
-          curleft += obj.offsetLeft;
-          curtop += obj.offsetTop;
-          obj = obj.offsetParent;
-        } while (obj);
-        point = this._newPoint(
-          x - curleft, y - curtop);
-      } else {
-        var rect = obj.getBoundingClientRect();
-        var scrollX = (window.scrollX || window.pageXOffset);
-        var scrollY = (window.scrollY || window.pageYOffset);
-        point = this._newPoint(
-          (o.e.clientX ? o.e.clientX : x) - rect.left - obj.clientLeft - scrollX,
-          (o.e.clientY ? o.e.clientY : y) - rect.top - obj.clientTop - scrollY);
-      }
-      return point;
+      return o.pixel;
     },
 
     /**

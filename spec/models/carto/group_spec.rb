@@ -29,14 +29,14 @@ describe Carto::Group do
   end
 
   describe 'organization behaviour' do
+    include_context 'organization with users helper'
+
     before(:all) do
-      @org = FactoryGirl.create(:organization)
-      @group = FactoryGirl.create(:random_group, organization_id: @org.id)
+      @group = FactoryGirl.create(:random_group, organization_id: @organization.id)
     end
 
     after(:all) do
       @group.destroy
-      @org.destroy
     end
 
     it 'generates auth_tokens and save them for future accesses' do

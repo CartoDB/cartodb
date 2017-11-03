@@ -1,6 +1,7 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
 var STATUS = require('../constants').STATUS;
+var SourceBase = require('../source/base');
 
 /**
  *
@@ -10,24 +11,6 @@ var STATUS = require('../constants').STATUS;
 function DataviewBase () {}
 
 _.extend(DataviewBase.prototype, Backbone.Events);
-
-DataviewBase.prototype._initialize = function (source, column, options) {
-  options = this._defaultOptions(options);
-
-  this._checkSource(source);
-  this._checkColumn(column);
-  this._checkOptions(options);
-
-  this._source = source;
-  this._column = column;
-  this._options = options;
-  this._status = STATUS.NOT_LOADED;
-  this._enabled = true;
-};
-
-DataviewBase.prototype.getData = function () {
-  throw new Error('getData must be implemented by the particular dataview.');
-};
 
 DataviewBase.prototype.getStatus = function () {
   return this._status;
@@ -58,6 +41,7 @@ DataviewBase.prototype.isEnabled = function () {
 };
 
 DataviewBase.prototype.setColumn = function (column) {
+  this._checkColumn(column);
   this._column = column;
   if (this._internalModel) {
     this._internalModel.set('column', this._column);
@@ -65,31 +49,50 @@ DataviewBase.prototype.setColumn = function (column) {
   return this;
 };
 
-DataviewBase.prototype.setParams = function (params) {
-  throw new Error('setParams must be implemented by the particular dataview.');
+DataviewBase.prototype.getColumn = function () {
+  return this._column;
 };
 
-// remove ?
+DataviewBase.prototype.getData = function () {
+  throw new Error('getData must be implemented by the particular dataview.');
+};
+
 // syncOnBoundingChanges
 // isSyncedOnBoundingChanges
 
 // Protected methods
 
-DataviewBase.prototype._defaultOptions = function (params) {
+DataviewBase.prototype._initialize = function (source, column, options) {
+  options = this._defaultOptions(options);
+
+  this._checkSource(source);
+  this._checkColumn(column);
+  this._checkOptions(options);
+
+  this._source = source;
+  this._column = column;
+  this._options = options;
+  this._status = STATUS.NOT_LOADED;
+  this._enabled = true;
+};
+
+DataviewBase.prototype._defaultOptions = function (options) {
   throw new Error('_defaultOptions must be implemented by the particular dataview.');
 };
 
-DataviewBase.prototype._checkSource = function (column) {
-  // TODO
-  return true;
+DataviewBase.prototype._checkSource = function (source) {
+  return source instanceof SourceBase;
 };
 
 DataviewBase.prototype._checkColumn = function (column) {
-  if (_.isUndefined(column) || _.isEmpty(column)) {
-    throw new TypeError('Column property is mandatory when creating a dataview.');
+  if (_.isUndefined(column)) {
+    throw new TypeError('Column property is required.');
   }
   if (!_.isString(column)) {
-    throw new TypeError('Column property must be a string when creating a dataview.');
+    throw new TypeError('Column property must be a string.');
+  }
+  if (_.isEmpty(column)) {
+    throw new TypeError('Column property must be not empty.');
   }
 };
 

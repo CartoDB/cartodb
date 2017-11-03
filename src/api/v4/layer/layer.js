@@ -1,11 +1,12 @@
+var LayerBase = require('./base');
 var CartoDBLayer = require('../../../geo/map/cartodb-layer');
 
 /**
- * 
+ *
  * Represent a layer Object.
  *
- * @param {object} source - The source where the layer will fetch the data.
- * @param {carto.style.CartoCSS} style - A CartoCSS object with the layer styling.
+ * @param {carto.source.Base} source - The source where the layer will fetch the data.
+ * @param {carto.style.Base} style - A CartoCSS object with the layer styling.
  * @param {object} opts
  * @param {string} opts.id - An unique indentifier for the layer.
  *
@@ -25,6 +26,8 @@ function Layer (source, style, opts) {
   }
   this._visible = true;
 }
+
+Layer.prototype = Object.create(LayerBase.prototype);
 
 Layer.prototype.setStyle = function (style, opts) {
   opts = opts || {};
